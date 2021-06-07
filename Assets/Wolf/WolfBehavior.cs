@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class WolfBehavior : MonoBehaviour, DestructibleStats
+public class WolfBehavior : MonoBehaviour, IAnimal
 {
+    public AnimationsName animationsName { get; } = new AnimationsName("Wolf");
     public bool gender = false, moving = false, adult, hunting, alone = false;
     public bool asleep = false;
     public float hungry, exhaustion, lp, sensibility;
@@ -85,7 +87,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
     public IEnumerable Attack(GameObject threat)
     {
         Vector3 threatPosition;
-        DestructibleStats threatLife = threat.GetComponent<DestructibleStats>();
+        IAnimal threatLife = threat.GetComponent<IAnimal>();
         do
         {
             threatLife.Escape(false, new List<GameObject> { this.gameObject });
@@ -101,7 +103,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
 
     public IEnumerable Deffend(GameObject threat)
     {
-        DestructibleStats threatLife = threat.GetComponent<DestructibleStats>();
+        IAnimal threatLife = threat.GetComponent<IAnimal>();
         Vector3 threatPosition = threat.transform.position;
         do
         {
@@ -121,10 +123,10 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
     public IEnumerator Follow()
     {
         moving = true;
-        int i = Random.Range(5, 10);
+        int i = UnityEngine.Random.Range(5, 10);
         int interval = i;
-        bird = Respawn.birds[Random.Range(Respawn.birds.Count, 0)];
-        int rest = (Random.Range(3, 6) * 10);
+        bird = Respawn.birds[UnityEngine.Random.Range(Respawn.birds.Count, 0)];
+        int rest = (UnityEngine.Random.Range(3, 6) * 10);
         if (rest > 29)
         {
             ani.speed = 0;
@@ -132,9 +134,9 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
         }
         nav.speed = 3;
         ani.speed = 3;
-        int distance = Random.Range(1, 100);
+        int distance = UnityEngine.Random.Range(1, 100);
         Vector3 distancePosition = new Vector3(distance, 0, distance);
-        ani.Play("RunWolf");
+        ani.Play(animationsName.run);
         while (i > 0)
         {
             nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
@@ -146,18 +148,21 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
 
     public IEnumerator Restore()
     {
-        int interval = Random.Range(40, 70);
+        int interval = UnityEngine.Random.Range(40, 70);
         while (1 == 1)
         {
-            exhaustion += 0.5f;
             hungry += 1f;
-            if (exhaustion > 3 && !hunting)
+            if (!asleep)
             {
-                StartCoroutine("Sleep");
-            }
-            if (hungry > 3 && !asleep)
-            {
-                StartCoroutine("Hunt");
+                exhaustion += 0.5f;
+                if (exhaustion > 3 && !hunting)
+                {
+                    StartCoroutine("Sleep");
+                }
+                if (hungry > 3 && !asleep)
+                {
+                    StartCoroutine("Hunt");
+                }
             }
             yield return new WaitForSeconds(interval);
         }
@@ -165,7 +170,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
 
     public IEnumerator Grow()
     {
-        int interval = Random.Range(12, 15);
+        int interval = UnityEngine.Random.Range(12, 15);
         while (size.magnitude < sizePotential.magnitude)
         {
             if (Vector3.Distance(transform.position, mom.transform.position) > 5)
@@ -184,7 +189,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
         {
             if(Vector3.Distance(transform.position, alpha.transform.position) > 100)
             {
-                int distance = Random.Range(3, 12);
+                int distance = UnityEngine.Random.Range(3, 12);
                 nav.SetDestination(alpha.transform.position + new Vector3(distance, distance, distance));
                 asleep = false;
                 nav.speed = 8;
@@ -201,12 +206,13 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
     public IEnumerator Sleep()
     {
         StopCoroutine("Follow");
+        moving = false;
         asleep = true;
         while (exhaustion > 1)
         {
             ani.speed = 0;
             yield return new WaitForSeconds(115);
-            exhaustion--;
+            exhaustion-=1.5f;
         }
         asleep = false;
     }
@@ -264,7 +270,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
                                 ani.speed = 10;
                                 while (afraid > 0)
                                 {
-                                    ani.Play("RunWolf");
+                                    ani.Play(animationsName.run);
                                     afraid--;
                                     nav.SetDestination(bird.transform.position);
                                     yield return new WaitForSeconds(5);
@@ -322,7 +328,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
                                 ani.speed = 10;
                                 while (afraid > 0)
                                 {
-                                    ani.Play("WolfRun");
+                                    ani.Play(animationsName.run);
                                     afraid--;
                                     nav.SetDestination(bird.transform.position);
                                     yield return new WaitForSeconds(1);
@@ -365,6 +371,7 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
         if (adult)
         {
             StopCoroutine("Follow");
+            if(bird == null) bird = Respawn.birds[UnityEngine.Random.Range(Respawn.birds.Count, 0)];
             GameObject prey = bird;
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
@@ -385,12 +392,12 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
             {
                 location = prey.transform.position;
                 distance = Vector3.Distance(location, transform.position);
-                if (distance < 80 || victim.aware)
+                if (distance < 80 || victim.aware || cansancio < 1)
                 {
-                    cansancio += 0.2f;
+                    cansancio += 0.01f;
                     nav.speed = 10;
                     ani.speed = 10;
-                    if (distance < 3)
+                    if (distance < 5)
                     {
                         if (hungry < 0) break;
                         if (!prey.GetComponent<NavMeshAgent>().enabled) break;
@@ -411,5 +418,33 @@ public class WolfBehavior : MonoBehaviour, DestructibleStats
             ani.speed = 0;
         }
         hunting = false;
+    }
+    public IEnumerator Shooted(Vector3 bulletPosition)
+    {
+        int wait = 3;
+        bulletPosition = transform.InverseTransformPoint(bulletPosition);
+        do
+        {
+            wait--;
+            float zDistance = Vector3.Distance(new Vector3(0,0,bulletPosition.z), new Vector3(0,0,this.transform.position.z));
+            if (zDistance < 1.5)
+            {
+                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x,0), new Vector3(this.transform.position.x,0));
+                if (xDistance < 0.25)
+                {
+                    float yDistance = Vector3.Distance(new Vector3(0,bulletPosition.y), new Vector3(0,this.transform.position.y));
+                    if (yDistance < 0.5)
+                    {
+                        this.exhaustion += 2;
+                        StopCoroutine("Hunt");
+                        StopCoroutine("Escape");
+                        hunting = false;
+                        StartCoroutine("Sleep");
+                        Debug.Log(this.gameObject);
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.5f);
+        } while (wait > 0);
     }
 }

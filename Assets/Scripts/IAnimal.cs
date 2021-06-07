@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface DestructibleStats
+public interface IAnimal
 {
     // Start is called before the first frame update
-    bool aware
-    {
-        get;
-        set;
-    }
+    public AnimationsName animationsName { get; }
+    bool aware { get; set; }
     void Hurt(float damage);
     IEnumerator Escape(bool team, List<GameObject> enemies);
 }

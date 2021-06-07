@@ -4,10 +4,11 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BunnyBehavior : MonoBehaviour,DestructibleStats
+public class BunnyBehavior : MonoBehaviour, IAnimal
 {
     public bool gender = false, moving = false, adult, hunting, alone = true;
     bool consciente;
+    public AnimationsName animationsName { get; } = new AnimationsName("Bunny");
     public bool aware
     {
         get => this.consciente;
@@ -65,9 +66,11 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
             this.rig.isKinematic = true;
             this.nav.enabled = false;
             transform.Rotate(Vector3.forward, 90);
+            Respawn.rabbits.Remove(this.gameObject);
             Destroy(this);
         }
     }
+
 
     //IEumerator
 
@@ -80,11 +83,11 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
         int rest = (Random.Range(2, 5) * 10);
         if (rest > 29)
         {
-            ani.Play("IdleBunny");
+            ani.Play(animationsName.idle);
             ani.speed = 0;
             yield return new WaitForSeconds(rest);
         }
-        ani.Play("RunBunny");
+        ani.Play(animationsName.run);
         nav.speed = 3;
         ani.speed = 3;
         int distance = Random.Range(1, 100);
@@ -117,6 +120,7 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
     {
         StopCoroutine("Follow");
         asleep = true;
+        moving = false;
         while (exhaustion > 1)
         {
             ani.speed = 0;
@@ -125,6 +129,7 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
         }
         asleep = false;
     }
+
 
     /// <summary>
     /// It will wair 3 seconds for every calculation
@@ -159,7 +164,7 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
                     ani.speed = 10;
                     while (afraid > 0)
                     {
-                        ani.Play("RunBunny");
+                        ani.Play(animationsName.run);
                         afraid--;
                         nav.SetDestination(bird.transform.position);
                         yield return new WaitForSeconds(10);
@@ -172,6 +177,37 @@ public class BunnyBehavior : MonoBehaviour,DestructibleStats
                 yield return new WaitForSeconds(3);
             }
         } while (!aware);
+    }
+
+    public IEnumerator Shooted(GameObject bullet)
+    {
+        int wait = 5;
+        Vector3 bulletPosition;
+        do
+        {
+            bulletPosition = bullet.transform.position;
+            wait--;
+            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, this.transform.position.z));
+            if (zDistance < 1)
+            {
+                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(this.transform.position.x, 0));
+                if (xDistance < 1)
+                {
+                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, this.transform.position.y));
+                    if (yDistance < 1)
+                    {
+                        this.exhaustion += 2;
+                        StopCoroutine("Hunt");
+                        StopCoroutine("Escape");
+                        hunting = false;
+                        StartCoroutine("Sleep");
+                        Debug.Log(this.gameObject);
+                        break;
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.05f);
+        } while (wait > 0);
     }
 
 }

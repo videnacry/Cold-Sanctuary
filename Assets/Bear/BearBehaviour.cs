@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BearBehaviour : MonoBehaviour, DestructibleStats
+public class BearBehaviour : MonoBehaviour, IAnimal
 {
     public bool gender = false, moving = false, adult, hunting, alone;
     public bool asleep = false;
     public float hungry, exhaustion, lp, sensibility;
     bool consciente;
+    public AnimationsName animationsName { get; } = new AnimationsName("Bear");
     public bool aware
     {
         get => this.consciente;
@@ -94,7 +95,7 @@ public class BearBehaviour : MonoBehaviour, DestructibleStats
         ani.speed = 3;
         int distance = Random.Range(1, 100);
         Vector3 distancePosition = new Vector3(distance, 0, distance);
-        ani.Play("RunBear");
+        ani.Play(animationsName.run);
         while (i > 0)
         {
             nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
@@ -109,15 +110,18 @@ public class BearBehaviour : MonoBehaviour, DestructibleStats
         int interval = Random.Range(40, 70);
         while (1 == 1)
         {
-            exhaustion += 0.5f;
             hungry += 1f;
-            if (exhaustion > 3 && !hunting)
+            if (!asleep)
             {
-                StartCoroutine("Sleep");
-            }
-            if (hungry > 3 && !asleep)
-            {
-                StartCoroutine("Hunt");
+                exhaustion += 0.5f;
+                if (exhaustion > 3 && !hunting)
+                {
+                    StartCoroutine("Sleep");
+                }
+                if (hungry > 3 && !asleep)
+                {
+                    StartCoroutine("Hunt");
+                }
             }
             yield return new WaitForSeconds(interval);
         }
@@ -145,11 +149,12 @@ public class BearBehaviour : MonoBehaviour, DestructibleStats
     {
         StopCoroutine("Follow");
         asleep = true;
+        moving = false;
         while (exhaustion > 1)
         {
             ani.speed = 0;
             yield return new WaitForSeconds(130);
-            exhaustion--;
+            exhaustion-=1.5f;
         }
         asleep = false;
     }
@@ -230,11 +235,11 @@ public class BearBehaviour : MonoBehaviour, DestructibleStats
             {
                 location = prey.transform.position;
                 distance = Vector3.Distance(location, transform.position);
-                if (distance < 40 || victim.aware)
+                if (distance < 40 || victim.aware || cansancio < 1)
                 {
-                    cansancio += 0.1f;
+                    cansancio += 0.02f;
                     nav.speed = 6;
-                    if (distance < 3)
+                    if (distance < 6)
                     {
                         if (hungry < 0) break;
                         if (!prey.GetComponent<NavMeshAgent>().enabled) break;
@@ -248,10 +253,48 @@ public class BearBehaviour : MonoBehaviour, DestructibleStats
                 }
                 nav.SetDestination(location);
                 yield return new WaitForSeconds(.1f);
-            } while (distance < 440 && cansancio > 0);
+            } while (distance < 440 && cansancio < 1);
             exhaustion += cansancio;
-            nav.speed = 3;
+            nav.speed = 0;
         }
         hunting = false;
+        moving = false;
+    }
+
+    public IEnumerator Shooted(GameObject bullet)
+    {
+        int wait = 5;
+        Vector3 bulletPosition;
+        do
+        {
+            bulletPosition = bullet.transform.position;
+            wait--;
+            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, this.transform.position.z));
+            if (zDistance < 2)
+            {
+                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(this.transform.position.x, 0));
+                if (xDistance < 2)
+                {
+                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, this.transform.position.y));
+                    if (yDistance < 3)
+                    {
+                        this.exhaustion += 2;
+                        StopCoroutine("Hunt");
+                        StopCoroutine("Escape");
+                        hunting = false;
+                        StartCoroutine("Sleep");
+                        Debug.Log(this.gameObject);
+                        break;
+                    }
+                }
+            }
+            yield return new WaitForSeconds(0.05f);
+        } while (wait > 0);
+    }
+    public float radius = 1;
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(this.transform.position, radius);
     }
 }
