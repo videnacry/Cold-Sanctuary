@@ -338,3 +338,37 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+
+# Own gitignore
+.vscode
+*.fbx
+*.mat
+*.png
+*.anim
+*.controller
+*.scenetemplate
+*.unity
+*.asset
+*.jpg
+*.tif
+*.brush
+*.terrainlayer
+*.txt
+*.lighting
+*.cginc
+*.shader
+*.json
+*.prefab
+*.graph
+*.preset
+*.disabled
+*.pdf
+*.ttf
+*.sln
+*.csproj
+*.vsconfig
+Audio
+Library
+ProjectSettings
+UserSettings
+Logs
