@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BunnyBehavior : Animal, IAnimal
+public class BunnyBehavior : Animal, IFactory
 {
     public bool hunting;
     public override AnimationsName animationsName { get; } = new AnimationsName("Bunny");
@@ -45,6 +45,8 @@ public class BunnyBehavior : Animal, IAnimal
 
     public IEnumerator Follow()
     {
+        yield return new WaitForSeconds(Random.Range(2, 5));
+        this.nav.enabled = true;
         moving = true;
         int i = Random.Range(5, 10);
         int interval = i;
@@ -146,6 +148,7 @@ public class BunnyBehavior : Animal, IAnimal
                 yield return new WaitForSeconds(3);
             }
         } while (!aware);
+        StartCoroutine(Follow());
     }
 
     public IEnumerator Shooted(GameObject bullet)
@@ -179,4 +182,17 @@ public class BunnyBehavior : Animal, IAnimal
         } while (wait > 0);
     }
 
+    public GameObject[] GenerateSquareRange(GameObject gameObject, int quantity, float range, float respawnHeight)
+    {
+        GameObject[] rabbits = new GameObject[quantity];
+        for (int idx = 0; quantity > idx; idx++)
+        {
+            GameObject rabbit = Instantiate(gameObject, new Vector3(Random.Range(0, range), respawnHeight, Random.Range(0, range)), transform.rotation);
+            Vector3 scale = rabbit.transform.localScale;
+            rabbit.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
+            rabbits[idx] = rabbit;
+            BunnyBehavior.population.Add(rabbit);
+        }
+        return rabbits;
+    }
 }
