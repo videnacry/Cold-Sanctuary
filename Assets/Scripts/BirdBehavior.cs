@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BirdBehavior : MonoBehaviour
+public class BirdBehavior : MonoBehaviour, IFactory
 {
 
     public int min, max;
@@ -11,12 +11,10 @@ public class BirdBehavior : MonoBehaviour
     float velocity=0, lapse,altura;
     int giro=0;
     bool moving = false;
-    Animator ani;
 
     // Start is called before the first frame update
     void Start()
     {
-        ani = GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -35,8 +33,6 @@ public class BirdBehavior : MonoBehaviour
     void Fly(float velocity)
     {
         StartCoroutine("Move");
-        ani.Play("Fly");
-        ani.speed = velocity;
     }
 
     int Altura(int rotation)
@@ -68,6 +64,20 @@ public class BirdBehavior : MonoBehaviour
             yield return new WaitForSeconds(.1f);
         }
         moving = false;
+    }
+
+    public GameObject[] GenerateSquareRange(GameObject gameObject, int quantity, float range, float respawnHeight = 250)
+    {
+        GameObject[] birds = new GameObject[quantity];
+        for (int idx = 0; quantity > idx; idx++)
+        {
+            GameObject bird = Instantiate(gameObject, new Vector3(Random.Range(0, range), respawnHeight, Random.Range(0, range)), transform.rotation);
+            Vector3 scale = bird.transform.localScale;
+            bird.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
+            birds[idx] = bird;
+            Respawn.birds.Add(bird);
+        }
+        return birds;
     }
 
 }
