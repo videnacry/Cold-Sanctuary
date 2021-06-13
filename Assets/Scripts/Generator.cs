@@ -45,21 +45,7 @@ public class Generator : MonoBehaviour
             factory.GenerateSquareRange(animal, quantity, range, respawnHeight);
         } else
         {
-            this.GenerateSquareRange(animal, quantity, range, respawnHeight);
+            Animal.StaticGenerateSquareRange(animal, quantity, range, respawnHeight);
         }
-    }
-
-    public GameObject[] GenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
-    {
-        GameObject[] creatures = new GameObject[quantity];
-        for (int idx = 0; quantity > idx; idx++)
-        {
-            GameObject creature = Instantiate(animal, new Vector3(UnityEngine.Random.Range(0, range), respawnHeight, UnityEngine.Random.Range(0, range)), transform.rotation);
-            Vector3 scale = creature.transform.localScale;
-            creature.transform.localScale = new Vector3(scale.x - UnityEngine.Random.Range(0.1f, 0.4f), scale.y - UnityEngine.Random.Range(0.1f, 0.4f), scale.z - UnityEngine.Random.Range(0.1f, 0.4f));
-            creatures[idx] = creature;
-            Respawn.birds.Add(creature);
-        }
-        return creatures;
     }
 }
