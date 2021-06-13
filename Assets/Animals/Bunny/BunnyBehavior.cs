@@ -4,8 +4,10 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BunnyBehavior : Animal, IFactory
+public class BunnyBehavior : Animal
 {
+    public static HashSet<GameObject> population = new HashSet<GameObject>();
+    public override HashSet<GameObject> Population { get => population; set => population = value; }
     public bool hunting;
     public override AnimationsName animationsName { get; } = new AnimationsName("Bunny");
 
@@ -22,7 +24,6 @@ public class BunnyBehavior : Animal, IFactory
         rig = GetComponent<Rigidbody>();
         ani = GetComponent<Animator>();
         lp = this.rig.mass;
-        population = Respawn.rabbits;
         StartCoroutine("Restore");
     }
 
@@ -180,19 +181,5 @@ public class BunnyBehavior : Animal, IFactory
             }
             yield return new WaitForSeconds(0.05f);
         } while (wait > 0);
-    }
-
-    public GameObject[] GenerateSquareRange(GameObject gameObject, int quantity, float range, float respawnHeight)
-    {
-        GameObject[] rabbits = new GameObject[quantity];
-        for (int idx = 0; quantity > idx; idx++)
-        {
-            GameObject rabbit = Instantiate(gameObject, new Vector3(Random.Range(0, range), respawnHeight, Random.Range(0, range)), transform.rotation);
-            Vector3 scale = rabbit.transform.localScale;
-            rabbit.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
-            rabbits[idx] = rabbit;
-            BunnyBehavior.population.Add(rabbit);
-        }
-        return rabbits;
     }
 }

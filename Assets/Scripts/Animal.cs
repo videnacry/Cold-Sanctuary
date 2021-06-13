@@ -5,9 +5,10 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public class Animal : MonoBehaviour, IAnimal
+public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 {
-    public HashSet<GameObject> population;
+    public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
+    public abstract HashSet<GameObject> Population { get ; set ; }
     public bool gender = false, moving = false, adult, alone, asleep = false, death = false;
     public float hungry, exhaustion, lp, sensibility;
     public Vector3 size, sizePotential;
@@ -15,9 +16,29 @@ public class Animal : MonoBehaviour, IAnimal
     public Rigidbody rig;
     public Animator ani;
 
-    public virtual AnimationsName animationsName { get; } = new AnimationsName("");
+    public abstract AnimationsName animationsName { get; }
 
-    public virtual bool aware { get; set; }
+    public bool aware { get; set; } = false;
+
+    public static GameObject[] StaticGenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
+    {
+        GameObject[] creatures = new GameObject[quantity];
+        for (int idx = 0; quantity > idx; idx++)
+        {
+            GameObject creature = Instantiate(animal, new Vector3(UnityEngine.Random.Range(0, range), respawnHeight, UnityEngine.Random.Range(0, range)), animal.transform.rotation);
+            Vector3 scale = creature.transform.localScale;
+            creature.transform.localScale = new Vector3(scale.x - UnityEngine.Random.Range(0.1f, 0.4f), scale.y - UnityEngine.Random.Range(0.1f, 0.4f), scale.z - UnityEngine.Random.Range(0.1f, 0.4f));
+            creatures[idx] = creature;
+            Animal creatureScript = creature.GetComponent<Animal>();
+            creatureScript.Population.Add(creature);
+            wholePopulation.Add(creature);
+        }
+        return creatures;
+    }
+    public virtual GameObject[] GenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
+    {
+        return Animal.StaticGenerateSquareRange(animal, quantity, range, respawnHeight);
+    }
 
     public virtual IEnumerator Escape(bool team, List<GameObject> enemies)
     {
@@ -39,7 +60,8 @@ public class Animal : MonoBehaviour, IAnimal
         }
         if (lp < 0)
         {
-            population.Remove(this.gameObject);
+            Population.Remove(this.gameObject);
+            wholePopulation.Remove(this.gameObject);
             Destroy(this);
         }
     }
