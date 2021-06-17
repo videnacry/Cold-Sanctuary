@@ -56,8 +56,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         {
             if (parentalCare == "biparental") paternalGender = !paternalGender;
             GameObject creature = Instantiate(animal, positions[0], animal.transform.rotation);
-            Vector3 scale = creature.transform.localScale;
-            creature.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
+            RandomRateScale(creature, 0, 0.4f);
             creatures[idx] = creature;
             Animal creatureScript = creature.GetComponent<Animal>();
             creatureScript.Population.Add(creature);
@@ -69,19 +68,18 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         for (int idx = minParentsCount; quantity > idx; idx++)
         {
             GameObject creature = Instantiate(animal, positions[idx], animal.transform.rotation);
-            Vector3 scale = creature.transform.localScale;
             creatures[idx] = creature;
             Animal creatureScript = creature.GetComponent<Animal>();
             if (maxParentsCount > minParentsCount)
             {
-                creature.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
+                RandomRateScale(creature, 0, 0.4f);
                 if (parentalCare == "biparental") paternalGender = !paternalGender;
                 minParentsCount++;
                 creatureScript.adult = true;
             }
             else
             {
-                creature.transform.localScale = new Vector3(scale.x - Random.Range(0.3f, 0.7f), scale.y - Random.Range(0.3f, 0.7f), scale.z - Random.Range(0.3f, 0.7f));
+                RandomRateScale(creature, 0.3f, 0.9f);
                 paternalGender = Random.Range(1, 3) == 1 ? false : true;
                 creatureScript.adult = false;
             }
@@ -92,11 +90,23 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         }
         return creatures;
     }
-    public static GameObject[] StaticRenderPaternalFamily(GameObject animal, int quantity, int parentsRandomRate, int minParentsCount, Vector3 position, float height)
+    public static GameObject RandomRateScale(GameObject animal, float minRate, float maxRate)
+    {
+        Vector3 scale = animal.transform.localScale;
+        float scaleBase = Random.Range(minRate + 0.12f, maxRate - 0.12f);
+        float minScale = scaleBase - 0.12f;
+        float maxScale = scaleBase + 0.12f;
+        float scaleX = scale.x - (Random.Range(minScale, maxScale) * scale.x);
+        float scaleY = scale.y - (Random.Range(minScale, maxScale) * scale.y);
+        float scaleZ = scale.z - (Random.Range(minScale, maxScale) * scale.z);
+        animal.transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
+        return animal;
+    }
+    public static GameObject[] StaticRenderPaternalFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, Vector3 position, float height)
     {
         return StaticRenderFamily(animal, quantity, parentsRandomRate, minParentsCount, "paternal", position, height);
     }
-    public static GameObject[] StaticRenderPaternalFamilyRate(GameObject animal, int quantity, int parentsRandomRate, Vector3 position, float height)
+    public static GameObject[] StaticRenderPaternalFamilyRate(GameObject animal, int quantity, float parentsRandomRate, Vector3 position, float height)
     {
         return StaticRenderPaternalFamily(animal, quantity, parentsRandomRate, 0, position, height);
     }
