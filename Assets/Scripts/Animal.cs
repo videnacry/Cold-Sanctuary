@@ -7,7 +7,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 {
     public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
     public abstract HashSet<GameObject> Population { get ; set ; }
-    public bool gender = false, moving = false, adult, alone, asleep = false, death = false, female = false, male = false;
+    public char sex;
+    public bool gender = false, moving = false, adult, alone, asleep = false, death = false;
     public float hungry, exhaustion, lp, sensibility;
     public Vector3 size, sizePotential;
     public NavMeshAgent nav;
@@ -34,60 +35,72 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         }
         return creatures;
     }
-    public static GameObject[] StaticRenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, string parentalCare, Vector3 position, float height)
+    public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height)
     {
         GameObject[] creatures = new GameObject[quantity];
         Vector3[] positions = new Vector3[quantity];
         int counter = 0;
-        for (int idx = -(quantity/2); quantity/2 > idx; idx+=counter)
+        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += counter)
         {
             positions[counter] = new Vector3((position.x * idx) + quantity, height, (position.z * idx) + quantity);
             counter++;
         }
-        bool paternalGender = true;
-        paternalGender = parentalCare switch
-        {
-            "maternal" => false,
-            "paternalGender" => true,
-            "biparental" => !paternalGender,
-            _ => true,
-        };
-        for (int idx = 0; minParentsCount > idx; idx++)
-        {
-            if (parentalCare == "biparental") paternalGender = !paternalGender;
-            GameObject creature = Instantiate(animal, positions[0], animal.transform.rotation);
-            RandomRateScale(creature, 0, 0.4f);
-            creatures[idx] = creature;
-            Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.Population.Add(creature);
-            if (paternalGender) creatureScript.male = true; 
-            else creatureScript.female = true;
-            wholePopulation.Add(creature);
-        }
-        float maxParentsCount = parentsRandomRate * quantity;
-        for (int idx = minParentsCount; quantity > idx; idx++)
+        for (int idx = 0; quantity > idx; idx++)
         {
             GameObject creature = Instantiate(animal, positions[idx], animal.transform.rotation);
             creatures[idx] = creature;
             Animal creatureScript = creature.GetComponent<Animal>();
-            if (maxParentsCount > minParentsCount)
-            {
-                RandomRateScale(creature, 0, 0.4f);
-                if (parentalCare == "biparental") paternalGender = !paternalGender;
-                minParentsCount++;
-                creatureScript.adult = true;
-            }
-            else
-            {
-                RandomRateScale(creature, 0.3f, 0.9f);
-                paternalGender = Random.Range(1, 3) == 1 ? false : true;
-                creatureScript.adult = false;
-            }
-            if (paternalGender) creatureScript.male = true;
-            else creatureScript.female = true;
             creatureScript.Population.Add(creature);
             wholePopulation.Add(creature);
         }
+        return creatures;
+    }
+    public static GameObject[] SetGendersRate (GameObject[] creatures, float rate, char sex)
+    {
+        foreach (GameObject creature in creatures)
+        {
+            Animal creatureScript = creature.GetComponent<Animal>();
+            creatureScript.sex = Sex.SwitchSex(sex);
+            if (Random.Range(0.0f, 1.0f) < rate)
+            {
+                creatureScript.sex = sex;
+            }
+        }
+        return creatures;
+    }
+public static GameObject[] SetParents(GameObject[] creatures,float parentsRandomRate, int minParentsCount, bool biparental, char parentalSex)
+    {
+        float parentsCount = 0;
+        foreach (GameObject creature in creatures)
+        {
+            Animal creatureScript = creature.GetComponent<Animal>();
+            if (minParentsCount > parentsCount || parentsRandomRate > parentsCount / creatures.Length)
+            {
+                parentsCount++;
+                creatureScript.adult = true;
+                creatureScript.sex = parentalSex;
+                RandomRateScale(creature, 0.0f, 0.4f);
+                if (biparental)
+                {
+                    parentalSex = Sex.SwitchSex(parentalSex);
+                }
+            } else
+            {
+                creatureScript.adult = false;
+                RandomRateScale(creature, 0.3f, 0.9f);
+            }
+        }
+        return creatures;
+    }
+    public static GameObject[] StaticRenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, string parentalCare, Vector3 position, float height)
+    {
+        GameObject[] creatures = SetGendersRate(RenderGroup(animal, quantity, position, height), 0.5f, Sex.female);
+        creatures = parentalCare switch
+        {
+            "maternal" => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.female),
+            "paternal" => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.male),
+            _ => SetParents(creatures, parentsRandomRate, minParentsCount, true, Sex.female)
+        };
         return creatures;
     }
     public static GameObject RandomRateScale(GameObject animal, float minRate, float maxRate)
