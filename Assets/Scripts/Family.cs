@@ -4,9 +4,6 @@ using UnityEngine;
 public abstract class Family : MonoBehaviour
 {
     public const char paternal = 'p', maternal = 'm', biparental = 'b';
-    public char sex;
-    public bool gender = false, moving = false, adult, alone, asleep = false, death = false;
-    public HashSet<GameObject> parents = new HashSet<GameObject>();
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height)
     {
         GameObject[] creatures = new GameObject[quantity];

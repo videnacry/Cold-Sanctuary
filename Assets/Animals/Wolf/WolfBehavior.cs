@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class WolfBehavior : MonoBehaviour, IAnimal
+public class WolfBehavior : Animal
 {
-    public AnimationsName animationsName { get; } = new AnimationsName("Wolf");
-    public bool gender = false, moving = false, adult, hunting, alone = false;
-    public bool asleep = false;
-    public float hungry, exhaustion, lp, sensibility;
-    bool consciente;
-    public bool aware
-    {
-        get => this.consciente;
-        set => this.consciente = value;
-    }
+    // Family creation default values
+    public override char ParentalCare { get; set; } = Family.biparental;
+    public override float ParentsRate { get; set; } = 0.3f;
+    public override int FamilySize { get; set; } = 6;
 
-    public Vector3 size, sizePotential;
-    public NavMeshAgent nav;
-    public Rigidbody rig;
-    public Animator ani;
+
+    public static HashSet<GameObject> population = new HashSet<GameObject>();
+    public override HashSet<GameObject> Population { get => population; set => population = value; }
+    public override AnimationsName animationsName { get; } = new AnimationsName("Wolf");
+    public bool hunting;
 
 
     GameObject bird;
@@ -67,21 +61,6 @@ public class WolfBehavior : MonoBehaviour, IAnimal
     public void Size()
     {
         size = transform.localScale;
-    }
-
-    public void Hurt(float damage)
-    {
-        lp -= damage;
-        exhaustion += damage;
-        if (lp < (rig.mass / 3))
-        {
-            StopAllCoroutines();
-            ani.speed = 0;
-            this.rig.isKinematic = true;
-            this.nav.enabled = false;
-            transform.Rotate(Vector3.forward, 90);
-            Destroy(this);
-        }
     }
 
     public IEnumerable Attack(GameObject threat)
@@ -229,7 +208,7 @@ public class WolfBehavior : MonoBehaviour, IAnimal
     /// <param name="enemies"> the enemies </param>
     /// <returns></returns>
 
-    public IEnumerator Escape(bool team, List<GameObject> enemies)
+    public override IEnumerator Escape(bool team, List<GameObject> enemies)
     {
         GameObject enemy = enemies[0];
         float enemyMass = enemy.GetComponent<Rigidbody>().mass;
@@ -368,18 +347,20 @@ public class WolfBehavior : MonoBehaviour, IAnimal
 
     public IEnumerator Hunt()
     {
-        List<GameObject> wolves = new List<GameObject>();
-        wolves.Add(this.gameObject);
+        List<GameObject> wolves = new List<GameObject>
+        {
+            this.gameObject
+        };
         moving = false;
         hunting = true;
         if (adult)
         {
             StopCoroutine("Follow");
             if(bird == null) bird = Respawn.birds[UnityEngine.Random.Range(0, Respawn.birds.Count)];
-            GameObject prey = Respawn.rabbits.First();
+            GameObject prey = BunnyBehavior.population.First();
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
-            foreach (GameObject rabbit in Respawn.rabbits)
+            foreach (GameObject rabbit in BunnyBehavior.population)
             {
                 if (distance > Vector3.Distance(transform.position, rabbit.transform.position))
                 {
@@ -402,7 +383,7 @@ public class WolfBehavior : MonoBehaviour, IAnimal
                     cansancio += 0.01f;
                     nav.speed = 10;
                     ani.speed = 10;
-                    if (distance < 5)
+                    if (distance < 6)
                     {
                         if (hungry < 0) break;
                         if (prey.GetComponent<Animal>().lp <= 0) break;

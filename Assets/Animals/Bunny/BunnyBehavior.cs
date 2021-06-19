@@ -1,11 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class BunnyBehavior : Animal
 {
+    // Family creation default values
+    public override char ParentalCare { get; set; } = Family.maternal;
+    public override float ParentsRate { get; set; } = 0.14f;
+    public override int FamilySize { get; set; } = 6;
+
+
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
     public bool hunting;
