@@ -37,14 +37,16 @@ public abstract class Family : MonoBehaviour
         }
         return creatures;
     }
-public static GameObject[] SetParents(GameObject[] creatures,float parentsRandomRate, int minParentsCount, bool biparental, char parentalSex)
+    public static GameObject[] SetParents(GameObject[] creatures,float parentsRandomRate, int minParentsCount, bool biparental, char parentalSex)
     {
         float parentsCount = 0;
+        HashSet<GameObject> parents = new HashSet<GameObject>();
         foreach (GameObject creature in creatures)
         {
             Animal creatureScript = creature.GetComponent<Animal>();
             if (minParentsCount > parentsCount || parentsRandomRate > (parentsCount / creatures.Length))
             {
+                parents.Add(creature);
                 parentsCount++;
                 creatureScript.adult = true;
                 creatureScript.sex = parentalSex;
@@ -55,7 +57,9 @@ public static GameObject[] SetParents(GameObject[] creatures,float parentsRandom
                 }
             } else
             {
+                creatureScript.parents = parents;
                 creatureScript.adult = false;
+                creatureScript.sizePotential = GetRandomRateScale(creature, 0.0f, 0.4f);
                 RandomRateScale(creature, 0.3f, 0.9f);
             }
         }
@@ -74,6 +78,11 @@ public static GameObject[] SetParents(GameObject[] creatures,float parentsRandom
     }
     public static GameObject RandomRateScale(GameObject animal, float minRate, float maxRate)
     {
+        animal.transform.localScale = GetRandomRateScale(animal, minRate, maxRate);
+        return animal;
+    }
+    public static Vector3 GetRandomRateScale(GameObject animal, float minRate, float maxRate)
+    {
         Vector3 scale = animal.transform.localScale;
         float scaleBase = Random.Range(minRate + 0.12f, maxRate - 0.12f);
         float minScale = scaleBase - 0.12f;
@@ -81,7 +90,6 @@ public static GameObject[] SetParents(GameObject[] creatures,float parentsRandom
         float scaleX = scale.x - (Random.Range(minScale, maxScale) * scale.x);
         float scaleY = scale.y - (Random.Range(minScale, maxScale) * scale.y);
         float scaleZ = scale.z - (Random.Range(minScale, maxScale) * scale.z);
-        animal.transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
-        return animal;
+        return new Vector3(scaleX, scaleY, scaleZ);
     }
 }
