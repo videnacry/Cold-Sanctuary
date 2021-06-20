@@ -1,24 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
 public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 {
+    // Family creation default values
+    public abstract char ParentalCare { get; set; }
+    public abstract float ParentsRate { get; set; }
+    public abstract int FamilySize { get; set; }
+
+
+    // Population
     public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
     public abstract HashSet<GameObject> Population { get ; set ; }
+
+
+    // Physiognomy
     public char sex;
-    public bool gender = false, moving = false, adult, alone, asleep = false, death = false;
-    public float hungry, exhaustion, lp, sensibility;
+    public bool adult, gender=false;
+    public float mass;
     public Vector3 size, sizePotential;
+
+
+    // State
+    public bool moving = false, alone, asleep = false, death = false;
+    public float hungry, exhaustion, lp, sensibility;
+
+
+    // Gameobject components
+    public bool aware { get; set; } = false;
     public NavMeshAgent nav;
     public Rigidbody rig;
     public Animator ani;
-    public HashSet<GameObject> parents = new HashSet<GameObject>();
+    public HashSet<GameObject> parents;
+
 
     public abstract AnimationsName animationsName { get; }
+    public GameObject bird;
 
-    public bool aware { get; set; } = false;
+
+
 
     public static GameObject[] StaticGenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
     {
@@ -35,107 +58,55 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         }
         return creatures;
     }
-    public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height)
-    {
-        GameObject[] creatures = new GameObject[quantity];
-        Vector3[] positions = new Vector3[quantity];
-        int counter = 0;
-        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += counter)
-        {
-            positions[counter] = new Vector3((position.x * idx) + quantity, height, (position.z * idx) + quantity);
-            counter++;
-        }
-        for (int idx = 0; quantity > idx; idx++)
-        {
-            GameObject creature = Instantiate(animal, positions[idx], animal.transform.rotation);
-            creatures[idx] = creature;
-            Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.Population.Add(creature);
-            wholePopulation.Add(creature);
-        }
-        return creatures;
-    }
-    public static GameObject[] SetGendersRate (GameObject[] creatures, float rate, char sex)
-    {
-        foreach (GameObject creature in creatures)
-        {
-            Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.sex = Sex.SwitchSex(sex);
-            if (Random.Range(0.0f, 1.0f) < rate)
-            {
-                creatureScript.sex = sex;
-            }
-        }
-        return creatures;
-    }
-public static GameObject[] SetParents(GameObject[] creatures,float parentsRandomRate, int minParentsCount, bool biparental, char parentalSex)
-    {
-        float parentsCount = 0;
-        foreach (GameObject creature in creatures)
-        {
-            Animal creatureScript = creature.GetComponent<Animal>();
-            if (minParentsCount > parentsCount || parentsRandomRate > parentsCount / creatures.Length)
-            {
-                parentsCount++;
-                creatureScript.adult = true;
-                creatureScript.sex = parentalSex;
-                RandomRateScale(creature, 0.0f, 0.4f);
-                if (biparental)
-                {
-                    parentalSex = Sex.SwitchSex(parentalSex);
-                }
-            } else
-            {
-                creatureScript.adult = false;
-                RandomRateScale(creature, 0.3f, 0.9f);
-            }
-        }
-        return creatures;
-    }
-    public static GameObject[] StaticRenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, string parentalCare, Vector3 position, float height)
-    {
-        GameObject[] creatures = SetGendersRate(RenderGroup(animal, quantity, position, height), 0.5f, Sex.female);
-        creatures = parentalCare switch
-        {
-            "maternal" => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.female),
-            "paternal" => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.male),
-            _ => SetParents(creatures, parentsRandomRate, minParentsCount, true, Sex.female)
-        };
-        return creatures;
-    }
-    public static GameObject RandomRateScale(GameObject animal, float minRate, float maxRate)
-    {
-        Vector3 scale = animal.transform.localScale;
-        float scaleBase = Random.Range(minRate + 0.12f, maxRate - 0.12f);
-        float minScale = scaleBase - 0.12f;
-        float maxScale = scaleBase + 0.12f;
-        float scaleX = scale.x - (Random.Range(minScale, maxScale) * scale.x);
-        float scaleY = scale.y - (Random.Range(minScale, maxScale) * scale.y);
-        float scaleZ = scale.z - (Random.Range(minScale, maxScale) * scale.z);
-        animal.transform.localScale = new Vector3(scaleX, scaleY, scaleZ);
-        return animal;
-    }
-    public static GameObject[] StaticRenderPaternalFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, Vector3 position, float height)
-    {
-        return StaticRenderFamily(animal, quantity, parentsRandomRate, minParentsCount, "paternal", position, height);
-    }
-    public static GameObject[] StaticRenderPaternalFamilyRate(GameObject animal, int quantity, float parentsRandomRate, Vector3 position, float height)
-    {
-        return StaticRenderPaternalFamily(animal, quantity, parentsRandomRate, 0, position, height);
-    }
-    public static GameObject[] StaticRenderPaternalFamilyCount(GameObject animal, int quantity, int parentsCount, Vector3 position, float height)
-    {
-        return StaticRenderPaternalFamily(animal, quantity, 0, parentsCount, position, height);
-    }
-
     public virtual GameObject[] GenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
     {
         return Animal.StaticGenerateSquareRange(animal, quantity, range, respawnHeight);
     }
-
-    public virtual IEnumerator Escape(bool team, List<GameObject> enemies)
+    public virtual GameObject[] RenderFamily (Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
     {
-        throw new System.NotImplementedException();
+        familySize = familySize > 0 ? familySize : this.FamilySize;
+        return Family.RenderFamily(this.gameObject, familySize , this.ParentsRate, minParentsCount, this.ParentalCare, position, height);
+    }
+    public abstract IEnumerator Escape(bool team, List<GameObject> enemies);
+    public abstract IEnumerator Follow();
+    public virtual IEnumerator Grow()
+    {
+        int interval = Random.Range(12, 16);
+        while (size.magnitude < sizePotential.magnitude)
+        {
+            if (parents.Count > 0)
+            {
+                GameObject nearParent = parents.First();
+                float nearParentDistance = Vector3.Distance(transform.position, nearParent.transform.position);
+                foreach (GameObject parent in parents)
+                {
+                    float parentDistance = Vector3.Distance(transform.position, parent.transform.position);
+                    if (nearParentDistance > parentDistance)
+                    {
+                        nearParent = parent;
+                        nearParentDistance = parentDistance;
+                    }
+                }
+                StopCoroutine(Follow());
+                if (nearParentDistance > 5)
+                {
+                    bird = nearParent;
+                    nav.SetDestination(nearParent.transform.position);
+                    moving = true;
+                    asleep = false;
+                    nav.speed = 5;
+                    ani.speed = 5;
+                }
+                else
+                {
+                    StartCoroutine(Follow());
+                }
+            }
+            size += (Vector3.one * Time.deltaTime);
+            transform.localScale += (Vector3.one * Time.deltaTime);
+            yield return new WaitForSeconds(interval);
+        }
+        adult = true;
     }
 
     public virtual void Hurt(float damage)
@@ -157,5 +128,15 @@ public static GameObject[] SetParents(GameObject[] creatures,float parentsRandom
             wholePopulation.Remove(this.gameObject);
             Destroy(this);
         }
+    }
+
+
+
+    // Gizmos
+    public float gizmoSphereRadio = 5;
+    public void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, gizmoSphereRadio);
     }
 }
