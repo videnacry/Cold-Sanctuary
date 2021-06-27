@@ -9,7 +9,15 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     // Family creation default values
     public abstract char ParentalCare { get; set; }
     public abstract float ParentsRate { get; set; }
-    public abstract int FamilySize { get; set; }
+    public abstract byte FamilySize { get; set; }
+
+
+
+    // Stages
+    public abstract Childhood Childhood { get; set; }
+    public abstract Adolescence Adolescence { get; set; }
+    public abstract Adulthood Adulthood { get; set; }
+
 
 
     // Population
@@ -19,6 +27,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
     // Physiognomy
     public char sex;
+    public char lifeStage;
     public bool adult, gender=false;
     public float mass;
     public Vector3 size, sizePotential;
@@ -35,7 +44,6 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     public Rigidbody rig;
     public Animator ani;
     public HashSet<GameObject> parents;
-
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
@@ -69,46 +77,6 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     }
     public abstract IEnumerator Escape(bool team, List<GameObject> enemies);
     public abstract IEnumerator Follow();
-    public virtual IEnumerator Grow()
-    {
-        int interval = Random.Range(12, 16);
-        while (size.magnitude < sizePotential.magnitude)
-        {
-            if (parents.Count > 0)
-            {
-                GameObject nearParent = parents.First();
-                float nearParentDistance = Vector3.Distance(transform.position, nearParent.transform.position);
-                foreach (GameObject parent in parents)
-                {
-                    float parentDistance = Vector3.Distance(transform.position, parent.transform.position);
-                    if (nearParentDistance > parentDistance)
-                    {
-                        nearParent = parent;
-                        nearParentDistance = parentDistance;
-                    }
-                }
-                StopCoroutine(Follow());
-                if (nearParentDistance > 5)
-                {
-                    bird = nearParent;
-                    nav.SetDestination(nearParent.transform.position);
-                    moving = true;
-                    asleep = false;
-                    nav.speed = 5;
-                    ani.speed = 5;
-                }
-                else
-                {
-                    StartCoroutine(Follow());
-                }
-            }
-            size += (Vector3.one * Time.deltaTime);
-            transform.localScale += (Vector3.one * Time.deltaTime);
-            yield return new WaitForSeconds(interval);
-        }
-        adult = true;
-    }
-
     public virtual void Hurt(float damage)
     {
         lp -= damage;

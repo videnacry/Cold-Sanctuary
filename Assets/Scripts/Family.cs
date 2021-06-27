@@ -3,7 +3,11 @@ using UnityEngine;
 
 public abstract class Family : MonoBehaviour
 {
+    // Parental care
     public const char paternal = 'p', maternal = 'm', biparental = 'b';
+
+
+
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height)
     {
         GameObject[] creatures = new GameObject[quantity];
@@ -49,8 +53,8 @@ public abstract class Family : MonoBehaviour
                 parents.Add(creature);
                 parentsCount++;
                 creatureScript.adult = true;
+                creatureScript.lifeStage = LifeStage.adult;
                 creatureScript.sex = parentalSex;
-                RandomRateScale(creature, 0.0f, 0.4f);
                 if (biparental)
                 {
                     parentalSex = Sex.SwitchSex(parentalSex);
@@ -59,8 +63,7 @@ public abstract class Family : MonoBehaviour
             {
                 creatureScript.parents = parents;
                 creatureScript.adult = false;
-                creatureScript.sizePotential = GetRandomRateScale(creature, 0.0f, 0.4f);
-                RandomRateScale(creature, 0.3f, 0.9f);
+                creatureScript.lifeStage = LifeStage.child;
             }
         }
         return creatures;
@@ -75,21 +78,5 @@ public abstract class Family : MonoBehaviour
             _ => SetParents(creatures, parentsRandomRate, minParentsCount, true, Sex.female)
         };
         return creatures;
-    }
-    public static GameObject RandomRateScale(GameObject animal, float minRate, float maxRate)
-    {
-        animal.transform.localScale = GetRandomRateScale(animal, minRate, maxRate);
-        return animal;
-    }
-    public static Vector3 GetRandomRateScale(GameObject animal, float minRate, float maxRate)
-    {
-        Vector3 scale = animal.transform.localScale;
-        float scaleBase = Random.Range(minRate + 0.12f, maxRate - 0.12f);
-        float minScale = scaleBase - 0.12f;
-        float maxScale = scaleBase + 0.12f;
-        float scaleX = scale.x - (Random.Range(minScale, maxScale) * scale.x);
-        float scaleY = scale.y - (Random.Range(minScale, maxScale) * scale.y);
-        float scaleZ = scale.z - (Random.Range(minScale, maxScale) * scale.z);
-        return new Vector3(scaleX, scaleY, scaleZ);
     }
 }

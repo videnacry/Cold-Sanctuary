@@ -8,7 +8,23 @@ public class BunnyBehavior : Animal
     // Family creation default values
     public override char ParentalCare { get; set; } = Family.maternal;
     public override float ParentsRate { get; set; } = 0.14f;
-    public override int FamilySize { get; set; } = 6;
+    public override byte FamilySize { get; set; } = 6;
+
+
+
+    // Stages
+    public Childhood childhood = LifeStage.GetChildhood(new Vector3(0.7f, 0.7f, 0.7f), 50, 50, 80);
+    public override Childhood Childhood { get => childhood; set => childhood = value; }
+    
+    
+    public Adolescence adolescence = LifeStage.GetAdolescence(new Vector3(0.7f, 0.7f, 0.7f), 680, 20, 40);
+    public override Adolescence Adolescence { get => adolescence; set => adolescence = value; }
+
+
+    public Adulthood adulthood = LifeStage.GetAdulthood(new Vector3(0.7f, 0.8f, 0.8f), 2190, 0, 20);
+    public override Adulthood Adulthood { get => adulthood; set => adulthood = value; }
+
+
 
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
@@ -17,7 +33,7 @@ public class BunnyBehavior : Animal
     public override AnimationsName animationsName { get; } = new AnimationsName("Bunny");
 
 
-    GameObject bird;
+
     public GameObject mom, player;
     public WolfBehavior[] children;
 
@@ -27,18 +43,16 @@ public class BunnyBehavior : Animal
         size = transform.localScale;
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
+        rig.mass = mass;
         ani = GetComponent<Animator>();
-        lp = this.rig.mass;
+        lp = mass;
         StartCoroutine("Restore");
+        LifeStage.Init(this);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!moving && !asleep && !hunting)
-        {
-            StartCoroutine("Follow");
-        }
     }
 
     public void Size()
@@ -49,33 +63,34 @@ public class BunnyBehavior : Animal
 
     //IEumerator
 
-    public IEnumerator Follow()
+    public override IEnumerator Follow()
     {
-        yield return new WaitForSeconds(Random.Range(2, 5));
-        this.nav.enabled = true;
-        moving = true;
-        int i = Random.Range(5, 10);
-        int interval = i;
-        bird = Respawn.birds[Random.Range(0, Respawn.birds.Count)];
-        int rest = (Random.Range(2, 5) * 10);
-        if (rest > 29)
+        while (1 == 1)
         {
+            ani.speed = 1;
             ani.Play(animationsName.idle);
-            ani.speed = 0;
-            yield return new WaitForSeconds(rest);
+            moving = true;
+            int i = Random.Range(5, 10);
+            int interval = i;
+            bird = Respawn.birds[Random.Range(0, Respawn.birds.Count)];
+            int rest = (Random.Range(2, 5) * 10);
+            if (rest > 29)
+            {
+                yield return new WaitForSeconds(rest);
+            }
+            ani.Play(animationsName.run);
+            nav.speed = 3;
+            ani.speed = 3;
+            int distance = Random.Range(1, 100);
+            Vector3 distancePosition = new Vector3(distance, 0, distance);
+            while (i > 0)
+            {
+                nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
+                i--;
+                yield return new WaitForSeconds(interval);
+            }
+            moving = false;
         }
-        ani.Play(animationsName.run);
-        nav.speed = 3;
-        ani.speed = 3;
-        int distance = Random.Range(1, 100);
-        Vector3 distancePosition = new Vector3(distance, 0, distance);
-        while (i > 0)
-        {
-            nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
-            i--;
-            yield return new WaitForSeconds(interval);
-        }
-        moving = false;
     }
 
     public IEnumerator Restore()

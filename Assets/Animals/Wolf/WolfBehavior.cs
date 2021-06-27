@@ -9,7 +9,23 @@ public class WolfBehavior : Animal
     // Family creation default values
     public override char ParentalCare { get; set; } = Family.biparental;
     public override float ParentsRate { get; set; } = 0.3f;
-    public override int FamilySize { get; set; } = 6;
+    public override byte FamilySize { get; set; } = 6;
+
+
+
+    // Stages
+    public Childhood childhood = LifeStage.GetChildhood(new Vector3(0.7f, 0.7f, 0.7f), 50, 50, 80);
+    public override Childhood Childhood { get => childhood; set => childhood = value; }
+
+
+    public Adolescence adolescence = LifeStage.GetAdolescence(new Vector3(0.7f, 0.7f, 0.7f), 680, 20, 40);
+    public override Adolescence Adolescence { get => adolescence; set => adolescence = value; }
+
+
+    public Adulthood adulthood = LifeStage.GetAdulthood(new Vector3(0.7f, 0.8f, 0.8f), 2190, 0, 20);
+    public override Adulthood Adulthood { get => adulthood; set => adulthood = value; }
+
+
 
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
@@ -18,7 +34,6 @@ public class WolfBehavior : Animal
     public bool hunting;
 
 
-    GameObject bird;
     public GameObject mom, player;
     public WolfBehavior[] group;
     public WolfBehavior[] children;
@@ -99,7 +114,7 @@ public class WolfBehavior : Animal
 
     //IEumerator
 
-    public IEnumerator Follow()
+    public override IEnumerator Follow()
     {
         moving = true;
         int i = UnityEngine.Random.Range(5, 10);
