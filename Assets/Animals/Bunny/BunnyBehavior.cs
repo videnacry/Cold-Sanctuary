@@ -40,28 +40,13 @@ public class BunnyBehavior : Animal
     // Start is called before the first frame update
     void Start()
     {
-        size = transform.localScale;
-        nav = GetComponent<NavMeshAgent>();
-        rig = GetComponent<Rigidbody>();
-        rig.mass = mass;
-        ani = GetComponent<Animator>();
-        lp = mass;
-        StartCoroutine("Restore");
-        LifeStage.Init(this);
+        Init();
     }
 
     // Update is called once per frame
     void Update()
     {
     }
-
-    public void Size()
-    {
-        size = transform.localScale;
-    }
-
-
-    //IEumerator
 
     public override IEnumerator Follow()
     {

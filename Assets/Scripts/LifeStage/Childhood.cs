@@ -11,12 +11,10 @@ public class Childhood : LifeStage
     // Types
     public const char den = 'd', nest = 'n';
 
-
-    public override IEnumerator Live (Animal script)
+    public override IEnumerator Live (Animal script, TimeController timeController)
     {
         stageDays = RemainingStageDays();
         script.transform.localScale = sizePotential;
-        int interval = Random.Range(12, 16);
         Vector3 growFraction = (script.Adolescence.sizePotential - sizePotential) / stageDays;
         while ((stageDays - livedDays) > 0)
         {
@@ -48,10 +46,10 @@ public class Childhood : LifeStage
             script.size += growFraction;
             script.transform.localScale += growFraction;
             livedDays++;
-            yield return new WaitForSeconds(interval);
+            yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
         }
         script.adult = true;
-        script.StartCoroutine(script.Adolescence.Live(script));
+        script.StartCoroutine(script.Adolescence.Live(script, timeController));
     }
     
 }

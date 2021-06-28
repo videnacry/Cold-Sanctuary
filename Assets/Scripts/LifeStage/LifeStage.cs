@@ -44,7 +44,7 @@ public abstract class LifeStage
         instance.baseScale = pBaseScale;
         return instance;
     }
-    public static void Init (Animal script)
+    public static void Init (Animal script, TimeController timeController)
     {
         script.Childhood.sizePotential = GetRandomDifferenceScale(script.Childhood.baseScale, script.Childhood.minScaleSubstrahend, script.Childhood.maxScaleSubstrahend);
         script.Adolescence.sizePotential = GetRandomDifferenceScale(script.Adolescence.baseScale, script.Adolescence.minScaleSubstrahend, script.Adolescence.maxScaleSubstrahend);
@@ -52,9 +52,9 @@ public abstract class LifeStage
         script.nav.enabled = true;
         switch (script.lifeStage)
         {
-            case adult: script.StartCoroutine(script.Adulthood.Live(script)); break;
-            case child: script.StartCoroutine(script.Childhood.Live(script)); break;
-            default: script.StartCoroutine(script.Adolescence.Live(script)); break;
+            case adult: script.StartCoroutine(script.Adulthood.Live(script, timeController)); break;
+            case child: script.StartCoroutine(script.Childhood.Live(script, timeController)); break;
+            default: script.StartCoroutine(script.Adolescence.Live(script, timeController)); break;
         }
     }
     public static Vector3 GetRandomDifferenceScale(Vector3 baseScale, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
@@ -76,7 +76,7 @@ public abstract class LifeStage
         float scaleDifference = maxScale - minScale;
         return (short)(((sizePotential.y - minScale) * stageDays) / scaleDifference);
     }
-    public virtual IEnumerator Live (Animal script)
+    public virtual IEnumerator Live (Animal script, TimeController timeController)
     {
         yield return new WaitForSeconds(3);
     }

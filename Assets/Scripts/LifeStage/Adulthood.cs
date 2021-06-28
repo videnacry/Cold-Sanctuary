@@ -27,15 +27,14 @@ public class Adulthood : LifeStage
         script.adult = true;
     }
     */
-    public override IEnumerator Live (Animal script)
+    public override IEnumerator Live (Animal script, TimeController timeController)
     {
         script.transform.localScale = sizePotential;
-        int interval = Random.Range(40, 60);
         while ((stageDays - livedDays) > 0)
         {
             livedDays++;
 
-            yield return new WaitForSeconds(interval);
+            yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
         }
         script.moving = false;
     }
