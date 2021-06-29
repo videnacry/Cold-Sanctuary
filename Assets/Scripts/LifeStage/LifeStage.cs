@@ -46,15 +46,15 @@ public abstract class LifeStage
     }
     public static void Init (Animal script, TimeController timeController)
     {
-        script.Childhood.sizePotential = GetRandomDifferenceScale(script.Childhood.baseScale, script.Childhood.minScaleSubstrahend, script.Childhood.maxScaleSubstrahend);
-        script.Adolescence.sizePotential = GetRandomDifferenceScale(script.Adolescence.baseScale, script.Adolescence.minScaleSubstrahend, script.Adolescence.maxScaleSubstrahend);
-        script.Adulthood.sizePotential = GetRandomDifferenceScale(script.Adulthood.baseScale, script.Adulthood.minScaleSubstrahend, script.Adulthood.maxScaleSubstrahend);
+        script.ChildStage.sizePotential = GetRandomDifferenceScale(script.ChildStage.baseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
+        script.TeenStage.sizePotential = GetRandomDifferenceScale(script.TeenStage.baseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
+        script.AdultStage.sizePotential = GetRandomDifferenceScale(script.AdultStage.baseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
         script.nav.enabled = true;
         switch (script.lifeStage)
         {
-            case adult: script.StartCoroutine(script.Adulthood.Live(script, timeController)); break;
-            case child: script.StartCoroutine(script.Childhood.Live(script, timeController)); break;
-            default: script.StartCoroutine(script.Adolescence.Live(script, timeController)); break;
+            case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController)); break;
+            case child: script.StartCoroutine(script.ChildStage.Live(script, timeController)); break;
+            default: script.StartCoroutine(script.TeenStage.Live(script, timeController)); break;
         }
     }
     public static Vector3 GetRandomDifferenceScale(Vector3 baseScale, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)

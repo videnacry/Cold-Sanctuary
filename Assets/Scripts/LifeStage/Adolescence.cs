@@ -11,7 +11,7 @@ public class Adolescence : LifeStage
     {
         stageDays = RemainingStageDays();
         script.transform.localScale = sizePotential;
-        Vector3 growFraction = (script.Adulthood.sizePotential - sizePotential) / stageDays;
+        Vector3 growFraction = (script.AdultStage.sizePotential - sizePotential) / stageDays;
         while ((stageDays - livedDays) > 0)
         {
             script.size += growFraction;
@@ -20,7 +20,7 @@ public class Adolescence : LifeStage
             yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
         }
         script.moving = false;
-        script.StartCoroutine(script.Adulthood.Live(script, timeController));
+        script.StartCoroutine(script.AdultStage.Live(script, timeController));
     }
 
 }

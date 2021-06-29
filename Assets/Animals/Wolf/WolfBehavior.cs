@@ -14,16 +14,23 @@ public class WolfBehavior : Animal
 
 
     // Stages
+
     public Childhood childhood = LifeStage.GetChildhood(new Vector3(0.7f, 0.7f, 0.7f), 50, 50, 80);
-    public override Childhood Childhood { get => childhood; set => childhood = value; }
+    public override Childhood ChildStage { get => childhood; set => childhood = value; }
+
+    public byte[] childPreparations = { 1, 2 };
+    public override byte[] ChildPreparations { get => childPreparations; set => childPreparations = value; }
+
+    public byte[] childEvents = { 1, 2 };
+    public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
 
 
     public Adolescence adolescence = LifeStage.GetAdolescence(new Vector3(0.7f, 0.7f, 0.7f), 680, 20, 40);
-    public override Adolescence Adolescence { get => adolescence; set => adolescence = value; }
+    public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
 
     public Adulthood adulthood = LifeStage.GetAdulthood(new Vector3(0.7f, 0.8f, 0.8f), 2190, 0, 20);
-    public override Adulthood Adulthood { get => adulthood; set => adulthood = value; }
+    public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
 
 

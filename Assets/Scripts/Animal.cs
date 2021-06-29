@@ -14,9 +14,11 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
     // Stages
-    public abstract Childhood Childhood { get; set; }
-    public abstract Adolescence Adolescence { get; set; }
-    public abstract Adulthood Adulthood { get; set; }
+    public abstract Childhood ChildStage { get; set; }
+    public abstract Adolescence TeenStage { get; set; }
+    public abstract Adulthood AdultStage { get; set; }
+    public abstract byte[] ChildPreparations { get; set; }
+    public abstract byte[] ChildEvents { get; set; }
 
 
 
@@ -50,7 +52,16 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
 
-
+    public virtual void Init ()
+    {
+        nav = GetComponent<NavMeshAgent>();
+        rig = GetComponent<Rigidbody>();
+        rig.mass = mass;
+        ani = GetComponent<Animator>();
+        lp = mass;
+        StartCoroutine("Restore");
+        LifeStage.Init(this, TimeController.timeController);
+    }
     public static GameObject[] StaticGenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
     {
         GameObject[] creatures = new GameObject[quantity];

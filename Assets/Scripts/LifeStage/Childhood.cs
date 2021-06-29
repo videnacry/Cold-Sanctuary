@@ -8,9 +8,71 @@ using UnityEngine.AI;
 [System.Serializable]
 public class Childhood : LifeStage
 {
-    // Types
-    public const char den = 'd', nest = 'n';
+    public delegate void Substage(Animal script);
+    public Substage SetScale()
+    {
+        return (Animal script) => script.transform.localScale = sizePotential;
+    }
+    public Substage SetStageDays()
+    {
+        return (Animal script) => stageDays = RemainingStageDays();
+    }
+    public Substage LoopGrow()
+    {
+        return (Animal script) =>
+        {
+            Vector3 growFraction = (script.TeenStage.sizePotential - sizePotential) / stageDays;
+            script.size += growFraction;
+            script.transform.localScale += growFraction;
+        };
+    }
+    public static class Preparations
+    {
+        public const byte SetScale = 1;
+        public const byte SetStageDays = 2;
+    }
+    public static class Events
+    {
+        public const byte LoopGrow = 1;
+    }
+    public Substage GetPreparation(byte idx)
+    {
+        return idx switch
+        {
+            Preparations.SetScale => SetScale(),
+            Preparations.SetStageDays => SetStageDays(),
+            _ => (script) => { }
 
+            ,
+        };
+    }
+    public Substage GetEvent(byte idx)
+    {
+        return idx switch
+        {
+            Events.LoopGrow => LoopGrow(),
+            _ => (script) => { }
+
+            ,
+        };
+    }
+    public override IEnumerator Live(Animal script, TimeController timeController)
+    {
+        foreach (byte preparation in script.ChildPreparations) GetPreparation(preparation)(script);
+        while ((stageDays - livedDays) > 0)
+        {
+            foreach (byte myEvent in script.ChildEvents) GetEvent(myEvent)(script);
+            livedDays++;
+            yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
+        }
+        script.adult = true;
+        script.StartCoroutine(script.TeenStage.Live(script, timeController));
+    }
+
+
+
+
+    /*--------------------------------Normal-----------------------------------------
     public override IEnumerator Live (Animal script, TimeController timeController)
     {
         stageDays = RemainingStageDays();
@@ -51,5 +113,5 @@ public class Childhood : LifeStage
         script.adult = true;
         script.StartCoroutine(script.Adolescence.Live(script, timeController));
     }
-    
+    */
 }
