@@ -12,43 +12,22 @@ public abstract class LifeStage
 
 
     // Instance sizes
-    public Vector3 sizePotential, baseScale;
+    public Vector3 sizePotential;
     public short stageDays;
     public int livedDays = 0;
     public int minScaleSubstrahend, maxScaleSubstrahend;
 
-
-    public static Childhood GetChildhood (Vector3 baseScale, short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
+    public LifeStage (short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
     {
-        Childhood instance = new Childhood();
-        InitInstance(instance, baseScale, pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend);
-        return instance;
-    }
-    public static Adolescence GetAdolescence(Vector3 baseScale, short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
-    {
-        Adolescence instance = new Adolescence();
-        InitInstance(instance, baseScale, pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend);
-        return instance;
-    }
-    public static Adulthood GetAdulthood(Vector3 baseScale, short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
-    {
-        Adulthood instance = new Adulthood();
-        InitInstance(instance, baseScale, pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend);
-        return instance;
-    }
-    public static LifeStage InitInstance (LifeStage instance, Vector3 pBaseScale, short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
-    {
-        instance.stageDays = pStageDays;
-        instance.minScaleSubstrahend = pMinScaleSubstrahend;
-        instance.maxScaleSubstrahend = pMaxScaleSubstrahend;
-        instance.baseScale = pBaseScale;
-        return instance;
+        stageDays = pStageDays;
+        minScaleSubstrahend = pMinScaleSubstrahend;
+        maxScaleSubstrahend = pMaxScaleSubstrahend;
     }
     public static void Init (Animal script, TimeController timeController)
     {
-        script.ChildStage.sizePotential = GetRandomDifferenceScale(script.ChildStage.baseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
-        script.TeenStage.sizePotential = GetRandomDifferenceScale(script.TeenStage.baseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
-        script.AdultStage.sizePotential = GetRandomDifferenceScale(script.AdultStage.baseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
+        script.ChildStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
+        script.TeenStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
+        script.AdultStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
         script.nav.enabled = true;
         switch (script.lifeStage)
         {
@@ -69,16 +48,67 @@ public abstract class LifeStage
         float scaleZ = baseScale.z - ((random.Next(minScale, maxScale) * baseScale.z) / 100);
         return new Vector3(scaleX, scaleY, scaleZ);
     }
-    public short RemainingStageDays()
+
+
+
+
+
+    public abstract IEnumerator Live(Animal script, TimeController timeController);
+
+
+
+    public delegate void Substage(Animal script);
+
+    public Substage SetScale()
     {
-        float minScale = baseScale.y - ((maxScaleSubstrahend / 100f) * baseScale.y);
-        float maxScale = baseScale.y - ((minScaleSubstrahend / 100f) * baseScale.y);
-        float scaleDifference = maxScale - minScale;
-        return (short)(((sizePotential.y - minScale) * stageDays) / scaleDifference);
+        return (Animal script) => script.transform.localScale = sizePotential;
     }
-    public virtual IEnumerator Live (Animal script, TimeController timeController)
+    public Substage SetRemainingStageDays()
     {
-        yield return new WaitForSeconds(3);
+        return (Animal script) =>
+        {
+            float minScale = script.BaseScale.y - ((maxScaleSubstrahend / 100f) * script.BaseScale.y);
+            float maxScale = script.BaseScale.y - ((minScaleSubstrahend / 100f) * script.BaseScale.y);
+            float scaleDifference = maxScale - minScale;
+            stageDays = (short)(((sizePotential.y - minScale) * stageDays) / scaleDifference);
+        };
+    }
+    public abstract Substage GrowScale();
+    public Substage Fatten()
+    {
+        return (Animal script) => script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
+    }
+    public static class Preps
+    {
+        public const byte SetScale = 1;
+        public const byte SetRemainingStageDays = 2;
+    }
+    public static class Events
+    {
+        public const byte LoopGrow = 1;
+        public const byte Fatten = 2;
+    }
+    public Substage GetPrep(byte idx)
+    {
+        return idx switch
+        {
+            Preps.SetScale => SetScale(),
+            Preps.SetRemainingStageDays => SetRemainingStageDays(),
+            _ => (script) => { }
+
+            ,
+        };
+    }
+    public Substage GetEvent(byte idx)
+    {
+        return idx switch
+        {
+            Events.LoopGrow => GrowScale(),
+            Events.Fatten => Fatten(),
+            _ => (script) => { }
+
+            ,
+        };
     }
 
 }

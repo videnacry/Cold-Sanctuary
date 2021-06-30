@@ -13,24 +13,47 @@ public class WolfBehavior : Animal
 
 
 
+
+    // Base Physiognomy
+    public float baseMass = 75;
+    public override float BaseMass { get => baseMass; set => baseMass = value; }
+
+
+    public Vector3 baseScale = new Vector3(2.5f, 2.5f, 2.5f);
+    public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
+
+
+
     // Stages
 
-    public Childhood childhood = LifeStage.GetChildhood(new Vector3(0.7f, 0.7f, 0.7f), 50, 50, 80);
+    public Childhood childhood = new Childhood(200, 65, 90);
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
     public byte[] childPreparations = { 1, 2 };
-    public override byte[] ChildPreparations { get => childPreparations; set => childPreparations = value; }
+    public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
     public byte[] childEvents = { 1, 2 };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
 
 
-    public Adolescence adolescence = LifeStage.GetAdolescence(new Vector3(0.7f, 0.7f, 0.7f), 680, 20, 40);
+    public Adolescence adolescence = new Adolescence(1000, 30, 65);
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
+    public byte[] teenPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public Adulthood adulthood = LifeStage.GetAdulthood(new Vector3(0.7f, 0.8f, 0.8f), 2190, 0, 20);
+    public byte[] teenEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
+
+
+    public Adulthood adulthood = new Adulthood(3285, 0, 20);
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
+
+    public byte[] adultPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
+
+    public byte[] adultEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
 
@@ -53,7 +76,6 @@ public class WolfBehavior : Animal
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
         ani = GetComponent<Animator>();
-        lp = this.rig.mass;
 
         StartCoroutine("Grow");
         StartCoroutine("Restore");
@@ -408,7 +430,7 @@ public class WolfBehavior : Animal
                     if (distance < 6)
                     {
                         if (hungry < 0) break;
-                        if (prey.GetComponent<Animal>().lp <= 0) break;
+                        if (prey.GetComponent<Animal>().rig.mass <= 0) break;
                         hungry -= 0.2f;
                         victim.Hurt(0.4f);
                     }

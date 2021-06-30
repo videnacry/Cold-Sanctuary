@@ -7,20 +7,28 @@ using UnityEngine.AI;
 [System.Serializable]
 public class Adolescence : LifeStage
 {
-    public override IEnumerator Live (Animal script, TimeController timeController)
+    public Adolescence (short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend) : base(pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend) { }
+
+    public override IEnumerator Live(Animal script, TimeController timeController)
     {
-        stageDays = RemainingStageDays();
-        script.transform.localScale = sizePotential;
-        Vector3 growFraction = (script.AdultStage.sizePotential - sizePotential) / stageDays;
+        foreach (byte preparation in script.TeenPreps) GetPrep(preparation)(script);
         while ((stageDays - livedDays) > 0)
         {
-            script.size += growFraction;
-            script.transform.localScale += growFraction;
+            foreach (byte myEvent in script.TeenEvents) GetEvent(myEvent)(script);
             livedDays++;
             yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
         }
-        script.moving = false;
+        script.lifeStage = LifeStage.teen;
         script.StartCoroutine(script.AdultStage.Live(script, timeController));
     }
 
+
+    public override Substage GrowScale()
+    {
+        return (Animal script) =>
+        {
+            Vector3 growFraction = (script.AdultStage.sizePotential - sizePotential) / stageDays;
+            script.transform.localScale += growFraction;
+        };
+    }
 }

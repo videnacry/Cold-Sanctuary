@@ -8,35 +8,23 @@ using UnityEngine.AI;
 [System.Serializable]
 public class Adulthood : LifeStage
 {
-    /*
-    public override IEnumerator Live (GameObject script)
+    public Adulthood(short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend) : base(pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend) { }
+
+    public override IEnumerator Live(Animal script, TimeController timeController)
     {
-        Animal script = script.GetComponent<Animal>();
-        int interval = Random.Range(40, 60);
-        int livedDays = 0;
+        foreach (byte preparation in script.AdultPreps) GetPrep(preparation)(script);
         while ((stageDays - livedDays) > 0)
         {
-
-            if ((livedDays % 365) == 0)
-            {
-                script.StartCoroutine(script.Reproduction.Live(script));
-            }
+            foreach (byte myEvent in script.AdultEvents) GetEvent(myEvent)(script);
             livedDays++;
-            yield return new WaitForSeconds(interval);
-        }
-        script.adult = true;
-    }
-    */
-    public override IEnumerator Live (Animal script, TimeController timeController)
-    {
-        script.transform.localScale = sizePotential;
-        while ((stageDays - livedDays) > 0)
-        {
-            livedDays++;
-
             yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(1.0f, 2.0f));
         }
-        script.moving = false;
+        script.lifeStage = LifeStage.adult;
     }
-    
+
+    public override Substage GrowScale()
+    {
+        return (Animal script) =>
+        {};
+    }
 }

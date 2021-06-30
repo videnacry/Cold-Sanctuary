@@ -5,33 +5,61 @@ using UnityEngine.AI;
 
 public class BunnyBehavior : Animal
 {
-    // Family creation default values
+    #region Family
+    /// <summary>
+    /// Properties wich determine how is going te be the created family of an instance
+    /// </summary>
     public override char ParentalCare { get; set; } = Family.maternal;
     public override float ParentsRate { get; set; } = 0.14f;
-    public override byte FamilySize { get; set; } = 6;
+    public override byte FamilySize { get; set; } = 4;
+    #endregion
 
+
+    #region Physiognomy
+    /// <summary>
+    /// Field with property wich contains the base value for new instances
+    /// </summary>
+    public float baseMass = 7;
+    public override float BaseMass { get => baseMass; set => baseMass = value; }
+
+
+    public Vector3 baseScale = new Vector3(0.8f, 0.8f, 0.8f);
+    public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
+    #endregion
 
 
     // Stages
-    public Childhood childhood = LifeStage.GetChildhood(new Vector3(0.7f, 0.7f, 0.7f), 50, 50, 80);
+    public Childhood childhood = new Childhood(50, 50, 80);
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
-    public byte[] childPreparations = { Childhood.Preparations.SetScale, Childhood.Preparations.SetStageDays };
-    public override byte[] ChildPreparations { get => childPreparations; set => childPreparations = value; }
+    public byte[] childPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
-    public byte[] childEvents = { Childhood.Events.LoopGrow };
+    public byte[] childEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
     
     
-    public Adolescence adolescence = LifeStage.GetAdolescence(new Vector3(0.7f, 0.7f, 0.7f), 680, 20, 40);
+    public Adolescence adolescence = new Adolescence(680, 20, 40); 
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
+    public byte[] teenPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public Adulthood adulthood = LifeStage.GetAdulthood(new Vector3(0.7f, 0.8f, 0.8f), 2190, 0, 20);
+    public byte[] teenEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
+
+
+    public Adulthood adulthood = new Adulthood(2190, 0, 20);
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
+    public byte[] adultPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    
+    public byte[] adultEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
+
+
+
 
 
 

@@ -15,23 +15,30 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
     // Stages
     public abstract Childhood ChildStage { get; set; }
-    public abstract Adolescence TeenStage { get; set; }
-    public abstract Adulthood AdultStage { get; set; }
-    public abstract byte[] ChildPreparations { get; set; }
+    public abstract byte[] ChildPreps { get; set; }
     public abstract byte[] ChildEvents { get; set; }
+
+    public abstract Adolescence TeenStage { get; set; }
+    public abstract byte[] TeenPreps { get; set; }
+    public abstract byte[] TeenEvents { get; set; }
+
+    public abstract Adulthood AdultStage { get; set; }
+    public abstract byte[] AdultPreps { get; set; }
+    public abstract byte[] AdultEvents { get; set; }
 
 
 
     // Population
     public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
-    public abstract HashSet<GameObject> Population { get ; set ; }
+    public abstract HashSet<GameObject> Population { get; set; }
 
 
     // Physiognomy
     public char sex;
     public char lifeStage;
-    public bool adult, gender=false;
-    public float mass;
+    public bool adult, gender = false;
+    public abstract float BaseMass { get; set; }
+    public abstract Vector3 BaseScale { get; set; }
     public Vector3 size, sizePotential;
 
 
@@ -56,9 +63,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
-        rig.mass = mass;
         ani = GetComponent<Animator>();
-        lp = mass;
         StartCoroutine("Restore");
         LifeStage.Init(this, TimeController.timeController);
     }
