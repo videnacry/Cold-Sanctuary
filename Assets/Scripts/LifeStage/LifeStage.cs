@@ -28,7 +28,6 @@ public abstract class LifeStage
         script.ChildStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
         script.TeenStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
         script.AdultStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
-        script.nav.enabled = true;
         switch (script.lifeStage)
         {
             case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController)); break;
@@ -59,6 +58,7 @@ public abstract class LifeStage
 
     public delegate void Substage(Animal script);
 
+    #region Preps
     public Substage SetScale()
     {
         return (Animal script) => script.transform.localScale = sizePotential;
@@ -73,20 +73,10 @@ public abstract class LifeStage
             stageDays = (short)(((sizePotential.y - minScale) * stageDays) / scaleDifference);
         };
     }
-    public abstract Substage GrowScale();
-    public Substage Fatten()
-    {
-        return (Animal script) => script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
-    }
     public static class Preps
     {
         public const byte SetScale = 1;
         public const byte SetRemainingStageDays = 2;
-    }
-    public static class Events
-    {
-        public const byte LoopGrow = 1;
-        public const byte Fatten = 2;
     }
     public Substage GetPrep(byte idx)
     {
@@ -99,16 +89,59 @@ public abstract class LifeStage
             ,
         };
     }
+    #endregion
+
+
+
+    #region Events
+    public abstract Substage GrowScale();
+    public Substage Fatten()
+    {
+        return (Animal script) => script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
+    }
+    public Substage Wander()
+    {
+        return (Animal script) =>
+        {
+            script.ani.Play(script.animationsName.walk);
+            script.ani.speed = 1;
+            script.nav.speed = 3;
+            script.target = BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1));
+            script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
+        };
+    }
+    public Substage Homebound()
+    {
+        return (Animal script) =>
+        {
+            if (Vector3.Distance(script.transform.position, script.HomeOrigin) > script.HomeRadius)
+            {
+                script.ani.Play(script.animationsName.run);
+                script.nav.speed = 5;
+                script.nav.SetDestination(script.HomeOrigin);
+            }
+        };
+    }
+    public static class Events
+    {
+        public const byte LoopGrow = 1;
+        public const byte Fatten = 2;
+        public const byte Wander = 3;
+        public const byte HomeBound = 4;
+    }
+
     public Substage GetEvent(byte idx)
     {
         return idx switch
         {
             Events.LoopGrow => GrowScale(),
             Events.Fatten => Fatten(),
+            Events.Wander => Wander(),
+            Events.HomeBound => Homebound(),
             _ => (script) => { }
 
             ,
         };
     }
-
+    #endregion
 }

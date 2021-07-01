@@ -60,11 +60,13 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
+    public GameObject target;
 
 
 
-    public virtual void Init ()
+    public virtual void Init()
     {
+        HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
         ani = GetComponent<Animator>();
@@ -94,10 +96,10 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         return Animal.StaticGenerateSquareRange(animal, area, quantity);
     }
-    public virtual GameObject[] RenderFamily (Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
+    public virtual GameObject[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
     {
         familySize = familySize > 0 ? familySize : this.FamilySize;
-        return Family.RenderFamily(this.gameObject, familySize , this.ParentsRate, minParentsCount, this.ParentalCare, position, height);
+        return Family.RenderFamily(this.gameObject, familySize, this.ParentsRate, minParentsCount, this.ParentalCare, position, height);
     }
     public abstract IEnumerator Escape(bool team, List<GameObject> enemies);
     public abstract IEnumerator Follow();
@@ -130,5 +132,14 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, gizmoSphereRadio);
+    }
+
+
+
+    // Collision
+    public void OnCollisionEnter(Collision collision)
+    {
+        nav.enabled = true;
+        GetComponent<BoxCollider>().enabled = false;
     }
 }

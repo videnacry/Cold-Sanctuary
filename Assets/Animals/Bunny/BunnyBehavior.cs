@@ -28,34 +28,44 @@ public class BunnyBehavior : Animal
     #endregion
 
 
+
+    public Vector3 homeOrigin;
+    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
+
+    public float homeRadius = 20;
+    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
+
+
+
+
     // Stages
     public Childhood childhood = new Childhood(50, 50, 80);
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
-    public byte[] childPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
-    public byte[] childEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
     
     
     public Adolescence adolescence = new Adolescence(680, 20, 40); 
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
-    public byte[] teenPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public byte[] teenEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander };
     public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
 
 
     public Adulthood adulthood = new Adulthood(2190, 0, 20);
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
-    public byte[] adultPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    public byte[] adultEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
@@ -71,7 +81,6 @@ public class BunnyBehavior : Animal
 
 
     public GameObject mom, player;
-    public WolfBehavior[] children;
 
     // Start is called before the first frame update
     void Start()

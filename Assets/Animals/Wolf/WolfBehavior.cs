@@ -24,35 +24,45 @@ public class WolfBehavior : Animal
 
 
 
+
+    public Vector3 homeOrigin;
+    public override Vector3 HomeOrigin { get => baseScale; set => baseScale = value; }
+
+    public float homeRadius = 2000;
+    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
+
+
+
+
     // Stages
 
     public Childhood childhood = new Childhood(200, 65, 90);
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
-    public byte[] childPreparations = { 1, 2 };
+    public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
-    public byte[] childEvents = { 1, 2 };
+    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
 
 
     public Adolescence adolescence = new Adolescence(1000, 30, 65);
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
-    public byte[] teenPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public byte[] teenEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
     public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
 
 
     public Adulthood adulthood = new Adulthood(3285, 0, 20);
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
-    public byte[] adultPreparations = { Childhood.Preps.SetScale, Childhood.Preps.SetRemainingStageDays };
+    public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    public byte[] adultEvents = { Childhood.Events.LoopGrow, Childhood.Events.Fatten };
+    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
@@ -64,6 +74,8 @@ public class WolfBehavior : Animal
     public bool hunting;
 
 
+    // LEGAZY
+    public Vector3 size, sizePotential;
     public GameObject mom, player;
     public WolfBehavior[] group;
     public WolfBehavior[] children;
