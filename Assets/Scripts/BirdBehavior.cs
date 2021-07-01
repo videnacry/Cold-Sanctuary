@@ -11,6 +11,7 @@ public class BirdBehavior : MonoBehaviour, IFactory
     float velocity=0, lapse,altura;
     int giro=0;
     bool moving = false;
+    public static HashSet<GameObject> population = new HashSet<GameObject>();
 
     // Start is called before the first frame update
     void Start()
@@ -26,11 +27,11 @@ public class BirdBehavior : MonoBehaviour, IFactory
             this.velocity = Random.Range(speed, speed / 3)/60;
             this.giro = Random.Range(0, 4);
             altura = Altura(this.giro);
-            Fly(velocity);
+            Fly();
         }
     }
 
-    void Fly(float velocity)
+    void Fly()
     {
         StartCoroutine("Move");
     }
@@ -66,16 +67,21 @@ public class BirdBehavior : MonoBehaviour, IFactory
         moving = false;
     }
 
-    public GameObject[] GenerateSquareRange(GameObject gameObject, int quantity, float range, float respawnHeight = 250)
+    public GameObject[] GenerateSquareRange(GameObject animal, GameObject area, int quantity)
     {
+        Bounds bounds = area.GetComponent<Collider>().bounds;
+        Vector3 minPos = bounds.min;
+        Vector3 maxPos = bounds.max;
         GameObject[] birds = new GameObject[quantity];
         for (int idx = 0; quantity > idx; idx++)
         {
-            GameObject bird = Instantiate(gameObject, new Vector3(Random.Range(0, range), respawnHeight, Random.Range(0, range)), transform.rotation);
+            Vector3 pos = new Vector3(Random.Range(minPos.x, maxPos.x), maxPos.y, Random.Range(minPos.z, maxPos.z));
+            GameObject bird = Instantiate(gameObject, pos, transform.rotation);
             Vector3 scale = bird.transform.localScale;
             bird.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
             birds[idx] = bird;
             Respawn.birds.Add(bird);
+            BirdBehavior.population.Add(bird);
         }
         return birds;
     }

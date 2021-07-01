@@ -5,5 +5,5 @@ using UnityEngine;
 
 public interface IFactory
 {
-    public GameObject[] GenerateSquareRange(GameObject gameObject, int quantity, float range, float respawnHeight);
+    public GameObject[] GenerateSquareRange(GameObject animal, GameObject area, int quantity);
 }

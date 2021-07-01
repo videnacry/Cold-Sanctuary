@@ -39,7 +39,11 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     public bool adult, gender = false;
     public abstract float BaseMass { get; set; }
     public abstract Vector3 BaseScale { get; set; }
-    public Vector3 size, sizePotential;
+
+
+    public abstract Vector3 HomeOrigin { get; set; }
+    public abstract float HomeRadius { get; set; }
+
 
 
     // State
@@ -67,12 +71,16 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         StartCoroutine("Restore");
         LifeStage.Init(this, TimeController.timeController);
     }
-    public static GameObject[] StaticGenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
+    public static GameObject[] StaticGenerateSquareRange(GameObject animal, GameObject area, int quantity)
     {
+        Bounds bounds = area.GetComponent<Collider>().bounds;
+        Vector3 minPos = bounds.min;
+        Vector3 maxPos = bounds.max;
         GameObject[] creatures = new GameObject[quantity];
         for (int idx = 0; quantity > idx; idx++)
         {
-            GameObject creature = Instantiate(animal, new Vector3(Random.Range(0, range), respawnHeight, Random.Range(0, range)), animal.transform.rotation);
+            Vector3 pos = new Vector3(Random.Range(minPos.x, maxPos.x), maxPos.y + 1, Random.Range(minPos.z, maxPos.z));
+            GameObject creature = Instantiate(animal, pos, animal.transform.rotation);
             Vector3 scale = creature.transform.localScale;
             creature.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
             creatures[idx] = creature;
@@ -82,9 +90,9 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         }
         return creatures;
     }
-    public virtual GameObject[] GenerateSquareRange(GameObject animal, int quantity, float range, float respawnHeight)
+    public virtual GameObject[] GenerateSquareRange(GameObject animal, GameObject area, int quantity)
     {
-        return Animal.StaticGenerateSquareRange(animal, quantity, range, respawnHeight);
+        return Animal.StaticGenerateSquareRange(animal, area, quantity);
     }
     public virtual GameObject[] RenderFamily (Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
     {

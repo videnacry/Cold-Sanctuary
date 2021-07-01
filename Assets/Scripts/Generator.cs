@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.UI;
 
 public class Generator : MonoBehaviour
 {
@@ -15,18 +11,17 @@ public class Generator : MonoBehaviour
         public int quantity;
     }
     public Subject[] subjects;
-    public GameObject center;
-    public float area, respawnHeight = 3;
+    public GameObject area;
     public static HashSet<GameObject> bears = new HashSet<GameObject>(), rabbits = new HashSet<GameObject>();
 
 
     // Start is called before the first frame update
     void Start()
     {
-        transform.LookAt(center.transform.position);
+        transform.LookAt(this.area.GetComponent<Collider>().bounds.center);
         foreach (Subject animal in subjects)
         {
-            Fill(animal.gameObject, animal.quantity, this.area, this.respawnHeight);
+            Fill(animal.gameObject, this.area, animal.quantity);
         }
     }
 
@@ -37,15 +32,15 @@ public class Generator : MonoBehaviour
 
     // Initialize game
     
-    public void Fill(GameObject animal, int quantity, float range, float respawnHeight = 5)
+    public void Fill(GameObject animal, GameObject area, int quantity)
     {
         IFactory factory = animal.GetComponent<IFactory>();
         if ( factory != null)
         {
-            factory.GenerateSquareRange(animal, quantity, range, respawnHeight);
+            factory.GenerateSquareRange(animal, area, quantity);
         } else
         {
-            Animal.StaticGenerateSquareRange(animal, quantity, range, respawnHeight);
+            Animal.StaticGenerateSquareRange(animal, area, quantity);
         }
     }
 }
