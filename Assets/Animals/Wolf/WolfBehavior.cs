@@ -21,6 +21,12 @@ public class WolfBehavior : Animal
 
     public Vector3 baseScale = new Vector3(2.5f, 2.5f, 2.5f);
     public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
+    public override ActionsPrep ActsPrep { get; set; } = new ActionsPrep
+    (
+        new ActionPrep("IdleWolf", 0),
+        new ActionPrep("WalkWolf", 6, 1),
+        new ActionPrep("RunWolf", 22, 3)
+    );
 
 
 
@@ -435,13 +441,11 @@ public class WolfBehavior : Animal
                 distance = Vector3.Distance(location, transform.position);
                 if (distance < 80 || victim.aware || cansancio < 1)
                 {
-                    ani.Play(animationsName.run);
+                    this.ActsPrep.run.Prep(this);
                     cansancio += 0.01f;
-                    nav.speed = 10;
-                    ani.speed = 10;
                     if (distance < 6)
                     {
-                        if (hungry < 0) break;
+                        if (hungry < -50) break;
                         if (prey.GetComponent<Animal>().rig.mass <= 0) break;
                         hungry -= 0.2f;
                         victim.Hurt(0.4f);
@@ -449,16 +453,13 @@ public class WolfBehavior : Animal
                 }
                 else
                 {
-                    ani.speed = 3;
-                    nav.speed = 3;
+                    this.ActsPrep.walk.Prep(this);
                 }
                 nav.SetDestination(location);
                 yield return new WaitForSeconds(3);
             } while (distance < 580 && cansancio < 1);
             exhaustion += cansancio;
-            nav.speed = 0;
-            ani.Play(animationsName.idle);
-            ani.speed = 1;
+            this.ActsPrep.idle.Prep(this);
         }
         hunting = false;
     }

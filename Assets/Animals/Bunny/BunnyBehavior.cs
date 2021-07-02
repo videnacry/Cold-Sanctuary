@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -12,6 +13,14 @@ public class BunnyBehavior : Animal
     public override char ParentalCare { get; set; } = Family.maternal;
     public override float ParentsRate { get; set; } = 0.14f;
     public override byte FamilySize { get; set; } = 4;
+
+    public ActionsPrep actsPrep = new ActionsPrep
+    (
+        new ActionPrep("IdleBunny", 0),
+        new ActionPrep("RunBunny", 8, 4),
+        new ActionPrep("RunBunny", 22, 10)
+    );
+    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; } 
     #endregion
 
 
@@ -45,7 +54,13 @@ public class BunnyBehavior : Animal
     public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
-    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
+    public byte[] childEvents = { 
+        LifeStage.Events.LoopGrow,
+        LifeStage.Events.Fatten,
+        LifeStage.Events.Wander,
+        LifeStage.Events.Rest,
+        LifeStage.Events.HomeBound 
+    };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
     
     
@@ -55,7 +70,12 @@ public class BunnyBehavior : Animal
     public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander };
+    public byte[] teenEvents = {
+        LifeStage.Events.LoopGrow,
+        LifeStage.Events.Fatten,
+        LifeStage.Events.Wander,
+        LifeStage.Events.Rest
+    };
     public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
 
 
@@ -65,7 +85,12 @@ public class BunnyBehavior : Animal
     public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander };
+    public byte[] adultEvents = {
+        LifeStage.Events.LoopGrow,
+        LifeStage.Events.Fatten,
+        LifeStage.Events.Wander,
+        LifeStage.Events.Rest
+    };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
@@ -167,39 +192,32 @@ public class BunnyBehavior : Animal
         float enemyMass = enemy.GetComponent<Rigidbody>().mass;
         float enemySpeed = enemy.GetComponent<NavMeshAgent>().speed;
         Vector3 enemyPosition = enemy.transform.position;
-
-
         do
         {
             if (enemyMass * (enemySpeed/2) - Vector3.Distance(enemyPosition, transform.position) > sensibility)
             {
-                StopCoroutine(Follow());
-                StopCoroutine(Sleep());
-                moving = true;
-                asleep = false;
                 aware = true;
 
                 while (Vector3.Distance(transform.position, enemyPosition) < 620)
                 {
                     int afraid = 30;
-                    nav.speed = 10;
-                    ani.speed = 10;
+                    this.actsPrep.run.Prep(this);
                     while (afraid > 0)
                     {
-                        ani.Play(animationsName.run);
                         afraid--;
-                        nav.SetDestination(bird.transform.position);
+                        nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, (BirdBehavior.population.Count - 1))).transform.position);
                         yield return new WaitForSeconds(10);
                     } 
                 }
             }
             else
             {
+                if (Random.Range(1, 3) > 1) this.actsPrep.walk.Prep(this);
+                else this.actsPrep.run.Prep(this);
                 aware = false;
                 yield return new WaitForSeconds(3);
             }
         } while (!aware);
-        StartCoroutine(Follow());
     }
 
     public IEnumerator Shooted(GameObject bullet)

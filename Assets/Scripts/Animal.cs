@@ -39,6 +39,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     public bool adult, gender = false;
     public abstract float BaseMass { get; set; }
     public abstract Vector3 BaseScale { get; set; }
+    public abstract ActionsPrep ActsPrep { get; set; }
+
 
 
     public abstract Vector3 HomeOrigin { get; set; }
@@ -66,9 +68,12 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
     public virtual void Init()
     {
+        Population.Add(gameObject);
+        wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
+        ChildStage.Fatten()(this);
         ani = GetComponent<Animator>();
         StartCoroutine("Restore");
         LifeStage.Init(this, TimeController.timeController);
@@ -87,8 +92,6 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
             creature.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
             creatures[idx] = creature;
             Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.Population.Add(creature);
-            wholePopulation.Add(creature);
         }
         return creatures;
     }
@@ -110,11 +113,12 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         if (lp < (rig.mass * 0.7))
         {
             StopAllCoroutines();
-            ani.speed = 0;
+            ani.enabled = false;
             this.rig.isKinematic = true;
             this.nav.enabled = false;
             if (!death) transform.Rotate(Vector3.forward, 90);
             death = true;
+            lp += (damage * 0.75f);
         }
         if (lp < 0)
         {

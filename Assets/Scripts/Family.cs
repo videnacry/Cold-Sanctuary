@@ -23,8 +23,6 @@ public abstract class Family : MonoBehaviour
             GameObject creature = Instantiate(animal, positions[idx], animal.transform.rotation);
             creatures[idx] = creature;
             Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.Population.Add(creature);
-            Animal.wholePopulation.Add(creature);
         }
         return creatures;
     }

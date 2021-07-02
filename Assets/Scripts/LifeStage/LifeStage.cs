@@ -97,27 +97,35 @@ public abstract class LifeStage
     public abstract Substage GrowScale();
     public Substage Fatten()
     {
-        return (Animal script) => script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
+        return (Animal script) =>
+        {
+            script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
+            script.lp = script.rig.mass;
+        };
     }
     public Substage Wander()
     {
         return (Animal script) =>
         {
-            script.ani.Play(script.animationsName.walk);
-            script.ani.speed = 1;
-            script.nav.speed = 3;
+            script.ActsPrep.walk.Prep(script);
             script.target = BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1));
             script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
+        };
+    }
+    public Substage Rest()
+    {
+        return (Animal script) =>
+        {
+            if (Random.Range(1, 4) > 1) script.ActsPrep.idle.Prep(script);
         };
     }
     public Substage Homebound()
     {
         return (Animal script) =>
         {
-            if (Vector3.Distance(script.transform.position, script.HomeOrigin) > script.HomeRadius)
+            if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
-                script.ani.Play(script.animationsName.run);
-                script.nav.speed = 5;
+                script.ActsPrep.run.Prep(script);
                 script.nav.SetDestination(script.HomeOrigin);
             }
         };
@@ -127,7 +135,8 @@ public abstract class LifeStage
         public const byte LoopGrow = 1;
         public const byte Fatten = 2;
         public const byte Wander = 3;
-        public const byte HomeBound = 4;
+        public const byte Rest = 4;
+        public const byte HomeBound = 5;
     }
 
     public Substage GetEvent(byte idx)
@@ -137,6 +146,7 @@ public abstract class LifeStage
             Events.LoopGrow => GrowScale(),
             Events.Fatten => Fatten(),
             Events.Wander => Wander(),
+            Events.Rest => Rest(),
             Events.HomeBound => Homebound(),
             _ => (script) => { }
 
