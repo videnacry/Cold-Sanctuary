@@ -1,28 +1,31 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Family : MonoBehaviour
+public abstract class Family
 {
     // Parental care
     public const char paternal = 'p', maternal = 'm', biparental = 'b';
 
-
-
-    public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height)
+    public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height, float radius = 0)
     {
+        if (radius == 0) radius = quantity * 2;
+        Vector3 maxPos = new Vector3(position.x + radius, position.y + radius, position.z + radius);
+        Vector3 minPos = new Vector3(position.x - radius, position.y - radius, position.z - radius);
         GameObject[] creatures = new GameObject[quantity];
         Vector3[] positions = new Vector3[quantity];
         int counter = 0;
-        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += counter)
+        for (int idx = -(quantity / 2); quantity / 2 > idx; idx += 1)
         {
-            positions[counter] = new Vector3((position.x * idx) + quantity, height, (position.z * idx) + quantity);
+            float xPos = Random.Range(minPos.x, maxPos.x);
+            float zPos = Random.Range(minPos.z, maxPos.z);
+            //positions[counter] = new Vector3((position.x * (idx/-idx)) + (5 * counter), height, (position.z * (idx/-idx)) + (5 * counter));
+            positions[counter] = new Vector3(xPos, height, zPos);
             counter++;
         }
         for (int idx = 0; quantity > idx; idx++)
         {
-            GameObject creature = Instantiate(animal, positions[idx], animal.transform.rotation);
+            GameObject creature = MonoBehaviour.Instantiate(animal, positions[idx], animal.transform.rotation);
             creatures[idx] = creature;
-            Animal creatureScript = creature.GetComponent<Animal>();
         }
         return creatures;
     }

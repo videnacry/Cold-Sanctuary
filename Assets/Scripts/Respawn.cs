@@ -83,14 +83,13 @@ public class Respawn : MonoBehaviour
                         if (8 < size)
                         {
                             Vector3 scale = animal.transform.localScale;
-                            if (i > 1 && i < 4)
+                            if (i > 1 && i < 6)
                             {
                                 WolfBehavior wolf = animal.GetComponent<WolfBehavior>();
                                 wolf.gender = ((Random.Range(0, 4) >= 2) ? true : false);
                                 float floatSize = ((size + 4) / 10);
                                 wolf.adult = false;
                                 animal.transform.localScale = new Vector3(scale.x - floatSize, scale.y - floatSize, scale.z - floatSize);
-                                wolf.sizePotential= new Vector3(scale.x - Random.Range(0.1f, 0.3f), scale.y - Random.Range(0.1f, 0.3f), scale.z - Random.Range(0.1f, 0.3f));
                                 wolfChildren.Add(wolf);
                                 try
                                 {
@@ -105,7 +104,7 @@ public class Respawn : MonoBehaviour
                                     wolf.hungry = Random.Range(0, 4);
                                 }
                             }
-                            else if (i > 3)
+                            else if (i > 5)
                             {
                                 BearBehaviour bear = animal.GetComponent<BearBehaviour>();
                                 bear.gender = ((Random.Range(0, 4) >= 2) ? true : false);
@@ -133,14 +132,14 @@ public class Respawn : MonoBehaviour
                         }
                         else
                         {
-                            if (i > 1 && i < 4)
+                            if (i > 1 && i < 6)
                             {
                                 WolfBehavior wolf = animal.GetComponent<WolfBehavior>();
                                 wolf.gender = ((Random.Range(0, 4) >= 2) ? true : false);
                                 wolf.hungry = Random.Range(0, 5);
                                 Vector3 scale = animal.transform.localScale;                                
                                 animal.transform.localScale = new Vector3(scale.x + Random.Range(-0.1f, 0.3f), scale.y + Random.Range(-0.1f, 0.3f), scale.z + Random.Range(-0.1f, 0.3f));
-                                wolf.Size();
+                                /*
                                 if (wolf.gender)
                                 {
                                     wolf.rig.mass = (10 * wolf.size.x) + (10 * wolf.size.y) + (10 * wolf.size.z);
@@ -149,6 +148,7 @@ public class Respawn : MonoBehaviour
                                 {
                                     wolf.rig.mass = (14 * wolf.size.x) + (14 * wolf.size.y) + (14 * wolf.size.z);
                                 }
+                                */
                                 try
                                 {
                                     if (wolf.rig.mass > alpha.rig.mass)
@@ -166,7 +166,7 @@ public class Respawn : MonoBehaviour
                                     alpha = wolf;
                                 }
                             }
-                            else if (i > 3)
+                            else if (i > 5)
                             {
                                 BearBehaviour bear = animal.GetComponent<BearBehaviour>();
                                 bear.gender = true;
@@ -187,24 +187,16 @@ public class Respawn : MonoBehaviour
                 }
                 i++;
             }
-            try
+            alpha.group = wolfChildren.ToArray();
+            foreach (WolfBehavior wolf in alpha.group)
             {
-                alpha.Alpha(wolves.ToArray(), wolfChildren.ToArray());
-            }
-            catch
-            {
-                alpha = wolfChildren.Where(wolf => wolf.rig.mass == wolfChildren.Max(child => child.rig.mass)).First();
-                alpha.group = wolfChildren.ToArray();
-                foreach (WolfBehavior wolf in alpha.group)
-                {
-                    wolf.alpha = alpha;
-                    wolf.alone = false;
-                }
+                wolf.alone = false;
             }
             while (total > 0)
             {
                 total--;
                 GameObject animal = Instantiate(animals[i], new Vector3(Random.Range(330, 910), 9, Random.Range(222, 980)), transform.rotation);
+                bears.Add(animal);
                 Vector3 scale = animal.transform.localScale;
                 animal.transform.localScale = new Vector3(scale.x + Random.Range(-0.1f, 0.4f), scale.y + Random.Range(-0.1f, 0.4f), scale.z + Random.Range(-0.1f, 0.4f));
                 BearBehaviour bear = animal.GetComponent<BearBehaviour>();
@@ -230,6 +222,7 @@ public class Respawn : MonoBehaviour
                     Vector3 scale = bird.transform.localScale;
                     bird.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
                     Respawn.birds.Add(bird);
+                    BirdBehavior.population.Add(bird);
                 }
                 i++;
             }
@@ -240,6 +233,7 @@ public class Respawn : MonoBehaviour
                 Vector3 scale = bird.transform.localScale;
                 bird.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
                 Respawn.birds.Add(bird);
+                BirdBehavior.population.Add(bird);
             }
         }
     }

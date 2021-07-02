@@ -21,18 +21,19 @@ public class WolfBehavior : Animal
 
     public Vector3 baseScale = new Vector3(2.5f, 2.5f, 2.5f);
     public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
-    public override ActionsPrep ActsPrep { get; set; } = new ActionsPrep
+    public ActionsPrep actsPrep = new ActionsPrep
     (
         new ActionPrep("IdleWolf", 0),
-        new ActionPrep("WalkWolf", 6, 1),
-        new ActionPrep("RunWolf", 22, 3)
+        new ActionPrep("WalkWolf", 2, 2),
+        new ActionPrep("RunWolf", 22, 5)
     );
+    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 
 
     public Vector3 homeOrigin;
-    public override Vector3 HomeOrigin { get => baseScale; set => baseScale = value; }
+    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
 
     public float homeRadius = 2000;
     public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
@@ -48,7 +49,7 @@ public class WolfBehavior : Animal
     public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
-    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
+    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
 
 
@@ -58,7 +59,7 @@ public class WolfBehavior : Animal
     public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
-    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
+    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
     public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
 
 
@@ -68,7 +69,7 @@ public class WolfBehavior : Animal
     public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.HomeBound };
+    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
@@ -81,48 +82,25 @@ public class WolfBehavior : Animal
 
 
     // LEGAZY
-    public Vector3 size, sizePotential;
     public GameObject mom, player;
     public WolfBehavior[] group;
     public WolfBehavior[] children;
-    public WolfBehavior alpha;
 
     // Start is called before the first frame update
     void Start()
     {
-        size = transform.localScale;
-        nav = GetComponent<NavMeshAgent>();
-        rig = GetComponent<Rigidbody>();
-        ani = GetComponent<Animator>();
-
-        StartCoroutine("Grow");
-        StartCoroutine("Restore");
+        base.Init();
     }
 
     // Update is called once per frame
     void Update()
     {
+        /*
         if (!moving && !asleep && !hunting)
         {
             StartCoroutine("Follow");
         }
-    }
-    
-    public void Alpha(WolfBehavior[] wolves, WolfBehavior[] cups)
-    {
-        alpha = GetComponent<WolfBehavior>();
-        group = wolves;
-        children = cups;
-        foreach(WolfBehavior wolf in group)
-        {
-            wolf.alpha = alpha;
-            wolf.alone = false;
-        }
-    }
-
-    public void Size()
-    {
-        size = transform.localScale;
+        */
     }
 
     public IEnumerable Attack(GameObject threat)
@@ -213,40 +191,6 @@ public class WolfBehavior : Animal
         }
     }
 
-    public IEnumerator Grow()
-    {
-        int interval = UnityEngine.Random.Range(12, 15);
-        while (size.magnitude < sizePotential.magnitude)
-        {
-            if (Vector3.Distance(transform.position, mom.transform.position) > 5)
-            {
-                bird = mom;
-                asleep = false;
-                nav.speed = 5;
-                ani.speed = 5;
-            }
-            size += (Vector3.one * Time.deltaTime);
-            yield return new WaitForSeconds(interval);
-        }
-        adult = true;
-        interval *= 2;
-        while ( 1 == 1)
-        {
-            if(Vector3.Distance(transform.position, alpha.transform.position) > 100)
-            {
-                int distance = UnityEngine.Random.Range(3, 12);
-                nav.SetDestination(alpha.transform.position + new Vector3(distance, distance, distance));
-                asleep = false;
-                nav.speed = 8;
-                ani.speed = 8;
-            }
-            else
-            {
-                ani.speed = 0;
-            }
-            yield return new WaitForSeconds(interval);
-        }
-    }
 
     public IEnumerator Sleep()
     {
@@ -287,15 +231,7 @@ public class WolfBehavior : Animal
                 asleep = false;
                 aware = true;
                 bool equalized, stronger;
-                float mass;
-                if (alone)
-                {
-                    mass = this.rig.mass;
-                }
-                else
-                {
-                    mass = alpha.rig.mass;
-                }
+                float mass = this.rig.mass;
                 equalized = ((enemyMass + enemyMass / 8) <= mass) ? true : false;
                 stronger = ((enemyMass * 3) < mass) ? true : false;
                 if (team)
