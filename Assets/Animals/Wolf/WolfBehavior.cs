@@ -23,9 +23,9 @@ public class WolfBehavior : Animal
     public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
     public ActionsPrep actsPrep = new ActionsPrep
     (
-        new ActionPrep("IdleWolf", 0),
+        new ActionPrep("IdleWolf", 0, 1, -2),
         new ActionPrep("WalkWolf", 2, 2),
-        new ActionPrep("RunWolf", 22, 5)
+        new ActionPrep("RunWolf", 22, 5, 3)
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
@@ -78,7 +78,6 @@ public class WolfBehavior : Animal
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
     public override AnimationsName animationsName { get; } = new AnimationsName("Wolf");
-    public bool hunting;
 
 
     // LEGAZY
@@ -95,12 +94,6 @@ public class WolfBehavior : Animal
     // Update is called once per frame
     void Update()
     {
-        /*
-        if (!moving && !asleep && !hunting)
-        {
-            StartCoroutine("Follow");
-        }
-        */
     }
 
     public IEnumerable Attack(GameObject threat)
@@ -139,73 +132,8 @@ public class WolfBehavior : Animal
 
     //IEumerator
 
-    public override IEnumerator Follow()
-    {
-        moving = true;
-        int i = UnityEngine.Random.Range(5, 10);
-        int interval = i;
-        bird = Respawn.birds[UnityEngine.Random.Range(0, Respawn.birds.Count)];
-        int rest = (UnityEngine.Random.Range(3, 6) * 10);
-        if (rest > 29)
-        {
-            ani.speed = 1;
-            ani.Play(animationsName.idle);
-            yield return new WaitForSeconds(rest);
-        }
-        ani.Play(animationsName.walk);
-        nav.speed = 3;
-        ani.speed = 1;
-        int distance = UnityEngine.Random.Range(1, 100);
-        Vector3 distancePosition = new Vector3(distance, 0, distance);
-        while (i > 0)
-        {
-            nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
-            i--;
-            yield return new WaitForSeconds(interval);
-        }
-        ani.Play(animationsName.idle);
-        ani.speed = 1;
-        nav.speed = 0;
-        moving = false;
-    }
 
-    public IEnumerator Restore()
-    {
-        int interval = UnityEngine.Random.Range(40, 70);
-        while (1 == 1)
-        {
-            hungry += 1f;
-            if (!asleep)
-            {
-                exhaustion += 0.5f;
-                if (exhaustion > 3 && !hunting)
-                {
-                    StartCoroutine("Sleep");
-                }
-                if (hungry > 3 && !asleep)
-                {
-                    StartCoroutine("Hunt");
-                }
-            }
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-
-    public IEnumerator Sleep()
-    {
-        StopCoroutine("Follow");
-        moving = false;
-        asleep = true;
-        while (exhaustion > 1)
-        {
-            ani.speed = 0;
-            yield return new WaitForSeconds(115);
-            exhaustion-=1.5f;
-        }
-        asleep = false;
-    }
-
+    /*
     /// <summary>
     /// It will wair 3 seconds for every calculation
     /// It has a foreach that most be changed
@@ -225,9 +153,7 @@ public class WolfBehavior : Animal
             {
             if (enemyMass * enemySpeed - Vector3.Distance(enemyPosition, transform.position) > sensibility)
             {
-                StopCoroutine(Follow());
                 StopCoroutine(Sleep());
-                moving = true;
                 asleep = false;
                 aware = true;
                 bool equalized, stronger;
@@ -337,24 +263,24 @@ public class WolfBehavior : Animal
             }
         } while (!aware);
     }
+    */
+
+
 
     /// <summary>
     /// Stops walking, go to hunt the near rabbit
     /// </summary>
     /// <returns>yield</returns>
 
-    public IEnumerator Hunt()
+    public IEnumerator Feed()
     {
         List<GameObject> wolves = new List<GameObject>
         {
             this.gameObject
         };
-        moving = false;
-        hunting = true;
+        this.busy = true;
         if (adult)
         {
-            StopCoroutine("Follow");
-            if(bird == null) bird = Respawn.birds[UnityEngine.Random.Range(0, Respawn.birds.Count)];
             GameObject prey = BunnyBehavior.population.First();
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
@@ -375,9 +301,9 @@ public class WolfBehavior : Animal
             {
                 location = prey.transform.position;
                 distance = Vector3.Distance(location, transform.position);
-                if (distance < 80 || victim.aware || cansancio < 1)
+                if (distance < 300 || victim.aware)
                 {
-                    this.ActsPrep.run.Prep(this);
+                    this.ActsPrep.run.Prep(this, (short) (this.ActsPrep.run.energyCost / 30));
                     cansancio += 0.01f;
                     if (distance < 6)
                     {
@@ -386,18 +312,20 @@ public class WolfBehavior : Animal
                         hungry -= 0.2f;
                         victim.Hurt(0.4f);
                     }
+                    nav.SetDestination(location);
+                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 60);
                 }
                 else
                 {
-                    this.ActsPrep.walk.Prep(this);
+                    this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                    nav.SetDestination(location);
+                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                 }
-                nav.SetDestination(location);
-                yield return new WaitForSeconds(3);
-            } while (distance < 580 && cansancio < 1);
+            } while (distance < 700 && cansancio < 1);
             exhaustion += cansancio;
             this.ActsPrep.idle.Prep(this);
         }
-        hunting = false;
+        this.busy = false;
     }
     public IEnumerator Shooted(Vector3 bulletPosition)
     {
@@ -416,10 +344,9 @@ public class WolfBehavior : Animal
                     if (yDistance < 0.5)
                     {
                         this.exhaustion += 2;
-                        StopCoroutine("Hunt");
+                        StopCoroutine("Feed");
                         StopCoroutine("Escape");
-                        hunting = false;
-                        StartCoroutine("Sleep");
+                        this.busy = false;
                         Debug.Log(this.gameObject);
                     }
                 }

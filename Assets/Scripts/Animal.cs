@@ -49,7 +49,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
     // State
-    public bool moving = false, alone, asleep = false, death = false;
+    public bool asleep = false, death = false, busy = false;
     public float hungry, exhaustion, lp, sensibility;
 
 
@@ -75,7 +75,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this);
         ani = GetComponent<Animator>();
-        StartCoroutine("Restore");
+        StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
     }
     public static GameObject[] StaticGenerateSquareRange(GameObject animal, GameObject area, int quantity)
@@ -104,8 +104,78 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         familySize = familySize > 0 ? familySize : this.FamilySize;
         return Family.RenderFamily(this.gameObject, familySize, this.ParentsRate, minParentsCount, this.ParentalCare, position, height);
     }
-    public abstract IEnumerator Escape(bool team, List<GameObject> enemies);
-    public abstract IEnumerator Follow();
+
+
+
+
+
+
+
+
+    public IEnumerator Restore()
+    {
+        float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
+        while (1 == 1)
+        {
+            hungry += 1f;
+            if (hungry > this.rig.mass * 0.07 && !asleep && !this.busy)
+            {
+                StartCoroutine("Feed");
+            }
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+
+    /// <summary>
+    /// It will wair 3 seconds for every calculation
+    /// </summary>
+    /// <param name="team"> if its prey of a team </param>
+    /// <param name="enemies"> the enemies </param>
+    /// <returns></returns>
+
+    public virtual IEnumerator Escape(bool team, List<GameObject> enemies)
+    {
+        GameObject enemy = enemies[0];
+        float enemyMass = enemy.GetComponent<Rigidbody>().mass;
+        float enemySpeed = enemy.GetComponent<NavMeshAgent>().speed;
+        Vector3 enemyPosition = enemy.transform.position;
+        do
+        {
+            if (enemyMass * (enemySpeed / 2) - Vector3.Distance(enemyPosition, transform.position) > sensibility)
+            {
+                aware = true;
+
+                while (Vector3.Distance(transform.position, enemyPosition) < 620)
+                {
+                    int afraid = 30;
+                    this.ActsPrep.run.Prep(this);
+                    while (afraid > 0)
+                    {
+                        afraid--;
+                        nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, (BirdBehavior.population.Count - 1))).transform.position);
+                        yield return new WaitForSeconds(10);
+                    }
+                }
+            }
+            else
+            {
+                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this);
+                else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                aware = false;
+                yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
+            }
+        } while (!aware);
+    }
+
+
+
+
+
+    /// <summary>
+    /// Inflict damage, kill script
+    /// </summary>
+    /// <param name="damage"></param>
     public virtual void Hurt(float damage)
     {
         lp -= damage;
@@ -122,6 +192,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         }
         if (lp < 0)
         {
+            this.rig.mass = 0;
             Population.Remove(this.gameObject);
             wholePopulation.Remove(this.gameObject);
             Destroy(this);

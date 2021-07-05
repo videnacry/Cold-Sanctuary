@@ -16,9 +16,9 @@ public class BunnyBehavior : Animal
 
     public ActionsPrep actsPrep = new ActionsPrep
     (
-        new ActionPrep("IdleBunny", 0),
+        new ActionPrep("IdleBunny", 0, 1, -2),
         new ActionPrep("RunBunny", 8, 4),
-        new ActionPrep("RunBunny", 22, 10)
+        new ActionPrep("RunBunny", 22, 10, 3)
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; } 
     #endregion
@@ -118,107 +118,8 @@ public class BunnyBehavior : Animal
     {
     }
 
-    public override IEnumerator Follow()
-    {
-        while (1 == 1)
-        {
-            ani.speed = 1;
-            ani.Play(animationsName.idle);
-            moving = true;
-            int i = Random.Range(5, 10);
-            int interval = i;
-            bird = Respawn.birds[Random.Range(0, Respawn.birds.Count)];
-            int rest = (Random.Range(2, 5) * 10);
-            if (rest > 29)
-            {
-                yield return new WaitForSeconds(rest);
-            }
-            ani.Play(animationsName.run);
-            nav.speed = 3;
-            ani.speed = 3;
-            int distance = Random.Range(1, 100);
-            Vector3 distancePosition = new Vector3(distance, 0, distance);
-            while (i > 0)
-            {
-                nav.SetDestination(new Vector3(bird.transform.position.x, transform.position.y, bird.transform.position.z) + distancePosition);
-                i--;
-                yield return new WaitForSeconds(interval);
-            }
-            moving = false;
-        }
-    }
 
-    public IEnumerator Restore()
-    {
-        int interval = Random.Range(50, 80);
-        while (1 == 1)
-        {
-            exhaustion += 0.5f;
-            if (exhaustion > 3 && !hunting)
-            {
-                StartCoroutine("Sleep");
-            }
-            yield return new WaitForSeconds(interval);
-        }
-    }
-
-
-    public IEnumerator Sleep()
-    {
-        StopCoroutine("Follow");
-        asleep = true;
-        moving = false;
-        while (exhaustion > 1)
-        {
-            ani.speed = 0;
-            yield return new WaitForSeconds(80);
-            exhaustion--;
-        }
-        asleep = false;
-    }
-
-
-    /// <summary>
-    /// It will wair 3 seconds for every calculation
-    /// It has a foreach that most be changed
-    /// </summary>
-    /// <param name="team"> if its prey of a team </param>
-    /// <param name="enemies"> the enemies </param>
-    /// <returns></returns>
-
-    public override IEnumerator Escape(bool team, List<GameObject> enemies)
-    {
-        GameObject enemy = enemies[0];
-        float enemyMass = enemy.GetComponent<Rigidbody>().mass;
-        float enemySpeed = enemy.GetComponent<NavMeshAgent>().speed;
-        Vector3 enemyPosition = enemy.transform.position;
-        do
-        {
-            if (enemyMass * (enemySpeed/2) - Vector3.Distance(enemyPosition, transform.position) > sensibility)
-            {
-                aware = true;
-
-                while (Vector3.Distance(transform.position, enemyPosition) < 620)
-                {
-                    int afraid = 30;
-                    this.actsPrep.run.Prep(this);
-                    while (afraid > 0)
-                    {
-                        afraid--;
-                        nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, (BirdBehavior.population.Count - 1))).transform.position);
-                        yield return new WaitForSeconds(10);
-                    } 
-                }
-            }
-            else
-            {
-                if (Random.Range(1, 3) > 1) this.actsPrep.walk.Prep(this);
-                else this.actsPrep.run.Prep(this);
-                aware = false;
-                yield return new WaitForSeconds(3);
-            }
-        } while (!aware);
-    }
+   
 
     public IEnumerator Shooted(GameObject bullet)
     {
