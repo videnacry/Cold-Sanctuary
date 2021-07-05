@@ -8,7 +8,7 @@ using UnityEngine.AI;
 public abstract class LifeStage
 {
     // Stages
-    public const char child = 'c', teen = 't', adult = 'a';
+    public const char child = 'c', teen = 't', adult = 'a', soul = 's';
 
 
     // Instance sizes
@@ -28,6 +28,10 @@ public abstract class LifeStage
         script.ChildStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
         script.TeenStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
         script.AdultStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
+        InitStage(script, timeController);
+    }
+    public static void InitStage (Animal script, TimeController timeController)
+    {
         switch (script.lifeStage)
         {
             case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController)); break;
@@ -52,7 +56,30 @@ public abstract class LifeStage
 
 
 
-    public abstract IEnumerator Live(Animal script, TimeController timeController);
+
+
+
+    public virtual IEnumerator Live(Animal script, TimeController timeController)
+    {
+        foreach (byte preparation in script.ChildPreps) GetPrep(preparation)(script);
+        while ((stageDays - livedDays) > 0)
+        {
+            byte dayThirds = 0;
+            while (dayThirds < 3)
+            {
+                if (!script.busy) foreach (byte myEvent in script.ChildEvents) GetEvent(myEvent)(script);
+                dayThirds++;
+                yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f));
+            }
+            livedDays++;
+        }
+        script.lifeStage = GetNextStage(script.lifeStage);
+        LifeStage.InitStage(script, timeController);
+    }
+    public static char GetNextStage (char lifeStage)
+    {
+        return lifeStage == child ? teen : lifeStage == teen ? adult : soul;
+    }
 
 
 
@@ -116,7 +143,8 @@ public abstract class LifeStage
     {
         return (Animal script) =>
         {
-            if (Random.Range(1, 4) > 1) script.ActsPrep.idle.Prep(script);
+            if (Random.Range(1, 4) > 1 || script.exhaustion > 3) script.ActsPrep.idle.Prep(script);
+            if (script.exhaustion < 0) script.exhaustion = 0;
         };
     }
     public Substage Homebound()
