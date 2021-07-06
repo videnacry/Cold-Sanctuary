@@ -149,7 +149,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
                 while (Vector3.Distance(transform.position, enemyPosition) < 620)
                 {
                     int afraid = 30;
-                    this.ActsPrep.run.Prep(this);
+                    this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
                     while (afraid > 0)
                     {
                         afraid--;
@@ -160,7 +160,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
             }
             else
             {
-                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this);
+                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
                 else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
                 aware = false;
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
@@ -173,7 +173,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
     /// <summary>
-    /// Inflict damage, kill script
+    /// Inflict damage, remove gameObject from population and wholePopulation fields, set lifestage to soul and rig.mass to 0
     /// </summary>
     /// <param name="damage"></param>
     public virtual void Hurt(float damage)
@@ -195,7 +195,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
             this.rig.mass = 0;
             Population.Remove(this.gameObject);
             wholePopulation.Remove(this.gameObject);
-            Destroy(this);
+            this.lifeStage = LifeStage.soul;
         }
     }
 

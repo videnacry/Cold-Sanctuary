@@ -294,7 +294,7 @@ public class WolfBehavior : Animal
                 }
                 yield return new WaitForSeconds(1);
             }
-            IAnimal victim = prey.GetComponent<IAnimal>();
+            Animal victim = prey.GetComponent<Animal>();
             StartCoroutine(victim.Escape(false, wolves));
             float cansancio = 0;
             do
@@ -308,7 +308,7 @@ public class WolfBehavior : Animal
                     if (distance < 6)
                     {
                         if (hungry < -50) break;
-                        if (prey.GetComponent<Animal>().rig.mass <= 0) break;
+                        if (victim.lifeStage == LifeStage.soul) break;
                         hungry -= 0.2f;
                         victim.Hurt(0.4f);
                     }
