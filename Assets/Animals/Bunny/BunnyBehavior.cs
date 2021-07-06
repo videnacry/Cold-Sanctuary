@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BunnyBehavior : Animal
+public class BunnyBehavior : Herbivore
 {
     #region Family
     /// <summary>

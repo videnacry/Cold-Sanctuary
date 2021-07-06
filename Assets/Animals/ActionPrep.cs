@@ -17,11 +17,12 @@ public class ActionPrep
         this.aniSpeed = pAniSpeed;
         this.energyCost = pEnergyCost;
     }
-    public void Prep(Animal script, short? pEnergyCost = null)
+    public void Prep(Animal pScript, float pAnimationTime)
     {
-        script.ani.Play(this.aniName);
-        script.ani.speed = this.aniSpeed;
-        script.nav.speed = this.navSpeed;
-        script.exhaustion += pEnergyCost != null ? (float) pEnergyCost : this.energyCost;
+        pScript.ani.Play(this.aniName);
+        pScript.ani.speed = this.aniSpeed;
+        pScript.nav.speed = this.navSpeed;
+        pScript.exhaustion += this.energyCost * pAnimationTime;
+        pScript.hungry += (this.energyCost > 0)? this.energyCost * pAnimationTime : 0;
     }
 }

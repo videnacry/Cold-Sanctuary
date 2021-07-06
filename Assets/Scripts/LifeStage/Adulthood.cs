@@ -10,9 +10,9 @@ public class Adulthood : LifeStage
 {
     public Adulthood(short pStageDays, int pMinScaleSubstrahend, int pMaxScaleSubstrahend) : base(pStageDays, pMinScaleSubstrahend, pMaxScaleSubstrahend) { }
 
-    public override Substage GrowScale()
+    public override SubEvent GrowScale()
     {
-        return (Animal script) =>
-        {};
+        return (Animal script, float duration) =>
+        { };
     }
 }

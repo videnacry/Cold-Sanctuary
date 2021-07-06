@@ -67,9 +67,10 @@ public abstract class LifeStage
             byte dayThirds = 0;
             while (dayThirds < 3)
             {
-                if (!script.busy) foreach (byte myEvent in script.ChildEvents) GetEvent(myEvent)(script);
+                float thirdDuration = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
+                if (!script.busy) foreach (byte myEvent in script.ChildEvents) GetEvent(myEvent)(script, thirdDuration);
                 dayThirds++;
-                yield return new WaitForSeconds(timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f));
+                yield return new WaitForSeconds(thirdDuration);
             }
             livedDays++;
         }
@@ -83,14 +84,15 @@ public abstract class LifeStage
 
 
 
-    public delegate void Substage(Animal script);
+    public delegate void SubPrep(Animal script);
+    public delegate void SubEvent(Animal script, float duration);
 
     #region Preps
-    public Substage SetScale()
+    public SubPrep SetScale()
     {
         return (Animal script) => script.transform.localScale = sizePotential;
     }
-    public Substage SetRemainingStageDays()
+    public SubPrep SetRemainingStageDays()
     {
         return (Animal script) =>
         {
@@ -105,7 +107,7 @@ public abstract class LifeStage
         public const byte SetScale = 1;
         public const byte SetRemainingStageDays = 2;
     }
-    public Substage GetPrep(byte idx)
+    public SubPrep GetPrep(byte idx)
     {
         return idx switch
         {
@@ -120,40 +122,42 @@ public abstract class LifeStage
 
 
 
+
+
     #region Events
-    public abstract Substage GrowScale();
-    public Substage Fatten()
+    public abstract SubEvent GrowScale();
+    public SubEvent Fatten()
     {
-        return (Animal script) =>
+        return (Animal script, float duration) =>
         {
             script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
             script.lp = script.rig.mass;
         };
     }
-    public Substage Wander()
+    public SubEvent Wander()
     {
-        return (Animal script) =>
+        return (Animal script, float duration) =>
         {
-            script.ActsPrep.walk.Prep(script);
+            script.ActsPrep.walk.Prep(script, duration);
             script.target = BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1));
             script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
         };
     }
-    public Substage Rest()
+    public SubEvent Rest()
     {
-        return (Animal script) =>
+        return (Animal script, float duration) =>
         {
-            if (Random.Range(1, 4) > 1 || script.exhaustion > 3) script.ActsPrep.idle.Prep(script);
+            if (Random.Range(1, 4) > 1 || script.exhaustion > 30) script.ActsPrep.idle.Prep(script, duration);
             if (script.exhaustion < 0) script.exhaustion = 0;
         };
     }
-    public Substage Homebound()
+    public SubEvent Homebound()
     {
-        return (Animal script) =>
+        return (Animal script, float duration) =>
         {
             if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
-                script.ActsPrep.run.Prep(script);
+                script.ActsPrep.run.Prep(script, duration);
                 script.nav.SetDestination(script.HomeOrigin);
             }
         };
@@ -167,7 +171,7 @@ public abstract class LifeStage
         public const byte HomeBound = 5;
     }
 
-    public Substage GetEvent(byte idx)
+    public SubEvent GetEvent(byte idx)
     {
         return idx switch
         {
@@ -176,7 +180,7 @@ public abstract class LifeStage
             Events.Wander => Wander(),
             Events.Rest => Rest(),
             Events.HomeBound => Homebound(),
-            _ => (script) => { }
+            _ => (script, duration) => { }
 
             ,
         };

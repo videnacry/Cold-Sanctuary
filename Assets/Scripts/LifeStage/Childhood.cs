@@ -13,9 +13,9 @@ public class Childhood : LifeStage
 
 
 
-    public override Substage GrowScale()
+    public override SubEvent GrowScale()
     {
-        return (Animal script) =>
+        return (Animal script, float duration) =>
         {
             Vector3 growFraction = (script.TeenStage.sizePotential - sizePotential) / stageDays;
             script.transform.localScale += growFraction;

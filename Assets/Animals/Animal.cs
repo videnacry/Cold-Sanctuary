@@ -73,7 +73,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
-        ChildStage.Fatten()(this);
+        ChildStage.Fatten()(this, 0);
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
@@ -125,6 +125,11 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
             yield return new WaitForSeconds(interval);
         }
     }
+
+
+
+    public abstract IEnumerator Feed();
+
 
 
     /// <summary>
