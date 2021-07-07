@@ -7,10 +7,14 @@ using UnityEngine.AI;
 public class WolfBehavior : Carnivore
 {
     // Family creation default values
+    /*
     public override char ParentalCare { get; set; } = Family.biparental;
     public override float ParentsRate { get; set; } = 0.3f;
     public override byte FamilySize { get; set; } = 6;
-
+    */
+    public static Family defaultGroup = new Family(6, 0.3f, Family.biparental);
+    public Family group = defaultGroup;
+    public override Family Group { get => group; set => group = value; }
 
 
 
@@ -82,7 +86,6 @@ public class WolfBehavior : Carnivore
 
     // LEGAZY
     public GameObject mom, player;
-    public WolfBehavior[] group;
     public WolfBehavior[] children;
 
     // Start is called before the first frame update

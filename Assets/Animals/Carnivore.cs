@@ -17,7 +17,7 @@ public abstract class Carnivore : Animal
             this.gameObject
         };
         this.busy = true;
-        if (adult)
+        if (this.lifeStage == LifeStage.teen || this.lifeStage == LifeStage.adult)
         {
             GameObject prey = BunnyBehavior.population.First();
             Vector3 location = prey.transform.position;

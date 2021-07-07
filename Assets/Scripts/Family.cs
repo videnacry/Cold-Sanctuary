@@ -1,10 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public abstract class Family
+[System.Serializable]
+public class Family
 {
     // Parental care
     public const char paternal = 'p', maternal = 'm', biparental = 'b';
+
+    public Animal[] members;
+    public Animal[] fed;
+    public Animal[] feeders;
+    public Animal alphaMale;
+    public Animal alphaFemale;
+    public char parentalCare;
+    public float parentsRate;
+    public byte familySize;
+    public Family(byte pFamilySize, float pParentsRate, char pParentalCare)
+    {
+        this.familySize = pFamilySize;
+        this.parentsRate = pParentsRate;
+        this.parentalCare = pParentalCare;
+    }
 
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height, float radius = 0)
     {
@@ -18,7 +35,6 @@ public abstract class Family
         {
             float xPos = Random.Range(minPos.x, maxPos.x);
             float zPos = Random.Range(minPos.z, maxPos.z);
-            //positions[counter] = new Vector3((position.x * (idx/-idx)) + (5 * counter), height, (position.z * (idx/-idx)) + (5 * counter));
             positions[counter] = new Vector3(xPos, height, zPos);
             counter++;
         }
@@ -29,55 +45,60 @@ public abstract class Family
         }
         return creatures;
     }
-    public static GameObject[] SetGendersRate (GameObject[] creatures, float rate, char sex)
+    public static Animal[] SetGendersRate (GameObject[] creatures, float rate, char sex)
     {
-        foreach (GameObject creature in creatures)
+        Animal[] scripts = new Animal[creatures.Length];
+        for (int idx = 0; creatures.Length > idx; idx++)
         {
-            Animal creatureScript = creature.GetComponent<Animal>();
-            creatureScript.sex = Sex.SwitchSex(sex);
+            scripts[idx] = creatures[idx].GetComponent<Animal>();
+            scripts[idx].sex = Sex.SwitchSex(sex);
             if (Random.Range(0.0f, 1.0f) < rate)
-            {
-                creatureScript.sex = sex;
-            }
+                scripts[idx].sex = sex;
         }
-        return creatures;
+        return scripts;
     }
-    public static GameObject[] SetParents(GameObject[] creatures,float parentsRandomRate, int minParentsCount, bool biparental, char parentalSex)
+    public static Animal[] SetParents(Animal[] scripts,float parentsRandomRate, int minParentsCount)
     {
         float parentsCount = 0;
-        HashSet<GameObject> parents = new HashSet<GameObject>();
-        foreach (GameObject creature in creatures)
+        char parentalSex = Sex.female;
+        bool alphaMaleSetted = false, alphaFemaleSetted = false;
+        Family family = new Family(scripts[0].Group.familySize, scripts[0].Group.parentsRate, scripts[0].Group.parentalCare);
+        HashSet<Animal> adults = new HashSet<Animal>();
+        HashSet<Animal> children = new HashSet<Animal>();
+        foreach (Animal script in scripts)
         {
-            Animal creatureScript = creature.GetComponent<Animal>();
-            if (minParentsCount > parentsCount || parentsRandomRate > (parentsCount / creatures.Length))
+            script.Group = family;
+            if (minParentsCount > parentsCount || parentsRandomRate > (parentsCount / scripts.Length))
             {
-                parents.Add(creature);
+                adults.Add(script);
                 parentsCount++;
-                creatureScript.adult = true;
-                creatureScript.lifeStage = LifeStage.adult;
-                creatureScript.sex = parentalSex;
-                if (biparental)
+                script.lifeStage = LifeStage.adult;
+                script.sex = parentalSex;
+                if (!alphaFemaleSetted) 
+                { 
+                    family.alphaFemale = script;
+                    alphaFemaleSetted = true;
+                } else if (!alphaMaleSetted)
                 {
-                    parentalSex = Sex.SwitchSex(parentalSex);
+                    family.alphaMale = script;
+                    alphaMaleSetted = true;
                 }
+                parentalSex = Sex.SwitchSex(parentalSex);
             } else
             {
-                creatureScript.parents = parents;
-                creatureScript.adult = false;
-                creatureScript.lifeStage = LifeStage.child;
+                script.lifeStage = LifeStage.child;
+                children.Add(script);
             }
         }
-        return creatures;
+        family.members = scripts;
+        family.fed = children.ToArray();
+        family.feeders = adults.ToArray();
+        return scripts;
     }
-    public static GameObject[] RenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, char parentalCare, Vector3 position, float height)
+    public static Animal[] RenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, char parentalCare, Vector3 position, float height)
     {
-        GameObject[] creatures = SetGendersRate(RenderGroup(animal, quantity, position, height), 0.5f, Sex.female);
-        creatures = parentalCare switch
-        {
-            Family.maternal => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.female),
-            Family.paternal => SetParents(creatures, parentsRandomRate, minParentsCount, false, Sex.male),
-            _ => SetParents(creatures, parentsRandomRate, minParentsCount, true, Sex.female)
-        };
-        return creatures;
+        Animal[] scripts = SetGendersRate(RenderGroup(animal, quantity, position, height), 0.5f, Sex.female);
+        scripts = SetParents(scripts, parentsRandomRate, minParentsCount);
+        return scripts;
     }
 }

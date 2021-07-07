@@ -10,9 +10,14 @@ public class BunnyBehavior : Herbivore
     /// <summary>
     /// Properties wich determine how is going te be the created family of an instance
     /// </summary>
+    /*
     public override char ParentalCare { get; set; } = Family.maternal;
     public override float ParentsRate { get; set; } = 0.14f;
     public override byte FamilySize { get; set; } = 4;
+    */
+    public static Family defaultGroup = new Family(5, 0.4f, Family.maternal);
+    public Family group = defaultGroup;
+    public override Family Group { get => group; set => group = value; }
 
     public ActionsPrep actsPrep = new ActionsPrep
     (

@@ -6,11 +6,12 @@ using UnityEngine.AI;
 
 public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 {
-    // Family creation default values
-    public abstract char ParentalCare { get; set; }
-    public abstract float ParentsRate { get; set; }
-    public abstract byte FamilySize { get; set; }
-
+    #region Family
+    /// <summary>
+    /// Properties wich determine how is going te be the created family of an instance
+    /// </summary>
+    public abstract Family Group { get; set; }
+    #endregion
 
 
     // Stages
@@ -33,13 +34,16 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     public abstract HashSet<GameObject> Population { get; set; }
 
 
-    // Physiognomy
+    #region Physiognomy
+    /// <summary>
+    /// Field with property wich contains the base value for new instances
+    /// </summary>
     public char sex;
     public char lifeStage;
-    public bool adult, gender = false;
     public abstract float BaseMass { get; set; }
     public abstract Vector3 BaseScale { get; set; }
     public abstract ActionsPrep ActsPrep { get; set; }
+    #endregion
 
 
 
@@ -58,7 +62,6 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     public NavMeshAgent nav;
     public Rigidbody rig;
     public Animator ani;
-    public HashSet<GameObject> parents;
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
@@ -91,7 +94,6 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
             Vector3 scale = creature.transform.localScale;
             creature.transform.localScale = new Vector3(scale.x - Random.Range(0.1f, 0.4f), scale.y - Random.Range(0.1f, 0.4f), scale.z - Random.Range(0.1f, 0.4f));
             creatures[idx] = creature;
-            Animal creatureScript = creature.GetComponent<Animal>();
         }
         return creatures;
     }
@@ -99,10 +101,10 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         return Animal.StaticGenerateSquareRange(animal, area, quantity);
     }
-    public virtual GameObject[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
+    public virtual Animal[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
     {
-        familySize = familySize > 0 ? familySize : this.FamilySize;
-        return Family.RenderFamily(this.gameObject, familySize, this.ParentsRate, minParentsCount, this.ParentalCare, position, height);
+        familySize = familySize > 0 ? familySize : this.Group.familySize;
+        return Family.RenderFamily(this.gameObject, familySize, this.Group.parentsRate, minParentsCount, this.Group.parentalCare, position, height);
     }
 
 
