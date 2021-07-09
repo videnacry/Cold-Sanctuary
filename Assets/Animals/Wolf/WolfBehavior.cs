@@ -19,17 +19,16 @@ public class WolfBehavior : Carnivore
 
 
     // Base Physiognomy
-    public float baseMass = 45;
-    public override float BaseMass { get => baseMass; set => baseMass = value; }
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(2.5f, 2.5f, 2.5f), 45, 0.09f, 0.2f, 0.05f);
+    public Physiognomy body = defaultBody;
+    public override Physiognomy Body { get => body; set => body = value; }
 
 
-    public Vector3 baseScale = new Vector3(2.5f, 2.5f, 2.5f);
-    public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
     public ActionsPrep actsPrep = new ActionsPrep
     (
         new ActionPrep("IdleWolf", 0, 1, -2),
-        new ActionPrep("WalkWolf", 2, 2),
-        new ActionPrep("RunWolf", 22, 5, 3)
+        new ActionPrep("WalkWolf", 3, 3),
+        new ActionPrep("RunWolf", 22, 5, 2)
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
@@ -39,7 +38,7 @@ public class WolfBehavior : Carnivore
     public Vector3 homeOrigin;
     public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
 
-    public float homeRadius = 2000;
+    public float homeRadius = 200;
     public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
 
 
@@ -73,7 +72,14 @@ public class WolfBehavior : Carnivore
     public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
     public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
-    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
+    public byte[] adultEvents = { 
+        LifeStage.Events.LoopGrow,
+        LifeStage.Events.Fatten,
+        LifeStage.Events.Wander,
+        LifeStage.Events.Rest,
+        LifeStage.Events.HomeBound,
+        LifeStage.Events.Feed,
+    };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 

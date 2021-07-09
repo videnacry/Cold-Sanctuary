@@ -25,18 +25,18 @@ public abstract class LifeStage
     }
     public static void Init (Animal script, TimeController timeController)
     {
-        script.ChildStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
-        script.TeenStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
-        script.AdultStage.sizePotential = GetRandomDifferenceScale(script.BaseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
+        script.ChildStage.sizePotential = GetRandomDifferenceScale(script.Body.baseScale, script.ChildStage.minScaleSubstrahend, script.ChildStage.maxScaleSubstrahend);
+        script.TeenStage.sizePotential = GetRandomDifferenceScale(script.Body.baseScale, script.TeenStage.minScaleSubstrahend, script.TeenStage.maxScaleSubstrahend);
+        script.AdultStage.sizePotential = GetRandomDifferenceScale(script.Body.baseScale, script.AdultStage.minScaleSubstrahend, script.AdultStage.maxScaleSubstrahend);
         InitStage(script, timeController);
     }
     public static void InitStage (Animal script, TimeController timeController)
     {
         switch (script.lifeStage)
         {
-            case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController)); break;
-            case child: script.StartCoroutine(script.ChildStage.Live(script, timeController)); break;
-            default: script.StartCoroutine(script.TeenStage.Live(script, timeController)); break;
+            case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController, script.AdultPreps, script.AdultEvents)); break;
+            case child: script.StartCoroutine(script.ChildStage.Live(script, timeController, script.ChildPreps, script.ChildEvents)); break;
+            default: script.StartCoroutine(script.TeenStage.Live(script, timeController, script.TeenPreps, script.TeenEvents)); break;
         }
     }
     public static Vector3 GetRandomDifferenceScale(Vector3 baseScale, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)
@@ -59,16 +59,16 @@ public abstract class LifeStage
 
 
 
-    public virtual IEnumerator Live(Animal script, TimeController timeController)
+    public virtual IEnumerator Live(Animal script, TimeController timeController, byte[] stagePreps, byte[] stageEvents)
     {
-        foreach (byte preparation in script.ChildPreps) GetPrep(preparation)(script);
+        foreach (byte preparation in stagePreps) GetPrep(preparation)(script);
         while ((stageDays - livedDays) > 0)
         {
             byte dayThirds = 0;
             while (dayThirds < 3)
             {
                 float thirdDuration = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
-                if (!script.busy) foreach (byte myEvent in script.ChildEvents) GetEvent(myEvent)(script, thirdDuration);
+                if (!script.busy) foreach (byte myEvent in stageEvents) GetEvent(myEvent)(script, thirdDuration);
                 dayThirds++;
                 yield return new WaitForSeconds(thirdDuration);
             }
@@ -96,8 +96,8 @@ public abstract class LifeStage
     {
         return (Animal script) =>
         {
-            float minScale = script.BaseScale.y - ((maxScaleSubstrahend / 100f) * script.BaseScale.y);
-            float maxScale = script.BaseScale.y - ((minScaleSubstrahend / 100f) * script.BaseScale.y);
+            float minScale = script.Body.baseScale.y - ((maxScaleSubstrahend / 100f) * script.Body.baseScale.y);
+            float maxScale = script.Body.baseScale.y - ((minScaleSubstrahend / 100f) * script.Body.baseScale.y);
             float scaleDifference = maxScale - minScale;
             stageDays = (short)(((sizePotential.y - minScale) * stageDays) / scaleDifference);
         };
@@ -130,7 +130,7 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) =>
         {
-            script.rig.mass = (script.transform.localScale.magnitude * script.BaseMass) / script.BaseScale.magnitude;
+            script.rig.mass = (script.transform.localScale.magnitude * script.Body.baseMass) / script.Body.baseScale.magnitude;
             script.lp = script.rig.mass;
         };
     }
@@ -162,6 +162,30 @@ public abstract class LifeStage
             }
         };
     }
+    public SubEvent Feed()
+    {
+        return (Animal script, float duration) =>
+        {
+            if (script.hungry < -script.Body.GetMealWeight(script) && script.Group.fed.Length > 0)
+            {
+                float parentDistance = Vector3.Distance(script.transform.position, script.Group.fed[0].HomeOrigin);
+                if (parentDistance > 10) script.ActsPrep.run.Prep(script, duration);
+                script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
+                foreach (Animal feeded in script.Group.fed)
+                {
+                    if (feeded.hungry < 0) continue;
+                    feeded.busy = true;
+                    if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) > 10) feeded.ActsPrep.run.Prep(script, duration);
+                    feeded.nav.SetDestination(script.Group.fed[0].HomeOrigin);
+                    if ( parentDistance < 10)
+                    {
+                        if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) < 10)
+                            feeded.hungry = -40;
+                    }
+                }
+            }
+        };
+    }
     public static class Events
     {
         public const byte LoopGrow = 1;
@@ -169,6 +193,7 @@ public abstract class LifeStage
         public const byte Wander = 3;
         public const byte Rest = 4;
         public const byte HomeBound = 5;
+        public const byte Feed = 6;
     }
 
     public SubEvent GetEvent(byte idx)
@@ -180,6 +205,7 @@ public abstract class LifeStage
             Events.Wander => Wander(),
             Events.Rest => Rest(),
             Events.HomeBound => Homebound(),
+            Events.Feed => Feed(),
             _ => (script, duration) => { }
 
             ,

@@ -40,8 +40,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     /// </summary>
     public char sex;
     public char lifeStage;
-    public abstract float BaseMass { get; set; }
-    public abstract Vector3 BaseScale { get; set; }
+    public abstract Physiognomy Body { get; set; }
     public abstract ActionsPrep ActsPrep { get; set; }
     #endregion
 
@@ -119,8 +118,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
         while (1 == 1)
         {
-            hungry += 1f;
-            if (hungry > this.rig.mass * 0.07 && !asleep && !this.busy)
+            if (hungry >= 0 && !asleep && !this.busy)
             {
                 StartCoroutine("Feed");
             }
@@ -187,19 +185,24 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         lp -= damage;
         exhaustion += damage;
-        if (lp < (rig.mass * 0.7))
+        if (!death)
         {
-            StopAllCoroutines();
-            ani.enabled = false;
-            this.rig.isKinematic = true;
-            this.nav.enabled = false;
-            if (!death) transform.Rotate(Vector3.forward, 90);
-            death = true;
-            lp += (damage * 0.75f);
+            if (lp < (rig.mass * 0.7))
+            {
+                transform.Rotate(Vector3.forward, 90);
+                death = true;
+                StopAllCoroutines();
+                ani.enabled = false;
+                this.rig.isKinematic = true;
+                this.nav.enabled = false;
+            }
         }
-        if (lp < 0)
+        else
         {
-            this.rig.mass = 0;
+            this.rig.mass -= damage;
+        }
+        if (this.rig.mass <= 0.1)
+        {
             Population.Remove(this.gameObject);
             wholePopulation.Remove(this.gameObject);
             this.lifeStage = LifeStage.soul;

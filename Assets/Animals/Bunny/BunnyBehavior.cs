@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
@@ -22,10 +23,10 @@ public class BunnyBehavior : Herbivore
     public ActionsPrep actsPrep = new ActionsPrep
     (
         new ActionPrep("IdleBunny", 0, 1, -2),
-        new ActionPrep("RunBunny", 8, 4),
-        new ActionPrep("RunBunny", 22, 10, 3)
+        new ActionPrep("RunBunny", 8, 4, 1),
+        new ActionPrep("RunBunny", 22, 10, 2)
     );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; } 
+    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
     #endregion
 
 
@@ -33,14 +34,10 @@ public class BunnyBehavior : Herbivore
     /// <summary>
     /// Field with property wich contains the base value for new instances
     /// </summary>
-    public float baseMass = 7;
-    public override float BaseMass { get => baseMass; set => baseMass = value; }
-
-
-    public Vector3 baseScale = new Vector3(0.8f, 0.8f, 0.8f);
-    public override Vector3 BaseScale { get => baseScale; set => baseScale = value; }
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.8f, 0.8f, 0.8f), 7, 0.13f, 0.07f, 0.18f);
+    public Physiognomy body = defaultBody;
+    public override Physiognomy Body { get => body; set => body = value; }
     #endregion
-
 
 
     public Vector3 homeOrigin;
@@ -94,7 +91,8 @@ public class BunnyBehavior : Herbivore
         LifeStage.Events.LoopGrow,
         LifeStage.Events.Fatten,
         LifeStage.Events.Wander,
-        LifeStage.Events.Rest
+        LifeStage.Events.Rest,
+        LifeStage.Events.Feed,
     };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
@@ -105,7 +103,6 @@ public class BunnyBehavior : Herbivore
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public bool hunting;
     public override AnimationsName animationsName { get; } = new AnimationsName("Bunny");
 
 
@@ -146,7 +143,6 @@ public class BunnyBehavior : Herbivore
                         this.exhaustion += 2;
                         StopCoroutine("Hunt");
                         StopCoroutine("Escape");
-                        hunting = false;
                         StartCoroutine("Sleep");
                         Debug.Log(this.gameObject);
                         break;

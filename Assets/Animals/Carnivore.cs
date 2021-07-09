@@ -16,9 +16,13 @@ public abstract class Carnivore : Animal
         {
             this.gameObject
         };
-        this.busy = true;
-        if (this.lifeStage == LifeStage.teen || this.lifeStage == LifeStage.adult)
+        if (BunnyBehavior.population.Count == 0)
         {
+            yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 5);
+        }
+        else if (this.lifeStage == LifeStage.teen || this.lifeStage == LifeStage.adult)
+        {
+            this.busy = true;
             GameObject prey = BunnyBehavior.population.First();
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
@@ -30,38 +34,50 @@ public abstract class Carnivore : Animal
                     location = rabbit.transform.position;
                     prey = rabbit;
                 }
-                yield return new WaitForSeconds(1);
             }
             Animal victim = prey.GetComponent<Animal>();
             StartCoroutine(victim.Escape(false, wolves));
             float cansancio = 0;
             do
             {
+                float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
                 location = prey.transform.position;
+                nav.SetDestination(location);
                 distance = Vector3.Distance(location, transform.position);
-                if (distance < 300 || victim.aware)
+                if (victim.death)
                 {
-                    this.ActsPrep.run.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 60);
-                    cansancio += 0.01f;
                     if (distance < 6)
                     {
-                        if (hungry < -50) break;
+                        this.ActsPrep.idle.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                        if (hungry < -this.Body.GetMealMaxWeight(this)) break;
                         if (victim.lifeStage == LifeStage.soul) break;
+                        victim.Hurt(0.2f);
                         hungry -= 0.2f;
-                        victim.Hurt(0.4f);
                     }
-                    nav.SetDestination(location);
-                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 60);
+                    else
+                    {
+                        this.ActsPrep.run.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                    }
+                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                }
+                else if (distance < 300 || victim.aware)
+                {
+                    this.ActsPrep.run.Prep(this, interval);
+                    cansancio += 0.01f;
+                    if (distance < 8)
+                    {
+                        victim.Hurt(0.8f);
+                    }
+                    yield return new WaitForSeconds(interval);
                 }
                 else
                 {
                     this.ActsPrep.walk.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 20);
-                    nav.SetDestination(location);
                     yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                 }
             } while (distance < 700 && cansancio < 1);
             exhaustion += cansancio;
+            this.busy = false;
         }
-        this.busy = false;
     }
 }

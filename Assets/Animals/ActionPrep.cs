@@ -9,20 +9,21 @@ public class ActionPrep
     public string aniName;
     public float navSpeed;
     public float aniSpeed;
-    public short energyCost;
-    public ActionPrep(string pAniName, float pNavSpeed, float pAniSpeed = 1, short pEnergyCost = 1)
+    public float energyCost;
+    public ActionPrep(string pAniName, float pNavSpeed, float pAniSpeed = 1, float pEnergyCost = 0.5f)
     {
         this.aniName = pAniName;
         this.navSpeed = pNavSpeed;
         this.aniSpeed = pAniSpeed;
-        this.energyCost = pEnergyCost;
+        this.energyCost = pEnergyCost/TimeController.timeController.TimeSpeedMinuteSecs/4;
     }
     public void Prep(Animal pScript, float pAnimationTime)
     {
         pScript.ani.Play(this.aniName);
         pScript.ani.speed = this.aniSpeed;
         pScript.nav.speed = this.navSpeed;
-        pScript.exhaustion += this.energyCost * pAnimationTime;
-        pScript.hungry += (this.energyCost > 0)? this.energyCost * pAnimationTime : 0;
+        float exhaustion = this.energyCost * pAnimationTime;
+        pScript.exhaustion += exhaustion;
+        pScript.hungry += (exhaustion > 0) ? pScript.Body.GetMealWeight(pScript) * exhaustion : 0;
     }
 }
