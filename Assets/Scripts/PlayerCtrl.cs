@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,27 +7,26 @@ using UnityEngine.AI;
 public class PlayerCtrl : MonoBehaviour
 {
     // Start is called before the first frame update
-
     public GameObject arm, forearm, finger1, finger2, finger3, finger4,rifle,torso,leftArm,leftForearm;
     public Vector3 torsoRotation, leftArmRotation, leftForearmRotation;
     public Vector3 armRotation,armDestiny,forearmRotation;
     public Vector3 finger1Rotation, finger2Rotation, finger3Rotation, finger4Rotation;
     public Vector3 rifleRotation,rifleDestiny,angle,shootPoint;
-    public Rigidbody bullet;
+    public GameObject bullet;
     public int shootSpeed;
     public bool showRotation;
-    NavMeshAgent nav;
+    public NavMeshAgent nav;
     Animator ani;
     Vector3 torsoOrigin, leftForearmOrigin, leftArmOrigin, rifleOrigin, armOrigin, forearmOrigin, finger1Origin, finger2Origin, finger3Origin, finger4Origin;
     Vector3 armRoot, rifleRoot;
     bool pointing=false,moving=false;
     float speed = 0.2f, potential = 0;
-    int act = 0,bullets;
+    int act = 0,bullets = 1000;
+    string objective = "bunny";
     Vector3 angles;
     void Start()
     {
         ani=GetComponent<Animator>();
-        nav = GetComponent<NavMeshAgent>();
         armOrigin = arm.transform.localRotation.eulerAngles;
         forearmOrigin = forearm.transform.localRotation.eulerAngles;
         finger1Origin = finger1.transform.localRotation.eulerAngles;
@@ -88,25 +88,25 @@ public class PlayerCtrl : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            nav.transform.Translate(Vector3.forward * speed);
+            nav.transform.Translate(transform.forward * speed);
             potential = 0.4f;
             act = 1;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            nav.transform.Translate(Vector3.back * speed);
+            nav.transform.Translate(transform.forward * -speed);
             potential = 0.3f;
             act = 1;
         }
         else if (Input.GetKey(KeyCode.A))
         {
-            nav.transform.Translate(Vector3.left * speed);
+            nav.transform.Translate(transform.right * -speed);
             potential = 0.3f;
             act = 1;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            nav.transform.Translate(Vector3.right * speed);
+            nav.transform.Translate(transform.right * speed);
             potential = 0.3f;
             act = 1;
         }
@@ -166,8 +166,32 @@ public class PlayerCtrl : MonoBehaviour
                     {
                         bullets--;
                         StartCoroutine("Shoot");
-                        Rigidbody shoot = Instantiate(bullet, rifle.transform.position + rifle.transform.TransformDirection(shootPoint), rifle.transform.rotation);
-                        shoot.AddForce(rifle.transform.TransformDirection(shootPoint * shootSpeed), ForceMode.Acceleration);
+                        Debug.Log(bullets);
+                        GameObject shoot = Instantiate(bullet, rifle.transform.position + rifle.transform.TransformDirection(shootPoint), rifle.transform.rotation);
+                        if(this.objective == "bunny")
+                        {
+                            foreach (GameObject bunny in Respawn.rabbits)
+                            {
+                                StartCoroutine(bunny.GetComponent<BunnyBehavior>().Shooted(shoot));
+                            }
+                        }
+                        else if(this.objective == "bear")
+                        {
+                            foreach (GameObject bear in Respawn.bears)
+                            {
+                                StartCoroutine(bear.GetComponent<BearBehaviour>().Shooted(shoot));
+                            }
+                        }
+                        shoot.GetComponent<Rigidbody>().AddForce(rifle.transform.TransformDirection(shootPoint * shootSpeed), ForceMode.Acceleration);
+                    }
+                }
+                if (Input.GetKey(KeyCode.G))
+                {
+                    //Change objective, so change drug to make the target sleep
+                    switch (this.objective)
+                    {
+                        case "bunny":objective = "bear"; Debug.Log("bear") ; break;
+                        case "bear":objective = "bunny"; Debug.Log("bunny"); break;
                     }
                 }
             }
