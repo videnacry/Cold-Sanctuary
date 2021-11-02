@@ -164,23 +164,38 @@ public abstract class LifeStage
     }
     public SubEvent Feed()
     {
-        return (Animal script, float duration) =>
+        return (Animal script, float duration) => 
         {
-            if (script.hungry < -script.Body.GetMealWeight(script) && script.Group.fed.Length > 0)
+            if (script.hungry < -script.Body.GetMealWeight(script))
             {
-                float parentDistance = Vector3.Distance(script.transform.position, script.Group.fed[0].HomeOrigin);
-                if (parentDistance > 10) script.ActsPrep.run.Prep(script, duration);
-                script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
-                foreach (Animal feeded in script.Group.fed)
+                float period = (duration/5);
+                while (duration > 0) 
                 {
-                    if (feeded.hungry < 0) continue;
-                    feeded.busy = true;
-                    if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) > 10) feeded.ActsPrep.run.Prep(script, duration);
-                    feeded.nav.SetDestination(script.Group.fed[0].HomeOrigin);
-                    if ( parentDistance < 10)
+                    duration -= period;
+                    float parentDistance = Vector3.Distance(script.transform.position, script.Group.fed[0].HomeOrigin);
+                    if (script.Group.fed.Length > 0)
                     {
-                        if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) < 10)
-                            feeded.hungry = -40;
+                        if (parentDistance > 10) script.ActsPrep.run.Prep(script, period);
+                        script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
+                    } 
+                    else script.ActsPrep.idle.Prep(script, period);
+                    
+                    foreach (Animal feeded in script.Group.fed)
+                    {
+                        if (feeded.hungry < 0) {
+                            feeded.busy = false;
+                            continue;
+                        }
+                        feeded.busy = true;
+                        if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) > 10) feeded.ActsPrep.run.Prep(feeded, period);
+                        else feeded.ActsPrep.idle.Prep(feeded, period);
+
+                        feeded.nav.SetDestination(script.Group.fed[0].HomeOrigin);
+                        if ( parentDistance < 10)
+                        {
+                            if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) < 10)
+                                feeded.hungry = -script.Body.GetMealWeight(script);
+                        }
                     }
                 }
             }
