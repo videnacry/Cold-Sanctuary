@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class AnimalRadar : FollowingElementBehavior
 {
     public Animal animalReference;
+    public float instanceDistance = 3;
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +31,7 @@ public class AnimalRadar : FollowingElementBehavior
         {
             transform.localPosition = new Vector3(0, 0, 0);
             transform.LookAt(animalReference.transform);
-            transform.Translate(Vector3.forward * 3);
+            transform.Translate(Vector3.forward * instanceDistance);
             yield return new WaitForSeconds(0.06f);
         }
     }

@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -139,7 +138,8 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             script.ActsPrep.walk.Prep(script, duration);
-            script.target = BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1));
+            List<GameObject> birds = new List<GameObject>(BirdBehavior.population);
+            script.target = birds[Random.Range(0, BirdBehavior.population.Count - 1)];
             script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
         };
     }
@@ -166,18 +166,15 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) => 
         {
-            if (script.hungry < -script.Body.GetMealWeight(script))
+            if (script.hungry < -script.Body.GetMealWeight(script) && script.Group.fed.Length > 0)
             {
                 float period = (duration/5);
                 while (duration > 0) 
                 {
                     duration -= period;
                     float parentDistance = Vector3.Distance(script.transform.position, script.Group.fed[0].HomeOrigin);
-                    if (script.Group.fed.Length > 0)
-                    {
-                        if (parentDistance > 10) script.ActsPrep.run.Prep(script, period);
-                        script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
-                    } 
+                    script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
+                    if (parentDistance > 10) script.ActsPrep.run.Prep(script, period);
                     else script.ActsPrep.idle.Prep(script, period);
                     
                     foreach (Animal feeded in script.Group.fed)
