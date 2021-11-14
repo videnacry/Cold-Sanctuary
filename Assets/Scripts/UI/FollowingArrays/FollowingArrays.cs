@@ -20,29 +20,40 @@ public class FollowingArrays : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            if (uiElements.Count > 0) this.Hide();
+            else this.Show();
+        }
+    }
+    public void SetWholeGameObjectRenderer(bool val)
+    {
+        Renderer renderer = this.GetComponent<Renderer>();
+        renderer.enabled = val;
+        Canvas canvas = this.GetComponentInChildren<Canvas>();
+        canvas.enabled = val;
     }
     public void Show()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y - 500, transform.position.z);
+        GameObject closeButton = Instantiate(closeButtonTemplate, transform.parent.transform);
         FollowingArrayInScript.RenderFollowingArrays(followingArrayInScripts, user, uiElements);
         FollowingArrayInArray.RenderFollowingArrays(followingArrayInArrays, user, uiElements);
-        GameObject closeButton = Instantiate(closeButtonTemplate, transform);
         HideFollowingArrays hideFollowingArrays = closeButton.AddComponent<HideFollowingArrays>();
         hideFollowingArrays.followingArrays = this;
-        closeButton.transform.localPosition = new Vector3(0, 1000, 0);
-        uiElements.Enqueue(closeButton);
+        this.uiElements.Enqueue(closeButton);
+        this.SetWholeGameObjectRenderer(false);
     }
     public void Hide()
     {
-        transform.position = new Vector3(transform.position.x, transform.position.y + 500, transform.position.z);
         foreach ( GameObject gameObject in uiElements)
         {
             Destroy(gameObject);
         }
-        uiElements.Clear();
+        this.uiElements.Clear();
+        this.SetWholeGameObjectRenderer(true);
     }
     private void OnMouseDown()
     {
-        Show();
+        this.Show();
     }
 }
