@@ -34,5 +34,6 @@ public class AnimalRadar : FollowingElementBehavior
             transform.Translate(Vector3.forward * instanceDistance);
             yield return new WaitForSeconds(0.06f);
         }
+        Destroy(this);
     }
 }

@@ -15,12 +15,23 @@ public struct FollowingArrayInArray
     {
         foreach (FollowingArrayInArray followingArray in followingArray_Arrays)
         {
-            foreach (GameObject element in followingArray.array)
+            if (followingArray.array.Length > 0)
+            {
+                foreach (GameObject element in followingArray.array)
+                {
+                    GameObject followingElement = MonoBehaviour.Instantiate(followingArray.arrayItemTemplate, user.transform);
+                    if (followingArray.followingElementBehavior != null)
+                    {
+                        FollowingElement followingElementScript = followingElement.AddComponent<FollowingElement>();
+                        followingElementScript.followingElementBehavior = followingArray.followingElementBehavior;
+                        followingElementScript.followingElementBehavior.Init(element);
+                    }
+                    uiElements.Enqueue(followingElement);
+                }
+            }
+            else 
             {
                 GameObject followingElement = MonoBehaviour.Instantiate(followingArray.arrayItemTemplate, user.transform);
-                FollowingElement followingElementScript = followingElement.AddComponent<FollowingElement>();
-                followingElementScript.followingElementBehavior = followingArray.followingElementBehavior;
-                followingElementScript.followingElementBehavior.Init(element);
                 uiElements.Enqueue(followingElement);
             }
         }

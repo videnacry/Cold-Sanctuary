@@ -9,7 +9,7 @@ public class HideFollowingArrays : MonoBehaviour
     public FollowingArrays followingArrays;
     private void OnMouseDown()
     {
-        followingArrays.Hide();
+        followingArrays.HideArrays();
     }
     private void Update()
     {
