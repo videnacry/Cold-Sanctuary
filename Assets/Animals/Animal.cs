@@ -4,7 +4,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public abstract class Animal : MonoBehaviour, IAnimal, IFactory
+public enum Reaction { Flee, Fight, HitAndRun }
+
+public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactory
 {
     #region Family
     /// <summary>
@@ -51,9 +53,87 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
 
+    // ITarget
+    public float Mass => rig != null ? rig.mass : Body.mass;
+    public float Speed => nav != null ? nav.speed : 0f;
+    public virtual char Faction => 'a';
+    public bool Dead => death;
+    public bool Consumed => lifeStage == LifeStage.soul;
+
+    // IEdible — los animales son carne comestible una vez muertos
+    public virtual OrganicMaterial Material => OrganicMaterial.Meat;
+    public virtual float Nutrition => 1f;
+    public virtual float Toughness => 0.5f;
+    public float Grams => rig != null ? rig.mass : 0f;
+    public virtual float BiteSize => 2f;
+
+    public float Consume(float biteSize)
+    {
+        float effectiveBite = biteSize / (1f + Toughness);
+        effectiveBite = Mathf.Min(effectiveBite, rig.mass);
+        rig.mass -= effectiveBite;
+        if (rig.mass <= 0.1f)
+        {
+            Population.Remove(gameObject);
+            wholePopulation.Remove(gameObject);
+            lifeStage = LifeStage.soul;
+        }
+        return effectiveBite * Nutrition;
+    }
+
+    // ThreatResponse species flags (override per species)
+    public virtual float Aggressiveness => 0f;
+    public virtual bool DefendsCubs => false;
+    public virtual bool CanHitAndRun => false;
+    public virtual float PackFactor => 0.5f;
+
+    // Bond system (Fase 4)
+    public virtual float HarmVsBond => 0.5f;
+    public virtual float BondGrowthRate => 1f;
+    public List<Bond> bonds = new List<Bond>();
+
+    /// <summary>
+    /// BondGrowthRate real: base * etapa de vida * (1 - trauma).
+    /// Crías vinculan 3x más rápido; el trauma frena el vínculo.
+    /// </summary>
+    public float EffectiveBondGrowthRate
+    {
+        get
+        {
+            float lifeMultiplier = lifeStage == LifeStage.child ? 3f
+                                 : lifeStage == LifeStage.teen  ? 1.5f
+                                 : 0.5f;
+            return BondGrowthRate * lifeMultiplier * (1f - trauma / 100f);
+        }
+    }
+
+    public Bond GetBond(ITarget target)
+    {
+        foreach (Bond b in bonds)
+            if (b.target == target) return b;
+        return null;
+    }
+
+    public void GrowBond(ITarget target, BondType type, float amount)
+    {
+        Bond b = GetBond(target);
+        if (b == null) { b = new Bond(target, type); bonds.Add(b); }
+        b.value = Mathf.Clamp(b.value + amount * EffectiveBondGrowthRate, 0f, 100f);
+    }
+
+    /// <summary> False si el vínculo es suficientemente alto para bloquear el daño. </summary>
+    public bool CanHarm(ITarget target)
+    {
+        if (target == null) return true;
+        Bond b = GetBond(target);
+        if (b == null) return true;
+        return b.value < HarmVsBond * 100f; // bond=100 siempre bloquea (100 < 100 = false)
+    }
+
     // State
     public bool asleep = false, death = false, busy = false;
     public float hungry, exhaustion, lp, sensibility;
+    public float trauma = 0f; // 0–100; reduce EffectiveBondGrowthRate y crece con cada golpe recibido
 
 
     // Gameobject components
@@ -119,9 +199,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
         while (1 == 1)
         {
             if (hungry >= 0 && !asleep && !this.busy)
-            {
                 StartCoroutine("Feed");
-            }
+            trauma = Mathf.Max(0f, trauma - 0.2f);
             yield return new WaitForSeconds(interval);
         }
     }
@@ -132,45 +211,127 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
 
 
 
-    /// <summary>
-    /// It will wair 3 seconds for every calculation
-    /// </summary>
-    /// <param name="team"> if its prey of a team </param>
-    /// <param name="enemies"> the enemies </param>
-    /// <returns></returns>
-
     public virtual IEnumerator Escape(bool team, List<GameObject> enemies)
     {
-        GameObject enemy = enemies[0];
-        float enemyMass = enemy.GetComponent<Rigidbody>().mass;
-        float enemySpeed = enemy.GetComponent<NavMeshAgent>().speed;
-        Vector3 enemyPosition = enemy.transform.position;
-        do
-        {
-            if (enemyMass * (enemySpeed / 2) - Vector3.Distance(enemyPosition, transform.position) > sensibility)
-            {
-                aware = true;
+        GameObject threat = enemies[0];
+        float enemyMass = threat.GetComponent<Rigidbody>().mass;
+        float enemySpeed = threat.GetComponent<NavMeshAgent>().speed;
+        Vector3 threatPos = threat.transform.position;
 
-                while (Vector3.Distance(transform.position, enemyPosition) < 620)
-                {
-                    int afraid = 30;
-                    this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-                    while (afraid > 0)
-                    {
-                        afraid--;
-                        nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, (BirdBehavior.population.Count - 1))).transform.position);
-                        yield return new WaitForSeconds(10);
-                    }
-                }
+        if (enemyMass * (enemySpeed / 2) - Vector3.Distance(threatPos, transform.position) <= sensibility)
+        {
+            if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+            else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+            yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
+            yield break;
+        }
+
+        aware = true;
+        switch (ResolveReaction(threat))
+        {
+            case Reaction.Fight:     yield return StartCoroutine(Fight(threat));     break;
+            case Reaction.HitAndRun: yield return StartCoroutine(HitAndRun(threat)); break;
+            default:                 yield return StartCoroutine(Flee(threat));      break;
+        }
+        aware = false;
+    }
+
+    protected Reaction ResolveReaction(GameObject threat)
+    {
+        ITarget threatTarget = threat.GetComponent<ITarget>();
+        if (threatTarget != null && !CanHarm(threatTarget))
+            return Reaction.Flee;
+
+        float enemyMass = threat.GetComponent<Rigidbody>()?.mass ?? 0f;
+        float enemySpeed = threat.GetComponent<NavMeshAgent>()?.speed ?? 0f;
+        float allyMass = 0f;
+        if (Group?.members != null)
+        {
+            foreach (Animal ally in Group.members)
+            {
+                if (ally != null && !ally.death && ally != this &&
+                    Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
+                    allyMass += ally.rig.mass;
+            }
+        }
+        float myPower = rig.mass + allyMass * PackFactor;
+        float enemyPower = enemyMass * enemySpeed;
+
+        bool defendingCubs = DefendsCubs && Group?.fed != null &&
+            System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
+                Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
+
+        if (myPower > enemyPower * 1.5f && Aggressiveness > 0.5f)
+            return Reaction.Fight;
+        if (defendingCubs && CanHitAndRun)
+            return Reaction.HitAndRun;
+        return Reaction.Flee;
+    }
+
+    protected virtual IEnumerator Flee(GameObject threat)
+    {
+        Vector3 threatPos = threat.transform.position;
+        while (Vector3.Distance(transform.position, threatPos) < 620)
+        {
+            this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+            int afraid = 30;
+            while (afraid > 0)
+            {
+                afraid--;
+                nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1)).transform.position);
+                yield return new WaitForSeconds(10);
+            }
+            threatPos = threat.transform.position;
+        }
+    }
+
+    protected virtual IEnumerator Fight(GameObject threat)
+    {
+        ITarget threatTarget = threat.GetComponent<ITarget>();
+        if (threatTarget == null) yield break;
+        float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
+        if (Group?.members != null)
+        {
+            foreach (Animal ally in Group.members)
+            {
+                if (ally != null && !ally.death && ally != this &&
+                    Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
+                    ally.StartCoroutine(ally.Fight(threat));
+            }
+        }
+        while (!threatTarget.Dead &&
+               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+        {
+            nav.SetDestination(threat.transform.position);
+            if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
+                threatTarget.Hurt((rig.mass - exhaustion) / 10f);
+            yield return new WaitForSeconds(interval);
+        }
+    }
+
+    // Ataca solo por la espalda; retrocede cuando la amenaza encara al animal.
+    protected virtual IEnumerator HitAndRun(GameObject threat)
+    {
+        ITarget threatTarget = threat.GetComponent<ITarget>();
+        if (threatTarget == null) yield break;
+        float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
+        while (!threatTarget.Dead &&
+               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+        {
+            Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
+            if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)
+            {
+                nav.SetDestination(threat.transform.position);
+                if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
+                    threatTarget.Hurt((rig.mass - exhaustion) / 15f);
             }
             else
             {
-                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-                else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-                aware = false;
-                yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
+                Vector3 retreat = transform.position + (transform.position - threat.transform.position).normalized * 10f;
+                nav.SetDestination(retreat);
             }
-        } while (!aware);
+            yield return new WaitForSeconds(interval);
+        }
     }
 
 
@@ -185,27 +346,15 @@ public abstract class Animal : MonoBehaviour, IAnimal, IFactory
     {
         lp -= damage;
         exhaustion += damage;
-        if (!death)
+        trauma = Mathf.Clamp(trauma + (damage / Mathf.Max(rig.mass, 1f)) * 30f, 0f, 100f);
+        if (!death && lp < rig.mass * 0.7f)
         {
-            if (lp < (rig.mass * 0.7))
-            {
-                transform.Rotate(Vector3.forward, 90);
-                death = true;
-                StopAllCoroutines();
-                ani.enabled = false;
-                this.rig.isKinematic = true;
-                this.nav.enabled = false;
-            }
-        }
-        else
-        {
-            this.rig.mass -= damage;
-        }
-        if (this.rig.mass <= 0.1)
-        {
-            Population.Remove(this.gameObject);
-            wholePopulation.Remove(this.gameObject);
-            this.lifeStage = LifeStage.soul;
+            transform.Rotate(Vector3.forward, 90);
+            death = true;
+            StopAllCoroutines();
+            ani.enabled = false;
+            rig.isKinematic = true;
+            nav.enabled = false;
         }
     }
 

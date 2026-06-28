@@ -107,7 +107,13 @@ public class BunnyBehavior : Herbivore
 
 
 
-    public GameObject mom, player;
+    public override float Aggressiveness => 0f;
+    public override bool DefendsCubs => true;
+    public override bool CanHitAndRun => true;
+    public override float PackFactor => 0f;
+    public override float HarmVsBond => 0.2f;
+    public override float BondGrowthRate => 1.5f;
+    public override float Toughness => 0.1f;
 
     // Start is called before the first frame update
     void Start()
@@ -153,3 +159,4 @@ public class BunnyBehavior : Herbivore
         } while (wait > 0);
     }
 }
+–
