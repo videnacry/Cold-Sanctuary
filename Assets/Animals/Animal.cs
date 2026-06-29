@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public enum Reaction { Flee, Fight, HitAndRun }
 
-public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactory
+public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, ICarrier, IFactory
 {
     #region Family
     /// <summary>
@@ -81,6 +81,30 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactor
         return effectiveBite * Nutrition;
     }
 
+    // ICarrier
+    protected FoodItem carriedFood;
+    public FoodItem CarriedFood => carriedFood;
+
+    public bool PickUp(FoodItem food)
+    {
+        if (carriedFood != null || food == null || food.Consumed) return false;
+        carriedFood = food;
+        food.transform.SetParent(transform);
+        food.transform.localPosition = Vector3.up;
+        return true;
+    }
+
+    public FoodItem Drop(Vector3 position)
+    {
+        if (carriedFood == null) return null;
+        FoodItem dropped = carriedFood;
+        carriedFood = null;
+        dropped.transform.SetParent(null);
+        dropped.transform.position = position;
+        dropped.droppedBy = this;
+        return dropped;
+    }
+
     // ThreatResponse species flags (override per species)
     public virtual float Aggressiveness => 0f;
     public virtual bool DefendsCubs => false;
@@ -130,10 +154,24 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactor
         return b.value < HarmVsBond * 100f; // bond=100 siempre bloquea (100 < 100 = false)
     }
 
+    // Post-natal species parameters (override per species)
+    public virtual float BaseStressLevel       => 0.2f;
+    public virtual float ThreatThreshold       => 0.5f;
+    public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
+    public virtual float NestSecurityLevel     => 0.5f;
+    public virtual float MaxFatReserves        => 20f;
+    public virtual float FatAccumulationRate   => 0.5f;
+
+    // Post-natal stage config (override per species; null = sin sistema post-natal)
+    public virtual PostNatalStage[] PostNatalStages => null;
+
     // State
     public bool asleep = false, death = false, busy = false;
     public float hungry, exhaustion, lp, sensibility;
-    public float trauma = 0f; // 0–100; reduce EffectiveBondGrowthRate y crece con cada golpe recibido
+    public float trauma      = 0f;   // 0–100; frena bond, crece con daño
+    public float stress      = 0f;   // 0–1; estrés ambiental/ansiedad
+    public float fatReserves = 0f;   // reservas de grasa; universal, maxFatReserves por especie
+    public float temperature = 38f;  // temperatura corporal (°C)
 
 
     // Gameobject components
@@ -159,6 +197,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactor
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
+        PostNatalManager pnm = GetComponent<PostNatalManager>();
+        if (pnm != null) pnm.Initialize(this);
     }
     public static GameObject[] StaticGenerateSquareRange(GameObject animal, GameObject area, int quantity)
     {
@@ -201,6 +241,7 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, IFactor
             if (hungry >= 0 && !asleep && !this.busy)
                 StartCoroutine("Feed");
             trauma = Mathf.Max(0f, trauma - 0.2f);
+            stress = Mathf.Max(0f, stress - 0.05f);
             yield return new WaitForSeconds(interval);
         }
     }

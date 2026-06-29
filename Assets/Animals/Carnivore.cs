@@ -84,6 +84,12 @@ public abstract class Carnivore : Animal
                 }
             } while (distance < 700 && cansancio < 1);
             exhaustion += cansancio;
+
+            // Si la presa quedó como FoodItem sin consumir, llevarla a las crías
+            FoodItem remains = prey?.GetComponent<FoodItem>();
+            if (victim.Dead && remains != null && !remains.Consumed && Group?.fed?.Length > 0)
+                (this as ICarrier)?.PickUp(remains);
+
             this.busy = false;
         }
     }

@@ -7,7 +7,7 @@ using UnityEngine.AI;
 /// Los animales que quieran cazar al jugador deben incluir PlayerTarget.population en su Diet.
 /// Ver docs/behavior-system.md (Componente C).
 /// </summary>
-public class PlayerTarget : MonoBehaviour, ITarget
+public class PlayerTarget : MonoBehaviour, ITarget, ICarrier
 {
     public float mass = 80f;
     public float speed = 5f;
@@ -27,6 +27,30 @@ public class PlayerTarget : MonoBehaviour, ITarget
 
     void Start() => population.Add(gameObject);
     void OnDestroy() => population.Remove(gameObject);
+
+    // ICarrier — teclas E (recoger) y Q (soltar) se wirean desde PlayerCtrl
+    FoodItem _carriedFood;
+    public FoodItem CarriedFood => _carriedFood;
+
+    public bool PickUp(FoodItem food)
+    {
+        if (_carriedFood != null || food == null || food.Consumed) return false;
+        _carriedFood = food;
+        food.transform.SetParent(transform);
+        food.transform.localPosition = Vector3.forward + Vector3.up;
+        return true;
+    }
+
+    public FoodItem Drop(Vector3 position)
+    {
+        if (_carriedFood == null) return null;
+        FoodItem dropped = _carriedFood;
+        _carriedFood = null;
+        dropped.transform.SetParent(null);
+        dropped.transform.position = position;
+        dropped.droppedBy = this;
+        return dropped;
+    }
 
     public void Hurt(float damage)
     {

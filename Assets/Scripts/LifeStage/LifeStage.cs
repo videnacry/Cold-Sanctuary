@@ -164,39 +164,61 @@ public abstract class LifeStage
     }
     public SubEvent Feed()
     {
-        return (Animal script, float duration) => 
+        return (Animal script, float duration) =>
         {
-            if (script.hungry < -script.Body.GetMealWeight(script) && script.Group.fed.Length > 0)
-            {
-                float period = (duration/5);
-                while (duration > 0) 
-                {
-                    duration -= period;
-                    float parentDistance = Vector3.Distance(script.transform.position, script.Group.fed[0].HomeOrigin);
-                    script.nav.SetDestination(script.Group.fed[0].HomeOrigin);
-                    if (parentDistance > 10) script.ActsPrep.run.Prep(script, period);
-                    else script.ActsPrep.idle.Prep(script, period);
-                    
-                    foreach (Animal feeded in script.Group.fed)
-                    {
-                        if (feeded.hungry < 0) {
-                            feeded.busy = false;
-                            continue;
-                        }
-                        feeded.busy = true;
-                        if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) > 10) feeded.ActsPrep.run.Prep(feeded, period);
-                        else feeded.ActsPrep.idle.Prep(feeded, period);
+            if (script.Group?.fed == null || script.Group.fed.Length == 0) return;
+            if (script.hungry >= -script.Body.GetMealWeight(script)) return;
 
-                        feeded.nav.SetDestination(script.Group.fed[0].HomeOrigin);
-                        if ( parentDistance < 10)
-                        {
-                            if (Vector3.Distance(feeded.transform.position, script.Group.fed[0].HomeOrigin) < 10)
-                                feeded.hungry = -script.Body.GetMealWeight(script);
-                        }
-                    }
+            ICarrier carrier = script as ICarrier;
+            if (carrier == null) return;
+
+            Vector3 nestPos = script.Group.fed[0].HomeOrigin;
+
+            // 1. Ya carga comida → ir al nido y depositar
+            if (carrier.CarriedFood != null)
+            {
+                float dist = Vector3.Distance(script.transform.position, nestPos);
+                script.nav.SetDestination(nestPos);
+                script.ActsPrep.run.Prep(script, duration);
+                if (dist < 10f)
+                {
+                    FoodItem dropped = carrier.Drop(nestPos + Random.insideUnitSphere * 3f);
+                    if (dropped != null)
+                        foreach (Animal cub in script.Group.fed)
+                            if (cub != null && !cub.death)
+                                cub.hungry = -script.Body.GetMealWeight(script);
                 }
+                return;
             }
+
+            // 2. Hay FoodItem en suelo dentro del HomeRadius → recoger sin cazar
+            FoodItem nearby = FindNearbyFood(script);
+            if (nearby != null)
+            {
+                float distFood = Vector3.Distance(script.transform.position, nearby.transform.position);
+                if (distFood < 5f)
+                    carrier.PickUp(nearby);
+                else
+                {
+                    script.nav.SetDestination(nearby.transform.position);
+                    script.ActsPrep.walk.Prep(script, duration);
+                }
+                return;
+            }
+
+            // 3. Sin comida disponible: la caza la maneja Restore() → Carnivore.Feed()
         };
+    }
+
+    static FoodItem FindNearbyFood(Animal script)
+    {
+        foreach (FoodItem food in FoodItem.GetAll())
+        {
+            if (food == null || food.Consumed) continue;
+            if (Vector3.Distance(script.transform.position, food.transform.position) < script.HomeRadius)
+                return food;
+        }
+        return null;
     }
     public static class Events
     {

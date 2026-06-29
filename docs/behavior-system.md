@@ -230,12 +230,14 @@ misma ruta.
 
 #### Checklist
 
-- [ ] Interfaz `ICarrier` (`Assets/Scripts/ICarrier.cs`): `CarriedFood`, `PickUp`, `Drop`.
-- [ ] `Animal` implementa `ICarrier`; campo `carriedFood`.
-- [ ] `PlayerTarget` implementa `ICarrier`; `PlayerCtrl` wirea teclas E/Q.
-- [ ] Refactorizar `LifeStage.Feed()`: lógica de prioridad — ya carga → deposita; hay carroña/comida en suelo → PickUp; si no → caza, come, recoge restos, deposita.
+- [x] Interfaz `ICarrier` (`Assets/Scripts/ICarrier.cs`): `CarriedFood`, `PickUp`, `Drop`.
+- [x] `Animal` implementa `ICarrier`; campo `carriedFood`.
+- [x] `PlayerTarget` implementa `ICarrier`.
+- [x] `FoodItem.GetAll()` — registro global para scan eficiente sin FindObjectsOfType.
+- [x] Refactorizar `LifeStage.Feed()`: lógica de prioridad — ya carga → deposita; hay comida en suelo → PickUp; si no → caza (Restore maneja esto); Carnivore.Feed recoge restos al terminar.
+- [ ] `PlayerCtrl`: wirear tecla E → `PickUp(FoodItem cercano)` y Q → `Drop(posiciónJugador + forward)`.
 - [ ] Ajustar `Diet` de crías para incluir `FoodItem.GetPopulation(material)` con `difficulty=0` y alta `preference`, para que prioricen comida depositada sobre buscar por su cuenta.
-- [ ] Verificar que `droppedBy` queda asignado correctamente en ambos flujos (adulto y jugador).
+- [ ] Verificar en Unity que `droppedBy` queda asignado correctamente en ambos flujos (adulto y jugador).
 
 ### Fase 6 — Etapas post-natales (crianza activa)
 
@@ -246,15 +248,28 @@ Cada **etapa** es una fase declarativa con su propio conjunto de comportamientos
 madre/padre/otros cuidadores **y** para la cría; la transición entre etapas no depende solo
 del tiempo sino de condiciones fisiológicas y conductuales.
 
+#### Principio: los comportamientos emergen de las variables
+
+No se hardcodea "el conejo visita dos veces al día". Si `BaseStressLevel` es alto y
+`NestSecurityLevel` es bajo, el sistema llega solo a esa conclusión. Tres ejes generan
+los parámetros de especie, y los parámetros generan el comportamiento:
+
+| Eje | Determina |
+|-----|-----------|
+| Posición en la cadena alimenticia | `BaseStressLevel`, `ThreatThreshold`, estrategia de refugio |
+| Tamaño corporal / reservas energéticas | duración de lactancia, `maxFatReserves`, frecuencia de caza |
+| Estructura social | distribución del cuidado, rol del padre, `VocalizationThreshold` |
+
 #### Etapas
 
 | # | Nombre | Descripción |
 |---|--------|-------------|
-| 1 | **Dependencia total** | Cría inmóvil, madre presente siempre (altriciales). |
+| 0 | **Nacimiento** | Secuencia fija de la madre (ver abajo); no ponderada. |
+| 1 | **Dependencia total** | Cría en letargo casi constante, madre presente. |
 | 2 | **Madre ausente / cría en nido** | Madre caza o busca comida; cría espera. |
-| 3 | **Alimentación** | Madre regresa y amamanta o trae comida sólida. |
-| 4 | **Exploración temprana** | Cría empieza a moverse pero regresa a la madre. |
-| 5 | **Juego** | Interacción social, desarrollo motor (clave en carnívoros y primates). |
+| 3 | **Alimentación activa** | Madre regresa y amamanta o trae comida sólida. |
+| 4 | **Exploración temprana** | Cría empieza a moverse pero regresa al cuidador. |
+| 5 | **Juego** | Interacción social, desarrollo motor (clave en carnívoros). |
 | 6 | **Introducción a sólidos** | Transición del destete; método de alimentación cambia. |
 | 7 | **Independencia gradual** | Períodos solos cada vez más largos. |
 | 8 | **Separación definitiva** | La cría ya no regresa al núcleo familiar. |
@@ -264,35 +279,74 @@ Cada especie declara solo las que le corresponden.
 
 #### Estructura por etapa
 
-```
+Cada `PostNatalStage` tiene dos capas de comportamiento:
+
+1. **`entryActions`** — lista ordenada ejecutada una sola vez al entrar al stage (p.ej. nacimiento).
+2. **`loopBehaviors`** — comportamientos ponderados que se ejecutan repetidamente durante el stage.
+
+Los comportamientos individuales (`Limpiar`, `Estimular`, `Guiar`, `Acicalar`, `Amamantar`…)
+son **universales** — cualquier especie puede usarlos. Lo que varía es si aparecen en
+`entryActions` o en `loopBehaviors`, y con qué peso/condición de activación.
+
+```csharp
 [Serializable] class PostNatalStage {
-    string label;                    // p.ej. "Dependencia total"
-    float durationDays;              // duración base en días de simulación
-    MotherBehaviorSet motherBehaviors;
+    string label;
+    float durationDays;
+    NestType nestType;
+    FatherRole fatherRole;
+    MotherPresencePattern presencePattern;
+    WeaningType weaningType;
+    MotherAction[] entryActions;       // secuenciales, una sola vez
+    MotherBehaviorSet loopBehaviors;   // ponderados, bucle durante el stage
     OffspringBehaviorSet cubBehaviors;
-    TransitionCondition[] transitions; // condiciones que abren la siguiente etapa
-    FeedingMethod feedingMethod;     // Nurse, Regurgitate, FoodItem, None
+    TransitionCondition[] transitions;
+    FeedingMethod feedingMethod;
 }
-enum FeedingMethod { Nurse, Regurgitate, FoodItem, None }
+
+enum NestType              { Burrow, OpenField, Beach, SnowDen }
+enum FatherRole            { Absent, Provider, ActiveCaregiver }
+enum MotherPresencePattern { Continuous, FrequentVisits, MinimalVisits, ProgrammedAbandonment }
+enum WeaningType           { Gradual, Abrupt }
+enum FeedingMethod         { Nurse, Regurgitate, FoodItem, None }
 ```
 
 **`TransitionCondition`** puede ser:
 - `TimeElapsed(days)` — tiempo mínimo en la etapa.
-- `CubWeight(threshold)` — la cría alcanzó un peso mínimo.
+- `CubWeightAbove(kg)` — la cría alcanzó un peso mínimo.
+- `CubReadinessScore(threshold)` — score compuesto (peso de grasa + indicadores de autonomía).
+- `MotherFatReservesBelow(threshold)` — reservas propias bajo umbral (abandono de foca).
 - `FirstSolidEaten` — la cría consumió un `FoodItem` por primera vez.
-- `FirstNestExit` — la cría salió del nido una vez sola.
-- `BondThreshold(value)` — bond madre↔cría supera un valor.
+- `FirstNestExit` — la cría salió del nido/zona de ocultamiento una vez sola.
+- `BondThreshold(value)` — bond cuidador↔cría supera un valor.
+- `ThreatLevelBelow(threshold)` — zona lo suficientemente segura para transición.
 
-#### Variables de estado continuo (madre y cría)
+#### Variables de estado (universales, parámetros distintos por especie)
 
-Ambas entidades comparten las mismas variables; difieren en velocidad de cambio:
+**Estado continuo** — ambas entidades (madre y cría), distinta velocidad de cambio:
 
 | Variable | Sube cuando… | Baja cuando… |
 |----------|-------------|--------------|
 | `hunger` | pasa el tiempo | come |
 | `energy` | descansa | se mueve, mama, caza |
-| `temperature` | junto a otro cuerpo, sol | temperatura ambiente baja, está sola |
+| `fatReserves` | come más de lo necesario | actividad intensa, letargo, lactancia |
+| `temperature` | junto a otro cuerpo, sol | ambiente frío, sola |
 | `stress` | amenaza cerca, hambre alta | tranquilidad, proximidad a cuidador |
+
+`fatReserves` es **universal**: todos los animales la tienen, solo difieren en `maxFatReserves`
+y en los umbrales que la activan. Un conejo con mucha grasa por intervención humana llega a
+un máximo bajo y lo gasta rápido por ser muy activo; nunca alcanza el umbral de letargo salvo
+en condiciones extremas. Los parámetros hacen el resto — no hay casos especiales en el código.
+
+**Parámetros de especie** (propiedades virtuales en `Animal`):
+
+```csharp
+public virtual float BaseStressLevel       => 0.2f; // estrés en reposo; conejo ~0.8, oso ~0.1
+public virtual float ThreatThreshold       => 0.5f; // umbral para despertar; oso en letargo: muy alto
+public virtual float VocalizationThreshold => 0.4f; // estrés mínimo para que la CRÍA llore
+public virtual float NestSecurityLevel     => 0.5f; // seguridad del refugio; madriguera oso: 0.9
+public virtual float MaxFatReserves        => 20f;  // capacidad máxima de reservas
+public virtual float FatAccumulationRate   => 1f;   // rapidez de acumulación al comer de más
+```
 
 #### Ciclo de decisión de la madre (tick de simulación)
 
@@ -307,49 +361,172 @@ La madre evalúa en orden de prioridad:
 El peso de cada acción varía con el estado: una madre hambrienta limpia rápido y se va;
 una con energía alta acicala más antes de partir.
 
-#### Ciclo de la cría sola en el nido
+#### Sistema motivacional — los comportamientos emergen, no se hardcodean
+
+El principio central del diseño: **no se hardcodea "el conejo visita dos veces al día"**.
+Si `baseStressLevel` es alto y `nestSecurityLevel` es bajo, el sistema llega solo a esa
+conclusión. Tres ejes generan los parámetros de especie, y los parámetros generan el comportamiento:
+
+| Eje | Determina |
+|-----|-----------|
+| **Posición en cadena alimenticia** | `baseStressLevel`, `threatThreshold`, estrategia de refugio |
+| **Tamaño corporal / reservas energéticas** | duración de lactancia, capacidad de ayuno, frecuencia de caza |
+| **Estructura social** | distribución del cuidado, rol del padre, `vocalizationThreshold` permitido |
+
+**Parámetros de especie nuevos** (propiedades virtuales en `Animal`, no estado variable):
+
+```csharp
+public virtual float BaseStressLevel    => 0.2f; // estrés basal en reposo; conejo ~0.8, oso ~0.1
+public virtual float ThreatThreshold    => 0.5f; // umbral para despertar/reaccionar; oso en letargo: muy alto
+public virtual float VocalizationThreshold => 0.4f; // hambre/estrés mínimo para que la CRÍA llore; venado: alto
+public virtual float NestSecurityLevel  => 0.5f; // seguridad percibida del refugio; madriguera oso: 0.9, campo venado: 0.1
+```
+
+**Variable de estado adicional:**
+
+```csharp
+public float fatReserves = 0f; // 0–100; la osa en letargo consume esto en lugar de cazar
+```
+
+#### Letargo — comportamiento universal
+
+El letargo no es exclusivo del oso. Es un `Behavior` genérico con parámetros por especie
+y etapa de vida:
+
+| Trigger | Animal | Duración | `lethargyDepth` |
+|---------|--------|----------|----------------|
+| Invierno (`temperature < umbral`) | Oso | Meses | Muy alto — solo despierta con amenaza seria |
+| Hambre muy alta + energía baja | Cría (cualquier especie) | Horas | Bajo |
+| Estómago lleno (`hungry << 0`) | Carnívoro adulto | Horas | Bajo |
+| Juventud (`lifeStage == child`) | Crías altriciales | Constante | Bajo |
+
+`lethargyDepth` determina cuánto hay que superar `ThreatThreshold` para despertar. Un oso
+en letargo de invierno necesita una amenaza muy alta; una cría hambrienta que cayó en letargo
+despierta con cualquier estímulo. El código es el mismo; solo cambian los parámetros.
+
+#### Stage 0 — Nacimiento (entryActions)
+
+Las primeras horas son una **secuencia ordenada** — la madre no puede saltarse ningún paso
+independientemente de su propio estado. Modelado como `entryActions[]` del Stage 0:
+
+1. `Limpiar` — activa respiración y circulación. _(Comportamiento universal: también usado como Groom periódico.)_
+2. `Estimular` — empuje con hocico, volteo; activa reflejos vitales. _(Universal.)_
+3. `GuiarPezon` — orienta a la cría hacia el pezón. _(Universal.)_
+4. `PrimeraToma` — calostro; anticuerpos críticos. Aplica solo en Stage 0.
+
+Los mismos comportamientos (`Limpiar`, `Estimular`) aparecen luego en `loopBehaviors` de
+stages posteriores como acicalar periódico, pero con distinto peso y condición de activación.
+
+#### Ciclo de decisión de la madre
+
+La madre evalúa en orden de prioridad cada tick:
+
+1. **¿Hay amenaza externa?** → `ResolveReaction` (Fase 2); todo lo demás espera.
+2. **¿`presencePattern` permite estar aquí ahora?** → Si es `MinimalVisits`, solo entra si
+   `environmentStress < BaseStressLevel` (noche/depredadores dormidos) Y lleva más de
+   `minVisitInterval` desde la última visita. Si no cumple, se aleja y espera.
+3. **¿Cría vocaliza (`cubStress > cubVocalizationThreshold`)?** → amamantar / limpiar / acercar.
+4. **¿Tiempo desde última toma > `NurseInterval`?** → amamantar (si `energy > MinEnergyToNurse`).
+5. **¿Propia `hunger > HuntThreshold`?** → cazar / buscar comida (Fase 5 — `ICarrier`).
+   Si `fatReserves > 0` y el animal puede vivir de grasa (oso en letargo), consume reservas.
+6. **Si no** → descansar junto a la cría, acicalar (`Limpiar`).
+
+La ventana de visita del conejo se abre naturalmente cuando los depredadores bajan su actividad
+nocturna → `environmentStress` baja → condición 2 se cumple. No hay "a las 2am fijo" en código.
+
+`HomeOrigin` es **mutable**: cualquier comportamiento puede llamar `SetHomeOrigin(pos)`.
+El oso bebé tiene como `HomeOrigin` la posición donde la madre decidió echarse. El venado
+actualiza el `HidingSpot` de la cría cada vez que la deja. La manada de lobos puede relocalizar
+si `environmentStress > relocationThreshold` durante N días → todos los miembros actualizan.
+
+#### Ciclo de la cría sola
 
 | Estado interno | Comportamiento |
 |----------------|---------------|
 | Hambre baja + energía alta | Exploración pequeña, movimiento |
-| Hambre media | Vocalización (llanto); sube `stress` |
-| Hambre alta + cansancio alto | Letargo, quietud (ahorra energía) |
-| Temperatura baja | Busca calor, se acurruca en el nido |
+| Hambre media (> `VocalizationThreshold`) | Vocalización en picos, sube `stress` |
+| Hambre alta + cansancio alto | Letargo (universal) — quietud, ahorra energía |
+| Temperatura baja | Busca calor, se acurruca |
+| `stress` alto + `NestSecurityLevel` bajo | Inmovilidad — suprime movimiento y sonido |
 
-Las crías no lloran continuamente: vocalizan en picos, se cansan, duermen, reinician.
-Modelable con umbrales y timers por ciclo de vocalización.
+#### Foca — abandono como outcome emergente
 
-#### Método de alimentación por tipo de animal y etapa
+El abandono no está hardcodeado. Emerge cuando dos condiciones se cruzan:
+- `CubReadinessScore > readinessThreshold` — score compuesto de peso de grasa + indicadores
+  de autonomía (¿ha mostrado comportamiento acuático?).
+- `MotherFatReservesBelow(threshold)` — la madre ya no puede sostener la lactancia.
 
-- **Carnívoros (lobo, zorro, oso):** etapas 1-3 → madre regresa y regurgita (`Regurgitate`);
-  etapa 6+ → cría come `FoodItem` directamente.
-- **Herbívoros y pinnípedos:** etapas 1-3 → lactancia directa (`Nurse`);
-  etapa 6 → introducción a sólidos (`FoodItem`).
-- La transición `Nurse → FoodItem` es la señal de la **Etapa 6**.
+**Si la madre no pudo acumular grasa suficiente** (por interferencia de depredadores):
+- Produce menos leche → cría crece más lenta → `CubReadinessScore` tarda más en madurar.
+- Si las reservas se agotan antes de que la cría esté lista → abandono prematuro → cría muere.
+- Este es un **outcome emergente del entorno**, no un caso especial en el código. El jugador
+  que proteja a la madre foca durante el embarazo impacta directamente la supervivencia.
+
+#### Manada de lobos — roles diferenciados
+
+No todos los adultos ejecutan el ciclo completo de madre. Cada adulto tiene un rol:
+
+| Rol | Comportamiento post-natal |
+|-----|--------------------------|
+| Madre alpha | Ciclo completo (Fases 0-8) |
+| Padre alpha | `Provider`: caza, regresa, regurgita; vigila perímetro |
+| Adultos auxiliares | `Guard`: permanecen en la madriguera mientras otros cazan; pueden amamantar (alolactancia) |
+| Hermanos de camada anterior | `Guard` + `Provider` secundario según su propio `hungry` |
+
+Los cachorros desarrollan bond con múltiples adultos a través de estas interacciones —
+`GrowBond` se llama desde cada acto de cuidado, no solo desde la madre.
+
+#### Fichas por especie
+
+| Especie | `BaseStressLevel` | `NestSecurityLevel` | `VocalizationThreshold` | `MaxFatReserves` | `FatherRole` | `PresencePattern` | `WeaningType` |
+|---------|:-----------------:|:-------------------:|:-----------------------:|:----------------:|:------------:|:-----------------:|:-------------:|
+| Lobo | 0.3 | 0.7 | 0.3 | 15 | Provider | Continuous | Gradual |
+| Oso | 0.1 | 0.9 | 0.5 | 100 | Absent | Continuous | Gradual |
+| Conejo | 0.85 | 0.3 | 0.6 | 5 | Absent | MinimalVisits | Gradual |
+| Venado | 0.6 | 0.1 | 0.9 | 10 | Absent | FrequentVisits | Gradual |
+| Foca | 0.4 | 0.6 | 0.5 | 80 | Absent | Continuous→Abrupt | Abrupt |
 
 #### Relación con sistemas previos
 
-- **Fase 4 (Bond):** cada acto de cuidado (`Nurse`, `Regurgitate`, `Groom`) llama
-  `GrowBond(cub, Imprint, delta)`. El bond madre↔cría crece con el cuidado.
-- **Fase 5 (ICarrier / FoodItem):** la alimentación en etapas tardías pasa exactamente
-  por el mismo flujo de `Drop` / `PickUp` que el jugador usa para alimentar animales.
-  `droppedBy` queda asignado al adulto; el bond crece por la misma ruta.
-- **LifeStage existente:** las etapas post-natales conviven con `Childhood`/`Adolescence`/
-  `Adulthood`; `PostNatalStage` es una sub-máquina activa mientras la criatura está en
-  `Childhood` (y parte de `Adolescence`).
+- **Fase 4 (Bond):** cada acto de cuidado (`Nurse`, `Regurgitate`, `Limpiar`) llama
+  `GrowBond(cub, Imprint, delta)`. Auxiliares del lobo también crecen bond con los cachorros.
+- **Fase 5 (ICarrier / FoodItem):** alimentación tardía usa el mismo flujo `Drop`/`PickUp`.
+  `droppedBy` asigna al cuidador; bond crece por la misma ruta que con el jugador.
+- **LifeStage existente:** `PostNatalStage[]` es una sub-máquina activa durante `Childhood`
+  (y parte de `Adolescence`). No reemplaza `LifeStage`; conviven.
+- **`TimeController`:** `presencePattern` consulta la hora del día para determinar si la
+  ventana de visita está abierta (conejo, animales nocturnos).
+
+#### Decisiones resueltas
+
+- **Letargo** → comportamiento universal con parámetros de especie. No es un `LifeStage` propio.
+- **`HomeOrigin` del venado** → mutable vía `SetHomeOrigin(pos)`; la madre lo actualiza al
+  dejar a la cría en cada `HidingSpot`. Misma propiedad, nuevo semántico.
+- **Manada de lobos** → roles diferenciados; no todos ejecutan el ciclo completo.
+- **Visitas del conejo** → ventana basada en `environmentStress + TimeController`; no timer fijo.
+- **`fatReserves`** → universal en `Animal`; `MaxFatReserves` por especie hace el resto.
+- **Foca sin grasa** → outcome emergente; no hay caso especial.
 
 #### Checklist
 
-- [ ] Diseñar `PostNatalStage`, `MotherBehaviorSet`, `OffspringBehaviorSet`,
-      `TransitionCondition`, `FeedingMethod` (`Assets/Scripts/PostNatal/`).
-- [ ] Añadir variables de estado continuo (`hunger`, `energy`, `temperature`, `stress`)
-      a `Animal` con tasas de cambio configurables por especie.
-- [ ] Implementar ciclo de decisión de la madre como coroutine con prioridad.
-- [ ] Implementar mini-ciclo de la cría sola: umbrales de vocalización, letargo, exploración.
-- [ ] Wiring con Fase 4: `GrowBond` en cada acto de cuidado.
-- [ ] Wiring con Fase 5: alimentación tardía usa `FoodItem` vía `ICarrier`.
-- [ ] Definir secuencia de etapas para lobo, oso, conejo y foca (primeras especies).
-- [ ] Condiciones de transición por especie (tiempo, peso, primer sólido, primer abandono del nido).
+- [x] Propiedades virtuales en `Animal`: `BaseStressLevel`, `ThreatThreshold`,
+      `VocalizationThreshold`, `NestSecurityLevel`, `MaxFatReserves`, `FatAccumulationRate`.
+- [x] Campos de estado en `Animal`: `stress`, `fatReserves`, `temperature`; decay de `stress` en `Restore()`.
+- [x] `PostNatalStages` virtual en `Animal`; `Init()` arranca `PostNatalManager` si presente.
+- [x] `Assets/Scripts/PostNatal/PostNatalEnums.cs` — enums + `MotherAction` universales.
+- [x] `Assets/Scripts/PostNatal/TransitionCondition.cs` — 8 tipos + `ComputeReadiness`.
+- [x] `Assets/Scripts/PostNatal/PostNatalStage.cs` — stage con `entryActions[]` + `transitions[]`.
+- [x] `Assets/Scripts/PostNatal/PostNatalManager.cs` — máquina de stages, ciclo madre (prioridad),
+      ciclo autónomo crías, acumulación de `fatReserves`, temperatura dinámica, wiring Fase 4 y 5.
+- [ ] Definir `PostNatalStage[]` por especie (override `PostNatalStages` + añadir componente
+      `PostNatalManager` al prefab madre): lobo, oso, conejo, venado, foca.
+- [ ] Roles diferenciados en manada de lobos: `Guard`, `Provider`, `AlloNurse`.
+- [ ] Calibrar umbrales `CubReadinessScore` por especie (foca: ~2.5; oso: ~1.8).
+- [ ] Integrar ventana `MinimalVisits` con hora del día de `TimeController` (conejo nocturno).
+- [ ] Wiring animaciones/sonido de llanto en `CubSoloCycle`.
+- [ ] Setear `FirstSolidEaten` desde `Carnivore.Feed` / `Diet` al comer un `FoodItem`.
+- [ ] Setear `FirstNestExit` desde nav cuando la cría se aleje > `HomeRadius` por primera vez.
+- [ ] Letargo universal: trigger (temperatura, hambre alta + agotamiento, juventud), depth.
 
 ### Tareas emergentes
 - _(Añadir aquí lo que vaya apareciendo.)_

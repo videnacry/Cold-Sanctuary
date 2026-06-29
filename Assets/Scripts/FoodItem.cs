@@ -32,8 +32,11 @@ public class FoodItem : MonoBehaviour, ITarget, IEdible
         return byMaterial[mat];
     }
 
-    void Start()  => GetPopulation(material).Add(gameObject);
-    void OnDestroy() => GetPopulation(material).Remove(gameObject);
+    static readonly HashSet<FoodItem> _all = new HashSet<FoodItem>();
+    public static HashSet<FoodItem> GetAll() => _all;
+
+    void Start()  { GetPopulation(material).Add(gameObject); _all.Add(this); }
+    void OnDestroy() { GetPopulation(material).Remove(gameObject); _all.Remove(this); }
 
     // ITarget — la comida siempre está "muerta" (disponible), nunca es amenaza
     public float Mass    => grams;
