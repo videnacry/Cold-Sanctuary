@@ -1,5 +1,10 @@
 # Cold Sanctuary — Dev Log & Contexto de Diseño
 
+> **Áreas de trabajo paralelas e independientes:**
+> - **Fauna** — comportamiento animal, ciclos post-natales, vínculo jugador↔cría.
+>   Diseño técnico: [`docs/behavior-system.md`](docs/behavior-system.md) · Gameplay: [`docs/fauna-gameplay.md`](docs/fauna-gameplay.md)
+> - **Jugador** — stats, asanas, ejercicios, compañeros, narrativa. Este archivo.
+
 ## Estado actual
 
 ### UI / Interfaces
@@ -125,7 +130,7 @@ La mayoría no llegó al santuario buscando formar parte de él — llegaron con
 8. El jugador hace sus **primeras flexiones, abdominales y piernas** — tutorial del sistema de posiciones corporales
 9. La maestra comenta el **nivel actual del jugador y cuánto le falta para avanzar** (feedback de progresión en pantalla)
 10. La maestra lleva al equipo al **área de crías** — primera zona de tareas
-11. Primeras tareas: **alimentar, cuidar y jugar** con las crías
+11. Primeras tareas: alimentar, cuidar y jugar con las crías (ver [`docs/fauna-gameplay.md`](docs/fauna-gameplay.md) para el detalle de actividades)
 12. Objetivo: que las crías se conviertan en **adultos amigables** (con personas y entre sí)
 13. Cuando el jugador alcanza un umbral de estadísticas + vínculo con las crías, la **maestra aparece** y le enseña su **primera postura de yoga** — cierre del Nivel 1 y desbloqueo del sistema de asanas
 
