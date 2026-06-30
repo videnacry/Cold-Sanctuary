@@ -57,6 +57,51 @@ public class SealBehavior : Herbivore
     public override HashSet<GameObject> Population { get => population; set => population = value; }
     public override AnimationsName animationsName { get; } = new AnimationsName("Seal");
 
+    // Post-natal species params
+    public override float BaseStressLevel       => 0.4f;
+    public override float VocalizationThreshold => 5f;
+    public override float NestSecurityLevel     => 0.6f;
+    public override float MaxFatReserves        => 80f;  // acumula mucho para lactar sin cazar
+    public override float FatAccumulationRate   => 1.5f;
+
+    static readonly PostNatalStage[] _postNatalStages =
+    {
+        // Stage 0 — Nacimiento en playa; vínculo por olfato (crítico)
+        new PostNatalStage {
+            label = "Nacimiento", durationDays = 1f,
+            nestType = NestType.Beach, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.Continuous,
+            feedingMethod = FeedingMethod.Nurse,
+            entryActions = new[] { MotherAction.Clean, MotherAction.Stimulate,
+                                   MotherAction.GuideTeat, MotherAction.FirstMilk },
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
+        },
+        // Stage 1 — Lactancia intensiva; madre casi no se mueve; cría engorda muy rápido.
+        // Abandono emergente: cuando fatReserves < 15 (sea por tiempo normal o por interferencia
+        // de depredadores que impidieron que la madre acumulara grasa antes del parto).
+        new PostNatalStage {
+            label = "Lactancia intensiva", durationDays = 12f,
+            nestType = NestType.Beach, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.ProgrammedAbandonment,
+            weaningType = WeaningType.Abrupt, feedingMethod = FeedingMethod.Nurse,
+            transitions = new[] {
+                new TransitionCondition
+                    { kind = TransitionCondition.Kind.MotherFatReservesBelow, threshold = 15f },
+            },
+        },
+        // Stage 2 — Cría sola; aprende a nadar por instinto (no hay más interacción de la madre)
+        new PostNatalStage {
+            label = "Separación definitiva", durationDays = 1f,
+            fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.ProgrammedAbandonment,
+            feedingMethod = FeedingMethod.None,
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
+        },
+    };
+    public override PostNatalStage[] PostNatalStages => _postNatalStages;
+
     public override float HarmVsBond => 0.1f;
     public override float BondGrowthRate => 2.0f;
     public override OrganicMaterial Material => OrganicMaterial.Fish;

@@ -309,10 +309,14 @@ public class PostNatalManager : MonoBehaviour
 
         // Hambre baja + energía → exploración pequeña
         cub.stress = Mathf.Max(0f, cub.stress - 0.05f * duration);
-        Vector3 wander = cub.HomeOrigin + Random.insideUnitSphere * 4f;
+        float exploreRadius = Mathf.Min(cub.HomeRadius * 0.3f, 8f);
+        Vector3 wander = cub.HomeOrigin + Random.insideUnitSphere * exploreRadius;
         wander.y = cub.transform.position.y;
         cub.nav.SetDestination(wander);
         cub.ActsPrep.walk.Prep(cub, duration);
+        if (!cub.firstNestExit &&
+            Vector3.Distance(cub.transform.position, cub.HomeOrigin) > exploreRadius * 0.5f)
+            cub.firstNestExit = true;
     }
 
     // ──────────────────────────────────────────────

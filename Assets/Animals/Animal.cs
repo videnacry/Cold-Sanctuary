@@ -172,6 +172,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, ICarrie
     public float stress      = 0f;   // 0–1; estrés ambiental/ansiedad
     public float fatReserves = 0f;   // reservas de grasa; universal, maxFatReserves por especie
     public float temperature = 38f;  // temperatura corporal (°C)
+    public bool firstSolidEaten = false; // cría comió un FoodItem por primera vez
+    public bool firstNestExit   = false; // cría salió del nido una vez sola
 
 
     // Gameobject components

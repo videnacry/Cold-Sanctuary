@@ -57,6 +57,8 @@ public abstract class Carnivore : Animal
                         FoodItem dropped = prey.GetComponent<FoodItem>();
                         if (dropped?.droppedBy != null)
                             GrowBond(dropped.droppedBy, BondType.Friend, nutrition);
+                        if (lifeStage == LifeStage.child && dropped != null)
+                            firstSolidEaten = true;
                     }
                     else
                     {

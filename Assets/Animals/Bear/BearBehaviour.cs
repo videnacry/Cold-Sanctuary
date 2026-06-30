@@ -69,6 +69,71 @@ public class BearBehaviour : Carnivore
     public override HashSet<GameObject> Population { get => population; set => population = value; }
     public override AnimationsName animationsName { get; } = new AnimationsName("Bear");
 
+    // Post-natal species params
+    public override float BaseStressLevel       => 0.1f;
+    public override float ThreatThreshold       => 0.8f;  // letargo profundo; muy difícil de despertar
+    public override float VocalizationThreshold => 5f;
+    public override float NestSecurityLevel     => 0.9f;
+    public override float MaxFatReserves        => 100f;  // acumula mucho antes del letargo
+    public override float FatAccumulationRate   => 2f;
+
+    static readonly PostNatalStage[] _postNatalStages =
+    {
+        // Stage 0 — Nacimiento en letargo (madre semi-inconsciente)
+        new PostNatalStage {
+            label = "Nacimiento en letargo", durationDays = 1f,
+            nestType = NestType.SnowDen, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.Continuous,
+            feedingMethod = FeedingMethod.Nurse,
+            entryActions = new[] { MotherAction.Clean, MotherAction.Stimulate,
+                                   MotherAction.GuideTeat, MotherAction.FirstMilk },
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
+        },
+        // Stage 1 — Madriguera / madre en letargo profundo (invierno)
+        new PostNatalStage {
+            label = "Madriguera letargo", durationDays = 60f,
+            nestType = NestType.SnowDen, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.Continuous,
+            feedingMethod = FeedingMethod.Nurse,
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 60f } },
+        },
+        // Stage 2 — Primera salida (primavera); madre consume fatReserves
+        new PostNatalStage {
+            label = "Primera salida", durationDays = 60f,
+            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.Continuous,
+            feedingMethod = FeedingMethod.Nurse,
+            entryActions = new[] { MotherAction.MarkHidingSpot },
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 60f } },
+        },
+        // Stage 3 — Aprendizaje activo (pesca/caza observada)
+        new PostNatalStage {
+            label = "Aprendizaje", durationDays = 120f,
+            fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.FrequentVisits,
+            feedingMethod = FeedingMethod.Regurgitate,
+            transitions = new[] {
+                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 120f },
+                new TransitionCondition { kind = TransitionCondition.Kind.FirstSolidEaten },
+            },
+        },
+        // Stage 4 — Independencia gradual (madre puede expulsar)
+        new PostNatalStage {
+            label = "Independencia", durationDays = 180f,
+            fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
+            transitions = new[] {
+                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 180f },
+                new TransitionCondition { kind = TransitionCondition.Kind.MotherFatReservesBelow, threshold = 20f },
+            },
+        },
+    };
+    public override PostNatalStage[] PostNatalStages => _postNatalStages;
+
     // ThreatResponse: solitario pero pesado y agresivo → lucha si tiene ventaja de masa.
     public override float Aggressiveness => 0.6f;
     public override bool DefendsCubs => true;

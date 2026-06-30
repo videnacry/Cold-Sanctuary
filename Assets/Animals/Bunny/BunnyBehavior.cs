@@ -107,6 +107,68 @@ public class BunnyBehavior : Herbivore
 
 
 
+    // Post-natal species params
+    public override float BaseStressLevel       => 0.85f; // presa extrema; estrés basal muy alto
+    public override float VocalizationThreshold => 6f;    // lloran poco para no atraer depredadores
+    public override float NestSecurityLevel     => 0.3f;
+    public override float MaxFatReserves        => 5f;
+    public override float FatAccumulationRate   => 0.2f;
+
+    static readonly PostNatalStage[] _postNatalStages =
+    {
+        // Stage 0 — Nacimiento rápido; madre se va casi enseguida
+        new PostNatalStage {
+            label = "Nacimiento", durationDays = 0.5f,
+            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            feedingMethod = FeedingMethod.Nurse,
+            entryActions = new[] { MotherAction.Clean, MotherAction.GuideTeat, MotherAction.FirstMilk },
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 0.5f } },
+        },
+        // Stage 1 — Nido solo; visitas nocturnas de 5 min
+        new PostNatalStage {
+            label = "Nido solo", durationDays = 7f,
+            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            feedingMethod = FeedingMethod.Nurse,
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f } },
+        },
+        // Stage 2 — Ojos abiertos; primera exploración del nido
+        new PostNatalStage {
+            label = "Ojos abiertos", durationDays = 7f,
+            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            feedingMethod = FeedingMethod.Nurse,
+            transitions = new[] {
+                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f },
+                new TransitionCondition { kind = TransitionCondition.Kind.FirstNestExit },
+            },
+        },
+        // Stage 3 — Primeras salidas; empieza con sólidos
+        new PostNatalStage {
+            label = "Primeras salidas", durationDays = 10f,
+            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
+            transitions = new[] {
+                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 10f },
+                new TransitionCondition { kind = TransitionCondition.Kind.FirstSolidEaten },
+            },
+        },
+        // Stage 4 — Independencia rápida (~3-4 semanas total)
+        new PostNatalStage {
+            label = "Independencia", durationDays = 7f,
+            fatherRole = FatherRole.Absent,
+            presencePattern = MotherPresencePattern.MinimalVisits,
+            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
+            transitions = new[] { new TransitionCondition
+                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f } },
+        },
+    };
+    public override PostNatalStage[] PostNatalStages => _postNatalStages;
+
     public override float Aggressiveness => 0f;
     public override bool DefendsCubs => true;
     public override bool CanHitAndRun => true;

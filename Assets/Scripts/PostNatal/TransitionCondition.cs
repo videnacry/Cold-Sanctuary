@@ -22,10 +22,6 @@ public class TransitionCondition
     public Kind kind;
     public float threshold;
 
-    // Flags de un solo uso seteados desde PostNatalManager
-    [System.NonSerialized] public bool firstSolidEaten;
-    [System.NonSerialized] public bool firstNestExit;
-
     public bool Evaluate(Animal mother, Animal cub, float daysInStage)
     {
         if (cub == null || mother == null) return false;
@@ -40,9 +36,9 @@ public class TransitionCondition
             case Kind.MotherFatReservesBelow:
                 return mother.fatReserves <= threshold;
             case Kind.FirstSolidEaten:
-                return firstSolidEaten;
+                return cub.firstSolidEaten;
             case Kind.FirstNestExit:
-                return firstNestExit;
+                return cub.firstNestExit;
             case Kind.BondThreshold:
                 Bond b = mother.GetBond(cub);
                 return b != null && b.value >= threshold;
