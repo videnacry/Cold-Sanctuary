@@ -221,6 +221,61 @@ El jugador la encuentra limpiando una zona del santuario. Ella detecta plantas y
 
 ---
 
+### Stat: Satisfacción
+
+La Satisfacción es la capacidad interna del jugador para celebrar la vida — desde el simple hecho de respirar hasta los grandes momentos. No es una emoción pasajera: es una stat que crece y que tiene efectos mecánicos reales.
+
+**Estructura:**
+- El jugador tiene una **barra de Satisfacción** propia, independiente de cualquier compañero
+- El **tamaño** de la barra crece con el trabajo del umbral → más capacidad = mayor resistencia a ataques fuertes directos y a ataques continuos sostenidos
+- La **velocidad de llenado pasivo** también crece → en niveles altos la barra se restaura sola con el simple hecho de existir, sin necesidad de acción activa
+- La restauración pasiva **se suma** a restauraciones externas (compañeros, comida, descanso, yoga) — no las reemplaza
+- En niveles muy desarrollados puede incorporar un **multiplicador a las restauraciones externas**: las fuentes externas curan más porque el cuerpo ya está en mejor disposición de recibir
+
+**Formas de restauración — varios canales:**
+Distintos compañeros y actividades activan distintos canales de restauración. El jugador gravitará naturalmente hacia los que más le resuenen, y eso define parte de su perfil:
+- **Celebración / alegría compartida** — canal de Gohageneis
+- **Calma contemplativa** — canal de Panterilia (Observación, consciencia)
+- **Desahogo / esfuerzo físico** — canal de Goluis (resistencia)
+- *(Más canales por definir con futuros compañeros)*
+
+**Restauración por cercanía a compañeros:**
+Estar cerca de ciertos compañeros restaura al jugador pasivamente, sin necesidad de completar una misión o activar nada. Cada compañero tiene su propio radio y ritmo de influencia.
+
+**Implicaciones de rol:**
+Las stats que el jugador priorice determinan su rol natural a futuro:
+- Satisfacción alta + restauración externa maximizada → **Healer / Tank**
+- Velocidad + resistencia al desgaste (Goluis) → **Damage / Support**
+- Balance entre todas → perfil versátil, menos pronunciado en cada área
+
+---
+
+### El Papi Gohageneis — Crías
+
+Artista de la vida cotidiana. Narra historias, da consejos, se une a bromear, cantar, bailar, actuar, chismosear, hacer el tonto, quejarse, repartir cariño, lloriquear, dar ánimos, exigir, perdonar, lanzarse rosas, caer en la tentación de comer ingredientes sin permiso, adorar cada detalle de sus romances, disfrutar cada nuevo invento o creación. Lleva ese gusto innato por festejar la vida.
+
+Y otras veces cae: le han llamado la atención, le han ofendido, está cansado, siente que le dejan la parte más difícil del trabajo. Se queja — y al poco rato ya está cantando otra vez.
+
+**Trasfondo:**
+De pequeño vio que había peligros reales. Un amigo suyo fue matado por estar con una chica que tenía pareja. En el bar donde trabajaba, un hombre muy borracho le dijo que le hubiera gustado ser como él — ganarse la vida, crear buen ambiente, hacer felices a los clientes — pero que le tocó ser secuestrador. Gohageneis aprendió pronto que la alegría no es ingenuidad: es una postura filosófica frente a lo que podría haber sido.
+
+**Tareas con las crías:**
+También cuida crías. Cuando pide ayuda al jugador, lo que ocurre es que él se toma su tiempo con cada una — les habla, les hace bromas, las mima, convierte cada cría en un personaje. La tarea que debería durar diez minutos dura el doble porque Gohageneis "dirige la escena". El jugador hace el trabajo mientras él actúa. Resultado curioso: sus crías tienen vínculos excepcionalmente fuertes — el método funciona, solo que a su ritmo.
+
+**Mecánica — CelebrationCharge:**
+- Una barra que se llena mientras el jugador está cerca de Gohageneis o participando en sus momentos (bromas, canciones, tareas compartidas)
+- Al alcanzar el umbral, activa un efecto de sanación interna suave y pasiva: reducción en la acumulación de fatiga mental o pequeña recuperación de desgaste ya acumulado
+- Trabajar este umbral repetidamente desarrolla la **stat de Satisfacción** del jugador
+
+**Ganancias del jugador:**
+- **Satisfacción** — la stat principal: barra más grande, llenado más rápido, multiplicador a restauraciones externas en niveles altos
+- **Resistencia al Desgaste emocional** — los errores y las presiones del día acumulan menos peso
+
+**Arco:**
+Gohageneis da alegría con generosidad — pero cuando cae, se levanta solo rápido, de vuelta a la actuación. Su superación es aprender a dejarse sostener: encontrar personas muy afines que lo amen también cuando está abajo, y permitirse estar en ese lugar un momento sin volver inmediatamente a la música. Alguien que da tanto necesita también aprender a recibir.
+
+---
+
 ### Misiones secundarias (otros compañeros — por definir)
 
 **Misión: Barrer con [Nombre]**
