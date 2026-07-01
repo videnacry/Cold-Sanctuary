@@ -3,16 +3,28 @@ using UnityEngine;
 
 public struct PaletteResult
 {
-    public bool   success;
-    public string outcomeId;  // id del asana, hechizo o preferencia activada
-    public float  magnitude;  // intensidad — útil para preferencias de animal (0–1)
+    public bool               success;
+    public string             outcomeId;   // id del asana, hechizo o preferencia activada
+    public float              magnitude;   // intensidad — escala efectos y tamaño de estructuras
+    public SpatialArrangement spatial;     // si el hechizo materializa bloques (puede ser null)
+}
+
+// Instrucciones para que MaterializationExecutor materialice los PaletteElements
+// de la paleta en un patrón de disposición espacial.
+// Los objetos a mover son siempre los propios elementos de la paleta —
+// no se referencian aquí; los obtiene MaterializationExecutor de Palette.
+public class SpatialArrangement
+{
+    public ArrangementPattern pattern;    // cómo calcular las posiciones
+    public string             patternId; // "stairs" | "barrier" | "platform" | "fallbreaker"
 }
 
 // Evalúa una selección acumulada de ingredientes y devuelve un resultado.
-// Cada sistema implementa su propia versión:
-//   AsanaEvaluator        — comprueba si la selección de posiciones forma un asana válido
-//   EnchantmentEvaluator  — comprueba si la combinación de elementos forma un hechizo
-//   EnrichmentEvaluator   — consulta las preferencias ocultas del animal
+// Implementaciones por sistema:
+//   AsanaEvaluator       — posiciones corporales → asana válido
+//   EnchantmentEvaluator — elementos periódicos  → hechizo
+//   EnrichmentEvaluator  — elementos naturales   → preferencia del animal
+//   BlockSpellEvaluator  — cualquier fórmula     → SpatialArrangement con patrón
 public interface IPaletteEvaluator
 {
     PaletteResult Evaluate(List<PaletteElementData> selection, GameObject context);

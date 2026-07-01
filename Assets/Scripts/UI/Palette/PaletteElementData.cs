@@ -9,7 +9,8 @@ public class PaletteElementData
     public Color              tint        = Color.white;
     public KeyCode            shortcut    = KeyCode.None;
     public PaletteElementType type        = PaletteElementType.Action;
-    public int                bondMin     = 0;   // bond mínimo del jugador para desbloquearse
+    public int                bondMin          = 0;     // bond mínimo del jugador para desbloquearse
+    public bool               isDirectUnlocked = false; // true tras suficiente práctica → dispara sin fórmula
 
     // payload: el dato real que el evaluador o el sistema de acción consume.
     // No se serializa por Unity — se asigna desde código al construir la config.

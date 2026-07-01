@@ -8,10 +8,23 @@
 [System.Serializable]
 public class PaletteConfig
 {
-    public enum Mode { Direct, Formula, Dialogue }
+    public enum Mode
+    {
+        Direct,   // todos los elementos disparan acción inmediata
+        Formula,  // todos los elementos se acumulan; al completar → evaluador
+        Hybrid,   // por elemento: isDirectUnlocked → directo; si no → ingrediente de fórmula
+        Dialogue, // DialogueText solo display; DialogueChoice dispara acción
+    }
 
     public Mode                 mode;
     public PaletteElementData[] elements;
-    public IPaletteEvaluator    evaluator;      // solo en Formula
-    public int                  maxSelection = 1; // ingredientes máximos antes de evaluar
+    public IPaletteEvaluator    evaluator;            // solo en Formula / Hybrid
+    public int                  maxSelection     = 1;    // ingredientes máximos antes de evaluar
+    public float                formulaMultiplier = 1.5f; // bonus de magnitude al completar la fórmula
+
+    // Agrupación — opcional. Si se define, permite navegación por categoría.
+    // Se activa automáticamente cuando elements.Length > groupThreshold.
+    public PaletteGroup[]      groups;
+    public int                 groupThreshold   = 12;    // umbral a partir del cual se sugiere ByGroup
+    public PaletteDisplayMode  defaultDisplay   = PaletteDisplayMode.All;
 }

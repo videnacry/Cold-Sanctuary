@@ -313,12 +313,66 @@ El jugador ha fortalecido suficientemente el lazo con las crías a su cargo (mé
 
 | Archivo | Responsabilidad |
 |---|---|
-| `AnimalRadar.cs` | Posiciona botón flotante apuntando al animal (LookAt + Translate) |
+| `AnimalRadar.cs` | Rastrea animales con botón flotante (extiende `TrackerBehavior`) |
+| `TrackerBehavior.cs` | Base reutilizable para rastrear cualquier GO: minerales, comida, amenazas |
 | `FollowingArrays.cs` | Sistema base de menús flotantes: instancia, cola, mostrar/ocultar |
-| `FollowingArrayInScript.cs` | Renderiza arrays de UI desde scripts |
-| `FollowingArrayInArray.cs` | Renderiza arrays de UI desde arrays |
-| `FollowingElementBehavior.cs` | Clase base para comportamientos de elementos UI |
-| `HashSetHolder.cs` | Gestión de población de animales para el radar |
+| `Palette.cs` | Extiende FollowingArrays con modos Direct / Formula / Hybrid / Dialogue y grupos |
+| `PaletteElement.cs` | Botón individual; puede materializarse como bloque físico en el mundo |
+| `MaterializationExecutor.cs` | Ejecuta la materialización de elementos de la paleta en patrones espaciales |
+| `ArrangementPattern.cs` | Patrones: Stairs, Barrier, Platform, FallBreaker |
+
+---
+
+## Sistema de Bloques — Propuestas pendientes de evaluación
+
+Las ideas siguientes **no están implementadas**. Se documentan para la próxima tarea.
+
+### A. Bloques con propiedades físicas por elemento de la tabla
+Cada elemento químico confiere al bloque materializado una propiedad distinta:
+
+| Familia | Comportamiento del bloque |
+|---|---|
+| Gases nobles (He, Ne, Ar…) | Livianos, flotan hacia arriba lentamente — ideales para alfombra |
+| Metales densos (Pb, Au, Fe) | Pesados, máxima estabilidad, resisten impactos |
+| Carbono (C) | Configurable: grafito = flexible/apilable; diamante = irrompible |
+| Elementos reactivos (Na, K) | Inestables — se disuelven antes si reciben un impacto o agua |
+
+Implicación: añadir campo `BlockProperties` a `PaletteElementData` con masa, durabilidad, etc.
+El prefab del bloque lee estas propiedades al materializar.
+
+### B. El jugador elige el material uniforme para todos sus bloques
+En lugar de que cada bloque sea del elemento que representa, el jugador puede
+seleccionar un elemento y aplicarlo a toda su paleta. Todos los bloques adquieren
+las propiedades de ese elemento hasta que se cambie la selección.
+
+Implicación: un `GlobalBlockMaterial` en la paleta que sobreescribe `BlockProperties`
+de todos los elementos activos.
+
+### C. Expansión de bloque — un solo bloque cubre toda una superficie
+Un bloque puede expandirse para cubrir un área mayor (p.ej., toda una pared como barrera).
+El jugador activa la expansión y el bloque escala hasta dimensiones útiles.
+
+Implicación: `PaletteElement.Expand(Vector3 targetScale)` con animación SmoothStep,
+límite de expansión configurable por elemento.
+
+### D. Plataforma móvil (alfombra mágica)
+El jugador se coloca sobre bloques dispuestos bajo sus pies (`PlatformPattern`) y los
+mueve como unidad. Implica un coroutine continua que desplaza los bloques y arrastra
+al jugador con ellos.
+
+**Sobre poner al jugador dentro del GameObject:**
+Poner al jugador como hijo del bloque (parenting) es eficiente — Unity lo resuelve con
+una simple actualización de jerarquía de Transform. El jugador no nota diferencia si la
+animación es suave. **Caveat importante**: si el `PlayerCtrl` usa `CharacterController`
+(el setup más común para primera persona), el parenting NO arrastra al personaje
+automáticamente porque `CharacterController` opera siempre en espacio de mundo.
+La solución estándar: cada frame, calcular el `deltaPosition` del bloque y aplicarlo
+manualmente al `CharacterController.Move()` del jugador.
+Si `PlayerCtrl` usa `Rigidbody`, el parenting funciona directamente pero puede provocar
+artefactos de física en colisiones. Evaluar al implementar `PlayerCtrl`.
+
+Implicación: nuevo modo `DynamicPlatform` en `ArrangementPattern` + lógica en
+`MaterializationExecutor` para la coroutine de movimiento continuo.
 
 ---
 

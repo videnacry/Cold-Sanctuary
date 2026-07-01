@@ -1,39 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class AnimalRadar : FollowingElementBehavior
+public class AnimalRadar : TrackerBehavior
 {
-    public Animal animalReference;
-    public float instanceDistance = 3;
-    // Start is called before the first frame update
-    void Start()
-    {
-        StartCoroutine("PointAnimal");
-    }
+    Animal animalReference;
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
-
-    // --------------------------------VIRTUAL METHODS-------------------------------------------
     public override void Init(GameObject elementReference)
     {
         animalReference = elementReference.GetComponent<Animal>();
+        base.Init(elementReference);
     }
 
-    public IEnumerator PointAnimal()
-    {
-        while (animalReference.lifeStage != LifeStage.soul)
-        {
-            transform.localPosition = new Vector3(0, 0, 0);
-            transform.LookAt(animalReference.transform);
-            transform.Translate(Vector3.forward * instanceDistance);
-            yield return new WaitForSeconds(0.06f);
-        }
-        Destroy(this);
-    }
+    protected override bool IsTargetAlive() => animalReference.lifeStage != LifeStage.soul;
 }
