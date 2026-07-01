@@ -431,9 +431,207 @@ Implicación: nuevo modo `DynamicPlatform` en `ArrangementPattern` + lógica en
 
 ---
 
+## Propuestas de balance — pendientes de evaluación
+
+### Multiplicador de fórmula (Palette, modo Formula / Hybrid)
+
+El `formulaMultiplier` en `PaletteConfig` está en `1.5f`. El objetivo es que usar la fórmula
+en lugar del botón directo se **sienta distinto y valga la pena** — no que sea levemente mejor.
+
+**Propuesta:** subir el rango a **2.5×–4×** dependiendo de la complejidad de la fórmula:
+
+| Tipo de acción | Multiplicador sugerido |
+|---|---|
+| Asana (2–3 posiciones) | ×2.5 |
+| Encantamiento simple (2–3 elementos) | ×3 |
+| Encantamiento avanzado (5+ elementos) | ×4 |
+| Cuidado de cría (Direct, sin fórmula) | ×1 (sin bonus — es directo por diseño) |
+
+Criterio de calibración: el jugador que practica la fórmula debe notar que llega a umbrales de efecto
+que el modo directo no alcanza aunque lo use varias veces seguidas. La diferencia debe ser visible sin
+necesitar explicación.
+
+**Pendiente:** calibrar con feedback de jugabilidad real. No cambiar hasta tener sesiones de prueba.
+
+---
+
+### Apilamiento de asanas (stack de fórmula durante postura activa)
+
+Mientras una asana está activa (el beneficio se está entregando — segundos a minutos),
+el jugador puede **volver a introducir la misma fórmula**. Cada completación adicional
+multiplica el beneficio total acumulado:
+
+- Completar la fórmula 1 vez → beneficio normal × `formulaMultiplier`
+- Completar 2 veces → beneficio × `formulaMultiplier²`
+- Completar N veces → beneficio × `formulaMultiplier^N`
+
+**Propósito:** recompensar la práctica sostenida y la atención. El jugador que sigue presente
+y sigue repitiendo la fórmula en lugar de dejarse llevar pasivamente saca más.
+
+**Implicación de código:**
+`AsanaQueue.benefitRate` podría escalar por un `stackMultiplier` que sube con cada
+completación de fórmula mientras la asana está activa.
+
+**Precaución:** definir un tope de stack (p.ej. ×4 máximo) para evitar explotación.
+
+**Pendiente:** definir si el stack se mantiene entre lados (posturas bilaterales) o se reinicia.
+
+---
+
+## Análisis de sistemas incorporados
+
+Sistemas añadidos con el último pull. Se analizan en relación al código ya existente.
+
+### Resumen de qué llegó
+
+| Archivo | Qué hace |
+|---|---|
+| `PlayerStats.cs` | Stats del jugador: satisfaction, mentalFatigue, stress, sleepiness, observationRadius, velocity, physicalResistance. API: `Restore()` / `Drain()` via `StatChannel` |
+| `IBondable.cs` | Interfaz genérica para todo lo que puede formar vínculo con el jugador: compañeros, animales, objetos, lugares |
+| `CompanionBase.cs` | Base para compañeros: estado interno (fatigue/stress/mood), proximidad → restaura o drena stats del jugador, ThoughtAnchors |
+| `ThoughtAnchor.cs` | Creencia que sesga el comportamiento de un compañero; se suaviza con el arco narrativo |
+| `Gohageneis.cs` | Canal: Satisfaction. CelebrationCharge → burst de restauración al alcanzar umbral |
+| `Goluis.cs` | Canal: MentalFatigue. Presión → sube estrés del jugador. `yoga_skepticism` bloquea asanas hasta que avanza el arco |
+| `Panterilia.cs` | Canal: MentalFatigue. Añade bonus a `observationRadius` del jugador al estar cerca |
+| `BondActivity.cs` | ScriptableObject. Práctica que construye bond con cualquier IBondable. Sistema de trauma/bloqueo/desbloqueo por satisfacción |
+| `BondActivityManager.cs` | Attached al Player. Registra IBondables por ID, activa prácticas activas/pasivas, tick de trauma diario |
+| `WorldBondable.cs` | Attach a cualquier objeto/lugar del mundo para que forme vínculo con el jugador |
+| `CameraManager.cs` | Singleton. 1ª/3ª persona, robos de cámara, efectos visuales por PlayerStats |
+| `CameraZoneTrigger.cs` | Trigger de zona → CameraManager.OnEnterCubArea / RequestRobbery |
+| `Asana.cs` | ScriptableObject. Posiciones requeridas, StatType, maestría, shortcut unlock a 10 prácticas |
+| `AsanaDetector.cs` | Attached al Player. Escucha pulsaciones de BodyPosition, detecta match de asana |
+| `AsanaQueue.cs` | Gestiona la asana activa y cola. Entrega beneficio continuo a sus propios contenedores |
+| `BodyPosition.cs` / `BodyPositionButton.cs` | Datos de posición corporal + botón UI que notifica al detector |
+
+---
+
+### Gaps y conflictos a resolver
+
+#### 1. StatType (Asana) vs StatChannel (PlayerStats) — desconectados
+
+`AsanaQueue` entrega beneficios a su propio `Dictionary<StatType, float> _containers`
+(Strength/Flexibility/Balance/Endurance). `PlayerStats` tiene stats completamente distintas
+(Satisfaction/MentalFatigue/Stress/Sleepiness via `StatChannel`).
+
+**El beneficio de las asanas no llega a PlayerStats actualmente.**
+
+Propuesta de mapeo (a evaluar según diseño):
+
+| StatType (asana) | StatChannel (player) |
+|---|---|
+| StrengthAndGrounding | MentalFatigue (reduce) |
+| Flexibility | Stress (reduce) |
+| Balance | Sleepiness (reduce) |
+| Endurance | (no mapeo directo — puede afectar physicalResistance) |
+
+Implementación mínima: en `AsanaQueue.DeliverBenefit()`, además de llenar el contenedor propio,
+llamar a `playerStats.Restore(gain, mappedChannel)`. Requiere referencia a `PlayerStats` en `AsanaQueue`.
+
+#### 2. `Palette.GetPlayerBond()` devuelve 0
+
+Hay un `TODO` explícito. Ahora existe `BondActivityManager` con el registro de IBondables.
+La paleta necesita conocer el bond del contexto activo (p.ej., la cría que se está cuidando).
+Solución: pasar el IBondable relevante al abrir la paleta (`Open(config, ctx, IBondable target)`)
+o leer el bond directamente del `user` si implementa IBondable.
+
+#### 3. `Goluis.resistanceBuilt` no está conectado a `PlayerStats.physicalResistance`
+
+`resistanceBuilt` (0–1) se acumula en Goluis pero `PlayerStats` no lo lee.
+Propuesta: en `CompanionBase.OnPlayerLeft()` o en un tick periódico,
+`playerStats.physicalResistance = 1f + goluis.resistanceBuilt`.
+
+#### 4. `CameraManager.RequestRobbery` no está conectado a los hitos de las crías
+
+`setup-camera-system.md` lo lista como pendiente explícito.
+`Animal.firstNestExit` y `Animal.firstSolidEaten` ya existen (añadidos en la Fase 6).
+Cuando esos booleans cambien a `true`, deberían disparar un robo de tipo `OrbitTarget`
+con la cría como target, para que la cámara celebre el momento.
+
+Propuesta mínima: en `PostNatalManager.Update()`, cuando se detecte el cambio →
+`CameraManager.Instance?.RequestRobbery(new CameraRobbery { type = RobberyType.OrbitTarget, orbitTarget = cub.transform, holdDuration = 3f })`.
+
+#### 5. `ScreenEffects.cs` — placeholder
+
+`BlackoutPulse` en `CameraManager` es solo un `Debug.Log`.
+Requiere un componente separado con overlay de pantalla completa (URP o canvas de UI).
+No bloqueante ahora, pero necesario antes de testing de jugabilidad.
+
+---
+
+### Alineaciones limpias (encajan sin cambios)
+
+- **`Asana.ShortcutUnlocked` ↔ `PaletteElementData.isDirectUnlocked`**: cuando el jugador
+  practica una asana 10 veces, `ShortcutUnlocked` es `true` → marcar `isDirectUnlocked = true`
+  en el `PaletteElementData` correspondiente → el modo Hybrid la activa directamente.
+  Un sistema de progresión puede sincronizar ambos automáticamente.
+
+- **`Goluis.yoga_skepticism` → `Asana.isUnlocked`**: el anchor `yoga_skepticism` es el gate narrativo
+  para las asanas. Mientras sea fuertemente negativo (antes de que el arco avance), las asanas no
+  se desbloquean. El sistema ya tiene `isUnlocked` en `Asana` — solo necesita que algo lo fije.
+  Propuesta: un `GoluisArcWatcher` que observe el anchor y, al cruzar el umbral (`> -0.4`),
+  llame al desbloqueador de asanas.
+
+- **BondActivity + Palette cuidado de crías**: la paleta de cuidado en modo Direct es exactamente
+  la UI de `BondActivities` para animales. Al pulsar "Presencia tranquila" en la paleta →
+  llamar `BondActivityManager.Practice("Presencia tranquila")`. La actividad ya sabe a qué IBondable
+  apuntar (por `targetId`). El vínculo se construye sin lógica extra.
+
+- **`CameraZoneTrigger` + `BondActivityManager.SetContextTag`**: al entrar al área de crías,
+  el trigger ya llama a `CameraManager.OnEnterCubArea()`. Añadir en el mismo trigger →
+  `bondActivityManager.SetContextTag("cub_area")` → activa pasivamente actividades con ese trigger.
+  Un solo evento de zona alimenta dos sistemas a la vez.
+
+- **`PlayerStats.observationRadius` + `Panterilia`**: ya funciona. Panterilia suma el bonus al
+  entrar y lo quita al salir. A futuro, las BondActivities pasivas que requieran un radio mínimo
+  pueden consultarlo directamente desde `PlayerStats`.
+
+---
+
+### Nuevas propuestas emergentes de este análisis
+
+#### Pipeline de zona completo
+Un trigger de zona puede activar simultáneamente:
+1. `CameraManager` → switch de perspectiva / robo
+2. `BondActivityManager` → context tags → prácticas pasivas
+3. Otros sistemas futuros (audio, iluminación)
+
+Un componente `ZoneActivator` que agregue estas llamadas sería más limpio que
+tener todo en `CameraZoneTrigger`. Propuesta de bajo impacto, alta utilidad.
+
+#### Satisfacción como desbloqueador de la paleta artística de cámara
+`docs/camera-system.md` propone paletas visuales desbloqueables por Satisfacción
+(Sueño, Estrés, Alegría, Normal). Estas paletas son exactamente elementos de una
+`Palette` en modo `Direct` con `PaletteElementData` por cada modo visual.
+`PlayerStats.satisfactionCapacity` puede funcionar como umbral de desbloqueo:
+a mayor capacidad (que crece con Gohageneis), más paletas artísticas disponibles.
+
+#### `WorldBondable` como IBondable para la esterilla
+La esterilla de yoga es el ejemplo más natural. Añadir `WorldBondable` al prefab de la esterilla,
+asignar `bondableId = "yoga_mat"`. Una `BondActivity "Presencia con la esterilla"` con
+`passiveTrigger: "mat_idle"` se activa sola cuando el jugador está sobre ella sin hacer nada.
+El bond con la esterilla crece — coherente con el alma contemplativa del juego.
+
+---
+
+### Notas de rendimiento
+
+| Punto | Evaluación |
+|---|---|
+| `CompanionBase.Update()` — `Vector3.Distance` cada frame | Bajo costo. Aceptable con N < 10 compañeros activos |
+| `WorldBondable.Update()` — distancia cada frame | Si hay muchos objetos WorldBondable (> 20), migrar a OverlapSphere con capas o check cada 0.1s |
+| `BondActivityManager.TickPassiveActivities()` | Ya tiene guard `if (_activeContextTags.Count == 0) return` — bien |
+| `AsanaDetector.CheckForMatch()` | Solo se llama al presionar posición, N de asanas pequeño — negligible |
+| `CameraManager.ApplyStatEffects()` — `Camera.main.fieldOfView` cada frame | Debería cachear `Camera.main` en `Awake`. Campo menor pero buena práctica |
+
+---
+
 ## Ideas / Backlog sin prioridad
 
 - Definir lista completa de posiciones corporales (los "botones") que componen cada asana y ejercicio
 - Decidir distribución visual de la tabla periódica en pantalla
 - Explorar si la mecánica de asanas tiene feedback visual/sonoro mientras se ejecuta
 - Evaluar rendimiento del cálculo de espacio libre para posturas (ver decisión de diseño abajo)
+- Definir lista estándar de `passiveTriggers` (tags de contexto) y qué sistemas los emiten
+- Decidir si el trauma de BondActivity se muestra explícitamente al jugador o solo como "actividad bloqueada"
+- Conectar arco de Goluis con desbloqueo de asanas (`GoluisArcWatcher` o lógica en `LevelScript`)
+- Implementar `ScreenEffects.cs` para efectos visuales reales de cámara (requiere URP)

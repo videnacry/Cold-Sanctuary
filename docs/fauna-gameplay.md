@@ -7,9 +7,41 @@ y cómo se conecta con la progresión del juego?
 
 ---
 
+## Contexto real — Santuario vs. cautiverio
+
+### "Criado en cautiverio" no es lo mismo que santuario
+
+"Criado en cautiverio" describe solo el origen del animal — nació bajo cuidado humano.
+Puede ocurrir en zoos, criaderos comerciales, laboratorios o santuarios. No dice nada
+sobre el bienestar.
+
+Un **santuario ético** (estándar GFAS — Global Federation of Animal Sanctuaries) define que:
+- **No se crían** animales como estrategia — los animales llegan rescatados o confiscados
+- **No se usan** para entretenimiento, espectáculos ni contacto pagado
+- **No se venden ni trasladan** salvo por bienestar del animal
+- El objetivo es **calidad de vida permanente**, no reproducción ni exhibición
+
+El santuario de Cold Sanctuary cae en esta categoría: los animales son residentes
+permanentes cuyo objetivo es la convivencia con humanos, no la reintroducción al medio
+silvestre. Esto lo distingue de un programa de rehabilitación.
+
+### Rehabilitación vs. residencia permanente — distinción clave para el diseño
+
+| | Rehabilitación | Santuario (este juego) |
+|---|---|---|
+| **Objetivo** | Devolver al medio silvestre | Convivencia permanente con humanos |
+| **Imprinting** | A evitar activamente — puede significar la muerte del animal al ser liberado | Deseable — es la mecánica central del bond |
+| **Contacto humano** | Mínimo; algunos usan disfraces de la especie para dar biberón | Progresivo y enriquecido |
+| **Éxito** | Animal liberado y autosuficiente | Animal con bond alto, comportamiento natural preservado |
+
+> El famoso programa del cóndor de California usó marionetas de adulto para dar biberón
+> a los polluelos — precisamente para evitar que identificaran a los humanos como familia.
+> En Cold Sanctuary ocurre exactamente lo contrario: ese imprinting es el objetivo.
+
+---
+
 ## Propósito del sistema de fauna en el juego
 
-El santuario trabaja para que los animales sean amigables entre sí y con las personas.
 El jugador llega como voluntario y su misión central en el **Nivel 1** es cuidar crías
 hasta que alcancen un vínculo suficiente con él — lo que abre el Nivel 2 y desbloquea
 las asanas.
@@ -33,36 +65,63 @@ apropiadamente — sin que nadie le haya dado un manual explícito.
 
 ---
 
+## Principio de diseño — el bond se gana, no se da
+
+En un santuario real, los animales que viven con humanos permanentemente desarrollan
+confianza de forma gradual y condicionada a que el humano respete sus señales.
+Un animal con `stress` alto rechaza el contacto aunque haya bond previo.
+
+Esto genera la mecánica correcta: **el jugador no puede forzar el bond**. Debe:
+1. Leer el estado de la cría antes de interactuar
+2. Elegir la actividad apropiada para ese estado
+3. Respetar cuando la cría se retira o señaliza incomodidad
+
+Un bond de 100 no significa que el animal sea un peluche — significa que confía
+en ese humano específico. Sigue siendo un animal salvaje.
+
+---
+
 ## Mecánicas de cuidado — qué puede hacer el jugador
 
-No es solo dar comida. El cuidado que se da en el santuario supera lo que daría
-la madre en la naturaleza: incluye enriquecimiento, socialización y aprendizaje mutuo.
-Cada actividad sube bond y mejora alguna variable de estado de la cría.
+Las actividades evolucionan con el bond: un animal recién llegado no tolera el grooming;
+uno con bond medio acepta entrenamiento básico; uno con bond alto coopera en cualquier
+procedimiento. Desbloquear actividades es parte de la progresión.
 
-| Actividad | Mecánica de input | Efecto en la cría |
-|---|---|---|
-| **Alimentación con biberón / jeringa** | Acercar item, animación cronometrada | Baja `hungry`, sube bond |
-| **Grooming (cepillar, desparasitar)** | Arrastre suave sobre la cría | Baja `stress`, sube bond, sube salud |
-| **Enriquecimiento olfativo** | Acercar objetos (hierbas, tierra, tela) al morro | Sube curiosidad/energía |
-| **Juego de caza controlado** | Mover objeto (pluma, cuerda, ramita) | Sube energía, desarrolla habilidades — riesgo de agresividad si sobreestimulado |
-| **Puzzle de comida** | Esconder alimento en objeto de enriquecimiento | Estimula inteligencia, sube bond |
-| **Presencia tranquila** | Sentarse cerca sin interactuar (timer pasivo) | Baja `stress` lentamente, sube bond — clave para animales tímidos |
-| **Exploración de texturas** | Ofrecer elementos de distintas texturas | Estimula sentidos, sube curiosidad |
-| **Socialización entre crías** | Acercar dos crías gradualmente | Sube bond entre ellas; si `stress` es alto puede crear conflicto |
-| **Respuesta vocal** | Reproducir sonido de la especie en respuesta al llanto | Baja `stress` inmediato |
-| **Depositar comida (ICarrier.Drop)** | Tecla Q del jugador | `droppedBy = playerTarget` → bond crece al comer |
+| Actividad | Mecánica de input | Efecto en la cría | Bond mínimo |
+|---|---|---|---|
+| **Presencia tranquila** | Sentarse cerca sin interactuar (timer pasivo) | Baja `stress` lentamente, sube bond — clave para animales tímidos | 0 |
+| **Respuesta vocal** | Reproducir sonido de la especie en respuesta al llanto | Baja `stress` inmediato | 0 |
+| **Depositar comida (ICarrier.Drop)** | Tecla Q del jugador | `droppedBy = playerTarget` → bond crece al comer | 0 |
+| **Alimentación con biberón / jeringa** | Acercar item, animación cronometrada | Baja `hungry`, sube bond | 10 |
+| **Enriquecimiento olfativo** | Acercar objetos (hierbas, tierra, tela, especias) al morro | Sube curiosidad/energía, revela preferencias de la especie | 20 |
+| **Exploración de texturas** | Ofrecer elementos de distintas texturas y temperaturas | Estimula sentidos | 20 |
+| **Puzzle de comida** | Esconder alimento en objeto de enriquecimiento | Estimula inteligencia, sube bond | 30 |
+| **Grooming (cepillar, desparasitar)** | Arrastre suave sobre la cría | Baja `stress`, sube bond, sube salud | 40 |
+| **Juego de caza controlado** | Mover objeto (pluma, cuerda, ramita) | Sube energía, desarrolla habilidades — riesgo de agresividad si sobreestimulado | 50 |
+| **Socialización entre crías** | Acercar dos crías gradualmente | Sube bond entre ellas; si `stress` es alto puede crear conflicto | 50 (entre ellas) |
+| **Entrenamiento de cooperación** | Señal + recompensa para que el animal realice un comportamiento | Sube bond, desbloquea procedimientos veterinarios en etapas avanzadas | 70 |
 
 > Referencia de código: `Animal.stress`, `Animal.hungry`, `GrowBond()`, `ICarrier`, `FoodItem.droppedBy`.
 
-### Actividades que NO se hacen (seguridad)
+### Estereotipias — consecuencia del descuido
 
-Estas reglas las enseñan los compañeros o aparecen como tips:
+Si el jugador descuida el enriquecimiento durante demasiado tiempo, la cría desarrolla
+**estereotipias**: comportamientos compulsivos repetitivos (balanceo, marcha circular,
+autolesión leve). Visibles en la animación. Se reducen al retomar el cuidado pero
+dejan una marca en el estado base de `stress`.
+
+Son el equivalente animal de la ansiedad crónica — y ocurren en la vida real en
+animales en cautiverio con poco enriquecimiento.
+
+### Actividades que NO se hacen (reglas de seguridad)
+
+Las enseñan los compañeros de forma orgánica, no como pantalla de tutorial:
 - No mirar fijamente a los ojos
 - No levantar del suelo
 - No correr cerca
-- No alimentar de la mano hasta bond alto
+- No alimentar de la mano hasta bond suficiente
 - Por más pacífico que parezca, puede atacar si no tiene su espacio
-- El juego de caza puede volverlos agresivos si se sobreestimula — parar cuando la cría pase a `Fight`
+- El juego de caza puede volverlos agresivos si se sobreestimula — parar cuando la cría señalice incomodidad o entre en `Fight`
 
 ---
 
@@ -75,10 +134,10 @@ Un compañero cercano observa el estado de la cría y hace un comentario en el m
 - `cub.hungry > VocalizationThreshold` → *"ese sonido significa que tiene hambre, pon la jeringa aquí"*
 - `cub.firstNestExit == true` → *"¡salió solo! eso es muy buena señal"*
 - Al acercarse demasiado rápido → *"ve más despacio, que te va a ver como una amenaza"*
+- Al sobreestimular en juego → *"para, que si le excitas demasiado luego no hay quien le calme"*
 
+Los compañeros también dan las reglas de seguridad de forma orgánica.
 Requiere: sistema de diálogo con triggers en variables de estado del animal.
-Los compañeros también dan las reglas de seguridad de forma orgánica, en lugar de
-un tutorial de texto.
 
 ### Opción B — Tarjeta de estado sobre la cría (fallback, implementar primero)
 
@@ -121,30 +180,27 @@ cumplidos y disparar el evento. No hay que añadir lógica nueva a los animales.
 
 ---
 
-## Casos reales de referencia
+## Referencia real por especie
 
-Actividades documentadas en santuarios y criaderos de fauna silvestre:
-- **Big cat sanctuaries**: grooming con cepillo, enrichment olfativo (especias, hierbas),
-  juego con objetos colgantes, puzzle feeders para estimular caza.
-- **Wolf/canid rescues**: socialización temprana con varias personas y sonidos,
-  jerarquía establecida por presencia tranquila, never direct eye contact.
-- **Seal/sea lion rehab**: alimentación con jeringa/biberón, introducción gradual al agua,
-  respuesta a vocalizaciones para reducir stress.
-- **Deer fawns**: "ocultamiento" respetado — no moverlas del spot aunque parezcan solas,
-  mínimo contacto humano para no imprinting si van a ser liberadas.
-
-> Para las crías del santuario el imprinting es *deseable* (son para convivencia,
-> no para reintroducción), así que se pueden humanizar más que en rehabilitación estándar.
+| Especie | Práctica real relevante |
+|---|---|
+| **Lobo / cánido** | Socialización temprana con múltiples personas y sonidos; jerarquía por presencia tranquila, nunca confrontación directa; los cachorros en santuario suelen vivir en manadas artificiales con adultos ya vinculados |
+| **Oso** | Los oseznos rescatados se crían en grupos de hermanos cuando es posible; enrichment muy importante — son los más propensos a estereotipias en cautiverio; entrenamiento de cooperación veterinaria es estándar en santuarios de osos |
+| **Conejo / lagomorfo** | Los gazapos son altriciales (nacen ciegos e inválidos); biberón cada 12h con leche específica; mínimo contacto las primeras semanas incluso en santuario de convivencia — son muy frágiles al estrés |
+| **Venado / cérvido** | Los cervatillos encontrados solos raramente están abandonados — la madre los deja escondidos; en santuario se usan "madres sustitutas" (peluche grande con olor de la especie) para no ser el único referente; muy sensibles al estrés por captura |
+| **Foca** | Alimentación con jeringa de pescado triturado; introducción gradual al agua es una actividad de enriquecimiento clave; responden muy bien a la vocalización humana que imita sus llamadas |
 
 ---
 
 ## Pendientes de diseño
 
 - [ ] Definir qué actividades están disponibles para cada especie y en qué etapa post-natal
-      (no todas las actividades aplican a todas las crías — un cachorro de foca en Stage 1
-      no puede hacer juego de caza todavía)
+      (un gazapo en Stage 1 no puede hacer juego de caza; una cría de foca necesita agua antes)
 - [ ] Definir los umbrales concretos de bond y stats para el LevelScript del Nivel 1
 - [ ] Diseñar la tarjeta de estado de la cría (Opción B) en el sistema FollowingArrays
 - [ ] Definir qué compañero guía qué comportamiento animal (ver personajes en DEVLOG.md)
 - [ ] Decidir si la alimentación con biberón es un item separado de FoodItem o una
       variante con `feedingMethod = FeedingMethod.Nurse`
+- [ ] Definir qué activa y qué reduce las estereotipias (umbral de tiempo sin enriquecimiento,
+      velocidad de recuperación con cuidado)
+- [ ] Diseñar el entrenamiento de cooperación veterinaria como mecánica de alto bond

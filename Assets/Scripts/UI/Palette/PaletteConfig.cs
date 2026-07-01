@@ -20,7 +20,11 @@ public class PaletteConfig
     public PaletteElementData[] elements;
     public IPaletteEvaluator    evaluator;            // solo en Formula / Hybrid
     public int                  maxSelection     = 1;    // ingredientes máximos antes de evaluar
-    public float                formulaMultiplier = 1.5f; // bonus de magnitude al completar la fórmula
+    // Propuesta pendiente: el multiplicador debería ser lo suficientemente alto como para que
+    // la diferencia entre directo y fórmula sea perceptible y motive el uso de la fórmula,
+    // pero sin hacer que el modo directo se sienta inútil. Valor tentativo: 2.5–4×.
+    // Calibrar según feedback de jugabilidad — ver DEVLOG.md §Propuestas de balance.
+    public float                formulaMultiplier = 1.5f;
 
     // Agrupación — opcional. Si se define, permite navegación por categoría.
     // Se activa automáticamente cuando elements.Length > groupThreshold.
