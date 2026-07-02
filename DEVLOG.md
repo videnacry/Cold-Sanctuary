@@ -572,14 +572,39 @@ Cuando el jugador está cerca de Panterilia, en lugar de `playerStats.Restore(..
 Panterilia aplica el efecto a través de la interfaz: `mind.RestoreMind(amount, MindChannel.MentalFatigue)`.
 Esto hace que el sistema de compañeros funcione para cualquier entidad con `IMind`, no solo el jugador.
 
+### IMindSimple — subconjunto para compañeros
+
+`CompanionBase` no necesita implementar `IMind` completa. Solo necesita las stats que ya tiene.
+`IMind` puede extender `IMindSimple` para no duplicar declaraciones:
+
+```csharp
+public interface IMindSimple { float mentalFatigue { get; set; } float stress { get; set; } float mood { get; set; } }
+// IMind extends IMindSimple and adds satisfaction, sleepiness, observationRadius...
+```
+
+Ver `docs/ibody-imind.md` para la propuesta completa.
+
+### NPCs — IBody e IMind para todos
+
+Los NPCs implementan las mismas interfaces. No hay lógica especial "solo para el jugador":
+
+- **La maestra**: `IBody` con `flexibility >= 0.9` — puede demostrar cualquier asana
+- **Goluis**: `IBody` alta `strength`, `flexibility` media — su estilo de enseñanza refleja sus límites
+- **Panterilia**: `IMind` con bajo estrés — su bonus de Observación surge de sus propias stats
+- **Animales/crías**: `IBody` (via IAnimal→IBody rename), `IMind` parcial (stress, vocalización)
+
+Ver `docs/asana-system.md` §TeacherNPC y §NPCs — IBody e IMind para todos.
+
 ### Pendientes antes de implementar
 
 - [ ] Definir qué stats de `IAnimal` migran a `IBody` vs quedan solo en `Animal.cs`
 - [ ] Decidir si `PlayerStats` se divide en dos componentes o implementa ambas interfaces
 - [ ] Definir `MindChannel` y `BodyChannel` como reemplazos de `StatChannel`
+- [ ] Confirmar que `IMind` extiende `IMindSimple` (no duplicar declaraciones)
 - [ ] Evaluar impacto en `CameraManager` (lee directamente de `PlayerStats` — necesitará `IMind`)
 - [ ] Evaluar impacto en `CompanionBase.ApplyProximityEffect()` (actualmente llama `playerStats.Restore`)
 - [ ] Evaluar si `BondActivity` registra trauma leyendo `IMind.stress` en lugar de `PlayerStats.stress`
+- [ ] Añadir `BodyPartStats` per-extremidad a `IBody` (flexibility/strength/stability) — ver `docs/asana-system.md`
 
 ---
 

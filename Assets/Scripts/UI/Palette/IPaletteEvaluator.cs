@@ -7,6 +7,10 @@ public struct PaletteResult
     public string             outcomeId;   // id del asana, hechizo o preferencia activada
     public float              magnitude;   // intensidad — escala efectos y tamaño de estructuras
     public SpatialArrangement spatial;     // si el hechizo materializa bloques (puede ser null)
+    // Feedback enriquecido — el tipo concreto depende del evaluador:
+    //   AsanaEvaluator → List<PositionEvaluation> con calidad y gap por extremidad
+    //   TeacherNPC lee este payload para elegir su línea de diálogo
+    public object             payload;
 }
 
 // Instrucciones para que MaterializationExecutor materialice los PaletteElements
