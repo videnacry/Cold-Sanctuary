@@ -72,6 +72,41 @@ public class BondActivityManager : MonoBehaviour
         return a != null && Practice(a);
     }
 
+    // ── Palette integration ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Build a PaletteConfig.Direct menu from all unlocked BondActivities.
+    /// Pass to Palette.Open() to show the activity picker UI.
+    /// Blocked activities appear with lockedOverlay via bondMin = int.MaxValue.
+    /// </summary>
+    public PaletteConfig BuildPaletteConfig()
+    {
+        var elements = new System.Collections.Generic.List<PaletteElementData>();
+
+        foreach (BondActivity a in activities)
+        {
+            if (!a.isUnlocked) continue;
+
+            var data = new PaletteElementData
+            {
+                id      = a.name,           // ScriptableObject asset name
+                label   = a.displayName,
+                // icon = a.icon if you add one to BondActivity later
+                // Blocked → bondMin = int.MaxValue so lockedOverlay shows
+                // Not blocked → bondMin = 0 so it's always accessible
+                bondMin = a.isBlocked ? int.MaxValue : 0,
+                payload = a
+            };
+            elements.Add(data);
+        }
+
+        return new PaletteConfig
+        {
+            mode     = PaletteConfig.Mode.Direct,
+            elements = elements.ToArray()
+        };
+    }
+
     // ── Passive activation ────────────────────────────────────────────────────
 
     void TickPassiveActivities()

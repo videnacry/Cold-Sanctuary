@@ -366,15 +366,84 @@ El jugador ha fortalecido suficientemente el lazo con las crías a su cargo (mé
 
 ## Arquitectura relevante
 
+### UI / Menús
+
 | Archivo | Responsabilidad |
 |---|---|
-| `AnimalRadar.cs` | Rastrea animales con botón flotante (extiende `TrackerBehavior`) |
-| `TrackerBehavior.cs` | Base reutilizable para rastrear cualquier GO: minerales, comida, amenazas |
 | `FollowingArrays.cs` | Sistema base de menús flotantes: instancia, cola, mostrar/ocultar |
-| `Palette.cs` | Extiende FollowingArrays con modos Direct / Formula / Hybrid / Dialogue y grupos |
+| `Palette.cs` | Extiende FollowingArrays — modos Direct / Formula / Hybrid / Dialogue, grupos |
+| `PaletteConfig.cs` | Descriptor de un menú Palette: modo, elementos, evaluador, grupos |
 | `PaletteElement.cs` | Botón individual; puede materializarse como bloque físico en el mundo |
-| `MaterializationExecutor.cs` | Ejecuta la materialización de elementos de la paleta en patrones espaciales |
+| `PaletteElementData.cs` | Datos de un elemento: label, icon, shortcut, bondMin, payload |
+| `PaletteGroup.cs` | Agrupación de elementos para navegación por categoría |
+| `IPaletteEvaluator.cs` | Interfaz para evaluar una fórmula acumulada (asanas, encantamientos) |
+| `MaterializationExecutor.cs` | Ejecuta materialización de elementos en patrones espaciales |
 | `ArrangementPattern.cs` | Patrones: Stairs, Barrier, Platform, FallBreaker |
+| `TrackerBehavior.cs` | Base para botones flotantes que rastrean un GO (apunta + sigue) |
+| `AnimalRadar.cs` | Rastrea animales; extiende TrackerBehavior |
+
+**Cómo se abre un menú Palette desde cualquier sistema:**
+```csharp
+Palette.Open(new PaletteConfig {
+    mode     = PaletteConfig.Mode.Direct,   // o Formula, Hybrid, Dialogue
+    elements = miArrayDeElementos,
+    evaluator = miEvaluador                 // solo en Formula / Hybrid
+});
+```
+
+**Usos previstos:**
+| Sistema | Modo | Evaluador |
+|---|---|---|
+| Asanas | Formula | `AsanaEvaluator : IPaletteEvaluator` — verifica match de posiciones |
+| Encantamientos | Formula / Hybrid | `EnchantmentEvaluator` |
+| Cuidado de crías | Direct | — |
+| BondActivities activas | Direct | — |
+| Diálogo | Dialogue | — |
+
+### Jugador
+
+| Archivo | Responsabilidad |
+|---|---|
+| `PlayerStats.cs` | Stats del jugador: Satisfacción, Fatiga Mental, Estrés, Sueño, Observación, Velocidad, Resistencia |
+| `PlayerCtrl.cs` | Movimiento, animaciones, apuntado |
+| `BondActivityManager.cs` | Gestiona BondActivities: práctica activa/pasiva, trauma, desbloqueo por Satisfacción |
+
+### Cámara
+
+| Archivo | Responsabilidad |
+|---|---|
+| `CameraManager.cs` | Switch 3ª/1ª persona, robos de cámara, efectos por stats (shake, FOV, apagones) |
+| `CameraZoneTrigger.cs` | Trigger de zona → notifica al CameraManager (e.g. área de crías → 1ª persona) |
+
+### Compañeros
+
+| Archivo | Responsabilidad |
+|---|---|
+| `CompanionBase.cs` | Simulación interna (fatiga, estrés, mood), proximidad con restauración/descarga, anclas de pensamiento |
+| `IBondable.cs` | Interfaz para cualquier entidad que pueda tener bond con el jugador |
+| `ThoughtAnchor.cs` | Creencia/patrón con peso (−1 bloquea, +1 impulsa) y velocidad de cambio de arco |
+| `Goluis.cs` | Presión activa, fatiga de doble turno, ancla `yoga_skepticism` |
+| `Panterilia.cs` | Restauración estable, bonus de Observación por proximidad, arco `chemical_reliance` |
+| `Gohageneis.cs` | CelebrationCharge → burst de Satisfacción + alivio de fatiga |
+| `WorldBondable.cs` | IBondable para objetos/lugares: esterilla, sol, montaña, etc. |
+
+### Vínculos
+
+| Archivo | Responsabilidad |
+|---|---|
+| `BondActivity.cs` | ScriptableObject: práctica que construye bond; gestiona trauma y bloqueo por Satisfacción |
+| `BondActivityManager.cs` | Gestiona todas las actividades del jugador: activa/pasiva, tags de contexto, tick diario |
+| `Bond.cs` | Vínculo afectivo animal→objetivo (0–100); tipos Imprint / Friend |
+
+### Animales
+
+| Archivo | Responsabilidad |
+|---|---|
+| `Animal.cs` | Estado base: hungry, stress, bond, fase de vida |
+| `PostNatalManager.cs` | Ciclos de las crías: fases de necesidad y fases autónomas (base del Nivel 2) |
+| `PostNatalStage.cs` | Etapa post-natal por especie; flags firstSolidEaten, firstNestExit |
+| `ICarrier.cs` | Interfaz para transportar FoodItems (pendiente implementación en PlayerCtrl) |
+| `FoodItem.cs` | Ítem de comida con referencia a quien lo depositó (droppedBy) |
 
 ---
 
