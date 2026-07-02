@@ -29,7 +29,7 @@ LifeStage (abstract serializable)
 └─ TimeController (singleton estático)
 ```
 
-### Interfaces
+### Interfaces actuales
 
 ```
 IAnimal
@@ -40,7 +40,18 @@ IAnimal
 
 IFactory
   └─ GenerateSquareRange(GameObject animal, GameObject area, int quantity): GameObject[]
+
+IBondable  (Assets/Scripts/Companion/IBondable.cs)
+  ├─ BondWithPlayer: float { get; }
+  ├─ GrowBondWithPlayer(float amount): void
+  └─ GetProximityEffect(StatChannel channel): float
 ```
+
+> **Propuesta pendiente — IBody / IMind:**
+> `IAnimal` se renombraría a `IBody` (cuerpo físico, aplicable también al jugador y NPCs).
+> Se añadiría `IMind` para las stats mentales/emocionales actualmente en `PlayerStats`.
+> `Restore()` enrutaría a `IBody`, `IMind` o `IBondable` según el tipo de efecto.
+> Ver DEVLOG.md §Propuesta de arquitectura — IBody / IMind / IBondable.
 
 ## Animales (`Assets/Animals/`)
 
