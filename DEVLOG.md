@@ -378,6 +378,142 @@ El jugador ha fortalecido suficientemente el lazo con las crías a su cargo (mé
 
 ---
 
+## Propuesta de arquitectura — IBody / IMind / IBondable
+
+Propuesta de refactorización profunda de las interfaces de stats. **No implementar hasta
+confirmar diseño completo**, pero documentar aquí para que guide las decisiones de corto plazo.
+
+### El problema actual
+
+`PlayerStats` mezcla stats físicas (velocity, physicalResistance) con stats mentales/emocionales
+(satisfaction, mentalFatigue, stress, sleepiness, observationRadius) en un solo componente.
+`IAnimal` describe el cuerpo físico de los animales, pero el jugador y los NPCs también tienen cuerpo.
+`CompanionBase` duplica parcialmente stats mentales (fatigue, stress, mood) sin interfaz común.
+
+### La propuesta
+
+Tres interfaces ortogonales que cualquier entidad puede implementar:
+
+```
+IBody      — estado físico: velocidad, resistencia, temperatura, reservas de grasa, hambre
+IMind      — estado mental/emocional: satisfacción, fatiga mental, estrés, sueño, observación
+IBondable  — capacidad de vínculo: bond con el jugador, efecto por proximidad
+```
+
+**Quién implementa qué:**
+
+| Entidad | IBody | IMind | IBondable |
+|---|---|---|---|
+| Jugador | ✅ | ✅ | — (es quien forma los vínculos, no quien los recibe) |
+| Animal / Cría | ✅ | parcial (stress, vocalización) | ✅ |
+| Compañero (CompanionBase) | parcial (fatigue) | ✅ (fatigue, stress, mood) | ✅ |
+| Objeto / Lugar (WorldBondable) | — | — | ✅ |
+
+### IAnimal → IBody
+
+`IAnimal` es en realidad una descripción del cuerpo físico, no de los animales como concepto.
+Renombrarlo a `IBody` lo hace aplicable al jugador, NPCs y compañeros sin cambiar su semántica.
+
+```csharp
+// Actual:
+public interface IAnimal {
+    AnimationsName animationsName { get; }
+    bool aware { get; set; }
+    void Hurt(float damage);
+    IEnumerator Escape(bool team, List<GameObject> enemies);
+}
+
+// Propuesto:
+public interface IBody {
+    // Stats físicas
+    float velocity          { get; }
+    float physicalResistance { get; }
+    float temperature       { get; }     // ya existe en Animal.cs
+    float fatReserves       { get; }     // ya existe en Animal.cs
+    // Acciones físicas
+    void Hurt(float damage);
+    IEnumerator Escape(bool team, List<GameObject> enemies);
+}
+```
+
+### IMind (nueva interfaz)
+
+Stats mentales/emocionales que actualmente viven en `PlayerStats` y en `CompanionBase`:
+
+```csharp
+public interface IMind {
+    float satisfaction      { get; }
+    float mentalFatigue     { get; }
+    float stress            { get; }
+    float sleepiness        { get; }
+    float observationRadius { get; }
+
+    void RestoreMind(float amount, MindChannel channel);
+    void DrainMind(float amount, MindChannel channel);
+}
+
+public enum MindChannel { Satisfaction, MentalFatigue, Stress, Sleepiness, Observation }
+```
+
+### Routing en Restore()
+
+En lugar de un solo `PlayerStats.Restore(amount, StatChannel)` que hace todo,
+la lógica de restauración consulta qué interfaces implementa el target:
+
+```csharp
+// Ejemplo conceptual:
+void ApplyEffect(GameObject target, EffectData effect) {
+    IBody  body = target.GetComponent<IBody>();
+    IMind  mind = target.GetComponent<IMind>();
+    IBondable bond = target.GetComponent<IBondable>();
+
+    if (effect.isPhysical && body != null)
+        body.RestoreBody(effect.amount, effect.bodyChannel);
+
+    if (effect.isMental && mind != null)
+        mind.RestoreMind(effect.amount, effect.mindChannel);
+
+    if (effect.growsBond && bond != null)
+        bond.GrowBondWithPlayer(effect.bondAmount);
+}
+```
+
+Esto permite que una sola acción (p.ej. una asana) afecte simultáneamente al cuerpo,
+a la mente y al vínculo, sin que ningún sistema sepa nada de los otros.
+
+### Stats que se mueven de PlayerStats a IMind
+
+| Stat actual en PlayerStats | Va a |
+|---|---|
+| satisfaction, satisfactionCapacity, satisfactionPassiveRate, restorationMultiplier | IMind |
+| mentalFatigue | IMind |
+| stress | IMind |
+| sleepiness | IMind |
+| observationRadius | IMind |
+| velocity | IBody |
+| physicalResistance | IBody |
+
+`PlayerStats` podría quedar como MonoBehaviour que implementa tanto `IBody` como `IMind`,
+o dividirse en dos componentes (`PlayerBody`, `PlayerMind`) que se enlazan en el mismo GameObject.
+
+### Implicación en los compañeros
+
+`CompanionBase` ya tiene `fatigue`, `stress`, `mood` — podría implementar `IMind`.
+Cuando el jugador está cerca de Panterilia, en lugar de `playerStats.Restore(...)` directamente,
+Panterilia aplica el efecto a través de la interfaz: `mind.RestoreMind(amount, MindChannel.MentalFatigue)`.
+Esto hace que el sistema de compañeros funcione para cualquier entidad con `IMind`, no solo el jugador.
+
+### Pendientes antes de implementar
+
+- [ ] Definir qué stats de `IAnimal` migran a `IBody` vs quedan solo en `Animal.cs`
+- [ ] Decidir si `PlayerStats` se divide en dos componentes o implementa ambas interfaces
+- [ ] Definir `MindChannel` y `BodyChannel` como reemplazos de `StatChannel`
+- [ ] Evaluar impacto en `CameraManager` (lee directamente de `PlayerStats` — necesitará `IMind`)
+- [ ] Evaluar impacto en `CompanionBase.ApplyProximityEffect()` (actualmente llama `playerStats.Restore`)
+- [ ] Evaluar si `BondActivity` registra trauma leyendo `IMind.stress` en lugar de `PlayerStats.stress`
+
+---
+
 ## Sistema de Bloques — Propuestas pendientes de evaluación
 
 Las ideas siguientes **no están implementadas**. Se documentan para la próxima tarea.

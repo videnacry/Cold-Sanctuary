@@ -76,22 +76,30 @@ Crear un GameObject vacío en la escena llamado `CameraManager`. No debe ser hij
 
 ---
 
-## 4. Zona de crías — CameraZoneTrigger
+## 4. Zona de crías — ZoneActivator (reemplaza CameraZoneTrigger)
+
+`ZoneActivator` es el componente recomendado para nuevas zonas. Wirea en un solo lugar:
+cámara + BondActivity context tags + lo que venga.
+`CameraZoneTrigger` sigue disponible pero no añadir más zonas con él.
 
 ### Configuración del trigger
 
 1. Crear un GameObject vacío llamado `CubAreaTrigger` en la escena, posicionado sobre el área de crías
 2. Añadir un componente **Collider** (BoxCollider o SphereCollider) y marcar **Is Trigger = true**
 3. Ajustar el tamaño para que cubra toda el área de crías
-4. Añadir el componente `CameraZoneTrigger`
+4. Añadir el componente `ZoneActivator`
 
-### Componente: `CameraZoneTrigger`
+### Componente: `ZoneActivator` — zona de crías
 
-| Campo Inspector | Valor |
-|---|---|
-| **Zone Type** | `CubArea` |
+| Sección | Campo | Valor |
+|---|---|---|
+| **Camera** | Action Type | `SwitchMode` |
+| **Camera** | Target Mode | `FirstPerson` |
+| **Camera** | Revert On Exit | ✅ activado |
+| **Bond Context Tags** | contextTags | `cub_area` |
 
-> Para zonas personalizadas usar `Custom` y configurar el `CameraRobbery` manualmente en Inspector.
+El tag `cub_area` activa automáticamente las BondActivities pasivas con ese trigger
+(p.ej. "Presencia tranquila") mientras el jugador esté en la zona.
 
 ### Configuración de física requerida
 
