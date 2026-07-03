@@ -13,6 +13,14 @@ public class Panterilia : CompanionBase
     public float observationRadiusBonus = 1.5f;
 
     bool _bonusApplied;
+    PlayerStats _playerStats; // needed until observationRadius is in IMind (write access)
+
+    protected override void Start()
+    {
+        base.Start();
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null) _playerStats = player.GetComponent<PlayerStats>();
+    }
 
     protected override void SetupAnchors()
     {

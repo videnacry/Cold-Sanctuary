@@ -111,6 +111,6 @@ public class PostureStressHandler : MonoBehaviour
         // by temporarily boosting mentalFatigue for the camera effect.
         // Replace with a dedicated shake call when CameraManager exposes one.
         if (CameraManager.Instance != null && intensity > 0.3f)
-            _stats.Drain(intensity * 0.02f * Time.deltaTime, StatChannel.MentalFatigue);
+            _stats.DrainMind(intensity * 0.02f * Time.deltaTime, MindChannel.MentalFatigue);
     }
 }

@@ -91,9 +91,9 @@ public class BondActivity : ScriptableObject
         // Register experience
         RegisterExperience(player);
 
-        // Grow bond with target
+        // Grow bond with target — player is the practitioner
         if (target != null)
-            target.GrowBondWithPlayer(bondGainPerPractice);
+            target.GrowBond(player, bondGainPerPractice);
 
         practiceCount++;
         return true;

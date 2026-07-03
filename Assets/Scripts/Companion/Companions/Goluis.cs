@@ -49,14 +49,12 @@ public class Goluis : CompanionBase
     {
         base.Update();
 
-        // Pressure system — applies stress to nearby player
-        if (pressureActive && _playerStats != null)
+        if (pressureActive && _playerMind != null)
         {
-            float dist = Vector3.Distance(transform.position, _playerStats.transform.position);
+            float dist = Vector3.Distance(transform.position, _playerTransform.position);
             if (dist <= proximityRadius)
             {
-                _playerStats.Drain(pressureStressRate * Time.deltaTime, StatChannel.Stress);
-                // Slowly builds resistance (tracked here, used by PlayerStats externally)
+                _playerMind.DrainMind(pressureStressRate * Time.deltaTime, MindChannel.Stress);
                 resistanceBuilt = Mathf.Clamp01(resistanceBuilt + 0.00001f * Time.deltaTime);
             }
         }

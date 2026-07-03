@@ -5,14 +5,22 @@ Detalle por sistema. Para el panorama general ver [`../CLAUDE.md`](../CLAUDE.md)
 ## Jerarquía de clases
 
 ```
-MonoBehaviour
-├─ Animal (abstract, implements IAnimal, IFactory)
-│  ├─ Carnivore (abstract)
-│  │  └─ WolfBehavior
-│  └─ Herbivore (abstract)
-│     └─ BunnyBehavior
-├─ BearBehaviour (implements IAnimal por separado — NO hereda de Animal)
-├─ BirdBehavior (implements IFactory)
+LivingEntity (abstract MonoBehaviour)
+│  drives: stress, trauma, fatReserves, temperature, bonds, aware
+│  hooks: RespondToHunger(), EvaluateThreat(), RespondToThreat()
+│
+├─ Animal (abstract, ITarget, IEdible, ICarrier, IFactory)
+│  ├─ Carnivore (abstract) → WolfBehavior, BearBehaviour
+│  └─ Herbivore (abstract) → BunnyBehavior, DeerBehavior, SealBehavior
+│
+├─ NPCBase : IMind, IBondable  [pendiente de implementar]
+│  ├─ CompanionBase
+│  │  ├─ Goluis
+│  │  ├─ Panterilia
+│  │  └─ Gohageneis
+│  └─ (futuros NPCs con drives reales)
+│
+├─ BirdBehavior (IFactory)
 ├─ PlayerCtrl, ShipCtrl
 ├─ SlideDoor, PullDoor, DrivePreparation
 ├─ Respawn, FamilyGenerator, Generator
@@ -29,36 +37,36 @@ LifeStage (abstract serializable)
 └─ TimeController (singleton estático)
 ```
 
-### Interfaces actuales
+### Interfaces
 
 ```
-IAnimal
-  ├─ animationsName: AnimationsName { get; }
-  ├─ aware: bool { get; set; }
-  ├─ Hurt(float damage): void
-  └─ Escape(bool team, List<GameObject> enemies): IEnumerator
+IBody  (Assets/Scripts/IBody.cs)
+  ├─ GetBodyPartStats(BodyPart): BodyPartStats
+  ├─ TrainBodyPart(BodyPart, BodyStatDimension, float): void
+  ├─ postureStress: float { get; }
+  ├─ AccumulatePostureStress(float): void
+  └─ ReleasePostureStress(float): void
+  Implementa: PlayerStats
 
-IFactory
-  └─ GenerateSquareRange(GameObject animal, GameObject area, int quantity): GameObject[]
+IMind  (Assets/Scripts/IMind.cs)
+  ├─ satisfaction, satisfactionCapacity, mentalFatigue, stress, sleepiness, observationRadius
+  ├─ RestoreMind(float, MindChannel): void
+  └─ DrainMind(float, MindChannel): void
+  Implementa: PlayerStats. Implementará: NPCBase
+
+IMindSimple  (Assets/Scripts/IMindSimple.cs)
+  ├─ fatigue, stress, mood
+  Implementa: CompanionBase (transitorio hasta que llegue NPCBase)
 
 IBondable  (Assets/Scripts/Companion/IBondable.cs)
   ├─ BondWithPlayer: float { get; }
   ├─ GrowBondWithPlayer(float amount): void
-  └─ GetProximityEffect(StatChannel channel): float
+  └─ GetProximityEffect(MindChannel): float
+  Implementa: CompanionBase, WorldBondable
+
+IFactory
+  └─ GenerateSquareRange(GameObject, GameObject, int): GameObject[]
 ```
-
-> **Propuesta pendiente — IBody / IMind:**
-> `IAnimal` se renombraría a `IBody` (cuerpo físico, aplicable también al jugador y NPCs).
-> Se añadiría `IMind` para las stats mentales/emocionales actualmente en `PlayerStats`.
-> `Restore()` enrutaría a `IBody`, `IMind` o `IBondable` según el tipo de efecto.
-> Ver [`docs/ibody-imind.md`](ibody-imind.md) para la propuesta completa.
-
-> **Propuesta pendiente — LivingEntity:**
-> Base compartida para `Animal` y `NPCBase`. Todos los seres vivos comparten los mismos
-> drives (hambre, amenaza, vínculos, ciclo de vida); la diferencia es la sofisticación de
-> respuesta (masa corporal vs habilidades mágicas). Migración planificada para cuando el
-> primer NPC con drives reales entre en desarrollo.
-> Ver [`docs/living-entity.md`](living-entity.md) para el diseño completo.
 
 ## Animales (`Assets/Animals/`)
 

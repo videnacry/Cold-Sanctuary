@@ -11,18 +11,19 @@ using UnityEngine;
 ///   - GetMoodModifier()   → how their personality biases the restoration
 ///   - OnPlayerNearby()    → optional dialogue/reaction hooks
 /// </summary>
-public abstract class CompanionBase : MonoBehaviour, IBondable
+public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
 {
     // ── Inspector ────────────────────────────────────────────────────────────
     [Header("Identity")]
     public string companionName;
 
     [Header("Internal State (0–1)")]
-    [Range(0f, 1f)] public float fatigue;
-    [Range(0f, 1f)] public float stress;
-    [Range(0f, 1f)] public float mood = 0.7f;   // 0 = very low, 1 = very good
+    [field: SerializeField, Range(0f, 1f)] public float fatigue { get; set; }
+    [field: SerializeField, Range(0f, 1f)] public float stress  { get; set; }
+    [field: SerializeField, Range(0f, 1f)] public float mood    { get; set; } = 0.7f;
 
-    [Header("Bond with Player")]
+    [Header("Bond — Player (initial value)")]
+    [Tooltip("Starting bond strength with the player. Other bonds start at 0 and grow through interaction.")]
     [Range(0f, 100f)] public float bondWithPlayer;
 
     [Header("Proximity")]
@@ -32,54 +33,69 @@ public abstract class CompanionBase : MonoBehaviour, IBondable
     [Tooltip("Base restoration per second at full bond and good mood.")]
     public float baseRestorationRate = 0.02f;
 
-    [Tooltip("Which stat channel this companion primarily restores.")]
-    public StatChannel primaryChannel = StatChannel.MentalFatigue;
+    [Tooltip("Which mind channel this companion primarily restores.")]
+    public MindChannel primaryChannel = MindChannel.MentalFatigue;
 
     [Header("Thought Anchors")]
     public List<ThoughtAnchor> anchors = new List<ThoughtAnchor>();
 
     // ── IBondable ────────────────────────────────────────────────────────────
-    public float BondWithPlayer => bondWithPlayer;
 
-    public void GrowBondWithPlayer(float amount)
+    // Non-player bonds (NPC↔NPC, NPC↔object). Player bond lives in bondWithPlayer.
+    readonly System.Collections.Generic.Dictionary<int, float> _otherBonds =
+        new System.Collections.Generic.Dictionary<int, float>();
+
+    public float GetBondStrength(MonoBehaviour source)
     {
-        bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
+        if (source == _playerEntity) return bondWithPlayer;
+        _otherBonds.TryGetValue(source.GetInstanceID(), out float val);
+        return val;
+    }
+
+    public void GrowBond(MonoBehaviour source, float amount)
+    {
+        if (source == _playerEntity)
+        {
+            bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
+            return;
+        }
+        int id = source.GetInstanceID();
+        _otherBonds.TryGetValue(id, out float cur);
+        _otherBonds[id] = Mathf.Clamp(cur + amount, 0f, 100f);
     }
 
     /// <summary>
-    /// Net effect per second on the given stat channel.
-    /// Driven by: bond level + companion mood + fatigue/stress + personality modifier.
-    /// Positive = restores player. Negative = drains player.
+    /// Net effect per second on source's mind channel when nearby.
+    /// Driven by: bond strength + companion mood + fatigue/stress + personality modifier.
+    /// Positive = restores source. Negative = drains source.
     /// </summary>
-    public float GetProximityEffect(StatChannel channel)
+    public float GetProximityEffect(MonoBehaviour source, MindChannel channel)
     {
         if (channel != primaryChannel) return 0f;
 
-        // Bond factor: 0 bond = no effect, 100 bond = full effect
-        float bondFactor = bondWithPlayer / 100f;
-
-        // State factor: tired/stressed companions give less (or drain at extremes)
+        float bondFactor  = GetBondStrength(source) / 100f;
         float stateFactor = mood - (fatigue * 0.5f) - (stress * 0.3f);
         stateFactor = Mathf.Clamp(stateFactor, -0.5f, 1f);
 
-        // Personality modifier (overridden per companion)
-        float moodMod = GetMoodModifier();
-
-        float effect = baseRestorationRate * bondFactor * stateFactor * moodMod;
-        return effect;
+        return baseRestorationRate * bondFactor * stateFactor * GetMoodModifier();
     }
 
     // ── Runtime ──────────────────────────────────────────────────────────────
-    protected PlayerStats _playerStats;
+    protected IMind _playerMind;
+    protected Transform _playerTransform;
+    protected MonoBehaviour _playerEntity; // identity token — used as bond key, no direct stat access
     bool _playerInRange;
 
     protected virtual void Start()
     {
         SetupAnchors();
-        // Find player stats — assumes a single player in scene tagged "Player"
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
-            _playerStats = player.GetComponent<PlayerStats>();
+        {
+            _playerMind      = player.GetComponent<IMind>();
+            _playerTransform = player.transform;
+            _playerEntity    = player.GetComponent<PlayerStats>();
+        }
     }
 
     protected virtual void Update()
@@ -90,9 +106,9 @@ public abstract class CompanionBase : MonoBehaviour, IBondable
 
     void CheckPlayerProximity()
     {
-        if (_playerStats == null) return;
+        if (_playerMind == null) return;
 
-        float dist = Vector3.Distance(transform.position, _playerStats.transform.position);
+        float dist = Vector3.Distance(transform.position, _playerTransform.position);
         bool inRange = dist <= proximityRadius;
 
         if (inRange && !_playerInRange)
@@ -112,24 +128,20 @@ public abstract class CompanionBase : MonoBehaviour, IBondable
 
     void ApplyProximityEffect()
     {
-        float effect = GetProximityEffect(primaryChannel);
+        if (_playerEntity == null) return;
+        float effect = GetProximityEffect(_playerEntity, primaryChannel);
         if (Mathf.Approximately(effect, 0f)) return;
 
         if (effect > 0f)
-            _playerStats.Restore(effect * Time.deltaTime, primaryChannel);
+            _playerMind.RestoreMind( effect * Time.deltaTime, primaryChannel);
         else
-            _playerStats.Drain(-effect * Time.deltaTime, primaryChannel);
+            _playerMind.DrainMind  (-effect * Time.deltaTime, primaryChannel);
     }
 
-    /// <summary>Simulate slow changes to fatigue/stress/mood over time.</summary>
     void SimulateInternalState()
     {
-        // Fatigue builds slowly — subclasses can override the rate
         fatigue = Mathf.Clamp01(fatigue + FatigueRatePerSecond() * Time.deltaTime);
-
-        // Mood drifts toward a resting value based on anchors
-        float restingMood = GetRestingMood();
-        mood = Mathf.MoveTowards(mood, restingMood, 0.001f * Time.deltaTime);
+        mood    = Mathf.MoveTowards(mood, GetRestingMood(), 0.001f * Time.deltaTime);
     }
 
     // ── Abstract / virtual hooks for subclasses ──────────────────────────────

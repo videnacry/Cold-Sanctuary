@@ -33,8 +33,8 @@ public abstract class Carnivore : Animal
             this.busy = true;
             ITarget victim = prey.GetComponent<ITarget>();
             if (victim == null) { this.busy = false; yield break; }
-            IAnimal victimEscape = prey.GetComponent<IAnimal>();
-            if (victimEscape != null) StartCoroutine(victimEscape.Escape(false, hunters));
+            LivingEntity victimEntity = prey.GetComponent<LivingEntity>();
+            victimEntity?.RespondToThreat(this.gameObject);
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
             float cansancio = 0;
@@ -68,8 +68,8 @@ public abstract class Carnivore : Animal
                 }
                 else
                 {
-                    IAnimal victimAnimal = prey.GetComponent<IAnimal>();
-                    bool preyAware = victimAnimal != null && victimAnimal.aware;
+                    LivingEntity victimLiving = prey.GetComponent<LivingEntity>();
+                    bool preyAware = victimLiving != null && victimLiving.aware;
                     if (distance < 300 || preyAware)
                     {
                         this.ActsPrep.run.Prep(this, interval);

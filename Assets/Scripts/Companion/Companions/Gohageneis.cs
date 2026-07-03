@@ -48,10 +48,9 @@ public class Gohageneis : CompanionBase
     {
         base.Update();
 
-        // Fill celebration charge while player is nearby
-        if (_playerStats != null)
+        if (_playerMind != null)
         {
-            float dist = Vector3.Distance(transform.position, _playerStats.transform.position);
+            float dist = Vector3.Distance(transform.position, _playerTransform.position);
             if (dist <= proximityRadius)
             {
                 celebrationCharge += chargeRate * Time.deltaTime;
@@ -71,10 +70,10 @@ public class Gohageneis : CompanionBase
 
     void TriggerCelebrationBurst()
     {
-        if (_playerStats == null) return;
+        if (_playerMind == null) return;
 
-        _playerStats.Restore(burstAmount, StatChannel.Satisfaction);
-        _playerStats.Restore(burstFatigueRelief, StatChannel.MentalFatigue);
+        _playerMind.RestoreMind(burstAmount,       MindChannel.Satisfaction);
+        _playerMind.RestoreMind(burstFatigueRelief, MindChannel.MentalFatigue);
 
         // Hook: play a sound, particle effect, dialogue line
         // e.g. AudioManager.Instance.Play("gohageneis_laugh");

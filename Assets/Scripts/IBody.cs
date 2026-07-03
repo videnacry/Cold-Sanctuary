@@ -1,9 +1,6 @@
 /// <summary>
-/// Physical body interface — per-limb stats and posture stress.
-/// Implemented by the player (PlayerStats) and eventually by NPCs/animals.
-///
-/// Focused on what the asana system needs today.
-/// Will be extended when IAnimal is renamed to IBody (separate task — see DEVLOG §IBody/IMind).
+/// Physical body interface — per-limb stats and posture stress for the asana/training system.
+/// Implemented by PlayerStats. Entities that can be harmed or flee extend LivingEntity.
 /// </summary>
 public interface IBody
 {

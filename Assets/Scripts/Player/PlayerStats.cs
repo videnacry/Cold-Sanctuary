@@ -2,10 +2,9 @@ using UnityEngine;
 
 /// <summary>
 /// Holds all runtime stats for the player.
-/// Implements IBody (per-limb physical stats + posture stress).
-/// Candidate to also implement IMind when that interface is defined — see DEVLOG §IBody/IMind.
+/// Implements IBody (per-limb physical stats + posture stress) and IMind (mental/emotional stats).
 /// </summary>
-public class PlayerStats : MonoBehaviour, IBody
+public class PlayerStats : MonoBehaviour, IBody, IMind
 {
     // ── Satisfaction ────────────────────────────────────────────────────────
     [Header("Satisfaction")]
@@ -67,26 +66,37 @@ public class PlayerStats : MonoBehaviour, IBody
         }
     }
 
+    // ── IMind explicit implementation ────────────────────────────────────────────
+
+    float IMind.satisfaction         => satisfaction;
+    float IMind.satisfactionCapacity => satisfactionCapacity;
+    float IMind.mentalFatigue        => mentalFatigue;
+    float IMind.stress               => stress;
+    float IMind.sleepiness           => sleepiness;
+    float IMind.observationRadius    => observationRadius;
+    void  IMind.RestoreMind(float amount, MindChannel channel) => RestoreMind(amount, channel);
+    void  IMind.DrainMind  (float amount, MindChannel channel) => DrainMind  (amount, channel);
+
     // ── Public helpers ───────────────────────────────────────────────────────
 
-    /// <summary>Apply restoration from an external source (food, rest, companion proximity).
-    /// The restorationMultiplier scales the gain at high satisfaction levels.</summary>
-    public void Restore(float amount, StatChannel channel)
+    /// <summary>Restore a mental stat from an external source (food, rest, companion proximity).
+    /// restorationMultiplier scales the gain at high satisfaction levels.</summary>
+    public void RestoreMind(float amount, MindChannel channel)
     {
         float scaled = amount * restorationMultiplier;
         switch (channel)
         {
-            case StatChannel.Satisfaction:
-                satisfaction = Mathf.Clamp01(satisfaction + scaled / satisfactionCapacity);
+            case MindChannel.Satisfaction:
+                satisfaction  = Mathf.Clamp01(satisfaction + scaled / satisfactionCapacity);
                 break;
-            case StatChannel.MentalFatigue:
+            case MindChannel.MentalFatigue:
                 mentalFatigue = Mathf.Clamp01(mentalFatigue - scaled);
                 break;
-            case StatChannel.Stress:
-                stress = Mathf.Clamp01(stress - scaled);
+            case MindChannel.Stress:
+                stress        = Mathf.Clamp01(stress - scaled);
                 break;
-            case StatChannel.Sleepiness:
-                sleepiness = Mathf.Clamp01(sleepiness - scaled);
+            case MindChannel.Sleepiness:
+                sleepiness    = Mathf.Clamp01(sleepiness - scaled);
                 break;
         }
     }
@@ -113,33 +123,25 @@ public class PlayerStats : MonoBehaviour, IBody
     public void ReleasePostureStress(float amount)
         => postureStress = Mathf.Clamp01(postureStress - amount);
 
-    // ── Apply damage/drain ───────────────────────────────────────────────────
+    // ── Drain ────────────────────────────────────────────────────────────────
 
-    /// <summary>Apply damage/drain to a stat channel.</summary>
-    public void Drain(float amount, StatChannel channel)
+    /// <summary>Apply damage or drain to a mental stat.</summary>
+    public void DrainMind(float amount, MindChannel channel)
     {
         switch (channel)
         {
-            case StatChannel.MentalFatigue:
+            case MindChannel.MentalFatigue:
                 mentalFatigue = Mathf.Clamp01(mentalFatigue + amount);
                 break;
-            case StatChannel.Stress:
-                stress = Mathf.Clamp01(stress + amount);
+            case MindChannel.Stress:
+                stress        = Mathf.Clamp01(stress + amount);
                 break;
-            case StatChannel.Sleepiness:
-                sleepiness = Mathf.Clamp01(sleepiness + amount);
+            case MindChannel.Sleepiness:
+                sleepiness    = Mathf.Clamp01(sleepiness + amount);
                 break;
-            case StatChannel.Satisfaction:
-                satisfaction = Mathf.Clamp01(satisfaction - amount / satisfactionCapacity);
+            case MindChannel.Satisfaction:
+                satisfaction  = Mathf.Clamp01(satisfaction - amount / satisfactionCapacity);
                 break;
         }
     }
-}
-
-public enum StatChannel
-{
-    Satisfaction,
-    MentalFatigue,
-    Stress,
-    Sleepiness
 }

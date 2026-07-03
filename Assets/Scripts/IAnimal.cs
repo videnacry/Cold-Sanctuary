@@ -1,12 +1,2 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public interface IAnimal
-{
-    // Start is called before the first frame update
-    public AnimationsName animationsName { get; }
-    bool aware { get; set; }
-    void Hurt(float damage);
-    IEnumerator Escape(bool team, List<GameObject> enemies);
-}
+// IAnimal was replaced by LivingEntity (Assets/Scripts/LivingEntity.cs).
+// File kept for git history only. Do not add code here.

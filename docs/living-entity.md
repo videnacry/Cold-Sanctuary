@@ -76,56 +76,49 @@ El `RespondToThreat()` puede evolucionar por niveles del arco narrativo:
 - Nivel 3-4: confrontación verbal / ritual
 - Nivel 5+: magia defensiva + coordinación de grupo
 
-## Plan de migración
+## Estado de la migración
 
-**No migrar ahora.** El sistema de `Animal` funciona. La migración rompe escenas existentes.
+**LivingEntity está implementada** (`Assets/Scripts/LivingEntity.cs`).
 
-### Secuencia correcta
+### Lo que se completó
 
-1. **Ahora (este doc):** Diseño reservado, interfaces alineadas.
-2. **Primer NPC con drives reales** (hambre/amenaza):
-   - Crear `LivingEntity` como clase abstracta real
-   - Migrar un animal de prueba (Bunny o Deer — los más simples)
-   - Verificar que `IBondable`, `LifeStage` y los behaviors siguen funcionando
-3. **Después de validar:** migrar el resto de `Animal`
-4. **Cuando existan companions jugables:** `NPCBase` hereda de `LivingEntity`
+- `LivingEntity` creada con drives: `stress`, `trauma`, `fatReserves`, `temperature`, `bonds`, `aware`, `death`, `asleep`
+- `Animal` migrada a `LivingEntity` — `bonds`, `GrowBond`, `CanHarm`, `EffectiveBondGrowthRate`, `HarmVsBond`, `BondGrowthRate`, `MaxFatReserves`, `FatAccumulationRate` viven en LivingEntity
+- Hooks implementados en Animal: `RespondToHunger()`, `EvaluateThreat()`, `RespondToThreat()` (public)
+- `IAnimal` eliminada. `IVital` eliminada. `aware` vive en LivingEntity.
+- Carnivore usa `GetComponent<LivingEntity>()` + `RespondToThreat()` + `.aware`
 
-### Qué migrar de Animal
+### Siguiente fase — NPCBase
 
-| Animal actual | LivingEntity |
-|---|---|
-| `hunger` (si existe) | `float hunger` en base |
-| `ThreatResponse.cs` | `RespondToThreat()` + `EvaluateThreat()` |
-| `LifeStage` lifecycle | `LifeStage lifeStage` en base |
-| `IBondable` impl | `IBondable bonds` en base |
-| `bodyMass` | queda en `Animal` (no aplica a NPCs) |
+Ver `docs/architecture.md` §NPCBase y el diseño en DEVLOG.md.
+
+```
+NPCBase : LivingEntity, IMind, IBondable
+  └─ CompanionBase (capa de interacción con el jugador)
+       └─ Goluis / Panterilia / Gohageneis (solo parámetros)
+```
 
 ### Qué NO sube a LivingEntity
 
-- `bodyMass` — sólo animales
-- `Family`, `FamilyGenerator` — solo animales (NPCs tienen grupos distintos)
-- Spawning logic — sólo animales
-- `Carnivore`/`Herbivore` split — sólo animales
+- `hungry`, `exhaustion`, `lp`, `sensibility` — mecánicas específicas de Animal
+- `Family`, `FamilyGenerator` — solo animales
+- Spawning logic — solo animales
+- `Carnivore`/`Herbivore` split — solo animales
 
 ## Relación con IBody / IMind
 
-`LivingEntity` no implementa `IBody` ni `IMind` directamente.
+`LivingEntity` no implementa `IBody` ni `IMind`.
 Los drives de `LivingEntity` son comportamentales (qué decide hacer el ser).
-`IBody`/`IMind` son capacitivos (qué puede hacer físicamente/mentalmente).
+`IBody`/`IMind` son capacitivos (qué puede hacer).
 
 ```
-LivingEntity.RespondToHunger()
-    → consulta IMind.stress para modular urgencia
-    → consulta IBody.postureStress para ver si puede moverse
-
-NPCBase : LivingEntity, IBody, IMind  (implementa los tres)
-Animal  : LivingEntity                 (solo drives, sin IMind sofisticado)
-PlayerEntity : LivingEntity            (IBody via PlayerStats, IMind pendiente)
+NPCBase : LivingEntity, IMind, IBondable
+Animal  : LivingEntity  (sin IMind sofisticado — solo drives básicos)
+PlayerStats             (implementa IBody + IMind; no extiende LivingEntity todavía)
 ```
 
 ## Archivos relacionados
 
-- `docs/ibody-imind.md` — especificación de IBody/IMind
-- `docs/behavior-system.md` — sistema presa/amenaza/vínculos actual (base de Animal)
-- `Assets/Animals/Animal.cs` — clase actual a migrar eventualmente
-- `Assets/Scripts/IAnimal.cs` — interfaz que LivingEntity absorberá
+- `Assets/Scripts/LivingEntity.cs` — implementación actual
+- `docs/ibody-imind.md` — estado de IMind/IBody
+- `Assets/Animals/Animal.cs` — primera subclase de LivingEntity

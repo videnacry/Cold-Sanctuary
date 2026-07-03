@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Attach to any world object or place that can form a bond with the player:
+/// Attach to any world object or place that can form a bond:
 /// a yoga mat, the sun, a mountain, a street, a ring.
+/// Any entity (player, NPC, companion) can build bond with this object.
 ///
 /// Register with BondActivityManager.RegisterBondable(id, this) on Start.
 /// </summary>
@@ -14,25 +16,32 @@ public class WorldBondable : MonoBehaviour, IBondable
 
     public string displayName;
 
-    [Header("Bond")]
+    [Header("Bond — Player (initial value)")]
+    [Tooltip("Starting bond strength with the player. Other bonds start at 0.")]
     [Range(0f, 100f)] public float bondWithPlayer;
 
     [Header("Proximity Restoration (optional)")]
-    [Tooltip("If > 0, restores this stat when the player is nearby (like a companion).")]
-    public StatChannel restorationChannel = StatChannel.Satisfaction;
+    [Tooltip("If > 0, restores this mind channel when an entity with bond is nearby.")]
+    public MindChannel restorationChannel = MindChannel.Satisfaction;
     public float restorationRatePerSecond;
     public float proximityRadius = 3f;
 
-    PlayerStats _playerStats;
+    IMind _playerMind;
+    Transform _playerTransform;
+    MonoBehaviour _playerEntity;
     BondActivityManager _manager;
+
+    readonly Dictionary<int, float> _otherBonds = new Dictionary<int, float>();
 
     void Start()
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
-            _playerStats = player.GetComponent<PlayerStats>();
-            _manager     = player.GetComponent<BondActivityManager>();
+            _playerMind      = player.GetComponent<IMind>();
+            _playerTransform = player.transform;
+            _playerEntity    = player.GetComponent<PlayerStats>();
+            _manager         = player.GetComponent<BondActivityManager>();
         }
 
         if (_manager != null && !string.IsNullOrEmpty(bondableId))
@@ -47,28 +56,42 @@ public class WorldBondable : MonoBehaviour, IBondable
 
     void Update()
     {
-        if (_playerStats == null || restorationRatePerSecond <= 0f) return;
+        if (_playerMind == null || restorationRatePerSecond <= 0f) return;
 
-        float dist = Vector3.Distance(transform.position, _playerStats.transform.position);
+        float dist = Vector3.Distance(transform.position, _playerTransform.position);
         if (dist <= proximityRadius)
         {
-            // Scale restoration by bond — low bond = minimal effect
-            float bondFactor = bondWithPlayer / 100f;
-            _playerStats.Restore(restorationRatePerSecond * bondFactor * Time.deltaTime, restorationChannel);
+            float effect = GetProximityEffect(_playerEntity, restorationChannel);
+            if (effect > 0f)
+                _playerMind.RestoreMind(effect * Time.deltaTime, restorationChannel);
         }
     }
 
     // ── IBondable ─────────────────────────────────────────────────────────────
 
-    public float BondWithPlayer => bondWithPlayer;
+    public float GetBondStrength(MonoBehaviour source)
+    {
+        if (source == _playerEntity) return bondWithPlayer;
+        _otherBonds.TryGetValue(source.GetInstanceID(), out float val);
+        return val;
+    }
 
-    public void GrowBondWithPlayer(float amount)
-        => bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
+    public void GrowBond(MonoBehaviour source, float amount)
+    {
+        if (source == _playerEntity)
+        {
+            bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
+            return;
+        }
+        int id = source.GetInstanceID();
+        _otherBonds.TryGetValue(id, out float cur);
+        _otherBonds[id] = Mathf.Clamp(cur + amount, 0f, 100f);
+    }
 
-    public float GetProximityEffect(StatChannel channel)
+    public float GetProximityEffect(MonoBehaviour source, MindChannel channel)
     {
         if (channel != restorationChannel) return 0f;
-        return restorationRatePerSecond * (bondWithPlayer / 100f);
+        return restorationRatePerSecond * (GetBondStrength(source) / 100f);
     }
 
     // ── Gizmos ────────────────────────────────────────────────────────────────

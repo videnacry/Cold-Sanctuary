@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public enum Reaction { Flee, Fight, HitAndRun }
 
-public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, ICarrier, IFactory
+public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactory
 {
     #region Family
     /// <summary>
@@ -111,73 +111,42 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, ICarrie
     public virtual bool CanHitAndRun => false;
     public virtual float PackFactor => 0.5f;
 
-    // Bond system (Fase 4)
-    public virtual float HarmVsBond => 0.5f;
-    public virtual float BondGrowthRate => 1f;
-    public List<Bond> bonds = new List<Bond>();
-
-    /// <summary>
-    /// BondGrowthRate real: base * etapa de vida * (1 - trauma).
-    /// Crías vinculan 3x más rápido; el trauma frena el vínculo.
-    /// </summary>
-    public float EffectiveBondGrowthRate
-    {
-        get
-        {
-            float lifeMultiplier = lifeStage == LifeStage.child ? 3f
-                                 : lifeStage == LifeStage.teen  ? 1.5f
-                                 : 0.5f;
-            return BondGrowthRate * lifeMultiplier * (1f - trauma / 100f);
-        }
-    }
-
-    public Bond GetBond(ITarget target)
-    {
-        foreach (Bond b in bonds)
-            if (b.target == target) return b;
-        return null;
-    }
-
-    public void GrowBond(ITarget target, BondType type, float amount)
-    {
-        Bond b = GetBond(target);
-        if (b == null) { b = new Bond(target, type); bonds.Add(b); }
-        b.value = Mathf.Clamp(b.value + amount * EffectiveBondGrowthRate, 0f, 100f);
-    }
-
-    /// <summary> False si el vínculo es suficientemente alto para bloquear el daño. </summary>
-    public bool CanHarm(ITarget target)
-    {
-        if (target == null) return true;
-        Bond b = GetBond(target);
-        if (b == null) return true;
-        return b.value < HarmVsBond * 100f; // bond=100 siempre bloquea (100 < 100 = false)
-    }
-
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
     public virtual float ThreatThreshold       => 0.5f;
     public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
     public virtual float NestSecurityLevel     => 0.5f;
-    public virtual float MaxFatReserves        => 20f;
-    public virtual float FatAccumulationRate   => 0.5f;
-
     // Post-natal stage config (override per species; null = sin sistema post-natal)
     public virtual PostNatalStage[] PostNatalStages => null;
 
-    // State
-    public bool asleep = false, death = false, busy = false;
+    // ── LivingEntity hooks ───────────────────────────────────────────────────────
+
+    protected override char LifeStageChar => lifeStage;
+
+    protected override void RespondToHunger() => StartCoroutine(Feed());
+
+    protected override float EvaluateThreat(GameObject source)
+    {
+        if (source == null || rig == null) return 0f;
+        float enemyMass  = source.GetComponent<Rigidbody>()?.mass ?? 0f;
+        float enemySpeed = source.GetComponent<NavMeshAgent>()?.speed ?? 0f;
+        return enemyMass * (enemySpeed * 0.5f) / Mathf.Max(rig.mass, 1f);
+    }
+
+    public override void RespondToThreat(GameObject threat)
+    {
+        if (threat == null) return;
+        StartCoroutine(Escape(false, new System.Collections.Generic.List<GameObject> { threat }));
+    }
+
+    // State — hunger/exhaustion/lp are animal-specific; stress/trauma/fatReserves/temperature/death/asleep live in LivingEntity
+    public bool  busy = false;
     public float hungry, exhaustion, lp, sensibility;
-    public float trauma      = 0f;   // 0–100; frena bond, crece con daño
-    public float stress      = 0f;   // 0–1; estrés ambiental/ansiedad
-    public float fatReserves = 0f;   // reservas de grasa; universal, maxFatReserves por especie
-    public float temperature = 38f;  // temperatura corporal (°C)
-    public bool firstSolidEaten = false; // cría comió un FoodItem por primera vez
-    public bool firstNestExit   = false; // cría salió del nido una vez sola
+    public bool  firstSolidEaten = false; // cría comió un FoodItem por primera vez
+    public bool  firstNestExit   = false; // cría salió del nido una vez sola
 
 
     // Gameobject components
-    public bool aware { get; set; } = false;
     public NavMeshAgent nav;
     public Rigidbody rig;
     public Animator ani;
@@ -240,8 +209,8 @@ public abstract class Animal : MonoBehaviour, IAnimal, ITarget, IEdible, ICarrie
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
         while (1 == 1)
         {
-            if (hungry >= 0 && !asleep && !this.busy)
-                StartCoroutine("Feed");
+            if (hungry >= 0 && !asleep && !busy)
+                RespondToHunger();
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             yield return new WaitForSeconds(interval);
