@@ -53,6 +53,13 @@ IBondable  (Assets/Scripts/Companion/IBondable.cs)
 > `Restore()` enrutaría a `IBody`, `IMind` o `IBondable` según el tipo de efecto.
 > Ver [`docs/ibody-imind.md`](ibody-imind.md) para la propuesta completa.
 
+> **Propuesta pendiente — LivingEntity:**
+> Base compartida para `Animal` y `NPCBase`. Todos los seres vivos comparten los mismos
+> drives (hambre, amenaza, vínculos, ciclo de vida); la diferencia es la sofisticación de
+> respuesta (masa corporal vs habilidades mágicas). Migración planificada para cuando el
+> primer NPC con drives reales entre en desarrollo.
+> Ver [`docs/living-entity.md`](living-entity.md) para el diseño completo.
+
 ## Animales (`Assets/Animals/`)
 
 - **`Animal.cs`** — base abstracta. Estado central (hambre, agotamiento, LP, conciencia),
