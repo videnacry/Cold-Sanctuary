@@ -77,6 +77,15 @@ public class AsanaQueue : MonoBehaviour
         benefitAccumulated = 0f;
     }
 
+    /// <summary>Immediately ends the active asana without completing it (e.g. on fall).</summary>
+    public void ForceEnd()
+    {
+        activeAsana        = null;
+        onSecondSide       = false;
+        benefitAccumulated = 0f;
+        _queue.Clear();
+    }
+
     // --- Container helpers ---
     public float GetContainer(StatType stat)
     {

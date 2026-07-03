@@ -141,10 +141,26 @@ dedicado que implemente `IBody`. La maestra, por ejemplo:
 
 ---
 
-## 5. Pendientes de implementar
+## 5. TeacherNPC — añadir personalidad
 
-- [ ] `PostureStressHandler.cs` — attached al Player; lee `IBody.postureStress` y aplica tambaleo/caída a `PlayerCtrl`
-- [ ] `TeacherNPC.cs` — lee `List<PositionEvaluation>` del resultado y elige línea de diálogo
+`TeacherNPC` es abstracta. La primera implementación concreta es `MaestraTeacher`.
+Para añadir un nuevo profesor:
+
+1. Crear `MiProfesor : TeacherNPC`
+2. Sobrescribir los cuatro hooks: `OnWrongFormula`, `OnImpossiblePositions`, `OnShortcutErrors`, `OnSuccess`
+3. Añadir el componente al GameObject del NPC en escena
+4. Enlazar a la Palette: desde el sistema que abre la paleta, llamar `teacher.EvaluateResult(result)` en el callback `OnFormulaEvaluated`
+
+Los helpers `PartName(BodyPart)` y `DimName(BodyStatDimension)` ya están en español en la clase base.
+`Say(string)` usa `Debug.Log` — reemplazar con `DialogueManager` cuando exista.
+
+---
+
+## 6. Pendientes de implementar
+
+- [x] `PostureStressHandler.cs` — tambaleo/caída en `PlayerCtrl`
+- [x] `TeacherNPC.cs` + `MaestraTeacher.cs` — feedback por calidad de posición
 - [ ] Completar requisitos de posición para todas las asanas del primer set
 - [ ] Calibrar valores iniciales de `bodyStats` con feedback de jugabilidad
 - [ ] Definir cómo se visualiza la calidad de posición en la Palette (color de botón, vibración, icono)
+- [ ] `PostureStressHandler.RequestCameraShake` — reemplazar piggyback de `mentalFatigue` con API real de shake en `CameraManager`
