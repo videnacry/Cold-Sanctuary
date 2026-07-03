@@ -2,9 +2,10 @@ using UnityEngine;
 
 /// <summary>
 /// Holds all runtime stats for the player.
-/// Other systems read these values to drive effects, UI, and mechanics.
+/// Implements IBody (per-limb physical stats + posture stress).
+/// Candidate to also implement IMind when that interface is defined — see DEVLOG §IBody/IMind.
 /// </summary>
-public class PlayerStats : MonoBehaviour
+public class PlayerStats : MonoBehaviour, IBody
 {
     // ── Satisfaction ────────────────────────────────────────────────────────
     [Header("Satisfaction")]
@@ -45,6 +46,17 @@ public class PlayerStats : MonoBehaviour
     public float velocity = 1f;
     public float physicalResistance = 1f;
 
+    // ── IBody — per-limb stats ───────────────────────────────────────────────
+    // Array indexed by (int)BodyPart: Elbows=0, Hands=1, Knees=2, Feet=3, Hips=4, Back=5, Shoulders=6, Head=7
+    [Header("Per-Limb Stats (IBody)")]
+    public BodyPartStats[] bodyStats = new BodyPartStats[8];
+
+    [HideInInspector] public float postureStress { get; private set; }
+
+    // ── PostureStress thresholds ─────────────────────────────────────────────
+    public const float StumbleThreshold = 0.5f;
+    public const float FallThreshold    = 1.0f;
+
     void Update()
     {
         // Passive satisfaction fill
@@ -78,6 +90,30 @@ public class PlayerStats : MonoBehaviour
                 break;
         }
     }
+
+    // ── IBody implementation ─────────────────────────────────────────────────
+
+    public BodyPartStats GetBodyPartStats(BodyPart part)
+    {
+        int idx = (int)part;
+        if (idx < 0 || idx >= bodyStats.Length) return new BodyPartStats();
+        return bodyStats[idx];
+    }
+
+    public void TrainBodyPart(BodyPart part, BodyStatDimension dimension, float delta)
+    {
+        int idx = (int)part;
+        if (idx < 0 || idx >= bodyStats.Length) return;
+        bodyStats[idx].Train(dimension, delta);
+    }
+
+    public void AccumulatePostureStress(float amount)
+        => postureStress = Mathf.Clamp01(postureStress + amount);
+
+    public void ReleasePostureStress(float amount)
+        => postureStress = Mathf.Clamp01(postureStress - amount);
+
+    // ── Apply damage/drain ───────────────────────────────────────────────────
 
     /// <summary>Apply damage/drain to a stat channel.</summary>
     public void Drain(float amount, StatChannel channel)
