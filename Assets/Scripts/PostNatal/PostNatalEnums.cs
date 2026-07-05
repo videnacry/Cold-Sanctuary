@@ -1,4 +1,4 @@
-public enum NestType             { Burrow, OpenField, Beach, SnowDen }
+public enum NestType             { Burrow, OpenField, Beach, SnowDen, OpenWater }
 public enum FatherRole           { Absent, Provider, ActiveCaregiver }
 public enum MotherPresencePattern { Continuous, FrequentVisits, MinimalVisits, ProgrammedAbandonment }
 public enum WeaningType          { Gradual, Abrupt }

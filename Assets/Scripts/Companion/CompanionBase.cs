@@ -42,13 +42,13 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     // ── IBondable ────────────────────────────────────────────────────────────
 
     // Non-player bonds (NPC↔NPC, NPC↔object). Player bond lives in bondWithPlayer.
-    readonly System.Collections.Generic.Dictionary<int, float> _otherBonds =
-        new System.Collections.Generic.Dictionary<int, float>();
+    readonly System.Collections.Generic.Dictionary<EntityId, float> _otherBonds =
+        new System.Collections.Generic.Dictionary<EntityId, float>();
 
     public float GetBondStrength(MonoBehaviour source)
     {
         if (source == _playerEntity) return bondWithPlayer;
-        _otherBonds.TryGetValue(source.GetInstanceID(), out float val);
+        _otherBonds.TryGetValue(source.GetEntityId(), out float val);
         return val;
     }
 
@@ -59,7 +59,7 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
             bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
             return;
         }
-        int id = source.GetInstanceID();
+        EntityId id = source.GetEntityId();
         _otherBonds.TryGetValue(id, out float cur);
         _otherBonds[id] = Mathf.Clamp(cur + amount, 0f, 100f);
     }

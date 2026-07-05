@@ -4,8 +4,33 @@
 > - **Fauna** — comportamiento animal, ciclos post-natales, vínculo jugador↔cría.
 >   Diseño técnico: [`docs/behavior-system.md`](docs/behavior-system.md) · Gameplay: [`docs/fauna-gameplay.md`](docs/fauna-gameplay.md)
 > - **Jugador** — stats, asanas, ejercicios, compañeros, narrativa. Este archivo.
+> - **Mundo / Simulación** — áreas, tareas autónomas, promociones, Director. [`docs/world-simulation.md`](docs/world-simulation.md)
+> - **Jugabilidad y loops** — mecánicas de combate, tabla periódica como Pokédex, FOMO. [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
 
 ## Estado actual
+
+### Simulación del Mundo ✅ (nuevo)
+- [x] `SanctuaryAreaType` — 13 zonas en 5 tiers
+- [x] `AreaTask` — tareas serializables con efectos de stats + tabla periódica
+- [x] `SanctuaryArea` — zona física con requisitos de entrada, tareas y residentes
+- [x] `WorldCharacter` — entidad autónoma (jugador o NPC), loop de tareas, eventos de promoción
+- [x] `SanctuaryDirector` — singleton de la Magnate: intercepta llegadas, evalúa, promueve individualmente o en grupo
+- Ver diseño completo: [`docs/world-simulation.md`](docs/world-simulation.md)
+
+### Combate / Jugabilidad ✅ (nuevo)
+- [x] `PeriodicTableManager` — singleton. 118 elementos como Pokédex. `Discover(symbol)`, grupos, `OnElementDiscovered`
+- [x] `ElementFragment` — pickup drop de mob procesado. Trigger → intento de descubrimiento
+- [x] `IngredientMob` — mob de ingrediente. Estados Idle/Aggro/Attack/Processed. Reproduce (levadura). Drops fragmentos
+- [x] `KitchenScaleController` — miniaturización al entrar a la cocina. Escala el root de la cocina ×8, ajusta FOV, activa mobs
+- [x] `PlayerCombat` — SphereCast de ataque, daño escalado por Strength, cooldown, armor/tool slots
+- [x] `NPCCombatBehavior` — compañeros pelean autónomamente en la misma sala, daño basado en su Strength
+- [x] `SanctuaryMission` (ScriptableObject) — misiones tipo IngredientCollection, YeastControl, AreaClear
+- [x] `MissionTracker` — singleton. Gestiona progreso, recompensas en coins + items, fallo en YeastControl
+- [x] `ItemData` (ScriptableObject) — Tool, Armor, Consumable, Fragment con stats de modificación
+- [x] `CoinWallet` — balance de monedas, Earn/Spend con eventos
+- [x] `Inventory` — items por cantidad, Equip (→ PlayerCombat), Sell (→ CoinWallet), UseConsumable
+- TODOs pendientes: NavMeshAgent, Animator triggers, VFX de golpe/recogida, UI de inventario/vendor
+- Ver diseño completo: [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
 
 ### UI / Interfaces
 - [x] **Radar de animales** (`AnimalRadar.cs`, `FollowingArrays.cs`)
@@ -737,25 +762,11 @@ Sistemas añadidos con el último pull. Se analizan en relación al código ya e
 
 ### Gaps y conflictos a resolver
 
-#### 1. StatType (Asana) vs StatChannel (PlayerStats) — desconectados
+#### ~~1. StatType vs StatChannel — desconectados~~ ✅ RESUELTO (03/07/2026)
 
-`AsanaQueue` entrega beneficios a su propio `Dictionary<StatType, float> _containers`
-(Strength/Flexibility/Balance/Endurance). `PlayerStats` tiene stats completamente distintas
-(Satisfaction/MentalFatigue/Stress/Sleepiness via `StatChannel`).
-
-**El beneficio de las asanas no llega a PlayerStats actualmente.**
-
-Propuesta de mapeo (a evaluar según diseño):
-
-| StatType (asana) | StatChannel (player) |
-|---|---|
-| StrengthAndGrounding | MentalFatigue (reduce) |
-| Flexibility | Stress (reduce) |
-| Balance | Sleepiness (reduce) |
-| Endurance | (no mapeo directo — puede afectar physicalResistance) |
-
-Implementación mínima: en `AsanaQueue.DeliverBenefit()`, además de llenar el contenedor propio,
-llamar a `playerStats.Restore(gain, mappedChannel)`. Requiere referencia a `PlayerStats` en `AsanaQueue`.
+`Asana.cs` ahora tiene `StatChannel channel` — el diseñador asigna por asana qué stat del jugador restaura.
+`AsanaQueue.DeliverBenefit()` llama `_playerStats.Restore(gain, activeAsana.channel)` en cada tick.
+Referencia a `PlayerStats` resuelta vía `GetComponent<PlayerStats>()` en `Start()`.
 
 #### 2. `Palette.GetPlayerBond()` devuelve 0
 

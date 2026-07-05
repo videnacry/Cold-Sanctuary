@@ -19,6 +19,15 @@ public class AsanaQueue : MonoBehaviour
     // Benefit delivery rate per second (tune in inspector via a wrapper MonoBehaviour)
     public float benefitRate = 1f;
 
+    private PlayerStats _playerStats;
+
+    void Start()
+    {
+        _playerStats = GetComponent<PlayerStats>();
+        if (_playerStats == null)
+            Debug.LogWarning("[AsanaQueue] No PlayerStats found on this GameObject.");
+    }
+
     void Update()
     {
         if (activeAsana == null) return;
@@ -53,6 +62,9 @@ public class AsanaQueue : MonoBehaviour
         float gain = benefitRate * delta;
         SetContainer(activeAsana.statType, Mathf.Min(current + gain, cap));
         benefitAccumulated += gain;
+
+        if (_playerStats != null)
+            _playerStats.RestoreMind(gain, activeAsana.channel);
     }
 
     private void OnLimitReached()

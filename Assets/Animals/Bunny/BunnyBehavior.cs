@@ -221,4 +221,3 @@ public class BunnyBehavior : Herbivore
         } while (wait > 0);
     }
 }
-–

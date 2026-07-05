@@ -19,6 +19,8 @@ public class Asana : ScriptableObject
 
     [Header("Stat")]
     public StatType statType;
+    [Tooltip("Which PlayerStats channel this asana restores when practiced.")]
+    public MindChannel channel = MindChannel.MentalFatigue;
     public float containerBase = 50f;
     public float containerMax  = 100f;
 

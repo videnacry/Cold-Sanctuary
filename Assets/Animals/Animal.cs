@@ -54,7 +54,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
 
 
     // ITarget
-    public float Mass => rig != null ? rig.mass : Body.mass;
+    public float Mass => rig != null ? rig.mass : Body.baseMass;
     public float Speed => nav != null ? nav.speed : 0f;
     public virtual char Faction => 'a';
     public bool Dead => death;

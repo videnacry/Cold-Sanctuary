@@ -31,7 +31,7 @@ public class WorldBondable : MonoBehaviour, IBondable
     MonoBehaviour _playerEntity;
     BondActivityManager _manager;
 
-    readonly Dictionary<int, float> _otherBonds = new Dictionary<int, float>();
+    readonly Dictionary<EntityId, float> _otherBonds = new Dictionary<EntityId, float>();
 
     void Start()
     {
@@ -72,7 +72,7 @@ public class WorldBondable : MonoBehaviour, IBondable
     public float GetBondStrength(MonoBehaviour source)
     {
         if (source == _playerEntity) return bondWithPlayer;
-        _otherBonds.TryGetValue(source.GetInstanceID(), out float val);
+        _otherBonds.TryGetValue(source.GetEntityId(), out float val);
         return val;
     }
 
@@ -83,7 +83,7 @@ public class WorldBondable : MonoBehaviour, IBondable
             bondWithPlayer = Mathf.Clamp(bondWithPlayer + amount, 0f, 100f);
             return;
         }
-        int id = source.GetInstanceID();
+        EntityId id = source.GetEntityId();
         _otherBonds.TryGetValue(id, out float cur);
         _otherBonds[id] = Mathf.Clamp(cur + amount, 0f, 100f);
     }
