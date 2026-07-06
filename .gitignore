@@ -372,3 +372,7 @@ Library
 ProjectSettings
 UserSettings
 Logs
+
+# Canal de tareas Claude <-> usuario — nunca se sube
+claude-code.txt
+claude-answer.txt
