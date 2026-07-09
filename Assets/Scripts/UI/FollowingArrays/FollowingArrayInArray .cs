@@ -20,18 +20,23 @@ public struct FollowingArrayInArray
                 foreach (GameObject element in followingArray.array)
                 {
                     GameObject followingElement = MonoBehaviour.Instantiate(followingArray.arrayItemTemplate, user.transform);
+                    followingElement.SetActive(true); // Instantiate copia activeSelf del template — las plantillas se guardan inactivas
                     if (followingArray.followingElementBehavior != null)
                     {
                         FollowingElement followingElementScript = followingElement.AddComponent<FollowingElement>();
-                        followingElementScript.followingElementBehavior = followingArray.followingElementBehavior;
-                        followingElementScript.followingElementBehavior.Init(element);
+                        // Misma razón que en FollowingArrayInScript: instancia propia por elemento.
+                        FollowingElementBehavior behaviorInstance =
+                            (FollowingElementBehavior)followingElement.AddComponent(followingArray.followingElementBehavior.GetType());
+                        followingElementScript.followingElementBehavior = behaviorInstance;
+                        behaviorInstance.Init(element);
                     }
                     uiElements.Enqueue(followingElement);
                 }
             }
-            else 
+            else
             {
                 GameObject followingElement = MonoBehaviour.Instantiate(followingArray.arrayItemTemplate, user.transform);
+                followingElement.SetActive(true); // Instantiate copia activeSelf del template — las plantillas se guardan inactivas
                 uiElements.Enqueue(followingElement);
             }
         }

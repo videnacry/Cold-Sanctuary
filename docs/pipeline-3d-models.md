@@ -35,7 +35,7 @@ y UVs de lightmap sin intervención manual.
 | **Zorro** (Fox) | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Husky** | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Conejo** (Bunny) | ✅ Extraído | Sketchfab | FBX |
-| **Oso Polar** | ⚠️ Pendiente conversión | Sketchfab (kenchoo) | GLB → FBX |
+| **Oso Polar** | ✅ Convertido e integrado | Sketchfab (kenchoo, CC-BY-4.0) | GLB → FBX |
 | **Foca** (Seal) | ⚠️ Pendiente conversión | Sketchfab (rkuhlf) | GLB → FBX |
 | **Ballena** (Whale) | 🔽 Por descargar | Quaternius Fish Pack | FBX |
 
@@ -50,12 +50,19 @@ Un solo pack con **9 animales árticos**, todos rigged con 19 animaciones y 29 b
 
 Si se compra la versión de pago ($89 el pack o individual más barato), se obtiene FBX directo sin conversión.
 
-### Conversión GLB → FBX (Oso Polar y Foca)
+### Conversión GLB → FBX (Oso Polar ✅, Foca pendiente)
 
 Los archivos GLB están en tu carpeta de Descargas. Para convertirlos:
 - **Online (sin instalar nada):** https://products.aspose.app/3d/conversion/glb-to-fbx
 - **Con Blender:** File → Import → glTF 2.0 → luego File → Export → FBX
 - Una vez convertidos, mover a `Assets/Animals/PolarBear/Models/` y `Assets/Animals/Seal/Models/`
+
+**Oso Polar — hecho:** convertido con Blender en modo headless (`blender --background --python script.py`,
+`bpy.ops.import_scene.gltf()` + `bpy.ops.export_scene.fbx()`, sin decimar — 10.352 vértices, 1 armature,
+conversión limpia en <1s). Factor de escala calculado con el diagnóstico del proyecto (altura cruda
+4.870m → objetivo 1.3m de hombro, factor 0.267 — ver `RealisticScaleFactor["PolarBear"]` en
+`AnimalPrefabGenerator.cs`), longitud resultante ~2.0m consistente con un oso polar real. Aplica el
+mismo patrón que Foca cuando se convierta.
 
 ### Ballena — dónde descargar
 
@@ -212,5 +219,79 @@ Para las animaciones de comportamiento (idle ansioso, agacharse, explorar):
 - Se animan directamente en Blender y se exportan como clips separados
 - O se usan herramientas como **DeepMotion** (IA de animación) para génerar animaciones
   de cuerpo completo a partir de video
+
+---
+
+## Decimar modelos pesados en Blender (5.1.2) — usar modo headless, no la GUI
+
+La cocina (`Kitchen.fbx`, exportado desde 3ds Max) llegó con **8.98M polígonos**. Intentar
+arreglarlo a mano en la GUI de Blender (Join + Decimate modifier sobre esa densidad) la dejó
+congelada ("No responde") repetidamente durante más de una hora — cualquier click sobre el
+objeto pesado (seleccionar, abrir un dropdown, entrar en Edit Mode) podía tardar 30–90s o más
+en responder, y el "Add Modifier" ni siquiera llegaba a desplegar el menú.
+
+**La solución fue no tocar la GUI en absoluto** y correr Blender en modo background con un
+script Python:
+
+```bash
+"C:\Program Files\Blender Foundation\Blender 5.1\blender.exe" --background --python script.py
+```
+
+Flujo recomendado para cualquier modelo por encima de ~1M polígonos:
+1. `bpy.ops.wm.read_factory_settings(use_empty=True)` — escena vacía, sin overhead de UI.
+2. Importar el FBX/GLB de origen.
+3. **Decimar objeto por objeto ANTES de hacer Join**, no la malla ya unida. Unir primero y
+   decimar después revienta la memoria (ver bug #2 abajo) porque el modifier de Decimate
+   necesita construir estructuras auxiliares sobre el total de vértices de una sola vez.
+4. Recién ahí, `bpy.ops.object.join()` sobre los objetos ya livianos.
+5. Guardar un **checkpoint `.blend`** antes de exportar. La exportación puede fallar o
+   colgarse (ver bug #3) y así el reintento no repite el trabajo pesado de decimar.
+6. Exportar.
+
+### Bug #1 — el importador FBX crashea con luces: `CyclesLightSettings.cast_shadow`
+
+Si el FBX trae un objeto de tipo Light (típico en exports de 3ds Max con iluminación de
+escena), `bpy.ops.import_scene.fbx()` lanza:
+
+```
+AttributeError: 'CyclesLightSettings' object has no attribute 'cast_shadow'
+```
+
+Es un bug del propio addon `io_scene_fbx` de esta build de Blender — asume un atributo que no
+existe en esta versión del engine Cycles. Workaround (parchear la clase en runtime *antes* de
+importar):
+
+```python
+bpy.ops.preferences.addon_enable(module='cycles')
+import cycles.properties as _cycles_props   # OJO: bpy.types.CyclesLightSettings NO es
+                                             # la misma clase que esta — hay que parchear
+                                             # cycles.properties.CyclesLightSettings,
+                                             # si no, el parche no tiene efecto.
+if not hasattr(_cycles_props.CyclesLightSettings, 'cast_shadow'):
+    _cycles_props.CyclesLightSettings.cast_shadow = bpy.props.BoolProperty(
+        name="Cast Shadow", default=True
+    )
+```
+
+### Bug #2 — Decimate sobre la malla ya unida (7M+ verts) → OOM / crash
+
+Aplicar el modifier Decimate sobre un solo objeto de ~7.1M vértices (después de Join) crashea
+con `EXCEPTION_ACCESS_VIOLATION` / "Malloc returns null" incluso con ~5GB ya reservados.
+Arreglo: decimar cada uno de los objetos originales por separado (cada uno es pequeño) y
+recién después unirlos. Bajó 7.1M → ~490K vértices (ratio 0.05) sin problema.
+
+### Bug #3 — el exportador FBX se cuelga con muchos material slots en una sola malla
+
+Con la malla ya unida (376 material slots en un solo objeto, ~490K vértices),
+`bpy.ops.export_scene.fbx()` tardó **más de 30 minutos** sin terminar (ni colgado ni con error
+— la CPU seguía subiendo, solo increíblemente lento). Reducir a un único material placeholder
+tampoco lo arregló. El exportador FBX de Blender está escrito en Python puro y parece tener
+comportamiento cuadrático (o peor) sobre mallas grandes con muchos material slots.
+
+**Arreglo: exportar a OBJ en vez de FBX** (`bpy.ops.wm.obj_export(...)`) — mismo mesh, mismos
+376 materiales, terminó en **2.5 segundos**. Unity importa `.obj` sin problema (mismo patrón
+ya usado para `YogaStudio.obj`). Si en el futuro hace falta FBX específicamente, probar
+primero si el cuello de botella persiste en una build de Blender más reciente antes de asumir
+que el modelo es el problema.
 
 Ver también: `docs/architecture.md` — sección Sistema de compañeros (IBondable).

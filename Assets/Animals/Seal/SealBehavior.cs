@@ -107,6 +107,9 @@ public class SealBehavior : Herbivore
     public override OrganicMaterial Material => OrganicMaterial.Fish;
     public override float Toughness => 0.5f;
 
+    // Pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
+    protected override bool GrazesOnLand => false;
+
     void Start() => Init();
 
     public IEnumerator Shooted(GameObject bullet)

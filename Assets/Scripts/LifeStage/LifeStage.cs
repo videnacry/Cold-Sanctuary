@@ -139,8 +139,10 @@ public abstract class LifeStage
         {
             script.ActsPrep.walk.Prep(script, duration);
             List<GameObject> birds = new List<GameObject>(BirdBehavior.population);
-            script.target = birds[Random.Range(0, BirdBehavior.population.Count - 1)];
-            script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
+            if (birds.Count == 0) return;
+            script.target = birds[Random.Range(0, birds.Count)];
+            if (script.nav != null && script.nav.isOnNavMesh)
+                script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
         };
     }
     public SubEvent Rest()
@@ -158,7 +160,7 @@ public abstract class LifeStage
             if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
                 script.ActsPrep.run.Prep(script, duration);
-                script.nav.SetDestination(script.HomeOrigin);
+                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(script.HomeOrigin);
             }
         };
     }
@@ -178,7 +180,7 @@ public abstract class LifeStage
             if (carrier.CarriedFood != null)
             {
                 float dist = Vector3.Distance(script.transform.position, nestPos);
-                script.nav.SetDestination(nestPos);
+                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nestPos);
                 script.ActsPrep.run.Prep(script, duration);
                 if (dist < 10f)
                 {
@@ -200,7 +202,7 @@ public abstract class LifeStage
                     carrier.PickUp(nearby);
                 else
                 {
-                    script.nav.SetDestination(nearby.transform.position);
+                    if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(nearby.transform.position);
                     script.ActsPrep.walk.Prep(script, duration);
                 }
                 return;

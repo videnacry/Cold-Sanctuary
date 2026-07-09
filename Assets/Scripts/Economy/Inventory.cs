@@ -95,7 +95,7 @@ public class Inventory : MonoBehaviour
     {
         if (item == null || GetQuantity(item) < 1) return false;
 
-        var combat = FindFirstObjectByType<PlayerCombat>();
+        var combat = FindAnyObjectByType<PlayerCombat>();
 
         switch (item.itemType)
         {
@@ -146,7 +146,7 @@ public class Inventory : MonoBehaviour
         if (item == null || item.itemType != ItemType.Consumable) return false;
         if (!RemoveItem(item, 1)) return false;
 
-        var stats = FindFirstObjectByType<PlayerStats>();
+        var stats = FindAnyObjectByType<PlayerStats>();
         if (stats != null && item.restoreAmount > 0)
             stats.RestoreMind(item.restoreAmount, item.restoreChannel);
 

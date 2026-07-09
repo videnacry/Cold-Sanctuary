@@ -11,7 +11,9 @@ public class FoxBehavior : Carnivore
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(1.0f, 1.0f, 1.0f), 4, 0.09f, 0.2f, 0.05f);
+    // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
+    // altura cruda 2.984m -> objetivo realista de altura de hombro adulto ~0.4m (zorro ártico).
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.134f, 0.134f, 0.134f), 4, 0.09f, 0.2f, 0.05f);
     public Physiognomy body = defaultBody;
     public override Physiognomy Body { get => body; set => body = value; }
 

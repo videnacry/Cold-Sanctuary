@@ -18,9 +18,14 @@ public struct FollowingArrayInScript
             foreach (GameObject element in followingArrayInScript.script.GetHashSetHolded())
             {
                 GameObject followingElement = MonoBehaviour.Instantiate(followingArrayInScript.arrayItemTemplate, user.transform);
+                followingElement.SetActive(true); // Instantiate copia activeSelf del template — las plantillas se guardan inactivas
                 FollowingElement followingElementScript = followingElement.AddComponent<FollowingElement>();
-                followingElementScript.followingElementBehavior = followingArrayInScript.followingElementBehavior;
-                followingElementScript.followingElementBehavior.Init(element);
+                // Cada elemento necesita su propia instancia del behavior — compartir una sola
+                // (como antes) hace que Init() de cada iteración pise el estado de la anterior.
+                FollowingElementBehavior behaviorInstance =
+                    (FollowingElementBehavior)followingElement.AddComponent(followingArrayInScript.followingElementBehavior.GetType());
+                followingElementScript.followingElementBehavior = behaviorInstance;
+                behaviorInstance.Init(element);
                 uiElements.Enqueue(followingElement);
             }
         }

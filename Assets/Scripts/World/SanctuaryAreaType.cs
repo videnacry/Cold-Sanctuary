@@ -8,11 +8,15 @@ public enum SanctuaryAreaType
     CubCare,              // Criado — first area for newcomers with low stats
     Cleaning,             // Limpieza — Panterilia's first domain
     Kitchen,              // Cocina — Goluis's domain
+    Infirmary,            // Enfermería — primeros auxilios, cuidado del jugador y las crías
+    VeterinaryClinic,     // Veterinaria — cuidado médico animal
+    YogaRoom,             // Sala de yoga — asanas y ejercicios básicos
 
     // ── Tier 2 — developing ──────────────────────────────────────────────────
     Garden,               // Huerto — physical work, food production, strength gains
-    VehicleWorkshop,      // Taller — tractor, boat, submarine maintenance
+    VehicleWorkshop,      // Taller / Mecánica — tractor, boat, submarine maintenance
     AlchemyLab,           // Laboratorio de alquimia vegetal — first periodic table exposure
+    TextileStudio,        // Estudio textil — costura, materiales, indumentaria
 
     // ── Tier 3 — intermediate ────────────────────────────────────────────────
     FuelLab,              // Laboratorio de combustible — biogas, biodiesel, electrolysis

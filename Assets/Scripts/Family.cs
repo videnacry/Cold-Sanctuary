@@ -95,9 +95,9 @@ public class Family
         family.feeders = adults.ToArray();
         return scripts;
     }
-    public static Animal[] RenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, char parentalCare, Vector3 position, float height)
+    public static Animal[] RenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, char parentalCare, Vector3 position, float height, float radius = 0)
     {
-        Animal[] scripts = SetGendersRate(RenderGroup(animal, quantity, position, height), 0.5f, Sex.female);
+        Animal[] scripts = SetGendersRate(RenderGroup(animal, quantity, position, height, radius), 0.5f, Sex.female);
         scripts = SetParents(scripts, parentsRandomRate, minParentsCount);
         return scripts;
     }

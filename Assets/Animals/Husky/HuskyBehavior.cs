@@ -14,7 +14,9 @@ public class HuskyBehavior : Carnivore
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(2.2f, 2.2f, 2.2f), 25, 0.09f, 0.2f, 0.05f);
+    // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
+    // altura cruda 3.388m -> objetivo realista de altura de hombro adulto ~0.58m.
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.171f, 0.171f, 0.171f), 25, 0.09f, 0.2f, 0.05f);
     public Physiognomy body = defaultBody;
     public override Physiognomy Body { get => body; set => body = value; }
 

@@ -8,7 +8,9 @@ public class DeerBehavior : Herbivore
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(2.0f, 2.0f, 2.0f), 90, 0.07f, 0.25f, 0.1f);
+    // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
+    // altura cruda 5.489m (usa Stag.fbx) -> objetivo realista de altura de hombro adulto ~1.2m.
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.219f, 0.219f, 0.219f), 90, 0.07f, 0.25f, 0.1f);
     public Physiognomy body = defaultBody;
     public override Physiognomy Body { get => body; set => body = value; }
 

@@ -88,6 +88,9 @@ public class PeriodicTableManager : MonoBehaviour
     /// <summary>All discovered element symbols.</summary>
     public IEnumerable<string> AllDiscovered() => _discovered;
 
+    /// <summary>Every symbol in the catalog, discovered or not.</summary>
+    public IEnumerable<string> AllSymbols => _catalog.Keys;
+
     /// <summary>
     /// Elements in a given group (period table column).
     /// Useful for checking if the player has completed a group to unlock an enchantment.

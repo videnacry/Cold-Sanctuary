@@ -39,6 +39,7 @@ public class FollowingArrays : MonoBehaviour
     public void AddCloseButton()
     {
         GameObject closeButton = Instantiate(closeButtonTemplate, transform.parent.transform);
+        closeButton.SetActive(true); // Instantiate copia activeSelf del template — las plantillas se guardan inactivas
         HideFollowingArrays hideFollowingArrays = closeButton.AddComponent<HideFollowingArrays>();
         hideFollowingArrays.followingArrays = this;
         this.uiElements.Enqueue(closeButton);
@@ -79,7 +80,7 @@ public class FollowingArrays : MonoBehaviour
         destroyer.uiElements = this.uiElements;
         return destroyer;
     }
-    public void HideArrays()
+    public virtual void HideArrays()
     {
         foreach ( GameObject gameObject in uiElements)
         {
