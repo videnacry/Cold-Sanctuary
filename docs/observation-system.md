@@ -150,7 +150,7 @@ Más flexible — `Animal.cs` puede implementar `IObservable` directamente sin c
 | `ObservationManager.cs` | Attached al Player. Cada frame (o cada 0.1s) compara `observationRadius` con distancias a objetos observables. Dispara señales visuales y pensamientos internos. |
 | Señal diegética | Sistema de partículas / material swap en el objeto observable. Se activa cuando está dentro del radio. |
 | Pensamiento interno | UI Canvas (world space o screen overlay) con el texto del pensamiento. Con animación de aparición/desaparición. |
-| Modo contemplativo | Detección de quietud en `PlayerCtrl` + coroutine que sube `observationRadius` mientras dura. |
+| Modo contemplativo | Detección de quietud en `PlayerController` + coroutine que sube `observationRadius` mientras dura. |
 | `ObservationRadius` base vs. bonus | Separar el valor base (permanente) del bonus Panterilia para evitar acumulación incorrecta. |
 
 ---

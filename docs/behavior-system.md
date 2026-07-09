@@ -81,7 +81,7 @@ interface ITarget { Transform transform; float Mass; float Speed; char Faction; 
 
 `Animal` lo implementa; un componente nuevo `PlayerTarget` lo añade al jugador. Las listas
 de presa y de amenaza pasan a referenciar `ITarget`, de modo que cualquier animal puede
-atacar/cazar al jugador y viceversa. Punto de contacto: `PlayerCtrl` (añadir el componente y,
+atacar/cazar al jugador y viceversa. Punto de contacto: `PlayerController` (añadir el componente y,
 si el jugador debe ser presa, registrarlo en las poblaciones relevantes).
 
 ### D. Vínculos / afinidad (Fase 4, transversal)
@@ -207,7 +207,7 @@ interface ICarrier {
 ```
 
 `Animal` implementa `ICarrier` (campo `carriedFood`). `PlayerTarget` también lo implementa;
-`PlayerCtrl` llama a `Drop()` cuando el jugador pulsa la tecla de soltar.
+`PlayerController` llamará a `Drop()` cuando el jugador pulse la tecla de soltar (pendiente de cablear).
 
 **Refactor de `LifeStage.Feed()` (evento de adulto):**
 
@@ -230,7 +230,7 @@ Cuando el adulto llama `Drop()`, el `FoodItem` resultante recibe `droppedBy = ad
 Esto hace que la cría crezca bond con el padre igual que con el jugador — mismo código,
 misma ruta.
 
-**`PlayerCtrl`:**  
+**`PlayerController`:**  
 - Nueva tecla (p.ej. `E`) para recoger `FoodItem` cercanos → `playerCarrier.PickUp(food)`.
 - Nueva tecla (p.ej. `Q`) para soltar → `playerCarrier.Drop(posiciónJugador + forward)`.
 - El `FoodItem` resultante tiene `droppedBy = playerTarget`.
@@ -242,7 +242,7 @@ misma ruta.
 - [x] `PlayerTarget` implementa `ICarrier`.
 - [x] `FoodItem.GetAll()` — registro global para scan eficiente sin FindObjectsOfType.
 - [x] Refactorizar `LifeStage.Feed()`: lógica de prioridad — ya carga → deposita; hay comida en suelo → PickUp; si no → caza (Restore maneja esto); Carnivore.Feed recoge restos al terminar.
-- [ ] `PlayerCtrl`: wirear tecla E → `PickUp(FoodItem cercano)` y Q → `Drop(posiciónJugador + forward)`.
+- [ ] `PlayerController`: wirear tecla E → `PickUp(FoodItem cercano)` y Q → `Drop(posiciónJugador + forward)`.
 - [ ] Ajustar `Diet` de crías para incluir `FoodItem.GetPopulation(material)` con `difficulty=0` y alta `preference`, para que prioricen comida depositada sobre buscar por su cuenta.
 - [ ] Verificar en Unity que `droppedBy` queda asignado correctamente en ambos flujos (adulto y jugador).
 

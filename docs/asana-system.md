@@ -241,7 +241,7 @@ siempre que la dirección sea correcta. El desconfort productivo tiene recompens
 | `BodyPartStats` por extremidad | `IBody` | Stats físicas de cada parte del cuerpo |
 | `postureStress` | `IBody` | Estrés acumulado por mala postura — umbral de tambaleo/caída |
 | `stress` (mental) | `IMind` | El desconfort prolongado eleva también el estrés mental |
-| Tambaleo / caída | `IBody` | Superado el umbral, afecta movimiento del PlayerCtrl |
+| Tambaleo / caída | `IBody` | Superado el umbral, afecta movimiento del jugador (`PlayerController`) |
 
 NPCs (la maestra, Goluis) también tienen `IBody` con sus propias stats de extremidades.
 La maestra tiene `flexibility >= 0.9` en la mayoría de partes — puede demostrar cualquier postura.

@@ -227,7 +227,7 @@ Items principales:
 
 - `WolfBehavior.cs ~145–275` — `Escape()` legacy comentado, código muerto
 - `BearBehaviour.cs` — máquina de estados por flags booleanos, duplica lógica de `Animal`
-- `PlayerCtrl.cs` — lógica placeholder y bugs de posicionamiento
+- ~~`PlayerCtrl.cs` — lógica placeholder y bugs de posicionamiento~~ — **retirado 2026-07-09** (jugador = `Player/PlayerController`)
 - `ActionsPrep.cs` / `ActionPrep.cs` — confusión de nombres documentada
 - Idioma de comentarios mezclado (inglés/español)
 
