@@ -29,8 +29,9 @@ public class Goluis : CompanionBase
     // dejó de estudiar a los 17. Ver docs/creature-stats.md.
     protected override float BaseStrength   => 1.5f;   // trabajo físico continuo
     protected override float BaseBodyMass   => 1.3f;   // invierte mucho en comida
-    protected override float BaseAgility    => 0.9f;   // corpulento
-    protected override float BasePerception => 0.6f;   // poca costumbre de estudio/detalle
+    protected override float BaseAgility      => 0.9f;   // corpulento
+    protected override float BasePerception   => 0.6f;   // poca costumbre de estudio/detalle
+    protected override float BaseAdaptability => 0.6f;   // el mismo tipo de trabajo toda la vida
 
     protected override void SetupAnchors()
     {

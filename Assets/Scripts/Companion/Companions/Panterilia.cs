@@ -26,8 +26,9 @@ public class Panterilia : CompanionBase
     // puestos/roles → lógica de negocio y atención al detalle; alejada de la vida corporal.
     protected override float BasePerception => 1.7f;   // atención al detalle muy alta
     protected override float BaseStrength   => 0.7f;   // fuerza decrecida por sedentarismo
-    protected override float BaseBodyMass   => 0.8f;   // nutrición descuidada; masa bajo la media
-    protected override float BaseAgility    => 0.95f;
+    protected override float BaseBodyMass     => 0.8f;   // nutrición descuidada; masa bajo la media
+    protected override float BaseAgility      => 0.95f;
+    protected override float BaseAdaptability => 1.4f;   // muchos puestos/roles → se adapta bien
     // Rasgo mental: gran facilidad para liberar energía mental → tiende a exagerar la realidad
     // e influenciarse por teorías/experiencia/imaginación de terceros. Ver docs/creature-stats.md.
 

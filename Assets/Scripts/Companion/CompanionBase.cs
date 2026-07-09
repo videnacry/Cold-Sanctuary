@@ -29,11 +29,13 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     [HideInInspector] public float perception;
     [HideInInspector] public float strength;
     [HideInInspector] public float bodyMass;
+    [HideInInspector] public float adaptability;   // versatilidad / velocidad de adaptación
 
-    protected virtual float BaseAgility    => 1f;
-    protected virtual float BasePerception => 1f;
-    protected virtual float BaseStrength   => 1f;
-    protected virtual float BaseBodyMass   => 1f;
+    protected virtual float BaseAgility      => 1f;
+    protected virtual float BasePerception   => 1f;
+    protected virtual float BaseStrength     => 1f;
+    protected virtual float BaseBodyMass     => 1f;
+    protected virtual float BaseAdaptability => 1f;
 
     [Header("Bond — Player (initial value)")]
     [Tooltip("Starting bond strength with the player. Other bonds start at 0 and grow through interaction.")]
@@ -101,10 +103,11 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
 
     protected virtual void Start()
     {
-        agility    = BaseAgility;
-        perception = BasePerception;
-        strength   = BaseStrength;
-        bodyMass   = BaseBodyMass;
+        agility      = BaseAgility;
+        perception   = BasePerception;
+        strength     = BaseStrength;
+        bodyMass     = BaseBodyMass;
+        adaptability = BaseAdaptability;
         SetupAnchors();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

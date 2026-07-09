@@ -21,11 +21,14 @@ public class Gohageneis : CompanionBase
     [Tooltip("Also reduces mental fatigue on burst — the laugh effect.")]
     public float burstFatigueRelief = 0.08f;
 
-    // Aptitudes (1.0 = media real humana). Provisional — origen aún sin definir.
-    protected override float BaseAgility    => 1.1f;   // vitalidad alta
-    protected override float BasePerception => 1.1f;
-    protected override float BaseStrength   => 1.0f;
-    protected override float BaseBodyMass   => 1.05f;
+    // Aptitudes (1.0 = media real humana). 28 años; salió de casa a los 16 buscando buena vida;
+    // nómada Venezuela→Colombia→Perú→Ecuador→España→USA→santuario con trabajos muy variados
+    // (mudanzas, ventas, bartender, Uber, cocina, limpieza, construcción). Fiesta, baile, gym, comer.
+    protected override float BaseAgility      => 1.2f;   // físicamente equilibrado tirando a ágil
+    protected override float BaseStrength     => 1.1f;   // gym + mudanzas/construcción
+    protected override float BaseBodyMass     => 1.1f;   // come bien, cuerpo sólido
+    protected override float BasePerception   => 1.05f;  // calle/social (bartender/ventas), no académica
+    protected override float BaseAdaptability => 1.7f;   // versatilidad extrema: mil trabajos y países
 
     protected override void SetupAnchors()
     {

@@ -28,7 +28,7 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
   `Animal` expone `virtual BaseAgility` / `BasePerception` por especie; se fijan en `Init()`.
   `sensibility` (umbral de detección de amenazas en `Escape()`) deriva de `perception`:
   `sensibility = BaseSensibility * perception` → más percepción, reacciona antes.
-- **Humanoides (companions)** — `CompanionBase.agility/perception/strength/bodyMass`
+- **Humanoides (companions)** — `CompanionBase.agility/perception/strength/bodyMass/adaptability`
   (+ `virtual Base*`), fijados en `Start()`. Cuando llegue `NPCBase : LivingEntity` estas
   aptitudes se consolidarán en `LivingEntity` y se eliminará la duplicación.
 - **Jugador** — `PlayerStats` ya tiene equivalentes parciales: `observationRadius` (≈ percepción)
@@ -68,9 +68,43 @@ Los valores codifican **origen + historia**, no solo el presente.
   muy **influenciada por ideas fuera de su experiencia propia** (teorías, experiencia e imaginación
   de terceros). Candidato a modelarse como un modificador de percepción/creencias o un `ThoughtAnchor`.
 
-### Gohageneis — celebración (provisional)
-- `agility 1.1`, `perception 1.1`, `strength 1.0`, `bodyMass 1.05`. Origen aún sin definir;
-  valores por revisar cuando se concrete su historia.
+### Gohageneis (28 años) — celebración / versatilidad
+- `agility 1.2`, `strength 1.1`, `bodyMass 1.1`, `perception 1.05`, `adaptability 1.7`.
+- Salió de casa a los 16 buscando una buena vida; **nómada**: Venezuela → Colombia → Perú →
+  Ecuador → España → USA → santuario, encadenando trabajos muy variados (mudanzas, ventas,
+  bartender, Uber, cocina, limpieza, construcción). Fiesta, baile, gimnasio y comer → **físicamente
+  equilibrado tirando a ágil**. Percepción de calle/social (dejó de estudiar a los 16, no académica).
+  Su rasgo definitorio es la **versatilidad / velocidad de adaptación** altísima (`adaptability 1.7`).
+
+## Aptitudes propuestas (menú para decidir)
+
+Aptitudes actuales: `agility`, `perception`, `strength`, `bodyMass` (atributo), y
+`adaptability` (añadida para Gohageneis). Propuesta de las que faltan, por familia:
+
+**Físicas**
+- **endurance / resistencia** — esfuerzo sostenido (turnos largos, yoga, trabajo). Recomendada.
+- **flexibility / flexibilidad** — directamente relevante para asanas. **Ojo: ya existe parcialmente**
+  en `BodyPartStats` (dimensión `flex` por extremidad); conectar ahí, no duplicar.
+
+**Cognitivas / mentales**
+- **reasoning / lógica** — la "lógica de negocio" de Panterilia; razonamiento y planificación.
+- **memory / memoria** — velocidad de aprender y retener (podría alimentar el desbloqueo por aprendizaje).
+- **creativity / imaginación** — ligada al rasgo mental de Panterilia (exageración, ideas de terceros).
+
+**Conductuales / meta**
+- **adaptability / versatilidad** — ✅ añadida hoy (velocidad de adaptación a tareas/contextos nuevos).
+- **sociability / sociabilidad** — bartender/ventas/fiesta; podría modular crecimiento de bond y trato con NPCs.
+- **discipline / constancia** — mantener rutinas (Panterilia estudia sin parar; Goluis trabaja sin parar).
+
+**Recomendación de núcleo**: `strength, agility, endurance, perception, adaptability` (+ `bodyMass`
+como atributo), y **conectar `flexibility` a `BodyPartStats`**. El resto (`reasoning`, `memory`,
+`creativity`, `sociability`, `discipline`) según las pidan las mecánicas.
+
+> **No confundir con estado emocional:** `mood`/`stress`/`fatigue`/`satisfaction`/`sleepiness` **no
+> son aptitudes** sino estado; ya viven en `IMind`/`IMindSimple`. Las aptitudes son capacidades estables.
+
+Mapeo con lo existente: `perception` ≈ `PlayerStats.observationRadius`; `agility` ≈ `velocity`;
+`strength`/`flexibility` ≈ dimensiones de `BodyPartStats`. Unificar al implementar `NPCBase`.
 
 ## Próximos pasos
 
