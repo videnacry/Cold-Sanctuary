@@ -59,8 +59,23 @@ public class KitchenScaleController : MonoBehaviour
 
     // ── Runtime ───────────────────────────────────────────────────────────────
 
-    bool _isMiniaturized;
+    bool    _isMiniaturized;
     Vector3 _originalKitchenScale;
+
+    /// <summary>True after Miniaturize() completes, false after Restore() completes.</summary>
+    public bool IsMiniaturized => _isMiniaturized;
+
+    /// <summary>Enter the kitchen (miniaturize + activate mobs). Called by KitchenEntrance.</summary>
+    public void EnterKitchen()
+    {
+        if (!_isMiniaturized) StartCoroutine(Miniaturize());
+    }
+
+    /// <summary>Exit the kitchen (restore scale + deactivate mobs). Called by KitchenEntrance.</summary>
+    public void ExitKitchen()
+    {
+        if (_isMiniaturized) StartCoroutine(Restore());
+    }
 
     void Awake()
     {

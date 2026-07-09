@@ -148,6 +148,7 @@ public static class SampleSceneBuilder
         if (player.GetComponent<CombatAbilityBar>() == null) player.AddComponent<CombatAbilityBar>();
         if (player.GetComponent<CombatTargetSelector>() == null) player.AddComponent<CombatTargetSelector>();
         if (player.GetComponent<AsanaDetector>() == null) player.AddComponent<AsanaDetector>();
+        if (player.GetComponent<InteractionController>() == null) player.AddComponent<InteractionController>();
 
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();
@@ -672,6 +673,8 @@ public static class SampleSceneBuilder
         }
 
         Debug.Log("[SampleSceneBuilder] Canvas + EventSystem minimos creados.");
+
+        BuildConfirmationPanel(canvasGO.transform);
     }
 
 
@@ -800,6 +803,98 @@ public static class SampleSceneBuilder
         return slider;
     }
 
+    // ── Confirmation panel ────────────────────────────────────────────────────
+    //
+    // Simple yes/no modal — used by KitchenEntrance and any future area gate.
+    // Created inside Canvas_AUTO and wired to ConfirmationPanel MonoBehaviour.
+
+    static void BuildConfirmationPanel(Transform canvasParent)
+    {
+        if (GameObject.Find("ConfirmationPanel_AUTO") != null) return;
+
+        // Root: dark semi-transparent background
+        GameObject panelGO = new GameObject("ConfirmationPanel_AUTO",
+            typeof(RectTransform),
+            typeof(UnityEngine.UI.Image),
+            typeof(CanvasGroup));
+        panelGO.transform.SetParent(canvasParent, worldPositionStays: false);
+
+        RectTransform panelRect  = panelGO.GetComponent<RectTransform>();
+        panelRect.anchorMin       = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax       = new Vector2(0.5f, 0.5f);
+        panelRect.pivot           = new Vector2(0.5f, 0.5f);
+        panelRect.sizeDelta       = new Vector2(420f, 210f);
+        panelRect.anchoredPosition = Vector2.zero;
+
+        panelGO.GetComponent<UnityEngine.UI.Image>().color = new Color(0.04f, 0.04f, 0.10f, 0.92f);
+
+        ConfirmationPanel cp = panelGO.AddComponent<ConfirmationPanel>();
+
+        // Title text (centred, top third)
+        cp.titleText   = CreateConfirmText(panelGO.transform, "Title",   new Vector2(0f,  68f), 22, "Área");
+        // Message text (centred, middle)
+        cp.messageText = CreateConfirmText(panelGO.transform, "Message", new Vector2(0f,  18f), 16, "¿Empezar turno?");
+        // Hint: Enter / Escape
+        CreateConfirmText(panelGO.transform, "Hint",
+            new Vector2(0f, -22f), 12, "Enter → Confirmar   Esc → Cancelar")
+            .color = new Color(0.7f, 0.7f, 0.7f);
+
+        // Confirm button (green-ish, left of centre)
+        (UnityEngine.UI.Button cb, UnityEngine.UI.Text cl) =
+            CreateConfirmButton(panelGO.transform, "ConfirmBtn",
+                new Vector2(-95f, -68f), "Entrar", new Color(0.18f, 0.55f, 0.28f));
+        cp.confirmButton = cb;
+        cp.confirmLabel  = cl;
+
+        // Cancel button (red-ish, right of centre)
+        (UnityEngine.UI.Button xb, UnityEngine.UI.Text xl) =
+            CreateConfirmButton(panelGO.transform, "CancelBtn",
+                new Vector2(95f, -68f), "Cancelar", new Color(0.50f, 0.14f, 0.14f));
+        cp.cancelButton = xb;
+        cp.cancelLabel  = xl;
+
+        Debug.Log("[SampleSceneBuilder] ConfirmationPanel creado en Canvas_AUTO.");
+    }
+
+    static UnityEngine.UI.Text CreateConfirmText(Transform parent, string name,
+        Vector2 anchoredPos, int fontSize, string content)
+    {
+        GameObject go = new GameObject(name,
+            typeof(RectTransform), typeof(UnityEngine.UI.Text));
+        go.transform.SetParent(parent, worldPositionStays: false);
+
+        RectTransform rt   = go.GetComponent<RectTransform>();
+        rt.sizeDelta        = new Vector2(380f, 38f);
+        rt.anchoredPosition = anchoredPos;
+
+        UnityEngine.UI.Text t = go.GetComponent<UnityEngine.UI.Text>();
+        t.text      = content;
+        t.fontSize  = fontSize;
+        t.alignment = TextAnchor.MiddleCenter;
+        t.color     = Color.white;
+        return t;
+    }
+
+    static (UnityEngine.UI.Button btn, UnityEngine.UI.Text lbl) CreateConfirmButton(
+        Transform parent, string name, Vector2 anchoredPos, string label, Color bgColor)
+    {
+        GameObject go = new GameObject(name,
+            typeof(RectTransform),
+            typeof(UnityEngine.UI.Image),
+            typeof(UnityEngine.UI.Button));
+        go.transform.SetParent(parent, worldPositionStays: false);
+
+        RectTransform rt   = go.GetComponent<RectTransform>();
+        rt.sizeDelta        = new Vector2(160f, 46f);
+        rt.anchoredPosition = anchoredPos;
+
+        go.GetComponent<UnityEngine.UI.Image>().color = bgColor;
+
+        UnityEngine.UI.Text lbl = CreateConfirmText(go.transform, "Label", Vector2.zero, 16, label);
+        UnityEngine.UI.Button btn = go.GetComponent<UnityEngine.UI.Button>();
+        return (btn, lbl);
+    }
+
     // ── Kitchen mobs ──────────────────────────────────────────────────────────
     //
     // Mobs start INACTIVE — KitchenScaleController activates them once the
@@ -865,21 +960,40 @@ public static class SampleSceneBuilder
             mobList.Add(mob);
         }
 
-        // Entrance trigger — open +Z side of the U-shape (Kitchen size: 10×9)
-        GameObject triggerGO = new GameObject("Kitchen_EntranceTrigger");
-        triggerGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
-        triggerGO.transform.localPosition = new Vector3(0f, 1f, 4.5f);
+        // Scale system — KitchenScaleController lives on its own GO (no Collider needed;
+        // entry is triggered programmatically by KitchenEntrance, not OnTriggerEnter).
+        GameObject scaleSystemGO = new GameObject("Kitchen_ScaleSystem");
+        scaleSystemGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
 
-        BoxCollider bc  = triggerGO.AddComponent<BoxCollider>();
-        bc.isTrigger    = true;
-        bc.size         = new Vector3(10f, 3f, 1.5f);
-
-        KitchenScaleController ksc = triggerGO.AddComponent<KitchenScaleController>();
+        KitchenScaleController ksc = scaleSystemGO.AddComponent<KitchenScaleController>();
         ksc.kitchenRoot    = contentRoot.transform;
         ksc.ingredientMobs = mobList.ToArray();
         // playerCamera left null — KitchenScaleController.Awake() falls back to Camera.main
 
-        Debug.Log($"[SampleSceneBuilder] {mobList.Count} IngredientMobs (boxes) colocados en Kitchen_Content (inactivos hasta entrada).");
+        // Entrance trigger — open +Z side of the U-shape (Kitchen size: 10×9).
+        // This is an IInteractable, NOT an auto-trigger; InteractionController handles
+        // proximity detection, prompt display, and dispatching to KitchenEntrance.Interact().
+        GameObject entranceGO = new GameObject("Kitchen_EntranceTrigger");
+        entranceGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
+        entranceGO.transform.localPosition = new Vector3(0f, 1f, 4.5f);
+
+        BoxCollider bc = entranceGO.AddComponent<BoxCollider>();
+        bc.isTrigger   = true;
+        bc.size        = new Vector3(10f, 3f, 1.5f);
+
+        KitchenEntrance entrance = entranceGO.AddComponent<KitchenEntrance>();
+        entrance.kitchenScaleController = ksc;
+        entrance.areaName = "Cocina";
+
+        // Visual cue — slightly transparent box so the player can see the entrance marker
+        MeshRenderer mr = entranceGO.GetComponent<MeshRenderer>();
+        if (mr == null) mr = entranceGO.AddComponent<MeshRenderer>();
+        // The BoxCollider IS the visual — a Cube primitive would add a redundant Collider,
+        // so just tint the MeshRenderer that might have been auto-added. If you want a
+        // visible mesh, swap this with GameObject.CreatePrimitive(PrimitiveType.Cube) + isTrigger.
+
+        Debug.Log($"[SampleSceneBuilder] {mobList.Count} IngredientMobs (boxes) colocados en Kitchen_Content " +
+                  "(inactivos hasta entrada). KitchenEntrance listo — interactúa con F o clic.");
     }
 
     static GameObject MakeMobBox(string mobName, Vector3 localOffset, Color color)
