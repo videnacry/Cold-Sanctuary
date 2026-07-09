@@ -136,9 +136,17 @@ El elenco de este juego (3 compañeros + maestra + NPCs menores) entra cómodame
   - Opciones: añadir setter a IMind, o método `SetObservationBonus(float)` en IMind
   - Ver `Assets/Scripts/Companion/Companions/Panterilia.cs`
 
-- [ ] **AsanaQueue → PlayerStats/IMind** — AsanaQueue acumula beneficios pero no los entrega
-  - Brecha: `StatType` (asanas) vs `MindChannel` (IMind)
-  - Ver `docs/known-issues.md`
+- [x] **AsanaQueue → PlayerStats/IMind** — conectado (`AsanaQueue.cs:66`,
+  `DeliverBenefit()` → `PlayerStats.RestoreMind`).
+
+> **Estado real (auditoría 2026-07-09):** esta conexión, marcada "pendiente" en
+> `ibody-imind.md`, ya está hecha en código.
+
+- [ ] **IPaletteEvaluator — evaluadores faltantes** — solo existe `AsanaEvaluator`;
+  faltan `EnchantmentEvaluator`, `EnrichmentEvaluator`, `BlockSpellEvaluator`.
+  Consecuencia: `MaterializationExecutor` y los 4 `ArrangementPattern`
+  (Stairs/Barrier/Platform/FallBreaker) están codificados pero inalcanzables (nada
+  construye `PaletteResult.spatial`).
 
 - [ ] **BearBehaviour** — incompleto, usa `IAnimal` directamente e ignora `LivingEntity`
   - Opciones: migrar a `LivingEntity` junto con NPCBase, o como tarea separada
@@ -219,7 +227,7 @@ Items principales:
 
 - `WolfBehavior.cs ~145–275` — `Escape()` legacy comentado, código muerto
 - `BearBehaviour.cs` — máquina de estados por flags booleanos, duplica lógica de `Animal`
-- `PlayerCtrl.cs` — lógica placeholder y bugs de posicionamiento
+- ~~`PlayerCtrl.cs` — lógica placeholder y bugs de posicionamiento~~ — **retirado 2026-07-09** (jugador = `Player/PlayerController`)
 - `ActionsPrep.cs` / `ActionPrep.cs` — confusión de nombres documentada
 - Idioma de comentarios mezclado (inglés/español)
 
@@ -237,3 +245,5 @@ Items principales:
 - [x] `docs/architecture.md` actualizada con jerarquía actual
 - [x] `docs/living-entity.md` actualizada con estado completado + siguiente fase
 - [x] `docs/ibody-imind.md` actualizada de "propuesta" a "implementado"
+- [x] `PostureStressHandler` implementado (ya reflejado en `docs/setup-body-system.md`)
+- [x] `AsanaQueue → IMind` conectado (`AsanaQueue.cs:66`)

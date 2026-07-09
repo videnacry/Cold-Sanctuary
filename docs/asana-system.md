@@ -90,6 +90,10 @@ public enum PositionQuality
 }
 ```
 
+> **Estado real (auditoría 2026-07-09):** el código solo define **3** valores —
+> `Correct` / `DirectionOkLowStat` / `Impossible` — con un único umbral 0.7. `Wrong`
+> no existe como estado de `PositionQuality`.
+
 ### Lógica de evaluación por extremidad
 
 ```
@@ -103,6 +107,9 @@ gap > 0.7         → Impossible
 
 Si la posición seleccionada no corresponde a ninguna requerida → `Wrong`.
 
+> **Estado real (auditoría 2026-07-09):** el código evalúa con un solo umbral 0.7
+> (no dos tramos) y no tiene rama `Wrong` para posición seleccionada sin correspondencia.
+
 ### Consecuencias por calidad
 
 | PositionQuality | Efecto |
@@ -111,6 +118,9 @@ Si la posición seleccionada no corresponde a ninguna requerida → `Wrong`.
 | **DirectionOkLowStat** | Beneficio reducido (× 0.5). Disconfort acumulado (→ `IMind.stress`). Stats de esa extremidad crecen más rápido — el esfuerzo entrena. |
 | **Wrong** | Sin beneficio. Daño acumulado (→ `IBody.Hurt` o campo `postureStress`). Tambaleo si acumula suficiente. |
 | **Impossible** | La extremidad visualmente "no llega". Sin daño pero sin beneficio. El profesor lo señala. |
+
+> **Estado real (auditoría 2026-07-09):** `IBody.Hurt` no existe en la interfaz `IBody`
+> del código actual; y el estado `Wrong` de esta tabla no tiene equivalente en `PositionQuality`.
 
 ### Acumulación y tambaleo
 
@@ -179,6 +189,11 @@ vs la maestra (que guía).
 El NPC profesor tiene acceso a `IBody` del jugador (vía referencia al Player).
 Observa el `List<PositionEvaluation>` del `PaletteResult` y elige su línea de diálogo.
 
+> **Estado real (auditoría 2026-07-09):** `TeacherNPC.Say()` solo hace `Debug.Log` —
+> no elige/reproduce diálogo real todavía. Además `TeacherNPC.EvaluateResult` nunca se
+> conecta a `Palette.OnFormulaEvaluated` en código; solo el Editor instancia estas clases
+> (huérfano en runtime).
+
 ```csharp
 public class TeacherNPC : MonoBehaviour
 {
@@ -226,7 +241,7 @@ siempre que la dirección sea correcta. El desconfort productivo tiene recompens
 | `BodyPartStats` por extremidad | `IBody` | Stats físicas de cada parte del cuerpo |
 | `postureStress` | `IBody` | Estrés acumulado por mala postura — umbral de tambaleo/caída |
 | `stress` (mental) | `IMind` | El desconfort prolongado eleva también el estrés mental |
-| Tambaleo / caída | `IBody` | Superado el umbral, afecta movimiento del PlayerCtrl |
+| Tambaleo / caída | `IBody` | Superado el umbral, afecta movimiento del jugador (`PlayerController`) |
 
 NPCs (la maestra, Goluis) también tienen `IBody` con sus propias stats de extremidades.
 La maestra tiene `flexibility >= 0.9` en la mayoría de partes — puede demostrar cualquier postura.

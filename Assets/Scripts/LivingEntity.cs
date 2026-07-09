@@ -28,6 +28,10 @@ public abstract class LivingEntity : MonoBehaviour
     [HideInInspector] public bool  asleep;
     [HideInInspector] public bool  aware;                // true while actively responding to a threat
 
+    // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/creature-stats.md)
+    [HideInInspector] public float agility    = 1f;
+    [HideInInspector] public float perception = 1f;
+
     public List<Bond> bonds = new List<Bond>();
 
     // ── Drive response hooks ─────────────────────────────────────────────────────

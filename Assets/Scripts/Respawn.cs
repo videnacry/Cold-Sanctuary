@@ -6,12 +6,11 @@ using UnityEngine.AI;
 
 public class Respawn : MonoBehaviour
 {
-    public GameObject[] beasts, aves;
+    public GameObject[] beasts;
     public int[] quantity;
     public GameObject center;
     public int amount;
     public static List<GameObject> birds = new List<GameObject>();
-    public static HashSet<GameObject> bears = new HashSet<GameObject>(), rabbits = new HashSet<GameObject>();
 
     bool start = true,hard=false;
 

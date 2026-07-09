@@ -49,7 +49,12 @@ con un array de 8 slots — uno por parte del cuerpo.
 | `StumbleThreshold` | 0.5 | Tambaleo — cámara vibra, movimiento reducido |
 | `FallThreshold` | 1.0 | Caída — postura interrumpida forzosamente |
 
-`PostureStressHandler.cs` (pendiente de implementar) leerá estos valores y los aplicará a `PlayerCtrl`.
+`PostureStressHandler.cs` ya está implementado y attached junto a `PlayerStats`; lee estos
+valores y drives `PlayerStats.velocity`.
+
+> **Estado real (auditoría 2026-07-09):** `RequestCameraShake` sigue pendiente — hoy
+> `PostureStressHandler` piggybacks en `DrainMind(MentalFatigue)` en lugar de una API de
+> shake real en `CameraManager`.
 
 ---
 
@@ -93,7 +98,7 @@ Cada `BodyPosition` dentro de una `Asana` tiene tres campos en Inspector:
 `AsanaEvaluator` es una clase plana (no MonoBehaviour). Se instancia desde el sistema que abre la paleta:
 
 ```csharp
-// Ejemplo desde un AsanaSystem o PlayerCtrl:
+// Ejemplo desde un AsanaSystem o PlayerController:
 AsanaEvaluator evaluator = new AsanaEvaluator(asanaQueue, unlockedAsanas);
 PaletteConfig config = new PaletteConfig
 {
@@ -158,7 +163,7 @@ Los helpers `PartName(BodyPart)` y `DimName(BodyStatDimension)` ya están en esp
 
 ## 6. Pendientes de implementar
 
-- [x] `PostureStressHandler.cs` — tambaleo/caída en `PlayerCtrl`
+- [x] `PostureStressHandler.cs` — tambaleo/caída (afecta a `PlayerStats`/`PlayerController`)
 - [x] `TeacherNPC.cs` + `MaestraTeacher.cs` — feedback por calidad de posición
 - [ ] Completar requisitos de posición para todas las asanas del primer set
 - [ ] Calibrar valores iniciales de `bodyStats` con feedback de jugabilidad

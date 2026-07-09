@@ -115,10 +115,11 @@ _stats.DrainMind(amount, MindChannel.MentalFatigue); // via IMind
 
 ---
 
-## Conexión pendiente: AsanaQueue → IMind
+## Conexión AsanaQueue → IMind — hecha
 
-`AsanaQueue` acumula beneficios en contenedores propios pero no los entrega a `PlayerStats`/`IMind`.
-La brecha está documentada en `docs/known-issues.md` (StatType vs MindChannel).
+> **Estado real (auditoría 2026-07-09):** esta conexión ya no está pendiente.
+> `AsanaQueue.DeliverBenefit()` llama `PlayerStats.RestoreMind(gain, activeAsana.channel)`
+> (`AsanaQueue.cs:66`).
 
 ---
 

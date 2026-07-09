@@ -1,5 +1,11 @@
 # Sistema de Cámara — Cold Sanctuary
 
+> **Estado real (auditoría 2026-07-09):** los robos de cámara (`SwitchPerspective`,
+> `OrbitTarget`, `CutToAndBack`) y el FOV/shake dirigidos por stats SÍ están implementados
+> y cableados. El **modo artístico** (paletas Sueño/Estrés/Alegría, más abajo) tiene
+> **cero implementación** — es diseño puro. `BlackoutPulse()` es solo un `Debug.Log`
+> stub (`CameraManager.cs:271`), sin efecto visual real todavía.
+
 Documento de diseño del sistema de cámara, efectos visuales y su relación con el estado interno del jugador.
 
 ---

@@ -81,7 +81,7 @@ interface ITarget { Transform transform; float Mass; float Speed; char Faction; 
 
 `Animal` lo implementa; un componente nuevo `PlayerTarget` lo añade al jugador. Las listas
 de presa y de amenaza pasan a referenciar `ITarget`, de modo que cualquier animal puede
-atacar/cazar al jugador y viceversa. Punto de contacto: `PlayerCtrl` (añadir el componente y,
+atacar/cazar al jugador y viceversa. Punto de contacto: `PlayerController` (añadir el componente y,
 si el jugador debe ser presa, registrarlo en las poblaciones relevantes).
 
 ### D. Vínculos / afinidad (Fase 4, transversal)
@@ -111,6 +111,9 @@ Gatea: `SelectPrey` (A) y `ThreatResponse` (B) consultan el vínculo antes de de
 
 ## Estado actual del stub "player como madre"
 
+> **Estado real (auditoría 2026-07-09):** los campos `mom, player` (`// LEGAZY`) ya
+> fueron eliminados de `BunnyBehavior`/`WolfBehavior`. Esta nota queda obsoleta.
+
 La intención ya quedó marcada como **campos sueltos sin lógica**:
 `BunnyBehavior.cs:110` y `WolfBehavior.cs:94` (`// LEGAZY`) → `public GameObject mom, player;`.
 No hay comportamiento de imprinting activo (lo usaba el viejo `Bear.Hunt()`, ya reemplazado).
@@ -134,10 +137,14 @@ huérfanos.
 
 _(Área libre para apuntes que surjan durante la implementación.)_
 
-- `BunnyBehavior.Shooted()` (`:144-146`) referencia `StopCoroutine("Hunt")` y
+> **Estado real (auditoría 2026-07-09):** nota obsoleta — el mecanismo completo de
+> `Shooted()`/disparo fue **eliminado** el 2026-07-09 (commit `2d09716`) por decisión de
+> diseño de no-violencia. Ya no hay bug que alinear.
+
+- ~~`BunnyBehavior.Shooted()` (`:144-146`) referencia `StopCoroutine("Hunt")` y
   `StartCoroutine("Sleep")`, coroutines que **no existen** en el modelo `Herbivore`. Bug
   latente — alinear con el modelo nuevo (como se hizo en el oso). Pendiente, fuera del foco
-  actual.
+  actual.~~
 
 ---
 
@@ -200,7 +207,7 @@ interface ICarrier {
 ```
 
 `Animal` implementa `ICarrier` (campo `carriedFood`). `PlayerTarget` también lo implementa;
-`PlayerCtrl` llama a `Drop()` cuando el jugador pulsa la tecla de soltar.
+`PlayerController` llamará a `Drop()` cuando el jugador pulse la tecla de soltar (pendiente de cablear).
 
 **Refactor de `LifeStage.Feed()` (evento de adulto):**
 
@@ -223,7 +230,7 @@ Cuando el adulto llama `Drop()`, el `FoodItem` resultante recibe `droppedBy = ad
 Esto hace que la cría crezca bond con el padre igual que con el jugador — mismo código,
 misma ruta.
 
-**`PlayerCtrl`:**  
+**`PlayerController`:**  
 - Nueva tecla (p.ej. `E`) para recoger `FoodItem` cercanos → `playerCarrier.PickUp(food)`.
 - Nueva tecla (p.ej. `Q`) para soltar → `playerCarrier.Drop(posiciónJugador + forward)`.
 - El `FoodItem` resultante tiene `droppedBy = playerTarget`.
@@ -235,7 +242,7 @@ misma ruta.
 - [x] `PlayerTarget` implementa `ICarrier`.
 - [x] `FoodItem.GetAll()` — registro global para scan eficiente sin FindObjectsOfType.
 - [x] Refactorizar `LifeStage.Feed()`: lógica de prioridad — ya carga → deposita; hay comida en suelo → PickUp; si no → caza (Restore maneja esto); Carnivore.Feed recoge restos al terminar.
-- [ ] `PlayerCtrl`: wirear tecla E → `PickUp(FoodItem cercano)` y Q → `Drop(posiciónJugador + forward)`.
+- [ ] `PlayerController`: wirear tecla E → `PickUp(FoodItem cercano)` y Q → `Drop(posiciónJugador + forward)`.
 - [ ] Ajustar `Diet` de crías para incluir `FoodItem.GetPopulation(material)` con `difficulty=0` y alta `preference`, para que prioricen comida depositada sobre buscar por su cuenta.
 - [ ] Verificar en Unity que `droppedBy` queda asignado correctamente en ambos flujos (adulto y jugador).
 
@@ -278,6 +285,10 @@ No todos los animales pasan por todas las etapas, ni en el mismo orden.
 Cada especie declara solo las que le corresponden.
 
 #### Estructura por etapa
+
+> **Estado real (auditoría 2026-07-09):** `MotherBehaviorSet`/`OffspringBehaviorSet`/
+> `loopBehaviors` descritos abajo **no existen** en el código; la lógica por-tick está
+> hardcodeada en `PostNatalManager`, no es data-driven todavía.
 
 Cada `PostNatalStage` tiene dos capas de comportamiento:
 
@@ -393,6 +404,9 @@ public float fatReserves = 0f; // 0–100; la osa en letargo consume esto en lug
 El letargo no es exclusivo del oso. Es un `Behavior` genérico con parámetros por especie
 y etapa de vida:
 
+> **Estado real (auditoría 2026-07-09):** el letargo universal descrito aquí, incluido
+> `lethargyDepth`, no existe todavía en el código.
+
 | Trigger | Animal | Duración | `lethargyDepth` |
 |---------|--------|----------|----------------|
 | Invierno (`temperature < umbral`) | Oso | Meses | Muy alto — solo despierta con amenaza seria |
@@ -435,6 +449,10 @@ La ventana de visita del conejo se abre naturalmente cuando los depredadores baj
 nocturna → `environmentStress` baja → condición 2 se cumple. No hay "a las 2am fijo" en código.
 
 `HomeOrigin` es **mutable**: cualquier comportamiento puede llamar `SetHomeOrigin(pos)`.
+
+> **Estado real (auditoría 2026-07-09):** `SetHomeOrigin()` no existe como método; el
+> código asigna `HomeOrigin` directamente.
+
 El oso bebé tiene como `HomeOrigin` la posición donde la madre decidió echarse. El venado
 actualiza el `HidingSpot` de la cría cada vez que la deja. La manada de lobos puede relocalizar
 si `environmentStress > relocationThreshold` durante N días → todos los miembros actualizan.
@@ -465,6 +483,9 @@ El abandono no está hardcodeado. Emerge cuando dos condiciones se cruzan:
 #### Manada de lobos — roles diferenciados
 
 No todos los adultos ejecutan el ciclo completo de madre. Cada adulto tiene un rol:
+
+> **Estado real (auditoría 2026-07-09):** el enum `FatherRole` se configura por etapa
+> pero **nunca se lee** en ningún lado del código — los roles son inertes por ahora.
 
 | Rol | Comportamiento post-natal |
 |-----|--------------------------|

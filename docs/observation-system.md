@@ -1,5 +1,10 @@
 # Sistema de Observación — Cold Sanctuary
 
+> **Estado real (auditoría 2026-07-09):** este documento es diseño/visión, casi nada está
+> implementado. Solo existe el float `observationRadius` en `PlayerStats`. No existen
+> `ObservableObject`, `IObservable`, `ObservationManager` ni el modo contemplativo. El
+> contenido de visión se mantiene íntegro debajo para referencia de diseño.
+
 Documento de diseño del sistema de Observación: radio de consciencia, señales diegéticas, modo contemplativo y crecimiento de la stat.
 
 Ver también: DEVLOG.md §Stat: Observación, `docs/ibody-imind.md` (la stat vive en `IMind`).
@@ -145,7 +150,7 @@ Más flexible — `Animal.cs` puede implementar `IObservable` directamente sin c
 | `ObservationManager.cs` | Attached al Player. Cada frame (o cada 0.1s) compara `observationRadius` con distancias a objetos observables. Dispara señales visuales y pensamientos internos. |
 | Señal diegética | Sistema de partículas / material swap en el objeto observable. Se activa cuando está dentro del radio. |
 | Pensamiento interno | UI Canvas (world space o screen overlay) con el texto del pensamiento. Con animación de aparición/desaparición. |
-| Modo contemplativo | Detección de quietud en `PlayerCtrl` + coroutine que sube `observationRadius` mientras dura. |
+| Modo contemplativo | Detección de quietud en `PlayerController` + coroutine que sube `observationRadius` mientras dura. |
 | `ObservationRadius` base vs. bonus | Separar el valor base (permanente) del bonus Panterilia para evitar acumulación incorrecta. |
 
 ---

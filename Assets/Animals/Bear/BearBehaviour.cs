@@ -143,6 +143,8 @@ public class BearBehaviour : Carnivore
     public override float BondGrowthRate => 0.4f;
     public override float BiteSize => 15f;
     public override float Toughness => 2f;
+    public override float BaseAgility    => 0.7f;   // poderoso pero lento
+    public override float BasePerception => 1.1f;   // buen olfato
 
     // Diet: prefiere focas; conejos como alternativa; lobos solo con mucha hambre.
     // El umbral 50 de 'difficulty' está por calibrar — ver decisiones abiertas en behavior-system.md.
@@ -160,33 +162,4 @@ public class BearBehaviour : Carnivore
         base.Init();
     }
 
-    public IEnumerator Shooted(GameObject bullet)
-    {
-        int wait = 5;
-        Vector3 bulletPosition;
-        do
-        {
-            bulletPosition = bullet.transform.position;
-            wait--;
-            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, this.transform.position.z));
-            if (zDistance < 2)
-            {
-                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(this.transform.position.x, 0));
-                if (xDistance < 2)
-                {
-                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, this.transform.position.y));
-                    if (yDistance < 3)
-                    {
-                        this.exhaustion += 2;
-                        StopCoroutine("Feed");
-                        StopCoroutine("Escape");
-                        this.busy = false;
-                        Debug.Log(this.gameObject);
-                        break;
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.05f);
-        } while (wait > 0);
-    }
 }

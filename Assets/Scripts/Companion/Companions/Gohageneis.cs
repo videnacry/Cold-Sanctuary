@@ -21,6 +21,12 @@ public class Gohageneis : CompanionBase
     [Tooltip("Also reduces mental fatigue on burst — the laugh effect.")]
     public float burstFatigueRelief = 0.08f;
 
+    // Aptitudes (1.0 = media real humana). Provisional — origen aún sin definir.
+    protected override float BaseAgility    => 1.1f;   // vitalidad alta
+    protected override float BasePerception => 1.1f;
+    protected override float BaseStrength   => 1.0f;
+    protected override float BaseBodyMass   => 1.05f;
+
     protected override void SetupAnchors()
     {
         anchors.Add(new ThoughtAnchor("celebrate_life",   0.9f,  0.001f));

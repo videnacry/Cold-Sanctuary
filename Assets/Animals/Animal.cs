@@ -110,6 +110,12 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
     public virtual bool DefendsCubs => false;
     public virtual bool CanHitAndRun => false;
     public virtual float PackFactor => 0.5f;
+    // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
+    // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
+    public virtual float BaseSensibility => 5f;
+    // Aptitudes base por especie (1.0 = media real). Ver docs/creature-stats.md.
+    public virtual float BaseAgility    => 1f;
+    public virtual float BasePerception => 1f;
 
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
@@ -164,7 +170,10 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
         rig = GetComponent<Rigidbody>();
-        ChildStage.Fatten()(this, 0);
+        ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
+        agility     = BaseAgility;
+        perception  = BasePerception;
+        sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);

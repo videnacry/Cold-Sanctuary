@@ -25,6 +25,13 @@ public class Goluis : CompanionBase
     [Tooltip("Resistance bonus accumulated from surviving Goluis pressure (0–1).")]
     [Range(0f, 1f)] public float resistanceBuilt;
 
+    // Aptitudes (1.0 = media real humana). 25 años, trabajo de fuerza toda su vida,
+    // dejó de estudiar a los 17. Ver docs/creature-stats.md.
+    protected override float BaseStrength   => 1.5f;   // trabajo físico continuo
+    protected override float BaseBodyMass   => 1.3f;   // invierte mucho en comida
+    protected override float BaseAgility    => 0.9f;   // corpulento
+    protected override float BasePerception => 0.6f;   // poca costumbre de estudio/detalle
+
     protected override void SetupAnchors()
     {
         anchors.Add(new ThoughtAnchor("yoga_skepticism",  -0.9f, 0.002f));  // blocks yoga

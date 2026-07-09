@@ -132,36 +132,9 @@ public class DeerBehavior : Herbivore
     public override float HarmVsBond => 0.1f;
     public override float BondGrowthRate => 1.8f;
     public override float Toughness => 0.4f;
+    public override float BaseAgility    => 1.4f;   // presa veloz
+    public override float BasePerception => 1.5f;   // muy alerta
 
     void Start() => Init();
 
-    public IEnumerator Shooted(GameObject bullet)
-    {
-        int wait = 5;
-        Vector3 bulletPosition;
-        do
-        {
-            bulletPosition = bullet.transform.position;
-            wait--;
-            float zDist = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, transform.position.z));
-            if (zDist < 2)
-            {
-                float xDist = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(transform.position.x, 0));
-                if (xDist < 2)
-                {
-                    float yDist = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, transform.position.y));
-                    if (yDist < 3)
-                    {
-                        exhaustion += 2;
-                        StopCoroutine("Feed");
-                        StopCoroutine("Escape");
-                        busy = false;
-                        Debug.Log(gameObject);
-                        break;
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.05f);
-        } while (wait > 0);
-    }
 }

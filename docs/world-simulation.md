@@ -8,16 +8,22 @@ tenga que gatillar nada.
 
 ### `SanctuaryAreaType` (enum)
 
-13 zonas organizadas en 5 tiers de progresión:
+17 zonas organizadas en 5 tiers de progresión:
+
+> **Estado real (auditoría 2026-07-09):** el enum `SanctuaryAreaType` tiene 17 entradas, no 13.
 
 | Tier | Área | Descripción |
 |------|------|-------------|
 | 1 | CubCare | Primera zona. Cuidado de crías. Stats mínimos. |
 | 1 | Cleaning | Limpieza del santuario. Dominio de Panterilia. |
 | 1 | Kitchen | Cocina. Dominio de Goluis. |
+| 1 | Infirmary | Enfermería. |
+| 1 | VeterinaryClinic | Clínica veterinaria. |
+| 1 | YogaRoom | Sala de yoga. |
 | 2 | Garden | Huerto. Trabajo físico, producción de alimento. Fuerza rápida. |
 | 2 | VehicleWorkshop | Taller. Tractor, barco, submarino. |
 | 2 | AlchemyLab | Lab de alquimia vegetal. Primera exposición a la tabla periódica. |
+| 2 | TextileStudio | Estudio textil. |
 | 3 | FuelLab | Lab de combustible. Biogás, biodiésel, electrólisis. |
 | 3 | CulturedMeatLab | Lab de carne cultivada. Química avanzada + nutrición. |
 | 3 | SupplementsPharmacy | Farmacia. Vitaminas, minerales. Panterilia nivel 2. |

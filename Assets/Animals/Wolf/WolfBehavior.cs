@@ -156,34 +156,9 @@ public class WolfBehavior : Carnivore
     public override float BondGrowthRate => 0.5f;
     public override float BiteSize => 5f;
     public override float Toughness => 0.8f;
+    public override float BaseAgility    => 1.2f;
+    public override float BasePerception => 1.4f;   // cazador de manada, olfato agudo
 
     void Start() => base.Init();
 
-    public IEnumerator Shooted(Vector3 bulletPosition)
-    {
-        int wait = 3;
-        bulletPosition = transform.InverseTransformPoint(bulletPosition);
-        do
-        {
-            wait--;
-            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, transform.position.z));
-            if (zDistance < 1.5f)
-            {
-                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(transform.position.x, 0));
-                if (xDistance < 0.25f)
-                {
-                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, transform.position.y));
-                    if (yDistance < 0.5f)
-                    {
-                        exhaustion += 2;
-                        StopCoroutine("Feed");
-                        StopCoroutine("Escape");
-                        busy = false;
-                        Debug.Log(gameObject);
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.5f);
-        } while (wait > 0);
-    }
 }
