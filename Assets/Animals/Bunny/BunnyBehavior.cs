@@ -179,6 +179,8 @@ public class BunnyBehavior : Herbivore
     public override float HarmVsBond => 0.2f;
     public override float BondGrowthRate => 1.5f;
     public override float Toughness => 0.1f;
+    public override float BaseAgility    => 1.5f;   // presa muy rápida
+    public override float BasePerception => 1.6f;   // hipervigilante
 
     // Start is called before the first frame update
     void Start()

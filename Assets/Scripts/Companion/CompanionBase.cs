@@ -22,6 +22,19 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     [field: SerializeField, Range(0f, 1f)] public float stress  { get; set; }
     [field: SerializeField, Range(0f, 1f)] public float mood    { get; set; } = 0.7f;
 
+    // ── Aptitudes corporales/mentales (1.0 = media real humana) ────────────────
+    // Se fijan en Start() desde las propiedades Base*; escalan con tareas/origen.
+    // Ver docs/creature-stats.md.
+    [HideInInspector] public float agility;
+    [HideInInspector] public float perception;
+    [HideInInspector] public float strength;
+    [HideInInspector] public float bodyMass;
+
+    protected virtual float BaseAgility    => 1f;
+    protected virtual float BasePerception => 1f;
+    protected virtual float BaseStrength   => 1f;
+    protected virtual float BaseBodyMass   => 1f;
+
     [Header("Bond — Player (initial value)")]
     [Tooltip("Starting bond strength with the player. Other bonds start at 0 and grow through interaction.")]
     [Range(0f, 100f)] public float bondWithPlayer;
@@ -88,6 +101,10 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
 
     protected virtual void Start()
     {
+        agility    = BaseAgility;
+        perception = BasePerception;
+        strength   = BaseStrength;
+        bodyMass   = BaseBodyMass;
         SetupAnchors();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

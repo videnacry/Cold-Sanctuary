@@ -132,6 +132,8 @@ public class DeerBehavior : Herbivore
     public override float HarmVsBond => 0.1f;
     public override float BondGrowthRate => 1.8f;
     public override float Toughness => 0.4f;
+    public override float BaseAgility    => 1.4f;   // presa veloz
+    public override float BasePerception => 1.5f;   // muy alerta
 
     void Start() => Init();
 

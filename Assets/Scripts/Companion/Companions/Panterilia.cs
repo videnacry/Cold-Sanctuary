@@ -22,6 +22,15 @@ public class Panterilia : CompanionBase
         if (player != null) _playerStats = player.GetComponent<PlayerStats>();
     }
 
+    // Aptitudes (1.0 = media real humana). 42 años, nunca dejó de estudiar, múltiples
+    // puestos/roles → lógica de negocio y atención al detalle; alejada de la vida corporal.
+    protected override float BasePerception => 1.7f;   // atención al detalle muy alta
+    protected override float BaseStrength   => 0.7f;   // fuerza decrecida por sedentarismo
+    protected override float BaseBodyMass   => 0.8f;   // nutrición descuidada; masa bajo la media
+    protected override float BaseAgility    => 0.95f;
+    // Rasgo mental: gran facilidad para liberar energía mental → tiende a exagerar la realidad
+    // e influenciarse por teorías/experiencia/imaginación de terceros. Ver docs/creature-stats.md.
+
     protected override void SetupAnchors()
     {
         anchors.Add(new ThoughtAnchor("work_hard",         0.85f, 0.001f));

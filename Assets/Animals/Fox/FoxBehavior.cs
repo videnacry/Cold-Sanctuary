@@ -151,6 +151,8 @@ public class FoxBehavior : Carnivore
     public override float BondGrowthRate => 0.8f;
     public override float BiteSize => 2.5f;
     public override float Toughness => 0.4f;
+    public override float BaseAgility    => 1.4f;   // ágil, escurridizo
+    public override float BasePerception => 1.5f;   // sentidos muy afinados
 
     void Start() => base.Init();
 

@@ -153,6 +153,8 @@ public class HuskyBehavior : Carnivore
     public override float BondGrowthRate => 2.2f;  // se vincula muy rápido, la raza más sociable del santuario
     public override float BiteSize => 3f;
     public override float Toughness => 0.6f;
+    public override float BaseAgility    => 1.2f;   // perro de trineo, resistente
+    public override float BasePerception => 1.1f;
 
     void Start() => base.Init();
 

@@ -131,6 +131,8 @@ public class WhaleBehavior : Herbivore
 
     // Filtra/pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;
+    public override float BaseAgility    => 0.6f;   // enorme, poco maniobrable
+    public override float BasePerception => 1.0f;
 
     void Start() => Init();
 

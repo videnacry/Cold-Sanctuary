@@ -156,6 +156,8 @@ public class WolfBehavior : Carnivore
     public override float BondGrowthRate => 0.5f;
     public override float BiteSize => 5f;
     public override float Toughness => 0.8f;
+    public override float BaseAgility    => 1.2f;
+    public override float BasePerception => 1.4f;   // cazador de manada, olfato agudo
 
     void Start() => base.Init();
 

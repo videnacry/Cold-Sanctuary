@@ -109,6 +109,8 @@ public class SealBehavior : Herbivore
 
     // Pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;
+    public override float BaseAgility    => 1.1f;   // ágil en agua, torpe en tierra
+    public override float BasePerception => 1.2f;
 
     void Start() => Init();
 
