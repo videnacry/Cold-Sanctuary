@@ -7,10 +7,8 @@ verificado). Los ítems ~~tachados~~ se resolvieron o dejaron de aplicar. Las re
 
 ## Bugs abiertos (verificados 2026-07-09)
 
-- **`Animal.cs` — `lp` sin inicializar** 🔴 — `lp` queda en `0` por defecto; `Hurt()` comprueba
-  `lp < rig.mass*0.7` (cierto desde 0) → **cualquier `Hurt()` mata al instante**. Inicializar `lp`
-  al nacer (p.ej. a partir de la masa).
-- **`Animal.cs` — `sensibility` siempre 0** — se lee en `Escape()` pero nunca se asigna.
+- ~~**`Animal.cs` — `lp` sin inicializar**~~ — **falso positivo del audit**: `lp` SÍ se inicializa
+  (`Init()` → `Fatten()` fija `lp = rig.mass`, `LifeStage.cs:133`), así que `Hurt()` no mata de un golpe.
 - **`ShipCtrl.cs:83,95`** — placeholders `if (1 == 1)`; las ramas de seguimiento de cámara
   (`else if`/`else`) son inalcanzables.
 - **`PullDoor.cs:90` — `OnCollissionEnter()`** mal escrito (doble s); Unity nunca lo llama →

@@ -86,11 +86,17 @@ El `RespondToThreat()` puede evolucionar por niveles del arco narrativo:
 - `Animal` migrada a `LivingEntity` — `bonds`, `GrowBond`, `CanHarm`, `EffectiveBondGrowthRate`, `HarmVsBond`, `BondGrowthRate`, `MaxFatReserves`, `FatAccumulationRate` viven en LivingEntity
 - Hooks implementados en Animal: `RespondToHunger()`, `EvaluateThreat()`, `RespondToThreat()` (public)
 
-> **Estado real (auditoría 2026-07-09):** `EvaluateThreat()` y `OnLifeStageChanged()`
-> están implementados/sobreescritos pero **nunca se invocan** en ningún lado — son hooks
-> muertos; `ResolveReaction` duplica la fórmula de amenaza inline en su lugar. Además,
-> `Animal.lp` nunca se inicializa (queda en `0`), lo que hace que `Hurt()` pueda matar
-> instantáneamente sin importar el daño recibido — bug latente, no arreglado.
+> **Estado real (auditoría 2026-07-09, corregido):** `EvaluateThreat()` y `OnLifeStageChanged()`
+> están implementados/sobreescritos pero **nunca se invocan** — son hooks muertos;
+> `ResolveReaction` duplica la fórmula de amenaza inline en su lugar.
+>
+> **Diseño — `lp` y `sensibility`:** `lp` SÍ se inicializa (`Init()` → `Fatten()` fija
+> `lp = rig.mass`, `LifeStage.cs:133`), así que `Hurt()` no mata de un golpe (el audit inicial
+> se equivocó en este punto). `sensibility` sí quedaba sin asignar (siempre 0) → ahora se
+> inicializa en `Init()` desde `BaseSensibility` (2026-07-09). Ambos **deben ir cambiando
+> conforme la criatura gana musculatura, agilidad e inteligencia**: `lp` ya sigue a `rig.mass`
+> (musculatura); `sensibility` debería escalar con agilidad/percepción cuando existan esos
+> stats (hoy es un baseline por calibrar).
 - `IAnimal` eliminada. `IVital` eliminada. `aware` vive en LivingEntity.
 - Carnivore usa `GetComponent<LivingEntity>()` + `RespondToThreat()` + `.aware`
 
