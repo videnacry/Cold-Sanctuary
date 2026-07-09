@@ -160,33 +160,4 @@ public class BearBehaviour : Carnivore
         base.Init();
     }
 
-    public IEnumerator Shooted(GameObject bullet)
-    {
-        int wait = 5;
-        Vector3 bulletPosition;
-        do
-        {
-            bulletPosition = bullet.transform.position;
-            wait--;
-            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, this.transform.position.z));
-            if (zDistance < 2)
-            {
-                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(this.transform.position.x, 0));
-                if (xDistance < 2)
-                {
-                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, this.transform.position.y));
-                    if (yDistance < 3)
-                    {
-                        this.exhaustion += 2;
-                        StopCoroutine("Feed");
-                        StopCoroutine("Escape");
-                        this.busy = false;
-                        Debug.Log(this.gameObject);
-                        break;
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.05f);
-        } while (wait > 0);
-    }
 }

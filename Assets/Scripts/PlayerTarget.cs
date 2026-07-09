@@ -28,7 +28,7 @@ public class PlayerTarget : MonoBehaviour, ITarget, ICarrier
     void Start() => population.Add(gameObject);
     void OnDestroy() => population.Remove(gameObject);
 
-    // ICarrier — teclas E (recoger) y Q (soltar) se wirean desde PlayerCtrl
+    // ICarrier — recoger/soltar (E/Q) aún sin cablear a ningún controlador (pendiente en PlayerController)
     FoodItem _carriedFood;
     public FoodItem CarriedFood => _carriedFood;
 

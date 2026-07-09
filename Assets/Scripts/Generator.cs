@@ -12,7 +12,6 @@ public class Generator : MonoBehaviour
     }
     public Subject[] subjects;
     public GameObject area;
-    public static HashSet<GameObject> bears = new HashSet<GameObject>(), rabbits = new HashSet<GameObject>();
 
 
     // Start is called before the first frame update

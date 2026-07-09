@@ -194,33 +194,4 @@ public class BunnyBehavior : Herbivore
 
    
 
-    public IEnumerator Shooted(GameObject bullet)
-    {
-        int wait = 5;
-        Vector3 bulletPosition;
-        do
-        {
-            bulletPosition = bullet.transform.position;
-            wait--;
-            float zDistance = Vector3.Distance(new Vector3(0, 0, bulletPosition.z), new Vector3(0, 0, this.transform.position.z));
-            if (zDistance < 1)
-            {
-                float xDistance = Vector3.Distance(new Vector3(bulletPosition.x, 0), new Vector3(this.transform.position.x, 0));
-                if (xDistance < 1)
-                {
-                    float yDistance = Vector3.Distance(new Vector3(0, bulletPosition.y), new Vector3(0, this.transform.position.y));
-                    if (yDistance < 1)
-                    {
-                        this.exhaustion += 2;
-                        StopCoroutine("Hunt");
-                        StopCoroutine("Escape");
-                        StartCoroutine("Sleep");
-                        Debug.Log(this.gameObject);
-                        break;
-                    }
-                }
-            }
-            yield return new WaitForSeconds(0.05f);
-        } while (wait > 0);
-    }
 }
