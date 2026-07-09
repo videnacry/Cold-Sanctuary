@@ -6,11 +6,116 @@
 > - **Jugador** — stats, asanas, ejercicios, compañeros, narrativa. Este archivo.
 > - **Mundo / Simulación** — áreas, tareas autónomas, promociones, Director. [`docs/world-simulation.md`](docs/world-simulation.md)
 > - **Jugabilidad y loops** — mecánicas de combate, tabla periódica como Pokédex, FOMO. [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
+> - **Pipeline 3D** — conversión/decimación de modelos, bugs conocidos de Blender. [`docs/pipeline-3d-models.md`](docs/pipeline-3d-models.md)
+> - **Pájaros** — estado actual, por qué son una dependencia crítica de `LifeStage.Wander()`, y por qué son candidatos a reemplazo. [`docs/bird-logic.md`](docs/bird-logic.md)
+> - **UI** — menú holográfico (Sistema/Hechizos/Yoga), arquitectura `FollowingArrays`. [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md) · Base técnica: [`docs/ui-following-arrays.md`](docs/ui-following-arrays.md)
 
 ## Estado actual
 
+### Tamaños de animales realistas ✅ (nuevo)
+- [x] Los prefabs de animales se importaban con la escala cruda del FBX de origen
+  (cada asset con su propia convención de unidades — el Bunny, por ejemplo, venía
+  ~100x más grande de lo esperado). `AnimalPrefabGenerator.RealisticScaleFactor`
+  (`Assets/Editor/AnimalPrefabGenerator.cs`) ahora define un factor de escala por
+  especie calculado con `Measure Raw Animal Sizes (diagnostic)` contra un tamaño
+  real objetivo (altura de hombro para cuadrúpedos parados, longitud corporal para
+  foca/ballena). `Tools > Cold Sanctuary > Fix Animal Colliders And Rigidbodies`
+  aplica el factor tanto al `Transform` del prefab como al campo `body` serializado
+  (para que `LifeStage.SetScale()` en Play use el tamaño correcto también).
+- ⚠️ Nota técnica: se intentó que `Physiognomy.baseScale` (el campo `defaultBody` de
+  cada `*Behavior.cs`) fuera la única fuente de verdad, pero el valor estático
+  compilado no reflejaba ediciones de código fuente de forma confiable en este
+  entorno (persistía el valor viejo incluso tras limpiar `Library/ScriptAssemblies`
+  y `Library/Bee` y reiniciar el Editor por completo — causa no identificada, podría
+  ser un problema de caché de Unity ajeno al proyecto). Por eso la tabla de factores
+  vive directamente en `AnimalPrefabGenerator.cs` (un script de Editor, que sí
+  recompila de forma confiable) en vez de en los `*Behavior.cs`. Si en el futuro se
+  edita un `defaultBody` y no parece surtir efecto, este es el motivo — no asumir
+  que el bug está en el código.
+- [ ] `PolarBear` y `Seal` no tienen factor todavía — sus carpetas `Models/` están
+  vacías (sin FBX), pendiente de arte.
+- **Generador de familias**: `Assets/Scripts/FamilyGenerator.cs` + `Assets/Scripts/Family.cs`
+  ahora sí están enganchados a `SampleSceneBuilder` — ver "Simulación de fauna (biosistema)"
+  más abajo.
+- [x] **Kushal (jugador) también estaba mal escalado** — medía 3.38m de alto (el FBX
+  tenía el mismo problema de unidad de importación que los animales) en vez de los
+  ~1.75m de una persona adulta. `SampleSceneBuilder.ApplyRealisticPlayerScale()`
+  mide el tamaño crudo y ajusta a `TargetPlayerHeightMeters = 1.75f`, de forma
+  idempotente (se puede re-correr el blockout sin re-escalar en cascada). Confirmado
+  con `Tools > Cold Sanctuary > Measure Selected Object Size` (nuevo, en
+  `Assets/Editor/SceneDiagnostics.cs` — mide cualquier GameObject seleccionado, útil
+  para futuros chequeos de escala).
+- [x] **Teclas de cámara J/L/I/K reafirmadas en `SampleSceneBuilder`** — el mismo
+  problema que `Physiognomy.baseScale`: `PlayerController` ya estaba agregado como
+  componente en la escena desde antes de que el default de esas 4 teclas pasara de
+  flechas a J/L/I/K, y un campo ya serializado no se actualiza solo cuando cambia el
+  default en el código fuente. `EnsurePlayerSystems()` ahora reafirma
+  `lookLeftKey/lookRightKey/lookUpKey/lookDownKey` a mano en cada corrida del
+  blockout. **Patrón a tener en cuenta**: cualquier campo público con valor default
+  en un `MonoBehaviour` que ya esté como componente en la escena puede quedar
+  desincronizado así — si se cambia un default y "no hace nada", revisar el YAML de
+  la escena (`grep <nombreCampo> Assets/Scenes/SampleScene.unity`) antes de asumir
+  que el código está mal.
+- **Unity MCP Server (nativo de Unity)**: Unity 6.5 trae un servidor MCP nativo (Project
+  Settings > AI > Unity MCP Server) que permitiría controlar el Editor sin depender de
+  screenshots/clicks. Investigado pero parece requerir una suscripción de Unity AI
+  activa — la pantalla muestra "Up to 0 direct connections allowed at a time",
+  consistente con los errores `NoSubscription` / `generators.ai.unity.com` que
+  aparecen en consola durante toda la sesión. No se pudo habilitar sin esa suscripción.
+- **MCP for Unity (Coplay, de terceros) ✅ instalado, servidor corriendo** — alternativa
+  gratuita y de código abierto (`https://github.com/CoplayDev/unity-mcp`, MIT). Instalado vía
+  Package Manager (git URL en `Packages/manifest.json`, solo en el proyecto vivo — no
+  versionado, mismo criterio que el resto de `Packages/`). Requiere `uv` (gestor de paquetes
+  Python) en el PATH del sistema — se instaló con el script oficial de `astral.sh` y se
+  reinició el Editor para que recogiera el PATH nuevo. El servidor local HTTP ya está
+  arrancado y con sesión activa (`Window > MCP for Unity`, puerto 8080).
+  - **Falta un paso manual — vincularlo a Claude Code.** "Configure All Detected Clients" no
+    detecta esta instancia de Claude Code (corre vía la app de escritorio, no hay un binario
+    `claude` en el PATH de este entorno — confirmado con `which claude`). El comando que hay
+    que correr a mano, desde donde SÍ exista el CLI de Claude Code:
+    `claude mcp add --scope local --transport http UnityMCP http://127.0.0.1:8080/mcp`.
+    Después hace falta reiniciar la sesión de Claude Code (los MCP no se cargan a mitad de
+    sesión). Mientras tanto, el servidor sigue disponible para cualquier otro cliente MCP
+    que sí se detecte automáticamente.
+
+### Simulación de fauna (biosistema) ✅ (nuevo)
+- [x] `FamilyGenerator.cs` reescrito: campo `animalPrefab` (antes `gameObjectMale`, con un
+  `gameObjectFemale` muerto que nunca se usaba), nuevo `radius` por familia. `Family.cs` y
+  `Animal.RenderFamily()` ahora aceptan y propagan ese `radius` hasta `Family.RenderGroup()`
+  (que ya lo soportaba mas nadie se lo pasaba).
+- [x] `SampleSceneBuilder.BuildWildlifePopulation()` (nuevo) crea un `WildlifePopulation_AUTO`
+  con un `FamilyGenerator` y 9 familias siguiendo una proporción ~70% herbívoros / 30%
+  carnívoros (elegida explícitamente para simular un biosistema equilibrado):
+  4 familias de Bunny + 2 de Deer (herbívoros terrestres) vs 1 de Wolf + 1 de Fox
+  (carnívoros), más 1 familia de Whale sobre `Sea_Placeholder` (marino, aparte). La familia
+  de Seal se omite — no existe `Seal.prefab` (carpeta `Animals/Seal/Models/` vacía, sin FBX
+  importado todavía), y `BuildWildlifePopulation` lo detecta y loguea un warning en vez de
+  fallar (`[SampleSceneBuilder] WildlifePopulation: no se encontro el prefab de Seal, se omite
+  esa familia`).
+- **Importante — solo se puebla en Play, no en Editor**: a diferencia del resto del blockout,
+  `FamilyGenerator.Start()` corre en Play mode. La escena se ve vacía de fauna hasta que se
+  presiona Play; no es un bug. Confirmado con el log
+  `[FamilyGenerator] 9 familia(s) generadas — 55 animales en total.`
+- [x] **Bug encontrado y arreglado al probar esto**: con más animales corriendo a la vez,
+  salió a la luz que la escena no tenía NavMesh horneado — cada `NavMeshAgent.SetDestination()`
+  fallaba en silencio y saturaba la consola (600+ errores en segundos, creciendo sin parar
+  mientras se mantenía Play). Ver sección NavMesh abajo.
+
+### Pipeline 3D — cocina decimada, Maestra convertida ✅ (nuevo)
+- [x] `Kitchen.fbx` (8.98M polys, export de 3ds Max) decimado a ~490K vértices vía Blender en
+  modo **headless** (`blender --background --python`) — la GUI se colgaba de forma consistente
+  con esta densidad de malla
+- [x] Encontrados y documentados 2 bugs de Blender 5.1.2 (import FBX crashea con luces;
+  export FBX cuelga con muchos material slots) + workarounds. Ver
+  [`docs/pipeline-3d-models.md`](docs/pipeline-3d-models.md#decimar-modelos-pesados-en-blender-512--usar-modo-headless-no-la-gui)
+- [x] Cocina colocada en `SampleScene` (reemplaza el placeholder), exportada como `.obj` en vez
+  de `.fbx` (el export FBX no terminaba; OBJ tardó 2.5s)
+- [x] Maestra (`Magnate5.blend` → FBX) convertida y colocada, con `WorldCharacter` conectado a
+  `SanctuaryDirector.magnateCharacter`
+
 ### Simulación del Mundo ✅ (nuevo)
-- [x] `SanctuaryAreaType` — 13 zonas en 5 tiers
+- [x] `SanctuaryAreaType` — 17 zonas en 5 tiers (+4: `Infirmary`, `VeterinaryClinic`,
+  `YogaRoom`, `TextileStudio` — agregadas junto con el rebuild de estructuras, ver abajo)
 - [x] `AreaTask` — tareas serializables con efectos de stats + tabla periódica
 - [x] `SanctuaryArea` — zona física con requisitos de entrada, tareas y residentes
 - [x] `WorldCharacter` — entidad autónoma (jugador o NPC), loop de tareas, eventos de promoción
@@ -29,8 +134,70 @@
 - [x] `ItemData` (ScriptableObject) — Tool, Armor, Consumable, Fragment con stats de modificación
 - [x] `CoinWallet` — balance de monedas, Earn/Spend con eventos
 - [x] `Inventory` — items por cantidad, Equip (→ PlayerCombat), Sell (→ CoinWallet), UseConsumable
-- TODOs pendientes: NavMeshAgent, Animator triggers, VFX de golpe/recogida, UI de inventario/vendor
+- TODOs pendientes: Animator triggers, VFX de golpe/recogida, UI de inventario/vendor
 - Ver diseño completo: [`docs/gameplay-loops.md`](docs/gameplay-loops.md)
+
+### Controlador del jugador ✅ (nuevo)
+- [x] `PlayerController.cs` — reemplaza `PlayerCtrl.cs` (obsoleto). `CharacterController` con WASD, sprint (LeftShift), salto (Space), mouse look + flechas de teclado, toggle 3ª/1ª persona (V), preferencia guardada en `PlayerPrefs`, cursor auto-gestionado durante diálogos.
+- [x] `AutoCameraZone.cs` — volumen trigger que anula la preferencia de cámara del jugador al entrar y la restaura al salir. `lockForDuration` usa el sistema de "robo" de `CameraManager`.
+- **Filosofía de input — mecanografía:** Cold Sanctuary diseña los controles para fomentar la postura correcta de teclado (home row). Todos los atajos son configurables en el Inspector.
+
+| Mano | Teclas default | Función |
+|------|---------------|---------|
+| Izquierda | W A S D | Movimiento |
+| Izquierda | Shift izq | Sprint |
+| Izquierda | Space | Salto / avanzar diálogo |
+| Derecha | J / L | Cámara izq/der |
+| Derecha | I / K | Cámara arriba/abajo |
+| Derecha | 1 – 0 | Habilidades de combate |
+| Derecha | Tab | Cycle target (mob siguiente) |
+| Derecha | Enter | Avanzar diálogo (alternativo) |
+| Cualquiera | V | Toggle 3ª ↔ 1ª persona |
+| Cualquiera | Escape | Deseleccionar target / desbloquear cursor |
+
+### Fixes — animales cayendo, sin controles, error de consola ✅ (nuevo)
+- [x] `LifeStage.Wander()` tiraba `ArgumentOutOfRangeException` en cada tick: indexaba
+  `BirdBehavior.population` (vacía, no había pájaros) sin chequeo, y con un off-by-one en
+  `Random.Range`. Guard clause + fix. Ver [`docs/bird-logic.md`](docs/bird-logic.md) para
+  por qué el wander de animales terrestres depende de pájaros en primer lugar.
+- [x] Animales atravesaban el piso: `AnimalPrefabGenerator.GenerateOne()` generaba
+  Rigidbody con gravedad + BoxCollider `size(1,1,1)` sin ajustar al mesh. Ahora
+  `ApplyPhysicsDefaults()` (Rigidbody kinemático + collider ajustado a los Renderers) se
+  aplica tanto al generar prefabs nuevos como al arreglar los existentes (`Tools > Cold
+  Sanctuary > Fix Animal Colliders And Rigidbodies`) — un mismo bug ya no puede reaparecer
+  en una especie nueva.
+- [x] `Player` no tenía mesh visual — solo `CharacterController` + scripts. `Kushal.fbx`
+  (importado en el pipeline 3D) estaba sin usar. `SampleSceneBuilder.EnsurePlayerVisual()`
+  lo instancia como hijo de `Player`.
+- [x] Agregados 6 pájaros placeholder (`SampleSceneBuilder.BuildBirds()`) para que el
+  wander de animales tenga objetivos reales — son esferas sin modelo, no arte final.
+- [x] `Active Input Handling` en Project Settings estaba en "Input System (New)" solamente,
+  rompiendo todo el `UnityEngine.Input` legacy del proyecto. Cambiado a "Both".
+
+### NavMesh ✅ (nuevo)
+- [x] `IngredientMob` — ahora usa `NavMeshAgent` real. `EnterAggro` hace `SetDestination`. Destino se actualiza cada 0.25 s mientras persigue. `isStopped = true` al atacar o ser procesado.
+- [x] `NPCCombatBehavior` — usa `NavMeshAgent` opcional. Throttle de destino cada 0.3 s. `FaceTarget` solo actúa si el agente está parado. Fallback gracioso si el NPC no tiene agente.
+- [x] **`Ground_Placeholder` ahora hornea su propio NavMesh** — `SampleSceneBuilder.BuildGround()`
+  le agrega un `NavMeshSurface` (paquete `com.unity.ai.navigation`, ya estaba instalado) con
+  `collectObjects = All`, y `Build()` llama a `BakeNavMesh()` al final (después de colocar
+  estructuras/animales) para hornear con todos los obstáculos ya en la escena. Antes de este
+  fix no había NavMesh horneado en absoluto en `SampleScene` — pasaba desapercibido con pocos
+  animales, pero con la población de fauna nueva (55 animales) cada `NavMeshAgent` fallaba
+  `SetDestination` en cada intento y saturaba la consola. Re-correr
+  `Tools > Cold Sanctuary > Build Sample Scene Blockout` rehornea automáticamente.
+- **Setup en Unity**: bake NavMesh en la escena de la cocina (miniaturizada) por separado —
+  esa escena no pasa por `SampleSceneBuilder`. Añadir `NavMeshAgent` a los prefabs de
+  `IngredientMob` y a los NPCs con `NPCCombatBehavior`.
+
+### Diálogo ✅ (nuevo)
+- Historia lineal — sin opciones de respuesta. La historia rodea a Kushal; los personajes son épicos, especialmente la Magnate.
+- [x] `DialogueLine` — estructura de una línea: `speakerName`, `portrait`, `text`, `typeSpeed`, `pauseAfter`, `screenEffect` (Flash / Shake / Darken), `side` (Left/Right)
+- [x] `DialogueSequence` (ScriptableObject) — array de `DialogueLine`, flag `playOnce`, id único. Crear en: `Create → Cold Sanctuary → Dialogue → Sequence`
+- [x] `DialogueManager` — singleton. `Play(sequence)` → reproduce líneas en orden. El jugador avanza con Space/Enter/Click. El manager aplica efectos de pantalla (flash blanco, shake de cámara, oscurecer). `IsPlaying` para bloquear doble-disparo.
+- [x] `DialoguePanel` — UI MonoBehaviour. Typewriter con `maxVisibleCharacters`. `CompleteTyping()` salta la animación. Fade in/out del `CanvasGroup`. Soporta retrato (izquierda o derecha), overlay de flash y overlay de oscurecer.
+- [x] `DialogueTrigger` — `RequireComponent(Collider)`. Al entrar el jugador dispara la secuencia. Ideal para puertas, la cámara de evaluación de la Magnate, descubrimientos ambientales.
+- [x] `Goluis` — conectado: `greetingSequence` y `pressureSequence` en el Inspector. `OnPlayerNearby()` los dispara según estado.
+- **Setup en Unity**: añadir `DialogueManager` a un GameObject persistente (junto con `PeriodicTableManager`). Crear `DialoguePanel` en el Canvas del juego. Asignar referencias en el Inspector.
 
 ### UI / Interfaces
 - [x] **Radar de animales** (`AnimalRadar.cs`, `FollowingArrays.cs`)
@@ -39,18 +206,230 @@
   - Diseñado para Desktop y Mobile: cada ítem es clickeable Y tiene tecla asociada
   - Las teclas se eligen para alinear al usuario al uso del teclado de escritura (sin flechas)
   - Actualmente representado como "encantamiento" — la presentación visual cambiará
+- [x] **Menú holográfico (Menú → Magia / Yoga / Sistema) ✅ (nuevo, rediseñado)** — un
+  holograma pequeño y plano anclado a la esquina inferior derecha de la pantalla (no un
+  objeto 3D en el mundo — ver nota histórica abajo) abre Magia (tabla periódica, solo
+  elementos descubiertos, + esquina "Hechizos" para lanzar combos completos desbloqueados),
+  Yoga (las 8 posturas corporales vía `AsanaDetector`, teclas Q/E/R/T/Y/U/O/P, + esquina
+  "Asanas" para posturas completas) y Sistema (pausa real + cámara 1ª/3ª + volumen). Sistema
+  nuevo y propio (`Hologram`/`HologramPool`/`HologramMenuController`) con un pool fijo de
+  118 tarjetas reutilizables (tamaño de la tabla periódica completa — el listado más grande
+  que el menú necesita mostrar a la vez), en vez de instanciar/destruir objetos por panel.
+  Probado en Play mode con clics reales: navegación completa Menú→Magia→Hechizos→volver→
+  cerrar confirmada, pausa real confirmada, 0 errores de consola. Yoga y el slider de volumen
+  no se llegaron a probar de forma interactiva (mismo camino de código que lo ya probado, sin
+  motivo para sospechar que fallen). Diseño completo, incluidas las preguntas abiertas
+  (accesos directos de asana/hechizo, iconos vs. texto, geometría exacta de tabla periódica):
+  [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
+  - **Nota histórica**: la primera versión (misma sesión, unas horas antes) usaba cajas 3D
+    flotando en el mundo delante del jugador vía `FollowingArrays`/`UI`. Se descartó por
+    completo tras feedback directo — no podía anclarse a una esquina, ocupaba demasiada
+    pantalla, y el cursor capturado todo el tiempo (ver abajo) impedía clicarla. `FollowingArrays`
+    sigue intacto, usado solo por el radar de animales (su caso de uso original) — el fix de
+    instancia-compartida y el `virtual` en `HideArrays()` de esa ronda siguen vigentes ahí.
+  - **Cursor libre + cámara con clic derecho sostenido ✅**: `PlayerController` capturaba el
+    cursor todo el tiempo desde `Start()`, haciendo imposible clicar cualquier UI. Ahora el
+    cursor arranca libre; mover la cámara con el ratón requiere mantener presionado el botón
+    **derecho** (`cameraLookButton`, configurable). El izquierdo queda libre para la UI y para
+    `PlayerCombat.attackKey` (ya estaba en `Mouse0` — por eso la cámara tuvo que ir al derecho,
+    no había otra opción sin romper el combate existente).
+  - **FOV separado 1ª/3ª persona ✅**: `CameraManager` tenía un solo `baseFOV` (60°) para ambos
+    modos. En primera persona, con Kushal ya a 1.75m reales, se sentía anormalmente cerrado
+    ("todo se ve pequeño"). Ahora `firstPersonFOV = 82°` (típico de shooters) vs.
+    `thirdPersonFOV = 60°`, aplicado al instante al cambiar de modo.
+
+### Estructuras de áreas (rebuild) + Sistema de nado ✅ (nuevo)
+- [x] **Modelos 3D feos reemplazados por estructuras primitivas** — a pedido explícito, las
+  7 áreas de juego (Cocina, Enfermería, Veterinaria, Sala de Yoga, Mecánica, Estudio Textil,
+  Huerto) ya no cargan `.fbx`/`.obj` (esos assets se dejan en `Assets/Environment/Buildings/`
+  por si se reusan a mano más adelante, pero `SampleSceneBuilder` ya no los instancia). Cada
+  área ahora es una caja: una "esterilla" (mat) horizontal fina de piso + paredes en forma de
+  U (3 lados, entrada abierta hacia +Z) hechas con cajas verticales estiradas, más una
+  etiqueta de texto flotante con el nombre. `BuildAreaStructures()` +
+  `BuildAreaBox()`/`CreateWallSegment()`/`CreateAreaLabel()` en `Assets/Editor/SampleSceneBuilder.cs`.
+  Cada área tiene color distinto y una posición fija en el mundo (7 áreas repartidas en tiers 1 y 2).
+- [x] **Conectadas al `SanctuaryDirector` (antes sin usar)** — `SanctuaryArea`/`SanctuaryAreaType`/
+  `SanctuaryDirector` ya existían del trabajo de "Simulación del Mundo" pero `allAreas[]` nunca
+  se llenaba (no hay auto-discovery, hay que asignarlo a mano). Cada `BuildAreaBox()` agrega y
+  configura un `SanctuaryArea` real (`areaType`, `displayName`, `progressionTier`), y
+  `WireSanctuaryDirector()` los asigna todos a `director.allAreas` al final del blockout — la
+  simulación de mundo pasa de inerte a funcional como efecto secundario natural de este rebuild.
+- [x] **Sistema de nado** — `WaterZone.cs` (nuevo, `RequireComponent(Collider)`) en un trigger
+  `BoxCollider` nuevo (`Sea_SwimZone`, hermano de `Sea_Placeholder` — el `Plane` del mar es una
+  superficie 2D, no sirve como volumen; se le quitó su collider y se agregó esta caja aparte
+  cubriendo el área visual del mar con margen). Al entrar, llama
+  `PlayerController.SetSwimming(true)` y tiñe `RenderSettings.fogColor` de azul (guarda/restaura
+  el color original al salir). `PlayerController.HandleMovement()` bifurca a
+  `HandleSwimMovement()` mientras `_isSwimming`: movimiento libre 3D sin gravedad, mismas teclas
+  de mano izquierda que en tierra (WASD horizontal, `jumpKey`=Space también sirve para subir,
+  nueva `swimDownKey`=Ctrl izq para bajar) — nada nuevo que aprender al entrar al agua.
+  - **Verificado en Play mode**: teletransportado el jugador dentro de `Sea_SwimZone`
+    (`Position = 200, -5, 0`), la física se estabilizó en `Y = -7.08` y se mantuvo perfectamente
+    quieta durante varios segundos (sin nado, la gravedad la habría seguido bajando — confirma
+    que el modo nado se activó). Al presionar Space, `Y` subió a `-7.0045`, confirmando que el
+    input vertical de nado también funciona.
+- [x] **Bug encontrado al probar esto — el menú holográfico desapareció**: `BuildUI()` y
+  `BuildHolographicMenu()` localizaban "el" Canvas de la escena con
+  `Object.FindAnyObjectByType<Canvas>()`, asumiendo que solo existiría uno. Pero
+  `CreateAreaLabel()` (parte de este mismo rebuild) le pone un `Canvas` world-space
+  ("Label_Canvas") a cada una de las 7 áreas para el cartel flotante con el nombre — con 7
+  canvases nuevos en la escena antes de que `BuildUI()` corriera, `FindAnyObjectByType`
+  devolvía uno cualquiera de esos (en la práctica, el de `TextileStudio_Area`) en vez del
+  `Canvas_AUTO` de pantalla completa. Efecto: `BuildUI()` creía que "ya había un Canvas" y
+  nunca creaba `Canvas_AUTO`, y `BuildHolographicMenu()` colgaba el pool de 118 hologramas +
+  el controller entero del cartel de Estudio Textil — world-space, lejos de cámara, en vez de
+  screen-space en la esquina. El menú "Menú" seguía existiendo en la escena (confirmado con
+  `Object.FindAnyObjectByType`/búsqueda por tipo en el Hierarchy) pero invisible en el Game
+  view. **Fix**: ambos métodos ahora buscan por nombre exacto (`GameObject.Find("Canvas_AUTO")`)
+  en vez de por tipo — inmune a cuántos Canvas world-space adicionales haya en la escena.
+  Verificado: rebuild limpio, log confirma `"Canvas + EventSystem minimos creados"` (antes
+  decía `"Ya existe un Canvas"`), y en Play mode el holograma "Menú" volvió a aparecer en la
+  esquina y el flujo Menú→abrir→cerrar funciona.
+
+### Menú holográfico jugable 100% por teclado ✅ (nuevo)
+- [x] **Pedido explícito**: el juego debe poder jugarse solo con mouse O solo con teclado, no
+  únicamente con mouse. Antes de esto, el menú holográfico (Menú/Magia/Yoga/Sistema) solo se
+  podía abrir con clic — sin forma de navegarlo desde el teclado.
+- [x] `HologramMenuController.menuToggleKey = KeyCode.M` (nuevo campo, configurable en el
+  Inspector) — abre/cierra el menú raíz sin mouse. `Update()` nuevo: `M` alterna
+  `OpenRoot()`/`CloseAll()`; `Escape` cierra si el menú está abierto (además de su uso ya
+  existente en `PlayerController` para soltar el cursor).
+- [x] **Navegación entre hologramas reutiliza el sistema de Unity, no uno propio**: cada
+  `Hologram` ya era un `Button` de uGUI — `Navigation.Mode.Automatic` (el default de `Button`,
+  nunca se había tocado) calcula vecinos arriba/abajo/izq/der solo con la posición en pantalla
+  de cada tarjeta activa, así que las flechas ya funcionan sin cablear nada a mano. Lo que
+  faltaba era darle un punto de partida al `EventSystem`: `FocusFirstActive()` (nuevo,
+  `HologramMenuController.cs`) selecciona el primer holograma de cada lista recién construida
+  (se llama al final de cada `Open*()`), y `Start()`/`CloseAll()` seleccionan el holograma
+  "Menú" de la esquina — así las flechas y Enter/Espacio (acción "Submit" del Input Manager,
+  ver `ProjectSettings/InputManager.asset`) funcionan desde el primer frame, sin necesitar un
+  clic previo.
+- [x] **Foco visible para navegación por teclado**: un `Button` creado por `AddComponent`
+  nunca recibe `targetGraphic` (solo lo autoasigna el menú "Crear > UI > Button" del editor),
+  así que el tinte de foco/hover no se veía. `HologramPool.CreateHologramInstance()` ahora
+  asigna `button.targetGraphic = background` y un `ColorBlock` con `highlightedColor`/
+  `selectedColor` bien por encima de blanco — el holograma con foco de teclado se ve
+  claramente más brillante y opaco que el resto.
+- **Verificado en Play mode**: `M` abre el menú raíz (Magia/Yoga/Sistema + X), `Enter` activa
+  el holograma con foco (confirmado abriendo "Magia" → tabla periódica). `Escape`/clic en "X"
+  no se pudieron re-confirmar en esta sesión por un problema de entorno (ver nota abajo), pero
+  la lógica es simétrica a `M` (mismo `CloseAll()`) y ya estaba probada por clic antes de este
+  cambio.
+  - **Nota de entorno, no de código**: durante esta ronda de pruebas, el toggle de Play/Stop del
+    Editor (vía clics de automatización o Ctrl+P) se volvió errático — cada intento de detener
+    Play parecía alternar en vez de asentarse, y la Game view daba la impresión de quedarse
+    "congelada" mostrando un estado viejo mientras la lógica de fondo seguía corriendo (los
+    contadores de warnings de consola seguían subiendo). Coincide con el patrón ya documentado
+    en este mismo archivo sobre clics intermitentes en el Editor vía la herramienta de
+    automatización — no se identificó ningún error de compilación ni de consola asociado. Si
+    esto se repite jugando a mano (sin automatización), sí sería motivo de investigación real.
+
+### Lista raíz y Sistema centradas (a pedido) ✅ (nuevo)
+- [x] El menú raíz (Magia/Yoga/Sistema) y la lista de Sistema (Cámara + volumen) usaban
+  `AddVertical(menuCorner, ...)`, pegadas al mismo borde derecho que el lanzador "Menú" —
+  correcto según el pedido original ("el holograma de menú debe estar en un rincón"), pero
+  al usarlo se pidió que la lista en sí se viera más centrada. Nuevo helper
+  `HologramMenuController.AddCenteredVertical()`/`CenteredVerticalPosition()`: agrupa los
+  items verticalmente centrados en pantalla (no anclados a esquina). El lanzador "Menú" y los
+  botones de cierre/atajo (X, Hechizos, Asanas, etc.) siguen en sus esquinas — eso no cambió.
+  `AddVertical`/`VerticalOffset` (ya sin usuarios) se eliminaron.
+- **Verificado en Play mode**: Magia/Yoga/Sistema aparecen agrupados en el centro de la
+  pantalla al abrir "Menú"; la X de cierre sigue en su esquina.
+
+### Sistema de forrajeo real para herbívoros terrestres + cardúmenes para marinos ✅ (nuevo)
+- [x] **Pedido explícito**: los conejos/venados no buscaban pasto de verdad — `Herbivore.Feed()`
+  era un timer abstracto sin ubicación. `GrassPatch.cs` (nuevo, `Assets/Scripts/World/`) —
+  registro estático simple (`GrassPatch.All`) de áreas de pasto en la escena;
+  `GrassPatch.Nearest(pos)` devuelve la más cercana. `Herbivore.Feed()` ahora camina
+  (`nav.SetDestination`) hasta la más cercana antes de la lógica de alimentación de siempre.
+  `SampleSceneBuilder.BuildGrassPatches()` coloca 3 cajas planas verdes (`GrassPatch_AUTO`,
+  18×18) repartidas sobre el territorio donde ya viven las familias de Bunny/Deer.
+- [x] **Pedido explícito — pescado para las ballenas**: `FishSchool.cs` (nuevo, mismo patrón
+  que `GrassPatch`) — equivalente marino para Whale/Seal. `Herbivore.Feed()` elige la fuente
+  según `GrazesOnLand`: `GrassPatch` en tierra, `FishSchool` en el mar, mismo bucle de "caminar
+  hasta ahí" para ambos casos. `WhaleBehavior`/`SealBehavior` overridean `GrazesOnLand =>
+  false` (son marinas — filtran/pescan, no pastan). `SampleSceneBuilder.BuildFishSchools()`
+  coloca 2 cardúmenes (`FishSchool_AUTO`, cajas planas azules) cerca de donde viven esas
+  familias.
+- **Nota sobre las ballenas**: son belugas (`Delphinapterus leucas`, ya documentado en
+  `WhaleBehavior.cs`), que comen pescado por filtrado, no krill — el krill es dieta de
+  ballenas barbadas (azul, jorobada), una especie distinta a la que hay en el santuario.
+- [x] **Bug encontrado y arreglado al probar esto**: `nav.SetDestination` tiraba
+  `"'SetDestination' can only be called on an active agent that has been placed on a NavMesh"`
+  a cada frame para Whale/Seal — nadan en mar abierto, donde no hay NavMesh horneado (solo el
+  suelo lo tiene), así que su `NavMeshAgent` nunca queda realmente "on mesh". Fix: `Feed()`
+  ahora chequea `nav.isOnNavMesh` antes de llamar `SetDestination` — si el agente no está en
+  malla (marino o no), simplemente come sin caminar, en vez de tirar el error a cada frame.
+- **Verificado en Play mode**: rebuild limpio, 0 errores de compilación, 0 errores de
+  `NavMeshAgent` tras el fix (confirmado buscando "NavMesh" en la consola — sin resultados).
+  Los únicos "errores" restantes en consola (`[RelayService] Bus validation failed` /
+  `Unity.AI.Tracing`) son del paquete interno de Unity AI Assistant fallando al conectar con
+  sus servicios cloud (licencia/red) — no tienen relación con el proyecto ni con este cambio.
+
+### Oso Polar agregado como especie jugable/poblada ✅ (nuevo)
+- [x] **Pedido explícito**: "¿los osos han sido agregados al juego?" → no lo estaban; el GLB del
+  oso ya estaba en Descargas (`polar-bear.zip`, Sketchfab por kenchoo, CC-BY-4.0, uso comercial
+  permitido con atribución) — exactamente el asset que `docs/pipeline-3d-models.md` ya marcaba
+  como pendiente. Pipeline completo:
+  1. Conversión GLB → FBX con el mismo script headless de Blender usado para Kitchen (sin
+     decimar — 10.352 vértices, 1 armature, <1s).
+  2. Import a `Assets/Animals/PolarBear/Models/PolarBear.fbx` (+ texturas) — solo en el proyecto
+     vivo, no en el repo git (regla de siempre: binarios/modelos no se suben).
+  3. Medición de tamaño crudo con Blender (headless, mismo patrón que el diagnóstico del
+     proyecto): altura 4.870m, longitud 7.424m. `RealisticScaleFactor["PolarBear"] = 0.267f` en
+     `AnimalPrefabGenerator.cs` (objetivo 1.3m de hombro → longitud resultante ~2.0m, consistente
+     con un oso polar real).
+  4. `Tools > Cold Sanctuary > Generate Animal Prefabs` → `Assets/Animals/PolarBear/PolarBear.prefab`
+     (usa `BearBehaviour`, ya existía de antes — carpeta "Bear" pero especie registrada como
+     "PolarBear").
+  5. Familia agregada a `SampleSceneBuilder.BuildWildlifePopulation()`: posición `(-15, 0, -50)`,
+     radio 22 — al margen costero del bioma terrestre (más cerca de x=0, rumbo a la zona marina),
+     coherente con que su `Diet` prioriza Seal > Bunny > Wolf.
+- [x] **Bug encontrado y arreglado al probar esto** (mismo patrón que el fix de forrajeo marino,
+  pero en otro lado del código): con el oso poblado, `NavMeshAgent.SetDestination` volvió a tirar
+  `"can only be called on an active agent that has been placed on a NavMesh"` a cada frame — esta
+  vez desde `PostNatalManager.MotherDecisionTick/CubSoloCycle` (5 sitios) y desde
+  `Animal.Flee/Fight/HitAndRun` + `Carnivore.Hunt` + `LifeStage.Wander/Homebound/Feed` (otros 9
+  sitios) — un problema **compartido por todas las especies**, no exclusivo del oso, que
+  simplemente no se había disparado antes. Fix: mismo guard `nav != null && nav.isOnNavMesh` antes
+  de cada `SetDestination`, aplicado en los 14 sitios sin proteger (`PostNatalManager.cs`,
+  `Animal.cs`, `Carnivore.cs`, `LifeStage.cs`).
+- **Verificado en Play mode**: rebuild limpio, 0 errores de compilación. `[FamilyGenerator] 10
+  familia(s) generadas — 58 animales en total` (incluye la familia de oso). 0 errores de
+  `NavMeshAgent` sostenido durante >90s de Play tras el fix. Único error residual: el ya conocido
+  `connection.state_change ... WebSocketException` del Unity AI Assistant intentando conectar a su
+  servicio cloud — ajeno al proyecto.
+- **Pendiente** (no pedido esta vez, solo documentado): Foca (Seal) sigue sin FBX — mismo GLB
+  pendiente de convertir, fuente Sketchfab (rkuhlf) — ver `docs/pipeline-3d-models.md`.
+
+### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
+Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
+errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >
+Play) — alternaba en vez de asentarse, y se vio de refilón una notificación de Windows robando
+foco durante uno de los intentos, lo que encaja con el patrón ya documentado antes en este
+archivo sobre clics intermitentes en el Editor. El usuario detuvo Play manualmente (un solo
+clic, sin problema) y desde ahí se pudo rebuildear, verificar en Play mode y guardar con
+normalidad — confirma que era un problema del entorno de automatización, no del Editor ni del
+código.
 
 ---
 
 ## En progreso / Por hacer
 
 ### 1. Interfaz de Encantamientos (rediseño)
+- [x] Layout resuelto — panel "Hechizos" del menú holográfico, un botón por elemento
+  descubierto. Ver [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
 - [ ] El jugador selecciona elementos químicos de la tabla periódica por cada encantamiento
-- [ ] Un botón por elemento (similar a como ahora hay uno por animal)
+  (mecánica de encantamiento en sí — el panel es de solo lectura por ahora)
+- [x] Un botón por elemento (similar a como ahora hay uno por animal)
 - [ ] Botones más pequeños que los del radar, con distribución diferente para no cubrir toda la pantalla
 - [ ] Mantener compatibilidad Desktop (tecla) + Mobile (click)
 
 ### 2. Interfaz de Posturas / Asanas
+
+- [x] Layout resuelto — panel "Yoga" del menú holográfico, un botón por posición corporal
+  (`BodyPositionButton`, ya existía pero sin ningún panel que lo mostrara). Ver
+  [`docs/ui-holographic-menu.md`](docs/ui-holographic-menu.md).
 
 **Progresión de desbloqueo:**
 - [ ] El jugador empieza SIN ninguna asana desbloqueada

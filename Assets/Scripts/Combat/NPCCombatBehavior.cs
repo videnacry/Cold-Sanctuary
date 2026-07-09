@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
@@ -36,13 +37,21 @@ public class NPCCombatBehavior : MonoBehaviour
     // ── Runtime ───────────────────────────────────────────────────────────────
 
     WorldCharacter  _character;
+    NavMeshAgent    _agent;
     IngredientMob   _currentTarget;
     float           _lastAttackTime;
+    float           _lastDestinationUpdate;
     bool            _combatActive;
+
+    const float DestinationUpdateInterval = 0.3f;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    void Awake() => _character = GetComponent<WorldCharacter>();
+    void Awake()
+    {
+        _character = GetComponent<WorldCharacter>();
+        _agent     = GetComponent<NavMeshAgent>(); // optional — may not have one
+    }
 
     void Update()
     {
@@ -58,13 +67,13 @@ public class NPCCombatBehavior : MonoBehaviour
 
         if (dist <= attackRange)
         {
+            StopMoving();
             FaceTarget(_currentTarget.transform);
             TryAttack();
         }
         else
         {
-            // TODO: NavMeshAgent.SetDestination(_currentTarget.transform.position)
-            FaceTarget(_currentTarget.transform);
+            MoveToward(_currentTarget.transform.position);
         }
     }
 
@@ -73,8 +82,9 @@ public class NPCCombatBehavior : MonoBehaviour
     /// <summary>Call this when the NPC enters a combat zone (e.g., the kitchen).</summary>
     public void EnterCombatMode()
     {
-        _combatActive   = true;
-        _currentTarget  = FindNearestMob();
+        _combatActive  = true;
+        _currentTarget = FindNearestMob();
+        if (_agent != null) _agent.isStopped = false;
         Debug.Log($"[{_character.characterName}] Entrando en modo combate.");
     }
 
@@ -83,6 +93,7 @@ public class NPCCombatBehavior : MonoBehaviour
     {
         _combatActive  = false;
         _currentTarget = null;
+        StopMoving();
         Debug.Log($"[{_character.characterName}] Saliendo de modo combate.");
     }
 
@@ -131,8 +142,39 @@ public class NPCCombatBehavior : MonoBehaviour
         return nearest;
     }
 
+    // ── Movement helpers ──────────────────────────────────────────────────────
+
+    void MoveToward(Vector3 destination)
+    {
+        if (_agent != null)
+        {
+            // Throttle destination updates
+            if (Time.time - _lastDestinationUpdate >= DestinationUpdateInterval)
+            {
+                _agent.isStopped = false;
+                _agent.SetDestination(destination);
+                _lastDestinationUpdate = Time.time;
+            }
+        }
+        else
+        {
+            // Fallback — no NavMeshAgent: manual facing only
+            FaceTarget(_currentTarget.transform);
+        }
+    }
+
+    void StopMoving()
+    {
+        if (_agent != null && !_agent.isStopped)
+            _agent.isStopped = true;
+    }
+
     void FaceTarget(Transform target)
     {
+        // When using NavMeshAgent this is handled by its angularSpeed.
+        // Keep as fallback for non-agent NPCs.
+        if (_agent != null && !_agent.isStopped) return;
+
         Vector3 dir = (target.position - transform.position);
         dir.y = 0f;
         if (dir.sqrMagnitude > 0.01f)

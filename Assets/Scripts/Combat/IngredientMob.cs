@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
@@ -12,10 +13,12 @@ using UnityEngine;
 /// The mob does NOT die in the traditional sense — it becomes "processed":
 /// the ingredient is consumed and transformed, consistent with the sanctuary's no-kill ethos.
 ///
-/// Attach this alongside a NavMeshAgent + Animator. The attack + movement logic is
-/// driven by this component; physics + collision handled by a CharacterController or Rigidbody.
+/// Requires a NavMeshAgent on the same GameObject (or a child). Movement is driven via
+/// NavMeshAgent.SetDestination; rotation is handled by the agent's own angularSpeed.
+/// NavMesh must be baked in the scene for movement to work.
 /// </summary>
 [RequireComponent(typeof(Collider))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class IngredientMob : MonoBehaviour
 {
     // ── Identity ──────────────────────────────────────────────────────────────
@@ -82,10 +85,15 @@ public class IngredientMob : MonoBehaviour
 
     // ── Runtime ───────────────────────────────────────────────────────────────
 
-    Transform   _playerTransform;
-    float       _lastAttackTime;
-    bool        _isProcessed;
-    MobState    _state = MobState.Idle;
+    NavMeshAgent _agent;
+    Transform    _playerTransform;
+    float        _lastAttackTime;
+    float        _lastDestinationUpdate;
+    bool         _isProcessed;
+    MobState     _state = MobState.Idle;
+
+    // How often (seconds) we push a new destination to the agent while chasing
+    const float DestinationUpdateInterval = 0.25f;
 
     enum MobState { Idle, Aggro, Attack, Processed }
 
@@ -94,6 +102,11 @@ public class IngredientMob : MonoBehaviour
     void Start()
     {
         _health = maxHealth;
+        _agent  = GetComponent<NavMeshAgent>();
+
+        // Keep the agent from auto-rotating — we only want NavMesh path following.
+        // The agent's own angularSpeed handles turning; we disable direct LookAt.
+        _agent.angularSpeed = 120f;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) _playerTransform = player.transform;
@@ -116,7 +129,10 @@ public class IngredientMob : MonoBehaviour
 
             case MobState.Aggro:
                 if (dist > aggroRange * 1.5f)
+                {
                     _state = MobState.Idle;
+                    _agent.isStopped = true;
+                }
                 else if (dist <= attackRange)
                     EnterAttack();
                 else
@@ -125,33 +141,41 @@ public class IngredientMob : MonoBehaviour
 
             case MobState.Attack:
                 if (dist > attackRange)
+                {
                     _state = MobState.Aggro;
+                    _agent.isStopped = false;
+                }
                 else
                     TryAttack();
                 break;
         }
     }
 
-    // ── Movement / attack stubs ───────────────────────────────────────────────
+    // ── Movement ──────────────────────────────────────────────────────────────
 
     void EnterAggro()
     {
         _state = MobState.Aggro;
-        // TODO: NavMeshAgent.SetDestination(_playerTransform.position);
+        _agent.isStopped = false;
+        _agent.SetDestination(_playerTransform.position);
+        _lastDestinationUpdate = Time.time;
         // TODO: Animator.SetBool("aggro", true);
     }
 
     void ChasePlayer()
     {
-        // TODO: NavMeshAgent.SetDestination(_playerTransform.position);
-        transform.LookAt(new Vector3(_playerTransform.position.x,
-                                     transform.position.y,
-                                     _playerTransform.position.z));
+        // Throttle destination updates — NavMesh pathfinding is not free
+        if (Time.time - _lastDestinationUpdate >= DestinationUpdateInterval)
+        {
+            _agent.SetDestination(_playerTransform.position);
+            _lastDestinationUpdate = Time.time;
+        }
     }
 
     void EnterAttack()
     {
         _state = MobState.Attack;
+        _agent.isStopped = true;   // stop moving, we're in melee range
         // TODO: Animator.SetTrigger("attack_start");
     }
 
@@ -191,8 +215,9 @@ public class IngredientMob : MonoBehaviour
 
     IEnumerator ProcessSequence()
     {
-        _isProcessed = true;
-        _state       = MobState.Processed;
+        _isProcessed     = true;
+        _state           = MobState.Processed;
+        _agent.isStopped = true;
 
         // TODO: Animator.SetTrigger("processed");
         Debug.Log($"[{ingredientName}] Procesado.");
@@ -248,7 +273,7 @@ public class IngredientMob : MonoBehaviour
             if (_isProcessed || spawnPrefab == null) yield break;
 
             // Count existing mobs of the same type
-            var existing = FindObjectsByType<IngredientMob>(FindObjectsSortMode.None);
+            var existing = FindObjectsByType<IngredientMob>();
             int count = 0;
             foreach (var m in existing)
                 if (m.ingredientName == ingredientName && !m._isProcessed) count++;

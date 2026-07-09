@@ -226,6 +226,29 @@ Esto crea rutas comerciales emergentes entre personajes sin que el juego las imp
 
 ---
 
+---
+
+## Layout de Controles — Filosofía Mecanografía
+
+Cold Sanctuary diseña sus controles para mantener ambas manos en posición de home row, promoviendo la postura correcta de teclado. Todos los atajos son configurables en el Inspector.
+
+| Mano | Teclas default | Función |
+|------|---------------|---------|
+| Izquierda | W A S D | Movimiento |
+| Izquierda | Shift izq | Sprint |
+| Izquierda | Space | Salto / avanzar diálogo |
+| Derecha | J / L | Cámara izq/der |
+| Derecha | I / K | Cámara arriba/abajo |
+| Derecha | 1 – 0 | Habilidades de combate |
+| Derecha | Tab | Cycle target (mob siguiente) |
+| Derecha | Enter | Avanzar diálogo (alternativo) |
+| Cualquiera | V | Toggle 3ª ↔ 1ª persona |
+| Cualquiera | Escape | Deseleccionar target / desbloquear cursor |
+
+El ratón actúa como alternativa al look de teclado, no como requisito. Un jugador puede jugar completamente con teclado manteniendo ambas manos en home row.
+
+---
+
 ## Referencia Técnica
 
 | Sistema | Archivo |

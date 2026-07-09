@@ -8,6 +8,13 @@ using UnityEngine;
 /// </summary>
 public class Goluis : CompanionBase
 {
+    [Header("Goluis — Dialogue")]
+    [Tooltip("Lines Goluis says the first time Kushal enters his range.")]
+    public DialogueSequence greetingSequence;
+
+    [Tooltip("Lines Goluis says when pressure is active and Kushal is nearby.")]
+    public DialogueSequence pressureSequence;
+
     [Header("Goluis — Pressure System")]
     [Tooltip("When active, adds a speed bonus comment — raises player stress but also mental resistance.")]
     public bool pressureActive;
@@ -66,7 +73,11 @@ public class Goluis : CompanionBase
 
     protected override void OnPlayerNearby()
     {
-        // Hook: trigger dialogue, pressure comment, etc.
-        // e.g. DialogueManager.Instance.PlayLine(companionName, "pressure_greeting");
+        if (DialogueManager.Instance == null || DialogueManager.Instance.IsPlaying) return;
+
+        if (pressureActive && pressureSequence != null)
+            DialogueManager.Instance.Play(pressureSequence);
+        else if (greetingSequence != null)
+            DialogueManager.Instance.Play(greetingSequence);
     }
 }
