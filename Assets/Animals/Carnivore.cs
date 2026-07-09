@@ -42,7 +42,7 @@ public abstract class Carnivore : Animal
             {
                 float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
                 location = prey.transform.position;
-                nav.SetDestination(location);
+                if (nav != null && nav.isOnNavMesh) nav.SetDestination(location);
                 distance = Vector3.Distance(location, transform.position);
                 if (victim.Dead)
                 {

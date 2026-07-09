@@ -191,10 +191,10 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
     {
         return Animal.StaticGenerateSquareRange(animal, area, quantity);
     }
-    public virtual Animal[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0)
+    public virtual Animal[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0, float radius = 0)
     {
         familySize = familySize > 0 ? familySize : this.Group.familySize;
-        return Family.RenderFamily(this.gameObject, familySize, this.Group.parentsRate, minParentsCount, this.Group.parentalCare, position, height);
+        return Family.RenderFamily(this.gameObject, familySize, this.Group.parentsRate, minParentsCount, this.Group.parentalCare, position, height, radius);
     }
 
 
@@ -290,7 +290,8 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
             while (afraid > 0)
             {
                 afraid--;
-                nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count - 1)).transform.position);
+                if (BirdBehavior.population.Count > 0 && nav != null && nav.isOnNavMesh)
+                    nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
                 yield return new WaitForSeconds(10);
             }
             threatPos = threat.transform.position;
@@ -314,7 +315,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         while (!threatTarget.Dead &&
                Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
         {
-            nav.SetDestination(threat.transform.position);
+            if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
             if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                 threatTarget.Hurt((rig.mass - exhaustion) / 10f);
             yield return new WaitForSeconds(interval);
@@ -333,14 +334,14 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
             Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
             if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)
             {
-                nav.SetDestination(threat.transform.position);
+                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                     threatTarget.Hurt((rig.mass - exhaustion) / 15f);
             }
             else
             {
                 Vector3 retreat = transform.position + (transform.position - threat.transform.position).normalized * 10f;
-                nav.SetDestination(retreat);
+                if (nav != null && nav.isOnNavMesh) nav.SetDestination(retreat);
             }
             yield return new WaitForSeconds(interval);
         }

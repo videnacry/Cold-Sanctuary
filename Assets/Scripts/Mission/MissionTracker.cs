@@ -176,7 +176,7 @@ public class MissionTracker : MonoBehaviour
     int CountYeastMobs()
     {
         // "Yeast" mobs are IngredientMobs that can reproduce (canReproduce flag)
-        var mobs = FindObjectsByType<IngredientMob>(FindObjectsSortMode.None);
+        var mobs = FindObjectsByType<IngredientMob>();
         int count = 0;
         foreach (var m in mobs)
             if (m.canReproduce) count++;

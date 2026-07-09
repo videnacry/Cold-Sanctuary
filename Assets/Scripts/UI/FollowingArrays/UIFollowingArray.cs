@@ -18,6 +18,7 @@ public struct UIFollowingArrayElement
         {
             elementsFollowingArraysIndex++;
             GameObject followingElement = MonoBehaviour.Instantiate(uiFollowingArrayElement.sheetButton, user.transform);
+            followingElement.SetActive(true); // Instantiate copia activeSelf del template — las plantillas se guardan inactivas
             FollowingArrays followingElementScript = followingElement.GetComponent<FollowingArrays>();
             followingElementScript.user = user;
             followingElementScript.parentFollowingArrays = parent;

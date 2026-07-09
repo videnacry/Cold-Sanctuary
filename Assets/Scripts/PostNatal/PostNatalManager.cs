@@ -127,7 +127,7 @@ public class PostNatalManager : MonoBehaviour
             {
                 Vector3 away = mother.HomeOrigin + Random.insideUnitSphere * mother.HomeRadius * 0.7f;
                 away.y = mother.transform.position.y;
-                mother.nav.SetDestination(away);
+                if (mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(away);
                 mother.ActsPrep.walk.Prep(mother, duration);
             }
             yield break;
@@ -137,7 +137,7 @@ public class PostNatalManager : MonoBehaviour
         float distToNest = Vector3.Distance(mother.transform.position, cub.HomeOrigin);
         if (distToNest > MotherProximity)
         {
-            mother.nav.SetDestination(cub.HomeOrigin);
+            if (mother.nav != null && mother.nav.isOnNavMesh) mother.nav.SetDestination(cub.HomeOrigin);
             mother.ActsPrep.run.Prep(mother, duration);
             yield break;
         }
@@ -270,7 +270,7 @@ public class PostNatalManager : MonoBehaviour
         // Temperatura crítica → buscar calor / volver al nido
         if (cub.temperature < TempCritical)
         {
-            cub.nav.SetDestination(cub.HomeOrigin);
+            if (cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
             cub.ActsPrep.run.Prep(cub, duration);
             yield break;
         }
@@ -302,7 +302,7 @@ public class PostNatalManager : MonoBehaviour
         // Temperatura baja → buscar calor (sin ser crítica)
         if (cub.temperature < TempAlone + 0.5f)
         {
-            cub.nav.SetDestination(cub.HomeOrigin);
+            if (cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(cub.HomeOrigin);
             cub.ActsPrep.walk.Prep(cub, duration);
             yield break;
         }
@@ -312,7 +312,7 @@ public class PostNatalManager : MonoBehaviour
         float exploreRadius = Mathf.Min(cub.HomeRadius * 0.3f, 8f);
         Vector3 wander = cub.HomeOrigin + Random.insideUnitSphere * exploreRadius;
         wander.y = cub.transform.position.y;
-        cub.nav.SetDestination(wander);
+        if (cub.nav != null && cub.nav.isOnNavMesh) cub.nav.SetDestination(wander);
         cub.ActsPrep.walk.Prep(cub, duration);
         if (!cub.firstNestExit &&
             Vector3.Distance(cub.transform.position, cub.HomeOrigin) > exploreRadius * 0.5f)

@@ -46,7 +46,13 @@ public class CameraManager : MonoBehaviour
     [Header("Effect Intensities")]
     public float maxShakeAmplitude  = 0.05f;
     public float maxFOVConstrict    = 15f;   // FOV tightening under stress (Goluis)
-    public float baseFOV            = 60f;
+
+    [Header("Field of view per mode")]
+    [Tooltip("3rd person can afford a tighter FOV since the whole body is in frame.")]
+    public float thirdPersonFOV = 60f;
+    [Tooltip("1st person needs a wider FOV or nearby geometry reads as abnormally small/distant — 60 felt zoomed out once Kushal was rescaled to real human height.")]
+    public float firstPersonFOV = 82f;
+    float baseFOV => _currentMode == CameraMode.FirstPerson ? firstPersonFOV : thirdPersonFOV;
 
     // ── Runtime state ────────────────────────────────────────────────────────
     CameraMode   _currentMode;
@@ -73,6 +79,18 @@ public class CameraManager : MonoBehaviour
     {
         if (!_inRobbery)
             ApplyStatEffects();
+    }
+
+    // Keeps the camera glued to the current anchor every frame — the anchors
+    // are parented to the moving Player, but were previously only synced once
+    // per mode-switch transition, so the camera never followed movement.
+    void LateUpdate()
+    {
+        if (_inRobbery || _transitionRoutine != null) return;
+        Transform anchor = _currentMode == CameraMode.FirstPerson ? firstPersonAnchor : thirdPersonAnchor;
+        if (anchor == null) return;
+        _cam.position = anchor.position;
+        _cam.rotation = anchor.rotation;
     }
 
     // ── Public API ───────────────────────────────────────────────────────────
@@ -109,6 +127,7 @@ public class CameraManager : MonoBehaviour
     void ApplyMode(CameraMode mode, bool instant = false)
     {
         _currentMode = mode;
+        Camera.main.fieldOfView = baseFOV; // instant snap — ApplyStatEffects() only nudges gradually
         Transform anchor = mode == CameraMode.FirstPerson ? firstPersonAnchor : thirdPersonAnchor;
         if (anchor == null) return;
 
@@ -140,6 +159,7 @@ public class CameraManager : MonoBehaviour
         }
         _cam.position = anchor.position;
         _cam.rotation = anchor.rotation;
+        _transitionRoutine = null;
     }
 
     // ── Camera robberies ─────────────────────────────────────────────────────

@@ -116,7 +116,7 @@ public class CombatTargetSelector : MonoBehaviour
 
     List<IngredientMob> GetSortedMobs()
     {
-        var all = FindObjectsByType<IngredientMob>(FindObjectsSortMode.None);
+        var all = FindObjectsByType<IngredientMob>();
         var result = new List<IngredientMob>();
 
         foreach (var m in all)
