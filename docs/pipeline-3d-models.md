@@ -24,6 +24,12 @@ El script `Assets/Editor/AnimalModelImporter.cs` corre automáticamente cuando U
 un FBX nuevo en cualquier carpeta `Models/` — configura escala, animaciones, blend shapes
 y UVs de lightmap sin intervención manual.
 
+> **Estado real (auditoría 2026-07-09):** `AnimalModelImporter` fija siempre
+> `animationType = Generic`; no existe la rama Humanoid/Player pese al comentario de
+> cabecera del propio script. El siguiente paso del pipeline tras importar es
+> `Assets/Editor/AnimalPrefabGenerator.cs`, con los comandos de menú `Generate Animal
+> Prefabs`, `Fix Animal Colliders And Rigidbodies` y `Measure Raw Animal Sizes`.
+
 ---
 
 ## Especies árticas — lista actualizada

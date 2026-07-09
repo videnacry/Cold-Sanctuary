@@ -111,6 +111,9 @@ Gatea: `SelectPrey` (A) y `ThreatResponse` (B) consultan el vínculo antes de de
 
 ## Estado actual del stub "player como madre"
 
+> **Estado real (auditoría 2026-07-09):** los campos `mom, player` (`// LEGAZY`) ya
+> fueron eliminados de `BunnyBehavior`/`WolfBehavior`. Esta nota queda obsoleta.
+
 La intención ya quedó marcada como **campos sueltos sin lógica**:
 `BunnyBehavior.cs:110` y `WolfBehavior.cs:94` (`// LEGAZY`) → `public GameObject mom, player;`.
 No hay comportamiento de imprinting activo (lo usaba el viejo `Bear.Hunt()`, ya reemplazado).
@@ -134,10 +137,14 @@ huérfanos.
 
 _(Área libre para apuntes que surjan durante la implementación.)_
 
-- `BunnyBehavior.Shooted()` (`:144-146`) referencia `StopCoroutine("Hunt")` y
+> **Estado real (auditoría 2026-07-09):** nota obsoleta — el mecanismo completo de
+> `Shooted()`/disparo fue **eliminado** el 2026-07-09 (commit `2d09716`) por decisión de
+> diseño de no-violencia. Ya no hay bug que alinear.
+
+- ~~`BunnyBehavior.Shooted()` (`:144-146`) referencia `StopCoroutine("Hunt")` y
   `StartCoroutine("Sleep")`, coroutines que **no existen** en el modelo `Herbivore`. Bug
   latente — alinear con el modelo nuevo (como se hizo en el oso). Pendiente, fuera del foco
-  actual.
+  actual.~~
 
 ---
 
@@ -279,6 +286,10 @@ Cada especie declara solo las que le corresponden.
 
 #### Estructura por etapa
 
+> **Estado real (auditoría 2026-07-09):** `MotherBehaviorSet`/`OffspringBehaviorSet`/
+> `loopBehaviors` descritos abajo **no existen** en el código; la lógica por-tick está
+> hardcodeada en `PostNatalManager`, no es data-driven todavía.
+
 Cada `PostNatalStage` tiene dos capas de comportamiento:
 
 1. **`entryActions`** — lista ordenada ejecutada una sola vez al entrar al stage (p.ej. nacimiento).
@@ -393,6 +404,9 @@ public float fatReserves = 0f; // 0–100; la osa en letargo consume esto en lug
 El letargo no es exclusivo del oso. Es un `Behavior` genérico con parámetros por especie
 y etapa de vida:
 
+> **Estado real (auditoría 2026-07-09):** el letargo universal descrito aquí, incluido
+> `lethargyDepth`, no existe todavía en el código.
+
 | Trigger | Animal | Duración | `lethargyDepth` |
 |---------|--------|----------|----------------|
 | Invierno (`temperature < umbral`) | Oso | Meses | Muy alto — solo despierta con amenaza seria |
@@ -435,6 +449,10 @@ La ventana de visita del conejo se abre naturalmente cuando los depredadores baj
 nocturna → `environmentStress` baja → condición 2 se cumple. No hay "a las 2am fijo" en código.
 
 `HomeOrigin` es **mutable**: cualquier comportamiento puede llamar `SetHomeOrigin(pos)`.
+
+> **Estado real (auditoría 2026-07-09):** `SetHomeOrigin()` no existe como método; el
+> código asigna `HomeOrigin` directamente.
+
 El oso bebé tiene como `HomeOrigin` la posición donde la madre decidió echarse. El venado
 actualiza el `HidingSpot` de la cría cada vez que la deja. La manada de lobos puede relocalizar
 si `environmentStress > relocationThreshold` durante N días → todos los miembros actualizan.
@@ -465,6 +483,9 @@ El abandono no está hardcodeado. Emerge cuando dos condiciones se cruzan:
 #### Manada de lobos — roles diferenciados
 
 No todos los adultos ejecutan el ciclo completo de madre. Cada adulto tiene un rol:
+
+> **Estado real (auditoría 2026-07-09):** el enum `FatherRole` se configura por etapa
+> pero **nunca se lee** en ningún lado del código — los roles son inertes por ahora.
 
 | Rol | Comportamiento post-natal |
 |-----|--------------------------|

@@ -85,6 +85,12 @@ El `RespondToThreat()` puede evolucionar por niveles del arco narrativo:
 - `LivingEntity` creada con drives: `stress`, `trauma`, `fatReserves`, `temperature`, `bonds`, `aware`, `death`, `asleep`
 - `Animal` migrada a `LivingEntity` — `bonds`, `GrowBond`, `CanHarm`, `EffectiveBondGrowthRate`, `HarmVsBond`, `BondGrowthRate`, `MaxFatReserves`, `FatAccumulationRate` viven en LivingEntity
 - Hooks implementados en Animal: `RespondToHunger()`, `EvaluateThreat()`, `RespondToThreat()` (public)
+
+> **Estado real (auditoría 2026-07-09):** `EvaluateThreat()` y `OnLifeStageChanged()`
+> están implementados/sobreescritos pero **nunca se invocan** en ningún lado — son hooks
+> muertos; `ResolveReaction` duplica la fórmula de amenaza inline en su lugar. Además,
+> `Animal.lp` nunca se inicializa (queda en `0`), lo que hace que `Hurt()` pueda matar
+> instantáneamente sin importar el daño recibido — bug latente, no arreglado.
 - `IAnimal` eliminada. `IVital` eliminada. `aware` vive en LivingEntity.
 - Carnivore usa `GetComponent<LivingEntity>()` + `RespondToThreat()` + `.aware`
 
@@ -122,3 +128,7 @@ PlayerStats             (implementa IBody + IMind; no extiende LivingEntity toda
 - `Assets/Scripts/LivingEntity.cs` — implementación actual
 - `docs/ibody-imind.md` — estado de IMind/IBody
 - `Assets/Animals/Animal.cs` — primera subclase de LivingEntity
+
+> **Estado real (auditoría 2026-07-09):** hay una colisión de nombres — el `Bond.cs` en
+> la raíz (vínculo animal, EN USO) es distinto de la carpeta `Bond/` (sistema
+> `BondActivity`/`IBondable`). Confuso pero no es un bug.

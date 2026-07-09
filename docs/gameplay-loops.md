@@ -67,6 +67,10 @@ son del tamaño de edificios. La cocina es una mazmorra gigante.
 4. Suficientes fragmentos → `PeriodicTableManager.Discover(elementSymbol)`
 5. Plato completado → stat de cocina +XP, satisfacción restaurada, posible drop de receta
 
+> **Estado real (auditoría 2026-07-09):** el cierre de misión `AreaClear` depende de un
+> `KitchenCombatManager` que **no existe** en el repo; `MissionTracker.ReportMobProcessed`/
+> `ReportAreaCleared` no tienen invocadores. El loop está diseñado pero aún no cableado.
+
 **Mobs de la cocina** (ejemplos):
 
 | Mob | Elemento | Patrón | Dificultad |

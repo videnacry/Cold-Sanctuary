@@ -21,7 +21,7 @@ LivingEntity (abstract MonoBehaviour)
 │  └─ (futuros NPCs con drives reales)
 │
 ├─ BirdBehavior (IFactory)
-├─ PlayerCtrl, ShipCtrl
+├─ ShipCtrl  (PlayerCtrl retirado 2026-07-09; jugador = Player/PlayerController)
 ├─ SlideDoor, PullDoor, DrivePreparation
 ├─ Respawn, FamilyGenerator, Generator
 └─ Test (registro de debug)
@@ -59,8 +59,8 @@ IMindSimple  (Assets/Scripts/IMindSimple.cs)
   Implementa: CompanionBase (transitorio hasta que llegue NPCBase)
 
 IBondable  (Assets/Scripts/Companion/IBondable.cs)
-  ├─ BondWithPlayer: float { get; }
-  ├─ GrowBondWithPlayer(float amount): void
+  ├─ GetBondStrength(): float
+  ├─ GrowBond(float amount): void
   └─ GetProximityEffect(MindChannel): float
   Implementa: CompanionBase, WorldBondable
 
@@ -119,10 +119,15 @@ Los eventos son pools de delegados (`SubEvent`), lo que permite componer comport
 
 ## Jugador y nave (`Assets/Scripts/`)
 
-- **`PlayerCtrl.cs`** — FPS: WASD, apuntado con ratón (IK de rifle/brazo/mano), mouse3 para
-  fijar objetivo (toggle conejo/oso con 'G'), click izq. dispara, 'F' zoom.
+- **`Player/PlayerController.cs`** — controlador **activo** (CharacterController): WASD + salto +
+  gravedad, mouse-look al mantener Mouse1, toggle 1ª/3ª persona con 'V' (vía `CameraManager`),
+  natación desde `WaterZone`, bloqueo durante diálogo. Sin combate/disparo. Es el que cablea
+  `SampleSceneBuilder`.
+- **`PlayerCtrl.cs`** — *retirado 2026-07-09*. Era el FPS legacy con disparo/dardo e IK de rifle;
+  el santuario es no-violento. Recuperable desde el historial de la rama de auditoría si se
+  reusa el rig de puntería.
 - **`ShipCtrl.cs`** — helicóptero: WASD pitch/roll/yaw/velocidad, mouse0 free-look, scroll
-  zoom, 'F' anima disparo. Fuerza ascendente constante.
+  zoom, 'F' anima disparo. Fuerza ascendente constante. Bug: placeholders `if(1==1)` (líneas 83/95).
 
 ## Entorno (`Assets/Scripts/`)
 
@@ -243,3 +248,42 @@ Ver diseño completo en [`observation-system.md`](observation-system.md).
   propios (`Dictionary<StatType, float>`). **Gap actual**: no conectado a `PlayerStats` todavía
   (ver DEVLOG.md §Gaps y conflictos — StatType vs StatChannel).
 - **`BodyPosition.cs`** / **`BodyPositionButton.cs`** — datos de posición corporal + botón UI.
+
+---
+
+## Sistemas incorporados no documentados hasta ahora (auditoría 2026-07-09)
+
+Estos sistemas existen en código pero no estaban en esta doc. Estado verificado en
+[`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md). "Cableado" = lo monta `SampleSceneBuilder`.
+
+- **Combate (`Assets/Scripts/Combat/`)** — *implementado; jugador cableado*. Melee por `SphereCast`
+  (`PlayerCombat`), tab-target (`CombatTargetSelector`), barra de 10 habilidades con afinidad
+  elemental y AOE (`CombatAbilityBar`), enemigos `IngredientMob`. Pendiente: cablear
+  `NPCCombatBehavior`, animaciones/VFX (muchos TODO), refresco en vivo de la barra.
+- **Economía (`Assets/Scripts/Economy/`)** — *implementado; núcleo jugador cableado*. `CoinWallet`,
+  `Inventory` (equipar herramienta/armadura, consumibles), `ItemData`. Pendiente de cablear:
+  `NPCEconomy` y `AreaVendor` (economía viva de NPCs, hoy inertes).
+- **Química / tabla periódica (`Assets/Scripts/Chemistry/`)** — *implementado y cableado*.
+  `PeriodicTableManager` como "Pokédex" de ~55 elementos por grupo; `ElementFragment` como pickup.
+  Alimenta el menú holográfico y desbloqueos de combate.
+- **Cocina / miniaturización (`Assets/Scripts/Kitchen/`)** — *implementado y cableado*. Escala la
+  sala ×8 con lerp de FOV; entrada vía `IInteractable` + `ConfirmationPanel`. Riesgo de doble-trigger.
+- **Ropa / crafting (`Assets/Scripts/Clothing/`)** — *parcial, sin cablear*. Pistas Textil/Química;
+  el crafting nunca entrega el item (`ClothingRecipe` no tiene `resultItem`) ni consume materiales.
+- **Diálogo (`Assets/Scripts/Dialogue/`)** — *implementado y cableado*. `DialogueManager` singleton,
+  `DialogueSequence`/`DialogueLine` (ScriptableObjects), `DialoguePanel` (typewriter, efectos),
+  `DialogueTrigger`. Assets creados por `Editor/DialogueAssetCreator`.
+- **Misiones (`Assets/Scripts/Mission/`)** — *implementado parcial*. `MissionTracker` para
+  `IngredientCollection` y `YeastControl`; `AreaClear` incompleto (falta `KitchenCombatManager`).
+- **Interacción (`Assets/Scripts/Interaction/`)** — *implementado y cableado*. `IInteractable` +
+  `InteractionController` (proximidad + raycast, bloquea durante diálogo/confirmación).
+- **Herramientas de Editor (`Assets/Editor/`)** — `SampleSceneBuilder` (blockout + cableado de casi
+  todos los sistemas), `AnimalPrefabGenerator`/`AnimalModelImporter` (pipeline de modelos),
+  `DialogueAssetCreator`, `SceneDiagnostics`.
+
+### Huérfanos completos (implementados, pendientes de cablear)
+
+No borrar: son trabajo listo para activar. `NPCCombatBehavior`, `NPCEconomy`, `AreaVendor`,
+`ClothingCraftingArea`, `Generator` (legacy), `MaterializationExecutor` + `ArrangementPattern`
+(inalcanzables hasta que exista `BlockSpellEvaluator`), `TeacherNPC`/`MaestraTeacher` (sin conectar
+a `Palette.OnFormulaEvaluated`), `BondActivityManager.Practice()`/`BuildPaletteConfig()`.

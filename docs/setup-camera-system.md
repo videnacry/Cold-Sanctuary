@@ -12,10 +12,13 @@ Scripts involucrados: `CameraManager`, `CameraZoneTrigger`, `PlayerStats`.
 | Componente | Notas |
 |---|---|
 | `PlayerStats` | Añadir directamente al Player. Configurar valores iniciales en Inspector. |
-| `PlayerCtrl` | Ya existente. |
+| `PlayerController` | Ya existente. |
 | `Animator` | Ya existente. |
 | `NavMeshAgent` | Ya existente. |
 | **Tag: `Player`** | Obligatorio — `CameraZoneTrigger` lo usa para identificar al jugador. |
+
+> **Estado real (auditoría 2026-07-09):** `PlayerCtrl` fue retirado el 2026-07-09; el
+> controlador activo y requerido es `Player/PlayerController`.
 
 ### Hijos requeridos del Player
 
@@ -121,7 +124,9 @@ No es necesario asignar la cámara en ningún Inspector — se obtiene automáti
 2. Crear `ThirdPersonAnchor` como hijo del Player, posicionar en escena
 3. Crear `FirstPersonAnchor` como hijo del hueso de cabeza, posicionar
 4. Crear el GameObject `CameraManager`, añadir el componente y asignar referencias
-5. Crear el `CubAreaTrigger` con collider trigger y componente `CameraZoneTrigger`
+5. Crear el `CubAreaTrigger` con collider trigger y componente `ZoneActivator` (ver §4;
+   `CameraZoneTrigger` está superseded — no usar en zonas nuevas). También existe
+   `AutoCameraZone` como alternativa sin cablear manualmente el trigger.
 6. Hacer Play y entrar al área de crías para verificar el switch de cámara
 7. Ajustar posición de los anchors según feel
 

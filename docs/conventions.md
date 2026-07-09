@@ -18,6 +18,12 @@ Este repo versiona únicamente los `.cs` de `Assets/`. Las escenas, prefabs,
 - Patrón Factory vía `IFactory`; comportamiento de animales vía herencia de `Animal`.
 - Lógica temporal centralizada en `TimeController` (`Assets/Scripts/Time/Time.cs`); usa
   `TimeSpeedMinuteSecs` para intervalos de coroutine en vez de constantes.
+- Sin namespaces: todo el código vive en el espacio global (0 namespaces confirmados en
+  los 144 `.cs` del proyecto).
+
+> **Estado real (auditoría 2026-07-09):** `ClothingCraftingArea.CraftRoutine` usa
+> `WaitForSeconds(minutes*60)` sin escalar por `TimeController` (tiene su propio TODO
+> admitiéndolo) — viola esta convención de tiempo centralizado.
 
 ## Al modificar comportamiento de animales
 

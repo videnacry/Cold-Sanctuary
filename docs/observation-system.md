@@ -1,5 +1,10 @@
 # Sistema de Observación — Cold Sanctuary
 
+> **Estado real (auditoría 2026-07-09):** este documento es diseño/visión, casi nada está
+> implementado. Solo existe el float `observationRadius` en `PlayerStats`. No existen
+> `ObservableObject`, `IObservable`, `ObservationManager` ni el modo contemplativo. El
+> contenido de visión se mantiene íntegro debajo para referencia de diseño.
+
 Documento de diseño del sistema de Observación: radio de consciencia, señales diegéticas, modo contemplativo y crecimiento de la stat.
 
 Ver también: DEVLOG.md §Stat: Observación, `docs/ibody-imind.md` (la stat vive en `IMind`).

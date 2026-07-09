@@ -72,6 +72,8 @@ en `subjects`, llama a `Fill()`, que busca `IFactory` en el prefab y si existe l
 `GenerateSquareRange`. **No hay ninguna instancia de `Generator` en la escena
 actualmente** — es infraestructura sin usar.
 
+> **Estado real (auditoría 2026-07-09):** `Generator.cs` es legacy/sin uso, confirmado.
+
 ### `Respawn` ([`Assets/Scripts/Respawn.cs`](../Assets/Scripts/Respawn.cs))
 
 Otro spawner independiente, con su propia lógica de reaparición periódica de
@@ -79,6 +81,9 @@ Otro spawner independiente, con su propia lógica de reaparición periódica de
 porque `BirdBehavior.GenerateSquareRange` escribe ahí — `Respawn.cs` en sí no lo lee
 ni lo usa. Tiene además un campo `aves` (pájaros) que no se referencia en ningún lado
 del archivo: campo muerto.
+
+> **Estado real (auditoría 2026-07-09):** `Respawn.bears`/`rabbits`/`aves` fueron
+> eliminados el 2026-07-09; de esos campos hoy solo queda `birds`.
 
 ## Lo que se agregó en esta sesión
 

@@ -45,6 +45,10 @@ Cada vez que la actividad se practica, el sistema registra el estado del jugador
 - Si `playerStats.stress > stressAcceptanceThreshold` en el momento de la práctica → experiencia negativa → `traumaAccumulated` sube
 - El trauma se acumula por repetición — una sola experiencia mala no bloquea, pero un patrón sí
 
+> **Estado real (auditoría 2026-07-09):** el gate de estrés en `RegisterExperience` es un
+> `stressThreshold = 0.6f` local hardcodeado, no un campo configurable
+> `stressAcceptanceThreshold` en `BondActivity`.
+
 ### Bloqueo por trauma
 Cuando `traumaAccumulated` supera un umbral (`blockThreshold`):
 - `isBlocked = true`
@@ -73,7 +77,7 @@ El trauma se reduce lentamente con el tiempo si la actividad no se practica en c
 BondActivity (ScriptableObject)
 ├── displayName: string
 ├── acquisitionNote: string          // narrativo, cómo se adquirió
-├── target: IBondable                // con quién/qué construye bond
+├── targetId: string                 // id de con quién/qué construye bond (resuelto en runtime)
 ├── isUnlocked: bool
 ├── bondGainPerPractice: float       // bond que sube al target por práctica
 ├── canActivatePassively: bool
@@ -101,6 +105,11 @@ BondActivity (ScriptableObject)
 | **Estrés** | Si supera `stressAcceptanceThreshold` durante la práctica → acumula trauma |
 | **Observación** | Algunas actividades pasivas requieren un radio de observación mínimo para activarse |
 | **Bond** | Resultado de la práctica — crece con el target cada vez que se practica sin bloqueo |
+
+> **Estado real (auditoría 2026-07-09):** no existe gating por radio de observación en el
+> código — las actividades pasivas solo se activan por coincidencia de `passiveTriggers`
+> (tags de contexto). Además, `BondActivityManager.Practice()`/`BuildPaletteConfig()` existen
+> pero no están cableados a ninguna UI ni input todavía.
 
 ---
 

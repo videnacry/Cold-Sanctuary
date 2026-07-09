@@ -49,7 +49,12 @@ con un array de 8 slots — uno por parte del cuerpo.
 | `StumbleThreshold` | 0.5 | Tambaleo — cámara vibra, movimiento reducido |
 | `FallThreshold` | 1.0 | Caída — postura interrumpida forzosamente |
 
-`PostureStressHandler.cs` (pendiente de implementar) leerá estos valores y los aplicará a `PlayerCtrl`.
+`PostureStressHandler.cs` ya está implementado y attached junto a `PlayerStats`; lee estos
+valores y drives `PlayerStats.velocity`.
+
+> **Estado real (auditoría 2026-07-09):** `RequestCameraShake` sigue pendiente — hoy
+> `PostureStressHandler` piggybacks en `DrainMind(MentalFatigue)` en lugar de una API de
+> shake real en `CameraManager`.
 
 ---
 

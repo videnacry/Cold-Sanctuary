@@ -67,9 +67,14 @@ UIFollowingArrayElement {
 - **`FollowingElement.cs`** — wrapper que guarda la referencia al `FollowingElementBehavior`.
 - **`FollowingElementBehavior.cs`** — base (virtual `Init(elementReference)`) para
   comportamiento por elemento de UI.
-- **`AnimalRadar.cs`** — extiende `FollowingElementBehavior`. `Init()` captura el `Animal`;
-  `PointAnimal()` (coroutine) orienta el transform hacia el animal a distancia y se detiene
-  cuando `lifeStage == soul`.
+- **`AnimalRadar.cs`** — extiende `FollowingElementBehavior`. `Init()` captura el `Animal`.
+- **`TrackerBehavior.cs`** — clase intermedia entre `FollowingElementBehavior` y `AnimalRadar`;
+  su coroutine `Track()` (no `PointAnimal()` en `AnimalRadar`) orienta el transform hacia el
+  animal a distancia y se detiene cuando `lifeStage == soul`.
+
+> **Estado real (auditoría 2026-07-09):** el tracking vive en `TrackerBehavior.Track()`, una
+> clase intermedia entre `FollowingElementBehavior` y `AnimalRadar` — no en un método
+> `PointAnimal()` de `AnimalRadar` como decía este doc.
 
 ## Acceso a datos
 
@@ -90,9 +95,13 @@ UI (principal, parent=null, Renderer on)
 
 ## Puntos frágiles (ver también known-issues.md)
 
-- `FollowingElement.followingElementBehavior` se asigna tras instanciar, pero
-  `Init()` puede correr en `Start()` antes de la asignación → posible race condition.
 - `RenderUIElements()` no persiste bien la referencia al padre; las hojas pueden perder
   la jerarquía al re-mostrarse.
 - `DestroyUIElements()` devuelve un struct para encadenar, pero captura la cola por
   referencia → comportamiento indefinido si se modifica a mitad.
+
+> **Estado real (auditoría 2026-07-09):** la race condition "`Init()` en `Start()` antes de la
+> asignación" ya no aplica al código actual — `FollowingElementBehavior.Init()` corre de forma
+> síncrona justo después de `AddComponent` (no en `Start()`), y `FollowingElement.Start()`/
+> `Update()` son no-ops vacíos. El riesgo de referencia compartida en `DestroyUIElements` sigue
+> siendo real en el código, pero no dispara ningún bug activo hoy.
