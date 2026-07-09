@@ -71,6 +71,7 @@ public static class SampleSceneBuilder
         BuildUI(root.transform);
         EnsurePlayerSystems();
         BuildHolographicMenu(root.transform);
+        BuildKitchenContent(root.transform);
         BakeNavMesh();
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -797,5 +798,127 @@ public static class SampleSceneBuilder
         slider.value = 1f;
         sliderGO.SetActive(false);
         return slider;
+    }
+
+    // ── Kitchen mobs ──────────────────────────────────────────────────────────
+    //
+    // Mobs start INACTIVE — KitchenScaleController activates them once the
+    // miniaturization transition completes. The entrance trigger sits at the
+    // open +Z side of the Kitchen U-shape (open toward the player).
+    //
+    // Fragment prefab is created on demand in Assets/Prefabs/ if it doesn't exist.
+
+    static void BuildKitchenContent(Transform parent)
+    {
+        const string kitchenAreaName = "Kitchen_Area";
+        GameObject kitchenArea = GameObject.Find(kitchenAreaName);
+        if (kitchenArea == null)
+        {
+            Debug.LogWarning("[SampleSceneBuilder] Kitchen_Area no encontrada — mobs de cocina omitidos.");
+            return;
+        }
+
+        // Content root: this is what KitchenScaleController scales up ×8
+        GameObject contentRoot = new GameObject("Kitchen_Content");
+        contentRoot.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
+
+        GameObject fragmentPrefab = CreateFragmentPrefabIfNeeded();
+
+        // (ingredientName, elementSymbol, maxHealth, attackDamage, boxColor, canReproduce)
+        (string n, string sym, float hp, float dmg, Color col, bool repro)[] defs =
+        {
+            ("Sal",        "Na",  60f,  8f, new Color(0.95f, 0.95f, 0.90f), false),
+            ("Levadura",   "C",   80f,  6f, new Color(0.95f, 0.90f, 0.40f), true),
+            ("Alliina",    "S",  100f, 12f, new Color(0.75f, 0.55f, 0.85f), false),
+            ("Capsaicina", "C",  120f, 18f, new Color(0.95f, 0.25f, 0.20f), false),
+        };
+
+        // Positions relative to Kitchen_Content root (kitchen center)
+        Vector3[] offsets =
+        {
+            new Vector3(-2.5f, 0.5f, -2.0f),
+            new Vector3( 1.5f, 0.5f, -2.5f),
+            new Vector3(-1.5f, 0.5f,  1.5f),
+            new Vector3( 2.0f, 0.5f,  1.0f),
+        };
+
+        var mobList = new List<IngredientMob>();
+        for (int i = 0; i < defs.Length; i++)
+        {
+            var d = defs[i];
+            GameObject mobGO = MakeMobBox(d.n, offsets[i], d.col);
+            mobGO.transform.SetParent(contentRoot.transform, worldPositionStays: false);
+
+            IngredientMob mob  = mobGO.AddComponent<IngredientMob>();
+            mob.ingredientName   = d.n;
+            mob.elementSymbol    = d.sym;
+            mob.maxHealth        = d.hp;
+            mob.attackDamage     = d.dmg;
+            mob.discoveryChance  = 0.4f;
+            mob.canReproduce     = d.repro;
+            mob.fragmentPrefab   = fragmentPrefab;
+            // spawnPrefab: left null — Levadura spawning requires a prefab asset,
+            // not a scene object. Wire it up manually in the Inspector once a
+            // Levadura prefab is saved.
+
+            mobGO.SetActive(false);   // KitchenScaleController activates on entry
+            mobList.Add(mob);
+        }
+
+        // Entrance trigger — open +Z side of the U-shape (Kitchen size: 10×9)
+        GameObject triggerGO = new GameObject("Kitchen_EntranceTrigger");
+        triggerGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
+        triggerGO.transform.localPosition = new Vector3(0f, 1f, 4.5f);
+
+        BoxCollider bc  = triggerGO.AddComponent<BoxCollider>();
+        bc.isTrigger    = true;
+        bc.size         = new Vector3(10f, 3f, 1.5f);
+
+        KitchenScaleController ksc = triggerGO.AddComponent<KitchenScaleController>();
+        ksc.kitchenRoot    = contentRoot.transform;
+        ksc.ingredientMobs = mobList.ToArray();
+        // playerCamera left null — KitchenScaleController.Awake() falls back to Camera.main
+
+        Debug.Log($"[SampleSceneBuilder] {mobList.Count} IngredientMobs (boxes) colocados en Kitchen_Content (inactivos hasta entrada).");
+    }
+
+    static GameObject MakeMobBox(string mobName, Vector3 localOffset, Color color)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = $"Mob_{mobName}";
+        go.transform.localPosition = localOffset;
+        go.transform.localScale    = new Vector3(0.8f, 1.0f, 0.8f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Mob_{mobName}_MAT", color);
+        // BoxCollider required by IngredientMob already added by CreatePrimitive
+        return go;
+    }
+
+    static GameObject CreateFragmentPrefabIfNeeded()
+    {
+        const string path = "Assets/Prefabs/ElementFragment.prefab";
+
+        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        if (existing != null) return existing;
+
+        if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
+            AssetDatabase.CreateFolder("Assets", "Prefabs");
+
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = "ElementFragment";
+        go.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
+        go.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("Fragment_Pickup_MAT", new Color(0.30f, 0.90f, 0.70f));
+
+        // Trigger so the player walks through it to pick it up (ElementFragment.OnTriggerEnter)
+        BoxCollider col = go.GetComponent<BoxCollider>();
+        col.isTrigger = true;
+
+        go.AddComponent<ElementFragment>();
+
+        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(go, path);
+        Object.DestroyImmediate(go);
+
+        Debug.Log($"[SampleSceneBuilder] ElementFragment prefab guardado en {path}.");
+        return prefab;
     }
 }
