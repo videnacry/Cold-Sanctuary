@@ -133,6 +133,8 @@ public class WhaleBehavior : Herbivore
     protected override bool GrazesOnLand => false;
     public override float BaseAgility    => 0.6f;   // enorme, poco maniobrable
     public override float BasePerception => 1.0f;
+    public override float LandAffinity   => 0.1f;   // varada e indefensa en tierra
+    public override float WaterAffinity  => 1.0f;   // su medio natural
 
     void Start() => Init();
 

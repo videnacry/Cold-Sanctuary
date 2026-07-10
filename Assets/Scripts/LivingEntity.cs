@@ -32,6 +32,18 @@ public abstract class LivingEntity : MonoBehaviour
     [HideInInspector] public float agility    = 1f;
     [HideInInspector] public float perception = 1f;
 
+    // Medio actual + afinidad por medio (tierra/agua/aire). El rendimiento físico se multiplica
+    // por la afinidad del medio en que está la criatura. Ver docs/creature-stats.md §Modificadores de medio.
+    [HideInInspector] public Medium currentMedium = Medium.Land;
+    public virtual float LandAffinity  => 1f;
+    public virtual float WaterAffinity => 0.4f;   // por defecto: un animal terrestre nada torpemente
+    public virtual float AirAffinity   => 0f;
+    public float MediumFactor => currentMedium == Medium.Water ? WaterAffinity
+                               : currentMedium == Medium.Air   ? AirAffinity
+                               :                                 LandAffinity;
+    /// <summary>Agilidad efectiva en el medio actual (base × afinidad del medio).</summary>
+    public float EffectiveAgility => agility * MediumFactor;
+
     public List<Bond> bonds = new List<Bond>();
 
     // ── Drive response hooks ─────────────────────────────────────────────────────

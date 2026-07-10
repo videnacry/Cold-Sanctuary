@@ -31,6 +31,12 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     [HideInInspector] public float bodyMass;
     [HideInInspector] public float adaptability;   // versatilidad / velocidad de adaptación
     [HideInInspector] public float composure;      // temple / sangre fría bajo peligro o estrés
+    [HideInInspector] public float endurance;      // resistencia física (esfuerzo sostenido)
+    [HideInInspector] public float reasoning;      // lógica / razonamiento (académico/abstracto)
+    [HideInInspector] public float memory;         // memoria / retención
+    [HideInInspector] public float creativity;     // imaginación / creatividad
+    [HideInInspector] public float sociability;    // trato social / carisma
+    [HideInInspector] public float discipline;     // constancia / mantener rutinas
 
     protected virtual float BaseAgility      => 1f;
     protected virtual float BasePerception   => 1f;
@@ -38,6 +44,12 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     protected virtual float BaseBodyMass     => 1f;
     protected virtual float BaseAdaptability => 1f;
     protected virtual float BaseComposure    => 1f;
+    protected virtual float BaseEndurance    => 1f;
+    protected virtual float BaseReasoning    => 1f;
+    protected virtual float BaseMemory       => 1f;
+    protected virtual float BaseCreativity   => 1f;
+    protected virtual float BaseSociability  => 1f;
+    protected virtual float BaseDiscipline   => 1f;
 
     [Header("Bond — Player (initial value)")]
     [Tooltip("Starting bond strength with the player. Other bonds start at 0 and grow through interaction.")]
@@ -111,6 +123,12 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
         bodyMass     = BaseBodyMass;
         adaptability = BaseAdaptability;
         composure    = BaseComposure;
+        endurance    = BaseEndurance;
+        reasoning    = BaseReasoning;
+        memory       = BaseMemory;
+        creativity   = BaseCreativity;
+        sociability  = BaseSociability;
+        discipline   = BaseDiscipline;
         SetupAnchors();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

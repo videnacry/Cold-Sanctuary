@@ -30,6 +30,12 @@ public class Gohageneis : CompanionBase
     protected override float BasePerception   => 1.05f;  // calle/social (bartender/ventas), no académica
     protected override float BaseAdaptability => 1.7f;   // versatilidad extrema: mil trabajos y países
     protected override float BaseComposure    => 1.2f;   // vida de calle/bartender: maneja el caos
+    protected override float BaseEndurance    => 1.3f;   // gym + oficios físicos
+    protected override float BaseReasoning    => 1.0f;
+    protected override float BaseMemory       => 1.0f;
+    protected override float BaseCreativity   => 1.2f;   // vividor, recursivo
+    protected override float BaseSociability  => 1.7f;   // bartender/fiesta: muy social
+    protected override float BaseDiscipline   => 0.6f;   // nómada, deja las cosas
 
     protected override void SetupAnchors()
     {

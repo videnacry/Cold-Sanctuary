@@ -30,6 +30,12 @@ public class Panterilia : CompanionBase
     protected override float BaseAgility      => 0.95f;
     protected override float BaseAdaptability => 1.4f;   // muchos puestos/roles → se adapta bien
     protected override float BaseComposure    => 0.7f;   // tiende a bloquearse bajo estrés agudo
+    protected override float BaseEndurance    => 0.9f;   // sedentaria
+    protected override float BaseReasoning    => 1.6f;   // lógica de negocio, muy analítica
+    protected override float BaseMemory       => 1.4f;   // estudia sin parar
+    protected override float BaseCreativity   => 1.4f;   // imaginación (liga con su rasgo mental)
+    protected override float BaseSociability  => 1.1f;   // trato profesional en muchos roles
+    protected override float BaseDiscipline   => 1.5f;   // nunca dejó de estudiar
     // Rasgo mental: gran facilidad para liberar energía mental → tiende a exagerar la realidad
     // e influenciarse por teorías/experiencia/imaginación de terceros. Ver docs/creature-stats.md.
 

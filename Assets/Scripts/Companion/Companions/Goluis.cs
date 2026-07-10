@@ -33,6 +33,12 @@ public class Goluis : CompanionBase
     protected override float BasePerception   => 1.1f;   // atención al detalle práctica (en su trabajo); lo bajo es lo académico (reasoning/memory)
     protected override float BaseAdaptability => 0.6f;   // el mismo tipo de trabajo toda la vida
     protected override float BaseComposure    => 1.5f;   // pasado en una banda: control bajo peligro/estrés
+    protected override float BaseEndurance    => 1.4f;   // cuerpo hecho al trabajo físico
+    protected override float BaseReasoning    => 0.7f;   // académico bajo (dejó de estudiar)
+    protected override float BaseMemory       => 0.8f;
+    protected override float BaseCreativity   => 0.7f;   // práctico, poco imaginativo
+    protected override float BaseSociability  => 0.7f;   // reservado, desconfiado
+    protected override float BaseDiscipline   => 1.3f;   // trabajador constante
 
     protected override void SetupAnchors()
     {
