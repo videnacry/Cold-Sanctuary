@@ -24,7 +24,7 @@ public static class AnimalPrefabGenerator
         ("Wolf",      "WolfBehavior"),
         ("Deer",      "DeerBehavior"),
         ("Fox",       "FoxBehavior"),
-        ("Husky",     "HuskyBehavior"),
+        ("Malamute",  "MalamuteBehavior"),
         ("Bunny",     "BunnyBehavior"),
         ("PolarBear", "BearBehaviour"),
         ("Seal",      "SealBehavior"),
@@ -169,7 +169,7 @@ public static class AnimalPrefabGenerator
         { "Wolf",  0.268f },  // altura cruda 2.984m -> objetivo 0.8m
         { "Deer",  0.219f },  // altura cruda 5.489m -> objetivo 1.2m
         { "Fox",   0.134f },  // altura cruda 2.984m -> objetivo 0.4m
-        { "Husky", 0.171f },  // altura cruda 3.388m -> objetivo 0.58m
+        { "Malamute", 0.185f },  // altura cruda 3.388m -> objetivo 0.63m (mesh husky reutilizado; sustituir por malamute)
         { "Bunny", 0.0106f }, // altura cruda 23.52m -> objetivo 0.25m
         { "Whale", 1.157f },  // longitud cruda 10.372m -> objetivo 12m
         { "PolarBear", 0.267f }, // altura cruda 4.870m -> objetivo 1.3m (longitud resultante ~2.0m)

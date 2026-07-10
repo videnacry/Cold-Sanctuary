@@ -2,29 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Husky siberiano (Canis lupus familiaris). Datos de referencia: masa adulta
-// 16–27 kg, trote sostenido ~12–16 km/h con sprints hasta ~30 km/h, muy social
-// y de baja agresividad hacia personas, vida larga gracias al cuidado humano
-// (~12–14 años frente a los ~9 de un lobo salvaje). En Cold Sanctuary representa
-// a los perros de trineo sueltos del santuario: conservan el instinto de manada
-// pero casi no cazan, dependen de que se les alimente.
-public class HuskyBehavior : Carnivore
+// Malamute de Alaska (Canis lupus familiaris). Datos de referencia: masa adulta
+// ~34–38 kg (más grande y fuerte que el husky), perro de carga/trineo que prioriza
+// fuerza y resistencia sobre velocidad; muy social, baja agresividad, instinto de
+// manada. En Cold Sanctuary representa a los perros de trabajo del santuario:
+// deambulan y se vinculan, pero casi no cazan (dependen de que se les alimente).
+// Rol salvaje-vs-mascota aún por decidir (ver docs/refuge-and-adult-behavior.md).
+public class MalamuteBehavior : Carnivore
 {
     public static Family defaultGroup = new Family(6, 0.3f, Family.maternal);  // el macho no cría, como en el perro doméstico
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
-    // altura cruda 3.388m -> objetivo realista de altura de hombro adulto ~0.58m.
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.171f, 0.171f, 0.171f), 25, 0.09f, 0.2f, 0.05f);
+    // altura cruda 3.388m -> objetivo realista de altura de hombro adulto ~0.63m (malamute, mayor que el husky).
+    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.185f, 0.185f, 0.185f), 36, 0.09f, 0.2f, 0.05f);  // ~36 kg: mayor y más pesado que el husky
     public Physiognomy body = defaultBody;
     public override Physiognomy Body { get => body; set => body = value; }
 
     public ActionsPrep actsPrep = new ActionsPrep
     (
-        new ActionPrep("IdleHusky", 0, 1, -2),
-        new ActionPrep("WalkHusky", 4, 3),
-        new ActionPrep("RunHusky", 20, 5, 2)   // resistencia + sprint, criado para el frío
+        new ActionPrep("IdleMalamute", 0, 1, -2),
+        new ActionPrep("WalkMalamute", 4, 3),
+        new ActionPrep("RunMalamute", 18, 5, 2)   // fuerza y resistencia de carga, criado para el frío
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
@@ -71,7 +71,7 @@ public class HuskyBehavior : Carnivore
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public override AnimationsName animationsName { get; } = new AnimationsName("Husky");
+    public override AnimationsName animationsName { get; } = new AnimationsName("Malamute");
 
     // Diet: casi no caza — instinto de presa débil, alta dificultad para que se moleste.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
@@ -153,7 +153,7 @@ public class HuskyBehavior : Carnivore
     public override float BondGrowthRate => 2.2f;  // se vincula muy rápido, la raza más sociable del santuario
     public override float BiteSize => 3f;
     public override float Toughness => 0.6f;
-    public override float BaseAgility    => 1.2f;   // perro de trineo, resistente
+    public override float BaseAgility    => 1.1f;   // perro de carga: fuerte y resistente, no velocista
     public override float BasePerception => 1.1f;
 
     void Start() => base.Init();

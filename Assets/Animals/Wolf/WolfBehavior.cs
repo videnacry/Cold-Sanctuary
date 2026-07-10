@@ -73,8 +73,9 @@ public class WolfBehavior : Carnivore
         new PreyEntry(DeerBehavior.population, 15f, 0f, 700f),
         new PreyEntry(BunnyBehavior.population, 8f, 0f, 700f),
         new PreyEntry(FoxBehavior.population, 5f, 20f, 600f),    // competencia entre cánidos
-        new PreyEntry(HuskyBehavior.population, 4f, 30f, 600f),  // solo con bastante hambre
+        new PreyEntry(MalamuteBehavior.population, 4f, 30f, 600f),  // solo con bastante hambre
         new PreyEntry(BearBehaviour.population, 2f, 80f, 500f),  // solo en manada y muerto de hambre; el combate lo decide masa + PackFactor
+        new PreyEntry(PlayerTarget.population, 1f, 85f, 500f),   // humano: solo hambriento y sin vínculo (CanHarm)
     });
     public Diet diet = defaultDiet;
     public override Diet Diet { get => diet; set => diet = value; }
