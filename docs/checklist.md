@@ -36,13 +36,17 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       (oso evita lobo con manada; manada grande lo ahuyenta). Dinámico, no multiplicador estático de dieta.
 - [ ] **Aura/estatus mágico del humano**: contador de usos destructivos de magia (decae con el tiempo) que
       modula si los animales lo temen (huida/cautela) o lo ven como inspirador (bonds fáciles). Requiere magia.
-- [ ] **Modelo de personaje unificado (`NPCBase`)**: hogar de stats + `ITarget` + población + aptitudes;
-      prerequisito para que companions/otros NPCs sean presa. Crear las poblaciones de personajes aquí.
+- [ ] **Modelo de personaje unificado (`NPCBase : LivingEntity`)**: hogar de stats + `ITarget` + población +
+      aptitudes (prerequisito para que companions/otros NPCs sean presa). **Control aparte** (cerebro
+      enchufable: input o IA) para que todo NPC sea jugable/intercambiable. **No** heredar de `Animal`.
+- [ ] **Territorios + poblaciones**: `Territory` trigger con `residents` (enter/exit, como `MediumZone`/
+      `SanctuaryArea`) → escaneos locales (arregla el perf de `SenseThreats`/banco); barreras/conectores para estabilidad.
 - [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
       familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 - [x] **Dietas** revisadas (todos los carnívoros): oso +ciervo/zorro/malamute/**humano**; lobo +zorro/malamute/oso(manada)/humano; zorro/malamute sin cambios.
-- [ ] **Banco de peces como organismo**: `FishSchool` → entidad viva que se mueve, huye, crece en nº (`lp`)
-      y es presa (oso/foca/zorro). Barato (1 entidad/banco). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+- [x] **Banco de peces como organismo** (hecho): `FishSchool` es entidad viva (deriva/huye/crece/autoregenera)
+      + `ITarget`/`IEdible`; en dietas de oso/zorro; herbívoros marinos lo depletan al pastar. **Pendiente:
+      robo/hurto del zorro** (llevarse comida ajena con `ICarrier`; liga con sigilo).
 - [ ] **Zorro: robar comida** (hurto de `FoodItem`/presa ajena vía `ICarrier` en vez de cazar de frente); liga con sigilo.
 - [ ] **Personajes/mascotas como presa**: `PlayerTarget` hoy = solo el jugador. Que companions/malamute-mascota sean `ITarget` con población objetivo (futuro, `NPCBase`).
 - [~] **Comportamiento adulto / territorialidad**: hecho el evitar-depredadores (`SenseThreats`). Falta:
@@ -92,3 +96,4 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Husky → Malamute (rename + dimensiones: masa 36, escala 0.185); jugador (`PlayerTarget`) como presa de oso/lobo.
 - [x] Territorialidad (comportamiento): `Animal.SenseThreats` — presas huyen de carnívoros (revive EvaluateThreat/ThreatThreshold).
 - [x] Malamute como mascota (fuera de `nestSpecies`; Deer entra para dar presa al lobo).
+- [x] Banco de peces como organismo (`FishSchool`): mueve/huye/crece + `ITarget`/`IEdible`; en dietas de oso/zorro.

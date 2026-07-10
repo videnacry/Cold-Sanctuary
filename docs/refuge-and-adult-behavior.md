@@ -78,6 +78,34 @@ fuerza/satisfacción/observación; puentea a `PlayerStats`). El hogar natural de
 para no duplicar y tener que migrar. Interino posible: un componente ligero `CharacterTarget : ITarget`
 (como `PlayerTarget`) que cualquier humanoide/mascota lleve y registre en una población compartida.
 
+**Jugador y NPC son el mismo tipo; el control va aparte.** La única diferencia entre Kushal y un NPC es
+**quién los maneja**, y debe poder **cambiarse de personaje**. Modelo correcto: **personaje control-agnóstico
++ "cerebro" enchufable** — un controlador de jugador (input) o una IA se acoplan al mismo personaje;
+cambiar de personaje = mover el controlador. `WorldCharacter` ya lo insinúa con `isPlayer`. Así **todo NPC
+es jugable** y se comporta igual con IA o con el jugador.
+
+**¿Heredar los personajes de `Animal`?** No lo recomiendo. El diseño acordado es que personajes y animales
+son **hermanos bajo `LivingEntity`** (`NPCBase : LivingEntity`), no que hereden de `Animal`: `Animal` arrastra
+`Diet` carnívoro/herbívoro, pastoreo, `Physiognomy` de pesos de comida y el ciclo `child→…→soul`, que no
+encajan en un humanoide. La **población y la targetabilidad se comparten mejor a nivel de `LivingEntity`**
+(o vía `CharacterTarget`), no forzando a los humanoides por toda la maquinaria de `Animal` — eso son
+"muchos cables" mal encajados.
+
+## Territorios y poblaciones (modelo propuesto)
+
+Para consultas espaciales ("quién hay cerca") y poblaciones estables:
+
+- **Territorio = trigger con conjunto de residentes.** Un `Territory` (collider trigger, como `MediumZone`)
+  mantiene un `residents` en `OnTriggerEnter/Exit` y marca el `currentTerritory` de quien entra. Ya existe
+  algo parecido: `SanctuaryArea` con `Residents`/`AddResident`/`RemoveResident` (para NPCs) — extenderlo o
+  reflejarlo para animales.
+- **Ventaja clave:** los escaneos (`SenseThreats`, banco de peces, selección de caza) consultarían **solo
+  los residentes del territorio**, no `wholePopulation` → resuelve de golpe el caveat de rendimiento.
+- **Estabilidad:** barreras y conectores (nivel/NavMesh) entre territorios para que las poblaciones cambien
+  poco; la *pertenencia* se mantiene por trigger (robusto), la *contención* por diseño de nivel.
+- **Mejor que** apoyarse solo en sensibilidad + collider suelto: el territorio da además la **partición de
+  población** que ya necesitamos para rendimiento.
+
 ## Enganches con lo ya construido
 
 - `currentMedium` + afinidad de medio (`MediumZone`) → base para evitar/entrar al agua por especie.
@@ -91,17 +119,16 @@ Se mantiene `FishSchool` como **marcador de zona abstracto** (no entidades) por 
 peces individuales serían muchísimos y con alto trasiego de aparición/desaparición. Las marinas
 "pescan" en el `FishSchool` más cercano.
 
-**Evolución propuesta — el banco como organismo (una sola entidad):** en vez de un marcador estático,
-`FishSchool` podría ser **una entidad viva**: se mueve, huye de depredadores y tiene un tamaño/`lp`
-= número de peces (crece con el tiempo, mengua al ser comido, desaparece a 0 y reaparece por intervalos).
-Sigue siendo **barato** (1 entidad por banco, no miles de peces) y lo vuelve dinámico y **presa real**:
-- El **oso polar** pescaría en la orilla (banco en su `Diet`), igual que foca y zorro.
-- El **zorro** come pescado, pero encaja mejor darle una mecánica de **robo/hurto**: acercarse sigiloso a
-  un `FoodItem`/presa muerta ajena (o al banco) y llevárselo con `ICarrier`, en vez de cazar de frente.
-  Liga con el futuro sistema de ocultarse (sigilo).
-
-Implementación: `FishSchool` pasaría a `Animal`-like / `LivingEntity` ligero (movimiento de banda, huida,
-población/`lp`, reproducción). Trabajo mediano → checklist.
+**El banco como organismo — IMPLEMENTADO (2026-07-10):** `FishSchool` ya no es un marcador estático sino
+una **entidad viva**: deriva por el agua, **huye** de carnívoros cercanos, y su `fishCount` (= `lp`/tamaño)
+**crece con el tiempo y se autoregenera** desde 0; mengua al ser comido. Es **`ITarget` + `IEdible`**
+(`Material = Fish`) con `FishSchool.population`, así que:
+- El **oso polar** lo pesca en la orilla (en su `Diet`, pref 8) y el **zorro** también (pref 5).
+- Los **herbívoros marinos** (ballena/foca) lo **pastan** vía `Herbivore.Feed` → `FishSchool.Graze()`.
+- Sigue **barato**: 1 entidad por banco (no miles de peces). Se mantuvo como su propio `MonoBehaviour`
+  implementando las interfaces (no se metió en la jerarquía `Animal`).
+- **Pendiente**: la mecánica de **robo/hurto** del zorro (llevarse comida ajena con `ICarrier` en vez de
+  cazar de frente), que liga con el futuro sistema de sigilo/ocultarse.
 
 **Dietas revisadas (2026-07-10)** — árbol trófico coherente:
 - **Oso** (apex/oportunista): foca, conejo, ciervo, lobo, zorro, malamute, y **humano** (el oso polar
@@ -123,9 +150,11 @@ población/`lp`, reproducción). Trabajo mediano → checklist.
 > no-presa / cautela / huida. Es la versión inversa del refinamiento de caza. Requiere el sistema de magia/maestría.
 
 > **Influencia de manada en la caza (decisión):** NO como multiplicador estático en la dieta, sino como
-> **evaluación dinámica al seleccionar/comprometer la caza**: contar la masa aliada cercana de la presa
-> y del cazador (reutilizando `PackFactor`). Así un oso evita atacar a un lobo con manada, y si la manada
-> es grande, se aleja. Es el mismo **refinamiento de caza** (ver checklist), unificado con el poder del humano.
+> **evaluación dinámica al seleccionar/comprometer la caza**: contar la masa aliada **cercana** de la presa
+> y del cazador (reutilizando `PackFactor`). Solo cuenta el apoyo que está *junto* en ese momento y **se
+> recalcula en vivo**: si un lobo se aleja de la manada o quedan pocos en el nido, su apoyo baja; si llegan
+> más lobos a ayudar, sube y cambia la dinámica. Así un oso evita atacar a un lobo con manada y, si es
+> grande, se aleja. Es el mismo **refinamiento de caza** (ver checklist), unificado con el poder del humano.
 
 > **Estatus del humano según su historia mágica (documentado):** las actitudes de los personajes cambian
 > cómo los ven los animales. Un contador de **usos destructivos de magia** sube su "aura de peligro"
