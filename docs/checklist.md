@@ -23,8 +23,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] Modelar el rasgo mental de **Panterilia** (exageración de la realidad / influencia de terceros).
 - [ ] Revisar `adaptability` para animales (hoy solo en companions).
 - [ ] Conectar `flexibility` a la dimensión `flex` de `BodyPartStats` (se entrena con yoga; universal).
-- [ ] **Modificadores de medio**: detector de medio para animales (setear `currentMedium`); afinidades
-      para humanoides (nadar) al llegar `NPCBase`; extender `MediumFactor` a `strength`/`endurance`.
+- [ ] **Modificadores de medio (resto)**: afinidades para humanoides (nadar) al llegar `NPCBase`;
+      extender `MediumFactor` a `strength`/`endurance`. (Detector `MediumZone` ya hecho.)
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
 - [x] **Lógica de agua/tierra**: detector (`MediumZone`) + comportamiento (`Animal.CorrectMedium`:
       acuáticos buscan agua, terrestres salen). Pendiente menor: evitación *proactiva* (desviar `Wander`).
