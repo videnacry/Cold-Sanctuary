@@ -72,11 +72,36 @@ Se mantiene `FishSchool` como **marcador de zona abstracto** (no entidades) por 
 peces individuales serían muchísimos y con alto trasiego de aparición/desaparición. Las marinas
 "pescan" en el `FishSchool` más cercano.
 
+**Evolución propuesta — el banco como organismo (una sola entidad):** en vez de un marcador estático,
+`FishSchool` podría ser **una entidad viva**: se mueve, huye de depredadores y tiene un tamaño/`lp`
+= número de peces (crece con el tiempo, mengua al ser comido, desaparece a 0 y reaparece por intervalos).
+Sigue siendo **barato** (1 entidad por banco, no miles de peces) y lo vuelve dinámico y **presa real**:
+- El **oso polar** pescaría en la orilla (banco en su `Diet`), igual que foca y zorro.
+- El **zorro** come pescado, pero encaja mejor darle una mecánica de **robo/hurto**: acercarse sigiloso a
+  un `FoodItem`/presa muerta ajena (o al banco) y llevárselo con `ICarrier`, en vez de cazar de frente.
+  Liga con el futuro sistema de ocultarse (sigilo).
+
+Implementación: `FishSchool` pasaría a `Animal`-like / `LivingEntity` ligero (movimiento de banda, huida,
+población/`lp`, reproducción). Trabajo mediano → checklist.
+
 **Dietas revisadas (2026-07-10)** — árbol trófico coherente:
-- **Oso** (apex/oportunista): foca, conejo, ciervo, lobo, zorro, husky.
-- **Lobo**: ciervo, conejo, zorro, husky, y **oso** (solo en manada y con mucha hambre). Depredación
-  **mutua** oso↔lobo: la selección solo elige la presa; **el combate lo decide la masa + `PackFactor`**
-  (un lobo solo pierde; una manada cercana suma masa aliada en `Fight` y puede con el oso).
+- **Oso** (apex/oportunista): foca, conejo, ciervo, lobo, zorro, malamute, y **humano** (el oso polar
+  **sí depreda humanos** → `difficulty` baja; solo lo frena el vínculo).
+- **Lobo**: ciervo, conejo, zorro, malamute, **oso** (solo en manada y con mucha hambre) y **humano**
+  (los lobos **evitan** al humano → `difficulty` alta; solo muy hambriento). Depredación **mutua**
+  oso↔lobo: la selección solo elige la presa; **el combate lo decide la masa + `PackFactor`**.
+
+> **Personajes/mascotas como presa:** `PlayerTarget` entra en las dietas de oso y lobo, pero **hoy solo
+> contiene al jugador** (es el único con el componente `PlayerTarget`). `CanHarm` protege a quien tenga
+> vínculo con el animal. Los demás personajes/mascotas (`CompanionBase`, un malamute-mascota) **aún no son
+> presa**: necesitan ser `ITarget` con su propia población objetivo (futuro, con `NPCBase`).
+
+> **La "predabilidad" del humano no es estática:** conforme el jugador/personaje domina magia y sube
+> maestría (niveles altos donde vence a un oso con facilidad), los animales deberían **percibir el peligro**
+> y dejar de verlo como presa — mantener distancia/cautela o incluso huir. Modelo: `PlayerTarget` expondría
+> un valor de **amenaza/poder** (crece con la maestría mágica) que la selección de caza (`SelectPrey`) y la
+> respuesta a amenaza (`EvaluateThreat`, hoy hook muerto) leerían: poder bajo → presa fácil; poder alto →
+> no-presa / cautela / huida. Es la versión inversa del refinamiento de caza. Requiere el sistema de magia/maestría.
 - **Zorro** (pequeño): conejo, pájaro — sin cambios, ya coherente.
-- **Husky** (mal cazador por diseño): conejo (difícil) — sin cambios.
+- **Malamute** (perro de carga, mal cazador): conejo (difícil).
 - Herbívoros (conejo, ciervo, foca, ballena) no tienen `Diet`: pastan en `GrassPatch`/`FishSchool`.

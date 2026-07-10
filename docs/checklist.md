@@ -9,6 +9,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
       (ver [`mission-mode.md`](mission-mode.md)).
 - [ ] **`Generator.cs`**: ¿borrar? (legacy redundante con `FamilyGenerator`).
+- [ ] **Malamute: salvaje o mascota** — recomendado perro de trabajo/compañía (no familias salvajes);
+      si mascota, quitarlo de `nestSpecies` y decidir si sigue siendo presa. (Rename Husky→Malamute ya hecho.)
 
 ## Aptitudes (creature-stats.md)
 - [~] **Bucle de evolución**: *animales hecho* (agilidad←movimiento, percepción←alerta, en `Animal.Restore`
@@ -26,12 +28,17 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
 - [x] **Lógica de agua/tierra**: detector (`MediumZone`) + comportamiento (`Animal.CorrectMedium`:
       acuáticos buscan agua, terrestres salen). Pendiente menor: evitación *proactiva* (desviar `Wander`).
-- [ ] **Refinar selección de caza**: `SelectPrey` no evalúa si el cazador puede ganar → un lobo solo y
-      hambriento se lanza al oso y muere. Ponderar ventaja de masa/manada antes de comprometer la caza.
+- [ ] **Refinar selección de caza**: `SelectPrey` no evalúa si el cazador puede ganar ni el **poder de la
+      presa** → un lobo solo se lanza al oso y muere; y un humano de alta maestría mágica seguiría siendo
+      "presa fácil". Ponderar ventaja de masa/manada + un valor de **amenaza/poder** del objetivo (humano
+      poderoso → no-presa/cautela/huida; ligar con `EvaluateThreat`). Requiere el sistema de magia/maestría.
 - [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
       familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
-- [x] **Peces / dietas**: se mantiene `FishSchool` abstracto (rendimiento); dietas de TODOS los carnívoros
-      revisadas (oso: +ciervo/zorro/husky; lobo: +zorro/husky; zorro/husky sin cambios).
+- [x] **Dietas** revisadas (todos los carnívoros): oso +ciervo/zorro/malamute/**humano**; lobo +zorro/malamute/oso(manada)/humano; zorro/malamute sin cambios.
+- [ ] **Banco de peces como organismo**: `FishSchool` → entidad viva que se mueve, huye, crece en nº (`lp`)
+      y es presa (oso/foca/zorro). Barato (1 entidad/banco). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+- [ ] **Zorro: robar comida** (hurto de `FoodItem`/presa ajena vía `ICarrier` en vez de cazar de frente); liga con sigilo.
+- [ ] **Personajes/mascotas como presa**: `PlayerTarget` hoy = solo el jugador. Que companions/malamute-mascota sean `ITarget` con población objetivo (futuro, `NPCBase`).
 - [ ] **Comportamiento adulto sin crías** + refugio/ocultarse (necesita árboles/arbustos), territorialidad,
       y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 
@@ -75,3 +82,4 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Bucle de evolución de aptitudes (animales): `AptitudeEvolution` + tick en `Animal.Restore`.
 - [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico, incl. lobo→oso en manada); fix de amontonamiento en `Homebound`.
 - [x] Comportamiento agua/tierra (`Animal.CorrectMedium`): acuáticos buscan agua, terrestres salen.
+- [x] Husky → Malamute (rename + dimensiones: masa 36, escala 0.185); jugador (`PlayerTarget`) como presa de oso/lobo.

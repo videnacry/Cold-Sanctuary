@@ -39,7 +39,7 @@ y UVs de lightmap sin intervención manual.
 | **Lobo** (Wolf) | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Ciervo/Stag** | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Zorro** (Fox) | ✅ Descargado | Quaternius Animal Pack | FBX |
-| **Husky** | ✅ Descargado | Quaternius Animal Pack | FBX |
+| **Malamute** (mesh husky de stand-in) | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Conejo** (Bunny) | ✅ Extraído | Sketchfab | FBX |
 | **Oso Polar** | ✅ Convertido e integrado | Sketchfab (kenchoo, CC-BY-4.0) | GLB → FBX |
 | **Foca** (Seal) | ⚠️ Pendiente conversión | Sketchfab (rkuhlf) | GLB → FBX |

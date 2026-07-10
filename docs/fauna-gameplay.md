@@ -189,10 +189,10 @@ cumplidos y disparar el evento. No hay que añadir lógica nueva a los animales.
 | **Conejo / lagomorfo** | Los gazapos son altriciales (nacen ciegos e inválidos); biberón cada 12h con leche específica; mínimo contacto las primeras semanas incluso en santuario de convivencia — son muy frágiles al estrés |
 | **Venado / cérvido** | Los cervatillos encontrados solos raramente están abandonados — la madre los deja escondidos; en santuario se usan "madres sustitutas" (peluche grande con olor de la especie) para no ser el único referente; muy sensibles al estrés por captura |
 | **Foca** | Alimentación con jeringa de pescado triturado; introducción gradual al agua es una actividad de enriquecimiento clave; responden muy bien a la vocalización humana que imita sus llamadas |
-| **Husky / can nórdico** | Especie completa en código (`HuskyBehavior`), sin ficha de diseño aún — completar referencia real y mecánicas |
+| **Malamute** | Especie completa en código (`MalamuteBehavior`), perro de carga del santuario; rol salvaje-vs-mascota por decidir — completar ficha |
 | **Zorro** | Especie completa en código (`FoxBehavior`), sin ficha de diseño aún — completar referencia real y mecánicas |
 
-> **Estado real (auditoría 2026-07-09):** `HuskyBehavior` y `FoxBehavior` existen y están
+> **Estado real (auditoría 2026-07-09):** `MalamuteBehavior` (ex-Husky) y `FoxBehavior` existen y están
 > completas en código pero faltaban en esta tabla. Además, el mecanismo de dardo
 > tranquilizante/disparo (`Shooted()`, `PlayerCtrl`) fue **eliminado** el 2026-07-09 — el
 > santuario es no-violento, ya no hay mecánica de disparo hacia los animales.

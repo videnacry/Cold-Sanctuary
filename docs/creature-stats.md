@@ -46,7 +46,7 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
 | Ciervo | 1.4 | 1.5 | presa alerta y rápida |
 | Zorro | 1.4 | 1.5 | ágil, sentidos afinados |
 | Lobo | 1.2 | 1.4 | cazador de manada, olfato agudo |
-| Husky | 1.2 | 1.1 | perro de trineo, resistente |
+| Malamute | 1.1 | 1.1 | perro de carga, fuerte y resistente |
 | Foca | 1.1 | 1.2 | ágil en agua, torpe en tierra |
 | Oso | 0.7 | 1.1 | poderoso pero lento; buen olfato |
 | Ballena | 0.6 | 1.0 | enorme, poco maniobrable |
