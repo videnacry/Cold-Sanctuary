@@ -20,9 +20,10 @@ Ver también [`behavior-system.md`](behavior-system.md) y [`creature-stats.md`](
 ## Comportamiento adulto sin crías (a diseñar)
 
 - Deambular, explorar, jugar entre sí, buscar/mantener nido o madriguera.
-- **Territorialidad/hábitat:** hoy todas las especies pueblan áreas abiertas contiguas y se quedan,
-  así que se ven conejos correteando junto a lobos. Falta separación por territorio/hábitat y por
-  relación depredador-presa (las presas evitan zonas de depredadores).
+- **Territorialidad/hábitat:** **parcialmente hecho (2026-07-10)** — `Animal.SenseThreats` hace que las
+  presas **huyan proactivamente** de carnívoros cercanos (revive `EvaluateThreat`+`ThreatThreshold`), así
+  que ya no se quedan tranquilas junto a lobos; un cánido solo también huye del oso. **Falta** la
+  separación *espacial* (territorios/nidos separados al generar la escena; ver "Montaje de escena").
 
 ## Ocultarse / refugio (a diseñar; necesita contenido: árboles y arbustos)
 
@@ -58,6 +59,24 @@ Hoy `SampleSceneBuilder` puebla familias sin tener en cuenta nidos ni depredador
 
 Esto resuelve de raíz lo observado (conejos correteando junto a lobos) y da sentido a `HomeOrigin`/
 `HomeRadius` como zona de nido. Enlaza con **territorialidad** (arriba).
+
+## Personajes como objetivo: modelo y poblaciones (prerequisito)
+
+Para que los animales salvajes puedan cazar/temer a personajes y mascotas, estos deben ser `ITarget`
+con una población consultable:
+- **Malamute (mascota):** ya es `ITarget` (es un `Animal`) con `MalamuteBehavior.population` → ya puede
+  ser presa. Como mascota se coloca como compañero (no vía `nestSpecies`).
+- **Jugador:** ya es `ITarget` vía `PlayerTarget` (+ `PlayerTarget.population`).
+- **Companions / otros NPCs:** **aún no** son `ITarget` (viven en `CompanionBase`, sin población objetivo).
+
+**¿Dónde viven hoy los stats de personaje? Fragmentado:** `PlayerStats` (jugador: `IBody`+`IMind`),
+`CompanionBase` (companions: fatiga/estrés/humor + aptitudes) y `WorldCharacter` (NPC de área:
+fuerza/satisfacción/observación; puentea a `PlayerStats`). El hogar natural de un **personaje unificado**
+(stats + `ITarget` + población + aptitudes) es el pendiente **`NPCBase : LivingEntity`**.
+
+**Recomendación:** crear las poblaciones de personajes/mascotas **al implementar `NPCBase`** (no antes),
+para no duplicar y tener que migrar. Interino posible: un componente ligero `CharacterTarget : ITarget`
+(como `PlayerTarget`) que cualquier humanoide/mascota lleve y registre en una población compartida.
 
 ## Enganches con lo ya construido
 
@@ -102,6 +121,19 @@ población/`lp`, reproducción). Trabajo mediano → checklist.
 > un valor de **amenaza/poder** (crece con la maestría mágica) que la selección de caza (`SelectPrey`) y la
 > respuesta a amenaza (`EvaluateThreat`, hoy hook muerto) leerían: poder bajo → presa fácil; poder alto →
 > no-presa / cautela / huida. Es la versión inversa del refinamiento de caza. Requiere el sistema de magia/maestría.
+
+> **Influencia de manada en la caza (decisión):** NO como multiplicador estático en la dieta, sino como
+> **evaluación dinámica al seleccionar/comprometer la caza**: contar la masa aliada cercana de la presa
+> y del cazador (reutilizando `PackFactor`). Así un oso evita atacar a un lobo con manada, y si la manada
+> es grande, se aleja. Es el mismo **refinamiento de caza** (ver checklist), unificado con el poder del humano.
+
+> **Estatus del humano según su historia mágica (documentado):** las actitudes de los personajes cambian
+> cómo los ven los animales. Un contador de **usos destructivos de magia** sube su "aura de peligro"
+> (los animales huyen / mantienen cautela) y **decae con el tiempo** (o con actos no destructivos), de modo
+> que un personaje puede dejar de ser aterrador e incluso pasar a **inspirador** → **bonds fáciles** (p. ej.
+> los osos se vinculan rápido). Alimenta el mismo valor de amenaza/poder que leen `SelectPrey`/`EvaluateThreat`:
+> aura alta → no-presa + huida; aura baja + maestría respetada → vínculo. Requiere el sistema de magia.
 - **Zorro** (pequeño): conejo, pájaro — sin cambios, ya coherente.
-- **Malamute** (perro de carga, mal cazador): conejo (difícil).
+- **Malamute** (perro de carga, mal cazador): conejo (difícil). **Mascota**: no forma familias salvajes
+  (fuera de `nestSpecies`); se coloca como compañero, pero sigue siendo presa potencial.
 - Herbívoros (conejo, ciervo, foca, ballena) no tienen `Diet`: pastan en `GrassPatch`/`FishSchool`.

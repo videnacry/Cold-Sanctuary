@@ -9,8 +9,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
       (ver [`mission-mode.md`](mission-mode.md)).
 - [ ] **`Generator.cs`**: ¿borrar? (legacy redundante con `FamilyGenerator`).
-- [ ] **Malamute: salvaje o mascota** — recomendado perro de trabajo/compañía (no familias salvajes);
-      si mascota, quitarlo de `nestSpecies` y decidir si sigue siendo presa. (Rename Husky→Malamute ya hecho.)
+- [x] **Malamute: mascota** (decidido) — fuera de `nestSpecies`; sigue siendo presa potencial. Colocación
+      como compañero: pendiente (parte del modelo de personajes/`NPCBase`).
 
 ## Aptitudes (creature-stats.md)
 - [~] **Bucle de evolución**: *animales hecho* (agilidad←movimiento, percepción←alerta, en `Animal.Restore`
@@ -32,6 +32,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       presa** → un lobo solo se lanza al oso y muere; y un humano de alta maestría mágica seguiría siendo
       "presa fácil". Ponderar ventaja de masa/manada + un valor de **amenaza/poder** del objetivo (humano
       poderoso → no-presa/cautela/huida; ligar con `EvaluateThreat`). Requiere el sistema de magia/maestría.
+- [ ] **Influencia de manada en la caza**: parte del refinamiento — evaluar masa aliada de presa y cazador
+      (oso evita lobo con manada; manada grande lo ahuyenta). Dinámico, no multiplicador estático de dieta.
+- [ ] **Aura/estatus mágico del humano**: contador de usos destructivos de magia (decae con el tiempo) que
+      modula si los animales lo temen (huida/cautela) o lo ven como inspirador (bonds fáciles). Requiere magia.
+- [ ] **Modelo de personaje unificado (`NPCBase`)**: hogar de stats + `ITarget` + población + aptitudes;
+      prerequisito para que companions/otros NPCs sean presa. Crear las poblaciones de personajes aquí.
 - [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
       familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 - [x] **Dietas** revisadas (todos los carnívoros): oso +ciervo/zorro/malamute/**humano**; lobo +zorro/malamute/oso(manada)/humano; zorro/malamute sin cambios.
@@ -39,8 +45,9 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       y es presa (oso/foca/zorro). Barato (1 entidad/banco). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 - [ ] **Zorro: robar comida** (hurto de `FoodItem`/presa ajena vía `ICarrier` en vez de cazar de frente); liga con sigilo.
 - [ ] **Personajes/mascotas como presa**: `PlayerTarget` hoy = solo el jugador. Que companions/malamute-mascota sean `ITarget` con población objetivo (futuro, `NPCBase`).
-- [ ] **Comportamiento adulto sin crías** + refugio/ocultarse (necesita árboles/arbustos), territorialidad,
-      y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+- [~] **Comportamiento adulto / territorialidad**: hecho el evitar-depredadores (`SenseThreats`). Falta:
+      idle enriquecido (explorar/jugar), separación *espacial* (montaje nidos-primero), refugio/ocultarse
+      (árboles/arbustos) y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 
 ## Aclaraciones → siguiente paso (learning-unlocks.md)
 - [ ] Crear un **registro de "aprendidos"** por jugador (elementos, posturas, habilidades) + evento
@@ -83,3 +90,5 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico, incl. lobo→oso en manada); fix de amontonamiento en `Homebound`.
 - [x] Comportamiento agua/tierra (`Animal.CorrectMedium`): acuáticos buscan agua, terrestres salen.
 - [x] Husky → Malamute (rename + dimensiones: masa 36, escala 0.185); jugador (`PlayerTarget`) como presa de oso/lobo.
+- [x] Territorialidad (comportamiento): `Animal.SenseThreats` — presas huyen de carnívoros (revive EvaluateThreat/ThreatThreshold).
+- [x] Malamute como mascota (fuera de `nestSpecies`; Deer entra para dar presa al lobo).
