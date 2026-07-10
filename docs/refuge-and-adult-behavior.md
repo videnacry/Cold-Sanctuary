@@ -56,7 +56,9 @@ peces individuales serían muchísimos y con alto trasiego de aparición/desapar
 
 **Dietas revisadas (2026-07-10)** — árbol trófico coherente:
 - **Oso** (apex/oportunista): foca, conejo, ciervo, lobo, zorro, husky.
-- **Lobo**: ciervo, conejo, zorro, husky (competencia entre cánidos).
+- **Lobo**: ciervo, conejo, zorro, husky, y **oso** (solo en manada y con mucha hambre). Depredación
+  **mutua** oso↔lobo: la selección solo elige la presa; **el combate lo decide la masa + `PackFactor`**
+  (un lobo solo pierde; una manada cercana suma masa aliada en `Fight` y puede con el oso).
 - **Zorro** (pequeño): conejo, pájaro — sin cambios, ya coherente.
 - **Husky** (mal cazador por diseño): conejo (difícil) — sin cambios.
 - Herbívoros (conejo, ciervo, foca, ballena) no tienen `Diet`: pastan en `GrassPatch`/`FishSchool`.
