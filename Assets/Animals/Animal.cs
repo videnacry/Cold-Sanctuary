@@ -224,6 +224,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
             CorrectMedium(interval);
+            SenseThreats();
             yield return new WaitForSeconds(interval);
         }
     }
@@ -258,6 +259,27 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         {
             ActsPrep.run.Prep(this, dt); nav.SetDestination(HomeOrigin);   // salir del agua hacia tierra
         }
+    }
+
+    // Territorialidad/cautela: percibe depredadores cercanos y huye proactivamente (revive
+    // EvaluateThreat + ThreatThreshold). Evita que las presas se queden tranquilas junto a depredadores;
+    // también hace que un cánido solo huya de un oso. Solo cuando no caza/huye/duerme.
+    // Rendimiento: escanea wholePopulation; a gran escala requeriría partición espacial.
+    void SenseThreats()
+    {
+        if (busy || aware || asleep || rig == null) return;
+        float range = HomeRadius * (0.5f + perception * 0.5f);   // la percepción amplía la alerta
+        GameObject threat = null;
+        float nearest = range;
+        foreach (GameObject go in wholePopulation)
+        {
+            if (go == null || go == gameObject) continue;
+            Carnivore predator = go.GetComponent<Carnivore>();
+            if (predator == null || predator.death) continue;
+            float d = Vector3.Distance(transform.position, go.transform.position);
+            if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
+        }
+        if (threat != null) RespondToThreat(threat);
     }
 
     public abstract IEnumerator Feed();

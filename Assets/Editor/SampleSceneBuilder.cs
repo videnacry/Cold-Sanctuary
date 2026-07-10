@@ -299,7 +299,7 @@ public static class SampleSceneBuilder
         animalsGroup.transform.SetParent(parent);
 
         // Loose cubs in the artificial nest area
-        string[] nestSpecies = { "Bunny", "Bunny", "Fox", "Wolf", "Malamute" };
+        string[] nestSpecies = { "Bunny", "Bunny", "Fox", "Wolf", "Deer" };  // Malamute es mascota (no familia salvaje); Deer da presa al lobo
         for (int i = 0; i < nestSpecies.Length; i++)
         {
             GameObject prefab = LoadAnimalPrefab(nestSpecies[i]);
