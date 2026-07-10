@@ -52,10 +52,14 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
 Los valores codifican **origen + historia**, no solo el presente.
 
 ### Goluis (25 años) — fuerza
-- `strength 1.5`, `bodyMass 1.3`, `agility 0.9`, `perception 0.6`, `adaptability 0.6`, `composure 1.5`.
+- `strength 1.5`, `bodyMass 1.3`, `agility 0.9`, `perception 1.1`, `adaptability 0.6`, `composure 1.5`.
 - Trabajo de fuerza del mismo tipo toda su vida → **fuerza aumentada**; invierte mucho en comida
-  → **masa aumentada**. Dejó de estudiar a los 17 (ahora 25) → **poca costumbre de estudio/detalle**
-  → percepción baja. Corpulencia → agilidad ligeramente baja. Un solo tipo de trabajo → adaptabilidad baja.
+  → **masa aumentada**. Un solo tipo de trabajo → adaptabilidad baja; corpulencia → agilidad algo baja.
+- **Atención al detalle práctica, no académica:** en su trabajo es **rápido y muy atento al detalle**
+  (`perception 1.1`); tanto, que a veces se escaquea (se va "al baño" a mirar el móvil) sin que se
+  note — encaja con su picardía/`composure`. Lo bajo en él es lo **académico/abstracto** (dejó de
+  estudiar a los 17): `reasoning`/`memory` bajos. Distinción clave del modelo: **percepción (atención
+  práctica/sensorial) ≠ razonamiento/memoria (estudio abstracto).**
 - **Pasado (adolescencia):** formó parte de un grupo de bandidos. No ha dado muchos detalles, pero se
   sabe que **les pidió ayuda para que la madre de su hija no presentara una denuncia en su contra**.
   Ese pasado lo lleva a **mirar con desconfianza** (refleja el anchor `trust_people = -0.4`) y le da
@@ -96,6 +100,11 @@ Aptitudes actuales: `agility`, `perception`, `strength`, `bodyMass` (atributo), 
 - **reasoning / lógica** — la "lógica de negocio" de Panterilia; razonamiento y planificación.
 - **memory / memoria** — velocidad de aprender y retener (podría alimentar el desbloqueo por aprendizaje).
 - **creativity / imaginación** — ligada al rasgo mental de Panterilia (exageración, ideas de terceros).
+
+> **Distinción práctica vs académica:** `perception` es atención **práctica/sensorial** (fijarse en
+> detalles del trabajo, del entorno); `reasoning`/`memory` son el eje **académico/abstracto**. Un
+> personaje puede ser muy observador en lo práctico y flojo en lo académico — es el caso de Goluis
+> (percepción alta, razonamiento/memoria bajos).
 
 **Conductuales / meta**
 - **adaptability / versatilidad** — ✅ añadida (velocidad de adaptación a tareas/contextos nuevos).

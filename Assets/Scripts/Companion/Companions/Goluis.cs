@@ -30,7 +30,7 @@ public class Goluis : CompanionBase
     protected override float BaseStrength   => 1.5f;   // trabajo físico continuo
     protected override float BaseBodyMass   => 1.3f;   // invierte mucho en comida
     protected override float BaseAgility      => 0.9f;   // corpulento
-    protected override float BasePerception   => 0.6f;   // poca costumbre de estudio/detalle
+    protected override float BasePerception   => 1.1f;   // atención al detalle práctica (en su trabajo); lo bajo es lo académico (reasoning/memory)
     protected override float BaseAdaptability => 0.6f;   // el mismo tipo de trabajo toda la vida
     protected override float BaseComposure    => 1.5f;   // pasado en una banda: control bajo peligro/estrés
 
