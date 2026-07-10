@@ -24,8 +24,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Modificadores de medio**: detector de medio para animales (setear `currentMedium`); afinidades
       para humanoides (nadar) al llegar `NPCBase`; extender `MediumFactor` a `strength`/`endurance`.
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
-- [~] **Lógica de agua/tierra**: detector hecho (`MediumZone` fija `currentMedium`). **Falta el
-      comportamiento**: evitar/entrar al agua según afinidad. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+- [x] **Lógica de agua/tierra**: detector (`MediumZone`) + comportamiento (`Animal.CorrectMedium`:
+      acuáticos buscan agua, terrestres salen). Pendiente menor: evitación *proactiva* (desviar `Wander`).
+- [ ] **Refinar selección de caza**: `SelectPrey` no evalúa si el cazador puede ganar → un lobo solo y
+      hambriento se lanza al oso y muere. Ponderar ventaja de masa/manada antes de comprometer la caza.
+- [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
+      familias en torno a ellos, con nidos **fuera del alcance de depredadores**. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 - [x] **Peces / dietas**: se mantiene `FishSchool` abstracto (rendimiento); dietas de TODOS los carnívoros
       revisadas (oso: +ciervo/zorro/husky; lobo: +zorro/husky; zorro/husky sin cambios).
 - [ ] **Comportamiento adulto sin crías** + refugio/ocultarse (necesita árboles/arbustos), territorialidad,
@@ -69,4 +73,5 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Set de aptitudes cerrado (12) + perfiles calibrados; distinción percepción práctica vs académica.
 - [x] Modificadores de medio (tierra/agua/aire): `Medium` + afinidades + `EffectiveAgility`; ballena/foca calibradas.
 - [x] Bucle de evolución de aptitudes (animales): `AptitudeEvolution` + tick en `Animal.Restore`.
-- [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico); fix de amontonamiento en `Homebound`.
+- [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico, incl. lobo→oso en manada); fix de amontonamiento en `Homebound`.
+- [x] Comportamiento agua/tierra (`Animal.CorrectMedium`): acuáticos buscan agua, terrestres salen.

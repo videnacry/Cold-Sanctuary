@@ -6,9 +6,11 @@ Ver también [`behavior-system.md`](behavior-system.md) y [`creature-stats.md`](
 ## Estado actual (verificado en código)
 
 - **No existe** lógica de esconderse / madrigueras / refugio / árboles / arbustos (grep vacío).
-- Los animales navegan **solo por NavMesh**; no evitan ni entran al agua de forma explícita. Las
-  especies marinas van con guarda `nav.isOnNavMesh`. El nuevo `MediumZone` ya fija `currentMedium`,
-  pero el **comportamiento** de evitar/entrar según el medio aún no está.
+- Los animales navegan por NavMesh. `MediumZone` fija `currentMedium`. **Comportamiento agua/tierra
+  implementado** (`Animal.CorrectMedium`, 2026-07-10): los acuáticos (afinidad agua > tierra) buscan el
+  `FishSchool` más cercano si quedan en tierra; los terrestres salen del agua hacia el nido; gated por
+  `busy`, así que un cazador sí sigue a su presa al agua. **Pendiente**: evitación *proactiva* (que un
+  terrestre desvíe su `Wander` lejos del agua antes de meterse).
 - Eventos de adulto actuales: `Wander`, `Rest`, `Feed` (entrega comida al nido), `Homebound`.
 - Los **padres** cuidan crías vía `PostNatal` (limpiar, estimular, guiar, amamantar; el ciervo tiene
   `MarkHidingSpot`). **Falta**: qué hacen los adultos **sin crías** a su cargo.
@@ -40,6 +42,22 @@ Ver también [`behavior-system.md`](behavior-system.md) y [`creature-stats.md`](
   pueda **descubrir que su nido fue detectado** y **mudarse**.
 - **Decisión:** dejarlo documentado hasta evaluar impacto; empezar por **refugio estático** (zonas
   fijas) antes que memoria dinámica de lugares.
+
+## Montaje de escena: nidos antes que familias (diseño)
+
+Hoy `SampleSceneBuilder` puebla familias sin tener en cuenta nidos ni depredadores (cada animal fija
+`HomeOrigin` = su posición de spawn en `Init`). Propuesta de orden:
+
+1. **Definir/colocar los nidos/territorios primero** (uno por familia/especie), separando territorios
+   de presa de los de depredador.
+2. **Validar que cada nido de presa quede fuera del alcance de depredadores** — comprobar distancia
+   mínima a las zonas/territorios de depredadores; si no cumple, reubicar.
+3. **Poblar cada familia alrededor de su nido** (`RenderFamily` centrada en el nido; `HomeOrigin` de los
+   miembros = el nido), en vez de en puntos sueltos contiguos.
+4. Colocar depredadores en sus propias zonas, lejos de los nidos de presa.
+
+Esto resuelve de raíz lo observado (conejos correteando junto a lobos) y da sentido a `HomeOrigin`/
+`HomeRadius` como zona de nido. Enlaza con **territorialidad** (arriba).
 
 ## Enganches con lo ya construido
 
