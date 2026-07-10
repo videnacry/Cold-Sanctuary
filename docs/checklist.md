@@ -11,9 +11,9 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **`Generator.cs`**: ¿borrar? (legacy redundante con `FamilyGenerator`).
 
 ## Aptitudes (creature-stats.md)
-- [ ] **Bucle de evolución por tarea/tiempo**: trabajo físico → `strength`/`bodyMass` ↑;
-      estudio/observación → `perception` ↑; sedentarismo → `strength`/`bodyMass` ↓;
-      variedad de tareas → `adaptability` ↑.
+- [~] **Bucle de evolución**: *animales hecho* (agilidad←movimiento, percepción←alerta, en `Animal.Restore`
+      con `AptitudeEvolution`). **Falta humanoides**: engancharla a tareas/misiones (físico→fuerza/resistencia,
+      estudio→razón/memoria, variedad→adaptabilidad, sedentarismo→↓).
 - [ ] Conectar aptitudes a mecánicas: `agility`→velocidad/maniobra, `perception`→detección+calidad
       de asana, `strength`→daño/carga, `bodyMass`→física/saciedad, `adaptability`→velocidad de aprendizaje.
 - [ ] Unificar con `PlayerStats` (`observationRadius`↔`perception`, `velocity`↔`agility`) y
@@ -24,6 +24,11 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Modificadores de medio**: detector de medio para animales (setear `currentMedium`); afinidades
       para humanoides (nadar) al llegar `NPCBase`; extender `MediumFactor` a `strength`/`endurance`.
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
+- [ ] **Lógica de agua/tierra**: hoy los animales no evitan ni entran al agua explícitamente (solo NavMesh
+      + guardas para especies marinas). Añadir comportamiento: focas/osos entran a por comida; conejos/lobos
+      la evitan. Se apoya en el detector de medio.
+- [ ] **Peces**: `FishSchool` es solo un marcador de zona (no entidades). Decidir si añadir peces reales
+      (entidades/escuelas) como comida/presa y **reconfigurar los `Diet`/menús** de ballena/foca (y depredadores).
 
 ## Aclaraciones → siguiente paso (learning-unlocks.md)
 - [ ] Crear un **registro de "aprendidos"** por jugador (elementos, posturas, habilidades) + evento
@@ -62,3 +67,4 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Docs de diseño: creature-stats, mission-mode, learning-unlocks, gaps-vs-planteamiento.
 - [x] Set de aptitudes cerrado (12) + perfiles calibrados; distinción percepción práctica vs académica.
 - [x] Modificadores de medio (tierra/agua/aire): `Medium` + afinidades + `EffectiveAgility`; ballena/foca calibradas.
+- [x] Bucle de evolución de aptitudes (animales): `AptitudeEvolution` + tick en `Animal.Restore`.

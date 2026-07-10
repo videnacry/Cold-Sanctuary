@@ -143,6 +143,21 @@ Aptitudes actuales: `agility`, `perception`, `strength`, `bodyMass` (atributo), 
 Mapeo con lo existente: `perception` ≈ `PlayerStats.observationRadius`; `agility` ≈ `velocity`;
 `strength`/`flexibility` ≈ dimensiones de `BodyPartStats`. Unificar al implementar `NPCBase`.
 
+## Evolución de aptitudes
+
+Las aptitudes **cambian con el uso**: crecen con la actividad que las ejercita y decaen con el desuso,
+dentro de una banda alrededor de su base. Motor: `AptitudeEvolution.Step(current, base, useSignal, dt)`.
+
+- **Animales (implementado):** tick en `Animal.Restore()`. La **agilidad** sube con la intensidad de
+  movimiento (`nav.velocity / run.navSpeed` → correr/perseguir/huir la ejercita) y decae en reposo; la
+  **percepción** sube mientras el animal está alerta (`aware`, respondiendo a amenazas) y decae si no.
+  `sensibility` sigue a la percepción evolucionada.
+- **Humanoides (pendiente):** enganchar a tareas/misiones — cada tarea entrena ciertas aptitudes al
+  completarse (trabajo físico → `strength`/`endurance`; estudio/observación → `reasoning`/`memory`/
+  `perception`; variedad de tareas → `adaptability`; sedentarismo → decae). Requiere unificar las
+  aptitudes en el portador que ejecuta tareas (`NPCBase`) o puentear desde `WorldCharacter.ApplyTaskEffects`.
+- **Calibración:** `gainRate`/`decayRate` y la banda `[0.7×, 1.6×]` del base son parámetros por afinar.
+
 ## Modificadores de medio (tierra / agua / aire)
 
 El **rendimiento físico** depende del medio en que está la criatura: un gato es ágil en tierra pero
@@ -167,9 +182,8 @@ torpe en el agua; una ballena, al revés. Se modela como un **multiplicador por 
 
 ## Próximos pasos
 
-1. Bucle de **evolución por tarea/tiempo**: cada tarea repetida ajusta la aptitud correspondiente
-   (p.ej. turno de cocina físico → +fuerza/masa; estudio/observación → +percepción; inactividad
-   corporal → −fuerza/masa).
+1. **Evolución de aptitudes** — *animales hecho* (ver §Evolución de aptitudes); **falta el lado
+   humanoide**: engancharla a tareas/misiones.
 2. Conectar aptitudes a mecánicas: `agility` → velocidad/maniobra; `perception` → radio de
    detección/observación y calidad de asana; `strength` → daño/carga; `bodyMass` → física/saciedad.
 3. Unificar con `PlayerStats` y consolidar en `LivingEntity` al implementar `NPCBase`.

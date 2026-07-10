@@ -222,11 +222,24 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
                 RespondToHunger();
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
+            EvolveAptitudes(interval);
             yield return new WaitForSeconds(interval);
         }
     }
 
 
+
+    // Evolución lenta de aptitudes por actividad (ver docs/creature-stats.md §Evolución de aptitudes).
+    // Correr/perseguir/huir sube la agilidad; estar alerta (aware) sube la percepción; el reposo las decae.
+    void EvolveAptitudes(float dt)
+    {
+        float runSpeed = ActsPrep?.run != null ? ActsPrep.run.navSpeed : 0f;
+        float intensity = (nav != null && nav.isOnNavMesh && runSpeed > 0.01f)
+            ? Mathf.Clamp01(nav.velocity.magnitude / runSpeed) : 0f;
+        agility     = AptitudeEvolution.Step(agility,    BaseAgility,    intensity,       dt);
+        perception  = AptitudeEvolution.Step(perception, BasePerception, aware ? 1f : 0f, dt);
+        sensibility = BaseSensibility * perception;   // la sensibilidad sigue a la percepción evolucionada
+    }
 
     public abstract IEnumerator Feed();
 
