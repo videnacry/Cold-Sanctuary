@@ -24,11 +24,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Modificadores de medio**: detector de medio para animales (setear `currentMedium`); afinidades
       para humanoides (nadar) al llegar `NPCBase`; extender `MediumFactor` a `strength`/`endurance`.
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
-- [ ] **Lógica de agua/tierra**: hoy los animales no evitan ni entran al agua explícitamente (solo NavMesh
-      + guardas para especies marinas). Añadir comportamiento: focas/osos entran a por comida; conejos/lobos
-      la evitan. Se apoya en el detector de medio.
-- [ ] **Peces**: `FishSchool` es solo un marcador de zona (no entidades). Decidir si añadir peces reales
-      (entidades/escuelas) como comida/presa y **reconfigurar los `Diet`/menús** de ballena/foca (y depredadores).
+- [~] **Lógica de agua/tierra**: detector hecho (`MediumZone` fija `currentMedium`). **Falta el
+      comportamiento**: evitar/entrar al agua según afinidad. Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
+- [x] **Peces / dietas**: se mantiene `FishSchool` abstracto (rendimiento); dietas de TODOS los carnívoros
+      revisadas (oso: +ciervo/zorro/husky; lobo: +zorro/husky; zorro/husky sin cambios).
+- [ ] **Comportamiento adulto sin crías** + refugio/ocultarse (necesita árboles/arbustos), territorialidad,
+      y memoria de lugares (solo documentado). Ver [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md).
 
 ## Aclaraciones → siguiente paso (learning-unlocks.md)
 - [ ] Crear un **registro de "aprendidos"** por jugador (elementos, posturas, habilidades) + evento
@@ -68,3 +69,4 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Set de aptitudes cerrado (12) + perfiles calibrados; distinción percepción práctica vs académica.
 - [x] Modificadores de medio (tierra/agua/aire): `Medium` + afinidades + `EffectiveAgility`; ballena/foca calibradas.
 - [x] Bucle de evolución de aptitudes (animales): `AptitudeEvolution` + tick en `Animal.Restore`.
+- [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico); fix de amontonamiento en `Homebound`.

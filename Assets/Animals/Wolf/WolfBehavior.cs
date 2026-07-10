@@ -72,6 +72,8 @@ public class WolfBehavior : Carnivore
     {
         new PreyEntry(DeerBehavior.population, 15f, 0f, 700f),
         new PreyEntry(BunnyBehavior.population, 8f, 0f, 700f),
+        new PreyEntry(FoxBehavior.population, 5f, 20f, 600f),    // competencia entre cánidos
+        new PreyEntry(HuskyBehavior.population, 4f, 30f, 600f),  // solo con bastante hambre
     });
     public Diet diet = defaultDiet;
     public override Diet Diet { get => diet; set => diet = value; }

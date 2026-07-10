@@ -173,8 +173,11 @@ torpe en el agua; una ballena, al revés. Se modela como un **multiplicador por 
   `Water 1.0 / Land 0.1`; Foca (anfibia) `Water 1.0 / Land 0.6`.
 - **Alcance**: hoy afecta a `agility`; a futuro también `strength`/`endurance` (todo lo locomotor/físico).
   Percepción y cognición no se escalan por medio salvo casos concretos (p. ej. ecolocación).
-- **Pendiente**: detector de medio para animales (hoy `currentMedium` arranca en `Land`; el jugador
-  ya tiene `WaterZone`). Afinidades para humanoides (nadar) al llegar `NPCBase`.
+- **Detector**: `MediumZone` (trigger sobre volúmenes de agua) fija `currentMedium` al entrar/salir
+  de cualquier `LivingEntity` (generaliza el `WaterZone` del jugador).
+- **Pendiente**: comportamiento agua/tierra (evitar/entrar según afinidad, ver
+  [`refuge-and-adult-behavior.md`](refuge-and-adult-behavior.md)); afinidades para humanoides al nadar
+  (`NPCBase`); extender el factor a `strength`/`endurance`.
 
 > **Ahogo / asfixia (solo documentado, sin implementar):** permanecer en un medio de afinidad muy baja
 > más allá de una tolerancia debería causar daño progresivo (la ballena varada en tierra; un terrestre
