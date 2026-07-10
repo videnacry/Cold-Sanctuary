@@ -4,9 +4,8 @@ Tablero para retomar. Última sesión: 2026-07-10. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md).
 
 ## Decisiones abiertas (rápidas)
-- [ ] **Aptitudes adicionales**: elegir del menú de [`creature-stats.md`](creature-stats.md) §propuestas.
-      Recomendado adoptar: `endurance`, y **conectar `flexibility` a `BodyPartStats`**. Opcionales:
-      `reasoning`, `memory`, `creativity`, `sociability`, `discipline`.
+- [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
+      añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
       (ver [`mission-mode.md`](mission-mode.md)).
 - [ ] **`Generator.cs`**: ¿borrar? (legacy redundante con `FamilyGenerator`).
@@ -21,6 +20,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       `BodyPartStats` (`flex`/`str`). Consolidar en `LivingEntity` al implementar `NPCBase`.
 - [ ] Modelar el rasgo mental de **Panterilia** (exageración de la realidad / influencia de terceros).
 - [ ] Revisar `adaptability` para animales (hoy solo en companions).
+- [ ] Conectar `flexibility` a la dimensión `flex` de `BodyPartStats` (se entrena con yoga; universal).
+- [ ] **Modificadores de medio**: detector de medio para animales (setear `currentMedium`); afinidades
+      para humanoides (nadar) al llegar `NPCBase`; extender `MediumFactor` a `strength`/`endurance`.
+- [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
 
 ## Aclaraciones → siguiente paso (learning-unlocks.md)
 - [ ] Crear un **registro de "aprendidos"** por jugador (elementos, posturas, habilidades) + evento
@@ -57,3 +60,5 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [x] Falso positivo `lp` corregido; `sensibility` inicializado.
 - [x] `agility`/`perception` en animales + companions; `adaptability` añadida; Goluis/Panterilia/Gohageneis calibrados.
 - [x] Docs de diseño: creature-stats, mission-mode, learning-unlocks, gaps-vs-planteamiento.
+- [x] Set de aptitudes cerrado (12) + perfiles calibrados; distinción percepción práctica vs académica.
+- [x] Modificadores de medio (tierra/agua/aire): `Medium` + afinidades + `EffectiveAgility`; ballena/foca calibradas.
