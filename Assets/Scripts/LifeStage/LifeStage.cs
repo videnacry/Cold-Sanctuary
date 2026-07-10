@@ -160,7 +160,11 @@ public abstract class LifeStage
             if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
                 script.ActsPrep.run.Prep(script, duration);
-                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(script.HomeOrigin);
+                // Apuntar a un punto DENTRO del radio del nido, no al punto exacto, para que los
+                // adultos se repartan por la zona en vez de amontonarse sobre HomeOrigin.
+                Vector3 offset = Random.insideUnitSphere * script.HomeRadius;
+                Vector3 dest = script.HomeOrigin + new Vector3(offset.x, 0f, offset.z);
+                if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(dest);
             }
         };
     }

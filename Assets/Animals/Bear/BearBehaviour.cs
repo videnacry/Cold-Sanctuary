@@ -153,6 +153,8 @@ public class BearBehaviour : Carnivore
         new PreyEntry(SealBehavior.population, 15f, 0f, 700f),
         new PreyEntry(BunnyBehavior.population, 10f, 0f, 700f),
         new PreyEntry(WolfBehavior.population, 3f, 50f, 500f),
+        new PreyEntry(FoxBehavior.population, 4f, 25f, 500f),    // pequeño y ágil; solo con hambre
+        new PreyEntry(HuskyBehavior.population, 4f, 25f, 500f),  // idem
     });
     public Diet diet = defaultDiet;
     public override Diet Diet { get => diet; set => diet = value; }
