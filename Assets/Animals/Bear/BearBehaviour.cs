@@ -156,6 +156,7 @@ public class BearBehaviour : Carnivore
         new PreyEntry(WolfBehavior.population, 3f, 50f, 500f),
         new PreyEntry(FoxBehavior.population, 4f, 25f, 500f),    // pequeño y ágil; solo con hambre
         new PreyEntry(MalamuteBehavior.population, 4f, 25f, 500f),  // idem
+        new PreyEntry(FishSchool.population, 8f, 0f, 600f),      // el oso polar pesca en la orilla
         new PreyEntry(PlayerTarget.population, 6f, 10f, 500f),   // oso polar: depreda humanos activamente; solo lo frena el vínculo (CanHarm)
     });
     public Diet diet = defaultDiet;

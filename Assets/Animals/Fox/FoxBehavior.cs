@@ -75,6 +75,7 @@ public class FoxBehavior : Carnivore
     {
         new PreyEntry(BunnyBehavior.population, 12f, 0f, 400f),
         new PreyEntry(BirdBehavior.population, 6f, 0f, 300f),
+        new PreyEntry(FishSchool.population, 5f, 10f, 250f),     // pesca/roba pescado ocasional
     });
     public Diet diet = defaultDiet;
     public override Diet Diet { get => diet; set => diet = value; }

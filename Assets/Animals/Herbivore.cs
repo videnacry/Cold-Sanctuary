@@ -51,6 +51,11 @@ public abstract class Herbivore : Animal
             this.hungry -= feed;
             yield return new WaitForSeconds(interval);
             this.hungry -= feed;
+            if (!GrazesOnLand && foodSource != null)
+            {
+                FishSchool fs = foodSource.GetComponent<FishSchool>();
+                if (fs != null) fs.Graze(feed);   // el pastoreo marino reduce el banco
+            }
             this.busy = false;
         }
     }
