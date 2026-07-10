@@ -29,6 +29,7 @@ public class Panterilia : CompanionBase
     protected override float BaseBodyMass     => 0.8f;   // nutrición descuidada; masa bajo la media
     protected override float BaseAgility      => 0.95f;
     protected override float BaseAdaptability => 1.4f;   // muchos puestos/roles → se adapta bien
+    protected override float BaseComposure    => 0.7f;   // tiende a bloquearse bajo estrés agudo
     // Rasgo mental: gran facilidad para liberar energía mental → tiende a exagerar la realidad
     // e influenciarse por teorías/experiencia/imaginación de terceros. Ver docs/creature-stats.md.
 

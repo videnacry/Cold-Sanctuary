@@ -28,7 +28,7 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
   `Animal` expone `virtual BaseAgility` / `BasePerception` por especie; se fijan en `Init()`.
   `sensibility` (umbral de detección de amenazas en `Escape()`) deriva de `perception`:
   `sensibility = BaseSensibility * perception` → más percepción, reacciona antes.
-- **Humanoides (companions)** — `CompanionBase.agility/perception/strength/bodyMass/adaptability`
+- **Humanoides (companions)** — `CompanionBase.agility/perception/strength/bodyMass/adaptability/composure`
   (+ `virtual Base*`), fijados en `Start()`. Cuando llegue `NPCBase : LivingEntity` estas
   aptitudes se consolidarán en `LivingEntity` y se eliminará la duplicación.
 - **Jugador** — `PlayerStats` ya tiene equivalentes parciales: `observationRadius` (≈ percepción)
@@ -52,13 +52,18 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
 Los valores codifican **origen + historia**, no solo el presente.
 
 ### Goluis (25 años) — fuerza
-- `strength 1.5`, `bodyMass 1.3`, `agility 0.9`, `perception 0.6`.
+- `strength 1.5`, `bodyMass 1.3`, `agility 0.9`, `perception 0.6`, `adaptability 0.6`, `composure 1.5`.
 - Trabajo de fuerza del mismo tipo toda su vida → **fuerza aumentada**; invierte mucho en comida
   → **masa aumentada**. Dejó de estudiar a los 17 (ahora 25) → **poca costumbre de estudio/detalle**
-  → percepción baja. Corpulencia → agilidad ligeramente baja.
+  → percepción baja. Corpulencia → agilidad ligeramente baja. Un solo tipo de trabajo → adaptabilidad baja.
+- **Pasado (adolescencia):** formó parte de un grupo de bandidos. No ha dado muchos detalles, pero se
+  sabe que **les pidió ayuda para que la madre de su hija no presentara una denuncia en su contra**.
+  Ese pasado lo lleva a **mirar con desconfianza** (refleja el anchor `trust_people = -0.4`) y le da
+  **temple/control en situaciones de peligro o estrés** (`composure 1.5`).
 
 ### Panterilia (42 años) — percepción
-- `perception 1.7`, `strength 0.7`, `bodyMass 0.8`, `agility 0.95`.
+- `perception 1.7`, `strength 0.7`, `bodyMass 0.8`, `agility 0.95`, `adaptability 1.4`, `composure 0.7`.
+- Bajo estrés agudo **tiende a bloquearse** (`composure 0.7`), a diferencia de Goluis.
 - Nunca dejó de estudiar y ha ocupado múltiples puestos/roles → **atención al detalle muy alta**
   y cierta **lógica de negocio**. Alejada del trabajo físico y de la vida corporal → su **fuerza
   incluso ha decrecido** y, como la alimentación es parte de la vida corporal, su **masa está por
@@ -74,7 +79,8 @@ Los valores codifican **origen + historia**, no solo el presente.
   Ecuador → España → USA → santuario, encadenando trabajos muy variados (mudanzas, ventas,
   bartender, Uber, cocina, limpieza, construcción). Fiesta, baile, gimnasio y comer → **físicamente
   equilibrado tirando a ágil**. Percepción de calle/social (dejó de estudiar a los 16, no académica).
-  Su rasgo definitorio es la **versatilidad / velocidad de adaptación** altísima (`adaptability 1.7`).
+  Su rasgo definitorio es la **versatilidad / velocidad de adaptación** altísima (`adaptability 1.7`);
+  la vida de calle/bartender le da además buen temple (`composure 1.2`).
 
 ## Aptitudes propuestas (menú para decidir)
 
@@ -92,7 +98,9 @@ Aptitudes actuales: `agility`, `perception`, `strength`, `bodyMass` (atributo), 
 - **creativity / imaginación** — ligada al rasgo mental de Panterilia (exageración, ideas de terceros).
 
 **Conductuales / meta**
-- **adaptability / versatilidad** — ✅ añadida hoy (velocidad de adaptación a tareas/contextos nuevos).
+- **adaptability / versatilidad** — ✅ añadida (velocidad de adaptación a tareas/contextos nuevos).
+- **composure / temple** — ✅ añadida (funcionar bajo peligro/estrés; Goluis alto por su pasado en una
+  banda, Panterilia bajo → se bloquea). Distinto del estrés-estado: es la *capacidad* de no colapsar.
 - **sociability / sociabilidad** — bartender/ventas/fiesta; podría modular crecimiento de bond y trato con NPCs.
 - **discipline / constancia** — mantener rutinas (Panterilia estudia sin parar; Goluis trabaja sin parar).
 

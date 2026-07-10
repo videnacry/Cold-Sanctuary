@@ -29,6 +29,7 @@ public class Gohageneis : CompanionBase
     protected override float BaseBodyMass     => 1.1f;   // come bien, cuerpo sólido
     protected override float BasePerception   => 1.05f;  // calle/social (bartender/ventas), no académica
     protected override float BaseAdaptability => 1.7f;   // versatilidad extrema: mil trabajos y países
+    protected override float BaseComposure    => 1.2f;   // vida de calle/bartender: maneja el caos
 
     protected override void SetupAnchors()
     {

@@ -30,12 +30,14 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     [HideInInspector] public float strength;
     [HideInInspector] public float bodyMass;
     [HideInInspector] public float adaptability;   // versatilidad / velocidad de adaptación
+    [HideInInspector] public float composure;      // temple / sangre fría bajo peligro o estrés
 
     protected virtual float BaseAgility      => 1f;
     protected virtual float BasePerception   => 1f;
     protected virtual float BaseStrength     => 1f;
     protected virtual float BaseBodyMass     => 1f;
     protected virtual float BaseAdaptability => 1f;
+    protected virtual float BaseComposure    => 1f;
 
     [Header("Bond — Player (initial value)")]
     [Tooltip("Starting bond strength with the player. Other bonds start at 0 and grow through interaction.")]
@@ -108,6 +110,7 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
         strength     = BaseStrength;
         bodyMass     = BaseBodyMass;
         adaptability = BaseAdaptability;
+        composure    = BaseComposure;
         SetupAnchors();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)

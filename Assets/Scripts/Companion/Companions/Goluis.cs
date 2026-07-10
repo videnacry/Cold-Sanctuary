@@ -32,6 +32,7 @@ public class Goluis : CompanionBase
     protected override float BaseAgility      => 0.9f;   // corpulento
     protected override float BasePerception   => 0.6f;   // poca costumbre de estudio/detalle
     protected override float BaseAdaptability => 0.6f;   // el mismo tipo de trabajo toda la vida
+    protected override float BaseComposure    => 1.5f;   // pasado en una banda: control bajo peligro/estrés
 
     protected override void SetupAnchors()
     {
