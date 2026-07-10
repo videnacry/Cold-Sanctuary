@@ -223,6 +223,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
+            CorrectMedium(interval);
             yield return new WaitForSeconds(interval);
         }
     }
@@ -239,6 +240,24 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         agility     = AptitudeEvolution.Step(agility,    BaseAgility,    intensity,       dt);
         perception  = AptitudeEvolution.Step(perception, BasePerception, aware ? 1f : 0f, dt);
         sensibility = BaseSensibility * perception;   // la sensibilidad sigue a la percepción evolucionada
+    }
+
+    // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
+    // del agua hacia tierra. Solo cuando no cazan/huyen (busy) — así un oso que persigue focas sí
+    // entra al agua. Ver docs/refuge-and-adult-behavior.md.
+    void CorrectMedium(float dt)
+    {
+        if (busy || asleep || nav == null || !nav.isOnNavMesh) return;
+        bool prefersWater = WaterAffinity > LandAffinity;
+        if (prefersWater && currentMedium != Medium.Water)
+        {
+            FishSchool water = FishSchool.Nearest(transform.position);   // marcadores de agua
+            if (water != null) { ActsPrep.walk.Prep(this, dt); nav.SetDestination(water.transform.position); }
+        }
+        else if (!prefersWater && currentMedium == Medium.Water)
+        {
+            ActsPrep.run.Prep(this, dt); nav.SetDestination(HomeOrigin);   // salir del agua hacia tierra
+        }
     }
 
     public abstract IEnumerator Feed();
