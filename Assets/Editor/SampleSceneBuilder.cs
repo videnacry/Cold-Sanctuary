@@ -60,8 +60,9 @@ public static class SampleSceneBuilder
         BuildGround(root.transform);
         BuildSeaAndFog(root.transform);
         BuildAnimals(root.transform);
-        BuildWildlifePopulation(root.transform);
-        BuildGrassPatches(root.transform);
+        System.Collections.Generic.List<NestSpec> nests = BuildWildlifePopulation(root.transform);
+        BuildGrassPatches(root.transform, nests);
+        BuildHabitatCover(root.transform, nests);
         BuildFishSchools(root.transform);
         BuildBirds(root.transform);
         BuildWorldSystems(root.transform);
@@ -270,7 +271,9 @@ public static class SampleSceneBuilder
         // Zona de nado real — antes el mar era puramente decorativo (sin collider de ningún
         // tipo). Un BoxCollider trigger aparte, no atado a la escala del Plane visual (evita
         // líos de escala heredada), cubre el volumen bajo la superficie. WaterZone avisa a
-        // PlayerController cuando el jugador entra/sale.
+        // PlayerController cuando el jugador entra/sale; MediumZone hace lo mismo para
+        // cualquier LivingEntity (fauna) — ambos coexisten en el mismo trigger sin pisarse,
+        // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
         swimZone.transform.position = new Vector3(200f, -8f, 0f);
@@ -278,6 +281,7 @@ public static class SampleSceneBuilder
         swimCollider.isTrigger = true;
         swimCollider.size = new Vector3(380f, 14f, 380f); // cubre el area visual del mar (plane 400x400) con margen
         swimZone.AddComponent<WaterZone>();
+        swimZone.AddComponent<MediumZone>().medium = Medium.Water;
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
@@ -315,6 +319,31 @@ public static class SampleSceneBuilder
         // familias reales con padres+crías en vez de individuos aislados.
     }
 
+    enum NestKind { Prey, Predator }
+
+    // Un "nido" es el centro real de una familia — FamilyGenerator lo usa como punto de
+    // dispersión al generar (radius) y, desde el fix en FamilyGenerator.Start(), también como
+    // HomeOrigin COMPARTIDO de todos los miembros (antes cada hermano fijaba su propio
+    // HomeOrigin a donde individualmente apareció — ver docs/refuge-and-adult-behavior.md
+    // "Montaje de escena: nidos antes que familias").
+    struct NestSpec
+    {
+        public string species;
+        public Vector3 position;
+        public float radius;
+        public NestKind kind;
+        public float height;
+    }
+
+    // homeRadius pequeño y realmente local — el único caso donde "nido de presa lejos de
+    // depredadores" es una separación alcanzable dentro de este mapa (ver comentario en
+    // ValidateNestSeparation). El resto de las especies tienen homeRadius mayor que medio
+    // mapa (Fox 150, Wolf 200, Deer 250, Bear 300) — roaming realista, no aplica.
+    static readonly System.Collections.Generic.Dictionary<string, float> SmallHomeRadius = new()
+    {
+        { "Bunny", 20f },
+    };
+
     // Bioma balanceado ~70% herbívoros / 30% carnívoros (aprobado con el usuario):
     // terrestres Bunny(5) x4=20 + Deer(6) x2=12 = 32 herbívoros vs Wolf(6) + Fox(7) =
     // 13 carnívoros → 32/45 ≈ 71% herbívoro. Los marinos (Whale, Seal) van aparte —
@@ -324,15 +353,25 @@ public static class SampleSceneBuilder
     // solo clúster gigante. A diferencia del resto del blockout (que instancia en
     // tiempo de Editor), FamilyGenerator.Start() genera recién al entrar en Play —
     // el área se ve vacía en el Editor hasta que se corre el juego.
-    static void BuildWildlifePopulation(Transform parent)
+    //
+    // Nidos repartidos por TODO el lado oeste del suelo (x en [-125,-15]; el este,
+    // x en [15,80], es de los edificios del santuario) en tres bandas por z con margen entre
+    // ellas — antes las 7 familias terrestres estaban amontonadas en una caja de 80x90 unidades
+    // (x:[-95,-15], z:[-50,40]) mientras el resto del suelo (250x250) quedaba vacío. Devuelve
+    // la lista de nidos para que BuildGrassPatches/BuildHabitatCover coloquen comida y
+    // vegetación cerca de cada nido de presa.
+    static System.Collections.Generic.List<NestSpec> BuildWildlifePopulation(Transform parent)
     {
         GameObject go = new GameObject("WildlifePopulation_AUTO");
         go.transform.SetParent(parent);
         FamilyGenerator generator = go.AddComponent<FamilyGenerator>();
 
+        var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
-        void AddFamily(string species, Vector3 pos, float radius, float height = 0f)
+        void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
+            nests.Add(new NestSpec { species = species, position = pos, radius = radius, kind = kind, height = height });
+
             GameObject prefab = LoadAnimalPrefab(species);
             if (prefab == null)
             {
@@ -342,57 +381,81 @@ public static class SampleSceneBuilder
             families.Add(new FamilyGenerator.Family { animalPrefab = prefab, position = pos, radius = radius, renderHeight = height });
         }
 
-        // Herbívoros — base de la pirámide
-        AddFamily("Bunny", new Vector3(-90f, 0f, 30f), 8f);
-        AddFamily("Bunny", new Vector3(-70f, 0f, 40f), 8f);
-        AddFamily("Bunny", new Vector3(-50f, 0f, 25f), 8f);
-        AddFamily("Bunny", new Vector3(-85f, 0f, -10f), 8f);
-        AddFamily("Deer", new Vector3(-60f, 0f, -20f), 12f);
-        AddFamily("Deer", new Vector3(-95f, 0f, 15f), 12f);
+        // Herbívoros — banda norte y centro-oeste
+        AddFamily("Bunny", new Vector3(-105f, 0f, 95f), 8f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-35f, 0f, 100f), 8f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-115f, 0f, 10f), 8f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-115f, 0f, -30f), 8f, NestKind.Prey);
+        AddFamily("Deer", new Vector3(-70f, 0f, 75f), 12f, NestKind.Prey);
+        AddFamily("Deer", new Vector3(-25f, 0f, 15f), 12f, NestKind.Prey);
 
-        // Carnívoros — depredadores tope, posicionados más al margen del área
-        AddFamily("Wolf", new Vector3(-75f, 0f, -35f), 14f);
-        AddFamily("Fox", new Vector3(-40f, 0f, -30f), 12f);
+        // Carnívoros — banda sur, lejos de los nidos de presa
+        AddFamily("Wolf", new Vector3(-95f, 0f, -90f), 14f, NestKind.Predator);
+        AddFamily("Fox", new Vector3(-50f, 0f, -105f), 12f, NestKind.Predator);
 
-        // Oso Polar — apex predator, territorio amplio (BearBehaviour.homeRadius=300)
-        // posicionado hacia el lado costero del bioma terrestre (más cerca de x=0, rumbo
-        // a la zona marina en x≈180-200) ya que su Diet prioriza Seal > Bunny > Wolf.
-        AddFamily("PolarBear", new Vector3(-15f, 0f, -50f), 22f);
+        // Oso Polar — apex predator, territorio amplio (BearBehaviour.homeRadius=300);
+        // frontera sur-este del bioma terrestre, más cerca de x=0 (rumbo a la zona marina en
+        // x≈180-200) ya que su Diet prioriza Seal > Bunny > Wolf.
+        AddFamily("PolarBear", new Vector3(-20f, 0f, -60f), 22f, NestKind.Predator);
+
+        ValidateNestSeparation(nests);
 
         // Marinos — sobre el Sea_Placeholder, aparte del bioma terrestre
-        AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, -1f);
-        AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, -1f);
+        AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, NestKind.Prey, -1f);
+        AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, NestKind.Prey, -1f);
 
         generator.families = families.ToArray();
+        return nests;
+    }
+
+    // Solo advierte (no reubica) — el ajuste fino de posiciones en este archivo siempre se hace
+    // a mano, igual que el resto del blockout. Solo evalúa a Bunny (SmallHomeRadius): es la
+    // única especie cuyo homeRadius es más chico que el mapa, así que es la única separación
+    // presa/depredador realmente alcanzable aquí (ver nota en BuildWildlifePopulation).
+    static void ValidateNestSeparation(System.Collections.Generic.List<NestSpec> nests)
+    {
+        foreach (NestSpec prey in nests)
+        {
+            if (prey.kind != NestKind.Prey || !SmallHomeRadius.TryGetValue(prey.species, out float homeRadius)) continue;
+
+            float minBuffer = homeRadius + 40f;
+            foreach (NestSpec predator in nests)
+            {
+                if (predator.kind != NestKind.Predator) continue;
+                float dist = Vector3.Distance(prey.position, predator.position);
+                if (dist < minBuffer)
+                    Debug.LogWarning($"[SampleSceneBuilder] Nido de {prey.species} en {prey.position} queda a {dist:F0}u de {predator.species} " +
+                        $"(mínimo recomendado {minBuffer:F0}u) — considerar reubicar a mano.");
+            }
+        }
     }
 
     // Áreas de pasto para los herbívoros terrestres — Herbivore.Feed() camina hasta la más
-    // cercana antes de comer (ver Herbivore.cs/GrassPatch.cs). Repartidas para cubrir el
-    // territorio donde están las familias de Bunny/Deer de arriba (x: -95..-50, z: -35..40).
-    // Los marinos (Whale, Seal) usan FishSchool en vez de esto — ver BuildFishSchools().
-    static void BuildGrassPatches(Transform parent)
+    // cercana antes de comer (ver Herbivore.cs/GrassPatch.cs). Una por cada nido de presa
+    // terrestre (Bunny/Deer) para que ningún nido quede sin comida cerca tras el reparto por
+    // bandas — antes eran 3 parches fijos pensados para las posiciones viejas, amontonadas.
+    // Los marinos (Whale, Seal; height < 0) usan FishSchool en vez de esto — ver BuildFishSchools().
+    static void BuildGrassPatches(Transform parent, System.Collections.Generic.List<NestSpec> nests)
     {
         GameObject group = new GameObject("GrassPatches_AUTO");
         group.transform.SetParent(parent);
 
-        Vector3[] positions =
-        {
-            new Vector3(-90f, 0f, 15f),
-            new Vector3(-65f, 0f, 10f),
-            new Vector3(-80f, 0f, -15f),
-        };
-
         Material grassMat = MakeMaterial("GrassPatch_MAT", new Color(0.45f, 0.6f, 0.3f));
-        for (int i = 0; i < positions.Length; i++)
+        int i = 0;
+        foreach (NestSpec nest in nests)
         {
+            if (nest.kind != NestKind.Prey || nest.height < 0f) continue;
+
             GameObject patch = GameObject.CreatePrimitive(PrimitiveType.Cube);
             patch.name = $"GrassPatch_{i}";
             patch.transform.SetParent(group.transform);
-            patch.transform.position = positions[i] + new Vector3(0f, 0.03f, 0f);
-            patch.transform.localScale = new Vector3(18f, 0.06f, 18f);
+            patch.transform.position = nest.position + new Vector3(0f, 0.03f, 0f);
+            float size = Mathf.Max(14f, nest.radius * 1.8f);
+            patch.transform.localScale = new Vector3(size, 0.06f, size);
             patch.GetComponent<Renderer>().sharedMaterial = grassMat;
             Object.DestroyImmediate(patch.GetComponent<Collider>()); // decorativo — no debe bloquear NavMesh/jugador
             patch.AddComponent<GrassPatch>();
+            i++;
         }
     }
 
@@ -422,6 +485,72 @@ public static class SampleSceneBuilder
             Object.DestroyImmediate(school.GetComponent<Collider>()); // decorativo — no debe bloquear nado/NavMesh
             school.AddComponent<FishSchool>();
         }
+    }
+
+    // Cobertura vegetal decorativa alrededor de cada nido de presa terrestre — para que "se
+    // vean un poco escondidos" (pedido explícito). Puramente visual: primitivas sin collider
+    // (igual que GrassPatch/FishSchool), sin componente de lógica — NO implementa detección ni
+    // ocultamiento real, eso queda documentado como pendiente en
+    // docs/refuge-and-adult-behavior.md ("empezar documentando, luego implementar").
+    static void BuildHabitatCover(Transform parent, System.Collections.Generic.List<NestSpec> nests)
+    {
+        GameObject group = new GameObject("HabitatCover_AUTO");
+        group.transform.SetParent(parent);
+
+        Material trunkMat = MakeMaterial("Tree_Trunk_MAT", new Color(0.35f, 0.24f, 0.15f));
+        Material canopyMat = MakeMaterial("Tree_Canopy_MAT", new Color(0.20f, 0.42f, 0.22f));
+        Material bushMat = MakeMaterial("Bush_MAT", new Color(0.18f, 0.35f, 0.18f));
+
+        int propIndex = 0;
+        foreach (NestSpec nest in nests)
+        {
+            if (nest.kind != NestKind.Prey || nest.height < 0f) continue; // solo presas terrestres
+
+            int propCount = Random.Range(3, 6);
+            for (int i = 0; i < propCount; i++)
+            {
+                Vector2 offset = Random.insideUnitCircle * (nest.radius * 1.3f);
+                Vector3 pos = nest.position + new Vector3(offset.x, 0f, offset.y);
+                if (Random.value > 0.5f) BuildTree(group.transform, pos, trunkMat, canopyMat, $"Tree_{propIndex}");
+                else BuildBush(group.transform, pos, bushMat, $"Bush_{propIndex}");
+                propIndex++;
+            }
+        }
+    }
+
+    static void BuildTree(Transform parent, Vector3 pos, Material trunkMat, Material canopyMat, string name)
+    {
+        GameObject tree = new GameObject(name);
+        tree.transform.SetParent(parent);
+        tree.transform.position = pos;
+
+        GameObject trunk = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        trunk.name = "Trunk";
+        trunk.transform.SetParent(tree.transform);
+        float height = Random.Range(3f, 5f);
+        trunk.transform.localPosition = new Vector3(0f, height / 2f, 0f);
+        trunk.transform.localScale = new Vector3(0.4f, height / 2f, 0.4f);
+        trunk.GetComponent<Renderer>().sharedMaterial = trunkMat;
+        Object.DestroyImmediate(trunk.GetComponent<Collider>());
+
+        GameObject canopy = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        canopy.name = "Canopy";
+        canopy.transform.SetParent(tree.transform);
+        canopy.transform.localPosition = new Vector3(0f, height + 1f, 0f);
+        canopy.transform.localScale = new Vector3(2.6f, 2.2f, 2.6f);
+        canopy.GetComponent<Renderer>().sharedMaterial = canopyMat;
+        Object.DestroyImmediate(canopy.GetComponent<Collider>());
+    }
+
+    static void BuildBush(Transform parent, Vector3 pos, Material bushMat, string name)
+    {
+        GameObject bush = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        bush.name = name;
+        bush.transform.SetParent(parent);
+        bush.transform.position = pos + new Vector3(0f, 0.5f, 0f);
+        bush.transform.localScale = new Vector3(1.8f, 1f, 1.8f);
+        bush.GetComponent<Renderer>().sharedMaterial = bushMat;
+        Object.DestroyImmediate(bush.GetComponent<Collider>());
     }
 
     // ── Birds ────────────────────────────────────────────────────────────────

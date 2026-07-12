@@ -468,6 +468,56 @@
     protegerse a uno mismo si se puede arrancar la misma corrutina en otro objeto sin comprobar su
     estado. Van tres casos de esta familia de bug en la sesión (`NavMesh`, `Escape`, `Fight`).
 
+### Nidos primero + hábitat de cobertura para la fauna terrestre ✅ (nuevo)
+- [x] **Pedido explícito**: el usuario notó que las 8 familias terrestres aparecían todas
+  amontonadas en una esquina del mapa (80×90 unidades de un suelo de 250×250), que faltaban
+  árboles/arbustos para "esconder" un poco los nidos, y que los miembros de una misma familia no
+  compartían un centro de nido real. Diseño completo en
+  `C:\Users\Blein\.claude\plans\encapsulated-wondering-panda.md`.
+- [x] **`SampleSceneBuilder.cs`** — `BuildWildlifePopulation()` reescrito: nuevo `struct NestSpec`
+  (especie, posición, radio, `NestKind` presa/depredador, altura) y las 10 familias terrestres +
+  marinas redistribuidas por las tres bandas norte/centro/sur del lado oeste del suelo (todo el
+  espacio ya disponible, sin agrandar el terreno). `ValidateNestSeparation()` nueva: por cada nido
+  de presa de rango pequeño (hoy solo Bunny, `homeRadius=20`), `Debug.LogWarning` si queda a menos
+  de `homeRadius + 40` de un nido de depredador — solo aviso, sin reubicar automático.
+  `BuildGrassPatches()` ahora itera los nidos de presa en tierra en vez de 3 posiciones
+  hardcodeadas. Nuevo `BuildHabitatCover()` + `BuildTree()`/`BuildBush()`: 3–5 props primitivos
+  (cilindro+cono para árbol, esfera achatada para arbusto) alrededor de cada nido de presa, sin
+  collider (decorativo, mismo patrón que `GrassPatch`/`FishSchool` — no debe estorbar al
+  `NavMeshAgent`).
+- [x] **`FamilyGenerator.cs`** — fix real de `HomeOrigin` compartido, con una vuelta de tuerca no
+  anticipada en el plan original: la primera versión (sobreescribir `member.HomeOrigin =
+  family.position` en el mismo `Start()`, justo después de `RenderFamily()`) **no funcionaba**,
+  porque cada especie fija `HomeOrigin = transform.position` desde su propio `Start()` (vía
+  `Animal.Init()`), y Unity **difiere el `Start()` de los objetos recién instanciados** hasta
+  después de que el `Start()` que los creó (`FamilyGenerator.Start()`) ya terminó — así que el
+  `Init()` de cada animal corría *después* de nuestra asignación y la volvía a pisar con el punto
+  de aparición individual. Confirmado con logs de diagnóstico: `HomeOrigin` valía `(0,0,0)` en el
+  mismo `Start()` (Init() aún no había corrido) y ya tenía el punto individual una vez transcurrido
+  un frame. **Fix definitivo**: `FamilyGenerator` junta todos los miembros pendientes en una lista
+  y usa `StartCoroutine` con `yield return null` (espera un frame) antes de fijar el `HomeOrigin`
+  compartido — para ese momento todos los `Start()` del frame (incluidos los de los animales recién
+  instanciados) ya corrieron, así que la asignación de `FamilyGenerator` es la que gana. Verificado
+  con logs temporales (retirados tras confirmar) y directamente en el Inspector: un Bunny cub en
+  `Position (-27.17, 0, 101.22)` mostró `Home Origin (-35, 0, 100)` — la posición del nido de la
+  familia, no la suya propia — y se mantuvo así al menos 3s después sin volver a cambiar.
+- ⚠️ **Gotcha de entorno reencontrado** (ya documentado arriba para `Physiognomy.baseScale`, pasa
+  de nuevo acá): tras sincronizar `FamilyGenerator.cs` al proyecto vivo con `cp` mientras Unity
+  estaba en Play mode, el Editor **no recompiló** al parar Play — el código viejo siguió
+  ejecutándose varias vueltas de Play/Stop seguidas (confirmado porque los `Debug.Log` nuevos nunca
+  aparecían en la consola). Solo se resolvió forzando `Assets > Refresh` (Ctrl+R) manualmente desde
+  el menú — mucho más liviano que el reinicio completo del Editor que hizo falta la vez anterior
+  con `Physiognomy.baseScale`. Anotado para no repetir la confusión: si un cambio de script no
+  parece surtir efecto pese a estar bien sincronizado en disco, probar `Assets > Refresh` antes de
+  asumir que el código está mal.
+- **Verificado en Play mode**: rebuild limpio, 0 errores. Familias visiblemente repartidas por las
+  tres bandas en la Scene view (ya no amontonadas). Árboles/arbustos de `HabitatCover_AUTO`
+  visibles alrededor de los nidos de presa. Monitoreo de memoria por PowerShell `Get-Process`
+  durante ~140s de Play: ambos procesos de Unity estables/decrecientes (2389→2283MB y 940→1018MB),
+  `Responding=True` sostenido. `Editor.log` sin **ninguna** ocurrencia de los stack traces de
+  `Fight`/`Escape` del bug de corrutinas anterior — con más separación real entre nidos de
+  depredador y presa, cero combates en esta sesión (antes había decenas incluso con el fix puesto).
+
 ### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
 Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
 errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >

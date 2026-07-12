@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -25,9 +27,16 @@ public class FamilyGenerator : MonoBehaviour
     }
     public Family[] families;
 
+    struct PendingHomeOrigin
+    {
+        public Animal member;
+        public Vector3 origin;
+    }
+
     void Start()
     {
         int totalSpawned = 0;
+        List<PendingHomeOrigin> pending = new List<PendingHomeOrigin>();
         foreach (Family family in families)
         {
             if (family.animalPrefab == null)
@@ -44,8 +53,27 @@ public class FamilyGenerator : MonoBehaviour
             }
 
             Animal[] members = template.RenderFamily(family.position, family.renderHeight, family.minParentsCount, family.quantity, family.radius);
+
+            foreach (Animal member in members)
+                if (member != null) pending.Add(new PendingHomeOrigin { member = member, origin = family.position });
+
             totalSpawned += members.Length;
         }
+        StartCoroutine(ApplyHomeOriginsNextFrame(pending));
         Debug.Log($"[FamilyGenerator] {families.Length} familia(s) generadas — {totalSpawned} animales en total.");
+    }
+
+    // Cada especie llama Animal.Init() (HomeOrigin = transform.position) desde su propio
+    // Start() — y Unity difiere el Start() de objetos recién instanciados al final del
+    // frame actual, DESPUÉS de que este Start() ya terminó. Si asignáramos HomeOrigin acá
+    // mismo, Init() lo pisaría después con el punto de aparición individual. Por eso
+    // esperamos un frame (todos los Start() del frame ya corrieron) antes de fijar el nido
+    // compartido, así el nuestro es el que gana. Ver
+    // docs/refuge-and-adult-behavior.md "Montaje de escena: nidos antes que familias".
+    IEnumerator ApplyHomeOriginsNextFrame(List<PendingHomeOrigin> pending)
+    {
+        yield return null;
+        foreach (PendingHomeOrigin p in pending)
+            if (p.member != null) p.member.HomeOrigin = p.origin;
     }
 }
