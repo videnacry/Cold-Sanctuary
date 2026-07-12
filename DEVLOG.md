@@ -554,6 +554,34 @@
   Inspector del `FamilyGenerator` (`WildlifePopulation_AUTO`) que el Element 10 referencia
   correctamente el prefab de Seal.
 
+### Territorio terrestre agrandado 2x + radios de dispersión más generosos ✅ (nuevo)
+- [x] **Pedido explícito**: "el agrandamiento del territorio para un territorio más realista con
+  espacios entre animales". `Ground_Placeholder` pasó de escala 25 (250×250u) a escala 50
+  (500×500u) — el resto de la escena (edificios del santuario en x∈[15,80], `Sea_Placeholder`,
+  `CubAreaTrigger`, spawn del jugador) queda intacta en sus coordenadas absolutas porque la
+  expansión es simétrica desde el centro; solo se ganó más espacio libre alrededor.
+- [x] Los 9 nidos terrestres de `BuildWildlifePopulation()` se rediseñaron con coordenadas nuevas
+  dentro de la franja oeste ampliada (x∈[-250,-20], antes x∈[-125,-15]) — no es un escalado
+  automático de las posiciones viejas, se recalcularon a mano para maximizar la separación
+  presa/depredador real. Distancia mínima Bunny↔depredador antes: ~60u (el piso que exigía
+  `ValidateNestSeparation`). Ahora: ~106-420u según el par, muy por encima del mínimo. También se
+  agrandó ~25% el radio de dispersión de cada familia (Bunny 8→10, Deer 12→15, Wolf 14→18,
+  Fox 12→15, PolarBear 22→28) para que haya más espacio entre los individuos de un mismo grupo, no
+  solo entre grupos distintos.
+- ⚠️ **Mismo gotcha de recompilación que ya se documentó para `FamilyGenerator.HomeOrigin`**: la
+  primera vez que se corrió `Build Sample Scene Blockout` tras sincronizar el `.cs`, el menú
+  ejecutó contra la assembly vieja (posiciones de nido viejas en el resultado) — recién se notó una
+  "Reloading Domain (busy for 49s)" DESPUÉS de que el comando ya había corrido. Confirmado con
+  `Assets > Refresh` + re-ejecutar el comando: la segunda corrida sí trajo las coordenadas nuevas
+  (verificado leyendo `Element 0` del `FamilyGenerator` en el Inspector). Refuerza la lección ya
+  anotada: tras sincronizar un `.cs`, esperar a que termine cualquier compilación/reload antes de
+  invocar comandos de menú custom — no alcanza con que el editor "parezca" listo.
+- **Verificado en Play mode**: vista superior (top view) del Scene tras poblar confirma los nidos
+  repartidos por todo el lado oeste del suelo agrandado, ya no amontonados en una esquina.
+  Monitoreo de memoria por PowerShell `Get-Process` durante ~60s: ambos procesos estables/
+  decrecientes (3102→2981MB y 1020→998MB), `Responding=True` sostenido. `Editor.log` sin ninguna
+  ocurrencia de `Fight`/`Escape`.
+
 ### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
 Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
 errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >

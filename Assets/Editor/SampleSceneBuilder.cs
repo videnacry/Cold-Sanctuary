@@ -234,7 +234,7 @@ public static class SampleSceneBuilder
         ground.name = "Ground_Placeholder";
         ground.transform.SetParent(parent);
         ground.transform.position = Vector3.zero;
-        ground.transform.localScale = new Vector3(25f, 1f, 25f); // ~250x250 units
+        ground.transform.localScale = new Vector3(50f, 1f, 50f); // ~500x500 units — agrandado 2x (antes 250x250) para dar espacio real entre territorios de fauna, ver BuildWildlifePopulation
         ground.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Ground_Snow_MAT", new Color(0.85f, 0.88f, 0.9f));
 
         if (ground.GetComponent<Collider>() == null)
@@ -354,12 +354,15 @@ public static class SampleSceneBuilder
     // tiempo de Editor), FamilyGenerator.Start() genera recién al entrar en Play —
     // el área se ve vacía en el Editor hasta que se corre el juego.
     //
-    // Nidos repartidos por TODO el lado oeste del suelo (x en [-125,-15]; el este,
-    // x en [15,80], es de los edificios del santuario) en tres bandas por z con margen entre
-    // ellas — antes las 7 familias terrestres estaban amontonadas en una caja de 80x90 unidades
-    // (x:[-95,-15], z:[-50,40]) mientras el resto del suelo (250x250) quedaba vacío. Devuelve
-    // la lista de nidos para que BuildGrassPatches/BuildHabitatCover coloquen comida y
-    // vegetación cerca de cada nido de presa.
+    // Nidos repartidos por TODO el lado oeste del suelo (x en [-250,-20]; el este,
+    // x en [15,80], es de los edificios del santuario) en tres bandas por z con margen amplio
+    // entre ellas. El suelo se agrandó 2x (250x250 -> 500x500, ver BuildGround) específicamente
+    // para esto — antes, incluso repartidas por las tres bandas, las familias quedaban con poco
+    // margen real entre nidos de presa y depredador (mínimo ~60u). Con el mapa más grande la
+    // separación mínima ronda ahora los 100-400u, sensación de territorio mucho más realista.
+    // También se agrandó un poco el radio de dispersión de cada familia (más espacio entre los
+    // individuos de un mismo grupo, no solo entre grupos). Devuelve la lista de nidos para que
+    // BuildGrassPatches/BuildHabitatCover coloquen comida y vegetación cerca de cada nido de presa.
     static System.Collections.Generic.List<NestSpec> BuildWildlifePopulation(Transform parent)
     {
         GameObject go = new GameObject("WildlifePopulation_AUTO");
@@ -382,21 +385,21 @@ public static class SampleSceneBuilder
         }
 
         // Herbívoros — banda norte y centro-oeste
-        AddFamily("Bunny", new Vector3(-105f, 0f, 95f), 8f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-35f, 0f, 100f), 8f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-115f, 0f, 10f), 8f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-115f, 0f, -30f), 8f, NestKind.Prey);
-        AddFamily("Deer", new Vector3(-70f, 0f, 75f), 12f, NestKind.Prey);
-        AddFamily("Deer", new Vector3(-25f, 0f, 15f), 12f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-220f, 0f, 190f), 10f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-60f, 0f, 200f), 10f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-230f, 0f, 20f), 10f, NestKind.Prey);
+        AddFamily("Bunny", new Vector3(-100f, 0f, -30f), 10f, NestKind.Prey);
+        AddFamily("Deer", new Vector3(-140f, 0f, 150f), 15f, NestKind.Prey);
+        AddFamily("Deer", new Vector3(-40f, 0f, 40f), 15f, NestKind.Prey);
 
         // Carnívoros — banda sur, lejos de los nidos de presa
-        AddFamily("Wolf", new Vector3(-95f, 0f, -90f), 14f, NestKind.Predator);
-        AddFamily("Fox", new Vector3(-50f, 0f, -105f), 12f, NestKind.Predator);
+        AddFamily("Wolf", new Vector3(-190f, 0f, -190f), 18f, NestKind.Predator);
+        AddFamily("Fox", new Vector3(-90f, 0f, -210f), 15f, NestKind.Predator);
 
         // Oso Polar — apex predator, territorio amplio (BearBehaviour.homeRadius=300);
         // frontera sur-este del bioma terrestre, más cerca de x=0 (rumbo a la zona marina en
         // x≈180-200) ya que su Diet prioriza Seal > Bunny > Wolf.
-        AddFamily("PolarBear", new Vector3(-20f, 0f, -60f), 22f, NestKind.Predator);
+        AddFamily("PolarBear", new Vector3(-30f, 0f, -110f), 28f, NestKind.Predator);
 
         ValidateNestSeparation(nests);
 
