@@ -419,6 +419,55 @@
   prefabs existentes (Wolf, Deer, Fox, Malamute, Bunny, PolarBear, Whale) — los 7 muestran
   `m_LocalRotation.y: 1` en el YAML del prefab tras el fix.
 
+### Bug crítico: `Escape()` podía apilar corrutinas sin límite y colgar la máquina — arreglado ✅
+- [x] **Reportado por el usuario**: tras poblar la escena con el oso y probar en Play, la máquina
+  completa (no solo Unity) se quedó bloqueada. Diagnóstico en frío (sin Unity abierto) sobre el
+  código pulleado esta sesión (territorialidad/`SenseThreats`):
+  - `Animal.SenseThreats()` corre en **cada tick de `Restore()`** (potencialmente muy frecuente) y
+    solo se frena si `aware == true`: `if (busy || aware || asleep || rig == null) return;`.
+  - `Animal.Escape()` tenía una rama de salida temprana (depredador detectado pero por debajo de
+    un umbral de peligro *distinto* al de `SenseThreats`) que hacía `yield return
+    new WaitForSeconds(...); yield break;` **sin haber marcado `aware = true` nunca** — solo la
+    rama "de verdad peligroso" lo marcaba, más abajo en el método.
+  - Resultado: con un depredador cerca que no superaba ese segundo umbral, cada tick de `Restore()`
+    volvía a ver `aware == false`, y `SenseThreats()` lanzaba **otro** `StartCoroutine(Escape(...))`
+    encima del anterior (que seguía vivo en su propio `WaitForSeconds`) — apilamiento sin límite,
+    sin cancelar las corrutinas previas. Con la escena nueva (58 animales, varios depredadores cerca
+    de presas por el amontonamiento ya conocido) esto escaló de "lento" a colgar el proceso y,
+    finalmente, la máquina entera.
+  - **Fix**: `aware = true` se marca **al entrar** a `Escape()` (antes de cualquier rama) dentro de
+    un `try`, y se limpia en un `finally` — así queda marcado en *todas* las salidas (incluida la
+    temprana) y `SenseThreats()` ya no puede relanzar una segunda corrutina mientras la primera
+    sigue viva. Cambio en `Assets/Animals/Animal.cs` (método `Escape`), sincronizado al proyecto
+    vivo.
+  - **Segundo bug, más grave, encontrado al reverificar en Play mode**: con el fix de `Escape()`
+    puesto, la memoria de Unity se mantuvo estable un minuto (buena señal), pero luego volvió a
+    crecer y el proceso volvió a colgarse. El `Editor.log` mostraba miles de repeticiones de un
+    stack trace `<Fight>...StartCoroutine(IEnumerator) -> <Escape>...MoveNext()` — el verdadero
+    culpable era `Animal.Fight()`: al entrar, recluta aliados con
+    `ally.StartCoroutine(ally.Fight(threat))` para **todo** `Group.members` dentro del `HomeRadius`,
+    **sin comprobar si ese aliado ya estaba peleando**. Cada aliado reclutado volvía a reclutar al
+    resto de la manada (incluido a quien lo reclutó), y como esto se repite en cada tick mientras el
+    combate sigue activo, generaba una **explosión combinatoria** de `StartCoroutine` — con una
+    manada de N lobos, el número de corrutinas activas crece sin límite. Con las dietas nuevas del
+    pull (oso↔lobo depredación mutua en manada, lobo vs zorro/malamute) los combates en manada son
+    mucho más frecuentes que antes, así que este bug —que probablemente ya existía— nunca se había
+    disparado con fuerza hasta ahora.
+  - **Fix del segundo bug**: nuevo campo `Animal.fighting` (paralelo a `aware`, no se reutiliza el
+    mismo porque `Escape()` ya lo deja en `true` antes de invocar `Fight()`, así que reusar `aware`
+    habría hecho que `Fight()` nunca arrancara). `Fight()` ahora: no reentra si `fighting` ya es
+    `true`, lo marca `true` al entrar (con `try`/`finally` para garantizar que se limpia), y solo
+    recluta aliados que **no** estén ya `fighting`. Mismo archivo, mismo patrón que `Escape()`.
+  - **Verificado**: memoria de Unity estable tras el segundo fix (checkeado con PowerShell
+    `Get-Process` en frío, no solo mirando la UI) — pendiente una sesión de Play mode más larga para
+    confirmar del todo con manadas en combate activo.
+  - **Nota para el futuro**: cualquier `SubEvent`/tick que dispare `StartCoroutine` de un
+    comportamiento "largo" (huir, cazar, pelear, reclutar aliados) desde un bucle recurrente **o**
+    desde otro comportamiento largo necesita un guard que se marque **incondicionalmente** al entrar
+    (con `try`/`finally`) y que se **respete también al reclutar a otros** — no alcanza con
+    protegerse a uno mismo si se puede arrancar la misma corrutina en otro objeto sin comprobar su
+    estado. Van tres casos de esta familia de bug en la sesión (`NavMesh`, `Escape`, `Fight`).
+
 ### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
 Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
 errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >

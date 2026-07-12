@@ -147,6 +147,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
 
     // State — hunger/exhaustion/lp are animal-specific; stress/trauma/fatReserves/temperature/death/asleep live in LivingEntity
     public bool  busy = false;
+    public bool  fighting = false;   // guard propio de Fight() — ver comentario en Fight()
     public float hungry, exhaustion, lp, sensibility;
     public bool  firstSolidEaten = false; // cría comió un FoodItem por primera vez
     public bool  firstNestExit   = false; // cría salió del nido una vez sola
@@ -288,27 +289,39 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
 
     public virtual IEnumerator Escape(bool team, List<GameObject> enemies)
     {
-        GameObject threat = enemies[0];
-        float enemyMass = threat.GetComponent<Rigidbody>().mass;
-        float enemySpeed = threat.GetComponent<NavMeshAgent>().speed;
-        Vector3 threatPos = threat.transform.position;
-
-        if (enemyMass * (enemySpeed / 2) - Vector3.Distance(threatPos, transform.position) <= sensibility)
-        {
-            if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-            else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-            yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
-            yield break;
-        }
-
+        // aware se marca ANTES de cualquier rama (incluida la de salida temprana) y SIEMPRE
+        // se limpia en el finally. Antes solo se marcaba en la rama "de verdad peligroso", así
+        // que la rama de salida temprana (yield break) nunca dejaba aware=true — y como
+        // SenseThreats() solo se frena con "aware", relanzaba un Escape() nuevo en cada tick de
+        // Restore() mientras el depredador siguiera cerca, apilando corrutinas sin límite (bug
+        // que colgó el proceso/la máquina — ver DEVLOG).
         aware = true;
-        switch (ResolveReaction(threat))
+        try
         {
-            case Reaction.Fight:     yield return StartCoroutine(Fight(threat));     break;
-            case Reaction.HitAndRun: yield return StartCoroutine(HitAndRun(threat)); break;
-            default:                 yield return StartCoroutine(Flee(threat));      break;
+            GameObject threat = enemies[0];
+            float enemyMass = threat.GetComponent<Rigidbody>().mass;
+            float enemySpeed = threat.GetComponent<NavMeshAgent>().speed;
+            Vector3 threatPos = threat.transform.position;
+
+            if (enemyMass * (enemySpeed / 2) - Vector3.Distance(threatPos, transform.position) <= sensibility)
+            {
+                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
+                yield break;
+            }
+
+            switch (ResolveReaction(threat))
+            {
+                case Reaction.Fight:     yield return StartCoroutine(Fight(threat));     break;
+                case Reaction.HitAndRun: yield return StartCoroutine(HitAndRun(threat)); break;
+                default:                 yield return StartCoroutine(Flee(threat));      break;
+            }
         }
-        aware = false;
+        finally
+        {
+            aware = false;
+        }
     }
 
     protected Reaction ResolveReaction(GameObject threat)
@@ -361,27 +374,44 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         }
     }
 
+    // Reclutaba aliados con "ally.StartCoroutine(ally.Fight(threat))" en cada entrada, sin
+    // comprobar si ese aliado YA estaba peleando — cada aliado reclutado volvía a reclutar al
+    // resto de la manada (incluido quien lo reclutó a él), y como esto se repetía en cada tick
+    // de Restore()/SenseThreats() mientras el combate seguía activo, generaba una explosión
+    // combinatoria de corrutinas (una manada de N lobos podía multiplicar llamadas a
+    // StartCoroutine sin límite) — esto, sumado al bug de Escape(), fue lo que colgó la máquina.
+    // Fix: guard propio "fighting" (try/finally) — no reentrar si ya se está peleando, y solo
+    // reclutar aliados que no estén ya peleando.
     protected virtual IEnumerator Fight(GameObject threat)
     {
+        if (fighting) yield break;
         ITarget threatTarget = threat.GetComponent<ITarget>();
         if (threatTarget == null) yield break;
-        float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
-        if (Group?.members != null)
+        fighting = true;
+        try
         {
-            foreach (Animal ally in Group.members)
+            float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
+            if (Group?.members != null)
             {
-                if (ally != null && !ally.death && ally != this &&
-                    Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
-                    ally.StartCoroutine(ally.Fight(threat));
+                foreach (Animal ally in Group.members)
+                {
+                    if (ally != null && !ally.death && !ally.fighting && ally != this &&
+                        Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
+                        ally.StartCoroutine(ally.Fight(threat));
+                }
+            }
+            while (!threatTarget.Dead &&
+                   Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+            {
+                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
+                if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
+                    threatTarget.Hurt((rig.mass - exhaustion) / 10f);
+                yield return new WaitForSeconds(interval);
             }
         }
-        while (!threatTarget.Dead &&
-               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+        finally
         {
-            if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
-            if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
-                threatTarget.Hurt((rig.mass - exhaustion) / 10f);
-            yield return new WaitForSeconds(interval);
+            fighting = false;
         }
     }
 
