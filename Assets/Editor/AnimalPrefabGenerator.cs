@@ -107,6 +107,7 @@ public static class AnimalPrefabGenerator
 
         ApplyRealisticScale(instance, behaviour, species);
         ApplyPhysicsDefaults(instance, species);
+        CorrectMeshFacing(instance);
 
         System.IO.Directory.CreateDirectory(Path.GetDirectoryName(prefabPath));
         GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
@@ -140,11 +141,12 @@ public static class AnimalPrefabGenerator
 
             ApplyRealisticScale(root, behaviour, species);
             ApplyPhysicsDefaults(root, species);
+            CorrectMeshFacing(root);
 
             PrefabUtility.SaveAsPrefabAsset(root, prefabPath);
             PrefabUtility.UnloadPrefabContents(root);
             fixedCount++;
-            Debug.Log($"[AnimalPrefabGenerator] {species}: escala/collider ajustados, rigidbody kinematico.");
+            Debug.Log($"[AnimalPrefabGenerator] {species}: escala/collider/orientacion ajustados, rigidbody kinematico.");
         }
         Debug.Log($"[AnimalPrefabGenerator] Fix listo — {fixedCount} prefab(s) corregidos.");
         AssetDatabase.SaveAssets();
@@ -192,6 +194,19 @@ public static class AnimalPrefabGenerator
         // serializados en este prefab.
         Physiognomy body = (Physiognomy)bodyField.GetValue(behaviour);
         if (body != null) body.baseScale = scale;
+    }
+
+    // Los FBX importados (Quaternius y Sketchfab por igual — confirmado en Oso Polar, Lobo y
+    // Ciervo) traen el mesh/armature mirando hacia -Z local en vez de +Z. El root del prefab
+    // NO se puede rotar (el NavMeshAgent usa su +Z local como "adelante" y lo re-orienta cada
+    // frame hacia la velocidad — updateRotation), así que la corrección va en los hijos
+    // directos (mesh/armature), rotándolos 180° en Y para que el frente visual coincida con
+    // el frente de movimiento. Asignación absoluta (no acumulativa) para que sea idempotente
+    // si se re-corre sobre un prefab ya corregido.
+    static void CorrectMeshFacing(GameObject root)
+    {
+        foreach (Transform child in root.transform)
+            child.localRotation = Quaternion.Euler(0f, 180f, 0f);
     }
 
     // Rigidbody cinematico (el NavMeshAgent es quien controla la posicion, un

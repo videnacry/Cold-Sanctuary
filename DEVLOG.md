@@ -402,6 +402,23 @@
 - **Pendiente** (no pedido esta vez, solo documentado): Foca (Seal) sigue sin FBX — mismo GLB
   pendiente de convertir, fuente Sketchfab (rkuhlf) — ver `docs/pipeline-3d-models.md`.
 
+### Bug: todos los animales corrían "de espaldas" (mesh mirando al lado contrario del movimiento) ✅
+- [x] **Reportado por el usuario**: "fíjate las direcciones que están tomando los animales para
+  moverse, pues parece que los venados corren de espaldas". Inspección de gizmos en Scene view
+  (Lobo, Ciervo, Oso Polar) confirmó que el frente visual del modelo quedaba opuesto al eje +Z
+  local del root — el eje que usa `NavMeshAgent.updateRotation` para orientar al animal según su
+  velocidad de movimiento. Bug sistémico de todos los FBX importados (confirmado en assets tanto de
+  Quaternius como de Sketchfab), no de una especie puntual.
+- [x] **Fix**: nuevo `CorrectMeshFacing()` en `AnimalPrefabGenerator.cs` — rota 180° en Y los hijos
+  directos del prefab (mesh/armature), nunca el root (rotar el root rompería la semántica de
+  `updateRotation`, que reorienta el root hacia la dirección de movimiento cada frame). Asignación
+  absoluta, no acumulativa, para que sea idempotente si se re-corre sobre un prefab ya corregido.
+  Enganchado tanto en `GenerateOne()` (prefabs nuevos) como en `FixExistingPrefabs()` (prefabs ya
+  creados).
+- **Verificado**: `Tools > Cold Sanctuary > Fix Animal Colliders And Rigidbodies` aplicado a los 7
+  prefabs existentes (Wolf, Deer, Fox, Malamute, Bunny, PolarBear, Whale) — los 7 muestran
+  `m_LocalRotation.y: 1` en el YAML del prefab tras el fix.
+
 ### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
 Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
 errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >
