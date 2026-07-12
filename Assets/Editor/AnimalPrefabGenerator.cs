@@ -155,8 +155,7 @@ public static class AnimalPrefabGenerator
     // Factor de escala uniforme (x=y=z) por especie, calculado a partir del tamaño
     // "crudo" medido con Measure Raw Animal Sizes (localScale=1) contra un tamaño
     // real objetivo. HxH = altura de hombro (cuadrúpedos parados); LxL = longitud
-    // corporal (especies horizontales: foca, ballena). No hay factor para PolarBear
-    // ni Seal todavía — sus carpetas Models/ están vacías (sin FBX), pendiente.
+    // corporal (especies horizontales: foca, ballena).
     //
     // Esta es la ÚNICA fuente de verdad para el tamaño de los prefabs — en un
     // principio se pensó usar Physiognomy.baseScale (el campo "defaultBody" de cada
@@ -175,6 +174,7 @@ public static class AnimalPrefabGenerator
         { "Bunny", 0.0106f }, // altura cruda 23.52m -> objetivo 0.25m
         { "Whale", 1.157f },  // longitud cruda 10.372m -> objetivo 12m
         { "PolarBear", 0.267f }, // altura cruda 4.870m -> objetivo 1.3m (longitud resultante ~2.0m)
+        { "Seal", 0.165f },   // longitud cruda 10.329m -> objetivo 1.7m (foca ártica genérica; no es cuadrúpedo de pie, se referencia por longitud como Whale)
     };
 
     static void ApplyRealisticScale(GameObject root, Component behaviour, string species)

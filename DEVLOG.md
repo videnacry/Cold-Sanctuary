@@ -518,6 +518,42 @@
   `Fight`/`Escape` del bug de corrutinas anterior — con más separación real entre nidos de
   depredador y presa, cero combates en esta sesión (antes había decenas incluso con el fix puesto).
 
+### Foca (Seal) convertida e integrada — especie completa, ya poblada ✅ (nuevo)
+- [x] **Pedido explícito**: "convierte la foca y revisa la migración completa, scripts, población,
+  gameobject con dimensiones realistas relativas a los demás". El GLB (en rigor glTF+bin, mismo
+  caso) ya estaba en Descargas (`seal.zip`, Sketchfab por rkuhlf, CC-BY-4.0, uso comercial permitido
+  con atribución) — el asset que `docs/pipeline-3d-models.md` marcaba pendiente. Pipeline idéntico
+  al Oso Polar:
+  1. Conversión con el mismo script headless de Blender (`bpy.ops.import_scene.gltf()` +
+     `bpy.ops.export_scene.fbx()`, sin decimar — 1.265 vértices, 2 mallas, 1 armature, <1s).
+  2. Import a `Assets/Animals/Seal/Models/Seal.fbx` — solo en el proyecto vivo (regla de siempre:
+     binarios/modelos no se suben a git). Advertencia menor de importación ("64 de 6969 vértices sin
+     peso de hueso, asignados a bone #0") — cosmético, <1% de la malla, no bloqueante.
+  3. Medición de tamaño crudo con Blender headless: X 6.359m, Y 10.329m, Z 4.075m. A diferencia de
+     los cuadrúpedos parados (que se referencian por altura de hombro), la foca no se sostiene de
+     pie — se referencia por longitud corporal como ya se hacía con Whale.
+     `RealisticScaleFactor["Seal"] = 0.165f` en `AnimalPrefabGenerator.cs` (longitud cruda 10.329m
+     → objetivo 1.7m, foca ártica genérica). `SealBehavior.cs` ya existía completo de una sesión
+     anterior (post-natal, dieta, homeRadius=150) — no necesitó ningún cambio de código, solo le
+     faltaba el modelo.
+  4. `Tools > Cold Sanctuary > Generate Animal Prefabs` → `Assets/Animals/Seal/Seal.prefab`.
+     `CorrectMeshFacing()` (fix de la sesión anterior) se aplicó automáticamente sin cambios — el
+     mismo problema de orientación de mesh confirmado también acá.
+  5. La familia de Seal ya estaba cableada en `SampleSceneBuilder.BuildWildlifePopulation()` desde
+     la sesión anterior (`AddFamily("Seal", ...)` existía pero fallaba en silencio con "no se
+     encontró el prefab" porque el prefab todavía no existía) — con el prefab ya generado, un
+     rebuild del blockout la population automáticamente sin tocar más código.
+- **Verificado — dimensiones relativas**: comparando el `BoxCollider` en espacio de mundo (tamaño
+  local del collider × `localScale` del prefab) contra el resto del roster: Wolf 0.33×0.80×1.48m,
+  Deer 0.56×1.20×1.19m, Fox 0.18×0.40×0.79m, PolarBear 0.82×1.59×2.27m, **Seal 1.31×0.82×1.82m**.
+  La foca queda más larga que el lobo y más chica que el oso polar — proporción realista para el
+  roster ártico (el ancho mayor a lo esperado viene de los flippers extendidos en la pose de rest
+  del rig, no es un error de escala).
+- **Verificado en Play mode**: rebuild limpio, 0 errores nuevos (el 1 error persistente es el
+  artefacto de entorno ya documentado, presente desde antes de esta sesión). Confirmado en el
+  Inspector del `FamilyGenerator` (`WildlifePopulation_AUTO`) que el Element 10 referencia
+  correctamente el prefab de Seal.
+
 ### Nota de sesión — Play mode atascado alternando con la automatización (entorno, no código)
 Durante buena parte de esta sesión, el toggle Play/Stop del Editor se volvió consistentemente
 errático al operarlo con la herramienta de automatización (clic, Ctrl+P, Edit > Play Mode >

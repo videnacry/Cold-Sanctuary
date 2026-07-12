@@ -42,7 +42,7 @@ y UVs de lightmap sin intervención manual.
 | **Malamute** (mesh husky de stand-in) | ✅ Descargado | Quaternius Animal Pack | FBX |
 | **Conejo** (Bunny) | ✅ Extraído | Sketchfab | FBX |
 | **Oso Polar** | ✅ Convertido e integrado | Sketchfab (kenchoo, CC-BY-4.0) | GLB → FBX |
-| **Foca** (Seal) | ⚠️ Pendiente conversión | Sketchfab (rkuhlf) | GLB → FBX |
+| **Foca** (Seal) | ✅ Convertida e integrada | Sketchfab (rkuhlf, CC-BY-4.0) | GLB → FBX |
 | **Ballena** (Whale) | 🔽 Por descargar | Quaternius Fish Pack | FBX |
 
 ### 🌟 Alternativa recomendada — Quirky Series Arctic Animals Vol 1 (Omabuarts)
@@ -56,7 +56,7 @@ Un solo pack con **9 animales árticos**, todos rigged con 19 animaciones y 29 b
 
 Si se compra la versión de pago ($89 el pack o individual más barato), se obtiene FBX directo sin conversión.
 
-### Conversión GLB → FBX (Oso Polar ✅, Foca pendiente)
+### Conversión GLB → FBX (Oso Polar ✅, Foca ✅)
 
 Los archivos GLB están en tu carpeta de Descargas. Para convertirlos:
 - **Online (sin instalar nada):** https://products.aspose.app/3d/conversion/glb-to-fbx
@@ -67,8 +67,14 @@ Los archivos GLB están en tu carpeta de Descargas. Para convertirlos:
 `bpy.ops.import_scene.gltf()` + `bpy.ops.export_scene.fbx()`, sin decimar — 10.352 vértices, 1 armature,
 conversión limpia en <1s). Factor de escala calculado con el diagnóstico del proyecto (altura cruda
 4.870m → objetivo 1.3m de hombro, factor 0.267 — ver `RealisticScaleFactor["PolarBear"]` en
-`AnimalPrefabGenerator.cs`), longitud resultante ~2.0m consistente con un oso polar real. Aplica el
-mismo patrón que Foca cuando se convierta.
+`AnimalPrefabGenerator.cs`), longitud resultante ~2.0m consistente con un oso polar real.
+
+**Foca — hecho:** mismo proceso exacto (headless, sin decimar — 1.265 vértices, 2 mallas, 1
+armature, <1s). A diferencia de los cuadrúpedos parados, se referencia por longitud corporal (no
+altura de hombro) como Whale: longitud cruda 10.329m → objetivo 1.7m, factor 0.165 — ver
+`RealisticScaleFactor["Seal"]`. Ver `DEVLOG.md` "Foca (Seal) convertida e integrada" para el
+detalle completo (dimensiones relativas al resto del roster, integración en
+`SampleSceneBuilder`).
 
 ### Ballena — dónde descargar
 
