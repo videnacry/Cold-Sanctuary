@@ -55,20 +55,30 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
 
 Los valores codifican **origen + historia**, no solo el presente. Tabla consolidada (1.0 = media real):
 
-| Aptitud | Goluis | Panterilia | Gohageneis |
-|---|---|---|---|
-| agility | 0.9 | 0.95 | 1.2 |
-| perception | 1.1 | 1.7 | 1.05 |
-| strength | 1.5 | 0.7 | 1.1 |
-| bodyMass | 1.3 | 0.8 | 1.1 |
-| adaptability | 0.6 | 1.4 | 1.7 |
-| composure | 1.5 | 0.7 | 1.2 |
-| endurance | 1.4 | 0.9 | 1.3 |
-| reasoning | 0.7 | 1.6 | 1.0 |
-| memory | 0.8 | 1.4 | 1.0 |
-| creativity | 0.7 | 1.4 | 1.2 |
-| sociability | 0.7 | 1.1 | 1.7 |
-| discipline | 1.3 | 1.5 | 0.6 |
+| Aptitud | Goluis | Panterilia | Gohageneis | Irosene |
+|---|---|---|---|---|
+| agility | 0.9 | 0.95 | 1.2 | 1.2 |
+| perception | 1.1 | 1.7 | 1.05 | 1.3 |
+| strength | 1.5 | 0.7 | 1.1 | 1.2 |
+| bodyMass | 1.3 | 0.8 | 1.1 | 1.3 |
+| adaptability | 0.6 | 1.4 | 1.7 | 1.6 |
+| composure | 1.5 | 0.7 | 1.2 | 1.4 |
+| endurance | 1.4 | 0.9 | 1.3 | 1.3 |
+| reasoning | 0.7 | 1.6 | 1.0 | 1.1 |
+| memory | 0.8 | 1.4 | 1.0 | 1.3 |
+| creativity | 0.7 | 1.4 | 1.2 | 1.5 |
+| sociability | 0.7 | 1.1 | 1.7 | 1.7 |
+| discipline | 1.3 | 1.5 | 0.6 | 1.1 |
+
+### Irosene (70+ años) — pasión / sociabilidad
+- `sociability 1.7`, `creativity 1.5`, `adaptability 1.6`, `composure 1.4`, `memory 1.3`, `perception 1.3`.
+- **Codifica origen + presente transformado.** Origen: obesidad y poca movilidad + secuelas de cáncer
+  → `strength`/`agility`/`endurance` muy bajas. Presente (santuario + magia): corre, escala y bucea
+  profundo → suben con fuerza (1.2–1.3). `bodyMass 1.3` (sobrepeso, ya funcional).
+- **Sociabilidad y creatividad máximas:** hiperexpresiva y motivadora; recetas de dulces y karaoke.
+  **Adaptabilidad 1.6:** sobrevivió a dos hogares violentos y levantó un negocio desde cero.
+- **Destreza de envolver dulces** de niña → velocidad/habilidad que hoy destacan en el **área textil**.
+- Ficha completa: [`character-irosene.md`](character-irosene.md).
 
 ### Goluis (25 años) — fuerza
 - `strength 1.5`, `bodyMass 1.3`, `agility 0.9`, `perception 1.1`, `adaptability 0.6`, `composure 1.5`.

@@ -61,7 +61,8 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md) — verdad del código verificada archivo a archivo (bugs, huérfanos, prometido-vs-hecho).
 - [`docs/checklist.md`](docs/checklist.md) — **empezar aquí para continuar**: tablero de tareas pendientes.
 - [`docs/gaps-vs-planteamiento.md`](docs/gaps-vs-planteamiento.md) — sistemas "hechos" que no cumplen el diseño + cómo cablear los huérfanos.
-- [`docs/creature-stats.md`](docs/creature-stats.md) — aptitudes (agilidad/percepción/fuerza/masa) de animales y NPCs; perfiles Goluis/Panterilia.
+- [`docs/creature-stats.md`](docs/creature-stats.md) — aptitudes (agilidad/percepción/fuerza/masa) de animales y NPCs; perfiles Goluis/Panterilia/Gohageneis/Irosene.
+- [`docs/character-irosene.md`](docs/character-irosene.md) — ficha del personaje Irosene (compañera motivacional; biografía, diálogo, árbol familiar, arco).
 - [`docs/mission-mode.md`](docs/mission-mode.md) — modo misión, disparador-personaje, contadores y economía circular del santuario.
 - [`docs/magic-plane-and-meditation.md`](docs/magic-plane-and-meditation.md) — plano mágico, máquina de virtualización (trigger universal), avatares-robot (gusano/araña/mosco/loto), capas de escala, meditación en yoga y arquetipos de mob.
 - [`docs/learning-unlocks.md`](docs/learning-unlocks.md) — desbloqueo por aprendizaje (elementos/posturas aparecen en su UI al aprenderlos).
