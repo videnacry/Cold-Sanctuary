@@ -238,7 +238,8 @@ El "combate" del juego es siempre **canalizar / comprender / cuidar** — "proce
 |---|---|---|---|
 | **Efímero / distracción** ✅ | Te persigue para pegarse | **Huir / no alimentarlo** → se desvanece si no logra engancharse. *(Mecánica del usuario, confirmada jugable. Implementado: `EphemeralThoughtMob`.)* | Observar y dejar pasar |
 | **Absorbente / obsesivo** | Rápido, se te pega como queriendo absorberte | **Indagar su raíz** (seguir un hilo hasta un nodo-memoria y "ver a través") → se disuelve permanentemente + suelta lore/insight. **No** golpearlo. | Auto-indagación / vichara |
-| **Postura (huye)** | Huye del jugador | **Perseguir y sostener** → forma la asana, sube su dominio | Visualización |
+| **Postura (huye)** ✅ | Huye del jugador | **Perseguir y sostener** → forma la asana, sube su dominio. *(Implementado: `PostureFormMob`.)* | Visualización |
+| **Canalizar / presencia** ✅ | Deriva; no hostil | **Acercarse y mantenerse presente** unos segundos → se resuelve (procesar/calmar/limpiar/neutralizar). Universal, sin violencia. *(Implementado: `ChannelMob`.)* | Concentración / atención |
 | **A proteger** | Frágil, otros mobs lo asedian | Interponerse / escudarlo | Compasión |
 | **A curar** | Herido/enfermo | Estabilizar con un recurso; engancha con Bond | Bondad amorosa (metta) |
 | **Simbionte / aliado** | Domesticable | Domar (no matar); luego ayuda (limpia, alerta) | — (taming, ya insinuado en submarino) |
@@ -304,6 +305,9 @@ así que es probable sin tocar `SampleSceneBuilder`.
 | `EphemeralThoughtMob` | Arquetipo efímero (§8): persigue al jugador; si no logra tocarlo durante `dissolveDelay` s → se desvanece. Cada toque resetea su timer. | ✅ |
 | `PostureVisualizationMission` | Primera misión concreta (§7): spawnea N pensamientos; el jugador huye para disolverlos; al llegar a la meta aplica la recompensa, llama `EndMission()` y dispara `onCompleted`. Se auto-cablea vía `MobMission.OnBegan/OnEnded`. | ✅ |
 | `MeditationReward` | Bloque de recompensa reutilizable (serializable): sube el dominio de la asana (`Asana.RegisterPractice`), aumenta `PlayerStats.observationRadius` (permanente) y opcionalmente da monedas (`CoinWallet`). | ✅ |
+| `MeditationMissionBase` | Base de misión: spawn N → resolver N → recompensa → `EndMission` + limpieza. Subclases solo definen `CreateMob`. Habilita "una misión por área" por configuración. | ✅ |
+| `PostureFormMob` + `AsanaFormationMission` | Arquetipo postura (huye; lo sostienes para formarlo) + su misión. | ✅ |
+| `ChannelMob` + `ChannelMission` | Arquetipo universal de presencia + su misión (reskin por área). | ✅ |
 
 **Cómo probarlo en escena:** en cada área, crea un GameObject `EnvironmentRoot` con la geometría
 y los mobs; añade `RealityShiftController` (asigna `environmentRoot`). Crea un GameObject por
@@ -319,7 +323,8 @@ que aparecen; cada una se desvanece si no te toca en unos segundos. Para el loto
 ### Aún pendiente de implementar
 - `SurfaceWalker` — locomoción con gravedad relativa a la normal + máscara de superficie.
 - `AvatarController` + tipo `Avatar` — avatares desbloqueables, cambio dentro/fuera de sim.
-- Resto de arquetipos de mob (§8): absorbente, postura-huye, a proteger, a curar, espejo…
+- Arquetipos de mob restantes (§8): absorbente (buscar la raíz), a proteger, a curar, espejo,
+  mimético, y las variantes bespoke de áreas complejas (taming submarino, lenguaje de monstruos).
 - Resto de misiones de las demás categorías (§7): observar el cuerpo, no pensar, espejo…
 
 ### A generalizar / refactorizar
@@ -344,3 +349,40 @@ que aparecen; cada una se desvanece si no te toca en unos segundos. Para el loto
 - [ ] ¿El "hechizo de independencia" es único o por área/tier?
 - [ ] Lista concreta de posturas-mob y su dominio requerido en la sala de yoga.
 - [ ] Cómo persisten los ítems de la simulación en el inventario real (racional ya dado por la ficción; falta el cableado).
+
+---
+
+## 12. Matriz de misiones por área (al menos una por área)
+
+Cada área del santuario tendrá **al menos una `MobMission`** disparada por su
+`VirtualizationMachine`. Con el framework actual, montar una es **configuración**: un GameObject
+con `MobMission` + una subclase de `MeditationMissionBase`, listado en la máquina del área.
+
+Tres arquetipos ya implementados cubren la mayoría de biomas (todos no-violentos):
+- **Efímero** (`EphemeralThoughtMob` / `PostureVisualizationMission`) — te persigue, **huyes**.
+- **Postura** (`PostureFormMob` / `AsanaFormationMission`) — **huye, lo persigues y sostienes**.
+- **Canalizar** (`ChannelMob` / `ChannelMission`) — **presencia**: te acercas y atiendes; universal
+  (procesar / calmar / limpiar / neutralizar), reskin por área.
+
+| Área (tier) | Bioma (gameplay-loops) | Misión mínima | Arquetipo | Estado |
+|---|---|---|---|---|
+| YogaRoom (1) | visualización mental | visualizar postura + formar posturas | Efímero + Postura | ✅ jugable |
+| Kitchen (1) | proceso de ingredientes | procesar ingredientes | Canalizar (reskin "procesar") | 🟡 config |
+| Cleaning (1) | limpieza | limpiar suciedad | Canalizar (reskin "limpiar") | 🟡 config |
+| Garden (2) | plagas territoriales | limpiar plagas | Canalizar (+territorio futuro) | 🟡 config |
+| AlchemyLab (2) | radicales libres | neutralizar radicales | Canalizar (reskin "neutralizar") | 🟡 config |
+| TextileStudio (2) | destreza fina | (Irosene destaca aquí) | Canalizar / bespoke | 🔲 diseño |
+| FuelLab (3) | combos de reacción | secuencia de inputs | **bespoke** (combos) | 🔲 diseño |
+| CulturedMeatLab (3) | química avanzada | canalizar cultivos | Canalizar | 🟡 config |
+| SupplementsPharmacy (3) | minerales/vitaminas | canalizar | Canalizar | 🟡 config |
+| UnderwaterGarden / Submarine (4) | taming marino | calmar criatura | Canalizar → **taming bespoke** | 🟡→🔲 |
+| NightWatch (4) | avistamientos | observar/presencia | Canalizar + Mimético (futuro) | 🔲 diseño |
+| MonsterSection (5) | lenguaje | comunicar | **bespoke** (lenguaje) | 🔲 diseño |
+
+Leyenda: **✅** jugable · **🟡** montable ya solo con configuración (reskin de `ChannelMission`) ·
+**🔲** requiere mecánica bespoke (combos, taming, lenguaje) o arquetipos aún no implementados
+(proteger, curar, absorbente, espejo, mimético).
+
+> Las áreas complejas (FuelLab combos, MonsterSection lenguaje, taming submarino) tendrán su
+> propia subclase de `MeditationMissionBase` con reglas propias — el patrón ya está listo para
+> ellas; solo cambia el `CreateMob`/lógica de resolución.
