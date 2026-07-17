@@ -376,3 +376,6 @@ Logs
 # Canal de tareas Claude <-> usuario — nunca se sube
 claude-code.txt
 claude-answer.txt
+
+# CLAUDE.md sí se versiona en este repo (anula la regla del ~/.gitignore_global)
+!CLAUDE.md
