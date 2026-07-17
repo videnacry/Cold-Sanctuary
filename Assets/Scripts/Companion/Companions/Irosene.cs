@@ -35,6 +35,15 @@ public class Irosene : CompanionBase
     [Tooltip("Bonus de satisfacción por segundo que aporta en misiones de compañeros (leído por el sistema de misiones cuando exista).")]
     public float companionMissionSatisfactionBonus = 0.01f;
 
+    protected override void Start()
+    {
+        // Su pasión llena la MORAL, no reduce la fatiga: canal primario = Satisfacción.
+        // (CompanionBase por defecto es MentalFatigue; Irosene es la excepción.)
+        primaryChannel      = MindChannel.Satisfaction;
+        baseRestorationRate = 0.03f; // su energía aporta algo más que la media
+        base.Start();
+    }
+
     // Aptitudes (1.0 = media real humana). Codifican ORIGEN + PRESENTE transformado.
     // Origen: obesidad y poca movilidad, secuelas de cáncer → fuerza/agilidad/resistencia muy bajas.
     // Presente (santuario, con magia): corre, escala y bucea profundo → subieron con fuerza.
