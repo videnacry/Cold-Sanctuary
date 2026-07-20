@@ -59,10 +59,11 @@ en una misión (y el *conscription loop* de `mission-mode` puede forzarlas cuand
 ## Estado — qué es jugable HOY
 
 - **Jugable hoy**: misiones Mob en **plano suelo** con los arquetipos ya implementados
-  (`EphemeralThoughtMob`, `PostureFormMob`, `ChannelMob`) vía `MeditationMissionBase`.
+  (`EphemeralThoughtMob`, `PostureFormMob`, `ChannelMob`, `AbsorbentThoughtMob`, `HealMob`,
+  `ProtectMob`+`WardAttackerMob`) vía `MeditationMissionBase` (y `ProtectionMission` bespoke).
 - **Pendiente (Eje A)**: pared/techo/aire/dentro-de-material → necesitan `SurfaceWalker` + avatares.
 - **Pendiente (bespoke)**: combos (FuelLab), taming (submarino), lenguaje (MonsterSection),
-  arquetipos aún sin código (a curar, a proteger, absorbente, espejo, mimético, territorial).
+  arquetipos aún sin código (espejo, mimético, territorial).
 - **Pendiente (simulacro)**: casi todo (falta `KitchenCombatManager` y el bucle de simulacro genérico;
   solo yoga tiene base vía `Asana`).
 
@@ -81,7 +82,8 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 
 | Misión mob | Escala · Plano | Arquetipo | Requisito / patrón | Recompensa | Estado |
 |---|---|---|---|---|---|
-| Calmar el miedo de la cría | mental · suelo | Channel (presencia) | stats bajos; leer señales de estrés | bond, satisfacción | 🟡 |
+| Calmar el miedo de la cría | mental · suelo | HealMob (a curar) | stats bajos; leer señales de estrés | bond, satisfacción | ✅ |
+| Proteger a la cría de sus miedos | mental · suelo | Protect (oleadas) | interponerse; puede fallar | bond | ✅ |
 
 ### Cleaning — limpieza (dominio de Panterilia)
 - **Simulacro**: limpiar zonas del santuario (barrer/fregar). Economía: grasa/sebo → **jabón**. ⚪
@@ -109,7 +111,7 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 
 | Misión mob | Escala · Plano | Arquetipo | Requisito / patrón | Recompensa | Estado |
 |---|---|---|---|---|---|
-| Estabilizar una dolencia | bacteria · suelo | Channel (LovingKindness) | leer el foco de infección | salud, Observación | 🟡 |
+| Estabilizar una dolencia | bacteria · suelo | HealMob (a curar) | leer el foco de infección | salud, Observación | ✅ |
 
 ### VeterinaryClinic — clínica veterinaria
 - **Simulacro**: procedimientos veterinarios (liga con "entrenamiento de cooperación" de fauna, bond alto). ⚪
@@ -117,7 +119,7 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 
 | Misión mob | Escala · Plano | Arquetipo | Requisito / patrón | Recompensa | Estado |
 |---|---|---|---|---|---|
-| Calmar al animal | mental · suelo | Channel | leer señales; no forzar | bond, satisfacción | 🟡 |
+| Calmar al animal | mental · suelo | HealMob (a curar) | leer señales; no forzar | bond, satisfacción | ✅ |
 
 ### YogaRoom — sala de yoga ★ (lógica mob ya jugable)
 - **Simulacro**: **sostener la asana** (sistema `Asana` real — mantener la postura). ⚪ (base ya existe)
@@ -127,6 +129,7 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 |---|---|---|---|---|---|
 | Visualizar postura (huir de pensamientos) | mental · suelo | Ephemeral | no reaccionar / mantener distancia | dominio asana, Observación | ✅ |
 | Formar posturas (perseguir y sostener) | mental · suelo | PostureForm | acorralar; sostener holdTime | dominio asana | ✅ |
+| Buscar la raíz de un pensamiento obsesivo | mental · suelo | Absorbent | no puedes huir; ve a su raíz | Observación, insight | ✅ |
 | Pensamientos en vuelo | mental · aire | PostureForm/Ephemeral | avatar mosco | Observación | 🟡→(Eje A) |
 
 ---

@@ -237,11 +237,11 @@ El "combate" del juego es siempre **canalizar / comprender / cuidar** — "proce
 | Arquetipo | Comportamiento | Cómo se resuelve | Técnica mental que mapea |
 |---|---|---|---|
 | **Efímero / distracción** ✅ | Te persigue para pegarse | **Huir / no alimentarlo** → se desvanece si no logra engancharse. *(Mecánica del usuario, confirmada jugable. Implementado: `EphemeralThoughtMob`.)* | Observar y dejar pasar |
-| **Absorbente / obsesivo** | Rápido, se te pega como queriendo absorberte | **Indagar su raíz** (seguir un hilo hasta un nodo-memoria y "ver a través") → se disuelve permanentemente + suelta lore/insight. **No** golpearlo. | Auto-indagación / vichara |
+| **Absorbente / obsesivo** ✅ | Rápido, se te pega como queriendo absorberte | **Indagar su raíz**: sigues el hilo hasta el nodo-memoria (marcador) y al alcanzarlo "ves a través" → se disuelve. No puedes huir (es más rápido). *(Implementado: `AbsorbentThoughtMob` / `RootInquiryMission`.)* | Auto-indagación / vichara |
 | **Postura (huye)** ✅ | Huye del jugador | **Perseguir y sostener** → forma la asana, sube su dominio. *(Implementado: `PostureFormMob`.)* | Visualización |
 | **Canalizar / presencia** ✅ | Deriva; no hostil | **Acercarse y mantenerse presente** unos segundos → se resuelve (procesar/calmar/limpiar/neutralizar). Universal, sin violencia. *(Implementado: `ChannelMob`.)* | Concentración / atención |
-| **A proteger** | Frágil, otros mobs lo asedian | Interponerse / escudarlo | Compasión |
-| **A curar** | Herido/enfermo | Estabilizar con un recurso; engancha con Bond | Bondad amorosa (metta) |
+| **A proteger** ✅ | Frágil, otros mobs lo asedian | Interponerse para repeler oleadas; si lo alcanzan demasiadas veces, se pierde (la misión puede **fallar**). *(Implementado: `ProtectMob` + `WardAttackerMob` / `ProtectionMission`.)* | Compasión |
+| **A curar** ✅ | Herido/enfermo; cojea hacia ti buscando consuelo | Mantenerte cerca hasta sanarlo; engancha con Bond/Satisfacción. *(Implementado: `HealMob` / `HealingMission`.)* | Bondad amorosa (metta) |
 | **Simbionte / aliado** | Domesticable | Domar (no matar); luego ayuda (limpia, alerta) | — (taming, ya insinuado en submarino) |
 | **Mimético / oculto** | Solo visible en el tier de percepción correcto o en meditación | Recompensa por subir Observación | — |
 | **Espejo** | Copia las acciones del jugador; "un pensamiento que eres tú" | Endgame mental | "¿Quién observa?" (self-inquiry) |
@@ -308,6 +308,9 @@ así que es probable sin tocar `SampleSceneBuilder`.
 | `MeditationMissionBase` | Base de misión: spawn N → resolver N → recompensa → `EndMission` + limpieza. Subclases solo definen `CreateMob`. Habilita "una misión por área" por configuración. | ✅ |
 | `PostureFormMob` + `AsanaFormationMission` | Arquetipo postura (huye; lo sostienes para formarlo) + su misión. | ✅ |
 | `ChannelMob` + `ChannelMission` | Arquetipo universal de presencia + su misión (reskin por área). | ✅ |
+| `AbsorbentThoughtMob` + `RootInquiryMission` | Arquetipo absorbente (te persigue rápido; sigues el hilo a su raíz). | ✅ |
+| `HealMob` + `HealingMission` | Arquetipo a curar (cojea hacia ti; lo sanas con presencia). | ✅ |
+| `ProtectMob` + `WardAttackerMob` + `ProtectionMission` | Arquetipo a proteger (escort/defensa con oleadas; puede fallar). | ✅ |
 
 **Cómo probarlo en escena:** en cada área, crea un GameObject `EnvironmentRoot` con la geometría
 y los mobs; añade `RealityShiftController` (asigna `environmentRoot`). Crea un GameObject por
@@ -323,8 +326,8 @@ que aparecen; cada una se desvanece si no te toca en unos segundos. Para el loto
 ### Aún pendiente de implementar
 - `SurfaceWalker` — locomoción con gravedad relativa a la normal + máscara de superficie.
 - `AvatarController` + tipo `Avatar` — avatares desbloqueables, cambio dentro/fuera de sim.
-- Arquetipos de mob restantes (§8): absorbente (buscar la raíz), a proteger, a curar, espejo,
-  mimético, y las variantes bespoke de áreas complejas (taming submarino, lenguaje de monstruos).
+- Arquetipos de mob restantes (§8): espejo, mimético, territorial, y las variantes bespoke de
+  áreas complejas (taming submarino, lenguaje de monstruos, combos de FuelLab).
 - Resto de misiones de las demás categorías (§7): observar el cuerpo, no pensar, espejo…
 
 ### A generalizar / refactorizar
