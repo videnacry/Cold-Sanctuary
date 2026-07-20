@@ -22,47 +22,59 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     [Tooltip("This area's reality-shift driver.")]
     public RealityShiftController shift;
 
-    [Tooltip("Missions offered by this machine (only isAvailable ones are listed).")]
+    [Tooltip("Missions offered by this machine (only isAvailable ones are listed). Modo misión in-place.")]
     public MobMission[] missions;
+
+    [Header("Mundo mob (escena propia)")]
+    [Tooltip("Si se rellena, la máquina carga esta ESCENA de mundo mob (MobWorldLoader) en vez del " +
+             "menú de misiones in-place. Debe estar en Build Settings (ver MobWorldSceneBuilder).")]
+    public string mobWorldSceneName = "";
 
     [Header("Cinematic")]
     [Tooltip("Player entering the machine and closing eyes. Plays before the screen goes black.")]
     public UnityEvent onEnterAnimation;
 
+    bool SceneMode => !string.IsNullOrEmpty(mobWorldSceneName);
+
     // ── IInteractable ─────────────────────────────────────────────────────────
 
     public string InteractLabel =>
-        MeditationSession.Instance.IsInMission
+        (!SceneMode && MeditationSession.Instance.IsInMission)
             ? "Salir de la simulación"
             : $"Entrar a la simulación de {areaName}";
 
     public bool CanInteract =>
-        shift != null && !MeditationSession.Instance.IsBusy;
+        SceneMode
+            ? (MobWorldLoader.Instance != null && !MobWorldLoader.Instance.IsBusy && !MobWorldLoader.Instance.IsInMobWorld)
+            : (shift != null && !MeditationSession.Instance.IsBusy);
 
     public void Interact()
     {
-        if (shift == null) return;
-
-        if (MeditationSession.Instance.IsInMission)
+        // Modo escena: cargar el mundo mob propio (salida vía YogaPortal dentro de la escena).
+        if (SceneMode)
         {
-            MeditationSession.Instance.EndMission();
+            Confirm(() => MobWorldLoader.Instance.EnterMobWorld(mobWorldSceneName));
             return;
         }
 
+        // Modo in-place (menú de misiones + RealityShiftController).
+        if (shift == null) return;
+        if (MeditationSession.Instance.IsInMission) { MeditationSession.Instance.EndMission(); return; }
+        Confirm(OpenSession);
+    }
+
+    void Confirm(System.Action onConfirm)
+    {
         if (ConfirmationPanel.Instance != null)
-        {
             ConfirmationPanel.Instance.Show(
                 title:       "Máquina de virtualización",
                 message:     $"¿Entrar a la simulación de {areaName}?",
-                onConfirm:   OpenSession,
+                onConfirm:   () => onConfirm(),
                 onCancel:    null,
                 confirmText: "Entrar",
                 cancelText:  "Cancelar");
-        }
         else
-        {
-            OpenSession(); // fallback: no panel wired
-        }
+            onConfirm(); // fallback: no panel wired
     }
 
     void OpenSession()

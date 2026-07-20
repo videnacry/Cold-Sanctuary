@@ -13,12 +13,20 @@ public class YogaPortal : MonoBehaviour, IInteractable
 {
     public string InteractLabel => "Salir por la sala de yoga";
 
+    // Sale de un mundo-mob-escena (MobWorldLoader) si lo hay; si no, del modo misión in-place.
     public bool CanInteract =>
-        MeditationSession.Instance.IsInMission && !MeditationSession.Instance.IsBusy;
+        (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy) ||
+        (MeditationSession.Instance.IsInMission && !MeditationSession.Instance.IsBusy);
 
     public void Interact()
     {
-        if (CanInteract) MeditationSession.Instance.EndMission();
+        if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld)
+        {
+            MobWorldLoader.Instance.ExitMobWorld();
+            return;
+        }
+        if (MeditationSession.Instance.IsInMission && !MeditationSession.Instance.IsBusy)
+            MeditationSession.Instance.EndMission();
     }
 
     void Start()
