@@ -49,7 +49,7 @@ van en *cursiva*.
 | Piedra | *Guardián del Fuego* | *El Tallador* | *La Recolectora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* |
 | Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | 🔲 | 🔲 | *El Soñador* |
 | Metales | *El Astrónomo de Babel* | *El Fundidor* / Ötzi | 🔲 | Enheduanna | Gilgamesh/Sargón | 🔲 |
-| Antigüedad | Ptolomeo (o Aristarco) | Imhotep | Hipócrates | Homero | Alejandro / César | Buda / Sócrates ✳ |
+| Antigüedad | Ptolomeo | Arquímedes | Hipócrates | Homero | Alejandro Magno | Sócrates ✳ (o Buda) |
 | Media | Alhacén (óptica) | *Maestro de catedrales* | Avicena (Ibn Sina) | 🔲 | Gengis Kan | 🔲 |
 | Renacimiento | Galileo | Brunelleschi | Vesalio | Leonardo da Vinci | 🔲 | 🔲 |
 | Ilustración | **Newton** | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
@@ -102,6 +102,34 @@ propio juego: la mente **observándose** (meditación).
 
 Cierre del hilo: del trance del chamán a la mente que se observa sin miedo — el mismo gesto que el
 jugador practica en la sala de yoga. Fuego (afuera) y Aliento (adentro) se tocan en la meditación.
+
+## Corte completo — Época 4: Antigüedad clásica (los 6 hilos)
+
+El primer elenco donde cada hilo tiene una figura **real y reconocible**. Formato:
+**Figura** (hilo · área · alineación) — *ancla que continúa*; agridulce → aprendizaje; ayuda (arquetipo).
+
+- **Ptolomeo** (A · Guardia nocturna · héroe) — *Guardián del Fuego, ya astrónomo*.
+  Ordena el cielo en un sistema hermoso → pone la Tierra en el centro (error que dura 1400 años) →
+  **el error humilde también enseña**. *Ayuda:* observar/buscar-la-raíz. *(alt: Aristarco.)*
+- **Arquímedes** (B · Mecánica · héroe) — *El Tallador, ya ingeniero*.
+  "¡Eureka!", palancas, tornillo, ingenios → sus máquinas defienden Siracusa; **muere a manos de un
+  soldado** → **el saber frente a la violencia**. *Ayuda:* canalizar/resolver su máquina a tiempo
+  (reencuadre esperanzador). Elemento: Au (la corona). *(Imhotep queda como figura B de los Metales.)*
+- **Hipócrates** (C · Enfermería · héroe) — *La Recolectora, ya médico*.
+  Funda la medicina ética ("primero, no dañar") → su medicina (los humores) es casi impotente ante
+  la enfermedad → **el juramento vale aunque el saber sea pobre**. *Ayuda:* curar.
+- **Homero** (D · Textil/arte · neutral-héroe) — *La Mano de Lascaux, ya bardo* (ciego).
+  Inmortaliza la gloria… **y el duelo** (la Ilíada es ira y pérdida) → **el arte guarda la memoria
+  del dolor, no solo de la victoria**. *Ayuda:* proteger/recitar.
+- **Alejandro Magno** (E · hub/MonsterSection · **héroe↔villano**) — *El Primer Jefe, ya conquistador*.
+  Une el mundo conocido y difunde la cultura → **a sangre y fuego**; muere a los 32 y su imperio se
+  rompe → **conquistar no es permanecer; la ambición sin freno se consume**. *Ayuda:* llegar-al-corazón.
+- **Sócrates** ✳ (F · Sala de Yoga · héroe) — *El Chamán, ya filósofo*.
+  "Conócete a ti mismo", partero de ideas → **condenado a la cicuta** por incomodar a la ciudad →
+  **la verdad interior cuesta, pero libera**. *Ayuda:* buscar-la-raíz / no-pensar. *(alt: Buda.)*
+
+> Reparto Antigüedad = 6 (uno por hilo), balance tonal cubierto: descubrimiento (Ptolomeo/Arquímedes),
+> tragedia (Arquímedes/Sócrates), guerra/terror (Alejandro/Homero), sabiduría (Hipócrates/Sócrates).
 
 ## Método de afinidad (para encadenar columnas)
 
