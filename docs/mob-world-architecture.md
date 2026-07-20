@@ -79,6 +79,17 @@ referencia**; **cada civilización-área instancia su propio reparto regional** 
 historia (matrices paralelas). La cocina (Mesopotamia) es la primera detallada; el "paso de la
 antorcha entre regiones" se vive como estos cross-overs.
 
+## 4c. Estructuras por época y escalado entre niveles
+
+- **Estructuras alineadas con la era:** el estilo edilicio avanza con el tiempo — **chozas**
+  (piedra/neolítico) → templos/murallas → **castillos** → **rascacielos**. Las estructuras complejas
+  quedan **deseables** para eras superiores; **de momento, diseño representativo** (una choza de adobe
+  basta para la Mesopotamia del amanecer).
+- **Escalado de áreas entre niveles:** una civilización en su cúspide (p. ej. **Roma**) abarcaría
+  **varias áreas** que luego se fragmentan en países. Como el juego tiene **varios niveles** (santuario
+  inicial, submarino, subterráneo, cielo — teórico, ajustable), se pueden **usar áreas de otros niveles
+  para civilizaciones más lejanas** → de unas pocas civilizaciones a muchísimas regiones.
+
 ## 5. NPCs mob: modelo ligero (≠ humanos)
 
 Dos niveles de NPC en el juego:
@@ -151,9 +162,9 @@ eso se construye **un mundo mob completo primero** y luego se reskinea.
 ## 12. Objetivo de primera construcción — mínimo jugable (insecto/cocina)
 
 - **Yoga-portal** para entrar/salir del mundo mob. → ✅ `YogaPortal` (salida; entrada ya vía máquina/loto).
-- La **ciudad-insecto de la cocina** (hub navegable básico). → 🔲 requiere escena/`SampleSceneBuilder`.
-- **2–3 áreas-tienda** con `MobResident` (rol + una misión). → ✅ código (`MobResident`); 🔲 colocación en escena.
-- **1 evento** de `MobWorldDirector` (p. ej. una migración que sube niveles y cambia una misión). → ✅ `MobWorldDirector`.
+- La **ciudad-insecto de la cocina** (hub navegable básico). → ✅ cableada = Mesopotamia del amanecer (chozas de adobe) en `SampleSceneBuilder`.
+- **2–3 áreas-tienda** con `MobResident` (rol + una misión). → ✅ 3 anclas en sus chozas (Guardián del Fuego/El Tallador/La Recolectora) + `YogaPortal`.
+- **1 evento** de `MobWorldDirector`. → ✅ `MobWorldDirector` en escena (auto-bootstrap; eventos por historia). Falta definir el primer evento concreto.
 
 Probar este patrón antes de reskinear a otras áreas/escalas.
 
