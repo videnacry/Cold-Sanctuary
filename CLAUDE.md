@@ -66,6 +66,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/mission-mode.md`](docs/mission-mode.md) — modo misión, disparador-personaje, contadores y economía circular del santuario.
 - [`docs/magic-plane-and-meditation.md`](docs/magic-plane-and-meditation.md) — plano mágico, máquina de virtualización (trigger universal), avatares-robot (gusano/araña/mosco/loto), capas de escala, meditación en yoga y arquetipos de mob.
 - [`docs/area-missions-spec.md`](docs/area-missions-spec.md) — spec consolidada de misiones por área (simulacro + mob; ejes escala/plano; dificultad = requisitos + habilidad); base para cablear todas las áreas.
+- [`docs/mob-world-architecture.md`](docs/mob-world-architecture.md) — santuario fractal por escala (un mundo a la vez), yoga-portal, áreas-tienda, NPCs mob ligeros (`MobResident`), mundo vivo por eventos (`MobWorldDirector`), radio expansible y balance tonal.
 - [`docs/learning-unlocks.md`](docs/learning-unlocks.md) — desbloqueo por aprendizaje (elementos/posturas aparecen en su UI al aprenderlos).
 - [`docs/refuge-and-adult-behavior.md`](docs/refuge-and-adult-behavior.md) — refugio/ocultarse, comportamiento adulto, memoria de lugares (diseño).
 - [`docs/architecture.md`](docs/architecture.md) — jerarquía de clases y cada sistema a fondo.
