@@ -118,21 +118,27 @@ eso se construye **un mundo mob completo primero** y luego se reskinea.
 
 ## 12. Objetivo de primera construcción — mínimo jugable (insecto/cocina)
 
-- **Yoga-portal** para entrar/salir del mundo mob.
-- La **ciudad-insecto de la cocina** (hub navegable básico).
-- **2–3 áreas-tienda** con `MobResident` (rol + una misión).
-- **1 evento** de `MobWorldDirector` (p. ej. una migración que sube niveles y cambia una misión).
+- **Yoga-portal** para entrar/salir del mundo mob. → ✅ `YogaPortal` (salida; entrada ya vía máquina/loto).
+- La **ciudad-insecto de la cocina** (hub navegable básico). → 🔲 requiere escena/`SampleSceneBuilder`.
+- **2–3 áreas-tienda** con `MobResident` (rol + una misión). → ✅ código (`MobResident`); 🔲 colocación en escena.
+- **1 evento** de `MobWorldDirector` (p. ej. una migración que sube niveles y cambia una misión). → ✅ `MobWorldDirector`.
 
 Probar este patrón antes de reskinear a otras áreas/escalas.
+
+> **Estado (2026-07-20):** el código-puro está hecho (`MobResident`, `MobWorldDirector`, `YogaPortal`,
+> auto-bootstrap). Falta el **montaje en escena** de la ciudad-insecto y las tiendas, que espera a
+> validar el `SampleSceneBuilder`.
 
 ## 13. Impacto en el código
 
 ### Nuevo
-- `MobResident` — NPC ligero: puesto fijo, servicio/rol, sube nivel por evento. (Contraparte barata
-  de `WorldCharacter`.)
-- `MobWorldDirector` — singleton que dispara eventos del mundo mob (migración/invasión/festival),
-  mueve poblaciones, sube niveles y reordena misiones. (Contraparte por eventos de `SanctuaryDirector`.)
-- Etiqueta `tone` por misión (para el balance tonal) — campo o metadato.
+- `MobResident` ✅ — NPC ligero (`IInteractable`): puesto fijo, rol/servicio, `LevelUp`/`MoveTo`/
+  `ReturnHome` movidos sólo por eventos. Contraparte barata de `WorldCharacter`.
+- `MobWorldDirector` ✅ — singleton (auto-bootstrap) que dispara eventos (`Migration`/`Invasion`/
+  `Festival`): mueve habitantes, sube niveles y notifica (`OnEvent`) para reordenar contenido.
+  Opción `autoEvents` para prototipado. Contraparte por eventos de `SanctuaryDirector`.
+- `YogaPortal` ✅ — `IInteractable` de salida del mundo mob (reusa `MeditationSession.EndMission`).
+- Etiqueta `tone` por misión (para el balance tonal) — 🔲 campo o metadato pendiente.
 
 ### Reuso / relación
 - `SanctuaryArea` + entry requirements → gating del **radio expansible**.
