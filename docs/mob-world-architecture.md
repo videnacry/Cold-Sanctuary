@@ -151,10 +151,53 @@ Probar este patrón antes de reskinear a otras áreas/escalas.
   activables). Recomendación inicial: **root activable por escala** (cargar/activar solo el mundo
   activo), coherente con el snap del `RealityShiftController`.
 
-## 14. Preguntas abiertas
+## 14. Contenido narrativo: reutilizar la Historia
+
+**Principio (decisión 2026-07-20):** las historias de los mobs **no se inventan** — se **reutiliza la
+Historia** real y la ficción de dominio público: países, guerras, conquistas, descubrimientos
+científicos, obras artísticas, avances médicos, investigaciones de dudosa moral, historias de amor.
+
+- **Cada mob = un personaje** (real o ficticio) renderizado como habitante de la escala activa
+  (insecto humanoide, etc.).
+- **Mecánica (estilo WoW):** el jugador se encuentra al personaje, **habla y lo ayuda** — y ayudar
+  ES una misión mob (canalizar/curar/proteger/buscar-la-raíz reencuadrada). Al ayudar, **su historia
+  se revela por capas**, ligada al bond / nivel de ayuda. Reusa `DialogueSequence`; el quest-giver
+  es un `MobResident` con identidad histórica.
+
+**Por qué encaja:**
+- Resuelve el **riesgo de volumen de contenido** (§11): biblioteca infinita ya escrita.
+- Satisface el **balance tonal** (§8) casi solo: la Historia trae los cinco tonos de forma natural.
+- **Sinergia con la tabla periódica / Observación / learning-unlocks.** Ejemplo canónico:
+  **Marie Curie** en el lab → descubre radio y polonio (avance + progreso de tabla) y muere por la
+  radiación (tragedia + "investigación de dudosa moral"). El mob es contenido educativo y mecánico.
+
+**Mapeo dominio histórico → área (propuesta):**
+| Área | Dominio histórico |
+|---|---|
+| AlchemyLab / FuelLab | ciencia, química, energía |
+| Enfermería / Farmacia | medicina + investigaciones de dudosa moral |
+| Estudio Textil | arte y obras |
+| Huerto | agricultura, botánica |
+| Cocina | gastronomía / oficios |
+| MonsterSection / NightWatch | conflictos, lo desconocido, lo "monstruoso" de la historia |
+
+**Guardarraíles (recomendación, ajustables por Berón):**
+- **Sensibilidad/tono:** guerras y atrocidades se tratan desde la **comprensión / reflexión /
+  sanación** (coherente con la ética no-violenta y contemplativa), nunca glorificación ni
+  trivialización.
+- **Propiedad intelectual:** personajes/eventos **reales** y ficción de **dominio público** (mitos,
+  folclore, clásicos) = libres. Ficción **moderna con copyright** = evitar.
+- **Rigor:** basarse en hechos; "ayudar" reinterpreta, no falsea la Historia.
+
+**Implementación:** la biografía por capas usa `DialogueSequence` (existe); cada capa se desbloquea
+al completar una misión de ayuda. La **etiqueta `tone`** (§8) sale natural del episodio histórico.
+
+## 15. Preguntas abiertas
 
 - [ ] ¿Escenas separadas por escala o roots activables? (reco: roots activables).
 - [ ] ¿Cuántas áreas-tienda mínimas hacen que la ciudad-insecto se sienta viva?
 - [ ] Catálogo de eventos del `MobWorldDirector` (tipos, disparadores, efectos).
 - [ ] Mapear los 5 tonos a misiones concretas por área (auditoría en `area-missions-spec`).
 - [ ] ¿El `MobResident` comparte aptitudes con `creature-stats` o usa un set reducido propio?
+- [ ] Confirmar guardarraíles de §14 (sensibilidad de historia dura; alcance de IP: reales + dominio público).
+- [ ] Primer set de personajes históricos por área (empezar por la cocina-insecto del mínimo jugable).
