@@ -1202,6 +1202,15 @@ public static class SampleSceneBuilder
             lotus.hasMobMissionSpell = false; // shift/missions se cablean por contexto al desbloquearlo
         }
 
+        // Director del mundo mob (eventos que hacen avanzar las eras). Auto-bootstrap en runtime,
+        // pero lo dejamos en escena para poder configurarlo (autoEvents off = eventos por historia).
+        if (Object.FindObjectOfType<MobWorldDirector>() == null)
+        {
+            GameObject dirGO = new GameObject("MobWorldDirector");
+            dirGO.transform.SetParent(parent);
+            dirGO.AddComponent<MobWorldDirector>();
+        }
+
         Debug.Log("[SampleSceneBuilder] Plano mágico cableado: VirtualizationMachine por área + loto en el jugador.");
     }
 
@@ -1308,17 +1317,23 @@ public static class SampleSceneBuilder
         return mm;
     }
 
-    // Ciudad-insecto mínima para el mundo mob de la cocina: 2 tiendas (MobResident) + yoga-portal.
+    // Ciudad-insecto mínima = MESOPOTAMIA del amanecer: chozas de adobe (estructura representativa de
+    // la era; castillos/rascacielos quedan deseables para eras superiores) + yoga-portal de salida.
     // Escala mundo (NO bajo el MobRoot escalado); inactiva hasta que la misión la activa (mobSet).
     static GameObject BuildKitchenMobHub(Transform parent, Transform areaT)
     {
-        GameObject hub = new GameObject("Kitchen_MobHub");
+        GameObject hub = new GameObject("Kitchen_MobHub_Mesopotamia");
         hub.transform.SetParent(parent);
         hub.transform.position = areaT.position;
 
-        AddMobResident(hub.transform, "Chef Grillo", "Cocinero", new Vector3(2.5f, 1f, 0f), new Color(0.5f, 0.7f, 0.3f));
-        AddMobResident(hub.transform, "Mercader Hormiga", "Vendedor", new Vector3(-2.5f, 1f, 1f), new Color(0.6f, 0.4f, 0.25f));
+        Color mud = new Color(0.72f, 0.55f, 0.36f); // adobe
 
+        // Anclas de piedra en sus edificios de dominio (prototipo: 3; el resto al reskinear).
+        AddResidentWithHut(hub.transform, "Guardián del Fuego", "El Hogar",   new Vector3(0f, 1f, -2.5f), mud, new Color(0.95f, 0.50f, 0.20f));
+        AddResidentWithHut(hub.transform, "El Tallador",        "La Fragua",  new Vector3(3f, 1f,  0f),   mud, new Color(0.60f, 0.60f, 0.65f));
+        AddResidentWithHut(hub.transform, "La Recolectora",     "El Granero", new Vector3(-3f, 1f, 0f),   mud, new Color(0.50f, 0.70f, 0.35f));
+
+        // Yoga-portal de salida.
         GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
         portal.name = "YogaPortal";
         portal.transform.SetParent(hub.transform);
@@ -1332,13 +1347,22 @@ public static class SampleSceneBuilder
         return hub;
     }
 
-    static void AddMobResident(Transform parentT, string residentName, string role, Vector3 localPos, Color color)
+    // Una choza de adobe (estructura sólida) + su habitante delante de la puerta (trigger, interactuable).
+    static void AddResidentWithHut(Transform parentT, string residentName, string role, Vector3 localPos,
+                                    Color hutColor, Color bodyColor)
     {
+        GameObject hut = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        hut.name = $"Hut_{residentName}";
+        hut.transform.SetParent(parentT);
+        hut.transform.localPosition = localPos;
+        hut.transform.localScale = new Vector3(2.2f, 2f, 2.2f);
+        hut.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Hut_{residentName}_MAT", hutColor);
+
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = residentName;
         go.transform.SetParent(parentT);
-        go.transform.localPosition = localPos;
-        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{residentName}_MAT", color);
+        go.transform.localPosition = localPos + new Vector3(0f, 0f, 1.6f); // frente a la choza
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{residentName}_MAT", bodyColor);
         go.GetComponent<Collider>().isTrigger = true;
         MobResident res = go.AddComponent<MobResident>();
         res.residentName = residentName;
