@@ -21,6 +21,39 @@ cuidado y validación (tragedia real / víctimas) · resto: dominio público, li
   Las primeras pinturas (belleza, descubrimiento) → su nombre se perdió para siempre → **la
   expresión perdura aunque se olvide al autor**. *Ayuda:* completar/preservar la pintura.
 
+## Neolítico (revolución agrícola)
+
+- **La Sembradora** (primera agricultura, arquetipo) — *Huerto*.
+  Domesticar el grano trae abundancia y las primeras aldeas → el excedente trae **jerarquía,
+  propiedad y las primeras guerras** → **cultivar bien lo que sembramos** (en la tierra y en la
+  sociedad). *Ayuda:* curar/atender el primer campo. Elemento: N.
+- **El Alfarero** (primera cerámica, arquetipo) — *Cocina/Textil*.
+  Dar forma al barro con fuego (transformación) → la vasija es frágil y sobrevive a su autor →
+  **crear cosas que sostengan a otros**. *Ayuda:* canalizar/moldear la vasija.
+
+## Edad de los Metales (Cobre → Bronce → Hierro)
+
+- **Ötzi, el Hombre de Hielo** (real, ~3300 a.C., Edad del Cobre) — *Mecánica*.
+  Portaba un **hacha de cobre**: el amanecer del metal → fue **asesinado** (flecha por la espalda,
+  hallazgo forense real) → **el primer útil de metal fue también la primera arma; estar alerta**.
+  *Ayuda:* **buscar la raíz** — reconstruir qué le pasó de verdad. Elemento: **Cu**.
+- **El Primer Herrero** (arquetipo, Bronce→Hierro) — *Mecánica/FuelLab*.
+  Dominar la forja (bronce = cobre+estaño; luego hierro) → la misma forja hace **arados y espadas**
+  → **el que forja elige**. *Ayuda:* canalizar/forjar (revela Cu, Sn, Fe) y **proteger** la forja.
+- **Gilgamesh** (epopeya de Uruk, dominio público, Bronce) — *capstone de la era temprana*.
+  Rey heroico; aventura y amistad con Enkidu → **Enkidu muere** y su búsqueda de la inmortalidad
+  fracasa → **aceptar la mortalidad; el sentido está en el vínculo y el legado** (enlaza con la
+  meditación). *Ayuda:* **llegar al corazón** de un ser mucho más poderoso.
+- **Enheduanna** (Acadia, ~2300 a.C.) — *Estudio Textil / arte*.
+  **Primera autora conocida por su nombre**; un golpe de Estado la exilia → **escribe para volver**
+  → **reivindicación**: recuperó su voz. *Ayuda:* **proteger** sus tablillas del golpe.
+
+> **Set recomendado para los primeros niveles (Edad de Piedra → Metales):** Guardián del Fuego
+> (Canalizar) → La Sembradora (Curar) → Ötzi (Buscar la raíz) → El Primer Herrero (Canalizar/Proteger)
+> → Gilgamesh (Llegar al corazón). Rampa de un arquetipo por personaje + primeros elementos
+> (C, N, Cu, Sn, Fe). Para el mínimo jugable de la cocina-insecto: empezar con **Guardián del Fuego +
+> Ötzi**.
+
 ## Antigüedad y mito (dominio público)
 
 - **Prometeo** (mito) — *FuelLab*.
