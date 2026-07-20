@@ -200,6 +200,11 @@ el resto se añade al reskinear. Cablear en `SampleSceneBuilder` (`MobResident` 
   `Festival`): mueve habitantes, sube niveles y notifica (`OnEvent`) para reordenar contenido.
   Opción `autoEvents` para prototipado. Contraparte por eventos de `SanctuaryDirector`.
 - `YogaPortal` ✅ — `IInteractable` de salida del mundo mob (reusa `MeditationSession.EndMission`).
+- `MobWorldLoader` 🔲 — carga/descarga **aditiva** de la escena del mundo mob **tras el fundido a
+  negro**, transfiere/persiste al jugador y lleva de vuelta al salir. Reemplaza el snap de escala para
+  mundos completos. (Ver decisión de arquitectura abajo.)
+- `MobWorldSceneBuilder` 🔲 — herramienta de Editor que **genera la escena** de una civilización
+  (p. ej. Mesopotamia) reusando el código de chozas/residentes; escenas-desde-código = versionable.
 - Etiqueta `tone` por misión (para el balance tonal) — 🔲 campo o metadato pendiente.
 
 ### Reuso / relación
@@ -208,10 +213,25 @@ el resto se añade al reskinear. Cablear en `SampleSceneBuilder` (`MobResident` 
 - `SurfaceWalker` + avatares → planos (Eje A) dentro del mundo mob.
 - `MeditationMissionBase` + arquetipos → las misiones mob del mundo.
 
-### A decidir
-- Cómo se representa "un mundo por escala" a nivel de escena (escenas separadas por escala vs. roots
-  activables). Recomendación inicial: **root activable por escala** (cargar/activar solo el mundo
-  activo), coherente con el snap del `RealityShiftController`.
+### Decisión de arquitectura (2026-07-21): **escena propia por mundo mob**
+
+Meter una civilización dentro del área base (escalar `environmentRoot` ×8 + hub en la escena base)
+sirve para un hub pequeño, pero **no escala** a una civilización entera, ensucia la escena base y
+depende de trucos de escala frágiles. **Resolución: cada mundo mob completo es su propia escena**
+(carga aditiva), autorada a **tamaño normal**.
+
+- La **miniaturización pasa a ser narrativa**: la transición ya usa un **fundido a negro** que
+  **oculta la carga de escena** igual de bien que el snap de escala.
+- Encaja con el principio "**un mundo por escala, de a uno**" (§2) y con el **radio expansible / muchas
+  civilizaciones** (§7, §4b).
+- **Versionable**: la escena se genera por código (`MobWorldSceneBuilder`), no a mano.
+- **Se reutiliza casi todo** (`MobResident`, `YogaPortal`, `MobWorldDirector`, misiones,
+  `MissionSelectMenu`); **lo nuevo** es `MobWorldLoader` + `MobWorldSceneBuilder`.
+- `RealityShiftController` (snap de escala) queda **opcional** para efectos in-place ligeros, o se
+  retira. El prototipo in-place actual (cocina, PR #6) queda como paso intermedio, superado por la
+  escena Mesopotamia.
+- **Costo:** plumbing de escenas — carga/descarga aditiva, transferir al jugador, `DontDestroyOnLoad`
+  en los singletons (`MeditationSession`/`ScreenFader`/`MobWorldDirector`). Estándar en Unity.
 
 ## 14. Contenido narrativo: reutilizar la Historia
 
@@ -286,7 +306,7 @@ al completar una misión de ayuda. La **etiqueta `tone`** (§8) sale natural del
 
 ## 15. Preguntas abiertas
 
-- [ ] ¿Escenas separadas por escala o roots activables? (reco: roots activables).
+- [x] ¿Escenas separadas o roots activables? → **RESUELTO: escena propia por mundo mob** (ver §13).
 - [ ] ¿Cuántas áreas-tienda mínimas hacen que la ciudad-insecto se sienta viva?
 - [ ] Catálogo de eventos del `MobWorldDirector` (tipos, disparadores, efectos).
 - [ ] Mapear los 5 tonos a misiones concretas por área (auditoría en `area-missions-spec`).
