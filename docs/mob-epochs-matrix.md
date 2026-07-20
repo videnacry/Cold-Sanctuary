@@ -21,16 +21,23 @@
 4. Antigüedad clásica · 5. Edad Media · 6. Renacimiento · 7. Ilustración / Revolución científica ·
 8. Revolución industrial (s.XIX) · 9. Siglo XX · 10. Actualidad / futuro cercano.
 
-## Hilos (N = 6)
+## Hilos (N = 6) — sobrenombres de piedra FIJADOS
 
-| Hilo | Tema | Área/dominio | Alineación típica |
-|---|---|---|---|
-| **A · Fuego y Estrellas** | energía, luz, física, cosmos | FuelLab / Guardia nocturna | héroe |
-| **B · Barro y Metal** | materia, metalurgia, construcción, ingeniería | Mecánica / Textil | héroe |
-| **C · Semilla y Vida** | agricultura, biología, medicina | Huerto / Enfermería / Farmacia | héroe (con nodo oscuro) |
-| **D · Trazo y Símbolo** | arte, escritura, cultura | Estudio Textil | héroe/neutral |
-| **E · Corona y Espada** | poder, guerra, ley | MonsterSection / hub | villano-capaz / héroe↔villano |
-| **F · Aliento y Mente** | cuerpo, espíritu, mente | Sala de Yoga / Enfermería | contemplativo |
+El "sobrenombre de piedra" es el **ancla**: el nombre con el que el jugador conoce al héroe en el
+Paleolítico y con el que **lo seguirá llamando** en todas las eras, aunque el mundo lo renombre.
+
+| Hilo | Sobrenombre de piedra (ancla) | Tema | Área/dominio | Alineación típica |
+|---|---|---|---|---|
+| **A · Fuego y Estrellas** | **Guardián del Fuego** | energía, luz, física, cosmos | FuelLab / Guardia nocturna | héroe |
+| **B · Barro y Metal** | **El Tallador** | materia, metalurgia, construcción, ingeniería | Mecánica / Textil | héroe |
+| **C · Semilla y Vida** | **La Recolectora** | plantas, agricultura, biología, medicina | Huerto / Enfermería / Farmacia | héroe (con nodo oscuro) |
+| **D · Trazo y Símbolo** | **La Mano de Lascaux** | arte, escritura, cultura | Estudio Textil | héroe/neutral |
+| **E · Corona y Espada** | **El Primer Jefe** | poder, guerra, ley | MonsterSection / hub | villano-capaz / héroe↔villano |
+| **F · Aliento y Mente** | **El Chamán** | cuerpo, espíritu, mente | Sala de Yoga / Enfermería | contemplativo |
+
+> B y C: el ancla paleolítica (**El Tallador** = primer útil de piedra; **La Recolectora** = quien
+> conocía las plantas que alimentan y curan) **se convierte** en el Neolítico en *El Alfarero* y *La
+> Sembradora* respectivamente — el jugador los sigue llamando por el ancla.
 
 ## Matriz (época × hilo) — esqueleto
 
@@ -39,8 +46,8 @@ van en *cursiva*.
 
 | Época | A Fuego/Estrellas | B Barro/Metal | C Semilla/Vida | D Trazo/Símbolo | E Corona/Espada | F Aliento/Mente |
 |---|---|---|---|---|---|---|
-| Piedra | *Guardián del Fuego* | *El Alfarero* | *La Sembradora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* |
-| Neolítico | *El Lector del Cielo* | *El Constructor de Dólmenes* | 🔲 | 🔲 | 🔲 | 🔲 |
+| Piedra | *Guardián del Fuego* | *El Tallador* | *La Recolectora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* |
+| Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | 🔲 | 🔲 | *El Soñador* |
 | Metales | *El Astrónomo de Babel* | *El Fundidor* / Ötzi | 🔲 | Enheduanna | Gilgamesh/Sargón | 🔲 |
 | Antigüedad | Ptolomeo (o Aristarco) | Imhotep | Hipócrates | Homero | Alejandro / César | Buda / Sócrates ✳ |
 | Media | Alhacén (óptica) | *Maestro de catedrales* | Avicena (Ibn Sina) | 🔲 | Gengis Kan | 🔲 |
@@ -73,6 +80,28 @@ astronomía, a la matemática…"*
 
 Cierre del hilo: del fuego en el suelo a comprender el universo — la mirada sube del suelo al cosmos
 (refleja el Eje A y la esperanza de volvernos plenamente racionales, §14).
+
+## Hilo F completo — "El Aliento y la Mente" (arco de 10 épocas)
+
+El espejo interior del Hilo A: si el Fuego mira **afuera** (el cosmos), el Aliento mira **adentro**
+(la mente). El jugador lo conoció como **El Chamán** y lo sigue llamando así. Culmina donde vive el
+propio juego: la mente **observándose** (meditación).
+
+| Época | Se le conoce como | Beat agridulce → aprendizaje |
+|---|---|---|
+| Piedra | El Chamán | entra en trance para sanar el alma de la tribu → sus visiones también siembran miedo → distinguir la visión del miedo |
+| Neolítico | El Soñador | da sentido a los sueños → …y usa el augurio para mandar → observar la mente sin someterla |
+| Metales | *El Sacerdote del templo* | ritual y consuelo comunitario → …el templo exige sacrificios e impuestos → la compasión no necesita altar |
+| Antigüedad | **Sócrates** *(o Buda ✳)* | "conócete a ti mismo" → **condenado a la cicuta** → la verdad interior cuesta cara pero libera |
+| Media | *El Místico* (Rumi/al-Ghazali) | el amor y el silencio como camino → sospechoso para la ortodoxia → callar también enseña |
+| Renacimiento | Montaigne | se observa a sí mismo (el ensayo) → duda de todo → la humildad del "¿qué sé yo?" |
+| Ilustración | Spinoza 🔲 | ética desde la razón → **excomulgado** → pensar libre tiene precio |
+| Industrial | *El alienado* 🔲 | la mente entra en la fábrica → el trabajo vacía el alma → recuperar el sentido |
+| Siglo XX | **Freud / Jung** | cartografían el inconsciente → teorías fallidas, época oscura → mirar dentro es un método, no un dogma |
+| Actualidad | *La neurociencia contemplativa* | la meditación se mide en el cerebro → reducir la mente a datos → el mapa no es el territorio; **observa** |
+
+Cierre del hilo: del trance del chamán a la mente que se observa sin miedo — el mismo gesto que el
+jugador practica en la sala de yoga. Fuego (afuera) y Aliento (adentro) se tocan en la meditación.
 
 ## Método de afinidad (para encadenar columnas)
 
