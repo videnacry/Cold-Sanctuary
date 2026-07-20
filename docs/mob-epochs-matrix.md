@@ -61,7 +61,7 @@ van en *cursiva*.
 | Época | A Fuego/Estrellas | B Barro/Metal | C Semilla/Vida | D Trazo/Símbolo | E Corona/Espada | F Aliento/Mente | G Risa/Enredo |
 |---|---|---|---|---|---|---|---|
 | Piedra | *Guardián del Fuego* | *El Tallador* | *La Recolectora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* | *El Bromista* |
-| Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | 🔲 | 🔲 | *El Soñador* | 🔲 |
+| Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | *La Contadora de Granos* | *El Jefe de la Aldea* | *El Soñador* | *El Aldeano Burlón* |
 | Metales | *El Astrónomo de Babel* | *El Fundidor* | Imhotep | Enheduanna | Sargón de Acad | *El Sacerdote del templo* | *El Bufón de la corte* |
 | Antigüedad | Ptolomeo | Arquímedes | Hipócrates | Homero | Alejandro Magno | Sócrates ✳ | Aristófanes |
 | Media | Alhacén | *Maestro de catedrales* | Avicena | 🔲 | Gengis Kan | *El Místico* | Nasreddín Hoja |
@@ -153,6 +153,36 @@ El primer elenco donde cada hilo tiene una figura **real y reconocible**. Format
 > Arquímedes), tragedia (Arquímedes/Sócrates), guerra (Alejandro/Homero), sabiduría (Hipócrates/
 > Sócrates), **humor (Aristófanes)**.
 
+## Corte completo — Época 2: Neolítico (los 7 hilos)
+
+**Región:** Creciente Fértil (y cunas paralelas independientes: China del mijo/arroz, Mesoamérica).
+Aún **sin nombres propios** (no hay escritura) → todos **arquetipos** de alta fidelidad.
+
+- **El Lector del Cielo** (A · Guardia nocturna · héroe) — *Guardián del Fuego, ya lee las estrellas*.
+  Usa el cielo para saber cuándo sembrar → …y para augurios que atan a la gente al ritual → **mirar
+  el cielo para prever, no para temer**. *Ayuda:* observar.
+- **El Alfarero** (B · Cocina/Textil · héroe) — *El Tallador, ya cuece el barro*. La vasija guarda el
+  excedente → …guardar permite **acaparar** → **crear para compartir, no para acumular**. *Ayuda:*
+  canalizar/moldear.
+- **La Sembradora** (C · Huerto · héroe) — *La Recolectora, ya cultiva*. Domesticar el grano trae
+  aldeas → …y **jerarquía, propiedad, primeras guerras y enfermedades** (del ganado) → **cultivar
+  bien lo que sembramos, en la tierra y en la sociedad**. *Ayuda:* curar/atender. Elem: N.
+- **La Contadora de Granos** (D · Textil/arte · neutral-héroe) — *La Mano de Lascaux, del trazo al
+  signo*. Marca fichas de barro para **contar el grano** → nace la **escritura… como contabilidad y
+  deuda** → **el signo recuerda, pero también controla**. *Ayuda:* ordenar/proteger los signos.
+- **El Jefe de la Aldea** (E · hub · villano-capaz/neutral) — *El Primer Jefe, ya guarda el granero*.
+  Organiza defensa y reparto → …**concentra el poder** y la primera coerción → **quien guarda el
+  grano guarda el poder**. *Ayuda:* llegar-al-corazón.
+- **El Soñador** (F · Yoga/Enfermería · contemplativo) — *El Chamán, ya interpreta sueños*. Da sentido
+  a los sueños de la aldea → …y usa el augurio para mandar → **observar la mente sin someterla**.
+  *Ayuda:* no-pensar.
+- **El Aldeano Burlón** (G · plaza · neutral-pícaro) — *El Bromista, ya se ríe de la aldea*. La burla
+  alivia la vida sedentaria y sus reglas → …reírse del jefe es peligroso → **la risa señala lo que
+  nadie osa decir**. *Ayuda:* enredo.
+
+> Balance tonal Neolítico cubierto. Con esto **Piedra → Neolítico → Metales** quedan completos (el
+> tramo del mínimo jugable).
+
 ## Corte completo — Época 3: Edad de los Metales (los 7 hilos)
 
 **Región:** Próximo Oriente del Bronce — **Mesopotamia** (Sumer/Acad) y **Egipto**.
@@ -194,6 +224,33 @@ Para unir un slot de una época con el de la siguiente, buscar **descendencia ca
 - **temática**: mismo dominio/pregunta (mirar el cielo) aunque el medio cambie.
 - **de arco**: la alineación evoluciona (un héroe que cae = héroe→villano; un villano que se redime).
 La afinidad decide qué figura real "hereda el mantel" del sobrenombre en cada época.
+
+## Estado, rol y fidelidad — continuidad entre arcos
+
+**Todos son "héroes".** Aunque hagan de villano, **forjan la Historia a su manera**; el rol
+(héroe / villano / neutro / víctima…) **no es fijo — es fluido**, otra afinidad más.
+
+**Dos afinidades encadenan a un personaje entre épocas:**
+1. **Temática/causal** (ver Método de afinidad) — el dominio/hilo.
+2. **De estado** *(nueva)* — el **estado físico/mental con que TERMINA su arco** en una época
+   **siembra cómo empieza el siguiente**; refleja el efecto de lo vivido.
+
+**Estado de cierre → semilla del arco siguiente.** Ejemplo: un héroe que **lo sacrificó todo y fue
+traicionado** reaparece **nervioso e inseguro**, muy distinto del arco anterior. Desde ahí puede
+**recuperar fuerzas**, **hundirse más** (y derivar a un rol más oscuro) o **pasar a un papel
+secundario**. Es continuidad emocional, no reinicio.
+
+**Nivel de fidelidad (0–1)** — cuán fiel es el personaje a sus principios/núcleo:
+- **Alta fidelidad → poca variedad**: constante pese al sufrimiento (un ancla moral).
+- **Baja fidelidad → mucha variedad**: oscila de rol y estado con fuerza (impredecible).
+- **Todos varían**; la fidelidad regula la **amplitud** → el elenco tiene constantes y veletas.
+- *Tendencia:* los arquetipos tempranos (Piedra/Neolítico) son de **alta fidelidad/baja variedad**
+  (son roles); al volverse **individuos con nombre** (Metales en adelante) baja la fidelidad y crece
+  la variedad.
+
+**Implementación (nota):** cada nodo de hilo por época lleva `{ rol, estadoCierre, fidelidad }`; el
+`estadoCierre` alimenta el arranque del nodo siguiente. Emparenta con `trauma`/`mood` de
+`CompanionBase` — reutilizable ese mismo tipo de estado.
 
 ## Pendiente
 
