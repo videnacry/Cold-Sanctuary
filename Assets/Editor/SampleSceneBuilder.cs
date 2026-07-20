@@ -72,7 +72,7 @@ public static class SampleSceneBuilder
         BuildUI(root.transform);
         EnsurePlayerSystems();
         BuildHolographicMenu(root.transform);
-        BuildKitchenContent(root.transform);
+        BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BakeNavMesh();
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
@@ -1174,5 +1174,174 @@ public static class SampleSceneBuilder
 
         Debug.Log($"[SampleSceneBuilder] ElementFragment prefab guardado en {path}.");
         return prefab;
+    }
+
+    // ── Plano mágico (reemplaza la entrada legacy de la cocina) ─────────────────
+    //
+    // Dos únicas vías de entrada al mundo mob: la VirtualizationMachine (por área) o el hechizo de
+    // loto (LotusMeditationAbility en el jugador). Ya no hay puerta. Los métodos legacy de cocina
+    // (BuildKitchenContent/MakeMobBox/CreateFragmentPrefabIfNeeded) quedan sin uso.
+
+    enum MissionKind { KitchenChannel, GardenChannel, Channel, Heal, Yoga }
+
+    static void BuildMeditationContent(Transform parent)
+    {
+        WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel);
+        WireMeditationArea(parent, "YogaRoom_Area",         "Sala de Yoga",   new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga);
+        WireMeditationArea(parent, "Garden_Area",           "Huerto",         new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel);
+        WireMeditationArea(parent, "Infirmary_Area",        "Enfermería",     new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal);
+        WireMeditationArea(parent, "VeterinaryClinic_Area", "Veterinaria",    new Color(0.55f, 0.75f, 0.70f), MissionKind.Heal);
+        WireMeditationArea(parent, "TextileStudio_Area",    "Estudio Textil", new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel);
+        WireMeditationArea(parent, "VehicleWorkshop_Area",  "Mecánica",       new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel);
+
+        // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
+        GameObject player = GameObject.Find("Player");
+        if (player != null && player.GetComponent<LotusMeditationAbility>() == null)
+        {
+            var lotus = player.AddComponent<LotusMeditationAbility>();
+            lotus.hasMobMissionSpell = false; // shift/missions se cablean por contexto al desbloquearlo
+        }
+
+        Debug.Log("[SampleSceneBuilder] Plano mágico cableado: VirtualizationMachine por área + loto en el jugador.");
+    }
+
+    static void WireMeditationArea(Transform parent, string areaName, string displayName, Color tint, MissionKind kind)
+    {
+        GameObject area = GameObject.Find(areaName);
+        if (area == null)
+        {
+            Debug.LogWarning($"[SampleSceneBuilder] {areaName} no encontrada — plano mágico omitido para esa área.");
+            return;
+        }
+
+        // Root de entorno que el reality shift escala ×8 (decor "gigante" detrás del negro).
+        GameObject mobRoot = new GameObject($"{areaName}_MobRoot");
+        mobRoot.transform.SetParent(area.transform, worldPositionStays: false);
+        for (int i = 0; i < 3; i++)
+        {
+            GameObject giant = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            giant.name = $"Giant_{i}";
+            giant.transform.SetParent(mobRoot.transform);
+            giant.transform.localPosition = new Vector3((i - 1) * 2f, 0.5f, -2f);
+            giant.transform.localScale = Vector3.one * 0.6f;
+            Collider gcol = giant.GetComponent<Collider>(); if (gcol != null) Object.DestroyImmediate(gcol);
+            giant.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{areaName}_giant{i}_MAT", Color.Lerp(tint, Color.white, 0.2f));
+        }
+
+        // Reality shift driver.
+        GameObject shiftGO = new GameObject($"{areaName}_ShiftSystem");
+        shiftGO.transform.SetParent(area.transform, worldPositionStays: false);
+        RealityShiftController shift = shiftGO.AddComponent<RealityShiftController>();
+        shift.environmentRoot = mobRoot.transform;
+        // playerCamera queda null → RealityShiftController usa Camera.main
+
+        // Máquina de virtualización en la entrada abierta (+Z).
+        GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
+        machineGO.transform.SetParent(area.transform, worldPositionStays: false);
+        machineGO.transform.localPosition = new Vector3(0f, 1f, 4.2f);
+        BoxCollider bc = machineGO.AddComponent<BoxCollider>();
+        bc.isTrigger = true;
+        bc.size = new Vector3(3f, 3f, 1.5f);
+        VirtualizationMachine machine = machineGO.AddComponent<VirtualizationMachine>();
+        machine.areaName = displayName;
+        machine.shift = shift;
+        machine.missions = BuildAreaMissions(parent, area.transform, displayName, tint, kind);
+    }
+
+    static MobMission[] BuildAreaMissions(Transform parent, Transform areaT, string displayName, Color tint, MissionKind kind)
+    {
+        if (kind == MissionKind.Yoga)
+        {
+            MobMission visualize = MakeMissionGO(areaT, "Mission_Visualizar", "Visualizar postura",
+                "Huye de los pensamientos hasta disolverlos.", MissionCategory.Visualization);
+            var pv = visualize.gameObject.AddComponent<PostureVisualizationMission>();
+            pv.mission = visualize; pv.targetCount = 5; pv.reward.observationGain = 0.25f;
+
+            MobMission form = MakeMissionGO(areaT, "Mission_Formar", "Formar posturas",
+                "Persigue y sostén cada postura.", MissionCategory.Visualization);
+            var af = form.gameObject.AddComponent<AsanaFormationMission>();
+            af.mission = form; af.targetCount = 3; af.reward.observationGain = 0.25f;
+
+            MobMission root = MakeMissionGO(areaT, "Mission_Raiz", "Buscar la raíz",
+                "No puedes huir; ve a su raíz.", MissionCategory.RootInquiry);
+            var ri = root.gameObject.AddComponent<RootInquiryMission>();
+            ri.mission = root; ri.targetCount = 3; ri.reward.observationGain = 0.3f;
+
+            return new[] { visualize, form, root };
+        }
+
+        if (kind == MissionKind.Heal)
+        {
+            MobMission heal = MakeMissionGO(areaT, "Mission_Curar", $"Curar en {displayName}",
+                "Quédate cerca hasta sanar a cada uno.", MissionCategory.LovingKindness);
+            var hm = heal.gameObject.AddComponent<HealingMission>();
+            hm.mission = heal; hm.targetCount = 4; hm.placeholderColor = Color.Lerp(tint, Color.white, 0.1f);
+            hm.reward.observationGain = 0.2f; hm.reward.coinReward = 5;
+            return new[] { heal };
+        }
+
+        // Variantes de Channel (Kitchen / Garden / Textile / Workshop)
+        string name = kind == MissionKind.KitchenChannel ? "Procesar ingredientes"
+                    : kind == MissionKind.GardenChannel  ? "Limpiar la plaga"
+                    : $"Atender en {displayName}";
+        MobMission ch = MakeMissionGO(areaT, "Mission_Canalizar", name,
+            "Acércate y mantente presente hasta resolverlos.", MissionCategory.NoThinking);
+        var cm = ch.gameObject.AddComponent<ChannelMission>();
+        cm.mission = ch; cm.targetCount = 4; cm.placeholderColor = Color.Lerp(tint, Color.white, 0.1f);
+        cm.reward.observationGain = 0.2f; cm.reward.coinReward = 5;
+
+        if (kind == MissionKind.KitchenChannel)
+            ch.mobSet = BuildKitchenMobHub(parent, areaT); // ciudad-insecto mínima: tiendas + portal
+
+        return new[] { ch };
+    }
+
+    static MobMission MakeMissionGO(Transform areaT, string goName, string missionName, string desc, MissionCategory cat)
+    {
+        GameObject go = new GameObject(goName);
+        go.transform.SetParent(areaT, worldPositionStays: false);
+        MobMission mm = go.AddComponent<MobMission>();
+        mm.missionName = missionName;
+        mm.description = desc;
+        mm.category    = cat;
+        mm.isAvailable = true;
+        return mm;
+    }
+
+    // Ciudad-insecto mínima para el mundo mob de la cocina: 2 tiendas (MobResident) + yoga-portal.
+    // Escala mundo (NO bajo el MobRoot escalado); inactiva hasta que la misión la activa (mobSet).
+    static GameObject BuildKitchenMobHub(Transform parent, Transform areaT)
+    {
+        GameObject hub = new GameObject("Kitchen_MobHub");
+        hub.transform.SetParent(parent);
+        hub.transform.position = areaT.position;
+
+        AddMobResident(hub.transform, "Chef Grillo", "Cocinero", new Vector3(2.5f, 1f, 0f), new Color(0.5f, 0.7f, 0.3f));
+        AddMobResident(hub.transform, "Mercader Hormiga", "Vendedor", new Vector3(-2.5f, 1f, 1f), new Color(0.6f, 0.4f, 0.25f));
+
+        GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        portal.name = "YogaPortal";
+        portal.transform.SetParent(hub.transform);
+        portal.transform.localPosition = new Vector3(0f, 1f, 3f);
+        portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
+        portal.GetComponent<Collider>().isTrigger = true;
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMaterial("YogaPortal_MAT", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<YogaPortal>();
+
+        hub.SetActive(false); // RealityShiftController lo activa al entrar
+        return hub;
+    }
+
+    static void AddMobResident(Transform parentT, string residentName, string role, Vector3 localPos, Color color)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = residentName;
+        go.transform.SetParent(parentT);
+        go.transform.localPosition = localPos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{residentName}_MAT", color);
+        go.GetComponent<Collider>().isTrigger = true;
+        MobResident res = go.AddComponent<MobResident>();
+        res.residentName = residentName;
+        res.role = role;
     }
 }
