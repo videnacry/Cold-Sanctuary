@@ -644,6 +644,14 @@ public static class SampleSceneBuilder
         pant.companionName = "Panterilia";
         panterilia.AddComponent<WorldCharacter>().characterName = "Panterilia";
 
+        // Irosene — compañera motivacional. Reside en el nivel submarino pero visita a Panterilia,
+        // así que su puesto orientativo va junto a ella (ver docs/character-irosene.md).
+        GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));
+        irosene.transform.SetParent(charactersGroup.transform);
+        var iro = irosene.AddComponent<Irosene>();
+        iro.companionName = "Irosene";
+        irosene.AddComponent<WorldCharacter>().characterName = "Irosene";
+
         // The Magnate (Maestra) is the SanctuaryDirector's arrival gatekeeper.
         SanctuaryDirector director = parent.GetComponentInChildren<SanctuaryDirector>();
         if (director != null) director.magnateCharacter = magnateWC;
