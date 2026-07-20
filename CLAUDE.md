@@ -69,6 +69,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/mob-world-architecture.md`](docs/mob-world-architecture.md) — santuario fractal por escala (un mundo a la vez), yoga-portal, áreas-tienda, NPCs mob ligeros (`MobResident`), mundo vivo por eventos (`MobWorldDirector`), radio expansible, balance tonal y contenido narrativo (reutilizar la Historia).
 - [`docs/mob-characters.md`](docs/mob-characters.md) — lista inicial de personajes-mob (históricos/mito de dominio público) con su arco agridulce→aprendizaje, área y misión de ayuda.
 - [`docs/mob-quests-early.md`](docs/mob-quests-early.md) — misiones e historia de la era temprana (Edad de Piedra→Metales): cadena de fases y qué revela cada una (Guardián del Fuego, Ötzi detallados; Sembradora/Herrero/Gilgamesh en esquema). Capa previa al diálogo.
+- [`docs/mob-epochs-matrix.md`](docs/mob-epochs-matrix.md) — héroes a través del tiempo: matriz época×hilo (10 épocas × 6 hilos), afinidad para encadenar arcos, alineación variable; incluye el Hilo del Fuego completo (Guardián del Fuego→Newton→Hawking).
 - [`docs/learning-unlocks.md`](docs/learning-unlocks.md) — desbloqueo por aprendizaje (elementos/posturas aparecen en su UI al aprenderlos).
 - [`docs/refuge-and-adult-behavior.md`](docs/refuge-and-adult-behavior.md) — refugio/ocultarse, comportamiento adulto, memoria de lugares (diseño).
 - [`docs/architecture.md`](docs/architecture.md) — jerarquía de clases y cada sistema a fondo.
