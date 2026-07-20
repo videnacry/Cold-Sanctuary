@@ -252,6 +252,21 @@ secundario**. Es continuidad emocional, no reinicio.
 `estadoCierre` alimenta el arranque del nodo siguiente. Emparenta con `trauma`/`mood` de
 `CompanionBase` — reutilizable ese mismo tipo de estado.
 
+### Cadena de estado — reparto temprano (Piedra → Neolítico → Metales → semilla de Antigüedad)
+
+| Hilo | Fidelidad | Estado de cierre por época → semilla del siguiente arco |
+|---|---|---|
+| A Fuego | **alta** | Piedra: asombro + responsabilidad (aprendió a contener) → Neo: sereno, tentado por el poder del augurio → Metales: algo desencantado (su ciencia sirve a la astrología del rey) → *semilla:* querer **mirar mejor** (Ptolomeo). |
+| B Barro/Metal | media-alta | Piedra: orgullo del útil → Neo: inquieto por el acaparamiento que habilitó → Metales: tenso/culpable (forjó espadas) → *semilla:* que su ingenio **salve, no mate** (Arquímedes). |
+| C Semilla/Vida | **alta** | Neo: agotada, preocupada (jerarquía/enfermedad) → Metales (Imhotep): reverenciado pero **deshumanizado** (deificado) → *semilla:* el **juramento de no dañar** (Hipócrates). |
+| D Trazo/Símbolo | media | Neo (Contadora): ambivalente (el signo recuerda y controla) → Metales (Enheduanna): exiliada→**reivindicada**, firme y orgullosa → *semilla:* la **voz que canta el dolor** (Homero). |
+| E Corona/Espada | **baja** (máx. variedad) | Neo: endurecido (coerción) → Metales (Sargón): triunfal pero **paranoico** (imperio que se pudre) → *semilla:* **ambición sin freno** (Alejandro, héroe↔villano). |
+| F Aliento/Mente | **alta** | Neo: pensativo, incómodo (el augurio como poder) → Metales (Sacerdote): atrapado entre consuelo y el templo que oprime → *semilla:* **cuestionar la ciudad** (Sócrates). |
+| G Risa/Enredo | media | Neo: cauto (reírse del jefe es peligroso) → Metales (Bufón): querido pero **silenciado** → *semilla:* la **sátira que hiere** (Aristófanes). |
+
+Con esto el reparto temprano queda **encadenado por estado** (no solo por tema): cada héroe llega a la
+Antigüedad marcado por lo que vivió.
+
 ## Pendiente
 
 - [ ] Confirmar N=6 hilos y sus temas (o ajustar).

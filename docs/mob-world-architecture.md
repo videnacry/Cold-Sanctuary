@@ -47,6 +47,38 @@ Toda área tiene **dos capas** (ver `area-missions-spec`):
 - **La ciudad.** El área mob (p. ej. la cocina→ciudad-insecto) es un hub navegable con esos
   edificios-tienda y NPCs mob.
 
+## 4b. Áreas = civilizaciones mob (confirmado 2026-07-21)
+
+Cada **área-base es una civilización mob**; el jugador entra por su máquina a esa civilización.
+**Cada civilización tiene sus edificios (uno por hilo/dominio) y sus misiones históricas** — la
+forja, el granero, el templo, el mercado, la torre de estrellas, el taller, el teatro — cada uno con
+el héroe de ese dominio en esa civilización/era.
+
+**Mapeo inicial (ajustable):**
+
+| Área base | Civilización mob | Por qué |
+|---|---|---|
+| Kitchen | **Mesopotamia** (la cuna) | primeras ciudades, pan y cerveza; hogar del reparto del amanecer |
+| Garden/Huerto | **China** | agricultura, jardines, té, seda |
+| VeterinaryClinic + CubCare | **Egipto** | reverencia y cuidado animal |
+| YogaRoom | **India** | yoga, meditación, filosofía (además es el portal) |
+| AlchemyLab | **Persia / mundo islámico** | alquimia, química, Casa de la Sabiduría |
+| VehicleWorkshop | **Roma** | ingeniería, máquinas, caminos |
+| TextileStudio | **Andes (Inca)** | el textil como lenguaje y moneda |
+| FuelLab | **Inglaterra industrial** | vapor, energía |
+| Infirmary | **Grecia** | medicina hipocrática |
+| Cleaning | **Japón** (propuesto) | pureza, orden, estética |
+| Pharmacy / CulturedMeat / Submarine / UnderwaterGarden / NightWatch / MonsterSection | 🔲 | por decidir |
+
+**Eventos entre áreas (cross-over):** un personaje de una civilización puede **aparecer en otra
+cumpliendo parte de su historia** (viajes). Raro al principio; **común en niveles altos**, donde de
+**unas pocas civilizaciones se pasa a muchísimos países/regiones**.
+
+**Relación con la matriz:** [`mob-epochs-matrix.md`](mob-epochs-matrix.md) es el **patrón/mainline de
+referencia**; **cada civilización-área instancia su propio reparto regional** a lo largo de SU
+historia (matrices paralelas). La cocina (Mesopotamia) es la primera detallada; el "paso de la
+antorcha entre regiones" se vive como estos cross-overs.
+
 ## 5. NPCs mob: modelo ligero (≠ humanos)
 
 Dos niveles de NPC en el juego:
@@ -126,8 +158,27 @@ eso se construye **un mundo mob completo primero** y luego se reskinea.
 Probar este patrón antes de reskinear a otras áreas/escalas.
 
 > **Estado (2026-07-20):** el código-puro está hecho (`MobResident`, `MobWorldDirector`, `YogaPortal`,
-> auto-bootstrap). Falta el **montaje en escena** de la ciudad-insecto y las tiendas, que espera a
-> validar el `SampleSceneBuilder`.
+> auto-bootstrap). `SampleSceneBuilder` **auditado y validado** (2026-07-21) → apto para el montaje.
+
+### Layout de la cocina-ciudad = Mesopotamia (primera civilización)
+
+Los 7 edificios por dominio (uno por hilo), cada uno con su **ancla de piedra** (el jugador los
+conoce en el amanecer; evolucionan de era con el `MobWorldDirector`). Más el yoga-portal de salida.
+
+| Edificio | Hilo | Ancla (habitante) |
+|---|---|---|
+| El Hogar (fuego) | A | Guardián del Fuego |
+| La Fragua / taller de piedra | B | El Tallador |
+| El Granero / huerto | C | La Recolectora |
+| La Pared Pintada | D | La Mano de Lascaux |
+| La Choza del Jefe | E | El Primer Jefe |
+| La Tienda del Chamán | F | El Chamán |
+| El Círculo de la Risa | G | El Bromista |
+| **Yoga-portal** (salida) | — | — |
+
+Para el primer prototipo bastan **2–3** habitantes (p. ej. Guardián del Fuego + Ötzi como suelto);
+el resto se añade al reskinear. Cablear en `SampleSceneBuilder` (`MobResident` en cada edificio;
+`YogaPortal`; `MobWorldDirector` con un evento).
 
 ## 13. Impacto en el código
 
