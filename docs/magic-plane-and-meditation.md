@@ -145,8 +145,8 @@ normal de la superficie**:
 
 | Componente | Rol | Estado |
 |---|---|---|
-| `SurfaceWalker` | Locomoción con gravedad relativa a la normal + máscara de superficies. | 🔲 Nuevo |
-| `AvatarController` | Avatar activo, avatares desbloqueados, cambio de avatar (dentro/fuera de sim). Cada `Avatar` define máscara de superficie, locomoción y tier. | 🔲 Nuevo |
+| `SurfaceWalker` | Locomoción con gravedad relativa a la normal (suelo/pared/techo mismo código) + modos `canClimb`/`flight`. Kinemático; va en el avatar-robot, no en el jugador. | ✅ (1er pase, tunear en editor) |
+| `AvatarController` + `RobotAvatar` | Avatar activo, desbloqueos, cambio (tecla G) gated por dentro-de-sim / hechizo. Cada `RobotAvatar` define locomoción (Ground/Climb/Flight), velocidad y escala. | ✅ |
 
 ---
 
@@ -324,8 +324,9 @@ que aparecen; cada una se desvanece si no te toca en unos segundos. Para el loto
 > podrá huir. Tunéalo en el `PostureVisualizationMission`.
 
 ### Aún pendiente de implementar
-- `SurfaceWalker` — locomoción con gravedad relativa a la normal + máscara de superficie.
-- `AvatarController` + tipo `Avatar` — avatares desbloqueables, cambio dentro/fuera de sim.
+- Integrar `SurfaceWalker`/avatares con las misiones: hoy la locomoción del Eje A existe
+  (suelo/pared/techo/aire) pero las misiones aún spawnean mobs en el suelo. Falta tunear en
+  editor los raycasts y cablear el avatar-robot como controlador dentro de la simulación.
 - Arquetipos de mob restantes (§8): espejo, mimético, territorial, y las variantes bespoke de
   áreas complejas (taming submarino, lenguaje de monstruos, combos de FuelLab).
 - Resto de misiones de las demás categorías (§7): observar el cuerpo, no pensar, espejo…
