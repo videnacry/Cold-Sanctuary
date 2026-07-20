@@ -181,13 +181,43 @@ científicos, obras artísticas, avances médicos, investigaciones de dudosa mor
 | Cocina | gastronomía / oficios |
 | MonsterSection / NightWatch | conflictos, lo desconocido, lo "monstruoso" de la historia |
 
-**Guardarraíles (recomendación, ajustables por Berón):**
-- **Sensibilidad/tono:** guerras y atrocidades se tratan desde la **comprensión / reflexión /
-  sanación** (coherente con la ética no-violenta y contemplativa), nunca glorificación ni
-  trivialización.
-- **Propiedad intelectual:** personajes/eventos **reales** y ficción de **dominio público** (mitos,
-  folclore, clásicos) = libres. Ficción **moderna con copyright** = evitar.
-- **Rigor:** basarse en hechos; "ayudar" reinterpreta, no falsea la Historia.
+**Filosofía tonal — agridulce que termina en aprendizaje (confirmado por Berón 2026-07-20):**
+- ~**La mitad** de las historias alegres/divertidas revelan un **trasfondo que invierte el tono**:
+  muchos placeres solo existen por un **sacrificio** (a veces no identificado); el caos puede nacer
+  de algo hermoso; se rastrean los errores/influencias que llevaron a lo trágico.
+- Pero el **resultado final siempre es aprendizaje**: aprovechar un suceso triste del pasado para
+  **forjar algo bueno** hoy — **reivindicación/redención**. Tesis: mundo real donde conviene estar
+  **alerta** y cultivar buenos sentimientos/ideas/lógica en uno y en quienes nos rodean; **esperanza
+  de crecer como especie hasta ser plenamente racionales**.
+
+**Barrido cronológico (Edad de Piedra → presente):** el mundo mob **avanza muy rápido** en el tiempo,
+**acoplado al `MobWorldDirector` (§6)**: sus eventos que "lo cambian todo" **son el avance de las
+eras**. Así se ve cómo figuras como Hércules, Buda, Jesús, Einstein o Da Vinci **siguen inspirando**
+siglos después.
+
+**Reencuadre esperanzador (contrafactual):** se pueden **retocar sucesos históricos o leyendas** para
+que se **perciba lo que realmente pasó** pero el jugador **halle la solución que evita la catástrofe**
+— mostrando la capacidad de resolver el mundo alrededor y la esperanza de mejorar.
+
+**Arquetipo de misión "Llegar al corazón":** misiones donde la vida del jugador **depende de alcanzar
+el corazón de mobs mucho más poderosos que él**, por su bien y el de otros mobs. No es combate: es
+**comprender/alcanzar el núcleo** (pariente del absorbente/buscar-la-raíz, a escala de "jefe").
+
+**Lo turbio, al final:** los casos más oscuros (p. ej. experimentación con personas sin derechos que
+derivó en descubrimientos) se **reservan para el tramo final** — menos prioritario, igual importante,
+siempre desde la reflexión y la reivindicación de las víctimas.
+
+**Guardarraíles (confirmados por Berón 2026-07-20):**
+- **Sensibilidad/tono:** el trasfondo duro es válido (ver filosofía agridulce), pero **siempre cierra
+  en aprendizaje/reivindicación**, desde la comprensión — nunca glorificación ni trivialización.
+- **Propiedad intelectual:** reales + dominio público = libres. Para figuras **muy importantes o
+  sensibles**, **representación abstracta** (arquetipo/esencia) y retoque "hasta el margen legal";
+  ficción moderna con copyright = evitar. La idea es representar la Historia **al menos de forma
+  abstracta**.
+- **Rigor:** basarse en hechos; el reencuadre esperanzador **reinterpreta explícitamente** (no se
+  presenta como historia literal).
+
+Lista inicial de personajes: [`mob-characters.md`](mob-characters.md).
 
 **Implementación:** la biografía por capas usa `DialogueSequence` (existe); cada capa se desbloquea
 al completar una misión de ayuda. La **etiqueta `tone`** (§8) sale natural del episodio histórico.
