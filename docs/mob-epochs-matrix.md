@@ -15,13 +15,26 @@
 - **Alineación** por época, puede virar: **héroe · villano · neutral · héroe→villano · villano→héroe**.
 - Cada etapa mantiene el arco **agridulce → aprendizaje** (§14) y entrega el elemento de su era.
 
+## Áreas = civilizaciones/regiones (capa espacial)
+
+Los repartos de una época **comparten territorio** (la Antigüedad salió grecomediterránea). Lo
+volvemos principio: **Área = civilización/región** (espacio) · **Época = tiempo** · **Hilo = dominio**.
+
+- Como en la Historia real, **el conocimiento migra entre regiones** cuando el centro del mundo se
+  desplaza: la astronomía va **Babilonia → Grecia → mundo islámico → Europa**. El hilo (dominio)
+  **cambia de área/región con la era** → el jugador ve **pasar la antorcha entre civilizaciones**.
+- **Objetivo: representar el mundo entero**, no solo Occidente. Rotar regiones por época y sumar
+  figuras de **China** (Confucio, Cai Lun, Zhang Heng), **India** (Aryabhata, Sushruta, Buda),
+  **Mesoamérica** (astrónomos mayas), **África** (Imhotep, Mansa Musa, los dogon), **mundo islámico**
+  (al-Khwarizmi, Alhacén, Avicena), etc.
+
 ## Épocas (10)
 
 1. Edad de Piedra (Paleolítico) · 2. Neolítico · 3. Edad de los Metales (Cobre/Bronce/Hierro) ·
 4. Antigüedad clásica · 5. Edad Media · 6. Renacimiento · 7. Ilustración / Revolución científica ·
 8. Revolución industrial (s.XIX) · 9. Siglo XX · 10. Actualidad / futuro cercano.
 
-## Hilos (N = 6) — sobrenombres de piedra FIJADOS
+## Hilos (N = 7) — sobrenombres de piedra FIJADOS
 
 El "sobrenombre de piedra" es el **ancla**: el nombre con el que el jugador conoce al héroe en el
 Paleolítico y con el que **lo seguirá llamando** en todas las eras, aunque el mundo lo renombre.
@@ -34,6 +47,7 @@ Paleolítico y con el que **lo seguirá llamando** en todas las eras, aunque el 
 | **D · Trazo y Símbolo** | **La Mano de Lascaux** | arte, escritura, cultura | Estudio Textil | héroe/neutral |
 | **E · Corona y Espada** | **El Primer Jefe** | poder, guerra, ley | MonsterSection / hub | villano-capaz / héroe↔villano |
 | **F · Aliento y Mente** | **El Chamán** | cuerpo, espíritu, mente | Sala de Yoga / Enfermería | contemplativo |
+| **G · Risa y Enredo** | **El Bromista** | humor, juego, astucia, sátira | Mercadillo / plaza (teatro) | neutral-pícaro |
 
 > B y C: el ancla paleolítica (**El Tallador** = primer útil de piedra; **La Recolectora** = quien
 > conocía las plantas que alimentan y curan) **se convierte** en el Neolítico en *El Alfarero* y *La
@@ -44,20 +58,21 @@ Paleolítico y con el que **lo seguirá llamando** en todas las eras, aunque el 
 Nombres confiables puestos; 🔲 = por decidir juntos. Los sobrenombres arquetípicos (sin nombre real)
 van en *cursiva*.
 
-| Época | A Fuego/Estrellas | B Barro/Metal | C Semilla/Vida | D Trazo/Símbolo | E Corona/Espada | F Aliento/Mente |
-|---|---|---|---|---|---|---|
-| Piedra | *Guardián del Fuego* | *El Tallador* | *La Recolectora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* |
-| Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | 🔲 | 🔲 | *El Soñador* |
-| Metales | *El Astrónomo de Babel* | *El Fundidor* / Ötzi | 🔲 | Enheduanna | Gilgamesh/Sargón | 🔲 |
-| Antigüedad | Ptolomeo | Arquímedes | Hipócrates | Homero | Alejandro Magno | Sócrates ✳ (o Buda) |
-| Media | Alhacén (óptica) | *Maestro de catedrales* | Avicena (Ibn Sina) | 🔲 | Gengis Kan | 🔲 |
-| Renacimiento | Galileo | Brunelleschi | Vesalio | Leonardo da Vinci | 🔲 | 🔲 |
-| Ilustración | **Newton** | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
-| Industrial | Herschel/Laplace 🔲 | Watt (vapor) | Pasteur | 🔲 | Napoleón | 🔲 |
-| Siglo XX | Einstein | von Braun (héroe↔villano) | "Los Nombres Robados" ⚠ | Picasso 🔲 | *(dictador)* villano | Freud/Jung 🔲 |
-| Actualidad | **Hawking** | 🔲 | 🔲 | 🔲 | 🔲 | 🔲 |
+| Época | A Fuego/Estrellas | B Barro/Metal | C Semilla/Vida | D Trazo/Símbolo | E Corona/Espada | F Aliento/Mente | G Risa/Enredo |
+|---|---|---|---|---|---|---|---|
+| Piedra | *Guardián del Fuego* | *El Tallador* | *La Recolectora* | *La Mano de Lascaux* | *El Primer Jefe* | *El Chamán* | *El Bromista* |
+| Neolítico | *El Lector del Cielo* | *El Alfarero* | *La Sembradora* | 🔲 | 🔲 | *El Soñador* | 🔲 |
+| Metales | *El Astrónomo de Babel* | *El Fundidor* | Imhotep | Enheduanna | Sargón de Acad | *El Sacerdote del templo* | *El Bufón de la corte* |
+| Antigüedad | Ptolomeo | Arquímedes | Hipócrates | Homero | Alejandro Magno | Sócrates ✳ | Aristófanes |
+| Media | Alhacén | *Maestro de catedrales* | Avicena | 🔲 | Gengis Kan | *El Místico* | Nasreddín Hoja |
+| Renacimiento | Galileo | Brunelleschi | Vesalio | Leonardo da Vinci | 🔲 | Montaigne | Rabelais |
+| Ilustración | **Newton** | 🔲 | 🔲 | 🔲 | 🔲 | Spinoza 🔲 | Voltaire |
+| Industrial | 🔲 | Watt (vapor) | Pasteur | 🔲 | Napoleón | *El alienado* 🔲 | Mark Twain |
+| Siglo XX | Einstein | von Braun (héroe↔villano) | "Los Nombres Robados" ⚠ | Picasso 🔲 | *(dictador)* villano | Freud/Jung | Chaplin |
+| Actualidad | **Hawking** | 🔲 | 🔲 | 🔲 | 🔲 | *neurociencia contempl.* | 🔲 |
 
-> El nº por época debe igualarse (6) al rellenar; hoy hay huecos a propósito.
+> Nº por época a igualar en **7** al rellenar; hoy hay huecos (🔲) a propósito. Ötzi y Gilgamesh
+> pasan a ser **personajes sueltos** de los Metales (no atados a un hilo).
 
 ## Hilo A completo — "El Fuego y las Estrellas" (arco de 10 épocas)
 
@@ -127,9 +142,50 @@ El primer elenco donde cada hilo tiene una figura **real y reconocible**. Format
 - **Sócrates** ✳ (F · Sala de Yoga · héroe) — *El Chamán, ya filósofo*.
   "Conócete a ti mismo", partero de ideas → **condenado a la cicuta** por incomodar a la ciudad →
   **la verdad interior cuesta, pero libera**. *Ayuda:* buscar-la-raíz / no-pensar. *(alt: Buda.)*
+- **Aristófanes** (G · Mercadillo/teatro · neutral-pícaro) — *El Bromista, ya comediógrafo*.
+  La comedia que se burla del poder y de las modas → su sátira ("Las Nubes") ridiculiza a **Sócrates**
+  y ayuda a volver la opinión contra él → **la risa es un arma: ilumina o hiere al inocente**.
+  *Ayuda:* enredo. *(Enlace entre hilos: Aristófanes ↔ Sócrates — los personajes se cruzan.)*
 
-> Reparto Antigüedad = 6 (uno por hilo), balance tonal cubierto: descubrimiento (Ptolomeo/Arquímedes),
-> tragedia (Arquímedes/Sócrates), guerra/terror (Alejandro/Homero), sabiduría (Hipócrates/Sócrates).
+> **Región:** grecomediterránea (comparten territorio → esta época "es" la civilización griega).
+> Otras regiones tienen su reparto paralelo a añadir (China de las Cien Escuelas, India clásica…).
+> Reparto Antigüedad = **7** (uno por hilo), balance tonal cubierto: descubrimiento (Ptolomeo/
+> Arquímedes), tragedia (Arquímedes/Sócrates), guerra (Alejandro/Homero), sabiduría (Hipócrates/
+> Sócrates), **humor (Aristófanes)**.
+
+## Corte completo — Época 3: Edad de los Metales (los 7 hilos)
+
+**Región:** Próximo Oriente del Bronce — **Mesopotamia** (Sumer/Acad) y **Egipto**.
+
+- **El Astrónomo de Babel** (A · Guardia nocturna · héroe) — *Guardián del Fuego, ya mira el cielo
+  desde el zigurat*. Primeros catálogos de estrellas y el calendario → la astrología al servicio del
+  rey (augurios que deciden guerras) → **separar el asombro del miedo**. *Ayuda:* observar.
+- **El Fundidor** (B · Mecánica/FuelLab · héroe) — *El Tallador, ya domina el horno*. Funde
+  cobre+estaño (bronce) y luego hierro → el mismo horno hace **arados y espadas** → **el que forja
+  elige**. *Ayuda:* canalizar/forjar + proteger la forja. Elem: **Cu, Sn, Fe**.
+- **Imhotep** (C · Enfermería/Mecánica · héroe) — *La Recolectora, ya primer médico con nombre* (y
+  gran constructor de la primera pirámide). Sana y levanta → **deificado** siglos después →
+  **se pierde el hombre tras el dios; el saber es humano**. *Ayuda:* curar.
+- **Enheduanna** (D · Textil · héroe) — *La Mano de Lascaux, ya primera autora con nombre*. Firma sus
+  himnos → un golpe la exilia; **escribe para volver** → **reivindicación**: recuperó su voz.
+  *Ayuda:* proteger sus tablillas.
+- **Sargón de Acad** (E · hub · **héroe↔villano**) — *El Primer Jefe, ya emperador*. De copero funda
+  el **primer imperio** → unifica por conquista; el imperio se hereda y se pudre → **el poder que no
+  se cuida corrompe a quien lo hereda**. *Ayuda:* llegar-al-corazón.
+- **El Sacerdote del templo** (F · Yoga/Enfermería · contemplativo) — *El Chamán, ya oficia*. Ritual
+  y consuelo comunitario → el templo exige sacrificios e impuestos → **la compasión no necesita
+  altar**. *Ayuda:* no-pensar / curar.
+- **El Bufón de la corte** (G · hub · neutral-pícaro) — *El Bromista, ya bufón del rey*. Junto al
+  trono nace el único que puede **decir la verdad riéndose** → …hasta que el rey lo calla → **la risa
+  desarma al poder, y el poder teme a la risa**. *Ayuda:* enredo.
+
+**Personajes sueltos de la era** (no atados a un hilo):
+- **Ötzi, el Hombre de Hielo** ⭑ — misterio forense real; *buscar-la-raíz* (detalle en
+  [`mob-quests-early.md`](mob-quests-early.md)). Elem: Cu.
+- **Gilgamesh** ⭑ — capstone legendario de Uruk; *llegar-al-corazón* (aceptar la mortalidad).
+
+> Balance tonal Metales: descubrimiento (Astrónomo/Fundidor/Imhotep), tristeza/reivindicación
+> (Enheduanna), poder/terror (Sargón), sabiduría (Sacerdote), **humor (Bufón)**.
 
 ## Método de afinidad (para encadenar columnas)
 
