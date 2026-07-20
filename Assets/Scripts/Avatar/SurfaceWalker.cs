@@ -22,6 +22,8 @@ public class SurfaceWalker : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 4f;
     public float turnSpeed = 120f;
+    [Tooltip("Caída (unidades/s) cuando el cuerpo se queda sin superficie bajo él.")]
+    public float fallSpeed = 8f;
 
     [Header("Surface sticking")]
     public LayerMask walkable = ~0;
@@ -84,16 +86,25 @@ public class SurfaceWalker : MonoBehaviour
         }
 
         // Stick to the surface below (gravity along -up).
+        bool stuck = false;
         if (Physics.Raycast(transform.position + _up * 0.1f, -_up,
                 out RaycastHit hit, stickDistance + surfaceOffset, walkable))
         {
             bool allowed = canClimb || Vector3.Dot(hit.normal, Vector3.up) > FloorDot;
             if (allowed)
             {
+                stuck = true;
                 _up = Vector3.Slerp(_up, hit.normal, alignSpeed * Time.deltaTime);
                 transform.position = Vector3.Lerp(
                     transform.position, hit.point + hit.normal * surfaceOffset, alignSpeed * Time.deltaTime);
             }
+        }
+
+        // Ungrounded → fall toward world-down and drift "up" back to vertical.
+        if (!stuck)
+        {
+            transform.position += Vector3.down * (fallSpeed * Time.deltaTime);
+            _up = Vector3.Slerp(_up, Vector3.up, alignSpeed * Time.deltaTime);
         }
 
         AlignUpTo(_up);
