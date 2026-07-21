@@ -75,6 +75,11 @@ public static class SampleSceneBuilder
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BakeNavMesh();
 
+        // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
+        // La cocina ya apunta a ella (mobWorldSceneName). Guardado por si la API de escenas falla.
+        try { MobWorldSceneBuilder.BuildMesopotamia(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
+
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
     }
@@ -1186,7 +1191,7 @@ public static class SampleSceneBuilder
 
     static void BuildMeditationContent(Transform parent)
     {
-        WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel);
+        WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel, MobWorldSceneBuilder.SceneName); // modo escena → mundo mob propio
         WireMeditationArea(parent, "YogaRoom_Area",         "Sala de Yoga",   new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga);
         WireMeditationArea(parent, "Garden_Area",           "Huerto",         new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel);
         WireMeditationArea(parent, "Infirmary_Area",        "Enfermería",     new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal);
@@ -1214,7 +1219,8 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Plano mágico cableado: VirtualizationMachine por área + loto en el jugador.");
     }
 
-    static void WireMeditationArea(Transform parent, string areaName, string displayName, Color tint, MissionKind kind)
+    static void WireMeditationArea(Transform parent, string areaName, string displayName, Color tint,
+                                    MissionKind kind, string mobSceneName = null)
     {
         GameObject area = GameObject.Find(areaName);
         if (area == null)
@@ -1223,7 +1229,24 @@ public static class SampleSceneBuilder
             return;
         }
 
-        // Root de entorno que el reality shift escala ×8 (decor "gigante" detrás del negro).
+        // Máquina de virtualización en la entrada abierta (+Z).
+        GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
+        machineGO.transform.SetParent(area.transform, worldPositionStays: false);
+        machineGO.transform.localPosition = new Vector3(0f, 1f, 4.2f);
+        BoxCollider bc = machineGO.AddComponent<BoxCollider>();
+        bc.isTrigger = true;
+        bc.size = new Vector3(3f, 3f, 1.5f);
+        VirtualizationMachine machine = machineGO.AddComponent<VirtualizationMachine>();
+        machine.areaName = displayName;
+
+        // MODO ESCENA: la máquina carga el mundo mob propio (sin shift/misiones in-place).
+        if (!string.IsNullOrEmpty(mobSceneName))
+        {
+            machine.mobWorldSceneName = mobSceneName;
+            return;
+        }
+
+        // MODO IN-PLACE: root de entorno que el reality shift escala ×8 (decor "gigante" tras el negro).
         GameObject mobRoot = new GameObject($"{areaName}_MobRoot");
         mobRoot.transform.SetParent(area.transform, worldPositionStays: false);
         for (int i = 0; i < 3; i++)
@@ -1237,22 +1260,12 @@ public static class SampleSceneBuilder
             giant.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{areaName}_giant{i}_MAT", Color.Lerp(tint, Color.white, 0.2f));
         }
 
-        // Reality shift driver.
         GameObject shiftGO = new GameObject($"{areaName}_ShiftSystem");
         shiftGO.transform.SetParent(area.transform, worldPositionStays: false);
         RealityShiftController shift = shiftGO.AddComponent<RealityShiftController>();
         shift.environmentRoot = mobRoot.transform;
         // playerCamera queda null → RealityShiftController usa Camera.main
 
-        // Máquina de virtualización en la entrada abierta (+Z).
-        GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
-        machineGO.transform.SetParent(area.transform, worldPositionStays: false);
-        machineGO.transform.localPosition = new Vector3(0f, 1f, 4.2f);
-        BoxCollider bc = machineGO.AddComponent<BoxCollider>();
-        bc.isTrigger = true;
-        bc.size = new Vector3(3f, 3f, 1.5f);
-        VirtualizationMachine machine = machineGO.AddComponent<VirtualizationMachine>();
-        machine.areaName = displayName;
         machine.shift = shift;
         machine.missions = BuildAreaMissions(parent, area.transform, displayName, tint, kind);
     }
