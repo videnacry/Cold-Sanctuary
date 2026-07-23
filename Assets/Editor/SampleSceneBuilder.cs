@@ -142,17 +142,22 @@ public static class SampleSceneBuilder
         group.transform.SetParent(parent);
         group.AddComponent<FarmingSandboxItems>(); // crea items placeholder y los asigna como drops (runtime)
 
-        // 3 criaturas de distinta dificultad/recompensa (dischargePerTouch menor = más difícil).
-        AddPlayCreature(group.transform, "PlayCreature_Suave", new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2, 20f);
-        AddPlayCreature(group.transform, "PlayCreature_Media", new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4, 35f);
-        AddPlayCreature(group.transform, "PlayCreature_Dura",  new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f);
+        // Criaturas de distinta dificultad/recompensa (dischargePerTouch menor = más difícil).
+        // Suave/Media: criadas por humanos, seguras. Dura: puede perder el control si te excitas y no esquivas.
+        // Salvaje: NO criada → no juega (rige la ley natural; V no hace nada) — demuestra el gateo por bond.
+        AddPlayCreature(group.transform, "PlayCreature_Suave",   new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2, 20f, handRaised: true,  canLoseControl: false);
+        AddPlayCreature(group.transform, "PlayCreature_Media",   new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4, 35f, handRaised: true,  canLoseControl: false);
+        AddPlayCreature(group.transform, "PlayCreature_Dura",    new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: true,  canLoseControl: true);
+        AddPlayCreature(group.transform, "PlayCreature_Salvaje", new Vector3( 4f, 1f, 9f), 0.10f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: false, canLoseControl: true);
 
-        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 3 PlayableCreatures. " +
-                  "Acércate y pulsa V para jugar hasta serenarlas (dan recursos/monedas/XP/items); luego F/clic para darles de comer.");
+        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 4 PlayableCreatures. " +
+                  "Juega (V) hasta serenarlas (dan recursos/monedas/XP/items); F/clic para darles de comer. " +
+                  "La 'Dura' puede golpearte si te excitas y no esquivas; la 'Salvaje' no juega (ley natural).");
     }
 
     static void AddPlayCreature(Transform parent, string name, Vector3 pos, float discharge,
-                                SanctuaryResource res, float amount, int coins, float xp)
+                                SanctuaryResource res, float amount, int coins, float xp,
+                                bool handRaised = true, bool canLoseControl = false)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name;
@@ -166,6 +171,8 @@ public static class SampleSceneBuilder
         pc.dropAmount        = amount;
         pc.dropCoins         = coins;
         pc.xpReward          = xp;
+        pc.handRaised        = handRaised;
+        pc.canLoseControl    = canLoseControl;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──

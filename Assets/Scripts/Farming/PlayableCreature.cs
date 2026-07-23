@@ -57,6 +57,25 @@ public class PlayableCreature : MonoBehaviour, IInteractable
     [Tooltip("No se aleja más de esto de su sitio de origen (correa).")]
     [Min(0f)] public float leash = 4f;
 
+    [Header("Desbloqueo del juego (bond/estado) — docs §4.1")]
+    [Tooltip("Criada por humanos → juega desde el principio.")]
+    public bool handRaised = true;
+    [Tooltip("En relajación profunda → juega aunque sea salvaje.")]
+    public bool deeplyRelaxed = false;
+    [Tooltip("Placeholder de 'vínculo suficiente ya alcanzado'. Real: leer LivingEntity.bonds.")]
+    public bool bondUnlocked = false;
+
+    [Header("Riesgo: pérdida de control — docs §4.1")]
+    [Tooltip("Si puede perder el control de su fuerza al excitarse y hacerte daño si no esquivas.")]
+    public bool canLoseControl = false;
+    [Tooltip("Daño base al perder el control (escala con la excitación). Requiere CharacterLevel en el jugador.")]
+    [Min(0f)] public float looseControlDamage = 8f;
+    [Tooltip("Excitación mínima para que pueda perder el control.")]
+    [Range(0f, 1f)] public float loseControlAbove = 0.5f;
+
+    /// <summary>¿Acepta jugar? (criada, relajada o con vínculo). Si no, rige la ley natural (depredación).</summary>
+    public bool PlayUnlocked => handRaised || deeplyRelaxed || bondUnlocked;
+
     [Header("Recompensa al serenarse")]
     public SanctuaryResource dropResource = SanctuaryResource.Materials;
     [Min(0f)] public float dropAmount = 20f;
@@ -74,8 +93,8 @@ public class PlayableCreature : MonoBehaviour, IInteractable
 
     public State CurrentState { get; private set; } = State.Playful;
 
-    /// <summary>Solo es objetivo de juego mientras aún tiene tensión que descargar.</summary>
-    public bool IsPlayable => CurrentState == State.Playful;
+    /// <summary>Objetivo de juego solo si está desbloqueada (bond/estado) y aún tiene tensión.</summary>
+    public bool IsPlayable => PlayUnlocked && CurrentState == State.Playful;
 
     /// <summary>Excitación actual 0..1 (para feedback/depuración).</summary>
     public float Excitement => _excitement;
@@ -166,16 +185,27 @@ public class PlayableCreature : MonoBehaviour, IInteractable
 
     void GetCaught()
     {
+        // Si está muy excitada y puede perder el control, te golpea (no esquivaste a tiempo).
+        if (canLoseControl && _excitement >= loseControlAbove)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null && p.TryGetComponent(out CharacterLevel cl))
+                cl.TakeDamage(looseControlDamage * _excitement);
+            Debug.Log($"[Farming] «{name}» perdió el control jugando — ¡esquiva la próxima!");
+        }
+        else
+        {
+            Debug.Log($"[Farming] «{name}» te atrapó jugando — ¡retrocede y vuelve a provocarla!");
+        }
+
         _excitement     = 0f;
         _closeTimer     = 0f;
         _caughtCooldown = 0.6f;
 
-        // Salto de retirada hacia su sitio (juego, sin daño).
+        // Salto de retirada hacia su sitio.
         Vector3 back = _home - transform.position; back.y = 0f;
         if (back.sqrMagnitude > 0.001f)
             transform.position += back.normalized * 0.5f;
-
-        Debug.Log($"[Farming] «{name}» te atrapó jugando — ¡retrocede y vuelve a provocarla!");
     }
 
     // ── IInteractable — dar comida y agua (solo cuando está serena) ─────────────
@@ -196,7 +226,8 @@ public class PlayableCreature : MonoBehaviour, IInteractable
 
     void Update()
     {
-        if (CurrentState != State.Playful) return;
+        // Solo se comporta como "jugable" si está desbloqueada; si no, rige la ley natural (Animal).
+        if (CurrentState != State.Playful || !PlayUnlocked) return;
 
         float dt = Time.deltaTime;
         _caughtCooldown = Mathf.Max(0f, _caughtCooldown - dt);

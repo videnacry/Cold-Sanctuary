@@ -43,7 +43,7 @@ public class SanctuaryResourceHUD : MonoBehaviour
             sb.AppendLine("");
             sb.AppendLine($"<b>Kushal</b>  Nv {_level.level}");
             sb.AppendLine($"XP: {Mathf.FloorToInt(_level.xp)}/{Mathf.FloorToInt(_level.XpToNext)}");
-            sb.AppendLine($"Vida: {_level.MaxHealth:0}   Maná: {_level.MaxMana:0}");
+            sb.AppendLine($"Vida: {_level.currentHealth:0}/{_level.MaxHealth:0}   Maná: {_level.currentMana:0}/{_level.MaxMana:0}");
         }
 
         GUI.Label(new Rect(origin.x, origin.y, 280f, 230f), sb.ToString(), _style);

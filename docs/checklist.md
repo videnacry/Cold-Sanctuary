@@ -100,8 +100,12 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       (te mira/se acerca, con correa) + rebote de escala. Sandbox en `SampleSceneBuilder`.
       **V3 hecho (2026-07-23):** tabla de **drops** (`ItemDrop[]` → `Inventory.AddItem`, con consumible y
       artefacto placeholder vía `FarmingSandboxItems`), y **XP → leveling** (`CharacterLevel`: xp/nivel →
-      +vida/+maná, mostrado en el HUD). **Falta:** generalizar el target de combate (hoy `CurrentTarget`
-      es `IngredientMob`) y enganchar vida/maná al combate real (`PlayerStats.progressionLevel`).
+      +vida/+maná + vida actual/daño, mostrado en el HUD). **Refinamiento hecho:** el juego es
+      **desbloqueable** (gateo `PlayUnlocked` = criada/relajada/vínculo; si no, ley natural) y **puede
+      hacer daño** (pérdida de control al excitarse → `CharacterLevel.TakeDamage` si no esquivas).
+      **Falta:** leer el vínculo real de `LivingEntity.bonds` (hoy flags placeholder), conmutar de verdad
+      a la depredación de `Animal` cuando no está desbloqueada, mecánica de **esquiva** propia,
+      generalizar el target de combate (`CurrentTarget` es `IngredientMob`) y enganchar vida/maná al combate.
 - [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
       (lava↔subterráneo primero); reusa `MobWorldLoader`.
 - [ ] **D — Construcción en el tiempo.** `Construction`: progreso consumiendo recursos+tiempo (lento en

@@ -188,6 +188,21 @@ Mecánicamente:
 - Encaja con el pilar de no-violencia: la fauna real es inofensiva al principio; las criaturas poderosas
   de los santuarios profundos tienen **más tensión que descargar** (más difícil) y **mejor recompensa**.
 
+**No siempre se puede jugar (dinámica DESBLOQUEABLE):** que una criatura acepte jugar depende de su
+**vínculo (bond)** y su **estado**. Solo entran en modo juego las **criadas por humanos**, las de
+**vínculo suficiente**, o las que están en **relajación profunda**. Si te acercas a, por ejemplo, un
+**oso polar salvaje** que no fue criado por humanos ni está relajado, **NO** hay juego: rige la **ley
+natural** (el sistema de depredación/amenaza que ya existe — `Animal.SenseThreats`/`EvaluateThreat`,
+dietas con humano como presa), y el carnívoro puede **cazar** al jugador y a otros personajes. Subir el
+vínculo (jugar + cuidar) es lo que va **desbloqueando** el juego con criaturas cada vez más peligrosas.
+
+**El juego NO es del todo inofensivo:** aun jugando, la criatura puede **hacer daño si no esquivas**. Y
+**cuanta más excitación**, **más probable que pierda el control de su fuerza**: al emocionarse te
+consideran un **oponente digno** y se van **liberando de restricciones** (te ven fuerte y no creen que
+vayan a lastimarte). Así, el combo tiene tensión real: descargas más rápido con más excitación, pero el
+riesgo de un golpe "sin control" también sube → hay que **jugar el ritmo y esquivar**, no solo tapear.
+*(La vida que da subir de nivel cobra sentido aquí: aguantar juego más rudo.)*
+
 ### 4.2 Transporte entre santuarios separados
 
 ¿Cómo se guerrea entre lugares tan separados como tierra firme, cielo, fondo marino y subsuelo? Opciones

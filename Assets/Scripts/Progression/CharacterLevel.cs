@@ -28,11 +28,21 @@ public class CharacterLevel : MonoBehaviour
     public float MaxHealth => baseMaxHealth + healthPerLevel * (level - 1);
     public float MaxMana   => baseMaxMana   + manaPerLevel   * (level - 1);
 
+    /// <summary>Vida/maná actuales (los llena Awake y al subir de nivel).</summary>
+    public float currentHealth;
+    public float currentMana;
+
     /// <summary>XP necesaria para el siguiente nivel desde el nivel actual.</summary>
     public float XpToNext => baseXpToNext * Mathf.Pow(xpCurve, level - 1);
 
     /// <summary>Disparado al subir de nivel (nuevo nivel).</summary>
     public event Action<int> OnLevelUp;
+
+    void Awake()
+    {
+        currentHealth = MaxHealth;
+        currentMana   = MaxMana;
+    }
 
     public void GainXp(float amount)
     {
@@ -44,8 +54,18 @@ public class CharacterLevel : MonoBehaviour
         {
             xp -= XpToNext;
             level++;
+            currentHealth = MaxHealth;  // subir de nivel cura del todo
+            currentMana   = MaxMana;
             Debug.Log($"[Nivel] «{name}» subió a nivel {level} — Vida {MaxHealth:0}, Maná {MaxMana:0}.");
             OnLevelUp?.Invoke(level);
         }
+    }
+
+    /// <summary>Recibe daño (p. ej. de una criatura que perdió el control jugando). No baja de 0.</summary>
+    public void TakeDamage(float dmg)
+    {
+        if (dmg <= 0f) return;
+        currentHealth = Mathf.Max(0f, currentHealth - dmg);
+        Debug.Log($"[Nivel] «{name}» recibió {dmg:0.0} de daño — Vida {currentHealth:0}/{MaxHealth:0}.");
     }
 }
