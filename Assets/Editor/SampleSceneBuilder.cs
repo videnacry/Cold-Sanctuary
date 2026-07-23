@@ -74,6 +74,7 @@ public static class SampleSceneBuilder
         BuildHolographicMenu(root.transform);
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
+        BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
@@ -120,6 +121,46 @@ public static class SampleSceneBuilder
         p.resource       = resource;
         p.perGameMinute  = perGameMinute;
         p.perWorkerBonus = perWorkerBonus;
+    }
+
+    // ── Farming no-violento (MVP) ───────────────────────────────────────────────
+    //
+    // docs/world-topology-and-planes.md §4.1: jugar con la criatura baja su tensión; al serenarse
+    // suelta recursos/monedas y se le puede dar de comer (F/clic) para que descanse. PlayController
+    // en el jugador (tecla V) + criaturas placeholder para probar.
+
+    static void BuildFarmingSandbox(Transform parent)
+    {
+        GameObject player = GameObject.Find("Player");
+        if (player != null && player.GetComponent<PlayController>() == null)
+            player.AddComponent<PlayController>();
+
+        GameObject group = new GameObject("FarmingSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // 3 criaturas de distinta dificultad/recompensa (dischargePerTouch menor = más difícil).
+        AddPlayCreature(group.transform, "PlayCreature_Suave", new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2);
+        AddPlayCreature(group.transform, "PlayCreature_Media", new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4);
+        AddPlayCreature(group.transform, "PlayCreature_Dura",  new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8);
+
+        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) en el jugador + 3 PlayableCreatures. " +
+                  "Acércate y pulsa V para jugar hasta serenarlas; luego F/clic para darles de comer.");
+    }
+
+    static void AddPlayCreature(Transform parent, string name, Vector3 pos, float discharge,
+                                SanctuaryResource res, float amount, int coins)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{name}_MAT", new Color(0.9f, 0.35f, 0.3f));
+
+        PlayableCreature pc = go.AddComponent<PlayableCreature>();
+        pc.dischargePerTouch = discharge;
+        pc.dropResource      = res;
+        pc.dropAmount        = amount;
+        pc.dropCoins         = coins;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──

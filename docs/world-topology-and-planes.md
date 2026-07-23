@@ -181,6 +181,10 @@ Mecánicamente:
   - **Recursos**.
   - **Objetos útiles** — consumibles estilo Warcraft: invocadores de aliados, potenciadores de
     ataque/defensa, restauradores de vida/maná.
+- **Cuidado tras el juego (cierra el bucle):** una vez serena, se le **provee comida y agua** para que
+  **se sacie y descanse**. Refuerza el pilar de **cuidado** del santuario (jugar + cuidar, no dañar) y
+  deja a la criatura en estado dócil/contento (posible bonus de vínculo; no vuelve a ser objetivo por un
+  tiempo).
 - Encaja con el pilar de no-violencia: la fauna real es inofensiva al principio; las criaturas poderosas
   de los santuarios profundos tienen **más tensión que descargar** (más difícil) y **mejor recompensa**.
 
