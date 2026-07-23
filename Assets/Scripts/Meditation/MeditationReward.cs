@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Reusable reward block for meditation / plano-mágico missions (docs §7).
+/// Reusable reward block for meditation / Microcosmos missions (docs §7).
 ///
 /// Serializable (not a component) so any mission can embed one and tune it in the Inspector.
 /// Wires into the concrete systems that already exist:

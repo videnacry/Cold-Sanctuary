@@ -8,7 +8,7 @@ using UnityEngine.UI;
 ///
 /// Design decision (docs/magic-plane-and-meditation.md §3): the size transition is NEVER
 /// shown to the player. The scale/FOV snap happens behind this black screen while the mission
-/// menu is shown. So this fader is the core piece of the plano-mágico entry flow.
+/// menu is shown. So this fader is the core piece of the Microcosmos entry flow.
 ///
 /// Singleton with auto-bootstrap: if no ScreenFader exists in the scene, Get() builds a
 /// self-contained overlay Canvas at runtime. This lets the meditation system be tested

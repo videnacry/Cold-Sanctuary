@@ -4,7 +4,19 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// Shared logic for every plano-mágico mob-mission: spawn N mobs one by one, count them as they
+/// How a mission finishes.
+/// </summary>
+public enum MissionEndMode
+{
+    /// In-place Microcosmos: MeditationSession fades to black and RealityShiftController snaps size back.
+    Session,
+    /// Mob-world scene (MobWorldLoader): there is no reality shift to undo — cleanup runs immediately
+    /// and the player leaves the scene via the YogaPortal.
+    Standalone
+}
+
+/// <summary>
+/// Shared logic for every Microcosmos mob-mission: spawn N mobs one by one, count them as they
 /// resolve (dissolve), apply the reward and end the session when the target is reached, and clean
 /// up leftovers. Subclasses only decide WHICH archetype to spawn (CreateMob).
 ///
@@ -35,6 +47,11 @@ public abstract class MeditationMissionBase : MonoBehaviour
 
     [Tooltip("Extra hook fired after the reward is applied (VFX, dialogue, unlocks…).")]
     public UnityEvent onCompleted;
+
+    [Header("End mode")]
+    [Tooltip("Session = in-place Microcosmos (fade + RealityShiftController snaps size back). " +
+             "Standalone = mob-world scene (no shift; cleanup runs now, player exits via YogaPortal).")]
+    public MissionEndMode endMode = MissionEndMode.Session;
 
     // ── Runtime ───────────────────────────────────────────────────────────────
 
@@ -105,6 +122,10 @@ public abstract class MeditationMissionBase : MonoBehaviour
     {
         MeditationMob mob = CreateMob(SpawnPosition());
         if (mob == null) return;
+        // Parent under the mission so the spawned mob belongs to the mission's scene. In a mob-world
+        // scene (Standalone) this guarantees the mob unloads with that scene instead of leaking into
+        // the base world; worldPositionStays keeps its spawn position intact.
+        mob.transform.SetParent(transform, worldPositionStays: true);
         if (player != null) mob.SetPlayer(player);
         mob.OnDissolved += HandleResolved;
         _mobs.Add(mob);
@@ -136,8 +157,18 @@ public abstract class MeditationMissionBase : MonoBehaviour
         reward.Apply(player);
         onCompleted?.Invoke();
 
-        // Fade to black, snap back to normal size, fade in. Fires MobMission.OnEnded → Cleanup().
-        MeditationSession.Instance.EndMission();
+        if (endMode == MissionEndMode.Session)
+        {
+            // In-place: fade to black, snap back to normal size, fade in. Fires MobMission.OnEnded → Cleanup().
+            MeditationSession.Instance.EndMission();
+        }
+        else
+        {
+            // Standalone (mob-world scene): no reality shift to undo. Clean up leftovers now; the player
+            // leaves the scene via the YogaPortal (MobWorldLoader.ExitMobWorld).
+            Debug.Log("[Meditación] Misión de mundo mob completada — sal por la sala de yoga cuando quieras.");
+            mission.RaiseEnd();
+        }
     }
 
     void Cleanup()

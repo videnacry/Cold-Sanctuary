@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// The virtualization machine — the universal trigger for mob / plano-mágico missions,
+/// The virtualization machine — the universal trigger for mob / Microcosmos missions,
 /// present in every area (docs §3). Replaces the door-based KitchenEntrance flow.
 ///
 /// Flow:

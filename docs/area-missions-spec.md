@@ -16,7 +16,7 @@
 
 **Tipo** (de `mission-mode.md`):
 - **Simulacro** — interacción diegética con reglas propias (hacer la tarea real del área). Sin mobs.
-- **Mob / wow** — entrar al plano mágico (máquina/loto) y proceso-combate contra mobs.
+- **Mob / wow** — entrar al Microcosmos (máquina/loto) y proceso-combate contra mobs.
 
 **Solo para misiones Mob, tres dimensiones ORTOGONALES (no una escalera):**
 - **Escala / capa** (Eje B): insecto → bacteria → molecular/partícula → energético → invisible/mental.
@@ -36,7 +36,7 @@ un **patrón**: si lo descifras llegas al núcleo con enfrentamientos de ~10; si
 enfrentamientos de más. Con más stats/hechizos sobrevives a 20 simultáneas → la completas casi sin
 pensar. (Check de "nivel/equipo" + skill de mecánicas.)
 
-**Común**: nombre, categoría mental (§7 del plano mágico), `targetCount`, recompensa, gating.
+**Común**: nombre, categoría mental (§7 del Microcosmos), `targetCount`, recompensa, gating.
 
 ---
 
@@ -48,7 +48,7 @@ Hay tres cosas que los docs llaman "misión/tarea"; se reparten así:
 |---|---|---|---|
 | **`AreaTask` (autónomo)** | Ciclo de fondo que sube stats poco a poco | Cuando el personaje **no** está en misión (incl. NPCs, FOMO) | `WorldCharacter.AutonomousTaskLoop`, `SanctuaryArea` |
 | **Simulacro** | Misión diegética activa del jugador (hacer la tarea de verdad) | El jugador la acepta en el área | pendiente (yoga usa `Asana`; cocina, `KitchenCombatManager` futuro) |
-| **Mob / wow** | Misión en el plano mágico contra mobs | El jugador entra por la **máquina de virtualización** / loto | `MeditationMissionBase` + arquetipos ✅ |
+| **Mob / wow** | Misión en el Microcosmos contra mobs | El jugador entra por la **máquina de virtualización** / loto | `MeditationMissionBase` + arquetipos ✅ |
 
 Regla: **el "modo mob" es el estilo *wow* de este juego**; **cada área tiene simulacro Y mob**. Las
 `AreaTask` no son misiones de jugador — son el telón de fondo que hace subir stats cuando no estás
@@ -61,7 +61,9 @@ en una misión (y el *conscription loop* de `mission-mode` puede forzarlas cuand
 - **Jugable hoy**: misiones Mob en **plano suelo** con los arquetipos ya implementados
   (`EphemeralThoughtMob`, `PostureFormMob`, `ChannelMob`, `AbsorbentThoughtMob`, `HealMob`,
   `ProtectMob`+`WardAttackerMob`) vía `MeditationMissionBase` (y `ProtectionMission` bespoke).
-- **Pendiente (Eje A)**: pared/techo/aire/dentro-de-material → necesitan `SurfaceWalker` + avatares.
+- **Eje A (planos)**: la locomoción ya existe — `SurfaceWalker` + avatares (`Assets/Scripts/Avatar/`,
+  gusano/araña/mosco) están implementados. Falta **definir y cablear** las misiones de pared/techo/aire
+  por área y el avatar de "dentro de material" (inmersión).
 - **Pendiente (bespoke)**: combos (FuelLab), taming (submarino), lenguaje (MonsterSection),
   arquetipos aún sin código (espejo, mimético, territorial).
 - **Pendiente (simulacro)**: casi todo (falta `KitchenCombatManager` y el bucle de simulacro genérico;
@@ -243,7 +245,9 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 - **Contradicción de sistemas resuelta arriba**: `AreaTask` (autónomo) ≠ misión de jugador; el "modo mob" ES
   el wow. `SanctuaryMission.MissionType` (IngredientCollection/AreaClear/YeastControl) es el tracking viejo de
   cocina — habrá que decidir si se integra con `MeditationMissionBase` o coexiste.
-- **Eje A (planos)**: nada por encima de "suelo" es jugable hasta que exista `SurfaceWalker` + avatares.
+- **Eje A (planos)**: la locomoción por planos ya existe (`SurfaceWalker` + avatares en
+  `Assets/Scripts/Avatar/`). Lo que queda es **definir y cablear** las misiones concretas por encima de
+  "suelo" (pared/techo/aire) en cada área, más el avatar de "dentro de material".
 - **Arquetipos pendientes** que varias áreas necesitan: a curar, a proteger, absorbente, espejo, mimético,
   territorial, y las mecánicas bespoke (combos, taming, lenguaje, oleadas de colmena).
 
@@ -255,5 +259,6 @@ Leyenda de estado por misión: ✅ jugable hoy · 🟡 montable con arquetipos a
 2. Elegir 2–3 áreas Tier 1 y **definir sus `MobMission` concretos** (nombre, categoría, `targetCount`, reward)
    — jugables ya en plano suelo con los arquetipos actuales.
 3. Cablear en escena (cuando confirmes que `SampleSceneBuilder` está al día).
-4. Priorizar `SurfaceWalker`+avatares (abre el Eje A en todas las áreas) o los arquetipos que faltan
-   (a curar/proteger para Infirmary/CubCare), según qué quieras jugar antes.
+4. Con `SurfaceWalker`+avatares **ya implementados** (Eje A abierto en código), definir y cablear las
+   misiones de pared/techo/aire por área; o priorizar los arquetipos que faltan (a curar/proteger para
+   Infirmary/CubCare), según qué quieras jugar antes.

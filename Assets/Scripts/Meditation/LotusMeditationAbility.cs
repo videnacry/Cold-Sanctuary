@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 
 /// <summary>
-/// The lotus path into the plano mágico — the endgame alternative to the machine (docs §1, §3).
+/// The lotus path into the Microcosmos — the endgame alternative to the machine (docs §1, §3).
 ///
 /// Once the player has learned lotus (yoga) AND acquired the "hechizo de misiones-mob" that
 /// frees them from the machine, they can sit and meditate anywhere. Casting the spell runs the

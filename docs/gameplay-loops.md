@@ -264,7 +264,7 @@ El ratón actúa como alternativa al look de teclado, no como requisito. Un juga
 | Habilidades de combate | `Assets/Scripts/Combat/CombatAbility.cs` + `CombatAbilityBar.cs` |
 | Ataque del jugador | `Assets/Scripts/Combat/PlayerCombat.cs` |
 | Combate autónomo NPC | `Assets/Scripts/Combat/NPCCombatBehavior.cs` |
-| Miniaturización (kitchen scale) | `Assets/Scripts/Kitchen/KitchenScaleController.cs` |
+| Miniaturización (por área) | `Assets/Scripts/Meditation/RealityShiftController.cs` |
 | Misiones | `Assets/Scripts/Mission/SanctuaryMission.cs` + `MissionTracker.cs` |
 | Economía base | `Assets/Scripts/Economy/CoinWallet.cs`, `Inventory.cs`, `ItemData.cs` |
 | Economía NPC | `Assets/Scripts/Economy/NPCEconomy.cs` |

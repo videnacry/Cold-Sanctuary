@@ -1,14 +1,17 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-07-10. Marca lo que completes.
-Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md).
+Tablero para retomar. Última sesión: 2026-07-23. Marca lo que completes.
+Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
+[`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 ## Decisiones abiertas (rápidas)
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
       (ver [`mission-mode.md`](mission-mode.md)).
-- [ ] **`Generator.cs`**: ¿borrar? (legacy redundante con `FamilyGenerator`).
+- [x] **`Generator.cs`**: revisado 2026-07-23 — **se mantiene**. No es redundante con `FamilyGenerator`
+      (uno genera familias, el otro es un spawner por área vía `IFactory`/`Animal.StaticGenerateSquareRange`);
+      sin invocadores en código pero es una herramienta scene-wireable útil.
 - [x] **Malamute: mascota** (decidido) — fuera de `nestSpecies`; sigue siendo presa potencial. Colocación
       como compañero: pendiente (parte del modelo de personajes/`NPCBase`).
 
@@ -60,8 +63,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] Sustituir el gating por `unlockLevel` de `CombatAbility` por gating por **"aprendido"**.
 - [ ] `CombatAbilityBar.RefreshBar()`: suscribirlo a `OnLearned` + `PeriodicTableManager.OnElementDiscovered`
       (arregla el "no refresco en vivo").
-- [ ] **Cocina**: con el trigger-personaje, colapsar a **una sola ruta de control** (interacción) y
-      quitar/guardar el auto-trigger por collider (evita la desincronización).
+- [x] **Cocina**: resuelto 2026-07-23 — `KitchenEntrance`/`KitchenScaleController` (y su auto-trigger)
+      **borrados**; la entrada es ahora una sola ruta vía `VirtualizationMachine` (Microcosmos).
 
 ## Modo misión / economía (mission-mode.md)
 - [ ] Implementar `KitchenCombatManager`: arranca modo misión, activa mobs, bloquea salida del área,
@@ -81,6 +84,34 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 ## Bugs abiertos (known-issues.md)
 - [ ] `ShipCtrl` `if(1==1)` (83/95); `PullDoor.OnCollissionEnter` (typo); `Respawn` off-by-one;
       `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
+
+## Mundo grande — los 3 planos (world-topology-and-planes.md)
+Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna vertebral).
+- [~] **A — Backbone de recursos + HUD (Mesocosmos).** `SanctuaryResource`/`SanctuaryResources` (ledger),
+      `AreaProducer` (pasivo + bonus por personaje asignado), `SanctuaryResourceHUD` (prototipo OnGUI),
+      cableado en `SampleSceneBuilder`. **Primera pasada hecha**; falta: asignación real de personajes
+      (enganchar a `SanctuaryDirector`), regla de visibilidad multi-santuario en guerra, y sustituir el
+      HUD prototipo por UI declarativa.
+- [ ] **B — Farming-como-juego (tensión).** `TensionCreature`: bajar puntos de tensión "jugando" →
+      criatura serena, deja de ser target, suelta XP/recursos/consumibles. Reusa `LivingEntity` + combate.
+- [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
+      (lava↔subterráneo primero); reusa `MobWorldLoader`.
+- [ ] **D — Construcción en el tiempo.** `Construction`: progreso consumiendo recursos+tiempo (lento en
+      Meso, rápido en Macro); 4 áreas + 1 en obra. Depende de A.
+- [ ] **E — Macrocosmos (RTS).** Unidades/roles (peón/héroe), árbol de construcción, cámara 2D-ish,
+      IA de guerra, agujero-negro de estructuras. Sistema grande; al final.
+- [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.
+
+## Hecho (2026-07-23)
+- [x] Sincronización de docs con el código (cifras, 3 sistemas nuevos, flips de estado).
+- [x] **Cocina jugable** (Microcosmos escena): `MissionEndMode.Standalone`, `MobWorldMission`, misión
+      "Procesar ingredientes" incrustada en `MobWorldSceneBuilder`.
+- [x] **Limpieza legacy**: borrados `KitchenScaleController`/`KitchenEntrance` (+método muerto del builder),
+      `IAnimal`/`IVital`. Restaurados `Generator`/`BodyPositionData`. (Perdido `NewFile1.txt`, sin trackear.)
+- [x] **Renombrado** plano mágico → **Microcosmos**; tríada **Micro/Meso/Macrocosmos** en docs.
+- [x] **Diseño del mundo grande**: `world-topology-and-planes.md` (planos, 5 santuarios, núcleo de 2 capas,
+      economía/farming/transporte/cámara del Macrocosmos, arco final con Leo).
+- [x] **A (1ª pasada)**: backbone de recursos de santuario + HUD (ver sección "Mundo grande").
 
 ## Hecho (2026-07-09/10)
 - [x] Auditoría completa + sincronización de 18 docs con el código.

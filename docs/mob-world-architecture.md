@@ -1,6 +1,7 @@
 # Arquitectura del Mundo Mob (santuario fractal)
 
-> Diseño (2026-07-20). Cómo son y funcionan los mundos mob del plano mágico: santuarios
+> Diseño (2026-07-20). Cómo son y funcionan los mundos mob del Microcosmos (el plano interior;
+> uno de los tres planos — ver [`world-topology-and-planes.md`](world-topology-and-planes.md)): santuarios
 > fractales por escala de consciencia, con NPCs ligeros y un mundo vivo por eventos.
 >
 > Conecta con: [`magic-plane-and-meditation.md`](magic-plane-and-meditation.md) (ejes, escalas,
@@ -163,7 +164,7 @@ eso se construye **un mundo mob completo primero** y luego se reskinea.
 
 - **Yoga-portal** para entrar/salir del mundo mob. → ✅ `YogaPortal` (salida; entrada ya vía máquina/loto).
 - La **ciudad-insecto de la cocina** (hub navegable básico). → ✅ cableada = Mesopotamia del amanecer (chozas de adobe) en `SampleSceneBuilder`.
-- **2–3 áreas-tienda** con `MobResident` (rol + una misión). → ✅ 3 anclas en sus chozas (Guardián del Fuego/El Tallador/La Recolectora) + `YogaPortal`.
+- **2–3 áreas-tienda** con `MobResident` (rol + una misión). → ✅ 3 anclas en sus chozas (Guardián del Fuego/El Tallador/La Recolectora) + `YogaPortal` + misión jugable "Procesar ingredientes" (`MobWorldMission`).
 - **1 evento** de `MobWorldDirector`. → ✅ `MobWorldDirector` en escena (auto-bootstrap; eventos por historia). Falta definir el primer evento concreto.
 
 Probar este patrón antes de reskinear a otras áreas/escalas.
@@ -199,12 +200,24 @@ el resto se añade al reskinear. Cablear en `SampleSceneBuilder` (`MobResident` 
 - `MobWorldDirector` ✅ — singleton (auto-bootstrap) que dispara eventos (`Migration`/`Invasion`/
   `Festival`): mueve habitantes, sube niveles y notifica (`OnEvent`) para reordenar contenido.
   Opción `autoEvents` para prototipado. Contraparte por eventos de `SanctuaryDirector`.
-- `YogaPortal` ✅ — `IInteractable` de salida del mundo mob (reusa `MeditationSession.EndMission`).
-- `MobWorldLoader` 🔲 — carga/descarga **aditiva** de la escena del mundo mob **tras el fundido a
-  negro**, transfiere/persiste al jugador y lleva de vuelta al salir. Reemplaza el snap de escala para
-  mundos completos. (Ver decisión de arquitectura abajo.)
-- `MobWorldSceneBuilder` 🔲 — herramienta de Editor que **genera la escena** de una civilización
-  (p. ej. Mesopotamia) reusando el código de chozas/residentes; escenas-desde-código = versionable.
+- `YogaPortal` ✅ — `IInteractable` de salida del mundo mob. En modo escena llama a
+  `MobWorldLoader.ExitMobWorld()`; en modo in-place reusa `MeditationSession.EndMission()`.
+- `MobWorldLoader` ✅ — singleton `DontDestroyOnLoad`. Carga/descarga **aditiva** de la escena del
+  mundo mob **tras el fundido a negro**, teletransporta al jugador a su `MobSpawnPoint` (guardando la
+  transform de retorno) y lo lleva de vuelta al salir. Reemplaza el snap de escala para mundos
+  completos. (Ver decisión de arquitectura abajo.)
+- `MobWorldSceneBuilder` ✅ — herramienta de Editor (`Assets/Editor/MobWorldSceneBuilder.cs`) que
+  **genera la escena** de una civilización (p. ej. Mesopotamia) reusando el código de chozas/residentes;
+  escenas-desde-código = versionable.
+- `MobSpawnPoint` ✅ — marcador del punto donde `MobWorldLoader` teletransporta al jugador al entrar a
+  una escena mob. Uno por escena, junto a la entrada / yoga-portal.
+- `MobWorldMission` ✅ — arranca una `MobMission` que vive DENTRO de una escena mob. Como el modo escena
+  no pasa por `MeditationSession`/`RealityShiftController`, espera a que `MobWorldLoader` termine la
+  entrada (carga + teletransporte + fundido) y entonces llama a `MobMission.RaiseBegin()` para que los
+  mobs aparezcan alrededor del jugador ya colocado. La misión usa `MeditationMissionBase.endMode =
+  Standalone` (nuevo): al completarla limpia en sitio en vez de llamar a `MeditationSession.EndMission`,
+  y el jugador sale por el `YogaPortal`. Con esto la escena de Mesopotamia es **jugable end-to-end**
+  (misión "Procesar ingredientes" = `ChannelMission`, incrustada por `MobWorldSceneBuilder`).
 - Etiqueta `tone` por misión (para el balance tonal) — 🔲 campo o metadato pendiente.
 
 ### Reuso / relación

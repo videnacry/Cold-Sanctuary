@@ -16,7 +16,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
   más `.gitignore` y `.gitattributes`. **No** están en git: escenas (`.unity`), prefabs,
   `ProjectSettings/`, `Packages/manifest.json` ni archivos `.meta`. La configuración del
   proyecto Unity y los assets visuales viven fuera de este repositorio.
-- ~15.200 líneas, 144 scripts, 30 commits. Verificación completa en [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md).
+- ~18.255 líneas, 179 scripts, 95 commits. Verificación completa en [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md).
 - Idioma de comentarios mezclado: inglés y español. Sin namespaces (todo global).
 
 ## Mapa de sistemas
@@ -31,7 +31,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Jugador | `Assets/Scripts/Player/PlayerController.cs`, `PlayerStats.cs` | Activo y cableado. `PlayerCtrl` retirado 2026-07-09 |
 | Nave/Entorno | `ShipCtrl.cs`, `SlideDoor.cs`, `PullDoor.cs`, `DrivePreparation.cs` | Bugs: `ShipCtrl` `if(1==1)`, `PullDoor.OnCollissionEnter` mal escrito |
 | Cámara | `Assets/Scripts/Camera/` | Funciona (robberies, FOV/shake). Modo artístico y `ScreenEffects` pendientes |
-| Generación | `IFactory.cs`, `BirdBehavior.cs`, `Respawn.cs` | Funciona; off-by-one en `Respawn`. `Generator.cs` legacy sin uso |
+| Generación | `IFactory.cs`, `BirdBehavior.cs`, `Respawn.cs` | Funciona; off-by-one en `Respawn`. `Generator.cs` (spawner por área, scene-wireable) sin invocadores en código |
 | Mundo/áreas | `Assets/Scripts/World/`, `Mission/` | Funciona; `AreaClear` incompleto (falta `KitchenCombatManager`) |
 | Compañeros/Bond | `Assets/Scripts/Companion/`, `Bond/` | Funciona; `BondActivityManager` sin cablear a UI. `NPCBase` pendiente |
 | Diálogo | `Assets/Scripts/Dialogue/` | Completo y cableado |
@@ -39,10 +39,13 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Combate | `Assets/Scripts/Combat/` | **Implementado; jugador cableado.** `NPCCombatBehavior` sin cablear |
 | Economía | `Assets/Scripts/Economy/` | **Implementado; núcleo jugador cableado.** `NPCEconomy`/`AreaVendor` inertes |
 | Química (tabla periódica) | `Assets/Scripts/Chemistry/` | Implementado y cableado (~55 elementos) |
-| Cocina (miniaturización) | `Assets/Scripts/Kitchen/` | Implementado y cableado; riesgo de doble-trigger |
+| Cocina (miniaturización) | (retirada) | La cocina legacy (`KitchenEntrance`/`KitchenScaleController`) se **borró** 2026-07-23. La entrada migró al trigger universal `VirtualizationMachine` (Meditation) + `RealityShiftController` (miniaturización genérica por área) + `MobWorldLoader` (mundo mob en escena). Ver fila **Meditación / Microcosmos** |
 | Ropa/crafting | `Assets/Scripts/Clothing/` | **Parcial/sin cablear**: crafting no entrega item |
 | UI (FollowingArrays/Palette/Hologram) | `Assets/Scripts/UI/` | Complejo; `MaterializationExecutor` inalcanzable (faltan evaluadores) |
 | Interacción | `Assets/Scripts/Interaction/` | Funciona; cableado |
+| Meditación / Microcosmos | `Assets/Scripts/Meditation/` (23 archivos) | Implementado. `VirtualizationMachine` (trigger universal de misiones mob), `MeditationSession`, `MeditationMissionBase` + misiones (Healing/Protection/Channel/AsanaFormation/PostureVisualization/RootInquiry), arquetipos de mob, `RealityShiftController`, `LotusMeditationAbility`. Ver `docs/magic-plane-and-meditation.md` |
+| Mundo mob | `Assets/Scripts/MobWorld/` (5 archivos) | Implementado. `MobResident`, `MobWorldDirector`, `YogaPortal`, `MobWorldLoader`, `MobSpawnPoint`; builder en `Assets/Editor/MobWorldSceneBuilder.cs`. Ver `docs/mob-world-architecture.md` |
+| Avatares (Microcosmos) | `Assets/Scripts/Avatar/` (3 archivos) | Implementado. `SurfaceWalker`, `AvatarController`, `RobotAvatar` (enum `AvatarLocomotion`: Ground/Climb/Flight). Ver `docs/magic-plane-and-meditation.md` §4 |
 | Herramientas Editor | `Assets/Editor/` | `SampleSceneBuilder` cablea casi todo el escenario |
 | Debug | `Test.cs` | Sin uso en flujo principal |
 
@@ -64,7 +67,8 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/creature-stats.md`](docs/creature-stats.md) — aptitudes (agilidad/percepción/fuerza/masa) de animales y NPCs; perfiles Goluis/Panterilia/Gohageneis/Irosene.
 - [`docs/character-irosene.md`](docs/character-irosene.md) — ficha del personaje Irosene (compañera motivacional; biografía, diálogo, árbol familiar, arco).
 - [`docs/mission-mode.md`](docs/mission-mode.md) — modo misión, disparador-personaje, contadores y economía circular del santuario.
-- [`docs/magic-plane-and-meditation.md`](docs/magic-plane-and-meditation.md) — plano mágico, máquina de virtualización (trigger universal), avatares-robot (gusano/araña/mosco/loto), capas de escala, meditación en yoga y arquetipos de mob.
+- [`docs/world-topology-and-planes.md`](docs/world-topology-and-planes.md) — visión de mundo: la tríada de planos (**Microcosmos** interior / **Mesocosmos** estándar a pie / **Macrocosmos** exterior tipo RTS), hub-and-spoke con gradiente peligro=dispersión, los 5 santuarios (terrestre/marino vertical/aéreo/subterráneo/núcleo de 2 capas plasma+diamante), acoplamiento Meso↔Macro (tiempo lento vs WC3, guerras en ambos modos), Macrocosmos (economía, farming como juego, transporte, cámara 2D) y progresión guionizada+emergente.
+- [`docs/magic-plane-and-meditation.md`](docs/magic-plane-and-meditation.md) — Microcosmos (el plano interior; uno de los tres planos — ver [`docs/world-topology-and-planes.md`](docs/world-topology-and-planes.md)), máquina de virtualización (trigger universal), avatares-robot (gusano/araña/mosco/loto), capas de escala, meditación en yoga y arquetipos de mob.
 - [`docs/area-missions-spec.md`](docs/area-missions-spec.md) — spec consolidada de misiones por área (simulacro + mob; ejes escala/plano; dificultad = requisitos + habilidad); base para cablear todas las áreas.
 - [`docs/mob-world-architecture.md`](docs/mob-world-architecture.md) — santuario fractal por escala (un mundo a la vez), yoga-portal, áreas-tienda, NPCs mob ligeros (`MobResident`), mundo vivo por eventos (`MobWorldDirector`), radio expansible, balance tonal y contenido narrativo (reutilizar la Historia).
 - [`docs/mob-characters.md`](docs/mob-characters.md) — lista inicial de personajes-mob (históricos/mito de dominio público) con su arco agridulce→aprendizaje, área y misión de ayuda.

@@ -16,20 +16,24 @@ verificado). Los ítems ~~tachados~~ se resolvieron o dejaron de aplicar. Las re
 - **`Respawn.cs:39`** — `Random.Range(1, beasts.Length)` se salta `beasts[0]` (off-by-one).
 - **`CombatAbilityBar.cs` — `RefreshBar()`** solo se llama en `Awake()`; nada lo re-llama al subir
   nivel o descubrir elemento → la barra no crece en vivo como promete el diseño.
-- **`KitchenScaleController.cs`** — doble entrada posible: `OnTriggerEnter/Exit` (collider) y
-  `EnterKitchen()/ExitKitchen()` (desde `KitchenEntrance`) sin protección mutua.
+- ~~**`KitchenScaleController.cs` / `KitchenEntrance.cs`** — doble entrada.~~ **Resuelto por borrado
+  (2026-07-23):** ambas clases (y el método muerto `BuildKitchenContent`/`MakeMobBox`/
+  `CreateFragmentPrefabIfNeeded` en `SampleSceneBuilder`) se retiraron. El flujo de cocina lo cubren
+  `VirtualizationMachine` + `RealityShiftController` + `MobWorldLoader`. El bug de doble-trigger
+  desapareció con la clase.
 - **`BirdBehavior.cs:~39`** — `Altura()` devuelve `int` usado como `float`; sin clamp de altura
   mínima (pájaros podrían caer bajo el terreno). Coroutine por string `"Move"`; `population` sin
   limpiar al destruir.
 - **`ActionPrep.cs:~18`** — `energyCost` dividido por `TimeSpeedMinuteSecs/4` sin límites (a 1x ≈ /0.25,
   a 30x ≈ /15) → posible inestabilidad.
 
-### Sin verificar en la auditoría (revisar)
-- **`DrivePreparation.cs` — `Exit()`** comparaba `transform.position` con `TransformDirection` (que
-  devuelve dirección, no posición); debería ser `TransformPoint`. No re-confirmado en 2026-07-09.
-
 ## Resueltos / ya no aplican
 
+- ~~**`DrivePreparation.cs` — `Exit()`** comparaba posición contra dirección pura (debía usar
+  `TransformPoint`).~~ **Verificado — no es bug**: `Exit()` (`DrivePreparation.cs:95,97`) usa
+  `transform.TransformDirection(exitPlace) + transform.position`, así que compara **posición-mundo
+  contra posición-mundo** de forma consistente con `SitDown()`/`Update()`. Queda solo latente que
+  `pos + TransformDirection` ignora la **escala** del objeto (irrelevante si la nave tiene escala 1).
 - ~~**`BearBehaviour` `Random.Range` invertido** y "no hereda de `Animal`, duplica estado por
   flags booleanos".~~ **Resuelto**: `BearBehaviour : Carnivore : Animal`, integrado y completo.
 - ~~**`PlayerCtrl.cs` `StartCoroutine("Point")`** y comentarios EN/ES mezclados en `PlayerCtrl`.~~
