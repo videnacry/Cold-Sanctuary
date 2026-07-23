@@ -132,23 +132,27 @@ public static class SampleSceneBuilder
     static void BuildFarmingSandbox(Transform parent)
     {
         GameObject player = GameObject.Find("Player");
-        if (player != null && player.GetComponent<PlayController>() == null)
-            player.AddComponent<PlayController>();
+        if (player != null)
+        {
+            if (player.GetComponent<PlayController>() == null)  player.AddComponent<PlayController>();
+            if (player.GetComponent<CharacterLevel>() == null)  player.AddComponent<CharacterLevel>(); // XP del farming
+        }
 
         GameObject group = new GameObject("FarmingSandbox_AUTO");
         group.transform.SetParent(parent);
+        group.AddComponent<FarmingSandboxItems>(); // crea items placeholder y los asigna como drops (runtime)
 
         // 3 criaturas de distinta dificultad/recompensa (dischargePerTouch menor = más difícil).
-        AddPlayCreature(group.transform, "PlayCreature_Suave", new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2);
-        AddPlayCreature(group.transform, "PlayCreature_Media", new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4);
-        AddPlayCreature(group.transform, "PlayCreature_Dura",  new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8);
+        AddPlayCreature(group.transform, "PlayCreature_Suave", new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2, 20f);
+        AddPlayCreature(group.transform, "PlayCreature_Media", new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4, 35f);
+        AddPlayCreature(group.transform, "PlayCreature_Dura",  new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f);
 
-        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) en el jugador + 3 PlayableCreatures. " +
-                  "Acércate y pulsa V para jugar hasta serenarlas; luego F/clic para darles de comer.");
+        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 3 PlayableCreatures. " +
+                  "Acércate y pulsa V para jugar hasta serenarlas (dan recursos/monedas/XP/items); luego F/clic para darles de comer.");
     }
 
     static void AddPlayCreature(Transform parent, string name, Vector3 pos, float discharge,
-                                SanctuaryResource res, float amount, int coins)
+                                SanctuaryResource res, float amount, int coins, float xp)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name;
@@ -161,6 +165,7 @@ public static class SampleSceneBuilder
         pc.dropResource      = res;
         pc.dropAmount        = amount;
         pc.dropCoins         = coins;
+        pc.xpReward          = xp;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──

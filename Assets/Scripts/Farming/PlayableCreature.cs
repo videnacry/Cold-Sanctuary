@@ -24,6 +24,15 @@ public class PlayableCreature : MonoBehaviour, IInteractable
 {
     public enum State { Playful, Serene, Resting }
 
+    /// <summary>Un posible botín al serenarse: item + cantidad + probabilidad (0–1).</summary>
+    [System.Serializable]
+    public class ItemDrop
+    {
+        public ItemData item;
+        [Min(1)] public int quantity = 1;
+        [Range(0f, 1f)] public float chance = 1f;
+    }
+
     [Header("Tensión")]
     [Tooltip("Tensión base (0–1) que descarga un 'toque' SIN excitación. Menor = más difícil.")]
     [Range(0.01f, 1f)] public float dischargePerTouch = 0.08f;
@@ -52,6 +61,12 @@ public class PlayableCreature : MonoBehaviour, IInteractable
     public SanctuaryResource dropResource = SanctuaryResource.Materials;
     [Min(0f)] public float dropAmount = 20f;
     [Min(0)]  public int   dropCoins  = 3;
+
+    [Tooltip("XP para el personaje del jugador (sube nivel → +vida/+maná).")]
+    [Min(0f)] public float xpReward = 25f;
+
+    [Tooltip("Items que puede soltar (además de recursos/monedas). Cada uno con su probabilidad.")]
+    public ItemDrop[] itemDrops;
 
     [Header("Cuidado (dar comida y agua)")]
     [Tooltip("fatReserves que restaura al cuidarla (solo si tiene LivingEntity).")]
@@ -121,7 +136,32 @@ public class PlayableCreature : MonoBehaviour, IInteractable
                   $"({dropAmount:0} {dropResource}" + (dropCoins > 0 ? $" + {dropCoins} monedas" : "") + ").");
         SanctuaryResources.Instance.Add(dropResource, dropAmount);
         if (dropCoins > 0) CoinWallet.Instance?.Earn(dropCoins);
+        GrantXpAndItems();
         Tint(new Color(0.55f, 0.85f, 0.55f)); // verde sereno
+    }
+
+    void GrantXpAndItems()
+    {
+        GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+        if (playerGO == null) return;
+
+        // XP → nivel del personaje del jugador (+vida/+maná).
+        if (xpReward > 0f && playerGO.TryGetComponent(out CharacterLevel level))
+            level.GainXp(xpReward);
+
+        // Botín de items al inventario del jugador.
+        if (itemDrops != null && itemDrops.Length > 0 && playerGO.TryGetComponent(out Inventory inv))
+        {
+            foreach (ItemDrop d in itemDrops)
+            {
+                if (d == null || d.item == null) continue;
+                if (Random.value <= d.chance)
+                {
+                    inv.AddItem(d.item, d.quantity);
+                    Debug.Log($"[Farming] Botín: {d.quantity}× {d.item.itemName}.");
+                }
+            }
+        }
     }
 
     void GetCaught()

@@ -16,7 +16,8 @@ public class SanctuaryResourceHUD : MonoBehaviour
     [Tooltip("Posición de la esquina del panel, en píxeles desde arriba-izquierda.")]
     public Vector2 origin = new Vector2(12f, 12f);
 
-    GUIStyle _style;
+    GUIStyle       _style;
+    CharacterLevel _level;   // nivel del jugador (cacheado)
 
     void OnGUI()
     {
@@ -31,6 +32,20 @@ public class SanctuaryResourceHUD : MonoBehaviour
         foreach (var kv in res.All())
             sb.AppendLine($"{kv.Key}: {Mathf.FloorToInt(kv.Value)}");
 
-        GUI.Label(new Rect(origin.x, origin.y, 280f, 140f), sb.ToString(), _style);
+        // Nivel del personaje del jugador (XP/vida/maná) — docs §4.1.
+        if (_level == null)
+        {
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) p.TryGetComponent(out _level);
+        }
+        if (_level != null)
+        {
+            sb.AppendLine("");
+            sb.AppendLine($"<b>Kushal</b>  Nv {_level.level}");
+            sb.AppendLine($"XP: {Mathf.FloorToInt(_level.xp)}/{Mathf.FloorToInt(_level.XpToNext)}");
+            sb.AppendLine($"Vida: {_level.MaxHealth:0}   Maná: {_level.MaxMana:0}");
+        }
+
+        GUI.Label(new Rect(origin.x, origin.y, 280f, 230f), sb.ToString(), _style);
     }
 }

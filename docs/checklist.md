@@ -98,8 +98,10 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       → sacia (`fatReserves`) y descansa. **V2 feel gato/perro hecho:** excitación/combo (descarga
       escala con excitación), **atrapada** (quedarte pegado resetea el combo), reacción de la criatura
       (te mira/se acerca, con correa) + rebote de escala. Sandbox en `SampleSceneBuilder`.
-      **Falta (V3):** tabla de drops + consumibles/artefactos (`Inventory`/`ItemData`), **XP → leveling de
-      personajes** (+vida/+maná; sistema aparte inexistente), y generalizar el target de combate.
+      **V3 hecho (2026-07-23):** tabla de **drops** (`ItemDrop[]` → `Inventory.AddItem`, con consumible y
+      artefacto placeholder vía `FarmingSandboxItems`), y **XP → leveling** (`CharacterLevel`: xp/nivel →
+      +vida/+maná, mostrado en el HUD). **Falta:** generalizar el target de combate (hoy `CurrentTarget`
+      es `IngredientMob`) y enganchar vida/maná al combate real (`PlayerStats.progressionLevel`).
 - [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
       (lava↔subterráneo primero); reusa `MobWorldLoader`.
 - [ ] **D — Construcción en el tiempo.** `Construction`: progreso consumiendo recursos+tiempo (lento en
