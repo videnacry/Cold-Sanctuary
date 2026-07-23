@@ -67,6 +67,27 @@ public static class MobWorldSceneBuilder
         portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MobYogaPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<YogaPortal>();
 
+        // Misión jugable de la cocina: "Procesar ingredientes" (ChannelMission por presencia). Es
+        // self-contained en la escena: MobWorldMission la arranca tras el fundido de entrada y, con
+        // endMode=Standalone, al completarla limpia en sitio (el jugador sale por el YogaPortal).
+        var missionGO = new GameObject("Mission_ProcesarIngredientes");
+        missionGO.transform.position = O + new Vector3(0f, 0f, 4f); // centro de la ciudad; los mobs salen alrededor del jugador
+        var mission = missionGO.AddComponent<MobMission>();
+        mission.missionName = "Procesar ingredientes";
+        mission.description = "Acércate a cada ingrediente y mantente presente hasta procesarlo.";
+        mission.category    = MissionCategory.NoThinking;
+        mission.isAvailable = true;
+
+        var channel = missionGO.AddComponent<ChannelMission>();
+        channel.mission          = mission;
+        channel.endMode          = MissionEndMode.Standalone;
+        channel.targetCount      = 4;
+        channel.placeholderColor = new Color(0.95f, 0.75f, 0.35f); // ámbar "ingrediente"
+        channel.reward.observationGain = 0.2f;
+        channel.reward.coinReward      = 5;
+
+        missionGO.AddComponent<MobWorldMission>(); // arranca la misión al entrar a la escena
+
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings(ScenePath);
         EditorSceneManager.CloseScene(scene, removeScene: true);

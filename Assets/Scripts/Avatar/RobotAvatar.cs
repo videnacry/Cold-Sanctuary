@@ -11,7 +11,7 @@ public enum AvatarLocomotion
 }
 
 /// <summary>
-/// One avatar-robot the player can pilot inside the plano mágico (docs §4).
+/// One avatar-robot the player can pilot inside the Microcosmos (docs §4).
 /// Progresión: gusano → araña → mosco → … (y al llegar al loto, el avatar pasa a ser elección
 /// estética). Se desbloquean con stats/hechizos; aquí sólo se registra `unlocked`.
 /// Serializable para configurarlos en el Inspector del AvatarController.

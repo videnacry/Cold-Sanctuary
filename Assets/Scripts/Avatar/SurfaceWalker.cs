@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Locomotion for the avatar-robot inside the plano mágico (docs §4, Eje A).
+/// Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 /// Gravity is RELATIVE TO THE SURFACE NORMAL: floor, wall and ceiling are the same code — the
 /// body's "up" aligns to whatever surface it sticks to, so walking onto a wall just re-parents
 /// "down" to that wall. What surfaces are allowed is set by the active Avatar (AvatarController):

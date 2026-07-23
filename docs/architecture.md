@@ -17,7 +17,8 @@ LivingEntity (abstract MonoBehaviour)
 │  ├─ CompanionBase
 │  │  ├─ Goluis
 │  │  ├─ Panterilia
-│  │  └─ Gohageneis
+│  │  ├─ Gohageneis
+│  │  └─ Irosene
 │  └─ (futuros NPCs con drives reales)
 │
 ├─ BirdBehavior (IFactory)
@@ -172,13 +173,24 @@ Los eventos son pools de delegados (`SubEvent`), lo que permite componer comport
   `changeRatePerDay`. `ShiftToward(float, float)` suaviza el cambio.
 - **`CompanionBase.cs`** — base abstracta que implementa `IBondable`. Simula `fatigue`/`stress`/`mood`.
   En Update, aplica efecto por proximidad al Player: restaura o drena según `GetProximityEffect()`.
-  Abstractos: `SetupAnchors()`, `GetMoodModifier()`, `FatigueRatePerSecond()`, `GetRestingMood()`.
+  Solo `SetupAnchors()` es **abstracto**; `GetMoodModifier()`, `FatigueRatePerSecond()` y
+  `GetRestingMood()` son **`virtual`** con default (`1f`, `0.0001f`, `0.7f` respectivamente;
+  `CompanionBase.cs:191-206`), igual que los hooks `OnPlayerNearby()`/`OnPlayerLeft()`.
+  Además expone ~12 aptitudes `Base*` `virtual` (`CompanionBase.cs:41-52`: `BaseAgility`,
+  `BasePerception`, `BaseStrength`, `BaseBodyMass`, `BaseAdaptability`, `BaseComposure`,
+  `BaseEndurance`, `BaseReasoning`, `BaseMemory`, `BaseCreativity`, `BaseSociability`,
+  `BaseDiscipline`) que cada compañero sobrescribe y `Start()` copia a los campos de instancia.
 - **`Companions/Goluis.cs`** — canal MentalFatigue. Drena estrés del jugador por presión. Anchor
   `yoga_skepticism` bloquea asanas hasta que el arco narrativo avanza.
 - **`Companions/Panterilia.cs`** — canal MentalFatigue. Añade `+1.5` a `observationRadius` mientras
   el jugador está cerca. Anchor `chemical_reliance` fades, `trust_nature` crece.
 - **`Companions/Gohageneis.cs`** — canal Satisfaction. `CelebrationCharge` acumula y libera bursts
   de restauración de Satisfaction + MentalFatigue al alcanzar umbral.
+- **`Companions/Irosene.cs`** — canal **Satisfaction** (excepción: la base es MentalFatigue). Su
+  pasión llena la moral: `encouragementBurst` inmediato al entrar en rango y `GetMoodModifier()` que
+  puede superar `1`. Aptitudes que codifican origen→presente transformado (sociabilidad/creatividad/
+  adaptabilidad altas). Anchors (`alpha_and_omega`, `pursue_dreams`, `rebellion`, `pride`…) que se
+  suavizan con el vínculo. Ficha en [`character-irosene.md`](character-irosene.md).
 
 ---
 
@@ -287,3 +299,83 @@ No borrar: son trabajo listo para activar. `NPCCombatBehavior`, `NPCEconomy`, `A
 `ClothingCraftingArea`, `Generator` (legacy), `MaterializationExecutor` + `ArrangementPattern`
 (inalcanzables hasta que exista `BlockSpellEvaluator`), `TeacherNPC`/`MaestraTeacher` (sin conectar
 a `Palette.OnFormulaEvaluated`), `BondActivityManager.Practice()`/`BuildPaletteConfig()`.
+
+---
+
+## Meditación / Microcosmos (`Assets/Scripts/Meditation/`, 23 archivos)
+
+El sistema que lleva al jugador al Microcosmos (el plano interior; uno de los tres planos — ver
+[`world-topology-and-planes.md`](world-topology-and-planes.md)), el mundo mob, y ejecuta las misiones mob. Detalle
+completo en [`magic-plane-and-meditation.md`](magic-plane-and-meditation.md).
+
+- **`VirtualizationMachine.cs`** — `IInteractable`, el **trigger universal** de misiones mob presente
+  en cada área (reemplaza el antiguo flujo de puertas `KitchenEntrance`, borrado 2026-07-23). Al interactuar: `ConfirmationPanel`
+  → `onEnterAnimation` → `MeditationSession.Open()`. Tiene dos modos: **in-place** (menú de misiones +
+  `RealityShiftController`) o **escena propia** (si `mobWorldSceneName` está relleno, delega en
+  `MobWorldLoader.EnterMobWorld`). Interactuar de nuevo durante una misión in-place la termina.
+- **`MeditationSession.cs`** — singleton (auto-bootstrap) que orquesta el flujo compartido por la
+  máquina y el loto: animación de entrada → **fade a negro** (`ScreenFader`) → `MissionSelectMenu` →
+  al elegir, `RealityShiftController.ShiftIn` (snap de escala mientras la pantalla está negra) →
+  fade de vuelta → juega la misión. `EndMission()` lo revierte. Expone `IsInMission`/`IsBusy`.
+- **`MeditationMissionBase.cs`** — `[RequireComponent(MobMission)]`. Lógica común de toda misión mob:
+  spawnea N mobs de a uno en anillo alrededor del jugador, los cuenta al disolverse, aplica
+  `MeditationReward` (maestría de asana + Observación + monedas) y llama `EndMission()` al llegar a
+  `targetCount`. Las subclases solo deciden **qué arquetipo** crear (`CreateMob`). Se autocablea vía
+  `MobMission.OnBegan/OnEnded`.
+  - **Subclases de misión**: `HealingMission`, `ProtectionMission`, `ChannelMission`,
+    `AsanaFormationMission`, `PostureVisualizationMission`, `RootInquiryMission`.
+  - **Arquetipos de mob** (`MeditationMob` base): `EphemeralThoughtMob`, `PostureFormMob`,
+    `ChannelMob`, `AbsorbentThoughtMob`, `HealMob`, `ProtectMob`, `WardAttackerMob`.
+- **`RealityShiftController.cs`** — **generaliza la antigua `KitchenScaleController`** (borrada 2026-07-23): la miniaturización ahora
+  es genérica por área. Escala el `environmentRoot` hacia arriba (no encoge al jugador, para no romper
+  el `CharacterController`) y ensancha el FOV. La transición es un **snap** (sin lerp/shader) porque
+  ocurre siempre tras el fade a negro. Uno por área, asignado a su `VirtualizationMachine`.
+- **`LotusMeditationAbility.cs`** — camino alternativo (endgame) al Microcosmos: tras aprender el loto
+  y el "hechizo de misiones-mob" (`hasMobMissionSpell`), el jugador medita en cualquier sitio con una
+  tecla y corre el **mismo** flujo que la máquina.
+- Apoyo: `MobMission` (descriptor), `MissionSelectMenu`, `MeditationReward`, `ScreenFader`.
+
+---
+
+## Mundo mob (`Assets/Scripts/MobWorld/`, 5 archivos)
+
+El santuario fractal por escala: cada mundo mob es su propia escena aditiva. Detalle en
+[`mob-world-architecture.md`](mob-world-architecture.md).
+
+- **`MobWorldLoader.cs`** — singleton `DontDestroyOnLoad`. Carga/descarga **aditiva** de la escena del
+  mundo mob **tras el fundido a negro** (`ScreenFader`), teletransporta al jugador a su `MobSpawnPoint`
+  (guardando la transform de retorno) y lo devuelve al salir. La escena mob se autora en un origen
+  lejano para no solaparse con el mundo base, que sigue cargado y simulando. La miniaturización pasa a
+  ser narrativa. Expone `IsInMobWorld`/`IsBusy`.
+- **`MobWorldDirector.cs`** — singleton (auto-bootstrap), contraparte por **eventos** del
+  `SanctuaryDirector` humano. `TriggerEvent(MobWorldEventType)` (`Migration`/`Invasion`/`Festival`)
+  mueve/sube de nivel a los `MobResident` registrados y notifica `OnEvent` para que otros sistemas
+  reordenen contenido. `autoEvents` dispara eventos aleatorios por timer para prototipado.
+- **`MobResident.cs`** — NPC ligero (`IInteractable`), contraparte barata de `WorldCharacter`. Estático
+  en su puesto; solo se mueve/sube de nivel cuando un evento lo dispara (`MoveTo`/`ReturnHome`/`LevelUp`).
+  Ofrece un rol/servicio estilo tienda WoW. Se auto-registra en `MobWorldDirector`.
+- **`YogaPortal.cs`** — `IInteractable` de **salida** del mundo mob (la entrada es por la máquina/loto).
+  Sale de la escena mob vía `MobWorldLoader.ExitMobWorld()` si la hay; si no, del modo misión in-place
+  vía `MeditationSession.EndMission()`.
+- **`MobSpawnPoint.cs`** — marcador del punto donde `MobWorldLoader` teletransporta al jugador al entrar.
+  Uno por escena mob (junto a la entrada/yoga-portal).
+- Builder de escenas: `Assets/Editor/MobWorldSceneBuilder.cs` (genera la escena de una civilización por
+  código, versionable).
+
+---
+
+## Avatares (Microcosmos) (`Assets/Scripts/Avatar/`, 3 archivos)
+
+Los avatares-robot que el jugador pilota dentro del Microcosmos (Eje A: planos suelo/pared/techo/aire).
+Detalle en [`magic-plane-and-meditation.md`](magic-plane-and-meditation.md) §4.
+
+- **`SurfaceWalker.cs`** — locomoción kinemática por superficie: la gravedad es **relativa a la normal
+  de la superficie**, así que suelo, pared y techo comparten código (el "arriba" del cuerpo se realinea
+  a la superficie a la que se pega). Al quedarse **sin superficie cae** hacia abajo-mundo. Modos según
+  el avatar activo: solo-suelo (gusano), trepar (araña, `canClimb`) y vuelo (mosco, `flight`, 3D libre).
+- **`RobotAvatar.cs`** — `[Serializable]`; un avatar configurable en el Inspector. Enum
+  **`AvatarLocomotion`** (`Ground` gusano / `Climb` araña / `Flight` mosco), `moveSpeed`, `turnSpeed`,
+  `bodyScale` y flag `unlocked` (desbloqueo por progresión).
+- **`AvatarController.cs`** — `[RequireComponent(SurfaceWalker)]`. Gestiona qué avatar se pilota y
+  aplica su config al `SurfaceWalker` (canClimb/flight/escala). Ciclado con tecla (G por defecto),
+  gated: dentro de la simulación siempre entre los desbloqueados; fuera, solo con `canSwitchOutsideSim`.

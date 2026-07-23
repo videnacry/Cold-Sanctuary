@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Base for mobs that live inside a meditation / plano-mágico mission (docs §8).
+/// Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
 ///
 /// Deliberately independent of IngredientMob (which needs a baked NavMesh): these use simple
 /// kinematic steering so a mission works in any area without NavMesh setup. As archetypes grow

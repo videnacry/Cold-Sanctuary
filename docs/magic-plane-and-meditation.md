@@ -1,6 +1,7 @@
-# Plano Mágico, Máquina de Virtualización, Avatares y Meditación
+# Microcosmos, Máquina de Virtualización, Avatares y Meditación
 
-> **Estado:** diseño (2026-07-13). Recoge la visión del usuario para el plano mágico, los
+> **Estado:** diseño (2026-07-13). Recoge la visión del usuario para el Microcosmos (antes
+> «plano mágico»), los
 > mobs y la meditación. Casi nada está implementado todavía; lo que sí existe se señala en
 > cada sección. Marca lo que se vaya cableando.
 >
@@ -12,7 +13,7 @@
 
 ## 1. La ficción: de la máquina al loto
 
-Para acceder al "plano mágico" el jugador entra en una **máquina de virtualización** que
+Para acceder al Microcosmos el jugador entra en una **máquina de virtualización** que
 supuestamente lo induce a un sueño hiper-realista. La ficción que se le cuenta:
 
 - Los objetos conseguidos en la simulación **se conservan fuera** de ella, porque la máquina
@@ -38,7 +39,7 @@ Mecánicamente, máquina y loto disparan **el mismo sistema**; el loto solo reti
 
 ## 2. Dos ejes de progresión (no confundirlos)
 
-Toda la progresión del plano mágico se mueve en **dos ejes independientes** que se combinan.
+Toda la progresión del Microcosmos se mueve en **dos ejes independientes** que se combinan.
 Ambos crecen con **stats** (cuando se habla de "magia" o "hechizo" es orientativo en la línea
 temporal, no un recurso aparte).
 
@@ -60,13 +61,13 @@ insecto.
 
 ## 3. La máquina de virtualización como trigger universal
 
-- **El trigger de las misiones de mobs / plano mágico es la máquina de virtualización**, que
+- **El trigger de las misiones de mobs / Microcosmos es la máquina de virtualización**, que
   ahora debe existir **en todas las áreas** (no solo en la cocina).
-- Esto **reemplaza** el trigger de puerta actual de la cocina (`KitchenEntrance` +
-  `KitchenScaleController` atados a un volumen de entrada).
+- Esto **reemplazó** el antiguo trigger de puerta de la cocina (`KitchenEntrance` +
+  `KitchenScaleController` atados a un volumen de entrada); ambas clases se **borraron** (2026-07-23).
 - Convive con el trigger de misión general descrito en [`mission-mode.md`](mission-mode.md)
   (un NPC dentro del área): el **NPC** abre misiones de simulacro; la **máquina** abre la
-  misión de plano mágico / mobs. Un área puede tener ambos.
+  misión del Microcosmos / mobs. Un área puede tener ambos.
 - Al final del arco, la máquina deja de ser necesaria en las áreas donde el jugador ya domina
   el loto + el hechizo de independencia.
 
@@ -95,12 +96,12 @@ insecto.
 
 | Componente | Rol | Estado |
 |---|---|---|
-| `RealityShiftController` | Generaliza `KitchenScaleController`: escala el **root del entorno** hacia arriba, ajusta FOV, activa/desactiva el set de mobs de la capa. Reutilizable por cualquier área. | 🔲 Nuevo (extraer de `KitchenScaleController`) |
+| `RealityShiftController` | Generaliza la antigua `KitchenScaleController`: escala el **root del entorno** hacia arriba, ajusta FOV, activa/desactiva el set de mobs de la capa. Reutilizable por cualquier área. | 🔲 Nuevo (extraído de la antigua `KitchenScaleController`, ya borrada) |
 | `VirtualizationMachine` | El objeto físico en cada área. Es el trigger. Inicia la cinemática de conexión y llama al `RealityShiftController`. | 🔲 Nuevo |
 | `MeditationController` | Evolución del "modo contemplativo". Dispara el mismo shift **sin** la máquina (postura de loto). Primera implementación real del sistema de observación. | 🔲 Nuevo |
 
-> **Nota de código:** `KitchenScaleController` escala el *root del entorno*, no al jugador
-> (para no romper el CharacterController/físicas). Respetar esto al generalizar.
+> **Nota de código:** la antigua `KitchenScaleController` escalaba el *root del entorno*, no al
+> jugador (para no romper el CharacterController/físicas); `RealityShiftController` conserva esa regla.
 
 ---
 
@@ -290,7 +291,7 @@ así que es probable sin tocar `SampleSceneBuilder`.
 | Archivo | Rol | Estado |
 |---|---|---|
 | `ScreenFader` | Overlay negro a pantalla completa; `FadeToBlack`/`FadeFromBlack`. Oculta el shift (§3). | ✅ |
-| `RealityShiftController` | Generaliza `KitchenScaleController`: **snap** de escala del `environmentRoot` + FOV, activa/desactiva los mobs de la misión. Uno por área. | ✅ |
+| `RealityShiftController` | Generaliza la antigua `KitchenScaleController` (borrada 2026-07-23): **snap** de escala del `environmentRoot` + FOV, activa/desactiva los mobs de la misión. Uno por área. | ✅ |
 | `MobMission` | Una misión seleccionable: nombre, descripción, `MissionCategory`, `mobSet`, `scaleOverride`, eventos `onBegin/onEnd`. | ✅ |
 | `MissionSelectMenu` | UI sobre el negro; lista misiones disponibles (teclas 1–9 / Escape). Construye la UI en runtime si no está cableada. | ✅ |
 | `MeditationSession` | Orquestador del flujo compartido: animación → negro → menú → snap → fade-in; `EndMission()` lo revierte. | ✅ |
@@ -332,9 +333,9 @@ que aparecen; cada una se desvanece si no te toca en unos segundos. Para el loto
 - Resto de misiones de las demás categorías (§7): observar el cuerpo, no pensar, espejo…
 
 ### A generalizar / refactorizar
-- `KitchenScaleController` → migrar a cliente de `RealityShiftController` (sin tocar aún para no
-  romper el cableado actual de `SampleSceneBuilder`).
-- `KitchenEntrance` (trigger de puerta) → reemplazar por `VirtualizationMachine`.
+- `KitchenScaleController` y `KitchenEntrance` → **hecho (2026-07-23)**: ambas clases se **borraron**;
+  su función la cubren `RealityShiftController` (miniaturización genérica por área) +
+  `VirtualizationMachine` (trigger universal) + `MobWorldLoader` (mundo mob en escena).
 - Modo contemplativo / `observationRadius` (hoy solo un float) → integrar con `MeditationSession`.
 
 ### Bugs/huecos relacionados (ver `known-issues.md`)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Orchestrates the plano-mágico entry flow shared by BOTH triggers (docs §3):
+/// Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
 ///   machine / lotus animation → fade to black → mission menu → (select) → snap shift →
 ///   fade from black → play mission. Ending reverses it.
 ///

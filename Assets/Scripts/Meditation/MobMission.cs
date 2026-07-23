@@ -21,7 +21,7 @@ public enum MissionCategory
 }
 
 /// <summary>
-/// One selectable mission inside the plano mágico (shown in the MissionSelectMenu).
+/// One selectable mission inside the Microcosmos (shown in the MissionSelectMenu).
 ///
 /// Attach to a GameObject per mission within an area. The mission owns its own mob set
 /// (a parent GameObject holding the mobs) which is activated on begin and deactivated on end.

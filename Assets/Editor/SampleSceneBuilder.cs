@@ -73,6 +73,7 @@ public static class SampleSceneBuilder
         EnsurePlayerSystems();
         BuildHolographicMenu(root.transform);
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
+        BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
@@ -82,6 +83,43 @@ public static class SampleSceneBuilder
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
+    }
+
+    // ── Economía de santuario (recursos + HUD) ─────────────────────────────────
+    //
+    // Backbone del mundo grande (docs/world-topology-and-planes.md §4/§7): cada área produce su
+    // recurso (AreaProducer, pasivo + bonus por personaje asignado) hacia el ledger global
+    // (SanctuaryResources), y un HUD prototipo lo muestra en el Mesocosmos.
+
+    static void BuildSanctuaryEconomy(Transform parent)
+    {
+        GameObject econ = new GameObject("SanctuaryEconomy_AUTO");
+        econ.transform.SetParent(parent);
+        var resources = econ.AddComponent<SanctuaryResources>();
+        resources.sanctuaryName = "Santuario Terrestre";
+        econ.AddComponent<SanctuaryResourceHUD>();
+
+        // Cada área produce lo que le corresponde (docs §4). Valores placeholder, ajustables.
+        AddAreaProducer("Kitchen_Area",          SanctuaryResource.Food,     12f, 18f);
+        AddAreaProducer("Garden_Area",           SanctuaryResource.Food,     18f, 20f);
+        AddAreaProducer("VehicleWorkshop_Area",  SanctuaryResource.Materials, 14f, 16f);
+        AddAreaProducer("TextileStudio_Area",    SanctuaryResource.Materials, 10f, 14f);
+        AddAreaProducer("Infirmary_Area",        SanctuaryResource.Research,   8f, 12f);
+        AddAreaProducer("VeterinaryClinic_Area", SanctuaryResource.Research,   8f, 12f);
+
+        Debug.Log("[SampleSceneBuilder] Economía de santuario cableada: SanctuaryResources + HUD + AreaProducers por área.");
+    }
+
+    static void AddAreaProducer(string areaName, SanctuaryResource resource, float perGameMinute, float perWorkerBonus)
+    {
+        GameObject area = GameObject.Find(areaName);
+        if (area == null) return; // el área puede no existir en este blockout — se omite en silencio
+
+        AreaProducer p = area.GetComponent<AreaProducer>();
+        if (p == null) p = area.AddComponent<AreaProducer>();
+        p.resource       = resource;
+        p.perGameMinute  = perGameMinute;
+        p.perWorkerBonus = perWorkerBonus;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──
@@ -1040,152 +1078,13 @@ public static class SampleSceneBuilder
         return (btn, lbl);
     }
 
-    // ── Kitchen mobs ──────────────────────────────────────────────────────────
-    //
-    // Mobs start INACTIVE — KitchenScaleController activates them once the
-    // miniaturization transition completes. The entrance trigger sits at the
-    // open +Z side of the Kitchen U-shape (open toward the player).
-    //
-    // Fragment prefab is created on demand in Assets/Prefabs/ if it doesn't exist.
-
-    static void BuildKitchenContent(Transform parent)
-    {
-        const string kitchenAreaName = "Kitchen_Area";
-        GameObject kitchenArea = GameObject.Find(kitchenAreaName);
-        if (kitchenArea == null)
-        {
-            Debug.LogWarning("[SampleSceneBuilder] Kitchen_Area no encontrada — mobs de cocina omitidos.");
-            return;
-        }
-
-        // Content root: this is what KitchenScaleController scales up ×8
-        GameObject contentRoot = new GameObject("Kitchen_Content");
-        contentRoot.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
-
-        GameObject fragmentPrefab = CreateFragmentPrefabIfNeeded();
-
-        // (ingredientName, elementSymbol, maxHealth, attackDamage, boxColor, canReproduce)
-        (string n, string sym, float hp, float dmg, Color col, bool repro)[] defs =
-        {
-            ("Sal",        "Na",  60f,  8f, new Color(0.95f, 0.95f, 0.90f), false),
-            ("Levadura",   "C",   80f,  6f, new Color(0.95f, 0.90f, 0.40f), true),
-            ("Alliina",    "S",  100f, 12f, new Color(0.75f, 0.55f, 0.85f), false),
-            ("Capsaicina", "C",  120f, 18f, new Color(0.95f, 0.25f, 0.20f), false),
-        };
-
-        // Positions relative to Kitchen_Content root (kitchen center)
-        Vector3[] offsets =
-        {
-            new Vector3(-2.5f, 0.5f, -2.0f),
-            new Vector3( 1.5f, 0.5f, -2.5f),
-            new Vector3(-1.5f, 0.5f,  1.5f),
-            new Vector3( 2.0f, 0.5f,  1.0f),
-        };
-
-        var mobList = new List<IngredientMob>();
-        for (int i = 0; i < defs.Length; i++)
-        {
-            var d = defs[i];
-            GameObject mobGO = MakeMobBox(d.n, offsets[i], d.col);
-            mobGO.transform.SetParent(contentRoot.transform, worldPositionStays: false);
-
-            IngredientMob mob  = mobGO.AddComponent<IngredientMob>();
-            mob.ingredientName   = d.n;
-            mob.elementSymbol    = d.sym;
-            mob.maxHealth        = d.hp;
-            mob.attackDamage     = d.dmg;
-            mob.discoveryChance  = 0.4f;
-            mob.canReproduce     = d.repro;
-            mob.fragmentPrefab   = fragmentPrefab;
-            // spawnPrefab: left null — Levadura spawning requires a prefab asset,
-            // not a scene object. Wire it up manually in the Inspector once a
-            // Levadura prefab is saved.
-
-            mobGO.SetActive(false);   // KitchenScaleController activates on entry
-            mobList.Add(mob);
-        }
-
-        // Scale system — KitchenScaleController lives on its own GO (no Collider needed;
-        // entry is triggered programmatically by KitchenEntrance, not OnTriggerEnter).
-        GameObject scaleSystemGO = new GameObject("Kitchen_ScaleSystem");
-        scaleSystemGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
-
-        KitchenScaleController ksc = scaleSystemGO.AddComponent<KitchenScaleController>();
-        ksc.kitchenRoot    = contentRoot.transform;
-        ksc.ingredientMobs = mobList.ToArray();
-        // playerCamera left null — KitchenScaleController.Awake() falls back to Camera.main
-
-        // Entrance trigger — open +Z side of the U-shape (Kitchen size: 10×9).
-        // This is an IInteractable, NOT an auto-trigger; InteractionController handles
-        // proximity detection, prompt display, and dispatching to KitchenEntrance.Interact().
-        GameObject entranceGO = new GameObject("Kitchen_EntranceTrigger");
-        entranceGO.transform.SetParent(kitchenArea.transform, worldPositionStays: false);
-        entranceGO.transform.localPosition = new Vector3(0f, 1f, 4.5f);
-
-        BoxCollider bc = entranceGO.AddComponent<BoxCollider>();
-        bc.isTrigger   = true;
-        bc.size        = new Vector3(10f, 3f, 1.5f);
-
-        KitchenEntrance entrance = entranceGO.AddComponent<KitchenEntrance>();
-        entrance.kitchenScaleController = ksc;
-        entrance.areaName = "Cocina";
-
-        // Visual cue — slightly transparent box so the player can see the entrance marker
-        MeshRenderer mr = entranceGO.GetComponent<MeshRenderer>();
-        if (mr == null) mr = entranceGO.AddComponent<MeshRenderer>();
-        // The BoxCollider IS the visual — a Cube primitive would add a redundant Collider,
-        // so just tint the MeshRenderer that might have been auto-added. If you want a
-        // visible mesh, swap this with GameObject.CreatePrimitive(PrimitiveType.Cube) + isTrigger.
-
-        Debug.Log($"[SampleSceneBuilder] {mobList.Count} IngredientMobs (boxes) colocados en Kitchen_Content " +
-                  "(inactivos hasta entrada). KitchenEntrance listo — interactúa con F o clic.");
-    }
-
-    static GameObject MakeMobBox(string mobName, Vector3 localOffset, Color color)
-    {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.name = $"Mob_{mobName}";
-        go.transform.localPosition = localOffset;
-        go.transform.localScale    = new Vector3(0.8f, 1.0f, 0.8f);
-        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Mob_{mobName}_MAT", color);
-        // BoxCollider required by IngredientMob already added by CreatePrimitive
-        return go;
-    }
-
-    static GameObject CreateFragmentPrefabIfNeeded()
-    {
-        const string path = "Assets/Prefabs/ElementFragment.prefab";
-
-        GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-        if (existing != null) return existing;
-
-        if (!AssetDatabase.IsValidFolder("Assets/Prefabs"))
-            AssetDatabase.CreateFolder("Assets", "Prefabs");
-
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.name = "ElementFragment";
-        go.transform.localScale = new Vector3(0.25f, 0.25f, 0.25f);
-        go.GetComponent<Renderer>().sharedMaterial =
-            MakeMaterial("Fragment_Pickup_MAT", new Color(0.30f, 0.90f, 0.70f));
-
-        // Trigger so the player walks through it to pick it up (ElementFragment.OnTriggerEnter)
-        BoxCollider col = go.GetComponent<BoxCollider>();
-        col.isTrigger = true;
-
-        go.AddComponent<ElementFragment>();
-
-        GameObject prefab = PrefabUtility.SaveAsPrefabAsset(go, path);
-        Object.DestroyImmediate(go);
-
-        Debug.Log($"[SampleSceneBuilder] ElementFragment prefab guardado en {path}.");
-        return prefab;
-    }
-
-    // ── Plano mágico (reemplaza la entrada legacy de la cocina) ─────────────────
+    // ── Microcosmos (reemplaza la entrada legacy de la cocina) ──────────────────
     //
     // Dos únicas vías de entrada al mundo mob: la VirtualizationMachine (por área) o el hechizo de
-    // loto (LotusMeditationAbility en el jugador). Ya no hay puerta. Los métodos legacy de cocina
-    // (BuildKitchenContent/MakeMobBox/CreateFragmentPrefabIfNeeded) quedan sin uso.
+    // loto (LotusMeditationAbility en el jugador). Ya no hay puerta. La cocina legacy
+    // (KitchenScaleController/KitchenEntrance + BuildKitchenContent/MakeMobBox/
+    // CreateFragmentPrefabIfNeeded) se retiró 2026-07-23: superada por VirtualizationMachine +
+    // RealityShiftController + MobWorldLoader.
 
     enum MissionKind { KitchenChannel, GardenChannel, Channel, Heal, Yoga }
 
@@ -1216,7 +1115,7 @@ public static class SampleSceneBuilder
             dirGO.AddComponent<MobWorldDirector>();
         }
 
-        Debug.Log("[SampleSceneBuilder] Plano mágico cableado: VirtualizationMachine por área + loto en el jugador.");
+        Debug.Log("[SampleSceneBuilder] Microcosmos cableado: VirtualizationMachine por área + loto en el jugador.");
     }
 
     static void WireMeditationArea(Transform parent, string areaName, string displayName, Color tint,
@@ -1225,7 +1124,7 @@ public static class SampleSceneBuilder
         GameObject area = GameObject.Find(areaName);
         if (area == null)
         {
-            Debug.LogWarning($"[SampleSceneBuilder] {areaName} no encontrada — plano mágico omitido para esa área.");
+            Debug.LogWarning($"[SampleSceneBuilder] {areaName} no encontrada — Microcosmos omitido para esa área.");
             return;
         }
 
