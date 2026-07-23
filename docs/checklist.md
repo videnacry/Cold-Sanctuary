@@ -92,12 +92,14 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       cableado en `SampleSceneBuilder`. **Primera pasada hecha**; falta: asignación real de personajes
       (enganchar a `SanctuaryDirector`), regla de visibilidad multi-santuario en guerra, y sustituir el
       HUD prototipo por UI declarativa.
-- [~] **B — Farming-como-juego (tensión).** **MVP hecho (2026-07-23):** `PlayableCreature` (tensión =
-      `LivingEntity.stress` si lo hay, o local) + `PlayController` (tecla V, toque de juego que descarga
-      tensión); al serenarse suelta recursos (`SanctuaryResources`) + monedas; `IInteractable` "dar comida
-      y agua" → sacia (`fatReserves`) y descansa. Sandbox en `SampleSceneBuilder`. **Falta (V2):** feel de
-      combo/ritmo (acercar-provocar-alejar, atrapadas), tabla de drops + consumibles/artefactos, y **XP →
-      leveling de personajes** (+vida/+maná; sistema aparte inexistente), + generalizar el target de combate.
+- [~] **B — Farming-como-juego (tensión).** **MVP + feel de combo hechos (2026-07-23):**
+      `PlayableCreature` (tensión = `LivingEntity.stress` o local) + `PlayController` (tecla V);
+      al serenarse suelta recursos (`SanctuaryResources`) + monedas; `IInteractable` "dar comida y agua"
+      → sacia (`fatReserves`) y descansa. **V2 feel gato/perro hecho:** excitación/combo (descarga
+      escala con excitación), **atrapada** (quedarte pegado resetea el combo), reacción de la criatura
+      (te mira/se acerca, con correa) + rebote de escala. Sandbox en `SampleSceneBuilder`.
+      **Falta (V3):** tabla de drops + consumibles/artefactos (`Inventory`/`ItemData`), **XP → leveling de
+      personajes** (+vida/+maná; sistema aparte inexistente), y generalizar el target de combate.
 - [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
       (lava↔subterráneo primero); reusa `MobWorldLoader`.
 - [ ] **D — Construcción en el tiempo.** `Construction`: progreso consumiendo recursos+tiempo (lento en
