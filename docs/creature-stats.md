@@ -193,6 +193,47 @@ torpe en el agua; una ballena, al revés. Se modela como un **multiplicador por 
 > más allá de una tolerancia debería causar daño progresivo (la ballena varada en tierra; un terrestre
 > demasiado tiempo bajo el agua). Futuro; requiere un temporizador de tolerancia por medio.
 
+## Pools derivados de las aptitudes (Mesocosmos)
+
+Los pools de acción/combate **se derivan de las aptitudes**, no se ponen a mano (docs
+[`world-topology-and-planes.md`](world-topology-and-planes.md) §4.1). Un personaje con más resistencia
+y fuerza tiene más vida; uno con más razonamiento, más maná. Primer consumidor en código:
+`CharacterLevel` (farming). Coeficientes iniciales **ajustables**.
+
+| Pool | Para qué | Aptitudes principales | Regen / notas |
+|---|---|---|---|
+| **Vida (HP)** | aguantar golpes | `endurance` + `strength` + `bodyMass` | tanque = resistente/fuerte/con cuerpo |
+| **Energía** | asanas, correr, **trepar** | `endurance` + `agility` − penalización por `bodyMass` | regen por `discipline` |
+| **Maná** | hechizos | `reasoning` + `memory` | regen por `discipline` + `composure` |
+| **Defensa pasiva** | resta al daño recibido | `bodyMass` + `strength` + `composure` (+ armadura) | + equipo (`ItemData.damageReduction`) |
+| **Poder de hechizo** | daño/efecto mágico | `creativity` + `reasoning` + maestría de elemento | escala con nivel |
+
+**Por qué maná y energía así (respuesta de diseño):**
+- **Energía = pool FÍSICO.** Base en `endurance` (esfuerzo sostenido) + `agility` (eficiencia de
+  movimiento), penalizada por `bodyMass` (más peso = más coste). Alimenta posturas de asana, correr,
+  trepar. La `discipline` mejora la regeneración.
+- **Maná = pool MENTAL/MÁGICO.** La magia aquí es intelectual (tabla periódica / encantamientos), así
+  que `reasoning` da el tamaño del pool y `memory` el repertorio retenido (liga con learning-unlocks);
+  `discipline`/`composure` estabilizan el canal (regen y no fallar bajo presión); `creativity` va al
+  **poder** del hechizo más que al pool.
+
+**Trepar (mecánica concreta):**
+- Puede trepar si `strength` (y `agility`) superan un umbral.
+- **Altura máxima ∝ `strength` / `bodyMass`** (potencia-peso): más fuerza y menos peso → más alto.
+- **Velocidad vertical ∝ `strength`·`agility`**; por ramas horizontales, ∝ `agility`·`flexibility`
+  (equilibrio).
+- **Coste por escalón (energía) ∝ `bodyMass` / `strength`** (pesado/débil = agota antes).
+- Como las misiones dan aptitudes, todos acaban trepando alto y con facilidad al progresar.
+
+**Misiones que dan aptitudes:** extender la recompensa (`MeditationReward` / recompensa de `MobMission`)
+para otorgar aptitudes (fuerza/resistencia/razonamiento…), no solo observación/monedas. Es el enganche
+que faltaba del lado humanoide de la evolución de aptitudes, y lo que hace crecer los pools derivados.
+
+> **Integración:** la derivación limpia necesita un acceso unificado a las aptitudes (hoy viven en
+> `CompanionBase`, parcialmente en `PlayerStats`/`LivingEntity`); encaja con el `NPCBase` pendiente. Un
+> módulo `DerivedStats` (funciones puras aptitudes→pools) puede escribirse ya y ser consumido por
+> `CharacterLevel` y el futuro `NPCBase`.
+
 ## Próximos pasos
 
 1. **Evolución de aptitudes** — *animales hecho* (ver §Evolución de aptitudes); **falta el lado

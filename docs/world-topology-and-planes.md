@@ -177,7 +177,8 @@ Mecánicamente:
 - Cada criatura tiene **puntos de tensión**; el "combate" los va bajando (no puntos de vida).
 - Al llegar a cero, la criatura queda **tranquila y serena**, **deja de poder ser objetivo** (target), y
   suelta:
-  - **Experiencia** para los personajes → suben de nivel (+puntos de vida, +maná).
+  - **Experiencia** para los personajes → suben de nivel (+vida, +maná). Los pools (vida/energía/maná/
+    defensa) **se derivan de las aptitudes** — ver [`creature-stats.md`](creature-stats.md) §Pools derivados.
   - **Recursos**.
   - **Objetos útiles** — consumibles estilo Warcraft: invocadores de aliados, potenciadores de
     ataque/defensa, restauradores de vida/maná.
