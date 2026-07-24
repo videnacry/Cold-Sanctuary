@@ -16,7 +16,7 @@ using UnityEngine;
 ///   NPCBase.RespondToHunger()   → navigates to the kitchen
 ///   PlayerEntity (future)       → fires a UI event
 /// </summary>
-public abstract class LivingEntity : MonoBehaviour
+public abstract class LivingEntity : MonoBehaviour, IAptitudes
 {
     // ── Drives ───────────────────────────────────────────────────────────────────
 
@@ -29,8 +29,35 @@ public abstract class LivingEntity : MonoBehaviour
     [HideInInspector] public bool  aware;                // true while actively responding to a threat
 
     // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/creature-stats.md)
-    [HideInInspector] public float agility    = 1f;
-    [HideInInspector] public float perception = 1f;
+    // Hogar UNIVERSAL de las 12 aptitudes (docs §Progresión): todo LivingEntity las tiene. Los animales
+    // usan activamente agility/perception (evolucionan); el resto quedan latentes por ahora (default 1).
+    [HideInInspector] public float agility      = 1f;
+    [HideInInspector] public float perception   = 1f;
+    [HideInInspector] public float strength     = 1f;
+    [HideInInspector] public float bodyMass     = 1f;
+    [HideInInspector] public float adaptability = 1f;
+    [HideInInspector] public float composure    = 1f;
+    [HideInInspector] public float endurance    = 1f;
+    [HideInInspector] public float reasoning    = 1f;
+    [HideInInspector] public float memory       = 1f;
+    [HideInInspector] public float creativity   = 1f;
+    [HideInInspector] public float sociability  = 1f;
+    [HideInInspector] public float discipline   = 1f;
+
+    // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
+    // desde Physiognomy más adelante).
+    public virtual float Agility      => agility;
+    public virtual float Perception   => perception;
+    public virtual float Strength     => strength;
+    public virtual float BodyMass     => bodyMass;
+    public virtual float Adaptability => adaptability;
+    public virtual float Composure    => composure;
+    public virtual float Endurance    => endurance;
+    public virtual float Reasoning    => reasoning;
+    public virtual float Memory       => memory;
+    public virtual float Creativity   => creativity;
+    public virtual float Sociability  => sociability;
+    public virtual float Discipline   => discipline;
 
     // Medio actual + afinidad por medio (tierra/agua/aire). El rendimiento físico se multiplica
     // por la afinidad del medio en que está la criatura. Ver docs/creature-stats.md §Modificadores de medio.

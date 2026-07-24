@@ -41,13 +41,17 @@ public class SanctuaryResourceHUD : MonoBehaviour
         if (_level != null)
         {
             sb.AppendLine("");
-            sb.AppendLine($"<b>Kushal</b>  Nv {_level.level}");
-            sb.AppendLine($"XP: {Mathf.FloorToInt(_level.xp)}/{Mathf.FloorToInt(_level.XpToNext)}");
+            sb.AppendLine($"<b>Kushal</b> — margas del alma");
+            sb.AppendLine($"Stats {_level.stats.level} (xp {_level.stats.xp:0}/{_level.stats.XpToNext:0})");
+            sb.AppendLine($"Yoga {_level.yoga.level}   ·   Vínculos {_level.bonds.level}");
             sb.AppendLine($"Vida: {_level.currentHealth:0}/{_level.MaxHealth:0}");
-            sb.AppendLine($"Energía: {_level.currentEnergy:0}/{_level.MaxEnergy:0}   Maná: {_level.currentMana:0}/{_level.MaxMana:0}");
+            string mana = _level.ManaUnlocked
+                ? $"   Maná: {_level.currentMana:0}/{_level.MaxMana:0}"
+                : "   Maná: (bloqueado — practica yoga)";
+            sb.AppendLine($"Energía: {_level.currentEnergy:0}/{_level.MaxEnergy:0}{mana}");
             sb.AppendLine($"Def: {_level.PassiveDefense:0}   Poder: {_level.SpellPower:0.0}");
         }
 
-        GUI.Label(new Rect(origin.x, origin.y, 300f, 280f), sb.ToString(), _style);
+        GUI.Label(new Rect(origin.x, origin.y, 320f, 300f), sb.ToString(), _style);
     }
 }

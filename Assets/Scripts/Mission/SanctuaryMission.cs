@@ -49,6 +49,13 @@ public class SanctuaryMission : ScriptableObject
     [Tooltip("Optional item awarded on completion. Leave null for coin-only reward.")]
     public ItemData itemReward;
 
+    [Tooltip("Aptitud que sube al completar (recompensa de simulacro; alimenta la marga de Stats). " +
+             "Ver docs/creature-stats.md §Progresión.")]
+    public AptitudeKind rewardAptitude = AptitudeKind.Strength;
+
+    [Tooltip("Cuánto sube esa aptitud al completar. 0 = sin recompensa de aptitud.")]
+    [Min(0f)] public float rewardAptitudeAmount = 0f;
+
     // ── Unlock ────────────────────────────────────────────────────────────────
 
     [Header("Unlock")]

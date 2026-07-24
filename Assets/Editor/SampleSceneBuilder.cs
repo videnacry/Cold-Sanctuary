@@ -135,6 +135,7 @@ public static class SampleSceneBuilder
         if (player != null)
         {
             if (player.GetComponent<PlayController>() == null) player.AddComponent<PlayController>();
+            if (player.GetComponent<PlayerClimber>() == null) player.AddComponent<PlayerClimber>(); // trepar (tecla Espacio)
 
             CharacterLevel cl = player.GetComponent<CharacterLevel>();
             if (cl == null) cl = player.AddComponent<CharacterLevel>(); // XP del farming; pools derivados de aptitudes
@@ -156,7 +157,16 @@ public static class SampleSceneBuilder
         AddPlayCreature(group.transform, "PlayCreature_Dura",    new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: true,  canLoseControl: true,  looseControlDamage: 35f);
         AddPlayCreature(group.transform, "PlayCreature_Salvaje", new Vector3( 4f, 1f, 9f), 0.10f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: false, canLoseControl: true,  looseControlDamage: 35f);
 
-        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 4 PlayableCreatures. " +
+        // Árbol trepable de prueba (docs §Trepar): acércate y mantén Espacio para subir (gasta energía).
+        GameObject tree = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        tree.name = "ClimbTree";
+        tree.transform.SetParent(group.transform);
+        tree.transform.position   = new Vector3(14f, 3f, 6f);
+        tree.transform.localScale = new Vector3(0.6f, 3f, 0.6f); // ~6 de alto
+        tree.GetComponent<Renderer>().sharedMaterial = MakeMaterial("ClimbTree_MAT", new Color(0.45f, 0.30f, 0.18f));
+        tree.AddComponent<Climbable>().topY = 6f;
+
+        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + PlayerClimber (Espacio) + CharacterLevel en el jugador + 4 PlayableCreatures + ClimbTree. " +
                   "Juega (V) hasta serenarlas (dan recursos/monedas/XP/items); F/clic para darles de comer. " +
                   "La 'Dura' puede golpearte si te excitas y no esquivas; la 'Salvaje' no juega (ley natural).");
     }
@@ -1237,17 +1247,17 @@ public static class SampleSceneBuilder
             MobMission visualize = MakeMissionGO(areaT, "Mission_Visualizar", "Visualizar postura",
                 "Huye de los pensamientos hasta disolverlos.", MissionCategory.Visualization);
             var pv = visualize.gameObject.AddComponent<PostureVisualizationMission>();
-            pv.mission = visualize; pv.targetCount = 5; pv.reward.observationGain = 0.25f;
+            pv.mission = visualize; pv.targetCount = 5; pv.reward.observationGain = 0.25f; pv.reward.yogaXp = 30f;
 
             MobMission form = MakeMissionGO(areaT, "Mission_Formar", "Formar posturas",
                 "Persigue y sostén cada postura.", MissionCategory.Visualization);
             var af = form.gameObject.AddComponent<AsanaFormationMission>();
-            af.mission = form; af.targetCount = 3; af.reward.observationGain = 0.25f;
+            af.mission = form; af.targetCount = 3; af.reward.observationGain = 0.25f; af.reward.yogaXp = 40f;
 
             MobMission root = MakeMissionGO(areaT, "Mission_Raiz", "Buscar la raíz",
                 "No puedes huir; ve a su raíz.", MissionCategory.RootInquiry);
             var ri = root.gameObject.AddComponent<RootInquiryMission>();
-            ri.mission = root; ri.targetCount = 3; ri.reward.observationGain = 0.3f;
+            ri.mission = root; ri.targetCount = 3; ri.reward.observationGain = 0.3f; ri.reward.yogaXp = 50f;
 
             return new[] { visualize, form, root };
         }

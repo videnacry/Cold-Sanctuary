@@ -93,7 +93,11 @@ public class BondActivity : ScriptableObject
 
         // Grow bond with target — player is the practitioner
         if (target != null)
+        {
             target.GrowBond(player, bondGainPerPractice);
+            // Estrechar un vínculo alimenta la marga de Vínculos del jugador (docs creature-stats §Progresión).
+            player.GetComponent<CharacterLevel>()?.GainBondXp(bondGainPerPractice);
+        }
 
         practiceCount++;
         return true;

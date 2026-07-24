@@ -115,24 +115,32 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
 - [~] **Pools derivados de aptitudes** (creature-stats.md §Pools derivados). **Hecho (2026-07-24):**
       módulo `DerivedStats` (funciones puras aptitudes→vida/energía/maná/defensa/poder) + `Aptitudes`
       struct; `CharacterLevel` reescrito para derivar los pools (energía nueva, defensa aplicada al daño
-      en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
-      **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
-      aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
-- [ ] **Aptitudes universales en `LivingEntity`** (decidido 2026-07-24): mover las 12 a `LivingEntity`
-      para que todo ser vivo las tenga (= unificación `NPCBase`); quitar el split animal/humanoide.
-- [ ] **"Vías del alma" = tracks INDEPENDIENTES** (nombre a confirmar; creature-stats §Progresión), cada
-      una con su pool de XP general: **Stats** (`CharacterLevel` realineado: XP de la ganancia de
-      aptitudes, sube la base — hoy usa XP arbitrario del farming), **Yoga** (pool general, no por asana;
-      gancho `RegisterPractice`/`MeditationReward`/`AsanaQueue.OnLimitReached`), **Vínculos** (pool con
-      el crecimiento de `bonds`/`GrowBond`), y futura **Hechizos**. Independientes (p.ej. nivel 20 stats +
-      1 yoga). Coexisten con maestría-por-asana y maestría-de-elemento (ya existen).
-- [ ] **Extender el yoga** (revisión 2026-07-24, ver known-issues §Yoga): resolver `AsanaEvaluator`
-      (no se instancia) y `AccumulatePostureStress` (0 invocadores) al cablear el track de yoga; hacer
-      **persistente** la maestría (`Asana.*` son `NonSerialized`).
-- [ ] **Maná latente → el yoga desbloquea su barra** (solo visibilidad/uso; los incrementos siguen
-      siendo stats+alma). No visible al inicio; practicar yoga lo revela.
-- [ ] **Misiones de simulacro que dan aptitudes** (hoy `SanctuaryMission` solo monedas/item): añadir
-      recompensa de aptitudes; es el lado humanoide de la evolución de aptitudes.
+      en `TakeDamage`, `SpendEnergy`), lee de cualquier `IAptitudes` (opt-in); HUD muestra energía/def/poder.
+      **Trepar hecho (MVP, verificar feel/física):** `Climbable` + `PlayerClimber` (Espacio; altura ∝
+      fuerza/peso, velocidad ∝ fuerza·agilidad, coste de energía ∝ peso/fuerza vía `SpendEnergy`).
+      **Falta:** unificar del todo la fuente de aptitudes con `NPCBase`.
+- [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
+      implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
+      `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
+      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme. **Hallazgo:** `CompanionBase`
+      NO extiende `LivingEntity`, así que la de-duplicación total (una sola copia de campos) queda para
+      `NPCBase` (reparentar). El acceso ya está universalizado.
+- [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Hecho (2026-07-24):**
+      `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);
+      los **puntos del alma escalan por TODAS las margas** (`SoulLevels`); **maná gateado por Yoga≥2**;
+      HUD; **XP de Yoga cableada** (`MeditationReward.yogaXp` → `GainYogaXp` en misiones de yoga); **XP de
+      Stats desde ganancia de aptitudes** (`GainAptitude` → `GainStatsXp`); **XP de Vínculos cableada**
+      (`BondActivity.TryPractice` → `GainBondXp`); **base-bump al subir de nivel** (`OnMargaLevelUp` sube
+      la base de todas las aptitudes vía `Aptitudes.AddAll`). **Falta:** XP de yoga por **práctica directa**
+      (`AsanaQueue.OnLimitReached`, requiere compilación/orphans) y la futura marga de **Hechizos**.
+- [~] **Misiones de simulacro que dan aptitudes** — **hecho (2026-07-24):** `SanctuaryMission` tiene
+      `rewardAptitude`/`rewardAptitudeAmount`; `MissionTracker` los aplica vía `CharacterLevel.GainAptitude`
+      (sube aptitud + alimenta la marga de Stats). Falta poblar valores por misión cuando existan más.
+- [ ] **Extender el yoga — orphans** (revisión 2026-07-24, known-issues §Yoga; **requiere compilación**):
+      resolver `AsanaEvaluator` (no se instancia) y `AccumulatePostureStress` (0 invocadores), y hacer
+      **persistente** la maestría (`Asana.*` son `NonSerialized`). Wiring de gameplay; mejor con Rider.
+- [ ] **Maná latente → el yoga desbloquea su barra** — **hecho** en `CharacterLevel.ManaUnlocked`
+      (Yoga≥2; solo visibilidad/uso, incrementos = stats+alma). *(marcado completo.)*
 - [ ] **Niveles por plano:** Mesocosmos autoritativo (reglas profundas); Macro/Micro pueden abstraer
       nivel+XP si el rendimiento lo exige.
 - [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.

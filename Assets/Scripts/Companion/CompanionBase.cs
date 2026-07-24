@@ -11,7 +11,7 @@ using UnityEngine;
 ///   - GetMoodModifier()   → how their personality biases the restoration
 ///   - OnPlayerNearby()    → optional dialogue/reaction hooks
 /// </summary>
-public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
+public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple, IAptitudes
 {
     // ── Inspector ────────────────────────────────────────────────────────────
     [Header("Identity")]
@@ -37,6 +37,20 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple
     [HideInInspector] public float creativity;     // imaginación / creatividad
     [HideInInspector] public float sociability;    // trato social / carisma
     [HideInInspector] public float discipline;     // constancia / mantener rutinas
+
+    // IAptitudes — acceso uniforme (mismo contrato que LivingEntity/PlayerStats).
+    public float Agility      => agility;
+    public float Perception   => perception;
+    public float Strength     => strength;
+    public float BodyMass     => bodyMass;
+    public float Adaptability => adaptability;
+    public float Composure    => composure;
+    public float Endurance    => endurance;
+    public float Reasoning    => reasoning;
+    public float Memory       => memory;
+    public float Creativity   => creativity;
+    public float Sociability  => sociability;
+    public float Discipline   => discipline;
 
     protected virtual float BaseAgility      => 1f;
     protected virtual float BasePerception   => 1f;
