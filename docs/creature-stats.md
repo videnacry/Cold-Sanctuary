@@ -247,9 +247,14 @@ progresión aparte** (maestría de asana, maestría de elemento). Mantener el se
 **Base + ganancias.** Cada aptitud = **base** (con la que nace el personaje) + **ganancias** (puntos/
 multiplicadores por practicar/misiones). Los pools se derivan de la aptitud efectiva (§Pools derivados).
 
+**El "alma" es una base INDEPENDIENTE (aclarado 2026-07-24).** El alma existe por sí misma, **aparte de
+los stats actuales**. Los stats pueden **sumar o restar** al alma (la modulan), pero el alma no ES los
+stats. En los pools (p. ej. la barra de maná), tanto los **stats (multiplicadores)** como el **alma**
+contribuyen al valor.
+
 **Nivel del "alma" por pool de XP.** Cada **punto de aptitud** ganado suma también a un **pool de XP**.
 Al alcanzar el umbral → **sube de nivel**: recompensa/desbloqueo **notorio** + un **incremento directo
-de la base** (crecimiento íntegro, no temporal — "un proceso del alma").
+de la base del alma** (crecimiento íntegro, no temporal — "un proceso del alma").
 
 **Varios tracks de nivel** (no uno solo):
 - **Nivel de personaje/alma** — por ganancia total de aptitudes.
@@ -257,8 +262,11 @@ de la base** (crecimiento íntegro, no temporal — "un proceso del alma").
   XP y niveles.
 - **Maestría de elemento** — *ya existe* el descubrimiento (Chemistry/tabla periódica).
 
-**Maná latente → se DESBLOQUEA con el yoga.** Al principio no es visible; practicar yoga (asanas) lo
-revela y lo hace crecer. Igual pueden desbloquearse habilidades/nuevas asanas.
+**Maná latente → el yoga DESBLOQUEA su barra (aclarado 2026-07-24).** El desbloqueo por yoga es **solo
+hacer la barra de maná visible y utilizable** — NO es una fuente de crecimiento aparte. Sus incrementos
+siguen viniendo de lo mismo: los **stats (multiplicadores)** + el **alma**. Antes del desbloqueo el maná
+existe internamente pero no se muestra ni se usa; practicar yoga lo revela. (Igual pueden desbloquearse
+habilidades/nuevas asanas.)
 
 **Niveles por plano.**
 - **Mesocosmos = autoritativo:** las reglas profundas (ganancia de aptitudes por hacer, pools derivados,
