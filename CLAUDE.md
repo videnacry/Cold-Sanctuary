@@ -16,7 +16,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
   más `.gitignore` y `.gitattributes`. **No** están en git: escenas (`.unity`), prefabs,
   `ProjectSettings/`, `Packages/manifest.json` ni archivos `.meta`. La configuración del
   proyecto Unity y los assets visuales viven fuera de este repositorio.
-- ~18.255 líneas, 179 scripts, 95 commits. Verificación completa en [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md).
+- ~19.126 líneas, 189 scripts, 115 commits. Verificación completa en [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md).
 - Idioma de comentarios mezclado: inglés y español. Sin namespaces (todo global).
 
 ## Mapa de sistemas
@@ -37,7 +37,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Diálogo | `Assets/Scripts/Dialogue/` | Completo y cableado |
 | Asanas | `Assets/Scripts/Asana/` | Funciona; conectado a `PlayerStats` (ya no pendiente) |
 | Combate | `Assets/Scripts/Combat/` | **Implementado; jugador cableado.** `NPCCombatBehavior` sin cablear |
-| Economía | `Assets/Scripts/Economy/` | **Implementado; núcleo jugador cableado.** `NPCEconomy`/`AreaVendor` inertes |
+| Economía | `Assets/Scripts/Economy/` | **Implementado; núcleo jugador cableado.** `NPCEconomy`/`AreaVendor` inertes. **+ recursos de santuario** (`SanctuaryResources`/`AreaProducer` + HUD, docs world-topology §4/§7) |
 | Química (tabla periódica) | `Assets/Scripts/Chemistry/` | Implementado y cableado (~55 elementos) |
 | Cocina (miniaturización) | (retirada) | La cocina legacy (`KitchenEntrance`/`KitchenScaleController`) se **borró** 2026-07-23. La entrada migró al trigger universal `VirtualizationMachine` (Meditation) + `RealityShiftController` (miniaturización genérica por área) + `MobWorldLoader` (mundo mob en escena). Ver fila **Meditación / Microcosmos** |
 | Ropa/crafting | `Assets/Scripts/Clothing/` | **Parcial/sin cablear**: crafting no entrega item |
@@ -46,12 +46,16 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Meditación / Microcosmos | `Assets/Scripts/Meditation/` (23 archivos) | Implementado. `VirtualizationMachine` (trigger universal de misiones mob), `MeditationSession`, `MeditationMissionBase` + misiones (Healing/Protection/Channel/AsanaFormation/PostureVisualization/RootInquiry), arquetipos de mob, `RealityShiftController`, `LotusMeditationAbility`. Ver `docs/magic-plane-and-meditation.md` |
 | Mundo mob | `Assets/Scripts/MobWorld/` (5 archivos) | Implementado. `MobResident`, `MobWorldDirector`, `YogaPortal`, `MobWorldLoader`, `MobSpawnPoint`; builder en `Assets/Editor/MobWorldSceneBuilder.cs`. Ver `docs/mob-world-architecture.md` |
 | Avatares (Microcosmos) | `Assets/Scripts/Avatar/` (3 archivos) | Implementado. `SurfaceWalker`, `AvatarController`, `RobotAvatar` (enum `AvatarLocomotion`: Ground/Climb/Flight). Ver `docs/magic-plane-and-meditation.md` §4 |
+| Progresión / alma | `Assets/Scripts/Progression/` | `CharacterLevel` (**margas del alma**: Stats/Yoga/Vínculos, tracks independientes) + `DerivedStats` (aptitudes→**puntos del alma**: vida/energía/maná/defensa/poder) + `SoulMarga`. Aptitudes universales vía `IAptitudes`. Ver `docs/creature-stats.md` §Progresión |
+| Farming (juego no-violento) | `Assets/Scripts/Farming/` | `PlayableCreature`/`PlayController` (bajar tensión jugando → recursos/XP/items; gateado por bond, puede dañar), `FarmingSandboxItems`, `Climbable`/`PlayerClimber` (trepar). Ver `docs/world-topology-and-planes.md` §4.1 |
 | Herramientas Editor | `Assets/Editor/` | `SampleSceneBuilder` cablea casi todo el escenario |
 | Debug | `Test.cs` | Sin uso en flujo principal |
 
 ## Abstracciones principales
 
-- `LivingEntity` (base compartida para Animal y futuros NPCs): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks de respuesta (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`).
+- `LivingEntity` (base compartida para Animal y futuros NPCs): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks de respuesta (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`). **Ahora hogar de las 12 aptitudes** (implementa `IAptitudes`).
+- `IAptitudes`: las **12 aptitudes universales** (agility/perception/strength/bodyMass/adaptability/composure/endurance/reasoning/memory/creativity/sociability/discipline). Implementan `LivingEntity`, `CompanionBase`, `PlayerStats`. `DerivedStats` deriva de ellas los **puntos del alma**.
+- `CharacterLevel` + `SoulMarga`: progresión por **margas del alma** (tracks independientes: Stats/Yoga/Vínculos) → suben los puntos del alma. Ver `docs/creature-stats.md` §Progresión.
 - `IMind` / `IMindSimple`: stats mentales. `PlayerStats` implementa `IMind` completa; `CompanionBase` usa `IMindSimple` (transitoria hasta NPCBase).
 - `IBody`: stats físicas por extremidad + estrés postural (sistema de asanas). Implementa: `PlayerStats`.
 - `IBondable`: vínculo con el jugador y efecto por proximidad. Implementa: `CompanionBase`, `WorldBondable`.
