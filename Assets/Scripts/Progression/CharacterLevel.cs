@@ -1,24 +1,23 @@
-using System;
 using UnityEngine;
 
 /// <summary>
-/// XP y nivel de un personaje, con **pools DERIVADOS de las aptitudes** (docs/creature-stats.md §Pools
-/// derivados; world-topology-and-planes.md §4.1): vida, energía, maná, defensa pasiva y poder de hechizo
-/// salen de las aptitudes vía <see cref="DerivedStats"/>, no se ponen a mano.
+/// Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión): varios
+/// tracks independientes (Stats, Yoga, Vínculos…), cada uno con su pool de XP y nivel. Los **pools**
+/// (vida/energía/maná/defensa/poder) se **derivan de las aptitudes** (`DerivedStats`), escalados por el
+/// nivel de la marga de **Stats** (la del cuerpo/alma) — subir esa marga = el "incremento de la base".
 ///
-/// El farming da XP → sube nivel → los pools crecen. De momento la vida/energía/maná viven aquí; el
-/// combate real y el consumo de energía (asanas/correr/trepar) se enganchan más adelante (y con
-/// `NPCBase`, la fuente de aptitudes se unificará entre companions/jugador/animales).
+/// El maná existe siempre, pero su barra **se desbloquea al practicar yoga** (marga de Yoga ≥ 2): solo
+/// afecta a la VISIBILIDAD/uso, no a cuánto vale (eso son aptitudes+nivel). Ver docs.
+///
+/// Fuentes de XP hoy: el farming alimenta la marga de Stats (`GainXp`). Yoga/Vínculos se cablearán en
+/// sus sistemas (`GainYogaXp`/`GainBondXp`).
 /// </summary>
 public class CharacterLevel : MonoBehaviour
 {
-    [Header("Nivel")]
-    [Min(1)] public int level = 1;
-    [Min(0f)] public float xp = 0f;
-
-    [Tooltip("XP para pasar de nivel 1 → 2. Cada nivel siguiente cuesta ×xpCurve.")]
-    [Min(1f)] public float baseXpToNext = 100f;
-    [Min(1f)] public float xpCurve = 1.3f;
+    [Header("Margas del alma (tracks independientes)")]
+    public SoulMarga stats = new SoulMarga { name = "Stats" };
+    public SoulMarga yoga  = new SoulMarga { name = "Yoga" };
+    public SoulMarga bonds = new SoulMarga { name = "Vínculos" };
 
     [Header("Aptitudes (derivan los pools). 1.0 = media.")]
     public Aptitudes aptitudes = Aptitudes.Default;
@@ -27,34 +26,29 @@ public class CharacterLevel : MonoBehaviour
              "PlayerStats). Si false, usa el campo 'aptitudes' de arriba (p.ej. perfil fijado a mano/builder).")]
     public bool deriveAptitudesFromComponent = false;
 
-    // Pools máximos derivados (docs §Pools derivados).
-    public float MaxHealth      => DerivedStats.MaxHealth(aptitudes, level);
-    public float MaxEnergy      => DerivedStats.MaxEnergy(aptitudes, level);
-    public float MaxMana        => DerivedStats.MaxMana(aptitudes, level);
+    // Pools máximos derivados; escalan por el nivel de la marga de Stats.
+    public float MaxHealth      => DerivedStats.MaxHealth(aptitudes, stats.level);
+    public float MaxEnergy      => DerivedStats.MaxEnergy(aptitudes, stats.level);
+    public float MaxMana        => DerivedStats.MaxMana(aptitudes, stats.level);
     public float PassiveDefense => DerivedStats.PassiveDefense(aptitudes);
-    public float SpellPower     => DerivedStats.SpellPower(aptitudes, level);
+    public float SpellPower     => DerivedStats.SpellPower(aptitudes, stats.level);
 
-    [Header("Pools actuales (los llena Awake y al subir de nivel)")]
+    /// <summary>La barra de maná se desbloquea al subir la marga de Yoga (solo visibilidad/uso).</summary>
+    public bool ManaUnlocked => yoga.level >= 2;
+
+    [Header("Pools actuales (los llena Awake y al subir la marga de Stats)")]
     public float currentHealth;
     public float currentEnergy;
     public float currentMana;
 
-    /// <summary>XP necesaria para el siguiente nivel desde el nivel actual.</summary>
-    public float XpToNext => baseXpToNext * Mathf.Pow(xpCurve, level - 1);
-
-    /// <summary>Disparado al subir de nivel (nuevo nivel).</summary>
-    public event Action<int> OnLevelUp;
-
     void Awake()
     {
         // Opt-in: derivar de las aptitudes del ser vivo en el mismo objeto (cualquier IAptitudes).
-        // Por defecto off, para no pisar un perfil fijado a mano (p.ej. Kushal en el builder).
         if (deriveAptitudesFromComponent)
         {
             IAptitudes src = GetComponent<IAptitudes>();
             if (src != null) aptitudes = Aptitudes.From(src);
         }
-
         RefillAll();
     }
 
@@ -65,21 +59,35 @@ public class CharacterLevel : MonoBehaviour
         currentMana   = MaxMana;
     }
 
-    public void GainXp(float amount)
-    {
-        if (amount <= 0f) return;
-        xp += amount;
+    // ── Fuentes de XP por marga ─────────────────────────────────────────────────
 
-        // Puede subir varios niveles de golpe con recompensas grandes.
-        while (xp >= XpToNext)
+    /// <summary>Compatibilidad: el farming alimenta la marga de Stats.</summary>
+    public void GainXp(float amount) => GainStatsXp(amount);
+
+    public void GainStatsXp(float amount)
+    {
+        int levels = stats.GainXp(amount);
+        if (levels > 0)
         {
-            xp -= XpToNext;
-            level++;
-            RefillAll();  // subir de nivel cura del todo (los pools crecen con el nivel)
-            Debug.Log($"[Nivel] «{name}» subió a nivel {level} — Vida {MaxHealth:0}, Energía {MaxEnergy:0}, Maná {MaxMana:0}.");
-            OnLevelUp?.Invoke(level);
+            RefillAll();  // los pools crecieron con el nivel de Stats → cura del todo
+            Debug.Log($"[Marga] «{name}» Stats nivel {stats.level} — Vida {MaxHealth:0}, Energía {MaxEnergy:0}, Maná {MaxMana:0}.");
         }
     }
+
+    public void GainYogaXp(float amount)
+    {
+        int levels = yoga.GainXp(amount);
+        if (levels > 0)
+            Debug.Log($"[Marga] «{name}» Yoga nivel {yoga.level}" + (ManaUnlocked ? " — barra de maná desbloqueada." : "."));
+    }
+
+    public void GainBondXp(float amount)
+    {
+        int levels = bonds.GainXp(amount);
+        if (levels > 0) Debug.Log($"[Marga] «{name}» Vínculos nivel {bonds.level}.");
+    }
+
+    // ── Vida / energía ───────────────────────────────────────────────────────────
 
     /// <summary>Daño recibido: se le resta la defensa pasiva (mínimo 0). No baja de 0.</summary>
     public void TakeDamage(float dmg)
@@ -88,11 +96,11 @@ public class CharacterLevel : MonoBehaviour
         float effective = Mathf.Max(0f, dmg - PassiveDefense);
         if (effective <= 0f)
         {
-            Debug.Log($"[Nivel] «{name}» absorbió el golpe (defensa {PassiveDefense:0}).");
+            Debug.Log($"[Alma] «{name}» absorbió el golpe (defensa {PassiveDefense:0}).");
             return;
         }
         currentHealth = Mathf.Max(0f, currentHealth - effective);
-        Debug.Log($"[Nivel] «{name}» recibió {effective:0.0} (def {PassiveDefense:0}) — Vida {currentHealth:0}/{MaxHealth:0}.");
+        Debug.Log($"[Alma] «{name}» recibió {effective:0.0} (def {PassiveDefense:0}) — Vida {currentHealth:0}/{MaxHealth:0}.");
     }
 
     /// <summary>Gasta energía (asanas, correr, trepar). Devuelve false si no hay suficiente.</summary>

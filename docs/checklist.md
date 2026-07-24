@@ -124,12 +124,15 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme. **Hallazgo:** `CompanionBase`
       NO extiende `LivingEntity`, así que la de-duplicación total (una sola copia de campos) queda para
       `NPCBase` (reparentar). El acceso ya está universalizado.
-- [ ] **"Vías del alma" = tracks INDEPENDIENTES** (nombre a confirmar; creature-stats §Progresión), cada
-      una con su pool de XP general: **Stats** (`CharacterLevel` realineado: XP de la ganancia de
-      aptitudes, sube la base — hoy usa XP arbitrario del farming), **Yoga** (pool general, no por asana;
-      gancho `RegisterPractice`/`MeditationReward`/`AsanaQueue.OnLimitReached`), **Vínculos** (pool con
-      el crecimiento de `bonds`/`GrowBond`), y futura **Hechizos**. Independientes (p.ej. nivel 20 stats +
-      1 yoga). Coexisten con maestría-por-asana y maestría-de-elemento (ya existen).
+- [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Estructura hecha
+      (2026-07-24):** clase `SoulMarga` (pool de XP + nivel + curva) y `CharacterLevel` reescrito con 3
+      margas (**Stats**/**Yoga**/**Vínculos**); los pools escalan por el nivel de la marga de **Stats**;
+      **maná gateado por Yoga≥2** (solo visibilidad); HUD muestra las margas; el farming alimenta Stats
+      (`GainXp`); expuesto `GainYogaXp`/`GainBondXp`. **Falta:** cablear XP de **Yoga** (desde
+      `RegisterPractice`/`MeditationReward`/`AsanaQueue.OnLimitReached`) y de **Vínculos** (desde
+      `GrowBond`); que la XP de Stats venga de **ganancia de aptitudes** (no XP directo del farming) y que
+      subir de nivel **incremente la base**; futura marga de **Hechizos**. Coexisten con maestría-por-asana
+      y maestría-de-elemento (ya existen).
 - [ ] **Extender el yoga** (revisión 2026-07-24, ver known-issues §Yoga): resolver `AsanaEvaluator`
       (no se instancia) y `AccumulatePostureStress` (0 invocadores) al cablear el track de yoga; hacer
       **persistente** la maestría (`Asana.*` son `NonSerialized`).

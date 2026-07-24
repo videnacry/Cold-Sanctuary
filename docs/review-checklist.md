@@ -73,6 +73,26 @@ O simplemente que `NPCBase` admita un flag `isConstruct` que limite el cambio de
 - Sin zona activa: tick reducido o congelado
 - Los bonds entre animales salvajes solo necesitan comprobarse dentro del radio de percepción
 
+### Mente ESCALABLE por capacidad (revisión 2026-07-24)
+
+En vez de un binario "tiene `IMind` o no", la mente es **un sistema con profundidad graduable**, gateada
+por las aptitudes (`reasoning`+`memory`…) y/o un **tier** explícito:
+
+- **Tier 0** (animal simple) → sin procesos mentales; solo drives de `LivingEntity` (≈ gratis).
+- **Tier bajo** (animal listo) → mente somera (pocos pensamientos, asociaciones simples).
+- **Tier alto** (personaje / humanizado) → mente completa: **generaciones de recuerdos y pensamientos**,
+  sus **interacciones/relaciones** (cómo unos afectan a otros y a las acciones), + ThoughtAnchors.
+
+Así el **contrato de la mente es universal** (todo `LivingEntity` puede tenerla) pero el **coste escala
+con la capacidad** → resuelve el presupuesto (los ~40 bichos corren tier-0 ≈ gratis; solo los personajes
+pagan la simulación completa). Distinción: **aptitudes = capacidad (universal, barata)** vs **mente =
+estado/proceso vivo (profundidad por capacidad)**. Implementación futura junto a `NPCBase`.
+
+> **Prioridad:** conviene cerrar la migración a `NPCBase` (reparentar `CompanionBase` a `LivingEntity`,
+> consolidar `IMind`/`IBody`/`IBondable`) **antes** de que el mundo crezca más — pero **con un loop de
+> compilación activo** (Rider/Unity), no a ciegas: es el refactor más central. `IAptitudes` (2026-07-24)
+> ya es un peldaño.
+
 ---
 
 ## Diseño — Sistema de bonds (visión corregida)
