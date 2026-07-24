@@ -118,6 +118,16 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
       **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
       aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
+- [ ] **Aptitudes universales en `LivingEntity`** (decidido 2026-07-24): mover las 12 a `LivingEntity`
+      para que todo ser vivo las tenga (= unificación `NPCBase`); quitar el split animal/humanoide.
+- [ ] **Modelo de nivel "alma" por pool de XP** (creature-stats §Progresión): el XP debe venir de la
+      **ganancia de aptitudes** (no arbitrario) y subir la **base**; alinear `CharacterLevel`. Varios
+      tracks (personaje / maestría de asana ya existe / maestría de elemento ya existe).
+- [ ] **Maná latente → desbloqueado por yoga** (no visible al inicio; el yoga lo revela/crece).
+- [ ] **Misiones de simulacro que dan aptitudes** (hoy `SanctuaryMission` solo monedas/item): añadir
+      recompensa de aptitudes; es el lado humanoide de la evolución de aptitudes.
+- [ ] **Niveles por plano:** Mesocosmos autoritativo (reglas profundas); Macro/Micro pueden abstraer
+      nivel+XP si el rendimiento lo exige.
 - [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.
 
 ## Hecho (2026-07-23)

@@ -37,6 +37,10 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
   aptitudes se consolidarán en `LivingEntity` y se eliminará la duplicación.
 - **Jugador** — `PlayerStats` ya tiene equivalentes parciales: `observationRadius` (≈ percepción)
   y `velocity` (≈ agilidad); crecen con la práctica (asanas). Pendiente unificar nomenclatura.
+- **Intención (decidido 2026-07-24):** las 12 aptitudes pertenecen a **todo ser vivo**; su hogar es
+  `LivingEntity`. El split actual (animales 2 + Physiognomy, companions 12, jugador parcial,
+  `WorldCharacter` aparte) es **transitorio** hasta `NPCBase`. Los animales usan pocas activamente
+  (agility/perception evolucionan); el resto quedan latentes.
 
 ## Calibración por especie (animales)
 
@@ -233,6 +237,40 @@ que faltaba del lado humanoide de la evolución de aptitudes, y lo que hace crec
 > `CompanionBase`, parcialmente en `PlayerStats`/`LivingEntity`); encaja con el `NPCBase` pendiente. Un
 > módulo `DerivedStats` (funciones puras aptitudes→pools) puede escribirse ya y ser consumido por
 > `CharacterLevel` y el futuro `NPCBase`.
+
+## Progresión: aptitudes universales, niveles y pools de XP
+
+**¿Más stats?** De momento **bastan las 12** (+ `flexibility` en `BodyPartStats`). La profundidad mágica
+NO se modela con stats nuevas, sino con **pools derivados** (maná = `reasoning`+`memory`) y **tracks de
+progresión aparte** (maestría de asana, maestría de elemento). Mantener el set pequeño y con sentido.
+
+**Base + ganancias.** Cada aptitud = **base** (con la que nace el personaje) + **ganancias** (puntos/
+multiplicadores por practicar/misiones). Los pools se derivan de la aptitud efectiva (§Pools derivados).
+
+**Nivel del "alma" por pool de XP.** Cada **punto de aptitud** ganado suma también a un **pool de XP**.
+Al alcanzar el umbral → **sube de nivel**: recompensa/desbloqueo **notorio** + un **incremento directo
+de la base** (crecimiento íntegro, no temporal — "un proceso del alma").
+
+**Varios tracks de nivel** (no uno solo):
+- **Nivel de personaje/alma** — por ganancia total de aptitudes.
+- **Maestría por asana** — *ya existe* (`Asana.masteryLevel`/`RegisterPractice`): cada postura tiene su
+  XP y niveles.
+- **Maestría de elemento** — *ya existe* el descubrimiento (Chemistry/tabla periódica).
+
+**Maná latente → se DESBLOQUEA con el yoga.** Al principio no es visible; practicar yoga (asanas) lo
+revela y lo hace crecer. Igual pueden desbloquearse habilidades/nuevas asanas.
+
+**Niveles por plano.**
+- **Mesocosmos = autoritativo:** las reglas profundas (ganancia de aptitudes por hacer, pools derivados,
+  maestrías). Es el modelo "real".
+- **Macrocosmos / Microcosmos = pueden ABSTRAER:** si el rendimiento lo exige, un nivel+XP simplificado
+  (proxy) en vez de simular todo. Meso manda; macro/micro optimizan.
+
+**Estado en código.** `CharacterLevel` (farming) hoy usa un XP→nivel **arbitrario** con pools ya
+derivados de aptitudes. Para alinearlo: el XP debe **venir de la ganancia de aptitudes** (no arbitrario)
+y el nivel debe **subir la base**. Los asanas ya tienen su track. Falta: misiones de **simulacro** que
+den **aptitudes** (hoy `SanctuaryMission` solo da monedas/item; solo `AreaTask.strengthDelta` mueve la
+fuerza de los `WorldCharacter` autónomos).
 
 ## Próximos pasos
 
