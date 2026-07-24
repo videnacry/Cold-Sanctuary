@@ -120,10 +120,17 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
 - [ ] **Aptitudes universales en `LivingEntity`** (decidido 2026-07-24): mover las 12 a `LivingEntity`
       para que todo ser vivo las tenga (= unificación `NPCBase`); quitar el split animal/humanoide.
-- [ ] **Modelo de nivel "alma" por pool de XP** (creature-stats §Progresión): el XP debe venir de la
-      **ganancia de aptitudes** (no arbitrario) y subir la **base**; alinear `CharacterLevel`. Varios
-      tracks (personaje / maestría de asana ya existe / maestría de elemento ya existe).
-- [ ] **Maná latente → desbloqueado por yoga** (no visible al inicio; el yoga lo revela/crece).
+- [ ] **"Vías del alma" = tracks INDEPENDIENTES** (nombre a confirmar; creature-stats §Progresión), cada
+      una con su pool de XP general: **Stats** (`CharacterLevel` realineado: XP de la ganancia de
+      aptitudes, sube la base — hoy usa XP arbitrario del farming), **Yoga** (pool general, no por asana;
+      gancho `RegisterPractice`/`MeditationReward`/`AsanaQueue.OnLimitReached`), **Vínculos** (pool con
+      el crecimiento de `bonds`/`GrowBond`), y futura **Hechizos**. Independientes (p.ej. nivel 20 stats +
+      1 yoga). Coexisten con maestría-por-asana y maestría-de-elemento (ya existen).
+- [ ] **Extender el yoga** (revisión 2026-07-24, ver known-issues §Yoga): resolver `AsanaEvaluator`
+      (no se instancia) y `AccumulatePostureStress` (0 invocadores) al cablear el track de yoga; hacer
+      **persistente** la maestría (`Asana.*` son `NonSerialized`).
+- [ ] **Maná latente → el yoga desbloquea su barra** (solo visibilidad/uso; los incrementos siguen
+      siendo stats+alma). No visible al inicio; practicar yoga lo revela.
 - [ ] **Misiones de simulacro que dan aptitudes** (hoy `SanctuaryMission` solo monedas/item): añadir
       recompensa de aptitudes; es el lado humanoide de la evolución de aptitudes.
 - [ ] **Niveles por plano:** Mesocosmos autoritativo (reglas profundas); Macro/Micro pueden abstraer
