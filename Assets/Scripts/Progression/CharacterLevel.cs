@@ -23,6 +23,10 @@ public class CharacterLevel : MonoBehaviour
     [Header("Aptitudes (derivan los pools). 1.0 = media.")]
     public Aptitudes aptitudes = Aptitudes.Default;
 
+    [Tooltip("Si true, deriva las aptitudes del IAptitudes del mismo objeto (LivingEntity/CompanionBase/" +
+             "PlayerStats). Si false, usa el campo 'aptitudes' de arriba (p.ej. perfil fijado a mano/builder).")]
+    public bool deriveAptitudesFromComponent = false;
+
     // Pools máximos derivados (docs §Pools derivados).
     public float MaxHealth      => DerivedStats.MaxHealth(aptitudes, level);
     public float MaxEnergy      => DerivedStats.MaxEnergy(aptitudes, level);
@@ -43,9 +47,13 @@ public class CharacterLevel : MonoBehaviour
 
     void Awake()
     {
-        // Si hay un companion en el mismo objeto y ya tiene aptitudes fijadas, deriva de las SUYAS.
-        if (TryGetComponent(out CompanionBase comp) && (comp.strength > 0f || comp.endurance > 0f))
-            aptitudes = Aptitudes.From(comp);
+        // Opt-in: derivar de las aptitudes del ser vivo en el mismo objeto (cualquier IAptitudes).
+        // Por defecto off, para no pisar un perfil fijado a mano (p.ej. Kushal en el builder).
+        if (deriveAptitudesFromComponent)
+        {
+            IAptitudes src = GetComponent<IAptitudes>();
+            if (src != null) aptitudes = Aptitudes.From(src);
+        }
 
         RefillAll();
     }

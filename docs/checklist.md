@@ -118,8 +118,12 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
       **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
       aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
-- [ ] **Aptitudes universales en `LivingEntity`** (decidido 2026-07-24): mover las 12 a `LivingEntity`
-      para que todo ser vivo las tenga (= unificación `NPCBase`); quitar el split animal/humanoide.
+- [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
+      implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
+      `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
+      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme. **Hallazgo:** `CompanionBase`
+      NO extiende `LivingEntity`, así que la de-duplicación total (una sola copia de campos) queda para
+      `NPCBase` (reparentar). El acceso ya está universalizado.
 - [ ] **"Vías del alma" = tracks INDEPENDIENTES** (nombre a confirmar; creature-stats §Progresión), cada
       una con su pool de XP general: **Stats** (`CharacterLevel` realineado: XP de la ganancia de
       aptitudes, sube la base — hoy usa XP arbitrario del farming), **Yoga** (pool general, no por asana;

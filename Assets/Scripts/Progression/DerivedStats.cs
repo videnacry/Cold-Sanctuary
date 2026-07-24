@@ -19,13 +19,13 @@ public struct Aptitudes
         endurance = 1f, reasoning = 1f, memory = 1f, creativity = 1f, sociability = 1f, discipline = 1f
     };
 
-    /// <summary>Copia las aptitudes de un companion (para derivar SUS pools).</summary>
-    public static Aptitudes From(CompanionBase c) => new Aptitudes
+    /// <summary>Copia las aptitudes de cualquier ser vivo (animal/companion/jugador) vía IAptitudes.</summary>
+    public static Aptitudes From(IAptitudes a) => new Aptitudes
     {
-        agility = c.agility, perception = c.perception, strength = c.strength, bodyMass = c.bodyMass,
-        adaptability = c.adaptability, composure = c.composure, endurance = c.endurance,
-        reasoning = c.reasoning, memory = c.memory, creativity = c.creativity,
-        sociability = c.sociability, discipline = c.discipline
+        agility = a.Agility, perception = a.Perception, strength = a.Strength, bodyMass = a.BodyMass,
+        adaptability = a.Adaptability, composure = a.Composure, endurance = a.Endurance,
+        reasoning = a.Reasoning, memory = a.Memory, creativity = a.Creativity,
+        sociability = a.Sociability, discipline = a.Discipline
     };
 }
 

@@ -4,7 +4,7 @@ using UnityEngine;
 /// Holds all runtime stats for the player.
 /// Implements IBody (per-limb physical stats + posture stress) and IMind (mental/emotional stats).
 /// </summary>
-public class PlayerStats : MonoBehaviour, IBody, IMind
+public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
 {
     // ── Satisfaction ────────────────────────────────────────────────────────
     [Header("Satisfaction")]
@@ -44,6 +44,21 @@ public class PlayerStats : MonoBehaviour, IBody, IMind
     [Header("Physical Stats")]
     public float velocity = 1f;
     public float physicalResistance = 1f;
+
+    // IAptitudes — mapeo parcial del jugador (equivalentes que existen; el resto 1.0 hasta unificar con
+    // NPCBase). observationRadius NO se mapea a Perception (es una distancia, no un multiplicador 1.0).
+    float IAptitudes.Agility      => velocity;
+    float IAptitudes.Strength     => physicalResistance;
+    float IAptitudes.Endurance    => physicalResistance;
+    float IAptitudes.Perception   => 1f;
+    float IAptitudes.BodyMass     => 1f;
+    float IAptitudes.Adaptability => 1f;
+    float IAptitudes.Composure    => 1f;
+    float IAptitudes.Reasoning    => 1f;
+    float IAptitudes.Memory       => 1f;
+    float IAptitudes.Creativity   => 1f;
+    float IAptitudes.Sociability  => 1f;
+    float IAptitudes.Discipline   => 1f;
 
     // ── IBody — per-limb stats ───────────────────────────────────────────────
     // Array indexed by (int)BodyPart: Elbows=0, Hands=1, Knees=2, Feet=3, Hips=4, Back=5, Shoulders=6, Head=7
