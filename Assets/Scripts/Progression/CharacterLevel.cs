@@ -26,17 +26,21 @@ public class CharacterLevel : MonoBehaviour
              "PlayerStats). Si false, usa el campo 'aptitudes' de arriba (p.ej. perfil fijado a mano/builder).")]
     public bool deriveAptitudesFromComponent = false;
 
-    // Pools máximos derivados; escalan por el nivel de la marga de Stats.
-    public float MaxHealth      => DerivedStats.MaxHealth(aptitudes, stats.level);
-    public float MaxEnergy      => DerivedStats.MaxEnergy(aptitudes, stats.level);
-    public float MaxMana        => DerivedStats.MaxMana(aptitudes, stats.level);
+    /// <summary>Suma de niveles GANADOS en todas las margas (0 al empezar). Cada nivel de cualquier
+    /// marga sube los puntos del alma — cada marga es "otro multiplicador".</summary>
+    public int SoulLevels => (stats.level - 1) + (yoga.level - 1) + (bonds.level - 1);
+
+    // Puntos del alma (pools máximos): derivados de aptitudes, escalados por SoulLevels (TODAS las margas).
+    public float MaxHealth      => DerivedStats.MaxHealth(aptitudes, SoulLevels);
+    public float MaxEnergy      => DerivedStats.MaxEnergy(aptitudes, SoulLevels);
+    public float MaxMana        => DerivedStats.MaxMana(aptitudes, SoulLevels);
     public float PassiveDefense => DerivedStats.PassiveDefense(aptitudes);
-    public float SpellPower     => DerivedStats.SpellPower(aptitudes, stats.level);
+    public float SpellPower     => DerivedStats.SpellPower(aptitudes, SoulLevels);
 
     /// <summary>La barra de maná se desbloquea al subir la marga de Yoga (solo visibilidad/uso).</summary>
     public bool ManaUnlocked => yoga.level >= 2;
 
-    [Header("Pools actuales (los llena Awake y al subir la marga de Stats)")]
+    [Header("Puntos del alma actuales (los llena Awake y al subir cualquier marga)")]
     public float currentHealth;
     public float currentEnergy;
     public float currentMana;
@@ -66,25 +70,29 @@ public class CharacterLevel : MonoBehaviour
 
     public void GainStatsXp(float amount)
     {
-        int levels = stats.GainXp(amount);
-        if (levels > 0)
+        if (stats.GainXp(amount) > 0)
         {
-            RefillAll();  // los pools crecieron con el nivel de Stats → cura del todo
+            RefillAll();  // los puntos del alma crecieron → cura del todo
             Debug.Log($"[Marga] «{name}» Stats nivel {stats.level} — Vida {MaxHealth:0}, Energía {MaxEnergy:0}, Maná {MaxMana:0}.");
         }
     }
 
     public void GainYogaXp(float amount)
     {
-        int levels = yoga.GainXp(amount);
-        if (levels > 0)
+        if (yoga.GainXp(amount) > 0)
+        {
+            RefillAll();  // el yoga también sube los puntos del alma
             Debug.Log($"[Marga] «{name}» Yoga nivel {yoga.level}" + (ManaUnlocked ? " — barra de maná desbloqueada." : "."));
+        }
     }
 
     public void GainBondXp(float amount)
     {
-        int levels = bonds.GainXp(amount);
-        if (levels > 0) Debug.Log($"[Marga] «{name}» Vínculos nivel {bonds.level}.");
+        if (bonds.GainXp(amount) > 0)
+        {
+            RefillAll();  // los vínculos también suben los puntos del alma
+            Debug.Log($"[Marga] «{name}» Vínculos nivel {bonds.level}.");
+        }
     }
 
     // ── Vida / energía ───────────────────────────────────────────────────────────

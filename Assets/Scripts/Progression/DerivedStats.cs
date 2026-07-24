@@ -39,28 +39,31 @@ public struct Aptitudes
 public static class DerivedStats
 {
     static float C(float v) => Mathf.Max(0f, v);                        // aptitud no-negativa
-    static float LevelFactor(int level, float per) => 1f + per * Mathf.Max(0, level - 1);
+
+    // Factor de nivel: `soulLevels` = SUMA de niveles ganados en TODAS las margas (0 al empezar).
+    // Cada nivel de CUALQUIER marga sube los puntos del alma → "cada marga es otro multiplicador".
+    static float LevelFactor(int soulLevels, float per) => 1f + per * Mathf.Max(0, soulLevels);
 
     /// <summary>Vida = resistencia + fuerza + masa (aguante a golpes).</summary>
-    public static float MaxHealth(Aptitudes a, int level) =>
+    public static float MaxHealth(Aptitudes a, int soulLevels) =>
         Mathf.Max(10f, (40f * C(a.endurance) + 35f * C(a.strength) + 25f * C(a.bodyMass))
-                       * LevelFactor(level, 0.15f));
+                       * LevelFactor(soulLevels, 0.15f));
 
     /// <summary>Energía = resistencia + agilidad, penalizada por el peso (asanas, correr, trepar).</summary>
-    public static float MaxEnergy(Aptitudes a, int level) =>
+    public static float MaxEnergy(Aptitudes a, int soulLevels) =>
         Mathf.Max(10f, (60f * C(a.endurance) + 50f * C(a.agility) - 10f * C(a.bodyMass))
-                       * LevelFactor(level, 0.10f));
+                       * LevelFactor(soulLevels, 0.10f));
 
     /// <summary>Maná = razonamiento + memoria (hechizos, magia intelectual).</summary>
-    public static float MaxMana(Aptitudes a, int level) =>
+    public static float MaxMana(Aptitudes a, int soulLevels) =>
         Mathf.Max(0f, (30f * C(a.reasoning) + 20f * C(a.memory))
-                      * LevelFactor(level, 0.12f));
+                      * LevelFactor(soulLevels, 0.12f));
 
     /// <summary>Defensa pasiva (se resta al daño recibido) = masa + fuerza + temple.</summary>
     public static float PassiveDefense(Aptitudes a) =>
         5f * C(a.bodyMass) + 5f * C(a.strength) + 5f * C(a.composure);
 
-    /// <summary>Poder de hechizo = creatividad + razonamiento (× nivel). Multiplicador base ~1.0.</summary>
-    public static float SpellPower(Aptitudes a, int level) =>
-        (0.6f * C(a.creativity) + 0.4f * C(a.reasoning)) * LevelFactor(level, 0.10f);
+    /// <summary>Poder de hechizo = creatividad + razonamiento (× nivel de alma). Base ~1.0.</summary>
+    public static float SpellPower(Aptitudes a, int soulLevels) =>
+        (0.6f * C(a.creativity) + 0.4f * C(a.reasoning)) * LevelFactor(soulLevels, 0.10f);
 }

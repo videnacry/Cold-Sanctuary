@@ -197,12 +197,18 @@ torpe en el agua; una ballena, al revés. Se modela como un **multiplicador por 
 > más allá de una tolerancia debería causar daño progresivo (la ballena varada en tierra; un terrestre
 > demasiado tiempo bajo el agua). Futuro; requiere un temporizador de tolerancia por medio.
 
-## Pools derivados de las aptitudes (Mesocosmos)
+## Los puntos del alma (pools derivados)
 
-Los pools de acción/combate **se derivan de las aptitudes**, no se ponen a mano (docs
+Los **puntos del alma** (nombre del grupo: **vida, energía, maná, defensa, poder de hechizo**) se
+**derivan de las aptitudes**, no se ponen a mano (docs
 [`world-topology-and-planes.md`](world-topology-and-planes.md) §4.1). Un personaje con más resistencia
-y fuerza tiene más vida; uno con más razonamiento, más maná. Primer consumidor en código:
-`CharacterLevel` (farming). Coeficientes iniciales **ajustables**.
+y fuerza tiene más vida; uno con más razonamiento, más maná.
+
+**Escalan por TODAS las margas (aclarado 2026-07-24).** Cada punto del alma = base(aptitudes) × factor de
+nivel, donde el factor suma los niveles ganados en **todas** las margas (Stats, Yoga, Vínculos…). Es
+decir, **cada marga es otro multiplicador**: subir Yoga sube la vida igual que subir Stats. En código:
+`DerivedStats.MaxX(aptitudes, soulLevels)` con `soulLevels = Σ (nivel−1) de cada marga`
+(`CharacterLevel.SoulLevels`). Coeficientes **ajustables**.
 
 | Pool | Para qué | Aptitudes principales | Regen / notas |
 |---|---|---|---|
