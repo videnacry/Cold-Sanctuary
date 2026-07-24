@@ -115,9 +115,10 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
 - [~] **Pools derivados de aptitudes** (creature-stats.md §Pools derivados). **Hecho (2026-07-24):**
       módulo `DerivedStats` (funciones puras aptitudes→vida/energía/maná/defensa/poder) + `Aptitudes`
       struct; `CharacterLevel` reescrito para derivar los pools (energía nueva, defensa aplicada al daño
-      en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
-      **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
-      aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
+      en `TakeDamage`, `SpendEnergy`), lee de cualquier `IAptitudes` (opt-in); HUD muestra energía/def/poder.
+      **Trepar hecho (MVP, verificar feel/física):** `Climbable` + `PlayerClimber` (Espacio; altura ∝
+      fuerza/peso, velocidad ∝ fuerza·agilidad, coste de energía ∝ peso/fuerza vía `SpendEnergy`).
+      **Falta:** unificar del todo la fuente de aptitudes con `NPCBase`.
 - [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
       implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
       `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
@@ -128,9 +129,10 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);
       los **puntos del alma escalan por TODAS las margas** (`SoulLevels`); **maná gateado por Yoga≥2**;
       HUD; **XP de Yoga cableada** (`MeditationReward.yogaXp` → `GainYogaXp` en misiones de yoga); **XP de
-      Stats desde ganancia de aptitudes** (`GainAptitude` → `GainStatsXp`). **Falta:** XP de **Vínculos**
-      (desde `GrowBond`), XP de yoga por **práctica directa** (`AsanaQueue.OnLimitReached`), que subir de
-      nivel **incremente la base del alma** de verdad, y la futura marga de **Hechizos**.
+      Stats desde ganancia de aptitudes** (`GainAptitude` → `GainStatsXp`); **XP de Vínculos cableada**
+      (`BondActivity.TryPractice` → `GainBondXp`); **base-bump al subir de nivel** (`OnMargaLevelUp` sube
+      la base de todas las aptitudes vía `Aptitudes.AddAll`). **Falta:** XP de yoga por **práctica directa**
+      (`AsanaQueue.OnLimitReached`, requiere compilación/orphans) y la futura marga de **Hechizos**.
 - [~] **Misiones de simulacro que dan aptitudes** — **hecho (2026-07-24):** `SanctuaryMission` tiene
       `rewardAptitude`/`rewardAptitudeAmount`; `MissionTracker` los aplica vía `CharacterLevel.GainAptitude`
       (sube aptitud + alimenta la marga de Stats). Falta poblar valores por misión cuando existan más.

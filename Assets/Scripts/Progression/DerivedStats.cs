@@ -35,6 +35,14 @@ public struct Aptitudes
         sociability = a.Sociability, discipline = a.Discipline
     };
 
+    /// <summary>Suma <paramref name="amt"/> a TODAS las aptitudes (crecimiento íntegro del alma).</summary>
+    public void AddAll(float amt)
+    {
+        agility += amt; perception += amt; strength += amt; bodyMass += amt;
+        adaptability += amt; composure += amt; endurance += amt; reasoning += amt;
+        memory += amt; creativity += amt; sociability += amt; discipline += amt;
+    }
+
     /// <summary>Suma <paramref name="amt"/> a la aptitud indicada (muta este struct).</summary>
     public void Add(AptitudeKind k, float amt)
     {

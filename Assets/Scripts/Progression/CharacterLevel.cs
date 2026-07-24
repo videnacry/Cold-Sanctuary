@@ -70,29 +70,44 @@ public class CharacterLevel : MonoBehaviour
 
     public void GainStatsXp(float amount)
     {
-        if (stats.GainXp(amount) > 0)
+        int levels = stats.GainXp(amount);
+        if (levels > 0)
         {
-            RefillAll();  // los puntos del alma crecieron → cura del todo
+            OnMargaLevelUp(levels);
             Debug.Log($"[Marga] «{name}» Stats nivel {stats.level} — Vida {MaxHealth:0}, Energía {MaxEnergy:0}, Maná {MaxMana:0}.");
         }
     }
 
     public void GainYogaXp(float amount)
     {
-        if (yoga.GainXp(amount) > 0)
+        int levels = yoga.GainXp(amount);
+        if (levels > 0)
         {
-            RefillAll();  // el yoga también sube los puntos del alma
+            OnMargaLevelUp(levels);
             Debug.Log($"[Marga] «{name}» Yoga nivel {yoga.level}" + (ManaUnlocked ? " — barra de maná desbloqueada." : "."));
         }
     }
 
     public void GainBondXp(float amount)
     {
-        if (bonds.GainXp(amount) > 0)
+        int levels = bonds.GainXp(amount);
+        if (levels > 0)
         {
-            RefillAll();  // los vínculos también suben los puntos del alma
+            OnMargaLevelUp(levels);
             Debug.Log($"[Marga] «{name}» Vínculos nivel {bonds.level}.");
         }
+    }
+
+    [Header("Incremento de base al subir de nivel")]
+    [Tooltip("Cuánto sube la base de CADA aptitud por cada nivel de marga (crecimiento íntegro del alma).")]
+    [Min(0f)] public float baseBumpPerLevel = 0.02f;
+
+    /// <summary>Al subir de nivel cualquier marga: incrementa la base del alma (todas las aptitudes) y
+    /// rellena los puntos del alma.</summary>
+    void OnMargaLevelUp(int levels)
+    {
+        if (baseBumpPerLevel > 0f) aptitudes.AddAll(baseBumpPerLevel * levels);
+        RefillAll();
     }
 
     [Header("Ganancia de aptitudes")]
