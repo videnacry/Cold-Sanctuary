@@ -252,21 +252,18 @@ los stats actuales**. Los stats pueden **sumar o restar** al alma (la modulan), 
 stats. En los pools (p. ej. la barra de maná), tanto los **stats (multiplicadores)** como el **alma**
 contribuyen al valor.
 
-**Las "Vías del alma" (nombre propuesto 2026-07-24).** El "nivel de alma" no es uno solo: hay **varias
-Vías**, cada una una **categoría/práctica** con **su propio pool de XP general** e **independiente** de
-las demás. Un personaje puede ser **nivel 20 en la Vía de los stats y nivel 1 en la del yoga**. Cada Vía,
-al llenar su pool, sube su nivel → desbloqueo **notorio** + **incremento directo de la base del alma**.
+**Las margas del alma (decidido 2026-07-24).** El "nivel de alma" no es uno solo: hay **varias margas**
+(*mārga* = "vía" en el yoga; nombre elegido por corto y temático). Cada marga es una **categoría/
+práctica** con **su propio pool de XP general** e **independiente** de las demás. Un personaje puede ser
+**nivel 20 en la marga de stats y nivel 1 en la del yoga**. Cada marga, al llenar su pool, sube su
+nivel → desbloqueo **notorio** + **incremento directo de la base del alma**.
 
-> *Por qué "Vías":* en el yoga las prácticas son *mārgas* (vías) — Karma (acción), Bhakti (devoción/
-> vínculo), Jñāna (conocimiento), Raja/Hatha (postura). Encaja con el tema del juego. Alternativas:
-> "Sendas", "Facetas", "Disciplinas del alma". **A confirmar el nombre.**
-
-- **Vía de los STATS** (≈ Karma/acción) — pool de XP con la **ganancia de aptitudes** (cada punto suma).
-- **Vía del YOGA** (≈ Raja/Hatha) — pool de XP **general, NO ligado a ninguna asana concreta**: practicar
-  yoga en general lo llena. *(A extender: hoy el yoga solo tiene maestría por asana, ver abajo.)*
-- **Vía de los VÍNCULOS** (≈ Bhakti) — pool de XP con el **crecimiento de bonds** (ya existe `bonds`/
-  `GrowBond`/`bondWithPlayer` en el código); estrechar vínculos sube esta Vía.
-- **Vía de los HECHIZOS / otras** (≈ Jñāna, futuras) — mismo patrón.
+- **Marga de STATS** (≈ Karma/acción) — pool de XP con la **ganancia de aptitudes** (cada punto suma).
+- **Marga del YOGA** (≈ Raja/Hatha) — pool de XP **general, NO ligado a ninguna asana concreta**:
+  practicar yoga en general lo llena. *(A extender: hoy el yoga solo tiene maestría por asana, ver abajo.)*
+- **Marga de los VÍNCULOS** (≈ Bhakti) — pool de XP con el **crecimiento de bonds** (ya existe `bonds`/
+  `GrowBond`/`bondWithPlayer` en el código); estrechar vínculos sube esta marga.
+- **Marga de los HECHIZOS / otras** (≈ Jñāna, futuras) — mismo patrón.
 
 Tracks **más finos** que conviven con los de alma (no son "de alma", son de destreza concreta):
 - **Maestría por asana** — *ya existe* (`Asana.masteryLevel`/`RegisterPractice`): cada postura sube por
