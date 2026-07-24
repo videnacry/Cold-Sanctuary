@@ -134,8 +134,14 @@ public static class SampleSceneBuilder
         GameObject player = GameObject.Find("Player");
         if (player != null)
         {
-            if (player.GetComponent<PlayController>() == null)  player.AddComponent<PlayController>();
-            if (player.GetComponent<CharacterLevel>() == null)  player.AddComponent<CharacterLevel>(); // XP del farming
+            if (player.GetComponent<PlayController>() == null) player.AddComponent<PlayController>();
+
+            CharacterLevel cl = player.GetComponent<CharacterLevel>();
+            if (cl == null) cl = player.AddComponent<CharacterLevel>(); // XP del farming; pools derivados de aptitudes
+            // Perfil de Kushal (algo por encima de la media) para que se note la derivación de pools.
+            Aptitudes apt = Aptitudes.Default;
+            apt.strength = 1.2f; apt.endurance = 1.2f; apt.agility = 1.1f;
+            cl.aptitudes = apt;
         }
 
         GameObject group = new GameObject("FarmingSandbox_AUTO");
@@ -147,8 +153,8 @@ public static class SampleSceneBuilder
         // Salvaje: NO criada → no juega (rige la ley natural; V no hace nada) — demuestra el gateo por bond.
         AddPlayCreature(group.transform, "PlayCreature_Suave",   new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2, 20f, handRaised: true,  canLoseControl: false);
         AddPlayCreature(group.transform, "PlayCreature_Media",   new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4, 35f, handRaised: true,  canLoseControl: false);
-        AddPlayCreature(group.transform, "PlayCreature_Dura",    new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: true,  canLoseControl: true);
-        AddPlayCreature(group.transform, "PlayCreature_Salvaje", new Vector3( 4f, 1f, 9f), 0.10f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: false, canLoseControl: true);
+        AddPlayCreature(group.transform, "PlayCreature_Dura",    new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: true,  canLoseControl: true,  looseControlDamage: 35f);
+        AddPlayCreature(group.transform, "PlayCreature_Salvaje", new Vector3( 4f, 1f, 9f), 0.10f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: false, canLoseControl: true,  looseControlDamage: 35f);
 
         Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 4 PlayableCreatures. " +
                   "Juega (V) hasta serenarlas (dan recursos/monedas/XP/items); F/clic para darles de comer. " +
@@ -157,7 +163,8 @@ public static class SampleSceneBuilder
 
     static void AddPlayCreature(Transform parent, string name, Vector3 pos, float discharge,
                                 SanctuaryResource res, float amount, int coins, float xp,
-                                bool handRaised = true, bool canLoseControl = false)
+                                bool handRaised = true, bool canLoseControl = false,
+                                float looseControlDamage = 8f)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name;
@@ -166,13 +173,14 @@ public static class SampleSceneBuilder
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{name}_MAT", new Color(0.9f, 0.35f, 0.3f));
 
         PlayableCreature pc = go.AddComponent<PlayableCreature>();
-        pc.dischargePerTouch = discharge;
-        pc.dropResource      = res;
-        pc.dropAmount        = amount;
-        pc.dropCoins         = coins;
-        pc.xpReward          = xp;
-        pc.handRaised        = handRaised;
-        pc.canLoseControl    = canLoseControl;
+        pc.dischargePerTouch   = discharge;
+        pc.dropResource        = res;
+        pc.dropAmount          = amount;
+        pc.dropCoins           = coins;
+        pc.xpReward            = xp;
+        pc.handRaised          = handRaised;
+        pc.canLoseControl      = canLoseControl;
+        pc.looseControlDamage  = looseControlDamage;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──

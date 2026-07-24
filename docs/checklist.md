@@ -112,10 +112,12 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       Meso, rápido en Macro); 4 áreas + 1 en obra. Depende de A.
 - [ ] **E — Macrocosmos (RTS).** Unidades/roles (peón/héroe), árbol de construcción, cámara 2D-ish,
       IA de guerra, agujero-negro de estructuras. Sistema grande; al final.
-- [ ] **Pools derivados de aptitudes** (creature-stats.md §Pools derivados): módulo `DerivedStats`
-      (funciones puras aptitudes→vida/energía/maná/defensa/poder), rewire `CharacterLevel` para leerlas,
-      y **trepar** (altura ∝ fuerza/peso; coste de energía por escalón). Necesita acceso unificado a
-      aptitudes (liga con `NPCBase`). Misiones deben **dar aptitudes** como recompensa.
+- [~] **Pools derivados de aptitudes** (creature-stats.md §Pools derivados). **Hecho (2026-07-24):**
+      módulo `DerivedStats` (funciones puras aptitudes→vida/energía/maná/defensa/poder) + `Aptitudes`
+      struct; `CharacterLevel` reescrito para derivar los pools (energía nueva, defensa aplicada al daño
+      en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
+      **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
+      aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
 - [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.
 
 ## Hecho (2026-07-23)
