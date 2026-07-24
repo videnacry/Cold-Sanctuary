@@ -29,6 +29,11 @@ public class MeditationReward
     [Tooltip("Coins awarded on completion. 0 = none.")]
     [Min(0)] public int coinReward = 0;
 
+    [Header("Marga de Yoga")]
+    [Tooltip("XP para la marga de Yoga del jugador (pool GENERAL de yoga, no por asana). 0 = none. " +
+             "Ver docs/creature-stats.md §Progresión.")]
+    [Min(0f)] public float yogaXp = 0f;
+
     /// <summary>Apply every reward. <paramref name="player"/> is the player's transform (may be null).</summary>
     public void Apply(Transform player)
     {
@@ -52,5 +57,8 @@ public class MeditationReward
 
         if (coinReward > 0)
             CoinWallet.Instance?.Earn(coinReward);
+
+        if (yogaXp > 0f && player != null)
+            player.GetComponent<CharacterLevel>()?.GainYogaXp(yogaXp);
     }
 }

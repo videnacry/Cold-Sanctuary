@@ -199,6 +199,14 @@ public class MissionTracker : MonoBehaviour
         if (mission.itemReward != null)
             Inventory.Instance?.AddItem(mission.itemReward, 1);
 
+        // Award aptitude (recompensa de simulacro → sube aptitud + alimenta la marga de Stats)
+        if (mission.rewardAptitudeAmount > 0f)
+        {
+            GameObject playerGO = GameObject.FindGameObjectWithTag("Player");
+            if (playerGO != null)
+                playerGO.GetComponent<CharacterLevel>()?.GainAptitude(mission.rewardAptitude, mission.rewardAptitudeAmount);
+        }
+
         OnMissionCompleted?.Invoke(mission);
 
         Debug.Log($"[MissionTracker] ✅ Misión completada: {mission.missionName}. " +

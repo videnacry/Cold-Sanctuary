@@ -1237,17 +1237,17 @@ public static class SampleSceneBuilder
             MobMission visualize = MakeMissionGO(areaT, "Mission_Visualizar", "Visualizar postura",
                 "Huye de los pensamientos hasta disolverlos.", MissionCategory.Visualization);
             var pv = visualize.gameObject.AddComponent<PostureVisualizationMission>();
-            pv.mission = visualize; pv.targetCount = 5; pv.reward.observationGain = 0.25f;
+            pv.mission = visualize; pv.targetCount = 5; pv.reward.observationGain = 0.25f; pv.reward.yogaXp = 30f;
 
             MobMission form = MakeMissionGO(areaT, "Mission_Formar", "Formar posturas",
                 "Persigue y sostén cada postura.", MissionCategory.Visualization);
             var af = form.gameObject.AddComponent<AsanaFormationMission>();
-            af.mission = form; af.targetCount = 3; af.reward.observationGain = 0.25f;
+            af.mission = form; af.targetCount = 3; af.reward.observationGain = 0.25f; af.reward.yogaXp = 40f;
 
             MobMission root = MakeMissionGO(areaT, "Mission_Raiz", "Buscar la raíz",
                 "No puedes huir; ve a su raíz.", MissionCategory.RootInquiry);
             var ri = root.gameObject.AddComponent<RootInquiryMission>();
-            ri.mission = root; ri.targetCount = 3; ri.reward.observationGain = 0.3f;
+            ri.mission = root; ri.targetCount = 3; ri.reward.observationGain = 0.3f; ri.reward.yogaXp = 50f;
 
             return new[] { visualize, form, root };
         }

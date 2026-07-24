@@ -95,6 +95,19 @@ public class CharacterLevel : MonoBehaviour
         }
     }
 
+    [Header("Ganancia de aptitudes")]
+    [Tooltip("XP a la marga de Stats por cada punto de aptitud ganado (docs: ganancia de aptitudes → XP de Stats).")]
+    [Min(0f)] public float statXpPerAptitudePoint = 100f;
+
+    /// <summary>Sube una aptitud (p.ej. recompensa de misión de simulacro) y alimenta la marga de Stats.</summary>
+    public void GainAptitude(AptitudeKind kind, float amount)
+    {
+        if (amount == 0f) return;
+        aptitudes.Add(kind, amount);
+        Debug.Log($"[Aptitud] «{name}» {kind} +{amount:0.00}.");
+        GainStatsXp(amount * statXpPerAptitudePoint);  // ganar aptitud alimenta la marga de Stats
+    }
+
     // ── Vida / energía ───────────────────────────────────────────────────────────
 
     /// <summary>Daño recibido: se le resta la defensa pasiva (mínimo 0). No baja de 0.</summary>

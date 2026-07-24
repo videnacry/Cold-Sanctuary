@@ -1,5 +1,12 @@
 using UnityEngine;
 
+/// <summary>Identifica una de las 12 aptitudes (para recompensas/ganancias por misión).</summary>
+public enum AptitudeKind
+{
+    Agility, Perception, Strength, BodyMass, Adaptability, Composure,
+    Endurance, Reasoning, Memory, Creativity, Sociability, Discipline
+}
+
 /// <summary>
 /// Aptitudes de un personaje (1.0 = media). Es el INPUT de <see cref="DerivedStats"/>. Coincide con el
 /// set de `CompanionBase` (docs/creature-stats.md). Struct serializable para poder tunearla en el
@@ -27,6 +34,26 @@ public struct Aptitudes
         reasoning = a.Reasoning, memory = a.Memory, creativity = a.Creativity,
         sociability = a.Sociability, discipline = a.Discipline
     };
+
+    /// <summary>Suma <paramref name="amt"/> a la aptitud indicada (muta este struct).</summary>
+    public void Add(AptitudeKind k, float amt)
+    {
+        switch (k)
+        {
+            case AptitudeKind.Agility:      agility      += amt; break;
+            case AptitudeKind.Perception:   perception   += amt; break;
+            case AptitudeKind.Strength:     strength     += amt; break;
+            case AptitudeKind.BodyMass:     bodyMass     += amt; break;
+            case AptitudeKind.Adaptability: adaptability += amt; break;
+            case AptitudeKind.Composure:    composure    += amt; break;
+            case AptitudeKind.Endurance:    endurance    += amt; break;
+            case AptitudeKind.Reasoning:    reasoning    += amt; break;
+            case AptitudeKind.Memory:       memory       += amt; break;
+            case AptitudeKind.Creativity:   creativity   += amt; break;
+            case AptitudeKind.Sociability:  sociability  += amt; break;
+            case AptitudeKind.Discipline:   discipline   += amt; break;
+        }
+    }
 }
 
 /// <summary>
