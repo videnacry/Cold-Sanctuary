@@ -92,14 +92,42 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       cableado en `SampleSceneBuilder`. **Primera pasada hecha**; falta: asignación real de personajes
       (enganchar a `SanctuaryDirector`), regla de visibilidad multi-santuario en guerra, y sustituir el
       HUD prototipo por UI declarativa.
-- [ ] **B — Farming-como-juego (tensión).** `TensionCreature`: bajar puntos de tensión "jugando" →
-      criatura serena, deja de ser target, suelta XP/recursos/consumibles. Reusa `LivingEntity` + combate.
+- [~] **B — Farming-como-juego (tensión).** **MVP + feel de combo hechos (2026-07-23):**
+      `PlayableCreature` (tensión = `LivingEntity.stress` o local) + `PlayController` (tecla V);
+      al serenarse suelta recursos (`SanctuaryResources`) + monedas; `IInteractable` "dar comida y agua"
+      → sacia (`fatReserves`) y descansa. **V2 feel gato/perro hecho:** excitación/combo (descarga
+      escala con excitación), **atrapada** (quedarte pegado resetea el combo), reacción de la criatura
+      (te mira/se acerca, con correa) + rebote de escala. Sandbox en `SampleSceneBuilder`.
+      **V3 hecho (2026-07-23):** tabla de **drops** (`ItemDrop[]` → `Inventory.AddItem`, con consumible y
+      artefacto placeholder vía `FarmingSandboxItems`), y **XP → leveling** (`CharacterLevel`: xp/nivel →
+      +vida/+maná + vida actual/daño, mostrado en el HUD). **Refinamiento hecho:** el juego es
+      **desbloqueable** (gateo `PlayUnlocked` = criada/relajada/vínculo; si no, ley natural) y **puede
+      hacer daño** (pérdida de control al excitarse → `CharacterLevel.TakeDamage` si no esquivas).
+      **Falta:** leer el vínculo real de `LivingEntity.bonds` (hoy flags placeholder), conmutar de verdad
+      a la depredación de `Animal` cuando no está desbloqueada, mecánica de **esquiva** propia,
+      generalizar el target de combate (`CurrentTarget` es `IngredientMob`) y enganchar vida/maná al combate.
 - [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
       (lava↔subterráneo primero); reusa `MobWorldLoader`.
 - [ ] **D — Construcción en el tiempo.** `Construction`: progreso consumiendo recursos+tiempo (lento en
       Meso, rápido en Macro); 4 áreas + 1 en obra. Depende de A.
 - [ ] **E — Macrocosmos (RTS).** Unidades/roles (peón/héroe), árbol de construcción, cámara 2D-ish,
       IA de guerra, agujero-negro de estructuras. Sistema grande; al final.
+- [~] **Pools derivados de aptitudes** (creature-stats.md §Pools derivados). **Hecho (2026-07-24):**
+      módulo `DerivedStats` (funciones puras aptitudes→vida/energía/maná/defensa/poder) + `Aptitudes`
+      struct; `CharacterLevel` reescrito para derivar los pools (energía nueva, defensa aplicada al daño
+      en `TakeDamage`, `SpendEnergy`), lee de `CompanionBase` si está; HUD muestra energía/def/poder.
+      **Falta:** **trepar** (altura ∝ fuerza/peso; coste de energía por escalón), **misiones que dan
+      aptitudes** como recompensa, y unificar la fuente de aptitudes (jugador/animales) con `NPCBase`.
+- [ ] **Aptitudes universales en `LivingEntity`** (decidido 2026-07-24): mover las 12 a `LivingEntity`
+      para que todo ser vivo las tenga (= unificación `NPCBase`); quitar el split animal/humanoide.
+- [ ] **Modelo de nivel "alma" por pool de XP** (creature-stats §Progresión): el XP debe venir de la
+      **ganancia de aptitudes** (no arbitrario) y subir la **base**; alinear `CharacterLevel`. Varios
+      tracks (personaje / maestría de asana ya existe / maestría de elemento ya existe).
+- [ ] **Maná latente → desbloqueado por yoga** (no visible al inicio; el yoga lo revela/crece).
+- [ ] **Misiones de simulacro que dan aptitudes** (hoy `SanctuaryMission` solo monedas/item): añadir
+      recompensa de aptitudes; es el lado humanoide de la evolución de aptitudes.
+- [ ] **Niveles por plano:** Mesocosmos autoritativo (reglas profundas); Macro/Micro pueden abstraer
+      nivel+XP si el rendimiento lo exige.
 - [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.
 
 ## Hecho (2026-07-23)

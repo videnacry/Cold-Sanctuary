@@ -37,6 +37,10 @@ tareas y orígenes → admiten **progresiones mucho más especiales e individual
   aptitudes se consolidarán en `LivingEntity` y se eliminará la duplicación.
 - **Jugador** — `PlayerStats` ya tiene equivalentes parciales: `observationRadius` (≈ percepción)
   y `velocity` (≈ agilidad); crecen con la práctica (asanas). Pendiente unificar nomenclatura.
+- **Intención (decidido 2026-07-24):** las 12 aptitudes pertenecen a **todo ser vivo**; su hogar es
+  `LivingEntity`. El split actual (animales 2 + Physiognomy, companions 12, jugador parcial,
+  `WorldCharacter` aparte) es **transitorio** hasta `NPCBase`. Los animales usan pocas activamente
+  (agility/perception evolucionan); el resto quedan latentes.
 
 ## Calibración por especie (animales)
 
@@ -192,6 +196,89 @@ torpe en el agua; una ballena, al revés. Se modela como un **multiplicador por 
 > **Ahogo / asfixia (solo documentado, sin implementar):** permanecer en un medio de afinidad muy baja
 > más allá de una tolerancia debería causar daño progresivo (la ballena varada en tierra; un terrestre
 > demasiado tiempo bajo el agua). Futuro; requiere un temporizador de tolerancia por medio.
+
+## Pools derivados de las aptitudes (Mesocosmos)
+
+Los pools de acción/combate **se derivan de las aptitudes**, no se ponen a mano (docs
+[`world-topology-and-planes.md`](world-topology-and-planes.md) §4.1). Un personaje con más resistencia
+y fuerza tiene más vida; uno con más razonamiento, más maná. Primer consumidor en código:
+`CharacterLevel` (farming). Coeficientes iniciales **ajustables**.
+
+| Pool | Para qué | Aptitudes principales | Regen / notas |
+|---|---|---|---|
+| **Vida (HP)** | aguantar golpes | `endurance` + `strength` + `bodyMass` | tanque = resistente/fuerte/con cuerpo |
+| **Energía** | asanas, correr, **trepar** | `endurance` + `agility` − penalización por `bodyMass` | regen por `discipline` |
+| **Maná** | hechizos | `reasoning` + `memory` | regen por `discipline` + `composure` |
+| **Defensa pasiva** | resta al daño recibido | `bodyMass` + `strength` + `composure` (+ armadura) | + equipo (`ItemData.damageReduction`) |
+| **Poder de hechizo** | daño/efecto mágico | `creativity` + `reasoning` + maestría de elemento | escala con nivel |
+
+**Por qué maná y energía así (respuesta de diseño):**
+- **Energía = pool FÍSICO.** Base en `endurance` (esfuerzo sostenido) + `agility` (eficiencia de
+  movimiento), penalizada por `bodyMass` (más peso = más coste). Alimenta posturas de asana, correr,
+  trepar. La `discipline` mejora la regeneración.
+- **Maná = pool MENTAL/MÁGICO.** La magia aquí es intelectual (tabla periódica / encantamientos), así
+  que `reasoning` da el tamaño del pool y `memory` el repertorio retenido (liga con learning-unlocks);
+  `discipline`/`composure` estabilizan el canal (regen y no fallar bajo presión); `creativity` va al
+  **poder** del hechizo más que al pool.
+
+**Trepar (mecánica concreta):**
+- Puede trepar si `strength` (y `agility`) superan un umbral.
+- **Altura máxima ∝ `strength` / `bodyMass`** (potencia-peso): más fuerza y menos peso → más alto.
+- **Velocidad vertical ∝ `strength`·`agility`**; por ramas horizontales, ∝ `agility`·`flexibility`
+  (equilibrio).
+- **Coste por escalón (energía) ∝ `bodyMass` / `strength`** (pesado/débil = agota antes).
+- Como las misiones dan aptitudes, todos acaban trepando alto y con facilidad al progresar.
+
+**Misiones que dan aptitudes:** extender la recompensa (`MeditationReward` / recompensa de `MobMission`)
+para otorgar aptitudes (fuerza/resistencia/razonamiento…), no solo observación/monedas. Es el enganche
+que faltaba del lado humanoide de la evolución de aptitudes, y lo que hace crecer los pools derivados.
+
+> **Integración:** la derivación limpia necesita un acceso unificado a las aptitudes (hoy viven en
+> `CompanionBase`, parcialmente en `PlayerStats`/`LivingEntity`); encaja con el `NPCBase` pendiente. Un
+> módulo `DerivedStats` (funciones puras aptitudes→pools) puede escribirse ya y ser consumido por
+> `CharacterLevel` y el futuro `NPCBase`.
+
+## Progresión: aptitudes universales, niveles y pools de XP
+
+**¿Más stats?** De momento **bastan las 12** (+ `flexibility` en `BodyPartStats`). La profundidad mágica
+NO se modela con stats nuevas, sino con **pools derivados** (maná = `reasoning`+`memory`) y **tracks de
+progresión aparte** (maestría de asana, maestría de elemento). Mantener el set pequeño y con sentido.
+
+**Base + ganancias.** Cada aptitud = **base** (con la que nace el personaje) + **ganancias** (puntos/
+multiplicadores por practicar/misiones). Los pools se derivan de la aptitud efectiva (§Pools derivados).
+
+**El "alma" es una base INDEPENDIENTE (aclarado 2026-07-24).** El alma existe por sí misma, **aparte de
+los stats actuales**. Los stats pueden **sumar o restar** al alma (la modulan), pero el alma no ES los
+stats. En los pools (p. ej. la barra de maná), tanto los **stats (multiplicadores)** como el **alma**
+contribuyen al valor.
+
+**Nivel del "alma" por pool de XP.** Cada **punto de aptitud** ganado suma también a un **pool de XP**.
+Al alcanzar el umbral → **sube de nivel**: recompensa/desbloqueo **notorio** + un **incremento directo
+de la base del alma** (crecimiento íntegro, no temporal — "un proceso del alma").
+
+**Varios tracks de nivel** (no uno solo):
+- **Nivel de personaje/alma** — por ganancia total de aptitudes.
+- **Maestría por asana** — *ya existe* (`Asana.masteryLevel`/`RegisterPractice`): cada postura tiene su
+  XP y niveles.
+- **Maestría de elemento** — *ya existe* el descubrimiento (Chemistry/tabla periódica).
+
+**Maná latente → el yoga DESBLOQUEA su barra (aclarado 2026-07-24).** El desbloqueo por yoga es **solo
+hacer la barra de maná visible y utilizable** — NO es una fuente de crecimiento aparte. Sus incrementos
+siguen viniendo de lo mismo: los **stats (multiplicadores)** + el **alma**. Antes del desbloqueo el maná
+existe internamente pero no se muestra ni se usa; practicar yoga lo revela. (Igual pueden desbloquearse
+habilidades/nuevas asanas.)
+
+**Niveles por plano.**
+- **Mesocosmos = autoritativo:** las reglas profundas (ganancia de aptitudes por hacer, pools derivados,
+  maestrías). Es el modelo "real".
+- **Macrocosmos / Microcosmos = pueden ABSTRAER:** si el rendimiento lo exige, un nivel+XP simplificado
+  (proxy) en vez de simular todo. Meso manda; macro/micro optimizan.
+
+**Estado en código.** `CharacterLevel` (farming) hoy usa un XP→nivel **arbitrario** con pools ya
+derivados de aptitudes. Para alinearlo: el XP debe **venir de la ganancia de aptitudes** (no arbitrario)
+y el nivel debe **subir la base**. Los asanas ya tienen su track. Falta: misiones de **simulacro** que
+den **aptitudes** (hoy `SanctuaryMission` solo da monedas/item; solo `AreaTask.strengthDelta` mueve la
+fuerza de los `WorldCharacter` autónomos).
 
 ## Próximos pasos
 

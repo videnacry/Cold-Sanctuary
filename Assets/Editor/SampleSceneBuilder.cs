@@ -74,6 +74,7 @@ public static class SampleSceneBuilder
         BuildHolographicMenu(root.transform);
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
+        BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
@@ -120,6 +121,66 @@ public static class SampleSceneBuilder
         p.resource       = resource;
         p.perGameMinute  = perGameMinute;
         p.perWorkerBonus = perWorkerBonus;
+    }
+
+    // ── Farming no-violento (MVP) ───────────────────────────────────────────────
+    //
+    // docs/world-topology-and-planes.md §4.1: jugar con la criatura baja su tensión; al serenarse
+    // suelta recursos/monedas y se le puede dar de comer (F/clic) para que descanse. PlayController
+    // en el jugador (tecla V) + criaturas placeholder para probar.
+
+    static void BuildFarmingSandbox(Transform parent)
+    {
+        GameObject player = GameObject.Find("Player");
+        if (player != null)
+        {
+            if (player.GetComponent<PlayController>() == null) player.AddComponent<PlayController>();
+
+            CharacterLevel cl = player.GetComponent<CharacterLevel>();
+            if (cl == null) cl = player.AddComponent<CharacterLevel>(); // XP del farming; pools derivados de aptitudes
+            // Perfil de Kushal (algo por encima de la media) para que se note la derivación de pools.
+            Aptitudes apt = Aptitudes.Default;
+            apt.strength = 1.2f; apt.endurance = 1.2f; apt.agility = 1.1f;
+            cl.aptitudes = apt;
+        }
+
+        GameObject group = new GameObject("FarmingSandbox_AUTO");
+        group.transform.SetParent(parent);
+        group.AddComponent<FarmingSandboxItems>(); // crea items placeholder y los asigna como drops (runtime)
+
+        // Criaturas de distinta dificultad/recompensa (dischargePerTouch menor = más difícil).
+        // Suave/Media: criadas por humanos, seguras. Dura: puede perder el control si te excitas y no esquivas.
+        // Salvaje: NO criada → no juega (rige la ley natural; V no hace nada) — demuestra el gateo por bond.
+        AddPlayCreature(group.transform, "PlayCreature_Suave",   new Vector3( 6f, 1f, 6f), 0.15f, SanctuaryResource.Food,      15f, 2, 20f, handRaised: true,  canLoseControl: false);
+        AddPlayCreature(group.transform, "PlayCreature_Media",   new Vector3( 9f, 1f, 4f), 0.10f, SanctuaryResource.Materials, 25f, 4, 35f, handRaised: true,  canLoseControl: false);
+        AddPlayCreature(group.transform, "PlayCreature_Dura",    new Vector3(11f, 1f, 8f), 0.06f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: true,  canLoseControl: true,  looseControlDamage: 35f);
+        AddPlayCreature(group.transform, "PlayCreature_Salvaje", new Vector3( 4f, 1f, 9f), 0.10f, SanctuaryResource.Research,  40f, 8, 60f, handRaised: false, canLoseControl: true,  looseControlDamage: 35f);
+
+        Debug.Log("[SampleSceneBuilder] Farming sandbox: PlayController (tecla V) + CharacterLevel en el jugador + 4 PlayableCreatures. " +
+                  "Juega (V) hasta serenarlas (dan recursos/monedas/XP/items); F/clic para darles de comer. " +
+                  "La 'Dura' puede golpearte si te excitas y no esquivas; la 'Salvaje' no juega (ley natural).");
+    }
+
+    static void AddPlayCreature(Transform parent, string name, Vector3 pos, float discharge,
+                                SanctuaryResource res, float amount, int coins, float xp,
+                                bool handRaised = true, bool canLoseControl = false,
+                                float looseControlDamage = 8f)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{name}_MAT", new Color(0.9f, 0.35f, 0.3f));
+
+        PlayableCreature pc = go.AddComponent<PlayableCreature>();
+        pc.dischargePerTouch   = discharge;
+        pc.dropResource        = res;
+        pc.dropAmount          = amount;
+        pc.dropCoins           = coins;
+        pc.xpReward            = xp;
+        pc.handRaised          = handRaised;
+        pc.canLoseControl      = canLoseControl;
+        pc.looseControlDamage  = looseControlDamage;
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──

@@ -177,12 +177,32 @@ Mecánicamente:
 - Cada criatura tiene **puntos de tensión**; el "combate" los va bajando (no puntos de vida).
 - Al llegar a cero, la criatura queda **tranquila y serena**, **deja de poder ser objetivo** (target), y
   suelta:
-  - **Experiencia** para los personajes → suben de nivel (+puntos de vida, +maná).
+  - **Experiencia** para los personajes → suben de nivel (+vida, +maná). Los pools (vida/energía/maná/
+    defensa) **se derivan de las aptitudes** — ver [`creature-stats.md`](creature-stats.md) §Pools derivados.
   - **Recursos**.
   - **Objetos útiles** — consumibles estilo Warcraft: invocadores de aliados, potenciadores de
     ataque/defensa, restauradores de vida/maná.
+- **Cuidado tras el juego (cierra el bucle):** una vez serena, se le **provee comida y agua** para que
+  **se sacie y descanse**. Refuerza el pilar de **cuidado** del santuario (jugar + cuidar, no dañar) y
+  deja a la criatura en estado dócil/contento (posible bonus de vínculo; no vuelve a ser objetivo por un
+  tiempo).
 - Encaja con el pilar de no-violencia: la fauna real es inofensiva al principio; las criaturas poderosas
   de los santuarios profundos tienen **más tensión que descargar** (más difícil) y **mejor recompensa**.
+
+**No siempre se puede jugar (dinámica DESBLOQUEABLE):** que una criatura acepte jugar depende de su
+**vínculo (bond)** y su **estado**. Solo entran en modo juego las **criadas por humanos**, las de
+**vínculo suficiente**, o las que están en **relajación profunda**. Si te acercas a, por ejemplo, un
+**oso polar salvaje** que no fue criado por humanos ni está relajado, **NO** hay juego: rige la **ley
+natural** (el sistema de depredación/amenaza que ya existe — `Animal.SenseThreats`/`EvaluateThreat`,
+dietas con humano como presa), y el carnívoro puede **cazar** al jugador y a otros personajes. Subir el
+vínculo (jugar + cuidar) es lo que va **desbloqueando** el juego con criaturas cada vez más peligrosas.
+
+**El juego NO es del todo inofensivo:** aun jugando, la criatura puede **hacer daño si no esquivas**. Y
+**cuanta más excitación**, **más probable que pierda el control de su fuerza**: al emocionarse te
+consideran un **oponente digno** y se van **liberando de restricciones** (te ven fuerte y no creen que
+vayan a lastimarte). Así, el combo tiene tensión real: descargas más rápido con más excitación, pero el
+riesgo de un golpe "sin control" también sube → hay que **jugar el ritmo y esquivar**, no solo tapear.
+*(La vida que da subir de nivel cobra sentido aquí: aguantar juego más rudo.)*
 
 ### 4.2 Transporte entre santuarios separados
 
