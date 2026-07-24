@@ -27,6 +27,26 @@ verificado). Los ítems ~~tachados~~ se resolvieron o dejaron de aplicar. Las re
 - **`ActionPrep.cs:~18`** — `energyCost` dividido por `TimeSpeedMinuteSecs/4` sin límites (a 1x ≈ /0.25,
   a 30x ≈ /15) → posible inestabilidad.
 
+### Yoga / asanas (revisión 2026-07-24)
+
+El sistema de asanas (datos, evaluación de calidad, entrenamiento por extremidad, cola de beneficio,
+maestría) está **implementado y coherente con el diseño**, pero hay dos piezas de runtime **sueltas** y
+un problema de persistencia:
+
+- **`AsanaEvaluator` nunca se instancia** — `grep "new AsanaEvaluator"` = 0. Es el único que llama a
+  `AsanaQueue.StartActive()` y `body.TrainBodyPart()`, así que por esa vía la cola no arranca ni se
+  entrena el cuerpo. La ruta cableada (`AsanaDetector` desde `HologramMenuController`) solo dispara un
+  `UnityEvent OnAsanaMatched`. → Dos rutas de detección paralelas; la que mueve stats está sin conectar.
+- **`AccumulatePostureStress` sin invocadores** (`IBody.cs:16`, impl. `PlayerStats.cs:120`) — `grep` = 0.
+  Consecuencia: `postureStress` **nunca sube**, así que el tambaleo/caída de `PostureStressHandler`
+  (`:46-106`) leen un valor que solo baja → el estrés postural está construido pero **no alimentado**.
+- **Maestría no persiste** — `Asana.practiceCount`/`masteryLevel`/`containerCurrent` son
+  `[System.NonSerialized]` (`Asana.cs:33-35`) → se pierden entre sesiones. Antes de basar progresión en
+  la maestría, moverlas a un store serializable.
+- **Yoga ↔ maná/XP desconectado** — el maná existe (`CharacterLevel`/`DerivedStats`) y se muestra en HUD,
+  pero el yoga no lo desbloquea ni aporta XP de personaje (solo el farming llama a `CharacterLevel.GainXp`,
+  `PlayableCreature.cs`). Es lo que el modelo de progresión (creature-stats §Progresión) pide conectar.
+
 ## Resueltos / ya no aplican
 
 - ~~**`DrivePreparation.cs` — `Exit()`** comparaba posición contra dirección pura (debía usar

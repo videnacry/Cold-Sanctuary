@@ -252,14 +252,26 @@ los stats actuales**. Los stats pueden **sumar o restar** al alma (la modulan), 
 stats. En los pools (p. ej. la barra de maná), tanto los **stats (multiplicadores)** como el **alma**
 contribuyen al valor.
 
-**Nivel del "alma" por pool de XP.** Cada **punto de aptitud** ganado suma también a un **pool de XP**.
-Al alcanzar el umbral → **sube de nivel**: recompensa/desbloqueo **notorio** + un **incremento directo
-de la base del alma** (crecimiento íntegro, no temporal — "un proceso del alma").
+**Las "Vías del alma" (nombre propuesto 2026-07-24).** El "nivel de alma" no es uno solo: hay **varias
+Vías**, cada una una **categoría/práctica** con **su propio pool de XP general** e **independiente** de
+las demás. Un personaje puede ser **nivel 20 en la Vía de los stats y nivel 1 en la del yoga**. Cada Vía,
+al llenar su pool, sube su nivel → desbloqueo **notorio** + **incremento directo de la base del alma**.
 
-**Varios tracks de nivel** (no uno solo):
-- **Nivel de personaje/alma** — por ganancia total de aptitudes.
-- **Maestría por asana** — *ya existe* (`Asana.masteryLevel`/`RegisterPractice`): cada postura tiene su
-  XP y niveles.
+> *Por qué "Vías":* en el yoga las prácticas son *mārgas* (vías) — Karma (acción), Bhakti (devoción/
+> vínculo), Jñāna (conocimiento), Raja/Hatha (postura). Encaja con el tema del juego. Alternativas:
+> "Sendas", "Facetas", "Disciplinas del alma". **A confirmar el nombre.**
+
+- **Vía de los STATS** (≈ Karma/acción) — pool de XP con la **ganancia de aptitudes** (cada punto suma).
+- **Vía del YOGA** (≈ Raja/Hatha) — pool de XP **general, NO ligado a ninguna asana concreta**: practicar
+  yoga en general lo llena. *(A extender: hoy el yoga solo tiene maestría por asana, ver abajo.)*
+- **Vía de los VÍNCULOS** (≈ Bhakti) — pool de XP con el **crecimiento de bonds** (ya existe `bonds`/
+  `GrowBond`/`bondWithPlayer` en el código); estrechar vínculos sube esta Vía.
+- **Vía de los HECHIZOS / otras** (≈ Jñāna, futuras) — mismo patrón.
+
+Tracks **más finos** que conviven con los de alma (no son "de alma", son de destreza concreta):
+- **Maestría por asana** — *ya existe* (`Asana.masteryLevel`/`RegisterPractice`): cada postura sube por
+  su cuenta. Practicar una asana debería sumar **a la vez** a su maestría **y** al pool general de
+  Alma-por-Yoga.
 - **Maestría de elemento** — *ya existe* el descubrimiento (Chemistry/tabla periódica).
 
 **Maná latente → el yoga DESBLOQUEA su barra (aclarado 2026-07-24).** El desbloqueo por yoga es **solo
@@ -274,11 +286,18 @@ habilidades/nuevas asanas.)
 - **Macrocosmos / Microcosmos = pueden ABSTRAER:** si el rendimiento lo exige, un nivel+XP simplificado
   (proxy) en vez de simular todo. Meso manda; macro/micro optimizan.
 
-**Estado en código.** `CharacterLevel` (farming) hoy usa un XP→nivel **arbitrario** con pools ya
-derivados de aptitudes. Para alinearlo: el XP debe **venir de la ganancia de aptitudes** (no arbitrario)
-y el nivel debe **subir la base**. Los asanas ya tienen su track. Falta: misiones de **simulacro** que
-den **aptitudes** (hoy `SanctuaryMission` solo da monedas/item; solo `AreaTask.strengthDelta` mueve la
-fuerza de los `WorldCharacter` autónomos).
+**Estado en código.** `CharacterLevel` (farming) hoy usa un XP→nivel **arbitrario**, con pools ya
+derivados de aptitudes. Para alinearlo con el modelo:
+- `CharacterLevel` pasa a ser el track **Alma-por-Stats**: su XP viene de la **ganancia de aptitudes**
+  (no arbitrario) y el nivel **sube la base del alma**.
+- Nuevo track **Alma-por-Yoga** con su **pool de XP general** (independiente): lo alimenta cualquier
+  práctica de yoga, no una asana concreta. Gancho natural: `Asana.RegisterPractice()` /
+  `MeditationReward.Apply()` / `AsanaQueue.OnLimitReached` (que además ya suben la maestría por asana).
+- Falta también: misiones de **simulacro** que den **aptitudes** (hoy `SanctuaryMission` solo da
+  monedas/item; solo `AreaTask.strengthDelta` mueve la fuerza de los `WorldCharacter` autónomos).
+- **Bloqueadores del lado yoga** (ver `known-issues.md` §Yoga): `AsanaEvaluator` no se instancia y
+  `AccumulatePostureStress` no se llama; conviene resolverlos al cablear el track de yoga. La maestría
+  además no persiste (`NonSerialized`).
 
 ## Próximos pasos
 
