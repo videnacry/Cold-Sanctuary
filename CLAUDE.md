@@ -68,6 +68,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md) — verdad del código verificada archivo a archivo (bugs, huérfanos, prometido-vs-hecho).
 - [`docs/checklist.md`](docs/checklist.md) — **empezar aquí para continuar**: tablero de tareas pendientes.
 - [`docs/testing-checklist.md`](docs/testing-checklist.md) — qué probar en el editor (progresión/margas, farming, recursos, trepar, cocina→Microcosmos, regresión).
+- [`docs/mind-model.md`](docs/mind-model.md) — modelo de mente/IA emergente de personajes: utility AI + pensamientos (memoria acotada) + campo social/semántico + relaciones, por tiers; efecto mariposa; survey de técnicas.
 - [`docs/gaps-vs-planteamiento.md`](docs/gaps-vs-planteamiento.md) — sistemas "hechos" que no cumplen el diseño + cómo cablear los huérfanos.
 - [`docs/creature-stats.md`](docs/creature-stats.md) — aptitudes (agilidad/percepción/fuerza/masa) de animales y NPCs; perfiles Goluis/Panterilia/Gohageneis/Irosene.
 - [`docs/character-irosene.md`](docs/character-irosene.md) — ficha del personaje Irosene (compañera motivacional; biografía, diálogo, árbol familiar, arco).
