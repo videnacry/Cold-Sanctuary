@@ -21,6 +21,21 @@ escalable), [`creature-stats.md`](creature-stats.md) (aptitudes, margas del alma
 - **Relaciones (base)** — `LivingEntity.bonds`/`GrowBond`, `CompanionBase.bondWithPlayer`.
 - **Aptitudes + margas del alma** — `IAptitudes` + `CharacterLevel` (valores para la ecuación).
 
+## 1.5 Arquitectura: UNA sola clase + `Mind` opcional (decisión 2026-07-25)
+
+Se **descarta `NPCBase` como clase intermedia** (era del diseño viejo, mente binaria). Como la mente es
+**escalable por tiers**, basta:
+
+- **`LivingEntity` = la única clase de ser vivo** (ya es hogar de las 12 aptitudes vía `IAptitudes`).
+  Implementa/expone `IBody` + `IMind` según haga falta.
+- **La mente vive en un componente `Mind` OPCIONAL** que cualquier `LivingEntity` puede llevar: con
+  componente = tiene mente (tier según capacidad); **sin componente = tier 0, gratis**. Los animales
+  simples no lo llevan.
+- **La mente se puede empezar YA**, sin migración previa: como `IAptitudes` es universal, el componente
+  `Mind` lee aptitudes/bonds de cualquier personaje. Lo pendiente (unificar `PlayerStats`/`CompanionBase`
+  bajo `LivingEntity`) es la migración de siempre, pero **ya no hace falta una clase `NPCBase`** y **no
+  bloquea** empezar la mente.
+
 ## 2. El modelo — capas (todas baratas y componibles)
 
 1. **Rutina (agenda)** — dónde va por defecto. Ya existe (`WorldCharacter`). FSM/agenda simple.

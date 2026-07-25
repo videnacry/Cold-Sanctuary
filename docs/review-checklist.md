@@ -7,6 +7,13 @@ Actualizar al resolver cada ítem.
 
 ## Diseño — NPCBase (visión corregida)
 
+> **Actualización 2026-07-25:** se **descarta `NPCBase` como clase intermedia**. Con la mente escalable
+> por tiers, el objetivo es **una sola clase `LivingEntity`** (ya hogar de las 12 aptitudes vía
+> `IAptitudes`) que exponga `IBody`+`IMind`, con la **mente en un componente `Mind` opcional** (sin
+> componente = tier 0). La migración (unificar `PlayerStats`/`CompanionBase` bajo `LivingEntity`) sigue,
+> pero **sin clase `NPCBase`**. La mente **puede empezar ya** (no la bloquea la migración). Ver
+> [`mind-model.md`](mind-model.md) §1.5. Lo de abajo queda como contexto histórico.
+
 Un NPC no tiene "personalidad scripted". Tiene un **estado acumulado real**:
 
 - Cuerpo entrenado de cierta manera (o no): qué extremidades ha ejercitado, cuánto,
