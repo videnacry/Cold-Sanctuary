@@ -128,9 +128,12 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       (2) **`CompanionBase : Anima`** — quitadas las 12 aptitudes duplicadas + `stress` (heredados), 3 hooks
       abstractos implementados (stubs), `fatigue`/`mood` propios; (3) **`IMindSimple.cs` borrado** (sin uso);
       (4) **`MigrationDiagnostics`** que vuelca por consola la validación en Play (herencia, aptitudes por
-      campo y vía `IAptitudes`, puntos del alma/margas del jugador). **Falta:** `WorldCharacter` que lea
-      stats de `Anima` (borrar sus lightweight; ojo satisfaction/observation = mente, no aptitud → requiere
-      el modelo de mente/drives); **`PlayerStats → Anima`** (el más cableado, al final); actualizar docs
+      campo y vía `IAptitudes`, puntos del alma/margas del jugador); (5) **`PlayerStats : Anima`** hecho —
+      `stress` y las 12 aptitudes heredadas (retirado el mapeo velocity→Agility; el jugador tiene aptitudes
+      reales), `velocity`/`physicalResistance` quedan de movimiento/combate, 3 hooks abstractos (stubs).
+      **Falta (único paso estructural):** `WorldCharacter` que lea stats de `Anima` (borrar sus lightweight)
+      — **bloqueo de diseño real:** `satisfaction`/`observation` NO son aptitudes sino mente/drives; hay que
+      decidir dónde viven (¿en un pilar `Mind`/`IMind` opcional?) antes de des-duplicar. Y actualizar docs
       históricos que aún dicen "LivingEntity".
 - [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Hecho (2026-07-24):**
       `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);

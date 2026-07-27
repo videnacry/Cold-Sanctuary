@@ -4,8 +4,14 @@ using UnityEngine;
 /// Holds all runtime stats for the player.
 /// Implements IBody (per-limb physical stats + posture stress) and IMind (mental/emotional stats).
 /// </summary>
-public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
+public class PlayerStats : Anima, IBody, IMind
 {
+    // Migración 2026-07-28: PlayerStats ahora ES un Anima (clase única de ser).
+    //   - `stress` se HEREDA de Anima (ya no campo propio).
+    //   - Las 12 aptitudes se HEREDAN de Anima (implementa IAptitudes); se retira el mapeo explícito
+    //     velocity→Agility (el jugador tiene aptitudes reales, default 1; el builder puede fijarlas).
+    //   - `velocity`/`physicalResistance` quedan como valores de movimiento/combate propios.
+    //   - Se implementan los 3 hooks abstractos de Anima (stubs).
     // ── Satisfaction ────────────────────────────────────────────────────────
     [Header("Satisfaction")]
     [Tooltip("Current satisfaction level. Grows passively when capacity is high.")]
@@ -26,9 +32,7 @@ public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
     [Range(0f, 1f)] public float mentalFatigue;
 
     // ── Stress ──────────────────────────────────────────────────────────────
-    [Header("Stress")]
-    [Tooltip("0 = calm, 1 = critical. Raised by Goluis pressure, lowered by rest.")]
-    [Range(0f, 1f)] public float stress;
+    // `stress` (0–1) se hereda de Anima (drive de ansiedad). Ya no es campo propio de PlayerStats.
 
     // ── Sleepiness ──────────────────────────────────────────────────────────
     [Header("Sleepiness")]
@@ -45,20 +49,9 @@ public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
     public float velocity = 1f;
     public float physicalResistance = 1f;
 
-    // IAptitudes — mapeo parcial del jugador (equivalentes que existen; el resto 1.0 hasta unificar con
-    // NPCBase). observationRadius NO se mapea a Perception (es una distancia, no un multiplicador 1.0).
-    float IAptitudes.Agility      => velocity;
-    float IAptitudes.Strength     => physicalResistance;
-    float IAptitudes.Endurance    => physicalResistance;
-    float IAptitudes.Perception   => 1f;
-    float IAptitudes.BodyMass     => 1f;
-    float IAptitudes.Adaptability => 1f;
-    float IAptitudes.Composure    => 1f;
-    float IAptitudes.Reasoning    => 1f;
-    float IAptitudes.Memory       => 1f;
-    float IAptitudes.Creativity   => 1f;
-    float IAptitudes.Sociability  => 1f;
-    float IAptitudes.Discipline   => 1f;
+    // IAptitudes: las 12 aptitudes se HEREDAN de Anima (campos, default 1). Se retiró el mapeo explícito
+    // velocity→Agility; el jugador tiene aptitudes reales como cualquier ser. `velocity`/`physicalResistance`
+    // siguen usándose para movimiento/combate.
 
     // ── IBody — per-limb stats ───────────────────────────────────────────────
     // Array indexed by (int)BodyPart: Elbows=0, Hands=1, Knees=2, Feet=3, Hips=4, Back=5, Shoulders=6, Head=7
@@ -159,4 +152,10 @@ public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
                 break;
         }
     }
+
+    // ── Hooks de Anima (drives físicos) ───────────────────────────────────────
+    // El jugador no reacciona por estos hooks (lo conduce el input/PlayerController); stubs seguros.
+    protected override void RespondToHunger() { }
+    protected override float EvaluateThreat(GameObject source) => 0f;
+    public    override void RespondToThreat(GameObject threat) { }
 }
