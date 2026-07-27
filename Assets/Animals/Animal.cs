@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public enum Reaction { Flee, Fight, HitAndRun }
 
-public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactory
+public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 {
     #region Family
     /// <summary>
@@ -125,7 +125,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
     // Post-natal stage config (override per species; null = sin sistema post-natal)
     public virtual PostNatalStage[] PostNatalStages => null;
 
-    // ── LivingEntity hooks ───────────────────────────────────────────────────────
+    // ── Anima hooks ───────────────────────────────────────────────────────
 
     protected override char LifeStageChar => lifeStage;
 
@@ -145,7 +145,7 @@ public abstract class Animal : LivingEntity, ITarget, IEdible, ICarrier, IFactor
         StartCoroutine(Escape(false, new System.Collections.Generic.List<GameObject> { threat }));
     }
 
-    // State — hunger/exhaustion/lp are animal-specific; stress/trauma/fatReserves/temperature/death/asleep live in LivingEntity
+    // State — hunger/exhaustion/lp are animal-specific; stress/trauma/fatReserves/temperature/death/asleep live in Anima
     public bool  busy = false;
     public bool  fighting = false;   // guard propio de Fight() — ver comentario en Fight()
     public float hungry, exhaustion, lp, sensibility;

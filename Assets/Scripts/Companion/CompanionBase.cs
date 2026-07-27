@@ -11,13 +11,13 @@ using UnityEngine;
 ///   - GetMoodModifier()   → how their personality biases the restoration
 ///   - OnPlayerNearby()    → optional dialogue/reaction hooks
 /// </summary>
-public abstract class CompanionBase : LivingEntity, IBondable
+public abstract class CompanionBase : Anima, IBondable
 {
-    // Migración 2026-07-28: CompanionBase ahora ES un LivingEntity (clase única de ser → futura `Anima`).
-    //   - Las 12 aptitudes y `stress` se HEREDAN de LivingEntity (ya no se duplican aquí).
-    //   - `IAptitudes` lo aporta LivingEntity. `IMindSimple` se retira (no lo usaba nadie).
-    //   - `fatigue`/`mood` son propios (LivingEntity no los tiene).
-    //   - Se implementan los hooks abstractos de LivingEntity (RespondToHunger/EvaluateThreat/RespondToThreat).
+    // Migración 2026-07-28: CompanionBase ahora ES un Anima (clase única de ser → futura `Anima`).
+    //   - Las 12 aptitudes y `stress` se HEREDAN de Anima (ya no se duplican aquí).
+    //   - `IAptitudes` lo aporta Anima. `IMindSimple` se retira (no lo usaba nadie).
+    //   - `fatigue`/`mood` son propios (Anima no los tiene).
+    //   - Se implementan los hooks abstractos de Anima (RespondToHunger/EvaluateThreat/RespondToThreat).
 
     // ── Inspector ────────────────────────────────────────────────────────────
     [Header("Identity")]
@@ -26,9 +26,9 @@ public abstract class CompanionBase : LivingEntity, IBondable
     [Header("Internal State (0–1)")]
     [Range(0f, 1f)] public float fatigue;
     [Range(0f, 1f)] public float mood = 0.7f;
-    // `stress` (0–1, ansiedad ambiental) se hereda de LivingEntity.
+    // `stress` (0–1, ansiedad ambiental) se hereda de Anima.
 
-    // Aptitudes: se fijan en Start() desde las Base* (los CAMPOS viven en LivingEntity). docs/creature-stats.md.
+    // Aptitudes: se fijan en Start() desde las Base* (los CAMPOS viven en Anima). docs/creature-stats.md.
     protected virtual float BaseAgility      => 1f;
     protected virtual float BasePerception   => 1f;
     protected virtual float BaseStrength     => 1f;
@@ -176,7 +176,7 @@ public abstract class CompanionBase : LivingEntity, IBondable
         mood    = Mathf.MoveTowards(mood, GetRestingMood(), 0.001f * Time.deltaTime);
     }
 
-    // ── Hooks de LivingEntity (drives físicos) ───────────────────────────────
+    // ── Hooks de Anima (drives físicos) ───────────────────────────────
     // Los compañeros no reaccionan a hambre/amenaza por estos hooks todavía (su Update simula estado y
     // proximidad). Stubs seguros; se enriquecerán al unificar la mente/autonomía.
     protected override void RespondToHunger() { }

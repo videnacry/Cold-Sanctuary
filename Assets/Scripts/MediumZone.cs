@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Volumen de un medio (normalmente agua). Al entrar/salir, fija el `currentMedium` de cualquier
-/// LivingEntity que lo atraviese, alimentando el multiplicador de medio (ver docs/creature-stats.md
+/// Anima que lo atraviese, alimentando el multiplicador de medio (ver docs/creature-stats.md
 /// §Modificadores de medio). Es el equivalente generalizado del WaterZone del jugador, pero para
 /// todas las criaturas. Requiere un Collider marcado como trigger.
 /// </summary>
@@ -20,13 +20,13 @@ public class MediumZone : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        LivingEntity le = other.GetComponent<LivingEntity>();
+        Anima le = other.GetComponent<Anima>();
         if (le != null) le.currentMedium = medium;
     }
 
     void OnTriggerExit(Collider other)
     {
-        LivingEntity le = other.GetComponent<LivingEntity>();
+        Anima le = other.GetComponent<Anima>();
         if (le != null) le.currentMedium = Medium.Land;   // al salir se asume tierra (limitación: zonas solapadas)
     }
 }

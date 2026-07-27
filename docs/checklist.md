@@ -123,13 +123,15 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
       `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
       (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme.
-- [~] **Migración a clase única (Anima)** — rama `feat/anima-migration` (**sin mergear hasta compilar**):
-      **`CompanionBase : LivingEntity`** hecho (2026-07-28): quitadas las 12 aptitudes duplicadas + `stress`
-      (heredados), retirado `IMindSimple` (sin uso; archivo muerto), implementados los 3 hooks abstractos
-      (RespondToHunger/EvaluateThreat/RespondToThreat como stubs). `fatigue`/`mood` quedan propios.
-      **Falta:** que `WorldCharacter` lea stats de `LivingEntity` (borrar sus lightweight duplicados);
-      `PlayerStats → LivingEntity` (el más cableado, al final); **renombrar `LivingEntity` → `Anima`**
-      (pase mecánico aparte); borrar `IMindSimple.cs`.
+- [~] **Migración a clase única `Anima`** — rama `feat/anima-migration` (**sin mergear hasta compilar**).
+      Hecho (2026-07-28): (1) **`LivingEntity` renombrada a `Anima`** en todo el código (`Anima.cs`), 34 refs;
+      (2) **`CompanionBase : Anima`** — quitadas las 12 aptitudes duplicadas + `stress` (heredados), 3 hooks
+      abstractos implementados (stubs), `fatigue`/`mood` propios; (3) **`IMindSimple.cs` borrado** (sin uso);
+      (4) **`MigrationDiagnostics`** que vuelca por consola la validación en Play (herencia, aptitudes por
+      campo y vía `IAptitudes`, puntos del alma/margas del jugador). **Falta:** `WorldCharacter` que lea
+      stats de `Anima` (borrar sus lightweight; ojo satisfaction/observation = mente, no aptitud → requiere
+      el modelo de mente/drives); **`PlayerStats → Anima`** (el más cableado, al final); actualizar docs
+      históricos que aún dicen "LivingEntity".
 - [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Hecho (2026-07-24):**
       `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);
       los **puntos del alma escalan por TODAS las margas** (`SoulLevels`); **maná gateado por Yoga≥2**;

@@ -16,7 +16,7 @@ using UnityEngine;
 ///   NPCBase.RespondToHunger()   → navigates to the kitchen
 ///   PlayerEntity (future)       → fires a UI event
 /// </summary>
-public abstract class LivingEntity : MonoBehaviour, IAptitudes
+public abstract class Anima : MonoBehaviour, IAptitudes
 {
     // ── Drives ───────────────────────────────────────────────────────────────────
 
@@ -29,7 +29,7 @@ public abstract class LivingEntity : MonoBehaviour, IAptitudes
     [HideInInspector] public bool  aware;                // true while actively responding to a threat
 
     // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/creature-stats.md)
-    // Hogar UNIVERSAL de las 12 aptitudes (docs §Progresión): todo LivingEntity las tiene. Los animales
+    // Hogar UNIVERSAL de las 12 aptitudes (docs §Progresión): todo Anima las tiene. Los animales
     // usan activamente agility/perception (evolucionan); el resto quedan latentes por ahora (default 1).
     [HideInInspector] public float agility      = 1f;
     [HideInInspector] public float perception   = 1f;

@@ -1,6 +1,6 @@
 /// <summary>
 /// Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md): permite leer las
-/// aptitudes de forma UNIFORME sin importar la clase concreta (animal `LivingEntity`, companion
+/// aptitudes de forma UNIFORME sin importar la clase concreta (animal `Anima`, companion
 /// `CompanionBase`, jugador `PlayerStats`), mientras no exista `NPCBase` que las consolide.
 ///
 /// 1.0 = media. Los getters son PascalCase para no chocar con los campos camelCase existentes.

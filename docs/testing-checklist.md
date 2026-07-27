@@ -106,6 +106,17 @@ Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_
 - [ ] Con el tiempo, los **humores** derivan a su base (`Regen`) y pensar **consume glucosa** (energía) →
       afecta la longitud alcanzable.
 
+## 9. Migración a `Anima` — validación por consola (rama `feat/anima-migration`)
+`MigrationDiagnostics_AUTO` vuelca un bloque `[Diag Anima]` al entrar en Play. Confirma en Console:
+- [ ] **Compila** tras el renombrado `LivingEntity → Anima` + `CompanionBase : Anima` (si no, pégame el error).
+- [ ] `[Diag] CompanionBase hereda de Anima: True` y `Animal hereda de Anima: True`.
+- [ ] Lista de **Anima en escena** con, por cada uno: tipo, `companion=True/False`, y aptitudes **coincidentes**
+      entre campo (`str/agi/rea`) y vía `IAptitudes` (`str/agi`) — deben dar lo mismo.
+- [ ] Los **compañeros** (Goluis/Panterilia/…) aparecen como `companion=True` y con sus aptitudes de perfil
+      (p.ej. Goluis `str≈1.5`), lo que confirma que `Start()` sigue fijando las aptitudes **heredadas**.
+- [ ] Línea de **Kushal**: margas + Vida/Energía/Maná/Def coherentes.
+- [ ] **Regresión** (§7): animales y compañeros siguen comportándose igual tras heredar de `Anima`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

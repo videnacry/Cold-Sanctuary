@@ -76,6 +76,7 @@ public static class SampleSceneBuilder
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
         BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
+        new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
@@ -426,7 +427,7 @@ public static class SampleSceneBuilder
         // tipo). Un BoxCollider trigger aparte, no atado a la escala del Plane visual (evita
         // líos de escala heredada), cubre el volumen bajo la superficie. WaterZone avisa a
         // PlayerController cuando el jugador entra/sale; MediumZone hace lo mismo para
-        // cualquier LivingEntity (fauna) — ambos coexisten en el mismo trigger sin pisarse,
+        // cualquier Anima (fauna) — ambos coexisten en el mismo trigger sin pisarse,
         // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
