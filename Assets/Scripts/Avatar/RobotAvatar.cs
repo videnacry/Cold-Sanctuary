@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 /// <summary>
 /// How an avatar moves — maps to the access plane it unlocks (docs §4, Eje A).
