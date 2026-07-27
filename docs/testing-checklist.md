@@ -7,26 +7,39 @@ error del Console/Rider.
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
 
+## Estado de sesión (para retomar sin contexto previo)
+
+- Los 60+ archivos de la PR (Progresión/Farming/Meditación/MobWorld/Avatares) ya están **sincronizados**
+  repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`).
+- **Un solo error de compilación** encontrado y arreglado: faltaba `using UnityEngine;` en
+  `Assets/Scripts/Avatar/RobotAvatar.cs` (usaba `[Tooltip(...)]` sin el using). Ya sincronizado.
+- El **MCP de Unity está instalado pero hay que arrancarlo a mano cada sesión nueva**: `Window > MCP for
+  Unity > Toggle MCP Window` → botón `Start Server` → botón `Connect`. Sin esto, las herramientas
+  `mcp__unityMCP__*` fallan con "No Unity Editor instances found" y hay que usar captura de pantalla
+  (mucho más lento).
+- Próximo paso: seguir por la sección 3 (Farming) hacia abajo.
+
 ## 0. Preparación
-- [ ] El proyecto **compila** (Rider: Build Solution; o Unity: Console sin errores al cargar).
-      Si falla, apuntar archivo:línea (zonas probables: `Progression/*`, `IAptitudes` en
-      `LivingEntity`/`CompanionBase`/`PlayerStats`, `PlayerClimber`).
-- [ ] `Tools → Cold Sanctuary → Build Sample Scene Blockout` corre sin excepciones (genera también la
-      escena `MobWorld_Mesopotamia` y la añade a Build Settings).
-- [ ] Al entrar en Play no hay errores rojos en la Console; el jugador (`Player`) existe y se mueve.
+- [x] El proyecto **compila** (0 errores CS tras el fix de `RobotAvatar.cs`).
+- [x] `Tools → Cold Sanctuary → Build Sample Scene Blockout` corre sin excepciones (genera
+      `MobWorldDirector`, `SanctuaryEconomy_AUTO`, `FarmingSandbox_AUTO`, escena `MobWorld_Mesopotamia`
+      en Build Settings).
+- [x] Al entrar en Play no hay errores rojos en la Console (solo el ya conocido `WebSocketException` de
+      conexión a Unity Cloud, ajeno al proyecto); el jugador (`Player`) existe.
+      Movimiento del jugador **aún no probado**.
 
 ## 1. HUD (esquina sup. izq., OnGUI prototipo)
-- [ ] Muestra el santuario ("Santuario Terrestre") y sus **recursos** (Food/Materials/Research).
-- [ ] Muestra las **margas del alma** de Kushal: Stats / Yoga / Vínculos (niveles + XP de Stats).
-- [ ] Muestra **Vida / Energía / Maná / Def / Poder**. Con el perfil de Kushal (str/end 1.2, agi 1.1)
-      los valores iniciales ≈ **Vida 115, Energía 117, Maná 50, Def 16** (nivel base).
-- [ ] El **maná aparece como "(bloqueado — practica yoga)"** al inicio.
+- [x] Muestra el santuario ("Santuario Terrestre") y sus **recursos** (Food/Materials/Research).
+- [x] Muestra las **margas del alma** de Kushal: Stats / Yoga / Vínculos (niveles + XP de Stats).
+- [x] Muestra **Vida / Energía / Maná / Def / Poder** — valores iniciales confirmados: **Vida 115/115,
+      Energía 117/117, Def 16** (coincide con lo esperado).
+- [x] El **maná aparece como "(bloqueado — practica yoga)"** al inicio.
 
 ## 2. Recursos de santuario (economía pasiva)
-- [ ] Los recursos **suben solos** con el tiempo (aporte pasivo por área: cocina/huerto→Food,
-      mecánica/textil→Materials, enfermería/veterinaria→Research).
+- [x] Los recursos **suben solos** con el tiempo — confirmado en Play mode: Food 21→350+, Materials
+      17→280+, Research 11→180+ solo dejando correr el tiempo (~2h de sesión).
 - [ ] Al **subir la velocidad de tiempo** (`TimeController`/`TimeTest` si está), suben más rápido
-      (escala Meso-lento / Macro-rápido).
+      (escala Meso-lento / Macro-rápido). **Aún no probado.**
 
 ## 3. Farming — jugar / serenar / cuidar (sandbox: 4 cápsulas + reglas)
 Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje** (no criada).
