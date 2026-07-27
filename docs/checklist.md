@@ -122,9 +122,14 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
 - [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
       implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
       `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
-      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme. **Hallazgo:** `CompanionBase`
-      NO extiende `LivingEntity`, así que la de-duplicación total (una sola copia de campos) queda para
-      `NPCBase` (reparentar). El acceso ya está universalizado.
+      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme.
+- [~] **Migración a clase única (Anima)** — rama `feat/anima-migration` (**sin mergear hasta compilar**):
+      **`CompanionBase : LivingEntity`** hecho (2026-07-28): quitadas las 12 aptitudes duplicadas + `stress`
+      (heredados), retirado `IMindSimple` (sin uso; archivo muerto), implementados los 3 hooks abstractos
+      (RespondToHunger/EvaluateThreat/RespondToThreat como stubs). `fatigue`/`mood` quedan propios.
+      **Falta:** que `WorldCharacter` lea stats de `LivingEntity` (borrar sus lightweight duplicados);
+      `PlayerStats → LivingEntity` (el más cableado, al final); **renombrar `LivingEntity` → `Anima`**
+      (pase mecánico aparte); borrar `IMindSimple.cs`.
 - [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Hecho (2026-07-24):**
       `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);
       los **puntos del alma escalan por TODAS las margas** (`SoulLevels`); **maná gateado por Yoga≥2**;
