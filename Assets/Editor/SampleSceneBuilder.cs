@@ -75,6 +75,7 @@ public static class SampleSceneBuilder
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
         BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
+        BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
@@ -191,6 +192,45 @@ public static class SampleSceneBuilder
         pc.handRaised          = handRaised;
         pc.canLoseControl      = canLoseControl;
         pc.looseControlDamage  = looseControlDamage;
+    }
+
+    // ── Mind sandbox (MVP de mente: frases por tono elemental) ──────────────────
+    //
+    // docs/anima-architecture.md §6/§10: 3 ánimas con Mind + aptitudes distintas → cada una tiende a un
+    // tono elemental y expresa frases hasta donde su poder mental alcanza. Mira la Console.
+
+    static void BuildMindSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("MindSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // Roca: fuerte/resistente, poco intelecto → tono Tierra, frases cortas.
+        AddMindBeing(group.transform, "Anima_Roca", new Vector3(-4f, 1f, 10f), new Color(0.50f, 0.45f, 0.40f),
+            a => { a.strength = 1.6f; a.endurance = 1.5f; a.bodyMass = 1.4f; a.reasoning = 0.6f; a.memory = 0.7f; a.creativity = 0.4f; return a; });
+
+        // Fuego apasionado: creatividad/sociabilidad altas → tono Fuego, frases más largas.
+        AddMindBeing(group.transform, "Anima_Fuego", new Vector3(-1f, 1f, 11f), new Color(0.90f, 0.40f, 0.20f),
+            a => { a.creativity = 1.7f; a.sociability = 1.6f; a.reasoning = 1.3f; a.memory = 1.3f; return a; });
+
+        // Viento disperso: agilidad/razón/percepción → tono Viento.
+        AddMindBeing(group.transform, "Anima_Viento", new Vector3(2f, 1f, 10f), new Color(0.70f, 0.80f, 0.90f),
+            a => { a.agility = 1.6f; a.reasoning = 1.5f; a.perception = 1.4f; a.discipline = 1.3f; return a; });
+
+        Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas. Mira la Console: " +
+                  "cada una tiende a su tono elemental y suelta frases según su poder mental (docs anima §6).");
+    }
+
+    static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,
+                             System.Func<Aptitudes, Aptitudes> config)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{name}_MAT", col);
+
+        Mind mind = go.AddComponent<Mind>();
+        mind.aptitudes = config(Aptitudes.Default);
     }
 
     // ── World systems (singletons from the world-simulation/combat/economy commit) ──
