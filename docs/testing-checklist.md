@@ -96,6 +96,16 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
 - [ ] Las **asanas/yoga** existentes (entrenamiento por extremidad, restaurar canal mental) siguen igual.
 - [ ] La **economía de monedas** (misiones, ventas) sigue funcionando.
 
+## 8. Mind MVP — frases por tono elemental (docs/anima-architecture.md)
+Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_Roca, Anima_Fuego, Anima_Viento).
+- [ ] En Play, la Console suelta cada ~4 s frases tipo `[Mente] «Anima_Roca» (Tierra+): "…"`.
+- [ ] **Cada ánima tiende a su tono**: Roca→Tierra, Fuego→Fuego, Viento→Viento (con destellos de otros).
+- [ ] **Poder mental → longitud**: la Roca (razón/memoria bajas) dice frases **más cortas**; Fuego/Viento
+      (razón/memoria altas) llegan a **más partes** (nace→crece→reproduce).
+- [ ] La **valencia** (+/−) sigue a la positividad (serotonina−cortisol) de los humores.
+- [ ] Con el tiempo, los **humores** derivan a su base (`Regen`) y pensar **consume glucosa** (energía) →
+      afecta la longitud alcanzable.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
