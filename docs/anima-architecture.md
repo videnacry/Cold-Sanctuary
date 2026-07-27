@@ -116,9 +116,61 @@ y con las instancias compartidas de elementos.
   6. **Body-swap** (mando input vs IA).
   7. **PlayerStats → Anima** (el más cableado: asanas/IBody/IMind) — al final, con compilador.
 
+> **Nombre de la clase raíz decidido 2026-07-27: `Anima`.** Encaja con niveles de alma (margas) y puntos
+> del alma: subir de nivel de alma **desbloquea capacidades/habilidades** del Anima.
+
+## 10. Extensiones (2026-07-27)
+
+### 10.1 Bioquímica: aptitudes estructurales + química dinámica
+Dos capas de "las variables del ser" (evita chocar con el sistema de **hechizos** `Chemistry`/
+`PeriodicTableManager`, que es la tabla periódica externa):
+- **Aptitudes (estructura, estables):** agility/strength/reasoning/memory… = el **techo** de capacidad.
+- **Bioquímica (estado, dinámico):** representación de **serotonina, adrenalina, cortisol, calcio,
+  glucosa/ATP, hidratación…** Es el **combustible** de energía y regeneración, y la fuente de **ánimos**
+  aparentes. (Nombre propuesto: **"bioquímica"** o **"humores"**, para NO chocar con la química-hechizo.)
+- **Acciones producen/consumen química:** asanas/ejercicios/misiones dan un **bonus/decremento momentáneo**
+  de compuestos (p.ej. adrenalina↑ → +agilidad temporal; serotonina↑ → +ánimo; calcio/hidrógeno↓ =
+  gasto) **+ un incremento/decremento mínimo y duradero**. El **decremento se repara con comida y
+  descanso** (liga con `fatReserves`/hambre/`Rest`).
+- **Reemplazo gradual:** donde tenga sentido, una aptitud abstracta se **deriva** de la bioquímica
+  (energía↔glucosa/ATP; estrés↔cortisol/adrenalina); las estructurales (agility/memory/reasoning) se
+  mantienen y la química las **modula** temporalmente. → recrear seres únicos por su **química**.
+
+### 10.2 Piscinas de vivencias + habilidades como frases
+- **Crear un personaje = darle un nº aleatorio de "vivencias"** de una piscina → define sus **aptitudes
+  base**. Un **generador de recuerdos** añade/altera con el tiempo → cambios de comportamiento vía
+  cambios en las stats/química.
+- **Cada habilidad es una FRASE** guardada en la piscina; al cumplir la **química necesaria** se
+  **desbloquea** y **sube de nivel**. → cada **asana es una frase**, con el ciclo de vida mapeado a la
+  maestría de la postura:
+  - **nace** = poner cada parte del cuerpo en su sitio.
+  - **crece** = partes perfectamente alineadas.
+  - **se reproduce** = postura sostenida **sin esfuerzo** por control/concentración perfectos.
+  - **muere** = quedarse **en blanco** en la postura, experimentándolo todo en la nada.
+  (Encaja con `Asana.masteryLevel`/`RegisterPractice` ya existentes.)
+
+### 10.3 Multi-instancia y "madres": posesión / secuestro de mente
+- Un **GameObject puede tener VARIAS instancias de Anima**: la **suya propia** (opcional) + instancias
+  **"madre"** (compartidas: madre-roca, madre-viento, **madre-Magnate**, madre-Kushal…). Un **booleano**
+  marca cada instancia como **madre** (compartida, puede conducir a otros) o **directa** (propia del ser).
+- Cada instancia adjunta tiene un **valor de relevancia**; el ser lo **conduce** la de **mayor
+  relevancia** en ese momento. Cada madre puede llamarlo con **intensidad inicial distinta** + **bonus
+  de evento**.
+- **Secuestro/posesión:** un evento (hechizo) **sube la relevancia** de una madre en muchos seres.
+  Ej.: piedra con `madre-roca=2`, `madre-Magnate=0`; al lanzar el hechizo, `madre-Magnate→10/100` →
+  todos parecen **poseídos por la mente de la Magnate**, sirviéndola **con su propia química/cuerpo**.
+  Los **hechizos de la Magnate son supremos** → su nivel de secuestro debe superar cualquier otro.
+- **Inmunidad por config:** una piedra con **solo** `madre-roca` (sin ranura de Magnate) **no puede ser
+  secuestrada** por nadie más. El nivel más simple de posesión = **sustituir los pensamientos** (la mente
+  activa) hasta que la madre lo deshaga; el cuerpo/química siguen siendo del ser.
+- **Población reducida por madres:** en vez de N rocas únicas, unas pocas madres (roca-gato,
+  roca-apasionada) + algunas rocas con Anima propia. Eficiente (pocas mentes reales).
+
 ## 9. Decisiones abiertas
-- Nombre de la clase raíz (`Anima`/`Ser`/`Entity`).
+- [x] Nombre de la clase raíz → **`Anima`** (2026-07-27).
 - ¿Los pilares son componentes MonoBehaviour o módulos puros referenciados por el Anima?
-- Formato de la **biblioteca de frases** (ScriptableObjects, tablas) y el mapeo aptitud→elemento.
-- ¿Instancia compartida de elemento como singleton por-elemento, o un Anima "madre" referenciado?
-- Regla exacta "poder mental → hasta qué parte de la frase".
+- **Nombre de la capa química** (bioquímica / humores / compuestos) — sin chocar con `Chemistry` (hechizos).
+- ¿Aptitudes estructurales se **mantienen** y la química **modula**, o reemplazo total gradual? (propuesto: híbrido).
+- Formato de **piscina de vivencias** y **biblioteca de frases** (ScriptableObjects, tablas) + mapeo aptitud/química→elemento.
+- Multi-instancia: ¿lista de `(Anima, esMadre, relevancia)` por GameObject? Resolución = máx relevancia.
+- Regla exacta "poder mental → hasta qué parte de la frase"; y "química necesaria → desbloquea frase".
