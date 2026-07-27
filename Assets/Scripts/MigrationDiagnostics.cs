@@ -23,8 +23,9 @@ public class MigrationDiagnostics : MonoBehaviour
         {
             IAptitudes apt = s;   // Anima implementa IAptitudes
             Debug.Log($"[Diag]  · {s.name} · tipo={s.GetType().Name} · companion={s is CompanionBase} · " +
-                      $"campo(str={s.strength:0.00} agi={s.agility:0.00} rea={s.reasoning:0.00}) · " +
-                      $"IAptitudes(str={apt.Strength:0.00} agi={apt.Agility:0.00})");
+                      $"apt(str={s.strength:0.00} agi={s.agility:0.00} rea={s.reasoning:0.00}) · " +
+                      $"IAptitudes(str={apt.Strength:0.00}) · " +
+                      $"drives(sat={s.satisfaction:0.00} phys={s.physicalResistance:0.00} obs={s.observationRadius:0.0} vel={s.velocity:0.0})");
         }
 
         // Mentes (pilar Mind) presentes.

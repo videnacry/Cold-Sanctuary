@@ -12,11 +12,11 @@ public class PlayerStats : Anima, IBody, IMind
     //     velocity→Agility (el jugador tiene aptitudes reales, default 1; el builder puede fijarlas).
     //   - `velocity`/`physicalResistance` quedan como valores de movimiento/combate propios.
     //   - Se implementan los 3 hooks abstractos de Anima (stubs).
-    // ── Satisfaction ────────────────────────────────────────────────────────
-    [Header("Satisfaction")]
-    [Tooltip("Current satisfaction level. Grows passively when capacity is high.")]
-    [Range(0f, 1f)] public float satisfaction;
-
+    // ── Drives heredados de Anima ─────────────────────────────────────────────
+    // `satisfaction`, `mentalFatigue`, `sleepiness`, `stress`, `observationRadius`, `velocity`,
+    // `physicalResistance` y las 12 aptitudes se HEREDAN de Anima (migración 2026-07-28). `playerStats.X`
+    // sigue funcionando (heredado). Aquí quedan solo los parámetros PROPIOS del jugador:
+    [Header("Satisfaction (parámetros del jugador)")]
     [Tooltip("Max size of the satisfaction bar. Grows by spending time with Gohageneis.")]
     public float satisfactionCapacity = 1f;
 
@@ -25,33 +25,6 @@ public class PlayerStats : Anima, IBody, IMind
 
     [Tooltip("Multiplier applied to all external restoration sources at high satisfaction.")]
     public float restorationMultiplier = 1f;
-
-    // ── Mental fatigue ───────────────────────────────────────────────────────
-    [Header("Mental Fatigue")]
-    [Tooltip("0 = fresh, 1 = at limit. High values cause screen effects and stumbling.")]
-    [Range(0f, 1f)] public float mentalFatigue;
-
-    // ── Stress ──────────────────────────────────────────────────────────────
-    // `stress` (0–1) se hereda de Anima (drive de ansiedad). Ya no es campo propio de PlayerStats.
-
-    // ── Sleepiness ──────────────────────────────────────────────────────────
-    [Header("Sleepiness")]
-    [Tooltip("0 = awake, 1 = about to black out.")]
-    [Range(0f, 1f)] public float sleepiness;
-
-    // ── Observation ─────────────────────────────────────────────────────────
-    [Header("Observation")]
-    [Tooltip("Radius of consciousness. Observable objects glow/emit cues within this range.")]
-    public float observationRadius = 3f;
-
-    // ── Velocity / Resistance ───────────────────────────────────────────────
-    [Header("Physical Stats")]
-    public float velocity = 1f;
-    public float physicalResistance = 1f;
-
-    // IAptitudes: las 12 aptitudes se HEREDAN de Anima (campos, default 1). Se retiró el mapeo explícito
-    // velocity→Agility; el jugador tiene aptitudes reales como cualquier ser. `velocity`/`physicalResistance`
-    // siguen usándose para movimiento/combate.
 
     // ── IBody — per-limb stats ───────────────────────────────────────────────
     // Array indexed by (int)BodyPart: Elbows=0, Hands=1, Knees=2, Feet=3, Hips=4, Back=5, Shoulders=6, Head=7

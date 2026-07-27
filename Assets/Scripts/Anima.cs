@@ -28,6 +28,15 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public bool  asleep;
     [HideInInspector] public bool  aware;                // true while actively responding to a threat
 
+    // Drives de mente/físico UNIVERSALES (migración 2026-07-28): eran de PlayerStats/WorldCharacter y se
+    // consolidan aquí (hogar único). Baratos (floats); la mente compleja sigue siendo un pilar opcional.
+    [HideInInspector] public float satisfaction;         // 0–1
+    [HideInInspector] public float mentalFatigue;        // 0–1
+    [HideInInspector] public float sleepiness;           // 0–1
+    [HideInInspector] public float observationRadius = 3f;
+    [HideInInspector] public float velocity = 1f;
+    [HideInInspector] public float physicalResistance = 1f;
+
     // Aptitudes (1.0 = media real de la especie/arquetipo; escalan con tareas/origen — ver docs/creature-stats.md)
     // Hogar UNIVERSAL de las 12 aptitudes (docs §Progresión): todo Anima las tiene. Los animales
     // usan activamente agility/perception (evolucionan); el resto quedan latentes por ahora (default 1).
