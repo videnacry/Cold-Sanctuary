@@ -9,15 +9,25 @@ error del Console/Rider.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Los 60+ archivos de la PR (Progresión/Farming/Meditación/MobWorld/Avatares) ya están **sincronizados**
-  repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`).
-- **Un solo error de compilación** encontrado y arreglado: faltaba `using UnityEngine;` en
-  `Assets/Scripts/Avatar/RobotAvatar.cs` (usaba `[Tooltip(...)]` sin el using). Ya sincronizado.
-- El **MCP de Unity está instalado pero hay que arrancarlo a mano cada sesión nueva**: `Window > MCP for
-  Unity > Toggle MCP Window` → botón `Start Server` → botón `Connect`. Sin esto, las herramientas
-  `mcp__unityMCP__*` fallan con "No Unity Editor instances found" y hay que usar captura de pantalla
-  (mucho más lento).
-- Próximo paso: seguir por la sección 3 (Farming) hacia abajo.
+- Todo lo mergeado hasta la PR #15 (Progresión/Farming/Meditación/MobWorld/Avatares/migración `Anima`/Mind)
+  ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`). El repo recibe cambios de
+  un compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si
+  hay commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
+  hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **Dos errores de compilación** encontrados y arreglados hasta ahora, mismo patrón ambos (falta
+  `using UnityEngine;`): `Assets/Scripts/Avatar/RobotAvatar.cs` (usaba `[Tooltip(...)]`) y
+  `Assets/Scripts/Mind/MindPhrase.cs` (usaba `Random.Range`). Ya sincronizados.
+- El **MCP de Unity no se pudo conectar esta sesión** (el botón "Configure" del panel busca un `claude` CLI
+  local que no se detecta en este entorno) — se testeó todo por captura de pantalla. Si en una sesión
+  futura si está disponible: `Window > MCP for Unity > Toggle MCP Window` → `Start Server` → `Connect`.
+- **La Console del Editor no pinta filas de tipo Info de forma fiable** (bug de UI, no del juego — visto
+  varias veces esta sesión). Cuando pase: leer directo
+  `C:\Users\Blein\COLD-SANCTUARY\Logs\Editor.log` (ruta nueva de Unity 6.5, ya no
+  `%LOCALAPPDATA%\Unity\Editor\Editor.log`) con `grep` — mucho más confiable que pelear con la UI.
+- **Bug real encontrado, sin arreglar todavía**: los compañeros no reciben sus aptitudes de perfil tras la
+  migración a `Anima` — ver detalle en la sección 10 de abajo.
+- Próximo paso: seguir por la sección 3 (Farming) hacia abajo (secciones 8/9/10 de Mind/Migración ya se
+  tocaron parcialmente, ver checkmarks).
 
 ## 0. Preparación
 - [x] El proyecto **compila** (0 errores CS tras el fix de `RobotAvatar.cs`).
@@ -43,12 +53,16 @@ error del Console/Rider.
 
 ## 3. Farming — jugar / serenar / cuidar (sandbox: 4 cápsulas + reglas)
 Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje** (no criada).
-- [ ] Acércate a **Suave** y pulsa **V** repetidamente: baja su "tensión" → **color rojo→verde**.
-- [ ] Al llegar a serena (verde): deja de responder a `V`, **suelta recursos + monedas** (Console
-      `[Farming] … serena … suelta recompensa`), da **XP** (sube la marga de Stats) y a veces **items**
-      (`[Farming] Botín: … Golosina/Colmillo de guerra`).
-- [ ] Ya serena, aparece el prompt **"Dar comida y agua"**; con **F**/clic → queda **descansando**
-      (color azul), Console `[Farming] … saciada y descansando`.
+- [x] Acércate a **Suave** y pulsa **V** repetidamente: baja su "tensión" → **color rojo→verde** —
+      confirmado, y también se mueve/gira hacia el jugador al excitarse.
+- [x] Al llegar a serena (verde): **suelta recursos + monedas**, da **XP** y a veces **items** —
+      confirmado leyendo `Logs/Editor.log` (la Console del editor sigue sin pintar Info de forma
+      fiable):
+      `[Farming] «PlayCreature_Suave» serena — descargó toda su tensión. Suelta recompensa (15 Food + 2
+      monedas).` seguido de `[Farming] Botín: 1× Golosina.` El HUD también subió de **Stats xp 0/100 →
+      20/100** en el mismo momento. Coincide exactamente con lo esperado.
+- [x] Ya serena, con **F**/clic → queda **descansando** (color azul/violáceo, visualmente confirmado) —
+      `Logs/Editor.log`: `[Farming] «PlayCreature_Suave» saciada y descansando.` Coincide.
 - [ ] **Combo/feel:** encadenar `V` acercándote y alejándote serena **más rápido** (excitación); la
       cápsula **rebota/crece** al excitarse y se **gira/acerca** a ti.
 - [ ] **Atrapada:** si te quedas pegado a la cápsula, tras ~1 s te "atrapa" (Console `… te atrapó…`) y
@@ -122,16 +136,38 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
 
 ## 10. Migración a `Anima` — validación por consola (PR #14, recién mergeada)
 `MigrationDiagnostics_AUTO` vuelca un bloque `[Diag Anima]` al entrar en Play. Confirma en Console:
-- [ ] **Compila** tras el renombrado `LivingEntity → Anima` + `CompanionBase`/`PlayerStats : Anima` (si no, pégame el error).
-- [ ] `[Diag] CompanionBase hereda de Anima: True` y `Animal hereda de Anima: True`.
-- [ ] Lista de **Anima en escena** con, por cada uno: tipo, `companion=True/False`, y aptitudes **coincidentes**
-      entre campo (`str/agi/rea`) y vía `IAptitudes` (`str/agi`) — deben dar lo mismo.
-- [ ] Los **compañeros** (Goluis/Panterilia/…) aparecen como `companion=True` y con sus aptitudes de perfil
-      (p.ej. Goluis `str≈1.5`), lo que confirma que `Start()` sigue fijando las aptitudes **heredadas**.
-- [ ] Línea de **Kushal**: margas + Vida/Energía/Maná/Def coherentes.
-- [ ] **Regresión** (§7): animales y compañeros siguen comportándose igual tras heredar de `Anima`.
-- [ ] **Cambio de comportamiento conocido**: los NPC (`WorldCharacter`) arrancan con `physicalResistance=1`
-      (antes `strength=0`) → puede requerir re-tuning de `promotionStrength`. Anota si algo se siente flojo/fuerte.
+- [x] **Compila** tras el renombrado `LivingEntity → Anima` + `CompanionBase`/`PlayerStats : Anima` — **un
+      error encontrado y arreglado**: faltaba `using UnityEngine;` en `Assets/Scripts/Mind/MindPhrase.cs`
+      (usaba `Random.Range` sin el using — mismo patrón que el bug de `RobotAvatar.cs` de la sesión
+      anterior). Ya sincronizado, 0 errores CS tras el fix.
+- [x] `[Diag] CompanionBase hereda de Anima: True` y `Animal hereda de Anima: True` — confirmado, leído
+      directo de `C:\Users\Blein\COLD-SANCTUARY\Logs\Editor.log` (la Console del editor no estaba
+      pintando filas de tipo Info de forma fiable esta sesión — bug de UI ya visto antes, no del juego).
+- [x] Lista de **Anima en escena**: 10 total (4 compañeros + 5 crías de animales + Player). `apt(str/agi/rea)`
+      **sí coincide** con `IAptitudes(str)` en todos los casos (ambos dan 1.00) — la vía de acceso está
+      bien cableada.
+- [ ] ❌ **BUG REAL (o posible falso positivo del diagnóstico)**: los compañeros **NO** muestran sus
+      aptitudes de perfil — se esperaba `Goluis str≈1.5` y en cambio `Goluis_Post` (y
+      Irosene/Panterilia/Gohageneis, todos con sufijo `_Post` en el nombre) muestran
+      `str=1.00 agi=1.00 rea=1.00` — el valor **default genérico**, igual que las crías de animales y el
+      Player.
+      **Hipótesis con más chances** (leyendo `CompanionBase.cs:109-115`: `Start() { agility =
+      BaseAgility; strength = BaseStrength; ... }` — el código SÍ está ahí, bien escrito): esto es el
+      mismo bug de **orden de `Start()` entre objetos hermanos** que ya apareció esta sesión con
+      `FamilyGenerator`/`HomeOrigin` (ver `DEVLOG.md`) — si `MigrationDiagnostics.Start()` corre ANTES
+      que `CompanionBase.Start()` de cada compañero (Unity no garantiza el orden entre `MonoBehaviour`s
+      de distintos GameObjects salvo que se configure `Script Execution Order`), el diagnóstico lee las
+      aptitudes en su valor default **antes** de que `CompanionBase.Start()` las sobreescriba con el
+      perfil. No pude confirmarlo por Inspector (los campos de `Anima` no aparecen ni en modo Debug —
+      probablemente son propiedades, no campos serializados, así que no se pueden inspeccionar así).
+      **Para confirmar/descartar**: agregar un log a `CompanionBase.Start()` con un timestamp/frame
+      count y comparar contra el de `MigrationDiagnostics.Start()`, o simplemente mover el volcado de
+      `MigrationDiagnostics` a `LateUpdate()` (una sola vez, con una bandera) en vez de `Start()`.
+- [x] Línea de **Kushal**: `margas Stats L1/Yoga L1/Vínc L1 · Vida 115 Energía 117 Maná 50 Def 16 ·
+      manáDesbloqueado=False` — coherente con lo esperado (HUD ya lo confirmaba en §1).
+- [ ] **Regresión** (§7): pendiente de probar en profundidad (animales/compañeros se ven en la lista y no
+      hay errores, pero no se verificó comportamiento en Play más allá de eso).
+- [ ] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
