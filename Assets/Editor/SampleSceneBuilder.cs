@@ -247,6 +247,37 @@ public static class SampleSceneBuilder
         var sb = new System.Text.StringBuilder("[Frases] Ser de ejemplo recibe: ");
         foreach (MindPhrase p in hand) sb.Append($"[{p.source}·{p.tone}] \"{p.positive[0]}\"  ");
         Debug.Log(sb.ToString());
+
+        LogDistribution();
+    }
+
+    /// <summary>Diagnóstico del reparto por modo (docs anima §11): Magnate + histórico bloqueados vs libres.</summary>
+    static void LogDistribution()
+    {
+        // 6 seres: la Magnate y un histórico BLOQUEADOS; los 4 compañeros LIBRES.
+        var holders = new System.Collections.Generic.List<PhraseHolder>
+        {
+            new PhraseHolder("Magnate", true),     // nadie hereda sus pensamientos
+            new PhraseHolder("Irosene", true),     // "histórico" bloqueado de ejemplo
+            new PhraseHolder("Goluis", false),
+            new PhraseHolder("Panterilia", false),
+            new PhraseHolder("Gohageneis", false),
+            new PhraseHolder("", false),           // ser anónimo emergente: solo recibe del pool
+        };
+
+        foreach (NarrativeMode mode in new[] { NarrativeMode.Estricta, NarrativeMode.Libre })
+        {
+            var plan = PhraseDistribution.Plan(mode, holders);
+            Debug.Log($"[Frases] Reparto {mode}:");
+            for (int i = 0; i < holders.Count; i++)
+            {
+                string who = holders[i].identity == "" ? "(anónimo)" : holders[i].identity;
+                string lk = holders[i].locked ? " 🔒" : "";
+                var sb = new System.Text.StringBuilder($"   {who}{lk} → ");
+                foreach (MindPhrase p in plan[i]) sb.Append($"[{p.source}·{p.tone}] ");
+                Debug.Log(sb.ToString());
+            }
+        }
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

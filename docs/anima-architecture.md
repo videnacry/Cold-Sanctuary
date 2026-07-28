@@ -217,6 +217,24 @@ MÁS en mentes poco inmersas.)*
   jugabilidad/narración) o cuando aprende la posesión. → **factible** y limpio con la composición: un
   `Anima` + una mente + un **controlador** (input del jugador **o** IA), intercambiable.
 
+### 11.5b Propiedad de los pensamientos + reparto por modo
+Cada mente tiene **`identity`** (fuente autoral), **`thoughts`** (sus vivencias actuales — inclinan su tono
+y son las frases que expresa) y **`thoughtsLocked`** (privados). El reparto inicial (`PhraseDistribution`)
+tiene dos modos:
+- **Estricta** (narrativa guionizada): cada ser recibe las vivencias de **su identidad**. La propiedad se
+  respeta → cada quien es quien es.
+- **Libre** (emergente): los pensamientos de los seres **no bloqueados** se mueven a un **pool público** y
+  se **redistribuyen al azar** entre ellos (efecto mariposa, cada partida distinta).
+
+**Bloqueo (`thoughtsLocked`)** = candado de propiedad, marcable/desmarcable por personaje:
+- La **Magnate** va bloqueada → **nadie hereda** sus pensamientos y ella **siempre** los tiene como base.
+- Los **personajes históricos** igual (su biografía es suya).
+- Los demás se **marcan/desmarcan a conveniencia**: en narrativa estricta se conservan; en libre, sus
+  pensamientos **se vuelcan al pool público antes de repartir**.
+
+`PhraseDistribution.Plan(mode, holders)` calcula el reparto sin escena (puro/loggeable);
+`Distribute(mode, minds)` lo aplica sembrando `Mind.thoughts`.
+
 ### 11.6 Estado en código (rama feat/mind-frases-campos)
 `PhraseCategory` + flags en `MindPhrase`; `ThoughtField`; `Mind` lee campos (empuje de tono + nudge de
 humores). **Falta:** poblar la piscina de **vivencias** desde las biografías; asana/hechizo como frases

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -17,6 +18,18 @@ public class Mind : MonoBehaviour
 
     [Header("Humores (bioquímica)")]
     public Humores humores = new Humores();
+
+    [Header("Identidad y pensamientos (docs anima §11)")]
+    [Tooltip("Fuente autoral de este ser (Magnate, Goluis, Ötzi…). Vacío = anónimo/genérico.")]
+    public string identity = "";
+
+    [Tooltip("Pensamientos PRIVADOS: nunca van al pool público ni se redistribuyen (Magnate, históricos). " +
+             "Se marca/desmarca a conveniencia por personaje.")]
+    public bool thoughtsLocked = false;
+
+    [Tooltip("Vivencias/pensamientos que este ser tiene AHORA. Inclinan su tono y son las frases que expresa. " +
+             "Los siembra PhraseDistribution según el modo (estricta/libre).")]
+    public List<MindPhrase> thoughts = new List<MindPhrase>();
 
     [Header("Ritmo")]
     [Min(0.5f)] public float thinkInterval = 4f;
@@ -61,7 +74,9 @@ public class Mind : MonoBehaviour
     void Think()
     {
         ElementalTone tone = PickTone();
-        var options = PhraseLibrary.ForTone(tone);
+        // Prefiere expresar SUS propias vivencias de ese tono; si no tiene, tira de la biblioteca compartida.
+        List<MindPhrase> options = ThoughtsForTone(tone);
+        if (options.Count == 0) options = PhraseLibrary.ForTone(tone);
         if (options.Count == 0) return;
         MindPhrase phrase = options[Random.Range(0, options.Count)];
 
@@ -100,6 +115,10 @@ public class Mind : MonoBehaviour
         w[(int)ElementalTone.Fuego]  = aptitudes.creativity + aptitudes.sociability + humores.adrenalina;
         w[(int)ElementalTone.Viento] = aptitudes.agility + aptitudes.reasoning + aptitudes.perception;
 
+        // Sus vivencias/pensamientos propios inclinan su tono (lo que ha vivido, lo tiñe).
+        foreach (MindPhrase t in thoughts)
+            if (t != null) w[(int)t.tone] += 1f;
+
         // Empuje de los campos de pensamiento que cubren a este ser (guía por el entorno, docs §5).
         foreach (ThoughtField f in _fields)
             if (f != null && f.Covers(transform.position))
@@ -123,5 +142,14 @@ public class Mind : MonoBehaviour
         float power = (aptitudes.reasoning + aptitudes.memory + aptitudes.discipline) / 3f;
         power *= Mathf.Lerp(0.5f, 1f, humores.Energia);
         return Mathf.Clamp(Mathf.FloorToInt(power * 3f), 0, 4);
+    }
+
+    /// <summary>Las vivencias/pensamientos propios de este ser que son de un tono dado.</summary>
+    List<MindPhrase> ThoughtsForTone(ElementalTone tone)
+    {
+        List<MindPhrase> list = new List<MindPhrase>();
+        foreach (MindPhrase t in thoughts)
+            if (t != null && t.tone == tone) list.Add(t);
+        return list;
     }
 }
