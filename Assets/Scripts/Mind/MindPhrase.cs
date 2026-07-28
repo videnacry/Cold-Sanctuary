@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Clasificación de una frase (docs/anima-architecture.md §6/§10). TODO es una frase: una vivencia, una
