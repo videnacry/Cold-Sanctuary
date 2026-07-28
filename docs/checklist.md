@@ -1,6 +1,6 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-07-23. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-07-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
@@ -144,6 +144,42 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
 - [ ] **Niveles por plano:** Mesocosmos autoritativo (reglas profundas); Macro/Micro pueden abstraer
       nivel+XP si el rendimiento lo exige.
 - [ ] **Decisión clave:** modelo de guerra en modo Meso (encarnada recomendada vs tiempo comprimido) — §9.
+
+## Mente emergente (anima-architecture.md §6/§11 · mind-model.md)
+Pilar `Mind` como componente enchufable. **MVP + composición hechos (2026-07-24…28).**
+- [x] **Mind MVP** (PR #13): `Mind` piensa por `thinkInterval`, elige FRASE por tono elemental
+      (aptitudes+humores), la expresa hasta su PODER MENTAL (`Depth`); `Humores` (bioquímica),
+      `ElementalTone`, `PhraseLibrary` (4 frases elementales).
+- [x] **Clasificación de frases + campos** (PR #15): `PhraseCategory {Vivencia,Asana,Hechizo,Elemental,Deseo}`
+      + flags `randomAssignable`/`reusable`; `ThoughtField` (empuja tono / nudge de humores por radio);
+      `Mind.PickTone` suma aptitudes+humores+campos+**vivencias propias**.
+- [x] **Pools de frases** (PR #15): `PhrasePools` — 14 vivencias FIELES a `creature-stats.md`
+      (Goluis→Tierra, Panterilia→Viento, Gohageneis→Agua, Irosene→Fuego) + 6 deseos base; `DealVivencias`
+      (reparto al azar respetando flags); `VivenciasOf(source)`; **Ötzi** autorado (histórico, `Historico()`).
+- [x] **Propiedad + reparto por modo** (PR #15): `Mind` tiene `identity`/`thoughts`/`thoughtsLocked`;
+      `PhraseDistribution` con `NarrativeMode {Estricta, Libre}` — estricta conserva la propiedad; libre
+      vuelca los no-bloqueados a un pool público y reparte al azar; **Magnate/históricos bloqueados** quedan
+      fuera y conservan los suyos. `Plan()` puro/loggeable + `Distribute()` a los `Mind` reales.
+- [ ] **A PROBAR en el editor** (sandbox `MindSandbox_AUTO` de `SampleSceneBuilder`): en Play, cada ánima
+      tiende a su tono y dentro del `ThoughtField(Agua)` se inclina a Agua + sube serotonina; consola
+      `[Frases]` imprime conteos de pools, biografías por fuente, y el reparto **Estricta vs Libre**
+      (Magnate + Ötzi 🔒 conservan lo suyo; compañeros + anónimo reciben del pool).
+- [ ] **Siguiente**: controlador intercambiable (jugador-como-input ↔ IA) y **posesión dinámica**
+      (insertar instancia/madre en runtime con relevancia); asana/hechizo como frases reales; multi-instancia.
+- [ ] **Flag futuro** `absorbsPublic` si algún día un bloqueado debe además recibir del pool (hoy: no recibe).
+
+## ⚠ Pendiente de TI (compilar en Unity antes de mergear)
+- [ ] **PR #14 — migración Anima** (`LivingEntity`→`Anima`; `CompanionBase`/`PlayerStats` : `Anima`;
+      `WorldCharacter` lee de `Anima`). Refactor del núcleo **sin compilar**; conectado a tu master en vivo.
+      **Bloqueado a propósito.** Pasos: haz `pull` de master (ya trae la PR #15), abre `feat/anima-migration`
+      en Unity, compila, pégame errores (o confirma OK); resuelvo el conflicto con la #15 en
+      `SampleSceneBuilder.cs`/`Mind.cs` (trivial: comentario + inserción de `MigrationDiagnostics`) y mergeo.
+      `MigrationDiagnostics_AUTO` vuelca validación por consola en Play.
+
+## Hecho (2026-07-28)
+- [x] **Pilar Mente**: clasificación de frases, campos de pensamiento, pools de vivencias (biografías reales),
+      reparto Estricta/Libre con bloqueo de propiedad, y Ötzi como primer histórico. **PR #15 mergeada.**
+- [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
 
 ## Hecho (2026-07-23)
 - [x] Sincronización de docs con el código (cifras, 3 sistemas nuevos, flips de estado).

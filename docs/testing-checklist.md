@@ -106,6 +106,24 @@ Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_
 - [ ] Con el tiempo, los **humores** derivan a su base (`Regen`) y pensar **consume glucosa** (energía) →
       afecta la longitud alcanzable.
 
+## 9. Mind — campos, pools de frases y reparto (docs/anima-architecture.md §11) — NUEVO
+Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Frases]` en la Console.
+- [ ] **Campo de pensamiento**: las ánimas que entren en el radio del `ThoughtField_Agua` (centro ~(-1,10),
+      radio 6) se **inclinan a Agua** y su **serotonina sube** (más frases positivas). Fuera del radio,
+      vuelven a su tono propio.
+- [ ] **Pools cargadas**: al construir/entrar en Play, la Console imprime
+      `[Frases] Total=… Elemental=4 Vivencia=18 Deseo=6` y una línea por biografía
+      (`Goluis: 3`, `Panterilia: 4`, `Gohageneis: 3`, `Irosene: 4`, y Ötzi vía histórico).
+- [ ] **Reparto Estricta**: cada quien recibe SOLO las vivencias de su identidad (Magnate/Ötzi incluidas).
+- [ ] **Reparto Libre**: Magnate 🔒 y Ötzi 🔒 **conservan lo suyo** y NO aparecen repartidos en otros; los
+      compañeros (libres) y el **anónimo** reciben vivencias barajadas del pool público (cada run distinto).
+- [ ] **Vivencias fieles**: las frases de cada fuente cuadran con su carácter (p. ej. Goluis·Tierra
+      "Mis manos conocen el peso."; Ötzi·Agua "Comprender mi muerte me libera.").
+
+> **Nota**: el rename `LivingEntity`→`Anima` (PR #14) sigue **sin mergear** hasta que compiles. Si abres
+> `feat/anima-migration`, valida además la consola de `MigrationDiagnostics_AUTO`. En master, la clase base
+> sigue siendo `LivingEntity`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
