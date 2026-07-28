@@ -1,6 +1,6 @@
 /// <summary>
 /// Physical body interface — per-limb stats and posture stress for the asana/training system.
-/// Implemented by PlayerStats. Entities that can be harmed or flee extend LivingEntity.
+/// Implemented by PlayerStats. Entities that can be harmed or flee extend Anima.
 /// </summary>
 public interface IBody
 {

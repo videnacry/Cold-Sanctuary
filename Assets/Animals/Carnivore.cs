@@ -33,7 +33,7 @@ public abstract class Carnivore : Animal
             this.busy = true;
             ITarget victim = prey.GetComponent<ITarget>();
             if (victim == null) { this.busy = false; yield break; }
-            LivingEntity victimEntity = prey.GetComponent<LivingEntity>();
+            Anima victimEntity = prey.GetComponent<Anima>();
             victimEntity?.RespondToThreat(this.gameObject);
             Vector3 location = prey.transform.position;
             float distance = Vector3.Distance(transform.position, location);
@@ -68,7 +68,7 @@ public abstract class Carnivore : Animal
                 }
                 else
                 {
-                    LivingEntity victimLiving = prey.GetComponent<LivingEntity>();
+                    Anima victimLiving = prey.GetComponent<Anima>();
                     bool preyAware = victimLiving != null && victimLiving.aware;
                     if (distance < 300 || preyAware)
                     {

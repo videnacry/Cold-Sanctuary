@@ -7,7 +7,7 @@ using UnityEngine;
 /// Cada `thinkInterval` tiene un "momento de pensamiento": elige una FRASE según su TONO elemental
 /// (derivado de sus aptitudes + humores), la expresa hasta donde su PODER MENTAL alcanza
 /// (nace/crece/reproduce… o el silencio), y eso consume/produce humores. Se puede pegar a CUALQUIER ser:
-/// si el objeto tiene un `IAptitudes` (LivingEntity/PlayerStats/…), lee de ahí; si no, usa el campo.
+/// si el objeto tiene un `IAptitudes` (Anima/PlayerStats/…), lee de ahí; si no, usa el campo.
 ///
 /// Barato: frases compartidas (`PhraseLibrary`), solo pesos por ser, decisión por temporizador.
 /// </summary>

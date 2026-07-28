@@ -11,47 +11,24 @@ using UnityEngine;
 ///   - GetMoodModifier()   → how their personality biases the restoration
 ///   - OnPlayerNearby()    → optional dialogue/reaction hooks
 /// </summary>
-public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple, IAptitudes
+public abstract class CompanionBase : Anima, IBondable
 {
+    // Migración 2026-07-28: CompanionBase ahora ES un Anima (clase única de ser → futura `Anima`).
+    //   - Las 12 aptitudes y `stress` se HEREDAN de Anima (ya no se duplican aquí).
+    //   - `IAptitudes` lo aporta Anima. `IMindSimple` se retira (no lo usaba nadie).
+    //   - `fatigue`/`mood` son propios (Anima no los tiene).
+    //   - Se implementan los hooks abstractos de Anima (RespondToHunger/EvaluateThreat/RespondToThreat).
+
     // ── Inspector ────────────────────────────────────────────────────────────
     [Header("Identity")]
     public string companionName;
 
     [Header("Internal State (0–1)")]
-    [field: SerializeField, Range(0f, 1f)] public float fatigue { get; set; }
-    [field: SerializeField, Range(0f, 1f)] public float stress  { get; set; }
-    [field: SerializeField, Range(0f, 1f)] public float mood    { get; set; } = 0.7f;
+    [Range(0f, 1f)] public float fatigue;
+    [Range(0f, 1f)] public float mood = 0.7f;
+    // `stress` (0–1, ansiedad ambiental) se hereda de Anima.
 
-    // ── Aptitudes corporales/mentales (1.0 = media real humana) ────────────────
-    // Se fijan en Start() desde las propiedades Base*; escalan con tareas/origen.
-    // Ver docs/creature-stats.md.
-    [HideInInspector] public float agility;
-    [HideInInspector] public float perception;
-    [HideInInspector] public float strength;
-    [HideInInspector] public float bodyMass;
-    [HideInInspector] public float adaptability;   // versatilidad / velocidad de adaptación
-    [HideInInspector] public float composure;      // temple / sangre fría bajo peligro o estrés
-    [HideInInspector] public float endurance;      // resistencia física (esfuerzo sostenido)
-    [HideInInspector] public float reasoning;      // lógica / razonamiento (académico/abstracto)
-    [HideInInspector] public float memory;         // memoria / retención
-    [HideInInspector] public float creativity;     // imaginación / creatividad
-    [HideInInspector] public float sociability;    // trato social / carisma
-    [HideInInspector] public float discipline;     // constancia / mantener rutinas
-
-    // IAptitudes — acceso uniforme (mismo contrato que LivingEntity/PlayerStats).
-    public float Agility      => agility;
-    public float Perception   => perception;
-    public float Strength     => strength;
-    public float BodyMass     => bodyMass;
-    public float Adaptability => adaptability;
-    public float Composure    => composure;
-    public float Endurance    => endurance;
-    public float Reasoning    => reasoning;
-    public float Memory       => memory;
-    public float Creativity   => creativity;
-    public float Sociability  => sociability;
-    public float Discipline   => discipline;
-
+    // Aptitudes: se fijan en Start() desde las Base* (los CAMPOS viven en Anima). docs/creature-stats.md.
     protected virtual float BaseAgility      => 1f;
     protected virtual float BasePerception   => 1f;
     protected virtual float BaseStrength     => 1f;
@@ -198,6 +175,13 @@ public abstract class CompanionBase : MonoBehaviour, IBondable, IMindSimple, IAp
         fatigue = Mathf.Clamp01(fatigue + FatigueRatePerSecond() * Time.deltaTime);
         mood    = Mathf.MoveTowards(mood, GetRestingMood(), 0.001f * Time.deltaTime);
     }
+
+    // ── Hooks de Anima (drives físicos) ───────────────────────────────
+    // Los compañeros no reaccionan a hambre/amenaza por estos hooks todavía (su Update simula estado y
+    // proximidad). Stubs seguros; se enriquecerán al unificar la mente/autonomía.
+    protected override void RespondToHunger() { }
+    protected override float EvaluateThreat(GameObject source) => 0f;
+    public    override void RespondToThreat(GameObject threat) { }
 
     // ── Abstract / virtual hooks for subclasses ──────────────────────────────
 

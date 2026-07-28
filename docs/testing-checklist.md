@@ -90,7 +90,7 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
 
 ## 7. Regresión — que lo previo NO se rompa (tras IAptitudes)
 - [ ] Los **animales** (oso/lobo/conejo/etc.) siguen naciendo, moviéndose, comiendo y huyendo como antes
-      (`LivingEntity` ahora implementa `IAptitudes` y tiene 12 campos nuevos, todos con default 1).
+      (`Anima` —antes `LivingEntity`— implementa `IAptitudes` y tiene 12 campos nuevos, todos con default 1).
 - [ ] Los **compañeros** (`CompanionBase`) siguen funcionando (bonds, mood); no hay errores por el
       nuevo `IAptitudes`.
 - [ ] Las **asanas/yoga** existentes (entrenamiento por extremidad, restaurar canal mental) siguen igual.
@@ -106,7 +106,7 @@ Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_
 - [ ] Con el tiempo, los **humores** derivan a su base (`Regen`) y pensar **consume glucosa** (energía) →
       afecta la longitud alcanzable.
 
-## 9. Mind — campos, pools de frases y reparto (docs/anima-architecture.md §11) — NUEVO
+## 9. Mind — campos, pools de frases y reparto (docs/anima-architecture.md §11)
 Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Frases]` en la Console.
 - [ ] **Campo de pensamiento**: las ánimas que entren en el radio del `ThoughtField_Agua` (centro ~(-1,10),
       radio 6) se **inclinan a Agua** y su **serotonina sube** (más frases positivas). Fuera del radio,
@@ -120,9 +120,18 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
 - [ ] **Vivencias fieles**: las frases de cada fuente cuadran con su carácter (p. ej. Goluis·Tierra
       "Mis manos conocen el peso."; Ötzi·Agua "Comprender mi muerte me libera.").
 
-> **Nota**: el rename `LivingEntity`→`Anima` (PR #14) sigue **sin mergear** hasta que compiles. Si abres
-> `feat/anima-migration`, valida además la consola de `MigrationDiagnostics_AUTO`. En master, la clase base
-> sigue siendo `LivingEntity`.
+## 10. Migración a `Anima` — validación por consola (PR #14, recién mergeada)
+`MigrationDiagnostics_AUTO` vuelca un bloque `[Diag Anima]` al entrar en Play. Confirma en Console:
+- [ ] **Compila** tras el renombrado `LivingEntity → Anima` + `CompanionBase`/`PlayerStats : Anima` (si no, pégame el error).
+- [ ] `[Diag] CompanionBase hereda de Anima: True` y `Animal hereda de Anima: True`.
+- [ ] Lista de **Anima en escena** con, por cada uno: tipo, `companion=True/False`, y aptitudes **coincidentes**
+      entre campo (`str/agi/rea`) y vía `IAptitudes` (`str/agi`) — deben dar lo mismo.
+- [ ] Los **compañeros** (Goluis/Panterilia/…) aparecen como `companion=True` y con sus aptitudes de perfil
+      (p.ej. Goluis `str≈1.5`), lo que confirma que `Start()` sigue fijando las aptitudes **heredadas**.
+- [ ] Línea de **Kushal**: margas + Vida/Energía/Maná/Def coherentes.
+- [ ] **Regresión** (§7): animales y compañeros siguen comportándose igual tras heredar de `Anima`.
+- [ ] **Cambio de comportamiento conocido**: los NPC (`WorldCharacter`) arrancan con `physicalResistance=1`
+      (antes `strength=0`) → puede requerir re-tuning de `promotionStrength`. Anota si algo se siente flojo/fuerte.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se

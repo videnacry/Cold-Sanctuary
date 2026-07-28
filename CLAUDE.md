@@ -53,14 +53,14 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 
 ## Abstracciones principales
 
-- `LivingEntity` (base compartida para Animal y futuros NPCs): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks de respuesta (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`). **Ahora hogar de las 12 aptitudes** (implementa `IAptitudes`).
-- `IAptitudes`: las **12 aptitudes universales** (agility/perception/strength/bodyMass/adaptability/composure/endurance/reasoning/memory/creativity/sociability/discipline). Implementan `LivingEntity`, `CompanionBase`, `PlayerStats`. `DerivedStats` deriva de ellas los **puntos del alma**.
+- `Anima` (**antes `LivingEntity`**, renombrada 2026-07-28) — **clase única de todo ser** (animado o inanimado-despertable; ver [`docs/anima-architecture.md`](docs/anima-architecture.md)): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks abstractos (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`), y **hogar de las 12 aptitudes** (implementa `IAptitudes`). `Animal` y `CompanionBase` heredan de ella; `PlayerStats` pendiente.
+- `IAptitudes`: las **12 aptitudes universales** (agility/perception/strength/bodyMass/adaptability/composure/endurance/reasoning/memory/creativity/sociability/discipline). Implementan `Anima` (y por herencia `Animal`/`CompanionBase`) y `PlayerStats` (mapeo parcial). `DerivedStats` deriva de ellas los **puntos del alma**.
 - `CharacterLevel` + `SoulMarga`: progresión por **margas del alma** (tracks independientes: Stats/Yoga/Vínculos) → suben los puntos del alma. Ver `docs/creature-stats.md` §Progresión.
 - `IMind` / `IMindSimple`: stats mentales. `PlayerStats` implementa `IMind` completa; `CompanionBase` usa `IMindSimple` (transitoria hasta NPCBase).
 - `IBody`: stats físicas por extremidad + estrés postural (sistema de asanas). Implementa: `PlayerStats`.
 - `IBondable`: vínculo con el jugador y efecto por proximidad. Implementa: `CompanionBase`, `WorldBondable`.
-- Jerarquía animal: `LivingEntity` → `Animal` → `Carnivore`/`Herbivore` → `WolfBehavior`/`BunnyBehavior`/`BearBehaviour`.
-- `NPCBase` (pendiente): extiende `LivingEntity`, implementa `IMind` + `IBondable`. Compañeros = parámetros solamente.
+- Jerarquía animal: `Anima` → `Animal` → `Carnivore`/`Herbivore` → `WolfBehavior`/`BunnyBehavior`/`BearBehaviour`. Y `Anima` → `CompanionBase` → `Goluis`/`Panterilia`/…
+- `NPCBase` **descartado** como clase intermedia (2026-07-25): se va a **una sola `Anima`** + pilares/mente opcionales. `IMindSimple` eliminado (2026-07-28).
 - `LifeStage` (abstracta) → `Childhood`/`Adolescence`/`Adulthood`.
 
 ## Documentación detallada (leer bajo demanda)

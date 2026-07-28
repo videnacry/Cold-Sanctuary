@@ -52,15 +52,8 @@ public class WorldCharacter : MonoBehaviour
     [Tooltip("observationRadius (world units) required.")]
     public float promotionObservation  = 2f;
 
-    // ── Lightweight NPC stats (used when PlayerStats is absent) ───────────────
-
-    [Header("NPC Stats (ignored when PlayerStats is present on this GameObject)")]
-    [Range(0f, 1f)] public float strength     = 0f;
-    [Range(0f, 1f)] public float satisfaction = 0f;
-    public float observation  = 1f;
-    [Range(0f, 1f)] public float mentalFatigue;
-    [Range(0f, 1f)] public float stress;
-    public float velocity = 1f;
+    // Migración 2026-07-28: los stats ya NO viven aquí. WorldCharacter lee/escribe el `Anima` del objeto
+    // (todo ser lo tiene: jugador=PlayerStats:Anima, compañeros=CompanionBase:Anima). Sin duplicación.
 
     // ── Events ────────────────────────────────────────────────────────────────
 
@@ -72,15 +65,15 @@ public class WorldCharacter : MonoBehaviour
 
     // ── Runtime ───────────────────────────────────────────────────────────────
 
-    PlayerStats _playerStats;
-    bool        _taskLoopRunning;
-    bool        _promotionFired;   // guard: fire once per area
+    Anima _anima;                  // hogar de stats del ser (jugador/compañero/…)
+    bool  _taskLoopRunning;
+    bool  _promotionFired;   // guard: fire once per area
 
     // ── Unity lifecycle ───────────────────────────────────────────────────────
 
     void Awake()
     {
-        _playerStats = GetComponent<PlayerStats>();
+        _anima = GetComponent<Anima>();
     }
 
     void Start()
@@ -90,25 +83,23 @@ public class WorldCharacter : MonoBehaviour
 
     // ── Stat accessors ────────────────────────────────────────────────────────
 
-    /// <summary>Strength / physicalResistance — reads PlayerStats if present.</summary>
+    // Stats leídos/escritos en el Anima del objeto (fuente única).
     public float Strength
     {
-        get => _playerStats != null ? _playerStats.physicalResistance : strength;
-        set { if (_playerStats != null) _playerStats.physicalResistance = value; else strength = Mathf.Clamp01(value); }
+        get => _anima != null ? _anima.physicalResistance : 0f;
+        set { if (_anima != null) _anima.physicalResistance = Mathf.Clamp01(value); }
     }
 
-    /// <summary>Satisfaction — reads PlayerStats if present.</summary>
     public float Satisfaction
     {
-        get => _playerStats != null ? _playerStats.satisfaction : satisfaction;
-        set { if (_playerStats != null) _playerStats.satisfaction = Mathf.Clamp01(value); else satisfaction = Mathf.Clamp01(value); }
+        get => _anima != null ? _anima.satisfaction : 0f;
+        set { if (_anima != null) _anima.satisfaction = Mathf.Clamp01(value); }
     }
 
-    /// <summary>ObservationRadius — reads PlayerStats if present.</summary>
     public float Observation
     {
-        get => _playerStats != null ? _playerStats.observationRadius : observation;
-        set { if (_playerStats != null) _playerStats.observationRadius = Mathf.Max(0f, value); else observation = Mathf.Max(0f, value); }
+        get => _anima != null ? _anima.observationRadius : 0f;
+        set { if (_anima != null) _anima.observationRadius = Mathf.Max(0f, value); }
     }
 
     // ── Promotion ─────────────────────────────────────────────────────────────
@@ -193,32 +184,25 @@ public class WorldCharacter : MonoBehaviour
 
     void ApplyTaskEffects(AreaTask task)
     {
-        if (_playerStats != null)
-        {
-            // Route through PlayerStats so restorationMultiplier and clamps apply
-            if (task.mindEffect > 0)
-                _playerStats.RestoreMind(Mathf.Abs(task.mindEffect), task.mindChannel);
-            else if (task.mindEffect < 0)
-                _playerStats.DrainMind(Mathf.Abs(task.mindEffect), task.mindChannel);
+        if (_anima == null) return;
 
-            _playerStats.physicalResistance =
-                Mathf.Clamp01(_playerStats.physicalResistance + task.strengthDelta);
-            _playerStats.observationRadius =
-                Mathf.Max(0f, _playerStats.observationRadius + task.observationDelta);
-            _playerStats.velocity =
-                Mathf.Clamp(_playerStats.velocity + task.velocityDelta, 0.1f, 5f);
+        // Efecto de mente: por IMind (jugador → aplica multiplicador/clamps) o directo sobre el Anima.
+        if (_anima is IMind mind)
+        {
+            if (task.mindEffect > 0)      mind.RestoreMind(Mathf.Abs(task.mindEffect), task.mindChannel);
+            else if (task.mindEffect < 0) mind.DrainMind(Mathf.Abs(task.mindEffect), task.mindChannel);
         }
         else
         {
-            // Lightweight NPC path
             if (task.mindEffect > 0)
-                satisfaction  = Mathf.Clamp01(satisfaction  + Mathf.Abs(task.mindEffect));
+                _anima.satisfaction  = Mathf.Clamp01(_anima.satisfaction + Mathf.Abs(task.mindEffect));
             else
-                mentalFatigue = Mathf.Clamp01(mentalFatigue - task.mindEffect);
-
-            strength    = Mathf.Clamp01(strength    + task.strengthDelta);
-            observation = Mathf.Max(0f, observation + task.observationDelta);
-            velocity    = Mathf.Clamp(velocity      + task.velocityDelta, 0.1f, 5f);
+                _anima.mentalFatigue = Mathf.Clamp01(_anima.mentalFatigue - task.mindEffect);
         }
+
+        // Físico: sobre el Anima (fuente única).
+        _anima.physicalResistance = Mathf.Clamp01(_anima.physicalResistance + task.strengthDelta);
+        _anima.observationRadius  = Mathf.Max(0f, _anima.observationRadius + task.observationDelta);
+        _anima.velocity           = Mathf.Clamp(_anima.velocity + task.velocityDelta, 0.1f, 5f);
     }
 }

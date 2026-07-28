@@ -122,9 +122,23 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
 - [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
       implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
       `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
-      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme. **Hallazgo:** `CompanionBase`
-      NO extiende `LivingEntity`, así que la de-duplicación total (una sola copia de campos) queda para
-      `NPCBase` (reparentar). El acceso ya está universalizado.
+      (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme.
+- [~] **Migración a clase única `Anima`** — rama `feat/anima-migration` (**sin mergear hasta compilar**).
+      Hecho (2026-07-28): (1) **`LivingEntity` renombrada a `Anima`** en todo el código (`Anima.cs`), 34 refs;
+      (2) **`CompanionBase : Anima`** — quitadas las 12 aptitudes duplicadas + `stress` (heredados), 3 hooks
+      abstractos implementados (stubs), `fatigue`/`mood` propios; (3) **`IMindSimple.cs` borrado** (sin uso);
+      (4) **`MigrationDiagnostics`** que vuelca por consola la validación en Play (herencia, aptitudes por
+      campo y vía `IAptitudes`, puntos del alma/margas del jugador); (5) **`PlayerStats : Anima`** hecho —
+      `stress` y las 12 aptitudes heredadas (retirado el mapeo velocity→Agility; el jugador tiene aptitudes
+      reales), `velocity`/`physicalResistance` quedan de movimiento/combate, 3 hooks abstractos (stubs).
+      (6) **`WorldCharacter` consolidado (2026-07-28):** las drives `satisfaction/mentalFatigue/sleepiness/
+      observationRadius/velocity/physicalResistance` se **movieron a `Anima`** (hogar único; `stress` ya
+      estaba); `PlayerStats` las hereda (retiradas sus copias; `playerStats.X` sigue funcionando); y
+      `WorldCharacter` lee/escribe el `Anima` del objeto (borrados sus lightweight + el bridge a
+      PlayerStats). **Migración ESTRUCTURAL COMPLETA:** todo ser (jugador/compañeros/animales) es `Anima`
+      con una sola fuente de stats. *(Nota: los NPC ahora arrancan con `physicalResistance=1` en vez de la
+      antigua `strength=0` → puede requerir re-tunear `promotionStrength`.)* **Falta menor:** docs
+      históricos que aún dicen "LivingEntity"; el pilar `Mind` (drives complejos) es trabajo aparte.
 - [~] **Margas del alma = tracks INDEPENDIENTES** (creature-stats §Progresión). **Hecho (2026-07-24):**
       `SoulMarga` (pool XP+nivel+curva) y `CharacterLevel` con 3 margas (**Stats**/**Yoga**/**Vínculos**);
       los **puntos del alma escalan por TODAS las margas** (`SoulLevels`); **maná gateado por Yoga≥2**;

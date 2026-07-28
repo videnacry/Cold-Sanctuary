@@ -22,7 +22,7 @@ public class CharacterLevel : MonoBehaviour
     [Header("Aptitudes (derivan los pools). 1.0 = media.")]
     public Aptitudes aptitudes = Aptitudes.Default;
 
-    [Tooltip("Si true, deriva las aptitudes del IAptitudes del mismo objeto (LivingEntity/CompanionBase/" +
+    [Tooltip("Si true, deriva las aptitudes del IAptitudes del mismo objeto (Anima/CompanionBase/" +
              "PlayerStats). Si false, usa el campo 'aptitudes' de arriba (p.ej. perfil fijado a mano/builder).")]
     public bool deriveAptitudesFromComponent = false;
 

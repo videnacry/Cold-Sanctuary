@@ -4,13 +4,19 @@ using UnityEngine;
 /// Holds all runtime stats for the player.
 /// Implements IBody (per-limb physical stats + posture stress) and IMind (mental/emotional stats).
 /// </summary>
-public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
+public class PlayerStats : Anima, IBody, IMind
 {
-    // ── Satisfaction ────────────────────────────────────────────────────────
-    [Header("Satisfaction")]
-    [Tooltip("Current satisfaction level. Grows passively when capacity is high.")]
-    [Range(0f, 1f)] public float satisfaction;
-
+    // Migración 2026-07-28: PlayerStats ahora ES un Anima (clase única de ser).
+    //   - `stress` se HEREDA de Anima (ya no campo propio).
+    //   - Las 12 aptitudes se HEREDAN de Anima (implementa IAptitudes); se retira el mapeo explícito
+    //     velocity→Agility (el jugador tiene aptitudes reales, default 1; el builder puede fijarlas).
+    //   - `velocity`/`physicalResistance` quedan como valores de movimiento/combate propios.
+    //   - Se implementan los 3 hooks abstractos de Anima (stubs).
+    // ── Drives heredados de Anima ─────────────────────────────────────────────
+    // `satisfaction`, `mentalFatigue`, `sleepiness`, `stress`, `observationRadius`, `velocity`,
+    // `physicalResistance` y las 12 aptitudes se HEREDAN de Anima (migración 2026-07-28). `playerStats.X`
+    // sigue funcionando (heredado). Aquí quedan solo los parámetros PROPIOS del jugador:
+    [Header("Satisfaction (parámetros del jugador)")]
     [Tooltip("Max size of the satisfaction bar. Grows by spending time with Gohageneis.")]
     public float satisfactionCapacity = 1f;
 
@@ -19,46 +25,6 @@ public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
 
     [Tooltip("Multiplier applied to all external restoration sources at high satisfaction.")]
     public float restorationMultiplier = 1f;
-
-    // ── Mental fatigue ───────────────────────────────────────────────────────
-    [Header("Mental Fatigue")]
-    [Tooltip("0 = fresh, 1 = at limit. High values cause screen effects and stumbling.")]
-    [Range(0f, 1f)] public float mentalFatigue;
-
-    // ── Stress ──────────────────────────────────────────────────────────────
-    [Header("Stress")]
-    [Tooltip("0 = calm, 1 = critical. Raised by Goluis pressure, lowered by rest.")]
-    [Range(0f, 1f)] public float stress;
-
-    // ── Sleepiness ──────────────────────────────────────────────────────────
-    [Header("Sleepiness")]
-    [Tooltip("0 = awake, 1 = about to black out.")]
-    [Range(0f, 1f)] public float sleepiness;
-
-    // ── Observation ─────────────────────────────────────────────────────────
-    [Header("Observation")]
-    [Tooltip("Radius of consciousness. Observable objects glow/emit cues within this range.")]
-    public float observationRadius = 3f;
-
-    // ── Velocity / Resistance ───────────────────────────────────────────────
-    [Header("Physical Stats")]
-    public float velocity = 1f;
-    public float physicalResistance = 1f;
-
-    // IAptitudes — mapeo parcial del jugador (equivalentes que existen; el resto 1.0 hasta unificar con
-    // NPCBase). observationRadius NO se mapea a Perception (es una distancia, no un multiplicador 1.0).
-    float IAptitudes.Agility      => velocity;
-    float IAptitudes.Strength     => physicalResistance;
-    float IAptitudes.Endurance    => physicalResistance;
-    float IAptitudes.Perception   => 1f;
-    float IAptitudes.BodyMass     => 1f;
-    float IAptitudes.Adaptability => 1f;
-    float IAptitudes.Composure    => 1f;
-    float IAptitudes.Reasoning    => 1f;
-    float IAptitudes.Memory       => 1f;
-    float IAptitudes.Creativity   => 1f;
-    float IAptitudes.Sociability  => 1f;
-    float IAptitudes.Discipline   => 1f;
 
     // ── IBody — per-limb stats ───────────────────────────────────────────────
     // Array indexed by (int)BodyPart: Elbows=0, Hands=1, Knees=2, Feet=3, Hips=4, Back=5, Shoulders=6, Head=7
@@ -159,4 +125,10 @@ public class PlayerStats : MonoBehaviour, IBody, IMind, IAptitudes
                 break;
         }
     }
+
+    // ── Hooks de Anima (drives físicos) ───────────────────────────────────────
+    // El jugador no reacciona por estos hooks (lo conduce el input/PlayerController); stubs seguros.
+    protected override void RespondToHunger() { }
+    protected override float EvaluateThreat(GameObject source) => 0f;
+    public    override void RespondToThreat(GameObject threat) { }
 }

@@ -15,8 +15,8 @@ using UnityEngine;
 ///     excitación** → fuerza el ritmo acercar-provocar-alejar.
 ///   - **Reacción:** mientras juega te mira y, si está excitada, se acerca (con correa a su sitio).
 ///
-/// Reutiliza lo que ya existe: si el GameObject tiene un <see cref="LivingEntity"/>, la tensión ES su
-/// <c>stress</c> (0–1) y el cuidado sube su <c>fatReserves</c>. Sin LivingEntity (placeholder), usa una
+/// Reutiliza lo que ya existe: si el GameObject tiene un <see cref="Anima"/>, la tensión ES su
+/// <c>stress</c> (0–1) y el cuidado sube su <c>fatReserves</c>. Sin Anima (placeholder), usa una
 /// tensión local. Implementa <see cref="IInteractable"/>: solo se puede "dar de comer" una vez serena.
 /// </summary>
 [RequireComponent(typeof(Collider))]
@@ -62,7 +62,7 @@ public class PlayableCreature : MonoBehaviour, IInteractable
     public bool handRaised = true;
     [Tooltip("En relajación profunda → juega aunque sea salvaje.")]
     public bool deeplyRelaxed = false;
-    [Tooltip("Placeholder de 'vínculo suficiente ya alcanzado'. Real: leer LivingEntity.bonds.")]
+    [Tooltip("Placeholder de 'vínculo suficiente ya alcanzado'. Real: leer Anima.bonds.")]
     public bool bondUnlocked = false;
 
     [Header("Riesgo: pérdida de control — docs §4.1")]
@@ -88,7 +88,7 @@ public class PlayableCreature : MonoBehaviour, IInteractable
     public ItemDrop[] itemDrops;
 
     [Header("Cuidado (dar comida y agua)")]
-    [Tooltip("fatReserves que restaura al cuidarla (solo si tiene LivingEntity).")]
+    [Tooltip("fatReserves que restaura al cuidarla (solo si tiene Anima).")]
     [Min(0f)] public float feedAmount = 1f;
 
     public State CurrentState { get; private set; } = State.Playful;
@@ -99,8 +99,8 @@ public class PlayableCreature : MonoBehaviour, IInteractable
     /// <summary>Excitación actual 0..1 (para feedback/depuración).</summary>
     public float Excitement => _excitement;
 
-    LivingEntity _living;      // opcional — si está, la tensión ES su stress (0–1)
-    float        _localTension = 1f;  // usado solo si no hay LivingEntity
+    Anima _living;      // opcional — si está, la tensión ES su stress (0–1)
+    float        _localTension = 1f;  // usado solo si no hay Anima
     Renderer     _renderer;
 
     float     _excitement;
