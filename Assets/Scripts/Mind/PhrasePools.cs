@@ -93,6 +93,36 @@ public static class PhrasePools
         Historico("Ötzi", ElementalTone.Agua,          // 5000 años congelado; comprender su muerte lo libera
             new[] { "Comprender mi muerte me libera.", "Recupero la historia que me robaron.", "La verdad, aun dura, da paz." },
             new[] { "Llevo cinco mil años sin descanso.", "Mi muerte quedó sin resolver.", "El hielo me guardó y me olvidó." }),
+
+        // ── El Guardián del Fuego (Paleolítico, Cocina/FuelLab; arquetipo Canalizar; Fuego) ───────────────
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // velar la última llama
+            new[] { "Velo la última llama viva.", "Mientras yo vele, la tribu vive.", "Reparto el fuego, hogar por hogar." },
+            new[] { "Si me duermo, todo se apaga.", "El fuego se muere en mis manos.", "Cargo yo solo con la noche." }),
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // el fuego hace crecer a la tribu
+            new[] { "El fuego cocina y sana.", "Su calor aleja a las fieras.", "Con la llama, crecimos." },
+            new[] { "El fuego pide y pide leña.", "Sin él volvemos al frío.", "Dependemos de una sola brasa." }),
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // el giro: el mismo don destruye; la intención decide
+            new[] { "Aprendí a contener las llamas.", "El don se cuida, no se teme.", "La intención decide, no el fuego." },
+            new[] { "El fuego que nutre también arrasa.", "Hice del hogar un arma.", "Lo que da vida, quema." }),
+
+        // ── La Sembradora (Neolítico, Huerto; arquetipo Curar/atender; Tierra/Agua) ────────────────────────
+        Historico("La Sembradora", ElementalTone.Tierra,       // domesticar el grano
+            new[] { "Guardé la semilla y volvió multiplicada.", "La tierra responde a quien la cuida.", "De un puñado, un campo." },
+            new[] { "La primera cosecha se malogró.", "El suelo no da si no sé pedirle.", "Sembré y no brotó nada." }),
+        Historico("La Sembradora", ElementalTone.Agua,         // atender/nutrir el brote
+            new[] { "Riego y los brotes despiertan.", "Cuidar el brote es cuidar a todos.", "La paciencia da fruto." },
+            new[] { "Un descuido y el campo enferma.", "La sequía se lo lleva todo.", "Doy y doy sin descanso." }),
+        Historico("La Sembradora", ElementalTone.Tierra,       // el giro: el excedente trae jerarquía y guerra
+            new[] { "Aprendí a cultivar también generosidad.", "Lo que sembramos moldea al pueblo.", "Reparto la abundancia." },
+            new[] { "El grano guardado despertó la codicia.", "Cercas, dueños, primeras disputas.", "La abundancia trajo el hambre de más." }),
+
+        // ── El Alfarero (Neolítico, Cocina/Textil; arquetipo Canalizar/moldear; Tierra/Fuego) ──────────────
+        Historico("El Alfarero", ElementalTone.Tierra,         // moldear el barro con fuego
+            new[] { "Doy forma al barro con mis manos.", "El fuego endurece lo que moldeo.", "De la tierra, una vasija." },
+            new[] { "El barro se me quiebra.", "El horno la partió.", "Mis manos no dan la forma." }),
+        Historico("El Alfarero", ElementalTone.Tierra,         // la vasija sostiene a otros; frágil pero perdura
+            new[] { "Mi vasija guarda el agua de otros.", "Creo cosas que sostienen a la tribu.", "Frágil como soy, mi obra perdura." },
+            new[] { "Soy tan frágil como el barro.", "Sobrevivo en cosas, no en memoria.", "Nadie recordará al alfarero." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.

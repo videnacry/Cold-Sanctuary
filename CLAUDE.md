@@ -48,6 +48,8 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Avatares (Microcosmos) | `Assets/Scripts/Avatar/` (3 archivos) | Implementado. `SurfaceWalker`, `AvatarController`, `RobotAvatar` (enum `AvatarLocomotion`: Ground/Climb/Flight). Ver `docs/magic-plane-and-meditation.md` §4 |
 | Progresión / alma | `Assets/Scripts/Progression/` | `CharacterLevel` (**margas del alma**: Stats/Yoga/Vínculos, tracks independientes) + `DerivedStats` (aptitudes→**puntos del alma**: vida/energía/maná/defensa/poder) + `SoulMarga`. Aptitudes universales vía `IAptitudes`. Ver `docs/creature-stats.md` §Progresión |
 | Farming (juego no-violento) | `Assets/Scripts/Farming/` | `PlayableCreature`/`PlayController` (bajar tensión jugando → recursos/XP/items; gateado por bond, puede dañar), `FarmingSandboxItems`, `Climbable`/`PlayerClimber` (trepar). Ver `docs/world-topology-and-planes.md` §4.1 |
+| Mente (pilar) | `Assets/Scripts/Mind/` | `Mind` (piensa por tono/frases), `Humores`, `ElementalTone`, `MindPhrase`/`PhraseLibrary`+`PhrasePools` (vivencias/deseos/históricos), `ThoughtField` (campo social/semántico), `PhraseDistribution` (reparto Estricta/Libre + bloqueo). Ver `docs/anima-architecture.md` §11 |
+| Control / posesión | `Assets/Scripts/Control/` | `AnimaController` cede el mando al `IBrain` de mayor relevancia; `AiBrain` (IA) vs `PlayerBrain` (input); `PossessionSpell` (power/range) posee en runtime. Ver `docs/anima-architecture.md` §11.5 |
 | Herramientas Editor | `Assets/Editor/` | `SampleSceneBuilder` cablea casi todo el escenario |
 | Debug | `Test.cs` | Sin uso en flujo principal |
 
@@ -62,6 +64,9 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - Jerarquía animal: `Anima` → `Animal` → `Carnivore`/`Herbivore` → `WolfBehavior`/`BunnyBehavior`/`BearBehaviour`. Y `Anima` → `CompanionBase` → `Goluis`/`Panterilia`/…
 - `NPCBase` **descartado** como clase intermedia (2026-07-25): se va a **una sola `Anima`** + pilares/mente opcionales. `IMindSimple` eliminado (2026-07-28).
 - `LifeStage` (abstracta) → `Childhood`/`Adolescence`/`Adulthood`.
+- **Control intercambiable**: `AnimaController` + `IBrain` (`AiBrain`/`PlayerBrain`) — el ser lo conduce el
+  cerebro de mayor **relevancia**; el jugador es "solo un input" (un `PlayerBrain`) que la **posesión**
+  (`PossessionSpell`, power/range) inyecta en runtime. Ver `docs/anima-architecture.md` §11.5.
 
 ## Documentación detallada (leer bajo demanda)
 
@@ -73,6 +78,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - [`docs/gaps-vs-planteamiento.md`](docs/gaps-vs-planteamiento.md) — sistemas "hechos" que no cumplen el diseño + cómo cablear los huérfanos.
 - [`docs/creature-stats.md`](docs/creature-stats.md) — aptitudes (agilidad/percepción/fuerza/masa) de animales y NPCs; perfiles Goluis/Panterilia/Gohageneis/Irosene.
 - [`docs/character-irosene.md`](docs/character-irosene.md) — ficha del personaje Irosene (compañera motivacional; biografía, diálogo, árbol familiar, arco).
+- [`docs/kitchen-simulation.md`](docs/kitchen-simulation.md) — **la Cocina como primera simulación jugable** (nivel de referencia): paseo/onboarding, progresión de rol (limpieza→cocina→recetas), química de la comida (compuestos→humores→aptitudes), suciedad real, puente Micro/Meso (minidrones), mundo-insecto, puente al santuario; orden de construcción.
 - [`docs/mission-mode.md`](docs/mission-mode.md) — modo misión, disparador-personaje, contadores y economía circular del santuario.
 - [`docs/world-topology-and-planes.md`](docs/world-topology-and-planes.md) — visión de mundo: la tríada de planos (**Microcosmos** interior / **Mesocosmos** estándar a pie / **Macrocosmos** exterior tipo RTS), hub-and-spoke con gradiente peligro=dispersión, los 5 santuarios (terrestre/marino vertical/aéreo/subterráneo/núcleo de 2 capas plasma+diamante), acoplamiento Meso↔Macro (tiempo lento vs WC3, guerras en ambos modos), Macrocosmos (economía, farming como juego, transporte, cámara 2D) y progresión guionizada+emergente.
 - [`docs/magic-plane-and-meditation.md`](docs/magic-plane-and-meditation.md) — Microcosmos (el plano interior; uno de los tres planos — ver [`docs/world-topology-and-planes.md`](docs/world-topology-and-planes.md)), máquina de virtualización (trigger universal), avatares-robot (gusano/araña/mosco/loto), capas de escala, meditación en yoga y arquetipos de mob.

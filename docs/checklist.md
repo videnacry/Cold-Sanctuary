@@ -198,12 +198,24 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
       `promotionStrength`. Aún no probado.
 - *Revertir si hiciera falta:* `git revert -m 1 cd1a95f` (#14) / `25f618a` (#15), o reset a `022e224` (pre-Mente).
 
-## Siguiente (código, tras el testing)
-- [ ] **Controlador intercambiable** (jugador-como-input ↔ IA) y **posesión dinámica** (insertar instancia/
-      madre en runtime con relevancia). Cimiento común de "jugador como input" y del hechizo de posesión.
+## La Cocina — primera simulación (nivel de referencia)
+Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
+- [ ] **A — Paseo + limpieza mancha-a-mancha (Meso)**: suciedad como objeto real, umbral → misión, borrar manchas.
+- [ ] **B — Loop de desayuno + contenedor**: nevera→plancha→especiar→contenedor (se rellena; log de raciones).
+- [ ] **C — Alimentación por humores**: personajes eligen contenedor por utilidad+humores; comer aplica
+      `compuestos` → nudge de humores. *(Introduce `FoodCompound` mínimo — modelo de §8: compuestos→humores→aptitudes.)*
+- [ ] **D — Puente Micro/Meso**: mancha del Meso = región del MicroKitchen; minidrones extraen → desaparece (suelo primero).
+- [ ] **E — Mundo-insecto vivo**: gusano→formas; conflictos fuerte/débil; misiones; enganchar al Guardián del Fuego.
+- [ ] **F/G — Recetas ricas (química) + puente al santuario** (alimentar carnívoros con bonds).
+- **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
+
+## Siguiente (código)
+- [ ] **Posesión real**: enganchar `PlayerBrain.Act()` a input de verdad (mover/interactuar el cuerpo
+      poseído) e integrar `PossessionSpell` con el hechizo del jugador (crecer power/range al mejorarlo).
 - [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
 - [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
-- [ ] **Más históricos** con el patrón `Historico()` ya validado por Ötzi (docs/mob-characters.md).
+- [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna/Alfarero-ampliado y eras posteriores;
+      docs/mob-characters.md, mob-epochs-matrix.md).
 
 ## Hecho (2026-07-28)
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
@@ -211,6 +223,12 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 - [x] **Migración Anima** (PR #14 mergeada): `LivingEntity`→`Anima` (clase única); `Animal`/`CompanionBase`/
       `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`.
 - [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
+- [x] **Controlador intercambiable + posesión** (MVP, PR de control): `AnimaController` cede el mando al
+      cerebro (`IBrain`) de mayor relevancia; `AiBrain` (IA propia) vs `PlayerBrain` (input del jugador);
+      `PossessionSpell` (power/range crecientes) inyecta al jugador en runtime si supera la relevancia del ser.
+- [x] **Históricos ampliados**: Guardián del Fuego, La Sembradora, El Alfarero (fieles a mob-quests-early).
+- [x] **Diseño de la Cocina**: `kitchen-simulation.md` (paseo, roles, química-comida, puente Micro/Meso,
+      mundo-insecto, humores vs compuestos, orden de build).
 - [x] **Testing en Unity**: #14/#15 compiladas y validadas (§10/§4/§3/§6/§8-9/§7); arreglado el falso
       positivo del diagnóstico de aptitudes de compañeros (`MigrationDiagnostics`→`Update`, commit `95fbbc0`).
 

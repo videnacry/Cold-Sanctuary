@@ -76,6 +76,7 @@ public static class SampleSceneBuilder
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
         BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
+        BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -280,6 +281,48 @@ public static class SampleSceneBuilder
                 Debug.Log(sb.ToString());
             }
         }
+    }
+
+    /// <summary>
+    /// Sandbox del control intercambiable + posesión por relevancia (docs anima §11.5). Dos seres con
+    /// `AnimaController` + `AiBrain`: uno DÉBIL (selfRelevance=1) y uno FUERTE (selfRelevance=3). A ambos
+    /// se les inyecta un `PlayerBrain` de posesión=2 → en Play, el AnimaController debe dar el mando del
+    /// débil al JUGADOR (2 > 1) y dejar el fuerte en su IA (2 &lt; 3). Un caster con `PossessionSpell` queda
+    /// en escena para probar `PossessNearest()` en runtime.
+    /// </summary>
+    static void BuildPossessionSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("PossessionSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // Ser DÉBIL: el jugador (posesión 2) supera su relevancia propia (1) → lo domina.
+        GameObject weak = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        weak.name = "Anima_Debil"; weak.transform.SetParent(group.transform);
+        weak.transform.position = new Vector3(-3f, 1f, 16f);
+        weak.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Debil_MAT", new Color(0.5f, 0.7f, 0.5f));
+        weak.AddComponent<AiBrain>().selfRelevance = 1f;
+        weak.AddComponent<PlayerBrain>().possessionRelevance = 2f;
+        weak.AddComponent<AnimaController>();
+
+        // Ser FUERTE: la misma posesión (2) NO supera su relevancia propia (3) → su IA conserva el mando.
+        GameObject strong = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        strong.name = "Anima_Fuerte"; strong.transform.SetParent(group.transform);
+        strong.transform.position = new Vector3(0f, 1f, 16f);
+        strong.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Fuerte_MAT", new Color(0.7f, 0.4f, 0.4f));
+        strong.AddComponent<AiBrain>().selfRelevance = 3f;
+        strong.AddComponent<PlayerBrain>().possessionRelevance = 2f;
+        strong.AddComponent<AnimaController>();
+
+        // Caster con el hechizo (para probar posesión dinámica en runtime vía PossessNearest()).
+        GameObject caster = new GameObject("PossessionCaster");
+        caster.transform.SetParent(group.transform);
+        caster.transform.position = new Vector3(3f, 1f, 16f);
+        PossessionSpell spell = caster.AddComponent<PossessionSpell>();
+        spell.power = 2f; spell.range = 12f;
+
+        Debug.Log("[SampleSceneBuilder] Possession sandbox: en Play, «Anima_Debil» pasa a control " +
+                  "«Jugador» (posesión 2 > selfRelevance 1) y «Anima_Fuerte» queda en «IA» (2 < 3). " +
+                  "Ver logs [Control]. El PossessionCaster permite probar PossessNearest() (docs anima §11.5).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,
