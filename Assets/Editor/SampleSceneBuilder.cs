@@ -217,8 +217,69 @@ public static class SampleSceneBuilder
         AddMindBeing(group.transform, "Anima_Viento", new Vector3(2f, 1f, 10f), new Color(0.70f, 0.80f, 0.90f),
             a => { a.agility = 1.6f; a.reasoning = 1.5f; a.perception = 1.4f; a.discipline = 1.3f; return a; });
 
-        Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas. Mira la Console: " +
-                  "cada una tiende a su tono elemental y suelta frases según su poder mental (docs anima §6).");
+        // Campo de pensamiento de prueba (docs anima §5): empuja hacia Agua + sube serotonina cerca.
+        GameObject fieldGO = new GameObject("ThoughtField_Agua");
+        fieldGO.transform.SetParent(group.transform);
+        fieldGO.transform.position = new Vector3(-1f, 0f, 10f);
+        ThoughtField field = fieldGO.AddComponent<ThoughtField>();
+        field.tone = ElementalTone.Agua; field.radius = 6f; field.pull = 4f;
+        field.nudgesHumor = true; field.humor = Humor.Serotonina; field.humorPerSecond = 0.05f;
+
+        Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas + un ThoughtField(Agua). " +
+                  "Console: cada una tiende a su tono, pero dentro del campo se inclinan a Agua y suben serotonina (docs anima §5/§6).");
+
+        LogPhrasePools();
+    }
+
+    /// <summary>Diagnóstico: al compilar/construir, valida en consola que las pools de frases cargan bien.</summary>
+    static void LogPhrasePools()
+    {
+        Debug.Log($"[Frases] Total={PhraseLibrary.All.Count} | " +
+                  $"Elemental={PhraseLibrary.ForCategory(PhraseCategory.Elemental).Count} " +
+                  $"Vivencia={PhraseLibrary.ForCategory(PhraseCategory.Vivencia).Count} " +
+                  $"Deseo={PhraseLibrary.ForCategory(PhraseCategory.Deseo).Count}");
+
+        foreach (string src in new[] { "Goluis", "Panterilia", "Gohageneis", "Irosene" })
+            Debug.Log($"[Frases] Biografía de {src}: {PhraseLibrary.VivenciasOf(src).Count} vivencias.");
+
+        // Reparto de ejemplo: crear un ser con 3 vivencias al azar sin repetir (modo espontáneo).
+        var taken = new System.Collections.Generic.HashSet<MindPhrase>();
+        var hand = PhraseLibrary.DealVivencias(3, taken);
+        var sb = new System.Text.StringBuilder("[Frases] Ser de ejemplo recibe: ");
+        foreach (MindPhrase p in hand) sb.Append($"[{p.source}·{p.tone}] \"{p.positive[0]}\"  ");
+        Debug.Log(sb.ToString());
+
+        LogDistribution();
+    }
+
+    /// <summary>Diagnóstico del reparto por modo (docs anima §11): Magnate + histórico bloqueados vs libres.</summary>
+    static void LogDistribution()
+    {
+        // 6 seres: la Magnate y un histórico BLOQUEADOS; los 4 compañeros LIBRES.
+        var holders = new System.Collections.Generic.List<PhraseHolder>
+        {
+            new PhraseHolder("Magnate", true),     // nadie hereda sus pensamientos
+            new PhraseHolder("Ötzi", true),        // histórico del Microcosmos, bloqueado
+            new PhraseHolder("Goluis", false),
+            new PhraseHolder("Panterilia", false),
+            new PhraseHolder("Gohageneis", false),
+            new PhraseHolder("Irosene", false),
+            new PhraseHolder("", false),           // ser anónimo emergente: solo recibe del pool
+        };
+
+        foreach (NarrativeMode mode in new[] { NarrativeMode.Estricta, NarrativeMode.Libre })
+        {
+            var plan = PhraseDistribution.Plan(mode, holders);
+            Debug.Log($"[Frases] Reparto {mode}:");
+            for (int i = 0; i < holders.Count; i++)
+            {
+                string who = holders[i].identity == "" ? "(anónimo)" : holders[i].identity;
+                string lk = holders[i].locked ? " 🔒" : "";
+                var sb = new System.Text.StringBuilder($"   {who}{lk} → ");
+                foreach (MindPhrase p in plan[i]) sb.Append($"[{p.source}·{p.tone}] ");
+                Debug.Log(sb.ToString());
+            }
+        }
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

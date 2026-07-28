@@ -174,3 +174,68 @@ Dos capas de "las variables del ser" (evita chocar con el sistema de **hechizos*
 - Formato de **piscina de vivencias** y **biblioteca de frases** (ScriptableObjects, tablas) + mapeo aptitud/química→elemento.
 - Multi-instancia: ¿lista de `(Anima, esMadre, relevancia)` por GameObject? Resolución = máx relevancia.
 - Regla exacta "poder mental → hasta qué parte de la frase"; y "química necesaria → desbloquea frase".
+
+## 11. Frases, campos y control (2026-07-28)
+
+### 11.1 TODO es una frase — clasificación
+Se **clasifican** las frases (`PhraseCategory`): **Vivencia · Asana · Hechizo · Elemental · Deseo**. Una
+vivencia, una postura de yoga, un conjuro, un pensamiento idle o un deseo base (trabajar/cuidar/comer/
+dormir) son todos **frases** con etapas nace/crece/reproduce/(muere=silencio), forma positiva/negativa y
+tono elemental. Los **hechizos y las asanas son frases** como las vivencias.
+
+### 11.2 Vivencias desde las vidas documentadas
+La categoría **Vivencia** se siembra con las **biografías ya escritas de Goluis/Gohageneis/Panterilia/
+Irosene**. Crear un personaje = darle un **nº aleatorio de vivencias** → definen sus aptitudes base. Así
+esas narraciones se vuelven **piezas reutilizables**: ya no son exactamente esos personajes (a menos que,
+por azar, todas las vivencias de Irosene caigan en un mismo ser, que "desarrollaría su papel").
+- Flags por frase (ya en código): **`randomAssignable`** (puede salir al azar) y **`reusable`** (puede
+  darse a más de uno) → evita que varios nazcan con las mismas vivencias. Aun compartidas, se **modulan**
+  por las demás vivencias/tono/frases del ser.
+
+### 11.3 Modo narración vs espontáneo
+La composición narrativa se conserva por si se ofrece un **modo de juego "narración"** (guiado) frente a
+**"espontáneo"** (mundo abierto emergente). Podría afectar al **final** (final abierto). Idea futura:
+cinemáticas con GameObjects **dinámicos** (no integrantes fijos). A explorar más adelante.
+
+### 11.4 Campos de pensamiento + método de cálculo (hecho, MVP)
+`ThoughtField` = fuente en el mundo que **empuja** a las mentes cercanas hacia un **tono** y/o **altera
+sus humores**; sirve para **guiar** personajes por el entorno. El **método de cálculo** de acciones/
+pensamientos es la utilidad del `Mind`: `PickTone` suma pesos de **aptitudes + humores + campos** →
+elección ponderada; `Depth` (poder mental × energía) decide hasta qué parte de la frase llega. Extensible
+a más consideraciones (necesidades, relaciones, input del jugador). *(Pendiente: que el campo influya
+MÁS en mentes poco inmersas.)*
+
+### 11.5 Posesión dinámica + el jugador como input
+- **Posesión = insertar en runtime** una instancia madre (o una propia) en cualquier GameObject con una
+  **relevancia**; conduce la de mayor relevancia. Sirve para niveles ligeros (el jugador vuelve **lobos**
+  en extensiones momentáneas de sí mismo) hasta el hechizo supremo de la Magnate. El hechizo del jugador
+  **crece en poder y alcance** (domina seres más poderosos y en mayor número); para dominar a alguien, su
+  relevancia debe **superar** la del ser.
+- **El jugador es solo un INPUT** que decide (o **influye**, si lo pedido va muy en contra de las
+  inclinaciones del ser) qué hace un personaje. Por eso **Kushal también tiene vivencias/recuerdos
+  autogenerados** → su propia mente, que **toma el control** cuando el jugador se va a otro cuerpo (por
+  jugabilidad/narración) o cuando aprende la posesión. → **factible** y limpio con la composición: un
+  `Anima` + una mente + un **controlador** (input del jugador **o** IA), intercambiable.
+
+### 11.5b Propiedad de los pensamientos + reparto por modo
+Cada mente tiene **`identity`** (fuente autoral), **`thoughts`** (sus vivencias actuales — inclinan su tono
+y son las frases que expresa) y **`thoughtsLocked`** (privados). El reparto inicial (`PhraseDistribution`)
+tiene dos modos:
+- **Estricta** (narrativa guionizada): cada ser recibe las vivencias de **su identidad**. La propiedad se
+  respeta → cada quien es quien es.
+- **Libre** (emergente): los pensamientos de los seres **no bloqueados** se mueven a un **pool público** y
+  se **redistribuyen al azar** entre ellos (efecto mariposa, cada partida distinta).
+
+**Bloqueo (`thoughtsLocked`)** = candado de propiedad, marcable/desmarcable por personaje:
+- La **Magnate** va bloqueada → **nadie hereda** sus pensamientos y ella **siempre** los tiene como base.
+- Los **personajes históricos** igual (su biografía es suya).
+- Los demás se **marcan/desmarcan a conveniencia**: en narrativa estricta se conservan; en libre, sus
+  pensamientos **se vuelcan al pool público antes de repartir**.
+
+`PhraseDistribution.Plan(mode, holders)` calcula el reparto sin escena (puro/loggeable);
+`Distribute(mode, minds)` lo aplica sembrando `Mind.thoughts`.
+
+### 11.6 Estado en código (rama feat/mind-frases-campos)
+`PhraseCategory` + flags en `MindPhrase`; `ThoughtField`; `Mind` lee campos (empuje de tono + nudge de
+humores). **Falta:** poblar la piscina de **vivencias** desde las biografías; asana/hechizo como frases
+reales; la **multi-instancia/controlador** (posesión); modo narración.

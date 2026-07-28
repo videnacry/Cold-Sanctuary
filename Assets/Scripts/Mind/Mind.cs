@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,6 +19,18 @@ public class Mind : MonoBehaviour
     [Header("Humores (bioquímica)")]
     public Humores humores = new Humores();
 
+    [Header("Identidad y pensamientos (docs anima §11)")]
+    [Tooltip("Fuente autoral de este ser (Magnate, Goluis, Ötzi…). Vacío = anónimo/genérico.")]
+    public string identity = "";
+
+    [Tooltip("Pensamientos PRIVADOS: nunca van al pool público ni se redistribuyen (Magnate, históricos). " +
+             "Se marca/desmarca a conveniencia por personaje.")]
+    public bool thoughtsLocked = false;
+
+    [Tooltip("Vivencias/pensamientos que este ser tiene AHORA. Inclinan su tono y son las frases que expresa. " +
+             "Los siembra PhraseDistribution según el modo (estricta/libre).")]
+    public List<MindPhrase> thoughts = new List<MindPhrase>();
+
     [Header("Ritmo")]
     [Min(0.5f)] public float thinkInterval = 4f;
 
@@ -29,18 +42,41 @@ public class Mind : MonoBehaviour
         if (src != null) aptitudes = Aptitudes.From(src);
     }
 
+    // Campos de pensamiento cercanos (refrescados por intervalos; pueden aparecer/desaparecer en runtime).
+    ThoughtField[] _fields = System.Array.Empty<ThoughtField>();
+    float _nextFieldRefresh;
+
     void Update()
     {
         humores.Regen(Time.deltaTime);
+        RefreshFieldsIfDue();
+        ApplyFieldHumors(Time.deltaTime);
         if (Time.time < _nextThink) return;
         _nextThink = Time.time + thinkInterval;
         Think();
     }
 
+    void RefreshFieldsIfDue()
+    {
+        if (Time.time < _nextFieldRefresh) return;
+        _nextFieldRefresh = Time.time + 1f;
+        _fields = FindObjectsOfType<ThoughtField>();
+    }
+
+    /// <summary>Los campos que cubren a este ser mueven sus humores (guiarlo por el entorno).</summary>
+    void ApplyFieldHumors(float dt)
+    {
+        foreach (ThoughtField f in _fields)
+            if (f != null && f.nudgesHumor && f.Covers(transform.position))
+                humores.Produce(f.humor, f.humorPerSecond * dt);
+    }
+
     void Think()
     {
         ElementalTone tone = PickTone();
-        var options = PhraseLibrary.ForTone(tone);
+        // Prefiere expresar SUS propias vivencias de ese tono; si no tiene, tira de la biblioteca compartida.
+        List<MindPhrase> options = ThoughtsForTone(tone);
+        if (options.Count == 0) options = PhraseLibrary.ForTone(tone);
         if (options.Count == 0) return;
         MindPhrase phrase = options[Random.Range(0, options.Count)];
 
@@ -69,21 +105,31 @@ public class Mind : MonoBehaviour
         humores.Produce(positive ? Humor.Serotonina : Humor.Cortisol, 0.02f);
     }
 
-    /// <summary>Tono elemental por pesos de aptitudes + humores (docs §5) → personalidad.</summary>
+    /// <summary>Tono elemental por pesos de aptitudes + humores + campos de pensamiento (docs §5).</summary>
     ElementalTone PickTone()
     {
-        float tierra = aptitudes.strength + aptitudes.endurance + aptitudes.bodyMass;
-        float agua   = aptitudes.composure + aptitudes.adaptability + humores.serotonina;
-        float fuego  = aptitudes.creativity + aptitudes.sociability + humores.adrenalina;
-        float viento = aptitudes.agility + aptitudes.reasoning + aptitudes.perception;
+        // Pesos base por aptitudes + humores (personalidad).  Índice = (int)ElementalTone.
+        float[] w = new float[4];
+        w[(int)ElementalTone.Tierra] = aptitudes.strength + aptitudes.endurance + aptitudes.bodyMass;
+        w[(int)ElementalTone.Agua]   = aptitudes.composure + aptitudes.adaptability + humores.serotonina;
+        w[(int)ElementalTone.Fuego]  = aptitudes.creativity + aptitudes.sociability + humores.adrenalina;
+        w[(int)ElementalTone.Viento] = aptitudes.agility + aptitudes.reasoning + aptitudes.perception;
 
-        float total = tierra + agua + fuego + viento;
+        // Sus vivencias/pensamientos propios inclinan su tono (lo que ha vivido, lo tiñe).
+        foreach (MindPhrase t in thoughts)
+            if (t != null) w[(int)t.tone] += 1f;
+
+        // Empuje de los campos de pensamiento que cubren a este ser (guía por el entorno, docs §5).
+        foreach (ThoughtField f in _fields)
+            if (f != null && f.Covers(transform.position))
+                w[(int)f.tone] += f.pull;
+
+        float total = w[0] + w[1] + w[2] + w[3];
         if (total <= 0f) return ElementalTone.Tierra;
 
         float r = Random.value * total;
-        if ((r -= tierra) < 0f) return ElementalTone.Tierra;
-        if ((r -= agua)   < 0f) return ElementalTone.Agua;
-        if ((r -= fuego)  < 0f) return ElementalTone.Fuego;
+        for (int i = 0; i < 4; i++)
+            if ((r -= w[i]) < 0f) return (ElementalTone)i;
         return ElementalTone.Viento;
     }
 
@@ -96,5 +142,14 @@ public class Mind : MonoBehaviour
         float power = (aptitudes.reasoning + aptitudes.memory + aptitudes.discipline) / 3f;
         power *= Mathf.Lerp(0.5f, 1f, humores.Energia);
         return Mathf.Clamp(Mathf.FloorToInt(power * 3f), 0, 4);
+    }
+
+    /// <summary>Las vivencias/pensamientos propios de este ser que son de un tono dado.</summary>
+    List<MindPhrase> ThoughtsForTone(ElementalTone tone)
+    {
+        List<MindPhrase> list = new List<MindPhrase>();
+        foreach (MindPhrase t in thoughts)
+            if (t != null && t.tone == tone) list.Add(t);
+        return list;
     }
 }
