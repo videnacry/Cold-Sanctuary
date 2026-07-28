@@ -211,6 +211,18 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 - **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
   agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
 
+## Áreas / historia — roadmap (area-progression.md)
+Orden alineado con la línea temporal del microworld (una época por área). Ver
+[`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
+- [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
+- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada, Ötzi).
+- [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
+- [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
+      equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
+      pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.
+      Reutilizable en todas las áreas; debut en el Huerto. Núcleo: "que los fuertes no se coman a los débiles".
+
 ## Siguiente (código)
 - [ ] **Peticiones → alma compartida** (`HelpRequest` sí/no → posesión consentida): acciones entre
       personajes; la intro de área "veterano lleva al novato". `FollowBrain` es el primer ladrillo (hecho).
