@@ -183,20 +183,20 @@ Pilar `Mind` como componente enchufable. **MVP + composición hechos (2026-07-24
       (insertar instancia/madre en runtime con relevancia); asana/hechizo como frases reales; multi-instancia.
 - [ ] **Flag futuro** `absorbsPublic` si algún día un bloqueado debe además recibir del pool (hoy: no recibe).
 
-## ⚠ TESTING EN CURSO — validar en Unity (PRs #14 y #15 ya en master)
-Ambas mergeadas el 2026-07-28. **Esta compilación es la primera validación real** (nada se compiló aquí).
-Orden de prueba (ver `testing-checklist.md`): **§10 Migración Anima → §7 Regresión → §9 Mind**.
-- [ ] **Compila** tras `pull` de master (el rename `LivingEntity`→`Anima` toca todo el núcleo). Si falla,
-      **pégame el error del Console** y lo arreglo.
-- [ ] **§10** `MigrationDiagnostics_AUTO` en consola: `CompanionBase/Animal hereda de Anima: True`, aptitudes
-      coincidentes campo↔`IAptitudes`. Ojo: NPC arrancan `physicalResistance=1` (antes `strength=0`) →
-      posible re-tuning de `promotionStrength`.
-- [ ] **§9** sandbox `MindSandbox_AUTO`: cada ánima tiende a su tono; dentro del `ThoughtField(Agua)` se
-      inclina a Agua + sube serotonina; logs `[Frases]` (conteos de pools, biografías, reparto Estricta/Libre
-      con Magnate + Ötzi 🔒).
-- **Si hay que deshacer:** `git revert -m 1 cd1a95f` (deshace #14) y/o `git revert -m 1 25f618a` (deshace #15);
-      o reset duro a `022e224` (master pre-Mente) + `push --force`. El repo solo versiona `.cs` → no toca tu
-      trabajo visual, y master no afecta tu editor hasta el `pull`.
+## Testing (2026-07-28) — validado en Unity; solo queda juego manual
+PRs #14 (Anima) y #15 (Mente) **compiladas y probadas** (evidencia detallada en `testing-checklist.md`).
+Confirmado: compila 0 errores; **§10** migración (jerarquía + aptitudes de perfil de los 4 compañeros tras
+el fix `MigrationDiagnostics`→`Update`); **§4** level-up real de Stats (Vida 115→135); **§3** farming
+(Suave/Media/Salvaje/atrapada); **§6** entrada a Mesopotamia + 1ª esfera; **§8/§9** Mind (frases por tono,
+pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 excepciones).
+- [ ] **Pendiente — solo con JUEGO MANUAL** (WASD / mantener tecla; el teletransporte de Inspector no basta):
+      rama de daño de "Dura" (perder control); **trepar** (mantener Espacio — sospecha de que `Input.GetKey`
+      no se sostiene vía automatización); completar las 4 esferas de Mesopotamia + salir por `YogaPortal`;
+      **misión de yoga** (→ marga Yoga + desbloqueo de maná); `ThoughtField_Agua` (mover una ánima al radio);
+      velocidad de tiempo.
+- [ ] **Cambio conocido**: NPC arrancan `physicalResistance=1` (antes `strength=0`) → posible re-tuning de
+      `promotionStrength`. Aún no probado.
+- *Revertir si hiciera falta:* `git revert -m 1 cd1a95f` (#14) / `25f618a` (#15), o reset a `022e224` (pre-Mente).
 
 ## Siguiente (código, tras el testing)
 - [ ] **Controlador intercambiable** (jugador-como-input ↔ IA) y **posesión dinámica** (insertar instancia/
@@ -209,8 +209,10 @@ Orden de prueba (ver `testing-checklist.md`): **§10 Migración Anima → §7 Re
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
       (biografías reales), reparto Estricta/Libre con bloqueo de propiedad, y Ötzi como primer histórico.
 - [x] **Migración Anima** (PR #14 mergeada): `LivingEntity`→`Anima` (clase única); `Animal`/`CompanionBase`/
-      `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`. **Pendiente: compilar.**
+      `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`.
 - [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
+- [x] **Testing en Unity**: #14/#15 compiladas y validadas (§10/§4/§3/§6/§8-9/§7); arreglado el falso
+      positivo del diagnóstico de aptitudes de compañeros (`MigrationDiagnostics`→`Update`, commit `95fbbc0`).
 
 ## Hecho (2026-07-23)
 - [x] Sincronización de docs con el código (cifras, 3 sistemas nuevos, flips de estado).

@@ -1,8 +1,9 @@
 # Checklist de pruebas (Mesocosmos: progresión, farming, recursos, trepar, cocina)
 
-Qué probar **en teoría** de lo construido hasta 2026-07-24. Nada de esto se compiló en el entorno de
-trabajo, así que el editor es la **primera compilación real**. Marca ✅/❌ y anota el texto de cualquier
-error del Console/Rider.
+Registro de pruebas del build hasta 2026-07-28. **Pasada de testing (automatizada) hecha el 2026-07-28**:
+la mayoría confirmado con evidencia de `Logs/Editor.log` (ver "Estado de sesión"). **Lo que queda requiere
+juego MANUAL** (WASD / mantener tecla): rama de daño de "Dura", trepar, 4 esferas de Mesopotamia + YogaPortal,
+misión de yoga, `ThoughtField_Agua`, velocidad de tiempo. Los ítems `[x]` son historial verificado.
 
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
@@ -238,32 +239,10 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
       `Goluis_Post str=1.50 agi=0.90 rea=0.70`, `Irosene_Post str=1.20 agi=1.20 rea=1.10`,
       `Panterilia_Post str=0.70 agi=0.95 rea=1.60`, `Gohageneis_Post str=1.10 agi=1.20 rea=1.00` —
       coincide exactamente con lo esperado. Cerrado.
-- [x] ~~BUG REAL (o posible falso positivo del diagnóstico)~~ (detalle histórico, ya resuelto abajo):
-      los compañeros **NO** mostraban sus
-      aptitudes de perfil — se esperaba `Goluis str≈1.5` y en cambio `Goluis_Post` (y
-      Irosene/Panterilia/Gohageneis, todos con sufijo `_Post` en el nombre) muestran
-      `str=1.00 agi=1.00 rea=1.00` — el valor **default genérico**, igual que las crías de animales y el
-      Player.
-      **Hipótesis con más chances** (leyendo `CompanionBase.cs:109-115`: `Start() { agility =
-      BaseAgility; strength = BaseStrength; ... }` — el código SÍ está ahí, bien escrito): esto es el
-      mismo bug de **orden de `Start()` entre objetos hermanos** que ya apareció esta sesión con
-      `FamilyGenerator`/`HomeOrigin` (ver `DEVLOG.md`) — si `MigrationDiagnostics.Start()` corre ANTES
-      que `CompanionBase.Start()` de cada compañero (Unity no garantiza el orden entre `MonoBehaviour`s
-      de distintos GameObjects salvo que se configure `Script Execution Order`), el diagnóstico lee las
-      aptitudes en su valor default **antes** de que `CompanionBase.Start()` las sobreescriba con el
-      perfil. No pude confirmarlo por Inspector (los campos de `Anima` no aparecen ni en modo Debug —
-      probablemente son propiedades, no campos serializados, así que no se pueden inspeccionar así).
-      **Para confirmar/descartar**: agregar un log a `CompanionBase.Start()` con un timestamp/frame
-      count y comparar contra el de `MigrationDiagnostics.Start()`, o simplemente mover el volcado de
-      `MigrationDiagnostics` a `LateUpdate()` (una sola vez, con una bandera) en vez de `Start()`.
-      **→ RESUELTO (Claude, 2026-07-28): era falso positivo del diagnóstico, NO bug de juego.** Verificado
-      leyendo el código: `Goluis.cs` (y las 4) SÍ sobreescriben `BaseStrength => 1.5f` etc., y
-      `CompanionBase.Start()` (`:109-122`) las aplica → en el juego las aptitudes se fijan bien. El
-      diagnóstico leía en su propio `Start()`, antes de que corriera el `Start()` de los compañeros (carrera
-      de orden entre GameObjects, tal como sospechabas). **Fix aplicado**: `MigrationDiagnostics` ahora
-      vuelca en el **primer `Update()`** (con bandera `_done`) — Unity garantiza que todos los `Start()`
-      corren antes del primer `Update`. **Re-test**: al re-ejecutar, `Goluis_Post` debe mostrar `str=1.50
-      agi=0.90 rea=0.70` (y las demás su perfil). Si es así, marcar este ítem [x].
+- [x] ~~Falso positivo del diagnóstico~~ (histórico, resuelto): los compañeros salían con aptitudes default
+      por una **carrera de `Start()`** (el diagnóstico leía antes que `CompanionBase.Start()` fijara el
+      perfil). Arreglado moviendo `MigrationDiagnostics` al **primer `Update()`** (commit `95fbbc0`);
+      re-test confirmó los valores de perfil (ver ítem anterior).
 - [x] Línea de **Kushal**: `margas Stats L1/Yoga L1/Vínc L1 · Vida 115 Energía 117 Maná 50 Def 16 ·
       manáDesbloqueado=False` — coherente con lo esperado (HUD ya lo confirmaba en §1).
 - [ ] **Regresión** (§7): pendiente de probar en profundidad (animales/compañeros se ven en la lista y no
