@@ -34,15 +34,29 @@ public class MindPhrase
     /// <summary>Si puede asignarse a más de un ser (evita que nazcan con las mismas vivencias si es false).</summary>
     public readonly bool reusable;
 
+    /// <summary>
+    /// Quién vivió esta frase (para vivencias). null = anónima/genérica. Un compañero del santuario
+    /// (Goluis, Irosene…) o un personaje histórico del Microcosmos (Ötzi, Hipatia…). Sirve para dos cosas:
+    /// (1) el "efecto Irosene" — si TODAS las vivencias de una fuente caen en un mismo ser, desarrolla su
+    /// papel; (2) el modo narración del Microcosmos — construir a un mob histórico con SU biografía real.
+    /// </summary>
+    public readonly string source;
+
     public MindPhrase(ElementalTone t, string[] pos, string[] neg,
                       PhraseCategory cat = PhraseCategory.Elemental,
-                      bool randomAssignable = true, bool reusable = true)
+                      bool randomAssignable = true, bool reusable = true, string source = null)
     {
         tone = t; positive = pos; negative = neg;
         category = cat; this.randomAssignable = randomAssignable; this.reusable = reusable;
+        this.source = source;
     }
 }
 
+/// <summary>
+/// Biblioteca COMPARTIDA de frases (flyweight, docs/anima-architecture.md §6, §11). Reúne las pools de
+/// todas las categorías: elementales (idle), vivencias (biografías), deseos base… Asanas y hechizos se
+/// enlazarán desde sus sistemas. Consulta por tono/categoría/fuente y reparto de vivencias al crear seres.
+/// </summary>
 public static class PhraseLibrary
 {
     static List<MindPhrase> _all;
@@ -59,7 +73,62 @@ public static class PhraseLibrary
         return list;
     }
 
-    static List<MindPhrase> Build() => new List<MindPhrase>
+    /// <summary>Todas las frases de una categoría (Vivencia/Asana/Hechizo/Elemental/Deseo).</summary>
+    public static List<MindPhrase> ForCategory(PhraseCategory c)
+    {
+        var list = new List<MindPhrase>();
+        foreach (MindPhrase p in All) if (p.category == c) list.Add(p);
+        return list;
+    }
+
+    /// <summary>
+    /// La biografía (vivencias) de una fuente concreta — un compañero o un mob histórico del Microcosmos.
+    /// Con esto el modo narración construye a un personaje con SUS pensamientos documentados.
+    /// </summary>
+    public static List<MindPhrase> VivenciasOf(string source)
+    {
+        var list = new List<MindPhrase>();
+        foreach (MindPhrase p in All)
+            if (p.category == PhraseCategory.Vivencia && p.source == source) list.Add(p);
+        return list;
+    }
+
+    /// <summary>
+    /// Reparte <paramref name="count"/> vivencias al azar al crear un ser (modo espontáneo). Respeta
+    /// <c>randomAssignable</c>; y si <paramref name="taken"/> se pasa, excluye las <c>reusable=false</c> ya
+    /// entregadas en la partida (para que no nazcan dos con la misma vivencia). Añade lo repartido a
+    /// <paramref name="taken"/>. Si por azar caen todas las de una fuente en un ser, "desarrolla su papel".
+    /// </summary>
+    public static List<MindPhrase> DealVivencias(int count, HashSet<MindPhrase> taken = null)
+    {
+        var pool = new List<MindPhrase>();
+        foreach (MindPhrase p in All)
+            if (p.category == PhraseCategory.Vivencia && p.randomAssignable &&
+                (p.reusable || taken == null || !taken.Contains(p)))
+                pool.Add(p);
+
+        var dealt = new List<MindPhrase>();
+        for (int i = 0; i < count && pool.Count > 0; i++)
+        {
+            int idx = Random.Range(0, pool.Count);
+            MindPhrase pick = pool[idx];
+            pool.RemoveAt(idx);                       // no repetir dentro del mismo ser
+            dealt.Add(pick);
+            if (!pick.reusable && taken != null) taken.Add(pick);
+        }
+        return dealt;
+    }
+
+    static List<MindPhrase> Build()
+    {
+        var all = new List<MindPhrase>();
+        all.AddRange(BuildElemental());               // pensamientos idle por tono
+        all.AddRange(PhrasePools.Vivencias());         // biografías (santuario + histórico)
+        all.AddRange(PhrasePools.Deseos());            // deseos base
+        return all;
+    }
+
+    static List<MindPhrase> BuildElemental() => new List<MindPhrase>
     {
         new MindPhrase(ElementalTone.Tierra,
             new[] { "Siento el peso de la tierra.", "Todo descansa y perdura.", "Soy raíz; nada me mueve." },

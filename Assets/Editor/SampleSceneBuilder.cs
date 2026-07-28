@@ -226,6 +226,27 @@ public static class SampleSceneBuilder
 
         Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas + un ThoughtField(Agua). " +
                   "Console: cada una tiende a su tono, pero dentro del campo se inclinan a Agua y suben serotonina (docs anima §5/§6).");
+
+        LogPhrasePools();
+    }
+
+    /// <summary>Diagnóstico: al compilar/construir, valida en consola que las pools de frases cargan bien.</summary>
+    static void LogPhrasePools()
+    {
+        Debug.Log($"[Frases] Total={PhraseLibrary.All.Count} | " +
+                  $"Elemental={PhraseLibrary.ForCategory(PhraseCategory.Elemental).Count} " +
+                  $"Vivencia={PhraseLibrary.ForCategory(PhraseCategory.Vivencia).Count} " +
+                  $"Deseo={PhraseLibrary.ForCategory(PhraseCategory.Deseo).Count}");
+
+        foreach (string src in new[] { "Goluis", "Panterilia", "Gohageneis", "Irosene" })
+            Debug.Log($"[Frases] Biografía de {src}: {PhraseLibrary.VivenciasOf(src).Count} vivencias.");
+
+        // Reparto de ejemplo: crear un ser con 3 vivencias al azar sin repetir (modo espontáneo).
+        var taken = new System.Collections.Generic.HashSet<MindPhrase>();
+        var hand = PhraseLibrary.DealVivencias(3, taken);
+        var sb = new System.Text.StringBuilder("[Frases] Ser de ejemplo recibe: ");
+        foreach (MindPhrase p in hand) sb.Append($"[{p.source}·{p.tone}] \"{p.positive[0]}\"  ");
+        Debug.Log(sb.ToString());
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,
