@@ -189,6 +189,14 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
       **Para confirmar/descartar**: agregar un log a `CompanionBase.Start()` con un timestamp/frame
       count y comparar contra el de `MigrationDiagnostics.Start()`, o simplemente mover el volcado de
       `MigrationDiagnostics` a `LateUpdate()` (una sola vez, con una bandera) en vez de `Start()`.
+      **→ RESUELTO (Claude, 2026-07-28): era falso positivo del diagnóstico, NO bug de juego.** Verificado
+      leyendo el código: `Goluis.cs` (y las 4) SÍ sobreescriben `BaseStrength => 1.5f` etc., y
+      `CompanionBase.Start()` (`:109-122`) las aplica → en el juego las aptitudes se fijan bien. El
+      diagnóstico leía en su propio `Start()`, antes de que corriera el `Start()` de los compañeros (carrera
+      de orden entre GameObjects, tal como sospechabas). **Fix aplicado**: `MigrationDiagnostics` ahora
+      vuelca en el **primer `Update()`** (con bandera `_done`) — Unity garantiza que todos los `Start()`
+      corren antes del primer `Update`. **Re-test**: al re-ejecutar, `Goluis_Post` debe mostrar `str=1.50
+      agi=0.90 rea=0.70` (y las demás su perfil). Si es así, marcar este ítem [x].
 - [x] Línea de **Kushal**: `margas Stats L1/Yoga L1/Vínc L1 · Vida 115 Energía 117 Maná 50 Def 16 ·
       manáDesbloqueado=False` — coherente con lo esperado (HUD ya lo confirmaba en §1).
 - [ ] **Regresión** (§7): pendiente de probar en profundidad (animales/compañeros se ven en la lista y no

@@ -1,16 +1,31 @@
 using UnityEngine;
 
 /// <summary>
-/// Diagnóstico de migración (TEMPORAL). Al entrar en Play vuelca por consola los valores relevantes de
-/// todos los seres (`Anima`) y del jugador, para **validar la migración sin depurador**: qué hereda de
-/// `Anima`, sus aptitudes (por campo y vía `IAptitudes`), y los puntos del alma/margas del jugador.
+/// Diagnóstico de migración (TEMPORAL). Vuelca por consola los valores relevantes de todos los seres
+/// (`Anima`) y del jugador, para **validar la migración sin depurador**: qué hereda de `Anima`, sus
+/// aptitudes (por campo y vía `IAptitudes`), y los puntos del alma/margas del jugador.
 /// Quitar o desactivar el GameObject en release.
+///
+/// IMPORTANTE: el volcado ocurre en el **primer `Update()`**, NO en `Start()`. Unity garantiza que TODOS
+/// los `Start()` de la escena corren antes del primer `Update()`, así que para entonces
+/// `CompanionBase.Start()` ya fijó las aptitudes de perfil (Goluis `str=1.5`, etc.). Leerlo en nuestro
+/// `Start()` daba los defaults (str=1.00) por la carrera de orden entre GameObjects — falso positivo
+/// (ver testing-checklist §10).
 /// </summary>
 public class MigrationDiagnostics : MonoBehaviour
 {
-    void Start()
+    bool _done;
+
+    void Update()
     {
-        Debug.Log("═══════ [Diag Anima] inicio ═══════");
+        if (_done) return;
+        _done = true;
+        Dump();
+    }
+
+    void Dump()
+    {
+        Debug.Log("═══════ [Diag Anima] inicio (primer Update — tras todos los Start) ═══════");
 
         // Chequeo de jerarquía (compila-time real: si compiló, la migración está bien tipada).
         Debug.Log($"[Diag] CompanionBase hereda de Anima: {typeof(Anima).IsAssignableFrom(typeof(CompanionBase))}");
