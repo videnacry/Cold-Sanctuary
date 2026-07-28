@@ -26,8 +26,14 @@ error del Console/Rider.
   `%LOCALAPPDATA%\Unity\Editor\Editor.log`) con `grep` — mucho más confiable que pelear con la UI.
 - **Bug real encontrado, sin arreglar todavía**: los compañeros no reciben sus aptitudes de perfil tras la
   migración a `Anima` — ver detalle en la sección 10 de abajo.
-- Próximo paso: seguir por la sección 3 (Farming) hacia abajo (secciones 8/9/10 de Mind/Migración ya se
-  tocaron parcialmente, ver checkmarks).
+- **Sección 3 (Farming) prácticamente completa**: Suave/Media/Salvaje confirmados con evidencia de
+  `Editor.log`. Atrapada de Dura confirmada (y descartado que sea el bug de corrutinas de
+  `Escape()`/`Fight()`). Solo falta la rama de daño de Dura ("pierde el control") — necesita juego
+  real con WASD, no teletransportar el Transform vía Inspector (los intentos con teletransporte no la
+  dispararon de forma confiable).
+- Próximo paso: sección 4 (Progresión a fondo — subir de nivel una marga completa), 5 (Trepar), 6
+  (Cocina→Mesopotamia), luego terminar 8/9 (Mind — solo se tocó `MindPhrase.cs` de pasada, falta
+  probar en Play), 10 ya casi completa (falta regresión y `physicalResistance` de NPCs).
 
 ## 0. Preparación
 - [x] El proyecto **compila** (0 errores CS tras el fix de `RobotAvatar.cs`).
@@ -63,15 +69,35 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
       20/100** en el mismo momento. Coincide exactamente con lo esperado.
 - [x] Ya serena, con **F**/clic → queda **descansando** (color azul/violáceo, visualmente confirmado) —
       `Logs/Editor.log`: `[Farming] «PlayCreature_Suave» saciada y descansando.` Coincide.
-- [ ] **Combo/feel:** encadenar `V` acercándote y alejándote serena **más rápido** (excitación); la
-      cápsula **rebota/crece** al excitarse y se **gira/acerca** a ti.
-- [ ] **Atrapada:** si te quedas pegado a la cápsula, tras ~1 s te "atrapa" (Console `… te atrapó…`) y
-      **resetea el combo** (da un saltito atrás).
-- [ ] **Dura** (peligrosa): con excitación alta y sin alejarte, **pierde el control y te pega** →
-      **baja la Vida** en el HUD (Console `… perdió el control…` / `[Alma] … recibió …`). Con poca
-      excitación, la **defensa** puede absorber el golpe (Console `… absorbió el golpe`).
-- [ ] **Salvaje** (no criada): **`V` no hace nada** (no es jugable → regiría la ley natural). Demuestra
-      el gateo por bond/estado.
+- [x] **Se acerca/gira al excitarse**: confirmado con Suave/Media — el capsule gira hacia el jugador y
+      se acerca (leash respetado). No se probó explícitamente el "rebota/crece" visual del combo.
+- [x] **Atrapada**: confirmado con Dura, quedándome quieto pegado a propósito — dispara `GetCaught()`
+      (`PlayableCreature.cs:186-209`) repetidamente cada `catchGrace` (1s) mientras el jugador no se
+      aleje, con log `[Farming] «PlayCreature_Dura» te atrapó jugando — ¡retrocede y vuelve a
+      provocarla!` cada vez y reseteo de excitación. **Leí el código para confirmar que no es el mismo
+      bug de corrutinas-en-cascada de `Escape()`/`Fight()` de antes** — acá cada disparo es autónomo
+      (sin acumular corrutinas), así que repetirse mientras el jugador se queda quieto es el
+      comportamiento **diseñado a propósito** (el propio mensaje te dice "retrocede"), no un bug. El
+      salto de retirada de la criatura es de solo 0.5u (`catchRange` default 1.2u) — a propósito, para
+      que la solución sea que el JUGADOR se aleje, no la criatura.
+- [ ] **Dura** (peligrosa) — **rama de "pierde el control" aún no disparada, dos intentos**:
+      1. Spam de `V` quieto pegado a Dura → solo activó la rama segura (`GetCaught()` → "te atrapó"),
+         nunca la rama de daño (`canLoseControl && _excitement >= loseControlAbove`, línea 189) porque
+         quedarse quieto resetea la excitación a 0 en cada atrapada antes de llegar al umbral de riesgo.
+      2. Reposicioné al jugador a 2u de Dura (`playRange=3` permite jugar sin entrar en `catchRange=1.2`
+         — código en `PlayController.cs:19`, así debería poder acumular excitación sin que dispare la
+         atrapada) y probé `V` de nuevo sin moverme — **esta vez no generó NINGÚN log nuevo** (ni
+         atrapada, ni daño, ni descarga), lo cual en sí es sospechoso pero no until confirmado como bug:
+         puede ser que a esa distancia particular el objetivo más cercano de `FindNearestPlayable`
+         cambiara, o que el teletransporte instantáneo (en vez de acercarse caminando) descolocara algo
+         del tracking de posición/objetivo.
+      **Conclusión**: esta rama concreta necesita una pasada de juego real (moverse con WASD, no
+      teletransportar la posición del Transform), no la puedo confirmar de forma confiable con
+      teletransportes instantáneos vía Inspector. Dejar pendiente para una prueba manual.
+- [x] **Salvaje** (no criada): **`V` no hace nada** — confirmado, 10 pulsaciones de `V` parado justo al
+      lado sin ningún efecto (ni tensión, ni XP, ni log). `grep "Salvaje" Logs/Editor.log` solo
+      encuentra la línea de setup del sandbox, cero interacciones de `[Farming]`. Gateo por bond/estado
+      funcionando como se espera.
 
 ## 4. Progresión — margas y puntos del alma
 - [ ] Serenar criaturas sube la **marga de Stats** (por la ganancia de aptitudes que da la XP); al
