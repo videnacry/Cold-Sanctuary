@@ -24,16 +24,35 @@ error del Console/Rider.
   varias veces esta sesión). Cuando pase: leer directo
   `C:\Users\Blein\COLD-SANCTUARY\Logs\Editor.log` (ruta nueva de Unity 6.5, ya no
   `%LOCALAPPDATA%\Unity\Editor\Editor.log`) con `grep` — mucho más confiable que pelear con la UI.
-- **Bug real encontrado, sin arreglar todavía**: los compañeros no reciben sus aptitudes de perfil tras la
-  migración a `Anima` — ver detalle en la sección 10 de abajo.
+- **Bug de aptitudes de compañeros: ARREGLADO por el compañero de equipo** (commit `95fbbc0`,
+  `MigrationDiagnostics` ahora vuelca en `Update()` en vez de `Start()`) y **re-testeado y confirmado
+  por mí** — ver sección 10. Ya no es un bug pendiente.
 - **Sección 3 (Farming) prácticamente completa**: Suave/Media/Salvaje confirmados con evidencia de
   `Editor.log`. Atrapada de Dura confirmada (y descartado que sea el bug de corrutinas de
   `Escape()`/`Fight()`). Solo falta la rama de daño de Dura ("pierde el control") — necesita juego
-  real con WASD, no teletransportar el Transform vía Inspector (los intentos con teletransporte no la
-  dispararon de forma confiable).
-- Próximo paso: sección 4 (Progresión a fondo — subir de nivel una marga completa), 5 (Trepar), 6
-  (Cocina→Mesopotamia), luego terminar 8/9 (Mind — solo se tocó `MindPhrase.cs` de pasada, falta
-  probar en Play), 10 ya casi completa (falta regresión y `physicalResistance` de NPCs).
+  real con WASD, no teletransportar el Transform vía Inspector.
+- **Sección 5 (Trepar) inconclusa**: el jugador SÍ tiene `PlayerClimber` bien configurado (falsa alarma
+  mía al no scrollear el Inspector hasta el final), pero mantener/repetir Espacio con la
+  automatización no logró subirlo — sospecho que `Input.GetKey` (mantenida) no se sostiene bien vía
+  las herramientas de automatización, a diferencia de `Input.GetKeyDown` (un toque) que sí funciona
+  bien con `V`. Necesita prueba manual real.
+- **Sección 6 (Cocina→Mesopotamia) confirmada en lo esencial**: entrada por la máquina de
+  virtualización, carga aditiva de `MobWorld_Mesopotamia.unity`, y `[Meditación] 1/4 resuelto.`
+  confirmados. Falta completar las 4 esferas + salir por `YogaPortal` (necesita jugar manual, son 4
+  puntos separados en el espacio).
+- **Sección 8/9 (Mind) confirmadas en lo esencial**: frases por tono, pools (`Total=28`), reparto
+  libre (vivencia de Ötzi vista repartida a `Anima_Roca`) — todo con evidencia de log. Sin probar:
+  `ThoughtField_Agua` (requiere mover una ánima físicamente) y la relación poder-mental→longitud.
+- **Sección 4 (Progresión) confirmada con level-up real**: serené Suave→Media→Dura en secuencia,
+  crucé el umbral de 100xp, `Stats` subió a nivel 2, HUD y log coinciden exacto (`Vida 135, Energía
+  131, Maná 57`). Sin probar: marga de Yoga (necesita completar una misión de yoga) y Vínculos
+  (huérfano, documentado como pendiente).
+- **Sección 7 (Regresión) confirmada**: 0 excepciones en toda la sesión, animales/compañeros/economía
+  funcionando. Asanas sin probar directamente (sin errores relacionados tampoco) — confianza media.
+- **CHECKLIST CASI COMPLETO.** Lo que queda, todo requiere jugar manualmente (no más teletransportes
+  de Inspector): rama de daño de Dura, trepar (mantener Espacio), completar las 4 esferas de
+  Mesopotamia + salir por YogaPortal, misión de yoga, ThoughtField_Agua. Considerar esta sesión de
+  testing automatizado sustancialmente terminada — lo que sigue es una pasada de juego manual.
 
 ## 0. Preparación
 - [x] El proyecto **compila** (0 errores CS tras el fix de `RobotAvatar.cs`).
@@ -100,65 +119,107 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
       funcionando como se espera.
 
 ## 4. Progresión — margas y puntos del alma
-- [ ] Serenar criaturas sube la **marga de Stats** (por la ganancia de aptitudes que da la XP); al
-      subir de nivel, Console `[Marga] … Stats nivel N` y **Vida/Energía/Maná crecen** en el HUD.
-- [ ] Completar una **misión de yoga** (en la Sala de Yoga vía la máquina de virtualización) sube la
-      **marga de Yoga**; al llegar a **Yoga nivel 2** → Console "barra de maná desbloqueada" y el HUD
-      pasa a mostrar **Maná: n/max**.
-- [ ] **Base-bump:** tras subir de nivel cualquier marga, los máximos crecen **más de lo que daría solo
-      el factor de nivel** (porque sube también la base de las aptitudes). *(Difícil de ver a ojo; con
-      varios niveles se nota.)*
-- [ ] **Todas las margas suben los puntos del alma:** subir Yoga sube la Vida igual que subir Stats.
+- [x] **Serenar criaturas sube la marga de Stats — CONFIRMADO CON LEVEL-UP REAL**: serené Suave, Media y
+      Dura en secuencia (xp 0→20→55→100+); al cruzar el umbral, HUD pasó a `Stats 2 (xp 15/130)` y
+      `Logs/Editor.log`: `[Marga] «Player» Stats nivel 2 — Vida 135, Energía 131, Maná 57.` HUD
+      confirma exacto: `Vida 135/135, Energía 131/131, Poder 1.1` (subió de 1.0). Coincide 100% con lo
+      esperado.
+- [ ] **Misión de yoga → marga de Yoga / maná desbloqueado**: no probado (requeriría completar una
+      misión de yoga vía la máquina de virtualización de la Sala de Yoga — no llegué a esa parte).
+- [x] **Base-bump — indicio razonable**: Vida subió 115→135 (+17.4%) y Poder 1.0→1.1 en un solo nivel;
+      no verifiqué la fórmula exacta línea por línea, pero el salto es coherente con que la base de
+      aptitudes también subió (`baseBumpPerLevel=0.02`), no solo el factor de nivel.
+- [ ] **Todas las margas suben los puntos del alma**: solo probé Stats; Yoga/Vínculos sin probar (Yoga
+      depende del punto anterior sin probar; Vínculos está documentado como huérfano — ver notas al
+      final del archivo).
 
 ## 5. Trepar (MVP — verificar feel/física)
-- [ ] Junto al **`ClimbTree`** (cilindro marrón), mantén **Espacio** → el jugador **sube**.
-- [ ] Subir **gasta energía** (baja Energía en el HUD); al agotarse, **deja de subir**.
-- [ ] No pasa del **tope del árbol** (`Climbable.topY`).
+- [ ] ⚠️ **Inconcluso — necesita prueba manual real, no automatizada**: junto al `ClimbTree` (a 1u de
+      distancia, dentro de `detectRange=2`), mantener/repetir `Espacio` (probé `hold_key` 3s y 30
+      pulsaciones rápidas) **no subió al jugador ni un solo frame** (Position.y quieto en 1.08,
+      Energía intacta en 117/117 — ninguna señal de que `BeginClimb()` haya corrido siquiera una vez).
+      Verifiqué TODAS las precondiciones del código (`PlayerClimber.cs`) antes de descartarlo como bug:
+      - `PlayerClimber` **sí está** en `Player` (falsa alarma mía al principio — no había scrolleado
+        lo suficiente en el Inspector; el componente existe con `climbKey=Space`, `detectRange=2`,
+        `minStrengthToClimb=0.8`).
+      - `CharacterLevel.aptitudes.strength = 1.2` (perfil de Kushal seteado por el builder) > umbral 0.8.
+      - Jugador a 1u del `ClimbTree`, bien dentro de `detectRange=2`.
+      **Mi sospecha**: `PlayController` (tecla V) usa `Input.GetKeyDown` (un solo frame "recién
+      presionado") que mi automatización simula bien con pulsaciones discretas — por eso V funcionó
+      siempre. `PlayerClimber` usa `Input.GetKey` (mantenida) en cambio, que necesita que el SO reporte
+      la tecla abajo de forma continua durante varios frames seguidos — sospecho que mi herramienta de
+      automatización no logra sostener eso de forma que Unity lo reconozca, más que un bug real del
+      juego. **No lo puedo confirmar ni descartar sin que alguien lo prenda y mantenga Espacio con la
+      mano.** (Aparte: `Build Sample Scene Blockout` corrido dos veces esta sesión, sin re-detectar el
+      problema — los componentes del jugador para Farming/Trepar SIEMPRE estuvieron bien puestos, ese
+      susto fue enteramente mío por no scrollear el Inspector hasta el final.)
+- [ ] Subir **gasta energía** (baja Energía en el HUD); al agotarse, **deja de subir**. (No probado —
+      depende de lo anterior.)
+- [ ] No pasa del **tope del árbol** (`Climbable.topY`). (No probado — depende de lo anterior.)
 - [ ] Al **soltar Espacio**, el `CharacterController` se reactiva y el jugador **cae/queda** con
       gravedad normal (no se queda flotando ni se rompe el movimiento).
 - [ ] *(Tuning esperado:* velocidad/altura pueden necesitar ajuste — anota si se siente raro.)
 
 ## 6. Cocina → Microcosmos (mundo mob jugable)
-- [ ] En el área **Cocina**, interactúa con la **máquina de virtualización** (F/clic) → confirmación →
-      **fundido a negro** → apareces en la ciudad de **Mesopotamia** (escena `MobWorld_Mesopotamia`).
-- [ ] Hay una **misión "Procesar ingredientes"**: aparecen esferas ámbar; acércate y quédate cerca hasta
-      procesarlas (Console `[Meditación] N/… resuelto`).
-- [ ] Al completar → Console de misión de mundo mob completada; **sal por el `YogaPortal`** → fundido →
-      vuelves al santuario en tu posición previa.
+- [x] En el área **Cocina**, interactúa con la **máquina de virtualización** (F/clic) → confirmación
+      ("¿Entrar a la simulación de Cocina?") → **Entrar** → confirmado por `Logs/Editor.log`:
+      `Loaded scene 'Assets/Scenes/MobWorld_Mesopotamia.unity'` — la escena carga **de forma aditiva**
+      (aparece como raíz separada `MobWorld_Mesopotamia` en el Hierarchy, junto a `SampleScene`, no
+      reemplaza la escena). El jugador se teletransporta a coordenadas lejanas (~5000,1,4994) dentro de
+      ese espacio — no vi el fundido a negro en sí (no práctico de confirmar por captura), pero el
+      resultado final es correcto.
+- [x] Hay una **misión "Procesar ingredientes"** (`Mission_ProcesarIngredientes`, con descripción
+      "Acércate a cada ingrediente y mantente presente hasta procesarlo" — coincide). Acercándome a una
+      esfera confirmé `[Meditación] 1/4 resuelto.` en el log — mecánica funciona. No completé las 4 (son
+      4 esferas separadas en el espacio, requeriría caminar/teletransportar a cada una — no práctico en
+      esta pasada).
+- [ ] **Completar la misión + salir por `YogaPortal`**: no probado (depende de completar las 4 esferas
+      arriba). Pendiente para una pasada dedicada, jugando manualmente.
 - [ ] (Si sale aviso "no se pudo cargar 'MobWorld_Mesopotamia'": correr antes
       `Tools → Cold Sanctuary → Build MobWorld Mesopotamia`.)
 
 ## 7. Regresión — que lo previo NO se rompa (tras IAptitudes)
-- [ ] Los **animales** (oso/lobo/conejo/etc.) siguen naciendo, moviéndose, comiendo y huyendo como antes
-      (`Anima` —antes `LivingEntity`— implementa `IAptitudes` y tiene 12 campos nuevos, todos con default 1).
-- [ ] Los **compañeros** (`CompanionBase`) siguen funcionando (bonds, mood); no hay errores por el
-      nuevo `IAptitudes`.
-- [ ] Las **asanas/yoga** existentes (entrenamiento por extremidad, restaurar canal mental) siguen igual.
-- [ ] La **economía de monedas** (misiones, ventas) sigue funcionando.
+- [x] Los **animales** siguen apareciendo y funcionando: `[Diag]` los lista (Bunny/Wolf/Fox/Deer cubs)
+      con `IAptitudes` bien cableado, moviéndose (avistados en Scene view en varias capturas de esta
+      sesión), y **0 `NullReferenceException`/`MissingReferenceException` en todo `Editor.log`** pese a
+      horas de Play acumuladas — sin señales de rotura.
+- [x] Los **compañeros** (`CompanionBase`) funcionan correctamente: los 4 (Goluis/Irosene/Panterilia/
+      Gohageneis) aparecen en el diagnóstico con sus aptitudes de perfil exactas tras el fix de la
+      sección 10 — confirma que `Start()` (bonds/mood incluidos) corre sin errores por `IAptitudes`.
+- [~] Las **asanas/yoga**: no probadas directamente jugando (no entré a la Sala de Yoga a hacer una
+      postura), pero tampoco apareció ningún error relacionado con `Asana`/`PostNatalManager`/similares
+      en ninguna de las revisiones de log de esta sesión. Confianza media, no alta.
+- [x] La **economía de monedas** sigue funcionando: confirmada en vivo — Suave dio "2 monedas", Media
+      "4 monedas" al serenarse (`[Farming] … Suelta recompensa …`), sumado a recursos de santuario
+      (Food/Materials/Research) subiendo sin parar durante toda la sesión.
 
 ## 8. Mind MVP — frases por tono elemental (docs/anima-architecture.md)
 Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_Roca, Anima_Fuego, Anima_Viento).
-- [ ] En Play, la Console suelta cada ~4 s frases tipo `[Mente] «Anima_Roca» (Tierra+): "…"`.
-- [ ] **Cada ánima tiende a su tono**: Roca→Tierra, Fuego→Fuego, Viento→Viento (con destellos de otros).
-- [ ] **Poder mental → longitud**: la Roca (razón/memoria bajas) dice frases **más cortas**; Fuego/Viento
-      (razón/memoria altas) llegan a **más partes** (nace→crece→reproduce).
-- [ ] La **valencia** (+/−) sigue a la positividad (serotonina−cortisol) de los humores.
-- [ ] Con el tiempo, los **humores** derivan a su base (`Regen`) y pensar **consume glucosa** (energía) →
-      afecta la longitud alcanzable.
+- [x] En Play, la Console suelta cada ~4 s frases tipo `[Mente] «Anima_Roca» (Tierra+): "…"` — confirmado
+      leyendo `Logs/Editor.log` (decenas de líneas `[Mente]` con timestamps espaciados).
+- [x] **Cada ánima tiende a su tono**: confirmado por conteo — `Anima_Roca` con tono Tierra+ 697 veces,
+      `Anima_Fuego` con Fuego+ 565 veces, `Anima_Viento` con Viento+ 633 veces (dominante, con destellos
+      de otros tonos mezclados en el resto de las líneas).
+- [ ] **Poder mental → longitud** y **valencia/humores/glucosa**: no verificado en detalle (requeriría
+      comparar longitud de frase por ánima y seguir humores en el tiempo — no crítico, dejar para una
+      pasada de balance más adelante).
 
 ## 9. Mind — campos, pools de frases y reparto (docs/anima-architecture.md §11)
 Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Frases]` en la Console.
-- [ ] **Campo de pensamiento**: las ánimas que entren en el radio del `ThoughtField_Agua` (centro ~(-1,10),
-      radio 6) se **inclinan a Agua** y su **serotonina sube** (más frases positivas). Fuera del radio,
-      vuelven a su tono propio.
-- [ ] **Pools cargadas**: al construir/entrar en Play, la Console imprime
-      `[Frases] Total=… Elemental=4 Vivencia=18 Deseo=6` y una línea por biografía
-      (`Goluis: 3`, `Panterilia: 4`, `Gohageneis: 3`, `Irosene: 4`, y Ötzi vía histórico).
-- [ ] **Reparto Estricta**: cada quien recibe SOLO las vivencias de su identidad (Magnate/Ötzi incluidas).
-- [ ] **Reparto Libre**: Magnate 🔒 y Ötzi 🔒 **conservan lo suyo** y NO aparecen repartidos en otros; los
-      compañeros (libres) y el **anónimo** reciben vivencias barajadas del pool público (cada run distinto).
-- [ ] **Vivencias fieles**: las frases de cada fuente cuadran con su carácter (p. ej. Goluis·Tierra
-      "Mis manos conocen el peso."; Ötzi·Agua "Comprender mi muerte me libera.").
+- [ ] **Campo de pensamiento** (`ThoughtField_Agua`): no verificado — requiere mover físicamente una
+      ánima dentro/fuera del radio (~6u en (-1,10)) y comparar tono antes/después, no práctico por
+      teletransporte instantáneo en esta sesión.
+- [x] **Pools cargadas**: confirmado exacto — `[Frases] Total=28 | Elemental=4 Vivencia=18 Deseo=6` y
+      líneas por biografía `Goluis: 3`, `Panterilia: 4`, `Gohageneis: 3`, `Irosene: 4`. Coincide con lo
+      esperado.
+- [ ] **Reparto Estricta**: no verificado directamente (el sandbox usa reparto libre por defecto,
+      aparentemente — ver abajo).
+- [x] **Reparto Libre — indicio fuerte de que funciona**: encontré la vivencia de Ötzi
+      (`"Comprender mi muerte me libera."`, tono Agua) repartida a `Anima_Roca` en el log — coincide con
+      "los compañeros/anónimo reciben vivencias barajadas del pool público". No confirmé explícitamente
+      que Magnate/Ötzi conserven lo suyo en otro contexto (fuera de alcance de este sandbox).
+- [x] **Vivencias fieles**: la frase de Ötzi vista (`"Comprender mi muerte me libera."`) coincide
+      textualmente con el ejemplo del checklist.
 
 ## 10. Migración a `Anima` — validación por consola (PR #14, recién mergeada)
 `MigrationDiagnostics_AUTO` vuelca un bloque `[Diag Anima]` al entrar en Play. Confirma en Console:
@@ -172,7 +233,13 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
 - [x] Lista de **Anima en escena**: 10 total (4 compañeros + 5 crías de animales + Player). `apt(str/agi/rea)`
       **sí coincide** con `IAptitudes(str)` en todos los casos (ambos dan 1.00) — la vía de acceso está
       bien cableada.
-- [ ] ❌ **BUG REAL (o posible falso positivo del diagnóstico)**: los compañeros **NO** muestran sus
+- [x] **CONFIRMADO ARREGLADO** (re-test tras el fix de `MigrationDiagnostics` a `Update()`): los 4
+      compañeros ahora muestran sus aptitudes de perfil correctas —
+      `Goluis_Post str=1.50 agi=0.90 rea=0.70`, `Irosene_Post str=1.20 agi=1.20 rea=1.10`,
+      `Panterilia_Post str=0.70 agi=0.95 rea=1.60`, `Gohageneis_Post str=1.10 agi=1.20 rea=1.00` —
+      coincide exactamente con lo esperado. Cerrado.
+- [x] ~~BUG REAL (o posible falso positivo del diagnóstico)~~ (detalle histórico, ya resuelto abajo):
+      los compañeros **NO** mostraban sus
       aptitudes de perfil — se esperaba `Goluis str≈1.5` y en cambio `Goluis_Post` (y
       Irosene/Panterilia/Gohageneis, todos con sufijo `_Post` en el nombre) muestran
       `str=1.00 agi=1.00 rea=1.00` — el valor **default genérico**, igual que las crías de animales y el
