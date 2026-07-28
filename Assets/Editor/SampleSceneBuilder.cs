@@ -258,10 +258,11 @@ public static class SampleSceneBuilder
         var holders = new System.Collections.Generic.List<PhraseHolder>
         {
             new PhraseHolder("Magnate", true),     // nadie hereda sus pensamientos
-            new PhraseHolder("Irosene", true),     // "histórico" bloqueado de ejemplo
+            new PhraseHolder("Ötzi", true),        // histórico del Microcosmos, bloqueado
             new PhraseHolder("Goluis", false),
             new PhraseHolder("Panterilia", false),
             new PhraseHolder("Gohageneis", false),
+            new PhraseHolder("Irosene", false),
             new PhraseHolder("", false),           // ser anónimo emergente: solo recibe del pool
         };
 

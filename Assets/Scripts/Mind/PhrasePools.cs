@@ -22,6 +22,11 @@ public static class PhrasePools
                                bool reusable = false) =>
         new MindPhrase(tone, pos, neg, PhraseCategory.Vivencia, randomAssignable: true, reusable: reusable, source: source);
 
+    // Personaje HISTÓRICO del Microcosmos: NO entra en el reparto aleatorio del santuario
+    // (randomAssignable=false); solo se asigna por su identidad en modo narración (VivenciasOf).
+    static MindPhrase Historico(string source, ElementalTone tone, string[] pos, string[] neg) =>
+        new MindPhrase(tone, pos, neg, PhraseCategory.Vivencia, randomAssignable: false, reusable: false, source: source);
+
     public static List<MindPhrase> Vivencias() => new List<MindPhrase>
     {
         // ── Goluis (fuerza; Tierra) ─────────────────────────────────────────────────────────────────
@@ -73,6 +78,21 @@ public static class PhrasePools
         Vivencia("Irosene", ElementalTone.Agua,        // renacer con el santuario (cáncer / movilidad)
             new[] { "Mi cuerpo volvió a moverse.", "Corro, escalo, buceo: otra vez viva.", "Nunca es tarde para renacer." },
             new[] { "Mi cuerpo me falló una vez.", "Temo que vuelva a fallar.", "El tiempo aprieta." }),
+
+        // ═══ Personajes históricos del Microcosmos (bloqueados; docs/mob-quests-early.md §2) ═══════════════
+        // ── Ötzi, el Hombre de Hielo (~3300 a.C., Edad del Cobre; mecánica "buscar la raíz"; Tierra) ──────
+        Historico("Ötzi", ElementalTone.Tierra,        // hombre común: pastor y trabajador del cobre
+            new[] { "Trabajo el cobre con mis manos.", "Guío el rebaño por el monte.", "Soy un hombre común, y basta." },
+            new[] { "Nadie recordará mi nombre.", "Solo soy uno más en el monte.", "La montaña no perdona al débil." }),
+        Historico("Ötzi", ElementalTone.Fuego,         // huía de algo, siempre alerta
+            new[] { "Estoy atento a cada sombra.", "Confío en mi instinto.", "Sé cuándo el peligro ronda." },
+            new[] { "Algo me persigue.", "No puedo bajar la guardia.", "Estuve alerta… no lo bastante." }),
+        Historico("Ötzi", ElementalTone.Fuego,         // la flecha por la espalda: la emboscada (la raíz)
+            new[] { "Cargué el primer metal, hacha y orgullo.", "Creí que el filo me protegía.", "Miré de frente lo que pude." },
+            new[] { "Me dispararon por la espalda.", "Una disputa, un hacha, y la muerte.", "El primer metal fue la primera arma." }),
+        Historico("Ötzi", ElementalTone.Agua,          // 5000 años congelado; comprender su muerte lo libera
+            new[] { "Comprender mi muerte me libera.", "Recupero la historia que me robaron.", "La verdad, aun dura, da paz." },
+            new[] { "Llevo cinco mil años sin descanso.", "Mi muerte quedó sin resolver.", "El hielo me guardó y me olvidó." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.
