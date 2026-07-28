@@ -216,8 +216,16 @@ public static class SampleSceneBuilder
         AddMindBeing(group.transform, "Anima_Viento", new Vector3(2f, 1f, 10f), new Color(0.70f, 0.80f, 0.90f),
             a => { a.agility = 1.6f; a.reasoning = 1.5f; a.perception = 1.4f; a.discipline = 1.3f; return a; });
 
-        Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas. Mira la Console: " +
-                  "cada una tiende a su tono elemental y suelta frases según su poder mental (docs anima §6).");
+        // Campo de pensamiento de prueba (docs anima §5): empuja hacia Agua + sube serotonina cerca.
+        GameObject fieldGO = new GameObject("ThoughtField_Agua");
+        fieldGO.transform.SetParent(group.transform);
+        fieldGO.transform.position = new Vector3(-1f, 0f, 10f);
+        ThoughtField field = fieldGO.AddComponent<ThoughtField>();
+        field.tone = ElementalTone.Agua; field.radius = 6f; field.pull = 4f;
+        field.nudgesHumor = true; field.humor = Humor.Serotonina; field.humorPerSecond = 0.05f;
+
+        Debug.Log("[SampleSceneBuilder] Mind sandbox: 3 ánimas con Mind + aptitudes distintas + un ThoughtField(Agua). " +
+                  "Console: cada una tiende a su tono, pero dentro del campo se inclinan a Agua y suben serotonina (docs anima §5/§6).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

@@ -29,12 +29,33 @@ public class Mind : MonoBehaviour
         if (src != null) aptitudes = Aptitudes.From(src);
     }
 
+    // Campos de pensamiento cercanos (refrescados por intervalos; pueden aparecer/desaparecer en runtime).
+    ThoughtField[] _fields = System.Array.Empty<ThoughtField>();
+    float _nextFieldRefresh;
+
     void Update()
     {
         humores.Regen(Time.deltaTime);
+        RefreshFieldsIfDue();
+        ApplyFieldHumors(Time.deltaTime);
         if (Time.time < _nextThink) return;
         _nextThink = Time.time + thinkInterval;
         Think();
+    }
+
+    void RefreshFieldsIfDue()
+    {
+        if (Time.time < _nextFieldRefresh) return;
+        _nextFieldRefresh = Time.time + 1f;
+        _fields = FindObjectsOfType<ThoughtField>();
+    }
+
+    /// <summary>Los campos que cubren a este ser mueven sus humores (guiarlo por el entorno).</summary>
+    void ApplyFieldHumors(float dt)
+    {
+        foreach (ThoughtField f in _fields)
+            if (f != null && f.nudgesHumor && f.Covers(transform.position))
+                humores.Produce(f.humor, f.humorPerSecond * dt);
     }
 
     void Think()
@@ -69,21 +90,27 @@ public class Mind : MonoBehaviour
         humores.Produce(positive ? Humor.Serotonina : Humor.Cortisol, 0.02f);
     }
 
-    /// <summary>Tono elemental por pesos de aptitudes + humores (docs §5) → personalidad.</summary>
+    /// <summary>Tono elemental por pesos de aptitudes + humores + campos de pensamiento (docs §5).</summary>
     ElementalTone PickTone()
     {
-        float tierra = aptitudes.strength + aptitudes.endurance + aptitudes.bodyMass;
-        float agua   = aptitudes.composure + aptitudes.adaptability + humores.serotonina;
-        float fuego  = aptitudes.creativity + aptitudes.sociability + humores.adrenalina;
-        float viento = aptitudes.agility + aptitudes.reasoning + aptitudes.perception;
+        // Pesos base por aptitudes + humores (personalidad).  Índice = (int)ElementalTone.
+        float[] w = new float[4];
+        w[(int)ElementalTone.Tierra] = aptitudes.strength + aptitudes.endurance + aptitudes.bodyMass;
+        w[(int)ElementalTone.Agua]   = aptitudes.composure + aptitudes.adaptability + humores.serotonina;
+        w[(int)ElementalTone.Fuego]  = aptitudes.creativity + aptitudes.sociability + humores.adrenalina;
+        w[(int)ElementalTone.Viento] = aptitudes.agility + aptitudes.reasoning + aptitudes.perception;
 
-        float total = tierra + agua + fuego + viento;
+        // Empuje de los campos de pensamiento que cubren a este ser (guía por el entorno, docs §5).
+        foreach (ThoughtField f in _fields)
+            if (f != null && f.Covers(transform.position))
+                w[(int)f.tone] += f.pull;
+
+        float total = w[0] + w[1] + w[2] + w[3];
         if (total <= 0f) return ElementalTone.Tierra;
 
         float r = Random.value * total;
-        if ((r -= tierra) < 0f) return ElementalTone.Tierra;
-        if ((r -= agua)   < 0f) return ElementalTone.Agua;
-        if ((r -= fuego)  < 0f) return ElementalTone.Fuego;
+        for (int i = 0; i < 4; i++)
+            if ((r -= w[i]) < 0f) return (ElementalTone)i;
         return ElementalTone.Viento;
     }
 

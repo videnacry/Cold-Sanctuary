@@ -1,9 +1,23 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// Una "frase" del pensamiento (docs/anima-architecture.md §6, §10.2): pertenece a un tono elemental,
-/// tiene forma positiva y negativa, y partes con ciclo de vida — [nace, crece, se reproduce]. La 4ª
-/// etapa (muere/silencio) NO es texto: es el silencio al que solo llega una mente muy poderosa.
+/// Clasificación de una frase (docs/anima-architecture.md §6/§10). TODO es una frase: una vivencia, una
+/// asana, un hechizo, un pensamiento elemental idle, un deseo base.
+/// </summary>
+public enum PhraseCategory
+{
+    Vivencia,    // experiencia de vida — modela las aptitudes base al crear un personaje
+    Asana,       // postura de yoga (habilidad corporal)
+    Hechizo,     // conjuro (habilidad mágica)
+    Elemental,   // pensamiento idle con tono elemental
+    Deseo        // deseo base: trabajar / cuidar / acompañar / comer / dormir…
+}
+
+/// <summary>
+/// Una "frase" del pensamiento (docs/anima-architecture.md §6, §10.2): pertenece a una CATEGORÍA y a un
+/// tono elemental, tiene forma positiva y negativa, y partes con ciclo de vida — [nace, crece, se
+/// reproduce]. La 4ª etapa (muere/silencio) NO es texto: es el silencio al que solo llega una mente muy
+/// poderosa.
 ///
 /// Biblioteca COMPARTIDA (flyweight): todas las ánimas referencian las mismas frases; el "alma" concreta
 /// de cada ser sale de sus PESOS (tono/aptitudes/humores), no de contenido único por ser.
@@ -11,12 +25,21 @@ using System.Collections.Generic;
 public class MindPhrase
 {
     public readonly ElementalTone tone;
+    public readonly PhraseCategory category;
     public readonly string[] positive;   // [nace, crece, reproduce]
     public readonly string[] negative;
 
-    public MindPhrase(ElementalTone t, string[] pos, string[] neg)
+    /// <summary>Si puede asignarse al azar al crear un personaje (para vivencias).</summary>
+    public readonly bool randomAssignable;
+    /// <summary>Si puede asignarse a más de un ser (evita que nazcan con las mismas vivencias si es false).</summary>
+    public readonly bool reusable;
+
+    public MindPhrase(ElementalTone t, string[] pos, string[] neg,
+                      PhraseCategory cat = PhraseCategory.Elemental,
+                      bool randomAssignable = true, bool reusable = true)
     {
         tone = t; positive = pos; negative = neg;
+        category = cat; this.randomAssignable = randomAssignable; this.reusable = reusable;
     }
 }
 
