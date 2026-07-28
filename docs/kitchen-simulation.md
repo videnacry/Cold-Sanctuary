@@ -21,6 +21,15 @@ Al entrar por primera vez a la cocina, un **paseo guiado** (compañero anfitrió
 Cada parada desbloquea su interacción y deja una **misión-tutorial** corta. Reutiliza el sistema de
 misiones por área ([`area-missions-spec.md`](area-missions-spec.md)).
 
+**Quién enseña, y cómo.** El **personaje presente** en el área (p. ej. Goluis) procesa el **pensamiento de
+"enseñar a los nuevos"** — un pensamiento presente **en todas las áreas** (docs anima §11.7): es un
+`MindPhrase` con **`lifecycle = OnceThenGone`** (enseña la primera vez y luego calla) o `DecaysPerUse`
+(insiste menos con el tiempo), **peso** alto cuando hay un novato cerca, y **gate por aptitud** (solo
+enseña quien tiene `sociability`/`discipline` suficiente). La **introducción** en sí usa la **petición →
+alma compartida** (docs anima §11.7): el veterano "invita" al novato (sí/no); al aceptar, comparten alma
+un momento y **caminan juntos** al recorrer las paradas del área. Aquí también se puede **liberar la mente
+de Kushal** (`FollowBrain`) para que siga al anfitrión por la cocina.
+
 ## 2. Progresión de rol (de lavaplatos a cocinero)
 El personaje **asciende** haciendo tareas, de lo simple a lo complejo:
 1. **Limpieza (pinche/lavaplatos)** — limpiar **suelo → paredes → plancha → mesones → refrigeradora →
@@ -130,7 +139,22 @@ No hacerlo de golpe. Escalera propuesta, cada paso jugable y verificable por con
 **Mínimo jugable primero:** A + B (cocina Meso jugable de punta a punta) → luego D (la unión Micro/Meso,
 que es la gran novedad).
 
-## 13. Piezas de código que ya existen y se reutilizan
+## 13. Próxima área para principiantes: **El Huerto** (recomendada)
+Tras la cocina, la 2ª área principiante debería ser **El Huerto/Jardín**, porque:
+- **Continúa la historia del microworld**: la era del **fuego** (cocina, Guardián del Fuego) da paso al
+  **Neolítico / revolución agrícola** — el siguiente escalón de [`mob-quests-early.md`](mob-quests-early.md).
+  Su histórica, **La Sembradora**, ya está autorada (arquetipo **Curar/atender**, elemento **N**).
+- **Cierra un bucle económico con la cocina**: el Huerto **produce los ingredientes** que la cocina cocina
+  (grano/verduras → contenedores). Enseña producción→consumo de forma tangible.
+- **Es suave para principiantes**: sembrar → regar/atender → cosechar (acciones espaciales simples, sin
+  peligro), con el mismo molde de misiones por área que la cocina.
+- **Reutiliza sistemas ya hechos**: `SanctuaryResources`/`AreaProducer` (Food), farming/`PlayableCreature`.
+- **Su giro conecta con el resto**: el excedente trae propiedad/jerarquía/primeras disputas → puente
+  natural hacia la mecánica de conflicto (fuertes vs débiles) del mundo-insecto y del santuario.
+Alternativas menores: **FuelLab** (Prometeo, sigue el hilo del fuego) o **Estudio/Textil** (arte:
+Mano de Lascaux/Enheduanna). Pero el **Huerto** es el que mejor encadena *historia + bucle con la cocina*.
+
+## 14. Piezas de código que ya existen y se reutilizan
 - Entrada al Micro: `VirtualizationMachine` + `RealityShiftController` + `MobWorldLoader`.
 - Mundo mob: `MobResident`/`MobWorldDirector`/`YogaPortal`/`MobSpawnPoint` (+ builder).
 - Avatares: `RobotAvatar`/`AvatarController`/`SurfaceWalker` (`AvatarLocomotion` Ground/Climb/Flight).

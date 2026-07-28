@@ -62,6 +62,27 @@ public struct Aptitudes
             case AptitudeKind.Discipline:   discipline   += amt; break;
         }
     }
+
+    /// <summary>Lee el valor de la aptitud indicada (para gatear pensamientos/acciones por aptitud).</summary>
+    public float Get(AptitudeKind k)
+    {
+        switch (k)
+        {
+            case AptitudeKind.Agility:      return agility;
+            case AptitudeKind.Perception:   return perception;
+            case AptitudeKind.Strength:     return strength;
+            case AptitudeKind.BodyMass:     return bodyMass;
+            case AptitudeKind.Adaptability: return adaptability;
+            case AptitudeKind.Composure:    return composure;
+            case AptitudeKind.Endurance:    return endurance;
+            case AptitudeKind.Reasoning:    return reasoning;
+            case AptitudeKind.Memory:       return memory;
+            case AptitudeKind.Creativity:   return creativity;
+            case AptitudeKind.Sociability:  return sociability;
+            case AptitudeKind.Discipline:   return discipline;
+            default:                        return 0f;
+        }
+    }
 }
 
 /// <summary>

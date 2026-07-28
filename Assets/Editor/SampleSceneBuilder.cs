@@ -295,34 +295,46 @@ public static class SampleSceneBuilder
         GameObject group = new GameObject("PossessionSandbox_AUTO");
         group.transform.SetParent(parent);
 
-        // Ser DÉBIL: el jugador (posesión 2) supera su relevancia propia (1) → lo domina.
+        // Ser DÉBIL (selfRelevance 1): la posesión del jugador (power 2 > 1) lo domina → lo mueves con WASD.
         GameObject weak = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         weak.name = "Anima_Debil"; weak.transform.SetParent(group.transform);
         weak.transform.position = new Vector3(-3f, 1f, 16f);
         weak.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Debil_MAT", new Color(0.5f, 0.7f, 0.5f));
         weak.AddComponent<AiBrain>().selfRelevance = 1f;
-        weak.AddComponent<PlayerBrain>().possessionRelevance = 2f;
         weak.AddComponent<AnimaController>();
 
-        // Ser FUERTE: la misma posesión (2) NO supera su relevancia propia (3) → su IA conserva el mando.
+        // Ser FUERTE (selfRelevance 3): la misma posesión (2 < 3) NO lo domina → su IA conserva el mando.
         GameObject strong = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         strong.name = "Anima_Fuerte"; strong.transform.SetParent(group.transform);
         strong.transform.position = new Vector3(0f, 1f, 16f);
         strong.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Fuerte_MAT", new Color(0.7f, 0.4f, 0.4f));
         strong.AddComponent<AiBrain>().selfRelevance = 3f;
-        strong.AddComponent<PlayerBrain>().possessionRelevance = 2f;
         strong.AddComponent<AnimaController>();
 
-        // Caster con el hechizo (para probar posesión dinámica en runtime vía PossessNearest()).
-        GameObject caster = new GameObject("PossessionCaster");
-        caster.transform.SetParent(group.transform);
-        caster.transform.position = new Vector3(3f, 1f, 16f);
-        PossessionSpell spell = caster.AddComponent<PossessionSpell>();
-        spell.power = 2f; spell.range = 12f;
+        // "Kushal": su mente liberada SIGUE al cuerpo débil (que conduce el jugador) por la zona.
+        GameObject follower = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        follower.name = "Kushal_Follow"; follower.transform.SetParent(group.transform);
+        follower.transform.position = new Vector3(-5f, 1f, 16f);
+        follower.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Kushal_Follow_MAT", new Color(0.35f, 0.55f, 0.85f));
+        follower.AddComponent<AiBrain>().selfRelevance = 1f;
+        FollowBrain fb = follower.AddComponent<FollowBrain>();
+        fb.target = weak.transform; fb.relevance = 1.5f;   // por encima del idle → conduce mientras siga
+        follower.AddComponent<AnimaController>();
 
-        Debug.Log("[SampleSceneBuilder] Possession sandbox: en Play, «Anima_Debil» pasa a control " +
-                  "«Jugador» (posesión 2 > selfRelevance 1) y «Anima_Fuerte» queda en «IA» (2 < 3). " +
-                  "Ver logs [Control]. El PossessionCaster permite probar PossessNearest() (docs anima §11.5).");
+        // El "alma" del jugador: posee al más cercano (el débil) al empezar; Tab intenta saltar al otro.
+        GameObject core = new GameObject("PlayerCore_AUTO");
+        core.transform.SetParent(group.transform);
+        core.transform.position = new Vector3(-3f, 1f, 14f);   // más cerca del débil que del fuerte
+        PossessionSpell spell = core.AddComponent<PossessionSpell>();
+        spell.power = 2f; spell.range = 30f;
+        PlayerCore pc = core.AddComponent<PlayerCore>();
+        pc.spell = spell; pc.possessNearestOnStart = true;
+        pc.followCamera = false;   // no pelear con la cámara del PlayerController real en este sandbox
+
+        Debug.Log("[SampleSceneBuilder] Possession sandbox: en Play el jugador posee «Anima_Debil» " +
+                  "(2 > 1) y lo mueves con WASD; «Kushal_Follow» lo sigue; con Tab intentas saltar a " +
+                  "«Anima_Fuerte» pero su IA aguanta (2 < 3). Ver logs [Control]/[Jugador]/[Posesión] " +
+                  "(docs anima §11.5). Nota: WASD mueve también al Player real (comparten input).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

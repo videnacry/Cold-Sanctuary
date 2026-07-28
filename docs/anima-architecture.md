@@ -239,3 +239,33 @@ tiene dos modos:
 `PhraseCategory` + flags en `MindPhrase`; `ThoughtField`; `Mind` lee campos (empuje de tono + nudge de
 humores). **Falta:** poblar la piscina de **vivencias** desde las biografías; asana/hechizo como frases
 reales; la **multi-instancia/controlador** (posesión); modo narración.
+
+### 11.7 Pensamientos escalables · movilidad/cambio de cuerpo · peticiones→alma compartida (2026-07-29)
+
+**Pensamientos escalables (hecho).** Cada `MindPhrase` gana:
+- **`weight`** — valor escalable de selección (base 1; `<1` "pocos por debajo", `>1` "por encima"). `Mind`
+  hace un **pick ponderado** por peso entre los pensamientos propios de ese tono.
+- **`lifecycle`** (`ThoughtLifecycle`): **Persistent** / **OnceThenGone** (existe hasta usarse una vez,
+  luego se va) / **DecaysPerUse** (pierde peso con cada uso). `Mind` lo aplica a los pensamientos **propios**.
+- **Gate por aptitud** (`gated` + `gateAptitude` + `gateMin`): el pensamiento solo se piensa/muestra si el
+  ser cumple una aptitud mínima (`Aptitudes.Get(AptitudeKind)`). Recordar: hay **aptitudes además de
+  humores** → se puede gatear por cualquiera de las 12.
+
+**Movilidad + cambio de cuerpo (hecho).** El "script del jugador" es **`PlayerCore`**: el **input
+persistente** (alma) donde viven los mandos y el **body-swap**. Al cambiar de cuerpo (`swapKey`): **libera**
+el anterior (su IA retoma), **secuestra** (posee) el nuevo vía `PossessionSpell`, y **realinea la cámara**.
+El cuerpo poseído se mueve por su **`PlayerBrain.Act()`** (lee input → mueve ESE cuerpo). Así el jugador es
+solo un input que salta de ánima en ánima.
+
+**Seguir (hecho).** `FollowBrain` = cerebro de IA que conduce al ser hacia un objetivo (sin objetivo no
+reclama). Con esto se "libera la mente de Kushal para que siga a su compañero por un área". Es el **primer
+ladrillo** de las acciones entre personajes.
+
+**Peticiones entre personajes → ALMA COMPARTIDA (diseño).** Las acciones entre personajes (pedir ayuda,
+acompañar, ir juntos a un sitio) **nacen de la posesión**: un personaje **pide** algo a otro y el
+destinatario solo responde **sí/no**. Si **sí** → se ejecuta una **posesión consentida** = **un alma en
+ambos cuerpos**: por un momento comparten **las mismas frases** y **hacen las mismas acciones** (p. ej. los
+dos caminar al mismo lugar — el caso de las **introducciones a nuevas áreas**, donde el veterano "lleva" al
+novato). Se modela reusando `PossessionSpell`/relevancia + una instancia de `Anima`/mente compartida
+(enlaza con la **multi-instancia "madre"** §5/§10.3). MVP siguiente: `HelpRequest` (pregunta sí/no) que, al
+aceptar, inserta en el destinatario un cerebro que replica el objetivo del emisor (hoy: `FollowBrain`).

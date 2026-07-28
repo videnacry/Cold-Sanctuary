@@ -14,6 +14,14 @@ public enum PhraseCategory
     Deseo        // deseo base: trabajar / cuidar / acompañar / comer / dormir…
 }
 
+/// <summary>Ciclo de vida de un pensamiento en la mente que lo tiene (docs anima §11).</summary>
+public enum ThoughtLifecycle
+{
+    Persistent,     // siempre disponible
+    OnceThenGone,   // existe hasta usarse por primera vez, luego desaparece
+    DecaysPerUse    // pierde peso con cada uso (se apaga poco a poco)
+}
+
 /// <summary>
 /// Una "frase" del pensamiento (docs/anima-architecture.md §6, §10.2): pertenece a una CATEGORÍA y a un
 /// tono elemental, tiene forma positiva y negativa, y partes con ciclo de vida — [nace, crece, se
@@ -43,13 +51,26 @@ public class MindPhrase
     /// </summary>
     public readonly string source;
 
+    /// <summary>Peso base de selección (valor escalable): 1 = normal; &lt;1 pocos por debajo; &gt;1 por encima.</summary>
+    public readonly float weight;
+    /// <summary>Ciclo de vida en la mente: persistente / una vez / decae por uso.</summary>
+    public readonly ThoughtLifecycle lifecycle;
+    /// <summary>Si el pensamiento requiere una aptitud mínima para poder pensarse/mostrarse.</summary>
+    public readonly bool gated;
+    public readonly AptitudeKind gateAptitude;
+    public readonly float gateMin;
+
     public MindPhrase(ElementalTone t, string[] pos, string[] neg,
                       PhraseCategory cat = PhraseCategory.Elemental,
-                      bool randomAssignable = true, bool reusable = true, string source = null)
+                      bool randomAssignable = true, bool reusable = true, string source = null,
+                      float weight = 1f, ThoughtLifecycle lifecycle = ThoughtLifecycle.Persistent,
+                      bool gated = false, AptitudeKind gateAptitude = AptitudeKind.Reasoning, float gateMin = 0f)
     {
         tone = t; positive = pos; negative = neg;
         category = cat; this.randomAssignable = randomAssignable; this.reusable = reusable;
         this.source = source;
+        this.weight = weight; this.lifecycle = lifecycle;
+        this.gated = gated; this.gateAptitude = gateAptitude; this.gateMin = gateMin;
     }
 }
 

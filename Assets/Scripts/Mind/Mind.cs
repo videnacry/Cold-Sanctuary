@@ -74,11 +74,11 @@ public class Mind : MonoBehaviour
     void Think()
     {
         ElementalTone tone = PickTone();
-        // Prefiere expresar SUS propias vivencias de ese tono; si no tiene, tira de la biblioteca compartida.
-        List<MindPhrase> options = ThoughtsForTone(tone);
-        if (options.Count == 0) options = PhraseLibrary.ForTone(tone);
+        // Prefiere expresar SUS propias vivencias de ese tono (gateadas por aptitud); si no, la biblioteca.
+        List<MindPhrase> owned = ThoughtsForTone(tone);
+        List<MindPhrase> options = owned.Count > 0 ? owned : PhraseLibrary.ForTone(tone);
         if (options.Count == 0) return;
-        MindPhrase phrase = options[Random.Range(0, options.Count)];
+        MindPhrase phrase = PickWeighted(options);
 
         bool positive = humores.Positividad >= 0f;
         string[] parts = positive ? phrase.positive : phrase.negative;
@@ -103,6 +103,49 @@ public class Mind : MonoBehaviour
         // Expresarse gasta energía; el tono del ánimo deja un poso químico.
         humores.Consume(Humor.Glucosa, 0.02f * spoken);
         humores.Produce(positive ? Humor.Serotonina : Humor.Cortisol, 0.02f);
+
+        ApplyLifecycle(phrase);   // una-vez / decae-por-uso (solo para pensamientos propios)
+    }
+
+    // ── Peso escalable + ciclo de vida de los pensamientos propios (docs anima §11) ──────────────
+    System.Collections.Generic.Dictionary<MindPhrase, int> _uses;
+
+    int UsesOf(MindPhrase p) => (_uses != null && _uses.TryGetValue(p, out int n)) ? n : 0;
+
+    /// <summary>Peso efectivo: el base de la frase, reducido por usos si su ciclo es DecaysPerUse.</summary>
+    float EffectiveWeight(MindPhrase p)
+    {
+        float w = Mathf.Max(0.0001f, p.weight);
+        if (p.lifecycle == ThoughtLifecycle.DecaysPerUse) w /= (1 + UsesOf(p));
+        return w;
+    }
+
+    /// <summary>Pick ponderado por EffectiveWeight (los pensamientos de más peso salen más).</summary>
+    MindPhrase PickWeighted(List<MindPhrase> options)
+    {
+        float total = 0f;
+        foreach (MindPhrase p in options) total += EffectiveWeight(p);
+        if (total <= 0f) return options[Random.Range(0, options.Count)];
+        float r = Random.value * total;
+        foreach (MindPhrase p in options)
+            if ((r -= EffectiveWeight(p)) < 0f) return p;
+        return options[options.Count - 1];
+    }
+
+    /// <summary>Tras usar un pensamiento propio: si es OnceThenGone se va; si DecaysPerUse pierde peso.</summary>
+    void ApplyLifecycle(MindPhrase p)
+    {
+        if (!thoughts.Contains(p)) return;   // solo los propios tienen ciclo de vida (la biblioteca es fija)
+        switch (p.lifecycle)
+        {
+            case ThoughtLifecycle.OnceThenGone:
+                thoughts.Remove(p);
+                break;
+            case ThoughtLifecycle.DecaysPerUse:
+                if (_uses == null) _uses = new System.Collections.Generic.Dictionary<MindPhrase, int>();
+                _uses[p] = UsesOf(p) + 1;
+                break;
+        }
     }
 
     /// <summary>Tono elemental por pesos de aptitudes + humores + campos de pensamiento (docs §5).</summary>
@@ -144,12 +187,15 @@ public class Mind : MonoBehaviour
         return Mathf.Clamp(Mathf.FloorToInt(power * 3f), 0, 4);
     }
 
-    /// <summary>Las vivencias/pensamientos propios de este ser que son de un tono dado.</summary>
+    /// <summary>Las vivencias/pensamientos propios de este ser, del tono dado y que pasan su gate de aptitud.</summary>
     List<MindPhrase> ThoughtsForTone(ElementalTone tone)
     {
         List<MindPhrase> list = new List<MindPhrase>();
         foreach (MindPhrase t in thoughts)
-            if (t != null && t.tone == tone) list.Add(t);
+            if (t != null && t.tone == tone && PassesGate(t)) list.Add(t);
         return list;
     }
+
+    /// <summary>¿Este ser cumple el requisito de aptitud del pensamiento? (sin gate → siempre sí).</summary>
+    bool PassesGate(MindPhrase p) => !p.gated || aptitudes.Get(p.gateAptitude) >= p.gateMin;
 }

@@ -208,14 +208,31 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 - [ ] **E — Mundo-insecto vivo**: gusano→formas; conflictos fuerte/débil; misiones; enganchar al Guardián del Fuego.
 - [ ] **F/G — Recetas ricas (química) + puente al santuario** (alimentar carnívoros con bonds).
 - **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
+- **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
+  agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
 
 ## Siguiente (código)
-- [ ] **Posesión real**: enganchar `PlayerBrain.Act()` a input de verdad (mover/interactuar el cuerpo
-      poseído) e integrar `PossessionSpell` con el hechizo del jugador (crecer power/range al mejorarlo).
+- [ ] **Peticiones → alma compartida** (`HelpRequest` sí/no → posesión consentida): acciones entre
+      personajes; la intro de área "veterano lleva al novato". `FollowBrain` es el primer ladrillo (hecho).
+- [ ] **Posesión real (resto)**: `PlayerBrain.Act()` ya mueve el cuerpo poseído; falta **interactuar**
+      (F/clic enrutado al cuerpo) e integrar `PossessionSpell` con el hechizo real del jugador (crecer power/range).
 - [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
 - [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
-- [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna/Alfarero-ampliado y eras posteriores;
+- [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
+
+## Hecho (2026-07-29) — PR #16 (control + históricos + cocina + movilidad)
+- [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/
+      `PossessionSpell` (docs anima §11.5).
+- [x] **Movilidad + cambio de cuerpo**: `PlayerCore` (input persistente: body-swap con `Tab` — libera el
+      anterior, secuestra el nuevo, realinea cámara); `PlayerBrain.Act()` mueve el cuerpo poseído con WASD.
+- [x] **`FollowBrain`**: la mente liberada sigue a un objetivo (Kushal sigue a su compañero).
+- [x] **Pensamientos escalables**: `MindPhrase` con `weight` + `lifecycle` (Persistent/OnceThenGone/
+      DecaysPerUse) + gate por aptitud (`AptitudeKind`/`gateMin`); `Mind` hace pick ponderado, gatea y aplica
+      ciclo de vida. `Aptitudes.Get(AptitudeKind)` añadido.
+- [x] **Históricos**: Guardián del Fuego, La Sembradora, El Alfarero.
+- [x] **Diseño**: `kitchen-simulation.md` (1ª simulación) + anima §11.7 (pensamientos escalables, movilidad,
+      peticiones→alma compartida). Recomendada 2ª área: el Huerto.
 
 ## Hecho (2026-07-28)
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
