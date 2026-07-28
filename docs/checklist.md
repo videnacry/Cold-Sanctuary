@@ -22,7 +22,8 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] Conectar aptitudes a mecánicas: `agility`→velocidad/maniobra, `perception`→detección+calidad
       de asana, `strength`→daño/carga, `bodyMass`→física/saciedad, `adaptability`→velocidad de aprendizaje.
 - [ ] Unificar con `PlayerStats` (`observationRadius`↔`perception`, `velocity`↔`agility`) y
-      `BodyPartStats` (`flex`/`str`). Consolidar en `LivingEntity` al implementar `NPCBase`.
+      `BodyPartStats` (`flex`/`str`). **Ya consolidado en `Anima`** (migración #14); queda mapear
+      `observationRadius`/`velocity`↔aptitudes del todo.
 - [ ] Modelar el rasgo mental de **Panterilia** (exageración de la realidad / influencia de terceros).
 - [ ] Revisar `adaptability` para animales (hoy solo en companions).
 - [ ] Conectar `flexibility` a la dimensión `flex` de `BodyPartStats` (se entrena con yoga; universal).
@@ -39,9 +40,9 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       (oso evita lobo con manada; manada grande lo ahuyenta). Dinámico, no multiplicador estático de dieta.
 - [ ] **Aura/estatus mágico del humano**: contador de usos destructivos de magia (decae con el tiempo) que
       modula si los animales lo temen (huida/cautela) o lo ven como inspirador (bonds fáciles). Requiere magia.
-- [ ] **Modelo de personaje unificado (`NPCBase : LivingEntity`)**: hogar de stats + `ITarget` + población +
-      aptitudes (prerequisito para que companions/otros NPCs sean presa). **Control aparte** (cerebro
-      enchufable: input o IA) para que todo NPC sea jugable/intercambiable. **No** heredar de `Animal`.
+- [~] **Modelo de personaje unificado** — `NPCBase` **descartado**; ya es la **clase única `Anima`**
+      (migración #14). Falta: `ITarget` + población en `Anima` (para que companions/otros NPCs sean presa) y
+      el **control aparte** (cerebro enchufable: input o IA) para que todo `Anima` sea jugable/intercambiable.
 - [ ] **Territorios + poblaciones**: `Territory` trigger con `residents` (enter/exit, como `MediumZone`/
       `SanctuaryArea`) → escaneos locales (arregla el perf de `SenseThreats`/banco); barreras/conectores para estabilidad.
 - [ ] **Montaje de escena** (`SampleSceneBuilder`): crear **nidos/madrigueras primero**, luego poblar
@@ -93,7 +94,7 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       (enganchar a `SanctuaryDirector`), regla de visibilidad multi-santuario en guerra, y sustituir el
       HUD prototipo por UI declarativa.
 - [~] **B — Farming-como-juego (tensión).** **MVP + feel de combo hechos (2026-07-23):**
-      `PlayableCreature` (tensión = `LivingEntity.stress` o local) + `PlayController` (tecla V);
+      `PlayableCreature` (tensión = `Anima.stress` o local) + `PlayController` (tecla V);
       al serenarse suelta recursos (`SanctuaryResources`) + monedas; `IInteractable` "dar comida y agua"
       → sacia (`fatReserves`) y descansa. **V2 feel gato/perro hecho:** excitación/combo (descarga
       escala con excitación), **atrapada** (quedarte pegado resetea el combo), reacción de la criatura
@@ -103,7 +104,7 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       +vida/+maná + vida actual/daño, mostrado en el HUD). **Refinamiento hecho:** el juego es
       **desbloqueable** (gateo `PlayUnlocked` = criada/relajada/vínculo; si no, ley natural) y **puede
       hacer daño** (pérdida de control al excitarse → `CharacterLevel.TakeDamage` si no esquivas).
-      **Falta:** leer el vínculo real de `LivingEntity.bonds` (hoy flags placeholder), conmutar de verdad
+      **Falta:** leer el vínculo real de `Anima.bonds` (hoy flags placeholder), conmutar de verdad
       a la depredación de `Animal` cuando no está desbloqueada, mecánica de **esquiva** propia,
       generalizar el target de combate (`CurrentTarget` es `IngredientMob`) y enganchar vida/maná al combate.
 - [ ] **C — Teletransportador "aeropuerto".** `SanctuaryTeleporter` bidireccional entre santuarios
@@ -120,10 +121,10 @@ Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna v
       fuerza/peso, velocidad ∝ fuerza·agilidad, coste de energía ∝ peso/fuerza vía `SpendEnergy`).
       **Falta:** unificar del todo la fuente de aptitudes con `NPCBase`.
 - [~] **Aptitudes universales** (2026-07-24): **hecho vía interfaz `IAptitudes`** (12 getters) que
-      implementan `LivingEntity` (ahora hogar de las 12 — agility/perception activas, resto latentes),
+      implementan `Anima` (ahora hogar de las 12 — agility/perception activas, resto latentes),
       `CompanionBase` y `PlayerStats` (mapeo parcial). `DerivedStats.From(IAptitudes)` y `CharacterLevel`
       (opt-in `deriveAptitudesFromComponent`) leen cualquier ser vivo uniforme.
-- [~] **Migración a clase única `Anima`** — rama `feat/anima-migration` (**sin mergear hasta compilar**).
+- [x] **Migración a clase única `Anima`** — **PR #14 mergeada a master (2026-07-28)**; falta que TÚ compiles.
       Hecho (2026-07-28): (1) **`LivingEntity` renombrada a `Anima`** en todo el código (`Anima.cs`), 34 refs;
       (2) **`CompanionBase : Anima`** — quitadas las 12 aptitudes duplicadas + `stress` (heredados), 3 hooks
       abstractos implementados (stubs), `fatigue`/`mood` propios; (3) **`IMindSimple.cs` borrado** (sin uso);
@@ -182,17 +183,33 @@ Pilar `Mind` como componente enchufable. **MVP + composición hechos (2026-07-24
       (insertar instancia/madre en runtime con relevancia); asana/hechizo como frases reales; multi-instancia.
 - [ ] **Flag futuro** `absorbsPublic` si algún día un bloqueado debe además recibir del pool (hoy: no recibe).
 
-## ⚠ Pendiente de TI (compilar en Unity antes de mergear)
-- [ ] **PR #14 — migración Anima** (`LivingEntity`→`Anima`; `CompanionBase`/`PlayerStats` : `Anima`;
-      `WorldCharacter` lee de `Anima`). Refactor del núcleo **sin compilar**; conectado a tu master en vivo.
-      **Bloqueado a propósito.** Pasos: haz `pull` de master (ya trae la PR #15), abre `feat/anima-migration`
-      en Unity, compila, pégame errores (o confirma OK); resuelvo el conflicto con la #15 en
-      `SampleSceneBuilder.cs`/`Mind.cs` (trivial: comentario + inserción de `MigrationDiagnostics`) y mergeo.
-      `MigrationDiagnostics_AUTO` vuelca validación por consola en Play.
+## ⚠ TESTING EN CURSO — validar en Unity (PRs #14 y #15 ya en master)
+Ambas mergeadas el 2026-07-28. **Esta compilación es la primera validación real** (nada se compiló aquí).
+Orden de prueba (ver `testing-checklist.md`): **§10 Migración Anima → §7 Regresión → §9 Mind**.
+- [ ] **Compila** tras `pull` de master (el rename `LivingEntity`→`Anima` toca todo el núcleo). Si falla,
+      **pégame el error del Console** y lo arreglo.
+- [ ] **§10** `MigrationDiagnostics_AUTO` en consola: `CompanionBase/Animal hereda de Anima: True`, aptitudes
+      coincidentes campo↔`IAptitudes`. Ojo: NPC arrancan `physicalResistance=1` (antes `strength=0`) →
+      posible re-tuning de `promotionStrength`.
+- [ ] **§9** sandbox `MindSandbox_AUTO`: cada ánima tiende a su tono; dentro del `ThoughtField(Agua)` se
+      inclina a Agua + sube serotonina; logs `[Frases]` (conteos de pools, biografías, reparto Estricta/Libre
+      con Magnate + Ötzi 🔒).
+- **Si hay que deshacer:** `git revert -m 1 cd1a95f` (deshace #14) y/o `git revert -m 1 25f618a` (deshace #15);
+      o reset duro a `022e224` (master pre-Mente) + `push --force`. El repo solo versiona `.cs` → no toca tu
+      trabajo visual, y master no afecta tu editor hasta el `pull`.
+
+## Siguiente (código, tras el testing)
+- [ ] **Controlador intercambiable** (jugador-como-input ↔ IA) y **posesión dinámica** (insertar instancia/
+      madre en runtime con relevancia). Cimiento común de "jugador como input" y del hechizo de posesión.
+- [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
+- [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
+- [ ] **Más históricos** con el patrón `Historico()` ya validado por Ötzi (docs/mob-characters.md).
 
 ## Hecho (2026-07-28)
-- [x] **Pilar Mente**: clasificación de frases, campos de pensamiento, pools de vivencias (biografías reales),
-      reparto Estricta/Libre con bloqueo de propiedad, y Ötzi como primer histórico. **PR #15 mergeada.**
+- [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
+      (biografías reales), reparto Estricta/Libre con bloqueo de propiedad, y Ötzi como primer histórico.
+- [x] **Migración Anima** (PR #14 mergeada): `LivingEntity`→`Anima` (clase única); `Animal`/`CompanionBase`/
+      `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`. **Pendiente: compilar.**
 - [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
 
 ## Hecho (2026-07-23)
