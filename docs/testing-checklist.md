@@ -1,25 +1,34 @@
 # Checklist de pruebas (Mesocosmos: progresión, farming, recursos, trepar, cocina)
 
-Registro de pruebas del build hasta 2026-07-28. **Pasada de testing (automatizada) hecha el 2026-07-28**:
+Registro de pruebas del build hasta 2026-07-29. **Pasada de testing (automatizada) hecha 2026-07-28/29**:
 la mayoría confirmado con evidencia de `Logs/Editor.log` (ver "Estado de sesión"). **Lo que queda requiere
-juego MANUAL** (WASD / mantener tecla): rama de daño de "Dura", trepar, 4 esferas de Mesopotamia + YogaPortal,
-misión de yoga, `ThoughtField_Agua`, velocidad de tiempo. Los ítems `[x]` son historial verificado.
+juego MANUAL** (WASD / mantener tecla / apuntar+confirmar): rama de daño de "Dura", trepar, 4 esferas de
+Mesopotamia + YogaPortal, misión de yoga, `ThoughtField_Agua`, velocidad de tiempo, flujo del motor de
+Virtualización (`VirtualPointer` + estaciones + receta, Kitchen/Garden). Los ítems `[x]` son historial verificado.
 
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la **PR #16** (Control/posesión + movilidad/body-swap + Cocina paso A +
-  históricos + extensiones de Mind — commits hasta `dbc2366`) ya está **sincronizado** repo↔proyecto
-  vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado** — ver sección 11. El repo recibe cambios de un
-  compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si
-  hay commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
-  hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- Todo lo mergeado hasta la **PR #17** (Cocina paseo+desayuno paso B + motor de Virtualización
+  puntero/estaciones/recetas, Kitchen y Garden — commits hasta `c26df3b`) ya está **sincronizado**
+  repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado** — ver secciones 11/12. El repo
+  recibe cambios de un compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar
+  `git log` al retomar** por si hay commits nuevos sin sincronizar (buscar archivos `.cs`
+  nuevos/modificados/borrados desde el último hash conocido y copiarlos a mano con `cp`/PowerShell
+  `Copy-Item`, replicando borrados también).
 - **Bug real encontrado y arreglado en PR #16** (commiteado `40cfbd1`): `AnimaController.PickBest()`
   no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo interfaz, no
   `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de cualquier
   `HelpRequest` aceptada. Fix: cast a `Object` en el null-check. Detalle en sección 11.
+- **Bug real encontrado y arreglado en PR #17** (sin commitear todavía):
+  `GuidedTour`/`Assets/Scripts/Kitchen/GuidedTour.cs` dejaba al anfitrión **atascado para siempre en la
+  primera estación** — el `stopDistance` por defecto de `FollowBrain` (2) es mayor que el
+  `arriveDistance` del paseo (1.5), así que el anfitrión se paraba en una "zona muerta" (~1.65 unidades)
+  y nunca disparaba el `Advance()`. Fix: `GuidedTour.StartTour()` ahora fija
+  `_walk.stopDistance = arriveDistance * 0.5f` al crear el `FollowBrain` del paseo. Re-testeado: el
+  paseo completa las 4 estaciones y termina correctamente. Detalle en sección 12.
 - La **Cocina legacy** (`KitchenScaleController`/`KitchenEntrance`, miniaturización + trigger) fue
   **borrada por el equipo el 2026-07-23** — reemplazada por `VirtualizationMachine`+
   `RealityShiftController`+`MobWorldLoader` (genérico, ver `CLAUDE.md`). Un plan mío pendiente de una
@@ -314,6 +323,28 @@ Evidencia de `Logs/Editor.log` de una corrida completa en Play:
 - [ ] **Virtualización — huerto** (`GardenVirtualization_AUTO`): misma mecánica, receta agrícola
       (compostero/cobertizo/semillero/agua/parcela) en 9 pasos: abonar→arar→trasplantar→regar→cosechar.
 - [ ] **Regresión**: nada de lo anterior (movimiento/cámara/asanas) se rompe con los nuevos scripts.
+
+## 12. Cocina paseo+desayuno (paso B) + motor de Virtualización (PR #17, mergeada 2026-07-29)
+`KitchenOnboarding_AUTO` ([Paseo]/[Cocina]), `VirtualizationSandbox_AUTO` ([Virtual]/[Producción]),
+`GardenVirtualization_AUTO` (misma mecánica en el Huerto). Evidencia de `Logs/Editor.log`:
+- [x] **Compila** tras sincronizar los 13 archivos del PR (`Kitchen/` paso B, `Virtualization/` completo,
+      `SampleSceneBuilder.cs`, `PlayerController.cs`) — 0 errores CS.
+- [x] **BUG REAL encontrado y arreglado**: paseo guiado (`GuidedTour`) atascado permanentemente en la
+      primera estación por un desajuste de umbrales (`FollowBrain.stopDistance`=2 > `arriveDistance`=1.5).
+      Ver detalle y fix en "Estado de sesión" arriba. Confirmado con posición exacta del `Anfitrion`
+      estancada en (9.6, 1, 15.6) — 1.65u de la Nevera, fuera del radio de "llegada" — durante minutos de
+      tiempo de juego sin avanzar, y confirmado resuelto tras el fix: `[Paseo] «Anfitrion» enseña
+      «Nevera»/«Plancha»/«Mesones»/«Contenedor»` seguido de `[Paseo] Fin del paseo.` en una sola pasada.
+- [x] **Loop de desayuno (paso B)**: `Cocinero`/`BreakfastCook` corre el ciclo completo sin parar
+      (nevera→toma huevos→plancha→revuelve→especia→contenedor) y `Comensal`/`Eater` come del
+      `FoodContainer` cada vez que se rellena — decenas de ciclos limpios observados, sin excepciones.
+- [~] **Motor de virtualización (`VirtualPointer`/`StationPart`/`ProductionOrder`/`TypingChallenge`,
+      Kitchen y Garden)**: las estaciones y la receta se construyen sin errores (`ProductionOrder`
+      creada con 7 pasos en Kitchen, 9 en Garden), pero **requiere input real** (flechas/ratón/touch +
+      confirmar) para ejercitar el flujo — mismo tipo de limitación que trepar (`Input.GetKey`
+      sostenido no se reproduce bien vía automatización). No se detectaron excepciones al dejarlo
+      correr sin input. **Pendiente de una pasada de juego manual** para confirmar el flujo completo
+      (apuntar en orden → confirmar → 3 desayunos/cosechas → misión cumplida).
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se

@@ -50,6 +50,10 @@ public class GuidedTour : MonoBehaviour
         // El anfitrión camina con un FollowBrain de alta relevancia re-apuntado por estación.
         _walk = gameObject.AddComponent<FollowBrain>();
         _walk.relevance = 5f;
+        // OJO: el `stopDistance` por defecto de FollowBrain (2) es mayor que `arriveDistance` (1.5) —
+        // sin este ajuste el anfitrión se para fuera del radio de "llegada" y el paseo queda atascado
+        // para siempre en la primera estación (nunca dispara el `Advance()`).
+        _walk.stopDistance = Mathf.Min(_walk.stopDistance, arriveDistance * 0.5f);
         if (_host != null) _host.RefreshBrains();
 
         Debug.Log($"[Paseo] «{name}» empieza el paseo{(guest != null ? $" con «{guest.name}»" : "")} ({stations.Length} estaciones).");
