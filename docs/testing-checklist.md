@@ -10,11 +10,23 @@ misión de yoga, `ThoughtField_Agua`, velocidad de tiempo. Los ítems `[x]` son 
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la PR #15 (Progresión/Farming/Meditación/MobWorld/Avatares/migración `Anima`/Mind)
-  ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`). El repo recibe cambios de
-  un compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si
+- Todo lo mergeado hasta la **PR #16** (Control/posesión + movilidad/body-swap + Cocina paso A +
+  históricos + extensiones de Mind — commits hasta `dbc2366`) ya está **sincronizado** repo↔proyecto
+  vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado** — ver sección 11. El repo recibe cambios de un
+  compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si
   hay commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
   hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **Bug real encontrado y arreglado en PR #16** (no committeado, pendiente de que el usuario lo pida):
+  `AnimaController.PickBest()` no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo
+  interfaz, no `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de
+  cualquier `HelpRequest` aceptada. Fix: cast a `Object` en el null-check. Detalle en sección 11.
+- La **Cocina legacy** (`KitchenScaleController`/`KitchenEntrance`, miniaturización + trigger) fue
+  **borrada por el equipo el 2026-07-23** — reemplazada por `VirtualizationMachine`+
+  `RealityShiftController`+`MobWorldLoader` (genérico, ver `CLAUDE.md`). Un plan mío pendiente de una
+  sesión anterior (`encapsulated-wondering-panda.md`, generalizar Kitchen a 5 áreas más vía
+  `AreaCombatManager`/`AreaEntrance`) **queda obsoleto** — apuntaba a los archivos borrados. No se
+  ejecutó. Si el usuario todavía quiere mobs+combate en las 5 áreas restantes, hay que rediseñarlo
+  contra la arquitectura nueva (`VirtualizationMachine`/`RealityShiftController`), no contra la vieja.
 - **Dos errores de compilación** encontrados y arreglados hasta ahora, mismo patrón ambos (falta
   `using UnityEngine;`): `Assets/Scripts/Avatar/RobotAvatar.cs` (usaba `[Tooltip(...)]`) y
   `Assets/Scripts/Mind/MindPhrase.cs` (usaba `Random.Range`). Ya sincronizados.
@@ -248,6 +260,37 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
 - [ ] **Regresión** (§7): pendiente de probar en profundidad (animales/compañeros se ven en la lista y no
       hay errores, pero no se verificó comportamiento en Play más allá de eso).
 - [ ] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado.
+
+## 11. Control/posesión + Cocina paso A (PR #16, mergeada 2026-07-29)
+`PossessionSandbox_AUTO` ([Control]/[Jugador]/[Posesión]/[Petición]) y `KitchenSandbox_AUTO` ([Cocina]).
+Evidencia de `Logs/Editor.log` de una corrida completa en Play:
+- [x] **Compila** tras sincronizar los 17 archivos nuevos/modificados del PR (`Control/`, `Kitchen/`,
+      extensiones de `Mind`, `SampleSceneBuilder.cs`) — 0 errores CS.
+- [x] **Posesión por relevancia**: `Anima_Debil` (selfRelevance 1) queda conducida por **Jugador**
+      (posesión power 2 > 1) — `[Control] «Anima_Debil» ahora conducido por: Jugador (relevancia 2,00)`.
+      `Anima_Fuerte` (selfRelevance 3) **resiste** la misma posesión (2 < 3) — se mantiene en `IA`, sin
+      log de cambio a Jugador. Coincide exactamente con el diseño.
+- [x] **`FollowBrain`**: `Kushal_Follow` queda conducido por `IA (seguir)` seleccionando el target correcto.
+- [x] **Petición → alma compartida (`HelpRequest`/`HelpResponder`)**: `Aldeano_Pide` pide ir juntos,
+      `Kushal_Follow` responde SÍ, comparten alma 8s (`FollowBrain` temporal relevancia 5), y al expirar
+      **retoma su propia mente** — `[Petición] Fin del alma compartida; «Kushal_Follow» retoma su propia
+      mente.` seguido de `[Control] «Kushal_Follow» ahora conducido por: IA (seguir) (relevancia 1,50)`.
+- [x] **Cocina paso A**: `KitchenDirtArea` genera manchas; al llegar a 5/5 activa la misión
+      (`[Cocina] ¡Suciedad sobre el umbral (5/5)! Misión de limpieza ACTIVA`); `Pinche_Limpia` (`Cleaner`
+      auto) las limpia una a una sin parar (30+ `[Cocina] Mancha «Dirt_N» limpiada.` observadas). El
+      sandbox regenera suciedad continuamente (por diseño, demo infinita) así que no se ejercitó el
+      camino de "misión completa al vaciarse" — no es un bug, solo no aplica en este sandbox.
+- [x] **BUG REAL encontrado y arreglado**: `AnimaController.PickBest()` (`Assets/Scripts/Control/
+      AnimaController.cs`) comparaba `if (b == null) continue;` sobre una variable tipada `IBrain`
+      (interfaz). Esa comparación usa el tipo estático `IBrain`, no `UnityEngine.Object` — así que
+      **no detecta un `MonoBehaviour` ya destruido** (Unity solo sobrecarga `==` en `Object`). Cuando
+      `HelpRequest.EndShare()` hace `Destroy(shared)` sobre el `FollowBrain` temporal, `PickBest()` lo
+      seguía eligiendo como `_active` y `_active.Act(this)` reventaba con `MissingReferenceException`
+      **en bucle infinito** (999+ errores/frame, todos los frames desde ese punto) ~8s después de
+      cualquier petición aceptada — bloqueaba efectivamente el Play mode. **Fix aplicado**:
+      `if ((b as Object) == null) continue;` (cast a `Object` para activar el chequeo "fake null" de
+      Unity). Sincronizado repo↔proyecto, recompilado, re-testeado: corrida completa post-petición sin
+      ningún error nuevo. **Sin commitear** (regla de la sesión — pedir antes de commitear).
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se

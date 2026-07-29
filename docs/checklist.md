@@ -237,10 +237,18 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
 
-## ⚠ Compilar en Unity (PR #16 mergeada a master)
+## ✅ Compilar en Unity (PR #16 mergeada a master) — verificado 2026-07-29
 Código nuevo aditivo (Control/ + Kitchen/ + extensiones de Mind). En Play, sandboxes con logs:
 `PossessionSandbox_AUTO` ([Control]/[Jugador]/[Posesión]/[Petición]) y `KitchenSandbox_AUTO` ([Cocina]).
-- [ ] **Compila** tras `pull`; si algo falla, pégame el error. Conteo de pools ahora `Total≈40 Vivencia≈30`.
+- [x] **Compila** tras `pull`, 0 errores CS. Ambos sandboxes probados en Play, comportamiento correcto
+      (posesión débil/fuerte, follow, petición→alma compartida, suciedad→misión→limpieza). Detalle y
+      evidencia de logs en `docs/testing-checklist.md`.
+- [x] **Bug encontrado y arreglado**: `AnimaController.PickBest()` no detectaba un `IBrain` destruido
+      (el `FollowBrain` temporal de `HelpRequest.EndShare`) porque `b == null` compara por el tipo
+      estático `IBrain`, no por `UnityEngine.Object` — Unity solo sobrecarga `==` para detectar
+      "destruido" en `Object`. Causaba `MissingReferenceException` en bucle infinito (999+ errores/frame)
+      ~8s después de cualquier peticion aceptada. Fix: `if ((b as Object) == null) continue;`. Commit
+      pendiente (no comiteo sin pedírmelo — regla de la sesión).
 
 ## Hecho (2026-07-29) — PR #16 mergeada (control + movilidad + históricos + cocina A)
 - [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/

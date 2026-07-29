@@ -38,7 +38,12 @@ public class AnimaController : MonoBehaviour
         float bestRel = float.NegativeInfinity;
         foreach (IBrain b in _brains)
         {
-            if (b == null) continue;
+            // OJO: `b == null` compara por el tipo estático `IBrain` (interfaz) y NO detecta un
+            // MonoBehaviour ya destruido (Destroy) — Unity solo sobrecarga `==` en `UnityEngine.Object`.
+            // Sin el cast, un cerebro destruido (p. ej. el FollowBrain temporal de HelpRequest.EndShare)
+            // sigue "vivo" para este chequeo y `PickBest` puede elegirlo, provocando
+            // MissingReferenceException en `_active.Act(this)`.
+            if ((b as Object) == null) continue;
             float r = b.Relevance;
             if (r > bestRel) { bestRel = r; best = b; }
         }
