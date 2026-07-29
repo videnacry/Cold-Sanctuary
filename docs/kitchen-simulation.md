@@ -123,10 +123,10 @@ asignan **misiones de alimentar a los carnívoros**:
 
 ## 12. Orden de construcción sugerido (para "dejar el nivel listo")
 No hacerlo de golpe. Escalera propuesta, cada paso jugable y verificable por consola:
-1. **A — Paseo + limpieza mancha-a-mancha (Meso).** Suciedad como objeto, umbral → misión, borrar manchas.
-   *(Reusa misiones por área; sin química todavía.)*
-2. **B — Loop de desayuno + contenedor.** Cadena nevera→plancha→especiar→contenedor; el contenedor se
-   rellena; log de raciones.
+1. **A — Paseo + limpieza mancha-a-mancha (Meso). [HECHO]** Suciedad como objeto, umbral → misión, borrar
+   manchas (`DirtArea`/`DirtSpot`/`Cleaner`) + **paseo** (`GuidedTour`/`TourStation`, alma compartida).
+2. **B — Loop de desayuno + contenedor. [MVP HECHO]** `BreakfastCook` recorre la cadena
+   nevera→plancha→especiar→contenedor y rellena el `FoodContainer`; `Eater` come. *(Falta hacerla espacial.)*
 3. **C — Alimentación por humores.** Los personajes eligen contenedor por utilidad+humores; comer aplica
    compuestos → nudge de humores. *(Introduce `FoodCompound` mínimo.)*
 4. **D — Puente Micro/Meso.** Mancha del Meso = región del MicroKitchen; minidrones extraen → la mancha

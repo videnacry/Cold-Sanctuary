@@ -78,6 +78,7 @@ public static class SampleSceneBuilder
         BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
         BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
         BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
+        BuildKitchenOnboarding(root.transform); // cocina paseo (§1) + paso B desayuno/contenedor (§3/§6)
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -385,6 +386,76 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Kitchen sandbox (paso A): «KitchenDirtArea» genera manchas; al pasar " +
                   "de 5 activa la misión de limpieza; «Pinche_Limpia» (Cleaner auto) las borra mancha a mancha " +
                   "y al vaciarse la completa. Logs [Cocina] (docs kitchen §5).");
+    }
+
+    /// <summary>
+    /// Paseo guiado (docs/kitchen-simulation.md §1) + paso B (loop de desayuno + contenedor, §3/§6). El
+    /// «Anfitrion» recorre las estaciones con el «Novato» (alma compartida); el «Cocinero» rellena el
+    /// contenedor y el «Comensal» come. Todo por consola: [Paseo]/[Cocina].
+    /// </summary>
+    static void BuildKitchenOnboarding(Transform parent)
+    {
+        GameObject group = new GameObject("KitchenOnboarding_AUTO");
+        group.transform.SetParent(parent);
+
+        TourStation nevera     = MakeStation(group.transform, "Nevera",     new Vector3(8f, 1f, 16f),  "sacar y guardar ingredientes.");
+        TourStation plancha    = MakeStation(group.transform, "Plancha",    new Vector3(12f, 1f, 20f), "cocinar: revolver, sellar, secar.");
+        TourStation mesones    = MakeStation(group.transform, "Mesones",    new Vector3(16f, 1f, 16f), "preparar y emplatar.");
+        TourStation contenedor = MakeStation(group.transform, "Contenedor", new Vector3(12f, 1f, 12f), "dejar la comida lista para que coman.");
+
+        // Contenedor de servicio (paso B), en la estación Contenedor.
+        GameObject foodGO = new GameObject("Contenedor_Desayuno");
+        foodGO.transform.SetParent(group.transform);
+        foodGO.transform.position = new Vector3(12f, 1f, 12f);
+        FoodContainer food = foodGO.AddComponent<FoodContainer>();
+        food.dishName = "huevos revueltos"; food.capacity = 20;
+
+        // Anfitrión (hace el paseo) + novato (lo acompaña por alma compartida).
+        GameObject host = MakeKitchenPerson(group.transform, "Anfitrion", new Vector3(12f, 1f, 15f), new Color(0.50f, 0.40f, 0.55f));
+        host.AddComponent<AiBrain>().selfRelevance = 1f;
+        host.AddComponent<AnimaController>();
+        host.AddComponent<HelpRequest>();
+        GameObject guest = MakeKitchenPerson(group.transform, "Novato", new Vector3(11f, 1f, 14f), new Color(0.60f, 0.70f, 0.50f));
+        guest.AddComponent<AiBrain>().selfRelevance = 1f;
+        AnimaController guestCtrl = guest.AddComponent<AnimaController>();
+        guest.AddComponent<HelpResponder>().acceptChance = 1f;
+        GuidedTour tour = host.AddComponent<GuidedTour>();
+        tour.guest = guestCtrl;
+        tour.stations = new[] { nevera, plancha, mesones, contenedor };
+        tour.arriveDistance = 1.5f; tour.dwell = 2f; tour.startOnPlay = true;
+
+        // Cocinero (paso B) rellena el contenedor + comensal que come.
+        GameObject cook = MakeKitchenPerson(group.transform, "Cocinero", new Vector3(12f, 1f, 19f), new Color(0.85f, 0.80f, 0.60f));
+        cook.AddComponent<BreakfastCook>().container = food;
+        GameObject eater = MakeKitchenPerson(group.transform, "Comensal", new Vector3(13f, 1f, 12f), new Color(0.70f, 0.55f, 0.50f));
+        Eater e = eater.AddComponent<Eater>(); e.eatInterval = 3f; e.reach = 15f;
+
+        Debug.Log("[SampleSceneBuilder] Kitchen onboarding: «Anfitrion» hace el PASEO por Nevera/Plancha/" +
+                  "Mesones/Contenedor con «Novato» (alma compartida); «Cocinero» rellena el contenedor con " +
+                  "el loop de desayuno y «Comensal» come. Logs [Paseo]/[Cocina] (docs kitchen §1/§3/§6).");
+    }
+
+    static TourStation MakeStation(Transform parent, string label, Vector3 pos, string canDo)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = "Station_" + label;
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.transform.localScale = new Vector3(1.2f, 1.2f, 1.2f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Station_" + label + "_MAT", new Color(0.55f, 0.55f, 0.60f));
+        TourStation st = go.AddComponent<TourStation>();
+        st.stationName = label; st.canDoHere = canDo;
+        return st;
+    }
+
+    static GameObject MakeKitchenPerson(Transform parent, string name, Vector3 pos, Color col)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
+        return go;
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

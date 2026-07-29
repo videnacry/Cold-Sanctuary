@@ -200,10 +200,12 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [~] **A — Limpieza mancha-a-mancha (Meso)**: **HECHO el núcleo** — `DirtArea` genera suciedad real,
-      umbral → misión activa, `Cleaner` borra mancha a mancha, se completa al vaciar (`DirtSpot`; sandbox
-      `KitchenSandbox_AUTO`). **Falta el PASEO** (onboarding guiado por áreas — reusa FollowBrain/HelpRequest).
-- [ ] **B — Loop de desayuno + contenedor**: nevera→plancha→especiar→contenedor (se rellena; log de raciones).
+- [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
+      (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
+      alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.
+- [~] **B — Loop de desayuno + contenedor**: **MVP hecho** — `BreakfastCook` recorre la cadena
+      (nevera→huevos→plancha→revolver→especiar→contenedor) y rellena un `FoodContainer`; `Eater` come del
+      contenedor. **Falta:** hacer la cadena **espacial** (caminar a las estaciones con `FollowBrain`).
 - [ ] **C — Alimentación por humores**: personajes eligen contenedor por utilidad+humores; comer aplica
       `compuestos` → nudge de humores. *(Introduce `FoodCompound` mínimo — modelo de §8: compuestos→humores→aptitudes.)*
 - [ ] **D — Puente Micro/Meso**: mancha del Meso = región del MicroKitchen; minidrones extraen → desaparece (suelo primero).
