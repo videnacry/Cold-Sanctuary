@@ -198,12 +198,65 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
       `promotionStrength`. Aún no probado.
 - *Revertir si hiciera falta:* `git revert -m 1 cd1a95f` (#14) / `25f618a` (#15), o reset a `022e224` (pre-Mente).
 
-## Siguiente (código, tras el testing)
-- [ ] **Controlador intercambiable** (jugador-como-input ↔ IA) y **posesión dinámica** (insertar instancia/
-      madre en runtime con relevancia). Cimiento común de "jugador como input" y del hechizo de posesión.
+## La Cocina — primera simulación (nivel de referencia)
+Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
+- [~] **A — Limpieza mancha-a-mancha (Meso)**: **HECHO el núcleo** — `DirtArea` genera suciedad real,
+      umbral → misión activa, `Cleaner` borra mancha a mancha, se completa al vaciar (`DirtSpot`; sandbox
+      `KitchenSandbox_AUTO`). **Falta el PASEO** (onboarding guiado por áreas — reusa FollowBrain/HelpRequest).
+- [ ] **B — Loop de desayuno + contenedor**: nevera→plancha→especiar→contenedor (se rellena; log de raciones).
+- [ ] **C — Alimentación por humores**: personajes eligen contenedor por utilidad+humores; comer aplica
+      `compuestos` → nudge de humores. *(Introduce `FoodCompound` mínimo — modelo de §8: compuestos→humores→aptitudes.)*
+- [ ] **D — Puente Micro/Meso**: mancha del Meso = región del MicroKitchen; minidrones extraen → desaparece (suelo primero).
+- [ ] **E — Mundo-insecto vivo**: gusano→formas; conflictos fuerte/débil; misiones; enganchar al Guardián del Fuego.
+- [ ] **F/G — Recetas ricas (química) + puente al santuario** (alimentar carnívoros con bonds).
+- **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
+- **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
+  agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
+
+## Áreas / historia — roadmap (area-progression.md)
+Orden alineado con la línea temporal del microworld (una época por área). Ver
+[`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
+- [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
+- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada; **Ötzi histórico**, El Primer Herrero).
+- [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
+- [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
+      equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
+      pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.
+      Reutilizable en todas las áreas; debut en el Huerto. Núcleo: "que los fuertes no se coman a los débiles".
+
+## Siguiente (código)
+- [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
+      (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
+- [ ] **Re-autorar vivencias** de Ötzi/Sembradora/Guardián con el canon de `founding-trio-stories.md`
+      (la coneja, el señuelo, la planta favorita, las piedras) al cerrar sus misiones.
+- [ ] **Posesión real (resto)**: `PlayerBrain.Act()` ya mueve el cuerpo poseído; falta **interactuar**
+      (F/clic enrutado al cuerpo) e integrar `PossessionSpell` con el hechizo real del jugador (crecer power/range).
 - [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
 - [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
-- [ ] **Más históricos** con el patrón `Historico()` ya validado por Ötzi (docs/mob-characters.md).
+- [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
+      docs/mob-characters.md, mob-epochs-matrix.md).
+
+## Hecho (2026-07-29) — PR #16 (control + históricos + cocina + movilidad)
+- [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/
+      `PossessionSpell` (docs anima §11.5).
+- [x] **Movilidad + cambio de cuerpo**: `PlayerCore` (input persistente: body-swap con `Tab` — libera el
+      anterior, secuestra el nuevo, realinea cámara); `PlayerBrain.Act()` mueve el cuerpo poseído con WASD.
+- [x] **`FollowBrain`**: la mente liberada sigue a un objetivo (Kushal sigue a su compañero).
+- [x] **Pensamientos escalables**: `MindPhrase` con `weight` + `lifecycle` (Persistent/OnceThenGone/
+      DecaysPerUse) + gate por aptitud (`AptitudeKind`/`gateMin`); `Mind` hace pick ponderado, gatea y aplica
+      ciclo de vida. `Aptitudes.Get(AptitudeKind)` añadido.
+- [x] **Históricos**: Guardián del Fuego (Señor del Fuego), La Sembradora, El Alfarero.
+- [x] **Peticiones → alma compartida (MVP)**: `HelpResponder` (sí/no) + `HelpRequest` (al aceptar, van
+      juntos vía `FollowBrain` temporal). Demo en el sandbox (Aldeano pide a Kushal ir a un punto).
+- [x] **Cocina paso A (núcleo)**: `DirtArea`/`DirtSpot`/`Cleaner` (suciedad real → umbral → misión →
+      limpieza mancha a mancha → completa). Sandbox `KitchenSandbox_AUTO`.
+- [x] **Nombres**: guardián ficticio Ötzi → **Nasatya** (encarna un Ashvin; con Kushal, "recolectores
+      estrella"); **Ötzi** queda para el histórico de la Forja. Vivencias de Nasatya autoradas.
+- [x] **Misiones definidas** (cadenas de fases) para Señor del Fuego, Nasatya y La Sembradora
+      (`founding-trio-stories.md` §7), a partir de sus historias.
+- [x] **Diseño**: `kitchen-simulation.md` + `garden-simulation.md` + `area-progression.md` +
+      **`founding-trio-stories.md`** (historias + Kushal + guías reales) + anima §11.7.
 
 ## Hecho (2026-07-28)
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
@@ -211,6 +264,12 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 - [x] **Migración Anima** (PR #14 mergeada): `LivingEntity`→`Anima` (clase única); `Animal`/`CompanionBase`/
       `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`.
 - [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
+- [x] **Controlador intercambiable + posesión** (MVP, PR de control): `AnimaController` cede el mando al
+      cerebro (`IBrain`) de mayor relevancia; `AiBrain` (IA propia) vs `PlayerBrain` (input del jugador);
+      `PossessionSpell` (power/range crecientes) inyecta al jugador en runtime si supera la relevancia del ser.
+- [x] **Históricos ampliados**: Guardián del Fuego, La Sembradora, El Alfarero (fieles a mob-quests-early).
+- [x] **Diseño de la Cocina**: `kitchen-simulation.md` (paseo, roles, química-comida, puente Micro/Meso,
+      mundo-insecto, humores vs compuestos, orden de build).
 - [x] **Testing en Unity**: #14/#15 compiladas y validadas (§10/§4/§3/§6/§8-9/§7); arreglado el falso
       positivo del diagnóstico de aptitudes de compañeros (`MigrationDiagnostics`→`Update`, commit `95fbbc0`).
 

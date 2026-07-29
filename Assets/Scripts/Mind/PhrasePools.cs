@@ -93,6 +93,51 @@ public static class PhrasePools
         Historico("Ötzi", ElementalTone.Agua,          // 5000 años congelado; comprender su muerte lo libera
             new[] { "Comprender mi muerte me libera.", "Recupero la historia que me robaron.", "La verdad, aun dura, da paz." },
             new[] { "Llevo cinco mil años sin descanso.", "Mi muerte quedó sin resolver.", "El hielo me guardó y me olvidó." }),
+
+        // ── Nasatya (guardián ficticio; encarna a un Ashvin — veloz, generoso, rescata a los débiles;
+        //    con Kushal, "los recolectores estrella"). Era temprana; docs/founding-trio-stories.md ──────────
+        Historico("Nasatya", ElementalTone.Fuego,      // huérfano; el Señor del Fuego le sembró calidez con piedras
+            new[] { "Unas piedras encendieron mi alma huérfana.", "Aprendí a jugar, a lanzar, a reír.", "Llevo el calor que me dieron." },
+            new[] { "Perdí a mis padres muy pronto.", "El frío de dentro no se apaga solo.", "Cargo una orfandad callada." }),
+        Historico("Nasatya", ElementalTone.Viento,     // recolector estrella: velocidad, energía, generosidad
+            new[] { "Soy rápido y fuerte; traigo comida para todos.", "Doy lo mío antes de guardarlo.", "Cuidar a los míos es mi orgullo." },
+            new[] { "Cargo con el hambre de todos.", "Si fallo, alguien no come.", "Nadie corre por mí." }),
+        Historico("Nasatya", ElementalTone.Agua,       // la idea de la coneja: asentar a los débiles, no abandonarlos
+            new[] { "La coneja oculta a sus crías y vuelve por ellas.", "Quedémonos por quien ya no puede seguir.", "Nadie más será abandonado." },
+            new[] { "Dejamos atrás a los nuestros cada viaje.", "La culpa de tantos adioses me pesa.", "El miedo vuelve cruel a la tribu." }),
+        Historico("Nasatya", ElementalTone.Fuego,      // el señuelo: se queda atrás para salvar a la Sembradora
+            new[] { "Distraigo a las fieras: que ella viva.", "Doy mi carrera por su salvación.", "Que Kushal la lleve a salvo." },
+            new[] { "Sé que quizá no vuelva.", "Me buscarán y no me hallarán.", "Me voy cargando una culpa que no es mía." }),
+
+        // ── El Guardián / Señor del Fuego (Paleolítico, Cocina/FuelLab; arquetipo Canalizar; Fuego) ────────
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // velar la última llama
+            new[] { "Velo la última llama viva.", "Mientras yo vele, la tribu vive.", "Reparto el fuego, hogar por hogar." },
+            new[] { "Si me duermo, todo se apaga.", "El fuego se muere en mis manos.", "Cargo yo solo con la noche." }),
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // el fuego hace crecer a la tribu
+            new[] { "El fuego cocina y sana.", "Su calor aleja a las fieras.", "Con la llama, crecimos." },
+            new[] { "El fuego pide y pide leña.", "Sin él volvemos al frío.", "Dependemos de una sola brasa." }),
+        Historico("Guardián del Fuego", ElementalTone.Fuego,   // el giro: el mismo don destruye; la intención decide
+            new[] { "Aprendí a contener las llamas.", "El don se cuida, no se teme.", "La intención decide, no el fuego." },
+            new[] { "El fuego que nutre también arrasa.", "Hice del hogar un arma.", "Lo que da vida, quema." }),
+
+        // ── La Sembradora (Neolítico, Huerto; arquetipo Curar/atender; Tierra/Agua) ────────────────────────
+        Historico("La Sembradora", ElementalTone.Tierra,       // domesticar el grano
+            new[] { "Guardé la semilla y volvió multiplicada.", "La tierra responde a quien la cuida.", "De un puñado, un campo." },
+            new[] { "La primera cosecha se malogró.", "El suelo no da si no sé pedirle.", "Sembré y no brotó nada." }),
+        Historico("La Sembradora", ElementalTone.Agua,         // atender/nutrir el brote
+            new[] { "Riego y los brotes despiertan.", "Cuidar el brote es cuidar a todos.", "La paciencia da fruto." },
+            new[] { "Un descuido y el campo enferma.", "La sequía se lo lleva todo.", "Doy y doy sin descanso." }),
+        Historico("La Sembradora", ElementalTone.Tierra,       // el giro: el excedente trae jerarquía y guerra
+            new[] { "Aprendí a cultivar también generosidad.", "Lo que sembramos moldea al pueblo.", "Reparto la abundancia." },
+            new[] { "El grano guardado despertó la codicia.", "Cercas, dueños, primeras disputas.", "La abundancia trajo el hambre de más." }),
+
+        // ── El Alfarero (Neolítico, Cocina/Textil; arquetipo Canalizar/moldear; Tierra/Fuego) ──────────────
+        Historico("El Alfarero", ElementalTone.Tierra,         // moldear el barro con fuego
+            new[] { "Doy forma al barro con mis manos.", "El fuego endurece lo que moldeo.", "De la tierra, una vasija." },
+            new[] { "El barro se me quiebra.", "El horno la partió.", "Mis manos no dan la forma." }),
+        Historico("El Alfarero", ElementalTone.Tierra,         // la vasija sostiene a otros; frágil pero perdura
+            new[] { "Mi vasija guarda el agua de otros.", "Creo cosas que sostienen a la tribu.", "Frágil como soy, mi obra perdura." },
+            new[] { "Soy tan frágil como el barro.", "Sobrevivo en cosas, no en memoria.", "Nadie recordará al alfarero." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.

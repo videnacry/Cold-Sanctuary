@@ -76,6 +76,8 @@ public static class SampleSceneBuilder
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
         BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
+        BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
+        BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -280,6 +282,109 @@ public static class SampleSceneBuilder
                 Debug.Log(sb.ToString());
             }
         }
+    }
+
+    /// <summary>
+    /// Sandbox del control intercambiable + posesión por relevancia (docs anima §11.5). Dos seres con
+    /// `AnimaController` + `AiBrain`: uno DÉBIL (selfRelevance=1) y uno FUERTE (selfRelevance=3). A ambos
+    /// se les inyecta un `PlayerBrain` de posesión=2 → en Play, el AnimaController debe dar el mando del
+    /// débil al JUGADOR (2 > 1) y dejar el fuerte en su IA (2 &lt; 3). Un caster con `PossessionSpell` queda
+    /// en escena para probar `PossessNearest()` en runtime.
+    /// </summary>
+    static void BuildPossessionSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("PossessionSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // Ser DÉBIL (selfRelevance 1): la posesión del jugador (power 2 > 1) lo domina → lo mueves con WASD.
+        GameObject weak = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        weak.name = "Anima_Debil"; weak.transform.SetParent(group.transform);
+        weak.transform.position = new Vector3(-3f, 1f, 16f);
+        weak.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Debil_MAT", new Color(0.5f, 0.7f, 0.5f));
+        weak.AddComponent<AiBrain>().selfRelevance = 1f;
+        weak.AddComponent<AnimaController>();
+
+        // Ser FUERTE (selfRelevance 3): la misma posesión (2 < 3) NO lo domina → su IA conserva el mando.
+        GameObject strong = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        strong.name = "Anima_Fuerte"; strong.transform.SetParent(group.transform);
+        strong.transform.position = new Vector3(0f, 1f, 16f);
+        strong.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Anima_Fuerte_MAT", new Color(0.7f, 0.4f, 0.4f));
+        strong.AddComponent<AiBrain>().selfRelevance = 3f;
+        strong.AddComponent<AnimaController>();
+
+        // "Kushal": su mente liberada SIGUE al cuerpo débil (que conduce el jugador) por la zona.
+        GameObject follower = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        follower.name = "Kushal_Follow"; follower.transform.SetParent(group.transform);
+        follower.transform.position = new Vector3(-5f, 1f, 16f);
+        follower.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Kushal_Follow_MAT", new Color(0.35f, 0.55f, 0.85f));
+        follower.AddComponent<AiBrain>().selfRelevance = 1f;
+        FollowBrain fb = follower.AddComponent<FollowBrain>();
+        fb.target = weak.transform; fb.relevance = 1.5f;   // por encima del idle → conduce mientras siga
+        AnimaController followerCtrl = follower.AddComponent<AnimaController>();
+        follower.AddComponent<HelpResponder>().acceptChance = 1f;   // acepta peticiones (demo)
+
+        // El "alma" del jugador: posee al más cercano (el débil) al empezar; Tab intenta saltar al otro.
+        GameObject core = new GameObject("PlayerCore_AUTO");
+        core.transform.SetParent(group.transform);
+        core.transform.position = new Vector3(-3f, 1f, 14f);   // más cerca del débil que del fuerte
+        PossessionSpell spell = core.AddComponent<PossessionSpell>();
+        spell.power = 2f; spell.range = 30f;
+        PlayerCore pc = core.AddComponent<PlayerCore>();
+        pc.spell = spell; pc.possessNearestOnStart = true;
+        pc.followCamera = false;   // no pelear con la cámara del PlayerController real en este sandbox
+
+        // Petición → alma compartida (docs anima §11.7): un aldeano pide a Kushal ir juntos a un punto.
+        GameObject goal = new GameObject("HelpGoal");
+        goal.transform.SetParent(group.transform);
+        goal.transform.position = new Vector3(3f, 1f, 18f);
+        GameObject asker = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        asker.name = "Aldeano_Pide"; asker.transform.SetParent(group.transform);
+        asker.transform.position = new Vector3(1f, 1f, 18f);
+        asker.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Aldeano_Pide_MAT", new Color(0.85f, 0.75f, 0.4f));
+        asker.AddComponent<AiBrain>().selfRelevance = 1f;
+        asker.AddComponent<AnimaController>();
+        HelpRequest req = asker.AddComponent<HelpRequest>();
+        req.autoAskOnStart = true; req.autoResponder = followerCtrl; req.autoGoal = goal.transform; req.shareDuration = 8f;
+
+        Debug.Log("[SampleSceneBuilder] Possession sandbox: en Play el jugador posee «Anima_Debil» " +
+                  "(2 > 1) y lo mueves con WASD; «Kushal_Follow» lo sigue; con Tab intentas saltar a " +
+                  "«Anima_Fuerte» pero su IA aguanta (2 < 3). «Aldeano_Pide» pide a Kushal ir juntos a " +
+                  "«HelpGoal» → alma compartida ~8s (logs [Petición]). Ver [Control]/[Jugador]/[Posesión] " +
+                  "(docs anima §11.5/§11.7). Nota: WASD mueve también al Player real (comparten input).");
+    }
+
+    /// <summary>
+    /// Sandbox del paso A de la cocina (docs/kitchen-simulation.md §5): una `DirtArea` genera manchas; al
+    /// pasar del umbral activa la misión de limpieza; un `Cleaner` (auto) las borra mancha a mancha y, al
+    /// vaciarse, la completa. Todo por consola (`[Cocina]`).
+    /// </summary>
+    static void BuildKitchenSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("KitchenSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.name = "Kitchen_Floor"; floor.transform.SetParent(group.transform);
+        floor.transform.position = new Vector3(12f, 0f, 16f);
+        floor.transform.localScale = new Vector3(1.2f, 1f, 1.2f);
+        floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Kitchen_Floor_MAT", new Color(0.80f, 0.80f, 0.75f));
+
+        GameObject dirt = new GameObject("KitchenDirtArea");
+        dirt.transform.SetParent(group.transform);
+        dirt.transform.position = new Vector3(12f, 0f, 16f);
+        DirtArea area = dirt.AddComponent<DirtArea>();
+        area.areaSize = new Vector2(8f, 8f); area.spawnInterval = 1.5f; area.maxSpots = 8; area.missionThreshold = 5;
+
+        GameObject pinche = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        pinche.name = "Pinche_Limpia"; pinche.transform.SetParent(group.transform);
+        pinche.transform.position = new Vector3(12f, 1f, 16f);
+        pinche.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Pinche_MAT", new Color(0.50f, 0.60f, 0.70f));
+        Cleaner c = pinche.AddComponent<Cleaner>();
+        c.auto = true; c.autoInterval = 2f; c.reach = 12f;   // alcance amplio para el demo sin moverse
+
+        Debug.Log("[SampleSceneBuilder] Kitchen sandbox (paso A): «KitchenDirtArea» genera manchas; al pasar " +
+                  "de 5 activa la misión de limpieza; «Pinche_Limpia» (Cleaner auto) las borra mancha a mancha " +
+                  "y al vaciarse la completa. Logs [Cocina] (docs kitchen §5).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,
