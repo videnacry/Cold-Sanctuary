@@ -252,10 +252,23 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
 
-## ⚠ Compilar en Unity (PR #16 mergeada a master)
-Código nuevo aditivo (Control/ + Kitchen/ + extensiones de Mind). En Play, sandboxes con logs:
-`PossessionSandbox_AUTO` ([Control]/[Jugador]/[Posesión]/[Petición]) y `KitchenSandbox_AUTO` ([Cocina]).
-- [ ] **Compila** tras `pull`; si algo falla, pégame el error. Conteo de pools ahora `Total≈40 Vivencia≈30`.
+## ⚠ Compilar y PROBAR en Unity (PRs #16 y #17 mergeadas a master)
+Código nuevo aditivo: `Control/` + `Kitchen/` + `Virtualization/` + extensiones de Mind. **Guion de prueba
+completo en [`testing-checklist.md`](testing-checklist.md) §11** (control/posesión, cocina paso A, paseo+
+desayuno, virtualización con mira central + HeadLook, mecanografía del fogón, huerto).
+- [ ] **Compila** tras `pull`; si algo falla, pégame el error. Sandboxes: `PossessionSandbox_AUTO`,
+      `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`.
+      Conteo de pools `Total≈40 Vivencia≈30`.
+
+## Hecho (2026-07-29) — PR #17 mergeada (cocina + motor de virtualización)
+- [x] **Cocina**: paso A (limpieza `DirtArea`/`DirtSpot`/`Cleaner` + paseo `GuidedTour`/`TourStation`) y
+      paso B MVP (`BreakfastCook`→`FoodContainer`→`Eater`).
+- [x] **Motor de virtualización** (`Assets/Scripts/Virtualization/`, generalizable): `VirtualPointer`
+      (mira fija al centro) + `HeadLook` (cabeza=cámara con restricciones, I/K/J/L) + `StationPart` +
+      `ProductionOrder` (receta→cuota) + `TypingChallenge` (mecanografía acelera; congela cámara). Recetas:
+      cocina (huevos, con typing en el fogón) y huerto (abonar→…→cosechar).
+- [x] **Diseño**: mecánica de mecanografía + idiomas (kitchen §4b), misiones de virtualización del huerto
+      y de guardián del mundo-insecto (garden §8/§9).
 
 ## Hecho (2026-07-29) — PR #16 mergeada (control + movilidad + históricos + cocina A)
 - [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/

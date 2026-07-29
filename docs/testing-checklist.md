@@ -249,6 +249,28 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
       hay errores, pero no se verificó comportamiento en Play más allá de eso).
 - [ ] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado.
 
+## 11. Control/posesión · Cocina · Virtualización (PRs #16 y #17) — NUEVO
+Sandboxes que genera `Build Sample Scene Blockout`. Todo por consola.
+- [ ] **Control/posesión** (`PossessionSandbox_AUTO`, logs `[Control]/[Jugador]/[Posesión]/[Petición]`):
+      el jugador posee «Anima_Debil» (2>1) y lo mueve con WASD; «Kushal_Follow» lo sigue; con **Tab**
+      intenta saltar a «Anima_Fuerte» pero su IA aguanta (2<3); «Aldeano_Pide» pide a Kushal ir a «HelpGoal»
+      → alma compartida ~8 s. *(Nota: WASD mueve también al Player real; comparten input.)*
+- [ ] **Cocina paso A** (`KitchenSandbox_AUTO`, logs `[Cocina]`): la `DirtArea` genera manchas; al pasar de
+      5 → "misión de limpieza ACTIVA"; el `Pinche_Limpia` (auto) las borra mancha a mancha → "misión COMPLETA".
+- [ ] **Cocina paseo + desayuno** (`KitchenOnboarding_AUTO`, logs `[Paseo]/[Cocina]`): «Anfitrion» recorre
+      Nevera/Plancha/Mesones/Contenedor "enseñando" cada una con «Novato» siguiéndolo (alma compartida);
+      «Cocinero» rellena el contenedor con el loop de desayuno y «Comensal» come.
+- [ ] **Virtualización — cocina** (`VirtualizationSandbox_AUTO`, logs `[Virtual]/[Producción]`): la **mira
+      está FIJA en el centro**; apunta **girando la cámara** (en el sandbox, con el look del PlayerController)
+      a las cajitas EN ORDEN — Mesón(abrir→sartén) → Nevera(abrir→huevos) → Cocina(poner sartén→cascar
+      huevo→**encender**) — y confirma con **F**. La parte apuntada se **resalta**. 3 desayunos = misión.
+- [ ] **Mecanografía (fogón)**: al confirmar **EncenderFuego** aparece una caja "Cocinando…"; **teclea**
+      `cook/eggs/protein/healthy/tasty/b2` → cada palabra **recorta tiempo**; al agotarse (o teclearlas
+      todas) se completa y produce el desayuno. **La cámara se congela mientras tecleas** (no debería girar).
+- [ ] **Virtualización — huerto** (`GardenVirtualization_AUTO`): misma mecánica, receta agrícola
+      (compostero/cobertizo/semillero/agua/parcela) en 9 pasos: abonar→arar→trasplantar→regar→cosechar.
+- [ ] **Regresión**: nada de lo anterior (movimiento/cámara/asanas) se rompe con los nuevos scripts.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
