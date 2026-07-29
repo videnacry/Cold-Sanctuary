@@ -94,7 +94,22 @@ public static class PhrasePools
             new[] { "Comprender mi muerte me libera.", "Recupero la historia que me robaron.", "La verdad, aun dura, da paz." },
             new[] { "Llevo cinco mil años sin descanso.", "Mi muerte quedó sin resolver.", "El hielo me guardó y me olvidó." }),
 
-        // ── El Guardián del Fuego (Paleolítico, Cocina/FuelLab; arquetipo Canalizar; Fuego) ───────────────
+        // ── Nasatya (guardián ficticio; encarna a un Ashvin — veloz, generoso, rescata a los débiles;
+        //    con Kushal, "los recolectores estrella"). Era temprana; docs/founding-trio-stories.md ──────────
+        Historico("Nasatya", ElementalTone.Fuego,      // huérfano; el Señor del Fuego le sembró calidez con piedras
+            new[] { "Unas piedras encendieron mi alma huérfana.", "Aprendí a jugar, a lanzar, a reír.", "Llevo el calor que me dieron." },
+            new[] { "Perdí a mis padres muy pronto.", "El frío de dentro no se apaga solo.", "Cargo una orfandad callada." }),
+        Historico("Nasatya", ElementalTone.Viento,     // recolector estrella: velocidad, energía, generosidad
+            new[] { "Soy rápido y fuerte; traigo comida para todos.", "Doy lo mío antes de guardarlo.", "Cuidar a los míos es mi orgullo." },
+            new[] { "Cargo con el hambre de todos.", "Si fallo, alguien no come.", "Nadie corre por mí." }),
+        Historico("Nasatya", ElementalTone.Agua,       // la idea de la coneja: asentar a los débiles, no abandonarlos
+            new[] { "La coneja oculta a sus crías y vuelve por ellas.", "Quedémonos por quien ya no puede seguir.", "Nadie más será abandonado." },
+            new[] { "Dejamos atrás a los nuestros cada viaje.", "La culpa de tantos adioses me pesa.", "El miedo vuelve cruel a la tribu." }),
+        Historico("Nasatya", ElementalTone.Fuego,      // el señuelo: se queda atrás para salvar a la Sembradora
+            new[] { "Distraigo a las fieras: que ella viva.", "Doy mi carrera por su salvación.", "Que Kushal la lleve a salvo." },
+            new[] { "Sé que quizá no vuelva.", "Me buscarán y no me hallarán.", "Me voy cargando una culpa que no es mía." }),
+
+        // ── El Guardián / Señor del Fuego (Paleolítico, Cocina/FuelLab; arquetipo Canalizar; Fuego) ────────
         Historico("Guardián del Fuego", ElementalTone.Fuego,   // velar la última llama
             new[] { "Velo la última llama viva.", "Mientras yo vele, la tribu vive.", "Reparto el fuego, hogar por hogar." },
             new[] { "Si me duermo, todo se apaga.", "El fuego se muere en mis manos.", "Cargo yo solo con la noche." }),

@@ -77,6 +77,7 @@ public static class SampleSceneBuilder
         BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
         BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
         BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
+        BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -350,6 +351,40 @@ public static class SampleSceneBuilder
                   "«Anima_Fuerte» pero su IA aguanta (2 < 3). «Aldeano_Pide» pide a Kushal ir juntos a " +
                   "«HelpGoal» → alma compartida ~8s (logs [Petición]). Ver [Control]/[Jugador]/[Posesión] " +
                   "(docs anima §11.5/§11.7). Nota: WASD mueve también al Player real (comparten input).");
+    }
+
+    /// <summary>
+    /// Sandbox del paso A de la cocina (docs/kitchen-simulation.md §5): una `DirtArea` genera manchas; al
+    /// pasar del umbral activa la misión de limpieza; un `Cleaner` (auto) las borra mancha a mancha y, al
+    /// vaciarse, la completa. Todo por consola (`[Cocina]`).
+    /// </summary>
+    static void BuildKitchenSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("KitchenSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.name = "Kitchen_Floor"; floor.transform.SetParent(group.transform);
+        floor.transform.position = new Vector3(12f, 0f, 16f);
+        floor.transform.localScale = new Vector3(1.2f, 1f, 1.2f);
+        floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Kitchen_Floor_MAT", new Color(0.80f, 0.80f, 0.75f));
+
+        GameObject dirt = new GameObject("KitchenDirtArea");
+        dirt.transform.SetParent(group.transform);
+        dirt.transform.position = new Vector3(12f, 0f, 16f);
+        DirtArea area = dirt.AddComponent<DirtArea>();
+        area.areaSize = new Vector2(8f, 8f); area.spawnInterval = 1.5f; area.maxSpots = 8; area.missionThreshold = 5;
+
+        GameObject pinche = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        pinche.name = "Pinche_Limpia"; pinche.transform.SetParent(group.transform);
+        pinche.transform.position = new Vector3(12f, 1f, 16f);
+        pinche.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Pinche_MAT", new Color(0.50f, 0.60f, 0.70f));
+        Cleaner c = pinche.AddComponent<Cleaner>();
+        c.auto = true; c.autoInterval = 2f; c.reach = 12f;   // alcance amplio para el demo sin moverse
+
+        Debug.Log("[SampleSceneBuilder] Kitchen sandbox (paso A): «KitchenDirtArea» genera manchas; al pasar " +
+                  "de 5 activa la misión de limpieza; «Pinche_Limpia» (Cleaner auto) las borra mancha a mancha " +
+                  "y al vaciarse la completa. Logs [Cocina] (docs kitchen §5).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

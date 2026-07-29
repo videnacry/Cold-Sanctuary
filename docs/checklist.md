@@ -200,7 +200,9 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [ ] **A — Paseo + limpieza mancha-a-mancha (Meso)**: suciedad como objeto real, umbral → misión, borrar manchas.
+- [~] **A — Limpieza mancha-a-mancha (Meso)**: **HECHO el núcleo** — `DirtArea` genera suciedad real,
+      umbral → misión activa, `Cleaner` borra mancha a mancha, se completa al vaciar (`DirtSpot`; sandbox
+      `KitchenSandbox_AUTO`). **Falta el PASEO** (onboarding guiado por áreas — reusa FollowBrain/HelpRequest).
 - [ ] **B — Loop de desayuno + contenedor**: nevera→plancha→especiar→contenedor (se rellena; log de raciones).
 - [ ] **C — Alimentación por humores**: personajes eligen contenedor por utilidad+humores; comer aplica
       `compuestos` → nudge de humores. *(Introduce `FoodCompound` mínimo — modelo de §8: compuestos→humores→aptitudes.)*
@@ -215,7 +217,7 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada, Ötzi).
+- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada; **Ötzi histórico**, El Primer Herrero).
 - [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
 - [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
@@ -247,9 +249,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [x] **Históricos**: Guardián del Fuego (Señor del Fuego), La Sembradora, El Alfarero.
 - [x] **Peticiones → alma compartida (MVP)**: `HelpResponder` (sí/no) + `HelpRequest` (al aceptar, van
       juntos vía `FollowBrain` temporal). Demo en el sandbox (Aldeano pide a Kushal ir a un punto).
+- [x] **Cocina paso A (núcleo)**: `DirtArea`/`DirtSpot`/`Cleaner` (suciedad real → umbral → misión →
+      limpieza mancha a mancha → completa). Sandbox `KitchenSandbox_AUTO`.
+- [x] **Nombres**: guardián ficticio Ötzi → **Nasatya** (encarna un Ashvin; con Kushal, "recolectores
+      estrella"); **Ötzi** queda para el histórico de la Forja. Vivencias de Nasatya autoradas.
+- [x] **Misiones definidas** (cadenas de fases) para Señor del Fuego, Nasatya y La Sembradora
+      (`founding-trio-stories.md` §7), a partir de sus historias.
 - [x] **Diseño**: `kitchen-simulation.md` + `garden-simulation.md` + `area-progression.md` +
-      **`founding-trio-stories.md`** (historias Señor del Fuego/Ötzi/Sembradora + Kushal, misiones, guías
-      reales) + anima §11.7. **Corrección**: Ötzi es de la era temprana, no de la Forja.
+      **`founding-trio-stories.md`** (historias + Kushal + guías reales) + anima §11.7.
 
 ## Hecho (2026-07-28)
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
