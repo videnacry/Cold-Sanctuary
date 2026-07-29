@@ -237,7 +237,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
 
-## Hecho (2026-07-29) — PR #16 (control + históricos + cocina + movilidad)
+## ⚠ Compilar en Unity (PR #16 mergeada a master)
+Código nuevo aditivo (Control/ + Kitchen/ + extensiones de Mind). En Play, sandboxes con logs:
+`PossessionSandbox_AUTO` ([Control]/[Jugador]/[Posesión]/[Petición]) y `KitchenSandbox_AUTO` ([Cocina]).
+- [ ] **Compila** tras `pull`; si algo falla, pégame el error. Conteo de pools ahora `Total≈40 Vivencia≈30`.
+
+## Hecho (2026-07-29) — PR #16 mergeada (control + movilidad + históricos + cocina A)
 - [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/
       `PossessionSpell` (docs anima §11.5).
 - [x] **Movilidad + cambio de cuerpo**: `PlayerCore` (input persistente: body-swap con `Tab` — libera el
