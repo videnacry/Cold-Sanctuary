@@ -22,7 +22,7 @@ Virtualización (`VirtualPointer` + estaciones + receta, Kitchen/Garden). Los í
   no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo interfaz, no
   `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de cualquier
   `HelpRequest` aceptada. Fix: cast a `Object` en el null-check. Detalle en sección 11.
-- **Bug real encontrado y arreglado en PR #17** (sin commitear todavía):
+- **Bug real encontrado y arreglado en PR #17** (commiteado `6ef53f9`):
   `GuidedTour`/`Assets/Scripts/Kitchen/GuidedTour.cs` dejaba al anfitrión **atascado para siempre en la
   primera estación** — el `stopDistance` por defecto de `FollowBrain` (2) es mayor que el
   `arriveDistance` del paseo (1.5), así que el anfitrión se paraba en una "zona muerta" (~1.65 unidades)
