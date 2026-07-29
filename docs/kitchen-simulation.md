@@ -48,12 +48,12 @@ cocina. Los personajes se acercan a los contenedores a **comer** (§6).
 
 ## 3b. Interacción de VIRTUALIZACIÓN (puntero + estaciones funcionales) — GENERALIZABLE
 El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
-- **Puntero pasivo** arriba-centro; es la **vía de teclado**: se mueve con las **teclas de cámara
-  I/K/J/L** (mecanografía) y **confirma con F** (la tecla de interacción del juego; **Espacio es salto**).
-  El **ratón** y el **touch** usan su **propio cursor** (clic/toque interactúa donde apuntan; no mueven la
-  mira de teclado) → se puede jugar **solo con teclado** o con ratón/touch. Teclas configurables (Inspector;
-  ver `DEVLOG.md` §Input). *(En modo virtualización, I/K/J/L mueven la mira en vez de rotar la cámara — la
-  arbitración cámara↔mira es un enganche pendiente.)*
+- **Mira FIJA en el centro** de la cámara (`VirtualPointer`): **nunca se mueve** en pantalla. Para apuntar,
+  **giras la cabeza = la cámara** con **I/K/J/L** (`HeadLook`), **con restricciones** de giro (yaw/pitch
+  limitados, como una cabeza real). Confirmas con **F** (Espacio es salto). El **ratón** y el **touch**
+  conservan su **propio cursor** (clic/toque interactúa donde apuntan). Así se juega **solo con teclado** o
+  con ratón/touch. Teclas configurables (ver `DEVLOG.md` §Input). *(Al entrar en una estación se activa
+  `HeadLook` y se congela el look libre del jugador; mientras se teclea, cabeza y mira se congelan.)*
 - **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
   sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
   huevo encima, **encender el fuego**…
@@ -92,10 +92,13 @@ Algunas acciones son **temporizadas** (cocinar en el fogón, licuar, hornear). M
 - **Enlace con la química (§8)**: como muchas palabras son **compuestos/nutrientes**, teclearlas puede
   además **registrar** ese compuesto en el platillo (más nutritivo/afinado) → une el typing con "la comida
   forma al personaje".
-- **Modelo para construir (MVP):** `TimedAction` (tiempo base + banco de palabras + recorte por palabra),
-  `TypingChallenge` (dibuja las palabras sobre el objeto + captura lo tecleado), bancos **localizables**.
-  Se enchufa como un **paso temporizado** dentro de la receta del `ProductionOrder` (hoy los pasos son
-  instantáneos; este añade duración + typing). **Por construir** — es un subsistema aparte.
+- **Estado: MVP HECHO** — `TypingChallenge` (tiempo base + banco de palabras + recorte por palabra;
+  captura `Input.inputString`; se completa por tiempo o al teclearlas todas → emite el paso a la
+  `ProductionOrder`). Se enchufa a una `StationPart` **temporizada** (`StationPart.timed`); el fogón de la
+  cocina ya lo usa (banco `cook/eggs/protein/healthy/tasty/b2`). Mientras corre, `TypingChallenge.Active`
+  **congela** cámara/mira/look del jugador. **Falta:** dibujar las palabras **sobre el objeto** (hoy en una
+  caja central), **bancos localizables** por idioma (en/fr…) y por **compuesto/nutriente** (aplicar el
+  compuesto al platillo), y las estaciones **licuadora/horno**.
 
 ## 5. Suciedad como objeto real (misión de limpieza)
 La **suciedad se crea literalmente** en el mundo (no es un flag):

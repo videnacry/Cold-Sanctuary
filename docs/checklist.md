@@ -200,18 +200,16 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR + FEEL HECHOS**
-      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** — mira de **teclado** movida por **I/K/J/L**
-      (cámara) + confirmar con **F** (Espacio=salto); **ratón/touch = su propio cursor** (clic/toque
-      interactúa donde apuntan). **Resaltado** de la parte apuntada (`StationPart.SetHighlighted`).
-      **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento). Recetas cableadas:
-      **cocina** (huevos, `VirtualizationSandbox_AUTO`) y **huerto** (`GardenVirtualization_AUTO`:
-      abonar→arar→trasplantar→regar→cosechar). **Falta:** enganchar la cuota a la **misión real**; typing (↓);
-      animaciones de abrir/coger; arbitración cámara↔mira en modo virtualización.
-- [ ] **Mecanografía para acelerar + idiomas (typing)** — DISEÑADO (kitchen §4b): acciones temporizadas
-      (fogón/licuadora/horno) que se aceleran tecleando palabras (verbo/ingrediente/**compuesto/nutriente**)
-      dibujadas sobre el objeto; idioma elegible (aprender inglés/francés). MVP: `TimedAction` +
-      `TypingChallenge` + bancos localizables, como paso temporizado del `ProductionOrder`. **Por construir.**
+- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR + FEEL + TYPING HECHOS**
+      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** = **mira FIJA en el centro** (no se mueve);
+      apuntas girando la **cabeza=cámara** con **`HeadLook`** (I/K/J/L, con **restricciones** de yaw/pitch);
+      confirmas con **F** (Espacio=salto); **ratón/touch = su propio cursor**. **Resaltado** de la parte
+      apuntada. **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento). Recetas:
+      **cocina** (`VirtualizationSandbox_AUTO`) y **huerto** (`GardenVirtualization_AUTO`). **Mecanografía**:
+      **`TypingChallenge`** — el fogón es una acción temporizada que se acelera tecleando (cook/eggs/protein/
+      b2…); congela cámara/mira mientras se teclea (`.Active`, gateado también en `PlayerController`).
+      **Falta:** enganchar la cuota a la **misión real**; palabras **sobre el objeto** + bancos localizables
+      (en/fr) y por compuesto; estaciones licuadora/horno; animaciones; activar `HeadLook` al entrar a estación.
 - [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
       (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
       alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.

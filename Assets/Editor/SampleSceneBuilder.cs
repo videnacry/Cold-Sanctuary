@@ -462,7 +462,12 @@ public static class SampleSceneBuilder
         MakeStationPart(group.transform, "Nevera", "TomarHuevo",    "tomas los huevos",         new Vector3(18f, 1f, 19f), new Color(0.95f, 0.90f, 0.70f));
         MakeStationPart(group.transform, "Cocina", "PonerSarten",   "pones la sartén al fuego", new Vector3(22f, 1f, 17f), new Color(0.30f, 0.30f, 0.35f));
         MakeStationPart(group.transform, "Cocina", "PonerHuevo",    "cascas el huevo",          new Vector3(22f, 1f, 18f), new Color(0.95f, 0.85f, 0.55f));
-        MakeStationPart(group.transform, "Cocina", "EncenderFuego", "enciendes el fuego",       new Vector3(22f, 1f, 19f), new Color(0.90f, 0.45f, 0.20f));
+        // El fogón es una acción TEMPORIZADA: se acelera tecleando (docs kitchen §4b).
+        StationPart fogon = MakeStationPart(group.transform, "Cocina", "EncenderFuego", "enciendes el fuego (teclea para cocinar)", new Vector3(22f, 1f, 19f), new Color(0.90f, 0.45f, 0.20f));
+        TypingChallenge cook = fogon.gameObject.AddComponent<TypingChallenge>();
+        cook.baseTime = 9f; cook.reductionPerWord = 1.5f; cook.language = "en";
+        cook.words = new[] { "cook", "eggs", "protein", "healthy", "tasty", "b2" };
+        fogon.timed = cook;
 
         // La receta (misión de producción): la cadena en orden.
         GameObject orderGO = new GameObject("Receta_Desayuno");
@@ -523,7 +528,7 @@ public static class SampleSceneBuilder
                   "agrícola (abonar→arar→trasplantar→regar→cosechar), 9 pasos, cuota 3. Reusa el VirtualPointer.");
     }
 
-    static void MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
+    static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = $"{station}_{action}";
@@ -533,6 +538,7 @@ public static class SampleSceneBuilder
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{station}_{action}_MAT", col);
         StationPart sp = go.AddComponent<StationPart>();
         sp.stationId = station; sp.actionId = action; sp.label = label;
+        return sp;
     }
 
     static TourStation MakeStation(Transform parent, string label, Vector3 pos, string canDo)

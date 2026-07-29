@@ -17,6 +17,9 @@ public class StationPart : MonoBehaviour
     [Tooltip("Texto de feedback (qué hace este paso).")]
     public string label = "";
 
+    [Tooltip("Si esta acción es TEMPORIZADA (se acelera tecleando), su reto de mecanografía. Vacío = instantánea.")]
+    public TypingChallenge timed;
+
     Vector3 _baseScale;
     bool _cached;
 
