@@ -200,12 +200,18 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR MVP HECHO**
-      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** input-agnóstico (**teclado**/**ratón**/**touch**
-      a la vez; puntero arriba-centro movido por las teclas de cámara), **`StationPart`** (partes
-      manipulables) + **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento).
-      Sandbox `VirtualizationSandbox_AUTO` (huevos revueltos, 7 pasos, cuota 3). **Generalizable a todas
-      las áreas.** **Falta:** resaltado/animaciones, enganchar la cuota a la misión real, y las recetas por área.
+- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR + FEEL HECHOS**
+      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** — mira de **teclado** movida por **I/K/J/L**
+      (cámara) + confirmar con **F** (Espacio=salto); **ratón/touch = su propio cursor** (clic/toque
+      interactúa donde apuntan). **Resaltado** de la parte apuntada (`StationPart.SetHighlighted`).
+      **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento). Recetas cableadas:
+      **cocina** (huevos, `VirtualizationSandbox_AUTO`) y **huerto** (`GardenVirtualization_AUTO`:
+      abonar→arar→trasplantar→regar→cosechar). **Falta:** enganchar la cuota a la **misión real**; typing (↓);
+      animaciones de abrir/coger; arbitración cámara↔mira en modo virtualización.
+- [ ] **Mecanografía para acelerar + idiomas (typing)** — DISEÑADO (kitchen §4b): acciones temporizadas
+      (fogón/licuadora/horno) que se aceleran tecleando palabras (verbo/ingrediente/**compuesto/nutriente**)
+      dibujadas sobre el objeto; idioma elegible (aprender inglés/francés). MVP: `TimedAction` +
+      `TypingChallenge` + bancos localizables, como paso temporizado del `ProductionOrder`. **Por construir.**
 - [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
       (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
       alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.

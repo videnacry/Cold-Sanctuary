@@ -1,29 +1,32 @@
 using UnityEngine;
 
 /// <summary>
-/// Puntero de virtualización INPUT-AGNÓSTICO (docs/kitchen-simulation.md §3b). Mantiene una posición en
-/// pantalla (arranca arriba-centro) y la actualiza con CUALQUIERA de tres entradas, a la vez, para que el
-/// juego se pueda jugar **solo con teclado**, **con ratón** o **con touch** — esa apertura es el objetivo:
-///   • TECLADO: las teclas de cámara mueven el puntero (delta).
-///   • RATÓN: si el ratón se mueve, fija el puntero en su posición.
-///   • TOUCH: si hay un toque, fija el puntero ahí; el inicio del toque confirma.
-/// Lanza un rayo desde la cámara por el puntero, detecta la <see cref="StationPart"/> apuntada y, al
-/// **confirmar** (tecla / clic / toque), emite su paso a todas las <see cref="ProductionOrder"/>.
-/// Dibuja una mira por OnGUI. Añádelo a un GameObject de la escena (uno por jugador).
+/// Puntero de virtualización (docs/kitchen-simulation.md §3b). Es la vía de **teclado**: una mira en
+/// pantalla (arranca arriba-centro) que se mueve con las **teclas de cámara I/K/J/L** (mecanografía; los
+/// mismos defaults que `PlayerController`) y se confirma con la **tecla de interacción F** (la misma del
+/// juego; Espacio es salto). El **ratón** y el **touch** son su **propio puntero**: NO mueven la mira de
+/// teclado — su clic/toque interactúa directamente donde apuntan. Así el juego se puede jugar **solo con
+/// teclado** o con ratón/touch, cada uno con su cursor. Todas las teclas son configurables (Inspector).
+/// Lanza un rayo desde la cámara, resalta la <see cref="StationPart"/> apuntada y, al confirmar, emite su
+/// paso a las <see cref="ProductionOrder"/>.
 /// </summary>
 public class VirtualPointer : MonoBehaviour
 {
     public Camera cam;
 
-    [Header("Teclado — mover con las teclas de cámara")]
-    public KeyCode up = KeyCode.UpArrow;
-    public KeyCode down = KeyCode.DownArrow;
-    public KeyCode left = KeyCode.LeftArrow;
-    public KeyCode right = KeyCode.RightArrow;
+    [Header("Teclado (mueve la mira) — mismas teclas que la cámara")]
+    public KeyCode up = KeyCode.I;
+    public KeyCode down = KeyCode.K;
+    public KeyCode left = KeyCode.J;
+    public KeyCode right = KeyCode.L;
     public float keyboardSpeed = 900f;   // px/s
-    public KeyCode confirmKey = KeyCode.Space;
+    [Tooltip("Tecla de interacción (la del juego: F). Espacio NO — es salto.")]
+    public KeyCode confirmKey = KeyCode.F;
 
-    [Header("Alcance del rayo")]
+    [Header("Ratón y touch (su PROPIO cursor; no mueven la mira de teclado)")]
+    public bool mouseInteract = true;
+    public bool touchInteract = true;
+
     public float rayDistance = 100f;
 
     Vector2 _pos;
@@ -42,54 +45,62 @@ public class VirtualPointer : MonoBehaviour
     void Update()
     {
         if (!_init) ResetToTopCenter();
-        bool confirm = false;
 
-        // TECLADO (delta con las teclas de cámara).
+        // ── Mira de TECLADO (solo el teclado la mueve) ──────────────────────────────────────────────
         Vector2 d = Vector2.zero;
         if (Input.GetKey(up)) d.y += 1f;
         if (Input.GetKey(down)) d.y -= 1f;
         if (Input.GetKey(right)) d.x += 1f;
         if (Input.GetKey(left)) d.x -= 1f;
         if (d.sqrMagnitude > 0f) _pos += d.normalized * keyboardSpeed * Time.deltaTime;
-        if (Input.GetKeyDown(confirmKey)) confirm = true;
-
-        // RATÓN (si se mueve, manda; si se clica, confirma).
-        if (Input.mousePresent)
-        {
-            if (Mathf.Abs(Input.GetAxis("Mouse X")) > 0f || Mathf.Abs(Input.GetAxis("Mouse Y")) > 0f)
-                _pos = Input.mousePosition;
-            if (Input.GetMouseButtonDown(0)) confirm = true;
-        }
-
-        // TOUCH (si hay toque, manda; el inicio confirma).
-        if (Input.touchCount > 0)
-        {
-            Touch t = Input.GetTouch(0);
-            _pos = t.position;
-            if (t.phase == TouchPhase.Began) confirm = true;
-        }
-
         _pos.x = Mathf.Clamp(_pos.x, 0f, Screen.width);
         _pos.y = Mathf.Clamp(_pos.y, 0f, Screen.height);
 
-        // Rayo → parte apuntada.
-        _hover = null;
-        if (cam != null)
+        // Resaltado de lo apuntado por la mira de teclado.
+        StationPart h = RaycastPart(_pos);
+        if (h != _hover)
         {
-            Ray ray = cam.ScreenPointToRay(_pos);
-            if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
-            {
-                _hover = hit.collider.GetComponent<StationPart>();
-                if (_hover == null) _hover = hit.collider.GetComponentInParent<StationPart>();
-            }
+            if (_hover != null) _hover.SetHighlighted(false);
+            _hover = h;
+            if (_hover != null) _hover.SetHighlighted(true);
+        }
+        if (Input.GetKeyDown(confirmKey) && _hover != null) Interact(_hover);
+
+        // ── RATÓN: su propio cursor (clic izq. interactúa donde apunta) ─────────────────────────────
+        if (mouseInteract && Input.mousePresent && Input.GetMouseButtonDown(0))
+        {
+            StationPart p = RaycastPart(Input.mousePosition);
+            if (p != null) Interact(p);
         }
 
-        if (confirm && _hover != null) Interact(_hover);
+        // ── TOUCH: su propio cursor (el toque interactúa donde toca) ────────────────────────────────
+        if (touchInteract && Input.touchCount > 0)
+        {
+            Touch t = Input.GetTouch(0);
+            if (t.phase == TouchPhase.Began)
+            {
+                StationPart p = RaycastPart(t.position);
+                if (p != null) Interact(p);
+            }
+        }
+    }
+
+    StationPart RaycastPart(Vector2 screenPos)
+    {
+        if (cam == null) return null;
+        Ray ray = cam.ScreenPointToRay(screenPos);
+        if (Physics.Raycast(ray, out RaycastHit hit, rayDistance))
+        {
+            StationPart sp = hit.collider.GetComponent<StationPart>();
+            if (sp == null) sp = hit.collider.GetComponentInParent<StationPart>();
+            return sp;
+        }
+        return null;
     }
 
     void Interact(StationPart part)
     {
-        Debug.Log($"[Virtual] Puntero → «{part.stationId}/{part.actionId}»" +
+        Debug.Log($"[Virtual] → «{part.stationId}/{part.actionId}»" +
                   (string.IsNullOrEmpty(part.label) ? "." : $" ({part.label})."));
         foreach (ProductionOrder o in FindObjectsOfType<ProductionOrder>())
             o.Submit(part.stationId, part.actionId);
@@ -97,7 +108,7 @@ public class VirtualPointer : MonoBehaviour
 
     void OnGUI()
     {
-        // GUI usa Y hacia abajo; el puntero usa Y hacia arriba → convertir.
+        // GUI usa Y hacia abajo; la mira usa Y hacia arriba → convertir.
         float gx = _pos.x, gy = Screen.height - _pos.y;
         GUI.Label(new Rect(gx - 8f, gy - 12f, 40f, 26f), _hover != null ? "◎" : "＋");
         if (_hover != null)

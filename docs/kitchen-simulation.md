@@ -48,8 +48,12 @@ cocina. Los personajes se acercan a los contenedores a **comer** (§6).
 
 ## 3b. Interacción de VIRTUALIZACIÓN (puntero + estaciones funcionales) — GENERALIZABLE
 El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
-- **Puntero pasivo** arriba-centro de la pantalla; se mueve con las **teclas de cámara** → **juego
-  solo-teclado**. Apunta a partes interactuables; una tecla **confirma** la acción sobre lo apuntado.
+- **Puntero pasivo** arriba-centro; es la **vía de teclado**: se mueve con las **teclas de cámara
+  I/K/J/L** (mecanografía) y **confirma con F** (la tecla de interacción del juego; **Espacio es salto**).
+  El **ratón** y el **touch** usan su **propio cursor** (clic/toque interactúa donde apuntan; no mueven la
+  mira de teclado) → se puede jugar **solo con teclado** o con ratón/touch. Teclas configurables (Inspector;
+  ver `DEVLOG.md` §Input). *(En modo virtualización, I/K/J/L mueven la mira en vez de rotar la cámara — la
+  arbitración cámara↔mira es un enganche pendiente.)*
 - **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
   sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
   huevo encima, **encender el fuego**…
@@ -75,6 +79,23 @@ El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
   periódica, ~55 elementos) ya existente.
 - **La comida forma al personaje**: comer nutre los **humores** (efecto pequeño e incremental) y, a largo
   plazo, empuja las **aptitudes** (dieta constante → cambios lentos). Ver §8.
+
+## 4b. Mecanografía para acelerar + idiomas (typing) — diseño
+Algunas acciones son **temporizadas** (cocinar en el fogón, licuar, hornear). Mientras corren, aparecen
+**palabras flotando sobre el objeto** (p. ej. sobre el huevo) y **teclearlas acelera** la acción:
+- **Banco de palabras por acción/ingrediente**: resuenan con lo que haces — verbo (`cook`), ingrediente
+  (`eggs`), **compuesto/nutriente** (`protein`, `B2`), cualidad (`healthy`). Cada palabra correcta **recorta
+  tiempo**; hay una **coherencia base** de tiempos, reducida por palabra.
+- **Idioma elegible** (en/fr/…): la cocina se vuelve **práctica de mecanografía y de idiomas** (aprender
+  inglés/francés cocinando). El banco de palabras se localiza.
+- **Otras estaciones temporizadas**: **licuadora**, **horno** (cada una con su banco y su tiempo base).
+- **Enlace con la química (§8)**: como muchas palabras son **compuestos/nutrientes**, teclearlas puede
+  además **registrar** ese compuesto en el platillo (más nutritivo/afinado) → une el typing con "la comida
+  forma al personaje".
+- **Modelo para construir (MVP):** `TimedAction` (tiempo base + banco de palabras + recorte por palabra),
+  `TypingChallenge` (dibuja las palabras sobre el objeto + captura lo tecleado), bancos **localizables**.
+  Se enchufa como un **paso temporizado** dentro de la receta del `ProductionOrder` (hoy los pasos son
+  instantáneos; este añade duración + typing). **Por construir** — es un subsistema aparte.
 
 ## 5. Suciedad como objeto real (misión de limpieza)
 La **suciedad se crea literalmente** en el mundo (no es un flag):

@@ -16,4 +16,15 @@ public class StationPart : MonoBehaviour
     public string actionId = "accion";
     [Tooltip("Texto de feedback (qué hace este paso).")]
     public string label = "";
+
+    Vector3 _baseScale;
+    bool _cached;
+
+    /// <summary>Resalta la parte cuando el puntero la apunta (feedback de feel). MVP: un pequeño bump de escala.</summary>
+    public void SetHighlighted(bool on)
+    {
+        if (!_cached) { _baseScale = transform.localScale; _cached = true; }
+        transform.localScale = on ? _baseScale * 1.25f : _baseScale;
+    }
 }
+

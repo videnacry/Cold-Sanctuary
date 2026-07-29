@@ -80,6 +80,7 @@ public static class SampleSceneBuilder
         BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
         BuildKitchenOnboarding(root.transform); // cocina paseo (§1) + paso B desayuno/contenedor (§3/§6)
         BuildVirtualizationSandbox(root.transform); // motor: puntero + estaciones funcionales + receta — docs kitchen §3b
+        BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -480,6 +481,46 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Virtualization sandbox (motor, docs kitchen §3b): mueve el puntero " +
                   "(flechas / ratón / touch), apunta a las partes EN ORDEN (Mesón→Nevera→Cocina) y confirma " +
                   "(Espacio / clic / toque). 3 desayunos = misión cumplida. Logs [Virtual]/[Producción].");
+    }
+
+    /// <summary>
+    /// El MISMO motor de virtualización aplicado al Huerto (docs/garden-simulation.md §8): otras estaciones
+    /// y otra receta (abonar→arar→trasplantar→regar→cosechar). Reutiliza el `VirtualPointer` del sandbox de
+    /// cocina (uno por jugador; sus pasos llegan a TODAS las `ProductionOrder`).
+    /// </summary>
+    static void BuildGardenVirtualization(Transform parent)
+    {
+        GameObject group = new GameObject("GardenVirtualization_AUTO");
+        group.transform.SetParent(parent);
+
+        // Cesto de producción (la cosecha).
+        GameObject cestoGO = new GameObject("Cesto_Cosecha");
+        cestoGO.transform.SetParent(group.transform);
+        cestoGO.transform.position = new Vector3(34f, 1f, 15f);
+        FoodContainer cesto = cestoGO.AddComponent<FoodContainer>();
+        cesto.dishName = "grano"; cesto.capacity = 20;
+
+        // Estaciones del huerto (herramientas/recursos a la izquierda, la parcela a la derecha).
+        MakeStationPart(group.transform, "Compostero", "TomarAbono",     "tomas abono (carretilla)",  new Vector3(28f, 1f, 13f), new Color(0.45f, 0.30f, 0.20f));
+        MakeStationPart(group.transform, "Cobertizo",  "TomarAzada",     "tomas la azada",            new Vector3(28f, 1f, 15f), new Color(0.55f, 0.50f, 0.45f));
+        MakeStationPart(group.transform, "Semillero",  "TomarPlantula",  "tomas una plántula/maceta", new Vector3(28f, 1f, 17f), new Color(0.45f, 0.70f, 0.40f));
+        MakeStationPart(group.transform, "Agua",       "LlenarRegadera", "llenas la regadera",        new Vector3(28f, 1f, 19f), new Color(0.55f, 0.75f, 0.95f));
+        MakeStationPart(group.transform, "Parcela",    "Abonar",         "abonas la tierra",          new Vector3(32f, 1f, 13f), new Color(0.40f, 0.28f, 0.18f));
+        MakeStationPart(group.transform, "Parcela",    "Arar",           "aras los surcos",           new Vector3(32f, 1f, 15f), new Color(0.50f, 0.38f, 0.25f));
+        MakeStationPart(group.transform, "Parcela",    "Trasplantar",    "trasplantas al surco",      new Vector3(32f, 1f, 17f), new Color(0.40f, 0.65f, 0.35f));
+        MakeStationPart(group.transform, "Parcela",    "Regar",          "riegas",                    new Vector3(32f, 1f, 19f), new Color(0.50f, 0.70f, 0.90f));
+        MakeStationPart(group.transform, "Parcela",    "Cosechar",       "cosechas al cesto",         new Vector3(32f, 1f, 21f), new Color(0.90f, 0.80f, 0.35f));
+
+        GameObject orderGO = new GameObject("Receta_Huerto");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "cosecha"; order.output = cesto; order.quota = 3;
+        order.stepStation = new[] { "Compostero", "Parcela", "Cobertizo", "Parcela", "Semillero", "Parcela", "Agua", "Parcela", "Parcela" };
+        order.stepAction  = new[] { "TomarAbono", "Abonar", "TomarAzada", "Arar", "TomarPlantula", "Trasplantar", "LlenarRegadera", "Regar", "Cosechar" };
+        order.stepLabel   = new[] { "tomas abono", "abonas la tierra", "tomas la azada", "aras los surcos", "tomas una plántula", "trasplantas", "llenas la regadera", "riegas", "cosechas" };
+
+        Debug.Log("[SampleSceneBuilder] Garden virtualization (docs garden §8): misma mecánica, receta " +
+                  "agrícola (abonar→arar→trasplantar→regar→cosechar), 9 pasos, cuota 3. Reusa el VirtualPointer.");
     }
 
     static void MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
