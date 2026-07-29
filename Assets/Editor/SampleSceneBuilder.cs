@@ -81,6 +81,7 @@ public static class SampleSceneBuilder
         BuildKitchenOnboarding(root.transform); // cocina paseo (§1) + paso B desayuno/contenedor (§3/§6)
         BuildVirtualizationSandbox(root.transform); // motor: puntero + estaciones funcionales + receta — docs kitchen §3b
         BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
+        BuildForgeVirtualization(root.transform);   // 3ª área: Forja/Metales (receta de bronce + typing) — docs forge-simulation.md
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -526,6 +527,45 @@ public static class SampleSceneBuilder
 
         Debug.Log("[SampleSceneBuilder] Garden virtualization (docs garden §8): misma mecánica, receta " +
                   "agrícola (abonar→arar→trasplantar→regar→cosechar), 9 pasos, cuota 3. Reusa el VirtualPointer.");
+    }
+
+    /// <summary>
+    /// El mismo motor en la 3ª área, la Forja/Metales (docs/forge-simulation.md): receta de herramienta de
+    /// bronce (TomarMineral → Fundir[typing] → Verter → Forjar → Templar). El crisol es una acción
+    /// temporizada que se acelera tecleando elementos/compuestos (bronze/copper/tin/cu/sn/melt).
+    /// </summary>
+    static void BuildForgeVirtualization(Transform parent)
+    {
+        GameObject group = new GameObject("ForgeVirtualization_AUTO");
+        group.transform.SetParent(parent);
+
+        GameObject binGO = new GameObject("Contenedor_Herramientas");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(44f, 1f, 16f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>();
+        bin.dishName = "herramienta de bronce"; bin.capacity = 20;
+
+        MakeStationPart(group.transform, "Cantera", "TomarMineral", "tomas mineral (cobre+estaño)", new Vector3(38f, 1f, 14f), new Color(0.45f, 0.42f, 0.38f));
+        // El crisol es TEMPORIZADO: se acelera tecleando elementos/compuestos (docs kitchen §4b + química).
+        StationPart crisol = MakeStationPart(group.transform, "Crisol", "Fundir", "fundes el metal (teclea para acelerar)", new Vector3(38f, 1f, 16f), new Color(0.90f, 0.50f, 0.20f));
+        TypingChallenge smelt = crisol.gameObject.AddComponent<TypingChallenge>();
+        smelt.baseTime = 10f; smelt.reductionPerWord = 1.5f; smelt.language = "en";
+        smelt.words = new[] { "bronze", "copper", "tin", "cu", "sn", "melt" };
+        crisol.timed = smelt;
+        MakeStationPart(group.transform, "Molde",  "Verter",  "viertes en el molde",   new Vector3(40f, 1f, 16f), new Color(0.55f, 0.45f, 0.35f));
+        MakeStationPart(group.transform, "Yunque", "Forjar",  "forjas en el yunque",   new Vector3(42f, 1f, 16f), new Color(0.40f, 0.40f, 0.45f));
+        MakeStationPart(group.transform, "Agua",   "Templar", "templas en agua",       new Vector3(42f, 1f, 18f), new Color(0.55f, 0.75f, 0.95f));
+
+        GameObject orderGO = new GameObject("Receta_Forja");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "herramienta de bronce"; order.output = bin; order.quota = 3;
+        order.stepStation = new[] { "Cantera", "Crisol", "Molde", "Yunque", "Agua" };
+        order.stepAction  = new[] { "TomarMineral", "Fundir", "Verter", "Forjar", "Templar" };
+        order.stepLabel   = new[] { "tomas mineral", "fundes el metal", "viertes en el molde", "forjas en el yunque", "templas en agua" };
+
+        Debug.Log("[SampleSceneBuilder] Forge virtualization (docs forge-simulation): receta de bronce, " +
+                  "5 pasos, el Crisol se acelera tecleando (bronze/copper/tin/cu/sn/melt). Reusa el VirtualPointer.");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)

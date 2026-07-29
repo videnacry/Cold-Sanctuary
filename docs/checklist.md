@@ -232,7 +232,9 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada; **Ötzi histórico**, El Primer Herrero).
+- [~] 3. **Forja/Mecánica** (Metales; Mesopotamia) — **DISEÑADA + receta cableada**
+      ([`forge-simulation.md`](forge-simulation.md)): El Primer Herrero + Sargón autorados; receta de bronce
+      (`ForgeVirtualization_AUTO`, crisol con typing). Falta: decisión arado/espada, misiones-historia, cuota↔misión.
 - [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
 - [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo

@@ -44,6 +44,8 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Encaja con:** las misiones de **detener conflictos** (garden §5) escalan aquí — el metal arma las
   disputas; y el núcleo **fuertes vs débiles**. Capstone de la era temprana: **Gilgamesh** ("llegar al
   corazón").
+- **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
+  **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
 ### 4. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.

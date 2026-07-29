@@ -49,11 +49,13 @@ cocina. Los personajes se acercan a los contenedores a **comer** (§6).
 ## 3b. Interacción de VIRTUALIZACIÓN (puntero + estaciones funcionales) — GENERALIZABLE
 El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
 - **Mira FIJA en el centro** de la cámara (`VirtualPointer`): **nunca se mueve** en pantalla. Para apuntar,
-  **giras la cabeza = la cámara** con **I/K/J/L** (`HeadLook`), **con restricciones** de giro (yaw/pitch
-  limitados, como una cabeza real). Confirmas con **F** (Espacio es salto). El **ratón** y el **touch**
-  conservan su **propio cursor** (clic/toque interactúa donde apuntan). Así se juega **solo con teclado** o
-  con ratón/touch. Teclas configurables (ver `DEVLOG.md` §Input). *(Al entrar en una estación se activa
-  `HeadLook` y se congela el look libre del jugador; mientras se teclea, cabeza y mira se congelan.)*
+  **giras la cabeza = la cámara de 1ª persona** con **I/K/J/L** (`HeadLook`, **vinculado a la cámara de
+  primera persona**), **con restricciones** de giro (yaw/pitch limitados, como una cabeza real). Confirmas
+  con **F** (Espacio es salto). El **ratón** y el **touch** conservan su **propio cursor** (clic/toque
+  interactúa donde apuntan). Así se juega **solo con teclado** o con ratón/touch. Teclas configurables (ver
+  `DEVLOG.md` §Input). *(El "**modo primera persona**" —antes lo llamé "modo estación"— activa `HeadLook`
+  en la cámara de 1ª persona y congela el look libre de `PlayerController`; mientras se teclea, cabeza y
+  mira se congelan.)*
 - **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
   sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
   huevo encima, **encender el fuego**…
