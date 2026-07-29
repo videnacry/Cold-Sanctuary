@@ -60,11 +60,13 @@ El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
 - **Se aplica igual a cada área**: cambian el set de estaciones y las recetas (ver Huerto en
   [`garden-simulation.md`](garden-simulation.md) §8). Es la mecánica de virtualización universal.
 
-> **Estado del código (importante).** Lo ya construido —`TourStation` (paseo), `BreakfastCook` (NPC que
-> cocina por temporizador)— es **onboarding + NPC de fondo**, NO esta interacción. **Falta por construir**
-> el motor real: **puntero** (input solo-teclado) + **estaciones funcionales** (partes manipulables) +
-> **motor de recetas/pasos** + **cuota de producción**. Es el siguiente paso de código de la cocina, y el
-> núcleo reutilizable de todas las áreas.
+> **Estado del código.** El **motor está construido (MVP)** en `Assets/Scripts/Virtualization/`:
+> **`VirtualPointer`** (puntero input-agnóstico: **teclado** con las teclas de cámara / **ratón** / **touch**,
+> a la vez), **`StationPart`** (parte manipulable: apuntable por el puntero) y **`ProductionOrder`** (receta
+> por pasos ordenados → producto → **cuota** = sustento). Sandbox `VirtualizationSandbox_AUTO` (cocina de
+> huevos revueltos, 7 pasos, cuota 3). *(`TourStation`/`BreakfastCook` siguen como onboarding/NPC de fondo.)*
+> **Falta:** feedback visual (resaltar la parte apuntada, animaciones), enganchar la cuota a la misión real
+> del área, y las **recetas de cada área** (huerto en `garden-simulation.md` §8).
 
 ## 4. Recetas = química (la "sopa de letras")
 - Una **receta** es una combinación de **ingredientes**; cada ingrediente aporta **compuestos** (ver §8).

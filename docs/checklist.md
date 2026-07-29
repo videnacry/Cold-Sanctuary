@@ -200,11 +200,12 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [ ] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el verdadero núcleo jugable, kitchen §3b)** — **por construir**:
-      **puntero** solo-teclado (arriba-centro, movido por las teclas de cámara) + **estaciones funcionales**
-      con partes manipulables (abrir mesón→sartén, nevera→huevos, poner al fogón, encender) + **motor de
-      recetas/pasos** + **cuota de producción** (sustento). **Generalizable a todas las áreas.** Lo ya hecho
-      (`TourStation`/`BreakfastCook`) es onboarding/NPC de fondo, NO esto.
+- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR MVP HECHO**
+      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** input-agnóstico (**teclado**/**ratón**/**touch**
+      a la vez; puntero arriba-centro movido por las teclas de cámara), **`StationPart`** (partes
+      manipulables) + **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento).
+      Sandbox `VirtualizationSandbox_AUTO` (huevos revueltos, 7 pasos, cuota 3). **Generalizable a todas
+      las áreas.** **Falta:** resaltado/animaciones, enganchar la cuota a la misión real, y las recetas por área.
 - [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
       (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
       alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.

@@ -79,6 +79,7 @@ public static class SampleSceneBuilder
         BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
         BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
         BuildKitchenOnboarding(root.transform); // cocina paseo (§1) + paso B desayuno/contenedor (§3/§6)
+        BuildVirtualizationSandbox(root.transform); // motor: puntero + estaciones funcionales + receta — docs kitchen §3b
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -433,6 +434,64 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Kitchen onboarding: «Anfitrion» hace el PASEO por Nevera/Plancha/" +
                   "Mesones/Contenedor con «Novato» (alma compartida); «Cocinero» rellena el contenedor con " +
                   "el loop de desayuno y «Comensal» come. Logs [Paseo]/[Cocina] (docs kitchen §1/§3/§6).");
+    }
+
+    /// <summary>
+    /// Sandbox del MOTOR de virtualización (docs/kitchen-simulation.md §3b): estaciones funcionales
+    /// (partes manipulables) + una receta de huevos revueltos + el `VirtualPointer` (teclado/ratón/touch).
+    /// En Play: mueve el puntero (flechas / ratón / touch), apunta a las partes EN ORDEN y confirma
+    /// (Espacio / clic / toque). Logs [Virtual]/[Producción]/[Cocina].
+    /// </summary>
+    static void BuildVirtualizationSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("VirtualizationSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // Contenedor de producción.
+        GameObject foodGO = new GameObject("Contenedor_Virtual");
+        foodGO.transform.SetParent(group.transform);
+        foodGO.transform.position = new Vector3(22f, 1f, 15f);
+        FoodContainer food = foodGO.AddComponent<FoodContainer>();
+        food.dishName = "huevos revueltos"; food.capacity = 20;
+
+        // Estaciones funcionales (partes manipulables).
+        MakeStationPart(group.transform, "Meson",  "AbrirPuerta",   "abres el mesón",           new Vector3(18f, 1f, 14f), new Color(0.55f, 0.40f, 0.30f));
+        MakeStationPart(group.transform, "Meson",  "TomarSarten",   "tomas la sartén",          new Vector3(18f, 1f, 15f), new Color(0.35f, 0.35f, 0.35f));
+        MakeStationPart(group.transform, "Nevera", "AbrirPuerta",   "abres la nevera",          new Vector3(18f, 1f, 18f), new Color(0.70f, 0.85f, 0.95f));
+        MakeStationPart(group.transform, "Nevera", "TomarHuevo",    "tomas los huevos",         new Vector3(18f, 1f, 19f), new Color(0.95f, 0.90f, 0.70f));
+        MakeStationPart(group.transform, "Cocina", "PonerSarten",   "pones la sartén al fuego", new Vector3(22f, 1f, 17f), new Color(0.30f, 0.30f, 0.35f));
+        MakeStationPart(group.transform, "Cocina", "PonerHuevo",    "cascas el huevo",          new Vector3(22f, 1f, 18f), new Color(0.95f, 0.85f, 0.55f));
+        MakeStationPart(group.transform, "Cocina", "EncenderFuego", "enciendes el fuego",       new Vector3(22f, 1f, 19f), new Color(0.90f, 0.45f, 0.20f));
+
+        // La receta (misión de producción): la cadena en orden.
+        GameObject orderGO = new GameObject("Receta_Desayuno");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "desayuno"; order.output = food; order.quota = 3;
+        order.stepStation = new[] { "Meson", "Meson", "Nevera", "Nevera", "Cocina", "Cocina", "Cocina" };
+        order.stepAction  = new[] { "AbrirPuerta", "TomarSarten", "AbrirPuerta", "TomarHuevo", "PonerSarten", "PonerHuevo", "EncenderFuego" };
+        order.stepLabel   = new[] { "abres el mesón", "tomas la sartén", "abres la nevera", "tomas los huevos", "pones la sartén al fuego", "cascas el huevo", "enciendes el fuego" };
+
+        // El puntero input-agnóstico.
+        GameObject ptr = new GameObject("VirtualPointer_AUTO");
+        ptr.transform.SetParent(group.transform);
+        ptr.AddComponent<VirtualPointer>();
+
+        Debug.Log("[SampleSceneBuilder] Virtualization sandbox (motor, docs kitchen §3b): mueve el puntero " +
+                  "(flechas / ratón / touch), apunta a las partes EN ORDEN (Mesón→Nevera→Cocina) y confirma " +
+                  "(Espacio / clic / toque). 3 desayunos = misión cumplida. Logs [Virtual]/[Producción].");
+    }
+
+    static void MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = $"{station}_{action}";
+        go.transform.SetParent(parent);
+        go.transform.position = pos;
+        go.transform.localScale = new Vector3(0.7f, 0.7f, 0.7f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{station}_{action}_MAT", col);
+        StationPart sp = go.AddComponent<StationPart>();
+        sp.stationId = station; sp.actionId = action; sp.label = label;
     }
 
     static TourStation MakeStation(Transform parent, string label, Vector3 pos, string canDo)

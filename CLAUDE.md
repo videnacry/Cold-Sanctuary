@@ -51,6 +51,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Mente (pilar) | `Assets/Scripts/Mind/` | `Mind` (piensa por tono/frases), `Humores`, `ElementalTone`, `MindPhrase`/`PhraseLibrary`+`PhrasePools` (vivencias/deseos/históricos), `ThoughtField` (campo social/semántico), `PhraseDistribution` (reparto Estricta/Libre + bloqueo). Ver `docs/anima-architecture.md` §11 |
 | Control / posesión | `Assets/Scripts/Control/` | `AnimaController` cede el mando al `IBrain` de mayor relevancia; `AiBrain` (IA) vs `PlayerBrain` (input, mueve el cuerpo); `PlayerCore` (input persistente + cambio de cuerpo); `FollowBrain` (seguir); `PossessionSpell` (posee en runtime); `HelpRequest`/`HelpResponder` (petición sí/no → alma compartida). Ver `docs/anima-architecture.md` §11.5/§11.7 |
 | Cocina (simulación) | `Assets/Scripts/Kitchen/` | Paso A: `DirtArea`/`DirtSpot`/`Cleaner` (suciedad real → misión → limpieza) + **paseo** `GuidedTour`/`TourStation`. Paso B (MVP): `BreakfastCook` (cadena de desayuno) → `FoodContainer` (se rellena) → `Eater` (come). Ver `docs/kitchen-simulation.md` |
+| Virtualización (interacción) | `Assets/Scripts/Virtualization/` | Motor genérico (todas las áreas): `VirtualPointer` (puntero input-agnóstico teclado/ratón/touch, movido por teclas de cámara), `StationPart` (parte manipulable), `ProductionOrder` (receta por pasos → cuota = sustento). Ver `docs/kitchen-simulation.md` §3b |
 | Herramientas Editor | `Assets/Editor/` | `SampleSceneBuilder` cablea casi todo el escenario |
 | Debug | `Test.cs` | Sin uso en flujo principal |
 
