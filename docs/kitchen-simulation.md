@@ -46,6 +46,26 @@ un poco → especiar → pasar a los contenedores`. Cada paso es un `IInteractab
 El resultado alimenta un **contenedor de servicio** que **siempre se está rellenando** mientras alguien
 cocina. Los personajes se acercan a los contenedores a **comer** (§6).
 
+## 3b. Interacción de VIRTUALIZACIÓN (puntero + estaciones funcionales) — GENERALIZABLE
+El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
+- **Puntero pasivo** arriba-centro de la pantalla; se mueve con las **teclas de cámara** → **juego
+  solo-teclado**. Apunta a partes interactuables; una tecla **confirma** la acción sobre lo apuntado.
+- **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
+  sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
+  huevo encima, **encender el fuego**…
+- **Recetas = pasos ordenados** sobre estaciones. El paso correcto avanza; el orden importa; feedback si te
+  equivocas. Completar la receta = **una ración/producto**.
+- **Cuota de producción de la MISIÓN = sustento del santuario**: repetir recetas llena los contenedores/
+  recursos hasta la cuota → misión cumplida; la comida **alimenta a todos los personajes** del santuario.
+- **Se aplica igual a cada área**: cambian el set de estaciones y las recetas (ver Huerto en
+  [`garden-simulation.md`](garden-simulation.md) §8). Es la mecánica de virtualización universal.
+
+> **Estado del código (importante).** Lo ya construido —`TourStation` (paseo), `BreakfastCook` (NPC que
+> cocina por temporizador)— es **onboarding + NPC de fondo**, NO esta interacción. **Falta por construir**
+> el motor real: **puntero** (input solo-teclado) + **estaciones funcionales** (partes manipulables) +
+> **motor de recetas/pasos** + **cuota de producción**. Es el siguiente paso de código de la cocina, y el
+> núcleo reutilizable de todas las áreas.
+
 ## 4. Recetas = química (la "sopa de letras")
 - Una **receta** es una combinación de **ingredientes**; cada ingrediente aporta **compuestos** (ver §8).
 - Los platillos elaborados se vuelven una **"sopa de letras"**: más ingredientes = más compuestos = más

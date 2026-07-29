@@ -200,6 +200,11 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
+- [ ] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el verdadero núcleo jugable, kitchen §3b)** — **por construir**:
+      **puntero** solo-teclado (arriba-centro, movido por las teclas de cámara) + **estaciones funcionales**
+      con partes manipulables (abrir mesón→sartén, nevera→huevos, poner al fogón, encender) + **motor de
+      recetas/pasos** + **cuota de producción** (sustento). **Generalizable a todas las áreas.** Lo ya hecho
+      (`TourStation`/`BreakfastCook`) es onboarding/NPC de fondo, NO esto.
 - [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
       (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
       alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.
@@ -214,6 +219,9 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 - **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
 - **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
   agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
+  Misiones de virtualización DISEÑADAS: [`garden-simulation.md`](garden-simulation.md) §8 (abonar→arar→
+  trasplantar→regar→proteger→cosechar) y §9 (**mundo-insecto: misiones de guardián**, proteger las plantas
+  de otros insectos).
 
 ## Áreas / historia — roadmap (area-progression.md)
 Orden alineado con la línea temporal del microworld (una época por área). Ver
