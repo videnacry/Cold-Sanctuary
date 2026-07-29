@@ -200,10 +200,22 @@ pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 ex
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
-- [~] **A — Limpieza mancha-a-mancha (Meso)**: **HECHO el núcleo** — `DirtArea` genera suciedad real,
-      umbral → misión activa, `Cleaner` borra mancha a mancha, se completa al vaciar (`DirtSpot`; sandbox
-      `KitchenSandbox_AUTO`). **Falta el PASEO** (onboarding guiado por áreas — reusa FollowBrain/HelpRequest).
-- [ ] **B — Loop de desayuno + contenedor**: nevera→plancha→especiar→contenedor (se rellena; log de raciones).
+- [~] **★ INTERACCIÓN DE VIRTUALIZACIÓN (el núcleo jugable, kitchen §3b)** — **MOTOR + FEEL + TYPING HECHOS**
+      (`Assets/Scripts/Virtualization/`): **`VirtualPointer`** = **mira FIJA en el centro** (no se mueve);
+      apuntas girando la **cabeza=cámara** con **`HeadLook`** (I/K/J/L, con **restricciones** de yaw/pitch);
+      confirmas con **F** (Espacio=salto); **ratón/touch = su propio cursor**. **Resaltado** de la parte
+      apuntada. **`ProductionOrder`** (receta por pasos → producto → **cuota** = sustento). Recetas:
+      **cocina** (`VirtualizationSandbox_AUTO`) y **huerto** (`GardenVirtualization_AUTO`). **Mecanografía**:
+      **`TypingChallenge`** — el fogón es una acción temporizada que se acelera tecleando (cook/eggs/protein/
+      b2…); congela cámara/mira mientras se teclea (`.Active`, gateado también en `PlayerController`).
+      **Falta:** enganchar la cuota a la **misión real**; palabras **sobre el objeto** + bancos localizables
+      (en/fr) y por compuesto; estaciones licuadora/horno; animaciones; activar `HeadLook` al entrar a estación.
+- [x] **A — Paseo + limpieza mancha-a-mancha (Meso)**: limpieza (`DirtArea`/`DirtSpot`/`Cleaner`) + **PASEO**
+      (`GuidedTour`/`TourStation`: el anfitrión recorre estaciones enseñando cada área, con el novato de
+      alma compartida vía `HelpRequest`). Sandbox `KitchenSandbox_AUTO` + `KitchenOnboarding_AUTO`.
+- [~] **B — Loop de desayuno + contenedor**: **MVP hecho** — `BreakfastCook` recorre la cadena
+      (nevera→huevos→plancha→revolver→especiar→contenedor) y rellena un `FoodContainer`; `Eater` come del
+      contenedor. **Falta:** hacer la cadena **espacial** (caminar a las estaciones con `FollowBrain`).
 - [ ] **C — Alimentación por humores**: personajes eligen contenedor por utilidad+humores; comer aplica
       `compuestos` → nudge de humores. *(Introduce `FoodCompound` mínimo — modelo de §8: compuestos→humores→aptitudes.)*
 - [ ] **D — Puente Micro/Meso**: mancha del Meso = región del MicroKitchen; minidrones extraen → desaparece (suelo primero).
@@ -212,6 +224,9 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 - **Mínimo jugable:** A + B → luego D (la unión Micro/Meso).
 - **Próxima área (principiante): el HUERTO** (kitchen-simulation §13) — continúa el microworld (fuego→
   agricultura, La Sembradora) y cierra el bucle con la cocina (produce ingredientes). 2ª simulación.
+  Misiones de virtualización DISEÑADAS: [`garden-simulation.md`](garden-simulation.md) §8 (abonar→arar→
+  trasplantar→regar→proteger→cosechar) y §9 (**mundo-insecto: misiones de guardián**, proteger las plantas
+  de otros insectos).
 
 ## Áreas / historia — roadmap (area-progression.md)
 Orden alineado con la línea temporal del microworld (una época por área). Ver

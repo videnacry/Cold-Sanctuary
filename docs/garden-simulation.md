@@ -90,3 +90,41 @@ Debut fuerte aquí (el giro neolítico lo pide), pero es un **arquetipo reutiliz
 4. **D — Proteger (plagas):** enganche al mundo-insecto (hormigas vs cosecha).
 5. **E — Históricos:** autorar y cablear La Contadora de Granos, El Jefe de la Aldea, El Lector del Cielo.
 **Mínimo jugable:** A + B (huerto que produce y almacena) → luego C (la mediación, la novedad de diseño).
+
+## 8. Misiones de VIRTUALIZACIÓN del Huerto (estaciones + recetas)
+Mismo modelo que la cocina ([`kitchen-simulation.md`](kitchen-simulation.md) §3b): **puntero solo-teclado**
++ **estaciones funcionales** + **recetas por pasos** → **cuota de producción** (sustento del santuario).
+
+**Estaciones del jardín (por funcionalidad):**
+- **Compostero** — coger **abono**.
+- **Cobertizo de herramientas** — coger **azada/arado**, **carretilla**, **regadera**, **semillas/plántulas**.
+- **Parcela / bancal** — tierra donde se abona, se ara, se siembra y se cosecha.
+- **Semillero / macetas** — plántulas a **trasplantar**.
+- **Punto de agua** — llenar la **regadera**.
+- **Cesto / silo** — donde va la **cosecha** (el contenedor de producción, como el de la cocina).
+
+**Receta base (cómo empieza y avanza)** — cadena de pasos ordenados:
+1. **Abonar la tierra** — carretilla: llevar **abono** del compostero a la parcela → esparcir. *(prepara el suelo; elemento N)*
+2. **Arar / labrar** — coger la **azada/arado** del cobertizo → abrir los **surcos**.
+3. **Sembrar / trasplantar** — coger **semillas** (o **macetas/plántulas** del semillero) → colocarlas en los surcos.
+4. **Regar** — llenar la **regadera** en el punto de agua → regar (repetir según estación/germinación).
+5. **Proteger** — quitar malas hierbas / espantar plagas *(puente al mundo-insecto, §9)*.
+6. **Cosechar** — recoger el fruto maduro al **cesto** → **+1 producción** hacia la cuota de la misión.
+
+→ Tus intuiciones encajan **todas** y en este orden: **abonar**(1) · **carretillas**(1 y 6, el acarreo) ·
+**arar**(2) · **mover plantas/macetas / trasplantar**(3) · regar(4) · proteger(5) · cosechar(6). La
+**cuota** (p. ej. N cestos) es el **sustento**; surte a la Cocina (ingredientes) y a los animales del santuario.
+
+## 9. Mundo-insecto: misiones de GUARDIÁN (proteger las plantas)
+Sí — a escala insecto, el Huerto se defiende. El jugador (mini-avatar: **gusano → hormiga → araña**, con
+locomoción que se desbloquea: reptar → paredes/tallos → volar) hace de **guardián de las plantas** frente a
+**otros insectos**:
+- **Interceptar plagas** — pulgones, orugas, hormigas cortadoras que se comen hojas/brotes.
+- **Escoltar/reubicar** brotes o semillas amenazados a zona segura.
+- **Patrullar** el bancal por rondas; defender el semillero de noche.
+- Escala por altura (desbloqueo de locomoción): primero el **suelo/raíces**, luego **tallos** (trepar),
+  luego **hojas altas/vuelo**.
+**Unión Micro↔Meso:** una planta **atacada** en el Huerto (Meso) = una **región de defensa** en el mundo-
+insecto (Micro) — igual que la mancha de la cocina es una región de limpieza. Es el núcleo del juego
+(**que los fuertes no se coman a los débiles**) en su forma activa: **defender al débil** (la planta) del
+depredador (la plaga). Históricos del área: **El Guardián / Señor del Fuego** (era del fuego) y compañía.
