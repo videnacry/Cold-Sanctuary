@@ -155,6 +155,8 @@ public class PlayerController : MonoBehaviour
     {
         // Block look during dialogue
         if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) return;
+        // Block look while typing a virtualization action (las letras no deben mover la cámara).
+        if (TypingChallenge.Active) return;
 
         float yaw   = 0f;
         float pitch = 0f;

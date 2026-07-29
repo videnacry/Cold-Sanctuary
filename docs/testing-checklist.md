@@ -16,10 +16,10 @@ misión de yoga, `ThoughtField_Agua`, velocidad de tiempo. Los ítems `[x]` son 
   compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si
   hay commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
   hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
-- **Bug real encontrado y arreglado en PR #16** (no committeado, pendiente de que el usuario lo pida):
-  `AnimaController.PickBest()` no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo
-  interfaz, no `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de
-  cualquier `HelpRequest` aceptada. Fix: cast a `Object` en el null-check. Detalle en sección 11.
+- **Bug real encontrado y arreglado en PR #16** (commiteado `40cfbd1`): `AnimaController.PickBest()`
+  no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo interfaz, no
+  `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de cualquier
+  `HelpRequest` aceptada. Fix: cast a `Object` en el null-check. Detalle en sección 11.
 - La **Cocina legacy** (`KitchenScaleController`/`KitchenEntrance`, miniaturización + trigger) fue
   **borrada por el equipo el 2026-07-23** — reemplazada por `VirtualizationMachine`+
   `RealityShiftController`+`MobWorldLoader` (genérico, ver `CLAUDE.md`). Un plan mío pendiente de una
@@ -261,8 +261,10 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
       hay errores, pero no se verificó comportamiento en Play más allá de eso).
 - [ ] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado.
 
-## 11. Control/posesión + Cocina paso A (PR #16, mergeada 2026-07-29)
-`PossessionSandbox_AUTO` ([Control]/[Jugador]/[Posesión]/[Petición]) y `KitchenSandbox_AUTO` ([Cocina]).
+## 11. Control/posesión · Cocina · Virtualización (PRs #16 y #17)
+Sandboxes que genera `Build Sample Scene Blockout`. Todo por consola.
+
+### PR #16 — verificado 2026-07-29 (`PossessionSandbox_AUTO`, `KitchenSandbox_AUTO`)
 Evidencia de `Logs/Editor.log` de una corrida completa en Play:
 - [x] **Compila** tras sincronizar los 17 archivos nuevos/modificados del PR (`Control/`, `Kitchen/`,
       extensiones de `Mind`, `SampleSceneBuilder.cs`) — 0 errores CS.
@@ -290,7 +292,28 @@ Evidencia de `Logs/Editor.log` de una corrida completa en Play:
       cualquier petición aceptada — bloqueaba efectivamente el Play mode. **Fix aplicado**:
       `if ((b as Object) == null) continue;` (cast a `Object` para activar el chequeo "fake null" de
       Unity). Sincronizado repo↔proyecto, recompilado, re-testeado: corrida completa post-petición sin
-      ningún error nuevo. **Sin commitear** (regla de la sesión — pedir antes de commitear).
+      ningún error nuevo. **Commiteado** (`40cfbd1`).
+
+### PR #17 — pendiente de compilar y probar
+- [ ] **Control/posesión** (`PossessionSandbox_AUTO`, logs `[Control]/[Jugador]/[Posesión]/[Petición]`):
+      el jugador posee «Anima_Debil» (2>1) y lo mueve con WASD; «Kushal_Follow» lo sigue; con **Tab**
+      intenta saltar a «Anima_Fuerte» pero su IA aguanta (2<3); «Aldeano_Pide» pide a Kushal ir a «HelpGoal»
+      → alma compartida ~8 s. *(Nota: WASD mueve también al Player real; comparten input.)*
+- [ ] **Cocina paso A** (`KitchenSandbox_AUTO`, logs `[Cocina]`): la `DirtArea` genera manchas; al pasar de
+      5 → "misión de limpieza ACTIVA"; el `Pinche_Limpia` (auto) las borra mancha a mancha → "misión COMPLETA".
+- [ ] **Cocina paseo + desayuno** (`KitchenOnboarding_AUTO`, logs `[Paseo]/[Cocina]`): «Anfitrion» recorre
+      Nevera/Plancha/Mesones/Contenedor "enseñando" cada una con «Novato» siguiéndolo (alma compartida);
+      «Cocinero» rellena el contenedor con el loop de desayuno y «Comensal» come.
+- [ ] **Virtualización — cocina** (`VirtualizationSandbox_AUTO`, logs `[Virtual]/[Producción]`): la **mira
+      está FIJA en el centro**; apunta **girando la cámara** (en el sandbox, con el look del PlayerController)
+      a las cajitas EN ORDEN — Mesón(abrir→sartén) → Nevera(abrir→huevos) → Cocina(poner sartén→cascar
+      huevo→**encender**) — y confirma con **F**. La parte apuntada se **resalta**. 3 desayunos = misión.
+- [ ] **Mecanografía (fogón)**: al confirmar **EncenderFuego** aparece una caja "Cocinando…"; **teclea**
+      `cook/eggs/protein/healthy/tasty/b2` → cada palabra **recorta tiempo**; al agotarse (o teclearlas
+      todas) se completa y produce el desayuno. **La cámara se congela mientras tecleas** (no debería girar).
+- [ ] **Virtualización — huerto** (`GardenVirtualization_AUTO`): misma mecánica, receta agrícola
+      (compostero/cobertizo/semillero/agua/parcela) en 9 pasos: abonar→arar→trasplantar→regar→cosechar.
+- [ ] **Regresión**: nada de lo anterior (movimiento/cámara/asanas) se rompe con los nuevos scripts.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
