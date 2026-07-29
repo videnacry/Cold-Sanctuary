@@ -224,8 +224,10 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       Reutilizable en todas las áreas; debut en el Huerto. Núcleo: "que los fuertes no se coman a los débiles".
 
 ## Siguiente (código)
-- [ ] **Peticiones → alma compartida** (`HelpRequest` sí/no → posesión consentida): acciones entre
-      personajes; la intro de área "veterano lleva al novato". `FollowBrain` es el primer ladrillo (hecho).
+- [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
+      (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
+- [ ] **Re-autorar vivencias** de Ötzi/Sembradora/Guardián con el canon de `founding-trio-stories.md`
+      (la coneja, el señuelo, la planta favorita, las piedras) al cerrar sus misiones.
 - [ ] **Posesión real (resto)**: `PlayerBrain.Act()` ya mueve el cuerpo poseído; falta **interactuar**
       (F/clic enrutado al cuerpo) e integrar `PossessionSpell` con el hechizo real del jugador (crecer power/range).
 - [ ] **Asana/hechizo como frases reales** (hoy solo categoría); **multi-instancia** (madre flyweight + relevancia).
@@ -242,9 +244,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [x] **Pensamientos escalables**: `MindPhrase` con `weight` + `lifecycle` (Persistent/OnceThenGone/
       DecaysPerUse) + gate por aptitud (`AptitudeKind`/`gateMin`); `Mind` hace pick ponderado, gatea y aplica
       ciclo de vida. `Aptitudes.Get(AptitudeKind)` añadido.
-- [x] **Históricos**: Guardián del Fuego, La Sembradora, El Alfarero.
-- [x] **Diseño**: `kitchen-simulation.md` (1ª simulación) + anima §11.7 (pensamientos escalables, movilidad,
-      peticiones→alma compartida). Recomendada 2ª área: el Huerto.
+- [x] **Históricos**: Guardián del Fuego (Señor del Fuego), La Sembradora, El Alfarero.
+- [x] **Peticiones → alma compartida (MVP)**: `HelpResponder` (sí/no) + `HelpRequest` (al aceptar, van
+      juntos vía `FollowBrain` temporal). Demo en el sandbox (Aldeano pide a Kushal ir a un punto).
+- [x] **Diseño**: `kitchen-simulation.md` + `garden-simulation.md` + `area-progression.md` +
+      **`founding-trio-stories.md`** (historias Señor del Fuego/Ötzi/Sembradora + Kushal, misiones, guías
+      reales) + anima §11.7. **Corrección**: Ötzi es de la era temprana, no de la Forja.
 
 ## Hecho (2026-07-28)
 - [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias

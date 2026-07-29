@@ -319,7 +319,8 @@ public static class SampleSceneBuilder
         follower.AddComponent<AiBrain>().selfRelevance = 1f;
         FollowBrain fb = follower.AddComponent<FollowBrain>();
         fb.target = weak.transform; fb.relevance = 1.5f;   // por encima del idle → conduce mientras siga
-        follower.AddComponent<AnimaController>();
+        AnimaController followerCtrl = follower.AddComponent<AnimaController>();
+        follower.AddComponent<HelpResponder>().acceptChance = 1f;   // acepta peticiones (demo)
 
         // El "alma" del jugador: posee al más cercano (el débil) al empezar; Tab intenta saltar al otro.
         GameObject core = new GameObject("PlayerCore_AUTO");
@@ -331,10 +332,24 @@ public static class SampleSceneBuilder
         pc.spell = spell; pc.possessNearestOnStart = true;
         pc.followCamera = false;   // no pelear con la cámara del PlayerController real en este sandbox
 
+        // Petición → alma compartida (docs anima §11.7): un aldeano pide a Kushal ir juntos a un punto.
+        GameObject goal = new GameObject("HelpGoal");
+        goal.transform.SetParent(group.transform);
+        goal.transform.position = new Vector3(3f, 1f, 18f);
+        GameObject asker = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        asker.name = "Aldeano_Pide"; asker.transform.SetParent(group.transform);
+        asker.transform.position = new Vector3(1f, 1f, 18f);
+        asker.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Aldeano_Pide_MAT", new Color(0.85f, 0.75f, 0.4f));
+        asker.AddComponent<AiBrain>().selfRelevance = 1f;
+        asker.AddComponent<AnimaController>();
+        HelpRequest req = asker.AddComponent<HelpRequest>();
+        req.autoAskOnStart = true; req.autoResponder = followerCtrl; req.autoGoal = goal.transform; req.shareDuration = 8f;
+
         Debug.Log("[SampleSceneBuilder] Possession sandbox: en Play el jugador posee «Anima_Debil» " +
                   "(2 > 1) y lo mueves con WASD; «Kushal_Follow» lo sigue; con Tab intentas saltar a " +
-                  "«Anima_Fuerte» pero su IA aguanta (2 < 3). Ver logs [Control]/[Jugador]/[Posesión] " +
-                  "(docs anima §11.5). Nota: WASD mueve también al Player real (comparten input).");
+                  "«Anima_Fuerte» pero su IA aguanta (2 < 3). «Aldeano_Pide» pide a Kushal ir juntos a " +
+                  "«HelpGoal» → alma compartida ~8s (logs [Petición]). Ver [Control]/[Jugador]/[Posesión] " +
+                  "(docs anima §11.5/§11.7). Nota: WASD mueve también al Player real (comparten input).");
     }
 
     static void AddMindBeing(Transform parent, string name, Vector3 pos, Color col,

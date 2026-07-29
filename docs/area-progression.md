@@ -12,10 +12,14 @@ la época y "pasa la antorcha" a otra región, encarnando **figuras reales** (co
 arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **elemento**.
 
 ## Ya planteadas
-1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Guardián del Fuego**). Elemento
+1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Señor del Fuego**). Elemento
    **C**. Ver [`kitchen-simulation.md`](kitchen-simulation.md).
 2. **El Huerto** — Neolítico (agricultura) · Creciente Fértil / primera aldea · hilo C (**La Sembradora**).
    Elemento **N**. Ver [`garden-simulation.md`](garden-simulation.md).
+
+> **Era temprana — grupo fundador:** Señor del Fuego → **Ötzi** (puente) → La Sembradora, con **Kushal** de
+> hilo conductor. Sus historias entrelazadas y las misiones que salen están en
+> [`founding-trio-stories.md`](founding-trio-stories.md). Ötzi es de **esta era** (no de la Forja).
 
 ## Las TRES siguientes áreas
 
@@ -28,9 +32,13 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
   (arado, hoz) → y **armas**.
 - **Giro (real):** la **misma forja** hace el arado y la espada → **el primer útil de metal fue también la
   primera arma** (enlaza con la muerte de **Ötzi**, flecha de cobre por la espalda). *El que forja, elige.*
-- **Históricos:** **El Primer Herrero / El Fundidor** (B), **Ötzi** (ya autorado, Cu), **Sargón de Acad**
-  (E, primer imperio → conflicto/dominio), **Enheduanna** (D, primera autora con nombre; Acadia),
-  **Imhotep** (C, Egipto; ingeniero-médico), **El Astrónomo de Babel** (A). Elementos **Cu, Sn, Fe**.
+- **Históricos:** **El Primer Herrero / El Fundidor** (B), **Sargón de Acad** (E, primer imperio →
+  conflicto/dominio), **Enheduanna** (D, primera autora con nombre; Acadia), **Imhotep** (C, Egipto;
+  ingeniero-médico), **El Astrónomo de Babel** (A). Elementos **Cu, Sn, Fe**.
+  > **Nota (corrección):** **Ötzi NO va aquí** — es de la **era temprana** (grupo fundador; ver
+  > [`founding-trio-stories.md`](founding-trio-stories.md)). Lo puse antes en la Forja simplificando de más.
+  > Lo que hereda la Forja es el **hilo del fuego**: la *pirita → hierro* del Señor del Fuego evoluciona en
+  > metalurgia. El hacha de cobre (motivo del Ötzi real) puede pasar a **El Primer Herrero**.
 - **Encaja con:** las misiones de **detener conflictos** (garden §5) escalan aquí — el metal arma las
   disputas; y el núcleo **fuertes vs débiles**. Capstone de la era temprana: **Gilgamesh** ("llegar al
   corazón").
