@@ -824,54 +824,59 @@ public static class SampleSceneBuilder
         GameObject group = new GameObject("MicrocosmosSandbox_AUTO");
         group.transform.SetParent(parent);
 
-        // Hormiguero = refugio (cuenta a los rescatados).
-        GameObject nest = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        nest.name = "Hormiguero"; nest.transform.SetParent(group.transform);
-        nest.transform.position = new Vector3(-30f, 1f, 10f); nest.transform.localScale = new Vector3(2.5f, 1.5f, 2.5f);
-        nest.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Hormiguero_MAT", new Color(0.45f, 0.35f, 0.25f));
-        CarryToRefuge refuge = nest.AddComponent<CarryToRefuge>(); refuge.needed = 2; refuge.radius = 3f;
+        // CUEVA = refugio natural (aún NO hay hormiguero/reina/feromonas — es el amanecer).
+        GameObject cave = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cave.name = "Cueva"; cave.transform.SetParent(group.transform);
+        cave.transform.position = new Vector3(-30f, 1f, 10f); cave.transform.localScale = new Vector3(2.5f, 1.5f, 2.5f);
+        cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
+        CarryToRefuge refuge = cave.AddComponent<CarryToRefuge>(); refuge.needed = 4; refuge.radius = 3f;
 
-        // Punto donde está la familia caída.
+        // Dónde cayó la familia mayor.
         GameObject familyPoint = new GameObject("FamiliaCaida_Punto");
         familyPoint.transform.SetParent(group.transform);
         familyPoint.transform.position = new Vector3(-34f, 1f, 24f);
 
-        // La familia caída (2 débiles, inmóviles hasta ser rescatados: WeakOne sin FollowBrain).
-        for (int i = 0; i < 2; i++)
+        // Las 4 FRÁGILES caídas (inmóviles hasta ser rescatadas): 1 súper mayor + 3 mayores (2 de ellas la
+        // primera familia del pulgón) (docs microcosmos-insects §4).
+        string[] elders = { "SuperMayor", "Mayor_familiaPulgon_0", "Mayor_familiaPulgon_1", "Mayor_tribu" };
+        for (int i = 0; i < elders.Length; i++)
         {
             GameObject fam = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            fam.name = $"Familia_{i}"; fam.transform.SetParent(group.transform);
-            fam.transform.position = new Vector3(-34f + i, 1f, 24f); fam.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-            fam.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Familia_{i}_MAT", new Color(0.55f, 0.50f, 0.40f));
+            fam.name = elders[i]; fam.transform.SetParent(group.transform);
+            fam.transform.position = new Vector3(-35f + (i % 2), 1f, 24f + (i / 2)); fam.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            fam.GetComponent<Renderer>().sharedMaterial = MakeMaterial(elders[i] + "_MAT", new Color(0.55f, 0.50f, 0.40f));
             fam.AddComponent<WeakOne>();
             fam.AddComponent<AiBrain>().selfRelevance = 1f;
             fam.AddComponent<AnimaController>();
         }
 
-        // El pulgón: produce melaza + mascota-guía (familia → refugio).
+        // El pulgón (la "mamá"): produce melaza + mascota-guía (lleva a las mayores → cueva).
         GameObject aphid = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         aphid.name = "Pulgon"; aphid.transform.SetParent(group.transform);
         aphid.transform.position = new Vector3(-30f, 1f, 20f); aphid.transform.localScale = new Vector3(0.4f, 0.4f, 0.6f);
         aphid.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Pulgon_MAT", new Color(0.60f, 0.80f, 0.45f));
         aphid.AddComponent<HoneydewProducer>().interval = 3f;
         AphidGuide guide = aphid.AddComponent<AphidGuide>();
-        guide.familyPoint = familyPoint.transform; guide.refuge = nest.transform;
+        guide.familyPoint = familyPoint.transform; guide.refuge = cave.transform; guide.rescueRadius = 5f;
 
-        // Dos hormigas que cuidan al pulgón (lo siguen por la melaza = mirmecofilia).
-        for (int i = 0; i < 2; i++)
+        // Las 3 CAPACES (movers) que cargan con las 4 frágiles: 1 adulta + 2 casi adultas (la dificultad —
+        // pocas y jóvenes). Acompañan al pulgón.
+        string[] movers = { "Adulta", "CasiAdulta_0", "CasiAdulta_1" };
+        for (int i = 0; i < movers.Length; i++)
         {
             GameObject ant = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            ant.name = $"Hormiga_{i}"; ant.transform.SetParent(group.transform);
-            ant.transform.position = new Vector3(-31f + i * 2f, 1f, 20f); ant.transform.localScale = new Vector3(0.5f, 0.5f, 0.7f);
-            ant.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Hormiga_{i}_MAT", new Color(0.35f, 0.25f, 0.20f));
+            ant.name = movers[i]; ant.transform.SetParent(group.transform);
+            ant.transform.position = new Vector3(-31f + i * 1.5f, 1f, 20f); ant.transform.localScale = new Vector3(0.5f, 0.5f, 0.7f);
+            ant.GetComponent<Renderer>().sharedMaterial = MakeMaterial(movers[i] + "_MAT", new Color(0.35f, 0.25f, 0.20f));
             ant.AddComponent<AiBrain>().selfRelevance = 1f;
             FollowBrain fb = ant.AddComponent<FollowBrain>(); fb.target = aphid.transform; fb.relevance = 1.5f; fb.stopDistance = 1.5f;
             ant.AddComponent<AnimaController>();
         }
 
-        Debug.Log("[SampleSceneBuilder] Microcosmos 1ª misión: el «Pulgon» (produce melaza; las «Hormiga» lo " +
-                  "cuidan) hace de MASCOTA-GUÍA → va a la «FamiliaCaida», la rescata (les da FollowBrain al " +
-                  "refugio) y la lleva al «Hormiguero» (CarryToRefuge). Logs [Micro]/[Cuidado] (docs microcosmos-insects §4).");
+        Debug.Log("[SampleSceneBuilder] Microcosmos 1ª misión (amanecer; sin reina/hormiguero/feromonas): banda " +
+                  "de 7 hormigas + «Pulgon» (mamá). El pulgón guía → rescata a las 4 frágiles (SuperMayor + 3 " +
+                  "Mayor, 2 = familia del pulgón) y las lleva a la «Cueva» (CarryToRefuge); solo 3 capaces " +
+                  "(Adulta + 2 CasiAdulta) para cargarlas. Logs [Micro]/[Cuidado] (docs microcosmos-insects §4).");
     }
 
     static void BuildCriaBeginner(Transform parent)
