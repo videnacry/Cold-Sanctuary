@@ -84,6 +84,7 @@ public static class SampleSceneBuilder
         BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
         BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
         BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
+        BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -796,6 +797,52 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Truck maintenance (docs forge §5): el «Camion» (lleva las cajas a las " +
                   "áreas) viene al taller. 1ª simulación de Mecánica: CAMBIO DE RUEDA (aflojar→gato→quitar→poner→" +
                   "apretar→bajar). Extras: aceite y agua. Logs [Producción].");
+    }
+
+    /// <summary>
+    /// Sandbox del PRÓLOGO (docs/area-progression.md "Apertura"): el guion (`PrologueSequence`, auto-demo) se
+    /// registra en consola; dos `WeakOne` (débiles) caminan a la `CarryToRefuge` (cueva-refugio) y, al
+    /// reunirlos, el **Mesocosmos** envía un aviso (`PlaneMessenger`) de volver por la sala de meditación
+    /// (`YogaPortal`). La escena real (Enfermería→máquina→Microcosmos→salida) se monta en Unity; esto scaffold.
+    /// </summary>
+    static void BuildPrologueSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("PrologueSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        group.AddComponent<PlaneMessenger>();
+
+        GameObject seqGO = new GameObject("Prologue");
+        seqGO.transform.SetParent(group.transform);
+        PrologueSequence seq = seqGO.AddComponent<PrologueSequence>();
+        seq.autoDemo = true; seq.autoInterval = 3f;
+
+        GameObject cave = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cave.name = "Cueva_Refugio"; cave.transform.SetParent(group.transform);
+        cave.transform.position = new Vector3(-8f, 1f, 22f);
+        cave.transform.localScale = new Vector3(3f, 2f, 3f);
+        cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
+        CarryToRefuge carry = cave.AddComponent<CarryToRefuge>();
+        carry.needed = 2; carry.radius = 3f;
+        carry.onComplete.AddListener(() => PlaneMessenger.Send("Mesocosmos",
+            "Kushal, cuando termines, ve a la sala de meditación (YogaPortal) para volver.", 8f));
+
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject w = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            w.name = $"Debil_{i}"; w.transform.SetParent(group.transform);
+            w.transform.position = new Vector3(-12f + i, 1f, 26f);
+            w.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Debil_{i}_MAT", new Color(0.60f, 0.60f, 0.50f));
+            w.AddComponent<WeakOne>();
+            w.AddComponent<AiBrain>().selfRelevance = 1f;
+            FollowBrain fb = w.AddComponent<FollowBrain>();
+            fb.target = cave.transform; fb.relevance = 2f; fb.stopDistance = 2f;
+            w.AddComponent<AnimaController>();
+        }
+
+        Debug.Log("[SampleSceneBuilder] Prologue sandbox: el guion se auto-reproduce (logs [Prólogo]); dos " +
+                  "«Debil» caminan a la «Cueva_Refugio» (CarryToRefuge → logs [Cuidado]); al reunirlos, el " +
+                  "Mesocosmos avisa (PlaneMessenger) de volver por la sala de meditación. docs area-progression Apertura.");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)

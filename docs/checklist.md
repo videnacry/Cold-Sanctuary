@@ -224,11 +224,12 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 ## Áreas / historia — roadmap (area-progression.md)
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
-- [ ] **0. PRÓLOGO — Enfermería** (apertura del juego): a Kushal (viene de fuera) le hacen exámenes+vacuna
-      (para no contagiar a los animales, irá al área de cría); curiosea → prueba la **máquina de avatares**
-      (`VirtualizationMachine` ya existe) → 1ª experiencia en el **Microcosmos = estrato PRE-FUEGO** (plantas
-      medicinales, **La Recolectora** — autorada). Luego primer trabajo (Cocina). Diseñado (area-progression
-      "Apertura" + "Pre-fuego"); por montar la escena/secuencia.
+- [~] **0. PRÓLOGO — Enfermería** (apertura del juego): a Kushal (viene de fuera) le hacen exámenes+vacuna;
+      curiosea → **máquina de avatares** (`VirtualizationMachine`) → **Microcosmos PRE-FUEGO** (plantas
+      medicinales, **La Recolectora** — autorada); apoya y **lleva a los débiles a la cueva** (`CarryToRefuge`/
+      `WeakOne`); vuelve por la **sala de meditación** (`YogaPortal`, puerta bidireccional ya existente) →
+      primer trabajo (Cocina). **Scaffold hecho** (`PrologueSequence`, `PlaneMessenger` mensajes del Mesocosmos,
+      `CarryToRefuge`; sandbox `PrologueSandbox_AUTO`). **Falta**: montar la ESCENA real en Unity.
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por

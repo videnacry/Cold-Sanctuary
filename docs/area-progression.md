@@ -27,6 +27,15 @@ del santuario — más aún porque irá al **área de cría**. Secuencia:
    **refugio**, pero **todavía SIN pinturas** (ver nota de arte abajo). Tutorial de virtualización + gancho.
 4. Pasados los exámenes + vacuna → lo llevan a su **primer trabajo** (1ª simulación de trabajo = la Cocina).
 
+> **Volver / puerta BIDIRECCIONAL (ya existe).** Tras ayudar a **llevar a los débiles a la cueva**, se le
+> dice a Kushal que vaya a la **sala de meditación** para **volver al Mesocosmos**. Se **entra** al Microcosmos
+> por esa misma área (la `VirtualizationMachine` = máquina de avatares/meditación) y se **sale** por el
+> `YogaPortal` (la sala de yoga dentro del Micro) → el jugador **sabe cómo volver** y puede **entrar/salir
+> incluso en mitad de misión** (`MobWorldLoader.ExitMobWorld`, ya soportado; docs mob-world §4). Eso hace
+> **conveniente separar personajes/lugares por área**. Además, el **Mesocosmos puede enviar avisos** al
+> jugador dentro del Micro (`PlaneMessenger`). *(Piezas ya existentes/scaffold: `PrologueSequence`,
+> `PlaneMessenger`, `CarryToRefuge`/`WeakOne`; la escena se monta en Unity.)*
+>
 > **El arte rupestre NO es de aquí (ciencia).** El fuego (~1 M–400 k años) precede al **arte figurativo**
 > (~45 k años, Paleolítico Superior) por cientos de miles de años. **No se dibujaba con sangre**: el rojo era
 > **ocre** (óxido de hierro), el negro **carbón** (¡requiere fuego!) o manganeso. → El **arte de cueva + la
