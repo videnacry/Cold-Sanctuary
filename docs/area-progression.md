@@ -11,7 +11,25 @@ historia real**. Base: [`mob-epochs-matrix.md`](mob-epochs-matrix.md) (hilos/ép
 la época y "pasa la antorcha" a otra región, encarnando **figuras reales** (con su ancla de piedra). El
 arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **elemento**.
 
+## Apertura del juego — prólogo en la ENFERMERÍA (2026-07-30)
+El juego **empieza en la Enfermería**, por una razón **narrativa y realista** (no cronológica): Kushal
+**viene de fuera**, así que le hacen **exámenes médicos y lo vacunan** para que **no contagie a los animales**
+del santuario — más aún porque irá al **área de cría**. Secuencia:
+1. **Exámenes médicos** (tutorial suave de la Enfermería; presentación del cuidado/salud).
+2. Kushal **pregunta y curiosea** → ve la **máquina de control de avatares** (= la `VirtualizationMachine`
+   ya existente + `RobotAvatar`/`AvatarController`). Le **dejan probarla**.
+3. **Primera experiencia en el MICROCOSMOS** → cae en el **lado más antiguo de la historia** (la era del
+   **fuego**, el **Señor del Fuego**; ver [`founding-trio-stories.md`](founding-trio-stories.md)). Tutorial
+   del núcleo de virtualización y gancho narrativo.
+4. Pasados los exámenes + vacuna → lo llevan a su **primer trabajo** (1ª simulación de trabajo = la Cocina).
+
+→ Esto resuelve el orden: la **Enfermería es el marco/prólogo** (razón narrativa), mientras la **historia
+del microcosmos arranca en el fuego** (que Kushal "prueba" con la máquina). La semilla de la medicina queda
+así desde el minuto 1, sin gatear un área médica completa antes de la Cocina.
+
 ## Ya planteadas
+0. **La Enfermería (prólogo)** — arranque: exámenes + vacuna + 1er uso de la máquina de avatares → Microcosmos
+   (fuego). La Enfermería-área desarrollada (medicina-profesión) se retoma más tarde (§5).
 1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Señor del Fuego**). Elemento
    **C**. Ver [`kitchen-simulation.md`](kitchen-simulation.md).
 2. **El Huerto** — Neolítico (agricultura) · Creciente Fértil / primera aldea · hilo C (**La Sembradora**).
@@ -70,6 +88,10 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
 ### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+> **La Enfermería también es el PRÓLOGO del juego** (ver "Apertura del juego" arriba): el primer contacto del
+> jugador (exámenes/vacuna del recién llegado) y donde prueba por primera vez la máquina de avatares. Aquí,
+> como área desarrollada, se retoma la medicina-profesión (Imhotep/Hipócrates…).
+>
 > **Cronología (2026-07-30): la medicina básica precede incluso a la agricultura.** El uso de plantas para
 > sanar es **anterior a cultivar** (es **recolectar/forrajear**) y hasta **prehumano** — **zoofarmacognosia**:
 > los **animales se automedican** comiendo ciertas plantas. → Es hilo **C**, ancla *La Recolectora* (plantas
