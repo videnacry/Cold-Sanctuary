@@ -235,7 +235,9 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       Enfermería=6, Yoga=7) — [`cria-simulation.md`](cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
       abastecer→rutina→nido). **Enganche a drives REALES**: `CriaCareTarget` toca `Animal.stress`/`hungry` y
       `GrowBond` (que ya factoriza trauma); el bond **se gana** (estrés alto → rechaza). **La Recolectora**
-      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Falta**: cablearlo a crías reales
+      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Histórico fundacional: El Perro de
+      Oberkassel** (real ~14.200 años; cachorro salvado del moquillo por amor → mito del santuario; autorado
+      con vivencias POV-perro + cadena de misión, cria-simulation §5). **Falta**: cablear a crías reales
       (`Animal` del `FamilyGenerator`) y el gateo de actividades por bond.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
