@@ -70,13 +70,19 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
 ### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
-> **Cronología (2026-07-30): la medicina es MÁS ANTIGUA que los metales.** Herbolaria y cuidado de heridas
-> son paleolíticos (hilo **C**, ancla *La Recolectora*: plantas que **alimentan y curan**); la **trepanación**
-> neolítica (~7000 a.C.) precede al cobre. Pero la **medicina como profesión documentada** (Imhotep,
-> Hipócrates, Avicena) es de la era de los metales en adelante. → **Desdoblar:** introducir **primeros
-> auxilios/herbolaria PRONTO, ligados al Huerto** (misma hilo C), y dejar la **Enfermería-área desarrollada**
-> aquí (con sus médicos históricos). Así los metales **no** van antes que la medicina *básica*, solo antes
-> que la medicina *profesional*. *(Orden a confirmar.)*
+> **Cronología (2026-07-30): la medicina básica precede incluso a la agricultura.** El uso de plantas para
+> sanar es **anterior a cultivar** (es **recolectar/forrajear**) y hasta **prehumano** — **zoofarmacognosia**:
+> los **animales se automedican** comiendo ciertas plantas. → Es hilo **C**, ancla *La Recolectora* (plantas
+> que **alimentan y curan**), tan antigua o más que el Huerto. **Gancho de juego:** aprender remedios
+> **observando a los animales automedicarse** (encaja con cuidar crías/bonds). La **trepanación** neolítica
+> (~7000 a.C.) ya precede al cobre.
+> **Sin origen único:** la herbolaria surgió **independiente en todas las regiones** (Egipto, Mesopotamia,
+> India, China, América) desde la misma raíz primal — **no** "Egipto antes que Mesopotamia". La **medicina
+> como profesión documentada** (Egipto: **Imhotep** ~2600 a.C., primer médico con nombre; Mesopotamia:
+> tablillas ~2100 a.C.) aparece **casi en paralelo** en el Bronce.
+> → **Desdoblar:** **primeros auxilios/herbolaria = capa TEMPRANA** (junto al Huerto, region-agnóstica, con
+> el gancho de los animales); **Enfermería-profesión** rota región (Egipto/Imhotep primero), ~era de los
+> metales. Los metales **no** van antes que la medicina *básica*, solo antes que la *profesional*.
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.
 - **Hilo/foco:** **C · Semilla y Vida** (continuación de La Recolectora: las plantas que **alimentan Y
   curan**) tocando **F · Aliento y Mente**. Arquetipo **Curar/atender**.

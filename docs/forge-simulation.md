@@ -39,6 +39,20 @@ Sandbox: `MechanicsBeginner_AUTO`.
   virtualización; algunos pasos temporizados con typing = "apretar tornillos"/diagnosticar).
 - **Elemento/tema:** Fe (hierro) y compuestos metálicos; *la técnica al servicio del cuidado, no del poder*.
 
+## 1c. ¿Construcción o Mecánica? (qué arregla cada una)
+Frontera clara (2026-07-30) para no confundir tickets:
+- **CONSTRUCCIÓN = el edificio y sus instalaciones FIJAS** (lo que no te llevarías): paredes, puertas,
+  ventanas, tejado, cimientos; **fontanería** (tuberías, grifos, desagües); **instalación eléctrica fija**
+  (cableado, enchufes, interruptores, cuadro/**diferencial**, luminarias y **bombillas**).
+- **MECÁNICA = aparatos con MECANISMO y vehículos** (partes móviles / desmontables): nevera (compresor),
+  horno, **licuadora**, telar, **motor de la bomba de agua**, extractor; vehículos (arado de bueyes, carro,
+  globo, submarino); **drones y avatares**.
+- **Regla:** *¿parte del inmueble (fijo)? → Construcción. ¿aparato con mecanismo? → Mecánica.* El **cableado
+  y las luces** son Construcción; el **motor dentro** de un electrodoméstico es Mecánica.
+- Reparaciones más fáciles de cada una: **Construcción** → grifo que gotea (hecho) / **bombilla o
+  diferencial** (electricidad). **Mecánica** → **cuchilla floja de la licuadora** / **engrasar un cojinete
+  que chirría** / filtro atascado.
+
 ## 2. La FORJA (Microcosmos) — capa histórica (Edad de los Metales)
 La **fundición de bronce** (cobre+estaño; luego hierro) es la **historia** de los metales → vive en el
 **Microcosmos** (Mesopotamia; el mob-world también tiene **sus propias estructuras y virtualizaciones**).
@@ -88,8 +102,9 @@ reparar. Bucle propuesto (idea del usuario):
 - **1ª reparación de ESTRUCTURA (Construcción/fontanería) — el GRIFO QUE GOTEA** (la avería más típica/
   simple; sirve igual en Cocina —fregadero— y Huerto —manguera/riego—): **cerrar la llave → desmontar la
   maneta → cambiar la junta gastada → montar → abrir y probar**. Requiere herramientas (llave inglesa). HECHO.
-- **1ª reparación de MÁQUINA (Mecánica/electricidad) — la BOMBILLA FUNDIDA** (la máquina más fácil, en todas
-  las áreas): **quitar la bombilla vieja → poner la nueva → encender**. Variante de onboarding con gracia: el
-  **diferencial saltado / máquina desenchufada** (1 acción; enseña *diagnosticar antes de desmontar*). Un
-  fusible/diferencial puede reactivar **varias máquinas a la vez**. *(Por cablear — candidata a la próxima.)*
-  Otras fáciles luego: **filtro atascado** (extractor/bomba), **correa suelta**, **cuchilla floja** (licuadora).
+- **1ª reparación eléctrica (CONSTRUCCIÓN) — la BOMBILLA FUNDIDA / el DIFERENCIAL saltado** (la instalación
+  eléctrica es del edificio): **quitar bombilla vieja → poner nueva → encender**; variante con gracia: rearmar
+  el **diferencial** (1 acción; enseña *diagnosticar antes de desmontar*; reactiva varias luces a la vez).
+- **1ª reparación de MÁQUINA (MECÁNICA) — la LICUADORA con la cuchilla floja** (aparato con mecanismo, la más
+  fácil): **desenchufar → reencajar/desatascar la cuchilla → probar**. O **engrasar un cojinete que chirría**.
+  *(Por cablear — candidatas a la próxima.)* Luego: **filtro atascado** (extractor/bomba), **correa suelta**.
