@@ -77,6 +77,18 @@ este estrato: el arte va en el hilo **D · La Mano de Lascaux**, Paleolítico Su
 > historias entrelazadas y las misiones definidas están en
 > [`founding-trio-stories.md`](founding-trio-stories.md). *(El Ötzi histórico va en la Forja, no aquí.)*
 
+## El área de CRÍA (recomendación 2026-07-30) — va ANTES que la Mecánica
+La **cría** (cuidar/criar animales) es el **corazón del santuario** — el jugador viene **para eso** (el
+prólogo lleva ahí). Cronología de la **domesticación** (para fijar su lugar):
+- **Perro** = **Paleolítico** (~15–40 k años), **antes de la agricultura** → el **primer compañero animal**.
+- **Ganado** (cabra/oveja/cerdo/vaca) = **Neolítico** (~10–8 k a.C.), **a la par del Huerto** (se domesticaron
+  plantas y animales juntos).
+- Ambos **anteriores** a los **metales** (~4 k a.C.) y a la **medicina profesional** (~2,6 k a.C.).
+→ **La cría va antes que Construcción/Mecánica.** Recomendado: el **bond/cuidado** desde pronto (perro,
+Paleolítico; enlaza con el prólogo y `CarryToRefuge`/`WeakOne`), y la **cría/ganadería** como área ~**Neolítico**
+(con el Huerto). **Reutiliza sistemas ya existentes** (`Animal`/`LifeStage`/`PostNatal`/`Family`). *(Posición
+exacta a confirmar; probablemente **área 3**, empujando Construcción→4, Mecánica→5, Enfermería→6, Yoga→7.)*
+
 ## Las siguientes áreas
 
 > **Reorden 2026-07-30:** la **Construcción va ANTES que la Mecánica** — primero se aprende a **levantar
