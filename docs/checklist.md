@@ -1,6 +1,6 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-07-28. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-07-30. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
@@ -183,20 +183,13 @@ Pilar `Mind` como componente enchufable. **MVP + composición hechos (2026-07-24
       (insertar instancia/madre en runtime con relevancia); asana/hechizo como frases reales; multi-instancia.
 - [ ] **Flag futuro** `absorbsPublic` si algún día un bloqueado debe además recibir del pool (hoy: no recibe).
 
-## Testing (2026-07-28) — validado en Unity; solo queda juego manual
-PRs #14 (Anima) y #15 (Mente) **compiladas y probadas** (evidencia detallada en `testing-checklist.md`).
-Confirmado: compila 0 errores; **§10** migración (jerarquía + aptitudes de perfil de los 4 compañeros tras
-el fix `MigrationDiagnostics`→`Update`); **§4** level-up real de Stats (Vida 115→135); **§3** farming
-(Suave/Media/Salvaje/atrapada); **§6** entrada a Mesopotamia + 1ª esfera; **§8/§9** Mind (frases por tono,
-pools `Total=28`, reparto libre con vivencia de Ötzi); **§7** regresión (0 excepciones).
-- [ ] **Pendiente — solo con JUEGO MANUAL** (WASD / mantener tecla; el teletransporte de Inspector no basta):
-      rama de daño de "Dura" (perder control); **trepar** (mantener Espacio — sospecha de que `Input.GetKey`
-      no se sostiene vía automatización); completar las 4 esferas de Mesopotamia + salir por `YogaPortal`;
-      **misión de yoga** (→ marga Yoga + desbloqueo de maná); `ThoughtField_Agua` (mover una ánima al radio);
-      velocidad de tiempo.
-- [ ] **Cambio conocido**: NPC arrancan `physicalResistance=1` (antes `strength=0`) → posible re-tuning de
-      `promotionStrength`. Aún no probado.
-- *Revertir si hiciera falta:* `git revert -m 1 cd1a95f` (#14) / `25f618a` (#15), o reset a `022e224` (pre-Mente).
+## Testing — validado en Unity (detalle en `testing-checklist.md` §10–12)
+Compila 0 errores; validados migración Anima, progresión, farming, Mind y cocina. Por probar: virtualización/
+dispatch (§11/§12).
+- [ ] **Pendiente — solo con JUEGO MANUAL**: daño de "Dura" (perder control); **trepar** (mantener Espacio);
+      4 esferas de Mesopotamia + `YogaPortal`; **misión de yoga** (→ marga Yoga + maná); `ThoughtField_Agua`;
+      velocidad de tiempo; y todo el §12 (Mecánica/Construcción arranque + dispatch del grifo).
+- [ ] **Cambio conocido**: NPC arrancan `physicalResistance=1` → posible re-tuning de `promotionStrength`.
 
 ## La Cocina — primera simulación (nivel de referencia)
 Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera de construcción (§12):
@@ -287,75 +280,19 @@ central + HeadLook, mecanografía) **y §12** (Mecánica/Construcción arranque 
       ~8s después de cualquier petición aceptada. Fix: `if ((b as Object) == null) continue;`. **Commiteado**
       (`40cfbd1`).
 
-## Hecho (2026-07-29) — PR #17 mergeada (cocina + motor de virtualización)
-- [x] **Cocina**: paso A (limpieza `DirtArea`/`DirtSpot`/`Cleaner` + paseo `GuidedTour`/`TourStation`) y
-      paso B MVP (`BreakfastCook`→`FoodContainer`→`Eater`).
-- [x] **Motor de virtualización** (`Assets/Scripts/Virtualization/`, generalizable): `VirtualPointer`
-      (mira fija al centro) + `HeadLook` (cabeza=cámara con restricciones, I/K/J/L) + `StationPart` +
-      `ProductionOrder` (receta→cuota) + `TypingChallenge` (mecanografía acelera; congela cámara). Recetas:
-      cocina (huevos, con typing en el fogón) y huerto (abonar→…→cosechar).
-- [x] **Diseño**: mecánica de mecanografía + idiomas (kitchen §4b), misiones de virtualización del huerto
-      y de guardián del mundo-insecto (garden §8/§9).
-
-## Hecho (2026-07-29) — PR #16 mergeada (control + movilidad + históricos + cocina A)
-- [x] **Controlador intercambiable + posesión** (MVP): `AnimaController`/`IBrain`/`AiBrain`/`PlayerBrain`/
-      `PossessionSpell` (docs anima §11.5).
-- [x] **Movilidad + cambio de cuerpo**: `PlayerCore` (input persistente: body-swap con `Tab` — libera el
-      anterior, secuestra el nuevo, realinea cámara); `PlayerBrain.Act()` mueve el cuerpo poseído con WASD.
-- [x] **`FollowBrain`**: la mente liberada sigue a un objetivo (Kushal sigue a su compañero).
-- [x] **Pensamientos escalables**: `MindPhrase` con `weight` + `lifecycle` (Persistent/OnceThenGone/
-      DecaysPerUse) + gate por aptitud (`AptitudeKind`/`gateMin`); `Mind` hace pick ponderado, gatea y aplica
-      ciclo de vida. `Aptitudes.Get(AptitudeKind)` añadido.
-- [x] **Históricos**: Guardián del Fuego (Señor del Fuego), La Sembradora, El Alfarero.
-- [x] **Peticiones → alma compartida (MVP)**: `HelpResponder` (sí/no) + `HelpRequest` (al aceptar, van
-      juntos vía `FollowBrain` temporal). Demo en el sandbox (Aldeano pide a Kushal ir a un punto).
-- [x] **Cocina paso A (núcleo)**: `DirtArea`/`DirtSpot`/`Cleaner` (suciedad real → umbral → misión →
-      limpieza mancha a mancha → completa). Sandbox `KitchenSandbox_AUTO`.
-- [x] **Nombres**: guardián ficticio Ötzi → **Nasatya** (encarna un Ashvin; con Kushal, "recolectores
-      estrella"); **Ötzi** queda para el histórico de la Forja. Vivencias de Nasatya autoradas.
-- [x] **Misiones definidas** (cadenas de fases) para Señor del Fuego, Nasatya y La Sembradora
-      (`founding-trio-stories.md` §7), a partir de sus historias.
-- [x] **Diseño**: `kitchen-simulation.md` + `garden-simulation.md` + `area-progression.md` +
-      **`founding-trio-stories.md`** (historias + Kushal + guías reales) + anima §11.7.
-
-## Hecho (2026-07-28)
-- [x] **Pilar Mente** (PR #15 mergeada): clasificación de frases, campos de pensamiento, pools de vivencias
-      (biografías reales), reparto Estricta/Libre con bloqueo de propiedad, y Ötzi como primer histórico.
-- [x] **Migración Anima** (PR #14 mergeada): `LivingEntity`→`Anima` (clase única); `Animal`/`CompanionBase`/
-      `PlayerStats` heredan; `WorldCharacter` lee de `Anima`. 0 refs a `LivingEntity`.
-- [x] **Diseño capturado**: `anima-architecture.md` §11 (frases/campos/control, propiedad/bloqueo/reparto).
-- [x] **Controlador intercambiable + posesión** (MVP, PR de control): `AnimaController` cede el mando al
-      cerebro (`IBrain`) de mayor relevancia; `AiBrain` (IA propia) vs `PlayerBrain` (input del jugador);
-      `PossessionSpell` (power/range crecientes) inyecta al jugador en runtime si supera la relevancia del ser.
-- [x] **Históricos ampliados**: Guardián del Fuego, La Sembradora, El Alfarero (fieles a mob-quests-early).
-- [x] **Diseño de la Cocina**: `kitchen-simulation.md` (paseo, roles, química-comida, puente Micro/Meso,
-      mundo-insecto, humores vs compuestos, orden de build).
-- [x] **Testing en Unity**: #14/#15 compiladas y validadas (§10/§4/§3/§6/§8-9/§7); arreglado el falso
-      positivo del diagnóstico de aptitudes de compañeros (`MigrationDiagnostics`→`Update`, commit `95fbbc0`).
-
-## Hecho (2026-07-23)
-- [x] Sincronización de docs con el código (cifras, 3 sistemas nuevos, flips de estado).
-- [x] **Cocina jugable** (Microcosmos escena): `MissionEndMode.Standalone`, `MobWorldMission`, misión
-      "Procesar ingredientes" incrustada en `MobWorldSceneBuilder`.
-- [x] **Limpieza legacy**: borrados `KitchenScaleController`/`KitchenEntrance` (+método muerto del builder),
-      `IAnimal`/`IVital`. Restaurados `Generator`/`BodyPositionData`. (Perdido `NewFile1.txt`, sin trackear.)
-- [x] **Renombrado** plano mágico → **Microcosmos**; tríada **Micro/Meso/Macrocosmos** en docs.
-- [x] **Diseño del mundo grande**: `world-topology-and-planes.md` (planos, 5 santuarios, núcleo de 2 capas,
-      economía/farming/transporte/cámara del Macrocosmos, arco final con Leo).
-- [x] **A (1ª pasada)**: backbone de recursos de santuario + HUD (ver sección "Mundo grande").
-
-## Hecho (2026-07-09/10)
-- [x] Auditoría completa + sincronización de 18 docs con el código.
-- [x] Retirada de la mecánica de disparo/`Shooted` (santuario no-violento).
-- [x] Falso positivo `lp` corregido; `sensibility` inicializado.
-- [x] `agility`/`perception` en animales + companions; `adaptability` añadida; Goluis/Panterilia/Gohageneis calibrados.
-- [x] Docs de diseño: creature-stats, mission-mode, learning-unlocks, gaps-vs-planteamiento.
-- [x] Set de aptitudes cerrado (12) + perfiles calibrados; distinción percepción práctica vs académica.
-- [x] Modificadores de medio (tierra/agua/aire): `Medium` + afinidades + `EffectiveAgility`; ballena/foca calibradas.
-- [x] Bucle de evolución de aptitudes (animales): `AptitudeEvolution` + tick en `Animal.Restore`.
-- [x] `MediumZone` (detector de medio); dietas revisadas (árbol trófico, incl. lobo→oso en manada); fix de amontonamiento en `Homebound`.
-- [x] Comportamiento agua/tierra (`Animal.CorrectMedium`): acuáticos buscan agua, terrestres salen.
-- [x] Husky → Malamute (rename + dimensiones: masa 36, escala 0.185); jugador (`PlayerTarget`) como presa de oso/lobo.
-- [x] Territorialidad (comportamiento): `Animal.SenseThreats` — presas huyen de carnívoros (revive EvaluateThreat/ThreatThreshold).
-- [x] Malamute como mascota (fuera de `nestSpecies`; Deer entra para dar presa al lobo).
-- [x] Banco de peces como organismo (`FishSchool`): mueve/huye/crece + `ITarget`/`IEdible`; en dietas de oso/zorro.
+## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **30-jul (PR #18):** **Mecánica** (arranque limpiar→abastecer→reparar) + **Forja del Micro**;
+  **dispatch/tickets** (`RepairTicket`/`ServiceHub`/`Toolbox`; 1ª reparación real = **grifo que gotea**);
+  **Construcción** (arranque + El Tallador); reorden Construcción→Mecánica; 1ª persona reconciliada
+  (`AutoCameraZone`/`HeadLook`).
+- **29-jul (PR #17):** **motor de virtualización** (`VirtualPointer` mira central, `StationPart`,
+  `ProductionOrder`, `TypingChallenge`/mecanografía, `StockingTask`/abastecer); cocina paso A (limpieza+paseo) y B (desayuno).
+- **29-jul (PR #16):** **controlador intercambiable + posesión** (`AnimaController`/`IBrain`/`PlayerCore`/
+  `FollowBrain`/`HelpRequest`); **pensamientos escalables** (weight/lifecycle/gate); históricos
+  (Guardián/Sembradora/Alfarero/Nasatya); nombres (Ötzi→Nasatya).
+- **28-jul (PR #14/#15):** migración a clase única **`Anima`**; **pilar Mente** (frases/campos/pools/reparto
+  Estricta-Libre) + `anima-architecture §11`.
+- **23-jul:** cocina jugable (Micro); limpieza legacy (`KitchenScale`/`Kitchen*`, `IAnimal`/`IVital`); tríada
+  Micro/Meso/Macro; diseño del mundo grande (`world-topology`); backbone de recursos + HUD.
+- **09/10-jul:** auditoría + sync de 18 docs; retirada del disparo (no-violencia); **12 aptitudes** + perfiles;
+  medios tierra/agua/aire; evolución de aptitudes; dietas/territorialidad; `FishSchool`; Malamute.
