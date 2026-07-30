@@ -224,7 +224,19 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 ## Áreas / historia — roadmap (area-progression.md)
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
+- [~] **0. PRÓLOGO — Enfermería** (apertura del juego): a Kushal (viene de fuera) le hacen exámenes+vacuna;
+      curiosea → **máquina de avatares** (`VirtualizationMachine`) → **Microcosmos PRE-FUEGO** (plantas
+      medicinales, **La Recolectora** — autorada); apoya y **lleva a los débiles a la cueva** (`CarryToRefuge`/
+      `WeakOne`); vuelve por la **sala de meditación** (`YogaPortal`, puerta bidireccional ya existente) →
+      primer trabajo (Cocina). **Scaffold hecho** (`PrologueSequence`, `PlaneMessenger` mensajes del Mesocosmos,
+      `CarryToRefuge`; sandbox `PrologueSandbox_AUTO`). **Falta**: montar la ESCENA real en Unity.
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
+- [~] **3. CRÍA** (corazón del santuario; **confirmada área 3, tras el Huerto** → Construcción=4, Mecánica=5,
+      Enfermería=6, Yoga=7) — [`cria-simulation.md`](cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
+      abastecer→rutina→nido). **Enganche a drives REALES**: `CriaCareTarget` toca `Animal.stress`/`hungry` y
+      `GrowBond` (que ya factoriza trauma); el bond **se gana** (estrés alto → rechaza). **La Recolectora**
+      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Falta**: cablearlo a crías reales
+      (`Animal` del `FamilyGenerator`) y el gateo de actividades por bond.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
       **dispatch/tickets**. **Hecho**: arranque `ConstructionBeginner_AUTO` (limpiar→abastecer→cimentar/muro/
@@ -232,11 +244,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       área, misiones-historia cableadas, históricos posteriores (Maestro de catedrales/Brunelleschi).
 - [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
       es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
-      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
-      `StockingTask`) → **reparación simple** (receta con diagnóstico tecleado). Tracción del Huerto =
-      **bueyes** (decidido). La **forja** de bronce → **Microcosmos** (`ForgeVirtualization_AUTO`; El Primer
-      Herrero/Sargón autorados). **Falta**: máquinas por área, vehículos (bueyes/globos/submarinos),
-      teleportadores, decisión arado/espada, misiones-historia.
+      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** → **reparación simple**.
+      **1ª reparación real de máquina = CAMBIO DE RUEDA del camión** (`TruckMaintenance_AUTO`: aflojar→gato→
+      quitar→poner→apretar→bajar; + aceite + agua). El **camión** lleva las cajas de suministros a las áreas.
+      Tracción del Huerto = **bueyes** (decidido). La **forja** de bronce → **Microcosmos**
+      (`ForgeVirtualization_AUTO`). **Frontera Construcción/Mecánica** definida (forge §1c). **Falta**:
+      máquinas por área, más vehículos (globos/submarinos), teleportadores, decisión arado/espada, misiones-historia.
 - [ ] **Onboarding genérico por área**: limpiar → **abastecer** (`StockingTask`, cajas→despensas) → producir.
       Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
 - [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).

@@ -83,6 +83,9 @@ public static class SampleSceneBuilder
         BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
         BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
         BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
+        BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
+        BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
+        BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -733,6 +736,185 @@ public static class SampleSceneBuilder
                   "«grifo que gotea» de la Cocina. Sin herramientas la reparación se rechaza; toma la llave " +
                   "en el banco, ve al grifo (lejos), arréglalo (cerrar→desmontar→cambiar junta→montar→probar) " +
                   "y vuelve a devolver las herramientas. Logs [Servicio]/[Herramientas]/[Producción]/[Ticket].");
+    }
+
+    /// <summary>
+    /// 1ª simulación de MECÁNICA (docs/forge-simulation.md §5): el **camión** (que lleva las cajas de
+    /// suministros a las áreas — las mismas de `StockingTask`) viene al taller a mantenimiento. La primera
+    /// reparación es el **CAMBIO DE RUEDA** (procedimiento real: aflojar→gato→quitar→poner→apretar→bajar).
+    /// Extras: cambio de aceite (2 pasos) y agua (1 paso). Reusa el motor de virtualización.
+    /// </summary>
+    static void BuildTruckMaintenance(Transform parent)
+    {
+        GameObject group = new GameObject("TruckMaintenance_AUTO");
+        group.transform.SetParent(parent);
+
+        GameObject truck = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        truck.name = "Camion"; truck.transform.SetParent(group.transform);
+        truck.transform.position = new Vector3(50f, 1f, 6f);
+        truck.transform.localScale = new Vector3(2.5f, 1.5f, 4f);
+        truck.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Camion_MAT", new Color(0.35f, 0.45f, 0.55f));
+
+        GameObject binGO = new GameObject("Camion_Mantenido");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(53f, 1f, 6f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "mantenimiento"; bin.capacity = 10;
+
+        // 1ª SIMULACIÓN: CAMBIO DE RUEDA (procedimiento real, 6 pasos).
+        MakeStationPart(group.transform, "Rueda", "Aflojar",  "aflojas los tornillos",            new Vector3(47f, 1f, 4f),  new Color(0.50f, 0.50f, 0.55f));
+        MakeStationPart(group.transform, "Rueda", "Levantar", "levantas con el gato",             new Vector3(47f, 1f, 5f),  new Color(0.60f, 0.60f, 0.40f));
+        MakeStationPart(group.transform, "Rueda", "Quitar",   "quitas tornillos y rueda",         new Vector3(47f, 1f, 6f),  new Color(0.40f, 0.40f, 0.40f));
+        MakeStationPart(group.transform, "Rueda", "Poner",    "pones la rueda nueva",             new Vector3(47f, 1f, 7f),  new Color(0.28f, 0.28f, 0.28f));
+        MakeStationPart(group.transform, "Rueda", "Apretar",  "aprietas los tornillos a mano",    new Vector3(47f, 1f, 8f),  new Color(0.50f, 0.50f, 0.55f));
+        MakeStationPart(group.transform, "Rueda", "Bajar",    "bajas el gato y aprietas en cruz", new Vector3(47f, 1f, 9f),  new Color(0.50f, 0.70f, 0.50f));
+        GameObject wheelGO = new GameObject("Receta_CambioRueda");
+        wheelGO.transform.SetParent(group.transform);
+        ProductionOrder wheel = wheelGO.AddComponent<ProductionOrder>();
+        wheel.productName = "rueda cambiada"; wheel.output = bin; wheel.quota = 1;
+        wheel.stepStation = new[] { "Rueda", "Rueda", "Rueda", "Rueda", "Rueda", "Rueda" };
+        wheel.stepAction  = new[] { "Aflojar", "Levantar", "Quitar", "Poner", "Apretar", "Bajar" };
+        wheel.stepLabel   = new[] { "aflojas los tornillos", "levantas con el gato", "quitas la rueda", "pones la nueva", "aprietas a mano", "bajas y aprietas en cruz" };
+
+        // Extras del mantenimiento: aceite (2 pasos) y agua (1 paso).
+        MakeStationPart(group.transform, "Aceite", "Vaciar",   "vacías el aceite viejo", new Vector3(53f, 1f, 4f), new Color(0.30f, 0.25f, 0.15f));
+        MakeStationPart(group.transform, "Aceite", "Rellenar", "rellenas aceite limpio", new Vector3(53f, 1f, 5f), new Color(0.60f, 0.50f, 0.20f));
+        GameObject oilGO = new GameObject("Receta_CambioAceite");
+        oilGO.transform.SetParent(group.transform);
+        ProductionOrder oil = oilGO.AddComponent<ProductionOrder>();
+        oil.productName = "aceite cambiado"; oil.output = bin; oil.quota = 1;
+        oil.stepStation = new[] { "Aceite", "Aceite" };
+        oil.stepAction  = new[] { "Vaciar", "Rellenar" };
+        oil.stepLabel   = new[] { "vacías el viejo", "rellenas limpio" };
+
+        MakeStationPart(group.transform, "Agua", "Rellenar", "rellenas el agua del radiador", new Vector3(53f, 1f, 7f), new Color(0.50f, 0.75f, 0.90f));
+        GameObject waterGO = new GameObject("Receta_Agua");
+        waterGO.transform.SetParent(group.transform);
+        ProductionOrder water = waterGO.AddComponent<ProductionOrder>();
+        water.productName = "agua rellenada"; water.output = bin; water.quota = 1;
+        water.stepStation = new[] { "Agua" };
+        water.stepAction  = new[] { "Rellenar" };
+        water.stepLabel   = new[] { "rellenas el radiador" };
+
+        Debug.Log("[SampleSceneBuilder] Truck maintenance (docs forge §5): el «Camion» (lleva las cajas a las " +
+                  "áreas) viene al taller. 1ª simulación de Mecánica: CAMBIO DE RUEDA (aflojar→gato→quitar→poner→" +
+                  "apretar→bajar). Extras: aceite y agua. Logs [Producción].");
+    }
+
+    /// <summary>
+    /// Sandbox del PRÓLOGO (docs/area-progression.md "Apertura"): el guion (`PrologueSequence`, auto-demo) se
+    /// registra en consola; dos `WeakOne` (débiles) caminan a la `CarryToRefuge` (cueva-refugio) y, al
+    /// reunirlos, el **Mesocosmos** envía un aviso (`PlaneMessenger`) de volver por la sala de meditación
+    /// (`YogaPortal`). La escena real (Enfermería→máquina→Microcosmos→salida) se monta en Unity; esto scaffold.
+    /// </summary>
+    /// <summary>
+    /// Área de CRÍA — el corazón del santuario (docs/cria-simulation.md, fauna-gameplay.md): cuidar crías
+    /// para ganar su **bond** (que se gana, no se da). Arranque como las demás: 1) limpiar el nido, 2)
+    /// abastecer (biberón/comida/paja), 3) **rutina de cuidado** (leer estado → calmar → alimentar → asear →
+    /// arrullar) reutilizando `ProductionOrder`, 4) llevar la cría al **nido** (`CarryToRefuge`/`WeakOne`).
+    /// </summary>
+    static void BuildCriaBeginner(Transform parent)
+    {
+        GameObject group = new GameObject("CriaBeginner_AUTO");
+        group.transform.SetParent(parent);
+
+        // 1) LIMPIAR el nido.
+        GameObject dirtGO = new GameObject("Nido_Suciedad");
+        dirtGO.transform.SetParent(group.transform);
+        dirtGO.transform.position = new Vector3(-20f, 0f, 10f);
+        DirtArea dirt = dirtGO.AddComponent<DirtArea>();
+        dirt.areaSize = new Vector2(6f, 6f); dirt.spawnInterval = 2f; dirt.maxSpots = 6; dirt.missionThreshold = 4;
+        GameObject sweeper = MakeKitchenPerson(group.transform, "Cuidador_Limpia", new Vector3(-20f, 1f, 10f), new Color(0.55f, 0.60f, 0.55f));
+        Cleaner sw = sweeper.AddComponent<Cleaner>(); sw.auto = true; sw.autoInterval = 2.5f; sw.reach = 10f;
+
+        // 2) ABASTECER (cajas → almacén de la cría).
+        MakeStationPart(group.transform, "Caja", "Biberon", "coges biberones",  new Vector3(-24f,   1f, 20f), new Color(0.85f, 0.85f, 0.75f));
+        MakeStationPart(group.transform, "Caja", "Comida",  "coges comida",     new Vector3(-22.8f, 1f, 20f), new Color(0.60f, 0.45f, 0.25f));
+        MakeStationPart(group.transform, "Caja", "Paja",    "coges paja/lecho", new Vector3(-21.6f, 1f, 20f), new Color(0.80f, 0.75f, 0.40f));
+        MakeStationPart(group.transform, "Almacen", "Biberon", "estante: biberones", new Vector3(-24f,   1f, 12f), new Color(0.85f, 0.85f, 0.75f));
+        MakeStationPart(group.transform, "Almacen", "Comida",  "estante: comida",    new Vector3(-22.8f, 1f, 12f), new Color(0.60f, 0.45f, 0.25f));
+        MakeStationPart(group.transform, "Almacen", "Paja",    "estante: lecho",     new Vector3(-21.6f, 1f, 12f), new Color(0.80f, 0.75f, 0.40f));
+        GameObject stockGO = new GameObject("Tarea_Abastecer_Cria");
+        stockGO.transform.SetParent(group.transform);
+        StockingTask stock = stockGO.AddComponent<StockingTask>();
+        stock.pickStation = "Caja"; stock.slotStation = "Almacen"; stock.total = 3; stock.areaLabel = "la cría";
+
+        // 3) RUTINA DE CUIDADO (el bond se gana: leer estado → calmar → alimentar → asear → arrullar).
+        GameObject binGO = new GameObject("Bond_Ganado");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(-16f, 1f, 15f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "sesión de cuidado"; bin.capacity = 10;
+        MakeStationPart(group.transform, "Cria", "LeerEstado", "lees su estado (hambre/estrés/bond)", new Vector3(-18f, 1f, 14f), new Color(0.70f, 0.75f, 0.85f));
+        MakeStationPart(group.transform, "Cria", "Calmar",     "te sientas cerca (presencia tranquila)", new Vector3(-18f, 1f, 15f), new Color(0.65f, 0.80f, 0.70f));
+        MakeStationPart(group.transform, "Cria", "Alimentar",  "das el biberón",                    new Vector3(-18f, 1f, 16f), new Color(0.90f, 0.85f, 0.70f));
+        MakeStationPart(group.transform, "Cria", "Asear",      "la aseas (grooming)",               new Vector3(-18f, 1f, 17f), new Color(0.75f, 0.75f, 0.60f));
+        MakeStationPart(group.transform, "Cria", "Arrullar",   "respondes a su llanto (vocal)",     new Vector3(-18f, 1f, 18f), new Color(0.80f, 0.70f, 0.80f));
+        GameObject orderGO = new GameObject("Receta_CuidadoCria");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "bond de la cría"; order.output = bin; order.quota = 3;
+        order.stepStation = new[] { "Cria", "Cria", "Cria", "Cria", "Cria" };
+        order.stepAction  = new[] { "LeerEstado", "Calmar", "Alimentar", "Asear", "Arrullar" };
+        order.stepLabel   = new[] { "lees su estado", "presencia tranquila", "das el biberón", "grooming", "respondes a su llanto" };
+
+        // 4) Llevar la cría al NIDO cálido (reusa CarryToRefuge/WeakOne).
+        GameObject nest = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        nest.name = "Nido_Calido"; nest.transform.SetParent(group.transform);
+        nest.transform.position = new Vector3(-14f, 1f, 20f); nest.transform.localScale = new Vector3(2f, 1f, 2f);
+        nest.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Nido_MAT", new Color(0.70f, 0.60f, 0.40f));
+        CarryToRefuge nestTask = nest.AddComponent<CarryToRefuge>(); nestTask.needed = 1; nestTask.radius = 2.5f;
+        GameObject cub = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        cub.name = "Cria_Bebe"; cub.transform.SetParent(group.transform);
+        cub.transform.position = new Vector3(-17f, 1f, 22f); cub.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+        cub.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cria_Bebe_MAT", new Color(0.85f, 0.80f, 0.65f));
+        cub.AddComponent<WeakOne>();
+        cub.AddComponent<CriaCareTarget>();   // engancha la rutina a drives reales (aquí placeholder: sin Animal → solo registra)
+        cub.AddComponent<AiBrain>().selfRelevance = 1f;
+        FollowBrain cfb = cub.AddComponent<FollowBrain>(); cfb.target = nest.transform; cfb.relevance = 2f; cfb.stopDistance = 1.5f;
+        cub.AddComponent<AnimaController>();
+
+        Debug.Log("[SampleSceneBuilder] Cría beginner (corazón del santuario, docs cria-simulation): limpiar el " +
+                  "nido → abastecer (biberón/comida/paja) → RUTINA DE CUIDADO (leer estado→calmar→alimentar→asear→" +
+                  "arrullar; el bond se gana) → llevar la «Cria_Bebe» al «Nido_Calido». Logs [Abastecer]/[Producción]/[Cuidado].");
+    }
+
+    static void BuildPrologueSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("PrologueSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        group.AddComponent<PlaneMessenger>();
+
+        GameObject seqGO = new GameObject("Prologue");
+        seqGO.transform.SetParent(group.transform);
+        PrologueSequence seq = seqGO.AddComponent<PrologueSequence>();
+        seq.autoDemo = true; seq.autoInterval = 3f;
+
+        GameObject cave = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cave.name = "Cueva_Refugio"; cave.transform.SetParent(group.transform);
+        cave.transform.position = new Vector3(-8f, 1f, 22f);
+        cave.transform.localScale = new Vector3(3f, 2f, 3f);
+        cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
+        CarryToRefuge carry = cave.AddComponent<CarryToRefuge>();
+        carry.needed = 2; carry.radius = 3f;
+        carry.onComplete.AddListener(() => PlaneMessenger.Send("Mesocosmos",
+            "Kushal, cuando termines, ve a la sala de meditación (YogaPortal) para volver.", 8f));
+
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject w = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            w.name = $"Debil_{i}"; w.transform.SetParent(group.transform);
+            w.transform.position = new Vector3(-12f + i, 1f, 26f);
+            w.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Debil_{i}_MAT", new Color(0.60f, 0.60f, 0.50f));
+            w.AddComponent<WeakOne>();
+            w.AddComponent<AiBrain>().selfRelevance = 1f;
+            FollowBrain fb = w.AddComponent<FollowBrain>();
+            fb.target = cave.transform; fb.relevance = 2f; fb.stopDistance = 2f;
+            w.AddComponent<AnimaController>();
+        }
+
+        Debug.Log("[SampleSceneBuilder] Prologue sandbox: el guion se auto-reproduce (logs [Prólogo]); dos " +
+                  "«Debil» caminan a la «Cueva_Refugio» (CarryToRefuge → logs [Cuidado]); al reunirlos, el " +
+                  "Mesocosmos avisa (PlaneMessenger) de volver por la sala de meditación. docs area-progression Apertura.");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)

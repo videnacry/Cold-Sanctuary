@@ -105,6 +105,9 @@ reparar. Bucle propuesto (idea del usuario):
 - **1ª reparación eléctrica (CONSTRUCCIÓN) — la BOMBILLA FUNDIDA / el DIFERENCIAL saltado** (la instalación
   eléctrica es del edificio): **quitar bombilla vieja → poner nueva → encender**; variante con gracia: rearmar
   el **diferencial** (1 acción; enseña *diagnosticar antes de desmontar*; reactiva varias luces a la vez).
-- **1ª reparación de MÁQUINA (MECÁNICA) — la LICUADORA con la cuchilla floja** (aparato con mecanismo, la más
-  fácil): **desenchufar → reencajar/desatascar la cuchilla → probar**. O **engrasar un cojinete que chirría**.
-  *(Por cablear — candidatas a la próxima.)* Luego: **filtro atascado** (extractor/bomba), **correa suelta**.
+- **1ª reparación de MÁQUINA (MECÁNICA) — el CAMBIO DE RUEDA del CAMIÓN** (decidido 2026-07-30; HECHO,
+  `TruckMaintenance_AUTO`): procedimiento real **aflojar tornillos → levantar con el gato → quitar rueda →
+  poner la nueva → apretar → bajar y apretar en cruz**. El **camión** es un vehículo del santuario que
+  **lleva las cajas de suministros a las áreas** (las mismas de `StockingTask`) y **viene al taller** a
+  mantenimiento: **cambio de rueda** (1ª sim) + **cambio de aceite** (vaciar→rellenar) + **agua** (radiador).
+  Luego, otras máquinas: filtro atascado (extractor/bomba), correa suelta, cuchilla floja (licuadora).

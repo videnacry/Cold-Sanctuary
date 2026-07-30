@@ -11,7 +11,62 @@ historia real**. Base: [`mob-epochs-matrix.md`](mob-epochs-matrix.md) (hilos/ép
 la época y "pasa la antorcha" a otra región, encarnando **figuras reales** (con su ancla de piedra). El
 arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **elemento**.
 
+## Apertura del juego — prólogo en la ENFERMERÍA (2026-07-30)
+El juego **empieza en la Enfermería**, por una razón **narrativa y realista** (no cronológica): Kushal
+**viene de fuera**, así que le hacen **exámenes médicos y lo vacunan** para que **no contagie a los animales**
+del santuario — más aún porque irá al **área de cría**. Secuencia:
+1. **Exámenes médicos** (tutorial suave de la Enfermería; presentación del cuidado/salud).
+2. Kushal **pregunta y curiosea** → ve la **máquina de control de avatares** (= la `VirtualizationMachine`
+   ya existente + `RobotAvatar`/`AvatarController`). Le **dejan probarla**.
+3. **Primera experiencia en el MICROCOSMOS → la era ANTERIOR AL FUEGO: las plantas medicinales.** (El fuego
+   es la Cocina; aquí **aún no nace el Señor del Fuego**.) Es el estrato **más antiguo**: el mundo de
+   **La Recolectora** (hilo **C**, ancla), donde Kushal ve cómo **algunos llevan plantas consigo** y **se
+   aferran a una como algo muy valioso** (la que alimenta y cura). La **comunicación es corporal/gestual**
+   (aún sin lenguaje desarrollado): se **mima/actúa** lo que se vio o se siente. Kushal entra a **apoyar y
+   animar a los débiles** → **antesala de las misiones de cuidado del área de CRÍA**. La **cueva** cabe como
+   **refugio**, pero **todavía SIN pinturas** (ver nota de arte abajo). Tutorial de virtualización + gancho.
+4. Pasados los exámenes + vacuna → lo llevan a su **primer trabajo** (1ª simulación de trabajo = la Cocina).
+
+> **Volver / puerta BIDIRECCIONAL (ya existe).** Tras ayudar a **llevar a los débiles a la cueva**, se le
+> dice a Kushal que vaya a la **sala de meditación** para **volver al Mesocosmos**. Se **entra** al Microcosmos
+> por esa misma área (la `VirtualizationMachine` = máquina de avatares/meditación) y se **sale** por el
+> `YogaPortal` (la sala de yoga dentro del Micro) → el jugador **sabe cómo volver** y puede **entrar/salir
+> incluso en mitad de misión** (`MobWorldLoader.ExitMobWorld`, ya soportado; docs mob-world §4). Eso hace
+> **conveniente separar personajes/lugares por área**. Además, el **Mesocosmos puede enviar avisos** al
+> jugador dentro del Micro (`PlaneMessenger`). *(Piezas ya existentes/scaffold: `PrologueSequence`,
+> `PlaneMessenger`, `CarryToRefuge`/`WeakOne`; la escena se monta en Unity.)*
+>
+> **El arte rupestre NO es de aquí (ciencia).** El fuego (~1 M–400 k años) precede al **arte figurativo**
+> (~45 k años, Paleolítico Superior) por cientos de miles de años. **No se dibujaba con sangre**: el rojo era
+> **ocre** (óxido de hierro), el negro **carbón** (¡requiere fuego!) o manganeso. → El **arte de cueva + la
+> misión de conseguir pigmento (OCRE, no sangre)** pertenecen a un **beat POSTERIOR, post-fuego**: el hilo
+> **D · Trazo y Símbolo**, ancla **La Mano de Lascaux**. En el prólogo pre-fuego, sí: **gesto/actuación**, no pintura.
+
+→ Resuelve el orden: la **Enfermería es el marco/prólogo** (razón narrativa), y la **historia del microcosmos
+arranca en el estrato PRE-FUEGO** (recolección + plantas medicinales, La Recolectora) → luego el **fuego**
+(Cocina) → agricultura (Huerto)… La semilla de la medicina queda desde el minuto 1.
+
+## Estrato PRE-FUEGO (el más antiguo del microcosmos) — La Recolectora
+Antes del fuego (Australopitecos / primeros *Homo*, ~2–3 M años), lo que la ciencia deduce y que usamos:
+- **Bipedismo → manos libres para CARGAR** (comida, crías… y **plantas**): explica que "lleven plantas consigo".
+- **Herramientas de piedra (Oldowan, ~2,6–3,3 M años) ANTES del fuego** — cortar, machacar, abrir huesos por
+  el tuétano. (El ancla **El Tallador** también es pre-fuego.)
+- **Dieta cruda** (fruta, hojas, tubérculos, semillas, algo de carroña); mandíbulas/tripa grandes; **aún no
+  se cocina**.
+- **Conocimiento de plantas que alimentan y curan** + **zoofarmacognosia** (aprender remedios observando a los
+  animales). → el mundo de **La Recolectora**.
+- **CUIDADO del enfermo/anciano en el grupo** (hay fósiles de individuos que sobrevivieron heridas/vejez sin
+  dientes → alguien los alimentó): **la compasión y el cuidar son anteriores al fuego** → raíz de la Enfermería.
+- Bandas pequeñas cooperativas, **reparto de comida**, crías de infancia larga; carroñeo antes que caza organizada.
+- **Comunicación pre-lenguaje: corporal/gestual** — mímica, actuar lo visto/sentido, sonidos y gestos (aún
+  sin lenguaje articulado ni escritura ni **arte**). → encaja con "las interacciones son más corporales".
+(Lo simbólico —**ocre, arte rupestre, entierros**— y la trepanación son **posteriores** (post-fuego), no de
+este estrato: el arte va en el hilo **D · La Mano de Lascaux**, Paleolítico Superior.)
+
 ## Ya planteadas
+0. **La Enfermería (prólogo)** — arranque: exámenes + vacuna + 1er uso de la máquina de avatares → Microcosmos
+   **pre-fuego** (plantas medicinales, **La Recolectora**). La Enfermería-área desarrollada (medicina-profesión)
+   se retoma más tarde (§6).
 1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Señor del Fuego**). Elemento
    **C**. Ver [`kitchen-simulation.md`](kitchen-simulation.md).
 2. **El Huerto** — Neolítico (agricultura) · Creciente Fértil / primera aldea · hilo C (**La Sembradora**).
@@ -22,13 +77,26 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 > historias entrelazadas y las misiones definidas están en
 > [`founding-trio-stories.md`](founding-trio-stories.md). *(El Ötzi histórico va en la Forja, no aquí.)*
 
+## El área de CRÍA — **área 3, tras el Huerto** (confirmado 2026-07-30)
+La **cría** (cuidar/criar animales) es el **corazón del santuario** — el jugador viene **para eso** (el
+prólogo lleva ahí). Cronología de la **domesticación** (para fijar su lugar):
+- **Perro** = **Paleolítico** (~15–40 k años), **antes de la agricultura** → el **primer compañero animal**.
+- **Ganado** (cabra/oveja/cerdo/vaca) = **Neolítico** (~10–8 k a.C.), **a la par del Huerto** (se domesticaron
+  plantas y animales juntos).
+- Ambos **anteriores** a los **metales** (~4 k a.C.) y a la **medicina profesional** (~2,6 k a.C.).
+→ **La cría va antes que Construcción/Mecánica.** Recomendado: el **bond/cuidado** desde pronto (perro,
+Paleolítico; enlaza con el prólogo y `CarryToRefuge`/`WeakOne`), y la **cría/ganadería** como área ~**Neolítico**
+(con el Huerto). **Reutiliza sistemas ya existentes** (`Animal`/`LifeStage`/`PostNatal`/`Family`).
+**CONFIRMADO: la cría es el área 3** (tras el Huerto) → Construcción=4, Mecánica=5, Enfermería=6, Yoga=7.
+Diseño y virtualización en [`cria-simulation.md`](cria-simulation.md).
+
 ## Las siguientes áreas
 
-> **Reorden 2026-07-30:** la **Construcción va ANTES que la Mecánica** — primero se aprende a **levantar
-> refugio** (chozas/casas, Neolítico) y solo después a **trabajar metales** (Edad de los Metales). Orden:
-> 3) **Construcción** → 4) **Mecánica** → 5) Enfermería → 6) Yoga.
+> **Orden (2026-07-30):** prólogo **Enfermería** → 1) **Cocina** → 2) **Huerto** → **3) Cría** → **4)
+> Construcción** → **5) Mecánica** → **6) Enfermería** (profesión) → **7) Yoga**. Racional: cría y refugio
+> (Neolítico) **antes** que los metales; la medicina profesional después de los metales; el Yoga cierra.
 
-### 3. La Construcción (Meso) / Levantar refugio (Micro) — Neolítico (chozas → casas)
+### 4. La Construcción (Meso) / Levantar refugio (Micro) — Neolítico (chozas → casas)
 - **Región/época:** Neolítico — la aldea del Huerto necesita **techo**: chozas de adobe, madera, paja;
   cerámica (El Alfarero) para materiales. Antes que el metal.
 - **Hilo/foco:** **B · Barro y Metal** (ancla *El Tallador* → *El Alfarero* → *Maestro de catedrales* →
@@ -42,7 +110,7 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Giro:** el refugio une a la tribu, pero **el muro también separa** (propiedad, fronteras) — enlaza con
   el excedente del Huerto y con "detener conflictos".
 
-### 4. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
+### 5. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
 > **Reencuadre 2026-07-30** (ver [`forge-simulation.md`](forge-simulation.md)): la 3ª área del **Mesocosmos**
 > es la **MECÁNICA** (reparar/mejorar máquinas de todas las áreas + vehículos/drones/avatares/teleportadores);
 > la **forja de bronce** literal se mueve al **Microcosmos** (capa histórica de los metales). Lo de abajo
@@ -69,7 +137,11 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
-### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+### 6. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+> **La Enfermería también es el PRÓLOGO del juego** (ver "Apertura del juego" arriba): el primer contacto del
+> jugador (exámenes/vacuna del recién llegado) y donde prueba por primera vez la máquina de avatares. Aquí,
+> como área desarrollada, se retoma la medicina-profesión (Imhotep/Hipócrates…).
+>
 > **Cronología (2026-07-30): la medicina básica precede incluso a la agricultura.** El uso de plantas para
 > sanar es **anterior a cultivar** (es **recolectar/forrajear**) y hasta **prehumano** — **zoofarmacognosia**:
 > los **animales se automedican** comiendo ciertas plantas. → Es hilo **C**, ancla *La Recolectora* (plantas
@@ -83,6 +155,14 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 > → **Desdoblar:** **primeros auxilios/herbolaria = capa TEMPRANA** (junto al Huerto, region-agnóstica, con
 > el gancho de los animales); **Enfermería-profesión** rota región (Egipto/Imhotep primero), ~era de los
 > metales. Los metales **no** van antes que la medicina *básica*, solo antes que la *profesional*.
+>
+> **¿Antes que Cocina? (2026-07-30)** El *instinto* de sanar (comer una planta para sentirse mejor) es lo
+> **más primal de todo** — precede al fuego y hasta a los humanos (animales). Pero conviene separar:
+> ese **instinto = "capa 0"** tejida en el **cuidado de los animales** (está presente desde el primer minuto
+> del santuario, observando a los seres que cuidas); la **Cocina** es la primera *simulación-tutorial de
+> trabajo*. → Recomendación: **la semilla de la medicina está desde el inicio (vía cuidado/observación de
+> animales)**, no como "área Enfermería gateada antes de la Cocina"; la Cocina sigue siendo el tutorial de
+> mecánicas, y la Enfermería-profesión se desarrolla después. *(Decisión final tuya.)*
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.
 - **Hilo/foco:** **C · Semilla y Vida** (continuación de La Recolectora: las plantas que **alimentan Y
   curan**) tocando **F · Aliento y Mente**. Arquetipo **Curar/atender**.
@@ -95,7 +175,7 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Encaja con:** refuerza el **tema de no-violencia/cuidado** del santuario; recibe del Huerto (plantas)
   y de la Cocina (nutrición → salud); atiende a heridos de los conflictos (área 3).
 
-### 6. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
+### 7. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
 - **Región:** rota (India para Buda, Grecia para Sócrates…).
 - **Hilo/foco:** **F · Aliento y Mente** (ancla *El Chamán* → *El Soñador* → Buda/Sócrates/Spinoza).
   Arquetipo **contemplativo** (canalizar/meditar).
