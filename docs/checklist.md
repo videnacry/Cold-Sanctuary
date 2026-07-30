@@ -270,13 +270,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16 y #17 mergeadas a master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16, #17 y #18 mergeadas a master)
 Código nuevo aditivo: `Control/` + `Kitchen/` + `Virtualization/` + extensiones de Mind. **Guion de prueba
-completo en [`testing-checklist.md`](testing-checklist.md) §11** (control/posesión, cocina paso A, paseo+
-desayuno, virtualización con mira central + HeadLook, mecanografía del fogón, huerto).
+en [`testing-checklist.md`](testing-checklist.md) §11** (control/posesión, cocina, virtualización, mira
+central + HeadLook, mecanografía) **y §12** (Mecánica/Construcción arranque + dispatch: reparar el grifo).
 - [ ] **Compila** tras `pull`; si algo falla, pégame el error. Sandboxes: `PossessionSandbox_AUTO`,
-      `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`.
-      Conteo de pools `Total≈40 Vivencia≈30`.
+      `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`,
+      `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `DispatchDemo_AUTO`, `ForgeVirtualization_AUTO`.
+      Conteo de pools `Total≈48 Vivencia≈38`.
 - [x] **PR #16 ya verificada en Play** (posesión débil/fuerte, follow, petición→alma compartida,
       suciedad→misión→limpieza) antes del merge de PR #17. Detalle en `testing-checklist.md` §11.
 - [x] **Bug encontrado y arreglado (PR #16)**: `AnimaController.PickBest()` no detectaba un `IBrain`

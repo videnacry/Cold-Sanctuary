@@ -346,6 +346,22 @@ Evidencia de `Logs/Editor.log` de una corrida completa en Play:
       correr sin input. **Pendiente de una pasada de juego manual** para confirmar el flujo completo
       (apuntar en orden → confirmar → 3 desayunos/cosechas → misión cumplida).
 
+## 12. Mecánica · Construcción · Dispatch/reparación (PR #18) — NUEVO
+Sandboxes de `Build Sample Scene Blockout`. Se apuntan con la **mira central** (girar cámara) + **F**, o
+ratón/touch. Logs por consola.
+- [ ] **Mecánica arranque** (`MechanicsBeginner_AUTO`): 1) el `Aprendiz_Limpia` borra la suciedad del taller
+      (`[Cocina]`), 2) **abastecer** — apunta a una **Caja** (Tornillos/Aceite/Repuesto) y luego a su
+      **estante** correcto → `[Abastecer]` "guardado"; si te equivocas de estante, avisa; 3) **reparación**
+      — Diagnosticar (teclea `check/oil/bolt/gear/fix`) → Destornillar → SustituirPieza → Probar → `[Producción]`.
+- [ ] **Construcción arranque** (`ConstructionBeginner_AUTO`): limpiar el solar → abastecer (Caja→Almacén:
+      Ladrillo/Madera/Teja) → construir (Cimentar[teclea `build/brick/wall/wood/roof`]→Muro→Techar→Probar).
+- [ ] **Dispatch — reparar el GRIFO QUE GOTEA** (`DispatchDemo_AUTO`): al entrar, `[Servicio]` lista el
+      ticket "grifo que gotea en Cocina". Ve al **grifo** (junto a la Cocina) e intenta repararlo **sin
+      herramientas** → se rechaza (`[Producción] necesitas HERRAMIENTAS`). Ve al **Taller** (lejos), apunta
+      a **Herramientas/Tomar** (`[Herramientas] Tomadas`), vuelve al grifo y haz los 5 pasos (cerrar llave →
+      desmontar → cambiar junta → montar → abrir/probar) → `[Ticket] reparada`. Vuelve y **Devolver**.
+- [ ] **Forja del Micro** (`ForgeVirtualization_AUTO`): receta de bronce; el Crisol se acelera tecleando.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
