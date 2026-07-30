@@ -70,6 +70,13 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
 ### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+> **Cronología (2026-07-30): la medicina es MÁS ANTIGUA que los metales.** Herbolaria y cuidado de heridas
+> son paleolíticos (hilo **C**, ancla *La Recolectora*: plantas que **alimentan y curan**); la **trepanación**
+> neolítica (~7000 a.C.) precede al cobre. Pero la **medicina como profesión documentada** (Imhotep,
+> Hipócrates, Avicena) es de la era de los metales en adelante. → **Desdoblar:** introducir **primeros
+> auxilios/herbolaria PRONTO, ligados al Huerto** (misma hilo C), y dejar la **Enfermería-área desarrollada**
+> aquí (con sus médicos históricos). Así los metales **no** van antes que la medicina *básica*, solo antes
+> que la medicina *profesional*. *(Orden a confirmar.)*
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.
 - **Hilo/foco:** **C · Semilla y Vida** (continuación de La Recolectora: las plantas que **alimentan Y
   curan**) tocando **F · Aliento y Mente**. Arquetipo **Curar/atender**.

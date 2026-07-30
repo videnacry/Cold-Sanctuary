@@ -85,6 +85,11 @@ reparar. Bucle propuesto (idea del usuario):
 - **Modelo (HECHO, MVP):** `RepairTicket` (avería en un área + su receta; abierta→cerrada), `ServiceHub`
   (tablero + banco de herramientas tomar/devolver), `Toolbox` (gate: sin herramientas no se repara —
   `ProductionOrder.requiresTools`). Sandbox `DispatchDemo_AUTO`.
-- **Primera reparación real — el GRIFO QUE GOTEA** (la avería más típica/simple, fontanería; sirve igual en
-  Cocina —fregadero— y Huerto —manguera/riego—): **cerrar la llave de paso → desmontar la maneta → cambiar
-  la junta/goma gastada → montar → abrir y probar (ya no gotea)**. Requiere herramientas (llave inglesa).
+- **1ª reparación de ESTRUCTURA (Construcción/fontanería) — el GRIFO QUE GOTEA** (la avería más típica/
+  simple; sirve igual en Cocina —fregadero— y Huerto —manguera/riego—): **cerrar la llave → desmontar la
+  maneta → cambiar la junta gastada → montar → abrir y probar**. Requiere herramientas (llave inglesa). HECHO.
+- **1ª reparación de MÁQUINA (Mecánica/electricidad) — la BOMBILLA FUNDIDA** (la máquina más fácil, en todas
+  las áreas): **quitar la bombilla vieja → poner la nueva → encender**. Variante de onboarding con gracia: el
+  **diferencial saltado / máquina desenchufada** (1 acción; enseña *diagnosticar antes de desmontar*). Un
+  fusible/diferencial puede reactivar **varias máquinas a la vez**. *(Por cablear — candidata a la próxima.)*
+  Otras fáciles luego: **filtro atascado** (extractor/bomba), **correa suelta**, **cuchilla floja** (licuadora).
