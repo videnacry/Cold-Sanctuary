@@ -7,7 +7,7 @@ using UnityEngine;
 /// <see cref="VirtualPointer"/> al confirmar sobre una <see cref="StationPart"/>). Motor genérico: sirve a
 /// cocina, huerto, forja… cambiando la receta.
 /// </summary>
-public class ProductionOrder : MonoBehaviour
+public class ProductionOrder : VirtualTask
 {
     [Header("Receta (pasos en ORDEN; mismo índice en los tres arrays)")]
     public string[] stepStation;
@@ -28,7 +28,7 @@ public class ProductionOrder : MonoBehaviour
     public bool Done => _done;
 
     /// <summary>Un paso realizado por el jugador. Avanza si es el siguiente esperado; produce al completar.</summary>
-    public void Submit(string stationId, string actionId)
+    public override void Submit(string stationId, string actionId)
     {
         if (_done || stepStation == null || stepStation.Length == 0) return;
         if (stepAction == null || stepAction.Length != stepStation.Length) return;   // receta mal formada

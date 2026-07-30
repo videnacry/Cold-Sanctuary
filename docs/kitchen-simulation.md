@@ -33,9 +33,12 @@ de Kushal** (`FollowBrain`) para que siga al anfitrión por la cocina.
 ## 2. Progresión de rol (de lavaplatos a cocinero)
 El personaje **asciende** haciendo tareas, de lo simple a lo complejo:
 1. **Limpieza (pinche/lavaplatos)** — limpiar **suelo → paredes → plancha → mesones → refrigeradora →
-   utensilios**; **reponer despensas**; **guardar todo en su lugar**. (Ver §5 y §7.)
-2. **Desayunos** — el primer cocinado (ver §3).
-3. **Recetas** — combinaciones cada vez más ricas (ver §4).
+   utensilios**. (Ver §5 y §7.)
+2. **Abastecer / ordenar** — llegan **cajas a la puerta**; el jugador coloca cada **ingrediente en su
+   despensa/nevera correcta** (`StockingTask`) → **aprende dónde está cada cosa** antes de cocinar. Mismo
+   mecanismo que el taller de la Mecánica (`forge-simulation.md` §1b).
+3. **Desayunos** — el primer cocinado (ver §3).
+4. **Recetas** — combinaciones cada vez más ricas (ver §4).
 Cada escalón se **desbloquea por aprendizaje** ([`learning-unlocks.md`](learning-unlocks.md)): la UI de
 esa tarea aparece cuando la aprendes.
 

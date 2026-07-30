@@ -79,8 +79,8 @@ public class TypingChallenge : MonoBehaviour
         Running = false;
         _activeCount = Mathf.Max(0, _activeCount - 1);
         Debug.Log($"[Typing] Acción «{_station}/{_action}» completada.");
-        foreach (ProductionOrder o in FindObjectsOfType<ProductionOrder>())
-            o.Submit(_station, _action);
+        foreach (VirtualTask t in FindObjectsOfType<VirtualTask>())
+            t.Submit(_station, _action);
     }
 
     void OnGUI()

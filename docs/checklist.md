@@ -232,12 +232,15 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [~] 3. **Mecánica (Meso) + Forja (Micro)** — **REENCUADRADA** ([`forge-simulation.md`](forge-simulation.md)):
-      la 3ª área Meso es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + **vehículos**
-      —tractor vs bueyes, globos, submarinos—, **drones/avatares**, **teleportadores** mecánica+magia). La
-      **forja** literal (bronce) se mueve al **Microcosmos** (metales). Autorados: El Primer Herrero, Sargón;
-      receta de forja cableada (`ForgeVirtualization_AUTO`). **Falta**: recetas de **reparación de máquinas**
-      (Mecánica), decidir vehículos, decisión arado/espada, misiones-historia, cuota↔misión.
+- [~] 3. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la 3ª área Meso
+      es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
+      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
+      `StockingTask`) → **reparación simple** (receta con diagnóstico tecleado). Tracción del Huerto =
+      **bueyes** (decidido). La **forja** de bronce → **Microcosmos** (`ForgeVirtualization_AUTO`; El Primer
+      Herrero/Sargón autorados). **Falta**: máquinas por área, vehículos (bueyes/globos/submarinos),
+      teleportadores, decisión arado/espada, misiones-historia.
+- [ ] **Onboarding genérico por área**: limpiar → **abastecer** (`StockingTask`, cajas→despensas) → producir.
+      Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
 - [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
 - [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo

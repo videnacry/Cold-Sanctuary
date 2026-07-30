@@ -14,10 +14,23 @@ las áreas tienen máquinas** que se estropean y mejoran.
 - **Máquinas de otras áreas** (reparar/mejorar en la Mecánica): **carne cultivada**, **textiles**,
   **enfermería**, **cocina**… Cada avería = una **misión de reparación** (receta de virtualización:
   diagnosticar → sustituir pieza → calibrar → probar).
-- **Vehículos** (construir/reparar): decisión de diseño **orgánico vs mecánico** —
-  - **Huerto:** **tractor** *(rama mecánica)* **o bueyes/vacas** *(rama orgánica, bonds/no-violencia)*.
+- **Vehículos/tracción** (construir/reparar): **orgánico vs mecánico** —
+  - **Huerto:** **bueyes/vacas** *(DECIDIDO 2026-07-30 — rama orgánica: bonds/no-violencia).* El tractor
+    queda como rama mecánica **opcional/futura** (estilo alternativo).
   - **Aéreo:** **globos aerostáticos** (santuario aéreo vertical). **Marino:** **submarinos** (santuario
-    marino/subterráneo). Coherentes con los 5 santuarios (`world-topology`). *A confirmar qué se incluye.*
+    marino/subterráneo). Coherentes con los 5 santuarios (`world-topology`). *Más adelante.*
+
+### 1b. Arranque de la Mecánica (tareas simples para principiantes)
+Igual que la cocina (limpiar → abastecer → cocinar), la Mecánica se **empieza sin experiencia** con las
+tareas más simples y se **asciende** a lo complejo (vehículos, drones, teleportadores):
+1. **Limpiar el taller** — barrer virutas/aceite (reusa el sistema de suciedad `DirtArea`/`Cleaner`).
+2. **Abastecer / ordenar** — **cajas dejadas en la puerta** → colocar cada pieza/herramienta en su
+   **estante correcto** (`StockingTask`) → el jugador **aprende dónde va cada cosa** (igual que las
+   despensas de la cocina). Coger de la caja, colocar en el estante que acepta ese ítem.
+3. **Reparación simple** — receta corta (diagnosticar → destornillar → sustituir pieza → probar), con el
+   **diagnóstico tecleado** (mecanografía, kitchen §4b).
+Luego: reparar/mejorar las **máquinas** de las áreas, y las tareas avanzadas (vehículos, drones, etc.).
+Sandbox: `MechanicsBeginner_AUTO`.
 - **Drones y avatares**: se **fabrican/reparan** aquí los **minidrones/miniavatares** (`RobotAvatar`/
   `AvatarController`) que interactúan con el **Microcosmos** (p. ej. limpiar manchas, extraer manjares).
 - **Mecánica + magia (futuro):** **teleportadores** ("aeropuerto", `world-topology` §C) y artículos que
@@ -48,8 +61,7 @@ Continúa el hilo del **fuego** del **Señor del Fuego** (la **pirita** → **hi
 ## 4. Estado y decisiones abiertas
 - **Autorado**: El Primer Herrero, Sargón (+ Ötzi). Receta de forja cableada (`ForgeVirtualization_AUTO`).
 - **Por decidir contigo** (diseño de vehículos/máquinas):
-  - ¿**Tractores** (mecánica) **vs bueyes/vacas** (orgánico) para el Huerto? *(propongo: ambos, como ramas
-    de estilo — orgánico casa con el tema animal/no-violencia; mecánico con el tema técnico.)*
+  - Tracción del Huerto: **bueyes/vacas DECIDIDO** (orgánico); tractor = rama opcional futura.
   - ¿**Globos/submarinos** ya, o más adelante? *(encajan con los santuarios aéreo/marino.)*
   - ¿**Teleportadores** y objetos mecánica+magia — cuándo entran?
   - Lista de **máquinas por área** (carne cultivada, textiles, enfermería, cocina) a reparar/mejorar.
