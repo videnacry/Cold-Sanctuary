@@ -5,16 +5,13 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 ## Decisiones abiertas (rápidas)
-- [~] **Microcosmos INSECTO — 1ª misión HECHA (scaffold)**: `MicrocosmosSandbox_AUTO` (hormiguero
-      `CarryToRefuge` + pulgón `HoneydewProducer`/`AphidGuide` = mascota-guía + familia caída `WeakOne` +
-      hormigas que lo cuidan). **Pipeline:** cada área **humana primero (Meso) → transformar a insecto (Micro)**
-      (microcosmos-insects §11). **Falta:** que el jugador (avatar-insecto) guíe/cargue; colonia real
-      (reina/castas); feromonas como mecánica; dispatch meso→micro. Ver [`microcosmos-insects.md`](microcosmos-insects.md).
-- [ ] **¿Microcosmos = mundo de INSECTOS?** (propuesta en [`microcosmos-insects.md`](microcosmos-insects.md))
-      Recomendado: **sí**, con **hormigas** como civilización primaria (ciudades/castas/reina), la **cría =
-      mirmecofilia** (hormigas ordeñan pulgones → el pulgón es la "mascota/ganado"), y **abeja/avispa/termita**
-      como otras ciudades. Entrada de Kushal: **dispatch meso→micro** (transportar insectos caídos a su hogar)
-      + **mascota-guía** que no deja a su familia abandonada (reusa `CarryToRefuge`/`WeakOne`). DECIDIDO opción B (históricos como insectos; violencia = "volverse salvaje", sin trauma humano). · Nota: domesticación es **post-fuego**.
+- [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
+      Históricos encarnados como insectos (violencia = "volverse salvaje", sin trauma humano). **Hormigas**
+      civilización primaria; **cría = mirmecofilia** (pulgón = ganado/mascota); su "fuego" = **feromonas**;
+      **hongos** (Physarum oráculo, Ophiocordyceps amenaza); abeja/avispa/termita = otras ciudades. **Pipeline:
+      área humana (Meso) → transformar a insecto (Micro).** **1ª misión hecha (scaffold)** `MicrocosmosSandbox_AUTO`
+      (amanecer: **cueva** natural, sin reina/hormiguero/feromonas; pulgón-mamá guía + banda de 7 hormigas).
+      **Falta:** jugador-avatar guía/carga; colonia real; feromonas como mecánica; dispatch meso→micro.
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
@@ -293,24 +290,25 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
       trataba a ambos. El Perro de Oberkassel es su fundacional-animal. (Diseño: area-progression §6.)
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16, #17 y #18 mergeadas a master)
-Código nuevo aditivo: `Control/` + `Kitchen/` + `Virtualization/` + extensiones de Mind. **Guion de prueba
-en [`testing-checklist.md`](testing-checklist.md) §11** (control/posesión, cocina, virtualización, mira
-central + HeadLook, mecanografía) **y §12** (Mecánica/Construcción arranque + dispatch: reparar el grifo).
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#20 en master)
+`Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
+prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
+`AnimaController.PickBest` (Object null-check), `GuidedTour.stopDistance`, y `CarryToRefuge`/`PrologueSequence`
+`UnityEvent` sin inicializar (abortaba `Build()`). *(Pendiente reportado: los `AddListener` puestos en el
+editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox no dispara; no bloquea.)*
 - [ ] **Compila** tras `pull`; si algo falla, pégame el error. Sandboxes: `PossessionSandbox_AUTO`,
       `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`,
-      `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `DispatchDemo_AUTO`, `ForgeVirtualization_AUTO`.
-      Conteo de pools `Total≈48 Vivencia≈38`.
-- [x] **PR #16 ya verificada en Play** (posesión débil/fuerte, follow, petición→alma compartida,
-      suciedad→misión→limpieza) antes del merge de PR #17. Detalle en `testing-checklist.md` §11.
-- [x] **Bug encontrado y arreglado (PR #16)**: `AnimaController.PickBest()` no detectaba un `IBrain`
-      destruido (el `FollowBrain` temporal de `HelpRequest.EndShare`) porque `b == null` compara por el
-      tipo estático `IBrain`, no por `UnityEngine.Object` — Unity solo sobrecarga `==` para detectar
-      "destruido" en `Object`. Causaba `MissingReferenceException` en bucle infinito (999+ errores/frame)
-      ~8s después de cualquier petición aceptada. Fix: `if ((b as Object) == null) continue;`. **Commiteado**
-      (`40cfbd1`).
+      `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `TruckMaintenance_AUTO`, `DispatchDemo_AUTO`,
+      `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`.
+      Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **30-jul (PR #20):** **El Perro de Oberkassel** + animales-héroe (Togo/Hachikō/Cher Ami, POV animal);
+  **Enfermería "Una Salud"** (personas+animales); **Microcosmos INSECTO** (opción B: hormigas, mirmecofilia/
+  pulgón, feromonas=su "fuego", hongos); **1ª misión del micro** (cueva + pulgón-guía + banda de 7 hormigas).
+- **30-jul (PR #19):** **área de CRÍA** (rutina de cuidado enganchada a drives reales; El Perro fundacional) +
+  **prólogo Enfermería** (pre-fuego, La Recolectora) + **camión** (1ª reparación = cambio de rueda) + reorden
+  (Cría=3). Fixes del equipo: `PickBest`/`GuidedTour`/`UnityEvent`.
 - **30-jul (PR #18):** **Mecánica** (arranque limpiar→abastecer→reparar) + **Forja del Micro**;
   **dispatch/tickets** (`RepairTicket`/`ServiceHub`/`Toolbox`; 1ª reparación real = **grifo que gotea**);
   **Construcción** (arranque + El Tallador); reorden Construcción→Mecánica; 1ª persona reconciliada
