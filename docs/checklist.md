@@ -279,8 +279,9 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       docs/mob-characters.md, mob-epochs-matrix.md).
 - [ ] **Históricos ANIMALES** (POV animal, docs/animal-heroes.md): autorados El Perro de Oberkassel, Togo,
       Hachikō, Cher Ami; **candidatos** Balto, Laika, Clever Hans (→Mente), Koko, Jumbo, Greyfriars Bobby.
-- [ ] **Renombrar Enfermería→VETERINARIA** (salud animal; trata todo animal) en código/escena cuando toque;
-      la enfermería humana = solo el puesto del prólogo. (Diseño: area-progression §6.)
+- [ ] **Enfermería "Una Salud"** (área 6): **una sola** clínica que cuida a **personas Y animales** (lado
+      veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
+      trataba a ambos. El Perro de Oberkassel es su fundacional-animal. (Diseño: area-progression §6.)
 
 ## ⚠ Compilar y PROBAR en Unity (PRs #16, #17 y #18 mergeadas a master)
 Código nuevo aditivo: `Control/` + `Kitchen/` + `Virtualization/` + extensiones de Mind. **Guion de prueba

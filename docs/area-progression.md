@@ -137,18 +137,18 @@ Diseño y virtualización en [`cria-simulation.md`](cria-simulation.md).
 - **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
-### 6. La VETERINARIA / Farmacia — salud ANIMAL (renombrada 2026-07-30)
-> **Es la VETERINARIA (salud animal), no una enfermería humana.** "Veterinario" = médico de animales, y
-> **trata TODO tipo de animales** (esa es su definición) → es el área correcta para el santuario. La
-> **enfermería humana** se reduce al **puesto del prólogo** (exámenes/vacuna de los voluntarios; puede ser el
-> propio chequeo de ingreso de la clínica). Histórico **fundacional de la veterinaria = El Perro de
-> Oberkassel** (primer animal cuidado por amor; cria-simulation §5) → puente con el área de **cría**.
-> Historia veterinaria real: el **papiro de Kahun** (~1800 a.C.) ya es un texto veterinario; hubo sanadores
-> de animales desde la ganadería. Las figuras de medicina *humana* (Imhotep/Hipócrates) quedan como
-> trasfondo del hilo médico, no como el foco del área.
->
-> **La Veterinaria también conecta con el PRÓLOGO** (ver "Apertura del juego"): el chequeo del recién llegado
-> y el primer uso de la máquina de avatares.
+### 6. La ENFERMERÍA — salud del santuario: personas Y animales ("Una Salud", 2026-07-30)
+> **Una sola Enfermería que cuida a TODOS los integrantes — personas y animales.** Se basa en el marco real
+> **"Una Salud" (One Health)**: la salud humana, animal y del entorno están conectadas → una clínica única
+> es lo coherente (y resuena con "todo es un `Anima`, todo está conectado"). El lado **veterinario** es el
+> **dominante** (es un santuario animal), pero también atiende a los **voluntarios**. Históricamente el
+> **mismo sanador** trataba a ambos (la herbolaria de **La Recolectora** + zoofarmacognosia; el **papiro de
+> Kahun** ~1800 a.C. ya es texto veterinario); separar humano/veterinario es **moderno**.
+> - **Fundacional (animal): El Perro de Oberkassel** (primer ser cuidado por amor; cria-simulation §5) →
+>   puente con la **cría**. Otros históricos-animal en [`animal-heroes.md`](animal-heroes.md).
+> - **Conecta con el PRÓLOGO** ("Apertura del juego"): al recién llegado lo **revisan aquí** (para no
+>   contagiar a los animales) y prueba la máquina de avatares.
+> - Las figuras de medicina *humana* (Imhotep/Hipócrates) quedan como trasfondo del hilo médico.
 >
 > **Cronología (2026-07-30): la medicina básica precede incluso a la agricultura.** El uso de plantas para
 > sanar es **anterior a cultivar** (es **recolectar/forrajear**) y hasta **prehumano** — **zoofarmacognosia**:
