@@ -53,12 +53,65 @@ Recolectora…) y (b) el **mundo-insecto**. Si los habitantes son insectos, ¿qu
   justificar → esta opción cojea con la era del fuego.)*
 - **Opción C — Dos capas:** el micro tiene su **ecología insecto real** (hormigas/pulgones: cría, conflicto,
   construcción) **y**, aparte, los **mob-históricos** como visitantes/ecos. Más rico, más complejo.
-→ **Recomendación:** **A** (insectos con su propia historia-civilización paralela; los históricos humanos son
-del Meso/marco). Es lo más limpio y aprovecha la biología real como mecánicas. *A confirmar por ti.*
+→ **DECISIÓN (2026-07-30): opción B** — los históricos **se encarnan como insectos** en el micro. Razón del
+autor: a escala insecto la **violencia se lee como "volverse salvaje / perder el equilibrio"**, no como
+trauma humano → permite contar las historias **más sangrientas sin peso traumático**, con distancia mítica
+(encaja con el tema de **restaurar el equilibrio**). El "problema del fuego" en B se resuelve con el **salto
+de desarrollo propio de las hormigas** (§7): su "fuego" no es fuego, son las **feromonas**.
 
-## 6. Impacto / pendientes
-- Si se confirma: el mundo-mob (`MobResident`/`MobWorldDirector`) se **puebla de insectos** (hormiga/pulgón
-  primero); los avatares (`RobotAvatar`) son la forma del jugador; la cría del micro = mirmecofilia (pulgón).
-- Revisar qué historias humanas ya escritas (grupo fundador, La Recolectora) pasan al **Meso** o se
-  reinterpretan.
+## 6. Impacto / pendientes (opción B confirmada)
+- El mundo-mob (`MobResident`/`MobWorldDirector`) se **puebla de insectos** (hormiga/pulgón primero); los
+  avatares (`RobotAvatar`) son la forma del jugador; la cría del micro = mirmecofilia (pulgón).
+- **Reinterpretar los históricos como insectos** (no moverlos al Meso): p. ej. el "Señor del Fuego" →
+  **la primera hormiga que dominó las feromonas** (su "fuego", §7); La Sembradora/Recolectora → **la que
+  domesticó el hongo/el pulgón**; el Jefe/Sargón → **la reina-tirana de las feromonas**. Sus **vivencias ya
+  escritas** se conservan como esencia y se re-tematizan a escala insecto.
 - Empezar por: **hormiguero + pulgón (cría) + la misión de la mascota-guía**.
+
+## 7. El "fuego" de las hormigas — el salto de desarrollo (ciencia real)
+El equivalente hormiga del fuego (el empujón que dispara la civilización) mejor candidato = **el dominio de
+las FEROMONAS**. Es su "fuego" **y** su "tecnología de la información", y es **real**:
+- **Feromonas = su lenguaje y su poder.** Las hormigas ya viven de señales químicas: rastros de comida,
+  alarma, y las **feromonas de la reina** que **organizan la colonia** y suprimen la reproducción de las
+  obreras. → **El salto:** aprender a **crear y usar feromonas a voluntad**, en niveles cada vez más altos:
+  primero la reina guía; luego se refinan → coordinan agricultura, guerra y dominio → **hormigas ápex del
+  microcosmos**, con una **"tecnología basada en feromonas"** (química como herramienta y como control). Es
+  justo tu idea, y es lo que las hormigas **realmente** hacen. *(El tirano que abusa de las feromonas para
+  someter = el análogo de Sargón/el Jefe → "perder el equilibrio".)*
+
+**Lo que las hormigas YA "descubrieron" (real, = sus eras):**
+- **Agricultura:** las **cortadoras cultivan hongo** (~50–60 M años), con **antibióticos** (bacterias) para
+  protegerlo. Su "Neolítico". → puente con los **hongos** (§8).
+- **Ganadería/domesticación:** **ordeñan pulgones** (mirmecofilia, §2). Su "cría".
+- **Guerra e imperio:** **guerras** entre colonias, **incursiones esclavistas** (dulosis), **supercolonias**
+  de miles de km ("crecer sin límite").
+- **Construcción viva:** **puentes y vivacs** con sus propios cuerpos; nidos ventilados. (+hongos → megaobras.)
+- **Electricidad (real, curioso):** hay hormigas (locas/rasperry) **atraídas a los aparatos eléctricos**, que
+  se meten en ordenadores pese a las descargas y provocan cortocircuitos → posible beat "descubren la
+  electricidad" a su modo.
+
+## 8. Hongos — el otro pilar (agricultura, tecnología, y la sombra)
+Las hormigas y los hongos ya son simbiontes → el micro puede tener **tecnología/arquitectura fúngica**
+(megaobras, "materiales" de hongo, medicina). Y dos hechos reales potentes:
+- **El moho inteligente (`Physarum`):** resuelve **laberintos** y halla rutas óptimas (replicó la red de
+  metro de Tokio). → un **"oráculo/ordenador vivo"** del micro. *(Es un protista, coloquialmente "hongo".)*
+- **El hongo zombi (`Ophiocordyceps`):** **secuestra** el comportamiento de las hormigas (las hace trepar y
+  morder una hoja, y le brota de la cabeza). → la **amenaza oscura** del micro y la imagen de **"perder el
+  equilibrio / volverse salvaje"** sin trauma humano (la locura viene de fuera). Encaja con la opción B.
+
+## 9. Castas — mito de origen (por alimentación, real)
+La **casta** (reina/obrera/soldado) la decide sobre todo la **ALIMENTACIÓN de la larva** (y feromonas), no la
+genética. → Mito fundacional: **la primera diferenciación** — una larva **alimentada distinto** se desarrolla
+como la **primera reina** (o el primer soldado). *(De tus dos ideas, esta —casta por alimentación— es la que
+coincide con la biología real.)* Es el "amanecer" de la sociedad hormiga.
+
+## 10. Domesticación antes del fuego — matiz (ciencia)
+Hay que separar dos cosas:
+- **Domesticación como PROCESO** (una especie cambia a lo largo de generaciones por convivir con humanos) →
+  el **perro** es **post-fuego** y **datable** (~15–40 k años). Eso es lo "claro" de la ciencia.
+- **Domar/hacerse amigo de un INDIVIDUO** → es **muy anterior, esporádico y NO deja rastro fósil** (una
+  amistad no se "fosiliza" como domesticación). Las **amistades entre especies existen** de verdad (cuervo y
+  gatito; una gata que adopta a otro felino o a un cachorro; una leona que adopta una cría de antílope). → Es
+  **plausible que hubiera vínculos individuales pre-fuego** (un perdido + un animal amigo), aunque la ciencia
+  no pueda fecharlos. → **Tu intuición vale para el vínculo individual** (no para la especie domesticada). En
+  el micro (insecto), el "ganado" es el pulgón (mirmecofilia), antiquísimo en la evolución hormiga.

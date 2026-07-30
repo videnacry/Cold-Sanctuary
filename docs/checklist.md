@@ -9,9 +9,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       Recomendado: **sí**, con **hormigas** como civilización primaria (ciudades/castas/reina), la **cría =
       mirmecofilia** (hormigas ordeñan pulgones → el pulgón es la "mascota/ganado"), y **abeja/avispa/termita**
       como otras ciudades. Entrada de Kushal: **dispatch meso→micro** (transportar insectos caídos a su hogar)
-      + **mascota-guía** que no deja a su familia abandonada (reusa `CarryToRefuge`/`WeakOne`). **Tensión a
-      decidir:** ¿los históricos humanos pasan al Meso y el micro tiene su historia-insecto paralela (opción A,
-      recomendada), o se encarnan como insectos (B), o dos capas (C)? · Nota: domesticación es **post-fuego**.
+      + **mascota-guía** que no deja a su familia abandonada (reusa `CarryToRefuge`/`WeakOne`). DECIDIDO opción B (históricos como insectos; violencia = "volverse salvaje", sin trauma humano). · Nota: domesticación es **post-fuego**.
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
