@@ -137,10 +137,18 @@ Diseño y virtualización en [`cria-simulation.md`](cria-simulation.md).
 - **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
-### 6. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
-> **La Enfermería también es el PRÓLOGO del juego** (ver "Apertura del juego" arriba): el primer contacto del
-> jugador (exámenes/vacuna del recién llegado) y donde prueba por primera vez la máquina de avatares. Aquí,
-> como área desarrollada, se retoma la medicina-profesión (Imhotep/Hipócrates…).
+### 6. La VETERINARIA / Farmacia — salud ANIMAL (renombrada 2026-07-30)
+> **Es la VETERINARIA (salud animal), no una enfermería humana.** "Veterinario" = médico de animales, y
+> **trata TODO tipo de animales** (esa es su definición) → es el área correcta para el santuario. La
+> **enfermería humana** se reduce al **puesto del prólogo** (exámenes/vacuna de los voluntarios; puede ser el
+> propio chequeo de ingreso de la clínica). Histórico **fundacional de la veterinaria = El Perro de
+> Oberkassel** (primer animal cuidado por amor; cria-simulation §5) → puente con el área de **cría**.
+> Historia veterinaria real: el **papiro de Kahun** (~1800 a.C.) ya es un texto veterinario; hubo sanadores
+> de animales desde la ganadería. Las figuras de medicina *humana* (Imhotep/Hipócrates) quedan como
+> trasfondo del hilo médico, no como el foco del área.
+>
+> **La Veterinaria también conecta con el PRÓLOGO** (ver "Apertura del juego"): el chequeo del recién llegado
+> y el primer uso de la máquina de avatares.
 >
 > **Cronología (2026-07-30): la medicina básica precede incluso a la agricultura.** El uso de plantas para
 > sanar es **anterior a cultivar** (es **recolectar/forrajear**) y hasta **prehumano** — **zoofarmacognosia**:
