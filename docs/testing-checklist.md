@@ -12,12 +12,36 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la **PR #18** (Mecánica/Construcción/Forja/Dispatch — reparación por tickets,
-  commits hasta `db9ed23`) ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`)
-  y **probado en lo automatizable** — ver secciones 11/12/13. El repo recibe cambios de un compañero de
-  equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay commits
-  nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último hash
-  conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- Todo lo mergeado hasta la **PR #19** (Área de Cría + prólogo del santuario + camión de mantenimiento,
+  commits hasta `d67fd7b`) ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`)
+  y **probado en lo automatizable** — ver secciones 11/12/13/14. El repo recibe cambios de un compañero
+  de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay
+  commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
+  hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **BUG REAL encontrado y arreglado en PR #19** (sin commitear todavía): `CarryToRefuge.onComplete`
+  (`Assets/Scripts/Prologue/CarryToRefuge.cs`) era un `UnityEvent` **sin inicializar** — al agregarse el
+  componente vía `AddComponent` en código (no desde el Inspector), el campo queda `null`, y
+  `SampleSceneBuilder.BuildPrologueSandbox` hace `carry.onComplete.AddListener(...)` sin chequeo →
+  `NullReferenceException` que **abortaba `SampleSceneBuilder.Build()` a mitad de camino**: todo lo que
+  se construye DESPUÉS de `BuildPrologueSandbox` en la lista (Cría, Construcción, Dispatch,
+  `MigrationDiagnostics_AUTO`, `BakeNavMesh`) **no llegaba a crearse**. Fix: inicializar el campo
+  (`= new UnityEvent()`); apliqué el mismo fix preventivo a `PrologueSequence.onFinished` (mismo patrón,
+  no crasheaba hoy solo porque se invoca con `?.` pero es la misma bomba de tiempo). Re-testeado: el
+  `Build()` completo ahora termina sin excepciones y genera los 3 sandboxes nuevos.
+- **Hallazgo adicional (no arreglado, no bloquea)**: aun con el fix de arriba, el mensaje cruzado de
+  `PlaneMessenger` que `BuildPrologueSandbox` engancha via `carry.onComplete.AddListener(...)` **nunca
+  se dispara en Play** — confirmado con evidencia de log: `onComplete?.Invoke()` corre (se ve el log
+  "Todos los débiles a salvo en la cueva."), pero el `Debug.Log` interno de `PlaneMessenger.Send(...)`
+  jamás aparece. Causa probable: los listeners de un `UnityEvent` agregados con `.AddListener(...)` en
+  código que corre en **Editor/Edit mode** (como esta herramienta de menú, que arma la escena ANTES de
+  que el usuario le dé a Play) son estado en memoria **no serializado** — Unity solo persiste
+  `m_PersistentCalls` (los conectados desde el Inspector); al pasar de Edit mode a Play mode la escena
+  se re-serializa/deserializa y esos listeners "runtime" se pierden en el camino, quedando el
+  `UnityEvent` vacío (pero no null, por eso no hay excepción, solo silencio). No lo arreglé yo —
+  requiere decidir el patrón correcto (p. ej. que `PrologueSequence` u otro `MonoBehaviour` que sí viva
+  en Play mode haga el `AddListener` en su propio `Start()`, en vez de un Editor-script). Reportado para
+  que el compañero lo revise; no bloquea nada más, solo significa que el aviso de "volvé por el
+  YogaPortal" no aparece en este sandbox.
 - **PR #18 (Mecánica/Construcción/Dispatch) compila y los 4 sandboxes nuevos corren sin excepciones**,
   pero el flujo real (abastecer/reparar/construir/forjar) necesita **input manual real** (apuntar con
   la mira + confirmar) — igual limitación que el motor de Virtualización de PR #17. Sin bugs nuevos
@@ -365,6 +389,41 @@ ratón/touch. Evidencia de `Logs/Editor.log` de una corrida en Play:
       teclado/ratón/touch) — no se pudieron ejercitar por automatización. **Pendiente de una pasada de
       juego manual** siguiendo el guion ya escrito arriba (StockingTask en Mecánica/Construcción,
       receta del grifo con herramientas en Dispatch, receta de bronce con mecanografía en la Forja).
+
+## 14. Camión de mantenimiento · Prólogo · Cría (PR #19, mergeada 2026-07-30)
+Sandboxes de `Build Sample Scene Blockout`: `TruckMaintenance_AUTO`, `PrologueSandbox_AUTO`,
+`CriaBeginner_AUTO`. Evidencia de `Logs/Editor.log`:
+- [x] **Compila** tras sincronizar los 7 archivos del PR (`Assets/Scripts/Prologue/` nuevo:
+      `CarryToRefuge`, `CriaCareTarget`, `PlaneMessenger`, `PrologueSequence`, `WeakOne`;
+      + `SampleSceneBuilder.cs`/`PhrasePools.cs`) — 0 errores CS.
+- [x] **BUG REAL encontrado y arreglado**: ver detalle completo en "Estado de sesión" arriba
+      (`CarryToRefuge.onComplete` sin inicializar → `NullReferenceException` que abortaba
+      `SampleSceneBuilder.Build()` a mitad de camino, dejando sin crear Cría/Construcción/Dispatch/
+      diagnóstico/NavMesh). Confirmado resuelto: el `Build()` ahora termina completo (`Blockout listo`)
+      con los 3 sandboxes nuevos presentes.
+- [x] **Prólogo (`PrologueSequence`, `autoDemo=true`) avanza sus 5 beats solo, por tiempo**:
+      `[Prólogo] 1/5` → `2/5` → `3/5` → `4/5` → `5/5` → `[Prólogo] Fin del prólogo → a su primer trabajo
+      (la Cocina).` — guion completo sin intervención, tal como está diseñado para la demo.
+- [x] **`CarryToRefuge`/`WeakOne` (rutina de "llevar a los débiles a salvo")**: ambas instancias
+      funcionan correctamente y de forma independiente — el `Nido_Calido` de la Cría (`needed=1`) se
+      completa con `Cria_Bebe` (`[Cuidado] «Cria_Bebe» a salvo en el refugio (1/1)`), y la
+      `Cueva_Refugio` del prólogo (`needed=2`) se completa con ambos `Debil_0`/`Debil_1`
+      (`(1/2)` → `(2/2)` → `Todos los débiles a salvo en la cueva.`). Sin cruce entre ambas (están lo
+      bastante separadas en el mapa) — los conteos dan exactos.
+- [~] **Aviso cruzado de `PlaneMessenger` no se dispara**: ver "Hallazgo adicional" en Estado de sesión
+      arriba — no es un crash, solo una funcionalidad silenciosamente inerte en este sandbox concreto.
+- [~] **Camión de mantenimiento (`TruckMaintenance_AUTO`)**: se construye sin errores (recetas de
+      cambio de rueda/aceite/agua, `ProductionOrder` con 6/2/1 pasos respectivamente), pero — igual que
+      el resto del motor de Virtualización — el flujo real requiere apuntar+confirmar con input manual.
+      Sin excepciones dejándolo correr sin input.
+- [~] **Cría — abastecer/rutina de cuidado (`CriaBeginner_AUTO`)**: la parte automática (limpiar el
+      nido, `DirtArea`/`Cleaner`) funciona igual que en Cocina/Mecánica/Construcción. El abastecer
+      (`StockingTask`) y la rutina de cuidado en sí (leer estado→calmar→alimentar→asear→arrullar)
+      requieren input manual — pendiente de una pasada jugando. `CriaCareTarget` está enganchado como
+      placeholder (el comentario del propio código: "sin Animal → solo registra") — revisar si ya
+      corresponde conectarlo a un `Animal`/`Anima` real o si sigue siendo intencionalmente un stub.
+- [x] **Regresión**: 0 excepciones nuevas en toda la corrida tras el fix (aparte del hallazgo de
+      `PlaneMessenger` ya descripto, que no es una excepción sino un silencio).
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se

@@ -13,7 +13,7 @@ public class CarryToRefuge : MonoBehaviour
     public float radius = 3f;
     [Min(1)] public int needed = 3;
 
-    public UnityEvent onComplete;
+    public UnityEvent onComplete = new UnityEvent();
 
     int _safe;
     float _nextPoll;

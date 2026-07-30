@@ -24,7 +24,7 @@ public class PrologueSequence : MonoBehaviour
     public bool autoDemo = false;
     [Min(0.5f)] public float autoInterval = 3f;
 
-    public UnityEvent onFinished;
+    public UnityEvent onFinished = new UnityEvent();
 
     int _i = -1;
     float _next;
