@@ -18,18 +18,34 @@ del santuario — más aún porque irá al **área de cría**. Secuencia:
 1. **Exámenes médicos** (tutorial suave de la Enfermería; presentación del cuidado/salud).
 2. Kushal **pregunta y curiosea** → ve la **máquina de control de avatares** (= la `VirtualizationMachine`
    ya existente + `RobotAvatar`/`AvatarController`). Le **dejan probarla**.
-3. **Primera experiencia en el MICROCOSMOS** → cae en el **lado más antiguo de la historia** (la era del
-   **fuego**, el **Señor del Fuego**; ver [`founding-trio-stories.md`](founding-trio-stories.md)). Tutorial
-   del núcleo de virtualización y gancho narrativo.
+3. **Primera experiencia en el MICROCOSMOS → la era ANTERIOR AL FUEGO: las plantas medicinales.** (El fuego
+   es la Cocina; aquí **aún no nace el Señor del Fuego**.) Es el estrato **más antiguo**: el mundo de
+   **La Recolectora** (hilo **C**, ancla), donde Kushal ve cómo **algunos llevan plantas consigo** y **se
+   aferran a una como algo muy valioso** (la que alimenta y cura). Tutorial de virtualización + gancho.
 4. Pasados los exámenes + vacuna → lo llevan a su **primer trabajo** (1ª simulación de trabajo = la Cocina).
 
-→ Esto resuelve el orden: la **Enfermería es el marco/prólogo** (razón narrativa), mientras la **historia
-del microcosmos arranca en el fuego** (que Kushal "prueba" con la máquina). La semilla de la medicina queda
-así desde el minuto 1, sin gatear un área médica completa antes de la Cocina.
+→ Resuelve el orden: la **Enfermería es el marco/prólogo** (razón narrativa), y la **historia del microcosmos
+arranca en el estrato PRE-FUEGO** (recolección + plantas medicinales, La Recolectora) → luego el **fuego**
+(Cocina) → agricultura (Huerto)… La semilla de la medicina queda desde el minuto 1.
+
+## Estrato PRE-FUEGO (el más antiguo del microcosmos) — La Recolectora
+Antes del fuego (Australopitecos / primeros *Homo*, ~2–3 M años), lo que la ciencia deduce y que usamos:
+- **Bipedismo → manos libres para CARGAR** (comida, crías… y **plantas**): explica que "lleven plantas consigo".
+- **Herramientas de piedra (Oldowan, ~2,6–3,3 M años) ANTES del fuego** — cortar, machacar, abrir huesos por
+  el tuétano. (El ancla **El Tallador** también es pre-fuego.)
+- **Dieta cruda** (fruta, hojas, tubérculos, semillas, algo de carroña); mandíbulas/tripa grandes; **aún no
+  se cocina**.
+- **Conocimiento de plantas que alimentan y curan** + **zoofarmacognosia** (aprender remedios observando a los
+  animales). → el mundo de **La Recolectora**.
+- **CUIDADO del enfermo/anciano en el grupo** (hay fósiles de individuos que sobrevivieron heridas/vejez sin
+  dientes → alguien los alimentó): **la compasión y el cuidar son anteriores al fuego** → raíz de la Enfermería.
+- Bandas pequeñas cooperativas, **reparto de comida**, crías de infancia larga; carroñeo antes que caza organizada.
+(Lo simbólico —ocre, entierros, arte— y la trepanación son **posteriores**, no de este estrato.)
 
 ## Ya planteadas
 0. **La Enfermería (prólogo)** — arranque: exámenes + vacuna + 1er uso de la máquina de avatares → Microcosmos
-   (fuego). La Enfermería-área desarrollada (medicina-profesión) se retoma más tarde (§5).
+   **pre-fuego** (plantas medicinales, **La Recolectora**). La Enfermería-área desarrollada (medicina-profesión)
+   se retoma más tarde (§5).
 1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Señor del Fuego**). Elemento
    **C**. Ver [`kitchen-simulation.md`](kitchen-simulation.md).
 2. **El Huerto** — Neolítico (agricultura) · Creciente Fértil / primera aldea · hilo C (**La Sembradora**).

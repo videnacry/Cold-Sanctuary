@@ -169,6 +169,18 @@ public static class PhrasePools
         Historico("El Tallador", ElementalTone.Tierra,         // el giro: el muro une, pero también separa
             new[] { "El muro nos guarece a todos.", "Construir es cuidar.", "Dentro cabemos los que somos." },
             new[] { "El muro que abriga también divide.", "Tras la cerca nace lo 'mío'.", "Levanté la primera frontera." }),
+
+        // ── La Recolectora (hilo C, ancla; era PRE-FUEGO: plantas que alimentan y curan; Agua/Tierra) ──────
+        //    Raíz de la Enfermería/medicina; en el Neolítico se vuelve La Sembradora. docs/area-progression §Pre-fuego
+        Historico("La Recolectora", ElementalTone.Agua,        // conocer las plantas que alimentan y curan
+            new[] { "Sé qué planta alimenta y cuál cura.", "La tierra guarda remedios.", "Llevo conmigo la que me salva." },
+            new[] { "Confundí una planta y enfermé.", "El bosque también esconde venenos.", "Sin saber, cada hoja es un riesgo." }),
+        Historico("La Recolectora", ElementalTone.Agua,        // aprender de los animales (zoofarmacognosia)
+            new[] { "Vi al enfermo comer una hoja y sanar.", "Los animales me enseñan sus remedios.", "Observo y aprendo del que sufre." },
+            new[] { "No siempre entiendo lo que veo.", "A veces la cura llega tarde.", "La naturaleza no da manual." }),
+        Historico("La Recolectora", ElementalTone.Agua,        // cuidar al que cae (raíz de la Enfermería/compasión)
+            new[] { "Cuido al herido hasta que sana.", "Nadie del grupo queda sin ayuda.", "Sanar es acompañar." },
+            new[] { "A veces no basta con cuidar.", "Pierdo a quien no pude salvar.", "Cargo el dolor de los que se van." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.
