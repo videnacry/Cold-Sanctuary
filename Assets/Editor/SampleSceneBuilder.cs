@@ -867,6 +867,7 @@ public static class SampleSceneBuilder
         cub.transform.position = new Vector3(-17f, 1f, 22f); cub.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         cub.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cria_Bebe_MAT", new Color(0.85f, 0.80f, 0.65f));
         cub.AddComponent<WeakOne>();
+        cub.AddComponent<CriaCareTarget>();   // engancha la rutina a drives reales (aquí placeholder: sin Animal → solo registra)
         cub.AddComponent<AiBrain>().selfRelevance = 1f;
         FollowBrain cfb = cub.AddComponent<FollowBrain>(); cfb.target = nest.transform; cfb.relevance = 2f; cfb.stopDistance = 1.5f;
         cub.AddComponent<AnimaController>();

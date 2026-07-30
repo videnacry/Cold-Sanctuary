@@ -66,7 +66,7 @@ este estrato: el arte va en el hilo **D · La Mano de Lascaux**, Paleolítico Su
 ## Ya planteadas
 0. **La Enfermería (prólogo)** — arranque: exámenes + vacuna + 1er uso de la máquina de avatares → Microcosmos
    **pre-fuego** (plantas medicinales, **La Recolectora**). La Enfermería-área desarrollada (medicina-profesión)
-   se retoma más tarde (§5).
+   se retoma más tarde (§6).
 1. **La Cocina** — Paleolítico (era del fuego) · FuelLab/Cocina · hilo A (**Señor del Fuego**). Elemento
    **C**. Ver [`kitchen-simulation.md`](kitchen-simulation.md).
 2. **El Huerto** — Neolítico (agricultura) · Creciente Fértil / primera aldea · hilo C (**La Sembradora**).
@@ -77,7 +77,7 @@ este estrato: el arte va en el hilo **D · La Mano de Lascaux**, Paleolítico Su
 > historias entrelazadas y las misiones definidas están en
 > [`founding-trio-stories.md`](founding-trio-stories.md). *(El Ötzi histórico va en la Forja, no aquí.)*
 
-## El área de CRÍA (recomendación 2026-07-30) — va ANTES que la Mecánica
+## El área de CRÍA — **área 3, tras el Huerto** (confirmado 2026-07-30)
 La **cría** (cuidar/criar animales) es el **corazón del santuario** — el jugador viene **para eso** (el
 prólogo lleva ahí). Cronología de la **domesticación** (para fijar su lugar):
 - **Perro** = **Paleolítico** (~15–40 k años), **antes de la agricultura** → el **primer compañero animal**.
@@ -86,16 +86,17 @@ prólogo lleva ahí). Cronología de la **domesticación** (para fijar su lugar)
 - Ambos **anteriores** a los **metales** (~4 k a.C.) y a la **medicina profesional** (~2,6 k a.C.).
 → **La cría va antes que Construcción/Mecánica.** Recomendado: el **bond/cuidado** desde pronto (perro,
 Paleolítico; enlaza con el prólogo y `CarryToRefuge`/`WeakOne`), y la **cría/ganadería** como área ~**Neolítico**
-(con el Huerto). **Reutiliza sistemas ya existentes** (`Animal`/`LifeStage`/`PostNatal`/`Family`). *(Posición
-exacta a confirmar; probablemente **área 3**, empujando Construcción→4, Mecánica→5, Enfermería→6, Yoga→7.)*
+(con el Huerto). **Reutiliza sistemas ya existentes** (`Animal`/`LifeStage`/`PostNatal`/`Family`).
+**CONFIRMADO: la cría es el área 3** (tras el Huerto) → Construcción=4, Mecánica=5, Enfermería=6, Yoga=7.
+Diseño y virtualización en [`cria-simulation.md`](cria-simulation.md).
 
 ## Las siguientes áreas
 
-> **Reorden 2026-07-30:** la **Construcción va ANTES que la Mecánica** — primero se aprende a **levantar
-> refugio** (chozas/casas, Neolítico) y solo después a **trabajar metales** (Edad de los Metales). Orden:
-> 3) **Construcción** → 4) **Mecánica** → 5) Enfermería → 6) Yoga.
+> **Orden (2026-07-30):** prólogo **Enfermería** → 1) **Cocina** → 2) **Huerto** → **3) Cría** → **4)
+> Construcción** → **5) Mecánica** → **6) Enfermería** (profesión) → **7) Yoga**. Racional: cría y refugio
+> (Neolítico) **antes** que los metales; la medicina profesional después de los metales; el Yoga cierra.
 
-### 3. La Construcción (Meso) / Levantar refugio (Micro) — Neolítico (chozas → casas)
+### 4. La Construcción (Meso) / Levantar refugio (Micro) — Neolítico (chozas → casas)
 - **Región/época:** Neolítico — la aldea del Huerto necesita **techo**: chozas de adobe, madera, paja;
   cerámica (El Alfarero) para materiales. Antes que el metal.
 - **Hilo/foco:** **B · Barro y Metal** (ancla *El Tallador* → *El Alfarero* → *Maestro de catedrales* →
@@ -109,7 +110,7 @@ exacta a confirmar; probablemente **área 3**, empujando Construcción→4, Mec�
 - **Giro:** el refugio une a la tribu, pero **el muro también separa** (propiedad, fronteras) — enlaza con
   el excedente del Huerto y con "detener conflictos".
 
-### 4. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
+### 5. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
 > **Reencuadre 2026-07-30** (ver [`forge-simulation.md`](forge-simulation.md)): la 3ª área del **Mesocosmos**
 > es la **MECÁNICA** (reparar/mejorar máquinas de todas las áreas + vehículos/drones/avatares/teleportadores);
 > la **forja de bronce** literal se mueve al **Microcosmos** (capa histórica de los metales). Lo de abajo
@@ -136,7 +137,7 @@ exacta a confirmar; probablemente **área 3**, empujando Construcción→4, Mec�
 - **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
   **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
-### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+### 6. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
 > **La Enfermería también es el PRÓLOGO del juego** (ver "Apertura del juego" arriba): el primer contacto del
 > jugador (exámenes/vacuna del recién llegado) y donde prueba por primera vez la máquina de avatares. Aquí,
 > como área desarrollada, se retoma la medicina-profesión (Imhotep/Hipócrates…).
@@ -174,7 +175,7 @@ exacta a confirmar; probablemente **área 3**, empujando Construcción→4, Mec�
 - **Encaja con:** refuerza el **tema de no-violencia/cuidado** del santuario; recibe del Huerto (plantas)
   y de la Cocina (nutrición → salud); atiende a heridos de los conflictos (área 3).
 
-### 6. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
+### 7. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
 - **Región:** rota (India para Buda, Grecia para Sócrates…).
 - **Hilo/foco:** **F · Aliento y Mente** (ancla *El Chamán* → *El Soñador* → Buda/Sócrates/Spinoza).
   Arquetipo **contemplativo** (canalizar/meditar).

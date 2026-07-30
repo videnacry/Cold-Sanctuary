@@ -231,11 +231,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       primer trabajo (Cocina). **Scaffold hecho** (`PrologueSequence`, `PlaneMessenger` mensajes del Mesocosmos,
       `CarryToRefuge`; sandbox `PrologueSandbox_AUTO`). **Falta**: montar la ESCENA real en Unity.
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [~] **CRÍA** (corazón del santuario; antes de Mecánica — domesticación pre-metales) — diseñada
-      ([`cria-simulation.md`](cria-simulation.md)) + **scaffold** `CriaBeginner_AUTO` (limpiar→abastecer→
-      rutina de cuidado leer-estado/calmar/alimentar/asear/arrullar→llevar al nido). Reusa fauna existente +
-      `CarryToRefuge`/`WeakOne`. **La Recolectora** (raíz pre-fuego, prólogo) con cadena de misión
-      (founding-trio §7.4). Posición exacta en el roadmap **a confirmar** (¿antes o después del Huerto?).
+- [~] **3. CRÍA** (corazón del santuario; **confirmada área 3, tras el Huerto** → Construcción=4, Mecánica=5,
+      Enfermería=6, Yoga=7) — [`cria-simulation.md`](cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
+      abastecer→rutina→nido). **Enganche a drives REALES**: `CriaCareTarget` toca `Animal.stress`/`hungry` y
+      `GrowBond` (que ya factoriza trauma); el bond **se gana** (estrés alto → rechaza). **La Recolectora**
+      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Falta**: cablearlo a crías reales
+      (`Animal` del `FamilyGenerator`) y el gateo de actividades por bond.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
       **dispatch/tickets**. **Hecho**: arranque `ConstructionBeginner_AUTO` (limpiar→abastecer→cimentar/muro/
