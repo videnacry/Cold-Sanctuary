@@ -21,8 +21,17 @@ del santuario — más aún porque irá al **área de cría**. Secuencia:
 3. **Primera experiencia en el MICROCOSMOS → la era ANTERIOR AL FUEGO: las plantas medicinales.** (El fuego
    es la Cocina; aquí **aún no nace el Señor del Fuego**.) Es el estrato **más antiguo**: el mundo de
    **La Recolectora** (hilo **C**, ancla), donde Kushal ve cómo **algunos llevan plantas consigo** y **se
-   aferran a una como algo muy valioso** (la que alimenta y cura). Tutorial de virtualización + gancho.
+   aferran a una como algo muy valioso** (la que alimenta y cura). La **comunicación es corporal/gestual**
+   (aún sin lenguaje desarrollado): se **mima/actúa** lo que se vio o se siente. Kushal entra a **apoyar y
+   animar a los débiles** → **antesala de las misiones de cuidado del área de CRÍA**. La **cueva** cabe como
+   **refugio**, pero **todavía SIN pinturas** (ver nota de arte abajo). Tutorial de virtualización + gancho.
 4. Pasados los exámenes + vacuna → lo llevan a su **primer trabajo** (1ª simulación de trabajo = la Cocina).
+
+> **El arte rupestre NO es de aquí (ciencia).** El fuego (~1 M–400 k años) precede al **arte figurativo**
+> (~45 k años, Paleolítico Superior) por cientos de miles de años. **No se dibujaba con sangre**: el rojo era
+> **ocre** (óxido de hierro), el negro **carbón** (¡requiere fuego!) o manganeso. → El **arte de cueva + la
+> misión de conseguir pigmento (OCRE, no sangre)** pertenecen a un **beat POSTERIOR, post-fuego**: el hilo
+> **D · Trazo y Símbolo**, ancla **La Mano de Lascaux**. En el prólogo pre-fuego, sí: **gesto/actuación**, no pintura.
 
 → Resuelve el orden: la **Enfermería es el marco/prólogo** (razón narrativa), y la **historia del microcosmos
 arranca en el estrato PRE-FUEGO** (recolección + plantas medicinales, La Recolectora) → luego el **fuego**
@@ -40,7 +49,10 @@ Antes del fuego (Australopitecos / primeros *Homo*, ~2–3 M años), lo que la c
 - **CUIDADO del enfermo/anciano en el grupo** (hay fósiles de individuos que sobrevivieron heridas/vejez sin
   dientes → alguien los alimentó): **la compasión y el cuidar son anteriores al fuego** → raíz de la Enfermería.
 - Bandas pequeñas cooperativas, **reparto de comida**, crías de infancia larga; carroñeo antes que caza organizada.
-(Lo simbólico —ocre, entierros, arte— y la trepanación son **posteriores**, no de este estrato.)
+- **Comunicación pre-lenguaje: corporal/gestual** — mímica, actuar lo visto/sentido, sonidos y gestos (aún
+  sin lenguaje articulado ni escritura ni **arte**). → encaja con "las interacciones son más corporales".
+(Lo simbólico —**ocre, arte rupestre, entierros**— y la trepanación son **posteriores** (post-fuego), no de
+este estrato: el arte va en el hilo **D · La Mano de Lascaux**, Paleolítico Superior.)
 
 ## Ya planteadas
 0. **La Enfermería (prólogo)** — arranque: exámenes + vacuna + 1er uso de la máquina de avatares → Microcosmos
