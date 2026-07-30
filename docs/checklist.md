@@ -232,11 +232,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       área, misiones-historia cableadas, históricos posteriores (Maestro de catedrales/Brunelleschi).
 - [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
       es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
-      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
-      `StockingTask`) → **reparación simple** (receta con diagnóstico tecleado). Tracción del Huerto =
-      **bueyes** (decidido). La **forja** de bronce → **Microcosmos** (`ForgeVirtualization_AUTO`; El Primer
-      Herrero/Sargón autorados). **Falta**: máquinas por área, vehículos (bueyes/globos/submarinos),
-      teleportadores, decisión arado/espada, misiones-historia.
+      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** → **reparación simple**.
+      **1ª reparación real de máquina = CAMBIO DE RUEDA del camión** (`TruckMaintenance_AUTO`: aflojar→gato→
+      quitar→poner→apretar→bajar; + aceite + agua). El **camión** lleva las cajas de suministros a las áreas.
+      Tracción del Huerto = **bueyes** (decidido). La **forja** de bronce → **Microcosmos**
+      (`ForgeVirtualization_AUTO`). **Frontera Construcción/Mecánica** definida (forge §1c). **Falta**:
+      máquinas por área, más vehículos (globos/submarinos), teleportadores, decisión arado/espada, misiones-historia.
 - [ ] **Onboarding genérico por área**: limpiar → **abastecer** (`StockingTask`, cajas→despensas) → producir.
       Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
 - [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).

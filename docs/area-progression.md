@@ -83,6 +83,14 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 > → **Desdoblar:** **primeros auxilios/herbolaria = capa TEMPRANA** (junto al Huerto, region-agnóstica, con
 > el gancho de los animales); **Enfermería-profesión** rota región (Egipto/Imhotep primero), ~era de los
 > metales. Los metales **no** van antes que la medicina *básica*, solo antes que la *profesional*.
+>
+> **¿Antes que Cocina? (2026-07-30)** El *instinto* de sanar (comer una planta para sentirse mejor) es lo
+> **más primal de todo** — precede al fuego y hasta a los humanos (animales). Pero conviene separar:
+> ese **instinto = "capa 0"** tejida en el **cuidado de los animales** (está presente desde el primer minuto
+> del santuario, observando a los seres que cuidas); la **Cocina** es la primera *simulación-tutorial de
+> trabajo*. → Recomendación: **la semilla de la medicina está desde el inicio (vía cuidado/observación de
+> animales)**, no como "área Enfermería gateada antes de la Cocina"; la Cocina sigue siendo el tutorial de
+> mecánicas, y la Enfermería-profesión se desarrolla después. *(Decisión final tuya.)*
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.
 - **Hilo/foco:** **C · Semilla y Vida** (continuación de La Recolectora: las plantas que **alimentan Y
   curan**) tocando **F · Aliento y Mente**. Arquetipo **Curar/atender**.

@@ -83,6 +83,7 @@ public static class SampleSceneBuilder
         BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
         BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
         BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
+        BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -733,6 +734,68 @@ public static class SampleSceneBuilder
                   "«grifo que gotea» de la Cocina. Sin herramientas la reparación se rechaza; toma la llave " +
                   "en el banco, ve al grifo (lejos), arréglalo (cerrar→desmontar→cambiar junta→montar→probar) " +
                   "y vuelve a devolver las herramientas. Logs [Servicio]/[Herramientas]/[Producción]/[Ticket].");
+    }
+
+    /// <summary>
+    /// 1ª simulación de MECÁNICA (docs/forge-simulation.md §5): el **camión** (que lleva las cajas de
+    /// suministros a las áreas — las mismas de `StockingTask`) viene al taller a mantenimiento. La primera
+    /// reparación es el **CAMBIO DE RUEDA** (procedimiento real: aflojar→gato→quitar→poner→apretar→bajar).
+    /// Extras: cambio de aceite (2 pasos) y agua (1 paso). Reusa el motor de virtualización.
+    /// </summary>
+    static void BuildTruckMaintenance(Transform parent)
+    {
+        GameObject group = new GameObject("TruckMaintenance_AUTO");
+        group.transform.SetParent(parent);
+
+        GameObject truck = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        truck.name = "Camion"; truck.transform.SetParent(group.transform);
+        truck.transform.position = new Vector3(50f, 1f, 6f);
+        truck.transform.localScale = new Vector3(2.5f, 1.5f, 4f);
+        truck.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Camion_MAT", new Color(0.35f, 0.45f, 0.55f));
+
+        GameObject binGO = new GameObject("Camion_Mantenido");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(53f, 1f, 6f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "mantenimiento"; bin.capacity = 10;
+
+        // 1ª SIMULACIÓN: CAMBIO DE RUEDA (procedimiento real, 6 pasos).
+        MakeStationPart(group.transform, "Rueda", "Aflojar",  "aflojas los tornillos",            new Vector3(47f, 1f, 4f),  new Color(0.50f, 0.50f, 0.55f));
+        MakeStationPart(group.transform, "Rueda", "Levantar", "levantas con el gato",             new Vector3(47f, 1f, 5f),  new Color(0.60f, 0.60f, 0.40f));
+        MakeStationPart(group.transform, "Rueda", "Quitar",   "quitas tornillos y rueda",         new Vector3(47f, 1f, 6f),  new Color(0.40f, 0.40f, 0.40f));
+        MakeStationPart(group.transform, "Rueda", "Poner",    "pones la rueda nueva",             new Vector3(47f, 1f, 7f),  new Color(0.28f, 0.28f, 0.28f));
+        MakeStationPart(group.transform, "Rueda", "Apretar",  "aprietas los tornillos a mano",    new Vector3(47f, 1f, 8f),  new Color(0.50f, 0.50f, 0.55f));
+        MakeStationPart(group.transform, "Rueda", "Bajar",    "bajas el gato y aprietas en cruz", new Vector3(47f, 1f, 9f),  new Color(0.50f, 0.70f, 0.50f));
+        GameObject wheelGO = new GameObject("Receta_CambioRueda");
+        wheelGO.transform.SetParent(group.transform);
+        ProductionOrder wheel = wheelGO.AddComponent<ProductionOrder>();
+        wheel.productName = "rueda cambiada"; wheel.output = bin; wheel.quota = 1;
+        wheel.stepStation = new[] { "Rueda", "Rueda", "Rueda", "Rueda", "Rueda", "Rueda" };
+        wheel.stepAction  = new[] { "Aflojar", "Levantar", "Quitar", "Poner", "Apretar", "Bajar" };
+        wheel.stepLabel   = new[] { "aflojas los tornillos", "levantas con el gato", "quitas la rueda", "pones la nueva", "aprietas a mano", "bajas y aprietas en cruz" };
+
+        // Extras del mantenimiento: aceite (2 pasos) y agua (1 paso).
+        MakeStationPart(group.transform, "Aceite", "Vaciar",   "vacías el aceite viejo", new Vector3(53f, 1f, 4f), new Color(0.30f, 0.25f, 0.15f));
+        MakeStationPart(group.transform, "Aceite", "Rellenar", "rellenas aceite limpio", new Vector3(53f, 1f, 5f), new Color(0.60f, 0.50f, 0.20f));
+        GameObject oilGO = new GameObject("Receta_CambioAceite");
+        oilGO.transform.SetParent(group.transform);
+        ProductionOrder oil = oilGO.AddComponent<ProductionOrder>();
+        oil.productName = "aceite cambiado"; oil.output = bin; oil.quota = 1;
+        oil.stepStation = new[] { "Aceite", "Aceite" };
+        oil.stepAction  = new[] { "Vaciar", "Rellenar" };
+        oil.stepLabel   = new[] { "vacías el viejo", "rellenas limpio" };
+
+        MakeStationPart(group.transform, "Agua", "Rellenar", "rellenas el agua del radiador", new Vector3(53f, 1f, 7f), new Color(0.50f, 0.75f, 0.90f));
+        GameObject waterGO = new GameObject("Receta_Agua");
+        waterGO.transform.SetParent(group.transform);
+        ProductionOrder water = waterGO.AddComponent<ProductionOrder>();
+        water.productName = "agua rellenada"; water.output = bin; water.quota = 1;
+        water.stepStation = new[] { "Agua" };
+        water.stepAction  = new[] { "Rellenar" };
+        water.stepLabel   = new[] { "rellenas el radiador" };
+
+        Debug.Log("[SampleSceneBuilder] Truck maintenance (docs forge §5): el «Camion» (lleva las cajas a las " +
+                  "áreas) viene al taller. 1ª simulación de Mecánica: CAMBIO DE RUEDA (aflojar→gato→quitar→poner→" +
+                  "apretar→bajar). Extras: aceite y agua. Logs [Producción].");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
