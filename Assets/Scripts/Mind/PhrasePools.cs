@@ -157,6 +157,18 @@ public static class PhrasePools
         Historico("Sargón de Acad", ElementalTone.Fuego,       // el nodo oscuro: dominio confundido con protección
             new[] { "Protejo a los míos con mano firme.", "Sin un fuerte, todo se desmorona.", "Doy paz, aunque sea a la fuerza." },
             new[] { "Someto para gobernar.", "Confundo el miedo con el respeto.", "Nadie recuerda a quién pisé para subir." }),
+
+        // ── El Tallador (hilo B · Barro y Metal; ancla: primer útil de piedra → levantar refugio; Tierra) ──
+        //    Base de la historia del área de CONSTRUCCIÓN. docs/construction-simulation.md
+        Historico("El Tallador", ElementalTone.Tierra,         // tallar la piedra: de un canto, una herramienta
+            new[] { "Doy forma a la piedra con paciencia.", "De un canto saco una herramienta.", "Mis manos moldean lo duro." },
+            new[] { "La piedra se astilla mal.", "Golpeo y golpeo sin lograr filo.", "Lo duro no cede a la prisa." }),
+        Historico("El Tallador", ElementalTone.Tierra,         // levantar el refugio: piedra sobre piedra, un hogar
+            new[] { "Levanto muros contra el viento.", "Doy techo a los míos.", "Piedra sobre piedra, un hogar." },
+            new[] { "El muro se me viene abajo.", "El techo no aguanta la lluvia.", "Cargo piedras hasta el agotamiento." }),
+        Historico("El Tallador", ElementalTone.Tierra,         // el giro: el muro une, pero también separa
+            new[] { "El muro nos guarece a todos.", "Construir es cuidar.", "Dentro cabemos los que somos." },
+            new[] { "El muro que abriga también divide.", "Tras la cerca nace lo 'mío'.", "Levanté la primera frontera." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.

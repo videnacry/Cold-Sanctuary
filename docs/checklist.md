@@ -233,9 +233,10 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
-      — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras**
-      (tuberías/electricidad/puertas/paredes/ventanas) por **dispatch/tickets**. **Diseñada**; por construir:
-      dispatch, recetas de obra, arranque `ConstructionBeginner`, históricos (Maestro de catedrales/Brunelleschi).
+      — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
+      **dispatch/tickets**. **Hecho**: arranque `ConstructionBeginner_AUTO` (limpiar→abastecer→cimentar/muro/
+      techar), **El Tallador** autorado + base de historia (§5). **Falta**: recetas de estructura reales por
+      área, misiones-historia cableadas, históricos posteriores (Maestro de catedrales/Brunelleschi).
 - [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
       es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
       **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
@@ -247,9 +248,10 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
 - [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
 - [ ] 6. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
-- [ ] **Reparación por DISPATCH (tickets)** — Mecánica y Construcción **te envían a otra área** a reparar:
-      llega ticket → tomas herramientas → vas al área → reparas (receta) → devuelves herramientas
-      (`forge-simulation.md` §5). MVP: `RepairTicket` + `ServiceHub` + gate de herramientas. **Por construir.**
+- [x] **Reparación por DISPATCH (tickets)** — **MVP hecho** (`DispatchDemo_AUTO`): `ServiceHub` lista tickets
+      + banco de herramientas (`Toolbox` tomar/devolver); `RepairTicket` (nevera de la Cocina); la receta
+      `requiresTools` → sin herramientas se rechaza. Bucle: ticket → tomar → ir al área → reparar → devolver.
+      **Falta**: UI de tablero real, tickets que aparecen dinámicamente, averiar máquinas reales por área.
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
       equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
       pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.

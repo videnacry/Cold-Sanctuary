@@ -20,6 +20,8 @@ public class ProductionOrder : VirtualTask
     [Tooltip("Contenedor que se rellena al completar la receta (opcional).")]
     public FoodContainer output;
     [Min(1)] public int quota = 3;   // cuántos productos pide la misión (sustento)
+    [Tooltip("Si es una reparación por dispatch: requiere HERRAMIENTAS tomadas (Toolbox) para poder hacerse.")]
+    public bool requiresTools = false;
 
     int _idx, _produced;
     bool _done;
@@ -32,6 +34,11 @@ public class ProductionOrder : VirtualTask
     {
         if (_done || stepStation == null || stepStation.Length == 0) return;
         if (stepAction == null || stepAction.Length != stepStation.Length) return;   // receta mal formada
+        if (requiresTools && !Toolbox.HasTools)
+        {
+            Debug.Log($"[Producción] «{productName}»: necesitas HERRAMIENTAS — tómalas en el taller antes de reparar.");
+            return;
+        }
         if (_idx >= stepStation.Length) _idx = 0;
 
         if (stationId == stepStation[_idx] && actionId == stepAction[_idx])

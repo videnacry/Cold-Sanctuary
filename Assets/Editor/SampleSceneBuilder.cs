@@ -83,6 +83,8 @@ public static class SampleSceneBuilder
         BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
         BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
         BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
+        BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
+        BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         BakeNavMesh();
 
@@ -626,6 +628,106 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Mechanics beginner (Meso, docs forge §1): 1) LIMPIAR (DirtArea) → " +
                   "2) ABASTECER (cajas→estantes, StockingTask: aprender dónde va cada cosa) → 3) REPARAR " +
                   "(receta con diagnóstico tecleado). Logs [Cocina]/[Abastecer]/[Producción].");
+    }
+
+    /// <summary>
+    /// Arranque de la CONSTRUCCIÓN (Meso, docs/construction-simulation.md §4): limpiar el solar → abastecer
+    /// materiales (cajas→almacén) → construir simple (cimentar[typing]→muro→techar→probar). Como todas las
+    /// áreas, empieza por lo simple. Reusa el motor de virtualización.
+    /// </summary>
+    static void BuildConstructionBeginner(Transform parent)
+    {
+        GameObject group = new GameObject("ConstructionBeginner_AUTO");
+        group.transform.SetParent(parent);
+
+        // 1) LIMPIAR el solar (escombros).
+        GameObject dirtGO = new GameObject("Solar_Escombros");
+        dirtGO.transform.SetParent(group.transform);
+        dirtGO.transform.position = new Vector3(60f, 0f, 10f);
+        DirtArea dirt = dirtGO.AddComponent<DirtArea>();
+        dirt.areaSize = new Vector2(6f, 6f); dirt.spawnInterval = 2f; dirt.maxSpots = 6; dirt.missionThreshold = 4;
+        GameObject sweeper = MakeKitchenPerson(group.transform, "Peon_Limpia", new Vector3(60f, 1f, 10f), new Color(0.55f, 0.50f, 0.45f));
+        Cleaner sw = sweeper.AddComponent<Cleaner>(); sw.auto = true; sw.autoInterval = 2.5f; sw.reach = 10f;
+
+        // 2) ABASTECER materiales (cajas → almacén).
+        MakeStationPart(group.transform, "Caja", "Ladrillo", "coges ladrillos", new Vector3(56f,   1f, 20f), new Color(0.70f, 0.35f, 0.25f));
+        MakeStationPart(group.transform, "Caja", "Madera",   "coges madera",    new Vector3(57.2f, 1f, 20f), new Color(0.55f, 0.40f, 0.20f));
+        MakeStationPart(group.transform, "Caja", "Teja",     "coges tejas",     new Vector3(58.4f, 1f, 20f), new Color(0.60f, 0.45f, 0.45f));
+        MakeStationPart(group.transform, "Almacen", "Ladrillo", "estante: ladrillos", new Vector3(56f,   1f, 12f), new Color(0.70f, 0.35f, 0.25f));
+        MakeStationPart(group.transform, "Almacen", "Madera",   "estante: madera",    new Vector3(57.2f, 1f, 12f), new Color(0.55f, 0.40f, 0.20f));
+        MakeStationPart(group.transform, "Almacen", "Teja",     "estante: tejas",     new Vector3(58.4f, 1f, 12f), new Color(0.60f, 0.45f, 0.45f));
+        GameObject stockGO = new GameObject("Tarea_Abastecer_Obra");
+        stockGO.transform.SetParent(group.transform);
+        StockingTask stock = stockGO.AddComponent<StockingTask>();
+        stock.pickStation = "Caja"; stock.slotStation = "Almacen"; stock.total = 3; stock.areaLabel = "la obra";
+
+        // 3) CONSTRUIR simple (cimentar tecleando → muro → techar → probar).
+        GameObject binGO = new GameObject("Refugios_Levantados");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(64f, 1f, 15f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "refugio"; bin.capacity = 10;
+        StationPart cimentar = MakeStationPart(group.transform, "Obra", "Cimentar", "cimentas (teclea)", new Vector3(62f, 1f, 14f), new Color(0.50f, 0.45f, 0.40f));
+        TypingChallenge lay = cimentar.gameObject.AddComponent<TypingChallenge>();
+        lay.baseTime = 8f; lay.reductionPerWord = 1.3f; lay.language = "en";
+        lay.words = new[] { "build", "brick", "wall", "wood", "roof" };
+        cimentar.timed = lay;
+        MakeStationPart(group.transform, "Obra", "Muro",   "levantas el muro", new Vector3(62f, 1f, 15f), new Color(0.70f, 0.35f, 0.25f));
+        MakeStationPart(group.transform, "Obra", "Techar", "pones el techo",   new Vector3(62f, 1f, 16f), new Color(0.60f, 0.45f, 0.45f));
+        MakeStationPart(group.transform, "Obra", "Probar", "compruebas que aguanta", new Vector3(62f, 1f, 17f), new Color(0.50f, 0.70f, 0.50f));
+        GameObject orderGO = new GameObject("Receta_Construccion");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "refugio"; order.output = bin; order.quota = 2;
+        order.stepStation = new[] { "Obra", "Obra", "Obra", "Obra" };
+        order.stepAction  = new[] { "Cimentar", "Muro", "Techar", "Probar" };
+        order.stepLabel   = new[] { "cimentas", "levantas el muro", "pones el techo", "compruebas" };
+
+        Debug.Log("[SampleSceneBuilder] Construction beginner (Meso, docs construction §4): limpiar → " +
+                  "abastecer (cajas→almacén) → construir (cimentar tecleando→muro→techar→probar). Logs [Abastecer]/[Producción].");
+    }
+
+    /// <summary>
+    /// Demo del bucle de REPARACIÓN POR DISPATCH (docs/forge-simulation.md §5): un `ServiceHub` (taller) con
+    /// banco de herramientas + un `RepairTicket` (nevera averiada en la Cocina, lejos) cuya receta
+    /// `requiresTools`. En Play: sin herramientas la reparación se rechaza; toma herramientas en el hub, ve
+    /// a la nevera, repárala (ticket se cierra), vuelve y devuélvelas.
+    /// </summary>
+    static void BuildDispatchDemo(Transform parent)
+    {
+        GameObject group = new GameObject("DispatchDemo_AUTO");
+        group.transform.SetParent(parent);
+
+        // Taller: banco de herramientas + tablero.
+        GameObject hubGO = new GameObject("Taller_Servicio");
+        hubGO.transform.SetParent(group.transform);
+        ServiceHub hub = hubGO.AddComponent<ServiceHub>();
+        hub.hubName = "Mecánica"; hub.toolStation = "Herramientas";
+        MakeStationPart(group.transform, "Herramientas", "Tomar",    "tomas las herramientas",   new Vector3(50f, 1f, 18f), new Color(0.85f, 0.70f, 0.25f));
+        MakeStationPart(group.transform, "Herramientas", "Devolver", "devuelves las herramientas", new Vector3(51.5f, 1f, 18f), new Color(0.55f, 0.55f, 0.55f));
+
+        // Avería LEJOS (en la Cocina): la nevera. Su receta requiere herramientas.
+        GameObject binGO = new GameObject("Averias_Resueltas");
+        binGO.transform.SetParent(group.transform);
+        binGO.transform.position = new Vector3(12f, 1f, 22f);
+        FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "avería resuelta"; bin.capacity = 5;
+        MakeStationPart(group.transform, "Nevera", "AbrirTapa",       "abres la tapa",          new Vector3(11f, 1f, 22f), new Color(0.70f, 0.85f, 0.95f));
+        MakeStationPart(group.transform, "Nevera", "CambiarPieza",    "cambias el compresor",   new Vector3(12f, 1f, 22f), new Color(0.55f, 0.55f, 0.60f));
+        MakeStationPart(group.transform, "Nevera", "Probar",          "pruebas que enfría",     new Vector3(13f, 1f, 22f), new Color(0.50f, 0.70f, 0.50f));
+        GameObject orderGO = new GameObject("Receta_RepararNevera");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "nevera reparada"; order.output = bin; order.quota = 1; order.requiresTools = true;
+        order.stepStation = new[] { "Nevera", "Nevera", "Nevera" };
+        order.stepAction  = new[] { "AbrirTapa", "CambiarPieza", "Probar" };
+        order.stepLabel   = new[] { "abres la tapa", "cambias el compresor", "pruebas que enfría" };
+        GameObject ticketGO = new GameObject("Ticket_NeveraCocina");
+        ticketGO.transform.SetParent(group.transform);
+        RepairTicket ticket = ticketGO.AddComponent<RepairTicket>();
+        ticket.area = "Cocina"; ticket.what = "nevera"; ticket.repair = order;
+
+        Debug.Log("[SampleSceneBuilder] Dispatch demo (docs forge §5): «Taller_Servicio» lista el ticket " +
+                  "(nevera de la Cocina). Sin herramientas la reparación se rechaza; toma herramientas en el " +
+                  "banco, ve a la nevera (lejos), repárala (ticket cerrado) y vuelve a devolverlas. Logs [Servicio]/[Herramientas]/[Ticket].");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)
