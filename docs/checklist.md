@@ -5,6 +5,16 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 ## Decisiones abiertas (rápidas)
+- [~] **Microcosmos INSECTO — 1ª misión HECHA (scaffold)**: `MicrocosmosSandbox_AUTO` (hormiguero
+      `CarryToRefuge` + pulgón `HoneydewProducer`/`AphidGuide` = mascota-guía + familia caída `WeakOne` +
+      hormigas que lo cuidan). **Pipeline:** cada área **humana primero (Meso) → transformar a insecto (Micro)**
+      (microcosmos-insects §11). **Falta:** que el jugador (avatar-insecto) guíe/cargue; colonia real
+      (reina/castas); feromonas como mecánica; dispatch meso→micro. Ver [`microcosmos-insects.md`](microcosmos-insects.md).
+- [ ] **¿Microcosmos = mundo de INSECTOS?** (propuesta en [`microcosmos-insects.md`](microcosmos-insects.md))
+      Recomendado: **sí**, con **hormigas** como civilización primaria (ciudades/castas/reina), la **cría =
+      mirmecofilia** (hormigas ordeñan pulgones → el pulgón es la "mascota/ganado"), y **abeja/avispa/termita**
+      como otras ciudades. Entrada de Kushal: **dispatch meso→micro** (transportar insectos caídos a su hogar)
+      + **mascota-guía** que no deja a su familia abandonada (reusa `CarryToRefuge`/`WeakOne`). DECIDIDO opción B (históricos como insectos; violencia = "volverse salvaje", sin trauma humano). · Nota: domesticación es **post-fuego**.
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
@@ -235,7 +245,9 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       Enfermería=6, Yoga=7) — [`cria-simulation.md`](cria-simulation.md) + `CriaBeginner_AUTO` (limpiar→
       abastecer→rutina→nido). **Enganche a drives REALES**: `CriaCareTarget` toca `Animal.stress`/`hungry` y
       `GrowBond` (que ya factoriza trauma); el bond **se gana** (estrés alto → rechaza). **La Recolectora**
-      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Falta**: cablearlo a crías reales
+      (raíz pre-fuego) con cadena de misión (founding-trio §7.4). **Histórico fundacional: El Perro de
+      Oberkassel** (real ~14.200 años; cachorro salvado del moquillo por amor → mito del santuario; autorado
+      con vivencias POV-perro + cadena de misión, cria-simulation §5). **Falta**: cablear a crías reales
       (`Animal` del `FamilyGenerator`) y el gateo de actividades por bond.
 - [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
       — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
@@ -275,6 +287,11 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Flag futuro** `absorbsPublic` si un bloqueado debe además recibir del pool (hoy: no recibe).
 - [ ] **Más históricos** con `Historico()` (quedan Gilgamesh/Enheduanna y eras posteriores;
       docs/mob-characters.md, mob-epochs-matrix.md).
+- [ ] **Históricos ANIMALES** (POV animal, docs/animal-heroes.md): autorados El Perro de Oberkassel, Togo,
+      Hachikō, Cher Ami; **candidatos** Balto, Laika, Clever Hans (→Mente), Koko, Jumbo, Greyfriars Bobby.
+- [ ] **Enfermería "Una Salud"** (área 6): **una sola** clínica que cuida a **personas Y animales** (lado
+      veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
+      trataba a ambos. El Perro de Oberkassel es su fundacional-animal. (Diseño: area-progression §6.)
 
 ## ⚠ Compilar y PROBAR en Unity (PRs #16, #17 y #18 mergeadas a master)
 Código nuevo aditivo: `Control/` + `Kitchen/` + `Virtualization/` + extensiones de Mind. **Guion de prueba

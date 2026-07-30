@@ -181,6 +181,41 @@ public static class PhrasePools
         Historico("La Recolectora", ElementalTone.Agua,        // cuidar al que cae (raíz de la Enfermería/compasión)
             new[] { "Cuido al herido hasta que sana.", "Nadie del grupo queda sin ayuda.", "Sanar es acompañar." },
             new[] { "A veces no basta con cuidar.", "Pierdo a quien no pude salvar.", "Cargo el dolor de los que se van." }),
+
+        // ── El Perro de Oberkassel (real, ~14.200 años; PRIMER PERRO-compañero; POV de un ANIMA-perro; Agua) ──
+        //    Mito fundacional de la cría/santuario: cachorro salvado del moquillo por amor, no por utilidad.
+        //    docs/cria-simulation.md · founding: cuidar al débil e "inútil" funda el vínculo.
+        Historico("El Perro de Oberkassel", ElementalTone.Agua,   // la enfermedad: casi muere, lo mantienen vivo
+            new[] { "Sobreviví a la fiebre que casi me lleva.", "Unas manos me mantuvieron caliente.", "Volví del borde gracias a ellos." },
+            new[] { "Ardía y temblaba, sin poder moverme.", "Enfermo no servía de nada, solo estorbaba.", "Temí que me dejaran atrás." }),
+        Historico("El Perro de Oberkassel", ElementalTone.Agua,   // el vínculo (imprint): su manada son ellos
+            new[] { "Ellos son mi manada ahora.", "Guardo su sueño y ellos el mío.", "Doy mi lealtad a quien me salvó." },
+            new[] { "Temo el día en que ya no estén.", "Sin ellos no sé quién soy.", "Cargo el miedo de volver a estar solo." }),
+        Historico("El Perro de Oberkassel", ElementalTone.Agua,   // el adiós: muere joven, enterrado con los suyos
+            new[] { "Descanso junto a los que amé.", "Nos enterraron juntos, como manada.", "El cariño no cabe en una vida corta." },
+            new[] { "Me fui demasiado pronto.", "No pude devolverles todo.", "Mi tiempo fue breve." }),
+
+        // ── Animales-protagonista (reales; POV animal). Lista curada en docs/animal-heroes.md ──────────────
+        // Togo (1925, carrera del suero a Nome) — heroísmo + reivindicación (hizo el tramo más duro; Balto se llevó la fama).
+        Historico("Togo", ElementalTone.Viento,
+            new[] { "Corrí en la ventisca por los que enferman.", "Guié al trineo por el hielo que cruje.", "Mis patas no se rindieron." },
+            new[] { "El frío mordía cada paso.", "El hielo se abría bajo nosotros.", "Agotado, pero no paré." }),
+        Historico("Togo", ElementalTone.Tierra,                   // la fama ajena → reivindicación
+            new[] { "Hice el tramo más largo y duro.", "Sé lo que corrí, aunque otro brille.", "Con el tiempo contaron mi verdad." },
+            new[] { "Otro perro se llevó la gloria.", "Corrí más y me olvidaron.", "Nadie recordó mi nombre al principio." }),
+
+        // Hachikō (Japón, 1920s-30s) — lealtad y duelo (esperó ~9 años a su dueño fallecido en la estación).
+        Historico("Hachikō", ElementalTone.Tierra,
+            new[] { "Cada tarde voy a la estación a esperarlo.", "Sé que volverá; yo estaré.", "Mi lealtad no mide el tiempo." },
+            new[] { "Ya no baja del tren.", "Espero y espero, y no llega.", "El andén se vacía sin él." }),
+        Historico("Hachikō", ElementalTone.Agua,                  // los años / el legado
+            new[] { "Mi espera enseñó lo que es el amor leal.", "La gente me trae calor mientras aguardo.", "Al fin descanso; quizá ya lo encuentro." },
+            new[] { "Me hago viejo en el mismo andén.", "Nadie me explica por qué no vuelve.", "El invierno pesa en los huesos." }),
+
+        // Cher Ami (paloma mensajera, WWI) — heroísmo/sacrificio (entregó el mensaje que salvó al "Batallón Perdido", herida).
+        Historico("Cher Ami", ElementalTone.Viento,
+            new[] { "Llevé el mensaje entre el fuego.", "Volé aunque me hirieran.", "Doscientos viven porque no caí." },
+            new[] { "Las balas me alcanzaron.", "Perdí una pata y un ojo.", "Volé sangrando hasta entregar." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.
