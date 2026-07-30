@@ -138,6 +138,37 @@ public static class PhrasePools
         Historico("El Alfarero", ElementalTone.Tierra,         // la vasija sostiene a otros; frágil pero perdura
             new[] { "Mi vasija guarda el agua de otros.", "Creo cosas que sostienen a la tribu.", "Frágil como soy, mi obra perdura." },
             new[] { "Soy tan frágil como el barro.", "Sobrevivo en cosas, no en memoria.", "Nadie recordará al alfarero." }),
+
+        // ── El Primer Herrero (Edad de los Metales, Forja; hilo B; Fuego/Tierra) — docs/forge-simulation.md ─
+        Historico("El Primer Herrero", ElementalTone.Fuego,    // dominar la forja (bronce = cobre+estaño; luego hierro)
+            new[] { "Fundo cobre y estaño en bronce.", "Del fuego saco herramientas nuevas.", "Mis arados hacen crecer la aldea." },
+            new[] { "El metal exige más y más fuego.", "Me quemo por dar de comer a otros.", "La fragua nunca descansa." }),
+        Historico("El Primer Herrero", ElementalTone.Fuego,    // el giro: la misma forja hace arado y espada
+            new[] { "El que forja, elige qué forjar.", "Elijo el arado antes que la espada.", "Doy filo para labrar, no para herir." },
+            new[] { "La misma forja hace la espada.", "Forjé el arma que nos dividió.", "El metal afiló la codicia." }),
+        Historico("El Primer Herrero", ElementalTone.Tierra,   // herencia del fuego: la pirita esconde hierro
+            new[] { "Heredé la chispa del que velaba el fuego.", "La piedra que escupe chispa guarda hierro.", "Del rescoldo a la fragua." },
+            new[] { "El don del fuego ahora hiere de lejos.", "Cada filo pesa en mi conciencia.", "Doblé el metal y también a los hombres." }),
+
+        // ── Sargón de Acad (Metales; hilo E, Corona y Espada; primer imperio; villano-capaz; Fuego/Tierra) ──
+        Historico("Sargón de Acad", ElementalTone.Tierra,      // unir ciudades en el primer imperio
+            new[] { "Uní ciudades dispersas en un imperio.", "Traje caminos, orden y ley.", "Mi nombre durará grabado en arcilla." },
+            new[] { "Uní por la fuerza.", "El que no se somete, cae.", "El poder siempre pide más poder." }),
+        Historico("Sargón de Acad", ElementalTone.Fuego,       // el nodo oscuro: dominio confundido con protección
+            new[] { "Protejo a los míos con mano firme.", "Sin un fuerte, todo se desmorona.", "Doy paz, aunque sea a la fuerza." },
+            new[] { "Someto para gobernar.", "Confundo el miedo con el respeto.", "Nadie recuerda a quién pisé para subir." }),
+
+        // ── El Tallador (hilo B · Barro y Metal; ancla: primer útil de piedra → levantar refugio; Tierra) ──
+        //    Base de la historia del área de CONSTRUCCIÓN. docs/construction-simulation.md
+        Historico("El Tallador", ElementalTone.Tierra,         // tallar la piedra: de un canto, una herramienta
+            new[] { "Doy forma a la piedra con paciencia.", "De un canto saco una herramienta.", "Mis manos moldean lo duro." },
+            new[] { "La piedra se astilla mal.", "Golpeo y golpeo sin lograr filo.", "Lo duro no cede a la prisa." }),
+        Historico("El Tallador", ElementalTone.Tierra,         // levantar el refugio: piedra sobre piedra, un hogar
+            new[] { "Levanto muros contra el viento.", "Doy techo a los míos.", "Piedra sobre piedra, un hogar." },
+            new[] { "El muro se me viene abajo.", "El techo no aguanta la lluvia.", "Cargo piedras hasta el agotamiento." }),
+        Historico("El Tallador", ElementalTone.Tierra,         // el giro: el muro une, pero también separa
+            new[] { "El muro nos guarece a todos.", "Construir es cuidar.", "Dentro cabemos los que somos." },
+            new[] { "El muro que abriga también divide.", "Tras la cerca nace lo 'mío'.", "Levanté la primera frontera." }),
     };
 
     // Deseos base: genéricos, anónimos y REUTILIZABLES (los comparte cualquier ser). De lo simple a lo complejo.

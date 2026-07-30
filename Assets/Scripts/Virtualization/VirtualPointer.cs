@@ -81,8 +81,8 @@ public class VirtualPointer : MonoBehaviour
         }
         Debug.Log($"[Virtual] → «{part.stationId}/{part.actionId}»" +
                   (string.IsNullOrEmpty(part.label) ? "." : $" ({part.label})."));
-        foreach (ProductionOrder o in FindObjectsOfType<ProductionOrder>())
-            o.Submit(part.stationId, part.actionId);
+        foreach (VirtualTask t in FindObjectsOfType<VirtualTask>())
+            t.Submit(part.stationId, part.actionId);
     }
 
     void OnGUI()

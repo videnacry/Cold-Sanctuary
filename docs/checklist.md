@@ -232,9 +232,27 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [ ] 3. **Forja/Mecánica** (Metales; Mesopotamia — escena ya existe; el metal = arado y espada; **Ötzi histórico**, El Primer Herrero).
-- [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
-- [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
+      — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras** por
+      **dispatch/tickets**. **Hecho**: arranque `ConstructionBeginner_AUTO` (limpiar→abastecer→cimentar/muro/
+      techar), **El Tallador** autorado + base de historia (§5). **Falta**: recetas de estructura reales por
+      área, misiones-historia cableadas, históricos posteriores (Maestro de catedrales/Brunelleschi).
+- [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
+      es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
+      **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
+      `StockingTask`) → **reparación simple** (receta con diagnóstico tecleado). Tracción del Huerto =
+      **bueyes** (decidido). La **forja** de bronce → **Microcosmos** (`ForgeVirtualization_AUTO`; El Primer
+      Herrero/Sargón autorados). **Falta**: máquinas por área, vehículos (bueyes/globos/submarinos),
+      teleportadores, decisión arado/espada, misiones-historia.
+- [ ] **Onboarding genérico por área**: limpiar → **abastecer** (`StockingTask`, cajas→despensas) → producir.
+      Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
+- [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
+- [ ] 6. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [x] **Reparación por DISPATCH (tickets)** — **MVP hecho** (`DispatchDemo_AUTO`): `ServiceHub` lista tickets
+      + banco de herramientas (`Toolbox` tomar/devolver); la receta `requiresTools` → sin herramientas se
+      rechaza. **Primera reparación real: GRIFO QUE GOTEA** de la Cocina (fontanería, la avería más típica/
+      simple): cerrar llave → desmontar → cambiar junta → montar → abrir y probar. Bucle: ticket → tomar
+      herramientas → ir al grifo → reparar → devolver. **Falta**: UI de tablero, tickets dinámicos, más averías.
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
       equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
       pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.

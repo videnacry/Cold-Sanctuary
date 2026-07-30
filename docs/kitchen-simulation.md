@@ -33,9 +33,12 @@ de Kushal** (`FollowBrain`) para que siga al anfitrión por la cocina.
 ## 2. Progresión de rol (de lavaplatos a cocinero)
 El personaje **asciende** haciendo tareas, de lo simple a lo complejo:
 1. **Limpieza (pinche/lavaplatos)** — limpiar **suelo → paredes → plancha → mesones → refrigeradora →
-   utensilios**; **reponer despensas**; **guardar todo en su lugar**. (Ver §5 y §7.)
-2. **Desayunos** — el primer cocinado (ver §3).
-3. **Recetas** — combinaciones cada vez más ricas (ver §4).
+   utensilios**. (Ver §5 y §7.)
+2. **Abastecer / ordenar** — llegan **cajas a la puerta**; el jugador coloca cada **ingrediente en su
+   despensa/nevera correcta** (`StockingTask`) → **aprende dónde está cada cosa** antes de cocinar. Mismo
+   mecanismo que el taller de la Mecánica (`forge-simulation.md` §1b).
+3. **Desayunos** — el primer cocinado (ver §3).
+4. **Recetas** — combinaciones cada vez más ricas (ver §4).
 Cada escalón se **desbloquea por aprendizaje** ([`learning-unlocks.md`](learning-unlocks.md)): la UI de
 esa tarea aparece cuando la aprendes.
 
@@ -49,11 +52,16 @@ cocina. Los personajes se acercan a los contenedores a **comer** (§6).
 ## 3b. Interacción de VIRTUALIZACIÓN (puntero + estaciones funcionales) — GENERALIZABLE
 El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
 - **Mira FIJA en el centro** de la cámara (`VirtualPointer`): **nunca se mueve** en pantalla. Para apuntar,
-  **giras la cabeza = la cámara** con **I/K/J/L** (`HeadLook`), **con restricciones** de giro (yaw/pitch
-  limitados, como una cabeza real). Confirmas con **F** (Espacio es salto). El **ratón** y el **touch**
-  conservan su **propio cursor** (clic/toque interactúa donde apuntan). Así se juega **solo con teclado** o
-  con ratón/touch. Teclas configurables (ver `DEVLOG.md` §Input). *(Al entrar en una estación se activa
-  `HeadLook` y se congela el look libre del jugador; mientras se teclea, cabeza y mira se congelan.)*
+  **giras la cabeza = la cámara de 1ª persona** con **I/K/J/L** (`HeadLook`, **vinculado a la cámara de
+  primera persona**), **con restricciones** de giro (yaw/pitch limitados, como una cabeza real). Confirmas
+  con **F** (Espacio es salto). El **ratón** y el **touch** conservan su **propio cursor** (clic/toque
+  interactúa donde apuntan). Así se juega **solo con teclado** o con ratón/touch. Teclas configurables (ver
+  `DEVLOG.md` §Input). *(El "**modo primera persona**" —antes lo llamé "modo estación"— NO se reinventa:
+  el cambio 1ª/3ª y el forzado por zona ya los hacen **`CameraManager` + `AutoCameraZone`** —una estación =
+  `AutoCameraZone{desiredMode=FirstPerson}`, como ya hace la entrada de cocina—; el pitch ya viene clampeado
+  en `PlayerController`. `HeadLook` solo añade el **giro de cabeza restringido** (yaw/pitch limitados) y,
+  mientras está activo o se teclea, `PlayerController` cede el look libre. La mira raycastea desde el centro
+  de la cámara activa.)*
 - **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
   sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
   huevo encima, **encender el fuego**…

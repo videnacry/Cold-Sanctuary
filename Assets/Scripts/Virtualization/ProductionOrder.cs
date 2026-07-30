@@ -7,7 +7,7 @@ using UnityEngine;
 /// <see cref="VirtualPointer"/> al confirmar sobre una <see cref="StationPart"/>). Motor genérico: sirve a
 /// cocina, huerto, forja… cambiando la receta.
 /// </summary>
-public class ProductionOrder : MonoBehaviour
+public class ProductionOrder : VirtualTask
 {
     [Header("Receta (pasos en ORDEN; mismo índice en los tres arrays)")]
     public string[] stepStation;
@@ -20,6 +20,8 @@ public class ProductionOrder : MonoBehaviour
     [Tooltip("Contenedor que se rellena al completar la receta (opcional).")]
     public FoodContainer output;
     [Min(1)] public int quota = 3;   // cuántos productos pide la misión (sustento)
+    [Tooltip("Si es una reparación por dispatch: requiere HERRAMIENTAS tomadas (Toolbox) para poder hacerse.")]
+    public bool requiresTools = false;
 
     int _idx, _produced;
     bool _done;
@@ -28,10 +30,15 @@ public class ProductionOrder : MonoBehaviour
     public bool Done => _done;
 
     /// <summary>Un paso realizado por el jugador. Avanza si es el siguiente esperado; produce al completar.</summary>
-    public void Submit(string stationId, string actionId)
+    public override void Submit(string stationId, string actionId)
     {
         if (_done || stepStation == null || stepStation.Length == 0) return;
         if (stepAction == null || stepAction.Length != stepStation.Length) return;   // receta mal formada
+        if (requiresTools && !Toolbox.HasTools)
+        {
+            Debug.Log($"[Producción] «{productName}»: necesitas HERRAMIENTAS — tómalas en el taller antes de reparar.");
+            return;
+        }
         if (_idx >= stepStation.Length) _idx = 0;
 
         if (stationId == stepStation[_idx] && actionId == stepAction[_idx])

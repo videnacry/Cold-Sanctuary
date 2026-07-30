@@ -22,9 +22,31 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 > historias entrelazadas y las misiones definidas están en
 > [`founding-trio-stories.md`](founding-trio-stories.md). *(El Ötzi histórico va en la Forja, no aquí.)*
 
-## Las TRES siguientes áreas
+## Las siguientes áreas
 
-### 3. La Forja / Mecánica — Edad de los Metales (Cobre → Bronce → Hierro)
+> **Reorden 2026-07-30:** la **Construcción va ANTES que la Mecánica** — primero se aprende a **levantar
+> refugio** (chozas/casas, Neolítico) y solo después a **trabajar metales** (Edad de los Metales). Orden:
+> 3) **Construcción** → 4) **Mecánica** → 5) Enfermería → 6) Yoga.
+
+### 3. La Construcción (Meso) / Levantar refugio (Micro) — Neolítico (chozas → casas)
+- **Región/época:** Neolítico — la aldea del Huerto necesita **techo**: chozas de adobe, madera, paja;
+  cerámica (El Alfarero) para materiales. Antes que el metal.
+- **Hilo/foco:** **B · Barro y Metal** (ancla *El Tallador* → *El Alfarero* → *Maestro de catedrales* →
+  Brunelleschi). Comparte hilo con la Mecánica, pero **la construcción es su etapa temprana**.
+- **Meso (santuario actual):** **hub de MANTENIMIENTO de estructuras** — reparar **tuberías, electricidad,
+  puertas, paredes, ventanas** de todas las áreas (por **tickets/dispatch**, ver `forge-simulation.md` §5:
+  llega el aviso → tomas herramientas → vas al área → reparas → vuelves y dejas las herramientas).
+- **Micro (histórico):** levantar refugio a través del tiempo (choza → casa → templo → catedral).
+- **Onboarding** (como todas): limpiar el solar → **abastecer** materiales (cajas→almacén, `StockingTask`) →
+  **construir/reparar simple** (receta: cimentar → levantar muro → techar → probar).
+- **Giro:** el refugio une a la tribu, pero **el muro también separa** (propiedad, fronteras) — enlaza con
+  el excedente del Huerto y con "detener conflictos".
+
+### 4. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
+> **Reencuadre 2026-07-30** (ver [`forge-simulation.md`](forge-simulation.md)): la 3ª área del **Mesocosmos**
+> es la **MECÁNICA** (reparar/mejorar máquinas de todas las áreas + vehículos/drones/avatares/teleportadores);
+> la **forja de bronce** literal se mueve al **Microcosmos** (capa histórica de los metales). Lo de abajo
+> describe la capa histórica (Micro).
 - **Región:** **Mesopotamia** (+ Egipto para Imhotep). Ya existe la escena `MobWorld_Mesopotamia` → reuso
   directo; el jugador ve **la aldea convertirse en ciudad**.
 - **Hilo/foco:** **B · Barro y Metal** (ancla *El Tallador* → *El Alfarero* → **El Fundidor / Primer
@@ -44,8 +66,10 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Encaja con:** las misiones de **detener conflictos** (garden §5) escalan aquí — el metal arma las
   disputas; y el núcleo **fuertes vs débiles**. Capstone de la era temprana: **Gilgamesh** ("llegar al
   corazón").
+- **Estado (2026-07-29):** diseñada en [`forge-simulation.md`](forge-simulation.md); **El Primer Herrero** y
+  **Sargón de Acad** autorados; receta de bronce cableada (`ForgeVirtualization_AUTO`, crisol con typing).
 
-### 4. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
+### 5. La Enfermería / Farmacia — salud (del Neolítico a la Antigüedad)
 - **Región:** rota (Egipto → Grecia → India → mundo islámico) según la figura.
 - **Hilo/foco:** **C · Semilla y Vida** (continuación de La Recolectora: las plantas que **alimentan Y
   curan**) tocando **F · Aliento y Mente**. Arquetipo **Curar/atender**.
@@ -58,7 +82,7 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 - **Encaja con:** refuerza el **tema de no-violencia/cuidado** del santuario; recibe del Huerto (plantas)
   y de la Cocina (nutrición → salud); atiende a heridos de los conflictos (área 3).
 
-### 5. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
+### 6. La Sala de Yoga — Aliento y Mente (el núcleo espiritual)
 - **Región:** rota (India para Buda, Grecia para Sócrates…).
 - **Hilo/foco:** **F · Aliento y Mente** (ancla *El Chamán* → *El Soñador* → Buda/Sócrates/Spinoza).
   Arquetipo **contemplativo** (canalizar/meditar).
