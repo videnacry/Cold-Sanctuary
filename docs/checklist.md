@@ -5,6 +5,11 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 ## Decisiones abiertas (rápidas)
+- [~] **Microcosmos INSECTO — 1ª misión HECHA (scaffold)**: `MicrocosmosSandbox_AUTO` (hormiguero
+      `CarryToRefuge` + pulgón `HoneydewProducer`/`AphidGuide` = mascota-guía + familia caída `WeakOne` +
+      hormigas que lo cuidan). **Pipeline:** cada área **humana primero (Meso) → transformar a insecto (Micro)**
+      (microcosmos-insects §11). **Falta:** que el jugador (avatar-insecto) guíe/cargue; colonia real
+      (reina/castas); feromonas como mecánica; dispatch meso→micro. Ver [`microcosmos-insects.md`](microcosmos-insects.md).
 - [ ] **¿Microcosmos = mundo de INSECTOS?** (propuesta en [`microcosmos-insects.md`](microcosmos-insects.md))
       Recomendado: **sí**, con **hormigas** como civilización primaria (ciudades/castas/reina), la **cría =
       mirmecofilia** (hormigas ordeñan pulgones → el pulgón es la "mascota/ganado"), y **abeja/avispa/termita**

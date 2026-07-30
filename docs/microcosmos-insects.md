@@ -115,3 +115,19 @@ Hay que separar dos cosas:
   **plausible que hubiera vínculos individuales pre-fuego** (un perdido + un animal amigo), aunque la ciencia
   no pueda fecharlos. → **Tu intuición vale para el vínculo individual** (no para la especie domesticada). En
   el micro (insecto), el "ganado" es el pulgón (mirmecofilia), antiquísimo en la evolución hormiga.
+
+## 11. Pipeline de producción: HUMANO primero → transformar a INSECTO (2026-07-30)
+Para **reconstruir la historia de la humanidad** área por área, el camino más simple (idea del autor):
+1. **Crear el área con HUMANOS** primero — su simulación Meso (estaciones, recetas, historia humana). Es lo
+   concreto y ya lo venimos haciendo (Cocina, Huerto, Cría, Construcción, Mecánica…).
+2. **TRANSFORMARLA al mundo-insecto** — reencarnar sus personajes y su arco como insectos (opción B): mismas
+   vivencias/mecánicas, re-tematizadas (fuego→feromonas, agricultura→hongo, ganado→pulgón, muro→hormiguero…).
+→ El **Meso** es la plantilla (humana); el **Micro** es su reflejo insecto. Así cada área nace una vez y se
+"proyecta" al otro plano sin rehacer el diseño.
+
+## 12. Estado — 1ª misión del Microcosmos (hecho, scaffold)
+`MicrocosmosSandbox_AUTO`: **hormiguero** (`CarryToRefuge`), **pulgón** (`HoneydewProducer` = melaza +
+`AphidGuide` = mascota-guía), **familia caída** (`WeakOne`) y **dos hormigas** que cuidan al pulgón
+(`FollowBrain`→pulgón = mirmecofilia). El pulgón guía a la familia, la rescata y la lleva al hormiguero.
+**Falta:** que el jugador (avatar-insecto) sea quien guíe/cargue (hoy lo hace el pulgón en auto-demo); la
+colonia real (reina/castas); las feromonas como mecánica; y el dispatch meso→micro que dispara la misión.

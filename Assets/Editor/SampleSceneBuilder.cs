@@ -86,6 +86,7 @@ public static class SampleSceneBuilder
         BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
         BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
         BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
+        BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -812,6 +813,67 @@ public static class SampleSceneBuilder
     /// abastecer (biberón/comida/paja), 3) **rutina de cuidado** (leer estado → calmar → alimentar → asear →
     /// arrullar) reutilizando `ProductionOrder`, 4) llevar la cría al **nido** (`CarryToRefuge`/`WeakOne`).
     /// </summary>
+    /// <summary>
+    /// 1ª misión del MICROCOSMOS insecto (docs/microcosmos-insects.md §4): un **hormiguero** (refugio), un
+    /// **pulgón** que produce melaza (mirmecofilia) y hace de **mascota-guía** hacia su **familia caída**, y
+    /// dos **hormigas** que lo cuidan (lo siguen por la melaza). El pulgón lleva a Kushal/al grupo a la
+    /// familia, la rescata y la guía al hormiguero (`CarryToRefuge`/`WeakOne`). Auto-demo por consola.
+    /// </summary>
+    static void BuildMicrocosmosSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("MicrocosmosSandbox_AUTO");
+        group.transform.SetParent(parent);
+
+        // Hormiguero = refugio (cuenta a los rescatados).
+        GameObject nest = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        nest.name = "Hormiguero"; nest.transform.SetParent(group.transform);
+        nest.transform.position = new Vector3(-30f, 1f, 10f); nest.transform.localScale = new Vector3(2.5f, 1.5f, 2.5f);
+        nest.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Hormiguero_MAT", new Color(0.45f, 0.35f, 0.25f));
+        CarryToRefuge refuge = nest.AddComponent<CarryToRefuge>(); refuge.needed = 2; refuge.radius = 3f;
+
+        // Punto donde está la familia caída.
+        GameObject familyPoint = new GameObject("FamiliaCaida_Punto");
+        familyPoint.transform.SetParent(group.transform);
+        familyPoint.transform.position = new Vector3(-34f, 1f, 24f);
+
+        // La familia caída (2 débiles, inmóviles hasta ser rescatados: WeakOne sin FollowBrain).
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject fam = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            fam.name = $"Familia_{i}"; fam.transform.SetParent(group.transform);
+            fam.transform.position = new Vector3(-34f + i, 1f, 24f); fam.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            fam.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Familia_{i}_MAT", new Color(0.55f, 0.50f, 0.40f));
+            fam.AddComponent<WeakOne>();
+            fam.AddComponent<AiBrain>().selfRelevance = 1f;
+            fam.AddComponent<AnimaController>();
+        }
+
+        // El pulgón: produce melaza + mascota-guía (familia → refugio).
+        GameObject aphid = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        aphid.name = "Pulgon"; aphid.transform.SetParent(group.transform);
+        aphid.transform.position = new Vector3(-30f, 1f, 20f); aphid.transform.localScale = new Vector3(0.4f, 0.4f, 0.6f);
+        aphid.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Pulgon_MAT", new Color(0.60f, 0.80f, 0.45f));
+        aphid.AddComponent<HoneydewProducer>().interval = 3f;
+        AphidGuide guide = aphid.AddComponent<AphidGuide>();
+        guide.familyPoint = familyPoint.transform; guide.refuge = nest.transform;
+
+        // Dos hormigas que cuidan al pulgón (lo siguen por la melaza = mirmecofilia).
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject ant = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            ant.name = $"Hormiga_{i}"; ant.transform.SetParent(group.transform);
+            ant.transform.position = new Vector3(-31f + i * 2f, 1f, 20f); ant.transform.localScale = new Vector3(0.5f, 0.5f, 0.7f);
+            ant.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Hormiga_{i}_MAT", new Color(0.35f, 0.25f, 0.20f));
+            ant.AddComponent<AiBrain>().selfRelevance = 1f;
+            FollowBrain fb = ant.AddComponent<FollowBrain>(); fb.target = aphid.transform; fb.relevance = 1.5f; fb.stopDistance = 1.5f;
+            ant.AddComponent<AnimaController>();
+        }
+
+        Debug.Log("[SampleSceneBuilder] Microcosmos 1ª misión: el «Pulgon» (produce melaza; las «Hormiga» lo " +
+                  "cuidan) hace de MASCOTA-GUÍA → va a la «FamiliaCaida», la rescata (les da FollowBrain al " +
+                  "refugio) y la lleva al «Hormiguero» (CarryToRefuge). Logs [Micro]/[Cuidado] (docs microcosmos-insects §4).");
+    }
+
     static void BuildCriaBeginner(Transform parent)
     {
         GameObject group = new GameObject("CriaBeginner_AUTO");
