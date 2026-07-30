@@ -104,6 +104,18 @@ Formato por fase: **objetivo (arquetipo) → qué revela → tono**. Arquetipos 
 4. **Transmitir el conocimiento** *(enseñar — pensamiento "enseñar a los nuevos", kitchen §1)* → la primera cosecha da fruto **a tiempo** de legar su saber. *(legado)*
 - **Recompensa:** elemento **N** · +Satisfacción · abre el Huerto y el bucle con la Cocina.
 
+### 7.4 La Recolectora — *Curar/atender* (PRE-FUEGO; prólogo de la Enfermería / raíz de la cría)
+La **raíz** del hilo C (se vuelve **La Sembradora** en el Neolítico). Es el estrato **más antiguo** (antes
+del fuego): recolectar, conocer las plantas que **alimentan y curan**, y **cuidar al indefenso**. Es lo que
+Kushal prueba en el **prólogo** (docs/area-progression "Apertura") y la **semilla de la Enfermería y de la
+cría**. Kushal: *ayuda a cargar y a cuidar* (secundario). Cadena de fases:
+1. **Buscar la planta que cura** *(observación/recolección)* → ciertas plantas sanan; **llevar consigo** la valiosa. *(descubrimiento)*
+2. **Aprender del animal enfermo** *(observar)* → ve a un animal comer una hoja y mejorar (**zoofarmacognosia**). *(asombro)*
+3. **Cuidar al que cae** *(atender — llevar al refugio, `CarryToRefuge`)* → sanar es acompañar; nadie del grupo queda solo. *(compasión)*
+4. **La planta valiosa** *(proteger/guardar)* → se **aferra** a la que salva; el saber que hay que transmitir (→ La Sembradora). *(legado)*
+- **Recompensa:** +Satisfacción/Observación · abre la **capa de primeros auxilios/herbolaria** y enlaza con
+  el **área de cría** (cuidar al indefenso). Comunicación **corporal/gestual** (pre-lenguaje), sin arte todavía.
+
 ## 8. Pendiente
 Re-enriquecer las vivencias de **Señor del Fuego** y **La Sembradora** con detalles del canon (la planta
 favorita, el joven de la semilla, las piedras de la infancia) al cerrar las misiones. (Nasatya ya autorado
