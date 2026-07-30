@@ -157,6 +157,8 @@ public class PlayerController : MonoBehaviour
         if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) return;
         // Block look while typing a virtualization action (las letras no deben mover la cámara).
         if (TypingChallenge.Active) return;
+        // Ceder el look libre cuando la cabeza restringida (modo 1ª persona de estación) está activa.
+        if (HeadLook.Active) return;
 
         float yaw   = 0f;
         float pitch = 0f;

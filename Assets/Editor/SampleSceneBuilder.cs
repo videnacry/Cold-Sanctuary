@@ -530,9 +530,10 @@ public static class SampleSceneBuilder
     }
 
     /// <summary>
-    /// El mismo motor en la 3ª área, la Forja/Metales (docs/forge-simulation.md): receta de herramienta de
-    /// bronce (TomarMineral → Fundir[typing] → Verter → Forjar → Templar). El crisol es una acción
-    /// temporizada que se acelera tecleando elementos/compuestos (bronze/copper/tin/cu/sn/melt).
+    /// El mismo motor aplicado a la FORJA del **Microcosmos** (era de los metales; docs/forge-simulation.md
+    /// §2): receta de herramienta de bronce (TomarMineral → Fundir[typing] → Verter → Forjar → Templar). El
+    /// crisol es una acción temporizada que se acelera tecleando elementos/compuestos. (La **Mecánica** del
+    /// Mesocosmos —reparar máquinas/vehículos— usará recetas distintas, aún por construir.)
     /// </summary>
     static void BuildForgeVirtualization(Transform parent)
     {

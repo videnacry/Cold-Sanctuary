@@ -24,7 +24,11 @@ arco de cada personaje es **agridulce → aprendizaje**; cada era entrega su **e
 
 ## Las TRES siguientes áreas
 
-### 3. La Forja / Mecánica — Edad de los Metales (Cobre → Bronce → Hierro)
+### 3. La Mecánica (Meso) / La Forja (Micro) — Edad de los Metales (Cobre → Bronce → Hierro)
+> **Reencuadre 2026-07-30** (ver [`forge-simulation.md`](forge-simulation.md)): la 3ª área del **Mesocosmos**
+> es la **MECÁNICA** (reparar/mejorar máquinas de todas las áreas + vehículos/drones/avatares/teleportadores);
+> la **forja de bronce** literal se mueve al **Microcosmos** (capa histórica de los metales). Lo de abajo
+> describe la capa histórica (Micro).
 - **Región:** **Mesopotamia** (+ Egipto para Imhotep). Ya existe la escena `MobWorld_Mesopotamia` → reuso
   directo; el jugador ve **la aldea convertirse en ciudad**.
 - **Hilo/foco:** **B · Barro y Metal** (ancla *El Tallador* → *El Alfarero* → **El Fundidor / Primer

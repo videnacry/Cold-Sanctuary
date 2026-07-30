@@ -23,10 +23,21 @@ public class HeadLook : MonoBehaviour
     [Tooltip("Giro vertical máximo arriba/abajo (grados).")]
     public float pitchLimit = 55f;
 
+    static int _activeCount;
+    /// <summary>¿Hay una cabeza restringida activa? (para que `PlayerController` ceda el look libre).</summary>
+    public static bool Active => _activeCount > 0;
+
     float _yaw, _pitch;
     Quaternion _home;
 
     void Awake() { _home = transform.localRotation; }
+
+    // IMPORTANTE (reuso): el CAMBIO de perspectiva 1ª/3ª y el forzado por zona ya los hacen
+    // CameraManager + AutoCameraZone (una estación = AutoCameraZone{desiredMode=FirstPerson}). HeadLook NO
+    // reimplementa eso — solo aporta el giro de cabeza restringido, y debe estar ENABLED únicamente en el
+    // modo primera persona de estación (lo activa/desactiva la entrada a la estación), no siempre.
+    void OnEnable() { _activeCount++; }
+    void OnDisable() { _activeCount = Mathf.Max(0, _activeCount - 1); }
 
     void Update()
     {

@@ -1,56 +1,57 @@
-# La Forja / Mecánica — tercera área (Edad de los Metales)
+# La Mecánica (Mesocosmos) y la Forja (Microcosmos)
 
-Diseño (2026-07-29). Tercera simulación, tras la **Cocina** (fuego) y el **Huerto** (agricultura).
-Continúa la historia del microcosmos: del **Neolítico** a la **Edad de los Metales** (Cobre→Bronce→Hierro).
-Base: [`area-progression.md`](area-progression.md), [`mob-epochs-matrix.md`](mob-epochs-matrix.md) (hilo B),
-[`mob-quests-early.md`](mob-quests-early.md), [`founding-trio-stories.md`](founding-trio-stories.md),
-[`kitchen-simulation.md`](kitchen-simulation.md) §3b (motor de virtualización).
+Diseño (2026-07-29; **reencuadre 2026-07-30**). Tercera área. **Corrección**: una **forja de bronce** no
+encaja bien en el santuario a pie. La 3ª área del **Mesocosmos** es la **MECÁNICA** —reparar/construir/
+investigar **máquinas y vehículos**—; la **forja/fundición** literal pertenece al **Microcosmos** (era de
+los metales, capa histórica). Base: [`area-progression.md`](area-progression.md),
+[`kitchen-simulation.md`](kitchen-simulation.md) §3b (motor de virtualización),
+[`world-topology-and-planes.md`](world-topology-and-planes.md), [`mob-epochs-matrix.md`](mob-epochs-matrix.md).
 
-## 1. Territorio y época
-- **Época:** Edad de los Metales. **Región:** **Mesopotamia** — la aldea del Huerto se ha vuelto **ciudad**
-  (reusa la escena `MobWorld_Mesopotamia` ya existente). Elementos: **Cu, Sn, Fe**.
-- **Cómo continúa la historia:** el hilo del **fuego** del **Señor del Fuego** ("la piedra que escupe
-  chispa", la **pirita**) evoluciona en **metalurgia** (pirita → **hierro**). Aquí vive el **Ötzi
-  histórico** (el hombre del **hacha de cobre**, asesinado — su misión "buscar la raíz"). No es Nasatya
-  (ese es el guardián ficticio de la era temprana; ver `founding-trio-stories.md`).
+## 1. La MECÁNICA (Mesocosmos) — el taller del santuario
+El **hub técnico** que da servicio a **todas** las áreas: se **repara, mejora e investiga** la **maquinaria**
+de cada una y se **construyen/reparan vehículos, drones y avatares**. Encaja en el santuario porque **todas
+las áreas tienen máquinas** que se estropean y mejoran.
+- **Máquinas de otras áreas** (reparar/mejorar en la Mecánica): **carne cultivada**, **textiles**,
+  **enfermería**, **cocina**… Cada avería = una **misión de reparación** (receta de virtualización:
+  diagnosticar → sustituir pieza → calibrar → probar).
+- **Vehículos** (construir/reparar): decisión de diseño **orgánico vs mecánico** —
+  - **Huerto:** **tractor** *(rama mecánica)* **o bueyes/vacas** *(rama orgánica, bonds/no-violencia)*.
+  - **Aéreo:** **globos aerostáticos** (santuario aéreo vertical). **Marino:** **submarinos** (santuario
+    marino/subterráneo). Coherentes con los 5 santuarios (`world-topology`). *A confirmar qué se incluye.*
+- **Drones y avatares**: se **fabrican/reparan** aquí los **minidrones/miniavatares** (`RobotAvatar`/
+  `AvatarController`) que interactúan con el **Microcosmos** (p. ej. limpiar manchas, extraer manjares).
+- **Mecánica + magia (futuro):** **teleportadores** ("aeropuerto", `world-topology` §C) y artículos que
+  **mezclan mecánica y magia**; su **investigación/mejora** vive aquí.
+- **Recetas de la Mecánica** = ensamblar/reparar (piezas + energía + tiempo, con el mismo motor de
+  virtualización; algunos pasos temporizados con typing = "apretar tornillos"/diagnosticar).
+- **Elemento/tema:** Fe (hierro) y compuestos metálicos; *la técnica al servicio del cuidado, no del poder*.
 
-## 2. El giro (agridulce)
-La **misma forja** hace el **arado** (labrar, dar de comer) y la **espada** (herir). El primer útil de
-metal fue también la **primera arma** — enlaza con la muerte de Ötzi y **escala el conflicto**: el metal
-arma las disputas del excedente que nacieron en el Huerto. **Aprendizaje:** *el que forja, elige.*
+## 2. La FORJA (Microcosmos) — capa histórica (Edad de los Metales)
+La **fundición de bronce** (cobre+estaño; luego hierro) es la **historia** de los metales → vive en el
+**Microcosmos** (Mesopotamia; el mob-world también tiene **sus propias estructuras y virtualizaciones**).
+Continúa el hilo del **fuego** del **Señor del Fuego** (la **pirita** → **hierro**). Aquí:
+- **Ötzi histórico** (hacha de cobre → misión "**buscar la raíz**"), **El Primer Herrero** (protagonista) y
+  **Sargón de Acad** (primer imperio → el dominio que somete). **Autorados** en `PhrasePools`.
+- **Giro:** la misma forja hace **arado y espada** → escala el conflicto (Sargón; "detener conflictos").
+  *El que forja, elige.*
+- **Receta de forja** (virtualización del Microcosmos): `TomarMineral → Fundir(typing) → Verter → Forjar →
+  Templar` → herramienta de bronce. Sandbox `ForgeVirtualization_AUTO` (crisol acelerable tecleando
+  bronze/copper/tin/cu/sn/melt) — demuestra el motor; es la forja **del Microcosmos**, no del santuario.
 
-## 3. Personajes históricos
-- **El Primer Herrero** (hilo **B · Barro y Metal**) — **protagonista**. Domina la forja (bronce=cobre+
-  estaño, luego hierro); el dilema arado/espada. **Autorado** en `PhrasePools` (Fuego/Tierra).
-- **Ötzi** (histórico, hacha de cobre) — su misión "**buscar la raíz**" (qué le pasó). Ya autorado.
-- **Sargón de Acad** (hilo **E · Corona y Espada**) — **primer imperio**; el dominio que **somete**;
-  antagonista de las misiones de **detener conflictos** a escala (garden §5). **Autorado** (villano-capaz).
-- (Fondo: **Enheduanna** — hilo D, primera autora; **Gilgamesh** — capstone de la era, "llegar al corazón".)
+## 3. Cómo se conectan Meso ↔ Micro
+- La **Forja** (Micro) produce el **saber/los metales**; la **Mecánica** (Meso) los usa para **máquinas y
+  vehículos** del santuario. El progreso histórico del Microcosmos **desbloquea** capacidades en la Mecánica.
+- Los **drones/avatares** fabricados en la Mecánica son los que **entran al Microcosmos** → bucle cerrado.
+- Idea confirmada: **el Microcosmos también tiene virtualizaciones** (no solo el Mesocosmos) — cada plano
+  tiene sus estaciones/recetas.
 
-## 4. Estaciones y receta (virtualización — mismo motor, kitchen §3b)
-Producir **herramientas de bronce** (sustento/materiales del santuario). Estaciones funcionales:
-- **Cantera/Mineralera** — coger **mineral** (cobre + estaño).
-- **Crisol** — **fundir** el metal (acción **temporizada** con **mecanografía**: teclear
-  `bronze/copper/tin/cu/sn/melt` acelera la fundición; kitchen §4b).
-- **Molde** — **verter** el metal fundido.
-- **Yunque** — **forjar** a martillazos la herramienta.
-- **Temple/Agua** — **templar** en agua (endurece).
-
-**Receta base (5 pasos):** `TomarMineral → Fundir(typing) → Verter → Forjar → Templar` → **1 herramienta**.
-Cuota de misión = N herramientas (arados/hoces) para el santuario. *(El "elegir arado vs espada" es una
-variante de receta futura: la misma cadena, distinto molde → una decisión moral con consecuencias.)*
-
-## 5. Enganches
-- **Con la Cocina/Huerto:** el fuego (Cocina) y las herramientas (arado→Huerto) cierran un bucle: la forja
-  **mejora la producción** de las otras áreas.
-- **Con el conflicto (mundo-insecto/santuario):** el metal escala las disputas → más misiones de **detener
-  conflictos** (Sargón), y el núcleo **fuertes vs débiles**.
-- **Con la química:** fundir/alear es química real (Cu+Sn=bronce) → las palabras del typing son elementos/
-  compuestos (Cu, Sn, Fe) → une mecanografía + química + "la comida/objeto forma al personaje".
-
-## 6. Estado de código
-- **Históricos autorados**: El Primer Herrero, Sargón de Acad (+ Ötzi ya estaba).
-- **Receta cableada**: `ForgeVirtualization_AUTO` (sandbox) con las 5 estaciones + el crisol temporizado
-  (typing). Reusa `VirtualPointer`/`StationPart`/`ProductionOrder`/`TypingChallenge`.
-- **Falta:** decisión arado/espada (variante de receta + consecuencia), misiones-historia del Primer
-  Herrero/Ötzi/Sargón (cadenas de fases), y enganchar la cuota a la misión real del área.
+## 4. Estado y decisiones abiertas
+- **Autorado**: El Primer Herrero, Sargón (+ Ötzi). Receta de forja cableada (`ForgeVirtualization_AUTO`).
+- **Por decidir contigo** (diseño de vehículos/máquinas):
+  - ¿**Tractores** (mecánica) **vs bueyes/vacas** (orgánico) para el Huerto? *(propongo: ambos, como ramas
+    de estilo — orgánico casa con el tema animal/no-violencia; mecánico con el tema técnico.)*
+  - ¿**Globos/submarinos** ya, o más adelante? *(encajan con los santuarios aéreo/marino.)*
+  - ¿**Teleportadores** y objetos mecánica+magia — cuándo entran?
+  - Lista de **máquinas por área** (carne cultivada, textiles, enfermería, cocina) a reparar/mejorar.
+- **Por construir**: recetas de **reparación de máquinas** de la Mecánica (Meso) — distintas de la forja;
+  la decisión **arado vs espada**; misiones-historia (Primer Herrero/Ötzi/Sargón); cuota↔misión.

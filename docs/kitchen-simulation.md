@@ -53,9 +53,12 @@ El modelo real de juego (2026-07-29), plantilla para **todas** las áreas:
   primera persona**), **con restricciones** de giro (yaw/pitch limitados, como una cabeza real). Confirmas
   con **F** (Espacio es salto). El **ratón** y el **touch** conservan su **propio cursor** (clic/toque
   interactúa donde apuntan). Así se juega **solo con teclado** o con ratón/touch. Teclas configurables (ver
-  `DEVLOG.md` §Input). *(El "**modo primera persona**" —antes lo llamé "modo estación"— activa `HeadLook`
-  en la cámara de 1ª persona y congela el look libre de `PlayerController`; mientras se teclea, cabeza y
-  mira se congelan.)*
+  `DEVLOG.md` §Input). *(El "**modo primera persona**" —antes lo llamé "modo estación"— NO se reinventa:
+  el cambio 1ª/3ª y el forzado por zona ya los hacen **`CameraManager` + `AutoCameraZone`** —una estación =
+  `AutoCameraZone{desiredMode=FirstPerson}`, como ya hace la entrada de cocina—; el pitch ya viene clampeado
+  en `PlayerController`. `HeadLook` solo añade el **giro de cabeza restringido** (yaw/pitch limitados) y,
+  mientras está activo o se teclea, `PlayerController` cede el look libre. La mira raycastea desde el centro
+  de la cámara activa.)*
 - **Estaciones por FUNCIONALIDAD**, cada una con **partes manipulables**: abrir la puerta del **mesón** →
   sacar **sartenes**; abrir la **nevera** → tomar **huevos**; colocar la sartén en la **cocina/fogón**, el
   huevo encima, **encender el fuego**…
