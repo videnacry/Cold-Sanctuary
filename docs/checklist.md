@@ -232,7 +232,11 @@ Diseño completo en [`kitchen-simulation.md`](kitchen-simulation.md). Escalera d
 Orden alineado con la línea temporal del microworld (una época por área). Ver
 [`area-progression.md`](area-progression.md), [`garden-simulation.md`](garden-simulation.md).
 - [~] 1. **Cocina** (Paleolítico/fuego) · 2. **Huerto** (Neolítico/agricultura) — diseñadas.
-- [~] 3. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la 3ª área Meso
+- [~] 3. **Construcción (Meso) / Levantar refugio (Micro)** ([`construction-simulation.md`](construction-simulation.md))
+      — **va ANTES que la Mecánica** (refugio antes que metal, Neolítico). Meso = hub de **estructuras**
+      (tuberías/electricidad/puertas/paredes/ventanas) por **dispatch/tickets**. **Diseñada**; por construir:
+      dispatch, recetas de obra, arranque `ConstructionBeginner`, históricos (Maestro de catedrales/Brunelleschi).
+- [~] 4. **Mecánica (Meso) + Forja (Micro)** ([`forge-simulation.md`](forge-simulation.md)): la área Meso
       es la **Mecánica** (reparar/mejorar **máquinas** de todas las áreas + vehículos/drones/teleportadores).
       **Arranque cableado** (`MechanicsBeginner_AUTO`): **limpiar** → **abastecer** (cajas→estantes,
       `StockingTask`) → **reparación simple** (receta con diagnóstico tecleado). Tracción del Huerto =
@@ -241,8 +245,11 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       teleportadores, decisión arado/espada, misiones-historia.
 - [ ] **Onboarding genérico por área**: limpiar → **abastecer** (`StockingTask`, cajas→despensas) → producir.
       Ya en cocina (§2) y mecánica (§1b). `StockingTask`/`ProductionOrder` comparten base `VirtualTask`.
-- [ ] 4. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
-- [ ] 5. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
+- [ ] 6. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
+- [ ] **Reparación por DISPATCH (tickets)** — Mecánica y Construcción **te envían a otra área** a reparar:
+      llega ticket → tomas herramientas → vas al área → reparas (receta) → devuelves herramientas
+      (`forge-simulation.md` §5). MVP: `RepairTicket` + `ServiceHub` + gate de herramientas. **Por construir.**
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
       equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
       pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.

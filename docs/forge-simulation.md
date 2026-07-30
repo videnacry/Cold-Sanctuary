@@ -67,3 +67,21 @@ Continúa el hilo del **fuego** del **Señor del Fuego** (la **pirita** → **hi
   - Lista de **máquinas por área** (carne cultivada, textiles, enfermería, cocina) a reparar/mejorar.
 - **Por construir**: recetas de **reparación de máquinas** de la Mecánica (Meso) — distintas de la forja;
   la decisión **arado vs espada**; misiones-historia (Primer Herrero/Ötzi/Sargón); cuota↔misión.
+
+## 5. Reparación por DISPATCH (tickets) — cruza áreas
+La Mecánica **no solo tiene virtualizaciones en su sala**: **despacha** al jugador a **otras áreas** a
+reparar. Bucle propuesto (idea del usuario):
+1. **Llega un ticket** al tablero de la Mecánica: *"la nevera de la Cocina no funciona"*, *"el horno"*,
+   *"el telar del Textil"*, etc. (avería = máquina marcada como estropeada en su área).
+2. El jugador **toma las herramientas** (en un banco de la Mecánica — gate: sin herramientas no repara).
+3. **Va al área** y **repara** la máquina (una **receta de virtualización** en esa máquina — el mismo
+   motor `ProductionOrder`/`StationPart`/typing).
+4. **Vuelve a la Mecánica** y **deja las herramientas** → ticket cerrado.
+- Efecto: el jugador **recorre el santuario** y aprende dónde está todo; la Mecánica queda como **hub de
+  mantenimiento** de todas las áreas (nevera/horno de Cocina, telar de Textil, equipos de Enfermería,
+  máquina de carne cultivada…).
+- **Construcción comparte este dispatch** para **estructuras**: tickets de **tuberías, electricidad,
+  puertas, paredes, ventanas** por todas las áreas (ver [`construction-simulation.md`](construction-simulation.md)).
+- **Modelo para construir (MVP):** `RepairTicket` (máquina/estructura averiada en un área + su receta de
+  arreglo; abierta→cerrada al completar), `ServiceHub` (tablero que lista tickets + banco de herramientas
+  tomar/devolver), gate de **herramientas**. La reparación reusa `ProductionOrder`. **Por construir.**
