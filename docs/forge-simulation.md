@@ -82,6 +82,9 @@ reparar. Bucle propuesto (idea del usuario):
   máquina de carne cultivada…).
 - **Construcción comparte este dispatch** para **estructuras**: tickets de **tuberías, electricidad,
   puertas, paredes, ventanas** por todas las áreas (ver [`construction-simulation.md`](construction-simulation.md)).
-- **Modelo para construir (MVP):** `RepairTicket` (máquina/estructura averiada en un área + su receta de
-  arreglo; abierta→cerrada al completar), `ServiceHub` (tablero que lista tickets + banco de herramientas
-  tomar/devolver), gate de **herramientas**. La reparación reusa `ProductionOrder`. **Por construir.**
+- **Modelo (HECHO, MVP):** `RepairTicket` (avería en un área + su receta; abierta→cerrada), `ServiceHub`
+  (tablero + banco de herramientas tomar/devolver), `Toolbox` (gate: sin herramientas no se repara —
+  `ProductionOrder.requiresTools`). Sandbox `DispatchDemo_AUTO`.
+- **Primera reparación real — el GRIFO QUE GOTEA** (la avería más típica/simple, fontanería; sirve igual en
+  Cocina —fregadero— y Huerto —manguera/riego—): **cerrar la llave de paso → desmontar la maneta → cambiar
+  la junta/goma gastada → montar → abrir y probar (ya no gotea)**. Requiere herramientas (llave inglesa).

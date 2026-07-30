@@ -701,33 +701,38 @@ public static class SampleSceneBuilder
         GameObject hubGO = new GameObject("Taller_Servicio");
         hubGO.transform.SetParent(group.transform);
         ServiceHub hub = hubGO.AddComponent<ServiceHub>();
-        hub.hubName = "Mecánica"; hub.toolStation = "Herramientas";
-        MakeStationPart(group.transform, "Herramientas", "Tomar",    "tomas las herramientas",   new Vector3(50f, 1f, 18f), new Color(0.85f, 0.70f, 0.25f));
+        hub.hubName = "Taller (Mecánica/Construcción)"; hub.toolStation = "Herramientas";
+        MakeStationPart(group.transform, "Herramientas", "Tomar",    "tomas la llave inglesa",     new Vector3(50f, 1f, 18f), new Color(0.85f, 0.70f, 0.25f));
         MakeStationPart(group.transform, "Herramientas", "Devolver", "devuelves las herramientas", new Vector3(51.5f, 1f, 18f), new Color(0.55f, 0.55f, 0.55f));
 
-        // Avería LEJOS (en la Cocina): la nevera. Su receta requiere herramientas.
+        // PRIMERA reparación real (la más simple/típica): un GRIFO QUE GOTEA en la Cocina (fontanería).
+        // Arreglo real: cerrar la llave de paso → desmontar el grifo → cambiar la junta/goma → montar →
+        // abrir y probar. Lejos del taller (junto a la Cocina), y la receta requiere herramientas.
         GameObject binGO = new GameObject("Averias_Resueltas");
         binGO.transform.SetParent(group.transform);
         binGO.transform.position = new Vector3(12f, 1f, 22f);
         FoodContainer bin = binGO.AddComponent<FoodContainer>(); bin.dishName = "avería resuelta"; bin.capacity = 5;
-        MakeStationPart(group.transform, "Nevera", "AbrirTapa",       "abres la tapa",          new Vector3(11f, 1f, 22f), new Color(0.70f, 0.85f, 0.95f));
-        MakeStationPart(group.transform, "Nevera", "CambiarPieza",    "cambias el compresor",   new Vector3(12f, 1f, 22f), new Color(0.55f, 0.55f, 0.60f));
-        MakeStationPart(group.transform, "Nevera", "Probar",          "pruebas que enfría",     new Vector3(13f, 1f, 22f), new Color(0.50f, 0.70f, 0.50f));
-        GameObject orderGO = new GameObject("Receta_RepararNevera");
+        MakeStationPart(group.transform, "Grifo", "CerrarLlave",  "cierras la llave de paso",   new Vector3(10.5f, 1f, 22f), new Color(0.60f, 0.60f, 0.60f));
+        MakeStationPart(group.transform, "Grifo", "Desmontar",    "desmontas la maneta",        new Vector3(11.5f, 1f, 22f), new Color(0.70f, 0.70f, 0.75f));
+        MakeStationPart(group.transform, "Grifo", "CambiarJunta", "cambias la junta gastada",   new Vector3(12.5f, 1f, 22f), new Color(0.30f, 0.30f, 0.30f));
+        MakeStationPart(group.transform, "Grifo", "Montar",       "montas de nuevo el grifo",   new Vector3(13.5f, 1f, 22f), new Color(0.70f, 0.70f, 0.75f));
+        MakeStationPart(group.transform, "Grifo", "AbrirProbar",  "abres la llave y compruebas (ya no gotea)", new Vector3(14.5f, 1f, 22f), new Color(0.50f, 0.75f, 0.90f));
+        GameObject orderGO = new GameObject("Receta_RepararGrifo");
         orderGO.transform.SetParent(group.transform);
         ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
-        order.productName = "nevera reparada"; order.output = bin; order.quota = 1; order.requiresTools = true;
-        order.stepStation = new[] { "Nevera", "Nevera", "Nevera" };
-        order.stepAction  = new[] { "AbrirTapa", "CambiarPieza", "Probar" };
-        order.stepLabel   = new[] { "abres la tapa", "cambias el compresor", "pruebas que enfría" };
-        GameObject ticketGO = new GameObject("Ticket_NeveraCocina");
+        order.productName = "grifo reparado"; order.output = bin; order.quota = 1; order.requiresTools = true;
+        order.stepStation = new[] { "Grifo", "Grifo", "Grifo", "Grifo", "Grifo" };
+        order.stepAction  = new[] { "CerrarLlave", "Desmontar", "CambiarJunta", "Montar", "AbrirProbar" };
+        order.stepLabel   = new[] { "cierras la llave de paso", "desmontas la maneta", "cambias la junta", "montas de nuevo", "abres y compruebas" };
+        GameObject ticketGO = new GameObject("Ticket_GrifoCocina");
         ticketGO.transform.SetParent(group.transform);
         RepairTicket ticket = ticketGO.AddComponent<RepairTicket>();
-        ticket.area = "Cocina"; ticket.what = "nevera"; ticket.repair = order;
+        ticket.area = "Cocina"; ticket.what = "grifo que gotea"; ticket.repair = order;
 
         Debug.Log("[SampleSceneBuilder] Dispatch demo (docs forge §5): «Taller_Servicio» lista el ticket " +
-                  "(nevera de la Cocina). Sin herramientas la reparación se rechaza; toma herramientas en el " +
-                  "banco, ve a la nevera (lejos), repárala (ticket cerrado) y vuelve a devolverlas. Logs [Servicio]/[Herramientas]/[Ticket].");
+                  "«grifo que gotea» de la Cocina. Sin herramientas la reparación se rechaza; toma la llave " +
+                  "en el banco, ve al grifo (lejos), arréglalo (cerrar→desmontar→cambiar junta→montar→probar) " +
+                  "y vuelve a devolver las herramientas. Logs [Servicio]/[Herramientas]/[Producción]/[Ticket].");
     }
 
     static StationPart MakeStationPart(Transform parent, string station, string action, string label, Vector3 pos, Color col)

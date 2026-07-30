@@ -249,9 +249,10 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] 5. **Enfermería/Farmacia** (salud; hereda las enfermedades del sedentarismo; Imhotep/Hipócrates).
 - [ ] 6. **Sala de Yoga** (Aliento y Mente; reusa meditación/Microcosmos; Buda/Sócrates; desbloquea maná).
 - [x] **Reparación por DISPATCH (tickets)** — **MVP hecho** (`DispatchDemo_AUTO`): `ServiceHub` lista tickets
-      + banco de herramientas (`Toolbox` tomar/devolver); `RepairTicket` (nevera de la Cocina); la receta
-      `requiresTools` → sin herramientas se rechaza. Bucle: ticket → tomar → ir al área → reparar → devolver.
-      **Falta**: UI de tablero real, tickets que aparecen dinámicamente, averiar máquinas reales por área.
+      + banco de herramientas (`Toolbox` tomar/devolver); la receta `requiresTools` → sin herramientas se
+      rechaza. **Primera reparación real: GRIFO QUE GOTEA** de la Cocina (fontanería, la avería más típica/
+      simple): cerrar llave → desmontar → cambiar junta → montar → abrir y probar. Bucle: ticket → tomar
+      herramientas → ir al grifo → reparar → devolver. **Falta**: UI de tablero, tickets dinámicos, más averías.
 - [ ] **Arquetipo de misión: DETENER CONFLICTOS (mediación)** (garden §5) — entre integrantes del mismo
       equipo (dominio vs autonomía) o entre tribus de la misma especie (territorio); todo desde
       pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.
