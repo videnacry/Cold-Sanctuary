@@ -1,23 +1,27 @@
 # Checklist de pruebas (Mesocosmos: progresión, farming, recursos, trepar, cocina)
 
-Registro de pruebas del build hasta 2026-07-29. **Pasada de testing (automatizada) hecha 2026-07-28/29**:
+Registro de pruebas del build hasta 2026-07-30. **Pasada de testing (automatizada) hecha 2026-07-28/29/30**:
 la mayoría confirmado con evidencia de `Logs/Editor.log` (ver "Estado de sesión"). **Lo que queda requiere
 juego MANUAL** (WASD / mantener tecla / apuntar+confirmar): rama de daño de "Dura", trepar, 4 esferas de
 Mesopotamia + YogaPortal, misión de yoga, `ThoughtField_Agua`, velocidad de tiempo, flujo del motor de
-Virtualización (`VirtualPointer` + estaciones + receta, Kitchen/Garden). Los ítems `[x]` son historial verificado.
+Virtualización en Kitchen/Garden/Mecánica/Construcción/Forja/Dispatch (`VirtualPointer` + estaciones +
+receta + tickets). Los ítems `[x]` son historial verificado.
 
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la **PR #17** (Cocina paseo+desayuno paso B + motor de Virtualización
-  puntero/estaciones/recetas, Kitchen y Garden — commits hasta `c26df3b`) ya está **sincronizado**
-  repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado** — ver secciones 11/12. El repo
-  recibe cambios de un compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar
-  `git log` al retomar** por si hay commits nuevos sin sincronizar (buscar archivos `.cs`
-  nuevos/modificados/borrados desde el último hash conocido y copiarlos a mano con `cp`/PowerShell
-  `Copy-Item`, replicando borrados también).
+- Todo lo mergeado hasta la **PR #18** (Mecánica/Construcción/Forja/Dispatch — reparación por tickets,
+  commits hasta `db9ed23`) ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`)
+  y **probado en lo automatizable** — ver secciones 11/12/13. El repo recibe cambios de un compañero de
+  equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay commits
+  nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último hash
+  conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **PR #18 (Mecánica/Construcción/Dispatch) compila y los 4 sandboxes nuevos corren sin excepciones**,
+  pero el flujo real (abastecer/reparar/construir/forjar) necesita **input manual real** (apuntar con
+  la mira + confirmar) — igual limitación que el motor de Virtualización de PR #17. Sin bugs nuevos
+  encontrados en esta pasada. Detalle en sección 13.
 - **Bug real encontrado y arreglado en PR #16** (commiteado `40cfbd1`): `AnimaController.PickBest()`
   no detectaba un `IBrain` destruido (comparaba `b == null` por el tipo interfaz, no
   `UnityEngine.Object`) → `MissingReferenceException` en bucle infinito ~8s después de cualquier
@@ -303,26 +307,18 @@ Evidencia de `Logs/Editor.log` de una corrida completa en Play:
       Unity). Sincronizado repo↔proyecto, recompilado, re-testeado: corrida completa post-petición sin
       ningún error nuevo. **Commiteado** (`40cfbd1`).
 
-### PR #17 — pendiente de compilar y probar
-- [ ] **Control/posesión** (`PossessionSandbox_AUTO`, logs `[Control]/[Jugador]/[Posesión]/[Petición]`):
-      el jugador posee «Anima_Debil» (2>1) y lo mueve con WASD; «Kushal_Follow» lo sigue; con **Tab**
-      intenta saltar a «Anima_Fuerte» pero su IA aguanta (2<3); «Aldeano_Pide» pide a Kushal ir a «HelpGoal»
-      → alma compartida ~8 s. *(Nota: WASD mueve también al Player real; comparten input.)*
-- [ ] **Cocina paso A** (`KitchenSandbox_AUTO`, logs `[Cocina]`): la `DirtArea` genera manchas; al pasar de
-      5 → "misión de limpieza ACTIVA"; el `Pinche_Limpia` (auto) las borra mancha a mancha → "misión COMPLETA".
-- [ ] **Cocina paseo + desayuno** (`KitchenOnboarding_AUTO`, logs `[Paseo]/[Cocina]`): «Anfitrion» recorre
-      Nevera/Plancha/Mesones/Contenedor "enseñando" cada una con «Novato» siguiéndolo (alma compartida);
-      «Cocinero» rellena el contenedor con el loop de desayuno y «Comensal» come.
-- [ ] **Virtualización — cocina** (`VirtualizationSandbox_AUTO`, logs `[Virtual]/[Producción]`): la **mira
-      está FIJA en el centro**; apunta **girando la cámara** (en el sandbox, con el look del PlayerController)
-      a las cajitas EN ORDEN — Mesón(abrir→sartén) → Nevera(abrir→huevos) → Cocina(poner sartén→cascar
-      huevo→**encender**) — y confirma con **F**. La parte apuntada se **resalta**. 3 desayunos = misión.
-- [ ] **Mecanografía (fogón)**: al confirmar **EncenderFuego** aparece una caja "Cocinando…"; **teclea**
-      `cook/eggs/protein/healthy/tasty/b2` → cada palabra **recorta tiempo**; al agotarse (o teclearlas
-      todas) se completa y produce el desayuno. **La cámara se congela mientras tecleas** (no debería girar).
-- [ ] **Virtualización — huerto** (`GardenVirtualization_AUTO`): misma mecánica, receta agrícola
-      (compostero/cobertizo/semillero/agua/parcela) en 9 pasos: abonar→arar→trasplantar→regar→cosechar.
-- [ ] **Regresión**: nada de lo anterior (movimiento/cámara/asanas) se rompe con los nuevos scripts.
+### PR #17 — verificado 2026-07-29 (ver detalle completo en sección 12 más abajo)
+- [x] **Control/posesión** (`PossessionSandbox_AUTO`): re-confirmado junto con PR #16, sigue funcionando
+      igual tras el merge de #17 (sin regresión).
+- [x] **Cocina paso A** (`KitchenSandbox_AUTO`): sigue funcionando igual, sin regresión.
+- [x] **Cocina paseo + desayuno** (`KitchenOnboarding_AUTO`): probado — encontrado y arreglado un bug real
+      (`GuidedTour` atascado en la 1ª estación, ver sección 12); tras el fix completa las 4 estaciones.
+      Loop de desayuno (`Cocinero`/`Comensal`) confirmado con decenas de ciclos limpios.
+- [~] **Virtualización — cocina/huerto** (mira+apuntar+confirmar, mecanografía del fogón): las estaciones y
+      la receta se construyen sin errores y no tiran excepciones corriendo sin input, pero el flujo de
+      apuntar/confirmar en sí **requiere juego manual real** (no reproducible por automatización, mismo
+      caso que trepar) — pendiente de una pasada jugando.
+- [x] **Regresión**: 0 excepciones nuevas en toda la corrida de PR #17.
 
 ## 12. Cocina paseo+desayuno (paso B) + motor de Virtualización (PR #17, mergeada 2026-07-29)
 `KitchenOnboarding_AUTO` ([Paseo]/[Cocina]), `VirtualizationSandbox_AUTO` ([Virtual]/[Producción]),
@@ -346,21 +342,29 @@ Evidencia de `Logs/Editor.log` de una corrida completa en Play:
       correr sin input. **Pendiente de una pasada de juego manual** para confirmar el flujo completo
       (apuntar en orden → confirmar → 3 desayunos/cosechas → misión cumplida).
 
-## 12. Mecánica · Construcción · Dispatch/reparación (PR #18) — NUEVO
+## 13. Mecánica · Construcción · Dispatch/reparación (PR #18, mergeada 2026-07-30)
 Sandboxes de `Build Sample Scene Blockout`. Se apuntan con la **mira central** (girar cámara) + **F**, o
-ratón/touch. Logs por consola.
-- [ ] **Mecánica arranque** (`MechanicsBeginner_AUTO`): 1) el `Aprendiz_Limpia` borra la suciedad del taller
-      (`[Cocina]`), 2) **abastecer** — apunta a una **Caja** (Tornillos/Aceite/Repuesto) y luego a su
-      **estante** correcto → `[Abastecer]` "guardado"; si te equivocas de estante, avisa; 3) **reparación**
-      — Diagnosticar (teclea `check/oil/bolt/gear/fix`) → Destornillar → SustituirPieza → Probar → `[Producción]`.
-- [ ] **Construcción arranque** (`ConstructionBeginner_AUTO`): limpiar el solar → abastecer (Caja→Almacén:
-      Ladrillo/Madera/Teja) → construir (Cimentar[teclea `build/brick/wall/wood/roof`]→Muro→Techar→Probar).
-- [ ] **Dispatch — reparar el GRIFO QUE GOTEA** (`DispatchDemo_AUTO`): al entrar, `[Servicio]` lista el
-      ticket "grifo que gotea en Cocina". Ve al **grifo** (junto a la Cocina) e intenta repararlo **sin
-      herramientas** → se rechaza (`[Producción] necesitas HERRAMIENTAS`). Ve al **Taller** (lejos), apunta
-      a **Herramientas/Tomar** (`[Herramientas] Tomadas`), vuelve al grifo y haz los 5 pasos (cerrar llave →
-      desmontar → cambiar junta → montar → abrir/probar) → `[Ticket] reparada`. Vuelve y **Devolver**.
-- [ ] **Forja del Micro** (`ForgeVirtualization_AUTO`): receta de bronce; el Crisol se acelera tecleando.
+ratón/touch. Evidencia de `Logs/Editor.log` de una corrida en Play:
+- [x] **Compila** tras sincronizar los 12 archivos del PR (`Virtualization/` nuevo: `RepairTicket`,
+      `ServiceHub`, `StockingTask`, `Toolbox`, `VirtualTask`; + extensiones y `SampleSceneBuilder.cs`) —
+      0 errores CS.
+- [x] **Los 4 sandboxes nuevos se construyen sin excepciones**: `ForgeVirtualization_AUTO`,
+      `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `DispatchDemo_AUTO` — confirmado por sus
+      logs `[SampleSceneBuilder]` de creación, uno por sandbox.
+- [x] **Sub-paso "limpiar" (automático, reutiliza `DirtArea`/`Cleaner`)**: tanto en Mecánica
+      (`Taller_Suciedad`) como en Construcción (`Solar_Escombros`) la suciedad sube hasta el umbral y
+      activa la misión — `[Cocina] ¡Suciedad sobre el umbral (4/4)! Misión de limpieza ACTIVA en
+      «Taller_Suciedad»/«Solar_Escombros»`. Mismo patrón que Cocina, ya probado, sin sorpresas.
+- [x] **Dispatch — listado inicial del ticket**: al entrar en Play, `[Servicio]` lista correctamente
+      el ticket pendiente — `[Servicio] «Taller (Mecánica/Construcción)»: 1 ticket(s) de avería. Toma
+      herramientas y ve al área a reparar.` seguido de `[Servicio]  · grifo que gotea en Cocina`.
+- [x] **Regresión**: 0 excepciones nuevas en toda la corrida (`NullReferenceException`/
+      `MissingReferenceException`/`error CS` — ninguna desde que arrancaron los sandboxes de PR #18).
+- [~] **Abastecer/reparar/construir/forjar (los pasos reales de cada flujo)**: igual que el motor de
+      Virtualización de PR #17, estos requieren **apuntar con la mira + confirmar** (input real de
+      teclado/ratón/touch) — no se pudieron ejercitar por automatización. **Pendiente de una pasada de
+      juego manual** siguiendo el guion ya escrito arriba (StockingTask en Mecánica/Construcción,
+      receta del grifo con herramientas en Dispatch, receta de bronce con mecanografía en la Forja).
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
