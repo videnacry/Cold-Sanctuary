@@ -18,7 +18,7 @@ receta + tickets). Los ítems `[x]` son historial verificado.
   de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay
   commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
   hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
-- **BUG REAL encontrado y arreglado en PR #19** (sin commitear todavía): `CarryToRefuge.onComplete`
+- **BUG REAL encontrado y arreglado en PR #19** (commiteado `7be2878`): `CarryToRefuge.onComplete`
   (`Assets/Scripts/Prologue/CarryToRefuge.cs`) era un `UnityEvent` **sin inicializar** — al agregarse el
   componente vía `AddComponent` en código (no desde el Inspector), el campo queda `null`, y
   `SampleSceneBuilder.BuildPrologueSandbox` hace `carry.onComplete.AddListener(...)` sin chequeo →
