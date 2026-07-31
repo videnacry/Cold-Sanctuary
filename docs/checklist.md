@@ -289,8 +289,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Enfermería "Una Salud"** (área 6): **una sola** clínica que cuida a **personas Y animales** (lado
       veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
       trataba a ambos. El Perro de Oberkassel es su fundacional-animal. (Diseño: area-progression §6.)
+- [ ] **Upa-yoga (resto)** (upa-yoga-mission §6): rebindear el input a las partes (tocar `PlayerController`/
+      `HeadLook`), articular avatar rigged (cuello/hombros/pies), cablear efectos a `PlayerStats`/humores,
+      Opción B creciente, mapeo elemento→compuesto (`Chemistry`), QTE de hombros (3+3), verificar reps (vídeo Isha).
+- [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
+      (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
+      vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#20 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#21 en master)
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
 `AnimaController.PickBest` (Object null-check), `GuidedTour.stopDistance`, y `CarryToRefuge`/`PrologueSequence`
@@ -299,10 +305,16 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
 - [ ] **Compila** tras `pull`; si algo falla, pégame el error. Sandboxes: `PossessionSandbox_AUTO`,
       `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`,
       `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `TruckMaintenance_AUTO`, `DispatchDemo_AUTO`,
-      `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`.
+      `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`
+      (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`), `UpaYogaSandbox_AUTO`.
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **31-jul (PR #21):** **nivel introductorio canónico** (`microcosmos-insects.md` §13: historia reescrita
+  —Sakshi cría al pulgón Ambrosio, la cueva, la muerte—, mapa de almas y **reencarnación** con *tell*, **armas
+  químicas/veneno**, género neutro) + **`novela.md`** (narración íntegra, semilla de la novela del juego) +
+  **`SoulRecord`** (ficha de alma) + **1ª virtualización de yoga** (`UpaYogaSession`: upa-yoga de cuello,
+  **control-por-partes** + **ritmo Guitar-Hero** con fichas/aliento/temblor; `upa-yoga-mission.md`).
 - **30-jul (PR #20):** **El Perro de Oberkassel** + animales-héroe (Togo/Hachikō/Cher Ami, POV animal);
   **Enfermería "Una Salud"** (personas+animales); **Microcosmos INSECTO** (opción B: hormigas, mirmecofilia/
   pulgón, feromonas=su "fuego", hongos); **1ª misión del micro** (cueva + pulgón-guía + banda de 7 hormigas).
