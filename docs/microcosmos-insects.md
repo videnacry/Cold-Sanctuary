@@ -141,3 +141,105 @@ Para **reconstruir la historia de la humanidad** área por área, el camino más
 cargar — la dificultad). El pulgón guía, rescata a las mayores y las lleva a la **cueva** (`CarryToRefuge`).
 **Falta:** que el jugador (avatar-insecto) guíe/cargue (hoy lo hace el pulgón en auto-demo); la sociedad
 hormiga posterior (reina/castas/feromonas/hormiguero); y el dispatch meso→micro que dispara la misión.
+
+---
+
+# §13. Nivel introductorio — canon (historia, almas y reencarnación) (2026-07-31)
+
+> **Narración íntegra (tono/sentimiento):** [`novela.md`](novela.md). Esta §13 es el mapa **estructural**;
+> la novela es la fuente de verdad **emocional** (casi literal del autor). Si discrepan, la novela manda en lo
+> narrativo y §13 en lo estructural.
+
+**Esta sección es el canon** del nivel introductorio y **actualiza** el esquema provisional de §4/§12 (la
+composición "1 súper mayor + 3 mayores…" y el pulgón "mamá que crió a las hormigas" quedan **superados**:
+fue **una hormiga, Sakshi, quien crió al pulgón**, no al revés).
+
+## §13.1 La historia (alba / cueva)
+**Sakshi**, una hormiga **observadora de la mente** —veía cómo actuaban las demás e incluso **a sí misma**, y
+a veces se quedaba **varada** en esa contemplación hasta que alguien la traía de vuelta—, fue **abandonada**
+por su tribu cuando la vieron **priorizar a un pulgón antes que seguirlas** (se sintieron despreciadas justo
+ellas, que se esforzaban por no dejarla atrás). Sola, halló a un **pulgón bebé deforme, Ambrosio**, que no
+podía sostenerse como los suyos; ella, que había observado a otros insectos, lo empujó a mantenerse firme y
+lo **cuidó hasta que sanó**. Ambrosio **no era común: vivió al extremo de lo posible para un pulgón** (como
+un perro que vive 18 años — la deformidad quizá le ralentizó el metabolismo). Juntos **acogieron a crías
+supervivientes de un ataque** — entre ellas las gemelas **Medea** y **Momo** —, y Ambrosio **las nutrió**.
+
+Más tarde el grupo **se unió a una tribu mayor**, la de **Héspero**, un/a **vigía de las estrellas**:
+dominante desde cría, arrastraba a la tribu a **las montañas más altas para acercarse a los astros** a costa
+de las débiles, **abandonando a muchas**. A su lado siempre, **Ruth**, la **recolectora** sumisa que acarrea
+**hongo** a todas partes, la última en comer, que quiere a Ambrosio pero **no puede desobedecer a Héspero**.
+La tribu terminó **abandonando** al grupo de Ambrosio; **4 hormigas desertaron** para quedarse con ellos (los
+**ancianos** de la banda), y **Momo se quedó** pese a que muchas le rogaban ir con ellas (su magnetismo era
+tal que la tribu **perdonaba la rebeldía de Medea** con tal de tener a Momo).
+
+**El final, muy cerca de la entrada de la cueva** (ya a la vista de Héspero): Ambrosio, que **llevaba días sin
+producir jugos** (y por eso más despreciado), venía muriéndose desde antes del abandono, pero **el peligro de
+su familia le dio fuerza** para empujar a los ancianos y dar sus **últimos jugos**. Se **derrumba** en la
+entrada, aliviado de haberlos puesto a salvo. **Medea**, más pequeña y débil de lo normal, **no logra
+levantarlo** (Ambrosio es grande y gordo); entre la histeria le pide **que no las deje** y **que la lleve con
+él**. Los **ancianos no pueden ni moverse**; el **único adulto, Atlas**, intenta consolarla y ella lo aparta;
+**Momo, por primera vez en mucho tiempo, se desborda en llanto** — y levanta a Ambrosio **sin esfuerzo**
+(secretamente es la más fuerte, por lo bien nutrida), le ofrece **todos sus tesoros** y trata de hacerle
+comer su hongo. **Héspero**, unos pasos delante y rígido, ve caer a Ambrosio con **un brillo de dolor en los
+ojos**; al ver a Medea arrullarlo, **se le afloja la quijada y se voltea rápido**. Tras la muerte, **Medea se
+endurece** (justo cuando la tribu al fin se acercaba) y **Momo toma un "trono" infantil** que Atlas enmienda.
+
+*Hilos parkeados (no desarrollar hasta extender el área): la ironía de que Sakshi hacía lo mismo que la tribu
+—empujar al que no encaja—; y que la tribu se vuelva más atrevida a medida que Héspero se ablanda.*
+
+## §13.2 Reencarnación — el mecanismo
+- **Dos vidas, dos juegos de nombres.** En la **Cocina** (era del fuego) **yacen las reencarnaciones**, con
+  **nombre y cuerpo distintos**: nunca coinciden con los del alba, para que el jugador **sienta** el eco sin
+  que se lo digan. La reencarnación es **real** (cuerpos nuevos), no una metáfora.
+- **Siempre hay un "tell".** Cada reencarnación deja un **indicio de vida pasada** (postura, manía, cuerpo,
+  hábito) para que el jugador pueda **notar** la relación. (Implementación: `SoulRecord` + sistema de indicios.)
+- **Los 7 hilos son roles que se reparten en CADA nivel** (ver `mob-epochs-matrix.md`). Un alma puede
+  encarnar **hilos distintos entre vidas** (Medea pasa de B a E); algunas son **constantes** (Héspero es A
+  siempre). Así cada nivel queda **tonalmente completo** aunque las almas evolucionen.
+
+### Mapa de almas
+| Alma (vida 1) | Vida 1 — alba/cueva · hilo | Vida 2 — Cocina/fuego |
+|---|---|---|
+| **Héspero** | vigía de estrellas; villano que abandona · **A** Guardián del Fuego | **Señor del Fuego** (sigue A) — *villano→héroe* |
+| **Sakshi** | observadora de la mente; crió a Ambrosio · **F** Aliento y Mente | **El Chamán** *(propuesta)* |
+| **Atlas** | el más fuerte; sostén/enmendador; pilar de Medea · **E** Corona y Espada | *fuerza benévola / orden justo* — **abierto** |
+| **Medea** | gemela débil; forja veneno y armas · **B** El Tallador | **tirana del veneno/feromonas** (pasa a **E**) — *héroe→villano* |
+| **Momo** | bromista magnética; trono infantil · **G** El Bromista | **el bufón de la era del fuego** *(propuesta)* |
+| **Ruth** | recolectora sumisa de hongo · **C** La Recolectora | **La Sembradora** (C) |
+| **Ambrosio** (pulgón) | mártir; cuerpo blando y grande · *centro sagrado, sin hilo* | **Nasatya** (almohada gigante, manso y fortísimo, postura rara) |
+| *(anciano sin nombre)* | *el primero que marca/pinta la cueva* · **D** La Mano de Lascaux *(propuesta)* | — |
+
+### Los dos ecos que encienden el mecanismo
+- **Ambrosio (pulgón blando) → Nasatya (almohada gigante).** El cuerpo que **nutría** vuelve como el cuerpo
+  que **abraza**; la postura rara es eco de la deformidad.
+- **Medea, ya tirana, espía a Nasatya y le da libertad total mientras controla a todos los demás.** El amor
+  enterrado por Ambrosio **sobrevive**: la déspota vela y perdona a la reencarnación de aquel a quien pidió
+  "llévame contigo". El jugador la ve **inexplicablemente blanda** con ese ser-almohada, y lo **siente**.
+
+## §13.3 Worldbuilding decidido
+- **Su civilización es QUÍMICA, no metalúrgica** (espejo de la humana en clave química):
+  **fuego → feromonas**, **metales/forja → venenos refinados/glándulas**, **agricultura → fungicultura**.
+  Las **armas** son de veneno, no cinéticas: el escalón "piedra-y-palo" = **veneno cosechado** de insectos
+  muertos (glándula/saco que cargan consigo), el **aguijón caído** como lanza emponzoñada, o **espina/astilla
+  untada en veneno** (el asta es lo de menos; mata el veneno). Ácido fórmico = su arma arrojadiza; mandíbulas
+  = los puños. El árbol tecnológico **culmina en las feromonas** → de ahí la **tirana de feromonas** (Medea) y
+  los "tesoros" (troves de veneno = riqueza). *(La forja/espina-metal estilizada aparece en niveles posteriores.)*
+- **Hongo, no plantas.** Ruth recolecta **hongo silvestre** (aún no cultiva) = germen pre-agrícola de la
+  fungicultura → florece en **La Sembradora**.
+- **Género neutro** en los insectos, salvo excepciones donde toque **maternidad/paternidad física**. Los
+  nombres son **nombres de alma** (Héspero se mantiene aunque el cuerpo hormiga sea hembra).
+- **Silueta de Ambrosio:** cuerpo **blando, panzudo, abundante** (nutridor) vs. las hormigas duras y
+  segmentadas; de viejo/deforme, grande y torpe.
+
+## §13.4 Abierto (a confirmar con el autor)
+1. **Hilo D (arte):** ¿nombre para el **anciano-pintor** (el primero que marca la cueva), o lo lleva Ambrosio?
+2. **Vidas 2 de Atlas / Sakshi / Momo:** propuestas *fuerza benévola / El Chamán / el bufón* — confirmar.
+3. **Ubicación de las reencarnaciones:** ¿todas en la Cocina, o repartidas por área según hilo (Ruth→Huerto)?
+
+## §13.5 Scaffold en escena
+`MicrocosmosSandbox_AUTO` (en `SampleSceneBuilder`) monta el **tableau de la llegada/muerte**: Ambrosio
+derrumbado en la entrada, Medea y Momo volcadas, Atlas y Sakshi detrás, los ancianos frágiles (`WeakOne`),
+y Héspero + Ruth velando desde la **Cueva**. **Cada ser lleva su `SoulRecord`** (nombre de alma · hilo · rol
+vida 1 · reencarnación vida 2 · tell), que se loguea al arrancar. `CarryToRefuge`/`WeakOne` siguen como
+scaffold jugable. **Falta:** el jugador (avatar-insecto) como agente; el "tell" visual real; el dispatch
+meso→micro; y transformar la Cocina (hoy humana) para alojar las reencarnaciones (siguiente paso).

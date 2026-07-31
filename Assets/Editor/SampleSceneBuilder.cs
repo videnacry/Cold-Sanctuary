@@ -87,6 +87,7 @@ public static class SampleSceneBuilder
         BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
         BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
         BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
+        BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -821,6 +822,9 @@ public static class SampleSceneBuilder
     /// </summary>
     static void BuildMicrocosmosSandbox(Transform parent)
     {
+        // Nivel introductorio (alba/cueva) — historia y almas canónicas en docs/microcosmos-insects.md §13.
+        // Tableau del momento de la LLEGADA/muerte: Ambrosio (pulgón) se derrumba en la entrada; la tribu
+        // (Héspero + Ruth) vela desde la cueva. Cada ser lleva su SoulRecord (nombre de alma · hilo · vida 2).
         GameObject group = new GameObject("MicrocosmosSandbox_AUTO");
         group.transform.SetParent(parent);
 
@@ -829,54 +833,114 @@ public static class SampleSceneBuilder
         cave.name = "Cueva"; cave.transform.SetParent(group.transform);
         cave.transform.position = new Vector3(-30f, 1f, 10f); cave.transform.localScale = new Vector3(2.5f, 1.5f, 2.5f);
         cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
-        CarryToRefuge refuge = cave.AddComponent<CarryToRefuge>(); refuge.needed = 4; refuge.radius = 3f;
+        CarryToRefuge refuge = cave.AddComponent<CarryToRefuge>(); refuge.needed = 2; refuge.radius = 4f;
 
-        // Dónde cayó la familia mayor.
-        GameObject familyPoint = new GameObject("FamiliaCaida_Punto");
-        familyPoint.transform.SetParent(group.transform);
-        familyPoint.transform.position = new Vector3(-34f, 1f, 24f);
+        // ── La TRIBU que ya está en la cueva y vela la llegada ───────────────────────────────
+        // Héspero: vigía de las estrellas, villano que abandona a los débiles (hilo A). Unos pasos delante de
+        // Ambrosio, entre él y la cueva. Reencarna → Señor del Fuego (misma alma-astro: atardecer→alba).
+        GameObject hespero = MakeInsect(group.transform, "Hespero", new Vector3(-30f, 1f, 12f),
+            new Vector3(0.6f, 0.6f, 0.8f), new Color(0.20f, 0.22f, 0.35f));
+        AddSoul(hespero, "Hespero", "A", "vigia de las estrellas; villano que abandona a los debiles",
+            "Senor del Fuego", "mira al cielo / atraido a lo alto; misma alma-astro (atardecer->alba)");
 
-        // Las 4 FRÁGILES caídas (inmóviles hasta ser rescatadas): 1 súper mayor + 3 mayores (2 de ellas la
-        // primera familia del pulgón) (docs microcosmos-insects §4).
-        string[] elders = { "SuperMayor", "Mayor_familiaPulgon_0", "Mayor_familiaPulgon_1", "Mayor_tribu" };
-        for (int i = 0; i < elders.Length; i++)
-        {
-            GameObject fam = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            fam.name = elders[i]; fam.transform.SetParent(group.transform);
-            fam.transform.position = new Vector3(-35f + (i % 2), 1f, 24f + (i / 2)); fam.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
-            fam.GetComponent<Renderer>().sharedMaterial = MakeMaterial(elders[i] + "_MAT", new Color(0.55f, 0.50f, 0.40f));
-            fam.AddComponent<WeakOne>();
-            fam.AddComponent<AiBrain>().selfRelevance = 1f;
-            fam.AddComponent<AnimaController>();
-        }
+        // Ruth: recolectora sumisa de hongo, la última en comer; quiere a Ambrosio pero no desobedece a
+        // Héspero (hilo C). Reencarna → La Sembradora. Lleva su montoncito de hongo.
+        GameObject ruth = MakeInsect(group.transform, "Ruth", new Vector3(-31.6f, 1f, 12.2f),
+            new Vector3(0.5f, 0.5f, 0.7f), new Color(0.45f, 0.40f, 0.30f));
+        AddSoul(ruth, "Ruth", "C", "recolectora sumisa de hongo; la ultima en comer",
+            "La Sembradora", "acarrea hongo a todas partes; de recoger a sembrar");
+        GameObject hongo = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        hongo.name = "Hongo_de_Ruth"; hongo.transform.SetParent(group.transform);
+        hongo.transform.position = new Vector3(-32.2f, 0.9f, 12.2f); hongo.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        hongo.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Hongo_MAT", new Color(0.75f, 0.70f, 0.55f));
 
-        // El pulgón (la "mamá"): produce melaza + mascota-guía (lleva a las mayores → cueva).
-        GameObject aphid = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        aphid.name = "Pulgon"; aphid.transform.SetParent(group.transform);
-        aphid.transform.position = new Vector3(-30f, 1f, 20f); aphid.transform.localScale = new Vector3(0.4f, 0.4f, 0.6f);
-        aphid.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Pulgon_MAT", new Color(0.60f, 0.80f, 0.45f));
-        aphid.AddComponent<HoneydewProducer>().interval = 3f;
-        AphidGuide guide = aphid.AddComponent<AphidGuide>();
-        guide.familyPoint = familyPoint.transform; guide.refuge = cave.transform; guide.rescueRadius = 5f;
+        // ── Ambrosio (el pulgón mártir) se derrumba en la entrada ────────────────────────────
+        // Cuerpo blando, grande, panzudo (nutridor) — contraste con las hormigas duras. Lleva días sin jugos
+        // (interval alto). Reencarna → Nasatya (almohada gigante, manso y fortísimo, postura rara).
+        GameObject aphid = MakeInsect(group.transform, "Ambrosio", new Vector3(-30f, 0.7f, 13.5f),
+            new Vector3(0.9f, 0.7f, 1.1f), new Color(0.60f, 0.80f, 0.45f));
+        aphid.AddComponent<HoneydewProducer>().interval = 30f; // "dias sin producir jugos"
+        AddSoul(aphid, "Ambrosio", "-", "el pulgon martir; cuerpo blando y grande que nutre a todos",
+            "Nasatya", "postura rara (eco de la deformidad); manso pese a fuerza; cuerpo-almohada");
 
-        // Las 3 CAPACES (movers) que cargan con las 4 frágiles: 1 adulta + 2 casi adultas (la dificultad —
-        // pocas y jóvenes). Acompañan al pulgón.
-        string[] movers = { "Adulta", "CasiAdulta_0", "CasiAdulta_1" };
-        for (int i = 0; i < movers.Length; i++)
-        {
-            GameObject ant = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-            ant.name = movers[i]; ant.transform.SetParent(group.transform);
-            ant.transform.position = new Vector3(-31f + i * 1.5f, 1f, 20f); ant.transform.localScale = new Vector3(0.5f, 0.5f, 0.7f);
-            ant.GetComponent<Renderer>().sharedMaterial = MakeMaterial(movers[i] + "_MAT", new Color(0.35f, 0.25f, 0.20f));
-            ant.AddComponent<AiBrain>().selfRelevance = 1f;
-            FollowBrain fb = ant.AddComponent<FollowBrain>(); fb.target = aphid.transform; fb.relevance = 1.5f; fb.stopDistance = 1.5f;
-            ant.AddComponent<AnimaController>();
-        }
+        // ── Las gemelas jóvenes, volcadas en Ambrosio ────────────────────────────────────────
+        // Medea: pequeña y débil, no logra levantarlo; forja veneno/armas (hilo B). Reencarna → tirana del
+        // veneno (pasa a E); en la vida 2 espía y libera a Nasatya y controla al resto.
+        GameObject medea = MakeInsect(group.transform, "Medea", new Vector3(-30.8f, 0.8f, 14.2f),
+            new Vector3(0.35f, 0.35f, 0.5f), new Color(0.30f, 0.20f, 0.22f));
+        AddSoul(medea, "Medea", "B", "gemela debil; defiende a Ambrosio; forja veneno y armas",
+            "tirana del veneno/feromonas (vida 2 -> hilo E)", "mandibula apretada; se aferra al veneno/la muerte");
 
-        Debug.Log("[SampleSceneBuilder] Microcosmos 1ª misión (amanecer; sin reina/hormiguero/feromonas): banda " +
-                  "de 7 hormigas + «Pulgon» (mamá). El pulgón guía → rescata a las 4 frágiles (SuperMayor + 3 " +
-                  "Mayor, 2 = familia del pulgón) y las lleva a la «Cueva» (CarryToRefuge); solo 3 capaces " +
-                  "(Adulta + 2 CasiAdulta) para cargarlas. Logs [Micro]/[Cuidado] (docs microcosmos-insects §4).");
+        // Momo: bromista magnética, secretamente fuerte (bien nutrida); levanta a Ambrosio sin esfuerzo (hilo
+        // G). Toma el «trono» infantil que Atlas enmienda. Reencarna → el bufón de la era del fuego.
+        GameObject momo = MakeInsect(group.transform, "Momo", new Vector3(-29.2f, 0.8f, 14.4f),
+            new Vector3(0.45f, 0.45f, 0.6f), new Color(0.55f, 0.45f, 0.20f));
+        AddSoul(momo, "Momo", "G", "bromista magnetica; fuerza oculta; trono infantil",
+            "el bufon de la era del fuego (propuesta)", "todo a broma; mas fuerte de lo que aparenta");
+
+        // ── El sostén y los ancianos ─────────────────────────────────────────────────────────
+        // Atlas: el único adulto, el más fuerte, sostén del bienestar y enmendador (hilo E). Único pilar de
+        // Medea. Reencarna → figura de fuerza benévola (propuesta).
+        GameObject atlas = MakeInsect(group.transform, "Atlas", new Vector3(-31.5f, 1f, 16.5f),
+            new Vector3(0.6f, 0.6f, 0.9f), new Color(0.30f, 0.28f, 0.24f));
+        AddSoul(atlas, "Atlas", "E", "el mas fuerte; sosten del bienestar; enmienda a Momo; pilar de Medea",
+            "fuerza benevola (propuesta)", "carga el peso de otros");
+
+        // Sakshi: observadora de la mente; crió a Ambrosio; se queda «varada» en la contemplación (hilo F).
+        // Reencarna → El Chamán (propuesta).
+        GameObject sakshi = MakeInsect(group.transform, "Sakshi", new Vector3(-28.7f, 1f, 16.8f),
+            new Vector3(0.5f, 0.5f, 0.7f), new Color(0.35f, 0.40f, 0.45f));
+        AddSoul(sakshi, "Sakshi", "F", "observadora de la mente; crio a Ambrosio; se queda varada",
+            "El Chaman (propuesta)", "se pierde en la contemplacion hasta que la traen de vuelta");
+
+        // Los ANCIANOS frágiles (inmóviles hasta ser cargados) — WeakOne. Uno es el primer PINTOR de la
+        // cueva (hilo D, La Mano de Lascaux, propuesta — nombre pendiente).
+        GameObject pintor = MakeInsect(group.transform, "Anciano_Pintor", new Vector3(-31f, 1f, 19.5f),
+            new Vector3(0.5f, 0.5f, 0.6f), new Color(0.50f, 0.46f, 0.40f));
+        pintor.AddComponent<WeakOne>();
+        pintor.AddComponent<AiBrain>().selfRelevance = 1f;
+        pintor.AddComponent<AnimaController>();
+        AddSoul(pintor, "Anciano_Pintor", "D", "el primero que marca/pinta la cueva al llegar",
+            "", "deja huellas/marcas por donde pasa (hilo D, nombre pendiente)");
+
+        GameObject anciano = MakeInsect(group.transform, "Anciano", new Vector3(-29.4f, 1f, 19.5f),
+            new Vector3(0.5f, 0.5f, 0.6f), new Color(0.50f, 0.46f, 0.40f));
+        anciano.AddComponent<WeakOne>();
+        anciano.AddComponent<AiBrain>().selfRelevance = 1f;
+        anciano.AddComponent<AnimaController>();
+
+        Debug.Log("[SampleSceneBuilder] Microcosmos — nivel introductorio (alba/cueva), tableau de la LLEGADA " +
+                  "(docs microcosmos-insects §13): Ambrosio (pulgon) se derrumba en la entrada; Medea no puede " +
+                  "levantarlo, Momo lo levanta; Hespero vela desde la cueva y se voltea. Cada ser lleva su " +
+                  "SoulRecord (nombre de alma · hilo · reencarnacion vida 2). CarryToRefuge/WeakOne = scaffold.");
+    }
+
+    // 1ª virtualización de yoga: solo necesita el componente en escena (UI OnGUI, arranca sola en Play).
+    static void BuildUpaYogaSandbox(Transform parent)
+    {
+        GameObject go = new GameObject("UpaYogaSandbox_AUTO");
+        go.transform.SetParent(parent);
+        go.AddComponent<UpaYogaSession>();   // autoStart = true → muestra paneles-tecla + secuencia al entrar en Play
+        Debug.Log("[SampleSceneBuilder] Upa-yoga (cuello): UpaYogaSandbox_AUTO. En Play muestra los paneles-tecla " +
+                  "(WASD/IJKL con letra), título=parte del cuerpo, barra de aliento; F = siguiente fase (docs upa-yoga-mission.md).");
+    }
+
+    // Crea un «insecto» (cápsula con material) para el sandbox del Microcosmos.
+    static GameObject MakeInsect(Transform parent, string name, Vector3 pos, Vector3 scale, Color col)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name; go.transform.SetParent(parent);
+        go.transform.position = pos; go.transform.localScale = scale;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
+        return go;
+    }
+
+    // Adjunta la ficha de alma (docs/microcosmos-insects.md §13) a un ser del Microcosmos.
+    static void AddSoul(GameObject go, string soulName, string hilo, string vida1, string vida2, string tell)
+    {
+        if (go == null) return;
+        SoulRecord s = go.AddComponent<SoulRecord>();
+        s.soulName = soulName; s.hilo = hilo; s.vida1Role = vida1; s.vida2Name = vida2; s.tell = tell;
     }
 
     static void BuildCriaBeginner(Transform parent)
