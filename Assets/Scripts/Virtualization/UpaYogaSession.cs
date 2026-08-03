@@ -7,13 +7,13 @@ using UnityEngine;
 /// (**WASD** = izquierda, **IJKL** = derecha; los de caminar y de <see cref="HeadLook"/>) **cambian de
 /// dueño** y pasan a controlar un **pie**, un **hombro** o el **cuello**.
 ///
-/// La mecánica es de **ritmo (tipo Guitar-Hero)**: **fichas caen** sobre los paneles-tecla; si pulsas **justo**
-/// cuando la ficha llega, **aciertas** (+punto); si no, **fallas** (−punto). Los **movimientos del cuerpo van
-/// orquestados** (siempre salen bien): fallar el ritmo no rompe la postura, solo hace **temblar** al jugador y
-/// le afecta el **aliento / energía / fatiga** (se repone descansando/comiendo). **Más puntos = más
-/// recompensa.** Las fichas son (por dentro) **elementos** que, en orden, formarían los **compuestos** que el
-/// movimiento libera; por fuera muestran **solo la letra de la tecla** (Opción A) — o el elemento si
-/// <see cref="showElement"/> (Opción B).
+/// La mecánica es de **ritmo**: las **fichas** llegan a los paneles-tecla (**caen** o **crecen** según
+/// <see cref="tileMode"/>); si pulsas **justo**, **aciertas** (+punto); si no, **fallas** (−punto). El
+/// movimiento **sucede** igual (va guiado), pero perder el ritmo **rompe la comunión**: **tiembla la parte del
+/// cuerpo que se está moviendo** (el grupo de teclas activo, no el jugador entero) y se resienten
+/// **aliento / energía / fatiga** (se repone descansando/comiendo). **Más puntos = más recompensa.** Las fichas
+/// son (por dentro) **elementos** que, en orden, formarían los **compuestos** que el movimiento libera; por
+/// fuera muestran **solo la letra de la tecla** — o el elemento si <see cref="showElement"/>.
 ///
 /// Andamiaje OnGUI (UI-mix). Pendiente: articular el avatar rigged, suprimir el input normal, y cablear los
 /// efectos a `PlayerStats`/humores de verdad (hoy son un medidor interno + logs).
@@ -33,8 +33,16 @@ public class UpaYogaSession : MonoBehaviour
     [Tooltip("Ventana de acierto alrededor del momento exacto.")]
     public float hitWindow = 0.18f;
     public int notesPerPhase = 8;
-    [Tooltip("false = Opción A (la ficha muestra solo la letra); true = Opción B (muestra el elemento químico).")]
+    [Tooltip("false = la ficha muestra solo la letra de la tecla; true = muestra el elemento químico.")]
     public bool showElement = false;
+    public enum TileMode { Fall, Grow }
+    [Tooltip("Grow = la ficha aparece sobre la tecla y crece hasta llenarla (púlsala al llenarse); Fall = cae (Guitar-Hero).")]
+    public TileMode tileMode = TileMode.Grow;
+
+    [Header("Rig (opcional): asigna los huesos y el yoga los mueve; vacío = solo UI/scaffold")]
+    public Transform neck;
+    public Transform leftShoulder, rightShoulder;
+    public float partSpeed = 90f, yawLimit = 70f, pitchLimit = 55f, shoulderLimit = 40f;
 
     static int _activeCount;
     public static bool Active => _activeCount > 0;
@@ -79,6 +87,8 @@ public class UpaYogaSession : MonoBehaviour
     readonly List<Note> _notes = new List<Note>();
     int _score, _hits, _misses;
     float _tremble, _energy = 0.7f, _fatigue = 0.3f;
+    float _yaw, _pitch, _lSh, _rSh;                 // acumuladores del rig (parte activa)
+    Quaternion _neckHome, _lShHome, _rShHome;       // rotaciones de reposo (para restaurar al terminar)
 
     void Start() { if (autoStart) Begin(); }
 
@@ -87,6 +97,9 @@ public class UpaYogaSession : MonoBehaviour
         if (_running) return;
         _running = true; _activeCount++;
         _score = 0; _hits = 0; _misses = 0; _tremble = 0f; _energy = 0.7f; _fatigue = 0.3f;
+        if (neck != null) _neckHome = neck.localRotation;
+        if (leftShoulder != null) _lShHome = leftShoulder.localRotation;
+        if (rightShoulder != null) _rShHome = rightShoulder.localRotation;
         StartPhase(0);
         Debug.Log("[UpaYoga] Sesion iniciada (ritmo). Pulsa la tecla justo cuando la ficha llega a su panel. F = saltar fase.");
     }
@@ -95,6 +108,9 @@ public class UpaYogaSession : MonoBehaviour
     {
         if (!_running) return;
         _running = false; _activeCount = Mathf.Max(0, _activeCount - 1);
+        if (neck != null) neck.localRotation = _neckHome;
+        if (leftShoulder != null) leftShoulder.localRotation = _lShHome;
+        if (rightShoulder != null) rightShoulder.localRotation = _rShHome;
         string tier = _score >= 12 ? "GRANDE" : _score >= 6 ? "media" : _score > 0 ? "pequena" : "ninguna";
         Debug.Log($"[UpaYoga] Fin. Puntos={_score} (aciertos {_hits}/fallos {_misses}). Recompensa {tier}. " +
                   "Los movimientos van orquestados (siempre salen); los fallos solo temblaron y gastaron aliento/energia.");
@@ -103,6 +119,7 @@ public class UpaYogaSession : MonoBehaviour
     void StartPhase(int idx)
     {
         _i = idx; _song = 0f; _breathT = 0f; _notes.Clear();
+        _yaw = 0f; _pitch = 0f; _lSh = 0f; _rSh = 0f;
         if (_i < 0 || _i >= Sequence.Length) return;
         Phase p = Sequence[_i];
         if (p.pattern != null && p.pattern.Length > 0)
@@ -123,6 +140,7 @@ public class UpaYogaSession : MonoBehaviour
         _song += Time.deltaTime;
         _breathT += Time.deltaTime; if (_breathT >= halfBreath * 2f) _breathT -= halfBreath * 2f;
         _tremble = Mathf.Max(0f, _tremble - Time.deltaTime * 0.6f);
+        DriveBody();   // mueve el rig (si hay huesos asignados) con las teclas de la parte activa
 
         // Aciertos: al pulsar una tecla de carril, busca la ficha más cercana dentro de la ventana.
         for (int lane = 0; lane < LaneKey.Length; lane++)
@@ -171,6 +189,39 @@ public class UpaYogaSession : MonoBehaviour
         }
     }
 
+    // Mueve el RIG (si hay huesos asignados): en fases de cuello, IJKL rotan `neck`; en hombros, W/S→izq, I/K→der.
+    // El temblor por perder comunión se suma como jitter a la parte activa. Sin hueso asignado, no-op (solo UI).
+    void DriveBody()
+    {
+        float jit = Mathf.Sin(Time.time * 47f) * _tremble * 8f;
+        if (_i >= 2 && _i <= 5)                                     // fases de CUELLO
+        {
+            if (neck == null) return;
+            if (Input.GetKey(KeyCode.L)) _yaw += partSpeed * Time.deltaTime;
+            if (Input.GetKey(KeyCode.J)) _yaw -= partSpeed * Time.deltaTime;
+            if (Input.GetKey(KeyCode.K)) _pitch += partSpeed * Time.deltaTime;
+            if (Input.GetKey(KeyCode.I)) _pitch -= partSpeed * Time.deltaTime;
+            _yaw = Mathf.Clamp(_yaw, -yawLimit, yawLimit);
+            _pitch = Mathf.Clamp(_pitch, -pitchLimit, pitchLimit);
+            neck.localRotation = _neckHome * Quaternion.Euler(_pitch + jit, _yaw + jit, 0f);
+        }
+        else if (_i == 6)                                           // fase de HOMBROS
+        {
+            if (rightShoulder != null)
+            {
+                float d = (Input.GetKey(KeyCode.I) ? 1f : 0f) - (Input.GetKey(KeyCode.K) ? 1f : 0f);
+                _rSh = Mathf.Clamp(_rSh + d * partSpeed * Time.deltaTime, -shoulderLimit, shoulderLimit);
+                rightShoulder.localRotation = _rShHome * Quaternion.Euler(_rSh + jit, 0f, 0f);
+            }
+            if (leftShoulder != null)
+            {
+                float d = (Input.GetKey(KeyCode.W) ? 1f : 0f) - (Input.GetKey(KeyCode.S) ? 1f : 0f);
+                _lSh = Mathf.Clamp(_lSh + d * partSpeed * Time.deltaTime, -shoulderLimit, shoulderLimit);
+                leftShoulder.localRotation = _lShHome * Quaternion.Euler(_lSh + jit, 0f, 0f);
+            }
+        }
+    }
+
     // ── UI (mix OnGUI): título + subtítulo + aliento + fichas cayendo sobre las teclas (forma de teclado) ──
     void OnGUI()
     {
@@ -178,15 +229,11 @@ public class UpaYogaSession : MonoBehaviour
         Phase p = Sequence[_i];
         float w = Screen.width, h = Screen.height;
 
-        // Temblor por pérdida de sincronía: sacude ligeramente los textos.
-        float sh = _tremble * 6f;
-        Vector2 shake = new Vector2(Mathf.Sin(Time.time * 40f) * sh, Mathf.Cos(Time.time * 37f) * sh);
-
         GUIStyle title = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 22, fontStyle = FontStyle.Bold };
         GUIStyle sub = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 14 };
         GUIStyle small = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 12 };
 
-        GUI.Label(new Rect(w * 0.5f - 300f + shake.x, 30f + shake.y, 600f, 30f), p.title, title);
+        GUI.Label(new Rect(w * 0.5f - 300f, 30f, 600f, 30f), p.title, title);
         GUI.Label(new Rect(w * 0.5f - 300f, 62f, 600f, 24f), p.subtitle, sub);
 
         if (p.breath)
@@ -206,27 +253,44 @@ public class UpaYogaSession : MonoBehaviour
         float[] lx = { cxL, cxL - (k + gap), cxL, cxL + (k + gap), cxR, cxR - (k + gap), cxR, cxR + (k + gap) };
         float[] ly = { keyY - (k + gap), keyY, keyY, keyY, keyY - (k + gap), keyY, keyY, keyY };
 
-        // Fichas cayendo.
+        // ¿Qué grupos están "en movimiento" en esta fase? Solo ESOS tiemblan al perder comunión.
+        bool leftActive = p.left != "—", rightActive = p.right != "—";
+        float sh = _tremble * 7f;
+        Vector2 shk = new Vector2(Mathf.Sin(Time.time * 40f) * sh, Mathf.Cos(Time.time * 37f) * sh);
+
+        // Fichas: caen (Fall) o crecen sobre la tecla (Grow). Solo se dibujan cerca de su momento.
         foreach (Note nt in _notes)
         {
             if (nt.done) continue;
-            float rel = nt.t - _song;                    // >0 aún cae; ~0 en la tecla
+            float rel = nt.t - _song;                    // >0 aún no; ~0 en la tecla
             if (rel > travelTime || rel < -hitWindow) continue;
-            float prog = 1f - (rel / travelTime);         // 0 arriba .. 1 en la tecla
-            float y = Mathf.Lerp(fretTop, ly[nt.lane], Mathf.Clamp01(prog));
-            string cap = showElement ? nt.element : LaneLetter[nt.lane];
+            float prog = Mathf.Clamp01(1f - (rel / travelTime)); // 0 lejos .. 1 en la tecla
             bool near = Mathf.Abs(rel) <= hitWindow;
+            Vector2 off = LaneActive(nt.lane, leftActive, rightActive) ? shk : Vector2.zero;
+            // Grow: la ficha va SOBRE la tecla (que ya muestra su letra) → muestra el ELEMENTO. Fall: la letra
+            // (cae lejos de la tecla). `showElement` fuerza el elemento también en Fall.
+            string cap = (tileMode == TileMode.Grow || showElement) ? nt.element : LaneLetter[nt.lane];
             Color old = GUI.color; GUI.color = near ? new Color(0.6f, 1f, 0.6f) : new Color(0.9f, 0.9f, 0.55f);
-            GUI.Box(new Rect(lx[nt.lane] - k * 0.45f, y - k * 0.45f, k * 0.9f, k * 0.9f), cap);
+            if (tileMode == TileMode.Fall)
+            {
+                float y = Mathf.Lerp(fretTop, ly[nt.lane], prog);
+                GUI.Box(new Rect(lx[nt.lane] - k * 0.45f + off.x, y - k * 0.45f + off.y, k * 0.9f, k * 0.9f), cap);
+            }
+            else // Grow: aparece pequeña sobre la tecla y crece hasta llenarla; hay que pulsarla al llenarse.
+            {
+                float s = Mathf.Lerp(k * 0.25f, k * 0.95f, prog);
+                GUI.Box(new Rect(lx[nt.lane] - s * 0.5f + off.x, ly[nt.lane] - s * 0.5f + off.y, s, s), cap);
+            }
             GUI.color = old;
         }
 
-        // Teclas objetivo (resaltadas al pulsar) + qué parte controla cada grupo.
+        // Teclas objetivo (resaltadas al pulsar). Tiemblan si SU parte se está moviendo (pérdida de comunión).
         for (int lane = 0; lane < LaneKey.Length; lane++)
         {
+            Vector2 off = LaneActive(lane, leftActive, rightActive) ? shk : Vector2.zero;
             Color old = GUI.color;
             if (Application.isPlaying && Input.GetKey(LaneKey[lane])) GUI.color = new Color(0.6f, 1f, 0.6f);
-            GUI.Box(new Rect(lx[lane] - k * 0.5f, ly[lane] - k * 0.5f, k, k), LaneLetter[lane]);
+            GUI.Box(new Rect(lx[lane] - k * 0.5f + off.x, ly[lane] - k * 0.5f + off.y, k, k), LaneLetter[lane]);
             GUI.color = old;
         }
         GUI.Label(new Rect(cxL - 90f, keyY + k * 0.5f + 6f, 180f, 20f), p.left, small);
@@ -241,4 +305,8 @@ public class UpaYogaSession : MonoBehaviour
         GUI.Label(new Rect(w * 0.5f - 120f, h - 34f, 240f, 22f),
                   (_i < Sequence.Length - 1 ? "F -> siguiente" : "F -> terminar"), small);
     }
+
+    // ¿El carril pertenece a un grupo que se está moviendo en esta fase? (0..3 = izq WASD, 4..7 = der IJKL)
+    static bool LaneActive(int lane, bool leftActive, bool rightActive)
+        => (lane < 4 && leftActive) || (lane >= 4 && rightActive);
 }

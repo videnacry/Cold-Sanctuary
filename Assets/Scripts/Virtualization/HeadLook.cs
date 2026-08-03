@@ -42,6 +42,7 @@ public class HeadLook : MonoBehaviour
     void Update()
     {
         if (TypingChallenge.Active) return;   // la cabeza no se mueve mientras se teclea
+        if (UpaYogaSession.Active) return;    // durante el yoga, IJKL las consume la sesión (no mueven la cámara)
 
         float dy = 0f, dp = 0f;
         if (Input.GetKey(right)) dy += 1f;

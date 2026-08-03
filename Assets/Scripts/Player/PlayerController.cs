@@ -159,6 +159,8 @@ public class PlayerController : MonoBehaviour
         if (TypingChallenge.Active) return;
         // Ceder el look libre cuando la cabeza restringida (modo 1ª persona de estación) está activa.
         if (HeadLook.Active) return;
+        // Durante el yoga (upa-yoga), IJKL/ratón los consume la sesión: no mover la cámara.
+        if (UpaYogaSession.Active) return;
 
         float yaw   = 0f;
         float pitch = 0f;
@@ -197,6 +199,8 @@ public class PlayerController : MonoBehaviour
 
     void HandleMovement()
     {
+        // Durante el yoga, WASD las consume la sesión (control por partes): el cuerpo no camina.
+        if (UpaYogaSession.Active) return;
         if (_isSwimming)
         {
             HandleSwimMovement();

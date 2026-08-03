@@ -34,21 +34,22 @@ jugador la **siente**. Los grupos son los que ya existen:
 
 ## 4. Mecánica de **ritmo (tipo Guitar-Hero)** + paneles-tecla
 La UI explicativa se vuelve **jugable**: sobre los paneles-tecla (con **forma de teclado**: W sobre A-S-D, e I
-sobre J-K-L) **caen fichas**. Si pulsas la tecla **justo** cuando la ficha llega a su panel → **acierto**
+sobre J-K-L) llegan **fichas**. Si pulsas la tecla **justo** cuando la ficha llega a su panel → **acierto**
 (+punto); si no → **fallo** (−punto). Encima, **título** = parte del cuerpo, **subtítulo** = instrucción, y una
 **barra de aliento** (inhala/exhala) que es el **pulso** de las fichas.
 
-- **El cuerpo va orquestado** (siempre sale bien): fallar el ritmo **no rompe la postura**, solo hace
-  **temblar** al jugador (la UI se sacude) y le afecta **aliento / energía / fatiga**. Acertar da **energía y
-  recuperación**; fallar **gasta**, hasta **descansar / comer / otra actividad** que reponga. **Más puntos =
-  más recompensa.** Esto **facilita** la simulación y la vuelve juego.
+- **Dos formas de ficha** (flag `tileMode`): **Grow (por defecto)** — la ficha **aparece sobre la tecla y
+  crece** hasta llenar el panel; hay que pulsarla al llenarse (queda **localizada en la parte**). Como está
+  **sobre** la tecla (que ya muestra su letra), la ficha muestra **el elemento químico** — el usuario ya leyó
+  la letra antes de que la tape. **Fall** — la ficha **cae** (Guitar-Hero clásico) y muestra **la letra**
+  (cae lejos de la tecla, la letra identifica el carril); `showElement` fuerza el elemento también en Fall.
+- **El movimiento SUCEDE (va guiado), pero puede perder comunión.** Fallar el ritmo no "sale mal" a lo bruto:
+  **tiembla la parte del cuerpo que se está moviendo** (el grupo de teclas activo, **no** el jugador entero) y
+  se resienten **aliento / energía / fatiga**. Acertar da **energía y recuperación**; fallar **gasta**, hasta
+  **descansar / comer / otra actividad** que reponga. **Más puntos = más recompensa.** Esto **facilita** la
+  simulación y la vuelve juego.
 - **Las fichas son elementos.** Por dentro cada ficha es un **elemento de la tabla periódica** que, **en
-  orden**, formaría el **compuesto** que ese movimiento **libera** (enlaza con `Chemistry`). Por fuera:
-  - **Opción A (elegida):** la ficha muestra **solo la letra de la tecla** (W/S… alineadas vertical, se sabe
-    cuál es por la letra); el elemento queda **oculto**.
-  - **Opción B (variante, un flag `showElement`):** muestra el **elemento**; y en vez de caer, puede
-    **aparecer pequeño sobre la tecla y crecer** hasta llenar el panel (pulsar antes de que se llene). *(Hoy
-    implementada la A; la B-creciente queda como variante a añadir.)*
+  orden**, formaría el **compuesto** que ese movimiento **libera** (enlaza con `Chemistry`; hoy placeholder).
 - Bajo cada cluster, **qué parte controla** ese grupo. Las teclas **se resaltan al pulsarlas**.
 
 **UI-mix (decidido):** paneles y textos van con **OnGUI** aquí (ocasión de mix aceptada); **candidatos a
@@ -61,12 +62,19 @@ a las hormigas a un refugio seguro mientras se desinfecta para tratar a un herid
 
 ## 6. Estado
 - **Hecho (scaffold jugable):** `UpaYogaSession` — 7 fases (postura base ×2 + cuello ×4 + hombros), **remapeo
-  de qué parte controla cada cluster**, **motor de ritmo Guitar-Hero** (fichas caen por carril, ventana de
-  acierto, puntuación, aciertos/fallos), **temblor** en la UI al fallar + medidores internos de **energía/
-  fatiga**, **barra de aliento** como pulso, **paneles-tecla con forma de teclado + letra** (Opción A;
-  `showElement` para la B), compuesto liberado por movimiento, avance con **F**/auto, `Active` estático.
+  de qué parte controla cada cluster**, **motor de ritmo** con **dos formas de ficha** (`tileMode`: **Grow**
+  por defecto = crece sobre la tecla / **Fall** = cae), ventana de acierto, puntuación (aciertos/fallos),
+  **temblor localizado en la parte que se mueve** (grupo activo, no el jugador) + medidores internos de
+  **energía/fatiga**, **barra de aliento** como pulso, **paneles-tecla con forma de teclado** (letra o
+  elemento en Grow / letra en Fall), compuesto liberado por movimiento, avance con **F**/auto, `Active` estático.
   Sandbox `UpaYogaSandbox_AUTO` en `SampleSceneBuilder`.
-- **Falta:** articular el **avatar rigged** (mover cuello/hombros/pies) y **suprimir el input normal** mientras
-  dura; cablear los efectos a **`PlayerStats`/humores** de verdad (hoy son medidor interno + logs); la
-  **Opción B creciente**; el mapeo **elemento→compuesto** real (con `Chemistry`); el **QTE de hombros** (3+3);
-  verificar repeticiones con el vídeo de Isha; opción de migrar paneles a `FollowingArrays`.
+- **Rebind del input (a) — hecho:** `HeadLook` y `PlayerController` (look + movimiento) **ceden a
+  `UpaYogaSession.Active`** (mismo patrón que `TypingChallenge.Active`) → durante el yoga, WASD/IJKL no
+  caminan ni mueven la cámara. **⚠ toca scripts core → compilar antes de mergear.**
+- **Rig — listo para enganchar:** campos `neck`/`leftShoulder`/`rightShoulder`; el driver **rota el hueso
+  asignado** con las teclas de la parte activa (IJKL→cuello; W/S→hombro izq., I/K→der.), con **jitter de
+  temblor** al perder comunión, y **restaura** la pose al terminar. **Sin hueso asignado = no-op** (solo UI).
+- **Falta:** asignar los **huesos del avatar rigged** (cuando el modelo esté en la escena) — el código ya los
+  moverá; cablear los efectos a **`PlayerStats`/humores** reales (hoy medidor interno + logs); el mapeo
+  **elemento→compuesto** real (con `Chemistry`); el **QTE de hombros** (3+3); verificar repeticiones con el
+  vídeo de Isha; opción de migrar paneles a `FollowingArrays`.
