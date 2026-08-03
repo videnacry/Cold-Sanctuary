@@ -289,14 +289,18 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Enfermería "Una Salud"** (área 6): **una sola** clínica que cuida a **personas Y animales** (lado
       veterinario dominante; también los voluntarios). Basada en el marco real One Health; el mismo sanador
       trataba a ambos. El Perro de Oberkassel es su fundacional-animal. (Diseño: area-progression §6.)
-- [ ] **Upa-yoga (resto)** (upa-yoga-mission §6): rebindear el input a las partes (tocar `PlayerController`/
-      `HeadLook`), articular avatar rigged (cuello/hombros/pies), cablear efectos a `PlayerStats`/humores,
-      Opción B creciente, mapeo elemento→compuesto (`Chemistry`), QTE de hombros (3+3), verificar reps (vídeo Isha).
+- [ ] **Upa-yoga (resto)** (upa-yoga-mission §6): *(rebind del input ✔ PR #22 — core, compilar)*; **asignar los
+      huesos del rig** cuando el avatar rigged esté en escena (el driver ya los mueve), cablear efectos a
+      `PlayerStats`/humores, mapeo elemento→compuesto (`Chemistry`), QTE de hombros (3+3), verificar reps (vídeo Isha).
 - [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
       (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#21 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#21 en master · **#22 abierta, toca CORE**)
+> **PR #22 (upa-yoga · rebind del input)** modifica **`PlayerController` y `HeadLook`** (guards `UpaYogaSession.Active`,
+> como el de `TypingChallenge`). Es **core** → **compilar y probar ANTES de mergear** (regla del proyecto). El
+> resto de #22 (Grow/temblor localizado/elemento-en-Grow/driver de rig null-safe) es aditivo.
+
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
 `AnimaController.PickBest` (Object null-check), `GuidedTour.stopDistance`, y `CarryToRefuge`/`PrologueSequence`
