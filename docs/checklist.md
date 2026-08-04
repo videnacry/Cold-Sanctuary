@@ -295,8 +295,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
       (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
+- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ → **emotion-slice**
+      (`stats+humores→frases→postura(`CreatureRig`)+`ScreenEffects``; refactor `UpaYogaSession` a `rig.Get()`)
+      → terminar `ScreenEffects` (cámara artística) → **composición** (slot peinado → partes → partes con
+      stats, ropa=defensa) → **depredación por stats** (`PreyEntry`: masa/fuerza/textura/tamaño; el tamaño
+      invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
+      lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#22 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#23 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -311,6 +317,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #23):** **`docs/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
+  timer; transformación por combate de stats con farol-vs-real; composición por componentes tipo CodeShip;
+  stats bidireccionales; Quimeras) + **`CreatureRig`** (parte lógica→hueso; auto `HumanBodyBones` humanoide /
+  manual insecto — un motor de yoga/emoción para cualquier cuerpo).
 - **03-ago (PR #22):** upa-yoga **(a)** — rebind del input (`HeadLook`/`PlayerController` ceden a
   `UpaYogaSession.Active`, como con `TypingChallenge`) + **hooks de rig** null-safe (neck/hombros; el driver
   rota el hueso asignado con las teclas + jitter de temblor, no-op si vacío) + refinos (tileMode Grow/Fall;
