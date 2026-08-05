@@ -56,6 +56,8 @@ reencuadra el evento antes de sentirlo.
 
 **Legibilidad (la capa que hace jugable todo esto):** leer esas señales = el hechizo **lector-de-mentes** /
 "señales posturales" de `stats-as-truth §6`. La **percepción** del observador decide cuánto lee.
+**Hecho (scaffold):** `EmotionReader` lee la orquesta de otros `Anima` cercanos → **"siente / quiere / hará"**
++ **aproximabilidad**; alcance y detalle gradúan por **percepción** (base del vínculo con crías). Sandbox `EmotionReader_AUTO`.
 
 ### §4b. La ORQUESTA de partes + traducción entre especies (hecho)
 El cuerpo no expresa con **una** postura global, sino con una **orquesta de partes**, cada una un componente
