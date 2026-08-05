@@ -266,9 +266,9 @@ public class CameraManager : MonoBehaviour
 
     IEnumerator BlackoutPulse()
     {
-        // Brief fade to black and back — driven by a fullscreen overlay (assign in a ScreenEffects component)
-        // Placeholder: just logs until ScreenEffects is implemented
-        Debug.Log("[CameraManager] Blackout pulse — sleepiness critical");
+        // Fade breve a negro y vuelta, vía ScreenEffects (2º actuador de emoción); si no está, solo espera.
+        if (ScreenEffects.Instance != null) ScreenEffects.Instance.Fade(0.8f, Color.black);
+        else Debug.Log("[CameraManager] Blackout pulse — sleepiness critical (sin ScreenEffects en escena)");
         yield return new WaitForSeconds(Random.Range(2f, 5f));
         _blackoutRoutine = null;
     }

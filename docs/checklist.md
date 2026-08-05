@@ -297,12 +297,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
 - [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ → **emotion-slice**
       (`stats+humores→frases→postura(`CreatureRig`)+`ScreenEffects``; refactor `UpaYogaSession` a `rig.Get()`)
-      → terminar `ScreenEffects` (cámara artística) → **composición** (slot peinado → partes → partes con
+      → `ScreenEffects` (cámara artística) ✔ → **composición** (slot peinado → partes → partes con
       stats, ropa=defensa) → **depredación por stats** (`PreyEntry`: masa/fuerza/textura/tamaño; el tamaño
       invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#23 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#24 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -313,10 +313,15 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`,
       `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `TruckMaintenance_AUTO`, `DispatchDemo_AUTO`,
       `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`
-      (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`), `UpaYogaSandbox_AUTO`.
+      (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`), `UpaYogaSandbox_AUTO`,
+      `ScreenEffectsSandbox_AUTO`.
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #24):** **`ScreenEffects`** (cámara artística: tintes por estado sueño/fatiga/estrés/
+  satisfacción + `Fade` que completa el blackout de `CameraManager`) + **hotfix:** el `enum` de `CreatureRig`
+  colisionaba con `BodyPart` de Asana → renombrado a **`RigPart`** (master #23 no compilaba). Sandbox
+  `ScreenEffectsSandbox_AUTO`.
 - **05-ago (PR #23):** **`docs/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
   timer; transformación por combate de stats con farol-vs-real; composición por componentes tipo CodeShip;
   stats bidireccionales; Quimeras) + **`CreatureRig`** (parte lógica→hueso; auto `HumanBodyBones` humanoide /
