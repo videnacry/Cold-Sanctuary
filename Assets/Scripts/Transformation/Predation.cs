@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -26,4 +27,26 @@ public static class Predation
     /// <summary>¿'a' teme a 'other'? (other bastante más poderoso).</summary>
     public static bool Fears(Anima a, Anima other, float margin = 0.5f)
         => a != null && other != null && PredatorPower(other) - PredatorPower(a) > margin;
+
+    /// <summary>
+    /// Poder EFECTIVO con **manada**: el propio + una fracción del de los **aliados** (misma facción `ITarget`)
+    /// dentro del radio. Dinámico (no un multiplicador fijo de dieta): un lobo solo no puede con el oso, pero
+    /// una manada sí; y el oso evita al lobo *con manada*.
+    /// </summary>
+    public static float EffectivePower(Anima self, float radius = 8f)
+    {
+        if (self == null) return 0f;
+        float p = PredatorPower(self);
+        ITarget st = self.GetComponent<ITarget>();
+        if (st == null) return p;   // sin facción → sin manada
+        HashSet<Anima> seen = new HashSet<Anima>();
+        foreach (Collider col in Physics.OverlapSphere(self.transform.position, radius))
+        {
+            Anima a = col.GetComponentInParent<Anima>();
+            if (a == null || a == self || !seen.Add(a)) continue;
+            ITarget t = a.GetComponent<ITarget>();
+            if (t != null && t.Faction == st.Faction) p += PredatorPower(a) * 0.5f;
+        }
+        return p;
+    }
 }

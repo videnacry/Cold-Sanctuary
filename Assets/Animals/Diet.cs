@@ -49,6 +49,7 @@ public class Diet
         PreyEntry chosenEntry = null;
         GameObject chosenTarget = null;
         Vector3 hunterPosition = hunter.transform.position;
+        float hunterPower = Predation.EffectivePower(hunter);   // incluye la manada del cazador
 
         foreach (PreyEntry entry in entries)
         {
@@ -65,7 +66,7 @@ public class Diet
                 // Depredación por stats: no cazar lo que no puede vencer (masa/fuerza/textura/tamaño). El
                 // tamaño invierte presa↔depredador; el farol de transformación no engaña (no cambia stats).
                 Anima candidateAnima = candidate.GetComponent<Anima>();
-                if (candidateAnima != null && !Predation.CanHunt(hunter, candidateAnima)) continue;
+                if (candidateAnima != null && hunterPower < Predation.Defense(candidateAnima)) continue;
                 float distance = Vector3.Distance(hunterPosition, candidate.transform.position);
                 if (distance <= nearestDistance)
                 {
