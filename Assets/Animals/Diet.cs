@@ -62,6 +62,10 @@ public class Diet
                 if (candidate == null || candidate == hunter.gameObject) continue;
                 ITarget candidateTarget = candidate.GetComponent<ITarget>();
                 if (candidateTarget != null && !hunter.CanHarm(candidateTarget)) continue;
+                // Depredación por stats: no cazar lo que no puede vencer (masa/fuerza/textura/tamaño). El
+                // tamaño invierte presa↔depredador; el farol de transformación no engaña (no cambia stats).
+                Anima candidateAnima = candidate.GetComponent<Anima>();
+                if (candidateAnima != null && !Predation.CanHunt(hunter, candidateAnima)) continue;
                 float distance = Vector3.Distance(hunterPosition, candidate.transform.position);
                 if (distance <= nearestDistance)
                 {

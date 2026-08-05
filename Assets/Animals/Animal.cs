@@ -136,7 +136,17 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (source == null || rig == null) return 0f;
         float enemyMass  = source.GetComponent<Rigidbody>()?.mass ?? 0f;
         float enemySpeed = source.GetComponent<NavMeshAgent>()?.speed ?? 0f;
-        return enemyMass * (enemySpeed * 0.5f) / Mathf.Max(rig.mass, 1f);
+        float physical = enemyMass * (enemySpeed * 0.5f) / Mathf.Max(rig.mass, 1f);
+        // Amenaza por STATS: escala según cuánto me supera en poder depredador (masa/fuerza/textura). Así una
+        // hormiga a lo grande con stats de ápex aterra; el farol (visual-only) no engaña (no cambia stats), la
+        // transformación real sí. (docs/stats-as-truth.md §2, Predation.)
+        Anima src = source.GetComponent<Anima>();
+        if (src != null)
+        {
+            float ratio = Predation.PredatorPower(src) / Mathf.Max(0.1f, Predation.PredatorPower(this));
+            physical *= Mathf.Clamp(ratio, 0.2f, 4f);
+        }
+        return physical;
     }
 
     public override void RespondToThreat(GameObject threat)
