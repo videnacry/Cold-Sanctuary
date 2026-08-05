@@ -303,7 +303,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#26 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#27 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -315,10 +315,15 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `TruckMaintenance_AUTO`, `DispatchDemo_AUTO`,
       `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`
       (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`), `UpaYogaSandbox_AUTO`,
-      `ScreenEffectsSandbox_AUTO`.
+      `ScreenEffectsSandbox_AUTO`, `EmotionOrchestraSandbox_AUTO`.
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #27):** **emotion-slice (orquesta)**: `EmotionExpression` (conductor: `Humores`→valencia/
+  activación/tensión+`Jolt`, sesgo por aptitudes) + `BodyPartReactor` (instrumento: reacción pasiva/violenta
+  por parte, traducción entre especies orejas↔brazos↔antenas↔alas) + aptitudes nuevas en `Anima`
+  (`afabilidad`, `sensibilidad`) + `UpaYogaSession` resuelve huesos vía `CreatureRig`/`BodyPart`. Sandbox
+  `EmotionOrchestraSandbox_AUTO`. (`docs/emotion-model.md §4b`.)
 - **05-ago (PR #26):** **`docs/emotion-model.md`** — modelo de emoción para **toda Anima** con base científica
   (circumplex=`Humores.Positividad×Energia` ya en código; Laban→`CreatureRig`; Big Five→aptitudes; etología/
   Darwin→señales animales+legibilidad). Aptitudes nuevas propuestas (`afabilidad`; promover `sensibilidad`).
@@ -331,7 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   satisfacción + `Fade` que completa el blackout de `CameraManager`) + **hotfix:** el `enum` de `CreatureRig`
   colisionaba con `BodyPart` de Asana → renombrado (y en **#25 unificado** en una sola `BodyPart`) (master #23
   no compilaba). Sandbox
-  `ScreenEffectsSandbox_AUTO`.
+  `ScreenEffectsSandbox_AUTO`, `EmotionOrchestraSandbox_AUTO`.
 - **05-ago (PR #23):** **`docs/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
   timer; transformación por combate de stats con farol-vs-real; composición por componentes tipo CodeShip;
   stats bidireccionales; Quimeras) + **`CreatureRig`** (parte lógica→hueso; auto `HumanBodyBones` humanoide /

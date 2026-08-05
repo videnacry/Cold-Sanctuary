@@ -89,6 +89,7 @@ public static class SampleSceneBuilder
         BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
         BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
         BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
+        BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -935,6 +936,35 @@ public static class SampleSceneBuilder
         fx.debugAutoCycle = true;   // sube/baja la intensidad en Play → se ven párpados/gris/viñeta roja
         Debug.Log("[SampleSceneBuilder] ScreenEffects: ScreenEffectsSandbox_AUTO (debugAutoCycle). En Play oscilan " +
                   "sueño (párpados)/fatiga (gris)/estrés (viñeta roja). Con jugador real, leen sus stats (docs stats-as-truth §6).");
+    }
+
+    // Orquesta emocional: un conductor (EmotionExpression, debugDrive) + partes-cubo que reaccionan.
+    static void BuildEmotionOrchestraSandbox(Transform parent)
+    {
+        GameObject root = new GameObject("EmotionOrchestraSandbox_AUTO");
+        root.transform.SetParent(parent);
+        root.transform.position = new Vector3(6f, 1.5f, 6f);
+        EmotionExpression exp = root.AddComponent<EmotionExpression>();
+        exp.debugDrive = true;   // oscila humores → la orquesta reacciona
+
+        // Cada cubo = una "parte" con un rol distinto (traducción entre especies).
+        MakeReactor(root.transform, "Quijada", new Vector3(0f, 0f, 0f), Vector3.right, 4f, 4f, 40f);   // tic ante el Jolt (violento)
+        MakeReactor(root.transform, "Antena", new Vector3(0.5f, 0.3f, 0f), Vector3.forward, 30f, 6f, 15f); // se mece con la activación
+        MakeReactor(root.transform, "Hombro", new Vector3(-0.5f, 0f, 0f), Vector3.right, 6f, 30f, 8f);  // se hunde con la valencia baja
+
+        Debug.Log("[SampleSceneBuilder] Orquesta emocional: EmotionOrchestraSandbox_AUTO (debugDrive). En Play, " +
+                  "«Quijada» da tics ante cambios violentos, «Antena» se mece con la activación, «Hombro» se hunde " +
+                  "con la valencia baja — misma señal, roles distintos (docs emotion-model.md).");
+    }
+
+    static void MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = name; go.transform.SetParent(parent);
+        go.transform.localPosition = pos; go.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", new Color(0.7f, 0.5f, 0.6f));
+        BodyPartReactor r = go.AddComponent<BodyPartReactor>();
+        r.axis = axis; r.arousalGain = arousalGain; r.valenceGain = valenceGain; r.joltGain = joltGain;
     }
 
     // Crea un «insecto» (cápsula con material) para el sandbox del Microcosmos.

@@ -57,6 +57,19 @@ reencuadra el evento antes de sentirlo.
 **Legibilidad (la capa que hace jugable todo esto):** leer esas señales = el hechizo **lector-de-mentes** /
 "señales posturales" de `stats-as-truth §6`. La **percepción** del observador decide cuánto lee.
 
+### §4b. La ORQUESTA de partes + traducción entre especies (hecho)
+El cuerpo no expresa con **una** postura global, sino con una **orquesta de partes**, cada una un componente
+que **reacciona a los stats** de dos formas: **pasiva** (nivel de activación/valencia → offset sostenido:
+erguir/hundir, abrir/cerrar) y **violenta** (un cambio brusco de stat → un **tic** rápido que decae: quijada,
+uñas, antena, oreja…). Y esto **es la traducción entre respuestas de especie**: la MISMA señal emocional mueve
+**orejas ↔ brazos ↔ antenas ↔ alas** según qué parte sea y sus ganancias (una oreja de gato y un brazo humano,
+ambos con "cerrarse ante el miedo" alto, reaccionan igual). No hay tabla gesto→parte: es **emergente** —cada
+parte tiene su *rol* (ganancias) y todas oyen la misma señal—.
+- **`EmotionExpression`** (conductor, en el `Anima`): `Humores`→valencia/activación/tensión + **`Jolt`** (la
+  variación violenta, amplificada por `sensibilidad`), sesgado por aptitudes/`afabilidad`; **publica la señal**.
+- **`BodyPartReactor`** (instrumento, uno por parte): lee la señal y mueve su hueso (vía `CreatureRig.Get(BodyPart)`)
+  con sus ganancias de activación/valencia/Jolt. Un ser = muchos, cada uno su rol. Universal y null-safe.
+
 ## 5. Las frases (etiquetas del espacio)
 Cada frase es una **región del espacio + calidad Laban**, gateada por stats (usa `MindPhrase`/`ThoughtField`):
 - "mirar siempre al frente" = compostura/aguante altos → **subir/directo** aunque haya fatiga.

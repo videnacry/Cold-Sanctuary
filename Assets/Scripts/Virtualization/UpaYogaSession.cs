@@ -40,6 +40,8 @@ public class UpaYogaSession : MonoBehaviour
     public TileMode tileMode = TileMode.Grow;
 
     [Header("Rig (opcional): asigna los huesos y el yoga los mueve; vacío = solo UI/scaffold")]
+    [Tooltip("Si se asigna, resuelve neck/hombros desde la fuente única BodyPart (rig.Get). Si no, usa los Transform de abajo.")]
+    public CreatureRig rig;
     public Transform neck;
     public Transform leftShoulder, rightShoulder;
     public float partSpeed = 90f, yawLimit = 70f, pitchLimit = 55f, shoulderLimit = 40f;
@@ -97,6 +99,12 @@ public class UpaYogaSession : MonoBehaviour
         if (_running) return;
         _running = true; _activeCount++;
         _score = 0; _hits = 0; _misses = 0; _tremble = 0f; _energy = 0.7f; _fatigue = 0.3f;
+        if (rig != null)   // fuente única de partes: resuelve los huesos desde BodyPart
+        {
+            if (rig.Get(BodyPart.Neck) != null) neck = rig.Get(BodyPart.Neck);
+            if (rig.Get(BodyPart.ShoulderLeft) != null) leftShoulder = rig.Get(BodyPart.ShoulderLeft);
+            if (rig.Get(BodyPart.ShoulderRight) != null) rightShoulder = rig.Get(BodyPart.ShoulderRight);
+        }
         if (neck != null) _neckHome = neck.localRotation;
         if (leftShoulder != null) _lShHome = leftShoulder.localRotation;
         if (rightShoulder != null) _rShHome = rightShoulder.localRotation;
