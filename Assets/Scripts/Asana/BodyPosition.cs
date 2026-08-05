@@ -57,8 +57,16 @@ public class BodyPosition
     }
 }
 
+/// <summary>
+/// **Fuente única** de partes del cuerpo (yoga/asana, IBody, rig, emoción, cross-especie). Los **primeros 8**
+/// (Elbows..Head) son las **regiones de yoga entrenables** e **indexadas por `(int)BodyPart` en
+/// `PlayerStats.bodyStats[8]`** — su orden NO se toca. Los siguientes son **huesos finos** (L/R) para
+/// articulación (`CreatureRig`) e insecto/quimera; **no** están en `bodyStats` → `GetBodyPartStats` devuelve
+/// vacío para ellos (por el guard de rango). No todo cuerpo tiene todas (una hormiga no tiene "Neck").
+/// </summary>
 public enum BodyPart
 {
+    // 0..7 — regiones de yoga entrenables (indexadas en bodyStats[8], NO reordenar):
     Elbows,
     Hands,
     Knees,
@@ -66,5 +74,13 @@ public enum BodyPart
     Hips,
     Back,
     Shoulders,
-    Head
+    Head,
+    // Huesos finos para rig/articulación (CreatureRig) — L/R:
+    Neck, Chest,
+    ShoulderLeft, ShoulderRight,
+    HandLeft, HandRight,
+    FootLeft, FootRight,
+    // Insecto / quimera:
+    AntennaLeft, AntennaRight, Tail,
+    LimbA, LimbB, LimbC, LimbD, LimbE, LimbF
 }

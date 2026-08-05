@@ -302,7 +302,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#24 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#25 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -318,9 +318,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #25):** **fuente única de partes**: se retira `RigPart` y se **amplía el `BodyPart` de Asana**
+  (0–7 = regiones de yoga intactas; + huesos finos L/R + insecto/quimera). `CreatureRig` tira de ella;
+  `bodyStats[8]` sigue igual (los huesos finos no se indexan → `GetBodyPartStats` vacío por el guard). Base
+  para la emotion-slice (`docs/stats-as-truth.md §8`).
 - **05-ago (PR #24):** **`ScreenEffects`** (cámara artística: tintes por estado sueño/fatiga/estrés/
   satisfacción + `Fade` que completa el blackout de `CameraManager`) + **hotfix:** el `enum` de `CreatureRig`
-  colisionaba con `BodyPart` de Asana → renombrado a **`RigPart`** (master #23 no compilaba). Sandbox
+  colisionaba con `BodyPart` de Asana → renombrado (y en **#25 unificado** en una sola `BodyPart`) (master #23
+  no compilaba). Sandbox
   `ScreenEffectsSandbox_AUTO`.
 - **05-ago (PR #23):** **`docs/stats-as-truth.md`** (la ley única: `stats→frases→todo`; hechizo=modo/energía=
   timer; transformación por combate de stats con farol-vs-real; composición por componentes tipo CodeShip;
