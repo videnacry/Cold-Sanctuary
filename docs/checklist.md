@@ -1,6 +1,6 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-07-30. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-08-05. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
@@ -295,12 +295,12 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
       (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
-- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ · **modelo `emotion-model.md` ✔** → **`EmotionExpression`**
-      (`Humores`→valencia/activación circumplex, sesgo por aptitudes+`ElementalTone`→Laban→`CreatureRig`+
-      `ScreenEffects`+frases; añadir `afabilidad`, promover `sensibilidad`; refactor `UpaYogaSession` a `rig.Get()`)
-      → `ScreenEffects` (cámara artística) ✔ → **composición** (slot peinado → partes → partes con
-      stats, ropa=defensa) → **depredación por stats** (`PreyEntry`: masa/fuerza/textura/tamaño; el tamaño
-      invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
+- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
+      `ScreenEffects` ✔ · **emotion-slice ✔** (`EmotionExpression`/`BodyPartReactor`/`EmotionReader`; circumplex+
+      Laban+frases+legibilidad; `afabilidad`/`sensibilidad`; `emotion-model.md`) → **quedan**: **composición**
+      (slot peinado → partes → partes con stats, ropa=defensa) → **depredación por stats** (`PreyEntry`:
+      masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador) → **hechizos** (transformación
+      3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
 ## ⚠ Compilar y PROBAR en Unity (PRs #16–#29 en master)
