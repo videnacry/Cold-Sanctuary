@@ -27,10 +27,14 @@ public class BodyPartReactor : MonoBehaviour
     public float joltGain = 25f;
     [Tooltip("Qué rápido se calma el tic.")]
     public float twitchDecay = 6f;
+    [Tooltip("Grados extra de hundimiento con el 'peso' Laban (valencia/energía bajas).")]
+    public float heavinessDroop = 10f;
+    [Tooltip("Amplitud del temblor tenso con el 'flujo ligado' Laban (tensión alta).")]
+    public float boundJitter = 2f;
 
     Transform _t;
     Quaternion _home;
-    float _twitch;
+    float _twitch, _current;
 
     void Start()
     {
@@ -44,13 +48,21 @@ public class BodyPartReactor : MonoBehaviour
     void Update()
     {
         if (conductor == null) return;
-        // PASIVO: la activación erige/perk; la valencia baja cierra/hunde.
-        float passive = (conductor.Arousal - 0.5f) * arousalGain - (0.5f - conductor.Valence) * valenceGain;
+        // PASIVO: la activación erige/perk; la valencia baja cierra/hunde; el PESO (Laban) hunde más.
+        float passive = (conductor.Arousal - 0.5f) * arousalGain
+                        - (0.5f - conductor.Valence) * valenceGain
+                        - conductor.Heaviness * heavinessDroop;
         // VIOLENTO: el Jolt inyecta un tic que luego decae.
         _twitch += conductor.Jolt * joltGain * Time.deltaTime * 8f;
         _twitch = Mathf.Lerp(_twitch, 0f, Time.deltaTime * twitchDecay);
+        // FLOW ligado (Laban): temblor tenso proporcional a la tensión.
+        float jitter = conductor.Boundness * boundJitter * Mathf.Sin(Time.time * 30f);
+        float target = passive + _twitch + jitter;
 
         Vector3 a = axis.sqrMagnitude > 0.0001f ? axis.normalized : Vector3.right;
-        _t.localRotation = _home * Quaternion.AngleAxis(passive + _twitch, a);
+        // TIME (Laban): la activación alta reacciona rápido; la baja, sostenida/lenta.
+        float speed = 2f + conductor.Quickness * 10f;
+        _current = Mathf.Lerp(_current, target, Time.deltaTime * speed);
+        _t.localRotation = _home * Quaternion.AngleAxis(_current, a);
     }
 }

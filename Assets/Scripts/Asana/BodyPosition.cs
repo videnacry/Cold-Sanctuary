@@ -80,6 +80,8 @@ public enum BodyPart
     ShoulderLeft, ShoulderRight,
     HandLeft, HandRight,
     FootLeft, FootRight,
+    // Animales (etología: orejas/cola son el "barómetro" emocional):
+    EarLeft, EarRight,
     // Insecto / quimera:
     AntennaLeft, AntennaRight, Tail,
     LimbA, LimbB, LimbC, LimbD, LimbE, LimbF
