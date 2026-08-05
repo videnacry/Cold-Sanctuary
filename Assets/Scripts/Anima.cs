@@ -52,6 +52,10 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float creativity   = 1f;
     [HideInInspector] public float sociability  = 1f;
     [HideInInspector] public float discipline   = 1f;
+    // Extendidas para deep-sim emocional (docs/emotion-model.md §6); aún NO en IAptitudes:
+    [HideInInspector] public float afabilidad   = 1f;   // agreeableness: calidez/cooperación vs frialdad
+    [HideInInspector] public float sensibilidad = 1f;   // reactividad EMOCIONAL (cuánto oscilan los humores).
+                                                        // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
 
     // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
     // desde Physiognomy más adelante).
