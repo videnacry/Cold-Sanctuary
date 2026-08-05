@@ -45,6 +45,13 @@ gusano-Kushal** reacciona a lo que **huele**, no a lo que ve; y una **hormiga co
 oso** aterra a los osos pero sigue siendo presa de las **Quimeras** del santuario subterráneo. (A uno mismo el
 hechizo siempre puede en forma; a otros, depende del combate de stats.)
 
+> **Hecho (scaffold):** `TransformationSpell` + `StatProfile`/`TransformPreset` (`Assets/Scripts/Transformation/`).
+> `Cast(target, form)` → **Failed / VisualOnly (farol) / Full (cuerpo+stats)** según potencia (compostura+
+> disciplina+creatividad + energía) vs coste (resistencia + inyectado por `Might`), con **revert** por duración.
+> Bidireccional (bajar stats = debilitar). Se cablea en `Anima`s reales (sin sandbox: `Anima` es abstracta).
+> **Pendiente:** ligar la **duración a la energía del hechizo**; que la **depredación "huela"** el resultado
+> (visual-only = farol → leen stats reales); customización giant/small ya cubierta por `visualScale`+`bodyMass`.
+
 ## 5. Composición por componentes (patrón CodeShip)
 Un personaje = **cuerpo base + partes slotables**; cada parte aporta **{malla, posición/escala, stats
 opcionales}** (igual que propulsores/alas → nave). Dos capas **ortogonales**:
