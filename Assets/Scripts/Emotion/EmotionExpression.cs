@@ -23,6 +23,11 @@ public class EmotionExpression : MonoBehaviour
     public float Arousal { get; private set; }   // 0..1 (activado)
     public float Tension { get; private set; }   // 0..1 (cortisol/adrenalina)
     public float Jolt    { get; private set; }   // 0..1 pico transitorio por cambio VIOLENTO
+    // Cualidades Laban (Effort) derivadas del circumplex — el CÓMO del movimiento (las usan los reactores):
+    public float Quickness { get; private set; } // Time: rápido (activación alta) ↔ sostenido
+    public float Heaviness { get; private set; } // Weight: pesado (valencia/energía bajas) ↔ ligero
+    public float Boundness { get; private set; } // Flow: ligado/tenso (tensión alta) ↔ libre/suelto
+    public string Emotion  { get; private set; } // etiqueta del cuadrante (frase base)
 
     Anima _anima;
     Humores _local;
@@ -70,5 +75,12 @@ public class EmotionExpression : MonoBehaviour
         _prevA = arousal; _prevT = tension;
 
         Valence = valence; Arousal = arousal; Tension = tension;
+
+        // Cualidades Laban desde el circumplex (docs/emotion-model.md §4).
+        Quickness = arousal;
+        Heaviness = Mathf.Clamp01((1f - valence) * 0.6f + (1f - arousal) * 0.4f);
+        Boundness = tension;
+        Emotion = arousal > 0.55f ? (valence >= 0.5f ? "alegria" : "ira/miedo")
+                                  : (valence >= 0.5f ? "serenidad" : "abatimiento");
     }
 }

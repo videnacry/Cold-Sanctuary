@@ -68,7 +68,27 @@ parte tiene su *rol* (ganancias) y todas oyen la misma señal—.
 - **`EmotionExpression`** (conductor, en el `Anima`): `Humores`→valencia/activación/tensión + **`Jolt`** (la
   variación violenta, amplificada por `sensibilidad`), sesgado por aptitudes/`afabilidad`; **publica la señal**.
 - **`BodyPartReactor`** (instrumento, uno por parte): lee la señal y mueve su hueso (vía `CreatureRig.Get(BodyPart)`)
-  con sus ganancias de activación/valencia/Jolt. Un ser = muchos, cada uno su rol. Universal y null-safe.
+  con sus ganancias. **Calidad de movimiento = Laban**: `Quickness` (activación→velocidad de reacción),
+  `Heaviness` (valencia/energía bajas→hundir), `Boundness` (tensión→temblor tenso). Un ser = muchos, cada uno su rol.
+
+### §4c. Presets por especie — NUESTROS animales (etología real)
+Roles de reacción por las especies **ya definidas** (Oso/Lobo/Zorro/Malamute/Conejo/Ciervo/Foca/Ballena/Pájaro).
+Partes en la fuente única `BodyPart` (se añaden `EarLeft/EarRight`; alas = `LimbA/LimbB`; cresta = `Head`).
+| Especie | Partes expresivas | Señal → reacción (real) |
+|---|---|---|
+| **Lobo** (`WolfBehavior`) | orejas, cola, lomo (`Chest`), cabeza | orejas adelante=interés / aplanadas=miedo; cola alta=dominio / entre patas=miedo; **erizar** lomo con ira; postura rígida=amenaza |
+| **Oso** (`BearBehaviour`) | torso (`Chest`/`Hips`), cabeza, quijada | **alzarse** (evaluar/amenaza) con activación; cabeza baja+balanceo=estrés; **chasquido de quijada** ante el Jolt |
+| **Zorro** (`FoxBehavior`) | orejas, cola | orejas foco/alerta; cola **esponjada** en alarma / baja en miedo; agazapar con valencia baja |
+| **Malamute** (`MalamuteBehavior`) | orejas, cola, torso | cola: meneo (alegría)=activación+valencia altas / entre patas (miedo); **play-bow**; apaciguar (afabilidad) |
+| **Conejo** (`BunnyBehavior`) | orejas, patas, cuerpo | orejas erguidas=alerta / pegadas=miedo; **freeze** (miedo alto → *suprimir* toda reacción = inmovilidad tónica); thump |
+| **Ciervo** (`DeerBehavior`) | orejas, cola | orejas giratorias; **cola-bandera** (levantar) en alarma; **freeze** y patear |
+| **Foca** (`SealBehavior`) | aletas (`Limb*`), cuerpo, cabeza | arquear/vocalizar; expresión distinta en agua vs tierra |
+| **Ballena** (`WhaleBehavior`) | cola, cuerpo | poca cara → **cuerpo/cola**: breach/slap = excitación/aviso |
+| **Pájaro** (`BirdBehavior`) | alas (`LimbA/B`), cresta (`Head`), cola | **abrir alas**=amenaza/exhibición; erizar cresta; huir (volar) con el Jolt |
+
+*Nota de rol especial:* **freeze / inmovilidad tónica** (conejo/ciervo ante miedo intenso) = un reactor que
+**suprime** la reacción (se queda quieto) en vez de moverse — importante y real. Se modela como un rol que
+*invierte* la respuesta al miedo. Los presets se asignan por prefab en Unity (los modelos viven fuera del repo).
 
 ## 5. Las frases (etiquetas del espacio)
 Cada frase es una **región del espacio + calidad Laban**, gateada por stats (usa `MindPhrase`/`ThoughtField`):
