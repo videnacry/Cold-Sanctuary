@@ -58,6 +58,8 @@ public abstract class Anima : MonoBehaviour, IAptitudes
                                                         // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
     [HideInInspector] public float armadura     = 0.1f; // textura/coraza (piel/escamas/exoesqueleto): puntos de
                                                         // depredador + defensa (docs/stats-as-truth.md §2, Predation).
+    [HideInInspector] public float magicAura    = 0f;   // aura mágica FIRMADA: + inspira (bonds fáciles) / −
+                                                        // destructiva (más temida). Decae con `MagicAura`.
 
     // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
     // desde Physiognomy más adelante).
@@ -151,7 +153,11 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     {
         Bond b = GetBond(target);
         if (b == null) { b = new Bond(target, type); bonds.Add(b); }
-        b.value = Mathf.Clamp(b.value + amount * EffectiveBondGrowthRate, 0f, 100f);
+        // Aura mágica benevolente del OBJETIVO → vínculo más fácil (docs/stats-as-truth §2).
+        float auraEase = 1f;
+        Anima ta = (target as Component)?.GetComponent<Anima>();
+        if (ta != null && ta.magicAura > 0f) auraEase = 1f + ta.magicAura;
+        b.value = Mathf.Clamp(b.value + amount * EffectiveBondGrowthRate * auraEase, 0f, 100f);
     }
 
     /// <summary>False if the bond with this target is strong enough to block harm.</summary>

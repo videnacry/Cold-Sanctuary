@@ -23,7 +23,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 
 | Sistema | Archivos clave | Estado |
 |---|---|---|
-| Animales | `Assets/Animals/Animal.cs`, `Carnivore.cs`, `Herbivore.cs` + 8 especies | Funciona; `BearBehaviour` ya hereda de `Carnivore`, completo. **Depredación por stats** (`Predation`): `SelectPrey` no caza lo invencible + `EvaluateThreat` teme al más poderoso (masa/fuerza/`armadura`/tamaño; el tamaño invierte presa↔depredador; el farol de transformación no engaña). Ver `docs/stats-as-truth.md` §2 |
+| Animales | `Assets/Animals/Animal.cs`, `Carnivore.cs`, `Herbivore.cs` + 8 especies | Funciona; `BearBehaviour` ya hereda de `Carnivore`, completo. **Depredación por stats** (`Predation`): `SelectPrey` no caza lo invencible + `EvaluateThreat` teme al más poderoso (masa/fuerza/`armadura`/tamaño; el tamaño invierte presa↔depredador; el farol no engaña). **Manada** (`EffectivePower`: poder de aliados por facción) + **aura mágica** (`Anima.magicAura`+`MagicAura`: destructiva→temida, benevolente→bonds fáciles). Ver `docs/stats-as-truth.md` §2 |
 | Post-natal | `Assets/Scripts/PostNatal/` | Funciona; enums `nestType/fatherRole/weaningType` decorativos (no leídos) |
 | Etapas de vida | `Assets/Scripts/LifeStage/` | Completo, buena composición |
 | Familia/genética | `Family.cs`, `Sex.cs`, `FamilyGenerator.cs` | Completo |

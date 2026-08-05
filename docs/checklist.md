@@ -43,10 +43,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       vencer (masa/fuerza/textura/tamaño) y `EvaluateThreat` escala por poder de stats (temer al más poderoso);
       el tamaño invierte presa↔depredador; el farol de transformación no engaña, la real sí. **Falta:** manada
       (masa aliada) y **aura/estatus mágico** del humano (requiere sistema de magia/maestría).
-- [ ] **Influencia de manada en la caza**: parte del refinamiento — evaluar masa aliada de presa y cazador
-      (oso evita lobo con manada; manada grande lo ahuyenta). Dinámico, no multiplicador estático de dieta.
-- [ ] **Aura/estatus mágico del humano**: contador de usos destructivos de magia (decae con el tiempo) que
-      modula si los animales lo temen (huida/cautela) o lo ven como inspirador (bonds fáciles). Requiere magia.
+- [x] **Influencia de manada en la caza** (PR #33): `Predation.EffectivePower` suma el poder de los **aliados**
+      (misma facción) en radio → `SelectPrey` usa el poder de manada del cazador; `EvaluateThreat` compara poder
+      efectivo de ambos (temer al respaldado por su grupo; envalentonarse con el propio). Dinámico.
+- [~] **Aura/estatus mágico del humano** (PR #33): **mecanismo hecho** — `Anima.magicAura` (firmado, decae con
+      `MagicAura`): − destructiva → más temido (`EvaluateThreat`); + benevolente → bonds fáciles (`GrowBond`).
+      **Falta:** que el **sistema de magia** llame a `Register*` al lanzar hechizos.
 - [~] **Modelo de personaje unificado** — `NPCBase` **descartado**; ya es la **clase única `Anima`**
       (migración #14). Falta: `ITarget` + población en `Anima` (para que companions/otros NPCs sean presa) y
       el **control aparte** (cerebro enchufable: input o IA) para que todo `Anima` sea jugable/intercambiable.
@@ -304,7 +306,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#32 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#33 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -320,6 +322,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #33):** **remate de depredación** — **manada** (`Predation.EffectivePower`: suma poder de aliados
+  por facción en radio → `SelectPrey`/`EvaluateThreat` dinámicos: lobo solo no puede con el oso, la manada sí;
+  el oso evita al lobo con manada) + **aura mágica** (`Anima.magicAura` firmado + `MagicAura` que decae:
+  − destructiva → más temido; + benevolente → bonds fáciles vía `GrowBond`). Falta: que la magia llame a `Register*`.
 - **05-ago (PR #32):** **depredación por stats** (`stats-as-truth §2`): `Predation` (`Assets/Scripts/
   Transformation/`) + `Anima.armadura` (textura/coraza). `Diet.SelectPrey` no caza lo invencible; `Animal.
   EvaluateThreat` escala la amenaza por poder de stats. El **tamaño invierte presa↔depredador**; el **farol**

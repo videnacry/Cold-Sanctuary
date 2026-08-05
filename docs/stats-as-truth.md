@@ -84,6 +84,8 @@ la verdad**. Paraguas: **"Quimeras"**.
 3. **Terminar `ScreenEffects`** (cámara artística: cansancio/sueño/excitación).
 4. **Composición:** slot de **peinado** → extender partes → partes con stats (ropa=defensa).
 5. **Depredación por stats** ✔ `Predation` (masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador;
-   el farol no engaña, la transformación real sí) en `SelectPrey`+`EvaluateThreat`. Falta: manada + aura mágica.
+   el farol no engaña, la transformación real sí) en `SelectPrey`+`EvaluateThreat`. **Manada** (`EffectivePower`:
+   poder de aliados por facción) ✔ y **aura mágica** (`Anima.magicAura`+`MagicAura`: destructiva→temida,
+   benevolente→bonds fáciles) ✔; falta que la magia llame a `MagicAura.Register*`.
 6. **Hechizos** (transformación 3-niveles, bond por stats, lector-de-mentes) sobre `PossessionSpell` + energía=timer.
 7. **Consumibles/monetización:** gratis + donaciones; cosméticos (avatar de león) = preset-skin, **al final**.

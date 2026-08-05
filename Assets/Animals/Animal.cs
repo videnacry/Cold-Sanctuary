@@ -143,8 +143,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Anima src = source.GetComponent<Anima>();
         if (src != null)
         {
-            float ratio = Predation.PredatorPower(src) / Mathf.Max(0.1f, Predation.PredatorPower(this));
+            // Poder EFECTIVO (con manada) de ambos → temer al respaldado por su grupo; envalentonarse con el propio.
+            float ratio = Predation.EffectivePower(src) / Mathf.Max(0.1f, Predation.EffectivePower(this));
             physical *= Mathf.Clamp(ratio, 0.2f, 4f);
+            // Aura mágica destructiva del origen → más temido (huida/cautela).
+            if (src.magicAura < 0f) physical += -src.magicAura * 2f;
         }
         return physical;
     }
