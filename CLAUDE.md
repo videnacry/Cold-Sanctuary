@@ -30,7 +30,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Tiempo | `Assets/Scripts/Time/Time.cs`, `TimeTest.cs` | Funciona; `TimeTest` es debug |
 | Jugador | `Assets/Scripts/Player/PlayerController.cs`, `PlayerStats.cs` | Activo y cableado. `PlayerCtrl` retirado 2026-07-09 |
 | Nave/Entorno | `ShipCtrl.cs`, `SlideDoor.cs`, `PullDoor.cs`, `DrivePreparation.cs` | Bugs: `ShipCtrl` `if(1==1)`, `PullDoor.OnCollissionEnter` mal escrito |
-| Cámara | `Assets/Scripts/Camera/` | Funciona (robberies, FOV/shake). Modo artístico y `ScreenEffects` pendientes |
+| Cámara | `Assets/Scripts/Camera/` | Funciona (robberies, FOV/shake por stress/fatiga). **`ScreenEffects`** (nuevo): tintes de pantalla por estado (sueño=párpados / fatiga=gris / estrés=viñeta roja / satisfacción=cálido) + `Fade` (completa el blackout de `CameraManager`). 2º actuador de emoción. Ver `stats-as-truth.md §6` |
 | Generación | `IFactory.cs`, `BirdBehavior.cs`, `Respawn.cs` | Funciona; off-by-one en `Respawn`. `Generator.cs` (spawner por área, scene-wireable) sin invocadores en código |
 | Mundo/áreas | `Assets/Scripts/World/`, `Mission/` | Funciona; `AreaClear` incompleto (falta `KitchenCombatManager`) |
 | Compañeros/Bond | `Assets/Scripts/Companion/`, `Bond/` | Funciona; `BondActivityManager` sin cablear a UI. `NPCBase` pendiente |

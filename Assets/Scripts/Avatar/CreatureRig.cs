@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>Partes lógicas de un ser (humano/insecto/quimera). No todo cuerpo tiene todas.</summary>
-public enum BodyPart
+public enum RigPart
 {
     Head, Neck, Chest, Hips,
     ShoulderLeft, ShoulderRight,
@@ -24,14 +24,14 @@ public enum BodyPart
 public class CreatureRig : MonoBehaviour
 {
     [System.Serializable]
-    public class PartBinding { public BodyPart part; public Transform bone; }
+    public class PartBinding { public RigPart part; public Transform bone; }
 
     [Tooltip("Si hay Animator humanoide, se auto-rellenan las partes estándar desde el Avatar de Unity.")]
     public Animator humanoidAnimator;
     [Tooltip("Bindings manuales (insectos/quimeras, o para sobreescribir el humanoide).")]
     public List<PartBinding> bindings = new List<PartBinding>();
 
-    readonly Dictionary<BodyPart, Transform> _map = new Dictionary<BodyPart, Transform>();
+    readonly Dictionary<RigPart, Transform> _map = new Dictionary<RigPart, Transform>();
 
     void Awake() { Rebuild(); }
 
@@ -41,29 +41,29 @@ public class CreatureRig : MonoBehaviour
         _map.Clear();
         if (humanoidAnimator != null && humanoidAnimator.isHuman)
         {
-            TryHuman(BodyPart.Head, HumanBodyBones.Head);
-            TryHuman(BodyPart.Neck, HumanBodyBones.Neck);
-            TryHuman(BodyPart.Chest, HumanBodyBones.Chest);
-            TryHuman(BodyPart.Hips, HumanBodyBones.Hips);
-            TryHuman(BodyPart.ShoulderLeft, HumanBodyBones.LeftShoulder);
-            TryHuman(BodyPart.ShoulderRight, HumanBodyBones.RightShoulder);
-            TryHuman(BodyPart.HandLeft, HumanBodyBones.LeftHand);
-            TryHuman(BodyPart.HandRight, HumanBodyBones.RightHand);
-            TryHuman(BodyPart.FootLeft, HumanBodyBones.LeftFoot);
-            TryHuman(BodyPart.FootRight, HumanBodyBones.RightFoot);
+            TryHuman(RigPart.Head, HumanBodyBones.Head);
+            TryHuman(RigPart.Neck, HumanBodyBones.Neck);
+            TryHuman(RigPart.Chest, HumanBodyBones.Chest);
+            TryHuman(RigPart.Hips, HumanBodyBones.Hips);
+            TryHuman(RigPart.ShoulderLeft, HumanBodyBones.LeftShoulder);
+            TryHuman(RigPart.ShoulderRight, HumanBodyBones.RightShoulder);
+            TryHuman(RigPart.HandLeft, HumanBodyBones.LeftHand);
+            TryHuman(RigPart.HandRight, HumanBodyBones.RightHand);
+            TryHuman(RigPart.FootLeft, HumanBodyBones.LeftFoot);
+            TryHuman(RigPart.FootRight, HumanBodyBones.RightFoot);
         }
         foreach (PartBinding b in bindings)   // manuales: prioridad + añaden partes no-humanas (antenas, patas…)
             if (b != null && b.bone != null) _map[b.part] = b.bone;
     }
 
-    void TryHuman(BodyPart part, HumanBodyBones bone)
+    void TryHuman(RigPart part, HumanBodyBones bone)
     {
         Transform t = humanoidAnimator.GetBoneTransform(bone);
         if (t != null) _map[part] = t;
     }
 
     /// <summary>El hueso de esa parte, o null si este cuerpo no la tiene (una hormiga no tiene "Neck").</summary>
-    public Transform Get(BodyPart part) => _map.TryGetValue(part, out Transform t) ? t : null;
+    public Transform Get(RigPart part) => _map.TryGetValue(part, out Transform t) ? t : null;
 
-    public bool Has(BodyPart part) => _map.ContainsKey(part);
+    public bool Has(RigPart part) => _map.ContainsKey(part);
 }

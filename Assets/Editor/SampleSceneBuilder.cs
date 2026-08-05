@@ -88,6 +88,7 @@ public static class SampleSceneBuilder
         BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
         BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
         BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
+        BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -923,6 +924,17 @@ public static class SampleSceneBuilder
         go.AddComponent<UpaYogaSession>();   // autoStart = true → muestra paneles-tecla + secuencia al entrar en Play
         Debug.Log("[SampleSceneBuilder] Upa-yoga (cuello): UpaYogaSandbox_AUTO. En Play muestra los paneles-tecla " +
                   "(WASD/IJKL con letra), título=parte del cuerpo, barra de aliento; F = siguiente fase (docs upa-yoga-mission.md).");
+    }
+
+    // Cámara artística: efectos de pantalla por estado. debugAutoCycle oscila la intensidad para verlos sin jugador.
+    static void BuildScreenEffectsSandbox(Transform parent)
+    {
+        GameObject go = new GameObject("ScreenEffectsSandbox_AUTO");
+        go.transform.SetParent(parent);
+        ScreenEffects fx = go.AddComponent<ScreenEffects>();
+        fx.debugAutoCycle = true;   // sube/baja la intensidad en Play → se ven párpados/gris/viñeta roja
+        Debug.Log("[SampleSceneBuilder] ScreenEffects: ScreenEffectsSandbox_AUTO (debugAutoCycle). En Play oscilan " +
+                  "sueño (párpados)/fatiga (gris)/estrés (viñeta roja). Con jugador real, leen sus stats (docs stats-as-truth §6).");
     }
 
     // Crea un «insecto» (cápsula con material) para el sandbox del Microcosmos.
