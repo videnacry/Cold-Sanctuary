@@ -43,9 +43,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       vencer (masa/fuerza/textura/tamaño) y `EvaluateThreat` escala por poder de stats (temer al más poderoso);
       el tamaño invierte presa↔depredador; el farol de transformación no engaña, la real sí. **Falta:** manada
       (masa aliada) y **aura/estatus mágico** del humano (requiere sistema de magia/maestría).
-- [x] **Influencia de manada en la caza** (PR #33): `Predation.EffectivePower` suma el poder de los **aliados**
-      (misma facción) en radio → `SelectPrey` usa el poder de manada del cazador; `EvaluateThreat` compara poder
-      efectivo de ambos (temer al respaldado por su grupo; envalentonarse con el propio). Dinámico.
+- [x] **Influencia de manada en la caza** (PR #33/#34): `Predation.EffectivePower` suma el poder de los
+      **aliados** (misma facción) en radio, ponderado por el **`PackFactor` por especie** (Lobo 0.8/Malamute 0.9
+      mucho; Oso 0.3/Zorro 0.2 poco; Conejo/Ciervo/Ballena 0 nada) → `SelectPrey` usa el poder de manada del
+      cazador; `EvaluateThreat` compara poder efectivo de ambos. Dinámico y calibrado por especie.
 - [~] **Aura/estatus mágico del humano** (PR #33): **mecanismo hecho** — `Anima.magicAura` (firmado, decae con
       `MagicAura`): − destructiva → más temido (`EvaluateThreat`); + benevolente → bonds fáciles (`GrowBond`).
       **Falta:** que el **sistema de magia** llame a `Register*` al lanzar hechizos.
@@ -306,7 +307,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#33 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#34 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -322,6 +323,9 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #34):** manada por especie — `Predation.EffectivePower` ahora pondera a los aliados por el
+  **`PackFactor` de la propia especie** (ya calibrado: Lobo 0.8/Malamute 0.9/Oso 0.3/Zorro 0.2/Conejo·Ciervo·
+  Ballena 0) en vez de un 0.5 fijo; alinea con la convención de `Animal.DecideReaction`.
 - **05-ago (PR #33):** **remate de depredación** — **manada** (`Predation.EffectivePower`: suma poder de aliados
   por facción en radio → `SelectPrey`/`EvaluateThreat` dinámicos: lobo solo no puede con el oso, la manada sí;
   el oso evita al lobo con manada) + **aura mágica** (`Anima.magicAura` firmado + `MagicAura` que decae:

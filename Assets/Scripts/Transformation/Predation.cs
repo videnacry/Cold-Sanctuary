@@ -39,13 +39,18 @@ public static class Predation
         float p = PredatorPower(self);
         ITarget st = self.GetComponent<ITarget>();
         if (st == null) return p;   // sin facción → sin manada
+        // Peso de manada = el `PackFactor` de la propia especie (convención de Animal.DecideReaction): el lobo
+        // (0.8)/malamute (0.9) se benefician mucho de los aliados; el oso (0.3)/zorro (0.2) poco; conejo/ciervo/
+        // ballena (0) nada. (Los no-Animal —companions/quimeras— usan 0.5 por defecto.)
+        float packFactor = (self as Animal)?.PackFactor ?? 0.5f;
+        if (packFactor <= 0f) return p;
         HashSet<Anima> seen = new HashSet<Anima>();
         foreach (Collider col in Physics.OverlapSphere(self.transform.position, radius))
         {
             Anima a = col.GetComponentInParent<Anima>();
             if (a == null || a == self || !seen.Add(a)) continue;
             ITarget t = a.GetComponent<ITarget>();
-            if (t != null && t.Faction == st.Faction) p += PredatorPower(a) * 0.5f;
+            if (t != null && t.Faction == st.Faction) p += PredatorPower(a) * packFactor;
         }
         return p;
     }
