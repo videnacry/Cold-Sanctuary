@@ -295,14 +295,15 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Transformar la Cocina** (hoy humana) → reencarnaciones (viaje 2: Nasatya llevando restos) + viaje 3
       (Enfermería insecto: guiar al refugio + motivar a los deprimidos). Cerrar §13.4 (nombre anciano-pintor;
       vidas 2 de Atlas/Sakshi/Momo; ubicación de reencarnaciones).
-- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ → **emotion-slice**
-      (`stats+humores→frases→postura(`CreatureRig`)+`ScreenEffects``; refactor `UpaYogaSession` a `rig.Get()`)
+- [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ · **modelo `emotion-model.md` ✔** → **`EmotionExpression`**
+      (`Humores`→valencia/activación circumplex, sesgo por aptitudes+`ElementalTone`→Laban→`CreatureRig`+
+      `ScreenEffects`+frases; añadir `afabilidad`, promover `sensibilidad`; refactor `UpaYogaSession` a `rig.Get()`)
       → `ScreenEffects` (cámara artística) ✔ → **composición** (slot peinado → partes → partes con
       stats, ropa=defensa) → **depredación por stats** (`PreyEntry`: masa/fuerza/textura/tamaño; el tamaño
       invierte presa↔depredador) → **hechizos** (transformación 3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#25 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#26 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -318,6 +319,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #26):** **`docs/emotion-model.md`** — modelo de emoción para **toda Anima** con base científica
+  (circumplex=`Humores.Positividad×Energia` ya en código; Laban→`CreatureRig`; Big Five→aptitudes; etología/
+  Darwin→señales animales+legibilidad). Aptitudes nuevas propuestas (`afabilidad`; promover `sensibilidad`).
+  La **firma emocional = tell de reencarnación**. (Doc; código = `EmotionExpression` a continuación.)
 - **05-ago (PR #25):** **fuente única de partes**: se retira `RigPart` y se **amplía el `BodyPart` de Asana**
   (0–7 = regiones de yoga intactas; + huesos finos L/R + insecto/quimera). `CreatureRig` tira de ella;
   `bodyStats[8]` sigue igual (los huesos finos no se indexan → `GetBodyPartStats` vacío por el guard). Base
