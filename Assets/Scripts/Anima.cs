@@ -56,6 +56,8 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float afabilidad   = 1f;   // agreeableness: calidez/cooperación vs frialdad
     [HideInInspector] public float sensibilidad = 1f;   // reactividad EMOCIONAL (cuánto oscilan los humores).
                                                         // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
+    [HideInInspector] public float armadura     = 0.1f; // textura/coraza (piel/escamas/exoesqueleto): puntos de
+                                                        // depredador + defensa (docs/stats-as-truth.md §2, Predation).
 
     // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
     // desde Physiognomy más adelante).

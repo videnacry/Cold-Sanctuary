@@ -39,10 +39,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 - [ ] **Ahogo/asfixia** (solo documentado): daño progresivo por permanecer en medio de baja afinidad.
 - [x] **Lógica de agua/tierra**: detector (`MediumZone`) + comportamiento (`Animal.CorrectMedium`:
       acuáticos buscan agua, terrestres salen). Pendiente menor: evitación *proactiva* (desviar `Wander`).
-- [ ] **Refinar selección de caza**: `SelectPrey` no evalúa si el cazador puede ganar ni el **poder de la
-      presa** → un lobo solo se lanza al oso y muere; y un humano de alta maestría mágica seguiría siendo
-      "presa fácil". Ponderar ventaja de masa/manada + un valor de **amenaza/poder** del objetivo (humano
-      poderoso → no-presa/cautela/huida; ligar con `EvaluateThreat`). Requiere el sistema de magia/maestría.
+- [~] **Refinar selección de caza**: **hecho (PR #32)** `Predation` — `SelectPrey` ya no caza lo que no puede
+      vencer (masa/fuerza/textura/tamaño) y `EvaluateThreat` escala por poder de stats (temer al más poderoso);
+      el tamaño invierte presa↔depredador; el farol de transformación no engaña, la real sí. **Falta:** manada
+      (masa aliada) y **aura/estatus mágico** del humano (requiere sistema de magia/maestría).
 - [ ] **Influencia de manada en la caza**: parte del refinamiento — evaluar masa aliada de presa y cazador
       (oso evita lobo con manada; manada grande lo ahuyenta). Dinámico, no multiplicador estático de dieta.
 - [ ] **Aura/estatus mágico del humano**: contador de usos destructivos de magia (decae con el tiempo) que
@@ -298,13 +298,13 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
       `ScreenEffects` ✔ · **emotion-slice ✔** (`EmotionExpression`/`BodyPartReactor`/`EmotionReader`; circumplex+
       Laban+frases+legibilidad; `afabilidad`/`sensibilidad`; `emotion-model.md`) → **quedan**: **composición**
-      (slot peinado → partes → partes con stats, ropa=defensa) → **depredación por stats** (`PreyEntry`:
+      (slot peinado → partes → partes con stats, ropa=defensa) → **depredación por stats ✔** (`Predation`:
       masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador) → **hechizos** (transformación
       3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#31 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#32 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -320,6 +320,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **05-ago (PR #32):** **depredación por stats** (`stats-as-truth §2`): `Predation` (`Assets/Scripts/
+  Transformation/`) + `Anima.armadura` (textura/coraza). `Diet.SelectPrey` no caza lo invencible; `Animal.
+  EvaluateThreat` escala la amenaza por poder de stats. El **tamaño invierte presa↔depredador**; el **farol**
+  de transformación no engaña (no cambia stats), la **real** sí. Falta: manada + aura mágica.
 - **05-ago (PR #31):** **transformación por combate de stats** (`stats-as-truth §4`): `TransformationSpell` +
   `StatProfile`/`TransformPreset` (`Assets/Scripts/Transformation/`). `Cast` → Failed / VisualOnly (farol,
   conserva stats) / Full (cuerpo+stats) según potencia vs coste (resistencia+inyectado por `Might`); revert

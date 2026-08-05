@@ -18,7 +18,7 @@ lanzador (por sus propios stats) decide si mueve **un stat, un grupo o todos**.
 |---|---|---|
 | **Emoción / postura** | `f(stats de disposición, humores actuales) → suma de frases → postura (`CreatureRig`) + `ScreenEffects`` | camera-shake ✔; resto nuevo |
 | **Identidad / diálogo interno** | suma de frases del ser (`ThoughtField`/`MindPhrase`) → habla/piensa según su mezcla stat | sustrato ✔ |
-| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño)` sobre `Diet`/`PreyEntry`; **el tamaño invierte presa↔depredador** | extender `PreyEntry` |
+| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño)`; **el tamaño invierte presa↔depredador** | **hecho:** `Predation` en `SelectPrey`+`EvaluateThreat` |
 | **Bond** | hechizo que sube/baja los stats-que-generan-bond → pase directo a mamá/hijo/amigo/enemigo (temporal) | nuevo, sobre bonds ✔ |
 | **Transformación** | combate de stats de 3 niveles (§4) | nuevo |
 | **Habilidades** | **mapa de stats**: la receta-de-acciones desbloquea un cluster (ganar fuerza ⇒ cluster distinto que ganar agilidad); el **árbol point-buy** (niveles de magia → puntos) es una **capa opcional/simple** para micro/macrocosmos | primario = emergente |
@@ -83,6 +83,7 @@ la verdad**. Paraguas: **"Quimeras"**.
    `UpaYogaSession` a pedir partes al rig (`rig.Get(BodyPart.Neck)`).
 3. **Terminar `ScreenEffects`** (cámara artística: cansancio/sueño/excitación).
 4. **Composición:** slot de **peinado** → extender partes → partes con stats (ropa=defensa).
-5. **Depredación por stats** (extender `PreyEntry`: masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador).
+5. **Depredación por stats** ✔ `Predation` (masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador;
+   el farol no engaña, la transformación real sí) en `SelectPrey`+`EvaluateThreat`. Falta: manada + aura mágica.
 6. **Hechizos** (transformación 3-niveles, bond por stats, lector-de-mentes) sobre `PossessionSpell` + energía=timer.
 7. **Consumibles/monetización:** gratis + donaciones; cosméticos (avatar de león) = preset-skin, **al final**.
