@@ -73,7 +73,7 @@ la verdad**. Paraguas: **"Quimeras"**.
 ## 8. Plan incremental (rebanadas)
 1. **`CreatureRig`** ✔ (esqueleto móvil central).
 2. **Emotion-slice:** `stats+humores → frases → postura (`CreatureRig`) + `ScreenEffects``; refactor
-   `UpaYogaSession` a pedir partes al rig (`rig.Get(RigPart.Neck)`).
+   `UpaYogaSession` a pedir partes al rig (`rig.Get(BodyPart.Neck)`).
 3. **Terminar `ScreenEffects`** (cámara artística: cansancio/sueño/excitación).
 4. **Composición:** slot de **peinado** → extender partes → partes con stats (ropa=defensa).
 5. **Depredación por stats** (extender `PreyEntry`: masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador).
