@@ -952,9 +952,15 @@ public static class SampleSceneBuilder
         MakeReactor(root.transform, "Antena", new Vector3(0.5f, 0.3f, 0f), Vector3.forward, 30f, 6f, 15f); // se mece con la activación
         MakeReactor(root.transform, "Hombro", new Vector3(-0.5f, 0f, 0f), Vector3.right, 6f, 30f, 8f);  // se hunde con la valencia baja
 
+        // Legibilidad: un lector cercano traduce la orquesta a "qué siente / quiere / hará".
+        GameObject reader = new GameObject("EmotionReader_AUTO");
+        reader.transform.SetParent(parent);
+        reader.transform.position = new Vector3(4f, 1.5f, 6f);
+        reader.AddComponent<EmotionReader>();
+
         Debug.Log("[SampleSceneBuilder] Orquesta emocional: EmotionOrchestraSandbox_AUTO (debugDrive). En Play, " +
                   "«Quijada» da tics ante cambios violentos, «Antena» se mece con la activación, «Hombro» se hunde " +
-                  "con la valencia baja — misma señal, roles distintos (docs emotion-model.md).");
+                  "con la valencia baja; «EmotionReader_AUTO» muestra la lectura sobre la orquesta (docs emotion-model.md).");
     }
 
     static void MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
