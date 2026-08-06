@@ -88,9 +88,15 @@ Partes en la fuente única `BodyPart` (se añaden `EarLeft/EarRight`; alas = `Li
 | **Ballena** (`WhaleBehavior`) | cola, cuerpo | poca cara → **cuerpo/cola**: breach/slap = excitación/aviso |
 | **Pájaro** (`BirdBehavior`) | alas (`LimbA/B`), cresta (`Head`), cola | **abrir alas**=amenaza/exhibición; erizar cresta; huir (volar) con el Jolt |
 
-*Nota de rol especial:* **freeze / inmovilidad tónica** (conejo/ciervo ante miedo intenso) = un reactor que
-**suprime** la reacción (se queda quieto) en vez de moverse — importante y real. Se modela como un rol que
-*invierte* la respuesta al miedo. Los presets se asignan por prefab en Unity (los modelos viven fuera del repo).
+*Rol especial **hecho**:* **freeze / inmovilidad tónica** (conejo/ciervo) — `BodyPartReactor.freezeOnFear`: ante
+`EmotionExpression.Fear` alto (desagradable+activado) la parte **se congela** (tiende a la pose de reposo) en
+vez de reaccionar. Los presets/parts se asignan por prefab en Unity (los modelos viven fuera del repo).
+
+*Contagio emocional **hecho**:* si el ser tiene un `ThoughtField`, `EmotionExpression` lo **proyecta** cuando la
+emoción es intensa (tono+humor según el cuadrante: miedo→Cortisol, calma/alegría→Serotonina) → los `Mind`
+cercanos lo "cogen" (usa el `nudgesHumor` que ya tiene `ThoughtField`). Así el miedo/serenidad se **pegan**.
+El **diálogo interno** ya sale emocionado: `Mind.Think` colorea sus frases por los humores compartidos
+(valencia = positivo/negativo; tono desde humores) → no hace falta un canal aparte.
 
 ## 5. Las frases (etiquetas del espacio)
 Cada frase es una **región del espacio + calidad Laban**, gateada por stats (usa `MindPhrase`/`ThoughtField`):

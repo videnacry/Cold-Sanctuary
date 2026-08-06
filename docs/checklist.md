@@ -307,7 +307,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#34 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#35 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -323,6 +323,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #35):** afinar emoción — **freeze/inmovilidad tónica** (`BodyPartReactor.freezeOnFear` + `Emotion
+  Expression.Fear`: el miedo intenso congela la parte, conejo/ciervo) + **contagio emocional** (si hay
+  `ThoughtField`, la emoción intensa lo proyecta con tono/humor por cuadrante → los `Mind` cercanos lo cogen).
+  El diálogo interno ya sale emocionado vía humores compartidos (`Mind.Think`). Sandbox: `Conejo_freeze` + field.
 - **05-ago (PR #34):** manada por especie — `Predation.EffectivePower` ahora pondera a los aliados por el
   **`PackFactor` de la propia especie** (ya calibrado: Lobo 0.8/Malamute 0.9/Oso 0.3/Zorro 0.2/Conejo·Ciervo·
   Ballena 0) en vez de un 0.5 fijo; alinea con la convención de `Animal.DecideReaction`.

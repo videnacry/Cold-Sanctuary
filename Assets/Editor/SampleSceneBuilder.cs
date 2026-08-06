@@ -946,11 +946,13 @@ public static class SampleSceneBuilder
         root.transform.position = new Vector3(6f, 1.5f, 6f);
         EmotionExpression exp = root.AddComponent<EmotionExpression>();
         exp.debugDrive = true;   // oscila humores → la orquesta reacciona
+        exp.field = root.AddComponent<ThoughtField>();   // contagio: proyecta la emoción intensa a los cercanos
 
         // Cada cubo = una "parte" con un rol distinto (traducción entre especies).
         MakeReactor(root.transform, "Quijada", new Vector3(0f, 0f, 0f), Vector3.right, 4f, 4f, 40f);   // tic ante el Jolt (violento)
         MakeReactor(root.transform, "Antena", new Vector3(0.5f, 0.3f, 0f), Vector3.forward, 30f, 6f, 15f); // se mece con la activación
         MakeReactor(root.transform, "Hombro", new Vector3(-0.5f, 0f, 0f), Vector3.right, 6f, 30f, 8f);  // se hunde con la valencia baja
+        MakeReactor(root.transform, "Conejo_freeze", new Vector3(0f, 0.4f, 0.4f), Vector3.right, 20f, 6f, 10f).freezeOnFear = true; // se CONGELA ante el miedo
 
         // Legibilidad: un lector cercano traduce la orquesta a "qué siente / quiere / hará".
         GameObject reader = new GameObject("EmotionReader_AUTO");
@@ -963,7 +965,7 @@ public static class SampleSceneBuilder
                   "con la valencia baja; «EmotionReader_AUTO» muestra la lectura sobre la orquesta (docs emotion-model.md).");
     }
 
-    static void MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
+    static BodyPartReactor MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name; go.transform.SetParent(parent);
@@ -971,6 +973,7 @@ public static class SampleSceneBuilder
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", new Color(0.7f, 0.5f, 0.6f));
         BodyPartReactor r = go.AddComponent<BodyPartReactor>();
         r.axis = axis; r.arousalGain = arousalGain; r.valenceGain = valenceGain; r.joltGain = joltGain;
+        return r;
     }
 
     // Crea un «insecto» (cápsula con material) para el sandbox del Microcosmos.

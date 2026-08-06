@@ -31,6 +31,8 @@ public class BodyPartReactor : MonoBehaviour
     public float heavinessDroop = 10f;
     [Tooltip("Amplitud del temblor tenso con el 'flujo ligado' Laban (tensión alta).")]
     public float boundJitter = 2f;
+    [Tooltip("Inmovilidad tónica: ante miedo intenso, esta parte se CONGELA (no reacciona) — conejo/ciervo.")]
+    public bool freezeOnFear = false;
 
     Transform _t;
     Quaternion _home;
@@ -58,6 +60,8 @@ public class BodyPartReactor : MonoBehaviour
         // FLOW ligado (Laban): temblor tenso proporcional a la tensión.
         float jitter = conductor.Boundness * boundJitter * Mathf.Sin(Time.time * 30f);
         float target = passive + _twitch + jitter;
+        // Inmovilidad tónica: el miedo intenso lleva la parte a QUIETUD (home) en vez de reaccionar.
+        if (freezeOnFear) target = Mathf.Lerp(target, 0f, conductor.Fear);
 
         Vector3 a = axis.sqrMagnitude > 0.0001f ? axis.normalized : Vector3.right;
         // TIME (Laban): la activación alta reacciona rápido; la baja, sostenida/lenta.
