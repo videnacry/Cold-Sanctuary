@@ -29,6 +29,9 @@ public class CompositionPart
     public ClothingRecipe clothing;
     [Tooltip("Aporte de stats (miembro = fuerza/agilidad…; adorno = 0; ropa = armor).")]
     public StatBonus bonus = new StatBonus();
+    [Tooltip("Tejido VIVO/biológico (miembro, ropa-viva): DOBLE SENTIDO — el huésped lo modula y se adapta " +
+             "progresivamente. Si es false (rígido: metal/coraza inerte): aporte plano, sin modular.")]
+    public bool living = true;
 
     public ClothingSlot Slot => clothing != null ? clothing.slot : slot;
     public float Armor => bonus.armor + (clothing != null ? clothing.defenseRating : 0f);
@@ -94,8 +97,9 @@ public class CharacterComposition : MonoBehaviour
         {
             if (p == null) continue;
             StatBonus b = p.bonus;
-            tStr += b.strength * hostFactor; tAgi += b.agility * hostFactor; tEnd += b.endurance * hostFactor;
-            tMass += b.bodyMass * hostFactor; tPer += b.perception * hostFactor; tCom += b.composure * hostFactor;
+            float f = p.living ? hostFactor : 1f;   // vivo = modulado por el huésped (doble sentido); rígido = plano
+            tStr += b.strength * f; tAgi += b.agility * f; tEnd += b.endurance * f;
+            tMass += b.bodyMass * f; tPer += b.perception * f; tCom += b.composure * f;
             tArm += p.Armor;   // armadura (ropa): externa
         }
 

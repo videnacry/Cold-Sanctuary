@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#37 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#38 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #38):** **tejido vivo (doble sentido)** — `CompositionPart.living`: vivo = modulado por el
+  huésped + injerto progresivo (miembro/ropa-viva); rígido = aporte plano (metal/coraza). + **dirección
+  documentada** (`stats-as-truth §9`): la **química como fundamento** (2 capas: `Humores` transitoria→emoción/
+  pensamientos ✔; `Constitution` estructural→stats base, por hacer). Química→pensamientos ya parcial vía `Mind`.
 - **06-ago (PR #37):** **composición fase 2** — `CharacterComposition` + `StatBonus`: las partes aportan un
   **delta gestionado** de stats sobre la constitución (campos de `Anima`) **sin pisar evolución/transformación**;
   aporte **biológico modulado por la vitalidad del huésped** (el mismo brazo rinde distinto según el cuerpo) e

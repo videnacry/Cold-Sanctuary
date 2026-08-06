@@ -99,3 +99,19 @@ la verdad**. Paraguas: **"Quimeras"**.
    benevolente→bonds fáciles) ✔; falta que la magia llame a `MagicAura.Register*`.
 6. **Hechizos** (transformación 3-niveles, bond por stats, lector-de-mentes) sobre `PossessionSpell` + energía=timer.
 7. **Consumibles/monetización:** gratis + donaciones; cosméticos (avatar de león) = preset-skin, **al final**.
+
+## 9. La química como FUNDAMENTO (dirección; parte hecho)
+Profundizar la química hasta que **genere los stats superiores** y **tiña los pensamientos** — la constitución
+ES química. **Dos capas:**
+- **Transitoria — `Humores`** (adrenalina/serotonina/cortisol/glucosa/calcio): rápida → conduce la **emoción**
+  (circumplex) y ya **colorea los pensamientos** (`Mind.Think`: valencia elige positivo/negativo, tono desde
+  humores). *(Hecho.)*
+- **Estructural — `Constitution`** (por hacer): lenta → **proteína/ATP/aminoácidos/minerales/glóbulos…** →
+  **deriva los stats base** (fuerza ← proteína+minerales; agilidad ← ATP+adrenalina; aguante ← ATP+glóbulos…).
+Cadena: **química → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
+Enganche: la derivación química→base entra por el mismo **delta gestionado** de `CharacterComposition` (no
+pisa evolución/transform); y `Chemistry` (tabla periódica) como fuente de compuestos.
+
+**Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — una prenda/miembro **vivo** es de doble
+sentido (el huésped lo modula + injerto progresivo); uno **rígido** (metal/coraza) es de una vía (aporte plano).
+La ropa de niveles altos = **tejido vivo** que intercambia química con el huésped (cuando exista `Constitution`).
