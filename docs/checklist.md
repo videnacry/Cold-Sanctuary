@@ -1,6 +1,6 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-08-05. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-08-06. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
@@ -301,13 +301,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
       `ScreenEffects` ✔ · **emotion-slice ✔** (`EmotionExpression`/`BodyPartReactor`/`EmotionReader`; circumplex+
       Laban+frases+legibilidad; `afabilidad`/`sensibilidad`; `emotion-model.md`) → **quedan**: **composición**
-      (slot peinado → partes → partes con stats, ropa=defensa) → **depredación por stats ✔** (`Predation`:
+      (fase 1 ✔ `CharacterComposition`: adornos/ropa→visual+defensa→armadura; fases 2-3: base/efectivo, miembros)
+      → **depredación por stats ✔** (`Predation`:
       masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador) → **hechizos** (transformación
       3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#35 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#36 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -323,6 +324,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #36):** **composición fase 1** — `CharacterComposition`+`CompositionPart` (`Assets/Scripts/
+  Composition/`): partes slotables (adornos/ropa) → activan su visual y la **defensa de la ropa suma a
+  `Anima.armadura`** (que `Predation` lee → vestir armadura = peor presa). `Equip`/`Unequip` por slot; reutiliza
+  `ClothingSlot` (ampliado con Hair/Eyebrows/Eyes) y `ClothingRecipe`. Cierra el runtime que faltaba a la ropa.
+  **NO toca el modelo de stats** (base/efectivo = fase 2; miembros con stats = fase 3).
 - **06-ago (PR #35):** afinar emoción — **freeze/inmovilidad tónica** (`BodyPartReactor.freezeOnFear` + `Emotion
   Expression.Fear`: el miedo intenso congela la parte, conejo/ciervo) + **contagio emocional** (si hay
   `ThoughtField`, la emoción intensa lo proyecta con tono/humor por cuadrante → los `Mind` cercanos lo cogen).
