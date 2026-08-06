@@ -117,13 +117,18 @@ ES química. **Dos capas:**
   material)` (Meat/Fish→N, Fruit/Grass→C); lo útil → `Constitution`, el exceso → grasa. *Falta:* herbívoros/
   `Eater`/`ElementFragment` (mismo one-liner) y recetas de compuestos reales.
 
-**Límite de absorción — hecho (`Metabolism`):** la absorción no tiene tope duro, pero la **utilización** que
-construye stats SÍ (techo tipo **síntesis proteica ~0.4 g/kg por comida**); **el exceso → grasa
-(`Anima.fatReserves`), no poder** → *no se puede comer todo el día para hacerse fuerte*. **Apetito** = hambre
-(**ghrelina**, corto plazo) − reservas (**leptina**/set-point, largo plazo) → con grasa alta, come menos. El
-techo **escala con la masa** y **adapta con el uso** (entreno del intestino) → **la capacidad crece con los
-stats**. `Absorb(symbol, amount)`: lo útil → `Constitution.AddElement`; el exceso → grasa.
-*(Base: leptina/ghrelina/set-point; techo de MPS. Fuentes en el PR.)*
+**Apetito por NUTRIENTES + límite de absorción — hecho (`Metabolism`):** cada ser tiene **pools por nutriente**
+(proteína/grasa/carbohidrato/minerales; distintos por especie) que se **agotan** (BMR × masa) → **deuda** →
+**`Appetite`** (la proteína pesa más: *protein leverage*), atenuado por reservas de grasa (**leptina**/
+set-point). El nutriente que más falta = **`Craving`** → decide **qué buscar/cazar y qué parte** (oso polar
+craves grasa → blubber). **`Selectivity`** = saciado→exquisito / hambriento→come cualquier cosa (los osos, en
+escasez, comen todo). La **utilización** que construye stats tiene **techo** (~síntesis proteica; escala con
+masa + entrena con uso) → **el exceso va a grasa, no a poder** (*no comes todo el día para ser fuerte*). Lo
+útil → `Constitution` (nutriente→elemento→stats). `AbsorbFood(nutrition, material)` reparte por material
+(carne=proteína+grasa; fruta=carb+minerales…). *Base: apetitos específicos, geometría nutricional, protein
+leverage, foraging por densidad energética (oso polar). Fuentes en el PR.*
+- *Falta (ganchos):* que el **`Craving`/`Selectivity`** sesguen `SelectPrey`/la elección de **parte**; y comer
+  en herbívoros/`Eater`/`ElementFragment`.
 Cadena: **química (niveles) → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
 
 **Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — vivo (prenda/miembro) = doble sentido
