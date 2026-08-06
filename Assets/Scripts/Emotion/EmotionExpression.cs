@@ -28,6 +28,10 @@ public class EmotionExpression : MonoBehaviour
     public float Heaviness { get; private set; } // Weight: pesado (valencia/energía bajas) ↔ ligero
     public float Boundness { get; private set; } // Flow: ligado/tenso (tensión alta) ↔ libre/suelto
     public string Emotion  { get; private set; } // etiqueta del cuadrante (frase base)
+    public float Fear      { get; private set; } // 0..1 desagradable+activado (para freeze/inmovilidad tónica)
+
+    [Header("Contagio (opcional): si hay ThoughtField, la emoción intensa lo proyecta a los cercanos")]
+    public ThoughtField field;
 
     Anima _anima;
     Humores _local;
@@ -82,5 +86,17 @@ public class EmotionExpression : MonoBehaviour
         Boundness = tension;
         Emotion = arousal > 0.55f ? (valence >= 0.5f ? "alegria" : "ira/miedo")
                                   : (valence >= 0.5f ? "serenidad" : "abatimiento");
+        Fear = Mathf.Clamp01((1f - valence) * arousal * 2f);   // desagradable + activado
+
+        // Contagio emocional: una emoción INTENSA proyecta su tono/humor al ThoughtField → los Minds cercanos
+        // lo "cogen" (miedo/serenidad se pegan). Usa el mecanismo que ya tiene ThoughtField (nudgesHumor).
+        if (field != null)
+        {
+            float intensity = Mathf.Clamp01(Mathf.Max(Mathf.Abs(valence - 0.5f) * 2f, arousal));
+            field.nudgesHumor = intensity > 0.5f;
+            field.tone = arousal > 0.55f ? ElementalTone.Fuego : (valence >= 0.5f ? ElementalTone.Agua : ElementalTone.Tierra);
+            field.humor = valence >= 0.5f ? Humor.Serotonina : Humor.Cortisol;
+            field.humorPerSecond = 0.05f * Mathf.Clamp01((intensity - 0.5f) * 2f);
+        }
     }
 }
