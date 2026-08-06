@@ -113,7 +113,9 @@ ES química. **Dos capas:**
   (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). **Los elementos son símbolos
   REALES de la tabla periódica** (`Chemistry`): validados contra `PeriodicTableManager` y **alimentables**
   (`AddElement`) desde el juego (absorber/comer un elemento → cambia la constitución → mueve los stats).
-  *Fase futura:* recetas de compuestos reales; que comer/absorber `ElementFragment` llame a `Metabolism.Absorb`.
+  **Comer → absorber (hecho, carnívoros):** `Carnivore.Feed` llama a `Metabolism.AbsorbFood(nutrition,
+  material)` (Meat/Fish→N, Fruit/Grass→C); lo útil → `Constitution`, el exceso → grasa. *Falta:* herbívoros/
+  `Eater`/`ElementFragment` (mismo one-liner) y recetas de compuestos reales.
 
 **Límite de absorción — hecho (`Metabolism`):** la absorción no tiene tope duro, pero la **utilización** que
 construye stats SÍ (techo tipo **síntesis proteica ~0.4 g/kg por comida**); **el exceso → grasa

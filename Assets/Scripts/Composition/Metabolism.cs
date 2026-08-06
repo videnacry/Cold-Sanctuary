@@ -74,4 +74,19 @@ public class Metabolism : MonoBehaviour
         if (excess > 0f && anima != null) anima.fatReserves += excess * 0.05f;   // exceso → grasa, no stats
         return useful;
     }
+
+    /// <summary>Absorber COMIDA: mapea el material a su elemento dominante y absorbe (lo llama el acto de comer).</summary>
+    public float AbsorbFood(float amount, OrganicMaterial material)
+    {
+        string sym;
+        switch (material)
+        {
+            case OrganicMaterial.Meat:  sym = "N"; break;   // proteína (nitrógeno)
+            case OrganicMaterial.Fish:  sym = "N"; break;   // proteína
+            case OrganicMaterial.Fruit: sym = "C"; break;   // azúcares (carbono)
+            case OrganicMaterial.Grass: sym = "C"; break;   // fibra (carbono)
+            default:                    sym = "C"; break;
+        }
+        return Absorb(sym, amount);
+    }
 }

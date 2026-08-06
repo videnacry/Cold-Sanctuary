@@ -54,6 +54,9 @@ public abstract class Carnivore : Animal
                         this.ActsPrep.idle.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
                         float nutrition = food.Consume(BiteSize);
                         hungry -= nutrition;
+                        // Absorción por metabolismo: lo útil construye stats (Constitution); el exceso → grasa
+                        // (opt-in: solo si el ser tiene Metabolism). docs/stats-as-truth §9.
+                        GetComponent<Metabolism>()?.AbsorbFood(nutrition, food.Material);
                         FoodItem dropped = prey.GetComponent<FoodItem>();
                         if (dropped?.droppedBy != null)
                             GrowBond(dropped.droppedBy, BondType.Friend, nutrition);
