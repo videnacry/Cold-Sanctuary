@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#39 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#40 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #40):** `Constitution` enganchada a **`Chemistry`** — los elementos del Nivel 1 son ahora
+  **símbolos reales de la tabla periódica** (validados contra `PeriodicTableManager.GetData`) y **alimentables**
+  (`AddElement(symbol, delta)`) desde el juego (absorber/comer elementos → cambia la constitución → mueve los
+  stats base). `stats-as-truth §9`. Falta: que `ElementFragment`/comer llame a `AddElement`; recetas reales.
 - **06-ago (PR #39):** **química como fundamento (por niveles)** — `Constitution`: elementos→compuestos→
   células→stats base (glóbulos=Fe+proteína, etc.), delta gestionado, neutro por defecto. + **hechizo
   inerte→vivo** (`CharacterComposition.Animate`) + **aura energiza los componentes propios aun inertes**

@@ -110,8 +110,10 @@ ES química. **Dos capas:**
   **elementos** (C/H/O/N/Ca/Fe) → **compuestos** (proteína/ATP/minerales/lípidos) → **células** (músculo/
   **glóbulos**=Fe+proteína/neurona/hueso) → **stats base** (fuerza←músculo+hueso; aguante←músculo+glóbulos;
   agilidad←músculo+neurona; percepción←neurona; masa←hueso+músculo). Aplica por el **mismo delta gestionado**
-  (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). *Fase futura:* elementos desde
-  `Chemistry` (tabla periódica) y recetas reales.
+  (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). **Los elementos son símbolos
+  REALES de la tabla periódica** (`Chemistry`): validados contra `PeriodicTableManager` y **alimentables**
+  (`AddElement`) desde el juego (absorber/comer un elemento → cambia la constitución → mueve los stats).
+  *Fase futura:* recetas de compuestos reales; que comer/absorber `ElementFragment` llame a `AddElement`.
 Cadena: **química (niveles) → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
 
 **Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — vivo (prenda/miembro) = doble sentido
