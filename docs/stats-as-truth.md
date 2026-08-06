@@ -106,12 +106,18 @@ ES química. **Dos capas:**
 - **Transitoria — `Humores`** (adrenalina/serotonina/cortisol/glucosa/calcio): rápida → conduce la **emoción**
   (circumplex) y ya **colorea los pensamientos** (`Mind.Think`: valencia elige positivo/negativo, tono desde
   humores). *(Hecho.)*
-- **Estructural — `Constitution`** (por hacer): lenta → **proteína/ATP/aminoácidos/minerales/glóbulos…** →
-  **deriva los stats base** (fuerza ← proteína+minerales; agilidad ← ATP+adrenalina; aguante ← ATP+glóbulos…).
-Cadena: **química → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
-Enganche: la derivación química→base entra por el mismo **delta gestionado** de `CharacterComposition` (no
-pisa evolución/transform); y `Chemistry` (tabla periódica) como fuente de compuestos.
+- **Estructural — `Constitution`** (hecho, scaffold): un modelo **progresivo por niveles de organización** —
+  **elementos** (C/H/O/N/Ca/Fe) → **compuestos** (proteína/ATP/minerales/lípidos) → **células** (músculo/
+  **glóbulos**=Fe+proteína/neurona/hueso) → **stats base** (fuerza←músculo+hueso; aguante←músculo+glóbulos;
+  agilidad←músculo+neurona; percepción←neurona; masa←hueso+músculo). Aplica por el **mismo delta gestionado**
+  (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). *Fase futura:* elementos desde
+  `Chemistry` (tabla periódica) y recetas reales.
+Cadena: **química (niveles) → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
 
-**Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — una prenda/miembro **vivo** es de doble
-sentido (el huésped lo modula + injerto progresivo); uno **rígido** (metal/coraza) es de una vía (aporte plano).
-La ropa de niveles altos = **tejido vivo** que intercambia química con el huésped (cuando exista `Constitution`).
+**Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — vivo (prenda/miembro) = doble sentido
+(huésped lo modula + injerto progresivo); rígido (metal/coraza) = una vía (plano). **Hechizo inerte→vivo:**
+`CharacterComposition.Animate(part)` (encaja con "toda `Anima` es despertable").
+
+**Aura profundizada — hecho (propio) / por hacer (aliados):** el aura mágica **energiza los componentes del
+individuo aunque sean inertes** (`CharacterComposition`: todo aporte ×`(1+magicAura)`). **Falta:** proyectarla a
+**aliados** (como el contagio emocional del `ThoughtField`: un aura fuerte anima/refuerza a los cercanos).

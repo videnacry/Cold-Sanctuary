@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#38 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#39 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #39):** **química como fundamento (por niveles)** — `Constitution`: elementos→compuestos→
+  células→stats base (glóbulos=Fe+proteína, etc.), delta gestionado, neutro por defecto. + **hechizo
+  inerte→vivo** (`CharacterComposition.Animate`) + **aura energiza los componentes propios aun inertes**
+  (×(1+magicAura)). `stats-as-truth §9`. Falta: elementos desde `Chemistry`; aura→aliados (contagio).
 - **06-ago (PR #38):** **tejido vivo (doble sentido)** — `CompositionPart.living`: vivo = modulado por el
   huésped + injerto progresivo (miembro/ropa-viva); rígido = aporte plano (metal/coraza). + **dirección
   documentada** (`stats-as-truth §9`): la **química como fundamento** (2 capas: `Humores` transitoria→emoción/

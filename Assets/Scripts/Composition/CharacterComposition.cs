@@ -78,6 +78,13 @@ public class CharacterComposition : MonoBehaviour
         SetVisible(part, false);
     }
 
+    /// <summary>Hechizo: **despierta** materia inerte a tejido VIVO (o al revés). La prenda pasa a doble
+    /// sentido (modulada por el huésped + injerto progresivo). Encaja con "toda `Anima` es despertable".</summary>
+    public void Animate(CompositionPart part, bool alive = true)
+    {
+        if (part != null) part.living = alive;
+    }
+
     static void SetVisible(CompositionPart p, bool on)
     {
         if (p != null && p.visual != null) p.visual.SetActive(on);
@@ -90,17 +97,19 @@ public class CharacterComposition : MonoBehaviour
         // Vitalidad del HUÉSPED = su constitución (campos actuales MENOS nuestro delta) → modula lo biológico.
         float hostMight = ((anima.strength - _aStr) + (anima.bodyMass - _aMass) + (anima.endurance - _aEnd)) / 3f;
         float hostFactor = Mathf.Clamp(hostMight, 0.5f, 2f);
+        // El AURA mágica energiza los componentes del individuo — incluso los inertes (docs/stats-as-truth §9).
+        float aura = 1f + Mathf.Max(0f, anima.magicAura);
 
-        // Objetivo: suma de aportes (los biológicos escalados por el huésped; la armadura no).
+        // Objetivo: suma de aportes (los biológicos escalados por el huésped; todo escalado por el aura).
         float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f;
         foreach (CompositionPart p in parts)
         {
             if (p == null) continue;
             StatBonus b = p.bonus;
-            float f = p.living ? hostFactor : 1f;   // vivo = modulado por el huésped (doble sentido); rígido = plano
+            float f = (p.living ? hostFactor : 1f) * aura;   // vivo = modulado por huésped; todo × aura (aun inerte)
             tStr += b.strength * f; tAgi += b.agility * f; tEnd += b.endurance * f;
             tMass += b.bodyMass * f; tPer += b.perception * f; tCom += b.composure * f;
-            tArm += p.Armor;   // armadura (ropa): externa
+            tArm += p.Armor * aura;   // el aura refuerza incluso la coraza inerte
         }
 
         // Injerto progresivo + aplicación gestionada (no pisa evolución/transformación).
