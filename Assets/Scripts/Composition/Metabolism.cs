@@ -131,16 +131,36 @@ public class Metabolism : MonoBehaviour
         return useful;
     }
 
-    /// <summary>Comer: reparte la nutrición en nutrientes según el material (carne=proteína+grasa, etc.).</summary>
+    /// <summary>Comer: reparte la nutrición en nutrientes según el material; el **antojo** sesga hacia la parte
+    /// que da lo que más falta (el oso craves grasa → come la blubber).</summary>
     public void AbsorbFood(float amount, OrganicMaterial material)
+    {
+        string a, b; float wa, wb;
+        switch (material)
+        {
+            case OrganicMaterial.Meat:
+            case OrganicMaterial.Fish:  a = "protein"; b = "fat";      wa = 0.6f; wb = 0.4f; break;
+            case OrganicMaterial.Fruit: a = "carb";    b = "minerals"; wa = 0.8f; wb = 0.2f; break;
+            case OrganicMaterial.Grass: a = "carb";    b = "minerals"; wa = 0.7f; wb = 0.3f; break;
+            default:                    a = "carb";    b = "carb";     wa = 1f;   wb = 0f;   break;
+        }
+        string c = Craving;   // antojo → come más de la parte que le da lo que le falta
+        if (c == a) { wa += 0.3f; wb -= 0.3f; }
+        else if (c == b) { wb += 0.3f; wa -= 0.3f; }
+        Absorb(a, amount * Mathf.Clamp01(wa));
+        if (b != a) Absorb(b, amount * Mathf.Clamp01(wb));
+    }
+
+    /// <summary>¿Un material aporta ese nutriente? (para que el antojo sesgue la elección de presa).</summary>
+    public static bool Provides(OrganicMaterial material, string nutrient)
     {
         switch (material)
         {
-            case OrganicMaterial.Meat:  Absorb("protein", amount * 0.6f); Absorb("fat", amount * 0.4f); break;
-            case OrganicMaterial.Fish:  Absorb("protein", amount * 0.6f); Absorb("fat", amount * 0.4f); break;
-            case OrganicMaterial.Fruit: Absorb("carb", amount * 0.8f); Absorb("minerals", amount * 0.2f); break;
-            case OrganicMaterial.Grass: Absorb("carb", amount * 0.7f); Absorb("minerals", amount * 0.3f); break;
-            default:                    Absorb("carb", amount); break;
+            case OrganicMaterial.Meat:
+            case OrganicMaterial.Fish:  return nutrient == "protein" || nutrient == "fat";
+            case OrganicMaterial.Fruit:
+            case OrganicMaterial.Grass: return nutrient == "carb" || nutrient == "minerals";
+            default:                    return nutrient == "carb";
         }
     }
 }
