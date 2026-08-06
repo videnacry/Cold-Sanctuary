@@ -50,6 +50,10 @@ public class Diet
         GameObject chosenTarget = null;
         Vector3 hunterPosition = hunter.transform.position;
         float hunterPower = Predation.EffectivePower(hunter);   // incluye la manada del cazador
+        float chosenPref = float.NegativeInfinity;
+        Metabolism meta = hunter.GetComponent<Metabolism>();    // antojo por nutriente → sesga la presa
+        string craving = meta != null ? meta.Craving : "";
+        float selectivity = meta != null ? meta.Selectivity : 0f;
 
         foreach (PreyEntry entry in entries)
         {
@@ -76,10 +80,19 @@ public class Diet
             }
             if (nearest == null) continue;
 
-            if (chosenEntry == null || entry.preference > chosenEntry.preference)
+            // Antojo: prefiere la presa que da el nutriente que más falta (más cuando está saciado/exquisito;
+            // hambriento come cualquier cosa). Así "la necesidad decide la depredación" (oso → foca por su grasa).
+            float pref = entry.preference;
+            if (!string.IsNullOrEmpty(craving))
+            {
+                IEdible ed = nearest.GetComponent<IEdible>();
+                if (ed != null && Metabolism.Provides(ed.Material, craving)) pref += 2f * selectivity;
+            }
+            if (chosenEntry == null || pref > chosenPref)
             {
                 chosenEntry = entry;
                 chosenTarget = nearest;
+                chosenPref = pref;
             }
         }
         return chosenTarget;
