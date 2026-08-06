@@ -66,6 +66,13 @@ reencarnación). **Necesitamos avatar humano por ancla** (no uno por hormiga; so
 **Empezar por un slot: peinado**; luego cejas/ojos/ropa; a futuro cada parte con stats (**ropa=defensa ya
 existe:** `ClothingRecipe.defenseRating`/`ClothingSlot`).
 
+> **Fase 1 hecha:** `CharacterComposition` + `CompositionPart` (`Assets/Scripts/Composition/`). Partes slotables
+> (adornos/ropa) → activan su **visual** y la **defensa de la ropa suma a `Anima.armadura`** (que `Predation`
+> ya lee: vestir armadura = peor presa). `Equip`/`Unequip` por slot; reutiliza `ClothingSlot` (ampliado con
+> Hair/Eyebrows/Eyes) y `ClothingRecipe`. **No toca el modelo general de stats** (base/efectivo = fase 2).
+> **Fases 2–3:** `baseStats`+`Recompute()` (base vs efectivo) → generalizar a **miembros** (aportan/quitan
+> stats; perder/injertar). Identidad (adornos) en el `SoulRecord` para que viaje al transformar (pendiente).
+
 ## 6. Legibilidad — load-bearing, no adorno
 Si los seres reaccionan a **stats ocultos**, el jugador **debe poder percibirlos**: el **lector-de-mentes** /
 **señales posturales** de animales / **objetos luminosos** (identificar recursos) es la **capa de lectura** de
