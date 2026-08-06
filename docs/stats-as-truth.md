@@ -66,12 +66,15 @@ reencarnación). **Necesitamos avatar humano por ancla** (no uno por hormiga; so
 **Empezar por un slot: peinado**; luego cejas/ojos/ropa; a futuro cada parte con stats (**ropa=defensa ya
 existe:** `ClothingRecipe.defenseRating`/`ClothingSlot`).
 
-> **Fase 1 hecha:** `CharacterComposition` + `CompositionPart` (`Assets/Scripts/Composition/`). Partes slotables
-> (adornos/ropa) → activan su **visual** y la **defensa de la ropa suma a `Anima.armadura`** (que `Predation`
-> ya lee: vestir armadura = peor presa). `Equip`/`Unequip` por slot; reutiliza `ClothingSlot` (ampliado con
-> Hair/Eyebrows/Eyes) y `ClothingRecipe`. **No toca el modelo general de stats** (base/efectivo = fase 2).
-> **Fases 2–3:** `baseStats`+`Recompute()` (base vs efectivo) → generalizar a **miembros** (aportan/quitan
-> stats; perder/injertar). Identidad (adornos) en el `SoulRecord` para que viaje al transformar (pendiente).
+> **Fases 1–2 hechas:** `CharacterComposition` + `CompositionPart`/`StatBonus` (`Assets/Scripts/Composition/`).
+> Partes slotables (adornos/ropa/**miembros**) → **visual** + **stats**. Modelo: la **constitución** (química/base
+> = los campos de `Anima`, que evolución/transformación mutan) es el HUÉSPED; cada parte aporta un **delta
+> GESTIONADO** (resta viejo/suma nuevo por frame) → **no pisa** evolución/transform (por eso es seguro). El
+> aporte **biológico** se **modula por la vitalidad** del huésped (el mismo brazo rinde distinto según el
+> cuerpo); **injerto progresivo** (`adaptSpeed`: el delta converge/decae). La armadura (ropa) suma a
+> `Anima.armadura` (que `Predation` lee) sin modular. Reutiliza `ClothingSlot`(+Hair/Eyebrows/Eyes)/`ClothingRecipe`.
+> **Fase 3:** reconciliar con `BodyPartStats`; miembros perdibles/injertables como assets; **base proyectada
+> desde `Humores`/`Chemistry`** (la química real); identidad (adornos) en el `SoulRecord` para que viaje al transformar.
 
 ## 6. Legibilidad — load-bearing, no adorno
 Si los seres reaccionan a **stats ocultos**, el jugador **debe poder percibirlos**: el **lector-de-mentes** /

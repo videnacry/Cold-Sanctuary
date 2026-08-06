@@ -301,14 +301,14 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
 - [ ] **Stats-as-truth — rebanadas** (docs/stats-as-truth.md §8): `CreatureRig` ✔ · `BodyPart` única ✔ ·
       `ScreenEffects` ✔ · **emotion-slice ✔** (`EmotionExpression`/`BodyPartReactor`/`EmotionReader`; circumplex+
       Laban+frases+legibilidad; `afabilidad`/`sensibilidad`; `emotion-model.md`) → **quedan**: **composición**
-      (fase 1 ✔ `CharacterComposition`: adornos/ropa→visual+defensa→armadura; fases 2-3: base/efectivo, miembros)
+      (fases 1-2 ✔ `CharacterComposition`: adornos/ropa/miembros→visual+delta gestionado, host-mod, injerto progresivo; fase 3: BodyPartStats/assets)
       → **depredación por stats ✔** (`Predation`:
       masa/fuerza/textura/tamaño; el tamaño invierte presa↔depredador) → **hechizos** (transformación
       3-niveles/farol-vs-real, bond por stats,
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#36 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#37 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #37):** **composición fase 2** — `CharacterComposition` + `StatBonus`: las partes aportan un
+  **delta gestionado** de stats sobre la constitución (campos de `Anima`) **sin pisar evolución/transformación**;
+  aporte **biológico modulado por la vitalidad del huésped** (el mismo brazo rinde distinto según el cuerpo) e
+  **injerto progresivo** (`adaptSpeed`: converge/decae). Base/efectivo resuelto de forma aditiva y segura.
+  Fase 3: `BodyPartStats`, miembros como assets, base desde `Humores`/`Chemistry`.
 - **06-ago (PR #36):** **composición fase 1** — `CharacterComposition`+`CompositionPart` (`Assets/Scripts/
   Composition/`): partes slotables (adornos/ropa) → activan su visual y la **defensa de la ropa suma a
   `Anima.armadura`** (que `Predation` lee → vestir armadura = peor presa). `Equip`/`Unequip` por slot; reutiliza

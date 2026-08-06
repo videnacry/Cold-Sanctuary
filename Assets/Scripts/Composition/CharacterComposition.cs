@@ -2,9 +2,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Una PARTE de composición (docs/stats-as-truth.md §5): adorno o prenda en un slot, con su **visual** y su
-/// **aporte de stats**. Fase 1: adornos (0 stats) y ropa (defensa → `Anima.armadura`). Puede referenciar una
-/// `ClothingRecipe` (toma su `slot` y `defenseRating`) o dar defensa/slot a mano.
+/// Aporte ADITIVO de una parte a los stats (0 = sin cambio). Subconjunto relevante (ampliable). Los aportes
+/// **biológicos** (de un miembro) se modulan por la **vitalidad** del cuerpo huésped (la química/base): un
+/// cuerpo fuerte exprime más del mismo brazo. La `armor` (ropa) es externa → NO se escala por el huésped.
+/// </summary>
+[System.Serializable]
+public class StatBonus
+{
+    public float strength, agility, endurance, bodyMass, perception, composure;
+    [Tooltip("Aporte a armadura/coraza (ropa; no se escala por el huésped).")]
+    public float armor;
+}
+
+/// <summary>
+/// Una parte de composición (docs/stats-as-truth.md §5): adorno / prenda / miembro en un slot, con su visual y
+/// su aporte de stats. Puede referenciar una `ClothingRecipe` (toma su slot y su `defenseRating`→armadura).
 /// </summary>
 [System.Serializable]
 public class CompositionPart
@@ -13,39 +25,40 @@ public class CompositionPart
     public ClothingSlot slot = ClothingSlot.Accessory;
     [Tooltip("Malla a activar (opcional; los modelos viven fuera del repo).")]
     public GameObject visual;
-    [Tooltip("Prenda opcional: si se asigna, usa su slot y aporta su defenseRating.")]
+    [Tooltip("Prenda opcional: si se asigna, usa su slot y aporta su defenseRating a la armadura.")]
     public ClothingRecipe clothing;
-    [Tooltip("Defensa extra directa (si no usas una prenda).")]
-    public float extraDefense = 0f;
+    [Tooltip("Aporte de stats (miembro = fuerza/agilidad…; adorno = 0; ropa = armor).")]
+    public StatBonus bonus = new StatBonus();
 
     public ClothingSlot Slot => clothing != null ? clothing.slot : slot;
-    public float Defense => (clothing != null ? clothing.defenseRating : 0f) + extraDefense;
+    public float Armor => bonus.armor + (clothing != null ? clothing.defenseRating : 0f);
 }
 
 /// <summary>
-/// COMPOSICIÓN de un ser (docs/stats-as-truth.md §5, **fase 1**): partes slotables (adornos/ropa) que dan
-/// **apariencia** (activan su malla) y **stats** — la defensa de la ropa suma a **`Anima.armadura`**, que
-/// `Predation` ya lee (vestir armadura = peor presa / más defensa). **No toca el modelo general de stats**
-/// (eso es la fase 2: base vs efectivo); aquí solo cachea `armadura = base + Σ defensa`. Un slot = una parte.
-/// Reutiliza `ClothingSlot`/`ClothingRecipe`. En `Anima`s reales (jugador/companions/animales).
+/// COMPOSICIÓN de un ser (docs/stats-as-truth.md §5, **fase 2**): partes slotables (adornos/ropa/miembros) que
+/// dan **apariencia** y **stats**. Modelo: la **constitución** (la química/base del cuerpo = los campos de
+/// `Anima`, que **evolución/transformación mutan libremente**) es el HUÉSPED; cada parte aporta un **delta
+/// GESTIONADO** (resta el viejo, suma el nuevo cada frame) → **nunca pisa** a evolución/transform.
+///  - **Modulación por huésped:** el aporte biológico se escala por la **vitalidad** del cuerpo (el mismo
+///    brazo rinde distinto en un cuerpo fuerte que en uno débil).
+///  - **Injerto progresivo:** el delta **converge** con el tiempo (`adaptSpeed`); al quitar la parte, se
+///    desvanece. La armadura (ropa) es externa → no se modula.
+/// Opt-in y aditivo: sin este componente, nada cambia. Fase 3: reconciliar con `BodyPartStats` y miembros
+/// perdibles/injertables como assets; base proyectable desde `Humores`/`Chemistry`.
 /// </summary>
 public class CharacterComposition : MonoBehaviour
 {
     public Anima anima;
     public List<CompositionPart> parts = new List<CompositionPart>();
+    [Tooltip("Velocidad de adaptación del injerto (mayor = más rápido).")]
+    public float adaptSpeed = 1.5f;
 
-    float _baseArmadura;
-    bool _captured;
+    // Delta actualmente aplicado a los campos de Anima (para sumarlo/quitarlo de forma gestionada).
+    float _aStr, _aAgi, _aEnd, _aMass, _aPer, _aCom, _aArm;
 
-    void Awake()
-    {
-        if (anima == null) anima = GetComponent<Anima>();
-        if (anima != null) { _baseArmadura = anima.armadura; _captured = true; }
-    }
+    void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
+    void Start() { foreach (CompositionPart p in parts) SetVisible(p, true); }
 
-    void Start() { foreach (CompositionPart p in parts) SetVisible(p, true); Recompute(); }
-
-    /// <summary>Equipa una parte en su slot (reemplaza la que hubiera en ese slot).</summary>
     public void Equip(CompositionPart part)
     {
         if (part == null) return;
@@ -53,14 +66,13 @@ public class CharacterComposition : MonoBehaviour
             if (parts[i] != null && parts[i].Slot == part.Slot) { SetVisible(parts[i], false); parts.RemoveAt(i); }
         parts.Add(part);
         SetVisible(part, true);
-        Recompute();
     }
 
     public void Unequip(CompositionPart part)
     {
-        if (part == null || !parts.Remove(part)) return;
+        if (part == null) return;
+        parts.Remove(part);
         SetVisible(part, false);
-        Recompute();
     }
 
     static void SetVisible(CompositionPart p, bool on)
@@ -68,13 +80,41 @@ public class CharacterComposition : MonoBehaviour
         if (p != null && p.visual != null) p.visual.SetActive(on);
     }
 
-    /// <summary>`armadura = base + Σ defensa de la ropa equipada`. No toca el resto de stats (fase 2).</summary>
-    public void Recompute()
+    void Update()
     {
         if (anima == null) return;
-        if (!_captured) { _baseArmadura = anima.armadura; _captured = true; }
-        float armor = _baseArmadura;
-        foreach (CompositionPart p in parts) if (p != null) armor += p.Defense;
-        anima.armadura = armor;
+
+        // Vitalidad del HUÉSPED = su constitución (campos actuales MENOS nuestro delta) → modula lo biológico.
+        float hostMight = ((anima.strength - _aStr) + (anima.bodyMass - _aMass) + (anima.endurance - _aEnd)) / 3f;
+        float hostFactor = Mathf.Clamp(hostMight, 0.5f, 2f);
+
+        // Objetivo: suma de aportes (los biológicos escalados por el huésped; la armadura no).
+        float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f;
+        foreach (CompositionPart p in parts)
+        {
+            if (p == null) continue;
+            StatBonus b = p.bonus;
+            tStr += b.strength * hostFactor; tAgi += b.agility * hostFactor; tEnd += b.endurance * hostFactor;
+            tMass += b.bodyMass * hostFactor; tPer += b.perception * hostFactor; tCom += b.composure * hostFactor;
+            tArm += p.Armor;   // armadura (ropa): externa
+        }
+
+        // Injerto progresivo + aplicación gestionada (no pisa evolución/transformación).
+        float k = Mathf.Clamp01(Time.deltaTime * adaptSpeed);
+        Step(ref anima.strength,   ref _aStr,  tStr,  k);
+        Step(ref anima.agility,    ref _aAgi,  tAgi,  k);
+        Step(ref anima.endurance,  ref _aEnd,  tEnd,  k);
+        Step(ref anima.bodyMass,   ref _aMass, tMass, k);
+        Step(ref anima.perception, ref _aPer,  tPer,  k);
+        Step(ref anima.composure,  ref _aCom,  tCom,  k);
+        Step(ref anima.armadura,   ref _aArm,  tArm,  k);
+    }
+
+    // Lleva `applied` hacia `target` (injerto progresivo) y ajusta el campo por la diferencia (gestionado).
+    static void Step(ref float field, ref float applied, float target, float k)
+    {
+        float next = Mathf.Lerp(applied, target, k);
+        field += next - applied;
+        applied = next;
     }
 }
