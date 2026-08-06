@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#42 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#43 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #43):** **apetito por NUTRIENTES** (`Metabolism` reescrito, base cientifica): pools por nutriente
+  (proteina/grasa/carb/minerales) que se agotan → deuda → `Appetite` (protein leverage) atenuado por leptina;
+  `Craving` (lo que mas falta → que cazar/que parte, p.ej. oso polar→grasa) y `Selectivity` (saciado→exquisito/
+  hambriento→come todo). Techo de utilizacion → stats; exceso → grasa. `AbsorbFood` reparte por material.
+  Falta: `Craving`/`Selectivity` sesguen `SelectPrey`/parte; herbivoros/Eater/ElementFragment.
 - **06-ago (PR #42):** **comer → absorber** enganchado (carnívoros): `Carnivore.Feed` llama a `Metabolism.
   AbsorbFood(nutrition, material)` (Meat/Fish→N, Fruit/Grass→C) → lo útil a `Constitution` (stats), el exceso a
   grasa; cierra el bucle jugable de la química/absorción. Falta: herbívoros/`Eater`/`ElementFragment` (mismo one-liner).
