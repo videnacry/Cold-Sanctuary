@@ -113,7 +113,15 @@ ES química. **Dos capas:**
   (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). **Los elementos son símbolos
   REALES de la tabla periódica** (`Chemistry`): validados contra `PeriodicTableManager` y **alimentables**
   (`AddElement`) desde el juego (absorber/comer un elemento → cambia la constitución → mueve los stats).
-  *Fase futura:* recetas de compuestos reales; que comer/absorber `ElementFragment` llame a `AddElement`.
+  *Fase futura:* recetas de compuestos reales; que comer/absorber `ElementFragment` llame a `Metabolism.Absorb`.
+
+**Límite de absorción — hecho (`Metabolism`):** la absorción no tiene tope duro, pero la **utilización** que
+construye stats SÍ (techo tipo **síntesis proteica ~0.4 g/kg por comida**); **el exceso → grasa
+(`Anima.fatReserves`), no poder** → *no se puede comer todo el día para hacerse fuerte*. **Apetito** = hambre
+(**ghrelina**, corto plazo) − reservas (**leptina**/set-point, largo plazo) → con grasa alta, come menos. El
+techo **escala con la masa** y **adapta con el uso** (entreno del intestino) → **la capacidad crece con los
+stats**. `Absorb(symbol, amount)`: lo útil → `Constitution.AddElement`; el exceso → grasa.
+*(Base: leptina/ghrelina/set-point; techo de MPS. Fuentes en el PR.)*
 Cadena: **química (niveles) → stats base → stats efectivos (con partes)**. "Subir un stat" = cambiar la química.
 
 **Tejido vivo (doble sentido) — hecho:** `CompositionPart.living` — vivo (prenda/miembro) = doble sentido

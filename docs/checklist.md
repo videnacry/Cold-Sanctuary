@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#40 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#41 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **06-ago (PR #41):** **límite de absorción** (`Metabolism`, base científica leptina/ghrelina/set-point +
+  techo de síntesis proteica): la absorción no tiene tope, la **utilización** sí (techo ~0.4 g/kg escalado por
+  masa + adaptación por uso); **exceso → grasa (`fatReserves`), no stats** → no se come todo el día para
+  hacerse fuerte. `Appetite` = hambre(ghrelina) − reservas(leptina). `Absorb`→`Constitution`. `stats-as-truth §9`.
+  Falta: enganchar comer/`ElementFragment`→`Absorb`.
 - **06-ago (PR #40):** `Constitution` enganchada a **`Chemistry`** — los elementos del Nivel 1 son ahora
   **símbolos reales de la tabla periódica** (validados contra `PeriodicTableManager.GetData`) y **alimentables**
   (`AddElement(symbol, delta)`) desde el juego (absorber/comer elementos → cambia la constitución → mueve los
