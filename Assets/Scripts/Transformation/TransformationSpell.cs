@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -22,6 +23,9 @@ public class TransformationSpell : MonoBehaviour
     [Tooltip("Duración (s) de la transformación (la fija la energía del hechizo).")]
     public float duration = 20f;
 
+    [Tooltip("Coste del hechizo en elementos (se paga de MagicReserves del lanzador si la tiene). Vacío = gratis.")]
+    public List<ElementCost> cost = new List<ElementCost>();
+
     public enum Result { Failed, VisualOnly, Full }
 
     void Awake() { if (caster == null) caster = GetComponent<Anima>(); }
@@ -32,6 +36,9 @@ public class TransformationSpell : MonoBehaviour
     public Result Cast(Anima target, TransformPreset form)
     {
         if (target == null || form == null || caster == null) return Result.Failed;
+        // Coste de magia: si el lanzador tiene reservas, debe poder pagar (agotado un elemento → no hay hechizo).
+        MagicReserves mr = caster.GetComponent<MagicReserves>();
+        if (mr != null && !mr.Pay(cost)) { Debug.Log($"[Transform] «{caster.name}» sin reservas para el hechizo."); return Result.Failed; }
 
         bool self = target == caster;
         StatProfile now = StatProfile.Capture(target);
