@@ -425,6 +425,58 @@ Sandboxes de `Build Sample Scene Blockout`: `TruckMaintenance_AUTO`, `PrologueSa
 - [x] **Regresión**: 0 excepciones nuevas en toda la corrida tras el fix (aparte del hallazgo de
       `PlaneMessenger` ya descripto, que no es una excepción sino un silencio).
 
+## 15. Magia · metabolismo · descomposición · quimeras (PRs #20–#52) — POR CABLEAR
+
+**IMPORTANTE (estado real):** todo este bloque es **código nuevo opt-in** y **NO tiene `_AUTO` sandbox** en
+`SampleSceneBuilder` (la mayoría cuelga de `Anima`, que es abstracta). Compila (verificado por conteo de llaves,
+no por Unity), pero **para probarlo hay que cablearlo**: o bien añadir componentes a mano sobre un `Anima`
+concreto (p.ej. un `BearBehaviour`), o construir sandboxes. **Recomendado antes de testear:** pedir los
+sandboxes (ver "Próximo paso" abajo). Lista de qué verificar cuando esté cableado:
+
+### 15a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`)
+- [ ] Un `Anima` con `Metabolism`(+`Constitution`) come (`AbsorbFood`): el pool del nutriente sube, lo útil
+      alimenta stats (`Constitution.AddElement`), y **el exceso NO va a magia** hasta desbloquear (va a grasa).
+- [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
+- [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
+
+### 15b. Primer hechizo desbloquea las pools (`Grimoire`)
+- [ ] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía;
+      dispara `OnLearned`. Tras esto, el **exceso de comer llena las pools** (hasta `capPerElement`) y luego grasa.
+
+### 15c. Hechizos: coste materia + energía
+- [ ] `FireSpell` **modo químico**: `Cast()` cobra combustible (C+H) + ignición (J); sin reservas → no sale
+      (log "sin reservas"). Presets `FireTier` dan los gramos esperados (chispa 0,018 g / lanzallamas 22 g).
+- [ ] `FireSpell` **modo masa-energía** (`massEnergyMode`): cobra ~µg + **toda** la energía del pool.
+- [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
+- [ ] Lanzar fuego **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+
+### 15d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
+- [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
+      (Elements/Energy) — verlo subir en el **HUD de recursos** (§1/§2).
+- [ ] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía.
+- [ ] **Energía gateada por física**: si `energyPhysicsId` no está en el `Grimoire` del obrero, su parte de
+      energía va **entera a la economía** (log "energía NO revelada").
+
+### 15e. Minijuego de descomposición (`DecompositionMinigame`) — **testable (OnGUI)**
+- [ ] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden:
+      **identificar** (elegir nombre correcto), **romper** (Perfecto/Regular/Fallo), **clasificar** (arrastrar
+      cada componente a su contenedor). Al agotarse el tiempo por muestra, avanza.
+- [ ] Solo cuentan en el `yield` los componentes de muestras **identificadas + rotas + bien clasificadas**
+      (×calidad de ruptura); al terminar la jornada llama a `Complete()` → sube la economía (§15d).
+- [ ] Jugar **más rápido** despacha más muestras en la misma jornada.
+
+### 15f. Sustrato de quarks del S4 (`QuarkReserve`)
+- [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un
+      número plausible para la UI.
+- [ ] `MakeElement(reservas, símbolo, gramos)` transforma quarks→pool de ese elemento (gasta quarks solo por
+      lo creado; respeta el tope). `Restitute(reservas, gramos)` → sube el pool de **energía** (E=mc²).
+
+### Próximo paso (para poder testear de verdad)
+Construir sandboxes `_AUTO` en `SampleSceneBuilder`: **(1)** `Descomposicion_AUTO` — el más fácil y sin `Anima`
+(un `DecompositionJob` + `DecompositionMinigame` con un batch de agua/sal/… → resultados visibles en el HUD de
+recursos); **(2)** `Magia_AUTO` — un `Anima` concreto con `Metabolism`+`Constitution`+`MagicReserves`+`Grimoire`
+(+`QuarkReserve`/`FireSpell`) para el bucle comer→desbloquear→lanzar. Ninguno existe todavía.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
