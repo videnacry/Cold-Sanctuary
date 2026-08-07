@@ -28,6 +28,16 @@ que dé al menos esa ficción, **se pierden en el vicio**, consumen más para ll
 químicos, pero **no aporta: resta hasta la muerte**. → *La peor tortura para un mago sería perder la magia*
 (el pico de bienestar de verdad).
 
+**Base científica (confirma tu intuición casi al pie de la letra):** la dopamina codifica el **error de
+predicción de recompensa** (RPE). La respuesta es **bifásica**: un "a-proceso" placentero seguido de un
+"b-proceso" negativo (ansia/abstinencia); la **neuroadaptación amplifica el b-proceso** → subes dosis/frecuencia
+(**tolerancia**). Por eso **el primer subidón no vuelve**: las adaptaciones **amortiguan la recompensa e
+intensifican el ansia** → es *neurológicamente imposible* recuperar la primera vez. Y el **contexto condiciona**:
+lugares, personas y **estados mentales** presentes al consumir se vuelven disparadores → tu "dependía de otros
+químicos y del equilibrio del momento" **es exactamente el set-and-setting**. Modelo: el pico depende de
+(consumible × contexto químico/emocional presente); perseguir solo el consumible → RPE decreciente → ansia
+creciente → daño. *(Fuentes en el PR.)*
+
 ## 3. El hechizo de comer — 1er trayecto: DESINTEGRAR (química de menos a más)
 Progresivo por santuario; **la "cocina" muta** en cada uno (y su minijuego enseña ese nivel):
 | Santuario | Aprende a comer | "Cocina"/lugar | Minijuego (jugabilidad) |
@@ -80,5 +90,54 @@ Kushal es su mano derecha; las misiones se vuelven **globales** (ya se teletrans
   + `Chemistry` (símbolos) ya son la **base**: el hechizo de comer solo **cambia el NIVEL** al que desintegras
   (compuesto/elemento/quark) y qué UI usas (escribir compuestos/elementos/quarks). Una **reserva de magia** por
   elemento (conteo en la tabla) + coste por hechizo = la capa mágica sobre esto.
-- *Falta (build):* reserva de magia por elemento + coste de hechizo; el hechizo de comer por niveles (UI); el
-  santuario de Quimeras como "cocina" del apogeo; la mecánica de adicción (grupos de células con control).
+- **Reserva de magia + coste (hecho):** `MagicReserves` — stock por elemento (lo que el jugador ve en la tabla)
+  + `ElementCost`/`CanCast`/`Pay`; agotado un elemento → no lanza hechizos que dependan de él. Falta: que los
+  hechizos (Transformation/…) declaren su coste y llamen a `Pay`; que comer rellene reservas.
+- *Falta (build):* el hechizo de comer por niveles (UI); el santuario de Quimeras como "cocina" del apogeo; la
+  mecánica de adicción (grupos de células con control); el modelo atómico y de combate (§8) en código.
+
+## 8. Alimentación al nivel ATÓMICO + comer = combate de elementos (refinado)
+La composición de un ser = **% de cada elemento** (hierro/calcio/nitrógeno…), que hay que reponer. Pero **no se
+comen elementos sueltos**: los elementos van en **compuestos**, que forman **células/tejidos**, que forman
+organismos → los animales comen **células/tejidos** (fuentes directas de elementos/compuestos hay pocas: sales
+minerales, *salt licks*). Por eso cada **componente del cuerpo** lleva su **composición química** (piel/blubber
+= grasa = C/H; músculo = proteína = N…), y el oso, buscando **sus elementos** (grasa por el frío, §Metabolism),
+**come la piel y deja el resto** — de forma natural, por composición.
+- **Comer = combate de elementos** (como el hechizo de control = combate de stats): el cuerpo **gasta**
+  elementos/químicos (ácido, enzimas — distintos para digerir carne vs planta) para **absorber** otros → **neto
+  = ganados − gastados**; el anima **conoce el neto previsto** y eso hace algo **más o menos apetecible**.
+- **Actividad y clima mueven la necesidad (hecho):** el **esfuerzo** aumenta el gasto de todo; el **frío**
+  (temp < 37°C) quema/pide más **grasa** (termogénesis) → el oso *craves* grasa **por el clima**. (`Metabolism.Update`.)
+
+## 9. La jerarquía completa de la materia (desintegrar) — con lo que faltaba
+Bajando: **organismo → sistemas → órganos → tejidos → células → orgánulos → moléculas/compuestos → átomos →
+(núcleo + electrones)**. El **núcleo → protones/neutrones → quarks** (up/down); los **electrones son LEPTONES**
+(partículas fundamentales, **NO hechas de quarks** → se tratan **aparte**, buena observación). Las **fuerzas**
+que unen todo son **bosones** (fotón/gluón/W-Z/Higgs) — **no son "otro nivel de materia", son la energía/
+interacción** (4 fuerzas: gravedad, EM, débil, fuerte). Por debajo de quarks/leptones no hay subestructura
+conocida (más allá = especulativo: cuerdas/preones). → Faltaban en la desintegración los niveles **órgano/
+sistema, tejido y célula**, y separar **electrones (leptones)** de los **quarks** (nucleones).
+- **Ubicación meso/micro:** la desintegración **organismo→órganos/sistemas→células** es **violenta** (canal,
+  anatomía) → mejor en el **Microcosmos** (donde la violencia tiene sentido y hay historias científicas/trágicas
+  — **Da Vinci** de exponente). El Meso se queda en comida/compuestos/elementos.
+
+## 10. Minijuegos de desintegración + órganos como COMPONENTES
+- **Mecánica:** separar y categorizar. Te ponen una **proteína** → arrastras cada **átomo** a su casillero
+  (lo reconoces por su configuración); todo colocado → puntos → siguiente (lípido, azúcar…). Nivel **quark**:
+  te ponen un átomo de **plomo/azufre/cobre** y lo desarmas en quarks. Nivel **órgano/sistema** (entre cocina y
+  compuestos, en el Micro): animales **muertos de vejez** → separas por sistemas/órganos a sus casilleros.
+- **Órganos/tejidos como `CompositionPart`** (revoluciona la composición): un órgano = componente con su
+  composición química y sus stats → sirve a **enfermería** (meso y micro) y a **narrar** (Da Vinci), y a la
+  creación de **quimeras** (ensamblar órganos/sistemas).
+
+## 11. Trascender la química (el 5º nivel / con la Magnate)
+Superar el consumo de materia (fermiones) → alimentarse de la **fabric**: **energía/fuerzas** (bosones: fotones/
+gravitón), **espacio-tiempo/vacío** (energía de punto cero), **materia/energía oscura**, o **gravedad**.
+Recomendación de "lo más primordial/diferente": **el vacío/energía del espacio-tiempo** (o la **energía oscura**,
+la expansión misma del espacio) — comer la **tela** en vez de la materia. Encaja con "trascender la química" y
+con teletransportarse (ya dobla el espacio).
+
+## 12. ¿MCP / fuente completa?
+No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
+(composición elemental/nutricional de alimentos), **PubChem** (compuestos → fórmula → elementos) y el **Modelo
+Estándar** (partículas). Con eso, las recetas compuesto→elemento y la composición de alimentos pueden ser reales.

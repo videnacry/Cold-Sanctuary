@@ -60,7 +60,19 @@ public class Metabolism : MonoBehaviour
     {
         _used = Mathf.Max(0f, _used - windowRegenPerSecond * Time.deltaTime);
         float bmr = burnPerSecond * (anima != null ? anima.bodyMass : 1f) * Time.deltaTime;
-        foreach (NutrientNeed n in needs) if (n != null) n.pool = Mathf.Max(0f, n.pool - bmr);
+        // La ACTIVIDAD (esfuerzo) aumenta el gasto (más nutrientes para acciones más potentes).
+        float activity = 1f;
+        Animal an = anima as Animal;
+        if (an != null) activity += Mathf.Clamp01(an.exhaustion) * 0.5f;
+        // FRÍO (temperatura < 37°C): el cuerpo quema/necesita más GRASA (termogénesis) — el oso craves grasa por el clima.
+        float cold = anima != null ? Mathf.Clamp01((37f - anima.temperature) / 5f) : 0f;
+        foreach (NutrientNeed n in needs)
+        {
+            if (n == null) continue;
+            float burn = bmr * activity;
+            if (n.nutrient == "fat") burn += bmr * cold * 3f;
+            n.pool = Mathf.Max(0f, n.pool - burn);
+        }
     }
 
     float Deficit(NutrientNeed n) => n == null || n.target <= 0f ? 0f : Mathf.Clamp01((n.target - n.pool) / n.target);
