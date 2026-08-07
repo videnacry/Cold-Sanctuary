@@ -184,6 +184,61 @@ Comer **rellena las reservas de magia** (`Metabolism` → `MagicReserves.Store`,
 **desbloqueadas por el primer hechizo** (`MagicReserves.unlocked`); lo que sobra → grasa. *Falta:* coste
 energético (J) por hechizo además del de elementos; la guía de física; que el 1er hechizo ponga `unlocked`.
 
+## 14. Las cocinas como TRABAJO: descomposición → energía + materia → economía + paga
+
+Consolidación de la conversación (2026-08-07). Todo lo de abajo encaja con el §3 (la "cocina" muta por
+santuario) y con lo montado en código este día.
+
+### Nombre
+Las llamamos **cocinas** por continuidad narrativa, pero **solo la de S1 es una cocina real**. En S2..S4 el
+mismo espacio es **tienda de ingredientes → laboratorio de química → planta nuclear** (§3). Nombre paraguas
+sugerido: **"cocina/taller de materia"** (o *estación de descomposición*), aceptando que el jugador la sigue
+llamando "cocina". No hace falta renombrar sistemas: es la misma familia de misiones a distinta escala.
+
+### Química **y física** en el mismo sitio
+La cocina no es solo separación/composición **química/biológica**: al descomponer se **libera energía**, así que
+también enseña **física**. Cada nivel de desintegración suelta MUCHÍSima más energía (y se puede **absorber**):
+| Rompes… | En… | Energía liberada (orden real) | Va a… |
+|---|---|---|---|
+| Compuesto | átomos (enlaces) | ~**kJ/mol** (química, eV por enlace) | reserva de energía (poca) |
+| Átomo | núcleo + electrones | ~**cientos de kJ–MJ** (ionización → reacciones) | reserva de energía |
+| Núcleo | protones/neutrones (nucleones) | ~**8×10¹³ J/kg** (nuclear, energía de ligadura) | reserva de energía (mucha) |
+| Materia | energía (E=mc²) | **9×10¹³ J/g = 90 TJ/g** | reserva de energía (máxima) |
+
+En código: la energía absorbida va a **`MagicReserves.energy` (julios)** vía `StoreEnergy`; los elementos
+sueltos a las **pools por elemento** (`Store`). Los hechizos pequeños se pagan en **gramos de elemento**
+(`Pay`), los grandes (nuclear/masa-energía, "bosones") en **julios** (`PayEnergy`). Ver §13.
+
+### Terminología (aclaración)
+Lo que describes —"desintegración que libera energía"— en biología es **catabolismo** (romper moléculas
+grandes en pequeñas liberando energía; su moneda es el ATP), **no** "catalización". La **catálisis** es otra
+cosa: **acelerar** una reacción con un catalizador/enzima (baja la energía de activación), no romper para
+liberar energía. En física el equivalente a "romper el átomo/núcleo" es **fisión** (y **aniquilación** para
+materia→energía). Útil para las etiquetas de la UI: *catabolismo/fisión/aniquilación* según el nivel.
+
+### Es un TRABAJO: economía del santuario + paga
+Sí — técnicamente estas misiones son **trabajos**. Igual que la comida/plantas/ropa que produce cada área
+(`SanctuaryResources`/`AreaProducer`, ver world-topology §4/§7), lo que se obtiene al descomponer se reparte:
+- **La mayor parte → reservas de la economía** del santuario (elementos/energía como recurso común del área).
+- **Una parte → paga** al jugador/personaje por el trabajo (a sus pools/energía o a su bolsa de recursos).
+Esto aplica a las cocinas de los santuarios **y** a la **cocina del cuartel de los jefes** (misma mecánica,
+otro dueño de las reservas). *Pendiente de cablear:* un `DecompositionJob`/`Producer` que, al completar la
+misión, llame a `SanctuaryResources.Add` (economía) y entregue el **cut** al `MagicReserves`/bolsa del obrero.
+
+### La física llega de OTRAS áreas (revelación progresiva)
+Como el jugador **rota por áreas**, llega a la cocina de S2/S3/S4 **ya con física aprendida** en Mecánica/Forja
+(§13). Por eso en esas cocinas se va **revelando la energía** que suelta la desintegración: sin ese saber, solo
+ve "materia → materia"; **con** él, ve y puede **capturar los julios**. Gating limpio: la lectura/absorción de
+energía de un nivel se desbloquea al haber aprendido su física (enlace→térmica en Forja; nuclear→masa-energía
+en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLearned` / learning-unlocks).
+
+### Enganche (montado hoy, PR posterior a #47)
+- **`Grimoire`** (registro de hechizos): el **primer hechizo** aprendido (`awaken-reserves`) llama a
+  `MagicReserves.Unlock()` → crea las pools (vacías, con tope) y la reserva de energía. Emite `OnLearned`.
+- **`MagicReserves`**: `Unlock()` siembra `seedElements` (H/C/N/O); `energy`+`energyCap`+`StoreEnergy`/
+  `PayEnergy` (la reserva de julios de la descomposición). El exceso de comer ya llenaba las pools (§13/PR #47).
+- *Falta:* el `DecompositionJob` que reparte a economía+paga; que la absorción de energía se gatee por física.
+
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
 (composición elemental/nutricional de alimentos), **PubChem** (compuestos → fórmula → elementos) y el **Modelo

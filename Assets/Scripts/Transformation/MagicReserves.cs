@@ -20,7 +20,7 @@ public class MagicReserves : MonoBehaviour
 {
     public Anima anima;
 
-    [Tooltip("Las crea el PRIMER HECHIZO. Hasta desbloquearlas, el exceso de comida va a grasa (no a magia).")]
+    [Tooltip("Las crea el PRIMER HECHIZO (Grimoire → Unlock). Hasta entonces, el exceso de comida va a grasa (no a magia).")]
     public bool unlocked = false;
     [Tooltip("Tope por elemento (el primer hechizo crea las pools 'con un límite').")]
     public float capPerElement = 100f;
@@ -28,7 +28,54 @@ public class MagicReserves : MonoBehaviour
     [Header("Reservas por elemento (símbolo de la tabla periódica → cantidad). Agotado → no lanza ese hechizo.")]
     public List<ElementAmount> reserves = new List<ElementAmount>();
 
+    [Header("Reserva de ENERGÍA (julios). La libera DESCOMPONER materia (compuesto→átomo→núcleo→quarks): "
+        + "cada nivel suelta MUCHÍSima más (química→nuclear→masa-energía). Paga los hechizos T3-T5 y los 'bosones'.")]
+    [Tooltip("Julios almacenados. Se rellena en las cocinas al descomponer/desintegrar (StoreEnergy).")]
+    public float energy = 0f;
+    [Tooltip("Tope de energía almacenable (crece con la maestría de física).")]
+    public float energyCap = 1e6f;
+
+    [Tooltip("Símbolos que siembra el primer hechizo (pools vacías, con tope). Los básicos de la vida.")]
+    public List<string> seedElements = new List<string> { "H", "C", "N", "O" };
+
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
+
+    /// <summary>El PRIMER HECHIZO: crea las pools de magia (vacías, con tope) y la reserva de energía.
+    /// A partir de aquí el exceso de comer/descomponer las llena. Idempotente.</summary>
+    public void Unlock()
+    {
+        if (unlocked) return;
+        unlocked = true;
+        foreach (string s in seedElements)
+            if (!string.IsNullOrEmpty(s) && !Has(s))
+                reserves.Add(new ElementAmount { symbol = s, amount = 0f });
+        Debug.Log($"[Reservas] «{(anima != null ? anima.name : name)}» despierta las pools de magia " +
+                  $"(tope {capPerElement}/elemento; energía tope {energyCap:0} J): {string.Join(", ", seedElements)}.");
+    }
+
+    bool Has(string symbol)
+    {
+        foreach (ElementAmount r in reserves) if (r != null && r.symbol == symbol) return true;
+        return false;
+    }
+
+    /// <summary>Absorbe energía de descomponer materia (julios), hasta el tope; devuelve el sobrante que no cupo.</summary>
+    public float StoreEnergy(float joules)
+    {
+        if (joules <= 0f) return 0f;
+        float put = Mathf.Min(joules, Mathf.Max(0f, energyCap - energy));
+        energy += put;
+        return joules - put;
+    }
+
+    /// <summary>Paga un coste en energía (julios) si hay reserva (todo o nada). Para hechizos nuclear/masa-energía.</summary>
+    public bool PayEnergy(float joules)
+    {
+        if (joules <= 0f) return true;
+        if (energy < joules) return false;
+        energy -= joules;
+        return true;
+    }
 
     /// <summary>Guarda hasta el tope; devuelve el sobrante (lo que no cupo → grasa). El exceso de comer entra aquí.</summary>
     public float Store(string symbol, float amount)
