@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#51 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#52 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #52):** **minijuego de descomposición** (`DecompositionMinigame`). La jornada corre 3 FASES sobre
+  las MISMAS muestras y el MISMO orden: (1) **identificar** —elegir el nombre correcto entre nombres al azar,
+  contra reloj—, (2) **romper** —calidad por timing 0..1 → energía capturada—, (3) **clasificar** —arrastrar
+  cada componente a su contenedor; al acabar el tiempo se guardan los bien clasificados y pasa a la siguiente.
+  Un componente cuenta en el `yield` si su muestra fue identificada+rota+bien clasificada (×calidad); al terminar
+  vuelca `yield`/`energyJoules` en `DecompositionJob` y `Complete()` reparte economía+paga. Más rápido = más
+  muestras/jornada = más progreso. Prototipo OnGUI. Doc §17. *Falta:* UI de arrastre real; meltdown; sembrar el
+  batch desde la materia del área.
 - **07-ago (PR #51):** **sustrato de quarks del S4 (`QuarkReserve`) + aclaraciones del modelo**. `QuarkReserve`:
   quarks crudos flexibles → `MakeElement` (quarks→gramos de cualquier elemento, para el MIX pre-crear/dinámico)
   y `Restitute` (quarks→energía, E=mc²) + `AtomsAvailable` (UI: átomos por elemento). Identidad **1 g ≈ 3·N_A =
