@@ -578,12 +578,16 @@ reservas/energía/quarks **y de stats (fuerza/masa/grasa)**.
 - [ ] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía;
       dispara `OnLearned`. Tras esto, el **exceso de comer llena las pools** (hasta `capPerElement`) y luego grasa.
 
-### 19c. Hechizos: coste materia + energía
-- [ ] `FireSpell` **modo químico**: `Cast()` cobra combustible (C+H) + ignición (J); sin reservas → no sale
-      (log "sin reservas"). Presets `FireTier` dan los gramos esperados (chispa 0,018 g / lanzallamas 22 g).
-- [ ] `FireSpell` **modo masa-energía** (`massEnergyMode`): cobra ~µg + **toda** la energía del pool.
+### 19c. Hechizos: coste materia + energía — **sandbox `Magia_AUTO`** (fuego/agua/tierra/viento)
+Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin depender de comer.
+- [ ] `FireSpell` **modo químico** (Chispa/Lanzallamas): cobra combustible (C+H) + ignición (J); sin reservas →
+      no sale (log "sin reservas"). Chispa 0,018 g / lanzallamas 22 g.
+- [ ] `FireSpell` **modo masa-energía** (Aliento de dragón): cobra ~µg + **toda** la energía del pool (necesita
+      restituir energía antes).
+- [ ] **Agua** (H₂O): gasta ~11% H + 89% O de 1 kg + ~200 J. **Tierra** (SiO₂): mucha materia (Si+O de 5 kg) +
+      poca energía. **Viento**: **materia 0** (aire gratis) + ~450 J (energía-pesado).
 - [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
-- [ ] Lanzar fuego **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+- [ ] Lanzar un hechizo **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
 
 ### 19d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
 - [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
