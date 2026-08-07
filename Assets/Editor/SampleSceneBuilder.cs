@@ -90,6 +90,8 @@ public static class SampleSceneBuilder
         BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
         BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
+        BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
+        BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -963,6 +965,72 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] Orquesta emocional: EmotionOrchestraSandbox_AUTO (debugDrive). En Play, " +
                   "«Quijada» da tics ante cambios violentos, «Antena» se mece con la activación, «Hombro» se hunde " +
                   "con la valencia baja; «EmotionReader_AUTO» muestra la lectura sobre la orquesta (docs emotion-model.md).");
+    }
+
+    // ── Descomposición (cocina como trabajo) ───────────────────────────────────
+    // Minijuego de 3 fases (identificar/romper/clasificar) SIN Anima: el lote descompuesto va a la economía
+    // del santuario (workerCut=0) → Elements/Energy suben en el HUD de recursos. docs magic-metabolism §14/§17.
+    static void BuildDecompositionSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("Descomposicion_AUTO");
+        group.transform.SetParent(parent);
+        group.transform.position = new Vector3(8f, 1.5f, 6f);
+
+        DecompositionJob job = group.AddComponent<DecompositionJob>();
+        job.level = DecompositionLevel.Compound;
+        job.workerCut = 0f;   // sin obrero → TODO a la economía del santuario (visible en el HUD de recursos)
+
+        DecompositionMinigame game = group.AddComponent<DecompositionMinigame>();
+        game.job = job;
+        game.perItemSeconds = 6f;
+        game.batch = new List<DecompSample>
+        {
+            MakeDecompSample("H2O (agua)", new[] { "H2O (agua)", "CO2", "NaCl", "O2" }, 200f,
+                new[] { "H", "O" }, new[] { 2f, 16f }),
+            MakeDecompSample("NaCl (sal)", new[] { "NaCl (sal)", "H2O (agua)", "CaCO3", "N2" }, 150f,
+                new[] { "Na", "Cl" }, new[] { 23f, 35f }),
+            MakeDecompSample("CO2", new[] { "CO2", "O2", "CH4", "H2O (agua)" }, 300f,
+                new[] { "C", "O" }, new[] { 12f, 32f }),
+        };
+
+        Debug.Log("[SampleSceneBuilder] Descomposicion_AUTO: en Play, botón «Iniciar jornada» → 3 fases " +
+                  "(identificar/romper/clasificar). Al terminar, Elements/Energy suben en el HUD de recursos (docs magic-metabolism §17).");
+    }
+
+    static DecompSample MakeDecompSample(string trueName, string[] options, float joules, string[] syms, float[] grams)
+    {
+        DecompSample s = new DecompSample { trueName = trueName, energyJoules = joules };
+        s.nameOptions = new List<string>(options);
+        s.components = new List<ElementAmount>();
+        for (int i = 0; i < syms.Length && i < grams.Length; i++)
+            s.components.Add(new ElementAmount { symbol = syms[i], amount = grams[i] });
+        return s;
+    }
+
+    // ── Magia (bucle comer→desbloquear→lanzar) ──────────────────────────────────
+    // Sin Anima concreto: los componentes de magia son null-safe. Un HUD de prueba (MagicSandboxDriver) conduce
+    // aprender el 1er hechizo, comer, quarks y lanzar fuego. docs magic-metabolism §16, testing-checklist §15.
+    static void BuildMagicSandbox(Transform parent)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = "Magia_AUTO";
+        go.transform.SetParent(parent);
+        go.transform.position = new Vector3(10f, 1f, 6f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Magia_AUTO_MAT", new Color(0.40f, 0.30f, 0.70f));
+
+        Constitution con = go.AddComponent<Constitution>();
+        Metabolism met = go.AddComponent<Metabolism>();
+        met.constitution = con;
+        MagicReserves res = go.AddComponent<MagicReserves>();
+        QuarkReserve q = go.AddComponent<QuarkReserve>();
+        Grimoire grim = go.AddComponent<Grimoire>();
+        FireSpell fire = go.AddComponent<FireSpell>();
+
+        MagicSandboxDriver drv = go.AddComponent<MagicSandboxDriver>();
+        drv.reserves = res; drv.grimoire = grim; drv.quarks = q; drv.fire = fire; drv.metabolism = met;
+
+        Debug.Log("[SampleSceneBuilder] Magia_AUTO: HUD de prueba (abajo-izq en Play) para el bucle sin Anima — " +
+                  "aprender 1er hechizo → comer/quarks rellenan las pools → lanzar fuego (químico/masa-energía) (testing §15).");
     }
 
     static BodyPartReactor MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
