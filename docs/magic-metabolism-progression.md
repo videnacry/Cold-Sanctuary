@@ -297,6 +297,83 @@ falta reserva de nivel-S4 para aguantarle el pulso. Para este punto el jugador p
 con magia** (2º trayecto, INTEGRAR §4: crear materia/células) en vez de traerla. *Falta (build):* enganchar
 `PlayableCreature` a un arquetipo Quimera + que su "comida" pueda venir de un hechizo de creación.
 
+## 16. Aclaraciones del modelo mágico (S4, quarks flexibles, alimentar quimeras, elementales)
+
+Respuestas y decisiones de la conversación (2026-08-07).
+
+### Todo hechizo gasta elementos **y** energía (aclaración)
+Sí: **incluso los básicos**. La tabla del §15 confundía — el "—" solo decía que chispa/lanzallamas **no usan el
+modo masa-energía**, no que no gasten energía. En modo químico el coste = **elementos (combustible)** +
+**ignición** del pool de energía (chispa ~16 J, lanzallamas ~20 kJ). Regla general: **cada hechizo declara
+`cost` (elementos) + `energyCost` (J) > 0** y paga con `MagicReserves.Pay(costs, energy)`. La energía es la
+**activación/canalización**; la materia es lo que la reacción consume. Nunca cero energía en un hechizo real.
+
+### Dos formas de llenar el pool de energía (son distintas y ambas valen)
+1. **En la cocina** — la energía sale de **SEPARAR** materia (compuesto→átomo→núcleo→quarks); cada nivel libera
+   más. Ya montado: `DecompositionJob` (niveles `Compound/Atom/Nucleus/Mass`) → `StoreEnergy`.
+2. **Hechizo de RESTITUCIÓN** — a demanda, desintegra **quarks propios** → energía (E=mc²) y rellena el pool.
+   Montado: `QuarkReserve.Restitute`. (El "excedente de quarks se desintegra en energía" que mencionabas.)
+
+### El S4: quarks flexibles → TODAS las pools (decisión: **el MIX**)
+Al llegar a S4 las **pools biológicas se llenan al máximo** (pico de bienestar) y las **pools de elementos
+funcionan distinto**. Elegimos tu **opción mixta** (la más rica), montada en `QuarkReserve`:
+- El mago guarda **quarks crudos**; **1 g de materia ≈ 3·N_A = 1,807×10²⁴ quarks** (identidad **independiente
+  del elemento**: 3 quarks/nucleón × Avogadro). La UI muestra **sobre cada elemento** cuántos **átomos** podrías
+  formar (`AtomsAvailable`); ya no es "tener X gramos de cada uno", es **flexible**.
+- **Pre-crear** elementos que sabes que usarás → **ventaja de velocidad** (ya están en la pool, listos).
+- **Dejar quarks sin transformar** → **conversión dinámica al lanzar** (`MakeElement` en el momento): más
+  lento, es "crear el elemento justo al lanzar el hechizo" → **según lo rápido que los crees, sale o no** (skill).
+- Usar cualquier elemento, al final, **gasta quarks** → los quarks sirven para las tres pools (bio/elemento/energía).
+- *Falta (build):* el timing/skill de la conversión dinámica (UI); que el casteo tire de `QuarkReserve` cuando la
+  pool del elemento esté corta.
+
+### Los topes progresan (como los propios pools son un hechizo)
+Los pools se **crean con un tope** (1er hechizo) y ese tope **sube de nivel** igual que los hechizos. En **S4** el
+tope por elemento debe bastar para **construir una casa**: una casa modesta ≈ **10 t = 10⁷ g** de material → el
+sustrato (quarks/elementos) debe sostener ~10⁷ g (≈ **1,8×10³¹ quarks**), y `energyCap` ≥ **10¹¹ J** (grupo de
+quimeras, §15). *Falta (build):* escalar `capPerElement`/`energyCap`/`QuarkReserve` por nivel de maestría.
+
+### Alimentar a las quimeras (domesticación) cuesta aparte de sobrevivir
+Cierto: los ~alientos de dragón del §15 son para **sobrevivir/jugar**, no para **alimentar**. Alimentar = darles
+**quarks o elementos + energía** (a definir por especie). Como un **dragón consume tanto como un mago avanzado**,
+alimentar a **un grupo** es caro: si cada quimera repone ~**10¹¹ J + kg de elementos**, un grupo de ~5 ≈ **5×10¹¹
+J + varios kg** → el jugador necesita un `QuarkReserve` grande y, llegado el caso, **crea la comida con magia**
+(2º trayecto, INTEGRAR §4). Modelo sugerido: un `ChimeraFeed` que consume del `QuarkReserve`/energía del jugador
+y sube `Humores` (adrenalina/serotonina) + sacia `Metabolism` de la quimera. *Falta (build).*
+
+### Elementales: un hechizo por elemento + perfiles de coste
+Los **elementales** son **cada uno de un elemento distinto** → piden **hechizos específicos** (y contras: fuego↔
+agua, tierra↔viento…). Y sí, el **perfil de coste varía** por hechizo:
+- **Mayormente energía, poca materia:** calor/luz/fuerza puros, rayos (bosones) → mucho `energyCost`, poco `cost`.
+- **Mayormente materia, poca energía:** muro de piedra/hierro, crear comida/casa → mucho `cost` (kg de ese
+  elemento), poco `energyCost`.
+- **Mixtos:** el aliento de dragón (combustible + ignición) o su versión masa-energía (µg + todo el pool).
+Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo); falta **catalogar** los hechizos elementales.
+
+## 17. El minijuego de DESCOMPOSICIÓN (cómo lo haría)
+
+Rellena el lote del `DecompositionJob` (`yield` + `energyJoules`) y enseña el nivel. Reutiliza lo que ya gustó:
+las **fichas que caen tipo Guitar-Hero** (como `UpaYogaSession`) + el motor `VirtualTask`/`StationPart`/
+`VirtualPointer`. Dos gestos encadenados:
+
+1. **ROMPER (ritmo/precisión).** Llega una muestra (compuesto / átomo / núcleo / nucleón según el santuario).
+   Aplicas la "herramienta" del nivel **en el momento justo**: enzima/calor (catabolismo, S1-2), ionizar (S3),
+   golpe de neutrón (**fisión**, S4 núcleo), disparador de **aniquilación** (masa). El **timing** decide cuánta
+   **energía capturas** (mal timing → se pierde como calor → menor `energyJoules`). En niveles altos hay
+   **penalización de peligro** (una fisión que "se va crítica" si tardas → daño/"meltdown"): así sube la dificultad.
+2. **CLASIFICAR (emparejar, fichas que caen).** Las piezas liberadas caen por **carriles** = las **pools destino**:
+   símbolos de elemento (S2-3), o **protón/neutrón/electrón** (S3), o **quarks up/down + leptones** (S4). Aciertas
+   el carril a tiempo → va a su pool (bio/elemento/quark/energía); fallas → se **contamina/pierde**. Los electrones
+   van a un carril de **leptón** aparte (no son quarks) — refuerza la física correcta.
+
+- **Rendimiento = precisión × timing** → define `yield` (gramos por elemento clasificado) y `energyJoules`
+  (por la energía bien capturada al romper). Eso alimenta el reparto **economía + paga** del `DecompositionJob`.
+- **Progresión = mismo minijuego, sustrato más profundo** (comida→compuestos→elementos→p/n/e→quarks/leptones):
+  más carriles, más rápido, más energía y más peligro por nivel. Encaja con "solo S1 es cocina real; S2-4 =
+  tienda/laboratorio/planta nuclear".
+- *Falta (build):* `DecompositionMinigame : VirtualTask` (romper con timing + clasificar por carriles) que al
+  terminar setee `yield`/`energyJoules` y llame a `DecompositionJob.Complete()`.
+
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
 (composición elemental/nutricional de alimentos), **PubChem** (compuestos → fórmula → elementos) y el **Modelo
