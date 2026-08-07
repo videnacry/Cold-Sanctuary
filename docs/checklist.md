@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#47 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#48 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #48):** **pools de magia + primer hechizo + reserva de energía**. `Grimoire` (registro de
+  hechizos aprendidos, `OnLearned`): el 1er hechizo `awaken-reserves` llama a `MagicReserves.Unlock()` → crea
+  las pools vacías con tope (siembra H/C/N/O). `MagicReserves`: + reserva de **energía (julios)**
+  (`energy`/`energyCap`/`StoreEnergy`/`PayEnergy`) — la que libera **descomponer** materia (química→nuclear→
+  masa-energía), paga los hechizos grandes (bosones). + doc `magic-metabolism §14`: cocinas = trabajo
+  (descomposición→energía+materia→economía+paga), física en la cocina, catabolismo/fisión/aniquilación (no
+  "catalización"), revelación de energía gateada por física de otras áreas. *Falta:* `DecompositionJob`
+  (reparte a `SanctuaryResources` + cut al obrero); gatear la absorción de energía por física aprendida.
 - **07-ago (PR #47):** **comer rellena las reservas de magia** (`Metabolism`→`MagicReserves.Store`, hasta el
   tope, una vez `unlocked` por el 1er hechizo; el resto→grasa) → cierra el bucle comer↔lanzar. + doc
   `magic-metabolism §13`: coste REAL de hechizos con numeros (fuego: vela 0,018g/lanzallamas 22g/dragon 2,2kg;
