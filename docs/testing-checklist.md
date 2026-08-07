@@ -588,6 +588,9 @@ Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin 
       poca energía. **Viento**: **materia 0** (aire gratis) + ~450 J (energía-pesado).
 - [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
 - [ ] Lanzar un hechizo **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+- [ ] **Abastecer/trasplante** (`SupplySpell`, rol healer): botón «Abastecer objetivo» → transfiere energía +
+      quarks + C del lanzador al `Magia_AUTO_Objetivo`; el HUD muestra subir la energía/C del objetivo y bajar
+      las del lanzador. Sin recursos suficientes → log "sin recursos".
 
 ### 19d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
 - [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
