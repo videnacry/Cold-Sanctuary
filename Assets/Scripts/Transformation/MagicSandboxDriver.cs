@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public class MagicSandboxDriver : MonoBehaviour
     public ElementalSpell elemental;
     public Metabolism metabolism;
     public Anima anima;
+    public SupplySpell supply;
+    public Anima supplyTarget;
+    public MagicReserves targetReserves;
 
     void Awake()
     {
@@ -26,12 +30,13 @@ public class MagicSandboxDriver : MonoBehaviour
         if (elemental == null) elemental = GetComponent<ElementalSpell>();
         if (metabolism == null) metabolism = GetComponent<Metabolism>();
         if (anima == null) anima = GetComponent<Anima>();
+        if (supply == null) supply = GetComponent<SupplySpell>();
     }
 
     void OnGUI()
     {
         int x = 10, y = 300;
-        GUI.Box(new Rect(x, y, 372, 372), "Magia_AUTO (prueba — docs testing-checklist §19)");
+        GUI.Box(new Rect(x, y, 372, 434), "Magia_AUTO (prueba — docs testing-checklist §19)");
         y += 26;
         bool unlocked = reserves != null && reserves.unlocked;
 
@@ -77,6 +82,16 @@ public class MagicSandboxDriver : MonoBehaviour
 
         if (reserves != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Cargar reservas de prueba (H/C/O/Si +100)"))
         { reserves.Store("H", 100f); reserves.Store("C", 100f); reserves.Store("O", 100f); reserves.Store("Si", 100f); }
+        y += 28;
+
+        // Abastecer/trasplante a otro personaje (rol healer): energía + quarks + algo de C.
+        if (supply != null && supplyTarget != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Abastecer objetivo (1e6 J + 5 g quarks + 50 C)"))
+        {
+            supply.energyToGive = 1_000_000f;
+            supply.quarkGramsToGive = 5f;
+            supply.elementsToGive = new List<ElementCost> { new ElementCost { symbol = "C", amount = 50f } };
+            supply.SupplyTo(supplyTarget);
+        }
         y += 30;
 
         if (reserves != null)
@@ -92,7 +107,12 @@ public class MagicSandboxDriver : MonoBehaviour
             y += 22;
         }
         if (anima != null)   // con Anima real: comer sube stats (Constitution, gradual) y el exceso → grasa
+        {
             GUI.Label(new Rect(x + 8, y, 356, 20),
                 $"Stats: fuerza {anima.strength:0.00}  masa {anima.bodyMass:0.00}  grasa {anima.fatReserves:0.00}");
+            y += 20;
+        }
+        if (targetReserves != null)
+            GUI.Label(new Rect(x + 8, y, 356, 20), $"Objetivo → energía {targetReserves.energy:0} J, C {targetReserves.Get("C"):0.#}");
     }
 }

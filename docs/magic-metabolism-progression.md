@@ -336,13 +336,28 @@ tope por elemento debe bastar para **construir una casa**: una casa modesta ≈ 
 sustrato (quarks/elementos) debe sostener ~10⁷ g (≈ **1,8×10³¹ quarks**), y `energyCap` ≥ **10¹¹ J** (grupo de
 quimeras, §15). *Falta (build):* escalar `capPerElement`/`energyCap`/`QuarkReserve` por nivel de maestría.
 
-### Alimentar a las quimeras (domesticación) cuesta aparte de sobrevivir
-Cierto: los ~alientos de dragón del §15 son para **sobrevivir/jugar**, no para **alimentar**. Alimentar = darles
-**quarks o elementos + energía** (a definir por especie). Como un **dragón consume tanto como un mago avanzado**,
-alimentar a **un grupo** es caro: si cada quimera repone ~**10¹¹ J + kg de elementos**, un grupo de ~5 ≈ **5×10¹¹
-J + varios kg** → el jugador necesita un `QuarkReserve` grande y, llegado el caso, **crea la comida con magia**
-(2º trayecto, INTEGRAR §4). Modelo sugerido: un `ChimeraFeed` que consume del `QuarkReserve`/energía del jugador
-y sube `Humores` (adrenalina/serotonina) + sacia `Metabolism` de la quimera. *Falta (build).*
+### Abastecer con magia = "trasplante" (NO solo quimeras) — montado (`SupplySpell`, PR #60)
+Alimentar con magia **no es solo para quimeras**: es un hechizo general de **abastecimiento / trasplante**. El
+mago **se llena de quarks/energía** (comiendo/desintegrando) y luego los **introduce en otro personaje** —
+rellena sus reservas (**elementos + energía + quarks crudos**). Sirve para: alimentar quimeras (domesticación),
+**alimentarse a sí mismo o a otro jugador**, y sobre todo el **rol de HEALER en la guerra**: restablecer las
+fuerzas (materia/energía para actuar y lanzar) de los compañeros. Mecánica = **trasplante**: se paga de las
+reservas del lanzador (por recurso, solo transfiere lo que puede pagar) y se deposita en el objetivo.
+- Montado: `SupplySpell.SupplyTo(target)` mueve energía (`PayEnergy`→`StoreEnergy`), elementos (pool→pool) y
+  quarks (`QuarkReserve`→`QuarkReserve`) del lanzador al objetivo. Sandbox: `Magia_AUTO` + `Magia_AUTO_Objetivo`.
+- Coste real: como un **dragón consume tanto como un mago avanzado**, alimentar a **un grupo** de quimeras es
+  caro (~5×10¹¹ J + varios kg); por eso a ese nivel el mago **crea/abastece con magia** en vez de traer comida.
+- *Falta:* que abastecer una quimera además suba sus `Humores` (adrenalina/serotonina) + sacie su `Metabolism`
+  (el lado "domesticación"); UI de selección de objetivo.
+
+### El regreso a S1 reconstruido + reparto de magos (worldbuilding)
+Tras la guerra, el jugador **vuelve a S1 reconstruido** (2º trayecto, §4): los animales pueden ser **otros, o los
+mismos con capacidades distintas** — p.ej. **osos entrenados por quimeras o por magos antiguos**. Reparto de
+fuerzas propuesto para equilibrar: los **magos más débiles se colocan en S4** (el santuario más fuerte y
+protegido, se benefician de él) y los **más fuertes en el resto, con más número en S1**. Cada mago **combate y a
+la vez prepara su santuario** (más poder/defensa) → ya no basta abastecer con lo básico; de ahí el `SupplySpell`
+como soporte/healer y la economía de área (`SanctuaryResources`) alimentando la defensa. (Cross: `area-progression`,
+`world-topology §7` guerra.)
 
 ### Elementales: un hechizo por elemento + perfiles de coste
 Los **elementales** son **cada uno de un elemento distinto** → piden **hechizos específicos** (y contras: fuego↔
