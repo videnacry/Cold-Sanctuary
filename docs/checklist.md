@@ -1,8 +1,15 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-08-06. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-08-07. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
+
+> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#52) está **mergeado y
+> documentado** (`docs/magic-metabolism-progression.md`), pero es **código opt-in SIN sandbox** (cuelga de
+> `Anima`, abstracta) → hay que **cablearlo para probarlo**. El guion de pruebas está en
+> [`testing-checklist.md` §15](testing-checklist.md) con qué verificar por sistema. **Lo más fácil de testear
+> primero:** el minijuego `DecompositionMinigame` (OnGUI, no necesita `Anima`). **Antes hace falta** construir
+> los sandboxes `Descomposicion_AUTO` y `Magia_AUTO` en `SampleSceneBuilder` (ninguno existe aún).
 
 ## Decisiones abiertas (rápidas)
 - [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
