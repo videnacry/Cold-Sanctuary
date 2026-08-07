@@ -139,7 +139,14 @@ public class Metabolism : MonoBehaviour
             if (constitution != null) constitution.AddElement(ToElement(nutrient), useful * 0.1f);
         }
         float excess = amount - useful;
-        if (excess > 0f && anima != null) anima.fatReserves += excess * 0.05f;   // exceso → grasa, no stats
+        if (excess > 0f)
+        {
+            // El primer hechizo crea las pools de magia: a partir de ahí el exceso las llena (hasta el tope);
+            // lo que aún sobra → grasa. (Por eso un mago come muchísimo: para cargar reservas.)
+            MagicReserves res = GetComponent<MagicReserves>();
+            if (res != null && res.unlocked) excess = res.Store(ToElement(nutrient), excess);
+            if (excess > 0f && anima != null) anima.fatReserves += excess * 0.05f;
+        }
         return useful;
     }
 

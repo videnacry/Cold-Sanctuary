@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#46 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#47 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #47):** **comer rellena las reservas de magia** (`Metabolism`→`MagicReserves.Store`, hasta el
+  tope, una vez `unlocked` por el 1er hechizo; el resto→grasa) → cierra el bucle comer↔lanzar. + doc
+  `magic-metabolism §13`: coste REAL de hechizos con numeros (fuego: vela 0,018g/lanzallamas 22g/dragon 2,2kg;
+  quimica da para lo pequeño, los grandes exigen nuclear/masa-energia E=mc2=90TJ/g), materia-vs-energia
+  (bosones=energia), escalera de hechizos, niveles de energia (fisica en Mecanica/Forja), UI atomica.
 - **07-ago (PR #46):** los hechizos **declaran coste y pagan de `MagicReserves`**: `TransformationSpell` y
   `PossessionSpell` tienen `cost` (List<ElementCost>) y llaman a `Pay` antes de actuar → sin reservas de ese
   elemento, el hechizo **no se lanza** (opt-in: sin `MagicReserves` es gratis). `magic-metabolism §7`.
