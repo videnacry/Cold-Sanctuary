@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +17,9 @@ public class PossessionSpell : MonoBehaviour
     [Tooltip("Alcance (m) desde el que se puede poseer. Crece con el hechizo.")]
     public float range = 8f;
 
+    [Tooltip("Coste del hechizo en elementos (se paga de MagicReserves si el lanzador la tiene). Vacío = gratis.")]
+    public List<ElementCost> cost = new List<ElementCost>();
+
     PlayerBrain _current;   // el cuerpo poseído ahora (si hay)
 
     /// <summary>Poseído actual (null si el jugador no está en ningún cuerpo ajeno).</summary>
@@ -25,6 +29,9 @@ public class PossessionSpell : MonoBehaviour
     public void Possess(AnimaController target)
     {
         if (target == null) return;
+        // Coste de magia: si el lanzador tiene reservas, debe poder pagar (agotado → no hay hechizo).
+        MagicReserves mr = GetComponent<MagicReserves>();
+        if (mr != null && !mr.Pay(cost)) { Debug.Log($"[Posesión] «{name}» sin reservas para el hechizo."); return; }
         Release();   // suelta el cuerpo anterior
 
         PlayerBrain pb = target.GetComponent<PlayerBrain>();

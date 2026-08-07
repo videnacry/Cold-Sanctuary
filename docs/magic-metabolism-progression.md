@@ -91,8 +91,9 @@ Kushal es su mano derecha; las misiones se vuelven **globales** (ya se teletrans
   (compuesto/elemento/quark) y qué UI usas (escribir compuestos/elementos/quarks). Una **reserva de magia** por
   elemento (conteo en la tabla) + coste por hechizo = la capa mágica sobre esto.
 - **Reserva de magia + coste (hecho):** `MagicReserves` — stock por elemento (lo que el jugador ve en la tabla)
-  + `ElementCost`/`CanCast`/`Pay`; agotado un elemento → no lanza hechizos que dependan de él. Falta: que los
-  hechizos (Transformation/…) declaren su coste y llamen a `Pay`; que comer rellene reservas.
+  + `ElementCost`/`CanCast`/`Pay`; agotado un elemento → no lanza hechizos que dependan de él. **`Transformation
+  Spell` y `PossessionSpell` ya declaran `cost` y llaman a `Pay`** (sin reservas → el hechizo no se lanza; opt-in:
+  sin `MagicReserves` es gratis). Falta: que **comer rellene** las reservas; costes en más hechizos.
 - *Falta (build):* el hechizo de comer por niveles (UI); el santuario de Quimeras como "cocina" del apogeo; la
   mecánica de adicción (grupos de células con control); el modelo atómico y de combate (§8) en código.
 

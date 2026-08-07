@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#45 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#46 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,9 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #46):** los hechizos **declaran coste y pagan de `MagicReserves`**: `TransformationSpell` y
+  `PossessionSpell` tienen `cost` (List<ElementCost>) y llaman a `Pay` antes de actuar → sin reservas de ese
+  elemento, el hechizo **no se lanza** (opt-in: sin `MagicReserves` es gratis). `magic-metabolism §7`.
 - **07-ago (PR #45):** **reserva de magia + coste de hechizo** (`MagicReserves`/`ElementCost`: stock por elemento
   = lo que ve el jugador en la tabla; agotado → no lanza ese hechizo) + **clima/actividad mueven la necesidad**
   (`Metabolism`: frío→mas gasto de grasa/termogenesis → el oso craves grasa por el clima; esfuerzo→mas gasto).
