@@ -350,29 +350,34 @@ agua, tierra↔viento…). Y sí, el **perfil de coste varía** por hechizo:
 - **Mixtos:** el aliento de dragón (combustible + ignición) o su versión masa-energía (µg + todo el pool).
 Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo); falta **catalogar** los hechizos elementales.
 
-## 17. El minijuego de DESCOMPOSICIÓN (cómo lo haría)
+## 17. El minijuego de DESCOMPOSICIÓN (montado, PR #52)
 
-Rellena el lote del `DecompositionJob` (`yield` + `energyJoules`) y enseña el nivel. Reutiliza lo que ya gustó:
-las **fichas que caen tipo Guitar-Hero** (como `UpaYogaSession`) + el motor `VirtualTask`/`StationPart`/
-`VirtualPointer`. Dos gestos encadenados:
+Diseño según tu aclaración: la **jornada** presenta un lote de muestras (compuesto/átomo/núcleo/nucleón según el
+santuario) en **TRES FASES sobre las MISMAS muestras y el MISMO orden**. Montado en `DecompositionMinigame`
+(prototipo OnGUI; la UI real será arrastre + visuales por nivel).
 
-1. **ROMPER (ritmo/precisión).** Llega una muestra (compuesto / átomo / núcleo / nucleón según el santuario).
-   Aplicas la "herramienta" del nivel **en el momento justo**: enzima/calor (catabolismo, S1-2), ionizar (S3),
-   golpe de neutrón (**fisión**, S4 núcleo), disparador de **aniquilación** (masa). El **timing** decide cuánta
-   **energía capturas** (mal timing → se pierde como calor → menor `energyJoules`). En niveles altos hay
-   **penalización de peligro** (una fisión que "se va crítica" si tardas → daño/"meltdown"): así sube la dificultad.
-2. **CLASIFICAR (emparejar, fichas que caen).** Las piezas liberadas caen por **carriles** = las **pools destino**:
-   símbolos de elemento (S2-3), o **protón/neutrón/electrón** (S3), o **quarks up/down + leptones** (S4). Aciertas
-   el carril a tiempo → va a su pool (bio/elemento/quark/energía); fallas → se **contamina/pierde**. Los electrones
-   van a un carril de **leptón** aparte (no son quarks) — refuerza la física correcta.
+1. **IDENTIFICAR.** Se muestra la muestra y, alrededor, **nombres al azar** de los que **uno es el correcto**;
+   el jugador **selecciona** el nombre correcto **antes de que se acabe el tiempo** de esa muestra. (Es la
+   "escribir/elegir el nombre" que planteaste.)
+2. **ROMPER.** Vuelven en el **mismo orden**; el jugador ejecuta la **ruptura** con una **calidad por timing**
+   (0..1) → cuánta **energía** captura (mal timing → se pierde como calor). Herramienta por nivel: enzima/calor
+   (**catabolismo**), ionizar, golpe de neutrón (**fisión**), disparador de **aniquilación**. (Futuro: peligro de
+   "meltdown" en niveles altos si tardas.)
+3. **CLASIFICAR.** Vuelven en el **mismo orden**; el jugador ve la muestra y, **alrededor, los contenedores** con
+   su nombre; **arrastra** cada componente liberado a su **contenedor** dentro del tiempo. Al **acabarse el
+   tiempo se guardan los bien clasificados** y pasa a la siguiente. Contenedores por nivel: símbolos de elemento,
+   o **protón/neutrón/electrón**, o **quarks + leptones** (los electrones a su bin de **leptón**: no son quarks).
 
-- **Rendimiento = precisión × timing** → define `yield` (gramos por elemento clasificado) y `energyJoules`
-  (por la energía bien capturada al romper). Eso alimenta el reparto **economía + paga** del `DecompositionJob`.
+- **Un componente cuenta en el `yield`** si su muestra fue **identificada + rota + bien clasificada**, escalado
+  por la **calidad de ruptura**. La energía capturada = Σ `energyJoules`×calidad. Ambos se vuelcan en el
+  `DecompositionJob` y `Complete()` reparte **economía + paga**.
+- **Jugadores más rápidos** despachan **más muestras por jornada** (`perItemSeconds` fijo por muestra) → más
+  provecho de una sola jornada → progreso más rápido, tal cual pediste.
 - **Progresión = mismo minijuego, sustrato más profundo** (comida→compuestos→elementos→p/n/e→quarks/leptones):
-  más carriles, más rápido, más energía y más peligro por nivel. Encaja con "solo S1 es cocina real; S2-4 =
-  tienda/laboratorio/planta nuclear".
-- *Falta (build):* `DecompositionMinigame : VirtualTask` (romper con timing + clasificar por carriles) que al
-  terminar setee `yield`/`energyJoules` y llame a `DecompositionJob.Complete()`.
+  más contenedores, más rápido, más energía por nivel. Encaja con "solo S1 es cocina real; S2-4 = tienda/
+  laboratorio/planta nuclear".
+- *Falta (build):* la UI de **arrastre** real + fichas/visuales por nivel; el peligro de "meltdown"; sembrar el
+  `batch` desde la materia real del área (hoy se configura en el inspector).
 
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
