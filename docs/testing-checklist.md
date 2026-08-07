@@ -555,17 +555,19 @@ Sin sandbox propio en `SampleSceneBuilder` — se integra directo en `Diet.Selec
       manual con animales de poder dispar, o pedirle al compañero un sandbox de demo (como los de
       Emoción) para poder confirmarlo por consola.
 
-## 19. Magia · metabolismo · descomposición · quimeras (PRs #35–#52) — POR CABLEAR
+## 19. Magia · metabolismo · descomposición · quimeras (PRs #35–#54)
 
-**IMPORTANTE (estado real):** todo este bloque es **código nuevo opt-in** y **NO tiene `_AUTO` sandbox** en
-`SampleSceneBuilder` (la mayoría cuelga de `Anima`, que es abstracta). Compila (verificado por conteo de llaves,
-no por Unity), pero **para probarlo hay que cablearlo**: o bien añadir componentes a mano sobre un `Anima`
-concreto (p.ej. un `BearBehaviour`), o construir sandboxes. **Recomendado antes de testear:** pedir los
-sandboxes (ver "Próximo paso" abajo). Lista de qué verificar cuando esté cableado:
+**ESTADO:** dos sandboxes `_AUTO` **YA construidos** (PR #54) — se generan con `Build Sample Scene Blockout`:
+**`Descomposicion_AUTO`** (minijuego, no necesita `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle
+comer→desbloquear→lanzar, sin `Anima` porque los componentes son null-safe). El resto del arco sigue siendo
+código opt-in sin cablear en juego real. Compila verificado por conteo de llaves (no por Unity). Qué verificar:
 
-### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`)
-- [ ] Un `Anima` con `Metabolism`(+`Constitution`) come (`AbsorbFood`): el pool del nutriente sube, lo útil
-      alimenta stats (`Constitution.AddElement`), y **el exceso NO va a magia** hasta desbloquear (va a grasa).
+### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`) — **sandbox `Magia_AUTO`**
+En Play, HUD abajo-izq del `Magia_AUTO`: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks /
+fuego** + lectura de reservas/energía/quarks. (Sin `Anima`: no se prueba la grasa ni los stats de `Constitution`,
+sí las pools de magia/energía/quarks.)
+- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: no llena las pools de magia (van a 0 / a grasa si hubiera Anima).
+- [ ] Tras **Aprender 1er hechizo**: comer carne llena N/H, comer fruta llena C… hasta `capPerElement`.
 - [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
 - [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
 
@@ -601,11 +603,12 @@ sandboxes (ver "Próximo paso" abajo). Lista de qué verificar cuando esté cabl
 - [ ] `MakeElement(reservas, símbolo, gramos)` transforma quarks→pool de ese elemento (gasta quarks solo por
       lo creado; respeta el tope). `Restitute(reservas, gramos)` → sube el pool de **energía** (E=mc²).
 
-### Próximo paso (para poder testear de verdad)
-Construir sandboxes `_AUTO` en `SampleSceneBuilder`: **(1)** `Descomposicion_AUTO` — el más fácil y sin `Anima`
-(un `DecompositionJob` + `DecompositionMinigame` con un batch de agua/sal/… → resultados visibles en el HUD de
-recursos); **(2)** `Magia_AUTO` — un `Anima` concreto con `Metabolism`+`Constitution`+`MagicReserves`+`Grimoire`
-(+`QuarkReserve`/`FireSpell`) para el bucle comer→desbloquear→lanzar. Ninguno existe todavía.
+### Sandboxes (PR #54) — cómo entrar
+Corre `Tools → Cold Sanctuary → Build Sample Scene Blockout` y dale a Play:
+- **`Descomposicion_AUTO`** (~8,1.5,6): HUD «Iniciar jornada» → 3 fases → sube Elements/Energy en el HUD de recursos.
+- **`Magia_AUTO`** (~10,1,6): HUD de prueba (abajo-izq) del bucle comer→desbloquear→lanzar (quarks/energía/fuego).
+- *Falta (siguiente):* un `Magia_AUTO` con **`Anima` real** para probar también grasa/stats de `Constitution`;
+  `ChimeraFeed`; escalado de topes por nivel; sembrar el `batch` desde la materia real del área.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se

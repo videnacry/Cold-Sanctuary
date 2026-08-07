@@ -1,0 +1,78 @@
+using System.Text;
+using UnityEngine;
+
+/// <summary>
+/// Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
+/// No necesita un `Anima` concreto: los componentes de magia son null-safe en `anima`. Botones: aprender el 1er
+/// hechizo (desbloquea las pools), comer (rellena reservas vía `Metabolism`), consumir/transformar quarks, lanzar
+/// fuego (químico / masa-energía). Muestra las reservas por elemento + energía + quarks. Solo para el sandbox.
+/// </summary>
+public class MagicSandboxDriver : MonoBehaviour
+{
+    public MagicReserves reserves;
+    public Grimoire grimoire;
+    public QuarkReserve quarks;
+    public FireSpell fire;
+    public Metabolism metabolism;
+
+    void Awake()
+    {
+        if (reserves == null) reserves = GetComponent<MagicReserves>();
+        if (grimoire == null) grimoire = GetComponent<Grimoire>();
+        if (quarks == null) quarks = GetComponent<QuarkReserve>();
+        if (fire == null) fire = GetComponent<FireSpell>();
+        if (metabolism == null) metabolism = GetComponent<Metabolism>();
+    }
+
+    void OnGUI()
+    {
+        int x = 10, y = 300;
+        GUI.Box(new Rect(x, y, 372, 268), "Magia_AUTO (prueba — docs testing-checklist §15)");
+        y += 26;
+        bool unlocked = reserves != null && reserves.unlocked;
+
+        if (grimoire != null)
+        {
+            GUI.Label(new Rect(x + 8, y, 356, 20), $"Pools: {(unlocked ? "DESBLOQUEADAS" : "bloqueadas (aprende el 1er hechizo)")}");
+            y += 22;
+            if (!unlocked && GUI.Button(new Rect(x + 8, y, 220, 24), "Aprender 1er hechizo (awaken)"))
+                grimoire.Learn(grimoire.awakenSpellId);
+            y += 28;
+        }
+
+        if (metabolism != null && GUI.Button(new Rect(x + 8, y, 165, 24), "Comer carne (×50)"))
+            metabolism.AbsorbFood(50f, OrganicMaterial.Meat);
+        if (metabolism != null && GUI.Button(new Rect(x + 180, y, 165, 24), "Comer fruta (×50)"))
+            metabolism.AbsorbFood(50f, OrganicMaterial.Fruit);
+        y += 28;
+
+        if (quarks != null && GUI.Button(new Rect(x + 8, y, 165, 24), "Consumir quarks (+1 g)"))
+            quarks.AddGrams(1.0);
+        if (quarks != null && reserves != null && GUI.Button(new Rect(x + 180, y, 165, 24), "Quarks→C (10 g)"))
+            quarks.MakeElement(reserves, "C", 10f);
+        y += 28;
+        if (quarks != null && reserves != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Restituir energía (aniquilar 0,001 g → J)"))
+            quarks.Restitute(reserves, 0.001);
+        y += 30;
+
+        if (fire != null && GUI.Button(new Rect(x + 8, y, 100, 24), "Chispa"))
+        { fire.SetTier(FireTier.Spark); fire.Cast(); }
+        if (fire != null && GUI.Button(new Rect(x + 112, y, 110, 24), "Lanzallamas"))
+        { fire.SetTier(FireTier.Flamethrower); fire.Cast(); }
+        if (fire != null && GUI.Button(new Rect(x + 226, y, 130, 24), "Aliento de dragón"))
+        { fire.SetTier(FireTier.DragonBreath); fire.Cast(); }
+        y += 32;
+
+        if (reserves != null)
+        {
+            StringBuilder sb = new StringBuilder("Reservas: ");
+            if (reserves.reserves != null)
+                foreach (ElementAmount e in reserves.reserves)
+                    if (e != null) sb.Append($"{e.symbol}={e.amount:0.#}  ");
+            GUI.Label(new Rect(x + 8, y, 356, 20), sb.ToString());
+            y += 22;
+            string q = quarks != null ? $"{quarks.GramsAvailable:0.###} g" : "-";
+            GUI.Label(new Rect(x + 8, y, 356, 20), $"Energía: {reserves.energy:0} J    Quarks: {q}");
+        }
+    }
+}

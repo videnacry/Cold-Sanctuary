@@ -4,12 +4,11 @@ Tablero para retomar. Última sesión: 2026-08-07. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#52) está **mergeado y
-> documentado** (`docs/magic-metabolism-progression.md`), pero es **código opt-in SIN sandbox** (cuelga de
-> `Anima`, abstracta) → hay que **cablearlo para probarlo**. El guion de pruebas está en
-> [`testing-checklist.md` §15](testing-checklist.md) con qué verificar por sistema. **Lo más fácil de testear
-> primero:** el minijuego `DecompositionMinigame` (OnGUI, no necesita `Anima`). **Antes hace falta** construir
-> los sandboxes `Descomposicion_AUTO` y `Magia_AUTO` en `SampleSceneBuilder` (ninguno existe aún).
+> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#54) está **mergeado y
+> documentado** (`docs/magic-metabolism-progression.md`). **Dos sandboxes ya construidos** (PR #54, salen con
+> `Build Sample Scene Blockout`): **`Descomposicion_AUTO`** (minijuego de 3 fases → economía, no necesita
+> `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle comer→desbloquear→lanzar). Guion por sistema en
+> [`testing-checklist.md` §19](testing-checklist.md). El resto del arco sigue opt-in sin cablear en juego real.
 
 ## Decisiones abiertas (rápidas)
 - [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
@@ -315,7 +314,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#52 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#54 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -331,6 +330,13 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #54):** **sandboxes de prueba** en `SampleSceneBuilder` (salen con `Build Sample Scene
+  Blockout`): **`Descomposicion_AUTO`** (`DecompositionJob` workerCut=0 + `DecompositionMinigame` con batch
+  agua/sal/CO₂ → al terminar la jornada suben Elements/Energy en el HUD de recursos; no necesita `Anima`) y
+  **`Magia_AUTO`** (cápsula con `Metabolism`+`Constitution`+`MagicReserves`+`QuarkReserve`+`Grimoire`+`FireSpell`
+  + `MagicSandboxDriver`, HUD OnGUI: aprender 1er hechizo → comer/quarks rellenan pools → lanzar fuego químico/
+  masa-energía; sin `Anima`, null-safe). Guion en `testing-checklist §19`. *Falta:* `Magia_AUTO` con `Anima` real
+  (grasa/stats), `ChimeraFeed`, escalado de topes, sembrar el batch desde la materia del área.
 - **07-ago (PR #52):** **minijuego de descomposición** (`DecompositionMinigame`). La jornada corre 3 FASES sobre
   las MISMAS muestras y el MISMO orden: (1) **identificar** —elegir el nombre correcto entre nombres al azar,
   contra reloj—, (2) **romper** —calidad por timing 0..1 → energía capturada—, (3) **clasificar** —arrastrar
