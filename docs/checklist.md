@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#50 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#51 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,15 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #51):** **sustrato de quarks del S4 (`QuarkReserve`) + aclaraciones del modelo**. `QuarkReserve`:
+  quarks crudos flexibles → `MakeElement` (quarks→gramos de cualquier elemento, para el MIX pre-crear/dinámico)
+  y `Restitute` (quarks→energía, E=mc²) + `AtomsAvailable` (UI: átomos por elemento). Identidad **1 g ≈ 3·N_A =
+  1,8×10²⁴ quarks** (independiente del elemento). + doc §16 (todo hechizo gasta elementos **y** energía; 2 vías
+  de llenar energía: cocina-separación vs restitución; el MIX de pools flexibles; topes progresan → S4 debe
+  poder crear una casa 10⁷ g; alimentar quimeras cuesta aparte —quarks/elementos+energía—; elementales = 1
+  hechizo por elemento con perfiles de coste) + §17 (**minijuego de descomposición**: romper-por-timing +
+  clasificar-por-carriles tipo Guitar-Hero → setea `yield`/`energyJoules` de `DecompositionJob`). *Falta:*
+  escalar topes por nivel; casteo que tire de quarks al faltar elemento; `ChimeraFeed`; `DecompositionMinigame`.
 - **07-ago (PR #50):** **`FireSpell` con coste físico REAL** + cálculo del S4. `FireSpell`: coste = potencia×
   tiempo → energía → **combustible** (C 85,7%/H 14,3%; O₂ del aire gratis) + ignición; presets `FireTier`
   (chispa 0,018g / lanzallamas 22g / aliento de dragón 2,2kg **inviable** por química). **Modo masa-energía**
