@@ -4,7 +4,7 @@ Tablero para retomar. Última sesión: 2026-08-07. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#54) está **mergeado y
+> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#58) está **mergeado y
 > documentado** (`docs/magic-metabolism-progression.md`). **Dos sandboxes ya construidos** (PR #54, salen con
 > `Build Sample Scene Blockout`): **`Descomposicion_AUTO`** (minijuego de 3 fases → economía, no necesita
 > `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle comer→desbloquear→lanzar). Guion por sistema en
