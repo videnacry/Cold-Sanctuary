@@ -314,7 +314,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#54 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#56 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -330,6 +330,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #56):** **`Magia_AUTO` con `Anima` real**. `SimpleAnima` (Anima concreto minimo: hooks no-op, sin
+  Awake/Start → seguro en sandbox) enchufado al `Magia_AUTO`; ahora comer sube stats via `Constitution` (gradual)
+  y el exceso→grasa (`fatReserves`), ademas de rellenar las pools. `MagicSandboxDriver` muestra fuerza/masa/grasa.
+  Testing §19a. *Falta:* `ChimeraFeed`; escalado de topes; gate `energyPhysicsId` desde `OnLearned`.
 - **07-ago (PR #54):** **sandboxes de prueba** en `SampleSceneBuilder` (salen con `Build Sample Scene
   Blockout`): **`Descomposicion_AUTO`** (`DecompositionJob` workerCut=0 + `DecompositionMinigame` con batch
   agua/sal/CO₂ → al terminar la jornada suben Elements/Energy en el HUD de recursos; no necesita `Anima`) y
