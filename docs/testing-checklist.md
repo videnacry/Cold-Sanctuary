@@ -563,11 +563,14 @@ comer→desbloquear→lanzar, sin `Anima` porque los componentes son null-safe).
 código opt-in sin cablear en juego real. Compila verificado por conteo de llaves (no por Unity). Qué verificar:
 
 ### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`) — **sandbox `Magia_AUTO`**
-En Play, HUD abajo-izq del `Magia_AUTO`: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks /
-fuego** + lectura de reservas/energía/quarks. (Sin `Anima`: no se prueba la grasa ni los stats de `Constitution`,
-sí las pools de magia/energía/quarks.)
-- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: no llena las pools de magia (van a 0 / a grasa si hubiera Anima).
-- [ ] Tras **Aprender 1er hechizo**: comer carne llena N/H, comer fruta llena C… hasta `capPerElement`.
+El `Magia_AUTO` lleva un **`SimpleAnima`** (Anima concreto mínimo, PR #56) → sí se prueban grasa y stats. HUD
+abajo-izq: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks / fuego** + lectura de
+reservas/energía/quarks **y de stats (fuerza/masa/grasa)**.
+- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: **no** llena las pools de magia (lo útil sube stats vía
+      `Constitution`, gradual; el exceso → **grasa** `fatReserves`, visible en el HUD).
+- [ ] Tras **Aprender 1er hechizo**: el exceso de comer llena las pools (carne→N/H, fruta→C) hasta `capPerElement`,
+      y solo lo que aún sobra → grasa.
+- [ ] Al comer, **fuerza/masa suben poco a poco** (Constitution converge hacia el objetivo por elementos).
 - [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
 - [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
 

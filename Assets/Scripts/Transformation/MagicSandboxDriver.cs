@@ -14,6 +14,7 @@ public class MagicSandboxDriver : MonoBehaviour
     public QuarkReserve quarks;
     public FireSpell fire;
     public Metabolism metabolism;
+    public Anima anima;
 
     void Awake()
     {
@@ -22,12 +23,13 @@ public class MagicSandboxDriver : MonoBehaviour
         if (quarks == null) quarks = GetComponent<QuarkReserve>();
         if (fire == null) fire = GetComponent<FireSpell>();
         if (metabolism == null) metabolism = GetComponent<Metabolism>();
+        if (anima == null) anima = GetComponent<Anima>();
     }
 
     void OnGUI()
     {
         int x = 10, y = 300;
-        GUI.Box(new Rect(x, y, 372, 268), "Magia_AUTO (prueba — docs testing-checklist §15)");
+        GUI.Box(new Rect(x, y, 372, 312), "Magia_AUTO (prueba — docs testing-checklist §19)");
         y += 26;
         bool unlocked = reserves != null && reserves.unlocked;
 
@@ -73,6 +75,10 @@ public class MagicSandboxDriver : MonoBehaviour
             y += 22;
             string q = quarks != null ? $"{quarks.GramsAvailable:0.###} g" : "-";
             GUI.Label(new Rect(x + 8, y, 356, 20), $"Energía: {reserves.energy:0} J    Quarks: {q}");
+            y += 22;
         }
+        if (anima != null)   // con Anima real: comer sube stats (Constitution, gradual) y el exceso → grasa
+            GUI.Label(new Rect(x + 8, y, 356, 20),
+                $"Stats: fuerza {anima.strength:0.00}  masa {anima.bodyMass:0.00}  grasa {anima.fatReserves:0.00}");
     }
 }
