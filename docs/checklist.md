@@ -314,7 +314,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#57 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#58 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -330,6 +330,10 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #58):** DECISIÓN (doc): **se descarta el gate de energía por física** (`energyPhysicsId` +
+  `OnLearned`). El jugador **entra a cada santuario con la química/biología/física necesaria** (la aprende al
+  terminar el anterior), así que la energía de la descomposición se capta **por defecto** (el campo queda como
+  palanca opcional). Docs `magic-metabolism §14/§16` + `testing §19d`.
 - **07-ago (PR #57):** **hechizos elementales basicos** `ElementalSpell` (agua/tierra/viento) con perfiles de
   coste distintos: agua (H2O ~1kg: 11%H+89%O + ~200J), tierra (SiO2 ~5kg: materia-pesado + poca energia), viento
   (materia 0 = aire gratis + ~450J = energia-pesado). Coste energia = 1/2 m v2. Junto al `FireSpell` completan los
@@ -338,7 +342,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
 - **07-ago (PR #56):** **`Magia_AUTO` con `Anima` real**. `SimpleAnima` (Anima concreto minimo: hooks no-op, sin
   Awake/Start → seguro en sandbox) enchufado al `Magia_AUTO`; ahora comer sube stats via `Constitution` (gradual)
   y el exceso→grasa (`fatReserves`), ademas de rellenar las pools. `MagicSandboxDriver` muestra fuerza/masa/grasa.
-  Testing §19a. *Falta:* `ChimeraFeed`; escalado de topes; gate `energyPhysicsId` desde `OnLearned`.
+  Testing §19a. *Falta:* `ChimeraFeed`; escalado de topes.
 - **07-ago (PR #54):** **sandboxes de prueba** en `SampleSceneBuilder` (salen con `Build Sample Scene
   Blockout`): **`Descomposicion_AUTO`** (`DecompositionJob` workerCut=0 + `DecompositionMinigame` con batch
   agua/sal/CO₂ → al terminar la jornada suben Elements/Energy en el HUD de recursos; no necesita `Anima`) y
@@ -377,8 +381,8 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   obrero si conoce la física** del nivel (`Grimoire`/`energyPhysicsId`), si no va toda a la economía. Enum
   `DecompositionLevel` (catabolismo/ionización/fisión/aniquilación). **Coste materia+energía**: los hechizos
   declaran `cost`(elementos)+`energyCost`(J) y pagan con `MagicReserves.Pay(costs, energy)` (todo o nada);
-  `TransformationSpell`/`PossessionSpell` ya lo usan. *Falta:* minijuego que rellene el lote; sandbox;
-  gatear `energyPhysicsId` desde el aprendizaje de física.
+  `TransformationSpell`/`PossessionSpell` ya lo usan. *Falta:* minijuego que rellene el lote (hecho, PR #52).
+  (Gate `energyPhysicsId` por física: **descartado** — entras a cada santuario con la física necesaria, §14.)
 - **07-ago (PR #48):** **pools de magia + primer hechizo + reserva de energía**. `Grimoire` (registro de
   hechizos aprendidos, `OnLearned`): el 1er hechizo `awaken-reserves` llama a `MagicReserves.Unlock()` → crea
   las pools vacías con tope (siembra H/C/N/O). `MagicReserves`: + reserva de **energía (julios)**

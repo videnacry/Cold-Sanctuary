@@ -225,12 +225,14 @@ Esto aplica a las cocinas de los santuarios **y** a la **cocina del cuartel de l
 otro dueño de las reservas). *Pendiente de cablear:* un `DecompositionJob`/`Producer` que, al completar la
 misión, llame a `SanctuaryResources.Add` (economía) y entregue el **cut** al `MagicReserves`/bolsa del obrero.
 
-### La física llega de OTRAS áreas (revelación progresiva)
-Como el jugador **rota por áreas**, llega a la cocina de S2/S3/S4 **ya con física aprendida** en Mecánica/Forja
-(§13). Por eso en esas cocinas se va **revelando la energía** que suelta la desintegración: sin ese saber, solo
-ve "materia → materia"; **con** él, ve y puede **capturar los julios**. Gating limpio: la lectura/absorción de
-energía de un nivel se desbloquea al haber aprendido su física (enlace→térmica en Forja; nuclear→masa-energía
-en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLearned` / learning-unlocks).
+### La física llega con el avance (DECISIÓN: sin gate)
+El jugador **entra a cada santuario con la química/biología/física que ese nivel necesita** — la aprende al
+**terminar el santuario anterior** (al final de S1 ya tiene la física para capturar energía en S2, etc.). Por
+eso **el gate de energía por física NO hace falta**: cuando llegas a descomponer con energía, ya sabes la física.
+En código esto ya se cumple: `DecompositionJob.energyPhysicsId` está **vacío por defecto → `EnergyRevealed` =
+true** (sin gate, la energía se captura). El campo se queda como **palanca opcional** por si algún diseño futuro
+quiere ocultar un nivel, pero **no se cablea** a `OnLearned`. (Antes se planteó "revelar la energía según la
+física aprendida en otras áreas"; se descarta por redundante con la progresión.)
 
 ### Enganche (montado)
 - **`Grimoire`** (PR #48): el **primer hechizo** aprendido (`awaken-reserves`) llama a `MagicReserves.Unlock()`
@@ -242,9 +244,9 @@ en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLe
   usan. Física real: quemar materia paga la parte química; los hechizos grandes pesan sobre todo en **energía**.
 - **`DecompositionJob`** (PR #49): al completar la misión de la cocina, reparte el lote descompuesto —
   **mayoría → economía** (`SanctuaryResources` Elements/Energy) + **`workerCut` → paga** al obrero
-  (`MagicReserves`). La **energía solo la capta el obrero si conoce la física** del nivel (`energyPhysicsId` en
-  su `Grimoire`); si no, va entera a la economía ("materia→materia"). Enum `DecompositionLevel`
-  (catabolismo/ionización/fisión/aniquilación).
+  (`MagicReserves`). La energía se capta **por defecto** (sin gate: entras al nivel con la física ya aprendida);
+  `energyPhysicsId` queda como **palanca opcional** (si se rellena y el `Grimoire` no lo conoce, esa energía va
+  entera a la economía). Enum `DecompositionLevel` (catabolismo/ionización/fisión/aniquilación).
 - *Falta:* el **minijuego** de selección (elementos/quarks) que rellene `yield`/`energyJoules` antes de
   `Complete()`; sandbox demoable; que aprender la física (Mecánica/Forja) marque el `energyPhysicsId` vía `OnLearned`.
 
@@ -283,7 +285,8 @@ quarks** = materia de nucleones cruda que se **rearma en elementos**, y esos ele
 alientos, muchísimo más que un grupo de quimeras. Los verdaderos límites (y por tanto la progresión) son:
 - **`energyCap`** — cuántos julios puedes *sostener*. Sube con la maestría de física: **≥10¹⁰ J al entrar a S4**
   (sobrevivir a una quimera) y **≥10¹¹ J al terminarlo** (a un grupo). *Falta:* escalar `energyCap` por nivel.
-- **la maestría de conversión** — saber la física para hacer materia→energía (el gate `energyPhysicsId`).
+- **la maestría de conversión** — saber la física para hacer materia→energía (que ya traes del santuario
+  anterior; por eso sin gate, ver §14 "La física llega con el avance").
 
 Así el jugador **llega a S4 pudiendo sobrevivir a UNA quimera y lo termina sobreviviendo a un GRUPO**, tal cual.
 
