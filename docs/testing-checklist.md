@@ -12,12 +12,44 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la **PR #19** (Área de Cría + prólogo del santuario + camión de mantenimiento,
-  commits hasta `d67fd7b`) ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`)
-  y **probado en lo automatizable** — ver secciones 11/12/13/14. El repo recibe cambios de un compañero
-  de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay
-  commits nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último
-  hash conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- Todo lo mergeado hasta la **PR #34** (depredación por stats: `Predation`/`MagicAura`/`StatProfile`/
+  `TransformationSpell` — farol vs transformación real, manada por `PackFactor`, commits hasta `9b2dcc2`)
+  ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado en lo
+  automatizable** — ver secciones 11/12/13/14/15/16/17/18. El repo recibe cambios de un compañero de
+  equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay commits
+  nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último hash
+  conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **PRs #31-34 (depredación por stats) compilan y no rompen nada, sin sandbox de demo propio** (no
+  tocaron `SampleSceneBuilder.cs` — se integra directo en `Diet.SelectPrey`/`Animal.EvaluateThreat`,
+  sin UI ni logs dedicados). 0 excepciones nuevas en una corrida completa; regresión limpia (Prólogo/
+  Cría/Microcosmos siguen igual). **Nota de continuidad**: `Diet.SelectPrey` ahora filtra presa por
+  `Predation.Defense` además de lo que ya filtraba — refuerza (no crea) el hallazgo ya documentado de
+  que `Carnivore.Feed()` casi nunca dispara en el sandbox actual (0 actividad de caza observada, igual
+  que en ciclos anteriores) — sigue sin ser un bug confirmado, solo un efecto de las distancias/stats
+  actuales; la pregunta de si rebalancear quedó abierta para el usuario. Detalle en sección 18.
+- Todo lo mergeado hasta la **PR #30** (sistema de Emoción deep-sim completo: modelo/orquesta/Laban/
+  legibilidad + `CreatureRig`/`ScreenEffects`) ya estaba sincronizado — fue un salto grande de una sola
+  vez: 19 commits (PRs #22 a #30) sin sincronizar de una sesión previa, probablemente por un gap de
+  varios días entre ciclos.
+- **PRs #22-30 compilan y los 2 sandboxes nuevos con auto-demo corren sin excepciones, sin bugs nuevos**:
+  a diferencia de casi todo el motor de Virtualización, `ScreenEffectsSandbox_AUTO` (`debugAutoCycle`) y
+  `EmotionOrchestraSandbox_AUTO` (`debugDrive`) están diseñados para probarse solos — confirmado
+  visualmente (tinte de pantalla rojo/gris oscilando, texto "siente: ira/miedo" → "siente: serenidad"
+  cambiando dinámicamente). Regresión limpia en Prólogo/Cría/Microcosmos pese a que este batch tocó
+  `Anima.cs`, `CameraManager.cs`, `PlayerController.cs`, `BodyPosition.cs` y `HeadLook.cs`. Detalle en
+  sección 17.
+- **PR #21 reescribió `BuildMicrocosmosSandbox`**: la misión de rescate del `AphidGuide` (PR #20, ver
+  sección 15 abajo) fue reemplazada por un **tableau narrativo estático** (8 seres con `SoulRecord`:
+  nombre de alma/hilo-arquetipo/reencarnación en la Cocina) — ya no hay rescate automático, es lore en
+  escena. Compila y corre sin excepciones (los 8 `[Alma] ...` se registran limpios). Nuevo también:
+  `UpaYogaSandbox_AUTO` (`UpaYogaSession`) — UI de paneles-tecla (WASD/IJKL) para yoga de cuello, arranca
+  sola y se ve bien en pantalla, pero el flujo real (F para avanzar de postura) necesita **input
+  manual** — mismo patrón que el resto del motor de Virtualización. Sin bugs nuevos. Detalle en
+  sección 16.
+- **PR #20 compila y el `MicrocosmosSandbox_AUTO` corre de punta a punta sin excepciones, sin bugs
+  nuevos**: a diferencia de los sandboxes del motor de Virtualización (que necesitan input manual), este
+  es completamente autónomo — el `AphidGuide` rescata a las 4 frágiles y las lleva a la Cueva
+  (`CarryToRefuge` 4/4) solo, sin intervención. Detalle en sección 15.
 - **BUG REAL encontrado y arreglado en PR #19** (commiteado `7be2878`): `CarryToRefuge.onComplete`
   (`Assets/Scripts/Prologue/CarryToRefuge.cs`) era un `UnityEvent` **sin inicializar** — al agregarse el
   componente vía `AddComponent` en código (no desde el Inspector), el campo queda `null`, y
@@ -67,9 +99,20 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 - **Dos errores de compilación** encontrados y arreglados hasta ahora, mismo patrón ambos (falta
   `using UnityEngine;`): `Assets/Scripts/Avatar/RobotAvatar.cs` (usaba `[Tooltip(...)]`) y
   `Assets/Scripts/Mind/MindPhrase.cs` (usaba `Random.Range`). Ya sincronizados.
-- El **MCP de Unity no se pudo conectar esta sesión** (el botón "Configure" del panel busca un `claude` CLI
-  local que no se detecta en este entorno) — se testeó todo por captura de pantalla. Si en una sesión
-  futura si está disponible: `Window > MCP for Unity > Toggle MCP Window` → `Start Server` → `Connect`.
+- **MCP de Unity: progreso parcial (2026-08-05), sigue sin poder usarse desde acá**. Las herramientas
+  `mcp__unityMCP__*` aparecieron disponibles por primera vez esta sesión. Seguí el procedimiento
+  (`Window > MCP for Unity > Toggle MCP Window` → `Start Server`): el botón se quedó colgado en
+  "Starting…" — el puerto 8080 ya estaba ocupado por un proceso zombi. Encontré el comando de lanzamiento
+  manual en el panel ("Manual Server Launch") y lo corrí por terminal — falló por el mismo conflicto de
+  puerto, pero confirmó que SÍ hay un servidor real escuchando en 8080. Volví al panel de Unity, apareció
+  un botón "Connect" nuevo, lo usé, y el panel pasó a mostrar **"Session Active (COLD-SANCTUARY)"** — el
+  lado de Unity quedó conectado. Pero **mis propias llamadas a herramientas (`find_gameobjects`,
+  `manage_scene get_active`, etc.) siguen devolviendo "No Unity Editor instances found"** incluso después
+  de esperar y reintentar — parece un problema de reconexión específico de este cliente/sesión de
+  herramientas, no de Unity ni del servidor. Seguí testeando todo por captura de pantalla como siempre.
+  Si en una sesión futura las herramientas MCP responden de entrada (sin este baile), usarlas directo
+  sería mucho más confiable que las capturas — vale la pena reintentar `mcp__unityMCP__manage_scene`
+  (`action: get_active`) al principio de cada ciclo antes de asumir que hay que usar computer-use.
 - **La Console del Editor no pinta filas de tipo Info de forma fiable** (bug de UI, no del juego — visto
   varias veces esta sesión). Cuando pase: leer directo
   `C:\Users\Blein\COLD-SANCTUARY\Logs\Editor.log` (ruta nueva de Unity 6.5, ya no
@@ -424,6 +467,87 @@ Sandboxes de `Build Sample Scene Blockout`: `TruckMaintenance_AUTO`, `PrologueSa
       corresponde conectarlo a un `Animal`/`Anima` real o si sigue siendo intencionalmente un stub.
 - [x] **Regresión**: 0 excepciones nuevas en toda la corrida tras el fix (aparte del hallazgo de
       `PlaneMessenger` ya descripto, que no es una excepción sino un silencio).
+
+## 15. Microcosmos — 1ª misión insecto (PR #20, mergeada 2026-07-30)
+`MicrocosmosSandbox_AUTO` ([Micro]/[Cuidado]). Evidencia de `Logs/Editor.log` de una corrida en Play:
+- [x] **Compila** tras sincronizar los 4 archivos del PR (`Assets/Scripts/Microcosmos/` nuevo:
+      `AphidGuide`, `HoneydewProducer`; + `SampleSceneBuilder.cs`/`PhrasePools.cs`) — 0 errores CS.
+- [x] **`Build()` completa sin excepciones** con el nuevo sandbox incluido (no repite el tipo de bug de
+      PR #19 — este `CarryToRefuge` no usa `.AddListener()`, así que no dependía del fix anterior).
+- [x] **`HoneydewProducer`**: produce melaza cada `interval` (3s) de forma continua y estable — decenas
+      de ciclos `[Micro] «Pulgon» (pulgón) produce melaza (N). Las hormigas la ansían.` sin cortes.
+- [x] **`AphidGuide` — misión completa de punta a punta, SIN input manual** (a diferencia del motor de
+      Virtualización): rescata a las 4 frágiles (`[Micro] «Mayor_tribu»/«Mayor_familiaPulgon_1»/
+      «Mayor_familiaPulgon_0»/«SuperMayor» rescatado: ahora sigue al refugio.`), anuncia que guía a la
+      familia (`[Micro] El pulgón guía a la familia rescatada hacia el refugio.`), y las 4 llegan a la
+      Cueva y completan el `CarryToRefuge` (`[Cuidado] ... (1/4)` → `(2/4)` → `(3/4)` → `(4/4)` →
+      `Todos los débiles a salvo en la cueva.`). Sin bugs — este sandbox es autónomo por diseño.
+- [x] **Regresión**: 0 excepciones nuevas; los sandboxes previos (Prólogo, Cría) siguen completando
+      correctamente en la misma corrida (confirmado en el mismo tramo de log).
+
+## 16. Microcosmos (tableau narrativo) + Upa-yoga (PR #21, mergeada 2026-07-31)
+`MicrocosmosSandbox_AUTO` (reescrito) y `UpaYogaSandbox_AUTO`. Evidencia de `Logs/Editor.log`:
+- [x] **Compila** tras sincronizar los 3 archivos del PR (`Assets/Scripts/Microcosmos/SoulRecord.cs`,
+      `Assets/Scripts/Virtualization/UpaYogaSession.cs` nuevos + `SampleSceneBuilder.cs`) — 0 errores CS.
+- [x] **`Build()` completa sin excepciones** con ambos sandboxes.
+- [x] **`SoulRecord`/`AddSoul` (tableau del Microcosmos)**: las 8 fichas de alma se registran limpias en
+      `Start()` — `[Alma] Hespero · hilo A ...`, `Ruth`, `Ambrosio`, `Medea`, `Momo`, `Atlas`, `Sakshi`,
+      `Anciano_Pintor` — sin errores. Es solo dato/lore (no conduce comportamiento), tal como está
+      documentado en el propio código.
+- [x] **`HoneydewProducer` en `Ambrosio`** (renombrado desde `Pulgon`) sigue funcionando igual que en
+      PR #20, ciclos limpios de melaza.
+- [~] **`UpaYogaSession`**: arranca solo al entrar en Play y **se ve correctamente en pantalla** — título
+      "POSTURA BASE · PIES", paneles-tecla WASD/IJKL, barra de energía/fatiga, indicador "F -> siguiente".
+      El avance real de fase (tecla F) requiere **input manual** — no se pudo ejercitar por
+      automatización, mismo caso que el resto del motor de Virtualización. Sin excepciones dejándolo
+      correr sin input.
+- [x] **Regresión**: 0 excepciones nuevas; Prólogo (5/5 beats), Cría (`1/1`) y Cueva del prólogo (`2/2`)
+      siguen completando igual que antes en la misma corrida.
+
+## 17. Emoción deep-sim: orquesta + Laban + legibilidad + ScreenEffects + CreatureRig (PRs #22-30, mergeadas 2026-08-05)
+`ScreenEffectsSandbox_AUTO`, `EmotionOrchestraSandbox_AUTO` (+ `EmotionReader_AUTO`). Evidencia de una
+corrida en Play (captura de pantalla + `Logs/Editor.log`):
+- [x] **Compila** tras sincronizar los 12 archivos del batch (`Assets/Scripts/Emotion/` nuevo:
+      `BodyPartReactor`, `EmotionExpression`, `EmotionReader`; `Camera/ScreenEffects.cs`,
+      `Avatar/CreatureRig.cs` nuevos; + `Anima.cs`, `BodyPosition.cs`, `CameraManager.cs`,
+      `PlayerController.cs`, `HeadLook.cs`, `UpaYogaSession.cs`, `SampleSceneBuilder.cs` modificados) —
+      0 errores CS. Fue un sync grande de una vez (19 commits, PRs #22 a #30 no sincronizados de un
+      gap previo) — sin problemas, se aplicó igual que los batches chicos.
+- [x] **`Build()` completa sin excepciones** con ambos sandboxes nuevos incluidos.
+- [x] **`ScreenEffects` (`debugAutoCycle=true`)**: confirmado **visualmente** en captura de pantalla —
+      la pantalla de juego mostró un tinte rojo/oscuro (viñeta de estrés) que luego pasó a colores
+      normales en una captura posterior, confirmando que la oscilación automática de intensidad
+      funciona sin jugador real.
+- [x] **`EmotionExpression`/`BodyPartReactor`/`EmotionReader` (`debugDrive=true`)**: confirmado
+      **visualmente** — el texto de lectura pasó de `"siente: ira/miedo · o dale espacio"` a `"siente:
+      serenidad"` entre dos capturas, confirmando que `EmotionReader` lee la orquesta emocional
+      (`Quijada`/`Antena`/`Hombro`) y la traduce a texto dinámicamente según los humores oscilantes.
+- [x] **Regresión — sin bugs pese a tocar archivos core**: `Anima.cs`, `CameraManager.cs`,
+      `PlayerController.cs`, `BodyPosition.cs` y `HeadLook.cs` fueron modificados en este batch, pero
+      Prólogo (5/5 beats), Cría/Cueva (`CarryToRefuge` completando) y Microcosmos (`Ambrosio` produciendo
+      melaza en loop) siguen funcionando idénticos en la misma corrida — 0 excepciones nuevas.
+- [~] **`CreatureRig` (refactor "fuente única de partes", retira `RigPart`)**: no se pudo verificar en
+      profundidad más allá de que compila y no rompe nada — es una pieza estructural interna
+      (esqueleto→huesos) sin un sandbox propio en `SampleSceneBuilder`; se ejercita indirectamente vía
+      `BodyPartReactor`/asanas. Sin evidencia de fallos, pero tampoco un test dedicado.
+
+## 18. Depredación por stats — Predation/MagicAura/TransformationSpell (PRs #31-34, mergeadas 2026-08-05)
+Sin sandbox propio en `SampleSceneBuilder` — se integra directo en `Diet.SelectPrey`/
+`Animal.EvaluateThreat`, se ejercita con los animales normales de la escena. Evidencia de una corrida:
+- [x] **Compila** tras sincronizar los 7 archivos (`Assets/Scripts/Transformation/` nuevo: `MagicAura`,
+      `Predation`, `StatProfile`, `TransformationSpell`; + `Animal.cs`/`Diet.cs`/`Anima.cs` modificados)
+      — 0 errores CS.
+- [x] **Regresión limpia**: 0 excepciones nuevas en toda la corrida; Prólogo/Cría/Cueva/Microcosmos
+      (`Ambrosio` produciendo melaza en loop) siguen funcionando idénticos.
+- [~] **Sin ejercitar directamente**: no hay logs/UI dedicados a `Predation`/`MagicAura`/
+      `TransformationSpell` para confirmar el comportamiento por consola (el diseño usa las mismas rutas
+      silenciosas que `Diet.SelectPrey`/`EvaluateThreat` ya tenían). Reconfirma (no crea) el hallazgo ya
+      documentado de sesiones anteriores: 0 actividad de `Carnivore.Feed()` observada — el nuevo filtro
+      `hunterPower < Predation.Defense(candidateAnima)` en `Diet.SelectPrey` es un filtro ADICIONAL sobre
+      el mismo camino que ya casi nunca se disparaba, así que no se puede saber por automatización si
+      hoy además bloquea activamente alguna caza que antes sí hubiera pasado. Necesitaría o bien juego
+      manual con animales de poder dispar, o pedirle al compañero un sandbox de demo (como los de
+      Emoción) para poder confirmarlo por consola.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
