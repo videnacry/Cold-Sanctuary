@@ -19,6 +19,8 @@ public class PossessionSpell : MonoBehaviour
 
     [Tooltip("Coste del hechizo en elementos (se paga de MagicReserves si el lanzador la tiene). Vacío = gratis.")]
     public List<ElementCost> cost = new List<ElementCost>();
+    [Tooltip("Coste en ENERGÍA (julios): la activación/canalización del hechizo, además de la materia. 0 = gratis.")]
+    public float energyCost = 0f;
 
     PlayerBrain _current;   // el cuerpo poseído ahora (si hay)
 
@@ -31,7 +33,7 @@ public class PossessionSpell : MonoBehaviour
         if (target == null) return;
         // Coste de magia: si el lanzador tiene reservas, debe poder pagar (agotado → no hay hechizo).
         MagicReserves mr = GetComponent<MagicReserves>();
-        if (mr != null && !mr.Pay(cost)) { Debug.Log($"[Posesión] «{name}» sin reservas para el hechizo."); return; }
+        if (mr != null && !mr.Pay(cost, energyCost)) { Debug.Log($"[Posesión] «{name}» sin reservas (materia/energía) para el hechizo."); return; }
         Release();   // suelta el cuerpo anterior
 
         PlayerBrain pb = target.GetComponent<PlayerBrain>();

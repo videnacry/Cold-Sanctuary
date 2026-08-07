@@ -8,5 +8,7 @@ public enum SanctuaryResource
 {
     Food,       // Alimento — sube el tope de tropas generables (Macrocosmos).
     Materials,  // Materiales — construcción, reparación y estructuras de guerra.
-    Research    // Investigación — mejoras y desbloqueos.
+    Research,   // Investigación — mejoras y desbloqueos.
+    Elements,   // Elementos (materia desintegrada en las cocinas: gramos-agregado; el detalle por elemento vive en MagicReserves).
+    Energy      // Energía (julios liberados al descomponer/desintegrar materia; ver magic-metabolism §14).
 }
