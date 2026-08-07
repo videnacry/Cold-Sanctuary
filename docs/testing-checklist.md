@@ -593,8 +593,8 @@ Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin 
 - [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
       (Elements/Energy) — verlo subir en el **HUD de recursos** (§1/§2).
 - [ ] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía.
-- [ ] **Energía gateada por física**: si `energyPhysicsId` no está en el `Grimoire` del obrero, su parte de
-      energía va **entera a la economía** (log "energía NO revelada").
+- [ ] Por defecto la energía se capta (sin gate). El `energyPhysicsId` es palanca **opcional**: solo si se
+      rellena y el `Grimoire` no lo conoce, su parte de energía va entera a la economía (log "energía NO revelada").
 
 ### 19e. Minijuego de descomposición (`DecompositionMinigame`) — **testable (OnGUI)**
 - [ ] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden:
