@@ -232,12 +232,21 @@ ve "materia → materia"; **con** él, ve y puede **capturar los julios**. Gatin
 energía de un nivel se desbloquea al haber aprendido su física (enlace→térmica en Forja; nuclear→masa-energía
 en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLearned` / learning-unlocks).
 
-### Enganche (montado hoy, PR posterior a #47)
-- **`Grimoire`** (registro de hechizos): el **primer hechizo** aprendido (`awaken-reserves`) llama a
-  `MagicReserves.Unlock()` → crea las pools (vacías, con tope) y la reserva de energía. Emite `OnLearned`.
-- **`MagicReserves`**: `Unlock()` siembra `seedElements` (H/C/N/O); `energy`+`energyCap`+`StoreEnergy`/
-  `PayEnergy` (la reserva de julios de la descomposición). El exceso de comer ya llenaba las pools (§13/PR #47).
-- *Falta:* el `DecompositionJob` que reparte a economía+paga; que la absorción de energía se gatee por física.
+### Enganche (montado)
+- **`Grimoire`** (PR #48): el **primer hechizo** aprendido (`awaken-reserves`) llama a `MagicReserves.Unlock()`
+  → crea las pools (vacías, con tope) y la reserva de energía. Emite `OnLearned`.
+- **`MagicReserves`** (PR #48): `Unlock()` siembra `seedElements` (H/C/N/O); `energy`+`energyCap`+`StoreEnergy`/
+  `PayEnergy` (reserva de julios de la descomposición). El exceso de comer ya llenaba las pools (§13/PR #47).
+- **Coste materia + energía** (PR #49): todo hechizo declara `cost` (elementos) **y** `energyCost` (julios) y
+  paga con `MagicReserves.Pay(costs, energyJoules)` (todo o nada). `TransformationSpell`/`PossessionSpell` ya lo
+  usan. Física real: quemar materia paga la parte química; los hechizos grandes pesan sobre todo en **energía**.
+- **`DecompositionJob`** (PR #49): al completar la misión de la cocina, reparte el lote descompuesto —
+  **mayoría → economía** (`SanctuaryResources` Elements/Energy) + **`workerCut` → paga** al obrero
+  (`MagicReserves`). La **energía solo la capta el obrero si conoce la física** del nivel (`energyPhysicsId` en
+  su `Grimoire`); si no, va entera a la economía ("materia→materia"). Enum `DecompositionLevel`
+  (catabolismo/ionización/fisión/aniquilación).
+- *Falta:* el **minijuego** de selección (elementos/quarks) que rellene `yield`/`energyJoules` antes de
+  `Complete()`; sandbox demoable; que aprender la física (Mecánica/Forja) marque el `energyPhysicsId` vía `OnLearned`.
 
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**

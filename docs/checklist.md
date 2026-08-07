@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#48 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#49 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #49):** **trabajo de descomposición + coste de energía en hechizos**. `DecompositionJob`: al
+  completar la misión de la cocina reparte el lote → **mayoría a la economía** (`SanctuaryResources` +enum
+  `Elements`/`Energy`) + **`workerCut` de paga** al obrero (`MagicReserves`); la **energía solo la capta el
+  obrero si conoce la física** del nivel (`Grimoire`/`energyPhysicsId`), si no va toda a la economía. Enum
+  `DecompositionLevel` (catabolismo/ionización/fisión/aniquilación). **Coste materia+energía**: los hechizos
+  declaran `cost`(elementos)+`energyCost`(J) y pagan con `MagicReserves.Pay(costs, energy)` (todo o nada);
+  `TransformationSpell`/`PossessionSpell` ya lo usan. *Falta:* minijuego que rellene el lote; sandbox;
+  gatear `energyPhysicsId` desde el aprendizaje de física.
 - **07-ago (PR #48):** **pools de magia + primer hechizo + reserva de energía**. `Grimoire` (registro de
   hechizos aprendidos, `OnLearned`): el 1er hechizo `awaken-reserves` llama a `MagicReserves.Unlock()` → crea
   las pools vacías con tope (siembra H/C/N/O). `MagicReserves`: + reserva de **energía (julios)**

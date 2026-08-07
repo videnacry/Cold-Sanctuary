@@ -126,4 +126,16 @@ public class MagicReserves : MonoBehaviour
                 if (c != null) Add(c.symbol, -c.amount);
         return true;
     }
+
+    /// <summary>Paga MATERIA (elementos) **y** ENERGÍA (julios) juntos, todo o nada. Todo hechizo cuesta
+    /// ambos: los elementos que consume la reacción + la energía de activación/canalización (y los hechizos
+    /// grandes —nuclear/masa-energía— pesan sobre todo en energía). Devuelve si se pudo lanzar.</summary>
+    public bool Pay(IEnumerable<ElementCost> costs, float energyJoules)
+    {
+        if (!CanCast(costs)) return false;
+        if (energyJoules > 0f && energy < energyJoules) return false;
+        Pay(costs);
+        if (energyJoules > 0f) energy -= energyJoules;
+        return true;
+    }
 }

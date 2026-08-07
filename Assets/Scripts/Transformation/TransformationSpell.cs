@@ -25,6 +25,8 @@ public class TransformationSpell : MonoBehaviour
 
     [Tooltip("Coste del hechizo en elementos (se paga de MagicReserves del lanzador si la tiene). Vacío = gratis.")]
     public List<ElementCost> cost = new List<ElementCost>();
+    [Tooltip("Coste en ENERGÍA (julios): la activación/canalización del hechizo, además de la materia. 0 = gratis.")]
+    public float energyCost = 0f;
 
     public enum Result { Failed, VisualOnly, Full }
 
@@ -38,7 +40,7 @@ public class TransformationSpell : MonoBehaviour
         if (target == null || form == null || caster == null) return Result.Failed;
         // Coste de magia: si el lanzador tiene reservas, debe poder pagar (agotado un elemento → no hay hechizo).
         MagicReserves mr = caster.GetComponent<MagicReserves>();
-        if (mr != null && !mr.Pay(cost)) { Debug.Log($"[Transform] «{caster.name}» sin reservas para el hechizo."); return Result.Failed; }
+        if (mr != null && !mr.Pay(cost, energyCost)) { Debug.Log($"[Transform] «{caster.name}» sin reservas (materia/energía) para el hechizo."); return Result.Failed; }
 
         bool self = target == caster;
         StatProfile now = StatProfile.Capture(target);
