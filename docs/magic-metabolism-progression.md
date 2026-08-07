@@ -138,6 +138,52 @@ Recomendación de "lo más primordial/diferente": **el vacío/energía del espac
 la expansión misma del espacio) — comer la **tela** en vez de la materia. Encaja con "trascender la química" y
 con teletransportarse (ya dobla el espacio).
 
+## 13. Coste REAL de los hechizos (química + energía) — con números
+Un hechizo tiene **dos presupuestos**: **materia** (los átomos que conjuras) y **ENERGÍA** (la reacción). La
+energía es el término que faltaba — y los **bosones = energía/fuerza** son ese lado. `coste_energía(J) =
+intensidad(W) × tiempo(s)`.
+- **Fuente de energía por nivel (la clave de la viabilidad):**
+  - **Química** (combustión): hidrocarburos ~**45 MJ/kg** → `gramos_combustible = E(J) / 45 000`.
+  - **Nuclear** (enlaces): ~millones× la química.
+  - **Masa-energía** `E=mc²`: **1 g = 9×10¹³ J = 90 TJ** (≈ **2 000 millones× la química**).
+- **Lanzar fuego (combustión C+H, el O sale del aire):**
+  - vela ~80 W · 10 s = 800 J → **0,018 g**. Soplete ~2 kW · 10 s = 20 kJ → **0,44 g**. Lanzallamas ~100 kW ·
+    10 s = 1 MJ → **~22 g**. Aliento de dragón ~10 MW · 10 s = 100 MJ → **~2,2 kg**.
+  - Comida diaria humana ~8,4 MJ ≈ **185 g** de combustible → das ~185 s de soplete, ~8 s de lanzallamas,
+    **~0,09 s** de aliento de dragón. → **la química da para hechizos pequeños/medios; los grandes son
+    INVIABLES comiendo** — *por eso el juego sube a nuclear/masa-energía*: **1 g de materia = 90 TJ** = aliento
+    de dragón 2,5 h, o un pueblo entero. Un mago avanzado desintegra un guijarro y tiene energía "infinita".
+- **Materia vs energía (algunos hechizos "involucran más que elementos", como intuías):**
+  - **Limitados por ENERGÍA** (poca masa): **fuego**, **rayo** (eléctrica), **viento** (`½mv²` del aire), luz.
+  - **Limitados por MATERIA** (necesitas los átomos): **agua** (H₂O), **tierra/piedra** (Si/O/Ca), hielo, metal
+    — 1 L de agua = **1 kg** de H+O (carísimo si no lo tomas del entorno).
+
+### Escalera de hechizos (de ecuación química básica a lo complejo)
+| Nivel | Hechizos | Enseña |
+|---|---|---|
+| **T1 térmico/química** | chispa, luz, **lanzar fuego** (CxHy+O₂→CO₂+H₂O+calor) | combustión, estequiometría |
+| **T1 materia** | **lanzar agua/tierra/piedra** (juntar/condensar átomos) | compuestos, masa |
+| **T2 cinético** | **viento**, empuje, escudo | mecánica (`½mv²`) |
+| **T2 electroquímico** | **rayo/chispa**, ácido, congelar (endotérmico) | electricidad, reacciones |
+| **T3 nuclear** | fusión/fisión, plasma, explosión | energía nuclear |
+| **T4 masa-energía** | desintegrar/crear materia, rayos enormes | `E=mc²` |
+| **T5 campo/vacío** | teletransporte, transformación, gravedad | espacio-tiempo (§11) |
+
+### Niveles de ENERGÍA (guía de física, paralela a química/biología)
+térmica/mecánica → química → **eléctrica/electromagnética** → **nuclear** → **masa-energía** → **campo/vacío**.
+La energía va más de la mano de la **física** → se podría enseñar en el **área de Mecánica/Forja** (máquinas,
+motores, electricidad → nuclear), en paralelo a la química de las cocinas.
+
+### UI atómica (tu propuesta, confirmada)
+En la cocina de **elementos** el jugador ve **protones/neutrones/electrones** para identificar el elemento
+(nº atómico = protones = identidad; neutrones = isótopo; electrones = carga). En la de **quarks** ve los
+**quarks** (de los nucleones) **y los leptones** (los electrones, aparte).
+
+### Enganche (hecho)
+Comer **rellena las reservas de magia** (`Metabolism` → `MagicReserves.Store`, hasta el tope) una vez
+**desbloqueadas por el primer hechizo** (`MagicReserves.unlocked`); lo que sobra → grasa. *Falta:* coste
+energético (J) por hechizo además del de elementos; la guía de física; que el 1er hechizo ponga `unlocked`.
+
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
 (composición elemental/nutricional de alimentos), **PubChem** (compuestos → fórmula → elementos) y el **Modelo

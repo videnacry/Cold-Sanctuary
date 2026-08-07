@@ -20,10 +20,31 @@ public class MagicReserves : MonoBehaviour
 {
     public Anima anima;
 
+    [Tooltip("Las crea el PRIMER HECHIZO. Hasta desbloquearlas, el exceso de comida va a grasa (no a magia).")]
+    public bool unlocked = false;
+    [Tooltip("Tope por elemento (el primer hechizo crea las pools 'con un límite').")]
+    public float capPerElement = 100f;
+
     [Header("Reservas por elemento (símbolo de la tabla periódica → cantidad). Agotado → no lanza ese hechizo.")]
     public List<ElementAmount> reserves = new List<ElementAmount>();
 
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
+
+    /// <summary>Guarda hasta el tope; devuelve el sobrante (lo que no cupo → grasa). El exceso de comer entra aquí.</summary>
+    public float Store(string symbol, float amount)
+    {
+        if (amount <= 0f) return 0f;
+        foreach (ElementAmount r in reserves)
+            if (r != null && r.symbol == symbol)
+            {
+                float put = Mathf.Min(amount, Mathf.Max(0f, capPerElement - r.amount));
+                r.amount += put;
+                return amount - put;
+            }
+        float put2 = Mathf.Min(amount, capPerElement);
+        reserves.Add(new ElementAmount { symbol = symbol, amount = put2 });
+        return amount - put2;
+    }
 
     public float Get(string symbol)
     {
