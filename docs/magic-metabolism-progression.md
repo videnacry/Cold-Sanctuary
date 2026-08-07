@@ -248,6 +248,55 @@ en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLe
 - *Falta:* el **minijuego** de selección (elementos/quarks) que rellene `yield`/`energyJoules` antes de
   `Complete()`; sandbox demoable; que aprender la física (Mecánica/Forja) marque el `energyPhysicsId` vía `OnLearned`.
 
+## 15. El `FireSpell` real + el S4: quarks → los DOS pools + presupuesto anti-quimeras
+
+Montado el **`FireSpell`** con coste físico (PR #50). Cierra el bucle *aprender→comer→lanzar*.
+
+### Coste del `FireSpell` (dos modos)
+| Preset | Potencia·tiempo | Energía | Modo **químico** (paga combustible C+H) | Modo **masa-energía** (S4, paga energía) |
+|---|---|---|---|---|
+| **Chispa** | 800 W · 1 s | 800 J | **0,018 g** de combustible + ~16 J ignición | — |
+| **Lanzallamas** | 1 MW · 1 s | 1 MJ | **22 g** + ~20 kJ ignición | — |
+| **Aliento de dragón** | 100 MW · 1 s | 100 MJ | **2,2 kg** (INVIABLE comiendo) | **1,1 µg** aniquilado + **100 MJ** del pool |
+- Químico: `cost` = C(85,7%)+H(14,3%) del combustible (el **O₂ del aire es gratis**) + `energyCost` = ignición.
+- Masa-energía (`massEnergyMode`): `cost` = µg de materia + `energyCost` = **toda** la energía del `energy` pool.
+- **El fuego pinta aura destructiva** (`MagicAura.RegisterDestructiveUse`) → `Predation` lo teme.
+
+### Sí: hay pool de energía, y el S4 llena LOS DOS
+Confirmado: `MagicReserves.energy`/`energyCap`/`StoreEnergy`/`PayEnergy` (PR #48). En **S4 comer = consumir
+quarks** = materia de nucleones cruda que se **rearma en elementos**, y esos elementos llenan **ambos** pools:
+1. **stats biológicos** (`Constitution`: elementos→células→aptitudes) — escala **gramos** (un cuerpo son ~kg de C/H/O/N/Ca);
+2. **pools de magia** (`MagicReserves.Store`) — `capPerElement` × un puñado de elementos ≈ **cientos de g**;
+3. y el **excedente**, al desintegrarlo a **masa-energía**, carga el **pool de energía** (via `DecompositionJob`
+   nivel `Mass`): **1 g de materia = 8,99×10¹³ J = 90 TJ**.
+
+### El cálculo: ¿cuántos quarks para "muchos alientos de dragón"?
+1 aliento de dragón = **100 MJ = 10⁸ J**. Vía aniquilación (E=mc²): **materia por aliento = 10⁸ / 9×10¹³ ≈ 1,1 µg**.
+| Objetivo | Energía | Materia aniquilada equivalente | Alientos de dragón (100 MJ c/u) |
+|---|---|---|---|
+| 1 aliento | 10⁸ J | ~1,1 µg | 1 |
+| **Sobrevivir 1 quimera** (llega a S4) | ~10¹⁰ J (10 GJ) | ~0,11 mg | ~100 |
+| **Sobrevivir un GRUPO** (termina S4) | ~10¹¹ J (100 GJ) | ~1,1 mg | ~1.000 |
+| Desintegrar **1 g** de materia | 9×10¹³ J | 1 g | **~900.000** |
+
+**Conclusión de diseño:** la **masa no es el cuello de botella** — desintegrar un **guijarro (~1 g)** ya da ~900k
+alientos, muchísimo más que un grupo de quimeras. Los verdaderos límites (y por tanto la progresión) son:
+- **`energyCap`** — cuántos julios puedes *sostener*. Sube con la maestría de física: **≥10¹⁰ J al entrar a S4**
+  (sobrevivir a una quimera) y **≥10¹¹ J al terminarlo** (a un grupo). *Falta:* escalar `energyCap` por nivel.
+- **la maestría de conversión** — saber la física para hacer materia→energía (el gate `energyPhysicsId`).
+
+Así el jugador **llega a S4 pudiendo sobrevivir a UNA quimera y lo termina sobreviviendo a un GRUPO**, tal cual.
+
+### Quimeras = los "osos" del S4 (domesticación)
+Los santuarios van de **domesticar**, así que en S4 el jugador juega el mismo minijuego documentado
+(`PlayableCreature`/`PlayController`, world-topology §4.1): **tienta a la quimera a atacarle** para bajarle la
+tensión (`stress`) y llenarla de **adrenalina/relajación/alegría** (`Humores`), y luego **le da de comer**. Las
+quimeras están documentadas como **dragones, elementales e hidras** (§5/§11). Un **dragón** consume tanto
+elemento+energía como un **mago avanzado** (misma clase energética: 100 MJ/aliento, pool enorme) → por eso hace
+falta reserva de nivel-S4 para aguantarle el pulso. Para este punto el jugador puede incluso **generar la comida
+con magia** (2º trayecto, INTEGRAR §4: crear materia/células) en vez de traerla. *Falta (build):* enganchar
+`PlayableCreature` a un arquetipo Quimera + que su "comida" pueda venir de un hechizo de creación.
+
 ## 12. ¿MCP / fuente completa?
 No hay un MCP dedicado, pero sí **fuentes autoritativas** que puedo consultar/cablear: **USDA FoodData Central**
 (composición elemental/nutricional de alimentos), **PubChem** (compuestos → fórmula → elementos) y el **Modelo

@@ -308,7 +308,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#49 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#50 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -324,6 +324,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #50):** **`FireSpell` con coste físico REAL** + cálculo del S4. `FireSpell`: coste = potencia×
+  tiempo → energía → **combustible** (C 85,7%/H 14,3%; O₂ del aire gratis) + ignición; presets `FireTier`
+  (chispa 0,018g / lanzallamas 22g / aliento de dragón 2,2kg **inviable** por química). **Modo masa-energía**
+  (S4): aniquila µg + paga toda la energía del pool (E=mc²). Pinta aura destructiva. + doc §15: **quarks del S4
+  llenan LOS DOS pools** (bio `Constitution` + magia `MagicReserves`) y el excedente→energía; tabla de
+  supervivencia (1 quimera ~10¹⁰J≈100 alientos al entrar; grupo ~10¹¹J≈1000 al terminar; 1 g de materia≈900k
+  alientos → la masa NO es el cuello de botella, sí `energyCap`+maestría); quimeras (dragón/hidra/elemental) =
+  los "osos" del minijuego de domesticación. *Falta:* escalar `energyCap` por nivel; enganchar Quimera a `PlayableCreature`.
 - **07-ago (PR #49):** **trabajo de descomposición + coste de energía en hechizos**. `DecompositionJob`: al
   completar la misión de la cocina reparte el lote → **mayoría a la economía** (`SanctuaryResources` +enum
   `Elements`/`Energy`) + **`workerCut` de paga** al obrero (`MagicReserves`); la **energía solo la capta el
