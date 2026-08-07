@@ -19,6 +19,12 @@ receta + tickets). Los ítems `[x]` son historial verificado.
   equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay commits
   nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último hash
   conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
+- **PRs #35-52 (magia/metabolismo/descomposición/quimeras, `Metabolism`/`Constitution`/`MagicReserves`/
+  `Grimoire`/`FireSpell`/`QuarkReserve`/`DecompositionJob`/`DecompositionMinigame`) ya sincronizados
+  repo↔proyecto vivo, sin testear todavía** — el compañero dejó la checklist lista para ese arco en la
+  **sección 19** (renumerada desde su "15" original al mergear con las secciones 15-18 de esta sesión,
+  que cubren un rango de PRs distinto y anterior). Compila; falta cablear sandboxes de demo antes de
+  poder probarlo de verdad (ver sección 19).
 - **PRs #31-34 (depredación por stats) compilan y no rompen nada, sin sandbox de demo propio** (no
   tocaron `SampleSceneBuilder.cs` — se integra directo en `Diet.SelectPrey`/`Animal.EvaluateThreat`,
   sin UI ni logs dedicados). 0 excepciones nuevas en una corrida completa; regresión limpia (Prólogo/
@@ -548,6 +554,58 @@ Sin sandbox propio en `SampleSceneBuilder` — se integra directo en `Diet.Selec
       hoy además bloquea activamente alguna caza que antes sí hubiera pasado. Necesitaría o bien juego
       manual con animales de poder dispar, o pedirle al compañero un sandbox de demo (como los de
       Emoción) para poder confirmarlo por consola.
+
+## 19. Magia · metabolismo · descomposición · quimeras (PRs #35–#52) — POR CABLEAR
+
+**IMPORTANTE (estado real):** todo este bloque es **código nuevo opt-in** y **NO tiene `_AUTO` sandbox** en
+`SampleSceneBuilder` (la mayoría cuelga de `Anima`, que es abstracta). Compila (verificado por conteo de llaves,
+no por Unity), pero **para probarlo hay que cablearlo**: o bien añadir componentes a mano sobre un `Anima`
+concreto (p.ej. un `BearBehaviour`), o construir sandboxes. **Recomendado antes de testear:** pedir los
+sandboxes (ver "Próximo paso" abajo). Lista de qué verificar cuando esté cableado:
+
+### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`)
+- [ ] Un `Anima` con `Metabolism`(+`Constitution`) come (`AbsorbFood`): el pool del nutriente sube, lo útil
+      alimenta stats (`Constitution.AddElement`), y **el exceso NO va a magia** hasta desbloquear (va a grasa).
+- [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
+- [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
+
+### 19b. Primer hechizo desbloquea las pools (`Grimoire`)
+- [ ] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía;
+      dispara `OnLearned`. Tras esto, el **exceso de comer llena las pools** (hasta `capPerElement`) y luego grasa.
+
+### 19c. Hechizos: coste materia + energía
+- [ ] `FireSpell` **modo químico**: `Cast()` cobra combustible (C+H) + ignición (J); sin reservas → no sale
+      (log "sin reservas"). Presets `FireTier` dan los gramos esperados (chispa 0,018 g / lanzallamas 22 g).
+- [ ] `FireSpell` **modo masa-energía** (`massEnergyMode`): cobra ~µg + **toda** la energía del pool.
+- [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
+- [ ] Lanzar fuego **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+
+### 19d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
+- [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
+      (Elements/Energy) — verlo subir en el **HUD de recursos** (§1/§2).
+- [ ] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía.
+- [ ] **Energía gateada por física**: si `energyPhysicsId` no está en el `Grimoire` del obrero, su parte de
+      energía va **entera a la economía** (log "energía NO revelada").
+
+### 19e. Minijuego de descomposición (`DecompositionMinigame`) — **testable (OnGUI)**
+- [ ] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden:
+      **identificar** (elegir nombre correcto), **romper** (Perfecto/Regular/Fallo), **clasificar** (arrastrar
+      cada componente a su contenedor). Al agotarse el tiempo por muestra, avanza.
+- [ ] Solo cuentan en el `yield` los componentes de muestras **identificadas + rotas + bien clasificadas**
+      (×calidad de ruptura); al terminar la jornada llama a `Complete()` → sube la economía (§19d).
+- [ ] Jugar **más rápido** despacha más muestras en la misma jornada.
+
+### 19f. Sustrato de quarks del S4 (`QuarkReserve`)
+- [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un
+      número plausible para la UI.
+- [ ] `MakeElement(reservas, símbolo, gramos)` transforma quarks→pool de ese elemento (gasta quarks solo por
+      lo creado; respeta el tope). `Restitute(reservas, gramos)` → sube el pool de **energía** (E=mc²).
+
+### Próximo paso (para poder testear de verdad)
+Construir sandboxes `_AUTO` en `SampleSceneBuilder`: **(1)** `Descomposicion_AUTO` — el más fácil y sin `Anima`
+(un `DecompositionJob` + `DecompositionMinigame` con un batch de agua/sal/… → resultados visibles en el HUD de
+recursos); **(2)** `Magia_AUTO` — un `Anima` concreto con `Metabolism`+`Constitution`+`MagicReserves`+`Grimoire`
+(+`QuarkReserve`/`FireSpell`) para el bucle comer→desbloquear→lanzar. Ninguno existe todavía.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
