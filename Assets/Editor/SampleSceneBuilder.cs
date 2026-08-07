@@ -1030,9 +1030,11 @@ public static class SampleSceneBuilder
         grim.anima = anima; grim.reserves = res;
         FireSpell fire = go.AddComponent<FireSpell>();
         fire.caster = anima;
+        ElementalSpell elem = go.AddComponent<ElementalSpell>();   // agua/tierra/viento (perfiles de coste distintos)
+        elem.caster = anima;
 
         MagicSandboxDriver drv = go.AddComponent<MagicSandboxDriver>();
-        drv.reserves = res; drv.grimoire = grim; drv.quarks = q; drv.fire = fire; drv.metabolism = met; drv.anima = anima;
+        drv.reserves = res; drv.grimoire = grim; drv.quarks = q; drv.fire = fire; drv.elemental = elem; drv.metabolism = met; drv.anima = anima;
 
         Debug.Log("[SampleSceneBuilder] Magia_AUTO: HUD de prueba (abajo-izq en Play) para el bucle con Anima real — " +
                   "aprender 1er hechizo → comer sube stats (Constitution)+exceso→grasa y rellena pools → lanzar fuego (testing §19).");

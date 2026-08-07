@@ -348,7 +348,15 @@ agua, tierra↔viento…). Y sí, el **perfil de coste varía** por hechizo:
 - **Mayormente materia, poca energía:** muro de piedra/hierro, crear comida/casa → mucho `cost` (kg de ese
   elemento), poco `energyCost`.
 - **Mixtos:** el aliento de dragón (combustible + ignición) o su versión masa-energía (µg + todo el pool).
-Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo); falta **catalogar** los hechizos elementales.
+Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo). **Montados (PR #57)** los 4 básicos para
+probar: `FireSpell` (fuego) + `ElementalSpell` (agua/tierra/viento), cada uno con su perfil:
+| Hechizo | Materia (coste elementos) | Energía (½·m·v²) | Perfil |
+|---|---|---|---|
+| **Fuego** | combustible C+H (o µg si masa-energía) | ignición / o todo el pool | químico→nuclear |
+| **Agua** (H₂O) | ~1 kg: 11% H + 89% O | ~200 J | materia media + energía |
+| **Tierra** (SiO₂) | ~5 kg: 47% Si + 53% O | ~250 J | **materia-pesado** |
+| **Viento** | **0** (aire ambiente, gratis) | ~450 J | **energía-pesado** ("bosones") |
+*Falta:* un hechizo por elemento de la tabla + contras (fuego↔agua…) para los elementales del S4.
 
 ## 17. El minijuego de DESCOMPOSICIÓN (montado, PR #52)
 

@@ -314,7 +314,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#56 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#57 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -330,6 +330,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **07-ago (PR #57):** **hechizos elementales basicos** `ElementalSpell` (agua/tierra/viento) con perfiles de
+  coste distintos: agua (H2O ~1kg: 11%H+89%O + ~200J), tierra (SiO2 ~5kg: materia-pesado + poca energia), viento
+  (materia 0 = aire gratis + ~450J = energia-pesado). Coste energia = 1/2 m v2. Junto al `FireSpell` completan los
+  4 basicos que quedamos en probar. Anadidos al HUD `Magia_AUTO` (+ boton "Cargar reservas de prueba"). Doc §16,
+  testing §19c. *Falta:* 1 hechizo por elemento + contras para los elementales del S4.
 - **07-ago (PR #56):** **`Magia_AUTO` con `Anima` real**. `SimpleAnima` (Anima concreto minimo: hooks no-op, sin
   Awake/Start → seguro en sandbox) enchufado al `Magia_AUTO`; ahora comer sube stats via `Constitution` (gradual)
   y el exceso→grasa (`fatReserves`), ademas de rellenar las pools. `MagicSandboxDriver` muestra fuerza/masa/grasa.

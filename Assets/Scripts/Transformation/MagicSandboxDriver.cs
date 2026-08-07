@@ -13,6 +13,7 @@ public class MagicSandboxDriver : MonoBehaviour
     public Grimoire grimoire;
     public QuarkReserve quarks;
     public FireSpell fire;
+    public ElementalSpell elemental;
     public Metabolism metabolism;
     public Anima anima;
 
@@ -22,6 +23,7 @@ public class MagicSandboxDriver : MonoBehaviour
         if (grimoire == null) grimoire = GetComponent<Grimoire>();
         if (quarks == null) quarks = GetComponent<QuarkReserve>();
         if (fire == null) fire = GetComponent<FireSpell>();
+        if (elemental == null) elemental = GetComponent<ElementalSpell>();
         if (metabolism == null) metabolism = GetComponent<Metabolism>();
         if (anima == null) anima = GetComponent<Anima>();
     }
@@ -29,7 +31,7 @@ public class MagicSandboxDriver : MonoBehaviour
     void OnGUI()
     {
         int x = 10, y = 300;
-        GUI.Box(new Rect(x, y, 372, 312), "Magia_AUTO (prueba — docs testing-checklist §19)");
+        GUI.Box(new Rect(x, y, 372, 372), "Magia_AUTO (prueba — docs testing-checklist §19)");
         y += 26;
         bool unlocked = reserves != null && reserves.unlocked;
 
@@ -63,7 +65,19 @@ public class MagicSandboxDriver : MonoBehaviour
         { fire.SetTier(FireTier.Flamethrower); fire.Cast(); }
         if (fire != null && GUI.Button(new Rect(x + 226, y, 130, 24), "Aliento de dragón"))
         { fire.SetTier(FireTier.DragonBreath); fire.Cast(); }
-        y += 32;
+        y += 30;
+
+        if (elemental != null && GUI.Button(new Rect(x + 8, y, 108, 24), "Agua"))
+        { elemental.SetElement(SpellElement.Water); elemental.Cast(); }
+        if (elemental != null && GUI.Button(new Rect(x + 120, y, 108, 24), "Tierra"))
+        { elemental.SetElement(SpellElement.Earth); elemental.Cast(); }
+        if (elemental != null && GUI.Button(new Rect(x + 232, y, 108, 24), "Viento"))
+        { elemental.SetElement(SpellElement.Wind); elemental.Cast(); }
+        y += 28;
+
+        if (reserves != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Cargar reservas de prueba (H/C/O/Si +100)"))
+        { reserves.Store("H", 100f); reserves.Store("C", 100f); reserves.Store("O", 100f); reserves.Store("Si", 100f); }
+        y += 30;
 
         if (reserves != null)
         {
