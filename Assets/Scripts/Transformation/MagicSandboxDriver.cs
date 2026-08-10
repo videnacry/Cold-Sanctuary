@@ -36,7 +36,7 @@ public class MagicSandboxDriver : MonoBehaviour
     void OnGUI()
     {
         int x = 10, y = 300;
-        GUI.Box(new Rect(x, y, 372, 434), "Magia_AUTO (prueba — docs testing-checklist §19)");
+        GUI.Box(new Rect(x, y, 372, 486), "Magia_AUTO (prueba — docs testing-checklist §19)");
         y += 26;
         bool unlocked = reserves != null && reserves.unlocked;
 
@@ -84,6 +84,11 @@ public class MagicSandboxDriver : MonoBehaviour
         { reserves.Store("H", 100f); reserves.Store("C", 100f); reserves.Store("O", 100f); reserves.Store("Si", 100f); }
         y += 28;
 
+        // Los topes DEPENDEN de los stats (stats-as-truth): subir stats → suben capPerElement/energyCap.
+        if (anima != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Subir stats de prueba (+0.5 razón/memoria/masa/aguante)"))
+        { anima.reasoning += 0.5f; anima.memory += 0.5f; anima.bodyMass += 0.5f; anima.endurance += 0.5f; anima.strength += 0.5f; }
+        y += 28;
+
         // Abastecer/trasplante a otro personaje (rol healer): energía + quarks + algo de C.
         if (supply != null && supplyTarget != null && GUI.Button(new Rect(x + 8, y, 337, 24), "Abastecer objetivo (1e6 J + 5 g quarks + 50 C)"))
         {
@@ -104,6 +109,9 @@ public class MagicSandboxDriver : MonoBehaviour
             y += 22;
             string q = quarks != null ? $"{quarks.GramsAvailable:0.###} g" : "-";
             GUI.Label(new Rect(x + 8, y, 356, 20), $"Energía: {reserves.energy:0} J    Quarks: {q}");
+            y += 20;
+            GUI.Label(new Rect(x + 8, y, 356, 20),
+                $"Topes (de stats): {reserves.EffectiveCapPerElement:0.#} g/elem   {reserves.EffectiveEnergyCap:0} J");
             y += 22;
         }
         if (anima != null)   // con Anima real: comer sube stats (Constitution, gradual) y el exceso → grasa

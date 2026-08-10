@@ -607,6 +607,11 @@ Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin 
       (×calidad de ruptura); al terminar la jornada llama a `Complete()` → sube la economía (§19d).
 - [ ] Jugar **más rápido** despacha más muestras en la misma jornada.
 
+### 19f-bis. Topes derivados de STATS (`MagicReserves.EffectiveCap*`) — sandbox `Magia_AUTO`
+- [ ] Con aptitudes base, el HUD muestra "Topes (de stats): ~100 g/elem, ~1e6 J". Botón **«Subir stats de
+      prueba»** → suben `EffectiveCapPerElement` (con MaxHealth: resistencia/fuerza/masa) y `EffectiveEnergyCap`
+      (con MaxMana: razón/memoria). No hay escala fija por santuario: todo sale de los stats.
+
 ### 19f. Sustrato de quarks del S4 (`QuarkReserve`)
 - [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un
       número plausible para la UI.
