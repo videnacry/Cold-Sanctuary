@@ -330,11 +330,18 @@ funcionan distinto**. Elegimos tu **opción mixta** (la más rica), montada en `
 - *Falta (build):* el timing/skill de la conversión dinámica (UI); que el casteo tire de `QuarkReserve` cuando la
   pool del elemento esté corta.
 
-### Los topes progresan (como los propios pools son un hechizo)
-Los pools se **crean con un tope** (1er hechizo) y ese tope **sube de nivel** igual que los hechizos. En **S4** el
-tope por elemento debe bastar para **construir una casa**: una casa modesta ≈ **10 t = 10⁷ g** de material → el
-sustrato (quarks/elementos) debe sostener ~10⁷ g (≈ **1,8×10³¹ quarks**), y `energyCap` ≥ **10¹¹ J** (grupo de
-quimeras, §15). *Falta (build):* escalar `capPerElement`/`energyCap`/`QuarkReserve` por nivel de maestría.
+### Los topes DEPENDEN DE LOS STATS (no del santuario) — montado (PR #61)
+Los pools se **crean con un tope** (1er hechizo) y ese tope **NO es una escala fija por santuario** — como todo,
+**depende de los stats** (stats-as-truth). El "por santuario" (S1..S4) es solo **referencia** de dónde sueles
+estar en esa curva. Montado en `MagicReserves`:
+- **`EffectiveCapPerElement`** = `capPerElement` × `MaxHealth(aptitudes)/100` → la **materia** que sostienes
+  escala con el "aguante" (**resistencia+fuerza+masa**, vía `DerivedStats.MaxHealth`).
+- **`EffectiveEnergyCap`** = `energyCap` × `MaxMana(aptitudes)/50` → la **energía** que sostienes escala con el
+  **maná** (**razón+memoria**, `DerivedStats.MaxMana`). Ambos × factor de niveles de alma (`CharacterLevel`).
+- **Quarks:** `QuarkReserve` **no tiene tope** — la materia cruda solo la limita lo que has reunido, no un cap.
+Así un mago de aptitudes altas almacena para **crear una casa** (~10⁷ g) o aguantar un **grupo de quimeras**
+(`energyCap` efectivo ≥ 10¹¹ J), y uno novato apenas nada — sin números mágicos por nivel, salen de los stats.
+`Store`/`StoreEnergy` usan ya los topes efectivos. *Falta:* nada crítico (tuning de las constantes 100/50).
 
 ### Abastecer con magia = "trasplante" (NO solo quimeras) — montado (`SupplySpell`, PR #60)
 Alimentar con magia **no es solo para quimeras**: es un hechizo general de **abastecimiento / trasplante**. El

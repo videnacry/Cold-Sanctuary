@@ -4,7 +4,7 @@ Tablero para retomar. Última sesión: 2026-08-07. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#60) está **mergeado y
+> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#61) está **mergeado y
 > documentado** (`docs/magic-metabolism-progression.md`). **Dos sandboxes ya construidos** (PR #54, salen con
 > `Build Sample Scene Blockout`): **`Descomposicion_AUTO`** (minijuego de 3 fases → economía, no necesita
 > `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle comer→desbloquear→lanzar). Guion por sistema en
@@ -314,7 +314,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#60 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#61 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -330,6 +330,11 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **10-ago (PR #61):** **topes de reservas derivados de los STATS** (no escala fija por santuario; stats-as-truth).
+  `MagicReserves.EffectiveCapPerElement` = base × `MaxHealth/100` (materia ← resistencia+fuerza+masa) y
+  `EffectiveEnergyCap` = base × `MaxMana/50` (energía ← razón+memoria), × niveles de alma (`CharacterLevel` opc.);
+  `Store`/`StoreEnergy` ya los usan. Quarks sin tope (los limita lo reunido). Sandbox `Magia_AUTO`: botón "Subir
+  stats" + lectura de topes efectivos. Doc §16, testing §19f. Cierra el pendiente de "escalado de topes".
 - **07-ago (PR #60):** **hechizo de abastecimiento / "trasplante"** `SupplySpell` (generaliza el `ChimeraFeed`):
   el mago se llena de quarks/energía y los **introduce en otro personaje** (energía+elementos+quarks de sus
   reservas → las del objetivo). Sirve para quimeras, otro jugador, uno mismo y sobre todo **rol HEALER en la
@@ -348,14 +353,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
 - **07-ago (PR #56):** **`Magia_AUTO` con `Anima` real**. `SimpleAnima` (Anima concreto minimo: hooks no-op, sin
   Awake/Start → seguro en sandbox) enchufado al `Magia_AUTO`; ahora comer sube stats via `Constitution` (gradual)
   y el exceso→grasa (`fatReserves`), ademas de rellenar las pools. `MagicSandboxDriver` muestra fuerza/masa/grasa.
-  Testing §19a. *Falta:* escalado de topes por nivel.
+  Testing §19a. (Topes derivados de stats: hecho PR #61.)
 - **07-ago (PR #54):** **sandboxes de prueba** en `SampleSceneBuilder` (salen con `Build Sample Scene
   Blockout`): **`Descomposicion_AUTO`** (`DecompositionJob` workerCut=0 + `DecompositionMinigame` con batch
   agua/sal/CO₂ → al terminar la jornada suben Elements/Energy en el HUD de recursos; no necesita `Anima`) y
   **`Magia_AUTO`** (cápsula con `Metabolism`+`Constitution`+`MagicReserves`+`QuarkReserve`+`Grimoire`+`FireSpell`
   + `MagicSandboxDriver`, HUD OnGUI: aprender 1er hechizo → comer/quarks rellenan pools → lanzar fuego químico/
   masa-energía; sin `Anima`, null-safe). Guion en `testing-checklist §19`. *Falta:* `Magia_AUTO` con `Anima` real
-  (grasa/stats), abastecer-quimera (Humores+Metabolism; base `SupplySpell` hecha), escalado de topes.
+  (grasa/stats), abastecer-quimera (Humores+Metabolism; base `SupplySpell` hecha). (Topes de stats: hecho #61.)
 - **07-ago (PR #52):** **minijuego de descomposición** (`DecompositionMinigame`). La jornada corre 3 FASES sobre
   las MISMAS muestras y el MISMO orden: (1) **identificar** —elegir el nombre correcto entre nombres al azar,
   contra reloj—, (2) **romper** —calidad por timing 0..1 → energía capturada—, (3) **clasificar** —arrastrar
@@ -372,8 +377,8 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
   poder crear una casa 10⁷ g; alimentar quimeras cuesta aparte —quarks/elementos+energía—; elementales = 1
   hechizo por elemento con perfiles de coste) + §17 (**minijuego de descomposición**: romper-por-timing +
   clasificar-por-carriles tipo Guitar-Hero → setea `yield`/`energyJoules` de `DecompositionJob`). *Falta:*
-  escalar topes por nivel; casteo que tire de quarks al faltar elemento. (`DecompositionMinigame` hecho PR #52;
-  `SupplySpell` hecho PR #60.)
+  casteo que tire de quarks al faltar elemento. (`DecompositionMinigame` PR #52; `SupplySpell` PR #60; topes de
+  stats PR #61.)
 - **07-ago (PR #50):** **`FireSpell` con coste físico REAL** + cálculo del S4. `FireSpell`: coste = potencia×
   tiempo → energía → **combustible** (C 85,7%/H 14,3%; O₂ del aire gratis) + ignición; presets `FireTier`
   (chispa 0,018g / lanzallamas 22g / aliento de dragón 2,2kg **inviable** por química). **Modo masa-energía**

@@ -22,7 +22,8 @@ public class MagicReserves : MonoBehaviour
 
     [Tooltip("Las crea el PRIMER HECHIZO (Grimoire → Unlock). Hasta entonces, el exceso de comida va a grasa (no a magia).")]
     public bool unlocked = false;
-    [Tooltip("Tope por elemento (el primer hechizo crea las pools 'con un límite').")]
+    [Tooltip("Tope por elemento — BASE. El tope real se ESCALA con los stats (ver EffectiveCapPerElement). "
+        + "La escala por santuario es solo referencia: como todo, depende de los stats.")]
     public float capPerElement = 100f;
 
     [Header("Reservas por elemento (símbolo de la tabla periódica → cantidad). Agotado → no lanza ese hechizo.")]
@@ -32,13 +33,41 @@ public class MagicReserves : MonoBehaviour
         + "cada nivel suelta MUCHÍSima más (química→nuclear→masa-energía). Paga los hechizos T3-T5 y los 'bosones'.")]
     [Tooltip("Julios almacenados. Se rellena en las cocinas al descomponer/desintegrar (StoreEnergy).")]
     public float energy = 0f;
-    [Tooltip("Tope de energía almacenable (crece con la maestría de física).")]
+    [Tooltip("Tope de energía — BASE. El tope real se ESCALA con los stats (ver EffectiveEnergyCap).")]
     public float energyCap = 1e6f;
 
     [Tooltip("Símbolos que siembra el primer hechizo (pools vacías, con tope). Los básicos de la vida.")]
     public List<string> seedElements = new List<string> { "H", "C", "N", "O" };
 
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
+
+    // Niveles de alma (opcional): multiplican los topes junto con las aptitudes. 0 si no hay CharacterLevel.
+    int SoulLevels { get { CharacterLevel cl = GetComponent<CharacterLevel>(); return cl != null ? cl.SoulLevels : 0; } }
+
+    /// <summary>Tope REAL por elemento = base × factor de STATS (stats-as-truth). La materia que puedes sostener
+    /// escala con el "aguante" (resistencia/fuerza/masa, vía `DerivedStats.MaxHealth`); por eso un mago avanzado
+    /// almacena para crear una casa y uno novato apenas nada. Sin `anima` → el valor base.</summary>
+    public float EffectiveCapPerElement
+    {
+        get
+        {
+            if (anima == null) return capPerElement;
+            float health = DerivedStats.MaxHealth(Aptitudes.From(anima), SoulLevels);
+            return capPerElement * Mathf.Max(0.1f, health / 100f);   // 100 = MaxHealth con aptitudes base
+        }
+    }
+
+    /// <summary>Tope REAL de energía = base × factor de STATS. La energía que puedes sostener escala con el
+    /// **maná** (razón/memoria, vía `DerivedStats.MaxMana`). Sin `anima` → el valor base.</summary>
+    public float EffectiveEnergyCap
+    {
+        get
+        {
+            if (anima == null) return energyCap;
+            float mana = DerivedStats.MaxMana(Aptitudes.From(anima), SoulLevels);
+            return energyCap * Mathf.Max(0.1f, mana / 50f);          // 50 = MaxMana con aptitudes base
+        }
+    }
 
     /// <summary>El PRIMER HECHIZO: crea las pools de magia (vacías, con tope) y la reserva de energía.
     /// A partir de aquí el exceso de comer/descomponer las llena. Idempotente.</summary>
@@ -63,7 +92,7 @@ public class MagicReserves : MonoBehaviour
     public float StoreEnergy(float joules)
     {
         if (joules <= 0f) return 0f;
-        float put = Mathf.Min(joules, Mathf.Max(0f, energyCap - energy));
+        float put = Mathf.Min(joules, Mathf.Max(0f, EffectiveEnergyCap - energy));
         energy += put;
         return joules - put;
     }
@@ -81,14 +110,15 @@ public class MagicReserves : MonoBehaviour
     public float Store(string symbol, float amount)
     {
         if (amount <= 0f) return 0f;
+        float cap = EffectiveCapPerElement;
         foreach (ElementAmount r in reserves)
             if (r != null && r.symbol == symbol)
             {
-                float put = Mathf.Min(amount, Mathf.Max(0f, capPerElement - r.amount));
+                float put = Mathf.Min(amount, Mathf.Max(0f, cap - r.amount));
                 r.amount += put;
                 return amount - put;
             }
-        float put2 = Mathf.Min(amount, capPerElement);
+        float put2 = Mathf.Min(amount, cap);
         reserves.Add(new ElementAmount { symbol = symbol, amount = put2 });
         return amount - put2;
     }
