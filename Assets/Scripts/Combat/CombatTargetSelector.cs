@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Tab-targeting system: cycles through IngredientMobs from nearest to farthest.
+/// Sistema de selección de target (Tab-targeting + clic).
 ///
-/// Usage:
-///   - Tab (keyboard)     → cycle to next mob
-///   - Click on a mob     → select it directly (mob's collider calls Select(mob))
-///   - Escape             → deselect
+/// Generalizado de <c>IngredientMob</c> a <see cref="ITarget"/> para soportar hechizos
+/// que se lanzan sobre cualquier ser vivo, objeto del entorno o NPC (no solo mobs de combate).
 ///
-/// CurrentTarget is read by CombatAbilityBar (keyboard shortcuts) and
-/// by the Palette system (mouse-click ability use).
+/// Compatibilidad hacia atrás: <see cref="CurrentIngredientMob"/> devuelve el target actual
+/// casteado a <c>IngredientMob</c> (null si el target es otro tipo); <see cref="SelectMob"/>
+/// y <see cref="SelectAndOpenPalette"/> mantienen la firma original.
 ///
-/// Visual feedback: attach a highlight effect prefab — it will be reparented to
-/// the selected mob each time the target changes.
+/// Uso:
+///   - Tab (teclado)          → ciclar al siguiente ITarget en rango
+///   - Clic en un objeto      → seleccionarlo directamente (el objeto llama <see cref="Select"/>)
+///   - Escape                 → deseleccionar
 /// </summary>
 public class CombatTargetSelector : MonoBehaviour
 {
@@ -25,7 +26,7 @@ public class CombatTargetSelector : MonoBehaviour
     // ── Inspector ─────────────────────────────────────────────────────────────
 
     [Header("Targeting")]
-    [Tooltip("Max range to consider a mob as targetable.")]
+    [Tooltip("Max range to consider a target as selectable (m).")]
     public float maxTargetRange = 20f;
 
     [Tooltip("Key to cycle to the next target.")]
@@ -42,14 +43,21 @@ public class CombatTargetSelector : MonoBehaviour
     // ── Events ────────────────────────────────────────────────────────────────
 
     /// <summary>Fired whenever the selected target changes (null = deselected).</summary>
-    public event Action<IngredientMob> OnTargetChanged;
+    public event Action<ITarget> OnTargetChanged;
+
+    /// <summary>Fired when the selected target is an IngredientMob (backward compat).</summary>
+    public event Action<IngredientMob> OnMobTargetChanged;
 
     // ── State ─────────────────────────────────────────────────────────────────
 
-    public IngredientMob CurrentTarget { get; private set; }
+    /// <summary>Target actual (cualquier ITarget). Null = sin selección.</summary>
+    public ITarget CurrentTarget { get; private set; }
 
-    int         _currentIndex;
-    GameObject  _highlightInstance;
+    /// <summary>Shortcut: CurrentTarget casteado a IngredientMob (null si es otro tipo).</summary>
+    public IngredientMob CurrentIngredientMob => CurrentTarget as IngredientMob;
+
+    int        _currentIndex;
+    GameObject _highlightInstance;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -64,73 +72,77 @@ public class CombatTargetSelector : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(cycleKey))   CycleTarget();
+        if (Input.GetKeyDown(cycleKey))    CycleTarget();
         if (Input.GetKeyDown(deselectKey)) Deselect();
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
 
-    /// <summary>Select a specific mob (e.g. from a mouse click on its collider).</summary>
-    public void Select(IngredientMob mob)
+    /// <summary>Selecciona cualquier ITarget (Anima, FoodItem, FishSchool, etc.).</summary>
+    public void Select(ITarget target)
     {
-        if (mob == null) { Deselect(); return; }
+        if (target == null || target.Dead || target.Consumed) { Deselect(); return; }
 
-        // Find its index in the sorted list so Tab continues from here
-        var mobs = GetSortedMobs();
-        _currentIndex = mobs.IndexOf(mob);
+        var targets = GetSortedTargets();
+        _currentIndex = targets.IndexOf(target);
         if (_currentIndex < 0) _currentIndex = 0;
 
-        ApplyTarget(mob);
+        ApplyTarget(target);
     }
 
-    /// <summary>Deselect the current target.</summary>
+    /// <summary>Backward compat: seleccionar un IngredientMob directamente.</summary>
+    public void SelectMob(IngredientMob mob) => Select(mob);
+
+    /// <summary>Deseleccionar el target actual.</summary>
     public void Deselect()
     {
         CurrentTarget = null;
         _currentIndex = 0;
         PositionHighlight(null);
         OnTargetChanged?.Invoke(null);
+        OnMobTargetChanged?.Invoke(null);
     }
 
     // ── Cycle ─────────────────────────────────────────────────────────────────
 
     void CycleTarget()
     {
-        var mobs = GetSortedMobs();
-        if (mobs.Count == 0) { Deselect(); return; }
-
-        // Advance index, wrap around
-        _currentIndex = (_currentIndex + 1) % mobs.Count;
-        ApplyTarget(mobs[_currentIndex]);
+        var targets = GetSortedTargets();
+        if (targets.Count == 0) { Deselect(); return; }
+        _currentIndex = (_currentIndex + 1) % targets.Count;
+        ApplyTarget(targets[_currentIndex]);
     }
 
-    void ApplyTarget(IngredientMob mob)
+    void ApplyTarget(ITarget target)
     {
-        CurrentTarget = mob;
-        PositionHighlight(mob.transform);
-        OnTargetChanged?.Invoke(mob);
-        Debug.Log($"[CombatTarget] → {mob.ingredientName}");
+        CurrentTarget = target;
+        PositionHighlight((target as MonoBehaviour)?.transform);
+        OnTargetChanged?.Invoke(target);
+        OnMobTargetChanged?.Invoke(target as IngredientMob); // null si no es mob
+        Debug.Log($"[CombatTarget] → {(target as MonoBehaviour)?.name ?? "?"}");
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
-    List<IngredientMob> GetSortedMobs()
+    List<ITarget> GetSortedTargets()
     {
-        var all = FindObjectsByType<IngredientMob>();
-        var result = new List<IngredientMob>();
+        var result = new List<ITarget>();
 
-        foreach (var m in all)
+        // Buscar todos los MonoBehaviour que implementen ITarget en escena
+        foreach (var mb in FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None))
         {
-            if (m == null || !m.gameObject.activeSelf) continue;
-            float dist = Vector3.Distance(transform.position, m.transform.position);
-            if (dist <= maxTargetRange) result.Add(m);
+            if (mb == null || !mb.gameObject.activeSelf) continue;
+            if (mb is ITarget t && !t.Dead && !t.Consumed)
+            {
+                float dist = Vector3.Distance(transform.position, t.transform.position);
+                if (dist <= maxTargetRange) result.Add(t);
+            }
         }
 
-        // Sort nearest → farthest
         result.Sort((a, b) =>
         {
-            float da = Vector3.Distance(transform.position, a.transform.position);
-            float db = Vector3.Distance(transform.position, b.transform.position);
+            float da = Vector3.Distance(transform.position, (a as MonoBehaviour).transform.position);
+            float db = Vector3.Distance(transform.position, (b as MonoBehaviour).transform.position);
             return da.CompareTo(db);
         });
 
@@ -150,12 +162,9 @@ public class CombatTargetSelector : MonoBehaviour
         _highlightInstance.transform.localPosition = Vector3.zero;
     }
 
-    // ── Mouse click on mob (call from IngredientMob's OnMouseDown) ────────────
+    // ── Mouse click on mob (backward compat) ─────────────────────────────────
 
-    /// <summary>
-    /// IngredientMob can call this from OnMouseDown to select themselves.
-    /// Also triggers Palette to open with combat abilities.
-    /// </summary>
+    /// <summary>IngredientMob calls this from OnMouseDown to select itself and open the Palette.</summary>
     public void SelectAndOpenPalette(IngredientMob mob)
     {
         Select(mob);
