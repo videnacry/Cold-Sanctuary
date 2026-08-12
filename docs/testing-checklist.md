@@ -17,14 +17,23 @@ receta + tickets). Los ítems `[x]` son historial verificado.
   procesar por varios ciclos. Recreado al retomar (ver instrucciones de la corutina). **Si volvés a ver
   muchos ciclos seguidos de "sin cambios" sin que el usuario intervenga, sospechá que el cron murió —
   correr `CronList` para confirmar en vez de asumir que sigue vivo.**
-- **BUG REAL de compilación encontrado y arreglado** (sin commitear): `TransformationSpell.cs(43,35)`
-  — `error CS0844`: la variable local `float cost` (línea 51) tenía el mismo nombre que el campo
-  `public List<ElementCost> cost` (línea 27), y una línea anterior del mismo método (43) ya usaba el
-  campo `cost` → el compilador no permite la variable local hasta su declaración cuando tapa a un campo
-  usado antes. Fix: renombrar la local a `totalCost`. **Este error llevaba sin detectarse un buen
-  rato** porque los `Assets > Refresh` incrementales de varios ciclos anteriores NO estaban
-  recompilando de verdad `Assembly-CSharp` (ver nota operativa abajo) — recién se detectó al forzar
-  `Reimport All`.
+- **BUG REAL de compilación encontrado y arreglado, commiteado por el compañero** (`51bb93f`):
+  `TransformationSpell.cs(43,35)` — `error CS0844`: la variable local `float cost` (línea 51) tenía el
+  mismo nombre que el campo `public List<ElementCost> cost` (línea 27), y una línea anterior del mismo
+  método (43) ya usaba el campo `cost` → el compilador no permite la variable local hasta su
+  declaración cuando tapa a un campo usado antes. Fix: renombrar la local a `totalCost`. **Este error
+  llevaba sin detectarse un buen rato** porque los `Assets > Refresh` incrementales de varios ciclos
+  anteriores NO estaban recompilando de verdad `Assembly-CSharp` (ver nota operativa abajo) — recién
+  se detectó al forzar `Reimport All`.
+- **PRs #56-61 sincronizados y probados (2026-08-12)**: `SimpleAnima` (Anima concreto mínimo) +
+  `ElementalSpell` (hechizos agua/tierra/viento) + `SupplySpell` (abastecer/"trasplante" a otro
+  personaje, tipo healer) + `Magia_AUTO` actualizado para usar un `Anima` real (antes era null-safe
+  sin Anima) — ahora comer sube stats de `Constitution` y el exceso va a grasa, además de rellenar
+  las pools de magia. Compila limpio (0 errores), sandbox se reconstruye y corre en Play sin
+  excepciones. Igual que siempre, el flujo real (aprender/comer/lanzar por botón) necesita input
+  manual — no se pudo ejercitar por automatización, pero se confirmó que no crashea dejándolo correr.
+  También llegó `SupplySpell` con un `Magia_AUTO_Objetivo` (otro `SimpleAnima` con reservas ya
+  desbloqueadas) para probar el trasplante — sin verificar en profundidad, mismo motivo.
 - **HALLAZGO OPERATIVO IMPORTANTE**: tras un `Reimport All`, Unity **reinicia el proceso completo**
   (splash screen, no solo domain reload) y a veces **vuelve a loguear en la ruta global por defecto**
   (`C:\Users\Blein\AppData\Local\Unity\Editor\Editor.log`) en vez de la ruta project-relative
