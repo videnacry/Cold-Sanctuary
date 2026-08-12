@@ -12,19 +12,38 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
-- Todo lo mergeado hasta la **PR #34** (depredación por stats: `Predation`/`MagicAura`/`StatProfile`/
-  `TransformationSpell` — farol vs transformación real, manada por `PackFactor`, commits hasta `9b2dcc2`)
-  ya está **sincronizado** repo↔proyecto vivo (`C:\Users\Blein\COLD-SANCTUARY`) y **probado en lo
-  automatizable** — ver secciones 11/12/13/14/15/16/17/18. El repo recibe cambios de un compañero de
-  equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar `git log` al retomar** por si hay commits
-  nuevos sin sincronizar (buscar archivos `.cs` nuevos/modificados/borrados desde el último hash
-  conocido y copiarlos a mano con `cp`/PowerShell `Copy-Item`, replicando borrados también).
-- **PRs #35-52 (magia/metabolismo/descomposición/quimeras, `Metabolism`/`Constitution`/`MagicReserves`/
-  `Grimoire`/`FireSpell`/`QuarkReserve`/`DecompositionJob`/`DecompositionMinigame`) ya sincronizados
-  repo↔proyecto vivo, sin testear todavía** — el compañero dejó la checklist lista para ese arco en la
-  **sección 19** (renumerada desde su "15" original al mergear con las secciones 15-18 de esta sesión,
-  que cubren un rango de PRs distinto y anterior). Compila; falta cablear sandboxes de demo antes de
-  poder probarlo de verdad (ver sección 19).
+- **CRON DE 2H MURIÓ (expiró a los 7 días) y no lo detecté hasta que el usuario avisó** — quedaron 21
+  commits (PRs #35-55: magia/metabolismo/descomposición + `Descomposicion_AUTO`/`Magia_AUTO`) sin
+  procesar por varios ciclos. Recreado al retomar (ver instrucciones de la corutina). **Si volvés a ver
+  muchos ciclos seguidos de "sin cambios" sin que el usuario intervenga, sospechá que el cron murió —
+  correr `CronList` para confirmar en vez de asumir que sigue vivo.**
+- **BUG REAL de compilación encontrado y arreglado** (sin commitear): `TransformationSpell.cs(43,35)`
+  — `error CS0844`: la variable local `float cost` (línea 51) tenía el mismo nombre que el campo
+  `public List<ElementCost> cost` (línea 27), y una línea anterior del mismo método (43) ya usaba el
+  campo `cost` → el compilador no permite la variable local hasta su declaración cuando tapa a un campo
+  usado antes. Fix: renombrar la local a `totalCost`. **Este error llevaba sin detectarse un buen
+  rato** porque los `Assets > Refresh` incrementales de varios ciclos anteriores NO estaban
+  recompilando de verdad `Assembly-CSharp` (ver nota operativa abajo) — recién se detectó al forzar
+  `Reimport All`.
+- **HALLAZGO OPERATIVO IMPORTANTE**: tras un `Reimport All`, Unity **reinicia el proceso completo**
+  (splash screen, no solo domain reload) y a veces **vuelve a loguear en la ruta global por defecto**
+  (`C:\Users\Blein\AppData\Local\Unity\Editor\Editor.log`) en vez de la ruta project-relative
+  (`C:\Users\Blein\COLD-SANCTUARY\Logs\Editor.log`) que se venía usando toda la sesión. Si después de
+  una acción el log project-relative deja de crecer (mismo `wc -l` en checks sucesivos) pese a que la
+  UI de Unity sigue respondiendo, **revisar la ruta global** antes de asumir que no pasó nada — así se
+  destapó el bug de `TransformationSpell.cs` (el `Build()` parecía "completar sin generar los sandboxes
+  nuevos" cuando en realidad estaba compilando con errores silenciosos para ese log).
+- Todo lo mergeado hasta la **PR #55** (`Descomposicion_AUTO`/`Magia_AUTO` — sandboxes testables del
+  arco magia/metabolismo, commits hasta `0ccc32e`) ya está **sincronizado** repo↔proyecto vivo
+  (`C:\Users\Blein\COLD-SANCTUARY`, confirmado archivo por archivo) — ver secciones 11-19. El repo
+  recibe cambios de un compañero de equipo (`videnacry`/`beron-gamboa`) en paralelo — **revisar
+  `git log` al retomar** por si hay commits nuevos sin sincronizar.
+- **PRs #35-55 (magia/metabolismo/descomposición) — compilan (tras el fix de arriba) y los 2 sandboxes
+  nuevos corren sin excepciones**: `Descomposicion_AUTO` (botón «Iniciar jornada» → minijuego 3 fases)
+  y `Magia_AUTO` (HUD de prueba: aprender→comer→lanzar fuego) se construyen y no crashean; sin
+  interacción manual real terminan con "0 elementos + 0 J" (esperado, no jugado de verdad) — mismo
+  patrón de "necesita input manual" que el resto del motor de Virtualización. 0 excepciones en toda la
+  corrida. Detalle en sección 19.
 - **PRs #31-34 (depredación por stats) compilan y no rompen nada, sin sandbox de demo propio** (no
   tocaron `SampleSceneBuilder.cs` — se integra directo en `Diet.SelectPrey`/`Animal.EvaluateThreat`,
   sin UI ni logs dedicados). 0 excepciones nuevas en una corrida completa; regresión limpia (Prólogo/
@@ -561,6 +580,13 @@ Sin sandbox propio en `SampleSceneBuilder` — se integra directo en `Diet.Selec
 **`Descomposicion_AUTO`** (minijuego, no necesita `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle
 comer→desbloquear→lanzar, sin `Anima` porque los componentes son null-safe). El resto del arco sigue siendo
 código opt-in sin cablear en juego real. Compila verificado por conteo de llaves (no por Unity). Qué verificar:
+
+**Verificado por mí (2026-08-07) — compila de verdad en Unity (0 errores CS tras arreglar
+`TransformationSpell.cs`, ver "Estado de sesión") y ambos sandboxes se construyen y corren en Play sin
+excepciones**: probé un clic rápido en «Iniciar jornada» de `Descomposicion_AUTO` (sin jugar las 3 fases
+de verdad) → terminó limpio con "0 elementos + 0 J" (log `[Descomp-minijuego]`), sin crash. `Magia_AUTO`
+construye su HUD sin errores. **Los ítems `[ ]` de abajo (19a-19f) siguen sin verificar en profundidad**
+— necesitan jugar cada fase/botón real, no solo confirmar que no crashea.
 
 ### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`) — **sandbox `Magia_AUTO`**
 En Play, HUD abajo-izq del `Magia_AUTO`: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks /
