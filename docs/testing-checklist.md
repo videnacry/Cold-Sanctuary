@@ -589,11 +589,14 @@ construye su HUD sin errores. **Los ítems `[ ]` de abajo (19a-19f) siguen sin v
 — necesitan jugar cada fase/botón real, no solo confirmar que no crashea.
 
 ### 19a. Bucle comer → reservas (`Metabolism`/`Constitution`/`MagicReserves`) — **sandbox `Magia_AUTO`**
-En Play, HUD abajo-izq del `Magia_AUTO`: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks /
-fuego** + lectura de reservas/energía/quarks. (Sin `Anima`: no se prueba la grasa ni los stats de `Constitution`,
-sí las pools de magia/energía/quarks.)
-- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: no llena las pools de magia (van a 0 / a grasa si hubiera Anima).
-- [ ] Tras **Aprender 1er hechizo**: comer carne llena N/H, comer fruta llena C… hasta `capPerElement`.
+El `Magia_AUTO` lleva un **`SimpleAnima`** (Anima concreto mínimo, PR #56) → sí se prueban grasa y stats. HUD
+abajo-izq: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks / fuego** + lectura de
+reservas/energía/quarks **y de stats (fuerza/masa/grasa)**.
+- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: **no** llena las pools de magia (lo útil sube stats vía
+      `Constitution`, gradual; el exceso → **grasa** `fatReserves`, visible en el HUD).
+- [ ] Tras **Aprender 1er hechizo**: el exceso de comer llena las pools (carne→N/H, fruta→C) hasta `capPerElement`,
+      y solo lo que aún sobra → grasa.
+- [ ] Al comer, **fuerza/masa suben poco a poco** (Constitution converge hacia el objetivo por elementos).
 - [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
 - [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
 
@@ -601,19 +604,26 @@ sí las pools de magia/energía/quarks.)
 - [ ] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía;
       dispara `OnLearned`. Tras esto, el **exceso de comer llena las pools** (hasta `capPerElement`) y luego grasa.
 
-### 19c. Hechizos: coste materia + energía
-- [ ] `FireSpell` **modo químico**: `Cast()` cobra combustible (C+H) + ignición (J); sin reservas → no sale
-      (log "sin reservas"). Presets `FireTier` dan los gramos esperados (chispa 0,018 g / lanzallamas 22 g).
-- [ ] `FireSpell` **modo masa-energía** (`massEnergyMode`): cobra ~µg + **toda** la energía del pool.
+### 19c. Hechizos: coste materia + energía — **sandbox `Magia_AUTO`** (fuego/agua/tierra/viento)
+Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin depender de comer.
+- [ ] `FireSpell` **modo químico** (Chispa/Lanzallamas): cobra combustible (C+H) + ignición (J); sin reservas →
+      no sale (log "sin reservas"). Chispa 0,018 g / lanzallamas 22 g.
+- [ ] `FireSpell` **modo masa-energía** (Aliento de dragón): cobra ~µg + **toda** la energía del pool (necesita
+      restituir energía antes).
+- [ ] **Agua** (H₂O): gasta ~11% H + 89% O de 1 kg + ~200 J. **Tierra** (SiO₂): mucha materia (Si+O de 5 kg) +
+      poca energía. **Viento**: **materia 0** (aire gratis) + ~450 J (energía-pesado).
 - [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
-- [ ] Lanzar fuego **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+- [ ] Lanzar un hechizo **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
+- [ ] **Abastecer/trasplante** (`SupplySpell`, rol healer): botón «Abastecer objetivo» → transfiere energía +
+      quarks + C del lanzador al `Magia_AUTO_Objetivo`; el HUD muestra subir la energía/C del objetivo y bajar
+      las del lanzador. Sin recursos suficientes → log "sin recursos".
 
 ### 19d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
 - [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
       (Elements/Energy) — verlo subir en el **HUD de recursos** (§1/§2).
 - [ ] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía.
-- [ ] **Energía gateada por física**: si `energyPhysicsId` no está en el `Grimoire` del obrero, su parte de
-      energía va **entera a la economía** (log "energía NO revelada").
+- [ ] Por defecto la energía se capta (sin gate). El `energyPhysicsId` es palanca **opcional**: solo si se
+      rellena y el `Grimoire` no lo conoce, su parte de energía va entera a la economía (log "energía NO revelada").
 
 ### 19e. Minijuego de descomposición (`DecompositionMinigame`) — **testable (OnGUI)**
 - [ ] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden:
@@ -622,6 +632,11 @@ sí las pools de magia/energía/quarks.)
 - [ ] Solo cuentan en el `yield` los componentes de muestras **identificadas + rotas + bien clasificadas**
       (×calidad de ruptura); al terminar la jornada llama a `Complete()` → sube la economía (§19d).
 - [ ] Jugar **más rápido** despacha más muestras en la misma jornada.
+
+### 19f-bis. Topes derivados de STATS (`MagicReserves.EffectiveCap*`) — sandbox `Magia_AUTO`
+- [ ] Con aptitudes base, el HUD muestra "Topes (de stats): ~100 g/elem, ~1e6 J". Botón **«Subir stats de
+      prueba»** → suben `EffectiveCapPerElement` (con MaxHealth: resistencia/fuerza/masa) y `EffectiveEnergyCap`
+      (con MaxMana: razón/memoria). No hay escala fija por santuario: todo sale de los stats.
 
 ### 19f. Sustrato de quarks del S4 (`QuarkReserve`)
 - [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un

@@ -225,12 +225,14 @@ Esto aplica a las cocinas de los santuarios **y** a la **cocina del cuartel de l
 otro dueño de las reservas). *Pendiente de cablear:* un `DecompositionJob`/`Producer` que, al completar la
 misión, llame a `SanctuaryResources.Add` (economía) y entregue el **cut** al `MagicReserves`/bolsa del obrero.
 
-### La física llega de OTRAS áreas (revelación progresiva)
-Como el jugador **rota por áreas**, llega a la cocina de S2/S3/S4 **ya con física aprendida** en Mecánica/Forja
-(§13). Por eso en esas cocinas se va **revelando la energía** que suelta la desintegración: sin ese saber, solo
-ve "materia → materia"; **con** él, ve y puede **capturar los julios**. Gating limpio: la lectura/absorción de
-energía de un nivel se desbloquea al haber aprendido su física (enlace→térmica en Forja; nuclear→masa-energía
-en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLearned` / learning-unlocks).
+### La física llega con el avance (DECISIÓN: sin gate)
+El jugador **entra a cada santuario con la química/biología/física que ese nivel necesita** — la aprende al
+**terminar el santuario anterior** (al final de S1 ya tiene la física para capturar energía en S2, etc.). Por
+eso **el gate de energía por física NO hace falta**: cuando llegas a descomponer con energía, ya sabes la física.
+En código esto ya se cumple: `DecompositionJob.energyPhysicsId` está **vacío por defecto → `EnergyRevealed` =
+true** (sin gate, la energía se captura). El campo se queda como **palanca opcional** por si algún diseño futuro
+quiere ocultar un nivel, pero **no se cablea** a `OnLearned`. (Antes se planteó "revelar la energía según la
+física aprendida en otras áreas"; se descarta por redundante con la progresión.)
 
 ### Enganche (montado)
 - **`Grimoire`** (PR #48): el **primer hechizo** aprendido (`awaken-reserves`) llama a `MagicReserves.Unlock()`
@@ -242,9 +244,9 @@ en Mecánica avanzada). Encaja con el registro de **aprendidos** (`Grimoire.OnLe
   usan. Física real: quemar materia paga la parte química; los hechizos grandes pesan sobre todo en **energía**.
 - **`DecompositionJob`** (PR #49): al completar la misión de la cocina, reparte el lote descompuesto —
   **mayoría → economía** (`SanctuaryResources` Elements/Energy) + **`workerCut` → paga** al obrero
-  (`MagicReserves`). La **energía solo la capta el obrero si conoce la física** del nivel (`energyPhysicsId` en
-  su `Grimoire`); si no, va entera a la economía ("materia→materia"). Enum `DecompositionLevel`
-  (catabolismo/ionización/fisión/aniquilación).
+  (`MagicReserves`). La energía se capta **por defecto** (sin gate: entras al nivel con la física ya aprendida);
+  `energyPhysicsId` queda como **palanca opcional** (si se rellena y el `Grimoire` no lo conoce, esa energía va
+  entera a la economía). Enum `DecompositionLevel` (catabolismo/ionización/fisión/aniquilación).
 - *Falta:* el **minijuego** de selección (elementos/quarks) que rellene `yield`/`energyJoules` antes de
   `Complete()`; sandbox demoable; que aprender la física (Mecánica/Forja) marque el `energyPhysicsId` vía `OnLearned`.
 
@@ -283,7 +285,8 @@ quarks** = materia de nucleones cruda que se **rearma en elementos**, y esos ele
 alientos, muchísimo más que un grupo de quimeras. Los verdaderos límites (y por tanto la progresión) son:
 - **`energyCap`** — cuántos julios puedes *sostener*. Sube con la maestría de física: **≥10¹⁰ J al entrar a S4**
   (sobrevivir a una quimera) y **≥10¹¹ J al terminarlo** (a un grupo). *Falta:* escalar `energyCap` por nivel.
-- **la maestría de conversión** — saber la física para hacer materia→energía (el gate `energyPhysicsId`).
+- **la maestría de conversión** — saber la física para hacer materia→energía (que ya traes del santuario
+  anterior; por eso sin gate, ver §14 "La física llega con el avance").
 
 Así el jugador **llega a S4 pudiendo sobrevivir a UNA quimera y lo termina sobreviviendo a un GRUPO**, tal cual.
 
@@ -327,19 +330,41 @@ funcionan distinto**. Elegimos tu **opción mixta** (la más rica), montada en `
 - *Falta (build):* el timing/skill de la conversión dinámica (UI); que el casteo tire de `QuarkReserve` cuando la
   pool del elemento esté corta.
 
-### Los topes progresan (como los propios pools son un hechizo)
-Los pools se **crean con un tope** (1er hechizo) y ese tope **sube de nivel** igual que los hechizos. En **S4** el
-tope por elemento debe bastar para **construir una casa**: una casa modesta ≈ **10 t = 10⁷ g** de material → el
-sustrato (quarks/elementos) debe sostener ~10⁷ g (≈ **1,8×10³¹ quarks**), y `energyCap` ≥ **10¹¹ J** (grupo de
-quimeras, §15). *Falta (build):* escalar `capPerElement`/`energyCap`/`QuarkReserve` por nivel de maestría.
+### Los topes DEPENDEN DE LOS STATS (no del santuario) — montado (PR #61)
+Los pools se **crean con un tope** (1er hechizo) y ese tope **NO es una escala fija por santuario** — como todo,
+**depende de los stats** (stats-as-truth). El "por santuario" (S1..S4) es solo **referencia** de dónde sueles
+estar en esa curva. Montado en `MagicReserves`:
+- **`EffectiveCapPerElement`** = `capPerElement` × `MaxHealth(aptitudes)/100` → la **materia** que sostienes
+  escala con el "aguante" (**resistencia+fuerza+masa**, vía `DerivedStats.MaxHealth`).
+- **`EffectiveEnergyCap`** = `energyCap` × `MaxMana(aptitudes)/50` → la **energía** que sostienes escala con el
+  **maná** (**razón+memoria**, `DerivedStats.MaxMana`). Ambos × factor de niveles de alma (`CharacterLevel`).
+- **Quarks:** `QuarkReserve` **no tiene tope** — la materia cruda solo la limita lo que has reunido, no un cap.
+Así un mago de aptitudes altas almacena para **crear una casa** (~10⁷ g) o aguantar un **grupo de quimeras**
+(`energyCap` efectivo ≥ 10¹¹ J), y uno novato apenas nada — sin números mágicos por nivel, salen de los stats.
+`Store`/`StoreEnergy` usan ya los topes efectivos. *Falta:* nada crítico (tuning de las constantes 100/50).
 
-### Alimentar a las quimeras (domesticación) cuesta aparte de sobrevivir
-Cierto: los ~alientos de dragón del §15 son para **sobrevivir/jugar**, no para **alimentar**. Alimentar = darles
-**quarks o elementos + energía** (a definir por especie). Como un **dragón consume tanto como un mago avanzado**,
-alimentar a **un grupo** es caro: si cada quimera repone ~**10¹¹ J + kg de elementos**, un grupo de ~5 ≈ **5×10¹¹
-J + varios kg** → el jugador necesita un `QuarkReserve` grande y, llegado el caso, **crea la comida con magia**
-(2º trayecto, INTEGRAR §4). Modelo sugerido: un `ChimeraFeed` que consume del `QuarkReserve`/energía del jugador
-y sube `Humores` (adrenalina/serotonina) + sacia `Metabolism` de la quimera. *Falta (build).*
+### Abastecer con magia = "trasplante" (NO solo quimeras) — montado (`SupplySpell`, PR #60)
+Alimentar con magia **no es solo para quimeras**: es un hechizo general de **abastecimiento / trasplante**. El
+mago **se llena de quarks/energía** (comiendo/desintegrando) y luego los **introduce en otro personaje** —
+rellena sus reservas (**elementos + energía + quarks crudos**). Sirve para: alimentar quimeras (domesticación),
+**alimentarse a sí mismo o a otro jugador**, y sobre todo el **rol de HEALER en la guerra**: restablecer las
+fuerzas (materia/energía para actuar y lanzar) de los compañeros. Mecánica = **trasplante**: se paga de las
+reservas del lanzador (por recurso, solo transfiere lo que puede pagar) y se deposita en el objetivo.
+- Montado: `SupplySpell.SupplyTo(target)` mueve energía (`PayEnergy`→`StoreEnergy`), elementos (pool→pool) y
+  quarks (`QuarkReserve`→`QuarkReserve`) del lanzador al objetivo. Sandbox: `Magia_AUTO` + `Magia_AUTO_Objetivo`.
+- Coste real: como un **dragón consume tanto como un mago avanzado**, alimentar a **un grupo** de quimeras es
+  caro (~5×10¹¹ J + varios kg); por eso a ese nivel el mago **crea/abastece con magia** en vez de traer comida.
+- *Falta:* que abastecer una quimera además suba sus `Humores` (adrenalina/serotonina) + sacie su `Metabolism`
+  (el lado "domesticación"); UI de selección de objetivo.
+
+### El regreso a S1 reconstruido + reparto de magos (worldbuilding)
+Tras la guerra, el jugador **vuelve a S1 reconstruido** (2º trayecto, §4): los animales pueden ser **otros, o los
+mismos con capacidades distintas** — p.ej. **osos entrenados por quimeras o por magos antiguos**. Reparto de
+fuerzas propuesto para equilibrar: los **magos más débiles se colocan en S4** (el santuario más fuerte y
+protegido, se benefician de él) y los **más fuertes en el resto, con más número en S1**. Cada mago **combate y a
+la vez prepara su santuario** (más poder/defensa) → ya no basta abastecer con lo básico; de ahí el `SupplySpell`
+como soporte/healer y la economía de área (`SanctuaryResources`) alimentando la defensa. (Cross: `area-progression`,
+`world-topology §7` guerra.)
 
 ### Elementales: un hechizo por elemento + perfiles de coste
 Los **elementales** son **cada uno de un elemento distinto** → piden **hechizos específicos** (y contras: fuego↔
@@ -348,7 +373,15 @@ agua, tierra↔viento…). Y sí, el **perfil de coste varía** por hechizo:
 - **Mayormente materia, poca energía:** muro de piedra/hierro, crear comida/casa → mucho `cost` (kg de ese
   elemento), poco `energyCost`.
 - **Mixtos:** el aliento de dragón (combustible + ignición) o su versión masa-energía (µg + todo el pool).
-Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo); falta **catalogar** los hechizos elementales.
+Esto ya lo soporta el modelo (`cost` + `energyCost` por hechizo). **Montados (PR #57)** los 4 básicos para
+probar: `FireSpell` (fuego) + `ElementalSpell` (agua/tierra/viento), cada uno con su perfil:
+| Hechizo | Materia (coste elementos) | Energía (½·m·v²) | Perfil |
+|---|---|---|---|
+| **Fuego** | combustible C+H (o µg si masa-energía) | ignición / o todo el pool | químico→nuclear |
+| **Agua** (H₂O) | ~1 kg: 11% H + 89% O | ~200 J | materia media + energía |
+| **Tierra** (SiO₂) | ~5 kg: 47% Si + 53% O | ~250 J | **materia-pesado** |
+| **Viento** | **0** (aire ambiente, gratis) | ~450 J | **energía-pesado** ("bosones") |
+*Falta:* un hechizo por elemento de la tabla + contras (fuego↔agua…) para los elementales del S4.
 
 ## 17. El minijuego de DESCOMPOSICIÓN (montado, PR #52)
 

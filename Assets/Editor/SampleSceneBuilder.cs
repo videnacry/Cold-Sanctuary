@@ -1018,19 +1018,40 @@ public static class SampleSceneBuilder
         go.transform.position = new Vector3(10f, 1f, 6f);
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Magia_AUTO_MAT", new Color(0.40f, 0.30f, 0.70f));
 
+        SimpleAnima anima = go.AddComponent<SimpleAnima>();   // Anima concreto mínimo (no-op): comer sube stats + exceso→grasa
         Constitution con = go.AddComponent<Constitution>();
+        con.anima = anima;
         Metabolism met = go.AddComponent<Metabolism>();
-        met.constitution = con;
+        met.anima = anima; met.constitution = con;
         MagicReserves res = go.AddComponent<MagicReserves>();
+        res.anima = anima;
         QuarkReserve q = go.AddComponent<QuarkReserve>();
         Grimoire grim = go.AddComponent<Grimoire>();
+        grim.anima = anima; grim.reserves = res;
         FireSpell fire = go.AddComponent<FireSpell>();
+        fire.caster = anima;
+        ElementalSpell elem = go.AddComponent<ElementalSpell>();   // agua/tierra/viento (perfiles de coste distintos)
+        elem.caster = anima;
+        SupplySpell supply = go.AddComponent<SupplySpell>();        // abastecer/trasplante a otro personaje (healer)
+        supply.caster = anima;
+
+        // Objetivo del abastecimiento: otro ser con reservas vacías (aliado/otro jugador a "curar").
+        GameObject tgtGo = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        tgtGo.name = "Magia_AUTO_Objetivo";
+        tgtGo.transform.SetParent(parent);
+        tgtGo.transform.position = new Vector3(12f, 1f, 6f);
+        tgtGo.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Magia_AUTO_Objetivo_MAT", new Color(0.30f, 0.55f, 0.45f));
+        SimpleAnima tgtAnima = tgtGo.AddComponent<SimpleAnima>();
+        MagicReserves tgtRes = tgtGo.AddComponent<MagicReserves>();
+        tgtRes.anima = tgtAnima; tgtRes.unlocked = true;   // ya "despertado" para poder recibir
+        tgtGo.AddComponent<QuarkReserve>();
 
         MagicSandboxDriver drv = go.AddComponent<MagicSandboxDriver>();
-        drv.reserves = res; drv.grimoire = grim; drv.quarks = q; drv.fire = fire; drv.metabolism = met;
+        drv.reserves = res; drv.grimoire = grim; drv.quarks = q; drv.fire = fire; drv.elemental = elem;
+        drv.metabolism = met; drv.anima = anima; drv.supply = supply; drv.supplyTarget = tgtAnima; drv.targetReserves = tgtRes;
 
-        Debug.Log("[SampleSceneBuilder] Magia_AUTO: HUD de prueba (abajo-izq en Play) para el bucle sin Anima — " +
-                  "aprender 1er hechizo → comer/quarks rellenan las pools → lanzar fuego (químico/masa-energía) (testing §15).");
+        Debug.Log("[SampleSceneBuilder] Magia_AUTO: HUD de prueba (abajo-izq en Play) para el bucle con Anima real — " +
+                  "aprender 1er hechizo → comer sube stats (Constitution)+exceso→grasa y rellena pools → lanzar fuego (testing §19).");
     }
 
     static BodyPartReactor MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
