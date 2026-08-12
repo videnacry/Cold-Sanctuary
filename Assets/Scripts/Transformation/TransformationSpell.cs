@@ -48,7 +48,7 @@ public class TransformationSpell : MonoBehaviour
 
         float resistance = self ? 0f : Mathf.Max(0f, now.Might - StatProfile.Capture(caster).Might);
         float injected = Mathf.Max(0f, form.profile.Might - now.Might);
-        float cost = resistance + injected;
+        float totalCost = resistance + injected;
         float power = TransformPower(caster) + spellPower;
 
         if (power < resistance)
@@ -60,12 +60,12 @@ public class TransformationSpell : MonoBehaviour
 
         ApplyVisual(target, form);
         Result r;
-        if (power >= cost) { form.profile.ApplyTo(target); r = Result.Full; }   // cuerpo Y stats
+        if (power >= totalCost) { form.profile.ApplyTo(target); r = Result.Full; }   // cuerpo Y stats
         else r = Result.VisualOnly;                                            // farol: conserva sus stats
 
         Debug.Log($"[Transform] «{target.name}» → {form.formName} " +
                   $"({(r == Result.Full ? "REAL (cuerpo+stats)" : "farol (solo visual; conserva stats)")}); " +
-                  $"potencia {power:F1} vs coste {cost:F1} (resist {resistance:F1} + inyectado {injected:F1}). " +
+                  $"potencia {power:F1} vs coste {totalCost:F1} (resist {resistance:F1} + inyectado {injected:F1}). " +
                   $"Revierte en {duration}s.");
         StartCoroutine(Revert(target, now, savedScale, r == Result.Full, duration, form));
         return r;
