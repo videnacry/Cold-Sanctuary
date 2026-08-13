@@ -26,8 +26,18 @@ public class SoulComposition : MonoBehaviour
     [Tooltip("Resuelve en Start (crea los stats iniciales).")]
     public bool resolveOnStart = true;
 
+    [Tooltip("Si se asigna, este cuerpo comparte un ALMA con otras reencarnaciones (docs soul-relations §4).")]
+    public SharedSoul sharedSoul;
+
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
-    void Start() { if (resolveOnStart) Resolve(); }
+    void Start()
+    {
+        if (resolveOnStart) Resolve();          // base desde arquetipos
+        if (sharedSoul != null) sharedSoul.Register(this);   // el alma compartida sobrescribe con la identidad común
+    }
+
+    /// <summary>La base mezclada (sin bonusPacks) — para el alma compartida y la conversión.</summary>
+    public Aptitudes ComputeBaseStats() => ComputeBase(out _, out _);
 
     /// <summary>Computa la mezcla (por distribución) y escribe las aptitudes/tamaño en el Anima + los bonusPacks.</summary>
     public void Resolve()

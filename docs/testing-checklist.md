@@ -730,6 +730,13 @@ Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus s
       **Reset** vuelve al original para comparar A vs B. (B es el modo de las reencarnaciones: identidad marcada.)
 - [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
 
+## 21. Alma COMPARTIDA (reencarnaciones) — sandbox `AlmaCompartida_AUTO`
+Dos cuerpos (melaza Toro+Bear / hormiga Ant+Human) comparten UNA alma. HUD arriba-centro-abajo.
+- [ ] Al arrancar, ambos cuerpos muestran stats coherentes con la MISMA identidad (forma compartida, cada uno a su presupuesto/tamaño).
+- [ ] **Entrena poder (+0.5)** → suben los stats de LOS DOS cuerpos a la vez (str/masa/agi). **Se lesiona (−0.3)** → bajan ambos (reinicios).
+- [ ] **+bond (Ruth)** → el contador de bonds del alma sube y es compartido por todas las reencarnaciones.
+- [ ] *(Falta: propagación perezosa por era; hoy ambos están activos en escena.)*
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
