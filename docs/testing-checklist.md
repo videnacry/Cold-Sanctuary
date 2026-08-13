@@ -691,6 +691,17 @@ Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin 
       prueba»** → suben `EffectiveCapPerElement` (con MaxHealth: resistencia/fuerza/masa) y `EffectiveEnergyCap`
       (con MaxMana: razón/memoria). No hay escala fija por santuario: todo sale de los stats.
 
+### 19g. Forcejeo / Channeling + FireSpell (Repeat/Charge) + WalkSpell — **sandbox `SpellDemo_AUTO`**
+Cápsula naranja (~14,1,6) con HUD arriba-centro (forcejeo/channel del fuego y del andar + ATP).
+- [ ] **Fuego múltiple**: mantener **G** → salen llamas seguidas; el **forcejeo sube** (HUD) y la llama se
+      **agranda** (log: más gramos/energía). Se detiene al soltar / al agotar reservas o energía.
+- [ ] **Cargar (channeling)**: mantener **G+Shift** → *channel* sube (HUD), no dispara; **soltar Shift** con G
+      pulsada → una llama **cargada** (más potente). Al soltar, el channel **decae** solo.
+- [ ] **Recuperar bonus**: soltar Shift (forcejeo sigue) → volver a G+Shift recupera el channel → se acumulan ambos.
+- [ ] **Caminar**: **WASD** mueve la cápsula y **gasta ATP**; **Shift** = esprintar (channel → más rápido, más
+      cansancio). Contra un obstáculo (sin desplazarte) el **forcejeo de andar** sube (empuja más).
+- [ ] El bonus escala por stats: forcejeo con aptitudes **físicas**, channel con **mentales** (subir stats → más bonus).
+
 ### 19f. Sustrato de quarks del S4 (`QuarkReserve`)
 - [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un
       número plausible para la UI.

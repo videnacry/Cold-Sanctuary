@@ -92,6 +92,54 @@ public abstract class SpellBase : MonoBehaviour
     protected virtual void OnChannelEnd() { }               // Channel: al soltar
     protected virtual void OnChargeRelease(float chargeTime) { }  // Charge: al soltar, con el tiempo acumulado
 
+    // ── Forcejeo / Channeling: bonos de poder compartidos por TODO hechizo ──────
+    // Dos bonos ortogonales que se suman al `force`:
+    //   • FORCEJEO — sube SOLO cuando el hechizo no logra su efecto (ReportResult(false)); persiste; escala con
+    //     aptitudes FÍSICAS. "Mantener la tecla sola".
+    //   • CHANNELING — sube mientras se canaliza (tecla + channelKey) y DECAE al soltar; escala con aptitudes
+    //     MENTALES. Se recupera volviendo a canalizar.
+    [Header("Forcejeo / Channeling (bonos de poder)")]
+    [Tooltip("Modificador de CANALIZAR: mantener esta tecla junto a la del hechizo = channeling (bonus mental).")]
+    public KeyCode channelKey = KeyCode.LeftShift;
+    [Tooltip("Cuánto sube el bonus de FORCEJEO por cada intento sin lograr el efecto.")]
+    [Min(0f)] public float forcejeoStep = 0.05f;
+    [Min(0f)] public float forcejeoMaxBonus = 3f;
+    [Tooltip("Cuánto sube el bonus de CHANNELING por segundo mientras se canaliza.")]
+    [Min(0f)] public float channelRampPerSecond = 1f;
+    [Min(0f)] public float channelMaxBonus = 3f;
+    [Tooltip("Cuánto DECAE el channeling por segundo al soltar (el forcejeo NO decae).")]
+    [Min(0f)] public float channelDecayPerSecond = 0.5f;
+
+    float _forcejeo;   // bonus físico (persiste; sube al fallar)
+    float _channel;    // bonus mental (sube canalizando, decae si no)
+
+    public float RawForcejeo => _forcejeo;
+    public float RawChannel  => _channel;
+
+    static float PhysFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.strength + c.endurance + c.bodyMass) / 3f);
+    static float MindFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.reasoning + c.memory + c.creativity) / 3f);
+
+    /// <summary>Bonus de forcejeo escalado por aptitudes FÍSICAS.</summary>
+    protected float ForcejeoBonus(Anima c) => _forcejeo * PhysFactor(c);
+    /// <summary>Bonus de channeling escalado por aptitudes MENTALES.</summary>
+    protected float ChannelBonus(Anima c) => _channel * MindFactor(c);
+    /// <summary>Bonus total sobre el `force` base (forcejeo físico + channeling mental).</summary>
+    protected float BonusPower(Anima c) => ForcejeoBonus(c) + ChannelBonus(c);
+
+    /// <summary>Sube el channeling si se canaliza; si no, decae. Llamar cada frame desde la subclase.</summary>
+    protected void TickChanneling(bool channeling, float dt)
+    {
+        if (channeling) _channel = Mathf.Min(channelMaxBonus, _channel + channelRampPerSecond * dt);
+        else            _channel = Mathf.Max(0f, _channel - channelDecayPerSecond * dt);
+    }
+
+    /// <summary>Reporta un intento: si NO logró el efecto, sube el forcejeo (persiste). El éxito NO lo baja.</summary>
+    protected void ReportResult(bool success)
+    {
+        if (!success) _forcejeo = Mathf.Min(forcejeoMaxBonus, _forcejeo + forcejeoStep);
+    }
+    protected void ResetForcejeo() => _forcejeo = 0f;
+
     // ── API pública ───────────────────────────────────────────────────────────
 
     /// <summary>
