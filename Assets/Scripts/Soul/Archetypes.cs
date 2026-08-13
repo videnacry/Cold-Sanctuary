@@ -1,0 +1,92 @@
+using System.Collections.Generic;
+
+/// <summary>Perfil de un arquetipo (cuerpo o mente): aptitudes base + altura (cuerpo) + tono (mente).</summary>
+public class ArchetypeProfile
+{
+    public Aptitudes aptitudes;
+    public float height = 1f;                 // altura relativa (1 = humano)
+    public ElementalTone tone = ElementalTone.Tierra;
+}
+
+/// <summary>
+/// Catálogo de ARQUETIPOS en CÓDIGO (docs/soul-composition-blend.md). El repo solo versiona `.cs`, así que los
+/// perfiles viven aquí (no en ScriptableObjects). **Cuerpos** aportan lo físico (agility/perception/strength/
+/// bodyMass/endurance) + altura; **mentes** lo mental (composure/reasoning/memory/creativity/sociability/
+/// discipline) + tono; **bonusPacks** son vectores aditivos de stats (potencia por nivel; NO tocan tono/thoughts).
+/// Valores tentativos (a calibrar con balance).
+/// </summary>
+public static class Archetypes
+{
+    static Dictionary<string, ArchetypeProfile> _bodies;
+    static Dictionary<string, ArchetypeProfile> _minds;
+    static Dictionary<string, Aptitudes> _packs;
+
+    public static ArchetypeProfile BodyOf(string name)
+    {
+        Init();
+        return name != null && _bodies.TryGetValue(name, out ArchetypeProfile p) ? p : _bodies["Human"];
+    }
+
+    public static ArchetypeProfile MindOf(string name)
+    {
+        Init();
+        return name != null && _minds.TryGetValue(name, out ArchetypeProfile p) ? p : _minds["Human"];
+    }
+
+    public static bool TryPack(string name, out Aptitudes a)
+    {
+        Init();
+        if (name != null && _packs.TryGetValue(name, out a)) return true;
+        a = new Aptitudes();
+        return false;
+    }
+
+    static void Init()
+    {
+        if (_bodies != null) return;
+        _bodies = new Dictionary<string, ArchetypeProfile>
+        {                          // altura, agi, per, str, mass, end
+            { "Human",   MakeBody(1.00f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f) },
+            { "Bear",    MakeBody(1.60f, 0.7f, 0.9f, 2.2f, 2.5f, 1.6f) },
+            { "Wolf",    MakeBody(1.00f, 1.6f, 1.4f, 1.3f, 1.0f, 1.5f) },
+            { "Bunny",   MakeBody(0.45f, 1.8f, 1.3f, 0.4f, 0.4f, 0.9f) },
+            { "Lion",    MakeBody(1.20f, 1.5f, 1.2f, 1.8f, 1.6f, 1.3f) },
+            { "Toro",    MakeBody(1.70f, 0.8f, 0.8f, 2.0f, 2.2f, 1.4f) },
+            { "Gallina", MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
+            { "Mono",    MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
+        };
+        _minds = new Dictionary<string, ArchetypeProfile>
+        {                          // tono, com, rea, mem, cre, soc, dis
+            { "Human", MakeMind(ElementalTone.Viento, 1.2f, 1.6f, 1.4f, 1.5f, 1.4f, 1.3f) },
+            { "Bear",  MakeMind(ElementalTone.Tierra, 1.2f, 0.7f, 0.8f, 0.5f, 0.6f, 0.7f) },
+            { "Lion",  MakeMind(ElementalTone.Fuego,  1.0f, 0.9f, 0.9f, 0.8f, 1.1f, 0.9f) },
+            { "Rock",  MakeMind(ElementalTone.Tierra, 2.0f, 0.6f, 1.2f, 0.3f, 0.4f, 1.5f) },
+            { "Fire",  MakeMind(ElementalTone.Fuego,  0.6f, 1.1f, 0.9f, 1.7f, 1.5f, 0.6f) },
+            { "Agua",  MakeMind(ElementalTone.Agua,   1.4f, 1.2f, 1.3f, 1.0f, 1.2f, 1.0f) },
+            { "Mono",  MakeMind(ElementalTone.Viento, 0.7f, 1.2f, 1.0f, 1.6f, 1.5f, 0.6f) },
+        };
+        _packs = new Dictionary<string, Aptitudes>
+        {   // aditivo (todas las aptitudes). Valores por nivel (placeholder; salen del balance del boss del santuario).
+            { "bonusPack1", Flat(0.5f) },
+            { "bonusPack2", Flat(1.2f) },
+            { "bonusPack3", Flat(2.5f) },
+            { "bonusPack4", Flat(4.5f) },
+        };
+    }
+
+    static ArchetypeProfile MakeBody(float height, float agi, float per, float str, float mass, float end)
+    {
+        Aptitudes a = Aptitudes.Default;
+        a.agility = agi; a.perception = per; a.strength = str; a.bodyMass = mass; a.endurance = end;
+        return new ArchetypeProfile { aptitudes = a, height = height };
+    }
+
+    static ArchetypeProfile MakeMind(ElementalTone tone, float com, float rea, float mem, float cre, float soc, float dis)
+    {
+        Aptitudes a = Aptitudes.Default;
+        a.composure = com; a.reasoning = rea; a.memory = mem; a.creativity = cre; a.sociability = soc; a.discipline = dis;
+        return new ArchetypeProfile { aptitudes = a, tone = tone };
+    }
+
+    static Aptitudes Flat(float v) { Aptitudes a = new Aptitudes(); a.AddAll(v); return a; }
+}

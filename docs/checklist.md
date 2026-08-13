@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#66 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#68 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,13 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **13-ago (PR #68):** **alma por MEZCLA — FASE 1 (el motor)**. `Soul/BlendSlot` (arquetipo + dominio % +
+  `shareDomain`), `Soul/Archetypes` (perfiles en código: cuerpos Human/Bear/Wolf/Bunny/Lion/Toro/Gallina/Mono +
+  mentes Human/Bear/Lion/Rock/Fire/Agua/Mono + bonusPack1-4), `Soul/SoulComposition.Resolve()` (escribe las 12
+  aptitudes: físicas←blend(cuerpos), mentales←blend(mentes) + Σ bonusPacks; + tamaño por altura mezclada). Sandbox
+  `AlmaBlend_AUTO` (Panterilia Human90+Lion5, oso-mente-humana, oso+bonusPack3). Testing §20. **Nada migrado aún:
+  esto es el MOTOR.** *Siguiente (fases 2-5):* migrar especies→cuerpos (reusar huir/manada de `Animal`), tono/
+  thoughts a `Mind`, semilla de `FamilyGenerator` por blend, disolver `CompanionBase`, mente activa interrumpe body.
 - **13-ago (PR #66, doc):** **`soul-composition-blend.md`** — arquitectura de **alma por MEZCLA**: cada ser se
   compone de arquetipos de **cuerpo** y **mente** con **dominio (%)** + `shareDomain`; stats/tono/thoughts finales
   = suma ponderada. Añadir/quitar arquetipos = híbridos/reencarnación/transformación. Reconcilia la corrección de

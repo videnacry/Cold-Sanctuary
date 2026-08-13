@@ -94,6 +94,7 @@ public static class SampleSceneBuilder
         BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
         BuildSpellDemoSandbox(root.transform);      // hechizos: forcejeo/channeling — fuego múltiple/carga (G/G+Shift) + caminar/esprintar (WASD/Shift) — testing §19g
+        BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -1327,6 +1328,48 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] SpellDemo_AUTO: en Play, HUD arriba-centro. G = fuego múltiple (el forcejeo " +
                   "sube y agranda la llama); G+Shift = cargar (channeling) → soltar Shift dispara cargado; WASD = andar, " +
                   "Shift = esprintar. Ver crecer forcejeo/channel y bajar la energía (testing §19g).");
+    }
+
+    // ── Alma por MEZCLA (fase 1): seres compuestos por arquetipos de cuerpo/mente + bonusPacks ──
+    static void BuildSoulBlendSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("AlmaBlend_AUTO");
+        group.transform.SetParent(parent);
+
+        // Panterilia: mente Human 90 + Lion 5 + resto (shareDomain) = 90% persona con rastro felino.
+        MakeBlendBeing(group.transform, "Panterilia_Blend", new Vector3(16f, 1f, 6f), new Color(0.70f, 0.50f, 0.80f),
+            new[] { ("Human", 90f, false), ("Bear", 0f, true), ("Bunny", 0f, true) },
+            new[] { ("Human", 90f, false), ("Lion", 5f, false), ("Fire", 0f, true), ("Agua", 0f, true) },
+            new string[0]);
+
+        // Oso con MENTE humana: cuerpo de oso, decide como humano (→ podría aprender yoga y crecer único).
+        MakeBlendBeing(group.transform, "OsoMenteHumana", new Vector3(18.5f, 1f, 6f), new Color(0.50f, 0.40f, 0.30f),
+            new[] { ("Bear", 100f, false) },
+            new[] { ("Human", 90f, false), ("Bear", 10f, false) },
+            new string[0]);
+
+        // Oso + bonusPack3: MISMA personalidad (solo BearMind) pero stats altísimos (potencia por nivel).
+        MakeBlendBeing(group.transform, "Oso_bonusPack3", new Vector3(21f, 1f, 6f), new Color(0.35f, 0.30f, 0.28f),
+            new[] { ("Bear", 100f, false) },
+            new[] { ("Bear", 100f, false) },
+            new[] { "bonusPack3" });
+
+        Debug.Log("[SampleSceneBuilder] AlmaBlend_AUTO: 3 seres por MEZCLA. En Play cada uno resuelve sus 12 " +
+                  "aptitudes + tamaño por blend (logs [Alma]); el tamaño se ve en escena (oso grande, etc.). " +
+                  "Oso_bonusPack3 = mismo comportamiento, stats altísimos (docs soul-composition-blend.md).");
+    }
+
+    static void MakeBlendBeing(Transform parent, string name, Vector3 pos, Color col,
+        (string a, float d, bool sh)[] bodies, (string a, float d, bool sh)[] minds, string[] packs)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
+        go.AddComponent<SimpleAnima>();
+        SoulComposition sc = go.AddComponent<SoulComposition>();
+        foreach ((string a, float d, bool sh) in bodies) sc.bodies.Add(new BlendSlot { archetype = a, domain = d, shareDomain = sh });
+        foreach ((string a, float d, bool sh) in minds)  sc.minds.Add(new BlendSlot { archetype = a, domain = d, shareDomain = sh });
+        foreach (string p in packs) sc.bonusPacks.Add(p);
     }
 
     static BodyPartReactor MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)
