@@ -12,7 +12,7 @@ using UnityEngine;
 ///   del lanzador** (acotado por `maxPullPower`). Si progresa, se mantiene.
 /// - **Ambos gastan ATP**: el lanzador ∝ al power que emplea (más fuerza → más energía); el objetivo por resistir.
 ///   Gana quien tenga más fuerza **o** más aguante: si el objetivo se queda sin ATP, cede.
-/// - `CastMode.Channel` (tecla `castKey`, por defecto F). También `Cast(caster, ITarget)` para la IA/targeting.
+/// - `CastMode.Channel` (tecla `spellKey`, por defecto F). También `Cast(caster, ITarget)` para la IA/targeting.
 /// Funciona con `SimpleAnima` (targeting por `ImpulseController`, no requiere `ITarget`).
 /// </summary>
 public class PullSpell : SpellBase
@@ -44,7 +44,7 @@ public class PullSpell : SpellBase
     {
         _self = GetComponent<Anima>();
         castMode = CastMode.Channel;
-        if (castKey == KeyCode.None) castKey = KeyCode.F;
+        if (spellKey == KeyCode.None) spellKey = KeyCode.F;
     }
 
     void Update()
