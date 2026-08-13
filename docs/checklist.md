@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#65 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#66 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,13 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **13-ago (PR #66, doc):** **`soul-composition-blend.md`** — arquitectura de **alma por MEZCLA**: cada ser se
+  compone de arquetipos de **cuerpo** y **mente** con **dominio (%)** + `shareDomain`; stats/tono/thoughts finales
+  = suma ponderada. Añadir/quitar arquetipos = híbridos/reencarnación/transformación. Reconcilia la corrección de
+  arquitectura: **el diseño unificado (Anima raíz + pilares) está documentado pero a medio migrar**; `Animal` YA
+  tiene huir+manada (las hormigas en `SimpleAnima` lo saltan — a corregir); especies = cuerpos; `CompanionBase`
+  se disuelve; mente activa interrumpe body (vía Control/`IBrain`). Plan por fases + decisiones (arquetipos en
+  código; array+shareDomain). *Siguiente:* fase 1 = `SoulComposition.Resolve` + `Archetypes` (blend de aptitudes).
 - **13-ago (PR #65, doc):** **`microcosmos-level1.md`** — consolidación + **fichas del elenco** del Nivel 1
   (Sakshi/Ambrosio/Medea/Momo/Héspero/Ruth/Atlas + ancianos: alma·aptitudes·firma emocional·relaciones·impulsos·
   beat·tell). Decisiones: **emergencia dirigida** (los mueven stats+thoughts; el director solo siembra
