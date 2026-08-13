@@ -42,8 +42,20 @@ final[k] = Σ_slots ( peso_slot_normalizado × archetype_slot.valor[k] )
 - **Tono elemental** ← blend ponderado de los tonos de las Mentes → "persona con Fuego predominante", etc.
 - **Thoughts** ← unión ponderada de los pools de frases de las Mentes (un lobo-persona suelta a veces ideas de lobo).
 - **afabilidad/sensibilidad** ← mente (temperamento).
+- **Tamaño/físico se INTERPOLA por el blend de cuerpos:** `human+bunny` → ~**1,60 m**, ágil/veloz; `human+bear`
+  → ~**2,00 m**, más masa/fuerza. El truco es **calibrar los %**. Esto genera los **stats INICIALES** (la base natural).
+
+Fórmula completa (con los `bonusPacks` de abajo):
+```
+aptitud[k] = blend(cuerpos).físicas[k]  +  blend(mentes).mentales[k]  +  Σ bonusPacks[k]
+tono/thoughts = blend(mentes)            // los bonusPacks NO tocan esto
+```
 Ventaja: **componer por arquetipos es más fácil y expresivo que teclear 14 números**; y modela identidad/mezcla
 de forma natural.
+
+**Difuminado → base:** cuantos más arquetipos/% se añaden, más se **diluye** el impacto de cada uno (regresa a la
+media) → se puede definir un **arquetipo "base"** (neutro) que **rellene con `shareDomain`** y tire hacia una
+línea base común.
 
 ## Quién MANDA (mente activa vs body automático)
 El **dominio de las Mentes** decide cuánto pesa la **decisión mental** frente a la **automatización corporal**:
@@ -53,10 +65,29 @@ Engancha con el **sistema de Control** existente (`AnimaController` + `IBrain` p
 = el "cerebro" de mayor relevancia que conduce el cuerpo. *Falta:* subordinar los bucles autónomos de `Animal`
 (`SenseThreats`/`Flee`) a ese mando (hoy corren siempre).
 
-## Variedad corporal
-- **Intra-especie** (dos osos algo distintos): mejor por **jitter genético** sobre el mismo `BearBody`
-  (semilla: `FamilyGenerator`), o un pequeño % de otro cuerpo en el blend.
-- **Entre-especies / híbridos / reencarnación**: el **blend de cuerpos** (y mentes) es la herramienta.
+## Variedad corporal (y genética)
+- **Por blend**: el propio blend de cuerpos **es** la herramienta de variación (interpola tamaño/físico según %).
+- **Intra-especie** (dos osos algo distintos): **jitter genético** sobre el mismo `BearBody`, o un pequeño % de
+  otro cuerpo en el blend.
+- **`FamilyGenerator`/genética se actualiza** para **sembrar por blend de los padres + jitter** (herencia = mezcla
+  de los arquetipos de cuerpo/mente de los progenitores), en vez de random sobre stats crudos.
+- **Entre-especies / híbridos / reencarnación**: el **blend** (cuerpos y mentes) es la herramienta.
+
+## bonusPacks: potencia por NIVEL (sin tocar personalidad)
+Los arquetipos dan la **base natural**. Para **personajes mágicos / que han progresado**, se añaden **`bonusPacks`**:
+vectores de stats **aditivos** (físicos + mentales) que **suben aptitudes pero NO tocan tono/thoughts**.
+- **Calibrados por dificultad**: `bonusPackN` ≈ **los stats necesarios para superar el santuario N** (se obtienen
+  analizando qué hace falta para ganarle al **boss final** de cada santuario). Así se **coloca** a un personaje en
+  el santuario correcto con la certeza de que sobrevivirá y **representa a alguien que ha llegado hasta ahí**.
+- **Ejemplos**:
+  - **Irosene** = `Human 97 + Toro 1 + Mono + Gallina + Agua + Fuego` (blend natural) **+ `bonusPack2`** → se la
+    coloca en el **3er santuario V1** con garantía de supervivencia.
+  - **Oso** = `BearBody + BearMind` **+ `bonusPack3`** → se comporta **como oso** (solo `BearMind`) pero con
+    físico/mente **altísimos**. La potencia no cambia quién es.
+- **Aditivo y gestionado** (patrón *managed-delta*, como `CharacterComposition`): el pack **se suma encima** de la
+  base y **no pisa** evolución/transformación; se puede **poner/quitar** (mejora mágica temporal o permanente).
+- El **sistema** solo **aplica** el vector; los **valores** del pack salen del **balance** (análisis del boss).
+- Encaja con `DerivedStats`: subir aptitudes → sube vida/energía/maná/poder → sobrevive santuarios más altos.
 
 ## Reconciliación con lo que hay (y qué falta)
 - **`Anima`** raíz + 12 aptitudes fusionadas: ✅ es donde se **escriben** los stats finales del blend.
@@ -73,20 +104,23 @@ Engancha con el **sistema de Control** existente (`AnimaController` + `IBrain` p
 ```
 [Serializable] class BlendSlot { public string archetype; [Range(0,100)] public float domain; public bool shareDomain; }
 class SoulComposition : MonoBehaviour {          // sobre el Anima
-    public List<BlendSlot> bodies;               // arquetipos de cuerpo + %
-    public List<BlendSlot> minds;                // arquetipos de mente + %
-    public void Resolve();                        // computa el blend → escribe aptitudes/tono en el Anima
+    public List<BlendSlot> bodies;               // arquetipos de cuerpo + %  → físicas + tamaño/velocidad
+    public List<BlendSlot> minds;                // arquetipos de mente + %   → mentales + tono + thoughts
+    public List<string>    bonusPacks;           // vectores de stats aditivos (NO tocan tono/thoughts)
+    public void Resolve();                        // aptitudes = blend(cuerpos)+blend(mentes)+Σ bonusPacks; tono/thoughts = blend(mentes)
 }
 static class Archetypes {                         // perfiles en código (repo solo versiona .cs)
     static BodyArchetype Body(string name);       // Bear/Wolf/Bunny/Human… (físicas + tamaño/vel + comportamientos)
     static MindArchetype Mind(string name);       // Bear/Human/Rock/Fire… (mentales + tono + thoughts)
+    static Aptitudes     Pack(string name);       // bonusPack2/3… (stats para superar el santuario N; del balance)
 }
 ```
 
 ## Plan por fases (el propio anima-architecture avisa: "no de golpe")
-1. **Blend de aptitudes** (lo más barato/valioso): `BlendSlot` + `SoulComposition.Resolve()` + `Archetypes` con
-   unos pocos perfiles (Human/Bear/Bunny/Lion + Rock/Fire) → escribe las 12 aptitudes por mezcla. Sandbox
-   demostrando Panterilia (Human 90 + Lion 5 + shareDomain) y "oso con mente humana".
+1. **Blend de aptitudes + tamaño + bonusPacks** (lo más barato/valioso): `BlendSlot` + `SoulComposition.Resolve()`
+   + `Archetypes` con unos pocos perfiles (Human/Bear/Bunny/Lion + Rock/Fire) y un par de `bonusPack`s → escribe
+   las 12 aptitudes + escala/tamaño por mezcla, y suma los packs. Sandbox: Panterilia (Human 90 + Lion 5 +
+   shareDomain), "oso con mente humana", y un oso + `bonusPack3` (mismo comportamiento, stats altísimos).
 2. **Mente**: tono + thoughts por blend (une pools de `PhraseLibrary`).
 3. **Cuerpo**: especies exponen `BodyArchetype`; el blend elige tamaño/velocidad; automatización corporal reusada.
 4. **Mando**: dominio de mente → interrumpe el Body (subordinar `SenseThreats`/`Flee` al `IBrain`).
