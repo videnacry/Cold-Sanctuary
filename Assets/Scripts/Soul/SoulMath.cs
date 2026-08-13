@@ -38,6 +38,14 @@ public static class SoulMath
         return s;
     }
 
+    /// <summary>Multiplica todas las aptitudes por un escalar (magnitud/poder).</summary>
+    public static Aptitudes Scale(Aptitudes a, float f)
+    {
+        Aptitudes r = new Aptitudes();
+        foreach (AptitudeKind k in All) r.Add(k, a.Get(k) * f);
+        return r;
+    }
+
     /// <summary>Reescala la FORMA de `src` (sobre `kinds`) para que su presupuesto sea `targetBudget`.</summary>
     public static Aptitudes RescaleShape(Aptitudes src, AptitudeKind[] kinds, float targetBudget)
     {

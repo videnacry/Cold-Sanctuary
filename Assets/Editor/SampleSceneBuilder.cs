@@ -95,6 +95,7 @@ public static class SampleSceneBuilder
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
         BuildSpellDemoSandbox(root.transform);      // hechizos: forcejeo/channeling — fuego múltiple/carga (G/G+Shift) + caminar/esprintar (WASD/Shift) — testing §19g
         BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
+        BuildSharedSoulSandbox(root.transform);     // alma COMPARTIDA: dos cuerpos (melaza/hormiga) una anima; propaga stats/bonds — docs soul-relations §4
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -1368,6 +1369,40 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] AlmaBlend_AUTO: 3 seres por MEZCLA + Ambrosio_Convert (Toro+Bear). En Play " +
                   "cada uno resuelve sus 12 aptitudes+tamaño por blend (logs [Alma]); Ambrosio_Convert tiene HUD para " +
                   "CONVERTIR a hormiga+humano en modo A/relativa o B/literal (reencarnación) (docs soul-relations-reincarnation §1).");
+    }
+
+    // ── Alma COMPARTIDA: dos cuerpos = una anima (reencarnaciones conectadas) ──
+    static void BuildSharedSoulSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("AlmaCompartida_AUTO");
+        group.transform.SetParent(parent);
+        SharedSoul soul = group.AddComponent<SharedSoul>();
+        soul.soulName = "Ambrosio";
+
+        SoulComposition melaza = MakeSharedBody(group.transform, "AmbrosioMelaza", new Vector3(16f, 1f, 9f),
+            new Color(0.60f, 0.80f, 0.45f), "Toro", "Bear", soul);
+        SoulComposition hormiga = MakeSharedBody(group.transform, "AmbrosioHormiga", new Vector3(18f, 1f, 9f),
+            new Color(0.40f, 0.50f, 0.30f), "Ant", "Human", soul);
+
+        SharedSoulDemo demo = group.AddComponent<SharedSoulDemo>();
+        demo.soul = soul; demo.bodyA = melaza; demo.bodyB = hormiga;
+
+        Debug.Log("[SampleSceneBuilder] AlmaCompartida_AUTO: 2 cuerpos (melaza Toro+Bear, hormiga Ant+Human) comparten " +
+                  "UNA alma. HUD: entrenar/lesionar el poder se propaga a ambos; +bond lo reciben TODAS las " +
+                  "reencarnaciones (docs soul-relations-reincarnation §4).");
+    }
+
+    static SoulComposition MakeSharedBody(Transform parent, string name, Vector3 pos, Color col, string body, string mind, SharedSoul soul)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
+        go.AddComponent<SimpleAnima>();
+        SoulComposition sc = go.AddComponent<SoulComposition>();
+        sc.bodies.Add(new BlendSlot { archetype = body, domain = 100f });
+        sc.minds.Add(new BlendSlot { archetype = mind, domain = 100f });
+        sc.sharedSoul = soul;
+        return sc;
     }
 
     static void MakeBlendBeing(Transform parent, string name, Vector3 pos, Color col,
