@@ -117,10 +117,11 @@ static class Archetypes {                         // perfiles en código (repo s
 ```
 
 ## Plan por fases (el propio anima-architecture avisa: "no de golpe")
-1. **Blend de aptitudes + tamaño + bonusPacks** (lo más barato/valioso): `BlendSlot` + `SoulComposition.Resolve()`
-   + `Archetypes` con unos pocos perfiles (Human/Bear/Bunny/Lion + Rock/Fire) y un par de `bonusPack`s → escribe
-   las 12 aptitudes + escala/tamaño por mezcla, y suma los packs. Sandbox: Panterilia (Human 90 + Lion 5 +
-   shareDomain), "oso con mente humana", y un oso + `bonusPack3` (mismo comportamiento, stats altísimos).
+1. **Blend de aptitudes + tamaño + bonusPacks** — ✅ **HECHO (PR #68)**: `BlendSlot` + `SoulComposition.Resolve()`
+   + `Archetypes` (perfiles en código: Human/Bear/Wolf/Bunny/Lion/Toro/Gallina/Mono cuerpos; Human/Bear/Lion/Rock/
+   Fire/Agua/Mono mentes; bonusPack1-4) → escribe las 12 aptitudes (físicas←cuerpos, mentales←mentes) + tamaño por
+   mezcla, y suma los packs. Sandbox `AlmaBlend_AUTO`: Panterilia (Human 90 + Lion 5 + shareDomain), oso-mente-
+   humana, oso + `bonusPack3`. **Nada migrado aún** — esto es el MOTOR; migrar a los seres reales es lo de abajo.
 2. **Mente**: tono + thoughts por blend (une pools de `PhraseLibrary`).
 3. **Cuerpo**: especies exponen `BodyArchetype`; el blend elige tamaño/velocidad; automatización corporal reusada.
 4. **Mando**: dominio de mente → interrumpe el Body (subordinar `SenseThreats`/`Flee` al `IBrain`).

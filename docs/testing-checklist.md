@@ -715,6 +715,16 @@ Corre `Tools → Cold Sanctuary → Build Sample Scene Blockout` y dale a Play:
 - *Falta (siguiente):* un `Magia_AUTO` con **`Anima` real** para probar también grasa/stats de `Constitution`;
   `ChimeraFeed`; escalado de topes por nivel; sembrar el `batch` desde la materia real del área.
 
+## 20. Alma por MEZCLA — fase 1 (`SoulComposition`) — sandbox `AlmaBlend_AUTO`
+Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus stats en Play.
+- [ ] En los logs `[Alma]`: **Panterilia_Blend** (Human 90 + Lion 5 + shareDomain) sale ~humana con rastro felino.
+- [ ] **OsoMenteHumana** (cuerpo Bear + mente Human 90/Bear 10): físico de oso (str/masa altas, grande) pero
+      mente humana (razón/creatividad altas).
+- [ ] **Oso_bonusPack3** (Bear/Bear + bonusPack3): mismas aptitudes de oso **+2.5 a todo** (stats altísimos), sin
+      cambiar personalidad.
+- [ ] El **tamaño** se ve en escena (el oso más grande que Panterilia; Bunny/Gallina serían pequeños).
+- [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
