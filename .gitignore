@@ -379,3 +379,14 @@ claude-answer.txt
 
 # CLAUDE.md sí se versiona en este repo (anula la regla del ~/.gitignore_global)
 !CLAUDE.md
+
+# === Solo se versiona codigo: .cs y .md (ver CLAUDE.md) ===
+# Todo lo demas fuera: assets binarios (.fbx/.jpeg/.mtl/.png), Temp/ de Unity,
+# .gitkeep, escenas, prefabs, .meta, ProjectSettings/, etc.
+# Para forzar una excepcion puntual: git add -f <ruta>
+*
+!*/
+!*.cs
+!*.md
+!.gitignore
+!.gitattributes
