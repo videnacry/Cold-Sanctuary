@@ -1344,16 +1344,17 @@ public static class SampleSceneBuilder
             new string[0]);
 
         // Oso con MENTE humana: cuerpo de oso, decide como humano (→ podría aprender yoga y crecer único).
+        // Con Mind → su tono/pensar emergen del blend mental (humano → Viento/Fuego), no del cuerpo de oso.
         MakeBlendBeing(group.transform, "OsoMenteHumana", new Vector3(18.5f, 1f, 6f), new Color(0.50f, 0.40f, 0.30f),
             new[] { ("Bear", 100f, false) },
             new[] { ("Human", 90f, false), ("Bear", 10f, false) },
-            new string[0]);
+            new string[0], true);
 
-        // Oso + bonusPack3: MISMA personalidad (solo BearMind) pero stats altísimos (potencia por nivel).
+        // Oso + bonusPack3: MISMA personalidad (solo BearMind → tono Tierra) pero stats altísimos.
         MakeBlendBeing(group.transform, "Oso_bonusPack3", new Vector3(21f, 1f, 6f), new Color(0.35f, 0.30f, 0.28f),
             new[] { ("Bear", 100f, false) },
             new[] { ("Bear", 100f, false) },
-            new[] { "bonusPack3" });
+            new[] { "bonusPack3" }, true);
 
         // Ser con forma distinta (Toro cuerpo + Bear mente) para probar la CONVERSIÓN (transformación/reencarnación).
         GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -1406,12 +1407,13 @@ public static class SampleSceneBuilder
     }
 
     static void MakeBlendBeing(Transform parent, string name, Vector3 pos, Color col,
-        (string a, float d, bool sh)[] bodies, (string a, float d, bool sh)[] minds, string[] packs)
+        (string a, float d, bool sh)[] bodies, (string a, float d, bool sh)[] minds, string[] packs, bool withMind = false)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
         go.AddComponent<SimpleAnima>();
+        if (withMind) go.AddComponent<Mind>();   // Fase 2: el tono/pensar emergen de las aptitudes del blend
         SoulComposition sc = go.AddComponent<SoulComposition>();
         foreach ((string a, float d, bool sh) in bodies) sc.bodies.Add(new BlendSlot { archetype = a, domain = d, shareDomain = sh });
         foreach ((string a, float d, bool sh) in minds)  sc.minds.Add(new BlendSlot { archetype = a, domain = d, shareDomain = sh });

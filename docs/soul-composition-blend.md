@@ -122,7 +122,7 @@ static class Archetypes {                         // perfiles en código (repo s
    Fire/Agua/Mono mentes; bonusPack1-4) → escribe las 12 aptitudes (físicas←cuerpos, mentales←mentes) + tamaño por
    mezcla, y suma los packs. Sandbox `AlmaBlend_AUTO`: Panterilia (Human 90 + Lion 5 + shareDomain), oso-mente-
    humana, oso + `bonusPack3`. **Nada migrado aún** — esto es el MOTOR; migrar a los seres reales es lo de abajo.
-2. **Mente**: tono + thoughts por blend (une pools de `PhraseLibrary`).
+2. **Mente**: tono + decisiones por blend — ✅ **HECHO (PR #72)**: `SoulComposition.WriteStats` resiembra `Mind.aptitudes` con el blend → el tono/pensar (`Mind.PickTone`) emerge del blend. *Falta:* thoughts por arquetipo (va con "pensamientos por capacidad").
 3. **Cuerpo**: especies exponen `BodyArchetype`; el blend elige tamaño/velocidad; automatización corporal reusada.
 4. **Mando**: dominio de mente → interrumpe el Body (subordinar `SenseThreats`/`Flee` al `IBrain`).
 5. **Disolver `CompanionBase`**; reencarnación/transformación = añadir/quitar arquetipos.

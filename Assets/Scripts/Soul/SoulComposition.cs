@@ -91,6 +91,11 @@ public class SoulComposition : MonoBehaviour
         anima.agility = a.agility; anima.perception = a.perception; anima.strength = a.strength; anima.bodyMass = a.bodyMass;
         anima.adaptability = a.adaptability; anima.composure = a.composure; anima.endurance = a.endurance; anima.reasoning = a.reasoning;
         anima.memory = a.memory; anima.creativity = a.creativity; anima.sociability = a.sociability; anima.discipline = a.discipline;
+
+        // FASE 2 (mente por blend): la Mente lee las aptitudes del blend → su tono/decisiones emergen de aquí
+        // (Mind.PickTone deriva el tono de las aptitudes; se resiembra porque su Awake corrió antes del Resolve).
+        Mind mind = GetComponent<Mind>();
+        if (mind != null) mind.aptitudes = a;
     }
 
     // ── blend por distribución ─────────────────────────────────────────────────
