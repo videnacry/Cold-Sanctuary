@@ -1354,9 +1354,20 @@ public static class SampleSceneBuilder
             new[] { ("Bear", 100f, false) },
             new[] { "bonusPack3" });
 
-        Debug.Log("[SampleSceneBuilder] AlmaBlend_AUTO: 3 seres por MEZCLA. En Play cada uno resuelve sus 12 " +
-                  "aptitudes + tamaño por blend (logs [Alma]); el tamaño se ve en escena (oso grande, etc.). " +
-                  "Oso_bonusPack3 = mismo comportamiento, stats altísimos (docs soul-composition-blend.md).");
+        // Ser con forma distinta (Toro cuerpo + Bear mente) para probar la CONVERSIÓN (transformación/reencarnación).
+        GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        amb.name = "Ambrosio_Convert"; amb.transform.SetParent(group.transform); amb.transform.position = new Vector3(23.5f, 1f, 6f);
+        amb.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Ambrosio_Convert_MAT", new Color(0.60f, 0.80f, 0.45f));
+        amb.AddComponent<SimpleAnima>();
+        SoulComposition ambSoul = amb.AddComponent<SoulComposition>();
+        ambSoul.bodies.Add(new BlendSlot { archetype = "Toro", domain = 100f });
+        ambSoul.minds.Add(new BlendSlot { archetype = "Bear", domain = 100f });
+        SoulConvertDemo demo = amb.AddComponent<SoulConvertDemo>();
+        demo.soul = ambSoul;
+
+        Debug.Log("[SampleSceneBuilder] AlmaBlend_AUTO: 3 seres por MEZCLA + Ambrosio_Convert (Toro+Bear). En Play " +
+                  "cada uno resuelve sus 12 aptitudes+tamaño por blend (logs [Alma]); Ambrosio_Convert tiene HUD para " +
+                  "CONVERTIR a hormiga+humano en modo A/relativa o B/literal (reencarnación) (docs soul-relations-reincarnation §1).");
     }
 
     static void MakeBlendBeing(Transform parent, string name, Vector3 pos, Color col,

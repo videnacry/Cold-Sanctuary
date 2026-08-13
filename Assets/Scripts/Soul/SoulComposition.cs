@@ -2,13 +2,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// ALMA por MEZCLA (docs/soul-composition-blend.md) — FASE 1. Compone el ser a partir de arquetipos de **cuerpo**
-/// (físico + tamaño) y **mente** (mental + tono) con **dominio (%)** + `shareDomain`, más **`bonusPacks`** (stats
-/// aditivos que NO tocan personalidad). `Resolve()` computa la mezcla y **escribe las 12 aptitudes** en el `Anima`
-/// (físicas ← cuerpos, mentales ← mentes) + el **tamaño** (altura mezclada) + suma los packs.
+/// ALMA por MEZCLA (docs/soul-composition-blend.md + soul-relations-reincarnation.md §1). Compone el ser desde
+/// arquetipos de **cuerpo** (físico + tamaño) y **mente** (mental + tono) con **dominio (%)** + `shareDomain`, más
+/// **`bonusPacks`** (stats aditivos que NO tocan personalidad). El blend es por **DISTRIBUCIÓN**: cada arquetipo
+/// se reescala al presupuesto del **primario** conservando su forma → un 1% empuja la forma un 1% (no despreciable).
 ///   `aptitud = blend(cuerpos)[físicas] + blend(mentes)[mentales] + Σ bonusPacks`
-/// Opt-in; sustituye a configurar stats a mano. *Falta (fases siguientes):* tono/thoughts a la `Mind`, especies
-/// como cuerpos reutilizando la automatización de `Animal`, disolver `CompanionBase`, semilla de `FamilyGenerator`.
+/// <see cref="ConvertTo"/> = **transformación/reencarnación**: reexpresa la identidad actual en un cuerpo nuevo
+/// (modo Literal B = forma exacta; Relative A = modulada por el cuerpo nuevo). Opt-in.
 /// </summary>
 public class SoulComposition : MonoBehaviour
 {
@@ -29,48 +29,87 @@ public class SoulComposition : MonoBehaviour
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
     void Start() { if (resolveOnStart) Resolve(); }
 
-    /// <summary>Computa la mezcla y escribe las aptitudes/tamaño en el Anima.</summary>
+    /// <summary>Computa la mezcla (por distribución) y escribe las aptitudes/tamaño en el Anima + los bonusPacks.</summary>
     public void Resolve()
     {
         if (anima == null) anima = GetComponent<Anima>();
         if (anima == null) return;
 
-        Aptitudes b = Blend(bodies, true, out float height, out _);
-        Aptitudes m = Blend(minds, false, out _, out ElementalTone tone);
-
-        // Físicas ← cuerpo, mentales ← mente.
-        anima.agility = b.agility; anima.perception = b.perception; anima.strength = b.strength;
-        anima.bodyMass = b.bodyMass; anima.endurance = b.endurance; anima.adaptability = b.adaptability;
-        anima.composure = m.composure; anima.reasoning = m.reasoning; anima.memory = m.memory;
-        anima.creativity = m.creativity; anima.sociability = m.sociability; anima.discipline = m.discipline;
-
-        // bonusPacks: aditivo a TODAS las aptitudes (no tocan tono/thoughts).
-        foreach (string p in bonusPacks)
-            if (Archetypes.TryPack(p, out Aptitudes pk))
-            {
-                anima.agility += pk.agility; anima.perception += pk.perception; anima.strength += pk.strength;
-                anima.bodyMass += pk.bodyMass; anima.adaptability += pk.adaptability; anima.composure += pk.composure;
-                anima.endurance += pk.endurance; anima.reasoning += pk.reasoning; anima.memory += pk.memory;
-                anima.creativity += pk.creativity; anima.sociability += pk.sociability; anima.discipline += pk.discipline;
-            }
-
+        Aptitudes final = ComputeBase(out float height, out ElementalTone tone);
+        AddPacks(ref final);
+        WriteStats(final);
         if (applyScale && height > 0f) transform.localScale = Vector3.one * height;
 
-        Debug.Log($"[Alma] «{anima.name}»: cuerpo(str {anima.strength:0.00} masa {anima.bodyMass:0.00} agi {anima.agility:0.00}) " +
-                  $"mente(razón {anima.reasoning:0.00} creat {anima.creativity:0.00}) tono {tone} altura {height:0.00}" +
+        Debug.Log($"[Alma] «{anima.name}»: str {final.strength:0.00} masa {final.bodyMass:0.00} agi {final.agility:0.00} " +
+                  $"razón {final.reasoning:0.00} creat {final.creativity:0.00} · tono {tone} altura {height:0.00}" +
                   (bonusPacks.Count > 0 ? $" +{bonusPacks.Count} pack(s)" : "") + ".");
     }
 
-    // Mezcla ponderada de una lista de ranuras. `asBody` decide si se leen arquetipos de cuerpo o de mente.
-    // Devuelve las aptitudes mezcladas; `height` (cuerpos) y `tone` (mente dominante) como extras.
-    Aptitudes Blend(List<BlendSlot> slots, bool asBody, out float height, out ElementalTone tone)
+    /// <summary>CONVERSIÓN a un cuerpo/mente nuevos (transformación/reencarnación). `mode` = A (Relative) / B (Literal).
+    /// Conserva la IDENTIDAD (distribución actual) reexpresada en la nueva base. Cambia los arquetipos del ser.</summary>
+    public void ConvertTo(string newBody, string newMind, ConversionMode mode)
     {
-        height = 1f;
-        tone = ElementalTone.Tierra;
+        if (anima == null) anima = GetComponent<Anima>();
+        if (anima == null) return;
+
+        Aptitudes current = ReadStats();
+        bodies = new List<BlendSlot> { new BlendSlot { archetype = newBody, domain = 100f } };
+        minds  = new List<BlendSlot> { new BlendSlot { archetype = newMind, domain = 100f } };
+
+        Aptitudes newBase = ComputeBase(out float height, out ElementalTone tone);
+        Aptitudes converted = SoulMath.Remap(current, newBase, mode);
+        WriteStats(converted);
+        if (applyScale && height > 0f) transform.localScale = Vector3.one * height;
+
+        Debug.Log($"[Alma] «{anima.name}» CONVERSIÓN {(mode == ConversionMode.Literal ? "B/literal" : "A/relativa")} → " +
+                  $"{newBody}+{newMind}: str {converted.strength:0.00} masa {converted.bodyMass:0.00} agi {converted.agility:0.00} " +
+                  $"razón {converted.reasoning:0.00} · tono {tone} altura {height:0.00}.");
+    }
+
+    // ── stats ↔ Anima ──────────────────────────────────────────────────────────
+    public Aptitudes ReadStats()
+    {
+        Aptitudes a = new Aptitudes();
+        a.agility = anima.agility; a.perception = anima.perception; a.strength = anima.strength; a.bodyMass = anima.bodyMass;
+        a.adaptability = anima.adaptability; a.composure = anima.composure; a.endurance = anima.endurance; a.reasoning = anima.reasoning;
+        a.memory = anima.memory; a.creativity = anima.creativity; a.sociability = anima.sociability; a.discipline = anima.discipline;
+        return a;
+    }
+
+    public void WriteStats(Aptitudes a)
+    {
+        anima.agility = a.agility; anima.perception = a.perception; anima.strength = a.strength; anima.bodyMass = a.bodyMass;
+        anima.adaptability = a.adaptability; anima.composure = a.composure; anima.endurance = a.endurance; anima.reasoning = a.reasoning;
+        anima.memory = a.memory; anima.creativity = a.creativity; anima.sociability = a.sociability; anima.discipline = a.discipline;
+    }
+
+    // ── blend por distribución ─────────────────────────────────────────────────
+    // Base (sin packs): físicas ← blend(cuerpos), mentales ← blend(mentes).
+    Aptitudes ComputeBase(out float height, out ElementalTone tone)
+    {
+        Aptitudes body = BlendPillar(bodies, true, SoulMath.Physical, out height, out _);
+        Aptitudes mind = BlendPillar(minds, false, SoulMath.Mental, out _, out tone);
+        Aptitudes final = new Aptitudes();
+        foreach (AptitudeKind k in SoulMath.Physical) final.Add(k, body.Get(k));
+        foreach (AptitudeKind k in SoulMath.Mental)   final.Add(k, mind.Get(k));
+        return final;
+    }
+
+    void AddPacks(ref Aptitudes a)
+    {
+        foreach (string p in bonusPacks)
+            if (Archetypes.TryPack(p, out Aptitudes pk))
+                foreach (AptitudeKind k in SoulMath.All) a.Add(k, pk.Get(k));
+    }
+
+    // Mezcla por distribución de una lista de ranuras sobre `kinds`. `asBody` decide cuerpo vs mente.
+    // Cada arquetipo se reescala al presupuesto del PRIMARIO (mayor dominio) conservando su forma, y se pondera.
+    Aptitudes BlendPillar(List<BlendSlot> slots, bool asBody, AptitudeKind[] kinds, out float height, out ElementalTone tone)
+    {
+        height = 1f; tone = ElementalTone.Tierra;
         if (slots == null || slots.Count == 0) return Aptitudes.Default;
 
-        float sumExplicit = 0f;
-        int shareCount = 0;
+        float sumExplicit = 0f; int shareCount = 0;
         foreach (BlendSlot s in slots)
         {
             if (s == null) continue;
@@ -82,21 +121,33 @@ public class SoulComposition : MonoBehaviour
         float total = sumExplicit + sharePer * shareCount;
         if (total <= 0f) return Aptitudes.Default;
 
+        // Pass 1: primario (mayor peso) → presupuesto de referencia + tono.
+        float bestW = -1f; ArchetypeProfile primary = null;
+        foreach (BlendSlot s in slots)
+        {
+            if (s == null) continue;
+            float w = s.shareDomain ? sharePer : Mathf.Max(0f, s.domain);
+            if (w <= 0f) continue;
+            ArchetypeProfile p = asBody ? Archetypes.BodyOf(s.archetype) : Archetypes.MindOf(s.archetype);
+            if (w > bestW) { bestW = w; primary = p; }
+        }
+        if (primary == null) return Aptitudes.Default;
+        float refBudget = SoulMath.Budget(primary.aptitudes, kinds);
+        tone = primary.tone;
+        if (refBudget <= 0f) return Aptitudes.Default;
+
+        // Pass 2: mezclar formas al presupuesto de referencia, ponderadas.
         Aptitudes result = new Aptitudes();
-        float h = 0f, bestW = -1f;
+        float h = 0f;
         foreach (BlendSlot s in slots)
         {
             if (s == null) continue;
             float w = (s.shareDomain ? sharePer : Mathf.Max(0f, s.domain)) / total;
             if (w <= 0f) continue;
             ArchetypeProfile p = asBody ? Archetypes.BodyOf(s.archetype) : Archetypes.MindOf(s.archetype);
-            Aptitudes a = p.aptitudes;
-            result.agility += w * a.agility; result.perception += w * a.perception; result.strength += w * a.strength;
-            result.bodyMass += w * a.bodyMass; result.adaptability += w * a.adaptability; result.composure += w * a.composure;
-            result.endurance += w * a.endurance; result.reasoning += w * a.reasoning; result.memory += w * a.memory;
-            result.creativity += w * a.creativity; result.sociability += w * a.sociability; result.discipline += w * a.discipline;
+            Aptitudes rescaled = SoulMath.RescaleShape(p.aptitudes, kinds, refBudget);
+            foreach (AptitudeKind k in kinds) result.Add(k, w * rescaled.Get(k));
             h += w * p.height;
-            if (w > bestW) { bestW = w; tone = p.tone; }
         }
         if (asBody) height = h;
         return result;
