@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#64 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#65 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,13 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **13-ago (PR #65, doc):** **`microcosmos-level1.md`** — consolidación + **fichas del elenco** del Nivel 1
+  (Sakshi/Ambrosio/Medea/Momo/Héspero/Ruth/Atlas + ancianos: alma·aptitudes·firma emocional·relaciones·impulsos·
+  beat·tell). Decisiones: **emergencia dirigida** (los mueven stats+thoughts; el director solo siembra
+  circunstancias/pensamientos, estilo `MobWorldDirector` — no marioneteo); **composición, NO clase `Ant`**
+  (hormiga = `SimpleAnima` + IA del compañero + `Mind`/`SoulRecord`/emoción + ficha; el sistema unificador ya
+  está: Anima raíz + pilares por composición + quark→elemento→compuesto→stat). Lista de impulsos sociales que
+  faltan + beats + orden de construcción. *Siguiente:* aplicar fichas a las hormigas (coordinar con el compañero).
 - **13-ago (PR #64):** **Forcejeo/Channeling unificados en `SpellBase` + `FireSpell`→`SpellBase` + sandbox**.
   `SpellBase`: dos bonos de poder — **forcejeo** (físico; sube solo al no lograr el efecto, `ReportResult`;
   persiste) y **channeling** (mental; sube al canalizar con `channelKey`/Shift, decae al soltar), `BonusPower` =
