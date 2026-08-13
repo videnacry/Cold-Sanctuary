@@ -93,6 +93,7 @@ public static class SampleSceneBuilder
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
         BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
+        BuildSpellDemoSandbox(root.transform);      // hechizos: forcejeo/channeling — fuego múltiple/carga (G/G+Shift) + caminar/esprintar (WASD/Shift) — testing §19g
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
@@ -1291,6 +1292,41 @@ public static class SampleSceneBuilder
 
         Debug.Log("[SampleSceneBuilder] Magia_AUTO: HUD de prueba (abajo-izq en Play) para el bucle con Anima real — " +
                   "aprender 1er hechizo → comer sube stats (Constitution)+exceso→grasa y rellena pools → lanzar fuego (testing §19).");
+    }
+
+    // ── Hechizos: forcejeo / channeling (fuego múltiple/carga + caminar/esprintar) ──
+    // Cápsula con FireSpell (G / G+Shift) + WalkSpell (WASD / Shift) sobre un SimpleAnima con reservas y ATP.
+    // Demuestra los bonos compartidos de SpellBase (forcejeo físico al fallar / channeling mental al cargar).
+    static void BuildSpellDemoSandbox(Transform parent)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = "SpellDemo_AUTO";
+        go.transform.SetParent(parent);
+        go.transform.position = new Vector3(14f, 1f, 6f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("SpellDemo_AUTO_MAT", new Color(0.75f, 0.45f, 0.25f));
+
+        SimpleAnima anima = go.AddComponent<SimpleAnima>();
+        go.AddComponent<CharacterLevel>();                    // barra de ATP (aptitudes Default → energía ~100)
+        MagicReserves res = go.AddComponent<MagicReserves>();
+        res.anima = anima;
+        res.unlocked = true;                                 // pools abiertas y con materia/energía para lanzar
+        res.Store("C", 100f); res.Store("H", 100f); res.Store("O", 100f);
+        res.energy = 1_000_000f;
+        go.AddComponent<QuarkReserve>();
+
+        FireSpell fire = go.AddComponent<FireSpell>();
+        fire.caster = anima;
+        fire.spellKey = KeyCode.G;                            // G = disparo múltiple; G+Shift = cargar (channeling)
+        fire.SetTier(FireTier.Flamethrower);
+
+        WalkSpell walk = go.AddComponent<WalkSpell>();        // WASD = andar; Shift = esprintar (channeling)
+
+        SpellDemoHUD hud = go.AddComponent<SpellDemoHUD>();
+        hud.fire = fire; hud.walk = walk; hud.anima = anima;
+
+        Debug.Log("[SampleSceneBuilder] SpellDemo_AUTO: en Play, HUD arriba-centro. G = fuego múltiple (el forcejeo " +
+                  "sube y agranda la llama); G+Shift = cargar (channeling) → soltar Shift dispara cargado; WASD = andar, " +
+                  "Shift = esprintar. Ver crecer forcejeo/channel y bajar la energía (testing §19g).");
     }
 
     static BodyPartReactor MakeReactor(Transform parent, string name, Vector3 pos, Vector3 axis, float arousalGain, float valenceGain, float joltGain)

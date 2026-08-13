@@ -1,29 +1,26 @@
 using UnityEngine;
 
 /// <summary>
-/// Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos). El
-/// mismo bucle de fuerza adaptativa, pero el objetivo es el propio cuerpo: gastas el **mínimo de fuerza para
-/// mover tu propio peso** (`bodyMass`) y, si algo te frena (obstáculo/cuesta/barro → no te desplazas), **subes
-/// paulatinamente** la fuerza hasta tu techo (`force + Strength`), gastando **más ATP** cuanto más fuerza usas.
-/// Consecuencia (coherente con el metabolismo): un cuerpo pesado o de poca fuerza **se cansa al andar**.
-///
-/// Dirección por ejes de input (WASD). Movimiento por Transform (demo); si el ser tiene `ImpulseController`,
-/// convendría inyectar un impulso de "walk" para participar del sistema emergente (pendiente). `CastMode.Channel`.
+/// Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos), ahora
+/// sobre el sistema unificado de bonos de `SpellBase`:
+///   • **Forcejeo** (físico): si algo te frena (no te desplazas), `ReportResult(false)` sube el bonus → empujas
+///     más fuerte contra el obstáculo/cuesta. Persiste.
+///   • **Channeling** (mental): mantener `channelKey` (Shift) al andar = **esprintar** (bonus mental → más
+///     velocidad); decae al soltar.
+/// La velocidad = `baseSpeed + bonos`, penalizada por el **peso** (`bodyMass`), y **cuesta ATP** ∝ velocidad×masa
+/// (un cuerpo pesado o forzado se cansa). Dirección por ejes (WASD). Movimiento por Transform (demo).
 /// </summary>
 public class WalkSpell : SpellBase
 {
     [Header("Caminar (fuerza adaptativa sobre el propio peso)")]
-    [Tooltip("Velocidad base al mover el propio peso sin resistencia (m/s a power=masa).")]
-    [Min(0f)] public float baseSpeed = 2f;
-    [Tooltip("Cuánto sube la fuerza por segundo cuando estás BLOQUEADO (no te desplazas).")]
-    [Min(0f)] public float rampRate = 2f;
-    [Tooltip("ATP/s por unidad de power empleado (más fuerza → más cansancio).")]
-    [Min(0f)] public float casterEnergyPerPower = 0.3f;
-    [Tooltip("Desplazamiento (m/frame) por debajo del cual se considera 'bloqueado' y sube la fuerza.")]
+    [Tooltip("Velocidad base al mover el propio peso sin resistencia ni bonos (m/s, antes de dividir por masa).")]
+    [Min(0f)] public float baseSpeed = 3f;
+    [Tooltip("ATP/s por unidad de (velocidad×masa): más rápido o más pesado → más cansancio.")]
+    [Min(0f)] public float energyPerEffort = 0.2f;
+    [Tooltip("Desplazamiento (m/frame) por debajo del cual se considera 'bloqueado' y sube el forcejeo.")]
     [Min(0f)] public float blockedEpsilon = 0.001f;
 
     Anima   _self;
-    float   _power;
     Vector3 _lastPos;
 
     void Awake()
@@ -35,31 +32,34 @@ public class WalkSpell : SpellBase
     void Update()
     {
         Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0f, Input.GetAxisRaw("Vertical"));
-        if (input.sqrMagnitude < 0.01f) { _power = 0f; _lastPos = transform.position; return; }
+        float dt = Time.deltaTime;
+        bool moving = input.sqrMagnitude >= 0.01f;
+
+        bool channeling = moving && Input.GetKey(channelKey);   // Shift al andar = esprintar (channeling mental)
+        TickChanneling(channeling, dt);
+
+        if (!moving) { _lastPos = transform.position; return; }
         input.Normalize();
 
-        float mass = _self != null ? _self.BodyMass : 1f;
-        float cap  = force + (_self != null ? _self.Strength : 0f) + mass;   // techo: tu fuerza (+ vencer tu peso)
-        if (_power <= 0f) _power = mass;                                     // mínimo para mover tu propio peso
-
-        // ¿Me desplacé el frame anterior? Si no (bloqueado), empuja más fuerte.
+        // ¿bloqueado el frame anterior? sin desplazarte = fallo → sube el forcejeo (físico).
         float moved = (transform.position - _lastPos).magnitude;
-        if (moved < blockedEpsilon) _power = Mathf.Min(cap, _power + rampRate * Time.deltaTime);
+        ReportResult(moved >= blockedEpsilon);
         _lastPos = transform.position;
 
-        // Cansancio: ATP ∝ power. Sin energía, no puedes avanzar.
-        if (_self != null && casterEnergyPerPower > 0f)
+        float mass  = _self != null ? _self.BodyMass : 1f;
+        float speed = (baseSpeed + BonusPower(_self)) / Mathf.Max(0.1f, mass);   // bonos ayudan; el peso frena
+
+        // Cansancio ∝ esfuerzo (velocidad×masa). Sin energía, no avanzas.
+        if (_self != null && energyPerEffort > 0f)
         {
             CharacterLevel cl = _self.GetComponent<CharacterLevel>();
-            if (cl != null && !cl.SpendEnergy(casterEnergyPerPower * _power * Time.deltaTime)) return;
+            if (cl != null && !cl.SpendEnergy(energyPerEffort * speed * mass * dt)) return;
         }
 
-        // Velocidad = base × (fuerza empleada / tu peso): más fuerza relativa = te mueves mejor.
-        float speed = baseSpeed * (_power / Mathf.Max(0.1f, mass));
-        transform.position += input * speed * Time.deltaTime;
+        transform.position += input * speed * dt;
     }
 
-    // No usa la API dirigida (el objetivo es siempre uno mismo).
+    // El objetivo es siempre uno mismo (no usa la API dirigida).
     public override bool CanCast(Anima caster, ITarget target) => true;
     public override void Cast(Anima caster, ITarget target) { }
 }

@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#63 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#64 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,14 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **13-ago (PR #64):** **Forcejeo/Channeling unificados en `SpellBase` + `FireSpell`→`SpellBase` + sandbox**.
+  `SpellBase`: dos bonos de poder — **forcejeo** (físico; sube solo al no lograr el efecto, `ReportResult`;
+  persiste) y **channeling** (mental; sube al canalizar con `channelKey`/Shift, decae al soltar), `BonusPower` =
+  suma escalada por aptitudes. `FireSpell` migrado a `SpellBase`: **Repeat** (mantener G = fuego múltiple, cada
+  llama sube el forcejeo) + **Charge** (G+Shift = canalizar → soltar Shift dispara cargado); el bonus multiplica
+  la intensidad. `WalkSpell` reescrito sobre los bonos (forcejeo al bloquearse, Shift=esprint) + `SpellDemoHUD`.
+  Sandbox **`SpellDemo_AUTO`**. Testing §19g. *Falta:* detección de impacto real para el forcejeo del fuego;
+  propagar forcejeo/channeling a `PullSpell`/`TransformationSpell`.
 - **13-ago (PR #63):** **`CastMode` en `SpellBase` + `PullSpell` fusionada + `WalkSpell`**. (1) Arreglado el
   **choque de compilación**: había dos `class PullSpell` (Microcosmos + Transformation) → CS0101; borrada la
   huérfana (`Transformation/PullSpell.cs`, NavMesh, sin cablear). (2) `SpellBase` + `CastMode`
