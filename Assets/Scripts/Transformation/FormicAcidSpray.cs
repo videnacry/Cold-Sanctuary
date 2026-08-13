@@ -1,31 +1,26 @@
 using UnityEngine;
 
 /// <summary>
-/// SPRAY DE ÁCIDO FÓRMICO — defensa de Kushal hormiga (Nivel 1, Microcosmos).
+/// Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
 ///
 /// Las hormigas obreras (Formica, Camponotus…) rocían ácido fórmico para disuadir
-/// depredadores. En Cold Sanctuary: AoE corto alcance que sube el <c>stress</c> de
-/// todos los <see cref="Anima"/> cercanos (excepto el propio Kushal y los aliados de
-/// su facción si <see cref="sprayFriendly"/> es false).
+/// depredadores. Como hechizo extiende <see cref="SpellBase"/>:
+///   • <c>range</c>  = radio del spray (reemplaza el antiguo <c>sprayRadius</c>).
+///   • <c>force</c>  = aumento de stress por hit (reemplaza <c>stressIncrease</c>).
 ///
-/// Cuando el stress del depredador sube de cierto umbral, <see cref="Animal.EvaluateThreat"/>
-/// / <see cref="Predation"/> ya lo hacen huir (el sistema de amenaza existente hace el trabajo).
+/// Target ignorado en AoE: el efecto cae sobre todos los <see cref="Anima"/> cercanos
+/// al caster excepto aliados de la misma facción (si <see cref="sprayFriendly"/> = false).
 ///
-/// Cargas limitadas (<see cref="maxCharges"/>); se recargan de una en una cada
-/// <see cref="rechargeTime"/> segundos. El jugador activa con la tecla Q (configurable).
+/// El stress acumulado en el depredador hace que <see cref="Predation"/> / <c>EvaluateThreat</c>
+/// ya lo hagan huir — el sistema de amenaza existente hace el trabajo.
 ///
-/// Sin CharacterLevel ni MagicReserves: es una habilidad corporal del insecto, no magia.
+/// Cargas limitadas (<see cref="maxCharges"/>); se recargan de una en una.
+/// Coste de energía opcional: campo <see cref="SpellBase.energyCost"/> (heredado).
 /// </summary>
-public class FormicAcidSpray : MonoBehaviour
+public class FormicAcidSpray : SpellBase
 {
-    [Header("Alcance y efecto")]
-    [Tooltip("Radio del spray (m). A escala insecto, 1-2 m representa distancia de varios cuerpos.")]
-    [Min(0.1f)] public float sprayRadius = 1.5f;
-
-    [Tooltip("Aumento de stress aplicado a cada Anima en rango (0–1).")]
-    [Range(0f, 1f)] public float stressIncrease = 0.35f;
-
-    [Tooltip("Si false, no afecta a aliados de la misma facción que Kushal.")]
+    [Header("Spray — parámetros extra")]
+    [Tooltip("Si false, no afecta a aliados de la misma facción que el caster.")]
     public bool sprayFriendly = false;
 
     [Header("Cargas")]
@@ -36,13 +31,13 @@ public class FormicAcidSpray : MonoBehaviour
     [Min(1f)] public float rechargeTime = 12f;
 
     [Header("Input")]
-    [Tooltip("Tecla para activar el spray (Q por defecto — libre en los controles documentados).")]
+    [Tooltip("Tecla para activar el spray.")]
     public KeyCode sprayKey = KeyCode.Q;
 
     // ── Estado ────────────────────────────────────────────────────────────────
 
     public int CurrentCharges => _charges;
-    public float RechargeProgress => _rechargeTimer / rechargeTime; // 0..1
+    public float RechargeProgress => _rechargeTimer / rechargeTime;
 
     int   _charges;
     float _rechargeTimer;
@@ -70,31 +65,36 @@ public class FormicAcidSpray : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(sprayKey)) Spray();
+        if (_self != null && Input.GetKeyDown(sprayKey) && CanCast(_self, null))
+        {
+            if (!PayEnergy(_self)) { Debug.Log("[Ácido] Sin energía para lanzar."); return; }
+            Cast(_self, null);
+        }
     }
 
-    // ── API pública ───────────────────────────────────────────────────────────
+    // ── SpellBase ─────────────────────────────────────────────────────────────
 
-    /// <summary>Lanza el spray si hay cargas disponibles.</summary>
-    public void Spray()
+    /// <summary>AoE: target ignorado (el efecto es esférico sobre el caster). Requiere cargas y energía.</summary>
+    public override bool CanCast(Anima caster, ITarget target)
+        => _charges > 0 && HasEnergy(caster);
+
+    /// <summary>Aplica el spray AoE. Usa <see cref="SpellBase.range"/> como radio y <see cref="SpellBase.force"/> como stress.</summary>
+    public override void Cast(Anima caster, ITarget target)
     {
-        if (_charges <= 0)
-        {
-            Debug.Log("[Ácido] Sin cargas. Espera a recargar.");
-            return;
-        }
-
+        if (!CanCast(caster, target)) return;
         _charges--;
         _rechargeTimer = 0f;
 
+        float sprayRadius = range > 0f ? range : 1.5f;
+        float stressIncrease = force;
+
         int affected = 0;
-        var hits = Physics.OverlapSphere(transform.position, sprayRadius);
+        var hits = Physics.OverlapSphere(caster.transform.position, sprayRadius);
         foreach (var col in hits)
         {
             var anima = col.GetComponent<Anima>();
-            if (anima == null || anima == _self) continue;
+            if (anima == null || anima == caster) continue;
 
-            // Respetar facción si sprayFriendly = false.
             if (!sprayFriendly && _myFaction != '\0')
             {
                 var tgt = col.GetComponent<ITarget>();
@@ -103,10 +103,9 @@ public class FormicAcidSpray : MonoBehaviour
 
             anima.stress = Mathf.Min(1f, anima.stress + stressIncrease);
             affected++;
-            Debug.Log($"[Ácido] «{anima.name}» stress +{stressIncrease:0.0} → {anima.stress:0.0}.");
         }
 
-        Debug.Log($"[Ácido] Spray activado. Afectados: {affected}. Cargas restantes: {_charges}/{maxCharges}.");
+        Debug.Log($"[Ácido] Spray activado. Afectados: {affected}. Cargas: {_charges}/{maxCharges}.");
     }
 
     // ── Gizmos ────────────────────────────────────────────────────────────────
@@ -114,6 +113,6 @@ public class FormicAcidSpray : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(1f, 0.8f, 0.1f, 0.25f);
-        Gizmos.DrawWireSphere(transform.position, sprayRadius);
+        Gizmos.DrawWireSphere(transform.position, range > 0f ? range : 1.5f);
     }
 }

@@ -19,8 +19,19 @@ using UnityEngine.AI;
 /// </summary>
 [RequireComponent(typeof(Collider))]
 [RequireComponent(typeof(NavMeshAgent))]
-public class IngredientMob : MonoBehaviour
+public class IngredientMob : MonoBehaviour, ITarget
 {
+    // ── ITarget ───────────────────────────────────────────────────────────────
+    // Implementado para que CombatTargetSelector (generalizado a ITarget) pueda
+    // seleccionar mobs de cocina como cualquier otro objetivo.
+    public float Mass => maxHealth;
+    public float Speed => _agent != null ? _agent.speed : 0f;
+    public char Faction => 'm';   // mob de cocina; distinto de 'a' (Animal) y 'h' (jugador)
+    public bool Dead => _isProcessed;
+    public bool Consumed => _isProcessed;
+    public void Hurt(float damage) => TakeDamage(damage);
+
+
     // ── Identity ──────────────────────────────────────────────────────────────
 
     [Header("Identity")]

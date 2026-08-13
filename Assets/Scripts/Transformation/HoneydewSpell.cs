@@ -4,16 +4,17 @@ using UnityEngine;
 /// Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
 ///
 /// Es el PRIMER CONSUMIBLE del juego (Nivel 1, Microcosmos). Kushal recolecta las gotas
-/// de melaza que produce Ambrosio; cada uso restaura <see cref="energyRestore"/> de energía
-/// al target seleccionado (<see cref="ITarget"/>), lo que temporalmente reactiva su
-/// <see cref="NavMeshAgent"/> (controlado por <see cref="WeaknessEffect"/>).
+/// de melaza que produce Ambrosio (<see cref="HoneydewPickup"/>); cada pickup añade una
+/// carga (<see cref="AddCharge"/>). Cada uso gasta una carga y restaura
+/// <see cref="energyRestore"/> de energía al target (<see cref="ITarget"/>), lo que
+/// temporalmente reactiva su <see cref="NavMeshAgent"/> (controlado por
+/// <see cref="WeaknessEffect"/>).
 ///
 /// El debilitamiento sigue drenando la energía → el jugador debe usarla en el momento justo
 /// (cuando el target está cerca del checkpoint o cuando nadie más puede jalarlo).
 ///
-/// Uso desde el inventario: el ítem llama <see cref="Cast"/> con el target del
-/// <see cref="CombatTargetSelector"/>. Si no hay target seleccionado, se aplica al propio
-/// caster (lanzar la maleza en uno mismo para recuperar energía).
+/// Uso desde teclado: tecla E (configurable) lanza sobre el target del
+/// <see cref="CombatTargetSelector"/>. Si no hay target, se aplica al propio caster.
 ///
 /// Produce logs con la energía restaurada para verificar el loop en testing.
 /// </summary>
@@ -26,6 +27,45 @@ public class HoneydewSpell : SpellBase
     [Tooltip("Si true y el target tiene WeaknessEffect pausado, Resume() se llama " +
              "automáticamente (la hormiga puede moverse de nuevo aunque sea un momento).")]
     public bool resumeWeakness = true;
+
+    [Header("Cargas (consumible recolectado)")]
+    [Tooltip("Cargas disponibles actualmente (cada HoneydewPickup suma 1).")]
+    public int charges = 0;
+
+    [Tooltip("Máximo de cargas que Kushal puede acumular.")]
+    [Min(1)] public int maxCharges = 10;
+
+    [Tooltip("Tecla para lanzar la maleza sobre el target seleccionado.")]
+    public KeyCode castKey = KeyCode.E;
+
+    // ── Ciclo de vida ────────────────────────────────────────────────────────
+
+    Anima _self;
+
+    void Awake() => _self = GetComponent<Anima>();
+
+    void Update()
+    {
+        if (_self == null || !Input.GetKeyDown(castKey)) return;
+        var target = CombatTargetSelector.Instance?.CurrentTarget;
+        if (charges <= 0) { Debug.Log("[Maleza] Sin cargas. Recolecta más melaza."); return; }
+        if (CanCast(_self, target ?? _self.GetComponent<ITarget>()))
+        {
+            charges--;
+            Cast(_self, target ?? _self.GetComponent<ITarget>());
+        }
+    }
+
+    // ── Cargas ───────────────────────────────────────────────────────────────
+
+    /// <summary>Añade una carga (llamado por <see cref="HoneydewPickup"/>).</summary>
+    public bool AddCharge()
+    {
+        if (charges >= maxCharges) return false;
+        charges++;
+        Debug.Log($"[Maleza] Carga recogida. Cargas: {charges}/{maxCharges}.");
+        return true;
+    }
 
     // ── ISpell ───────────────────────────────────────────────────────────────
 

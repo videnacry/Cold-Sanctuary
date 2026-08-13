@@ -64,7 +64,7 @@ public class Gohageneis : CompanionBase
     {
         base.Update();
 
-        if (_playerMind != null)
+        if (_playerMind != null && _playerTransform != null)
         {
             float dist = Vector3.Distance(transform.position, _playerTransform.position);
             if (dist <= proximityRadius)

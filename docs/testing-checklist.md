@@ -12,6 +12,50 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO CON 4 BUGS REALES (2026-08-12, commit `44cac82` "SpellBase + hechizos Nivel1 Microcosmos")** —
+  el más cargado de la sesión. Unity se había cerrado mal (recuperó backups de escena al reabrir, dije
+  que No porque nunca guardamos escena). Al abrir el proyecto, **Safe Mode por errores de compilación**:
+  1. **BUG de compilación — duplicado**: el commit trackeado agregó `Assets/Scripts/Transformation/
+     PullSpell.cs` (diseño físico viejo: NavMeshAgent+resistencia), pero mi checkout local YA tenía
+     (sin trackear, `git status` los marca `??`) un set completo y más nuevo de archivos en
+     `Assets/Scripts/Microcosmos/` (`ATPRegenSpell`, `BondEscapeReader`, `HomeImpulse`,
+     `HoneydewPickup`, `ImpulseController`, `MovementImpulse`, `PullSpell` con diseño de forcejeo/
+     tug-of-war, `ThreatScanner`, `WalkToGoal`) que `SampleSceneBuilder.cs` (sí trackeado) ya
+     referenciaba exclusivamente. Los dos `PullSpell` (mismo nombre de clase, sin namespaces en este
+     proyecto) chocaban → `error CS0101`. **El compañero probablemente olvidó `git add` los ~9 archivos
+     nuevos de `Microcosmos/` al commitear** — un clone limpio de este commit ni siquiera compilaría
+     (le faltarían `ATPRegenSpell`/`BondEscapeReader`/etc. enteros, no solo el duplicado). Fix aplicado:
+     **borré `Transformation/PullSpell.cs` del proyecto vivo únicamente** (no toqué el commit del repo,
+     no es mi lugar decidir eso) — quedó el `Microcosmos/PullSpell.cs` que sí es el que se usa.
+  2. **BUG de compilación — typo**: `Microcosmos/PullSpell.cs(115)` usaba `target.Transform` (mayúscula)
+     en vez de `target.transform` (la propiedad real de `ITarget`). Arreglado directo en el archivo (no
+     trackeado en git, así que el fix vive solo en este checkout local y en el proyecto vivo — avisar al
+     compañero para que lo replique cuando comitee sus archivos de verdad).
+  3. **BUG de compilación — API generalizada sin actualizar callers**: `CombatTargetSelector.cs` (sí
+     trackeado, parte del commit) se generalizó de `IngredientMob` a `ITarget`, pero `CombatAbilityBar.cs`
+     seguía llamando `UseAbility(..., IngredientMob)` con el `ITarget` nuevo → `error CS1503` ×3. Fix:
+     usar `CombatTargetSelector.Instance?.CurrentIngredientMob` (la propiedad de compat hacia atrás que
+     la propia clase ya exponía) en los 2 call-sites de `CombatAbilityBar.cs`. Además `IngredientMob`
+     no implementaba `ITarget` pese a que el diseño ya lo asumía (`CurrentIngredientMob`,
+     `OnMobTargetChanged` hacen cast `as IngredientMob`) → agregué `: ITarget` a `IngredientMob` con
+     `Mass=maxHealth`, `Speed=agent.speed`, `Faction='m'`, `Dead`/`Consumed=_isProcessed`,
+     `Hurt()=TakeDamage()`. **Ambos cambios trackeados, listos para commitear** (`CombatAbilityBar.cs`,
+     `IngredientMob.cs`).
+  4. **BUG REAL de runtime (ya con todo compilando)**: `MissingReferenceException` en bucle (999+
+     errores) en los 4 compañeros — `CompanionBase._playerTransform` se cachea una sola vez en `Start()`
+     y nunca se revalida; si el GameObject "Player" se destruye/reemplaza en runtime (posible con el
+     nuevo sistema de posesión/body-swap, corriendo por primera vez ahora que todo compila), la
+     referencia queda colgante. Encontrados 3 puntos con el mismo patrón sin chequeo:
+     `CompanionBase.CheckPlayerProximity()`, `Gohageneis.Update()` (override, chequeo de celebración),
+     `Goluis.Update()` (override, chequeo de presión). Fix: agregar `_playerTransform == null` al guard
+     en los 3. **Trackeados, listos para commitear.** Re-testeado: corrida completa en Play sin
+     excepciones nuevas.
+  **Archivos con fix pendiente de commitear** (todos ya sincronizados al proyecto vivo):
+  `Assets/Scripts/Combat/CombatAbilityBar.cs`, `Assets/Scripts/Combat/IngredientMob.cs`,
+  `Assets/Scripts/Companion/CompanionBase.cs`, `Assets/Scripts/Companion/Companions/Gohageneis.cs`,
+  `Assets/Scripts/Companion/Companions/Goluis.cs`. **Pendiente de que el compañero resuelva en su lado**:
+  comitear los ~9 archivos de `Microcosmos/` que le faltan (con el typo de `.Transform` ya arreglado si
+  quiere copiarlo) y decidir qué hacer con el `Transformation/PullSpell.cs` viejo/duplicado (¿borrarlo?).
 - **CRON DE 2H MURIÓ (expiró a los 7 días) y no lo detecté hasta que el usuario avisó** — quedaron 21
   commits (PRs #35-55: magia/metabolismo/descomposición + `Descomposicion_AUTO`/`Magia_AUTO`) sin
   procesar por varios ciclos. Recreado al retomar (ver instrucciones de la corutina). **Si volvés a ver

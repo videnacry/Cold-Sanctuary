@@ -28,6 +28,9 @@ public abstract class SpellBase : MonoBehaviour
     [Tooltip("Duración del efecto en segundos. 0 = instantáneo.")]
     [Min(0f)] public float duration = 0f;
 
+    [Tooltip("Coste de energía (barra de ATP/CharacterLevel) por cada uso. 0 = gratis.")]
+    [Min(0f)] public float energyCost = 0f;
+
     // ── API pública ───────────────────────────────────────────────────────────
 
     /// <summary>
@@ -48,6 +51,28 @@ public abstract class SpellBase : MonoBehaviour
     {
         if (range <= 0f) return true; // tacto: siempre en rango (validar distancia física en CanCast)
         return Vector3.Distance(caster.transform.position, target.transform.position) <= range;
+    }
+
+    /// <summary>
+    /// ¿Tiene <paramref name="caster"/> suficiente energía para lanzar?
+    /// Si <see cref="energyCost"/> == 0, siempre true.
+    /// </summary>
+    protected bool HasEnergy(Anima caster)
+    {
+        if (energyCost <= 0f) return true;
+        var cl = caster.GetComponent<CharacterLevel>();
+        return cl == null || cl.currentEnergy >= energyCost;
+    }
+
+    /// <summary>
+    /// Paga el coste de energía. Devuelve false si no hay suficiente (sin pagar).
+    /// Llamar en <see cref="Cast"/> justo antes de ejecutar el efecto.
+    /// </summary>
+    protected bool PayEnergy(Anima caster)
+    {
+        if (energyCost <= 0f) return true;
+        var cl = caster.GetComponent<CharacterLevel>();
+        return cl == null || cl.SpendEnergy(energyCost);
     }
 
     /// <summary>

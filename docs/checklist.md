@@ -17,7 +17,11 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
       **hongos** (Physarum oráculo, Ophiocordyceps amenaza); abeja/avispa/termita = otras ciudades. **Pipeline:
       área humana (Meso) → transformar a insecto (Micro).** **1ª misión hecha (scaffold)** `MicrocosmosSandbox_AUTO`
       (amanecer: **cueva** natural, sin reina/hormiguero/feromonas; pulgón-mamá guía + banda de 7 hormigas).
-      **Falta:** jugador-avatar guía/carga; colonia real; feromonas como mecánica; dispatch meso→micro.
+      **Hecho (PR #62):** `WeaknessEffect` (hormigas viejas), `HoneydewSpell` (maleza Ambrosio = primer consumible),
+      `PullSpell` (Jalar, primer hechizo), `FormicAcidSpray` (defensa Kushal), `SpellBase` (base de hechizos),
+      `CombatTargetSelector` generalizado a `ITarget`.
+      **Falta:** jugador-avatar guía/carga; sandbox escena Nivel 1 (suelo de bosque + cueva checkpoint + zonas de depredadores);
+      colonia real; feromonas como mecánica; dispatch meso→micro; conectar `HoneydewSpell` al inventario.
 - [x] **Aptitudes adicionales**: set cerrado — `endurance/reasoning/memory/creativity/sociability/discipline`
       añadidas a `CompanionBase`; `flexibility` → `BodyPartStats` (pendiente de conectar).
 - [ ] **Economía circular** (aprobada): cerrar la tabla final residuo→subproducto→área
@@ -325,11 +329,26 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       `KitchenSandbox_AUTO`, `KitchenOnboarding_AUTO`, `VirtualizationSandbox_AUTO`, `GardenVirtualization_AUTO`,
       `MechanicsBeginner_AUTO`, `ConstructionBeginner_AUTO`, `TruckMaintenance_AUTO`, `DispatchDemo_AUTO`,
       `ForgeVirtualization_AUTO`, `PrologueSandbox_AUTO`, `CriaBeginner_AUTO`, `MicrocosmosSandbox_AUTO`
-      (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`), `UpaYogaSandbox_AUTO`,
+      (ahora tableau §13: Ambrosio/Sakshi/Héspero/Medea/Momo/Ruth/Atlas + `SoulRecord`),
+      `Nivel1Microcosmos_AUTO` *(pendiente: escena abierta suelo-de-bosque + hormigas con `WeaknessEffect` + checkpoint cueva)*,
+      `UpaYogaSandbox_AUTO`,
       `ScreenEffectsSandbox_AUTO`, `EmotionOrchestraSandbox_AUTO`, `EmotionReader_AUTO`.
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **12-ago (PR #62):** **Sistema de hechizos Nivel 1 Microcosmos** (hormiga / debilitamiento).
+  `SpellBase` (abstracta: `range`/`force`/`duration`, `CanCast`/`Cast`, `InRange`, `EffectiveForce` = fuerza+Strength−masa-target−resistencia).
+  `WeaknessEffect` (hechizo de vejez; drena `currentEnergy` a ritmo fijo; deshabilita `NavMeshAgent` en 0;
+  el drenaje sigue aunque se rellene la energía externamente; `Cancel`/`Resume`/`ApplyImmediate`).
+  `PullSpell` ("Jalar": primer hechizo real del jugador; arrastra `ITarget` hacia el caster; física vs masa +
+  velocidad-de-huida como resistencia; coroutine desactiva el agente durante el arrastre).
+  `HoneydewSpell` ("Maleza de Ambrosio": **primer consumible del juego**; restaura `currentEnergy` vía
+  `CharacterLevel`; auto-uso si no hay target; interactúa con `WeaknessEffect.Resume()`).
+  `FormicAcidSpray` (habilidad corporal, **no magia**; AoE de estrés en radio; cargas limitadas con recarga
+  gradual; respeta facción; tecla Q).
+  `CombatTargetSelector` generalizado de `IngredientMob` a `ITarget` (backward compat: `CurrentIngredientMob`,
+  `SelectMob`, `SelectAndOpenPalette`, `OnMobTargetChanged`; `GetSortedTargets` busca todo `MonoBehaviour`
+  que implemente `ITarget`). **Sync**: ambos repos (GitHub + COLD-SANCTUARY).
 - **10-ago (PR #61):** **topes de reservas derivados de los STATS** (no escala fija por santuario; stats-as-truth).
   `MagicReserves.EffectiveCapPerElement` = base × `MaxHealth/100` (materia ← resistencia+fuerza+masa) y
   `EffectiveEnergyCap` = base × `MaxMana/50` (energía ← razón+memoria), × niveles de alma (`CharacterLevel` opc.);

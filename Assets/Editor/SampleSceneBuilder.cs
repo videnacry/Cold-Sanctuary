@@ -87,6 +87,7 @@ public static class SampleSceneBuilder
         BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
         BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
         BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
+        BuildNivel1Sandbox(root.transform);         // Nivel 1 GAMEPLAY: mapa abierto, hormigas+WeaknessEffect, maleza Ambrosio, hechizos Kushal — docs microcosmos §13
         BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
         BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
@@ -917,6 +918,244 @@ public static class SampleSceneBuilder
                   "(docs microcosmos-insects §13): Ambrosio (pulgon) se derrumba en la entrada; Medea no puede " +
                   "levantarlo, Momo lo levanta; Hespero vela desde la cueva y se voltea. Cada ser lleva su " +
                   "SoulRecord (nombre de alma · hilo · reencarnacion vida 2). CarryToRefuge/WeakOne = scaffold.");
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // NIVEL 1 GAMEPLAY — mapa abierto hormiga
+    // SpellBase / WeaknessEffect / PullSpell / HoneydewSpell / FormicAcidSpray
+    // (PR #62, docs microcosmos-insects.md §13)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Monta el sandbox jugable del Nivel 1 Microcosmos:
+    /// <list type="bullet">
+    ///   <item>Suelo plano 40×40 m (escala insecto).</item>
+    ///   <item><b>Cueva-checkpoint</b>: <see cref="CarryToRefuge"/> needed=4.</item>
+    ///   <item><b>Hormigas viejas</b>: <see cref="SimpleAnima"/>+<see cref="CharacterLevel"/>+
+    ///         <see cref="WeaknessEffect"/>+<see cref="NavMeshAgent"/>+<see cref="ImpulseController"/>
+    ///         +<see cref="HomeImpulse"/> (→ cueva) + <see cref="ThreatScanner"/>+<see cref="WeakOne"/>.
+    ///         Sin energía → ImpulseController no puede pagar walkCost → se paran (comportamiento emergente).</item>
+    ///   <item><b>Ambrosio</b>: pulgón con <see cref="HoneydewProducer"/> (×5/8 s).</item>
+    ///   <item><b>Kushal</b>: <see cref="FormicAcidSpray"/>+<see cref="PullSpell"/>+
+    ///         <see cref="HoneydewSpell"/>+<see cref="CombatTargetSelector"/>.</item>
+    ///   <item><b>Depredadores</b>: Mariquita/Escarabajo/Araña lobo con stats escalados.</item>
+    /// </list>
+    /// ⚠ Requiere NavMesh bakeado (Window → AI → Navigation → Bake) antes de Play.
+    /// </summary>
+    static void BuildNivel1Sandbox(Transform parent)
+    {
+        GameObject root = new GameObject("Nivel1Microcosmos_AUTO");
+        root.transform.SetParent(parent);
+
+        // ── Suelo ──────────────────────────────────────────────────────────
+        // Plano grande que simula el suelo del bosque a escala insecto.
+        // ThreatEmitter: la selva ES peligrosa — todas las hormigas perciben amenaza
+        // ambiental constante aunque no vean depredadores. Las viejas (bajo poder) sienten
+        // más peligro específico que las jóvenes, lo que dispara PackAwareness en las jóvenes.
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.name = "ForestFloor"; floor.transform.SetParent(root.transform);
+        floor.transform.position = Vector3.zero;
+        floor.transform.localScale = new Vector3(4f, 1f, 4f); // 40x40 m a escala insecto
+        floor.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("ForestFloor_MAT", new Color(0.25f, 0.18f, 0.10f));
+        // Añadir un Collider al plano (Plane ya lo tiene) y ThreatEmitter.
+        var floorThreat = floor.AddComponent<ThreatEmitter>();
+        floorThreat.threatPower = 1.5f;  // amenaza baja-media: real pero tolerable para los fuertes
+        floorThreat.radius      = 30f;   // cubre todo el mapa
+        floorThreat.falloff     = 0.2f;  // casi constante (la selva peligrosa no tiene zona segura)
+
+        // ── Cueva-checkpoint ────────────────────────────────────────────────
+        // El grupo debe llegar aquí. CarryToRefuge cuenta las WeakOne en radio.
+        Vector3 cavePos = new Vector3(0f, 0.5f, -16f);
+        GameObject cave = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cave.name = "CuevaCheckpoint"; cave.transform.SetParent(root.transform);
+        cave.transform.position = cavePos; cave.transform.localScale = new Vector3(4f, 2f, 4f);
+        cave.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("Cave_MAT", new Color(0.30f, 0.27f, 0.24f));
+        CarryToRefuge checkpoint = cave.AddComponent<CarryToRefuge>();
+        checkpoint.radius = 4f; checkpoint.needed = 4; // 4 hormigas viejas → misión completa
+
+        // ── Hormigas viejas (comportamiento emergente) ──────────────────────
+        // ImpulseController suma: HomeImpulse(→cueva) + ThreatScanner(flee depredadores).
+        // WeaknessEffect drena energía → ImpulseController.walkEnergyCostPerSecond no puede
+        // pagarse → se paran sin que nadie les diga explícitamente que paren.
+        // Hay 5 pero solo se necesitan 4 → tensión: Kushal no puede salvar a todas.
+        string[] antNames = { "Vieja_1", "Vieja_2", "Vieja_3", "Vieja_4", "Vieja_5" };
+        Vector3[] antPositions = {
+            new Vector3(-3f, 0.5f, 8f),
+            new Vector3(0f,  0.5f, 10f),
+            new Vector3(3f,  0.5f, 7f),
+            new Vector3(-2f, 0.5f, 14f),
+            new Vector3(4f,  0.5f, 12f),
+        };
+        foreach (var (antName, pos) in System.Linq.Enumerable.Zip(antNames, antPositions,
+            (n, p) => (n, p)))
+        {
+            GameObject ant = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+            ant.name = antName; ant.transform.SetParent(root.transform);
+            ant.transform.position = pos; ant.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            ant.GetComponent<Renderer>().sharedMaterial =
+                MakeMaterial($"{antName}_MAT", new Color(0.55f, 0.48f, 0.38f));
+
+            var anima = ant.AddComponent<SimpleAnima>();
+            anima.agility = 0.3f; anima.strength = 0.2f; anima.bodyMass = 0.15f;
+            anima.endurance = 0.2f;
+            // autoabandono bajo: son viejas y débiles, su prioridad es sobrevivir.
+            // Las PackAwareness de las hormigas JÓVENES (Kushal y futuras) serán las que
+            // evalúen ayudarlas: selfPower(joven) alto → peligroEspec bajo → condición se cumple.
+            anima.autoabandono = 0.15f;
+
+            var cl = ant.AddComponent<CharacterLevel>();
+            cl.stats.level = 1; cl.yoga.level = 1; cl.bonds.level = 1;
+
+            // WeaknessEffect: drena energía. controlAgent = false porque
+            // ImpulseController gestiona el movimiento vía walkEnergyCostPerSecond.
+            var weak = ant.AddComponent<WeaknessEffect>();
+            weak.drainPerSecond = 4f;
+            weak.controlAgent = false; // ImpulseController controla si puede moverse
+
+            var agent = ant.AddComponent<UnityEngine.AI.NavMeshAgent>();
+            agent.speed = 1.0f; agent.radius = 0.2f; agent.height = 0.4f;
+
+            // Sistema de impulsos: reemplaza WalkToGoal.
+            var impulseCtrl = ant.AddComponent<ImpulseController>();
+            impulseCtrl.walkEnergyCostPerSecond = 1.5f; // sin energía → se paran
+
+            var homeImp = ant.AddComponent<HomeImpulse>();
+            homeImp.homePosition = cavePos;
+            homeImp.baseMagnitude = 0.5f;
+            homeImp.stressBonusPerUnit = 2f; // más estrés → más prisa por llegar al nido
+            homeImp.arrivalRadius = 3f;
+
+            // ThreatScanner: detecta depredadores Anima + ThreatEmitter (suelo de selva).
+            // Radio amplio para recoger el ThreatEmitter del suelo aunque esté lejos.
+            var scanner = ant.AddComponent<ThreatScanner>();
+            scanner.scanRadius = 25f;    // debe ser >= floorThreat.radius para detectar el suelo
+            scanner.fearThreshold = 0.2f; // sensibles (viejas = poca confianza)
+            scanner.maxFleeMagnitude = 4f;
+            scanner.decayRate = 1.5f;
+
+            // ATPRegenSpell: bloqueado por WeaknessEffect.blockReserveRegen → no se autorecarga.
+            var regen = ant.AddComponent<ATPRegenSpell>();
+            regen.regenPerSecond = 6f;
+
+            // PackAwareness: cada hormiga escanea compañeras con ThreatScanner.
+            // Las viejas tienen autoabandono bajo → rara vez ayudan.
+            // Las jóvenes (Kushal, futuras) con más autoabandono + selfPower → condición cumplida.
+            var pack = ant.AddComponent<PackAwareness>();
+            pack.packRadius = 10f;
+            pack.missionAbandonoBonus = 0.2f;
+
+            ant.AddComponent<WeakOne>(); // CarryToRefuge las cuenta al entrar en radio
+        }
+
+        // ── Ambrosio (pulgón productor) ─────────────────────────────────────
+        // Cuerpo blando y grande. Produce 5 gotas (recurso limitado) cada 8 s.
+        // El pickup (HoneydewPickup) se spawna vía prefab → en el sandbox usamos el inspector.
+        Vector3 aphidPos = new Vector3(-1f, 0.6f, 4f);
+        GameObject aphid = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        aphid.name = "Ambrosio_Aphid"; aphid.transform.SetParent(root.transform);
+        aphid.transform.position = aphidPos; aphid.transform.localScale = new Vector3(0.8f, 0.6f, 0.9f);
+        aphid.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("Ambrosio_MAT", new Color(0.60f, 0.80f, 0.45f));
+        var producer = aphid.AddComponent<HoneydewProducer>();
+        producer.interval = 8f; producer.maxTotal = 5;
+        // dropPickup se asigna en inspector (prefab de HoneydewPickup esfera amarilla pequeña).
+        aphid.AddComponent<SimpleAnima>().bodyMass = 0.8f; // grande y lento = fácil de ignorar
+
+        // ── Honeydew pickup de ejemplo (sin prefab aún) ─────────────────────
+        // Esfera pequeña amarilla en el suelo junto a Ambrosio para probar la recolección.
+        GameObject drop = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        drop.name = "HoneydewDrop_Sample"; drop.transform.SetParent(root.transform);
+        drop.transform.position = aphidPos + new Vector3(0.8f, 0.1f, 0f);
+        drop.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
+        drop.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("Honeydew_MAT", new Color(0.95f, 0.85f, 0.20f));
+        drop.AddComponent<HoneydewPickup>().lifetime = 120f;
+
+        // ── Kushal (jugador) ─────────────────────────────────────────────────
+        // Hormiga jugadora: FormicAcidSpray (Q) + PullSpell (E→target) + HoneydewSpell (E→honeydew).
+        // En el sandbox es una cápsula; el avatar real se conecta desde la escena de Unity.
+        Vector3 kushalPos = new Vector3(0f, 0.5f, 2f);
+        GameObject kushal = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        kushal.name = "Kushal_Ant"; kushal.transform.SetParent(root.transform);
+        kushal.transform.position = kushalPos; kushal.transform.localScale = new Vector3(0.45f, 0.45f, 0.45f);
+        kushal.GetComponent<Renderer>().sharedMaterial =
+            MakeMaterial("Kushal_MAT", new Color(0.22f, 0.40f, 0.65f));
+
+        var kAnima = kushal.AddComponent<SimpleAnima>();
+        kAnima.agility = 0.6f; kAnima.strength = 0.5f; kAnima.bodyMass = 0.2f; kAnima.endurance = 0.6f;
+        // Kushal tiene autoabandono alto: es el personaje del jugador, dispuesto a ayudar.
+        // selfPower(Kushal) > viejas → peligroEspec(vieja) = floorDanger - kushalPower es bajo
+        // → condición: autoabandono(0.7) + bond(0.4) > peligroEspec → siempre cumplida para viejas.
+        kAnima.autoabandono = 0.7f;
+
+        var kLevel = kushal.AddComponent<CharacterLevel>();
+        kLevel.stats.level = 1; kLevel.yoga.level = 1; kLevel.bonds.level = 1;
+
+        // Selector de target (Tab para ciclar, Escape para deseleccionar).
+        kushal.AddComponent<CombatTargetSelector>();
+
+        // ThreatScanner + PackAwareness: Kushal detecta el peligro ambiental y evalúa ayudar.
+        // Con selfPower alto y autoabandono=0.7, casi siempre decide ayudar a las viejas.
+        var kScanner = kushal.AddComponent<ThreatScanner>();
+        kScanner.scanRadius = 25f; kScanner.fearThreshold = 0.3f; kScanner.maxFleeMagnitude = 3f;
+        var kPack = kushal.AddComponent<PackAwareness>();
+        kPack.packRadius = 12f; kPack.missionAbandonoBonus = 0.15f;
+
+        // Hechizos.
+        // PullSpell: range = alcance del jalón, force = magnitud inicial del impulso.
+        // Mantener F → el power sube hasta maxPullPower (forcejeo emergente con HomeImpulse).
+        var pull = kushal.AddComponent<PullSpell>();
+        pull.range = 4f; pull.force = 1.5f; pull.rampRate = 0.8f; pull.maxPullPower = 7f;
+        pull.energyCost = 0.5f; // gasta energía por tick mientras mantiene F
+
+        var honeydew = kushal.AddComponent<HoneydewSpell>();
+        honeydew.range = 3f; honeydew.energyRestore = 40f; honeydew.maxCharges = 5;
+        honeydew.castKey = KeyCode.E;
+
+        // Defensa corporal (ácido fórmico, Q).
+        // FormicAcidSpray hereda SpellBase: range = radio del spray, force = estrés por hit.
+        var acid = kushal.AddComponent<FormicAcidSpray>();
+        acid.range = 1.2f; acid.force = 0.35f; acid.maxCharges = 3;
+
+        // ── Depredadores (3 zonas de dificultad) ───────────────────────────────
+        // Zona fácil (Z=15-18): MARIQUITA — come pulgones/piojos; baja masa, poco peligrosa.
+        BuildPredator(root.transform, "Mariquita", new Vector3(-5f, 0.5f, 16f),
+            new Vector3(0.3f, 0.2f, 0.35f), new Color(0.85f, 0.15f, 0.10f),
+            agility: 0.5f, strength: 0.3f, mass: 0.2f);
+
+        // Zona media (Z=8-12): ESCARABAJO TERRESTRE — resistente, más lento.
+        BuildPredator(root.transform, "Escarabajo", new Vector3(8f, 0.5f, 10f),
+            new Vector3(0.5f, 0.35f, 0.55f), new Color(0.15f, 0.10f, 0.05f),
+            agility: 0.35f, strength: 0.6f, mass: 0.5f);
+
+        // Zona difícil (Z=18-22): ARAÑA LOBO — rápida, gran masa, muy peligrosa.
+        BuildPredator(root.transform, "Arana_Lobo", new Vector3(5f, 0.5f, 20f),
+            new Vector3(0.65f, 0.5f, 0.7f), new Color(0.40f, 0.38f, 0.30f),
+            agility: 0.75f, strength: 0.8f, mass: 0.7f);
+
+        Debug.Log("[SampleSceneBuilder] Nivel1Microcosmos_AUTO: mapa abierto (40x40 m), cueva-checkpoint " +
+                  "(CarryToRefuge×4), 5 hormigas viejas (ImpulseController+HomeImpulse+ThreatScanner+WeaknessEffect+WeakOne), " +
+                  "Ambrosio (HoneydewProducer ×5/8s), Kushal hormiga (PullSpell/HoneydewSpell/FormicAcidSpray), " +
+                  "3 depredadores por zona (Mariquita/Escarabajo/Araña). " +
+                  "⚠ Bake NavMesh en Window>AI>Navigation antes de Play.");
+    }
+
+    /// <summary>Crea un depredador de sandbox (cápsula + SimpleAnima con stats calibrados).</summary>
+    static void BuildPredator(Transform parent, string predName, Vector3 pos, Vector3 scale, Color col,
+        float agility, float strength, float mass)
+    {
+        GameObject pred = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        pred.name = predName; pred.transform.SetParent(parent);
+        pred.transform.position = pos; pred.transform.localScale = scale;
+        pred.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{predName}_MAT", col);
+
+        var anima = pred.AddComponent<SimpleAnima>();
+        anima.agility = agility; anima.strength = strength; anima.bodyMass = mass;
+        // Sin ITarget/faction: sandbox básico — la depredación real requiere Animal.
+        pred.AddComponent<AiBrain>().selfRelevance = 1.5f;
+        pred.AddComponent<AnimaController>();
     }
 
     // 1ª virtualización de yoga: solo necesita el componente en escena (UI OnGUI, arranca sola en Play).

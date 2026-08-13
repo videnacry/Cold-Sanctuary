@@ -16,6 +16,11 @@ using UnityEngine.AI;
 /// Requiere <see cref="CharacterLevel"/> en el mismo GO (para drenar <c>currentEnergy</c>)
 /// y opcionalmente un <see cref="NavMeshAgent"/> (para detener el movimiento cuando la
 /// energía llega a 0).
+///
+/// Interacción con <see cref="ATPRegenSpell"/>: cuando <see cref="blockReserveRegen"/> es
+/// true, el ATPRegenSpell no puede convertir fatReserves en energía — el ser queda atrapado
+/// sin poder regenerarse por sí solo. La energía puede bajar pero las reservas metabólicas
+/// permanecen intactas (no hay hambre adicional por el debilitamiento).
 /// </summary>
 [RequireComponent(typeof(CharacterLevel))]
 public class WeaknessEffect : MonoBehaviour
@@ -23,6 +28,10 @@ public class WeaknessEffect : MonoBehaviour
     [Header("Drenaje de energía")]
     [Tooltip("Energía drenada por segundo (unidades de currentEnergy).")]
     [Min(0.01f)] public float drainPerSecond = 5f;
+
+    [Tooltip("Bloquea ATPRegenSpell: las reservas metabólicas (fatReserves) NO se pueden usar " +
+             "para recargar energía. El ser no puede regenerarse solo y necesita ayuda externa.")]
+    public bool blockReserveRegen = true;
 
     [Tooltip("Si true, el NavMeshAgent se deshabilita al llegar a 0 energía " +
              "y se re-habilita cuando la energía sube de nuevo.")]

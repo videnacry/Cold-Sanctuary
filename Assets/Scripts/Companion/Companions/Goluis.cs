@@ -71,7 +71,7 @@ public class Goluis : CompanionBase
     {
         base.Update();
 
-        if (pressureActive && _playerMind != null)
+        if (pressureActive && _playerMind != null && _playerTransform != null)
         {
             float dist = Vector3.Distance(transform.position, _playerTransform.position);
             if (dist <= proximityRadius)

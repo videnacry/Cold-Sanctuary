@@ -138,7 +138,9 @@ public abstract class CompanionBase : Anima, IBondable
 
     void CheckPlayerProximity()
     {
-        if (_playerMind == null) return;
+        // _playerTransform se cachea una sola vez en Start(); si el GameObject "Player" se
+        // destruye/reemplaza en runtime (p. ej. body-swap/posesión), la referencia queda colgante.
+        if (_playerMind == null || _playerTransform == null) return;
 
         float dist = Vector3.Distance(transform.position, _playerTransform.position);
         bool inRange = dist <= proximityRadius;

@@ -102,7 +102,7 @@ public class CombatAbilityBar : MonoBehaviour
         {
             if (Input.GetKeyDown(_bar[i].hotkey))
             {
-                var target = CombatTargetSelector.Instance?.CurrentTarget;
+                var target = CombatTargetSelector.Instance?.CurrentIngredientMob;
                 if (target != null) UseAbility(i, target);
                 else Debug.Log("[AbilityBar] Sin target seleccionado.");
                 break;
@@ -173,7 +173,7 @@ public class CombatAbilityBar : MonoBehaviour
     {
         if (data.payload is CombatAbility ability)
         {
-            var target = CombatTargetSelector.Instance?.CurrentTarget;
+            var target = CombatTargetSelector.Instance?.CurrentIngredientMob;
             if (target != null)
                 UseAbility(ability, target);
             else

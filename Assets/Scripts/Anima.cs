@@ -60,6 +60,10 @@ public abstract class Anima : MonoBehaviour, IAptitudes
                                                         // depredador + defensa (docs/stats-as-truth.md §2, Predation).
     [HideInInspector] public float magicAura    = 0f;   // aura mágica FIRMADA: + inspira (bonds fáciles) / −
                                                         // destructiva (más temida). Decae con `MagicAura`.
+    [HideInInspector] public float autoabandono = 0.3f; // disposición al auto-sacrificio (0=solo piensa en sí / 1=total
+                                                        // altruista). Determina si el ser se detiene a ayudar a
+                                                        // compañeros en peligro (PackAwareness). Escala con bond y
+                                                        // se dispara temporalmente en "modo misión".
 
     // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
     // desde Physiognomy más adelante).
