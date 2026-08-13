@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#61 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#63 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,15 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **13-ago (PR #63):** **`CastMode` en `SpellBase` + `PullSpell` fusionada + `WalkSpell`**. (1) Arreglado el
+  **choque de compilación**: había dos `class PullSpell` (Microcosmos + Transformation) → CS0101; borrada la
+  huérfana (`Transformation/PullSpell.cs`, NavMesh, sin cablear). (2) `SpellBase` + `CastMode`
+  (Instant/Repeat/Channel/Charge) + `PollInput()` opt-in + hooks `OnCast*` → mantener-tecla configurable por
+  hechizo (fireball=Repeat, jalar/caminar=Channel, transformación=Charge/Instant). (3) `PullSpell` **fusiona**
+  las dos verdades: forcejeo emergente por `ImpulseController` (Micro) + física por stats (tope = `force+Strength`,
+  arranque = `max(force, masaObjetivo)`, sube solo si NO hay **progreso hacia el caster**, ambos gastan ATP ∝
+  fuerza). (4) `WalkSpell` (contraparte a uno mismo: mínimo para mover el propio peso, sube si bloqueado, cansa).
+  *Falta:* cablear `WalkSpell` a un sandbox; migrar `FireSpell`→Repeat / `TransformationSpell`→Charge si se quiere.
 - **12-ago (PR #62):** **Sistema de hechizos Nivel 1 Microcosmos** (hormiga / debilitamiento).
   `SpellBase` (abstracta: `range`/`force`/`duration`, `CanCast`/`Cast`, `InRange`, `EffectiveForce` = fuerza+Strength−masa-target−resistencia).
   `WeaknessEffect` (hechizo de vejez; drena `currentEnergy` a ritmo fijo; deshabilita `NavMeshAgent` en 0;

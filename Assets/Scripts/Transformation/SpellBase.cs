@@ -1,6 +1,17 @@
 using UnityEngine;
 
 /// <summary>
+/// Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos). No es una sola
+/// conducta pegada a la base: cada hechizo elige su modo.
+///   • <b>Instant</b> — un disparo por pulsación (mantener no hace nada).
+///   • <b>Repeat</b>  — RELANZA cada `repeatCooldown` mientras se mantiene (p.ej. fireball: sale una tras otra).
+///   • <b>Channel</b> — SOSTIENE/acumula el efecto mientras se mantiene (p.ej. Jalar/Caminar: el forcejeo sube).
+///   • <b>Charge</b>  — acumula mientras mantienes y SUELTA al soltar; más carga = efecto mayor (p.ej. la
+///                      transformación: mantener alarga la duración/potencia).
+/// </summary>
+public enum CastMode { Instant, Repeat, Channel, Charge }
+
+/// <summary>
 /// Base abstracta para todos los hechizos del juego (docs/stats-as-truth.md §hechizos).
 ///
 /// Un hechizo tiene tres parámetros universales:
@@ -30,6 +41,56 @@ public abstract class SpellBase : MonoBehaviour
 
     [Tooltip("Coste de energía (barra de ATP/CharacterLevel) por cada uso. 0 = gratis.")]
     [Min(0f)] public float energyCost = 0f;
+
+    [Header("Modo de lanzamiento (mantener tecla)")]
+    [Tooltip("Cómo responde a mantener la tecla: Instant / Repeat / Channel / Charge.")]
+    public CastMode castMode = CastMode.Instant;
+    [Tooltip("Tecla para lanzar/mantener con input directo. None = el hechizo no usa input propio (lo dispara la IA/otro).")]
+    public KeyCode castKey = KeyCode.None;
+    [Tooltip("Repeat: segundos entre relanzamientos mientras se mantiene.")]
+    [Min(0.05f)] public float repeatCooldown = 0.5f;
+
+    float _repeatTimer;
+    float _chargeTime;
+
+    // ── Manejo de input por modo (OPT-IN: la subclase lo llama desde su Update) ─
+    /// <summary>Dispatch de input según `castMode` sobre `castKey`. Llamar desde el `Update` de la subclase.
+    /// Invoca los hooks `OnCast*` correspondientes. Si `castKey` es None, no hace nada.</summary>
+    protected void PollInput()
+    {
+        if (castKey == KeyCode.None) return;
+        switch (castMode)
+        {
+            case CastMode.Instant:
+                if (Input.GetKeyDown(castKey)) OnCastPressed();
+                break;
+            case CastMode.Repeat:
+                if (Input.GetKey(castKey))
+                {
+                    _repeatTimer -= Time.deltaTime;
+                    if (_repeatTimer <= 0f) { OnCastPressed(); _repeatTimer = repeatCooldown; }
+                }
+                else _repeatTimer = 0f;
+                break;
+            case CastMode.Channel:
+                if (Input.GetKeyDown(castKey)) OnChannelStart();
+                if (Input.GetKey(castKey)) OnChannelTick(Time.deltaTime);
+                if (Input.GetKeyUp(castKey)) OnChannelEnd();
+                break;
+            case CastMode.Charge:
+                if (Input.GetKeyDown(castKey)) _chargeTime = 0f;
+                if (Input.GetKey(castKey)) _chargeTime += Time.deltaTime;
+                if (Input.GetKeyUp(castKey)) { OnChargeRelease(_chargeTime); _chargeTime = 0f; }
+                break;
+        }
+    }
+
+    // Hooks que la subclase sobreescribe según su modo (por defecto no hacen nada).
+    protected virtual void OnCastPressed() { }              // Instant / Repeat
+    protected virtual void OnChannelStart() { }             // Channel: al empezar a mantener
+    protected virtual void OnChannelTick(float dt) { }      // Channel: cada frame mientras se mantiene
+    protected virtual void OnChannelEnd() { }               // Channel: al soltar
+    protected virtual void OnChargeRelease(float chargeTime) { }  // Charge: al soltar, con el tiempo acumulado
 
     // ── API pública ───────────────────────────────────────────────────────────
 
