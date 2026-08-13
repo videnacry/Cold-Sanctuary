@@ -728,6 +728,7 @@ Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus s
 - [ ] **Conversión (Ambrosio_Convert)**: HUD "SoulConvert". El ser arranca Toro+Bear (grande/fuerte/lento). Botón
       **A/relativa** → hormiga cuya forma la modula la hormiga; **B/literal** → misma forma exacta, tamaño hormiga.
       **Reset** vuelve al original para comparar A vs B. (B es el modo de las reencarnaciones: identidad marcada.)
+- [ ] **Mente por blend** (PR #72): `OsoMenteHumana` (mente Human) suelta frases `[Mente]` con tono **Viento/Fuego**; `Oso_bonusPack3` (mente Bear) con tono **Tierra** → el tono emerge del blend, no del cuerpo.
 - [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
 
 ## 21. Alma COMPARTIDA (reencarnaciones) — sandbox `AlmaCompartida_AUTO`
