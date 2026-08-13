@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#68 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#69 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **14-ago (PR #69, doc):** **`soul-relations-reincarnation.md`** — diseño avanzado del alma: (1) blend/conversión por **DISTRIBUCIÓN** (una función reusable; tu fórmula simplifica a "reescalar cada arquetipo al presupuesto de la base × dominio"; sirve para blend Y transformación; decisión abierta A/B); (2) **relaciones por especie/karma** (`speciesBond` mezclables; base evolutiva foca↔oso−, perro↔humano+; `openness` para especies nuevas; → inclinación/thoughts/autoabandono); (3) **pensamientos por capacidad** (`floor(cap·dom/100)`, umbral entero; 2 pools; coste `K`); (4) **reencarnación por ALMA COMPARTIDA** (varios cuerpos = una anima; stats/bonds se propagan; lesiones→reinicios; nombres idénticos; **perezoso** por era). *Siguiente:* cerrar sabor de conversión → `SoulMath.Remap`.
 - **13-ago (PR #68):** **alma por MEZCLA — FASE 1 (el motor)**. `Soul/BlendSlot` (arquetipo + dominio % +
   `shareDomain`), `Soul/Archetypes` (perfiles en código: cuerpos Human/Bear/Wolf/Bunny/Lion/Toro/Gallina/Mono +
   mentes Human/Bear/Lion/Rock/Fire/Agua/Mono + bonusPack1-4), `Soul/SoulComposition.Resolve()` (escribe las 12

@@ -1,0 +1,90 @@
+# Alma (avanzado): conversión por distribución · relaciones por especie · pensamientos por capacidad · reencarnación compartida
+
+Diseño (2026-08-14). Extiende [`soul-composition-blend.md`](soul-composition-blend.md). Todo son mecánicas de
+**stats + thoughts** (nada de scripting): las funciones de `Animal` (sentir peligro/huir/ayudar al pack) deben
+**migrarse a evaluaciones de stats** — es el mismo comportamiento, movido a datos.
+
+## 1. Blend / Conversión por DISTRIBUCIÓN (una sola función reutilizable)
+**Problema de la fase 1** (media ponderada de valores absolutos): un arquetipo al 1% es **casi despreciable**.
+**Tu propuesta** lo arregla mezclando **distribuciones** (la *forma* de dónde están los puntos), no valores crudos.
+
+**Tu fórmula, simplificada (álgebra):**
+```
+contrib_X[k] = (X[k]/ΣX) · Hbase[k] / (Hbase[k]/ΣH) · dominio
+             = (X[k]/ΣX) · ΣH · dominio          // Hbase[k] se cancela ↑
+```
+O sea: **reescala cada arquetipo al "presupuesto" de la base (ΣH), conservando su forma, y pondera por dominio.**
+El `×Hbase[k] ÷Hbase[k]%` se anula → no hace falta.
+
+**Son DOS operaciones con la misma idea:**
+- **Blend (crear base desde varios arquetipos):** presupuesto de referencia = el del **arquetipo primario** (mayor
+  dominio); `final[k] = Σ_X dominio_X · X[k] · (ΣRef/ΣX)`. Así 1% de conejo **empuja la forma** hacia el conejo
+  (más agilidad, menos fuerza) al 1%, a escala del oso — ya no es despreciable.
+- **Conversión / transformación (un ser → cuerpo nuevo):** **conserva la identidad** (su distribución actual) en el
+  cuerpo nuevo. **Dos lecturas** (hay que elegir el "sabor"):
+  - **(A) tu fórmula:** `nuevo[k] = (actual[k]/Σactual) · baseNueva[k]` → tu énfasis **× la capacidad del cuerpo
+    nuevo** en cada stat (un oso fuerte que se vuelve hormiga = hormiga que tira a fuerte, pero topada por lo
+    hormiga). Reencarna "quién eres" *limitado por el nuevo cuerpo*.
+  - **(B) reescala uniforme:** `nuevo[k] = (actual[k]/Σactual) · ΣbaseNueva` → conserva tu **forma exacta**,
+    solo redimensionada al presupuesto del cuerpo nuevo (una "mini-tú con forma de hormiga").
+  Recomendación: **(A)** casa mejor con "las capacidades del cuerpo mandan"; **(B)** es más fiel a la identidad.
+- **Una función específica** `SoulMath.Remap(...)`, **recalculable** al cambiar arquetipos (crea los stats base).
+- *Decisión abierta:* (A) vs (B) para la conversión; y presupuesto de referencia = **primario** (recomendado).
+
+## 2. Relaciones por especie (bonds / karma)
+Cada alma lleva un mapa **`speciesRelations`**: por cada anima-base existente, un número (**0 = base**; **+** buena
+relación, **−** mala). Se **rellena** con la vivencia y **decide** acercarse/vincular vs huir/pelear.
+- **Arquetipos `speciesBond`** (`bearBond`/`wolfBond`/`humanBond`…): declaran la **base kármica** de relación con
+  **todas** las especies (incluida la propia). **Mezclables** por dominio/`shareDomain` igual que cuerpo/mente →
+  `humanBond+bearBond` = humano con **más agrado a osos** que `humanBond+bunnyBond`.
+- **Base kármica** (evolución): Foca→Oso **negativo** (depredada por generaciones); Conejo→Lobo negativo;
+  Perro↔Humano **positivo**. Es la "condición inicial".
+- **Se llena con puntos** en el juego: cruzarse (guardas la **clase predominante** del otro), depredación, ayuda,
+  y los **bonds individuales** (tu array de personajes) suman a la relación con su especie.
+- **Especie NUEVA** (nunca vista, p.ej. oso que ve un lobo por 1ª vez): la relación inicial = **`openness`** =
+  `f(media de tus relaciones positivas)` → cuantas más buenas relaciones, **más cálido** con desconocidos (y al revés).
+- **Los puntos → stats → inclinación / pensamiento**, y modulan **`autoabandono`**: el **amor** sube autoabandono
+  (te sacrificas), el **amor propio** lo baja. (Ojo al equilibrio; quizá reformular como dos ejes.)
+
+**Cálculo propuesto:**
+```
+relacion(yo, X) = blend(speciesBonds)[X]  +  Σ interacciones(X)  +  Σ bonds_individuales(miembros de X)·k
+al conocer especie nueva Y:  relacion(yo, Y) = openness = c · media(relaciones > 0)
+inclinación: relacion > θ → acercarse/vincular ;  < −θ → huir/pelear ;  intermedio → cauto
+```
+Al crecer un bond → generar **thoughts** (amistad/compasión/bienestar) que empujan el temperamento (respeto/deseo
+de dominar/cariño/venganza) — vía el **campo mental** (`ThoughtField`) que ya existe.
+
+## 3. Pensamientos por capacidad (dos pools)
+- **Capacidad** = `f(inteligencia: reasoning+memory+creativity+discipline)` → **entero**.
+- **Pool base (biológica/kármica):** por cada `MindArchetype`, `nThoughts = floor(capacidad · dominio/100)`.
+  Umbral **entero**: un arquetipo al **1%** no da ningún pensamiento hasta **capacidad ≥ 100**; **entrenar** la mente
+  sube la capacidad y **desbloquea** de golpe uno de cada arquetipo al 1%. `dogMind 3%` a capacidad 100 → 3 ideas de perro.
+- **Pool actual (aprendida/pre-cargada):** se llena en juego (o de antemano para crear un personaje); **cada
+  pensamiento cuesta `K`** de capacidad (`K` = 1/5/10, **perilla de rendimiento**).
+- **Función de recálculo** al cambiar capacidad/arquetipos: recomputa `floor(cap·dom/100)` por arquetipo, añade/quita.
+- **Valoración:** el `floor` es elegante y da progresión natural. Sugerencia: la capacidad se reparte —primero la
+  base kármica (barata), el resto para la actual a `K` cada una— para no doblar coste.
+
+## 4. Reencarnación: ALMA COMPARTIDA (expansión espaciotemporal)
+Varios GameObjects (p.ej. `AmbrosioMelaza` en la cueva, `AmbrosioHormiga` en la cocina) **comparten UNA alma**
+(stats/bonds canónicos). Es una **"posesión libre"**: la misma `Anima` referida por varios cuerpos.
+- Cada cuerpo = `SoulComposition` que **referencia el alma compartida** + sus propios arquetipos (bodyAnt +
+  humanMind + ref a Ambrosio) y **convierte** los stats del alma a su cuerpo (§1).
+- **Ganar/perder stats** en cualquier cuerpo activo **escribe de vuelta** al alma (en su distribución canónica) →
+  **se propaga a todos** (cada cuerpo re-convierte). Lesiones **bajan** stats → **no** es subida constante → permite
+  **reinicios**: si la era-3 se debilita, todas las reencarnaciones se debilitan; al visitar la era-2 después, ves a
+  Ambrosio **tan débil como el último que tocaste** (era-2). "Conectados desafiando al tiempo y el espacio."
+- **Bonds acumulables** en el alma: en la era-3 Medea vincula con la reencarnación de Ruth → **todas las Medeas**
+  reciben a Ruth (incrementado) en sus bonds.
+- **Nombres idénticos** en todas las reencarnaciones (de momento) → hace **obvio y natural** el renacimiento, ata
+  coincidencias, y **facilita las historias** (cada viaje de era = una *continuación* en otro contexto).
+- **Rendimiento (clave):** **perezoso** — solo el cuerpo de la **era activa** convierte en vivo; los inactivos
+  guardan el valor del alma y **convierten al visitar** esa era. No es un recálculo global por frame → viable.
+
+## Prioridad y orden
+- **Lo más deseable ahora (tú):** la **conversión** (§1) + **bonds acumulables** (§4).
+- Orden sugerido: (1) cerrar el "sabor" de la conversión (A/B) → (2) `SoulMath.Remap` + `SoulComposition.ConvertTo`
+  → (3) alma compartida `SharedSoul` (perezosa) → (4) `speciesRelations`/`speciesBond` → (5) pensamientos por capacidad.
+- Antes de construir: **migrar las funciones de `Animal` a evaluaciones de stats** (huir/ayudar-al-pack) y unificar
+  con la IA de impulsos del compañero (evitar dos sistemas de amenaza).
