@@ -46,7 +46,7 @@ public abstract class SpellBase : MonoBehaviour
     [Tooltip("Cómo responde a mantener la tecla: Instant / Repeat / Channel / Charge.")]
     public CastMode castMode = CastMode.Instant;
     [Tooltip("Tecla para lanzar/mantener con input directo. None = el hechizo no usa input propio (lo dispara la IA/otro).")]
-    public KeyCode castKey = KeyCode.None;
+    public KeyCode spellKey = KeyCode.None;
     [Tooltip("Repeat: segundos entre relanzamientos mientras se mantiene.")]
     [Min(0.05f)] public float repeatCooldown = 0.5f;
 
@@ -54,18 +54,18 @@ public abstract class SpellBase : MonoBehaviour
     float _chargeTime;
 
     // ── Manejo de input por modo (OPT-IN: la subclase lo llama desde su Update) ─
-    /// <summary>Dispatch de input según `castMode` sobre `castKey`. Llamar desde el `Update` de la subclase.
-    /// Invoca los hooks `OnCast*` correspondientes. Si `castKey` es None, no hace nada.</summary>
+    /// <summary>Dispatch de input según `castMode` sobre `spellKey`. Llamar desde el `Update` de la subclase.
+    /// Invoca los hooks `OnCast*` correspondientes. Si `spellKey` es None, no hace nada.</summary>
     protected void PollInput()
     {
-        if (castKey == KeyCode.None) return;
+        if (spellKey == KeyCode.None) return;
         switch (castMode)
         {
             case CastMode.Instant:
-                if (Input.GetKeyDown(castKey)) OnCastPressed();
+                if (Input.GetKeyDown(spellKey)) OnCastPressed();
                 break;
             case CastMode.Repeat:
-                if (Input.GetKey(castKey))
+                if (Input.GetKey(spellKey))
                 {
                     _repeatTimer -= Time.deltaTime;
                     if (_repeatTimer <= 0f) { OnCastPressed(); _repeatTimer = repeatCooldown; }
@@ -73,14 +73,14 @@ public abstract class SpellBase : MonoBehaviour
                 else _repeatTimer = 0f;
                 break;
             case CastMode.Channel:
-                if (Input.GetKeyDown(castKey)) OnChannelStart();
-                if (Input.GetKey(castKey)) OnChannelTick(Time.deltaTime);
-                if (Input.GetKeyUp(castKey)) OnChannelEnd();
+                if (Input.GetKeyDown(spellKey)) OnChannelStart();
+                if (Input.GetKey(spellKey)) OnChannelTick(Time.deltaTime);
+                if (Input.GetKeyUp(spellKey)) OnChannelEnd();
                 break;
             case CastMode.Charge:
-                if (Input.GetKeyDown(castKey)) _chargeTime = 0f;
-                if (Input.GetKey(castKey)) _chargeTime += Time.deltaTime;
-                if (Input.GetKeyUp(castKey)) { OnChargeRelease(_chargeTime); _chargeTime = 0f; }
+                if (Input.GetKeyDown(spellKey)) _chargeTime = 0f;
+                if (Input.GetKey(spellKey)) _chargeTime += Time.deltaTime;
+                if (Input.GetKeyUp(spellKey)) { OnChargeRelease(_chargeTime); _chargeTime = 0f; }
                 break;
         }
     }
