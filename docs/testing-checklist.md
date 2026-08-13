@@ -723,6 +723,11 @@ Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus s
 - [ ] **Oso_bonusPack3** (Bear/Bear + bonusPack3): mismas aptitudes de oso **+2.5 a todo** (stats altísimos), sin
       cambiar personalidad.
 - [ ] El **tamaño** se ve en escena (el oso más grande que Panterilia; Bunny/Gallina serían pequeños).
+- [ ] **Blend por DISTRIBUCIÓN** (PR #70): un arquetipo al 1% empuja la forma (ya no despreciable). Panterilia
+      (Human 90 + Lion 5) sale humana con leve sesgo felino.
+- [ ] **Conversión (Ambrosio_Convert)**: HUD "SoulConvert". El ser arranca Toro+Bear (grande/fuerte/lento). Botón
+      **A/relativa** → hormiga cuya forma la modula la hormiga; **B/literal** → misma forma exacta, tamaño hormiga.
+      **Reset** vuelve al original para comparar A vs B. (B es el modo de las reencarnaciones: identidad marcada.)
 - [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)

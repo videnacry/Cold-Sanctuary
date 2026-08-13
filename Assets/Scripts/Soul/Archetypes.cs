@@ -54,6 +54,7 @@ public static class Archetypes
             { "Toro",    MakeBody(1.70f, 0.8f, 0.8f, 2.0f, 2.2f, 1.4f) },
             { "Gallina", MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
             { "Mono",    MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
+            { "Ant",     MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
         };
         _minds = new Dictionary<string, ArchetypeProfile>
         {                          // tono, com, rea, mem, cre, soc, dis
