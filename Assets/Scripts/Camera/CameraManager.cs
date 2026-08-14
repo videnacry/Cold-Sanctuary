@@ -151,14 +151,21 @@ public class CameraManager : MonoBehaviour
 
         while (t < transitionDuration)
         {
+            // El anchor es hijo del Player; si el Player se destruye/reemplaza a mitad de
+            // transición (p. ej. body-swap/posesión), la referencia queda colgante.
+            if (anchor == null) { _transitionRoutine = null; yield break; }
+
             t += Time.deltaTime;
             float p = Mathf.SmoothStep(0f, 1f, t / transitionDuration);
             _cam.position = Vector3.Lerp(startPos, anchor.position, p);
             _cam.rotation = Quaternion.Slerp(startRot, anchor.rotation, p);
             yield return null;
         }
-        _cam.position = anchor.position;
-        _cam.rotation = anchor.rotation;
+        if (anchor != null)
+        {
+            _cam.position = anchor.position;
+            _cam.rotation = anchor.rotation;
+        }
         _transitionRoutine = null;
     }
 
