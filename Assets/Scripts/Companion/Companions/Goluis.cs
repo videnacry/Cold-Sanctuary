@@ -11,14 +11,24 @@ public class Goluis : MonoBehaviour
     public DialogueSequence pressureSequence;
 
     [Header("Goluis — Pressure System")]
-    [Tooltip("Sube estrés del jugador pero también su resistencia mental.")]
+    [Tooltip("Override manual. Normalmente la presión EMERGE de su estado (cansancio/estrés), no es un rasgo fijo: " +
+             "Goluis mete prisa cuando hay mucho trabajo, va sin dormir o tiene que salir pronto al otro turno.")]
     public bool pressureActive;
+    [Tooltip("Umbrales de estado por encima de los cuales la presión emerge sola.")]
+    public float fatigueThreshold = 0.6f, stressThreshold = 0.6f;
     public float pressureStressRate = 0.005f;
     [Range(0f, 1f)] public float resistanceBuilt;
 
     MoodState _mood;
+    Anima _anima;
 
-    void Awake() { _mood = GetComponent<MoodState>(); }
+    /// <summary>Presión REAL = override manual O estado degradado (cansancio/estrés). Así el mal humor es situacional.</summary>
+    public bool UnderPressure =>
+        pressureActive
+        || (_mood != null && _mood.fatigue > fatigueThreshold)
+        || (_anima != null && _anima.stress > stressThreshold);
+
+    void Awake() { _mood = GetComponent<MoodState>(); _anima = GetComponent<Anima>(); }
     void OnEnable()  { if (_mood != null) _mood.OnPlayerEnter += OnNearby; }
     void OnDisable() { if (_mood != null) _mood.OnPlayerEnter -= OnNearby; }
 
@@ -26,7 +36,7 @@ public class Goluis : MonoBehaviour
     {
         if (_mood == null) return;
 
-        if (pressureActive && _mood.PlayerInRange && _mood.PlayerMind != null)
+        if (UnderPressure && _mood.PlayerInRange && _mood.PlayerMind != null)
         {
             _mood.PlayerMind.DrainMind(pressureStressRate * Time.deltaTime, MindChannel.Stress);
             resistanceBuilt = Mathf.Clamp01(resistanceBuilt + 0.00001f * Time.deltaTime);
@@ -39,7 +49,7 @@ public class Goluis : MonoBehaviour
     void OnNearby()
     {
         if (DialogueManager.Instance == null || DialogueManager.Instance.IsPlaying) return;
-        if (pressureActive && pressureSequence != null) DialogueManager.Instance.Play(pressureSequence);
+        if (UnderPressure && pressureSequence != null) DialogueManager.Instance.Play(pressureSequence);
         else if (greetingSequence != null) DialogueManager.Instance.Play(greetingSequence);
     }
 }

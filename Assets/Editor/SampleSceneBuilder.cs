@@ -1423,6 +1423,7 @@ public static class SampleSceneBuilder
         sc.applyScale = false;
         sc.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });
         go.AddComponent<SocialField>();   // (c) su "actitud" (ánimo/fiesta) contagia a vecinos con bond — emergente
+        go.AddComponent<MoodDynamics>();  // el estrés (cortisol) sube por fatiga/sueño/hambre → mal humor situacional
         return go.AddComponent<MoodState>();
     }
 

@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#83 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#84 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **14-ago (PR #84):** **dinámica de humores/estrés** `MoodDynamics`: el estrés (cortisol) es químico y **sube por el estado** (fatiga/sueño/hambre/reservas bajas), baja descansado; `Anima.stress` lo refleja. El mal humor de **Goluis es situacional** (`UnderPressure` emerge de `fatigue`/`stress`, ya no es un flag fijo). Enganchado en el núcleo de compañeros del builder. *Pendiente:* desgaste de reservas por acciones de trabajo (de pie/fuerza).
 - **14-ago (PR #83):** **humores derivados de la personalidad** `HumorProfile.Apply`: los humores base salen de los stats (adrenalina ← sociability+creatividad+agilidad−disciplina; serotonina ← afabilidad+sociability; cortisol ← sensibilidad−composure; glucosa ← endurance+masa; calcio ← disciplina+composure). Se aplican al resolver el blend (`SoulComposition.WriteStats`, compañeros) y en `Animal.Init` (animales con `Mind`). Así el `SocialField` **diferencia las actitudes solo** (Gohageneis alto adrenalina/serotonina → fiesta; Panterilia más cortisol → calma). *Falta:* reducir los componentes bespoke de compañero a lo puramente mecánico.
 - **14-ago (PR #82):** **(c) campo social global emergente** `SocialField`. Cada anima **contagia su ánimo** (sube serotonina/adrenalina) a las animas cercanas **con bond ≥ umbral y sin threat**, escalado por su `sociability` × (positividad+energía de sus humores). Generaliza `ThoughtField`; el jugador es una anima más. Enganchado a los compañeros (en `MakeCompanionCore`) → su "actitud" (fiesta/calma) **emerge** de sus stats/humores/bonds en vez de hardcodearse. *Falta:* derivar los humores por-compañero de su perfil (hoy default) y reducir los componentes bespoke (celebración/observación) a lo puramente mecánico.
 - **14-ago (PR #81):** **(a) autoabandono derivado + (b) huir/ayudar por bonds+threat+autoabandono en `Animal`**. `Autoabandono.From(anima)` = entrega/(entrega+autoconservación) [entrega ← afabilidad+sensibilidad+bond medio; autoconservación ← composure+disciplina+instinto], ya no un campo crudo; `Anima.RecomputeAutoabandono` (llamado en `Animal.Init` y al decidir). `Animal.EvaluateThreat`: el **bond baja la amenaza** (bond 100 → amenaza 0, confianza no huida). `ResolveReaction`: el `autoabandono` envalentona (myPower×(1+autoabandono)) y por las crías planta cara si **(autoabandono + vínculo) > peligro** (desventaja). *Falta:* ayudar a un aliado LEJANO en peligro (navegación de `PackAwareness`); unificar con las hormigas.
