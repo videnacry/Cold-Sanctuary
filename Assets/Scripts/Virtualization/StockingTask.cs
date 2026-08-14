@@ -27,6 +27,7 @@ public class StockingTask : VirtualTask
         if (stationId == pickStation)
         {
             _held = actionId;
+            SpendExertion();   // levantar de la caja cansa
             Debug.Log($"[Abastecer] Coges «{actionId}» de la caja.");
         }
         else if (stationId == slotStation)
@@ -35,6 +36,7 @@ public class StockingTask : VirtualTask
             if (_held == actionId)
             {
                 _placed++;
+                SpendExertion();   // colocar en el estante cansa
                 Debug.Log($"[Abastecer] «{_held}» guardado en su sitio ({_placed}/{total}).");
                 _held = null;
                 if (_placed >= total) { _done = true; Debug.Log($"[Abastecer] Todo en su sitio — {areaLabel} abastecida."); }
