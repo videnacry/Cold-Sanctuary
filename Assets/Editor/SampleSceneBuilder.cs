@@ -1412,6 +1412,19 @@ public static class SampleSceneBuilder
                   "reencarnaciones (docs soul-relations-reincarnation §4).");
     }
 
+    // Núcleo de un compañero por composición: SimpleAnima + Mind + SoulComposition(arquetipo) + MoodState.
+    static MoodState MakeCompanionCore(GameObject go, string archetype)
+    {
+        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Mind>();
+        SoulComposition sc = go.AddComponent<SoulComposition>();
+        sc.bodies.Add(new BlendSlot { archetype = archetype, domain = 100f });
+        sc.minds.Add(new BlendSlot { archetype = archetype, domain = 100f });
+        sc.applyScale = false;
+        sc.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });
+        return go.AddComponent<MoodState>();
+    }
+
     // Compañero por COMPOSICIÓN (fase 5): reproduce a una companion desde su arquetipo, sin heredar CompanionBase.
     static void MakeComposedCompanion(Transform parent, string name, string archetype, Vector3 pos, Color col)
     {
@@ -2185,30 +2198,53 @@ public static class SampleSceneBuilder
         WorldCharacter magnateWC = maestra.AddComponent<WorldCharacter>();
         magnateWC.characterName = "Maestra";
 
+        // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): SimpleAnima + SoulComposition(arquetipo) +
+        // Mind + MoodState(curvas+anchors) + su componente de comportamiento propio.
         GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));
         gohageneis.transform.SetParent(charactersGroup.transform);
-        var goha = gohageneis.AddComponent<Gohageneis>();
-        goha.companionName = "Gohageneis";
+        MoodState gohaMood = MakeCompanionCore(gohageneis, "Gohageneis");
+        gohaMood.restingMoodMin = 0.65f; gohaMood.restingMoodMax = 0.9f; gohaMood.moodModMin = 0.4f; gohaMood.moodModMax = 1.2f; gohaMood.fatigueRate = 0.00008f;
+        gohaMood.anchors.Add(new ThoughtAnchor("celebrate_life", 0.9f, 0.001f));
+        gohaMood.anchors.Add(new ThoughtAnchor("include_everyone", 0.85f, 0.001f));
+        gohaMood.anchors.Add(new ThoughtAnchor("hide_pain", 0.7f, 0.005f));
+        gohaMood.anchors.Add(new ThoughtAnchor("trust_joy", 0.8f, 0.001f));
+        gohageneis.AddComponent<Gohageneis>();
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
         GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
         goluis.transform.SetParent(charactersGroup.transform);
-        var gol = goluis.AddComponent<Goluis>();
-        gol.companionName = "Goluis";
+        MoodState golMood = MakeCompanionCore(goluis, "Goluis");
+        golMood.restingMoodMin = 0.3f; golMood.restingMoodMax = 0.65f; golMood.moodModMin = -0.3f; golMood.moodModMax = 0.7f; golMood.fatigueRate = 0.0003f;
+        golMood.anchors.Add(new ThoughtAnchor("yoga_skepticism", -0.9f, 0.002f));
+        golMood.anchors.Add(new ThoughtAnchor("work_hard", 0.85f, 0.001f));
+        golMood.anchors.Add(new ThoughtAnchor("family_first", 0.95f, 0f));
+        golMood.anchors.Add(new ThoughtAnchor("trust_people", -0.4f, 0.005f));
+        goluis.AddComponent<Goluis>();
         goluis.AddComponent<WorldCharacter>().characterName = "Goluis";
 
         GameObject panterilia = MakePlaceholderPerson("Panterilia_Post", new Vector3(0f, 1f, -12f), new Color(0.55f, 0.25f, 0.5f));
         panterilia.transform.SetParent(charactersGroup.transform);
-        var pant = panterilia.AddComponent<Panterilia>();
-        pant.companionName = "Panterilia";
+        MoodState pantMood = MakeCompanionCore(panterilia, "Panterilia");
+        pantMood.restingMoodMin = 0.55f; pantMood.restingMoodMax = 0.8f; pantMood.moodModMin = 0.3f; pantMood.moodModMax = 1f; pantMood.stressPenalty = 0.6f; pantMood.fatigueRate = 0.00015f;
+        pantMood.anchors.Add(new ThoughtAnchor("work_hard", 0.85f, 0.001f));
+        pantMood.anchors.Add(new ThoughtAnchor("protect_daughter", 0.95f, 0f));
+        pantMood.anchors.Add(new ThoughtAnchor("trust_nature", 0.3f, 0.01f));
+        pantMood.anchors.Add(new ThoughtAnchor("chemical_reliance", 0.6f, 0.02f));
+        panterilia.AddComponent<Panterilia>();
         panterilia.AddComponent<WorldCharacter>().characterName = "Panterilia";
 
-        // Irosene — compañera motivacional. Reside en el nivel submarino pero visita a Panterilia,
-        // así que su puesto orientativo va junto a ella (ver docs/character-irosene.md).
+        // Irosene — compañera motivacional (canal primario = Satisfacción). Ver docs/character-irosene.md.
         GameObject irosene = MakePlaceholderPerson("Irosene_Post", new Vector3(3f, 1f, -13f), new Color(0.90f, 0.55f, 0.40f));
         irosene.transform.SetParent(charactersGroup.transform);
-        var iro = irosene.AddComponent<Irosene>();
-        iro.companionName = "Irosene";
+        MoodState iroMood = MakeCompanionCore(irosene, "Irosene");
+        iroMood.primaryChannel = MindChannel.Satisfaction; iroMood.baseRestorationRate = 0.03f;
+        iroMood.restingMoodMin = 0.6f; iroMood.restingMoodMax = 0.9f; iroMood.moodModMin = 0.5f; iroMood.moodModMax = 1.2f; iroMood.stressPenalty = 0.5f; iroMood.fatigueRate = 0.0001f;
+        iroMood.anchors.Add(new ThoughtAnchor("alpha_and_omega", 0.95f, 0f));
+        iroMood.anchors.Add(new ThoughtAnchor("pursue_dreams", 0.9f, 0f));
+        iroMood.anchors.Add(new ThoughtAnchor("love_your_people", 0.85f, 0.005f));
+        iroMood.anchors.Add(new ThoughtAnchor("rebellion", 0.8f, 0.003f));
+        iroMood.anchors.Add(new ThoughtAnchor("pride", 0.6f, 0.004f));
+        irosene.AddComponent<Irosene>();
         irosene.AddComponent<WorldCharacter>().characterName = "Irosene";
 
         // The Magnate (Maestra) is the SanctuaryDirector's arrival gatekeeper.

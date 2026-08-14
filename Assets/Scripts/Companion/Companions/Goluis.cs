@@ -1,98 +1,45 @@
 using UnityEngine;
 
 /// <summary>
-/// El Maestro Goluis — cocina, doble turno, presión y resistencia.
-/// Primary channel: MentalFatigue (su presión sube fatiga, pero con el tiempo
-/// te endurece y baja tu límite de fatiga base).
-/// Anchor clave: "yoga_skepticism" — bloquea aprendizaje de asanas hasta que el arco lo suaviza.
+/// El Maestro Goluis — cocina, doble turno, presión y resistencia. Comportamiento propio (sobre `MoodState`);
+/// stats desde el arquetipo "Goluis" (`SoulComposition`). Anchor clave: "yoga_skepticism". Ver docs/creature-stats.md.
 /// </summary>
-public class Goluis : CompanionBase
+public class Goluis : MonoBehaviour
 {
     [Header("Goluis — Dialogue")]
-    [Tooltip("Lines Goluis says the first time Kushal enters his range.")]
     public DialogueSequence greetingSequence;
-
-    [Tooltip("Lines Goluis says when pressure is active and Kushal is nearby.")]
     public DialogueSequence pressureSequence;
 
     [Header("Goluis — Pressure System")]
-    [Tooltip("When active, adds a speed bonus comment — raises player stress but also mental resistance.")]
+    [Tooltip("Sube estrés del jugador pero también su resistencia mental.")]
     public bool pressureActive;
-
-    [Tooltip("Stress applied to the player per second when pressure is active.")]
     public float pressureStressRate = 0.005f;
-
-    [Tooltip("Resistance bonus accumulated from surviving Goluis pressure (0–1).")]
     [Range(0f, 1f)] public float resistanceBuilt;
 
-    // Aptitudes (1.0 = media real humana). 25 años, trabajo de fuerza toda su vida,
-    // dejó de estudiar a los 17. Ver docs/creature-stats.md.
-    protected override float BaseStrength   => 1.5f;   // trabajo físico continuo
-    protected override float BaseBodyMass   => 1.3f;   // invierte mucho en comida
-    protected override float BaseAgility      => 0.9f;   // corpulento
-    protected override float BasePerception   => 1.1f;   // atención al detalle práctica (en su trabajo); lo bajo es lo académico (reasoning/memory)
-    protected override float BaseAdaptability => 0.6f;   // el mismo tipo de trabajo toda la vida
-    protected override float BaseComposure    => 1.5f;   // pasado en una banda: control bajo peligro/estrés
-    protected override float BaseEndurance    => 1.4f;   // cuerpo hecho al trabajo físico
-    protected override float BaseReasoning    => 0.7f;   // académico bajo (dejó de estudiar)
-    protected override float BaseMemory       => 0.8f;
-    protected override float BaseCreativity   => 0.7f;   // práctico, poco imaginativo
-    protected override float BaseSociability  => 0.7f;   // reservado, desconfiado
-    protected override float BaseDiscipline   => 1.3f;   // trabajador constante
+    MoodState _mood;
 
-    protected override void SetupAnchors()
+    void Awake() { _mood = GetComponent<MoodState>(); }
+    void OnEnable()  { if (_mood != null) _mood.OnPlayerEnter += OnNearby; }
+    void OnDisable() { if (_mood != null) _mood.OnPlayerEnter -= OnNearby; }
+
+    void Update()
     {
-        anchors.Add(new ThoughtAnchor("yoga_skepticism",  -0.9f, 0.002f));  // blocks yoga
-        anchors.Add(new ThoughtAnchor("work_hard",         0.85f, 0.001f)); // drives double shift
-        anchors.Add(new ThoughtAnchor("family_first",      0.95f, 0.0f));   // fixed — doesn't change
-        anchors.Add(new ThoughtAnchor("trust_people",     -0.4f,  0.005f)); // starts low, grows with bond
-    }
+        if (_mood == null) return;
 
-    protected override float GetMoodModifier()
-    {
-        // Goluis's nature: when he's in good mood, still reserved — modifier capped at 0.7
-        // When in bad mood, he can drain the player slightly (negative modifier possible)
-        return Mathf.Lerp(-0.3f, 0.7f, mood);
-    }
-
-    protected override float FatigueRatePerSecond()
-    {
-        // Double shift — tires faster than average companions
-        return 0.0003f;
-    }
-
-    protected override float GetRestingMood()
-    {
-        // Goluis defaults to a neutral-to-low mood; bond improves this
-        return Mathf.Lerp(0.3f, 0.65f, bondWithPlayer / 100f);
-    }
-
-    protected override void Update()
-    {
-        base.Update();
-
-        if (pressureActive && _playerMind != null && _playerTransform != null)
+        if (pressureActive && _mood.PlayerInRange && _mood.PlayerMind != null)
         {
-            float dist = Vector3.Distance(transform.position, _playerTransform.position);
-            if (dist <= proximityRadius)
-            {
-                _playerMind.DrainMind(pressureStressRate * Time.deltaTime, MindChannel.Stress);
-                resistanceBuilt = Mathf.Clamp01(resistanceBuilt + 0.00001f * Time.deltaTime);
-            }
+            _mood.PlayerMind.DrainMind(pressureStressRate * Time.deltaTime, MindChannel.Stress);
+            resistanceBuilt = Mathf.Clamp01(resistanceBuilt + 0.00001f * Time.deltaTime);
         }
 
-        // Arc: if bond is high enough, soften yoga_skepticism over time
-        if (bondWithPlayer > 60f)
-            ShiftAnchor("yoga_skepticism", -0.2f, Time.deltaTime); // slowly opens up
+        if (_mood.bondWithPlayer > 60f)
+            _mood.ShiftAnchor("yoga_skepticism", -0.2f, Time.deltaTime);   // el arco lo abre poco a poco
     }
 
-    protected override void OnPlayerNearby()
+    void OnNearby()
     {
         if (DialogueManager.Instance == null || DialogueManager.Instance.IsPlaying) return;
-
-        if (pressureActive && pressureSequence != null)
-            DialogueManager.Instance.Play(pressureSequence);
-        else if (greetingSequence != null)
-            DialogueManager.Instance.Play(greetingSequence);
+        if (pressureActive && pressureSequence != null) DialogueManager.Instance.Play(pressureSequence);
+        else if (greetingSequence != null) DialogueManager.Instance.Play(greetingSequence);
     }
 }
