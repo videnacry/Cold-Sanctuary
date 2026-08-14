@@ -215,6 +215,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
         ApplySpeciesArchetype();                       // fase 3: aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
+        Mind mind = GetComponent<Mind>();
+        if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);

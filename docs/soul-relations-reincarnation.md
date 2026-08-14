@@ -67,7 +67,7 @@ vetados por **threat** (poder) y **bonds negativos** (rechazo).
 - **Consecuencia:** los componentes por-compañero (celebración/observación/presión) deberían **disolverse** en un
   **campo social** compartido: cada anima influye en el ánimo/humores de sus vecinos con bond según **sus propios
   stats/humores** (generaliza `ThoughtField`). Los compañeros se diferencian por su **perfil de stats/bonds**.
-- **HECHO (PR #82):** `SocialField` — cada anima contagia su ánimo (serotonina/adrenalina) a vecinos con bond ≥ umbral y sin threat, escalado por su `sociability` + positividad/energía (humores). Enganchado a los compañeros → su "actitud" emerge. *Falta:* que los humores por-compañero salgan de sus stats/rol (hoy default) para que la fiesta de Gohageneis destaque; reducir los componentes bespoke.
+- **HECHO (PR #82):** `SocialField` — cada anima contagia su ánimo (serotonina/adrenalina) a vecinos con bond ≥ umbral y sin threat, escalado por su `sociability` + positividad/energía (humores). Enganchado a los compañeros → su "actitud" emerge. **HECHO (PR #83):** `HumorProfile.Apply` deriva los humores base de la personalidad (adrenalina ← sociability+creatividad+agilidad−disciplina; serotonina ← afabilidad+sociability; cortisol ← sensibilidad−composure; glucosa ← endurance+masa) → se aplica al resolver el blend (compañeros) y en `Animal.Init` (con Mente). Ahora la fiesta de Gohageneis emerge sola. *Falta:* reducir los componentes bespoke (celebración/observación) a lo puramente mecánico.
 
 ## 2c. Huir / ayudar-al-pack (revisión) — el modelo YA existe, pero está partido
 El modelo rico —**bonds + threat + autoabandono (entrega ↔ autoconservación) + pack**— **ya está implementado**
