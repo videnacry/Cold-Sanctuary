@@ -6,7 +6,9 @@ using UnityEngine;
 /// (glucosa/minerales gastados haciendo fuerza); **BAJA** descansado/saciado. La `serotonina` cede ante el
 /// cortisol sostenido. `Anima.stress` **refleja** el cortisol. Así los **estados de ánimo emergen del estado** —
 /// el mal humor de Goluis aparece **cuando está cansado o con prisa**, no es un rasgo fijo. La `sensibilidad`
-/// gobierna cuánto oscila. Opt-in; requiere `Mind` (humores). Lee `MoodState`/`Metabolism` si están.
+/// gobierna cuánto oscila. Opt-in; corre sobre **cualquier `Anima`**: con `Mind` usa los humores (más rico);
+/// **sin `Mind` (p. ej. el jugador)** deriva el estrés directamente del estado (fatiga/sueño/hambre). La fatiga
+/// es la **universal** (`Anima.mentalFatigue`) o la de `MoodState`, la mayor. Lee `Metabolism` si está.
 /// </summary>
 public class MoodDynamics : MonoBehaviour
 {
@@ -38,25 +40,34 @@ public class MoodDynamics : MonoBehaviour
 
     void Update()
     {
-        if (anima == null || _mind == null || Time.time < _next) return;
+        if (anima == null || Time.time < _next) return;
         float dt = tick;
         _next = Time.time + tick;
 
-        Humores h = _mind.humores;
-        float fatigue = _mood != null ? _mood.fatigue : 0f;
+        Humores h = _mind != null ? _mind.humores : null;
+        float fatigue = Mathf.Max(Mathf.Clamp01(anima.mentalFatigue), _mood != null ? _mood.fatigue : 0f);
         float hunger = _metab != null ? _metab.Appetite : 0f;
+        float glucoseLack = h != null ? (1f - h.glucosa) : 0f;
+        float mineralLack = h != null ? (1f - h.calcio) : 0f;
 
         float target = Mathf.Clamp01(
             baseStress
             + wFatigue * fatigue
             + wSleep * Mathf.Clamp01(anima.sleepiness)
             + wHunger * hunger
-            + wLowGlucose * (1f - h.glucosa)
-            + wLowMinerals * (1f - h.calcio));
+            + wLowGlucose * glucoseLack
+            + wLowMinerals * mineralLack);
 
         float rate = driftRate * Mathf.Max(0.2f, anima.sensibilidad) * dt;   // sensibilidad = reactividad emocional
-        h.cortisol = Mathf.MoveTowards(h.cortisol, target, rate);
-        h.serotonina = Mathf.MoveTowards(h.serotonina, Mathf.Clamp01(0.6f - target * 0.4f), rate * 0.5f);
-        anima.stress = Mathf.MoveTowards(anima.stress, h.cortisol, rate);    // el stress del Anima refleja el cortisol
+        if (h != null)
+        {
+            h.cortisol = Mathf.MoveTowards(h.cortisol, target, rate);
+            h.serotonina = Mathf.MoveTowards(h.serotonina, Mathf.Clamp01(0.6f - target * 0.4f), rate * 0.5f);
+            anima.stress = Mathf.MoveTowards(anima.stress, h.cortisol, rate);   // con Mind: el stress refleja el cortisol
+        }
+        else
+        {
+            anima.stress = Mathf.MoveTowards(anima.stress, target, rate);       // sin Mind (jugador): estrés directo del estado
+        }
     }
 }
