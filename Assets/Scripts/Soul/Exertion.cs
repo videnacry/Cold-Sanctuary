@@ -35,7 +35,11 @@ public static class Exertion
         }
         if (c.sleepiness != 0f) a.sleepiness = Mathf.Clamp01(a.sleepiness + c.sleepiness);
 
-        MoodState ms = a.GetComponent<MoodState>();
-        if (ms != null && c.fatigue != 0f) ms.fatigue = Mathf.Clamp01(ms.fatigue + c.fatigue);
+        if (c.fatigue != 0f)
+        {
+            a.mentalFatigue = Mathf.Clamp01(a.mentalFatigue + c.fatigue);   // fatiga UNIVERSAL → aplica también al jugador (sin MoodState)
+            MoodState ms = a.GetComponent<MoodState>();
+            if (ms != null) ms.fatigue = Mathf.Clamp01(ms.fatigue + c.fatigue);   // + la fatiga de compañero, si existe
+        }
     }
 }

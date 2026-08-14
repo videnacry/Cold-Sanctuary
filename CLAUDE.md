@@ -61,7 +61,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 
 ## Abstracciones principales
 
-- `Anima` (**antes `LivingEntity`**, renombrada 2026-07-28) — **clase única de todo ser** (animado o inanimado-despertable; ver [`docs/anima-architecture.md`](docs/anima-architecture.md)): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks abstractos (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`), y **hogar de las 12 aptitudes** (implementa `IAptitudes`). `Animal` y `CompanionBase` heredan de ella; `PlayerStats` pendiente.
+- `Anima` (**antes `LivingEntity`**, renombrada 2026-07-28) — **clase única de todo ser** (animado o inanimado-despertable; ver [`docs/anima-architecture.md`](docs/anima-architecture.md)): drives (`stress`, `trauma`, `fatReserves`, `aware`), bonds, hooks abstractos (`RespondToHunger`, `RespondToThreat`, `EvaluateThreat`), y **hogar de las 12 aptitudes** (implementa `IAptitudes`). `Animal` y `PlayerStats` heredan de ella; los compañeros son **composición** (`SimpleAnima`+pilares, `CompanionBase` retirada).
 - `IAptitudes`: las **12 aptitudes universales** (agility/perception/strength/bodyMass/adaptability/composure/endurance/reasoning/memory/creativity/sociability/discipline). Implementan `Anima` (y por herencia `Animal`/`CompanionBase`) y `PlayerStats` (mapeo parcial). `DerivedStats` deriva de ellas los **puntos del alma**.
 - `CharacterLevel` + `SoulMarga`: progresión por **margas del alma** (tracks independientes: Stats/Yoga/Vínculos) → suben los puntos del alma. Ver `docs/creature-stats.md` §Progresión.
 - `IMind` / `IMindSimple`: stats mentales. `PlayerStats` implementa `IMind` completa; `CompanionBase` usa `IMindSimple` (transitoria hasta NPCBase).

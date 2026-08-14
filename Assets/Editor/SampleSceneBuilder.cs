@@ -495,6 +495,17 @@ public static class SampleSceneBuilder
         order.stepStation = new[] { "Meson", "Meson", "Nevera", "Nevera", "Cocina", "Cocina", "Cocina" };
         order.stepAction  = new[] { "AbrirPuerta", "TomarSarten", "AbrirPuerta", "TomarHuevo", "PonerSarten", "PonerHuevo", "EncenderFuego" };
         order.stepLabel   = new[] { "abres el mesón", "tomas la sartén", "abres la nevera", "tomas los huevos", "pones la sartén al fuego", "cascas el huevo", "enciendes el fuego" };
+        // El jugador cocina → se desgasta (vía A). Estar de pie/abrir cuesta poco; encender el fuego/cascar, más.
+        order.worker = GameObject.Find("Player")?.GetComponent<Anima>();
+        order.stepExertion = new[] {
+            new ExertionCost { glucose = 0.01f, minerals = 0.01f, fatigue = 0.01f },  // abrir el mesón
+            new ExertionCost { glucose = 0.02f, minerals = 0.01f, fatigue = 0.02f },  // tomar la sartén (peso)
+            new ExertionCost { glucose = 0.01f, minerals = 0.01f, fatigue = 0.01f },  // abrir la nevera
+            new ExertionCost { glucose = 0.01f, minerals = 0.01f, fatigue = 0.01f },  // tomar los huevos
+            new ExertionCost { glucose = 0.02f, minerals = 0.01f, fatigue = 0.02f },  // poner la sartén
+            new ExertionCost { glucose = 0.02f, minerals = 0.02f, fatigue = 0.02f },  // cascar el huevo
+            new ExertionCost { glucose = 0.04f, minerals = 0.02f, fatigue = 0.03f },  // encender el fuego (esfuerzo)
+        };
 
         // El puntero input-agnóstico.
         GameObject ptr = new GameObject("VirtualPointer_AUTO");
@@ -1775,6 +1786,12 @@ public static class SampleSceneBuilder
         if (player.GetComponent<CombatTargetSelector>() == null) player.AddComponent<CombatTargetSelector>();
         if (player.GetComponent<AsanaDetector>() == null) player.AddComponent<AsanaDetector>();
         if (player.GetComponent<InteractionController>() == null) player.AddComponent<InteractionController>();
+
+        // El jugador ES un Anima: su ESTRÉS emerge del estado (fatiga/sueño/trabajo) igual que en todos, vía
+        // MoodDynamics. Sin Mind → deriva el estrés directo de las drives universales (docs soul-relations §2b).
+        Anima playerAnima = player.GetComponent<Anima>();
+        if (playerAnima != null && player.GetComponent<MoodDynamics>() == null)
+            player.AddComponent<MoodDynamics>().anima = playerAnima;
 
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();
