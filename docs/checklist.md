@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#76 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#77 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **14-ago (PR #77):** **openness + efecto del bond**. `Archetypes.NetDisposition(especie)` (suma de sus relaciones) + `SpeciesKarma.Openness(me)`: al conocer una **especie nueva** (sin relación específica) el arranque se resuelve por la **disposición GENERAL** del ser (si en total sus relaciones son + o −). **Efecto** en `BondPillar`: la buena compañía **calma** (baja `stress`), la mala **inquieta** (lo sube) — proporcional a la relación con cada vecino; sigue reconfortando la mente del vecino por el bond. `stressEasePerPoint`.
 - **14-ago (PR #76):** **base kármica por especie (`speciesBond`)**. Arquetipos de relación (`Archetypes.RelationValue` / `_relations`: foca→oso −40, conejo→lobo −50, perro↔humano +45, lealtad de manada…), `SpeciesKarma.RelationOf` (mezcla los `speciesBonds` del ser por dominio, o su `Anima.SpeciesName` directa), `SoulComposition.speciesBonds` (mezclable), y `BondPillar` **arranca el bond por karma** al conocer a alguien (solo la positiva siembra confianza; la negativa la lleva el THREAT por poder, separado). `Anima.SpeciesName` (Animal→su arquetipo). Especie nueva (lobo↔komodo) = 0. *Falta:* karma negativa→amplifica threat; circunstancias (ayuda/depredación); openness.
 - **14-ago (PR #75):** **corrección — `BondPillar` universal (sin vía directa al jugador)**. Reescrito: cada `Anima` **familiariza con cualquier `ITarget` cercano según las circunstancias** (cercanía) usando el sistema de bonds **universal de `Anima`** (`GrowBond`/`GetBond`, etapa×trauma×aura) — el jugador es un `ITarget` más (`PlayerTarget`), no un caso especial. Se quitó el `bondWithPlayer`/player-first copiado de `CompanionBase`. La "comodidad" a la mente de un vecino escala por el bond mutuo. *Falta:* base kármica por especie (foca↔oso−, perro↔humano+) como punto de partida (soul-relations §2).
 - **14-ago (PR #74):** **migración fase 5 (preparada) — disolver `CompanionBase`**. `Soul/BondPillar` implementa `IBondable` (vínculo con el jugador + efecto de proximidad, extraído de `CompanionBase`) como **componente** — igual patrón que `WorldBondable`. Así un compañero = `Anima + SoulComposition + BondPillar` (+ `Mind`), **sin clase especial**. Arquetipo `Panterilia` (cuerpo+mente con sus 12 valores reales). Sandbox: `Panterilia_SinClase` reproduce a Panterilia sin heredar `CompanionBase`. Aditivo (no toca los compañeros actuales). *Falta:* migrar las 4 companions a este patrón y **retirar** `CompanionBase` (con compilador/coordinación); mover su `Update` de estado interno al pilar.

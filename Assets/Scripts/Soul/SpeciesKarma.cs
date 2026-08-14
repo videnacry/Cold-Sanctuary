@@ -22,6 +22,38 @@ public static class SpeciesKarma
         return Archetypes.RelationValue(me.SpeciesName, otherSpecies);   // especie directa (animales)
     }
 
+    const float OpennessFactor = 0.2f;   // atenúa la disposición general → arranque templado con desconocidos
+
+    /// <summary>OPENNESS: al conocer una ESPECIE NUEVA (sin relación específica), el arranque se resuelve por la
+    /// DISPOSICIÓN GENERAL del ser (si en total sus relaciones son + o −). Atenuado (arranque templado).</summary>
+    public static float Openness(Anima me)
+    {
+        if (me == null) return 0f;
+        SoulComposition sc = me.GetComponent<SoulComposition>();
+        float net = (sc != null && sc.speciesBonds != null && sc.speciesBonds.Count > 0)
+            ? BlendDisposition(sc.speciesBonds)
+            : Archetypes.NetDisposition(me.SpeciesName);
+        return net * OpennessFactor;
+    }
+
+    static float BlendDisposition(List<BlendSlot> slots)
+    {
+        float sumExplicit = 0f; int shareCount = 0;
+        foreach (BlendSlot s in slots) { if (s == null) continue; if (s.shareDomain) shareCount++; else sumExplicit += Mathf.Max(0f, s.domain); }
+        float remainder = Mathf.Max(0f, 100f - sumExplicit);
+        float sharePer = shareCount > 0 ? remainder / shareCount : 0f;
+        float total = sumExplicit + sharePer * shareCount;
+        if (total <= 0f) return 0f;
+        float sum = 0f;
+        foreach (BlendSlot s in slots)
+        {
+            if (s == null) continue;
+            float w = (s.shareDomain ? sharePer : Mathf.Max(0f, s.domain)) / total;
+            if (w > 0f) sum += w * Archetypes.NetDisposition(s.archetype);
+        }
+        return sum;
+    }
+
     // Mezcla por dominio (+ shareDomain) de los mapas de relación de los speciesBonds.
     static float BlendRelations(List<BlendSlot> slots, string otherSpecies)
     {

@@ -51,6 +51,17 @@ public static class Archetypes
         return _relations.TryGetValue(mySpecies, out Dictionary<string, float> map) && map.TryGetValue(otherSpecies, out float v) ? v : 0f;
     }
 
+    /// <summary>Disposición NETA de una especie (suma de sus relaciones): + = amistosa en general, − = recelosa.
+    /// Base del `openness` al conocer una especie nueva.</summary>
+    public static float NetDisposition(string species)
+    {
+        Init();
+        if (string.IsNullOrEmpty(species) || !_relations.TryGetValue(species, out Dictionary<string, float> map)) return 0f;
+        float s = 0f;
+        foreach (float v in map.Values) s += v;
+        return s;
+    }
+
     static void Init()
     {
         if (_bodies != null) return;

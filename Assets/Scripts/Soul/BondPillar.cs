@@ -20,6 +20,8 @@ public class BondPillar : MonoBehaviour
     [Tooltip("Ritmo de 'comodidad' que da a la MENTE de un vecino, escalado por el bond mutuo.")]
     public float comfortRate = 0.02f;
     public MindChannel comfortChannel = MindChannel.MentalFatigue;
+    [Tooltip("Cuánto baja/sube MI stress por punto de relación con cada vecino (buena compañía calma; mala inquieta).")]
+    public float stressEasePerPoint = 0.0004f;
     [Min(0.1f)] public float scanInterval = 0.5f;
 
     float _next;
@@ -39,18 +41,26 @@ public class BondPillar : MonoBehaviour
             ITarget t = c.GetComponent<ITarget>();
             if (t == null || t.Dead) continue;
 
-            // KARMA: la PRIMERA vez que se cruzan, el bond no arranca en 0 sino en la relación kármica de especie
-            // (foca↔oso −, perro↔humano +). Especie nueva (lobo↔komodo) → 0. La karma NEGATIVA no siembra bond
-            // (el rechazo lo lleva el sistema de THREAT, por poder); solo la positiva da confianza inicial.
-            if (anima.GetBond(t) == null)
+            Anima other = c.GetComponent<Anima>();
+            Bond existing = anima.GetBond(t);
+            float rel;   // relación efectiva (para el efecto): el bond acumulado si ya se conocen; si no, karma/openness.
+            if (existing == null)
             {
-                Anima other = c.GetComponent<Anima>();
+                // KARMA de especie (foca↔oso −, perro↔humano +). Si NO hay relación específica (especie nueva,
+                // p.ej. lobo↔komodo), se resuelve por OPENNESS = disposición GENERAL del ser (si en total sus
+                // relaciones son + o −). La NEGATIVA no siembra bond (el rechazo lo lleva el THREAT, por poder).
                 float karma = other != null ? SpeciesKarma.RelationOf(anima, other.SpeciesName) : 0f;
+                if (Mathf.Approximately(karma, 0f)) karma = SpeciesKarma.Openness(anima);
                 if (karma > 0f) anima.GrowBond(t, BondType.Friend, karma);
+                rel = karma;
             }
+            else rel = existing.value;
 
             // Familiarización por circunstancia (cercanía): crece el bond con CUALQUIER ser (incl. el jugador-ITarget).
             anima.GrowBond(t, BondType.Friend, familiarityPerSecond * dt);
+
+            // EFECTO: la buena compañía CALMA (baja mi stress); la mala INQUIETA (lo sube).
+            anima.stress = Mathf.Clamp01(anima.stress - rel * stressEasePerPoint * dt);
 
             // Comodidad: si el vecino tiene mente, se reconforta según nuestro bond (sustituye al "restaurar al jugador").
             IMind mind = c.GetComponent<IMind>();
