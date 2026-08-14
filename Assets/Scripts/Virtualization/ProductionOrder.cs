@@ -14,6 +14,9 @@ public class ProductionOrder : VirtualTask
     public string[] stepAction;
     [Tooltip("Descripción por paso (opcional, para el feedback de consola).")]
     public string[] stepLabel;
+    [Tooltip("Coste físico POR PASO (opcional, mismo índice). Si falta/está vacío, usa exertionPerStep. " +
+             "Así encender el fuego o amasar cuesta más reservas que abrir una puerta.")]
+    public ExertionCost[] stepExertion;
 
     [Header("Producción")]
     public string productName = "plato";
@@ -46,6 +49,7 @@ public class ProductionOrder : VirtualTask
             string lbl = (stepLabel != null && _idx < stepLabel.Length && !string.IsNullOrEmpty(stepLabel[_idx]))
                 ? stepLabel[_idx] : $"{stationId}/{actionId}";
             Debug.Log($"[Producción] Paso {_idx + 1}/{stepStation.Length}: {lbl}. ✓");
+            SpendExertion(stepExertion != null && _idx < stepExertion.Length ? stepExertion[_idx] : null);   // desgaste de ESTE paso
             _idx++;
 
             if (_idx >= stepStation.Length)   // receta completa → un producto

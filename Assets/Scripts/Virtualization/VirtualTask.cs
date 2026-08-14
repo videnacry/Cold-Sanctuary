@@ -8,5 +8,18 @@ using UnityEngine;
 /// </summary>
 public abstract class VirtualTask : MonoBehaviour
 {
+    [Header("Coste físico de trabajar aquí (vía A) — «de pie o haciendo fuerza»")]
+    [Tooltip("Quién REALIZA el trabajo. Si se asigna, cada paso le desgasta reservas/fatiga (→ estrés vía MoodDynamics). " +
+             "Vacío = sin desgaste corporal (p. ej. mientras el jugador aún no es un Anima).")]
+    public Anima worker;
+    [Tooltip("Coste por paso correcto. ProductionOrder puede sobrescribirlo por paso (encender fuego cuesta más que abrir una puerta).")]
+    public ExertionCost exertionPerStep = new ExertionCost();
+
     public abstract void Submit(string stationId, string actionId);
+
+    /// <summary>Aplica el desgaste de un paso de trabajo al <see cref="worker"/> (si hay). `over` = coste específico del paso.</summary>
+    protected void SpendExertion(ExertionCost over = null)
+    {
+        if (worker != null) Exertion.Apply(worker, over ?? exertionPerStep);
+    }
 }

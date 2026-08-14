@@ -82,6 +82,7 @@ public static class SampleSceneBuilder
         BuildVirtualizationSandbox(root.transform); // motor: puntero + estaciones funcionales + receta — docs kitchen §3b
         BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
         BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
+        BuildExertionSandbox(root.transform);       // desgaste por trabajo (vía A): el obrero se cansa/estresa — docs soul-relations §2b
         BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
         BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
         BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
@@ -583,6 +584,56 @@ public static class SampleSceneBuilder
 
         Debug.Log("[SampleSceneBuilder] Forge virtualization (docs forge-simulation): receta de bronce, " +
                   "5 pasos, el Crisol se acelera tecleando (bronze/copper/tin/cu/sn/melt). Reusa el VirtualPointer.");
+    }
+
+    /// <summary>
+    /// DESGASTE POR TRABAJO (vía A — docs/soul-relations §2b). Un **trabajador Anima** (arquetipo Goluis, con
+    /// <see cref="MoodDynamics"/> y comportamiento) asignado a una receta de **labor pesada**: cada paso le gasta
+    /// reservas (glucosa/minerales) y acumula fatiga según el <c>stepExertion</c> (cargar/moler pesan más que
+    /// apilar). Conduce la receta con el puntero y observa en el Inspector cómo, turno a turno, le baja la glucosa,
+    /// sube la fatiga y el cortisol → `Anima.stress` sube → **`Goluis.UnderPressure` se activa solo** (mal humor
+    /// situacional). Nota: hoy el que confirma es el jugador (aún no-Anima), así que el trabajador es el "obrero"
+    /// asignado; cuando el jugador sea un Anima, bastará con ponerlo de `worker`.
+    /// </summary>
+    static void BuildExertionSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("Desgaste_AUTO");
+        group.transform.SetParent(parent);
+
+        // El trabajador: Anima con humores dinámicos + comportamiento de Goluis (para ver UnderPressure).
+        GameObject workerGO = new GameObject("Obrero_Goluis");
+        workerGO.transform.SetParent(group.transform);
+        workerGO.transform.position = new Vector3(50f, 1f, 16f);
+        MakeCompanionCore(workerGO, "Goluis");          // SimpleAnima+Mind+SoulComposition+SocialField+MoodDynamics+MoodState
+        workerGO.AddComponent<Goluis>();
+        Anima worker = workerGO.GetComponent<Anima>();
+
+        FoodContainer bin = new GameObject("Pila_Obra").AddComponent<FoodContainer>();
+        bin.transform.SetParent(group.transform);
+        bin.transform.position = new Vector3(50f, 1f, 20f);
+        bin.dishName = "carga movida"; bin.capacity = 30;
+
+        MakeStationPart(group.transform, "ObraCantera", "CargarPiedra", "cargas una piedra (fuerza)", new Vector3(48f, 1f, 14f), new Color(0.45f, 0.42f, 0.38f));
+        MakeStationPart(group.transform, "ObraMuela",   "Moler",        "mueles a mano (esfuerzo)",   new Vector3(48f, 1f, 16f), new Color(0.55f, 0.50f, 0.45f));
+        MakeStationPart(group.transform, "ObraPila",    "Apilar",       "apilas (de pie)",            new Vector3(48f, 1f, 18f), new Color(0.60f, 0.55f, 0.40f));
+
+        GameObject orderGO = new GameObject("Receta_LaborPesada");
+        orderGO.transform.SetParent(group.transform);
+        ProductionOrder order = orderGO.AddComponent<ProductionOrder>();
+        order.productName = "carga movida"; order.output = bin; order.quota = 10;   // cuota alta → el desgaste se acumula
+        order.stepStation = new[] { "ObraCantera",  "ObraMuela", "ObraPila" };
+        order.stepAction  = new[] { "CargarPiedra", "Moler",     "Apilar" };
+        order.stepLabel   = new[] { "cargas piedra", "mueles a mano", "apilas" };
+        order.worker = worker;
+        order.stepExertion = new[] {
+            new ExertionCost { glucose = 0.06f, minerals = 0.04f, fatigue = 0.05f },   // cargar: fuerza
+            new ExertionCost { glucose = 0.05f, minerals = 0.02f, fatigue = 0.04f },   // moler: esfuerzo sostenido
+            new ExertionCost { glucose = 0.02f, minerals = 0.03f, fatigue = 0.03f, sleepiness = 0.01f },  // apilar: de pie
+        };
+
+        Debug.Log("[SampleSceneBuilder] Desgaste_AUTO (vía A): «Obrero_Goluis» trabaja una receta de labor pesada; " +
+                  "cada paso le gasta reservas/fatiga → MoodDynamics lo vuelve cortisol/estrés → Goluis.UnderPressure. " +
+                  "Conduce la receta (ObraCantera/CargarPiedra → ObraMuela/Moler → ObraPila/Apilar) y mira sus humores.");
     }
 
     /// <summary>
