@@ -98,7 +98,11 @@ public class SoulComposition : MonoBehaviour
         // FASE 2 (mente por blend): la Mente lee las aptitudes del blend → su tono/decisiones emergen de aquí
         // (Mind.PickTone deriva el tono de las aptitudes; se resiembra porque su Awake corrió antes del Resolve).
         Mind mind = GetComponent<Mind>();
-        if (mind != null) mind.aptitudes = a;
+        if (mind != null)
+        {
+            mind.aptitudes = a;
+            HumorProfile.Apply(anima, mind.humores);   // humores base derivados de la personalidad (§2b) → el SocialField diferencia solo
+        }
     }
 
     // ── blend por distribución ─────────────────────────────────────────────────
