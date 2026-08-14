@@ -55,6 +55,7 @@ public static class Archetypes
             { "Gallina",  MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
             { "Mono",     MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
             { "Ant",      MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
+            { "Panterilia", MakeBody(1.00f, 0.95f, 1.7f, 0.7f, 0.8f, 0.9f) },   // perfil real de la companion (fase 5)
             { "Fox",      MakeBody(1.00f, 1.4f, 1.5f, 1.1f, 0.9f, 1.3f) },
             { "Deer",     MakeBody(1.50f, 1.4f, 1.5f, 1.0f, 1.4f, 1.5f) },
             { "Seal",     MakeBody(1.20f, 1.1f, 1.2f, 1.3f, 1.6f, 1.4f) },
@@ -70,6 +71,7 @@ public static class Archetypes
             { "Fire",  MakeMind(ElementalTone.Fuego,  0.6f, 1.1f, 0.9f, 1.7f, 1.5f, 0.6f) },
             { "Agua",     MakeMind(ElementalTone.Agua,   1.4f, 1.2f, 1.3f, 1.0f, 1.2f, 1.0f) },
             { "Mono",     MakeMind(ElementalTone.Viento, 0.7f, 1.2f, 1.0f, 1.6f, 1.5f, 0.6f) },
+            { "Panterilia", MakeMind(ElementalTone.Viento, 0.7f, 1.6f, 1.4f, 1.4f, 1.1f, 1.5f) },   // analítica/imaginativa (fase 5)
             { "Wolf",     MakeMind(ElementalTone.Viento, 1.0f, 1.0f, 1.0f, 0.7f, 1.4f, 1.2f) },   // manada: social, disciplinado
             { "Fox",      MakeMind(ElementalTone.Fuego,  0.8f, 1.3f, 1.1f, 1.4f, 1.0f, 0.7f) },   // astuto, creativo
             { "Bunny",    MakeMind(ElementalTone.Agua,   0.6f, 0.8f, 1.0f, 0.6f, 1.0f, 0.6f) },   // tímido

@@ -738,6 +738,10 @@ Dos cuerpos (melaza Toro+Bear / hormiga Ant+Human) comparten UNA alma. HUD arrib
 - [ ] **+bond (Ruth)** → el contador de bonds del alma sube y es compartido por todas las reencarnaciones.
 - [ ] *(Falta: propagación perezosa por era; hoy ambos están activos en escena.)*
 
+## 22. Compañero por composición (fase 5) — sandbox `AlmaBlend_AUTO`
+- [ ] `Panterilia_SinClase` (SimpleAnima + SoulComposition arquetipo Panterilia + Mind + BondPillar): en el `[Alma]` sus stats coinciden con la Panterilia real (per 1.7, rea 1.6, disc 1.5, str 0.7…), SIN heredar `CompanionBase`.
+- [ ] `BondPillar` implementa `IBondable`: si el jugador se le acerca (radio 4), restaura su canal mental (MentalFatigue) según bond×mood — igual que un compañero, pero por composición.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

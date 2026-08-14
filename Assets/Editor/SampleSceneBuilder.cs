@@ -1356,6 +1356,20 @@ public static class SampleSceneBuilder
             new[] { ("Bear", 100f, false) },
             new[] { "bonusPack3" }, true);
 
+        // Compañero por COMPOSICIÓN (fase 5): reproduce a Panterilia SIN heredar CompanionBase.
+        // = SimpleAnima + SoulComposition (arquetipo Panterilia) + Mind + BondPillar (IBondable por componente).
+        GameObject compa = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        compa.name = "Panterilia_SinClase"; compa.transform.SetParent(group.transform); compa.transform.position = new Vector3(23.5f, 1f, 8f);
+        compa.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Panterilia_SinClase_MAT", new Color(0.70f, 0.50f, 0.80f));
+        compa.AddComponent<SimpleAnima>();
+        compa.AddComponent<Mind>();
+        SoulComposition compaSoul = compa.AddComponent<SoulComposition>();
+        compaSoul.bodies.Add(new BlendSlot { archetype = "Panterilia", domain = 100f });
+        compaSoul.minds.Add(new BlendSlot { archetype = "Panterilia", domain = 100f });
+        compaSoul.applyScale = false;   // no reescalar (es un humano)
+        BondPillar bond = compa.AddComponent<BondPillar>();
+        bond.bondWithPlayer = 40f; bond.primaryChannel = MindChannel.MentalFatigue;
+
         // Ser con forma distinta (Toro cuerpo + Bear mente) para probar la CONVERSIÓN (transformación/reencarnación).
         GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         amb.name = "Ambrosio_Convert"; amb.transform.SetParent(group.transform); amb.transform.position = new Vector3(23.5f, 1f, 6f);
