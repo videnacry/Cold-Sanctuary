@@ -1422,6 +1422,7 @@ public static class SampleSceneBuilder
         sc.minds.Add(new BlendSlot { archetype = archetype, domain = 100f });
         sc.applyScale = false;
         sc.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });
+        go.AddComponent<SocialField>();   // (c) su "actitud" (ánimo/fiesta) contagia a vecinos con bond — emergente
         return go.AddComponent<MoodState>();
     }
 
