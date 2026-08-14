@@ -89,7 +89,10 @@ public static class Archetypes
             { "Gallina",  MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
             { "Mono",     MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
             { "Ant",      MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
-            { "Panterilia", MakeBody(1.00f, 0.95f, 1.7f, 0.7f, 0.8f, 0.9f) },   // perfil real de la companion (fase 5)
+            { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales
+            { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },
+            { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },
+            { "Irosene",     MakeBody(1.00f, 1.2f,  1.3f,  1.2f, 1.3f, 1.3f, 1.6f) },
             { "Fox",      MakeBody(1.00f, 1.4f, 1.5f, 1.1f, 0.9f, 1.3f) },
             { "Deer",     MakeBody(1.50f, 1.4f, 1.5f, 1.0f, 1.4f, 1.5f) },
             { "Seal",     MakeBody(1.20f, 1.1f, 1.2f, 1.3f, 1.6f, 1.4f) },
@@ -105,7 +108,10 @@ public static class Archetypes
             { "Fire",  MakeMind(ElementalTone.Fuego,  0.6f, 1.1f, 0.9f, 1.7f, 1.5f, 0.6f) },
             { "Agua",     MakeMind(ElementalTone.Agua,   1.4f, 1.2f, 1.3f, 1.0f, 1.2f, 1.0f) },
             { "Mono",     MakeMind(ElementalTone.Viento, 0.7f, 1.2f, 1.0f, 1.6f, 1.5f, 0.6f) },
-            { "Panterilia", MakeMind(ElementalTone.Viento, 0.7f, 1.6f, 1.4f, 1.4f, 1.1f, 1.5f) },   // analítica/imaginativa (fase 5)
+            { "Panterilia",  MakeMind(ElementalTone.Viento, 0.7f, 1.6f, 1.4f, 1.4f, 1.1f, 1.5f) },   // analítica/imaginativa (fase 5)
+            { "Goluis",      MakeMind(ElementalTone.Tierra, 1.5f, 0.7f, 0.8f, 0.7f, 0.7f, 1.3f) },   // práctico, reservado, disciplinado
+            { "Gohageneis",  MakeMind(ElementalTone.Fuego,  1.2f, 1.0f, 1.0f, 1.2f, 1.7f, 0.6f) },   // social, versátil, poco disciplinado
+            { "Irosene",     MakeMind(ElementalTone.Fuego,  1.4f, 1.1f, 1.3f, 1.5f, 1.7f, 1.1f) },   // hiperexpresiva, creativa, motivadora
             { "Wolf",     MakeMind(ElementalTone.Viento, 1.0f, 1.0f, 1.0f, 0.7f, 1.4f, 1.2f) },   // manada: social, disciplinado
             { "Fox",      MakeMind(ElementalTone.Fuego,  0.8f, 1.3f, 1.1f, 1.4f, 1.0f, 0.7f) },   // astuto, creativo
             { "Bunny",    MakeMind(ElementalTone.Agua,   0.6f, 0.8f, 1.0f, 0.6f, 1.0f, 0.6f) },   // tímido
@@ -123,10 +129,10 @@ public static class Archetypes
         };
     }
 
-    static ArchetypeProfile MakeBody(float height, float agi, float per, float str, float mass, float end)
+    static ArchetypeProfile MakeBody(float height, float agi, float per, float str, float mass, float end, float adapt = 1f)
     {
         Aptitudes a = Aptitudes.Default;
-        a.agility = agi; a.perception = per; a.strength = str; a.bodyMass = mass; a.endurance = end;
+        a.agility = agi; a.perception = per; a.strength = str; a.bodyMass = mass; a.endurance = end; a.adaptability = adapt;
         return new ArchetypeProfile { aptitudes = a, height = height };
     }
 
