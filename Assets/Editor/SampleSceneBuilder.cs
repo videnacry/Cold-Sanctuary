@@ -1367,7 +1367,8 @@ public static class SampleSceneBuilder
         compaSoul.bodies.Add(new BlendSlot { archetype = "Panterilia", domain = 100f });
         compaSoul.minds.Add(new BlendSlot { archetype = "Panterilia", domain = 100f });
         compaSoul.applyScale = false;   // no reescalar (es un humano)
-        compa.AddComponent<BondPillar>();   // familiariza con cualquier ITarget cercano (incl. el jugador) por circunstancia
+        compaSoul.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });   // karma humana (agrado a perros, etc.)
+        compa.AddComponent<BondPillar>();   // familiariza con cualquier ITarget cercano (incl. el jugador) por circunstancia + karma
 
         // Ser con forma distinta (Toro cuerpo + Bear mente) para probar la CONVERSIÓN (transformación/reencarnación).
         GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);

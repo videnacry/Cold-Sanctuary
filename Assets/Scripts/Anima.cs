@@ -67,6 +67,10 @@ public abstract class Anima : MonoBehaviour, IAptitudes
 
     // IAptitudes — acceso uniforme (getters virtuales: Animal puede sobreescribir p.ej. Strength/BodyMass
     // desde Physiognomy más adelante).
+    /// <summary>Nombre de ESPECIE para las relaciones/karma (docs/soul-relations-reincarnation §2). null = desconocida.
+    /// `Animal` lo devuelve desde su arquetipo; los seres compuestos, desde sus `speciesBonds`.</summary>
+    public virtual string SpeciesName => null;
+
     public virtual float Agility      => agility;
     public virtual float Perception   => perception;
     public virtual float Strength     => strength;

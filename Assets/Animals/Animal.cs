@@ -121,6 +121,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
     /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
     protected virtual string SpeciesArchetype => null;
+    public override string SpeciesName => SpeciesArchetype;   // la especie para relaciones/karma = su arquetipo
 
     // Llena las aptitudes desde el arquetipo de especie (respeta agility/perception, que las maneja Base*+evolución).
     void ApplySpeciesArchetype()

@@ -39,6 +39,16 @@ public class BondPillar : MonoBehaviour
             ITarget t = c.GetComponent<ITarget>();
             if (t == null || t.Dead) continue;
 
+            // KARMA: la PRIMERA vez que se cruzan, el bond no arranca en 0 sino en la relación kármica de especie
+            // (foca↔oso −, perro↔humano +). Especie nueva (lobo↔komodo) → 0. La karma NEGATIVA no siembra bond
+            // (el rechazo lo lleva el sistema de THREAT, por poder); solo la positiva da confianza inicial.
+            if (anima.GetBond(t) == null)
+            {
+                Anima other = c.GetComponent<Anima>();
+                float karma = other != null ? SpeciesKarma.RelationOf(anima, other.SpeciesName) : 0f;
+                if (karma > 0f) anima.GrowBond(t, BondType.Friend, karma);
+            }
+
             // Familiarización por circunstancia (cercanía): crece el bond con CUALQUIER ser (incl. el jugador-ITarget).
             anima.GrowBond(t, BondType.Friend, familiarityPerSecond * dt);
 
