@@ -150,6 +150,9 @@ public abstract class Anima : MonoBehaviour, IAptitudes
         }
     }
 
+    /// <summary>Recalcula el `autoabandono` desde los stats/bonds (entrega ↔ autoconservación). docs soul-relations §2c.</summary>
+    public void RecomputeAutoabandono() => autoabandono = Autoabandono.From(this);
+
     public Bond GetBond(ITarget target)
     {
         foreach (Bond b in bonds)
