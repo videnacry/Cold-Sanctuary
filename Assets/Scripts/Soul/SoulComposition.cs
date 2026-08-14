@@ -21,6 +21,9 @@ public class SoulComposition : MonoBehaviour
     [Header("bonusPacks (stats aditivos; NO tocan tono/thoughts)")]
     public List<string> bonusPacks = new List<string>();
 
+    [Header("speciesBonds (relación kármica base por especie; mezclable) — docs soul-relations §2")]
+    public List<BlendSlot> speciesBonds = new List<BlendSlot>();
+
     [Tooltip("Aplica el tamaño (altura mezclada) al transform.")]
     public bool applyScale = true;
     [Tooltip("Resuelve en Start (crea los stats iniciales).")]

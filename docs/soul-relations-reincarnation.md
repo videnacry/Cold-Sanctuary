@@ -46,6 +46,8 @@ relación, **−** mala). Se **rellena** con la vivencia y **decide** acercarse/
 - **Los puntos → stats → inclinación / pensamiento**, y modulan **`autoabandono`**: el **amor** sube autoabandono
   (te sacrificas), el **amor propio** lo baja. (Ojo al equilibrio; quizá reformular como dos ejes.)
 
+**Montado (PR #76):** arquetipos de relación por especie (`Archetypes.RelationValue`: foca↔oso −, perro↔humano +…), `SpeciesKarma.RelationOf` (blend de `speciesBonds` por dominio, o especie directa), `SoulComposition.speciesBonds`, y `BondPillar` **siembra el bond inicial** por karma (solo la positiva; la negativa la lleva el THREAT, separado). `Anima.SpeciesName`. *Falta:* que la karma negativa amplifique el threat; circunstancias no-proximidad (ayuda/depredación); openness.
+
 **Cálculo propuesto:**
 ```
 relacion(yo, X) = blend(speciesBonds)[X]  +  Σ interacciones(X)  +  Σ bonds_individuales(miembros de X)·k

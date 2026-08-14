@@ -41,9 +41,32 @@ public static class Archetypes
         return false;
     }
 
+    static Dictionary<string, Dictionary<string, float>> _relations;
+
+    /// <summary>Relación kármica base de una especie hacia otra (0 neutro, + agrado, − desagrado). docs soul-relations §2.</summary>
+    public static float RelationValue(string mySpecies, string otherSpecies)
+    {
+        Init();
+        if (string.IsNullOrEmpty(mySpecies) || string.IsNullOrEmpty(otherSpecies)) return 0f;
+        return _relations.TryGetValue(mySpecies, out Dictionary<string, float> map) && map.TryGetValue(otherSpecies, out float v) ? v : 0f;
+    }
+
     static void Init()
     {
         if (_bodies != null) return;
+        _relations = new Dictionary<string, Dictionary<string, float>>
+        {   // base evolutiva/kármica (por generaciones). Simétrica donde tiene sentido; el resto = 0 (neutro).
+            { "Seal",     new Dictionary<string, float> { { "Bear", -40f }, { "Whale", 20f } } },   // depredada por osos
+            { "Bunny",    new Dictionary<string, float> { { "Wolf", -50f }, { "Fox", -40f } } },
+            { "Deer",     new Dictionary<string, float> { { "Wolf", -45f }, { "Bear", -30f } } },
+            { "Human",    new Dictionary<string, float> { { "Malamute", 45f } } },                   // perro↔humano
+            { "Malamute", new Dictionary<string, float> { { "Human", 45f }, { "Wolf", 15f } } },      // perro (pariente del lobo)
+            { "Wolf",     new Dictionary<string, float> { { "Wolf", 15f } } },                        // lealtad de manada
+            { "Whale",    new Dictionary<string, float> { { "Seal", 20f } } },
+            { "Bear",     new Dictionary<string, float>() },                                          // solitario, neutro
+            { "Fox",      new Dictionary<string, float>() },
+            { "Panterilia", new Dictionary<string, float> { { "Malamute", 45f } } },                  // humana
+        };
         _bodies = new Dictionary<string, ArchetypeProfile>
         {                          // altura, agi, per, str, mass, end
             { "Human",   MakeBody(1.00f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f) },
