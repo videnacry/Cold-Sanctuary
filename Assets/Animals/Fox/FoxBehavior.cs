@@ -7,6 +7,8 @@ using UnityEngine;
 // buenos), cuidado biparental, vida silvestre corta (~3–6 años).
 public class FoxBehavior : Carnivore
 {
+    protected override string SpeciesArchetype => "Fox";
+
     public static Family defaultGroup = new Family(7, 0.4f, Family.biparental);
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

@@ -10,6 +10,8 @@ using UnityEngine;
 // Rol salvaje-vs-mascota aún por decidir (ver docs/refuge-and-adult-behavior.md).
 public class MalamuteBehavior : Carnivore
 {
+    protected override string SpeciesArchetype => "Malamute";
+
     public static Family defaultGroup = new Family(6, 0.3f, Family.maternal);  // el macho no cría, como en el perro doméstico
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

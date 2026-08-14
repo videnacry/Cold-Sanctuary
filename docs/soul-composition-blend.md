@@ -123,7 +123,7 @@ static class Archetypes {                         // perfiles en código (repo s
    mezcla, y suma los packs. Sandbox `AlmaBlend_AUTO`: Panterilia (Human 90 + Lion 5 + shareDomain), oso-mente-
    humana, oso + `bonusPack3`. **Nada migrado aún** — esto es el MOTOR; migrar a los seres reales es lo de abajo.
 2. **Mente**: tono + decisiones por blend — ✅ **HECHO (PR #72)**: `SoulComposition.WriteStats` resiembra `Mind.aptitudes` con el blend → el tono/pensar (`Mind.PickTone`) emerge del blend. *Falta:* thoughts por arquetipo (va con "pensamientos por capacidad").
-3. **Cuerpo**: especies exponen `BodyArchetype`; el blend elige tamaño/velocidad; automatización corporal reusada.
+3. **Cuerpo**: especies → arquetipos — 🟡 **MITAD HECHA (PR #73)**: `Animal.Init` llena las aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante + mentales) desde el arquetipo de especie (`SpeciesArchetype` overridado en Bear/Wolf/Fox/Bunny/Deer/Seal/Whale/Malamute) → los animales dejan de tener aptitudes planas; reusa el huir/manada de `Animal` (ya por stats). *Falta (mitad delicada):* hormigas→`Animal`, que el huir/predación lean el stat `bodyMass` en vez de `Physiognomy`/`rig.mass`, coordinar con el compañero.
 4. **Mando**: dominio de mente → interrumpe el Body (subordinar `SenseThreats`/`Flee` al `IBrain`).
 5. **Disolver `CompanionBase`**; reencarnación/transformación = añadir/quitar arquetipos.
 

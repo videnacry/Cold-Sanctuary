@@ -12,6 +12,8 @@ using UnityEngine;
 // cazable todavía en el juego).
 public class WhaleBehavior : Herbivore
 {
+    protected override string SpeciesArchetype => "Whale";
+
     public static Family defaultGroup = new Family(10, 0.25f, Family.maternal);
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

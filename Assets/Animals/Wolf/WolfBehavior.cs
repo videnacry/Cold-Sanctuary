@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class WolfBehavior : Carnivore
 {
+    protected override string SpeciesArchetype => "Wolf";
+
     public static Family defaultGroup = new Family(6, 0.3f, Family.biparental);
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

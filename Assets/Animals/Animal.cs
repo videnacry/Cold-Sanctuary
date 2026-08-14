@@ -117,6 +117,23 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public virtual float BaseAgility    => 1f;
     public virtual float BasePerception => 1f;
 
+    /// <summary>Nombre del ARQUETIPO de especie (docs/soul-composition-blend.md). Si se define, `Init()` llena las
+    /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
+    /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
+    protected virtual string SpeciesArchetype => null;
+
+    // Llena las aptitudes desde el arquetipo de especie (respeta agility/perception, que las maneja Base*+evolución).
+    void ApplySpeciesArchetype()
+    {
+        if (string.IsNullOrEmpty(SpeciesArchetype)) return;
+        ArchetypeProfile b = Archetypes.BodyOf(SpeciesArchetype);
+        ArchetypeProfile m = Archetypes.MindOf(SpeciesArchetype);
+        strength    = b.aptitudes.strength;   bodyMass    = b.aptitudes.bodyMass;
+        endurance   = b.aptitudes.endurance;  adaptability = b.aptitudes.adaptability;
+        composure   = m.aptitudes.composure;  reasoning   = m.aptitudes.reasoning;   memory     = m.aptitudes.memory;
+        creativity  = m.aptitudes.creativity; sociability = m.aptitudes.sociability;  discipline = m.aptitudes.discipline;
+    }
+
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
     public virtual float ThreatThreshold       => 0.5f;
@@ -188,6 +205,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         agility     = BaseAgility;
         perception  = BasePerception;
         sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
+        ApplySpeciesArchetype();                       // fase 3: aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
