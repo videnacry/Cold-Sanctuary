@@ -12,6 +12,30 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-14 — sync PRs #62-84 (55 commits, 43 .cs), 0 errores tras compilar, 1 bug real
+  encontrado y arreglado**. El cron de 2h había expirado (7 días) otra vez — recreado (`f6566e93`).
+  Batch grande: sistema de "alma" nuevo (`Assets/Scripts/Soul/`: Archetypes, BlendSlot, BondPillar,
+  HumorProfile, MoodDynamics, SharedSoul(+Demo), SocialField, SoulComposition, SoulConvertDemo,
+  SoulMath, SpeciesKarma), **`CompanionBase` RETIRADO** (borrado del repo, reemplazado por composición
+  vía `MoodState.cs` — mis fixes de la sesión anterior a ese archivo quedaron sin efecto, ya no aplica),
+  y el compañero **arregló por su cuenta el duplicado `PullSpell`** que yo había resuelto la sesión
+  pasada (borró `Transformation/PullSpell.cs` del repo, `Microcosmos/PullSpell.cs` ahora sí trackeado
+  con el typo `.Transform`→`.transform` ya corregido) — **ya no hay archivos sueltos sin trackear en
+  `Microcosmos/`**, el hueco de repo-hygiene de la sesión anterior quedó resuelto solo. Mis fixes previos
+  de `CombatAbilityBar.cs`/`IngredientMob.cs` (generalización a `ITarget`) sobrevivieron intactos.
+  Sync + rebuild de escena (`Tools > Cold Sanctuary > Build Sample Scene Blockout`) + compilación
+  completa (43 archivos, ~4 min) → **0 errores** confirmado por `Editor.log`. Nuevos sandboxes visibles
+  en Hierarchy: `AlmaBlend_AUTO`, `AlmaCompartida_AUTO` (SharedSoul demo), además de los ya existentes
+  `SpellDemo_AUTO`/`Magia_AUTO`. Testeados en Play mode (HUDs de `SoulConvert`/`SpellDemo` funcionando).
+  **BUG REAL encontrado (misma familia que el de `CompanionBase` de la sesión anterior, pero en
+  archivo no tocado por este batch)**: `MissingReferenceException` en `CameraManager.TransitionTo()`
+  (`Assets/Scripts/Camera/CameraManager.cs:156`) — el `anchor` (Transform hijo del Player,
+  `firstPersonAnchor`/`thirdPersonAnchor`) se cachea al iniciar la corrutina de transición de cámara y
+  no se revalida frame a frame; si el Player se destruye/reemplaza a mitad de transición (posesión/
+  body-swap), la referencia queda colgante. Solo 1 ocurrencia (no en loop, a diferencia del bug anterior
+  de compañeros). Fix: null-check de `anchor` en el loop + antes del snap final, con `yield break`
+  limpio. **Trackeado, sincronizado a repo y proyecto vivo, listo para commitear.**
+
 - **CICLO CON 4 BUGS REALES (2026-08-12, commit `44cac82` "SpellBase + hechizos Nivel1 Microcosmos")** —
   el más cargado de la sesión. Unity se había cerrado mal (recuperó backups de escena al reabrir, dije
   que No porque nunca guardamos escena). Al abrir el proyecto, **Safe Mode por errores de compilación**:
