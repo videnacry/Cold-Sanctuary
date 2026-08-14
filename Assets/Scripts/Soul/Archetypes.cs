@@ -52,9 +52,14 @@ public static class Archetypes
             { "Bunny",   MakeBody(0.45f, 1.8f, 1.3f, 0.4f, 0.4f, 0.9f) },
             { "Lion",    MakeBody(1.20f, 1.5f, 1.2f, 1.8f, 1.6f, 1.3f) },
             { "Toro",    MakeBody(1.70f, 0.8f, 0.8f, 2.0f, 2.2f, 1.4f) },
-            { "Gallina", MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
-            { "Mono",    MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
-            { "Ant",     MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
+            { "Gallina",  MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
+            { "Mono",     MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
+            { "Ant",      MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
+            { "Fox",      MakeBody(1.00f, 1.4f, 1.5f, 1.1f, 0.9f, 1.3f) },
+            { "Deer",     MakeBody(1.50f, 1.4f, 1.5f, 1.0f, 1.4f, 1.5f) },
+            { "Seal",     MakeBody(1.20f, 1.1f, 1.2f, 1.3f, 1.6f, 1.4f) },
+            { "Whale",    MakeBody(3.00f, 0.6f, 1.0f, 2.8f, 3.0f, 2.0f) },
+            { "Malamute", MakeBody(1.10f, 1.3f, 1.3f, 1.4f, 1.2f, 1.6f) },
         };
         _minds = new Dictionary<string, ArchetypeProfile>
         {                          // tono, com, rea, mem, cre, soc, dis
@@ -63,8 +68,15 @@ public static class Archetypes
             { "Lion",  MakeMind(ElementalTone.Fuego,  1.0f, 0.9f, 0.9f, 0.8f, 1.1f, 0.9f) },
             { "Rock",  MakeMind(ElementalTone.Tierra, 2.0f, 0.6f, 1.2f, 0.3f, 0.4f, 1.5f) },
             { "Fire",  MakeMind(ElementalTone.Fuego,  0.6f, 1.1f, 0.9f, 1.7f, 1.5f, 0.6f) },
-            { "Agua",  MakeMind(ElementalTone.Agua,   1.4f, 1.2f, 1.3f, 1.0f, 1.2f, 1.0f) },
-            { "Mono",  MakeMind(ElementalTone.Viento, 0.7f, 1.2f, 1.0f, 1.6f, 1.5f, 0.6f) },
+            { "Agua",     MakeMind(ElementalTone.Agua,   1.4f, 1.2f, 1.3f, 1.0f, 1.2f, 1.0f) },
+            { "Mono",     MakeMind(ElementalTone.Viento, 0.7f, 1.2f, 1.0f, 1.6f, 1.5f, 0.6f) },
+            { "Wolf",     MakeMind(ElementalTone.Viento, 1.0f, 1.0f, 1.0f, 0.7f, 1.4f, 1.2f) },   // manada: social, disciplinado
+            { "Fox",      MakeMind(ElementalTone.Fuego,  0.8f, 1.3f, 1.1f, 1.4f, 1.0f, 0.7f) },   // astuto, creativo
+            { "Bunny",    MakeMind(ElementalTone.Agua,   0.6f, 0.8f, 1.0f, 0.6f, 1.0f, 0.6f) },   // tímido
+            { "Deer",     MakeMind(ElementalTone.Agua,   1.0f, 0.8f, 1.0f, 0.6f, 1.1f, 0.9f) },
+            { "Seal",     MakeMind(ElementalTone.Agua,   1.1f, 0.9f, 1.0f, 0.9f, 1.2f, 0.8f) },   // juguetón
+            { "Whale",    MakeMind(ElementalTone.Agua,   1.8f, 1.4f, 1.6f, 1.2f, 1.3f, 1.3f) },   // sabio, calmado
+            { "Malamute", MakeMind(ElementalTone.Tierra, 1.1f, 1.0f, 1.1f, 0.8f, 1.5f, 1.4f) },   // leal, disciplinado
         };
         _packs = new Dictionary<string, Aptitudes>
         {   // aditivo (todas las aptitudes). Valores por nivel (placeholder; salen del balance del boss del santuario).

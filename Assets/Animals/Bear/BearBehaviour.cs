@@ -6,6 +6,8 @@ using UnityEngine.AI;
 
 public class BearBehaviour : Carnivore
 {
+    protected override string SpeciesArchetype => "Bear";
+
     // Family creation default values
     public static Family defaultGroup = new Family(3, 0.4f, Family.maternal);
     public Family group = defaultGroup;

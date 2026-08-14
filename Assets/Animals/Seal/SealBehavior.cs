@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SealBehavior : Herbivore
 {
+    protected override string SpeciesArchetype => "Seal";
+
     public static Family defaultGroup = new Family(8, 0.3f, Family.maternal);
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class DeerBehavior : Herbivore
 {
+    protected override string SpeciesArchetype => "Deer";
+
     public static Family defaultGroup = new Family(6, 0.3f, Family.maternal);
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }

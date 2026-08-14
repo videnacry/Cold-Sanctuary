@@ -7,6 +7,8 @@ using UnityEngine.AI;
 
 public class BunnyBehavior : Herbivore
 {
+    protected override string SpeciesArchetype => "Bunny";
+
     #region Family
     /// <summary>
     /// Properties wich determine how is going te be the created family of an instance
