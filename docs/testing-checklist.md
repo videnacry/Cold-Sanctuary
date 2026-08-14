@@ -740,7 +740,7 @@ Dos cuerpos (melaza Toro+Bear / hormiga Ant+Human) comparten UNA alma. HUD arrib
 
 ## 22. Compañero por composición (fase 5) — sandbox `AlmaBlend_AUTO`
 - [ ] `Panterilia_SinClase` (SimpleAnima + SoulComposition arquetipo Panterilia + Mind + BondPillar): en el `[Alma]` sus stats coinciden con la Panterilia real (per 1.7, rea 1.6, disc 1.5, str 0.7…), SIN heredar `CompanionBase`.
-- [ ] `BondPillar` implementa `IBondable`: si el jugador se le acerca (radio 4), restaura su canal mental (MentalFatigue) según bond×mood — igual que un compañero, pero por composición.
+- [ ] `BondPillar` (universal, SIN vía directa al jugador): familiariza con CUALQUIER `ITarget` cercano por cercanía (crece `Anima.bonds`); si el vecino tiene mente (el jugador vía `PlayerTarget`), lo reconforta según el bond. El jugador es un ITarget más.
 
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
