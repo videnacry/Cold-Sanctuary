@@ -57,6 +57,30 @@ inclinación: relacion > θ → acercarse/vincular ;  < −θ → huir/pelear ; 
 Al crecer un bond → generar **thoughts** (amistad/compasión/bienestar) que empujan el temperamento (respeto/deseo
 de dominar/cariño/venganza) — vía el **campo mental** (`ThoughtField`) que ya existe.
 
+## 2b. Los efectos son GLOBALES y EMERGENTES (no dirigidos al jugador) — CORRECCIÓN
+El jugador **no es especial**: es **una anima más** (la que poseas). Los "efectos de compañero" no van al jugador,
+son **mecanismos globales** que cada anima proyecta a **las animas cercanas con las que tiene bond**, atenuados/
+vetados por **threat** (poder) y **bonds negativos** (rechazo).
+- **La ACTITUD emerge de bonds + stats + humores**, no se hardcodea. Ej.: la "fiesta" de Gohageneis = alta
+  `sociability` + **bond alto con Humano** + bonds **positivos (>0, menores)** con perros/crías + **adrenalina/
+  positividad** alta → **juega con las animas de alto bond y bajo threat** a su alrededor (les sube el ánimo).
+- **Consecuencia:** los componentes por-compañero (celebración/observación/presión) deberían **disolverse** en un
+  **campo social** compartido: cada anima influye en el ánimo/humores de sus vecinos con bond según **sus propios
+  stats/humores** (generaliza `ThoughtField`). Los compañeros se diferencian por su **perfil de stats/bonds**.
+- *(Estado: hoy `MoodState`/los componentes de compañero aún proyectan al jugador — a migrar a campo global.)*
+
+## 2c. Huir / ayudar-al-pack (revisión) — el modelo YA existe, pero está partido
+El modelo rico —**bonds + threat + autoabandono (entrega ↔ autoconservación) + pack**— **ya está implementado**
+en **`PackAwareness`** (Microcosmos): *ayudar si* `(autoabandono + vínculo) > peligroEspec`, con
+`peligroEspec = compañero.PerceivedDanger − selfPower` (si soy poderoso, el peligro neto del compañero baja). El
+"modo misión" sube `autoabandono` temporalmente. **Pero:**
+- **Gap 1:** `PackAwareness` solo está en las hormigas. El huir/pelear de **`Animal`** (`ResolveReaction`) es
+  **solo por PODER** (`masa + masa-manada × PackFactor` vs poder de la amenaza) — **no** usa bonds ni autoabandono.
+  → **unificar**: que `Animal` decida huir/ayudar con el modelo de `PackAwareness`.
+- **Gap 2:** `Anima.autoabandono` es un **campo crudo (0.3)**, no **deriva** de "entrega vs autoconservación".
+  → derivarlo de stats/humores (entrega ← afabilidad/sensibilidad/bonds altos; autoconservación ← composure/
+  disciplina/instinto). *(Fórmula exacta a confirmar por el diseño.)*
+
 ## 3. Pensamientos por capacidad (dos pools)
 - **Capacidad** = `f(inteligencia: reasoning+memory+creativity+discipline)` → **entero**.
 - **Pool base (biológica/kármica):** por cada `MindArchetype`, `nThoughts = floor(capacidad · dominio/100)`.
