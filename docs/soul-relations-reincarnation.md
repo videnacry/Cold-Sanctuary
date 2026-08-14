@@ -76,10 +76,9 @@ en **`PackAwareness`** (Microcosmos): *ayudar si* `(autoabandono + vínculo) > p
 "modo misión" sube `autoabandono` temporalmente. **Pero:**
 - **Gap 1:** `PackAwareness` solo está en las hormigas. El huir/pelear de **`Animal`** (`ResolveReaction`) es
   **solo por PODER** (`masa + masa-manada × PackFactor` vs poder de la amenaza) — **no** usa bonds ni autoabandono.
-  → **unificar**: que `Animal` decida huir/ayudar con el modelo de `PackAwareness`.
+  → **HECHO parcial (PR #81)**: `Animal.EvaluateThreat` baja la amenaza por el bond (un amigo no asusta); `ResolveReaction` usa `(autoabandono + vínculo-con-crías) > peligro` para plantar cara, y el `autoabandono` envalentona (myPower×(1+autoabandono)). *Falta:* mover a ayudar a un aliado LEJANO en peligro (rol de `PackAwareness`, requiere su navegación).
 - **Gap 2:** `Anima.autoabandono` es un **campo crudo (0.3)**, no **deriva** de "entrega vs autoconservación".
-  → derivarlo de stats/humores (entrega ← afabilidad/sensibilidad/bonds altos; autoconservación ← composure/
-  disciplina/instinto). *(Fórmula exacta a confirmar por el diseño.)*
+  → **HECHO (PR #81)**: `Autoabandono.From` = entrega/(entrega+autoconservación) [entrega ← afabilidad+sensibilidad+bond medio; autoconservación ← composure+disciplina+1]; `Anima.RecomputeAutoabandono`; `Animal.Init`/`ResolveReaction` lo recomputan.
 
 ## 3. Pensamientos por capacidad (dos pools)
 - **Capacidad** = `f(inteligencia: reasoning+memory+creativity+discipline)` → **entero**.

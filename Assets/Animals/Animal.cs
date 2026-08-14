@@ -167,6 +167,13 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             // Aura mágica destructiva del origen → más temido (huida/cautela).
             if (src.magicAura < 0f) physical += -src.magicAura * 2f;
         }
+        // BOND: un ser con el que tengo vínculo NO me da miedo (confianza, no huida). Bond 100 → amenaza 0.
+        ITarget srcT = source.GetComponent<ITarget>();
+        if (srcT != null)
+        {
+            Bond b = GetBond(srcT);
+            if (b != null) physical *= Mathf.Clamp01(1f - b.value / 100f);
+        }
         return physical;
     }
 
@@ -207,6 +214,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         perception  = BasePerception;
         sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
         ApplySpeciesArchetype();                       // fase 3: aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
+        RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         ani = GetComponent<Animator>();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
@@ -374,7 +382,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
                     allyMass += ally.rig.mass;
             }
         }
-        float myPower = rig.mass + allyMass * PackFactor;
+        RecomputeAutoabandono();   // fresco con los bonds actuales
+        float myPower = (rig.mass + allyMass * PackFactor) * (1f + autoabandono);   // (b) autoabandono = valentía por el pack
         float enemyPower = enemyMass * enemySpeed;
 
         bool defendingCubs = DefendsCubs && Group?.fed != null &&
@@ -382,10 +391,27 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
 
         if (myPower > enemyPower * 1.5f && Aggressiveness > 0.5f)
-            return Reaction.Fight;
-        if (defendingCubs && CanHitAndRun)
-            return Reaction.HitAndRun;
+            return Reaction.Fight;   // claramente más fuerte
+
+        // (b) Modelo bonds+threat+autoabandono: por las crías/manada, plantar cara si (autoabandono + vínculo) > peligro.
+        if (defendingCubs)
+        {
+            float peligro = Mathf.Max(0f, enemyPower / Mathf.Max(0.1f, myPower) - 1f);   // 0 = parejo, >0 = en desventaja
+            float vinculo = CubBondFactor();                                             // 0..1 (bond con las crías)
+            if ((autoabandono + vinculo) > peligro)
+                return CanHitAndRun ? Reaction.HitAndRun : Reaction.Fight;
+        }
         return Reaction.Flee;
+    }
+
+    // Vínculo medio con las crías defendidas (0..1); si aún no hay bond, afinidad de cría por defecto (0.4).
+    float CubBondFactor()
+    {
+        if (Group?.fed == null) return 0f;
+        float sum = 0f; int n = 0;
+        foreach (Animal cub in Group.fed)
+            if (cub != null && !cub.death) { Bond b = GetBond(cub); sum += b != null ? b.value : 40f; n++; }
+        return n > 0 ? Mathf.Clamp01(sum / n / 100f) : 0f;
     }
 
     protected virtual IEnumerator Flee(GameObject threat)
