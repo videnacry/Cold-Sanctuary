@@ -28,16 +28,15 @@ public class MigrationDiagnostics : MonoBehaviour
         Debug.Log("═══════ [Diag Anima] inicio (primer Update — tras todos los Start) ═══════");
 
         // Chequeo de jerarquía (compila-time real: si compiló, la migración está bien tipada).
-        Debug.Log($"[Diag] CompanionBase hereda de Anima: {typeof(Anima).IsAssignableFrom(typeof(CompanionBase))}");
         Debug.Log($"[Diag] Animal hereda de Anima: {typeof(Anima).IsAssignableFrom(typeof(Animal))}");
 
-        // Todos los Anima de la escena (Animal + CompanionBase + lo que venga).
+        // Todos los Anima de la escena (Animal + compañeros compuestos + lo que venga).
         Anima[] seres = FindObjectsOfType<Anima>();
         Debug.Log($"[Diag] Anima en escena: {seres.Length}");
         foreach (Anima s in seres)
         {
             IAptitudes apt = s;   // Anima implementa IAptitudes
-            Debug.Log($"[Diag]  · {s.name} · tipo={s.GetType().Name} · companion={s is CompanionBase} · " +
+            Debug.Log($"[Diag]  · {s.name} · tipo={s.GetType().Name} · companion={s.GetComponent<MoodState>() != null} · " +
                       $"apt(str={s.strength:0.00} agi={s.agility:0.00} rea={s.reasoning:0.00}) · " +
                       $"IAptitudes(str={apt.Strength:0.00}) · " +
                       $"drives(sat={s.satisfaction:0.00} phys={s.physicalResistance:0.00} obs={s.observationRadius:0.0} vel={s.velocity:0.0})");
