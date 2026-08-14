@@ -1370,6 +1370,11 @@ public static class SampleSceneBuilder
         compaSoul.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });   // karma humana (agrado a perros, etc.)
         compa.AddComponent<BondPillar>();   // familiariza con cualquier ITarget cercano (incl. el jugador) por circunstancia + karma
 
+        // Los otros 3 compañeros por composición (arquetipos capturados de sus Base* reales) — prueban la disolución de CompanionBase.
+        MakeComposedCompanion(group.transform, "Goluis_SinClase", "Goluis", new Vector3(23.5f, 1f, 9.5f), new Color(0.50f, 0.55f, 0.40f));
+        MakeComposedCompanion(group.transform, "Gohageneis_SinClase", "Gohageneis", new Vector3(23.5f, 1f, 11f), new Color(0.80f, 0.60f, 0.30f));
+        MakeComposedCompanion(group.transform, "Irosene_SinClase", "Irosene", new Vector3(23.5f, 1f, 12.5f), new Color(0.85f, 0.50f, 0.55f));
+
         // Ser con forma distinta (Toro cuerpo + Bear mente) para probar la CONVERSIÓN (transformación/reencarnación).
         GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         amb.name = "Ambrosio_Convert"; amb.transform.SetParent(group.transform); amb.transform.position = new Vector3(23.5f, 1f, 6f);
@@ -1405,6 +1410,22 @@ public static class SampleSceneBuilder
         Debug.Log("[SampleSceneBuilder] AlmaCompartida_AUTO: 2 cuerpos (melaza Toro+Bear, hormiga Ant+Human) comparten " +
                   "UNA alma. HUD: entrenar/lesionar el poder se propaga a ambos; +bond lo reciben TODAS las " +
                   "reencarnaciones (docs soul-relations-reincarnation §4).");
+    }
+
+    // Compañero por COMPOSICIÓN (fase 5): reproduce a una companion desde su arquetipo, sin heredar CompanionBase.
+    static void MakeComposedCompanion(Transform parent, string name, string archetype, Vector3 pos, Color col)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
+        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Mind>();
+        SoulComposition sc = go.AddComponent<SoulComposition>();
+        sc.bodies.Add(new BlendSlot { archetype = archetype, domain = 100f });
+        sc.minds.Add(new BlendSlot { archetype = archetype, domain = 100f });
+        sc.applyScale = false;
+        sc.speciesBonds.Add(new BlendSlot { archetype = "Human", domain = 100f });
+        go.AddComponent<BondPillar>();
     }
 
     static SoulComposition MakeSharedBody(Transform parent, string name, Vector3 pos, Color col, string body, string mind, SharedSoul soul)

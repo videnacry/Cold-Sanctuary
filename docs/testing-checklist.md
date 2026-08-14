@@ -729,6 +729,7 @@ Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus s
       **A/relativa** → hormiga cuya forma la modula la hormiga; **B/literal** → misma forma exacta, tamaño hormiga.
       **Reset** vuelve al original para comparar A vs B. (B es el modo de las reencarnaciones: identidad marcada.)
 - [ ] **Mente por blend** (PR #72): `OsoMenteHumana` (mente Human) suelta frases `[Mente]` con tono **Viento/Fuego**; `Oso_bonusPack3` (mente Bear) con tono **Tierra** → el tono emerge del blend, no del cuerpo.
+- [ ] **4 compañeros por composición** (PR #78): `Panterilia_SinClase`/`Goluis_SinClase`/`Gohageneis_SinClase`/`Irosene_SinClase` — sus `[Alma]` deben coincidir con los `Base*` reales de cada companion (Goluis str 1.5/disc 1.3; Gohageneis adapt 1.7/soc 1.7; Irosene soc 1.7/cre 1.5…), SIN `CompanionBase`.
 - [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
 
 ## 21. Alma COMPARTIDA (reencarnaciones) — sandbox `AlmaCompartida_AUTO`
