@@ -114,6 +114,14 @@ public abstract class SpellBase : MonoBehaviour
     [Tooltip("Tope base del bonus por FORCEJEO (× aptitudes físicas).")]
     [Min(0f)] public float maxPowerWithForcejeo = 3f;
 
+    [Header("Animación de carga (opcional; cada hechizo la suya)")]
+    [Tooltip("Animator que reproduce la animación de carga. Vacío = sin animación (solo lógica).")]
+    public Animator chargeAnimator;
+    [Tooltip("Estado del Animator MIENTRAS se carga (p.ej. la postura de salida del velocista). Vacío = ninguno.")]
+    public string chargeAnimState = "";
+    [Tooltip("Estado del Animator al SOLTAR la carga (el burst/arranque; p.ej. la zancada de salida). Vacío = ninguno.")]
+    public string releaseAnimState = "";
+
     float _powerBonus;    // el bonus unificado (se suma a `force`/velocidad; decae con el tiempo)
     float _chargeAccum;   // acumulado durante la carga; se inyecta a _powerBonus al soltar chargeKey
     bool  _charging;
@@ -137,12 +145,16 @@ public abstract class SpellBase : MonoBehaviour
 
         // CHARGE: acumula mientras se mantiene; al soltar, inyecta de golpe y dispara el burst.
         if (charging)
+        {
+            if (!_charging) PlayChargeAnim(chargeAnimState);   // flanco de subida: empieza la postura de carga
             _chargeAccum = Mathf.Min(maxCharge, _chargeAccum + chargeRampPerSecond * dt);
+        }
         else if (_charging)   // soltó la carga este frame
         {
             _powerBonus = Mathf.Max(_powerBonus, _chargeAccum);
             float injected = _chargeAccum;
             _chargeAccum = 0f;
+            PlayChargeAnim(releaseAnimState);                  // el burst/arranque
             OnChargeReleased(injected);
         }
         _charging = charging;
@@ -168,6 +180,12 @@ public abstract class SpellBase : MonoBehaviour
 
     /// <summary>Descarta el bonus acumulado (vuelta inmediata a la base).</summary>
     protected void ResetPowerBonus() { _powerBonus = 0f; _chargeAccum = 0f; }
+
+    /// <summary>Reproduce un estado del Animator de carga, si están configurados. No-op si no.</summary>
+    void PlayChargeAnim(string state)
+    {
+        if (chargeAnimator != null && !string.IsNullOrEmpty(state)) chargeAnimator.Play(state);
+    }
 
     /// <summary>Hook: se llama al SOLTAR la carga, con el bonus inyectado. La subclase dispara aquí su burst
     /// (arrancar con la velocidad acumulada / lanzar la esfera gigante).</summary>
