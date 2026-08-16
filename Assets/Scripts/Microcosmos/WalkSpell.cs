@@ -26,7 +26,11 @@ public class WalkSpell : SpellBase
     Anima   _self;
     Vector3 _lastPos;
 
-    void Awake() { _self = GetComponent<Anima>(); }
+    void Awake()
+    {
+        _self = GetComponent<Anima>();
+        if (chargeAnimator == null) chargeAnimator = GetComponent<Animator>();   // postura de salida / arranque (nombra los estados en el Inspector)
+    }
 
     void Update()
     {

@@ -63,6 +63,7 @@ public class FireSpell : SpellBase
     void Awake()
     {
         if (caster == null) caster = GetComponent<Anima>();
+        if (chargeAnimator == null) chargeAnimator = GetComponent<Animator>();   // animación de carga de la esfera (nombra los estados en el Inspector)
         castMode = CastMode.Repeat;
     }
 

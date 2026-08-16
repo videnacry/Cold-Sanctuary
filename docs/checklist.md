@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#87 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#88 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **16-ago (PR #88):** **animación de carga por hechizo** en `SpellBase` (`chargeAnimator` + `chargeAnimState`/`releaseAnimState`), disparada por `IsCharging`/`OnChargeReleased` — cada hechizo su animación (postura de salida del velocista, carga de la esfera…). `WalkSpell`/`FireSpell` auto-cablean el `Animator` local; los estados se nombran en el Inspector.
 - **16-ago (PR #87):** **sistema de bonos de hechizo unificado** (`SpellBase`). Charge, channeling y forcejeo pasan a un único `powerBonus` que **decae con el tiempo**. `CastMode.Charge` **retirado**; charge=**LeftShift** (acumula sin aplicar; al soltar, burst que dispara), channeling=**RightShift** (suelo/tope dinámico `maxPowerWithChanneling`). Topes por hechizo (`maxPowerWithCharge`/`Channeling`/`Forcejeo`) escalados por aptitudes (físicas charge/forcejeo, mentales channeling). `WalkSpell` a **ESDF** con carga=postura de salida (arranque) + channel=punta. `FireSpell`: LShift carga la esfera gigante, RShift la sostiene. HUD/sandbox `SpellDemo_AUTO` actualizados.
 - **14-ago (PR #86):** **jugador integrado en el modelo de ánimo/estrés**. `MoodDynamics`/`Exertion` ahora corren sobre **cualquier `Anima`** (el jugador ya lo era desde 2026-07-28): con `Mind` usan humores; **sin `Mind` (jugador)** derivan el estrés de las drives universales (`mentalFatigue`/`sleepiness`/hambre). En el builder el jugador lleva `MoodDynamics` y es `worker` de la receta de cocina → cocinar lo desgasta y estresa. Unifica el modelo (el jugador es «solo un Anima» más).
 - **14-ago (PR #85):** **desgaste por trabajo (vía A)** `Exertion`/`ExertionCost`: las acciones de trabajo declaran coste (glucosa/minerales/fatiga/sueño) y gastan reservas del `Anima` → `MoodDynamics` lo vuelve estrés. Enganchado en `VirtualTask.worker`/`exertionPerStep`, `ProductionOrder.stepExertion[]` (cargar/forjar pesan más) y `StockingTask`. Sandbox `Desgaste_AUTO` (obrero Goluis que se cansa→estresa→`UnderPressure`).
