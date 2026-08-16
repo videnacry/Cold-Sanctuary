@@ -5,11 +5,11 @@ using UnityEngine;
 /// conducta pegada a la base: cada hechizo elige su modo.
 ///   • <b>Instant</b> — un disparo por pulsación (mantener no hace nada).
 ///   • <b>Repeat</b>  — RELANZA cada `repeatCooldown` mientras se mantiene (p.ej. fireball: sale una tras otra).
-///   • <b>Channel</b> — SOSTIENE/acumula el efecto mientras se mantiene (p.ej. Jalar/Caminar: el forcejeo sube).
-///   • <b>Charge</b>  — acumula mientras mantienes y SUELTA al soltar; más carga = efecto mayor (p.ej. la
-///                      transformación: mantener alarga la duración/potencia).
+///   • <b>Channel</b> — SOSTIENE/aplica el efecto mientras se mantiene (p.ej. Jalar: el forcejeo actúa).
+/// El CHARGE ya NO es un modo: es un bonus ORTOGONAL (chargeKey/LeftShift) del sistema de `powerBonus` (abajo),
+/// disponible para cualquier hechizo sin importar su `castMode`.
 /// </summary>
-public enum CastMode { Instant, Repeat, Channel, Charge }
+public enum CastMode { Instant, Repeat, Channel }
 
 /// <summary>
 /// Base abstracta para todos los hechizos del juego (docs/stats-as-truth.md §hechizos).
@@ -51,7 +51,6 @@ public abstract class SpellBase : MonoBehaviour
     [Min(0.05f)] public float repeatCooldown = 0.5f;
 
     float _repeatTimer;
-    float _chargeTime;
 
     // ── Manejo de input por modo (OPT-IN: la subclase lo llama desde su Update) ─
     /// <summary>Dispatch de input según `castMode` sobre `spellKey`. Llamar desde el `Update` de la subclase.
@@ -77,11 +76,6 @@ public abstract class SpellBase : MonoBehaviour
                 if (Input.GetKey(spellKey)) OnChannelTick(Time.deltaTime);
                 if (Input.GetKeyUp(spellKey)) OnChannelEnd();
                 break;
-            case CastMode.Charge:
-                if (Input.GetKeyDown(spellKey)) _chargeTime = 0f;
-                if (Input.GetKey(spellKey)) _chargeTime += Time.deltaTime;
-                if (Input.GetKeyUp(spellKey)) { OnChargeRelease(_chargeTime); _chargeTime = 0f; }
-                break;
         }
     }
 
@@ -90,55 +84,94 @@ public abstract class SpellBase : MonoBehaviour
     protected virtual void OnChannelStart() { }             // Channel: al empezar a mantener
     protected virtual void OnChannelTick(float dt) { }      // Channel: cada frame mientras se mantiene
     protected virtual void OnChannelEnd() { }               // Channel: al soltar
-    protected virtual void OnChargeRelease(float chargeTime) { }  // Charge: al soltar, con el tiempo acumulado
 
-    // ── Forcejeo / Channeling: bonos de poder compartidos por TODO hechizo ──────
-    // Dos bonos ortogonales que se suman al `force`:
-    //   • FORCEJEO — sube SOLO cuando el hechizo no logra su efecto (ReportResult(false)); persiste; escala con
-    //     aptitudes FÍSICAS. "Mantener la tecla sola".
-    //   • CHANNELING — sube mientras se canaliza (tecla + channelKey) y DECAE al soltar; escala con aptitudes
-    //     MENTALES. Se recupera volviendo a canalizar.
-    [Header("Forcejeo / Channeling (bonos de poder)")]
-    [Tooltip("Modificador de CANALIZAR: mantener esta tecla junto a la del hechizo = channeling (bonus mental).")]
-    public KeyCode channelKey = KeyCode.LeftShift;
-    [Tooltip("Cuánto sube el bonus de FORCEJEO por cada intento sin lograr el efecto.")]
-    [Min(0f)] public float forcejeoStep = 0.05f;
-    [Min(0f)] public float forcejeoMaxBonus = 3f;
-    [Tooltip("Cuánto sube el bonus de CHANNELING por segundo mientras se canaliza.")]
+    // ── Bonus de poder UNIFICADO: charge + channeling + forcejeo → un solo `powerBonus` que DECAE ─────
+    // (docs/stats-as-truth §hechizos). Charge y channeling se pulsan JUNTO a la acción del hechizo:
+    //   • CHARGE (chargeKey = LeftShift): mantener acumula SIN aplicar el efecto (el ser "toma postura"); al
+    //     SOLTAR inyecta el acumulado de golpe (burst) y dispara → OnChargeReleased. Tope maxPowerWithCharge.
+    //   • CHANNELING (channelKey = RightShift): SUELO/tope dinámico en maxPowerWithChanneling — si el bonus está
+    //     por debajo, sube gradual hasta él; si la carga lo dejó por encima, impide que decaiga por debajo de él.
+    //   • FORCEJEO — sube al FALLAR el efecto (ReportResult(false)); ahora vive en el MISMO powerBonus.
+    // Sin sostener nada, el powerBonus DECAE a 0 (vuelta al hechizo base). Las aptitudes escalan los TOPES:
+    // físicas el de charge/forcejeo, mentales el de channeling (a futuro, override de stats por hechizo).
+    [Header("Bonus de poder (charge + channeling + forcejeo, unificado)")]
+    [Tooltip("Tecla de CARGA: mantener acumula sin aplicar; soltar inyecta el burst y dispara.")]
+    public KeyCode chargeKey = KeyCode.LeftShift;
+    [Tooltip("Tecla de CANALIZAR: suelo/tope dinámico (sube hasta su max o impide que decaiga por debajo).")]
+    public KeyCode channelKey = KeyCode.RightShift;
+    [Tooltip("Cuánto DECAE el powerBonus por segundo cuando no se sostiene (vuelta a la base).")]
+    [Min(0f)] public float decayPerSecond = 0.5f;
+    [Tooltip("Cuánto acumula la CARGA por segundo mientras mantienes chargeKey.")]
+    [Min(0f)] public float chargeRampPerSecond = 1f;
+    [Tooltip("Tope base del bonus por CARGA (× aptitudes físicas).")]
+    [Min(0f)] public float maxPowerWithCharge = 3f;
+    [Tooltip("Cuánto sube el CANALIZAR por segundo hacia su tope.")]
     [Min(0f)] public float channelRampPerSecond = 1f;
-    [Min(0f)] public float channelMaxBonus = 3f;
-    [Tooltip("Cuánto DECAE el channeling por segundo al soltar (el forcejeo NO decae).")]
-    [Min(0f)] public float channelDecayPerSecond = 0.5f;
+    [Tooltip("Tope base del bonus por CANALIZAR (× aptitudes mentales). También es el SUELO mientras se canaliza.")]
+    [Min(0f)] public float maxPowerWithChanneling = 3f;
+    [Tooltip("Cuánto sube el FORCEJEO por cada intento fallido.")]
+    [Min(0f)] public float forcejeoStep = 0.05f;
+    [Tooltip("Tope base del bonus por FORCEJEO (× aptitudes físicas).")]
+    [Min(0f)] public float maxPowerWithForcejeo = 3f;
 
-    float _forcejeo;   // bonus físico (persiste; sube al fallar)
-    float _channel;    // bonus mental (sube canalizando, decae si no)
+    float _powerBonus;    // el bonus unificado (se suma a `force`/velocidad; decae con el tiempo)
+    float _chargeAccum;   // acumulado durante la carga; se inyecta a _powerBonus al soltar chargeKey
+    bool  _charging;
 
-    public float RawForcejeo => _forcejeo;
-    public float RawChannel  => _channel;
+    public float PowerBonus  => _powerBonus;
+    public float ChargeAccum => _chargeAccum;
+    public bool  IsCharging  => _charging;
 
     static float PhysFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.strength + c.endurance + c.bodyMass) / 3f);
     static float MindFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.reasoning + c.memory + c.creativity) / 3f);
 
-    /// <summary>Bonus de forcejeo escalado por aptitudes FÍSICAS.</summary>
-    protected float ForcejeoBonus(Anima c) => _forcejeo * PhysFactor(c);
-    /// <summary>Bonus de channeling escalado por aptitudes MENTALES.</summary>
-    protected float ChannelBonus(Anima c) => _channel * MindFactor(c);
-    /// <summary>Bonus total sobre el `force` base (forcejeo físico + channeling mental).</summary>
-    protected float BonusPower(Anima c) => ForcejeoBonus(c) + ChannelBonus(c);
-
-    /// <summary>Sube el channeling si se canaliza; si no, decae. Llamar cada frame desde la subclase.</summary>
-    protected void TickChanneling(bool channeling, float dt)
+    /// <summary>Actualiza el powerBonus (charge/channeling/decay) según chargeKey/channelKey. Llamar cada frame
+    /// desde la subclase con su caster. El FORCEJEO se sube aparte con <see cref="ReportResult"/> al fallar.</summary>
+    protected void TickPowerBonus(Anima c, float dt)
     {
-        if (channeling) _channel = Mathf.Min(channelMaxBonus, _channel + channelRampPerSecond * dt);
-        else            _channel = Mathf.Max(0f, _channel - channelDecayPerSecond * dt);
+        float maxCharge = maxPowerWithCharge     * PhysFactor(c);
+        float maxChan   = maxPowerWithChanneling * MindFactor(c);
+
+        bool charging   = chargeKey  != KeyCode.None && Input.GetKey(chargeKey);
+        bool channeling = channelKey != KeyCode.None && Input.GetKey(channelKey);
+
+        // CHARGE: acumula mientras se mantiene; al soltar, inyecta de golpe y dispara el burst.
+        if (charging)
+            _chargeAccum = Mathf.Min(maxCharge, _chargeAccum + chargeRampPerSecond * dt);
+        else if (_charging)   // soltó la carga este frame
+        {
+            _powerBonus = Mathf.Max(_powerBonus, _chargeAccum);
+            float injected = _chargeAccum;
+            _chargeAccum = 0f;
+            OnChargeReleased(injected);
+        }
+        _charging = charging;
+
+        // CHANNELING: sube hacia su tope si está por debajo (parte de lo que dejó la carga).
+        if (channeling && _powerBonus < maxChan)
+            _powerBonus = Mathf.Min(maxChan, _powerBonus + channelRampPerSecond * dt);
+
+        // DECAY: hacia el suelo (maxChan si se canaliza; 0 si no). Nunca por debajo del suelo.
+        float floor = channeling ? maxChan : 0f;
+        if (_powerBonus > floor)
+            _powerBonus = Mathf.Max(floor, _powerBonus - decayPerSecond * dt);
     }
 
-    /// <summary>Reporta un intento: si NO logró el efecto, sube el forcejeo (persiste). El éxito NO lo baja.</summary>
-    protected void ReportResult(bool success)
+    /// <summary>Reporta un intento: si NO logró el efecto, sube el FORCEJEO dentro del mismo powerBonus.</summary>
+    protected void ReportResult(Anima c, bool success)
     {
-        if (!success) _forcejeo = Mathf.Min(forcejeoMaxBonus, _forcejeo + forcejeoStep);
+        if (success) return;
+        float maxForc = maxPowerWithForcejeo * PhysFactor(c);
+        if (_powerBonus < maxForc)
+            _powerBonus = Mathf.Min(maxForc, _powerBonus + forcejeoStep);
     }
-    protected void ResetForcejeo() => _forcejeo = 0f;
+
+    /// <summary>Descarta el bonus acumulado (vuelta inmediata a la base).</summary>
+    protected void ResetPowerBonus() { _powerBonus = 0f; _chargeAccum = 0f; }
+
+    /// <summary>Hook: se llama al SOLTAR la carga, con el bonus inyectado. La subclase dispara aquí su burst
+    /// (arrancar con la velocidad acumulada / lanzar la esfera gigante).</summary>
+    protected virtual void OnChargeReleased(float injected) { }
 
     // ── API pública ───────────────────────────────────────────────────────────
 

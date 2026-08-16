@@ -94,7 +94,7 @@ public static class SampleSceneBuilder
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
         BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
-        BuildSpellDemoSandbox(root.transform);      // hechizos: forcejeo/channeling — fuego múltiple/carga (G/G+Shift) + caminar/esprintar (WASD/Shift) — testing §19g
+        BuildSpellDemoSandbox(root.transform);      // hechizos: powerBonus unificado — fuego (G/+LShift carga/+RShift canaliza) + caminar ESDF — testing §19g
         BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
         BuildSharedSoulSandbox(root.transform);     // alma COMPARTIDA: dos cuerpos (melaza/hormiga) una anima; propaga stats/bonds — docs soul-relations §4
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
@@ -1359,8 +1359,8 @@ public static class SampleSceneBuilder
     }
 
     // ── Hechizos: forcejeo / channeling (fuego múltiple/carga + caminar/esprintar) ──
-    // Cápsula con FireSpell (G / G+Shift) + WalkSpell (WASD / Shift) sobre un SimpleAnima con reservas y ATP.
-    // Demuestra los bonos compartidos de SpellBase (forcejeo físico al fallar / channeling mental al cargar).
+    // Cápsula con FireSpell (G / +LShift carga / +RShift canaliza) + WalkSpell (ESDF) sobre un SimpleAnima con
+    // reservas y ATP. Demuestra el powerBonus unificado de SpellBase (charge + channeling + forcejeo, con decaimiento).
     static void BuildSpellDemoSandbox(Transform parent)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -1380,17 +1380,18 @@ public static class SampleSceneBuilder
 
         FireSpell fire = go.AddComponent<FireSpell>();
         fire.caster = anima;
-        fire.spellKey = KeyCode.G;                            // G = disparo múltiple; G+Shift = cargar (channeling)
+        fire.spellKey = KeyCode.G;                            // G = disparo múltiple; +LShift = cargar; +RShift = canalizar
         fire.SetTier(FireTier.Flamethrower);
 
-        WalkSpell walk = go.AddComponent<WalkSpell>();        // WASD = andar; Shift = esprintar (channeling)
+        WalkSpell walk = go.AddComponent<WalkSpell>();        // ESDF = andar; LShift = postura de salida; RShift = punta
 
         SpellDemoHUD hud = go.AddComponent<SpellDemoHUD>();
         hud.fire = fire; hud.walk = walk; hud.anima = anima;
 
         Debug.Log("[SampleSceneBuilder] SpellDemo_AUTO: en Play, HUD arriba-centro. G = fuego múltiple (el forcejeo " +
-                  "sube y agranda la llama); G+Shift = cargar (channeling) → soltar Shift dispara cargado; WASD = andar, " +
-                  "Shift = esprintar. Ver crecer forcejeo/channel y bajar la energía (testing §19g).");
+                  "agranda la llama); G+LShift = cargar la esfera gigante (sale al soltar); G+RShift = canalizar (mantiene " +
+                  "el tamaño). ESDF = andar; +LShift = postura de salida (arranque rápido); +RShift = punta. El powerBonus " +
+                  "decae al soltar. Ver crecer el bonus y bajar la energía (testing §19g).");
     }
 
     // ── Alma por MEZCLA (fase 1): seres compuestos por arquetipos de cuerpo/mente + bonusPacks ──
