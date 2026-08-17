@@ -79,8 +79,8 @@ especies en peligro. Regla: los biomas de un santuario no se repiten en otro.
 australiana y la selva amazónica. Con Amazonía aquí, la **selva** no hace falta como V2 de S1.
 
 **Ecosistemas y posibles huecos:** el **arrecife de coral** encaja como **S2V1** (aguas someras, biodiverso y
-amenazado). Candidatos aún sin ubicar si se quiere ampliar: **humedal/manglar** (cocodrilo, manatí, capibara),
-**taiga/bosque templado** (casi el bioma "de partida"). *(Por decidir si entran.)*
+amenazado). **Humedal/manglar** (cocodrilo, manatí, capibara) y **taiga/bosque templado** quedan como **posibles
+implementaciones a FUTURO** (backlog), no en el set inicial.
 
 ## 5. Especies *(propuesta, a confirmar)* — todas en peligro real
 
