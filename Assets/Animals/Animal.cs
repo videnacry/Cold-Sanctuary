@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum Reaction { Flee, Fight, HitAndRun }
+// enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/anima-dissolving-animal.md)
 
 public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 {
@@ -201,6 +201,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     [HideInInspector] public WalkSpell Walk;   // opt-in: si está, provee la velocidad del NavMesh (locomoción-hechizo)
     [HideInInspector] public bool Running;     // ¿la acción actual es correr? (channeling del hechizo) — lo fija ActionPrep
+    ThreatResponder _threat;                   // política luchar/huir por stats (etapa 1); auto-alta en Init
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
@@ -214,6 +215,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
+        _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
+        if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
         {
@@ -389,36 +392,16 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         }
     }
 
+    // La POLÍTICA de decisión vive en ThreatResponder (etapa 1). Aquí solo se computa el contexto de CRÍAS
+    // (acoplado a Family/Group, que aún vive en Animal) y se delega.
     protected Reaction ResolveReaction(GameObject threat)
     {
-        ITarget threatTarget = threat.GetComponent<ITarget>();
-        if (threatTarget != null && !CanHarm(threatTarget))
-            return Reaction.Flee;
-
-        // Poder por STATS (Fase 0, docs/anima-dissolving-animal.md): antes se usaba rig.mass × NavMeshAgent.speed y
-        // un bucle propio de manada; ahora sale de Predation.EffectivePower (fuerza/masa/textura/agilidad + aliados
-        // por facción en radio, ponderados por PackFactor). El ratio myPower/enemyPower es scale-invariant.
-        Anima threatAnima = threat.GetComponent<Anima>();
         RecomputeAutoabandono();   // fresco con los bonds actuales
-        float myPower = Predation.EffectivePower(this) * (1f + autoabandono);   // (b) autoabandono = valentía por el pack
-        float enemyPower = threatAnima != null ? Predation.EffectivePower(threatAnima) : 0f;
-
         bool defendingCubs = DefendsCubs && Group?.fed != null &&
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
-
-        if (myPower > enemyPower * 1.5f && Aggressiveness > 0.5f)
-            return Reaction.Fight;   // claramente más fuerte
-
-        // (b) Modelo bonds+threat+autoabandono: por las crías/manada, plantar cara si (autoabandono + vínculo) > peligro.
-        if (defendingCubs)
-        {
-            float peligro = Mathf.Max(0f, enemyPower / Mathf.Max(0.1f, myPower) - 1f);   // 0 = parejo, >0 = en desventaja
-            float vinculo = CubBondFactor();                                             // 0..1 (bond con las crías)
-            if ((autoabandono + vinculo) > peligro)
-                return CanHitAndRun ? Reaction.HitAndRun : Reaction.Fight;
-        }
-        return Reaction.Flee;
+        float cubBond = defendingCubs ? CubBondFactor() : 0f;
+        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond, Aggressiveness, CanHitAndRun);
     }
 
     // Vínculo medio con las crías defendidas (0..1); si aún no hay bond, afinidad de cría por defecto (0.4).
