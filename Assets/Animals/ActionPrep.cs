@@ -21,7 +21,8 @@ public class ActionPrep
     {
         pScript.ani.Play(this.aniName);
         pScript.ani.speed = this.aniSpeed;
-        pScript.nav.speed = this.navSpeed;
+        pScript.nav.speed = this.navSpeed;                                   // fallback; si hay WalkSpell, FeedWalkSpeed lo sobrescribe
+        pScript.Running = (pScript.ActsPrep != null && this == pScript.ActsPrep.run);   // ¿es la acción de CORRER? → channeling
         float exhaustion = this.energyCost * pAnimationTime;
         pScript.exhaustion += exhaustion;
         pScript.hungry += (exhaustion > 0) ? pScript.Body.GetMealWeight(pScript) * exhaustion : 0;

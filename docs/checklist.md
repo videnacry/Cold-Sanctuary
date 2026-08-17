@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#91 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#92 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **17-ago (PR #92):** **rollout locomoción — animales (opt-in)**. El `NavMeshAgent` sigue navegando (pathfinding); si el animal lleva un `WalkSpell`, su `nav.speed` sale del hechizo cada tick (`Animal.FeedWalkSpeed` → `WalkSpell.StepSpeed`): correr (`Running`→channeling) sube gradual a la punta, andar decae, con la lógica del `powerBonus`. `ActionPrep.Prep` fija `Animal.Running` (¿es la acción de correr?). Auto-cablea base=walk.navSpeed, punta=run−walk. **Cero regresión** (solo cambia si se añade el WalkSpell). Los animales corren para huir/cazar/salir del agua/alerta-random. *Pendiente:* que la IA humana navegue por NavMesh con esta misma velocidad (AiBrain→NavMesh).
 - **17-ago (PR #91):** **rollout locomoción — jugador**. `PlayerController` delega la VELOCIDAD horizontal al `WalkSpell` (carga-postura + punta + decaimiento + ATP), conservando dirección cámara-relativa, gravedad, salto y `_cc.Move`. `WalkSpell.StepSpeed(charging,channeling,moving,dt)` provee la velocidad sin mover. LeftShift parado = postura de salida; RightShift = punta. Builder añade el `WalkSpell` al jugador (base=walkSpeed, topes=sprint−walk). *Pendiente:* animales (NavMesh) al mismo hechizo.
 - **17-ago (PR #90):** **locomoción universal** — `WalkSpell` conducible por brains. `SpellBase.TickPowerBonus(c,dt,charging,channeling)` explícito; `WalkSpell` gana `selfDriven`, `DriveFromInput()` (input propio) y `Drive(dir,...)` (programático). `PlayerBrain` conduce el WalkSpell si existe (ESDF + carga/correr); `AiBrain` lo conduce hacia `moveTarget` (rellena el hueco de locomoción IA). Andar/correr = un hechizo que cualquier brain mueve. Sandbox `WalkUniversal_AUTO` (caminante IA→destino). *Pendiente:* migrar el jugador principal (`PlayerController`) y los animales (NavMesh) a este hechizo.
 - **17-ago (PR #89):** **pensamientos base de especie** (data-driven). `ArchetypeProfile.basePhrases` + `PhraseCategory.Especie` + `PhrasePools.Especie()` (Human/Bear/Wolf/Bunny/Fox/Deer/Seal/Whale/Lion/Malamute, tono por especie). Se siembran en `Mind.thoughts` al componerse: `SoulComposition.Resolve` (mente dominante) y `Animal.ApplySpeciesArchetype` (su especie). `Archetypes.BaseThoughtsOf` / `Mind.SeedThoughts`. NO hay clases de mente por especie: es el arquetipo (datos) el que declara stats mentales + pensamientos base.
