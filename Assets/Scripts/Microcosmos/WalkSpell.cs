@@ -23,6 +23,10 @@ public class WalkSpell : SpellBase
     [Header("Direcciones ESDF")]
     public KeyCode leftKey = KeyCode.S, forwardKey = KeyCode.E, backKey = KeyCode.D, rightKey = KeyCode.F;
 
+    [Tooltip("Si lee su PROPIO input (ESDF + shifts) en Update. Ponlo en FALSE cuando lo conduce un brain " +
+             "(PlayerBrain/AiBrain lo mueven llamando a DriveFromInput()/Drive()) — así la locomoción es universal.")]
+    public bool selfDriven = true;
+
     Anima   _self;
     Vector3 _lastPos;
 
@@ -32,21 +36,35 @@ public class WalkSpell : SpellBase
         if (chargeAnimator == null) chargeAnimator = GetComponent<Animator>();   // postura de salida / arranque (nombra los estados en el Inspector)
     }
 
-    void Update()
-    {
-        float dt = Time.deltaTime;
-        TickPowerBonus(_self, dt);   // LeftShift=carga (postura), RightShift=channel (punta), + decaimiento
+    void Update() { if (selfDriven) DriveFromInput(); }
 
+    /// <summary>Conducir leyendo el INPUT propio (ESDF + LeftShift carga + RightShift channel). Lo llama el
+    /// PlayerBrain cuando el jugador conduce este cuerpo; también el modo self-driven (demo).</summary>
+    public void DriveFromInput()
+    {
         Vector3 dir = Vector3.zero;
         if (Input.GetKey(forwardKey)) dir.z += 1f;
         if (Input.GetKey(backKey))    dir.z -= 1f;
         if (Input.GetKey(rightKey))   dir.x += 1f;
         if (Input.GetKey(leftKey))    dir.x -= 1f;
+        bool charging   = chargeKey  != KeyCode.None && Input.GetKey(chargeKey);
+        bool channeling = channelKey != KeyCode.None && Input.GetKey(channelKey);
+        Locomote(dir, charging, channeling, Time.deltaTime);
+    }
+
+    /// <summary>Conducir PROGRAMÁTICAMENTE (IA): dirección en mundo + intención de carga/channel. Lo llama el AiBrain.</summary>
+    public void Drive(Vector3 worldDir, bool charging = false, bool channeling = false)
+        => Locomote(worldDir, charging, channeling, Time.deltaTime);
+
+    // Núcleo de locomoción compartido: aplica carga/channel/forcejeo → velocidad = (base + powerBonus)/masa, con ATP.
+    void Locomote(Vector3 dir, bool charging, bool channeling, float dt)
+    {
+        TickPowerBonus(_self, dt, charging, channeling);   // LeftShift=carga (postura), RightShift=punta, + decaimiento
+
         bool moving = dir.sqrMagnitude >= 0.01f;
 
-        // Cargando la velocidad inicial (LeftShift): el personaje se queda QUIETO tomando postura de salida.
+        // Cargando la velocidad inicial: el personaje se queda QUIETO tomando postura de salida.
         if (IsCharging) { _lastPos = transform.position; return; }
-
         if (!moving) { _lastPos = transform.position; return; }
         dir.Normalize();
 

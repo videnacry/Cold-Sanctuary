@@ -133,15 +133,19 @@ public abstract class SpellBase : MonoBehaviour
     static float PhysFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.strength + c.endurance + c.bodyMass) / 3f);
     static float MindFactor(Anima c) => c == null ? 1f : Mathf.Max(0.1f, (c.reasoning + c.memory + c.creativity) / 3f);
 
-    /// <summary>Actualiza el powerBonus (charge/channeling/decay) según chargeKey/channelKey. Llamar cada frame
-    /// desde la subclase con su caster. El FORCEJEO se sube aparte con <see cref="ReportResult"/> al fallar.</summary>
+    /// <summary>Actualiza el powerBonus leyendo chargeKey/channelKey (input propio). Llamar cada frame desde la
+    /// subclase self-driven. Para conducción por brain, usa la sobrecarga con `charging`/`channeling` explícitos.</summary>
     protected void TickPowerBonus(Anima c, float dt)
+        => TickPowerBonus(c, dt,
+            chargeKey  != KeyCode.None && Input.GetKey(chargeKey),
+            channelKey != KeyCode.None && Input.GetKey(channelKey));
+
+    /// <summary>Actualiza el powerBonus con intención de carga/channel EXPLÍCITA (la pasa el brain que conduce, o
+    /// el propio input). El FORCEJEO se sube aparte con <see cref="ReportResult"/> al fallar.</summary>
+    protected void TickPowerBonus(Anima c, float dt, bool charging, bool channeling)
     {
         float maxCharge = maxPowerWithCharge     * PhysFactor(c);
         float maxChan   = maxPowerWithChanneling * MindFactor(c);
-
-        bool charging   = chargeKey  != KeyCode.None && Input.GetKey(chargeKey);
-        bool channeling = channelKey != KeyCode.None && Input.GetKey(channelKey);
 
         // CHARGE: acumula mientras se mantiene; al soltar, inyecta de golpe y dispara el burst.
         if (charging)

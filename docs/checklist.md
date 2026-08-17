@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#89 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#90 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **17-ago (PR #90):** **locomoción universal** — `WalkSpell` conducible por brains. `SpellBase.TickPowerBonus(c,dt,charging,channeling)` explícito; `WalkSpell` gana `selfDriven`, `DriveFromInput()` (input propio) y `Drive(dir,...)` (programático). `PlayerBrain` conduce el WalkSpell si existe (ESDF + carga/correr); `AiBrain` lo conduce hacia `moveTarget` (rellena el hueco de locomoción IA). Andar/correr = un hechizo que cualquier brain mueve. Sandbox `WalkUniversal_AUTO` (caminante IA→destino). *Pendiente:* migrar el jugador principal (`PlayerController`) y los animales (NavMesh) a este hechizo.
 - **17-ago (PR #89):** **pensamientos base de especie** (data-driven). `ArchetypeProfile.basePhrases` + `PhraseCategory.Especie` + `PhrasePools.Especie()` (Human/Bear/Wolf/Bunny/Fox/Deer/Seal/Whale/Lion/Malamute, tono por especie). Se siembran en `Mind.thoughts` al componerse: `SoulComposition.Resolve` (mente dominante) y `Animal.ApplySpeciesArchetype` (su especie). `Archetypes.BaseThoughtsOf` / `Mind.SeedThoughts`. NO hay clases de mente por especie: es el arquetipo (datos) el que declara stats mentales + pensamientos base.
 - **16-ago (PR #88):** **animación de carga por hechizo** en `SpellBase` (`chargeAnimator` + `chargeAnimState`/`releaseAnimState`), disparada por `IsCharging`/`OnChargeReleased` — cada hechizo su animación (postura de salida del velocista, carga de la esfera…). `WalkSpell`/`FireSpell` auto-cablean el `Animator` local; los estados se nombran en el Inspector.
 - **16-ago (PR #87):** **sistema de bonos de hechizo unificado** (`SpellBase`). Charge, channeling y forcejeo pasan a un único `powerBonus` que **decae con el tiempo**. `CastMode.Charge` **retirado**; charge=**LeftShift** (acumula sin aplicar; al soltar, burst que dispara), channeling=**RightShift** (suelo/tope dinámico `maxPowerWithChanneling`). Topes por hechizo (`maxPowerWithCharge`/`Channeling`/`Forcejeo`) escalados por aptitudes (físicas charge/forcejeo, mentales channeling). `WalkSpell` a **ESDF** con carga=postura de salida (arranque) + channel=punta. `FireSpell`: LShift carga la esfera gigante, RShift la sostiene. HUD/sandbox `SpellDemo_AUTO` actualizados.

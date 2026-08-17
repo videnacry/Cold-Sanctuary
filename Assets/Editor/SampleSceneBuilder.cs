@@ -95,6 +95,7 @@ public static class SampleSceneBuilder
         BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
         BuildSpellDemoSandbox(root.transform);      // hechizos: powerBonus unificado — fuego (G/+LShift carga/+RShift canaliza) + caminar ESDF — testing §19g
+        BuildWalkUniversalSandbox(root.transform);  // locomoción universal: WalkSpell conducido por un brain (AiBrain) hacia un destino
         BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
         BuildSharedSoulSandbox(root.transform);     // alma COMPARTIDA: dos cuerpos (melaza/hormiga) una anima; propaga stats/bonds — docs soul-relations §4
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
@@ -1392,6 +1393,43 @@ public static class SampleSceneBuilder
                   "agranda la llama); G+LShift = cargar la esfera gigante (sale al soltar); G+RShift = canalizar (mantiene " +
                   "el tamaño). ESDF = andar; +LShift = postura de salida (arranque rápido); +RShift = punta. El powerBonus " +
                   "decae al soltar. Ver crecer el bonus y bajar la energía (testing §19g).");
+    }
+
+    // Locomoción UNIVERSAL: un ser conducido por su brain (IA) que camina hacia un destino con el MISMO WalkSpell
+    // que usaría el jugador (PlayerBrain). Demuestra que andar/correr es un hechizo que cualquier brain conduce.
+    static void BuildWalkUniversalSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("WalkUniversal_AUTO");
+        group.transform.SetParent(parent);
+
+        // El destino (un cubo hacia el que caminar).
+        GameObject target = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        target.name = "Destino";
+        target.transform.SetParent(group.transform);
+        target.transform.position = new Vector3(22f, 0.5f, 6f);
+        target.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WalkUniversal_Target_MAT", new Color(0.4f, 0.8f, 0.4f));
+
+        // El caminante IA.
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = "CaminanteIA";
+        go.transform.SetParent(group.transform);
+        go.transform.position = new Vector3(16f, 1f, 6f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WalkUniversal_Walker_MAT", new Color(0.35f, 0.55f, 0.85f));
+
+        go.AddComponent<SimpleAnima>();
+        go.AddComponent<CharacterLevel>();                       // ATP para el coste de andar
+
+        WalkSpell walk = go.AddComponent<WalkSpell>();
+        walk.selfDriven = false;                                 // lo conduce el brain, no su propio input
+        walk.baseSpeed = 2.5f;
+
+        go.AddComponent<AnimaController>();                      // cede el mando al brain de mayor relevancia
+        AiBrain ai = go.AddComponent<AiBrain>();                 // su IA conduce el WalkSpell hacia el destino
+        ai.moveTarget = target.transform;
+
+        Debug.Log("[SampleSceneBuilder] WalkUniversal_AUTO: en Play, «CaminanteIA» camina al «Destino» usando el " +
+                  "MISMO WalkSpell que el jugador (aquí lo conduce AiBrain; un PlayerBrain lo movería con ESDF). " +
+                  "Locomoción = hechizo universal conducido por brains.");
     }
 
     // ── Alma por MEZCLA (fase 1): seres compuestos por arquetipos de cuerpo/mente + bonusPacks ──

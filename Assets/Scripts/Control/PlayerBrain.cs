@@ -22,8 +22,13 @@ public class PlayerBrain : MonoBehaviour, IBrain
 
     bool _logged;
     CharacterController _cc;
+    WalkSpell _walk;
 
-    void Awake() => _cc = GetComponent<CharacterController>();
+    void Awake()
+    {
+        _cc = GetComponent<CharacterController>();
+        _walk = GetComponent<WalkSpell>();
+    }
 
     public void Act(AnimaController ctrl)
     {
@@ -33,7 +38,10 @@ public class PlayerBrain : MonoBehaviour, IBrain
             _logged = true;
         }
 
-        // Input → mover ESTE cuerpo (los ejes por defecto de Unity: WASD / flechas).
+        // Locomoción UNIVERSAL: si el cuerpo tiene el hechizo de andar, el jugador lo conduce (ESDF + carga/correr).
+        if (_walk != null) { _walk.DriveFromInput(); return; }
+
+        // Fallback para cuerpos sin WalkSpell: movimiento propio (ejes por defecto de Unity: WASD / flechas).
         Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
         if (move.sqrMagnitude > 1f) move.Normalize();
 
