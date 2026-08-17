@@ -155,7 +155,6 @@ public class WolfBehavior : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     public override float Aggressiveness => 0.7f;
-    public override bool DefendsCubs => true;
     public override bool CanHitAndRun => false;
     public override float PackFactor => 0.8f;
     public override float HarmVsBond => 0.8f;

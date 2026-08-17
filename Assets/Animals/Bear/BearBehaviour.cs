@@ -138,7 +138,6 @@ public class BearBehaviour : Carnivore
 
     // ThreatResponse: solitario pero pesado y agresivo → lucha si tiene ventaja de masa.
     public override float Aggressiveness => 0.6f;
-    public override bool DefendsCubs => true;
     public override bool CanHitAndRun => false;
     public override float PackFactor => 0.3f;
     public override float HarmVsBond => 0.7f;

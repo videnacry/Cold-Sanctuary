@@ -76,12 +76,15 @@ sobre el mismo cuerpo/componentes que la IA.
    - [x] **Política de decisión** (`ResolveReaction` → `ThreatResponder.Decide`): luchar/huir/pegar-y-correr por
      `Predation.EffectivePower` + `autoabandono` + bonds. `Animal` la auto-añade en `Init` y le pasa el contexto de
      **crías** (`defendingCubs`/`cubBond`, que aún salen de `Family`/`Group` en `Animal`). `enum Reaction` movido. (PR #94)
-   - [ ] **Evaluación** (`EvaluateThreat`) → `ThreatResponder.Assess`: pendiente de la migración a stats de su base
-     (`rig.mass`, cambia de escala → recalibrar `ThreatThreshold`).
+   - [x] **Evaluación** (`EvaluateThreat` → `ThreatResponder.Assess`): plenamente **stat-based** (ratio de
+     `Predation.EffectivePower`, ya no `rig.mass`/NavMesh). Nueva escala = fracción de mi poder efectivo; `ThreatThreshold`
+     (0.5 base, 0.8 oso) sigue coherente y es el knob de **recalibración en Unity**. (PR #95)
+   - [x] **Defensa de crías EMERGENTE**: retirado el flag `DefendsCubs` (base + 8 overrides); la defensa sale del
+     `cubBond` (vínculo) + `autoabandono` vs peligro. (PR #95)
    - [ ] **Detección** (`SenseThreats`) y **acciones** (`Flee`/`Fight`/`HitAndRun`, NavMesh/anim): pendientes (son
      locomoción + máquina de `Animal`; se mueven cuando se extraiga `Locomotion`).
-   - Nota: el **cuidado** de crías (alimentar/nido/postnatal) es OTRO sistema (`PostNatal`/`Feed`), no `ThreatResponder`
-     — aquí solo va la **defensa** de crías ante amenaza.
+   - Dirección (acordada): el **cuidado** de crías (alimentar/nido, hoy `PostNatal`) debería volverse también
+     **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
 2. **`Forager`/`Predator`**: extraer hambre/forrajeo/caza; `Animal` delega. Depredación por stat `bodyMass`.
 3. **`Locomotion`** (NavMesh mover) + `WalkSpell` (ya) como el paquete de moverse; `AiBrain` lo conduce.
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.

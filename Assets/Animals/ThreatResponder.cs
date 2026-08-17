@@ -10,10 +10,10 @@ public enum Reaction { Flee, Fight, HitAndRun }
 /// y de los **bonds** (no dañar a quien quieres; defender crías). Cualquier `Anima` puede llevarlo — no depende de
 /// la maquinaria de `Animal`.
 ///
-/// De momento la EVALUACIÓN de amenaza (`Animal.EvaluateThreat`, aún con base en `rig.mass`), la DETECCIÓN
-/// (`SenseThreats`) y las ACCIONES (coroutines `Flee`/`Fight`/`HitAndRun`, que usan NavMesh/animación) siguen en
-/// `Animal`; se migrarán en pasos siguientes. El contexto de CRÍAS (Family/`Group`) lo calcula `Animal` y se pasa
-/// aquí (`defendingCubs`/`cubBond`), porque el sistema de familia aún vive en `Animal`.
+/// Incluye la EVALUACIÓN (`Assess`, ya stat-based) y la DECISIÓN (`Decide`). La DETECCIÓN (`SenseThreats`) y las
+/// ACCIONES (coroutines `Flee`/`Fight`/`HitAndRun`, que usan NavMesh/animación) siguen en `Animal`; se migrarán con
+/// `Locomotion`. El contexto de CRÍAS (Family/`Group`) lo calcula `Animal` y se pasa aquí (`defendingCubs`/`cubBond`),
+/// porque el sistema de familia aún vive en `Animal`; la defensa de crías es EMERGENTE (bond + autoabandono), sin flag.
 /// </summary>
 public class ThreatResponder : MonoBehaviour
 {
@@ -21,6 +21,25 @@ public class ThreatResponder : MonoBehaviour
     public float fightPowerMargin = 1.5f;
     [Tooltip("Agresividad mínima para atacar cuando se es claramente más fuerte.")]
     public float aggressionGate = 0.5f;
+    [Tooltip("Cuánto suma al miedo un aura mágica DESTRUCTIVA del origen (por unidad de aura). Tunable.")]
+    public float auraFear = 1f;
+
+    /// <summary>EVALÚA cuán amenazante es `source` para `self`, por STATS: poder depredador EFECTIVO del origen
+    /// (con manada) relativo al mío. 1 = parejo; &gt;1 me supera; acotado [0.2, 4]. Un aura destructiva asusta más;
+    /// un BOND lo desactiva (bond 100 → amenaza 0). El resultado se compara con `ThreatThreshold` (fracción de mi
+    /// poder a partir de la cual me alarmo). Portable: no usa `rig.mass`/NavMesh.</summary>
+    public float Assess(Anima self, GameObject source)
+    {
+        if (self == null || source == null) return 0f;
+        Anima src = source.GetComponent<Anima>();
+        if (src == null) return 0f;
+
+        float threat = Mathf.Clamp(Predation.EffectivePower(src) / Mathf.Max(0.1f, Predation.EffectivePower(self)), 0.2f, 4f);
+        if (src.magicAura < 0f) threat += -src.magicAura * auraFear;   // aura destructiva → más temido
+        ITarget srcT = source.GetComponent<ITarget>();
+        if (srcT != null) { Bond b = self.GetBond(srcT); if (b != null) threat *= Mathf.Clamp01(1f - b.value / 100f); }
+        return threat;
+    }
 
     /// <summary>Decide la reacción por STATS + autoabandono + bonds. `self` = quien reacciona; el resto es contexto
     /// que aporta el llamante (crías/agresividad/pegar-y-correr son aún específicos de la especie).</summary>

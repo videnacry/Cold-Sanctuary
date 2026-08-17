@@ -107,7 +107,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     // ThreatResponse species flags (override per species)
     public virtual float Aggressiveness => 0f;
-    public virtual bool DefendsCubs => false;
+    // DefendsCubs (flag) retirado (etapa 1): la defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
     public virtual bool CanHitAndRun => false;
     public virtual float PackFactor => 0.5f;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
@@ -140,7 +140,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
-    public virtual float ThreatThreshold       => 0.5f;
+    public virtual float ThreatThreshold       => 0.5f;   // NUEVA escala (Assess): fracción de MI poder efectivo a partir de la cual me alarmo (recalibrable en Unity)
     public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
     public virtual float NestSecurityLevel     => 0.5f;
     // Post-natal stage config (override per species; null = sin sistema post-natal)
@@ -152,33 +152,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     protected override void RespondToHunger() => StartCoroutine(Feed());
 
+    // La EVALUACIÓN de amenaza vive en ThreatResponder (etapa 1), plenamente stat-based (ya no usa rig.mass/NavMesh).
     protected override float EvaluateThreat(GameObject source)
-    {
-        if (source == null || rig == null) return 0f;
-        float enemyMass  = source.GetComponent<Rigidbody>()?.mass ?? 0f;
-        float enemySpeed = source.GetComponent<NavMeshAgent>()?.speed ?? 0f;
-        float physical = enemyMass * (enemySpeed * 0.5f) / Mathf.Max(rig.mass, 1f);
-        // Amenaza por STATS: escala según cuánto me supera en poder depredador (masa/fuerza/textura). Así una
-        // hormiga a lo grande con stats de ápex aterra; el farol (visual-only) no engaña (no cambia stats), la
-        // transformación real sí. (docs/stats-as-truth.md §2, Predation.)
-        Anima src = source.GetComponent<Anima>();
-        if (src != null)
-        {
-            // Poder EFECTIVO (con manada) de ambos → temer al respaldado por su grupo; envalentonarse con el propio.
-            float ratio = Predation.EffectivePower(src) / Mathf.Max(0.1f, Predation.EffectivePower(this));
-            physical *= Mathf.Clamp(ratio, 0.2f, 4f);
-            // Aura mágica destructiva del origen → más temido (huida/cautela).
-            if (src.magicAura < 0f) physical += -src.magicAura * 2f;
-        }
-        // BOND: un ser con el que tengo vínculo NO me da miedo (confianza, no huida). Bond 100 → amenaza 0.
-        ITarget srcT = source.GetComponent<ITarget>();
-        if (srcT != null)
-        {
-            Bond b = GetBond(srcT);
-            if (b != null) physical *= Mathf.Clamp01(1f - b.value / 100f);
-        }
-        return physical;
-    }
+        => _threat != null ? _threat.Assess(this, source) : 0f;
 
     public override void RespondToThreat(GameObject threat)
     {
@@ -397,7 +373,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     protected Reaction ResolveReaction(GameObject threat)
     {
         RecomputeAutoabandono();   // fresco con los bonds actuales
-        bool defendingCubs = DefendsCubs && Group?.fed != null &&
+        // Defensa de crías EMERGENTE (no un flag DefendsCubs): si hay crías propias cerca de la amenaza, la decisión
+        // sale sola del vínculo con ellas (cubBond) + autoabandono vs el peligro. docs/anima-dissolving-animal.md.
+        bool defendingCubs = Group?.fed != null &&
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
         float cubBond = defendingCubs ? CubBondFactor() : 0f;

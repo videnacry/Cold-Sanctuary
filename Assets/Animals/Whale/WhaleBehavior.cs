@@ -123,7 +123,6 @@ public class WhaleBehavior : Herbivore
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
     public override float Aggressiveness => 0f;
-    public override bool DefendsCubs => true;
     public override bool CanHitAndRun => false;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.1f;
