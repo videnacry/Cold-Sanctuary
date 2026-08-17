@@ -53,7 +53,7 @@ especies en peligro. Regla: los biomas de un santuario no se repiten en otro.
 
 | Santuario | Elemento | V1 (1ª vuelta) | V2 (2ª vuelta) |
 |---|---|---|---|
-| **S1** | Tierra | **Hielo/polar** | **Selva tropical** |
+| **S1** | Tierra | **Hielo/polar** | **Era de Hielo** — megafauna extinta (mamut, dientes de sable, perezoso gigante…) |
 | **S2** | Agua | **Aguas someras** | **Abisal** — laboratorio superavanzado en lo más profundo + **burbuja "modo prehistórico"** |
 | **S3** | Aire | **Montaña** | **Ciudad flotante superavanzada** — burbuja de aire artificial |
 | **S4** | Fuego | **Sabana** | **Volcán/geotermal** — quimeras + caracoles de fuego |
@@ -70,6 +70,17 @@ especies en peligro. Regla: los biomas de un santuario no se repiten en otro.
   actual).
 - **S4 · Volcán (fuego):** hogar de las **quimeras** y los **caracoles de fuego** (encaja con el *scaly-foot* de
   ventilas, real y amenazado).
+- **S1 · Era de Hielo (tierra):** en vez de un bioma vivo distinto, la 2ª vuelta del santuario de hielo trae de
+  vuelta la **megafauna extinta del Pleistoceno** — **mamut lanudo, tigre dientes de sable, perezoso gigante,
+  rinoceronte lanudo, lobo gigante (dire wolf)**. Mantiene la identidad de frío y sigue el patrón "V2 = gigantes
+  extintos" del resto de santuarios.
+
+**Cuarteles de los jefes = Australia + Amazonía** (localización propia, no un santuario V1/V2). Cubren la fauna
+australiana y la selva amazónica. Con Amazonía aquí, la **selva** no hace falta como V2 de S1.
+
+**Ecosistemas y posibles huecos:** el **arrecife de coral** encaja como **S2V1** (aguas someras, biodiverso y
+amenazado). Candidatos aún sin ubicar si se quiere ampliar: **humedal/manglar** (cocodrilo, manatí, capibara),
+**taiga/bosque templado** (casi el bioma "de partida"). *(Por decidir si entran.)*
 
 ## 5. Especies *(propuesta, a confirmar)* — todas en peligro real
 
