@@ -178,6 +178,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     [HideInInspector] public WalkSpell Walk;   // opt-in: si está, provee la velocidad del NavMesh (locomoción-hechizo)
     [HideInInspector] public bool Running;     // ¿la acción actual es correr? (channeling del hechizo) — lo fija ActionPrep
     ThreatResponder _threat;                   // política luchar/huir por stats (etapa 1); auto-alta en Init
+    [HideInInspector] public Locomotion Loco;  // mover NavMesh + gait (etapa 2); auto-alta en Init
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
@@ -193,6 +194,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         nav = GetComponent<NavMeshAgent>();
         _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
         if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
+        Loco = GetComponent<Locomotion>();                               // etapa 2: mover NavMesh + gait como componente
+        if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
         {
@@ -298,11 +301,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (prefersWater && currentMedium != Medium.Water)
         {
             FishSchool water = FishSchool.Nearest(transform.position);   // marcadores de agua
-            if (water != null) { ActsPrep.walk.Prep(this, dt); nav.SetDestination(water.transform.position); }
+            if (water != null) Loco.Walk(water.transform.position, dt);
         }
         else if (!prefersWater && currentMedium == Medium.Water)
         {
-            ActsPrep.run.Prep(this, dt); nav.SetDestination(HomeOrigin);   // salir del agua hacia tierra
+            Loco.Run(HomeOrigin, dt);   // salir del agua hacia tierra
         }
     }
 

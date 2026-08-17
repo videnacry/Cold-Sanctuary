@@ -33,8 +33,7 @@ public abstract class Herbivore : Animal
                 float walkInterval = TimeController.timeController.TimeSpeedMinuteSecs / 30;
                 while (Vector3.Distance(transform.position, foodSource.position) > 3f)
                 {
-                    nav.SetDestination(foodSource.position);
-                    this.ActsPrep.walk.Prep(this, walkInterval);
+                    Loco.Walk(foodSource.position, walkInterval);
                     yield return new WaitForSeconds(walkInterval);
                 }
             }
@@ -46,7 +45,7 @@ public abstract class Herbivore : Animal
                 interval *= 1.2f;
                 feed *= 1.5f;
             }
-            this.ActsPrep.idle.Prep(this, interval);
+            Loco.Idle(interval);
             yield return new WaitForSeconds(interval);
             this.hungry -= feed;
             yield return new WaitForSeconds(interval);

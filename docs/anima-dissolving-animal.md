@@ -72,6 +72,11 @@ sobre el mismo cuerpo/componentes que la IA.
 
 ## Orden por etapas (cada una un PR; `Animal` sigue vivo hasta vaciarse)
 
+> **Reorden (2026-08-17):** al leer `Carnivore.Feed`/`Herbivore.Feed` se ve que el forrajeo es **mayoritariamente
+> locomoción** (`nav.SetDestination` + `ActsPrep`) + comer, no política portable. Por eso **`Locomotion` va ANTES que
+> `Forager`/`Predator`** (perseguir/pastar es locomoción). Orden nuevo: 1) ThreatResponder → 2) Locomotion →
+> 3) Forager/Predator → 4) SpeciesBody/lifecycle → 5) reconciliar IA → 6) reconstruir lobo → 7) migrar y borrar.
+
 1. **`ThreatResponder`**: extraer la respuesta a amenaza a componente; `Animal` delega en él. Paridad.
    - [x] **Política de decisión** (`ResolveReaction` → `ThreatResponder.Decide`): luchar/huir/pegar-y-correr por
      `Predation.EffectivePower` + `autoabandono` + bonds. `Animal` la auto-añade en `Init` y le pasa el contexto de
@@ -85,8 +90,11 @@ sobre el mismo cuerpo/componentes que la IA.
    - [ ] **Acciones** (`Flee`/`Fight`/`HitAndRun`, NavMesh/anim): pendientes (son locomoción + máquina de `Animal`; se mueven cuando se extraiga `Locomotion`).
    - Dirección (acordada): el **cuidado** de crías (alimentar/nido, hoy `PostNatal`) debería volverse también
      **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
-2. **`Forager`/`Predator`**: extraer hambre/forrajeo/caza; `Animal` delega. Depredación por stat `bodyMass`.
-3. **`Locomotion`** (NavMesh mover) + `WalkSpell` (ya) como el paquete de moverse; `AiBrain` lo conduce.
+2. **`Locomotion`** (NavMesh mover: `nav` + `ActsPrep` → `MoveTo(dest, running)`/`Halt()`) + `WalkSpell` (ya) como el
+   paquete de **moverse**; `AiBrain` lo conduce. Las coroutines de acción (`Flee`/`Fight`/`HitAndRun`/`Feed`) pasan a
+   llamarlo en vez de tocar `nav`/`ActsPrep` directamente. **← siguiente (era el bloqueante de `Forager`).**
+3. **`Forager`/`Predator`** (SOBRE `Locomotion`): decidir **qué/dónde** comer (`Diet.SelectPrey` / pasto-pez) → ir
+   (Locomotion) → comer. Depredación por stat `bodyMass`/fuerza.
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
 5. **Reconciliar IA**: mover el "cuándo" (decisiones) a `AiBrain`/componentes; retirar las corrutinas de `Animal`.
 6. **Reconstruir un lobo** como `SimpleAnima` + componentes (prefab de prueba). Validar **paridad** con el `Animal` actual.
