@@ -91,8 +91,9 @@ sobre el mismo cuerpo/componentes que la IA.
    - Dirección (acordada): el **cuidado** de crías (alimentar/nido, hoy `PostNatal`) debería volverse también
      **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
 2. **`Locomotion`** (NavMesh + gait `ActionPrep`: `Walk`/`Run`/`Idle`/`Move`/`SetGait`/`GoTo`). **[x] Comportamientos migrados** (PR #100 semilla + #101 resto): `CorrectMedium`, `Herbivore.Feed`, `Carnivore.Feed`, `Flee`/`Fight`/`HitAndRun`, wander — ya no tocan `nav`/`ActsPrep` directamente (solo lecturas de config). *Falta:* que `AiBrain` lo conduzca (reconciliar IA) y sacar el `ActsPrep` a data de arquetipo para que sea portable.
-3. **`Forager`/`Predator`** (SOBRE `Locomotion`): decidir **qué/dónde** comer (`Diet.SelectPrey` / pasto-pez) → ir
-   (Locomotion) → comer. Depredación por stat `bodyMass`/fuerza.
+3. **`Forager`/`Predator`** (SOBRE `Locomotion`): decidir **qué/dónde** comer → ir (Locomotion) → comer.
+   - [x] **Selección de objetivo** (`Forager.SelectTarget` + `FoodMode` Prey/Grass/Fish + `Animal.ConfigureForager`): carnívoro→`Diet`, herbívoro→pasto/banco. `Carnivore`/`Herbivore.Feed` la usan. (PR #102)
+   - [ ] **Persecución + comer**: siguen en `Carnivore.Feed`/`Herbivore.Feed` (locomoción + ingesta); se extraen luego. Depredación ya por stats (`Predation`).
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
 5. **Reconciliar IA**: mover el "cuándo" (decisiones) a `AiBrain`/componentes; retirar las corrutinas de `Animal`.
 6. **Reconstruir un lobo** como `SimpleAnima` + componentes (prefab de prueba). Validar **paridad** con el `Animal` actual.
