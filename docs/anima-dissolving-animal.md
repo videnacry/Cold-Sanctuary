@@ -90,9 +90,7 @@ sobre el mismo cuerpo/componentes que la IA.
    - [ ] **Acciones** (`Flee`/`Fight`/`HitAndRun`, NavMesh/anim): pendientes (son locomoción + máquina de `Animal`; se mueven cuando se extraiga `Locomotion`).
    - Dirección (acordada): el **cuidado** de crías (alimentar/nido, hoy `PostNatal`) debería volverse también
      **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
-2. **`Locomotion`** (NavMesh mover: `nav` + `ActsPrep` → `MoveTo(dest, running)`/`Halt()`) + `WalkSpell` (ya) como el
-   paquete de **moverse**; `AiBrain` lo conduce. Las coroutines de acción (`Flee`/`Fight`/`HitAndRun`/`Feed`) pasan a
-   llamarlo en vez de tocar `nav`/`ActsPrep` directamente. **← siguiente (era el bloqueante de `Forager`).**
+2. **`Locomotion`** (NavMesh + gait `ActionPrep`: `Walk`/`Run`/`Idle`/`Move`/`SetGait`/`GoTo`). **[x] Comportamientos migrados** (PR #100 semilla + #101 resto): `CorrectMedium`, `Herbivore.Feed`, `Carnivore.Feed`, `Flee`/`Fight`/`HitAndRun`, wander — ya no tocan `nav`/`ActsPrep` directamente (solo lecturas de config). *Falta:* que `AiBrain` lo conduzca (reconciliar IA) y sacar el `ActsPrep` a data de arquetipo para que sea portable.
 3. **`Forager`/`Predator`** (SOBRE `Locomotion`): decidir **qué/dónde** comer (`Diet.SelectPrey` / pasto-pez) → ir
    (Locomotion) → comer. Depredación por stat `bodyMass`/fuerza.
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
