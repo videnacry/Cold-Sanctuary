@@ -1832,6 +1832,15 @@ public static class SampleSceneBuilder
         if (playerAnima != null && player.GetComponent<MoodDynamics>() == null)
             player.AddComponent<MoodDynamics>().anima = playerAnima;
 
+        // Locomoción UNIVERSAL: el jugador anda/corre con el mismo WalkSpell (carga-postura + punta), conducido por
+        // PlayerController (mantiene cámara/gravedad/salto). base = caminar; carga/channel suben hasta ~esprintar.
+        WalkSpell playerWalk = player.GetComponent<WalkSpell>();
+        if (playerWalk == null) playerWalk = player.AddComponent<WalkSpell>();
+        playerWalk.selfDriven = false;                                       // lo conduce el PlayerController
+        playerWalk.baseSpeed = controller.walkSpeed;
+        playerWalk.maxPowerWithCharge     = Mathf.Max(0f, controller.sprintSpeed - controller.walkSpeed);
+        playerWalk.maxPowerWithChanneling = Mathf.Max(0f, controller.sprintSpeed - controller.walkSpeed);
+
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();
         playerWC.characterName = "Player";

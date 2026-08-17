@@ -91,6 +91,7 @@ public class PlayerController : MonoBehaviour
     // ── Runtime ───────────────────────────────────────────────────────────────
 
     CharacterController _cc;
+    WalkSpell _walk;                 // locomoción universal: provee la velocidad (carga/postura/punta/decae) — PR #91
     float _verticalVelocity;
     float _currentPitch;
     bool  _isSwimming;
@@ -107,6 +108,7 @@ public class PlayerController : MonoBehaviour
     void Awake()
     {
         _cc = GetComponent<CharacterController>();
+        _walk = GetComponent<WalkSpell>();
     }
 
     void Start()
@@ -207,11 +209,19 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // Horizontal
+        // Horizontal (dirección cámara-relativa; la velocidad la da el WalkSpell si está — locomoción universal).
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         Vector3 move = Vector3.ClampMagnitude(transform.right * h + transform.forward * v, 1f);
-        float speed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
+        float speed;
+        if (_walk != null)
+        {
+            bool charging   = Input.GetKey(_walk.chargeKey);     // LeftShift parado = postura de salida
+            bool channeling = Input.GetKey(_walk.channelKey);    // RightShift = subir a la punta
+            speed = _walk.StepSpeed(charging, channeling, move.sqrMagnitude > 0.01f, Time.deltaTime);
+            if (_walk.IsCharging) move = Vector3.zero;            // cargando: quieto tomando postura (con gravedad)
+        }
+        else speed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
 
         // Vertical / gravity
         if (_cc.isGrounded)
