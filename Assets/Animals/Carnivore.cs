@@ -42,7 +42,7 @@ public abstract class Carnivore : Animal
             {
                 float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
                 location = prey.transform.position;
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(location);
+                Loco.GoTo(location);
                 distance = Vector3.Distance(location, transform.position);
                 if (victim.Dead)
                 {
@@ -51,7 +51,7 @@ public abstract class Carnivore : Animal
                         IEdible food = prey.GetComponent<IEdible>();
                         if (food == null || food.Consumed) break;
                         if (hungry < -this.Body.GetMealMaxWeight(this)) break;
-                        this.ActsPrep.idle.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                        Loco.Idle(TimeController.timeController.TimeSpeedMinuteSecs / 30);
                         float nutrition = food.Consume(BiteSize);
                         hungry -= nutrition;
                         // Absorción por metabolismo: lo útil construye stats (Constitution); el exceso → grasa
@@ -65,7 +65,7 @@ public abstract class Carnivore : Animal
                     }
                     else
                     {
-                        this.ActsPrep.run.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                        Loco.SetGait(true, TimeController.timeController.TimeSpeedMinuteSecs / 30);
                     }
                     yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
                 }
@@ -75,7 +75,7 @@ public abstract class Carnivore : Animal
                     bool preyAware = victimLiving != null && victimLiving.aware;
                     if (distance < 300 || preyAware)
                     {
-                        this.ActsPrep.run.Prep(this, interval);
+                        Loco.SetGait(true, interval);
                         cansancio += 0.01f;
                         if (distance < 8)
                             victim.Hurt(0.8f);
@@ -83,7 +83,7 @@ public abstract class Carnivore : Animal
                     }
                     else
                     {
-                        this.ActsPrep.walk.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 20);
+                        Loco.SetGait(false, TimeController.timeController.TimeSpeedMinuteSecs / 20);
                         yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                     }
                 }

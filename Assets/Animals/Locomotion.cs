@@ -34,4 +34,18 @@ public class Locomotion : MonoBehaviour
         if (_nav != null && _nav.isOnNavMesh) _nav.SetDestination(dest);
         if (_animal != null) gait?.Prep(_animal, animTime);
     }
+
+    /// <summary>Solo cambia el GAIT (correr/andar) sin tocar el destino (p.ej. correr en el sitio / nervios).</summary>
+    public void SetGait(bool running, float animTime)
+    {
+        if (_animal == null) return;
+        ActionPrep g = running ? _animal.ActsPrep?.run : _animal.ActsPrep?.walk;
+        g?.Prep(_animal, animTime);
+    }
+
+    /// <summary>Solo fija el DESTINO (si está sobre NavMesh), sin cambiar el gait.</summary>
+    public void GoTo(Vector3 dest)
+    {
+        if (_nav != null && _nav.isOnNavMesh) _nav.SetDestination(dest);
+    }
 }

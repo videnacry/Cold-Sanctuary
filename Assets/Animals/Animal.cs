@@ -354,8 +354,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             // no reacción plena. `alertReach` convierte el miedo en metros: más peligroso → reacciono de más lejos.
             if (scare * _threat.alertReach - dist <= sensibility)
             {
-                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-                else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                Loco.SetGait(Random.Range(1, 3) <= 1, (short)(this.ActsPrep.run.energyCost / 10));
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                 yield break;
             }
@@ -402,13 +401,13 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Vector3 threatPos = threat.transform.position;
         while (Vector3.Distance(transform.position, threatPos) < 620)
         {
-            this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+            Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
             int afraid = 30;
             while (afraid > 0)
             {
                 afraid--;
-                if (BirdBehavior.population.Count > 0 && nav != null && nav.isOnNavMesh)
-                    nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
+                if (BirdBehavior.population.Count > 0)
+                    Loco.GoTo(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
                 yield return new WaitForSeconds(10);
             }
             threatPos = threat.transform.position;
@@ -444,7 +443,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             while (!threatTarget.Dead &&
                    Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
             {
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
+                Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                     threatTarget.Hurt((rig.mass - exhaustion) / 10f);
                 yield return new WaitForSeconds(interval);
@@ -468,14 +467,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
             if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)
             {
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
+                Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                     threatTarget.Hurt((rig.mass - exhaustion) / 15f);
             }
             else
             {
                 Vector3 retreat = transform.position + (transform.position - threat.transform.position).normalized * 10f;
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(retreat);
+                Loco.GoTo(retreat);
             }
             yield return new WaitForSeconds(interval);
         }
