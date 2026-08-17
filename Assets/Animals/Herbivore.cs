@@ -11,7 +11,7 @@ public abstract class Herbivore : Animal
     protected virtual bool GrazesOnLand => true;
 
     // Config del Forager (etapa 3): pasto en tierra, banco de peces en el mar.
-    protected override void ConfigureForager(Forager f) { f.mode = GrazesOnLand ? FoodMode.Grass : FoodMode.Fish; }
+    protected override void ConfigureForager(Forager f) { if (GrazesOnLand) f.eatsGrass = true; else f.eatsFish = true; }
 
     /// <summary>
     /// Walks to the nearest food source for this species (grass on land, fish at sea) if one

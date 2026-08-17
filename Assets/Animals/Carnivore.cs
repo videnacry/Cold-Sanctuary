@@ -12,8 +12,8 @@ public abstract class Carnivore : Animal
     /// </summary>
     public abstract Diet Diet { get; set; }
 
-    // Config del Forager (etapa 3): un carnívoro caza PRESA según su Diet.
-    protected override void ConfigureForager(Forager f) { f.mode = FoodMode.Prey; f.diet = Diet; }
+    // Config del Forager (etapa 3): un carnívoro caza PRESA según su Diet. (Un omnívoro marcaría además eatsGrass.)
+    protected override void ConfigureForager(Forager f) { f.eatsPrey = true; f.diet = Diet; }
 
     /// <summary>
     /// Stops walking, picks the best prey from its Diet (priority + hunger + range) and hunts it.
