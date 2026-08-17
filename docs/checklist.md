@@ -318,7 +318,7 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
-## ⚠ Compilar y PROBAR en Unity (PRs #16–#94 en master)
+## ⚠ Compilar y PROBAR en Unity (PRs #16–#95 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de
 prueba en [`testing-checklist.md`](testing-checklist.md) §11–§14.** Bugs ya arreglados por el equipo:
@@ -336,6 +336,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **17-ago (PR #95):** **etapa 1 completada (assessment)** — `EvaluateThreat` → `ThreatResponder.Assess` plenamente stat-based (ratio `Predation.EffectivePower`, sin `rig.mass`/NavMesh; escala = fracción de mi poder, `ThreatThreshold` recalibrable). **Defensa de crías emergente**: retirado el flag `DefendsCubs` (base + 8 overrides) → sale del vínculo (cubBond) + autoabandono vs peligro. Dirección: el CUIDADO de crías (PostNatal) también debería volverse emergente en su etapa.
 - **17-ago (PR #94):** **etapa 1 disolución — `ThreatResponder`**. Extraída la POLÍTICA de decisión luchar/huir/pegar-y-correr de `Animal.ResolveReaction` a un componente `ThreatResponder` (portable: `Predation.EffectivePower` + `autoabandono` + bonds). `Animal` lo auto-añade en `Init` y le pasa el contexto de crías (`defendingCubs`/`cubBond`, aún de `Family`/`Group`). `enum Reaction` movido. *Pendiente en etapa 1:* `EvaluateThreat`→`Assess` (tras recalibrar), detección y coroutines (con `Locomotion`).
 - **17-ago (PR #93):** **plan de disolución de `Animal`** (`docs/anima-dissolving-animal.md`: disolver > extender+renombrar, kit-objetivo, qué método va a qué componente, orden por etapas) + **Fase 0 inicio** — `Animal.ResolveReaction` (fight/flee) migrado a `Predation.EffectivePower` (poder por stats + manada) × `(1+autoabandono)`, en vez de `rig.mass × NavMeshAgent.speed` + bucle de manada propio (scale-invariant, sin recalibrar). *Siguiente:* `EvaluateThreat` base y alerta de proximidad (cambian de escala → recalibrar con test).
 - **17-ago (PR #92):** **rollout locomoción — animales (opt-in)**. El `NavMeshAgent` sigue navegando (pathfinding); si el animal lleva un `WalkSpell`, su `nav.speed` sale del hechizo cada tick (`Animal.FeedWalkSpeed` → `WalkSpell.StepSpeed`): correr (`Running`→channeling) sube gradual a la punta, andar decae, con la lógica del `powerBonus`. `ActionPrep.Prep` fija `Animal.Running` (¿es la acción de correr?). Auto-cablea base=walk.navSpeed, punta=run−walk. **Cero regresión** (solo cambia si se añade el WalkSpell). Los animales corren para huir/cazar/salir del agua/alerta-random. *Pendiente:* que la IA humana navegue por NavMesh con esta misma velocidad (AiBrain→NavMesh).

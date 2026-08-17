@@ -148,7 +148,6 @@ public class MalamuteBehavior : Carnivore
 
     // Domesticado: muy baja agresividad, casi no lucha; se une fácil por vínculo.
     public override float Aggressiveness => 0.15f;
-    public override bool DefendsCubs => true;
     public override bool CanHitAndRun => false;
     public override float PackFactor => 0.9f;   // fuerte instinto de equipo de trineo
     public override float HarmVsBond => 0.3f;
