@@ -343,11 +343,13 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         try
         {
             GameObject threat = enemies[0];
-            float enemyMass = threat.GetComponent<Rigidbody>().mass;
-            float enemySpeed = threat.GetComponent<NavMeshAgent>().speed;
             Vector3 threatPos = threat.transform.position;
+            float scare = EvaluateThreat(threat);                          // stat-based (Assess): fracción de mi poder × bond + aura
+            float dist  = Vector3.Distance(threatPos, transform.position);
 
-            if (enemyMass * (enemySpeed / 2) - Vector3.Distance(threatPos, transform.position) <= sensibility)
+            // Poco peligroso / lejos (relativo a mi sensibilidad de detección) → solo NERVIOS (andar/correr random),
+            // no reacción plena. `alertReach` convierte el miedo en metros: más peligroso → reacciono de más lejos.
+            if (scare * _threat.alertReach - dist <= sensibility)
             {
                 if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
                 else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));

@@ -81,8 +81,8 @@ sobre el mismo cuerpo/componentes que la IA.
      (0.5 base, 0.8 oso) sigue coherente y es el knob de **recalibración en Unity**. (PR #95)
    - [x] **Defensa de crías EMERGENTE**: retirado el flag `DefendsCubs` (base + 8 overrides); la defensa sale del
      `cubBond` (vínculo) + `autoabandono` vs peligro. (PR #95)
-   - [ ] **Detección** (`SenseThreats`) y **acciones** (`Flee`/`Fight`/`HitAndRun`, NavMesh/anim): pendientes (son
-     locomoción + máquina de `Animal`; se mueven cuando se extraiga `Locomotion`).
+   - [x] **Detección** (`SenseThreats`) + **alerta de proximidad** (en `Escape`): ya stat-based (usan `EvaluateThreat`/`Assess` + `alertReach` tunable, no `rig.mass`/NavMesh). (PR #96)
+   - [ ] **Acciones** (`Flee`/`Fight`/`HitAndRun`, NavMesh/anim): pendientes (son locomoción + máquina de `Animal`; se mueven cuando se extraiga `Locomotion`).
    - Dirección (acordada): el **cuidado** de crías (alimentar/nido, hoy `PostNatal`) debería volverse también
      **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
 2. **`Forager`/`Predator`**: extraer hambre/forrajeo/caza; `Animal` delega. Depredación por stat `bodyMass`.
