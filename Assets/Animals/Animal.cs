@@ -199,6 +199,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public Rigidbody rig;
     public Animator ani;
 
+    [HideInInspector] public WalkSpell Walk;   // opt-in: si está, provee la velocidad del NavMesh (locomoción-hechizo)
+    [HideInInspector] public bool Running;     // ¿la acción actual es correr? (channeling del hechizo) — lo fija ActionPrep
+
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
     public GameObject target;
@@ -211,6 +214,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
+        Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
+        if (Walk != null)
+        {
+            Walk.selfDriven = false;          // el NavMesh navega; el hechizo solo PROVEE la velocidad (con su lógica)
+            if (ActsPrep != null && ActsPrep.walk != null) Walk.baseSpeed = ActsPrep.walk.navSpeed;
+            if (ActsPrep != null && ActsPrep.walk != null && ActsPrep.run != null)
+                Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
+        }
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
         agility     = BaseAgility;
@@ -270,6 +281,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
             CorrectMedium(interval);
+            FeedWalkSpeed(interval);
             SenseThreats();
             yield return new WaitForSeconds(interval);
         }
@@ -287,6 +299,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         agility     = AptitudeEvolution.Step(agility,    BaseAgility,    intensity,       dt);
         perception  = AptitudeEvolution.Step(perception, BasePerception, aware ? 1f : 0f, dt);
         sensibility = BaseSensibility * perception;   // la sensibilidad sigue a la percepción evolucionada
+    }
+
+    // OPT-IN: si el animal lleva un WalkSpell, su velocidad de NavMesh sale del hechizo (correr = channeling → sube
+    // gradual a la punta; andar → decae; con su gasto). El NavMesh sigue navegando (pathfinding). Ver docs.
+    void FeedWalkSpeed(float dt)
+    {
+        if (Walk == null || nav == null || !nav.isOnNavMesh) return;
+        nav.speed = Walk.StepSpeed(false, Running, nav.hasPath, dt);   // charging=false; channeling=Running; moving=tiene ruta
     }
 
     // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
