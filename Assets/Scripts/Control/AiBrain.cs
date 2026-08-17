@@ -13,12 +13,27 @@ public class AiBrain : MonoBehaviour, IBrain
              "tomar el mando. Súbela en seres poderosos (jefes) para que sean más difíciles de poseer.")]
     public float selfRelevance = 1f;
 
+    [Tooltip("Destino de locomoción de la IA (opcional). Si hay WalkSpell + destino, la IA camina hacia él POR " +
+             "el hechizo (misma locomoción universal que el jugador). Vacío = no se mueve (lo mueve otra rutina).")]
+    public Transform moveTarget;
+    [Tooltip("Distancia a la que se considera 'llegado' y deja de andar.")]
+    [Min(0.05f)] public float arriveRadius = 0.5f;
+
     public float Relevance => selfRelevance;
     public string BrainName => "IA";
 
+    WalkSpell _walk;
+
+    void Awake() => _walk = GetComponent<WalkSpell>();
+
     public void Act(AnimaController ctrl)
     {
-        // El pilar Mind piensa solo; la locomoción autónoma vive en WorldCharacter/rutina.
-        // Hueco para enganchar aquí el movimiento de IA cuando se unifique.
+        // Locomoción IA UNIFICADA: el mismo hechizo de andar que usa el jugador, conducido hacia el destino.
+        if (_walk != null && moveTarget != null)
+        {
+            Vector3 to = moveTarget.position - transform.position; to.y = 0f;
+            if (to.sqrMagnitude > arriveRadius * arriveRadius) _walk.Drive(to);   // camina hacia el destino
+        }
+        // (El pilar Mind sigue pensando por su cuenta; aquí solo va la locomoción.)
     }
 }
