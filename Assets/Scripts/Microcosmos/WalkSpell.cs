@@ -56,22 +56,13 @@ public class WalkSpell : SpellBase
     public void Drive(Vector3 worldDir, bool charging = false, bool channeling = false)
         => Locomote(worldDir, charging, channeling, Time.deltaTime);
 
-    // Núcleo de locomoción compartido: aplica carga/channel/forcejeo → velocidad = (base + powerBonus)/masa, con ATP.
-    void Locomote(Vector3 dir, bool charging, bool channeling, float dt)
+    /// <summary>Velocidad horizontal ACTUAL para un driver EXTERNO (p.ej. PlayerController con CharacterController):
+    /// actualiza el powerBonus (carga/channel/decae) y, si se mueve, cobra ATP y devuelve (base+bonus)/masa. Devuelve
+    /// 0 en postura de carga, parado o sin ATP. NO mueve el transform — eso lo hace el driver (respeta gravedad/colisión).</summary>
+    public float StepSpeed(bool charging, bool channeling, bool moving, float dt)
     {
         TickPowerBonus(_self, dt, charging, channeling);   // LeftShift=carga (postura), RightShift=punta, + decaimiento
-
-        bool moving = dir.sqrMagnitude >= 0.01f;
-
-        // Cargando la velocidad inicial: el personaje se queda QUIETO tomando postura de salida.
-        if (IsCharging) { _lastPos = transform.position; return; }
-        if (!moving) { _lastPos = transform.position; return; }
-        dir.Normalize();
-
-        // ¿bloqueado? sin desplazarte = fallo → sube el forcejeo (dentro del powerBonus).
-        float moved = (transform.position - _lastPos).magnitude;
-        ReportResult(_self, moved >= blockedEpsilon);
-        _lastPos = transform.position;
+        if (IsCharging || !moving) return 0f;              // en postura de salida o parado: sin velocidad
 
         float mass  = _self != null ? _self.BodyMass : 1f;
         float speed = (baseSpeed + PowerBonus) / Mathf.Max(0.1f, mass);   // carga+channel ayudan; el peso frena
@@ -80,8 +71,23 @@ public class WalkSpell : SpellBase
         if (_self != null && energyPerEffort > 0f)
         {
             CharacterLevel cl = _self.GetComponent<CharacterLevel>();
-            if (cl != null && !cl.SpendEnergy(energyPerEffort * speed * mass * dt)) return;
+            if (cl != null && !cl.SpendEnergy(energyPerEffort * speed * mass * dt)) return 0f;
         }
+        return speed;
+    }
+
+    // Núcleo de locomoción por Transform (self/IA, sin CharacterController): velocidad de StepSpeed + forcejeo al bloquearte.
+    void Locomote(Vector3 dir, bool charging, bool channeling, float dt)
+    {
+        bool moving = dir.sqrMagnitude >= 0.01f;
+        float speed = StepSpeed(charging, channeling, moving, dt);
+        if (speed <= 0f) { _lastPos = transform.position; return; }
+        dir.Normalize();
+
+        // ¿bloqueado? sin desplazarte = fallo → sube el forcejeo (dentro del powerBonus).
+        float moved = (transform.position - _lastPos).magnitude;
+        ReportResult(_self, moved >= blockedEpsilon);
+        _lastPos = transform.position;
 
         transform.position += dir * speed * dt;
     }
