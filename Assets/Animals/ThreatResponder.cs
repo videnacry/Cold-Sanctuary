@@ -23,6 +23,9 @@ public class ThreatResponder : MonoBehaviour
     public float aggressionGate = 0.5f;
     [Tooltip("Cuánto suma al miedo un aura mágica DESTRUCTIVA del origen (por unidad de aura). Tunable.")]
     public float auraFear = 1f;
+    [Tooltip("Convierte el 'miedo' (fracción de mi poder) en un ALCANCE en metros para la alerta de proximidad: " +
+             "más peligroso → reacciono de más lejos; más cerca → reacción plena en vez de solo nervios. Tunable.")]
+    public float alertReach = 10f;
 
     /// <summary>EVALÚA cuán amenazante es `source` para `self`, por STATS: poder depredador EFECTIVO del origen
     /// (con manada) relativo al mío. 1 = parejo; &gt;1 me supera; acotado [0.2, 4]. Un aura destructiva asusta más;
