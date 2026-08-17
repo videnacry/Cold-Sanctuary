@@ -12,6 +12,9 @@ public abstract class Carnivore : Animal
     /// </summary>
     public abstract Diet Diet { get; set; }
 
+    // Config del Forager (etapa 3): un carnívoro caza PRESA según su Diet.
+    protected override void ConfigureForager(Forager f) { f.mode = FoodMode.Prey; f.diet = Diet; }
+
     /// <summary>
     /// Stops walking, picks the best prey from its Diet (priority + hunger + range) and hunts it.
     /// </summary>
@@ -24,7 +27,7 @@ public abstract class Carnivore : Animal
         };
         if (this.lifeStage == LifeStage.teen || this.lifeStage == LifeStage.adult)
         {
-            GameObject prey = this.Diet.SelectPrey(this);
+            GameObject prey = Forage.SelectTarget(this);
             if (prey == null)
             {
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 5);

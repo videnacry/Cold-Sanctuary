@@ -106,6 +106,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     }
 
     // ThreatResponse species flags (override per species)
+    /// <summary>Cada especie configura su <see cref="Forager"/> (modo presa/pasto/pez + dieta). Base: pasto.</summary>
+    protected virtual void ConfigureForager(Forager f) { }
+
     public virtual float Aggressiveness => 0f;
     // DefendsCubs (flag) retirado (etapa 1): la defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
     public virtual bool CanHitAndRun => false;
@@ -179,6 +182,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     [HideInInspector] public bool Running;     // ¿la acción actual es correr? (channeling del hechizo) — lo fija ActionPrep
     ThreatResponder _threat;                   // política luchar/huir por stats (etapa 1); auto-alta en Init
     [HideInInspector] public Locomotion Loco;  // mover NavMesh + gait (etapa 2); auto-alta en Init
+    [HideInInspector] public Forager Forage;   // política "qué/dónde comer" (etapa 3); auto-alta + config en Init
 
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
@@ -196,6 +200,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
         Loco = GetComponent<Locomotion>();                               // etapa 2: mover NavMesh + gait como componente
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
+        Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
+        if (Forage == null) Forage = gameObject.AddComponent<Forager>();
+        ConfigureForager(Forage);                                        // cada especie fija su modo (presa/pasto/pez) + dieta
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
         {

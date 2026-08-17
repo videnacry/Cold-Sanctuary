@@ -10,6 +10,9 @@ public abstract class Herbivore : Animal
     // (Whale, Seal) walk to the nearest FishSchool instead — see WhaleBehavior/SealBehavior.
     protected virtual bool GrazesOnLand => true;
 
+    // Config del Forager (etapa 3): pasto en tierra, banco de peces en el mar.
+    protected override void ConfigureForager(Forager f) { f.mode = GrazesOnLand ? FoodMode.Grass : FoodMode.Fish; }
+
     /// <summary>
     /// Walks to the nearest food source for this species (grass on land, fish at sea) if one
     /// exists, then eats.
@@ -21,9 +24,8 @@ public abstract class Herbivore : Animal
         {
             this.busy = true;
 
-            Transform foodSource = GrazesOnLand
-                ? GrassPatch.Nearest(transform.position)?.transform
-                : FishSchool.Nearest(transform.position)?.transform;
+            GameObject food = Forage.SelectTarget(this);   // pasto o banco de peces según el modo del Forager
+            Transform foodSource = food != null ? food.transform : null;
 
             // Marine species swim over open water with no baked NavMesh under them (only the
             // ground is baked) — nav.SetDestination throws if the agent isn't on one, so guard
