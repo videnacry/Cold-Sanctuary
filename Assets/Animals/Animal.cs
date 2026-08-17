@@ -395,21 +395,13 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (threatTarget != null && !CanHarm(threatTarget))
             return Reaction.Flee;
 
-        float enemyMass = threat.GetComponent<Rigidbody>()?.mass ?? 0f;
-        float enemySpeed = threat.GetComponent<NavMeshAgent>()?.speed ?? 0f;
-        float allyMass = 0f;
-        if (Group?.members != null)
-        {
-            foreach (Animal ally in Group.members)
-            {
-                if (ally != null && !ally.death && ally != this &&
-                    Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
-                    allyMass += ally.rig.mass;
-            }
-        }
+        // Poder por STATS (Fase 0, docs/anima-dissolving-animal.md): antes se usaba rig.mass × NavMeshAgent.speed y
+        // un bucle propio de manada; ahora sale de Predation.EffectivePower (fuerza/masa/textura/agilidad + aliados
+        // por facción en radio, ponderados por PackFactor). El ratio myPower/enemyPower es scale-invariant.
+        Anima threatAnima = threat.GetComponent<Anima>();
         RecomputeAutoabandono();   // fresco con los bonds actuales
-        float myPower = (rig.mass + allyMass * PackFactor) * (1f + autoabandono);   // (b) autoabandono = valentía por el pack
-        float enemyPower = enemyMass * enemySpeed;
+        float myPower = Predation.EffectivePower(this) * (1f + autoabandono);   // (b) autoabandono = valentía por el pack
+        float enemyPower = threatAnima != null ? Predation.EffectivePower(threatAnima) : 0f;
 
         bool defendingCubs = DefendsCubs && Group?.fed != null &&
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
