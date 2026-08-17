@@ -42,6 +42,14 @@ public class Mind : MonoBehaviour
         if (src != null) aptitudes = Aptitudes.From(src);
     }
 
+    /// <summary>Añade pensamientos base (p.ej. innatos de la especie) que aún no tenga. No duplica.</summary>
+    public void SeedThoughts(System.Collections.Generic.IEnumerable<MindPhrase> phrases)
+    {
+        if (phrases == null) return;
+        foreach (MindPhrase p in phrases)
+            if (p != null && !thoughts.Contains(p)) thoughts.Add(p);
+    }
+
     // Campos de pensamiento cercanos (refrescados por intervalos; pueden aparecer/desaparecer en runtime).
     ThoughtField[] _fields = System.Array.Empty<ThoughtField>();
     float _nextFieldRefresh;

@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 
-/// <summary>Perfil de un arquetipo (cuerpo o mente): aptitudes base + altura (cuerpo) + tono (mente).</summary>
+/// <summary>Perfil de un arquetipo (cuerpo o mente): aptitudes base + altura (cuerpo) + tono (mente) +
+/// **pensamientos base de la especie** (mente): las frases innatas con que arranca (un oso "piensa como oso").</summary>
 public class ArchetypeProfile
 {
     public Aptitudes aptitudes;
     public float height = 1f;                 // altura relativa (1 = humano)
     public ElementalTone tone = ElementalTone.Tierra;
+    public List<MindPhrase> basePhrases;      // pensamientos base de la especie (solo mentes); null = ninguno
 }
 
 /// <summary>
@@ -127,6 +129,24 @@ public static class Archetypes
             { "bonusPack3", Flat(2.5f) },
             { "bonusPack4", Flat(4.5f) },
         };
+
+        // Adjunta los pensamientos BASE de especie a su arquetipo de mente (por `source` = nombre de especie).
+        foreach (MindPhrase p in PhrasePools.Especie())
+            if (p.source != null && _minds.TryGetValue(p.source, out ArchetypeProfile prof))
+            {
+                if (prof.basePhrases == null) prof.basePhrases = new List<MindPhrase>();
+                prof.basePhrases.Add(p);
+            }
+    }
+
+    static readonly List<MindPhrase> _noThoughts = new List<MindPhrase>();
+
+    /// <summary>Pensamientos BASE (innatos) de una especie — los siembra su mente al componerse. docs soul-relations §2b.</summary>
+    public static List<MindPhrase> BaseThoughtsOf(string species)
+    {
+        Init();
+        return species != null && _minds.TryGetValue(species, out ArchetypeProfile p) && p.basePhrases != null
+            ? p.basePhrases : _noThoughts;
     }
 
     static ArchetypeProfile MakeBody(float height, float agi, float per, float str, float mass, float end, float adapt = 1f)

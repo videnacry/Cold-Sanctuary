@@ -133,6 +133,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         endurance   = b.aptitudes.endurance;  adaptability = b.aptitudes.adaptability;
         composure   = m.aptitudes.composure;  reasoning   = m.aptitudes.reasoning;   memory     = m.aptitudes.memory;
         creativity  = m.aptitudes.creativity; sociability = m.aptitudes.sociability;  discipline = m.aptitudes.discipline;
+
+        Mind mind = GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
+        if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(SpeciesArchetype));
     }
 
     // Post-natal species parameters (override per species)

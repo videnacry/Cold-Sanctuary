@@ -243,4 +243,43 @@ public static class PhrasePools
             new[] { "Quiero más.", "Esto puede ser mío.", "Extiendo mi voluntad." },
             new[] { "Nada me basta.", "Lo quiero todo.", "Me pierdo en el querer." }),
     };
+
+    // Pensamientos BASE de especie: innatos, ligados a una especie por `source` (= su arquetipo). NO al azar
+    // (los siembra el arquetipo de mente, no el reparto). Tono acorde al arquetipo de mente de cada especie.
+    static MindPhrase Especie(string species, ElementalTone tone, string[] pos, string[] neg) =>
+        new MindPhrase(tone, pos, neg, PhraseCategory.Especie, randomAssignable: false, reusable: true, source: species);
+
+    public static List<MindPhrase> Especie() => new List<MindPhrase>
+    {
+        Especie("Human", ElementalTone.Viento,
+            new[] { "Me pregunto qué habrá más allá.", "Puedo imaginarlo y construirlo.", "Se lo contaré a los demás." },
+            new[] { "Nada tiene sentido.", "Doy vueltas sin avanzar.", "Me pierdo en mis propias ideas." }),
+        Especie("Bear", ElementalTone.Tierra,
+            new[] { "El bosque es mío.", "Camino sin prisa.", "Como, duermo, resisto." },
+            new[] { "Alguien invade mi territorio.", "El hambre aprieta.", "Gruño y todo se aparta." }),
+        Especie("Wolf", ElementalTone.Viento,
+            new[] { "La manada es una sola voz.", "Corro con los míos.", "Rastreo y guío." },
+            new[] { "Me han dejado atrás.", "Solo no soy nada.", "Aúllo y nadie responde." }),
+        Especie("Bunny", ElementalTone.Agua,
+            new[] { "Escucho el menor ruido.", "Me escondo y espero.", "Si huyo, vivo." },
+            new[] { "Algo acecha.", "No hay dónde esconderse.", "El miedo me paraliza." }),
+        Especie("Fox", ElementalTone.Fuego,
+            new[] { "Hay un camino astuto.", "Observo antes de actuar.", "Consigo lo que quiero sin pelear." },
+            new[] { "Me he pasado de listo.", "Nadie se fía de mí.", "Solo con mis trucos." }),
+        Especie("Deer", ElementalTone.Agua,
+            new[] { "Pasto atento.", "Alzo la cabeza al menor crujido.", "El grupo me da calma." },
+            new[] { "Algo se mueve entre los árboles.", "Estoy expuesto.", "Corro sin mirar atrás." }),
+        Especie("Seal", ElementalTone.Agua,
+            new[] { "El agua es juego.", "Me deslizo y giro.", "Salgo a tomar el sol." },
+            new[] { "Una sombra bajo el agua.", "El hielo se aleja.", "Torpe fuera del mar." }),
+        Especie("Whale", ElementalTone.Agua,
+            new[] { "Canto largo y hondo.", "El mar recuerda.", "Guío al banco por la corriente." },
+            new[] { "Un silencio inmenso.", "Me he perdido del banco.", "El océano pesa." }),
+        Especie("Lion", ElementalTone.Fuego,
+            new[] { "Soy fuerza que descansa al sol.", "La manada me sigue.", "Cuando me alzo, todos miran." },
+            new[] { "Alguien reta mi lugar.", "El hambre de la manada es mía.", "Rujo para que se aparten." }),
+        Especie("Malamute", ElementalTone.Tierra,
+            new[] { "Tiro con ganas.", "Mi humano es mi manada.", "El frío no me para." },
+            new[] { "Me han dejado atado.", "Echo de menos a los míos.", "Aúllo a la puerta." }),
+    };
 }
