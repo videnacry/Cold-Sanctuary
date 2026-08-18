@@ -98,7 +98,7 @@ sobre el mismo cuerpo/componentes que la IA.
    - [x] **Persecución/cazar** (carnívoro): `Carnivore.Feed` movido entero a `Forager.Hunt(self)` (elegir presa + perseguir por `Locomotion` + herir + comer + llevar sobras a las crías). `Carnivore.Feed` solo delega. (PR #106)
    - **Etapa 3 COMPLETA:** `Forager` posee select (omnívoro) + `Hunt` + `Graze` + `Eat`. `Carnivore`/`Herbivore` quedan en ~18 líneas (solo `Diet`/`GrazesOnLand` → `ConfigureForager` + delegación) → el "qué come" es ya config de componente.
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
-5. **Reconciliar IA**: mover el "cuándo" (decisiones) a `AiBrain`/componentes; retirar las corrutinas de `Animal`.
+5. **Reconciliar IA** [x en marcha, PR #107]: las decisiones ACTIVAS del animal (forrajeo/amenaza) se movieron de `Restore` a `Animal.ActiveBehaveTick`, que conduce el `AiBrain` (auto-añadido con `AnimaController` en `Init`). La **posesión** (`PlayerBrain` de mayor relevancia) las **suprime** → el jugador conduce el mismo cuerpo. `Restore` queda solo con lo PASIVO (metabolismo/evolución/medio/velocidad). *Falta:* que al poseer, la locomoción del jugador (WalkSpell/Transform) no pelee con el `NavMeshAgent` del animal.
 6. **Reconstruir un lobo** como `SimpleAnima` + componentes (prefab de prueba). Validar **paridad** con el `Animal` actual.
 7. Migrar las 9 especies; **borrar** `Animal`/`Carnivore`/`Herbivore` + las clases de conducta por especie.
 
