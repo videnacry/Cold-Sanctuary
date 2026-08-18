@@ -1169,11 +1169,13 @@ public static class SampleSceneBuilder
         kPack.packRadius = 12f; kPack.missionAbandonoBonus = 0.15f;
 
         // Hechizos.
-        // PullSpell: range = alcance del jalón, force = magnitud inicial del impulso.
-        // Mantener F → el power sube hasta maxPullPower (forcejeo emergente con HomeImpulse).
+        // PullSpell (F mantenido): forcejeo adaptativo.
+        // force = power inicial; sube (rampRate) solo si la hormiga no avanza.
+        // Techo = min(maxPullPower, force + Kushal.Strength).
+        // Energía del caster = casterEnergyPerPower × power × dt.
         var pull = kushal.AddComponent<PullSpell>();
         pull.range = 4f; pull.force = 1.5f; pull.rampRate = 0.8f; pull.maxPullPower = 7f;
-        pull.energyCost = 0.5f; // gasta energía por tick mientras mantiene F
+        pull.casterEnergyPerPower = 0.4f; pull.targetEnergyCostPerSecond = 1.2f;
 
         var honeydew = kushal.AddComponent<HoneydewSpell>();
         honeydew.range = 3f; honeydew.energyRestore = 40f; honeydew.maxCharges = 5;
