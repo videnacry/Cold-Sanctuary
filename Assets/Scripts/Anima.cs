@@ -87,9 +87,13 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     // Medio actual + afinidad por medio (tierra/agua/aire). El rendimiento físico se multiplica
     // por la afinidad del medio en que está la criatura. Ver docs/creature-stats.md §Modificadores de medio.
     [HideInInspector] public Medium currentMedium = Medium.Land;
-    public virtual float LandAffinity  => 1f;
-    public virtual float WaterAffinity => 0.4f;   // por defecto: un animal terrestre nada torpemente
-    public virtual float AirAffinity   => 0f;
+    // Afinidad por medio como DATA (la fija el arquetipo vía SpeciesBody/SoulComposition, ya no un override por clase).
+    [HideInInspector] public float landAffinity  = 1f;
+    [HideInInspector] public float waterAffinity = 0.4f;   // por defecto: un animal terrestre nada torpemente
+    [HideInInspector] public float airAffinity   = 0f;
+    public virtual float LandAffinity  => landAffinity;
+    public virtual float WaterAffinity => waterAffinity;
+    public virtual float AirAffinity   => airAffinity;
     public float MediumFactor => currentMedium == Medium.Water ? WaterAffinity
                                : currentMedium == Medium.Air   ? AirAffinity
                                :                                 LandAffinity;

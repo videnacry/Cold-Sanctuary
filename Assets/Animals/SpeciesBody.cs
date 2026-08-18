@@ -27,6 +27,8 @@ public class SpeciesBody : MonoBehaviour
         a.composure   = m.aptitudes.composure;  a.reasoning   = m.aptitudes.reasoning;   a.memory     = m.aptitudes.memory;
         a.creativity  = m.aptitudes.creativity; a.sociability = m.aptitudes.sociability;  a.discipline = m.aptitudes.discipline;
 
+        a.landAffinity = b.landAffinity; a.waterAffinity = b.waterAffinity; a.airAffinity = b.airAffinity;   // medio (data del arquetipo)
+
         Mind mind = a.GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
         if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(species));
     }

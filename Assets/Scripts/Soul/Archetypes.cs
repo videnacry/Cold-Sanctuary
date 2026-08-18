@@ -8,6 +8,7 @@ public class ArchetypeProfile
     public float height = 1f;                 // altura relativa (1 = humano)
     public ElementalTone tone = ElementalTone.Tierra;
     public List<MindPhrase> basePhrases;      // pensamientos base de la especie (solo mentes); null = ninguno
+    public float landAffinity = 1f, waterAffinity = 0.4f, airAffinity = 0f;   // afinidad por medio (cuerpo)
 }
 
 /// <summary>
@@ -129,6 +130,10 @@ public static class Archetypes
             { "bonusPack3", Flat(2.5f) },
             { "bonusPack4", Flat(4.5f) },
         };
+
+        // Afinidad por medio de los cuerpos ACUÁTICOS (el resto usa el default terrestre 1/0.4/0).
+        _bodies["Whale"].waterAffinity = 1.0f; _bodies["Whale"].landAffinity = 0.1f;   // varada e indefensa en tierra
+        _bodies["Seal"].waterAffinity  = 1.0f; _bodies["Seal"].landAffinity  = 0.6f;   // anfibia
 
         // Adjunta los pensamientos BASE de especie a su arquetipo de mente (por `source` = nombre de especie).
         foreach (MindPhrase p in PhrasePools.Especie())
