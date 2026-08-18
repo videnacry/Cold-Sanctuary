@@ -12,6 +12,23 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-14 (tarde) — sync PRs #85-86 (desgaste por trabajo + jugador en modelo de ánimo), 0
+  errores, mi fix de `CameraManager` de este mismo día quedó COMITEADO por el compañero** (commit
+  `76559a0 "Update CameraManager.cs"` — confirmado vía `git log` que mi cambio llegó al historial tal
+  cual, sin conflicto). Igual mi entrada anterior de este checklist sobrevivió intacta (el compañero
+  la tocó en un commit "Update testing-checklist.md" sin pisarla). Nuevo: `Assets/Scripts/Soul/
+  Exertion.cs` (costo de energía/fatiga por acción, `ExertionCost`), `MoodDynamics.cs` ampliado,
+  `ProductionOrder`/`StockingTask`/`VirtualTask` ahora aceptan `worker`+`stepExertion` (el trabajador
+  gasta glucosa/minerales/fatiga por paso → sube cortisol → `Goluis.UnderPressure` se activa solo), y
+  el **Player ahora es parte del modelo de ánimo** (`MoodDynamics` se le agrega automáticamente en
+  `SampleSceneBuilder`, deriva estrés de sus drives sin necesitar `Mind`). Nuevo sandbox de prueba:
+  `Desgaste_AUTO` (obrero Goluis con receta de labor pesada — cantera/moler/apilar). Reconstruí escena
+  + testeado en Play mode (0 errores, 0 excepciones nuevas, log revisado línea por línea). **Nota
+  operativa nueva**: durante este ciclo GitHub Desktop tomó el foco del sistema y bloqueó
+  temporalmente el computer-use (usuario denegó acceso a esa app) — se resolvió forzando el foco de
+  Unity vía PowerShell (`SetForegroundWindow`/`ShowWindow` de user32.dll) en vez de reintentar clicks a
+  ciegas. Anotado por si se repite.
+
 - **CICLO 2026-08-14 — sync PRs #62-84 (55 commits, 43 .cs), 0 errores tras compilar, 1 bug real
   encontrado y arreglado**. El cron de 2h había expirado (7 días) otra vez — recreado (`f6566e93`).
   Batch grande: sistema de "alma" nuevo (`Assets/Scripts/Soul/`: Archetypes, BlendSlot, BondPillar,
