@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -60,5 +61,43 @@ public class Forager : MonoBehaviour
         if (self.lifeStage == LifeStage.child && dropped != null)
             self.firstSolidEaten = true;
         return nutrition;
+    }
+
+    /// <summary>PASTAR/pescar (herbívoro/consumidor de banco): va a la fuente más cercana (por `Locomotion`) y come,
+    /// bajando el hambre; si es un banco de peces, lo reduce (`Graze`). Movido desde `Herbivore.Feed` (etapa 3).</summary>
+    public IEnumerator Graze(Animal self)
+    {
+        if (self == null || (self.lifeStage != LifeStage.adult && self.lifeStage != LifeStage.teen)) yield break;
+        self.busy = true;
+
+        GameObject food = SelectTarget(self);
+        Transform foodSource = food != null ? food.transform : null;
+
+        // Los marinos nadan sobre mar abierto sin NavMesh horneado debajo → guardar (Loco.Walk ya lo respeta,
+        // pero sin el guard el while no avanzaría nunca).
+        if (foodSource != null && self.nav != null && self.nav.isOnNavMesh)
+        {
+            float walkInterval = TimeController.timeController.TimeSpeedMinuteSecs / 30;
+            while (Vector3.Distance(self.transform.position, foodSource.position) > 3f)
+            {
+                self.Loco.Walk(foodSource.position, walkInterval);
+                yield return new WaitForSeconds(walkInterval);
+            }
+        }
+
+        float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);
+        float feed = self.Body.GetMealWeight(self) * 0.6f;
+        if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
+        self.Loco.Idle(interval);
+        yield return new WaitForSeconds(interval);
+        self.hungry -= feed;
+        yield return new WaitForSeconds(interval);
+        self.hungry -= feed;
+        if (eatsFish && foodSource != null)
+        {
+            FishSchool fs = foodSource.GetComponent<FishSchool>();
+            if (fs != null) fs.Graze(feed);   // el pastoreo marino reduce el banco
+        }
+        self.busy = false;
     }
 }
