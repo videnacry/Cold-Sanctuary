@@ -86,7 +86,7 @@ public class Forager : MonoBehaviour
         }
 
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);
-        float feed = self.Body.GetMealWeight(self) * 0.6f;
+        float feed = self.Body.GetMealWeight(self.rig.mass) * 0.6f;
         if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
@@ -133,7 +133,7 @@ public class Forager : MonoBehaviour
                 {
                     IEdible food = prey.GetComponent<IEdible>();
                     if (food == null || food.Consumed) break;
-                    if (self.hungry < -self.Body.GetMealMaxWeight(self)) break;
+                    if (self.hungry < -self.Body.GetMealMaxWeight(self.rig.mass)) break;
                     self.Loco.Idle(TimeController.timeController.TimeSpeedMinuteSecs / 30);
                     Eat(self, food, prey, self.BiteSize);
                 }

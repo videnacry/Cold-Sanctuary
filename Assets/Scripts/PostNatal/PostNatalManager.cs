@@ -164,7 +164,7 @@ public class PostNatalManager : MonoBehaviour
             {
                 float consumed = duration * 0.5f;
                 mother.fatReserves = Mathf.Max(0f, mother.fatReserves - consumed);
-                mother.hungry      = Mathf.Max(-mother.Body.GetMealWeight(mother), mother.hungry - consumed);
+                mother.hungry      = Mathf.Max(-mother.Body.GetMealWeight(mother.rig.mass), mother.hungry - consumed);
             }
             // Si no tiene reservas, Restore() ya lanza Carnivore.Feed() cuando hungry >= 0
             yield break;
@@ -205,7 +205,7 @@ public class PostNatalManager : MonoBehaviour
                 nurseTimer = 0f;
                 ForEachCub(cubs, cub =>
                 {
-                    cub.hungry = -mother.Body.GetMealWeight(mother);
+                    cub.hungry = -mother.Body.GetMealWeight(mother.rig.mass);
                     cub.stress = 0f;
                     // calostro: bono de anticuerpos → trauma base empieza bajo
                     cub.trauma = Mathf.Max(0f, cub.trauma - 10f);
@@ -220,7 +220,7 @@ public class PostNatalManager : MonoBehaviour
                 float nutrition = stage.feedingMethod == FeedingMethod.Regurgitate ? d : d * 2f;
                 ForEachCub(cubs, cub =>
                 {
-                    cub.hungry = Mathf.Max(cub.hungry - nutrition, -mother.Body.GetMealWeight(mother));
+                    cub.hungry = Mathf.Max(cub.hungry - nutrition, -mother.Body.GetMealWeight(mother.rig.mass));
                     cub.stress = Mathf.Max(0f, cub.stress - 0.3f);
                     mother.GrowBond(cub, BondType.Imprint, nutrition);
                 });
@@ -354,7 +354,7 @@ public class PostNatalManager : MonoBehaviour
 
     void AccumulateFat(float dt)
     {
-        if (mother.hungry < -mother.Body.GetMealWeight(mother) * FedThresholdFactor)
+        if (mother.hungry < -mother.Body.GetMealWeight(mother.rig.mass) * FedThresholdFactor)
             mother.fatReserves = Mathf.Min(mother.MaxFatReserves,
                 mother.fatReserves + mother.FatAccumulationRate * dt);
     }
