@@ -44,4 +44,21 @@ public class Forager : MonoBehaviour
         }
         return best;
     }
+
+    /// <summary>Da un mordisco a `food` y aplica la INGESTA a `self`: nutrición (baja el hambre + `Metabolism` opt-in),
+    /// **bond** con quien dejó la comida (compartir alimenta el vínculo), y marca la 1ª sólida de una cría. Devuelve
+    /// la nutrición obtenida. Multi-consumo: varios pueden morder el mismo `food` (pool compartido de `IEdible`).</summary>
+    public float Eat(Animal self, IEdible food, GameObject foodObject, float biteSize)
+    {
+        if (self == null || food == null) return 0f;
+        float nutrition = food.Consume(biteSize);
+        self.hungry -= nutrition;
+        self.GetComponent<Metabolism>()?.AbsorbFood(nutrition, food.Material);   // opt-in: construye stats / grasa
+        FoodItem dropped = foodObject != null ? foodObject.GetComponent<FoodItem>() : null;
+        if (dropped != null && dropped.droppedBy != null)
+            self.GrowBond(dropped.droppedBy, BondType.Friend, nutrition);        // quien te trae comida te cae bien
+        if (self.lifeStage == LifeStage.child && dropped != null)
+            self.firstSolidEaten = true;
+        return nutrition;
+    }
 }

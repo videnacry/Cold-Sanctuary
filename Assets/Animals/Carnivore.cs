@@ -55,16 +55,7 @@ public abstract class Carnivore : Animal
                         if (food == null || food.Consumed) break;
                         if (hungry < -this.Body.GetMealMaxWeight(this)) break;
                         Loco.Idle(TimeController.timeController.TimeSpeedMinuteSecs / 30);
-                        float nutrition = food.Consume(BiteSize);
-                        hungry -= nutrition;
-                        // Absorción por metabolismo: lo útil construye stats (Constitution); el exceso → grasa
-                        // (opt-in: solo si el ser tiene Metabolism). docs/stats-as-truth §9.
-                        GetComponent<Metabolism>()?.AbsorbFood(nutrition, food.Material);
-                        FoodItem dropped = prey.GetComponent<FoodItem>();
-                        if (dropped?.droppedBy != null)
-                            GrowBond(dropped.droppedBy, BondType.Friend, nutrition);
-                        if (lifeStage == LifeStage.child && dropped != null)
-                            firstSolidEaten = true;
+                        Forage.Eat(this, food, prey, BiteSize);   // ingesta: nutrición + metabolismo + bond + 1ª sólida (etapa 3)
                     }
                     else
                     {
