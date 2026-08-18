@@ -12,6 +12,25 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-18 — sync PRs #87-107 (46 commits, 26 .cs), 0 errores tras compilar y testear en
+  Play**. Unity llevaba ~4 días cerrado (última actividad 2026-08-14); lo reabrí desde Unity Hub
+  (dialog "Recovering Scene Backups" → No, como siempre). Batch: **refactor grande de comportamiento
+  animal** — se extraen políticas antes mezcladas en `Animal`/`Carnivore`/`Herbivore`/especies a
+  componentes nuevos y composables: `Assets/Animals/Locomotion.cs` (NavMesh+gait, unifica
+  wander/flee/fight/hit-and-run), `Forager.cs` (política qué/dónde comer, con modo MIXTO omnívoro por
+  flags combinables), `ThreatResponder.cs` (luchar/huir por stats, `EvaluateThreat`→`Assess` 100%
+  stat-based). También: **locomoción universal** (`WalkSpell` ahora conduce tanto a `PlayerController`
+  como a animales vía `Control/AiBrain.cs`/`PlayerBrain.cs` — el NavMesh sigue navegando, pero la
+  velocidad sale del hechizo), **reconciliación IA/posesión etapa 4** (`AiBrain` conduce decisiones
+  activas; la posesión las suprime, sin pisarse), animación de carga de hechizos + `powerBonus`
+  unificado (charge+channeling+forcejeo) en `SpellBase.cs`/`FireSpell.cs`, pensamientos base de especie
+  data-driven en `Soul/Archetypes.cs`. Sync + rebuild de escena + ~4 min de compilación completa
+  (26 archivos) → **0 errores** confirmado por `Editor.log`. Testeado en Play mode: animales (`Bunny`)
+  spawneando y corriendo su IA (Locomotion/Forager/ThreatResponder) sin excepciones tras ~50s activo.
+  Único "error" en consola fue ruido nuevo no relacionado a código: el Relay del AI Assistant de Unity
+  fallando al conectar al MCP (`unityMCP` está desconectado esta sesión, confirmado aparte) — no es un
+  bug real, análogo al ruido ya conocido de Licensing 404.
+
 - **CICLO 2026-08-14 (tarde) — sync PRs #85-86 (desgaste por trabajo + jugador en modelo de ánimo), 0
   errores, mi fix de `CameraManager` de este mismo día quedó COMITEADO por el compañero** (commit
   `76559a0 "Update CameraManager.cs"` — confirmado vía `git log` que mi cambio llegó al historial tal
