@@ -124,22 +124,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
     /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
     protected virtual string SpeciesArchetype => null;
-    public override string SpeciesName => SpeciesArchetype;   // la especie para relaciones/karma = su arquetipo
+    // La especie para relaciones/karma sale del componente SpeciesBody (etapa 5); si aún no está, del arquetipo de la clase.
+    public override string SpeciesName => _speciesBody != null && !string.IsNullOrEmpty(_speciesBody.species)
+        ? _speciesBody.species : SpeciesArchetype;
 
-    // Llena las aptitudes desde el arquetipo de especie (respeta agility/perception, que las maneja Base*+evolución).
-    void ApplySpeciesArchetype()
-    {
-        if (string.IsNullOrEmpty(SpeciesArchetype)) return;
-        ArchetypeProfile b = Archetypes.BodyOf(SpeciesArchetype);
-        ArchetypeProfile m = Archetypes.MindOf(SpeciesArchetype);
-        strength    = b.aptitudes.strength;   bodyMass    = b.aptitudes.bodyMass;
-        endurance   = b.aptitudes.endurance;  adaptability = b.aptitudes.adaptability;
-        composure   = m.aptitudes.composure;  reasoning   = m.aptitudes.reasoning;   memory     = m.aptitudes.memory;
-        creativity  = m.aptitudes.creativity; sociability = m.aptitudes.sociability;  discipline = m.aptitudes.discipline;
-
-        Mind mind = GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
-        if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(SpeciesArchetype));
-    }
+    SpeciesBody _speciesBody;   // identidad de especie (stats base + pensamientos) como componente; auto-alta en Init
 
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
@@ -216,7 +205,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         agility     = BaseAgility;
         perception  = BasePerception;
         sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
-        ApplySpeciesArchetype();                       // fase 3: aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
+        // Etapa 5: la identidad de especie (arquetipo → stats base + pensamientos) vive en un componente SpeciesBody.
+        _speciesBody = GetComponent<SpeciesBody>();
+        if (_speciesBody == null) _speciesBody = gameObject.AddComponent<SpeciesBody>();
+        if (string.IsNullOrEmpty(_speciesBody.species)) _speciesBody.species = SpeciesArchetype;   // por defecto, el de la clase
+        _speciesBody.Apply(this);                      // aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
