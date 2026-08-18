@@ -100,4 +100,74 @@ public class Forager : MonoBehaviour
         }
         self.busy = false;
     }
+
+    /// <summary>CAZAR (carnívoro): elige presa (Diet), la persigue (por `Locomotion`), la hiere al alcance y come al
+    /// abatirla; si sobra, la lleva a las crías. Movido desde `Carnivore.Feed` (etapa 3). La depredación va por stats
+    /// (`Predation` decide en `Diet.SelectPrey`).</summary>
+    public IEnumerator Hunt(Animal self)
+    {
+        if (self == null || (self.lifeStage != LifeStage.teen && self.lifeStage != LifeStage.adult)) yield break;
+
+        GameObject prey = SelectTarget(self);
+        if (prey == null)
+        {
+            yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 5);
+            yield break;
+        }
+        self.busy = true;
+        ITarget victim = prey.GetComponent<ITarget>();
+        if (victim == null) { self.busy = false; yield break; }
+        prey.GetComponent<Anima>()?.RespondToThreat(self.gameObject);   // la presa reacciona a la amenaza
+        Vector3 location = prey.transform.position;
+        float distance = Vector3.Distance(self.transform.position, location);
+        float cansancio = 0;
+        do
+        {
+            float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
+            location = prey.transform.position;
+            self.Loco.GoTo(location);
+            distance = Vector3.Distance(location, self.transform.position);
+            if (victim.Dead)
+            {
+                if (distance < 6)
+                {
+                    IEdible food = prey.GetComponent<IEdible>();
+                    if (food == null || food.Consumed) break;
+                    if (self.hungry < -self.Body.GetMealMaxWeight(self)) break;
+                    self.Loco.Idle(TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                    Eat(self, food, prey, self.BiteSize);
+                }
+                else
+                {
+                    self.Loco.SetGait(true, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                }
+                yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
+            }
+            else
+            {
+                Anima victimLiving = prey.GetComponent<Anima>();
+                bool preyAware = victimLiving != null && victimLiving.aware;
+                if (distance < 300 || preyAware)
+                {
+                    self.Loco.SetGait(true, interval);
+                    cansancio += 0.01f;
+                    if (distance < 8) victim.Hurt(0.8f);
+                    yield return new WaitForSeconds(interval);
+                }
+                else
+                {
+                    self.Loco.SetGait(false, TimeController.timeController.TimeSpeedMinuteSecs / 20);
+                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
+                }
+            }
+        } while (distance < 700 && cansancio < 1);
+        self.exhaustion += cansancio;
+
+        // Si la presa quedó como FoodItem sin consumir, llevarla a las crías.
+        FoodItem remains = prey != null ? prey.GetComponent<FoodItem>() : null;
+        if (victim.Dead && remains != null && !remains.Consumed && self.Group?.fed?.Length > 0)
+            (self as ICarrier)?.PickUp(remains);
+
+        self.busy = false;
+    }
 }

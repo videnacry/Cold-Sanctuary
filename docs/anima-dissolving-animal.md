@@ -95,7 +95,8 @@ sobre el mismo cuerpo/componentes que la IA.
    - [x] **Selección de objetivo** (`Forager.SelectTarget` + `Animal.ConfigureForager`): flags **combinables** `eatsPrey`/`eatsGrass`/`eatsFish` (omnívoro = varios → la fuente más cercana); carnívoro→`Diet`, herbívoro→pasto/banco. `Carnivore`/`Herbivore.Feed` la usan. (PR #102-#103)
    - [x] **Comer** (carnívoro): `Forager.Eat(self, food, obj, biteSize)` — mordisco + nutrición (hambre + `Metabolism`) + bond con quien dejó la comida + 1ª sólida de cría. Multi-consumo soportado (`IEdible` con pool compartido). `Carnivore.Feed` lo usa. (PR #104)
    - [x] **Pastar/pescar** (herbívoro): `Herbivore.Feed` movido entero a `Forager.Graze(self)` (ir a la fuente por `Locomotion` + comer + reducir banco). `Herbivore.Feed` solo delega. (PR #105)
-   - [ ] **Persecución** (el bucle de acercarse/cazar) sigue en `Carnivore.Feed`; se mueve a `Forager.Hunt` luego. Depredación ya por stats (`Predation`).
+   - [x] **Persecución/cazar** (carnívoro): `Carnivore.Feed` movido entero a `Forager.Hunt(self)` (elegir presa + perseguir por `Locomotion` + herir + comer + llevar sobras a las crías). `Carnivore.Feed` solo delega. (PR #106)
+   - **Etapa 3 COMPLETA:** `Forager` posee select (omnívoro) + `Hunt` + `Graze` + `Eat`. `Carnivore`/`Herbivore` quedan en ~18 líneas (solo `Diet`/`GrazesOnLand` → `ConfigureForager` + delegación) → el "qué come" es ya config de componente.
 4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
 5. **Reconciliar IA**: mover el "cuándo" (decisiones) a `AiBrain`/componentes; retirar las corrutinas de `Animal`.
 6. **Reconstruir un lobo** como `SimpleAnima` + componentes (prefab de prueba). Validar **paridad** con el `Animal` actual.
