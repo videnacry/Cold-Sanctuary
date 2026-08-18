@@ -10,9 +10,6 @@ public class SealBehavior : Herbivore
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(1.5f, 1.5f, 1.5f), 80, 0.05f, 0.3f, 0.1f);
-    public Physiognomy body = defaultBody;
-    public override Physiognomy Body { get => body; set => body = value; }
 
     public ActionsPrep actsPrep = new ActionsPrep(
         new ActionPrep("IdleSeal", 0, 1, -2),

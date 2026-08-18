@@ -13,10 +13,6 @@ public class BearBehaviour : Carnivore
     public Family group = defaultGroup;
     public override Family Group { get => group; set => group = value; }
 
-    // Base Physiognomy
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(3.5f, 3.5f, 3.5f), 300, 0.09f, 0.2f, 0.05f);
-    public Physiognomy body = defaultBody;
-    public override Physiognomy Body { get => body; set => body = value; }
 
     public ActionsPrep actsPrep = new ActionsPrep
     (

@@ -42,7 +42,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// </summary>
     public char sex;
     public char lifeStage;
-    public abstract Physiognomy Body { get; set; }
+    // Físico de la especie (escala/masa/pesos de comida). DATA del catálogo (Physiognomy.Of), fijado en Init — ya no
+    // un `defaultBody` por subclase (etapa 5). Settable (crecimiento/composición pueden reemplazarlo).
+    public Physiognomy Body { get; set; }
     public abstract ActionsPrep ActsPrep { get; set; }
     #endregion
 
@@ -200,6 +202,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             if (ActsPrep != null && ActsPrep.walk != null && ActsPrep.run != null)
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
+        Body = Physiognomy.Of(SpeciesArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
         agility     = BaseAgility;
