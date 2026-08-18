@@ -20,9 +20,6 @@ public class WhaleBehavior : Herbivore
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // longitud cruda 10.372m -> objetivo realista de longitud corporal adulta ~12m.
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(1.157f, 1.157f, 1.157f), 1300, 0.04f, 0.3f, 0.12f);
-    public Physiognomy body = defaultBody;
-    public override Physiognomy Body { get => body; set => body = value; }
 
     public ActionsPrep actsPrep = new ActionsPrep(
         new ActionPrep("IdleWhale", 0, 1, -2),

@@ -39,9 +39,6 @@ public class BunnyBehavior : Herbivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 23.52m (el FBX vino en una unidad ~100x mas grande de lo esperado)
     // -> objetivo realista de altura adulta ~0.25m.
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(0.0106f, 0.0106f, 0.0106f), 7, 0.13f, 0.07f, 0.18f);
-    public Physiognomy body = defaultBody;
-    public override Physiognomy Body { get => body; set => body = value; }
     #endregion
 
 
