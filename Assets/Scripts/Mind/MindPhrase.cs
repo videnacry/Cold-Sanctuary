@@ -11,7 +11,8 @@ public enum PhraseCategory
     Asana,       // postura de yoga (habilidad corporal)
     Hechizo,     // conjuro (habilidad mágica)
     Elemental,   // pensamiento idle con tono elemental
-    Deseo        // deseo base: trabajar / cuidar / acompañar / comer / dormir…
+    Deseo,       // deseo base: trabajar / cuidar / acompañar / comer / dormir…
+    Especie      // pensamiento BASE de una especie (innato): un oso piensa como oso, un lobo como lobo…
 }
 
 /// <summary>Ciclo de vida de un pensamiento en la mente que lo tiene (docs anima §11).</summary>

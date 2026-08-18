@@ -20,10 +20,11 @@ public enum FireTier
 ///     energía entera del **pool de energía** + ~µg de materia. Así un dragón/mago avanzado sostiene alientos.
 /// Opt-in; se cablea en `Anima`s reales. Sin `MagicReserves` es gratis (prototipado).
 ///
-/// **Migrado a `SpellBase`** (docs/stats-as-truth §hechizos): usa `CastMode.Repeat` (mantener `spellKey` =
-/// disparo múltiple; cada llama que no impacta sube el **forcejeo**) y la **carga** (mantener `spellKey`+
-/// `channelKey`/Shift = **channeling** → al soltar Shift dispara una llama más potente). El bonus de poder
-/// (forcejeo físico + channeling mental) **multiplica la intensidad** → más gramos/energía por llama.
+/// **Migrado a `SpellBase`** (docs/stats-as-truth §hechizos) con el `powerBonus` unificado:
+///   • mantener `spellKey` = **disparo múltiple** (cada llama que no impacta sube el **forcejeo**);
+///   • `chargeKey`/LeftShift = **cargar** (acumula sin disparar; al soltar, lanza una **esfera gigante** ∝ carga);
+///   • `channelKey`/RightShift = **canalizar** (mantiene el tamaño de las esferas hasta su tope; si es igual al de
+///     carga, no menguan hasta soltar). El `powerBonus` **multiplica la intensidad** → más gramos/energía por llama.
 /// </summary>
 public class FireSpell : SpellBase
 {
@@ -62,35 +63,36 @@ public class FireSpell : SpellBase
     void Awake()
     {
         if (caster == null) caster = GetComponent<Anima>();
+        if (chargeAnimator == null) chargeAnimator = GetComponent<Animator>();   // animación de carga de la esfera (nombra los estados en el Inspector)
         castMode = CastMode.Repeat;
     }
 
-    // Input propio (opt-in con `spellKey`): solo tecla = disparo múltiple (forcejeo por llama que no impacta);
-    // tecla + channelKey (Shift) = CANALIZAR (carga el bonus mental, no dispara); al soltar Shift con la tecla
-    // aún pulsada → dispara una llama cargada. El bonus multiplica la intensidad (más gramos/energía).
+    // Input propio (opt-in con `spellKey`): mantener spellKey = disparo múltiple; LeftShift = cargar la esfera
+    // gigante (no dispara mientras cargas; sale al soltar, vía OnChargeReleased); RightShift = canalizar (mantiene
+    // el tamaño). El powerBonus unificado multiplica la intensidad (más gramos/energía).
     void Update()
     {
         if (spellKey == KeyCode.None) return;
         float dt = Time.deltaTime;
-        bool key = Input.GetKey(spellKey);
-        bool channeling = key && Input.GetKey(channelKey);
-        TickChanneling(channeling, dt);
+        TickPowerBonus(caster, dt);                 // charge (LeftShift) / channel (RightShift) / decaimiento
 
-        if (channeling) return;                                             // cargando: acumula, no dispara
-        if (Input.GetKeyUp(channelKey) && key && RawChannel > 0f) { Cast(); return; }   // soltó Shift → llama cargada
+        if (IsCharging) { _fireTimer = 0f; return; } // cargando la esfera gigante: no dispara repetido
 
-        if (key)                                                           // solo tecla → disparo múltiple
+        if (Input.GetKey(spellKey))                  // mantener tecla → disparo múltiple
         {
             _fireTimer -= dt;
             if (_fireTimer <= 0f)
             {
                 Cast();
-                ReportResult(false);   // sin detección de impacto aún → cada llama "empuja" el forcejeo (placeholder)
+                ReportResult(caster, false);   // sin detección de impacto aún → cada llama "empuja" el forcejeo (placeholder)
                 _fireTimer = repeatCooldown;
             }
         }
         else _fireTimer = 0f;
     }
+
+    // Al soltar la CARGA (LeftShift): sale la esfera cargada de golpe (usa el powerBonus recién inyectado).
+    protected override void OnChargeReleased(float injected) => Cast();
 
     /// <summary>Coloca los parámetros de un preset documentado (§13).</summary>
     public void SetTier(FireTier tier)
@@ -121,7 +123,7 @@ public class FireSpell : SpellBase
     /// intensidad. Devuelve si salió.</summary>
     public bool Cast()
     {
-        _powerMult = 1f + Mathf.Max(0f, BonusPower(caster));   // el bonus agranda la llama (más gramos/energía)
+        _powerMult = 1f + Mathf.Max(0f, PowerBonus);   // el bonus unificado agranda la llama (más gramos/energía)
         MagicReserves mr = caster != null ? caster.GetComponent<MagicReserves>() : GetComponent<MagicReserves>();
         List<ElementCost> cost = BuildCost();
         float eCost = EnergyCost;

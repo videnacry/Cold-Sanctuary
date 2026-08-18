@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum Reaction { Flee, Fight, HitAndRun }
+// enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/anima-dissolving-animal.md)
 
 public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 {
@@ -106,8 +106,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     }
 
     // ThreatResponse species flags (override per species)
+    /// <summary>Cada especie configura su <see cref="Forager"/> (modo presa/pasto/pez + dieta). Base: pasto.</summary>
+    protected virtual void ConfigureForager(Forager f) { }
+
     public virtual float Aggressiveness => 0f;
-    public virtual bool DefendsCubs => false;
+    // DefendsCubs (flag) retirado (etapa 1): la defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
     public virtual bool CanHitAndRun => false;
     public virtual float PackFactor => 0.5f;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
@@ -133,11 +136,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         endurance   = b.aptitudes.endurance;  adaptability = b.aptitudes.adaptability;
         composure   = m.aptitudes.composure;  reasoning   = m.aptitudes.reasoning;   memory     = m.aptitudes.memory;
         creativity  = m.aptitudes.creativity; sociability = m.aptitudes.sociability;  discipline = m.aptitudes.discipline;
+
+        Mind mind = GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
+        if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(SpeciesArchetype));
     }
 
     // Post-natal species parameters (override per species)
     public virtual float BaseStressLevel       => 0.2f;
-    public virtual float ThreatThreshold       => 0.5f;
+    public virtual float ThreatThreshold       => 0.5f;   // NUEVA escala (Assess): fracción de MI poder efectivo a partir de la cual me alarmo (recalibrable en Unity)
     public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
     public virtual float NestSecurityLevel     => 0.5f;
     // Post-natal stage config (override per species; null = sin sistema post-natal)
@@ -149,33 +155,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     protected override void RespondToHunger() => StartCoroutine(Feed());
 
+    // La EVALUACIÓN de amenaza vive en ThreatResponder (etapa 1), plenamente stat-based (ya no usa rig.mass/NavMesh).
     protected override float EvaluateThreat(GameObject source)
-    {
-        if (source == null || rig == null) return 0f;
-        float enemyMass  = source.GetComponent<Rigidbody>()?.mass ?? 0f;
-        float enemySpeed = source.GetComponent<NavMeshAgent>()?.speed ?? 0f;
-        float physical = enemyMass * (enemySpeed * 0.5f) / Mathf.Max(rig.mass, 1f);
-        // Amenaza por STATS: escala según cuánto me supera en poder depredador (masa/fuerza/textura). Así una
-        // hormiga a lo grande con stats de ápex aterra; el farol (visual-only) no engaña (no cambia stats), la
-        // transformación real sí. (docs/stats-as-truth.md §2, Predation.)
-        Anima src = source.GetComponent<Anima>();
-        if (src != null)
-        {
-            // Poder EFECTIVO (con manada) de ambos → temer al respaldado por su grupo; envalentonarse con el propio.
-            float ratio = Predation.EffectivePower(src) / Mathf.Max(0.1f, Predation.EffectivePower(this));
-            physical *= Mathf.Clamp(ratio, 0.2f, 4f);
-            // Aura mágica destructiva del origen → más temido (huida/cautela).
-            if (src.magicAura < 0f) physical += -src.magicAura * 2f;
-        }
-        // BOND: un ser con el que tengo vínculo NO me da miedo (confianza, no huida). Bond 100 → amenaza 0.
-        ITarget srcT = source.GetComponent<ITarget>();
-        if (srcT != null)
-        {
-            Bond b = GetBond(srcT);
-            if (b != null) physical *= Mathf.Clamp01(1f - b.value / 100f);
-        }
-        return physical;
-    }
+        => _threat != null ? _threat.Assess(this, source) : 0f;
 
     public override void RespondToThreat(GameObject threat)
     {
@@ -196,6 +178,12 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public Rigidbody rig;
     public Animator ani;
 
+    [HideInInspector] public WalkSpell Walk;   // opt-in: si está, provee la velocidad del NavMesh (locomoción-hechizo)
+    [HideInInspector] public bool Running;     // ¿la acción actual es correr? (channeling del hechizo) — lo fija ActionPrep
+    ThreatResponder _threat;                   // política luchar/huir por stats (etapa 1); auto-alta en Init
+    [HideInInspector] public Locomotion Loco;  // mover NavMesh + gait (etapa 2); auto-alta en Init
+    [HideInInspector] public Forager Forage;   // política "qué/dónde comer" (etapa 3); auto-alta + config en Init
+
     public abstract AnimationsName animationsName { get; }
     public GameObject bird;
     public GameObject target;
@@ -208,6 +196,21 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
+        _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
+        if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
+        Loco = GetComponent<Locomotion>();                               // etapa 2: mover NavMesh + gait como componente
+        if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
+        Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
+        if (Forage == null) Forage = gameObject.AddComponent<Forager>();
+        ConfigureForager(Forage);                                        // cada especie fija su modo (presa/pasto/pez) + dieta
+        Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
+        if (Walk != null)
+        {
+            Walk.selfDriven = false;          // el NavMesh navega; el hechizo solo PROVEE la velocidad (con su lógica)
+            if (ActsPrep != null && ActsPrep.walk != null) Walk.baseSpeed = ActsPrep.walk.navSpeed;
+            if (ActsPrep != null && ActsPrep.walk != null && ActsPrep.run != null)
+                Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
+        }
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
         agility     = BaseAgility;
@@ -218,6 +221,12 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
         ani = GetComponent<Animator>();
+        // Etapa 4: la IA ACTIVA (forrajeo/amenaza) la conduce un brain; la posesión (PlayerBrain) la suprime. El AiBrain
+        // se añade antes del AnimaController y se refrescan los brains (por si el controller ya venía del prefab).
+        if (GetComponent<AiBrain>() == null) gameObject.AddComponent<AiBrain>();
+        AnimaController ac = GetComponent<AnimaController>();
+        if (ac == null) ac = gameObject.AddComponent<AnimaController>();
+        ac.RefreshBrains();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
         PostNatalManager pnm = GetComponent<PostNatalManager>();
@@ -256,20 +265,32 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
 
 
+    // PASIVO (siempre, lo conduzca quien lo conduzca): metabolismo/evolución/medio/velocidad + decaimiento de trauma/estrés.
+    // Las decisiones ACTIVAS (forrajeo/amenaza) se movieron a ActiveBehaveTick, que conduce el brain (etapa 4).
     public IEnumerator Restore()
     {
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
         while (1 == 1)
         {
-            if (hungry >= 0 && !asleep && !busy)
-                RespondToHunger();
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
             CorrectMedium(interval);
-            SenseThreats();
+            FeedWalkSpeed(interval);
             yield return new WaitForSeconds(interval);
         }
+    }
+
+    float _nextBehave;
+    /// <summary>Decisiones ACTIVAS de la IA animal (forrajeo + amenaza), conducidas por el brain (`AiBrain`) — la
+    /// POSESIÓN las SUPRIME (si el jugador conduce, `AnimaController` llama a `PlayerBrain`, no a este). Throttled
+    /// al mismo ritmo que antes tenía `Restore`. Etapa 4 (docs/anima-dissolving-animal.md).</summary>
+    public void ActiveBehaveTick()
+    {
+        if (death || Time.time < _nextBehave) return;
+        _nextBehave = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
+        if (hungry >= 0 && !asleep && !busy) RespondToHunger();
+        SenseThreats();
     }
 
 
@@ -286,6 +307,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         sensibility = BaseSensibility * perception;   // la sensibilidad sigue a la percepción evolucionada
     }
 
+    // OPT-IN: si el animal lleva un WalkSpell, su velocidad de NavMesh sale del hechizo (correr = channeling → sube
+    // gradual a la punta; andar → decae; con su gasto). El NavMesh sigue navegando (pathfinding). Ver docs.
+    void FeedWalkSpeed(float dt)
+    {
+        if (Walk == null || nav == null || !nav.isOnNavMesh) return;
+        nav.speed = Walk.StepSpeed(false, Running, nav.hasPath, dt);   // charging=false; channeling=Running; moving=tiene ruta
+    }
+
     // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
     // del agua hacia tierra. Solo cuando no cazan/huyen (busy) — así un oso que persigue focas sí
     // entra al agua. Ver docs/refuge-and-adult-behavior.md.
@@ -296,11 +325,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (prefersWater && currentMedium != Medium.Water)
         {
             FishSchool water = FishSchool.Nearest(transform.position);   // marcadores de agua
-            if (water != null) { ActsPrep.walk.Prep(this, dt); nav.SetDestination(water.transform.position); }
+            if (water != null) Loco.Walk(water.transform.position, dt);
         }
         else if (!prefersWater && currentMedium == Medium.Water)
         {
-            ActsPrep.run.Prep(this, dt); nav.SetDestination(HomeOrigin);   // salir del agua hacia tierra
+            Loco.Run(HomeOrigin, dt);   // salir del agua hacia tierra
         }
     }
 
@@ -341,14 +370,15 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         try
         {
             GameObject threat = enemies[0];
-            float enemyMass = threat.GetComponent<Rigidbody>().mass;
-            float enemySpeed = threat.GetComponent<NavMeshAgent>().speed;
             Vector3 threatPos = threat.transform.position;
+            float scare = EvaluateThreat(threat);                          // stat-based (Assess): fracción de mi poder × bond + aura
+            float dist  = Vector3.Distance(threatPos, transform.position);
 
-            if (enemyMass * (enemySpeed / 2) - Vector3.Distance(threatPos, transform.position) <= sensibility)
+            // Poco peligroso / lejos (relativo a mi sensibilidad de detección) → solo NERVIOS (andar/correr random),
+            // no reacción plena. `alertReach` convierte el miedo en metros: más peligroso → reacciono de más lejos.
+            if (scare * _threat.alertReach - dist <= sensibility)
             {
-                if (Random.Range(1, 3) > 1) this.ActsPrep.walk.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
-                else this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+                Loco.SetGait(Random.Range(1, 3) <= 1, (short)(this.ActsPrep.run.energyCost / 10));
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
                 yield break;
             }
@@ -366,44 +396,18 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         }
     }
 
+    // La POLÍTICA de decisión vive en ThreatResponder (etapa 1). Aquí solo se computa el contexto de CRÍAS
+    // (acoplado a Family/Group, que aún vive en Animal) y se delega.
     protected Reaction ResolveReaction(GameObject threat)
     {
-        ITarget threatTarget = threat.GetComponent<ITarget>();
-        if (threatTarget != null && !CanHarm(threatTarget))
-            return Reaction.Flee;
-
-        float enemyMass = threat.GetComponent<Rigidbody>()?.mass ?? 0f;
-        float enemySpeed = threat.GetComponent<NavMeshAgent>()?.speed ?? 0f;
-        float allyMass = 0f;
-        if (Group?.members != null)
-        {
-            foreach (Animal ally in Group.members)
-            {
-                if (ally != null && !ally.death && ally != this &&
-                    Vector3.Distance(ally.transform.position, transform.position) < HomeRadius)
-                    allyMass += ally.rig.mass;
-            }
-        }
         RecomputeAutoabandono();   // fresco con los bonds actuales
-        float myPower = (rig.mass + allyMass * PackFactor) * (1f + autoabandono);   // (b) autoabandono = valentía por el pack
-        float enemyPower = enemyMass * enemySpeed;
-
-        bool defendingCubs = DefendsCubs && Group?.fed != null &&
+        // Defensa de crías EMERGENTE (no un flag DefendsCubs): si hay crías propias cerca de la amenaza, la decisión
+        // sale sola del vínculo con ellas (cubBond) + autoabandono vs el peligro. docs/anima-dissolving-animal.md.
+        bool defendingCubs = Group?.fed != null &&
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
-
-        if (myPower > enemyPower * 1.5f && Aggressiveness > 0.5f)
-            return Reaction.Fight;   // claramente más fuerte
-
-        // (b) Modelo bonds+threat+autoabandono: por las crías/manada, plantar cara si (autoabandono + vínculo) > peligro.
-        if (defendingCubs)
-        {
-            float peligro = Mathf.Max(0f, enemyPower / Mathf.Max(0.1f, myPower) - 1f);   // 0 = parejo, >0 = en desventaja
-            float vinculo = CubBondFactor();                                             // 0..1 (bond con las crías)
-            if ((autoabandono + vinculo) > peligro)
-                return CanHitAndRun ? Reaction.HitAndRun : Reaction.Fight;
-        }
-        return Reaction.Flee;
+        float cubBond = defendingCubs ? CubBondFactor() : 0f;
+        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond, Aggressiveness, CanHitAndRun);
     }
 
     // Vínculo medio con las crías defendidas (0..1); si aún no hay bond, afinidad de cría por defecto (0.4).
@@ -421,13 +425,13 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Vector3 threatPos = threat.transform.position;
         while (Vector3.Distance(transform.position, threatPos) < 620)
         {
-            this.ActsPrep.run.Prep(this, (short)(this.ActsPrep.run.energyCost / 10));
+            Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
             int afraid = 30;
             while (afraid > 0)
             {
                 afraid--;
-                if (BirdBehavior.population.Count > 0 && nav != null && nav.isOnNavMesh)
-                    nav.SetDestination(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
+                if (BirdBehavior.population.Count > 0)
+                    Loco.GoTo(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
                 yield return new WaitForSeconds(10);
             }
             threatPos = threat.transform.position;
@@ -463,7 +467,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             while (!threatTarget.Dead &&
                    Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
             {
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
+                Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                     threatTarget.Hurt((rig.mass - exhaustion) / 10f);
                 yield return new WaitForSeconds(interval);
@@ -487,14 +491,14 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
             if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)
             {
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(threat.transform.position);
+                Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
                     threatTarget.Hurt((rig.mass - exhaustion) / 15f);
             }
             else
             {
                 Vector3 retreat = transform.position + (transform.position - threat.transform.position).normalized * 10f;
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(retreat);
+                Loco.GoTo(retreat);
             }
             yield return new WaitForSeconds(interval);
         }

@@ -12,90 +12,9 @@ public abstract class Carnivore : Animal
     /// </summary>
     public abstract Diet Diet { get; set; }
 
-    /// <summary>
-    /// Stops walking, picks the best prey from its Diet (priority + hunger + range) and hunts it.
-    /// </summary>
-    /// <returns>yield</returns>
-    public override IEnumerator Feed()
-    {
-        List<GameObject> hunters = new List<GameObject>
-        {
-            this.gameObject
-        };
-        if (this.lifeStage == LifeStage.teen || this.lifeStage == LifeStage.adult)
-        {
-            GameObject prey = this.Diet.SelectPrey(this);
-            if (prey == null)
-            {
-                yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 5);
-                yield break;
-            }
-            this.busy = true;
-            ITarget victim = prey.GetComponent<ITarget>();
-            if (victim == null) { this.busy = false; yield break; }
-            Anima victimEntity = prey.GetComponent<Anima>();
-            victimEntity?.RespondToThreat(this.gameObject);
-            Vector3 location = prey.transform.position;
-            float distance = Vector3.Distance(transform.position, location);
-            float cansancio = 0;
-            do
-            {
-                float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
-                location = prey.transform.position;
-                if (nav != null && nav.isOnNavMesh) nav.SetDestination(location);
-                distance = Vector3.Distance(location, transform.position);
-                if (victim.Dead)
-                {
-                    if (distance < 6)
-                    {
-                        IEdible food = prey.GetComponent<IEdible>();
-                        if (food == null || food.Consumed) break;
-                        if (hungry < -this.Body.GetMealMaxWeight(this)) break;
-                        this.ActsPrep.idle.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
-                        float nutrition = food.Consume(BiteSize);
-                        hungry -= nutrition;
-                        // Absorción por metabolismo: lo útil construye stats (Constitution); el exceso → grasa
-                        // (opt-in: solo si el ser tiene Metabolism). docs/stats-as-truth §9.
-                        GetComponent<Metabolism>()?.AbsorbFood(nutrition, food.Material);
-                        FoodItem dropped = prey.GetComponent<FoodItem>();
-                        if (dropped?.droppedBy != null)
-                            GrowBond(dropped.droppedBy, BondType.Friend, nutrition);
-                        if (lifeStage == LifeStage.child && dropped != null)
-                            firstSolidEaten = true;
-                    }
-                    else
-                    {
-                        this.ActsPrep.run.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 30);
-                    }
-                    yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
-                }
-                else
-                {
-                    Anima victimLiving = prey.GetComponent<Anima>();
-                    bool preyAware = victimLiving != null && victimLiving.aware;
-                    if (distance < 300 || preyAware)
-                    {
-                        this.ActsPrep.run.Prep(this, interval);
-                        cansancio += 0.01f;
-                        if (distance < 8)
-                            victim.Hurt(0.8f);
-                        yield return new WaitForSeconds(interval);
-                    }
-                    else
-                    {
-                        this.ActsPrep.walk.Prep(this, TimeController.timeController.TimeSpeedMinuteSecs / 20);
-                        yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
-                    }
-                }
-            } while (distance < 700 && cansancio < 1);
-            exhaustion += cansancio;
+    // Config del Forager (etapa 3): un carnívoro caza PRESA según su Diet. (Un omnívoro marcaría además eatsGrass.)
+    protected override void ConfigureForager(Forager f) { f.eatsPrey = true; f.diet = Diet; }
 
-            // Si la presa quedó como FoodItem sin consumir, llevarla a las crías
-            FoodItem remains = prey?.GetComponent<FoodItem>();
-            if (victim.Dead && remains != null && !remains.Consumed && Group?.fed?.Length > 0)
-                (this as ICarrier)?.PickUp(remains);
-
-            this.busy = false;
-        }
-    }
+    // Cazar (elegir presa + perseguir + comer + llevar sobras a las crías) vive en Forager.Hunt (etapa 3). Se delega.
+    public override IEnumerator Feed() => Forage.Hunt(this);
 }

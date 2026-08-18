@@ -94,7 +94,8 @@ public static class SampleSceneBuilder
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
         BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
         BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
-        BuildSpellDemoSandbox(root.transform);      // hechizos: forcejeo/channeling — fuego múltiple/carga (G/G+Shift) + caminar/esprintar (WASD/Shift) — testing §19g
+        BuildSpellDemoSandbox(root.transform);      // hechizos: powerBonus unificado — fuego (G/+LShift carga/+RShift canaliza) + caminar ESDF — testing §19g
+        BuildWalkUniversalSandbox(root.transform);  // locomoción universal: WalkSpell conducido por un brain (AiBrain) hacia un destino
         BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
         BuildSharedSoulSandbox(root.transform);     // alma COMPARTIDA: dos cuerpos (melaza/hormiga) una anima; propaga stats/bonds — docs soul-relations §4
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
@@ -1361,8 +1362,8 @@ public static class SampleSceneBuilder
     }
 
     // ── Hechizos: forcejeo / channeling (fuego múltiple/carga + caminar/esprintar) ──
-    // Cápsula con FireSpell (G / G+Shift) + WalkSpell (WASD / Shift) sobre un SimpleAnima con reservas y ATP.
-    // Demuestra los bonos compartidos de SpellBase (forcejeo físico al fallar / channeling mental al cargar).
+    // Cápsula con FireSpell (G / +LShift carga / +RShift canaliza) + WalkSpell (ESDF) sobre un SimpleAnima con
+    // reservas y ATP. Demuestra el powerBonus unificado de SpellBase (charge + channeling + forcejeo, con decaimiento).
     static void BuildSpellDemoSandbox(Transform parent)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -1382,17 +1383,55 @@ public static class SampleSceneBuilder
 
         FireSpell fire = go.AddComponent<FireSpell>();
         fire.caster = anima;
-        fire.spellKey = KeyCode.G;                            // G = disparo múltiple; G+Shift = cargar (channeling)
+        fire.spellKey = KeyCode.G;                            // G = disparo múltiple; +LShift = cargar; +RShift = canalizar
         fire.SetTier(FireTier.Flamethrower);
 
-        WalkSpell walk = go.AddComponent<WalkSpell>();        // WASD = andar; Shift = esprintar (channeling)
+        WalkSpell walk = go.AddComponent<WalkSpell>();        // ESDF = andar; LShift = postura de salida; RShift = punta
 
         SpellDemoHUD hud = go.AddComponent<SpellDemoHUD>();
         hud.fire = fire; hud.walk = walk; hud.anima = anima;
 
         Debug.Log("[SampleSceneBuilder] SpellDemo_AUTO: en Play, HUD arriba-centro. G = fuego múltiple (el forcejeo " +
-                  "sube y agranda la llama); G+Shift = cargar (channeling) → soltar Shift dispara cargado; WASD = andar, " +
-                  "Shift = esprintar. Ver crecer forcejeo/channel y bajar la energía (testing §19g).");
+                  "agranda la llama); G+LShift = cargar la esfera gigante (sale al soltar); G+RShift = canalizar (mantiene " +
+                  "el tamaño). ESDF = andar; +LShift = postura de salida (arranque rápido); +RShift = punta. El powerBonus " +
+                  "decae al soltar. Ver crecer el bonus y bajar la energía (testing §19g).");
+    }
+
+    // Locomoción UNIVERSAL: un ser conducido por su brain (IA) que camina hacia un destino con el MISMO WalkSpell
+    // que usaría el jugador (PlayerBrain). Demuestra que andar/correr es un hechizo que cualquier brain conduce.
+    static void BuildWalkUniversalSandbox(Transform parent)
+    {
+        GameObject group = new GameObject("WalkUniversal_AUTO");
+        group.transform.SetParent(parent);
+
+        // El destino (un cubo hacia el que caminar).
+        GameObject target = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        target.name = "Destino";
+        target.transform.SetParent(group.transform);
+        target.transform.position = new Vector3(22f, 0.5f, 6f);
+        target.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WalkUniversal_Target_MAT", new Color(0.4f, 0.8f, 0.4f));
+
+        // El caminante IA.
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = "CaminanteIA";
+        go.transform.SetParent(group.transform);
+        go.transform.position = new Vector3(16f, 1f, 6f);
+        go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WalkUniversal_Walker_MAT", new Color(0.35f, 0.55f, 0.85f));
+
+        go.AddComponent<SimpleAnima>();
+        go.AddComponent<CharacterLevel>();                       // ATP para el coste de andar
+
+        WalkSpell walk = go.AddComponent<WalkSpell>();
+        walk.selfDriven = false;                                 // lo conduce el brain, no su propio input
+        walk.baseSpeed = 2.5f;
+
+        go.AddComponent<AnimaController>();                      // cede el mando al brain de mayor relevancia
+        AiBrain ai = go.AddComponent<AiBrain>();                 // su IA conduce el WalkSpell hacia el destino
+        ai.moveTarget = target.transform;
+
+        Debug.Log("[SampleSceneBuilder] WalkUniversal_AUTO: en Play, «CaminanteIA» camina al «Destino» usando el " +
+                  "MISMO WalkSpell que el jugador (aquí lo conduce AiBrain; un PlayerBrain lo movería con ESDF). " +
+                  "Locomoción = hechizo universal conducido por brains.");
     }
 
     // ── Alma por MEZCLA (fase 1): seres compuestos por arquetipos de cuerpo/mente + bonusPacks ──
@@ -1794,6 +1833,15 @@ public static class SampleSceneBuilder
         Anima playerAnima = player.GetComponent<Anima>();
         if (playerAnima != null && player.GetComponent<MoodDynamics>() == null)
             player.AddComponent<MoodDynamics>().anima = playerAnima;
+
+        // Locomoción UNIVERSAL: el jugador anda/corre con el mismo WalkSpell (carga-postura + punta), conducido por
+        // PlayerController (mantiene cámara/gravedad/salto). base = caminar; carga/channel suben hasta ~esprintar.
+        WalkSpell playerWalk = player.GetComponent<WalkSpell>();
+        if (playerWalk == null) playerWalk = player.AddComponent<WalkSpell>();
+        playerWalk.selfDriven = false;                                       // lo conduce el PlayerController
+        playerWalk.baseSpeed = controller.walkSpeed;
+        playerWalk.maxPowerWithCharge     = Mathf.Max(0f, controller.sprintSpeed - controller.walkSpeed);
+        playerWalk.maxPowerWithChanneling = Mathf.Max(0f, controller.sprintSpeed - controller.walkSpeed);
 
         WorldCharacter playerWC = player.GetComponent<WorldCharacter>();
         if (playerWC == null) playerWC = player.AddComponent<WorldCharacter>();

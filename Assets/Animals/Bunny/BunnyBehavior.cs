@@ -175,7 +175,6 @@ public class BunnyBehavior : Herbivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     public override float Aggressiveness => 0f;
-    public override bool DefendsCubs => true;
     public override bool CanHitAndRun => true;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.2f;

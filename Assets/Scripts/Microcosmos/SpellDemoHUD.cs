@@ -13,10 +13,10 @@ public class SpellDemoHUD : MonoBehaviour
         int x = 392, y = 10;
         GUI.Box(new Rect(x, y, 328, 132), "SpellDemo_AUTO (docs testing §19g)");
         y += 24;
-        GUI.Label(new Rect(x + 8, y, 312, 20), "G = fuego múltiple · G+Shift = cargar · WASD = andar · Shift = esprintar");
+        GUI.Label(new Rect(x + 8, y, 312, 20), "G=fuego · +LShift=cargar · +RShift=canalizar · ESDF=andar");
         y += 22;
-        if (fire != null) { GUI.Label(new Rect(x + 8, y, 312, 20), $"Fuego — forcejeo {fire.RawForcejeo:0.00}   channel {fire.RawChannel:0.00}"); y += 20; }
-        if (walk != null) { GUI.Label(new Rect(x + 8, y, 312, 20), $"Andar — forcejeo {walk.RawForcejeo:0.00}   channel {walk.RawChannel:0.00}"); y += 20; }
+        if (fire != null) { GUI.Label(new Rect(x + 8, y, 312, 20), $"Fuego — bonus {fire.PowerBonus:0.00}   carga {fire.ChargeAccum:0.00}{(fire.IsCharging ? " (cargando)" : "")}"); y += 20; }
+        if (walk != null) { GUI.Label(new Rect(x + 8, y, 312, 20), $"Andar — bonus {walk.PowerBonus:0.00}   carga {walk.ChargeAccum:0.00}{(walk.IsCharging ? " (postura)" : "")}"); y += 20; }
         if (anima != null)
         {
             CharacterLevel cl = anima.GetComponent<CharacterLevel>();

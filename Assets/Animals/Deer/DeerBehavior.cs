@@ -128,7 +128,6 @@ public class DeerBehavior : Herbivore
 
     // Herbívoro: huye ante amenazas, no lucha.
     public override float Aggressiveness => 0f;
-    public override bool DefendsCubs => false;
     public override bool CanHitAndRun => false;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.1f;

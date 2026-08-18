@@ -53,6 +53,9 @@ public class SoulComposition : MonoBehaviour
         WriteStats(final);
         if (applyScale && height > 0f) transform.localScale = Vector3.one * height;
 
+        Mind mind = GetComponent<Mind>();     // pensamientos base del arquetipo de mente DOMINANTE (piensa como su especie)
+        if (mind != null) { string dom = DominantMindArchetype(); if (dom != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(dom)); }
+
         Debug.Log($"[Alma] «{anima.name}»: str {final.strength:0.00} masa {final.bodyMass:0.00} agi {final.agility:0.00} " +
                   $"razón {final.reasoning:0.00} creat {final.creativity:0.00} · tono {tone} altura {height:0.00}" +
                   (bonusPacks.Count > 0 ? $" +{bonusPacks.Count} pack(s)" : "") + ".");
@@ -115,6 +118,18 @@ public class SoulComposition : MonoBehaviour
         foreach (AptitudeKind k in SoulMath.Physical) final.Add(k, body.Get(k));
         foreach (AptitudeKind k in SoulMath.Mental)   final.Add(k, mind.Get(k));
         return final;
+    }
+
+    /// <summary>El arquetipo de la ranura de MENTE con mayor dominio (para los pensamientos base de especie).</summary>
+    string DominantMindArchetype()
+    {
+        string best = null; float bestW = -1f;
+        foreach (BlendSlot s in minds)
+        {
+            if (s == null || s.shareDomain) continue;
+            if (s.domain > bestW) { bestW = s.domain; best = s.archetype; }
+        }
+        return best;
     }
 
     void AddPacks(ref Aptitudes a)
