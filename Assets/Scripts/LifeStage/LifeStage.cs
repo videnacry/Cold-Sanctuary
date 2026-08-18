@@ -173,7 +173,7 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             if (script.Group?.fed == null || script.Group.fed.Length == 0) return;
-            if (script.hungry >= -script.Body.GetMealWeight(script)) return;
+            if (script.hungry >= -script.Body.GetMealWeight(script.rig.mass)) return;
 
             ICarrier carrier = script as ICarrier;
             if (carrier == null) return;
@@ -192,7 +192,7 @@ public abstract class LifeStage
                     if (dropped != null)
                         foreach (Animal cub in script.Group.fed)
                             if (cub != null && !cub.death)
-                                cub.hungry = -script.Body.GetMealWeight(script);
+                                cub.hungry = -script.Body.GetMealWeight(script.rig.mass);
                 }
                 return;
             }

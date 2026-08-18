@@ -21,18 +21,11 @@ public class Physiognomy
         this.mealMinBodyWeight = pMealMinBodyWeight;
         this.mealMaxBodyWeight = pMealMaxBodyWeight;
     }
-    public float GetMealMinWeight (Animal pScript)
-    {
-        return pScript.rig.mass * this.mealMinBodyWeight;
-    }
-    public float GetMealMaxWeight(Animal pScript)
-    {
-        return pScript.rig.mass * this.mealMaxBodyWeight;
-    }
-    public float GetMealWeight(Animal pScript)
-    {
-        return pScript.rig.mass * this.mealBodyWeight;
-    }
+    // Pesos de comida a partir de la MASA (kg). Desacoplado del tipo Animal (etapa 5): toma la masa, no el Animal —
+    // así el físico lo puede usar cualquier ser (rumbo a la composición). El llamante pasa su rig.mass.
+    public float GetMealMinWeight(float mass) => mass * this.mealMinBodyWeight;
+    public float GetMealMaxWeight(float mass) => mass * this.mealMaxBodyWeight;
+    public float GetMealWeight(float mass) => mass * this.mealBodyWeight;
 
     // ── Catálogo por especie (etapa 5): el físico deja de ser un `defaultBody` por clase y pasa a DATA. ──
     // new Physiognomy(baseScale, baseMass, mealBodyWeight, mealMaxBodyWeight, mealMinBodyWeight)
