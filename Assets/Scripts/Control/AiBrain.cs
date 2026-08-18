@@ -23,17 +23,26 @@ public class AiBrain : MonoBehaviour, IBrain
     public string BrainName => "IA";
 
     WalkSpell _walk;
+    Animal _animal;
 
-    void Awake() => _walk = GetComponent<WalkSpell>();
+    void Awake()
+    {
+        _walk = GetComponent<WalkSpell>();
+        _animal = GetComponent<Animal>();
+    }
 
     public void Act(AnimaController ctrl)
     {
-        // Locomoción IA UNIFICADA: el mismo hechizo de andar que usa el jugador, conducido hacia el destino.
+        // IA de ANIMAL (etapa 4): sus decisiones activas (forrajeo + amenaza) las conduce este brain — al poseerlo,
+        // AnimaController deja de llamar aquí (llama al PlayerBrain) → el jugador toma el mando del MISMO cuerpo.
+        if (_animal != null) { _animal.ActiveBehaveTick(); return; }
+
+        // Locomoción IA para seres NO-Animal (caminantes/compañeros): el mismo WalkSpell que el jugador, hacia el destino.
         if (_walk != null && moveTarget != null)
         {
             Vector3 to = moveTarget.position - transform.position; to.y = 0f;
             if (to.sqrMagnitude > arriveRadius * arriveRadius) _walk.Drive(to);   // camina hacia el destino
         }
-        // (El pilar Mind sigue pensando por su cuenta; aquí solo va la locomoción.)
+        // (El pilar Mind sigue pensando por su cuenta; aquí solo va la conducta activa/locomoción.)
     }
 }

@@ -221,6 +221,12 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
         ani = GetComponent<Animator>();
+        // Etapa 4: la IA ACTIVA (forrajeo/amenaza) la conduce un brain; la posesión (PlayerBrain) la suprime. El AiBrain
+        // se añade antes del AnimaController y se refrescan los brains (por si el controller ya venía del prefab).
+        if (GetComponent<AiBrain>() == null) gameObject.AddComponent<AiBrain>();
+        AnimaController ac = GetComponent<AnimaController>();
+        if (ac == null) ac = gameObject.AddComponent<AnimaController>();
+        ac.RefreshBrains();
         StartCoroutine(Restore());
         LifeStage.Init(this, TimeController.timeController);
         PostNatalManager pnm = GetComponent<PostNatalManager>();
@@ -259,21 +265,32 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
 
 
+    // PASIVO (siempre, lo conduzca quien lo conduzca): metabolismo/evolución/medio/velocidad + decaimiento de trauma/estrés.
+    // Las decisiones ACTIVAS (forrajeo/amenaza) se movieron a ActiveBehaveTick, que conduce el brain (etapa 4).
     public IEnumerator Restore()
     {
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
         while (1 == 1)
         {
-            if (hungry >= 0 && !asleep && !busy)
-                RespondToHunger();
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
             CorrectMedium(interval);
             FeedWalkSpeed(interval);
-            SenseThreats();
             yield return new WaitForSeconds(interval);
         }
+    }
+
+    float _nextBehave;
+    /// <summary>Decisiones ACTIVAS de la IA animal (forrajeo + amenaza), conducidas por el brain (`AiBrain`) — la
+    /// POSESIÓN las SUPRIME (si el jugador conduce, `AnimaController` llama a `PlayerBrain`, no a este). Throttled
+    /// al mismo ritmo que antes tenía `Restore`. Etapa 4 (docs/anima-dissolving-animal.md).</summary>
+    public void ActiveBehaveTick()
+    {
+        if (death || Time.time < _nextBehave) return;
+        _nextBehave = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
+        if (hungry >= 0 && !asleep && !busy) RespondToHunger();
+        SenseThreats();
     }
 
 
