@@ -113,8 +113,7 @@ public class SealBehavior : Herbivore
     protected override bool GrazesOnLand => false;
     public override float BaseAgility    => 1.1f;   // ágil en agua, torpe en tierra
     public override float BasePerception => 1.2f;
-    public override float LandAffinity   => 0.6f;   // anfibia: se mueve en tierra, mejor en agua
-    public override float WaterAffinity  => 1.0f;
+    // Afinidad de medio → data del arquetipo "Seal" (Archetypes), aplicada por SpeciesBody (etapa 5).
 
     void Start() => Init();
 
