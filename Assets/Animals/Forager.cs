@@ -19,8 +19,11 @@ public class Forager : MonoBehaviour
     public bool eatsGrass;
     [Tooltip("Come PECES/banco (herbívoro/consumidor marino/pescador).")]
     public bool eatsFish;
-    [Tooltip("Radio de búsqueda de presa (OverlapSphere). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
-    public float huntRadius = 100f;
+    [Tooltip("Alcance de detección de presa POR PERCEPCIÓN: radio = perception × esto (deriva de stats; crece con la " +
+             "evolución de la percepción). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
+    public float huntRangePerPerception = 80f;
+    [Tooltip("Radio mínimo de búsqueda de presa (por si la percepción es muy baja).")]
+    public float minHuntRadius = 20f;
     [Tooltip("Peso de la distancia en la preferencia de presa (más cerca = preferida). Tunable.")]
     public float distanceWeight = 0.01f;
 
@@ -45,23 +48,25 @@ public class Forager : MonoBehaviour
     {
         Vector3 pos = self.transform.position;
         float myPower = Predation.EffectivePower(self);   // con manada
+        float radius = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);   // detección POR STATS
         GameObject best = null; float bestScore = float.NegativeInfinity;
-        foreach (Collider col in Physics.OverlapSphere(pos, huntRadius))
+        foreach (Collider col in Physics.OverlapSphere(pos, radius))
         {
             Anima a = col.GetComponentInParent<Anima>();
             if (a == null || a == self) continue;
             IEdible food = a.GetComponent<IEdible>();
             if (food == null || food.Consumed) continue;                                   // no comestible / ya consumida
-            if (a.SpeciesName != null && a.SpeciesName == self.SpeciesName) continue;       // no canibalismo
             ITarget t = a.GetComponent<ITarget>();
             if (t == null) continue;
             bool carcass = t.Dead;
             float defense = Predation.Defense(a);
-            if (!carcass)
+            if (!carcass)   // presa VIVA
             {
-                if (myPower < defense) continue;          // presa VIVA: solo si puedo con ella (con manada)
+                if (a.SpeciesName != null && a.SpeciesName == self.SpeciesName) continue;   // no CAZAR la propia especie
+                if (myPower < defense) continue;          // solo si puedo con ella (con manada)
                 if (!self.CanHarm(t)) continue;           // un vínculo la protege
             }
+            // Carcasa: comestible siempre (scavenging), incluso de la propia especie.
             float dist = Vector3.Distance(pos, a.transform.position);
             float ease = carcass ? 3f : myPower / Mathf.Max(0.1f, defense);                 // más fácil = preferida
             float score = ease - dist * distanceWeight;                                     // más cerca = preferida
