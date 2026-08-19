@@ -56,18 +56,6 @@ public class WolfBehavior : Carnivore
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
-    // Diet: prefiere venados; conejos como alternativa fácil.
-    public static Diet defaultDiet = new Diet(new PreyEntry[]
-    {
-        new PreyEntry(AnimalPopulations.Of("Deer"), 15f, 0f, 700f),
-        new PreyEntry(AnimalPopulations.Of("Bunny"), 8f, 0f, 700f),
-        new PreyEntry(AnimalPopulations.Of("Fox"), 5f, 20f, 600f),    // competencia entre cánidos
-        new PreyEntry(AnimalPopulations.Of("Malamute"), 4f, 30f, 600f),  // solo con bastante hambre
-        new PreyEntry(AnimalPopulations.Of("Bear"), 2f, 80f, 500f),  // solo en manada y muerto de hambre; el combate lo decide masa + PackFactor
-        new PreyEntry(PlayerTarget.population, 1f, 85f, 500f),   // humano: solo hambriento y sin vínculo (CanHarm)
-    });
-    public Diet diet = defaultDiet;
-    public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
 

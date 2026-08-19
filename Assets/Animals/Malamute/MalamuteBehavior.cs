@@ -62,13 +62,6 @@ public class MalamuteBehavior : Carnivore
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
-    // Diet: casi no caza — instinto de presa débil, alta dificultad para que se moleste.
-    public static Diet defaultDiet = new Diet(new PreyEntry[]
-    {
-        new PreyEntry(AnimalPopulations.Of("Bunny"), 4f, 40f, 300f),
-    });
-    public Diet diet = defaultDiet;
-    public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
 

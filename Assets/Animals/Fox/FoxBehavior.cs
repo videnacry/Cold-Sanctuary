@@ -59,15 +59,6 @@ public class FoxBehavior : Carnivore
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
-    // Diet: oportunista — conejos como presa principal, aves cuando están a mano.
-    public static Diet defaultDiet = new Diet(new PreyEntry[]
-    {
-        new PreyEntry(AnimalPopulations.Of("Bunny"), 12f, 0f, 400f),
-        new PreyEntry(BirdBehavior.population, 6f, 0f, 300f),
-        new PreyEntry(FishSchool.population, 5f, 10f, 250f),     // pesca/roba pescado ocasional
-    });
-    public Diet diet = defaultDiet;
-    public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
 
@@ -132,4 +123,5 @@ public class FoxBehavior : Carnivore
     void Start() => base.Init();
 
     protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.3f; t.canHitAndRun = true; }
+    protected override void ConfigureForager(Forager f) { base.ConfigureForager(f); f.eatsFish = true; }   // pesca además de cazar
 }
