@@ -118,10 +118,10 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public virtual float PackFactor => 0.5f;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
     // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
-    public virtual float BaseSensibility => 5f;
-    // Aptitudes base por especie (1.0 = media real). Ver docs/creature-stats.md.
-    public virtual float BaseAgility    => 1f;
-    public virtual float BasePerception => 1f;
+    // Bases evolutivas: DATA del componente SpeciesBody (etapa 5). Fallback a los defaults si aún no está.
+    public virtual float BaseSensibility => _speciesBody != null ? _speciesBody.baseSensibility : 5f;
+    public virtual float BaseAgility    => _speciesBody != null ? _speciesBody.baseAgility : 1f;
+    public virtual float BasePerception => _speciesBody != null ? _speciesBody.basePerception : 1f;
 
     /// <summary>Nombre del ARQUETIPO de especie (docs/soul-composition-blend.md). Si se define, `Init()` llena las
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
@@ -207,14 +207,11 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Body = Physiognomy.Of(SpeciesArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
-        agility     = BaseAgility;
-        perception  = BasePerception;
-        sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
-        // Etapa 5: la identidad de especie (arquetipo → stats base + pensamientos) vive en un componente SpeciesBody.
+        // Etapa 5: la identidad de especie (arquetipo → stats base + pensamientos + medio + bases evolutivas) es un componente.
         _speciesBody = GetComponent<SpeciesBody>();
         if (_speciesBody == null) _speciesBody = gameObject.AddComponent<SpeciesBody>();
         if (string.IsNullOrEmpty(_speciesBody.species)) _speciesBody.species = SpeciesArchetype;   // por defecto, el de la clase
-        _speciesBody.Apply(this);                      // aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
+        _speciesBody.Apply(this);                      // aptitudes + medio + fija agility/perception/sensibility base
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
