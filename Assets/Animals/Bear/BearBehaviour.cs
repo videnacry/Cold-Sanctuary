@@ -56,8 +56,6 @@ public class BearBehaviour : Carnivore
     };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
 
     // Post-natal species params
 
@@ -124,12 +122,12 @@ public class BearBehaviour : Carnivore
     // El umbral 50 de 'difficulty' está por calibrar — ver decisiones abiertas en behavior-system.md.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
     {
-        new PreyEntry(SealBehavior.population, 15f, 0f, 700f),
-        new PreyEntry(BunnyBehavior.population, 10f, 0f, 700f),
-        new PreyEntry(DeerBehavior.population, 7f, 15f, 700f),   // caza ciervos cuando puede
-        new PreyEntry(WolfBehavior.population, 3f, 50f, 500f),
-        new PreyEntry(FoxBehavior.population, 4f, 25f, 500f),    // pequeño y ágil; solo con hambre
-        new PreyEntry(MalamuteBehavior.population, 4f, 25f, 500f),  // idem
+        new PreyEntry(AnimalPopulations.Of("Seal"), 15f, 0f, 700f),
+        new PreyEntry(AnimalPopulations.Of("Bunny"), 10f, 0f, 700f),
+        new PreyEntry(AnimalPopulations.Of("Deer"), 7f, 15f, 700f),   // caza ciervos cuando puede
+        new PreyEntry(AnimalPopulations.Of("Wolf"), 3f, 50f, 500f),
+        new PreyEntry(AnimalPopulations.Of("Fox"), 4f, 25f, 500f),    // pequeño y ágil; solo con hambre
+        new PreyEntry(AnimalPopulations.Of("Malamute"), 4f, 25f, 500f),  // idem
         new PreyEntry(FishSchool.population, 8f, 0f, 600f),      // el oso polar pesca en la orilla
         new PreyEntry(PlayerTarget.population, 6f, 10f, 500f),   // oso polar: depreda humanos activamente; solo lo frena el vínculo (CanHarm)
     });

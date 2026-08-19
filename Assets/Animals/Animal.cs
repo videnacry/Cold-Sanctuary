@@ -34,7 +34,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     // Population
     public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
-    public abstract HashSet<GameObject> Population { get; set; }
+    // Población viva de la especie: registro central por nombre (etapa 5), ya no un estático por clase.
+    public HashSet<GameObject> Population => AnimalPopulations.Of(SpeciesName);
 
 
     #region Physiognomy

@@ -61,13 +61,11 @@ public class MalamuteBehavior : Carnivore
     };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
 
     // Diet: casi no caza — instinto de presa débil, alta dificultad para que se moleste.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
     {
-        new PreyEntry(BunnyBehavior.population, 4f, 40f, 300f),
+        new PreyEntry(AnimalPopulations.Of("Bunny"), 4f, 40f, 300f),
     });
     public Diet diet = defaultDiet;
     public override Diet Diet { get => diet; set => diet = value; }
