@@ -118,21 +118,7 @@ public class BearBehaviour : Carnivore
 
     // ThreatResponse: solitario pero pesado y agresivo → lucha si tiene ventaja de masa.
 
-    // Diet: prefiere focas; conejos como alternativa; lobos solo con mucha hambre.
     // El umbral 50 de 'difficulty' está por calibrar — ver decisiones abiertas en behavior-system.md.
-    public static Diet defaultDiet = new Diet(new PreyEntry[]
-    {
-        new PreyEntry(AnimalPopulations.Of("Seal"), 15f, 0f, 700f),
-        new PreyEntry(AnimalPopulations.Of("Bunny"), 10f, 0f, 700f),
-        new PreyEntry(AnimalPopulations.Of("Deer"), 7f, 15f, 700f),   // caza ciervos cuando puede
-        new PreyEntry(AnimalPopulations.Of("Wolf"), 3f, 50f, 500f),
-        new PreyEntry(AnimalPopulations.Of("Fox"), 4f, 25f, 500f),    // pequeño y ágil; solo con hambre
-        new PreyEntry(AnimalPopulations.Of("Malamute"), 4f, 25f, 500f),  // idem
-        new PreyEntry(FishSchool.population, 8f, 0f, 600f),      // el oso polar pesca en la orilla
-        new PreyEntry(PlayerTarget.population, 6f, 10f, 500f),   // oso polar: depreda humanos activamente; solo lo frena el vínculo (CanHarm)
-    });
-    public Diet diet = defaultDiet;
-    public override Diet Diet { get => diet; set => diet = value; }
 
     void Start()
     {
@@ -140,4 +126,5 @@ public class BearBehaviour : Carnivore
     }
 
     protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.6f; t.canHitAndRun = false; }
+    protected override void ConfigureForager(Forager f) { base.ConfigureForager(f); f.eatsFish = true; }   // pesca además de cazar
 }
