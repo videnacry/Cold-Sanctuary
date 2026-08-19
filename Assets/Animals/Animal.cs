@@ -17,17 +17,20 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     #endregion
 
 
-    // Stages
+    // Stages. Los PREPS de las 3 etapas eran idénticos en todas las especies → default concreto (etapa 5). Los EVENTS
+    // varían por especie (territoriales llevan HomeBound) → siguen como data por especie por ahora.
+    static readonly byte[] _stagePreps = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
+    public byte[] ChildPreps => _stagePreps;
+    public byte[] TeenPreps  => _stagePreps;
+    public byte[] AdultPreps => _stagePreps;
+
     public abstract Childhood ChildStage { get; set; }
-    public abstract byte[] ChildPreps { get; set; }
     public abstract byte[] ChildEvents { get; set; }
 
     public abstract Adolescence TeenStage { get; set; }
-    public abstract byte[] TeenPreps { get; set; }
     public abstract byte[] TeenEvents { get; set; }
 
     public abstract Adulthood AdultStage { get; set; }
-    public abstract byte[] AdultPreps { get; set; }
     public abstract byte[] AdultEvents { get; set; }
 
 

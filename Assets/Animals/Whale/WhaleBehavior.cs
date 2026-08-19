@@ -31,8 +31,6 @@ public class WhaleBehavior : Herbivore
     public Childhood childhood = new Childhood(730, 90, 99);   // ~2 años, lactancia extendida
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
-    public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
     public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
     public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
@@ -40,8 +38,6 @@ public class WhaleBehavior : Herbivore
     public Adolescence adolescence = new Adolescence(2555, 60, 90);   // ~7 años hasta madurez (~9 años totales)
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
-    public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
     public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest };
     public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
@@ -49,8 +45,6 @@ public class WhaleBehavior : Herbivore
     public Adulthood adulthood = new Adulthood(14600, 0, 20);   // ~40 años, longevidad real de beluga
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
-    public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
     public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
