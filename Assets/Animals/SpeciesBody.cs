@@ -16,6 +16,10 @@ public class SpeciesBody : MonoBehaviour
     [Tooltip("Nombre de especie/arquetipo (Bear, Wolf, Human…): stats base físicas/mentales + relaciones/karma.")]
     public string species;
 
+    /// <summary>Config escalar de la especie (PackFactor, bond, reservas, IEdible, umbrales post-natales…). La fija
+    /// <see cref="Apply"/> desde <see cref="SpeciesProfile.Of"/>; la lee `Animal` en sus virtuals.</summary>
+    public SpeciesProfile profile = SpeciesProfile.Default;
+
     [Header("Bases evolutivas (agility/perception evolucionan hacia aquí; sensibility = base × perception)")]
     public float baseAgility = 1f;
     public float basePerception = 1f;
@@ -42,6 +46,8 @@ public class SpeciesBody : MonoBehaviour
         a.creativity  = m.aptitudes.creativity; a.sociability = m.aptitudes.sociability;  a.discipline = m.aptitudes.discipline;
 
         a.landAffinity = b.landAffinity; a.waterAffinity = b.waterAffinity; a.airAffinity = b.airAffinity;   // medio (data del arquetipo)
+
+        profile = SpeciesProfile.Of(species);       // config escalar por especie (la lee Animal)
 
         if (_baseStats == null) BuildBaseStats();   // bases evolutivas por especie
         if (species != null && _baseStats.TryGetValue(species, out (float agi, float per) bs)) { baseAgility = bs.agi; basePerception = bs.per; }

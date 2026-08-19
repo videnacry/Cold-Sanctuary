@@ -110,11 +110,6 @@ public class BunnyBehavior : Herbivore
 
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.85f; // presa extrema; estrés basal muy alto
-    public override float VocalizationThreshold => 6f;    // lloran poco para no atraer depredadores
-    public override float NestSecurityLevel     => 0.3f;
-    public override float MaxFatReserves        => 5f;
-    public override float FatAccumulationRate   => 0.2f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -171,10 +166,6 @@ public class BunnyBehavior : Herbivore
     };
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
-    public override float PackFactor => 0f;
-    public override float HarmVsBond => 0.2f;
-    public override float BondGrowthRate => 1.5f;
-    public override float Toughness => 0.1f;
 
     // Start is called before the first frame update
     void Start()

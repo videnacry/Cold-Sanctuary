@@ -80,11 +80,6 @@ public class FoxBehavior : Carnivore
     public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.5f;   // mesodepredador, presa de lobos y osos
-    public override float VocalizationThreshold => 4f;
-    public override float NestSecurityLevel     => 0.6f;
-    public override float MaxFatReserves        => 12f;    // engorda fuerte antes del invierno
-    public override float FatAccumulationRate   => 0.8f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -143,11 +138,6 @@ public class FoxBehavior : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Evita conflicto; huye de amenazas mayores (lobos, osos).
-    public override float PackFactor => 0.2f;
-    public override float HarmVsBond => 0.6f;
-    public override float BondGrowthRate => 0.8f;
-    public override float BiteSize => 2.5f;
-    public override float Toughness => 0.4f;
 
     void Start() => base.Init();
 
