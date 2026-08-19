@@ -50,8 +50,9 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
 
 
-    public abstract Vector3 HomeOrigin { get; set; }
-    public abstract float HomeRadius { get; set; }
+    // HomeOrigin = estado por-instancia (se fija en Init/FamilyGenerator). HomeRadius = data de especie (SpeciesBody). Etapa 5.
+    public Vector3 HomeOrigin { get; set; }
+    public float HomeRadius => _speciesBody != null ? _speciesBody.homeRadius : 100f;
 
 
 
@@ -183,7 +184,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     [HideInInspector] public Locomotion Loco;  // mover NavMesh + gait (etapa 2); auto-alta en Init
     [HideInInspector] public Forager Forage;   // política "qué/dónde comer" (etapa 3); auto-alta + config en Init
 
-    public abstract AnimationsName animationsName { get; }
+    // Derivado del nombre de especie (IdleWolf/WalkWolf/RunWolf…): ya no un override por clase (etapa 5).
+    public AnimationsName animationsName => new AnimationsName(SpeciesArchetype);
     public GameObject bird;
     public GameObject target;
 

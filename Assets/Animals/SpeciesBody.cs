@@ -24,6 +24,15 @@ public class SpeciesBody : MonoBehaviour
     public float baseAgility = 1f;
     public float basePerception = 1f;
     public float baseSensibility = 5f;
+    [Tooltip("Radio de territorio/hogar de la especie (data; antes override HomeRadius por clase).")]
+    public float homeRadius = 100f;
+
+    static Dictionary<string, float> _homeRadii;
+    static void BuildHomeRadii() => _homeRadii = new Dictionary<string, float>
+    {
+        { "Whale", 400f }, { "Bear", 300f }, { "Deer", 250f }, { "Wolf", 200f },
+        { "Fox", 150f }, { "Seal", 150f }, { "Malamute", 100f }, { "Bunny", 20f },
+    };
 
     // Bases evolutivas por especie (data; antes eran overrides BaseAgility/BasePerception por clase).
     static Dictionary<string, (float agi, float per)> _baseStats;
@@ -48,6 +57,8 @@ public class SpeciesBody : MonoBehaviour
         a.landAffinity = b.landAffinity; a.waterAffinity = b.waterAffinity; a.airAffinity = b.airAffinity;   // medio (data del arquetipo)
 
         profile = SpeciesProfile.Of(species);       // config escalar por especie (la lee Animal)
+        if (_homeRadii == null) BuildHomeRadii();
+        if (species != null && _homeRadii.TryGetValue(species, out float hr)) homeRadius = hr;   // radio de territorio
 
         if (_baseStats == null) BuildBaseStats();   // bases evolutivas por especie
         if (species != null && _baseStats.TryGetValue(species, out (float agi, float per) bs)) { baseAgility = bs.agi; basePerception = bs.per; }

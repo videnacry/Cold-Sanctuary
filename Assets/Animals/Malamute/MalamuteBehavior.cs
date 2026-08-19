@@ -27,11 +27,7 @@ public class MalamuteBehavior : Carnivore
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
-    public Vector3 homeOrigin;
-    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
 
-    public float homeRadius = 100;   // se queda cerca del santuario, no es territorial como el lobo
-    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
 
     // Stages (días de juego) — madurez a ~1 año; longevidad de perro cuidado (~12-14 años).
     public Childhood childhood = new Childhood(60, 98, 99);   // destete completo ~8 semanas
@@ -70,7 +66,6 @@ public class MalamuteBehavior : Carnivore
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public override AnimationsName animationsName { get; } = new AnimationsName("Malamute");
 
     // Diet: casi no caza — instinto de presa débil, alta dificultad para que se moleste.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
