@@ -21,6 +21,10 @@ public class ThreatResponder : MonoBehaviour
     public float fightPowerMargin = 1.5f;
     [Tooltip("Agresividad mínima para atacar cuando se es claramente más fuerte.")]
     public float aggressionGate = 0.5f;
+    [Tooltip("Agresividad de ESTE ser (config por especie): por encima de aggressionGate, ataca si es más fuerte.")]
+    public float aggressiveness = 0f;
+    [Tooltip("¿Sabe pegar-y-correr? (config por especie).")]
+    public bool canHitAndRun = false;
     [Tooltip("Cuánto suma al miedo un aura mágica DESTRUCTIVA del origen (por unidad de aura). Tunable.")]
     public float auraFear = 1f;
     [Tooltip("Convierte el 'miedo' (fracción de mi poder) en un ALCANCE en metros para la alerta de proximidad: " +
@@ -44,10 +48,9 @@ public class ThreatResponder : MonoBehaviour
         return threat;
     }
 
-    /// <summary>Decide la reacción por STATS + autoabandono + bonds. `self` = quien reacciona; el resto es contexto
-    /// que aporta el llamante (crías/agresividad/pegar-y-correr son aún específicos de la especie).</summary>
-    public Reaction Decide(Anima self, GameObject threat, float autoabandono,
-                           bool defendingCubs, float cubBond, float aggressiveness, bool canHitAndRun)
+    /// <summary>Decide la reacción por STATS + autoabandono + bonds. `self` = quien reacciona; el contexto de CRÍAS
+    /// lo aporta el llamante; la agresividad/pegar-y-correr son campos de este componente (config de especie).</summary>
+    public Reaction Decide(Anima self, GameObject threat, float autoabandono, bool defendingCubs, float cubBond)
     {
         if (self == null || threat == null) return Reaction.Flee;
 

@@ -171,8 +171,6 @@ public class BunnyBehavior : Herbivore
     };
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
-    public override float Aggressiveness => 0f;
-    public override bool CanHitAndRun => true;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.2f;
     public override float BondGrowthRate => 1.5f;
@@ -194,4 +192,5 @@ public class BunnyBehavior : Herbivore
 
    
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = true; }
 }
