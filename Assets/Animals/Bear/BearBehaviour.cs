@@ -133,8 +133,6 @@ public class BearBehaviour : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // ThreatResponse: solitario pero pesado y agresivo → lucha si tiene ventaja de masa.
-    public override float Aggressiveness => 0.6f;
-    public override bool CanHitAndRun => false;
     public override float PackFactor => 0.3f;
     public override float HarmVsBond => 0.7f;
     public override float BondGrowthRate => 0.4f;
@@ -164,4 +162,5 @@ public class BearBehaviour : Carnivore
         base.Init();
     }
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.6f; t.canHitAndRun = false; }
 }

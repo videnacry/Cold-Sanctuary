@@ -111,9 +111,10 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// <summary>Cada especie configura su <see cref="Forager"/> (modo presa/pasto/pez + dieta). Base: pasto.</summary>
     protected virtual void ConfigureForager(Forager f) { }
 
-    public virtual float Aggressiveness => 0f;
-    // DefendsCubs (flag) retirado (etapa 1): la defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
-    public virtual bool CanHitAndRun => false;
+    // Aggressiveness/CanHitAndRun retirados: son config del componente ThreatResponder (etapa 5). Cada especie los fija
+    // en ConfigureThreat. La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
+    /// <summary>Cada especie configura su <see cref="ThreatResponder"/> (agresividad, pegar-y-correr). Base: pacífico.</summary>
+    protected virtual void ConfigureThreat(ThreatResponder t) { }
     public virtual float PackFactor => 0.5f;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
     // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
@@ -189,6 +190,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         nav = GetComponent<NavMeshAgent>();
         _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
         if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
+        ConfigureThreat(_threat);                                        // cada especie fija agresividad/pegar-y-correr
         Loco = GetComponent<Locomotion>();                               // etapa 2: mover NavMesh + gait como componente
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
@@ -403,7 +405,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
         float cubBond = defendingCubs ? CubBondFactor() : 0f;
-        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond, Aggressiveness, CanHitAndRun);
+        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond);
     }
 
     // Vínculo medio con las crías defendidas (0..1); si aún no hay bond, afinidad de cría por defecto (0.4).

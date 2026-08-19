@@ -143,8 +143,6 @@ public class FoxBehavior : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Evita conflicto; huye de amenazas mayores (lobos, osos).
-    public override float Aggressiveness => 0.3f;
-    public override bool CanHitAndRun => true;
     public override float PackFactor => 0.2f;
     public override float HarmVsBond => 0.6f;
     public override float BondGrowthRate => 0.8f;
@@ -155,4 +153,5 @@ public class FoxBehavior : Carnivore
 
     void Start() => base.Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.3f; t.canHitAndRun = true; }
 }

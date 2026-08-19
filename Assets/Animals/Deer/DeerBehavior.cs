@@ -124,8 +124,6 @@ public class DeerBehavior : Herbivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Herbívoro: huye ante amenazas, no lucha.
-    public override float Aggressiveness => 0f;
-    public override bool CanHitAndRun => false;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.1f;
     public override float BondGrowthRate => 1.8f;
@@ -135,4 +133,5 @@ public class DeerBehavior : Herbivore
 
     void Start() => Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = false; }
 }

@@ -151,8 +151,6 @@ public class WolfBehavior : Carnivore
     };
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
-    public override float Aggressiveness => 0.7f;
-    public override bool CanHitAndRun => false;
     public override float PackFactor => 0.8f;
     public override float HarmVsBond => 0.8f;
     public override float BondGrowthRate => 0.5f;
@@ -163,4 +161,5 @@ public class WolfBehavior : Carnivore
 
     void Start() => base.Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.7f; t.canHitAndRun = false; }
 }

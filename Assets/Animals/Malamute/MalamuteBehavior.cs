@@ -144,8 +144,6 @@ public class MalamuteBehavior : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Domesticado: muy baja agresividad, casi no lucha; se une fácil por vínculo.
-    public override float Aggressiveness => 0.15f;
-    public override bool CanHitAndRun => false;
     public override float PackFactor => 0.9f;   // fuerte instinto de equipo de trineo
     public override float HarmVsBond => 0.3f;
     public override float BondGrowthRate => 2.2f;  // se vincula muy rápido, la raza más sociable del santuario
@@ -156,4 +154,5 @@ public class MalamuteBehavior : Carnivore
 
     void Start() => base.Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.15f; t.canHitAndRun = false; }
 }

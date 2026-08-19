@@ -119,8 +119,6 @@ public class WhaleBehavior : Herbivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
-    public override float Aggressiveness => 0f;
-    public override bool CanHitAndRun => false;
     public override float PackFactor => 0f;
     public override float HarmVsBond => 0.1f;
     public override float BondGrowthRate => 2.5f;   // el vínculo más rápido del santuario
@@ -135,4 +133,5 @@ public class WhaleBehavior : Herbivore
 
     void Start() => Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = false; }
 }
