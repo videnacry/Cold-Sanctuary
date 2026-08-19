@@ -825,7 +825,7 @@ ejercitar la lógica movida. No basta con "spawnea y no peta".
   `Locomotion`, `Forager`, `SpeciesBody`, `AiBrain` y `AnimaController` (auto-añadidos). El `[Alma]`/inspector
   muestra stats de su especie (Wolf: str/mass del arquetipo; `SpeciesBody.baseAgility` 1.2, `basePerception` 1.4).
 - [ ] **Forrajeo (Forager)**: un herbívoro hambriento (`hungry >= 0`) camina al `GrassPatch`/`FishSchool` más
-- [ ] **Presa por PROXIMIDAD + STATS** (Diet retirada, PR #119): un carnívoro hambriento caza al `Anima` comestible más fácil/cercano dentro de `huntRadius` que pueda por stats (`Predation`); NO caza su especie ni a quien tiene vínculo; el OSO/LOBO cazan al JUGADOR si no hay bond. Tunables: `Forager.huntRadius`/`distanceWeight`. (Si no caza, subir `huntRadius`.)
+- [ ] **Presa por PROXIMIDAD + STATS** (Diet retirada, PR #119): un carnívoro hambriento caza al `Anima` comestible más fácil/cercano dentro de `huntRadius` que pueda por stats (`Predation`); NO caza su especie ni a quien tiene vínculo; el OSO/LOBO cazan al JUGADOR si no hay bond. Radio de detección = `perception × huntRangePerPerception` (deriva de STATS, crece con la evolución). Come también CARCASAS cercanas (incl. de su especie: scavenging). Tunables: `Forager.{huntRangePerPerception, minHuntRadius, distanceWeight}`. (Si no caza, subir `huntRangePerPerception`.)
   cercano y come (baja `hungry`); un carnívoro elige presa por `Diet`, la persigue y la muerde. Con **omnívoro**
   (marcar `Forager.eatsPrey`+`eatsGrass` en el inspector) elige la fuente **más cercana**.
 - [ ] **Amenaza (ThreatResponder)**: una presa detecta al depredador cercano (`Assess > ThreatThreshold`) y **huye**;
