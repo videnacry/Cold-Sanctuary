@@ -6,9 +6,6 @@ public class WolfBehavior : Carnivore
 {
     protected override string SpeciesArchetype => "Wolf";
 
-    public static Family defaultGroup = new Family(6, 0.3f, Family.biparental);
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 2.984m -> objetivo realista de altura de hombro adulto ~0.8m.

@@ -23,6 +23,25 @@ public class Family
         this.parentalCare = pParentalCare;
     }
 
+    // Estructura familiar por especie (etapa 5): antes un `defaultGroup` estático por clase, ahora DATA. Devuelve una
+    // COPIA (cada ser arranca con la suya; RenderFamily la reemplaza). Desconocida → familia maternal pequeña.
+    static readonly Family _default = new Family(4, 0.3f, maternal);
+    static Dictionary<string, Family> _catalog;
+    static void BuildCatalog() => _catalog = new Dictionary<string, Family>
+    {
+        { "Fox",  new Family(7, 0.4f,  biparental) }, { "Bear",     new Family(3, 0.4f,  maternal) },
+        { "Wolf", new Family(6, 0.3f,  biparental) }, { "Malamute", new Family(6, 0.3f,  maternal) },
+        { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(10, 0.25f, maternal) },
+        { "Seal", new Family(8, 0.3f,  maternal)   }, { "Deer",     new Family(6, 0.3f,  maternal) },
+    };
+
+    public static Family Of(string species)
+    {
+        if (_catalog == null) BuildCatalog();
+        Family f = species != null && _catalog.TryGetValue(species, out Family v) ? v : _default;
+        return new Family(f.familySize, f.parentsRate, f.parentalCare);
+    }
+
     public static GameObject[] RenderGroup(GameObject animal, int quantity, Vector3 position, float height, float radius = 0)
     {
         if (radius == 0) radius = quantity * 2;

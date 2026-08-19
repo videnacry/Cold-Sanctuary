@@ -12,7 +12,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// <summary>
     /// Properties wich determine how is going te be the created family of an instance
     /// </summary>
-    public abstract Family Group { get; set; }
+    // Estructura familiar: DATA de especie (Family.Of), fijada en Init; settable (RenderFamily la reemplaza). Etapa 5.
+    public Family Group { get; set; }
     #endregion
 
 
@@ -193,6 +194,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     public virtual void Init()
     {
+        if (Group == null) Group = Family.Of(SpeciesArchetype);   // estructura familiar de la especie (data); RenderFamily la reemplaza
         Population.Add(gameObject);
         wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
