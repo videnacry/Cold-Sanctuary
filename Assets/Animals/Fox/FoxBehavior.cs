@@ -58,13 +58,11 @@ public class FoxBehavior : Carnivore
     };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
 
     // Diet: oportunista — conejos como presa principal, aves cuando están a mano.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
     {
-        new PreyEntry(BunnyBehavior.population, 12f, 0f, 400f),
+        new PreyEntry(AnimalPopulations.Of("Bunny"), 12f, 0f, 400f),
         new PreyEntry(BirdBehavior.population, 6f, 0f, 300f),
         new PreyEntry(FishSchool.population, 5f, 10f, 250f),     // pesca/roba pescado ocasional
     });

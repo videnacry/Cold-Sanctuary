@@ -96,8 +96,6 @@ public class BunnyBehavior : Herbivore
 
 
 
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
 
 
 

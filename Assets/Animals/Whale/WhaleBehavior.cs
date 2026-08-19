@@ -55,8 +55,6 @@ public class WhaleBehavior : Herbivore
     public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed };
     public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
 
     // Post-natal species params
 
