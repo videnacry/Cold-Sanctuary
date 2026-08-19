@@ -48,8 +48,6 @@ public class BunnyBehavior : Herbivore
     public Childhood childhood = new Childhood(50, 50, 80);
     public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
-    public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
 
     public byte[] childEvents = { 
         LifeStage.Events.LoopGrow,
@@ -64,8 +62,6 @@ public class BunnyBehavior : Herbivore
     public Adolescence adolescence = new Adolescence(680, 20, 40); 
     public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
-    public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
 
     public byte[] teenEvents = {
         LifeStage.Events.LoopGrow,
@@ -79,8 +75,6 @@ public class BunnyBehavior : Herbivore
     public Adulthood adulthood = new Adulthood(2190, 0, 20);
     public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
-    public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
 
     public byte[] adultEvents = {
         LifeStage.Events.LoopGrow,
