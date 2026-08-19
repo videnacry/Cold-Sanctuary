@@ -9,9 +9,6 @@ public class FoxBehavior : Carnivore
 {
     protected override string SpeciesArchetype => "Fox";
 
-    public static Family defaultGroup = new Family(7, 0.4f, Family.biparental);
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 2.984m -> objetivo realista de altura de hombro adulto ~0.4m (zorro ártico).

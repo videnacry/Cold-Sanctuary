@@ -12,9 +12,6 @@ public class MalamuteBehavior : Carnivore
 {
     protected override string SpeciesArchetype => "Malamute";
 
-    public static Family defaultGroup = new Family(6, 0.3f, Family.maternal);  // el macho no cría, como en el perro doméstico
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 3.388m -> objetivo realista de altura de hombro adulto ~0.63m (malamute, mayor que el husky).

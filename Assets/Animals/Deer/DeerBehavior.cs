@@ -6,9 +6,6 @@ public class DeerBehavior : Herbivore
 {
     protected override string SpeciesArchetype => "Deer";
 
-    public static Family defaultGroup = new Family(6, 0.3f, Family.maternal);
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 5.489m (usa Stag.fbx) -> objetivo realista de altura de hombro adulto ~1.2m.

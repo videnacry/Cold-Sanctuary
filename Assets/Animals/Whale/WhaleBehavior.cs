@@ -14,9 +14,6 @@ public class WhaleBehavior : Herbivore
 {
     protected override string SpeciesArchetype => "Whale";
 
-    public static Family defaultGroup = new Family(10, 0.25f, Family.maternal);
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
 
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // longitud cruda 10.372m -> objetivo realista de longitud corporal adulta ~12m.
