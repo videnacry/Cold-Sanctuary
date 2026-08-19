@@ -42,11 +42,7 @@ public class BunnyBehavior : Herbivore
     #endregion
 
 
-    public Vector3 homeOrigin;
-    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
 
-    public float homeRadius = 20;
-    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
 
 
 
@@ -105,7 +101,6 @@ public class BunnyBehavior : Herbivore
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public override AnimationsName animationsName { get; } = new AnimationsName("Bunny");
 
 
 

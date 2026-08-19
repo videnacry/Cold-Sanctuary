@@ -21,11 +21,7 @@ public class WolfBehavior : Carnivore
     );
     public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
-    public Vector3 homeOrigin;
-    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
 
-    public float homeRadius = 200;
-    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
 
     // Stages
     public Childhood childhood = new Childhood(77, 98, 99);
@@ -64,7 +60,6 @@ public class WolfBehavior : Carnivore
 
     public static HashSet<GameObject> population = new HashSet<GameObject>();
     public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public override AnimationsName animationsName { get; } = new AnimationsName("Wolf");
 
     // Diet: prefiere venados; conejos como alternativa fácil.
     public static Diet defaultDiet = new Diet(new PreyEntry[]
