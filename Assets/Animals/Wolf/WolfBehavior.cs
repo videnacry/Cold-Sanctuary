@@ -80,11 +80,6 @@ public class WolfBehavior : Carnivore
     public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.3f;
-    public override float VocalizationThreshold => 3f;   // cachorros lloran fácil
-    public override float NestSecurityLevel     => 0.7f;
-    public override float MaxFatReserves        => 15f;
-    public override float FatAccumulationRate   => 0.6f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -151,11 +146,6 @@ public class WolfBehavior : Carnivore
     };
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
-    public override float PackFactor => 0.8f;
-    public override float HarmVsBond => 0.8f;
-    public override float BondGrowthRate => 0.5f;
-    public override float BiteSize => 5f;
-    public override float Toughness => 0.8f;
 
     void Start() => base.Init();
 

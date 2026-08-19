@@ -68,12 +68,6 @@ public class BearBehaviour : Carnivore
     public override AnimationsName animationsName { get; } = new AnimationsName("Bear");
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.1f;
-    public override float ThreatThreshold       => 0.8f;  // letargo profundo; muy difícil de despertar
-    public override float VocalizationThreshold => 5f;
-    public override float NestSecurityLevel     => 0.9f;
-    public override float MaxFatReserves        => 100f;  // acumula mucho antes del letargo
-    public override float FatAccumulationRate   => 2f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -133,11 +127,6 @@ public class BearBehaviour : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // ThreatResponse: solitario pero pesado y agresivo → lucha si tiene ventaja de masa.
-    public override float PackFactor => 0.3f;
-    public override float HarmVsBond => 0.7f;
-    public override float BondGrowthRate => 0.4f;
-    public override float BiteSize => 15f;
-    public override float Toughness => 2f;
 
     // Diet: prefiere focas; conejos como alternativa; lobos solo con mucha hambre.
     // El umbral 50 de 'difficulty' está por calibrar — ver decisiones abiertas en behavior-system.md.

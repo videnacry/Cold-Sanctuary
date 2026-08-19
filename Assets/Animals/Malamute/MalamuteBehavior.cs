@@ -81,11 +81,6 @@ public class MalamuteBehavior : Carnivore
     public override Diet Diet { get => diet; set => diet = value; }
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.2f;   // acostumbrado al contacto humano
-    public override float VocalizationThreshold => 2f;     // raza muy vocal, "habla"/aúlla con facilidad
-    public override float NestSecurityLevel     => 0.8f;   // nido/kennel mantenido y protegido
-    public override float MaxFatReserves        => 10f;    // atleta magro, no depende de grasa acumulada
-    public override float FatAccumulationRate   => 0.4f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -144,11 +139,6 @@ public class MalamuteBehavior : Carnivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Domesticado: muy baja agresividad, casi no lucha; se une fácil por vínculo.
-    public override float PackFactor => 0.9f;   // fuerte instinto de equipo de trineo
-    public override float HarmVsBond => 0.3f;
-    public override float BondGrowthRate => 2.2f;  // se vincula muy rápido, la raza más sociable del santuario
-    public override float BiteSize => 3f;
-    public override float Toughness => 0.6f;
 
     void Start() => base.Init();
 

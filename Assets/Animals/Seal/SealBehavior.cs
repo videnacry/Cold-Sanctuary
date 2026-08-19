@@ -57,11 +57,6 @@ public class SealBehavior : Herbivore
     public override AnimationsName animationsName { get; } = new AnimationsName("Seal");
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.4f;
-    public override float VocalizationThreshold => 5f;
-    public override float NestSecurityLevel     => 0.6f;
-    public override float MaxFatReserves        => 80f;  // acumula mucho para lactar sin cazar
-    public override float FatAccumulationRate   => 1.5f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -101,10 +96,6 @@ public class SealBehavior : Herbivore
     };
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
-    public override float HarmVsBond => 0.1f;
-    public override float BondGrowthRate => 2.0f;
-    public override OrganicMaterial Material => OrganicMaterial.Fish;
-    public override float Toughness => 0.5f;
 
     // Pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;

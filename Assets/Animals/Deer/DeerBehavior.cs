@@ -59,11 +59,6 @@ public class DeerBehavior : Herbivore
     public override AnimationsName animationsName { get; } = new AnimationsName("Deer");
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.6f;
-    public override float VocalizationThreshold => 9f;  // muy alto; cría usa inmovilidad, no llanto
-    public override float NestSecurityLevel     => 0.1f; // campo abierto; muy expuesto
-    public override float MaxFatReserves        => 10f;
-    public override float FatAccumulationRate   => 0.4f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -124,10 +119,6 @@ public class DeerBehavior : Herbivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Herbívoro: huye ante amenazas, no lucha.
-    public override float PackFactor => 0f;
-    public override float HarmVsBond => 0.1f;
-    public override float BondGrowthRate => 1.8f;
-    public override float Toughness => 0.4f;
 
     void Start() => Init();
 

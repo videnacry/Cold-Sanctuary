@@ -63,11 +63,18 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public bool Consumed => lifeStage == LifeStage.soul;
 
     // IEdible — los animales son carne comestible una vez muertos
-    public virtual OrganicMaterial Material => OrganicMaterial.Meat;
+    public virtual OrganicMaterial Material => Prof.material;
     public virtual float Nutrition => 1f;
-    public virtual float Toughness => 0.5f;
+    public virtual float Toughness => Prof.toughness;
     public float Grams => rig != null ? rig.mass : 0f;
-    public virtual float BiteSize => 2f;
+    public virtual float BiteSize => Prof.biteSize;
+    // Config escalar de la especie (data del SpeciesProfile vía SpeciesBody). Nunca null (fallback Default). Etapa 5.
+    protected SpeciesProfile Prof => _speciesBody != null ? _speciesBody.profile : SpeciesProfile.Default;
+    // Overrides de Anima cableados al perfil de especie (antes eran overrides por clase).
+    public override float HarmVsBond          => Prof.harmVsBond;
+    public override float BondGrowthRate      => Prof.bondGrowthRate;
+    public override float MaxFatReserves      => Prof.maxFatReserves;
+    public override float FatAccumulationRate => Prof.fatAccumulationRate;
 
     public float Consume(float biteSize)
     {
@@ -115,7 +122,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     // en ConfigureThreat. La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
     /// <summary>Cada especie configura su <see cref="ThreatResponder"/> (agresividad, pegar-y-correr). Base: pacífico.</summary>
     protected virtual void ConfigureThreat(ThreatResponder t) { }
-    public virtual float PackFactor => 0.5f;
+    public virtual float PackFactor => Prof.packFactor;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
     // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
     // Bases evolutivas: DATA del componente SpeciesBody (etapa 5). Fallback a los defaults si aún no está.
@@ -134,10 +141,10 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     SpeciesBody _speciesBody;   // identidad de especie (stats base + pensamientos) como componente; auto-alta en Init
 
     // Post-natal species parameters (override per species)
-    public virtual float BaseStressLevel       => 0.2f;
-    public virtual float ThreatThreshold       => 0.5f;   // NUEVA escala (Assess): fracción de MI poder efectivo a partir de la cual me alarmo (recalibrable en Unity)
-    public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
-    public virtual float NestSecurityLevel     => 0.5f;
+    public virtual float BaseStressLevel       => Prof.baseStressLevel;
+    public virtual float ThreatThreshold       => Prof.threatThreshold;   // escala Assess: fracción de MI poder a partir de la cual me alarmo (recalibrable)
+    public virtual float VocalizationThreshold => Prof.vocalizationThreshold;   // hungry > N para que la cría llore
+    public virtual float NestSecurityLevel     => Prof.nestSecurityLevel;
     // Post-natal stage config (override per species; null = sin sistema post-natal)
     public virtual PostNatalStage[] PostNatalStages => null;
 

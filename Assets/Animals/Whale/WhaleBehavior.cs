@@ -67,11 +67,6 @@ public class WhaleBehavior : Herbivore
     public override AnimationsName animationsName { get; } = new AnimationsName("Whale");
 
     // Post-natal species params
-    public override float BaseStressLevel       => 0.35f;
-    public override float VocalizationThreshold => 1.5f;   // la especie más vocal del santuario
-    public override float NestSecurityLevel     => 0.5f;   // mar abierto, sin nido físico; protección de manada
-    public override float MaxFatReserves        => 120f;   // grasa/blubber, la mayor reserva del roster
-    public override float FatAccumulationRate   => 1.8f;
 
     static readonly PostNatalStage[] _postNatalStages =
     {
@@ -119,11 +114,6 @@ public class WhaleBehavior : Herbivore
     public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
-    public override float PackFactor => 0f;
-    public override float HarmVsBond => 0.1f;
-    public override float BondGrowthRate => 2.5f;   // el vínculo más rápido del santuario
-    public override OrganicMaterial Material => OrganicMaterial.Fish;
-    public override float Toughness => 2.5f;   // capa de grasa gruesa, la más resistente del roster
 
     // Filtra/pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;
