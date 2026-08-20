@@ -13,13 +13,6 @@ public class FoxBehavior : Carnivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 2.984m -> objetivo realista de altura de hombro adulto ~0.4m (zorro ártico).
 
-    public ActionsPrep actsPrep = new ActionsPrep
-    (
-        new ActionPrep("IdleFox", 0, 1, -2),
-        new ActionPrep("WalkFox", 3, 3),
-        new ActionPrep("RunFox", 14, 5, 2)   // burst ~50 km/h real
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 

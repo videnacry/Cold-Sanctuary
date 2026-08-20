@@ -8,12 +8,6 @@ public class SealBehavior : Herbivore
 
 
 
-    public ActionsPrep actsPrep = new ActionsPrep(
-        new ActionPrep("IdleSeal", 0, 1, -2),
-        new ActionPrep("WalkSeal", 4, 2),
-        new ActionPrep("RunSeal", 10, 3, 2)
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 

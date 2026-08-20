@@ -11,13 +11,6 @@ public class BearBehaviour : Carnivore
     // Family creation default values
 
 
-    public ActionsPrep actsPrep = new ActionsPrep
-    (
-        new ActionPrep("IdleBear", 0, 1, -2),
-        new ActionPrep("WalkBear", 3, 2),
-        new ActionPrep("RunBear", 12, 4, 2)
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 

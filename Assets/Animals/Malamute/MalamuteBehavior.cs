@@ -16,13 +16,6 @@ public class MalamuteBehavior : Carnivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 3.388m -> objetivo realista de altura de hombro adulto ~0.63m (malamute, mayor que el husky).
 
-    public ActionsPrep actsPrep = new ActionsPrep
-    (
-        new ActionPrep("IdleMalamute", 0, 1, -2),
-        new ActionPrep("WalkMalamute", 4, 3),
-        new ActionPrep("RunMalamute", 18, 5, 2)   // fuerza y resistencia de carga, criado para el frío
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 
