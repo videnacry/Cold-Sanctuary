@@ -19,13 +19,6 @@ public class BunnyBehavior : Herbivore
     public override byte FamilySize { get; set; } = 4;
     */
 
-    public ActionsPrep actsPrep = new ActionsPrep
-    (
-        new ActionPrep("IdleBunny", 0, 1, -2),
-        new ActionPrep("RunBunny", 8, 4, 1),
-        new ActionPrep("RunBunny", 22, 10, 2)
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
     #endregion
 
 

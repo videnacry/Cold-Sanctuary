@@ -18,12 +18,6 @@ public class WhaleBehavior : Herbivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // longitud cruda 10.372m -> objetivo realista de longitud corporal adulta ~12m.
 
-    public ActionsPrep actsPrep = new ActionsPrep(
-        new ActionPrep("IdleWhale", 0, 1, -2),
-        new ActionPrep("WalkWhale", 3, 2),   // crucero, real ~3-9 km/h
-        new ActionPrep("RunWhale", 8, 3, 2)  // pico, real ~22 km/h — no es un nadador veloz
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 

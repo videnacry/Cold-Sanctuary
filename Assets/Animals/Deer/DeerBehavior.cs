@@ -10,12 +10,6 @@ public class DeerBehavior : Herbivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 5.489m (usa Stag.fbx) -> objetivo realista de altura de hombro adulto ~1.2m.
 
-    public ActionsPrep actsPrep = new ActionsPrep(
-        new ActionPrep("IdleDeer", 0, 1, -2),
-        new ActionPrep("WalkDeer", 5, 2),
-        new ActionPrep("RunDeer", 18, 4, 2)
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 

@@ -50,7 +50,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     // Físico de la especie (escala/masa/pesos de comida). DATA del catálogo (Physiognomy.Of), fijado en Init — ya no
     // un `defaultBody` por subclase (etapa 5). Settable (crecimiento/composición pueden reemplazarlo).
     public Physiognomy Body { get; set; }
-    public abstract ActionsPrep ActsPrep { get; set; }
+    // Gaits de la especie: DATA del catálogo (ActionsPrep.Of), fijados en Init; settable. Etapa 5.
+    public ActionsPrep ActsPrep { get; set; }
     #endregion
 
 
@@ -211,6 +212,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
         ConfigureForager(Forage);                                        // cada especie fija su modo (presa/pasto/pez) + dieta
+        ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
         {

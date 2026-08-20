@@ -10,13 +10,6 @@ public class WolfBehavior : Carnivore
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // altura cruda 2.984m -> objetivo realista de altura de hombro adulto ~0.8m.
 
-    public ActionsPrep actsPrep = new ActionsPrep
-    (
-        new ActionPrep("IdleWolf", 0, 1, -2),
-        new ActionPrep("WalkWolf", 3, 3),
-        new ActionPrep("RunWolf", 22, 5, 2)
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
 
 
 
