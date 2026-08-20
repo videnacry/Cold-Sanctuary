@@ -21,7 +21,6 @@ public class BunnyBehavior : Herbivore
 
     #endregion
 
-
     #region Physiognomy
     /// <summary>
     /// Field with property wich contains the base value for new instances
@@ -31,88 +30,8 @@ public class BunnyBehavior : Herbivore
     // -> objetivo realista de altura adulta ~0.25m.
     #endregion
 
-
-
-
-
-
-
-
-
     
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // Post-natal species params
-
-    static readonly PostNatalStage[] _postNatalStages =
-    {
-        // Stage 0 — Nacimiento rápido; madre se va casi enseguida
-        new PostNatalStage {
-            label = "Nacimiento", durationDays = 0.5f,
-            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            feedingMethod = FeedingMethod.Nurse,
-            entryActions = new[] { MotherAction.Clean, MotherAction.GuideTeat, MotherAction.FirstMilk },
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 0.5f } },
-        },
-        // Stage 1 — Nido solo; visitas nocturnas de 5 min
-        new PostNatalStage {
-            label = "Nido solo", durationDays = 7f,
-            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            feedingMethod = FeedingMethod.Nurse,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f } },
-        },
-        // Stage 2 — Ojos abiertos; primera exploración del nido
-        new PostNatalStage {
-            label = "Ojos abiertos", durationDays = 7f,
-            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            feedingMethod = FeedingMethod.Nurse,
-            transitions = new[] {
-                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f },
-                new TransitionCondition { kind = TransitionCondition.Kind.FirstNestExit },
-            },
-        },
-        // Stage 3 — Primeras salidas; empieza con sólidos
-        new PostNatalStage {
-            label = "Primeras salidas", durationDays = 10f,
-            nestType = NestType.Burrow, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] {
-                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 10f },
-                new TransitionCondition { kind = TransitionCondition.Kind.FirstSolidEaten },
-            },
-        },
-        // Stage 4 — Independencia rápida (~3-4 semanas total)
-        new PostNatalStage {
-            label = "Independencia", durationDays = 7f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 7f } },
-        },
-    };
-    public override PostNatalStage[] PostNatalStages => _postNatalStages;
-
 
     // Start is called before the first frame update
     void Start()
@@ -124,7 +43,6 @@ public class BunnyBehavior : Herbivore
     void Update()
     {
     }
-
 
    
 

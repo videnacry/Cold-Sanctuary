@@ -14,70 +14,8 @@ public class WhaleBehavior : Herbivore
 {
     protected override string SpeciesArchetype => "Whale";
 
-
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // longitud cruda 10.372m -> objetivo realista de longitud corporal adulta ~12m.
-
-
-
-
-    // Stages (días de juego) — el animal más longevo del santuario.
-
-
-
-
-
-
-
-
-
-
-    // Post-natal species params
-
-    static readonly PostNatalStage[] _postNatalStages =
-    {
-        // Stage 0 — Nacimiento en mar abierto; la cría nada por sí sola en minutos
-        new PostNatalStage {
-            label = "Nacimiento", durationDays = 1f,
-            nestType = NestType.OpenWater, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.Continuous,
-            feedingMethod = FeedingMethod.Nurse,
-            entryActions = new[] { MotherAction.Clean, MotherAction.Stimulate,
-                                   MotherAction.GuideTeat, MotherAction.FirstMilk },
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
-        },
-        // Stage 1 — Lactancia extendida junto a la madre (~20 meses reales)
-        new PostNatalStage {
-            label = "Lactancia extendida", durationDays = 600f,
-            nestType = NestType.OpenWater, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.Continuous,
-            feedingMethod = FeedingMethod.Nurse,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 600f } },
-        },
-        // Stage 2 — Destete gradual; aprende a pescar junto a la madre
-        new PostNatalStage {
-            label = "Destete gradual", durationDays = 365f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.FrequentVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] {
-                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 365f },
-                new TransitionCondition { kind = TransitionCondition.Kind.FirstSolidEaten },
-            },
-        },
-        // Stage 3 — Independencia gradual dentro de la manada/pod
-        new PostNatalStage {
-            label = "Independencia", durationDays = 365f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 365f } },
-        },
-    };
-    public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
 
