@@ -22,26 +22,14 @@ public class WhaleBehavior : Herbivore
 
 
     // Stages (días de juego) — el animal más longevo del santuario.
-    public Childhood childhood = new Childhood(730, 90, 99);   // ~2 años, lactancia extendida
-    public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
 
-    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
-    public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
-
-    public Adolescence adolescence = new Adolescence(2555, 60, 90);   // ~7 años hasta madurez (~9 años totales)
-    public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
 
-    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest };
-    public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
-
-    public Adulthood adulthood = new Adulthood(14600, 0, 20);   // ~40 años, longevidad real de beluga
-    public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
 
-    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed };
-    public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
+
+
 
 
     // Post-natal species params
