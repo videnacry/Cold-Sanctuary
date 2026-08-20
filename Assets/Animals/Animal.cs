@@ -24,14 +24,17 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public byte[] TeenPreps  => _stagePreps;
     public byte[] AdultPreps => _stagePreps;
 
-    public abstract Childhood ChildStage { get; set; }
-    public abstract byte[] ChildEvents { get; set; }
+    // Etapas + eventos: DATA del catálogo (StageProfile.Of), creadas/leídas en Init (etapa 5). Las etapas son
+    // auto-property (se MUTAN: sizePotential) → cada ser las suyas; los eventos, get-only del perfil.
+    StageProfile _stages = StageProfile.Of(null);
+    public Childhood ChildStage { get; set; }
+    public byte[] ChildEvents => _stages.childEvents;
 
-    public abstract Adolescence TeenStage { get; set; }
-    public abstract byte[] TeenEvents { get; set; }
+    public Adolescence TeenStage { get; set; }
+    public byte[] TeenEvents => _stages.teenEvents;
 
-    public abstract Adulthood AdultStage { get; set; }
-    public abstract byte[] AdultEvents { get; set; }
+    public Adulthood AdultStage { get; set; }
+    public byte[] AdultEvents => _stages.adultEvents;
 
 
 
@@ -222,6 +225,10 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
         Body = Physiognomy.Of(SpeciesArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
+        _stages = StageProfile.Of(SpeciesArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
+        ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);
+        TeenStage  = new Adolescence(_stages.teenDays, _stages.teenMin, _stages.teenMax);
+        AdultStage = new Adulthood(_stages.adultDays, _stages.adultMin, _stages.adultMax);
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
         // Etapa 5: la identidad de especie (arquetipo → stats base + pensamientos + medio + bases evolutivas) es un componente.

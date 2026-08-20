@@ -37,46 +37,16 @@ public class BunnyBehavior : Herbivore
 
 
 
-    // Stages
-    public Childhood childhood = new Childhood(50, 50, 80);
-    public override Childhood ChildStage { get => childhood; set => childhood = value; }
 
 
-    public byte[] childEvents = { 
-        LifeStage.Events.LoopGrow,
-        LifeStage.Events.Fatten,
-        LifeStage.Events.Wander,
-        LifeStage.Events.Rest,
-        LifeStage.Events.HomeBound 
-    };
-    public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
     
     
-    public Adolescence adolescence = new Adolescence(680, 20, 40); 
-    public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
 
 
-    public byte[] teenEvents = {
-        LifeStage.Events.LoopGrow,
-        LifeStage.Events.Fatten,
-        LifeStage.Events.Wander,
-        LifeStage.Events.Rest
-    };
-    public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
 
 
-    public Adulthood adulthood = new Adulthood(2190, 0, 20);
-    public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
 
 
-    public byte[] adultEvents = {
-        LifeStage.Events.LoopGrow,
-        LifeStage.Events.Fatten,
-        LifeStage.Events.Wander,
-        LifeStage.Events.Rest,
-        LifeStage.Events.Feed,
-    };
-    public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
 
 
 
