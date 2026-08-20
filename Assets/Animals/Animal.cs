@@ -156,7 +156,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public virtual float VocalizationThreshold => Prof.vocalizationThreshold;   // hungry > N para que la cría llore
     public virtual float NestSecurityLevel     => Prof.nestSecurityLevel;
     // Post-natal stage config (override per species; null = sin sistema post-natal)
-    public virtual PostNatalStage[] PostNatalStages => null;
+    // Secuencia post-natal de la especie: DATA (PostNatalProfile.Of), ya no un override por clase (etapa 5).
+    public PostNatalStage[] PostNatalStages => PostNatalProfile.Of(SpeciesArchetype);
 
     // ── Anima hooks ───────────────────────────────────────────────────────
 

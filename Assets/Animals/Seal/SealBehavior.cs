@@ -6,63 +6,6 @@ public class SealBehavior : Herbivore
 {
     protected override string SpeciesArchetype => "Seal";
 
-
-
-
-
-
-    // Stages (días de juego)
-
-
-
-
-
-
-
-
-
-
-    // Post-natal species params
-
-    static readonly PostNatalStage[] _postNatalStages =
-    {
-        // Stage 0 — Nacimiento en playa; vínculo por olfato (crítico)
-        new PostNatalStage {
-            label = "Nacimiento", durationDays = 1f,
-            nestType = NestType.Beach, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.Continuous,
-            feedingMethod = FeedingMethod.Nurse,
-            entryActions = new[] { MotherAction.Clean, MotherAction.Stimulate,
-                                   MotherAction.GuideTeat, MotherAction.FirstMilk },
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
-        },
-        // Stage 1 — Lactancia intensiva; madre casi no se mueve; cría engorda muy rápido.
-        // Abandono emergente: cuando fatReserves < 15 (sea por tiempo normal o por interferencia
-        // de depredadores que impidieron que la madre acumulara grasa antes del parto).
-        new PostNatalStage {
-            label = "Lactancia intensiva", durationDays = 12f,
-            nestType = NestType.Beach, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.ProgrammedAbandonment,
-            weaningType = WeaningType.Abrupt, feedingMethod = FeedingMethod.Nurse,
-            transitions = new[] {
-                new TransitionCondition
-                    { kind = TransitionCondition.Kind.MotherFatReservesBelow, threshold = 15f },
-            },
-        },
-        // Stage 2 — Cría sola; aprende a nadar por instinto (no hay más interacción de la madre)
-        new PostNatalStage {
-            label = "Separación definitiva", durationDays = 1f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.ProgrammedAbandonment,
-            feedingMethod = FeedingMethod.None,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
-        },
-    };
-    public override PostNatalStage[] PostNatalStages => _postNatalStages;
-
-
     // Pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;
     // Afinidad de medio → data del arquetipo "Seal" (Archetypes), aplicada por SpeciesBody (etapa 5).
