@@ -62,7 +62,9 @@ public class SpeciesBody : MonoBehaviour
 
         if (_baseStats == null) BuildBaseStats();   // bases evolutivas por especie
         if (species != null && _baseStats.TryGetValue(species, out (float agi, float per) bs)) { baseAgility = bs.agi; basePerception = bs.per; }
-        a.agility = baseAgility; a.perception = basePerception; a.sensibility = baseSensibility * basePerception;   // agility/perception evolucionan desde aquí
+        // sensibility NO se fija acá: es propio de `Animal` (rango de detección de amenazas, no de `Anima`
+        // genérico) y `Animal.EvolveAptitudes()` ya lo recalcula cada tick desde `BaseSensibility * perception`.
+        a.agility = baseAgility; a.perception = basePerception;   // agility/perception evolucionan desde aquí
 
         Mind mind = a.GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
         if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(species));

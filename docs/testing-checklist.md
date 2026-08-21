@@ -12,6 +12,43 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-21 — sync etapa 5 (38 commits, PRs #108-125, 27 .cs) + 3 BUGS REALES encontrados y
+  arreglados en la cadena de generación de familias, el más grave de la sesión**: la población de fauna
+  auto-generada (`FamilyGenerator`/`WildlifePopulation_AUTO`, 11 familias / 66 animales) estaba
+  **crasheando en el primer intento y generando CERO animales**, silenciosamente — probablemente la razón
+  real detrás de la nota del propio §23 ("el sandbox apenas dispara caza": no es que la IA no cace, es que
+  no había con quién). Antes de esto, sync limpio (0 errores) de la primera mitad del batch (data-driven:
+  `SpeciesBody`, `SpeciesProfile`, `StageProfile`, `PostNatalProfile`, `AnimalPopulations`, retiro de
+  `Diet.cs`; también arreglado un typo de compilación separado, `SpeciesBody.cs:65` usaba `Anima.
+  sensibility` que no existe en la clase base — ver abajo).
+  1. **BUG compilación**: `SpeciesBody.cs(65,67)` — `a.sensibility` no existe en `Anima` (es específico de
+     `Animal`, y además redundante: `Animal.EvolveAptitudes()` ya lo recalcula cada tick). Fix: quitar esa
+     asignación de `SpeciesBody.Apply()`.
+  2. **BUG runtime — `IndexOutOfRangeException` en cada Play, 100% reproducible**: `FamilyGenerator.Start()`
+     llama `template.RenderFamily(...)` sobre el PREFAB ASSET (nunca instanciado/`Init()`-ado, solo
+     template) — `Animal.RenderFamily()` leía `this.Group.familySize` asumiendo que `Group` (dato de
+     especie, etapa 5) ya estaba listo. En la práctica `Group` podía quedar no-nulo pero con
+     `familySize=0` (estado que persiste entre sesiones de Play en el mismo proceso de Editor — no se
+     resetea con "Reload Domain" para objetos que no son parte de la escena, como un prefab asset).
+     `RenderGroup(quantity=0)` → array vacío → `SetParents(scripts=[])` → `scripts[0]` explota.
+     **Resultado: 0 de 66 animales generados, cada vez.** Fix en `Animal.RenderFamily()`: validar
+     `Group.familySize > 0`, no solo `Group != null`, antes de confiar en él (si no, `Family.Of
+     (SpeciesArchetype)` fresco).
+  3. **BUG runtime — `NullReferenceException`, expuesto al arreglar el #2**: con el familySize ya
+     resuelto correctamente, `Family.SetParents()` (Family.cs:84) leía `scripts[0].Group.familySize` —
+     pero `scripts[0]` es una criatura RECIÉN `Instantiate()`ada; Unity difiere su propio `Start()`
+     (donde correría `Init()` y fijaría `Group`) hasta después de que `FamilyGenerator.Start()` termina
+     en el mismo frame. `Group` seguía `null` en ese punto → NRE. Fix: `SetParents`/`RenderFamily` ahora
+     reciben `familySize`/`parentalCare` como PARÁMETROS (que el caller ya tiene) en vez de leerlos de
+     una instancia que todavía no se inicializó.
+  **Confirmado con evidencia de `Editor.log`**: tras los 3 fixes, `[FamilyGenerator] 11 familia(s)
+  generadas — 66 animales en total.` (antes: crash inmediato, 0 animales). `Forager.Hunt()` corrió 612
+  veces en la sesión de Play siguiente (antes: prácticamente nunca, no había presas/depredadores cerca)
+  — la caza real ahora se dispara sola con población real, sin necesidad de forzar el encuentro a mano.
+  0 excepciones reales en toda la sesión final (solo ruido conocido: Licensing 404, Relay/AI Assistant
+  desconectado). **Los 3 archivos (`Assets/Animals/SpeciesBody.cs`, `Assets/Animals/Animal.cs`,
+  `Assets/Scripts/Family.cs`) están trackeados en git — listos para commitear.**
+
 - **CICLO 2026-08-18 16:33 — sync commit `307891c`** (compañero comiteó los 4 archivos que el ciclo
   anterior estaban `staged` sin commitear): `Assets/Scripts/Microcosmos/CaveTrigger.cs`,
   `KitchenFireMission.cs`, `ScentEmitter.cs`, `ScentScanner.cs`. Sincronizados al proyecto vivo,

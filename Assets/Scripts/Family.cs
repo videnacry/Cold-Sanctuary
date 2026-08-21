@@ -76,12 +76,15 @@ public class Family
         }
         return scripts;
     }
-    public static Animal[] SetParents(Animal[] scripts,float parentsRandomRate, int minParentsCount)
+    public static Animal[] SetParents(Animal[] scripts, byte familySize, float parentsRandomRate, int minParentsCount, char parentalCare)
     {
         float parentsCount = 0;
         char parentalSex = Sex.female;
         bool alphaMaleSetted = false, alphaFemaleSetted = false;
-        Family family = new Family(scripts[0].Group.familySize, scripts[0].Group.parentsRate, scripts[0].Group.parentalCare);
+        // familySize/parentalCare vienen por parámetro (no de scripts[0].Group): las criaturas recién
+        // Instantiate()adas todavía no corrieron su propio Start()/Init() (Unity lo difiere), así que su
+        // Group sigue sin fijar en este mismo frame — leerlo acá tiraba NullReferenceException.
+        Family family = new Family(familySize, parentsRandomRate, parentalCare);
         HashSet<Animal> adults = new HashSet<Animal>();
         HashSet<Animal> children = new HashSet<Animal>();
         foreach (Animal script in scripts)
@@ -117,7 +120,7 @@ public class Family
     public static Animal[] RenderFamily(GameObject animal, int quantity, float parentsRandomRate, int minParentsCount, char parentalCare, Vector3 position, float height, float radius = 0)
     {
         Animal[] scripts = SetGendersRate(RenderGroup(animal, quantity, position, height, radius), 0.5f, Sex.female);
-        scripts = SetParents(scripts, parentsRandomRate, minParentsCount);
+        scripts = SetParents(scripts, (byte)quantity, parentsRandomRate, minParentsCount, parentalCare);
         return scripts;
     }
 }

@@ -274,8 +274,12 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     }
     public virtual Animal[] RenderFamily(Vector3 position, float height, int minParentsCount = 0, int familySize = 0, float radius = 0)
     {
-        familySize = familySize > 0 ? familySize : this.Group.familySize;
-        return Family.RenderFamily(this.gameObject, familySize, this.Group.parentsRate, minParentsCount, this.Group.parentalCare, position, height, radius);
+        // `this` puede ser el prefab ASSET (FamilyGenerator llama sobre el template, nunca instanciado/Init'd) →
+        // Group puede seguir sin fijar (null, o con familySize=0 si quedó de un estado previo). No confiar en
+        // que esté listo solo por no ser null: si el tamaño resuelto no es válido, recurrir a Family.Of fresco.
+        Family group = Group != null && Group.familySize > 0 ? Group : Family.Of(SpeciesArchetype);
+        familySize = familySize > 0 ? familySize : group.familySize;
+        return Family.RenderFamily(this.gameObject, familySize, group.parentsRate, minParentsCount, group.parentalCare, position, height, radius);
     }
 
 
