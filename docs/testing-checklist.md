@@ -12,6 +12,14 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-18 16:33 — sync commit `307891c`** (compañero comiteó los 4 archivos que el ciclo
+  anterior estaban `staged` sin commitear): `Assets/Scripts/Microcosmos/CaveTrigger.cs`,
+  `KitchenFireMission.cs`, `ScentEmitter.cs`, `ScentScanner.cs`. Sincronizados al proyecto vivo,
+  compilación completa (~4 min) → **0 errores** confirmado por `Editor.log`. Aún **no están cableados**
+  en `SampleSceneBuilder.cs` (no aparecen sandboxes nuevos en la Hierarchy) — son `MonoBehaviour`
+  standalone sin invocadores todavía; nada que testear en Play mode por ahora hasta que el compañero
+  los integre a la escena.
+
 - **CICLO 2026-08-18 — sync PRs #87-107 (46 commits, 26 .cs), 0 errores tras compilar y testear en
   Play**. Unity llevaba ~4 días cerrado (última actividad 2026-08-14); lo reabrí desde Unity Hub
   (dialog "Recovering Scene Backups" → No, como siempre). Batch: **refactor grande de comportamiento
