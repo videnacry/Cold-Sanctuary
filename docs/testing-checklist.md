@@ -818,6 +818,43 @@ Dos cuerpos (melaza Toro+Bear / hormiga Ant+Human) comparten UNA alma. HUD arrib
 - [ ] `BondPillar` (universal, SIN vía directa al jugador): familiariza con CUALQUIER `ITarget` cercano por cercanía (crece `Anima.bonds`); si el vecino tiene mente (el jugador vía `PlayerTarget`), lo reconforta según el bond. El jugador es un ITarget más.
 - [ ] **Karma** (PR #76): `Panterilia_SinClase` (speciesBonds=Human) al cruzarse con un perro/`Malamute` arranca el bond en +45 (agrado dog↔human); con una especie sin relación, en 0. La karma NEGATIVA no siembra bond (el rechazo lo lleva el threat por poder, p.ej. lobo↔komodo).
 
+## 23. Refactor de comportamiento animal — componentes (E1–E5, PRs #94–#114)
+
+El "ser animal" pasó de una jerarquía de clases (`Animal`/`Carnivore`/`Herbivore`/8 especies) a **componentes + data**
+sobre `Anima`. La conducta ya no está en `Feed`/`Escape` de la clase, sino en `ThreatResponder`/`Locomotion`/`Forager`
+(auto-añadidos en `Animal.Init`), y la identidad de especie en `SpeciesBody`/`SpeciesProfile`/`Physiognomy.Of`.
+**OJO (cabo conocido, línea ~165): el sandbox actual apenas dispara caza** → hay que forzar el encuentro para
+ejercitar la lógica movida. No basta con "spawnea y no peta".
+
+**Setup sugerido:** en una escena con NavMesh horneado, spawnear un **depredador** (Wolf/Bear) y varias **presas**
+(Bunny/Deer) a ~10–20 m, y dejar correr en Play. (Si `SampleSceneBuilder` no lo monta, colocarlos a mano.)
+
+- [ ] **Componentes presentes**: al entrar en Play, cada animal tiene en su GameObject `ThreatResponder`,
+  `Locomotion`, `Forager`, `SpeciesBody`, `AiBrain` y `AnimaController` (auto-añadidos). El `[Alma]`/inspector
+  muestra stats de su especie (Wolf: str/mass del arquetipo; `SpeciesBody.baseAgility` 1.2, `basePerception` 1.4).
+- [ ] **Forrajeo (Forager)**: un herbívoro hambriento (`hungry >= 0`) camina al `GrassPatch`/`FishSchool` más
+- [ ] **Presa por PROXIMIDAD + STATS** (Diet retirada, PR #119): un carnívoro hambriento caza al `Anima` comestible más fácil/cercano dentro de `huntRadius` que pueda por stats (`Predation`); NO caza su especie ni a quien tiene vínculo; el OSO/LOBO cazan al JUGADOR si no hay bond. Radio de detección = `perception × huntRangePerPerception` (deriva de STATS, crece con la evolución). Come también CARCASAS cercanas (incl. de su especie: scavenging). Tunables: `Forager.{huntRangePerPerception, minHuntRadius, distanceWeight}`. (Si no caza, subir `huntRangePerPerception`.)
+  cercano y come (baja `hungry`); un carnívoro elige presa por `Diet`, la persigue y la muerde. Con **omnívoro**
+  (marcar `Forager.eatsPrey`+`eatsGrass` en el inspector) elige la fuente **más cercana**.
+- [ ] **Amenaza (ThreatResponder)**: una presa detecta al depredador cercano (`Assess > ThreatThreshold`) y **huye**;
+  el depredador **caza**. Un ser con **bond alto** hacia el otro NO huye (el bond desactiva la amenaza). Manada:
+  un lobo solo huye del oso, pero **con aliados cerca** (EffectivePower) puede plantar cara.
+- [ ] **Defensa de crías EMERGENTE** (sin flag): un adulto con crías propias cerca de la amenaza planta cara si
+  `autoabandono + cubBond > peligro` (no depende de una especie "defensora").
+- [ ] **Locomoción**: el `NavMeshAgent` sigue navegando (rodea obstáculos); si el animal lleva `WalkSpell`, la
+  `nav.speed` sube al correr y decae al andar (opt-in). Sin él, usa los `navSpeed` de `ActsPrep`.
+- [ ] **IA + posesión (E4)**: sin poseer, la IA decide sola (forrajea/huye). Al **poseer** un animal (PlayerBrain de
+  mayor relevancia), su IA se **suprime** y lo conduce el jugador. (Cabo: al poseer, el WalkSpell/Transform puede
+  pelear con el NavMeshAgent — ver plan.)
+- [ ] **Medio (SpeciesBody)**: una foca/ballena en agua se mueve normal; en tierra, penalizada (WaterAffinity 1.0 /
+  LandAffinity baja, ahora data del arquetipo).
+- [ ] **Paridad**: caza/huida/pastoreo/manada se comportan como ANTES del refactor (mismos valores; los escalares
+  salen de `SpeciesProfile`, extraídos 1:1 de los overrides).
+
+**Knobs de recalibración** (si algo se siente mal, ajustar en el inspector del componente, NO en código):
+`ThreatResponder.{aggressionGate, auraFear, alertReach, fightPowerMargin}` y, por especie, `SpeciesProfile`
+(threatThreshold, packFactor…) + `SpeciesBody.{baseAgility, basePerception}`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

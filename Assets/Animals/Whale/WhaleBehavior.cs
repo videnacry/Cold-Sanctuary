@@ -14,129 +14,16 @@ public class WhaleBehavior : Herbivore
 {
     protected override string SpeciesArchetype => "Whale";
 
-    public static Family defaultGroup = new Family(10, 0.25f, Family.maternal);
-    public Family group = defaultGroup;
-    public override Family Group { get => group; set => group = value; }
-
     // Escala medida contra el mesh crudo (ver AnimalPrefabGenerator > Measure Raw Animal Sizes):
     // longitud cruda 10.372m -> objetivo realista de longitud corporal adulta ~12m.
-    public static Physiognomy defaultBody = new Physiognomy(new Vector3(1.157f, 1.157f, 1.157f), 1300, 0.04f, 0.3f, 0.12f);
-    public Physiognomy body = defaultBody;
-    public override Physiognomy Body { get => body; set => body = value; }
-
-    public ActionsPrep actsPrep = new ActionsPrep(
-        new ActionPrep("IdleWhale", 0, 1, -2),
-        new ActionPrep("WalkWhale", 3, 2),   // crucero, real ~3-9 km/h
-        new ActionPrep("RunWhale", 8, 3, 2)  // pico, real ~22 km/h — no es un nadador veloz
-    );
-    public override ActionsPrep ActsPrep { get => actsPrep; set => actsPrep = value; }
-
-    public Vector3 homeOrigin;
-    public override Vector3 HomeOrigin { get => homeOrigin; set => homeOrigin = value; }
-
-    public float homeRadius = 400;   // bahía-santuario en mar abierto, el rango más grande del roster
-    public override float HomeRadius { get => homeRadius; set => homeRadius = value; }
-
-    // Stages (días de juego) — el animal más longevo del santuario.
-    public Childhood childhood = new Childhood(730, 90, 99);   // ~2 años, lactancia extendida
-    public override Childhood ChildStage { get => childhood; set => childhood = value; }
-
-    public byte[] childPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] ChildPreps { get => childPreparations; set => childPreparations = value; }
-
-    public byte[] childEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound };
-    public override byte[] ChildEvents { get => childEvents; set => childEvents = value; }
-
-    public Adolescence adolescence = new Adolescence(2555, 60, 90);   // ~7 años hasta madurez (~9 años totales)
-    public override Adolescence TeenStage { get => adolescence; set => adolescence = value; }
-
-    public byte[] teenPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] TeenPreps { get => teenPreparations; set => teenPreparations = value; }
-
-    public byte[] teenEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest };
-    public override byte[] TeenEvents { get => teenEvents; set => teenEvents = value; }
-
-    public Adulthood adulthood = new Adulthood(14600, 0, 20);   // ~40 años, longevidad real de beluga
-    public override Adulthood AdultStage { get => adulthood; set => adulthood = value; }
-
-    public byte[] adultPreparations = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
-    public override byte[] AdultPreps { get => adultPreparations; set => adultPreparations = value; }
-
-    public byte[] adultEvents = { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed };
-    public override byte[] AdultEvents { get => adultEvents; set => adultEvents = value; }
-
-    public static HashSet<GameObject> population = new HashSet<GameObject>();
-    public override HashSet<GameObject> Population { get => population; set => population = value; }
-    public override AnimationsName animationsName { get; } = new AnimationsName("Whale");
-
-    // Post-natal species params
-    public override float BaseStressLevel       => 0.35f;
-    public override float VocalizationThreshold => 1.5f;   // la especie más vocal del santuario
-    public override float NestSecurityLevel     => 0.5f;   // mar abierto, sin nido físico; protección de manada
-    public override float MaxFatReserves        => 120f;   // grasa/blubber, la mayor reserva del roster
-    public override float FatAccumulationRate   => 1.8f;
-
-    static readonly PostNatalStage[] _postNatalStages =
-    {
-        // Stage 0 — Nacimiento en mar abierto; la cría nada por sí sola en minutos
-        new PostNatalStage {
-            label = "Nacimiento", durationDays = 1f,
-            nestType = NestType.OpenWater, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.Continuous,
-            feedingMethod = FeedingMethod.Nurse,
-            entryActions = new[] { MotherAction.Clean, MotherAction.Stimulate,
-                                   MotherAction.GuideTeat, MotherAction.FirstMilk },
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 1f } },
-        },
-        // Stage 1 — Lactancia extendida junto a la madre (~20 meses reales)
-        new PostNatalStage {
-            label = "Lactancia extendida", durationDays = 600f,
-            nestType = NestType.OpenWater, fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.Continuous,
-            feedingMethod = FeedingMethod.Nurse,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 600f } },
-        },
-        // Stage 2 — Destete gradual; aprende a pescar junto a la madre
-        new PostNatalStage {
-            label = "Destete gradual", durationDays = 365f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.FrequentVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] {
-                new TransitionCondition { kind = TransitionCondition.Kind.TimeElapsed, threshold = 365f },
-                new TransitionCondition { kind = TransitionCondition.Kind.FirstSolidEaten },
-            },
-        },
-        // Stage 3 — Independencia gradual dentro de la manada/pod
-        new PostNatalStage {
-            label = "Independencia", durationDays = 365f,
-            fatherRole = FatherRole.Absent,
-            presencePattern = MotherPresencePattern.MinimalVisits,
-            weaningType = WeaningType.Gradual, feedingMethod = FeedingMethod.FoodItem,
-            transitions = new[] { new TransitionCondition
-                { kind = TransitionCondition.Kind.TimeElapsed, threshold = 365f } },
-        },
-    };
-    public override PostNatalStage[] PostNatalStages => _postNatalStages;
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
-    public override float Aggressiveness => 0f;
-    public override bool CanHitAndRun => false;
-    public override float PackFactor => 0f;
-    public override float HarmVsBond => 0.1f;
-    public override float BondGrowthRate => 2.5f;   // el vínculo más rápido del santuario
-    public override OrganicMaterial Material => OrganicMaterial.Fish;
-    public override float Toughness => 2.5f;   // capa de grasa gruesa, la más resistente del roster
 
     // Filtra/pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
     protected override bool GrazesOnLand => false;
-    public override float BaseAgility    => 0.6f;   // enorme, poco maniobrable
-    public override float BasePerception => 1.0f;
-    public override float LandAffinity   => 0.1f;   // varada e indefensa en tierra
-    public override float WaterAffinity  => 1.0f;   // su medio natural
+    // Afinidad de medio → data del arquetipo "Whale" (Archetypes), aplicada por SpeciesBody (etapa 5).
 
     void Start() => Init();
 
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = false; }
 }

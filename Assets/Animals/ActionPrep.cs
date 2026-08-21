@@ -25,6 +25,6 @@ public class ActionPrep
         pScript.Running = (pScript.ActsPrep != null && this == pScript.ActsPrep.run);   // ¿es la acción de CORRER? → channeling
         float exhaustion = this.energyCost * pAnimationTime;
         pScript.exhaustion += exhaustion;
-        pScript.hungry += (exhaustion > 0) ? pScript.Body.GetMealWeight(pScript) * exhaustion : 0;
+        pScript.hungry += (exhaustion > 0) ? pScript.Body.GetMealWeight(pScript.rig.mass) * exhaustion : 0;
     }
 }

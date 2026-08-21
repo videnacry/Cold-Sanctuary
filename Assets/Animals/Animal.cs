@@ -6,34 +6,42 @@ using UnityEngine.AI;
 
 // enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/anima-dissolving-animal.md)
 
-public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
+public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA (etapa 5): toda la conducta/data está en componentes+catálogos
 {
     #region Family
     /// <summary>
     /// Properties wich determine how is going te be the created family of an instance
     /// </summary>
-    public abstract Family Group { get; set; }
+    // Estructura familiar: DATA de especie (Family.Of), fijada en Init; settable (RenderFamily la reemplaza). Etapa 5.
+    public Family Group { get; set; }
     #endregion
 
 
-    // Stages
-    public abstract Childhood ChildStage { get; set; }
-    public abstract byte[] ChildPreps { get; set; }
-    public abstract byte[] ChildEvents { get; set; }
+    // Stages. Los PREPS de las 3 etapas eran idénticos en todas las especies → default concreto (etapa 5). Los EVENTS
+    // varían por especie (territoriales llevan HomeBound) → siguen como data por especie por ahora.
+    static readonly byte[] _stagePreps = { LifeStage.Preps.SetScale, LifeStage.Preps.SetRemainingStageDays };
+    public byte[] ChildPreps => _stagePreps;
+    public byte[] TeenPreps  => _stagePreps;
+    public byte[] AdultPreps => _stagePreps;
 
-    public abstract Adolescence TeenStage { get; set; }
-    public abstract byte[] TeenPreps { get; set; }
-    public abstract byte[] TeenEvents { get; set; }
+    // Etapas + eventos: DATA del catálogo (StageProfile.Of), creadas/leídas en Init (etapa 5). Las etapas son
+    // auto-property (se MUTAN: sizePotential) → cada ser las suyas; los eventos, get-only del perfil.
+    StageProfile _stages = StageProfile.Of(null);
+    public Childhood ChildStage { get; set; }
+    public byte[] ChildEvents => _stages.childEvents;
 
-    public abstract Adulthood AdultStage { get; set; }
-    public abstract byte[] AdultPreps { get; set; }
-    public abstract byte[] AdultEvents { get; set; }
+    public Adolescence TeenStage { get; set; }
+    public byte[] TeenEvents => _stages.teenEvents;
+
+    public Adulthood AdultStage { get; set; }
+    public byte[] AdultEvents => _stages.adultEvents;
 
 
 
     // Population
     public static HashSet<GameObject> wholePopulation = new HashSet<GameObject>();
-    public abstract HashSet<GameObject> Population { get; set; }
+    // Población viva de la especie: registro central por nombre (etapa 5), ya no un estático por clase.
+    public HashSet<GameObject> Population => AnimalPopulations.Of(SpeciesName);
 
 
     #region Physiognomy
@@ -42,14 +50,18 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// </summary>
     public char sex;
     public char lifeStage;
-    public abstract Physiognomy Body { get; set; }
-    public abstract ActionsPrep ActsPrep { get; set; }
+    // Físico de la especie (escala/masa/pesos de comida). DATA del catálogo (Physiognomy.Of), fijado en Init — ya no
+    // un `defaultBody` por subclase (etapa 5). Settable (crecimiento/composición pueden reemplazarlo).
+    public Physiognomy Body { get; set; }
+    // Gaits de la especie: DATA del catálogo (ActionsPrep.Of), fijados en Init; settable. Etapa 5.
+    public ActionsPrep ActsPrep { get; set; }
     #endregion
 
 
 
-    public abstract Vector3 HomeOrigin { get; set; }
-    public abstract float HomeRadius { get; set; }
+    // HomeOrigin = estado por-instancia (se fija en Init/FamilyGenerator). HomeRadius = data de especie (SpeciesBody). Etapa 5.
+    public Vector3 HomeOrigin { get; set; }
+    public float HomeRadius => _speciesBody != null ? _speciesBody.homeRadius : 100f;
 
 
 
@@ -61,11 +73,18 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     public bool Consumed => lifeStage == LifeStage.soul;
 
     // IEdible — los animales son carne comestible una vez muertos
-    public virtual OrganicMaterial Material => OrganicMaterial.Meat;
+    public virtual OrganicMaterial Material => Prof.material;
     public virtual float Nutrition => 1f;
-    public virtual float Toughness => 0.5f;
+    public virtual float Toughness => Prof.toughness;
     public float Grams => rig != null ? rig.mass : 0f;
-    public virtual float BiteSize => 2f;
+    public virtual float BiteSize => Prof.biteSize;
+    // Config escalar de la especie (data del SpeciesProfile vía SpeciesBody). Nunca null (fallback Default). Etapa 5.
+    protected SpeciesProfile Prof => _speciesBody != null ? _speciesBody.profile : SpeciesProfile.Default;
+    // Overrides de Anima cableados al perfil de especie (antes eran overrides por clase).
+    public override float HarmVsBond          => Prof.harmVsBond;
+    public override float BondGrowthRate      => Prof.bondGrowthRate;
+    public override float MaxFatReserves      => Prof.maxFatReserves;
+    public override float FatAccumulationRate => Prof.fatAccumulationRate;
 
     public float Consume(float biteSize)
     {
@@ -109,45 +128,36 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     /// <summary>Cada especie configura su <see cref="Forager"/> (modo presa/pasto/pez + dieta). Base: pasto.</summary>
     protected virtual void ConfigureForager(Forager f) { }
 
-    public virtual float Aggressiveness => 0f;
-    // DefendsCubs (flag) retirado (etapa 1): la defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
-    public virtual bool CanHitAndRun => false;
-    public virtual float PackFactor => 0.5f;
+    // Aggressiveness/CanHitAndRun retirados: son config del componente ThreatResponder (etapa 5). Cada especie los fija
+    // en ConfigureThreat. La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
+    /// <summary>Cada especie configura su <see cref="ThreatResponder"/> (agresividad, pegar-y-correr). Base: pacífico.</summary>
+    protected virtual void ConfigureThreat(ThreatResponder t) { }
+    public virtual float PackFactor => Prof.packFactor;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;
     // debe escalar con agilidad/inteligencia cuando existan esos stats. Ver docs/living-entity.md.
-    public virtual float BaseSensibility => 5f;
-    // Aptitudes base por especie (1.0 = media real). Ver docs/creature-stats.md.
-    public virtual float BaseAgility    => 1f;
-    public virtual float BasePerception => 1f;
+    // Bases evolutivas: DATA del componente SpeciesBody (etapa 5). Fallback a los defaults si aún no está.
+    public virtual float BaseSensibility => _speciesBody != null ? _speciesBody.baseSensibility : 5f;
+    public virtual float BaseAgility    => _speciesBody != null ? _speciesBody.baseAgility : 1f;
+    public virtual float BasePerception => _speciesBody != null ? _speciesBody.basePerception : 1f;
 
     /// <summary>Nombre del ARQUETIPO de especie (docs/soul-composition-blend.md). Si se define, `Init()` llena las
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
     /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
     protected virtual string SpeciesArchetype => null;
-    public override string SpeciesName => SpeciesArchetype;   // la especie para relaciones/karma = su arquetipo
+    // La especie para relaciones/karma sale del componente SpeciesBody (etapa 5); si aún no está, del arquetipo de la clase.
+    public override string SpeciesName => _speciesBody != null && !string.IsNullOrEmpty(_speciesBody.species)
+        ? _speciesBody.species : SpeciesArchetype;
 
-    // Llena las aptitudes desde el arquetipo de especie (respeta agility/perception, que las maneja Base*+evolución).
-    void ApplySpeciesArchetype()
-    {
-        if (string.IsNullOrEmpty(SpeciesArchetype)) return;
-        ArchetypeProfile b = Archetypes.BodyOf(SpeciesArchetype);
-        ArchetypeProfile m = Archetypes.MindOf(SpeciesArchetype);
-        strength    = b.aptitudes.strength;   bodyMass    = b.aptitudes.bodyMass;
-        endurance   = b.aptitudes.endurance;  adaptability = b.aptitudes.adaptability;
-        composure   = m.aptitudes.composure;  reasoning   = m.aptitudes.reasoning;   memory     = m.aptitudes.memory;
-        creativity  = m.aptitudes.creativity; sociability = m.aptitudes.sociability;  discipline = m.aptitudes.discipline;
-
-        Mind mind = GetComponent<Mind>();     // pensamientos base de la especie (si tiene Mente): piensa como su especie
-        if (mind != null) mind.SeedThoughts(Archetypes.BaseThoughtsOf(SpeciesArchetype));
-    }
+    SpeciesBody _speciesBody;   // identidad de especie (stats base + pensamientos) como componente; auto-alta en Init
 
     // Post-natal species parameters (override per species)
-    public virtual float BaseStressLevel       => 0.2f;
-    public virtual float ThreatThreshold       => 0.5f;   // NUEVA escala (Assess): fracción de MI poder efectivo a partir de la cual me alarmo (recalibrable en Unity)
-    public virtual float VocalizationThreshold => 5f;   // hungry > N para que la cría llore
-    public virtual float NestSecurityLevel     => 0.5f;
+    public virtual float BaseStressLevel       => Prof.baseStressLevel;
+    public virtual float ThreatThreshold       => Prof.threatThreshold;   // escala Assess: fracción de MI poder a partir de la cual me alarmo (recalibrable)
+    public virtual float VocalizationThreshold => Prof.vocalizationThreshold;   // hungry > N para que la cría llore
+    public virtual float NestSecurityLevel     => Prof.nestSecurityLevel;
     // Post-natal stage config (override per species; null = sin sistema post-natal)
-    public virtual PostNatalStage[] PostNatalStages => null;
+    // Secuencia post-natal de la especie: DATA (PostNatalProfile.Of), ya no un override por clase (etapa 5).
+    public PostNatalStage[] PostNatalStages => PostNatalProfile.Of(SpeciesArchetype);
 
     // ── Anima hooks ───────────────────────────────────────────────────────
 
@@ -184,7 +194,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
     [HideInInspector] public Locomotion Loco;  // mover NavMesh + gait (etapa 2); auto-alta en Init
     [HideInInspector] public Forager Forage;   // política "qué/dónde comer" (etapa 3); auto-alta + config en Init
 
-    public abstract AnimationsName animationsName { get; }
+    // Derivado del nombre de especie (IdleWolf/WalkWolf/RunWolf…): ya no un override por clase (etapa 5).
+    public AnimationsName animationsName => new AnimationsName(SpeciesArchetype);
     public GameObject bird;
     public GameObject target;
 
@@ -192,17 +203,20 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
 
     public virtual void Init()
     {
+        if (Group == null) Group = Family.Of(SpeciesArchetype);   // estructura familiar de la especie (data); RenderFamily la reemplaza
         Population.Add(gameObject);
         wholePopulation.Add(gameObject);
         HomeOrigin = transform.position;
         nav = GetComponent<NavMeshAgent>();
         _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
         if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
+        ConfigureThreat(_threat);                                        // cada especie fija agresividad/pegar-y-correr
         Loco = GetComponent<Locomotion>();                               // etapa 2: mover NavMesh + gait como componente
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
         ConfigureForager(Forage);                                        // cada especie fija su modo (presa/pasto/pez) + dieta
+        ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
         {
@@ -211,12 +225,18 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             if (ActsPrep != null && ActsPrep.walk != null && ActsPrep.run != null)
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
+        Body = Physiognomy.Of(SpeciesArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
+        _stages = StageProfile.Of(SpeciesArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
+        ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);
+        TeenStage  = new Adolescence(_stages.teenDays, _stages.teenMin, _stages.teenMax);
+        AdultStage = new Adulthood(_stages.adultDays, _stages.adultMin, _stages.adultMax);
         rig = GetComponent<Rigidbody>();
         ChildStage.Fatten()(this, 0);   // fija rig.mass y lp = rig.mass
-        agility     = BaseAgility;
-        perception  = BasePerception;
-        sensibility = BaseSensibility * perception;   // más percepción → detecta amenazas antes
-        ApplySpeciesArchetype();                       // fase 3: aptitudes (fuerza/masa/mentales) desde el arquetipo de especie
+        // Etapa 5: la identidad de especie (arquetipo → stats base + pensamientos + medio + bases evolutivas) es un componente.
+        _speciesBody = GetComponent<SpeciesBody>();
+        if (_speciesBody == null) _speciesBody = gameObject.AddComponent<SpeciesBody>();
+        if (string.IsNullOrEmpty(_speciesBody.species)) _speciesBody.species = SpeciesArchetype;   // por defecto, el de la clase
+        _speciesBody.Apply(this);                      // aptitudes + medio + fija agility/perception/sensibility base
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
@@ -354,7 +374,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (threat != null) RespondToThreat(threat);
     }
 
-    public abstract IEnumerator Feed();
+    // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
+    public IEnumerator Feed() => Forage.eatsPrey ? Forage.Hunt(this) : Forage.Graze(this);
 
 
 
@@ -407,7 +428,7 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
             System.Array.Exists(Group.fed, cub => cub != null && !cub.death &&
                 Vector3.Distance(cub.transform.position, threat.transform.position) < 20f);
         float cubBond = defendingCubs ? CubBondFactor() : 0f;
-        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond, Aggressiveness, CanHitAndRun);
+        return _threat.Decide(this, threat, autoabandono, defendingCubs, cubBond);
     }
 
     // Vínculo medio con las crías defendidas (0..1); si aún no hay bond, afinidad de cría por defecto (0.4).

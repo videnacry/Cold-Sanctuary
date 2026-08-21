@@ -2,25 +2,30 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Componente de FORRAJEO (docs/anima-dissolving-animal.md, etapa 3). Encapsula la POLÍTICA de "qué/dónde comer":
-/// presa (carnívoro, vía <see cref="Diet"/>), pasto y/o banco de peces (herbívoro). Los flags son **combinables**:
-/// un **omnívoro** marca varios (p.ej. presa + pasto), y `SelectTarget` elige la fuente **más cercana** de las que
-/// come. **Portable**: cualquier `Anima` lo lleva con su combinación (el "qué come" deja de ser la subclase
-/// `Carnivore`/`Herbivore` y pasa a ser config de un componente).
+/// Componente de FORRAJEO (docs/anima-dissolving-animal.md). Encapsula "qué/dónde comer" Y el forrajeo entero:
+/// **presa** (carnívoro; por PROXIMIDAD + STATS vía `SelectPrey`/`Predation`, ya no una tabla Diet), **pasto** y/o
+/// **banco de peces** (herbívoro/pescador). Los flags (`eatsPrey`/`eatsGrass`/`eatsFish`) son **combinables** — un
+/// **omnívoro** marca varios y `SelectTarget` elige la fuente más cercana. **Portable**: cualquier `Anima` lo lleva
+/// con su combinación (el "qué come" es config de componente, no la subclase `Carnivore`/`Herbivore`).
 ///
-/// De momento la PERSECUCIÓN y el COMER siguen en `Carnivore.Feed`/`Herbivore.Feed` (locomoción + ingesta); se
-/// extraen en un paso posterior. Aquí solo va la **selección de objetivo**.
+/// Incluye la conducta completa: `SelectTarget` (elegir) + `Hunt`/`Graze` (perseguir/pastar por `Locomotion`) +
+/// `Eat` (ingerir: nutrición + bond + metabolismo). `Carnivore.Feed`/`Herbivore.Feed` solo delegan.
 /// </summary>
 public class Forager : MonoBehaviour
 {
-    [Tooltip("Come PRESA (carnívoro): consulta su Diet.")]
+    [Tooltip("Come PRESA (carnívoro): busca Animas cazables cerca por stats (Predation), ya no por una tabla Diet.")]
     public bool eatsPrey;
     [Tooltip("Come PASTO (herbívoro terrestre).")]
     public bool eatsGrass;
-    [Tooltip("Come PECES/banco (herbívoro/consumidor marino).")]
+    [Tooltip("Come PECES/banco (herbívoro/consumidor marino/pescador).")]
     public bool eatsFish;
-    [Tooltip("Tabla de presas priorizada (solo si eatsPrey).")]
-    public Diet diet;
+    [Tooltip("Alcance de detección de presa POR PERCEPCIÓN: radio = perception × esto (deriva de stats; crece con la " +
+             "evolución de la percepción). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
+    public float huntRangePerPerception = 80f;
+    [Tooltip("Radio mínimo de búsqueda de presa (por si la percepción es muy baja).")]
+    public float minHuntRadius = 20f;
+    [Tooltip("Peso de la distancia en la preferencia de presa (más cerca = preferida). Tunable.")]
+    public float distanceWeight = 0.01f;
 
     /// <summary>El objetivo de comida más cercano entre las fuentes que come (presa/pasto/pez), o null. Un omnívoro
     /// (varios flags) elige la más cercana; el carnívoro/herbívoro puro solo tiene una fuente activa.</summary>
@@ -28,10 +33,46 @@ public class Forager : MonoBehaviour
     {
         if (self == null) return null;
         Vector3 pos = self.transform.position;
-        GameObject prey  = (eatsPrey && diet != null) ? diet.SelectPrey(self) : null;   // la Diet ya prioriza
+        GameObject prey  = eatsPrey  ? SelectPrey(self) : null;                          // presa por proximidad + stats
         GameObject grass = eatsGrass ? GrassPatch.Nearest(pos)?.gameObject : null;
         GameObject fish  = eatsFish  ? FishSchool.Nearest(pos)?.gameObject : null;
         return Nearest(pos, prey, grass, fish);
+    }
+
+    /// <summary>PRESA por PROXIMIDAD + STATS (reemplaza la `Diet`): `OverlapSphere` busca `Anima`s comestibles
+    /// cercanas —incluidas **carcasas** y el **jugador**—; descarta la PROPIA especie (no canibalismo) y las que un
+    /// **vínculo** protege (`CanHarm`); una presa VIVA solo cuenta si mi poder EFECTIVO (con manada) supera su defensa
+    /// (`Predation`). Prefiere lo más **fácil** (poder/defensa) y **cercano**; una carcasa es "gratis". Emergente:
+    /// quién es presa sale de stats, no de una tabla fija.</summary>
+    GameObject SelectPrey(Animal self)
+    {
+        Vector3 pos = self.transform.position;
+        float myPower = Predation.EffectivePower(self);   // con manada
+        float radius = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);   // detección POR STATS
+        GameObject best = null; float bestScore = float.NegativeInfinity;
+        foreach (Collider col in Physics.OverlapSphere(pos, radius))
+        {
+            Anima a = col.GetComponentInParent<Anima>();
+            if (a == null || a == self) continue;
+            IEdible food = a.GetComponent<IEdible>();
+            if (food == null || food.Consumed) continue;                                   // no comestible / ya consumida
+            ITarget t = a.GetComponent<ITarget>();
+            if (t == null) continue;
+            bool carcass = t.Dead;
+            float defense = Predation.Defense(a);
+            if (!carcass)   // presa VIVA
+            {
+                if (a.SpeciesName != null && a.SpeciesName == self.SpeciesName) continue;   // no CAZAR la propia especie
+                if (myPower < defense) continue;          // solo si puedo con ella (con manada)
+                if (!self.CanHarm(t)) continue;           // un vínculo la protege
+            }
+            // Carcasa: comestible siempre (scavenging), incluso de la propia especie.
+            float dist = Vector3.Distance(pos, a.transform.position);
+            float ease = carcass ? 3f : myPower / Mathf.Max(0.1f, defense);                 // más fácil = preferida
+            float score = ease - dist * distanceWeight;                                     // más cerca = preferida
+            if (score > bestScore) { bestScore = score; best = a.gameObject; }
+        }
+        return best;
     }
 
     static GameObject Nearest(Vector3 pos, params GameObject[] gos)
@@ -86,7 +127,7 @@ public class Forager : MonoBehaviour
         }
 
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);
-        float feed = self.Body.GetMealWeight(self) * 0.6f;
+        float feed = self.Body.GetMealWeight(self.rig.mass) * 0.6f;
         if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
@@ -133,7 +174,7 @@ public class Forager : MonoBehaviour
                 {
                     IEdible food = prey.GetComponent<IEdible>();
                     if (food == null || food.Consumed) break;
-                    if (self.hungry < -self.Body.GetMealMaxWeight(self)) break;
+                    if (self.hungry < -self.Body.GetMealMaxWeight(self.rig.mass)) break;
                     self.Loco.Idle(TimeController.timeController.TimeSpeedMinuteSecs / 30);
                     Eat(self, food, prey, self.BiteSize);
                 }
