@@ -23,7 +23,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 
 | Sistema | Archivos clave | Estado |
 |---|---|---|
-| Animales | `Assets/Animals/Animal.cs`, `Carnivore.cs`, `Herbivore.cs` + 8 especies | Funciona; `BearBehaviour` ya hereda de `Carnivore`, completo. **Depredación por stats** (`Predation`): `SelectPrey` no caza lo invencible + `EvaluateThreat` teme al más poderoso (masa/fuerza/`armadura`/tamaño; el tamaño invierte presa↔depredador; el farol no engaña). **Manada** (`EffectivePower`: poder de aliados por facción) + **aura mágica** (`Anima.magicAura`+`MagicAura`: destructiva→temida, benevolente→bonds fáciles). Ver `docs/stats-as-truth.md` §2 |
+| Animales | `Assets/Animals/Animal.cs` (concreta) + componentes (`Forager`/`ThreatResponder`/`Locomotion`/`SpeciesBody`) + catálogos + 8 clases mínimas | Funciona. **`Carnivore`/`Herbivore` BORRADAS** (PR #126): las 8 especies heredan directo de `Animal`; qué come lo fija `Forager.ConfigureForSpecies` por data. **Depredación por stats** (`Predation`): `SelectPrey` no caza lo invencible + `EvaluateThreat` teme al más poderoso (masa/fuerza/`armadura`/tamaño; el tamaño invierte presa↔depredador; el farol no engaña). **Manada** (`EffectivePower`: poder de aliados por facción) + **aura mágica** (`Anima.magicAura`+`MagicAura`: destructiva→temida, benevolente→bonds fáciles). Ver `docs/stats-as-truth.md` §2 |
 | Post-natal | `Assets/Scripts/PostNatal/` | Funciona; enums `nestType/fatherRole/weaningType` decorativos (no leídos) |
 | Etapas de vida | `Assets/Scripts/LifeStage/` | Completo, buena composición |
 | Familia/genética | `Family.cs`, `Sex.cs`, `FamilyGenerator.cs` | Completo |
@@ -67,7 +67,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 - `IMind` / `IMindSimple`: stats mentales. `PlayerStats` implementa `IMind` completa; `CompanionBase` usa `IMindSimple` (transitoria hasta NPCBase).
 - `IBody`: stats físicas por extremidad + estrés postural (sistema de asanas). Implementa: `PlayerStats`.
 - `IBondable`: vínculo con el jugador y efecto por proximidad. Implementa: `CompanionBase`, `WorldBondable`.
-- Jerarquía animal: `Anima` → `Animal` → `Carnivore`/`Herbivore` → `WolfBehavior`/`BunnyBehavior`/`BearBehaviour`. Y `Anima` → `CompanionBase` → `Goluis`/`Panterilia`/…
+- Jerarquía animal: `Anima` → `Animal` (concreta) → `WolfBehavior`/`BunnyBehavior`/`BearBehaviour`/… (8 clases mínimas: `SpeciesArchetype` + `Start` + `ConfigureThreat`; `Carnivore`/`Herbivore` borradas). Todo lo demás es data (catálogos) + componentes. Y `Anima` → `CompanionBase` → `Goluis`/`Panterilia`/…
 - `NPCBase` **descartado** como clase intermedia (2026-07-25): se va a **una sola `Anima`** + pilares/mente opcionales. `IMindSimple` eliminado (2026-07-28).
 - `LifeStage` (abstracta) → `Childhood`/`Adolescence`/`Adulthood`.
 - **Control intercambiable**: `AnimaController` + `IBrain` (`AiBrain`/`PlayerBrain`) — el ser lo conduce el

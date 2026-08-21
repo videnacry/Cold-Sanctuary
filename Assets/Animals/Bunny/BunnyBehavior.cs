@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BunnyBehavior : Herbivore
+public class BunnyBehavior : Animal
 {
     protected override string SpeciesArchetype => "Bunny";
 

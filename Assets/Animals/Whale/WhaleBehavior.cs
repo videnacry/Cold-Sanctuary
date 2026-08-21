@@ -10,7 +10,7 @@ using UnityEngine;
 // directa para el tono de "Cold Sanctuary". Se alimenta por filtrado/pesca
 // (Herbivore.Feed la simula de forma abstracta; no hay población de peces
 // cazable todavía en el juego).
-public class WhaleBehavior : Herbivore
+public class WhaleBehavior : Animal
 {
     protected override string SpeciesArchetype => "Whale";
 
@@ -19,8 +19,7 @@ public class WhaleBehavior : Herbivore
 
     // Gentil y curiosa; no lucha, se acerca a los cuidadores con facilidad.
 
-    // Filtra/pesca en mar abierto — no hay pasto que buscar (ver Herbivore.GrazesOnLand).
-    protected override bool GrazesOnLand => false;
+    // Filtra/pesca en mar abierto — no hay pasto que buscar (el flag eatsFish lo fija Forager.ConfigureForSpecies).
     // Afinidad de medio → data del arquetipo "Whale" (Archetypes), aplicada por SpeciesBody (etapa 5).
 
     void Start() => Init();

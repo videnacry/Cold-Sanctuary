@@ -27,6 +27,19 @@ public class Forager : MonoBehaviour
     [Tooltip("Peso de la distancia en la preferencia de presa (más cerca = preferida). Tunable.")]
     public float distanceWeight = 0.01f;
 
+    /// <summary>Fija los flags de comida por ESPECIE (data; antes era el hook ConfigureForager de Carnivore/Herbivore/
+    /// especies). Carnívoros comen presa; Oso/Zorro además pescan; herbívoros terrestres pastan; marinos pescan.</summary>
+    public void ConfigureForSpecies(string species)
+    {
+        switch (species)
+        {
+            case "Wolf": case "Malamute":            eatsPrey = true; break;
+            case "Bear": case "Fox":                 eatsPrey = true; eatsFish = true; break;   // cazan y pescan
+            case "Bunny": case "Deer":               eatsGrass = true; break;
+            case "Whale": case "Seal":               eatsFish = true; break;                    // herbívoros/consumidores marinos
+        }
+    }
+
     /// <summary>El objetivo de comida más cercano entre las fuentes que come (presa/pasto/pez), o null. Un omnívoro
     /// (varios flags) elige la más cercana; el carnívoro/herbívoro puro solo tiene una fuente activa.</summary>
     public GameObject SelectTarget(Animal self)

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WolfBehavior : Carnivore
+public class WolfBehavior : Animal
 {
     protected override string SpeciesArchetype => "Wolf";
 

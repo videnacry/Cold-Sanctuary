@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DeerBehavior : Herbivore
+public class DeerBehavior : Animal
 {
     protected override string SpeciesArchetype => "Deer";
 

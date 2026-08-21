@@ -8,7 +8,7 @@ using UnityEngine;
 // manada. En Cold Sanctuary representa a los perros de trabajo del santuario:
 // deambulan y se vinculan, pero casi no cazan (dependen de que se les alimente).
 // Rol salvaje-vs-mascota aún por decidir (ver docs/refuge-and-adult-behavior.md).
-public class MalamuteBehavior : Carnivore
+public class MalamuteBehavior : Animal
 {
     protected override string SpeciesArchetype => "Malamute";
 
