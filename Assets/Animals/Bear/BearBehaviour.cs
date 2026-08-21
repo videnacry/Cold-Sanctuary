@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class BearBehaviour : Carnivore
+public class BearBehaviour : Animal
 {
     protected override string SpeciesArchetype => "Bear";
 
@@ -20,5 +20,4 @@ public class BearBehaviour : Carnivore
     }
 
     protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.6f; t.canHitAndRun = false; }
-    protected override void ConfigureForager(Forager f) { base.ConfigureForager(f); f.eatsFish = true; }   // pesca además de cazar
 }

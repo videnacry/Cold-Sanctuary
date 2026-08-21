@@ -71,7 +71,8 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
         float bestD = fleeRange;
         foreach (GameObject go in Animal.wholePopulation)
         {
-            if (go == null || go.GetComponent<Carnivore>() == null) continue;
+            Animal a = go != null ? go.GetComponent<Animal>() : null;   // depredador del banco = come presa (eatsPrey), ya no el tipo Carnivore
+            if (a == null || a.Forage == null || !a.Forage.eatsPrey) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d < bestD) { bestD = d; best = go.transform; }
         }

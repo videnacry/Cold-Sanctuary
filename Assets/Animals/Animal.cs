@@ -125,8 +125,6 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     }
 
     // ThreatResponse species flags (override per species)
-    /// <summary>Cada especie configura su <see cref="Forager"/> (modo presa/pasto/pez + dieta). Base: pasto.</summary>
-    protected virtual void ConfigureForager(Forager f) { }
 
     // Aggressiveness/CanHitAndRun retirados: son config del componente ThreatResponder (etapa 5). Cada especie los fija
     // en ConfigureThreat. La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
@@ -215,7 +213,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
-        ConfigureForager(Forage);                                        // cada especie fija su modo (presa/pasto/pez) + dieta
+        Forage.ConfigureForSpecies(SpeciesArchetype);                    // flags de comida por especie (data)
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
@@ -370,8 +368,8 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         foreach (GameObject go in wholePopulation)
         {
             if (go == null || go == gameObject) continue;
-            Carnivore predator = go.GetComponent<Carnivore>();
-            if (predator == null || predator.death) continue;
+            Animal predator = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
+            if (predator == null || predator.death || predator.Forage == null || !predator.Forage.eatsPrey) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }

@@ -5,7 +5,7 @@ using UnityEngine;
 // Zorro ártico (Vulpes lagopus). Datos de referencia: masa adulta 3.2–9.4 kg,
 // carreras cortas hasta ~50 km/h, camadas grandes (5–8 crías, hasta 25 en años
 // buenos), cuidado biparental, vida silvestre corta (~3–6 años).
-public class FoxBehavior : Carnivore
+public class FoxBehavior : Animal
 {
     protected override string SpeciesArchetype => "Fox";
 
@@ -17,5 +17,4 @@ public class FoxBehavior : Carnivore
     void Start() => base.Init();
 
     protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.3f; t.canHitAndRun = true; }
-    protected override void ConfigureForager(Forager f) { base.ConfigureForager(f); f.eatsFish = true; }   // pesca además de cazar
 }
