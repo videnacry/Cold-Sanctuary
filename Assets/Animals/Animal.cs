@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 // enum Reaction → movido a ThreatResponder.cs (etapa 1, docs/anima-dissolving-animal.md)
 
-public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
+public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA (etapa 5): toda la conducta/data está en componentes+catálogos
 {
     #region Family
     /// <summary>
@@ -374,7 +374,8 @@ public abstract class Animal : Anima, ITarget, IEdible, ICarrier, IFactory
         if (threat != null) RespondToThreat(threat);
     }
 
-    public abstract IEnumerator Feed();
+    // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
+    public IEnumerator Feed() => Forage.eatsPrey ? Forage.Hunt(this) : Forage.Graze(this);
 
 
 
