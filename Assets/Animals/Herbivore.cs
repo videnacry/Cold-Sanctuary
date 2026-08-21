@@ -13,6 +13,4 @@ public abstract class Herbivore : Animal
     // Config del Forager (etapa 3): pasto en tierra, banco de peces en el mar.
     protected override void ConfigureForager(Forager f) { if (GrazesOnLand) f.eatsGrass = true; else f.eatsFish = true; }
 
-    // El forrajeo (ir a la fuente + comer) vive en Forager.Graze (etapa 3). Aquí solo se delega.
-    public override IEnumerator Feed() => Forage.Graze(this);
 }
