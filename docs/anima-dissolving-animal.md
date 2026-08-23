@@ -1,6 +1,18 @@
 # Disolver `Animal` → todo ser es un `Anima` + componentes
 
-**Estado (2026-08-17):** propuesta/plan. Este doc alinea el objetivo antes del refactor.
+**Estado (2026-08-23):** etapas 1–5 **hechas** (PRs #94–#126). `Animal` es **CONCRETA** y toda la data/conducta de
+especie vive en **componentes** (`Forager`/`ThreatResponder`/`Locomotion`/`SpeciesBody`) + **catálogos**
+(`SpeciesProfile`/`StageProfile`/`Physiognomy`/`ActionsPrep`/`Family`/`AnimalPopulations`/`PostNatalProfile`).
+`Carnivore`/`Herbivore` **borradas** (#126); las 8 especies heredan de `Animal` como **anclas mínimas de prefab**
+(`SpeciesArchetype` + `Start` + `ConfigureThreat`).
+
+> **Reencuadre importante (etapas 6–7):** el plan original decía "reconstruir el lobo como `SimpleAnima` y **borrar
+> `Animal`**". Al llegar aquí se vio que es **inviable/incorrecto**: (1) sacar `LifeStage`/`Family`/`PostNatal` del
+> tipo `Animal` son ~15 miembros de sistemas **propios del ser-animal**, no universales; (2) las 8 clases son el
+> **MonoBehaviour que los prefabs (fuera de git) referencian por tipo** → borrarlas huérfana los prefabs. Así que el
+> objetivo real cumplido es **`Animal` concreto + jerarquía de forrajeo borrada**, no "borrar `Animal`". El siguiente
+> paso ya **no** es estructural sino **emergente**: disolver `ConfigureThreat` (temperamento) a histórico → ver
+> **[`capabilities-and-embodiment.md`](capabilities-and-embodiment.md)**.
 
 ## Secuencia acordada
 
@@ -92,15 +104,19 @@ sobre el mismo cuerpo/componentes que la IA.
      **emergente** (bonds + pack) como la defensa — se aborda al extraer ese sistema en una etapa posterior.
 2. **`Locomotion`** (NavMesh + gait `ActionPrep`: `Walk`/`Run`/`Idle`/`Move`/`SetGait`/`GoTo`). **[x] Comportamientos migrados** (PR #100 semilla + #101 resto): `CorrectMedium`, `Herbivore.Feed`, `Carnivore.Feed`, `Flee`/`Fight`/`HitAndRun`, wander — ya no tocan `nav`/`ActsPrep` directamente (solo lecturas de config). *Falta:* que `AiBrain` lo conduzca (reconciliar IA) y sacar el `ActsPrep` a data de arquetipo para que sea portable.
 3. **`Forager`/`Predator`** (SOBRE `Locomotion`): decidir **qué/dónde** comer → ir (Locomotion) → comer.
-   - [x] **Selección de objetivo** (`Forager.SelectTarget` + `Animal.ConfigureForager`): flags **combinables** `eatsPrey`/`eatsGrass`/`eatsFish` (omnívoro = varios → la fuente más cercana); carnívoro→`Diet`, herbívoro→pasto/banco. `Carnivore`/`Herbivore.Feed` la usan. (PR #102-#103)
+   - [x] **Selección de objetivo** (`Forager.SelectTarget`): flags **combinables** `eatsPrey`/`eatsGrass`/`eatsFish` (omnívoro = varios → la fuente más cercana). Los flags los fija `Forager.ConfigureForSpecies` (data, #126); la presa va por proximidad+stats (`SelectPrey`, `Diet` retirada #119). (PR #102-#103)
    - [x] **Comer** (carnívoro): `Forager.Eat(self, food, obj, biteSize)` — mordisco + nutrición (hambre + `Metabolism`) + bond con quien dejó la comida + 1ª sólida de cría. Multi-consumo soportado (`IEdible` con pool compartido). `Carnivore.Feed` lo usa. (PR #104)
    - [x] **Pastar/pescar** (herbívoro): `Herbivore.Feed` movido entero a `Forager.Graze(self)` (ir a la fuente por `Locomotion` + comer + reducir banco). `Herbivore.Feed` solo delega. (PR #105)
    - [x] **Persecución/cazar** (carnívoro): `Carnivore.Feed` movido entero a `Forager.Hunt(self)` (elegir presa + perseguir por `Locomotion` + herir + comer + llevar sobras a las crías). `Carnivore.Feed` solo delega. (PR #106)
    - **Etapa 3 COMPLETA:** `Forager` posee select (omnívoro) + `Hunt` + `Graze` + `Eat`. `Carnivore`/`Herbivore` quedan en ~18 líneas (solo `Diet`/`GrazesOnLand` → `ConfigureForager` + delegación) → el "qué come" es ya config de componente.
-4. **`SpeciesBody`** + desacoplar `LifeStage`/`Family`/`PostNatal` del tipo `Animal`.
-5. **Reconciliar IA** [x en marcha, PR #107]: las decisiones ACTIVAS del animal (forrajeo/amenaza) se movieron de `Restore` a `Animal.ActiveBehaveTick`, que conduce el `AiBrain` (auto-añadido con `AnimaController` en `Init`). La **posesión** (`PlayerBrain` de mayor relevancia) las **suprime** → el jugador conduce el mismo cuerpo. `Restore` queda solo con lo PASIVO (metabolismo/evolución/medio/velocidad). *Falta:* que al poseer, la locomoción del jugador (WalkSpell/Transform) no pelee con el `NavMeshAgent` del animal.
-6. **Reconstruir un lobo** como `SimpleAnima` + componentes (prefab de prueba). Validar **paridad** con el `Animal` actual.
-7. Migrar las 9 especies; **borrar** `Animal`/`Carnivore`/`Herbivore` + las clases de conducta por especie.
+4. **`SpeciesBody`** + toda la data de especie a catálogos. **[x] (PRs #108–#124)** — `SpeciesBody`, `SpeciesProfile`,
+   `Physiognomy`, `ActionsPrep`, `StageProfile`, `Family`, `AnimalPopulations`, `PostNatalProfile`. (No se "desacopló"
+   `LifeStage`/`Family`/`PostNatal` del tipo `Animal`: ver reencuadre arriba.)
+5. **Reconciliar IA** [x, PR #107]: las decisiones ACTIVAS del animal (forrajeo/amenaza) se movieron de `Restore` a `Animal.ActiveBehaveTick`, que conduce el `AiBrain` (auto-añadido con `AnimaController` en `Init`). La **posesión** (`PlayerBrain` de mayor relevancia) las **suprime** → el jugador conduce el mismo cuerpo. `Restore` queda solo con lo PASIVO (metabolismo/evolución/medio/velocidad). *Falta:* que al poseer, la locomoción del jugador (WalkSpell/Transform) no pelee con el `NavMeshAgent` del animal.
+6. **`Animal` CONCRETA** [x, PR #125]: resuelto el último `abstract` (`Feed()` → concreto por flags). `Animal` es instanciable.
+7. **Borrar la jerarquía de forrajeo** [x, PR #126]: `Carnivore`/`Herbivore` eliminadas; las 8 especies heredan de
+   `Animal`. **`Animal` NO se borra** (base del ser-animal); las 8 clases quedan como anclas de prefab. Siguiente
+   (emergente, no estructural): temperamento a histórico → [`capabilities-and-embodiment.md`](capabilities-and-embodiment.md).
 
 ## Riesgos
 
