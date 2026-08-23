@@ -16,5 +16,5 @@ public class FoxBehavior : Animal
 
     void Start() => base.Init();
 
-    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.3f; t.canHitAndRun = true; }
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.3f; }
 }

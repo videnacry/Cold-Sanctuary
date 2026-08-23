@@ -12,6 +12,9 @@ public class StatBonus
     public float strength, agility, endurance, bodyMass, perception, composure;
     [Tooltip("Aporte a armadura/coraza (ropa; no se escala por el huésped).")]
     public float armor;
+    [Tooltip("Aporte a ARMA ofensiva (colmillo/veneno/garra/aguijón): sube Anima.armament ⟂ masa (Predation). " +
+             "Biológico → SÍ se modula por la vitalidad del huésped. Así 'crear el colmillo' es una parte del cuerpo.")]
+    public float armament;
 }
 
 /// <summary>
@@ -32,6 +35,10 @@ public class CompositionPart
     [Tooltip("Tejido VIVO/biológico (miembro, ropa-viva): DOBLE SENTIDO — el huésped lo modula y se adapta " +
              "progresivamente. Si es false (rígido: metal/coraza inerte): aporte plano, sin modular.")]
     public bool living = true;
+    [Tooltip("Capacidades/RECEPTORES que esta parte habilita (E2, docs/capabilities-and-embodiment.md §2): " +
+             "ojo→\"see\", oído→\"hear\", colmillo→\"bite\", aguijón→\"sting\". Un hechizo gateado por capacidad " +
+             "requiere que ALGUNA parte lo conceda → así el sentido/arma sale de la anatomía, no de un escalar.")]
+    public string[] grants;
 
     public ClothingSlot Slot => clothing != null ? clothing.slot : slot;
     public float Armor => bonus.armor + (clothing != null ? clothing.defenseRating : 0f);
@@ -57,7 +64,7 @@ public class CharacterComposition : MonoBehaviour
     public float adaptSpeed = 1.5f;
 
     // Delta actualmente aplicado a los campos de Anima (para sumarlo/quitarlo de forma gestionada).
-    float _aStr, _aAgi, _aEnd, _aMass, _aPer, _aCom, _aArm;
+    float _aStr, _aAgi, _aEnd, _aMass, _aPer, _aCom, _aArm, _aWpn;
 
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
     void Start() { foreach (CompositionPart p in parts) SetVisible(p, true); }
@@ -90,6 +97,19 @@ public class CharacterComposition : MonoBehaviour
         if (p != null && p.visual != null) p.visual.SetActive(on);
     }
 
+    /// <summary>¿ALGUNA parte equipada concede esta capacidad/RECEPTOR? (E2). Es la "forma de verificar tener
+    /// receptor visual/auditivo/etc." para gatear los hechizos sensoriales/físicos por anatomía — lo lee
+    /// `Mind.PassesGate` cuando una frase fija `gateCapability`. Ver docs/capabilities-and-embodiment.md §2.</summary>
+    public bool Grants(string capability)
+    {
+        if (string.IsNullOrEmpty(capability)) return false;
+        foreach (CompositionPart p in parts)
+            if (p != null && p.grants != null)
+                foreach (string g in p.grants)
+                    if (g == capability) return true;
+        return false;
+    }
+
     void Update()
     {
         if (anima == null) return;
@@ -101,7 +121,7 @@ public class CharacterComposition : MonoBehaviour
         float aura = 1f + Mathf.Max(0f, anima.magicAura);
 
         // Objetivo: suma de aportes (los biológicos escalados por el huésped; todo escalado por el aura).
-        float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f;
+        float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f, tWpn = 0f;
         foreach (CompositionPart p in parts)
         {
             if (p == null) continue;
@@ -110,6 +130,7 @@ public class CharacterComposition : MonoBehaviour
             tStr += b.strength * f; tAgi += b.agility * f; tEnd += b.endurance * f;
             tMass += b.bodyMass * f; tPer += b.perception * f; tCom += b.composure * f;
             tArm += p.Armor * aura;   // el aura refuerza incluso la coraza inerte
+            tWpn += b.armament * f;   // el arma (colmillo/veneno) es biológica → modulada por el huésped
         }
 
         // Injerto progresivo + aplicación gestionada (no pisa evolución/transformación).
@@ -121,6 +142,7 @@ public class CharacterComposition : MonoBehaviour
         Step(ref anima.perception, ref _aPer,  tPer,  k);
         Step(ref anima.composure,  ref _aCom,  tCom,  k);
         Step(ref anima.armadura,   ref _aArm,  tArm,  k);
+        Step(ref anima.armament,   ref _aWpn,  tWpn,  k);
     }
 
     // Lleva `applied` hacia `target` (injerto progresivo) y ajusta el campo por la diferencia (gestionado).

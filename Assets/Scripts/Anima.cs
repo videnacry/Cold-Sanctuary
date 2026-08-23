@@ -58,6 +58,10 @@ public abstract class Anima : MonoBehaviour, IAptitudes
                                                         // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
     [HideInInspector] public float armadura     = 0.1f; // textura/coraza (piel/escamas/exoesqueleto): puntos de
                                                         // depredador + defensa (docs/stats-as-truth.md §2, Predation).
+    [HideInInspector] public float armament     = 0f;   // ARMA ofensiva ⟂ MASA (colmillo/veneno/garra/aguijón/parásito):
+                                                        // deja que un cuerpo pequeño hiera a uno grande (avispa>cucaracha).
+                                                        // 0 = sin arma especial (el daño sale de masa/fuerza). La pone la
+                                                        // anatomía/composición, como armadura. Ver capabilities-and-embodiment.md §2.
     [HideInInspector] public float magicAura    = 0f;   // aura mágica FIRMADA: + inspira (bonds fáciles) / −
                                                         // destructiva (más temida). Decae con `MagicAura`.
     [HideInInspector] public float autoabandono = 0.3f; // disposición al auto-sacrificio (0=solo piensa en sí / 1=total
@@ -101,6 +105,12 @@ public abstract class Anima : MonoBehaviour, IAptitudes
     public float EffectiveAgility => agility * MediumFactor;
 
     public List<Bond> bonds = new List<Bond>();
+
+    // CONFIANZA por CAPACIDAD/hechizo (0–100): la "maestría" que crece con el uso EXITOSO y mengua con el fracaso —
+    // el **bond hacia el hechizo** (docs/capabilities-and-embodiment.md §4). Mismo mecanismo que los bonds, indexado
+    // por NOMBRE de hechizo en vez de por ITarget. Es el motor del temperamento-HISTÓRICO: el tiburón que muerde con
+    // éxito gana confianza en "Morder" → se atreve más. La selección de la mente ponderará por esta confianza (D2/D3).
+    public Dictionary<string, float> spellConfidence = new Dictionary<string, float>();
 
     // ── Drive response hooks ─────────────────────────────────────────────────────
 
@@ -173,6 +183,20 @@ public abstract class Anima : MonoBehaviour, IAptitudes
         Anima ta = (target as Component)?.GetComponent<Anima>();
         if (ta != null && ta.magicAura > 0f) auraEase = 1f + ta.magicAura;
         b.value = Mathf.Clamp(b.value + amount * EffectiveBondGrowthRate * auraEase, 0f, 100f);
+    }
+
+    /// <summary>Confianza (maestría) en una capacidad/hechizo, 0–100. 0 = nunca la ha usado con éxito.</summary>
+    public float Confidence(string spell)
+        => !string.IsNullOrEmpty(spell) && spellConfidence.TryGetValue(spell, out float v) ? v : 0f;
+
+    /// <summary>Registra el USO de una capacidad: el éxito la REFUERZA (más rápido de joven, como los bonds —
+    /// `EffectiveBondGrowthRate`), el fracaso la MERMA. Es el aprendizaje-por-resultado que vuelve la agresividad/
+    /// destreza un HISTÓRICO (docs/capabilities-and-embodiment.md §4). Decaimiento pasivo sin uso = hook (un tick).</summary>
+    public void RecordUse(string spell, bool success, float amount = 5f)
+    {
+        if (string.IsNullOrEmpty(spell)) return;
+        float delta = success ? amount * EffectiveBondGrowthRate : -amount;
+        spellConfidence[spell] = Mathf.Clamp(Confidence(spell) + delta, 0f, 100f);
     }
 
     /// <summary>False if the bond with this target is strong enough to block harm.</summary>
