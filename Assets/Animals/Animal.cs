@@ -126,9 +126,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     // ThreatResponse species flags (override per species)
 
-    // Aggressiveness/CanHitAndRun retirados: son config del componente ThreatResponder (etapa 5). Cada especie los fija
-    // en ConfigureThreat. La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
-    /// <summary>Cada especie configura su <see cref="ThreatResponder"/> (agresividad, pegar-y-correr). Base: pacífico.</summary>
+    // `canHitAndRun` DISUELTO (rebanada A): el acoso emerge del margen de poder al defender crías (no un flag).
+    // `aggressiveness` sigue como campo del ThreatResponder, fijado por especie en ConfigureThreat (→ histórico, rebanada D).
+    // La defensa de crías EMERGE del vínculo (cubBond) + autoabandono vs peligro.
+    /// <summary>Cada especie configura su <see cref="ThreatResponder"/> (por ahora solo la agresividad). Base: pacífico.</summary>
     protected virtual void ConfigureThreat(ThreatResponder t) { }
     public virtual float PackFactor => Prof.packFactor;
     // Umbral de percepción/reacción ante amenazas (usado en Escape). Baseline por calibrar;

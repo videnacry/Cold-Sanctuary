@@ -21,10 +21,10 @@ public class ThreatResponder : MonoBehaviour
     public float fightPowerMargin = 1.5f;
     [Tooltip("Agresividad mínima para atacar cuando se es claramente más fuerte.")]
     public float aggressionGate = 0.5f;
-    [Tooltip("Agresividad de ESTE ser (config por especie): por encima de aggressionGate, ataca si es más fuerte.")]
+    [Tooltip("Agresividad de ESTE ser (config por especie): por encima de aggressionGate, ataca si es más fuerte. " +
+             "Dirección: dejará de ser un escalar y pasará a HISTÓRICO (semilla innata + confianza-por-uso) — " +
+             "rebanada D de capabilities-and-embodiment.md.")]
     public float aggressiveness = 0f;
-    [Tooltip("¿Sabe pegar-y-correr? (config por especie).")]
-    public bool canHitAndRun = false;
     [Tooltip("Cuánto suma al miedo un aura mágica DESTRUCTIVA del origen (por unidad de aura). Tunable.")]
     public float auraFear = 1f;
     [Tooltip("Convierte el 'miedo' (fracción de mi poder) en un ALCANCE en metros para la alerta de proximidad: " +
@@ -49,7 +49,9 @@ public class ThreatResponder : MonoBehaviour
     }
 
     /// <summary>Decide la reacción por STATS + autoabandono + bonds. `self` = quien reacciona; el contexto de CRÍAS
-    /// lo aporta el llamante; la agresividad/pegar-y-correr son campos de este componente (config de especie).</summary>
+    /// lo aporta el llamante. El **acoso** (pegar-y-correr) ya NO es un flag de especie: EMERGE del margen de poder al
+    /// defender crías (no puedo con ella → acoso en vez de standup). `aggressiveness` sigue como campo (→ histórico,
+    /// rebanada D de capabilities-and-embodiment.md).</summary>
     public Reaction Decide(Anima self, GameObject threat, float autoabandono, bool defendingCubs, float cubBond)
     {
         if (self == null || threat == null) return Reaction.Flee;
@@ -70,7 +72,10 @@ public class ThreatResponder : MonoBehaviour
         {
             float peligro = Mathf.Max(0f, enemyPower / Mathf.Max(0.1f, myPower) - 1f);   // 0 = parejo, >0 = en desventaja
             if ((autoabandono + cubBond) > peligro)
-                return canHitAndRun ? Reaction.HitAndRun : Reaction.Fight;
+                // Fight vs ACOSO emerge del margen de poder (ya no un flag de especie): me comprometo a una pelea plena
+                // solo si soy claramente más fuerte; si no puedo con ella, acoso (golpe + retirada hacia el nido,
+                // repetido) — la coneja que muerde la cola de la serpiente y se retira. Ver capabilities-and-embodiment.md §4.
+                return myPower > enemyPower * fightPowerMargin ? Reaction.Fight : Reaction.HitAndRun;
         }
         return Reaction.Flee;
     }

@@ -19,5 +19,5 @@ public class MalamuteBehavior : Animal
 
     void Start() => base.Init();
 
-    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.15f; t.canHitAndRun = false; }
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0.15f; }
 }
