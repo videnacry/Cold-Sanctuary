@@ -23,7 +23,7 @@ lanzador (por sus propios stats) decide si mueve **un stat, un grupo o todos**.
 |---|---|---|
 | **Emoción / postura** | `f(stats de disposición, humores actuales) → suma de frases → postura (`CreatureRig`) + `ScreenEffects`` | camera-shake ✔; resto nuevo |
 | **Identidad / diálogo interno** | suma de frases del ser (`ThoughtField`/`MindPhrase`) → habla/piensa según su mezcla stat | sustrato ✔ |
-| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño, **arma**)`; el tamaño invierte presa↔depredador; **falta el eje de armamento** (veneno/filo ⟂ masa) y **gatear la lectura por sentidos** ([`capabilities-and-embodiment.md`](capabilities-and-embodiment.md) §2–§3) | **hecho:** `Predation` en `Forager.SelectPrey`+`Assess` |
+| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño, **arma ⟂ masa**)`; el tamaño invierte presa↔depredador; lectura **gateada por sentidos** ([`capabilities-and-embodiment.md`](capabilities-and-embodiment.md) §2–§3) | **hecho:** `Predation` (+`armament`) en `Forager.SelectPrey`+`Assess` (gateado) |
 | **Bond** | hechizo que sube/baja los stats-que-generan-bond → pase directo a mamá/hijo/amigo/enemigo (temporal) | nuevo, sobre bonds ✔ |
 | **Transformación** | combate de stats de 3 niveles (§4) | nuevo |
 | **Habilidades** | **mapa de stats**: la receta-de-acciones desbloquea un cluster (ganar fuerza ⇒ cluster distinto que ganar agilidad); el **árbol point-buy** (niveles de magia → puntos) es una **capa opcional/simple** para micro/macrocosmos | primario = emergente |

@@ -59,6 +59,11 @@ masa**: el **arma** (colmillos/veneno/garra/aguijón/estrangulamiento/parasitism
 No es "más poder": es **qué arma tienes contra qué defensa** (piedra/papel/tijera). Un arma es un **componente del
 cuerpo** (encaja con `CharacterComposition`/quimeras). La depredación deja de ser una sola escala.
 
+> **Hecho (B, PR #130):** campo `Anima.armament` (⟂ masa, default 0 → sin cambio de balance); `Predation.PredatorPower
+> += armament × ArmamentPower`. Como el poder efectivo alimenta la percepción de amenaza (`EffectivePower`→`Assess`),
+> el pequeño-pero-armado **caza Y es temido** con un solo cambio. *Falta:* el **matchup tipado** (veneno vs quitina,
+> garra vs coraza) — hoy el arma es un escalar; la piedra/papel/tijera real es un hook.
+
 ## 3. Leer stats está **gateado por los sentidos**
 
 Reaccionar a los stats del otro exige **percibirlos**. Hoy `ThreatResponder.Assess` lee `EffectivePower` del enemigo
@@ -94,6 +99,21 @@ Por eso `aggressiveness` **no** es un número de especie. Se parte en:
 
 **Nature vs nurture:** un tiburón criado en agua libre, alimentado por sus padres, **organiza su energía hacia otro
 temperamento**. Mismo cuerpo, historia distinta → agresividad distinta. La ferocidad es un **histórico**.
+
+### La confianza es un **bond hacia el hechizo** (mecanismo de D)
+
+Ya hay bonds hacia **seres** (`Bond` por `ITarget`, 0–100, crece con `GrowBond`) y hacia **especies**
+(`speciesBonds`, relaciones/karma). La **confianza en una capacidad** es **el mismo mecanismo indexado por hechizo**:
+un valor 0–100 por hechizo/arma que **crece con el uso exitoso** (el tiburón muerde, le sale bien → sube la confianza
+en `Morder`) y **decae** sin uso o tras fracasos. Reutiliza `GrowBond`:
+
+- La **selección** de la mente (§5) pondera por esta confianza: `necesidad × capacidad × confianza(hechizo)` — un ser
+  se atreve más con lo que *sabe que le funciona* (colmillos, o una **estrategia** intangible, como la araña saltarina).
+- La **agresividad efectiva** = semilla innata + **la confianza en las armas de daño** que tengo. El tiburón "aprende"
+  la agresividad = acumula bond con `Morder`; el conejo nunca lo hace (su `Morder` no le da resultados).
+- Encaja con la transformación (§6): un conejo con colmillos de serpiente tiene el arma (potencia > 0) pero **confianza
+  0** → debe **ganarla usándola** (la curva de reaprendizaje). El arma es *posibilidad*; el bond‑hacia‑el‑hechizo es
+  *maestría*.
 
 ### `canHitAndRun` se **disuelve** (no se migra)
 
@@ -165,7 +185,7 @@ De lo más concreto/verificable a lo más profundo:
 | # | Rebanada | Qué | Reusa |
 |---|---|---|---|
 | **A ✔** | **Disolver `canHitAndRun`** (PR #128) | acoso = defensa-de-crías + margen de poder; borrado el bool + 7 asignaciones por especie. Fight vs acoso: `myPower > enemyPower × fightPowerMargin ? Fight : HitAndRun` | `ThreatResponder.Decide` |
-| **B** | **Eje de armamento** en `Predation` | arma ⟂ masa (veneno/filo/garra/parásito); avispa>cucaracha creíble | `Predation`, componentes |
+| **B ✔** | **Eje de armamento** en `Predation` (PR #130) | campo `Anima.armament` (⟂ masa, default 0 = sin cambio); `PredatorPower += armament × ArmamentPower`. Un pequeño-pero-armado (avispa) caza y ES temido (propaga por `EffectivePower`→`Assess`). Matchup tipado (veneno vs quitina) = hook | `Predation`, `CharacterComposition` |
 | **C ✔** | **`Assess` gateado por sentidos** (PR #129) | `threat = Lerp(unawareThreat, real, clarity)`, `clarity = Clamp01(percepción/perceptionForFullRead) × legibilidad`. Fauna actual (percepción ≥1) → clarity 1 → sin cambio de balance; percepción baja (garrapata/ciego) → no percibe el peligro. Bond se aplica DESPUÉS (memoria). Legibilidad = hook (1f; a futuro tamaño/quietud/camuflaje) | `EmotionReader` (perception) |
 | **D** | **Confianza por uso → temperamento** | `aggressiveness` = semilla innata + histórico de resultados; hechizos con receta+id; thoughts por el mismo motor | `Humores`/`Mind`/`PhraseLibrary`/`SoulRecord` |
 
