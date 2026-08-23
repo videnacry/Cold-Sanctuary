@@ -24,5 +24,5 @@ public class WhaleBehavior : Animal
 
     void Start() => Init();
 
-    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = false; }
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; }
 }

@@ -46,5 +46,5 @@ public class BunnyBehavior : Animal
 
    
 
-    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; t.canHitAndRun = true; }
+    protected override void ConfigureThreat(ThreatResponder t) { t.aggressiveness = 0f; }
 }
