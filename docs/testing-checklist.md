@@ -12,6 +12,22 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-23 — pull revisado: `b75e037` (mis 3 fixes de generación de familias, comiteados por
+  el compañero tal cual) + `2e55323`/PR #126 (borra `Carnivore`/`Herbivore`, las 8 especies heredan
+  directo de `Animal`; qué comen pasa a ser data vía `Forager.ConfigureForSpecies`)**. Sincronizado al
+  proyecto vivo (incl. borrado de `Carnivore.cs`/`Herbivore.cs`). **Sin verificación de compilación en
+  vivo esta vez**: tanto el bridge MCP de Unity como las herramientas de control de escritorio estuvieron
+  caídas todo el ciclo (problema conocido de este entorno) — no pude forzar un recompile ni tomar
+  capturas. En su lugar hice una revisión manual exhaustiva del diff de PR #126 (que el propio commit
+  admite no haber podido compilar: "verificado por conteo de llaves y grep de símbolos"): confirmé que
+  las 8 clases de especie cambiaron de base correctamente (`Carnivore`/`Herbivore` → `Animal`), que
+  `ConfigureForager`/`GrazesOnLand` no tienen ninguna referencia de código sobreviviente (solo quedan en
+  comentarios), que los 2 sitios que hacían `GetComponent<Carnivore>()` (`Animal.SenseThreats`,
+  `FishSchool.NearestPredator`) se recablearon correctamente a `Forager.eatsPrey`, y que los 3 campos
+  `eatsPrey`/`eatsGrass`/`eatsFish` que usa el nuevo `Forager.ConfigureForSpecies()` existen. **No
+  reemplaza una compilación real** — pendiente confirmar con Editor.log en el próximo ciclo en que las
+  herramientas reconecten.
+
 - **CICLO 2026-08-21 — sync etapa 5 (38 commits, PRs #108-125, 27 .cs) + 3 BUGS REALES encontrados y
   arreglados en la cadena de generación de familias, el más grave de la sesión**: la población de fauna
   auto-generada (`FamilyGenerator`/`WildlifePopulation_AUTO`, 11 familias / 66 animales) estaba
