@@ -171,6 +171,7 @@ public class Forager : MonoBehaviour
         self.busy = true;
         ITarget victim = prey.GetComponent<ITarget>();
         if (victim == null) { self.busy = false; yield break; }
+        bool wasAliveAtStart = !victim.Dead;   // para la confianza-por-uso: solo cuenta como CAZA si estaba viva (no carroña)
         prey.GetComponent<Anima>()?.RespondToThreat(self.gameObject);   // la presa reacciona a la amenaza
         Vector3 location = prey.transform.position;
         float distance = Vector3.Distance(self.transform.position, location);
@@ -216,6 +217,10 @@ public class Forager : MonoBehaviour
             }
         } while (distance < 700 && cansancio < 1);
         self.exhaustion += cansancio;
+
+        // Confianza-por-uso (D2): una CAZA de presa viva refuerza el combate si la abatí; si me rendí (agotado), lo merma.
+        // Así el depredador exitoso se vuelve más osado y el que nunca caza (herbívoro) no. Ver capabilities-and-embodiment.md §4.
+        if (wasAliveAtStart) self.RecordUse(Capability.Combat, victim.Dead);
 
         // Si la presa quedó como FoodItem sin consumir, llevarla a las crías.
         FoodItem remains = prey != null ? prey.GetComponent<FoodItem>() : null;

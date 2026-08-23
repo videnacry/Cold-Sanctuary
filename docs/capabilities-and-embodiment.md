@@ -133,8 +133,13 @@ en `Morder`) y **decae** sin uso o tras fracasos. Reutiliza `GrowBond`:
 
 > **Hecho (D1, PR #131):** infra en `Anima` — `spellConfidence` (dict nombre→0–100), `Confidence(spell)` y
 > `RecordUse(spell, success, amount)` (éxito refuerza —más rápido de joven, vía `EffectiveBondGrowthRate`— / fracaso
-> merma). Es el sustrato del bond‑hacia‑el‑hechizo. *Falta (D2):* PRODUCTORES (registrar éxito/fracaso al cazar/pelear)
-> y CONSUMIDORES (la agresividad efectiva y la selección leen la confianza). Decaimiento pasivo sin uso = hook.
+> merma). Es el sustrato del bond‑hacia‑el‑hechizo.
+>
+> **Hecho (D2, PR #132):** primer bucle productor→consumidor. **Productor:** `Forager.Hunt` → `RecordUse(Capability.Combat,
+> maté?)` solo si la presa estaba VIVA (no carroña). **Consumidor:** `ThreatResponder.Decide` usa **agresividad efectiva
+> = `aggressiveness` innata + `Confidence(Combat)/100 × peso`** para el gate de atacar. Confianza 0 al nacer → conducta
+> idéntica; sube con la caza exitosa → el depredador se envalentona con el tiempo, el herbívoro (que no caza) nunca.
+> *Falta:* productor de FIGHT (ganar/perder enfrentamientos), decaimiento pasivo, y la **selección** ponderada (D3).
 
 ### `canHitAndRun` se **disuelve** (no se migra)
 
@@ -209,13 +214,15 @@ De lo más concreto/verificable a lo más profundo:
 | **B ✔** | **Eje de armamento** en `Predation` (PR #130) | campo `Anima.armament` (⟂ masa, default 0 = sin cambio); `PredatorPower += armament × ArmamentPower`. Un pequeño-pero-armado (avispa) caza y ES temido (propaga por `EffectivePower`→`Assess`). Matchup tipado (veneno vs quitina) = hook | `Predation`, `CharacterComposition` |
 | **C ✔** | **`Assess` gateado por sentidos** (PR #129) | `threat = Lerp(unawareThreat, real, clarity)`, `clarity = Clamp01(percepción/perceptionForFullRead) × legibilidad`. Fauna actual (percepción ≥1) → clarity 1 → sin cambio de balance; percepción baja (garrapata/ciego) → no percibe el peligro. Bond se aplica DESPUÉS (memoria). Legibilidad = hook (1f; a futuro tamaño/quietud/camuflaje) | `EmotionReader` (perception) |
 | **D1 ✔** | **Infra de confianza-por-hechizo** (PR #131) | `Anima.spellConfidence` + `Confidence`/`RecordUse` (el bond-hacia-el-hechizo) | `bonds`/`EffectiveBondGrowthRate` |
-| **D2** | **Productores + consumidores** de confianza | registrar éxito/fracaso al cazar/pelear; la agresividad efectiva y `Decide` leen la confianza | `Forager`/`ThreatResponder` |
+| **D2 ✔** | **Productores + consumidores** de confianza (PR #132) | `Forager.Hunt` registra `RecordUse(Combat, maté?)` (solo presa VIVA, no carroña); `ThreatResponder.Decide` usa **agresividad efectiva = innata + confianza(Combat)**. Confianza 0 al nacer → sin cambio; sube con la caza exitosa (el depredador se vuelve osado, el herbívoro no) | `Forager`/`ThreatResponder` |
 | **D3** | **Motor de selección por receta+id** | la mente elige hechizo/thought = `argmax(necesidad × capacidad × confianza)`; thoughts por el mismo motor | `Mind`/`PhraseLibrary`/`SoulRecord` |
 | **E** | **Anatomía → capacidad/receptor** (bodyParts) | `armament`/`perception`/receptores salen de `CompositionPart` (colmillo/veneno/ojo/oído); habilitan hechizos; componen quimeras | `CharacterComposition`/`StatBonus` |
 
-**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131). Sigue **D2** (productores+consumidores de confianza:
-la agresividad efectiva empieza a leer el histórico) → **D3** (motor de selección) → **E** (anatomía→capacidad, cuando
-haya bodyParts). D2 es el que por fin responde "¿por qué se matan?" con conducta.
+**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131), D2 ✔ (#132). La agresividad ya es un **histórico** (el
+depredador que caza con éxito se envalentona). Sigue **D3** (motor de selección por receta+id: la mente elige
+hechizo/thought por `necesidad × capacidad × confianza`) → **E** (anatomía→capacidad, cuando haya bodyParts). Falta
+también, en D-cola: **productor de FIGHT** (hoy solo la caza alimenta la confianza; ganar/perder un enfrentamiento aún
+no) y el **decaimiento pasivo** de la confianza sin uso.
 
 ## 9. Sustrato existente (qué ya hay)
 
