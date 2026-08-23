@@ -12,9 +12,15 @@ using UnityEngine;
 /// </summary>
 public static class Predation
 {
-    /// <summary>Poder depredador: capacidad de cazar/intimidar (masa/fuerza/textura/agilidad).</summary>
+    /// <summary>Cuánto pesa el ARMA (⟂ masa) en el poder depredador. Aditivo y a peso pleno: un arma es decisiva y
+    /// permite a un cuerpo pequeño (avispa/garrapata) herir a uno grande. Los seres sin arma especial (armament=0)
+    /// quedan igual que antes. Tunable. Ver capabilities-and-embodiment.md §2.</summary>
+    public const float ArmamentPower = 1f;
+
+    /// <summary>Poder depredador: capacidad de cazar/intimidar. Masa/fuerza/textura/agilidad + **arma ⟂ masa**
+    /// (colmillo/veneno/garra/aguijón): el arma NO escala con la masa, así el pequeño-pero-armado puede cazar.</summary>
     public static float PredatorPower(Anima a) => a == null ? 0f
-        : a.strength * 0.4f + a.bodyMass * 0.4f + a.armadura * 0.15f + a.agility * 0.05f;
+        : a.strength * 0.4f + a.bodyMass * 0.4f + a.armadura * 0.15f + a.agility * 0.05f + a.armament * ArmamentPower;
 
     /// <summary>Defensa: lo difícil que es someterlo/comerlo (masa/fuerza/textura).</summary>
     public static float Defense(Anima a) => a == null ? 0f

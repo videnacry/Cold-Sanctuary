@@ -58,6 +58,10 @@ public abstract class Anima : MonoBehaviour, IAptitudes
                                                         // OJO: distinta de Animal.sensibility (rango de detección de amenazas).
     [HideInInspector] public float armadura     = 0.1f; // textura/coraza (piel/escamas/exoesqueleto): puntos de
                                                         // depredador + defensa (docs/stats-as-truth.md §2, Predation).
+    [HideInInspector] public float armament     = 0f;   // ARMA ofensiva ⟂ MASA (colmillo/veneno/garra/aguijón/parásito):
+                                                        // deja que un cuerpo pequeño hiera a uno grande (avispa>cucaracha).
+                                                        // 0 = sin arma especial (el daño sale de masa/fuerza). La pone la
+                                                        // anatomía/composición, como armadura. Ver capabilities-and-embodiment.md §2.
     [HideInInspector] public float magicAura    = 0f;   // aura mágica FIRMADA: + inspira (bonds fáciles) / −
                                                         // destructiva (más temida). Decae con `MagicAura`.
     [HideInInspector] public float autoabandono = 0.3f; // disposición al auto-sacrificio (0=solo piensa en sí / 1=total
