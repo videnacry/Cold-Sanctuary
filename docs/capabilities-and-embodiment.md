@@ -166,7 +166,7 @@ De lo más concreto/verificable a lo más profundo:
 |---|---|---|---|
 | **A ✔** | **Disolver `canHitAndRun`** (PR #128) | acoso = defensa-de-crías + margen de poder; borrado el bool + 7 asignaciones por especie. Fight vs acoso: `myPower > enemyPower × fightPowerMargin ? Fight : HitAndRun` | `ThreatResponder.Decide` |
 | **B** | **Eje de armamento** en `Predation` | arma ⟂ masa (veneno/filo/garra/parásito); avispa>cucaracha creíble | `Predation`, componentes |
-| **C** | **`Assess` gateado por sentidos** | leer stats ∝ mi percepción × su legibilidad; garrapata "ciega"; dar ojos recalibra despacio | `EmotionReader` (perception) |
+| **C ✔** | **`Assess` gateado por sentidos** (PR #129) | `threat = Lerp(unawareThreat, real, clarity)`, `clarity = Clamp01(percepción/perceptionForFullRead) × legibilidad`. Fauna actual (percepción ≥1) → clarity 1 → sin cambio de balance; percepción baja (garrapata/ciego) → no percibe el peligro. Bond se aplica DESPUÉS (memoria). Legibilidad = hook (1f; a futuro tamaño/quietud/camuflaje) | `EmotionReader` (perception) |
 | **D** | **Confianza por uso → temperamento** | `aggressiveness` = semilla innata + histórico de resultados; hechizos con receta+id; thoughts por el mismo motor | `Humores`/`Mind`/`PhraseLibrary`/`SoulRecord` |
 
 **Recomendado:** A primero (cierra el hook pendiente, ya maduro); de las grandes, **C antes que B** (la ceguera/
