@@ -36,6 +36,9 @@ public class ThreatResponder : MonoBehaviour
     public float perceptionForFullRead = 1f;
     [Tooltip("Amenaza percibida cuando NO puedo leer al otro (0 = no me alarmo por lo que no percibo).")]
     public float unawareThreat = 0f;
+    [Tooltip("Cuánto suma a la agresividad EFECTIVA la confianza en el combate (0–100 → ×este/100). Con confianza 0 " +
+             "(recién nacido) no cambia nada; el que caza/pelea con éxito se vuelve más osado — temperamento HISTÓRICO.")]
+    public float confidenceAggressionWeight = 1f;
 
     /// <summary>EVALÚA cuán amenazante es `source` para `self`, por STATS: poder depredador EFECTIVO del origen
     /// (con manada) relativo al mío. 1 = parejo; &gt;1 me supera; acotado [0.2, 4]. Un aura destructiva asusta más;
@@ -67,8 +70,9 @@ public class ThreatResponder : MonoBehaviour
 
     /// <summary>Decide la reacción por STATS + autoabandono + bonds. `self` = quien reacciona; el contexto de CRÍAS
     /// lo aporta el llamante. El **acoso** (pegar-y-correr) ya NO es un flag de especie: EMERGE del margen de poder al
-    /// defender crías (no puedo con ella → acoso en vez de standup). `aggressiveness` sigue como campo (→ histórico,
-    /// rebanada D de capabilities-and-embodiment.md).</summary>
+    /// defender crías (no puedo con ella → acoso en vez de standup). La **agresividad EFECTIVA** = `aggressiveness`
+    /// innata + la **confianza en el combate** (histórico de uso): el que hiere con éxito se vuelve más osado (D2,
+    /// capabilities-and-embodiment.md §4). Con confianza 0 (recién nacido) = comportamiento de antes.</summary>
     public Reaction Decide(Anima self, GameObject threat, float autoabandono, bool defendingCubs, float cubBond)
     {
         if (self == null || threat == null) return Reaction.Flee;
@@ -81,7 +85,9 @@ public class ThreatResponder : MonoBehaviour
         float myPower    = Predation.EffectivePower(self) * (1f + autoabandono);   // stats + manada + valentía
         float enemyPower = threatAnima != null ? Predation.EffectivePower(threatAnima) : 0f;
 
-        if (myPower > enemyPower * fightPowerMargin && aggressiveness > aggressionGate)
+        // Agresividad EFECTIVA = innata + confianza acumulada en el combate (0 al nacer → sin cambio; sube con el uso exitoso).
+        float effectiveAggression = aggressiveness + self.Confidence(Capability.Combat) / 100f * confidenceAggressionWeight;
+        if (myPower > enemyPower * fightPowerMargin && effectiveAggression > aggressionGate)
             return Reaction.Fight;   // claramente más fuerte
 
         // Modelo bonds+threat+autoabandono: por las crías, plantar cara si (autoabandono + vínculo) > peligro.
