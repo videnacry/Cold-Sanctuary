@@ -61,17 +61,27 @@ public class MindPhrase
     public readonly AptitudeKind gateAptitude;
     public readonly float gateMin;
 
+    /// <summary>Clave de CAPACIDAD para la confianza (D3a): si se fija, la selección pondera esta frase por
+    /// `Anima.Confidence(capability)` (el bond-hacia-el-hechizo) — lo dominado se elige más. Vacío = frase normal,
+    /// sin ponderar por confianza. Ver docs/capabilities-and-embodiment.md §5.</summary>
+    public readonly string capability;
+    /// <summary>Gate por RECEPTOR/capacidad anatómica (E2): si se fija, la frase (p.ej. `Ver`) solo es seleccionable
+    /// si el ser TIENE el receptor — alguna `CompositionPart.grants` lo concede. Vacío = sin gate anatómico.</summary>
+    public readonly string gateCapability;
+
     public MindPhrase(ElementalTone t, string[] pos, string[] neg,
                       PhraseCategory cat = PhraseCategory.Elemental,
                       bool randomAssignable = true, bool reusable = true, string source = null,
                       float weight = 1f, ThoughtLifecycle lifecycle = ThoughtLifecycle.Persistent,
-                      bool gated = false, AptitudeKind gateAptitude = AptitudeKind.Reasoning, float gateMin = 0f)
+                      bool gated = false, AptitudeKind gateAptitude = AptitudeKind.Reasoning, float gateMin = 0f,
+                      string capability = null, string gateCapability = null)
     {
         tone = t; positive = pos; negative = neg;
         category = cat; this.randomAssignable = randomAssignable; this.reusable = reusable;
         this.source = source;
         this.weight = weight; this.lifecycle = lifecycle;
         this.gated = gated; this.gateAptitude = gateAptitude; this.gateMin = gateMin;
+        this.capability = capability; this.gateCapability = gateCapability;
     }
 }
 

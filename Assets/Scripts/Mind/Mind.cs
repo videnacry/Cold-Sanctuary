@@ -34,12 +34,20 @@ public class Mind : MonoBehaviour
     [Header("Ritmo")]
     [Min(0.5f)] public float thinkInterval = 4f;
 
+    [Tooltip("Piso de confianza en la selección de una frase-CAPACIDAD (D3a): 0.25 = una capacidad aún no dominada " +
+             "se elige a 1/4 de su peso (para poder probarse y ganar confianza); dominada, a peso pleno.")]
+    [Range(0f, 1f)] public float minConfidenceFactor = 0.25f;
+
     float _nextThink;
+    Anima _anima;                    // para leer Confidence(spell) (D3a) — el bond-hacia-el-hechizo
+    CharacterComposition _body;      // para el gate por receptor/anatomía (E2)
 
     void Awake()
     {
         IAptitudes src = GetComponent<IAptitudes>();
         if (src != null) aptitudes = Aptitudes.From(src);
+        _anima = GetComponent<Anima>();
+        _body = GetComponent<CharacterComposition>();
     }
 
     /// <summary>Añade pensamientos base (p.ej. innatos de la especie) que aún no tenga. No duplica.</summary>
@@ -125,6 +133,11 @@ public class Mind : MonoBehaviour
     {
         float w = Mathf.Max(0.0001f, p.weight);
         if (p.lifecycle == ThoughtLifecycle.DecaysPerUse) w /= (1 + UsesOf(p));
+        // D3a: una frase-CAPACIDAD (hechizo/asana con clave) se pondera por la CONFIANZA en ella (el bond-hacia-el-
+        // hechizo): lo dominado se elige más; lo nuevo conserva un piso (`minConfidenceFactor`) para poder probarse
+        // y aprenderse. Sin clave → sin cambio (las frases actuales quedan igual). Ver capabilities-and-embodiment.md §5.
+        if (!string.IsNullOrEmpty(p.capability) && _anima != null)
+            w *= Mathf.Lerp(minConfidenceFactor, 1f, _anima.Confidence(p.capability) / 100f);
         return w;
     }
 
@@ -204,6 +217,13 @@ public class Mind : MonoBehaviour
         return list;
     }
 
-    /// <summary>¿Este ser cumple el requisito de aptitud del pensamiento? (sin gate → siempre sí).</summary>
-    bool PassesGate(MindPhrase p) => !p.gated || aptitudes.Get(p.gateAptitude) >= p.gateMin;
+    /// <summary>¿Este ser puede pensar/lanzar esta frase? Gate por APTITUD (mínimo) y por RECEPTOR/anatomía (E2):
+    /// si la frase fija `gateCapability`, requiere que alguna `CompositionPart` lo conceda (ojo→Ver, colmillo→Morder).
+    /// Sin gates → siempre sí. Ver docs/capabilities-and-embodiment.md §2.</summary>
+    bool PassesGate(MindPhrase p)
+    {
+        if (p.gated && aptitudes.Get(p.gateAptitude) < p.gateMin) return false;
+        if (!string.IsNullOrEmpty(p.gateCapability) && (_body == null || !_body.Grants(p.gateCapability))) return false;
+        return true;
+    }
 }

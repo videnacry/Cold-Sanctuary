@@ -83,8 +83,12 @@ mecanismo (la **rebanada E**, §8). La `perception` sigue graduando **cuán bien
 > **Hecho (E1, PR #133):** el punto 1 para el ARMA. `StatBonus.armament` + su aplicación por el delta gestionado de
 > `CharacterComposition` (modulada por la vitalidad del huésped, como lo biológico) → un **colmillo/veneno como
 > `CompositionPart`** sube el `Anima.armament` que `Predation` lee. Cierra B desde la anatomía: el arma ya es una PARTE,
-> no un escalar suelto. *Falta (E2):* el punto 2 —el **tag de receptor/capacidad** en `CompositionPart` (ojo→`Ver`) y la
-> query "¿tengo receptor?"— que se cablea con las entidades de hechizo (D3).
+> no un escalar suelto.
+>
+> **Hecho (E2, PR #134):** el punto 2 —el RECEPTOR. `CompositionPart.grants` (ojo→`"see"`, colmillo→`"bite"`) +
+> `CharacterComposition.Grants(cap)`; una frase que fije `MindPhrase.gateCapability` solo pasa `Mind.PassesGate` si el
+> ser lo concede. Es "la forma de verificar tener receptor visual/auditivo". DORMIDO hasta que existan las frases-hechizo
+> (D3b); mientras, ninguna frase lo fija → sin efecto. La `perception` sigue graduando *cuán bien*; el receptor, *si*.
 
 ## 3. Leer stats está **gateado por los sentidos**
 
@@ -177,6 +181,13 @@ Un **solo motor de "respuesta por receta"**: repertorio global + receta sobre st
 (hechizo **o** thought). La mente **escoge por necesidad** entre lo viable; esa selección *es* el número/código que
 apunta a la capacidad concreta.
 
+> **Hecho (D3a + E2, PR #134):** el motor de selección de thoughts de `Mind` ya sabe (1) **ponderar por confianza** —
+> `EffectiveWeight` multiplica por `Confidence(capability)` si la frase declara una `capability` (D3a) — y (2) **gatear
+> por receptor** — `PassesGate` exige `CharacterComposition.Grants(gateCapability)` si la frase lo pide (E2). Es el
+> mismo `Mind` que ya elige por `PickTone`/`PickWeighted`/`PassesGate`. **Dormido** hasta que se creen las frases de
+> categoría `Hechizo`/`Deseo` que fijen esas claves. *Falta (D3b):* que la selección **conduzca la acción** (hoy `Mind`
+> solo loguea; las acciones son ramas fijas en `ActiveBehaveTick`).
+
 ## 6. El cuerpo es el cableado (embodiment)
 
 - **¿Las neuronas ya saben lo que el cuerpo puede hacer?** Las dos cosas: hay **programas motores innatos** (un
@@ -221,15 +232,16 @@ De lo más concreto/verificable a lo más profundo:
 | **C ✔** | **`Assess` gateado por sentidos** (PR #129) | `threat = Lerp(unawareThreat, real, clarity)`, `clarity = Clamp01(percepción/perceptionForFullRead) × legibilidad`. Fauna actual (percepción ≥1) → clarity 1 → sin cambio de balance; percepción baja (garrapata/ciego) → no percibe el peligro. Bond se aplica DESPUÉS (memoria). Legibilidad = hook (1f; a futuro tamaño/quietud/camuflaje) | `EmotionReader` (perception) |
 | **D1 ✔** | **Infra de confianza-por-hechizo** (PR #131) | `Anima.spellConfidence` + `Confidence`/`RecordUse` (el bond-hacia-el-hechizo) | `bonds`/`EffectiveBondGrowthRate` |
 | **D2 ✔** | **Productores + consumidores** de confianza (PR #132) | `Forager.Hunt` registra `RecordUse(Combat, maté?)` (solo presa VIVA, no carroña); `ThreatResponder.Decide` usa **agresividad efectiva = innata + confianza(Combat)**. Confianza 0 al nacer → sin cambio; sube con la caza exitosa (el depredador se vuelve osado, el herbívoro no) | `Forager`/`ThreatResponder` |
-| **D3** | **Motor de selección por receta+id** | la mente elige hechizo/thought = `argmax(necesidad × capacidad × confianza)`; thoughts por el mismo motor | `Mind`/`PhraseLibrary`/`SoulRecord` |
+| **D3a ✔** | **Confianza en el peso de selección** (PR #134) | `Mind.EffectiveWeight` pondera una frase-CAPACIDAD por `Confidence(capability)` (piso `minConfidenceFactor` para poder probar lo nuevo). `MindPhrase.capability` opcional; sin clave → sin cambio. Es el puente D2→motor | `Mind`/`MindPhrase` |
+| **D3b** | **La selección CONDUCE la acción** | que el deseo elegido por el motor (`necesidad × capacidad × confianza`) despache Feed/Sleep/Escape, reemplazando la prioridad fija de `ActiveBehaveTick`. `PhraseCategory` ya tiene `Hechizo`/`Deseo`. **El salto grande** (conecta `Mind`→acción, hoy solo loguea) | `Mind`/`Animal`/`AiBrain` |
 | **E1 ✔** | **Anatomía → stats** (bodyParts) (PR #133) | `armament` en `StatBonus`, aplicado por el delta gestionado (modulado por huésped, como lo biológico) → un colmillo/veneno sube `Anima.armament` que `Predation` lee. El arma sale ya de una PARTE | `CharacterComposition`/`StatBonus` |
-| **E2** | **Anatomía → capacidad/RECEPTOR** | tag de capacidad/receptor en `CompositionPart` (ojo→`Ver`, aguijón→`Picar`) + query "¿tengo receptor de esta modalidad?"; se cablea cuando existan las entidades de hechizo (con D3) | `CompositionPart`, repertorio |
+| **E2 ✔** | **Anatomía → capacidad/RECEPTOR** (PR #134) | `CompositionPart.grants` (ojo→`"see"`, colmillo→`"bite"`) + `CharacterComposition.Grants(cap)`; `MindPhrase.gateCapability` + `Mind.PassesGate` lo comprueban → una frase-hechizo solo es seleccionable si el ser TIENE el receptor. Reusa el patrón del gate por aptitud | `CompositionPart`/`Mind` |
 
-**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131), D2 ✔ (#132), E1 ✔ (#133). La agresividad ya es un **histórico** (el
-depredador que caza con éxito se envalentona). Sigue **D3** (motor de selección por receta+id: la mente elige
-hechizo/thought por `necesidad × capacidad × confianza`) → **E** (anatomía→capacidad, cuando haya bodyParts). Falta
-también, en D-cola: **productor de FIGHT** (hoy solo la caza alimenta la confianza; ganar/perder un enfrentamiento aún
-no) y el **decaimiento pasivo** de la confianza sin uso.
+**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131), D2 ✔ (#132), E1 ✔ (#133), D3a ✔ · E2 ✔ (#134). El motor
+de selección de thoughts ya sabe ponderar por confianza y gatear por receptor/anatomía; los **mecanismos están listos y
+DORMIDOS** hasta que existan frases-hechizo que fijen `capability`/`gateCapability`. Sigue el salto grande **D3b** (que
+la selección CONDUZCA la acción, reemplazando `ActiveBehaveTick`) — conviene un `docs/` del motor de selección antes de
+tocar código. Falta también, en D-cola: **productor de FIGHT** y el **decaimiento pasivo** de la confianza.
 
 ## 9. Sustrato existente (qué ya hay)
 
