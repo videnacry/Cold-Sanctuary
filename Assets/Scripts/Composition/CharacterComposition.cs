@@ -35,6 +35,10 @@ public class CompositionPart
     [Tooltip("Tejido VIVO/biológico (miembro, ropa-viva): DOBLE SENTIDO — el huésped lo modula y se adapta " +
              "progresivamente. Si es false (rígido: metal/coraza inerte): aporte plano, sin modular.")]
     public bool living = true;
+    [Tooltip("Capacidades/RECEPTORES que esta parte habilita (E2, docs/capabilities-and-embodiment.md §2): " +
+             "ojo→\"see\", oído→\"hear\", colmillo→\"bite\", aguijón→\"sting\". Un hechizo gateado por capacidad " +
+             "requiere que ALGUNA parte lo conceda → así el sentido/arma sale de la anatomía, no de un escalar.")]
+    public string[] grants;
 
     public ClothingSlot Slot => clothing != null ? clothing.slot : slot;
     public float Armor => bonus.armor + (clothing != null ? clothing.defenseRating : 0f);
@@ -91,6 +95,19 @@ public class CharacterComposition : MonoBehaviour
     static void SetVisible(CompositionPart p, bool on)
     {
         if (p != null && p.visual != null) p.visual.SetActive(on);
+    }
+
+    /// <summary>¿ALGUNA parte equipada concede esta capacidad/RECEPTOR? (E2). Es la "forma de verificar tener
+    /// receptor visual/auditivo/etc." para gatear los hechizos sensoriales/físicos por anatomía — lo lee
+    /// `Mind.PassesGate` cuando una frase fija `gateCapability`. Ver docs/capabilities-and-embodiment.md §2.</summary>
+    public bool Grants(string capability)
+    {
+        if (string.IsNullOrEmpty(capability)) return false;
+        foreach (CompositionPart p in parts)
+            if (p != null && p.grants != null)
+                foreach (string g in p.grants)
+                    if (g == capability) return true;
+        return false;
     }
 
     void Update()
