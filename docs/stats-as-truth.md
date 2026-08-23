@@ -5,7 +5,12 @@
 lobo/oso/hormiga/dragón es solo un **preset de stats**; la clase `Wolf`/`Bear` es una **config genérica**. Todos
 los modos/hechizos (avatar, emoción, lector-de-mentes, transformación) son **el mismo motor** visto desde
 ángulos distintos. Sustrato ya existente: `Anima`+`IAptitudes`+`DerivedStats`, `Mind`/`ThoughtField`/
-`MindPhrase` (frases gateadas por stats), `Diet`/`PreyEntry`, `CameraManager` (shake por `mentalFatigue`).
+`MindPhrase` (frases gateadas por stats), `Forager.SelectPrey`+`Predation` (presa por proximidad+stats; `Diet` retirada),
+`CameraManager` (shake por `mentalFatigue`).
+
+> **Corolario (2026-08-23):** capacidad = **hechizo** (global + receta sobre stats/anatomía → id que elige la mente),
+> leer stats está **gateado por los sentidos**, hay un eje de **armamento ⟂ masa**, y el temperamento es un
+> **histórico** (confianza-por-uso), no un rasgo. Todo en **[`capabilities-and-embodiment.md`](capabilities-and-embodiment.md)**.
 
 ## 1. Stats bidireccionales
 Los hechizos **suben Y bajan** stats (no solo suben). Bajar es tan útil como subir: **debilitar** a un rival,
@@ -18,7 +23,7 @@ lanzador (por sus propios stats) decide si mueve **un stat, un grupo o todos**.
 |---|---|---|
 | **Emoción / postura** | `f(stats de disposición, humores actuales) → suma de frases → postura (`CreatureRig`) + `ScreenEffects`` | camera-shake ✔; resto nuevo |
 | **Identidad / diálogo interno** | suma de frases del ser (`ThoughtField`/`MindPhrase`) → habla/piensa según su mezcla stat | sustrato ✔ |
-| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño)`; **el tamaño invierte presa↔depredador** | **hecho:** `Predation` en `SelectPrey`+`EvaluateThreat` |
+| **Depredación / miedo** | `f(masa, fuerza, textura/armadura, tamaño, **arma**)`; el tamaño invierte presa↔depredador; **falta el eje de armamento** (veneno/filo ⟂ masa) y **gatear la lectura por sentidos** ([`capabilities-and-embodiment.md`](capabilities-and-embodiment.md) §2–§3) | **hecho:** `Predation` en `Forager.SelectPrey`+`Assess` |
 | **Bond** | hechizo que sube/baja los stats-que-generan-bond → pase directo a mamá/hijo/amigo/enemigo (temporal) | nuevo, sobre bonds ✔ |
 | **Transformación** | combate de stats de 3 niveles (§4) | nuevo |
 | **Habilidades** | **mapa de stats**: la receta-de-acciones desbloquea un cluster (ganar fuerza ⇒ cluster distinto que ganar agilidad); el **árbol point-buy** (niveles de magia → puntos) es una **capa opcional/simple** para micro/macrocosmos | primario = emergente |
@@ -113,9 +118,9 @@ ES química. **Dos capas:**
   (no pisa evolución/transform); **neutro por defecto** (todo a 1 → delta 0). **Los elementos son símbolos
   REALES de la tabla periódica** (`Chemistry`): validados contra `PeriodicTableManager` y **alimentables**
   (`AddElement`) desde el juego (absorber/comer un elemento → cambia la constitución → mueve los stats).
-  **Comer → absorber (hecho, carnívoros):** `Carnivore.Feed` llama a `Metabolism.AbsorbFood(nutrition,
-  material)` (Meat/Fish→N, Fruit/Grass→C); lo útil → `Constitution`, el exceso → grasa. *Falta:* herbívoros/
-  `Eater`/`ElementFragment` (mismo one-liner) y recetas de compuestos reales.
+  **Comer → absorber (hecho):** `Forager.Eat` llama a `Metabolism.AbsorbFood(nutrition,
+  material)` (Meat/Fish→N, Fruit/Grass→C); lo útil → `Constitution`, el exceso → grasa. *Falta:* `Eater`/
+  `ElementFragment` (mismo one-liner) y recetas de compuestos reales.
 
 **Apetito por NUTRIENTES + límite de absorción — hecho (`Metabolism`):** cada ser tiene **pools por nutriente**
 (proteína/grasa/carbohidrato/minerales; distintos por especie) que se **agotan** (BMR × masa) → **deuda** →

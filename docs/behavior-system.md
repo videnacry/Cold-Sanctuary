@@ -5,8 +5,20 @@ amenazas y vínculos** que atraviesa a todos los animales. Es la fuente de verda
 línea de trabajo: aquí se diseña, se anota y se lleva el checklist. Añade tareas nuevas a
 medida que surjan.
 
-Relacionado: [`architecture.md`](architecture.md) (jerarquía base), `Animal`/`Carnivore`/
-`Herbivore`.
+Relacionado: [`architecture.md`](architecture.md) (jerarquía base).
+
+> ## ⚠ Estado actual (2026-08-23) — este doc es en gran parte HISTÓRICO
+> El sistema **evolucionó** más allá de lo que describe el cuerpo de abajo. Lo vigente:
+> - **`Diet`/`PreyEntry` BORRADAS** (PR #119): la presa se elige por **proximidad + stats** (`Forager.SelectPrey`
+>   + `Predation`), no por tablas por especie. Radio de caza **por percepción**; **carcasas** seleccionables (scavenging).
+> - **`Carnivore`/`Herbivore` BORRADAS** (PR #126); `Animal` es **concreta**. Qué come cada especie lo fija
+>   `Forager.ConfigureForSpecies` (data). La conducta vive en **componentes** (`Forager`/`ThreatResponder`/`Locomotion`).
+> - **Agresividad / `canHitAndRun` NO son flags de especie** (dirección): la agresividad **emerge** (semilla innata +
+>   confianza-por-uso, un histórico) y el "pegar-y-correr" se **disuelve** en la defensa-de-crías + margen de poder.
+> - El **modelo emergente vigente** (capacidad=hechizo, lectura gateada por sentidos, arma ⟂ masa, temperamento-histórico,
+>   cambio de cuerpo) está en **[`capabilities-and-embodiment.md`](capabilities-and-embodiment.md)**. Empezar ahí.
+>
+> Lo de abajo se conserva como **constancia de diseño** (por qué se tomaron las decisiones), no como estado del código.
 
 ---
 
