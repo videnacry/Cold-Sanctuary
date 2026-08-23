@@ -64,6 +64,22 @@ cuerpo** (encaja con `CharacterComposition`/quimeras). La depredación deja de s
 > el pequeño-pero-armado **caza Y es temido** con un solo cambio. *Falta:* el **matchup tipado** (veneno vs quitina,
 > garra vs coraza) — hoy el arma es un escalar; la piedra/papel/tijera real es un hook.
 
+### Las capacidades salen de **bodyParts** (`armament`/`perception` son el sustrato interino)
+
+`armament` (§2) y `perception` (§3) son hoy **escalares** en `Anima`, pero el end-state es que los **escriba la
+anatomía**: un **colmillo/glándula de veneno** sube `armament`, un **ojo** la `perception`, un **oído/antena** habilita
+otra modalidad. Una parte del cuerpo (`CompositionPart`) hace **tres cosas a la vez**:
+
+1. **escribe stats** (su `StatBonus`) — ya funciona para `perception`/`armor`; **falta añadir `armament` a `StatBonus`**;
+2. **habilita el hechizo / es el RECEPTOR** — tener ojo = existe el receptor de `Ver`; tener aguijón = `Picar`
+   disponible. Un hechizo sensorial comprueba **"¿tengo un receptor de esta modalidad?"**, no solo un escalar de
+   percepción (un ser sin ojos pero con antena "ve" por otra vía). *Falta:* un tag de **capacidad/receptor** en
+   `CompositionPart`;
+3. **compone quimeras** — es el mismo sistema `CharacterComposition`/`CompositionPart` (stats-as-truth §5).
+
+Así, crear el colmillo/veneno/ojo como partes **unifica** arma + sentido + quimera + desbloqueo-de-hechizo en un solo
+mecanismo (la **rebanada E**, §8). La `perception` sigue graduando **cuán bien** lee; el receptor decide **si** puede.
+
 ## 3. Leer stats está **gateado por los sentidos**
 
 Reaccionar a los stats del otro exige **percibirlos**. Hoy `ThreatResponder.Assess` lee `EffectivePower` del enemigo
@@ -114,6 +130,11 @@ en `Morder`) y **decae** sin uso o tras fracasos. Reutiliza `GrowBond`:
 - Encaja con la transformación (§6): un conejo con colmillos de serpiente tiene el arma (potencia > 0) pero **confianza
   0** → debe **ganarla usándola** (la curva de reaprendizaje). El arma es *posibilidad*; el bond‑hacia‑el‑hechizo es
   *maestría*.
+
+> **Hecho (D1, PR #131):** infra en `Anima` — `spellConfidence` (dict nombre→0–100), `Confidence(spell)` y
+> `RecordUse(spell, success, amount)` (éxito refuerza —más rápido de joven, vía `EffectiveBondGrowthRate`— / fracaso
+> merma). Es el sustrato del bond‑hacia‑el‑hechizo. *Falta (D2):* PRODUCTORES (registrar éxito/fracaso al cazar/pelear)
+> y CONSUMIDORES (la agresividad efectiva y la selección leen la confianza). Decaimiento pasivo sin uso = hook.
 
 ### `canHitAndRun` se **disuelve** (no se migra)
 
@@ -187,11 +208,14 @@ De lo más concreto/verificable a lo más profundo:
 | **A ✔** | **Disolver `canHitAndRun`** (PR #128) | acoso = defensa-de-crías + margen de poder; borrado el bool + 7 asignaciones por especie. Fight vs acoso: `myPower > enemyPower × fightPowerMargin ? Fight : HitAndRun` | `ThreatResponder.Decide` |
 | **B ✔** | **Eje de armamento** en `Predation` (PR #130) | campo `Anima.armament` (⟂ masa, default 0 = sin cambio); `PredatorPower += armament × ArmamentPower`. Un pequeño-pero-armado (avispa) caza y ES temido (propaga por `EffectivePower`→`Assess`). Matchup tipado (veneno vs quitina) = hook | `Predation`, `CharacterComposition` |
 | **C ✔** | **`Assess` gateado por sentidos** (PR #129) | `threat = Lerp(unawareThreat, real, clarity)`, `clarity = Clamp01(percepción/perceptionForFullRead) × legibilidad`. Fauna actual (percepción ≥1) → clarity 1 → sin cambio de balance; percepción baja (garrapata/ciego) → no percibe el peligro. Bond se aplica DESPUÉS (memoria). Legibilidad = hook (1f; a futuro tamaño/quietud/camuflaje) | `EmotionReader` (perception) |
-| **D** | **Confianza por uso → temperamento** | `aggressiveness` = semilla innata + histórico de resultados; hechizos con receta+id; thoughts por el mismo motor | `Humores`/`Mind`/`PhraseLibrary`/`SoulRecord` |
+| **D1 ✔** | **Infra de confianza-por-hechizo** (PR #131) | `Anima.spellConfidence` + `Confidence`/`RecordUse` (el bond-hacia-el-hechizo) | `bonds`/`EffectiveBondGrowthRate` |
+| **D2** | **Productores + consumidores** de confianza | registrar éxito/fracaso al cazar/pelear; la agresividad efectiva y `Decide` leen la confianza | `Forager`/`ThreatResponder` |
+| **D3** | **Motor de selección por receta+id** | la mente elige hechizo/thought = `argmax(necesidad × capacidad × confianza)`; thoughts por el mismo motor | `Mind`/`PhraseLibrary`/`SoulRecord` |
+| **E** | **Anatomía → capacidad/receptor** (bodyParts) | `armament`/`perception`/receptores salen de `CompositionPart` (colmillo/veneno/ojo/oído); habilitan hechizos; componen quimeras | `CharacterComposition`/`StatBonus` |
 
-**Recomendado:** A primero (cierra el hook pendiente, ya maduro); de las grandes, **C antes que B** (la ceguera/
-legibilidad reencuadra toda la decisión y reutiliza `EmotionReader`). D es la sustancia ("¿por qué se matan?") y se
-apoya en A–C.
+**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131). Sigue **D2** (productores+consumidores de confianza:
+la agresividad efectiva empieza a leer el histórico) → **D3** (motor de selección) → **E** (anatomía→capacidad, cuando
+haya bodyParts). D2 es el que por fin responde "¿por qué se matan?" con conducta.
 
 ## 9. Sustrato existente (qué ya hay)
 
