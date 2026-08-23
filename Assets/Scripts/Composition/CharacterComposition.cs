@@ -12,6 +12,9 @@ public class StatBonus
     public float strength, agility, endurance, bodyMass, perception, composure;
     [Tooltip("Aporte a armadura/coraza (ropa; no se escala por el huésped).")]
     public float armor;
+    [Tooltip("Aporte a ARMA ofensiva (colmillo/veneno/garra/aguijón): sube Anima.armament ⟂ masa (Predation). " +
+             "Biológico → SÍ se modula por la vitalidad del huésped. Así 'crear el colmillo' es una parte del cuerpo.")]
+    public float armament;
 }
 
 /// <summary>
@@ -57,7 +60,7 @@ public class CharacterComposition : MonoBehaviour
     public float adaptSpeed = 1.5f;
 
     // Delta actualmente aplicado a los campos de Anima (para sumarlo/quitarlo de forma gestionada).
-    float _aStr, _aAgi, _aEnd, _aMass, _aPer, _aCom, _aArm;
+    float _aStr, _aAgi, _aEnd, _aMass, _aPer, _aCom, _aArm, _aWpn;
 
     void Awake() { if (anima == null) anima = GetComponent<Anima>(); }
     void Start() { foreach (CompositionPart p in parts) SetVisible(p, true); }
@@ -101,7 +104,7 @@ public class CharacterComposition : MonoBehaviour
         float aura = 1f + Mathf.Max(0f, anima.magicAura);
 
         // Objetivo: suma de aportes (los biológicos escalados por el huésped; todo escalado por el aura).
-        float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f;
+        float tStr = 0f, tAgi = 0f, tEnd = 0f, tMass = 0f, tPer = 0f, tCom = 0f, tArm = 0f, tWpn = 0f;
         foreach (CompositionPart p in parts)
         {
             if (p == null) continue;
@@ -110,6 +113,7 @@ public class CharacterComposition : MonoBehaviour
             tStr += b.strength * f; tAgi += b.agility * f; tEnd += b.endurance * f;
             tMass += b.bodyMass * f; tPer += b.perception * f; tCom += b.composure * f;
             tArm += p.Armor * aura;   // el aura refuerza incluso la coraza inerte
+            tWpn += b.armament * f;   // el arma (colmillo/veneno) es biológica → modulada por el huésped
         }
 
         // Injerto progresivo + aplicación gestionada (no pisa evolución/transformación).
@@ -121,6 +125,7 @@ public class CharacterComposition : MonoBehaviour
         Step(ref anima.perception, ref _aPer,  tPer,  k);
         Step(ref anima.composure,  ref _aCom,  tCom,  k);
         Step(ref anima.armadura,   ref _aArm,  tArm,  k);
+        Step(ref anima.armament,   ref _aWpn,  tWpn,  k);
     }
 
     // Lleva `applied` hacia `target` (injerto progresivo) y ajusta el campo por la diferencia (gestionado).

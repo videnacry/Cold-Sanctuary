@@ -80,6 +80,12 @@ otra modalidad. Una parte del cuerpo (`CompositionPart`) hace **tres cosas a la 
 Así, crear el colmillo/veneno/ojo como partes **unifica** arma + sentido + quimera + desbloqueo-de-hechizo en un solo
 mecanismo (la **rebanada E**, §8). La `perception` sigue graduando **cuán bien** lee; el receptor decide **si** puede.
 
+> **Hecho (E1, PR #133):** el punto 1 para el ARMA. `StatBonus.armament` + su aplicación por el delta gestionado de
+> `CharacterComposition` (modulada por la vitalidad del huésped, como lo biológico) → un **colmillo/veneno como
+> `CompositionPart`** sube el `Anima.armament` que `Predation` lee. Cierra B desde la anatomía: el arma ya es una PARTE,
+> no un escalar suelto. *Falta (E2):* el punto 2 —el **tag de receptor/capacidad** en `CompositionPart` (ojo→`Ver`) y la
+> query "¿tengo receptor?"— que se cablea con las entidades de hechizo (D3).
+
 ## 3. Leer stats está **gateado por los sentidos**
 
 Reaccionar a los stats del otro exige **percibirlos**. Hoy `ThreatResponder.Assess` lee `EffectivePower` del enemigo
@@ -216,9 +222,10 @@ De lo más concreto/verificable a lo más profundo:
 | **D1 ✔** | **Infra de confianza-por-hechizo** (PR #131) | `Anima.spellConfidence` + `Confidence`/`RecordUse` (el bond-hacia-el-hechizo) | `bonds`/`EffectiveBondGrowthRate` |
 | **D2 ✔** | **Productores + consumidores** de confianza (PR #132) | `Forager.Hunt` registra `RecordUse(Combat, maté?)` (solo presa VIVA, no carroña); `ThreatResponder.Decide` usa **agresividad efectiva = innata + confianza(Combat)**. Confianza 0 al nacer → sin cambio; sube con la caza exitosa (el depredador se vuelve osado, el herbívoro no) | `Forager`/`ThreatResponder` |
 | **D3** | **Motor de selección por receta+id** | la mente elige hechizo/thought = `argmax(necesidad × capacidad × confianza)`; thoughts por el mismo motor | `Mind`/`PhraseLibrary`/`SoulRecord` |
-| **E** | **Anatomía → capacidad/receptor** (bodyParts) | `armament`/`perception`/receptores salen de `CompositionPart` (colmillo/veneno/ojo/oído); habilitan hechizos; componen quimeras | `CharacterComposition`/`StatBonus` |
+| **E1 ✔** | **Anatomía → stats** (bodyParts) (PR #133) | `armament` en `StatBonus`, aplicado por el delta gestionado (modulado por huésped, como lo biológico) → un colmillo/veneno sube `Anima.armament` que `Predation` lee. El arma sale ya de una PARTE | `CharacterComposition`/`StatBonus` |
+| **E2** | **Anatomía → capacidad/RECEPTOR** | tag de capacidad/receptor en `CompositionPart` (ojo→`Ver`, aguijón→`Picar`) + query "¿tengo receptor de esta modalidad?"; se cablea cuando existan las entidades de hechizo (con D3) | `CompositionPart`, repertorio |
 
-**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131), D2 ✔ (#132). La agresividad ya es un **histórico** (el
+**Progreso:** A ✔ (#128), C ✔ (#129), B ✔ (#130), D1 ✔ (#131), D2 ✔ (#132), E1 ✔ (#133). La agresividad ya es un **histórico** (el
 depredador que caza con éxito se envalentona). Sigue **D3** (motor de selección por receta+id: la mente elige
 hechizo/thought por `necesidad × capacidad × confianza`) → **E** (anatomía→capacidad, cuando haya bodyParts). Falta
 también, en D-cola: **productor de FIGHT** (hoy solo la caza alimenta la confianza; ganar/perder un enfrentamiento aún
