@@ -90,6 +90,23 @@ se extiende a otras capacidades) → el bucle histórico se cierra: **lo que te 
   es la rama de ACCIÓN. Comparten picker y frases, no el temporizador.
 - **Posesión:** sin cambios — `PlayerBrain` toma el mando, `Volition` no corre.
 
+## 6.1. Convivencia con `LifeStage` (capa reactiva vs rítmica) — hallazgo
+
+`Wander`/`Rest`/**`Feed`** **ya son eventos de `LifeStage`** (`Events.Wander/Rest/Feed`, ejecutados por su propio
+scheduler, no por `ActiveBehaveTick`). De hecho **`Feed` lo disparan HOY dos sistemas** (la capa reactiva
+`ActiveBehaveTick`→`RespondToHunger` **y** el evento rítmico `LifeStage.Feed`), coordinados por el guard `busy`.
+
+→ **Corrección del plan:** Volición **NO** debe añadir deseos `rest`/`wander` (duplicarían/pelearían con `LifeStage`).
+La división correcta es por **dominio**:
+
+| Capa | Qué decide | Sistema |
+|---|---|---|
+| **Reactiva/oportunista** | responder al estado AHORA: comer con hambre, defenderse de una amenaza | **`Volition`** (reemplaza `ActiveBehaveTick`) |
+| **Rítmica/de desarrollo** | el compás vital: crecer, engordar, deambular, descansar, homebound | **`LifeStage`** (sin cambios) |
+
+Ambas pueden disparar `Feed` (como hoy), y el `busy` las coordina. Así D3b2 se acota: **solo la capa reactiva**
+(comer + amenaza-como-deseo), sin tocar el ciclo de vida.
+
 ## 7. Migración por rebanadas (paridad primero; nada se borra hasta validar)
 
 - **D3b1 ✔ (PR #136) — catálogo + selector tras flag (paridad).** `DesireCatalog` (hoy solo `eat`, = lo único que
@@ -97,8 +114,11 @@ se extiende a otras capacidades) → el bucle histórico se cierra: **lo que te 
   `SenseThreats` siempre), `AiBrain.useVolition` (**default OFF**). Con el flag ON reproduce la conducta actual (comer
   con hambre + sensar amenaza). `SenseThreats`/`Feed` expuestos public. *Pendiente: validar paridad en Unity y añadir
   el resto de deseos (D3b2).*
-- **D3b2 — flip + retirar ramas.** Confirmada la paridad, `useVolition` default ON; se retira la prioridad fija de
-  `ActiveBehaveTick`. Ahora la prioridad es **emergente** (need×confianza).
+- **D3b2 — amenaza-como-deseo + flip (SOLO capa reactiva).** Añadir el deseo `defend` (need = amenaza percibida vía
+  `Assess`, gateada por sentidos, con **piso de seguridad**) y dejar `SenseThreats` de reflejo a deseo; `useVolition`
+  default ON; retirar la prioridad fija de `ActiveBehaveTick`. **NO** se añaden `rest`/`wander` (son de `LifeStage`, §6.1).
+  **GATE:** requiere que el compañero **compile y valide en Unity** la paridad de D3b1 (flag ON en un animal de prueba)
+  antes de flipear el default — no flipear-en-vivo sobre un stack sin compilar.
 - **D3b3 — hechizos como acciones + activar D3a/E2 en vivo.** Frases de categoría `Hechizo` (Morder/Ver…) seleccionables,
   con `capability` (confianza, D3a) y `gateCapability` (receptor, E2) ya **en uso** — despiertan los mecanismos dormidos.
 - **D-cola (independiente):** productor de FIGHT para la confianza; **decaimiento pasivo** de `spellConfidence` sin uso.
