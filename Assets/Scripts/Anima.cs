@@ -199,6 +199,17 @@ public abstract class Anima : MonoBehaviour, IAptitudes
         spellConfidence[spell] = Mathf.Clamp(Confidence(spell) + delta, 0f, 100f);
     }
 
+    /// <summary>DECAIMIENTO pasivo de la confianza sin uso (la maestría se enfría lentamente): baja todas las
+    /// capacidades por `amount`. El uso activo (`RecordUse` con éxito) la supera de sobra. Llamar desde un tick
+    /// pasivo. Ver docs/capabilities-and-embodiment.md §4 (D-cola).</summary>
+    public void DecayConfidence(float amount)
+    {
+        if (amount <= 0f || spellConfidence.Count == 0) return;
+        List<string> keys = new List<string>(spellConfidence.Keys);
+        foreach (string k in keys)
+            spellConfidence[k] = Mathf.Max(0f, spellConfidence[k] - amount);
+    }
+
     /// <summary>False if the bond with this target is strong enough to block harm.</summary>
     public bool CanHarm(ITarget target)
     {
