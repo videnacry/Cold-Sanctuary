@@ -39,6 +39,42 @@ dirige. Un impulso = { dirección, peso, tag, decaimiento }. La **lectura está 
 con `EmotionReader` (legibilidad × mi percepción): un ser en guardia/oculto no emite colegueo; uno tumbado al sol, sí. Es
 el gemelo positivo de `BondEscapeReader` (que lee la huida). También modela el **cebo**: un depredador que finge calma.
 
+## 2.1. Impulsos de BASE — qué mueve a un ser saciado (etología)
+
+Un animal al que **no le falta comida ni descanso NO se queda quieto**: la investigación etológica da un repertorio de
+motivaciones "de fondo" que ahora modelamos como **impulsos base** (llenan el vacío cuando los impulsos por necesidad
+están bajos). Esto reemplaza el "deambular random" por una **exploración con propósito**:
+
+| Impulso base | Fenómeno real | En el juego |
+|---|---|---|
+| **Explorar / buscar info** | *latent learning* + *mapas cognitivos* (Tolman); *information primacy* | vagar para **refrescar el mapa** de recursos (llena la memoria, §N4) aunque no haya hambre |
+| **Curiosidad / novedad** | *neophilia* (más fuerte de joven, decae con la edad) | acercarse a inspeccionar lo **ambiguo/novedoso** (§curiosidad abajo) |
+| **Jugar** | *play* (energía sobrante; correlaciona con contrafreeloading) | de crías/teens sobre todo; gasto de energía sin necesidad |
+| **Forrajear aunque sobre comida** | *contrafreeloading* (necesidad conductual de forrajear, no solo de comer) | el olor de comida atrae **aun sin hambre** (peso bajo) → busca por gusto |
+| **Patrullar / marcar territorio** | *patrolling*; territorialidad | recorrer el `HomeRadius`, **emitir su propio olor** (marca) |
+| **No repetir el camino** | *alternación espontánea* | repulsor leve de la dirección recién visitada (§N4) |
+| **Confort / mantenimiento** | acicalarse, tomar el sol, revolcarse | idle "activo" en zonas de confort (§N2) |
+| **Afiliarse** | buscar compañía relajada | el **colegueo** como atractor social positivo |
+
+> La suma: **un ser saciado explora, patrulla, juega, se acicala y socializa** — no es un `Idle`. El "director" solo
+> siembra circunstancias; estos impulsos base hacen el resto (encaja con la "emergencia dirigida" del Microcosmos).
+
+### Curiosidad / abstracción (tu idea del conejo y la planta)
+
+Una **coincidencia PARCIAL** entre una pista y un recurso recordado (una planta que *se parece* a la comida) genera un
+impulso de **acercarse a inspeccionar**: al llegar, **olfatea con más atención** → al acercarse, la percepción (C) sube
+la claridad de la lectura → **confirma o descarta** y **actualiza la memoria**. Un `curiosity` (índice, alto de joven —
+neophilia) fija cuánto se atreve con lo ambiguo. Modela también **confundir rastros** (dos pistas parecidas) y el
+**"ajá"** (descubrir que sí/no era). *Base: neophilia, information-primacy, curiosity→latent-learning.*
+
+### Nostalgia / impronta del lugar de nacimiento (tu idea de las flores)
+
+Tu intuición ("nació sobre flores → siempre se acerca a las flores") es un fenómeno real con nombre: **Natal Habitat
+Preference Induction (NHPI) / impronta de hábitat** — la exposición a las señales del entorno natal en un periodo
+sensible crea una **preferencia de por vida** por señales similares ("habitat cueing": reduce el coste de buscar). En el
+juego: al nacer se guarda una **firma natal** (las señales del sitio) → un **atractor persistente y bajo** hacia pistas
+que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un impulso de fondo).
+
 ## 3. Cómo encaja con lo demás
 
 - **Deseos (D3b):** el deseo elegido (`eat`/`defend`/buscar‑refugio) fija **qué** busca; la navegación por impulsos
@@ -61,10 +97,26 @@ el gemelo positivo de `BondEscapeReader` (que lee la huida). También modela el 
   evitación proactiva del mal medio (cierra el tema de la asfixia por el lado de "no entrar").
 - **N3 — COLEGUEO (`SafetyReader`):** atractor a inofensivos calmados/visibles (inverso de `BondEscapeReader`, vía
   `EmotionReader`). Incluye el cebo (calma fingida).
-- **N4 — EXPERIENCIA (memoria de lugares):** repulsor de sitios visitados‑vacíos + atractor a donde vio el recurso;
-  "no volver por el mismo camino salvo que ahí esté lo que busco".
-- **N5 — ENGAÑO:** emisores que mienten / cambian de golpe (trampas, cebos, señales que desaparecen) → el escáner puede
-  ser engañado; la percepción/experiencia altas lo mitigan.
+- **N4 — EXPERIENCIA (memoria de lugares por recurso):** cada ser lleva **un array corto por tipo de recurso**
+  (comida, amigo, refugio…), **máx ~3 ubicaciones** — un canal *top-found-locations*. La entrada más **relevante** =
+  más **reciente + cercana**; las nuevas **reemplazan** a las peores. Cada una **decae con el tiempo** (cuanto más pasa,
+  menos probable que el recurso siga ahí) hasta caer bajo un **mínimo** que ya no merece ir a buscarlo → se descarta. El
+  deseo activo (D3b) consulta el array de SU recurso → atractor a la mejor entrada viva. + **alternación espontánea**:
+  repulsor leve de la dirección recién venida, salvo que esa dirección tenga una entrada de lo que ahora busca. Barato
+  (≤3×N recursos, floats). Base: *cognitive maps* / *latent learning*.
+- **N5 — CURIOSIDAD (`curiosity`) + inspección:** coincidencia PARCIAL pista↔memoria → impulso de acercarse; al llegar,
+  la percepción (C) sube la claridad → confirma/descarta → actualiza N4. Índice `curiosity` alto de joven (neophilia).
+  Modela confundir rastros parecidos.
+- **N6 — IMPRONTA NATAL (nostalgia):** guardar una **firma natal** al nacer (señales del sitio) → atractor persistente
+  bajo hacia pistas similares (NHPI/habitat cueing). Un dato + un impulso de fondo.
+- **N7 — RASTROS + MARCAR territorio:** seguir el **gradiente** de olor (ir a los puntos de mayor intensidad para
+  "descifrar" la dirección, como el perro) hasta una línea de rastro; y **emitir** el propio olor (marca de territorio,
+  self-`ScentEmitter`). Habilita confusión de rastros solapados.
+- **N8 — IMPULSOS DE BASE (ser saciado):** cuando los impulsos por necesidad están bajos, activar
+  explorar/patrullar/jugar/contrafreeloading/confort (§2.1) → el ser saciado deja de estar `Idle` y explora con
+  propósito (refresca N4).
+- **N9 — ENGAÑO:** emisores que mienten / cambian de golpe (trampas, cebos, señales que desaparecen) → el escáner puede
+  ser engañado; la percepción/experiencia/curiosidad altas lo mitigan.
 
 ## 5. Riesgos / abierto
 
