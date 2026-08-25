@@ -109,10 +109,10 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
   Modela confundir rastros parecidos.
 - **N6 — IMPRONTA NATAL (nostalgia):** guardar una **firma natal** al nacer (señales del sitio) → atractor persistente
   bajo hacia pistas similares (NHPI/habitat cueing). Un dato + un impulso de fondo.
-- **N7 — RASTROS + MARCAR territorio (sobre la interfaz `Trace`, §4.2):** primero **unificar** `ScentEmitter`/
-  `ThreatEmitter` bajo `Trace` + `LeaveTrace`; luego seguir el **gradiente** de olor (ir a los puntos de mayor
-  intensidad para "descifrar" la dirección, como el perro) hasta una línea de rastro; **emitir** el propio olor (marca);
-  y los canales de estado (celo/enfermo/waste/disturbance) + `spell_residue`. Habilita confusión de rastros solapados.
+- **N7 — RASTROS + MARCAR territorio (subproducto = extensión de hechizo, §4.2):** `SpellBase.byproduct` +
+  `LeaveByproduct()`; unificar `ScentEmitter`/`ThreatEmitter` bajo `Trace`; celo/enfermo/defecar/marcar como **hechizos**
+  que sueltan su canal. Luego seguir el **gradiente** de olor (ir a los puntos de mayor intensidad para "descifrar" la
+  dirección, como el perro) hasta una línea de rastro. Habilita confusión de rastros solapados.
 - **N8 — IMPULSOS DE BASE (ser saciado):** cuando los impulsos por necesidad están bajos, activar
   explorar/patrullar/jugar/contrafreeloading/confort (§2.1) → el ser saciado deja de estar `Idle` y explora con
   propósito (refresca N4).
@@ -130,32 +130,43 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
   (`decayOverTime`/`decayTime`) y caída por distancia (`ScentAt`) → la **primitiva de rastro existe**.
 - **No hay interfaz de subproducto.** Correcto: nunca se estableció un contrato para "esta acción/estado deja X".
 
-**Propuesta — `Trace` (interfaz de emisión unificada):** `{ canal, fuerza, radio, falloff, lifespan→decae, IntensityAt(pos) }`.
-`ScentEmitter`/`ThreatEmitter` la implementan (unificación); los scanners leen por **canal**. Un ser deja rastro con un
-hook **`LeaveTrace(canal, fuerza, lifespan)`**. El **lifespan drena la fuerza** → **rastreable** (persiste tras irse el
-ser) y **se desvanece** (viejo = débil; liga con la memoria decayente N4 y los rastros N7).
+**Propuesta — el subproducto es una EXTENSIÓN DEL HECHIZO, no una interfaz aparte.** Como **toda acción/estado es un
+hechizo** (`SpellBase`: caminar/jalar/usar-items ya lo son), **enfermar / defecar / estar en celo / dormir / dar vueltas
+también son hechizos** (auto-lanzados, casi siempre `Channel`/con `duration`). `SpellBase` gana un **subproducto opcional**
+que, al lanzarse/sostenerse, **suelta un `Trace`** en el lugar del lanzador:
 
-**Canales = subproductos (tus ejemplos):**
+- **`SpellBase.byproduct`** = `{ canal, fuerza, lifespan }` (default: ninguno). Un helper `LeaveByproduct()` que la base
+  llama en `Cast`/tick spawnea un **`Trace`**.
+- **`Trace`** = el **artefacto en el mundo** (generaliza `ScentEmitter`, que ya trae lifespan/decay/falloff/`IntensityAt`);
+  `ScentEmitter`/`ThreatEmitter` se unifican bajo él. Los scanners leen por **canal**. El **lifespan drena la fuerza** →
+  **rastreable** (persiste tras irse el ser) y **se desvanece** (liga con la memoria N4 y los rastros N7).
 
-| Canal | Lo deja… | Efecto |
+Así no hay dos sistemas: el subproducto es "lo que el hechizo deja". `magicAura` (reputación EN el ser) y el `Trace`
+(marca EN el lugar) son complementarios — un hechizo puede mover ambos.
+
+**Canales, y qué hechizo los deja:**
+
+| Canal | Hechizo (acción/estado) | Efecto |
 |---|---|---|
-| `scent_food` | comida/cadáver (ya) | atrae carroñeros/depredadores |
-| `scent_self` | **marcar territorio** (self-emit) | señal a congéneres; identidad del rastro |
-| `threat` | depredador/peligro (ya) | repulsor |
-| `estrus` (**celo**) | estado reproductivo | atrae parejas; delata presencia |
-| `sickness` (**enfermo**) | estado de salud | otros **evitan**; el depredador prioriza al **débil** (presa fácil) |
-| `waste` (**heces/digestión**) | tras digerir | rastro **+** material económico (fertilizante → economía circular) |
-| `disturbance` (**dar muchas vueltas en radio reducido**) | pacing | pista de presencia/nerviosismo |
-| `spell_residue` | **lanzar un hechizo** | generaliza `magicAura`: además de la reputación EN el ser, deja **marca rastreable** en el lugar |
+| `scent_food` | comer / morir (deja cadáver) | atrae carroñeros/depredadores |
+| `scent_self` | **marcar** (hechizo de marcaje) | señal/identidad a congéneres |
+| `threat` | depredar / amenazar | repulsor |
+| `estrus` (**celo**) | *hechizo-estado* de celo | atrae parejas; delata presencia |
+| `sickness` (**enfermo**) | *hechizo-estado* de enfermedad | otros **evitan**; el depredador prioriza al **débil** |
+| `waste` (**heces**) | *hechizo* de defecar (tras digerir) | rastro **+** material (fertilizante → economía circular) |
+| `disturbance` | caminar/**dar vueltas** en radio reducido | pista de presencia/nervios |
 
-**Doble naturaleza:** un subproducto puede ser **rastro** (olor) **y** **material** (heces = recurso) → un mismo evento
-suelta un `Trace` **y** opcionalmente un `FoodItem`/recurso (enlaza con "residuo→subproducto→área" de la economía
-circular, tarea abierta). **Estados que además cambian conducta:** `estrus`/`sickness` no solo emiten — modulan deseos
+(No hay un canal "mágico" especial: **cualquier** hechizo puede declarar su subproducto — andar deja rastro tenue, un
+hechizo destructivo deja marca fuerte, etc. Solo se omite donde haya **baja compatibilidad**.)
+
+**Doble naturaleza:** un subproducto puede ser **rastro** (olor) **y** **material** (heces = recurso) → el hechizo suelta
+un `Trace` **y** opcionalmente un `FoodItem`/recurso (enlaza con "residuo→subproducto→área" de la economía circular).
+**Estados que además cambian conducta:** los hechizo-estado `estrus`/`sickness` no solo emiten — **modulan los deseos**
 (celo → buscar pareja; enfermo → los demás evitan, el depredador ataca al débil) → tocan lifecycle/reproducción y depredación.
 
-> **Rebanada** (parte de N7): unificar los dos emisores bajo `Trace` (con cuidado: son Nivel 1 VIVO) → añadir canales de
-> estado (celo/enfermedad/waste/disturbance) → `LeaveTrace` disparado por acciones/estados → `spell_residue` (el hechizo
-> deja marca). Es **la interfaz de subproducto** que hoy no existe.
+> **Rebanada** (parte de N7): `SpellBase.byproduct` + `LeaveByproduct()`; unificar `ScentEmitter`/`ThreatEmitter` bajo
+> `Trace` (con cuidado: son Nivel 1 VIVO); modelar celo/enfermedad/defecar/marcar como **hechizos** que sueltan su canal.
+> Es la extensión de hechizo que da el subproducto — no una interfaz nueva.
 
 ## 5. Riesgos / abierto
 
