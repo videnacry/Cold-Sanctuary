@@ -178,6 +178,16 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     public bool  busy = false;
     public bool  fighting = false;   // guard propio de Fight() — ver comentario en Fight()
     public float hungry, exhaustion, lp, sensibility;
+
+    [Header("Asfixia (medio de baja afinidad)")]
+    [Tooltip("Por debajo de esta afinidad del MEDIO ACTUAL (MediumFactor), el ser se ASFIXIA: daño progresivo por " +
+             "permanecer donde no puede respirar/moverse (pez fuera del agua, ballena varada). 0 = desactivada. " +
+             "Conservador (0.3): con la afinidad-agua por defecto (0.4) un terrestre NADA torpe pero NO se ahoga; " +
+             "los depredadores que pescan deben tener waterAffinity >= este umbral. Tunable en Unity.")]
+    public float asphyxiaThreshold = 0.3f;
+    [Tooltip("Ritmo de asfixia por tick pasivo: daño = (umbral - MediumFactor) × esto × masa. Tunable.")]
+    public float asphyxiaRate = 0.5f;
+
     public bool  firstSolidEaten = false; // cría comió un FoodItem por primera vez
     public bool  firstNestExit   = false; // cría salió del nido una vez sola
 
@@ -299,6 +309,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
             CorrectMedium(interval);
+            Suffocate();              // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
             FeedWalkSpeed(interval);
             DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
             yield return new WaitForSeconds(interval);
@@ -342,6 +353,17 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     // Comportamiento de medio: los acuáticos buscan agua si quedan en tierra; los terrestres salen
     // del agua hacia tierra. Solo cuando no cazan/huyen (busy) — así un oso que persigue focas sí
     // entra al agua. Ver docs/refuge-and-adult-behavior.md.
+    // AHOGO/ASFIXIA (docs/checklist Aptitudes): si el ser permanece en un medio de baja afinidad (MediumFactor por
+    // debajo del umbral), sufre daño progresivo — cuanto peor el medio, más rápido. `CorrectMedium` intenta sacarlo
+    // antes (busca su medio); si no puede, esto le da consecuencia. Reusa `Hurt` (→ muerte por el mismo camino).
+    void Suffocate()
+    {
+        if (death || asphyxiaThreshold <= 0f || rig == null) return;
+        float deficit = asphyxiaThreshold - MediumFactor;
+        if (deficit <= 0f) return;                          // medio soportable → sin asfixia
+        Hurt(deficit * asphyxiaRate * rig.mass);            // ahogo: proporcional a lo malo del medio y a la masa
+    }
+
     void CorrectMedium(float dt)
     {
         if (busy || asleep || nav == null || !nav.isOnNavMesh) return;
