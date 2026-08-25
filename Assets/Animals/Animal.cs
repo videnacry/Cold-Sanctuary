@@ -300,6 +300,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             EvolveAptitudes(interval);
             CorrectMedium(interval);
             FeedWalkSpeed(interval);
+            DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
             yield return new WaitForSeconds(interval);
         }
     }
@@ -501,6 +502,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         finally
         {
             fighting = false;
+            // Confianza-por-uso (D-cola): GANAR la pelea (amenaza abatida) refuerza el combate → el que vence
+            // se envalentona, como en la caza (D2). Solo victoria clara; no se penaliza que la amenaza se aleje.
+            if (threatTarget.Dead) RecordUse(Capability.Combat, true);
         }
     }
 

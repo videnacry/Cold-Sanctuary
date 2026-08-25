@@ -149,7 +149,9 @@ en `Morder`) y **decae** sin uso o tras fracasos. Reutiliza `GrowBond`:
 > maté?)` solo si la presa estaba VIVA (no carroña). **Consumidor:** `ThreatResponder.Decide` usa **agresividad efectiva
 > = `aggressiveness` innata + `Confidence(Combat)/100 × peso`** para el gate de atacar. Confianza 0 al nacer → conducta
 > idéntica; sube con la caza exitosa → el depredador se envalentona con el tiempo, el herbívoro (que no caza) nunca.
-> *Falta:* productor de FIGHT (ganar/perder enfrentamientos), decaimiento pasivo, y la **selección** ponderada (D3).
+> **Hecho (D-cola, PR #137):** productor de FIGHT (`Animal.Fight` → `RecordUse(Combat, true)` al abatir la amenaza) +
+> **decaimiento pasivo** (`Anima.DecayConfidence`, llamado en `Restore`: la maestría se enfría sin uso). Ahora la
+> confianza sube (cazar/pelear con éxito) y baja (fallar/no usar). *Falta:* la **selección** ponderada en vivo (D3b3).
 
 ### `canHitAndRun` se **disuelve** (no se migra)
 
@@ -241,7 +243,8 @@ De lo más concreto/verificable a lo más profundo:
 de selección de thoughts ya sabe ponderar por confianza y gatear por receptor/anatomía; los **mecanismos están listos y
 DORMIDOS** hasta que existan frases-hechizo que fijen `capability`/`gateCapability`. Sigue el salto grande **D3b** (que
 la selección CONDUZCA la acción, reemplazando `ActiveBehaveTick`) — conviene un `docs/` del motor de selección antes de
-tocar código. Falta también, en D-cola: **productor de FIGHT** y el **decaimiento pasivo** de la confianza.
+tocar código. **D-cola ✔ (#137):** productor de FIGHT (`Fight`→`RecordUse(Combat)` al vencer) + decaimiento pasivo
+(`DecayConfidence` en `Restore`) — la confianza ya sube con el éxito y se enfría sin uso.
 
 ## 9. Sustrato existente (qué ya hay)
 
