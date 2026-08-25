@@ -360,7 +360,8 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     // EvaluateThreat + ThreatThreshold). Evita que las presas se queden tranquilas junto a depredadores;
     // también hace que un cánido solo huya de un oso. Solo cuando no caza/huye/duerme.
     // Rendimiento: escanea wholePopulation; a gran escala requeriría partición espacial.
-    void SenseThreats()
+    // public: el motor de volición (D3b) lo llama como REFLEJO cada tick (docs/volition-selection-engine.md).
+    public void SenseThreats()
     {
         if (busy || aware || asleep || rig == null) return;
         float range = HomeRadius * (0.5f + perception * 0.5f);   // la percepción amplía la alerta

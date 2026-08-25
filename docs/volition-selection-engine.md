@@ -92,9 +92,11 @@ se extiende a otras capacidades) → el bucle histórico se cierra: **lo que te 
 
 ## 7. Migración por rebanadas (paridad primero; nada se borra hasta validar)
 
-- **D3b1 — catálogo + selector tras flag (paridad).** `DesireCatalog` con `eat`/`defend`/`rest`/`wander` mapeados a los
-  handlers EXISTENTES; `Volition.Tick`; `AiBrain` lo usa si `useVolition` (**default OFF**). Con el flag ON, debe
-  **reproducir la conducta actual** (comer con hambre; atender amenaza). *Validar paridad en Unity.*
+- **D3b1 ✔ (PR #136) — catálogo + selector tras flag (paridad).** `DesireCatalog` (hoy solo `eat`, = lo único que
+  `ActiveBehaveTick` decidía además del reflejo de amenaza), `Volition.Tick` (mismo throttle; deseo si libre + reflejo
+  `SenseThreats` siempre), `AiBrain.useVolition` (**default OFF**). Con el flag ON reproduce la conducta actual (comer
+  con hambre + sensar amenaza). `SenseThreats`/`Feed` expuestos public. *Pendiente: validar paridad en Unity y añadir
+  el resto de deseos (D3b2).*
 - **D3b2 — flip + retirar ramas.** Confirmada la paridad, `useVolition` default ON; se retira la prioridad fija de
   `ActiveBehaveTick`. Ahora la prioridad es **emergente** (need×confianza).
 - **D3b3 — hechizos como acciones + activar D3a/E2 en vivo.** Frases de categoría `Hechizo` (Morder/Ver…) seleccionables,

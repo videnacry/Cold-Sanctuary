@@ -19,11 +19,17 @@ public class AiBrain : MonoBehaviour, IBrain
     [Tooltip("Distancia a la que se considera 'llegado' y deja de andar.")]
     [Min(0.05f)] public float arriveRadius = 0.5f;
 
+    [Tooltip("D3b1: usa el motor de VOLICIÓN (deseos por necesidad, docs/volition-selection-engine.md) en vez de la " +
+             "prioridad FIJA de ActiveBehaveTick. Default OFF → conducta idéntica. Activar SOLO tras validar paridad " +
+             "en Unity; entonces D3b2 retira la rama fija.")]
+    public bool useVolition = false;
+
     public float Relevance => selfRelevance;
     public string BrainName => "IA";
 
     WalkSpell _walk;
     Animal _animal;
+    Volition _volition;
 
     void Awake()
     {
@@ -35,7 +41,16 @@ public class AiBrain : MonoBehaviour, IBrain
     {
         // IA de ANIMAL (etapa 4): sus decisiones activas (forrajeo + amenaza) las conduce este brain — al poseerlo,
         // AnimaController deja de llamar aquí (llama al PlayerBrain) → el jugador toma el mando del MISMO cuerpo.
-        if (_animal != null) { _animal.ActiveBehaveTick(); return; }
+        if (_animal != null)
+        {
+            if (useVolition)   // D3b1: el motor de volición decide (paridad tras flag); OFF = prioridad fija de siempre.
+            {
+                if (_volition == null) _volition = _animal.GetComponent<Volition>() ?? _animal.gameObject.AddComponent<Volition>();
+                _volition.Tick(_animal);
+            }
+            else _animal.ActiveBehaveTick();
+            return;
+        }
 
         // Locomoción IA para seres NO-Animal (caminantes/compañeros): el mismo WalkSpell que el jugador, hacia el destino.
         if (_walk != null && moveTarget != null)
