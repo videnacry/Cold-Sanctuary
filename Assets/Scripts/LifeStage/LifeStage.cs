@@ -138,11 +138,13 @@ public abstract class LifeStage
         return (Animal script, float duration) =>
         {
             script.ActsPrep.walk.Prep(script, duration);
-            List<GameObject> birds = new List<GameObject>(BirdBehavior.population);
-            if (birds.Count == 0) return;
-            script.target = birds[Random.Range(0, birds.Count)];
-            if (script.nav != null && script.nav.isOnNavMesh)
-                script.nav.SetDestination(new Vector3(script.target.transform.position.x, script.transform.position.y, script.target.transform.position.z));
+            if (script.nav == null || !script.nav.isOnNavMesh) return;
+            // Deambular a un punto LOCAL (ya no hacia un ave al azar — ese placeholder no tenía sentido). El `Homebound`
+            // lo devuelve si se aleja de su hogar. La navegación por LECTURA del entorno (impulsos: olor/hogar/colegueo/
+            // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
+            float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
+            Vector2 r = Random.insideUnitCircle * step;
+            script.nav.SetDestination(script.transform.position + new Vector3(r.x, 0f, r.y));
         };
     }
     public SubEvent Rest()
