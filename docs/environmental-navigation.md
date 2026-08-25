@@ -168,6 +168,46 @@ un `Trace` **y** opcionalmente un `FoodItem`/recurso (enlaza con "residuo→subp
 > `Trace` (con cuidado: son Nivel 1 VIVO); modelar celo/enfermedad/defecar/marcar como **hechizos** que sueltan su canal.
 > Es la extensión de hechizo que da el subproducto — no una interfaz nueva.
 
+## 4.3. Análisis de impacto (rendimiento) — subproductos, sobre todo CAMINAR
+
+**El riesgo:** un subproducto **por acción continua** (caminar) genera rastro **sin parar**. Si cada traza es un
+GameObject, explota.
+
+**Coste naïve (por qué NO como GameObjects):** ~66 animales (WildlifePopulation_AUTO), cada uno caminando, soltando una
+traza cada ~0.3 s con lifespan 60 s → ~200 trazas vivas/animal → **~13 000 objetos `Trace` + Collider** en estado
+estable. Verificado: `ScentScanner` usa `Physics.OverlapSphere(scanRadius)` cada 0.5 s y los emisores **no se registran**
+(se descubren por física) → cada traza necesita **Collider** → 13 000 colliders = **bloat de broadphase + arrays de
+OverlapSphere enormes** en 66×2 escaneos/s, **+ 13 000 `Update()` de decaimiento/frame + GC**. Inviable.
+
+**Solución: la naturaleza del subproducto elige su representación** (el hechizo lo declara):
+
+| Naturaleza | Representación | Coste |
+|---|---|---|
+| **Continuo / trail** (caminar, saturar una zona) | **campo de depósito = REJILLA de feromonas**: `float` por (celda, canal); depósito **O(1)**, lectura **O(9 celdas)**, **decaimiento LAZY** (`valor × decay^Δt` al tocar la celda). Sin GameObjects/colliders/OverlapSphere. | **PLANO** (independiente de la longitud del rastro). 200×200 m @ 4 m = 2 500 celdas × ~6 canales × 4 B ≈ **60 KB** |
+| **Puntual / saliente** (comida, cadáver, **poste de marca**, nido) | GameObject `Trace`/`ScentEmitter` actual | barato: **pocos** → el `OverlapSphere` de hoy sigue bien |
+| **De estado** (celo, enfermedad) | **en el ser**, como `magicAura`: se lee EN VIVO en los escaneos de proximidad que YA existen | **~0 extra** (opcional: depósito tenue en la rejilla) |
+
+→ **Caminar → rejilla** (o nada). **Marcar → objeto** puntual o depósito fuerte. **Defecar → objeto** (+material).
+**Celo/enfermo → estado en el ser.** La rejilla de feromonas es además lo **canónico para hormigas** (encaja con el
+Microcosmos). El "seguir el gradiente" del perro (N7) = leer las celdas vecinas de la rejilla, no barrer objetos.
+
+**Reglas de contención (aunque un caso use objeto):**
+- **Canal opt-in:** caminar por defecto **no** deja traza (o solo aporta muy débil a la rejilla). Solo los subproductos
+  con valor de juego (marca/heces/celo/enfermo/comida) emiten de verdad.
+- **Rate-limit + MERGE:** si se emite objeto, no uno por frame — cada X m/s, y **fusionar** (subir la fuerza) con una
+  traza cercana del mismo canal en vez de crear otra.
+- **CAP por emisor:** ring buffer de las últimas K trazas propias (sobrescribe la más vieja) → cota dura = animales×K.
+- **Throttle de lectura:** mantener `scanRate` (~0.5 s) y **escanear solo el canal relevante** al deseo/sentido presente
+  (sin olfato no se lee `scent_*`).
+- **LOD por distancia:** fauna lejos del jugador / de áreas activas usa rejilla a menor resolución o sin trazas puntuales.
+
+**Presupuesto objetivo:** trails **siempre por rejilla** (coste plano); objetos `Trace` vivos **≤ unos cientos** globales
+(fuentes salientes); escaneos ≤ el ritmo actual y por canal. Con esto, "dejar rastro al caminar" cuesta **O(1) por paso**
+y **O(9) por lectura** — despreciable frente a lo que ya hace `SenseThreats`/`ScentScanner`.
+
+> Nota: esto también sugiere **migrar los escaneos O(n) existentes** (`EmotionReader`/`AphidGuide` usan
+> `FindObjectsOfType` por frame) a registro/partición cuando se toque el sistema — deuda ya anotada en `SenseThreats`.
+
 ## 5. Riesgos / abierto
 
 - **No compilable aquí** → cada rebanada tras validación; N1 (grafting de `ImpulseController` al `Animal`) es la de más
