@@ -962,6 +962,17 @@ Primitiva **aislada y dormida** (nada la usa aún). Test manual de la propia rej
   `PheromoneField.Leave(p, ScentFood, 20)`), un animal que hace `Wander` **deriva hacia** esa zona. Balance-safe: sin
   rejilla, `Trail` = 0 → sin efecto.
 
+## 28. N7 — subproducto de hechizo → rastro (PR #148)
+
+- [ ] **Regresión**: los hechizos actuales (Pull/Walk/Fire/Honeydew…) funcionan **igual** (todos con `leavesByproduct`
+  = false por defecto → `LeaveByproduct` no-op).
+- [ ] **Bucle completo (opt-in)**: en un hechizo con input (`spellKey`), marca `leavesByproduct = true`,
+  `byproductChannel = ScentFood`, `byproductStrength = 20`. Pon un `PheromoneField` en escena. Lanza/mantén el hechizo
+  moviéndote → deja un **rastro** (verificable con `PheromoneField.Sniff/ActiveCells`), y un animal cercano que hace
+  `Wander` **deriva hacia** el rastro (N1). Al parar, el rastro **decae** y se poda.
+- [ ] **Rate-limit**: con `byproductInterval = 0.5`, el depósito no se dispara cada frame (no satura la celda).
+- [ ] **Sin PheromoneField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op).
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

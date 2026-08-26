@@ -52,6 +52,29 @@ public abstract class SpellBase : MonoBehaviour
 
     float _repeatTimer;
 
+    [Header("Subproducto / rastro (opt-in — docs/environmental-navigation.md §4.2)")]
+    [Tooltip("Si el hechizo deja un RASTRO (feromona) al ACTUAR. Default OFF → los hechizos actuales no cambian. " +
+             "Todo hechizo puede tener subproducto: enfermar/defecar/marcar/estar-en-celo son hechizos que sueltan su canal.")]
+    public bool leavesByproduct = false;
+    [Tooltip("Canal del rastro (olor propio=marca/comida/celo/enfermo/heces/dar-vueltas).")]
+    public TraceChannel byproductChannel = TraceChannel.ScentSelf;
+    [Tooltip("Intensidad depositada por emisión (en la rejilla PheromoneField).")]
+    [Min(0f)] public float byproductStrength = 1f;
+    [Tooltip("Segundos mínimos entre depósitos mientras el hechizo actúa (rate-limit; caminar NO debe soltar por frame).")]
+    [Min(0.05f)] public float byproductInterval = 0.5f;
+
+    float _nextByproduct;
+
+    /// <summary>Deposita el subproducto/rastro del hechizo en la rejilla de feromonas (docs §4.2/§4.3), con rate-limit.
+    /// No-op si el hechizo no deja rastro, si la fuerza es 0, o si no hay `PheromoneField` en escena. Se llama solo
+    /// cuando el hechizo ACTÚA (cast/canaliza). El coste es O(1) (una celda) — barato aunque se camine mucho.</summary>
+    protected void LeaveByproduct()
+    {
+        if (!leavesByproduct || byproductStrength <= 0f || Time.time < _nextByproduct) return;
+        _nextByproduct = Time.time + Mathf.Max(0.05f, byproductInterval);
+        PheromoneField.Leave(transform.position, byproductChannel, byproductStrength);
+    }
+
     // ── Manejo de input por modo (OPT-IN: la subclase lo llama desde su Update) ─
     /// <summary>Dispatch de input según `castMode` sobre `spellKey`. Llamar desde el `Update` de la subclase.
     /// Invoca los hooks `OnCast*` correspondientes. Si `spellKey` es None, no hace nada.</summary>
@@ -61,19 +84,19 @@ public abstract class SpellBase : MonoBehaviour
         switch (castMode)
         {
             case CastMode.Instant:
-                if (Input.GetKeyDown(spellKey)) OnCastPressed();
+                if (Input.GetKeyDown(spellKey)) { OnCastPressed(); LeaveByproduct(); }
                 break;
             case CastMode.Repeat:
                 if (Input.GetKey(spellKey))
                 {
                     _repeatTimer -= Time.deltaTime;
-                    if (_repeatTimer <= 0f) { OnCastPressed(); _repeatTimer = repeatCooldown; }
+                    if (_repeatTimer <= 0f) { OnCastPressed(); LeaveByproduct(); _repeatTimer = repeatCooldown; }
                 }
                 else _repeatTimer = 0f;
                 break;
             case CastMode.Channel:
                 if (Input.GetKeyDown(spellKey)) OnChannelStart();
-                if (Input.GetKey(spellKey)) OnChannelTick(Time.deltaTime);
+                if (Input.GetKey(spellKey)) { OnChannelTick(Time.deltaTime); LeaveByproduct(); }
                 if (Input.GetKeyUp(spellKey)) OnChannelEnd();
                 break;
         }
