@@ -205,6 +205,12 @@ Microcosmos). El "seguir el gradiente" del perro (N7) = leer las celdas vecinas 
 (fuentes salientes); escaneos ≤ el ritmo actual y por canal. Con esto, "dejar rastro al caminar" cuesta **O(1) por paso**
 y **O(9) por lectura** — despreciable frente a lo que ya hace `SenseThreats`/`ScentScanner`.
 
+> **Hecho (primitiva, PR #145):** `PheromoneField` (`Assets/Scripts/World/PheromoneField.cs`) — la rejilla: singleton
+> con `Leave`/`Sniff`/`Trail` (fachada estática no-op sin instancia), diccionario disperso, decaimiento **perezoso**
+> (`Settle` al tocar) + poda de baja frecuencia, canales `TraceChannel`. **`volumetric`** (opt-in) mete la profundidad
+> `y` para **mar/aire** (gradiente 3D, 26 vecinas); tierra sigue 2D exacta. **Aislada y dormida** (nada deposita/lee aún)
+> → se enchufa en N1 (los impulsos leen `Trail`) y N7 (`SpellBase.byproduct` llama `Leave`).
+
 > Nota: esto también sugiere **migrar los escaneos O(n) existentes** (`EmotionReader`/`AphidGuide` usan
 > `FindObjectsOfType` por frame) a registro/partición cuando se toque el sistema — deuda ya anotada en `SenseThreats`.
 
