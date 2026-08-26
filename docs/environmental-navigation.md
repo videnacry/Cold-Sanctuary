@@ -113,10 +113,14 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
   Modela confundir rastros parecidos.
 - **N6 — IMPRONTA NATAL (nostalgia):** guardar una **firma natal** al nacer (señales del sitio) → atractor persistente
   bajo hacia pistas similares (NHPI/habitat cueing). Un dato + un impulso de fondo.
-- **N7 — RASTROS + MARCAR territorio (subproducto = extensión de hechizo, §4.2):** `SpellBase.byproduct` +
-  `LeaveByproduct()`; unificar `ScentEmitter`/`ThreatEmitter` bajo `Trace`; celo/enfermo/defecar/marcar como **hechizos**
-  que sueltan su canal. Luego seguir el **gradiente** de olor (ir a los puntos de mayor intensidad para "descifrar" la
-  dirección, como el perro) hasta una línea de rastro. Habilita confusión de rastros solapados.
+- **N7 — RASTROS + MARCAR territorio (subproducto = extensión de hechizo, §4.2):**
+  - **[x] byproduct en `SpellBase` (PR #148):** campos opt-in `leavesByproduct`/`byproductChannel`/`byproductStrength`/
+    `byproductInterval` + `LeaveByproduct()` (deposita en `PheromoneField`, rate-limited, O(1)); auto-llamado en el
+    dispatch de cast (Instant/Repeat/Channel). Default OFF → hechizos actuales sin cambio. **Cierra el bucle**: un
+    hechizo opt-in deposita → `Wander` (N1) lo lee. Un `PheromoneField` en escena activa el rastro.
+  - **[ ] Falta:** unificar `ScentEmitter`/`ThreatEmitter` bajo `Trace` (Nivel 1 vivo, con cuidado); modelar celo/
+    enfermo/defecar/marcar como **hechizos** que sueltan su canal; seguir el **gradiente** hasta una línea de rastro
+    (el perro) — ya disponible vía `PheromoneField.Trail`. Habilita confusión de rastros solapados.
 - **N8 — IMPULSOS DE BASE (ser saciado):** cuando los impulsos por necesidad están bajos, activar
   explorar/patrullar/jugar/contrafreeloading/confort (§2.1) → el ser saciado deja de estar `Idle` y explora con
   propósito (refresca N4).
