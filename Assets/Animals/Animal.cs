@@ -468,21 +468,20 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         return n > 0 ? Mathf.Clamp01(sum / n / 100f) : 0f;
     }
 
+    [Tooltip("Cuánto proyecta la huida hacia adelante (lejos de la amenaza) por re-cálculo. Tunable.")]
+    public float fleeStep = 40f;
+
     protected virtual IEnumerator Flee(GameObject threat)
     {
-        Vector3 threatPos = threat.transform.position;
-        while (Vector3.Distance(transform.position, threatPos) < 620)
+        // N1 (docs/environmental-navigation.md): huir LEJOS de la amenaza leyendo su posición, no hacia un ave al azar
+        // (el placeholder anterior podía llevar la presa HACIA el peligro). Re-orienta cada tick mientras el peligro sigue cerca.
+        while (threat != null && Vector3.Distance(transform.position, threat.transform.position) < 620)
         {
             Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
-            int afraid = 30;
-            while (afraid > 0)
-            {
-                afraid--;
-                if (BirdBehavior.population.Count > 0)
-                    Loco.GoTo(BirdBehavior.population.ElementAt(Random.Range(0, BirdBehavior.population.Count)).transform.position);
-                yield return new WaitForSeconds(10);
-            }
-            threatPos = threat.transform.position;
+            Vector3 away = transform.position - threat.transform.position; away.y = 0f;
+            if (away.sqrMagnitude < 0.01f) { Vector2 r = Random.insideUnitCircle.normalized; away = new Vector3(r.x, 0f, r.y); }
+            if (nav != null && nav.isOnNavMesh) Loco.GoTo(transform.position + away.normalized * fleeStep);
+            yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
         }
     }
 
