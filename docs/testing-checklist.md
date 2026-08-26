@@ -908,6 +908,50 @@ ejercitar la lógica movida. No basta con "spawnea y no peta".
 `ThreatResponder.{aggressionGate, auraFear, alertReach, fightPowerMargin}` y, por especie, `SpeciesProfile`
 (threatThreshold, packFactor…) + `SpeciesBody.{baseAgility, basePerception}`.
 
+## 24. Modelo emergente: temperamento/sentidos/armamento/confianza (PRs #128–#137)
+
+Todo **balance-safe**: al spawn la conducta debe ser **idéntica** a antes; los efectos EMERGEN con el tiempo o son
+dormidos. Doc: [`capabilities-and-embodiment.md`](capabilities-and-embodiment.md).
+
+- [ ] **Regresión (lo primero)**: fauna recién spawneada caza/huye/pastorea **igual** que antes de #128 (nada cambia
+  al nacer: confianza 0, `armament` 0, percepción ≥1 → sin gateo).
+- [ ] **`canHitAndRun` disuelto (#128)**: una madre (coneja/ciervo) con cría, ante una serpiente/depredador que NO puede
+  vencer, **acosa** (golpe + retirada) en vez de plantarse; un oso fuerte con cría se **planta** (Fight). No hay flag.
+- [ ] **`Assess` gateado por sentidos (#129)**: baja `perception` de una presa por debajo de 1 en el inspector → **tarda
+  más o no reacciona** a un depredador (lo "lee" peor); percepción alta → reacciona de más lejos. Con percepción ≥1
+  (default de toda la fauna) NO cambia nada.
+- [ ] **Armamento ⟂ masa (#130)**: a un ser pequeño y débil súbele `Anima.armament` en el inspector → su `PredatorPower`
+  sube y puede **cazar/ser temido** por seres mayores (avispa>cucaracha). Con `armament` 0 (default) sin cambio.
+- [ ] **Confianza → agresividad histórica (#131/#132/#137)**: un depredador que **caza con éxito** repetidamente sube
+  `spellConfidence["combat"]` → se vuelve **más osado** (ataca en situaciones donde antes dudaba). Un herbívoro nunca
+  la sube. Ganar una **pelea** también refuerza (#137). Sin uso, la confianza **decae** lentamente (#137).
+- [ ] **D3a/E2 dormidos (#134)**: la fauna con `Mind` **piensa igual** (ninguna frase fija `capability`/`gateCapability`
+  todavía). Sin regresión en `Mind`.
+
+## 25. Asfixia + deambular local (PRs #139, #140)
+
+- [ ] **Asfixia (#139)**: una **ballena/foca varada en tierra** (o un terrestre atrapado en agua profunda del que
+  `CorrectMedium` no puede sacarlo) **pierde vida progresivamente** (`Suffocate` vía `Hurt`) y acaba muriendo. Un animal
+  en **su** medio, sin cambios. Un terrestre que **nada de paso** (waterAffinity 0.4 > umbral 0.3) **NO** se ahoga.
+  Tunables: `Animal.{asphyxiaThreshold, asphyxiaRate}`. (Ojo: los que pescan necesitan `waterAffinity ≥ asphyxiaThreshold`.)
+- [ ] **Deambular local (#140)**: un animal en `Wander` (evento de etapa) se mueve a un **punto local** dentro de su
+  territorio (radio = `HomeRadius` acotado 5–25), **ya no hacia un ave al azar**. Si se aleja, `Homebound` lo devuelve.
+  No debería alejarse hacia pájaros voladores.
+
+## 26. Rejilla de feromonas `PheromoneField` (PR #145)
+
+Primitiva **aislada y dormida** (nada la usa aún). Test manual de la propia rejilla:
+
+- [ ] **Sin instancia = no-op**: sin un `PheromoneField` en escena, `PheromoneField.Sniff/Trail` devuelven 0/zero y
+  `Leave` no hace nada (no peta). No cambia ninguna conducta.
+- [ ] **Depósito y lectura**: añade un GameObject con `PheromoneField`. Desde un script de prueba, `Leave(p, ScentSelf,
+  10)` y luego `Sniff(p, ScentSelf)` > 0 en esa celda; en una celda lejana, 0.
+- [ ] **Gradiente**: deposita en una celda y `Trail(posVecina, canal)` apunta **hacia** ella (vector no-cero).
+- [ ] **Decaimiento + poda**: tras un tiempo (según `decayPerSecond`), `Sniff` baja hacia 0; `ActiveCells` vuelve a 0
+  cuando todo se agota (poda cada `pruneInterval`).
+- [ ] **`volumetric` (mar/aire)**: con `volumetric = true`, dos depósitos a la **misma x,z pero distinta profundidad y**
+  caen en **celdas distintas** y `Trail` da componente vertical; con `false`, comparten celda (2D). Sin impacto de perf.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
