@@ -90,9 +90,13 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
 
 - **N0 — quitar el sinsentido:** `LifeStage.Wander` deja de apuntar a un ave al azar; deambula a un punto local
   (alrededor de su posición/hogar). Stopgap pequeño y honesto hasta N1.
-- **N1 — impulsos en el overworld:** `Animal` puede llevar `ImpulseController`; `Wander`/`Flee` pasan a leer el neto de
-  impulsos en vez del ave al azar. Reutiliza `HomeImpulse`/`Scent`/`ThreatScanner` tal cual. (El overworld ya es NavMesh,
-  como `ImpulseController`.)
+- **N1 ✔ (PR #147) — leer el entorno para dirigirse (sin ceder el agente):** `ImpulseController` **posee** el
+  `NavMeshAgent` (SetDestination cada tick) → grafarlo pelearía con `Wander`/`Flee`/`Forager`, que ya lo conducen. Así N1
+  aplica el principio "leer → dirigirse" **inline**, manteniendo el ownership de `Animal`: **`Flee` huye LEJOS de la
+  amenaza** (leyendo su posición; ya no hacia un ave al azar — el placeholder podía llevar la presa HACIA el peligro), y
+  **`Wander` sesga su destino con `PheromoneField.Trail(ScentFood)`** (dormido hasta que N7 deposite → sin rejilla no
+  cambia nada). *Deferido:* graft completo de `ImpulseController` (mover TODO por impulsos), pendiente de decidir el
+  ownership del agente — mejor tras validar en Unity.
 - **N2 — campo de CONFORT (humedad/medio):** emisor de confort por microclima; impulso hacia la afinidad preferida →
   evitación proactiva del mal medio (cierra el tema de la asfixia por el lado de "no entrar").
 - **N3 — COLEGUEO (`SafetyReader`):** atractor a inofensivos calmados/visibles (inverso de `BondEscapeReader`, vía

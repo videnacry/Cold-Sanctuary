@@ -952,6 +952,16 @@ Primitiva **aislada y dormida** (nada la usa aún). Test manual de la propia rej
 - [ ] **`volumetric` (mar/aire)**: con `volumetric = true`, dos depósitos a la **misma x,z pero distinta profundidad y**
   caen en **celdas distintas** y `Trail` da componente vertical; con `false`, comparten celda (2D). Sin impacto de perf.
 
+## 27. Navegación N1 — huir lejos + wander por rastro (PR #147)
+
+- [ ] **Flee correcto**: acércate con un depredador a una presa (o baja el bond) → la presa **huye en dirección
+  CONTRARIA** al depredador (se aleja), **ya no** corre hacia un pájaro al azar ni hacia el depredador. Re-orienta si el
+  depredador la persigue. Tunable: `Animal.fleeStep`.
+- [ ] **Wander por rastro (dormido)**: **sin** un `PheromoneField` en escena (o sin rastros), `Wander` deambula local
+  **igual que en #140** (sin cambio). Con un `PheromoneField` y un depósito de `ScentFood` cerca (script de prueba
+  `PheromoneField.Leave(p, ScentFood, 20)`), un animal que hace `Wander` **deriva hacia** esa zona. Balance-safe: sin
+  rejilla, `Trail` = 0 → sin efecto.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
