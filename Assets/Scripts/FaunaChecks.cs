@@ -12,15 +12,15 @@ using UnityEngine;
 /// Mutaciones puntuales (armamento/percepción) se **restauran en el mismo frame** (sin yields de por medio) → no
 /// alteran la sim. Se omite (SKIP, sin FAIL) lo que la composición de fauna de la escena no permita comprobar.
 /// </summary>
-public class FaunaChecks : MonoBehaviour
+public class FaunaChecks : MonoBehaviour, ITestUnit
 {
-    [Tooltip("Segundos de espera para que FamilyGenerator + Init de los animales asienten antes de asev­erar.")]
-    public float settle = 1.5f;
+    public int Group => 1;              // sobre la fauna real (tras la rejilla)
+    public bool ParallelSafe => false;  // muta/restaura campos de la faura → serie
 
-    IEnumerator Start()
+    public IEnumerator Run()
     {
-        yield return new WaitForSeconds(settle);
         TestProbe.Begin("FaunaChecks (escena real)");
+        yield return null;
 
         List<Animal> alive = new List<Animal>();
         foreach (Animal a in FindObjectsOfType<Animal>())

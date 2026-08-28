@@ -17,6 +17,17 @@ public static class TestProbe
 {
     static int _pass, _fail;
     static string _group = "";
+    static int _grandPass, _grandFail;   // acumulados a través de TODOS los grupos (para el TOTAL del TestRunner)
+
+    /// <summary>Resetea el TOTAL global (lo llama el `TestRunner` antes de correr todos los grupos).</summary>
+    public static void ResetTotals() { _grandPass = 0; _grandFail = 0; }
+
+    /// <summary>Loguea el veredicto GLOBAL de la corrida (suma de todos los grupos).</summary>
+    public static void Total()
+    {
+        string v = _grandFail == 0 ? "OK ✓" : "FALLOS ✗";
+        Debug.Log($"[TEST] ═══ TOTAL: {_grandPass} PASS / {_grandFail} FAIL → {v} ═══");
+    }
 
     /// <summary>Abre un grupo de checks (resetea contadores). Llamar al empezar un sandbox/misión.</summary>
     public static void Begin(string group)
@@ -28,8 +39,8 @@ public static class TestProbe
     /// <summary>Un aserto booleano. Loguea PASS/FAIL y cuenta. Devuelve la condición (para encadenar).</summary>
     public static bool Check(string name, bool ok, string detail = "")
     {
-        if (ok) { _pass++; Debug.Log($"[TEST] PASS · {name}{Tail(detail)}"); }
-        else    { _fail++; Debug.LogWarning($"[TEST] FAIL · {name}{Tail(detail)}"); }
+        if (ok) { _pass++; _grandPass++; Debug.Log($"[TEST] PASS · {name}{Tail(detail)}"); }
+        else    { _fail++; _grandFail++; Debug.LogWarning($"[TEST] FAIL · {name}{Tail(detail)}"); }
         return ok;
     }
 
