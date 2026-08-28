@@ -144,9 +144,14 @@ public abstract class LifeStage
             // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
             float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
             Vector2 r = Random.insideUnitCircle * step;
-            Vector3 dest = script.transform.position + new Vector3(r.x, 0f, r.y);
-            // N1: sesgo por LECTURA del entorno — deriva hacia el olor de comida si la rejilla lo tiene. Dormido hasta que
-            // algo deposite (N7) → sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada. docs/environmental-navigation.md.
+            Vector3 offset = new Vector3(r.x, 0f, r.y);
+            // N8: ALTERNACIÓN ESPONTÁNEA (etología, environmental-navigation.md §2.1) — el ser saciado explora con
+            // propósito, sin volver por donde vino: sesga el destino hacia ADELANTE (sigue avanzando por el territorio).
+            Vector3 fwd = script.transform.forward; fwd.y = 0f;
+            if (fwd.sqrMagnitude > 0.01f) offset += fwd.normalized * step * 0.6f;
+            Vector3 dest = script.transform.position + offset;
+            // N1: sesgo por LECTURA del entorno — deriva hacia el olor de comida si la rejilla lo tiene (contrafreeloading:
+            // hacia la comida aun sin hambre). Sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada.
             Vector3 trail = TraceField.Trail(script.transform.position, TraceChannel.ScentFood);
             if (trail.sqrMagnitude > 0.0001f) dest += trail.normalized * step;
             script.nav.SetDestination(dest);
