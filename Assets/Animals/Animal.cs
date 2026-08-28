@@ -188,6 +188,18 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     [Tooltip("Ritmo de asfixia por tick pasivo: daño = (umbral - MediumFactor) × esto × masa. Tunable.")]
     public float asphyxiaRate = 0.5f;
 
+    [Header("Inanición (hambre prolongada)")]
+    [Tooltip("Umbral: se entra en inanición si el hambre supera N comidas máximas (grasa→masa→enfermedad→muerte).")]
+    [Min(0f)] public float starvationMeals = 3f;
+    [Tooltip("Reservas de grasa gastadas por tick de inanición (se tira de la despensa primero).")]
+    [Min(0f)] public float starvationFatRate = 0.05f;
+    [Tooltip("Fracción de MASA consumida por tick cuando ya no hay grasa (el cuerpo se consume → debilita).")]
+    [Range(0f, 0.2f)] public float starvationMassRate = 0.02f;
+    [Tooltip("Muere de inanición si la masa cae por debajo de baseMass × esto.")]
+    [Range(0f, 1f)] public float lethalMassFrac = 0.4f;
+    [Tooltip("Gravedad de la ENFERMEDAD que dispara el hambre prolongada (necesita tratamiento para recuperarse).")]
+    [Range(0f, 1f)] public float starvationSickness = 0.4f;
+
     public bool  firstSolidEaten = false; // cría comió un FoodItem por primera vez
     public bool  firstNestExit   = false; // cría salió del nido una vez sola
 
@@ -313,6 +325,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             EvolveAptitudes(interval);
             CorrectMedium(interval);
             Suffocate();              // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
+            Starve();                 // inanición si el hambre es prolongada (grasa→masa→enfermedad→muerte)
             FeedWalkSpeed(interval);
             DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
             yield return new WaitForSeconds(interval);
@@ -365,6 +378,25 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         float deficit = asphyxiaThreshold - MediumFactor;
         if (deficit <= 0f) return;                          // medio soportable → sin asfixia
         Hurt(deficit * asphyxiaRate * rig.mass);            // ahogo: proporcional a lo malo del medio y a la masa
+    }
+
+    // INANICIÓN (hambre prolongada): tu progresión — reservas → masa → enfermedad → muerte. El comer (baja hungry)
+    // la detiene; recuperarse pide TRATAMIENTO (comer + curar la enfermedad que dispara). Público para el test.
+    public void Starve()
+    {
+        if (death || rig == null || Body == null) return;
+        float mealMax = Body.GetMealMaxWeight(rig.mass);
+        if (mealMax <= 0.001f || hungry < mealMax * starvationMeals) return;   // aún no es inanición
+
+        if (fatReserves > 0f) { fatReserves = Mathf.Max(0f, fatReserves - starvationFatRate); return; }  // tira de la grasa primero
+
+        // Sin grasa: el cuerpo se consume (baja masa → menos poder/defensa = debilitado) y el hambre prolongada
+        // LANZA la enfermedad (el "punto físico" que necesita tratamiento).
+        rig.mass = Mathf.Max(0.1f, rig.mass * (1f - starvationMassRate));
+        GetComponent<SicknessState>()?.MakeSick(starvationSickness);
+
+        // Por debajo de un mínimo vital → muerte por inanición (por el mismo camino que cualquier daño letal).
+        if (rig.mass <= Body.baseMass * lethalMassFrac) Hurt(rig.mass);
     }
 
     void CorrectMedium(float dt)
