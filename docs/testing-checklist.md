@@ -1061,6 +1061,17 @@ Emite un **`[TEST] ═══ TOTAL: X PASS / Y FAIL`** al final → **un solo ve
 - [ ] **Añadir un test** = un componente `ITestUnit` (Group + ParallelSafe + `Run()`) en el `TestRunner_AUTO`. Las
   **misiones WASD** reportan por el mismo `TestProbe` → el `TOTAL` juntará laboratorio y juego real.
 
+## 33. Primera misión WASD-test — `ReachGoalMission` (PR #155)
+
+El frente de **juego real**: una misión mínima jugable que reporta por el mismo `TestProbe`. `SampleSceneBuilder`
+añade `WasdMission_AUTO`; coloca un **marcador de refugio** ~12 m adelante del jugador.
+- [ ] **Jugar**: con **WASD**, camina hasta el marcador. Al llegar, la consola muestra `[TEST] ▼ Misión WASD: llegar al
+  refugio` con `el jugador se movió (hubo WASD)` = PASS y `llegó al refugio` = PASS, y su `SUMMARY`.
+- [ ] **Anti-falso-positivo**: si aparecieras sobre la meta sin moverte, `el jugador se movió` daría FAIL (recorrido <
+  umbral). Sin `Player` en escena → SKIP (sin FAIL).
+- Nota: emite sus `[TEST]` **al completarse** (la conduce el jugador, no el `TestRunner`) → aparece después del `TOTAL`
+  del laboratorio; grep `[TEST]` los junta.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

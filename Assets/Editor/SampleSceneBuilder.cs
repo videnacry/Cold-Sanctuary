@@ -109,6 +109,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<FaunaChecks>();          // grupo 1: conducta/stats sobre la fauna real
         tests.AddComponent<EmergenceAuto>();        // grupo 2: bucle de temperamento
         tests.AddComponent<TestRunner>();           // orquesta lo anterior + TOTAL
+        new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
