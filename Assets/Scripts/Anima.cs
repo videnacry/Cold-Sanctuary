@@ -62,6 +62,9 @@ public abstract class Anima : MonoBehaviour, IAptitudes
                                                         // deja que un cuerpo pequeño hiera a uno grande (avispa>cucaracha).
                                                         // 0 = sin arma especial (el daño sale de masa/fuerza). La pone la
                                                         // anatomía/composición, como armadura. Ver capabilities-and-embodiment.md §2.
+    [HideInInspector] public float sickness     = 0f;   // ENFERMEDAD (0=sano … 1=grave): baja poder Y defensa (presa
+                                                        // fácil que los demás evitan) y deja rastro `Sickness`. La cura
+                                                        // (enfermería) la reduce. La gestiona `SicknessState`. Ver capabilities §2.
     [HideInInspector] public float magicAura    = 0f;   // aura mágica FIRMADA: + inspira (bonds fáciles) / −
                                                         // destructiva (más temida). Decae con `MagicAura`.
     [HideInInspector] public float autoabandono = 0.3f; // disposición al auto-sacrificio (0=solo piensa en sí / 1=total

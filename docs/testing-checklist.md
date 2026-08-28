@@ -1111,6 +1111,15 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
  `AiBrain.useVolition=false` y/o `Reproduction.Enabled=false` revierten al comportamiento anterior.
 - [ ] El wander ya no es puramente random: los animales tienden a **seguir explorando** en una dirección.
 
+## 38. Cortejo rico + enfermedad (PR #160)
+
+- **Cortejo rico**: `Reproduction.FindMate` elige la pareja compatible cercana de **mayor vínculo (bond)** y más cerca
+  (no la primera). En Play (Reproduction activa): los que tienen bond se emparejan preferentemente.
+- **Enfermedad** (`SicknessState`, auto-add): `SicknessTest` (grupo 6) asevera `MakeSick` → `Anima.sickness>0` → baja
+  `PredatorPower`/`Defense` (**presa fácil**) + deja rastro `Sickness`; `Heal` (enfermería) lo revierte. En Play: onset
+  espontáneo RARO (`spontaneousChancePerMinute`), se recupera solo; un enfermo es cazado antes. Grep `[TEST] ... Sickness`.
+- [ ] Abre la ENFERMERÍA: curar un animal enfermo = `SicknessState.Heal`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

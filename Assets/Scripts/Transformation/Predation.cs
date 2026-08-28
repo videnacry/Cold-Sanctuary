@@ -18,13 +18,15 @@ public static class Predation
     public const float ArmamentPower = 1f;
 
     /// <summary>Poder depredador: capacidad de cazar/intimidar. Masa/fuerza/textura/agilidad + **arma ⟂ masa**
-    /// (colmillo/veneno/garra/aguijón): el arma NO escala con la masa, así el pequeño-pero-armado puede cazar.</summary>
+    /// (colmillo/veneno/garra/aguijón): el arma NO escala con la masa, así el pequeño-pero-armado puede cazar. La
+    /// **enfermedad** (`sickness`) lo debilita.</summary>
     public static float PredatorPower(Anima a) => a == null ? 0f
-        : a.strength * 0.4f + a.bodyMass * 0.4f + a.armadura * 0.15f + a.agility * 0.05f + a.armament * ArmamentPower;
+        : (a.strength * 0.4f + a.bodyMass * 0.4f + a.armadura * 0.15f + a.agility * 0.05f + a.armament * ArmamentPower)
+          * (1f - Mathf.Clamp01(a.sickness));
 
-    /// <summary>Defensa: lo difícil que es someterlo/comerlo (masa/fuerza/textura).</summary>
+    /// <summary>Defensa: lo difícil que es someterlo/comerlo (masa/fuerza/textura). La **enfermedad** lo vuelve presa fácil.</summary>
     public static float Defense(Anima a) => a == null ? 0f
-        : a.bodyMass * 0.5f + a.strength * 0.3f + a.armadura * 0.2f;
+        : (a.bodyMass * 0.5f + a.strength * 0.3f + a.armadura * 0.2f) * (1f - Mathf.Clamp01(a.sickness));
 
     /// <summary>¿Puede el cazador con la presa? Necesita superar su defensa (margen opcional).</summary>
     public static bool CanHunt(Anima hunter, Anima prey, float margin = 0f)
