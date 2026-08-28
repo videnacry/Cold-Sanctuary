@@ -1021,6 +1021,22 @@ contamina el "0 errores de compilación". API: `Begin(grupo)` · `Check/Near/Gre
 - [ ] **Humo del propio harness**: un `TestProbe.Begin("demo"); Check("ok", true); Check("no", false); End();` produce en
   consola una línea PASS, una FAIL (warning) y un SUMMARY `1 PASS / 1 FAIL`.
 
+## 30. `FaunaChecks_AUTO` — conducta/stats sobre la fauna real (PR #151)
+
+Complementa §23/§24 automáticamente: `SampleSceneBuilder` añade `FaunaChecks_AUTO`, que tras ~1.5 s (asentar
+`FamilyGenerator`+`Init`) asevera por `TestProbe` sobre los animales REALES (grep `[TEST]` en `Editor.log`):
+- **Wiring del refactor**: cada animal tiene `ThreatResponder`/`Locomotion`/`Forager`/`SpeciesBody`/`AiBrain`/
+  `AnimaController`; `SpeciesBody` sembró `strength > 0`.
+- **Armamento ⟂ masa (#130)**: subir `armament` sube `PredatorPower` (restaurado en el mismo frame).
+- **Confianza histórica (#131/#132)**: `Confidence("combat")` arranca en 0.
+- **Depredación por stats (#119/#32)**: el depredador más fuerte PUEDE con la presa más blanda; la presa NO puede
+  cazar al depredador.
+- **`Assess` gateado por sentidos (#129)**: bajar la percepción de la presa reduce la amenaza percibida.
+
+Asevera **funciones deterministas** (no la emergencia con timing → no flaky). Omite (SKIP, sin FAIL) lo que la
+composición de fauna no permita. **Interpretación**: si `[TEST] ▲ FaunaChecks — SUMMARY` da `0 FAIL`, el modelo
+emergente está bien cableado en runtime; un FAIL apunta al building-block exacto.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
