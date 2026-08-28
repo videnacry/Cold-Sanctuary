@@ -94,7 +94,7 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
   `NavMeshAgent` (SetDestination cada tick) → grafarlo pelearía con `Wander`/`Flee`/`Forager`, que ya lo conducen. Así N1
   aplica el principio "leer → dirigirse" **inline**, manteniendo el ownership de `Animal`: **`Flee` huye LEJOS de la
   amenaza** (leyendo su posición; ya no hacia un ave al azar — el placeholder podía llevar la presa HACIA el peligro), y
-  **`Wander` sesga su destino con `PheromoneField.Trail(ScentFood)`** (dormido hasta que N7 deposite → sin rejilla no
+  **`Wander` sesga su destino con `TraceField.Trail(ScentFood)`** (dormido hasta que N7 deposite → sin rejilla no
   cambia nada). *Deferido:* graft completo de `ImpulseController` (mover TODO por impulsos), pendiente de decidir el
   ownership del agente — mejor tras validar en Unity.
 - **N2 — campo de CONFORT (humedad/medio):** emisor de confort por microclima; impulso hacia la afinidad preferida →
@@ -115,12 +115,12 @@ que la reencajan. Es una "nostalgia" emergente y barata (un dato al nacer + un i
   bajo hacia pistas similares (NHPI/habitat cueing). Un dato + un impulso de fondo.
 - **N7 — RASTROS + MARCAR territorio (subproducto = extensión de hechizo, §4.2):**
   - **[x] byproduct en `SpellBase` (PR #148):** campos opt-in `leavesByproduct`/`byproductChannel`/`byproductStrength`/
-    `byproductInterval` + `LeaveByproduct()` (deposita en `PheromoneField`, rate-limited, O(1)); auto-llamado en el
+    `byproductInterval` + `LeaveByproduct()` (deposita en `TraceField`, rate-limited, O(1)); auto-llamado en el
     dispatch de cast (Instant/Repeat/Channel). Default OFF → hechizos actuales sin cambio. **Cierra el bucle**: un
-    hechizo opt-in deposita → `Wander` (N1) lo lee. Un `PheromoneField` en escena activa el rastro.
+    hechizo opt-in deposita → `Wander` (N1) lo lee. Un `TraceField` en escena activa el rastro.
   - **[ ] Falta:** unificar `ScentEmitter`/`ThreatEmitter` bajo `Trace` (Nivel 1 vivo, con cuidado); modelar celo/
     enfermo/defecar/marcar como **hechizos** que sueltan su canal; seguir el **gradiente** hasta una línea de rastro
-    (el perro) — ya disponible vía `PheromoneField.Trail`. Habilita confusión de rastros solapados.
+    (el perro) — ya disponible vía `TraceField.Trail`. Habilita confusión de rastros solapados.
 - **N8 — IMPULSOS DE BASE (ser saciado):** cuando los impulsos por necesidad están bajos, activar
   explorar/patrullar/jugar/contrafreeloading/confort (§2.1) → el ser saciado deja de estar `Idle` y explora con
   propósito (refresca N4).
@@ -213,7 +213,7 @@ Microcosmos). El "seguir el gradiente" del perro (N7) = leer las celdas vecinas 
 (fuentes salientes); escaneos ≤ el ritmo actual y por canal. Con esto, "dejar rastro al caminar" cuesta **O(1) por paso**
 y **O(9) por lectura** — despreciable frente a lo que ya hace `SenseThreats`/`ScentScanner`.
 
-> **Hecho (primitiva, PR #145):** `PheromoneField` (`Assets/Scripts/World/PheromoneField.cs`) — la rejilla: singleton
+> **Hecho (primitiva, PR #145):** `TraceField` (`Assets/Scripts/World/TraceField.cs`) — la rejilla: singleton
 > con `Leave`/`Sniff`/`Trail` (fachada estática no-op sin instancia), diccionario disperso, decaimiento **perezoso**
 > (`Settle` al tocar) + poda de baja frecuencia, canales `TraceChannel`. **`volumetric`** (opt-in) mete la profundidad
 > `y` para **mar/aire** (gradiente 3D, 26 vecinas); tierra sigue 2D exacta. **Aislada y dormida** (nada deposita/lee aún)

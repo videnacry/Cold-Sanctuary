@@ -80,6 +80,23 @@ otra modalidad. Una parte del cuerpo (`CompositionPart`) hace **tres cosas a la 
 Así, crear el colmillo/veneno/ojo como partes **unifica** arma + sentido + quimera + desbloqueo-de-hechizo en un solo
 mecanismo (la **rebanada E**, §8). La `perception` sigue graduando **cuán bien** lee; el receptor decide **si** puede.
 
+### Todo hechizo tiene DOS vías: cuerpo O magia (corrección 2026-08-28)
+
+No hay "hechizos corporales" vs "hechizos mágicos" — **cada hechizo es global y siempre tiene DOS vías de habilitación**:
+la **anatomía** (una parte del cuerpo) **o** la **magia** (aprenderlo en el `Grimoire`). Ver = ojo **o** grimorio; morder =
+colmillo **o** grimorio; lanzar fuego = órgano/lanzallamas **o** grimorio; moverse = piernas **o** levitación. La
+disponibilidad de un hechizo es `tengo la parte  ∨  Grimoire.Knows(id)`.
+
+- **El repertorio vive en el ALMA** (lo que unifica a TODO ser, incl. inanimados-despertables): `Grimoire` (aprendidos)
+  + `spellConfidence` (maestría) + `MagicReserves` (combustible). La anatomía es **una** de las dos vías, no la sede. El
+  `Grimoire` es **universal y vacío por defecto** (bloqueado hasta `Learn`; el 1º despierta las pools) → un ser sin cuerpo
+  (una **roca** con `Mind`+`Grimoire`) puede hacerlo todo por la vía mágica: verse, moverse por el mapa…
+- **`armament`** (§2) es el habilitador **corporal** del subconjunto ofensivo; el hechizo `Morder` mira `armament > 0`
+  **o** el grimorio. Por eso `armament` está en 0 para todos: el arma corporal la pone la anatomía, no un valor suelto.
+- **Animación degradada:** el hechizo **llama a partes del cuerpo**; si no las tiene → **sin animación** o una **global**.
+  Lanzar fuego: el dragón abre la boca; el mago conjura una **nube** delante y sale de ahí; la roca muestra una nube en su
+  base. Mismo EFECTO (sale fuego / se mueve), presentación adaptada. La nube-mágica es el fallback reutilizable.
+
 > **Hecho (E1, PR #133):** el punto 1 para el ARMA. `StatBonus.armament` + su aplicación por el delta gestionado de
 > `CharacterComposition` (modulada por la vitalidad del huésped, como lo biológico) → un **colmillo/veneno como
 > `CompositionPart`** sube el `Anima.armament` que `Predation` lee. Cierra B desde la anatomía: el arma ya es una PARTE,

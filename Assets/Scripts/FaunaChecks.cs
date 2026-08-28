@@ -4,7 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Sandbox AUTOEJECUTABLE de CONDUCTA/lógica sobre la ESCENA REAL (NavMesh horneado + fauna de `FamilyGenerator`),
-/// reportando por `TestProbe` (`[TEST]` en `Editor.log`). A diferencia de `PheromoneFieldTest` (pura lógica), esto
+/// reportando por `TestProbe` (`[TEST]` en `Editor.log`). A diferencia de `TraceFieldTest` (pura lógica), esto
 /// necesita animales reales, así que espera a que hayan hecho `Init` y luego asevera **funciones DETERMINISTAS**
 /// (no la emergencia con timing, que sería flaky): el wiring del refactor por componentes, la depredación por stats,
 /// el eje de armamento ⟂ masa, la confianza-histórica en 0 al nacer, y el gateo sensorial de `Assess`.

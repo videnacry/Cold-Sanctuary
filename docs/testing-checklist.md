@@ -20,7 +20,7 @@ receta + tickets). Los ítems `[x]` son historial verificado.
   (D3b)** — `Assets/Animals/Volition.cs` + `DesireCatalog.cs` (nuevos): un "deseo" elegido por
   necesidad×capacidad×confianza despacha las respuestas existentes (reemplaza la prioridad fija de
   `ActiveBehaveTick`), migrado tras flag con paridad garantizada (el propio PR dice que el comportamiento
-  debe verse IDÉNTICO a antes). **Navegación ambiental (N1/N7)**: `PheromoneField.cs` (nuevo, rejilla de
+  debe verse IDÉNTICO a antes). **Navegación ambiental (N1/N7)**: `TraceField.cs` (nuevo, rejilla de
   rastros — descrita como "dormida", sin invocadores activos todavía) + ajustes en `LifeStage.cs`
   (huir lejos + deambular por rastro) y `SpellBase.cs` (subproducto = extensión de hechizo). Sync +
   rebuild de escena + compilación → **0 errores** confirmado por `Editor.log`. Testeado en Play:
@@ -969,15 +969,15 @@ dormidos. Doc: [`capabilities-and-embodiment.md`](capabilities-and-embodiment.md
   territorio (radio = `HomeRadius` acotado 5–25), **ya no hacia un ave al azar**. Si se aleja, `Homebound` lo devuelve.
   No debería alejarse hacia pájaros voladores.
 
-## 26. Rejilla de feromonas `PheromoneField` (PR #145)
+## 26. Rejilla de feromonas `TraceField` (PR #145)
 
 Primitiva **aislada y dormida** (nada la usa aún). **AUTO (PR #150):** `NavTests_AUTO` (lo añade
-`SampleSceneBuilder`) ejecuta `PheromoneFieldTest` al entrar en Play y **reporta por `TestProbe`** — en `Editor.log`,
-grep `[TEST] ... PheromoneField` (depósito/lectura/gradiente/decaimiento/`volumetric`). Test manual de respaldo:
+`SampleSceneBuilder`) ejecuta `TraceFieldTest` al entrar en Play y **reporta por `TestProbe`** — en `Editor.log`,
+grep `[TEST] ... TraceField` (depósito/lectura/gradiente/decaimiento/`volumetric`). Test manual de respaldo:
 
-- [ ] **Sin instancia = no-op**: sin un `PheromoneField` en escena, `PheromoneField.Sniff/Trail` devuelven 0/zero y
+- [ ] **Sin instancia = no-op**: sin un `TraceField` en escena, `TraceField.Sniff/Trail` devuelven 0/zero y
   `Leave` no hace nada (no peta). No cambia ninguna conducta.
-- [ ] **Depósito y lectura**: añade un GameObject con `PheromoneField`. Desde un script de prueba, `Leave(p, ScentSelf,
+- [ ] **Depósito y lectura**: añade un GameObject con `TraceField`. Desde un script de prueba, `Leave(p, ScentSelf,
   10)` y luego `Sniff(p, ScentSelf)` > 0 en esa celda; en una celda lejana, 0.
 - [ ] **Gradiente**: deposita en una celda y `Trail(posVecina, canal)` apunta **hacia** ella (vector no-cero).
 - [ ] **Decaimiento + poda**: tras un tiempo (según `decayPerSecond`), `Sniff` baja hacia 0; `ActiveCells` vuelve a 0
@@ -990,9 +990,9 @@ grep `[TEST] ... PheromoneField` (depósito/lectura/gradiente/decaimiento/`volum
 - [ ] **Flee correcto**: acércate con un depredador a una presa (o baja el bond) → la presa **huye en dirección
   CONTRARIA** al depredador (se aleja), **ya no** corre hacia un pájaro al azar ni hacia el depredador. Re-orienta si el
   depredador la persigue. Tunable: `Animal.fleeStep`.
-- [ ] **Wander por rastro (dormido)**: **sin** un `PheromoneField` en escena (o sin rastros), `Wander` deambula local
-  **igual que en #140** (sin cambio). Con un `PheromoneField` y un depósito de `ScentFood` cerca (script de prueba
-  `PheromoneField.Leave(p, ScentFood, 20)`), un animal que hace `Wander` **deriva hacia** esa zona. Balance-safe: sin
+- [ ] **Wander por rastro (dormido)**: **sin** un `TraceField` en escena (o sin rastros), `Wander` deambula local
+  **igual que en #140** (sin cambio). Con un `TraceField` y un depósito de `ScentFood` cerca (script de prueba
+  `TraceField.Leave(p, ScentFood, 20)`), un animal que hace `Wander` **deriva hacia** esa zona. Balance-safe: sin
   rejilla, `Trail` = 0 → sin efecto.
 
 ## 28. N7 — subproducto de hechizo → rastro (PR #148)
@@ -1000,11 +1000,11 @@ grep `[TEST] ... PheromoneField` (depósito/lectura/gradiente/decaimiento/`volum
 - [ ] **Regresión**: los hechizos actuales (Pull/Walk/Fire/Honeydew…) funcionan **igual** (todos con `leavesByproduct`
   = false por defecto → `LeaveByproduct` no-op).
 - [ ] **Bucle completo (opt-in)**: en un hechizo con input (`spellKey`), marca `leavesByproduct = true`,
-  `byproductChannel = ScentFood`, `byproductStrength = 20`. Pon un `PheromoneField` en escena. Lanza/mantén el hechizo
-  moviéndote → deja un **rastro** (verificable con `PheromoneField.Sniff/ActiveCells`), y un animal cercano que hace
+  `byproductChannel = ScentFood`, `byproductStrength = 20`. Pon un `TraceField` en escena. Lanza/mantén el hechizo
+  moviéndote → deja un **rastro** (verificable con `TraceField.Sniff/ActiveCells`), y un animal cercano que hace
   `Wander` **deriva hacia** el rastro (N1). Al parar, el rastro **decae** y se poda.
 - [ ] **Rate-limit**: con `byproductInterval = 0.5`, el depósito no se dispara cada frame (no satura la celda).
-- [ ] **Sin PheromoneField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op).
+- [ ] **Sin TraceField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op).
 
 ## 29. Convención de tests automáticos — `TestProbe` (PASS/FAIL por consola)
 
@@ -1054,7 +1054,7 @@ Los tests con TIMING real (una caza que sube la confianza sola; muerte por asfix
 Los `*_AUTO` ya **no** auto-corren cada uno por su lado: un solo **`TestRunner_AUTO`** (lo pone `SampleSceneBuilder`)
 reúne las `ITestUnit` y las corre **grupo a grupo EN SERIE** (el "array-de-arrays": grupos serie × paralelo-dentro solo
 si `ParallelSafe`, que por defecto es false porque casi todo muta estado compartido —la rejilla es singleton, la fauna
-se muta/restaura—). Grupos actuales: **0** `PheromoneFieldTest` (rejilla) → **1** `FaunaChecks` → **2** `EmergenceAuto`.
+se muta/restaura—). Grupos actuales: **0** `TraceFieldTest` (rejilla) → **1** `FaunaChecks` → **2** `EmergenceAuto`.
 Emite un **`[TEST] ═══ TOTAL: X PASS / Y FAIL`** al final → **un solo veredicto ordenado** en `Editor.log`.
 
 - [ ] Al entrar en Play, la consola muestra los grupos en orden (0,1,2), cada uno con su `SUMMARY`, y un `TOTAL` final.

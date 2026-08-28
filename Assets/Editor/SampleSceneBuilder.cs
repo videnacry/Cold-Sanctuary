@@ -105,7 +105,7 @@ public static class SampleSceneBuilder
         // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/testing-checklist.md §32.
         GameObject tests = new GameObject("TestRunner_AUTO");
         tests.transform.SetParent(root.transform);
-        tests.AddComponent<PheromoneFieldTest>();   // grupo 0: rejilla (pura lógica)
+        tests.AddComponent<TraceFieldTest>();   // grupo 0: rejilla (pura lógica)
         tests.AddComponent<FaunaChecks>();          // grupo 1: conducta/stats sobre la fauna real
         tests.AddComponent<EmergenceAuto>();        // grupo 2: bucle de temperamento
         tests.AddComponent<TestRunner>();           // orquesta lo anterior + TOTAL
