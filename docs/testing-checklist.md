@@ -971,7 +971,9 @@ dormidos. Doc: [`capabilities-and-embodiment.md`](capabilities-and-embodiment.md
 
 ## 26. Rejilla de feromonas `PheromoneField` (PR #145)
 
-Primitiva **aislada y dormida** (nada la usa aún). Test manual de la propia rejilla:
+Primitiva **aislada y dormida** (nada la usa aún). **AUTO (PR #150):** `NavTests_AUTO` (lo añade
+`SampleSceneBuilder`) ejecuta `PheromoneFieldTest` al entrar en Play y **reporta por `TestProbe`** — en `Editor.log`,
+grep `[TEST] ... PheromoneField` (depósito/lectura/gradiente/decaimiento/`volumetric`). Test manual de respaldo:
 
 - [ ] **Sin instancia = no-op**: sin un `PheromoneField` en escena, `PheromoneField.Sniff/Trail` devuelven 0/zero y
   `Leave` no hace nada (no peta). No cambia ninguna conducta.
