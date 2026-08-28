@@ -1,14 +1,23 @@
 # Checklist — continuar
 
-Tablero para retomar. Última sesión: 2026-08-07. Marca lo que completes.
+Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **PRÓXIMO PASO = TESTING.** El arco **magia/metabolismo/descomposición** (PRs #45–#61) está **mergeado y
-> documentado** (`docs/magic-metabolism-progression.md`). **Dos sandboxes ya construidos** (PR #54, salen con
-> `Build Sample Scene Blockout`): **`Descomposicion_AUTO`** (minijuego de 3 fases → economía, no necesita
-> `Anima`) y **`Magia_AUTO`** (HUD de prueba del bucle comer→desbloquear→lanzar). Guion por sistema en
-> [`testing-checklist.md` §19](testing-checklist.md). El resto del arco sigue opt-in sin cablear en juego real.
+> **ESTADO (2026-08-28) — MUNDO VIVO.** Cerrado el gran arco **emergente + ciclo de vida** (PRs #128–#162, todo
+> documentado): capacidad=hechizo con gate de **doble vía** (anatomía ∨ `Grimoire`), **temperamento histórico**
+> (confianza-por-uso), sentidos/armamento, **navegación por rastros** (`TraceField`/stigmergy), y **ciclo de vida
+> completo** (reproducción runtime, celo, enfermedad, **inanición→muerte**). Los flags **`AiBrain.useVolition` y
+> `Reproduction.Enabled` están ON** (#159) → ecosistema auto-sostenible; reversibles poniéndolos en false.
+> **Testing:** `TestProbe`/`TestRunner` (grep `[TEST]`), 8 sandboxes en `TestRunner_AUTO`, misión-observación
+> `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/capabilities-and-embodiment.md`,
+> `docs/volition-selection-engine.md`, `docs/environmental-navigation.md`. **Validación en Unity:** el compañero
+> confirmó compilación limpia + 0 regresiones hasta #148; **pendiente compilar #149–#162** (todo balance-safe/gateado).
+> **Siguiente sugerido:** Enfermería (curar enfermos/inanición vía `SicknessState.Heal`), N2/N4 (que el saciado gravite
+> a lugares), o status del jugador (atacado/huida) en el HUD.
+>
+> *(Arco previo cerrado — magia/metabolismo/descomposición #45–#61: sandboxes `Descomposicion_AUTO`/`Magia_AUTO`,
+> guion en [`testing-checklist.md` §19](testing-checklist.md).)*
 
 ## Decisiones abiertas (rápidas)
 - [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
