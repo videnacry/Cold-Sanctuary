@@ -114,6 +114,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<EmergenceAuto>();        // grupo 2: bucle de temperamento
         tests.AddComponent<GrimoireTest>();         // grupo 3: repertorio de doble vía (cuerpo ∨ magia)
         tests.AddComponent<EstrusTest>();           // grupo 4: celo (hechizo-estado) → rastro Estrus
+        tests.AddComponent<LifeCycleAuto>();        // grupo 5: parto → cría (cierra el ciclo de vida)
         tests.AddComponent<TestRunner>();           // orquesta lo anterior + TOTAL
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         BakeNavMesh();

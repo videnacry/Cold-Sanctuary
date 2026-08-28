@@ -1089,6 +1089,17 @@ Primer paso de reproducción + **enciende el sistema de trazas** (ahora hay un `
  (cortejo/gestación = pasos 2-3) → sin cambio de población. El deseo `mate` (buscar pareja por el gradiente de Estrus)
  está en `DesireCatalog` pero DORMIDO hasta activar `Volition` (D3b2).
 
+## 36. Reproducción — cortejo/concepción/parto + ciclo de vida (PR #158)
+
+Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por `Reproduction.Enabled`): una HEMBRA
+ adulta en celo, saciada y con pareja compatible cerca concibe (gestación) y **pare** una cría (copia del progenitor en
+ etapa `child` → crece por el ciclo existente). `LifeCycleAuto` (grupo 5) asevera el MECANISMO por `TestProbe`:
+ `SpawnOffspring()` produce una cría en etapa CHILD de la misma especie (se destruye tras el test). Grep `[TEST] ... LifeCycle`.
+- [ ] **Activar en Play** (opt-in): poner `Reproduction.Enabled = true` (desde un driver o consola). Con el tiempo
+ acelerado, adultos en celo cercanos de sexo opuesto → cría nueva tras la gestación; respeta cooldown + tope de
+ población (`softPopulationCap`). Con `Enabled=false` (default): **sin cambio de población**.
+- [ ] Nacer/crecer/morir (vejez `adult→soul`, ser comido, daño/asfixia) ya existían; **reproducir** era el hueco.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
