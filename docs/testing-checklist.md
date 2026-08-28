@@ -1037,6 +1037,18 @@ Asevera **funciones deterministas** (no la emergencia con timing → no flaky). 
 composición de fauna no permita. **Interpretación**: si `[TEST] ▲ FaunaChecks — SUMMARY` da `0 FAIL`, el modelo
 emergente está bien cableado en runtime; un FAIL apunta al building-block exacto.
 
+## 31. `EmergenceAuto_AUTO` — bucle de temperamento (PR #152)
+
+`SampleSceneBuilder` añade `EmergenceAuto_AUTO`; tras ~1.6 s asevera por `TestProbe` el **bucle emergente completo**
+(lo que `FaunaChecks` de una-aserción no cubre), conducido de forma determinista (no espera cazas reales → no flaky):
+- **Productor**: `RecordUse(Combat, éxito)` sube la confianza.
+- **Consumidor → conducta**: con `aggressiveness = 0`, `Decide` frente a la presa más blanda pasa de **≠Fight** (confianza 0)
+  a **Fight** (confianza 80) → el temperamento es histórico. (SKIP si el depredador no supera el margen de poder.)
+- **Decaimiento**: `DecayConfidence` baja la maestría.
+
+Muta confianza/agresividad y **restaura en el mismo frame** (sin yields) → no altera la sim. Grep `[TEST] ... Emergence`.
+Los tests con TIMING real (una caza que sube la confianza sola; muerte por asfixia) y los WASD (misiones) van aparte.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

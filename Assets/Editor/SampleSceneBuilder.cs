@@ -103,6 +103,7 @@ public static class SampleSceneBuilder
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         new GameObject("NavTests_AUTO").AddComponent<PheromoneFieldTest>().transform.SetParent(root.transform);   // self-test de la rejilla (TestProbe → [TEST] en Editor.log)
         new GameObject("FaunaChecks_AUTO").AddComponent<FaunaChecks>().transform.SetParent(root.transform);       // checks de conducta/stats sobre la fauna real (TestProbe)
+        new GameObject("EmergenceAuto_AUTO").AddComponent<EmergenceAuto>().transform.SetParent(root.transform);   // bucle de temperamento (confianza→agresividad→decisión) (TestProbe)
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
