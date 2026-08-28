@@ -1072,6 +1072,13 @@ añade `WasdMission_AUTO`; coloca un **marcador de refugio** ~12 m adelante del 
 - Nota: emite sus `[TEST]` **al completarse** (la conduce el jugador, no el `TestRunner`) → aparece después del `TOTAL`
   del laboratorio; grep `[TEST]` los junta.
 
+## 34. Grimoire — repertorio de doble vía (PR #156)
+
+`GrimoireTest` (grupo 3 del `TestRunner`) asevera por `TestProbe`: el grimorio arranca **vacío/bloqueado** y `Learn`
+ desbloquea; sobre un `Anima` real, `CanUse(id, false)` = false sin vía, `CanUse(id, true)` = true por la **vía corporal**,
+ `KnowsSpell` = false sin grimorio, y tras `AddComponent<Grimoire>()`+`Learn` → `CanUse(id, false)` = true por la **vía
+ mágica** (grimorio transitorio, se destruye). Grep `[TEST] ... Grimoire`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

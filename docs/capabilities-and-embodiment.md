@@ -97,6 +97,12 @@ disponibilidad de un hechizo es `tengo la parte  ∨  Grimoire.Knows(id)`.
   Lanzar fuego: el dragón abre la boca; el mago conjura una **nube** delante y sale de ahí; la roca muestra una nube en su
   base. Mismo EFECTO (sale fuego / se mueve), presentación adaptada. La nube-mágica es el fallback reutilizable.
 
+> **Hecho (gate de doble vía, PR #156):** `Anima.CanUse(spellId, bodyEnabled) = bodyEnabled ∨ KnowsSpell(spellId)` y
+> `KnowsSpell` (lee el `Grimoire` del ser; universal pero **vacío/bloqueado** sin componente o sin `Learn`). Es el gate
+> canónico: `Morder` = `CanUse("morder", armament>0)`, `Ver` = `CanUse("ver", tieneOjo)`. **Dormido** hasta que los
+> hechizos lo llamen. *Falta:* que cada `SpellBase`/frase-hechizo consulte `CanUse` (su `spellId` + su habilitador
+> corporal), y la **animación degradada** (llamadas a partes + fallback nube).
+
 > **Hecho (E1, PR #133):** el punto 1 para el ARMA. `StatBonus.armament` + su aplicación por el delta gestionado de
 > `CharacterComposition` (modulada por la vitalidad del huésped, como lo biológico) → un **colmillo/veneno como
 > `CompositionPart`** sube el `Anima.armament` que `Predation` lee. Cierra B desde la anatomía: el arma ya es una PARTE,

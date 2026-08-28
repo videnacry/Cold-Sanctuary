@@ -210,6 +210,22 @@ public abstract class Anima : MonoBehaviour, IAptitudes
             spellConfidence[k] = Mathf.Max(0f, spellConfidence[k] - amount);
     }
 
+    /// <summary>¿Puede este ser usar la capacidad/hechizo `spellId`? DOS VÍAS SIEMPRE (docs/capabilities-and-embodiment.md
+    /// §2): la ANATOMÍA (`bodyEnabled`, que el llamante deduce de la parte — colmillo/ojo/`armament`) O la MAGIA
+    /// (aprendido en el `Grimoire`). Cada hechizo es global; anatomía y grimorio son dos habilitadores del MISMO hechizo.
+    /// Ej.: `Morder` = `self.CanUse("morder", armament > 0)`; `Ver` = `self.CanUse("ver", tieneOjo)`.</summary>
+    public bool CanUse(string spellId, bool bodyEnabled) => bodyEnabled || KnowsSpell(spellId);
+
+    /// <summary>¿Conoce el hechizo por la VÍA MÁGICA (aprendido en su <see cref="Grimoire"/>)? El repertorio vive en el
+    /// alma y es UNIVERSAL pero **vacío/bloqueado por defecto**: sin Grimoire (o sin haberlo aprendido) = false. Así una
+    /// roca con `Mind`+`Grimoire` puede hacer cosas por magia sin cuerpo.</summary>
+    public bool KnowsSpell(string spellId)
+    {
+        if (string.IsNullOrEmpty(spellId)) return false;
+        Grimoire g = GetComponent<Grimoire>();
+        return g != null && g.Knows(spellId);
+    }
+
     /// <summary>False if the bond with this target is strong enough to block harm.</summary>
     public bool CanHarm(ITarget target)
     {
