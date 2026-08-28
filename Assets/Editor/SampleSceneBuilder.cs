@@ -101,6 +101,10 @@ public static class SampleSceneBuilder
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
+        // Rejilla de rastros PERSISTENTE (singleton): sin ella, todo el sistema de trazas (celo, byproducts, wander por
+        // olor) es no-op en juego. Vacía = no hace nada hasta que algo deposita. docs/environmental-navigation.md.
+        new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root.transform);
+
         // Tests automáticos coordinados por TestRunner (grupos en serie; [TEST] en Editor.log). Las unidades ITestUnit
         // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/testing-checklist.md §32.
         GameObject tests = new GameObject("TestRunner_AUTO");
@@ -109,6 +113,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<FaunaChecks>();          // grupo 1: conducta/stats sobre la fauna real
         tests.AddComponent<EmergenceAuto>();        // grupo 2: bucle de temperamento
         tests.AddComponent<GrimoireTest>();         // grupo 3: repertorio de doble vía (cuerpo ∨ magia)
+        tests.AddComponent<EstrusTest>();           // grupo 4: celo (hechizo-estado) → rastro Estrus
         tests.AddComponent<TestRunner>();           // orquesta lo anterior + TOTAL
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         BakeNavMesh();

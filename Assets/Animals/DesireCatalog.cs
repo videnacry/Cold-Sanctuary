@@ -41,6 +41,17 @@ public static class DesireCatalog
             self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
             self => self.StartCoroutine(self.Feed())),
 
+        // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
+        // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/environmental-navigation.md.
+        new Desire("mate",
+            self => { EstrusState e = self.GetComponent<EstrusState>(); return e != null && e.InEstrus ? 1f : 0f; },
+            self =>
+            {
+                if (self.nav == null || !self.nav.isOnNavMesh) return;
+                Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
+                if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
+            }),
+
         // D3b2: new Desire("rest", …), new Desire("wander", …), new Desire("defend", … , Capability.Combat) con piso de seguridad.
     };
 }

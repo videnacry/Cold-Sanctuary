@@ -1079,6 +1079,16 @@ añade `WasdMission_AUTO`; coloca un **marcador de refugio** ~12 m adelante del 
  `KnowsSpell` = false sin grimorio, y tras `AddComponent<Grimoire>()`+`Learn` → `CanUse(id, false)` = true por la **vía
  mágica** (grimorio transitorio, se destruye). Grep `[TEST] ... Grimoire`.
 
+## 35. Celo (estro) → rastro Estrus (PR #157)
+
+Primer paso de reproducción + **enciende el sistema de trazas** (ahora hay un `TraceField_AUTO` PERSISTENTE en escena;
+ antes todo `Leave`/`Trail` era no-op). `EstrusTest` (grupo 4) asevera: hay `TraceField.Instance`; cada animal tiene
+ `EstrusState` (auto-add en `Init`); `Emit()` deja rastro `Estrus` legible. Grep `[TEST] ... Estrus`.
+- [ ] En Play (tiempo acelerado): un ADULTO entra en celo por ciclo (`EstrusState.InEstrus`) y deposita `Estrus` en la
+ rejilla; se puede leer con `TraceField.Sniff(pos, Estrus)`. Balance-safe: nada consume el celo para reproducirse aún
+ (cortejo/gestación = pasos 2-3) → sin cambio de población. El deseo `mate` (buscar pareja por el gradiente de Estrus)
+ está en `DesireCatalog` pero DORMIDO hasta activar `Volition` (D3b2).
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
