@@ -1134,6 +1134,16 @@ santuario con WASD) leyendo un **HUD de status global**. `SampleSceneBuilder` a�
   impida completarla; el status delata desequilibrios que un test automático no capta igual. (Status del jugador
   atacado/huida = futuro; el jugador no es un `Animal`.)
 
+## 40. Inanición — `Animal.Starve()` (PR #162)
+
+`StarvationTest` (grupo 7) asevera, determinista y NO destructivo: con hambre alta y **sin grasa**, un tick de `Starve`
+baja la **masa** (el cuerpo se consume → debilita) y **enferma** (`sickness>0`, dispara `SicknessState`); restaura todo.
+- [ ] **En Play**: un animal que no come (p.ej. un herbívoro sin pasto alcanzable) supera el umbral (`starvationMeals`
+  comidas de hambre) → gasta grasa → consume masa → **enferma** (presa fácil) → **muere** si la masa cae bajo
+  `baseMass × lethalMassFrac`. Recuperarse pide **tratamiento**: comer (para la inanición) + curar la enfermedad
+  (tiempo o enfermería). Aparece en el HUD/`[ECO]` como muertes → el **balance** cobra dientes.
+- Tunables: `Animal.{starvationMeals, starvationFatRate, starvationMassRate, lethalMassFrac, starvationSickness}`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
