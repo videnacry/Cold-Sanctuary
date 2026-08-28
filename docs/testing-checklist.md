@@ -12,6 +12,37 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-27 — pull de 28 commits (PRs #135-148) + sync (8 .cs, 3 nuevos), 0 errores**. El
+  checkout local había quedado 28 commits atrás (git lo detectó como fast-forward puro); mi nota local
+  sin comitear en `testing-checklist.md` chocó con `git pull` normal ("would be overwritten by merge")
+  porque el compañero también editó ese archivo (solo agregó secciones nuevas al final, sin tocar mi
+  parte) — resuelto con `git stash` → `pull` → `stash pop`, sin conflictos. Batch: **motor de volición
+  (D3b)** — `Assets/Animals/Volition.cs` + `DesireCatalog.cs` (nuevos): un "deseo" elegido por
+  necesidad×capacidad×confianza despacha las respuestas existentes (reemplaza la prioridad fija de
+  `ActiveBehaveTick`), migrado tras flag con paridad garantizada (el propio PR dice que el comportamiento
+  debe verse IDÉNTICO a antes). **Navegación ambiental (N1/N7)**: `PheromoneField.cs` (nuevo, rejilla de
+  rastros — descrita como "dormida", sin invocadores activos todavía) + ajustes en `LifeStage.cs`
+  (huir lejos + deambular por rastro) y `SpellBase.cs` (subproducto = extensión de hechizo). Sync +
+  rebuild de escena + compilación → **0 errores** confirmado por `Editor.log`. Testeado en Play:
+  `[FamilyGenerator] 11 familia(s) generadas — 66 animales en total` sigue funcionando, 0 excepciones
+  reales tras ~45s activo (solo ruido conocido: WebSocketException del relay MCP desconectado). Sin
+  regresión visible, consistente con que ambos sistemas nuevos están detrás de flag/dormidos por diseño.
+
+- **CICLO 2026-08-26 — confirmación en vivo del PR #126 (Carnivore/Herbivore) + sync PRs #127-134 (19
+  commits, "capacidad=hechizo": eje de armamento, confianza-por-uso, gate por sentidos, disuelve
+  canHitAndRun) — 0 errores**. Unity llevaba días cerrado; se reabrió sin problema (bridge MCP y
+  computer-use habían estado caídos el ciclo anterior, ahora reconectaron). Con Unity real esta vez:
+  **compilación limpia confirmada por Editor.log** (0 `error CS`, el único "1 error" en consola es el
+  ruido conocido del Relay/AI Assistant con el MCP desconectado) — esto **confirma retroactivamente**
+  la revisión manual del ciclo anterior sobre PR #126 (borrado de `Carnivore`/`Herbivore`), que se había
+  hecho sin poder compilar. Reconstruida la escena y testeado en Play: `[FamilyGenerator] 11 familia(s)
+  generadas — 66 animales en total` sigue funcionando (el fix de la sesión pasada aguanta), 0
+  excepciones reales en toda la sesión de Play (~60k líneas de log). Nuevo batch sincronizado: sistema
+  de "capacidad=hechizo" (`Assets/Animals/Capability.cs`, nuevo) — eje de armamento ⟂ masa en
+  `Predation`, confianza-por-hechizo/uso alimentando la agresividad (reemplaza `canHitAndRun` estático),
+  `Assess` gateado por sentidos (percepción × legibilidad). Ver `docs/capabilities-and-embodiment.md`
+  (agregado por el batch) para el diseño completo.
+
 - **CICLO 2026-08-23 — pull revisado: `b75e037` (mis 3 fixes de generación de familias, comiteados por
   el compañero tal cual) + `2e55323`/PR #126 (borra `Carnivore`/`Herbivore`, las 8 especies heredan
   directo de `Animal`; qué comen pasa a ser data vía `Forager.ConfigureForSpecies`)**. Sincronizado al
