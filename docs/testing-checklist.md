@@ -1100,6 +1100,17 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
  población (`softPopulationCap`). Con `Enabled=false` (default): **sin cambio de población**.
 - [ ] Nacer/crecer/morir (vejez `adult→soul`, ser comido, daño/asfixia) ya existían; **reproducir** era el hueco.
 
+## 37. Mundo VIVO — flags activados + wander con propósito (PR #159)
+
+**Cambio de conducta en vivo** (ya no dormido): `AiBrain.useVolition = true` (la volición conduce: comer+amenaza en
+ paridad + deseo `mate` en celo) y `Reproduction.Enabled = true` (población auto-sostenible, contenida por celo+saciada+
+ pareja+cooldown+`softPopulationCap`). + N8: `LifeStage.Wander` sesga hacia adelante (alternación espontánea → explora
+ sin volver por donde vino) + hacia el olor de comida (contrafreeloading).
+- [ ] **Vigilar en Play**: la fauna se comporta como antes (paridad de volición) y además **se reproduce** con el
+ tiempo (adultos en celo cercanos → crías; la población crece despacio, no explota por los caps). Si algo va mal:
+ `AiBrain.useVolition=false` y/o `Reproduction.Enabled=false` revierten al comportamiento anterior.
+- [ ] El wander ya no es puramente random: los animales tienden a **seguir explorando** en una dirección.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

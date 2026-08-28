@@ -19,10 +19,10 @@ public class AiBrain : MonoBehaviour, IBrain
     [Tooltip("Distancia a la que se considera 'llegado' y deja de andar.")]
     [Min(0.05f)] public float arriveRadius = 0.5f;
 
-    [Tooltip("D3b1: usa el motor de VOLICIÓN (deseos por necesidad, docs/volition-selection-engine.md) en vez de la " +
-             "prioridad FIJA de ActiveBehaveTick. Default OFF → conducta idéntica. Activar SOLO tras validar paridad " +
-             "en Unity; entonces D3b2 retira la rama fija.")]
-    public bool useVolition = false;
+    [Tooltip("Usa el motor de VOLICIÓN (deseos por necesidad, docs/volition-selection-engine.md) en vez de la prioridad " +
+             "FIJA de ActiveBehaveTick. **ACTIVADO** (2026-08-28, D3b2): la volición conduce (paridad comer+amenaza + " +
+             "deseo 'mate' en celo). ActiveBehaveTick queda de fallback si se pone en false.")]
+    public bool useVolition = true;
 
     public float Relevance => selfRelevance;
     public string BrainName => "IA";

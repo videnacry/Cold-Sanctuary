@@ -13,8 +13,9 @@ using UnityEngine;
 /// </summary>
 public class Reproduction : MonoBehaviour
 {
-    /// <summary>Gate GLOBAL: la reproducción solo ocurre si está en true (default false por seguridad de población).</summary>
-    public static bool Enabled = false;
+    /// <summary>Gate GLOBAL: la reproducción solo ocurre si está en true. **ACTIVADA** (2026-08-28) → población
+    /// auto-sostenible; contenida por celo+saciada+pareja+cooldown+softPopulationCap. Poner false para desactivarla.</summary>
+    public static bool Enabled = true;
 
     [Tooltip("Duración de la gestación (segundos × velocidad de juego).")]
     [Min(0.1f)] public float gestationSeconds = 20f;
