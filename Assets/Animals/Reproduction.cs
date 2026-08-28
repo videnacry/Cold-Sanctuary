@@ -54,8 +54,11 @@ public class Reproduction : MonoBehaviour
         return true;
     }
 
+    // Cortejo RICO: entre las parejas compatibles cercanas, prefiere la de mayor VÍNCULO (bond) y más cerca — no la
+    // primera que aparece. Sin bond, decide la proximidad. (Afinidad de especie ⟶ uniforme aquí, misma especie.)
     Animal FindMate()
     {
+        Animal best = null; float bestScore = float.NegativeInfinity;
         foreach (Collider col in Physics.OverlapSphere(transform.position, mateRadius))
         {
             Animal other = col.GetComponentInParent<Animal>();
@@ -63,9 +66,14 @@ public class Reproduction : MonoBehaviour
             if (other.lifeStage != LifeStage.adult) continue;
             if (other.sex == _animal.sex) continue;                            // sexo opuesto
             if (other.SpeciesName != _animal.SpeciesName) continue;            // misma especie
-            return other;
+
+            float score = 0f;
+            ITarget t = other.GetComponent<ITarget>();
+            if (t != null) { Bond b = _animal.GetBond(t); if (b != null) score += b.value; }   // vínculo = preferencia
+            score -= Vector3.Distance(transform.position, other.transform.position) * 0.1f;      // más cerca, mejor
+            if (score > bestScore) { bestScore = score; best = other; }
         }
-        return null;
+        return best;
     }
 
     void Conceive()
