@@ -101,6 +101,7 @@ public static class SampleSceneBuilder
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
+        new GameObject("NavTests_AUTO").AddComponent<PheromoneFieldTest>().transform.SetParent(root.transform);   // self-test de la rejilla (TestProbe → [TEST] en Editor.log)
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
