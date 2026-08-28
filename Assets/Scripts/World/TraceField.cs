@@ -61,8 +61,8 @@ public class TraceField : MonoBehaviour
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(this); return; }
-        Instance = this;
+        if (Instance == null) Instance = this;   // el PRIMERO es el singleton (fachada estática); los demás COEXISTEN
+        //                                          (p.ej. el campo aislado de TraceFieldTest, que usa sus métodos de instancia).
     }
     void OnDestroy() { if (Instance == this) Instance = null; }
 

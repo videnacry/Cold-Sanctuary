@@ -225,6 +225,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
         Forage.ConfigureForSpecies(SpeciesArchetype);                    // flags de comida por especie (data)
+        if (GetComponent<EstrusState>() == null) gameObject.AddComponent<EstrusState>();   // celo (hechizo-estado): ciclo → deposita Estrus. Reproducción paso 1.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)
