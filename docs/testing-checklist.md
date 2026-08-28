@@ -1120,6 +1120,20 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
   espontáneo RARO (`spontaneousChancePerMinute`), se recupera solo; un enfermo es cazado antes. Grep `[TEST] ... Sickness`.
 - [ ] Abre la ENFERMERÍA: curar un animal enfermo = `SicknessState.Heal`.
 
+## 39. Misión-observación del ecosistema — `EcosystemObservation` (PR #161)
+
+Reencuadre del frente WASD: **no** un check mecánico, sino una **experiencia** que el compañero vive (recorrer el
+santuario con WASD) leyendo un **HUD de status global**. `SampleSceneBuilder` añade `EcoObservation_AUTO`.
+- [ ] **Jugar/observar**: el HUD muestra, por especie, etapas (cría/juv/adulto) + hambrientos/celo/enfermos, y totales
+  herbívoros vs depredadores. Recorre el mapa y evalúa si hay equilibrio.
+- [ ] **Log (`[ECO]`)**: cada ~10 s se loguea el resumen con la **tendencia** (Δ vivos). Grep `[ECO]` en `Editor.log`
+  para ver la trayectoria del ecosistema a lo largo de la partida.
+- [ ] **Alertas de desbalance** (`[ECO] ALERTA`, warning): una especie se **extingue**, o colapsan **herbívoros**/
+  **depredadores** → delata bugs de balance (p.ej. los depredadores acaban con todos los herbívoros).
+- **Uso QA (visión del usuario)**: el compañero **lee la misión, la intenta, documenta fricción y arregla** lo que le
+  impida completarla; el status delata desequilibrios que un test automático no capta igual. (Status del jugador
+  atacado/huida = futuro; el jugador no es un `Animal`.)
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
