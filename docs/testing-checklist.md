@@ -1004,6 +1004,21 @@ Primitiva **aislada y dormida** (nada la usa aún). Test manual de la propia rej
 - [ ] **Rate-limit**: con `byproductInterval = 0.5`, el depósito no se dispara cada frame (no satura la celda).
 - [ ] **Sin PheromoneField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op).
 
+## 29. Convención de tests automáticos — `TestProbe` (PASS/FAIL por consola)
+
+Faltaba una capa de **aserto**: los sandboxes/drivers conducen o vuelcan valores, pero nadie decía PASS/FAIL.
+**`TestProbe`** (`Assets/Scripts/TestProbe.cs`) lo cubre y es **reutilizable en dos frentes**:
+- **Sandboxes autoejecutables** (`NavAuto`/`EmergenceAuto`/`VolitionAuto`…): conducen la situación y luego `TestProbe.Check`ean.
+- **Misiones jugables (WASD)**: la misión llama `TestProbe.Check` en sus criterios de éxito → el **juego real** reporta
+  pruebas por el mismo canal (visión del usuario: las misiones-test de hoy son el avance del juego de mañana).
+
+**Cómo leerlo** (el compañero, en `Editor.log`): grep **`[TEST]`**. `[TEST] PASS/FAIL · <nombre> — <detalle>`, y el
+veredicto por grupo `[TEST] ▲ <grupo> — SUMMARY: X PASS / Y FAIL`. **FAIL usa `LogWarning`, NO `LogError`** → no
+contamina el "0 errores de compilación". API: `Begin(grupo)` · `Check/Near/Greater/NotNull(...)` · `End()`.
+
+- [ ] **Humo del propio harness**: un `TestProbe.Begin("demo"); Check("ok", true); Check("no", false); End();` produce en
+  consola una línea PASS, una FAIL (warning) y un SUMMARY `1 PASS / 1 FAIL`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
