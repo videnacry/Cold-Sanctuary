@@ -14,7 +14,8 @@ public enum TraceChannel
 }
 
 /// <summary>
-/// REJILLA DE FEROMONAS (docs/environmental-navigation.md §4.2/§4.3): campo de depósito para los subproductos
+/// REJILLA DE RASTROS — un campo de **STIGMERGY** (coordinación indirecta dejando rastros que estimulan la siguiente
+/// acción; Grassé 1959, feromonas de hormigas). docs/environmental-navigation.md §4.2/§4.3: campo de depósito para los subproductos
 /// **continuos/de rastro** (caminar, saturar una zona), en vez de un GameObject por traza. El mundo se discretiza en
 /// celdas; cada celda guarda **cuánta señal hay por canal**. Depositar = O(1); leer/gradiente = O(9 celdas); el
 /// decaimiento es **PEREZOSO** (se aplica al TOCAR la celda, poniéndola al día por el tiempo transcurrido) + una poda
@@ -24,16 +25,16 @@ public enum TraceChannel
 /// **Aislado y dormido:** nada deposita/lee todavía; se enchufa cuando `SpellBase.byproduct` deposite (N7) y los
 /// impulsos lean el gradiente (N1). Sin instancia en escena, la fachada estática es no-op (seguro).
 ///
-/// Uso: `PheromoneField.Leave(pos, canal, cantidad)` al emitir; `PheromoneField.Trail(pos, canal)` → un vector-impulso
-/// hacia el olor más fuerte; `PheromoneField.Sniff(pos, canal)` → intensidad en el punto.
+/// Uso: `TraceField.Leave(pos, canal, cantidad)` al emitir; `TraceField.Trail(pos, canal)` → un vector-impulso
+/// hacia el olor más fuerte; `TraceField.Sniff(pos, canal)` → intensidad en el punto.
 ///
 /// **Tierra vs mar/aire:** por defecto es 2D (ignora la altura). Con `volumetric = true` incluye la profundidad `y`
 /// (gradiente vertical) para nadar/volar; como el diccionario es disperso, 3D no infla memoria y el gradiente solo
 /// pasa de 8 a 26 vecinas. Un campo 2D de tierra + un campo 3D de mar = dos instancias con distinto `volumetric`.
 /// </summary>
-public class PheromoneField : MonoBehaviour
+public class TraceField : MonoBehaviour
 {
-    public static PheromoneField Instance { get; private set; }
+    public static TraceField Instance { get; private set; }
 
     [Tooltip("Tamaño de celda (m). Fino (2-3) = rastros nítidos, más celdas; grande (5+) = más barato y tosco.")]
     [Min(0.25f)] public float cellSize = 4f;

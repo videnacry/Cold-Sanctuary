@@ -147,7 +147,7 @@ public abstract class LifeStage
             Vector3 dest = script.transform.position + new Vector3(r.x, 0f, r.y);
             // N1: sesgo por LECTURA del entorno — deriva hacia el olor de comida si la rejilla lo tiene. Dormido hasta que
             // algo deposite (N7) → sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada. docs/environmental-navigation.md.
-            Vector3 trail = PheromoneField.Trail(script.transform.position, TraceChannel.ScentFood);
+            Vector3 trail = TraceField.Trail(script.transform.position, TraceChannel.ScentFood);
             if (trail.sqrMagnitude > 0.0001f) dest += trail.normalized * step;
             script.nav.SetDestination(dest);
         };

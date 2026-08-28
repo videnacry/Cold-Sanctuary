@@ -58,7 +58,7 @@ public abstract class SpellBase : MonoBehaviour
     public bool leavesByproduct = false;
     [Tooltip("Canal del rastro (olor propio=marca/comida/celo/enfermo/heces/dar-vueltas).")]
     public TraceChannel byproductChannel = TraceChannel.ScentSelf;
-    [Tooltip("Intensidad depositada por emisión (en la rejilla PheromoneField).")]
+    [Tooltip("Intensidad depositada por emisión (en la rejilla TraceField).")]
     [Min(0f)] public float byproductStrength = 1f;
     [Tooltip("Segundos mínimos entre depósitos mientras el hechizo actúa (rate-limit; caminar NO debe soltar por frame).")]
     [Min(0.05f)] public float byproductInterval = 0.5f;
@@ -66,13 +66,13 @@ public abstract class SpellBase : MonoBehaviour
     float _nextByproduct;
 
     /// <summary>Deposita el subproducto/rastro del hechizo en la rejilla de feromonas (docs §4.2/§4.3), con rate-limit.
-    /// No-op si el hechizo no deja rastro, si la fuerza es 0, o si no hay `PheromoneField` en escena. Se llama solo
+    /// No-op si el hechizo no deja rastro, si la fuerza es 0, o si no hay `TraceField` en escena. Se llama solo
     /// cuando el hechizo ACTÚA (cast/canaliza). El coste es O(1) (una celda) — barato aunque se camine mucho.</summary>
     protected void LeaveByproduct()
     {
         if (!leavesByproduct || byproductStrength <= 0f || Time.time < _nextByproduct) return;
         _nextByproduct = Time.time + Mathf.Max(0.05f, byproductInterval);
-        PheromoneField.Leave(transform.position, byproductChannel, byproductStrength);
+        TraceField.Leave(transform.position, byproductChannel, byproductStrength);
     }
 
     // ── Manejo de input por modo (OPT-IN: la subclase lo llama desde su Update) ─
