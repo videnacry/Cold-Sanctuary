@@ -101,9 +101,14 @@ public static class SampleSceneBuilder
         BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
         BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
-        new GameObject("NavTests_AUTO").AddComponent<PheromoneFieldTest>().transform.SetParent(root.transform);   // self-test de la rejilla (TestProbe → [TEST] en Editor.log)
-        new GameObject("FaunaChecks_AUTO").AddComponent<FaunaChecks>().transform.SetParent(root.transform);       // checks de conducta/stats sobre la fauna real (TestProbe)
-        new GameObject("EmergenceAuto_AUTO").AddComponent<EmergenceAuto>().transform.SetParent(root.transform);   // bucle de temperamento (confianza→agresividad→decisión) (TestProbe)
+        // Tests automáticos coordinados por TestRunner (grupos en serie; [TEST] en Editor.log). Las unidades ITestUnit
+        // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/testing-checklist.md §32.
+        GameObject tests = new GameObject("TestRunner_AUTO");
+        tests.transform.SetParent(root.transform);
+        tests.AddComponent<PheromoneFieldTest>();   // grupo 0: rejilla (pura lógica)
+        tests.AddComponent<FaunaChecks>();          // grupo 1: conducta/stats sobre la fauna real
+        tests.AddComponent<EmergenceAuto>();        // grupo 2: bucle de temperamento
+        tests.AddComponent<TestRunner>();           // orquesta lo anterior + TOTAL
         BakeNavMesh();
 
         // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.

@@ -10,9 +10,12 @@ using UnityEngine;
 /// Los checks de CONDUCTA (un animal deriva al rastro / huye en dirección contraria) necesitan la escena con NavMesh
 /// horneado + fauna → van en un sandbox/misión aparte que corre SOBRE la escena real. Ver testing-checklist §27/§29.
 /// </summary>
-public class PheromoneFieldTest : MonoBehaviour
+public class PheromoneFieldTest : MonoBehaviour, ITestUnit
 {
-    IEnumerator Start()
+    public int Group => 0;              // pura lógica; crea/destruye su propio PheromoneField → aislado, va primero
+    public bool ParallelSafe => false;  // toca el singleton PheromoneField → serie
+
+    public IEnumerator Run()
     {
         TestProbe.Begin("PheromoneField");
 

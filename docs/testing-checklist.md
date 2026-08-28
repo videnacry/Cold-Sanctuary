@@ -1049,6 +1049,18 @@ emergente está bien cableado en runtime; un FAIL apunta al building-block exact
 Muta confianza/agresividad y **restaura en el mismo frame** (sin yields) → no altera la sim. Grep `[TEST] ... Emergence`.
 Los tests con TIMING real (una caza que sube la confianza sola; muerte por asfixia) y los WASD (misiones) van aparte.
 
+## 32. `TestRunner` — orquestación de tests (PR #153)
+
+Los `*_AUTO` ya **no** auto-corren cada uno por su lado: un solo **`TestRunner_AUTO`** (lo pone `SampleSceneBuilder`)
+reúne las `ITestUnit` y las corre **grupo a grupo EN SERIE** (el "array-de-arrays": grupos serie × paralelo-dentro solo
+si `ParallelSafe`, que por defecto es false porque casi todo muta estado compartido —la rejilla es singleton, la fauna
+se muta/restaura—). Grupos actuales: **0** `PheromoneFieldTest` (rejilla) → **1** `FaunaChecks` → **2** `EmergenceAuto`.
+Emite un **`[TEST] ═══ TOTAL: X PASS / Y FAIL`** al final → **un solo veredicto ordenado** en `Editor.log`.
+
+- [ ] Al entrar en Play, la consola muestra los grupos en orden (0,1,2), cada uno con su `SUMMARY`, y un `TOTAL` final.
+- [ ] **Añadir un test** = un componente `ITestUnit` (Group + ParallelSafe + `Run()`) en el `TestRunner_AUTO`. Las
+  **misiones WASD** reportan por el mismo `TestProbe` → el `TOTAL` juntará laboratorio y juego real.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

@@ -12,14 +12,15 @@ using UnityEngine;
 /// agresividad y **restaura en el mismo frame** (sin yields) → no altera la sim. Omite (SKIP, sin FAIL) si la escena no
 /// tiene un par depredador/presa con ventaja de poder suficiente.
 /// </summary>
-public class EmergenceAuto : MonoBehaviour
+public class EmergenceAuto : MonoBehaviour, ITestUnit
 {
-    public float settle = 1.6f;
+    public int Group => 2;              // bucle de temperamento sobre la fauna (tras FaunaChecks)
+    public bool ParallelSafe => false;  // muta/restaura confianza/agresividad de la fauna → serie
 
-    IEnumerator Start()
+    public IEnumerator Run()
     {
-        yield return new WaitForSeconds(settle);
         TestProbe.Begin("EmergenceAuto (bucle de temperamento)");
+        yield return null;
 
         List<Animal> alive = new List<Animal>();
         foreach (Animal a in FindObjectsOfType<Animal>())
