@@ -92,6 +92,10 @@ public static class Archetypes
             { "Gallina",  MakeBody(0.35f, 1.2f, 1.1f, 0.3f, 0.3f, 0.7f) },
             { "Mono",     MakeBody(0.90f, 1.7f, 1.3f, 0.9f, 0.8f, 1.2f) },
             { "Ant",      MakeBody(0.30f, 1.6f, 1.2f, 0.5f, 0.4f, 1.3f) },   // hormiga: pequeña, ágil, fuerte para su tamaño
+            { "Aphid",   MakeBody(0.20f, 0.3f, 0.6f, 0.2f, 0.8f, 0.5f) },   // pulgón: lento, gordo, sin defensa
+            { "Ladybug", MakeBody(0.20f, 0.9f, 1.0f, 0.6f, 0.5f, 0.8f) },   // mariquita: compacta, buena percepción, élitros duros
+            { "Spider",  MakeBody(0.40f, 1.4f, 1.5f, 1.0f, 0.7f, 0.9f) },   // araña lobo: rápida, 8 ojos = percepción excepcional
+            { "Cricket", MakeBody(0.35f, 1.3f, 1.1f, 0.7f, 0.6f, 1.0f) },   // grillo: saltador ágil, buenos sentidos
             { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales
             { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },
             { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },
@@ -122,6 +126,11 @@ public static class Archetypes
             { "Seal",     MakeMind(ElementalTone.Agua,   1.1f, 0.9f, 1.0f, 0.9f, 1.2f, 0.8f) },   // juguetón
             { "Whale",    MakeMind(ElementalTone.Agua,   1.8f, 1.4f, 1.6f, 1.2f, 1.3f, 1.3f) },   // sabio, calmado
             { "Malamute", MakeMind(ElementalTone.Tierra, 1.1f, 1.0f, 1.1f, 0.8f, 1.5f, 1.4f) },   // leal, disciplinado
+            { "Ant",     MakeMind(ElementalTone.Tierra, 1.0f, 0.6f, 1.0f, 0.5f, 1.6f, 1.5f) },   // colonia: disciplina máx, muy social, memoria de rastros
+            { "Aphid",   MakeMind(ElementalTone.Agua,   1.2f, 0.4f, 0.7f, 0.4f, 0.8f, 0.5f) },   // pasivo, escasa inteligencia individual
+            { "Ladybug", MakeMind(ElementalTone.Fuego,  0.8f, 0.8f, 0.7f, 0.6f, 0.5f, 0.7f) },   // semi-solitaria, cazadora oportunista
+            { "Spider",  MakeMind(ElementalTone.Tierra, 1.8f, 1.0f, 0.9f, 0.7f, 0.3f, 1.2f) },   // depredadora paciente; composure = calma de emboscada
+            { "Cricket", MakeMind(ElementalTone.Viento, 0.7f, 0.9f, 0.8f, 1.3f, 0.9f, 0.6f) },   // curioso, creativo, canta
         };
         _packs = new Dictionary<string, Aptitudes>
         {   // aditivo (todas las aptitudes). Valores por nivel (placeholder; salen del balance del boss del santuario).

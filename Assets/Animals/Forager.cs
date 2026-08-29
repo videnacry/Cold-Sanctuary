@@ -37,6 +37,12 @@ public class Forager : MonoBehaviour
             case "Bear": case "Fox":                 eatsPrey = true; eatsFish = true; break;   // cazan y pescan
             case "Bunny": case "Deer":               eatsGrass = true; break;
             case "Whale": case "Seal":               eatsFish = true; break;                    // herbívoros/consumidores marinos
+            // Insectos
+            case "Ant":                              eatsPrey = true; break;                    // carnívora; caza invertebrados pequeños
+            case "Aphid":                            eatsGrass = true; break;                   // savia de plantas
+            case "Ladybug":                          eatsPrey = true; break;                    // depredadora de pulgones
+            case "Spider":                           eatsPrey = true; break;                    // depredadora; emboscada
+            case "Cricket":                          eatsGrass = true; eatsPrey = true; break;  // omnívora oportunista
         }
     }
 

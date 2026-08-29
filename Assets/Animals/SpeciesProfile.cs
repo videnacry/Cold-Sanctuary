@@ -49,6 +49,12 @@ public class SpeciesProfile
             { "Seal",     new SpeciesProfile(0.5f, 0.1f, 2.0f, 2.0f, 0.5f, 0.4f, 5.0f, 0.6f, 80.0f, 1.5f, 0.5f, OrganicMaterial.Fish) },
             { "Whale",    new SpeciesProfile(0.0f, 0.1f, 2.5f, 2.0f, 2.5f, 0.35f, 1.5f, 0.5f, 120.0f, 1.8f, 0.5f, OrganicMaterial.Fish) },
             { "Wolf",     new SpeciesProfile(0.8f, 0.8f, 0.5f, 5.0f, 0.8f, 0.3f, 3.0f, 0.7f, 15.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },
+            // Insectos — cadena trófica del Microcosmos (Nivel 1)
+            { "Ant",     new SpeciesProfile(0.9f, 0.4f, 1.5f, 0.8f, 0.5f, 0.3f, 3.0f, 0.7f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; defiende
+            { "Aphid",   new SpeciesProfile(0.0f, 0.1f, 2.5f, 0.1f, 0.1f, 0.7f, 8.0f, 0.2f,  0.5f, 0.3f, 0.6f, OrganicMaterial.Meat) },  // presa total; sin daño
+            { "Ladybug", new SpeciesProfile(0.1f, 0.7f, 0.6f, 1.5f, 0.7f, 0.4f, 5.0f, 0.5f,  1.5f, 0.6f, 0.4f, OrganicMaterial.Meat) },  // élitros = toughness alta
+            { "Spider",  new SpeciesProfile(0.0f, 0.9f, 0.2f, 4.0f, 1.2f, 0.2f, 4.0f, 0.5f,  3.0f, 0.8f, 0.3f, OrganicMaterial.Meat) },  // veneno; solitaria; paciente
+            { "Cricket", new SpeciesProfile(0.2f, 0.4f, 1.0f, 1.0f, 0.4f, 0.5f, 5.0f, 0.4f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // omnívoro; huye primero
         };
     }
 }

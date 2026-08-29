@@ -33,6 +33,12 @@ public class Family
         { "Wolf", new Family(6, 0.3f,  biparental) }, { "Malamute", new Family(6, 0.3f,  maternal) },
         { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(10, 0.25f, maternal) },
         { "Seal", new Family(8, 0.3f,  maternal)   }, { "Deer",     new Family(6, 0.3f,  maternal) },
+        // Insectos
+        { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
+        { "Aphid",   new Family(4, 0.6f, maternal) },  // racimo de clones (partenogénesis aproximada)
+        { "Ladybug", new Family(2, 0.3f, maternal) },  // semi-solitaria
+        { "Spider",  new Family(1, 0.1f, maternal) },  // solitaria (canibalismo mata al macho)
+        { "Cricket", new Family(3, 0.3f, maternal) },  // grupos pequeños
     };
 
     public static Family Of(string species)

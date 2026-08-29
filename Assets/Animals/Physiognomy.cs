@@ -44,6 +44,12 @@ public class Physiognomy
             { "Seal",     new Physiognomy(new Vector3(1.5f, 1.5f, 1.5f),      80f, 0.05f, 0.3f, 0.1f) },
             { "Deer",     new Physiognomy(new Vector3(0.219f, 0.219f, 0.219f),90f, 0.07f, 0.25f, 0.1f) },
             { "Whale",    new Physiognomy(new Vector3(1.157f, 1.157f, 1.157f),1300f, 0.04f, 0.3f, 0.12f) },
+            // Insectos — escala de prefab ajustada al suelo del Microcosmos
+            { "Ant",     new Physiognomy(new Vector3(0.003f, 0.003f, 0.003f), 0.002f, 0.10f, 0.15f, 0.05f) },
+            { "Aphid",   new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.001f, 0.05f, 0.10f, 0.03f) },
+            { "Ladybug", new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.004f, 0.12f, 0.20f, 0.06f) },
+            { "Spider",  new Physiognomy(new Vector3(0.007f, 0.005f, 0.007f), 0.008f, 0.10f, 0.25f, 0.06f) },
+            { "Cricket", new Physiognomy(new Vector3(0.005f, 0.004f, 0.006f), 0.003f, 0.10f, 0.20f, 0.05f) },
         };
     }
 
