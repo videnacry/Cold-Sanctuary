@@ -1,7 +1,7 @@
 using System.Collections;
 
 /// <summary>
-/// Una unidad de test que el <see cref="TestRunner"/> ejecuta de forma coordinada (docs/testing-checklist.md §32).
+/// Una unidad de test que el <see cref="ColdSanctuary.TestRunner"/> ejecuta de forma coordinada (docs/testing-checklist.md §32).
 /// Los sandboxes `*_AUTO` la implementan en vez de auto-correr en su `Start` — así el runner controla el ORDEN y evita
 /// que se pisen (p.ej. la rejilla es un singleton; dos tests mutando la misma fauna).
 /// </summary>

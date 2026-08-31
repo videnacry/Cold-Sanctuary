@@ -56,7 +56,9 @@ public class ReachGoalMission : MonoBehaviour
 
     void OnGUI()
     {
-        if (!_hasPlayer) return;
+        // _player puede quedar colgante si el GameObject "Player" se destruye/reemplaza en runtime
+        // (posesión/body-swap) — Update() ya lo chequea; OnGUI() corre cada repaint y necesita el mismo guard.
+        if (!_hasPlayer || _player == null) return;
         string msg = _done
             ? "✓ Misión completada: llegaste al refugio."
             : $"Misión (WASD): ve al marcador del refugio  ·  {Vector3.Distance(_player.position, transform.position):0} m";

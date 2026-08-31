@@ -12,6 +12,46 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-08-29 — commit LOCAL del usuario (no del compañero, no pusheado)**: `5a892f5
+  "feat(insects): add Ant/Aphid/Ladybug/Spider/Cricket full lifecycle presets"` — 5 especies de
+  insectos nuevas (`AntBehavior`/`AphidBehavior`/`CricketBehavior`/`LadybugBehavior`/`SpiderBehavior`)
+  + entradas en `Archetypes`/`Family`/`Forager`/`Physiognomy`/`SpeciesProfile`/`StageProfile` (cadena
+  trófica: Aphid ← Ant/Ladybug ← Spider/Cricket). Sincronizado al proyecto vivo, compilación limpia
+  (0 errores, Unity llevaba ~3 días cerrado, reabrió sin drama). **No están cableadas en
+  `SampleSceneBuilder.cs` todavía** (ese archivo no cambió en el commit) — no aparecen en el HUD de
+  `EcosystemObservation` ni se generan en el sandbox; solo el código base existe, pendiente de que el
+  compañero/usuario las agregue a `BuildWildlifePopulation`. Testeado en Play: 0 excepciones nuevas
+  (única `MissingReferenceException` en el log es residual, de ANTES del fix de `ReachGoalMission` del
+  ciclo anterior — última ocurrencia línea 889044, esta sesión arranca en 890172), `[FamilyGenerator]
+  11 familia(s) — 66 animales` y `[TEST] TOTAL: 42 PASS / 0 FAIL` siguen confirmando sin regresión.
+
+- **CICLO 2026-08-28 — cron reactivado (expiró, `56da7d35` nuevo) + pull de 31 commits (PRs #149-163)
+  + 2 BUGS REALES de compilación/runtime encontrados y arreglados**. Sync: harness de tests automático
+  nuevo (`TestProbe`/`TestRunner`/`ITestUnit` + unidades `*Test`/`*Auto`), `PheromoneField`→`TraceField`
+  (rename), ciclo de vida completo (`EstrusState`/`Reproduction`/`SicknessState`), misión-observación del
+  ecosistema (`EcosystemObservation`) y primera misión jugable WASD (`ReachGoalMission`).
+  1. **BUG compilación**: `SampleSceneBuilder.cs(120)` — `AddComponent<TestRunner>()` choca (CS0434) con
+     el namespace `UnityEditor.TestRunner` del Unity Test Framework (activo porque el archivo tiene
+     `using UnityEditor;`). `global::TestRunner` NO lo resuelve (limitación conocida del compilador para
+     este choque específico namespace-vs-tipo). Fix: envolver la clase `TestRunner` en un namespace
+     (`namespace ColdSanctuary { ... }`) — única excepción a la convención "sin namespaces" del proyecto,
+     justificada porque es la única forma real de resolver el choque sin renombrar una clase que la
+     documentación ya referencia extensamente. Actualizado el único call-site real y los `<see cref>`.
+  2. **BUG runtime — `MissingReferenceException` en loop (6094 ocurrencias en la sesión anterior a mi
+     fix), misma familia recurrente de toda la sesión**: `ReachGoalMission.OnGUI():60` accedía a
+     `_player.position` sin chequear `_player == null` (si el "Player" se destruye/reemplaza por
+     posesión/body-swap, igual que ya pasó con `CameraManager`/`CompanionBase` en ciclos anteriores).
+     `Update()` ya tenía el guard correcto (`_done || !_hasPlayer || _player == null`); `OnGUI()` solo
+     chequeaba `!_hasPlayer`. Como `OnGUI()` corre cada repaint, esto explica el volumen. Fix: mismo
+     guard en `OnGUI()`. **Confirmado con evidencia rigurosa de `Editor.log`**: última excepción en línea
+     889067, el domain reload de mi fix en línea 889404 — cero excepciones nuevas en 63k+ líneas después.
+  **Bonus**: el harness de tests automático (`TestRunner_AUTO`) corrió completo tras los fixes —
+  `[TEST] ═══ TOTAL: 42 PASS / 0 FAIL → OK ✓ ═══` (cubre depredación por stats, gate sensorial,
+  temperamento/confianza histórica, grimorio de doble vía, celo→rastro, parto→cría, enfermedad→presa
+  fácil, inanición→enfermedad). **Archivos con fix, trackeados y sincronizados, listos para commitear**:
+  `Assets/Editor/SampleSceneBuilder.cs`, `Assets/Scripts/TestRunner.cs`, `Assets/Scripts/ITestUnit.cs`,
+  `Assets/Scripts/ReachGoalMission.cs`.
+
 - **CICLO 2026-08-27 — pull de 28 commits (PRs #135-148) + sync (8 .cs, 3 nuevos), 0 errores**. El
   checkout local había quedado 28 commits atrás (git lo detectó como fast-forward puro); mi nota local
   sin comitear en `testing-checklist.md` chocó con `git pull` normal ("would be overwritten by merge")

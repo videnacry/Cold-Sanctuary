@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Envuelto en namespace (única excepción a "sin namespaces" del proyecto): el nombre "TestRunner" choca
+// (CS0434) con el namespace UnityEditor.TestRunner del Unity Test Framework — `global::` no lo resuelve
+// (limitación conocida del compilador con esta colisión puntual). El resto de la clase, sin cambios.
+namespace ColdSanctuary
+{
 /// <summary>
 /// Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario: reúne las
 /// <see cref="ITestUnit"/> de sus hijos/sí mismo y las corre **grupo a grupo EN SERIE** (menor `Group` primero);
@@ -52,4 +57,5 @@ public class TestRunner : MonoBehaviour
 
         TestProbe.Total();
     }
+}
 }
