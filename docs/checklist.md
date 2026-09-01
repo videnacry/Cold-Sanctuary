@@ -333,6 +333,28 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       lector-de-mentes) sobre `PossessionSpell`+energía-timer. **Transformación 3-niveles/farol-vs-real ✔**
       (`TransformationSpell`); falta ligarla a energía-timer y a la depredación. Monetización cosmética al final.
 
+## ⚠ Prefabs pendientes de crear (el compañero, en Unity — el repo NO versiona prefabs)
+
+Los `Animal` NUEVOS **no spawnean** hasta que exista `Assets/Animals/{Especie}/{Especie}.prefab`; hoy `AddFamily` los
+**omite con un warning** (graceful). El fitoplancton/krill/peces **NO** necesitan prefab (se generan con **primitivas** en
+`BuildPhytoplankton`/`BuildKrill`/`BuildSwarms`; `Swarm.unitPrefab` es opcional para el pez-hijo). Pendientes:
+- [ ] **Pingüino** y **Orca** (fauna de hielo): ya registrados en `Tools ▸ Cold Sanctuary ▸ Generate Animal Prefabs` →
+      los crea automáticamente **en cuanto pongas un `.fbx`** en `Assets/Animals/{Penguin,Orca}/Models/`. Sin modelo, se saltan.
+- [ ] **5 insectos** (Ant/Aphid/Ladybug/Spider/Cricket) para el **Microcosmos Scene1** (NO van al Santuario 1): mismo patrón,
+      falta su `.fbx`/prefab. Hoy el contenido usa **primitivas** (`SimpleAnima`), así que la escena funciona sin ellos.
+- [ ] Los ya existentes (PolarBear/Whale/Seal) deben tener su prefab en tu proyecto (validados antes); si no aparecen, córrelo.
+
+## Escenas del MICROCOSMOS (son propias, hermanas — no van en el mesocosmos)
+
+El microcosmos es su **propio plano**: sus niveles son **escenas separadas**, NO objetos dentro de la escena del
+Santuario 1 (mesocosmos). Ya reorganizado así (PR #174):
+- [ ] **Scene1 (Ambrosio / el alba)** — `Tools ▸ Cold Sanctuary ▸ Build Microcosmos Scene1 (Ambrosio)` → genera
+      `Assets/Scenes/Microcosmos_Scene1_Ambrosio.unity` (cueva/pulgón-guía + mapa de hormigas/depredadores/hechizos).
+- [ ] **Mesopotamia** (la ciudad-insecto) — `Build MobWorld Mesopotamia` → `MobWorld_Mesopotamia.unity`. **Es parte del
+      microcosmos**; Scene1 es **anterior** en la historia (hermana). "Build Sample Scene Blockout" regenera AMBAS de un click.
+- [ ] Al cargarlas additive en runtime (sobre el jugador persistente) puede hacer falta un **offset de posición** (el
+      contenido está autorado en coords base) + entrada del jugador (portal/spawn). Follow-up.
+
 ## ⚠ Compilar y PROBAR en Unity (PRs #16–#96 en master)
 
 `Control/` + `Kitchen/` + `Virtualization/` + `Prologue/` + `Microcosmos/` + extensiones de Mind. **Guion de

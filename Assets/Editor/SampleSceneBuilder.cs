@@ -89,8 +89,8 @@ public static class SampleSceneBuilder
         BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
         BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
         BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
-        BuildMicrocosmosSandbox(root.transform);    // Microcosmos 1ª misión: hormiguero + pulgón-guía + familia caída — docs microcosmos-insects.md
-        BuildNivel1Sandbox(root.transform);         // Nivel 1 GAMEPLAY: mapa abierto, hormigas+WeaknessEffect, maleza Ambrosio, hechizos Kushal — docs microcosmos §13
+        // El MICROCOSMOS es OTRA ESCENA (no va aquí, en el mesocosmos): Scene1 (Ambrosio/alba) y Mesopotamia son
+        // escenas HERMANAS del microcosmos. Se generan abajo con MicrocosmosSceneBuilder/MobWorldSceneBuilder.
         BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
         BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
         BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
@@ -126,8 +126,12 @@ public static class SampleSceneBuilder
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance
         BakeNavMesh();
 
-        // Genera también la escena del mundo mob (Mesopotamia) → todo listo de un click.
-        // La cocina ya apunta a ella (mobWorldSceneName). Guardado por si la API de escenas falla.
+        // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
+        //  · Scene1 (Ambrosio/alba) — el nivel introductorio de la cueva/pulgón (anterior en la historia).
+        //  · Mesopotamia (mundo mob) — la ciudad-insecto; la cocina ya apunta a ella (mobWorldSceneName).
+        // Todo listo de un click. Guardado en try por si la API de escenas falla.
+        try { MicrocosmosSceneBuilder.BuildScene1(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene1: {e.Message}"); }
         try { MobWorldSceneBuilder.BuildMesopotamia(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
 
@@ -914,7 +918,7 @@ public static class SampleSceneBuilder
     /// dos **hormigas** que lo cuidan (lo siguen por la melaza). El pulgón lleva a Kushal/al grupo a la
     /// familia, la rescata y la guía al hormiguero (`CarryToRefuge`/`WeakOne`). Auto-demo por consola.
     /// </summary>
-    static void BuildMicrocosmosSandbox(Transform parent)
+    internal static void BuildMicrocosmosSandbox(Transform parent)
     {
         // Nivel introductorio (alba/cueva) — historia y almas canónicas en docs/microcosmos-insects.md §13.
         // Tableau del momento de la LLEGADA/muerte: Ambrosio (pulgón) se derrumba en la entrada; la tribu
@@ -1031,7 +1035,7 @@ public static class SampleSceneBuilder
     /// </list>
     /// ⚠ Requiere NavMesh bakeado (Window → AI → Navigation → Bake) antes de Play.
     /// </summary>
-    static void BuildNivel1Sandbox(Transform parent)
+    internal static void BuildNivel1Sandbox(Transform parent)
     {
         GameObject root = new GameObject("Nivel1Microcosmos_AUTO");
         root.transform.SetParent(parent);
