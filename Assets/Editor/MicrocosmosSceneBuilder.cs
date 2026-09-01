@@ -17,13 +17,18 @@ using UnityEngine.SceneManagement;
 /// con luz y NavMesh horneado. Se añade a Build Settings para cargarla por nombre en runtime (additive sobre el jugador).
 ///
 /// Uso: Tools → Cold Sanctuary → Build Microcosmos Scene1 (Ambrosio). También la regenera "Build Sample Scene Blockout".
-/// ⚠ Al cargarse additive en runtime junto al mundo base puede querer un OFFSET de posición (el contenido está autorado
-///   en coords base); pendiente si se solapa con otra escena cargada a la vez.
+/// Carga en runtime: `MobWorldLoader.Instance.EnterMobWorld("Microcosmos_Scene1_Ambrosio")` (genérico, no solo mob) →
+/// teletransporta al jugador al `MobSpawnPoint`; el `YogaPortal` lo devuelve. Falta cablear QUÉ dispara la entrada (un
+/// trigger del prólogo/alba); el resto (offset + spawn + portal) ya está resuelto aquí.
 /// </summary>
 public static class MicrocosmosSceneBuilder
 {
     public const string SceneName = "Microcosmos_Scene1_Ambrosio";
     const string ScenePath = "Assets/Scenes/" + SceneName + ".unity";
+
+    // Origen LEJANO y DISTINTO del de Mesopotamia (5000,0,5000): así, cargada additive sobre el mundo base (o junto a la
+    // otra escena hermana), el contenido —autorado en coords base— no solapa a nadie. Todo el root se desplaza aquí.
+    static readonly Vector3 O = new Vector3(-5000f, 0f, 5000f);
 
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos Scene1 (Ambrosio)")]
     public static void BuildScene1()
@@ -35,19 +40,40 @@ public static class MicrocosmosSceneBuilder
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);   // los GameObjects nuevos caen en esta escena
 
-        // Luz direccional (el alba).
+        // Luz direccional (el alba). Para una luz direccional la posición es irrelevante (solo cuenta la rotación).
         GameObject lightGO = new GameObject("Sun");
         lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
         Light light = lightGO.AddComponent<Light>();
         light.type = LightType.Directional;
         light.color = new Color(1f, 0.95f, 0.85f);   // luz cálida de amanecer
 
-        // Contenido del microcosmos Nivel 1 (reutiliza los builders existentes; ahora viven en SU escena).
+        // Contenido del microcosmos Nivel 1 (reutiliza los builders existentes; ahora viven en SU escena). Se construye
+        // con el root en el ORIGEN (los builders fijan posiciones en coords base) y luego se DESPLAZA el root entero a O
+        // → todo el contenido se mueve coherentemente sin tocar los builders. Las posiciones autoradas quedan como
+        // offsets locales respecto de O.
         GameObject root = new GameObject("Microcosmos_Scene1_AUTO");
         SampleSceneBuilder.BuildMicrocosmosSandbox(root.transform);   // cueva/pulgón-guía/familia caída (el tableau del alba)
         SampleSceneBuilder.BuildNivel1Sandbox(root.transform);        // mapa abierto: hormigas + depredadores + hechizos de Kushal
+        root.transform.position = O;                                 // desplaza TODO a un origen lejano (no solapa el mundo base)
 
-        BakeMicroNavMesh();
+        // Entrada/salida del jugador (genérico vía MobWorldLoader, como Mesopotamia): teletransporta al MobSpawnPoint al
+        // entrar; el YogaPortal devuelve al mundo normal. Ambos parentados al root → caen ya en O.
+        GameObject spawn = new GameObject("MobSpawnPoint");
+        spawn.transform.SetParent(root.transform);
+        spawn.transform.localPosition = new Vector3(0f, 1f, -6f);
+        spawn.transform.localRotation = Quaternion.LookRotation(Vector3.forward);
+        spawn.AddComponent<MobSpawnPoint>();
+
+        GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        portal.name = "YogaPortal";
+        portal.transform.SetParent(root.transform);
+        portal.transform.localPosition = new Vector3(0f, 1f, -5f);
+        portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
+        portal.GetComponent<Collider>().isTrigger = true;
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroYogaPortal", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<YogaPortal>();
+
+        BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
 
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings(ScenePath);
@@ -67,6 +93,12 @@ public static class MicrocosmosSceneBuilder
         if (surface == null) surface = floor.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
         surface.BuildNavMesh();
+    }
+
+    static Material MakeMat(string name, Color c)
+    {
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        return new Material(shader) { name = name, color = c };
     }
 
     static void AddToBuildSettings(string path)
