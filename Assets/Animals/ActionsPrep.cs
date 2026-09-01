@@ -32,6 +32,9 @@ public class ActionsPrep
         { "Seal", new ActionsPrep(new ActionPrep("IdleSeal", 0f, 1f, -2f), new ActionPrep("WalkSeal", 4f, 2f, 0.5f), new ActionPrep("RunSeal", 10f, 3f, 2f)) },
         { "Whale", new ActionsPrep(new ActionPrep("IdleWhale", 0f, 1f, -2f), new ActionPrep("WalkWhale", 3f, 2f, 0.5f), new ActionPrep("RunWhale", 8f, 3f, 2f)) },
         { "Wolf", new ActionsPrep(new ActionPrep("IdleWolf", 0f, 1f, -2f), new ActionPrep("WalkWolf", 3f, 3f, 0.5f), new ActionPrep("RunWolf", 22f, 5f, 2f)) },
+        // Fauna de hielo — pingüino torpe en tierra (lento); orca nadadora veloz
+        { "Penguin", new ActionsPrep(new ActionPrep("IdlePenguin", 0f, 1f, -2f), new ActionPrep("WalkPenguin", 2f, 2f, 0.5f), new ActionPrep("RunPenguin", 6f, 4f, 2f)) },
+        { "Orca", new ActionsPrep(new ActionPrep("IdleOrca", 0f, 1f, -2f), new ActionPrep("WalkOrca", 4f, 2f, 0.5f), new ActionPrep("RunOrca", 14f, 3f, 2f)) },
     };
 
     /// <summary>Los gaits (idle/walk/run) de una especie. Desconocida → genérico.</summary>

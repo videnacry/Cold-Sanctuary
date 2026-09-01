@@ -18,6 +18,8 @@ public class Phytoplankton : MonoBehaviour, ITarget, IEdible
     public float maxBiomass = 100f;
     [Tooltip("Biomasa/seg que regenera al fotosintetizar (escalada por la velocidad del juego).")]
     public float regenPerSecond = 0.6f;
+    [Tooltip("Factor de fotosíntesis de noche (0 = no crece sin luz; 1 = igual que de día). Usa el reloj (Clock).")]
+    [Range(0f, 1f)] public float nightFactor = 0.2f;
     [Tooltip("Masa (kg) por unidad de biomasa, para Mass/Grams.")]
     public float perBiomassMass = 0.1f;
 
@@ -26,11 +28,13 @@ public class Phytoplankton : MonoBehaviour, ITarget, IEdible
 
     void Update()
     {
-        // Fotosíntesis: regenera a ritmo constante (asume luz). GANCHO: cuando exista un ciclo día/noche en el
-        // proyecto (hoy `TimeController` solo lleva velocidad, sin reloj horario), gatear esto por la luz solar.
+        // Fotosíntesis: crece con la LUZ (reloj del día vía Clock). De noche crece a nightFactor; sin Clock en escena el
+        // reloj se queda de día (IsDay=true) → crece a tope. Se autoregenera desde casi 0 (nunca "muere").
         if (biomass >= maxBiomass) return;
-        byte timeScale = TimeController.timeController != null ? TimeController.timeController.TimeSpeed : (byte)1;
-        biomass = Mathf.Min(maxBiomass, biomass + regenPerSecond * timeScale * Time.deltaTime);
+        TimeController tc = TimeController.timeController;
+        byte timeScale = tc != null ? tc.TimeSpeed : (byte)1;
+        float light = (tc == null || tc.IsDay) ? 1f : nightFactor;
+        biomass = Mathf.Min(maxBiomass, biomass + regenPerSecond * light * timeScale * Time.deltaTime);
     }
 
     public static Phytoplankton Nearest(Vector3 position)

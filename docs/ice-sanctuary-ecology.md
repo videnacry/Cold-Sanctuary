@@ -62,8 +62,9 @@ una sola entidad. Nombre **genérico** (`Swarm`) porque sirve para **pez, krill 
   nutrientes (throttle `biteCooldown`). Gateado por `Forager.eatsFish` + hambre.
 - **Fitoplancton = "césped del mar"** (`Phytoplankton`, MonoBehaviour productor: `biomass` + `regenPerSecond`, IEdible;
   vive de agua+luz). ✅ Creado. Base de todo: **fitoplancton→krill→pez→foca/pingüino/ballena→oso/orca**.
-- **Krill = igual** (`Swarm` con `unitName="Krill"`, pasta fitoplancton, comido por pez/ballena) — PENDIENTE de crear
-  (el patrón ya sirve tal cual). Falta afinar la etiqueta de dieta si se quiere pez≠krill (hoy `eatsFish` es genérico).
+- **Krill** ✅ CREADO = `Swarm` con `kind=SwarmKind.Krill`: **dieta propia** (pasta FITOPLANCTON; el pez pasta KRILL).
+  Los depredadores lo muerden según su `Forager`: `eatsKrill` (krill) vs `eatsFish` (pez) → **pez≠krill**. Cadena de
+  pastoreo por proximidad: fitoplancton→krill→pez; y mordisco-por-colisión de los Animal (foca/pingüino/oso/orca).
 
 ## 3. Especies del bioma (spec para implementar por PRs)
 
@@ -77,7 +78,8 @@ insectos (`5a892f5`). Los **inanimados** (árbol, plancton) son `SimpleAnima` + 
 | **Árbol carnívoro de hielo** | `SimpleAnima` + `IceTree`/`LethalHoney` | productor **carnívoro pasivo**: atrae y adormece; alberga abejas | inmóvil; `Nectar` fuerte; enorme |
 | **Abeja de las nieves** | `Animal` (vuela) | anida en el árbol; hace miel de nutrientes de muertos; presa de araña/pájaro/pingüino | percepción alta; frágil; **necesita volar/trepar** (ver §4) |
 | **Araña de las nieves** | `Animal` | caza abejas cerca del árbol | como `Spider` pero adaptada al frío; `armament` (veneno) |
-| **Pingüino** (especial) | `Animal` | come abejas: **deambula cerca del árbol‑con‑cadáver** y espera a que las abejas bajen al cadáver para cazarlas; presa de la **foca** | "conoce el mecanismo" = deseo de merodear el `Nectar`/carcasa; nada bien |
+| **Pingüino** ✅ | `Animal` (`PenguinBehavior`) | marino: come **pez Y krill** (`eatsFish`+`eatsKrill`, mordisco-colisión); presa de **foca y orca**; anfibio (agua 1.0 / tierra 0.7) | catálogos completos; sueño en tierra pendiente. A futuro: merodear el árbol/cadáver por las abejas |
+| **Orca** ✅ | `Animal` (`OrcaBehavior`) | **apex** marino: caza focas/ballenas/pingüinos por stats (`eatsPrey`+Predation); pod social (packFactor alto); acuática pura | relaciones kármicas −Seal/−Whale/−Penguin; agresividad emerge del histórico |
 | **Foca / Ballena** | `Animal` (ya existen) | marinos; foca come pingüino/pez | ya en catálogos; encajan en hielo |
 | **Oso polar** | `Animal` (ya existe como "PolarBear") | apex; come foca/pez | **coherente aquí** (a diferencia de sobre tierra) |
 
@@ -93,12 +95,14 @@ les pondrá un `Mind`/thoughts que **concuerde con las personas de esa época** 
 - **Canal `Nectar`** en `TraceChannel` + `IceTree` que lo deposita (reusa `TraceField`).
 - **`Torpor`** (hechizo-estado: dormir letal) — como `EstrusState`/`SicknessState` pero fuerza `asleep` y daña sin comer.
 - **Miel de nutrientes**: el nido/miel se "fabrica" con carcasas cercanas → enlaza `DecompositionJob`/economía.
-- **Sueño (día/noche)**: `Anima.asleep` YA es una compuerta (dormido → no elige deseos, no responde al hambre, no
-  corrige medio: `Volition`/`ActiveBehaveTick`/`CorrectMedium` con `if (!asleep)`) y existe `MindChannel.Sleepiness` —
-  pero **NADIE pone `asleep=true`**: el sueño real NO está disparado. Falta el gatillo (ciclo día/noche o fatiga → dormir),
-  y el proyecto **no tiene reloj horario** (hoy `TimeController` solo lleva velocidad). Fauna marina: peces/krill "duermen"
-  quietos a la deriva (no cueva); mamíferos = sueño unihemisférico (siguen subiendo a respirar); foca/pingüino descansan
-  sobre el hielo. Al implementarlo, reusar la compuerta `asleep` existente.
+- **Reloj del día** ✅ AÑADIDO: `TimeController` ahora lleva la HORA (`startHour` + `Hour` + `IsDay`); el componente
+  `Clock` (Clock_AUTO en escena) da el tic cada frame y la velocidad corre las horas. Primer consumidor: la fotosíntesis
+  del fitoplancton (crece con la luz, `nightFactor` de noche). **Desbloquea el sueño día/noche.**
+- **Sueño (día/noche)** — PENDIENTE (ahora ya hay reloj): `Anima.asleep` YA es una compuerta (dormido → no elige deseos,
+  no responde al hambre, no corrige medio: `Volition`/`ActiveBehaveTick`/`CorrectMedium` con `if (!asleep)`) y existe
+  `MindChannel.Sleepiness` — pero **NADIE pone `asleep=true`**. Falta el gatillo: con el `Clock` ya se puede hacer
+  `asleep = !IsDay` (o por fatiga) por especie. Fauna marina: peces/krill "duermen" quietos a la deriva (no cueva);
+  mamíferos = sueño unihemisférico (siguen subiendo a respirar); foca/pingüino descansan sobre el hielo.
 - **Limpiar `SampleSceneBuilder`**: quitar la fauna templada de la escena del Santuario 1 y poblarla con la de arriba
   (o hacer una escena de hielo aparte). Hoy solo se **quitaron los insectos** (no eran de aquí); el resto, pendiente.
 

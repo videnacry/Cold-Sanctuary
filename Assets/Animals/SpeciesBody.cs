@@ -32,6 +32,7 @@ public class SpeciesBody : MonoBehaviour
     {
         { "Whale", 400f }, { "Bear", 300f }, { "Deer", 250f }, { "Wolf", 200f },
         { "Fox", 150f }, { "Seal", 150f }, { "Malamute", 100f }, { "Bunny", 20f },
+        { "Orca", 400f }, { "Penguin", 120f },
     };
 
     // Bases evolutivas por especie (data; antes eran overrides BaseAgility/BasePerception por clase).
@@ -40,6 +41,7 @@ public class SpeciesBody : MonoBehaviour
     {
         { "Fox",  (1.4f, 1.5f) }, { "Bear",     (0.7f, 1.1f) }, { "Whale", (0.6f, 1.0f) }, { "Bunny", (1.5f, 1.6f) },
         { "Wolf", (1.2f, 1.4f) }, { "Malamute", (1.1f, 1.1f) }, { "Deer",  (1.4f, 1.5f) }, { "Seal",  (1.1f, 1.2f) },
+        { "Orca", (1.3f, 1.4f) }, { "Penguin",  (0.9f, 1.1f) },
     };
 
     /// <summary>Escribe en el `Anima` las aptitudes NO-evolutivas del arquetipo (fuerza/masa/mentales) y siembra los

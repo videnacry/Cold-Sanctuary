@@ -33,6 +33,9 @@ public class Family
         { "Wolf", new Family(6, 0.3f,  biparental) }, { "Malamute", new Family(6, 0.3f,  maternal) },
         { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(10, 0.25f, maternal) },
         { "Seal", new Family(8, 0.3f,  maternal)   }, { "Deer",     new Family(6, 0.3f,  maternal) },
+        // Fauna de hielo
+        { "Penguin", new Family(8, 0.3f, biparental) },  // colonia; ambos padres incuban/alimentan
+        { "Orca",    new Family(6, 0.25f, maternal)  },  // pod matriarcal
         // Insectos
         { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
         { "Aphid",   new Family(4, 0.6f, maternal) },  // racimo de clones (partenogénesis aproximada)
