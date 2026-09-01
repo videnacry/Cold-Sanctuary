@@ -120,6 +120,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<LifeCycleAuto>();        // grupo 5: parto → cría (cierra el ciclo de vida)
         tests.AddComponent<SicknessTest>();         // grupo 6: enfermedad → presa fácil + rastro
         tests.AddComponent<StarvationTest>();       // grupo 7: inanición → masa↓ + enfermedad
+        tests.AddComponent<SleepTest>();            // grupo 8: sueño día/noche (reloj → asleep; amenaza despierta)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance

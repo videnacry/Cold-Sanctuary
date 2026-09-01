@@ -98,11 +98,15 @@ les pondrá un `Mind`/thoughts que **concuerde con las personas de esa época** 
 - **Reloj del día** ✅ AÑADIDO: `TimeController` ahora lleva la HORA (`startHour` + `Hour` + `IsDay`); el componente
   `Clock` (Clock_AUTO en escena) da el tic cada frame y la velocidad corre las horas. Primer consumidor: la fotosíntesis
   del fitoplancton (crece con la luz, `nightFactor` de noche). **Desbloquea el sueño día/noche.**
-- **Sueño (día/noche)** — PENDIENTE (ahora ya hay reloj): `Anima.asleep` YA es una compuerta (dormido → no elige deseos,
-  no responde al hambre, no corrige medio: `Volition`/`ActiveBehaveTick`/`CorrectMedium` con `if (!asleep)`) y existe
-  `MindChannel.Sleepiness` — pero **NADIE pone `asleep=true`**. Falta el gatillo: con el `Clock` ya se puede hacer
-  `asleep = !IsDay` (o por fatiga) por especie. Fauna marina: peces/krill "duermen" quietos a la deriva (no cueva);
-  mamíferos = sueño unihemisférico (siguen subiendo a respirar); foca/pingüino descansan sobre el hielo.
+- **Sueño (día/noche)** ✅ IMPLEMENTADO: `SleepCycle` (componente auto-añadido en `Animal.Init`) dispara la compuerta
+  `Anima.asleep` por el RELOJ (`TimeController.IsDay`, que corre con `Clock`). Diurno duerme de noche; `nocturnal` al
+  revés. Dormido → no elige deseos, no busca comida, no corrige medio (compuertas ya existentes). **Se DESPIERTA ante una
+  amenaza** (`aware`): `SenseThreats` sigue corriendo aunque duerma → la supervivencia manda. Mamíferos marinos: dormir
+  en el agua es seguro (`Suffocate()` corre en `Restore()` pase lo que pase; aprox. del sueño unihemisférico sin modelar
+  la respiración). Peces/krill (`Swarm`, no son `Anima`): de noche **derivan más lento** (`nightDriftFactor`), la huida
+  no. `TimeController.SetHour` permite forzar la hora (tests, o futuras mecánicas "dormir hasta el amanecer"). Un futuro
+  `Torpor` (miel letal) puede tomar el mando poniendo `SleepCycle.Suspended`. Test: `SleepTest` (grupo 8, §41). Queda como
+  mejora opcional el sueño por FATIGA (además del reloj) y el `MindChannel.Sleepiness` (aún decorativo).
 - **Limpiar `SampleSceneBuilder`**: quitar la fauna templada de la escena del Santuario 1 y poblarla con la de arriba
   (o hacer una escena de hielo aparte). Hoy solo se **quitaron los insectos** (no eran de aquí); el resto, pendiente.
 

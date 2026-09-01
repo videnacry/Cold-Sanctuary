@@ -1184,6 +1184,25 @@ baja la **masa** (el cuerpo se consume → debilita) y **enferma** (`sickness>0`
   (tiempo o enfermería). Aparece en el HUD/`[ECO]` como muertes → el **balance** cobra dientes.
 - Tunables: `Animal.{starvationMeals, starvationFatRate, starvationMassRate, lethalMassFrac, starvationSickness}`.
 
+## 41. Sueño día/noche — `SleepCycle` + reloj (PR #171)
+
+`SleepTest` (grupo 8) asevera, determinista y NO destructivo (restaura la hora/estado al terminar): fuerza la hora con
+`TimeController.SetHour` y llama a `SleepCycle.Evaluate()` sobre un animal real:
+- de **noche** (02:00) un **diurno** pone `asleep=true`;
+- de **día** (12:00) está despierto (`asleep=false`);
+- con **amenaza** (`aware=true`) de noche → **despierta** (`asleep=false`): la supervivencia rompe el sueño.
+
+Requisitos en escena: un `Clock` (Clock_AUTO) da el tic del reloj; cada `Animal` recibe un `SleepCycle` (auto-add en
+`Init`). Sin `Clock`, `IsDay` es siempre true → nadie duerme (conducta previa intacta), y el test cae en SKIP-suave.
+- [ ] **En Play (visual)**: avanza el reloj hasta la noche (o `startHour` nocturno en `Clock_AUTO`) → la fauna se
+  **queda quieta** (no forrajea ni deambula); al amanecer, retoma. Un depredador que se acerca de noche **despierta** a
+  la presa (huye). Los bancos de peces/krill (`Swarm`) **derivan más lento** de noche (`nightDriftFactor`), pero **huir
+  sigue a toda velocidad**.
+- Tunables: `SleepCycle.{nocturnal, onlyMature}`, `Clock.startHour`, `Swarm.nightDriftFactor`, ventana de día en
+  `TimeController.IsDay` (6:00–18:00).
+- Pendiente (no-bug): sueño por **fatiga** además del reloj; `MindChannel.Sleepiness` aún decorativo; el futuro `Torpor`
+  (miel letal) usará `SleepCycle.Suspended` para forzar el sueño.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
