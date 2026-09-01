@@ -31,12 +31,15 @@ public class Family
     {
         { "Fox",  new Family(7, 0.4f,  biparental) }, { "Bear",     new Family(3, 0.4f,  maternal) },
         { "Wolf", new Family(6, 0.3f,  biparental) }, { "Malamute", new Family(6, 0.3f,  maternal) },
-        { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(3, 0.25f, maternal) },
+        { "Bunny",new Family(5, 0.4f,  maternal)   }, { "Whale",    new Family(3, 0.5f,  maternal) },
         { "Seal", new Family(4, 0.3f,  maternal)   }, { "Deer",     new Family(6, 0.3f,  maternal) },
         // Fauna de hielo — POBLACIÓN BAJA (2-4/familia): son Animal completos (caros) y con reproducción ON crecen
         // solos con las horas; arrancar pequeño evita la explosión demográfica. Ver docs/ice-sanctuary-ecology.md §5.
-        { "Penguin", new Family(4, 0.3f, biparental) },  // colonia (representada pequeña); ambos padres incuban
-        { "Orca",    new Family(2, 0.25f, maternal)  },  // pod matriarcal; apex = poquísimos
+        // El nº de CRÍAS se mantiene REAL: el parto es SIEMPRE 1 cría (Reproduction.SpawnOffspring, no depende de esto);
+        // y el reparto semilla (parentsRate) deja pocas crías por familia (K-estrategas marinos): Orca 1, Ballena 1,
+        // Foca 2, Pingüino 2. parentsRate alto = más adultos y menos crías (mamífero marino: 1 cría por hembra).
+        { "Penguin", new Family(4, 0.3f, biparental) },  // colonia (representada pequeña); 2 adultos + 2 pollos
+        { "Orca",    new Family(2, 0.25f, maternal)  },  // pod matriarcal; apex: 1 adulta + 1 ballenato
         // Insectos
         { "Ant",     new Family(6, 0.8f, maternal) },  // colonia; reinas = parents
         { "Aphid",   new Family(4, 0.6f, maternal) },  // racimo de clones (partenogénesis aproximada)
