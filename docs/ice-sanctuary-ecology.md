@@ -33,6 +33,33 @@ en un medio sin suelo, es **carnívoro pasivo** y a la vez **promueve** a los or
 - El "guardar su futuro alimenticio" = un almacén de nutrientes que crece con las carcasas cercanas (enlaza `Metabolism`/
   economía). Ramas = geometría escalable con el nivel de nutrientes (a futuro).
 
+## 2.1. Principio: primero el BIOMA REAL, luego las mutaciones
+
+Realidad del hielo (Antártida): **sí hay flora terrestre** (líquenes/musgo/algas) pero **los consumidores son
+micro-invertebrados** (colémbolos, ácaros, tardígrados; el mayor animal puramente terrestre es un mosquito sin alas de
+~6 mm). **No hay grandes herbívoros de tierra.** → El hielo es **mayormente MARINO**; la tierra es micro-vida. Orden:
+**(A) construir el bioma real** (cadena marina + micro-tierra), **(B) añadir las mutaciones** del santuario artificial
+(árbol carnívoro, insectos especiales) encima.
+
+## 2.2. Cadena real (el objetivo del bioma)
+
+**Marina (donde está la vida):**
+`Fitoplancton` ("césped del mar": fotosintetiza, vive de agua+luz) → `Krill` → `Peces` → {`Foca`, `Pingüino`, `Ballena`
+(barbada come krill directo)} → {`Oso polar`, `Orca` (caza ballenas/focas)}.
+
+**Terrestre (micro, escasa):** `Líquen/musgo` → micro-invertebrados (colémbolo/ácaro) → ácaro depredador. Opcional/tardío.
+
+### El banco como ORGANISMO (spec de `FishSchool`/`Krill`, idea del usuario)
+
+En vez de miles de peces, un **GameObject-banco** con **peces hijos** y una sola ánima (`SimpleAnima`+comportamiento):
+- **Lifecycle LINEAL** (sin child/teen/adult): solo **comer / huir / descansar**. Todos se mueven juntos.
+- **Crece comiendo** (fitoplancton/krill) y su tamaño **multiplica los GameObjects-hijos** (más peces visibles); mengua al
+  ser comido (menos hijos). Se autoregenera (ya lo hace `FishSchool.growthPerSecond`).
+- **`IEdible` especial (colisión-mordisco):** el depredador **NO caza un pez concreto** — se acerca y **choca** con el
+  banco; al contactar da un mordisco → **desaparece un hijo (un pez)** y el depredador obtiene los nutrientes de un pez.
+- **Krill = igual** (banco que come fitoplancton, comido por peces/ballena). **Fitoplancton = "césped" acuático** (un
+  `GrassPatch` marino / `SimpleAnima` productor que "vive de agua"), base de todo.
+
 ## 3. Especies del bioma (spec para implementar por PRs)
 
 Patrón de cada especie-animal = `XBehavior : Animal` (`SpeciesArchetype` + `Start`+`ConfigureThreat`) **+ 6 entradas de

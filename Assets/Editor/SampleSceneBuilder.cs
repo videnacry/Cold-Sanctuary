@@ -2095,26 +2095,18 @@ public static class SampleSceneBuilder
             families.Add(new FamilyGenerator.Family { animalPrefab = prefab, position = pos, radius = radius, renderHeight = height });
         }
 
-        // Herbívoros — banda norte y centro-oeste
-        AddFamily("Bunny", new Vector3(-220f, 0f, 190f), 10f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-60f, 0f, 200f), 10f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-230f, 0f, 20f), 10f, NestKind.Prey);
-        AddFamily("Bunny", new Vector3(-100f, 0f, -30f), 10f, NestKind.Prey);
-        AddFamily("Deer", new Vector3(-140f, 0f, 150f), 15f, NestKind.Prey);
-        AddFamily("Deer", new Vector3(-40f, 0f, 40f), 15f, NestKind.Prey);
+        // SANTUARIO 1 = HIELO (docs/ice-sanctuary-ecology.md). El suelo ya es nieve (Ground_Snow_MAT); la
+        // inconsistencia era la fauna TEMPLADA. Retirados conejo/ciervo/lobo/zorro — RESERVADOS para un santuario
+        // templado (no pertenecen al hielo). La vida TERRESTRE de hielo (árbol carnívoro, abeja/araña de nieves,
+        // pingüino) se añade al implementar esas especies. Base viva del hielo = marina: plancton → pez → foca → oso.
+        //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
-        // Carnívoros — banda sur, lejos de los nidos de presa
-        AddFamily("Wolf", new Vector3(-190f, 0f, -190f), 18f, NestKind.Predator);
-        AddFamily("Fox", new Vector3(-90f, 0f, -210f), 15f, NestKind.Predator);
-
-        // Oso Polar — apex predator, territorio amplio (BearBehaviour.homeRadius=300);
-        // frontera sur-este del bioma terrestre, más cerca de x=0 (rumbo a la zona marina en
-        // x≈180-200) ya que su Diet prioriza Seal > Bunny > Wolf.
-        AddFamily("PolarBear", new Vector3(-30f, 0f, -110f), 28f, NestKind.Predator);
+        // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
+        AddFamily("PolarBear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);
 
         ValidateNestSeparation(nests);
 
-        // Marinos — sobre el Sea_Placeholder, aparte del bioma terrestre
+        // Marinos — sobre el Sea_Placeholder (base marina del hielo).
         AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, NestKind.Prey, -1f);
         AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, NestKind.Prey, -1f);
 
