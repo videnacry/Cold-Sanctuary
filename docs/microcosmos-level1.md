@@ -4,6 +4,13 @@ Doc de **consolidación** del Nivel 1 (enriquecer + unir las dos versiones exist
 Fuentes de verdad: [`novela.md`](novela.md) (tono, manda en la ficción), [`microcosmos-insects.md`](microcosmos-insects.md) §13
 (mapa de almas), [`emotion-model.md`](emotion-model.md), [`anima-architecture.md`](anima-architecture.md).
 
+> **Arquitectura de escenas (PR #174):** el microcosmos es su **propio plano** → sus niveles son **escenas separadas**,
+> NO objetos dentro de la escena del Santuario 1 (mesocosmos). **Scene1 (Ambrosio / el alba)** es esta — se genera con
+> `Tools ▸ Cold Sanctuary ▸ Build Microcosmos Scene1 (Ambrosio)` (`MicrocosmosSceneBuilder` → `Microcosmos_Scene1_Ambrosio.unity`).
+> **Mesopotamia** (`MobWorldSceneBuilder`, la ciudad-insecto) también **es del microcosmos**; Scene1 es **anterior** en la
+> historia → son **escenas hermanas**. Reutilizan los builders `BuildMicrocosmosSandbox`+`BuildNivel1Sandbox` (ahora en su
+> escena, ya no en el mesocosmos). Falta (follow-up): offset de posición si se cargan additive a la vez + entrada del jugador.
+
 ## Principio rector: emergencia dirigida (por stats + thoughts, NO marioneteo)
 A los personajes **los mueven sus stats + su Mente** (thoughts/`Humores`/`ThoughtField`). El "director" de la
 historia **no mueve a nadie**: solo **siembra circunstancias y pensamientos** (patrón ya existente:
