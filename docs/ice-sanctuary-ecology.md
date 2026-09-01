@@ -49,16 +49,21 @@ micro-invertebrados** (colémbolos, ácaros, tardígrados; el mayor animal puram
 
 **Terrestre (micro, escasa):** `Líquen/musgo` → micro-invertebrados (colémbolo/ácaro) → ácaro depredador. Opcional/tardío.
 
-### El banco como ORGANISMO (spec de `FishSchool`/`Krill`, idea del usuario)
+### El banco como ORGANISMO (`Swarm` — antes `FishSchool`; idea del usuario) ✅ IMPLEMENTADO
 
-En vez de miles de peces, un **GameObject-banco** con **peces hijos** y una sola ánima (`SimpleAnima`+comportamiento):
-- **Lifecycle LINEAL** (sin child/teen/adult): solo **comer / huir / descansar**. Todos se mueven juntos.
-- **Crece comiendo** (fitoplancton/krill) y su tamaño **multiplica los GameObjects-hijos** (más peces visibles); mengua al
-  ser comido (menos hijos). Se autoregenera (ya lo hace `FishSchool.growthPerSecond`).
-- **`IEdible` especial (colisión-mordisco):** el depredador **NO caza un pez concreto** — se acerca y **choca** con el
-  banco; al contactar da un mordisco → **desaparece un hijo (un pez)** y el depredador obtiene los nutrientes de un pez.
-- **Krill = igual** (banco que come fitoplancton, comido por peces/ballena). **Fitoplancton = "césped" acuático** (un
-  `GrassPatch` marino / `SimpleAnima` productor que "vive de agua"), base de todo.
+En vez de miles de peces, un **GameObject-enjambre** (`Swarm`, MonoBehaviour barato — NO `Anima`) con **crías hijas** y
+una sola entidad. Nombre **genérico** (`Swarm`) porque sirve para **pez, krill y bandadas/enjambres de otros santuarios**;
+`unitName` da el nombre de la cría ("Fish"/"Krill"). Rename con `[FormerlySerializedAs]` → no rompe el prefab existente.
+- **Lifecycle LINEAL** (sin child/teen/adult): solo **comer / huir / descansar**. Todas se mueven juntas (parentadas).
+- **Crece comiendo** (fitoplancton) y su tamaño **multiplica los GameObjects-hijos** (más crías visibles, capado a
+  `maxVisible`); mengua al ser comido (menos hijos). `GrazePhytoplankton` pasta el productor cercano; + autoregenerado base.
+- **`IEdible` especial (mordisco-por-colisión):** el depredador **NO caza una cría concreta** — se acerca y **choca** con
+  el enjambre (`Swarm.OnTriggerStay`); al contactar da un mordisco → **desaparece una cría** y el depredador obtiene sus
+  nutrientes (throttle `biteCooldown`). Gateado por `Forager.eatsFish` + hambre.
+- **Fitoplancton = "césped del mar"** (`Phytoplankton`, MonoBehaviour productor: `biomass` + `regenPerSecond`, IEdible;
+  vive de agua+luz). ✅ Creado. Base de todo: **fitoplancton→krill→pez→foca/pingüino/ballena→oso/orca**.
+- **Krill = igual** (`Swarm` con `unitName="Krill"`, pasta fitoplancton, comido por pez/ballena) — PENDIENTE de crear
+  (el patrón ya sirve tal cual). Falta afinar la etiqueta de dieta si se quiere pez≠krill (hoy `eatsFish` es genérico).
 
 ## 3. Especies del bioma (spec para implementar por PRs)
 
@@ -88,6 +93,12 @@ les pondrá un `Mind`/thoughts que **concuerde con las personas de esa época** 
 - **Canal `Nectar`** en `TraceChannel` + `IceTree` que lo deposita (reusa `TraceField`).
 - **`Torpor`** (hechizo-estado: dormir letal) — como `EstrusState`/`SicknessState` pero fuerza `asleep` y daña sin comer.
 - **Miel de nutrientes**: el nido/miel se "fabrica" con carcasas cercanas → enlaza `DecompositionJob`/economía.
+- **Sueño (día/noche)**: `Anima.asleep` YA es una compuerta (dormido → no elige deseos, no responde al hambre, no
+  corrige medio: `Volition`/`ActiveBehaveTick`/`CorrectMedium` con `if (!asleep)`) y existe `MindChannel.Sleepiness` —
+  pero **NADIE pone `asleep=true`**: el sueño real NO está disparado. Falta el gatillo (ciclo día/noche o fatiga → dormir),
+  y el proyecto **no tiene reloj horario** (hoy `TimeController` solo lleva velocidad). Fauna marina: peces/krill "duermen"
+  quietos a la deriva (no cueva); mamíferos = sueño unihemisférico (siguen subiendo a respirar); foca/pingüino descansan
+  sobre el hielo. Al implementarlo, reusar la compuerta `asleep` existente.
 - **Limpiar `SampleSceneBuilder`**: quitar la fauna templada de la escena del Santuario 1 y poblarla con la de arriba
   (o hacer una escena de hielo aparte). Hoy solo se **quitaron los insectos** (no eran de aquí); el resto, pendiente.
 

@@ -405,7 +405,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         bool prefersWater = WaterAffinity > LandAffinity;
         if (prefersWater && currentMedium != Medium.Water)
         {
-            FishSchool water = FishSchool.Nearest(transform.position);   // marcadores de agua
+            Swarm water = Swarm.Nearest(transform.position);   // marcadores de agua
             if (water != null) Loco.Walk(water.transform.position, dt);
         }
         else if (!prefersWater && currentMedium == Medium.Water)

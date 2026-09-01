@@ -20,7 +20,7 @@ public enum CastMode { Instant, Repeat, Channel }
 ///   • <see cref="duration"/> — duración del efecto (0 = instantáneo).
 ///
 /// Subclases implementan <see cref="CanCast"/> y <see cref="Cast"/>.
-/// El target es un <see cref="ITarget"/> — cualquier Anima, FoodItem, FishSchool u objeto del mundo
+/// El target es un <see cref="ITarget"/> — cualquier Anima, FoodItem, Swarm u objeto del mundo
 /// que implemente la interfaz. Esto permite lanzar sobre uno mismo, sobre otro ser vivo o
 /// sobre elementos del entorno (la transformación al mundo entero, p. ej.).
 ///
