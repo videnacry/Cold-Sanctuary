@@ -22,7 +22,8 @@ public class Volition : MonoBehaviour
     public void Tick(Animal self)
     {
         if (self == null || self.death || Time.time < _nextTick) return;
-        _nextTick = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
+        // LOD: los lejanos deciden menos veces (SenseThreats es O(n²) → el mayor ahorro).
+        _nextTick = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f) * Lod.SlowFactor(self.transform.position);
 
         // Deseos volitivos: solo si está libre (mismo guard que hoy para comer). D3b2 mete la amenaza como deseo.
         if (!self.asleep && !self.busy) SelectAndDispatch(self);

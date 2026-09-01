@@ -328,7 +328,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             Starve();                 // inanición si el hambre es prolongada (grasa→masa→enfermedad→muerte)
             FeedWalkSpeed(interval);
             DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
-            yield return new WaitForSeconds(interval);
+            yield return new WaitForSeconds(interval * Lod.SlowFactor(transform.position));   // LOD: mantenimiento (metabolismo/inanición) más lento si está lejos
         }
     }
 
@@ -339,7 +339,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     public void ActiveBehaveTick()
     {
         if (death || Time.time < _nextBehave) return;
-        _nextBehave = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f);
+        _nextBehave = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f) * Lod.SlowFactor(transform.position);   // LOD: lejanos deciden menos
         if (hungry >= 0 && !asleep && !busy) RespondToHunger();
         SenseThreats();
     }
