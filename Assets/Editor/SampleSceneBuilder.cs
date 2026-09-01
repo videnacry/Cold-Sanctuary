@@ -2118,6 +2118,18 @@ public static class SampleSceneBuilder
         AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, NestKind.Prey, -1f);
         AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, NestKind.Prey, -1f);
 
+        // Insectos — "pradera micro" en el noreste terrestre, CLUSTER apretado (radios pequeños) para que la
+        // cadena trófica sea alcanzable con el corto rango de percepción de un insecto:
+        //   Aphid (savia, base) ← Ant/Ladybug (cazan pulgones) ← Spider/Cricket (tope). Cricket omnívoro grazea también.
+        // Prefabs pendientes: si no existe Assets/Animals/{especie}/{especie}.prefab, AddFamily lo omite con warning
+        // (sin romper nada) — spawnean en cuanto se cree el prefab (mismo patrón que Wolf/Bunny).
+        AddFamily("Aphid",   new Vector3(90f, 0f, 120f), 6f, NestKind.Prey);       // base (grazea → recibe GrassPatch)
+        AddFamily("Aphid",   new Vector3(112f, 0f, 132f), 6f, NestKind.Prey);
+        AddFamily("Cricket", new Vector3(122f, 0f, 116f), 8f, NestKind.Prey);      // omnívoro (grazea → GrassPatch)
+        AddFamily("Ant",     new Vector3(100f, 0f, 126f), 8f, NestKind.Predator);  // caza pulgones
+        AddFamily("Ladybug", new Vector3(96f, 0f, 136f), 6f, NestKind.Predator);   // depredadora de pulgones
+        AddFamily("Spider",  new Vector3(106f, 0f, 146f), 10f, NestKind.Predator); // tope de la cadena
+
         generator.families = families.ToArray();
         return nests;
     }
