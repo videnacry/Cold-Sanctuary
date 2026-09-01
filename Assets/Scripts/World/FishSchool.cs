@@ -25,8 +25,20 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
     public float wanderRadius = 15f;
     public float fleeRange = 12f;          // distancia a la que detecta depredadores
 
+    [Header("Peces hijos (el banco como ORGANISMO — docs/ice-sanctuary-ecology.md §2.2)")]
+    [Tooltip("Radio en el que se reparten los peces hijos (y tamaño del collider del banco).")]
+    public float schoolSpread = 4f;
+    [Tooltip("Tope de peces hijos VISIBLES (rendimiento): el banco no muestra miles.")]
+    public int maxVisibleFish = 12;
+    [Tooltip("Cada pez hijo visible representa N del fishCount (crecer multiplica los hijos; menguar los quita).")]
+    [Min(1f)] public float fishPerChild = 5f;
+    [Tooltip("Prefab del pez hijo (opcional; si null, se crean primitivas).")]
+    public GameObject fishPrefab;
+
     Vector3 _origin;
     Vector3 _target;
+    readonly List<Transform> _children = new List<Transform>();
+    float _nextReconcile;
 
     void OnEnable()  { All.Add(this);    population.Add(gameObject); }
     void OnDisable() { All.Remove(this); population.Remove(gameObject); }
@@ -35,6 +47,12 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
     {
         _origin = transform.position;
         _target = PickWanderTarget();
+        // El banco es UN cuerpo con un trigger que CUBRE el área de los hijos → los depredadores chocan con el banco
+        // (mordisco-por-colisión, siguiente pieza), no con un pez concreto. Los hijos van parentados → se mueven con él.
+        SphereCollider col = GetComponent<SphereCollider>();
+        if (col == null) col = gameObject.AddComponent<SphereCollider>();
+        col.isTrigger = true;
+        col.radius = schoolSpread;
     }
 
     void Update()
@@ -44,6 +62,8 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
         // Crece con el tiempo (escalado por la velocidad del juego); se autoregenera desde 0.
         byte timeScale = TimeController.timeController != null ? TimeController.timeController.TimeSpeed : (byte)1;
         fishCount = Mathf.Min(maxFish, fishCount + growthPerSecond * timeScale * dt);
+
+        if (Time.time >= _nextReconcile) { _nextReconcile = Time.time + 0.5f; ReconcileChildren(); }
 
         // Huye del depredador más cercano; si no hay, deriva tranquilo.
         Transform predator = NearestPredator();
@@ -63,6 +83,33 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
     {
         Vector2 r = Random.insideUnitCircle * wanderRadius;
         return _origin + new Vector3(r.x, 0f, r.y);
+    }
+
+    // Ajusta el nº de peces hijos VISIBLES al tamaño del banco: crecer los multiplica, menguar/ser comido los quita.
+    // Barato: capado a maxVisibleFish (no miles). Van parentados → se mueven con el banco (movimiento coherente).
+    void ReconcileChildren()
+    {
+        int target = Mathf.Clamp(Mathf.RoundToInt(fishCount / Mathf.Max(1f, fishPerChild)), 0, maxVisibleFish);
+        while (_children.Count > target)
+        {
+            Transform t = _children[_children.Count - 1];
+            _children.RemoveAt(_children.Count - 1);
+            if (t != null) Destroy(t.gameObject);
+        }
+        while (_children.Count < target) SpawnChild();
+    }
+
+    void SpawnChild()
+    {
+        GameObject fish = fishPrefab != null ? Instantiate(fishPrefab) : GameObject.CreatePrimitive(PrimitiveType.Cube);
+        fish.name = "Fish";
+        fish.transform.SetParent(transform, false);
+        Vector2 r = Random.insideUnitCircle * schoolSpread;
+        fish.transform.localPosition = new Vector3(r.x, Random.Range(-1f, 1f), r.y);
+        fish.transform.localScale = Vector3.one * 0.4f;
+        Collider c = fish.GetComponent<Collider>();
+        if (c != null) Destroy(c);   // los hijos no colisionan; el banco (padre) lleva el trigger
+        _children.Add(fish.transform);
     }
 
     Transform NearestPredator()
