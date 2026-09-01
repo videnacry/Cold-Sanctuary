@@ -29,6 +29,8 @@ public static class AnimalPrefabGenerator
         ("PolarBear", "BearBehaviour"),
         ("Seal",      "SealBehavior"),
         ("Whale",     "WhaleBehavior"),
+        ("Penguin",   "PenguinBehavior"),   // fauna de hielo (necesita un .fbx en Assets/Animals/Penguin/Models/)
+        ("Orca",      "OrcaBehavior"),       // fauna de hielo (necesita un .fbx en Assets/Animals/Orca/Models/)
     };
 
     const string AnimalsRoot = "Assets/Animals";
