@@ -240,6 +240,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<EstrusState>() == null) gameObject.AddComponent<EstrusState>();   // celo (hechizo-estado): ciclo → deposita Estrus. Reproducción paso 1.
         if (GetComponent<Reproduction>() == null) gameObject.AddComponent<Reproduction>();  // cortejo→concepción→parto (gateado OFF por defecto). Reproducción pasos 2-3.
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
+        if (GetComponent<SleepCycle>() == null) gameObject.AddComponent<SleepCycle>();   // sueño día/noche: dispara la compuerta `asleep` por el reloj (Clock); despierta ante amenazas.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)

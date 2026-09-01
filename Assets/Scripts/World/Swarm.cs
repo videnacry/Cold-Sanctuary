@@ -47,6 +47,8 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     public float fleeSpeed = 5f;
     public float wanderRadius = 15f;
     public float fleeRange = 12f;          // distancia a la que detecta depredadores
+    [Tooltip("Factor de deriva de NOCHE (sueño marino: peces/krill quedan casi quietos a la deriva). La huida NO se ralentiza.")]
+    [Range(0f, 1f)] public float nightDriftFactor = 0.3f;
 
     [Header("Crías visibles (el enjambre como ORGANISMO — docs/ice-sanctuary-ecology.md §2.2)")]
     [Tooltip("Radio en el que se reparten las crías (y tamaño del collider del enjambre).")]
@@ -105,8 +107,10 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         }
         else
         {
+            // Sueño marino: de noche la deriva se ralentiza (quedan casi quietos). Sin reloj → siempre de día.
+            float rest = (TimeController.timeController == null || TimeController.timeController.IsDay) ? 1f : nightDriftFactor;
             if (Vector3.Distance(transform.position, _target) < 1f) _target = PickWanderTarget();
-            transform.position = Vector3.MoveTowards(transform.position, _target, driftSpeed * dt);
+            transform.position = Vector3.MoveTowards(transform.position, _target, driftSpeed * rest * dt);
         }
     }
 
