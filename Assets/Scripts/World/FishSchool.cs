@@ -34,11 +34,14 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
     [Min(1f)] public float fishPerChild = 5f;
     [Tooltip("Prefab del pez hijo (opcional; si null, se crean primitivas).")]
     public GameObject fishPrefab;
+    [Tooltip("Segundos mínimos entre mordiscos al banco (mordisco-por-colisión).")]
+    [Min(0.05f)] public float biteCooldown = 0.5f;
 
     Vector3 _origin;
     Vector3 _target;
     readonly List<Transform> _children = new List<Transform>();
     float _nextReconcile;
+    float _nextBite;
 
     void OnEnable()  { All.Add(this);    population.Add(gameObject); }
     void OnDisable() { All.Remove(this); population.Remove(gameObject); }
@@ -83,6 +86,21 @@ public class FishSchool : MonoBehaviour, ITarget, IEdible
     {
         Vector2 r = Random.insideUnitCircle * wanderRadius;
         return _origin + new Vector3(r.x, 0f, r.y);
+    }
+
+    // MORDISCO-POR-COLISIÓN (docs/ice-sanctuary-ecology.md §2.2): el depredador NO caza un pez concreto — se acerca y
+    // CHOCA con el banco (su trigger cubre a los hijos); al contacto, si está hambriento, muerde: desaparece un pez
+    // (Hurt→Reconcile quita un hijo) y obtiene los nutrientes de un pez. Throttled por biteCooldown.
+    void OnTriggerStay(Collider other)
+    {
+        if (Time.time < _nextBite || fishCount <= 0f) return;
+        Animal a = other.GetComponentInParent<Animal>();
+        if (a == null || a.death || a.Forage == null || !a.Forage.eatsFish || a.hungry < 0f) return;
+        _nextBite = Time.time + biteCooldown;
+        Hurt(1f);                                                    // un pez menos (Reconcile lo quita visualmente)
+        float nutrition = perFishMass * Nutrition;
+        a.hungry -= nutrition;
+        a.GetComponent<Metabolism>()?.AbsorbFood(nutrition, Material);   // opt-in (como Forager.Eat)
     }
 
     // Ajusta el nº de peces hijos VISIBLES al tamaño del banco: crecer los multiplica, menguar/ser comido los quita.

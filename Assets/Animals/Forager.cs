@@ -150,13 +150,18 @@ public class Forager : MonoBehaviour
         if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
-        self.hungry -= feed;
-        yield return new WaitForSeconds(interval);
-        self.hungry -= feed;
-        if (eatsFish && foodSource != null)
+        FishSchool fs = (eatsFish && foodSource != null) ? foodSource.GetComponent<FishSchool>() : null;
+        if (fs != null)
         {
-            FishSchool fs = foodSource.GetComponent<FishSchool>();
-            if (fs != null) fs.Graze(feed);   // el pastoreo marino reduce el banco
+            // PEZ: la ingesta la hace el MORDISCO-POR-COLISIÓN (FishSchool.OnTriggerStay) mientras el depredador reposa
+            // DENTRO del banco (su trigger) → aquí solo se navega/reposa, sin alimentar (evita doble ingesta).
+            yield return new WaitForSeconds(interval);
+        }
+        else
+        {
+            self.hungry -= feed;   // PASTO: come aquí como siempre
+            yield return new WaitForSeconds(interval);
+            self.hungry -= feed;
         }
         self.busy = false;
     }
