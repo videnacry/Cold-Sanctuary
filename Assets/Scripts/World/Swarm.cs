@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+/// <summary>Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
+/// Krill pasta el fitoplancton; Pez pasta el krill. Los depredadores (Animal) lo muerden según su Forager
+/// (eatsKrill para krill, eatsFish para pez). Ampliable a otros santuarios (bandadas, enjambres…).</summary>
+public enum SwarmKind { Fish, Krill }
+
 /// <summary>
 /// ENJAMBRE/BANCO como ORGANISMO: una sola entidad que representa a muchas criaturas pequeñas (peces, krill,
 /// y a futuro bandadas/enjambres de otros santuarios). Deriva por su medio, huye de depredadores cercanos, y su
@@ -27,12 +32,14 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     [FormerlySerializedAs("perFishMass")]
     public float perUnitMass = 0.5f;       // kg por cría (para Mass/Grams)
 
-    [Header("Alimentación (pasta a su productor: fitoplancton)")]
-    [Tooltip("Distancia a la que el enjambre pasta el fitoplancton más cercano.")]
+    [Header("Dieta propia (qué es y qué pasta)")]
+    [Tooltip("Qué criatura es el enjambre: Krill pasta fitoplancton; Fish pasta krill. Define también quién lo come.")]
+    public SwarmKind kind = SwarmKind.Fish;
+    [Tooltip("Distancia a la que el enjambre pasta su alimento (fitoplancton para el krill, banco de krill para el pez).")]
     public float grazeRange = 6f;
-    [Tooltip("Biomasa/seg que arranca del fitoplancton y convierte en crecimiento (escalado por la velocidad del juego).")]
+    [Tooltip("Alimento/seg que arranca y convierte en crecimiento (escalado por la velocidad del juego).")]
     public float grazeRate = 0.4f;
-    [Tooltip("Cuánto crece el enjambre por unidad de biomasa pastada.")]
+    [Tooltip("Cuánto crece el enjambre por unidad de alimento pastado.")]
     public float growthPerGraze = 1f;
 
     [Header("Movimiento")]
@@ -84,8 +91,8 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         float dt = Time.deltaTime;
         byte timeScale = TimeController.timeController != null ? TimeController.timeController.TimeSpeed : (byte)1;
 
-        // Crece: autoregenerado base + lo que PASTA del fitoplancton cercano (fitoplancton→enjambre).
-        count = Mathf.Min(maxCount, count + growthPerSecond * timeScale * dt + GrazePhytoplankton(dt, timeScale));
+        // Crece: autoregenerado base + lo que PASTA de su alimento (fitoplancton→krill→pez).
+        count = Mathf.Min(maxCount, count + growthPerSecond * timeScale * dt + GrazeFood(dt, timeScale));
 
         if (Time.time >= _nextReconcile) { _nextReconcile = Time.time + 0.5f; ReconcileChildren(); }
 
@@ -103,17 +110,27 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         }
     }
 
-    // PASTOREO DEL PRODUCTOR: el enjambre (krill/pez) arranca biomasa del fitoplancton más cercano dentro de rango y
-    // la convierte en crecimiento. Es el eslabón fitoplancton→enjambre (paralelo al mordisco depredador→enjambre).
-    float GrazePhytoplankton(float dt, byte timeScale)
+    // PASTOREO SEGÚN DIETA PROPIA (fitoplancton→krill→pez): el enjambre arranca alimento del más cercano dentro de rango
+    // y lo convierte en crecimiento. Krill pasta el FITOPLANCTON; Pez pasta el banco de KRILL. Paralelo por PROXIMIDAD
+    // del mordisco-por-colisión que hacen los depredadores Animal (foca/pingüino/…) sobre el enjambre.
+    float GrazeFood(float dt, byte timeScale)
     {
         if (count >= maxCount) return 0f;
-        Phytoplankton food = Phytoplankton.Nearest(transform.position);
-        if (food == null || food.Consumed) return 0f;
-        if ((food.transform.position - transform.position).sqrMagnitude > grazeRange * grazeRange) return 0f;
         float bite = grazeRate * timeScale * dt;
-        float eaten = food.Consume(bite);          // reduce la biomasa del productor (se autoregenera con la luz)
-        return eaten * growthPerGraze;
+        Vector3 pos = transform.position;
+
+        if (kind == SwarmKind.Krill)                        // krill → fitoplancton (productor)
+        {
+            Phytoplankton food = Phytoplankton.Nearest(pos);
+            if (food == null || food.Consumed) return 0f;
+            if ((food.transform.position - pos).sqrMagnitude > grazeRange * grazeRange) return 0f;
+            return food.Consume(bite) * growthPerGraze;
+        }
+
+        Swarm krill = Nearest(pos, SwarmKind.Krill);         // pez → banco de krill
+        if (krill == null || krill.Consumed) return 0f;
+        if ((krill.transform.position - pos).sqrMagnitude > grazeRange * grazeRange) return 0f;
+        return krill.Consume(bite) * growthPerGraze;
     }
 
     Vector3 PickWanderTarget()
@@ -129,7 +146,9 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     {
         if (Time.time < _nextBite || count <= 0f) return;
         Animal a = other.GetComponentInParent<Animal>();
-        if (a == null || a.death || a.Forage == null || !a.Forage.eatsFish || a.hungry < 0f) return;
+        if (a == null || a.death || a.Forage == null || a.hungry < 0f) return;
+        bool wanted = kind == SwarmKind.Krill ? a.Forage.eatsKrill : a.Forage.eatsFish;   // dieta propia: krill≠pez
+        if (!wanted) return;
         _nextBite = Time.time + biteCooldown;
         Hurt(1f);                                                    // una cría menos (Reconcile la quita visualmente)
         float nutrition = perUnitMass * Nutrition;
@@ -190,6 +209,20 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
                 bestDistSqr = distSqr;
                 nearest = school;
             }
+        }
+        return nearest;
+    }
+
+    /// <summary>El enjambre no-agotado más cercano de una CLASE dada (para dietas: un pez busca el banco de krill).</summary>
+    public static Swarm Nearest(Vector3 position, SwarmKind kind)
+    {
+        Swarm nearest = null;
+        float bestDistSqr = float.MaxValue;
+        foreach (Swarm school in All)
+        {
+            if (school == null || school.kind != kind || school.Consumed) continue;
+            float distSqr = (school.transform.position - position).sqrMagnitude;
+            if (distSqr < bestDistSqr) { bestDistSqr = distSqr; nearest = school; }
         }
         return nearest;
     }

@@ -70,13 +70,15 @@ public static class Archetypes
         if (_bodies != null) return;
         _relations = new Dictionary<string, Dictionary<string, float>>
         {   // base evolutiva/kármica (por generaciones). Simétrica donde tiene sentido; el resto = 0 (neutro).
-            { "Seal",     new Dictionary<string, float> { { "Bear", -40f }, { "Whale", 20f } } },   // depredada por osos
+            { "Seal",     new Dictionary<string, float> { { "Bear", -40f }, { "Whale", 20f }, { "Orca", -55f } } },   // depredada por osos y orcas
             { "Bunny",    new Dictionary<string, float> { { "Wolf", -50f }, { "Fox", -40f } } },
             { "Deer",     new Dictionary<string, float> { { "Wolf", -45f }, { "Bear", -30f } } },
             { "Human",    new Dictionary<string, float> { { "Malamute", 45f } } },                   // perro↔humano
             { "Malamute", new Dictionary<string, float> { { "Human", 45f }, { "Wolf", 15f } } },      // perro (pariente del lobo)
             { "Wolf",     new Dictionary<string, float> { { "Wolf", 15f } } },                        // lealtad de manada
-            { "Whale",    new Dictionary<string, float> { { "Seal", 20f } } },
+            { "Whale",    new Dictionary<string, float> { { "Seal", 20f }, { "Orca", -50f } } },      // la beluga teme a la orca
+            { "Penguin",  new Dictionary<string, float> { { "Seal", -35f }, { "Orca", -40f } } },     // presa de foca y orca
+            { "Orca",     new Dictionary<string, float> { { "Seal", -40f }, { "Whale", -40f }, { "Penguin", -20f } } }, // apex: depreda marinos
             { "Bear",     new Dictionary<string, float>() },                                          // solitario, neutro
             { "Fox",      new Dictionary<string, float>() },
             { "Panterilia", new Dictionary<string, float> { { "Malamute", 45f } } },                  // humana
@@ -104,6 +106,8 @@ public static class Archetypes
             { "Deer",     MakeBody(1.50f, 1.4f, 1.5f, 1.0f, 1.4f, 1.5f) },
             { "Seal",     MakeBody(1.20f, 1.1f, 1.2f, 1.3f, 1.6f, 1.4f) },
             { "Whale",    MakeBody(3.00f, 0.6f, 1.0f, 2.8f, 3.0f, 2.0f) },
+            { "Penguin",  MakeBody(0.60f, 1.0f, 1.1f, 0.5f, 0.5f, 1.2f) },   // pequeño, ágil nadando, débil, resistente al frío
+            { "Orca",     MakeBody(2.60f, 1.2f, 1.4f, 2.6f, 2.8f, 2.2f) },   // apex: grande, fuerte, rápido, gran percepción
             { "Malamute", MakeBody(1.10f, 1.3f, 1.3f, 1.4f, 1.2f, 1.6f) },
         };
         _minds = new Dictionary<string, ArchetypeProfile>
@@ -124,6 +128,8 @@ public static class Archetypes
             { "Bunny",    MakeMind(ElementalTone.Agua,   0.6f, 0.8f, 1.0f, 0.6f, 1.0f, 0.6f) },   // tímido
             { "Deer",     MakeMind(ElementalTone.Agua,   1.0f, 0.8f, 1.0f, 0.6f, 1.1f, 0.9f) },
             { "Seal",     MakeMind(ElementalTone.Agua,   1.1f, 0.9f, 1.0f, 0.9f, 1.2f, 0.8f) },   // juguetón
+            { "Penguin",  MakeMind(ElementalTone.Agua,   0.8f, 0.8f, 0.9f, 0.7f, 1.5f, 1.0f) },   // gregario (colonia), poco individualista
+            { "Orca",     MakeMind(ElementalTone.Agua,   1.6f, 1.4f, 1.6f, 1.3f, 1.6f, 1.4f) },   // muy inteligente y social (pod, cultura)
             { "Whale",    MakeMind(ElementalTone.Agua,   1.8f, 1.4f, 1.6f, 1.2f, 1.3f, 1.3f) },   // sabio, calmado
             { "Malamute", MakeMind(ElementalTone.Tierra, 1.1f, 1.0f, 1.1f, 0.8f, 1.5f, 1.4f) },   // leal, disciplinado
             { "Ant",     MakeMind(ElementalTone.Tierra, 1.0f, 0.6f, 1.0f, 0.5f, 1.6f, 1.5f) },   // colonia: disciplina máx, muy social, memoria de rastros
@@ -143,6 +149,8 @@ public static class Archetypes
         // Afinidad por medio de los cuerpos ACUÁTICOS (el resto usa el default terrestre 1/0.4/0).
         _bodies["Whale"].waterAffinity = 1.0f; _bodies["Whale"].landAffinity = 0.1f;   // varada e indefensa en tierra
         _bodies["Seal"].waterAffinity  = 1.0f; _bodies["Seal"].landAffinity  = 0.6f;   // anfibia
+        _bodies["Orca"].waterAffinity  = 1.0f; _bodies["Orca"].landAffinity  = 0.05f;  // varada e indefensa en tierra
+        _bodies["Penguin"].waterAffinity = 1.0f; _bodies["Penguin"].landAffinity = 0.7f;   // anfibio: cómodo en hielo
 
         // Adjunta los pensamientos BASE de especie a su arquetipo de mente (por `source` = nombre de especie).
         foreach (MindPhrase p in PhrasePools.Especie())

@@ -63,8 +63,9 @@ public static class SampleSceneBuilder
         System.Collections.Generic.List<NestSpec> nests = BuildWildlifePopulation(root.transform);
         BuildGrassPatches(root.transform, nests);
         BuildHabitatCover(root.transform, nests);
-        BuildSwarms(root.transform);
-        BuildPhytoplankton(root.transform);
+        BuildPhytoplankton(root.transform);   // productor base (primero: los enjambres lo pastan)
+        BuildKrill(root.transform);           // krill: pasta fitoplancton, comido por pez/pingüino/ballena
+        BuildSwarms(root.transform);          // peces: pastan krill, comidos por foca/oso/pingüino/orca
         BuildBirds(root.transform);
         BuildWorldSystems(root.transform);
         BuildCharacters(root.transform);
@@ -105,6 +106,7 @@ public static class SampleSceneBuilder
         // Rejilla de rastros PERSISTENTE (singleton): sin ella, todo el sistema de trazas (celo, byproducts, wander por
         // olor) es no-op en juego. Vacía = no hace nada hasta que algo deposita. docs/environmental-navigation.md.
         new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root.transform);
+        new GameObject("Clock_AUTO").AddComponent<Clock>().transform.SetParent(root.transform);  // reloj del día (hora inicial + tic); la velocidad corre las horas
 
         // Tests automáticos coordinados por TestRunner (grupos en serie; [TEST] en Editor.log). Las unidades ITestUnit
         // van en el MISMO GO; el TestRunner las reúne y ordena. Ver docs/testing-checklist.md §32.
@@ -2110,6 +2112,9 @@ public static class SampleSceneBuilder
         // Marinos — sobre el Sea_Placeholder (base marina del hielo).
         AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, NestKind.Prey, -1f);
         AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, NestKind.Prey, -1f);
+        // Fauna de hielo NUEVA (requieren prefab en Assets/Animals/{Especie}/{Especie}.prefab; si falta, se omiten con aviso).
+        AddFamily("Penguin", new Vector3(155f, 0f, 5f), 15f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
+        AddFamily("Orca", new Vector3(215f, -1f, -10f), 30f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
@@ -2196,7 +2201,39 @@ public static class SampleSceneBuilder
             school.GetComponent<Renderer>().sharedMaterial = fishMat;
             Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
             Swarm swarm = school.AddComponent<Swarm>();
+            swarm.kind = SwarmKind.Fish;
             swarm.unitName = "Fish";
+        }
+    }
+
+    // Krill: enjambre de clase Krill (dieta propia). Pasta el FITOPLANCTON para crecer; comido por pez (proximidad) y por
+    // ballena/pingüino (mordisco-por-colisión). Sembrado en las mismas aguas, entre el fitoplancton y los peces.
+    static void BuildKrill(Transform parent)
+    {
+        GameObject group = new GameObject("Krill_AUTO");
+        group.transform.SetParent(parent);
+
+        Vector3[] positions =
+        {
+            new Vector3(200f, -2f, 10f),
+            new Vector3(190f, -2f, -8f),
+        };
+
+        Material krillMat = MakeMaterial("Swarm_Krill_MAT", new Color(0.75f, 0.45f, 0.4f, 0.6f));
+        for (int i = 0; i < positions.Length; i++)
+        {
+            GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            school.name = $"Swarm_Krill_{i}";
+            school.transform.SetParent(group.transform);
+            school.transform.position = positions[i];
+            school.transform.localScale = new Vector3(8f, 1.5f, 8f);
+            school.GetComponent<Renderer>().sharedMaterial = krillMat;
+            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
+            Swarm swarm = school.AddComponent<Swarm>();
+            swarm.kind = SwarmKind.Krill;
+            swarm.unitName = "Krill";
+            swarm.schoolSpread = 3f;      // banco más compacto que el de peces
+            swarm.perUnitMass = 0.05f;    // cada krill pesa poquísimo
         }
     }
 

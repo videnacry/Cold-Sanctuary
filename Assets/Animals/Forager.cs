@@ -17,8 +17,10 @@ public class Forager : MonoBehaviour
     public bool eatsPrey;
     [Tooltip("Come PASTO (herbívoro terrestre).")]
     public bool eatsGrass;
-    [Tooltip("Come PECES/banco (herbívoro/consumidor marino/pescador).")]
+    [Tooltip("Come PECES/banco (Swarm de clase Fish).")]
     public bool eatsFish;
+    [Tooltip("Come KRILL (Swarm de clase Krill) — dieta propia distinta del pez.")]
+    public bool eatsKrill;
     [Tooltip("Alcance de detección de presa POR PERCEPCIÓN: radio = perception × esto (deriva de stats; crece con la " +
              "evolución de la percepción). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
     public float huntRangePerPerception = 80f;
@@ -36,7 +38,9 @@ public class Forager : MonoBehaviour
             case "Wolf": case "Malamute":            eatsPrey = true; break;
             case "Bear": case "Fox":                 eatsPrey = true; eatsFish = true; break;   // cazan y pescan
             case "Bunny": case "Deer":               eatsGrass = true; break;
-            case "Whale": case "Seal":               eatsFish = true; break;                    // herbívoros/consumidores marinos
+            case "Whale": case "Seal":               eatsFish = true; break;                    // consumidores marinos (beluga/foca: pescan)
+            case "Penguin":                          eatsFish = true; eatsKrill = true; break;  // pesca peces Y krill
+            case "Orca":                             eatsPrey = true; break;                    // apex: caza focas/ballenas (presa por stats)
             // Insectos
             case "Ant":                              eatsPrey = true; break;                    // carnívora; caza invertebrados pequeños
             case "Aphid":                            eatsGrass = true; break;                   // savia de plantas
@@ -54,8 +58,9 @@ public class Forager : MonoBehaviour
         Vector3 pos = self.transform.position;
         GameObject prey  = eatsPrey  ? SelectPrey(self) : null;                          // presa por proximidad + stats
         GameObject grass = eatsGrass ? GrassPatch.Nearest(pos)?.gameObject : null;
-        GameObject fish  = eatsFish  ? Swarm.Nearest(pos)?.gameObject : null;
-        return Nearest(pos, prey, grass, fish);
+        GameObject fish  = eatsFish  ? Swarm.Nearest(pos, SwarmKind.Fish)?.gameObject  : null;
+        GameObject krill = eatsKrill ? Swarm.Nearest(pos, SwarmKind.Krill)?.gameObject : null;
+        return Nearest(pos, prey, grass, fish, krill);
     }
 
     /// <summary>PRESA por PROXIMIDAD + STATS (reemplaza la `Diet`): `OverlapSphere` busca `Anima`s comestibles
@@ -150,11 +155,11 @@ public class Forager : MonoBehaviour
         if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
-        Swarm fs = (eatsFish && foodSource != null) ? foodSource.GetComponent<Swarm>() : null;
+        Swarm fs = ((eatsFish || eatsKrill) && foodSource != null) ? foodSource.GetComponent<Swarm>() : null;
         if (fs != null)
         {
-            // PEZ: la ingesta la hace el MORDISCO-POR-COLISIÓN (Swarm.OnTriggerStay) mientras el depredador reposa
-            // DENTRO del banco (su trigger) → aquí solo se navega/reposa, sin alimentar (evita doble ingesta).
+            // BANCO (pez/krill): la ingesta la hace el MORDISCO-POR-COLISIÓN (Swarm.OnTriggerStay) mientras el depredador
+            // reposa DENTRO del banco (su trigger) → aquí solo se navega/reposa, sin alimentar (evita doble ingesta).
             yield return new WaitForSeconds(interval);
         }
         else

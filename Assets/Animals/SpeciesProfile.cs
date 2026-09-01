@@ -49,6 +49,9 @@ public class SpeciesProfile
             { "Seal",     new SpeciesProfile(0.5f, 0.1f, 2.0f, 2.0f, 0.5f, 0.4f, 5.0f, 0.6f, 80.0f, 1.5f, 0.5f, OrganicMaterial.Fish) },
             { "Whale",    new SpeciesProfile(0.0f, 0.1f, 2.5f, 2.0f, 2.5f, 0.35f, 1.5f, 0.5f, 120.0f, 1.8f, 0.5f, OrganicMaterial.Fish) },
             { "Wolf",     new SpeciesProfile(0.8f, 0.8f, 0.5f, 5.0f, 0.8f, 0.3f, 3.0f, 0.7f, 15.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },
+            // Fauna de hielo
+            { "Penguin",  new SpeciesProfile(0.4f, 0.1f, 2.0f, 2.0f, 0.4f, 0.45f, 5.0f, 0.5f, 40.0f, 1.2f, 0.5f, OrganicMaterial.Fish) },  // colonia; presa
+            { "Orca",     new SpeciesProfile(0.8f, 0.4f, 1.2f, 12.0f, 1.5f, 0.15f, 3.0f, 0.6f, 150.0f, 1.8f, 0.4f, OrganicMaterial.Meat) }, // apex; caza en pod
             // Insectos — cadena trófica del Microcosmos (Nivel 1)
             { "Ant",     new SpeciesProfile(0.9f, 0.4f, 1.5f, 0.8f, 0.5f, 0.3f, 3.0f, 0.7f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; defiende
             { "Aphid",   new SpeciesProfile(0.0f, 0.1f, 2.5f, 0.1f, 0.1f, 0.7f, 8.0f, 0.2f,  0.5f, 0.3f, 0.6f, OrganicMaterial.Meat) },  // presa total; sin daño
