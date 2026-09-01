@@ -54,7 +54,7 @@ public class Forager : MonoBehaviour
         Vector3 pos = self.transform.position;
         GameObject prey  = eatsPrey  ? SelectPrey(self) : null;                          // presa por proximidad + stats
         GameObject grass = eatsGrass ? GrassPatch.Nearest(pos)?.gameObject : null;
-        GameObject fish  = eatsFish  ? FishSchool.Nearest(pos)?.gameObject : null;
+        GameObject fish  = eatsFish  ? Swarm.Nearest(pos)?.gameObject : null;
         return Nearest(pos, prey, grass, fish);
     }
 
@@ -150,10 +150,10 @@ public class Forager : MonoBehaviour
         if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
-        FishSchool fs = (eatsFish && foodSource != null) ? foodSource.GetComponent<FishSchool>() : null;
+        Swarm fs = (eatsFish && foodSource != null) ? foodSource.GetComponent<Swarm>() : null;
         if (fs != null)
         {
-            // PEZ: la ingesta la hace el MORDISCO-POR-COLISIÓN (FishSchool.OnTriggerStay) mientras el depredador reposa
+            // PEZ: la ingesta la hace el MORDISCO-POR-COLISIÓN (Swarm.OnTriggerStay) mientras el depredador reposa
             // DENTRO del banco (su trigger) → aquí solo se navega/reposa, sin alimentar (evita doble ingesta).
             yield return new WaitForSeconds(interval);
         }

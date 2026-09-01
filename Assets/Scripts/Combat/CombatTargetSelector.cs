@@ -78,7 +78,7 @@ public class CombatTargetSelector : MonoBehaviour
 
     // ── Public API ────────────────────────────────────────────────────────────
 
-    /// <summary>Selecciona cualquier ITarget (Anima, FoodItem, FishSchool, etc.).</summary>
+    /// <summary>Selecciona cualquier ITarget (Anima, FoodItem, Swarm, etc.).</summary>
     public void Select(ITarget target)
     {
         if (target == null || target.Dead || target.Consumed) { Deselect(); return; }

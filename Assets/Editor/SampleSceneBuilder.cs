@@ -63,7 +63,8 @@ public static class SampleSceneBuilder
         System.Collections.Generic.List<NestSpec> nests = BuildWildlifePopulation(root.transform);
         BuildGrassPatches(root.transform, nests);
         BuildHabitatCover(root.transform, nests);
-        BuildFishSchools(root.transform);
+        BuildSwarms(root.transform);
+        BuildPhytoplankton(root.transform);
         BuildBirds(root.transform);
         BuildWorldSystems(root.transform);
         BuildCharacters(root.transform);
@@ -2145,7 +2146,7 @@ public static class SampleSceneBuilder
     // cercana antes de comer (ver Herbivore.cs/GrassPatch.cs). Una por cada nido de presa
     // terrestre (Bunny/Deer) para que ningún nido quede sin comida cerca tras el reparto por
     // bandas — antes eran 3 parches fijos pensados para las posiciones viejas, amontonadas.
-    // Los marinos (Whale, Seal; height < 0) usan FishSchool en vez de esto — ver BuildFishSchools().
+    // Los marinos (Whale, Seal; height < 0) usan Swarm en vez de esto — ver BuildSwarms().
     static void BuildGrassPatches(Transform parent, System.Collections.Generic.List<NestSpec> nests)
     {
         GameObject group = new GameObject("GrassPatches_AUTO");
@@ -2170,12 +2171,12 @@ public static class SampleSceneBuilder
         }
     }
 
-    // Equivalente marino de BuildGrassPatches() — cardúmenes que Whale/Seal buscan antes de
-    // comer (Herbivore.Feed() con GrazesOnLand == false). Repartidos cerca de donde viven esas
-    // familias (Whale en 200,-1,15 radio 30; Seal en 180,-1,-20 radio 15, ver arriba).
-    static void BuildFishSchools(Transform parent)
+    // Bancos/enjambres marinos (Swarm, antes FishSchool): organismos-banco que derivan, huyen y crecen pastando el
+    // fitoplancton (ver BuildPhytoplankton). Los depredadores (oso/foca/pez) los comen por MORDISCO-POR-COLISIÓN
+    // (Swarm.OnTriggerStay). Repartidos cerca de donde viven las familias marinas (Whale 200,-1,15; Seal 180,-1,-20).
+    static void BuildSwarms(Transform parent)
     {
-        GameObject group = new GameObject("FishSchools_AUTO");
+        GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
 
         Vector3[] positions =
@@ -2184,23 +2185,53 @@ public static class SampleSceneBuilder
             new Vector3(185f, -2f, -15f),
         };
 
-        Material fishMat = MakeMaterial("FishSchool_MAT", new Color(0.35f, 0.55f, 0.65f, 0.6f));
+        Material fishMat = MakeMaterial("Swarm_Fish_MAT", new Color(0.35f, 0.55f, 0.65f, 0.6f));
         for (int i = 0; i < positions.Length; i++)
         {
             GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            school.name = $"FishSchool_{i}";
+            school.name = $"Swarm_Fish_{i}";
             school.transform.SetParent(group.transform);
             school.transform.position = positions[i];
             school.transform.localScale = new Vector3(10f, 2f, 10f);
             school.GetComponent<Renderer>().sharedMaterial = fishMat;
-            Object.DestroyImmediate(school.GetComponent<Collider>()); // decorativo — no debe bloquear nado/NavMesh
-            school.AddComponent<FishSchool>();
+            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
+            Swarm swarm = school.AddComponent<Swarm>();
+            swarm.unitName = "Fish";
+        }
+    }
+
+    // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
+    // Los enjambres (Swarm) lo pastan por cercanía para crecer (fitoplancton→krill/pez). Marcadores baratos, sin
+    // collider (como GrassPatch). Sembrado en las mismas aguas que los bancos. Ver docs/ice-sanctuary-ecology.md §2.2.
+    static void BuildPhytoplankton(Transform parent)
+    {
+        GameObject group = new GameObject("Phytoplankton_AUTO");
+        group.transform.SetParent(parent);
+
+        Vector3[] positions =
+        {
+            new Vector3(205f, -2f, 20f),
+            new Vector3(185f, -2f, -15f),
+            new Vector3(195f, -2f, 2f),
+        };
+
+        Material planktonMat = MakeMaterial("Phytoplankton_MAT", new Color(0.3f, 0.6f, 0.45f, 0.5f));
+        for (int i = 0; i < positions.Length; i++)
+        {
+            GameObject cloud = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cloud.name = $"Phytoplankton_{i}";
+            cloud.transform.SetParent(group.transform);
+            cloud.transform.position = positions[i];
+            cloud.transform.localScale = new Vector3(12f, 1f, 12f);
+            cloud.GetComponent<Renderer>().sharedMaterial = planktonMat;
+            Object.DestroyImmediate(cloud.GetComponent<Collider>()); // decorativo — pastado por cercanía, no por colisión
+            cloud.AddComponent<Phytoplankton>();
         }
     }
 
     // Cobertura vegetal decorativa alrededor de cada nido de presa terrestre — para que "se
     // vean un poco escondidos" (pedido explícito). Puramente visual: primitivas sin collider
-    // (igual que GrassPatch/FishSchool), sin componente de lógica — NO implementa detección ni
+    // (igual que GrassPatch/Swarm), sin componente de lógica — NO implementa detección ni
     // ocultamiento real, eso queda documentado como pendiente en
     // docs/refuge-and-adult-behavior.md ("empezar documentando, luego implementar").
     static void BuildHabitatCover(Transform parent, System.Collections.Generic.List<NestSpec> nests)
