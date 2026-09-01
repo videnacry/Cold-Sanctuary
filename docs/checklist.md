@@ -352,8 +352,11 @@ Santuario 1 (mesocosmos). Ya reorganizado así (PR #174):
       `Assets/Scenes/Microcosmos_Scene1_Ambrosio.unity` (cueva/pulgón-guía + mapa de hormigas/depredadores/hechizos).
 - [ ] **Mesopotamia** (la ciudad-insecto) — `Build MobWorld Mesopotamia` → `MobWorld_Mesopotamia.unity`. **Es parte del
       microcosmos**; Scene1 es **anterior** en la historia (hermana). "Build Sample Scene Blockout" regenera AMBAS de un click.
-- [ ] Al cargarlas additive en runtime (sobre el jugador persistente) puede hacer falta un **offset de posición** (el
-      contenido está autorado en coords base) + entrada del jugador (portal/spawn). Follow-up.
+- [x] **Offset + entrada del jugador** ✅ (PR #175): Scene1 se desplaza a un origen lejano (`O = -5000,0,5000`, distinto del
+      de Mesopotamia) → no solapa el mundo base al cargar additive; y lleva `MobSpawnPoint` (el `MobWorldLoader` teletransporta
+      ahí) + `YogaPortal` (salida) — carga genérica: `MobWorldLoader.Instance.EnterMobWorld("Microcosmos_Scene1_Ambrosio")`.
+- [ ] **Falta el DISPARADOR de entrada** a Scene1 (qué trigger del prólogo/alba llama a `EnterMobWorld`) — a diferencia de
+      Mesopotamia, que ya la abre la `VirtualizationMachine` de la cocina. Cablearlo cuando toque el prólogo.
 
 ## ⚠ Compilar y PROBAR en Unity (PRs #16–#96 en master)
 
