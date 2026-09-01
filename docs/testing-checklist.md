@@ -12,6 +12,42 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-09-01 (2º) — pull de 2 commits más (PR #174, "Microcosmos = escena propia")**. Reencuadre
+  arquitectónico: el Microcosmos deja de vivir como objetos dentro de la escena del Mesocosmos y pasa a
+  ser su **propia escena** (`Microcosmos_Scene1_Ambrosio.unity`), hermana de Mesopotamia
+  (`MobWorldSceneBuilder`) — ambas generadas por código, no versionadas. `SampleSceneBuilder` ya NO monta
+  `BuildMicrocosmosSandbox`/`BuildNivel1Sandbox` directo en el mesocosmos; los volvió `internal static`
+  para que el `MicrocosmosSceneBuilder.cs` nuevo los reutilice en su propia escena (luz de amanecer +
+  NavMesh propio + auto-agregado a Build Settings). Sincronizado (2 archivos). **De nuevo sin
+  verificación de compilación en vivo**: bridge MCP y `computer-use` siguen caídos (segundo ciclo
+  seguido). Revisión estática: el patrón `internal static` es correcto (mismo assembly de Editor,
+  confirmado que `SampleSceneBuilder`/`MicrocosmosSceneBuilder` están ambos en `Assets/Editor/`), y
+  `MobWorldSceneBuilder.SceneName` (referenciado en el log final) existe como `public const string`.
+  **Pendiente crítico para el próximo ciclo con herramientas activas**: además de confirmar compilación,
+  correr `Tools > Cold Sanctuary > Build Sample Scene Blockout` (que ahora también dispara
+  `MicrocosmosSceneBuilder.BuildScene1()`) y chequear que la escena nueva se generó sin errores y quedó
+  agregada a Build Settings.
+
+- **CICLO 2026-09-01 — sync manual: comiteé y pusheé mis 2 fixes pendientes (a pedido explícito del
+  usuario) + pull de 21 commits (PRs #164-173, "Santuario de Hielo")**. Antes del pull, con el OK del
+  usuario ("commit y push"), comiteé (`0191129`) y pusheé el fix de `TestRunner`/namespace + el de
+  `ReachGoalMission` del ciclo anterior (quedaron documentados ahí mismo). Después, pull trajo: 2
+  especies nuevas de hielo (`OrcaBehavior` — apex marino, caza por stats; `PenguinBehavior` — pesca
+  peces+krill, presa de foca/orca), **ciclo de sueño día/noche** (`SleepCycle` + reloj `Clock` nuevo),
+  población baja para fauna de hielo (2-4/familia, evita explosión demográfica con reproducción ON),
+  cría real de ballena (2 adultos + 1 cría en vez de 1+2), y **`FishSchool.cs` renombrado a `Swarm.cs`**
+  (+ `Phytoplankton.cs` nuevo, base de la cadena trófica marina) — doc nueva `ice-sanctuary-ecology.md`.
+  Sincronizado al proyecto vivo (24 archivos, incl. borrado de `FishSchool.cs`). **Sin verificación de
+  compilación en vivo esta vez**: tanto el bridge MCP de Unity (`no Unity Editor instances found` pese a
+  que `Unity.exe` está corriendo) como `computer-use` estuvieron caídos todo el ciclo. Hice en su lugar
+  una revisión estática del diff: confirmé que no queda ninguna referencia de código a `FishSchool`
+  (solo comentarios explicando el rename), que `Swarm.NearestPredator()` migró correctamente el patrón
+  `Forage.eatsPrey` (mismo que ya había verificado para PR #126), y que `OrcaBehavior`/`PenguinBehavior`
+  siguen el patrón mínimo de las demás especies (heredan `Animal` directo, sin `Carnivore`/`Herbivore`) y
+  están bien cableadas en `Forager.ConfigureForSpecies` (incluye el nuevo flag `eatsKrill`). **No
+  reemplaza una compilación real** — pendiente confirmar con Editor.log en el próximo ciclo en que las
+  herramientas reconecten.
+
 - **CICLO 2026-08-29 — commit LOCAL del usuario (no del compañero, no pusheado)**: `5a892f5
   "feat(insects): add Ant/Aphid/Ladybug/Spider/Cricket full lifecycle presets"` — 5 especies de
   insectos nuevas (`AntBehavior`/`AphidBehavior`/`CricketBehavior`/`LadybugBehavior`/`SpiderBehavior`)
