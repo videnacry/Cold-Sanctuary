@@ -1033,12 +1033,14 @@ public static class SampleSceneBuilder
         caveFloor.transform.position = new Vector3(-30f, 0f, 15f); caveFloor.transform.localScale = new Vector3(1.2f, 1f, 1.6f);
         caveFloor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("CaveFloor_MAT", new Color(0.28f, 0.26f, 0.24f));
 
-        // Medidor de COHESIÓN/ABANDONO (legible; lo leerá el Level1Director en la rebanada 3).
+        // Medidor de COHESIÓN/ABANDONO (legible) + DIRECTOR de beats (rebanada 3): secuencia los beats del alba
+        // sembrando circunstancias (campos de pensamiento/humor) y leyendo el estado; engancha la emoción del elenco.
         group.AddComponent<TribeCohesion>();
+        group.AddComponent<Level1Director>();
 
         Debug.Log("[SampleSceneBuilder] Microcosmos — tableau del alba (docs microcosmos-level1.md): el elenco tiene " +
-                  "IDENTIDAD por ALMA-MEZCLA (SoulComposition) + SoulRecord, y ya se MUEVE por IMPULSOS SOCIALES " +
-                  "(Tend/Cull/Obey/Gather) con medidor de COHESIÓN/abandono (rebanada 2). Falta: Level1Director = rebanada 3.");
+                  "IDENTIDAD por ALMA-MEZCLA + IMPULSOS SOCIALES + COHESIÓN, y un LEVEL1DIRECTOR que secuencia los beats " +
+                  "(observar→cuidar→abandono→desercion→muerte) sembrando circunstancias + emoción (rebanadas 1-3).");
     }
 
     // Rebanada 2: da a un miembro del elenco el stack de MOVIMIENTO (NavMeshAgent + ImpulseController + querencia suave a
