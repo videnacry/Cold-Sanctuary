@@ -154,14 +154,24 @@ emocional** (`Humores`/tono) · **relaciones** · **impulsos dominantes** · **r
 - **Cohesión de manada + tolerancia/abandono** (contador legible). → **✅ REBANADA 2 (PR #178)**: `TribeCohesion`
   (medidor: centroide + dispersión → `Cohesion` [0,1]; `Abandoned` cuando cae bajo umbral un tiempo). Solo mide; lo lee el director.
 - **Director de circunstancias** (`Level1Director` estilo `MobWorldDirector`): programa los estímulos/beats y
-  siembra pensamientos/`ThoughtField`; **no mueve a nadie**. → **rebanada 3** (pendiente).
-- **Enganchar emoción** (`EmotionExpression`/`EmotionReader`) a las hormigas (legibilidad). → **rebanada 3** (pendiente).
-- **Consolidar** el tableau de la muerte como beat final del mapa jugable (unir los dos sandboxes). → **rebanada 4** (pendiente).
+  siembra pensamientos/`ThoughtField`; **no mueve a nadie**. → **✅ REBANADA 3 (PR #179)**: coroutine de 5 beats
+  (observar→cuidar→abandono→deserción→clímax/muerte) que lee `TribeCohesion` y siembra `ThoughtField`s (resentimiento/duelo);
+  cada espera cae por timeout → balance-safe.
+- **Enganchar emoción** (`EmotionExpression`/`EmotionReader`) a las hormigas (legibilidad). → **✅ REBANADA 3 (PR #179)**:
+  el director añade `EmotionExpression` a cada miembro del elenco (publican valencia/activación/tensión).
+- **Consolidar** el tableau de la muerte como beat final del mapa jugable (unir los dos sandboxes). → **✅ REBANADA 4 (PR #180)**:
+  el `Level1Director` **espera el RESCATE** (`CarryToRefuge.Done`, `needed=4`) antes del clímax → la muerte de Ambrosio es el
+  **beat final tras rescatar a los ancianos**. Sin jugador cae por timeout (auto-demo).
 
-## Orden de construcción sugerido
-1. **Este doc** (fichas + impulsos + beats) — ✅ hecho.
-2. **Capa de identidad**: fichas (SoulRecord + Mind + perfiles) → ✅ **hecho para el elenco del tableau** (receta `Cast`,
-   PR #176). Pendiente: aplicar a las hormigas del mapa jugable vía `MakeAnt(...)` (coordinar con el compañero: es su mapa).
-3. **Impulsos sociales** + cohesión/abandono. ← **siguiente rebanada**.
-4. **`Level1Director`** (circunstancias/beats) + enganchar emoción.
-5. **Consolidar** el tableau como beat final.
+## Orden de construcción sugerido — ✅ COMPLETO (rebanadas 1-4, PRs #176-#180)
+1. **Este doc** (fichas + impulsos + beats) — ✅.
+2. **Capa de identidad** por ALMA-MEZCLA (cuerpo insecto+Human[+Gallina] / mente Human-del-alba+insecto+elemento) — ✅ para
+   el elenco del tableau. **Pendiente (con el compañero):** aplicar lo mismo a las hormigas del mapa jugable.
+3. **Impulsos sociales** (`SocialImpulse`) + **cohesión/abandono** (`TribeCohesion`) — ✅.
+4. **`Level1Director`** (beats + circunstancias) + **emoción** — ✅.
+5. **Consolidar** (clímax tras el rescate) — ✅.
+
+> **Pendientes menores (no-bug), a pulir después:** (a) beats 4-5 originales (nacer las gemelas / llegar la tribu de Héspero)
+> = **spawns de nuevas ánimas** — hoy registrados como estímulos FUTUROS; (b) **relaciones por-individuo** (karma hacia
+> Ambrosio/Héspero) para afinar Tend/Adore/Grief; (c) identidad a las hormigas del **mapa jugable** (del compañero); (d) merge
+> ESPACIAL de los dos sandboxes (hoy conviven en la misma escena en zonas distintas; el director ya los une por el guion).
