@@ -134,10 +134,18 @@ emocional** (`Humores`/tono) · **relaciones** · **impulsos dominantes** · **r
 ## Mecánicas que faltan (resumen para construir)
 > **Construyéndose POR REBANADAS** (el usuario lo pidió, 2026-09-02). Estado abajo.
 - **Capa de identidad** (fichas → datos): `SoulRecord` + `Mind` + perfil de aptitudes + relaciones. *(aditivo)*
-  → **✅ REBANADA 1 (PR #176)** para el ELENCO del tableau (`BuildMicrocosmosSandbox`, la receta `Cast(...)`): cada
-  personaje es ya un **Ánima real** (`SimpleAnima` + `Mind` con las aptitudes de su ficha + su **voz** como pensamiento
-  `Vivencia`) además del `SoulRecord`. Falta: **relaciones** por-individuo (hacia Ambrosio/Héspero…) — irán con los
-  impulsos (las usan Tend/Adore/Grief); y aplicar lo mismo a las hormigas del **mapa jugable** (coordinar con el compañero).
+  → **✅ REBANADA 1 (PR #176 + #177)** para el ELENCO del tableau (`BuildMicrocosmosSandbox`, receta `Cast(...)`): cada
+  personaje es ya un **Ánima real** cuya identidad sale de un **ALMA-MEZCLA** (`SoulComposition`, `soul-composition-blend.md`),
+  no de aptitudes a mano — usa los **arquetipos reales de insecto**:
+  - **CUERPO** = su insecto (`Ant`; Ambrosio = `Aphid`) dominante + algo de `Human` (la "desviación" proto-humana que los
+    hace especiales). **Ambrosio** suma **`Gallina`** (~40%): la gallina como **"madre de la naturaleza"** — cuerpo nutridor/clueco.
+  - **MENTE** = **`Human` de ESTA ERA (~50%)** + su **mente de insecto** (`Ant`/`Aphid`, instinto de colonia) + un arquetipo
+    **elemental/animal** que captura su esencia (Medea=`Fire`, Sakshi=`Agua`, Momo=`Mono`, Atlas=`Bear`, Héspero=`Rock`…).
+  - **% humano del alba:** un humano moderno individuado ≈ **90%** (cf. Panterilia). El humano del **amanecer** está apenas
+    medio-emergido del instinto → **~40-60%** (Ruth/Anciano 40 = los más colonia; Sakshi 60 = la mente más despierta). El %
+    **sube en las reencarnaciones** (vida 2 = humanos más plenos). SoulComposition computa aptitudes/tono/pensamientos del blend.
+  - Falta: **relaciones** por-individuo (hacia Ambrosio/Héspero…) — irán con los impulsos (Tend/Adore/Grief); y aplicar lo
+    mismo a las hormigas del **mapa jugable** (coordinar con el compañero).
 - **Impulsos sociales** (`Tend/Adore/Observe/Cull/Gather/Obey/Grief/Follow`) como fuentes de impulso (sobre `ImpulseController`). → **rebanada 2** (pendiente).
 - **Cohesión de manada + tolerancia/abandono** (contador legible). → **rebanada 2** (pendiente).
 - **Director de circunstancias** (`Level1Director` estilo `MobWorldDirector`): programa los estímulos/beats y
