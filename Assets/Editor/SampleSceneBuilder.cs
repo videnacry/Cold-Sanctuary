@@ -933,84 +933,119 @@ public static class SampleSceneBuilder
         cave.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cueva_MAT", new Color(0.35f, 0.32f, 0.30f));
         CarryToRefuge refuge = cave.AddComponent<CarryToRefuge>(); refuge.needed = 2; refuge.radius = 4f;
 
-        // ── La TRIBU que ya está en la cueva y vela la llegada ───────────────────────────────
-        // Héspero: vigía de las estrellas, villano que abandona a los débiles (hilo A). Unos pasos delante de
-        // Ambrosio, entre él y la cueva. Reencarna → Señor del Fuego (misma alma-astro: atardecer→alba).
-        GameObject hespero = MakeInsect(group.transform, "Hespero", new Vector3(-30f, 1f, 12f),
-            new Vector3(0.6f, 0.6f, 0.8f), new Color(0.20f, 0.22f, 0.35f));
-        AddSoul(hespero, "Hespero", "A", "vigia de las estrellas; villano que abandona a los debiles",
-            "Senor del Fuego", "mira al cielo / atraido a lo alto; misma alma-astro (atardecer->alba)");
+        // ── El ELENCO con IDENTIDAD REAL (rebanada 1, docs/microcosmos-level1.md §Fichas / Orden §2) ──────────
+        // Cada uno ya no es una cápsula inerte: es un Ánima real (SimpleAnima) con MENTE (aptitudes de su ficha +
+        // su voz como pensamiento Vivencia) y su SoulRecord. Todavía NO se mueven (impulsos/beats = rebanadas 2-3);
+        // esta capa es la base para que la simulación emergente pueda leerlos/moverlos después.
 
-        // Ruth: recolectora sumisa de hongo, la última en comer; quiere a Ambrosio pero no desobedece a
-        // Héspero (hilo C). Reencarna → La Sembradora. Lleva su montoncito de hongo.
-        GameObject ruth = MakeInsect(group.transform, "Ruth", new Vector3(-31.6f, 1f, 12.2f),
-            new Vector3(0.5f, 0.5f, 0.7f), new Color(0.45f, 0.40f, 0.30f));
-        AddSoul(ruth, "Ruth", "C", "recolectora sumisa de hongo; la ultima en comer",
-            "La Sembradora", "acarrea hongo a todas partes; de recoger a sembrar");
+        // Héspero: vigía de las estrellas, villano que abandona a los débiles (hilo A) → Señor del Fuego.
+        Cast(group.transform, "Hespero", new Vector3(-30f, 1f, 12f), new Vector3(0.6f, 0.6f, 0.8f),
+            new Color(0.20f, 0.22f, 0.35f), "A", "vigia de las estrellas; villano que abandona a los debiles",
+            "Senor del Fuego", "mira al cielo / atraido a lo alto; misma alma-astro (atardecer->alba)",
+            a => { a.perception = 1.6f; a.discipline = 1.4f; a.composure = 1.2f; a.sociability = 0.5f; a.creativity = 0.7f; return a; },
+            ElementalTone.Viento, new[] { "Vigilo el cielo por todos.", "El fuerte guia; el debil estorba." },
+            new[] { "Cargar con los debiles nos hunde.", "Mejor solo que lastrado." });
+
+        // Ruth: recolectora sumisa de hongo, la última en comer (hilo C) → La Sembradora. Lleva su hongo.
+        Cast(group.transform, "Ruth", new Vector3(-31.6f, 1f, 12.2f), new Vector3(0.5f, 0.5f, 0.7f),
+            new Color(0.45f, 0.40f, 0.30f), "C", "recolectora sumisa de hongo; la ultima en comer",
+            "La Sembradora", "acarrea hongo a todas partes; de recoger a sembrar",
+            a => { a.endurance = 1.5f; a.discipline = 1.3f; a.strength = 0.8f; a.composure = 0.7f; a.sociability = 0.9f; return a; },
+            ElementalTone.Agua, new[] { "Guardo para todos.", "Si Hespero manda, obedezco." },
+            new[] { "Nunca me toca comer.", "No me atrevo a desobedecer." });
         GameObject hongo = GameObject.CreatePrimitive(PrimitiveType.Cube);
         hongo.name = "Hongo_de_Ruth"; hongo.transform.SetParent(group.transform);
         hongo.transform.position = new Vector3(-32.2f, 0.9f, 12.2f); hongo.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
         hongo.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Hongo_MAT", new Color(0.75f, 0.70f, 0.55f));
 
-        // ── Ambrosio (el pulgón mártir) se derrumba en la entrada ────────────────────────────
-        // Cuerpo blando, grande, panzudo (nutridor) — contraste con las hormigas duras. Lleva días sin jugos
-        // (interval alto). Reencarna → Nasatya (almohada gigante, manso y fortísimo, postura rara).
-        GameObject aphid = MakeInsect(group.transform, "Ambrosio", new Vector3(-30f, 0.7f, 13.5f),
-            new Vector3(0.9f, 0.7f, 1.1f), new Color(0.60f, 0.80f, 0.45f));
+        // Ambrosio (el pulgón mártir): cuerpo blando, grande, nutridor; agotado (lleva días sin jugos) → Nasatya.
+        GameObject aphid = Cast(group.transform, "Ambrosio", new Vector3(-30f, 0.7f, 13.5f), new Vector3(0.9f, 0.7f, 1.1f),
+            new Color(0.60f, 0.80f, 0.45f), "-", "el pulgon martir; cuerpo blando y grande que nutre a todos",
+            "Nasatya", "postura rara (eco de la deformidad); manso pese a fuerza; cuerpo-almohada",
+            a => { a.bodyMass = 1.8f; a.strength = 1.1f; a.endurance = 0.5f; a.sociability = 1.6f; a.composure = 1.5f; a.agility = 0.4f; return a; },
+            ElementalTone.Agua, new[] { "Doy de mi para que vivan.", "Aguanto un poco mas." },
+            new[] { "Ya no me queda jugo.", "Estoy tan cansado." });
         aphid.AddComponent<HoneydewProducer>().interval = 30f; // "dias sin producir jugos"
-        AddSoul(aphid, "Ambrosio", "-", "el pulgon martir; cuerpo blando y grande que nutre a todos",
-            "Nasatya", "postura rara (eco de la deformidad); manso pese a fuerza; cuerpo-almohada");
 
-        // ── Las gemelas jóvenes, volcadas en Ambrosio ────────────────────────────────────────
-        // Medea: pequeña y débil, no logra levantarlo; forja veneno/armas (hilo B). Reencarna → tirana del
-        // veneno (pasa a E); en la vida 2 espía y libera a Nasatya y controla al resto.
-        GameObject medea = MakeInsect(group.transform, "Medea", new Vector3(-30.8f, 0.8f, 14.2f),
-            new Vector3(0.35f, 0.35f, 0.5f), new Color(0.30f, 0.20f, 0.22f));
-        AddSoul(medea, "Medea", "B", "gemela debil; defiende a Ambrosio; forja veneno y armas",
-            "tirana del veneno/feromonas (vida 2 -> hilo E)", "mandibula apretada; se aferra al veneno/la muerte");
+        // Medea: gemela débil, no logra levantar a Ambrosio; forja veneno/armas (hilo B) → tirana del veneno (E).
+        Cast(group.transform, "Medea", new Vector3(-30.8f, 0.8f, 14.2f), new Vector3(0.35f, 0.35f, 0.5f),
+            new Color(0.30f, 0.20f, 0.22f), "B", "gemela debil; defiende a Ambrosio; forja veneno y armas",
+            "tirana del veneno/feromonas (vida 2 -> hilo E)", "mandibula apretada; se aferra al veneno/la muerte",
+            a => { a.strength = 0.4f; a.bodyMass = 0.4f; a.creativity = 1.6f; a.discipline = 1.4f; a.perception = 1.2f; a.sociability = 0.5f; a.composure = 0.6f; return a; },
+            ElementalTone.Fuego, new[] { "Si no puedo con fuerza, con veneno.", "Nadie tocara a Ambrosio." },
+            new[] { "Soy demasiado debil.", "No pude levantarlo." });
 
-        // Momo: bromista magnética, secretamente fuerte (bien nutrida); levanta a Ambrosio sin esfuerzo (hilo
-        // G). Toma el «trono» infantil que Atlas enmienda. Reencarna → el bufón de la era del fuego.
-        GameObject momo = MakeInsect(group.transform, "Momo", new Vector3(-29.2f, 0.8f, 14.4f),
-            new Vector3(0.45f, 0.45f, 0.6f), new Color(0.55f, 0.45f, 0.20f));
-        AddSoul(momo, "Momo", "G", "bromista magnetica; fuerza oculta; trono infantil",
-            "el bufon de la era del fuego (propuesta)", "todo a broma; mas fuerte de lo que aparenta");
+        // Momo: bromista magnética, secretamente fuerte; levanta a Ambrosio sin esfuerzo (hilo G) → el bufón.
+        Cast(group.transform, "Momo", new Vector3(-29.2f, 0.8f, 14.4f), new Vector3(0.45f, 0.45f, 0.6f),
+            new Color(0.55f, 0.45f, 0.20f), "G", "bromista magnetica; fuerza oculta; trono infantil",
+            "el bufon de la era del fuego (propuesta)", "todo a broma; mas fuerte de lo que aparenta",
+            a => { a.sociability = 1.7f; a.creativity = 1.5f; a.strength = 1.4f; a.agility = 1.3f; a.composure = 1.2f; a.discipline = 0.6f; return a; },
+            ElementalTone.Fuego, new[] { "Todo es mas facil riendo.", "Yo lo levanto, mirad." },
+            new[] { "A veces la risa no basta.", "Nadie ve lo que cargo." });
 
-        // ── El sostén y los ancianos ─────────────────────────────────────────────────────────
-        // Atlas: el único adulto, el más fuerte, sostén del bienestar y enmendador (hilo E). Único pilar de
-        // Medea. Reencarna → figura de fuerza benévola (propuesta).
-        GameObject atlas = MakeInsect(group.transform, "Atlas", new Vector3(-31.5f, 1f, 16.5f),
-            new Vector3(0.6f, 0.6f, 0.9f), new Color(0.30f, 0.28f, 0.24f));
-        AddSoul(atlas, "Atlas", "E", "el mas fuerte; sosten del bienestar; enmienda a Momo; pilar de Medea",
-            "fuerza benevola (propuesta)", "carga el peso de otros");
+        // Atlas: el único adulto, el más fuerte, sostén y enmendador (hilo E) → fuerza benévola.
+        Cast(group.transform, "Atlas", new Vector3(-31.5f, 1f, 16.5f), new Vector3(0.6f, 0.6f, 0.9f),
+            new Color(0.30f, 0.28f, 0.24f), "E", "el mas fuerte; sosten del bienestar; enmienda a Momo; pilar de Medea",
+            "fuerza benevola (propuesta)", "carga el peso de otros",
+            a => { a.strength = 1.8f; a.bodyMass = 1.6f; a.endurance = 1.7f; a.discipline = 1.3f; a.composure = 1.4f; a.sociability = 1.1f; return a; },
+            ElementalTone.Tierra, new[] { "Yo cargo lo que otros no pueden.", "Estoy para sostener." },
+            new[] { "Si caigo yo, caen todos.", "El peso no termina nunca." });
 
-        // Sakshi: observadora de la mente; crió a Ambrosio; se queda «varada» en la contemplación (hilo F).
-        // Reencarna → El Chamán (propuesta).
-        GameObject sakshi = MakeInsect(group.transform, "Sakshi", new Vector3(-28.7f, 1f, 16.8f),
-            new Vector3(0.5f, 0.5f, 0.7f), new Color(0.35f, 0.40f, 0.45f));
-        AddSoul(sakshi, "Sakshi", "F", "observadora de la mente; crio a Ambrosio; se queda varada",
-            "El Chaman (propuesta)", "se pierde en la contemplacion hasta que la traen de vuelta");
+        // Sakshi: observadora de la mente; crió a Ambrosio; se queda «varada» en la contemplación (hilo F) → El Chamán.
+        Cast(group.transform, "Sakshi", new Vector3(-28.7f, 1f, 16.8f), new Vector3(0.5f, 0.5f, 0.7f),
+            new Color(0.35f, 0.40f, 0.45f), "F", "observadora de la mente; crio a Ambrosio; se queda varada",
+            "El Chaman (propuesta)", "se pierde en la contemplacion hasta que la traen de vuelta",
+            a => { a.perception = 1.7f; a.reasoning = 1.6f; a.memory = 1.4f; a.composure = 1.5f; a.agility = 0.7f; a.sociability = 0.9f; return a; },
+            ElementalTone.Viento, new[] { "Observo hasta comprender.", "Vi al pulgon antes que nadie." },
+            new[] { "Me pierdo en mis propias ideas.", "Olvido volver del pensamiento." });
 
-        // Los ANCIANOS frágiles (inmóviles hasta ser cargados) — WeakOne. Uno es el primer PINTOR de la
-        // cueva (hilo D, La Mano de Lascaux, propuesta — nombre pendiente).
-        GameObject pintor = MakeInsect(group.transform, "Anciano_Pintor", new Vector3(-31f, 1f, 19.5f),
-            new Vector3(0.5f, 0.5f, 0.6f), new Color(0.50f, 0.46f, 0.40f));
+        // Los ANCIANOS frágiles (inmóviles hasta ser cargados) — WeakOne. Uno es el primer PINTOR de la cueva (hilo D).
+        GameObject pintor = Cast(group.transform, "Anciano_Pintor", new Vector3(-31f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
+            new Color(0.50f, 0.46f, 0.40f), "D", "el primero que marca/pinta la cueva al llegar",
+            "", "deja huellas/marcas por donde pasa (hilo D, nombre pendiente)",
+            a => { a.creativity = 1.6f; a.memory = 1.5f; a.strength = 0.4f; a.endurance = 0.4f; a.bodyMass = 0.5f; return a; },
+            ElementalTone.Tierra, new[] { "Marco la roca para recordar.", "Dejo mi huella al pasar." },
+            new[] { "Ya no puedo caminar solo.", "Se me van las fuerzas." });
         pintor.AddComponent<WeakOne>();
         pintor.AddComponent<AiBrain>().selfRelevance = 1f;
         pintor.AddComponent<AnimaController>();
-        AddSoul(pintor, "Anciano_Pintor", "D", "el primero que marca/pinta la cueva al llegar",
-            "", "deja huellas/marcas por donde pasa (hilo D, nombre pendiente)");
 
-        GameObject anciano = MakeInsect(group.transform, "Anciano", new Vector3(-29.4f, 1f, 19.5f),
-            new Vector3(0.5f, 0.5f, 0.6f), new Color(0.50f, 0.46f, 0.40f));
+        GameObject anciano = Cast(group.transform, "Anciano", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
+            new Color(0.50f, 0.46f, 0.40f), "", "anciano fragil de la banda", "", "necesita que lo carguen al refugio",
+            a => { a.strength = 0.4f; a.endurance = 0.4f; a.bodyMass = 0.5f; a.perception = 0.8f; return a; },
+            ElementalTone.Tierra, new[] { "Aun recuerdo los viejos caminos." }, new[] { "Ya no me tengo en pie." });
         anciano.AddComponent<WeakOne>();
         anciano.AddComponent<AiBrain>().selfRelevance = 1f;
         anciano.AddComponent<AnimaController>();
 
         Debug.Log("[SampleSceneBuilder] Microcosmos — nivel introductorio (alba/cueva), tableau de la LLEGADA " +
-                  "(docs microcosmos-insects §13): Ambrosio (pulgon) se derrumba en la entrada; Medea no puede " +
-                  "levantarlo, Momo lo levanta; Hespero vela desde la cueva y se voltea. Cada ser lleva su " +
-                  "SoulRecord (nombre de alma · hilo · reencarnacion vida 2). CarryToRefuge/WeakOne = scaffold.");
+                  "(docs microcosmos-level1.md): el elenco ya tiene IDENTIDAD REAL (SimpleAnima + Mind con aptitudes " +
+                  "de ficha + voz + SoulRecord). Aun estatico: impulsos sociales/cohesion/Level1Director = rebanadas 2-4.");
+    }
+
+    /// <summary>Rebanada 1 de identidad (docs/microcosmos-level1.md §2): crea un miembro del elenco como ÁNIMA REAL —
+    /// visual (MakeInsect) + <see cref="SoulRecord"/> (alma/hilo/reencarnación) + <see cref="SimpleAnima"/> con las
+    /// aptitudes de su ficha + <see cref="Mind"/> (mismas aptitudes → tono/personalidad + su voz como pensamiento
+    /// Vivencia). Aditivo: NO añade IA/movimiento (eso son rebanadas 2-3). Devuelve el GameObject para extras.</summary>
+    static GameObject Cast(Transform parent, string name, Vector3 pos, Vector3 scale, Color col,
+                           string hilo, string vida1, string vida2, string tell,
+                           System.Func<Aptitudes, Aptitudes> aptFn, ElementalTone tone, string[] posThoughts, string[] negThoughts)
+    {
+        GameObject go = MakeInsect(parent, name, pos, scale, col);
+        AddSoul(go, name, hilo, vida1, vida2, tell);
+
+        Aptitudes apt = aptFn(Aptitudes.Default);
+        SimpleAnima a = go.AddComponent<SimpleAnima>();
+        a.agility = apt.agility; a.perception = apt.perception; a.strength = apt.strength; a.bodyMass = apt.bodyMass;
+        a.endurance = apt.endurance; a.adaptability = apt.adaptability; a.composure = apt.composure;
+        a.reasoning = apt.reasoning; a.memory = apt.memory; a.creativity = apt.creativity;
+        a.sociability = apt.sociability; a.discipline = apt.discipline;
+
+        Mind m = go.AddComponent<Mind>();
+        m.aptitudes = apt;
+        m.identity = name;
+        m.SeedThoughts(new[] { new MindPhrase(tone, posThoughts, negThoughts, PhraseCategory.Vivencia, false, true, name) });
+        return go;
     }
 
     // ─────────────────────────────────────────────────────────────────────────

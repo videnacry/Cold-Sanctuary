@@ -132,19 +132,23 @@ emocional** (`Humores`/tono) · **relaciones** · **impulsos dominantes** · **r
   (guiar/pastorear con `PullSpell`, alma compartida `HelpRequest`, seguir `FollowBrain`, poseer `PossessionSpell`).
 
 ## Mecánicas que faltan (resumen para construir)
-- **Capa de identidad** (fichas → datos) sobre las hormigas del compañero: `SoulRecord` + `Mind` + perfil de
-  aptitudes + relaciones. *(aditivo, no toca su IA)*
-- **Impulsos sociales** (`Tend/Adore/Observe/Cull/Gather/Obey/Grief/Follow`) como fuentes de `MovementImpulse`.
-- **Cohesión de manada + tolerancia/abandono** (contador legible).
+> **Construyéndose POR REBANADAS** (el usuario lo pidió, 2026-09-02). Estado abajo.
+- **Capa de identidad** (fichas → datos): `SoulRecord` + `Mind` + perfil de aptitudes + relaciones. *(aditivo)*
+  → **✅ REBANADA 1 (PR #176)** para el ELENCO del tableau (`BuildMicrocosmosSandbox`, la receta `Cast(...)`): cada
+  personaje es ya un **Ánima real** (`SimpleAnima` + `Mind` con las aptitudes de su ficha + su **voz** como pensamiento
+  `Vivencia`) además del `SoulRecord`. Falta: **relaciones** por-individuo (hacia Ambrosio/Héspero…) — irán con los
+  impulsos (las usan Tend/Adore/Grief); y aplicar lo mismo a las hormigas del **mapa jugable** (coordinar con el compañero).
+- **Impulsos sociales** (`Tend/Adore/Observe/Cull/Gather/Obey/Grief/Follow`) como fuentes de impulso (sobre `ImpulseController`). → **rebanada 2** (pendiente).
+- **Cohesión de manada + tolerancia/abandono** (contador legible). → **rebanada 2** (pendiente).
 - **Director de circunstancias** (`Level1Director` estilo `MobWorldDirector`): programa los estímulos/beats y
-  siembra pensamientos/`ThoughtField`; **no mueve a nadie**.
-- **Enganchar emoción** (`EmotionExpression`/`EmotionReader`) a las hormigas (legibilidad).
-- **Consolidar** el tableau de la muerte como beat final del mapa jugable (unir los dos sandboxes).
+  siembra pensamientos/`ThoughtField`; **no mueve a nadie**. → **rebanada 3** (pendiente).
+- **Enganchar emoción** (`EmotionExpression`/`EmotionReader`) a las hormigas (legibilidad). → **rebanada 3** (pendiente).
+- **Consolidar** el tableau de la muerte como beat final del mapa jugable (unir los dos sandboxes). → **rebanada 4** (pendiente).
 
 ## Orden de construcción sugerido
-1. **Este doc** (fichas + impulsos + beats) — hecho.
-2. **Capa de identidad**: aplicar las fichas (SoulRecord + Mind + perfiles) a las hormigas existentes vía la
-   receta `MakeAnt(...)` (coordinar con el compañero: es su mapa).
-3. **Impulsos sociales** + cohesión/abandono.
+1. **Este doc** (fichas + impulsos + beats) — ✅ hecho.
+2. **Capa de identidad**: fichas (SoulRecord + Mind + perfiles) → ✅ **hecho para el elenco del tableau** (receta `Cast`,
+   PR #176). Pendiente: aplicar a las hormigas del mapa jugable vía `MakeAnt(...)` (coordinar con el compañero: es su mapa).
+3. **Impulsos sociales** + cohesión/abandono. ← **siguiente rebanada**.
 4. **`Level1Director`** (circunstancias/beats) + enganchar emoción.
 5. **Consolidar** el tableau como beat final.
