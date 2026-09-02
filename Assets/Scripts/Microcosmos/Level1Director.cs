@@ -32,8 +32,15 @@ public class Level1Director : MonoBehaviour
     [Tooltip("Cohesión por debajo de la cual se considera que el cuidado ya separó a Sakshi del grupo (beat 3).")]
     [Range(0f, 1f)] public float careCohesion = 0.5f;
 
+    [Header("Consolidación (rebanada 4): el clímax es el beat FINAL tras el rescate del mapa jugable")]
+    [Tooltip("Esperar a que la misión CarryToRefuge del mapa jugable se complete antes del clímax/muerte (une los dos sandboxes).")]
+    public bool climaxAfterRescue = true;
+    [Tooltip("Tope de espera del rescate (s de juego): sin jugador nunca se completa → cae por timeout y el clímax llega igual.")]
+    public float rescueTimeout = 120f;
+
     readonly Dictionary<string, GameObject> _cast = new Dictionary<string, GameObject>();
     TribeCohesion _cohesion;
+    CarryToRefuge _refuge;
     GameObject _ambrosio;
 
     void Start()
@@ -41,6 +48,7 @@ public class Level1Director : MonoBehaviour
         DiscoverCast();
         _cohesion = GetComponent<TribeCohesion>();
         if (_cohesion == null) _cohesion = gameObject.AddComponent<TribeCohesion>();
+        _refuge = FindRefuge();   // la misión de rescate del MAPA JUGABLE (consolidación, rebanada 4)
         HookEmotion();
         StartCoroutine(RunBeats());
     }
@@ -89,6 +97,15 @@ public class Level1Director : MonoBehaviour
         Log("Beat 4 · DESERCION: 4 ancianos fragiles se quedan (WeakOne); el grupo se marcha. Momo se queda.");
         // (los nacimientos de Medea/Momo y la llegada de la tribu de Hespero = estimulos FUTUROS: spawn de nuevas animas.)
         yield return Wait(desertSeconds);
+
+        // ── CONSOLIDACIÓN (rebanada 4): el clímax es el beat FINAL, tras el RESCATE del mapa jugable ──
+        // Une los dos sandboxes: el jugador lleva a los ancianos a la cueva (CarryToRefuge) y ENTONCES se cierra el
+        // tableau con la muerte de Ambrosio. Sin jugador, cae por timeout y el clímax llega igual (auto-demo).
+        if (climaxAfterRescue && _refuge != null)
+        {
+            Log("Esperando el RESCATE (CarryToRefuge del mapa jugable) antes del climax…");
+            yield return WaitUntilRescuedOr(rescueTimeout);
+        }
 
         // ── Beat 5: CLÍMAX / MUERTE ─────────────────────────────────────────
         Log("Beat 5 · CLIMAX: Ambrosio colapsa cerca de la cueva. Medea no logra levantarlo; Momo lo levanta; " +
@@ -149,6 +166,28 @@ public class Level1Director : MonoBehaviour
             if (_cohesion != null && _cohesion.Abandoned) yield break;
             t += Time.deltaTime * Speed; yield return null;
         }
+    }
+
+    IEnumerator WaitUntilRescuedOr(float timeout)
+    {
+        float t = 0f;
+        while (t < timeout)
+        {
+            if (_refuge != null && _refuge.Done) yield break;
+            t += Time.deltaTime * Speed; yield return null;
+        }
+    }
+
+    // La misión de rescate del MAPA JUGABLE: entre las CarryToRefuge, la de mayor `needed` (playable=4 > tableau=2).
+    CarryToRefuge FindRefuge()
+    {
+        CarryToRefuge best = null;
+        foreach (CarryToRefuge r in FindObjectsOfType<CarryToRefuge>())
+        {
+            if (r == null) continue;
+            if (best == null || r.needed > best.needed) best = r;
+        }
+        return best;
     }
 
     void Log(string msg) => Debug.Log("[Nivel1] " + msg);
