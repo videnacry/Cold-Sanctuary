@@ -146,8 +146,13 @@ emocional** (`Humores`/tono) · **relaciones** · **impulsos dominantes** · **r
     **sube en las reencarnaciones** (vida 2 = humanos más plenos). SoulComposition computa aptitudes/tono/pensamientos del blend.
   - Falta: **relaciones** por-individuo (hacia Ambrosio/Héspero…) — irán con los impulsos (Tend/Adore/Grief); y aplicar lo
     mismo a las hormigas del **mapa jugable** (coordinar con el compañero).
-- **Impulsos sociales** (`Tend/Adore/Observe/Cull/Gather/Obey/Grief/Follow`) como fuentes de impulso (sobre `ImpulseController`). → **rebanada 2** (pendiente).
-- **Cohesión de manada + tolerancia/abandono** (contador legible). → **rebanada 2** (pendiente).
+- **Impulsos sociales** (`Tend/Adore/Observe/Cull/Gather/Obey/Grief/Follow`) como fuentes de impulso (sobre `ImpulseController`).
+  → **✅ REBANADA 2 (PR #178)**: `SocialImpulse` (un componente, drive-enum con los 8 drives) añade un `MovementImpulse`
+  hacia/lejos del objetivo. Cableado en el tableau: Sakshi/Medea/Momo/Atlas = `Tend`(Ambrosio) (Sakshi se vuelca y se
+  separa), Héspero = `Cull` (se aparta de los débiles), Ruth = `Obey`(Héspero)+`Gather`. Se les dio el stack de
+  movimiento (`NavMeshAgent`+`ImpulseController`+querencia a la cueva) + un `CaveFloor` para el NavMesh.
+- **Cohesión de manada + tolerancia/abandono** (contador legible). → **✅ REBANADA 2 (PR #178)**: `TribeCohesion`
+  (medidor: centroide + dispersión → `Cohesion` [0,1]; `Abandoned` cuando cae bajo umbral un tiempo). Solo mide; lo lee el director.
 - **Director de circunstancias** (`Level1Director` estilo `MobWorldDirector`): programa los estímulos/beats y
   siembra pensamientos/`ThoughtField`; **no mueve a nadie**. → **rebanada 3** (pendiente).
 - **Enganchar emoción** (`EmotionExpression`/`EmotionReader`) a las hormigas (legibilidad). → **rebanada 3** (pendiente).

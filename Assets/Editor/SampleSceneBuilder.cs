@@ -1005,9 +1005,63 @@ public static class SampleSceneBuilder
         anciano.AddComponent<AiBrain>().selfRelevance = 1f;
         anciano.AddComponent<AnimaController>();
 
+        // ── REBANADA 2: MOVIMIENTO por IMPULSOS SOCIALES + COHESIÓN ──────────────────────────────────────────
+        // El elenco deja de ser estático: se mueve por drives sociales (sobre el ImpulseController). La tribu VELA y
+        // CUIDA a Ambrosio (Tend); Sakshi se vuelca (magnitud alta → se separa del grupo → baja la cohesión); Héspero
+        // se APARTA de los débiles (Cull); Ruth obedece a Héspero y recoge comida. Ambrosio (colapsado) no se mueve.
+        Vector3 caveArea = new Vector3(-30f, 0.5f, 12f);   // querencia suave a la cueva
+        Transform ambrosioT = aphid.transform;
+        foreach (string who in new[] { "Sakshi", "Medea", "Momo", "Atlas" })
+        {
+            Transform t = group.transform.Find(who); if (t == null) continue;
+            Mobilize(t.gameObject, caveArea);
+            Drive(t.gameObject, SocialImpulse.SocialDrive.Tend, ambrosioT, who == "Sakshi" ? 1.4f : 1.0f);   // Sakshi se vuelca (se separa)
+        }
+        Transform hesperoT = group.transform.Find("Hespero");
+        if (hesperoT != null) { Mobilize(hesperoT.gameObject, caveArea); Drive(hesperoT.gameObject, SocialImpulse.SocialDrive.Cull, null, 0.8f); }
+        Transform ruthT = group.transform.Find("Ruth");
+        if (ruthT != null)
+        {
+            Mobilize(ruthT.gameObject, caveArea);
+            Drive(ruthT.gameObject, SocialImpulse.SocialDrive.Obey, hesperoT, 0.6f);
+            Drive(ruthT.gameObject, SocialImpulse.SocialDrive.Gather, null, 0.5f);
+        }
+
+        // Piso de la cueva → NavMesh bajo el tableau (si no hay, los impulsos no mueven: graceful).
+        GameObject caveFloor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        caveFloor.name = "CaveFloor"; caveFloor.transform.SetParent(group.transform);
+        caveFloor.transform.position = new Vector3(-30f, 0f, 15f); caveFloor.transform.localScale = new Vector3(1.2f, 1f, 1.6f);
+        caveFloor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("CaveFloor_MAT", new Color(0.28f, 0.26f, 0.24f));
+
+        // Medidor de COHESIÓN/ABANDONO (legible; lo leerá el Level1Director en la rebanada 3).
+        group.AddComponent<TribeCohesion>();
+
         Debug.Log("[SampleSceneBuilder] Microcosmos — tableau del alba (docs microcosmos-level1.md): el elenco tiene " +
-                  "IDENTIDAD por ALMA-MEZCLA (SoulComposition: cuerpo insecto+Human[+Gallina] / mente Human-del-alba ~50%" +
-                  "+insecto+elemento) + SoulRecord. Aun estatico: impulsos/cohesion/Level1Director = rebanadas 2-4.");
+                  "IDENTIDAD por ALMA-MEZCLA (SoulComposition) + SoulRecord, y ya se MUEVE por IMPULSOS SOCIALES " +
+                  "(Tend/Cull/Obey/Gather) con medidor de COHESIÓN/abandono (rebanada 2). Falta: Level1Director = rebanada 3.");
+    }
+
+    // Rebanada 2: da a un miembro del elenco el stack de MOVIMIENTO (NavMeshAgent + ImpulseController + querencia suave a
+    // la cueva). Sin coste de energía (el tableau no es el reto de energía del mapa jugable). Idempotente.
+    static void Mobilize(GameObject go, Vector3 home)
+    {
+        UnityEngine.AI.NavMeshAgent agent = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (agent == null) agent = go.AddComponent<UnityEngine.AI.NavMeshAgent>();
+        agent.speed = 0.8f; agent.radius = 0.25f; agent.height = 0.6f;
+        ImpulseController ctrl = go.GetComponent<ImpulseController>();
+        if (ctrl == null) ctrl = go.AddComponent<ImpulseController>();
+        ctrl.walkEnergyCostPerSecond = 0f;
+        HomeImpulse home_i = go.GetComponent<HomeImpulse>();
+        if (home_i == null) home_i = go.AddComponent<HomeImpulse>();
+        home_i.homePosition = home; home_i.baseMagnitude = 0.25f;
+    }
+
+    // Rebanada 2: añade un drive social (impulso) a un miembro. Varios drives conviven (tags distintos).
+    static SocialImpulse Drive(GameObject go, SocialImpulse.SocialDrive drive, Transform target, float mag)
+    {
+        SocialImpulse s = go.AddComponent<SocialImpulse>();
+        s.drive = drive; s.fixedTarget = target; s.magnitude = mag;
+        return s;
     }
 
     /// <summary>Rebanada 1 de identidad por ALMA-MEZCLA (docs/microcosmos-level1.md §2 + soul-composition-blend.md): crea un
