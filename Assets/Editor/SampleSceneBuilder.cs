@@ -131,6 +131,8 @@ public static class SampleSceneBuilder
         //  · Scene1 (Ambrosio/alba) — el nivel introductorio de la cueva/pulgón (anterior en la historia).
         //  · Mesopotamia (mundo mob) — la ciudad-insecto; la cocina ya apunta a ella (mobWorldSceneName).
         // Todo listo de un click. Guardado en try por si la API de escenas falla.
+        try { MicrocosmosSceneBuilder.BuildScene0(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene0 (Sakshi): {e.Message}"); }
         try { MicrocosmosSceneBuilder.BuildScene1(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene1: {e.Message}"); }
         try { MobWorldSceneBuilder.BuildMesopotamia(); }
@@ -1046,7 +1048,7 @@ public static class SampleSceneBuilder
 
     // Rebanada 2: da a un miembro del elenco el stack de MOVIMIENTO (NavMeshAgent + ImpulseController + querencia suave a
     // la cueva). Sin coste de energía (el tableau no es el reto de energía del mapa jugable). Idempotente.
-    static void Mobilize(GameObject go, Vector3 home)
+    internal static void Mobilize(GameObject go, Vector3 home)
     {
         UnityEngine.AI.NavMeshAgent agent = go.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (agent == null) agent = go.AddComponent<UnityEngine.AI.NavMeshAgent>();
@@ -1060,7 +1062,7 @@ public static class SampleSceneBuilder
     }
 
     // Rebanada 2: añade un drive social (impulso) a un miembro. Varios drives conviven (tags distintos).
-    static SocialImpulse Drive(GameObject go, SocialImpulse.SocialDrive drive, Transform target, float mag)
+    internal static SocialImpulse Drive(GameObject go, SocialImpulse.SocialDrive drive, Transform target, float mag)
     {
         SocialImpulse s = go.AddComponent<SocialImpulse>();
         s.drive = drive; s.fixedTarget = target; s.magnitude = mag;
@@ -1072,7 +1074,7 @@ public static class SampleSceneBuilder
     /// <see cref="Mind"/> + <see cref="SoulComposition"/> con los BLEND-slots de cuerpo/mente (arquetipo, %). En Start
     /// (resolveOnStart) el blend computa aptitudes/tono/pensamientos desde los arquetipos reales. `applyScale=false` para
     /// respetar la escala autorada del insecto. Aditivo: NO añade IA/movimiento (rebanadas 2-3). Devuelve el GameObject.</summary>
-    static GameObject Cast(Transform parent, string name, Vector3 pos, Vector3 scale, Color col,
+    internal static GameObject Cast(Transform parent, string name, Vector3 pos, Vector3 scale, Color col,
                            string hilo, string vida1, string vida2, string tell,
                            (string arch, float dom)[] bodies, (string arch, float dom)[] minds)
     {
