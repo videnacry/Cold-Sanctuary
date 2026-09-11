@@ -54,6 +54,27 @@ al Guardián → el ser deja de sufrir por un stat en rojo (el estupefaciente; t
 el dolor). Riesgo/coste: sin Guardián, el ser puede dañarse sin avisar (se usa para bien —ecuanimidad— o para mal
 —adicción/autolesión—).
 
+### 3.1. Base científica de los UMBRALES y los gastos/fuentes (respuesta a "¿qué influye?")
+
+El modelo NO es arbitrario: es el de la biología real (**alostasis/carga alostática** + **presupuesto energético**).
+- **El Guardián = ALOSTASIS.** La ciencia llama *allostasis* a mantener la estabilidad **prediciendo y anticipando**
+  (no solo reaccionando); la **carga alostática** es el **coste acumulado** cuando la regulación del estrés compite con
+  crecer/mantener/reparar, y la **sobrecarga** deriva en hipermetabolismo → declive/envejecimiento. → El "sufrimiento"
+  que emite el Guardián **es** la carga alostática; la Observación (§4) la **reduce**.
+- **Los GASTOS diarios = presupuesto energético (TEE) = BMR + AEE + Termorregulación:**
+  - **BMR** (metabolismo basal, solo por estar vivo) escala con la **masa** por la **ley de Kleiber** (`BMR ∝ masa^0.75`):
+    un cuerpo grande gasta más en absoluto pero menos por gramo. → el umbral/gasto base sale de la **masa corporal** (y
+    de la **anatomía**: más órganos/miembros = más BMR; branquias≠pulmones cambian el coste por medio).
+  - **AEE** (actividad) = **`Exertion`, que YA existe** (correr/hacer fuerza gasta glucosa/minerales/fatiga/sueño).
+  - **Termorregulación** = el **entorno** (temperatura/medio agua-aire): estar en un medio de baja afinidad cuesta
+    extra (enlaza con `MediumFactor`/`Suffocate`, ya existentes). → el **entorno** entra por aquí.
+- **Las FUENTES = alimentación** (`Metabolism`: nutriente→elemento/energía→reservas). El **estilo de vida** y la **dieta**
+  fijan cuánto y cómo se repone.
+- **Resumen accionable:** los umbrales seguros de un ser derivan de **masa (Kleiber) + anatomía + medio**; el **gasto
+  diario** = BMR + AEE (`Exertion`) + termorregulación; las **fuentes** = comer (`Metabolism`). El Guardián compara
+  reservas vs gasto y, al cruzar el límite, emite carga (estrés/emoción/químico). *(Todo esto ya tiene piezas en el
+  código: `Exertion`, `Humores`, `MoodDynamics`, `Metabolism`, `MediumFactor` — el Guardián las unifica bajo Kleiber+alostasis.)*
+
 ## 4. La OBSERVACIÓN (ecuanimidad = libertad del apremio)
 
 > Idea del usuario: "cierta paz/energía que permite observar cualquier ánima que tengas delante; si las
@@ -113,3 +134,34 @@ noción a TODA ánima y le da consecuencia mecánica (no solo un número del HUD
 
 > Regla de la saga (contexto): **todos los personajes siempre vivos**, ≥6 por historia, la misma alma en cuerpos
 > distintos (reencarnación). Ver [`microcosmos-sakshi-origin.md`](microcosmos-sakshi-origin.md) y `soul-composition-blend.md`.
+
+## 8. Los STATS MENTALES — qué tenemos y el esquema científico (respuesta a "¿hay más?")
+
+**Lo que YA hay en el código:**
+- **Estados mentales** (`IMind`): `satisfaction`(+capacity), `mentalFatigue`, `stress`, `sleepiness`, `observationRadius`.
+- **Aptitudes mentales** (de las 12 de `IAptitudes`): `reasoning`, `memory`, `creativity`, `sociability`, `discipline`,
+  `composure`, `perception`, `adaptability` (+ `afabilidad`/`sensibilidad` de `emotion-model.md`).
+- **Emoción** (`EmotionExpression`): **circumplejo** valencia×activación (+ Laban) — la base científica del afecto.
+- **Químicos** (`Humores`): Adrenalina/Serotonina/Cortisol/Glucosa/Calcio.
+
+**El esquema científico (3 ejes que la psicología usa; encajan con lo nuestro):**
+1. **AFECTO = PAD (Pleasure-Arousal-Dominance, Mehrabian-Russell).** Ya tenemos Placer(valencia)+Activación(arousal);
+   **falta la 3ª dimensión: DOMINANCIA** (agencia/control percibido sobre la situación). **Recomiendo añadirla** — es
+   barata y **temáticamente central** (control, posesión, el hechizo de miedo de la Magnate, la sumisión de Ruth vs el
+   mando de Héspero). Y **la Observación ≈ dominancia sobre los PROPIOS apremios** (autorregulación): mirar es ganar
+   agencia sobre el estado interno → cierra el círculo con §4.
+2. **PERSONALIDAD = Big Five (OCEAN).** Ya está **casi** mapeada por las aptitudes: Apertura≈`creativity`,
+   Responsabilidad≈`discipline`, Extraversión≈`sociability`, Amabilidad≈`afabilidad`, Neuroticismo≈inverso de `composure`.
+   → No hacen falta stats nuevos; **formalizar el mapeo** (perfil Big Five derivado de aptitudes) da personalidad legible.
+3. **COGNICIÓN = CHC (Cattell-Horn-Carroll).** Es la taxonomía más validada (10 amplias, 70+ estrechas; las funciones
+   ejecutivas quedan subsumidas). Nuestras `reasoning`(≈Gf fluido), `memory`(≈Gsm/Glr), `perception`(≈Gv/Ga) ya cubren lo
+   grueso; posibles añadidos amplios: **velocidad de proceso (Gs)** y **conocimiento/cristalizado (Gc)**. → **Recomiendo NO
+   explotar** en 70 sub-habilidades; mantener el set amplio y usar CHC como **referencia** para profundizar si hace falta.
+
+**Decisión propuesta:** (i) añadir **Dominancia** al afecto (PAD completo) y ligarla a la Observación/autorregulación;
+(ii) derivar un **perfil Big Five** de las aptitudes (sin stats nuevos); (iii) tratar la cognición con el set amplio
+actual, CHC como norte. Así "hay más" pero **sin inflar** — se ordena lo que ya existe bajo marcos reales.
+
+Fuentes: allostasis/carga alostática ([PubMed](https://pubmed.ncbi.nlm.nih.gov/36302295/), [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S030645302200292X)),
+Kleiber ([Wikipedia](https://en.wikipedia.org/wiki/Kleiber%27s_law)), PAD ([Wikipedia](https://en.wikipedia.org/wiki/PAD_emotional_state_model)),
+Big Five ([Wikipedia](https://en.wikipedia.org/wiki/Big_Five_personality_traits)), CHC ([Wiley](https://onlinelibrary.wiley.com/doi/full/10.1002/9781118660584.ese0431)).
