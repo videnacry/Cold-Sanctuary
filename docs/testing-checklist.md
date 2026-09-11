@@ -1239,6 +1239,19 @@ Requisitos en escena: un `Clock` (Clock_AUTO) da el tic del reloj; cada `Animal`
 - Pendiente (no-bug): sueño por **fatiga** además del reloj; `MindChannel.Sleepiness` aún decorativo; el futuro `Torpor`
   (miel letal) usará `SleepCycle.Suspended` para forzar el sueño.
 
+## 42. Río — `RiverCurrent` (corriente que arrastra y debilita) (PR #182)
+
+`RiverCurrentTest` (grupo 9) asevera, determinista (llama `ApplyTo` directo, sin física/NavMesh) y NO destructivo
+(destruye lo que crea): con `pushPower=3` y `massResist=1`, una **cría** (masa 0.2 → empuje neto 2.8) es **arrastrada
+aguas abajo (+Z)** y **pierde ATP** (debilitada), mientras una **hormiga grande** (masa 5 → neto −2) **AGUANTA** (no se
+mueve). Es el combate de stats del río.
+- [ ] **En Play (cuando esté el nivel de Sakshi)**: pon un `RiverCurrent` sobre un `BoxCollider` (trigger) del cauce,
+  `flowDirection` aguas abajo. Un ánima pequeña que entre es llevada; una grande resiste; al salir muy debilitada (sin
+  ATP) no puede pagar el movimiento → se queda quieta y solo **observa** (ventana de bond). Tunables:
+  `RiverCurrent.{pushPower, massResist, driftSpeed, dragEnergyPerSecond, dragStressPerSecond}`.
+- Pendiente (no-bug): colocarlo en la escena del nivel; el subsistema de **observación** (que Sakshi debilitada no huya y
+  gane bond) es su propia pieza — ver `docs/apremios-guardian-observacion.md`.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
