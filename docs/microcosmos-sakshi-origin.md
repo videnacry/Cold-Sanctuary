@@ -66,7 +66,10 @@ El río **empuja a las ánimas que entran en él**. Se implementa como **hechizo
 
 ## 5. Mecánicas que faltan (para construir, en orden)
 
-1. **`RiverCurrent`** (hechizo de corriente): dirección + área + daño por arrastre. *(primer build)*
+1. **`RiverCurrent`** (hechizo de corriente): dirección + área + daño por arrastre. *(primer build)* → **✅ HECHO (PR #182)**:
+   componente-zona (`Assets/Scripts/Microcosmos/RiverCurrent.cs`) que arrastra aguas abajo por **empuje neto = fuerza −
+   masa·resist** (grande aguanta, cría no), vía `ImpulseController` si lo hay o desplazando directo si no, y **debilita**
+   (drena ATP + estrés). Test `RiverCurrentTest` (grupo 9). Falta: **colocarlo en la escena del nivel** (la zona del cauce).
 2. **Preferencia de dieta** (depredador **prefiere hormigas a gusanos**): hoy la depredación elige por *facilidad +
    distancia* (`Forager.SelectPrey`), sin "sabor". Añadir un **peso de apetencia por material/especie** (gusano = poco
    apetecible / correoso) para que el bicho vaya a Sakshi y no a Kushal.

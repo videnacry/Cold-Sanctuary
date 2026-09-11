@@ -34,6 +34,30 @@ igual a personas y animales (*Una Salud*)— le hace un reconocimiento. Entre la
 
 ---
 
+## Nivel 0 — El río (el origen de Sakshi)
+
+> *Primer pase (a enriquecer por el autor). Diseño en [`microcosmos-sakshi-origin.md`](microcosmos-sakshi-origin.md).*
+
+La primera vez que Kushal desciende, no llega a la cueva: llega a una **orilla lejana**, donde el agua deja lo que
+arrastra. Allí, medio hundida en el barro, hay una **cría de hormiga** que el río se llevó de los suyos y escupió aquí,
+tan lejos que su familia es un rumor y el peligro, un vecino. Está tan zarandeada que apenas puede moverse. Solo puede
+**mirar**. Y mira a Kushal —un gusano lento y blando— como si fuera lo más asombroso del mundo.
+
+No muy lejos acecha algo con **poca hambre**: por eso se acerca despacio, con sigilo, dándole a Kushal el tiempo justo
+para entender dónde está y para **sentir el miedo antes de que llegue**. El depredador prefiere la carne de hormiga a la
+de gusano, así que va a por la cría. Kushal no sabe cazar ni huir cargándola: solo sabe **empujar**, interponer su cuerpo
+una y otra vez. Y como el otro tampoco tenía mucha hambre, al principio **se asusta y se aparta**.
+
+Pero el hambre crece. Vuelve por otro lado, y vuelve, hasta que el empujón deja de importarle y **se lanza a toda
+velocidad**. Justo entonces —porque han caminado alejándose del peligro que olían por todas partes, y este era el único
+rincón que no lo tenía— **llega el resto de la tribu**. El depredador mide la fuerza del grupo que lo encara, y **huye**.
+
+Sakshi no recordará las palabras, pero recordará dos cosas: que el **río** casi la borra, y que **alguien la defendió
+mientras ella solo podía observar**. De ahí le nace esa costumbre suya de **detenerse de golpe a mirar** —a indagar, a
+asombrarse—, que un día hará que los demás la dejen atrás.
+
+---
+
 ## Nivel 1 — El alba (la cueva)
 
 ### Sakshi, la que miraba
