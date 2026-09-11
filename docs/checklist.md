@@ -301,6 +301,16 @@ Orden alineado con la línea temporal del microworld (una época por área). Ver
       pensamientos/humores. Resoluble por campo de calma / posesión-mediación / satisfacer la raíz / bond.
       Reutilizable en todas las áreas; debut en el Huerto. Núcleo: "que los fuertes no se coman a los débiles".
 
+## Microcosmos — era pre-Ambrosio (origen de Sakshi) — DISEÑO acordado, a construir por rebanadas
+Docs: [`microcosmos-sakshi-origin.md`](microcosmos-sakshi-origin.md) (nivel/era) + [`apremios-guardian-observacion.md`](apremios-guardian-observacion.md) (subsistema).
+Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **empezar por el RÍO**.
+- [ ] **`RiverCurrent`** (1er build): hechizo tipo `PullSpell` con dirección fija (aguas abajo) + área (trigger del cauce) + **daño por arrastre** (arrastra a los pequeños, debilita a Sakshi cría → no huye, solo observa).
+- [ ] **Preferencia de dieta** en `Forager.SelectPrey`: peso de apetencia por material/especie (el depredador **prefiere hormiga a gusano**) → va a Sakshi, no a Kushal.
+- [ ] **Depredador débil + escalada de hambre** que vence al miedo (Kushal-gusano solo **empuja**); **anillo de depredadores** → vector seguro = orilla de Sakshi (llegada emergente de la tribu vía `ThreatScanner`/`ThreatEmitter`).
+- [ ] **Subsistema apremios/Guardián/Observación** por rebanadas: Guardián (generalizar `MoodDynamics`) → registro de apremios (hambre/miedo) → aptitud `observacion` → `Observar` pasivo (ojos, `grants`) → adormecer al Guardián (químico). Ver el doc.
+- [ ] Ley de la saga: **≥6 personajes vivos por historia, misma alma en cuerpos distintos**. En esta era, Momo/Medea = almas en **ancianas** que mueren cerca de su nacimiento.
+- [ ] Escenarios INTERMEDIOS entre este nivel y el alba de Ambrosio (a definir).
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
