@@ -32,16 +32,40 @@ public class Volition : MonoBehaviour
         self.SenseThreats();
     }
 
+    [Tooltip("Peso del HÁBITO: cuánto sube el atractivo de un deseo por su confianza-por-uso (temperamento histórico).")]
+    public float habitWeight = 0.5f;
+    [Tooltip("Peso de la DISCIPLINA en la histéresis: cuánto margen extra debe superar un deseo nuevo para desbancar al actual (el disciplinado no flip-flopea).")]
+    public float disciplineHysteresis = 0.15f;
+
+    Desire _last;
+    float _lastScore;
+
     void SelectAndDispatch(Animal self)
     {
+        // ARENA de arbitraje (docs/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
+        // STATS propios → personalidad. Se pondera por: NECESIDAD (drives) × HÁBITO (confianza-por-uso: lo practicado
+        // se elige más) + BOND (ya dentro del NeedProbe social) + DISCIPLINA (histéresis: no cambiar de deseo por un
+        // margen pequeño). Así dos seres con la misma necesidad eligen distinto según quiénes son.
         Desire best = null;
         float bestScore = minNeed;
         foreach (Desire d in DesireCatalog.All)
         {
-            // D3b3: × EffectiveWeight (confianza D3a) + gate por receptor (E2) cuando los deseos sean frases.
-            float score = d.NeedProbe(self);
+            float score = d.NeedProbe(self) * (1f + self.Confidence(d.capability) / 100f * habitWeight);   // hábito
             if (score > bestScore) { bestScore = score; best = d; }
         }
-        best?.Dispatch(self);
+
+        // DISCIPLINA (histéresis): un ser disciplinado se mantiene en su deseo salvo que otro lo supere por un margen.
+        if (_last != null && best != _last && bestScore < _lastScore + self.discipline * disciplineHysteresis)
+        {
+            best = _last;
+            bestScore = _last.NeedProbe(self) * (1f + self.Confidence(_last.capability) / 100f * habitWeight);
+        }
+
+        if (best != null)
+        {
+            best.Dispatch(self);
+            self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
+            _last = best; _lastScore = bestScore;
+        }
     }
 }

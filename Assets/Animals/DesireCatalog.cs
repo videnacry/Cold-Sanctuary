@@ -39,7 +39,8 @@ public static class DesireCatalog
         // (Forager.Hunt/Graze) — idéntico a lo que hacía RespondToHunger.
         new Desire("eat",
             self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
-            self => self.StartCoroutine(self.Feed())),
+            self => self.StartCoroutine(self.Feed()),
+            "forage"),
 
         // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
         // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/environmental-navigation.md.
@@ -50,7 +51,8 @@ public static class DesireCatalog
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
                 Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
                 if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
-            }),
+            },
+            "mate"),
 
         // ── APREMIOS SOCIALES como DESEOS (docs/consciousness-mechanics.md §4: la sim social es capacidad de Anima por
         // config; compite en la MISMA arena que comer/celo → de la pugna, resuelta por los stats propios, emerge la
@@ -60,13 +62,15 @@ public static class DesireCatalog
         // amplificada por la afabilidad del que cuida. Es el "Tend" de Sakshi/la tribu, ahora compitiendo con el hambre.
         new Desire("tend",
             self => SocialNeed(self, care: true) * Mathf.Max(0.3f, self.afabilidad) * W_TEND,
-            self => ApproachBondTarget(self, care: true)),
+            self => ApproachBondTarget(self, care: true),
+            "tend"),
 
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
         new Desire("follow",
             self => SocialNeed(self, care: false) * Mathf.Max(0.2f, self.sociability) * W_FOLLOW,
-            self => ApproachBondTarget(self, care: false)),
+            self => ApproachBondTarget(self, care: false),
+            "follow"),
     };
 
     // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
