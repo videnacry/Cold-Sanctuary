@@ -14,7 +14,9 @@ public enum PerceptChannel
     Direction,    // en qué dirección
     Movement,     // si se mueve / hacia dónde
     // Específicos (según el receptor)
-    Color,        // vista
+    Color,        // vista — banda VISIBLE (los dicrómatas como el perro la captan con MENOS matices)
+    ColorUV,      // ultravioleta: abejas/aves/renos lo ven; marcas UV (flores) solo detectables por quien tiene esta banda
+    ColorInfra,   // infrarrojo/calor-como-color: serpientes; solapa con termocepción
     Shape,        // vista/tacto
     Odor,         // olfato
     Flavor,       // gusto
@@ -45,7 +47,8 @@ public static class Percept
     {
         switch (c)
         {
-            case PerceptChannel.Color: case PerceptChannel.Odor: case PerceptChannel.Flavor:
+            case PerceptChannel.Color: case PerceptChannel.ColorUV: case PerceptChannel.ColorInfra:
+            case PerceptChannel.Odor: case PerceptChannel.Flavor:
             case PerceptChannel.Sound: case PerceptChannel.Texture: case PerceptChannel.Temperature:
             case PerceptChannel.Bioelectric:
                 return PerceptKind.Stimulus;                      // lo que el RECEPTOR transduce

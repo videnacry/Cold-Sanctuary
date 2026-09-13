@@ -100,11 +100,14 @@ Cada órgano DECLARA qué **información** genera, no su nombre:
 - **`PerceptChannel`**: los canales de información — GENERALES (Presence/Distance/Direction/Movement, casi cualquier
   sentido) + ESPECÍFICOS (Color/Shape=vista, Odor=olfato, Flavor=gusto, Sound=oído, Texture/Temperature=tacto/termo,
   Bioelectric=electro) + de alto nivel (Identity/Emotion/Threat).
-- **`SenseOrgan`** (la clase de órgano que faltaba): `sense` (fija el alcance) + `provides` (canal→calidad 0-1) +
-  `rangeMultiplier`. **Todo es config**, no el tipo → **ojo normal / ojo CIEGO (Color 0) / ojo BORROSO (Color ~0.3) /
-  lengua que SABOREA LA LUZ (gusto que provee Color) / oído que escucha la luz…**. Sí, una "super-lengua" que saborea
-  partículas del aire (rastrear como el olfato) o la luz (rastrear como la vista) es POSIBLE — se configura sus canales.
-  Presets: `Eye/BlindEye/Nose/Ear/Tongue/Skin/LightTastingTongue`.
+- **`SenseOrgan`** (la clase de órgano que faltaba): **la LISTA COMPLETA de canales, cada uno con un número base 0-1**
+  (0 = no lo capta) + **`acuity`** = intensidad/profundidad GLOBAL que escala todos (idea del usuario: hay una base
+  universal y la intensidad decide cuánto detalle se obtiene) → calidad = base × acuity. **Todo es config**, no el tipo →
+  ojo normal / **ciego** (todo 0) / **borroso** (acuity baja) / **dicrómata** (Color bajo, sin UV = perro) / **UV** (abeja) /
+  lengua que **SABOREA LA LUZ** / oído que oye luz. Presets: `Eye/BlindEye/DogEye/UVEye/Nose/Ear/Tongue/Skin/LightTastingTongue`.
+- **Colores = BANDAS espectrales** (alineado con la ciencia): `Color`(visible)/`ColorUV`/`ColorInfra`. Un dicrómata (perro)
+  ve la banda visible con MENOS matices; una abeja añade `ColorUV`. Una **marca UV** (flor) solo la detecta quien tenga esa
+  banda → sí, hay "colores especiales" cuya detectabilidad depende del receptor del observador.
 - **`ObserveSpell.Perceive(target)`**: AGREGA los canales de todos los órganos del ser (máxima calidad, atenuada por la
   distancia) → un dict canal→calidad = QUÉ información saca del objetivo. Vía MÁGICA (grimorio "observar"): añade todos
   los canales a calidad = **confianza del hechicero** → **más habilidad, más información**. Test `SensesTest` (grupo 14).

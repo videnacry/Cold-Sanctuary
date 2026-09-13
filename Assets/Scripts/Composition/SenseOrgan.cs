@@ -29,17 +29,21 @@ public class SenseOrgan : MonoBehaviour
     public string sense = "vista";
     [Tooltip("Multiplicador de alcance de ESTE órgano (águila = >1; miope = <1).")]
     [Min(0f)] public float rangeMultiplier = 1f;
-    [Tooltip("Qué canales de información genera este órgano y con qué calidad (config → ciego/borroso/sinestésico).")]
+    [Tooltip("INTENSIDAD/PROFUNDIDAD global del órgano (0..1+): escala TODOS sus canales (idea del usuario — hay una base " +
+             "universal y la intensidad decide cuánto detalle se obtiene). Ojo borroso = acuity baja; ojo agudo = alta.")]
+    [Min(0f)] public float acuity = 1f;
+    [Tooltip("La LISTA COMPLETA de canales, cada uno con su BASE 0..1 (0 = este órgano no capta ese canal). La calidad " +
+             "efectiva = base × acuity. Un ojo ciego = todo 0; un perro dicrómata = Color bajo, sin ColorUV; una abeja = ColorUV>0.")]
     public ChannelQuality[] provides;
 
     /// <summary>Alcance efectivo del órgano (sentido × multiplicador).</summary>
     public float Reach => Senses.RangeOf(sense) * rangeMultiplier;
 
-    /// <summary>Calidad [0,1] con la que este órgano capta un canal (0 = no lo capta).</summary>
+    /// <summary>Calidad efectiva [0,1] con la que capta un canal = base del canal × <see cref="acuity"/> (0 = no lo capta).</summary>
     public float QualityOf(PerceptChannel c)
     {
         if (provides == null) return 0f;
-        foreach (ChannelQuality q in provides) if (q.channel == c) return q.quality;
+        foreach (ChannelQuality q in provides) if (q.channel == c) return Mathf.Clamp01(q.quality * acuity);
         return 0f;
     }
 
@@ -74,4 +78,13 @@ public class SenseOrgan : MonoBehaviour
     /// <summary>Una lengua SINESTÉSICA que "saborea la luz" (provee Color por el gusto) — rara pero posible.</summary>
     public static SenseOrgan LightTastingTongue(GameObject go) => Add(go, "Lengua-luz", "gusto", 3f,
         (PerceptChannel.Presence, 1f), (PerceptChannel.Flavor, 1f), (PerceptChannel.Color, 0.6f), (PerceptChannel.Distance, 0.4f));
+
+    /// <summary>Ojo DICRÓMATA (perro): ve, pero con MENOS matices de color y sin UV.</summary>
+    public static SenseOrgan DogEye(GameObject go) => Add(go, "Ojo dicromata", "vista", 1f,
+        (PerceptChannel.Presence, 1f), (PerceptChannel.Distance, 0.9f), (PerceptChannel.Direction, 1f),
+        (PerceptChannel.Movement, 1.2f), (PerceptChannel.Color, 0.4f), (PerceptChannel.Shape, 0.8f));   // buen movimiento, poco color
+    /// <summary>Ojo con banda ULTRAVIOLETA (abeja/ave): ve marcas UV invisibles para el humano.</summary>
+    public static SenseOrgan UVEye(GameObject go) => Add(go, "Ojo UV", "vista", 1f,
+        (PerceptChannel.Presence, 1f), (PerceptChannel.Distance, 0.7f), (PerceptChannel.Direction, 1f),
+        (PerceptChannel.Movement, 1f), (PerceptChannel.Color, 0.8f), (PerceptChannel.ColorUV, 1f), (PerceptChannel.Shape, 0.7f));
 }
