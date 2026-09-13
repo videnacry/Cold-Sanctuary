@@ -25,6 +25,14 @@ public class MoodDynamics : MonoBehaviour
     public float wLowGlucose = 0.20f;
     public float wLowMinerals = 0.15f;
 
+    // ── El GUARDIÁN (alostasis) legible (docs/apremios-guardian-observacion.md §3) ─────────────────────────────
+    /// <summary>Carga alostática ANTES de la observación (suma ponderada de los apremios que rebasan lo seguro).</summary>
+    public float AllostaticLoad { get; private set; }
+    /// <summary>Apremios actuales (para el Volition/lectura): hambre / fatiga / sueño [0,1].</summary>
+    public float ApremioHambre { get; private set; }
+    public float ApremioFatiga { get; private set; }
+    public float ApremioSueno  { get; private set; }
+
     float _next;
     Mind _mind;
     MoodState _mood;
@@ -50,13 +58,23 @@ public class MoodDynamics : MonoBehaviour
         float glucoseLack = h != null ? (1f - h.glucosa) : 0f;
         float mineralLack = h != null ? (1f - h.calcio) : 0f;
 
-        float target = Mathf.Clamp01(
+        // Apremios legibles (lo que exige el cuerpo) — los lee el Volition y quien quiera.
+        ApremioHambre = Mathf.Clamp01(hunger);
+        ApremioFatiga = Mathf.Clamp01(fatigue);
+        ApremioSueno  = Mathf.Clamp01(anima.sleepiness);
+
+        // Carga alostática = suma ponderada de los apremios (cuánto EXIGE el estado). Es lo que el Guardián querría volver estrés.
+        AllostaticLoad = Mathf.Clamp01(
             baseStress
             + wFatigue * fatigue
-            + wSleep * Mathf.Clamp01(anima.sleepiness)
+            + wSleep * ApremioSueno
             + wHunger * hunger
             + wLowGlucose * glucoseLack
             + wLowMinerals * mineralLack);
+
+        // OBSERVACIÓN: amortigua el SUFRIMIENTO (no el apremio) → un ser sereno/observando sufre menos por la misma carga.
+        // Un ser promedio → factor 1 (sin cambio; aditivo sobre lo ya tuneado).
+        float target = AllostaticLoad * Observation.SufferingFactor(anima);
 
         float rate = driftRate * Mathf.Max(0.2f, anima.sensibilidad) * dt;   // sensibilidad = reactividad emocional
         if (h != null)

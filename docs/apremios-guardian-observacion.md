@@ -170,14 +170,14 @@ actual, CHC como norte. Así "hay más" pero **sin inflar** — se ordena lo que
 | **Personalidad Big Five** | ✅ APLICADO (PR #184) | Faltaba el mapeo → `BigFive.Of(Anima)` deriva OCEAN de las aptitudes (sin stats nuevos). |
 | **Preferencia de dieta** | ✅ APLICADO (PR #184) | Faltaba el "sabor" → `DietPreference` (apetencia por especie) integrado en `Forager.SelectPrey`. |
 | **Cognición CHC** | 🟡 parcial | `reasoning`(Gf)/`memory`(Gsm/Glr)/`perception`(Gv/Ga) cubren lo amplio. Opcional a futuro: `Gs` (velocidad) / `Gc` (conocimiento). Recomendado NO inflar. |
-| **Guardián (alostasis + Kleiber)** | ❌ FALTA (próxima rebanada) | Piezas presentes: `Exertion`(AEE), `MoodDynamics`(guard parcial), `Metabolism`(fuentes), `MediumFactor`(termorreg). **Falta**: (1) el componente unificador con **umbrales por stat**, (2) el **BMR base ∝ masa^0.75** (Kleiber), (3) salida = carga **proporcional al exceso**, (4) hechizo/químico que **relaja/duerme** al Guardián. |
-| **Apremios** (hechizos-estado) | ❌ FALTA | Registro de apremios (hambre/miedo…) que depositan intensidad; los lee el `Volition` (sesgo) y el Guardián (carga). Patrón `EstrusState`/`SicknessState`. |
-| **Observación / ecuanimidad** | ❌ FALTA | Aptitud `observacion` (base por temple/razón/disciplina + químicos) que **amortigua la carga** del Guardián (no el apremio) + el **pasivo de los ojos** (mirada sostenida → sube por uso) vía `grants`. |
+| **Guardián (alostasis + Kleiber)** | ✅ APLICADO (PR #185) | `MoodDynamics` generalizado: expone **`AllostaticLoad`** (carga = suma ponderada de apremios) y su salida se **amortigua por la observación**. **`BasalMetabolism`** añade el **BMR ∝ masa^0.75** (Kleiber). Falta (opcional): hechizo/químico que **adormece** al Guardián (estupefaciente). |
+| **Apremios** | ✅ APLICADO (PR #185) | `MoodDynamics` publica los apremios legibles (`ApremioHambre/Fatiga/Sueno`) desde las fuentes (hambre/fatiga/sueño). Refinamiento futuro: apremios como hechizos-estado separados (miedo/duelo) con el patrón `EstrusState`. |
+| **Observación / ecuanimidad** | ✅ APLICADO (PR #185) | `Observation.LevelOf` (temple/razón/disciplina por encima de la media + `ObservationSkill` entrenable) → `SufferingFactor` **amortigua la carga** del Guardián (no el apremio). **`ObserveSpell`** (pasivo de los ojos): mirada sostenida → entrena la habilidad + ecuanimidad. |
 
-**Resumen "qué falta para replicarlos por completo":** los tres marcos "de ordenar lo que había" (PAD, Big Five, dieta)
-**ya están aplicados**. Lo que falta es **construir el subsistema nuevo** (Guardián + apremios + observación), que es la
-próxima rebanada grande — todas sus dependencias (Exertion/MoodDynamics/Metabolism/MediumFactor/AptitudeEvolution/grants)
-**ya existen**, así que es integración, no invención.
+**Resumen:** los tres marcos "de ordenar lo que había" (PAD, Big Five, dieta) y el **subsistema nuevo** (Guardián +
+apremios + observación) **ya están aplicados**. Todo aditivo/graceful: un ser PROMEDIO no cambia (observación 0 → factor 1;
+`BasalMetabolism` es opt-in). Pendiente menor: el hechizo que adormece al Guardián (estupefaciente/adicción), y afinar los
+apremios de **miedo/duelo** como hechizos-estado. Dependencias reusadas: `Exertion`/`Metabolism`/`MediumFactor`/`AptitudeEvolution`/`grants`.
 
 Fuentes: allostasis/carga alostática ([PubMed](https://pubmed.ncbi.nlm.nih.gov/36302295/), [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S030645302200292X)),
 Kleiber ([Wikipedia](https://en.wikipedia.org/wiki/Kleiber%27s_law)), PAD ([Wikipedia](https://en.wikipedia.org/wiki/PAD_emotional_state_model)),

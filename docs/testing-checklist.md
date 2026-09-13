@@ -1252,6 +1252,26 @@ mueve). Es el combate de stats del río.
 - Pendiente (no-bug): colocarlo en la escena del nivel; el subsistema de **observación** (que Sakshi debilitada no huya y
   gane bond) es su propia pieza — ver `docs/apremios-guardian-observacion.md`.
 
+## 43. Preferencia de dieta — `DietPreference` (PR #184)
+
+`DietPreferenceTest` (grupo 10, pura/determinista): `DietPreference.For(predador, presa)` — la mariquita prefiere el
+pulgón (>1); un depredador de hormigas prefiere **hormiga a gusano** (Ant>1, Gusano<1); lo no listado = neutro (1).
+Integrado en `Forager.SelectPrey` (`score = facilidad × apetencia − distancia`).
+- [ ] **En Play**: un depredador con presas de varias especies cerca elige la **más apetecible** (no solo la más fácil/cerca).
+
+## 44. Apremios / Guardián / Observación (PR #185)
+
+`ObservationTest` (grupo 11, determinista): un ser **promedio** tiene observación ~0 → `SufferingFactor` ~1 (no cambia el
+estrés existente); un ser **sereno/entrenado** (`ObservationSkill`) observa >0 → sufre MENOS por la misma carga (factor <1).
+- **Guardián** = `MoodDynamics` generalizado: expone `AllostaticLoad` (carga = apremios ponderados) y su salida de estrés se
+  **amortigua por la observación** (`Observation.SufferingFactor`). Apremios legibles: `ApremioHambre/Fatiga/Sueno`.
+- **BMR (Kleiber)** = `BasalMetabolism` (opt-in): drena ATP ∝ masa^0.75 con el tiempo (coste de estar vivo).
+- **Observar** = `ObserveSpell` (pasivo de los ojos): mirada sostenida a un ánima → entrena `ObservationSkill` + ecuanimidad.
+- [ ] **En Play (nivel de Sakshi)**: Sakshi débil (sin ATP) no huye y **observa** al que se le acerca → gana ecuanimidad
+  (menos estrés) → se deja acompañar (ventana de bond). Tunables: `Observation.MaxDamping`, `ObserveSpell.{gazeSeconds,
+  trainPerSecond, calmPerSecond}`, `BasalMetabolism.bmrCoefficient`.
+- Pendiente (no-bug): el hechizo que **adormece** al Guardián (estupefaciente); apremios de **miedo/duelo** como hechizos-estado.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
