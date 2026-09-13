@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -33,6 +34,9 @@ public class ObserveSpell : MonoBehaviour
         if (_skill == null) _skill = gameObject.AddComponent<ObservationSkill>();
     }
 
+    [Tooltip("Velocidad a la que la ALERTA sube/baja con lo que se percibe (percepción → alertness → decisión).")]
+    [Min(0f)] public float alertnessRate = 0.8f;
+
     void Update()
     {
         Transform t = NearestAnima();
@@ -44,6 +48,16 @@ public class ObserveSpell : MonoBehaviour
             _skill.Train(trainPerSecond * Time.deltaTime);    // mirar sostenido → sube la observación (evolución por uso)
             _skill.AddBoost(calmPerSecond * Time.deltaTime);  // y da ecuanimidad AHORA (amortigua el sufrimiento)
         }
+
+        // PERCEPCIÓN → ALERTNESS: la alerta sube hacia la mayor calidad de lo que se PERCIBE del más cercano; cae si no
+        // hay nada. Así un ser solo se pone en guardia por lo que sus sentidos (o el grimoire) alcanzan (idea del usuario).
+        float strongest = 0f;
+        if (t != null)
+        {
+            Anima ta = t.GetComponentInParent<Anima>();
+            foreach (KeyValuePair<PerceptChannel, float> kv in Perceive(ta)) strongest = Mathf.Max(strongest, kv.Value);
+        }
+        if (_self != null) _self.alertness = Mathf.MoveTowards(_self.alertness, strongest, alertnessRate * Time.deltaTime);
     }
 
     /// <summary>Alcance de observación: el MEJOR de sus ÓRGANOS (SenseOrgan) o, si no tiene, el mejor de su lista `senses`.</summary>

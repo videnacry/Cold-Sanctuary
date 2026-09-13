@@ -128,6 +128,15 @@ Cada órgano DECLARA qué **información** genera, no su nombre:
   derivado por el cerebro (Distancia/Identidad; el estímulo no basta — la sala con niebla) → **affordance** (Gibson: lo que
   el entorno OFRECE hacer — Amenaza/Emoción). `PerceptChannel` cubre los tres niveles; `Percept.Kind` los etiqueta.
 
+### 3.3. Percepción → ALERTNESS → decisión (PR #202)
+
+Dos conceptos distintos, ambos útiles (no fusionar): **`aware`** (bool) = ESTADO discreto "respondiendo a una amenaza
+AHORA"; **`alertness`** (float 0–1, nuevo en `Anima`) = GRADO de alerta perceptiva "cuánto estoy captando". La percepción
+las alimenta: `ObserveSpell` sube `alertness` hacia la mayor calidad de lo que PERCIBE del más cercano (por órganos o
+grimoire), y cae si no percibe nada → un ser solo se pone en guardia por **lo que sus sentidos alcanzan** (un ciego no se
+alerta de algo que solo se ve). Se ve en el HUD. **Siguiente slice:** que `alertness` gatee `aware`/`SenseThreats` (reaccionar
+solo a lo percibido) — hoy `alertness` ya se genera; falta enchufarla a la respuesta de amenaza del `Animal`.
+
 ## Estrategia de PREFABS / versionado / UI (respuestas)
 
 - **Escenas y tests: ya son TODO por CÓDIGO** (`SampleSceneBuilder`/`MicrocosmosSceneBuilder`/`MobWorldSceneBuilder` + los

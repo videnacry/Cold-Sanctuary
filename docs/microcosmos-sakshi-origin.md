@@ -105,6 +105,27 @@ depredadores, se acerca/interactúa con la tribu. Sin objetivo duro; es explorac
   crea el mapa con el mismo plan de respawn que el Santuario 1, conservando río/orilla/anillo.
 - El **temporizador** = reusar el `Clock`/`TimeController` (un `MobWorldMission`-like con cuenta atrás → salir por el `YogaPortal`).
 
+## 6.6. Patrón de niveles por era: EXPLORACIÓN LIBRE ⨯ CHECKPOINTS
+
+Idea del usuario: cada era tendrá **dos tipos** de nivel, y se puede establecer como patrón:
+- **Exploración LIBRE** (temporizador): merodear sin objetivo duro; su función es **explorar entornos nuevos donde el
+  peligro SUPERA los stats/hechizos del jugador** → cuesta volver al punto de salida (tensión). El punto de salida es un
+  portal (ver §6.7).
+- **Exploración por CHECKPOINTS**: el jugador debe **alcanzar checkpoints** del mapa para completar el nivel. Base ya
+  existente: `CarryToRefuge` (contar llegadas a un punto) y `ReachGoalMission` (ir a una meta WASD).
+
+## 6.7. Hilo de estos niveles: Kushal DESPIERTA la observación de Sakshi
+
+El PROPÓSITO narrativo de los niveles intermedios (aclaración del usuario): Kushal va **despertando la OBSERVACIÓN de
+Sakshi** (con el pasivo `ObserveSpell`: mirada sostenida → sube la observación/ecuanimidad). Eso la convierte, poco a poco,
+en la Sakshi que **se ensimisma mirando** lugares/ánimas y **no nota la agenda de la tribu** → **se rezaga**. Entonces los
+miembros de la tribu deben **ir a buscarla para "despertarla"** (interrumpir su observación) y que avance con ellos al
+siguiente lugar. Bucle jugable (mapea a lo que ya hay):
+- **Kushal + Sakshi observan** juntos → `ObservationSkill` de Sakshi sube (y su `alertness`); gana ecuanimidad.
+- **Sakshi se absorbe** → deja de seguir a la tribu (su deseo `observe`/quietud gana a `follow`).
+- **La tribu se aleja** (cohesión baja, `TribeCohesion`) → un miembro vuelve a por ella (`tend`/`follow` hacia Sakshi) y la
+  "despierta" (rompe el gaze) → Sakshi retoma el `follow`. Es el germen de su rareza y del abandono futuro.
+
 ## 7. Escenarios intermedios hasta Ambrosio (a definir)
 
 Entre este nivel (origen de Sakshi) y el alba de Ambrosio habrá **varios escenarios** que:
