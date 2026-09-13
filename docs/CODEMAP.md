@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 349 tipos._
+_Total: 348 tipos._
 
 
 ## Animals
@@ -62,7 +62,7 @@ _Total: 349 tipos._
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
 - **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
 - **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
-- **Anima** (class) — `Assets/Scripts/Anima.cs` — Shared base for all living beings — animals, NPCs, and eventually the player.
+- **Anima** (class) — `Assets/Scripts/Anima.cs`
 - **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5):
 - **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
 - **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
@@ -307,7 +307,6 @@ _Total: 349 tipos._
 - **SharedSoulDemo** (class) — `Assets/Scripts/Soul/SharedSoulDemo.cs` — Demo (OnGUI) del ALMA COMPARTIDA (docs/soul-relations-reincarnation §4) para el sandbox `AlmaCompartida_AUTO`:
 - **ShipCtrl** (class) — `Assets/Scripts/ShipCtrl.cs`
 - **SicknessTest** (class) — `Assets/Scripts/SicknessTest.cs` — Unidad de test de la ENFERMEDAD (docs/testing-checklist.md §38), por `TestProbe`, determinista:
-- **SimpleAnima** (class) — `Assets/Scripts/SimpleAnima.cs` — Un `Anima` CONCRETO mínimo — un ser "despertable" sin comportamiento propio (docs/anima-architecture.md:
 - **SleepTest** (class) — `Assets/Scripts/SleepTest.cs` — Unidad de test del SUEÑO día/noche (docs/testing-checklist.md §41), por `TestProbe`:
 - **SlideDoor** (class) — `Assets/Scripts/SlideDoor.cs`
 - **SocialField** (class) — `Assets/Scripts/Soul/SocialField.cs` — CAMPO SOCIAL — efecto EMERGENTE y GLOBAL (docs/soul-relations-reincarnation §2b).

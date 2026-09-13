@@ -6,7 +6,7 @@ using UnityEngine;
 /// arquetipo (Bear, Wolf, Human…) y **aplica** sus stats base (físicas/mentales del catálogo `Archetypes`) + los
 /// **pensamientos base** de la especie al `Anima`. Con esto la "especie" deja de ser el tipo de clase
 /// (`BearBehaviour`, `WolfBehavior`…) y pasa a ser **data de un componente** — el paso para reconstruir un lobo por
-/// composición (`SimpleAnima` + componentes) sin una subclase por especie.
+/// composición (`Anima` + componentes) sin una subclase por especie.
 ///
 /// Respeta `agility`/`perception` (las gobiernan `BaseAgility`/`BasePerception` + evolución), igual que hacía
 /// `Animal.ApplySpeciesArchetype`. También da el `SpeciesName` para relaciones/karma.

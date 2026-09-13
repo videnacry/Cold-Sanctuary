@@ -51,7 +51,7 @@ public class StateSpellsTest : MonoBehaviour, ITestUnit
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
-        go.AddComponent<SimpleAnima>().composure = composure;
+        go.AddComponent<Anima>().composure = composure;
         return go;
     }
 }

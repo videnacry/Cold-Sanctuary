@@ -37,7 +37,7 @@ public class ObservationTest : MonoBehaviour, ITestUnit
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name;
-        SimpleAnima a = go.AddComponent<SimpleAnima>();
+        Anima a = go.AddComponent<Anima>();
         a.composure = temple; a.reasoning = temple; a.discipline = temple;
         return go;
     }
