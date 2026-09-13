@@ -1286,6 +1286,15 @@ deseo + tolerancia.
 - Pendiente (no-bug): cablear los apremios de miedo/duelo al `Level1Director` de Ambrosio (hoy el director siembra
   `ThoughtField`; puede además lanzar `GriefSpell` en el clímax).
 
+## 46. Estado ideal — elementos (composición) + actividad (ACWR) (PR #189)
+
+`IdealStateTest` (grupo 13, pura/determinista): `ElementsStatus` (ideal ∝ masa; ratio→nivel Deficiente/Ideal/Exceso; color
+verde/naranja/rojo; unidad g/mg/µg) y `ActivityLevel` (carga aguda 7d / crónica 28d → ACWR; zona **Bendecido 0.8–1.3** /
+Desentrenado / Sobrecarga).
+- [ ] **En Play (futuro HUD)**: los stats de Kushal se muestran con número+unidad+color (`ElementsStatus.Evaluate`), y su
+  actividad diaria mueve la `ActivityZone`. Base científica: composición corporal real + ACWR/Yerkes-Dodson (ver
+  `docs/consciousness-mechanics.md`).
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

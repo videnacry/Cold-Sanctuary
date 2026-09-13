@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 345 tipos._
+_Total: 348 tipos._
 
 
 ## Animals
@@ -56,6 +56,7 @@ _Total: 345 tipos._
 ## Scripts
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
+- **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
 - **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
@@ -137,6 +138,7 @@ _Total: 345 tipos._
 - **ElementAmount** (class) — `Assets/Scripts/Composition/Constitution.cs` — Cantidad de un elemento (símbolo de la tabla periódica, `Chemistry`).
 - **ElementCost** (class) — `Assets/Scripts/Transformation/MagicReserves.cs` — Coste de un hechizo en elementos (docs/magic-metabolism-progression.md §1).
 - **ElementFragment** (class) — `Assets/Scripts/Chemistry/ElementFragment.cs` — A collectible fragment dropped by an IngredientMob when processed.
+- **ElementLevel** (enum) — `Assets/Scripts/Chemistry/ElementsStatus.cs` — Estado de un elemento respecto a su cantidad IDEAL (docs/consciousness-mechanics.md §UI/estado ideal).
 - **ElementState** (enum) — `Assets/Scripts/UI/Palette/PaletteElement.cs`
 - **EmergenceAuto** (class) — `Assets/Scripts/EmergenceAuto.cs` — Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/capabilities-and-embodiment.md §4), reportando por `TestProbe`.
 - **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md).
@@ -189,6 +191,7 @@ _Total: 345 tipos._
 - **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
 - **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
 - **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
+- **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
 - **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
 - **IFactory** (interface) — `Assets/Scripts/IFactory.cs`
 - **IInteractable** (interface) — `Assets/Scripts/Interaction/IInteractable.cs` — Marker interface for any object Kushal can interact with.
