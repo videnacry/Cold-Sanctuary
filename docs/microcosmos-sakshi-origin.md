@@ -70,9 +70,10 @@ El río **empuja a las ánimas que entran en él**. Se implementa como **hechizo
    componente-zona (`Assets/Scripts/Microcosmos/RiverCurrent.cs`) que arrastra aguas abajo por **empuje neto = fuerza −
    masa·resist** (grande aguanta, cría no), vía `ImpulseController` si lo hay o desplazando directo si no, y **debilita**
    (drena ATP + estrés). Test `RiverCurrentTest` (grupo 9). Falta: **colocarlo en la escena del nivel** (la zona del cauce).
-2. **Preferencia de dieta** (depredador **prefiere hormigas a gusanos**): hoy la depredación elige por *facilidad +
-   distancia* (`Forager.SelectPrey`), sin "sabor". Añadir un **peso de apetencia por material/especie** (gusano = poco
-   apetecible / correoso) para que el bicho vaya a Sakshi y no a Kushal.
+2. **Preferencia de dieta** (depredador **prefiere hormigas a gusanos**) → **✅ HECHO (PR #184)**: `DietPreference`
+   (apetencia por especie) integrado en `Forager.SelectPrey` (`score = facilidad × apetencia − distancia`). El depredador
+   de hormigas prefiere `Ant` (3×) y desdeña `Gusano`/`Worm` (0.3×) → va a Sakshi, no a Kushal. Test `DietPreferenceTest`
+   (grupo 10). **Falta en el nivel:** que el depredador débil sea un `Animal` con `Forager` (hoy es blockout `SimpleAnima`).
 3. **Depredador débil + escalada de hambre** que vence al miedo: el hambre creciente **sube el peso del apremio de comer
    por encima del miedo** → deja de importarle el empujón (ver `apremios-guardian-observacion.md` §2). Kushal-gusano solo
    **empuja** (interpone su cuerpo / un empujón por impulso, no un ataque).
