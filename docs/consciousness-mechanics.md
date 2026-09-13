@@ -31,6 +31,23 @@ Piezas existentes que reusa: `PlayerStats`/`IMind`/`IBody` (stats), `ScreenEffec
 Falta: un **HUD completo de stats de Kushal** (visible + descubrimiento progresivo) y el mapeo **acción/comida → efecto**
 por-ítem, más el enganche de "bienestar sostenido → sube aptitud".
 
+### 2.1. Base científica del ESTADO IDEAL (implementada) + la UI de colores
+
+- **Composición de nutrientes (elementos):** el cuerpo es, por % de masa, O 65% · C 18.5% · H 9.5% · N 3.3% · Ca 1.6% ·
+  P 1.2% · K 0.4% · S 0.25% · Na 0.15% · Cl 0.15% · Mg 0.05% (≈99.9%). → **`ElementsStatus`** (implementado): `IdealGrams
+  (elemento, masa) = fracción × masa`; `Classify(actual, ideal)` por RATIO → Deficiente/Bajo/**Ideal**/Alto/Exceso; `ColorOf`
+  (verde/naranja/rojo); `Format` (g/mg/µg/ng). **Es la única función** que la UI llama por elemento: número con unidad +
+  color de si está estable/inferior/superior. **Se EXTRAPOLA a cualquier especie/body** con solo su masa (mismas proporciones).
+- **Nivel de actividad (el "estado bendecido"):** modelo real del deporte — **carga aguda (7 días)** vs **crónica (28
+  días)**; su ratio **ACWR** en **0.8–1.3 = zona óptima/bendecida** (fitness y fatiga en equilibrio). Coincide con
+  **Yerkes-Dodson** (rendimiento/creatividad máximos con arousal ÓPTIMO, no máximo → *flow*: "calmado pero energizado").
+  **Fitness = carga crónica**, lo que crece despacio con actividad sostenida y alimenta el **crecimiento acumulado** de
+  aptitudes. → **`ActivityLevel`** (implementado): `Acute`/`Chronic`/`Acwr`/`Freshness`/`Zone` (Desentrenado/**Bendecido**/
+  Sobrecarga), EWMA por día de juego. Cada actividad llama `AddLoad`.
+- Test: `IdealStateTest` (grupo 13). Fuentes: composición ([sciencenotes](https://sciencenotes.org/elements-in-the-human-body-and-what-they-do/)),
+  ACWR ([scienceforsport](https://www.scienceforsport.com/acutechronic-workload-ratio/)), Yerkes-Dodson/flow ([simplypsychology](https://www.simplypsychology.org/what-is-the-yerkes-dodson-law.html)),
+  fitness-fatiga ([humankinetics](https://journals.humankinetics.com/view/journals/ijspp/17/5/article-p810.xml)).
+
 ## 3. OBSERVACIÓN — minijuego de destello + preguntas
 
 Idea del usuario: se muestra un **entorno por unos segundos**, luego se presentan **preguntas de opción múltiple** para
@@ -63,6 +80,28 @@ el `NavMeshAgent`.
 
 Es el rework más grande pendiente; toca la sim social recién hecha y el mapa del compañero → coordinar. Habilitador ya
 puesto: `Animal.Init` cede las aptitudes a `SoulComposition` si está presente (PR #187).
+
+### 4.1. El CHOQUE entre sistemas es el RASGO, no el bug (corrección del usuario, 2026-09-13)
+
+Aclaración importante: pensamientos ⨯ bonds ⨯ stats ⨯ herramientas ⨯ necesidades-biológicas **deben COMPETIR entre sí**;
+de esa pugna, resuelta por la **configuración/stats propios** de cada ser, emerge **su respuesta característica** = su
+**personalidad**. Por tanto la unificación NO es "elegir un sistema y descartar otro", sino **un único ARENA de
+arbitraje** donde todos los tirones (hambre, miedo, apremios sociales, deseos, hábitos) aportan su peso y **ganan según
+quién sea el ser**. `Volition` (deseo = necesidad×capacidad×confianza) y el `ImpulseController` (suma de impulsos
+ponderados) son dos mitades del mismo arena → se fusionan en uno. La diversidad de resoluciones ES el objetivo.
+
+### 4.2. Estado de la MIGRACIÓN a `Anima` (auditado 2026-09-13)
+
+- **Animales:** `Animal : Anima, ITarget, IEdible, …` ✅ (ya son `Anima`). `Mind` es **opt-in** (no todos lo llevan) → si
+  se quiere que "piensen", hay que añadírselo por config (encaja con "capacidad por configuración").
+- **Compañeros (Goluis/Panterilia):** ❌ **siguen siendo `MonoBehaviour` sueltos** (`Assets/Scripts/Companion/Companions/`) —
+  el "grave error" que mencionas **no está migrado**. El camino nuevo (composición `SimpleAnima`+pilares en el
+  SoulBlendSandbox) coexiste con esas clases legacy. Pendiente: migrarlos a `Anima` completo por composición.
+- **`SimpleAnima`:** aún se usa para actores del microcosmos + sandboxes. **Es** un `Anima` concreto (mínimo), pero la
+  directriz es **retirarlo para personajes**: un personaje = `Anima`/`Animal` completo cuyas capacidades limita su
+  CONFIGURACIÓN, no una clase recortada. `SimpleAnima` solo debería quedar (si acaso) para lo verdaderamente inanimado.
+- Los **bonds** (registro por-miembro `Anima.bonds` + por-especie `Archetypes.speciesBond`) **ya son** el sustrato de la
+  simulación social — encajan con "tenemos los bonds para la sim social".
 
 ## 5. Herramienta de contexto: CODEMAP + CI
 
