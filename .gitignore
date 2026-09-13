@@ -390,3 +390,6 @@ claude-answer.txt
 !*.md
 !.gitignore
 !.gitattributes
+# CI y herramientas del proyecto (excepciones a la lista blanca *.cs/*.md)
+!.github/workflows/*.yml
+!tools/*.py

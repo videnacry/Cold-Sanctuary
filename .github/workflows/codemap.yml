@@ -1,0 +1,29 @@
+name: CODEMAP al día
+
+# Verifica que docs/CODEMAP.md (índice de clases) está regenerado y commiteado en cada PR/push.
+# Así el "contexto completo del proyecto" se mantiene actualizado automáticamente (no depende de recordarlo).
+on:
+  pull_request:
+    paths: ["Assets/**/*.cs", "tools/gen_codemap.py", "docs/CODEMAP.md"]
+  push:
+    branches: [master]
+    paths: ["Assets/**/*.cs", "tools/gen_codemap.py"]
+
+jobs:
+  codemap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Regenerar CODEMAP
+        run: python3 tools/gen_codemap.py
+      - name: Verificar que está commiteado
+        run: |
+          if ! git diff --quiet docs/CODEMAP.md; then
+            echo "::error::docs/CODEMAP.md está desactualizado. Corre 'python3 tools/gen_codemap.py' y commitea el resultado."
+            git --no-pager diff docs/CODEMAP.md | head -80
+            exit 1
+          fi
+          echo "CODEMAP.md al día ✔"
