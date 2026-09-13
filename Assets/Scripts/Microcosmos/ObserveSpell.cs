@@ -46,10 +46,18 @@ public class ObserveSpell : MonoBehaviour
         }
     }
 
+    /// <summary>Alcance de observación: el MEJOR de sus ÓRGANOS (SenseOrgan) o, si no tiene, el mejor de su lista `senses`.</summary>
+    float Reach()
+    {
+        float reach = 0f;
+        foreach (SenseOrgan o in GetComponents<SenseOrgan>()) reach = Mathf.Max(reach, o.Reach);
+        if (reach <= 0f) reach = Senses.BestReach(senses);
+        return reach > 0f ? reach : fallbackRange;
+    }
+
     Transform NearestAnima()
     {
-        float reach = Senses.BestReach(senses);            // el alcance sale del MEJOR sentido que tenga
-        if (reach <= 0f) reach = fallbackRange;            // sin sentidos exteroceptivos → respaldo
+        float reach = Reach();
         Transform best = null; float bestSq = reach * reach;
         foreach (Collider c in Physics.OverlapSphere(transform.position, reach))
         {
@@ -59,5 +67,41 @@ public class ObserveSpell : MonoBehaviour
             if (d < bestSq) { bestSq = d; best = a.transform; }
         }
         return best;
+    }
+
+    /// <summary>QUÉ información extrae este ser de un objetivo: calidad [0,1] por <see cref="PerceptChannel"/>. Agrega los
+    /// canales de sus ÓRGANOS (máxima calidad), atenuada por la distancia; y, si conoce el hechizo "observar" por el
+    /// GRIMORIO (vía mágica), añade TODOS los canales a una calidad = su confianza en el hechizo (más habilidad → más
+    /// información). Devuelve un dict canal→calidad. docs/consciousness-mechanics.md §3.</summary>
+    public Dictionary<PerceptChannel, float> Perceive(Anima target)
+    {
+        var result = new Dictionary<PerceptChannel, float>();
+        if (target == null || _self == null) return result;
+
+        float dist = Vector3.Distance(transform.position, target.transform.position);
+
+        // Vía ANATÓMICA: cada órgano, si su alcance cubre al objetivo, aporta sus canales atenuados por la distancia.
+        foreach (SenseOrgan o in GetComponents<SenseOrgan>())
+        {
+            float reach = o.Reach;
+            if (reach <= 0.01f || dist > reach) continue;
+            float atten = Mathf.Clamp01(1f - dist / reach);
+            if (o.provides != null)
+                foreach (SenseOrgan.ChannelQuality cq in o.provides)
+                {
+                    float q = cq.quality * atten;
+                    if (q > 0f && (!result.TryGetValue(cq.channel, out float cur) || q > cur)) result[cq.channel] = q;
+                }
+        }
+
+        // Vía MÁGICA (grimorio): "observar" aprendido → todos los canales a calidad = confianza/100 (habilidad del hechicero).
+        if (_self.KnowsSpell("observar"))
+        {
+            float magic = _self.Confidence("observar") / 100f;
+            if (magic > 0f)
+                foreach (PerceptChannel ch in System.Enum.GetValues(typeof(PerceptChannel)))
+                    if (!result.TryGetValue(ch, out float cur) || magic > cur) result[ch] = magic;
+        }
+        return result;
     }
 }

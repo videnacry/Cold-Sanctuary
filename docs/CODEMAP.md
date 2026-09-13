@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 351 tipos._
+_Total: 354 tipos._
 
 
 ## Animals
@@ -256,6 +256,7 @@ _Total: 351 tipos._
 - **PaletteGroup** (class) — `Assets/Scripts/UI/Palette/PaletteGroup.cs`
 - **PaletteResult** (struct) — `Assets/Scripts/UI/Palette/IPaletteEvaluator.cs`
 - **Panterilia** (class) — `Assets/Scripts/Companion/Companions/Panterilia.cs` — Panterilia — limpieza, nutrición, observación.
+- **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
 - **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
 - **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
 - **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
@@ -303,7 +304,9 @@ _Total: 351 tipos._
 - **ScentScanner** (class) — `Assets/Scripts/Microcosmos/ScentScanner.cs` — ESCÁNER DE OLOR — detecta cercanos y genera un impulso de ATRACCIÓN hacia la fuente más intensa.
 - **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística").
 - **ScreenFader** (class) — `Assets/Scripts/Meditation/ScreenFader.cs` — Full-screen black overlay used to hide the reality-shift transition.
+- **SenseOrgan** (class) — `Assets/Scripts/Composition/SenseOrgan.cs` — ÓRGANO SENSORIAL (docs/consciousness-mechanics.md §3) — la clase de body-part que faltaba.
 - **Senses** (class) — `Assets/Scripts/Soul/Senses.cs` — Catálogo de SENTIDOS (docs/consciousness-mechanics.md §3) — "observar" no es solo la vista:
+- **SensesTest** (class) — `Assets/Scripts/SensesTest.cs` — Test de los SENTIDOS/ÓRGANOS (docs/consciousness-mechanics.md §3, testing-checklist §47), por `TestProbe`:
 - **ServiceHub** (class) — `Assets/Scripts/Virtualization/ServiceHub.cs` — Tablero de servicio de un taller (Mecánica o Construcción; docs/forge-simulation.md §5).
 - **Sex** (class) — `Assets/Scripts/Sex.cs`
 - **SharedSoul** (class) — `Assets/Scripts/Soul/SharedSoul.cs` — ALMA COMPARTIDA entre reencarnaciones (docs/soul-relations-reincarnation.md §4).

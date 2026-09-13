@@ -126,6 +126,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<ObservationTest>();      // grupo 11: observación (amortigua el sufrimiento del apremio)
         tests.AddComponent<StateSpellsTest>();      // grupo 12: hechizos-estado (hub alostático, miedo, adicción)
         tests.AddComponent<IdealStateTest>();       // grupo 13: estado ideal (elementos por masa + actividad ACWR)
+        tests.AddComponent<SensesTest>();            // grupo 14: sentidos/órganos (observar = canales según el receptor)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance
