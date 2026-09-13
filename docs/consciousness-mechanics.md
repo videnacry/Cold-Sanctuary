@@ -110,7 +110,31 @@ Cada órgano DECLARA qué **información** genera, no su nombre:
   los canales a calidad = **confianza del hechicero** → **más habilidad, más información**. Test `SensesTest` (grupo 14).
 - Respuestas: ¿el gusto puede dar distancia? **sí, por config** (un órgano de gusto puede listar `Distance`). ¿Lenguas
   que saborean luz / oídos que oyen luz? **sí, por config** (canales sinestésicos). ¿El grimorio también trae la lista?
-  **sí**, y escalada por la habilidad. Faltan (a futuro): gatear los canales por el receptor real de la anatomía (grants).
+  **sí**, y escalada por la habilidad.
+- **SIN enganche anatómico (decisión 2026-09-14):** cualquier órgano puede ir en cualquier `Anima`, LIBRE — es lo que
+  habilita las **quimeras** (un pez con ojos de águila, una lengua que saborea la luz). No hay bloqueo por "receptor real".
+
+### 3.2. Base científica de la percepción (validación de `PerceptChannel`)
+
+`PerceptChannel` es correcto y ahora está FUNDAMENTADO en el modelo real (2 ejes ortogonales):
+- **Transducción** (`Senses.Transduction`): la biología clasifica los sentidos por la ENERGÍA que convierte el receptor —
+  **FOTO**(vista) · **MECANO**(oído/tacto/propio/vestibular/eco) · **QUIMIO**(olfato/gusto) · **TERMO** · **NOCI**(daño) ·
+  **ELECTRO** · **MAGNETO** · **INTERO**(interno). Es el CÓMO. La sinestesia/**sustitución sensorial** (real) = una
+  transducción que deriva un percepto de otra modalidad → funda la "lengua que saborea la luz".
+- **Nivel del percepto** (`Percept.Kind`): **estímulo** crudo que transduce el receptor (Color/Sonido/Olor…) → **percepto**
+  derivado por el cerebro (Distancia/Identidad; el estímulo no basta — la sala con niebla) → **affordance** (Gibson: lo que
+  el entorno OFRECE hacer — Amenaza/Emoción). `PerceptChannel` cubre los tres niveles; `Percept.Kind` los etiqueta.
+
+## Estrategia de PREFABS / versionado / UI (respuestas)
+
+- **Escenas y tests: ya son TODO por CÓDIGO** (`SampleSceneBuilder`/`MicrocosmosSceneBuilder`/`MobWorldSceneBuilder` + los
+  `*Test : ITestUnit`). No hay `.unity` hechas a mano versionadas → **nada que migrar**; ya es "code-first".
+- **Prefabs solo para modelos 3D** (animales): `AnimalPrefabGenerator` monta el prefab desde un `.fbx` en
+  `Assets/Animals/{Especie}/Models/` (esa carpeta ES el "setting de modelo 3D") y el builder lo referencia por ruta
+  (`LoadAnimalPrefab`). El `.prefab` generado no se versiona (lista blanca del `.gitignore`), pero el CÓDIGO que lo genera sí.
+- **UI:** se queda como **`FollowingArrays`** (sistema declarativo de paneles reutilizables); sus paneles se pueden
+  **generar por código** (`BuildAnimaStatusPanels`, ya hecho) → no requiere prefabs manuales. El hueco aparte del HUD son
+  los **evaluadores del `Palette`** (`MaterializationExecutor`).
 
 ## 4. Directriz de ARQUITECTURA — `Anima` debe bastar (por configuración) para TODO
 

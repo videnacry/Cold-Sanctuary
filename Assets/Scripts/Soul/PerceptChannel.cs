@@ -28,10 +28,31 @@ public enum PerceptChannel
     Threat,       // cuán peligroso es
 }
 
+/// <summary>Nivel del canal (base científica estímulo↔percepto↔affordance): el ESTÍMULO crudo que transduce el receptor
+/// (Color/Sonido/Olor…), el PERCEPTO derivado por el cerebro (Distancia/Identidad — el estímulo no basta, cf. la sala
+/// con niebla) y la AFFORDANCE (Gibson: lo que el entorno OFRECE hacer — Amenaza/Emoción son de este tipo).</summary>
+public enum PerceptKind { Stimulus, Derived, Affordance }
+
 public static class Percept
 {
     /// <summary>¿Es un canal GENERAL (lo da casi cualquier sentido)?</summary>
     public static bool IsGeneral(PerceptChannel c)
         => c == PerceptChannel.Presence || c == PerceptChannel.Distance
         || c == PerceptChannel.Direction || c == PerceptChannel.Movement;
+
+    /// <summary>Nivel del canal: estímulo crudo / percepto derivado / affordance (docs/consciousness-mechanics §3).</summary>
+    public static PerceptKind Kind(PerceptChannel c)
+    {
+        switch (c)
+        {
+            case PerceptChannel.Color: case PerceptChannel.Odor: case PerceptChannel.Flavor:
+            case PerceptChannel.Sound: case PerceptChannel.Texture: case PerceptChannel.Temperature:
+            case PerceptChannel.Bioelectric:
+                return PerceptKind.Stimulus;                      // lo que el RECEPTOR transduce
+            case PerceptChannel.Threat: case PerceptChannel.Emotion:
+                return PerceptKind.Affordance;                   // lo que OFRECE (Gibson): peligro/estado ajeno
+            default:
+                return PerceptKind.Derived;                      // Presence/Distance/Direction/Movement/Shape/Identity
+        }
+    }
 }

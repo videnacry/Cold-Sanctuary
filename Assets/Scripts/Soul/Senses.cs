@@ -46,4 +46,27 @@ public static class Senses
 
     /// <summary>Los cinco básicos (por defecto, si el ser no declara sus receptores).</summary>
     public static readonly string[] Basic = { "vista", "oido", "olfato", "gusto", "tacto" };
+
+    // ── Base científica: la MODALIDAD por TRANSDUCCIÓN (qué energía física convierte el receptor) ──────────────────
+    // La biología clasifica los sentidos por su transducción: FOTOrrecepción (luz), MECANOrrecepción (presión/vibración
+    // → tacto/oído/propio/vestibular/ecolocalización), QUIMIOrrecepción (químicos → olfato/gusto), TERMOrrecepción,
+    // NOCIcepción (daño), ELECTROrrecepción, MAGNETOrrecepción, e INTEROcepción (estado interno). Fundamenta los órganos
+    // (y las QUIMERAS/sinestesia: una "lengua que saborea la luz" = transducción QUÍMICA que deriva un percepto de Color
+    // — sustitución sensorial, real). El percepto (PerceptChannel) es lo DERIVADO; la transducción es el CÓMO.
+    public enum Transduction { Photo, Mechano, Chemo, Thermo, Nociception, Electro, Magneto, Interoception }
+
+    static readonly Dictionary<string, Transduction> Mode = new Dictionary<string, Transduction>
+    {
+        { "vista", Transduction.Photo },
+        { "oido", Transduction.Mechano }, { "tacto", Transduction.Mechano }, { "eco", Transduction.Mechano },
+        { "propio", Transduction.Mechano }, { "vestibular", Transduction.Mechano },
+        { "olfato", Transduction.Chemo }, { "gusto", Transduction.Chemo },
+        { "termo", Transduction.Thermo }, { "nocicepcion", Transduction.Nociception },
+        { "electro", Transduction.Electro }, { "magneto", Transduction.Magneto },
+        { "intero", Transduction.Interoception },
+    };
+
+    /// <summary>La transducción (clase de receptor real) de un sentido. Desconocido → Mechano (el más común).</summary>
+    public static Transduction TransductionOf(string sense)
+        => sense != null && Mode.TryGetValue(sense, out Transduction t) ? t : Transduction.Mechano;
 }
