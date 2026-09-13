@@ -914,7 +914,7 @@ public static class SampleSceneBuilder
     /// Sandbox del PRÓLOGO (docs/area-progression.md "Apertura"): el guion (`PrologueSequence`, auto-demo) se
     /// registra en consola; dos `WeakOne` (débiles) caminan a la `CarryToRefuge` (cueva-refugio) y, al
     /// reunirlos, el **Mesocosmos** envía un aviso (`PlaneMessenger`) de volver por la sala de meditación
-    /// (`YogaPortal`). La escena real (Enfermería→máquina→Microcosmos→salida) se monta en Unity; esto scaffold.
+    /// (`WorldExitPortal`). La escena real (Enfermería→máquina→Microcosmos→salida) se monta en Unity; esto scaffold.
     /// </summary>
     /// <summary>
     /// Área de CRÍA — el corazón del santuario (docs/cria-simulation.md, fauna-gameplay.md): cuidar crías
@@ -1800,7 +1800,7 @@ public static class SampleSceneBuilder
         CarryToRefuge carry = cave.AddComponent<CarryToRefuge>();
         carry.needed = 2; carry.radius = 3f;
         carry.onComplete.AddListener(() => PlaneMessenger.Send("Mesocosmos",
-            "Kushal, cuando termines, ve a la sala de meditación (YogaPortal) para volver.", 8f));
+            "Kushal, cuando termines, ve a la sala de meditación para volver.", 8f));
 
         for (int i = 0; i < 2; i++)
         {
@@ -3128,13 +3128,13 @@ public static class SampleSceneBuilder
 
         // Yoga-portal de salida.
         GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "YogaPortal";
+        portal.name = "WorldExitPortal";
         portal.transform.SetParent(hub.transform);
         portal.transform.localPosition = new Vector3(0f, 1f, 3f);
         portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMaterial("YogaPortal_MAT", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<YogaPortal>();
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WorldExitPortal_MAT", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<WorldExitPortal>();
 
         hub.SetActive(false); // RealityShiftController lo activa al entrar
         return hub;

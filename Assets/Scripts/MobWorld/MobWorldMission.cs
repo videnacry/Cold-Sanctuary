@@ -11,7 +11,7 @@ using UnityEngine;
 ///
 /// The mission it drives should have its MeditationMissionBase.endMode = Standalone so completion
 /// cleans up in place instead of calling MeditationSession.EndMission. The player leaves via the
-/// YogaPortal in the scene.
+/// WorldExitPortal in the scene.
 ///
 /// Also works when the scene is played directly in the editor (no MobWorldLoader): it just waits for
 /// a tagged Player to exist, then begins.

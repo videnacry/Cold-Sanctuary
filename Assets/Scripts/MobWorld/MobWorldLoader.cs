@@ -44,7 +44,7 @@ public class MobWorldLoader : MonoBehaviour
         StartCoroutine(EnterRoutine(sceneName));
     }
 
-    /// <summary>Return to the base world (called by the YogaPortal inside the mob scene).</summary>
+    /// <summary>Return to the base world (called by the WorldExitPortal inside the mob scene).</summary>
     public void ExitMobWorld()
     {
         if (IsBusy || !IsInMobWorld) return;

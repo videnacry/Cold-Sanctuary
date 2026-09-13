@@ -50,7 +50,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
 
     public void Interact()
     {
-        // Modo escena: cargar el mundo mob propio (salida vía YogaPortal dentro de la escena).
+        // Modo escena: cargar el mundo mob propio (salida vía WorldExitPortal dentro de la escena).
         if (SceneMode)
         {
             Confirm(() => MobWorldLoader.Instance.EnterMobWorld(mobWorldSceneName));

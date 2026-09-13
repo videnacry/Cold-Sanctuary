@@ -11,7 +11,7 @@ public enum MissionEndMode
     /// In-place Microcosmos: MeditationSession fades to black and RealityShiftController snaps size back.
     Session,
     /// Mob-world scene (MobWorldLoader): there is no reality shift to undo — cleanup runs immediately
-    /// and the player leaves the scene via the YogaPortal.
+    /// and the player leaves the scene via the WorldExitPortal.
     Standalone
 }
 
@@ -50,7 +50,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
 
     [Header("End mode")]
     [Tooltip("Session = in-place Microcosmos (fade + RealityShiftController snaps size back). " +
-             "Standalone = mob-world scene (no shift; cleanup runs now, player exits via YogaPortal).")]
+             "Standalone = mob-world scene (no shift; cleanup runs now, player exits via WorldExitPortal).")]
     public MissionEndMode endMode = MissionEndMode.Session;
 
     // ── Runtime ───────────────────────────────────────────────────────────────
@@ -165,7 +165,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
         else
         {
             // Standalone (mob-world scene): no reality shift to undo. Clean up leftovers now; the player
-            // leaves the scene via the YogaPortal (MobWorldLoader.ExitMobWorld).
+            // leaves the scene via the WorldExitPortal (MobWorldLoader.ExitMobWorld).
             Debug.Log("[Meditación] Misión de mundo mob completada — sal por la sala de yoga cuando quieras.");
             mission.RaiseEnd();
         }
