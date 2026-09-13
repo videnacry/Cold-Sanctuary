@@ -265,6 +265,12 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
+        // ALMA-MEZCLA: si el ser tiene SoulComposition (p.ej. el elenco del Microcosmos), ELLA es la dueña FINAL de las
+        // aptitudes → se resuelve AQUÍ (después de SpeciesBody), de forma determinista, y sobreescribe el blend de
+        // arquetipos. Así un personaje es Animal COMPLETO (IA, ciclo de vida, IEdible, predación…) Y su identidad por
+        // mezcla. Se desactiva su resolveOnStart para no resolver dos veces. docs/apremios §/microcosmos-level1.
+        SoulComposition soul = GetComponent<SoulComposition>();
+        if (soul != null) { soul.resolveOnStart = false; soul.Resolve(); }
         ani = GetComponent<Animator>();
         // Etapa 4: la IA ACTIVA (forrajeo/amenaza) la conduce un brain; la posesión (PlayerBrain) la suprime. El AiBrain
         // se añade antes del AnimaController y se refrescan los brains (por si el controller ya venía del prefab).
@@ -607,10 +613,31 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         {
             transform.Rotate(Vector3.forward, 90);
             death = true;
+            BroadcastGrief();                 // los que tenían un VÍNCULO con este ser (+ o −) entran en DUELO
             StopAllCoroutines();
             ani.enabled = false;
             rig.isKinematic = true;
             nav.enabled = false;
+        }
+    }
+
+    /// <summary>Al MORIR, lanza el <see cref="GriefSpell"/> sobre cada ser que tenía un VÍNCULO con este (positivo o
+    /// negativo): la pérdida pesa (o el enemigo que se va deja su marca). Peso del duelo ∝ magnitud del vínculo.
+    /// docs/apremios-guardian-observacion.md §3. Barato: la muerte es un evento raro; recorre wholePopulation una vez.</summary>
+    void BroadcastGrief()
+    {
+        ITarget me = this;
+        foreach (GameObject go in wholePopulation)
+        {
+            if (go == null || go == gameObject) continue;
+            Anima other = go.GetComponent<Anima>();
+            if (other == null) continue;
+            Bond b = other.GetBond(me);
+            if (b == null || Mathf.Abs(b.value) < 1f) continue;   // solo quien tenía vínculo real (+ o −)
+            GriefSpell g = go.GetComponent<GriefSpell>();
+            if (g == null) g = go.AddComponent<GriefSpell>();
+            g.force = Mathf.Clamp01(Mathf.Abs(b.value) / 100f);   // más vínculo → más duelo
+            g.Cast(other, me);
         }
     }
 
