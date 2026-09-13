@@ -56,10 +56,12 @@ por-ítem, más el enganche de "bienestar sostenido → sube aptitud".
 - **Elementos → compuestos → células → stats:** ✅ **existe y con detalle** en `Constitution`: elementos (símbolos reales,
   validados vs `PeriodicTableManager`) → **compuestos** (proteína/ATP/minerales/lípidos) → **células** (músculo/glóbulos=
   Fe+proteína/neurona/hueso) → **stats base**. Alimentable en juego (`AddElement`).
-- **Compuestos → HUMORES:** ❌ **HUECO**. Hoy los `Humores` (Adrenalina/Serotonina/Cortisol/Glucosa/Calcio) los producen
-  la Mente/acciones/`MoodDynamics`, **no** salen del pipeline químico de `Constitution`. Para "los compuestos forman los
-  humores" al detalle falta un **puente compuestos→humores** (p.ej. glucosa-compuesto→`Glucosa`; Ca→`Calcio`; precursores
-  como triptófano→`Serotonina`, y adrenalina/cortisol desde sus precursores). Es la pieza a añadir (rebanada propia).
+- **Compuestos → HUMORES:** ✅ **PUENTE HECHO (PR #196)** — `ChemistryHumors`: la composición (`Constitution`: ATP/
+  minerales/proteína/neurona) **genera/influye los humores** (`Mind.humores`) a corto plazo (empuje/tick) y largo plazo
+  (el objetivo lo fija la composición, que cambia despacio). Mapeo: ATP→Glucosa, minerales→Calcio, proteína+neurona→
+  Serotonina (lento), carencia→Cortisol. De ahí el ánimo pesa en la **ARENA** (energía/estrés químicos compiten con los
+  pensamientos → tu "enfrentar pensamientos con la composición química"). Getters de compuestos añadidos a `Constitution`.
+  Cadena completa: elementos→compuestos→(células→stats **y** →humores). Opt-in (componente).
 
 ## 3. OBSERVACIÓN — minijuego de destello + preguntas
 

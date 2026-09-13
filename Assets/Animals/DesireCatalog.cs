@@ -71,14 +71,30 @@ public static class DesireCatalog
             self => SocialNeed(self, care: false) * Mathf.Max(0.2f, self.sociability) * W_FOLLOW,
             self => ApproachBondTarget(self, care: false),
             "follow"),
+
+        // DESCANSAR (drive biológico real que faltaba): necesidad = sueño + fatiga. Despacha idle (se detiene; el
+        // Restore pasivo recupera). Compite con todo → un ser agotado prioriza parar sobre deambular/comer un poco.
+        new Desire("rest",
+            self => Mathf.Clamp01((self.sleepiness + self.mentalFatigue) * 0.5f),
+            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); self.Loco?.Idle(1f); },
+            "rest"),
+
+        // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/environmental-navigation.md §N5/N8):
+        // necesidad BAJA (solo gana cuando no hay hambre/amenaza/social) y ESCALADA por la mente curiosa (razón+creatividad)
+        // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
+        new Desire("explore",
+            self => W_EXPLORE * Mathf.Clamp01((self.reasoning + self.creativity) * 0.5f),
+            self => { if (self.nav != null && self.nav.isOnNavMesh) { Vector2 r = Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
+            "explore"),
     };
 
     // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
     // aprieta (eat = hambre, que puede ser >1; la amenaza es reflejo aparte), pero lo SOCIAL gana cuando el ser está
     // saciado. El celo NO debe atropellar a comer. La resolución final depende de los STATS propios → personalidad.
-    const float W_MATE   = 0.6f;    // celo moderado (antes 1.0 → atropellaba el hambre media)
-    const float W_TEND   = 0.9f;    // cuidar al vínculo en apuro: fuerte (× afabilidad)
-    const float W_FOLLOW = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
+    const float W_MATE    = 0.6f;    // celo moderado (antes 1.0 → atropellaba el hambre media)
+    const float W_TEND    = 0.9f;    // cuidar al vínculo en apuro: fuerte (× afabilidad)
+    const float W_FOLLOW  = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
+    const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
