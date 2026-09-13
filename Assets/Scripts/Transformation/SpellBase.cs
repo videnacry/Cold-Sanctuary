@@ -12,6 +12,16 @@ using UnityEngine;
 public enum CastMode { Instant, Repeat, Channel }
 
 /// <summary>
+/// Cómo se desarrolla el EFECTO de un hechizo EN EL TIEMPO una vez disparado (ORTOGONAL a <see cref="CastMode"/>, que es
+/// sobre el INPUT). docs/apremios-guardian-observacion.md / stats-as-truth §hechizos:
+///   • <b>Instant</b>   — el efecto ocurre UNA VEZ (curar, un empujón puntual).
+///   • <b>Sustained</b> — el efecto se MANTIENE de forma continua mientras dura (`duration`) o mientras se sostiene (Jalar).
+///   • <b>Periodic</b>  — el efecto se REPRODUCE a intervalos (`tickInterval`) durante `duration` (debilitamiento, veneno,
+///     miedo que reincide, abstinencia). Es el modo de los hechizos-ESTADO que "laten".
+/// </summary>
+public enum EffectTiming { Instant, Sustained, Periodic }
+
+/// <summary>
 /// Base abstracta para todos los hechizos del juego (docs/stats-as-truth.md §hechizos).
 ///
 /// Un hechizo tiene tres parámetros universales:
@@ -41,6 +51,13 @@ public abstract class SpellBase : MonoBehaviour
 
     [Tooltip("Coste de energía (barra de ATP/CharacterLevel) por cada uso. 0 = gratis.")]
     [Min(0f)] public float energyCost = 0f;
+
+    [Header("Efecto en el tiempo (ortogonal al modo de input)")]
+    [Tooltip("Cómo se desarrolla el EFECTO una vez disparado: Instant (una vez) / Sustained (continuo mientras dura) / " +
+             "Periodic (a intervalos tickInterval durante duration). Lo usan los hechizos-estado; default Instant (no cambia nada).")]
+    public EffectTiming timing = EffectTiming.Instant;
+    [Tooltip("Periodic: segundos entre repeticiones del efecto.")]
+    [Min(0.05f)] public float tickInterval = 1f;
 
     [Header("Modo de lanzamiento (mantener tecla)")]
     [Tooltip("Cómo responde a mantener la tecla: Instant / Repeat / Channel / Charge.")]

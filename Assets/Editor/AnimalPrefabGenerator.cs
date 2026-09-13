@@ -31,7 +31,17 @@ public static class AnimalPrefabGenerator
         ("Whale",     "WhaleBehavior"),
         ("Penguin",   "PenguinBehavior"),   // fauna de hielo (necesita un .fbx en Assets/Animals/Penguin/Models/)
         ("Orca",      "OrcaBehavior"),       // fauna de hielo (necesita un .fbx en Assets/Animals/Orca/Models/)
+        // Insectos del Microcosmos (las clases YA existían; aquí se registran para que el generador los produzca).
+        // Necesitan un .fbx en Assets/Animals/{Especie}/Models/ (si no, se saltan con log, como el resto).
+        ("Ant",       "AntBehavior"),
+        ("Aphid",     "AphidBehavior"),
+        ("Ladybug",   "LadybugBehavior"),
+        ("Spider",    "SpiderBehavior"),
+        ("Cricket",   "CricketBehavior"),
     };
+    // NOTA: esta lista es el REGISTRO — para producir una especie nueva basta añadir su (carpeta, clase) aquí. Es
+    // explícita (no auto-descubierta) a propósito, porque la carpeta y la clase no siempre coinciden (p.ej. la carpeta
+    // "PolarBear" usa la clase "BearBehaviour"); la lista encapsula ese mapeo.
 
     const string AnimalsRoot = "Assets/Animals";
 

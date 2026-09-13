@@ -63,18 +63,24 @@ public class MoodDynamics : MonoBehaviour
         ApremioFatiga = Mathf.Clamp01(fatigue);
         ApremioSueno  = Mathf.Clamp01(anima.sleepiness);
 
-        // Carga alostática = suma ponderada de los apremios (cuánto EXIGE el estado). Es lo que el Guardián querría volver estrés.
+        // Carga externa (miedo/duelo/abstinencia) y sedación (estupefaciente) desde el hub alostático, si existe.
+        AllostaticState al = GetComponent<AllostaticState>();
+        float extraLoad = al != null ? al.ExtraLoad : 0f;
+        float sedation  = al != null ? al.Sedation  : 0f;
+
+        // Carga alostática = apremios internos (estado) + carga externa (hechizos-estado). Lo que el Guardián querría volver estrés.
         AllostaticLoad = Mathf.Clamp01(
             baseStress
             + wFatigue * fatigue
             + wSleep * ApremioSueno
             + wHunger * hunger
             + wLowGlucose * glucoseLack
-            + wLowMinerals * mineralLack);
+            + wLowMinerals * mineralLack
+            + extraLoad);
 
-        // OBSERVACIÓN: amortigua el SUFRIMIENTO (no el apremio) → un ser sereno/observando sufre menos por la misma carga.
-        // Un ser promedio → factor 1 (sin cambio; aditivo sobre lo ya tuneado).
-        float target = AllostaticLoad * Observation.SufferingFactor(anima);
+        // OBSERVACIÓN (amortigua el SUFRIMIENTO, no el apremio) + SEDACIÓN química (estupefaciente): un ser sereno/observando/
+        // sedado sufre menos por la misma carga. Un ser promedio sin nada → factor 1 (sin cambio; aditivo).
+        float target = AllostaticLoad * Observation.SufferingFactor(anima) * (1f - sedation);
 
         float rate = driftRate * Mathf.Max(0.2f, anima.sensibilidad) * dt;   // sensibilidad = reactividad emocional
         if (h != null)
