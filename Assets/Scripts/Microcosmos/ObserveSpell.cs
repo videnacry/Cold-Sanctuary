@@ -9,10 +9,13 @@ using UnityEngine;
 /// </summary>
 public class ObserveSpell : MonoBehaviour
 {
-    [Tooltip("Segundos mirando el MISMO objetivo para que cuente como 'observar'.")]
+    [Tooltip("Segundos ATENDIENDO al mismo objetivo para que cuente como 'observar'.")]
     [Min(0f)] public float gazeSeconds = 1.5f;
-    [Tooltip("Radio en el que busca un ánima a la que mirar.")]
-    [Min(0.5f)] public float range = 8f;
+    [Tooltip("SENTIDOS con los que este ser observa (docs/consciousness-mechanics §3). Por defecto los 5 básicos; un " +
+             "topo podría ser {olfato,tacto}, un murciélago {eco,oido}… El alcance sale del mejor sentido (Senses).")]
+    public string[] senses = { "vista", "oido", "olfato", "gusto", "tacto" };
+    [Tooltip("Radio de respaldo si sus sentidos no dan alcance (0).")]
+    [Min(0.5f)] public float fallbackRange = 8f;
     [Tooltip("Cuánto ENTRENA la observación por segundo mientras observa (sube despacio).")]
     [Min(0f)] public float trainPerSecond = 0.02f;
     [Tooltip("Impulso de ECUANIMIDAD por segundo mientras observa (decae luego).")]
@@ -45,8 +48,10 @@ public class ObserveSpell : MonoBehaviour
 
     Transform NearestAnima()
     {
-        Transform best = null; float bestSq = range * range;
-        foreach (Collider c in Physics.OverlapSphere(transform.position, range))
+        float reach = Senses.BestReach(senses);            // el alcance sale del MEJOR sentido que tenga
+        if (reach <= 0f) reach = fallbackRange;            // sin sentidos exteroceptivos → respaldo
+        Transform best = null; float bestSq = reach * reach;
+        foreach (Collider c in Physics.OverlapSphere(transform.position, reach))
         {
             Anima a = c.GetComponentInParent<Anima>();
             if (a == null || a == _self) continue;

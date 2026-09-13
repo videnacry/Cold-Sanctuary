@@ -130,6 +130,7 @@ public static class SampleSceneBuilder
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance
         new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root.transform);  // HUD de estado de un Anima (drives/actividad/elementos con color) — docs consciousness-mechanics §2
+        BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2329,6 +2330,40 @@ public static class SampleSceneBuilder
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
     // Los enjambres (Swarm) lo pastan por cercanía para crecer (fitoplancton→krill/pez). Marcadores baratos, sin
     // collider (como GrassPatch). Sembrado en las mismas aguas que los bancos. Ver docs/ice-sanctuary-ecology.md §2.2.
+    // HUD DECLARATIVO generado por CÓDIGO (responde a "¿se pueden generar prefabs por código?" — SÍ): crea un panel-
+    // GameObject por elemento (Quad + TextMesh) y los VINCULA con AnimaStatusPanels (color/valor vivos desde ElementsStatus).
+    // No hace falta prefab manual en Unity; todo queda versionado en este .cs. (También se podría PrefabUtility.SaveAsPrefabAsset
+    // para un .prefab reutilizable, como AnimalPrefabGenerator; aquí se construye en escena, que es aún más "code-first".)
+    static void BuildAnimaStatusPanels(Transform parent)
+    {
+        GameObject group = new GameObject("AnimaStatusPanels_AUTO");
+        group.transform.SetParent(parent);
+
+        string[] els = { "O", "C", "H", "N", "Ca", "Fe" };
+        var mapping = new System.Collections.Generic.List<AnimaStatusPanels.ElementPanel>();
+        for (int i = 0; i < els.Length; i++)
+        {
+            GameObject panel = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            panel.name = $"Panel_{els[i]}";
+            panel.transform.SetParent(group.transform);
+            panel.transform.localPosition = new Vector3(0f, 6f - i * 0.6f, 0f);   // pila vertical (blockout)
+            panel.transform.localScale = new Vector3(2f, 0.5f, 1f);
+            Object.DestroyImmediate(panel.GetComponent<Collider>());              // decorativo, no bloquea
+
+            GameObject label = new GameObject("Label");
+            label.transform.SetParent(panel.transform);
+            label.transform.localPosition = new Vector3(0f, 0f, -0.05f);
+            label.transform.localScale = Vector3.one * 0.15f;
+            TextMesh tm = label.AddComponent<TextMesh>();
+            tm.text = els[i]; tm.anchor = TextAnchor.MiddleCenter; tm.characterSize = 0.5f; tm.fontSize = 48;
+
+            mapping.Add(new AnimaStatusPanels.ElementPanel { element = els[i], panel = panel });
+        }
+
+        AnimaStatusPanels binder = group.AddComponent<AnimaStatusPanels>();
+        binder.panels = mapping.ToArray();   // vincula cada panel a su elemento → color/valor vivos por ElementsStatus
+    }
+
     static void BuildPhytoplankton(Transform parent)
     {
         GameObject group = new GameObject("Phytoplankton_AUTO");
