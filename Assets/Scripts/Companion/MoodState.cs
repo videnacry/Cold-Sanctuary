@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad —
-/// **extraído de `CompanionBase`** (que se retira, fase 5). Un compañero = `SimpleAnima` + `SoulComposition`
+/// **extraído de `CompanionBase`** (que se retira, fase 5). Un compañero = `Anima` + `SoulComposition`
 /// (stats por arquetipo) + `Mind` + **`MoodState`** + su componente de comportamiento propio. Implementa
 /// `IBondable` por composición. **Parametrizable** por compañero mediante curvas (mood/resting/fatiga), que antes
 /// eran overrides de clase. La restauración al jugador y el drift de ánimo se hacen aquí.

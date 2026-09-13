@@ -209,14 +209,14 @@ public static class MicrocosmosSceneBuilder
                   "hormiga a gusano), empujar del gusano, escalada de hambre, y el subsistema de observacion.");
     }
 
-    /// <summary>Depredador de blockout: cápsula + SimpleAnima + AiBrain + ThreatEmitter (para que la tribu lo perciba y huya).</summary>
+    /// <summary>Depredador de blockout: cápsula + Anima + AiBrain + ThreatEmitter (para que la tribu lo perciba y huya).</summary>
     static GameObject MakePredator(Transform parent, string name, Vector3 pos, Vector3 scale, Color col, float threatPower, float threatRadius)
     {
         GameObject pred = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         pred.name = name; pred.transform.SetParent(parent);
         pred.transform.position = pos; pred.transform.localScale = scale;
         pred.GetComponent<Renderer>().sharedMaterial = MakeMat($"{name}_MAT", col);
-        SimpleAnima a = pred.AddComponent<SimpleAnima>();
+        Anima a = pred.AddComponent<Anima>();
         a.strength = threatPower; a.bodyMass = scale.y;
         pred.AddComponent<AiBrain>().selfRelevance = 1.5f;
         pred.AddComponent<AnimaController>();

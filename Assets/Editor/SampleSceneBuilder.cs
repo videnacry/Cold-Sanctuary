@@ -651,7 +651,7 @@ public static class SampleSceneBuilder
         GameObject workerGO = new GameObject("Obrero_Goluis");
         workerGO.transform.SetParent(group.transform);
         workerGO.transform.position = new Vector3(50f, 1f, 16f);
-        MakeCompanionCore(workerGO, "Goluis");          // SimpleAnima+Mind+SoulComposition+SocialField+MoodDynamics+MoodState
+        MakeCompanionCore(workerGO, "Goluis");          // Anima+Mind+SoulComposition+SocialField+MoodDynamics+MoodState
         workerGO.AddComponent<Goluis>();
         Anima worker = workerGO.GetComponent<Anima>();
 
@@ -1075,7 +1075,7 @@ public static class SampleSceneBuilder
     }
 
     /// <summary>Rebanada 1 de identidad por ALMA-MEZCLA (docs/microcosmos-level1.md §2 + soul-composition-blend.md): crea un
-    /// miembro del elenco como ÁNIMA REAL — visual (MakeInsect) + <see cref="SoulRecord"/> + <see cref="SimpleAnima"/> +
+    /// miembro del elenco como ÁNIMA REAL — visual (MakeInsect) + <see cref="SoulRecord"/> + <see cref="Anima"/> +
     /// <see cref="Mind"/> + <see cref="SoulComposition"/> con los BLEND-slots de cuerpo/mente (arquetipo, %). En Start
     /// (resolveOnStart) el blend computa aptitudes/tono/pensamientos desde los arquetipos reales. `applyScale=false` para
     /// respetar la escala autorada del insecto. Aditivo: NO añade IA/movimiento (rebanadas 2-3). Devuelve el GameObject.</summary>
@@ -1086,7 +1086,7 @@ public static class SampleSceneBuilder
         GameObject go = MakeInsect(parent, name, pos, scale, col);
         AddSoul(go, name, hilo, vida1, vida2, tell);
 
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         Mind m = go.AddComponent<Mind>();
         m.identity = name;
 
@@ -1108,7 +1108,7 @@ public static class SampleSceneBuilder
     /// <list type="bullet">
     ///   <item>Suelo plano 40×40 m (escala insecto).</item>
     ///   <item><b>Cueva-checkpoint</b>: <see cref="CarryToRefuge"/> needed=4.</item>
-    ///   <item><b>Hormigas viejas</b>: <see cref="SimpleAnima"/>+<see cref="CharacterLevel"/>+
+    ///   <item><b>Hormigas viejas</b>: <see cref="Anima"/>+<see cref="CharacterLevel"/>+
     ///         <see cref="WeaknessEffect"/>+<see cref="NavMeshAgent"/>+<see cref="ImpulseController"/>
     ///         +<see cref="HomeImpulse"/> (→ cueva) + <see cref="ThreatScanner"/>+<see cref="WeakOne"/>.
     ///         Sin energía → ImpulseController no puede pagar walkCost → se paran (comportamiento emergente).</item>
@@ -1174,7 +1174,7 @@ public static class SampleSceneBuilder
             ant.GetComponent<Renderer>().sharedMaterial =
                 MakeMaterial($"{antName}_MAT", new Color(0.55f, 0.48f, 0.38f));
 
-            var anima = ant.AddComponent<SimpleAnima>();
+            var anima = ant.AddComponent<Anima>();
             anima.agility = 0.3f; anima.strength = 0.2f; anima.bodyMass = 0.15f;
             anima.endurance = 0.2f;
             // autoabandono bajo: son viejas y débiles, su prioridad es sobrevivir.
@@ -1238,7 +1238,7 @@ public static class SampleSceneBuilder
         var producer = aphid.AddComponent<HoneydewProducer>();
         producer.interval = 8f; producer.maxTotal = 5;
         // dropPickup se asigna en inspector (prefab de HoneydewPickup esfera amarilla pequeña).
-        aphid.AddComponent<SimpleAnima>().bodyMass = 0.8f; // grande y lento = fácil de ignorar
+        aphid.AddComponent<Anima>().bodyMass = 0.8f; // grande y lento = fácil de ignorar
 
         // ── Honeydew pickup de ejemplo (sin prefab aún) ─────────────────────
         // Esfera pequeña amarilla en el suelo junto a Ambrosio para probar la recolección.
@@ -1260,7 +1260,7 @@ public static class SampleSceneBuilder
         kushal.GetComponent<Renderer>().sharedMaterial =
             MakeMaterial("Kushal_MAT", new Color(0.22f, 0.40f, 0.65f));
 
-        var kAnima = kushal.AddComponent<SimpleAnima>();
+        var kAnima = kushal.AddComponent<Anima>();
         kAnima.agility = 0.6f; kAnima.strength = 0.5f; kAnima.bodyMass = 0.2f; kAnima.endurance = 0.6f;
         // Kushal tiene autoabandono alto: es el personaje del jugador, dispuesto a ayudar.
         // selfPower(Kushal) > viejas → peligroEspec(vieja) = floorDanger - kushalPower es bajo
@@ -1321,7 +1321,7 @@ public static class SampleSceneBuilder
                   "⚠ Bake NavMesh en Window>AI>Navigation antes de Play.");
     }
 
-    /// <summary>Crea un depredador de sandbox (cápsula + SimpleAnima con stats calibrados).</summary>
+    /// <summary>Crea un depredador de sandbox (cápsula + Anima con stats calibrados).</summary>
     static void BuildPredator(Transform parent, string predName, Vector3 pos, Vector3 scale, Color col,
         float agility, float strength, float mass)
     {
@@ -1330,7 +1330,7 @@ public static class SampleSceneBuilder
         pred.transform.position = pos; pred.transform.localScale = scale;
         pred.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"{predName}_MAT", col);
 
-        var anima = pred.AddComponent<SimpleAnima>();
+        var anima = pred.AddComponent<Anima>();
         anima.agility = agility; anima.strength = strength; anima.bodyMass = mass;
         // Sin ITarget/faction: sandbox básico — la depredación real requiere Animal.
         pred.AddComponent<AiBrain>().selfRelevance = 1.5f;
@@ -1436,7 +1436,7 @@ public static class SampleSceneBuilder
         go.transform.position = new Vector3(10f, 1f, 6f);
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Magia_AUTO_MAT", new Color(0.40f, 0.30f, 0.70f));
 
-        SimpleAnima anima = go.AddComponent<SimpleAnima>();   // Anima concreto mínimo (no-op): comer sube stats + exceso→grasa
+        Anima anima = go.AddComponent<Anima>();   // Anima concreto mínimo (no-op): comer sube stats + exceso→grasa
         Constitution con = go.AddComponent<Constitution>();
         con.anima = anima;
         Metabolism met = go.AddComponent<Metabolism>();
@@ -1459,7 +1459,7 @@ public static class SampleSceneBuilder
         tgtGo.transform.SetParent(parent);
         tgtGo.transform.position = new Vector3(12f, 1f, 6f);
         tgtGo.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Magia_AUTO_Objetivo_MAT", new Color(0.30f, 0.55f, 0.45f));
-        SimpleAnima tgtAnima = tgtGo.AddComponent<SimpleAnima>();
+        Anima tgtAnima = tgtGo.AddComponent<Anima>();
         MagicReserves tgtRes = tgtGo.AddComponent<MagicReserves>();
         tgtRes.anima = tgtAnima; tgtRes.unlocked = true;   // ya "despertado" para poder recibir
         tgtGo.AddComponent<QuarkReserve>();
@@ -1473,7 +1473,7 @@ public static class SampleSceneBuilder
     }
 
     // ── Hechizos: forcejeo / channeling (fuego múltiple/carga + caminar/esprintar) ──
-    // Cápsula con FireSpell (G / +LShift carga / +RShift canaliza) + WalkSpell (ESDF) sobre un SimpleAnima con
+    // Cápsula con FireSpell (G / +LShift carga / +RShift canaliza) + WalkSpell (ESDF) sobre un Anima con
     // reservas y ATP. Demuestra el powerBonus unificado de SpellBase (charge + channeling + forcejeo, con decaimiento).
     static void BuildSpellDemoSandbox(Transform parent)
     {
@@ -1483,7 +1483,7 @@ public static class SampleSceneBuilder
         go.transform.position = new Vector3(14f, 1f, 6f);
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("SpellDemo_AUTO_MAT", new Color(0.75f, 0.45f, 0.25f));
 
-        SimpleAnima anima = go.AddComponent<SimpleAnima>();
+        Anima anima = go.AddComponent<Anima>();
         go.AddComponent<CharacterLevel>();                    // barra de ATP (aptitudes Default → energía ~100)
         MagicReserves res = go.AddComponent<MagicReserves>();
         res.anima = anima;
@@ -1529,7 +1529,7 @@ public static class SampleSceneBuilder
         go.transform.position = new Vector3(16f, 1f, 6f);
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial("WalkUniversal_Walker_MAT", new Color(0.35f, 0.55f, 0.85f));
 
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         go.AddComponent<CharacterLevel>();                       // ATP para el coste de andar
 
         WalkSpell walk = go.AddComponent<WalkSpell>();
@@ -1571,11 +1571,11 @@ public static class SampleSceneBuilder
             new[] { "bonusPack3" }, true);
 
         // Compañero por COMPOSICIÓN (fase 5): reproduce a Panterilia SIN heredar CompanionBase.
-        // = SimpleAnima + SoulComposition (arquetipo Panterilia) + Mind + BondPillar (IBondable por componente).
+        // = Anima + SoulComposition (arquetipo Panterilia) + Mind + BondPillar (IBondable por componente).
         GameObject compa = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         compa.name = "Panterilia_SinClase"; compa.transform.SetParent(group.transform); compa.transform.position = new Vector3(23.5f, 1f, 8f);
         compa.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Panterilia_SinClase_MAT", new Color(0.70f, 0.50f, 0.80f));
-        compa.AddComponent<SimpleAnima>();
+        compa.AddComponent<Anima>();
         compa.AddComponent<Mind>();
         SoulComposition compaSoul = compa.AddComponent<SoulComposition>();
         compaSoul.bodies.Add(new BlendSlot { archetype = "Panterilia", domain = 100f });
@@ -1593,7 +1593,7 @@ public static class SampleSceneBuilder
         GameObject amb = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         amb.name = "Ambrosio_Convert"; amb.transform.SetParent(group.transform); amb.transform.position = new Vector3(23.5f, 1f, 6f);
         amb.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Ambrosio_Convert_MAT", new Color(0.60f, 0.80f, 0.45f));
-        amb.AddComponent<SimpleAnima>();
+        amb.AddComponent<Anima>();
         SoulComposition ambSoul = amb.AddComponent<SoulComposition>();
         ambSoul.bodies.Add(new BlendSlot { archetype = "Toro", domain = 100f });
         ambSoul.minds.Add(new BlendSlot { archetype = "Bear", domain = 100f });
@@ -1626,10 +1626,10 @@ public static class SampleSceneBuilder
                   "reencarnaciones (docs soul-relations-reincarnation §4).");
     }
 
-    // Núcleo de un compañero por composición: SimpleAnima + Mind + SoulComposition(arquetipo) + MoodState.
+    // Núcleo de un compañero por composición: Anima + Mind + SoulComposition(arquetipo) + MoodState.
     static MoodState MakeCompanionCore(GameObject go, string archetype)
     {
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         go.AddComponent<Mind>();
         SoulComposition sc = go.AddComponent<SoulComposition>();
         sc.bodies.Add(new BlendSlot { archetype = archetype, domain = 100f });
@@ -1647,7 +1647,7 @@ public static class SampleSceneBuilder
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         go.AddComponent<Mind>();
         SoulComposition sc = go.AddComponent<SoulComposition>();
         sc.bodies.Add(new BlendSlot { archetype = archetype, domain = 100f });
@@ -1662,7 +1662,7 @@ public static class SampleSceneBuilder
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         SoulComposition sc = go.AddComponent<SoulComposition>();
         sc.bodies.Add(new BlendSlot { archetype = body, domain = 100f });
         sc.minds.Add(new BlendSlot { archetype = mind, domain = 100f });
@@ -1676,7 +1676,7 @@ public static class SampleSceneBuilder
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         go.name = name; go.transform.SetParent(parent); go.transform.position = pos;
         go.GetComponent<Renderer>().sharedMaterial = MakeMaterial(name + "_MAT", col);
-        go.AddComponent<SimpleAnima>();
+        go.AddComponent<Anima>();
         if (withMind) go.AddComponent<Mind>();   // Fase 2: el tono/pensar emergen de las aptitudes del blend
         SoulComposition sc = go.AddComponent<SoulComposition>();
         foreach ((string a, float d, bool sh) in bodies) sc.bodies.Add(new BlendSlot { archetype = a, domain = d, shareDomain = sh });
@@ -2491,7 +2491,7 @@ public static class SampleSceneBuilder
         WorldCharacter magnateWC = maestra.AddComponent<WorldCharacter>();
         magnateWC.characterName = "Maestra";
 
-        // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): SimpleAnima + SoulComposition(arquetipo) +
+        // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): Anima + SoulComposition(arquetipo) +
         // Mind + MoodState(curvas+anchors) + su componente de comportamiento propio.
         GameObject gohageneis = MakePlaceholderPerson("Gohageneis_Post", new Vector3(5f, 1f, -5f), new Color(0.95f, 0.5f, 0.2f));
         gohageneis.transform.SetParent(charactersGroup.transform);

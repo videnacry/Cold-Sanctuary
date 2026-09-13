@@ -152,7 +152,7 @@ public class PackAwareness : MonoBehaviour
             return b != null ? Mathf.Clamp01(b.value / 100f) : 0f;
         }
 
-        // Fallback sandbox (SimpleAnima sin ITarget): bond de grupo base.
+        // Fallback sandbox (Anima sin ITarget): bond de grupo base.
         return other.GetComponent<Anima>() != null ? 0.4f : 0f;
     }
 

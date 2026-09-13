@@ -55,7 +55,7 @@ public class RiverCurrentTest : MonoBehaviour, ITestUnit
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
         go.name = name; go.transform.position = pos;
-        SimpleAnima a = go.AddComponent<SimpleAnima>();
+        Anima a = go.AddComponent<Anima>();
         a.bodyMass = mass;
         go.AddComponent<CharacterLevel>();   // para el drenaje de ATP (sin ImpulseController → ruta directa de arrastre)
         return go;

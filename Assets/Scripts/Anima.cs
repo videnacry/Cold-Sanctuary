@@ -11,12 +11,16 @@ using UnityEngine;
 ///   temperature  → body heat
 ///   bonds        → relational ties to other beings
 ///
-/// Declares abstract hooks so each subclass responds to those drives differently:
+/// Declara hooks VIRTUALES (default no-op) que cada configuración/subclase sobreescribe:
 ///   Animal.RespondToHunger()    → hunts or grazes
 ///   NPCBase.RespondToHunger()   → navigates to the kitchen
 ///   PlayerEntity (future)       → fires a UI event
 /// </summary>
-public abstract class Anima : MonoBehaviour, IAptitudes
+// CONCRETA (2026-09-13): todo lo que existe es un `Anima`; lo que RESTRINGE sus capacidades es su CONFIGURACIÓN
+// (qué componentes/agencia/pilares lleva), no su clase. Por eso `Anima` es instanciable y los hooks tienen default
+// no-op (un ser "pasivo" = Anima sin agencia; uno agente = Anima + los componentes que despiertan los hooks; un
+// `Animal` = Anima especializada con NavMesh/IA). Se RETIRÓ `SimpleAnima` (era esto mismo con otro nombre).
+public class Anima : MonoBehaviour, IAptitudes
 {
     // ── Drives ───────────────────────────────────────────────────────────────────
 
@@ -117,21 +121,19 @@ public abstract class Anima : MonoBehaviour, IAptitudes
 
     // ── Drive response hooks ─────────────────────────────────────────────────────
 
-    /// <summary>Called by the being's internal cycle when hunger needs addressing.</summary>
-    protected abstract void RespondToHunger();
+    // Hooks de AGENCIA (percibir→decidir→actuar). Default NO-OP: un `Anima` sin agencia no reacciona por sí mismo
+    // (equivale al antiguo `Anima`). La agencia se DESPIERTA por configuración: `Animal` los sobreescribe con
+    // conducta real (cazar/pastar/huir) y corre el bucle; a futuro, un componente de agencia hará lo mismo sobre
+    // cualquier `Anima`. Ver docs/consciousness-mechanics.md §4.
 
-    /// <summary>
-    /// How threatening is this source to this being?
-    /// Returns 0 (safe) to 1+ (existential threat).
-    /// Used to decide whether to flee, fight, or ignore.
-    /// </summary>
-    protected abstract float EvaluateThreat(GameObject source);
+    /// <summary>Respuesta al hambre. Default no-op; `Animal` caza/pasta.</summary>
+    protected virtual void RespondToHunger() { }
 
-    /// <summary>
-    /// Called when a threat exceeds this being's tolerance threshold.
-    /// Public so external systems (e.g. a predator) can trigger it directly.
-    /// </summary>
-    public abstract void RespondToThreat(GameObject threat);
+    /// <summary>Cuán amenazante es la fuente (0 seguro … 1+ existencial). Default 0.</summary>
+    protected virtual float EvaluateThreat(GameObject source) => 0f;
+
+    /// <summary>Reacción a una amenaza. Público para que sistemas externos lo disparen. Default no-op.</summary>
+    public virtual void RespondToThreat(GameObject threat) { }
 
     /// <summary>Override to react when this being's life stage advances.</summary>
     protected virtual void OnLifeStageChanged(char prev, char next) { }
