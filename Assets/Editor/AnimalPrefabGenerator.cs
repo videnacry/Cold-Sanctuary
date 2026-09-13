@@ -45,6 +45,30 @@ public static class AnimalPrefabGenerator
 
     const string AnimalsRoot = "Assets/Animals";
 
+    /// <summary>AUDITORÍA: comprueba, para cada especie del registro, si tiene su .prefab y su modelo .fbx, y ALERTA de
+    /// los que faltan (por eso una escena no los spawnearía). Responde a "¿hay algo que avise si falta un modelo 3D?".</summary>
+    [MenuItem("Tools/Cold Sanctuary/Audit Animal Prefabs (modelos 3D)")]
+    public static void AuditPrefabs()
+    {
+        int ok = 0, noPrefab = 0, noModel = 0;
+        var missing = new System.Text.StringBuilder();
+        foreach ((string species, string _) in Species)
+        {
+            bool hasPrefab = System.IO.File.Exists($"{AnimalsRoot}/{species}/{species}.prefab");
+            bool hasModel  = FindFbx($"{AnimalsRoot}/{species}/Models", species) != null;
+            if (hasPrefab) ok++;
+            else
+            {
+                if (hasModel) { noPrefab++; missing.AppendLine($"  · {species}: falta el PREFAB (hay .fbx → corre 'Generate Animal Prefabs')."); }
+                else          { noModel++;  missing.AppendLine($"  · {species}: falta el MODELO 3D (.fbx en {AnimalsRoot}/{species}/Models/) → no se puede generar."); }
+            }
+        }
+        string report = $"[AnimalPrefabGenerator] Auditoría: {ok} con prefab, {noPrefab} sin prefab (pero con modelo), " +
+                        $"{noModel} sin modelo 3D.\n{missing}";
+        if (noPrefab + noModel == 0) Debug.Log(report + "  Todo OK ✔");
+        else Debug.LogWarning(report + "→ esas especies se OMITEN al construir la escena (AddFamily avisa una a una).");
+    }
+
     [MenuItem("Tools/Cold Sanctuary/Generate Animal Prefabs")]
     public static void GenerateAll()
     {

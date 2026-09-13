@@ -89,6 +89,22 @@ El avatar **gusano** es el primero de la progresión (gusano→araña→mosco; l
 empujando al depredador débil". Sus hechizos (ver `BuildNivel1Sandbox`: `FormicAcidSpray`/`PullSpell`/`HoneydewSpell`)
 se irán introduciendo; aquí basta **empujar** + (a futuro) el pasivo de **observar**.
 
+## 6.5. Nivel intermedio ABIERTO con temporizador (Kushal explora) — a construir
+
+Entre Sakshi y Ambrosio, un nivel **abierto de merodeo** (idea del usuario): Kushal entra al Microcosmos con un **reloj
+de arena** (temporizador) que avisa cuánto le queda antes de salir; en ese lapso **deambula libremente** — observa/huye de
+depredadores, se acerca/interactúa con la tribu. Sin objetivo duro; es exploración + descubrimiento.
+
+- **Tamaño del mapa = como el Santuario 1** (~500×500) → cabe el río, la orilla, y **cadenas alimenticias COMPLETAS**
+  (no solo depredadores+hormigas): plantas → **herbívoros insectos** (pulgón=savia; y otros) → depredadores (mariquita/
+  araña) → apex — igual que la cadena marina del Santuario 1. *(Herbívoros en el mundo insecto: SÍ — pulgón/oruga/grillo
+  comen plantas; muchos son oportunistas, pero hay herbívoros claros.)*
+- **Reutilizar el spawn por ÁREA**: ya existe **`Generator`** (subjects×área, hoy huérfano) + `FamilyGenerator`/`AddFamily`
+  (cada familia con su posición+radio = su área). Plan: poblar el mapa con **una familia/Generator por especie y por ÁREA**
+  (opción de "en qué zona aparece cada especie" — ya es intrínseca a AddFamily; se puede formalizar como parámetro). Así se
+  crea el mapa con el mismo plan de respawn que el Santuario 1, conservando río/orilla/anillo.
+- El **temporizador** = reusar el `Clock`/`TimeController` (un `MobWorldMission`-like con cuenta atrás → salir por el `YogaPortal`).
+
 ## 7. Escenarios intermedios hasta Ambrosio (a definir)
 
 Entre este nivel (origen de Sakshi) y el alba de Ambrosio habrá **varios escenarios** que:
