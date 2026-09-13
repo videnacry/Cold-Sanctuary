@@ -44,7 +44,7 @@ public static class DesireCatalog
         // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
         // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/environmental-navigation.md.
         new Desire("mate",
-            self => { EstrusState e = self.GetComponent<EstrusState>(); return e != null && e.InEstrus ? 1f : 0f; },
+            self => { EstrusState e = self.GetComponent<EstrusState>(); return e != null && e.InEstrus ? W_MATE : 0f; },
             self =>
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
@@ -59,15 +59,22 @@ public static class DesireCatalog
         // CUIDAR: acercarse al ser QUERIDO (bond+) que está en apuros (estrés/enfermo). Necesidad = vínculo × su apuro,
         // amplificada por la afabilidad del que cuida. Es el "Tend" de Sakshi/la tribu, ahora compitiendo con el hambre.
         new Desire("tend",
-            self => SocialNeed(self, care: true) * Mathf.Max(0.3f, self.afabilidad),
+            self => SocialNeed(self, care: true) * Mathf.Max(0.3f, self.afabilidad) * W_TEND,
             self => ApproachBondTarget(self, care: true)),
 
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
         new Desire("follow",
-            self => SocialNeed(self, care: false) * Mathf.Max(0.2f, self.sociability) * 0.5f,
+            self => SocialNeed(self, care: false) * Mathf.Max(0.2f, self.sociability) * W_FOLLOW,
             self => ApproachBondTarget(self, care: false)),
     };
+
+    // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
+    // aprieta (eat = hambre, que puede ser >1; la amenaza es reflejo aparte), pero lo SOCIAL gana cuando el ser está
+    // saciado. El celo NO debe atropellar a comer. La resolución final depende de los STATS propios → personalidad.
+    const float W_MATE   = 0.6f;    // celo moderado (antes 1.0 → atropellaba el hambre media)
+    const float W_TEND   = 0.9f;    // cuidar al vínculo en apuro: fuerte (× afabilidad)
+    const float W_FOLLOW = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
