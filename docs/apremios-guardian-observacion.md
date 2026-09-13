@@ -162,6 +162,23 @@ noción a TODA ánima y le da consecuencia mecánica (no solo un número del HUD
 (ii) derivar un **perfil Big Five** de las aptitudes (sin stats nuevos); (iii) tratar la cognición con el set amplio
 actual, CHC como norte. Así "hay más" pero **sin inflar** — se ordena lo que ya existe bajo marcos reales.
 
+### 8.1. Estado de aplicación y qué falta para replicar los modelos (2026-09-13)
+
+| Modelo | Estado | Qué faltaba / falta |
+|---|---|---|
+| **Afecto PAD** | ✅ APLICADO (PR #184) | Faltaba la **Dominancia** → añadida a `EmotionExpression.Dominance` (agencia = temple + baja tensión + valencia). |
+| **Personalidad Big Five** | ✅ APLICADO (PR #184) | Faltaba el mapeo → `BigFive.Of(Anima)` deriva OCEAN de las aptitudes (sin stats nuevos). |
+| **Preferencia de dieta** | ✅ APLICADO (PR #184) | Faltaba el "sabor" → `DietPreference` (apetencia por especie) integrado en `Forager.SelectPrey`. |
+| **Cognición CHC** | 🟡 parcial | `reasoning`(Gf)/`memory`(Gsm/Glr)/`perception`(Gv/Ga) cubren lo amplio. Opcional a futuro: `Gs` (velocidad) / `Gc` (conocimiento). Recomendado NO inflar. |
+| **Guardián (alostasis + Kleiber)** | ❌ FALTA (próxima rebanada) | Piezas presentes: `Exertion`(AEE), `MoodDynamics`(guard parcial), `Metabolism`(fuentes), `MediumFactor`(termorreg). **Falta**: (1) el componente unificador con **umbrales por stat**, (2) el **BMR base ∝ masa^0.75** (Kleiber), (3) salida = carga **proporcional al exceso**, (4) hechizo/químico que **relaja/duerme** al Guardián. |
+| **Apremios** (hechizos-estado) | ❌ FALTA | Registro de apremios (hambre/miedo…) que depositan intensidad; los lee el `Volition` (sesgo) y el Guardián (carga). Patrón `EstrusState`/`SicknessState`. |
+| **Observación / ecuanimidad** | ❌ FALTA | Aptitud `observacion` (base por temple/razón/disciplina + químicos) que **amortigua la carga** del Guardián (no el apremio) + el **pasivo de los ojos** (mirada sostenida → sube por uso) vía `grants`. |
+
+**Resumen "qué falta para replicarlos por completo":** los tres marcos "de ordenar lo que había" (PAD, Big Five, dieta)
+**ya están aplicados**. Lo que falta es **construir el subsistema nuevo** (Guardián + apremios + observación), que es la
+próxima rebanada grande — todas sus dependencias (Exertion/MoodDynamics/Metabolism/MediumFactor/AptitudeEvolution/grants)
+**ya existen**, así que es integración, no invención.
+
 Fuentes: allostasis/carga alostática ([PubMed](https://pubmed.ncbi.nlm.nih.gov/36302295/), [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S030645302200292X)),
 Kleiber ([Wikipedia](https://en.wikipedia.org/wiki/Kleiber%27s_law)), PAD ([Wikipedia](https://en.wikipedia.org/wiki/PAD_emotional_state_model)),
 Big Five ([Wikipedia](https://en.wikipedia.org/wiki/Big_Five_personality_traits)), CHC ([Wiley](https://onlinelibrary.wiley.com/doi/full/10.1002/9781118660584.ese0431)).

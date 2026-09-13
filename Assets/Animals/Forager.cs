@@ -93,7 +93,8 @@ public class Forager : MonoBehaviour
             // Carcasa: comestible siempre (scavenging), incluso de la propia especie.
             float dist = Vector3.Distance(pos, a.transform.position);
             float ease = carcass ? 3f : myPower / Mathf.Max(0.1f, defense);                 // más fácil = preferida
-            float score = ease - dist * distanceWeight;                                     // más cerca = preferida
+            float appetite = DietPreference.For(self.SpeciesName, a.SpeciesName);           // "sabor": apetencia por especie (real)
+            float score = ease * appetite - dist * distanceWeight;                          // fácil × apetecible − lejos
             if (score > bestScore) { bestScore = score; best = a.gameObject; }
         }
         return best;
