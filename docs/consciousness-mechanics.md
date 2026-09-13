@@ -93,6 +93,25 @@ que el jugador **identifique y memorice rápido** lo que vio. Entrena **percepci
   **amortigua el sufrimiento** (Guardián) — el jugador entrena la ecuanimidad "mirando bien".
 - Es la versión JUGADOR del pasivo `ObserveSpell` (que ya hace "mirar sostenido → sube observación") de las ánimas.
 
+### 3.1. Órganos ⨯ canales de información (PR #199)
+
+"Observar" es un HECHIZO que se lanza por CUALQUIER body-part sensorial **o** desde el grimorio (doble vía `CanUse`).
+Cada órgano DECLARA qué **información** genera, no su nombre:
+- **`PerceptChannel`**: los canales de información — GENERALES (Presence/Distance/Direction/Movement, casi cualquier
+  sentido) + ESPECÍFICOS (Color/Shape=vista, Odor=olfato, Flavor=gusto, Sound=oído, Texture/Temperature=tacto/termo,
+  Bioelectric=electro) + de alto nivel (Identity/Emotion/Threat).
+- **`SenseOrgan`** (la clase de órgano que faltaba): `sense` (fija el alcance) + `provides` (canal→calidad 0-1) +
+  `rangeMultiplier`. **Todo es config**, no el tipo → **ojo normal / ojo CIEGO (Color 0) / ojo BORROSO (Color ~0.3) /
+  lengua que SABOREA LA LUZ (gusto que provee Color) / oído que escucha la luz…**. Sí, una "super-lengua" que saborea
+  partículas del aire (rastrear como el olfato) o la luz (rastrear como la vista) es POSIBLE — se configura sus canales.
+  Presets: `Eye/BlindEye/Nose/Ear/Tongue/Skin/LightTastingTongue`.
+- **`ObserveSpell.Perceive(target)`**: AGREGA los canales de todos los órganos del ser (máxima calidad, atenuada por la
+  distancia) → un dict canal→calidad = QUÉ información saca del objetivo. Vía MÁGICA (grimorio "observar"): añade todos
+  los canales a calidad = **confianza del hechicero** → **más habilidad, más información**. Test `SensesTest` (grupo 14).
+- Respuestas: ¿el gusto puede dar distancia? **sí, por config** (un órgano de gusto puede listar `Distance`). ¿Lenguas
+  que saborean luz / oídos que oyen luz? **sí, por config** (canales sinestésicos). ¿El grimorio también trae la lista?
+  **sí**, y escalada por la habilidad. Faltan (a futuro): gatear los canales por el receptor real de la anatomía (grants).
+
 ## 4. Directriz de ARQUITECTURA — `Anima` debe bastar (por configuración) para TODO
 
 Decisión del usuario (2026-09-13): **las Ánimas deben ser capaces de TODA la simulación social con solo configuración**.
