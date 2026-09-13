@@ -16,11 +16,22 @@ public enum ElementLevel { Deficiente, Bajo, Ideal, Alto, Exceso }
 /// </summary>
 public static class ElementsStatus
 {
-    // Fracción de la masa corporal por elemento (los 11 que suman ~99.9%).
+    // Fracción de la masa corporal por elemento. MAYORES (11, ~99.9%) + TRAZA esenciales (los que gobiernan
+    // mecánicas concretas: Fe=sangre/oxígeno, I=tiroides/energía, Zn=inmunidad/enzimas, etc.). Fracciones reales aprox.
     static readonly Dictionary<string, float> IdealFraction = new Dictionary<string, float>
     {
+        // Mayores (bioelementos): ≈99.9% de la masa.
         { "O", 0.650f }, { "C", 0.185f }, { "H", 0.095f }, { "N", 0.033f }, { "Ca", 0.016f },
         { "P", 0.012f }, { "K", 0.004f }, { "S", 0.0025f }, { "Na", 0.0015f }, { "Cl", 0.0015f }, { "Mg", 0.0005f },
+        // Traza esenciales (µg–mg por kg): pequeños pero rigen mecánicas → deben poder controlarse científicamente.
+        { "Fe", 6.0e-5f },   // hierro: transporte de O2 (sangre); su falta = fatiga/anemia
+        { "F",  3.7e-5f },   // flúor: huesos/dientes
+        { "Zn", 3.3e-5f },   // zinc: enzimas/inmunidad/cicatrización
+        { "Cu", 1.4e-6f },   // cobre: enzimas redox
+        { "Mn", 1.5e-6f },   // manganeso: enzimas/hueso
+        { "I",  2.9e-7f },   // yodo: tiroides → METABOLISMO/energía
+        { "Se", 2.1e-7f },   // selenio: antioxidante
+        { "Co", 3.0e-8f },   // cobalto: núcleo de la B12
     };
 
     /// <summary>Gramos IDEALES de un elemento para una masa corporal dada (kg). 0 si el elemento no está en la tabla.</summary>
