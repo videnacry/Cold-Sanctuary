@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 ///
 /// Construye la ciudad-insecto = Mesopotamia del amanecer a un ORIGEN LEJANO (no solapa el mundo
 /// base, que sigue cargado en aditivo) con: suelo, luz, MobSpawnPoint, 3 chozas + anclas y el
-/// YogaPortal de salida. La añade a Build Settings para poder cargarla por nombre en runtime.
+/// WorldExitPortal de salida. La añade a Build Settings para poder cargarla por nombre en runtime.
 ///
 /// Uso: Tools → Cold Sanctuary → Build MobWorld Mesopotamia. Luego pon "MobWorld_Mesopotamia" en el
 /// campo mobWorldSceneName de la VirtualizationMachine de la cocina.
@@ -60,16 +60,16 @@ public static class MobWorldSceneBuilder
 
         // Yoga-portal de salida.
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "YogaPortal";
+        portal.name = "WorldExitPortal";
         portal.transform.position   = O + new Vector3(0f, 1f, -5f);
         portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MobYogaPortal", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<YogaPortal>();
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<WorldExitPortal>();
 
         // Misión jugable de la cocina: "Procesar ingredientes" (ChannelMission por presencia). Es
         // self-contained en la escena: MobWorldMission la arranca tras el fundido de entrada y, con
-        // endMode=Standalone, al completarla limpia en sitio (el jugador sale por el YogaPortal).
+        // endMode=Standalone, al completarla limpia en sitio (el jugador sale por el WorldExitPortal).
         var missionGO = new GameObject("Mission_ProcesarIngredientes");
         missionGO.transform.position = O + new Vector3(0f, 0f, 4f); // centro de la ciudad; los mobs salen alrededor del jugador
         var mission = missionGO.AddComponent<MobMission>();

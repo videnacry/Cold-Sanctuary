@@ -440,8 +440,17 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
-        if (threat != null) RespondToThreat(threat);
+        // PERCEPCIÓN → ALERTNESS → AWARE: la amenaza percibida sube la alerta (más cerca dentro del alcance = más alerta);
+        // el ser solo REACCIONA (aware) cuando su alerta CRUZA el umbral → reacciona a lo que percibe, no a todo. Sin
+        // amenaza a la vista, la alerta decae. docs/consciousness-mechanics.md §3.3.
+        if (threat != null)
+        {
+            alertness = Mathf.Max(alertness, Mathf.Clamp01(1f - nearest / range));
+            if (alertness >= ALERT_TO_REACT) RespondToThreat(threat);
+        }
+        else alertness = Mathf.MoveTowards(alertness, 0f, 0.5f * TimeController.timeController.TimeSpeedMinuteSecs / 60f);
     }
+    const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
     public IEnumerator Feed() => Forage.eatsPrey ? Forage.Hunt(this) : Forage.Graze(this);

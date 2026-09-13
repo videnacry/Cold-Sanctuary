@@ -134,8 +134,16 @@ Dos conceptos distintos, ambos útiles (no fusionar): **`aware`** (bool) = ESTAD
 AHORA"; **`alertness`** (float 0–1, nuevo en `Anima`) = GRADO de alerta perceptiva "cuánto estoy captando". La percepción
 las alimenta: `ObserveSpell` sube `alertness` hacia la mayor calidad de lo que PERCIBE del más cercano (por órganos o
 grimoire), y cae si no percibe nada → un ser solo se pone en guardia por **lo que sus sentidos alcanzan** (un ciego no se
-alerta de algo que solo se ve). Se ve en el HUD. **Siguiente slice:** que `alertness` gatee `aware`/`SenseThreats` (reaccionar
-solo a lo percibido) — hoy `alertness` ya se genera; falta enchufarla a la respuesta de amenaza del `Animal`.
+alerta de algo que solo se ve). Se ve en el HUD.
+
+**`alertness` → `aware` (enchufado, PR #203):** `Animal.SenseThreats` ya no dispara la respuesta por el solo hecho de que
+haya un depredador en el radio. Al detectar la amenaza más cercana **dentro de su alcance de percepción** (`range` escalado
+por `perception`), sube `alertness` proporcional a la cercanía (`1 − dist/range`) y **solo llama a `RespondToThreat` cuando
+`alertness ≥ ALERT_TO_REACT` (0.3)** → el ser reacciona a lo que percibe, no a todo lo que hay. Sin amenaza a la vista, la
+alerta decae. La misma `alertness` la alimentan en paralelo los órganos/grimoire vía `ObserveSpell` (percibir de cerca ya
+deja al ser "en guardia" antes de que la amenaza cruce el umbral). No rompe a la fauna sin `ObserveSpell`: la propia
+`SenseThreats` genera la alerta desde la amenaza que percibe. **Siguiente slice (opcional):** limitar el `range` de
+`SenseThreats` al alcance real de los órganos (`ObserveSpell.Reach`) para seres con percepción atípica (topo, murciélago).
 
 ## Estrategia de PREFABS / versionado / UI (respuestas)
 

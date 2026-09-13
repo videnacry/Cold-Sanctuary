@@ -18,7 +18,7 @@ using UnityEngine.SceneManagement;
 ///
 /// Uso: Tools → Cold Sanctuary → Build Microcosmos Scene1 (Ambrosio). También la regenera "Build Sample Scene Blockout".
 /// Carga en runtime: `MobWorldLoader.Instance.EnterMobWorld("Microcosmos_Scene1_Ambrosio")` (genérico, no solo mob) →
-/// teletransporta al jugador al `MobSpawnPoint`; el `YogaPortal` lo devuelve. Falta cablear QUÉ dispara la entrada (un
+/// teletransporta al jugador al `MobSpawnPoint`; el `WorldExitPortal` lo devuelve. Falta cablear QUÉ dispara la entrada (un
 /// trigger del prólogo/alba); el resto (offset + spawn + portal) ya está resuelto aquí.
 /// </summary>
 public static class MicrocosmosSceneBuilder
@@ -57,7 +57,7 @@ public static class MicrocosmosSceneBuilder
         root.transform.position = O;                                 // desplaza TODO a un origen lejano (no solapa el mundo base)
 
         // Entrada/salida del jugador (genérico vía MobWorldLoader, como Mesopotamia): teletransporta al MobSpawnPoint al
-        // entrar; el YogaPortal devuelve al mundo normal. Ambos parentados al root → caen ya en O.
+        // entrar; el WorldExitPortal devuelve al mundo normal. Ambos parentados al root → caen ya en O.
         GameObject spawn = new GameObject("MobSpawnPoint");
         spawn.transform.SetParent(root.transform);
         spawn.transform.localPosition = new Vector3(0f, 1f, -6f);
@@ -65,13 +65,13 @@ public static class MicrocosmosSceneBuilder
         spawn.AddComponent<MobSpawnPoint>();
 
         GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "YogaPortal";
+        portal.name = "WorldExitPortal";
         portal.transform.SetParent(root.transform);
         portal.transform.localPosition = new Vector3(0f, 1f, -5f);
         portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroYogaPortal", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<YogaPortal>();
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<WorldExitPortal>();
 
         BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
 
@@ -189,12 +189,12 @@ public static class MicrocosmosSceneBuilder
         spawn.AddComponent<MobSpawnPoint>();
 
         GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "YogaPortal"; portal.transform.SetParent(root.transform);
+        portal.name = "WorldExitPortal"; portal.transform.SetParent(root.transform);
         portal.transform.localPosition = shore + new Vector3(4f, 0.6f, -2f);
         portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroYogaPortal0", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<YogaPortal>();
+        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal0", new Color(0.75f, 0.65f, 0.85f));
+        portal.AddComponent<WorldExitPortal>();
 
         BakeMicroNavMesh();
 

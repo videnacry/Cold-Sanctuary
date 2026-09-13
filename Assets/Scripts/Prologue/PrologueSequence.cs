@@ -6,7 +6,7 @@ using UnityEngine.Events;
 /// cada uno se completa (<see cref="CompleteBeat"/>, llamado por el trigger real de ese beat — máquina,
 /// misión de cuidado, portal…) o, en demo, sola por tiempo (<see cref="autoDemo"/>). No implementa las
 /// escenas (eso es Unity); es el **hilo** que las encadena y las registra, reutilizando piezas existentes
-/// (`VirtualizationMachine` = entrar, `YogaPortal` = salir, recetas de virtualización, misiones de cuidado).
+/// (`VirtualizationMachine` = entrar, `WorldExitPortal` = salir, recetas de virtualización, misiones de cuidado).
 /// </summary>
 public class PrologueSequence : MonoBehaviour
 {
@@ -16,7 +16,7 @@ public class PrologueSequence : MonoBehaviour
         "Enfermería: exámenes médicos y vacuna del recién llegado (chequeo).",
         "Kushal curiosea → prueba la máquina de avatares (VirtualizationMachine) → entra al Microcosmos (pre-fuego).",
         "Era de La Recolectora: apoya y anima a los débiles; llévalos a la cueva-refugio (CarryToRefuge).",
-        "Ve a la sala de meditación (YogaPortal) para volver al Mesocosmos.",
+        "Ve a la sala de meditación para volver al Mesocosmos.",
         "De vuelta y aprobado → primer trabajo (Cocina).",
     };
 

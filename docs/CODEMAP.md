@@ -365,6 +365,6 @@ _Total: 354 tipos._
 - **WeakOne** (class) — `Assets/Scripts/Prologue/WeakOne.cs` — Un ser DÉBIL al que hay que dar soporte y llevar a un refugio (docs/area-progression.md "Apertura"):
 - **WorldBondable** (class) — `Assets/Scripts/Bond/WorldBondable.cs` — Attach to any world object or place that can form a bond:
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
-- **YogaPortal** (class) — `Assets/Scripts/MobWorld/YogaPortal.cs` — The yoga room as the EXIT of a mob world (docs mob-world-architecture §4):
+- **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 
