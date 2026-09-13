@@ -48,6 +48,19 @@ por-ítem, más el enganche de "bienestar sostenido → sube aptitud".
   ACWR ([scienceforsport](https://www.scienceforsport.com/acutechronic-workload-ratio/)), Yerkes-Dodson/flow ([simplypsychology](https://www.simplypsychology.org/what-is-the-yerkes-dodson-law.html)),
   fitness-fatiga ([humankinetics](https://journals.humankinetics.com/view/journals/ijspp/17/5/article-p810.xml)).
 
+### 2.2. Auditoría de la cadena ELEMENTOS → COMPUESTOS → HUMORES (2026-09-13)
+
+- **Elementos (ampliados, PR #195):** `ElementsStatus` ya no lista solo los 11 mayores — añade los **traza esenciales**
+  (`Fe`/`F`/`Zn`/`Cu`/`Mn`/`I`/`Se`/`Co`) que rigen mecánicas concretas (Fe=sangre/O₂, I=tiroides/metabolismo, Zn=inmunidad…).
+  No era una muestra parcial a propósito; faltaban y ahora están, con su fracción real por masa (µg–mg/kg). Ampliables.
+- **Elementos → compuestos → células → stats:** ✅ **existe y con detalle** en `Constitution`: elementos (símbolos reales,
+  validados vs `PeriodicTableManager`) → **compuestos** (proteína/ATP/minerales/lípidos) → **células** (músculo/glóbulos=
+  Fe+proteína/neurona/hueso) → **stats base**. Alimentable en juego (`AddElement`).
+- **Compuestos → HUMORES:** ❌ **HUECO**. Hoy los `Humores` (Adrenalina/Serotonina/Cortisol/Glucosa/Calcio) los producen
+  la Mente/acciones/`MoodDynamics`, **no** salen del pipeline químico de `Constitution`. Para "los compuestos forman los
+  humores" al detalle falta un **puente compuestos→humores** (p.ej. glucosa-compuesto→`Glucosa`; Ca→`Calcio`; precursores
+  como triptófano→`Serotonina`, y adrenalina/cortisol desde sus precursores). Es la pieza a añadir (rebanada propia).
+
 ## 3. OBSERVACIÓN — minijuego de destello + preguntas
 
 Idea del usuario: se muestra un **entorno por unos segundos**, luego se presentan **preguntas de opción múltiple** para
