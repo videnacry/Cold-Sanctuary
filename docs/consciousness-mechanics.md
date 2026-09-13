@@ -68,6 +68,27 @@ Tend/Cull/cohesión) se construyó sobre `SimpleAnima` + `ImpulseController`, mi
 de NavMesh (`AiBrain`/`Volition`/`ThreatResponder`). Un ser con AMBOS tendría **dos sistemas de movimiento peleando** por
 el `NavMeshAgent`.
 
+**Progreso (PR #190):** los **apremios sociales ya son DESEOS** en `DesireCatalog` (`tend` = cuidar al vínculo en apuro,
+`follow` = cohesión), compitiendo en `Volition` con `eat`/`mate`, ponderados por afabilidad/sociabilidad → la sim social
+es ya **capacidad de cualquier `Animal` por config**, en la MISMA arena que el hambre. Falta: darle esa arena a los
+compañeros (hoy `SimpleAnima`, sin agencia — ver §4.3) y afinar los pesos.
+
+### 4.3. Migración de COMPAÑEROS y retirada de `SimpleAnima` — plan preciso
+
+Auditado: `MakeCompanionCore` monta el compañero como **`SimpleAnima` + Mind + SoulComposition + Mood** → tiene mente/
+humores/identidad pero **NO agencia**: no decide ni actúa vía la arena, porque **solo `Animal` tiene el bucle que llama a
+`Volition`/`SenseThreats`** (`ActiveBehaveTick`/`AiBrain`). Por eso hoy los personajes no-animales quedan "a medias".
+
+**El nudo:** hay dos `Anima` concretos — `SimpleAnima` (ser pasivo) y `Animal` (ser con AGENCIA, cuyo `Init` cablea
+NavMesh/Forager/AiBrain/Volition/ciclo de vida). Retirar `SimpleAnima` para personajes exige que **la AGENCIA sea una
+capacidad configurable** que cualquier `Anima` pueda tener, no algo exclusivo de `Animal`.
+
+**Plan recomendado (rebanada dedicada):** extraer el "cableado de agencia" de `Animal.Init` a un **bundle reutilizable**
+(un `AgencyCore`/componente) que añade y tickea AiBrain+Volition(+Locomotion/Forager según config). Entonces:
+- un COMPAÑERO = `Anima` + `AgencyCore` (por config) + pilares → **completo y agente**, sin ser un "animal".
+- `SimpleAnima` se reserva a lo inanimado (o se disuelve: un `Anima` "completo por defecto" cuyas capacidades se apagan por config).
+Es un refactor de `Animal.Init` (con test de paridad) → se hace como su propia rebanada para no romper la fauna.
+
 **Plan de unificación (a implementar por rebanadas):**
 1. **Un solo sustrato de movimiento.** Que la IA de `Animal` (deseos de `Volition`) **alimente impulsos** en un
    `ImpulseController` unificado (o al revés: que los `SocialImpulse` se expresen como **deseos** del `Volition`). Un solo

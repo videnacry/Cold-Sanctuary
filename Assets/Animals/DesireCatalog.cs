@@ -52,6 +52,57 @@ public static class DesireCatalog
                 if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
             }),
 
-        // D3b2: new Desire("rest", …), new Desire("wander", …), new Desire("defend", … , Capability.Combat) con piso de seguridad.
+        // ── APREMIOS SOCIALES como DESEOS (docs/consciousness-mechanics.md §4: la sim social es capacidad de Anima por
+        // config; compite en la MISMA arena que comer/celo → de la pugna, resuelta por los stats propios, emerge la
+        // personalidad). Reusan el registro de bonds por-miembro (Anima.bonds). Solo mueven vía NavMesh (Animal).
+
+        // CUIDAR: acercarse al ser QUERIDO (bond+) que está en apuros (estrés/enfermo). Necesidad = vínculo × su apuro,
+        // amplificada por la afabilidad del que cuida. Es el "Tend" de Sakshi/la tribu, ahora compitiendo con el hambre.
+        new Desire("tend",
+            self => SocialNeed(self, care: true) * Mathf.Max(0.3f, self.afabilidad),
+            self => ApproachBondTarget(self, care: true)),
+
+        // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
+        // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
+        new Desire("follow",
+            self => SocialNeed(self, care: false) * Mathf.Max(0.2f, self.sociability) * 0.5f,
+            self => ApproachBondTarget(self, care: false)),
     };
+
+    // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
+    // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
+    static float SocialNeed(Animal self, bool care)
+    {
+        float best = 0f;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Transform t = b.target.transform; if (t == null) continue;
+            Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
+            float tie = Mathf.Clamp01(b.value / 100f);
+            float urg = care ? Mathf.Clamp01(o.stress)                                   // cuidar: cuanto peor está el otro
+                             : Mathf.Clamp01(Vector3.Distance(self.transform.position, t.position) / 20f);  // seguir: cuán lejos
+            best = Mathf.Max(best, tie * urg);
+        }
+        return best;
+    }
+
+    // Despacho social: navega hacia el ser querido elegido (el más urgente por cuidado, o el más cercano por cohesión).
+    static void ApproachBondTarget(Animal self, bool care)
+    {
+        if (self.nav == null || !self.nav.isOnNavMesh) return;
+        Transform best = null; float bestScore = 0f;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Transform t = b.target.transform; if (t == null) continue;
+            Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
+            float tie = Mathf.Clamp01(b.value / 100f);
+            float urg = care ? Mathf.Clamp01(o.stress)
+                             : Mathf.Clamp01(Vector3.Distance(self.transform.position, t.position) / 20f);
+            float score = tie * urg;
+            if (score > bestScore) { bestScore = score; best = t; }
+        }
+        if (best != null) self.nav.SetDestination(best.position);
+    }
 }
