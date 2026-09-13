@@ -63,6 +63,18 @@ por-ítem, más el enganche de "bienestar sostenido → sube aptitud".
   pensamientos → tu "enfrentar pensamientos con la composición química"). Getters de compuestos añadidos a `Constitution`.
   Cadena completa: elementos→compuestos→(células→stats **y** →humores). Opt-in (componente).
 
+### 2.3. HUD declarativo (`FollowingArrays`/`Palette`) — huecos y avance
+
+El HUD "declarativo" = la UI de arrays de paneles reutilizables (la misma que la tabla periódica / asanas). Estado:
+- **Prototipo OnGUI** (`AnimaStatusHUD`): ✅ funciona ya (drives/actividad/elementos con color; sin dependencias).
+- **Adaptador declarativo** (`AnimaStatusPanels`, PR #197): ✅ la mitad de CÓDIGO — colorea PANELES-GameObject por
+  elemento (Renderer) + valor en `TextMesh`, con el "actual" desde `Constitution.El()` × ideal por masa.
+- **Huecos del sistema declarativo** (por eso no está entero): (1) **los paneles son PREFABS-GameObject** creados en
+  Unity → no versionables en código; el compañero debe montarlos y asignarlos al `AnimaStatusPanels`. (2)
+  `MaterializationExecutor` **inalcanzable** (faltan evaluadores cableados) — el camino Palette→materializar tiene huecos.
+  (3) `FollowingArrays` no tenía **binding a valores vivos** → lo aporta este adaptador. Resumen: el código para pintar
+  paneles vivos por color/valor **ya está**; falta que existan los **paneles-prefab** (Unity) y cerrar los evaluadores del Palette.
+
 ## 3. OBSERVACIÓN — minijuego de destello + preguntas
 
 Idea del usuario: se muestra un **entorno por unos segundos**, luego se presentan **preguntas de opción múltiple** para
