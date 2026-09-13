@@ -176,8 +176,34 @@ actual, CHC como norte. Así "hay más" pero **sin inflar** — se ordena lo que
 
 **Resumen:** los tres marcos "de ordenar lo que había" (PAD, Big Five, dieta) y el **subsistema nuevo** (Guardián +
 apremios + observación) **ya están aplicados**. Todo aditivo/graceful: un ser PROMEDIO no cambia (observación 0 → factor 1;
-`BasalMetabolism` es opt-in). Pendiente menor: el hechizo que adormece al Guardián (estupefaciente/adicción), y afinar los
-apremios de **miedo/duelo** como hechizos-estado. Dependencias reusadas: `Exertion`/`Metabolism`/`MediumFactor`/`AptitudeEvolution`/`grants`.
+`BasalMetabolism` es opt-in). Dependencias reusadas: `Exertion`/`Metabolism`/`MediumFactor`/`AptitudeEvolution`/`grants`.
+
+### 8.2. Hechizos-estado del apremio + efecto-en-tiempo (PR #186)
+
+Vía el **hub `AllostaticState`** (carga externa + sedación que decaen), los hechizos-estado modulan al Guardián sin
+acoplarse a él:
+- **`FearSpell` (miedo):** inyecta pavor (carga alostática) **resistido por el temple** (composure); AoE si `range>0`;
+  puede REINCIDIR (`Periodic`). Sube estrés. El eje oscuro (la Magnate).
+- **`NarcoticSpell` (estupefaciente):** SEDA al Guardián (`Sedation` → menos sufrimiento) pero **enmascara el daño** y
+  **alimenta la adicción** (la tolerancia recorta el efecto).
+- **`AddictionState` (adicción):** cada dosis sube deseo + tolerancia; sin dosis → **abstinencia** (carga que empuja a repetir).
+- **`GriefSpell` (duelo):** al morir un vínculo, carga tristeza a intervalos (`Periodic`) durante `duration` (cierre del
+  tableau de Ambrosio). Lo amortigua el acompañamiento/observación.
+
+**Propiedad de EFECTO-EN-TIEMPO (`SpellBase.EffectTiming`, ortogonal a `CastMode`):** todo hechizo declara cómo se
+desarrolla su efecto una vez disparado — **`Instant`** (una vez), **`Sustained`** (continuo mientras dura/se sostiene,
+p.ej. Jalar), **`Periodic`** (a intervalos `tickInterval` durante `duration`, p.ej. debilitamiento/veneno/miedo-que-reincide/
+abstinencia). Default `Instant` → no cambia los hechizos existentes. Test `StateSpellsTest` (grupo 12).
+
+### 8.3. Los 70+ (CHC) y el interés central del juego (subir la CONSCIENCIA)
+
+El usuario recuerda que el **interés central del juego es incrementar la consciencia del jugador** → revelar TODAS las
+propiedades físicas y mentales y **cómo trabajarlas por mecánicas/juegos**. Bajo esa luz, los 70+ de CHC **no son
+"inflar"**: son **dimensiones ENTRENABLES** que se **revelan y desarrollan** jugando. El marco ya existe:
+`AptitudeEvolution` (evolución por uso), `ObservationSkill` (entrenar mirando), `learning-unlocks.md` (aparecen en la UI
+al aprenderlas). Plan: un **registro de propiedades entrenables** (aptitud/estado → actividad que la desarrolla + su
+mini-mecánica), que se **descubren** con el juego. No hace falta crear las 70 de golpe: se añaden **cuando cada una tiene
+su mecánica** (una propiedad sin forma de trabajarla no enseña nada). Así "hay más" **y** cada "más" es una lección jugable.
 
 Fuentes: allostasis/carga alostática ([PubMed](https://pubmed.ncbi.nlm.nih.gov/36302295/), [ScienceDirect](https://www.sciencedirect.com/science/article/pii/S030645302200292X)),
 Kleiber ([Wikipedia](https://en.wikipedia.org/wiki/Kleiber%27s_law)), PAD ([Wikipedia](https://en.wikipedia.org/wiki/PAD_emotional_state_model)),

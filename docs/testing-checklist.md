@@ -1272,6 +1272,20 @@ estrés existente); un ser **sereno/entrenado** (`ObservationSkill`) observa >0 
   trainPerSecond, calmPerSecond}`, `BasalMetabolism.bmrCoefficient`.
 - Pendiente (no-bug): el hechizo que **adormece** al Guardián (estupefaciente); apremios de **miedo/duelo** como hechizos-estado.
 
+## 45. Hechizos-estado (miedo / estupefaciente / adicción / duelo) + efecto-en-tiempo (PR #186)
+
+`StateSpellsTest` (grupo 12, determinista): el hub `AllostaticState` registra carga externa + sedación; el **miedo**
+(`FearSpell`) carga al frágil y el **temple lo resiste** (sereno < frágil); la **adicción** (`AddictionState.Dose`) sube
+deseo + tolerancia.
+- **Insectos en el generador** (PR #186): `Ant/Aphid/Ladybug/Spider/Cricket` añadidos a `Generate Animal Prefabs`
+  (las clases ya existían). Necesitan un `.fbx` en `Assets/Animals/{Especie}/Models/` para producir el prefab.
+- **Efecto-en-tiempo** (`SpellBase.EffectTiming`): `Instant`/`Sustained`/`Periodic` (+`tickInterval`) — ortogonal a `CastMode`.
+- [ ] **En Play**: `FearSpell` sobre una zona → los de poco temple entran en pánico (estrés), los serenos aguantan.
+  `NarcoticSpell` seda (baja estrés) pero deja `AddictionState` (tolerancia↑, y abstinencia si no se repite). `GriefSpell`
+  al morir un vínculo → duelo a intervalos. Tunables en cada componente.
+- Pendiente (no-bug): cablear los apremios de miedo/duelo al `Level1Director` de Ambrosio (hoy el director siembra
+  `ThoughtField`; puede además lanzar `GriefSpell` en el clímax).
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.
