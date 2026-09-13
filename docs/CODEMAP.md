@@ -1,0 +1,361 @@
+# CODEMAP — índice de clases del proyecto (GENERADO — no editar a mano)
+
+> Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
+> Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
+_Total: 345 tipos._
+
+
+## Animals
+
+- **ActionPrep** (class) — `Assets/Animals/ActionPrep.cs`
+- **ActionsPrep** (class) — `Assets/Animals/ActionsPrep.cs`
+- **Animal** (class) — `Assets/Animals/Animal.cs`
+- **AnimalPopulations** (class) — `Assets/Animals/AnimalPopulations.cs` — Registro de poblaciones vivas POR ESPECIE (docs/anima-dissolving-animal.md, etapa 5).
+- **AntBehavior** (class) — `Assets/Animals/Ant/AntBehavior.cs`
+- **AphidBehavior** (class) — `Assets/Animals/Aphid/AphidBehavior.cs`
+- **BearBehaviour** (class) — `Assets/Animals/Bear/BearBehaviour.cs`
+- **BunnyBehavior** (class) — `Assets/Animals/Bunny/BunnyBehavior.cs`
+- **Capability** (class) — `Assets/Animals/Capability.cs` — Claves de CAPACIDAD/hechizo para la confianza-por-uso ( / `RecordUse`).
+- **CricketBehavior** (class) — `Assets/Animals/Cricket/CricketBehavior.cs`
+- **DeerBehavior** (class) — `Assets/Animals/Deer/DeerBehavior.cs`
+- **Desire** (class) — `Assets/Animals/DesireCatalog.cs` — Un DESEO seleccionable (docs/volition-selection-engine.md §3):
+- **DietPreference** (class) — `Assets/Animals/DietPreference.cs` — PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor":
+- **EstrusState** (class) — `Assets/Animals/EstrusState.cs` — CELO (estro) como **hechizo-estado** (docs/environmental-navigation.md §4.2; reproducción paso 1).
+- **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
+- **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
+- **LadybugBehavior** (class) — `Assets/Animals/Ladybug/LadybugBehavior.cs`
+- **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
+- **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
+- **OrcaBehavior** (class) — `Assets/Animals/Orca/OrcaBehavior.cs`
+- **PenguinBehavior** (class) — `Assets/Animals/Penguin/PenguinBehavior.cs`
+- **Physiognomy** (class) — `Assets/Animals/Physiognomy.cs`
+- **PostNatalProfile** (class) — `Assets/Animals/PostNatalProfile.cs` — Config POST-NATAL por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **Reaction** (enum) — `Assets/Animals/ThreatResponder.cs` — Reacción ante una amenaza (docs/behavior-system.md):
+- **Reproduction** (class) — `Assets/Animals/Reproduction.cs` — REPRODUCCIÓN (ciclo de vida, pasos 2-3:
+- **SealBehavior** (class) — `Assets/Animals/Seal/SealBehavior.cs`
+- **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2).
+- **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4):
+- **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5).
+- **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
+- **StageProfile** (class) — `Assets/Animals/StageProfile.cs` — Perfil de CICLO DE VIDA por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **Volition** (class) — `Assets/Animals/Volition.cs` — Motor de VOLICIÓN (docs/volition-selection-engine.md):
+- **WhaleBehavior** (class) — `Assets/Animals/Whale/WhaleBehavior.cs`
+- **WolfBehavior** (class) — `Assets/Animals/Wolf/WolfBehavior.cs`
+
+## Editor
+
+- **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
+- **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
+- **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
+- **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
+
+## Scripts
+
+- **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
+- **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
+- **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
+- **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
+- **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
+- **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
+- **Anima** (class) — `Assets/Scripts/Anima.cs` — Shared base for all living beings — animals, NPCs, and eventually the player.
+- **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5):
+- **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
+- **AnimationsName** (class) — `Assets/Scripts/AnimationsName.cs`
+- **AphidGuide** (class) — `Assets/Scripts/Microcosmos/AphidGuide.cs` — La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos-insects.md §4).
+- **AptitudeEvolution** (class) — `Assets/Scripts/AptitudeEvolution.cs` — Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.
+- **AptitudeKind** (enum) — `Assets/Scripts/Progression/DerivedStats.cs` — Identifica una de las 12 aptitudes (para recompensas/ganancias por misión).
+- **ArchetypeProfile** (class) — `Assets/Scripts/Soul/Archetypes.cs` — Perfil de un arquetipo (cuerpo o mente):
+- **AreaProducer** (class) — `Assets/Scripts/Economy/AreaProducer.cs` — Hace que un área del santuario produzca un recurso (docs/world-topology-and-planes.md §4):
+- **AreaTask** (class) — `Assets/Scripts/World/AreaTask.cs` — Defines one task available inside a SanctuaryArea.
+- **AreaVendor** (class) — `Assets/Scripts/Economy/AreaVendor.cs` — Handles buying and selling at a specific sanctuary area or at the market.
+- **ArrangementPattern** (class) — `Assets/Scripts/UI/Palette/ArrangementPattern.cs`
+- **Asana** (class) — `Assets/Scripts/Asana/Asana.cs` — Data asset for an Asana (yoga pose) or basic exercise.
+- **AsanaDetector** (class) — `Assets/Scripts/Asana/AsanaDetector.cs` — Attach to the Player.
+- **AsanaEvaluator** (class) — `Assets/Scripts/Asana/AsanaEvaluator.cs` — IPaletteEvaluator for the asana system.
+- **AsanaFormationMission** (class) — `Assets/Scripts/Meditation/AsanaFormationMission.cs` — Formation mission (docs §7/§8):
+- **AsanaQueue** (class) — `Assets/Scripts/Asana/AsanaQueue.cs` — Manages the active asana and the queue of upcoming ones.
+- **ATPRegenSpell** (class) — `Assets/Scripts/Microcosmos/ATPRegenSpell.cs` — REGENERACIÓN PASIVA DE ENERGÍA (ATP) — hechizo de duración ilimitada siempre activo.
+- **Autoabandono** (class) — `Assets/Scripts/Autoabandono.cs` — Deriva el autoabandono (disposición al auto-sacrificio, 0..1) de la tensión entrega ↔ autoconservación (docs/soul-relations-reincarnation §2c).
+- **AutoCameraZone** (class) — `Assets/Scripts/Camera/AutoCameraZone.cs` — Trigger volume that automatically switches the camera mode when Kushal enters, then restores the player's preferred mode when he leaves.
+- **AvatarController** (class) — `Assets/Scripts/Avatar/AvatarController.cs` — Manages which avatar-robot the player is piloting and applies its config to the SurfaceWalker (docs §4).
+- **AvatarLocomotion** (enum) — `Assets/Scripts/Avatar/RobotAvatar.cs` — How an avatar moves — maps to the access plane it unlocks (docs §4, Eje A).
+- **BasalMetabolism** (class) — `Assets/Scripts/Soul/BasalMetabolism.cs` — METABOLISMO BASAL (BMR) — el coste de "solo estar vivo" (docs/apremios-guardian-observacion.md §3.1).
+- **BigFiveProfile** (struct) — `Assets/Scripts/Soul/BigFive.cs` — Perfil de PERSONALIDAD Big Five / OCEAN (docs/apremios-guardian-observacion.md §8) — el modelo más usado en psicología.
+- **BirdBehavior** (class) — `Assets/Scripts/BirdBehavior.cs`
+- **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/soul-composition-blend.md):
+- **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción).
+- **BodyPartStats** (class) — `Assets/Scripts/BodyPartStats.cs` — Physical stats for a single body part.
+- **BodyPosition** (class) — `Assets/Scripts/Asana/BodyPosition.cs` — Represents a single body part placement that composes an Asana or Exercise.
+- **BodyPositionButton** (class) — `Assets/Scripts/Asana/BodyPositionButton.cs` — Attach to each UI button in the posture interface.
+- **BodyPositionData** (class) — `Assets/Scripts/Asana/BodyPositionData.cs` — Data-only tag for one canonical BodyPosition — lives on a non-rendered GameObject, used as the data source for the Yoga hologram panel (one per BodyPart).
+- **BondActivity** (class) — `Assets/Scripts/Bond/BondActivity.cs` — A practice that builds bond between the player and an IBondable target (companion, animal, object, place, natural element).
+- **BondActivityManager** (class) — `Assets/Scripts/Bond/BondActivityManager.cs` — Manages all BondActivities for the player.
+- **BondEscapeReader** (class) — `Assets/Scripts/Microcosmos/BondEscapeReader.cs` — LECTOR DE ESCAPE POR BOND — lee el estado de huida de los miembros del grupo con alto vínculo y ajusta el impulso de hogar propio para acompañarles.
+- **BondPillar** (class) — `Assets/Scripts/Soul/BondPillar.cs` — PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/anima-architecture.md · soul-relations-reincarnation §2 — fase 5).
+- **BondType** (enum) — `Assets/Scripts/Bond.cs`
+- **BreakfastCook** (class) — `Assets/Scripts/Kitchen/BreakfastCook.cs` — El loop de cocinar el desayuno (docs/kitchen-simulation.md §3).
+- **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
+- **CameraZoneTrigger** (class) — `Assets/Scripts/Camera/CameraZoneTrigger.cs` — Attach to a trigger collider surrounding a zone (e.g.
+- **CarryToRefuge** (class) — `Assets/Scripts/Prologue/CarryToRefuge.cs` — Misión de CUIDADO:
+- **CastMode** (enum) — `Assets/Scripts/Transformation/SpellBase.cs` — Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos).
+- **CaveTrigger** (class) — `Assets/Scripts/Microcosmos/CaveTrigger.cs` — Zona "cueva" — detecta cuando un ítem de comida entra en su trigger y notifica a para registrarlo como recogido.
+- **ChannelMission** (class) — `Assets/Scripts/Meditation/ChannelMission.cs` — Universal channel mission (docs §7 matrix):
+- **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
+- **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
+- **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
+- **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
+- **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
+- **Clock** (class) — `Assets/Scripts/Time/Clock.cs` — Hace correr el RELOJ del juego:
+- **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
+- **ClothingRecipe** (class) — `Assets/Scripts/Clothing/ClothingRecipe.cs` — Defines one clothing item craftable in the ClothingCraftingArea.
+- **CoinWallet** (class) — `Assets/Scripts/Economy/CoinWallet.cs` — Tracks the player's coin balance.
+- **CombatAbility** (class) — `Assets/Scripts/Combat/CombatAbility.cs` — Defines one combat ability usable against an IngredientMob.
+- **CombatAbilityBar** (class) — `Assets/Scripts/Combat/CombatAbilityBar.cs` — Manages the player's equipped ability bar (up to 10 slots, keys 1–0).
+- **CombatTargetSelector** (class) — `Assets/Scripts/Combat/CombatTargetSelector.cs` — Sistema de selección de target (Tab-targeting + clic).
+- **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
+- **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+- **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
+- **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
+- **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
+- **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
+- **DialogueLine** (class) — `Assets/Scripts/Dialogue/DialogueLine.cs` — A single line of dialogue — one thing one character says.
+- **DialogueManager** (class) — `Assets/Scripts/Dialogue/DialogueManager.cs` — Singleton that drives all dialogue playback in Cold Sanctuary.
+- **DialoguePanel** (class) — `Assets/Scripts/Dialogue/DialoguePanel.cs` — The on-screen UI for dialogue.
+- **DialogueSequence** (class) — `Assets/Scripts/Dialogue/DialogueSequence.cs` — A ScriptableObject asset that represents a complete dialogue event — a series of lines spoken in order, with no branching.
+- **DialogueTrigger** (class) — `Assets/Scripts/Dialogue/DialogueTrigger.cs` — Attach to any collider (set to IsTrigger) to play a DialogueSequence when Kushal enters.
+- **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
+- **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A).
+- **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5):
+- **DrivePreparation** (class) — `Assets/Scripts/DrivePreparation.cs`
+- **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/kitchen-simulation.md §6).
+- **EcosystemObservation** (class) — `Assets/Scripts/EcosystemObservation.cs` — Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/testing-checklist.md §39).
+- **ElementalTone** (enum) — `Assets/Scripts/Mind/ElementalTone.cs` — Tono elemental de un ánima (personalidad/temperamento):
+- **ElementAmount** (class) — `Assets/Scripts/Composition/Constitution.cs` — Cantidad de un elemento (símbolo de la tabla periódica, `Chemistry`).
+- **ElementCost** (class) — `Assets/Scripts/Transformation/MagicReserves.cs` — Coste de un hechizo en elementos (docs/magic-metabolism-progression.md §1).
+- **ElementFragment** (class) — `Assets/Scripts/Chemistry/ElementFragment.cs` — A collectible fragment dropped by an IngredientMob when processed.
+- **ElementState** (enum) — `Assets/Scripts/UI/Palette/PaletteElement.cs`
+- **EmergenceAuto** (class) — `Assets/Scripts/EmergenceAuto.cs` — Sandbox AUTOEJECUTABLE del BUCLE EMERGENTE de temperamento (docs/capabilities-and-embodiment.md §4), reportando por `TestProbe`.
+- **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md).
+- **EmotionReader** (class) — `Assets/Scripts/Emotion/EmotionReader.cs` — LEGIBILIDAD (docs/emotion-model.md §6):
+- **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
+- **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
+- **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
+- **Family** (class) — `Assets/Scripts/Family.cs`
+- **FamilyGenerator** (class) — `Assets/Scripts/FamilyGenerator.cs` — Puebla la escena con familias de animales al arrancar Play.
+- **FarmingSandboxItems** (class) — `Assets/Scripts/Farming/FarmingSandboxItems.cs` — Bootstrapper de PRUEBA (runtime, solo para el sandbox de SampleSceneBuilder):
+- **FaunaChecks** (class) — `Assets/Scripts/FaunaChecks.cs` — Sandbox AUTOEJECUTABLE de CONDUCTA/lógica sobre la ESCENA REAL (NavMesh horneado + fauna de `FamilyGenerator`), reportando por `TestProbe` (`[TEST]` en `Editor.log`).
+- **FearSpell** (class) — `Assets/Scripts/Microcosmos/FearSpell.cs` — Hechizo de MIEDO (docs/sanctuary-second-lap-and-fear.md, apremios §3):
+- **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/magic-metabolism-progression.md §13).
+- **FollowBrain** (class) — `Assets/Scripts/Control/FollowBrain.cs` — Cerebro de IA que hace que el ser SIGA a un objetivo (docs/anima-architecture.md §11.5).
+- **FollowingArrayInArray** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInArray .cs`
+- **FollowingArrayInScript** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInScript.cs`
+- **FollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingArrays.cs`
+- **FollowingElement** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElement.cs`
+- **FollowingElementBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/FollowingElementBehavior.cs`
+- **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
+- **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
+- **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
+- **Generator** (class) — `Assets/Scripts/Generator.cs`
+- **Gohageneis** (class) — `Assets/Scripts/Companion/Companions/Gohageneis.cs` — El Papi Gohageneis — celebración, arte de vivir, restauración emocional.
+- **Goluis** (class) — `Assets/Scripts/Companion/Companions/Goluis.cs` — El Maestro Goluis — cocina, doble turno, presión y resistencia.
+- **GrassPatch** (class) — `Assets/Scripts/World/GrassPatch.cs` — Marks a flat grazing area.
+- **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
+- **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
+- **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
+- **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
+- **HashSetHolder** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolder.cs`
+- **HashSetHolderAnimalPopulation** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolderAnimalPopulation.cs`
+- **HeadLook** (class) — `Assets/Scripts/Virtualization/HeadLook.cs` — Cámara-CABEZA del **modo primera persona** (docs/kitchen-simulation.md §3b).
+- **HealingMission** (class) — `Assets/Scripts/Meditation/HealingMission.cs` — "A curar" mission (docs §7/§8):
+- **HealMob** (class) — `Assets/Scripts/Meditation/HealMob.cs` — The "to heal" archetype (docs §8):
+- **HelpRequest** (class) — `Assets/Scripts/Control/HelpRequest.cs` — Lado EMISOR de una petición entre personajes (docs/anima-architecture.md §11.7).
+- **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7).
+- **HideFollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/HideFollowingArrays.cs`
+- **Hologram** (class) — `Assets/Scripts/UI/Hologram/Hologram.cs` — One reusable, poolable flat UI card.
+- **HologramCorner** (enum) — `Assets/Scripts/UI/Hologram/HologramMenuController.cs`
+- **HologramPool** (class) — `Assets/Scripts/UI/Hologram/HologramPool.cs` — Fixed-size pool of Hologram cards, sized to the largest list the menu will ever need to show at once.
+- **HomeImpulse** (class) — `Assets/Scripts/Microcosmos/HomeImpulse.cs` — Impulso de HOGAR — atracción continua y baja hacia (el nido/cueva).
+- **HoneydewPickup** (class) — `Assets/Scripts/Microcosmos/HoneydewPickup.cs` — GOTA DE MELAZA recolectable — aparece en el suelo junto a Ambrosio cuando la «suelta».
+- **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2).
+- **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
+- **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
+- **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
+- **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md):
+- **IBody** (interface) — `Assets/Scripts/IBody.cs` — Physical body interface — per-limb stats and posture stress for the asana/training system.
+- **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
+- **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
+- **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
+- **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
+- **IFactory** (interface) — `Assets/Scripts/IFactory.cs`
+- **IInteractable** (interface) — `Assets/Scripts/Interaction/IInteractable.cs` — Marker interface for any object Kushal can interact with.
+- **IMind** (interface) — `Assets/Scripts/IMind.cs` — Mental and emotional state contract for any entity with an inner life.
+- **ImpulseController** (class) — `Assets/Scripts/Microcosmos/ImpulseController.cs` — CONTROLADOR DE IMPULSOS de dirección — suma todos los activos y dirige el hacia el vector resultante.
+- **IngredientMob** (class) — `Assets/Scripts/Combat/IngredientMob.cs` — An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
+- **InteractionController** (class) — `Assets/Scripts/Interaction/InteractionController.cs` — Attached to the Player.
+- **Inventory** (class) — `Assets/Scripts/Economy/Inventory.cs` — The player's inventory.
+- **Irosene** (class) — `Assets/Scripts/Companion/Companions/Irosene.cs` — Irosene (70+) — pasión, motivación, sociabilidad.
+- **ITarget** (interface) — `Assets/Scripts/ITarget.cs` — Objetivo universal:
+- **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
+- **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
+- **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
+- **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
+- **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
+- **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
+- **Lod** (class) — `Assets/Scripts/Lod.cs` — LOD de simulación (docs/checklist.md — análisis de escala):
+- **LotusMeditationAbility** (class) — `Assets/Scripts/Meditation/LotusMeditationAbility.cs` — The lotus path into the Microcosmos — the endgame alternative to the machine (docs §1, §3).
+- **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
+- **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
+- **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
+- **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
+- **MeditationMob** (class) — `Assets/Scripts/Meditation/MeditationMob.cs` — Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
+- **MeditationReward** (class) — `Assets/Scripts/Meditation/MeditationReward.cs` — Reusable reward block for meditation / Microcosmos missions (docs §7).
+- **MeditationSession** (class) — `Assets/Scripts/Meditation/MeditationSession.cs` — Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
+- **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
+- **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
+- **MigrationDiagnostics** (class) — `Assets/Scripts/MigrationDiagnostics.cs` — Diagnóstico de migración (TEMPORAL).
+- **Mind** (class) — `Assets/Scripts/Mind/Mind.cs` — El pilar MENTE de un ánima (docs/anima-architecture.md §3, §6, §10) — MVP.
+- **MindChannel** (enum) — `Assets/Scripts/MindChannel.cs` — Identifies which mental/emotional stat to target when restoring or draining.
+- **MissionCategory** (enum) — `Assets/Scripts/Meditation/MobMission.cs` — Category of mental practice a mission belongs to.
+- **MissionEndMode** (enum) — `Assets/Scripts/Meditation/MeditationMissionBase.cs` — How a mission finishes.
+- **MissionSelectMenu** (class) — `Assets/Scripts/Meditation/MissionSelectMenu.cs` — The list of available mob-missions, shown OVER the black screen (docs §3).
+- **MissionTracker** (class) — `Assets/Scripts/Mission/MissionTracker.cs` — Singleton that manages active missions, tracks progress, and distributes rewards.
+- **MobResident** (class) — `Assets/Scripts/MobWorld/MobResident.cs` — Lightweight resident of a mob world (docs mob-world-architecture §5).
+- **MobSpawnPoint** (class) — `Assets/Scripts/MobWorld/MobSpawnPoint.cs` — Marks where the player appears inside a mob-world scene.
+- **MobWorldEventType** (enum) — `Assets/Scripts/MobWorld/MobWorldDirector.cs` — Type of world-changing event in a mob world (docs mob-world-architecture §6).
+- **MobWorldLoader** (class) — `Assets/Scripts/MobWorld/MobWorldLoader.cs` — Loads/unloads a mob-world scene behind the black screen and teleports the player in/out (docs mob-world-architecture §13 — "escena propia por mundo mob").
+- **MobWorldMission** (class) — `Assets/Scripts/MobWorld/MobWorldMission.cs` — Drives a MobMission that lives inside a mob-world SCENE (docs mob-world-architecture §13).
+- **MoodDynamics** (class) — `Assets/Scripts/Soul/MoodDynamics.cs` — DINÁMICA de humores/estrés (docs/soul-relations-reincarnation §2b).
+- **MoodState** (class) — `Assets/Scripts/Companion/MoodState.cs` — Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad — **extraído de `CompanionBase`** (que se retira, fase 5).
+- **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
+- **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3):
+- **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
+- **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
+- **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
+- **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.
+- **NutrientNeed** (class) — `Assets/Scripts/Composition/Metabolism.cs` — Necesidad de un NUTRIENTE (proteína/grasa/carbohidrato/minerales):
+- **Observation** (class) — `Assets/Scripts/Soul/Observation.cs` — OBSERVACIÓN / ECUANIMIDAD (docs/apremios-guardian-observacion.md §4) — la libertad frente al apremio.
+- **ObservationSkill** (class) — `Assets/Scripts/Soul/ObservationSkill.cs` — La OBSERVACIÓN como habilidad que EVOLUCIONA POR USO (docs/apremios-guardian-observacion.md §4) — como la agilidad/ percepción ya suben con el uso (`AptitudeEvolution`).
+- **ObservationTest** (class) — `Assets/Scripts/ObservationTest.cs` — Test de la OBSERVACIÓN/ecuanimidad (docs/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
+- **ObserveSpell** (class) — `Assets/Scripts/Microcosmos/ObserveSpell.cs` — HECHIZO PASIVO DE LOS OJOS:
+- **OrganicMaterial** (enum) — `Assets/Scripts/OrganicMaterial.cs`
+- **PackAwareness** (class) — `Assets/Scripts/Microcosmos/PackAwareness.cs` — CONCIENCIA DE MANADA — lógica de ayuda emergente entre compañeros.
+- **Palette** (class) — `Assets/Scripts/UI/Palette/Palette.cs`
+- **PaletteConfig** (class) — `Assets/Scripts/UI/Palette/PaletteConfig.cs`
+- **PaletteElementData** (class) — `Assets/Scripts/UI/Palette/PaletteElementData.cs`
+- **PaletteElementType** (enum) — `Assets/Scripts/UI/Palette/PaletteElementType.cs`
+- **PaletteGroup** (class) — `Assets/Scripts/UI/Palette/PaletteGroup.cs`
+- **PaletteResult** (struct) — `Assets/Scripts/UI/Palette/IPaletteEvaluator.cs`
+- **Panterilia** (class) — `Assets/Scripts/Companion/Companions/Panterilia.cs` — Panterilia — limpieza, nutrición, observación.
+- **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
+- **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
+- **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
+- **Phytoplankton** (class) — `Assets/Scripts/World/Phytoplankton.cs` — FITOPLANCTON:
+- **PlaneMessenger** (class) — `Assets/Scripts/Prologue/PlaneMessenger.cs` — Mensajes que cruzan entre planos (docs/area-progression.md "Apertura"):
+- **PlayableCreature** (class) — `Assets/Scripts/Farming/PlayableCreature.cs` — Farming NO-violento (docs/world-topology-and-planes.md §4.1).
+- **PlayController** (class) — `Assets/Scripts/Farming/PlayController.cs` — Input de "juego" del jugador para el farming no-violento (docs/world-topology-and-planes.md §4.1, MVP).
+- **PlayerBrain** (class) — `Assets/Scripts/Control/PlayerBrain.cs` — El input del JUGADOR como un cerebro más (docs/anima-architecture.md §11.5:
+- **PlayerClimber** (class) — `Assets/Scripts/Farming/PlayerClimber.cs` — Trepar (docs/creature-stats.md §Pools derivados → "Trepar").
+- **PlayerCombat** (class) — `Assets/Scripts/Combat/PlayerCombat.cs` — Handles the player's melee attack in combat zones (kitchen, alchemy lab, etc.).
+- **PlayerController** (class) — `Assets/Scripts/Player/PlayerController.cs` — Kushal's player controller for Cold Sanctuary.
+- **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
+- **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
+- **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
+- **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.
+- **PossessionSpell** (class) — `Assets/Scripts/Control/PossessionSpell.cs` — Hechizo de POSESIÓN del jugador (docs/anima-architecture.md §11.5).
+- **PostNatalManager** (class) — `Assets/Scripts/PostNatal/PostNatalManager.cs` — Añadir al GameObject de la MADRE.
+- **PostNatalStage** (class) — `Assets/Scripts/PostNatal/PostNatalStage.cs` — Una etapa del ciclo post-natal.
+- **PostureFormMob** (class) — `Assets/Scripts/Meditation/PostureFormMob.cs` — The "posture" archetype (docs §8):
+- **PostureStressHandler** (class) — `Assets/Scripts/Player/PostureStressHandler.cs` — Reads IBody.postureStress every frame and applies physical consequences:
+- **PostureVisualizationMission** (class) — `Assets/Scripts/Meditation/PostureVisualizationMission.cs` — Visualization mission (docs §7):
+- **Predation** (class) — `Assets/Scripts/Transformation/Predation.cs` — Depredación por STATS (docs/stats-as-truth.md §2):
+- **ProductionOrder** (class) — `Assets/Scripts/Virtualization/ProductionOrder.cs` — La MISIÓN de producción de un área (docs/kitchen-simulation.md §3b):
+- **PrologueSequence** (class) — `Assets/Scripts/Prologue/PrologueSequence.cs` — El guion del PRÓLOGO (docs/area-progression.md "Apertura"):
+- **ProtectionMission** (class) — `Assets/Scripts/Meditation/ProtectionMission.cs` — "A proteger" mission (docs §7/§8) — bespoke escort/defense, not a MeditationMissionBase subclass because it has two mob types, counts only repels, and can FAIL:
+- **ProtectMob** (class) — `Assets/Scripts/Meditation/ProtectMob.cs` — The fragile ward of the "a proteger" archetype (docs §8):
+- **PullDoor** (class) — `Assets/Scripts/PullDoor.cs`
+- **PullSpell** (class) — `Assets/Scripts/Microcosmos/PullSpell.cs` — Hechizo JALAR — Kushal atrae a otro ser hacia sí inyectando un en el del objetivo.
+- **QuarkReserve** (class) — `Assets/Scripts/Transformation/QuarkReserve.cs` — SUSTRATO DE QUARKS del S4 (docs/magic-metabolism-progression.md §16).
+- **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33).
+- **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
+- **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
+- **Respawn** (class) — `Assets/Scripts/Respawn.cs`
+- **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
+- **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
+- **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):
+- **SanctuaryArea** (class) — `Assets/Scripts/World/SanctuaryArea.cs` — A zone inside Cold Sanctuary.
+- **SanctuaryAreaType** (enum) — `Assets/Scripts/World/SanctuaryAreaType.cs` — All zones in Cold Sanctuary, ordered roughly by progression tier.
+- **SanctuaryDirector** (class) — `Assets/Scripts/World/SanctuaryDirector.cs` — The Magnate's world management component — the brain of the sanctuary's autonomous simulation.
+- **SanctuaryMission** (class) — `Assets/Scripts/Mission/SanctuaryMission.cs` — Defines one mission available in the sanctuary.
+- **SanctuaryResource** (enum) — `Assets/Scripts/Economy/SanctuaryResource.cs` — Recursos globales de un santuario (Mesocosmos / Macrocosmos, ver docs/world-topology-and-planes.md §4 y §7).
+- **SanctuaryResourceHUD** (class) — `Assets/Scripts/UI/SanctuaryResourceHUD.cs` — HUD PROTOTIPO (OnGUI) de los recursos del santuario activo (docs/world-topology-and-planes.md §7):
+- **SanctuaryResources** (class) — `Assets/Scripts/Economy/SanctuaryResources.cs` — Libro mayor (ledger) de recursos del santuario ACTIVO (docs/world-topology-and-planes.md §4/§7).
+- **ScentEmitter** (class) — `Assets/Scripts/Microcosmos/ScentEmitter.cs` — EMISOR DE OLOR — cualquier objeto (comida, cadáver, nido) puede convertirse en fuente de atracción olfativa para depredadores cercanos.
+- **ScentScanner** (class) — `Assets/Scripts/Microcosmos/ScentScanner.cs` — ESCÁNER DE OLOR — detecta cercanos y genera un impulso de ATRACCIÓN hacia la fuente más intensa.
+- **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística").
+- **ScreenFader** (class) — `Assets/Scripts/Meditation/ScreenFader.cs` — Full-screen black overlay used to hide the reality-shift transition.
+- **ServiceHub** (class) — `Assets/Scripts/Virtualization/ServiceHub.cs` — Tablero de servicio de un taller (Mecánica o Construcción; docs/forge-simulation.md §5).
+- **Sex** (class) — `Assets/Scripts/Sex.cs`
+- **SharedSoul** (class) — `Assets/Scripts/Soul/SharedSoul.cs` — ALMA COMPARTIDA entre reencarnaciones (docs/soul-relations-reincarnation.md §4).
+- **SharedSoulDemo** (class) — `Assets/Scripts/Soul/SharedSoulDemo.cs` — Demo (OnGUI) del ALMA COMPARTIDA (docs/soul-relations-reincarnation §4) para el sandbox `AlmaCompartida_AUTO`:
+- **ShipCtrl** (class) — `Assets/Scripts/ShipCtrl.cs`
+- **SicknessTest** (class) — `Assets/Scripts/SicknessTest.cs` — Unidad de test de la ENFERMEDAD (docs/testing-checklist.md §38), por `TestProbe`, determinista:
+- **SimpleAnima** (class) — `Assets/Scripts/SimpleAnima.cs` — Un `Anima` CONCRETO mínimo — un ser "despertable" sin comportamiento propio (docs/anima-architecture.md:
+- **SleepTest** (class) — `Assets/Scripts/SleepTest.cs` — Unidad de test del SUEÑO día/noche (docs/testing-checklist.md §41), por `TestProbe`:
+- **SlideDoor** (class) — `Assets/Scripts/SlideDoor.cs`
+- **SocialField** (class) — `Assets/Scripts/Soul/SocialField.cs` — CAMPO SOCIAL — efecto EMERGENTE y GLOBAL (docs/soul-relations-reincarnation §2b).
+- **SocialImpulse** (class) — `Assets/Scripts/Microcosmos/SocialImpulse.cs` — IMPULSO SOCIAL (docs/microcosmos-level1.md §Impulsos sociales, rebanada 2):
+- **SoulComposition** (class) — `Assets/Scripts/Soul/SoulComposition.cs` — ALMA por MEZCLA (docs/soul-composition-blend.md + soul-relations-reincarnation.md §1).
+- **SoulConvertDemo** (class) — `Assets/Scripts/Soul/SoulConvertDemo.cs` — Demo (OnGUI) de la CONVERSIÓN de stats (docs/soul-relations-reincarnation §1) para el sandbox `AlmaBlend_AUTO`.
+- **SoulMarga** (class) — `Assets/Scripts/Progression/SoulMarga.cs` — Una "marga del alma" (docs/creature-stats.md §Progresión):
+- **SoulRecord** (class) — `Assets/Scripts/Microcosmos/SoulRecord.cs` — Ficha de ALMA del mundo insecto (docs/microcosmos-insects.md §13).
+- **SpeciesKarma** (class) — `Assets/Scripts/Soul/SpeciesKarma.cs` — Resuelve la RELACIÓN kármica base de un ser hacia una especie (docs/soul-relations-reincarnation §2).
+- **SpellDemoHUD** (class) — `Assets/Scripts/Microcosmos/SpellDemoHUD.cs` — HUD de PRUEBA (OnGUI) del sandbox `SpellDemo_AUTO`:
+- **SpellElement** (enum) — `Assets/Scripts/Transformation/ElementalSpell.cs` — Elemento de un hechizo elemental básico.
+- **StarvationTest** (class) — `Assets/Scripts/StarvationTest.cs` — Unidad de test de la INANICIÓN (docs/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
+- **StatBonus** (class) — `Assets/Scripts/Composition/CharacterComposition.cs` — Aporte ADITIVO de una parte a los stats (0 = sin cambio).
+- **StateSpellsTest** (class) — `Assets/Scripts/StateSpellsTest.cs` — Test de los HECHIZOS-ESTADO (docs/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
+- **StationPart** (class) — `Assets/Scripts/Virtualization/StationPart.cs` — Una PARTE manipulable de una estación de virtualización (docs/kitchen-simulation.md §3b):
+- **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4).
+- **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
+- **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
+- **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
+- **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
+- **TeacherNPC** (class) — `Assets/Scripts/Companion/TeacherNPC.cs` — Base for any NPC that can evaluate the player's asana attempts and give feedback.
+- **Test** (class) — `Assets/Scripts/Test.cs`
+- **TestProbe** (class) — `Assets/Scripts/TestProbe.cs` — Mini-harness de PRUEBAS por consola (PASS/FAIL) — la capa que faltaba:
+- **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario:
+- **ThoughtAnchor** (class) — `Assets/Scripts/Companion/ThoughtAnchor.cs` — A belief or pattern that biases a companion's behavior.
+- **ThoughtField** (class) — `Assets/Scripts/Mind/ThoughtField.cs` — Campo de pensamiento (docs/anima-architecture.md §5, "campo social/semántico"):
+- **ThreatEmitter** (class) — `Assets/Scripts/Microcosmos/ThreatEmitter.cs` — EMISOR DE AMENAZA ambiental — cualquier objeto puede convertirse en fuente de peligro.
+- **ThreatScanner** (class) — `Assets/Scripts/Microcosmos/ThreatScanner.cs` — Escáner de AMENAZAS — detecta dos tipos de peligro y los combina en (leído por para decidir si ayudar a compañeros):
+- **TimeController** (class) — `Assets/Scripts/Time/Time.cs`
+- **TimeTest** (class) — `Assets/Scripts/Time/TimeTest.cs`
+- **Toolbox** (class) — `Assets/Scripts/Virtualization/Toolbox.cs` — Las HERRAMIENTAS del jugador para reparar (docs/forge-simulation.md §5).
+- **TourStation** (class) — `Assets/Scripts/Kitchen/TourStation.cs` — Una parada del paseo guiado (docs/kitchen-simulation.md §1):
+- **TraceChannel** (enum) — `Assets/Scripts/World/TraceField.cs` — Canales de rastro/subproducto (docs/environmental-navigation.md §4.2).
+- **TraceFieldTest** (class) — `Assets/Scripts/TraceFieldTest.cs` — Sandbox AUTOEJECUTABLE de la rejilla de feromonas (`TraceField`), reportando por `TestProbe` (PASS/FAIL en `Editor.log`, grep `[TEST]`).
+- **TrackerBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/TrackerBehavior.cs`
+- **TransformationSpell** (class) — `Assets/Scripts/Transformation/TransformationSpell.cs` — Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/stats-as-truth.md §4).
+- **TransitionCondition** (class) — `Assets/Scripts/PostNatal/TransitionCondition.cs` — Condición que debe cumplirse para avanzar al siguiente PostNatalStage.
+- **TribeCohesion** (class) — `Assets/Scripts/Microcosmos/TribeCohesion.cs` — COHESIÓN DE MANADA + ABANDONO (docs/microcosmos-level1.md §Impulsos/beats, rebanada 2):
+- **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b).
+- **UI** (class) — `Assets/Scripts/UI/FollowingArrays/UI.cs`
+- **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`
+- **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/upa-yoga-mission.md).
+- **VirtualizationMachine** (class) — `Assets/Scripts/Meditation/VirtualizationMachine.cs` — The virtualization machine — the universal trigger for mob / Microcosmos missions, present in every area (docs §3).
+- **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/kitchen-simulation.md §3b).
+- **VirtualTask** (class) — `Assets/Scripts/Virtualization/VirtualTask.cs` — Base de una TAREA de virtualización que recibe pasos del (docs kitchen-simulation.md §3b).
+- **WalkSpell** (class) — `Assets/Scripts/Microcosmos/WalkSpell.cs` — Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos), sobre el sistema unificado de `powerBonus` de `SpellBase`.
+- **WardAttackerMob** (class) — `Assets/Scripts/Meditation/WardAttackerMob.cs` — Attacker of the "a proteger" archetype (docs §8):
+- **WaterZone** (class) — `Assets/Scripts/Player/WaterZone.cs` — Attach to a trigger Collider spanning a swimmable water volume (e.g.
+- **WeaknessEffect** (class) — `Assets/Scripts/Transformation/WeaknessEffect.cs` — Efecto de DEBILITAMIENTO progresivo — drena la energía del ser a ritmo fijo hasta dejarla en 0, momento en que se detiene (el NavMeshAgent se deshabilita).
+- **WeakOne** (class) — `Assets/Scripts/Prologue/WeakOne.cs` — Un ser DÉBIL al que hay que dar soporte y llevar a un refugio (docs/area-progression.md "Apertura"):
+- **WorldBondable** (class) — `Assets/Scripts/Bond/WorldBondable.cs` — Attach to any world object or place that can form a bond:
+- **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
+- **YogaPortal** (class) — `Assets/Scripts/MobWorld/YogaPortal.cs` — The yoga room as the EXIT of a mob world (docs mob-world-architecture §4):
+- **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
+
