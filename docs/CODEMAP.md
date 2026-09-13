@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 350 tipos._
+_Total: 351 tipos._
 
 
 ## Animals
@@ -303,6 +303,7 @@ _Total: 350 tipos._
 - **ScentScanner** (class) — `Assets/Scripts/Microcosmos/ScentScanner.cs` — ESCÁNER DE OLOR — detecta cercanos y genera un impulso de ATRACCIÓN hacia la fuente más intensa.
 - **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística").
 - **ScreenFader** (class) — `Assets/Scripts/Meditation/ScreenFader.cs` — Full-screen black overlay used to hide the reality-shift transition.
+- **Senses** (class) — `Assets/Scripts/Soul/Senses.cs` — Catálogo de SENTIDOS (docs/consciousness-mechanics.md §3) — "observar" no es solo la vista:
 - **ServiceHub** (class) — `Assets/Scripts/Virtualization/ServiceHub.cs` — Tablero de servicio de un taller (Mecánica o Construcción; docs/forge-simulation.md §5).
 - **Sex** (class) — `Assets/Scripts/Sex.cs`
 - **SharedSoul** (class) — `Assets/Scripts/Soul/SharedSoul.cs` — ALMA COMPARTIDA entre reencarnaciones (docs/soul-relations-reincarnation.md §4).

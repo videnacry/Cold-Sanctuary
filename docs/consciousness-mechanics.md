@@ -69,15 +69,25 @@ El HUD "declarativo" = la UI de arrays de paneles reutilizables (la misma que la
 - **Prototipo OnGUI** (`AnimaStatusHUD`): ✅ funciona ya (drives/actividad/elementos con color; sin dependencias).
 - **Adaptador declarativo** (`AnimaStatusPanels`, PR #197): ✅ la mitad de CÓDIGO — colorea PANELES-GameObject por
   elemento (Renderer) + valor en `TextMesh`, con el "actual" desde `Constitution.El()` × ideal por masa.
-- **Huecos del sistema declarativo** (por eso no está entero): (1) **los paneles son PREFABS-GameObject** creados en
-  Unity → no versionables en código; el compañero debe montarlos y asignarlos al `AnimaStatusPanels`. (2)
-  `MaterializationExecutor` **inalcanzable** (faltan evaluadores cableados) — el camino Palette→materializar tiene huecos.
-  (3) `FollowingArrays` no tenía **binding a valores vivos** → lo aporta este adaptador. Resumen: el código para pintar
-  paneles vivos por color/valor **ya está**; falta que existan los **paneles-prefab** (Unity) y cerrar los evaluadores del Palette.
+- **Paneles GENERADOS POR CÓDIGO** (PR #198): `BuildAnimaStatusPanels` crea los paneles-GameObject (Quad+TextMesh) por
+  elemento y los vincula con `AnimaStatusPanels` → **el HUD declarativo se genera SIN prefab manual** (todo versionado
+  en el `.cs`). Respuesta a "¿prefabs por código?": **SÍ** — o construyendo el GameObject en escena (como aquí y como los
+  actores del microcosmos), o con `PrefabUtility.SaveAsPrefabAsset` para un `.prefab` reutilizable (como `AnimalPrefabGenerator`).
+  Lo único no versionado es el ARCHIVO `.prefab` (por la lista blanca del `.gitignore`), NO la capacidad de generarlo.
+- **Huecos restantes**: `MaterializationExecutor` **inalcanzable** (faltan evaluadores del `Palette` cableados) — el camino
+  Palette→materializar sigue con huecos (aparte del HUD). El binding a valores vivos ya lo aporta `AnimaStatusPanels`.
+  Integrarlo en los "sheets" de `FollowingArrays` es cosmético ahora (los paneles pueden ser prefab o code-gen como aquí).
 
-## 3. OBSERVACIÓN — minijuego de destello + preguntas
+## 3. OBSERVACIÓN — por CUALQUIER sentido (no solo la vista) + minijuego
 
-Idea del usuario: se muestra un **entorno por unos segundos**, luego se presentan **preguntas de opción múltiple** para
+**Observar = percibir por cualquier RECEPTOR que el ser tenga** (PR #198), no solo los ojos. Base científica: el humano
+ya tiene &gt;5 sentidos y los animales más — exterocepción (vista/oído/olfato/gusto/tacto/**termocepción**/**ecolocalización**/
+**magneto**/**electrorrecepción**) + internos (**propiocepción**/**vestibular**/**interocepción**/**nocicepción**). Catálogo en
+`Senses` (sentido→alcance: el olfato llega lejos, el tacto exige contacto). `ObserveSpell` observa por el MEJOR sentido
+que tenga el ser → un topo observa por olfato/tacto, un murciélago por ecolocalización, Sakshi debilitada por varios.
+Qué sentidos tiene = su CONFIGURACIÓN (receptores de su anatomía) → encaja con "todo es Anima, la config restringe".
+
+Idea del usuario (minijuego): se muestra un **entorno por unos segundos**, luego se presentan **preguntas de opción múltiple** para
 que el jugador **identifique y memorice rápido** lo que vio. Entrena **percepción + memoria de trabajo** (y la observación).
 - Enlaza con el sistema: acertar sube `ObservationSkill`/`perception`/`memory` (evolución por uso), y la observación
   **amortigua el sufrimiento** (Guardián) — el jugador entrena la ecuanimidad "mirando bien".
