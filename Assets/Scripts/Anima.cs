@@ -30,7 +30,10 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float temperature = 38f;    // body temperature in °C
     [HideInInspector] public bool  death;
     [HideInInspector] public bool  asleep;
-    [HideInInspector] public bool  aware;                // true while actively responding to a threat
+    [HideInInspector] public bool  aware;                // ESTADO discreto: true mientras RESPONDE activamente a una amenaza
+    [HideInInspector] public float alertness;            // GRADO 0–1 de alerta perceptiva: cuánto está CAPTANDO ahora (lo
+                                                         // alimenta la percepción — órganos/grimoire, via ObserveSpell).
+                                                         // A futuro gatea `aware`: un ser reacciona solo a lo que percibe.
 
     // Drives de mente/físico UNIVERSALES (migración 2026-07-28): eran de PlayerStats/WorldCharacter y se
     // consolidan aquí (hogar único). Baratos (floats); la mente compleja sigue siendo un pilar opcional.

@@ -43,6 +43,7 @@ public class AnimaStatusHUD : MonoBehaviour
         sb.AppendLine(Bar("Fatiga",       a.mentalFatigue, badHigh: true));
         sb.AppendLine(Bar("Enfermedad",   a.sickness,      badHigh: true));
         sb.AppendLine(Bar("Satisfacción", a.satisfaction,  badHigh: false));
+        sb.AppendLine(Bar("Alerta",       a.alertness,     badHigh: false));   // percepción → alertness
         if (a is Animal an) sb.AppendLine(Bar("Hambre", Mathf.Clamp01(an.hungry), badHigh: true));
 
         // Actividad (ACWR): la zona Bendecida es la ideal.
