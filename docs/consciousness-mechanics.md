@@ -79,9 +79,22 @@ Auditado: `MakeCompanionCore` monta el compañero como **`SimpleAnima` + Mind + 
 humores/identidad pero **NO agencia**: no decide ni actúa vía la arena, porque **solo `Animal` tiene el bucle que llama a
 `Volition`/`SenseThreats`** (`ActiveBehaveTick`/`AiBrain`). Por eso hoy los personajes no-animales quedan "a medias".
 
-**El nudo:** hay dos `Anima` concretos — `SimpleAnima` (ser pasivo) y `Animal` (ser con AGENCIA, cuyo `Init` cablea
-NavMesh/Forager/AiBrain/Volition/ciclo de vida). Retirar `SimpleAnima` para personajes exige que **la AGENCIA sea una
-capacidad configurable** que cualquier `Anima` pueda tener, no algo exclusivo de `Animal`.
+**Análisis PROFUNDO de `Anima` (auditado 2026-09-13):** la base `Anima` **ya es el hogar de casi TODO** por config —
+las 12+ aptitudes (+ afabilidad/sensibilidad/armadura/armament/sickness/autoabandono/magicAura), los drives (stress/
+trauma/fatReserves/temperature/sleepiness/mentalFatigue/satisfaction), afinidad de medio, el sistema de **bonds**, la
+**confianza-por-hechizo** (`spellConfidence` = temperamento histórico), y `CanUse`/`KnowsSpell` (la doble vía anatomía∨
+magia). Lo ÚNICO que las subclases aportan son **3 hooks abstractos** — `RespondToHunger`, `EvaluateThreat`,
+`RespondToThreat` — **más el BUCLE que los ejecuta** (`Animal.ActiveBehaveTick`/`AiBrain`/`Volition` + el cableado de
+`Init`: NavMesh/Forager/Locomotion/LifeStage).
+
+**Qué es la AGENCIA:** justo eso — la capacidad de **percibir → decidir → actuar** sobre los propios drives (los 3 hooks
++ el bucle de decisión). Hoy vive baked en `Animal`; `SimpleAnima` implementa los hooks como **no-ops** (por eso "no
+decide sola"). **No son dos mundos**: es UN `Anima` al que le falta activar una capacidad. Corrección aceptada: **todo es
+`Anima`; lo que restringe es la CONFIGURACIÓN**. `SimpleAnima` es solo "un `Anima` con la agencia apagada" — no algo
+"para inanimados"; un inanimado es igualmente un `Anima` con casi todo apagado.
+
+**El nudo real:** para que cualquier `Anima` sea agente por config (y desaparezca la distinción `SimpleAnima`/`Animal`),
+hay que **sacar la AGENCIA de `Animal` a un componente/bundle** (los 3 hooks + su bucle) que se añada por configuración.
 
 **Plan recomendado (rebanada dedicada):** extraer el "cableado de agencia" de `Animal.Init` a un **bundle reutilizable**
 (un `AgencyCore`/componente) que añade y tickea AiBrain+Volition(+Locomotion/Forager según config). Entonces:
