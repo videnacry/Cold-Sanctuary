@@ -78,6 +78,8 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 
 ## Documentación detallada (leer bajo demanda)
 
+- [`docs/CODEMAP.md`](docs/CODEMAP.md) — **índice a nivel de CLASE** (todas las clases/enums con su resumen, agrupadas por carpeta). GENERADO por `tools/gen_codemap.py` y verificado por CI (`.github/workflows/codemap.yml`) en cada PR. Empezar aquí para ubicar una clase.
+- [`docs/consciousness-mechanics.md`](docs/consciousness-mechanics.md) — **el interés central: subir la consciencia del jugador**. Propiedad ⇄ mecánica que la desarrolla; **autorregulación = el cuidado de Kushal** (stats visibles + descubrir efectos de comida/yoga/descanso/bonds → crecimiento acumulado de las 70+); **observación = minijuego destello+preguntas**; y la **directriz de arquitectura**: `Anima` debe bastar (por configuración) para toda la sim social → `SimpleAnima` no para personajes; plan de unificación de movimiento.
 - [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md) — verdad del código verificada archivo a archivo (bugs, huérfanos, prometido-vs-hecho).
 - [`docs/checklist.md`](docs/checklist.md) — **empezar aquí para continuar**: tablero de tareas pendientes.
 - [`docs/testing-checklist.md`](docs/testing-checklist.md) — qué probar en el editor (progresión/margas, farming, recursos, trepar, cocina→Microcosmos, regresión).
