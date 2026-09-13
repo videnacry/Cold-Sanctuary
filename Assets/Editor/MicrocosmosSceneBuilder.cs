@@ -141,15 +141,20 @@ public static class MicrocosmosSceneBuilder
             new[] { ("Ant", 85f), ("Human", 15f) }, new[] { ("Human", 55f), ("Agua", 25f), ("Ant", 20f) });
         sakshi.AddComponent<CharacterLevel>();
         WeaknessEffect sweak = sakshi.AddComponent<WeaknessEffect>();
-        sweak.drainPerSecond = 6f; sweak.controlAgent = false;   // debilitada: sin ATP no puede huir (cuando llegue la observación)
+        sweak.drainPerSecond = 6f; sweak.controlAgent = false;   // debilitada: sin ATP no puede huir
+        sakshi.AddComponent<MoodDynamics>();      // el Guardián (estrés del estado, amortiguado por la observación)
+        sakshi.AddComponent<ObserveSpell>();      // los ojos: débil, solo puede OBSERVAR → gana ecuanimidad (no huye, se deja acompañar)
 
         // ── El DEPREDADOR DÉBIL, de poca hambre, junto a la orilla (prefiere hormiga a gusano — mecánica pendiente) ──
         GameObject weakPred = MakePredator(root.transform, "Depredador_debil", shore + new Vector3(9f, 0.1f, 4f),
             new Vector3(0.7f, 0.7f, 1.0f), new Color(0.5f, 0.35f, 0.3f), threatPower: 0.6f, threatRadius: 10f);
 
-        // ── ANILLO DE DEPREDADORES (fuertes) alrededor → el vértice seguro es la orilla sur (Sakshi) ──
-        Vector3[] ring = { new Vector3(0f, 0.1f, 28f), new Vector3(28f, 0.1f, 10f), new Vector3(-28f, 0.1f, 10f),
-                           new Vector3(20f, 0.1f, -18f), new Vector3(-20f, 0.1f, -18f) };
+        // ── TRIÁNGULO DE DEPREDADORES (fuertes) en el NORTE/flancos → la base SUR (orilla de Sakshi) queda DESPEJADA ──
+        // Corrección: antes había 2 depredadores cerca de la orilla; la tribu se quedaba en el centro. Ahora TODOS en
+        // z ≥ 4 (mitad norte) → el gradiente "alejarse del peligro" apunta limpio al SUR, hacia Sakshi.
+        Vector3[] ring = { new Vector3(0f, 0.1f, 28f),   // vértice norte
+                           new Vector3(22f, 0.1f, 18f), new Vector3(-22f, 0.1f, 18f),   // flancos altos
+                           new Vector3(30f, 0.1f, 4f),  new Vector3(-30f, 0.1f, 4f) };  // flancos medios (nada al sur)
         for (int i = 0; i < ring.Length; i++)
             MakePredator(root.transform, $"Depredador_anillo_{i}", ring[i], new Vector3(1.1f, 1.1f, 1.5f),
                 new Color(0.4f, 0.2f, 0.2f), threatPower: 2.5f, threatRadius: 22f);
