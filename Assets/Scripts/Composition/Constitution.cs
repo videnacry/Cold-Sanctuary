@@ -31,6 +31,14 @@ public class Constitution : MonoBehaviour
     // Nivel 2 — compuestos. Nivel 3 — células. (Derivados; solo lectura en juego.)
     float _protein, _atp, _minerals, _lipids;
     float _muscle, _blood, _neuron, _bone;
+
+    // Getters públicos de los compuestos/células — para el puente químico→humores (ChemistryHumors) y la UI.
+    public float Protein  => _protein;
+    public float ATP      => _atp;
+    public float Minerals => _minerals;
+    public float Lipids   => _lipids;
+    public float Blood    => _blood;
+    public float Neuron   => _neuron;
     // Delta aplicado a los stats base (gestionado).
     float _aStr, _aAgi, _aEnd, _aMass, _aPer;
 

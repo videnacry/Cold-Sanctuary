@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 348 tipos._
+_Total: 349 tipos._
 
 
 ## Animals
@@ -108,6 +108,7 @@ _Total: 348 tipos._
 - **ChannelMission** (class) — `Assets/Scripts/Meditation/ChannelMission.cs` — Universal channel mission (docs §7 matrix):
 - **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
 - **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
+- **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
