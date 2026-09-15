@@ -38,6 +38,12 @@ public static class AnimalPrefabGenerator
         ("Ladybug",   "LadybugBehavior"),
         ("Spider",    "SpiderBehavior"),
         ("Cricket",   "CricketBehavior"),
+        ("Termite",     "TermiteBehavior"),
+        ("DungBeetle",  "DungBeetleBehavior"),
+        ("Antlion",     "AntlionBehavior"),
+        ("Mantis",      "MantisBehavior"),
+        ("Grasshopper", "GrasshopperBehavior"),
+        ("Meerkat",     "MeerkatBehavior"),
     };
     // NOTA: esta lista es el REGISTRO — para producir una especie nueva basta añadir su (carpeta, clase) aquí. Es
     // explícita (no auto-descubierta) a propósito, porque la carpeta y la clase no siempre coinciden (p.ej. la carpeta

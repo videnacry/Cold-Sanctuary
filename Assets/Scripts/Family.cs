@@ -46,6 +46,12 @@ public class Family
         { "Ladybug", new Family(2, 0.3f, maternal) },  // semi-solitaria
         { "Spider",  new Family(1, 0.1f, maternal) },  // solitaria (canibalismo mata al macho)
         { "Cricket", new Family(3, 0.3f, maternal) },  // grupos pequeños
+        { "Termite",     new Family(6, 0.8f, maternal)   },  // colonia eusocial (reyes/reina = parents)
+        { "DungBeetle",  new Family(2, 0.3f, biparental) },  // pareja rueda/cuida la bola-nido
+        { "Grasshopper", new Family(5, 0.3f, maternal)   },  // gregario (fase enjambre)
+        { "Antlion",     new Family(1, 0.1f, maternal)   },  // solitario (larva de embudo)
+        { "Mantis",      new Family(1, 0.1f, maternal)   },  // solitaria (canibalismo sexual)
+        { "Meerkat",     new Family(6, 0.5f, biparental) },  // cría cooperativa (helpers al nido)
     };
 
     public static Family Of(string species)

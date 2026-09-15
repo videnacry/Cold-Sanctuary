@@ -53,6 +53,12 @@ public class Physiognomy
             { "Ladybug", new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.004f, 0.12f, 0.20f, 0.06f) },
             { "Spider",  new Physiognomy(new Vector3(0.007f, 0.005f, 0.007f), 0.008f, 0.10f, 0.25f, 0.06f) },
             { "Cricket", new Physiognomy(new Vector3(0.005f, 0.004f, 0.006f), 0.003f, 0.10f, 0.20f, 0.05f) },
+            { "Termite",     new Physiognomy(new Vector3(0.003f, 0.003f, 0.004f), 0.002f, 0.10f, 0.15f, 0.05f) },
+            { "DungBeetle",  new Physiognomy(new Vector3(0.006f, 0.005f, 0.006f), 0.006f, 0.12f, 0.20f, 0.06f) },
+            { "Antlion",     new Physiognomy(new Vector3(0.006f, 0.004f, 0.006f), 0.005f, 0.10f, 0.22f, 0.05f) },
+            { "Mantis",      new Physiognomy(new Vector3(0.008f, 0.006f, 0.009f), 0.006f, 0.12f, 0.25f, 0.06f) },
+            { "Grasshopper", new Physiognomy(new Vector3(0.006f, 0.004f, 0.007f), 0.003f, 0.10f, 0.20f, 0.05f) },
+            { "Meerkat",     new Physiognomy(new Vector3(0.006f, 0.008f, 0.010f), 0.004f, 0.12f, 0.20f, 0.06f) },
         };
     }
 

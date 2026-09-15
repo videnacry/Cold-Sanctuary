@@ -19,6 +19,25 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > *(Arco previo cerrado — magia/metabolismo/descomposición #45–#61: sandboxes `Descomposicion_AUTO`/`Magia_AUTO`,
 > guion en [`testing-checklist.md` §19](testing-checklist.md).)*
 
+## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
+- [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
+      clases/config de **hormiga cosechadora, termita cosechadora, escarabajo pelotero, hormiga león,
+      mantis, grillo, saltamontes, áfido, colémbolo, araña**; + skin **suricata** (render de la máquina).
+- [ ] **Dos generators** en builders: familias (`FamilyGenerator`: hormiga/termita) + individuos
+      (`Generator`: araña/mantis/hormiga león) — en `SampleSceneBuilder` **y** `MicrocosmosSceneBuilder`.
+- [ ] **`scena2Enfermería1`**: nivel con **cronómetro** de limpieza de filamentos/orificios de maquinaria
+      (Kushal insecto) — reusar `DirtArea`/`Cleaner` + `VirtualizationMachine` + `WorldExitPortal`.
+- [ ] **`scena3Enfermería1`**: misión **probar-alimentos** (sobre identificar/clasificar del
+      `DecompositionMinigame`) + skin **suricata** (fallo máquina) + un consumible **adictivo**
+      (`AddictionState`/`NarcoticSpell`) + uno **venenoso** (`SicknessState`→enfermar/**morir**→`GriefSpell`).
+- [ ] **Eje C de la máquina de avatares** (traducción/skin de especie; fallo que espeja la sociología)
+      — enchufar a `EmotionReader`/`BodyPartReactor`. Ver `magic-plane-and-meditation.md` Eje C.
+- [ ] **Kushal conector**: un bloque `FollowingArrays` visible con menú cerrado = **pensamiento actual**
+      de Kushal (fuente `Mind`/`PhraseLibrary`), persistente ~10 min; + **área de automisiones** (un bloque
+      por misión, como la tabla periódica).
+- [ ] **Linduarda** (doctora, **hechicera nivel 4/S4**): clase `Companion` + rol de puerta al Micro. Ficha:
+      [`character-linduarda.md`](character-linduarda.md).
+
 ## Decisiones abiertas (rápidas)
 - [~] **Microcosmos = mundo de INSECTOS (DECIDIDO opción B)** — [`microcosmos-insects.md`](microcosmos-insects.md).
       Históricos encarnados como insectos (violencia = "volverse salvaje", sin trauma humano). **Hormigas**

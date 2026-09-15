@@ -47,6 +47,12 @@ public class Forager : MonoBehaviour
             case "Ladybug":                          eatsPrey = true; break;                    // depredadora de pulgones
             case "Spider":                           eatsPrey = true; break;                    // depredadora; emboscada
             case "Cricket":                          eatsGrass = true; eatsPrey = true; break;  // omnívora oportunista
+            case "Termite":                          eatsGrass = true; break;                   // cosechadora: corta hierba/celulosa
+            case "DungBeetle":                       eatsGrass = true; break;                   // descomponedor: detrito/materia vegetal
+            case "Grasshopper":                      eatsGrass = true; break;                   // herbívoro de pasto (fase enjambre)
+            case "Antlion":                          eatsPrey = true; break;                    // emboscada en embudo
+            case "Mantis":                           eatsPrey = true; break;                    // depredadora de emboscada
+            case "Meerkat":                          eatsPrey = true; break;                    // insectívora (skin de la tribu)
         }
     }
 

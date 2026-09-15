@@ -21,6 +21,15 @@ En el santuario es **la doctora**: cuida personas *y* animales (Una Salud), y es
 insistencia de Kushal— **autoriza su entrada al Microcosmos** para pasar tiempo con Sakshi o hacer
 tareas para la enfermería (ver "Rol narrativo").
 
+**Hechicera de nivel 4 (S4).** En la escalera de progresión mágica
+([`magic-metabolism-progression.md`](magic-metabolism-progression.md) §3/§15), el nivel 4 es el tope del
+1er trayecto: come a **nivel de quarks** y maneja **masa-energía** (E=mc²). Implica que Linduarda es de
+las **más avanzadas**: sus **células de maga ya no necesitan comer**, **desintegra/crea materia** a
+voluntad, **sana abasteciendo** reservas ajenas (rol *healer*, `SupplySpell`) y está en el umbral de la
+**teletransportación** (T5, campo/vacío). Por eso, diegéticamente, **es ella quien opera la máquina de
+virtualización/avatares** — el "teleporte" del santuario — y quien **puede conceder** el descenso al
+Microcosmos. Encaja con su **sueño de teletransportarse por el mundo**.
+
 ---
 
 ## Personalidad y tono
