@@ -57,6 +57,19 @@ Los dos ejes se cruzan: el avatar dice *dónde*, la escala dice *qué*. Una ara�
 paredes) en la capa molecular interactúa con mobs distintos que la misma araña en la capa
 insecto.
 
+### Eje C — Traducción / SKIN de la especie (¿con qué piel veo a los demás?)
+
+La máquina no solo transporta: **traduce las señales de otras formas de vida a conductas legibles,
+casi humanas**, para que el piloto pueda **entender/comunicarse** con seres muy distintos (enchufa con
+`EmotionReader`/`BodyPartReactor`, la traducción entre especies orejas↔antenas↔alas). Ese traductor
+**elige un molde de especie** para renderizar a los otros — y el molde **espeja la sociología** de los
+personajes de la escena (suricatas para una banda cooperativa que descubre algo, etc.; ver
+[`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md) §1). **La máquina está en
+desarrollo y a veces se confunde**: recrea el mundo con la piel de **otra especie** (una tribu de
+hormigas puede aparecer y actuar como **suricatas**, siendo hormigas por debajo). Es la **justificación
+diegética del sistema de skins**: no cambia la fauna ni la escala, cambia la **piel traducida**. Y ver a
+los conocidos con otra piel **obliga a observar** para reconocerlos → alimenta la stat de Observación.
+
 ---
 
 ## 3. La máquina de virtualización como trigger universal

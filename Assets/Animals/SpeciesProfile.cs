@@ -58,6 +58,12 @@ public class SpeciesProfile
             { "Ladybug", new SpeciesProfile(0.1f, 0.7f, 0.6f, 1.5f, 0.7f, 0.4f, 5.0f, 0.5f,  1.5f, 0.6f, 0.4f, OrganicMaterial.Meat) },  // élitros = toughness alta
             { "Spider",  new SpeciesProfile(0.0f, 0.9f, 0.2f, 4.0f, 1.2f, 0.2f, 4.0f, 0.5f,  3.0f, 0.8f, 0.3f, OrganicMaterial.Meat) },  // veneno; solitaria; paciente
             { "Cricket", new SpeciesProfile(0.2f, 0.4f, 1.0f, 1.0f, 0.4f, 0.5f, 5.0f, 0.4f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // omnívoro; huye primero
+            { "Termite",     new SpeciesProfile(0.9f, 0.3f, 1.5f, 0.8f, 0.4f, 0.3f, 3.0f, 0.9f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; nido muy seguro
+            { "DungBeetle",  new SpeciesProfile(0.1f, 0.5f, 0.8f, 0.9f, 1.0f, 0.3f, 5.0f, 0.4f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // élitros = toughness alta; solitario
+            { "Antlion",     new SpeciesProfile(0.0f, 0.8f, 0.2f, 3.0f, 0.5f, 0.2f, 6.0f, 0.6f,  2.5f, 0.7f, 0.35f, OrganicMaterial.Meat) }, // emboscada; embudo = nido
+            { "Mantis",      new SpeciesProfile(0.0f, 0.9f, 0.2f, 3.5f, 0.6f, 0.2f, 5.0f, 0.4f,  2.5f, 0.7f, 0.3f, OrganicMaterial.Meat) },  // depredadora solitaria; paciente
+            { "Grasshopper", new SpeciesProfile(0.4f, 0.3f, 1.0f, 1.0f, 0.3f, 0.5f, 4.0f, 0.3f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // gregario; presa base
+            { "Meerkat",     new SpeciesProfile(0.9f, 0.4f, 1.6f, 0.8f, 0.4f, 0.3f, 3.0f, 0.8f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // cooperativa; bond rápido; madriguera segura
         };
     }
 }

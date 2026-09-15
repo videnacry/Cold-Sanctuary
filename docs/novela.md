@@ -157,6 +157,38 @@ volvieron más atrevidas — pero eso es otra historia.)*
 
 ---
 
+## Las visitas — la máquina de avatares (Enfermería)
+
+> *Primer pase (a enriquecer por el autor). Diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md).*
+
+**Primera escena (las hormigas).** Kushal vuelve al Microcosmos y encuentra, otra vez, a la **tribu de
+hormigas**: el mundo insecto tal como es.
+
+**Segunda escena (los conductos).** Kushal le pide a **Linduarda** —la doctora, una **hechicera de nivel
+cuatro**, de las que ya no comen y desarman la materia hasta el temblor de sus quarks— entrar **solo por
+explorar**. Ella se lo concede, pero con una condición de médica: hay una **máquina con conductos y orificios
+imposibles de limpiar a su tamaño**; al de Kushal, no. Así que baja **a contrarreloj** a limpiar los
+filamentos por dentro, pequeño y ágil como un insecto, mientras la tribu sigue siendo la de siempre.
+
+**Tercera escena (los suricatas que eran hormigas).** La siguiente vez, algo se tuerce. La máquina de avatares
+—le habían avisado— **está en desarrollo, y a veces confunde las señales** de otras formas de vida: para que
+Kushal pueda **entenderse** con los insectos, traduce lo que ellos sienten a **conductas legibles, casi
+humanas**… y esta vez elige mal el molde. Kushal entra y la tribu ya no parece de hormigas: **parecen
+suricatas**, y hasta **actúan como suricatas** —centinelas erguidos, vigías que solo miran—, aunque por debajo
+sigan siendo las mismas hormigas de siempre. Nadie se lo ha dicho a la tribu; es la máquina, soñando el mundo
+con otra piel.
+
+La tribu llega a un lugar de **abundancia**: por todas partes cosas que **parecen comestibles** y nadie sabe
+si lo son. Linduarda, arriba, le encarga a Kushal **investigar unos tipos de hongo** a partir de unas
+**muestras** —y las ha dejado en un punto que **no está apartado** de la tribu. Cuando Kushal va a mirarlas,
+encuentra allí a los suyos **reunidos, probando de todo** para saber qué se puede comer. Casi todo alimenta.
+Pero **una de esas cosas engancha** —da un consuelo que no vuelve, y un miembro empieza a **perseguirlo** y a
+apartarse de los demás—; y **otra es veneno**: alguien **enferma**, y alguien **no se levanta**. Kushal
+observa, aprende a **distinguir** —esta semilla sí, este hongo no—, y Sakshi, mirando cómo mira Kushal,
+aprende a **mirar**.
+
+---
+
 ## Las reencarnaciones (la Cocina) — el consuelo
 En la Cocina, la era del fuego, **yacen sus reencarnaciones**, con **otros nombres y otros cuerpos**, sin que
 nadie lo diga. **Ambrosio** vuelve como **Nasatya**: una **almohada gigante**, mansísima pese a su fuerza

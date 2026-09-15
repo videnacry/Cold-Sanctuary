@@ -40,10 +40,55 @@ cosechadora** (base central, exploradoras/patrulleras, semillas) es la opción c
 Reservar **termitas** para la **Construcción**, **langostas** para **masas/explotación**, **hormiga
 león** para el antagonista solitario.
 
-> Nota de escala: "un animal por escena vía skin" tensiona el canon "Microcosmos = insectos". Se
-> resuelve declarando que el Microcosmos es un **plano de representación** (no una maqueta a escala
-> fija): la especie encarna al personaje. Decisión abierta ⚠️ (mantener insecto vs abrir a
-> pequeños vertebrados sociales).
+> **Escala (RESUELTO):** se **mantienen las dimensiones** — el mundo sigue siendo a escala insecto. La
+> tribu **son insectos** (hormigas); cuando aparecen como **suricatas, son suricatas del TAMAÑO de
+> hormigas** y, sobre todo, son el **render de la máquina de avatares** (§1b), no vertebrados reales
+> añadidos a la cadena trófica. Es decir: el "otro animal" es un **skin/traducción**, no un cambio de
+> escala ni de fauna real. La cadena alimenticia se completa con **fauna insecto de la era** (§1c).
+
+### 1b. La MÁQUINA DE AVATARES traduce (y a veces confunde) — la justificación diegética del skin
+
+El "un animal por escena" **no es magia gratis**: es la **máquina de avatares** de la Enfermería
+(la que baja a Kushal al Micro; ver `docs/magic-plane-and-meditation.md`). Su función real es
+**traducir las señales de otras formas de vida a conductas legibles, casi humanas**, para que Kushal
+pueda **entender/comunicarse** con los insectos (enchufa con `EmotionReader`/`BodyPartReactor`, que ya
+traducen señales entre especies: orejas↔antenas↔alas). Está **en desarrollo** y **a veces falla**:
+**confunde las señales y recrea el mundo con la piel de OTRA especie**. Por eso una tribu de **hormigas**
+puede aparecer —y hasta *comportarse*— como **suricatas**: por debajo siguen siendo hormigas; es la
+máquina soñando el mundo con otro molde. Esto:
+- **Justifica** narrativamente el sistema de skins (§1) sin romper el canon insecto.
+- **Regla del elenco:** el skin que elige la máquina **espeja la sociología** de los personajes de esa
+  escena (§1) — un "fallo" que en verdad *revela* quiénes son.
+- **Gancho de observación:** ver a los suyos con otra piel **obliga a mirar con atención** para
+  reconocerlos → entrena la observación de Sakshi/Kushal.
+
+### 1c. Cadena alimenticia (fauna insecto real de la era, a escala)
+
+Todo insecto/artrópodo de sabana del Pleistoceno temprano sudafricano (~1–1,8 Ma), para que la cadena
+cierre sin vertebrados reales (§Escala):
+- **Productores:** hierba/semillas/hongos (no-animados: `Anima` inanimada barata / ítems `IEdible`).
+- **Herbívoros/primarios:** **hormiga cosechadora** (semillas), **termita cosechadora** (hierba),
+  **saltamontes/langosta**, **grillo**, **áfido**; **colémbolos** (detritívoros más débiles que la hormiga).
+- **Descomponedores:** **escarabajo pelotero**, **escarabajo/mosca necrófaga** (enchufa `DecompositionJob`).
+- **Depredadores:** **hormiga león** (emboscada), **mantis**, **araña** (individuo solitario, `Generator`).
+La **tribu** protagonista = hormigas (familia, `FamilyGenerator`); los **solitarios** (araña, mantis,
+hormiga león) = individuos (`Generator`). El **suricata** es SKIN de la tribu, no un eslabón.
+
+### 1d. Estructura de la Enfermería (3 escenas) — `scena[N]Enfermería1`
+
+Numeración 1-based (ver naming del proyecto: `1sanctuary1` = primer santuario). Arco de las visitas
+de Kushal por permiso de **Linduarda**:
+
+| Escena | Skin de la tribu | Qué pasa | Sistemas |
+|---|---|---|---|
+| **scena1Enfermería1** | **hormigas** | Kushal vuelve al Micro; la tribu es la de siempre (origen/alba). | fauna hormiga |
+| **scena2Enfermería1** | **hormigas** | Kushal pide entrar **solo a explorar**; Linduarda concede **a cambio de limpiar los filamentos/orificios de una máquina** (más fácil siendo insecto) — **nivel con cronómetro**. | `DirtArea`/`Cleaner` + `VirtualizationMachine` + `WorldExitPortal`; nivel-timer |
+| **scena3Enfermería1** | **suricatas** (fallo de la máquina, §1b) | La tribu llega a un lugar de **abundancia de elementos desconocidos que parecen comestibles**. **Linduarda encarga a Kushal investigar tipos de hongo** de unas **muestras** dejadas en un punto **no aislado** de la tribu → Kushal los encuentra allí **probando de todo**. **Algunos son adictivos** (un miembro cae en adicción), **uno venenoso** (un miembro **enferma** y **otro muere**). | misión probar-alimentos (§2) + `AddictionState`/`NarcoticSpell` + `SicknessState`/muerte + `GriefSpell` |
+
+> **Linduarda es hechicera de nivel 4** (S4 en la progresión mágica, `docs/magic-metabolism-progression.md`
+> §3/§15): manipula la materia a **nivel de quarks / masa-energía** (E=mc²), **sus células ya no comen**,
+> **crea materia y sana** (healer, `SupplySpell`) y roza la **teletransportación** — por eso **opera la
+> máquina de virtualización/avatares** y **autoriza** la entrada al Micro. Ficha: `docs/character-linduarda.md`.
 
 ---
 

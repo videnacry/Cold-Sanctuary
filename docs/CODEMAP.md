@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 354 tipos._
+_Total: 360 tipos._
 
 
 ## Animals
@@ -12,6 +12,7 @@ _Total: 354 tipos._
 - **Animal** (class) — `Assets/Animals/Animal.cs`
 - **AnimalPopulations** (class) — `Assets/Animals/AnimalPopulations.cs` — Registro de poblaciones vivas POR ESPECIE (docs/anima-dissolving-animal.md, etapa 5).
 - **AntBehavior** (class) — `Assets/Animals/Ant/AntBehavior.cs`
+- **AntlionBehavior** (class) — `Assets/Animals/Antlion/AntlionBehavior.cs`
 - **AphidBehavior** (class) — `Assets/Animals/Aphid/AphidBehavior.cs`
 - **BearBehaviour** (class) — `Assets/Animals/Bear/BearBehaviour.cs`
 - **BunnyBehavior** (class) — `Assets/Animals/Bunny/BunnyBehavior.cs`
@@ -20,12 +21,16 @@ _Total: 354 tipos._
 - **DeerBehavior** (class) — `Assets/Animals/Deer/DeerBehavior.cs`
 - **Desire** (class) — `Assets/Animals/DesireCatalog.cs` — Un DESEO seleccionable (docs/volition-selection-engine.md §3):
 - **DietPreference** (class) — `Assets/Animals/DietPreference.cs` — PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor":
+- **DungBeetleBehavior** (class) — `Assets/Animals/DungBeetle/DungBeetleBehavior.cs`
 - **EstrusState** (class) — `Assets/Animals/EstrusState.cs` — CELO (estro) como **hechizo-estado** (docs/environmental-navigation.md §4.2; reproducción paso 1).
 - **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
 - **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
+- **GrasshopperBehavior** (class) — `Assets/Animals/Grasshopper/GrasshopperBehavior.cs`
 - **LadybugBehavior** (class) — `Assets/Animals/Ladybug/LadybugBehavior.cs`
 - **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
+- **MantisBehavior** (class) — `Assets/Animals/Mantis/MantisBehavior.cs`
+- **MeerkatBehavior** (class) — `Assets/Animals/Meerkat/MeerkatBehavior.cs`
 - **OrcaBehavior** (class) — `Assets/Animals/Orca/OrcaBehavior.cs`
 - **PenguinBehavior** (class) — `Assets/Animals/Penguin/PenguinBehavior.cs`
 - **Physiognomy** (class) — `Assets/Animals/Physiognomy.cs`
@@ -39,6 +44,7 @@ _Total: 354 tipos._
 - **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5):
 - **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
 - **StageProfile** (class) — `Assets/Animals/StageProfile.cs` — Perfil de CICLO DE VIDA por especie (docs/anima-dissolving-animal.md, etapa 5):
+- **TermiteBehavior** (class) — `Assets/Animals/Termite/TermiteBehavior.cs`
 - **Volition** (class) — `Assets/Animals/Volition.cs` — Motor de VOLICIÓN (docs/volition-selection-engine.md):
 - **WhaleBehavior** (class) — `Assets/Animals/Whale/WhaleBehavior.cs`
 - **WolfBehavior** (class) — `Assets/Animals/Wolf/WolfBehavior.cs`
