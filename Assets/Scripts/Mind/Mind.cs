@@ -31,6 +31,14 @@ public class Mind : MonoBehaviour
              "Los siembra PhraseDistribution según el modo (estricta/libre).")]
     public List<MindPhrase> thoughts = new List<MindPhrase>();
 
+    // ── PENSAMIENTO ACTUAL EXPUESTO (para la UI que lee al ser que maneja el jugador) ────────────
+    // La UI (AnimaThoughtHUD) muestra el ÚLTIMO pensamiento formulado + su intensidad; el jugador "lee"
+    // así a Kushal/al ser poseído (miedo, deseo…). Ver docs/microcosmos-dungbeetle-level.md §5.
+    [HideInInspector] public string lastThought = "";     // texto del último pensamiento expresado
+    [HideInInspector] public float  lastIntensity = 0f;   // 0..1 (profundidad del pensamiento / poder mental)
+    [HideInInspector] public bool   lastPositive = true;  // valencia (verde/rojo en la UI)
+    [HideInInspector] public float  lastThoughtTime = -9999f;   // Time.time de cuándo se formuló (para caducar a los ~10 min)
+
     [Header("Ritmo")]
     [Min(0.5f)] public float thinkInterval = 4f;
 
@@ -115,6 +123,12 @@ public class Mind : MonoBehaviour
         int spoken = Mathf.Min(depth, parts.Length);
         string msg = string.Join(" ", parts, 0, spoken);
         Debug.Log($"[Mente] «{name}» ({tone}{(positive ? "+" : "−")}): \"{msg}\"");
+
+        // Exponer para la UI: qué piensa AHORA y con cuánta intensidad (profundidad 1..3 → 0..1).
+        lastThought = msg;
+        lastIntensity = Mathf.Clamp01(spoken / 3f);
+        lastPositive = positive;
+        lastThoughtTime = Time.time;
 
         // Expresarse gasta energía; el tono del ánimo deja un poso químico.
         humores.Consume(Humor.Glucosa, 0.02f * spoken);

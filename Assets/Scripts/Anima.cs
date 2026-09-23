@@ -34,6 +34,13 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public float alertness;            // GRADO 0–1 de alerta perceptiva: cuánto está CAPTANDO ahora (lo
                                                          // alimenta la percepción — órganos/grimoire, via ObserveSpell).
                                                          // A futuro gatea `aware`: un ser reacciona solo a lo que percibe.
+    [HideInInspector] public float mindStatusCalculationFog; // 0–1 NIEBLA COGNITIVA por estrés agudo (adrenalina/cortisol →
+                                                         // visión de túnel, Yerkes-Dodson). La sube AcuteStressResponse;
+                                                         // ENTURBIA los cálculos de acción (EvaluateThreat/SenseThreats/
+                                                         // Volition/…). docs/microcosmos-dungbeetle-level.md §3.
+    [HideInInspector] public float physicalBoost;        // 0–1 IMPULSO físico transitorio del subidón de adrenalina (más
+                                                         // velocidad/fuerza/agilidad efectivas); lo fija AcuteStressResponse,
+                                                         // financiado por glucosa (se paga). Los consumidores lo leen como (1+boost).
 
     // Drives de mente/físico UNIVERSALES (migración 2026-07-28): eran de PlayerStats/WorldCharacter y se
     // consolidan aquí (hogar único). Baratos (floats); la mente compleja sigue siendo un pilar opcional.

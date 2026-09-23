@@ -40,11 +40,12 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 
 ## Nivel de los peloteros + mecánicas nuevas (diseño en [`microcosmos-dungbeetle-level.md`](microcosmos-dungbeetle-level.md))
 Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FALTA):
-- [ ] **UI de pensamiento de Kushal** (bloque FollowingArrays visible con menú cerrado, pensamiento
-      actual + intensidad, ~10 min). El motor `Mind.Think`/`Depth` ya genera; hoy solo va a `Debug.Log`.
-- [ ] **Control por necesidad + idle + adrenalina** (sobre arbitraje de relevancia `IBrain`/`AiBrain`):
-      saciado→jugador manda; bajo mínimo→veta acciones contrarias; muy bajo→autónomo con boost +
-      **`mindStatusCalculationFog`** (enturbia EvaluateThreat/SenseThreats/Volition/PackAwareness/…).
+- [x] **UI de pensamiento del ser controlado** (`AnimaThoughtHUD`, OnGUI, ~10 min) — HECHO 2026-09-23.
+      `Mind` expone `lastThought`/`lastIntensity`/`lastPositive`. *Siguiente: versión FollowingArrays.*
+- [x] **Control por necesidad + idle + adrenalina** (`AcuteStressResponse`) — HECHO 2026-09-23:
+      apremio→relevancia IA→toma de mando; `Anima.physicalBoost` (química) + `Anima.mindStatusCalculationFog`
+      (Yerkes-Dodson), enchufada a `SenseThreats`. *Pendiente: veto de acciones contrarias + niebla en más cálculos.*
+- [x] **Guard del Animator** (`ActionPrep.Prep` con `HasState`) — HECHO: una especie sin modelo ya no revienta.
 - [ ] **`SpawnSpell : SpellBase`** (generar prefab en un lugar; `duration`/timing ya existen) + **sueño
       por agotamiento** (`exhaustion` alto → dormir).
 - [ ] **Evento `livetogether`** (bond>umbral → comparar `bond_hogar − peligro`; gate por bond mutuo →

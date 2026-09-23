@@ -18,9 +18,20 @@ eso ES el rasgo (stats→frases→identidad):
   él con alegría, "la fuente de la vida", futuro prometedor (familia). Pensamientos positivos → más
   desarrollo.
 
-Peloteros reales: **mayormente solitarios**, pero forman **pareja temporal** que coopera rodando/
-enterrando la bola-nido y **cuida la cría biparentalmente** dentro de ella (modelados `Family(2,
-biparental)`). Perfecto para: encuentro solitario → combate → bond → cría en la rueda.
+> **CORRECCIÓN IMPORTANTE — no es emparejamiento.** Momo y Medea **NO se unen como pareja**. Todos los
+> insectos del Microcosmos se configuran con una **mente HUMANIZADA** (mente similar a la de los HUMANOS
+> de la era correspondiente) **+ comportamientos de la especie** (ver [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md) §1
+> y [`soul-composition-blend.md`](soul-composition-blend.md)). Por eso su sociabilidad **no es efecto de
+> especie**, sino de esa mente humanizada. **Se las crea con un BOND ALTO entre ellas**, *como si se
+> conociesen de otra vida*: en `Anima.bonds` (lista donde se **agregan animas específicas** para sembrar
+> vínculo → así nacen las amistades) se les pone un `Bond(Friend)` alto de inicio (vía `Anima.GrowBond(otra,
+> BondType.Friend, valor)` — **EXISTE**). Al encontrarse por primera vez, ese bond lleva a **interacciones
+> positivas**: pasan de **competir por el alimento** a volverse un **pack** (por la mente humanizada) y
+> **mudarse a vivir juntas** — como **amigas, no como pareja**.
+
+Peloteros reales (para el sustrato de especie): **mayormente solitarios**; su `Family(2,biparental)` del
+catálogo modela la cooperación con la bola-nido, pero **la unión de Momo/Medea es AMISTAD** (bond
+pre-sembrado + mente humanizada), no cría en pareja.
 
 ### La anticipación que hace crecer los stats  → **FALTA (construir; hay patrón)**
 La idea: Medea, aguardando taciturna, **imaginó tan claro el futuro** (correr, agarrar, consumir,
@@ -40,12 +51,13 @@ Medea llega antes, fabrica su rueda y se la lleva. Momo (por azar más cerca y e
 casa de Medea) la **intercepta y empuja la rueda hacia sí** → **combate por la rueda**. Mientras están
 juntos **crece el bond** — sembrado **positivo, como si se conocieran de otra vida**.
 
-- **Bond entre animas cercanas → impulsos sociales → hablar → pack:** `Anima.bonds`/`BondWith`
-  (EXISTE), `PackAwareness` (EXISTE: ayuda/protección emergente), `SocialImpulse`/`TribeCohesion`
-  (EXISTE). **Hablar:** la `Mind` **genera** pensamientos con tono/valencia e **intensidad** (`Depth()`
-  0–4) pero **solo los vuelca a consola** (`Debug.Log("[Mente]…")`) → **no hay UI de diálogo/pensamiento
-  para el jugador** (ver §3 y la mecánica de UI). Como en el mundo insecto todos son humanoides, "hablar"
-  = mostrar esos pensamientos. **PARCIAL** (se generan; falta surface).
+- **Bond entre animas cercanas → impulsos sociales → hablar → pack:** `Anima.bonds`/`GrowBond`
+  (EXISTE; **se pre-siembra** la amistad Momo↔Medea, ver arriba), `PackAwareness` (EXISTE:
+  ayuda/protección emergente), `SocialImpulse`/`TribeCohesion` (EXISTE). **Hablar/pensar:** la `Mind`
+  genera pensamientos con tono/valencia e **intensidad** (`Depth()`), y **ahora los EXPONE** (`Mind.lastThought`/
+  `lastIntensity`/`lastPositive`) y los **muestra la UI** `AnimaThoughtHUD` (**CONSTRUIDO 2026-09-23**, §5).
+  Como en el mundo insecto todos son humanoides, "hablar" = mostrar esos pensamientos. → de **PARCIAL** a
+  **EXISTE** (surface hecho).
 
 ### Evento `livetogether` (mudarse juntos)  → **FALTA (construir)**
 Necesidad fundamental para formar familias/tribus: dos animas se conocen, su bond supera un umbral y
@@ -63,20 +75,25 @@ Necesidad fundamental para formar familias/tribus: dos animas se conocen, su bon
 
 ## 3. Misión 1 (Linduarda): extraer un cabello de cada pelotero
 
-**Control por posesión / idle / “el cuerpo toma el mando”**  → arbitraje **EXISTE**, gate por necesidad
-y adrenalina **FALTAN**. El control es por **relevancia** (`IBrain.Relevance`; `AnimaController` da el
-mando al cerebro de mayor relevancia; la posesión debe superar `selfRelevance`). **No** existe: (a) modo
-**idle** libre cuando las necesidades están saciadas, (b) que el ánima **rechace** el control del
-jugador cuando una necesidad cruza un umbral, (c) **override por adrenalina** (actuar solo, con boost).
-Hook limpio a construir: cuando una necesidad es crítica, **subir `AiBrain.selfRelevance`** (o inyectar
-un cerebro-reflejo) para que **gane al `PlayerBrain`** → el ánima "toma el mando". Escalones:
-- Necesidad **sobre el mínimo** → el jugador manda (idle libre).
-- Necesidad **bajo el mínimo** → el ánima **veta acciones contrarias** (p. ej. no ir en dirección
-  opuesta al alimento) salvo que el **peligro > estrés por hambre**.
-- Necesidad **muy** bajo el mínimo → **autónomo**: el cuerpo se pasa de sus límites conscientes con
-  **adrenalina** (más fuerza/velocidad/agilidad) y **niebla** sobre el análisis.
+**Control por posesión / idle / “el cuerpo toma el mando”**  → **CONSTRUIDO (2026-09-23,
+`AcuteStressResponse`)** sobre el arbitraje por relevancia que ya existía. El control es por **relevancia**
+(`IBrain.Relevance`; `AnimaController` da el mando al cerebro de mayor relevancia; la posesión debe superar
+`selfRelevance`). Ahora `AcuteStressResponse` calcula la **activación** = el apremio más fuerte
+(`stress`/`hungry`/`alertness`) y:
+- Necesidad **sobre el óptimo** → el jugador manda (idle libre): `physicalBoost≈0`, `fog=0`, relevancia IA baja.
+- Necesidad **subiendo** → la **relevancia de la IA sube** con la activación (empieza a disputar el mando).
+- Necesidad **por encima de `takeoverArousal`** (~0.85) → **autónomo**: la relevancia IA **supera la
+  posesión** → el cuerpo toma el mando, con **subidón de adrenalina** (`physicalBoost`, financiado por
+  glucosa) y **niebla** sobre el análisis (`mindStatusCalculationFog`).
+- *Pendiente fino:* el **veto de acciones contrarias** en la zona intermedia (que el `PlayerBrain`
+  consulte la dirección de la necesidad antes de moverse) — hoy la toma es por relevancia (todo o nada).
 
-### `mindStatusCalculationFog` + bonus de pensamiento intenso  → **FALTA (construir)**
+### `mindStatusCalculationFog` + bonus de pensamiento intenso  → **CONSTRUIDO (2026-09-23)**
+`Anima.mindStatusCalculationFog` (0..1) y `Anima.physicalBoost` (0..1) existen; los fija `AcuteStressResponse`
+anclado en la **química real** (`Humor.Adrenalina`/`Cortisol`/`Glucosa`): el estrés agudo produce adrenalina+
+cortisol → moviliza glucosa → **impulso físico** (se paga drenando glucosa) + **niebla** (Yerkes-Dodson:
+cognición cae más allá del óptimo). Ya **enchufado** un consumidor: `SenseThreats` baja el umbral de reacción
+con la niebla (**hipervigilancia/impulsividad**). *Falta enchufarla al resto de cálculos de acción (abajo).*
 Ciencia (confirmada): el estrés agudo (catecolaminas + cortisol) **sube fuerza/velocidad/tolerancia al
 dolor** pero **estrecha la atención y degrada el razonamiento** (visión de túnel; curva de
 Yerkes-Dodson, ya parcialmente en `ActivityLevel`). Modelo:
@@ -146,12 +163,14 @@ En la rueda van **la semilla + las crías** de pelotero → Kushal debe **espera
 
 ---
 
-## 5. UI de pensamiento de Kushal  → **FALTA (construir; el motor existe)**
-La `Mind` ya **genera** el pensamiento actual (tono/valencia + intensidad `Depth()`), pero **solo a
-consola**. Construir: **un bloque de FollowingArrays visible con el menú cerrado** que muestre el
-**pensamiento actual** del ánima controlada, con su **intensidad**, persistente ~**10 min** (marca de
-tiempo). Es el canal por el que el jugador "lee" a Kushal (miedo a acercarse, deseo, etc.) — pilar del
-modelo "jugador = conector, no titiritero".
+## 5. UI de pensamiento del ser que maneja el jugador  → **CONSTRUIDO (2026-09-23, `AnimaThoughtHUD`)**
+No es solo de Kushal: muestra el pensamiento del **ser que el jugador maneje** (puede controlar CUALQUIER
+`Anima` cambiando el puntero de control + la cámara). La `Mind` ahora **expone** su pensamiento actual
+(`lastThought` + `lastIntensity` 0..1 + `lastPositive`), y **`AnimaThoughtHUD`** (prototipo OnGUI, cableado
+en `SampleSceneBuilder`) busca el ser cuyo `AnimaController.Active` es un `PlayerBrain` y muestra ese
+pensamiento con su **intensidad** (verde=positivo/rojo=negativo), **persistente ~10 min** (`linger`). Es el
+canal por el que el jugador "lee" al ser (miedo a acercarse, deseo…) — pilar del modelo "jugador =
+conector, no titiritero". *Siguiente:* versión declarativa (bloque FollowingArrays) en vez de OnGUI.
 
 ---
 
@@ -165,24 +184,24 @@ modelo "jugador = conector, no titiritero".
 | Generación de pensamientos (tono/valencia/intensidad) | **EXISTE** | `Mind.Think`/`Depth`, `PhraseLibrary` |
 | Sistema de olor (atracción) | **EXISTE** | `ScentEmitter`/`ScentScanner` |
 | Proteger crías (madre-cría) | **PARCIAL** | `PostNatalManager.Guard`, `HomeOrigin` |
-| "Hablar" (surface de pensamientos al jugador) | **PARCIAL** | falta UI (solo `Debug.Log`) |
+| "Hablar" (surface de pensamientos al jugador) | **EXISTE (2026-09-23)** | `Mind.lastThought` + `AnimaThoughtHUD` |
+| UI de pensamiento del ser controlado (10 min) | **EXISTE (2026-09-23)** | `AnimaThoughtHUD` (OnGUI) |
+| Control por necesidad + idle + adrenalina + `mindStatusCalculationFog` | **EXISTE (2026-09-23)** | `AcuteStressResponse` + relevancia IA |
+| Guard del Animator (robustez sin modelo) | **EXISTE (2026-09-23)** | `ActionPrep.Prep` con `HasState` |
 | Sueño por agotamiento | **PARCIAL** | `SleepCycle` + campo `exhaustion` |
 | Generación por hechizo (prefab+lugar) | **PARCIAL** | patrón `Instantiate` → envolver en `SpawnSpell` |
 | Olor **repelente**/reduce-comestibilidad (apestoso) | **PARCIAL** | `ScentEmitter` negativo + `IEdible` |
 | **`livetogether`** (mudarse juntos por bond) | **FALTA** | `bonds`+`HomeOrigin`+`alertness` |
-| **Control por necesidad + idle + adrenalina** | **FALTA** | relevancia `IBrain`/`AiBrain.selfRelevance` |
-| **`mindStatusCalculationFog`** + bonus por deseo | **FALTA** | `ActivityLevel`(Yerkes-Dodson), `Humores` |
 | **Crecimiento de stats por anticipación** (`leap` NO existe) | **FALTA** | patrón `ObservationSkill.Train`/`Confidence` |
-| **UI de pensamiento de Kushal** (bloque 10 min) | **FALTA** | `Mind` + FollowingArrays |
 | **`sleepDistribution`** (turnos de vigilia) | **FALTA** | `SleepCycle` + `PackAwareness` |
 | Depredador que aterra a peloteros pero no a Kushal | **FALTA** | `Archetypes._relations` + miedo diferencial |
 
 ---
 
 ## 7. Orden de construcción sugerido (rebanadas)
-1. **UI de pensamiento de Kushal** (§5) — desbloquea que el jugador "entienda" todo lo demás.
-2. **Control por necesidad + idle + adrenalina/`mindStatusCalculationFog`** (§3) — el corazón del modelo
-   jugador-conector; base para que las misiones "nazcan naturales".
+1. ✅ **UI de pensamiento del ser controlado** (§5) — HECHO (`AnimaThoughtHUD`).
+2. ✅ **Control por necesidad + idle + adrenalina/`mindStatusCalculationFog`** (§3) — HECHO
+   (`AcuteStressResponse`); *pendiente fino: veto de acciones contrarias + enchufar la niebla a más cálculos.*
 3. **`SpawnSpell`** (generación con temporizador, §3) + **sueño por agotamiento**.
 4. **Evento `livetogether`** (§2) — semilla de familias/tribus.
 5. **`sleepDistribution`** + extensión "origen más seguro del pack" (§4).

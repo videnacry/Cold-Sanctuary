@@ -13,6 +13,14 @@
 
 ## 1. Ley: la ESPECIE es un skin narrativo, elegida por la sociología de los personajes
 
+**Principio de la MENTE HUMANIZADA:** todo insecto del Microcosmos se configura con una **mente similar a
+la de los HUMANOS de la era correspondiente** (`SoulComposition`: alto dominio de arquetipo `Human` en la
+mente) **+ comportamientos de la especie** (cuerpo/automatismos). Por eso su **sociabilidad, amistad y
+decisiones** salen de esa mente humana, no del mero instinto de especie (p. ej. Momo y Medea peloteros se
+hacen **amigos**, no pareja — ver [`microcosmos-dungbeetle-level.md`](microcosmos-dungbeetle-level.md)). Y
+las **amistades se pueden pre-sembrar**: `Anima.bonds` es una lista donde se **agregan animas específicas**
+con un `Bond` inicial (`GrowBond(otra, Friend, valor)`), "como si se conocieran de otra vida".
+
 El Microcosmos **no se queda en hormigas**. Cada era/escena usa **el animal cuyo estilo de vida y
 estructura social se parece a los personajes** que toca representar. Como todo es `Anima` con
 `SoulComposition` (mezcla de arquetipos) + `CreatureRig`, cambiar de especie es **cambiar el skin y

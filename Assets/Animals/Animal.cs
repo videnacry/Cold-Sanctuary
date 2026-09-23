@@ -446,7 +446,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (threat != null)
         {
             alertness = Mathf.Max(alertness, Mathf.Clamp01(1f - nearest / range));
-            if (alertness >= ALERT_TO_REACT) RespondToThreat(threat);
+            // La NIEBLA cognitiva (estrés agudo) baja el umbral → hipervigilancia/reacción impulsiva con menos análisis
+            // (Yerkes-Dodson: el arousal alto dispara antes; el análisis fino se pierde). mindStatusCalculationFog 0..1.
+            float react = ALERT_TO_REACT * (1f - 0.5f * mindStatusCalculationFog);
+            if (alertness >= react) RespondToThreat(threat);
         }
         else alertness = Mathf.MoveTowards(alertness, 0f, 0.5f * TimeController.timeController.TimeSpeedMinuteSecs / 60f);
     }
