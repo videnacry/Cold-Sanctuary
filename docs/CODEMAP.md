@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 360 tipos._
+_Total: 362 tipos._
 
 
 ## Animals
@@ -63,6 +63,7 @@ _Total: 360 tipos._
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
 - **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
+- **AcuteStressResponse** (class) — `Assets/Scripts/Soul/AcuteStressResponse.cs` — RESPUESTA AGUDA AL ESTRÉS ("el cuerpo se pasa de sus límites") — ciencia real anclada en la química que ya existe:
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
 - **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
@@ -73,6 +74,7 @@ _Total: 360 tipos._
 - **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
 - **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
 - **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI):
+- **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5).
 - **AnimationsName** (class) — `Assets/Scripts/AnimationsName.cs`
 - **AphidGuide** (class) — `Assets/Scripts/Microcosmos/AphidGuide.cs` — La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos-insects.md §4).
 - **AptitudeEvolution** (class) — `Assets/Scripts/AptitudeEvolution.cs` — Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.

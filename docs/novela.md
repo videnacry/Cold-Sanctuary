@@ -189,6 +189,47 @@ aprende a **mirar**.
 
 ---
 
+## Los escarabajos — Momo y Medea, en otra vida
+
+> *Primer pase (a enriquecer por el autor). Diseño en [`microcosmos-dungbeetle-level.md`](microcosmos-dungbeetle-level.md).*
+
+Hubo una vida, mucho antes, en que Momo y Medea fueron **dos escarabajos peloteros**. No se conocían
+—o eso creían—, pero algo en ellos venía **atado de antes**: al mirarse por primera vez no sentían el
+recelo del extraño, sino la calidez tonta de quien reencuentra a alguien sin saber de qué. (En el mundo
+insecto todos piensan con **mente de humano**; por eso lo suyo no fue instinto de bicho, fue **amistad**.)
+
+Cada uno miraba **su bola** de un modo. Para **Momo**, la rueda era su yo muerto: una carga honorable
+que arrastrar hasta el final, y en admirarla se iba quedando **solo**, orgulloso de su obra difunta.
+Para **Medea**, la misma bola era **abastecimiento** —alimento listo, la fuente de la vida—; corría a
+ella con una alegría que ya soñaba familia. Aguardando tanto ese día, lo imaginó tan claro —correr,
+agarrar, comer, tener a los suyos— que **el cuerpo se le fue preparando**, y cuando por fin apareció el
+festín, Medea era **más rápida y más fuerte** de lo que había sido nunca.
+
+Medea llegó antes. Amasó su rueda y se la llevaba a casa. Momo, que por azar quedaba más cerca y en el
+camino, la **interceptó** y empujó la bola hacia sí; y ahí, hombro con hombro, empezaron a **pelear por
+la rueda**. Pero pelear tan juntos también es estar juntos: entre empujón y empujón fue creciendo lo que
+ya traían de antes, hasta que dejaron de disputarse la bola y **se reconocieron**. Hablaron. Rieron.
+Decidieron, como se decide en manada, **irse a vivir juntos** —no como pareja, sino como **amigos**—, al
+mejor de sus dos hogares.
+
+Kushal lo vio todo, porque **Linduarda** —la doctora, la maga— lo había mandado a algo pequeño y
+concreto: **arrancarles un cabello a cada uno**. Solo que a un escarabajo despierto no te le acercas: en
+cuanto Kushal se aproximaba, **se paraba en seco**, y en su pensamiento —que ahora se lee en pantalla— se
+encendía claro el **miedo**. Así que el jugador tuvo que **esperar**: dejar que el hambre los llevara al
+otro extremo y de vuelta, dejar que corrieran y jalaran y pelearan y hablaran, hasta que, **rendidos de
+cansancio**, se durmieron. Entonces, y solo entonces, Kushal pudo acercarse y tomar los dos cabellos.
+
+Después vino otra tarea: **recuperar la semilla que iba dentro de la rueda**. Pero en la rueda ya no
+había solo semilla: había **crías**. Y los padres no se apartaban —montaban **guardia por turnos**,
+mientras uno dormía el otro velaba, y hasta la cría, medio despierta, se quejaba para que la cuidaran—.
+Kushal, prudente, no dejó que el jugador se acercara: su pensamiento lo decía a gritos, *ahí no*. Hizo
+falta que llegara **algo peor**: un bicho pequeño y venenoso al que los escarabajos **temían** pero
+Kushal no; los padres salieron a plantarle cara. Las crías, recién salidas de la bola y aún **cubiertas
+de aquel material**, apestaban lo bastante como para no ser bocado de nadie. Kushal venció al intruso
+—y en defenderlos **se ganó su cariño**—, y con los padres lejos pudo, al fin, **ir por la semilla**.
+
+---
+
 ## Las reencarnaciones (la Cocina) — el consuelo
 En la Cocina, la era del fuego, **yacen sus reencarnaciones**, con **otros nombres y otros cuerpos**, sin que
 nadie lo diga. **Ambrosio** vuelve como **Nasatya**: una **almohada gigante**, mansísima pese a su fuerza

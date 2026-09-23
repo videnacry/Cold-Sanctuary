@@ -30,11 +30,16 @@ El importador `AnimalModelImporter.cs` se ejecuta **solo al importar** y fija:
   raíz. → **el FBX necesita: rig Generic, un hueso RAÍZ, y clips de animación embebidos.**
 - Requiere **al menos un MeshRenderer/SkinnedMeshRenderer** (si no, el collider no se puede ajustar).
 
-### Animaciones requeridas (¡crítico!)
+### Animaciones requeridas (recomendado; ya no es crítico)
 El sistema **no usa parámetros/estados del AnimatorController**: reproduce clips **por NOMBRE** con
-`Animator.Play("<estado>")` + ajusta `Animator.speed`. Cada prefab **DEBE** llevar un `Animator` con un
-controller que contenga los estados con el nombre exacto, o **lanza excepción al primer movimiento**
-(`ActionPrep.Prep` llama a `ani.Play` sin null-check).
+`Animator.Play("<estado>")` + ajusta `Animator.speed`. Lo ideal es que cada prefab lleve un `Animator`
+con un controller que contenga los estados con el nombre exacto.
+
+> **Fragilidad RESUELTA (2026-09-23):** `ActionPrep.Prep` ahora **comprueba** que exista `Animator` +
+> `runtimeAnimatorController` + el estado (`HasState`) antes de `ani.Play` (y guarda `nav`) → si falta el
+> modelo/controller o el estado, **NO revienta**: se salta la animación y sigue con nav/exhaustion. Así
+> puedes probar una especie **sin modelo/animaciones** (se moverá sin animar). Poner el `.fbx` +
+> AnimatorController con `Idle/Walk/Run` sigue siendo lo deseable para que se vea bien.
 
 Nombre del estado = `gait + Especie`. Catálogo en `ActionsPrep.cs`:
 - **Mamíferos/fauna de hielo con entrada propia** (Bear/Deer/Fox/Malamute/Seal/Whale/Wolf/Penguin/Orca):
