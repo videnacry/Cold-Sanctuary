@@ -70,14 +70,55 @@ public class Mind : MonoBehaviour
     ThoughtField[] _fields = System.Array.Empty<ThoughtField>();
     float _nextFieldRefresh;
 
+    [Header("Campo de pensamientos: percepción del entorno")]
+    [Tooltip("Radio en el que la mente PERCIBE otras animas y deja que tiñan su pensamiento (todo es anima, hasta el " +
+             "suelo). docs/microcosmos-dungbeetle-level.md §? / campo de pensamientos.")]
+    [Min(0f)] public float awarenessRadius = 8f;
+    float _nextSense;
+    static readonly Collider[] _senseHits = new Collider[24];
+
     void Update()
     {
         humores.Regen(Time.deltaTime);
         RefreshFieldsIfDue();
         ApplyFieldHumors(Time.deltaTime);
+        SenseSurroundings(Time.deltaTime);
         if (Time.time < _nextThink) return;
         _nextThink = Time.time + thinkInterval;
         Think();
+    }
+
+    /// <summary>EL CAMPO DE PENSAMIENTOS RESPONDE AL ENTORNO Y AL ESTADO: la mente percibe las animas cercanas y sus
+    /// propias necesidades, y eso **tiñe sus humores** → de ahí salen el tono (PickTone) y la valencia (Think) de sus
+    /// pensamientos. Así los pensamientos "nacen del entorno" además de los propios: amiga cerca → calma (serotonina);
+    /// depredador no vinculado → cautela (adrenalina/cortisol); presencia neutra (hasta el suelo) → pertenencia; y las
+    /// necesidades fuertes (hambre/sueño/estrés) → malestar (cortisol). Nudges pequeños (×dt); Regen tira de vuelta.</summary>
+    void SenseSurroundings(float dt)
+    {
+        _nextSense -= dt;
+        if (_nextSense > 0f || _anima == null) return;
+        _nextSense = 0.75f;
+
+        // NECESIDADES propias (estado físico → pensamiento): incomodan → tono negativo/urgente.
+        float need = Mathf.Max(_anima.stress, _anima.sleepiness);
+        if (_anima is Animal an) need = Mathf.Max(need, Mathf.Clamp01(an.hungry));
+        if (need > 0.5f) humores.Produce(Humor.Cortisol, 0.04f * need * dt);
+
+        // ENTORNO: animas cercanas (todo es anima). Amiga → calma; depredador no vinculado → cautela; resto → pertenencia.
+        int n = Physics.OverlapSphereNonAlloc(transform.position, awarenessRadius, _senseHits);
+        int neutral = 0;
+        for (int i = 0; i < n; i++)
+        {
+            Anima other = _senseHits[i] != null ? _senseHits[i].GetComponentInParent<Anima>() : null;
+            if (other == null || other == _anima) continue;
+
+            bool friend = other is ITarget it && _anima.GetBond(it) is Bond b && b.value > 20f;
+            bool predator = !friend && other is Animal oa && oa.Forage != null && oa.Forage.eatsPrey;
+            if (friend)        humores.Produce(Humor.Serotonina, 0.05f * dt);
+            else if (predator) { humores.Produce(Humor.Adrenalina, 0.05f * dt); humores.Produce(Humor.Cortisol, 0.03f * dt); }
+            else               neutral++;
+        }
+        if (neutral > 0) humores.Produce(Humor.Serotonina, 0.01f * dt);   // no estar solo tranquiliza un poco (pertenencia)
     }
 
     void RefreshFieldsIfDue()

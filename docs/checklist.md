@@ -46,6 +46,23 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       apremio→relevancia IA→toma de mando; `Anima.physicalBoost` (química) + `Anima.mindStatusCalculationFog`
       (Yerkes-Dodson), enchufada a `SenseThreats`. *Pendiente: veto de acciones contrarias + niebla en más cálculos.*
 - [x] **Guard del Animator** (`ActionPrep.Prep` con `HasState`) — HECHO: una especie sin modelo ya no revienta.
+- [x] **Campo de pensamientos ← entorno + necesidades** (`Mind.SenseSurroundings`) — HECHO 2026-09-27:
+      percibe animas cercanas (amiga/depredador/neutra) + hambre/sueño/estrés → tiñe humores → tono/valencia.
+- [x] **Control por necesidad en TODAS las animas** — HECHO: `AcuteStressResponse` auto-añadido en `Animal.Init`.
+      *(Companions/PlayerStats: añadir a mano si se quiere el mismo efecto.)*
+- [x] **Necesidad de defecar** (`DefecationNeed`, fibra→tránsito→excremento+olor) — HECHO (opt-in). *Falta:*
+      auto-añadir + prefab de excremento (Unity) + que sea la acción natural del SpawnSpell.
+
+## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](spell-genesis-and-sanctuary-progression.md))
+- [ ] **`SpellLadder`** (escalera de intensidad por array + hechizos compuestos + `requires`) → caminar→correr→teletransporte.
+- [ ] **`EatSpell : SpellBase`** (comer = descomponer anima por intensidad/stats: platillo/compuestos/elementos/quarks;
+      afecta gramos del objetivo + llena pools). Envuelve `Forager`/`Metabolism`/`DecompositionMinigame`.
+- [ ] **Misiones → XP de margas** (`CharacterLevel.GainXp` desde cocina/enfermería/yoga/vínculos) → subir nivel
+      integral → capacidad de pools → **evento de cambio de santuario** al reunir puntos.
+- [ ] **Restaurante + planta atómica en todos los santuarios**; misiones gateadas por hechizos del jugador;
+      "cuanto más preparada, más provecho" (purificar toxinas cocinando). Historia de área (planta/restaurante).
+- [ ] **`CommunicationSpell`** (emparejar dos animas cercanas → alternar sus pensamientos como charla).
+- [ ] **¿Push-ups/abs?** decidir si se añaden como acciones/misiones o el físico sale del trabajo/farming.
 - [ ] **`SpawnSpell : SpellBase`** (generar prefab en un lugar; `duration`/timing ya existen) + **sueño
       por agotamiento** (`exhaustion` alto → dormir).
 - [ ] **Evento `livetogether`** (bond>umbral → comparar `bond_hogar − peligro`; gate por bond mutuo →
