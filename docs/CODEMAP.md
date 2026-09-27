@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 362 tipos._
+_Total: 363 tipos._
 
 
 ## Animals
@@ -134,6 +134,7 @@ _Total: 362 tipos._
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
+- **DefecationNeed** (class) — `Assets/Scripts/Composition/DefecationNeed.cs` — NECESIDAD DE DEFECAR (popó) — una pulsión como el hambre o el sueño, anclada en biología real:
 - **DialogueLine** (class) — `Assets/Scripts/Dialogue/DialogueLine.cs` — A single line of dialogue — one thing one character says.
 - **DialogueManager** (class) — `Assets/Scripts/Dialogue/DialogueManager.cs` — Singleton that drives all dialogue playback in Cold Sanctuary.
 - **DialoguePanel** (class) — `Assets/Scripts/Dialogue/DialoguePanel.cs` — The on-screen UI for dialogue.
