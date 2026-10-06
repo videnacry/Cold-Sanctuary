@@ -52,11 +52,18 @@ public class DefecationNeed : MonoBehaviour
         float fiber = (_animal != null && _animal.Forage != null && _animal.Forage.eatsGrass) ? fiberFactor : 1f;
         urge = Mathf.Clamp01(urge + basePerMinute * fed * fiber * (dt / minuteSecs));
 
-        // Urgencia alta incomoda (participa de necesidades/pensamiento/control por necesidad).
-        if (urge > discomfortAt)
-            _anima.stress = Mathf.Clamp01(_anima.stress + 0.05f * (urge - discomfortAt) * (dt / minuteSecs));
+        // SUPRESIÓN (idea del autor): NO se defeca en peligro ni dormido (se aguanta por una necesidad más fuerte: la
+        // de un entorno seguro / el sueño); y el CONTROL MENTAL (disciplina+compostura) sube el umbral de continencia.
+        // La urgencia sigue subiendo (tope 1) y aguantar INCOMODA (sube estrés) → compite en el campo de pensamientos y
+        // en el control-por-necesidad, pudiendo a su vez vencer a otros impulsos si es lo bastante fuerte.
+        bool safe = !_anima.asleep && !_anima.aware && _anima.alertness < 0.5f;
+        float mentalControl = Mathf.Clamp01((_anima.discipline + _anima.composure) / 4f);
+        float continence = Mathf.Min(0.98f, 0.55f + 0.43f * mentalControl);   // más control → aguanta hasta más urgencia
 
-        if (urge >= 1f) Defecate();
+        if (urge > discomfortAt)
+            _anima.stress = Mathf.Clamp01(_anima.stress + 0.05f * (urge - discomfortAt) * (safe ? 1f : 1.6f) * (dt / minuteSecs));
+
+        if (safe && urge >= continence) Defecate();
     }
 
     /// <summary>Defecar: alivio + excremento (prefab opcional) + rastro de olor. También es lo que dispararía el hechizo

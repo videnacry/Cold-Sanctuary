@@ -52,6 +52,13 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       *(Companions/PlayerStats: añadir a mano si se quiere el mismo efecto.)*
 - [x] **Necesidad de defecar** (`DefecationNeed`, fibra→tránsito→excremento+olor) — HECHO (opt-in). *Falta:*
       auto-añadir + prefab de excremento (Unity) + que sea la acción natural del SpawnSpell.
+- [x] **Defecación reprimible** (peligro/sueño/control mental: `aware`/`alertness`/`asleep` + disciplina+compostura
+      = continencia) — HECHO 2026-10-06. Aguantar sube el estrés → compite en el campo de pensamientos.
+- [x] **Control-por-necesidad también en animas COMPUESTAS** (`AcuteStressResponse` en `Cast()`) — HECHO.
+      *(Jugador: decisión aparte — el "body" le quitaría el mando bajo estrés extremo, que es el diseño.)*
+- [x] **Restaurante JUGABLE** (`RestaurantKitchen`/`CookingStation`/`CookingRecipe`): cocinar para todos →
+      stock equilibrado (multi-anima) → jugador avanza con E → XP + porción al inventario — HECHO 2026-10-06.
+      *Falta:* estaciones manipulables reales (Virtualization `StationPart`, prefabs Unity).
 
 ## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](spell-genesis-and-sanctuary-progression.md))
 - [ ] **`SpellLadder`** (escalera de intensidad por array + hechizos compuestos + `requires`) → caminar→correr→teletransporte.
