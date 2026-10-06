@@ -61,7 +61,8 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       integral → capacidad de pools → **evento de cambio de santuario** al reunir puntos.
 - [ ] **Restaurante + planta atómica en todos los santuarios**; misiones gateadas por hechizos del jugador;
       "cuanto más preparada, más provecho" (purificar toxinas cocinando). Historia de área (planta/restaurante).
-- [ ] **`CommunicationSpell`** (emparejar dos animas cercanas → alternar sus pensamientos como charla).
+- [x] **`CommunicationSpell`** (emparejar dos animas cercanas → alternar pensamientos + contagio emocional ×vínculo
+      + crece amistad) — HECHO 2026-10-06. `Mind.SpeakNow()`. *Siguiente: frases de respuesta; turnos largos.*
 - [ ] **¿Push-ups/abs?** decidir si se añaden como acciones/misiones o el físico sale del trabajo/farming.
 - [ ] **`SpawnSpell : SpellBase`** (generar prefab en un lugar; `duration`/timing ya existen) + **sueño
       por agotamiento** (`exhaustion` alto → dormir).

@@ -158,9 +158,13 @@ vocalizar/expresar; la `Mind` ya *piensa*, §campo de pensamientos). Con él, do
 **charlas esporádicas** ligadas al **campo de pensamientos** y a los **pensamientos nativos** de cada una
 (mente humanizada, ver [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md)). En el
 mundo insecto (humanoides) esto se ve como diálogo; mecánicamente = intercambiar/mostrar pensamientos.
-> **Estado:** DISEÑO. Base lista: `Mind` genera y **expone** pensamientos (`lastThought`), `ThoughtField`,
-> y ahora el **campo de pensamientos percibe el entorno** (ver §8). Falta el `CommunicationSpell` que
-> **empareje** a dos animas cercanas y **alterne** sus pensamientos como charla.
+> **Estado: CONSTRUIDO (2026-10-06, `CommunicationSpell : SpellBase`).** Pasivo: cada rato esporádico empareja
+> con el anima cercana **más vinculada** que tenga `Mind` y **alternan un pensamiento** (`Mind.SpeakNow`) como
+> charla (`[Charla] A ↔ B`). Hay **contagio emocional** (la valencia del que habla mueve los humores del que
+> escucha, **×vínculo** — emoción compartida real) y charlar en positivo **crece la amistad** (`GrowBond`). Su
+> acción natural = expresar; opt-in = es un hechizo **aprendido** (no innato), coherente con el desbloqueo por
+> camino. *Siguiente:* frases de charla específicas (responder al pensamiento del otro, no solo alternar), y
+> emparejar por iniciativa mutua para turnos de diálogo más largos.
 
 ---
 
