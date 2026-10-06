@@ -58,6 +58,14 @@ public class Mind : MonoBehaviour
         _body = GetComponent<CharacterComposition>();
     }
 
+    /// <summary>Forzar a la mente a FORMULAR un pensamiento AHORA y devolver lo que "dijo" (puede ser "" si no llega a
+    /// formularlo). Lo usa el <see cref="CommunicationSpell"/> para las charlas (alternar pensamientos como diálogo).</summary>
+    public string SpeakNow()
+    {
+        Think();
+        return lastThought;
+    }
+
     /// <summary>Añade pensamientos base (p.ej. innatos de la especie) que aún no tenga. No duplica.</summary>
     public void SeedThoughts(System.Collections.Generic.IEnumerable<MindPhrase> phrases)
     {

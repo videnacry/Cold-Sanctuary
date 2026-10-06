@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 363 tipos._
+_Total: 364 tipos._
 
 
 ## Animals
@@ -128,6 +128,7 @@ _Total: 363 tipos._
 - **CombatAbility** (class) — `Assets/Scripts/Combat/CombatAbility.cs` — Defines one combat ability usable against an IngredientMob.
 - **CombatAbilityBar** (class) — `Assets/Scripts/Combat/CombatAbilityBar.cs` — Manages the player's equipped ability bar (up to 10 slots, keys 1–0).
 - **CombatTargetSelector** (class) — `Assets/Scripts/Combat/CombatTargetSelector.cs` — Sistema de selección de target (Tab-targeting + clic).
+- **CommunicationSpell** (class) — `Assets/Scripts/Mind/CommunicationSpell.cs` — HECHIZO DE COMUNICACIÓN — "todas las animas pueden hablar entre sí".
 - **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
 - **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
