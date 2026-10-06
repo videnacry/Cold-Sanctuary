@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 364 tipos._
+_Total: 367 tipos._
 
 
 ## Animals
@@ -131,6 +131,8 @@ _Total: 364 tipos._
 - **CommunicationSpell** (class) — `Assets/Scripts/Mind/CommunicationSpell.cs` — HECHIZO DE COMUNICACIÓN — "todas las animas pueden hablar entre sí".
 - **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
 - **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+- **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §...
+- **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
@@ -300,6 +302,7 @@ _Total: 364 tipos._
 - **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
 - **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
 - **Respawn** (class) — `Assets/Scripts/Respawn.cs`
+- **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina).
 - **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
 - **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
 - **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):

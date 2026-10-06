@@ -98,6 +98,22 @@ jugador**, no el lugar:
   (presente en todos los santuarios) y dejar el **restaurante** para **cocina** (platillos). Ambos coexisten
   en cada santuario; el jugador elige.
 
+### 4.0 Cocina del restaurante JUGABLE (CONSTRUIDO 2026-10-06)
+Montado el bucle base: **no se come, se cocina para VENDER**. `RestaurantKitchen` + `CookingStation` +
+`CookingRecipe`:
+- **Misión = preparar platillos para TODOS los personajes** → llenar el **stock** (`FoodContainer`) de cada
+  platillo hasta su `target` (= "para todos"). Platillos montados: **huevos revueltos, ensalada, avena** (con
+  los pasos exactos que dio el autor; p. ej. avena = hervir las leches en ollas distintas → cortar banana/
+  guanábana → avena+canela+chocolate → mezclar → fruta al final).
+- **Equilibrio de stock:** cuando una anima entra a cocinar, el gestor le asigna el platillo **más por debajo**
+  de su objetivo (contando lo ya en marcha) → **varias animas cocinan en paralelo** platillos distintos.
+- **Jugable:** el jugador **avanza cada paso con `E`** (HUD con la receta, paso actual y stock); los NPCs
+  avanzan solos. Al emplatar → +1 al stock → pide el siguiente platillo que falte.
+- **Al cumplir** (todo el stock lleno): **XP (marga Stats)** a cada participante + **una porción de CADA
+  platillo al inventario** (al del jugador vía `Inventory`). Sandbox `Restaurante_AUTO`.
+- *Siguiente:* estaciones **manipulables reales** (Virtualization `StationPart`: ir a la nevera, agarrar los
+  huevos…) — necesita prefabs (Unity); hoy los pasos son por tecla/tiempo.
+
 ### 4.1 "Cuanto más preparada, más provecho" (refrán del juego)
 Mensaje del juego: **un anima, cuanto más preparada, más provecho saca de cualquier acción.** Consecuencias:
 - Un mago capaz de **descomponer a quarks** que va a **cocinar** recibe **muchísimos** puntos de magia (su

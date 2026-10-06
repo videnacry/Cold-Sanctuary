@@ -133,6 +133,7 @@ public static class SampleSceneBuilder
         new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root.transform);  // HUD de estado de un Anima (drives/actividad/elementos con color) — docs consciousness-mechanics §2
         new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root.transform);  // HUD del PENSAMIENTO del ser que maneja el jugador — docs microcosmos-dungbeetle-level §5
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
+        BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -1097,6 +1098,7 @@ public static class SampleSceneBuilder
         soul.applyScale = false;   // conservar la escala autorada del insecto (no la altura del blend)
         foreach (var (arch, dom) in bodies) soul.bodies.Add(new BlendSlot { archetype = arch, domain = dom });
         foreach (var (arch, dom) in minds)  soul.minds.Add(new BlendSlot { archetype = arch, domain = dom });
+        go.AddComponent<AcuteStressResponse>();   // control-por-necesidad también en animas COMPUESTAS (todo es Anima): el "body" puja por el mando
         return go;
     }
 
@@ -2336,6 +2338,45 @@ public static class SampleSceneBuilder
     // GameObject por elemento (Quad + TextMesh) y los VINCULA con AnimaStatusPanels (color/valor vivos desde ElementsStatus).
     // No hace falta prefab manual en Unity; todo queda versionado en este .cs. (También se podría PrefabUtility.SaveAsPrefabAsset
     // para un .prefab reutilizable, como AnimalPrefabGenerator; aquí se construye en escena, que es aún más "code-first".)
+    // RESTAURANTE jugable (sandbox): 3 platillos con su stock + gestor + una estación JUGABLE (en el Player) + 2 NPCs
+    // cocinando. El jugador avanza cada paso con E; al llenar el stock de todos → misión cumplida (XP + inventario).
+    static void BuildRestaurantSandbox(Transform parent)
+    {
+        GameObject rest = new GameObject("Restaurante_AUTO");
+        rest.transform.SetParent(parent);
+
+        string[] dishNames = { "Huevos revueltos", "Ensalada", "Avena" };
+        var stocks = new System.Collections.Generic.List<RestaurantKitchen.DishStock>();
+        foreach (string dn in dishNames)
+        {
+            GameObject g = new GameObject($"Stock_{dn}");
+            g.transform.SetParent(rest.transform);
+            FoodContainer fc = g.AddComponent<FoodContainer>();
+            fc.dishName = dn;
+            stocks.Add(new RestaurantKitchen.DishStock { container = fc, target = 6 });
+        }
+        RestaurantKitchen kitchen = rest.AddComponent<RestaurantKitchen>();
+        kitchen.dishes = stocks.ToArray();
+
+        // Estación JUGABLE en el Player (si existe); si no, una suelta de demostración.
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        GameObject cookGo = player != null ? player : new GameObject("Cocinero_Jugador");
+        if (player == null) cookGo.transform.SetParent(rest.transform);
+        if (cookGo.GetComponent<CharacterLevel>() == null) cookGo.AddComponent<CharacterLevel>();
+        CookingStation ps = cookGo.GetComponent<CookingStation>() ?? cookGo.AddComponent<CookingStation>();
+        ps.kitchen = kitchen; ps.playerDriven = true;
+
+        // 2 NPCs cocinando en paralelo (automáticos) → demuestran el reparto por equilibrio de stock.
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject npc = new GameObject($"Cocinero_NPC_{i + 1}");
+            npc.transform.SetParent(rest.transform);
+            npc.AddComponent<CharacterLevel>();
+            CookingStation cs = npc.AddComponent<CookingStation>();
+            cs.kitchen = kitchen; cs.playerDriven = false;
+        }
+    }
+
     static void BuildAnimaStatusPanels(Transform parent)
     {
         GameObject group = new GameObject("AnimaStatusPanels_AUTO");
