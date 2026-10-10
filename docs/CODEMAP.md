@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 367 tipos._
+_Total: 371 tipos._
 
 
 ## Animals
@@ -62,6 +62,7 @@ _Total: 367 tipos._
 ## Scripts
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
+- **ActionQueue** (class) — `Assets/Scripts/Control/ActionQueue.cs` — COLA DE ACCIONES de un anima (docs/typed-spells-and-queues.md) — ejecuta s en orden, estilo Sims.
 - **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
 - **AcuteStressResponse** (class) — `Assets/Scripts/Soul/AcuteStressResponse.cs` — RESPUESTA AGUDA AL ESTRÉS ("el cuerpo se pasa de sus límites") — ciencia real anclada en la química que ya existe:
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
@@ -72,6 +73,7 @@ _Total: 367 tipos._
 - **Anima** (class) — `Assets/Scripts/Anima.cs`
 - **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5):
 - **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
+- **AnimaNameplate** (class) — `Assets/Scripts/UI/AnimaNameplate.cs` — ETIQUETAS DE NOMBRE sobre las animas (docs/typed-spells-and-queues.md):
 - **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
 - **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI):
 - **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5).
@@ -298,6 +300,7 @@ _Total: 367 tipos._
 - **PullDoor** (class) — `Assets/Scripts/PullDoor.cs`
 - **PullSpell** (class) — `Assets/Scripts/Microcosmos/PullSpell.cs` — Hechizo JALAR — Kushal atrae a otro ser hacia sí inyectando un en el del objetivo.
 - **QuarkReserve** (class) — `Assets/Scripts/Transformation/QuarkReserve.cs` — SUSTRATO DE QUARKS del S4 (docs/magic-metabolism-progression.md §16).
+- **QueuedSpell** (class) — `Assets/Scripts/Control/QueuedSpell.cs` — Un HECHIZO EN COLA (docs/typed-spells-and-queues.md):
 - **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33).
 - **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
 - **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
@@ -335,6 +338,7 @@ _Total: 367 tipos._
 - **SoulMarga** (class) — `Assets/Scripts/Progression/SoulMarga.cs` — Una "marga del alma" (docs/creature-stats.md §Progresión):
 - **SoulRecord** (class) — `Assets/Scripts/Microcosmos/SoulRecord.cs` — Ficha de ALMA del mundo insecto (docs/microcosmos-insects.md §13).
 - **SpeciesKarma** (class) — `Assets/Scripts/Soul/SpeciesKarma.cs` — Resuelve la RELACIÓN kármica base de un ser hacia una especie (docs/soul-relations-reincarnation §2).
+- **SpellConsole** (class) — `Assets/Scripts/Control/SpellConsole.cs` — LANZADOR DE HECHIZOS POR TECLADO (docs/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un hechizo":
 - **SpellDemoHUD** (class) — `Assets/Scripts/Microcosmos/SpellDemoHUD.cs` — HUD de PRUEBA (OnGUI) del sandbox `SpellDemo_AUTO`:
 - **SpellElement** (enum) — `Assets/Scripts/Transformation/ElementalSpell.cs` — Elemento de un hechizo elemental básico.
 - **StarvationTest** (class) — `Assets/Scripts/StarvationTest.cs` — Unidad de test de la INANICIÓN (docs/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
