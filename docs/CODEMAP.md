@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 371 tipos._
+_Total: 377 tipos._
 
 
 ## Animals
@@ -78,6 +78,7 @@ _Total: 371 tipos._
 - **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI):
 - **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5).
 - **AnimationsName** (class) — `Assets/Scripts/AnimationsName.cs`
+- **AnymaFactory** (class) — `Assets/Scripts/Control/AnymaFactory.cs` — FÁBRICA DE ANIMAS (docs/anyma-factory-and-control.md §2) — crea variantes a partir de un .
 - **AphidGuide** (class) — `Assets/Scripts/Microcosmos/AphidGuide.cs` — La MASCOTA-GUÍA de la 1ª misión del Microcosmos (docs/microcosmos-insects.md §4).
 - **AptitudeEvolution** (class) — `Assets/Scripts/AptitudeEvolution.cs` — Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.
 - **AptitudeKind** (enum) — `Assets/Scripts/Progression/DerivedStats.cs` — Identifica una de las 12 aptitudes (para recompensas/ganancias por misión).
@@ -109,6 +110,7 @@ _Total: 371 tipos._
 - **BondActivityManager** (class) — `Assets/Scripts/Bond/BondActivityManager.cs` — Manages all BondActivities for the player.
 - **BondEscapeReader** (class) — `Assets/Scripts/Microcosmos/BondEscapeReader.cs` — LECTOR DE ESCAPE POR BOND — lee el estado de huida de los miembros del grupo con alto vínculo y ajusta el impulso de hogar propio para acompañarles.
 - **BondPillar** (class) — `Assets/Scripts/Soul/BondPillar.cs` — PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/anima-architecture.md · soul-relations-reincarnation §2 — fase 5).
+- **BondSpell** (class) — `Assets/Scripts/Soul/BondSpell.cs` — HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/anyma-factory-and-control.md §3:
 - **BondType** (enum) — `Assets/Scripts/Bond.cs`
 - **BreakfastCook** (class) — `Assets/Scripts/Kitchen/BreakfastCook.cs` — El loop de cocinar el desayuno (docs/kitchen-simulation.md §3).
 - **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
@@ -345,7 +347,9 @@ _Total: 371 tipos._
 - **StatBonus** (class) — `Assets/Scripts/Composition/CharacterComposition.cs` — Aporte ADITIVO de una parte a los stats (0 = sin cambio).
 - **StateSpellsTest** (class) — `Assets/Scripts/StateSpellsTest.cs` — Test de los HECHIZOS-ESTADO (docs/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
 - **StationPart** (class) — `Assets/Scripts/Virtualization/StationPart.cs` — Una PARTE manipulable de una estación de virtualización (docs/kitchen-simulation.md §3b):
+- **StatPhysique** (class) — `Assets/Scripts/Soul/StatPhysique.cs` — APARIENCIA POR STATS (docs/anyma-factory-and-control.md §1):
 - **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4).
+- **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
@@ -356,6 +360,7 @@ _Total: 371 tipos._
 - **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario:
 - **ThoughtAnchor** (class) — `Assets/Scripts/Companion/ThoughtAnchor.cs` — A belief or pattern that biases a companion's behavior.
 - **ThoughtField** (class) — `Assets/Scripts/Mind/ThoughtField.cs` — Campo de pensamiento (docs/anima-architecture.md §5, "campo social/semántico"):
+- **ThoughtSpell** (class) — `Assets/Scripts/Soul/ThoughtSpell.cs` — HECHIZO DE MANIPULACIÓN DE PENSAMIENTO/ÁNIMO (docs/anyma-factory-and-control.md §3).
 - **ThreatEmitter** (class) — `Assets/Scripts/Microcosmos/ThreatEmitter.cs` — EMISOR DE AMENAZA ambiental — cualquier objeto puede convertirse en fuente de peligro.
 - **ThreatScanner** (class) — `Assets/Scripts/Microcosmos/ThreatScanner.cs` — Escáner de AMENAZAS — detecta dos tipos de peligro y los combina en (leído por para decidir si ayudar a compañeros):
 - **TimeController** (class) — `Assets/Scripts/Time/Time.cs`
@@ -383,5 +388,6 @@ _Total: 371 tipos._
 - **WorldBondable** (class) — `Assets/Scripts/Bond/WorldBondable.cs` — Attach to any world object or place that can form a bond:
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
+- **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 

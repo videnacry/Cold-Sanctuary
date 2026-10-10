@@ -43,8 +43,13 @@ En vez de una clase C# por especie, **plantillas como OBJETO** + una factory:
 - `AnymaFactory.Create(AnymaSpec spec)` → instancia un `Anima` (hoy, un `Animal` de la especie) y **rellena lo no
   fijado** con random dentro de márgenes (reusa los catálogos como rangos base). `CreateMany(specs[])` para grupos.
 - Convive con lo actual: por dentro usa `Animal`+catálogos; por fuera, el spec decide qué es fijo y qué random.
-> **Estado:** DISEÑO. Base lista (catálogos = plantillas-data, `FamilyGenerator`/`Generator`, hechizos de
-> modificación). Falta `AnymaSpec` + `AnymaFactory.Create(spec)` con randomización por rangos.
+> **Estado: CONSTRUIDO (2026-10-10, 1ª rebanada).** `AnymaSpec` (props opcionales: `species`,
+> `randomStatsLimitations` = multiplicador **0.8..2** por defecto, `hunger`/`sleepiness` `<0`=random,
+> `hasHome`/`home`, `familyRole`) + `AnymaFactory` (array de plantillas `especie→prefab`; `Create(spec,pos)` +
+> `CreateMany(specs,center)`; spec vacío → todo random) + `AnymaSpecApplier` (aplica el spec un frame tras
+> `Animal.Init`: multiplica stats de cuerpo/mente por el rango, fija hambre/sueño/hogar). *Falta:* sexualidad/
+> pensamientos/vínculos random y los roles familiares compuestos ("pareja+2 crías+2 amigos+2 solitarios")
+> cableados; y asignar los prefabs en Unity (no versionados).
 
 ## 3. Filosofía de CONTROL (corrección importante del autor)
 
@@ -66,5 +71,7 @@ En vez de una clase C# por especie, **plantillas como OBJETO** + una factory:
 | Identidad mutable por hechizos (stats/vínculos/mente) | **EXISTE** (`TransformationSpell`/`GrowBond`/`SeedThoughts`) |
 | `AcuteStressResponse` siempre activo y universal (fauna+compuestas+jugador) | **EXISTE** |
 | Render de familias/individuos random (`FamilyGenerator`/`Generator`) | **EXISTE** |
-| `AnymaSpec` + `AnymaFactory.Create(spec)` (opcionales → random en rango) | **FALTA** |
-| Pedidos compuestos ("8 osos: pareja+2 crías+2 amigos+2 solitarios") | **FALTA** |
+| `AnymaSpec` + `AnymaFactory.Create(spec)`/`CreateMany` (opcionales → random en rango 0.8..2) | **EXISTE (2026-10-10)** |
+| Apariencia por stats (`StatPhysique`: fuerza/masa/grasa → grosor, sin pisar altura de LifeStage; auto en `Animal.Init`) | **EXISTE (2026-10-10)** |
+| Hechizos de modificación: stats (`TransformationSpell`), **vínculo (`BondSpell`)**, **mente (`ThoughtSpell`)** | **EXISTE (2026-10-10)** |
+| Pedidos compuestos ("8 osos: pareja+2 crías+2 amigos+2 solitarios") + sexualidad/pensamientos random | **FALTA** |

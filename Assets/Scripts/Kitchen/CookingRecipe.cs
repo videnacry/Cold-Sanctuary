@@ -29,6 +29,20 @@ public class CookingRecipe
         "hierve los dos tipos de leche en ollas distintas", "corta las bananas y guanábanas",
         "agrega avena, canela y chocolate a las ollas", "mezcla", "agrega la fruta al final", "emplata");
 
+    public static CookingRecipe YogurConFruta() => new CookingRecipe("Yogur con fruta",
+        "toma yogur/kéfir y semillas de lino", "pulveriza las semillas de lino", "lava 7 frutas",
+        "prepara la sandía y el coco (corte especial)", "corta las demás frutas",
+        "mezcla el yogur con la fruta", "espolvorea el lino y emplata");
+
+    public static CookingRecipe BowlQuinoa() => new CookingRecipe("Bowl de quinoa",
+        "toma quinoa, lentejas, piña y mango", "enjuaga y cuece la quinoa", "cuece las lentejas",
+        "corta la piña y el mango", "mezcla quinoa y lentejas en el bowl", "añade la fruta y aliña", "emplata");
+
+    public static CookingRecipe Menestra() => new CookingRecipe("Menestra",
+        "toma arroz/quinoa y lenteja/garbanzo/frijol", "sofríe y prepara el caldo/salsa",
+        "cuece las legumbres en el caldo", "cuece el arroz (o quinoa)", "mezcla legumbres y arroz",
+        "rectifica el sazón", "emplata");
+
     /// <summary>Devuelve el preset cuyo nombre coincide (ignora may/min); si no, null.</summary>
     public static CookingRecipe Preset(string dishName)
     {
@@ -37,6 +51,9 @@ public class CookingRecipe
         if (n.Contains("huevo")) return HuevosRevueltos();
         if (n.Contains("ensalada")) return Ensalada();
         if (n.Contains("avena")) return Avena();
+        if (n.Contains("yogur") || n.Contains("kéfir") || n.Contains("kefir")) return YogurConFruta();
+        if (n.Contains("bowl") || n.Contains("quinoa")) return BowlQuinoa();
+        if (n.Contains("menestra") || n.Contains("lenteja")) return Menestra();
         return null;
     }
 }
