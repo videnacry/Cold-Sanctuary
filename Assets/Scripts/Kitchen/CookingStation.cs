@@ -40,6 +40,7 @@ public class CookingStation : MonoBehaviour
     void Update()
     {
         if (kitchen == null) return;
+        if (!kitchen.Open) return;                // el área cerró (de noche): no se cocina
         if (_recipe == null)                      // todo cubierto (o aún no asignado): reintenta de vez en cuando
         {
             if (Time.time >= _next) { _next = Time.time + 2f; TakeAssignment(); }

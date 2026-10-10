@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 379 tipos._
+_Total: 380 tipos._
 
 
 ## Animals
@@ -83,6 +83,7 @@ _Total: 379 tipos._
 - **AptitudeEvolution** (class) — `Assets/Scripts/AptitudeEvolution.cs` — Evolución lenta de una aptitud por uso/desuso, dentro de una banda alrededor de su valor base.
 - **AptitudeKind** (enum) — `Assets/Scripts/Progression/DerivedStats.cs` — Identifica una de las 12 aptitudes (para recompensas/ganancias por misión).
 - **ArchetypeProfile** (class) — `Assets/Scripts/Soul/Archetypes.cs` — Perfil de un arquetipo (cuerpo o mente):
+- **AreaHours** (class) — `Assets/Scripts/World/AreaHours.cs` — HORARIO de un área (docs/typed-spells-and-queues.md / world):
 - **AreaProducer** (class) — `Assets/Scripts/Economy/AreaProducer.cs` — Hace que un área del santuario produzca un recurso (docs/world-topology-and-planes.md §4):
 - **AreaTask** (class) — `Assets/Scripts/World/AreaTask.cs` — Defines one task available inside a SanctuaryArea.
 - **AreaVendor** (class) — `Assets/Scripts/Economy/AreaVendor.cs` — Handles buying and selling at a specific sanctuary area or at the market.

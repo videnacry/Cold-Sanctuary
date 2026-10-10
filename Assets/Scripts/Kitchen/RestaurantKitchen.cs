@@ -34,9 +34,14 @@ public class RestaurantKitchen : MonoBehaviour
 
     bool _complete;
     readonly List<CookingStation> _participants = new List<CookingStation>();
+    AreaHours _hours;
+
+    /// <summary>El restaurante está abierto (de día) — de noche cierra y no se cocina. Usa `AreaHours` si está.</summary>
+    public bool Open => _hours == null || _hours.IsOpen;
 
     void Awake()
     {
+        _hours = GetComponent<AreaHours>();
         foreach (DishStock d in dishes)
             if (d.recipe == null)
                 d.recipe = CookingRecipe.Preset(d.container != null ? d.container.dishName : "")

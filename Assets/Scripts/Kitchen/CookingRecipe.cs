@@ -43,17 +43,73 @@ public class CookingRecipe
         "cuece las legumbres en el caldo", "cuece el arroz (o quinoa)", "mezcla legumbres y arroz",
         "rectifica el sazón", "emplata");
 
-    /// <summary>Devuelve el preset cuyo nombre coincide (ignora may/min); si no, null.</summary>
+    // ── Platillos "bomba nutricional", uno por cultura (nivel de dificultad siguiente; ~6-8 pasos c/u) ───────
+    // Principio: fermentado (probióticos) + legumbre+cereal (proteína completa) + hoja verde + grasa buena + especia.
+    public static CookingRecipe DalIndio() => new CookingRecipe("Dal indio",
+        "toma lentejas, arroz, espinaca, cúrcuma, jengibre y ajo", "sofríe el tadka (ajo/jengibre/cúrcuma)",
+        "cuece las lentejas (dal)", "cuece el arroz", "saltea la espinaca (saag)", "une dal y saag", "sirve con arroz");
+    public static CookingRecipe MilpaMexicana() => new CookingRecipe("Milpa mexicana",
+        "toma frijol, maíz nixtamalizado, nopal, amaranto y chile", "prepara la masa de maíz", "cuece los frijoles",
+        "asa y pica el nopal", "tuesta el amaranto", "haz la salsa de chile", "arma el plato de milpa");
+    public static CookingRecipe InjeraEtiope() => new CookingRecipe("Injera con misir wot",
+        "toma teff fermentado, lentejas rojas, cebolla y berbere", "vierte y cuece la injera de teff",
+        "sofríe la cebolla con berbere", "cuece las lentejas (misir wot)", "liga el guiso", "enrolla con la injera", "emplata");
+    public static CookingRecipe BibimbapCoreano() => new CookingRecipe("Bibimbap",
+        "toma arroz, kimchi, espinaca, zanahoria, huevo y gochujang", "cuece el arroz", "saltea las verduras por separado",
+        "fríe el huevo", "dispón todo sobre el arroz", "añade kimchi y gochujang", "mezcla al servir");
+    public static CookingRecipe BowlJapones() => new CookingRecipe("Bowl japonés (natto/miso)",
+        "toma arroz, natto, miso, edamame, alga y pescado azul", "cuece el arroz", "disuelve el miso en caldo dashi",
+        "remueve el natto", "cuece el edamame", "corta pescado y alga", "monta el bowl");
+    public static CookingRecipe MezzeMediterraneo() => new CookingRecipe("Mezze mediterráneo",
+        "toma garbanzos, quinoa, verduras, aceite de oliva y yogur", "cuece la quinoa", "haz el hummus de garbanzo",
+        "asa las verduras", "bate el yogur con hierbas", "aliña con aceite de oliva", "compón el mezze");
+    public static CookingRecipe CurryTailandes() => new CookingRecipe("Curry verde tailandés",
+        "toma tofu, pasta de curry verde, leche de coco, berenjena y albahaca", "sofríe la pasta de curry",
+        "añade la leche de coco", "cuece tofu y berenjena", "ajusta dulce/salado/ácido", "añade albahaca", "sirve con arroz");
+    public static CookingRecipe TagineMarroqui() => new CookingRecipe("Tajín marroquí",
+        "toma garbanzos, verduras, dátiles, ras el hanout y almendra", "sofríe la cebolla con ras el hanout",
+        "añade verduras y garbanzos", "agrega dátiles y caldo", "guisa a fuego lento en el tajín", "tuesta la almendra", "emplata");
+    public static CookingRecipe GadoGadoIndonesio() => new CookingRecipe("Gado-gado",
+        "toma tempeh, verduras variadas, huevo, maní y lima", "hierve/vaporiza las verduras", "fríe el tempeh",
+        "cuece el huevo", "haz la salsa de maní", "monta las verduras", "napa con salsa de maní");
+    public static CookingRecipe FeijoadaBrasil() => new CookingRecipe("Feijoada vegetal",
+        "toma frijol negro, verduras, naranja, arroz y col", "cuece el frijol negro", "sofríe las verduras ahumadas",
+        "guisa junto al frijol", "cuece el arroz", "saltea la col (couve)", "sirve con gajos de naranja");
+    public static CookingRecipe PhoVietnamita() => new CookingRecipe("Pho vegetal",
+        "toma fideo de arroz, caldo de especias, tofu, brotes y hierbas", "tuesta jengibre/canela/anís para el caldo",
+        "infusiona el caldo", "hidrata el fideo", "escalda tofu y brotes", "monta el bol", "corona con hierbas y lima");
+    public static CookingRecipe MercimekTurco() => new CookingRecipe("Mercimek (sopa turca de lenteja)",
+        "toma lenteja roja, zanahoria, cebolla, comino y limón", "sofríe cebolla y zanahoria", "añade la lenteja y agua",
+        "cuece hasta deshacer", "tritura la sopa", "sazona con comino", "sirve con limón");
+    public static CookingRecipe TarwiPeruano() => new CookingRecipe("Guiso andino (tarwi/quinua)",
+        "toma tarwi desamargado, quinua, choclo, ají y huacatay", "enjuaga la quinua y cuécela", "cuece el choclo",
+        "haz el aderezo de ají", "integra el tarwi", "perfuma con huacatay", "emplata");
+    public static CookingRecipe CongeeChino() => new CookingRecipe("Congee con tofu",
+        "toma arroz, tofu, jengibre, cebollín, shiitake y soja", "hidrata los shiitake", "cuece el arroz hasta papilla",
+        "saltea tofu y jengibre", "integra el shiitake", "sazona con soja", "corona con cebollín");
+    public static CookingRecipe MoiMoiNigeriano() => new CookingRecipe("Moi moi (pastel de frijol)",
+        "toma frijol caupí, pimiento, cebolla, aceite y especias", "remoja y pela el frijol", "licúa con pimiento y cebolla",
+        "sazona la pasta", "vierte en moldes", "cuece al vapor", "desmolda y sirve");
+    public static CookingRecipe LentejasEspanolas() => new CookingRecipe("Lentejas a la española",
+        "toma lentejas, verduras, pimentón, laurel y aceite", "sofríe el refrito de verduras", "añade pimentón y laurel",
+        "incorpora las lentejas y agua", "guisa a fuego lento", "rectifica el sazón", "sirve con un hilo de aceite");
+
+    static CookingRecipe[] _all;
+    public static CookingRecipe[] All => _all ?? (_all = new[]
+    {
+        HuevosRevueltos(), Ensalada(), Avena(), YogurConFruta(), BowlQuinoa(), Menestra(),
+        DalIndio(), MilpaMexicana(), InjeraEtiope(), BibimbapCoreano(), BowlJapones(), MezzeMediterraneo(),
+        CurryTailandes(), TagineMarroqui(), GadoGadoIndonesio(), FeijoadaBrasil(), PhoVietnamita(),
+        MercimekTurco(), TarwiPeruano(), CongeeChino(), MoiMoiNigeriano(), LentejasEspanolas()
+    });
+
+    /// <summary>Devuelve el preset cuyo nombre coincide (contiene, ignora may/min); si no, null.</summary>
     public static CookingRecipe Preset(string dishName)
     {
         if (string.IsNullOrEmpty(dishName)) return null;
         string n = dishName.Trim().ToLowerInvariant();
-        if (n.Contains("huevo")) return HuevosRevueltos();
-        if (n.Contains("ensalada")) return Ensalada();
-        if (n.Contains("avena")) return Avena();
-        if (n.Contains("yogur") || n.Contains("kéfir") || n.Contains("kefir")) return YogurConFruta();
-        if (n.Contains("bowl") || n.Contains("quinoa")) return BowlQuinoa();
-        if (n.Contains("menestra") || n.Contains("lenteja")) return Menestra();
+        foreach (CookingRecipe r in All)
+            if (r.dishName.ToLowerInvariant().Contains(n) || n.Contains(r.dishName.ToLowerInvariant())) return r;
         return null;
     }
 }
