@@ -132,6 +132,7 @@ public static class SampleSceneBuilder
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance
         new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root.transform);  // HUD de estado de un Anima (drives/actividad/elementos con color) — docs consciousness-mechanics §2
         new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root.transform);  // HUD del PENSAMIENTO del ser que maneja el jugador — docs microcosmos-dungbeetle-level §5
+        new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BakeNavMesh();
@@ -1899,6 +1900,15 @@ public static class SampleSceneBuilder
         }
 
         EnsurePlayerVisual(player);
+
+        // CONTROL POR NECESIDAD SIEMPRE ACTIVO (todo es Anima; el jugador NUNCA tiene control total):
+        // el "body" (AcuteStressResponse) puja por el mando como una fuerza más. No es un switch.
+        if (player.GetComponent<Anima>() != null && player.GetComponent<AcuteStressResponse>() == null)
+            player.AddComponent<AcuteStressResponse>();
+        // Lanzador de hechizos por TECLADO + cola de acciones (jugador programa al poseído tipo Sims).
+        if (player.GetComponent<ActionQueue>() == null) player.AddComponent<ActionQueue>();
+        if (Object.FindObjectOfType<SpellConsole>() == null)
+            new GameObject("SpellConsole_AUTO").AddComponent<SpellConsole>().transform.SetParent(player.transform);
 
         // PlayerController expects a "CameraPivot" child holding both camera anchors
         // (it applies mouse/arrow pitch to the pivot, yaw to the Player body itself).

@@ -60,6 +60,19 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       stock equilibrado (multi-anima) → jugador avanza con E → XP + porción al inventario — HECHO 2026-10-06.
       *Falta:* estaciones manipulables reales (Virtualization `StationPart`, prefabs Unity).
 
+## Hechizos por teclado + colas (diseño en [`typed-spells-and-queues.md`](typed-spells-and-queues.md))
+- [x] **Etiquetas de nombre** (`AnimaNameplate`) — HECHO 2026-10-10.
+- [x] **Consola de hechizos por teclado** (`SpellConsole`) + `walkTo` (destino anima-visible/área; "¿Dónde está X?") — HECHO.
+- [x] **Cola de acciones 2-carriles** (`ActionQueue`: `own` prioritaria + `player` editable) + `QueuedSpell`/`WalkToSpell` — HECHO.
+- [x] **`AcuteStressResponse` siempre activo y universal** (fauna+compuestas+jugador) — HECHO (no es switch).
+- [ ] **Hechizos de cocina encolables** (`take`/`putIn`/`beat`/`emplata`) + etiquetar muebles/ingredientes → cocinar escribiendo.
+- [ ] **Hechizos-postura por bodyPart + colas en paralelo** → misiones de yoga ("no tengo pierna disponible").
+- [ ] **`own`-lane alimentada por `AcuteStressResponse`** (el cuerpo interrumpe) + UI de colas del poseído + cast time NPC (~40 ppm).
+
+## Anyma factory + control (diseño en [`anyma-factory-and-control.md`](anyma-factory-and-control.md))
+- [ ] **`AnymaSpec` + `AnymaFactory.Create(spec)`** (props opcionales → resto random en rango) + `CreateMany` (grupos: "8 osos…").
+- [ ] Hechizos de **modificación de pensamientos/vínculos** como "control por alineación" (stats ya: `TransformationSpell`).
+
 ## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](spell-genesis-and-sanctuary-progression.md))
 - [ ] **`SpellLadder`** (escalera de intensidad por array + hechizos compuestos + `requires`) → caminar→correr→teletransporte.
 - [ ] **`EatSpell : SpellBase`** (comer = descomponer anima por intensidad/stats: platillo/compuestos/elementos/quarks;
