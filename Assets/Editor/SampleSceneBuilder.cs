@@ -2355,7 +2355,7 @@ public static class SampleSceneBuilder
         GameObject rest = new GameObject("Restaurante_AUTO");
         rest.transform.SetParent(parent);
 
-        string[] dishNames = { "Huevos revueltos", "Ensalada", "Avena" };
+        string[] dishNames = { "Huevos revueltos", "Ensalada", "Avena", "Yogur con fruta", "Bowl de quinoa", "Menestra" };
         var stocks = new System.Collections.Generic.List<RestaurantKitchen.DishStock>();
         foreach (string dn in dishNames)
         {
@@ -2385,6 +2385,59 @@ public static class SampleSceneBuilder
             CookingStation cs = npc.AddComponent<CookingStation>();
             cs.kitchen = kitchen; cs.playerDriven = false;
         }
+
+        BuildRestaurantRoom(rest.transform);   // entorno físico con primitivas (estaciones/ingredientes nombrados)
+    }
+
+    // RESTAURANTE físico con PRIMITIVAS por defecto (reemplazables): una sala cuadrada con suelo, estaciones
+    // (nevera, planchas, bols, ollas, mesa de emplatado) e ingredientes, cada uno con su ETIQUETA de nombre → el
+    // jugador puede cocinar ESCRIBIENDO: walkTo({destiny:"Nevera"}) → step. Muchas planchas/ollas = varios cocineros a
+    // la vez. (La sartén = bloque de altura ~1 como un plato cuadrado; huevos = cubos pequeños.) Selector de reemplazo:
+    // cambiar los primitivos por tus prefabs es arrastrarlos sobre estos GameObjects nombrados. docs/typed-spells-and-queues.md.
+    static void BuildRestaurantRoom(Transform parent)
+    {
+        GameObject room = new GameObject("Sala"); room.transform.SetParent(parent);
+        room.transform.localPosition = new Vector3(14f, 0f, 0f);   // a un lado del santuario
+
+        // Suelo cuadrado grande
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.name = "Suelo_Restaurante"; floor.transform.SetParent(room.transform);
+        floor.transform.localPosition = Vector3.zero; floor.transform.localScale = new Vector3(16f, 0.2f, 12f);
+
+        // Estaciones (muchas planchas/ollas/bols para cocinar en paralelo) + mesa de emplatado + nevera.
+        (string label, Vector3 pos, Vector3 scale)[] stations = {
+            ("Nevera",        new Vector3(-7f, 1f, 5f),  new Vector3(1.5f, 2f, 1.5f)),
+            ("Plancha 1",     new Vector3(-4f, 1f, 5f),  new Vector3(1.6f, 1f, 1.6f)),   // bloque bajo = "platillo" cuadrado
+            ("Plancha 2",     new Vector3(-1f, 1f, 5f),  new Vector3(1.6f, 1f, 1.6f)),
+            ("Olla 1",        new Vector3(2f, 1f, 5f),   new Vector3(1.2f, 1.2f, 1.2f)),
+            ("Olla 2",        new Vector3(5f, 1f, 5f),   new Vector3(1.2f, 1.2f, 1.2f)),
+            ("Bol 1",         new Vector3(-4f, 0.9f, 2f),new Vector3(1f, 0.8f, 1f)),
+            ("Bol 2",         new Vector3(-1f, 0.9f, 2f),new Vector3(1f, 0.8f, 1f)),
+            ("Mesa de emplatado", new Vector3(5f, 0.9f, 2f), new Vector3(3f, 0.8f, 1.5f)),
+        };
+        foreach (var s in stations) MakeLabeledPrimitive(room.transform, s.label, s.pos, s.scale, new Color(0.7f, 0.7f, 0.75f));
+
+        // Ingredientes (cubos pequeños) nombrados — el jugador escribe walkTo({destiny:"Huevos"}) → step.
+        (string label, Color col)[] ingredients = {
+            ("Huevos", new Color(0.95f, 0.9f, 0.6f)), ("Verduras", new Color(0.4f, 0.8f, 0.4f)),
+            ("Avena", new Color(0.85f, 0.75f, 0.55f)), ("Fruta", new Color(0.9f, 0.5f, 0.6f)),
+            ("Yogur", new Color(0.95f, 0.95f, 0.95f)), ("Legumbres", new Color(0.6f, 0.45f, 0.3f)),
+        };
+        for (int i = 0; i < ingredients.Length; i++)
+        {
+            Vector3 p = new Vector3(-7f + i * 2.6f, 0.7f, -4f);
+            MakeLabeledPrimitive(room.transform, ingredients[i].label, p, new Vector3(0.5f, 0.5f, 0.5f), ingredients[i].col);
+        }
+    }
+
+    static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = label; g.transform.SetParent(parent); g.transform.localPosition = pos; g.transform.localScale = scale;
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"Rest_{label}", col);
+        WorldLabel wl = g.AddComponent<WorldLabel>();
+        wl.text = label;
+        wl.height = scale.y * 0.5f + 0.4f;
     }
 
     static void BuildAnimaStatusPanels(Transform parent)

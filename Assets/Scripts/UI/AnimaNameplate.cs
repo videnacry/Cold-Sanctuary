@@ -16,6 +16,7 @@ public class AnimaNameplate : MonoBehaviour
 
     GUIStyle _style;
     Anima[] _animas = System.Array.Empty<Anima>();
+    WorldLabel[] _labels = System.Array.Empty<WorldLabel>();
     float _nextScan;
 
     void OnGUI()
@@ -24,20 +25,27 @@ public class AnimaNameplate : MonoBehaviour
         if (cam == null) return;
         if (_style == null) _style = new GUIStyle(GUI.skin.label) { fontSize = 11, alignment = TextAnchor.MiddleCenter, richText = true };
 
-        if (Time.time >= _nextScan) { _nextScan = Time.time + 0.5f; _animas = FindObjectsOfType<Anima>(); }
+        if (Time.time >= _nextScan) { _nextScan = Time.time + 0.5f; _animas = FindObjectsOfType<Anima>(); _labels = FindObjectsOfType<WorldLabel>(); }
 
         foreach (Anima a in _animas)
         {
             if (a == null || a.death) continue;
-            Vector3 world = a.transform.position + Vector3.up * headHeight;
-            if ((world - cam.transform.position).sqrMagnitude > maxDistance * maxDistance) continue;
-            Vector3 sp = cam.WorldToScreenPoint(world);
-            if (sp.z <= 0f) continue;                                  // detrás de la cámara
-
             Mind m = a.GetComponent<Mind>();
             string label = m != null && !string.IsNullOrEmpty(m.identity) ? m.identity : a.name;
-            float screenY = Screen.height - sp.y;
-            GUI.Label(new Rect(sp.x - 70f, screenY - 10f, 140f, 20f), $"<color=#E8E8E8>{label}</color>", _style);
+            Draw(cam, a.transform.position + Vector3.up * headHeight, label, "E8E8E8");
         }
+        foreach (WorldLabel wl in _labels)   // muebles/ingredientes/estaciones (cocina por teclado)
+        {
+            if (wl == null || string.IsNullOrEmpty(wl.text)) continue;
+            Draw(cam, wl.transform.position + Vector3.up * wl.height, wl.text, "C7E8FF");
+        }
+    }
+
+    void Draw(Camera cam, Vector3 world, string label, string hex)
+    {
+        if ((world - cam.transform.position).sqrMagnitude > maxDistance * maxDistance) return;
+        Vector3 sp = cam.WorldToScreenPoint(world);
+        if (sp.z <= 0f) return;                                  // detrás de la cámara
+        GUI.Label(new Rect(sp.x - 70f, Screen.height - sp.y - 10f, 140f, 20f), $"<color=#{hex}>{label}</color>", _style);
     }
 }

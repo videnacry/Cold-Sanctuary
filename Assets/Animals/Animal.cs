@@ -242,6 +242,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
         if (GetComponent<SleepCycle>() == null) gameObject.AddComponent<SleepCycle>();   // sueño día/noche: dispara la compuerta `asleep` por el reloj (Clock); despierta ante amenazas.
         if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos-dungbeetle-level.md §3.
+        if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/anyma-factory-and-control.md §1.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
         Walk = GetComponent<WalkSpell>();     // OPT-IN: locomoción-hechizo (velocidad stat-driven) SOBRE el NavMesh
         if (Walk != null)

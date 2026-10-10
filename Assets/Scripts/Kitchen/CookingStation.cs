@@ -47,8 +47,14 @@ public class CookingStation : MonoBehaviour
         }
 
         bool advance = playerDriven ? Input.GetKeyDown(stepKey) : Time.time >= _next;
-        if (!advance) return;
+        if (advance) AdvanceStep();
+    }
 
+    /// <summary>Ejecuta el paso actual (lo llama la tecla, el tiempo del NPC, o la consola de hechizos "step"/"cook").
+    /// Al terminar la receta, deposita en el stock y pide el siguiente platillo que haga falta.</summary>
+    public void AdvanceStep()
+    {
+        if (_recipe == null) return;
         if (_step < _recipe.steps.Length)
             Debug.Log($"[Cocina] «{name}» {_recipe.dishName}: {_recipe.steps[_step]}");
         _step++;

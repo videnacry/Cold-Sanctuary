@@ -73,8 +73,33 @@ public class SpellConsole : MonoBehaviour
         switch (cmd.Trim().ToLowerInvariant())
         {
             case "walkto": WalkTo(self, args); break;
+            case "step": case "cook": Step(self); break;
+            case "bond":    CastOn<BondSpell>(self, args); break;
+            case "thought": CastOn<ThoughtSpell>(self, args); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
+    }
+
+    // Avanza el paso de cocina del poseído (cocinar por teclado; combínalo con walkTo a cada estación).
+    void Step(Anima self)
+    {
+        CookingStation cs = self.GetComponent<CookingStation>();
+        if (cs == null) { Log($"«{self.name}» no está cocinando."); return; }
+        cs.AdvanceStep();
+        Log($"«{self.name}»: siguiente paso de cocina.");
+    }
+
+    // Lanza un hechizo SpellBase del poseído sobre un destino (p. ej. bond/thought). Añade el componente si falta.
+    void CastOn<T>(Anima self, Dictionary<string, string> args) where T : SpellBase
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d
+                    : args.TryGetValue("character", out string c) ? c : null;
+        Transform target = name != null ? ResolveDestiny(self, name) : null;
+        ITarget it = target != null ? target.GetComponentInParent<ITarget>() : null;
+        if (it == null) { Log($"«{self.name}»: ¿a quién? ({name})"); return; }
+        T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
+        if (spell is ThoughtSpell ts) ts.positive = !(args.TryGetValue("positive", out string p) && (p == "false" || p == "0"));
+        if (spell.CanCast(self, it)) { spell.Cast(self, it); Log($"«{self.name}» lanza {typeof(T).Name} sobre {name}."); }
     }
 
     static string Clean(string s) => s.Trim().Trim('"', '\'', ' ');

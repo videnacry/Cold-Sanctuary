@@ -64,7 +64,10 @@ mecanografía ≈ 40 palabras/minuto** (≈ **0,67 palabras/s**, ~**1,5 s por pa
 | Consola de hechizos por teclado (`SpellConsole`) + `walkTo` + destino por nombre/área + "¿Dónde está X?" | **EXISTE** (1ª rebanada) |
 | Cola de acciones 2-carriles (`ActionQueue`: own prioritaria + player editable) | **EXISTE** (base) |
 | `QueuedSpell` + `WalkToSpell` | **EXISTE** |
-| Más hechizos encolables (take/putIn/beat/… para la cocina por teclado) | **FALTA** |
+| Comandos de consola: `walkTo`, **`step`/`cook`** (avanza la receta), **`bond`**, **`thought`** (lanzan `BondSpell`/`ThoughtSpell`) | **EXISTE** |
+| **Restaurante físico con primitivas** (suelo + nevera/planchas/ollas/bols/mesa + ingredientes, todos con etiqueta; muchas estaciones para varios cocineros) | **EXISTE** (`BuildRestaurantRoom`) |
+| **Cocinar por teclado**: `walkTo({destiny:"Nevera"})` → `step` (estaciones y ingredientes etiquetados) | **EXISTE** (base) |
+| Más hechizos encolables específicos por paso (take/putIn/beat con estación exacta) | **FALTA** |
 | Colas en paralelo + hechizos-postura por bodyPart (yoga) | **FALTA** |
 | `own`-lane alimentada por `AcuteStressResponse` (el cuerpo encola su urgencia) | **FALTA** |
 | Cast time NPC (~40 ppm) + ver las colas del poseído en UI | **FALTA** |

@@ -65,13 +65,20 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Consola de hechizos por teclado** (`SpellConsole`) + `walkTo` (destino anima-visible/área; "¿Dónde está X?") — HECHO.
 - [x] **Cola de acciones 2-carriles** (`ActionQueue`: `own` prioritaria + `player` editable) + `QueuedSpell`/`WalkToSpell` — HECHO.
 - [x] **`AcuteStressResponse` siempre activo y universal** (fauna+compuestas+jugador) — HECHO (no es switch).
-- [ ] **Hechizos de cocina encolables** (`take`/`putIn`/`beat`/`emplata`) + etiquetar muebles/ingredientes → cocinar escribiendo.
+- [x] **Cocinar por teclado** (base): restaurante físico con primitivas etiquetadas (`BuildRestaurantRoom`) +
+      `WorldLabel` en nameplates + consola `step`/`cook` + `walkTo({destiny:"Nevera"})` — HECHO 2026-10-10.
+      *Falta:* hechizos por paso con estación exacta (take/putIn/beat), selector de reemplazo de primitivas.
+- [x] **Platillos** yogur/kéfir + bowl quinoa+lentejas + menestra — HECHO (presets + sandbox, ~7 pasos c/u).
+- [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
+      stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
+- [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat`/`emplata` ligados a estación exacta) + selector de primitivas.
 - [ ] **Hechizos-postura por bodyPart + colas en paralelo** → misiones de yoga ("no tengo pierna disponible").
 - [ ] **`own`-lane alimentada por `AcuteStressResponse`** (el cuerpo interrumpe) + UI de colas del poseído + cast time NPC (~40 ppm).
 
 ## Anyma factory + control (diseño en [`anyma-factory-and-control.md`](anyma-factory-and-control.md))
-- [ ] **`AnymaSpec` + `AnymaFactory.Create(spec)`** (props opcionales → resto random en rango) + `CreateMany` (grupos: "8 osos…").
-- [ ] Hechizos de **modificación de pensamientos/vínculos** como "control por alineación" (stats ya: `TransformationSpell`).
+- [x] **`AnymaSpec` + `AnymaFactory`** (props opcionales → random 0.8..2) + `CreateMany` — HECHO (falta: roles compuestos + sexualidad/pensamientos random; asignar prefabs en Unity).
+- [x] Hechizos de **modificación de vínculos (`BondSpell`) y mente (`ThoughtSpell`)** — HECHO (stats ya: `TransformationSpell`).
+- [x] **Apariencia por stats** (`StatPhysique`, auto en `Animal.Init`) — HECHO.
 
 ## Génesis de hechizos + progresión (diseño en [`spell-genesis-and-sanctuary-progression.md`](spell-genesis-and-sanctuary-progression.md))
 - [ ] **`SpellLadder`** (escalera de intensidad por array + hechizos compuestos + `requires`) → caminar→correr→teletransporte.
