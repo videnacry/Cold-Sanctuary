@@ -72,8 +72,13 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
       stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
 - [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat`/`emplata` ligados a estación exacta) + selector de primitivas.
-- [ ] **Hechizos-postura por bodyPart + colas en paralelo** → misiones de yoga ("no tengo pierna disponible").
-- [ ] **`own`-lane alimentada por `AcuteStressResponse`** (el cuerpo interrumpe) + UI de colas del poseído + cast time NPC (~40 ppm).
+- [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
+- [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
+- [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.
+- [x] **`bond`/`thought` por nombre en cualquier parte** (amistad remota) + `amount` — HECHO.
+- [ ] **Enrutar la Volición de la fauna por la cola** (NPCs "escriben" cada acción) — refactor mayor pendiente.
+- [ ] **UI de colas del poseído** + cast time NPC (~40 ppm).
+- [ ] **Factory en niveles del Microcosmos**: poblar con insectos neutros de ambiente (+ sonidos, necesita audio en Unity).
 
 ## Anyma factory + control (diseño en [`anyma-factory-and-control.md`](anyma-factory-and-control.md))
 - [x] **`AnymaSpec` + `AnymaFactory`** (props opcionales → random 0.8..2) + `CreateMany` — HECHO (falta: roles compuestos + sexualidad/pensamientos random; asignar prefabs en Unity).

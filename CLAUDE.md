@@ -37,7 +37,7 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
 | Mundo/áreas | `Assets/Scripts/World/`, `Mission/` | Funciona; `AreaClear` incompleto (falta `KitchenCombatManager`) |
 | Compañeros/Bond | `Assets/Scripts/Companion/`, `Bond/` | Funciona; `BondActivityManager` sin cablear a UI. `NPCBase` pendiente |
 | Diálogo | `Assets/Scripts/Dialogue/` | Completo y cableado |
-| Asanas | `Assets/Scripts/Asana/` | Funciona; conectado a `PlayerStats` (ya no pendiente) |
+| Asanas | `Assets/Scripts/Asana/` | Funciona; conectado a `PlayerStats`. **Yoga por hechizos-postura** (`YogaSpells.cs`): `PostureSpell` (1 bodyPart), `AsanaPoseSpell` (asana = varias partes), **`SunSalutation`** (Saludo al Sol, 12 asanas) → consola `yoga`; parte ausente → "no tengo X disponible". Ver `docs/typed-spells-and-queues.md` §4.1 |
 | Combate | `Assets/Scripts/Combat/` | **Implementado; jugador cableado.** `NPCCombatBehavior` sin cablear |
 | Economía | `Assets/Scripts/Economy/` | **Implementado; núcleo jugador cableado.** `NPCEconomy`/`AreaVendor` inertes. **+ recursos de santuario** (`SanctuaryResources`/`AreaProducer` + HUD; enum ampliado con **Elements/Energy**, docs world-topology §4/§7). **+ trabajo de descomposición**: `DecompositionJob` (lote→economía mayoritaria + `workerCut` de paga; energía gateada por física) y `DecompositionMinigame` (jornada de 3 fases identificar/romper/clasificar, prototipo OnGUI). Ver `magic-metabolism §14/§17`. Sandbox **`Descomposicion_AUTO`** (PR #54) |
 | Química (tabla periódica) | `Assets/Scripts/Chemistry/` | Implementado y cableado (~55 elementos) |
