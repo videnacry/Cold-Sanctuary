@@ -80,5 +80,19 @@ public class AcuteStressResponse : MonoBehaviour
                                                     : Mathf.Lerp(1f, maxTakeoverRelevance, (arousal - takeoverArousal) / Mathf.Max(0.01f, 1f - takeoverArousal));
             _ai.selfRelevance = _baseRelevance + extra;
         }
+
+        // ── CARRIL PRIVADO (own): al TOMAR EL MANDO, el cuerpo mete su reflejo prioritario en la cola → bloquea al
+        // jugador mientras el apremio manda (la IA de alta relevancia es quien conduce). docs/typed-spells-and-queues.md §4.
+        bool nowTakeover = arousal >= takeoverArousal;
+        if (nowTakeover && !InTakeover)
+        {
+            InTakeover = true;
+            var q = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
+            q.EnqueueOwn(new BodyReflexSpell(this));   // se autodisuelve cuando baja el apremio (Tick lee InTakeover)
+        }
+        else if (!nowTakeover) InTakeover = false;
     }
+
+    /// <summary>El cuerpo tiene el mando ahora mismo (apremio sobre el umbral). Lo lee el `BodyReflexSpell` del carril `own`.</summary>
+    public bool InTakeover { get; private set; }
 }

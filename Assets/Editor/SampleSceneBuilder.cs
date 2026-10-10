@@ -1100,6 +1100,8 @@ public static class SampleSceneBuilder
         foreach (var (arch, dom) in bodies) soul.bodies.Add(new BlendSlot { archetype = arch, domain = dom });
         foreach (var (arch, dom) in minds)  soul.minds.Add(new BlendSlot { archetype = arch, domain = dom });
         go.AddComponent<AcuteStressResponse>();   // control-por-necesidad también en animas COMPUESTAS (todo es Anima): el "body" puja por el mando
+        go.AddComponent<ActionQueue>();           // cola de acciones (own/player)
+        go.AddComponent<IdleBehavior>();          // libre → se encola merodeos (usa la cola en vez de actuar directo)
         return go;
     }
 

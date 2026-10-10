@@ -76,6 +76,7 @@ public class SpellConsole : MonoBehaviour
             case "step": case "cook": Step(self); break;
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
+            case "yoga": case "surya": Yoga(self); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
     }
@@ -89,17 +90,33 @@ public class SpellConsole : MonoBehaviour
         Log($"«{self.name}»: siguiente paso de cocina.");
     }
 
-    // Lanza un hechizo SpellBase del poseído sobre un destino (p. ej. bond/thought). Añade el componente si falta.
+    // Yoga: encola el Saludo al Sol (12 asanas) en la cola del poseído → adopta las posturas por bodyPart.
+    void Yoga(Anima self)
+    {
+        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
+        Log($"«{self.name}» empieza el Saludo al Sol (12 asanas).");
+    }
+
+    // Hechizos de MODIFICACIÓN (bond/thought) sobre un destino: resuelve el anima por nombre EN CUALQUIER PARTE
+    // (configurar una relación con alguien aunque nunca se haya visto — crear amistad remota, docs anyma-factory §3).
     void CastOn<T>(Anima self, Dictionary<string, string> args) where T : SpellBase
     {
         string name = args.TryGetValue("destiny", out string d) ? d
                     : args.TryGetValue("character", out string c) ? c : null;
-        Transform target = name != null ? ResolveDestiny(self, name) : null;
-        ITarget it = target != null ? target.GetComponentInParent<ITarget>() : null;
-        if (it == null) { Log($"«{self.name}»: ¿a quién? ({name})"); return; }
+        ITarget it = name != null ? ResolveAnimaAnywhere(name) : null;
+        if (it == null) { Log($"«{self.name}»: no encuentro a {name}."); return; }
         T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
+        if (args.TryGetValue("amount", out string am) && float.TryParse(am, out float amt)) spell.force = amt;
         if (spell is ThoughtSpell ts) ts.positive = !(args.TryGetValue("positive", out string p) && (p == "false" || p == "0"));
         if (spell.CanCast(self, it)) { spell.Cast(self, it); Log($"«{self.name}» lanza {typeof(T).Name} sobre {name}."); }
+    }
+
+    static ITarget ResolveAnimaAnywhere(string name)
+    {
+        foreach (Anima a in FindObjectsOfType<Anima>())
+            if (!a.death && NameMatches(a.name, name) && a is ITarget it) return it;
+        return null;
     }
 
     static string Clean(string s) => s.Trim().Trim('"', '\'', ' ');

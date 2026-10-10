@@ -68,8 +68,11 @@ mecanografía ≈ 40 palabras/minuto** (≈ **0,67 palabras/s**, ~**1,5 s por pa
 | **Restaurante físico con primitivas** (suelo + nevera/planchas/ollas/bols/mesa + ingredientes, todos con etiqueta; muchas estaciones para varios cocineros) | **EXISTE** (`BuildRestaurantRoom`) |
 | **Cocinar por teclado**: `walkTo({destiny:"Nevera"})` → `step` (estaciones y ingredientes etiquetados) | **EXISTE** (base) |
 | Más hechizos encolables específicos por paso (take/putIn/beat con estación exacta) | **FALTA** |
-| Colas en paralelo + hechizos-postura por bodyPart (yoga) | **FALTA** |
-| `own`-lane alimentada por `AcuteStressResponse` (el cuerpo encola su urgencia) | **FALTA** |
+| Hechizos-postura por bodyPart (`PostureSpell`) + asanas (`AsanaPoseSpell`) + **Saludo al Sol** (`SunSalutation`, 12 asanas) + consola `yoga`/`surya`; parte ausente → "no tengo X disponible" | **EXISTE (2026-10-10)** |
+| `own`-lane alimentada por `AcuteStressResponse` (`BodyReflexSpell` bloquea al jugador en toma de mando) | **EXISTE (2026-10-10)** |
+| **Carril opcional** del anima libre (`IdleBehavior` encola `WanderSpell`; auto en animas compuestas via `Cast`) | **EXISTE (2026-10-10)** |
+| `bond`/`thought` resuelven al objetivo por nombre EN CUALQUIER PARTE (crear amistad remota) + `amount` | **EXISTE (2026-10-10)** |
+| Enrutar TODA la IA de la fauna (`Volition`) por la cola (NPCs "escriben" cada acción) | **FALTA** (refactor mayor) |
 | Cast time NPC (~40 ppm) + ver las colas del poseído en UI | **FALTA** |
 | Nameplates/estaciones world-space + teclado virtual | **FALTA** (necesita prefabs Unity) |
 

@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 377 tipos._
+_Total: 379 tipos._
 
 
 ## Animals
@@ -211,6 +211,7 @@ _Total: 377 tipos._
 - **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
 - **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
 - **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
+- **IdleBehavior** (class) — `Assets/Scripts/Control/IdleBehavior.cs` — COMPORTAMIENTO LIBRE vía COLA (docs/typed-spells-and-queues.md §4):
 - **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
 - **IFactory** (interface) — `Assets/Scripts/IFactory.cs`
 - **IInteractable** (interface) — `Assets/Scripts/Interaction/IInteractable.cs` — Marker interface for any object Kushal can interact with.
@@ -292,6 +293,7 @@ _Total: 377 tipos._
 - **PostNatalManager** (class) — `Assets/Scripts/PostNatal/PostNatalManager.cs` — Añadir al GameObject de la MADRE.
 - **PostNatalStage** (class) — `Assets/Scripts/PostNatal/PostNatalStage.cs` — Una etapa del ciclo post-natal.
 - **PostureFormMob** (class) — `Assets/Scripts/Meditation/PostureFormMob.cs` — The "posture" archetype (docs §8):
+- **PostureSpell** (class) — `Assets/Scripts/Asana/YogaSpells.cs` — HECHIZO-POSTURA de UNA parte del cuerpo (docs/typed-spells-and-queues.md §4.1):
 - **PostureStressHandler** (class) — `Assets/Scripts/Player/PostureStressHandler.cs` — Reads IBody.postureStress every frame and applies physical consequences:
 - **PostureVisualizationMission** (class) — `Assets/Scripts/Meditation/PostureVisualizationMission.cs` — Visualization mission (docs §7):
 - **Predation** (class) — `Assets/Scripts/Transformation/Predation.cs` — Depredación por STATS (docs/stats-as-truth.md §2):
