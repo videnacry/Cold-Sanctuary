@@ -71,7 +71,11 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Platillos** yogur/kéfir + bowl quinoa+lentejas + menestra — HECHO (presets + sandbox, ~7 pasos c/u).
 - [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
       stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
-- [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat`/`emplata` ligados a estación exacta) + selector de primitivas.
+- [x] **22 platillos** (6 base + 16 bomba por país, `CookingRecipe.All`) + **cierre nocturno** (`AreaHours`+`IsDay`) — HECHO 2026-10-10.
+- [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](testing-recent-features.md)) — HECHO (montaje + tests por feature).
+- [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) + selector de primitivas.
+- [ ] **Magnate** (estado infinito/sin necesidades; clon en todos los sanctuary; bond alto por defecto desde todas; evento proteger-vida→enfermería; pacifica al aparecer; guardia nocturna alimentando animales; revisión semanal de status del mesomundo). Diseño pendiente de doc.
+- [ ] **Volición por la cola** (needs→thoughts→la IA encola hechizos-recuerdo del `Grimoire`) — refactor mayor.
 - [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
 - [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
 - [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.

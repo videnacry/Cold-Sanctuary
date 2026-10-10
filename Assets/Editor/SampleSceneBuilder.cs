@@ -2367,6 +2367,7 @@ public static class SampleSceneBuilder
             fc.dishName = dn;
             stocks.Add(new RestaurantKitchen.DishStock { container = fc, target = 6 });
         }
+        rest.AddComponent<AreaHours>();   // el restaurante CIERRA de noche (usa el reloj; de noche todos duermen)
         RestaurantKitchen kitchen = rest.AddComponent<RestaurantKitchen>();
         kitchen.dishes = stocks.ToArray();
 
