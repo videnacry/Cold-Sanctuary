@@ -72,6 +72,28 @@ detiene.
 > escribe su propio informe con `flush` por línea (`-liveReport`) y un **latido** cada 30 s con
 > `Time.time`/`frameCount`, que separa "el mundo corre pero no logea" de "el mundo está detenido".
 
+**6. El MCP de Unity: el servidor está bien; lo que no se registra es el lado EDITOR.** Diagnosticado a
+fondo el 2026-10-11 — el `No Unity Editor instances found` de meses **decía la verdad**.
+- *Arquitectura (v10.3.0)*: el plugin DENTRO del Editor se conecta **como cliente** por WebSocket a
+  `/hub/plugin` en un **hub HTTP** (por defecto `http://127.0.0.1:8080`; de ahí el flag `--http-url`), y los
+  servidores MCP se enganchan a ese mismo hub. Prueba de que funcionó:
+  `Library/MCPForUnity/Logs/server-launch-8080.log` → `Plugin registered: COLD-SANCTUARY (1b8269d07f57fd14)`
+  + `Registered 34 tools`, con el último `disconnected (1005)` el **2026-08-07**. Desde entonces, nada.
+- *Lo que había hoy*: dos procesos `mcp-for-unity --transport stdio` **vivos pero con 0 s de CPU y sin un
+  solo puerto a la escucha** (lanzados por otro cliente, nunca usados) y **nada escuchando en 8080**.
+- *Lo que NO basta*: levantar el hub a mano (`uvx --from mcpforunityserver==10.3.0 mcp-for-unity
+  --transport http --http-port 8080`) hace que 8080 escuche, pero el plugin **no se auto-reconecta**:
+  reiniciar el Editor con el hub ya arriba dejó **0 registros** en ese log.
+- *Lo que falta (necesita un humano, una vez)*: abrir en el Editor la ventana de **MCP for Unity**
+  (`Window > MCP for Unity`) y dejar el bridge conectado/auto-arranque activado. A partir de ahí
+  `Library/MCPForUnity/RunState/` deja de estar vacío y las llamadas MCP enrutan.
+- *Cómo comprobarlo de verdad, sin creerse nada*: una llamada MCP **real** que exija el Editor —
+  `manage_scene(action="get_active")`. `telemetry_status` responde `success` **sin Editor**, así que NO
+  sirve como prueba de que el bridge esté vivo. Y `Library/MCPForUnity/RunState/` vacío = el bridge
+  nunca arrancó.
+- `.mcp.json` (en la raíz, ya versionado) declara el servidor para las sesiones de Claude Code con el
+  transporte `stdio` habitual. Eso es el lado CLIENTE y es correcto; no sustituye al paso de arriba.
+
 **Verificar sin depender del MCP** (las tres vías, de más barata a más completa):
 - `tools/verify-compile.sh` — compila runtime+editor de verdad **sin abrir el Editor y sin licencia**
   (reusa los `.rsp` de Bee + el Roslyn de Unity). Devuelve 1 si hay `error CS`.
