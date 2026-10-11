@@ -59,6 +59,19 @@ receta + tickets). Los ítems `[x]` son historial verificado.
   Tras los arreglos: **runtime 375 fuentes y editor 9 fuentes, 0 errores** (42 y 3 warnings, casi todos
   `CS0618` de `FindObjectsOfType` obsoleto — deuda cosmética, no rompe).
 
+  **Inventario de fauna (verificado sin Unity, cotejando el registro `Species` contra el disco):** las
+  **21 clases de comportamiento existen** las 21 (ninguna especie se saltará por clase ausente), pero solo
+  **8 especies tienen modelo y prefab** — los 8 mamíferos (Wolf/Deer/Fox/Malamute/Bunny/PolarBear/Seal/
+  Whale). **Las otras 13 no tienen `.fbx` ni `.prefab`**: Penguin, Orca, Ant, Aphid, Ladybug, Spider,
+  Cricket, Termite, DungBeetle, Antlion, Mantis, Grasshopper, Meerkat. Consecuencia real: como el builder
+  carga el prefab por ruta y **omite con aviso** lo que falte (`SampleSceneBuilder.cs:2221`), **el
+  Pingüino y la Orca — justo lo que añadieron los PRs #164–173 del "Santuario de Hielo" — no pueden
+  aparecer en escena todavía**, ni ningún insecto del Microcosmos. `Generate Animal Prefabs` no lo
+  arregla: sin `.fbx` salta la especie. **Es trabajo de autoría de modelos (no de código)**: meter un
+  `.fbx` en `Assets/Animals/{Especie}/Models/` (rig Generic, hueso raíz, clips `Idle`/`Walk`/`Run` — los
+  insectos usan esos nombres literales) y correr `Generate Animal Prefabs`. Ver
+  [`unity-editor-manual.md`](unity-editor-manual.md) §1–§2.
+
   **Lo que SIGUE bloqueado hasta que se renueve la licencia** (necesita el Editor vivo): correr
   `Build Sample Scene Blockout` (y que genere las escenas hermanas del Microcosmos), **Play** y con él los
   15 grupos de `[TEST]` del `TestRunner_AUTO`, el NavMesh, los prefabs de fauna y toda la lista manual de
