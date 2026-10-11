@@ -3,6 +3,10 @@
 ###############################################################################
 * text=auto
 
+# Los scripts de shell SIEMPRE con LF: con el CRLF que `text=auto` deja al hacer
+# checkout en Windows, bash falla con "\r: command not found".
+*.sh text eol=lf
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

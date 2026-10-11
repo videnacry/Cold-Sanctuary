@@ -84,7 +84,8 @@ public static class DesireCatalog
         // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
         new Desire("explore",
             self => W_EXPLORE * Mathf.Clamp01((self.reasoning + self.creativity) * 0.5f),
-            self => { if (self.nav != null && self.nav.isOnNavMesh) { Vector2 r = Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
+            // UnityEngine.Random explícito: el `using System` de arriba trae System.Random y el nombre corto es ambiguo (CS0104).
+            self => { if (self.nav != null && self.nav.isOnNavMesh) { Vector2 r = UnityEngine.Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
             "explore"),
     };
 

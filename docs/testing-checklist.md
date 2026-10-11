@@ -12,6 +12,77 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 
 ## Estado de sesión (para retomar sin contexto previo)
 
+- **CICLO 2026-10-11 — DESBLOQUEADO: compilación verificada por CLI (sin MCP y sin licencia) + 3 errores
+  reales arreglados. Pull de 78 commits (PRs #176–#212)**. Se rompe la racha de 5 ciclos sin verificar.
+  Tres hallazgos que explican el atasco entero:
+
+  1. **El proyecto Unity es OTRA CARPETA y estaba un mes por detrás.** El clon de git
+     (`Documents/GitHub/Cold-Sanctuary`) **no es un proyecto Unity**: no tiene `Packages/`, su `Library/`
+     está vacío y su `ProjectVersion.txt` dice `UnknownUnityVersion`. El proyecto real es
+     **`C:/Users/Blein/COLD-SANCTUARY`** (Unity 6000.5.1f1, URP, bajo Plastic/unity-version-control, NO
+     git) — ahí están las escenas (`SampleScene`, `MobWorld_Mesopotamia`), los 9 prefabs, los 703 `.meta`
+     y el `manifest.json` (que **sí** referencia `com.coplaydev.unity-mcp`). Estaba **57 `.cs` por detrás**
+     del repo. Comprobado que **no había trabajo local que perder**: los 31 archivos divergentes
+     coincidían byte a byte con blobs del historial de git (todos ≤2026-09-01). Sincronizado: 57 nuevos +
+     31 actualizados, y **retirados 2 restos obsoletos que rompían la compilación** — `SimpleAnima.cs`
+     (retirado en `644e2a8`, "Anima concreta") y `YogaPortal.cs` (renombrado a `WorldExitPortal.cs` en
+     `f7083a1`). Se conserva `WalkToGoal.cs`, que solo existe en Unity (huérfano pero inofensivo; el
+     propio `SampleSceneBuilder.cs:1113` dice que los impulsos lo reemplazan).
+
+  2. **El MCP de Unity NO era el problema: la LICENCIA de Unity está caducada.** El bridge estaba bien
+     instalado y compilado en el proyecto real (`Library/PackageCache/com.coplaydev.unity-mcp@4ee62b09`,
+     `Library/ScriptAssemblies/MCPForUnity.Editor.dll`). Lo que falla es arrancar el Editor:
+     `Unity.Licensing.Client.log` dice **`[Code: 401] Token not found in cache`** y
+     **`Ignoring license: ... (LicenseGroupOfflineValidityPeriodIsExpired)`** —
+     `AppData/Local/Unity/licenses/UnityEntitlementLicense.xml` es del 2026-09-08 y agotó su validez
+     offline, y renovarla necesita un token OAuth que ya no está. Unity termina con **return code 198,
+     "No valid Unity Editor license found"**, en batchmode *y* en GUI. Eso explica los ciclos anteriores
+     en que "Unity.exe estaba corriendo" pero el bridge no conectaba: el Editor nunca llegaba a cargar el
+     proyecto. **Acción del usuario (único bloqueo real): abrir Unity Hub e iniciar sesión otra vez.**
+     Nota: el XML **sí** incluye el entitlement `com.unity.editor.headless`, así que en cuanto la licencia
+     se renueve, **`-batchmode` funcionará** y se podrá automatizar todo de verdad.
+
+  3. **Se puede compilar sin licencia, y ahora está automatizado.** Unity (Bee) deja en
+     `Library/Bee/artifacts/*.dag/*.rsp` la línea de compilación exacta (366 `-r:`, los `-define:`, los
+     analizadores). Reusándola con el Roslyn del Editor se obtienen **los mismos `error CS` que daría el
+     Editor, sin abrirlo y sin licencia**. Dos herramientas nuevas:
+     **`tools/sync-to-unity.sh`** (repo → proyecto Unity; `--prune` borra los `.cs` que el repo retiró) y
+     **`tools/verify-compile.sh`** (compila runtime + editor y devuelve 1 si hay errores). Probadas en
+     ambos sentidos (positivo y negativo, con un error inyectado a propósito).
+
+  **3 errores REALES de compilación encontrados y arreglados** (ninguna de las 5 revisiones estáticas
+  previas los vio; estaban en el código nuevo de los PRs #176–#212, que **no compilaba**):
+  - `DesireCatalog.cs:87` — `error CS0104`: `Random` ambiguo entre `UnityEngine.Random` y `System.Random`
+    (el archivo tiene `using System` y `using UnityEngine`) → calificado a `UnityEngine.Random`.
+  - `StateSpellsTest.cs:34,35` — `error CS1503` ×2: se pasaba un `GameObject` a
+    `AllostaticState.Of(Component)` → se le pasa `.transform`.
+  Tras los arreglos: **runtime 375 fuentes y editor 9 fuentes, 0 errores** (42 y 3 warnings, casi todos
+  `CS0618` de `FindObjectsOfType` obsoleto — deuda cosmética, no rompe).
+
+  **Lo que SIGUE bloqueado hasta que se renueve la licencia** (necesita el Editor vivo): correr
+  `Build Sample Scene Blockout` (y que genere las escenas hermanas del Microcosmos), **Play** y con él los
+  15 grupos de `[TEST]` del `TestRunner_AUTO`, el NavMesh, los prefabs de fauna y toda la lista manual de
+  [`testing-recent-features.md`](testing-recent-features.md). Para eso se dejó
+  **`Assets/Editor/HeadlessVerify.cs`** (`Tools/Cold Sanctuary/Verify (compilar + blockout + guardar)`,
+  o `-executeMethod HeadlessVerify.Run`): abre `SampleScene`, corre el builder, inventaría
+  `LevelDressing_AUTO`/`TraceField_AUTO`/`Clock_AUTO`/`TestRunner_AUTO`/tag `Player`, guarda y escribe
+  `[VERIFY] RESULTADO: PASS|FAIL` al log. **Es lo primero que hay que correr en cuanto Unity abra.**
+
+- **CICLO 2026-09-01 (3º) — pull de 2 commits más (completa entrada/salida de la escena Microcosmos
+  Scene1)**. `MicrocosmosSceneBuilder.cs` ahora desplaza todo el contenido a un origen lejano y distinto
+  del de Mesopotamia (`(-5000,0,5000)`, vs `(5000,0,5000)` de Mesopotamia) para que ambas escenas
+  hermanas no se solapen si se cargan juntas additive, y agrega `MobSpawnPoint` (entrada, genérico vía
+  `MobWorldLoader`) + `YogaPortal` (salida) — mismo patrón que Mesopotamia. Falta cablear qué dispara la
+  entrada real (un trigger del prólogo), documentado como pendiente por el propio autor. Sincronizado
+  (1 archivo). El compañero también comiteó su propia entrada de bitácora documentando mis hallazgos de
+  los 3 ciclos anteriores (`7029514`). **Quinto ciclo seguido sin poder confirmar compilación en vivo**:
+  bridge MCP y `computer-use` siguen caídos. Revisión estática: `MobSpawnPoint`/`YogaPortal`/
+  `MobWorldLoader` existen como clases públicas en `Assets/Scripts/MobWorld/`, accesibles desde el script
+  de Editor — nada raro. **Cuando reconecten las herramientas, hay 3 ciclos de cambios acumulados por
+  confirmar de una sola vez**: el batch de hielo (Orca/Pingüino/sueño/Swarm), la escena propia del
+  Microcosmos (creación), y esta entrada/salida (parte 2) — priorizar compilar + correr `Build Sample
+  Scene Blockout` + Play antes de seguir sincronizando más para no acumular aún más deuda de verificación.
+
 - **CICLO 2026-09-01 (2º) — pull de 2 commits más (PR #174, "Microcosmos = escena propia")**. Reencuadre
   arquitectónico: el Microcosmos deja de vivir como objetos dentro de la escena del Mesocosmos y pasa a
   ser su **propia escena** (`Microcosmos_Scene1_Ambrosio.unity`), hermana de Mesopotamia

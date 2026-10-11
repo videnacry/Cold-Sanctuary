@@ -16,6 +16,13 @@ asanas, encantamientos por tabla periódica y actividades de vínculo.
   más `.gitignore` y `.gitattributes`. **No** están en git: escenas (`.unity`), prefabs,
   `ProjectSettings/`, `Packages/manifest.json` ni archivos `.meta`. La configuración del
   proyecto Unity y los assets visuales viven fuera de este repositorio.
+- **El proyecto Unity es OTRA CARPETA: `C:/Users/Blein/COLD-SANCTUARY`** (Unity 6000.5.1f1, URP,
+  bajo Plastic, no git). Este clon de git **no** es abrible en Unity (sin `Packages/`, `Library/`
+  vacía). Son dos copias del código, así que **hay que sincronizar antes de probar nada**:
+  `tools/sync-to-unity.sh` (`--prune` si el repo borró/renombró archivos) y luego
+  `tools/verify-compile.sh`, que **compila de verdad sin abrir el Editor ni necesitar licencia**
+  (reusa los `.rsp` de Bee + el Roslyn de Unity). Dentro del Editor, `HeadlessVerify.Run`
+  (`Tools/Cold Sanctuary/Verify`) monta el blockout y reporta `[VERIFY] PASS|FAIL`.
 - ~29.900 líneas, 313 scripts, ~500 commits (PRs #16–#162 en master). Verificación base en [`docs/AUDIT-2026-07-09.md`](docs/AUDIT-2026-07-09.md); el detalle reciente, en [`docs/checklist.md`](docs/checklist.md) (Historial).
 - Idioma de comentarios mezclado: inglés y español. Sin namespaces (todo global).
 

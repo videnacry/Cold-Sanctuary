@@ -31,8 +31,9 @@ public class StateSpellsTest : MonoBehaviour, ITestUnit
         GameObject sereno = MakeAnima("Sereno_TEST", 3f);
         fear.Frighten(fragil.GetComponent<Anima>());
         fear.Frighten(sereno.GetComponent<Anima>());
-        float loadFragil = AllostaticState.Of(fragil).ExtraLoad;
-        float loadSereno = AllostaticState.Of(sereno).ExtraLoad;
+        // `Of` toma un Component (no un GameObject): se le pasa el transform, que siempre existe.
+        float loadFragil = AllostaticState.Of(fragil.transform).ExtraLoad;
+        float loadSereno = AllostaticState.Of(sereno.transform).ExtraLoad;
         TestProbe.Greater("el miedo carga al fragil", loadFragil, 0.1f);
         TestProbe.Check("el TEMPLE resiste el miedo (sereno < fragil)", loadSereno < loadFragil);
 
