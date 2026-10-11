@@ -10,7 +10,121 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
 
+## ⚠️ DIAGNÓSTICO PERMANENTE — leer ANTES de dar un ciclo por bloqueado
+
+Tres causas reales hicieron perder **5 ciclos seguidos** (2026-08-29 → 2026-09-01) creyendo que "el bridge
+MCP está caído". No lo estaba. Si un ciclo no puede verificar en vivo, comprobar esto **en este orden**:
+
+**1. ¿Hay un Unity ZOMBI atascado en el diálogo de licencia, reteniendo el lockfile?**
+Es la causa raíz del síntoma histórico *"`Unity.exe` está corriendo pero el MCP dice `No Unity Editor
+instances found`"*. Si la licencia caducó, el Editor arranca, **se queda en el diálogo de activación y
+nunca carga el proyecto** → el bridge nunca levanta (el MCP decía la verdad), y además el proceso
+**retiene `Temp/UnityLockfile`**, así que ningún Editor nuevo puede abrir el proyecto. Puede quedarse así
+horas.
+- *Detectarlo*: `Get-CimInstance Win32_Process -Filter "Name='Unity.exe'" | Select ProcessId,CreationDate,CommandLine`
+  → un proceso viejo, con **poco CPU acumulado**; su `-logFile` termina en
+  `No valid Unity Editor license found. Please activate your license.` y **no crece más**; y
+  `Library/MCPForUnity/RunState/` está **vacío** (el bridge nunca arrancó).
+- *Resolverlo*: matar ese PID (`Stop-Process -Id <pid> -Force`) y borrar `Temp/UnityLockfile` si quedó.
+  Un log congelado en esa línea = zombi, no "Unity trabajando".
+- *Ojo*: un log que parece parado puede estar solo **buffereado**. Antes de declararlo colgado, mirar el
+  `mtime` del log y si `Library/ScriptAssemblies/*.dll` o `Library/Bee/*` se han escrito hace poco.
+
+**2. ¿Caducó la licencia de Unity?** Es un bloqueo que **solo el usuario** puede levantar (firmar en Unity
+Hub); no se arregla por CLI.
+- *Detectarlo*: en `%LOCALAPPDATA%\Unity\Unity.Licensing.Client.log` →
+  `[Code: 401] Token not found in cache` y
+  `Ignoring license: ... (LicenseGroupOfflineValidityPeriodIsExpired)`. Unity sale con **return code 198**.
+  Falla igual en `-batchmode` **y** en GUI (no es un problema de headless).
+- *Resuelto*: el log dice `Successfully updated license file` y el notificador de validez offline
+  reprograma a ~23 días. El entitlement `com.unity.editor.headless` **sí** está en la licencia Personal,
+  así que con licencia válida `-batchmode` también funciona.
+
+**3. ¿Está el proyecto Unity sincronizado con el repo?** Son **dos copias** (ver `CLAUDE.md`): el repo git
+solo versiona `.cs`+docs; el proyecto Unity vive en `C:/Users/Blein/COLD-SANCTUARY`. El 2026-10-11 estaba
+**57 archivos por detrás** → el Editor compilaba código de hace un mes. Correr **siempre**
+`tools/sync-to-unity.sh` antes de probar, y `--prune` si el repo borró/renombró algo (un `.cs` obsoleto
+que define una clase retirada **rompe la compilación**).
+
+**4. ¿Es un MODAL esperando un clic?** Tras matar un Editor, el siguiente arranque muestra
+**"Recovering Scene Backups"** (por `Temp/__Backupscenes/*.backup`) y se queda ahí **para siempre**: el
+log se corta justo tras licenciar (~3 KB) y el proceso se queda a ~0 % de CPU.
+- *Detectarlo*: `Get-Process Unity | Select MainWindowTitle` → el título **es** el diálogo.
+- *Resolverlo*: borrar `Temp/__Backupscenes` (y el lockfile) **antes** de lanzar. Ya lo hace
+  `tools/run-live-test.sh`. Los backups son desechables: `HeadlessLive` guarda la escena y el blockout
+  lo regenera el builder.
+
+**5. ¿Está el Play PAUSADO por falta de foco?** Un Editor lanzado desde la línea de comandos **nunca
+tiene el foco**, y con **"Run In Background" desactivado Unity pausa el Play**. Corre **un** frame y se
+detiene.
+- *Detectarlo (firma exacta)*: sale **un único `[ECO]`**; el `WaitForSeconds(startDelay)` del
+  `TestRunner` **no vence jamás** (nunca aparece `[TEST] ══════ TestRunner: N unidad(es)`);
+  `EditorApplication.update` deja de disparar; y —lo que lo distingue de un cuelgue— el proceso
+  **responde** (`(Get-Process Unity).Responding` = True) con la **CPU plana** (dos lecturas separadas
+  dan el mismo total). Un `timeScale=0` NO da esta firma: ahí el Editor seguiría actualizándose.
+- *Resolverlo*: `PlayerSettings.runInBackground = true`. Ya lo fuerza `HeadlessLive` antes de entrar en
+  Play (es un ajuste de `ProjectSettings/`, que no se versiona).
+
+> **Regla general aprendida a base de perder tres corridas seguidas (2026-10-11):** las cinco causas de
+> arriba tienen la **misma firma externa** — proceso vivo, log que no crece. **Un log que no crece NO es
+> trabajo en curso.** Antes de esperar, mirar siempre: `Responding`, **delta de CPU entre dos lecturas**,
+> y el **título de la ventana**. Y no vigilar solo el log de Unity: buffea. Para eso `HeadlessLive`
+> escribe su propio informe con `flush` por línea (`-liveReport`) y un **latido** cada 30 s con
+> `Time.time`/`frameCount`, que separa "el mundo corre pero no logea" de "el mundo está detenido".
+
+**Verificar sin depender del MCP** (las tres vías, de más barata a más completa):
+- `tools/verify-compile.sh` — compila runtime+editor de verdad **sin abrir el Editor y sin licencia**
+  (reusa los `.rsp` de Bee + el Roslyn de Unity). Devuelve 1 si hay `error CS`.
+- `-executeMethod HeadlessVerify.Run` — abre `SampleScene`, monta el blockout, inventaría y guarda.
+- `-executeMethod HeadlessLive.RunLive -liveSeconds N` — lo anterior **+ entra en Play N segundos y sale**,
+  que es lo que hace falta para los `[TEST]`/`[ECO]` de este checklist. **Modo GUI, nunca `-batchmode`
+  a la vez.**
+
 ## Estado de sesión (para retomar sin contexto previo)
+
+- **CICLO 2026-10-11 (2º) — PRUEBAS EN VIVO: el blockout se monta y se guarda EN VIVO (verificado), pero
+  los 15 grupos de `[TEST]` siguen PENDIENTES por un bloqueo del entorno, no del juego.**
+
+  **Lo que SÍ quedó verificado en vivo** (licencia renovada; Editor abierto por CLI con
+  `-executeMethod`, evidencia en el informe `[LIVE]`): `SampleSceneBuilder.Build()` completa sin
+  excepciones, deja `LevelDressing_AUTO` con **714 descendientes**, los singletons `TraceField_AUTO`,
+  `Clock_AUTO`, `TestRunner_AUTO` y `EcoObservation_AUTO` presentes, el tag `Player` presente, la escena
+  guardada, y las **3 escenas hermanas regeneradas en disco** (`SampleScene`, `Microcosmos_Scene1_Ambrosio`,
+  `Microcosmos_Scene0_SakshiRio`, `MobWorld_Mesopotamia`). Marcado en
+  [`testing-recent-features.md`](testing-recent-features.md) §0. **`[ECO]` emite** con el formato y la Δ
+  esperados — `[ECO] vivos=15 (Δ+15) · herbívoros=3 · depredadores=5 | Deer:1 | Wolf:1 | Fox:1 | Bunny:2 |
+  Bear:3 | Whale:3 | Seal:4` — pero **solo se capturó UNA muestra**, así que el ítem de §39 (log cada ~10 s
+  + trayectoria) queda **abierto**: no hay evidencia de periodicidad.
+
+  **Observación de balance para §39** (de esa única muestra): **5 depredadores contra 3 herbívoros**
+  (lobo + zorro + 3 osos comiendo de 2 conejos y 1 ciervo). Es justo el desequilibrio que la sección pide
+  vigilar. No es un bug, es una alerta de balance a confirmar con una corrida larga.
+
+  **Por qué los `[TEST]` siguen pendientes.** El Play **sí arranca** (`isPlaying=true`), pero el **player
+  loop corre UN frame y se detiene**: `frames=1`, un único `[ECO]` (que sale de un `Update()`), y el
+  `WaitForSeconds(startDelay)` del `TestRunner` nunca vence → **nunca aparece
+  `[TEST] ══════ TestRunner: N unidad(es)`**. Descartado midiendo, no por conjetura: `timeScale=1`,
+  `isPaused=False`, `runInBackground=True` (y persistido a 1 en `ProjectSettings.asset` con
+  `AssetDatabase.SaveAssets()`), y traer la ventana al frente con `SetForegroundWindow` **no cambia nada**
+  (CPU +0,7 s en 12 s, proceso `Responding=True`). Conclusión: **un Editor lanzado por línea de comandos,
+  sin interacción real, no bombea el player loop en este entorno.** Con una pulsación REAL de Play el bucle
+  corre normal.
+  El control de escritorio tampoco es vía en esta sesión: primero lo retenía otra sesión de Claude y
+  después el entorno respondió `Computer-use access can't be approved during a scheduled run`.
+
+  **Cómo cerrarlo en un solo gesto** (lo que debe hacer el próximo ciclo con alguien delante):
+  `tools/run-live-test.sh` o, mejor, abrir el Editor con
+  `-executeMethod HeadlessLive.PrepareOnly -liveReport <fichero>` → monta el blockout, lo guarda y **arma
+  la captura de consola**; entonces **pulsar Play a mano** y los `[TEST]` de los 15 grupos + los `[ECO]` se
+  escriben solos en ese fichero (flush por línea). Después, leerlo y marcar.
+
+  **Cinco fallos de herramienta en el camino, todos documentados arriba en el DIAGNÓSTICO PERMANENTE**
+  (zombi en el diálogo de licencia, modal "Recovering Scene Backups", `delayCall` que no revive tras el
+  domain reload, el PlayerSetting perdido por no guardarlo antes del reload, y el player loop sin bombear).
+  Los cinco compartían la misma firma externa: **proceso vivo, log que no crece**. De ahí la regla nueva:
+  un log que no crece NO es trabajo en curso — mirar `Responding`, **delta de CPU** y **título de ventana**.
+  Ruido observado y descartado: 8 errores de `Unity Version Control` / `Unity ID` (auth de Plastic) tras
+  dejar el Editor abierto 7 h; nada que ver con el juego.
 
 - **CICLO 2026-10-11 — DESBLOQUEADO: compilación verificada por CLI (sin MCP y sin licencia) + 3 errores
   reales arreglados. Pull de 78 commits (PRs #176–#212)**. Se rompe la racha de 5 ciclos sin verificar.

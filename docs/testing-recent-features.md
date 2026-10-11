@@ -5,15 +5,29 @@
 > [`unity-editor-manual.md`](unity-editor-manual.md). Diseño de cada sistema en los docs enlazados.
 
 ## 0. Montaje base (una vez)
-- [ ] Paquetes instalados: **URP** y **AI Navigation** (si no, los builders no compilan / no hay NavMesh).
-- [ ] Menú **`Tools/Cold Sanctuary/Build Sample Scene Blockout`** → genera el mesocosmos + regenera escenas del Microcosmos.
-- [ ] Guardar la escena. Debe existir un GameObject **`Player`** con tag `Player`.
-- [ ] Objetos esperados en escena (los crea el builder): `Clock_AUTO`, `TraceField_AUTO`, HUDs
-      `AnimaStatusHUD_AUTO`/`AnimaThoughtHUD_AUTO`/`AnimaNameplate_AUTO`, `SpellConsole_AUTO`, `Restaurante_AUTO`.
-- [ ] **Prefabs de fauna**: `Tools/Cold Sanctuary/Audit Animal Prefabs` → ver qué falta; poner los `.fbx` en
-      `Assets/Animals/{Especie}/Models/` (rig **Generic**, clips `Idle/Walk/Run`) y `Generate Animal Prefabs`.
-      Pendientes: Termite/DungBeetle/Antlion/Mantis/Grasshopper/Meerkat. **Sin modelo ya NO crashea** (ActionPrep
-      tiene guard): se mueven sin animar.
+> Verificado 2026-10-11 por CLI (`-executeMethod HeadlessLive.PrepareOnly`). Evidencia citada por línea.
+- [x] Paquetes instalados: **URP** y **AI Navigation** — `Packages/manifest.json`:
+      `"com.unity.render-pipelines.universal": "17.5.0"` y `"com.unity.ai.navigation": "2.0.13"`. Además el
+      ensamblado de Editor (que usa `NavMeshSurface`) **compila con 0 errores**, así que los paquetes resuelven.
+- [x] Menú **`Build Sample Scene Blockout`** → genera el mesocosmos + regenera escenas del Microcosmos.
+      Log: `[LIVE] SampleSceneBuilder.Build() completado.` y las **3 escenas hermanas reescritas** en disco en la
+      misma corrida (08:50): `SampleScene.unity` (1.075 KB), `Microcosmos_Scene1_Ambrosio.unity` (306 KB),
+      `Microcosmos_Scene0_SakshiRio.unity` (239 KB), `MobWorld_Mesopotamia.unity` (62 KB).
+      ⚠ Aviso del propio builder para la escena del Microcosmos: **«Bake NavMesh en Window>AI>Navigation antes
+      de Play»** (el mesocosmos sí lo hornea solo con `BakeNavMesh()`).
+- [x] Guardar la escena + `Player` con tag `Player` — log: `[LIVE] escena guardada.` y `[LIVE]   OK    tag 'Player'`.
+- [ ] Objetos esperados en escena. **PARCIAL**: confirmados por log 4 de ellos —
+      `[LIVE] OK TraceField_AUTO` / `Clock_AUTO` / `TestRunner_AUTO` / `EcoObservation_AUTO`, con
+      `LevelDressing_AUTO con 714 descendientes`. **SIN verificar** los HUDs
+      `AnimaStatusHUD_AUTO`/`AnimaThoughtHUD_AUTO`/`AnimaNameplate_AUTO`, `SpellConsole_AUTO` y
+      `Restaurante_AUTO` (el inventario de `HeadlessLive` no los consulta todavía).
+- [x] **Prefabs de fauna** — auditado 2026-10-11 cotejando el registro `Species` contra el disco: las **21 clases
+      de comportamiento existen**, pero solo **8 especies tienen `.fbx` + `.prefab`** (los mamíferos
+      Wolf/Deer/Fox/Malamute/Bunny/PolarBear/Seal/Whale). **Faltan 13**: Penguin, Orca, Ant, Aphid, Ladybug,
+      Spider, Cricket, Termite, DungBeetle, Antlion, Mantis, Grasshopper, Meerkat. Confirmado **en vivo** que el
+      builder los omite: `[SampleSceneBuilder] WildlifePopulation: no se encontro el prefab de Penguin, se omite
+      esa familia.` (ídem Orca) → **el Pingüino y la Orca del Santuario de Hielo no entran en escena**. Es
+      autoría de modelos, no código.
 
 ## 1. HUDs (OnGUI, salen solos al dar Play)
 - [ ] **Estado** (`AnimaStatusHUD`): drives/actividad/elementos con color del ser objetivo.
