@@ -84,9 +84,21 @@ fondo el 2026-10-11 — el `No Unity Editor instances found` de meses **decía l
 - *Lo que NO basta*: levantar el hub a mano (`uvx --from mcpforunityserver==10.3.0 mcp-for-unity
   --transport http --http-port 8080`) hace que 8080 escuche, pero el plugin **no se auto-reconecta**:
   reiniciar el Editor con el hub ya arriba dejó **0 registros** en ese log.
-- *Lo que falta (necesita un humano, una vez)*: abrir en el Editor la ventana de **MCP for Unity**
-  (`Window > MCP for Unity`) y dejar el bridge conectado/auto-arranque activado. A partir de ahí
-  `Library/MCPForUnity/RunState/` deja de estar vacío y las llamadas MCP enrutan.
+- *Dónde se rompe EXACTAMENTE* (localizado el 2026-10-11 capturando la consola del Editor): el plugin **sí
+  intenta conectarse solo** y falla —
+  `Error: connection.state_change oldState=Connecting newState=Failed`
+  `error=WebSocketException: Unable to connect to the remote server (after 10 attempts)`.
+  El puerto que busca **no es 8080**: `EditorPrefs` guarda una clave **por PID de Unity**,
+  `MCP-CLIENT-PORT<pid>` (vista `= 0x232a` → **9002**). Y el 9002 **lo tiene ocupado `relay_win`**, un
+  proceso relé de la propia cadena de MCP for Unity (deja `Library/MCPForUnity/Logs/relay.txt`): escucha,
+  pero el WebSocket del plugin no completa contra él. **El fallo es interno de esa herramienta**, no del
+  proyecto ni de la configuración del cliente.
+- *Qué mirar al retomarlo*: `reg query "HKCU\Software\Unity Technologies\Unity Editor 5.x"` filtrando `MCP`
+  da el puerto del Editor vivo (`MCP-CLIENT-PORT<pid>`); comprobar **quién** lo tiene con
+  `Get-NetTCPConnection -State Listen -LocalPort <puerto>`. Si es `relay_win` y el plugin sigue fallando,
+  la vía razonable es reinstalar/actualizar el paquete `com.coplaydev.unity-mcp` (o matar `relay_win` y
+  dejar que el Editor relance su servidor), y abrir una vez `Window > MCP for Unity` para ver el estado
+  del bridge en su propia UI.
 - *Cómo comprobarlo de verdad, sin creerse nada*: una llamada MCP **real** que exija el Editor —
   `manage_scene(action="get_active")`. `telemetry_status` responde `success` **sin Editor**, así que NO
   sirve como prueba de que el bridge esté vivo. Y `Library/MCPForUnity/RunState/` vacío = el bridge
