@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 381 tipos._
+_Total: 383 tipos._
 
 
 ## Animals
@@ -54,6 +54,7 @@ _Total: 381 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
@@ -267,6 +268,7 @@ _Total: 381 tipos._
 - **ObservationTest** (class) — `Assets/Scripts/ObservationTest.cs` — Test de la OBSERVACIÓN/ecuanimidad (docs/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
 - **ObserveSpell** (class) — `Assets/Scripts/Microcosmos/ObserveSpell.cs` — HECHIZO PASIVO DE LOS OJOS:
 - **OrganicMaterial** (enum) — `Assets/Scripts/OrganicMaterial.cs`
+- **PacifySpell** (class) — `Assets/Scripts/Soul/PacifySpell.cs` — HECHIZO DE PACIFICACIÓN (docs/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo:
 - **PackAwareness** (class) — `Assets/Scripts/Microcosmos/PackAwareness.cs` — CONCIENCIA DE MANADA — lógica de ayuda emergente entre compañeros.
 - **Palette** (class) — `Assets/Scripts/UI/Palette/Palette.cs`
 - **PaletteConfig** (class) — `Assets/Scripts/UI/Palette/PaletteConfig.cs`

@@ -184,6 +184,7 @@ public class Mind : MonoBehaviour
         humores.Produce(positive ? Humor.Serotonina : Humor.Cortisol, 0.02f);
 
         ApplyLifecycle(phrase);   // una-vez / decae-por-uso (solo para pensamientos propios)
+        Reinforce(phrase, 1f);    // realizar el pensamiento SUBE su cuenta (maestría ⇄ recurrencia)
     }
 
     // ── Peso escalable + ciclo de vida de los pensamientos propios (docs anima §11) ──────────────
@@ -191,11 +192,39 @@ public class Mind : MonoBehaviour
 
     int UsesOf(MindPhrase p) => (_uses != null && _uses.TryGetValue(p, out int n)) ? n : 0;
 
-    /// <summary>Peso efectivo: el base de la frase, reducido por usos si su ciclo es DecaysPerUse.</summary>
+    // ── CUENTA del pensamiento (docs/spells-suprahechizo-and-thoughts.md §2): cada pensamiento tiene un NÚMERO que su
+    // realización incrementa y que el entorno/trauma erosiona. Números "infinitos" (sin tope); el % sale al comparar.
+    // La selección usa la cuenta → lo más practicado se piensa (y hace) más; el trauma puede cambiar la dirección.
+    System.Collections.Generic.Dictionary<MindPhrase, float> _counts;
+    [Tooltip("Cuánto pesa la CUENTA del pensamiento en la selección (0 = como antes; >0 = lo practicado domina).")]
+    [Min(0f)] public float countWeight = 0.2f;
+
+    /// <summary>Cuenta actual de un pensamiento (0 si nunca se realizó).</summary>
+    public float CountOf(MindPhrase p) => (p != null && _counts != null && _counts.TryGetValue(p, out float v)) ? v : 0f;
+    /// <summary>Realizar un pensamiento SUBE su cuenta (lo hace la expresión, el entrenamiento, la Magnate con intensidad).</summary>
+    public void Reinforce(MindPhrase p, float amount)
+    {
+        if (p == null || amount == 0f) return;
+        if (_counts == null) _counts = new System.Collections.Generic.Dictionary<MindPhrase, float>();
+        _counts[p] = Mathf.Max(0f, CountOf(p) + amount);
+    }
+    /// <summary>El entorno/trauma/contradicción BAJA la cuenta de un pensamiento (tambaleo / cambio de dirección).</summary>
+    public void Erode(MindPhrase p, float amount) => Reinforce(p, -Mathf.Abs(amount));
+
+    /// <summary>% de "correspondencia energética" de un pensamiento = su cuenta / Σ cuentas (para UI/decisiones).</summary>
+    public float ShareOf(MindPhrase p)
+    {
+        if (_counts == null || _counts.Count == 0) return 0f;
+        float total = 0f; foreach (var kv in _counts) total += kv.Value;
+        return total > 0f ? CountOf(p) / total : 0f;
+    }
+
+    /// <summary>Peso efectivo: el base de la frase, reducido por usos si su ciclo es DecaysPerUse, y SUBIDO por su cuenta.</summary>
     float EffectiveWeight(MindPhrase p)
     {
         float w = Mathf.Max(0.0001f, p.weight);
         if (p.lifecycle == ThoughtLifecycle.DecaysPerUse) w /= (1 + UsesOf(p));
+        w += countWeight * CountOf(p);   // lo más realizado/entrenado se elige más (cuenta del pensamiento)
         // D3a: una frase-CAPACIDAD (hechizo/asana con clave) se pondera por la CONFIANZA en ella (el bond-hacia-el-
         // hechizo): lo dominado se elige más; lo nuevo conserva un piso (`minConfidenceFactor`) para poder probarse
         // y aprenderse. Sin clave → sin cambio (las frases actuales quedan igual). Ver capabilities-and-embodiment.md §5.

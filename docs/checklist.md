@@ -79,9 +79,13 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
       *Falta:* marca por anima, bond alto por defecto (Anima→ITarget), llevar a enfermería, guardia nocturna, clon por sanctuary.
 - [x] **Cocina con RANGO** (`use`/`take` falla si no alcanzas la estación) — HECHO (1er paso de "steps=hechizos con alcance").
 - [x] **Insectos neutros de ambiente** (factory en Micro Scene0; se saltan sin .fbx) — HECHO.
-- [ ] **`SuperSpell`** (suprahechizo = cola de sub-hechizos; análisis=CanCast, potencia=force, equilibrio) — ver spells-suprahechizo-and-thoughts.md.
-- [ ] **`Mind.thoughtCounts`** (cuenta mutable por pensamiento: maestría sube, trauma baja → selección por cuenta).
-- [ ] **Volición por la cola** (needs→thoughts→encola hechizos-recuerdo del `Grimoire`) — se apoya en SuperSpell + thoughtCounts.
+- [x] **`SuperSpell`** (suprahechizo = cola de sub-hechizos; `IsSatisfied`=check, `Destabilize(power)`=equilibrio) — HECHO 2026-10-12.
+- [x] **Cuenta de pensamientos** (`Mind.CountOf`/`Reinforce`/`Erode`/`ShareOf`; selección por cuenta; expresar refuerza) — HECHO.
+- [x] **`PacifySpell`** (quita humores negativos, sube positivos) + la Magnate lo usa — HECHO.
+- [x] **Independencia de modelos 3D** (`AnymaFactory.CreateCubeAnima`: prefab vacío → cubo) — HECHO.
+- [ ] **Volición por la cola** (needs→thoughts→encola hechizos-recuerdo del `Grimoire` como `SuperSpell`) — ya tiene las piezas (SuperSpell + thoughtCounts); falta enrutar `DesireCatalog.Dispatch` por la `ActionQueue`.
+- [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
+- [ ] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` (13/21 especies sin modelo) — extender la independencia a la generación de prefabs del editor.
 - [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
 - [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
 - [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.

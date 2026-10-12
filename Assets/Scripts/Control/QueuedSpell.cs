@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -10,6 +11,35 @@ public abstract class QueuedSpell
     public abstract string Label { get; }
     /// <summary>Ejecuta un paso; devuelve true cuando el hechizo ha terminado. `self` = quien lo lanza.</summary>
     public abstract bool Tick(Anima self);
+    /// <summary>¿Este paso ya está CUMPLIDO antes de lanzarse? (docs/spells-suprahechizo §3: el "check" de un
+    /// suprahechizo — p. ej. "estar de pie" cuando ya lo estás → se consume sin animación). Por defecto no.</summary>
+    public virtual bool IsSatisfied(Anima self) => false;
+}
+
+/// <summary>SUPRAHECHIZO (conjuro) — un hechizo que desencadena una COLA de sub-hechizos (docs/spells-suprahechizo §3).
+/// Recorre sus pasos saltando los que ya están CUMPLIDOS (check, sin animación); cada sub-hechizo hace su propio
+/// análisis en su `Tick`/`IsSatisfied`. Tiene una POTENCIA impuesta: si recibe un golpe de más potencia (`Destabilize`)
+/// PIERDE EL EQUILIBRIO y se REINICIA (lo derribaron → vuelve a empezar por levantarse). Es la base de "la IA lanza
+/// una serie de hechizos-recuerdo para resolver una necesidad" (p. ej. comer → analizar → levantarse → buscar → …).</summary>
+public class SuperSpell : QueuedSpell
+{
+    public string name = "conjuro";
+    public List<QueuedSpell> steps = new List<QueuedSpell>();
+    public float power = 1f;
+    int _i;
+
+    public override string Label => $"conjuro {name}";
+
+    public override bool Tick(Anima self)
+    {
+        while (_i < steps.Count && (steps[_i] == null || steps[_i].IsSatisfied(self))) _i++;   // salta checks ya cumplidos
+        if (_i >= steps.Count) return true;
+        if (steps[_i].Tick(self)) _i++;
+        return _i >= steps.Count;
+    }
+
+    /// <summary>Un hechizo entrante de MÁS potencia desequilibra → reinicia el conjuro (lo derribaron físicamente).</summary>
+    public void Destabilize(float incomingPower) { if (incomingPower > power) _i = 0; }
 }
 
 /// <summary>Ir hacia un DESTINO (otra anima, o un área/gameobject por nombre), opcionalmente manteniendo distancia.
