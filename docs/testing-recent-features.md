@@ -94,6 +94,17 @@
       "no alcanzo Nevera — acércate". Haz `walkTo({destiny:"Nevera"})`, y cuando llegues, `use({destiny:"Nevera"})`
       → **avanza el paso**. (Primer paso del modelo "steps = hechizos con alcance"; la magia ampliará el rango.)
 
+## 12b. Hechizos de cocina por PASO (`take`/`putIn`/`beat`)
+- [ ] Posee al cocinero (receta *Huevos revueltos*), consola `~`. Encola de corrido:
+      `walkTo("Nevera")` → `take("Nevera")` (solo la abre: paso «ve a la nevera») → `walkTo("Huevos")` → `take("Huevos")` →
+      `walkTo("Plancha")` → `step` (calienta) → `putIn("Plancha")` (la receta no tiene paso "pon": avisa sin avanzar) →
+      `beat("Plancha")` (revuelve; tarda ~2,5 s ÷ fuerza/agilidad).
+      Cada hechizo que **casa con el verbo** del paso actual lo **avanza** (HUD ✔).
+- [ ] Fallos esperados (log `[Cocina]` + pensamiento): `take` lejos → "no alcanzo"; `take` con las manos llenas;
+      `putIn("Huevos")` → "no es un recipiente"; `beat` en olla vacía → "no hay nada que batir"; hechizo que no casa →
+      "hecho, pero el paso que toca es «…»". `"Plancha"` resuelve la «Plancha N» más cercana.
+- [ ] Con `MagicReserves` desbloqueada y energía, `take` a distancia **funciona** pagando 50 J/m extra.
+
 ## 13. Insectos neutros de ambiente (Microcosmos Scene0)
 - [ ] Regenera `Build Microcosmos Scene0`; si los `.fbx` de Cricket/Aphid/Ladybug/Grasshopper existen, verás unos
       pocos dispersos por la zona norte (ambiente). Si faltan, la consola loguea que se omiten (no crashea).

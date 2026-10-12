@@ -70,13 +70,14 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **`AcuteStressResponse` siempre activo y universal** (fauna+compuestas+jugador) — HECHO (no es switch).
 - [x] **Cocinar por teclado** (base): restaurante físico con primitivas etiquetadas (`BuildRestaurantRoom`) +
       `WorldLabel` en nameplates + consola `step`/`cook` + `walkTo({destiny:"Nevera"})` — HECHO 2026-10-10.
-      *Falta:* hechizos por paso con estación exacta (take/putIn/beat), selector de reemplazo de primitivas.
+      *Falta:* selector de reemplazo de primitivas (take/putIn/beat HECHOS).
 - [x] **Platillos** yogur/kéfir + bowl quinoa+lentejas + menestra — HECHO (presets + sandbox, ~7 pasos c/u).
 - [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
       stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
 - [x] **22 platillos** (6 base + 16 bomba por país, `CookingRecipe.All`) + **cierre nocturno** (`AreaHours`+`IsDay`) — HECHO 2026-10-10.
 - [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](testing-recent-features.md)) — HECHO (montaje + tests por feature).
-- [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) + selector de primitivas.
+- [x] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) — HECHO 2026-10-12 (`Assets/Scripts/Kitchen/KitchenStepSpells.cs`: manos `KitchenHands`, recipientes `KitchenVessel`, avanzan la receta si casan con el verbo del paso).
+- [ ] **Selector de reemplazo de primitivas** del restaurante (cambiar los cubos por prefabs).
 - [x] **Magnate** (1ª rebanada): estado infinito + sin necesidades + imposeíble de poseer + **pacifica** + va al
       **rezagado** y le **enseña yoga** (Grimoire+Saludo al Sol+XP) — HECHO 2026-10-12 (`Assets/Scripts/World/Magnate.cs`).
       *Falta:* marca por anima, bond alto por defecto (Anima→ITarget), llevar a enfermería, guardia nocturna, clon por sanctuary.

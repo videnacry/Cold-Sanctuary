@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 383 tipos._
+_Total: 384 tipos._
 
 
 ## Animals
@@ -227,6 +227,7 @@ _Total: 383 tipos._
 - **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
 - **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
+- **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
 - **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
