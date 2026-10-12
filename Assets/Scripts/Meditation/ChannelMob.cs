@@ -67,6 +67,6 @@ public class ChannelMob : MeditationMob
         }
         Vector3 dir = _wanderTarget - transform.position; dir.y = 0f;
         if (dir.sqrMagnitude > 0.0001f)
-            transform.position += dir.normalized * (moveSpeed * 0.5f) * Time.deltaTime;
+            Step(dir, moveSpeed * 0.5f * Time.deltaTime);
     }
 }

@@ -37,7 +37,7 @@ public class HealMob : MeditationMob
 
         // Limp toward the player seeking comfort, but stop once within healing range.
         if (dist > healRadius && dist > 0.001f)
-            transform.position += (toPlayer / dist) * moveSpeed * Time.deltaTime;
+            Step(toPlayer, moveSpeed * Time.deltaTime);
 
         if (dist <= healRadius)
         {

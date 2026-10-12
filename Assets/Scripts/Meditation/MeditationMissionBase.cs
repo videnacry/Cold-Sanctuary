@@ -138,9 +138,19 @@ public abstract class MeditationMissionBase : MonoBehaviour
     protected Vector3 SpawnPosition()
     {
         Vector3 center = player != null ? player.position : transform.position;
-        float angle = Random.value * Mathf.PI * 2f;
-        float d     = Mathf.Lerp(minSpawnDistance, spawnRadius, Random.value);
-        return center + new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle)) * d;
+        // Prefiere un punto a la vista del jugador: dentro de una sala pequeña (p. ej. la de Yoga, 9×9 m)
+        // el anillo de 4–8 m caía al otro lado de las paredes.
+        Vector3 fallback = center;
+        for (int i = 0; i < 8; i++)
+        {
+            float angle = Random.value * Mathf.PI * 2f;
+            float d     = Mathf.Lerp(minSpawnDistance, spawnRadius, Random.value);
+            Vector3 dir = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
+            Vector3 p   = center + dir * d;
+            if (i == 0) fallback = p;
+            if (!Physics.Raycast(center, dir, d, ~0, QueryTriggerInteraction.Ignore)) return p;
+        }
+        return fallback;
     }
 
     void HandleResolved(MeditationMob m)

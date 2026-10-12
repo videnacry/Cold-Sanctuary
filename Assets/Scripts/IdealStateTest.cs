@@ -22,12 +22,13 @@ public class IdealStateTest : MonoBehaviour, ITestUnit
         TestProbe.Check("triple del ideal → Exceso", ElementsStatus.Classify(2000f, 650f) == ElementLevel.Exceso);
         Color ideal = ElementsStatus.ColorOf(ElementLevel.Ideal);
         TestProbe.Check("el nivel Ideal es VERDE (g>r y g>b)", ideal.g > ideal.r && ideal.g > ideal.b);
-        TestProbe.Check("formato con unidad (0.0005 g → mg)", ElementsStatus.Format(0.0005f).Contains("mg"));
+        TestProbe.Check("formato con unidad (0.005 g → mg; 0.0005 g → µg)", ElementsStatus.Format(0.005f).Contains("mg") && ElementsStatus.Format(0.0005f).Contains("µg"));
 
         // ── ActivityLevel: ACWR (aguda 7d / crónica 28d), zona bendecida 0.8–1.3 ──
         GameObject go = new GameObject("Activity_TEST");
         ActivityLevel act = go.AddComponent<ActivityLevel>();
-        for (int d = 0; d < 40; d++) { act.AddLoad(10f); act.RollDay(); }   // 40 días de carga estable
+        // 120 días: con la crónica a 28 días, a los 40 aún no ha convergido (ACWR ≈ 1.31, roza Sobrecarga).
+        for (int d = 0; d < 120; d++) { act.AddLoad(10f); act.RollDay(); }   // carga estable
         TestProbe.Check("carga sostenida → zona BENDECIDA (ACWR 0.8–1.3)", act.Zone == ActivityZone.Bendecido);
         for (int d = 0; d < 4; d++) { act.AddLoad(40f); act.RollDay(); }     // pico brusco
         TestProbe.Check("pico brusco → SOBRECARGA (ACWR > 1.3)", act.Zone == ActivityZone.Sobrecarga);

@@ -264,6 +264,8 @@ public class PlayerController : MonoBehaviour
     void HandlePerspectiveToggle()
     {
         if (!Input.GetKeyDown(perspectiveToggleKey)) return;
+        // V es también "jugar con criatura": junto a una, la tecla es del juego, no de la cámara (antes giraba la vista a cada toque).
+        if (TryGetComponent(out PlayController play) && play.playKey == perspectiveToggleKey && play.HasTargetInRange) return;
         if (CameraManager.Instance == null) return;
 
         CameraMode next = CameraManager.Instance.preferredMode == CameraMode.ThirdPerson

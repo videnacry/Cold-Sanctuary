@@ -1332,7 +1332,7 @@ public static class SampleSceneBuilder
                   "(CarryToRefuge×4), 5 hormigas viejas (ImpulseController+HomeImpulse+ThreatScanner+WeaknessEffect+WeakOne), " +
                   "Ambrosio (HoneydewProducer ×5/8s), Kushal hormiga (PullSpell/HoneydewSpell/FormicAcidSpray), " +
                   "3 depredadores por zona (Mariquita/Escarabajo/Araña). " +
-                  "⚠ Bake NavMesh en Window>AI>Navigation antes de Play.");
+                  "NavMesh: lo hornea MicrocosmosSceneBuilder.BakeMicroNavMesh (no hace falta hornearlo a mano).");
     }
 
     /// <summary>Crea un depredador de sandbox (cápsula + Anima con stats calibrados).</summary>
@@ -3160,6 +3160,7 @@ public static class SampleSceneBuilder
         panelGO.GetComponent<UnityEngine.UI.Image>().color = new Color(0.04f, 0.04f, 0.10f, 0.92f);
 
         ConfirmationPanel cp = panelGO.AddComponent<ConfirmationPanel>();
+        panelGO.GetComponent<CanvasGroup>().alpha = 0f;   // oculto hasta Show(): si no, «¿Empezar turno?» se ve en la escena fuera de Play
 
         // Title text (centred, top third)
         cp.titleText   = CreateConfirmText(panelGO.transform, "Title",   new Vector2(0f,  68f), 22, "Área");

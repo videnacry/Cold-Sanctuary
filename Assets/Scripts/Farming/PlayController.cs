@@ -35,6 +35,11 @@ public class PlayController : MonoBehaviour
         target.Play();
     }
 
+    /// <summary>Hay una criatura jugable a mano: la tecla es para jugar (PlayerController no cambia de cámara con ella).</summary>
+
+    public bool HasTargetInRange => FindNearestPlayable() != null;
+
+
     PlayableCreature FindNearestPlayable()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, playRange);

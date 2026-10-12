@@ -67,7 +67,7 @@ public class AbsorbentThoughtMob : MeditationMob
         if (dist > 0.001f)
         {
             Vector3 dir = toPlayer / dist;
-            transform.position += dir * moveSpeed * Time.deltaTime;
+            Step(dir, moveSpeed * Time.deltaTime);
             transform.rotation = Quaternion.Slerp(
                 transform.rotation, Quaternion.LookRotation(dir), 8f * Time.deltaTime);
         }

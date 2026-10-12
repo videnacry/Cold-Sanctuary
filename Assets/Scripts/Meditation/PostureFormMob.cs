@@ -40,7 +40,7 @@ public class PostureFormMob : MeditationMob
         if (dist < fleeDistance && dist > 0.001f)
         {
             Vector3 away = -toPlayer / dist;
-            transform.position += away * moveSpeed * Time.deltaTime;
+            Step(away, moveSpeed * Time.deltaTime);   // sin atravesar muros: contra la pared queda acorralada
             transform.rotation = Quaternion.Slerp(
                 transform.rotation, Quaternion.LookRotation(away), 8f * Time.deltaTime);
         }
