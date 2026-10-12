@@ -12,20 +12,22 @@ using UnityEngine;
 /// </summary>
 public class AnimaStatusHUD : MonoBehaviour
 {
-    public Anima target;
+    public Anima target;   // override de inspector (debug): si se fija, se muestra siempre
     public Vector2 origin = new Vector2(12f, 180f);
     public bool showElements = true;
 
     GUIStyle _style;
-    Anima _cached;
+
+    // ON-DEMAND (por hechizo): el HUD NO está siempre visible; aparece al lanzar `StatusSpell` sobre un anima
+    // (`status({destiny:"self"})`) durante unos segundos. docs/consciousness-mechanics §2 + typed-spells.
+    static Anima _shown;
+    static float _until;
+    public static void Show(Anima a, float duration = 12f) { _shown = a; _until = Time.time + duration; }
 
     Anima Target()
     {
-        if (target != null) return target;
-        if (_cached != null) return _cached;
-        GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (p != null && p.TryGetComponent(out Anima pa)) return _cached = pa;
-        return _cached = FindObjectOfType<Anima>();
+        if (target != null) return target;                         // debug: inspector override
+        return (_shown != null && Time.time < _until) ? _shown : null;   // si no, solo cuando se lanzó el hechizo
     }
 
     void OnGUI()

@@ -16,9 +16,10 @@ public class FoodContainer : MonoBehaviour
     /// <summary>Añade raciones (lo hace el cocinero al emplatar). Devuelve false si ya está lleno.</summary>
     public bool Deposit(int n = 1)
     {
-        if (rations >= capacity) return false;
-        rations = Mathf.Min(capacity, rations + n);
-        Debug.Log($"[Cocina] Contenedor «{name}»: +{n} {dishName} ({rations}/{capacity}).");
+        // SIN TOPE: se puede generar comida/recursos de forma infinita; lo que importa es el EQUILIBRIO entre
+        // productos (lo gestiona RestaurantKitchen). `capacity` queda como referencia visual, no limita.
+        rations += n;
+        Debug.Log($"[Cocina] Contenedor «{name}»: +{n} {dishName} ({rations}).");
         return true;
     }
 

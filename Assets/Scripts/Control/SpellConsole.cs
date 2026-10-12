@@ -81,6 +81,13 @@ public class SpellConsole : MonoBehaviour
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
+            case "clean": case "limpiar": Clean(self); break;
+            case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
+            case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
+            case "vaccinate": case "vacunar": CastOn<VaccinateSpell>(self, args); break;
+            case "status": case "estado": Status(self, args); break;
+            case "open": case "abrir": AreaCmd(self, args, false); break;
+            case "close": case "cerrar": AreaCmd(self, args, true); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
     }
@@ -151,6 +158,48 @@ public class SpellConsole : MonoBehaviour
         Log($"«{self.name}» empieza el Saludo al Sol (12 asanas).");
     }
 
+    // STATUS por hechizo: muestra el HUD de estado de un anima, o los stocks de un área (santuario/restaurante).
+    void Status(Anima self, Dictionary<string, string> args)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : "self";
+        GameObject go = ResolveObject(self, name);
+        if (go == null) { Log($"«{self.name}»: no encuentro {name}."); return; }
+        StatusSpell sp = self.GetComponent<StatusSpell>() ?? self.gameObject.AddComponent<StatusSpell>();
+        sp.targetObject = go; sp.Cast(self, null);
+        Log($"«{self.name}» mira el estado de {go.name}.");
+    }
+
+    // ABRIR/CERRAR un área con el mismo hechizo (property close).
+    void AreaCmd(Anima self, Dictionary<string, string> args, bool close)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : null;
+        GameObject go = name != null ? ResolveObject(self, name) : null;
+        if (go == null) { Log("¿qué área? (destiny)"); return; }
+        OpenSpell sp = self.GetComponent<OpenSpell>() ?? self.gameObject.AddComponent<OpenSpell>();
+        sp.targetObject = go; sp.close = close;
+        sp.reset = args.TryGetValue("reset", out string r) && (r == "true" || r == "1");
+        sp.Cast(self, null);
+        Log($"«{self.name}» {(close ? "cierra" : "abre")} {go.name}.");
+    }
+
+    // Resuelve un objeto por nombre: "self"/vacío = uno mismo; si no, un GameObject por name (áreas), o un anima.
+    GameObject ResolveObject(Anima self, string name)
+    {
+        if (string.IsNullOrEmpty(name) || name == "self" || name == "me" || name == "yo") return self.gameObject;
+        GameObject go = GameObject.Find(name);
+        if (go != null) return go;
+        ITarget it = ResolveAnimaAnywhere(name);
+        return (it as Component)?.gameObject;
+    }
+
+    // Limpieza como HECHIZO: limpia la mancha más cercana dentro del alcance (falla si no hay/estás lejos).
+    void Clean(Anima self)
+    {
+        CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
+        cs.Cast(self, null);
+        Log($"«{self.name}» limpia.");
+    }
+
     // Hechizos de MODIFICACIÓN (bond/thought) sobre un destino: resuelve el anima por nombre EN CUALQUIER PARTE
     // (configurar una relación con alguien aunque nunca se haya visto — crear amistad remota, docs anyma-factory §3).
     void CastOn<T>(Anima self, Dictionary<string, string> args) where T : SpellBase
@@ -162,6 +211,7 @@ public class SpellConsole : MonoBehaviour
         T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
         if (args.TryGetValue("amount", out string am) && float.TryParse(am, out float amt)) spell.force = amt;
         if (spell is ThoughtSpell ts) ts.positive = !(args.TryGetValue("positive", out string p) && (p == "false" || p == "0"));
+        if (spell is TeachSpell te && args.TryGetValue("skill", out string sk)) te.skillId = sk;
         if (spell.CanCast(self, it)) { spell.Cast(self, it); Log($"«{self.name}» lanza {typeof(T).Name} sobre {name}."); }
     }
 

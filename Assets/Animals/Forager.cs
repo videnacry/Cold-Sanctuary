@@ -53,6 +53,7 @@ public class Forager : MonoBehaviour
             case "Antlion":                          eatsPrey = true; break;                    // emboscada en embudo
             case "Mantis":                           eatsPrey = true; break;                    // depredadora de emboscada
             case "Meerkat":                          eatsPrey = true; break;                    // insectívora (skin de la tribu)
+            case "SnowBee":                          eatsGrass = true; break;                   // néctar (pollinizadora/carroñera suave)
         }
     }
 

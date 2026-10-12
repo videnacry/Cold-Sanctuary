@@ -137,6 +137,9 @@ public static class SampleSceneBuilder
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
+        BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
+        BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
+        BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2454,6 +2457,122 @@ public static class SampleSceneBuilder
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
         m.AddComponent<Magnate>();
+    }
+
+    // PRUEBA EN VIVO de VIDA FAMILIAR: una familia aislada con comida puesta → no gastan tiempo cazando/pastando ni
+    // interactúan con otra fauna; se observa SOLO pareja/padres/crías (+ el deseo `nurse`). Lobos (pack familiar, con
+    // "tíos" = más adultos) con carne; conejos con pasto. Lejos del resto del mapa. Si falta el prefab, se omite.
+    static void BuildFamilyLifeTest(Transform parent)
+    {
+        GameObject root = new GameObject("PruebaVidaFamiliar_AUTO"); root.transform.SetParent(parent);
+
+        // Lobos: familia + tíos (minParentsCount=3) con carne alrededor → test puro de vida de manada.
+        Vector3 wolfPos = new Vector3(-140f, 0f, 0f);
+        GameObject wolfPrefab = LoadAnimalPrefab("Wolf");
+        if (wolfPrefab != null)
+        {
+            GameObject wg = new GameObject("Lobos_familia"); wg.transform.SetParent(root.transform);
+            FamilyGenerator fg = wg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = wolfPrefab, position = wolfPos, quantity = 6, minParentsCount = 3, radius = 10f } };
+            for (int i = 0; i < 6; i++)   // carne puesta (no necesitan cazar)
+            {
+                GameObject f = new GameObject("Carne"); f.transform.SetParent(root.transform);
+                f.transform.position = wolfPos + new Vector3((i % 3) * 3f - 3f, 0.3f, (i / 3) * 3f - 1.5f);
+                FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 200f;
+            }
+        }
+        else Debug.LogWarning("[FamilyLifeTest] sin prefab Wolf (genera prefabs — ahora salen cubos si no hay .fbx), se omite la familia de lobos.");
+
+        // Conejos: familia con pasto → test de vida familiar herbívora.
+        Vector3 bunnyPos = new Vector3(-160f, 0f, 25f);
+        GameObject bunnyPrefab = LoadAnimalPrefab("Bunny");
+        if (bunnyPrefab != null)
+        {
+            GameObject bg = new GameObject("Conejos_familia"); bg.transform.SetParent(root.transform);
+            FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = bunnyPrefab, position = bunnyPos, quantity = 5, minParentsCount = 2, radius = 8f } };
+            for (int i = 0; i < 4; i++)   // parches de pasto (no necesitan buscar lejos)
+            {
+                GameObject g = new GameObject("Pasto"); g.transform.SetParent(root.transform);
+                g.transform.position = bunnyPos + new Vector3((i % 2) * 4f - 2f, 0f, (i / 2) * 4f - 2f);
+                g.AddComponent<GrassPatch>();
+            }
+        }
+        else Debug.LogWarning("[FamilyLifeTest] sin prefab Bunny, se omite la familia de conejos.");
+    }
+
+    // ESCENARIOS DEDICADOS de interacción (aislados, al oeste del mapa): cada uno pone solo los actores + la comida
+    // necesaria para que el test sea PURO (ver docs/sanctuary1-level-and-live-tests §2). Si falta un prefab, se omite.
+    static void BuildInteractionTests(Transform parent)
+    {
+        GameObject root = new GameObject("PruebasInteraccion_AUTO"); root.transform.SetParent(parent);
+
+        // 1) APAREAMIENTO: una pareja de lobos aislada con carne (no cazan) → entran en celo y se reproducen (deseo `mate`).
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, -40f), 2, 2);
+        for (int i = 0; i < 2; i++) TestMeat(root.transform, new Vector3(-210f + i * 2f, 0.3f, -40f));
+
+        // 2) CAZA: 1 lobo (sin carne → caza) + conejos con pasto → acecho/persecución/depredación limpia.
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, 0f), 1, 1);
+        TestPack(root.transform, "Bunny", new Vector3(-200f, 0f, 8f), 4, 2);
+        for (int i = 0; i < 3; i++) TestGrass(root.transform, new Vector3(-200f + i * 3f, 0f, 8f));
+
+        // 3) 1 vs 1: dos lobos y UNA carne (recurso escaso) → competencia/conflicto.
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, 40f), 1, 1);
+        TestPack(root.transform, "Wolf", new Vector3(-204f, 0f, 40f), 1, 1);
+        TestMeat(root.transform, new Vector3(-207f, 0.3f, 40f));
+
+        // 4) PACK vs 1: manada de lobos + un oso → defensa/ataque de grupo (PackAwareness).
+        TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, -20f), 6, 3);
+        TestPack(root.transform, "PolarBear", new Vector3(-232f, 0f, -20f), 1, 1);
+
+        // 5) PACK vs PACK: dos manadas de lobos contiguas.
+        TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, 20f), 5, 2);
+        TestPack(root.transform, "Wolf", new Vector3(-228f, 0f, 24f), 5, 2);
+    }
+
+    static void TestPack(Transform root, string species, Vector3 pos, int qty, int minParents)
+    {
+        GameObject prefab = LoadAnimalPrefab(species);
+        if (prefab == null) { Debug.LogWarning($"[InteractionTest] sin prefab {species} (genera prefabs — salen cubos si no hay .fbx), se omite."); return; }
+        GameObject g = new GameObject($"{species}_x{qty}"); g.transform.SetParent(root);
+        FamilyGenerator fg = g.AddComponent<FamilyGenerator>();
+        fg.families = new[] { new FamilyGenerator.Family { animalPrefab = prefab, position = pos, quantity = qty, minParentsCount = minParents, radius = Mathf.Max(3f, qty * 1.5f) } };
+    }
+
+    static void TestMeat(Transform root, Vector3 pos)
+    {
+        GameObject f = new GameObject("Carne"); f.transform.SetParent(root); f.transform.position = pos;
+        FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 200f;
+    }
+
+    static void TestGrass(Transform root, Vector3 pos)
+    {
+        GameObject g = new GameObject("Pasto"); g.transform.SetParent(root); g.transform.position = pos;
+        g.AddComponent<GrassPatch>();
+    }
+
+    // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
+    // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
+    static void BuildIceFlora(Transform parent)
+    {
+        GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
+        Vector3 treePos = new Vector3(120f, 1f, 20f);
+
+        GameObject tree = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        tree.name = "ArbolCarnivoroHielo"; tree.transform.SetParent(root.transform);
+        tree.transform.position = treePos; tree.transform.localScale = new Vector3(1.5f, 3f, 1.5f);
+        var r = tree.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("IceTree_MAT", new Color(0.55f, 0.8f, 0.85f));
+        tree.AddComponent<IceCarnivorousTree>();
+        tree.AddComponent<WorldLabel>().text = "Árbol carnívoro de hielo";
+
+        GameObject beePrefab = LoadAnimalPrefab("SnowBee");
+        if (beePrefab != null)
+        {
+            GameObject bg = new GameObject("Abejas_nieve"); bg.transform.SetParent(root.transform);
+            FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = treePos + new Vector3(4f, 0f, 0f), quantity = 6, minParentsCount = 1, radius = 5f } };
+        }
+        else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
     }
 
     static void BuildAnimaStatusPanels(Transform parent)

@@ -95,6 +95,14 @@ public static class DesireCatalog
             self => ApproachBondTarget(self, care: true),
             "tend"),
 
+        // NUTRIR (MIGRACIÓN del postnatal a la arena): el padre/madre ALIMENTA a una CRÍA (lifeStage='c') VINCULADA y
+        // hambrienta. Necesidad = vínculo × hambre de la cría × afabilidad → compite con comer/amenaza como un deseo más
+        // (antes lo conducía directo `PostNatalManager`). Despacha acercarse + nutrir (baja el hambre de la cría).
+        new Desire("nurse",
+            self => { CubNeed(self, out float n); return n * Mathf.Max(0.3f, self.afabilidad) * W_NURSE; },
+            self => NurseCub(self),
+            "tend"),
+
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
         new Desire("follow",
@@ -108,6 +116,14 @@ public static class DesireCatalog
             self => Mathf.Clamp01((self.sleepiness + self.mentalFatigue) * 0.5f),
             self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); self.Loco?.Idle(1f); },
             "rest"),
+
+        // VOLVER AL HOGAR (cohesión de nido / territorialidad): deriva hacia el `HomeOrigin` cuando se aleja y no hay
+        // apremio. Cubre el LADO CRÍA de la migración postnatal (quedarse cerca del nido) y a cualquier ser territorial.
+        // Débil (fondo) → el hambre/amenaza/social lo superan. docs/sanctuary1-level-and-live-tests §3.
+        new Desire("homebound",
+            self => W_HOME * Mathf.Clamp01(Vector3.Distance(self.transform.position, self.HomeOrigin) / Mathf.Max(1f, self.HomeRadius)),
+            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(self.HomeOrigin); },
+            "homebound"),
 
         // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/environmental-navigation.md §N5/N8):
         // necesidad BAJA (solo gana cuando no hay hambre/amenaza/social) y ESCALADA por la mente curiosa (razón+creatividad)
@@ -126,6 +142,36 @@ public static class DesireCatalog
     const float W_TEND    = 0.9f;    // cuidar al vínculo en apuro: fuerte (× afabilidad)
     const float W_FOLLOW  = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
     const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
+    const float W_NURSE   = 1.0f;    // nutrir a la cría: fuerte (× afabilidad) → un padre atiende a su cría hambrienta
+    const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
+
+    // Cría más necesitada: recorre los bonds, busca Animal en etapa CRÍA ('c') y hambrienta; devuelve urgencia = vínculo×hambre.
+    static Animal CubNeed(Animal self, out float need)
+    {
+        need = 0f; Animal best = null;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
+            float urg = Mathf.Clamp01(b.value / 100f) * Mathf.Clamp01(cub.hungry);
+            if (urg > need) { need = urg; best = cub; }
+        }
+        return best;
+    }
+
+    // Nutrir: ir a la cría más necesitada y, si está cerca, bajarle el hambre (le pasa alimento); cuesta algo al que nutre.
+    static void NurseCub(Animal self)
+    {
+        Animal cub = CubNeed(self, out _);
+        if (cub == null) return;
+        if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(cub.transform.position);
+        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f)
+        {
+            cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);   // amamantar/compartir comida
+            self.exhaustion += 0.5f;                          // cuidar cansa un poco
+        }
+    }
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).

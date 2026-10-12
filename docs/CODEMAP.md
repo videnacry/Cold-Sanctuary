@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 384 tipos._
+_Total: 390 tipos._
 
 
 ## Animals
@@ -40,6 +40,7 @@ _Total: 384 tipos._
 - **SealBehavior** (class) — `Assets/Animals/Seal/SealBehavior.cs`
 - **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2).
 - **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4):
+- **SnowBeeBehavior** (class) — `Assets/Animals/SnowBee/SnowBeeBehavior.cs`
 - **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5).
 - **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5):
 - **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
@@ -126,7 +127,9 @@ _Total: 384 tipos._
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
+- **CleanSpell** (class) — `Assets/Scripts/Kitchen/CleanSpell.cs` — HECHIZO DE LIMPIEZA (docs/spells-suprahechizo §; sanctuary1 onboarding):
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
+- **ClinicalAnalysisSpell** (class) — `Assets/Scripts/Soul/ClinicalSpells.cs` — HECHIZO DE ANÁLISIS CLÍNICO (docs/sanctuary1-level-and-live-tests §4) — el que lanza Linduarda en la enfermería al recibir a Kushal:
 - **Clock** (class) — `Assets/Scripts/Time/Clock.cs` — Hace correr el RELOJ del juego:
 - **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
 - **ClothingRecipe** (class) — `Assets/Scripts/Clothing/ClothingRecipe.cs` — Defines one clothing item craftable in the ClothingCraftingArea.
@@ -212,6 +215,7 @@ _Total: 384 tipos._
 - **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
 - **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
 - **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
+- **IceCarnivorousTree** (class) — `Assets/Scripts/World/IceCarnivorousTree.cs` — ÁRBOL CARNÍVORO DE HIELO (docs/ice-sanctuary-ecology.md) — la flora clave del Santuario 1:
 - **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
 - **IdleBehavior** (class) — `Assets/Scripts/Control/IdleBehavior.cs` — COMPORTAMIENTO LIBRE vía COLA (docs/typed-spells-and-queues.md §4):
 - **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
@@ -357,11 +361,13 @@ _Total: 384 tipos._
 - **StatPhysique** (class) — `Assets/Scripts/Soul/StatPhysique.cs` — APARIENCIA POR STATS (docs/anyma-factory-and-control.md §1):
 - **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4).
 - **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
+- **StatusSpell** (class) — `Assets/Scripts/World/StatusSpells.cs` — HECHIZO DE STATUS (docs/typed-spells-and-queues):
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
 - **TeacherNPC** (class) — `Assets/Scripts/Companion/TeacherNPC.cs` — Base for any NPC that can evaluate the player's asana attempts and give feedback.
+- **TeachSpell** (class) — `Assets/Scripts/Soul/TeachSpell.cs` — HECHIZO DE ENSEÑANZA / DEMOSTRACIÓN (docs/sanctuary1-level-and-live-tests §4, spells-suprahechizo §4):
 - **Test** (class) — `Assets/Scripts/Test.cs`
 - **TestProbe** (class) — `Assets/Scripts/TestProbe.cs` — Mini-harness de PRUEBAS por consola (PASS/FAIL) — la capa que faltaba:
 - **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario:

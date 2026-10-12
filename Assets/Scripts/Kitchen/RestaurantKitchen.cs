@@ -32,9 +32,19 @@ public class RestaurantKitchen : MonoBehaviour
     [Tooltip("XP de Stats que recibe cada participante al cumplir la misión.")]
     [Min(0f)] public float xpOnComplete = 20f;
 
-    bool _complete;
+    bool _rewardedThisBalance;
     readonly List<CookingStation> _participants = new List<CookingStation>();
     AreaHours _hours;
+
+    // EQUILIBRIO (docs): no hay tope; el objetivo es nivelar TODOS los platillos al que tiene MÁS stock (o al piso
+    // `target` de cada uno, lo que sea mayor). El análisis = este nº; así, si uno va muy por detrás, se asignan VARIOS
+    // obreros a él hasta igualar (p. ej. 4 obreros a huevos si los demás están a 24 y van de 6 en 6).
+    int Equilibrium()
+    {
+        int eq = 0;
+        foreach (DishStock d in dishes) { eq = Mathf.Max(eq, d.Have); eq = Mathf.Max(eq, d.target); }
+        return eq;
+    }
 
     /// <summary>El restaurante está abierto (de día) — de noche cierra y no se cocina. Usa `AreaHours` si está.</summary>
     public bool Open => _hours == null || _hours.IsOpen;
@@ -48,17 +58,20 @@ public class RestaurantKitchen : MonoBehaviour
                            ?? new CookingRecipe(d.container != null ? d.container.dishName : "platillo", "prepara", "emplata");
     }
 
-    /// <summary>Asigna a `who` el platillo MÁS por debajo de su objetivo (stock + lo ya en marcha). null = todo cubierto.</summary>
+    /// <summary>Asigna a `who` el platillo MÁS por debajo del EQUILIBRIO (stock + lo ya en marcha). Varios obreros
+    /// pueden recibir el MISMO platillo hasta nivelarlo. null = todo al nivel del más alto (equilibrado).</summary>
     public CookingRecipe AssignNext(CookingStation who)
     {
         if (!_participants.Contains(who)) _participants.Add(who);
+        int eq = Equilibrium();
         DishStock best = null; int bestDeficit = 0;
         foreach (DishStock d in dishes)
         {
-            int deficit = d.target - (d.Have + d.inProgress);
+            int deficit = eq - (d.Have + d.inProgress);
             if (deficit > bestDeficit) { bestDeficit = deficit; best = d; }
         }
-        if (best == null) { CheckComplete(); return null; }
+        if (best == null) { CheckBalanced(); return null; }   // ya está todo equilibrado
+        _rewardedThisBalance = false;                          // hay trabajo → se podrá premiar el próximo equilibrio
         best.inProgress++;
         return best.recipe;
     }
@@ -73,20 +86,23 @@ public class RestaurantKitchen : MonoBehaviour
                 if (d.container != null) d.container.Deposit(1);
                 break;
             }
-        CheckComplete();
+        CheckBalanced();
     }
 
-    void CheckComplete()
+    // EQUILIBRADO: todos los platillos al nivel del más alto. Premia UNA vez por ciclo de equilibrio (se re-arma cuando
+    // vuelve a haber trabajo — un comensal consume y hay que reponer → producción continua, sin "fin" fijo).
+    void CheckBalanced()
     {
-        if (_complete) return;
-        foreach (DishStock d in dishes) if (d.Have < d.target) return;
-        _complete = true;
+        if (_rewardedThisBalance) return;
+        int eq = Equilibrium();
+        foreach (DishStock d in dishes) if (d.Have < eq) return;
+        _rewardedThisBalance = true;
         Reward();
     }
 
     void Reward()
     {
-        Debug.Log("[Restaurante] MISIÓN CUMPLIDA: platillos preparados para todos los personajes.");
+        Debug.Log("[Restaurante] EQUILIBRIO alcanzado: stock nivelado de todos los platillos.");
         foreach (CookingStation p in _participants)
         {
             if (p == null) continue;
@@ -106,5 +122,15 @@ public class RestaurantKitchen : MonoBehaviour
             if (d.item != null) inv.AddItem(d.item, 1);
     }
 
-    public bool Complete => _complete;
+    public bool Balanced => _rewardedThisBalance;
+
+    /// <summary>Vuelca el STOCK del área (lo lee `StatusSpell` al lanzarse sobre el santuario/restaurante).</summary>
+    public void LogStocks()
+    {
+        int eq = Equilibrium();
+        var sb = new System.Text.StringBuilder($"[Status] «{name}» stock (equilibrio {eq}): ");
+        foreach (DishStock d in dishes)
+            sb.Append($"{(d.container != null ? d.container.dishName : d.recipe?.dishName)} {d.Have}/{eq}  ");
+        Debug.Log(sb.ToString());
+    }
 }

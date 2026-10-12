@@ -52,6 +52,7 @@ public class Family
         { "Antlion",     new Family(1, 0.1f, maternal)   },  // solitario (larva de embudo)
         { "Mantis",      new Family(1, 0.1f, maternal)   },  // solitaria (canibalismo sexual)
         { "Meerkat",     new Family(6, 0.5f, biparental) },  // cría cooperativa (helpers al nido)
+        { "SnowBee",     new Family(6, 0.8f, maternal)   },  // colonia eusocial (reina = parents)
     };
 
     public static Family Of(string species)

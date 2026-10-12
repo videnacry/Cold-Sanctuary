@@ -37,8 +37,12 @@
       **Generic**, clips `Idle/Walk/Run`) en `Assets/Animals/{Especie}/Models/` cuando los tengas y regenera esa
       especie (borra su `.prefab`-cubo antes, o se omite por existir). Sin modelo tampoco crashea en runtime (guard en ActionPrep).
 
-## 1. HUDs (OnGUI, salen solos al dar Play)
-- [ ] **Estado** (`AnimaStatusHUD`): drives/actividad/elementos con color del ser objetivo.
+## 1. HUDs (OnGUI)
+- [ ] **Estado** (`AnimaStatusHUD`): **ON-DEMAND por hechizo** (ya no está siempre visible). Posee a un ser y escribe
+      `status({destiny:"self"})` en la consola → aparece su HUD de estado unos segundos. `status({destiny:"Restaurante_AUTO"})`
+      → vuelca los **stocks** del área por consola. (El override de inspector `target` lo fuerza visible para depurar.)
+- [ ] **Abrir/cerrar áreas por hechizo**: `open({destiny:"Restaurante_AUTO"})` / `close({destiny:"Restaurante_AUTO"})` /
+      `open({destiny:"Restaurante_AUTO", reset:true})` (volver al reloj). Con cerrado, los cocineros paran.
 - [ ] **Pensamiento** (`AnimaThoughtHUD`): muestra el pensamiento del ser que manejas (posee uno) con intensidad;
       persiste ~10 min; verde=positivo/rojo=negativo. Verifica que cambie al **poseer** otro cuerpo.
 - [ ] **Nombres** (`AnimaNameplate`): nombres sobre las animas a la vista **y** sobre muebles/ingredientes del
