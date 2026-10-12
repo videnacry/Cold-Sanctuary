@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 399 tipos._
+_Total: 400 tipos._
 
 
 ## Animals
@@ -66,6 +66,7 @@ _Total: 399 tipos._
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
 - **ActionQueue** (class) — `Assets/Scripts/Control/ActionQueue.cs` — COLA DE ACCIONES de un anima (docs/typed-spells-and-queues.md) — ejecuta s en orden, estilo Sims.
+- **ActionSteps** (class) — `Assets/Scripts/Control/ActionSteps.cs` — LEY "todo es un superhechizo" (docs/spells-suprahechizo-and-thoughts, stats-as-truth §Hechizos):
 - **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
 - **AcuteStressResponse** (class) — `Assets/Scripts/Soul/AcuteStressResponse.cs` — RESPUESTA AGUDA AL ESTRÉS ("el cuerpo se pasa de sus límites") — ciencia real anclada en la química que ya existe:
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.

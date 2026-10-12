@@ -64,12 +64,15 @@ public static class DesireCatalog
             self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
             self => self.StartCoroutine(self.Feed()),
             "forage",
-            // SUPRAHECHIZO de comer (ejemplo de descomposición): ANALIZAR → COMER. Más adelante: levantarse-si-caído,
-            // acercarse, cazar/pacer, o pedir-ayuda si no hay energía (docs/spells-suprahechizo §3).
-            self => new List<QueuedSpell>
+            // SUPRAHECHIZO de comer: LEVANTARSE (paso compartido) → ANALIZAR → COMER. El 'levantarse' es la MISMA factory
+            // que usan caminar/trepar (ActionSteps.GetUp): si mañana se parte en más pasos, este deseo lo hereda solo.
+            // Más adelante: acercarse, cazar/pacer, o pedir-ayuda si no hay energía (docs/spells-suprahechizo §3).
+            self =>
             {
-                new DispatchStep(a => Debug.Log($"[Deseo] «{a.name}» analiza: ¿comida cerca o a buscar?"), "analizar"),
-                new DispatchStep(a => a.StartCoroutine(a.Feed()), "comer"),
+                List<QueuedSpell> steps = new List<QueuedSpell>(ActionSteps.GetUp());
+                steps.Add(new DispatchStep(a => Debug.Log($"[Deseo] «{a.name}» analiza: ¿comida cerca o a buscar?"), "analizar"));
+                steps.Add(new DispatchStep(a => a.StartCoroutine(a.Feed()), "comer"));
+                return steps;
             }),
 
         // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
