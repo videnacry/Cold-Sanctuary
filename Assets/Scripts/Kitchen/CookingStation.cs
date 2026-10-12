@@ -24,6 +24,9 @@ public class CookingStation : MonoBehaviour
     float _next;
     GUIStyle _style;
 
+    /// <summary>Texto del paso que toca ahora (null si no hay receta). Lo leen los hechizos por paso (take/putIn/beat).</summary>
+    public string CurrentStep => _recipe != null && _step < _recipe.steps.Length ? _recipe.steps[_step] : null;
+
     void Start()
     {
         if (kitchen == null) kitchen = FindObjectOfType<RestaurantKitchen>();

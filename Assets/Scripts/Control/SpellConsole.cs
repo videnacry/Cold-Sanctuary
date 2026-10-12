@@ -28,7 +28,7 @@ public class SpellConsole : MonoBehaviour
         if (!_open) return;
         float w = 560f, h = 24f, x = 12f, y = Screen.height - 120f;
         GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 92f), "");
-        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Hechizos</b>  p.ej.  walkTo({destiny:\"Marilia\", maxSpeed:true})");
+        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Hechizos</b>  walkTo(\"Nevera\") · take(\"Huevos\") · putIn(\"Plancha\") · beat(\"Plancha\")");
         GUI.SetNextControlName("spellInput");
         _input = GUI.TextField(new Rect(x, y + 20f, w, h), _input);
         GUI.FocusControl("spellInput");
@@ -74,7 +74,10 @@ public class SpellConsole : MonoBehaviour
         {
             case "walkto": WalkTo(self, args); break;
             case "step": case "cook": Step(self); break;
-            case "use": case "take": UseStation(self, args); break;
+            case "use": UseStation(self, args); break;
+            case "take":  EnqueueKitchen(self, args, new TakeSpell { item = args.TryGetValue("item", out string it) ? it : null }); break;
+            case "putin": case "put": EnqueueKitchen(self, args, new PutInSpell()); break;
+            case "beat":  EnqueueKitchen(self, args, new BeatSpell()); break;
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
@@ -105,6 +108,39 @@ public class SpellConsole : MonoBehaviour
         CookingStation cs = self.GetComponent<CookingStation>();
         if (cs != null) cs.AdvanceStep();
         Log($"«{self.name}» usa {name}.");
+    }
+
+    // HECHIZOS DE COCINA POR PASO (take/putIn/beat, KitchenStepSpells.cs): resuelve la estación EXACTA por nombre
+    // ("Plancha" → la «Plancha N» etiquetada más cercana) y lo ENCOLA tras lo que ya haya (walkTo primero → llega → toma).
+    // El rango se comprueba al EJECUTARSE, no al encolar.
+    void EnqueueKitchen(Anima self, Dictionary<string, string> args, KitchenStepSpell spell)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : (args.TryGetValue("character", out string c) ? c : null);
+        if (name == null) { Log($"{spell.GetType().Name} necesita un destiny (p. ej. Huevos, Olla)."); return; }
+        GameObject station = ResolveStation(self, name);
+        if (station == null) { Log($"«{self.name}»: ¿Dónde está {name}?"); return; }
+        spell.target = station; spell.targetName = station.name;
+        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        q.EnqueuePlayer(spell);
+        Log($"«{self.name}» → {spell.Label}.");
+    }
+
+    // Estación por nombre: exacto primero; si no, la más cercana entre objetos etiquetados (WorldLabel) o recipientes.
+    static GameObject ResolveStation(Anima self, string name)
+    {
+        GameObject exact = GameObject.Find(name);
+        if (exact != null) return exact;
+        GameObject best = null; float bestSq = float.MaxValue;
+        var candidates = new List<Component>();
+        candidates.AddRange(FindObjectsOfType<WorldLabel>());
+        candidates.AddRange(FindObjectsOfType<KitchenVessel>());
+        foreach (Component comp in candidates)
+        {
+            if (!NameMatches(comp.name, name)) continue;
+            float sq = (comp.transform.position - self.transform.position).sqrMagnitude;
+            if (sq < bestSq) { bestSq = sq; best = comp.gameObject; }
+        }
+        return best;
     }
 
     // Yoga: encola el Saludo al Sol (12 asanas) en la cola del poseído → adopta las posturas por bodyPart.
