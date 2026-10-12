@@ -31,6 +31,8 @@ public class Anima : MonoBehaviour, IAptitudes
     [HideInInspector] public bool  death;
     [HideInInspector] public bool  asleep;
     [HideInInspector] public bool  aware;                // ESTADO discreto: true mientras RESPONDE activamente a una amenaza
+    [HideInInspector] public bool  prone;                // POSTURA: true = caído/derribado. El paso 'levantarse' lo repone;
+                                                         // todo superhechizo de movimiento empieza por levantarse (se salta si ya está de pie).
     [HideInInspector] public float alertness;            // GRADO 0–1 de alerta perceptiva: cuánto está CAPTANDO ahora (lo
                                                          // alimenta la percepción — órganos/grimoire, via ObserveSpell).
                                                          // A futuro gatea `aware`: un ser reacciona solo a lo que percibe.
