@@ -5,6 +5,11 @@
 > [`unity-editor-manual.md`](unity-editor-manual.md). Diseño de cada sistema en los docs enlazados.
 
 ## 0. Montaje base (una vez)
+- [ ] **COMPILAR PRIMERO** (el proyecto Unity es otra carpeta, `C:/Users/Blein/COLD-SANCTUARY`): `tools/sync-to-unity.sh`
+      (`--prune` si hubo borrados/renombres) y luego **`tools/verify-compile.sh`** → compila de verdad sin abrir el
+      Editor. **Hazlo tras cada PR mío**: yo no puedo compilar en mi máquina (solo verifico llaves/refs), así que este
+      paso es el que caza errores reales de compilación. Repórtame lo que salga y lo arreglo.
+- [ ] Dentro del Editor: `Tools/Cold Sanctuary/Verify` (`HeadlessVerify.Run`) monta el blockout → `[VERIFY] PASS|FAIL`.
 - [ ] Paquetes instalados: **URP** y **AI Navigation** (si no, los builders no compilan / no hay NavMesh).
 - [ ] Menú **`Tools/Cold Sanctuary/Build Sample Scene Blockout`** → genera el mesocosmos + regenera escenas del Microcosmos.
 - [ ] Guardar la escena. Debe existir un GameObject **`Player`** con tag `Player`.
