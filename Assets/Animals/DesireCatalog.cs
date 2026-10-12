@@ -11,13 +11,36 @@ public class Desire
 {
     public readonly string key;
     public readonly Func<Animal, float> NeedProbe;   // 0..1+ : necesidad actual (de los drives)
-    public readonly Action<Animal> Dispatch;         // corre la acción existente
+    public readonly Action<Animal> Dispatch;         // corre la acción existente (paso por defecto del suprahechizo)
     public readonly string capability;               // clave de confianza (D3a) para D3b3; null = sin ponderar
+    public readonly Func<Animal, List<QueuedSpell>> StepsBuilder;   // opcional: descompone el deseo en sub-hechizos
 
-    public Desire(string key, Func<Animal, float> need, Action<Animal> dispatch, string capability = null)
+    public Desire(string key, Func<Animal, float> need, Action<Animal> dispatch, string capability = null,
+                  Func<Animal, List<QueuedSpell>> steps = null)
     {
-        this.key = key; NeedProbe = need; Dispatch = dispatch; this.capability = capability;
+        this.key = key; NeedProbe = need; Dispatch = dispatch; this.capability = capability; StepsBuilder = steps;
     }
+
+    /// <summary>CONJURA el deseo como SUPRAHECHIZO (docs/spells-suprahechizo §3): una cola de sub-hechizos. Por defecto
+    /// un solo paso = la acción de siempre (`Dispatch`); si el deseo trae `StepsBuilder`, usa su descomposición
+    /// (analizar→acercarse→actuar…). La potencia = la necesidad actual (para el equilibrio: un hechizo más fuerte lo tumba).</summary>
+    public SuperSpell Conjure(Animal self)
+    {
+        List<QueuedSpell> steps = StepsBuilder != null ? StepsBuilder(self)
+                                                       : new List<QueuedSpell> { new DispatchStep(Dispatch, key) };
+        return new SuperSpell { name = key, steps = steps, power = Mathf.Max(0.1f, NeedProbe(self)) };
+    }
+}
+
+/// <summary>Un sub-hechizo que ejecuta una ACCIÓN existente (Action&lt;Animal&gt;) una vez y termina. El ladrillo con el
+/// que un deseo-suprahechizo envuelve su conducta actual; se insertan más pasos (analizar/levantarse/acercarse) antes.</summary>
+public class DispatchStep : QueuedSpell
+{
+    readonly Action<Animal> _act;
+    readonly string _label;
+    public DispatchStep(Action<Animal> act, string label = "acción") { _act = act; _label = label; }
+    public override string Label => _label;
+    public override bool Tick(Anima self) { if (_act != null && self is Animal an) _act(an); return true; }
 }
 
 /// <summary>
@@ -40,7 +63,14 @@ public static class DesireCatalog
         new Desire("eat",
             self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
             self => self.StartCoroutine(self.Feed()),
-            "forage"),
+            "forage",
+            // SUPRAHECHIZO de comer (ejemplo de descomposición): ANALIZAR → COMER. Más adelante: levantarse-si-caído,
+            // acercarse, cazar/pacer, o pedir-ayuda si no hay energía (docs/spells-suprahechizo §3).
+            self => new List<QueuedSpell>
+            {
+                new DispatchStep(a => Debug.Log($"[Deseo] «{a.name}» analiza: ¿comida cerca o a buscar?"), "analizar"),
+                new DispatchStep(a => a.StartCoroutine(a.Feed()), "comer"),
+            }),
 
         // BUSCAR PAREJA (reproducción paso 1): en celo, dirigirse al gradiente de Estrus (otras animas en celo). Dormido
         // hasta que Volition esté activo (D3b2); el cortejo/concepción llega en el paso 2. docs/environmental-navigation.md.

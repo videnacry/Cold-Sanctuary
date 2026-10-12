@@ -87,7 +87,7 @@ public class PullDoor : MonoBehaviour
         this.moving = false;
     }
 
-    void OnCollissionEnter()
+    void OnCollisionEnter(Collision collision)
     {
         if (lp>0)
         {

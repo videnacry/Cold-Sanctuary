@@ -12,7 +12,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > **Testing:** `TestProbe`/`TestRunner` (grep `[TEST]`), 8 sandboxes en `TestRunner_AUTO`, misión-observación
 > `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/capabilities-and-embodiment.md`,
 > `docs/volition-selection-engine.md`, `docs/environmental-navigation.md`. **Validación en Unity:** el compañero
-> confirmó compilación limpia + 0 regresiones hasta #148; **pendiente compilar #149–#162** (todo balance-safe/gateado).
+> confirmó compilación limpia + 0 regresiones hasta #148. **2026-10-12: master hasta #217 (7eb29ec) COMPILA con 0 errores**
+> (`tools/verify-compile.sh`, Unity 6000.5.1f1: runtime 0 err/43 warnings, editor 0 err/3 warnings). Falta **probar en
+> escena** (regresiones) lo de #149 en adelante. En el proyecto Unity sobran 3 `.cs` fuera de git: `Assets/Editor/HeadlessLive.cs`
+> y `Assets/Scripts/ChecklistAuto.cs` (commits locales sin pushear) y `Assets/Scripts/Microcosmos/WalkToGoal.cs` (nunca en git).
 > **Siguiente sugerido:** Enfermería (curar enfermos/inanición vía `SicknessState.Heal`), N2/N4 (que el saciado gravite
 > a lugares), o status del jugador (atacado/huida) en el HUD.
 >
@@ -87,7 +90,12 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Volición por la cola** — HECHO 2026-10-12: `Volition` encola un `DesireSpell` (envuelve el deseo elegido) en la
       `ActionQueue` (carril opcional) en vez de despachar directo; `useQueue` (fallback directo si no hay cola). El
       carril `own` del cuerpo (`AcuteStressResponse`) tiene prioridad → un apremio pausa la volición solo.
-      *Siguiente:* que cada deseo sea un `SuperSpell` con sus sub-pasos (analizar→levantarse→buscar…) + usar thoughtCounts.
+- [x] **Deseos = SUPRAHECHIZOS** — HECHO 2026-10-12: `Desire.Conjure()` devuelve un `SuperSpell` (por defecto 1 paso =
+      `DispatchStep` de la acción actual; descomponible vía `StepsBuilder`). `eat` ya tiene 2 pasos (analizar→comer).
+      La `Volition` encola el `Conjure` del deseo elegido. *Siguiente:* descomponer el resto (acercarse/levantarse/pedir-ayuda) + usar thoughtCounts.
+- [ ] **MIGRAR el sistema postnatal (crías/padres/parejas) a DESEOS** (`PostNatalManager` actúa DIRECTO hoy): convertir
+      nutrir/guardar-cría/cortejo en `Desire`s (NeedProbe+Steps) que compitan en la arena y corran por la cola — la
+      plantilla ya existe (`tend`/`follow`/`mate`). Ya hay material suficiente para hacerlo.
 - [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
 - [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
       Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
@@ -225,8 +233,10 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] `NPCCombatBehavior`, `NPCEconomy`/`AreaVendor`, `ClothingCraftingArea` (cerrar loop).
 
 ## Bugs abiertos (known-issues.md)
-- [ ] `ShipCtrl` `if(1==1)` (83/95); `PullDoor.OnCollissionEnter` (typo); `Respawn` off-by-one;
-      `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
+- [x] `ShipCtrl` `if(1==1)` (83/95) → pitch de cámara acotado (`minCamPitch`/`maxCamPitch`). (2026-10-12)
+- [x] `PullDoor.OnCollissionEnter` (typo) → `OnCollisionEnter(Collision)`; la rotura por golpes (`lp`) ya corre. (2026-10-12)
+- [x] `Respawn` off-by-one → `Random.Range(0, beasts.Length)` incluye `beasts[0]`. (2026-10-12)
+- [ ] `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
 
 ## Mundo grande — los 3 planos (world-topology-and-planes.md)
 Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna vertebral).
