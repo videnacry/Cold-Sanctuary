@@ -137,6 +137,7 @@ public static class SampleSceneBuilder
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
+        BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
@@ -2412,30 +2413,33 @@ public static class SampleSceneBuilder
         floor.name = "Suelo_Restaurante"; floor.transform.SetParent(room.transform);
         floor.transform.localPosition = Vector3.zero; floor.transform.localScale = new Vector3(16f, 0.2f, 12f);
 
-        // Estaciones (muchas planchas/ollas/bols para cocinar en paralelo) + mesa de emplatado + nevera.
-        (string label, Vector3 pos, Vector3 scale)[] stations = {
-            ("Nevera",        new Vector3(-7f, 1f, 5f),  new Vector3(1.5f, 2f, 1.5f)),
-            ("Plancha 1",     new Vector3(-4f, 1f, 5f),  new Vector3(1.6f, 1f, 1.6f)),   // bloque bajo = "platillo" cuadrado
-            ("Plancha 2",     new Vector3(-1f, 1f, 5f),  new Vector3(1.6f, 1f, 1.6f)),
-            ("Olla 1",        new Vector3(2f, 1f, 5f),   new Vector3(1.2f, 1.2f, 1.2f)),
-            ("Olla 2",        new Vector3(5f, 1f, 5f),   new Vector3(1.2f, 1.2f, 1.2f)),
-            ("Bol 1",         new Vector3(-4f, 0.9f, 2f),new Vector3(1f, 0.8f, 1f)),
-            ("Bol 2",         new Vector3(-1f, 0.9f, 2f),new Vector3(1f, 0.8f, 1f)),
-            ("Mesa de emplatado", new Vector3(5f, 0.9f, 2f), new Vector3(3f, 0.8f, 1.5f)),
-        };
-        foreach (var s in stations) MakeLabeledPrimitive(room.transform, s.label, s.pos, s.scale, new Color(0.7f, 0.7f, 0.75f));
+        // ESCALA REAL (jugador/humano ~1.7): encimeras a ~0.9 de alto; los útiles van ENCIMA. Nevera alta; olla/bol
+        // pequeños; huevos diminutos. Así la olla, el jugador y la cocina respetan proporciones reales.
+        Color furniture = new Color(0.72f, 0.72f, 0.78f);
+        Color metal = new Color(0.6f, 0.62f, 0.66f);
 
-        // Ingredientes (cubos pequeños) nombrados — el jugador escribe walkTo({destiny:"Huevos"}) → step.
+        // Encimera trasera (z=5) con planchas y ollas encima; encimera de ingredientes (z=-4); mesa de emplatado (z=2).
+        MakeLabeledPrimitive(room.transform, "Encimera cocina", new Vector3(0f, 0.45f, 5f), new Vector3(13f, 0.9f, 0.8f), furniture);
+        MakeLabeledPrimitive(room.transform, "Encimera ingredientes", new Vector3(0f, 0.45f, -4f), new Vector3(13f, 0.9f, 0.8f), furniture);
+        MakeLabeledPrimitive(room.transform, "Mesa de emplatado", new Vector3(5f, 0.45f, 2f), new Vector3(2.5f, 0.9f, 1.0f), furniture);
+        MakeLabeledPrimitive(room.transform, "Nevera", new Vector3(-7f, 0.9f, 5f), new Vector3(0.8f, 1.8f, 0.7f), new Color(0.8f, 0.85f, 0.9f));
+
+        // Útiles SOBRE la encimera (y≈0.95): planchas planas, ollas y bols pequeños.
+        MakeLabeledPrimitive(room.transform, "Plancha 1", new Vector3(-4f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
+        MakeLabeledPrimitive(room.transform, "Plancha 2", new Vector3(-1f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(4f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
+        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
+        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.4f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
+
+        // Ingredientes (diminutos ~0.12) sobre la encimera de ingredientes.
         (string label, Color col)[] ingredients = {
             ("Huevos", new Color(0.95f, 0.9f, 0.6f)), ("Verduras", new Color(0.4f, 0.8f, 0.4f)),
             ("Avena", new Color(0.85f, 0.75f, 0.55f)), ("Fruta", new Color(0.9f, 0.5f, 0.6f)),
             ("Yogur", new Color(0.95f, 0.95f, 0.95f)), ("Legumbres", new Color(0.6f, 0.45f, 0.3f)),
         };
         for (int i = 0; i < ingredients.Length; i++)
-        {
-            Vector3 p = new Vector3(-7f + i * 2.6f, 0.7f, -4f);
-            MakeLabeledPrimitive(room.transform, ingredients[i].label, p, new Vector3(0.5f, 0.5f, 0.5f), ingredients[i].col);
-        }
+            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, 0.98f, -4f), new Vector3(0.14f, 0.14f, 0.14f), ingredients[i].col);
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
@@ -2573,6 +2577,29 @@ public static class SampleSceneBuilder
             fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = treePos + new Vector3(4f, 0f, 0f), quantity = 6, minParentsCount = 1, radius = 5f } };
         }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
+    }
+
+    // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
+    // salud, lanza el status global y va a atenderlo (análisis + vacuna). Guion EMERGENTE (no scriptado).
+    static void BuildLinduarda(Transform parent)
+    {
+        GameObject root = new GameObject("Enfermeria_AUTO"); root.transform.SetParent(parent);
+
+        GameObject l = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        l.name = "Linduarda"; l.transform.SetParent(root.transform); l.transform.position = new Vector3(8f, 1f, 8f);
+        var r = l.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Linduarda_MAT", new Color(0.9f, 0.8f, 0.85f));
+        l.AddComponent<Anima>();
+        l.AddComponent<Mind>().identity = "Linduarda";
+        l.AddComponent<Linduarda>();
+
+        GameObject wolf = LoadAnimalPrefab("Wolf");
+        if (wolf != null)
+        {
+            GameObject p = (GameObject)PrefabUtility.InstantiatePrefab(wolf);
+            p.name = "Kushal_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);
+            HealthRecord hr = p.AddComponent<HealthRecord>(); hr.vaccinated = false; hr.analyzed = false;
+        }
+        else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
     }
 
     static void BuildAnimaStatusPanels(Transform parent)

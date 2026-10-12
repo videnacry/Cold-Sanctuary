@@ -121,8 +121,9 @@ public static class AnimalPrefabGenerator
             instance = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
         else
         {
-            Debug.Log($"[AnimalPrefabGenerator] {species}: sin modelo 3D → PREFAB-CUBO por defecto (independiente de modelos).");
-            instance = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            Debug.Log($"[AnimalPrefabGenerator] {species}: sin modelo 3D → PREFAB-CUERPO-DE-CUBOS por defecto (independiente de modelos).");
+            instance = new GameObject(species);
+            CubeBody.Build(instance, species);   // cuerpo = grupo de cubos por parte (con CreatureRig para las asanas)
         }
         instance.name = species;
 
