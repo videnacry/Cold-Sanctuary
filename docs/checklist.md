@@ -232,8 +232,10 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] `NPCCombatBehavior`, `NPCEconomy`/`AreaVendor`, `ClothingCraftingArea` (cerrar loop).
 
 ## Bugs abiertos (known-issues.md)
-- [ ] `ShipCtrl` `if(1==1)` (83/95); `PullDoor.OnCollissionEnter` (typo); `Respawn` off-by-one;
-      `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
+- [x] `ShipCtrl` `if(1==1)` (83/95) → pitch de cámara acotado (`minCamPitch`/`maxCamPitch`). (2026-10-12)
+- [x] `PullDoor.OnCollissionEnter` (typo) → `OnCollisionEnter(Collision)`; la rotura por golpes (`lp`) ya corre. (2026-10-12)
+- [x] `Respawn` off-by-one → `Random.Range(0, beasts.Length)` incluye `beasts[0]`. (2026-10-12)
+- [ ] `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
 
 ## Mundo grande — los 3 planos (world-topology-and-planes.md)
 Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna vertebral).
