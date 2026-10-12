@@ -24,13 +24,14 @@ Todas se montan con `Tools/Cold Sanctuary/Build Sample Scene Blockout` (bajo `Le
 - **TestRunner_AUTO** (grupos 0–14, `[TEST]`): TraceField/Fauna/Emergence/Grimoire/Estrus/LifeCycle/Sickness/
   Starvation/Sleep + otros. **Test de observación** `ObservationTest`, estados `StateSpellsTest`, río `RiverCurrentTest`.
 
-## 2. Pruebas en vivo — QUÉ FALTA (escenarios dedicados)
-Hoy la caza/lucha ocurre **emergente** en el ecosistema, pero no hay **escenarios aislados** para observarlas:
-- [ ] **Apareamiento** (una pareja en celo, aislada, con comida → ver cortejo/concepción; hoy `EstrusTest` es unit).
-- [ ] **Caza** (1 depredador + presas + comida para la presa → ver acecho/persecución/depredación limpia).
-- [ ] **Lucha 1 vs 1** (dos depredadores por un recurso/territorio).
-- [ ] **Pack vs 1** y **Pack vs Pack** (manada(s) con `PackAwareness` → ayuda/defensa emergente).
-Patrón: como `BuildFamilyLifeTest`, aislados y con comida puesta para que el test sea **solo** de esa interacción.
+## 2. Pruebas en vivo — escenarios dedicados (CONSTRUIDO 2026-10-12, `BuildInteractionTests`)
+Aislados al oeste del mapa (`PruebasInteraccion_AUTO`), con solo los actores + la comida justa para que el test sea puro:
+- [x] **Apareamiento**: pareja de lobos + carne → entran en celo y se reproducen (deseo `mate`).
+- [x] **Caza**: 1 lobo (sin carne → caza) + conejos con pasto → acecho/persecución/depredación.
+- [x] **1 vs 1**: dos lobos + UNA carne (recurso escaso) → competencia/conflicto.
+- [x] **Pack vs 1**: manada de lobos + un oso → defensa/ataque de grupo (`PackAwareness`).
+- [x] **Pack vs Pack**: dos manadas de lobos contiguas.
+(Se omite un escenario si falta su prefab; con el prefab-cubo por defecto salen como cubos.)
 
 ## 3. Migración del postnatal a DESEOS — estado
 - **HECHO (1ª rebanada):** deseo **`nurse`** en `DesireCatalog` — el padre/madre **alimenta a la cría** (lifeStage='c')
