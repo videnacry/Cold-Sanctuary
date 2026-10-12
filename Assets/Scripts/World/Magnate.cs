@@ -21,6 +21,12 @@ public class Magnate : MonoBehaviour
     [Min(0.3f)] public float teachRadius = 2.5f;
     [Min(0f)] public float moveSpeed = 4f;
 
+    [Header("Guía del nuevo integrante (sala de yoga → cocina)")]
+    [Tooltip("Dónde lleva al nuevo a hacer upa-yoga. Si está vacío, busca un GameObject llamado 'SalaYoga'.")]
+    public Transform yogaSpot;
+    [Tooltip("Dónde lleva al nuevo a aprender un área. Si está vacío, busca un GameObject llamado 'CocinaSpot'.")]
+    public Transform kitchenSpot;
+
     Anima _a;
     PacifySpell _pacify;
     float _nextTeach, _nextPacify;
@@ -85,14 +91,30 @@ public class Magnate : MonoBehaviour
         Vector3 to = t.transform.position - transform.position; to.y = 0f;
         if (to.magnitude > teachRadius) { transform.position += to.normalized * moveSpeed * Time.deltaTime; return; }
 
-        // Ceremonia: la maestra lo presenta como nuevo miembro, le da el upa-yoga y lo encamina a aprender un área (cocina).
+        // Ceremonia: la maestra lo presenta como nuevo miembro, le da el upa-yoga y lo ENCAMINA a aprender un área (cocina).
         Debug.Log($"[Magnate] presenta a «{t.name}» como nuevo miembro del santuario. Le enseña upa-yoga y lo lleva a la cocina.");
         Teach(t);                              // upa-yoga: el recuerdo del Saludo al Sol + ánimo (ver Teach)
         Mind m = t.GetComponent<Mind>();
         if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
+        LeadToYogaThenKitchen(t);              // y lo LLEVA: camina a la sala de yoga, practica, y va a la cocina
         _newcomer.presented = true;
         _newcomer = null;
     }
+
+    // Superhechizo de GUÍA: encola en el nuevo caminar→sala de yoga (upa-yoga: Saludo al Sol)→caminar→cocina.
+    // Reutiliza ActionSpells.Walk (= levantarse + acercarse) y SunSalutation. En el carril propio (prioritario) del cuerpo.
+    void LeadToYogaThenKitchen(Anima t)
+    {
+        ActionQueue q = t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
+        Transform yoga = yogaSpot != null ? yogaSpot : FindSpot("SalaYoga");
+        Transform kitchen = kitchenSpot != null ? kitchenSpot : FindSpot("CocinaSpot");
+        if (yoga != null) q.EnqueueOwn(ActionSpells.Walk(yoga));
+        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueueOwn(s);   // al llegar, practica el Saludo al Sol
+        if (kitchen != null) q.EnqueueOwn(ActionSpells.Walk(kitchen));
+        Debug.Log($"[Magnate] guía a «{t.name}»: sala de yoga → upa-yoga → cocina.");
+    }
+
+    static Transform FindSpot(string n) { GameObject g = GameObject.Find(n); return g != null ? g.transform : null; }
 
     // Proteger la vida: a su alrededor lanza PACIFICACIÓN (quita humores negativos, sube positivos, quita `aware`) →
     // el depredador suelta a su presa. Throttled (~0.5 s) para no castear cada frame sobre muchos.
