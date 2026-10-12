@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 380 tipos._
+_Total: 384 tipos._
 
 
 ## Animals
@@ -54,6 +54,7 @@ _Total: 380 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
@@ -226,6 +227,7 @@ _Total: 380 tipos._
 - **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
 - **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
+- **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
 - **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
@@ -234,6 +236,7 @@ _Total: 380 tipos._
 - **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
+- **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
 - **MeditationMob** (class) — `Assets/Scripts/Meditation/MeditationMob.cs` — Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
 - **MeditationReward** (class) — `Assets/Scripts/Meditation/MeditationReward.cs` — Reusable reward block for meditation / Microcosmos missions (docs §7).
@@ -266,6 +269,7 @@ _Total: 380 tipos._
 - **ObservationTest** (class) — `Assets/Scripts/ObservationTest.cs` — Test de la OBSERVACIÓN/ecuanimidad (docs/apremios-guardian-observacion.md §4, testing-checklist §44), por `TestProbe`:
 - **ObserveSpell** (class) — `Assets/Scripts/Microcosmos/ObserveSpell.cs` — HECHIZO PASIVO DE LOS OJOS:
 - **OrganicMaterial** (enum) — `Assets/Scripts/OrganicMaterial.cs`
+- **PacifySpell** (class) — `Assets/Scripts/Soul/PacifySpell.cs` — HECHIZO DE PACIFICACIÓN (docs/spells-suprahechizo-and-thoughts.md §5) — serena a un objetivo:
 - **PackAwareness** (class) — `Assets/Scripts/Microcosmos/PackAwareness.cs` — CONCIENCIA DE MANADA — lógica de ayuda emergente entre compañeros.
 - **Palette** (class) — `Assets/Scripts/UI/Palette/Palette.cs`
 - **PaletteConfig** (class) — `Assets/Scripts/UI/Palette/PaletteConfig.cs`

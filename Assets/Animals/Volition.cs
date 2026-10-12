@@ -63,9 +63,18 @@ public class Volition : MonoBehaviour
 
         if (best != null)
         {
-            best.Dispatch(self);
+            // POR LA COLA (docs/typed-spells-and-queues §4): en vez de actuar directo, el ser "lanza" el deseo como un
+            // hechizo en su ActionQueue (carril opcional) → usa la misma cola que el jugador. El carril `own` (reflejo
+            // del cuerpo, AcuteStressResponse) tiene prioridad, así que un apremio corporal pausa esto solo. Si no hay
+            // ActionQueue (o useQueue=false), cae al despacho directo de siempre (paridad).
+            ActionQueue q = useQueue ? self.GetComponent<ActionQueue>() : null;
+            if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
+            else best.Dispatch(self);
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
             _last = best; _lastScore = bestScore;
         }
     }
+
+    [Tooltip("Despachar los deseos POR LA ActionQueue (el ser 'lanza' sus acciones como el jugador). Si no hay cola, directo.")]
+    public bool useQueue = true;
 }

@@ -101,13 +101,6 @@ public static class AnimalPrefabGenerator
             return null;
         }
 
-        string fbxPath = FindFbx(modelsDir, species);
-        if (fbxPath == null)
-        {
-            Debug.LogWarning($"[AnimalPrefabGenerator] {species}: no se encontro ningun .fbx en {modelsDir}/, se omite.");
-            return null;
-        }
-
         System.Type behaviourType = System.Type.GetType(behaviourTypeName)
             ?? System.AppDomain.CurrentDomain.GetAssemblies()
                 .Select(a => a.GetType(behaviourTypeName))
@@ -118,14 +111,18 @@ public static class AnimalPrefabGenerator
             return null;
         }
 
-        GameObject fbxAsset = AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath);
-        if (fbxAsset == null)
+        // MODELO o CUBO: si hay .fbx se usa; si NO (o no carga), se crea un PREFAB-CUBO por defecto → el juego es
+        // independiente de los modelos 3D (como la cocina). Los catálogos (escala/stats) aplican igual por especie.
+        string fbxPath = FindFbx(modelsDir, species);
+        GameObject fbxAsset = fbxPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath) : null;
+        GameObject instance;
+        if (fbxAsset != null)
+            instance = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
+        else
         {
-            Debug.LogWarning($"[AnimalPrefabGenerator] {species}: no se pudo cargar el asset en {fbxPath}, se omite.");
-            return null;
+            Debug.Log($"[AnimalPrefabGenerator] {species}: sin modelo 3D → PREFAB-CUBO por defecto (independiente de modelos).");
+            instance = GameObject.CreatePrimitive(PrimitiveType.Cube);
         }
-
-        GameObject instance = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
         instance.name = species;
 
         if (instance.GetComponent<Rigidbody>() == null)
@@ -155,7 +152,7 @@ public static class AnimalPrefabGenerator
         GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
         Object.DestroyImmediate(instance);
 
-        Debug.Log($"[AnimalPrefabGenerator] {species}: creado {prefabPath} (modelo: {fbxPath}, behavior: {behaviourTypeName}).");
+        Debug.Log($"[AnimalPrefabGenerator] {species}: creado {prefabPath} (modelo: {fbxPath ?? "CUBO por defecto"}, behavior: {behaviourTypeName}).");
         return savedPrefab != null ? prefabPath : null;
     }
 

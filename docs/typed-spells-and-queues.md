@@ -67,7 +67,8 @@ mecanografía ≈ 40 palabras/minuto** (≈ **0,67 palabras/s**, ~**1,5 s por pa
 | Comandos de consola: `walkTo`, **`step`/`cook`** (avanza la receta), **`bond`**, **`thought`** (lanzan `BondSpell`/`ThoughtSpell`) | **EXISTE** |
 | **Restaurante físico con primitivas** (suelo + nevera/planchas/ollas/bols/mesa + ingredientes, todos con etiqueta; muchas estaciones para varios cocineros) | **EXISTE** (`BuildRestaurantRoom`) |
 | **Cocinar por teclado**: `walkTo({destiny:"Nevera"})` → `step` (estaciones y ingredientes etiquetados) | **EXISTE** (base) |
-| Más hechizos encolables específicos por paso (take/putIn/beat con estación exacta) | **FALTA** |
+| Hechizos de cocina por paso `take`/`putIn`/`beat` (`KitchenStepSpells.cs`): estación exacta, RANGO del miembro (o magia: energía/metro), manos (`KitchenHands`) y recipientes (`KitchenVessel`); avanzan la receta si casan con el verbo del paso | **EXISTE (2026-10-12)** |
+| Selector de reemplazo de primitivas del restaurante | **FALTA** |
 | Hechizos-postura por bodyPart (`PostureSpell`) + asanas (`AsanaPoseSpell`) + **Saludo al Sol** (`SunSalutation`, 12 asanas) + consola `yoga`/`surya`; parte ausente → "no tengo X disponible" | **EXISTE (2026-10-10)** |
 | `own`-lane alimentada por `AcuteStressResponse` (`BodyReflexSpell` bloquea al jugador en toma de mando) | **EXISTE (2026-10-10)** |
 | **Carril opcional** del anima libre (`IdleBehavior` encola `WanderSpell`; auto en animas compuestas via `Cast`) | **EXISTE (2026-10-10)** |

@@ -9,11 +9,11 @@ verificado). Los ítems ~~tachados~~ se resolvieron o dejaron de aplicar. Las re
 
 - ~~**`Animal.cs` — `lp` sin inicializar**~~ — **falso positivo del audit**: `lp` SÍ se inicializa
   (`Init()` → `Fatten()` fija `lp = rig.mass`, `LifeStage.cs:133`), así que `Hurt()` no mata de un golpe.
-- **`ShipCtrl.cs:83,95`** — placeholders `if (1 == 1)`; las ramas de seguimiento de cámara
-  (`else if`/`else`) son inalcanzables.
-- **`PullDoor.cs:90` — `OnCollissionEnter()`** mal escrito (doble s); Unity nunca lo llama →
-  la rotura de puerta por golpes (`lp`) es código muerto. Renombrar a `OnCollisionEnter`.
-- **`Respawn.cs:39`** — `Random.Range(1, beasts.Length)` se salta `beasts[0]` (off-by-one).
+- ~~**`ShipCtrl.cs:83,95`** — placeholders `if (1 == 1)`.~~ **Resuelto 2026-10-12:** pitch de cámara
+  acotado a `[minCamPitch, maxCamPitch]`; se quitaron las ramas muertas.
+- ~~**`PullDoor.cs:90` — `OnCollissionEnter()`** mal escrito.~~ **Resuelto 2026-10-12:** renombrado a
+  `OnCollisionEnter(Collision)`; ojo, ahora CUALQUIER colisión resta `lp` (también el jugador).
+- ~~**`Respawn.cs:39`** — off-by-one que saltaba `beasts[0]`.~~ **Resuelto 2026-10-12.**
 - **`CombatAbilityBar.cs` — `RefreshBar()`** solo se llama en `Awake()`; nada lo re-llama al subir
   nivel o descubrir elemento → la barra no crece en vivo como promete el diseño.
 - ~~**`KitchenScaleController.cs` / `KitchenEntrance.cs`** — doble entrada.~~ **Resuelto por borrado

@@ -5,6 +5,7 @@
 > [`unity-editor-manual.md`](unity-editor-manual.md). Diseño de cada sistema en los docs enlazados.
 
 ## 0. Montaje base (una vez)
+<<<<<<< HEAD
 > Verificado 2026-10-11 por CLI (`-executeMethod HeadlessLive.PrepareOnly`). Evidencia citada por línea.
 - [x] Paquetes instalados: **URP** y **AI Navigation** — `Packages/manifest.json`:
       `"com.unity.render-pipelines.universal": "17.5.0"` y `"com.unity.ai.navigation": "2.0.13"`. Además el
@@ -28,6 +29,22 @@
       builder los omite: `[SampleSceneBuilder] WildlifePopulation: no se encontro el prefab de Penguin, se omite
       esa familia.` (ídem Orca) → **el Pingüino y la Orca del Santuario de Hielo no entran en escena**. Es
       autoría de modelos, no código.
+=======
+- [ ] **COMPILAR PRIMERO** (el proyecto Unity es otra carpeta, `C:/Users/Blein/COLD-SANCTUARY`): `tools/sync-to-unity.sh`
+      (`--prune` si hubo borrados/renombres) y luego **`tools/verify-compile.sh`** → compila de verdad sin abrir el
+      Editor. **Hazlo tras cada PR mío**: yo no puedo compilar en mi máquina (solo verifico llaves/refs), así que este
+      paso es el que caza errores reales de compilación. Repórtame lo que salga y lo arreglo.
+- [ ] Dentro del Editor: `Tools/Cold Sanctuary/Verify` (`HeadlessVerify.Run`) monta el blockout → `[VERIFY] PASS|FAIL`.
+- [ ] Paquetes instalados: **URP** y **AI Navigation** (si no, los builders no compilan / no hay NavMesh).
+- [ ] Menú **`Tools/Cold Sanctuary/Build Sample Scene Blockout`** → genera el mesocosmos + regenera escenas del Microcosmos.
+- [ ] Guardar la escena. Debe existir un GameObject **`Player`** con tag `Player`.
+- [ ] Objetos esperados en escena (los crea el builder): `Clock_AUTO`, `TraceField_AUTO`, HUDs
+      `AnimaStatusHUD_AUTO`/`AnimaThoughtHUD_AUTO`/`AnimaNameplate_AUTO`, `SpellConsole_AUTO`, `Restaurante_AUTO`.
+- [ ] **Prefabs de fauna**: `Tools/Cold Sanctuary/Generate Animal Prefabs` → ahora crea un **prefab-CUBO** para las
+      especies **sin `.fbx`** (independiente de modelos 3D), así que **las 21 quedan con prefab**. Pon `.fbx` (rig
+      **Generic**, clips `Idle/Walk/Run`) en `Assets/Animals/{Especie}/Models/` cuando los tengas y regenera esa
+      especie (borra su `.prefab`-cubo antes, o se omite por existir). Sin modelo tampoco crashea en runtime (guard en ActionPrep).
+>>>>>>> e825df8423a8eeb49b7862cd1d9ce73682ba19ea
 
 ## 1. HUDs (OnGUI, salen solos al dar Play)
 - [ ] **Estado** (`AnimaStatusHUD`): drives/actividad/elementos con color del ser objetivo.
@@ -70,6 +87,8 @@
 - [ ] Desde un script/botón de prueba: `factory.Create(new AnymaSpec(), pos)` (spec vacío) varias veces → deben salir
       con **stats variados** (×0.8..2) y tamaños/grosores distintos; hambre/sueño random.
 - [ ] `Create(new AnymaSpec{ species="Bear", randomStatsLimitations=new StatRange{min=1.5f,max=3f} })` → osos grandes.
+- [ ] **Independencia de modelos:** deja un `templates[]` **con `prefab` vacío** (solo la especie) → al crear sale un
+      **CUBO** funcional (Animal + SpeciesBody de esa especie). El juego no requiere los `.fbx`.
 
 ## 7. Apariencia por stats (`StatPhysique`, auto en fauna)
 - [ ] Sube `strength` o `fatReserves` de un animal (inspector o `TransformationSpell`) → se ve **más grueso** (ancho),
@@ -87,6 +106,40 @@
 ## 10. Comportamiento libre por cola (`IdleBehavior`, en animas compuestas del Microcosmos)
 - [ ] En las escenas del Microcosmos, las animas del elenco **libres** (sin poseer, sin apremio) **merodean**
       (encolan `WanderSpell`). Al poseer una, puedes vaciar su cola y programar la tuya.
+
+## 11. La Magnate (`BuildMagnate` → cápsula "Magnate")
+- [ ] Da Play: tiene stats al tope, **no le bajan** hambre/sueño/estrés. No puedes poseerla (relevancia altísima).
+- [ ] Pon un depredador atacando a una presa cerca de ella → al entrar en su radio, la presa/depredador **dejan de
+      estar `aware`** (se calma; el lobo suelta al conejo).
+- [ ] Deja correr: cada ~30 s (de juego) **va hacia el ser con menor nivel integral** y, al llegar, loguea
+      `[Magnate] enseña el Saludo al Sol a «X»` → ese ser **aprende "yoga"** (Grimoire), **encola el Saludo al Sol** y
+      sube XP de Yoga. (Si le falta comer/descansar, lo dice y no enseña.)
+
+## 12. Cocina con RANGO (acción = hechizo con alcance)
+- [ ] Posee al cocinero, abre consola (`~`). Lejos de la nevera, escribe `use({destiny:"Nevera"})` → **falla**:
+      "no alcanzo Nevera — acércate". Haz `walkTo({destiny:"Nevera"})`, y cuando llegues, `use({destiny:"Nevera"})`
+      → **avanza el paso**. (Primer paso del modelo "steps = hechizos con alcance"; la magia ampliará el rango.)
+
+## 12b. Hechizos de cocina por PASO (`take`/`putIn`/`beat`)
+- [ ] Posee al cocinero (receta *Huevos revueltos*), consola `~`. Encola de corrido:
+      `walkTo("Nevera")` → `take("Nevera")` (solo la abre: paso «ve a la nevera») → `walkTo("Huevos")` → `take("Huevos")` →
+      `walkTo("Plancha")` → `step` (calienta) → `putIn("Plancha")` (la receta no tiene paso "pon": avisa sin avanzar) →
+      `beat("Plancha")` (revuelve; tarda ~2,5 s ÷ fuerza/agilidad).
+      Cada hechizo que **casa con el verbo** del paso actual lo **avanza** (HUD ✔).
+- [ ] Fallos esperados (log `[Cocina]` + pensamiento): `take` lejos → "no alcanzo"; `take` con las manos llenas;
+      `putIn("Huevos")` → "no es un recipiente"; `beat` en olla vacía → "no hay nada que batir"; hechizo que no casa →
+      "hecho, pero el paso que toca es «…»". `"Plancha"` resuelve la «Plancha N» más cercana.
+- [ ] Con `MagicReserves` desbloqueada y energía, `take` a distancia **funciona** pagando 50 J/m extra.
+
+## 13. Insectos neutros de ambiente (Microcosmos Scene0)
+- [ ] Regenera `Build Microcosmos Scene0`; si los `.fbx` de Cricket/Aphid/Ladybug/Grasshopper existen, verás unos
+      pocos dispersos por la zona norte (ambiente). Si faltan, la consola loguea que se omiten (no crashea).
+
+## 14. Volición por la cola (NPCs "lanzan" sus acciones)
+- [ ] Un animal **no poseído** con necesidades: su `Volition` ahora **encola un `DesireSpell`** (el deseo elegido:
+      comer/seguir/descansar…) en su `ActionQueue` en vez de actuar directo. Comportamiento ≈ igual que antes
+      (el `Dispatch` arranca la conducta), pero ahora pasa por la cola. Si subes su apremio corporal (`AcuteStressResponse`
+      en toma de mando), el carril `own` **pausa** la volición. (`Volition.useQueue`=false vuelve al despacho directo.)
 
 ## Qué reportar
 Consola de Unity: busca `[Cocina]`, `[Restaurante]`, `[Yoga]`, `[Hechizo]`, `[Charla]`, `[Mente]`. Anota crashes,

@@ -12,7 +12,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > **Testing:** `TestProbe`/`TestRunner` (grep `[TEST]`), 8 sandboxes en `TestRunner_AUTO`, misión-observación
 > `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/capabilities-and-embodiment.md`,
 > `docs/volition-selection-engine.md`, `docs/environmental-navigation.md`. **Validación en Unity:** el compañero
-> confirmó compilación limpia + 0 regresiones hasta #148; **pendiente compilar #149–#162** (todo balance-safe/gateado).
+> confirmó compilación limpia + 0 regresiones hasta #148. **2026-10-12: master hasta #217 (7eb29ec) COMPILA con 0 errores**
+> (`tools/verify-compile.sh`, Unity 6000.5.1f1: runtime 0 err/43 warnings, editor 0 err/3 warnings). Falta **probar en
+> escena** (regresiones) lo de #149 en adelante. En el proyecto Unity sobran 3 `.cs` fuera de git: `Assets/Editor/HeadlessLive.cs`
+> y `Assets/Scripts/ChecklistAuto.cs` (commits locales sin pushear) y `Assets/Scripts/Microcosmos/WalkToGoal.cs` (nunca en git).
 > **Siguiente sugerido:** Enfermería (curar enfermos/inanición vía `SicknessState.Heal`), N2/N4 (que el saciado gravite
 > a lugares), o status del jugador (atacado/huida) en el HUD.
 >
@@ -67,15 +70,35 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **`AcuteStressResponse` siempre activo y universal** (fauna+compuestas+jugador) — HECHO (no es switch).
 - [x] **Cocinar por teclado** (base): restaurante físico con primitivas etiquetadas (`BuildRestaurantRoom`) +
       `WorldLabel` en nameplates + consola `step`/`cook` + `walkTo({destiny:"Nevera"})` — HECHO 2026-10-10.
-      *Falta:* hechizos por paso con estación exacta (take/putIn/beat), selector de reemplazo de primitivas.
+      *Falta:* selector de reemplazo de primitivas (take/putIn/beat HECHOS).
 - [x] **Platillos** yogur/kéfir + bowl quinoa+lentejas + menestra — HECHO (presets + sandbox, ~7 pasos c/u).
 - [x] **`AnymaSpec` + `AnymaFactory`** (spec opcional → random 0.8..2; `CreateMany`) + `StatPhysique` (apariencia por
       stats) + **`BondSpell`/`ThoughtSpell`** (modificación de vínculo/mente; stats ya=`TransformationSpell`) — HECHO.
 - [x] **22 platillos** (6 base + 16 bomba por país, `CookingRecipe.All`) + **cierre nocturno** (`AreaHours`+`IsDay`) — HECHO 2026-10-10.
 - [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](testing-recent-features.md)) — HECHO (montaje + tests por feature).
-- [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) + selector de primitivas.
-- [ ] **Magnate** (estado infinito/sin necesidades; clon en todos los sanctuary; bond alto por defecto desde todas; evento proteger-vida→enfermería; pacifica al aparecer; guardia nocturna alimentando animales; revisión semanal de status del mesomundo). Diseño pendiente de doc.
-- [ ] **Volición por la cola** (needs→thoughts→la IA encola hechizos-recuerdo del `Grimoire`) — refactor mayor.
+- [x] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) — HECHO 2026-10-12 (`Assets/Scripts/Kitchen/KitchenStepSpells.cs`: manos `KitchenHands`, recipientes `KitchenVessel`, avanzan la receta si casan con el verbo del paso).
+- [ ] **Selector de reemplazo de primitivas** del restaurante (cambiar los cubos por prefabs).
+- [x] **Magnate** (1ª rebanada): estado infinito + sin necesidades + imposeíble de poseer + **pacifica** + va al
+      **rezagado** y le **enseña yoga** (Grimoire+Saludo al Sol+XP) — HECHO 2026-10-12 (`Assets/Scripts/World/Magnate.cs`).
+      *Falta:* marca por anima, bond alto por defecto (Anima→ITarget), llevar a enfermería, guardia nocturna, clon por sanctuary.
+- [x] **Cocina con RANGO** (`use`/`take` falla si no alcanzas la estación) — HECHO (1er paso de "steps=hechizos con alcance").
+- [x] **Insectos neutros de ambiente** (factory en Micro Scene0; se saltan sin .fbx) — HECHO.
+- [x] **`SuperSpell`** (suprahechizo = cola de sub-hechizos; `IsSatisfied`=check, `Destabilize(power)`=equilibrio) — HECHO 2026-10-12.
+- [x] **Cuenta de pensamientos** (`Mind.CountOf`/`Reinforce`/`Erode`/`ShareOf`; selección por cuenta; expresar refuerza) — HECHO.
+- [x] **`PacifySpell`** (quita humores negativos, sube positivos) + la Magnate lo usa — HECHO.
+- [x] **Independencia de modelos 3D** (`AnymaFactory.CreateCubeAnima`: prefab vacío → cubo) — HECHO.
+- [x] **Volición por la cola** — HECHO 2026-10-12: `Volition` encola un `DesireSpell` (envuelve el deseo elegido) en la
+      `ActionQueue` (carril opcional) en vez de despachar directo; `useQueue` (fallback directo si no hay cola). El
+      carril `own` del cuerpo (`AcuteStressResponse`) tiene prioridad → un apremio pausa la volición solo.
+- [x] **Deseos = SUPRAHECHIZOS** — HECHO 2026-10-12: `Desire.Conjure()` devuelve un `SuperSpell` (por defecto 1 paso =
+      `DispatchStep` de la acción actual; descomponible vía `StepsBuilder`). `eat` ya tiene 2 pasos (analizar→comer).
+      La `Volition` encola el `Conjure` del deseo elegido. *Siguiente:* descomponer el resto (acercarse/levantarse/pedir-ayuda) + usar thoughtCounts.
+- [ ] **MIGRAR el sistema postnatal (crías/padres/parejas) a DESEOS** (`PostNatalManager` actúa DIRECTO hoy): convertir
+      nutrir/guardar-cría/cortejo en `Desire`s (NeedProbe+Steps) que compitan en la arena y corran por la cola — la
+      plantilla ya existe (`tend`/`follow`/`mate`). Ya hay material suficiente para hacerlo.
+- [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
+- [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
+      Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
 - [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
 - [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
 - [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.
@@ -210,8 +233,10 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [ ] `NPCCombatBehavior`, `NPCEconomy`/`AreaVendor`, `ClothingCraftingArea` (cerrar loop).
 
 ## Bugs abiertos (known-issues.md)
-- [ ] `ShipCtrl` `if(1==1)` (83/95); `PullDoor.OnCollissionEnter` (typo); `Respawn` off-by-one;
-      `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
+- [x] `ShipCtrl` `if(1==1)` (83/95) → pitch de cámara acotado (`minCamPitch`/`maxCamPitch`). (2026-10-12)
+- [x] `PullDoor.OnCollissionEnter` (typo) → `OnCollisionEnter(Collision)`; la rotura por golpes (`lp`) ya corre. (2026-10-12)
+- [x] `Respawn` off-by-one → `Random.Range(0, beasts.Length)` incluye `beasts[0]`. (2026-10-12)
+- [ ] `BirdBehavior` altura sin clamp; `ActionPrep` `energyCost` sin límites.
 
 ## Mundo grande — los 3 planos (world-topology-and-planes.md)
 Escalera de implementación propuesta (2026-07-23). Empezar por **A** (columna vertebral).

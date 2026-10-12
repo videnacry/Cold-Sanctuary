@@ -136,6 +136,7 @@ public static class SampleSceneBuilder
         new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
+        BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2442,6 +2443,17 @@ public static class SampleSceneBuilder
         WorldLabel wl = g.AddComponent<WorldLabel>();
         wl.text = label;
         wl.height = scale.y * 0.5f + 0.4f;
+    }
+
+    // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).
+    static void BuildMagnate(Transform parent)
+    {
+        GameObject m = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        m.name = "Magnate"; m.transform.SetParent(parent); m.transform.position = new Vector3(6f, 1f, 6f);
+        var r = m.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Magnate_MAT", new Color(0.85f, 0.8f, 0.95f));
+        m.AddComponent<Anima>();
+        m.AddComponent<Mind>().identity = "Magnate";
+        m.AddComponent<Magnate>();
     }
 
     static void BuildAnimaStatusPanels(Transform parent)

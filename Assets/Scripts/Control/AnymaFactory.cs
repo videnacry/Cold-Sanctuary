@@ -20,14 +20,30 @@ public class AnymaFactory : MonoBehaviour
 
     public Template[] templates = System.Array.Empty<Template>();
 
-    /// <summary>Crea UNA anima según el spec (vacío = todo random) en `pos`. Devuelve el GameObject o null.</summary>
+    /// <summary>Crea UNA anima según el spec (vacío = todo random) en `pos`. Si el selector de prefab está VACÍO, la
+    /// crea con un **CUBO** → el juego es **independiente de los modelos 3D** (como la cocina). Devuelve el GameObject.</summary>
     public GameObject Create(AnymaSpec spec, Vector3 pos)
     {
         spec = spec ?? new AnymaSpec();
         Template t = Pick(spec.species);
-        if (t == null || t.prefab == null) { Debug.LogWarning($"[AnymaFactory] Sin plantilla para «{spec.species}»."); return null; }
-        GameObject go = Instantiate(t.prefab, pos, Quaternion.identity);
+        GameObject go = (t != null && t.prefab != null)
+            ? Instantiate(t.prefab, pos, Quaternion.identity)
+            : CreateCubeAnima(t != null ? t.species : spec.species, pos);   // sin modelo → cubo
         go.AddComponent<AnymaSpecApplier>().spec = spec;
+        return go;
+    }
+
+    // Anima por DEFECTO sin modelo 3D: un cubo + Animal + SpeciesBody(especie) + Mind. Los catálogos (stats/masa/dieta)
+    // se aplican igual por la especie; solo falta el `ConfigureThreat` del subclass (menor). Game model-independent.
+    static GameObject CreateCubeAnima(string species, Vector3 pos)
+    {
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        go.name = string.IsNullOrEmpty(species) ? "Anima" : species;
+        go.transform.position = pos;
+        go.AddComponent<Animal>();
+        SpeciesBody sb = go.GetComponent<SpeciesBody>() ?? go.AddComponent<SpeciesBody>();
+        if (!string.IsNullOrEmpty(species)) sb.species = species;   // antes del Init → los catálogos usan esta especie
+        go.AddComponent<Mind>();
         return go;
     }
 
