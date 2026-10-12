@@ -5,7 +5,10 @@
 > [`unity-editor-manual.md`](unity-editor-manual.md). Diseño de cada sistema en los docs enlazados.
 
 ## 0. Montaje base (una vez)
-<<<<<<< HEAD
+- [ ] **COMPILAR PRIMERO** (el proyecto Unity es otra carpeta, `C:/Users/Blein/COLD-SANCTUARY`): `tools/sync-to-unity.sh`
+      (`--prune` si hubo borrados/renombres) y luego **`tools/verify-compile.sh`** → compila de verdad sin abrir el
+      Editor. **Hazlo tras cada PR mío**: yo no puedo compilar en mi máquina (solo verifico llaves/refs), así que este
+      paso es el que caza errores reales de compilación. Repórtame lo que salga y lo arreglo.
 > Verificado 2026-10-11 por CLI (`-executeMethod HeadlessLive.PrepareOnly`). Evidencia citada por línea.
 - [x] Paquetes instalados: **URP** y **AI Navigation** — `Packages/manifest.json`:
       `"com.unity.render-pipelines.universal": "17.5.0"` y `"com.unity.ai.navigation": "2.0.13"`. Además el
@@ -29,22 +32,10 @@
       builder los omite: `[SampleSceneBuilder] WildlifePopulation: no se encontro el prefab de Penguin, se omite
       esa familia.` (ídem Orca) → **el Pingüino y la Orca del Santuario de Hielo no entran en escena**. Es
       autoría de modelos, no código.
-=======
-- [ ] **COMPILAR PRIMERO** (el proyecto Unity es otra carpeta, `C:/Users/Blein/COLD-SANCTUARY`): `tools/sync-to-unity.sh`
-      (`--prune` si hubo borrados/renombres) y luego **`tools/verify-compile.sh`** → compila de verdad sin abrir el
-      Editor. **Hazlo tras cada PR mío**: yo no puedo compilar en mi máquina (solo verifico llaves/refs), así que este
-      paso es el que caza errores reales de compilación. Repórtame lo que salga y lo arreglo.
-- [ ] Dentro del Editor: `Tools/Cold Sanctuary/Verify` (`HeadlessVerify.Run`) monta el blockout → `[VERIFY] PASS|FAIL`.
-- [ ] Paquetes instalados: **URP** y **AI Navigation** (si no, los builders no compilan / no hay NavMesh).
-- [ ] Menú **`Tools/Cold Sanctuary/Build Sample Scene Blockout`** → genera el mesocosmos + regenera escenas del Microcosmos.
-- [ ] Guardar la escena. Debe existir un GameObject **`Player`** con tag `Player`.
-- [ ] Objetos esperados en escena (los crea el builder): `Clock_AUTO`, `TraceField_AUTO`, HUDs
-      `AnimaStatusHUD_AUTO`/`AnimaThoughtHUD_AUTO`/`AnimaNameplate_AUTO`, `SpellConsole_AUTO`, `Restaurante_AUTO`.
 - [ ] **Prefabs de fauna**: `Tools/Cold Sanctuary/Generate Animal Prefabs` → ahora crea un **prefab-CUBO** para las
       especies **sin `.fbx`** (independiente de modelos 3D), así que **las 21 quedan con prefab**. Pon `.fbx` (rig
       **Generic**, clips `Idle/Walk/Run`) en `Assets/Animals/{Especie}/Models/` cuando los tengas y regenera esa
       especie (borra su `.prefab`-cubo antes, o se omite por existir). Sin modelo tampoco crashea en runtime (guard en ActionPrep).
->>>>>>> e825df8423a8eeb49b7862cd1d9ce73682ba19ea
 
 ## 1. HUDs (OnGUI, salen solos al dar Play)
 - [ ] **Estado** (`AnimaStatusHUD`): drives/actividad/elementos con color del ser objetivo.
