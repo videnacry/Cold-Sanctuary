@@ -117,6 +117,14 @@ public static class DesireCatalog
             self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.ResetPath(); self.Loco?.Idle(1f); },
             "rest"),
 
+        // VOLVER AL HOGAR (cohesión de nido / territorialidad): deriva hacia el `HomeOrigin` cuando se aleja y no hay
+        // apremio. Cubre el LADO CRÍA de la migración postnatal (quedarse cerca del nido) y a cualquier ser territorial.
+        // Débil (fondo) → el hambre/amenaza/social lo superan. docs/sanctuary1-level-and-live-tests §3.
+        new Desire("homebound",
+            self => W_HOME * Mathf.Clamp01(Vector3.Distance(self.transform.position, self.HomeOrigin) / Mathf.Max(1f, self.HomeRadius)),
+            self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(self.HomeOrigin); },
+            "homebound"),
+
         // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/environmental-navigation.md §N5/N8):
         // necesidad BAJA (solo gana cuando no hay hambre/amenaza/social) y ESCALADA por la mente curiosa (razón+creatividad)
         // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
@@ -135,6 +143,7 @@ public static class DesireCatalog
     const float W_FOLLOW  = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
     const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
     const float W_NURSE   = 1.0f;    // nutrir a la cría: fuerte (× afabilidad) → un padre atiende a su cría hambrienta
+    const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
 
     // Cría más necesitada: recorre los bonds, busca Animal en etapa CRÍA ('c') y hambrienta; devuelve urgencia = vínculo×hambre.
     static Animal CubNeed(Animal self, out float need)
