@@ -35,6 +35,7 @@ public class MagicSandboxDriver : MonoBehaviour
 
     void OnGUI()
     {
+        if (!HudGate.Near(this)) return;   // panel de sandbox: solo de cerca o con F1
         int x = 10, y = 300;
         GUI.Box(new Rect(x, y, 372, 486), "Magia_AUTO (prueba — docs testing-checklist §19)");
         y += 26;

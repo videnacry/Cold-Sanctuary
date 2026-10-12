@@ -12,6 +12,8 @@ public class SharedSoulDemo : MonoBehaviour
     void OnGUI()
     {
         if (soul == null) return;
+        // El grupo está en el origen; el panel se ancla al primer cuerpo. Solo de cerca o con F1.
+        if (!HudGate.Near(bodyA != null ? (Component)bodyA : this)) return;
         int x = 392, y = 308;
         GUI.Box(new Rect(x, y, 342, 168), "AlmaCompartida (reencarnaciones) — docs soul-relations §4");
         y += 24;

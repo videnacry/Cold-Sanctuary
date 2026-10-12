@@ -87,6 +87,7 @@ public class EcosystemObservation : MonoBehaviour
 
     void OnGUI()
     {
+        if (!HudGate.ShowAll) return;   // panel de prueba: solo en modo prueba (F1)
         float w = 360f, h = 40f + _current.Count * 20f;
         GUI.Box(new Rect(10f, 60f, w, h), "Santuario (WASD) — recorre y evalúa el equilibrio");
         float y = 82f;

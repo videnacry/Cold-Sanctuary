@@ -71,9 +71,20 @@ public class CookingStation : MonoBehaviour
         }
     }
 
+    Transform _room;
+
+    // La sala física del restaurante ("Sala", hija del RestaurantKitchen) — si no existe, el propio gestor.
+    bool NearKitchen()
+    {
+        if (kitchen == null) return HudGate.ShowAll;
+        if (_room == null) { _room = kitchen.transform.Find("Sala"); if (_room == null) _room = kitchen.transform; }
+        return HudGate.Near(_room.position, 10f);
+    }
+
     void OnGUI()
     {
         if (!playerDriven) return;
+        if (!NearKitchen()) return;   // la estación va en el Player: el panel sale solo dentro de la cocina (o con F1)
         if (_style == null) _style = new GUIStyle(GUI.skin.label) { fontSize = 13, richText = true, wordWrap = true };
 
         var sb = new System.Text.StringBuilder();

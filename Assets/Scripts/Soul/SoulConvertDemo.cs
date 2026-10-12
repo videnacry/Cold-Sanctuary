@@ -24,6 +24,7 @@ public class SoulConvertDemo : MonoBehaviour
     void OnGUI()
     {
         if (soul == null || anima == null) return;
+        if (!HudGate.Near(this)) return;   // panel de sandbox: solo de cerca o con F1
         int x = 392, y = 152;
         GUI.Box(new Rect(x, y, 342, 150), "SoulConvert (conversión A/B) — docs soul-relations §1");
         y += 24;

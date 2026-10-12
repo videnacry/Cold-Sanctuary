@@ -10,6 +10,7 @@ public class SpellDemoHUD : MonoBehaviour
 
     void OnGUI()
     {
+        if (!HudGate.Near(this)) return;   // panel de sandbox: solo de cerca o con F1
         int x = 392, y = 10;
         GUI.Box(new Rect(x, y, 328, 132), "SpellDemo_AUTO (docs testing §19g)");
         y += 24;

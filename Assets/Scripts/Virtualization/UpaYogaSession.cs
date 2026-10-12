@@ -20,8 +20,11 @@ using UnityEngine;
 /// </summary>
 public class UpaYogaSession : MonoBehaviour
 {
-    [Tooltip("Arranca la sesión al empezar (para el sandbox).")]
+    [Tooltip("Deja la sesión LISTA al empezar (sandbox): sale un aviso y arranca con startKey. Ya no arranca sola: " +
+             "mientras corre congela al jugador y se queda con WASD/IJKL, y nada más entrar en Play no se podía andar.")]
     public bool autoStart = true;
+    [Tooltip("Tecla para empezar la sesión cuando está lista (autoStart). Esc la abandona.")]
+    public KeyCode startKey = KeyCode.H;
     [Tooltip("Tecla para saltar de fase (la de interacción del juego: F).")]
     public KeyCode nextKey = KeyCode.F;
     [Tooltip("Segundos de cada media respiración (inhala / exhala) — también el pulso de las fichas.")]
@@ -92,7 +95,9 @@ public class UpaYogaSession : MonoBehaviour
     float _yaw, _pitch, _lSh, _rSh;                 // acumuladores del rig (parte activa)
     Quaternion _neckHome, _lShHome, _rShHome;       // rotaciones de reposo (para restaurar al terminar)
 
-    void Start() { if (autoStart) Begin(); }
+    bool _armed;
+
+    void Start() { if (autoStart) _armed = true; }
 
     public void Begin()
     {
@@ -144,7 +149,12 @@ public class UpaYogaSession : MonoBehaviour
 
     void Update()
     {
-        if (!_running) return;
+        if (!_running)
+        {
+            if (_armed && Input.GetKeyDown(startKey)) Begin();
+            return;
+        }
+        if (Input.GetKeyDown(KeyCode.Escape)) { End(); return; }
         _song += Time.deltaTime;
         _breathT += Time.deltaTime; if (_breathT >= halfBreath * 2f) _breathT -= halfBreath * 2f;
         _tremble = Mathf.Max(0f, _tremble - Time.deltaTime * 0.6f);
@@ -233,7 +243,14 @@ public class UpaYogaSession : MonoBehaviour
     // ── UI (mix OnGUI): título + subtítulo + aliento + fichas cayendo sobre las teclas (forma de teclado) ──
     void OnGUI()
     {
-        if (!_running || _i < 0 || _i >= Sequence.Length) return;
+        if (!_running)
+        {
+            if (_armed)
+                GUI.Label(new Rect(Screen.width * 0.5f - 160f, Screen.height - 28f, 320f, 22f),
+                          $"{startKey}: empezar upa-yoga de cuello  ·  Esc: salir");
+            return;
+        }
+        if (_i < 0 || _i >= Sequence.Length) return;
         Phase p = Sequence[_i];
         float w = Screen.width, h = Screen.height;
 

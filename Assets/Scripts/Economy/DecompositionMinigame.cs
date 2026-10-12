@@ -149,6 +149,7 @@ public class DecompositionMinigame : MonoBehaviour
     // --- Prototipo OnGUI (para probar el flujo en escena; la UI real será arrastre + visuales) ---
     void OnGUI()
     {
+        if (phase == Phase.Idle && !HudGate.Near(this)) return;   // el botón de inicio, solo de cerca o con F1
         if (phase == Phase.Idle)
         {
             if (GUI.Button(new Rect(10, 10, 180, 30), "Iniciar jornada")) Begin();

@@ -42,7 +42,8 @@ public class ScreenEffects : MonoBehaviour
 
     void Update()
     {
-        if (debugAutoCycle) debugPreview = Mathf.PingPong(Time.time * 0.15f, 1f);
+        // La demo oscila solo en modo prueba (F1): en la escena principal tiñe TODA la pantalla y se ve como parpadeo.
+        if (debugAutoCycle) debugPreview = HudGate.ShowAll ? Mathf.PingPong(Time.time * 0.15f, 1f) : 0f;
         if (_fadeDur > 0f)
         {
             _fadeElapsed += Time.deltaTime;
