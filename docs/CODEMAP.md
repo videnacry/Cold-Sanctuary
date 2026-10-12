@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 388 tipos._
+_Total: 389 tipos._
 
 
 ## Animals
@@ -129,6 +129,7 @@ _Total: 388 tipos._
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
 - **CleanSpell** (class) — `Assets/Scripts/Kitchen/CleanSpell.cs` — HECHIZO DE LIMPIEZA (docs/spells-suprahechizo §; sanctuary1 onboarding):
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
+- **ClinicalAnalysisSpell** (class) — `Assets/Scripts/Soul/ClinicalSpells.cs` — HECHIZO DE ANÁLISIS CLÍNICO (docs/sanctuary1-level-and-live-tests §4) — el que lanza Linduarda en la enfermería al recibir a Kushal:
 - **Clock** (class) — `Assets/Scripts/Time/Clock.cs` — Hace correr el RELOJ del juego:
 - **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
 - **ClothingRecipe** (class) — `Assets/Scripts/Clothing/ClothingRecipe.cs` — Defines one clothing item craftable in the ClothingCraftingArea.

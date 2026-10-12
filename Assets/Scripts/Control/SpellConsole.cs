@@ -83,6 +83,8 @@ public class SpellConsole : MonoBehaviour
             case "yoga": case "surya": Yoga(self); break;
             case "clean": case "limpiar": Clean(self); break;
             case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
+            case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
+            case "vaccinate": case "vacunar": CastOn<VaccinateSpell>(self, args); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
     }
