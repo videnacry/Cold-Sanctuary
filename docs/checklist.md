@@ -86,7 +86,12 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Volición por la cola** — HECHO 2026-10-12: `Volition` encola un `DesireSpell` (envuelve el deseo elegido) en la
       `ActionQueue` (carril opcional) en vez de despachar directo; `useQueue` (fallback directo si no hay cola). El
       carril `own` del cuerpo (`AcuteStressResponse`) tiene prioridad → un apremio pausa la volición solo.
-      *Siguiente:* que cada deseo sea un `SuperSpell` con sus sub-pasos (analizar→levantarse→buscar…) + usar thoughtCounts.
+- [x] **Deseos = SUPRAHECHIZOS** — HECHO 2026-10-12: `Desire.Conjure()` devuelve un `SuperSpell` (por defecto 1 paso =
+      `DispatchStep` de la acción actual; descomponible vía `StepsBuilder`). `eat` ya tiene 2 pasos (analizar→comer).
+      La `Volition` encola el `Conjure` del deseo elegido. *Siguiente:* descomponer el resto (acercarse/levantarse/pedir-ayuda) + usar thoughtCounts.
+- [ ] **MIGRAR el sistema postnatal (crías/padres/parejas) a DESEOS** (`PostNatalManager` actúa DIRECTO hoy): convertir
+      nutrir/guardar-cría/cortejo en `Desire`s (NeedProbe+Steps) que compitan en la arena y corran por la cola — la
+      plantilla ya existe (`tend`/`follow`/`mate`). Ya hay material suficiente para hacerlo.
 - [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
 - [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
       Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
