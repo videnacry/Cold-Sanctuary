@@ -136,6 +136,7 @@ public static class SampleSceneBuilder
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
+        BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
@@ -2575,6 +2576,29 @@ public static class SampleSceneBuilder
             fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = treePos + new Vector3(4f, 0f, 0f), quantity = 6, minParentsCount = 1, radius = 5f } };
         }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
+    }
+
+    // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
+    // salud, lanza el status global y va a atenderlo (análisis + vacuna). Guion EMERGENTE (no scriptado).
+    static void BuildLinduarda(Transform parent)
+    {
+        GameObject root = new GameObject("Enfermeria_AUTO"); root.transform.SetParent(parent);
+
+        GameObject l = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        l.name = "Linduarda"; l.transform.SetParent(root.transform); l.transform.position = new Vector3(8f, 1f, 8f);
+        var r = l.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Linduarda_MAT", new Color(0.9f, 0.8f, 0.85f));
+        l.AddComponent<Anima>();
+        l.AddComponent<Mind>().identity = "Linduarda";
+        l.AddComponent<Linduarda>();
+
+        GameObject wolf = LoadAnimalPrefab("Wolf");
+        if (wolf != null)
+        {
+            GameObject p = (GameObject)PrefabUtility.InstantiatePrefab(wolf);
+            p.name = "Kushal_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);
+            HealthRecord hr = p.AddComponent<HealthRecord>(); hr.vaccinated = false; hr.analyzed = false;
+        }
+        else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
     }
 
     static void BuildAnimaStatusPanels(Transform parent)

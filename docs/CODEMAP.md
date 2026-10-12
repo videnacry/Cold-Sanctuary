@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 391 tipos._
+_Total: 393 tipos._
 
 
 ## Animals
@@ -199,6 +199,7 @@ _Total: 391 tipos._
 - **HeadLook** (class) — `Assets/Scripts/Virtualization/HeadLook.cs` — Cámara-CABEZA del **modo primera persona** (docs/kitchen-simulation.md §3b).
 - **HealingMission** (class) — `Assets/Scripts/Meditation/HealingMission.cs` — "A curar" mission (docs §7/§8):
 - **HealMob** (class) — `Assets/Scripts/Meditation/HealMob.cs` — The "to heal" archetype (docs §8):
+- **HealthRecord** (class) — `Assets/Scripts/World/HealthRecord.cs` — FICHA DE SALUD de un anyma (docs/sanctuary1-level-and-live-tests §4):
 - **HelpRequest** (class) — `Assets/Scripts/Control/HelpRequest.cs` — Lado EMISOR de una petición entre personajes (docs/anima-architecture.md §11.7).
 - **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7).
 - **HideFollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/HideFollowingArrays.cs`
@@ -236,6 +237,7 @@ _Total: 391 tipos._
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
 - **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
+- **Linduarda** (class) — `Assets/Scripts/World/Linduarda.cs` — LINDUARDA, la doctora (docs/character-linduarda, sanctuary1 §4) — hechicera avanzada cuyo **pensamiento custom** es **asegurar la salud del santuario**.
 - **Lod** (class) — `Assets/Scripts/Lod.cs` — LOD de simulación (docs/checklist.md — análisis de escala):
 - **LotusMeditationAbility** (class) — `Assets/Scripts/Meditation/LotusMeditationAbility.cs` — The lotus path into the Microcosmos — the endgame alternative to the machine (docs §1, §3).
 - **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
