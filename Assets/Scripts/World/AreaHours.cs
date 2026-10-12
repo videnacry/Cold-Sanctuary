@@ -12,10 +12,14 @@ public class AreaHours : MonoBehaviour
     [Tooltip("Si true, ignora las horas y usa directamente IsDay del reloj (día=abierto).")]
     public bool followDayNight = true;
 
+    [Tooltip("Override manual por hechizo: 0=auto (reloj), 1=forzar ABIERTO, -1=forzar CERRADO. Lo fija OpenSpell.")]
+    public int manualOverride = 0;
+
     public bool IsOpen
     {
         get
         {
+            if (manualOverride != 0) return manualOverride > 0;
             var tc = TimeController.timeController;
             if (tc == null) return true;
             if (followDayNight) return tc.IsDay;

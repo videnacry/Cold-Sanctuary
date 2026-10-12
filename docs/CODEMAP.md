@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 389 tipos._
+_Total: 390 tipos._
 
 
 ## Animals
@@ -361,6 +361,7 @@ _Total: 389 tipos._
 - **StatPhysique** (class) — `Assets/Scripts/Soul/StatPhysique.cs` — APARIENCIA POR STATS (docs/anyma-factory-and-control.md §1):
 - **StatProfile** (class) — `Assets/Scripts/Transformation/StatProfile.cs` — Perfil de las aptitudes de un `Anima` (docs/stats-as-truth.md §4).
 - **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
+- **StatusSpell** (class) — `Assets/Scripts/World/StatusSpells.cs` — HECHIZO DE STATUS (docs/typed-spells-and-queues):
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).

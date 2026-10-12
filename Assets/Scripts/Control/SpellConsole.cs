@@ -85,6 +85,9 @@ public class SpellConsole : MonoBehaviour
             case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
             case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
             case "vaccinate": case "vacunar": CastOn<VaccinateSpell>(self, args); break;
+            case "status": case "estado": Status(self, args); break;
+            case "open": case "abrir": AreaCmd(self, args, false); break;
+            case "close": case "cerrar": AreaCmd(self, args, true); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
     }
@@ -153,6 +156,40 @@ public class SpellConsole : MonoBehaviour
         var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
         foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
         Log($"«{self.name}» empieza el Saludo al Sol (12 asanas).");
+    }
+
+    // STATUS por hechizo: muestra el HUD de estado de un anima, o los stocks de un área (santuario/restaurante).
+    void Status(Anima self, Dictionary<string, string> args)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : "self";
+        GameObject go = ResolveObject(self, name);
+        if (go == null) { Log($"«{self.name}»: no encuentro {name}."); return; }
+        StatusSpell sp = self.GetComponent<StatusSpell>() ?? self.gameObject.AddComponent<StatusSpell>();
+        sp.targetObject = go; sp.Cast(self, null);
+        Log($"«{self.name}» mira el estado de {go.name}.");
+    }
+
+    // ABRIR/CERRAR un área con el mismo hechizo (property close).
+    void AreaCmd(Anima self, Dictionary<string, string> args, bool close)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : null;
+        GameObject go = name != null ? ResolveObject(self, name) : null;
+        if (go == null) { Log("¿qué área? (destiny)"); return; }
+        OpenSpell sp = self.GetComponent<OpenSpell>() ?? self.gameObject.AddComponent<OpenSpell>();
+        sp.targetObject = go; sp.close = close;
+        sp.reset = args.TryGetValue("reset", out string r) && (r == "true" || r == "1");
+        sp.Cast(self, null);
+        Log($"«{self.name}» {(close ? "cierra" : "abre")} {go.name}.");
+    }
+
+    // Resuelve un objeto por nombre: "self"/vacío = uno mismo; si no, un GameObject por name (áreas), o un anima.
+    GameObject ResolveObject(Anima self, string name)
+    {
+        if (string.IsNullOrEmpty(name) || name == "self" || name == "me" || name == "yo") return self.gameObject;
+        GameObject go = GameObject.Find(name);
+        if (go != null) return go;
+        ITarget it = ResolveAnimaAnywhere(name);
+        return (it as Component)?.gameObject;
     }
 
     // Limpieza como HECHIZO: limpia la mancha más cercana dentro del alcance (falla si no hay/estás lejos).

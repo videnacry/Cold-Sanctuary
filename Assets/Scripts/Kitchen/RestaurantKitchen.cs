@@ -123,4 +123,14 @@ public class RestaurantKitchen : MonoBehaviour
     }
 
     public bool Balanced => _rewardedThisBalance;
+
+    /// <summary>Vuelca el STOCK del área (lo lee `StatusSpell` al lanzarse sobre el santuario/restaurante).</summary>
+    public void LogStocks()
+    {
+        int eq = Equilibrium();
+        var sb = new System.Text.StringBuilder($"[Status] «{name}» stock (equilibrio {eq}): ");
+        foreach (DishStock d in dishes)
+            sb.Append($"{(d.container != null ? d.container.dishName : d.recipe?.dishName)} {d.Have}/{eq}  ");
+        Debug.Log(sb.ToString());
+    }
 }
