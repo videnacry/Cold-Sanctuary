@@ -21,6 +21,16 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 >
 > *(Arco previo cerrado — magia/metabolismo/descomposición #45–#61: sandboxes `Descomposicion_AUTO`/`Magia_AUTO`,
 > guion en [`testing-checklist.md` §19](testing-checklist.md).)*
+>
+> **HECHO 2026-10-12 (PRs #222–#231, pendiente verify-compile del compi):** habilidades/enseñanza como hechizos
+> (`CleanSpell`/`TeachSpell`); **migración postnatal→deseos** (`nurse`/`homebound` + flag `delegateMovementToVolition`);
+> **escenarios dedicados** (apareamiento/caza/1v1/pack); **flora/fauna de hielo** (`IceCarnivorousTree`+`SnowBee`);
+> superhechizos clínicos (`análisis`/`vacunar`); **stock SIN tope + equilibrio** (varios obreros por producto);
+> **UIs por hechizo** (`status`/`open`/`close`; `AnimaStatusHUD` on-demand); **modelos corporales de CUBOS** por anyma
+> (`CubeBody`, con partes para asanas) + escala real del restaurante; **Linduarda** guardiana de salud emergente +
+> **guion emergente** documentado. Detalle en [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md).
+> *Falta para Nivel 1 completo:* guion/triggers de enfermería→micro→yoga→cocina→mundo abierto, gating de misiones
+> (diarias/prioridad/equipo/automisiones/muestras/salto-temporal), inventario como hechizo (`StockSpell`), guardería.
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
