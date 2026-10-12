@@ -141,6 +141,7 @@ public static class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
+        BuildSpeciesScenarios(root.transform);   // ESCENARIOS POR ESPECIE: cada animal en su ciclo/interacción representativa (oso pesca, foca↔orca, colonia pingüino, ballena-krill, zorro/ciervo/malamute)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         BakeNavMesh();
 
@@ -2218,7 +2219,7 @@ public static class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("PolarBear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);
+        AddFamily("Bear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
@@ -2542,7 +2543,7 @@ public static class SampleSceneBuilder
 
         // 4) PACK vs 1: manada de lobos + un oso → defensa/ataque de grupo (PackAwareness).
         TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, -20f), 6, 3);
-        TestPack(root.transform, "PolarBear", new Vector3(-232f, 0f, -20f), 1, 1);
+        TestPack(root.transform, "Bear", new Vector3(-232f, 0f, -20f), 1, 1);   // "Bear" = el prefab/catálogo real (no existe "PolarBear")
 
         // 5) PACK vs PACK: dos manadas de lobos contiguas.
         TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, 20f), 5, 2);
@@ -2568,6 +2569,74 @@ public static class SampleSceneBuilder
     {
         GameObject g = new GameObject("Pasto"); g.transform.SetParent(root); g.transform.position = pos;
         g.AddComponent<GrassPatch>();
+    }
+
+    static void TestFish(Transform root, Vector3 pos)
+    {
+        GameObject f = new GameObject("Pescado"); f.transform.SetParent(root); f.transform.position = pos;
+        FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Fish; fi.grams = 150f;
+    }
+
+    // Mini-cardumen (pez o krill) para los escenarios por especie: cubo translúcido + Swarm (el trigger lo pone Swarm.Start).
+    static void MiniSwarm(Transform root, string name, SwarmKind kind, Vector3 pos)
+    {
+        GameObject s = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        s.name = name; s.transform.SetParent(root); s.transform.position = pos; s.transform.localScale = new Vector3(6f, 1.5f, 6f);
+        Color col = kind == SwarmKind.Krill ? new Color(0.75f, 0.45f, 0.4f, 0.6f) : new Color(0.35f, 0.55f, 0.65f, 0.6f);
+        var r = s.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
+        Object.DestroyImmediate(s.GetComponent<Collider>());
+        Swarm sw = s.AddComponent<Swarm>(); sw.kind = kind; sw.unitName = kind == SwarmKind.Krill ? "Krill" : "Fish";
+    }
+
+    // ESCENARIOS POR ESPECIE (docs/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN
+    // representativa (dieta + presa/depredador + convivencia). Coherentes con el Santuario 1 (hielo); los templados
+    // (zorro/ciervo/malamute) quedan como demostración reservada. Reutilizan TestPack/TestFish/TestMeat/TestGrass/MiniSwarm;
+    // los ciclos (celo/sueño/caza/depredación) se AUTOCONFIGURAN desde el arquetipo de la especie en runtime (Animal.Init).
+    static void BuildSpeciesScenarios(Transform parent)
+    {
+        GameObject root = new GameObject("EscenariosEspecie_AUTO"); root.transform.SetParent(parent);
+        Transform r = root.transform;
+
+        // ── Hielo (coherentes con el bioma) ─────────────────────────────────────────────────────
+        // 1) OSO — pesca en el hielo + una foca como presa potencial (ápice; come peces y presa).
+        TestPack(r, "Bear", new Vector3(300f, 0f, -60f), 1, 1);
+        MiniSwarm(r, "Peces_oso", SwarmKind.Fish, new Vector3(304f, -1f, -60f));
+        TestFish(r, new Vector3(302f, 0.2f, -58f));
+        TestPack(r, "Seal", new Vector3(308f, 0f, -62f), 1, 1);
+
+        // 2) FOCA — descansa y come peces; una ORCA merodea (depredador) → huida al avistarla.
+        TestPack(r, "Seal", new Vector3(300f, 0f, -30f), 2, 1);
+        MiniSwarm(r, "Peces_foca", SwarmKind.Fish, new Vector3(303f, -1f, -30f));
+        TestPack(r, "Orca", new Vector3(312f, 0f, -30f), 1, 1);
+
+        // 3) PINGÜINO — colonia (familia grande) con krill y peces; una FOCA depredadora cerca.
+        TestPack(r, "Penguin", new Vector3(300f, 0f, 0f), 6, 2);
+        MiniSwarm(r, "Krill_ping", SwarmKind.Krill, new Vector3(304f, -1f, 2f));
+        MiniSwarm(r, "Peces_ping", SwarmKind.Fish, new Vector3(296f, -1f, -2f));
+        TestPack(r, "Seal", new Vector3(310f, 0f, 2f), 1, 1);
+
+        // 4) ORCA — caza: una orca y una pequeña colonia de pingüinos de presa.
+        TestPack(r, "Orca", new Vector3(300f, 0f, 30f), 1, 1);
+        TestPack(r, "Penguin", new Vector3(306f, 0f, 32f), 3, 1);
+
+        // 5) BALLENA — filtra krill en paz (filter feeder; sin amenaza).
+        TestPack(r, "Whale", new Vector3(300f, 0f, 60f), 1, 1);
+        MiniSwarm(r, "Krill_ballena", SwarmKind.Krill, new Vector3(305f, -1f, 60f));
+
+        // ── Templados (reserva demostrativa; fuera del bioma de hielo) ───────────────────────────
+        // 6) ZORRO — acecho oportunista de un conejo + peces (come presa y pez).
+        TestPack(r, "Fox", new Vector3(340f, 0f, -40f), 1, 1);
+        TestPack(r, "Bunny", new Vector3(346f, 0f, -38f), 3, 2);
+        for (int i = 0; i < 2; i++) TestGrass(r, new Vector3(346f + i * 2f, 0f, -38f));
+
+        // 7) CIERVO — manada que pasta; un lobo de amenaza → huida en grupo.
+        TestPack(r, "Deer", new Vector3(340f, 0f, 0f), 4, 2);
+        for (int i = 0; i < 3; i++) TestGrass(r, new Vector3(340f + i * 2f, 0f, 0f));
+        TestPack(r, "Wolf", new Vector3(352f, 0f, 2f), 1, 1);
+
+        // 8) MALAMUTE — perro de trineo domesticado: junto a carne, convive en paz.
+        TestPack(r, "Malamute", new Vector3(340f, 0f, 40f), 2, 1);
+        for (int i = 0; i < 2; i++) TestMeat(r, new Vector3(340f + i * 2f, 0.3f, 40f));
     }
 
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
