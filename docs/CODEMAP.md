@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 384 tipos._
+_Total: 386 tipos._
 
 
 ## Animals
@@ -126,6 +126,7 @@ _Total: 384 tipos._
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
+- **CleanSpell** (class) — `Assets/Scripts/Kitchen/CleanSpell.cs` — HECHIZO DE LIMPIEZA (docs/spells-suprahechizo §; sanctuary1 onboarding):
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
 - **Clock** (class) — `Assets/Scripts/Time/Clock.cs` — Hace correr el RELOJ del juego:
 - **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
@@ -362,6 +363,7 @@ _Total: 384 tipos._
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
 - **TeacherNPC** (class) — `Assets/Scripts/Companion/TeacherNPC.cs` — Base for any NPC that can evaluate the player's asana attempts and give feedback.
+- **TeachSpell** (class) — `Assets/Scripts/Soul/TeachSpell.cs` — HECHIZO DE ENSEÑANZA / DEMOSTRACIÓN (docs/sanctuary1-level-and-live-tests §4, spells-suprahechizo §4):
 - **Test** (class) — `Assets/Scripts/Test.cs`
 - **TestProbe** (class) — `Assets/Scripts/TestProbe.cs` — Mini-harness de PRUEBAS por consola (PASS/FAIL) — la capa que faltaba:
 - **TestRunner** (class) — `Assets/Scripts/TestRunner.cs` — Orquestador de tests (docs/testing-checklist.md §32) — el "array-de-arrays" del usuario:
