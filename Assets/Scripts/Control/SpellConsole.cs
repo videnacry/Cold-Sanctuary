@@ -81,6 +81,8 @@ public class SpellConsole : MonoBehaviour
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
+            case "clean": case "limpiar": Clean(self); break;
+            case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
     }
@@ -151,6 +153,14 @@ public class SpellConsole : MonoBehaviour
         Log($"«{self.name}» empieza el Saludo al Sol (12 asanas).");
     }
 
+    // Limpieza como HECHIZO: limpia la mancha más cercana dentro del alcance (falla si no hay/estás lejos).
+    void Clean(Anima self)
+    {
+        CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
+        cs.Cast(self, null);
+        Log($"«{self.name}» limpia.");
+    }
+
     // Hechizos de MODIFICACIÓN (bond/thought) sobre un destino: resuelve el anima por nombre EN CUALQUIER PARTE
     // (configurar una relación con alguien aunque nunca se haya visto — crear amistad remota, docs anyma-factory §3).
     void CastOn<T>(Anima self, Dictionary<string, string> args) where T : SpellBase
@@ -162,6 +172,7 @@ public class SpellConsole : MonoBehaviour
         T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
         if (args.TryGetValue("amount", out string am) && float.TryParse(am, out float amt)) spell.force = amt;
         if (spell is ThoughtSpell ts) ts.positive = !(args.TryGetValue("positive", out string p) && (p == "false" || p == "0"));
+        if (spell is TeachSpell te && args.TryGetValue("skill", out string sk)) te.skillId = sk;
         if (spell.CanCast(self, it)) { spell.Cast(self, it); Log($"«{self.name}» lanza {typeof(T).Name} sobre {name}."); }
     }
 
