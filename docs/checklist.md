@@ -93,9 +93,15 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Deseos = SUPRAHECHIZOS** — HECHO 2026-10-12: `Desire.Conjure()` devuelve un `SuperSpell` (por defecto 1 paso =
       `DispatchStep` de la acción actual; descomponible vía `StepsBuilder`). `eat` ya tiene 2 pasos (analizar→comer).
       La `Volition` encola el `Conjure` del deseo elegido. *Siguiente:* descomponer el resto (acercarse/levantarse/pedir-ayuda) + usar thoughtCounts.
-- [ ] **MIGRAR el sistema postnatal (crías/padres/parejas) a DESEOS** (`PostNatalManager` actúa DIRECTO hoy): convertir
-      nutrir/guardar-cría/cortejo en `Desire`s (NeedProbe+Steps) que compitan en la arena y corran por la cola — la
-      plantilla ya existe (`tend`/`follow`/`mate`). Ya hay material suficiente para hacerlo.
+- [x] **MIGRACIÓN postnatal→deseos (1ª rebanada)** — HECHO 2026-10-12: deseo **`nurse`** (padre alimenta cría
+      `lifeStage='c'` vinculada+hambrienta) compite en la arena y corre por la cola. *Falta:* retirar los drives
+      directos de `PostNatalManager` (guardCub/fetchCub/cub-side) — el calendario de etapas se queda. Ver
+      [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md) §3.
+- [x] **Prueba en vivo de vida familiar** (`BuildFamilyLifeTest`: lobos+carne / conejos+pasto, aislados) — HECHO.
+- [ ] **Escenarios en vivo que faltan**: apareamiento · caza · 1v1 · pack-vs-1 · pack-vs-pack (patrón aislado+comida). §2.
+- [ ] **Nivel 1 jugable — cablear el onboarding** (enfermería→análisisClínico/vacunar→micro→limpieza+automisiones→
+      muestras→yoga→comer→paseo nocturno/sueño→día2 cocina→mundo abierto→guardería). Lo existente vs lo que falta:
+      [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md) §4.
 - [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
 - [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
       Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
