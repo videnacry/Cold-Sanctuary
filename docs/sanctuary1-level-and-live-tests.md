@@ -46,8 +46,9 @@ Aislados al oeste del mapa (`PruebasInteraccion_AUTO`), con solo los actores + l
 
 ## 4. Onboarding del Nivel 1 (Santuario 1) — PLAN DE CABLEADO
 Secuencia objetivo (Kushal), con lo que YA existe y lo que falta cablear:
-1. **Enfermería**: Linduarda hace reconocimiento → lanza **`análisisClínico`** (superhechizo) ✱FALTA + **`vacunar`** ✱FALTA.
-   (Existe: `Linduarda` ficha, `VirtualizationMachine` de entrada al Micro, `SpellConsole`/`SuperSpell` como base.)
+1. **Enfermería**: Linduarda hace reconocimiento → lanza **`análisisClínico`** (`ClinicalAnalysisSpell`, revela
+   drives+elementos) ✓ + **`vacunar`** (`VaccinateSpell`, cura/inmuniza) ✓ — consola `analysis`/`vaccinate`. *Falta:*
+   cablear a Linduarda en la escena de enfermería + que las lance al recibir a Kushal.
 2. **1er vistazo al Microcosmos** (sin misión) → vuelve.
 3. Linduarda lo manda con **condición: limpieza** → misiones de **limpieza** (`DirtArea`/`DirtSpot`/`Cleaner` ✓) +
    **inventario** (`StockingTask` ✓), **diarias y con prioridad sobre cocinar**, **en equipo** ✱FALTA (gating diario/prioridad/equipo).
