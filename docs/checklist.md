@@ -30,7 +30,16 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > (`CubeBody`, con partes para asanas) + escala real del restaurante; **Linduarda** guardiana de salud emergente +
 > **guion emergente** documentado. Detalle en [`sanctuary1-level-and-live-tests.md`](sanctuary1-level-and-live-tests.md).
 > *Falta para Nivel 1 completo:* guion/triggers de enfermería→micro→yoga→cocina→mundo abierto, gating de misiones
-> (diarias/prioridad/equipo/automisiones/muestras/salto-temporal), inventario como hechizo (`StockSpell`), guardería.
+> (diarias/prioridad/equipo/automisiones/muestras/salto-temporal), guardería.
+>
+> **HECHO 2026-10-12 (PRs #234–#239, pendiente verify-compile del compi):** **inventario como hechizo**
+> (`StockShelf`+`StockSpell`, con rango/aprendible); **grimorio con autocompletado** (sugerencias difusas + plantillas)
+> y `status({visible,seconds})` que muestra Y oculta con el mismo hechizo; **formas por especie** en `CubeBody`
+> (`Differentiate`: oso voluminoso/orejas redondas, lobo puntiagudo, conejo con orejotas, ciervo/suricata); **onboarding
+> al santuario** (`SanctuaryOnboarding`: apto tras análisis+vacuna+**3 misiones** → Linduarda certifica → la Magnate
+> **presenta** al nuevo y le enseña upa-yoga); **"todo es superhechizo"** (`ActionSteps`/`ActionSpells`: caminar/trepar
+> componen el paso compartido **`levantarse`** = `GetUpStep`, heredable; `Anima.prone`); **yoga live-test**
+> (`YogaTest`: la postura rota el rig, Saludo al Sol = 12 asanas); **escala precisa de la cocina** (huevo 5 cm, olla 22 cm).
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
