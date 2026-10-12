@@ -75,14 +75,23 @@ necesidades** (no come/duerme/estresa), **imposeíble de poseer** (relevancia al
 *Falta (rebanadas):* la **marca por anima** (último avance + cuándo) para priorizar mejor; **bond alto por defecto**
 desde todas hacia ella (requiere que su `Anima` sea `ITarget`); **llevar a la enfermería** al que está por morir;
 **guardia nocturna** alimentando animales (de noche, cuando los demás duermen — encaja con `AreaHours`); y que
-enseñar use la **intensidad** para subir la **cuenta del pensamiento** (§2, cuando exista).
+enseñar use la **intensidad** para subir la **cuenta del pensamiento** (§2, con `Mind.Reinforce`, ya disponible).
+
+### 5b. El ÁREA de Guardián (torre de vigía) — por construir
+El trabajo de guardián (proteger a todos **+ ayudar a los compañeros a subir de nivel**) merece su **lugar**: una
+**torre de vigía**. Los personajes que hagan de vigías **suben a la torre** y **obtienen sus misiones** (patrullar el
+bosque, alimentar animales, llevar heridos a la enfermería, enseñar yoga al rezagado — lo que la Magnate hace sola).
+Hoy **NO existe** un área/misión de guardián en código (solo el concepto); sería un **puesto de misiones**
+(interactuable, como el tablero del restaurante) ubicado en la torre. *A construir.*
 
 ## 6. Estado
 | Pieza | Estado |
 |---|---|
 | Hechizo = animación; mismo hechizo para curar/enseñar/entrenar | **MODELO** (SpellBase ya lo soporta) |
-| Suprahechizo = cola de sub-hechizos (análisis=CanCast, potencia=force, equilibrio) | **DISEÑO** (`SuperSpell` por construir; primitivas listas) |
-| Cuenta mutable por pensamiento (maestría↔recurrencia; trauma baja) | **FALTA** (`Mind.thoughtCounts`) |
+| Suprahechizo = cola de sub-hechizos (análisis=CanCast, potencia=force, equilibrio) | **EXISTE (2026-10-12, `SuperSpell`)**: recorre pasos saltando los `IsSatisfied` (check), `Destabilize(power)` reinicia |
+| Cuenta mutable por pensamiento (maestría↔recurrencia; trauma baja) | **EXISTE (2026-10-12)**: `Mind.CountOf`/`Reinforce`/`Erode`/`ShareOf`; la selección usa la cuenta (`countWeight`); expresar un pensamiento lo refuerza |
+| Hechizo de pacificación (quita negativos, sube positivos) | **EXISTE (`PacifySpell`)**; la Magnate lo usa |
+| Anima sin modelo 3D → cubo (independencia de modelos, como la cocina) | **EXISTE (`AnymaFactory.CreateCubeAnima`)** |
 | Enseñanza self+target, clase = maestros/estudiantes, intensidad | **PARCIAL** (hechizos self/target ya; Magnate enseña; falta la cuenta) |
 | Magnate (infinito, pacifica, enseña al rezagado) | **EXISTE (2026-10-12, 1ª rebanada)** |
 | Cocina: acción con RANGO (`use`/`take` falla si no alcanzas) | **EXISTE** (first slice de "steps=hechizos con alcance") |

@@ -22,7 +22,8 @@ public class Magnate : MonoBehaviour
     [Min(0f)] public float moveSpeed = 4f;
 
     Anima _a;
-    float _nextTeach;
+    PacifySpell _pacify;
+    float _nextTeach, _nextPacify;
     Anima _student;
     static readonly Collider[] _hits = new Collider[32];
 
@@ -32,6 +33,8 @@ public class Magnate : MonoBehaviour
         MaxOut();
         AiBrain ai = GetComponent<AiBrain>() ?? gameObject.AddComponent<AiBrain>();
         ai.selfRelevance = 99999f;   // nadie la posee
+        _pacify = GetComponent<PacifySpell>() ?? gameObject.AddComponent<PacifySpell>();
+        _pacify.force = 2f;
         _nextTeach = Time.time + 3f;
     }
 
@@ -55,15 +58,19 @@ public class Magnate : MonoBehaviour
         if (_student != null) GoTeach();
     }
 
-    // Proteger la vida: a su alrededor, las animas dejan de estar en guardia (el depredador suelta a su presa).
+    // Proteger la vida: a su alrededor lanza PACIFICACIÓN (quita humores negativos, sube positivos, quita `aware`) →
+    // el depredador suelta a su presa. Throttled (~0.5 s) para no castear cada frame sobre muchos.
     void Pacify()
     {
+        if (Time.time < _nextPacify) return;
+        _nextPacify = Time.time + 0.5f;
         int n = Physics.OverlapSphereNonAlloc(transform.position, pacifyRadius, _hits);
         for (int i = 0; i < n; i++)
         {
             Anima a = _hits[i] != null ? _hits[i].GetComponentInParent<Anima>() : null;
             if (a == null || a == _a) continue;
-            a.aware = false;                        // calma: no responde a amenazas junto a la Magnate
+            if (a is ITarget it && _pacify.CanCast(_a, it)) _pacify.Cast(_a, it);
+            else a.aware = false;
         }
     }
 

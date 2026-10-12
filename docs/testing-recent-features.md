@@ -61,6 +61,8 @@
 - [ ] Desde un script/botón de prueba: `factory.Create(new AnymaSpec(), pos)` (spec vacío) varias veces → deben salir
       con **stats variados** (×0.8..2) y tamaños/grosores distintos; hambre/sueño random.
 - [ ] `Create(new AnymaSpec{ species="Bear", randomStatsLimitations=new StatRange{min=1.5f,max=3f} })` → osos grandes.
+- [ ] **Independencia de modelos:** deja un `templates[]` **con `prefab` vacío** (solo la especie) → al crear sale un
+      **CUBO** funcional (Animal + SpeciesBody de esa especie). El juego no requiere los `.fbx`.
 
 ## 7. Apariencia por stats (`StatPhysique`, auto en fauna)
 - [ ] Sube `strength` o `fatReserves` de un animal (inspector o `TransformationSpell`) → se ve **más grueso** (ancho),
