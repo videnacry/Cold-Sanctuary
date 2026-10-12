@@ -137,6 +137,7 @@ public static class SampleSceneBuilder
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
+        BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2496,6 +2497,56 @@ public static class SampleSceneBuilder
             }
         }
         else Debug.LogWarning("[FamilyLifeTest] sin prefab Bunny, se omite la familia de conejos.");
+    }
+
+    // ESCENARIOS DEDICADOS de interacción (aislados, al oeste del mapa): cada uno pone solo los actores + la comida
+    // necesaria para que el test sea PURO (ver docs/sanctuary1-level-and-live-tests §2). Si falta un prefab, se omite.
+    static void BuildInteractionTests(Transform parent)
+    {
+        GameObject root = new GameObject("PruebasInteraccion_AUTO"); root.transform.SetParent(parent);
+
+        // 1) APAREAMIENTO: una pareja de lobos aislada con carne (no cazan) → entran en celo y se reproducen (deseo `mate`).
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, -40f), 2, 2);
+        for (int i = 0; i < 2; i++) TestMeat(root.transform, new Vector3(-210f + i * 2f, 0.3f, -40f));
+
+        // 2) CAZA: 1 lobo (sin carne → caza) + conejos con pasto → acecho/persecución/depredación limpia.
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, 0f), 1, 1);
+        TestPack(root.transform, "Bunny", new Vector3(-200f, 0f, 8f), 4, 2);
+        for (int i = 0; i < 3; i++) TestGrass(root.transform, new Vector3(-200f + i * 3f, 0f, 8f));
+
+        // 3) 1 vs 1: dos lobos y UNA carne (recurso escaso) → competencia/conflicto.
+        TestPack(root.transform, "Wolf", new Vector3(-210f, 0f, 40f), 1, 1);
+        TestPack(root.transform, "Wolf", new Vector3(-204f, 0f, 40f), 1, 1);
+        TestMeat(root.transform, new Vector3(-207f, 0.3f, 40f));
+
+        // 4) PACK vs 1: manada de lobos + un oso → defensa/ataque de grupo (PackAwareness).
+        TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, -20f), 6, 3);
+        TestPack(root.transform, "PolarBear", new Vector3(-232f, 0f, -20f), 1, 1);
+
+        // 5) PACK vs PACK: dos manadas de lobos contiguas.
+        TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, 20f), 5, 2);
+        TestPack(root.transform, "Wolf", new Vector3(-228f, 0f, 24f), 5, 2);
+    }
+
+    static void TestPack(Transform root, string species, Vector3 pos, int qty, int minParents)
+    {
+        GameObject prefab = LoadAnimalPrefab(species);
+        if (prefab == null) { Debug.LogWarning($"[InteractionTest] sin prefab {species} (genera prefabs — salen cubos si no hay .fbx), se omite."); return; }
+        GameObject g = new GameObject($"{species}_x{qty}"); g.transform.SetParent(root);
+        FamilyGenerator fg = g.AddComponent<FamilyGenerator>();
+        fg.families = new[] { new FamilyGenerator.Family { animalPrefab = prefab, position = pos, quantity = qty, minParentsCount = minParents, radius = Mathf.Max(3f, qty * 1.5f) } };
+    }
+
+    static void TestMeat(Transform root, Vector3 pos)
+    {
+        GameObject f = new GameObject("Carne"); f.transform.SetParent(root); f.transform.position = pos;
+        FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 200f;
+    }
+
+    static void TestGrass(Transform root, Vector3 pos)
+    {
+        GameObject g = new GameObject("Pasto"); g.transform.SetParent(root); g.transform.position = pos;
+        g.AddComponent<GrassPatch>();
     }
 
     static void BuildAnimaStatusPanels(Transform parent)
