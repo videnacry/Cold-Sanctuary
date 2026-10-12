@@ -43,6 +43,45 @@ public static class CubeBody
             rig.bindings.Add(new CreatureRig.PartBinding { part = p.part, bone = cube.transform });
         }
         rig.Rebuild();
+        Differentiate(root, species, rig);   // silueta propia de la especie (orejas, volumen, hocico…)
+    }
+
+    // Formas REPRESENTATIVAS por especie (sobre el plan): cada factory tiene su "receta" para parecerse al animal real
+    // aun sin modelos 3D (osos voluminosos, conejos con orejotas, zorros con hocico, etc.). La escala global la pone
+    // Physiognomy/LifeStage; aquí ajustamos PROPORCIONES y añadimos partes (orejas) a los mamíferos.
+    static void Differentiate(GameObject root, string species, CreatureRig rig)
+    {
+        string s = (species ?? "").ToLowerInvariant();
+        Transform chest = rig.Get(BodyPart.Chest);
+        Transform head = rig.Get(BodyPart.Head);
+
+        // Volumen del tronco (bulk) y tamaño de cabeza por especie.
+        float bulk = 1f, headMul = 1f, earW = 0f, earH = 0f, earZ = 0f;
+        if (s.Contains("bear"))      { bulk = 1.4f; headMul = 1.2f; earW = 0.1f; earH = 0.1f; }   // oso: voluminoso, orejas redondas
+        else if (s.Contains("wolf") || s.Contains("malamute")) { bulk = 0.95f; earW = 0.08f; earH = 0.12f; }  // lobo: estilizado, orejas puntiagudas
+        else if (s.Contains("fox"))  { bulk = 0.8f; headMul = 0.9f; earW = 0.09f; earH = 0.15f; }   // zorro: fino, orejas grandes
+        else if (s.Contains("bunny")){ bulk = 0.8f; headMul = 0.9f; earW = 0.07f; earH = 0.3f; earZ = 0.05f; } // conejo: orejotas
+        else if (s.Contains("deer")) { bulk = 0.9f; earW = 0.07f; earH = 0.18f; }                    // ciervo: orejas altas
+        else if (s.Contains("meerkat")) { bulk = 0.75f; headMul = 1.05f; earW = 0.06f; earH = 0.08f; }
+
+        if (chest != null) chest.localScale = Vector3.Scale(chest.localScale, new Vector3(bulk, 1f, Mathf.Lerp(1f, 1.2f, bulk - 1f + 0.3f)));
+        if (head != null)  head.localScale *= headMul;
+
+        // Orejas (solo mamíferos con earH>0): dos cubos pequeños sobre la cabeza.
+        if (head != null && earH > 0.001f)
+        {
+            Vector3 hp = head.localPosition;
+            AddEar(root, rig, BodyPart.EarLeft,  new Vector3(hp.x - 0.1f, hp.y + 0.15f, hp.z + earZ), new Vector3(earW, earH, earW * 0.6f));
+            AddEar(root, rig, BodyPart.EarRight, new Vector3(hp.x + 0.1f, hp.y + 0.15f, hp.z + earZ), new Vector3(earW, earH, earW * 0.6f));
+        }
+    }
+
+    static void AddEar(GameObject root, CreatureRig rig, BodyPart part, Vector3 pos, Vector3 scale)
+    {
+        GameObject ear = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        ear.name = part.ToString(); ear.transform.SetParent(root.transform, false);
+        ear.transform.localPosition = pos; ear.transform.localScale = scale;
+        rig.bindings.Add(new CreatureRig.PartBinding { part = part, bone = ear.transform });
     }
 
     static List<Part> PartsOf(Plan plan)
