@@ -63,9 +63,32 @@ public class Volition : MonoBehaviour
 
         if (best != null)
         {
-            best.Dispatch(self);
+            // POR LA COLA (docs/typed-spells-and-queues §4): en vez de actuar directo, el ser "lanza" el deseo como un
+            // hechizo en su ActionQueue (carril opcional) → usa la misma cola que el jugador. El carril `own` (reflejo
+            // del cuerpo, AcuteStressResponse) tiene prioridad, así que un apremio corporal pausa esto solo. Si no hay
+            // ActionQueue (o useQueue=false), cae al despacho directo de siempre (paridad).
+            ActionQueue q = useQueue ? self.GetComponent<ActionQueue>() : null;
+            if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(new DesireSpell(best)); }
+            else best.Dispatch(self);
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
             _last = best; _lastScore = bestScore;
         }
+    }
+
+    [Tooltip("Despachar los deseos POR LA ActionQueue (el ser 'lanza' sus acciones como el jugador). Si no hay cola, directo.")]
+    public bool useQueue = true;
+}
+
+/// <summary>Envuelve un <see cref="Desire"/> como hechizo en cola: al ejecutarse llama al `Dispatch` del deseo (la
+/// acción existente) y termina. Así la IA "lanza" su acción por la <see cref="ActionQueue"/>, igual que el jugador.</summary>
+public class DesireSpell : QueuedSpell
+{
+    readonly Desire _desire;
+    public DesireSpell(Desire d) { _desire = d; }
+    public override string Label => _desire != null ? _desire.key : "deseo";
+    public override bool Tick(Anima self)
+    {
+        if (_desire != null && self is Animal an) _desire.Dispatch(an);
+        return true;   // one-shot por tick de volición (el Dispatch arranca la conducta continua como siempre)
     }
 }

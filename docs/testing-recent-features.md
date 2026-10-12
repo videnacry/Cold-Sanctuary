@@ -15,10 +15,10 @@
 - [ ] Guardar la escena. Debe existir un GameObject **`Player`** con tag `Player`.
 - [ ] Objetos esperados en escena (los crea el builder): `Clock_AUTO`, `TraceField_AUTO`, HUDs
       `AnimaStatusHUD_AUTO`/`AnimaThoughtHUD_AUTO`/`AnimaNameplate_AUTO`, `SpellConsole_AUTO`, `Restaurante_AUTO`.
-- [ ] **Prefabs de fauna**: `Tools/Cold Sanctuary/Audit Animal Prefabs` → ver qué falta; poner los `.fbx` en
-      `Assets/Animals/{Especie}/Models/` (rig **Generic**, clips `Idle/Walk/Run`) y `Generate Animal Prefabs`.
-      Pendientes: Termite/DungBeetle/Antlion/Mantis/Grasshopper/Meerkat. **Sin modelo ya NO crashea** (ActionPrep
-      tiene guard): se mueven sin animar.
+- [ ] **Prefabs de fauna**: `Tools/Cold Sanctuary/Generate Animal Prefabs` → ahora crea un **prefab-CUBO** para las
+      especies **sin `.fbx`** (independiente de modelos 3D), así que **las 21 quedan con prefab**. Pon `.fbx` (rig
+      **Generic**, clips `Idle/Walk/Run`) en `Assets/Animals/{Especie}/Models/` cuando los tengas y regenera esa
+      especie (borra su `.prefab`-cubo antes, o se omite por existir). Sin modelo tampoco crashea en runtime (guard en ActionPrep).
 
 ## 1. HUDs (OnGUI, salen solos al dar Play)
 - [ ] **Estado** (`AnimaStatusHUD`): drives/actividad/elementos con color del ser objetivo.
@@ -97,6 +97,12 @@
 ## 13. Insectos neutros de ambiente (Microcosmos Scene0)
 - [ ] Regenera `Build Microcosmos Scene0`; si los `.fbx` de Cricket/Aphid/Ladybug/Grasshopper existen, verás unos
       pocos dispersos por la zona norte (ambiente). Si faltan, la consola loguea que se omiten (no crashea).
+
+## 14. Volición por la cola (NPCs "lanzan" sus acciones)
+- [ ] Un animal **no poseído** con necesidades: su `Volition` ahora **encola un `DesireSpell`** (el deseo elegido:
+      comer/seguir/descansar…) en su `ActionQueue` en vez de actuar directo. Comportamiento ≈ igual que antes
+      (el `Dispatch` arranca la conducta), pero ahora pasa por la cola. Si subes su apremio corporal (`AcuteStressResponse`
+      en toma de mando), el carril `own` **pausa** la volición. (`Volition.useQueue`=false vuelve al despacho directo.)
 
 ## Qué reportar
 Consola de Unity: busca `[Cocina]`, `[Restaurante]`, `[Yoga]`, `[Hechizo]`, `[Charla]`, `[Mente]`. Anota crashes,
