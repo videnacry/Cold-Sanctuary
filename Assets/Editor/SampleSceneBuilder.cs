@@ -2476,7 +2476,22 @@ public static class SampleSceneBuilder
         var r = m.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Magnate_MAT", new Color(0.85f, 0.8f, 0.95f));
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
-        m.AddComponent<Magnate>();
+        Magnate mag = m.AddComponent<Magnate>();
+
+        // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
+        mag.yogaSpot = MakeSpot(parent, "SalaYoga", new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+    }
+
+    // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
+    static Transform MakeSpot(Transform parent, string name, Vector3 pos, Color col)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name; g.transform.SetParent(parent); g.transform.position = pos; g.transform.localScale = new Vector3(2f, 0.1f, 2f);
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
+        Object.DestroyImmediate(g.GetComponent<Collider>());   // solo marca el sitio, no estorba
+        g.AddComponent<WorldLabel>().text = name;
+        return g.transform;
     }
 
     // PRUEBA EN VIVO de VIDA FAMILIAR: una familia aislada con comida puesta → no gastan tiempo cazando/pastando ni
