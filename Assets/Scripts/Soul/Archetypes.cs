@@ -104,6 +104,7 @@ public static class Archetypes
             { "Mantis",      MakeBody(0.45f, 1.2f, 1.6f, 1.4f, 0.8f, 0.9f) },   // mantis: visión estereoscópica, patas raptoras
             { "Grasshopper", MakeBody(0.40f, 1.5f, 1.0f, 0.9f, 0.6f, 1.1f) },   // saltamontes: salto/vuelo ágil, herbívoro
             { "Meerkat",     MakeBody(0.30f, 1.4f, 1.7f, 0.8f, 0.5f, 1.3f) },   // suricata (skin insecto): percepción máx = centinela/observación
+            { "SnowBee",     MakeBody(0.22f, 1.2f, 0.9f, 0.4f, 0.3f, 1.0f) },   // abeja de las nieves: pequeña, voladora ágil, adaptada al frío
             { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales
             { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },
             { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },
@@ -149,6 +150,7 @@ public static class Archetypes
             { "Mantis",      MakeMind(ElementalTone.Viento, 1.9f, 1.0f, 0.8f, 0.6f, 0.2f, 1.1f) },   // depredadora quieta, calculadora; solitaria
             { "Grasshopper", MakeMind(ElementalTone.Viento, 0.6f, 0.6f, 0.6f, 0.8f, 1.2f, 0.5f) },   // gregario en fase enjambre (masas)
             { "Meerkat",     MakeMind(ElementalTone.Tierra, 1.0f, 1.1f, 1.0f, 0.7f, 1.8f, 1.3f) },   // cooperativa, muy social, vigilante
+            { "SnowBee",     MakeMind(ElementalTone.Agua, 1.0f, 0.5f, 1.0f, 0.5f, 1.6f, 1.5f) },   // eusocial: disciplina/sociabilidad altas, memoria de nido
         };
         _packs = new Dictionary<string, Aptitudes>
         {   // aditivo (todas las aptitudes). Valores por nivel (placeholder; salen del balance del boss del santuario).

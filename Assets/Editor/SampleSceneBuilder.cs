@@ -138,6 +138,7 @@ public static class SampleSceneBuilder
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
+        BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2547,6 +2548,30 @@ public static class SampleSceneBuilder
     {
         GameObject g = new GameObject("Pasto"); g.transform.SetParent(root); g.transform.position = pos;
         g.AddComponent<GrassPatch>();
+    }
+
+    // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
+    // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
+    static void BuildIceFlora(Transform parent)
+    {
+        GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
+        Vector3 treePos = new Vector3(120f, 1f, 20f);
+
+        GameObject tree = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        tree.name = "ArbolCarnivoroHielo"; tree.transform.SetParent(root.transform);
+        tree.transform.position = treePos; tree.transform.localScale = new Vector3(1.5f, 3f, 1.5f);
+        var r = tree.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("IceTree_MAT", new Color(0.55f, 0.8f, 0.85f));
+        tree.AddComponent<IceCarnivorousTree>();
+        tree.AddComponent<WorldLabel>().text = "Árbol carnívoro de hielo";
+
+        GameObject beePrefab = LoadAnimalPrefab("SnowBee");
+        if (beePrefab != null)
+        {
+            GameObject bg = new GameObject("Abejas_nieve"); bg.transform.SetParent(root.transform);
+            FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = treePos + new Vector3(4f, 0f, 0f), quantity = 6, minParentsCount = 1, radius = 5f } };
+        }
+        else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
     }
 
     static void BuildAnimaStatusPanels(Transform parent)
