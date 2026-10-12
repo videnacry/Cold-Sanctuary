@@ -71,6 +71,7 @@ guardería**. El resto (limpieza/inventario/yoga/comer/cierre-nocturno/volición
   insectos sabana/era-fuego (Ant/Aphid/Ladybug/Spider/Cricket/Termite/DungBeetle/Antlion/Mantis/Grasshopper/Meerkat).
 - **Modelos 3D**: el compi reportó **13/21 sin `.fbx`**; con el **prefab-cubo por defecto** (`AnimalPrefabGenerator`)
   ya se generan todas como cubos → **jugable sin modelos**. 
-- **Falta**: confirmar que la **flora/insectos de hielo** del diseño (plancton→krill→pez ✓ como Swarm/Phytoplankton;
-  **árbol carnívoro de hielo + abejas de las nieves** ✱ aún no montados) estén en la escena del Santuario 1; y poblar
-  los **niveles del Microcosmos** con la fauna de su era (ambiente ✓ Scene0; revisar las demás).
+- **Flora/insectos de hielo (HECHO 2026-10-12):** plancton→krill→pez ✓ (Swarm/Phytoplankton) + **árbol carnívoro de
+  hielo** (`IceCarnivorousTree`: señuelo de olor→sopor→muerte→crece) + **abeja de las nieves** (`SnowBee`, especie nueva,
+  anida junto al árbol) → `BuildIceFlora` en el Santuario 1.
+- **Falta**: poblar las demás escenas del Microcosmos con la fauna de su era (ambiente ✓ en Scene0; revisar el resto).

@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 386 tipos._
+_Total: 388 tipos._
 
 
 ## Animals
@@ -40,6 +40,7 @@ _Total: 386 tipos._
 - **SealBehavior** (class) — `Assets/Animals/Seal/SealBehavior.cs`
 - **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2).
 - **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4):
+- **SnowBeeBehavior** (class) — `Assets/Animals/SnowBee/SnowBeeBehavior.cs`
 - **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5).
 - **SpeciesProfile** (class) — `Assets/Animals/SpeciesProfile.cs` — Config ESCALAR por especie (docs/anima-dissolving-animal.md, etapa 5):
 - **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
@@ -213,6 +214,7 @@ _Total: 386 tipos._
 - **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
 - **IBrain** (interface) — `Assets/Scripts/Control/IBrain.cs` — Un "cerebro" que puede conducir a un `Anima` (docs/anima-architecture.md §11.5).
 - **ICarrier** (interface) — `Assets/Scripts/ICarrier.cs` — Entidad que puede recoger comida del suelo y depositarla en otra posición.
+- **IceCarnivorousTree** (class) — `Assets/Scripts/World/IceCarnivorousTree.cs` — ÁRBOL CARNÍVORO DE HIELO (docs/ice-sanctuary-ecology.md) — la flora clave del Santuario 1:
 - **IdealStateTest** (class) — `Assets/Scripts/IdealStateTest.cs` — Test del ESTADO IDEAL (docs/consciousness-mechanics.md, testing-checklist §46), por `TestProbe`:
 - **IdleBehavior** (class) — `Assets/Scripts/Control/IdleBehavior.cs` — COMPORTAMIENTO LIBRE vía COLA (docs/typed-spells-and-queues.md §4):
 - **IEdible** (interface) — `Assets/Scripts/IEdible.cs` — Todo lo que puede ser comido:
