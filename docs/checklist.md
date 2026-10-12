@@ -12,7 +12,10 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > **Testing:** `TestProbe`/`TestRunner` (grep `[TEST]`), 8 sandboxes en `TestRunner_AUTO`, misión-observación
 > `EcosystemObservation` (`[ECO]`) + misión WASD. Diseño vivo en `docs/capabilities-and-embodiment.md`,
 > `docs/volition-selection-engine.md`, `docs/environmental-navigation.md`. **Validación en Unity:** el compañero
-> confirmó compilación limpia + 0 regresiones hasta #148; **pendiente compilar #149–#162** (todo balance-safe/gateado).
+> confirmó compilación limpia + 0 regresiones hasta #148. **2026-10-12: master hasta #217 (7eb29ec) COMPILA con 0 errores**
+> (`tools/verify-compile.sh`, Unity 6000.5.1f1: runtime 0 err/43 warnings, editor 0 err/3 warnings). Falta **probar en
+> escena** (regresiones) lo de #149 en adelante. En el proyecto Unity sobran 3 `.cs` fuera de git: `Assets/Editor/HeadlessLive.cs`
+> y `Assets/Scripts/ChecklistAuto.cs` (commits locales sin pushear) y `Assets/Scripts/Microcosmos/WalkToGoal.cs` (nunca en git).
 > **Siguiente sugerido:** Enfermería (curar enfermos/inanición vía `SicknessState.Heal`), N2/N4 (que el saciado gravite
 > a lugares), o status del jugador (atacado/huida) en el HUD.
 >
