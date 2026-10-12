@@ -61,7 +61,8 @@ public class ReachGoalMission : MonoBehaviour
         if (!_hasPlayer || _player == null) return;
         string msg = _done
             ? "✓ Misión completada: llegaste al refugio."
-            : $"Misión (WASD): ve al marcador del refugio  ·  {Vector3.Distance(_player.position, transform.position):0} m";
-        GUI.Label(new Rect(10f, 34f, 480f, 22f), msg);
+            : $"Misión (WASD): ve al marcador del refugio  ·  {HudGate.Arrow(_player.position, transform.position)} {Vector3.Distance(_player.position, transform.position):0} m";
+        // Abajo al centro: arriba a la izquierda pisaba el HUD de recursos.
+        GUI.Label(new Rect(Screen.width * 0.5f - 240f, Screen.height - 52f, 480f, 22f), msg);
     }
 }

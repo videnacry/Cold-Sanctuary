@@ -59,6 +59,10 @@ public abstract class MeditationMissionBase : MonoBehaviour
     int       _resolved;
     int       _spawned;
     bool      _running;
+    static int _runningCount;
+
+    /// <summary>Hay alguna misión de mob en curso (otros HUD se apartan para no tapar el marcador).</summary>
+    public static bool AnyRunning => _runningCount > 0;
     Coroutine _spawnRoutine;
     readonly List<MeditationMob> _mobs = new List<MeditationMob>();
 
@@ -97,7 +101,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
     void Begin()
     {
         if (_running) return;
-        _running   = true;
+        _running   = true; _runningCount++;
         _resolved  = 0;
         _spawned   = 0;
 
@@ -150,7 +154,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
     void Complete()
     {
         if (!_running) return;
-        _running = false;
+        _running = false; _runningCount = Mathf.Max(0, _runningCount - 1);
         if (_spawnRoutine != null) StopCoroutine(_spawnRoutine);
 
         Debug.Log(CompleteMessage);
@@ -173,12 +177,39 @@ public abstract class MeditationMissionBase : MonoBehaviour
 
     void Cleanup()
     {
+        if (_running) _runningCount = Mathf.Max(0, _runningCount - 1);
         _running = false;
         if (_spawnRoutine != null) { StopCoroutine(_spawnRoutine); _spawnRoutine = null; }
 
         foreach (var m in _mobs)
             if (m != null) Destroy(m.gameObject);
         _mobs.Clear();
+    }
+
+    // ── HUD de seguimiento ──────────────────────────────────────────────────────
+    // Sin esto la misión solo se anunciaba por consola: en Play no había ni progreso ni pista de dónde
+    // estaban los mobs (esferas sin collider que pueden quedar detrás de muebles), y no se sabía qué hacer.
+
+    void OnGUI()
+    {
+        if (!_running) return;
+        string title = mission != null && !string.IsNullOrEmpty(mission.missionName) ? mission.missionName : name;
+        string msg = $"{title}: {_resolved}/{targetCount}";
+
+        MeditationMob nearest = null; float best = float.MaxValue;
+        if (player != null)
+            foreach (MeditationMob m in _mobs)
+            {
+                if (m == null) continue;
+                float d = Vector3.Distance(player.position, m.transform.position);
+                if (d < best) { best = d; nearest = m; }
+            }
+        if (nearest != null)
+            msg += $"   ·   el más cercano: {HudGate.Arrow(player.position, nearest.transform.position)} {best:0} m";
+        else if (_spawned < targetCount) msg += "   ·   aparecen a tu alrededor…";
+
+        var style = new GUIStyle(GUI.skin.box) { fontSize = 15, alignment = TextAnchor.MiddleCenter };
+        GUI.Box(new Rect(Screen.width * 0.5f - 230f, 8f, 460f, 28f), msg, style);
     }
 
     // ── Helper for subclasses without a prefab ──────────────────────────────────

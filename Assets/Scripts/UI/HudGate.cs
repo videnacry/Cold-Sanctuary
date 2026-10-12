@@ -28,6 +28,18 @@ public static class HudGate
 
     public static bool Near(Component c, float radius = 4f) => c != null && Near(c.transform.position, radius);
 
+    static readonly string[] Arrows = { "↑", "↗", "→", "↘", "↓", "↙", "←", "↖" };
+
+    /// <summary>Flecha (relativa a hacia dónde mira la cámara) de <paramref name="from"/> a <paramref name="to"/>,
+    /// para que los HUD de misión digan hacia dónde ir y no solo a cuántos metros.</summary>
+    public static string Arrow(Vector3 from, Vector3 to)
+    {
+        Vector3 d = to - from; d.y = 0f;
+        Vector3 fwd = Camera.main != null ? Camera.main.transform.forward : Vector3.forward; fwd.y = 0f;
+        float ang = Vector3.SignedAngle(fwd, d, Vector3.up);
+        return Arrows[Mathf.RoundToInt(((ang + 360f) % 360f) / 45f) % 8];
+    }
+
     static Transform Player()
     {
         if (_player != null) return _player;

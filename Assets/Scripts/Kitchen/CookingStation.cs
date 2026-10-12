@@ -76,6 +76,7 @@ public class CookingStation : MonoBehaviour
     // La sala física del restaurante ("Sala", hija del RestaurantKitchen) — si no existe, el propio gestor.
     bool NearKitchen()
     {
+        if (MeditationMissionBase.AnyRunning) return false;   // dentro de una misión, el marcador de arriba manda
         if (kitchen == null) return HudGate.ShowAll;
         if (_room == null) { _room = kitchen.transform.Find("Sala"); if (_room == null) _room = kitchen.transform; }
         return HudGate.Near(_room.position, 10f);

@@ -68,7 +68,8 @@ public class AnimaStatusHUD : MonoBehaviour
             }
         }
 
-        GUI.Label(new Rect(origin.x, origin.y, 320f, 460f), sb.ToString(), _style);
+        float y = Mathf.Max(origin.y, SanctuaryResourceHUD.Bottom + 8f);   // debajo del HUD de recursos, sin pisarlo
+        GUI.Label(new Rect(origin.x, y, 320f, 460f), sb.ToString(), _style);
     }
 
     // Un valor 0..1 → "etiqueta: NN% " coloreado (verde bien / rojo mal). badHigh: alto = malo (estrés); si no, alto = bueno.

@@ -17,10 +17,14 @@ public class SanctuaryResourceHUD : MonoBehaviour
     public Vector2 origin = new Vector2(12f, 12f);
 
     GUIStyle       _style;
+    /// <summary>Borde inferior del panel en el último repintado (0 = no se dibujó). Lo usa AnimaStatusHUD para apilarse.</summary>
+    public static float Bottom;
+
     CharacterLevel _level;   // nivel del jugador (cacheado)
 
     void OnGUI()
     {
+        if (Event.current.type == EventType.Layout) Bottom = 0f;
         if (!SanctuaryResources.HasInstance) return;
         SanctuaryResources res = SanctuaryResources.Instance;
 
@@ -52,6 +56,9 @@ public class SanctuaryResourceHUD : MonoBehaviour
             sb.AppendLine($"Def: {_level.PassiveDefense:0}   Poder: {_level.SpellPower:0.0}");
         }
 
-        GUI.Label(new Rect(origin.x, origin.y, 320f, 300f), sb.ToString(), _style);
+        string text = sb.ToString();
+        float h = _style.CalcHeight(new GUIContent(text), 320f);
+        GUI.Label(new Rect(origin.x, origin.y, 320f, h), text, _style);
+        Bottom = origin.y + h;   // el HUD de estado se apila debajo (antes se pisaban)
     }
 }
