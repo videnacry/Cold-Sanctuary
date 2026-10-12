@@ -72,6 +72,11 @@ public static class HudGate
         {
             GUI.Label(new Rect(Screen.width - 190f, Screen.height - 24f, 185f, 22f),
                       ShowAll ? "F1: ocultar paneles de prueba" : "F1: ver paneles de prueba");
+            // En modo prueba, la posición del jugador: los sandbox se describen por coordenadas en los docs.
+            Transform p = Player();
+            if (ShowAll && p != null)
+                GUI.Label(new Rect(Screen.width - 190f, Screen.height - 44f, 185f, 22f),
+                          $"pos ({p.position.x:0}, {p.position.y:0.0}, {p.position.z:0})");
         }
     }
 }
