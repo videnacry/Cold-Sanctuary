@@ -2606,6 +2606,11 @@ public static class SampleSceneBuilder
             GameObject p = (GameObject)PrefabUtility.InstantiatePrefab(wolf);
             p.name = "Kushal_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);
             HealthRecord hr = p.AddComponent<HealthRecord>(); hr.vaccinated = false; hr.analyzed = false;
+            // Aspirante al santuario: Linduarda lo cura (análisis+vacuna), luego hace sus 3 misiones introductorias
+            // (auto-demo) → ella lo certifica apto → la Magnate lo presenta y lo lleva a yoga/cocina. Cadena EMERGENTE completa.
+            SanctuaryOnboarding on = p.AddComponent<SanctuaryOnboarding>();
+            on.autoCompleteForDemo = true;
+            if (p.GetComponent<Mind>() == null) p.AddComponent<Mind>().identity = "Kushal";
         }
         else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
     }

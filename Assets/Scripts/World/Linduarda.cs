@@ -32,8 +32,16 @@ public class Linduarda : MonoBehaviour
     void Update()
     {
         if (_a == null || _a.death) return;
-        if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); }
+        if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
+    }
+
+    // Segundo impulso de la doctora: CERTIFICAR APTO a quien ya está sano y completó sus 3 misiones introductorias.
+    // Instantáneo (es su juicio médico, no requiere desplazarse). De aquí nace que la Magnate lo presente.
+    void Certify()
+    {
+        foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
+            if (o != null && o.ReadyForApt) o.CertifyApt();
     }
 
     // STATUS GLOBAL (por magia, instantáneo): el HealthRecord más cercano que necesite cuidado.

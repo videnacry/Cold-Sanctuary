@@ -25,6 +25,7 @@ public class Magnate : MonoBehaviour
     PacifySpell _pacify;
     float _nextTeach, _nextPacify;
     Anima _student;
+    SanctuaryOnboarding _newcomer;
     static readonly Collider[] _hits = new Collider[32];
 
     void Awake()
@@ -54,8 +55,43 @@ public class Magnate : MonoBehaviour
 
         Pacify();
 
+        // Pensamiento PRIORITARIO: ¿hay un aspirante recién certificado apto por Linduarda y sin presentar?
+        // Entonces lo presenta ante el santuario y lo lleva a yoga (upa-yoga) y a la cocina. Va antes que enseñar al rezagado.
+        if (_newcomer == null) _newcomer = FindNewcomer();
+        if (_newcomer != null) { GoPresent(); return; }
+
         if (Time.time >= _nextTeach) { _nextTeach = Time.time + teachInterval; _student = FindLaggard(); }
         if (_student != null) GoTeach();
+    }
+
+    // El aspirante apto que todavía no ha sido presentado (el más cercano).
+    SanctuaryOnboarding FindNewcomer()
+    {
+        SanctuaryOnboarding best = null; float bestSq = float.MaxValue;
+        foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
+        {
+            if (o == null || !o.apt || o.presented) continue;
+            float sq = (o.transform.position - transform.position).sqrMagnitude;
+            if (sq < bestSq) { bestSq = sq; best = o; }
+        }
+        return best;
+    }
+
+    void GoPresent()
+    {
+        if (_newcomer == null) return;
+        Anima t = _newcomer.GetComponentInParent<Anima>();
+        if (t == null) { _newcomer.presented = true; _newcomer = null; return; }
+        Vector3 to = t.transform.position - transform.position; to.y = 0f;
+        if (to.magnitude > teachRadius) { transform.position += to.normalized * moveSpeed * Time.deltaTime; return; }
+
+        // Ceremonia: la maestra lo presenta como nuevo miembro, le da el upa-yoga y lo encamina a aprender un área (cocina).
+        Debug.Log($"[Magnate] presenta a «{t.name}» como nuevo miembro del santuario. Le enseña upa-yoga y lo lleva a la cocina.");
+        Teach(t);                              // upa-yoga: el recuerdo del Saludo al Sol + ánimo (ver Teach)
+        Mind m = t.GetComponent<Mind>();
+        if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
+        _newcomer.presented = true;
+        _newcomer = null;
     }
 
     // Proteger la vida: a su alrededor lanza PACIFICACIÓN (quita humores negativos, sube positivos, quita `aware`) →
