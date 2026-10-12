@@ -37,13 +37,13 @@ public class AnymaFactory : MonoBehaviour
     // se aplican igual por la especie; solo falta el `ConfigureThreat` del subclass (menor). Game model-independent.
     static GameObject CreateCubeAnima(string species, Vector3 pos)
     {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        go.name = string.IsNullOrEmpty(species) ? "Anima" : species;
+        GameObject go = new GameObject(string.IsNullOrEmpty(species) ? "Anima" : species);
         go.transform.position = pos;
         go.AddComponent<Animal>();
         SpeciesBody sb = go.GetComponent<SpeciesBody>() ?? go.AddComponent<SpeciesBody>();
         if (!string.IsNullOrEmpty(species)) sb.species = species;   // antes del Init → los catálogos usan esta especie
         go.AddComponent<Mind>();
+        CubeBody.Build(go, species);   // cuerpo = GRUPO DE CUBOS por parte (con CreatureRig para las asanas)
         return go;
     }
 
