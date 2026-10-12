@@ -62,7 +62,22 @@ Secuencia objetivo (Kushal), con lo que YA existe y lo que falta cablear:
    cocina** (misiones) → al terminar, **liberado** para pasear.
 8. **Mundo abierto**: Mecánica y Huerto (**también con limpieza+inventario** ✱ por confirmar) y **guardería/cría** ✱FALTA.
 
-**Lo que hay que construir para el Nivel 1 jugable:** los **superhechizos `análisisClínico` y `vacunar`** (Linduarda),
+### El GUION es EMERGENTE (no scriptado) — nace de pensamientos + hechizos
+No hay un guion rígido: las escenas **emergen** de los **pensamientos custom** de cada ser y de los **hechizos** que
+lanzan, igual que los **peloteros** se conocen y deciden vivir juntos, **Medea/Momo** empujaban a los viejos al refugio,
+o la **Magnate** se acerca a los rezagados a enseñarles. Patrón: un ser tiene un **pensamiento-impulso** → **lanza un
+hechizo** (a veces un **status/survey** para saber a quién) → **va y actúa**. Montado así:
+- **Linduarda** (`Linduarda.cs`, CONSTRUIDO): su pensamiento = **asegurar la salud del santuario** → cada rato lanza un
+  **status global** (por magia, instantáneo) y, a quien tenga su `HealthRecord` en `false`, **va y le lanza** el análisis
+  (`ClinicalAnalysisSpell`) o la vacuna (`VaccinateSpell`). **Kushal se crea con ambos en `false`** → al empezar, a
+  Linduarda **le nace** atenderlo. (Como la Magnate con el rezagado.) Sandbox: `Enfermeria_AUTO` + paciente demo.
+- **Otras interacciones** (a recrear con el mismo patrón): un ser con pensamiento "proteger" + ve a otro en peligro →
+  hechizo de ayuda/pacificar (Magnate); dos con bond pre-sembrado + se encuentran → charla/mudanza (peleteros,
+  `CommunicationSpell`+`livetogether`); un maestro con "hacer crecer" + ve un rezagado → `TeachSpell` (Magnate/pinche
+  de guardia). El guion = **sembrar los pensamientos y hechizos** y dejar que la arena (Volición) los dispare.
+
+**Lo que hay que construir para el Nivel 1 jugable:** ~~los superhechizos `análisisClínico` y `vacunar`~~ (HECHO) y
+cablear su disparo (HECHO con Linduarda); faltan
 el **guion/`PrologueSequence` que encadena** los pasos 1–8, el **gating de misiones** (diarias, prioridad limpieza>cocina,
 equipo), las **automisiones** (área de menú), **recoger muestras**, **salto temporal al amanecer**, y las **misiones de
 guardería**. El resto (limpieza/inventario/yoga/comer/cierre-nocturno/volición-sueño/micro) **ya existe**; es cablearlo.
