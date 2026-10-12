@@ -36,9 +36,12 @@ Patrón: como `BuildFamilyLifeTest`, aislados y con comida puesta para que el te
 - **HECHO (1ª rebanada):** deseo **`nurse`** en `DesireCatalog` — el padre/madre **alimenta a la cría** (lifeStage='c')
   vinculada y hambrienta; compite en la **arena** (vínculo×hambre×afabilidad) y corre por la **cola** (Conjure→SuperSpell).
   Junto a `tend`/`follow`/`mate` ya existentes, la **decisión** de cuidado está en la arena.
-- **FALTA:** retirar los **drives directos** de `PostNatalManager` (corutinas `SetDestination` a `cub.HomeOrigin`,
-  nursing por intervalos, roles de padre) y expresarlos como deseos (`guardCub`, `fetchCub`, cub-side `stayClose`/`cry`).
-  El **calendario** de etapas/destete de `PostNatalManager` puede quedarse (es la agenda, no la conducta momento-a-momento).
+- **HECHO (2026-10-12, migración construida):** el **lado padre** lo cubren `nurse` (cría hambrienta) + `tend` (cría
+  estresada) + `follow` (cohesión); el **lado cría/nido** lo cubre el nuevo deseo **`homebound`** (volver al `HomeOrigin`).
+  `PostNatalManager` tiene un flag **`delegateMovementToVolition`**: al ponerlo `true`, **deja de conducir el movimiento**
+  (madre↔nido, cría↔nido) → lo hacen los deseos; su **calendario** de etapas/destete/lactancia se queda. **Default `false`**
+  (sin regresión); el compi lo pone `true` tras validar la emergencia en vivo (prueba `BuildFamilyLifeTest`).
+- **FALTA:** validar la emergencia y **activar el flag**; afinar pesos (`W_NURSE`/`W_HOME`) con la prueba de familia.
 
 ## 4. Onboarding del Nivel 1 (Santuario 1) — PLAN DE CABLEADO
 Secuencia objetivo (Kushal), con lo que YA existe y lo que falta cablear:
