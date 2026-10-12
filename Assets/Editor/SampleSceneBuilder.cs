@@ -2425,22 +2425,28 @@ public static class SampleSceneBuilder
         MakeLabeledPrimitive(room.transform, "Mesa de emplatado", new Vector3(5f, 0.45f, 2f), new Vector3(2.5f, 0.9f, 1.0f), furniture);
         MakeLabeledPrimitive(room.transform, "Nevera", new Vector3(-7f, 0.9f, 5f), new Vector3(0.8f, 1.8f, 0.7f), new Color(0.8f, 0.85f, 0.9f));
 
-        // Útiles SOBRE la encimera (y≈0.95): planchas planas, ollas y bols pequeños.
-        MakeLabeledPrimitive(room.transform, "Plancha 1", new Vector3(-4f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
-        MakeLabeledPrimitive(room.transform, "Plancha 2", new Vector3(-1f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(4f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
-        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
-        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.4f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
+        // Útiles SOBRE la encimera (tapa a y=0.9: centro 0.45 + alto/2). MEDIDAS REALES de cocina: sartén Ø~0.26 h~0.04;
+        // olla Ø~0.22 h~0.13 (≈4-5 L); bol Ø~0.18 h~0.08. Así una olla de 22 cm NO se llena con 3 huevos de 5 cm (caben ~20).
+        const float counterTop = 0.9f;
+        MakeLabeledPrimitive(room.transform, "Sarten 1", new Vector3(-4f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
+        MakeLabeledPrimitive(room.transform, "Sarten 2", new Vector3(-3f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(3f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
+        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
+        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.1f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
 
-        // Ingredientes (diminutos ~0.12) sobre la encimera de ingredientes.
-        (string label, Color col)[] ingredients = {
-            ("Huevos", new Color(0.95f, 0.9f, 0.6f)), ("Verduras", new Color(0.4f, 0.8f, 0.4f)),
-            ("Avena", new Color(0.85f, 0.75f, 0.55f)), ("Fruta", new Color(0.9f, 0.5f, 0.6f)),
-            ("Yogur", new Color(0.95f, 0.95f, 0.95f)), ("Legumbres", new Color(0.6f, 0.45f, 0.3f)),
+        // Ingredientes a TAMAÑO REAL (huevo ~5 cm; el resto, piezas ~8 cm) sobre su encimera. Cada uno sienta sobre la tapa.
+        (string label, Color col, float size)[] ingredients = {
+            ("Huevos",   new Color(0.95f, 0.9f, 0.6f),  0.05f), ("Verduras", new Color(0.4f, 0.8f, 0.4f), 0.08f),
+            ("Avena",    new Color(0.85f, 0.75f, 0.55f), 0.08f), ("Fruta",    new Color(0.9f, 0.5f, 0.6f), 0.08f),
+            ("Yogur",    new Color(0.95f, 0.95f, 0.95f), 0.08f), ("Legumbres",new Color(0.6f, 0.45f, 0.3f), 0.07f),
         };
         for (int i = 0; i < ingredients.Length; i++)
-            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, 0.98f, -4f), new Vector3(0.14f, 0.14f, 0.14f), ingredients[i].col);
+        {
+            float sz = ingredients[i].size;
+            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, counterTop + sz * 0.5f, -4f),
+                                 new Vector3(sz, sz, sz), ingredients[i].col);
+        }
 
         // Estante de DESPENSA (misión de inventario = abastecerlo con el hechizo `stock`).
         GameObject shelf = GameObject.CreatePrimitive(PrimitiveType.Cube);
