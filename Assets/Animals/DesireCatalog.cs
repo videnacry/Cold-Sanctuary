@@ -95,6 +95,14 @@ public static class DesireCatalog
             self => ApproachBondTarget(self, care: true),
             "tend"),
 
+        // NUTRIR (MIGRACIÓN del postnatal a la arena): el padre/madre ALIMENTA a una CRÍA (lifeStage='c') VINCULADA y
+        // hambrienta. Necesidad = vínculo × hambre de la cría × afabilidad → compite con comer/amenaza como un deseo más
+        // (antes lo conducía directo `PostNatalManager`). Despacha acercarse + nutrir (baja el hambre de la cría).
+        new Desire("nurse",
+            self => { CubNeed(self, out float n); return n * Mathf.Max(0.3f, self.afabilidad) * W_NURSE; },
+            self => NurseCub(self),
+            "tend"),
+
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
         new Desire("follow",
@@ -126,6 +134,35 @@ public static class DesireCatalog
     const float W_TEND    = 0.9f;    // cuidar al vínculo en apuro: fuerte (× afabilidad)
     const float W_FOLLOW  = 0.35f;   // cohesión: de fondo (× sociabilidad); el hambre/amenaza lo superan
     const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
+    const float W_NURSE   = 1.0f;    // nutrir a la cría: fuerte (× afabilidad) → un padre atiende a su cría hambrienta
+
+    // Cría más necesitada: recorre los bonds, busca Animal en etapa CRÍA ('c') y hambrienta; devuelve urgencia = vínculo×hambre.
+    static Animal CubNeed(Animal self, out float need)
+    {
+        need = 0f; Animal best = null;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
+            float urg = Mathf.Clamp01(b.value / 100f) * Mathf.Clamp01(cub.hungry);
+            if (urg > need) { need = urg; best = cub; }
+        }
+        return best;
+    }
+
+    // Nutrir: ir a la cría más necesitada y, si está cerca, bajarle el hambre (le pasa alimento); cuesta algo al que nutre.
+    static void NurseCub(Animal self)
+    {
+        Animal cub = CubNeed(self, out _);
+        if (cub == null) return;
+        if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(cub.transform.position);
+        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f)
+        {
+            cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);   // amamantar/compartir comida
+            self.exhaustion += 0.5f;                          // cuidar cansa un poco
+        }
+    }
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).

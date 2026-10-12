@@ -136,6 +136,7 @@ public static class SampleSceneBuilder
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
+        BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2453,6 +2454,48 @@ public static class SampleSceneBuilder
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
         m.AddComponent<Magnate>();
+    }
+
+    // PRUEBA EN VIVO de VIDA FAMILIAR: una familia aislada con comida puesta → no gastan tiempo cazando/pastando ni
+    // interactúan con otra fauna; se observa SOLO pareja/padres/crías (+ el deseo `nurse`). Lobos (pack familiar, con
+    // "tíos" = más adultos) con carne; conejos con pasto. Lejos del resto del mapa. Si falta el prefab, se omite.
+    static void BuildFamilyLifeTest(Transform parent)
+    {
+        GameObject root = new GameObject("PruebaVidaFamiliar_AUTO"); root.transform.SetParent(parent);
+
+        // Lobos: familia + tíos (minParentsCount=3) con carne alrededor → test puro de vida de manada.
+        Vector3 wolfPos = new Vector3(-140f, 0f, 0f);
+        GameObject wolfPrefab = LoadAnimalPrefab("Wolf");
+        if (wolfPrefab != null)
+        {
+            GameObject wg = new GameObject("Lobos_familia"); wg.transform.SetParent(root.transform);
+            FamilyGenerator fg = wg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = wolfPrefab, position = wolfPos, quantity = 6, minParentsCount = 3, radius = 10f } };
+            for (int i = 0; i < 6; i++)   // carne puesta (no necesitan cazar)
+            {
+                GameObject f = new GameObject("Carne"); f.transform.SetParent(root.transform);
+                f.transform.position = wolfPos + new Vector3((i % 3) * 3f - 3f, 0.3f, (i / 3) * 3f - 1.5f);
+                FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 200f;
+            }
+        }
+        else Debug.LogWarning("[FamilyLifeTest] sin prefab Wolf (genera prefabs — ahora salen cubos si no hay .fbx), se omite la familia de lobos.");
+
+        // Conejos: familia con pasto → test de vida familiar herbívora.
+        Vector3 bunnyPos = new Vector3(-160f, 0f, 25f);
+        GameObject bunnyPrefab = LoadAnimalPrefab("Bunny");
+        if (bunnyPrefab != null)
+        {
+            GameObject bg = new GameObject("Conejos_familia"); bg.transform.SetParent(root.transform);
+            FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
+            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = bunnyPrefab, position = bunnyPos, quantity = 5, minParentsCount = 2, radius = 8f } };
+            for (int i = 0; i < 4; i++)   // parches de pasto (no necesitan buscar lejos)
+            {
+                GameObject g = new GameObject("Pasto"); g.transform.SetParent(root.transform);
+                g.transform.position = bunnyPos + new Vector3((i % 2) * 4f - 2f, 0f, (i / 2) * 4f - 2f);
+                g.AddComponent<GrassPatch>();
+            }
+        }
+        else Debug.LogWarning("[FamilyLifeTest] sin prefab Bunny, se omite la familia de conejos.");
     }
 
     static void BuildAnimaStatusPanels(Transform parent)
