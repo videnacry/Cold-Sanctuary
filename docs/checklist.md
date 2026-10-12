@@ -74,8 +74,14 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **22 platillos** (6 base + 16 bomba por país, `CookingRecipe.All`) + **cierre nocturno** (`AreaHours`+`IsDay`) — HECHO 2026-10-10.
 - [x] **Guía de pruebas para Unity** ([`testing-recent-features.md`](testing-recent-features.md)) — HECHO (montaje + tests por feature).
 - [ ] **Hechizos de cocina por PASO** (`take`/`putIn`/`beat` ligados a estación exacta, con RANGO = alcance del miembro; a distancia irreal con magia) + selector de primitivas.
-- [ ] **Magnate** (estado infinito/sin necesidades; clon en todos los sanctuary; bond alto por defecto desde todas; evento proteger-vida→enfermería; pacifica al aparecer; guardia nocturna alimentando animales; revisión semanal de status del mesomundo). Diseño pendiente de doc.
-- [ ] **Volición por la cola** (needs→thoughts→la IA encola hechizos-recuerdo del `Grimoire`) — refactor mayor.
+- [x] **Magnate** (1ª rebanada): estado infinito + sin necesidades + imposeíble de poseer + **pacifica** + va al
+      **rezagado** y le **enseña yoga** (Grimoire+Saludo al Sol+XP) — HECHO 2026-10-12 (`Assets/Scripts/World/Magnate.cs`).
+      *Falta:* marca por anima, bond alto por defecto (Anima→ITarget), llevar a enfermería, guardia nocturna, clon por sanctuary.
+- [x] **Cocina con RANGO** (`use`/`take` falla si no alcanzas la estación) — HECHO (1er paso de "steps=hechizos con alcance").
+- [x] **Insectos neutros de ambiente** (factory en Micro Scene0; se saltan sin .fbx) — HECHO.
+- [ ] **`SuperSpell`** (suprahechizo = cola de sub-hechizos; análisis=CanCast, potencia=force, equilibrio) — ver spells-suprahechizo-and-thoughts.md.
+- [ ] **`Mind.thoughtCounts`** (cuenta mutable por pensamiento: maestría sube, trauma baja → selección por cuenta).
+- [ ] **Volición por la cola** (needs→thoughts→encola hechizos-recuerdo del `Grimoire`) — se apoya en SuperSpell + thoughtCounts.
 - [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
 - [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
 - [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.

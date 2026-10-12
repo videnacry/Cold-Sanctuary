@@ -74,6 +74,7 @@ public class SpellConsole : MonoBehaviour
         {
             case "walkto": WalkTo(self, args); break;
             case "step": case "cook": Step(self); break;
+            case "use": case "take": UseStation(self, args); break;
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
@@ -88,6 +89,22 @@ public class SpellConsole : MonoBehaviour
         if (cs == null) { Log($"«{self.name}» no está cocinando."); return; }
         cs.AdvanceStep();
         Log($"«{self.name}»: siguiente paso de cocina.");
+    }
+
+    // ACCIÓN CON RANGO (first slice de "steps = hechizos con alcance"): usar una estación (nevera/plancha…) exige estar
+    // dentro del ALCANCE (del miembro; la magia lo ampliará). Si no llegas, FALLA → el jugador debe `walkTo` primero.
+    void UseStation(Anima self, Dictionary<string, string> args)
+    {
+        string name = args.TryGetValue("destiny", out string d) ? d : (args.TryGetValue("character", out string c) ? c : null);
+        if (name == null) { Log("use necesita un destiny (p. ej. Nevera)."); return; }
+        GameObject station = GameObject.Find(name);
+        if (station == null) { Log($"«{self.name}»: ¿Dónde está {name}?"); return; }
+        float reach = 2f + Mathf.Max(0f, self.perception - 1f);          // alcance del miembro; la magia lo ampliará
+        if (Vector3.Distance(self.transform.position, station.transform.position) > reach)
+        { Log($"«{self.name}»: no alcanzo {name} — acércate (walkTo)."); return; }   // falla por rango
+        CookingStation cs = self.GetComponent<CookingStation>();
+        if (cs != null) cs.AdvanceStep();
+        Log($"«{self.name}» usa {name}.");
     }
 
     // Yoga: encola el Saludo al Sol (12 asanas) en la cola del poseído → adopta las posturas por bodyPart.

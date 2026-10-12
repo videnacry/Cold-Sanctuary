@@ -116,6 +116,8 @@ public static class MicrocosmosSceneBuilder
         // La orilla de Sakshi = borde SUR (z negativo). Es el PUNTO SEGURO (más lejos del anillo) y la ENTRADA.
         Vector3 shore = new Vector3(0f, 0.4f, -25f);
 
+        BuildAmbientInsects(root.transform);   // insectos NEUTROS de ambiente (no afectan el nivel; dan vida real)
+
         // ── RÍO: franja N→S que desemboca en la orilla; arrastra aguas abajo (-Z) y debilita ──
         GameObject river = new GameObject("Rio");
         river.transform.SetParent(root.transform);
@@ -240,6 +242,27 @@ public static class MicrocosmosSceneBuilder
     {
         Shader shader = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         return new Material(shader) { name = name, color = c };
+    }
+
+    // INSECTOS NEUTROS de ambiente: usa el FACTORY/prefabs de fauna para poblar la escena con bichos que NO afectan al
+    // nivel (dan vida/sonido real). Carga el prefab por ruta (editor); si no existe (fbx pendiente), se salta. Dispersa
+    // unos pocos de cada especie lejos de la orilla de Sakshi. docs/anyma-factory-and-control.md.
+    static void BuildAmbientInsects(Transform root)
+    {
+        GameObject amb = new GameObject("InsectosAmbiente"); amb.transform.SetParent(root);
+        (string species, int count)[] fauna = { ("Cricket", 4), ("Aphid", 5), ("Ladybug", 3), ("Grasshopper", 4) };
+        foreach (var (species, count) in fauna)
+        {
+            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Animals/{species}/{species}.prefab");
+            if (prefab == null) { Debug.Log($"[Micro] ambiente: sin prefab {species} (pon el .fbx y genera) — se omite."); continue; }
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 r = Random.insideUnitCircle * 20f;
+                Vector3 p = new Vector3(r.x, 0.4f, Mathf.Abs(r.y));   // zona norte/centro, lejos de la orilla sur
+                GameObject go = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
+                go.transform.SetParent(amb.transform); go.transform.position = p;
+            }
+        }
     }
 
     static void AddToBuildSettings(string path)
