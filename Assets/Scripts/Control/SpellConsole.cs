@@ -23,24 +23,78 @@ public class SpellConsole : MonoBehaviour
 
     void Update() { if (Input.GetKeyDown(toggleKey)) _open = !_open; }
 
+    // GRIMORIO: catálogo de hechizos con su PLANTILLA por defecto (forma completa). El jugador no memoriza: escribe algo,
+    // ve sugerencias (tolera fallos, ordena por similitud) y con Tab rellena la plantilla y cambia las properties.
+    static readonly (string name, string template)[] Spells =
+    {
+        ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
+        ("use",       "use({destiny:\"Nevera\"})"),
+        ("take",      "take({item:\"Huevos\"})"),
+        ("putIn",     "putIn({destiny:\"Plancha\"})"),
+        ("beat",      "beat({destiny:\"Plancha\"})"),
+        ("step",      "step"),
+        ("bond",      "bond({destiny:\"\", amount:20})"),
+        ("thought",   "thought({destiny:\"\", positive:true})"),
+        ("yoga",      "yoga"),
+        ("clean",     "clean"),
+        ("teach",     "teach({destiny:\"\", skill:\"yoga\"})"),
+        ("analysis",  "analysis({destiny:\"\"})"),
+        ("vaccinate", "vaccinate({destiny:\"\"})"),
+        ("status",    "status({visible:true, destiny:\"self\", seconds:20})"),
+        ("open",      "open({destiny:\"\"})"),
+        ("close",     "close({destiny:\"\"})"),
+    };
+
     void OnGUI()
     {
         if (!_open) return;
-        float w = 560f, h = 24f, x = 12f, y = Screen.height - 120f;
-        GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 92f), "");
-        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Hechizos</b>  walkTo(\"Nevera\") · take(\"Huevos\") · putIn(\"Plancha\") · beat(\"Plancha\")");
+        float w = 560f, h = 24f, x = 12f, y = Screen.height - 240f;
+        GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 212f), "");
+        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Grimorio</b>  (escribe y pulsa Tab para autocompletar la plantilla; Enter lanza)");
         GUI.SetNextControlName("spellInput");
         _input = GUI.TextField(new Rect(x, y + 20f, w, h), _input);
         GUI.FocusControl("spellInput");
 
+        // Sugerencias (difusas): el prefijo = lo escrito antes del '('. Vacío → muestra todo (vista del grimorio).
+        string prefix = _input;
+        int paren = prefix.IndexOf('(');
+        if (paren >= 0) prefix = prefix.Substring(0, paren);
+        var sug = Suggest(prefix.Trim());
+
         Event e = Event.current;
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && sug.Count > 0)   // Tab → rellena la plantilla del 1º
+        { _input = sug[0].template; e.Use(); }
         if (e.type == EventType.KeyDown && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter))
         {
             if (!string.IsNullOrWhiteSpace(_input)) { Dispatch(_input.Trim()); _input = ""; }
             e.Use();
         }
-        for (int i = 0; i < _log.Count && i < 3; i++)
-            GUI.Label(new Rect(x, y + 48f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
+
+        for (int i = 0; i < sug.Count && i < 7; i++)
+            GUI.Label(new Rect(x, y + 48f + i * 16f, w, 16f), (i == 0 ? "➤ " : "   ") + $"<b>{sug[i].name}</b>  <size=10>{sug[i].template}</size>");
+        for (int i = 0; i < _log.Count && i < 2; i++)
+            GUI.Label(new Rect(x, y + 48f + 7 * 16f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
+    }
+
+    // Búsqueda difusa (tolerante a fallos): startsWith > contiene > solape de caracteres. Ordena por similitud.
+    static List<(string name, string template)> Suggest(string q)
+    {
+        var scored = new List<(int score, string name, string template)>();
+        foreach (var s in Spells)
+        {
+            string n = s.name.ToLowerInvariant(); string ql = q.ToLowerInvariant();
+            int score;
+            if (string.IsNullOrEmpty(ql)) score = 1;
+            else if (n == ql) score = 1000;
+            else if (n.StartsWith(ql)) score = 500 - (n.Length - ql.Length);
+            else if (n.Contains(ql)) score = 200;
+            else { int overlap = 0; foreach (char c in ql) if (n.IndexOf(c) >= 0) overlap++; score = overlap * 20 - Mathf.Abs(n.Length - ql.Length); }
+            if (score > 0) scored.Add((score, s.name, s.template));
+        }
+        scored.Sort((a, b) => b.score.CompareTo(a.score));
+        var outp = new List<(string, string)>();
+        foreach (var s in scored) outp.Add((s.name, s.template));
+        return outp;
     }
 
     void Log(string s) { _log.Add(s); if (_log.Count > 10) _log.RemoveAt(0); Debug.Log($"[Hechizo] {s}"); }
@@ -165,8 +219,11 @@ public class SpellConsole : MonoBehaviour
         GameObject go = ResolveObject(self, name);
         if (go == null) { Log($"«{self.name}»: no encuentro {name}."); return; }
         StatusSpell sp = self.GetComponent<StatusSpell>() ?? self.gameObject.AddComponent<StatusSpell>();
-        sp.targetObject = go; sp.Cast(self, null);
-        Log($"«{self.name}» mira el estado de {go.name}.");
+        sp.targetObject = go;
+        sp.visible = !(args.TryGetValue("visible", out string v) && (v == "false" || v == "0"));   // visible:false = ocultar
+        if (args.TryGetValue("seconds", out string s) && float.TryParse(s, out float sec)) sp.seconds = sec;
+        sp.Cast(self, null);
+        Log($"«{self.name}» {(sp.visible ? "mira" : "oculta")} el estado de {go.name}.");
     }
 
     // ABRIR/CERRAR un área con el mismo hechizo (property close).

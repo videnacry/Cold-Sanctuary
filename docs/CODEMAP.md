@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 393 tipos._
+_Total: 396 tipos._
 
 
 ## Animals
@@ -55,6 +55,7 @@ _Total: 393 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
@@ -124,6 +125,7 @@ _Total: 393 tipos._
 - **ChannelMission** (class) — `Assets/Scripts/Meditation/ChannelMission.cs` — Universal channel mission (docs §7 matrix):
 - **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
 - **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
+- **ChecklistAuto** (class) — `Assets/Scripts/ChecklistAuto.cs` — Cubre por CÓDIGO bloques de `docs/testing-checklist.md` que la guía pedía comprobar **a mano en el inspector**, para que queden con evidencia `[TEST]` en el log como el resto.
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
@@ -210,6 +212,7 @@ _Total: 393 tipos._
 - **HoneydewPickup** (class) — `Assets/Scripts/Microcosmos/HoneydewPickup.cs` — GOTA DE MELAZA recolectable — aparece en el suelo junto a Ambrosio cuando la «suelta».
 - **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2).
 - **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
+- **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
 - **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
 - **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md):

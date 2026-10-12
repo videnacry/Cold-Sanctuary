@@ -23,6 +23,7 @@ public class AnimaStatusHUD : MonoBehaviour
     static Anima _shown;
     static float _until;
     public static void Show(Anima a, float duration = 12f) { _shown = a; _until = Time.time + duration; }
+    public static void Hide() { _until = 0f; }   // ocultar = el mismo hechizo status con visible:false
 
     Anima Target()
     {
