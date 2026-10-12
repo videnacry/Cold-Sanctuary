@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 380 tipos._
+_Total: 381 tipos._
 
 
 ## Animals
@@ -234,6 +234,7 @@ _Total: 380 tipos._
 - **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
+- **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
 - **MeditationMob** (class) — `Assets/Scripts/Meditation/MeditationMob.cs` — Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
 - **MeditationReward** (class) — `Assets/Scripts/Meditation/MeditationReward.cs` — Reusable reward block for meditation / Microcosmos missions (docs §7).

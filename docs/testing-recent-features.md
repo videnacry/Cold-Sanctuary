@@ -74,6 +74,23 @@
 - [ ] En las escenas del Microcosmos, las animas del elenco **libres** (sin poseer, sin apremio) **merodean**
       (encolan `WanderSpell`). Al poseer una, puedes vaciar su cola y programar la tuya.
 
+## 11. La Magnate (`BuildMagnate` → cápsula "Magnate")
+- [ ] Da Play: tiene stats al tope, **no le bajan** hambre/sueño/estrés. No puedes poseerla (relevancia altísima).
+- [ ] Pon un depredador atacando a una presa cerca de ella → al entrar en su radio, la presa/depredador **dejan de
+      estar `aware`** (se calma; el lobo suelta al conejo).
+- [ ] Deja correr: cada ~30 s (de juego) **va hacia el ser con menor nivel integral** y, al llegar, loguea
+      `[Magnate] enseña el Saludo al Sol a «X»` → ese ser **aprende "yoga"** (Grimoire), **encola el Saludo al Sol** y
+      sube XP de Yoga. (Si le falta comer/descansar, lo dice y no enseña.)
+
+## 12. Cocina con RANGO (acción = hechizo con alcance)
+- [ ] Posee al cocinero, abre consola (`~`). Lejos de la nevera, escribe `use({destiny:"Nevera"})` → **falla**:
+      "no alcanzo Nevera — acércate". Haz `walkTo({destiny:"Nevera"})`, y cuando llegues, `use({destiny:"Nevera"})`
+      → **avanza el paso**. (Primer paso del modelo "steps = hechizos con alcance"; la magia ampliará el rango.)
+
+## 13. Insectos neutros de ambiente (Microcosmos Scene0)
+- [ ] Regenera `Build Microcosmos Scene0`; si los `.fbx` de Cricket/Aphid/Ladybug/Grasshopper existen, verás unos
+      pocos dispersos por la zona norte (ambiente). Si faltan, la consola loguea que se omiten (no crashea).
+
 ## Qué reportar
 Consola de Unity: busca `[Cocina]`, `[Restaurante]`, `[Yoga]`, `[Hechizo]`, `[Charla]`, `[Mente]`. Anota crashes,
 NPEs, o comportamientos raros (jitter de movimiento, escalas deformadas, colas atascadas) con el ser/escena.
