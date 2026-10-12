@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 393 tipos._
+_Total: 401 tipos._
 
 
 ## Animals
@@ -55,6 +55,7 @@ _Total: 393 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
@@ -65,6 +66,7 @@ _Total: 393 tipos._
 
 - **AbsorbentThoughtMob** (class) — `Assets/Scripts/Meditation/AbsorbentThoughtMob.cs` — The "absorbent / obsessive thought" archetype (docs §8):
 - **ActionQueue** (class) — `Assets/Scripts/Control/ActionQueue.cs` — COLA DE ACCIONES de un anima (docs/typed-spells-and-queues.md) — ejecuta s en orden, estilo Sims.
+- **ActionSteps** (class) — `Assets/Scripts/Control/ActionSteps.cs` — LEY "todo es un superhechizo" (docs/spells-suprahechizo-and-thoughts, stats-as-truth §Hechizos):
 - **ActivityZone** (enum) — `Assets/Scripts/Soul/ActivityLevel.cs` — Zona de la carga de actividad (docs/consciousness-mechanics.md §activity).
 - **AcuteStressResponse** (class) — `Assets/Scripts/Soul/AcuteStressResponse.cs` — RESPUESTA AGUDA AL ESTRÉS ("el cuerpo se pasa de sus límites") — ciencia real anclada en la química que ya existe:
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
@@ -124,6 +126,7 @@ _Total: 393 tipos._
 - **ChannelMission** (class) — `Assets/Scripts/Meditation/ChannelMission.cs` — Universal channel mission (docs §7 matrix):
 - **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
 - **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
+- **ChecklistAuto** (class) — `Assets/Scripts/ChecklistAuto.cs` — Cubre por CÓDIGO bloques de `docs/testing-checklist.md` que la guía pedía comprobar **a mano en el inspector**, para que queden con evidencia `[TEST]` en el log como el resto.
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
@@ -210,6 +213,7 @@ _Total: 393 tipos._
 - **HoneydewPickup** (class) — `Assets/Scripts/Microcosmos/HoneydewPickup.cs` — GOTA DE MELAZA recolectable — aparece en el suelo junto a Ambrosio cuando la «suelta».
 - **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2).
 - **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
+- **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
 - **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
 - **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md):
@@ -329,6 +333,7 @@ _Total: 393 tipos._
 - **SanctuaryAreaType** (enum) — `Assets/Scripts/World/SanctuaryAreaType.cs` — All zones in Cold Sanctuary, ordered roughly by progression tier.
 - **SanctuaryDirector** (class) — `Assets/Scripts/World/SanctuaryDirector.cs` — The Magnate's world management component — the brain of the sanctuary's autonomous simulation.
 - **SanctuaryMission** (class) — `Assets/Scripts/Mission/SanctuaryMission.cs` — Defines one mission available in the sanctuary.
+- **SanctuaryOnboarding** (class) — `Assets/Scripts/World/SanctuaryOnboarding.cs` — ONBOARDING de un aspirante al santuario (docs/sanctuary1-level-and-live-tests §4, founding-trio §7).
 - **SanctuaryResource** (enum) — `Assets/Scripts/Economy/SanctuaryResource.cs` — Recursos globales de un santuario (Mesocosmos / Macrocosmos, ver docs/world-topology-and-planes.md §4 y §7).
 - **SanctuaryResourceHUD** (class) — `Assets/Scripts/UI/SanctuaryResourceHUD.cs` — HUD PROTOTIPO (OnGUI) de los recursos del santuario activo (docs/world-topology-and-planes.md §7):
 - **SanctuaryResources** (class) — `Assets/Scripts/Economy/SanctuaryResources.cs` — Libro mayor (ledger) de recursos del santuario ACTIVO (docs/world-topology-and-planes.md §4/§7).
@@ -366,6 +371,8 @@ _Total: 393 tipos._
 - **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
 - **StatusSpell** (class) — `Assets/Scripts/World/StatusSpells.cs` — HECHIZO DE STATUS (docs/typed-spells-and-queues):
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
+- **StockShelf** (class) — `Assets/Scripts/Kitchen/StockShelf.cs` — ESTANTE a abastecer (misiones de INVENTARIO, docs/sanctuary1 §4):
+- **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
@@ -405,5 +412,6 @@ _Total: 393 tipos._
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
+- **YogaTest** (class) — `Assets/Scripts/YogaTest.cs` — Unidad de test del YOGA (docs/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`.
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 

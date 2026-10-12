@@ -10,6 +10,8 @@ using UnityEngine;
 public class StatusSpell : SpellBase
 {
     public GameObject targetObject;   // anima o área; si null, el caster
+    public bool visible = true;       // MOSTRAR/OCULTAR = el MISMO hechizo (property) → menos hechizos que recordar
+    public float seconds = 20f;       // cuánto tiempo visible
 
     public override bool CanCast(Anima caster, ITarget target) => true;
 
@@ -18,7 +20,12 @@ public class StatusSpell : SpellBase
         GameObject go = targetObject != null ? targetObject : (caster != null ? caster.gameObject : null);
         if (go == null) return;
         Anima a = go.GetComponentInParent<Anima>();
-        if (a != null) { AnimaStatusHUD.Show(a); Debug.Log($"[Status] estado de «{a.name}»."); return; }
+        if (a != null)
+        {
+            if (visible) { AnimaStatusHUD.Show(a, seconds); Debug.Log($"[Status] estado de «{a.name}» ({seconds}s)."); }
+            else { AnimaStatusHUD.Hide(); Debug.Log("[Status] oculto."); }
+            return;
+        }
         RestaurantKitchen k = go.GetComponentInChildren<RestaurantKitchen>() ?? Object.FindObjectOfType<RestaurantKitchen>();
         if (k != null) k.LogStocks();
     }

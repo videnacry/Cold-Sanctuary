@@ -127,6 +127,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<StateSpellsTest>();      // grupo 12: hechizos-estado (hub alostático, miedo, adicción)
         tests.AddComponent<IdealStateTest>();       // grupo 13: estado ideal (elementos por masa + actividad ACWR)
         tests.AddComponent<SensesTest>();            // grupo 14: sentidos/órganos (observar = canales según el receptor)
+        tests.AddComponent<YogaTest>();              // grupo 15: yoga (postura rota el rig; Saludo al Sol = 12 asanas)
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -140,6 +141,7 @@ public static class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
+        BuildSpeciesScenarios(root.transform);   // ESCENARIOS POR ESPECIE: cada animal en su ciclo/interacción representativa (oso pesca, foca↔orca, colonia pingüino, ballena-krill, zorro/ciervo/malamute)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         BakeNavMesh();
 
@@ -2217,7 +2219,7 @@ public static class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("PolarBear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);
+        AddFamily("Bear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
@@ -2424,22 +2426,36 @@ public static class SampleSceneBuilder
         MakeLabeledPrimitive(room.transform, "Mesa de emplatado", new Vector3(5f, 0.45f, 2f), new Vector3(2.5f, 0.9f, 1.0f), furniture);
         MakeLabeledPrimitive(room.transform, "Nevera", new Vector3(-7f, 0.9f, 5f), new Vector3(0.8f, 1.8f, 0.7f), new Color(0.8f, 0.85f, 0.9f));
 
-        // Útiles SOBRE la encimera (y≈0.95): planchas planas, ollas y bols pequeños.
-        MakeLabeledPrimitive(room.transform, "Plancha 1", new Vector3(-4f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
-        MakeLabeledPrimitive(room.transform, "Plancha 2", new Vector3(-1f, 0.96f, 5f), new Vector3(0.8f, 0.08f, 0.6f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(4f, 1.05f, 5f), new Vector3(0.35f, 0.3f, 0.35f), metal);
-        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
-        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.4f, 0.98f, 2f), new Vector3(0.3f, 0.14f, 0.3f), new Color(0.9f, 0.9f, 0.85f));
+        // Útiles SOBRE la encimera (tapa a y=0.9: centro 0.45 + alto/2). MEDIDAS REALES de cocina: sartén Ø~0.26 h~0.04;
+        // olla Ø~0.22 h~0.13 (≈4-5 L); bol Ø~0.18 h~0.08. Así una olla de 22 cm NO se llena con 3 huevos de 5 cm (caben ~20).
+        const float counterTop = 0.9f;
+        MakeLabeledPrimitive(room.transform, "Sarten 1", new Vector3(-4f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
+        MakeLabeledPrimitive(room.transform, "Sarten 2", new Vector3(-3f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
+        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(3f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
+        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
+        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.1f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
 
-        // Ingredientes (diminutos ~0.12) sobre la encimera de ingredientes.
-        (string label, Color col)[] ingredients = {
-            ("Huevos", new Color(0.95f, 0.9f, 0.6f)), ("Verduras", new Color(0.4f, 0.8f, 0.4f)),
-            ("Avena", new Color(0.85f, 0.75f, 0.55f)), ("Fruta", new Color(0.9f, 0.5f, 0.6f)),
-            ("Yogur", new Color(0.95f, 0.95f, 0.95f)), ("Legumbres", new Color(0.6f, 0.45f, 0.3f)),
+        // Ingredientes a TAMAÑO REAL (huevo ~5 cm; el resto, piezas ~8 cm) sobre su encimera. Cada uno sienta sobre la tapa.
+        (string label, Color col, float size)[] ingredients = {
+            ("Huevos",   new Color(0.95f, 0.9f, 0.6f),  0.05f), ("Verduras", new Color(0.4f, 0.8f, 0.4f), 0.08f),
+            ("Avena",    new Color(0.85f, 0.75f, 0.55f), 0.08f), ("Fruta",    new Color(0.9f, 0.5f, 0.6f), 0.08f),
+            ("Yogur",    new Color(0.95f, 0.95f, 0.95f), 0.08f), ("Legumbres",new Color(0.6f, 0.45f, 0.3f), 0.07f),
         };
         for (int i = 0; i < ingredients.Length; i++)
-            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, 0.98f, -4f), new Vector3(0.14f, 0.14f, 0.14f), ingredients[i].col);
+        {
+            float sz = ingredients[i].size;
+            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, counterTop + sz * 0.5f, -4f),
+                                 new Vector3(sz, sz, sz), ingredients[i].col);
+        }
+
+        // Estante de DESPENSA (misión de inventario = abastecerlo con el hechizo `stock`).
+        GameObject shelf = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        shelf.name = "Despensa"; shelf.transform.SetParent(room.transform);
+        shelf.transform.localPosition = new Vector3(7f, 0.9f, -4f); shelf.transform.localScale = new Vector3(1.2f, 1.8f, 0.5f);
+        var sr = shelf.GetComponent<Renderer>(); if (sr != null) sr.sharedMaterial = MakeMaterial("Despensa_MAT", new Color(0.55f, 0.45f, 0.35f));
+        shelf.AddComponent<StockShelf>().label = "Despensa";
+        shelf.AddComponent<WorldLabel>().text = "Despensa";
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
@@ -2460,7 +2476,22 @@ public static class SampleSceneBuilder
         var r = m.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Magnate_MAT", new Color(0.85f, 0.8f, 0.95f));
         m.AddComponent<Anima>();
         m.AddComponent<Mind>().identity = "Magnate";
-        m.AddComponent<Magnate>();
+        Magnate mag = m.AddComponent<Magnate>();
+
+        // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
+        mag.yogaSpot = MakeSpot(parent, "SalaYoga", new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+    }
+
+    // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
+    static Transform MakeSpot(Transform parent, string name, Vector3 pos, Color col)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name; g.transform.SetParent(parent); g.transform.position = pos; g.transform.localScale = new Vector3(2f, 0.1f, 2f);
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
+        Object.DestroyImmediate(g.GetComponent<Collider>());   // solo marca el sitio, no estorba
+        g.AddComponent<WorldLabel>().text = name;
+        return g.transform;
     }
 
     // PRUEBA EN VIVO de VIDA FAMILIAR: una familia aislada con comida puesta → no gastan tiempo cazando/pastando ni
@@ -2527,7 +2558,7 @@ public static class SampleSceneBuilder
 
         // 4) PACK vs 1: manada de lobos + un oso → defensa/ataque de grupo (PackAwareness).
         TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, -20f), 6, 3);
-        TestPack(root.transform, "PolarBear", new Vector3(-232f, 0f, -20f), 1, 1);
+        TestPack(root.transform, "Bear", new Vector3(-232f, 0f, -20f), 1, 1);   // "Bear" = el prefab/catálogo real (no existe "PolarBear")
 
         // 5) PACK vs PACK: dos manadas de lobos contiguas.
         TestPack(root.transform, "Wolf", new Vector3(-240f, 0f, 20f), 5, 2);
@@ -2553,6 +2584,74 @@ public static class SampleSceneBuilder
     {
         GameObject g = new GameObject("Pasto"); g.transform.SetParent(root); g.transform.position = pos;
         g.AddComponent<GrassPatch>();
+    }
+
+    static void TestFish(Transform root, Vector3 pos)
+    {
+        GameObject f = new GameObject("Pescado"); f.transform.SetParent(root); f.transform.position = pos;
+        FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Fish; fi.grams = 150f;
+    }
+
+    // Mini-cardumen (pez o krill) para los escenarios por especie: cubo translúcido + Swarm (el trigger lo pone Swarm.Start).
+    static void MiniSwarm(Transform root, string name, SwarmKind kind, Vector3 pos)
+    {
+        GameObject s = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        s.name = name; s.transform.SetParent(root); s.transform.position = pos; s.transform.localScale = new Vector3(6f, 1.5f, 6f);
+        Color col = kind == SwarmKind.Krill ? new Color(0.75f, 0.45f, 0.4f, 0.6f) : new Color(0.35f, 0.55f, 0.65f, 0.6f);
+        var r = s.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
+        Object.DestroyImmediate(s.GetComponent<Collider>());
+        Swarm sw = s.AddComponent<Swarm>(); sw.kind = kind; sw.unitName = kind == SwarmKind.Krill ? "Krill" : "Fish";
+    }
+
+    // ESCENARIOS POR ESPECIE (docs/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN
+    // representativa (dieta + presa/depredador + convivencia). Coherentes con el Santuario 1 (hielo); los templados
+    // (zorro/ciervo/malamute) quedan como demostración reservada. Reutilizan TestPack/TestFish/TestMeat/TestGrass/MiniSwarm;
+    // los ciclos (celo/sueño/caza/depredación) se AUTOCONFIGURAN desde el arquetipo de la especie en runtime (Animal.Init).
+    static void BuildSpeciesScenarios(Transform parent)
+    {
+        GameObject root = new GameObject("EscenariosEspecie_AUTO"); root.transform.SetParent(parent);
+        Transform r = root.transform;
+
+        // ── Hielo (coherentes con el bioma) ─────────────────────────────────────────────────────
+        // 1) OSO — pesca en el hielo + una foca como presa potencial (ápice; come peces y presa).
+        TestPack(r, "Bear", new Vector3(300f, 0f, -60f), 1, 1);
+        MiniSwarm(r, "Peces_oso", SwarmKind.Fish, new Vector3(304f, -1f, -60f));
+        TestFish(r, new Vector3(302f, 0.2f, -58f));
+        TestPack(r, "Seal", new Vector3(308f, 0f, -62f), 1, 1);
+
+        // 2) FOCA — descansa y come peces; una ORCA merodea (depredador) → huida al avistarla.
+        TestPack(r, "Seal", new Vector3(300f, 0f, -30f), 2, 1);
+        MiniSwarm(r, "Peces_foca", SwarmKind.Fish, new Vector3(303f, -1f, -30f));
+        TestPack(r, "Orca", new Vector3(312f, 0f, -30f), 1, 1);
+
+        // 3) PINGÜINO — colonia (familia grande) con krill y peces; una FOCA depredadora cerca.
+        TestPack(r, "Penguin", new Vector3(300f, 0f, 0f), 6, 2);
+        MiniSwarm(r, "Krill_ping", SwarmKind.Krill, new Vector3(304f, -1f, 2f));
+        MiniSwarm(r, "Peces_ping", SwarmKind.Fish, new Vector3(296f, -1f, -2f));
+        TestPack(r, "Seal", new Vector3(310f, 0f, 2f), 1, 1);
+
+        // 4) ORCA — caza: una orca y una pequeña colonia de pingüinos de presa.
+        TestPack(r, "Orca", new Vector3(300f, 0f, 30f), 1, 1);
+        TestPack(r, "Penguin", new Vector3(306f, 0f, 32f), 3, 1);
+
+        // 5) BALLENA — filtra krill en paz (filter feeder; sin amenaza).
+        TestPack(r, "Whale", new Vector3(300f, 0f, 60f), 1, 1);
+        MiniSwarm(r, "Krill_ballena", SwarmKind.Krill, new Vector3(305f, -1f, 60f));
+
+        // ── Templados (reserva demostrativa; fuera del bioma de hielo) ───────────────────────────
+        // 6) ZORRO — acecho oportunista de un conejo + peces (come presa y pez).
+        TestPack(r, "Fox", new Vector3(340f, 0f, -40f), 1, 1);
+        TestPack(r, "Bunny", new Vector3(346f, 0f, -38f), 3, 2);
+        for (int i = 0; i < 2; i++) TestGrass(r, new Vector3(346f + i * 2f, 0f, -38f));
+
+        // 7) CIERVO — manada que pasta; un lobo de amenaza → huida en grupo.
+        TestPack(r, "Deer", new Vector3(340f, 0f, 0f), 4, 2);
+        for (int i = 0; i < 3; i++) TestGrass(r, new Vector3(340f + i * 2f, 0f, 0f));
+        TestPack(r, "Wolf", new Vector3(352f, 0f, 2f), 1, 1);
+
+        // 8) MALAMUTE — perro de trineo domesticado: junto a carne, convive en paz.
+        TestPack(r, "Malamute", new Vector3(340f, 0f, 40f), 2, 1);
+        for (int i = 0; i < 2; i++) TestMeat(r, new Vector3(340f + i * 2f, 0.3f, 40f));
     }
 
     // FLORA DE HIELO (docs/ice-sanctuary-ecology.md): el árbol carnívoro (atrae hambrientos con olor a comida → sopor →
@@ -2598,6 +2697,11 @@ public static class SampleSceneBuilder
             GameObject p = (GameObject)PrefabUtility.InstantiatePrefab(wolf);
             p.name = "Kushal_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);
             HealthRecord hr = p.AddComponent<HealthRecord>(); hr.vaccinated = false; hr.analyzed = false;
+            // Aspirante al santuario: Linduarda lo cura (análisis+vacuna), luego hace sus 3 misiones introductorias
+            // (auto-demo) → ella lo certifica apto → la Magnate lo presenta y lo lleva a yoga/cocina. Cadena EMERGENTE completa.
+            SanctuaryOnboarding on = p.AddComponent<SanctuaryOnboarding>();
+            on.autoCompleteForDemo = true;
+            if (p.GetComponent<Mind>() == null) p.AddComponent<Mind>().identity = "Kushal";
         }
         else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
     }
