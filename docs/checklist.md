@@ -83,9 +83,13 @@ Orden sugerido; cada una con su veredicto de estado en el doc (EXISTE/PARCIAL/FA
 - [x] **Cuenta de pensamientos** (`Mind.CountOf`/`Reinforce`/`Erode`/`ShareOf`; selección por cuenta; expresar refuerza) — HECHO.
 - [x] **`PacifySpell`** (quita humores negativos, sube positivos) + la Magnate lo usa — HECHO.
 - [x] **Independencia de modelos 3D** (`AnymaFactory.CreateCubeAnima`: prefab vacío → cubo) — HECHO.
-- [ ] **Volición por la cola** (needs→thoughts→encola hechizos-recuerdo del `Grimoire` como `SuperSpell`) — ya tiene las piezas (SuperSpell + thoughtCounts); falta enrutar `DesireCatalog.Dispatch` por la `ActionQueue`.
+- [x] **Volición por la cola** — HECHO 2026-10-12: `Volition` encola un `DesireSpell` (envuelve el deseo elegido) en la
+      `ActionQueue` (carril opcional) en vez de despachar directo; `useQueue` (fallback directo si no hay cola). El
+      carril `own` del cuerpo (`AcuteStressResponse`) tiene prioridad → un apremio pausa la volición solo.
+      *Siguiente:* que cada deseo sea un `SuperSpell` con sus sub-pasos (analizar→levantarse→buscar…) + usar thoughtCounts.
 - [ ] **Área de Guardián / torre de vigía** (puesto de misiones: patrullar/alimentar/llevar a enfermería/enseñar) — no existe; ver spells-suprahechizo §5b.
-- [ ] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` (13/21 especies sin modelo) — extender la independencia a la generación de prefabs del editor.
+- [x] **Prefabs-cubo por defecto** en `AnimalPrefabGenerator` cuando falta el `.fbx` — HECHO 2026-10-12: `Generate
+      Animal Prefabs` crea un prefab-CUBO (misma pipeline de componentes) para las especies sin modelo → las 21 tienen prefab.
 - [x] **Yoga: Saludo al Sol** (`PostureSpell`/`AsanaPoseSpell`/`SunSalutation` 12 asanas + consola `yoga`; "no tengo X") — HECHO 2026-10-10.
 - [x] **`own`-lane** (`AcuteStressResponse`→`BodyReflexSpell` bloquea al jugador en toma de mando) — HECHO.
 - [x] **Carril opcional** (`IdleBehavior`→`WanderSpell`, auto en animas compuestas) — HECHO.
