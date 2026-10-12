@@ -10,6 +10,7 @@ public class ShipCtrl : MonoBehaviour
     float speed = 0,xAngle,yAngle;
     public float upAngle,rightAngle;
     Vector3 eulerAngles,camAngles;
+    public float minCamPitch = -80f, maxCamPitch = 80f;
     void Start()
     {
         ani = GetComponent<Animator>();
@@ -80,30 +81,12 @@ public class ShipCtrl : MonoBehaviour
 
         else
         {
-            if (1 == 1)
-            {
-                Camera.main.transform.Rotate(yAngle, 0, 0);
-            }
-            else if (Camera.main.transform.rotation.eulerAngles.x < 180)
-            {
-                Camera.main.transform.rotation = Quaternion.Euler(180, camAngles.y, camAngles.z);
-            }
-            else
-            {
-                Camera.main.transform.rotation = Quaternion.Euler(250, camAngles.y, camAngles.z);
-            }
-            if (1 == 1)
-            {
-                Camera.main.transform.Rotate(0, xAngle, 0);
-            }
-            else if (Camera.main.transform.rotation.eulerAngles.y < 50)
-            {
-                Camera.main.transform.Rotate(0, 10, 0);
-            }
-            else
-            {
-                Camera.main.transform.Rotate(0, -10, 0);
-            }
+            // Pitch libre del ratón, acotado a [minCamPitch, maxCamPitch] para que la cámara
+            // no se dé la vuelta (antes: placeholder if(1==1) con ramas de clamp inalcanzables).
+            float pitch = Mathf.DeltaAngle(0f, camAngles.x) + yAngle;
+            pitch = Mathf.Clamp(pitch, minCamPitch, maxCamPitch);
+            Camera.main.transform.localEulerAngles = new Vector3(pitch, camAngles.y, camAngles.z);
+            Camera.main.transform.Rotate(0, xAngle, 0);
         }
     }
 }

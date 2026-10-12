@@ -35,7 +35,7 @@ public class Respawn : MonoBehaviour
         start = false;
         yield return new WaitForSeconds(Random.Range((hard)?180:60, (hard)?120:360));
         amount = Random.Range(1, 3);
-        int creature = Random.Range(1, beasts.Length);
+        int creature = Random.Range(0, beasts.Length);
         amount *= quantity[creature];
         while (amount > 0)  
         {
