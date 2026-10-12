@@ -2440,6 +2440,14 @@ public static class SampleSceneBuilder
         };
         for (int i = 0; i < ingredients.Length; i++)
             MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, 0.98f, -4f), new Vector3(0.14f, 0.14f, 0.14f), ingredients[i].col);
+
+        // Estante de DESPENSA (misión de inventario = abastecerlo con el hechizo `stock`).
+        GameObject shelf = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        shelf.name = "Despensa"; shelf.transform.SetParent(room.transform);
+        shelf.transform.localPosition = new Vector3(7f, 0.9f, -4f); shelf.transform.localScale = new Vector3(1.2f, 1.8f, 0.5f);
+        var sr = shelf.GetComponent<Renderer>(); if (sr != null) sr.sharedMaterial = MakeMaterial("Despensa_MAT", new Color(0.55f, 0.45f, 0.35f));
+        shelf.AddComponent<StockShelf>().label = "Despensa";
+        shelf.AddComponent<WorldLabel>().text = "Despensa";
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)

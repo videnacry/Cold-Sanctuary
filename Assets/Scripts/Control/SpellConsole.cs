@@ -37,6 +37,7 @@ public class SpellConsole : MonoBehaviour
         ("thought",   "thought({destiny:\"\", positive:true})"),
         ("yoga",      "yoga"),
         ("clean",     "clean"),
+        ("stock",     "stock"),
         ("teach",     "teach({destiny:\"\", skill:\"yoga\"})"),
         ("analysis",  "analysis({destiny:\"\"})"),
         ("vaccinate", "vaccinate({destiny:\"\"})"),
@@ -136,6 +137,7 @@ public class SpellConsole : MonoBehaviour
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
             case "clean": case "limpiar": Clean(self); break;
+            case "stock": case "abastecer": Stock(self); break;
             case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
             case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
             case "vaccinate": case "vacunar": CastOn<VaccinateSpell>(self, args); break;
@@ -255,6 +257,14 @@ public class SpellConsole : MonoBehaviour
         CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
         cs.Cast(self, null);
         Log($"«{self.name}» limpia.");
+    }
+
+    // Abastecer como HECHIZO (inventario): llena el estante más cercano dentro del alcance.
+    void Stock(Anima self)
+    {
+        StockSpell ss = self.GetComponent<StockSpell>() ?? self.gameObject.AddComponent<StockSpell>();
+        ss.Cast(self, null);
+        Log($"«{self.name}» abastece.");
     }
 
     // Hechizos de MODIFICACIÓN (bond/thought) sobre un destino: resuelve el anima por nombre EN CUALQUIER PARTE

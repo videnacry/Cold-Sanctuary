@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 396 tipos._
+_Total: 398 tipos._
 
 
 ## Animals
@@ -369,6 +369,8 @@ _Total: 396 tipos._
 - **StatRange** (class) — `Assets/Scripts/Control/AnymaSpec.cs` — Rango de multiplicador de stats (docs/anyma-factory-and-control.md §2):
 - **StatusSpell** (class) — `Assets/Scripts/World/StatusSpells.cs` — HECHIZO DE STATUS (docs/typed-spells-and-queues):
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
+- **StockShelf** (class) — `Assets/Scripts/Kitchen/StockShelf.cs` — ESTANTE a abastecer (misiones de INVENTARIO, docs/sanctuary1 §4):
+- **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
