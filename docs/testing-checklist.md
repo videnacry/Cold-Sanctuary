@@ -1527,6 +1527,50 @@ Desentrenado / Sobrecarga).
   actividad diaria mueve la `ActivityZone`. Base científica: composición corporal real + ACWR/Yerkes-Dodson (ver
   `docs/consciousness-mechanics.md`).
 
+## 47. Pruebas en vivo jugando (2026-10-12 → 2026-10-15, Claude por capturas + teclado + entrada directa)
+
+> Jugado en el editor como jugador (WASD/IJKL/F/V/H) y, desde 2026-10-15, con la **entrada directa de hechizos**:
+> cada línea escrita en `<proyecto Unity>/Temp/spell-inbox.txt` se lanza como si se tecleara en la consola `~`
+> (solo editor / development build; el resultado sale en el log como `[Hechizo] …`).
+
+**Arreglado en esta tanda (bloqueaban jugar):**
+- [x] ~10 paneles OnGUI de sandbox superpuestos al dar Play → ahora salen solo **cerca** de su sandbox; **F1** = modo
+      prueba (todos + posición del jugador). HUD de recursos y de estado apilados; misión WASD abajo con flecha.
+- [x] Upa-yoga arrancaba sola, congelaba al jugador y se quedaba con WASD/IJKL → empieza con **H**, Esc la abandona.
+- [x] Parpadeo: la demo de `ScreenEffects` (`debugAutoCycle`) teñía la pantalla en bucle → solo en modo prueba (F1).
+- [x] Misiones del Microcosmos sin pista en pantalla → marcador arriba «misión X/N · el más cercano: ↗ 6 m».
+- [x] Mobs de misión (esferas sin collider) **atravesaban paredes**: en la Sala de Yoga las posturas huían a través de
+      los muros y no se podían acorralar → `MeditationMob.Step` choca y desliza; aparecen a la vista del jugador.
+- [x] **V** también cambiaba 1ª/3ª persona mientras jugabas con una criatura → junto a una, V solo es «jugar».
+- [x] `¿Empezar turno?` visible en la escena fuera de Play → el builder crea el panel oculto.
+- [x] `IdealStateTest` 2 FAIL eran del test (0,0005 g = 500 µg; 40 días no convergen una crónica de 28 d) → 90/90.
+- [x] Consola de hechizos: `walkTo({maxSpeed:true})` pasaba `charging` (postura de salida = quieto) → jugador clavado y
+      cola bloqueada; ahora usa la punta (channeling) y se rinde si se atasca 3 s. `walkTo`/`use`/pasos de cocina miden
+      hasta la **superficie** de la estación (antes al centro de la caja: «no alcanzo Nevera» pegado a ella).
+- [x] `bond/thought/teach/analysis/vaccinate` no encontraban a compañeros (solo `Animal` era `ITarget`) ni a `self` →
+      `AnimaTarget` adaptador. `open/close` aceptan el nombre visible del área («Cocina»).
+
+**Comprobado en Play:**
+- [x] Movimiento WASD; misión «Limpiar la plaga» (Huerto) completa 4/4 → +observación, +5 monedas.
+- [x] Farming: serenar a «Suave» con V → 15 Food + 2 monedas + Golosina, Stats xp 0→20.
+- [x] Marga de **Yoga 2 + maná desbloqueado** al jugador (la Magnate le enseña el Saludo al Sol).
+- [x] `[VERIFY] PASS`; `Generate Animal Prefabs` crea 14 prefabs-cubo (pingüino/orca/insectos/abeja…).
+- [x] TestRunner: 16 unidades, 90/90 tras el arreglo del test.
+- [x] **Cocinar un plato entero solo con hechizos** (sin ratón ni teclado): `walkTo Nevera → use → take Huevos →
+      walkTo Plancha 1 → putIn → beat → step → walkTo Mesa de emplatado → use` → Stock Huevos revueltos +1.
+- [x] Hechizos OK por la entrada directa: `status`, `yoga` (12 asanas), `clean`, `stock`, `bond`, `thought`,
+      `analysis` (log `[Clínico]`), `vaccinate`, `teach` (`[Enseñanza] … (aprendido)`), `open/close Restaurante_AUTO`.
+
+**Pendiente / observaciones (no arreglado):**
+- [ ] «Formar posturas» (Sala de Yoga): no la completé con pulsaciones discretas (hay que sostener 2 s a <1,5 m de
+      una postura que huye a 2,5 m/s). Con control continuo debería salir; si no, bajar `postureSpeed`.
+- [ ] `open/close` sobre las áreas del santuario («Cocina» = `Kitchen_Area`) → «sin AreaHours»: solo el restaurante
+      tiene horario.
+- [ ] En la consola, `step`/`use` son **inmediatos** y `walkTo/take/putIn/beat` van a la **cola**: mezclados en una
+      misma tanda se ejecutan fuera de orden (un `step` adelanta a un `putIn` aún en cola).
+- [ ] Balance: con los escenarios de interacción hay ~33 lobos (16 crías) frente a 1 ciervo; los conejos van cayendo.
+- [ ] Paneles de sandbox (comer, hechizos, alma) solo se pueden pulsar con **ratón**.
+
 ## Notas — lo que NO está cableado aún (no reportar como bug)
 - `BondActivity` (marga de Vínculos) aún es huérfano en el juego → la XP de Vínculos fluirá cuando se
   cablee su UI; el gancho ya está puesto.

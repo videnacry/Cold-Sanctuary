@@ -21,7 +21,38 @@ public class SpellConsole : MonoBehaviour
     string _input = "";
     readonly List<string> _log = new List<string>();
 
-    void Update() { if (Input.GetKeyDown(toggleKey)) _open = !_open; }
+    void Update()
+    {
+        if (Input.GetKeyDown(toggleKey)) _open = !_open;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        PollInbox();
+#endif
+    }
+
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    // ENTRADA DIRECTA (pruebas en vivo): cada línea que aparezca en `<proyecto>/Temp/spell-inbox.txt` se lanza como si
+    // se hubiera escrito en la consola, sin teclado ni ratón (`echo 'walkTo({destiny:"Nevera"})' >> Temp/spell-inbox.txt`).
+    // El fichero se borra al leerlo; el resultado sale en el log como `[Hechizo] …`. Solo en editor / development build.
+    float _nextPoll;
+
+    void PollInbox()
+    {
+        if (Time.unscaledTime < _nextPoll) return;
+        _nextPoll = Time.unscaledTime + 0.5f;
+        string path = System.IO.Path.Combine(Application.dataPath, "..", "Temp", "spell-inbox.txt");
+        if (!System.IO.File.Exists(path)) return;
+        string[] lines;
+        try { lines = System.IO.File.ReadAllLines(path); System.IO.File.Delete(path); }
+        catch (System.IO.IOException) { return; }   // aún escribiéndose: se reintenta en el siguiente sondeo
+        foreach (string raw in lines)
+        {
+            string line = raw.Trim();
+            if (line.Length == 0 || line.StartsWith("#")) continue;
+            Debug.Log($"[Hechizo] (inbox) {line}");
+            Dispatch(line);
+        }
+    }
+#endif
 
     // GRIMORIO: catálogo de hechizos con su PLANTILLA por defecto (forma completa). El jugador no memoriza: escribe algo,
     // ve sugerencias (tolera fallos, ordena por similitud) y con Tab rellena la plantilla y cambia las properties.
@@ -166,7 +197,7 @@ public class SpellConsole : MonoBehaviour
         GameObject station = GameObject.Find(name);
         if (station == null) { Log($"«{self.name}»: ¿Dónde está {name}?"); return; }
         float reach = 2f + Mathf.Max(0f, self.perception - 1f);          // alcance del miembro; la magia lo ampliará
-        if (Vector3.Distance(self.transform.position, station.transform.position) > reach)
+        if (KitchenStepSpell.DistanceTo(self, station) > reach)
         { Log($"«{self.name}»: no alcanzo {name} — acércate (walkTo)."); return; }   // falla por rango
         CookingStation cs = self.GetComponent<CookingStation>();
         if (cs != null) cs.AdvanceStep();
@@ -247,6 +278,10 @@ public class SpellConsole : MonoBehaviour
         if (string.IsNullOrEmpty(name) || name == "self" || name == "me" || name == "yo") return self.gameObject;
         GameObject go = GameObject.Find(name);
         if (go != null) return go;
+        // Las áreas se llaman en escena "Kitchen_Area" pero el jugador las conoce por su nombre visible ("Cocina").
+        foreach (SanctuaryArea area in FindObjectsOfType<SanctuaryArea>())
+            if (area.displayName != null && string.Equals(area.displayName, name, System.StringComparison.OrdinalIgnoreCase))
+                return area.gameObject;
         ITarget it = ResolveAnimaAnywhere(name);
         return (it as Component)?.gameObject;
     }
@@ -273,7 +308,7 @@ public class SpellConsole : MonoBehaviour
     {
         string name = args.TryGetValue("destiny", out string d) ? d
                     : args.TryGetValue("character", out string c) ? c : null;
-        ITarget it = name != null ? ResolveAnimaAnywhere(name) : null;
+        ITarget it = name == null ? null : IsSelf(name) ? TargetOf(self) : ResolveAnimaAnywhere(name);
         if (it == null) { Log($"«{self.name}»: no encuentro a {name}."); return; }
         T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
         if (args.TryGetValue("amount", out string am) && float.TryParse(am, out float amt)) spell.force = amt;
@@ -284,9 +319,25 @@ public class SpellConsole : MonoBehaviour
 
     static ITarget ResolveAnimaAnywhere(string name)
     {
+        // Prefiere el nombre exacto; si no, el primero que lo contenga.
+        Anima best = null;
         foreach (Anima a in FindObjectsOfType<Anima>())
-            if (!a.death && NameMatches(a.name, name) && a is ITarget it) return it;
-        return null;
+        {
+            if (a.death || !NameMatches(a.name, name)) continue;
+            if (string.Equals(a.name, name, System.StringComparison.OrdinalIgnoreCase)) { best = a; break; }
+            if (best == null) best = a;
+        }
+        return best != null ? TargetOf(best) : null;
+    }
+
+    static bool IsSelf(string name) => name == "self" || name == "me" || name == "yo";
+
+    // Los Animal ya son ITarget; el resto de anima (compañeros, Magnate…) recibe un AnimaTarget adaptador.
+    static ITarget TargetOf(Anima a)
+    {
+        if (a is ITarget it) return it;
+        ITarget existing = a.GetComponent<ITarget>();
+        return existing ?? a.gameObject.AddComponent<AnimaTarget>();
     }
 
     static string Clean(string s) => s.Trim().Trim('"', '\'', ' ');

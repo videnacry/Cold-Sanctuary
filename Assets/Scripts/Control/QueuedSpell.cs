@@ -54,14 +54,36 @@ public class WalkToSpell : QueuedSpell
 
     public override string Label => $"ir a {targetName}" + (maxSpeed ? " (rápido)" : "");
 
+    [Tooltip("Segundos sin acercarse antes de rendirse (sin pathfinding, una pared en línea recta lo atasca).")]
+    public float giveUpAfter = 3f;
+    float _bestDist = float.MaxValue, _lastProgress = -1f;
+
+    static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
     public override bool Tick(Anima self)
     {
         if (self == null || target == null) return true;
         Vector3 to = target.position - self.transform.position; to.y = 0f;
-        if (to.magnitude <= Mathf.Max(0.1f, stopDistance)) return true;   // llegó
+        // Hasta la SUPERFICIE si el destino es sólido (nevera, plancha…): su centro queda dentro del collider y
+        // `stopDistance` nunca se alcanzaba (se quedaba empujando contra la caja).
+        Collider col = target.GetComponentInChildren<Collider>();
+        float dist = col != null && !col.isTrigger
+            ? Vector3.Distance(Flat(self.transform.position), Flat(col.ClosestPoint(self.transform.position)))
+            : to.magnitude;
+        if (dist <= Mathf.Max(0.1f, stopDistance) + (col != null && !col.isTrigger ? 0.5f : 0f)) return true;   // llegó
+
+        // Atascado: si en `giveUpAfter` s no se ha acercado, se rinde para no bloquear la cola del jugador para siempre.
+        if (_lastProgress < 0f || dist < _bestDist - 0.2f) { _bestDist = dist; _lastProgress = Time.time; }
+        else if (Time.time - _lastProgress > giveUpAfter)
+        {
+            Debug.Log($"[Hechizo] «{self.name}» no puede llegar a {targetName} (atascado a {dist:0.#} m) — se cancela.");
+            return true;
+        }
 
         WalkSpell walk = self.GetComponent<WalkSpell>();
-        if (walk != null) walk.Drive(to.normalized, charging: maxSpeed);   // correr = caminar con intensidad (charging)
+        // maxSpeed = subir a la punta (channeling). Antes pasaba `charging`, que es la postura de SALIDA (quieto):
+        // walkTo({maxSpeed:true}) dejaba al jugador clavado y la cola bloqueada.
+        if (walk != null) walk.Drive(to.normalized, channeling: maxSpeed);
         else
         {
             var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>();

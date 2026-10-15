@@ -23,11 +23,22 @@ public abstract class KitchenStepSpell : QueuedSpell
     /// <summary>Alcance del miembro (mismo criterio que `use` de la consola).</summary>
     public static float LimbReach(Anima self) => 2f + Mathf.Max(0f, self.perception - 1f);
 
+    /// <summary>Distancia horizontal del jugador a la SUPERFICIE de la estación (no a su centro): con una nevera de 1,5 m
+    /// de ancho, el centro quedaba fuera del alcance aunque estuvieras pegado a ella.</summary>
+    public static float DistanceTo(Anima self, GameObject station)
+    {
+        Vector3 from = self.transform.position;
+        Collider col = station.GetComponentInChildren<Collider>();
+        Vector3 to = col != null && !col.isTrigger ? col.ClosestPoint(from) : station.transform.position;
+        from.y = 0f; to.y = 0f;
+        return Vector3.Distance(from, to);
+    }
+
     /// <summary>¿Llega a la estación? Con el miembro, o pagando energía con magia. `magic` = true si hizo falta magia.</summary>
     public static bool InReach(Anima self, GameObject station, out bool magic)
     {
         magic = false;
-        float dist = Vector3.Distance(self.transform.position, station.transform.position);
+        float dist = DistanceTo(self, station);
         float reach = LimbReach(self);
         if (dist <= reach) return true;
         MagicReserves mr = self.GetComponent<MagicReserves>();
