@@ -165,9 +165,17 @@ public class Magnate : MonoBehaviour
 
         Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
         g.Learn("yoga");                                             // el recuerdo de la asana
+        // DEMOSTRACIÓN: la Magnate hace el Saludo al Sol con su cuerpo y el alumno la IMITA articulación por articulación
+        // (antes solo se le encolaba la secuencia al alumno y ella no hacía nada). Más nivel de yoga → la sigue mejor.
+        ActionQueue mine = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
+        if (mine.Own.Count == 0)
+            foreach (QueuedSpell s in SunSalutation.Sequence()) mine.EnqueueOwn(s);
         ActionQueue q = t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
-        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
         CharacterLevel cl = t.GetComponent<CharacterLevel>();
+        float follow = 2f + (cl != null ? cl.yoga.level : 1);
+        bool already = false;   // la Magnate enseña a menudo: no apilar una imitación por cada vez
+        foreach (QueuedSpell s in q.Player) if (s is MimicPoseSpell) { already = true; break; }
+        if (!already) q.EnqueuePlayer(new MimicPoseSpell { teacher = transform, duration = SunSalutation.Duration(), follow = follow });
         if (cl != null) cl.GainYogaXp(10f);                          // potencia el avance (marga de Yoga)
         Mind m = t.GetComponent<Mind>();
         if (m != null) m.humores.Produce(Humor.Serotonina, 0.2f);   // el ánimo de practicar sube (ThoughtSpell-like)

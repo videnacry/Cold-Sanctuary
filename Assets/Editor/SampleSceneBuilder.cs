@@ -143,6 +143,7 @@ public static class SampleSceneBuilder
         BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
         BuildSpeciesScenarios(root.transform);   // ESCENARIOS POR ESPECIE: cada animal en su ciclo/interacción representativa (oso pesca, foca↔orca, colonia pingüino, ballena-krill, zorro/ciervo/malamute)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
+        DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2074,6 +2075,26 @@ public static class SampleSceneBuilder
     // Los NavMeshAgent de los animales fallan en silencio (y spamean SetDestination)
     // si no hay NavMesh horneado en la escena. Se hornea al final de Build(), una
     // vez colocados el suelo, las estructuras y demás obstáculos.
+    // CUERPOS DE CUBOS: todo anima humano de la escena (no Animal, no criaturas de farming) cambia su cápsula o su .fbx por
+    // un cuerpo de cubos articulado (CubeHumanoid), con el color de su material actual como ropa. Así el yoga mueve
+    // hombro/codo/rodilla de verdad: los .fbx no tienen un esqueleto adecuado y las cápsulas no tienen partes.
+    static void DressHumanoids()
+    {
+        Color skin = new Color(0.86f, 0.70f, 0.58f);
+        int n = 0;
+        foreach (Anima a in Object.FindObjectsOfType<Anima>())
+        {
+            if (a is Animal || a.GetComponent<PlayableCreature>() != null) continue;
+            if (a.GetComponentInChildren<CubeJoint>() != null) continue;   // ya vestido
+            Renderer r = a.GetComponentInChildren<Renderer>();
+            if (r == null) continue;
+            Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);
+            CubeHumanoid.Dress(a.gameObject, clothes, skin);
+            n++;
+        }
+        Debug.Log($"[SampleSceneBuilder] Cuerpos de cubos: {n} anima humanos vestidos (CubeHumanoid).");
+    }
+
     static void BakeNavMesh()
     {
         GameObject ground = GameObject.Find("Ground_Placeholder");

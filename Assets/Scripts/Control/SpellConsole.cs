@@ -175,8 +175,25 @@ public class SpellConsole : MonoBehaviour
             case "status": case "estado": Status(self, args); break;
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
+            case "queue": case "cola": LogQueue(self); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
+    }
+
+    // Diagnóstico: qué hay en la cola del poseído (carril propio, que manda, y el del jugador) y dónde está.
+    void LogQueue(Anima self)
+    {
+        ActionQueue q = self.GetComponent<ActionQueue>();
+        var sb = new System.Text.StringBuilder($"«{self.name}» en {self.transform.position:F1} · cola propia: ");
+        if (q != null) foreach (QueuedSpell s in q.Own) sb.Append(s.Label).Append(" | ");
+        sb.Append(" · cola del jugador: ");
+        if (q != null) foreach (QueuedSpell s in q.Player) sb.Append(s.Label).Append(" | ");
+        GameObject tagged = GameObject.FindGameObjectWithTag("Player");
+        Log(sb.ToString());
+        Log($"  self: tag={self.tag} padre={(self.transform.parent != null ? self.transform.parent.name : "-")} mismo={(GameObject.FindGameObjectWithTag("Player") == self.gameObject)} · " +
+            $"Player(tag): {(tagged != null ? tagged.name + " en " + tagged.transform.position.ToString("F1") + " anima=" + (tagged.GetComponent<Anima>() != null) : "ninguno")}");
+        foreach (AnimaController ac in FindObjectsOfType<AnimaController>())
+            if (ac.Active is PlayerBrain) Log($"  PlayerBrain activo en «{ac.name}» {ac.transform.position:F1}");
     }
 
     // Avanza el paso de cocina del poseído (cocinar por teclado; combínalo con walkTo a cada estación).

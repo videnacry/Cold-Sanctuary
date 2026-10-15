@@ -84,5 +84,8 @@ public enum BodyPart
     EarLeft, EarRight,
     // Insecto / quimera:
     AntennaLeft, AntennaRight, Tail,
-    LimbA, LimbB, LimbC, LimbD, LimbE, LimbF
+    LimbA, LimbB, LimbC, LimbD, LimbE, LimbF,
+    // Articulaciones del cuerpo de cubos (CubeBody bípedo): codo→antebrazo, cadera→muslo, rodilla→espinilla.
+    // Shoulder* = hombro (brazo entero), Hand* = muñeca, Foot* = tobillo, Chest = cintura, Neck/Head = cuello/cabeza.
+    ForearmLeft, ForearmRight, ThighLeft, ThighRight, ShinLeft, ShinRight
 }
