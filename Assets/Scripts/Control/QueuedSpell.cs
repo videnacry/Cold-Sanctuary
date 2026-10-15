@@ -54,11 +54,37 @@ public class WalkToSpell : QueuedSpell
 
     public override string Label => $"ir a {targetName}" + (maxSpeed ? " (rápido)" : "");
 
-    [Tooltip("Segundos sin acercarse antes de rendirse (sin pathfinding, una pared en línea recta lo atasca).")]
-    public float giveUpAfter = 3f;
-    float _bestDist = float.MaxValue, _lastProgress = -1f;
+    [Tooltip("Segundos sin avanzar antes de rendirse (para no bloquear la cola del jugador si no hay camino).")]
+    public float giveUpAfter = 4f;
+    float _lastProgress = -1f;
+    Vector3 _progressPos;
+
+    // RUTA por el NavMesh horneado de la escena: antes iba en línea recta y se clavaba contra la primera pared.
+    UnityEngine.AI.NavMeshPath _path;
+    int _corner;
+    float _repathAt;
+    Vector3 _pathGoal;
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
+
+    // Dirección hacia la siguiente esquina de la ruta (o directa si no hay NavMesh/ruta).
+    Vector3 Steer(Vector3 from, Vector3 goal)
+    {
+        if (_path == null) _path = new UnityEngine.AI.NavMeshPath();
+        if (Time.time >= _repathAt || Flat(goal - _pathGoal).sqrMagnitude > 1f)
+        {
+            _repathAt = Time.time + 1f; _pathGoal = goal; _corner = 1;
+            const int all = UnityEngine.AI.NavMesh.AllAreas;
+            bool ok = UnityEngine.AI.NavMesh.SamplePosition(from, out var a, 2f, all)
+                   && UnityEngine.AI.NavMesh.SamplePosition(goal, out var b, 3f, all)
+                   && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, all, _path)
+                   && _path.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid;
+            if (!ok) _path.ClearCorners();
+        }
+        Vector3[] c = _path.corners;
+        while (_corner < c.Length && Flat(c[_corner] - from).magnitude < 0.4f) _corner++;
+        return c.Length >= 2 && _corner < c.Length ? Flat(c[_corner] - from) : Flat(goal - from);
+    }
 
     public override bool Tick(Anima self)
     {
@@ -72,8 +98,10 @@ public class WalkToSpell : QueuedSpell
             : to.magnitude;
         if (dist <= Mathf.Max(0.1f, stopDistance) + (col != null && !col.isTrigger ? 0.5f : 0f)) return true;   // llegó
 
-        // Atascado: si en `giveUpAfter` s no se ha acercado, se rinde para no bloquear la cola del jugador para siempre.
-        if (_lastProgress < 0f || dist < _bestDist - 0.2f) { _bestDist = dist; _lastProgress = Time.time; }
+        // Atascado: si en `giveUpAfter` s no se ha movido (la ruta puede alejarse en línea recta), se rinde para no
+        // bloquear la cola del jugador para siempre.
+        if (_lastProgress < 0f || Flat(self.transform.position - _progressPos).magnitude > 0.3f)
+        { _progressPos = self.transform.position; _lastProgress = Time.time; }
         else if (Time.time - _lastProgress > giveUpAfter)
         {
             Debug.Log($"[Hechizo] «{self.name}» no puede llegar a {targetName} (atascado a {dist:0.#} m) — se cancela.");
@@ -83,7 +111,7 @@ public class WalkToSpell : QueuedSpell
         WalkSpell walk = self.GetComponent<WalkSpell>();
         // maxSpeed = subir a la punta (channeling). Antes pasaba `charging`, que es la postura de SALIDA (quieto):
         // walkTo({maxSpeed:true}) dejaba al jugador clavado y la cola bloqueada.
-        if (walk != null) walk.Drive(to.normalized, channeling: maxSpeed);
+        if (walk != null) walk.Drive(Steer(self.transform.position, target.position).normalized, channeling: maxSpeed);
         else
         {
             var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>();

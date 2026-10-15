@@ -2415,6 +2415,14 @@ public static class SampleSceneBuilder
         floor.name = "Suelo_Restaurante"; floor.transform.SetParent(room.transform);
         floor.transform.localPosition = Vector3.zero; floor.transform.localScale = new Vector3(16f, 0.2f, 12f);
 
+        // CONTORNO bajo (0,4 m) que dibuja la sala sin tapar la vista; hueco de entrada de 3 m en el lado -Z.
+        Color edge = new Color(0.35f, 0.35f, 0.40f);
+        MakeOutline(room.transform, "Contorno N", new Vector3(0f, 0.3f, 6f), new Vector3(16f, 0.4f, 0.15f), edge);
+        MakeOutline(room.transform, "Contorno O", new Vector3(-8f, 0.3f, 0f), new Vector3(0.15f, 0.4f, 12f), edge);
+        MakeOutline(room.transform, "Contorno E", new Vector3(8f, 0.3f, 0f), new Vector3(0.15f, 0.4f, 12f), edge);
+        MakeOutline(room.transform, "Contorno S1", new Vector3(-4.75f, 0.3f, -6f), new Vector3(6.5f, 0.4f, 0.15f), edge);
+        MakeOutline(room.transform, "Contorno S2", new Vector3(4.75f, 0.3f, -6f), new Vector3(6.5f, 0.4f, 0.15f), edge);
+
         // ESCALA REAL (jugador/humano ~1.7): encimeras a ~0.9 de alto; los útiles van ENCIMA. Nevera alta; olla/bol
         // pequeños; huevos diminutos. Así la olla, el jugador y la cocina respetan proporciones reales.
         Color furniture = new Color(0.72f, 0.72f, 0.78f);
@@ -2466,6 +2474,14 @@ public static class SampleSceneBuilder
         WorldLabel wl = g.AddComponent<WorldLabel>();
         wl.text = label;
         wl.height = scale.y * 0.5f + 0.4f;
+    }
+
+    // Borde bajo SIN etiqueta (contorno de la sala).
+    static void MakeOutline(Transform parent, string name, Vector3 pos, Vector3 scale, Color col)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name; g.transform.SetParent(parent); g.transform.localPosition = pos; g.transform.localScale = scale;
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Rest_Contorno", col);
     }
 
     // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).
@@ -2999,7 +3015,8 @@ public static class SampleSceneBuilder
         return areas.ToArray();
     }
 
-    const float AreaWallHeight = 2.4f;
+    // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
+    const float AreaWallHeight = 0.5f;
     const float AreaWallThickness = 0.3f;
 
     static SanctuaryArea BuildAreaBox(Transform parent, string name, string displayName,

@@ -16,10 +16,16 @@ public class IceCarnivorousTree : MonoBehaviour
     [Min(0f)] public float lureStrength = 3f;
     [Tooltip("Cuánto crece (escala) por cada presa que muere cerca.")]
     [Min(0f)] public float growthPerKill = 0.15f;
+    [Tooltip("Escala máxima: sin tope, crecía sin control.")]
+    [Min(1f)] public float maxScale = 3f;
 
     float _next;
     int _absorbed;
+    // Cada cadáver hace crecer el árbol UNA vez. Antes se volvía a contar en cada sondeo (0,5 s) mientras siguiera en
+    // el radio, y con cuerpos de cubos cada collider de parte lo contaba otra vez → crecimiento sin límite.
+    readonly System.Collections.Generic.HashSet<Anima> _eaten = new System.Collections.Generic.HashSet<Anima>();
     static readonly Collider[] _hits = new Collider[32];
+    readonly System.Collections.Generic.HashSet<Anima> _seen = new System.Collections.Generic.HashSet<Anima>();
 
     void Update()
     {
@@ -31,18 +37,24 @@ public class IceCarnivorousTree : MonoBehaviour
         // Señuelo: rastro de "comida" (atrae al Wander que deriva por olor).
         TraceField.Leave(transform.position, TraceChannel.ScentFood, lureStrength);
 
+        _seen.Clear();
         int n = Physics.OverlapSphereNonAlloc(transform.position, lureRadius, _hits);
         for (int i = 0; i < n; i++)
         {
             Anima a = _hits[i] != null ? _hits[i].GetComponentInParent<Anima>() : null;
-            if (a == null || a.GetComponent<IceCarnivorousTree>() != null) continue;
+            if (a == null || a.GetComponent<IceCarnivorousTree>() != null || !_seen.Add(a)) continue;   // una vez por anima aunque tenga varios colliders
             float d = Vector3.Distance(transform.position, a.transform.position);
             if (d <= killRadius)
             {
                 // SOPOR letal: lo adormece y debilita; cuando muere cerca, el árbol lo absorbe y crece.
                 a.sleepiness = Mathf.Clamp01(a.sleepiness + 2f * step);
                 a.sickness = Mathf.Clamp01(a.sickness + 1.5f * step);
-                if (a.death) { _absorbed++; transform.localScale += Vector3.one * growthPerKill; }
+                if (a.death && _eaten.Add(a))
+                {
+                    _absorbed++;
+                    float s = Mathf.Min(maxScale, transform.localScale.x + growthPerKill);
+                    transform.localScale = Vector3.one * s;
+                }
             }
             else
             {

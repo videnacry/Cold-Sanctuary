@@ -194,7 +194,7 @@ public class SpellConsole : MonoBehaviour
     {
         string name = args.TryGetValue("destiny", out string d) ? d : (args.TryGetValue("character", out string c) ? c : null);
         if (name == null) { Log("use necesita un destiny (p. ej. Nevera)."); return; }
-        GameObject station = GameObject.Find(name);
+        GameObject station = FindNearestNamed(name, self.transform.position);
         if (station == null) { Log($"«{self.name}»: ¿Dónde está {name}?"); return; }
         float reach = 2f + Mathf.Max(0f, self.perception - 1f);          // alcance del miembro; la magia lo ampliará
         if (KitchenStepSpell.DistanceTo(self, station) > reach)
@@ -219,10 +219,24 @@ public class SpellConsole : MonoBehaviour
         Log($"«{self.name}» → {spell.Label}.");
     }
 
+    // El objeto ACTIVO con ese nombre exacto MÁS CERCANO. `GameObject.Find` devolvía uno cualquiera: hay varias «Nevera»
+    // (restaurante, tour, virtualización) y `walkTo` llevaba a una mientras `use` comprobaba el alcance contra otra.
+    static GameObject FindNearestNamed(string name, Vector3 from)
+    {
+        GameObject best = null; float bestSq = float.MaxValue;
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+        {
+            if (!string.Equals(t.name, name, System.StringComparison.OrdinalIgnoreCase)) continue;
+            float sq = (t.position - from).sqrMagnitude;
+            if (sq < bestSq) { bestSq = sq; best = t.gameObject; }
+        }
+        return best;
+    }
+
     // Estación por nombre: exacto primero; si no, la más cercana entre objetos etiquetados (WorldLabel) o recipientes.
     static GameObject ResolveStation(Anima self, string name)
     {
-        GameObject exact = GameObject.Find(name);
+        GameObject exact = FindNearestNamed(name, self.transform.position);
         if (exact != null) return exact;
         GameObject best = null; float bestSq = float.MaxValue;
         var candidates = new List<Component>();
@@ -276,7 +290,7 @@ public class SpellConsole : MonoBehaviour
     GameObject ResolveObject(Anima self, string name)
     {
         if (string.IsNullOrEmpty(name) || name == "self" || name == "me" || name == "yo") return self.gameObject;
-        GameObject go = GameObject.Find(name);
+        GameObject go = FindNearestNamed(name, self.transform.position);
         if (go != null) return go;
         // Las áreas se llaman en escena "Kitchen_Area" pero el jugador las conoce por su nombre visible ("Cocina").
         foreach (SanctuaryArea area in FindObjectsOfType<SanctuaryArea>())
@@ -385,7 +399,7 @@ public class SpellConsole : MonoBehaviour
             if (a != self && NameMatches(a.name, name)) return null;
 
         // si no es anima, puede ser un ÁREA / gameobject por nombre (restaurante, santuario…)
-        GameObject area = GameObject.Find(name);
+        GameObject area = FindNearestNamed(name, self.transform.position);
         return area != null ? area.transform : null;
     }
 
