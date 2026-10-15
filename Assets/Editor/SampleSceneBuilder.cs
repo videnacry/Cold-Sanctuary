@@ -76,32 +76,10 @@ public static class SampleSceneBuilder
         BuildHolographicMenu(root.transform);
         BuildMeditationContent(root.transform); // reemplaza la entrada legacy de cocina (KitchenEntrance/KitchenScaleController)
         BuildSanctuaryEconomy(root.transform);  // recursos por santuario + HUD (Mesocosmos) — docs/world-topology-and-planes.md §4/§7
-        BuildFarmingSandbox(root.transform);    // MVP de farming no-violento — docs/world-topology-and-planes.md §4.1
-        BuildMindSandbox(root.transform);       // MVP de mente (frases por tono elemental) — docs/anima-architecture.md
-        BuildPossessionSandbox(root.transform); // control intercambiable + posesión por relevancia — docs anima §11.5
-        BuildKitchenSandbox(root.transform);    // cocina paso A: suciedad como objeto + limpieza — docs kitchen §5
-        BuildKitchenOnboarding(root.transform); // cocina paseo (§1) + paso B desayuno/contenedor (§3/§6)
-        BuildVirtualizationSandbox(root.transform); // motor: puntero + estaciones funcionales + receta — docs kitchen §3b
-        BuildGardenVirtualization(root.transform);  // misma mecánica en el Huerto (receta agrícola) — docs garden §8
-        BuildForgeVirtualization(root.transform);   // forja del Microcosmos (receta de bronce + typing) — docs forge-simulation.md §2
-        BuildExertionSandbox(root.transform);       // desgaste por trabajo (vía A): el obrero se cansa/estresa — docs soul-relations §2b
-        BuildMechanicsBeginner(root.transform);     // Mecánica (Meso) arranque: limpiar→abastecer→reparar — docs forge-simulation.md §1
-        BuildTruckMaintenance(root.transform);      // 1ª simulación de Mecánica: cambio de rueda del camión — docs forge §5
-        BuildPrologueSandbox(root.transform);       // prólogo: guion + mensajes cruzados + llevar débiles a la cueva — docs area-progression Apertura
-        BuildCriaBeginner(root.transform);          // área de CRÍA (corazón): limpiar→abastecer→rutina de cuidado→nido — docs cria-simulation.md
+        // Las PRUEBAS (farming, mente, posesión, cocina, oficios, prólogo, yoga, cámara/emoción, magia, alma, fauna) ya no van
+        // aquí: cada grupo tiene su propia escena en Assets/Scenes/Pruebas (menú «Build Test Scenes»). Aquí solo el santuario.
         // El MICROCOSMOS es OTRA ESCENA (no va aquí, en el mesocosmos): Scene1 (Ambrosio/alba) y Mesopotamia son
         // escenas HERMANAS del microcosmos. Se generan abajo con MicrocosmosSceneBuilder/MobWorldSceneBuilder.
-        BuildUpaYogaSandbox(root.transform);        // 1ª virtualización de yoga: upa-yoga de cuello (control por partes + paneles-tecla) — docs upa-yoga-mission.md
-        BuildScreenEffectsSandbox(root.transform);  // cámara artística: tintes por estado (sueño/fatiga/estrés) — docs stats-as-truth.md §6
-        BuildEmotionOrchestraSandbox(root.transform); // orquesta emocional: partes que reaccionan a humores (violento/pasivo) — docs emotion-model.md
-        BuildDecompositionSandbox(root.transform);  // cocina/descomposición: minijuego 3 fases → economía+paga — docs magic-metabolism §14/§17
-        BuildMagicSandbox(root.transform);          // bucle de magia (HUD prueba): aprender→comer→lanzar; quarks/energía — docs magic-metabolism §16, testing §15
-        BuildSpellDemoSandbox(root.transform);      // hechizos: powerBonus unificado — fuego (G/+LShift carga/+RShift canaliza) + caminar ESDF — testing §19g
-        BuildWalkUniversalSandbox(root.transform);  // locomoción universal: WalkSpell conducido por un brain (AiBrain) hacia un destino
-        BuildSoulBlendSandbox(root.transform);      // alma por MEZCLA (fase 1): Panterilia/oso-mente-humana/oso+bonusPack3 — docs soul-composition-blend.md
-        BuildSharedSoulSandbox(root.transform);     // alma COMPARTIDA: dos cuerpos (melaza/hormiga) una anima; propaga stats/bonds — docs soul-relations §4
-        BuildConstructionBeginner(root.transform);  // Construcción (Meso) arranque: limpiar→abastecer→construir — docs construction-simulation.md
-        BuildDispatchDemo(root.transform);          // reparación por dispatch/tickets (herramientas→ir→reparar) — docs forge §5
         new GameObject("MigrationDiagnostics_AUTO").AddComponent<MigrationDiagnostics>().transform.SetParent(root.transform); // vuelca validación por consola en Play
         // Rejilla de rastros PERSISTENTE (singleton): sin ella, todo el sistema de trazas (celo, byproducts, wander por
         // olor) es no-op en juego. Vacía = no hace nada hasta que algo deposita. docs/environmental-navigation.md.
@@ -139,9 +117,6 @@ public static class SampleSceneBuilder
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
-        BuildFamilyLifeTest(root.transform);     // PRUEBAS EN VIVO de vida familiar (lobos+carne / conejos+pasto, aislados) — observar pareja/padres/crías + deseo `nurse`
-        BuildInteractionTests(root.transform);   // ESCENARIOS DEDICADOS: apareamiento / caza / 1v1 / pack-vs-1 / pack-vs-pack (aislados)
-        BuildSpeciesScenarios(root.transform);   // ESCENARIOS POR ESPECIE: cada animal en su ciclo/interacción representativa (oso pesca, foca↔orca, colonia pingüino, ballena-krill, zorro/ciervo/malamute)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BakeNavMesh();
@@ -159,6 +134,84 @@ public static class SampleSceneBuilder
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
+    }
+
+    // ── ESCENAS DE PRUEBA (una por grupo) ─────────────────────────────────────
+    //
+    // Antes ~30 sandboxes vivían a la vez en la escena principal: tardaba en cargar, sus paneles se pisaban y se
+    // interferían (p. ej. la posesión le quitaba el mando al jugador al arrancar). Ahora la escena principal es solo el
+    // santuario jugable y cada grupo de pruebas se genera en su propia escena (copia de la principal → base mínima +
+    // el grupo). Se abren desde Assets/Scenes/Pruebas o desde Build Settings.
+    const string TestScenesFolder = "Assets/Scenes/Pruebas";
+
+    static readonly (string scene, System.Action<Transform>[] build)[] TestScenes =
+    {
+        ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
+        ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
+        ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
+        ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
+        ("Prueba_Oficios",        new System.Action<Transform>[] { BuildGardenVirtualization, BuildForgeVirtualization, BuildExertionSandbox,
+                                                                   BuildMechanicsBeginner, BuildTruckMaintenance, BuildConstructionBeginner,
+                                                                   BuildDispatchDemo, BuildCriaBeginner }),
+        ("Prueba_Prologo",        new System.Action<Transform>[] { BuildPrologueSandbox }),
+        ("Prueba_Yoga",           new System.Action<Transform>[] { BuildUpaYogaSandbox }),
+        ("Prueba_CamaraEmocion",  new System.Action<Transform>[] { BuildScreenEffectsSandbox, BuildEmotionOrchestraSandbox }),
+        ("Prueba_Magia",          new System.Action<Transform>[] { BuildMagicSandbox, BuildSpellDemoSandbox, BuildWalkUniversalSandbox }),
+        ("Prueba_Alma",           new System.Action<Transform>[] { BuildSoulBlendSandbox, BuildSharedSoulSandbox }),
+        ("Prueba_Fauna",          new System.Action<Transform>[] { BuildFamilyLifeTest, BuildInteractionTests, BuildSpeciesScenarios }),
+    };
+
+    [MenuItem("Tools/Cold Sanctuary/Build Test Scenes (una escena por prueba)")]
+    public static void BuildTestScenes()
+    {
+        string main = "Assets/Scenes/SampleScene.unity";
+        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+        if (!AssetDatabase.IsValidFolder(TestScenesFolder)) AssetDatabase.CreateFolder("Assets/Scenes", "Pruebas");
+
+        var buildScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+        foreach (var (sceneName, build) in TestScenes)
+        {
+            string path = $"{TestScenesFolder}/{sceneName}.unity";
+            AssetDatabase.DeleteAsset(path);
+            AssetDatabase.CopyAsset(main, path);          // misma cámara, luz y Player que la principal
+            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
+
+            GameObject old = GameObject.Find(RootName);
+            if (old != null) Object.DestroyImmediate(old);
+            GameObject root = new GameObject(RootName);
+            BuildTestBase(root.transform);
+            foreach (var b in build)
+            {
+                try { b(root.transform); }
+                catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
+            }
+            DressHumanoids();
+            BakeNavMesh();
+            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
+            if (!buildScenes.Exists(s => s.path == path)) buildScenes.Add(new EditorBuildSettingsScene(path, true));
+            Debug.Log($"[TestScenes] {path}: {build.Length} sandbox(es).");
+        }
+        EditorBuildSettings.scenes = buildScenes.ToArray();
+        EditorSceneManager.OpenScene(main, OpenSceneMode.Single);
+        Debug.Log($"[TestScenes] {TestScenes.Length} escenas de prueba en {TestScenesFolder}.");
+    }
+
+    // Lo mínimo para que una prueba funcione: suelo, sistemas del mundo, áreas (algunas pruebas las usan), HUD/UI,
+    // sistemas del jugador, economía (recompensas), rastros, reloj y los HUD de estado/pensamiento/nombres.
+    static void BuildTestBase(Transform root)
+    {
+        BuildGround(root);
+        BuildWorldSystems(root);
+        SanctuaryArea[] areas = BuildAreaStructures(root);
+        WireSanctuaryDirector(areas);
+        BuildUI(root);
+        EnsurePlayerSystems();
+        BuildSanctuaryEconomy(root);
+        new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root);
+        new GameObject("Clock_AUTO").AddComponent<Clock>().transform.SetParent(root);
+        new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root);
+        new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root);
+        new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root);
     }
 
     // ── Economía de santuario (recursos + HUD) ─────────────────────────────────
