@@ -29,15 +29,21 @@ public class PostureSpell : QueuedSpell
     }
 }
 
-/// <summary>Una ASANA = varias partes a la vez (colas en paralelo por bodyPart, §4.1). Rota todas las partes que el
-/// rig tenga hacia su objetivo durante `hold`; las que falten se ignoran. La unidad del Saludo al Sol.</summary>
+/// <summary>Una ASANA = varias partes a la vez (colas en paralelo por bodyPart, §4.1). Primero una TRANSICIÓN suave
+/// (`transition` s, de la postura actual a la nueva, con aceleración y frenado) y luego la MANTIENE `hold` s quieta.
+/// `rootHeight` (opcional, en unidades del cuerpo; la cadera de pie está a ~0,95) baja o sube la pelvis para las
+/// posturas en el suelo (plancha, cobra…). Antes rotaba hacia el objetivo y contaba el tiempo a la vez, con 1,5 s por
+/// asana: se veía como un bucle de movimientos rápidos.</summary>
 public class AsanaPoseSpell : QueuedSpell
 {
     public string asanaName = "asana";
     public (BodyPart part, Vector3 euler)[] parts = System.Array.Empty<(BodyPart, Vector3)>();
-    public float hold = 1.2f;
-    public float lerp = 4f;
-    float _until = -1f;
+    public float hold = 10f;
+    public float transition = 2.5f;
+    public float rootHeight = -1f;   // -1 = la de pie (reposo)
+    float _start = -1f;
+    Quaternion[] _from;
+    Vector3 _rootFrom;
 
     public override string Label => $"asana {asanaName}";
 
@@ -45,14 +51,36 @@ public class AsanaPoseSpell : QueuedSpell
     {
         if (self == null) return true;
         CreatureRig rig = self.GetComponent<CreatureRig>();
-        if (_until < 0f) _until = Time.time + hold;
-        if (rig != null)
-            foreach (var p in parts)
+        if (_start < 0f)
+        {
+            _start = Time.time;
+            _from = new Quaternion[parts.Length];
+            for (int i = 0; i < parts.Length; i++)
             {
-                Transform bone = rig.Get(p.part);
-                if (bone != null) bone.localRotation = Quaternion.Slerp(bone.localRotation, Quaternion.Euler(p.euler), lerp * Time.deltaTime);
+                Transform b = rig != null ? rig.Get(parts[i].part) : null;
+                _from[i] = b != null ? b.localRotation : Quaternion.identity;
             }
-        return Time.time >= _until;
+            Transform hips = rig != null ? rig.Get(BodyPart.Hips) : null;
+            if (hips != null) _rootFrom = hips.localPosition;
+        }
+        float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - _start) / Mathf.Max(0.01f, transition)));
+        if (rig != null)
+        {
+            for (int i = 0; i < parts.Length; i++)
+            {
+                Transform bone = rig.Get(parts[i].part);
+                if (bone != null) bone.localRotation = Quaternion.Slerp(_from[i], Quaternion.Euler(parts[i].euler), t);
+            }
+            Transform hips = rig.Get(BodyPart.Hips);
+            CubeJoint hj = hips != null ? hips.GetComponent<CubeJoint>() : null;
+            if (hj != null)
+            {
+                Vector3 rest = hj.RestPosition;
+                Vector3 goal = rootHeight >= 0f ? new Vector3(rest.x, rootHeight, rest.z) : rest;
+                hips.localPosition = Vector3.Lerp(_rootFrom, goal, t);
+            }
+        }
+        return Time.time - _start >= transition + hold;
     }
 }
 
@@ -61,17 +89,21 @@ public class AsanaPoseSpell : QueuedSpell
 /// `CreatureRig`) son aproximadas (el compañero afina en Unity); lo exacto es el ORDEN y los grupos musculares.</summary>
 public static class SunSalutation
 {
-    // POSTURA COMPLETA por articulación del cuerpo de cubos (CubeHumanoid): cada pose fija TODAS las articulaciones
-    // (las que no se nombran vuelven a 0 = de pie) para que una zancada no deje la pierna adelantada en la siguiente.
-    // Ejes (rotación local, grados): X+ inclina hacia DELANTE (cintura dobla el torso; muslo hacia atrás; espinilla
-    // dobla la rodilla hacia atrás), X- lleva el miembro hacia DELANTE; Z abre los brazos hacia los lados/arriba.
+    // Cada pose fija TODAS las articulaciones del cuerpo de cubos (las no nombradas vuelven a 0 = de pie) y la altura de
+    // la pelvis. Ejes (rotación local, grados): X+ flexiona hacia DELANTE (columna dobla el torso; muslo va hacia atrás;
+    // espinilla dobla la rodilla), X- lleva el miembro hacia DELANTE; Z abre/eleva los brazos por los lados.
+    // Hips (la pelvis, raíz del cuerpo) X+ inclina el cuerpo entero hacia delante: 80–90 = tumbado boca abajo.
+    public const float Hold = 10f, Transition = 2.5f;
+    const float Stand = -1f;   // pelvis a la altura de pie
+
     static readonly BodyPart[] Joints =
     {
-        BodyPart.Chest, BodyPart.Head, BodyPart.ShoulderLeft, BodyPart.ShoulderRight, BodyPart.ForearmLeft, BodyPart.ForearmRight,
+        BodyPart.Hips, BodyPart.Back, BodyPart.Chest, BodyPart.Neck, BodyPart.Head,
+        BodyPart.ShoulderLeft, BodyPart.ShoulderRight, BodyPart.ForearmLeft, BodyPart.ForearmRight, BodyPart.HandLeft, BodyPart.HandRight,
         BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
-    static AsanaPoseSpell Pose(string name, float hold, params (BodyPart part, Vector3 euler)[] set)
+    static AsanaPoseSpell Pose(string name, float hold, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
     {
         var all = new (BodyPart, Vector3)[Joints.Length];
         for (int i = 0; i < Joints.Length; i++)
@@ -80,49 +112,66 @@ public static class SunSalutation
             foreach (var s in set) if (s.part == Joints[i]) e = s.euler;
             all[i] = (Joints[i], e);
         }
-        return new AsanaPoseSpell { asanaName = name, parts = all, hold = hold };
+        return new AsanaPoseSpell { asanaName = name, parts = all, hold = hold, transition = Transition, rootHeight = rootHeight };
     }
 
     static (BodyPart, Vector3) J(BodyPart p, float x, float z = 0f) => (p, new Vector3(x, 0f, z));
-    static (BodyPart, Vector3)[] ArmsUp => new[] { J(BodyPart.ShoulderLeft, 0, -165), J(BodyPart.ShoulderRight, 0, 165) };
-    static (BodyPart, Vector3)[] Prayer => new[] { J(BodyPart.ShoulderLeft, -20, 15), J(BodyPart.ShoulderRight, -20, -15),
-                                                   J(BodyPart.ForearmLeft, -110, -40), J(BodyPart.ForearmRight, -110, 40) };
-    static (BodyPart, Vector3)[] Plus(params (BodyPart, Vector3)[][] groups)
+    static (BodyPart, Vector3)[] Join(params (BodyPart, Vector3)[][] groups)
     {
         var l = new List<(BodyPart, Vector3)>();
         foreach (var g in groups) l.AddRange(g);
         return l.ToArray();
     }
+    // La columna reparte la flexión: 55 % lumbar, 45 % torácica.
+    static (BodyPart, Vector3)[] Spine(float x) => new[] { J(BodyPart.Back, x * 0.55f), J(BodyPart.Chest, x * 0.45f) };
+    static (BodyPart, Vector3)[] ArmsUp => new[] { J(BodyPart.ShoulderLeft, 0, -170), J(BodyPart.ShoulderRight, 0, 170) };
+    static (BodyPart, Vector3)[] Prayer => new[] { J(BodyPart.ShoulderLeft, -25, 12), J(BodyPart.ShoulderRight, -25, -12),
+        J(BodyPart.ForearmLeft, -105, -45), J(BodyPart.ForearmRight, -105, 45), J(BodyPart.HandLeft, 0, -20), J(BodyPart.HandRight, 0, 20) };
+    // Manos al suelo con el torso inclinado X grados: el brazo apunta al suelo (−X respecto al torso).
+    static (BodyPart, Vector3)[] HandsDown(float torsoTilt) => new[] { J(BodyPart.ShoulderLeft, -torsoTilt), J(BodyPart.ShoulderRight, -torsoTilt) };
+    static (BodyPart, Vector3)[] Lunge(bool leftForward) => new[]
+    {
+        J(leftForward ? BodyPart.ThighLeft : BodyPart.ThighRight, -100), J(leftForward ? BodyPart.ShinLeft : BodyPart.ShinRight, 95),
+        J(leftForward ? BodyPart.ThighRight : BodyPart.ThighLeft, 55),  J(leftForward ? BodyPart.ShinRight : BodyPart.ShinLeft, 10),
+        J(leftForward ? BodyPart.FootRight : BodyPart.FootLeft, 60),
+    };
 
-    public static List<QueuedSpell> Sequence(float holdPerPose = 1.5f)
+    public static List<QueuedSpell> Sequence(float holdPerPose = Hold)
     {
         float h = holdPerPose;
-        var lungeR = new[] { J(BodyPart.Chest, 25), J(BodyPart.Head, -25), J(BodyPart.ThighRight, -95), J(BodyPart.ShinRight, 90),
-                             J(BodyPart.ThighLeft, 35), J(BodyPart.ShoulderLeft, -60), J(BodyPart.ShoulderRight, -60) };
-        var lungeL = new[] { J(BodyPart.Chest, 25), J(BodyPart.Head, -25), J(BodyPart.ThighLeft, -95), J(BodyPart.ShinLeft, 90),
-                             J(BodyPart.ThighRight, 35), J(BodyPart.ShoulderLeft, -60), J(BodyPart.ShoulderRight, -60) };
         return new List<QueuedSpell>
         {
-            Pose("Pranamasana (oración)", h, Prayer),
-            Pose("Hasta Uttanasana (brazos arriba)", h, Plus(ArmsUp, new[] { J(BodyPart.Chest, -25), J(BodyPart.Head, -20) })),
-            Pose("Uttanasana (flexión adelante)", h, J(BodyPart.Chest, 95), J(BodyPart.Head, 20)),
-            Pose("Ashwa Sanchalanasana (zancada)", h, lungeR),
-            Pose("Dandasana (plancha)", h, J(BodyPart.Chest, 80), J(BodyPart.ThighLeft, 10), J(BodyPart.ThighRight, 10),
-                 J(BodyPart.ShoulderLeft, -80), J(BodyPart.ShoulderRight, -80)),
-            Pose("Ashtanga Namaskara (ocho miembros)", h, J(BodyPart.Chest, 70), J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70),
-                 J(BodyPart.ShoulderLeft, -30), J(BodyPart.ShoulderRight, -30), J(BodyPart.ForearmLeft, -60), J(BodyPart.ForearmRight, -60)),
-            Pose("Bhujangasana (cobra)", h, J(BodyPart.Chest, -45), J(BodyPart.Head, -30),
-                 J(BodyPart.ShoulderLeft, -20), J(BodyPart.ShoulderRight, -20)),
-            Pose("Adho Mukha Svanasana (perro boca abajo)", h, Plus(ArmsUp, new[] { J(BodyPart.Chest, 100), J(BodyPart.Head, 25) })),
-            Pose("Ashwa Sanchalanasana (zancada)", h, lungeL),
-            Pose("Uttanasana (flexión adelante)", h, J(BodyPart.Chest, 95), J(BodyPart.Head, 20)),
-            Pose("Hasta Uttanasana (brazos arriba)", h, Plus(ArmsUp, new[] { J(BodyPart.Chest, -25), J(BodyPart.Head, -20) })),
-            Pose("Pranamasana (oración)", h, Prayer),
+            // 1. Oración: de pie, palmas juntas delante del pecho.
+            Pose("Pranamasana (oración)", h, Stand, Prayer),
+            // 2. Brazos arriba con extensión suave de la columna.
+            Pose("Hasta Uttanasana (brazos arriba)", h, Stand, Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
+            // 3. Flexión adelante: torso sobre las piernas, manos al suelo.
+            Pose("Uttanasana (flexión adelante)", h, Stand, Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
+            // 4. Zancada: pierna derecha atrás, izquierda delante, pelvis baja, mirada al frente.
+            Pose("Ashwa Sanchalanasana (zancada)", h, 0.5f, Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
+            // 5. Plancha: cuerpo recto y en diagonal, brazos rectos al suelo.
+            Pose("Dandasana (plancha)", h, 0.5f, Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 50), J(BodyPart.FootRight, 50),
+                                                              J(BodyPart.Head, -20) }, HandsDown(72))),
+            // 6. Ocho apoyos: rodillas, pecho y barbilla al suelo, cadera alta, codos doblados.
+            Pose("Ashtanga Namaskara (ocho miembros)", h, 0.35f, Join(new[] { J(BodyPart.Hips, 80), J(BodyPart.ShinLeft, 35), J(BodyPart.ShinRight, 35),
+                J(BodyPart.ShoulderLeft, -20), J(BodyPart.ShoulderRight, -20), J(BodyPart.ForearmLeft, -100), J(BodyPart.ForearmRight, -100) }, Spine(-15))),
+            // 7. Cobra: tumbado, pecho arriba con la espalda arqueada.
+            Pose("Bhujangasana (cobra)", h, 0.18f, Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80),
+                J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30))),
+            // 8. Perro boca abajo: V invertida, cadera arriba, brazos alineados con el torso.
+            Pose("Adho Mukha Svanasana (perro boca abajo)", h, Stand, Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50),
+                J(BodyPart.Head, 20) }, Spine(80), ArmsUp)),
+            // 9. Zancada con la otra pierna delante.
+            Pose("Ashwa Sanchalanasana (zancada)", h, 0.5f, Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
+            // 10–12. Vuelta: flexión, brazos arriba, oración.
+            Pose("Uttanasana (flexión adelante)", h, Stand, Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
+            Pose("Hasta Uttanasana (brazos arriba)", h, Stand, Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
+            Pose("Pranamasana (oración)", h, Stand, Prayer),
         };
     }
 
     /// <summary>Duración total de la secuencia (para quien la imita).</summary>
-    public static float Duration(float holdPerPose = 1.5f) => 12 * holdPerPose;
+    public static float Duration(float holdPerPose = Hold) => 12 * (holdPerPose + Transition);
 }
 
 /// <summary>
@@ -139,8 +188,8 @@ public class MimicPoseSpell : QueuedSpell
 
     static readonly BodyPart[] Joints =
     {
-        BodyPart.Chest, BodyPart.Neck, BodyPart.Head, BodyPart.ShoulderLeft, BodyPart.ShoulderRight, BodyPart.ForearmLeft,
-        BodyPart.ForearmRight, BodyPart.HandLeft, BodyPart.HandRight, BodyPart.ThighLeft, BodyPart.ThighRight,
+        BodyPart.Hips, BodyPart.Back, BodyPart.Chest, BodyPart.Neck, BodyPart.Head, BodyPart.ShoulderLeft, BodyPart.ShoulderRight,
+        BodyPart.ForearmLeft, BodyPart.ForearmRight, BodyPart.HandLeft, BodyPart.HandRight, BodyPart.ThighLeft, BodyPart.ThighRight,
         BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
@@ -161,6 +210,15 @@ public class MimicPoseSpell : QueuedSpell
             Transform t = !done && theirs != null ? theirs.Get(p) : null;
             Quaternion goal = t != null ? t.localRotation : Quaternion.identity;   // al acabar: de pie
             b.localRotation = Quaternion.Slerp(b.localRotation, goal, follow * Time.deltaTime);
+        }
+        // La altura de la pelvis también (plancha, cobra…): sigue la del maestro, o vuelve a la de pie al acabar.
+        Transform myHips = mine.Get(BodyPart.Hips);
+        CubeJoint mj = myHips != null ? myHips.GetComponent<CubeJoint>() : null;
+        if (mj != null)
+        {
+            Transform th = !done && theirs != null ? theirs.Get(BodyPart.Hips) : null;
+            Vector3 goalPos = th != null ? new Vector3(mj.RestPosition.x, th.localPosition.y, mj.RestPosition.z) : mj.RestPosition;
+            myHips.localPosition = Vector3.Lerp(myHips.localPosition, goalPos, follow * Time.deltaTime);
         }
         return done;
     }

@@ -43,6 +43,7 @@ public static class CubeHumanoid
         rig.bindings.Clear();
         Build(body.transform, rig, clothes, skin);
         rig.Rebuild();
+        if (who.GetComponent<CubeWalkCycle>() == null) who.AddComponent<CubeWalkCycle>();   // piernas y brazos al andar
         return rig;
     }
 
@@ -61,8 +62,10 @@ public static class CubeHumanoid
 
         // Pelvis (cadera) a la altura de la cadera; todo cuelga de aquí.
         CubeJoint hips  = Joint(root, BodyPart.Hips,  new Vector3(0f, 0.95f, 0f), new Vector3(0.34f, 0.2f, 0.22f), Vector3.zero, dark, rig);
-        CubeJoint waist = Joint(hips.transform, BodyPart.Chest, new Vector3(0f, 0.1f, 0f), new Vector3(0.4f, 0.5f, 0.24f), new Vector3(0f, 0.25f, 0f), cloth, rig);
-        CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.52f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
+        // Columna en DOS tramos (lumbar = Back, torácica = Chest) para que flexiones y extensiones se repartan y se curven.
+        CubeJoint lumbar = Joint(hips.transform, BodyPart.Back, new Vector3(0f, 0.1f, 0f), new Vector3(0.36f, 0.24f, 0.22f), new Vector3(0f, 0.12f, 0f), cloth, rig);
+        CubeJoint waist = Joint(lumbar.transform, BodyPart.Chest, new Vector3(0f, 0.24f, 0f), new Vector3(0.4f, 0.3f, 0.24f), new Vector3(0f, 0.15f, 0f), cloth, rig);
+        CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
 
         for (int side = -1; side <= 1; side += 2)
@@ -70,7 +73,7 @@ public static class CubeHumanoid
             bool left = side < 0;
             // Brazo: hombro → codo → muñeca.
             CubeJoint sh = Joint(waist.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight,
-                new Vector3(0.26f * side, 0.46f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
+                new Vector3(0.26f * side, 0.22f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
             CubeJoint el = Joint(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight,
                 new Vector3(0f, -0.3f, 0f), new Vector3(0.09f, 0.27f, 0.09f), new Vector3(0f, -0.135f, 0f), flesh, rig);
             Joint(el.transform, left ? BodyPart.HandLeft : BodyPart.HandRight,

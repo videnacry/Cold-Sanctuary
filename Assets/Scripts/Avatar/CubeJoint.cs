@@ -15,15 +15,18 @@ public class CubeJoint : MonoBehaviour
     [SerializeField] List<Transform> _childJoints = new List<Transform>();
     [SerializeField] List<Vector3> _childBasePos = new List<Vector3>();
     [SerializeField] Quaternion _restRotation = Quaternion.identity;
+    [SerializeField] Vector3 _restPosition;
     float _stretch = 1f;
 
     public float Stretch => _stretch;
     public Quaternion RestRotation => _restRotation;
+    public Vector3 RestPosition => _restPosition;
 
     /// <summary>Registra el estado de reposo (tras construir el cuerpo).</summary>
     public void Capture()
     {
         _restRotation = transform.localRotation;
+        _restPosition = transform.localPosition;
         if (segment != null) { _segBaseScale = segment.localScale; _segBasePos = segment.localPosition; }
         _childJoints.Clear(); _childBasePos.Clear();
         foreach (Transform c in transform)

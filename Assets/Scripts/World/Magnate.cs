@@ -163,6 +163,10 @@ public class Magnate : MonoBehaviour
         if (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f))
         { Debug.Log($"[Magnate] «{t.name}» necesita comer/descansar antes de aprender."); return; }
 
+        // Ya está con una clase en curso (la imita ahora mismo): no se reinicia ni se repite cada pocos segundos.
+        ActionQueue tq = t.GetComponent<ActionQueue>();
+        if (tq != null) foreach (QueuedSpell s in tq.Player) if (s is MimicPoseSpell) return;
+
         Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
         g.Learn("yoga");                                             // el recuerdo de la asana
         // DEMOSTRACIÓN: la Magnate hace el Saludo al Sol con su cuerpo y el alumno la IMITA articulación por articulación

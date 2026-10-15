@@ -232,7 +232,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            _verticalVelocity -= gravity * Time.deltaTime;
+            _verticalVelocity = Mathf.Max(_verticalVelocity - gravity * Time.deltaTime, -50f);   // velocidad terminal (antes caía sin límite)
         }
 
         Vector3 velocity = move * speed;

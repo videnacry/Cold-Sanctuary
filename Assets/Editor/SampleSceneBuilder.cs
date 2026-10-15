@@ -1912,12 +1912,18 @@ public static class SampleSceneBuilder
 
         EnsurePlayerVisual(player);
 
+        // PUNTO DE APARICIÓN despejado: el Player de la escena empezaba en (22,-6), donde se solapan el suelo del restaurante,
+        // la esterilla del Huerto y su decorado de virtualización; el CharacterController quedaba dentro de un collider y
+        // acababa cayendo bajo el suelo (visto en vivo: y = −2,7 y luego caída sin fin).
+        player.transform.position = new Vector3(30f, 1.2f, -13f);
+
         // CONTROL POR NECESIDAD SIEMPRE ACTIVO (todo es Anima; el jugador NUNCA tiene control total):
         // el "body" (AcuteStressResponse) puja por el mando como una fuerza más. No es un switch.
         if (player.GetComponent<Anima>() != null && player.GetComponent<AcuteStressResponse>() == null)
             player.AddComponent<AcuteStressResponse>();
         // Lanzador de hechizos por TECLADO + cola de acciones (jugador programa al poseído tipo Sims).
         if (player.GetComponent<ActionQueue>() == null) player.AddComponent<ActionQueue>();
+        if (player.GetComponent<GroundGuard>() == null) player.AddComponent<GroundGuard>();   // si queda bajo tierra, lo recoloca
         if (Object.FindObjectOfType<SpellConsole>() == null)
             new GameObject("SpellConsole_AUTO").AddComponent<SpellConsole>().transform.SetParent(player.transform);
 
@@ -2081,7 +2087,7 @@ public static class SampleSceneBuilder
     static void DressHumanoids()
     {
         Color skin = new Color(0.86f, 0.70f, 0.58f);
-        int n = 0;
+        int n = 0, alive = 0;
         foreach (Anima a in Object.FindObjectsOfType<Anima>())
         {
             if (a is Animal || a.GetComponent<PlayableCreature>() != null) continue;
@@ -2091,8 +2097,19 @@ public static class SampleSceneBuilder
             Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);
             CubeHumanoid.Dress(a.gameObject, clothes, skin);
             n++;
+            // Los compañeros (con mente, no el jugador ni la Magnate) estaban quietos: les damos cuerpo que ANDA (WalkSpell),
+            // cola de acciones y vida libre (IdleBehavior → merodear). CharacterLevel para que la Magnate pueda enseñarles.
+            if (a.GetComponent<Mind>() != null && !a.CompareTag("Player") && a.GetComponent<Magnate>() == null)
+            {
+                if (a.GetComponent<WalkSpell>() == null) { WalkSpell w = a.gameObject.AddComponent<WalkSpell>(); w.selfDriven = false; }
+                if (a.GetComponent<ActionQueue>() == null) a.gameObject.AddComponent<ActionQueue>();
+                if (a.GetComponent<IdleBehavior>() == null) a.gameObject.AddComponent<IdleBehavior>();
+                if (a.GetComponent<CharacterLevel>() == null) a.gameObject.AddComponent<CharacterLevel>();
+                if (a.GetComponent<GroundGuard>() == null) a.gameObject.AddComponent<GroundGuard>();
+                alive++;
+            }
         }
-        Debug.Log($"[SampleSceneBuilder] Cuerpos de cubos: {n} anima humanos vestidos (CubeHumanoid).");
+        Debug.Log($"[SampleSceneBuilder] Cuerpos de cubos: {n} anima humanos vestidos (CubeHumanoid); {alive} compañeros con vida libre (merodean).");
     }
 
     static void BakeNavMesh()
