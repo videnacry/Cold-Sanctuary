@@ -18,7 +18,8 @@ public class StarvationTest : MonoBehaviour, ITestUnit
 
         Animal a = null;
         foreach (Animal x in FindObjectsOfType<Animal>())
-            if (x != null && !x.death && x.rig != null && x.Body != null) { a = x; break; }
+            // con masa real: los prefabs-cubo (especies sin .fbx) tienen Rigidbody de masa 0 y el test no puede medir nada
+            if (x != null && !x.death && x.rig != null && x.rig.mass > 0.01f && x.Body != null) { a = x; break; }
         if (a == null) { Debug.Log("[TEST] SKIP · Starvation — sin fauna lista (rig/Body)"); TestProbe.End(); yield break; }
 
         float sHungry = a.hungry, sFat = a.fatReserves, sMass = a.rig.mass, sSick = a.sickness;

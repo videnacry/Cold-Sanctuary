@@ -97,6 +97,12 @@ public class SanctuaryArea : MonoBehaviour
     {
         if (spawnPoints != null && spawnPoints.Length > 0)
             return spawnPoints[index % spawnPoints.Length].position;
-        return transform.position;
+        // Sin puntos de aparición: alrededor del centro del área y SOBRE el suelo. Antes devolvía el pivote del área (y = 0),
+        // y quien era asignado (el jugador, los compañeros) quedaba con medio cuerpo bajo tierra.
+        float ang = index * 2.399f;   // ángulo áureo: no se apilan
+        Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (1.2f + 0.4f * (index % 4));
+        if (Physics.Raycast(p + Vector3.up * 5f, Vector3.down, out RaycastHit hit, 20f, ~0, QueryTriggerInteraction.Ignore))
+            return hit.point + Vector3.up * 1.1f;
+        return p + Vector3.up * 1.1f;
     }
 }
