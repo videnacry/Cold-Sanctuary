@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 422 tipos._
+_Total: 424 tipos._
 
 
 ## Animals
@@ -433,6 +433,8 @@ _Total: 422 tipos._
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
 - **YogaNamaskar** (class) — `Assets/Scripts/Asana/YogaNamaskar.cs` — YOGA NAMASKAR (lo que la Magnate enseña DESPUÉS del upa-yoga de cuello y ANTES del Saludo al Sol).
+- **YogaSession** (class) — `Assets/Scripts/Asana/YogaLibrary.cs` — REGISTRO de sesiones de yoga.
+- **YogaSessionRunner** (class) — `Assets/Scripts/Asana/YogaSessionRunner.cs` — DEMOSTRADOR de una sesión de yoga:
 - **YogaTest** (class) — `Assets/Scripts/YogaTest.cs` — Unidad de test del YOGA (docs/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`.
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 
