@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 424 tipos._
+_Total: 432 tipos._
 
 
 ## Animals
@@ -101,6 +101,7 @@ _Total: 424 tipos._
 - **AsanaEvaluator** (class) — `Assets/Scripts/Asana/AsanaEvaluator.cs` — IPaletteEvaluator for the asana system.
 - **AsanaFormationMission** (class) — `Assets/Scripts/Meditation/AsanaFormationMission.cs` — Formation mission (docs §7/§8):
 - **AsanaQueue** (class) — `Assets/Scripts/Asana/AsanaQueue.cs` — Manages the active asana and the queue of upcoming ones.
+- **AshtangaPrimary** (class) — `Assets/Scripts/Asana/AshtangaPrimary.cs` — ASHTANGA — Serie Primaria (Yoga Chikitsa), "nivel 1" (docs/ashtanga-primary-series.md).
 - **ATPRegenSpell** (class) — `Assets/Scripts/Microcosmos/ATPRegenSpell.cs` — REGENERACIÓN PASIVA DE ENERGÍA (ATP) — hechizo de duración ilimitada siempre activo.
 - **Autoabandono** (class) — `Assets/Scripts/Autoabandono.cs` — Deriva el autoabandono (disposición al auto-sacrificio, 0..1) de la tensión entrega ↔ autoconservación (docs/soul-relations-reincarnation §2c).
 - **AutoCameraZone** (class) — `Assets/Scripts/Camera/AutoCameraZone.cs` — Trigger volume that automatically switches the camera mode when Kushal enters, then restores the player's preferred mode when he leaves.
@@ -155,6 +156,9 @@ _Total: 424 tipos._
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
+- **CubeCreature** (class) — `Assets/Scripts/Avatar/CubeCreature.cs` — FAUNA DE CUBOS CON HUESOS (docs/anyma-factory-and-control §1):
+- **CubeFace** (class) — `Assets/Scripts/Avatar/CubeFace.cs` — CARA DE CUBOS con EXPRESIONES:
+- **CubeGait** (class) — `Assets/Scripts/Avatar/CubeGait.cs` — MARCHA de la fauna de cubos ():
 - **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
 - **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
 - **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
@@ -201,7 +205,8 @@ _Total: 424 tipos._
 - **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
-- **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO DEL HUERTO hecho de bloques:
+- **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
+- **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):
 - **Generator** (class) — `Assets/Scripts/Generator.cs`
 - **Gohageneis** (class) — `Assets/Scripts/Companion/Companions/Gohageneis.cs` — El Papi Gohageneis — celebración, arte de vivir, restauración emocional.
 - **Goluis** (class) — `Assets/Scripts/Companion/Companions/Goluis.cs` — El Maestro Goluis — cocina, doble turno, presión y resistencia.
@@ -210,6 +215,7 @@ _Total: 424 tipos._
 - **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
 - **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
+- **GuardTower** (class) — `Assets/Scripts/World/GuardTower.cs` — TORRE DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b):
 - **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
 - **HashSetHolder** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolder.cs`
 - **HashSetHolderAnimalPopulation** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolderAnimalPopulation.cs`
@@ -251,7 +257,9 @@ _Total: 424 tipos._
 - **ITarget** (interface) — `Assets/Scripts/ITarget.cs` — Objetivo universal:
 - **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
 - **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
+- **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
+- **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md):
 - **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
@@ -321,7 +329,7 @@ _Total: 424 tipos._
 - **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
 - **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
 - **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
-- **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR del santuario (docs/ice-sanctuary-ecology.md):
+- **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR (docs/ice-sanctuary-ecology.md):
 - **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.
 - **PossessionSpell** (class) — `Assets/Scripts/Control/PossessionSpell.cs` — Hechizo de POSESIÓN del jugador (docs/anima-architecture.md §11.5).
 - **PostNatalManager** (class) — `Assets/Scripts/PostNatal/PostNatalManager.cs` — Añadir al GameObject de la MADRE.

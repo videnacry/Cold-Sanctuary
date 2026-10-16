@@ -166,6 +166,7 @@ public static class SampleSceneBuilder
         ("Yoga_UpaCuello",        new System.Action<Transform>[] { BuildYogaUpaNeck }),
         ("Yoga_Namaskar",         new System.Action<Transform>[] { BuildYogaNamaskar }),
         ("Yoga_SaludoSol",        new System.Action<Transform>[] { BuildYogaSaludoSol }),
+        ("Yoga_Ashtanga1",        new System.Action<Transform>[] { BuildYogaAshtanga1 }),
         ("Prueba_CamaraEmocion",  new System.Action<Transform>[] { BuildScreenEffectsSandbox, BuildEmotionOrchestraSandbox }),
         ("Prueba_Magia",          new System.Action<Transform>[] { BuildMagicSandbox, BuildSpellDemoSandbox, BuildWalkUniversalSandbox }),
         ("Prueba_Alma",           new System.Action<Transform>[] { BuildSoulBlendSandbox, BuildSharedSoulSandbox }),
@@ -1423,6 +1424,7 @@ public static class SampleSceneBuilder
     static void BuildYogaUpaNeck(Transform parent)   => BuildYogaSessionScene(parent, "Upa-yoga de cuello");
     static void BuildYogaNamaskar(Transform parent)  => BuildYogaSessionScene(parent, "Yoga Namaskar");
     static void BuildYogaSaludoSol(Transform parent) => BuildYogaSessionScene(parent, "Saludo al Sol");
+    static void BuildYogaAshtanga1(Transform parent) => BuildYogaSessionScene(parent, "Ashtanga Primaria");
 
     static void BuildYogaSessionScene(Transform parent, string session)
     {
