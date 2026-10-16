@@ -68,6 +68,7 @@ public class SpellConsole : MonoBehaviour
         ("thought",   "thought({destiny:\"\", positive:true})"),
         ("yoga",      "yoga"),
         ("clean",     "clean"),
+        ("feed",      "feed"),
         ("stock",     "stock"),
         ("teach",     "teach({destiny:\"\", skill:\"yoga\"})"),
         ("analysis",  "analysis({destiny:\"\"})"),
@@ -171,6 +172,7 @@ public class SpellConsole : MonoBehaviour
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
             case "clean": case "limpiar": Clean(self); break;
+            case "feed": case "alimentar": Feed(self); break;
             case "stock": case "abastecer": Stock(self); break;
             case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
             case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
@@ -378,6 +380,14 @@ public class SpellConsole : MonoBehaviour
         CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
         cs.Cast(self, null);
         Log($"«{self.name}» limpia.");
+    }
+
+    // Alimentar como HECHIZO: va al visitante hambriento más cercano (huerto) y le da de comer al llegar.
+    void Feed(Anima self)
+    {
+        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        q.EnqueuePlayer(new FeedVisitorSpell());
+        Log($"«{self.name}» va a dar de comer al visitante hambriento más cercano.");
     }
 
     // Abastecer como HECHIZO (inventario): llena el estante más cercano dentro del alcance.

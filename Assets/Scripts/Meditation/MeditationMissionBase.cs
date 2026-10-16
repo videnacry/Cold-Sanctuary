@@ -180,7 +180,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
         {
             // Standalone (mob-world scene): no reality shift to undo. Clean up leftovers now; the player
             // leaves the scene via the WorldExitPortal (MobWorldLoader.ExitMobWorld).
-            Debug.Log("[Meditación] Misión de mundo mob completada — sal por la sala de yoga cuando quieras.");
+            Debug.Log("[Meditación] Misión completada — elige otra en el tablero o sal por el portal cuando quieras.");
             mission.RaiseEnd();
         }
     }

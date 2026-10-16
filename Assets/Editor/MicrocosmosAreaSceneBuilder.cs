@@ -77,6 +77,17 @@ public static class MicrocosmosAreaSceneBuilder
             m.transform.position = o + new Vector3(0f, 0f, 3f);
             foreach (MeditationMissionBase b in m.GetComponents<MeditationMissionBase>()) b.endMode = MissionEndMode.Standalone;
         }
+        // HUERTO: un campo de cultivos GIGANTES (aquí eres pequeño) que los visitantes hambrientos quieren morder.
+        if (kind == SampleSceneBuilder.MissionKind.GardenChannel)
+        {
+            GardenCrop.Kind[] kinds = (GardenCrop.Kind[])System.Enum.GetValues(typeof(GardenCrop.Kind));
+            for (int k = 0; k < 10; k++)
+            {
+                float ang = k * 36f * Mathf.Deg2Rad;
+                Vector3 p = o + new Vector3(Mathf.Cos(ang) * 7f, 0f, 4f + Mathf.Sin(ang) * 5f);
+                GardenCrop.Build(root.transform, kinds[k % kinds.Length], p, 900 + k, 3f);
+            }
+        }
         var board = root.AddComponent<MobWorldMissionBoard>();
         board.areaName = display;
         board.missions = missions;

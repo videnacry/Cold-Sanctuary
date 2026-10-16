@@ -27,13 +27,13 @@ public class BodyAging : MonoBehaviour
     BodyMetabolism _body;
     Vector3 _adultScale;
     char _lastStage;
+    bool _stageKnown;
 
     void Awake()
     {
         _a = GetComponent<Anima>();
         _body = GetComponent<BodyMetabolism>();
         _adultScale = transform.localScale;
-        _lastStage = Stage;
         ApplyScale();
     }
 
@@ -54,6 +54,7 @@ public class BodyAging : MonoBehaviour
         if (_a == null) _a = GetComponent<Anima>();
         if (_body == null) _body = GetComponent<BodyMetabolism>();
         if (_a == null || _a.death || gameHours <= 0f) return;
+        if (!_stageKnown) { _lastStage = Stage; _stageKnown = true; }   // la etapa de partida no es un «cambio»
         float days = gameHours / 24f;
         float cells = _body != null ? _body.NeedsScale : 1f;   // células de mago: 0 = congeladas en el tiempo
 

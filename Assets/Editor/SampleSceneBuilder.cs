@@ -120,6 +120,7 @@ public static class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
+        BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2173,6 +2174,47 @@ public static class SampleSceneBuilder
         Debug.Log($"[SampleSceneBuilder] Cuerpos de cubos: {n} anima humanos vestidos (CubeHumanoid); {alive} compañeros con vida libre (merodean).");
     }
 
+    // BANQUISA: el suelo único (un plano de nieve) se convierte en CASQUETES de hielo separados por canales de agua con
+    // puentes, y mar abierto con témpanos al este. Va al final (antes del NavMesh) para proteger con hielo firme todo lo
+    // que ya está colocado: áreas, hub, seres, estaciones, nidos. Y siembra el SOTOBOSQUE polar (se genera en Play).
+    static void BuildPolarIce(Transform root)
+    {
+        GameObject ground = GameObject.Find("Ground_Placeholder");
+        if (ground == null) return;
+        var protect = PolarLandscapeBuilder.Protect;
+        protect.Clear();
+        protect.Add(new Vector3(5f, 0f, 32f));                           // hub del santuario (personajes, Magnate, restaurante)
+        protect.Add(new Vector3(30f, -13f, 10f));                        // aparición del jugador
+        protect.Add(new Vector3(130f, -10f, 34f));                       // osos
+        protect.Add(new Vector3(155f, 5f, 21f));                         // colonia de pingüinos (borde del hielo)
+        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
+            protect.Add(new Vector3(a.transform.position.x, a.transform.position.z, 20f));
+        foreach (Anima a in Object.FindObjectsOfType<Anima>())
+            if (a.transform.position.y > -0.5f) protect.Add(new Vector3(a.transform.position.x, a.transform.position.z, 6f));
+        foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
+        {
+            Transform t = r.transform;
+            if (t.IsChildOf(ground.transform) || t.name.StartsWith("Sea") || t.GetComponentInParent<IceCarnivorousTree>() != null) continue;
+            Bounds b = r.bounds;
+            if (b.center.y < -0.5f || b.extents.x > 40f || b.extents.z > 40f) continue;
+            protect.Add(new Vector3(b.center.x, b.center.z, Mathf.Max(b.extents.x, b.extents.z) + 3f));
+        }
+        foreach (IceCarnivorousTree t in Object.FindObjectsOfType<IceCarnivorousTree>())
+            protect.Add(new Vector3(t.transform.position.x, t.transform.position.z, 6f));
+
+        // El plano deja de ser suelo: queda como portador del NavMeshSurface y padre de los casquetes.
+        Object.DestroyImmediate(ground.GetComponent<MeshCollider>());
+        Object.DestroyImmediate(ground.GetComponent<MeshRenderer>());
+        Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
+        ground.transform.localScale = Vector3.one;
+        int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
+        Debug.Log($"[Banquisa] Casquetes de hielo: {boxes} placas, canales con puentes y témpanos al este; {protect.Count} zonas protegidas con hielo firme.");
+
+        GameObject under = new GameObject("SotobosquePolar_AUTO");
+        under.transform.SetParent(root, false);
+        under.AddComponent<PolarUnderstory>();
+    }
+
     static void BakeNavMesh()
     {
         GameObject ground = GameObject.Find("Ground_Placeholder");
@@ -2190,8 +2232,9 @@ public static class SampleSceneBuilder
         GameObject sea = GameObject.CreatePrimitive(PrimitiveType.Plane);
         sea.name = "Sea_Placeholder";
         sea.transform.SetParent(parent);
-        sea.transform.position = new Vector3(200f, -1f, 0f); // beside the ground block, slightly lower
-        sea.transform.localScale = new Vector3(40f, 1f, 40f);
+        sea.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel, 0f); // BANQUISA: el mar está bajo TODO el hielo y asoma por los canales
+        sea.transform.localScale = new Vector3(120f, 1f, 120f);                          // 1200 m: más allá del hielo, mar abierto
+        PolarLandscapeBuilder.IgnoreForNav(sea);                                          // que nadie «ande» sobre el agua
         sea.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Sea_Placeholder_MAT", new Color(0.10f, 0.28f, 0.45f));
         Object.DestroyImmediate(sea.GetComponent<Collider>()); // el MeshCollider del Plane es solo una superficie 2D, no sirve como volumen nadable
 
@@ -2203,12 +2246,19 @@ public static class SampleSceneBuilder
         // cada uno ignora los objetos que no tienen su componente requerido.
         GameObject swimZone = new GameObject("Sea_SwimZone");
         swimZone.transform.SetParent(parent);
-        swimZone.transform.position = new Vector3(200f, -8f, 0f);
+        swimZone.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 8f, 0f);
         BoxCollider swimCollider = swimZone.AddComponent<BoxCollider>();
         swimCollider.isTrigger = true;
-        swimCollider.size = new Vector3(380f, 14f, 380f); // cubre el area visual del mar (plane 400x400) con margen
+        swimCollider.size = new Vector3(1200f, 16f, 1200f); // todo el mar: bajo la banquisa, en los canales y alrededor
         swimZone.AddComponent<WaterZone>();
         swimZone.AddComponent<MediumZone>().medium = Medium.Water;
+
+        // Fondo marino: sin él, quien cae a un canal se hundiría para siempre. Invisible y fuera del NavMesh.
+        GameObject seabed = new GameObject("FondoMarino");
+        seabed.transform.SetParent(parent);
+        seabed.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel - 17f, 0f);
+        seabed.AddComponent<BoxCollider>().size = new Vector3(1200f, 2f, 1200f);
+        PolarLandscapeBuilder.IgnoreForNav(seabed);
 
         RenderSettings.fog = true;
         RenderSettings.fogMode = FogMode.ExponentialSquared;
@@ -2773,28 +2823,30 @@ public static class SampleSceneBuilder
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
     static void BuildIceFlora(Transform parent)
     {
-        // BOSQUE DE HIELO: varios árboles carnívoros de BLOQUES (tronco, pisos de ramas con plataformas-posadero y nidos)
-        // en vez de un único cilindro. Dan ambiente de bosque y abundancia vegetal al santuario (docs/ice-sanctuary-ecology §2).
+        // BOSQUE DE HIELO con EDADES: arboledas de un árbol madre (adulto o viejo) rodeado de jóvenes y brotes, y árboles
+        // sueltos, esparcidos por todo el hielo (docs/ice-sanctuary-ecology §2). Lejos de las áreas, del hub, de los nidos
+        // y de los canales, para no cortar el paso. Los brotes aún no cazan; los viejos tienen más raíces y una rama seca.
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
-        // ESPARCIDOS por el mapa (no en un solo grupo): arboledas de 2–3 y árboles sueltos, lejos de las áreas del
-        // santuario (x 0–75) y del mar (x > 175), para que todo el hielo tenga vida vegetal.
-        Vector3 center = Vector3.zero;
-        var spots = new (float x, float z, float h)[]
+        var avoid = new List<Vector3>
         {
-            (112f, 48f, 20f), (126f, 60f, 15f), (100f, 66f, 14f),          // arboleda NE
-            (-60f, 40f, 18f), (-74f, 52f, 14f),                         // arboleda O
-            (-40f, -70f, 17f), (-26f, -84f, 13f), (-54f, -88f, 15f),    // arboleda SO
-            (40f, -90f, 16f), (95f, -60f, 18f),                         // sur
-            (-120f, -20f, 19f), (-150f, 80f, 16f), (-110f, 130f, 14f),  // oeste lejano
-            (20f, 130f, 17f), (70f, 150f, 15f), (140f, 110f, 18f),      // norte
-            (-170f, -120f, 15f), (130f, -140f, 16f), (-20f, 170f, 13f), (160f, 170f, 14f),
+            new Vector3(5f, 0f, 38f),       // hub
+            new Vector3(30f, -13f, 12f),    // aparición del jugador
+            new Vector3(130f, -10f, 34f),   // osos
+            new Vector3(155f, 5f, 24f),     // pingüinos
         };
+        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
+            avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
+        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 14, loose: 10);
         GameObject first = null;
-        for (int i = 0; i < spots.Length; i++)
+        var hiveTrees = new List<Vector3>();
+        var count = new Dictionary<PolarLandscapeBuilder.TreeAge, int>();
+        for (int i = 0; i < plan.Count; i++)
         {
-            Vector3 pos = center + new Vector3(spots[i].x, 0f, spots[i].z);
-            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{i + 1}", pos, 1234 + i * 77, spots[i].h);
-            if (first == null) first = tree;
+            var (pos, age, h) = plan[i];
+            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{age}_{i + 1}", pos, 1234 + i * 77, h);
+            count[age] = count.TryGetValue(age, out int c) ? c + 1 : 1;
+            if (first == null && age != PolarLandscapeBuilder.TreeAge.Brote) first = tree;
+            if (age >= PolarLandscapeBuilder.TreeAge.Adulto && hiveTrees.Count < 4 && i % 3 == 0) hiveTrees.Add(pos);
         }
         if (first != null)
         {
@@ -2806,19 +2858,17 @@ public static class SampleSceneBuilder
         GameObject beePrefab = LoadAnimalPrefab("SnowBee");
         if (beePrefab != null)
         {
-            // Colmenas de abejas de las nieves en una arboleda de cada zona (anidan en sus ramas, miel de los muertos).
-            int[] hives = { 0, 3, 5, 10 };
-            for (int h = 0; h < hives.Length; h++)
+            // Colmenas de abejas de las nieves en árboles grandes (anidan en sus ramas, miel de los muertos).
+            for (int h = 0; h < hiveTrees.Count; h++)
             {
-                int k = hives[h];
                 GameObject bg = new GameObject($"Abejas_nieve_{h + 1}"); bg.transform.SetParent(root.transform);
-                Vector3 at = center + new Vector3(spots[k].x + 4f, 0f, spots[k].z);
                 FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
-                fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = at, quantity = 5, minParentsCount = 1, radius = 5f } };
+                fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = hiveTrees[h] + new Vector3(4f, 0f, 0f), quantity = 5, minParentsCount = 1, radius = 5f } };
             }
         }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
-        Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {spots.Length}, esparcidos en arboledas y sueltos por todo el mapa.");
+        string ages = string.Join(", ", count.Select(kv => $"{kv.Value} {kv.Key.ToString().ToLowerInvariant()}"));
+        Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {plan.Count} esparcidos ({ages}).");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -3119,28 +3169,63 @@ public static class SampleSceneBuilder
         var areas = new List<SanctuaryArea>
         {
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(20f, 0f, 55f), new Vector2(10f, 9f), new Color(0.75f, 0.45f, 0.30f)),
+                new Vector3(5f, 0f, 95f), new Vector2(10f, 9f), new Color(0.75f, 0.45f, 0.30f)),
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
-                new Vector3(45f, 0f, 55f), new Vector2(8f, 8f), new Color(0.85f, 0.95f, 0.90f)),
+                new Vector3(55f, 0f, 95f), new Vector2(8f, 8f), new Color(0.85f, 0.95f, 0.90f)),
 
             BuildAreaBox(areasGroup.transform, "VeterinaryClinic_Area", "Veterinaria", SanctuaryAreaType.VeterinaryClinic, 1,
-                new Vector3(70f, 0f, 55f), new Vector2(8f, 8f), new Color(0.55f, 0.75f, 0.70f)),
+                new Vector3(105f, 0f, 95f), new Vector2(8f, 8f), new Color(0.55f, 0.75f, 0.70f)),
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
-                new Vector3(70f, 0f, 25f), new Vector2(9f, 9f), new Color(0.75f, 0.65f, 0.85f)),
+                new Vector3(105f, 0f, 35f), new Vector2(9f, 9f), new Color(0.75f, 0.65f, 0.85f)),
 
             BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
-                new Vector3(70f, 0f, -5f), new Vector2(10f, 9f), new Color(0.55f, 0.55f, 0.60f)),
+                new Vector3(105f, 0f, -25f), new Vector2(10f, 9f), new Color(0.55f, 0.55f, 0.60f)),
 
             BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                new Vector3(45f, 0f, -20f), new Vector2(8f, 8f), new Color(0.85f, 0.60f, 0.65f)),
+                new Vector3(55f, 0f, -55f), new Vector2(8f, 8f), new Color(0.85f, 0.60f, 0.65f)),
 
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                new Vector3(20f, 0f, -5f), new Vector2(9f, 9f), new Color(0.50f, 0.70f, 0.40f)),
+                new Vector3(5f, 0f, -30f), new Vector2(16f, 14f), new Color(0.50f, 0.70f, 0.40f)),
         };
+        // ÁREAS ESPACIADAS (~50 m entre vecinas, antes 25): entre ellas caben árboles y animales sin cortar el paso.
+        // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
+        PlantGarden(areas[areas.Count - 1].transform);
 
         return areas.ToArray();
+    }
+
+    // Surcos del huerto: flora MODIFICADA (crece en el hielo, tonos claros) con los ingredientes del restaurante.
+    static void PlantGarden(Transform garden)
+    {
+        GardenCrop.Kind[] rows =
+        {
+            GardenCrop.Kind.Arroz, GardenCrop.Kind.Lenteja, GardenCrop.Kind.Quinoa, GardenCrop.Kind.Maiz,
+            GardenCrop.Kind.Tomate, GardenCrop.Kind.Espinaca, GardenCrop.Kind.Pina, GardenCrop.Kind.Banana,
+        };
+        GameObject beds = new GameObject("Cultivos");
+        beds.transform.SetParent(garden, false);
+        Material soil = MakeMaterial("Huerto_Surco_MAT", new Color(0.62f, 0.55f, 0.50f));
+        int seed = 500;
+        for (int r = 0; r < rows.Length; r++)
+        {
+            int col = r % 2, row = r / 2;                       // 2 columnas × 4 filas, delante de la máquina
+            float x = col == 0 ? -3.6f : 3.6f, z = -5f + row * 2.2f;
+            GameObject bed = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            bed.name = $"Surco_{rows[r]}";
+            bed.transform.SetParent(beds.transform, false);
+            bed.transform.localPosition = new Vector3(x, 0.12f, z);
+            bed.transform.localScale = new Vector3(6f, 0.08f, 1.4f);
+            bed.GetComponent<Renderer>().sharedMaterial = soil;
+            Object.DestroyImmediate(bed.GetComponent<Collider>());
+            int plants = rows[r] == GardenCrop.Kind.Banana ? 2 : 4;
+            for (int p = 0; p < plants; p++)
+            {
+                float px = x - 2.2f + p * (4.4f / Mathf.Max(1, plants - 1));
+                GardenCrop.Build(beds.transform, rows[r], garden.TransformPoint(new Vector3(px, 0.16f, z)), seed++);
+            }
+        }
     }
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
@@ -3608,7 +3693,19 @@ public static class SampleSceneBuilder
             return new[] { heal };
         }
 
-        // Variantes de Channel (Kitchen / Garden / Textile / Workshop)
+        // HUERTO: ya no es «limpiar la plaga» (una bola que se resolvía sola al pasar cerca). Llegan animalitos con hambre a
+        // por los cultivos y se les da de comer (F o «alimentar») para que no muerdan las plantas. docs/garden.
+        if (kind == MissionKind.GardenChannel)
+        {
+            MobMission feed = MakeMissionGO(areaT, "Mission_Alimentar", "Alimentar a los visitantes",
+                "Un animal hambriento va a por el cultivo: dale de comer (F) antes de que lo muerda.", MissionCategory.LovingKindness);
+            var fv = feed.gameObject.AddComponent<FeedVisitorMission>();
+            fv.mission = feed; fv.targetCount = 4; fv.spawnInterval = 5f; fv.minSpawnDistance = 8f; fv.spawnRadius = 14f;
+            fv.reward.observationGain = 0.2f; fv.reward.coinReward = 5;
+            return new[] { feed };
+        }
+
+        // Variantes de Channel (Kitchen / Textile / Workshop)
         string name = kind == MissionKind.KitchenChannel ? "Procesar ingredientes"
                     : kind == MissionKind.GardenChannel  ? "Limpiar la plaga"
                     : $"Atender en {displayName}";

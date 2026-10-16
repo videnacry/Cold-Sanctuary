@@ -1580,3 +1580,12 @@ Desentrenado / Sobrecarga).
 - XP de yoga por **práctica directa** (no por misión) aún no cableada.
 - `NPCBase` / mente escalable: solo diseño.
 - HUD es **prototipo OnGUI**; se sustituirá por UI declarativa.
+
+### 47.x Santuario polar y huerto (2026-10-16)
+- [x] Árboles con edades (brote / joven / adulto / viejo) en arboledas esparcidas — Editor.log `[IceFlora] 68 esparcidos`.
+- [x] Áreas separadas ~50 m (Cocina, Enfermería, Veterinaria, Yoga, Mecánica, Textil, Huerto) con hueco para árboles y animales.
+- [x] Banquisa: casquetes de hielo con canales de agua, puentes de hielo y témpanos al este; mar bajo todo el hielo con fondo — `[Banquisa] 587 placas`.
+- [x] Sotobosque polar en Play (hierba de escarcha, arbustos de liquen, musgo, flores claras) — `[Flora] 16154 plantas`.
+- [x] Huerto con cultivos de bloques (arroz, lenteja, quinoa, maíz, tomate, espinaca, piña, banana); gigantes en el microcosmos.
+- [x] «Alimentar a los visitantes» (antes «Limpiar la plaga», que avanzaba solo al pasar cerca): virtualize Huerto → 1 → `feed` ×4 → 4/4 y ✅.
+- [ ] Probar a pie un canal: caer al agua, nadar y salir al casquete; que los animales crucen por los puentes.

@@ -36,31 +36,37 @@ public static class CubeTree
         root.transform.SetParent(parent, false);
         root.transform.position = groundPos;
 
+        // EDAD por altura: brote (<6 m) un piso y sin posaderos; joven (<12 m) dos pisos; adulto tres; viejo (≥20 m) con
+        // más raíces y una rama seca. El grosor sigue a la altura.
+        float girth = Mathf.Clamp(height / 16f, 0.3f, 1.35f);
+        int tiers = height < 6f ? 1 : height < 12f ? 2 : 3;
+        bool old = height >= 20f;
         // TRONCO: bloques apilados que se estrechan, con un leve giro (más orgánico que un cilindro).
         int trunkBlocks = Mathf.Max(4, Mathf.RoundToInt(height / 2f));
         float block = height / trunkBlocks;
         for (int i = 0; i < trunkBlocks; i++)
         {
-            float w = Mathf.Lerp(2.2f, 0.9f, i / (float)(trunkBlocks - 1));
+            float w = Mathf.Lerp(2.2f, 0.9f, i / (float)(trunkBlocks - 1)) * girth;
             Block(root.transform, "Tronco", new Vector3(0f, block * (i + 0.5f), 0f), new Vector3(w, block * 1.02f, w),
                   Quaternion.Euler(0f, i * 11f, 0f), bark, true);
         }
         // Raíces: cuatro contrafuertes en la base.
-        for (int k = 0; k < 4; k++)
+        for (int k = 0, roots = old ? 7 : 4; k < roots; k++)
         {
-            float a = k * 90f + R(-15f, 15f);
+            float a = k * 360f / roots + R(-15f, 15f);
             Vector3 d = Quaternion.Euler(0f, a, 0f) * Vector3.forward;
-            Block(root.transform, "Raiz", d * 1.6f + Vector3.up * 0.4f, new Vector3(0.7f, 0.8f, 2.2f),
+            Block(root.transform, "Raiz", d * 1.6f * girth + Vector3.up * 0.4f * girth, new Vector3(0.7f, 0.8f, 2.2f) * girth,
                   Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, true);
         }
 
         // RAMAS: 3 pisos; cada rama es una cadena de bloques que sube y se abre, con plataforma en la punta.
         int nests = 0;
-        for (int tier = 0; tier < 3; tier++)
+        for (int tier = 0; tier < tiers; tier++)
         {
-            float y = height * Mathf.Lerp(0.38f, 0.82f, tier / 2f);
-            int count = 5 - tier;
-            float reach = Mathf.Lerp(7f, 3.5f, tier / 2f) * (height / 16f);
+            float tf = tiers > 1 ? tier / (float)(tiers - 1) : 0.5f;
+            float y = height * Mathf.Lerp(0.38f, 0.82f, tf);
+            int count = height < 6f ? 3 : 5 - tier;
+            float reach = Mathf.Lerp(7f, 3.5f, tf) * (height / 16f);
             float offset = R(0f, 360f);
             for (int b = 0; b < count; b++)
             {
@@ -69,7 +75,7 @@ public static class CubeTree
                 Vector3 p = new Vector3(0f, y + R(-0.6f, 0.6f), 0f);
                 int segs = 3;
                 float segLen = reach / segs;
-                float thick = Mathf.Lerp(0.7f, 0.45f, tier / 2f);
+                float thick = Mathf.Lerp(0.7f, 0.45f, tf) * Mathf.Max(0.5f, girth);
                 for (int s = 0; s < segs; s++)
                 {
                     Vector3 dir = Quaternion.Euler(-pitch + s * 9f, yaw, 0f) * Vector3.forward;   // sube y se va aplanando
@@ -78,12 +84,13 @@ public static class CubeTree
                     p += dir * segLen;
                     thick *= 0.8f;
                 }
+                if (height < 9f) { Block(root.transform, "Escarcha", p + Vector3.up * 0.3f, Vector3.one * R(0.5f, 0.8f), Quaternion.Euler(0f, R(0f, 90f), 0f), leaf, false); continue; }
                 // Plataforma de la punta (posadero) + mata de escarcha encima; a veces un nido.
                 GameObject plat = Block(root.transform, "Rama_Plataforma", p + Vector3.up * 0.1f, new Vector3(1.8f, 0.2f, 1.8f),
                                         Quaternion.Euler(0f, yaw, 0f), platformMat, true);
                 Block(root.transform, "Escarcha", p + Vector3.up * 0.75f, Vector3.one * R(0.9f, 1.4f),
                       Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), leaf, false);
-                if ((b + tier) % 2 == 0)
+                if (height >= 12f && (b + tier) % 2 == 0)
                 {
                     Block(plat.transform.parent, "Nido_Abejas", p + new Vector3(0.5f, 0.45f, 0.2f), new Vector3(0.55f, 0.5f, 0.55f),
                           Quaternion.identity, nestMat, false);
@@ -91,10 +98,16 @@ public static class CubeTree
                 }
             }
         }
+        if (old)   // rama seca y quebrada: el árbol viejo se nota
+        {
+            Vector3 dd = Quaternion.Euler(-5f, R(0f, 360f), 0f) * Vector3.forward;
+            Block(root.transform, "Rama_Seca", new Vector3(0f, height * 0.25f, 0f) + dd * 1.8f, new Vector3(0.5f, 0.5f, 3.2f), Quaternion.LookRotation(dd) * Quaternion.Euler(25f, 0f, 0f), bark, true);
+        }
         // Copa: dos bloques de escarcha en lo alto.
-        Block(root.transform, "Copa", new Vector3(0f, height + 0.8f, 0f), new Vector3(2.6f, 1.6f, 2.6f), Quaternion.Euler(0f, 20f, 0f), leaf, false);
-        Block(root.transform, "Copa", new Vector3(0f, height + 2.0f, 0f), new Vector3(1.6f, 1.2f, 1.6f), Quaternion.Euler(0f, 55f, 0f), leaf, false);
+        Block(root.transform, "Copa", new Vector3(0f, height + 0.8f * girth, 0f), new Vector3(2.6f, 1.6f, 2.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 20f, 0f), leaf, false);
+        Block(root.transform, "Copa", new Vector3(0f, height + 2.0f * girth, 0f), new Vector3(1.6f, 1.2f, 1.6f) * Mathf.Max(0.45f, girth), Quaternion.Euler(0f, 55f, 0f), leaf, false);
 
+        if (height < 6f) return root;   // un brote aún no caza
         // El árbol depredador, con radios a su escala (señuelo amplio, sopor bajo la copa).
         IceCarnivorousTree t = root.AddComponent<IceCarnivorousTree>();
         t.lureRadius = 10f + height;
