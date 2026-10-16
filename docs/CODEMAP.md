@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 442 tipos._
+_Total: 443 tipos._
 
 
 ## Animals
@@ -264,6 +264,7 @@ _Total: 442 tipos._
 - **ITarget** (interface) — `Assets/Scripts/ITarget.cs` — Objetivo universal:
 - **ItemData** (class) — `Assets/Scripts/Economy/ItemData.cs` — Defines an equippable or consumable item in the sanctuary economy.
 - **ITestUnit** (interface) — `Assets/Scripts/ITestUnit.cs` — Una unidad de test que el ejecuta de forma coordinada (docs/testing-checklist.md §32).
+- **KitchenBoss** (class) — `Assets/Scripts/World/KitchenBoss.cs` — GOLUIS, el JEFE de la cocina (docs/kitchen-simulation.md).
 - **KitchenCook** (class) — `Assets/Scripts/Kitchen/KitchenCook.cs` — COCINERO VISIBLE (docs/kitchen-simulation.md §3:
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
 - **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md):
