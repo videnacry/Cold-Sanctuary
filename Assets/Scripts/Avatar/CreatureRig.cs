@@ -54,4 +54,16 @@ public class CreatureRig : MonoBehaviour
     public Transform Get(BodyPart part) => _map.TryGetValue(part, out Transform t) ? t : null;
 
     public bool Has(BodyPart part) => _map.ContainsKey(part);
+
+    // ── Arbitraje de postura ──────────────────────────────────────────────────────────────────────
+    // Varios sistemas quieren rotar el mismo hueso cada frame (yoga, emoción = BodyPartReactor, andar = CubeWalkCycle).
+    // El yoga BLOQUEA los huesos que está colocando (con expiración corta que refresca cada Tick); los demás ceden ese
+    // hueso mientras dure el bloqueo, para que no haya tira y afloja (la asana "entrando y saliendo" en bucle).
+    readonly Dictionary<BodyPart, float> _poseLock = new Dictionary<BodyPart, float>();
+
+    /// <summary>El yoga reclama este hueso por `seconds` (se refresca mientras la asana sigue activa).</summary>
+    public void LockPose(BodyPart part, float seconds = 0.3f) => _poseLock[part] = Time.time + seconds;
+
+    /// <summary>¿El yoga manda ahora mismo sobre este hueso? Entonces emoción/andar no lo tocan.</summary>
+    public bool IsPoseLocked(BodyPart part) => _poseLock.TryGetValue(part, out float until) && Time.time < until;
 }
