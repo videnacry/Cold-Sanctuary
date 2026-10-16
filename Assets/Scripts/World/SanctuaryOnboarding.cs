@@ -24,6 +24,8 @@ public class SanctuaryOnboarding : MonoBehaviour
     public bool presented = false;
     [Tooltip("Linduarda lo pone a true tras llevarlo a la máquina de virtualización (iniciación al Microcosmos).")]
     public bool initiated = false;
+    [Tooltip("Goluis lo pone a true tras enseñarle a limpiar y las recetas base de la cocina.")]
+    public bool kitchenTrained = false;
 
     [Header("Solo para escenas AUTO (prueba en vivo de toda la cadena)")]
     public bool autoCompleteForDemo = false;

@@ -120,6 +120,7 @@ public static class SampleSceneBuilder
         new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root.transform);  // ETIQUETAS de nombre sobre las animas (para dirigir hechizos por teclado) — docs typed-spells-and-queues
         BuildAnimaStatusPanels(root.transform);  // HUD DECLARATIVO generado por CÓDIGO (paneles-GameObject por elemento) — demuestra prefabs-por-código
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
+        BuildGoluisKitchen(root.transform);      // GOLUIS, jefe de cocina: inicia a los recién llegados (sígueme→limpiar→recetas). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
@@ -2774,6 +2775,18 @@ public static class SampleSceneBuilder
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name; g.transform.SetParent(parent); g.transform.localPosition = pos; g.transform.localScale = scale;
         var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Rest_Contorno", col);
+    }
+
+    // GOLUIS en la cocina: jefe que inicia a los recién llegados (los hace seguirlo y les enseña limpiar + recetas base).
+    static void BuildGoluisKitchen(Transform parent)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        g.name = "Goluis"; g.transform.SetParent(parent); g.transform.position = new Vector3(20f, 1f, 13f);   // junto a las estaciones de cocina
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Goluis_MAT", new Color(0.75f, 0.85f, 0.7f));
+        g.AddComponent<Anima>();
+        g.AddComponent<Mind>().identity = "Goluis";
+        g.AddComponent<KitchenBoss>();
+        g.AddComponent<WorldLabel>().text = "Goluis (jefe de cocina)";
     }
 
     // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).
