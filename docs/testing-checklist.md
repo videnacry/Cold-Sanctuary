@@ -1589,3 +1589,11 @@ Desentrenado / Sobrecarga).
 - [x] Huerto con cultivos de bloques (arroz, lenteja, quinoa, maíz, tomate, espinaca, piña, banana); gigantes en el microcosmos.
 - [x] «Alimentar a los visitantes» (antes «Limpiar la plaga», que avanzaba solo al pasar cerca): virtualize Huerto → 1 → `feed` ×4 → 4/4 y ✅.
 - [ ] Probar a pie un canal: caer al agua, nadar y salir al casquete; que los animales crucen por los puentes.
+
+### 47.y Huertos por gremio, sotobosque ártico, fauna de cubos con huesos (2026-10-16)
+- [x] Agua del mar transparente (URP Lit Transparent).
+- [x] Sotobosque solo al pie de los árboles, 8 especies árticas de bloques — `[Flora] 2381 plantas`.
+- [x] 50 cultivos (todos los ingredientes vegetales del restaurante) en 6 huertos-gremio repartidos — `[Huerto] … plantas` ×6 (~1000).
+- [x] Prefabs de animales regenerados como cubos con huesos (23, también foca/ballena/orca/pingüino) — menú «Rebuild Animal Prefabs (cubos con huesos)».
+- [x] Caras de cubos con expresiones (humanos y animales) — tests 104/104 en Play.
+- [ ] Revisar a ojo cada especie (proporciones, cara) y la marcha/ondulación en movimiento.

@@ -80,7 +80,7 @@ public static class MicrocosmosAreaSceneBuilder
         // HUERTO: un campo de cultivos GIGANTES (aquí eres pequeño) que los visitantes hambrientos quieren morder.
         if (kind == SampleSceneBuilder.MissionKind.GardenChannel)
         {
-            GardenCrop.Kind[] kinds = (GardenCrop.Kind[])System.Enum.GetValues(typeof(GardenCrop.Kind));
+            GardenCrop.Kind[] kinds = { GardenCrop.Kind.Tomate, GardenCrop.Kind.Maiz, GardenCrop.Kind.Quinoa, GardenCrop.Kind.Col, GardenCrop.Kind.Lenteja, GardenCrop.Kind.Pimiento, GardenCrop.Kind.Banana, GardenCrop.Kind.Pina, GardenCrop.Kind.Arroz, GardenCrop.Kind.Berenjena };
             for (int k = 0; k < 10; k++)
             {
                 float ang = k * 36f * Mathf.Deg2Rad;

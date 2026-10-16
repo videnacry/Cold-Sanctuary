@@ -90,5 +90,9 @@ public enum BodyPart
     ForearmLeft, ForearmRight, ThighLeft, ThighRight, ShinLeft, ShinRight,
     // Escápula/hombro (entre el torso y el brazo): permite ENCOGER/rodar el hombro (elevar/adelantar/atrasar) sin mover
     // el brazo — lo que el hombro-articulación (brazo entero) no puede. Para los ejercicios de hombros del upa-yoga.
-    ScapulaLeft, ScapulaRight
+    ScapulaLeft, ScapulaRight,
+    // CARA de cubos (CubeFace): mandíbula, cejas, párpados y comisuras — para expresiones. Y huesos extra de animales:
+    // cola en tres tramos, aleta caudal y aleta dorsal (cetáceos), hocico.
+    Jaw, BrowLeft, BrowRight, EyelidLeft, EyelidRight, MouthLeft, MouthRight,
+    Tail2, Tail3, Fluke, DorsalFin, Snout
 }

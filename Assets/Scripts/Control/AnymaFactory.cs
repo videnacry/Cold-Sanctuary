@@ -43,7 +43,9 @@ public class AnymaFactory : MonoBehaviour
         SpeciesBody sb = go.GetComponent<SpeciesBody>() ?? go.AddComponent<SpeciesBody>();
         if (!string.IsNullOrEmpty(species)) sb.species = species;   // antes del Init → los catálogos usan esta especie
         go.AddComponent<Mind>();
-        CubeBody.Build(go, species);   // cuerpo = GRUPO DE CUBOS por parte (con CreatureRig para las asanas)
+        // Cuerpo de CUBOS CON HUESOS a tamaño real (animales) o el bípedo de partes (humanos/compañeros).
+        if (CubeBody.PlanFor(species) == CubeBody.Plan.Biped) CubeBody.Build(go, species);
+        else CubeCreature.Build(go, species);
         return go;
     }
 

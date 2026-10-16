@@ -66,7 +66,9 @@ public static class CubeHumanoid
         CubeJoint lumbar = Joint(hips.transform, BodyPart.Back, new Vector3(0f, 0.1f, 0f), new Vector3(0.36f, 0.24f, 0.22f), new Vector3(0f, 0.12f, 0f), cloth, rig);
         CubeJoint waist = Joint(lumbar.transform, BodyPart.Chest, new Vector3(0f, 0.24f, 0f), new Vector3(0.4f, 0.3f, 0.24f), new Vector3(0f, 0.15f, 0f), cloth, rig);
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
-        Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
+        CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
+        // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
+        CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, new Color(0.25f, 0.18f, 0.12f), rig);
 
         for (int side = -1; side <= 1; side += 2)
         {

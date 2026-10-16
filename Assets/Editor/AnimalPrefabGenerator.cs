@@ -27,6 +27,7 @@ public static class AnimalPrefabGenerator
         ("Malamute",  "MalamuteBehavior"),
         ("Bunny",     "BunnyBehavior"),
         ("PolarBear", "BearBehaviour"),
+        ("Bear",      "BearBehaviour"),       // el oso del santuario de hielo (BuildWildlifePopulation carga "Bear")
         ("Seal",      "SealBehavior"),
         ("Whale",     "WhaleBehavior"),
         ("Penguin",   "PenguinBehavior"),   // fauna de hielo (necesita un .fbx en Assets/Animals/Penguin/Models/)
@@ -116,15 +117,11 @@ public static class AnimalPrefabGenerator
         // independiente de los modelos 3D (como la cocina). Los catálogos (escala/stats) aplican igual por especie.
         string fbxPath = FindFbx(modelsDir, species);
         GameObject fbxAsset = fbxPath != null ? AssetDatabase.LoadAssetAtPath<GameObject>(fbxPath) : null;
-        GameObject instance;
-        if (fbxAsset != null)
-            instance = (GameObject)PrefabUtility.InstantiatePrefab(fbxAsset);
-        else
-        {
-            Debug.Log($"[AnimalPrefabGenerator] {species}: sin modelo 3D → PREFAB-CUERPO-DE-CUBOS por defecto (independiente de modelos).");
-            instance = new GameObject(species);
-            CubeBody.Build(instance, species);   // cuerpo = grupo de cubos por parte (con CreatureRig para las asanas)
-        }
+        // TODOS los animales son de CUBOS CON HUESOS (CubeCreature), también los que tienen .fbx: así comparten
+        // esqueleto, posturas y cara expresiva. El .fbx queda solo como referencia de proporciones.
+        GameObject instance = new GameObject(species);
+        CubeCreature.Build(instance, species);
+        bool cubes = true;
         instance.name = species;
 
         if (instance.GetComponent<Rigidbody>() == null)
@@ -146,9 +143,9 @@ public static class AnimalPrefabGenerator
         if (behaviour == null)
             behaviour = instance.AddComponent(behaviourType);
 
-        ApplyRealisticScale(instance, behaviour, species);
+        if (cubes) SetBaseScaleOne(behaviour, species);   // el cuerpo de cubos ya está a tamaño real
+        else { ApplyRealisticScale(instance, behaviour, species); CorrectMeshFacing(instance); }
         ApplyPhysicsDefaults(instance, species);
-        CorrectMeshFacing(instance);
 
         System.IO.Directory.CreateDirectory(Path.GetDirectoryName(prefabPath));
         GameObject savedPrefab = PrefabUtility.SaveAsPrefabAsset(instance, prefabPath);
@@ -156,6 +153,31 @@ public static class AnimalPrefabGenerator
 
         Debug.Log($"[AnimalPrefabGenerator] {species}: creado {prefabPath} (modelo: {fbxPath ?? "CUBO por defecto"}, behavior: {behaviourTypeName}).");
         return savedPrefab != null ? prefabPath : null;
+    }
+
+    // Cuerpo de cubos a tamaño real → la escala base del Physiognomy (que LifeStage aplica en Play) es 1.
+    // Los insectos conservan la suya (su escala la decide su microcosmos).
+    static void SetBaseScaleOne(Component behaviour, string species)
+    {
+        if (behaviour == null || CubeCreature.IsInsect(species)) return;
+        System.Reflection.FieldInfo bodyField = behaviour.GetType().GetField("body");
+        if (bodyField == null || bodyField.FieldType != typeof(Physiognomy)) return;
+        Physiognomy body = (Physiognomy)bodyField.GetValue(behaviour);
+        if (body != null) body.baseScale = Vector3.one;
+    }
+
+    /// <summary>Borra los prefabs de animales y los vuelve a generar con cuerpo de CUBOS CON HUESOS y cara.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Rebuild Animal Prefabs (cubos con huesos)")]
+    public static void RebuildAllAsCubes()
+    {
+        int n = 0;
+        foreach ((string species, string _) in Species)
+        {
+            string prefabPath = $"{AnimalsRoot}/{species}/{species}.prefab";
+            if (File.Exists(prefabPath)) { AssetDatabase.DeleteAsset(prefabPath); n++; }
+        }
+        Debug.Log($"[AnimalPrefabGenerator] {n} prefabs borrados; regenerando con cubos y huesos…");
+        GenerateAll();
     }
 
     // Los prefabs ya generados tenian el BoxCollider por defecto (size 1,1,1 en el
@@ -173,6 +195,7 @@ public static class AnimalPrefabGenerator
             if (!File.Exists(prefabPath)) continue;
 
             GameObject root = PrefabUtility.LoadPrefabContents(prefabPath);
+            if (root.GetComponent<CubeGait>() != null) { PrefabUtility.UnloadPrefabContents(root); continue; }   // cuerpo de cubos: nada que corregir
 
             System.Type behaviourType = System.Type.GetType(behaviourTypeName)
                 ?? System.AppDomain.CurrentDomain.GetAssemblies()

@@ -2140,6 +2140,35 @@ public static class SampleSceneBuilder
         return mat;
     }
 
+    // Material de AGUA transparente (URP Lit en modo Transparent, mezcla alfa): deja ver peces, focas y el borde
+    // sumergido del hielo. Sin escribir profundidad, para que lo de debajo se vea a través.
+    static Material MakeWaterMaterial(string name, Color color)
+    {
+        Material m = MakeMaterial(name, color);
+        if (m.HasProperty("_Surface"))
+        {
+            m.SetFloat("_Surface", 1f);   // Transparent
+            m.SetFloat("_Blend", 0f);     // Alpha
+            m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_ZWrite", 0f);
+            m.SetFloat("_Smoothness", 0.9f);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            m.SetOverrideTag("RenderType", "Transparent");
+            m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        }
+        else
+        {   // Standard (fallback)
+            m.SetFloat("_Mode", 3f);
+            m.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            m.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetInt("_ZWrite", 0);
+            m.EnableKeyword("_ALPHABLEND_ON");
+            m.renderQueue = 3000;
+        }
+        return m;
+    }
+
     // ── Ground ───────────────────────────────────────────────────────────────
 
     static void BuildGround(Transform parent)
@@ -2257,7 +2286,7 @@ public static class SampleSceneBuilder
         sea.transform.position = new Vector3(0f, PolarLandscapeBuilder.WaterLevel, 0f); // BANQUISA: el mar está bajo TODO el hielo y asoma por los canales
         sea.transform.localScale = new Vector3(120f, 1f, 120f);                          // 1200 m: más allá del hielo, mar abierto
         PolarLandscapeBuilder.IgnoreForNav(sea);                                          // que nadie «ande» sobre el agua
-        sea.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Sea_Placeholder_MAT", new Color(0.10f, 0.28f, 0.45f));
+        sea.GetComponent<Renderer>().sharedMaterial = MakeWaterMaterial("Sea_Placeholder_MAT", new Color(0.30f, 0.55f, 0.70f, 0.42f));   // agua TRANSPARENTE: se ve lo que nada debajo
         Object.DestroyImmediate(sea.GetComponent<Collider>()); // el MeshCollider del Plane es solo una superficie 2D, no sirve como volumen nadable
 
         // Zona de nado real — antes el mar era puramente decorativo (sin collider de ningún
@@ -2858,6 +2887,8 @@ public static class SampleSceneBuilder
         };
         foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
             avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
+        foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
+            avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
         var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 14, loose: 10);
         GameObject first = null;
         var hiveTrees = new List<Vector3>();
@@ -3209,7 +3240,7 @@ public static class SampleSceneBuilder
                 new Vector3(55f, 0f, -55f), new Vector2(8f, 8f), new Color(0.85f, 0.60f, 0.65f)),
 
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                new Vector3(5f, 0f, -30f), new Vector2(16f, 14f), new Color(0.50f, 0.70f, 0.40f)),
+                new Vector3(5f, 0f, -30f), new Vector2(24f, 20f), new Color(0.50f, 0.70f, 0.40f)),
         };
         // ÁREAS ESPACIADAS (~50 m entre vecinas, antes 25): entre ellas caben árboles y animales sin cortar el paso.
         // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
@@ -3218,37 +3249,41 @@ public static class SampleSceneBuilder
         return areas.ToArray();
     }
 
-    // Surcos del huerto: flora MODIFICADA (crece en el hielo, tonos claros) con los ingredientes del restaurante.
+    // HUERTOS POR GREMIO repartidos por el mapa (docs/huertos-y-cultivos.md): en vez de un único terreno, varias
+    // parcelas de policultivo —cada una con plantas que se ayudan— cerca del agua o de las áreas que las usan. Las
+    // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (con collider, para el NavMesh) y el cartel.
     static void PlantGarden(Transform garden)
     {
-        GardenCrop.Kind[] rows =
-        {
-            GardenCrop.Kind.Arroz, GardenCrop.Kind.Lenteja, GardenCrop.Kind.Quinoa, GardenCrop.Kind.Maiz,
-            GardenCrop.Kind.Tomate, GardenCrop.Kind.Espinaca, GardenCrop.Kind.Pina, GardenCrop.Kind.Banana,
-        };
-        GameObject beds = new GameObject("Cultivos");
-        beds.transform.SetParent(garden, false);
-        Material soil = MakeMaterial("Huerto_Surco_MAT", new Color(0.62f, 0.55f, 0.50f));
-        int seed = 500;
-        for (int r = 0; r < rows.Length; r++)
-        {
-            int col = r % 2, row = r / 2;                       // 2 columnas × 4 filas, delante de la máquina
-            float x = col == 0 ? -3.6f : 3.6f, z = -5f + row * 2.2f;
-            GameObject bed = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            bed.name = $"Surco_{rows[r]}";
-            bed.transform.SetParent(beds.transform, false);
-            bed.transform.localPosition = new Vector3(x, 0.12f, z);
-            bed.transform.localScale = new Vector3(6f, 0.08f, 1.4f);
-            bed.GetComponent<Renderer>().sharedMaterial = soil;
-            Object.DestroyImmediate(bed.GetComponent<Collider>());
-            int plants = rows[r] == GardenCrop.Kind.Banana ? 2 : 4;
-            for (int p = 0; p < plants; p++)
-            {
-                float px = x - 2.2f + p * (4.4f / Mathf.Max(1, plants - 1));
-                GardenCrop.Build(beds.transform, rows[r], garden.TransformPoint(new Vector3(px, 0.16f, z)), seed++);
-            }
-        }
+        // Hortalizas asociadas dentro del área del Huerto (delante de la máquina de virtualización).
+        MakePlot(garden, GardenPlot.Guild.Hortalizas, garden.TransformPoint(new Vector3(0f, 0.1f, -3.5f)), new Vector2(20f, 12f), 11, false);
+        Transform parent = garden.parent;
+        MakePlot(parent, GardenPlot.Guild.Milpa,            new Vector3(-45f, 0f, -75f), new Vector2(20f, 20f), 12, true);
+        MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -100f), new Vector2(18f, 14f), 13, true);
+        MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-38f, 0f, 0f),   new Vector2(22f, 16f), 14, true);
+        MakePlot(parent, GardenPlot.Guild.Rotacion,         new Vector3(55f, 0f, -5f),   new Vector2(24f, 16f), 15, true);
+        MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(55f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
     }
+
+    static void MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil)
+    {
+        GameObject go = new GameObject($"Huerto_{guild}");
+        go.transform.SetParent(parent, true);
+        go.transform.position = center;
+        GardenPlot plot = go.AddComponent<GardenPlot>();
+        plot.guild = guild; plot.size = size; plot.seed = seed;
+        if (withSoil)
+        {
+            GameObject soil = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            soil.name = "Suelo_Huerto";
+            soil.transform.SetParent(go.transform, false);
+            soil.transform.localPosition = new Vector3(0f, 0.03f, 0f);
+            soil.transform.localScale = new Vector3(size.x + 2f, 0.06f, size.y + 2f);
+            soil.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"Huerto_{guild}_Suelo_MAT",
+                guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f));
+        }
+        CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
+    }
+
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
     const float AreaWallHeight = 0.5f;
