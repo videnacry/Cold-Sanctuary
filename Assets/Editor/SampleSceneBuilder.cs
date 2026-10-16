@@ -2154,6 +2154,7 @@ public static class SampleSceneBuilder
             CubeHumanoid.Dress(a.gameObject, clothes, skin);
             // CUERPO con metabolismo (hambre/sueño) para todo humano; la Magnate, por sus células de mago, no los siente.
             if (a.GetComponent<BodyMetabolism>() == null) a.gameObject.AddComponent<BodyMetabolism>();
+            if (a.GetComponent<BodyAging>() == null) a.gameObject.AddComponent<BodyAging>();   // edad = efecto del cuerpo
             if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
             // Los compañeros (con mente, no el jugador ni la Magnate) estaban quietos: les damos cuerpo que ANDA (WalkSpell),

@@ -163,7 +163,7 @@ public class Anima : MonoBehaviour, IAptitudes
     /// Current life stage as a char constant from LifeStage.
     /// Used to compute bond growth multipliers. Override in subclasses.
     /// </summary>
-    protected virtual char LifeStageChar => LifeStage.adult;
+    protected virtual char LifeStageChar => TryGetComponent(out BodyAging ag) ? ag.Stage : LifeStage.adult;   // humanos: la etapa sale del cuerpo
 
     /// <summary>
     /// Real bond growth rate: base × life-stage multiplier × (1 − trauma).

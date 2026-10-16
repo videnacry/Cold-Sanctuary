@@ -56,7 +56,33 @@ public class BodyMetabolismTest : MonoBehaviour, ITestUnit
         bool sleep = false; foreach (QueuedSpell s in nq.Own) if (s is SleepSpell) sleep = true;
         TestProbe.Check("con sueño el cuerpo encola DORMIR", sleep);
 
+        // EDAD como efecto del cuerpo: crece si come, el estrés desgasta más, las células de mago casi no envejecen.
+        BodyAging fedKid = MakeAging("NinoComido_TEST", growth: 0.1f, hunger: 0f, stress: 0f, mage: false);
+        BodyAging starvedKid = MakeAging("NinoHambriento_TEST", growth: 0.1f, hunger: 1f, stress: 0f, mage: false);
+        fedKid.Step(24f * 200f); starvedKid.Step(24f * 200f);
+        TestProbe.Check("un niño bien comido crece más que uno hambriento", fedKid.growth > starvedKid.growth,
+                        $"comido {fedKid.growth:0.00} vs hambriento {starvedKid.growth:0.00}");
+        BodyAging calm = MakeAging("Sereno_TEST", growth: 1f, hunger: 0f, stress: 0f, mage: false);
+        BodyAging tense = MakeAging("Estresado_TEST", growth: 1f, hunger: 0f, stress: 1f, mage: false);
+        BodyAging mage = MakeAging("Maga_TEST2", growth: 1f, hunger: 0f, stress: 1f, mage: true);
+        calm.Step(24f * 500f); tense.Step(24f * 500f); mage.Step(24f * 500f);
+        TestProbe.Check("el estrés desgasta más (envejece antes)", tense.wear > calm.wear, $"estrés {tense.wear:0.00} vs sereno {calm.wear:0.00}");
+        TestProbe.Near("células de mago: casi no envejece", mage.wear, 0.2f, 0.01f);
+        calm.wear = 0.99f; calm.Step(24f * 100f);
+        TestProbe.Check("desgaste 1 → muere de vieja", calm.GetComponent<Anima>().death);
+
+        foreach (BodyAging ag in new[] { fedKid, starvedKid, calm, tense, mage }) Object.Destroy(ag.gameObject);
         Object.Destroy(h); Object.Destroy(m); Object.Destroy(n);
         TestProbe.End();
+    }
+
+    static BodyAging MakeAging(string name, float growth, float hunger, float stress, bool mage)
+    {
+        GameObject g = new GameObject(name);
+        Anima a = g.AddComponent<Anima>(); a.stress = stress;
+        if (mage) g.AddComponent<MageCells>().fraction = 1f;
+        BodyMetabolism b = g.AddComponent<BodyMetabolism>(); b.enabled = false; b.hunger = hunger;
+        BodyAging ag = g.AddComponent<BodyAging>(); ag.enabled = false; ag.growth = growth;
+        return ag;
     }
 }
