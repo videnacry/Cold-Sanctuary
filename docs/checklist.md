@@ -55,8 +55,18 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > `UpaYoga.NeckSequence` (6 ejercicios de cuello/hombros, respiración silenciosa; + articulación nueva `ScapulaLeft/Right`),
 > `YogaNamaskar.Sequence` (palmas juntas, Ujjayi, Balasana), `SunSalutation.Sequence`; **Magnate enseña por etapas**
 > (upa-yoga cuello→namaskar→saludo); **stance por postura** (`AsanaPoseSpell.stanceWidth`, talones juntos) + **alcance
-> IK** (`TwoBoneIK` + `reaches`: palmas juntas/dedos al suelo, opt-in). *Falta:* una **escena por sesión de yoga**
-> (revisión separada) + registro de sesiones para las futuras (Ashtanga 4 niveles, Shambhavi, upa-yoga de brazos…).
+> IK** (`TwoBoneIK` + `reaches`: palmas juntas/dedos al suelo, opt-in).
+>
+> **HECHO 2026-10-16 (PRs #249–#255, pendiente verify-compile del compi) — YOGA + NIVEL 1:** **escena por sesión**
+> (`YogaLibrary` + `YogaSessionRunner` + `Yoga_UpaCuello/Namaskar/SaludoSol`); **Ashtanga Serie Primaria** (núcleo +
+> [`ashtanga-primary-series.md`](ashtanga-primary-series.md) + `Yoga_Ashtanga1`). **CABLEADO Nivel 1 (plan completo):**
+> **(1)** enseñanza interactiva `TeachingSession` (el maestro pide y ESPERA al alumno; `LessonPrompt`) → la Magnate la usa;
+> **(2)** hechizos **enseñables/aprendibles con requisitos** (`SpellCatalog` prerequisitos+items, `Grimoire.CanLearn`/`knowsAll`,
+> `TeachSpell` gateado, recetas con `RequiredItems`); **(3)** `FollowSpell` + **Linduarda iniciación** (curar→«sígueme»→
+> máquina de virtualización→Micro); **(4)** **Goluis jefe de cocina** (`KitchenBoss`: sígueme→limpiar→recetas); **(5)**
+> **salto temporal al dormir** (cuerpo del jugador duerme→amanece, `SleepSpell`+`SetHour`). *Falta:* spawnear al jugador
+> en la enfermería como paciente de Linduarda; migrar limpieza/recetas de Goluis a `TeachingSession` interactiva; afinar
+> ángulos/IK en Unity; sesiones de yoga futuras (Ashtanga 2–4, Shambhavi, brazos).
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
