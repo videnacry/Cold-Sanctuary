@@ -84,10 +84,26 @@ public class SleepSpell : QueuedSpell
     bool _started;
     public override string Label => "dormir";
 
+    [Tooltip("Hora a la que se despierta tras el salto temporal (amanecer).")]
+    public const float WakeHour = 6.5f;
+
     public override bool Tick(Anima self)
     {
         if (self == null) return true;
-        if (!_started) { _started = true; self.asleep = true; Debug.Log($"[Cuerpo] «{self.name}» se duerme."); }
+        if (!_started)
+        {
+            _started = true; self.asleep = true;
+            Debug.Log($"[Cuerpo] «{self.name}» se duerme.");
+            // SALTO TEMPORAL: si es el cuerpo que maneja el JUGADOR, el juego pasa directo al amanecer (no se corta).
+            // La claridad va atada al reloj (TimeController.IsDay), así que al fijar la hora cambia el día/noche.
+            // (Kushal/Magnate no duermen por ahora, así que no disparan esto.)
+            if (self.GetComponent<PlayerBrain>() != null && TimeController.timeController != null)
+            {
+                TimeController.timeController.SetHour(WakeHour);
+                self.sleepiness = 0f;   // despierta descansado al amanecer
+                Debug.Log($"[Tiempo] «{self.name}» duerme → salto al amanecer ({WakeHour:0.0} h).");
+            }
+        }
         if (self.aware || self.sleepiness < 0.1f)
         {
             self.asleep = false;
