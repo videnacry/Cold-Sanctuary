@@ -45,6 +45,7 @@ public class CubeWalkCycle : MonoBehaviour
 
     void Set(BodyPart p, float x)
     {
+        if (_rig.IsPoseLocked(p)) return;   // el yoga manda sobre este hueso: no lo balanceamos al andar
         Transform t = _rig.Get(p);
         if (t != null) t.localRotation = Quaternion.Euler(x, 0f, 0f);
     }

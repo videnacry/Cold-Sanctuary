@@ -50,6 +50,8 @@ public class BodyPartReactor : MonoBehaviour
     void Update()
     {
         if (conductor == null) return;
+        // Si el yoga está colocando este hueso, la emoción cede (no hay tira y afloja → sin bucle de entrar/salir).
+        if (rig != null && rig.IsPoseLocked(part)) return;
         // PASIVO: la activación erige/perk; la valencia baja cierra/hunde; el PESO (Laban) hunde más.
         float passive = (conductor.Arousal - 0.5f) * arousalGain
                         - (0.5f - conductor.Valence) * valenceGain

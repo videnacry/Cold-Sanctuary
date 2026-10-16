@@ -24,23 +24,25 @@ public class PostureSpell : QueuedSpell
         Transform bone = rig != null ? rig.Get(part) : null;
         if (bone == null) { Debug.Log($"[Yoga] «{self.name}»: no tengo {part} disponible."); return true; }
         if (_until < 0f) _until = Time.time + hold;
+        rig.LockPose(part);   // mientras coloco este hueso, la emoción/andar no lo pisan (evita el bucle entrar/salir)
         bone.localRotation = Quaternion.Slerp(bone.localRotation, Quaternion.Euler(localEuler), lerp * Time.deltaTime);
         return Time.time >= _until;
     }
 }
 
-/// <summary>Una ASANA = varias partes a la vez (colas en paralelo por bodyPart, §4.1). Primero una TRANSICIÓN suave
-/// (`transition` s, de la postura actual a la nueva, con aceleración y frenado) y luego la MANTIENE `hold` s quieta.
+/// <summary>Una ASANA = varias partes a la vez (colas en paralelo por bodyPart, §4.1). En un tiempo TOTAL `duration`,
+/// el `reachFraction` inicial (30%) LLEGA a la postura (desde la actual, con aceleración y frenado) y el resto (70%) la
+/// MANTIENE quieta. Subir/bajar `duration` conserva el 30/70. Mientras coloca cada hueso lo BLOQUEA en el rig, para que
+/// la emoción (`BodyPartReactor`) y el andar (`CubeWalkCycle`) no lo pisen (si no, la asana "entra y sale" en bucle).
 /// `rootHeight` (opcional, en unidades del cuerpo; la cadera de pie está a ~0,95) baja o sube la pelvis para las
-/// posturas en el suelo (plancha, cobra…). Antes rotaba hacia el objetivo y contaba el tiempo a la vez, con 1,5 s por
-/// asana: se veía como un bucle de movimientos rápidos.</summary>
+/// posturas en el suelo (plancha, cobra…).</summary>
 public class AsanaPoseSpell : QueuedSpell
 {
     public string asanaName = "asana";
     public (BodyPart part, Vector3 euler)[] parts = System.Array.Empty<(BodyPart, Vector3)>();
-    public float hold = 10f;
-    public float transition = 2.5f;
-    public float rootHeight = -1f;   // -1 = la de pie (reposo)
+    public float duration = 10f;          // tiempo TOTAL de la asana (llegar + sostener)
+    [Range(0.05f, 0.9f)] public float reachFraction = 0.3f;   // 30% del tiempo en LLEGAR a la postura; el 70% restante, SOSTENIÉNDOLA
+    public float rootHeight = -1f;        // -1 = la de pie (reposo)
     float _start = -1f;
     Quaternion[] _from;
     Vector3 _rootFrom;
@@ -63,11 +65,15 @@ public class AsanaPoseSpell : QueuedSpell
             Transform hips = rig != null ? rig.Get(BodyPart.Hips) : null;
             if (hips != null) _rootFrom = hips.localPosition;
         }
-        float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - _start) / Mathf.Max(0.01f, transition)));
+        // Transición = reachFraction del total; el resto es estancamiento (t se queda en 1). Así subir/bajar `duration`
+        // mantiene el 30/70 sin cambiar nada más. Entra con aceleración y frena (SmoothStep).
+        float transition = Mathf.Max(0.01f, reachFraction * duration);
+        float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - _start) / transition));
         if (rig != null)
         {
             for (int i = 0; i < parts.Length; i++)
             {
+                rig.LockPose(parts[i].part);   // el yoga manda sobre este hueso: ni emoción ni andar lo pisan (sin bucle)
                 Transform bone = rig.Get(parts[i].part);
                 if (bone != null) bone.localRotation = Quaternion.Slerp(_from[i], Quaternion.Euler(parts[i].euler), t);
             }
@@ -80,7 +86,7 @@ public class AsanaPoseSpell : QueuedSpell
                 hips.localPosition = Vector3.Lerp(_rootFrom, goal, t);
             }
         }
-        return Time.time - _start >= transition + hold;
+        return Time.time - _start >= duration;
     }
 }
 
@@ -93,7 +99,7 @@ public static class SunSalutation
     // la pelvis. Ejes (rotación local, grados): X+ flexiona hacia DELANTE (columna dobla el torso; muslo va hacia atrás;
     // espinilla dobla la rodilla), X- lleva el miembro hacia DELANTE; Z abre/eleva los brazos por los lados.
     // Hips (la pelvis, raíz del cuerpo) X+ inclina el cuerpo entero hacia delante: 80–90 = tumbado boca abajo.
-    public const float Hold = 10f, Transition = 2.5f;
+    public const float Hold = 10f;   // duración TOTAL por asana (30% llegar + 70% sostener, ver AsanaPoseSpell)
     const float Stand = -1f;   // pelvis a la altura de pie
 
     static readonly BodyPart[] Joints =
@@ -103,7 +109,7 @@ public static class SunSalutation
         BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
-    static AsanaPoseSpell Pose(string name, float hold, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
+    static AsanaPoseSpell Pose(string name, float duration, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
     {
         var all = new (BodyPart, Vector3)[Joints.Length];
         for (int i = 0; i < Joints.Length; i++)
@@ -112,7 +118,7 @@ public static class SunSalutation
             foreach (var s in set) if (s.part == Joints[i]) e = s.euler;
             all[i] = (Joints[i], e);
         }
-        return new AsanaPoseSpell { asanaName = name, parts = all, hold = hold, transition = Transition, rootHeight = rootHeight };
+        return new AsanaPoseSpell { asanaName = name, parts = all, duration = duration, rootHeight = rootHeight };
     }
 
     static (BodyPart, Vector3) J(BodyPart p, float x, float z = 0f) => (p, new Vector3(x, 0f, z));
@@ -170,8 +176,8 @@ public static class SunSalutation
         };
     }
 
-    /// <summary>Duración total de la secuencia (para quien la imita).</summary>
-    public static float Duration(float holdPerPose = Hold) => 12 * (holdPerPose + Transition);
+    /// <summary>Duración total de la secuencia (para quien la imita). Cada asana ya incluye llegar + sostener.</summary>
+    public static float Duration(float holdPerPose = Hold) => 12 * holdPerPose;
 }
 
 /// <summary>
