@@ -75,6 +75,9 @@ public class SpellConsole : MonoBehaviour
         ("status",    "status({visible:true, destiny:\"self\", seconds:20})"),
         ("open",      "open({destiny:\"\"})"),
         ("close",     "close({destiny:\"\"})"),
+        ("virtualize", "virtualize({destiny:\"Huerto\"})"),
+        ("lookAt",    "lookAt({destiny:\"Magnate\"})"),
+        ("look",      "look({yaw:90, pitch:0})"),
     };
 
     void OnGUI()
@@ -176,10 +179,40 @@ public class SpellConsole : MonoBehaviour
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
+            case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "look": case "mirar": LookCmd(self, args, false); break;
             case "lookat": case "mirara": LookCmd(self, args, true); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
+    }
+
+    // HECHIZO DE VIRTUALIZACIÓN: entra al MICROCOSMOS de un área (su propia escena). Junto a la máquina del área es
+    // gratis (la máquina lo lanza); a distancia se lanza con MAGIA y cuesta maná (requiere el maná desbloqueado: yoga 2).
+    const float VirtualizeManaCost = 20f;
+    void Virtualize(Anima self, Dictionary<string, string> args)
+    {
+        string area = args.TryGetValue("destiny", out string d) ? d : null;
+        VirtualizationMachine best = null; float bestSq = float.MaxValue;
+        foreach (VirtualizationMachine vm in FindObjectsOfType<VirtualizationMachine>())
+        {
+            if (string.IsNullOrEmpty(vm.mobWorldSceneName)) continue;
+            if (area != null && !NameMatches(vm.areaName, area)) continue;
+            float sq = (vm.transform.position - self.transform.position).sqrMagnitude;
+            if (sq < bestSq) { bestSq = sq; best = vm; }
+        }
+        if (best == null) { Log($"«{self.name}»: no conozco el microcosmos de {area ?? "aquí"}."); return; }
+        if (MobWorldLoader.Instance.IsBusy || MobWorldLoader.Instance.IsInMobWorld) { Log("Ya estás entrando o dentro de un microcosmos."); return; }
+
+        bool atMachine = bestSq <= 6f * 6f;   // estar en el área, junto a su máquina
+        if (!atMachine)
+        {
+            CharacterLevel cl = self.GetComponent<CharacterLevel>();
+            if (cl == null || !cl.ManaUnlocked) { Log($"«{self.name}»: aún no sabes virtualizar con magia (practica yoga) — ve a la máquina de {best.areaName}."); return; }
+            if (cl.currentMana < VirtualizeManaCost) { Log($"«{self.name}»: no tienes maná suficiente ({cl.currentMana:0}/{VirtualizeManaCost:0})."); return; }
+            cl.currentMana -= VirtualizeManaCost;
+        }
+        Log($"«{self.name}» virtualiza el microcosmos de {best.areaName} {(atMachine ? "con la máquina" : $"con magia (−{VirtualizeManaCost:0} maná)")}.");
+        MobWorldLoader.Instance.EnterMobWorld(best.mobWorldSceneName);
     }
 
     // CÁMARA por hechizo (apuntar sin ratón): look({yaw:90, pitch:-20}) gira; lookAt({destiny:"Magnate"}) mira hacia algo.

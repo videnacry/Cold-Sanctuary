@@ -132,6 +132,8 @@ public static class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene1: {e.Message}"); }
         try { MobWorldSceneBuilder.BuildMesopotamia(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
+        try { MicrocosmosAreaSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
@@ -3481,17 +3483,26 @@ public static class SampleSceneBuilder
     // CreateFragmentPrefabIfNeeded) se retiró 2026-07-23: superada por VirtualizationMachine +
     // RealityShiftController + MobWorldLoader.
 
-    enum MissionKind { KitchenChannel, GardenChannel, Channel, Heal, Yoga }
+    internal enum MissionKind { KitchenChannel, GardenChannel, Channel, Heal, Yoga }
+
+    // MICROCOSMOS POR ÁREA: cada área tiene su propia escena de microcosmos (no se juega dentro del mesocosmos agrandando
+    // el decorado). Se entra con el hechizo de virtualización: desde la máquina del área, o con magia (consola `virtualize`).
+    internal static readonly (string areaGo, string display, string key, Color tint, MissionKind kind)[] MicroAreas =
+    {
+        ("YogaRoom_Area",         "Sala de Yoga",   "SalaYoga",    new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga),
+        ("Garden_Area",           "Huerto",         "Huerto",      new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel),
+        ("Infirmary_Area",        "Enfermería",     "Enfermeria",  new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal),
+        ("VeterinaryClinic_Area", "Veterinaria",    "Veterinaria", new Color(0.55f, 0.75f, 0.70f), MissionKind.Heal),
+        ("TextileStudio_Area",    "Estudio Textil", "Textil",      new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel),
+        ("VehicleWorkshop_Area",  "Mecánica",       "Mecanica",    new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel),
+    };
+    internal static string MicroSceneName(string key) => "Microcosmos_" + key;
 
     static void BuildMeditationContent(Transform parent)
     {
         WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel, MobWorldSceneBuilder.SceneName); // modo escena → mundo mob propio
-        WireMeditationArea(parent, "YogaRoom_Area",         "Sala de Yoga",   new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga);
-        WireMeditationArea(parent, "Garden_Area",           "Huerto",         new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel);
-        WireMeditationArea(parent, "Infirmary_Area",        "Enfermería",     new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal);
-        WireMeditationArea(parent, "VeterinaryClinic_Area", "Veterinaria",    new Color(0.55f, 0.75f, 0.70f), MissionKind.Heal);
-        WireMeditationArea(parent, "TextileStudio_Area",    "Estudio Textil", new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel);
-        WireMeditationArea(parent, "VehicleWorkshop_Area",  "Mecánica",       new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel);
+        foreach (var m in MicroAreas)   // cada área → su escena de microcosmos
+            WireMeditationArea(parent, m.areaGo, m.display, m.tint, m.kind, MicroSceneName(m.key));
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
@@ -3564,7 +3575,7 @@ public static class SampleSceneBuilder
         machine.missions = BuildAreaMissions(parent, area.transform, displayName, tint, kind);
     }
 
-    static MobMission[] BuildAreaMissions(Transform parent, Transform areaT, string displayName, Color tint, MissionKind kind)
+    internal static MobMission[] BuildAreaMissions(Transform parent, Transform areaT, string displayName, Color tint, MissionKind kind)
     {
         if (kind == MissionKind.Yoga)
         {
@@ -3612,7 +3623,7 @@ public static class SampleSceneBuilder
         return new[] { ch };
     }
 
-    static MobMission MakeMissionGO(Transform areaT, string goName, string missionName, string desc, MissionCategory cat)
+    internal static MobMission MakeMissionGO(Transform areaT, string goName, string missionName, string desc, MissionCategory cat)
     {
         GameObject go = new GameObject(goName);
         go.transform.SetParent(areaT, worldPositionStays: false);
