@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 416 tipos._
+_Total: 422 tipos._
 
 
 ## Animals
@@ -61,6 +61,7 @@ _Total: 416 tipos._
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
+- **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 
@@ -189,6 +190,7 @@ _Total: 416 tipos._
 - **FarmingSandboxItems** (class) — `Assets/Scripts/Farming/FarmingSandboxItems.cs` — Bootstrapper de PRUEBA (runtime, solo para el sandbox de SampleSceneBuilder):
 - **FaunaChecks** (class) — `Assets/Scripts/FaunaChecks.cs` — Sandbox AUTOEJECUTABLE de CONDUCTA/lógica sobre la ESCENA REAL (NavMesh horneado + fauna de `FamilyGenerator`), reportando por `TestProbe` (`[TEST]` en `Editor.log`).
 - **FearSpell** (class) — `Assets/Scripts/Microcosmos/FearSpell.cs` — Hechizo de MIEDO (docs/sanctuary-second-lap-and-fear.md, apremios §3):
+- **FeedVisitorMission** (class) — `Assets/Scripts/Meditation/FeedVisitorMission.cs` — «ALIMENTAR A LOS VISITANTES» (huerto; antes «Limpiar la plaga»):
 - **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/magic-metabolism-progression.md §13).
 - **FollowBrain** (class) — `Assets/Scripts/Control/FollowBrain.cs` — Cerebro de IA que hace que el ser SIGA a un objetivo (docs/anima-architecture.md §11.5).
 - **FollowingArrayInArray** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInArray .cs`
@@ -199,6 +201,7 @@ _Total: 416 tipos._
 - **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
+- **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO DEL HUERTO hecho de bloques:
 - **Generator** (class) — `Assets/Scripts/Generator.cs`
 - **Gohageneis** (class) — `Assets/Scripts/Companion/Companions/Gohageneis.cs` — El Papi Gohageneis — celebración, arte de vivir, restauración emocional.
 - **Goluis** (class) — `Assets/Scripts/Companion/Companions/Goluis.cs` — El Maestro Goluis — cocina, doble turno, presión y resistencia.
@@ -227,6 +230,7 @@ _Total: 416 tipos._
 - **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
 - **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
+- **HungryVisitorMob** (class) — `Assets/Scripts/Meditation/HungryVisitorMob.cs` — VISITANTE HAMBRIENTO del huerto (misión «Alimentar a los visitantes»):
 - **IAptitudes** (interface) — `Assets/Scripts/IAptitudes.cs` — Contrato de las 12 aptitudes que **todo ser vivo** expone (docs/creature-stats.md):
 - **IBody** (interface) — `Assets/Scripts/IBody.cs` — Physical body interface — per-limb stats and posture stress for the asana/training system.
 - **IBondable** (interface) — `Assets/Scripts/Companion/IBondable.cs` — Anything that can form a bond — companions, NPCs, animals, objects, places.
@@ -317,6 +321,7 @@ _Total: 416 tipos._
 - **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
 - **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
 - **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
+- **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR del santuario (docs/ice-sanctuary-ecology.md):
 - **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.
 - **PossessionSpell** (class) — `Assets/Scripts/Control/PossessionSpell.cs` — Hechizo de POSESIÓN del jugador (docs/anima-architecture.md §11.5).
 - **PostNatalManager** (class) — `Assets/Scripts/PostNatal/PostNatalManager.cs` — Añadir al GameObject de la MADRE.
@@ -409,6 +414,7 @@ _Total: 416 tipos._
 - **TransformationSpell** (class) — `Assets/Scripts/Transformation/TransformationSpell.cs` — Hechizo de **TRANSFORMACIÓN por combate de stats** (docs/stats-as-truth.md §4).
 - **TransitionCondition** (class) — `Assets/Scripts/PostNatal/TransitionCondition.cs` — Condición que debe cumplirse para avanzar al siguiente PostNatalStage.
 - **TribeCohesion** (class) — `Assets/Scripts/Microcosmos/TribeCohesion.cs` — COHESIÓN DE MANADA + ABANDONO (docs/microcosmos-level1.md §Impulsos/beats, rebanada 2):
+- **TwoBoneIK** (class) — `Assets/Scripts/Asana/TwoBoneIK.cs` — IK ANALÍTICA de 2 huesos (ley de cosenos) para "alcance":
 - **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b).
 - **UI** (class) — `Assets/Scripts/UI/FollowingArrays/UI.cs`
 - **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`

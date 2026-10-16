@@ -43,9 +43,11 @@ public class AsanaPoseSpell : QueuedSpell
     public float duration = 10f;          // tiempo TOTAL de la asana (llegar + sostener)
     [Range(0.03f, 1f)] public float reachFraction = 0.3f;   // fracción del tiempo en LLEGAR a la postura; el resto, SOSTENIÉNDOLA (asanas 0.3; upa-yoga ≈1 = el rezo tarda toda la respiración)
     public float rootHeight = -1f;        // -1 = la de pie (reposo)
+    public float stanceWidth = -1f;       // anchura de piernas (distancia entre pies); 0 = talones juntos; -1 = no tocar
+    public (BodyPart end, Vector3 localTarget)[] reaches = System.Array.Empty<(BodyPart, Vector3)>();   // IK: lleva mano/pie a un punto (palmas juntas, dedos al suelo)
     float _start = -1f;
     Quaternion[] _from;
-    Vector3 _rootFrom;
+    Vector3 _rootFrom, _thighFromL, _thighFromR;
 
     public override string Label => $"asana {asanaName}";
 
@@ -64,6 +66,10 @@ public class AsanaPoseSpell : QueuedSpell
             }
             Transform hips = rig != null ? rig.Get(BodyPart.Hips) : null;
             if (hips != null) _rootFrom = hips.localPosition;
+            Transform thL = rig != null ? rig.Get(BodyPart.ThighLeft) : null;
+            Transform thR = rig != null ? rig.Get(BodyPart.ThighRight) : null;
+            if (thL != null) _thighFromL = thL.localPosition;
+            if (thR != null) _thighFromR = thR.localPosition;
         }
         // Transición = reachFraction del total; el resto es estancamiento (t se queda en 1). Así subir/bajar `duration`
         // mantiene el 30/70 sin cambiar nada más. Entra con aceleración y frena (SmoothStep).
@@ -85,8 +91,52 @@ public class AsanaPoseSpell : QueuedSpell
                 Vector3 goal = rootHeight >= 0f ? new Vector3(rest.x, rootHeight, rest.z) : rest;
                 hips.localPosition = Vector3.Lerp(_rootFrom, goal, t);
             }
+
+            // STANCE: anchura de piernas (talones juntos = 0). Mueve la RAÍZ de los muslos lateralmente.
+            if (stanceWidth >= 0f)
+            {
+                Stance(rig, BodyPart.ThighLeft, -stanceWidth * 0.5f, _thighFromL, t);
+                Stance(rig, BodyPart.ThighRight, stanceWidth * 0.5f, _thighFromR, t);
+            }
+
+            // ALCANCE (IK de 2 huesos): lleva mano/pie a un punto del cuerpo (palmas juntas, dedos al suelo…).
+            if (reaches != null && reaches.Length > 0)
+            {
+                Transform root = hips != null && hips.parent != null ? hips.parent : self.transform;
+                foreach (var rc in reaches) Reach(rig, root, rc.end, rc.localTarget, t);
+            }
         }
         return Time.time - _start >= duration;
+    }
+
+    static void Stance(CreatureRig rig, BodyPart part, float targetX, Vector3 from, float t)
+    {
+        Transform th = rig.Get(part); if (th == null) return;
+        CubeJoint cj = th.GetComponent<CubeJoint>();
+        Vector3 rest = cj != null ? cj.RestPosition : th.localPosition;
+        th.localPosition = Vector3.Lerp(from, new Vector3(targetX, rest.y, rest.z), t);
+        rig.LockPose(part);
+    }
+
+    static void Reach(CreatureRig rig, Transform root, BodyPart end, Vector3 localTarget, float t)
+    {
+        BodyPart midP, rootP;
+        switch (end)
+        {
+            case BodyPart.HandLeft:  midP = BodyPart.ForearmLeft;  rootP = BodyPart.ShoulderLeft;  break;
+            case BodyPart.HandRight: midP = BodyPart.ForearmRight; rootP = BodyPart.ShoulderRight; break;
+            case BodyPart.FootLeft:  midP = BodyPart.ShinLeft;     rootP = BodyPart.ThighLeft;     break;
+            case BodyPart.FootRight: midP = BodyPart.ShinRight;    rootP = BodyPart.ThighRight;    break;
+            default: return;
+        }
+        Transform endT = rig.Get(end), midT = rig.Get(midP), rootT = rig.Get(rootP);
+        if (endT == null || midT == null || rootT == null) return;
+        Vector3 world = root.TransformPoint(localTarget);
+        bool arm = end == BodyPart.HandLeft || end == BodyPart.HandRight;
+        // Codo hacia abajo-atrás; rodilla hacia delante.
+        Vector3 pole = midT.position + (arm ? (-root.up * 0.3f - root.forward * 0.1f) : (root.forward * 0.3f));
+        TwoBoneIK.Solve(rootT, midT, endT, world, pole, t);
+        rig.LockPose(rootP); rig.LockPose(midP); rig.LockPose(end);
     }
 }
 
@@ -112,16 +162,18 @@ public static class SunSalutation
         BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
-    static AsanaPoseSpell Pose(string name, float duration, float reach, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
+    static AsanaPoseSpell Pose(string name, float duration, float reach, float rootHeight, (BodyPart, Vector3)[] set,
+                              float stanceWidth = -1f, (BodyPart, Vector3)[] reaches = null)
     {
         var all = new (BodyPart, Vector3)[Joints.Length];
         for (int i = 0; i < Joints.Length; i++)
         {
             Vector3 e = Vector3.zero;
-            foreach (var s in set) if (s.part == Joints[i]) e = s.euler;
+            foreach (var s in set) if (s.Item1 == Joints[i]) e = s.Item2;
             all[i] = (Joints[i], e);
         }
-        return new AsanaPoseSpell { asanaName = name, parts = all, duration = duration, reachFraction = reach, rootHeight = rootHeight };
+        return new AsanaPoseSpell { asanaName = name, parts = all, duration = duration, reachFraction = reach, rootHeight = rootHeight,
+                                    stanceWidth = stanceWidth, reaches = reaches ?? System.Array.Empty<(BodyPart, Vector3)>() };
     }
 
     static (BodyPart, Vector3) J(BodyPart p, float x, float z = 0f) => (p, new Vector3(x, 0f, z));
@@ -148,23 +200,28 @@ public static class SunSalutation
         J(leftForward ? BodyPart.FootRight : BodyPart.FootLeft, 60),
     };
 
-    // Las 12 posturas con su altura de pelvis (root) y su juego de huesos. El tejido de respiraciones lo pone Sequence().
-    static readonly (string name, float root, System.Func<(BodyPart, Vector3)[]> set)[] Postures =
+    // Alcances de ejemplo (IK): palmas juntas delante del pecho (Pranamasana) y diez dedos al suelo junto a los pies
+    // (Uttanasana). Coordenadas en el cuerpo NATIVO (pies y≈0, cadera y≈0.95). Opt-in: el resto de posturas no usan IK.
+    static (BodyPart, Vector3)[] PalmsTogether => new[] { (BodyPart.HandLeft, new Vector3(0f, 1.25f, 0.20f)), (BodyPart.HandRight, new Vector3(0f, 1.25f, 0.20f)) };
+    static (BodyPart, Vector3)[] HandsToFloor => new[] { (BodyPart.HandLeft, new Vector3(-0.09f, 0.03f, 0.14f)), (BodyPart.HandRight, new Vector3(0.09f, 0.03f, 0.14f)) };
+
+    // Las 12 posturas: altura de pelvis (root), anchura de pies (stance; 0 = talones juntos, −1 = no tocar), huesos y alcance IK.
+    static readonly (string name, float root, float stance, System.Func<(BodyPart, Vector3)[]> set, System.Func<(BodyPart, Vector3)[]> reaches)[] Postures =
     {
-        ("Pranamasana (oración)",                 Stand, () => Prayer),
-        ("Hasta Uttanasana (brazos arriba)",      Stand, () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
-        ("Uttanasana (flexión adelante)",         Stand, () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
-        ("Ashwa Sanchalanasana (zancada)",        0.5f,  () => Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
-        ("Dandasana (plancha)",                   0.5f,  () => Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 25), J(BodyPart.FootRight, 25), J(BodyPart.Head, -20) }, HandsDown(72))),
-        ("Ashtanga Namaskara (ocho miembros)",    0.30f, () => Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
+        ("Pranamasana (oración)",                 Stand, 0f,   () => Prayer, () => PalmsTogether),
+        ("Hasta Uttanasana (brazos arriba)",      Stand, 0f,   () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) }), null),
+        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) }), () => HandsToFloor),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) }), null),
+        ("Dandasana (plancha)",                   0.5f,  -1f,  () => Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 25), J(BodyPart.FootRight, 25), J(BodyPart.Head, -20) }, HandsDown(72)), null),
+        ("Ashtanga Namaskara (ocho miembros)",    0.30f, -1f,  () => Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
                                                                            J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70), J(BodyPart.Head, 10),
-                                                                           J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55))),
-        ("Bhujangasana (cobra)",                  0.5f,  () => Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80), J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30))),
-        ("Adho Mukha Svanasana (perro boca abajo)", Stand, () => Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50), J(BodyPart.Head, 20) }, Spine(80), ArmsUp)),
-        ("Ashwa Sanchalanasana (zancada)",        0.5f,  () => Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
-        ("Uttanasana (flexión adelante)",         Stand, () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
-        ("Hasta Uttanasana (brazos arriba)",      Stand, () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
-        ("Pranamasana (oración)",                 Stand, () => Prayer),
+                                                                           J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55)), null),
+        ("Bhujangasana (cobra)",                  0.5f,  -1f,  () => Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80), J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30)), null),
+        ("Adho Mukha Svanasana (perro boca abajo)", Stand, 0f, () => Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50), J(BodyPart.Head, 20) }, Spine(80), ArmsUp), null),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) }), null),
+        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) }), () => HandsToFloor),
+        ("Hasta Uttanasana (brazos arriba)",      Stand, 0f,   () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) }), null),
+        ("Pranamasana (oración)",                 Stand, 0f,   () => Prayer, () => PalmsTogether),
     };
 
     /// <summary>Saludo al Sol POR RESPIRACIONES: cada postura = 1 fase para llegar (se mueve toda la respiración) + 2 fases
@@ -176,9 +233,10 @@ public static class SunSalutation
         foreach (var p in Postures)
         {
             var set = p.set();
-            seq.Add(Pose($"{p.name} · {Lbl(phase)}", breath, 1f, p.root, set)); phase++;                 // llegar (se mueve)
-            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set)); phase++;        // mantener (1 respiración…)
-            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set)); phase++;        // …completa
+            var reach = p.reaches != null ? p.reaches() : null;
+            seq.Add(Pose($"{p.name} · {Lbl(phase)}", breath, 1f, p.root, set, p.stance, reach)); phase++;             // llegar (se mueve)
+            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set, p.stance, reach)); phase++;    // mantener (1 respiración…)
+            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set, p.stance, reach)); phase++;    // …completa
         }
         return seq;
     }

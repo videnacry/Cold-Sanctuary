@@ -47,6 +47,16 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > (`LeadToYogaThenKitchen`: camina a `SalaYoga` → Saludo al Sol → `CocinaSpot`), cerrando la cadena
 > apto→presentar→yoga→cocina. *Falta (escenario-guion grande):* elenco del Microcosmos Nivel 1 (Sakshi/Ambrosio/…)
 > en posiciones+status+pensamientos (otra escena, `MicrocosmosSceneBuilder`; ver `microcosmos-level1.md`).
+>
+> **HECHO 2026-10-16 (PRs #244–#248, pendiente verify-compile del compi) — YOGA a fondo:** sin bucle de la asana
+> (arbitraje por hueso `CreatureRig.LockPose`: yoga manda sobre emoción/andar) + **timing por RESPIRACIONES** (fase de
+> 8 s; Saludo al Sol = 1 fase llegar + 2 mantener = 24 s/postura); **asanas más exactas** (brazos arriba paralelos por
+> flexión, Ashtanga cadera alta) + **ficha anatómica** [`yoga-asanas-spec.md`](yoga-asanas-spec.md); **3 prácticas**:
+> `UpaYoga.NeckSequence` (6 ejercicios de cuello/hombros, respiración silenciosa; + articulación nueva `ScapulaLeft/Right`),
+> `YogaNamaskar.Sequence` (palmas juntas, Ujjayi, Balasana), `SunSalutation.Sequence`; **Magnate enseña por etapas**
+> (upa-yoga cuello→namaskar→saludo); **stance por postura** (`AsanaPoseSpell.stanceWidth`, talones juntos) + **alcance
+> IK** (`TwoBoneIK` + `reaches`: palmas juntas/dedos al suelo, opt-in). *Falta:* una **escena por sesión de yoga**
+> (revisión separada) + registro de sesiones para las futuras (Ashtanga 4 niveles, Shambhavi, upa-yoga de brazos…).
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
