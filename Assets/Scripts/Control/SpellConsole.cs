@@ -176,8 +176,30 @@ public class SpellConsole : MonoBehaviour
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
+            case "look": case "mirar": LookCmd(self, args, false); break;
+            case "lookat": case "mirara": LookCmd(self, args, true); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
         }
+    }
+
+    // CÁMARA por hechizo (apuntar sin ratón): look({yaw:90, pitch:-20}) gira; lookAt({destiny:"Magnate"}) mira hacia algo.
+    void LookCmd(Anima self, Dictionary<string, string> args, bool at)
+    {
+        PlayerController pc = self.GetComponent<PlayerController>();
+        if (pc == null) { Log($"«{self.name}» no tiene cámara propia."); return; }
+        if (at)
+        {
+            string name = args.TryGetValue("destiny", out string d) ? d : null;
+            GameObject go = name != null ? ResolveObject(self, name) : null;
+            if (go == null) { Log($"«{self.name}»: no encuentro {name}."); return; }
+            pc.LookAtPoint(go.transform.position + Vector3.up * 1f);
+            Log($"«{self.name}» mira a {go.name}.");
+            return;
+        }
+        float yaw = args.TryGetValue("yaw", out string y) && float.TryParse(y, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fy) ? fy : 0f;
+        float pitch = args.TryGetValue("pitch", out string p) && float.TryParse(p, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float fp) ? fp : 0f;
+        pc.Look(yaw, pitch);
+        Log($"«{self.name}» gira {yaw:0}° y {pitch:0}°.");
     }
 
     // Diagnóstico: qué hay en la cola del poseído (carril propio, que manda, y el del jugador) y dónde está.

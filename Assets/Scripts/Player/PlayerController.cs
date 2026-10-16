@@ -197,6 +197,31 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>Gira cuerpo (yaw) y cámara (pitch) por código: lo usan los hechizos `look`/`lookAt` (apuntar sin ratón).</summary>
+    public void Look(float yawDelta, float pitchDelta)
+    {
+        transform.Rotate(Vector3.up, yawDelta, Space.World);
+        if (cameraPivot != null)
+        {
+            _currentPitch = Mathf.Clamp(_currentPitch + pitchDelta, -maxPitchUp, maxPitchDown);
+            cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+        }
+    }
+
+    /// <summary>Mira hacia un punto del mundo (cuerpo hacia su horizontal, cámara hacia su altura).</summary>
+    public void LookAtPoint(Vector3 p)
+    {
+        Vector3 to = p - transform.position; Vector3 flat = new Vector3(to.x, 0f, to.z);
+        if (flat.sqrMagnitude > 0.0001f) transform.rotation = Quaternion.LookRotation(flat);
+        if (cameraPivot != null)
+        {
+            Vector3 fromCam = p - cameraPivot.position;
+            float pitch = -Mathf.Atan2(fromCam.y, new Vector2(fromCam.x, fromCam.z).magnitude) * Mathf.Rad2Deg;
+            _currentPitch = Mathf.Clamp(pitch, -maxPitchUp, maxPitchDown);
+            cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+        }
+    }
+
     // ── Movement ──────────────────────────────────────────────────────────────
 
     void HandleMovement()

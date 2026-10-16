@@ -2773,11 +2773,18 @@ public static class SampleSceneBuilder
         // BOSQUE DE HIELO: varios árboles carnívoros de BLOQUES (tronco, pisos de ramas con plataformas-posadero y nidos)
         // en vez de un único cilindro. Dan ambiente de bosque y abundancia vegetal al santuario (docs/ice-sanctuary-ecology §2).
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
-        Vector3 center = new Vector3(112f, 0f, 48f);
+        // ESPARCIDOS por el mapa (no en un solo grupo): arboledas de 2–3 y árboles sueltos, lejos de las áreas del
+        // santuario (x 0–75) y del mar (x > 175), para que todo el hielo tenga vida vegetal.
+        Vector3 center = Vector3.zero;
         var spots = new (float x, float z, float h)[]
         {
-            (0f, 0f, 20f), (-17f, 6f, 15f), (15f, -5f, 17f), (-6f, -18f, 14f), (9f, 17f, 18f),
-            (-20f, -14f, 13f), (24f, 14f, 15f), (-3f, 26f, 16f), (27f, -20f, 14f), (-28f, 22f, 17f),
+            (112f, 48f, 20f), (126f, 60f, 15f), (100f, 66f, 14f),          // arboleda NE
+            (-60f, 40f, 18f), (-74f, 52f, 14f),                         // arboleda O
+            (-40f, -70f, 17f), (-26f, -84f, 13f), (-54f, -88f, 15f),    // arboleda SO
+            (40f, -90f, 16f), (95f, -60f, 18f),                         // sur
+            (-120f, -20f, 19f), (-150f, 80f, 16f), (-110f, 130f, 14f),  // oeste lejano
+            (20f, 130f, 17f), (70f, 150f, 15f), (140f, 110f, 18f),      // norte
+            (-170f, -120f, 15f), (130f, -140f, 16f), (-20f, 170f, 13f), (160f, 170f, 14f),
         };
         GameObject first = null;
         for (int i = 0; i < spots.Length; i++)
@@ -2796,17 +2803,19 @@ public static class SampleSceneBuilder
         GameObject beePrefab = LoadAnimalPrefab("SnowBee");
         if (beePrefab != null)
         {
-            // Colmenas de abejas de las nieves junto a tres árboles (anidan en sus ramas y hacen miel de los muertos).
-            for (int k = 0; k < 3; k++)
+            // Colmenas de abejas de las nieves en una arboleda de cada zona (anidan en sus ramas, miel de los muertos).
+            int[] hives = { 0, 3, 5, 10 };
+            for (int h = 0; h < hives.Length; h++)
             {
-                GameObject bg = new GameObject($"Abejas_nieve_{k + 1}"); bg.transform.SetParent(root.transform);
+                int k = hives[h];
+                GameObject bg = new GameObject($"Abejas_nieve_{h + 1}"); bg.transform.SetParent(root.transform);
                 Vector3 at = center + new Vector3(spots[k].x + 4f, 0f, spots[k].z);
                 FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
                 fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = at, quantity = 5, minParentsCount = 1, radius = 5f } };
             }
         }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
-        Debug.Log($"[IceFlora] Bosque de hielo: {spots.Length} árboles carnívoros de bloques alrededor de {center}.");
+        Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {spots.Length}, esparcidos en arboledas y sueltos por todo el mapa.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
