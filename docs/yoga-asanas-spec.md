@@ -30,6 +30,42 @@ Si quieres, implemento (1) y (2) como un subsistema aparte; con eso las posturas
 
 ---
 
+## El yoga va por RESPIRACIONES (no por tiempo fijo)
+
+Una **respiración** = inhalación (8 s) + exhalación (8 s). El cambio de postura ocurre **en una fase** (8 s) y la postura
+se **mantiene n respiraciones**. En código, cada fase es un `AsanaPoseSpell` de 8 s con `reachFraction = 1` (el cuerpo se
+mueve toda la fase). `SunSalutation.Breath = 8`.
+
+- **Saludo al Sol**: 1 respiración por postura → **1 fase para llegar + 2 de mantenimiento = 24 s/postura** (12×3 = 36 fases).
+- **Yoga Namaskar / Upa-yoga de cuello**: cada movimiento ocurre en 1 fase (flujo continuo); sin mantenimiento salvo Balasana.
+
+## Progresión de enseñanza de la Magnate
+
+1. **Upa-yoga de cuello y hombros** (`UpaYoga.NeckSequence`) — lo primero.
+2. **Yoga Namaskar** (`YogaNamaskar.Sequence`) — de pie + cuclillas, palmas siempre juntas, Ujjayi.
+3. **Saludo al Sol / Surya Namaskar** (`SunSalutation.Sequence`).
+
+## Upa-yoga de cuello y hombros (`UpaYoga`) — 6 ejercicios
+
+De pie, **talones a la anchura de las caderas**, **espalda recta y relajada**, brazos sueltos. Respiración **SIN sonido**,
+8 s por fase. Ejercicios 1–4 solo mueven el cuello; 5–6 solo los hombros (escápula). 3 repeticiones c/u; terminan neutros.
+
+1. **Flexión/extensión**: exhala barbilla al pecho · inhala cabeza atrás.
+2. **Rotación**: inhala cara a la derecha (+~20° atrás) · exhala al frente · inhala a la izquierda · exhala al frente.
+3. **Inclinación lateral** (oreja al hombro, "torsión"): exhala derecha · inhala arriba · exhala izquierda.
+4. **Círculo completo**: barbilla→oreja dcha→atrás→oreja izq→barbilla; inhala al subir, exhala al bajar. 3 + 3 (sentido contrario).
+5. **Hombros, giros verticales hacia delante**: inhala arriba-atrás · exhala abajo-delante.
+6. **Hombros, giros en sentido contrario**.
+
+*Rig:* `Head` (X flexión, Y rotación, Z inclinación) + nueva articulación **`ScapulaLeft/Right`** (entre torso y hombro)
+para encoger/rodar el hombro sin mover el brazo. El giro circular se aproxima con 4 cuartos por vuelta.
+
+## Yoga Namaskar (`YogaNamaskar`) — de pie + cuclillas + Balasana
+
+**Palmas siempre juntas en rezo**; **espalda recta salvo en Balasana**; respiración **Ujjayi** (glotis, sonora), 8 s/fase.
+De pie ×3 (rezo pecho→cabeza→nuca→cabeza→pecho; la 3ª baja a cuclillas) + cuclillas ×2 (añade brazos al frente) +
+**Balasana** (postura del niño) 2 min.
+
 ## Saludo al Sol (Surya Namaskar A) — 12 asanas
 
 Respiración: una por transición (inhala al abrir/subir, exhala al plegar/bajar). Mirada = *drishti*.
@@ -57,21 +93,3 @@ Respiración: una por transición (inhala al abrir/subir, exhala al plegar/bajar
 10. **Uttanasana**. Exhala. = 3.
 11. **Hasta Uttanasana**. Inhala. = 2.
 12. **Pranamasana**. Exhala. = 1.
-
----
-
-## Upa-yoga de cuello (lo primero que enseña la Magnate)
-
-Respiración **Ujjayi** ("victoriosa"): se exhala como hacia la boca cerrada y el aire sale por la nariz cerrando
-parcialmente la **glotis** → sonido oceánico. Cada inhalación/exhalación dura **8 s** y el rezo **se mueve toda la
-respiración** (fluido y lento; en código `reachFraction = 1`). Implementado en `UpaYoga.NeckWarmup()`.
-
-- Preparación: de pie, **piernas a la anchura de los hombros**, rezo al pecho.
-- **De pie × 3**: inhala → rezo **sobre la cabeza**; exhala (Ujjayi) → manos a la **nuca**; inhala → arriba; exhala → rezo
-  **al pecho**. La **3ª** exhalación al pecho baja además a **cuclillas**.
-- **Cuclillas × 2** (plantas completas en el suelo, rodillas adelante, rezo por delante de las piernas a la altura del
-  pecho): arriba → nuca → arriba → pecho → inhala **brazos al frente** (rezo extendido) → exhala recoge y apunta arriba.
-- Cierre: **Balasana** (postura del niño) **2 min**.
-
-*Rig:* `Overhead` sube por flexión (manos juntas arriba), `Nape` (codos muy flexionados tras el cuello), `Forward`
-(brazos horizontales al frente), cuclillas por `root` bajo + muslos/espinillas muy flexionados. Afinado visual pendiente.

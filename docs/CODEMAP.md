@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 412 tipos._
+_Total: 416 tipos._
 
 
 ## Animals
@@ -58,6 +58,7 @@ _Total: 412 tipos._
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
+- **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
@@ -108,6 +109,7 @@ _Total: 412 tipos._
 - **BigFiveProfile** (struct) — `Assets/Scripts/Soul/BigFive.cs` — Perfil de PERSONALIDAD Big Five / OCEAN (docs/apremios-guardian-observacion.md §8) — el modelo más usado en psicología.
 - **BirdBehavior** (class) — `Assets/Scripts/BirdBehavior.cs`
 - **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/soul-composition-blend.md):
+- **BodyAging** (class) — `Assets/Scripts/Body/BodyAging.cs` — EDAD COMO EFECTO DE LOS STATS (etapa 3 del cuerpo unificado):
 - **BodyMetabolismTest** (class) — `Assets/Scripts/BodyMetabolismTest.cs` — Unidad de test del METABOLISMO DEL CUERPO (docs/body-metabolism):
 - **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción).
 - **BodyPartStats** (class) — `Assets/Scripts/BodyPartStats.cs` — Physical stats for a single body part.
@@ -275,6 +277,7 @@ _Total: 412 tipos._
 - **MobWorldEventType** (enum) — `Assets/Scripts/MobWorld/MobWorldDirector.cs` — Type of world-changing event in a mob world (docs mob-world-architecture §6).
 - **MobWorldLoader** (class) — `Assets/Scripts/MobWorld/MobWorldLoader.cs` — Loads/unloads a mob-world scene behind the black screen and teleports the player in/out (docs mob-world-architecture §13 — "escena propia por mundo mob").
 - **MobWorldMission** (class) — `Assets/Scripts/MobWorld/MobWorldMission.cs` — Drives a MobMission that lives inside a mob-world SCENE (docs mob-world-architecture §13).
+- **MobWorldMissionBoard** (class) — `Assets/Scripts/MobWorld/MobWorldMissionBoard.cs` — TABLERO DE MISIONES de una escena de microcosmos por área:
 - **MoodDynamics** (class) — `Assets/Scripts/Soul/MoodDynamics.cs` — DINÁMICA de humores/estrés (docs/soul-relations-reincarnation §2b).
 - **MoodState** (class) — `Assets/Scripts/Companion/MoodState.cs` — Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad — **extraído de `CompanionBase`** (que se retira, fase 5).
 - **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
@@ -409,7 +412,7 @@ _Total: 412 tipos._
 - **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b).
 - **UI** (class) — `Assets/Scripts/UI/FollowingArrays/UI.cs`
 - **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`
-- **UpaYoga** (class) — `Assets/Scripts/Asana/UpaYoga.cs` — UPA-YOGA DE CUELLO (lo PRIMERO que enseña la Magnate; docs/upa-yoga-mission.md).
+- **UpaYoga** (class) — `Assets/Scripts/Asana/UpaYoga.cs` — UPA-YOGA DE CUELLO Y HOMBROS — lo PRIMERO que enseña la Magnate (antes de Yoga Namaskar y del Saludo al Sol).
 - **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/upa-yoga-mission.md).
 - **VirtualizationMachine** (class) — `Assets/Scripts/Meditation/VirtualizationMachine.cs` — The virtualization machine — the universal trigger for mob / Microcosmos missions, present in every area (docs §3).
 - **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/kitchen-simulation.md §3b).
@@ -423,6 +426,7 @@ _Total: 412 tipos._
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
+- **YogaNamaskar** (class) — `Assets/Scripts/Asana/YogaNamaskar.cs` — YOGA NAMASKAR (lo que la Magnate enseña DESPUÉS del upa-yoga de cuello y ANTES del Saludo al Sol).
 - **YogaTest** (class) — `Assets/Scripts/YogaTest.cs` — Unidad de test del YOGA (docs/testing-checklist.md; stats-as-truth §Yoga), por `TestProbe`.
 - **ZoneActivator** (class) — `Assets/Scripts/Camera/ZoneActivator.cs` — Attach to a trigger collider to drive multiple systems when the player enters or exits.
 

@@ -99,7 +99,10 @@ public static class SunSalutation
     // la pelvis. Ejes (rotación local, grados): X+ flexiona hacia DELANTE (columna dobla el torso; muslo va hacia atrás;
     // espinilla dobla la rodilla), X- lleva el miembro hacia DELANTE; Z abre/eleva los brazos por los lados.
     // Hips (la pelvis, raíz del cuerpo) X+ inclina el cuerpo entero hacia delante: 80–90 = tumbado boca abajo.
-    public const float Hold = 20f;   // duración TOTAL por asana (30% llegar + 70% sostener, ver AsanaPoseSpell)
+    // EL YOGA VA POR RESPIRACIONES, no por tiempo fijo. Una respiración = inhalación (8 s) + exhalación (8 s).
+    // Cada cambio de postura ocurre EN UNA respiración (una fase de 8 s) y la postura se MANTIENE n respiraciones.
+    // Saludo al Sol = 1 respiración por postura → 1 fase para llegar + 2 fases de mantenimiento = 24 s/postura.
+    public const float Breath = 8f;   // una fase (inhalación O exhalación)
     const float Stand = -1f;   // pelvis a la altura de pie
 
     static readonly BodyPart[] Joints =
@@ -109,7 +112,7 @@ public static class SunSalutation
         BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
-    static AsanaPoseSpell Pose(string name, float duration, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
+    static AsanaPoseSpell Pose(string name, float duration, float reach, float rootHeight, params (BodyPart part, Vector3 euler)[] set)
     {
         var all = new (BodyPart, Vector3)[Joints.Length];
         for (int i = 0; i < Joints.Length; i++)
@@ -118,7 +121,7 @@ public static class SunSalutation
             foreach (var s in set) if (s.part == Joints[i]) e = s.euler;
             all[i] = (Joints[i], e);
         }
-        return new AsanaPoseSpell { asanaName = name, parts = all, duration = duration, rootHeight = rootHeight };
+        return new AsanaPoseSpell { asanaName = name, parts = all, duration = duration, reachFraction = reach, rootHeight = rootHeight };
     }
 
     static (BodyPart, Vector3) J(BodyPart p, float x, float z = 0f) => (p, new Vector3(x, 0f, z));
@@ -145,44 +148,48 @@ public static class SunSalutation
         J(leftForward ? BodyPart.FootRight : BodyPart.FootLeft, 60),
     };
 
-    public static List<QueuedSpell> Sequence(float holdPerPose = Hold)
+    // Las 12 posturas con su altura de pelvis (root) y su juego de huesos. El tejido de respiraciones lo pone Sequence().
+    static readonly (string name, float root, System.Func<(BodyPart, Vector3)[]> set)[] Postures =
     {
-        float h = holdPerPose;
-        return new List<QueuedSpell>
+        ("Pranamasana (oración)",                 Stand, () => Prayer),
+        ("Hasta Uttanasana (brazos arriba)",      Stand, () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
+        ("Uttanasana (flexión adelante)",         Stand, () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  () => Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
+        ("Dandasana (plancha)",                   0.5f,  () => Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 25), J(BodyPart.FootRight, 25), J(BodyPart.Head, -20) }, HandsDown(72))),
+        ("Ashtanga Namaskara (ocho miembros)",    0.30f, () => Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
+                                                                           J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70), J(BodyPart.Head, 10),
+                                                                           J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55))),
+        ("Bhujangasana (cobra)",                  0.5f,  () => Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80), J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30))),
+        ("Adho Mukha Svanasana (perro boca abajo)", Stand, () => Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50), J(BodyPart.Head, 20) }, Spine(80), ArmsUp)),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  () => Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
+        ("Uttanasana (flexión adelante)",         Stand, () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
+        ("Hasta Uttanasana (brazos arriba)",      Stand, () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
+        ("Pranamasana (oración)",                 Stand, () => Prayer),
+    };
+
+    /// <summary>Saludo al Sol POR RESPIRACIONES: cada postura = 1 fase para llegar (se mueve toda la respiración) + 2 fases
+    /// de mantenimiento (= 1 respiración completa). A 8 s/fase son 24 s/postura. Las fases alternan inhalar/exhalar.</summary>
+    public static List<QueuedSpell> Sequence(float breath = Breath)
+    {
+        var seq = new List<QueuedSpell>();
+        int phase = 0;
+        foreach (var p in Postures)
         {
-            // 1. Oración: de pie, palmas juntas delante del pecho.
-            Pose("Pranamasana (oración)", h, Stand, Prayer),
-            // 2. Brazos arriba con extensión suave de la columna.
-            Pose("Hasta Uttanasana (brazos arriba)", h, Stand, Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
-            // 3. Flexión adelante: torso sobre las piernas, manos al suelo.
-            Pose("Uttanasana (flexión adelante)", h, Stand, Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
-            // 4. Zancada: pierna derecha atrás, izquierda delante, pelvis baja, mirada al frente.
-            Pose("Ashwa Sanchalanasana (zancada)", h, 0.5f, Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
-            // 5. Plancha: cuerpo recto y en diagonal, brazos rectos al suelo.
-            Pose("Dandasana (plancha)", h, 0.5f, Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 50), J(BodyPart.FootRight, 50),
-                                                              J(BodyPart.Head, -20) }, HandsDown(72))),
-            // 6. Ocho apoyos: rodillas, pecho y barbilla al suelo, CADERA ALTA (piqueada). La pelvis se eleva (Hips bajo +
-            //    root bajo) mientras el pecho baja (Spine adelante) y los codos doblados acercan pecho/barbilla al suelo.
-            Pose("Ashtanga Namaskara (ocho miembros)", h, 0.30f, Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
-                J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70), J(BodyPart.Head, 10),
-                J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55))),
-            // 7. Cobra: tumbado, pecho arriba con la espalda arqueada.
-            Pose("Bhujangasana (cobra)", h, 0.18f, Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80),
-                J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30))),
-            // 8. Perro boca abajo: V invertida, cadera arriba, brazos alineados con el torso.
-            Pose("Adho Mukha Svanasana (perro boca abajo)", h, Stand, Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50),
-                J(BodyPart.Head, 20) }, Spine(80), ArmsUp)),
-            // 9. Zancada con la otra pierna delante.
-            Pose("Ashwa Sanchalanasana (zancada)", h, 0.5f, Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) })),
-            // 10–12. Vuelta: flexión, brazos arriba, oración.
-            Pose("Uttanasana (flexión adelante)", h, Stand, Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) })),
-            Pose("Hasta Uttanasana (brazos arriba)", h, Stand, Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) })),
-            Pose("Pranamasana (oración)", h, Stand, Prayer),
-        };
+            var set = p.set();
+            seq.Add(Pose($"{p.name} · {Lbl(phase)}", breath, 1f, p.root, set)); phase++;                 // llegar (se mueve)
+            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set)); phase++;        // mantener (1 respiración…)
+            seq.Add(Pose($"{p.name} · mantén ({Lbl(phase)})", breath, 1f, p.root, set)); phase++;        // …completa
+        }
+        return seq;
     }
 
-    /// <summary>Duración total de la secuencia (para quien la imita). Cada asana ya incluye llegar + sostener.</summary>
-    public static float Duration(float holdPerPose = Hold) => 12 * holdPerPose;
+    static string Lbl(int phase) => (phase % 2 == 0) ? "inhala" : "exhala";
+
+    /// <summary>Nº de posturas (12). La secuencia encolada tiene 3 fases por postura.</summary>
+    public static int PostureCount => Postures.Length;
+
+    /// <summary>Duración total (para quien la imita): 12 posturas × 3 fases × 8 s = 288 s.</summary>
+    public static float Duration(float breath = Breath) => Postures.Length * 3 * breath;
 }
 
 /// <summary>

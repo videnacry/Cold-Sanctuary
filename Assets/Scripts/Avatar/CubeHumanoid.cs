@@ -71,9 +71,13 @@ public static class CubeHumanoid
         for (int side = -1; side <= 1; side += 2)
         {
             bool left = side < 0;
-            // Brazo: hombro → codo → muñeca.
-            CubeJoint sh = Joint(waist.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight,
-                new Vector3(0.26f * side, 0.22f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
+            // Escápula (pivote junto a la base del cuello): rodar/encoger el hombro sin mover el brazo. En reposo es
+            // transparente (rotación identidad), así que no altera las demás posturas; de ella cuelga el brazo.
+            CubeJoint scap = Joint(waist.transform, left ? BodyPart.ScapulaLeft : BodyPart.ScapulaRight,
+                new Vector3(0.08f * side, 0.26f, 0f), new Vector3(0.14f, 0.1f, 0.12f), new Vector3(0.09f * side, -0.02f, 0f), cloth, rig);
+            // Brazo: escápula → hombro → codo → muñeca.
+            CubeJoint sh = Joint(scap.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight,
+                new Vector3(0.18f * side, -0.04f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
             CubeJoint el = Joint(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight,
                 new Vector3(0f, -0.3f, 0f), new Vector3(0.09f, 0.27f, 0.09f), new Vector3(0f, -0.135f, 0f), flesh, rig);
             Joint(el.transform, left ? BodyPart.HandLeft : BodyPart.HandRight,
