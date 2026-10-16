@@ -130,7 +130,10 @@ public static class SunSalutation
     }
     // La columna reparte la flexión: 55 % lumbar, 45 % torácica.
     static (BodyPart, Vector3)[] Spine(float x) => new[] { J(BodyPart.Back, x * 0.55f), J(BodyPart.Chest, x * 0.45f) };
-    static (BodyPart, Vector3)[] ArmsUp => new[] { J(BodyPart.ShoulderLeft, 0, -170), J(BodyPart.ShoulderRight, 0, 170) };
+    // Brazos arriba por FLEXIÓN (X−, suben por delante hasta la vertical): quedan PARALELOS a la anchura de los hombros
+    // (en Hasta Uttanasana hay un hueco entre manos y codos = la distancia entre hombros). Antes se abrían en lateral (Z)
+    // y convergían/abrían mal; para el perro boca abajo, además, así quedan EN LÍNEA con el torso plegado.
+    static (BodyPart, Vector3)[] ArmsUp => new[] { J(BodyPart.ShoulderLeft, -175), J(BodyPart.ShoulderRight, -175) };
     static (BodyPart, Vector3)[] Prayer => new[] { J(BodyPart.ShoulderLeft, -25, 12), J(BodyPart.ShoulderRight, -25, -12),
         J(BodyPart.ForearmLeft, -105, -45), J(BodyPart.ForearmRight, -105, 45), J(BodyPart.HandLeft, 0, -20), J(BodyPart.HandRight, 0, 20) };
     // Manos al suelo con el torso inclinado X grados: el brazo apunta al suelo (−X respecto al torso).
@@ -158,9 +161,11 @@ public static class SunSalutation
             // 5. Plancha: cuerpo recto y en diagonal, brazos rectos al suelo.
             Pose("Dandasana (plancha)", h, 0.5f, Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 50), J(BodyPart.FootRight, 50),
                                                               J(BodyPart.Head, -20) }, HandsDown(72))),
-            // 6. Ocho apoyos: rodillas, pecho y barbilla al suelo, cadera alta, codos doblados.
-            Pose("Ashtanga Namaskara (ocho miembros)", h, 0.35f, Join(new[] { J(BodyPart.Hips, 80), J(BodyPart.ShinLeft, 35), J(BodyPart.ShinRight, 35),
-                J(BodyPart.ShoulderLeft, -20), J(BodyPart.ShoulderRight, -20), J(BodyPart.ForearmLeft, -100), J(BodyPart.ForearmRight, -100) }, Spine(-15))),
+            // 6. Ocho apoyos: rodillas, pecho y barbilla al suelo, CADERA ALTA (piqueada). La pelvis se eleva (Hips bajo +
+            //    root bajo) mientras el pecho baja (Spine adelante) y los codos doblados acercan pecho/barbilla al suelo.
+            Pose("Ashtanga Namaskara (ocho miembros)", h, 0.30f, Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
+                J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70), J(BodyPart.Head, 10),
+                J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55))),
             // 7. Cobra: tumbado, pecho arriba con la espalda arqueada.
             Pose("Bhujangasana (cobra)", h, 0.18f, Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80),
                 J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30))),

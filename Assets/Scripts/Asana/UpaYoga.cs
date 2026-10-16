@@ -35,9 +35,10 @@ public static class UpaYoga
     // Rezo al pecho: codos doblados, palmas juntas delante del esternón.
     static (BodyPart, Vector3)[] PrayerChest => new[] { J(BodyPart.ShoulderLeft, -25, 12), J(BodyPart.ShoulderRight, -25, -12),
         J(BodyPart.ForearmLeft, -105, -45), J(BodyPart.ForearmRight, -105, 45), J(BodyPart.HandLeft, 0, -20), J(BodyPart.HandRight, 0, 20) };
-    // Rezo sobre la cabeza: brazos elevados por los lados hasta juntarse arriba, antebrazos rectos.
-    static (BodyPart, Vector3)[] Overhead => new[] { J(BodyPart.ShoulderLeft, 0, -168), J(BodyPart.ShoulderRight, 0, 168),
-        J(BodyPart.ForearmLeft, 0, -6), J(BodyPart.ForearmRight, 0, 6), J(BodyPart.HandLeft, 0, -6), J(BodyPart.HandRight, 0, 6) };
+    // Rezo sobre la cabeza: brazos subidos POR DELANTE (flexión X−) hasta la vertical, antebrazos rectos y palmas juntas
+    // (ligera aducción Z para que el rezo se mantenga unido arriba). El compañero afina la convergencia en Unity.
+    static (BodyPart, Vector3)[] Overhead => new[] { J(BodyPart.ShoulderLeft, -172, 6), J(BodyPart.ShoulderRight, -172, -6),
+        J(BodyPart.ForearmLeft, 0, -4), J(BodyPart.ForearmRight, 0, 4), J(BodyPart.HandLeft, 0, -6), J(BodyPart.HandRight, 0, 6) };
     // Manos a la nuca: hombros abiertos arriba, codos muy doblados → las manos caen tras el cuello.
     static (BodyPart, Vector3)[] Nape => new[] { J(BodyPart.ShoulderLeft, 0, -130), J(BodyPart.ShoulderRight, 0, 130),
         J(BodyPart.ForearmLeft, -125, -25), J(BodyPart.ForearmRight, -125, 25), J(BodyPart.HandLeft, 0, -15), J(BodyPart.HandRight, 0, 15) };

@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 410 tipos._
+_Total: 412 tipos._
 
 
 ## Animals
@@ -55,6 +55,7 @@ _Total: 410 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
+- **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
@@ -279,6 +280,7 @@ _Total: 410 tipos._
 - **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
 - **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3):
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
+- **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
 - **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
 - **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
 - **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.
