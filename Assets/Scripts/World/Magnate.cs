@@ -164,31 +164,23 @@ public class Magnate : MonoBehaviour
         if (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f))
         { Debug.Log($"[Magnate] «{t.name}» necesita comer/descansar antes de aprender."); return; }
 
-        // Ya está con una clase en curso (la imita ahora mismo): no se reinicia ni se repite cada pocos segundos.
-        ActionQueue tq = t.GetComponent<ActionQueue>();
-        if (tq != null) foreach (QueuedSpell s in tq.Player) if (s is MimicPoseSpell) return;
+        // Ya hay una clase en curso: no se reinicia ni se apila (la TeachingSession se destruye al terminar).
+        if (GetComponent<TeachingSession>() != null) return;
 
-        // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; una vez aprendido, se progresa al Saludo al Sol.
+        // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; luego Yoga Namaskar; luego el Saludo al Sol.
+        // (El Grimoire se aprende al COMPLETAR la lección, en TeachingSession.Finish, no al empezarla.)
         Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
-        List<QueuedSpell> routine; float dur; string label;
-        if (!g.Knows("upa-yoga"))            { routine = UpaYoga.NeckSequence(); dur = UpaYoga.Duration(); label = "upa-yoga de cuello"; g.Learn("upa-yoga"); }
-        else if (!g.Knows("yoga-namaskar")) { routine = YogaNamaskar.Sequence(); dur = YogaNamaskar.Duration(); label = "Yoga Namaskar"; g.Learn("yoga-namaskar"); }
-        else                                { routine = SunSalutation.Sequence(); dur = SunSalutation.Duration(); label = "el Saludo al Sol"; g.Learn("yoga"); }
+        System.Func<List<QueuedSpell>> builder; string learn, label;
+        if (!g.Knows("upa-yoga"))           { builder = () => UpaYoga.NeckSequence();   learn = "upa-yoga";      label = "upa-yoga de cuello"; }
+        else if (!g.Knows("yoga-namaskar")) { builder = () => YogaNamaskar.Sequence();  learn = "yoga-namaskar"; label = "Yoga Namaskar"; }
+        else                                { builder = () => SunSalutation.Sequence(); learn = "yoga";          label = "el Saludo al Sol"; }
 
-        // DEMOSTRACIÓN: la Magnate hace la rutina con su cuerpo y el alumno la IMITA articulación por articulación.
-        // Más nivel de yoga → la sigue mejor.
-        ActionQueue mine = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
-        if (mine.Own.Count == 0)
-            foreach (QueuedSpell s in routine) mine.EnqueueOwn(s);
-        ActionQueue q = t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
+        // ENSEÑANZA INTERACTIVA: la Magnate demuestra cada paso, se lo PIDE al alumno y ESPERA a que lo realice.
+        TeachingSession.Begin(_a, t, learn, builder);
         CharacterLevel cl = t.GetComponent<CharacterLevel>();
-        float follow = 2f + (cl != null ? cl.yoga.level : 1);
-        bool already = false;   // la Magnate enseña a menudo: no apilar una imitación por cada vez
-        foreach (QueuedSpell s in q.Player) if (s is MimicPoseSpell) { already = true; break; }
-        if (!already) q.EnqueuePlayer(new MimicPoseSpell { teacher = transform, duration = dur, follow = follow });
         if (cl != null) cl.GainYogaXp(10f);                          // potencia el avance (marga de Yoga)
         Mind m = t.GetComponent<Mind>();
         if (m != null) m.humores.Produce(Humor.Serotonina, 0.2f);   // el ánimo de practicar sube (ThoughtSpell-like)
-        Debug.Log($"[Magnate] enseña {label} a «{t.name}».");
+        Debug.Log($"[Magnate] enseña {label} a «{t.name}» (interactivo).");
     }
 }
