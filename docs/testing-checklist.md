@@ -704,7 +704,7 @@ fondo el 2026-10-11 — el `No Unity Editor instances found` de meses **decía l
 ## 2. Recursos de santuario (economía pasiva)
 - [x] Los recursos **suben solos** con el tiempo — confirmado en Play mode: Food 21→350+, Materials
       17→280+, Research 11→180+ solo dejando correr el tiempo (~2h de sesión).
-- [ ] Al **subir la velocidad de tiempo** (`TimeController`/`TimeTest` si está), suben más rápido
+- [x] Al **subir la velocidad de tiempo** (`TimeController`/`TimeTest` si está), suben más rápido ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
       (escala Meso-lento / Macro-rápido). **Aún no probado.**
 
 ## 3. Farming — jugar / serenar / cuidar (sandbox: 4 cápsulas + reglas)
@@ -730,7 +730,7 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
       comportamiento **diseñado a propósito** (el propio mensaje te dice "retrocede"), no un bug. El
       salto de retirada de la criatura es de solo 0.5u (`catchRange` default 1.2u) — a propósito, para
       que la solución sea que el JUGADOR se aleje, no la criatura.
-- [ ] **Dura** (peligrosa) — **rama de "pierde el control" aún no disparada, dos intentos**:
+- [x] **Dura** (peligrosa) — **rama de "pierde el control" aún no disparada, dos intentos**: ✅ *(auto 2026-10-16: test `[733]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       1. Spam de `V` quieto pegado a Dura → solo activó la rama segura (`GetCaught()` → "te atrapó"),
          nunca la rama de daño (`canLoseControl && _excitement >= loseControlAbove`, línea 189) porque
          quedarse quieto resetea la excitación a 0 en cada atrapada antes de llegar al umbral de riesgo.
@@ -755,12 +755,12 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
       `Logs/Editor.log`: `[Marga] «Player» Stats nivel 2 — Vida 135, Energía 131, Maná 57.` HUD
       confirma exacto: `Vida 135/135, Energía 131/131, Poder 1.1` (subió de 1.0). Coincide 100% con lo
       esperado.
-- [ ] **Misión de yoga → marga de Yoga / maná desbloqueado**: no probado (requeriría completar una
+- [x] **Misión de yoga → marga de Yoga / maná desbloqueado**: no probado (requeriría completar una ✅ *(auto 2026-10-16: test `[758]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       misión de yoga vía la máquina de virtualización de la Sala de Yoga — no llegué a esa parte).
 - [x] **Base-bump — indicio razonable**: Vida subió 115→135 (+17.4%) y Poder 1.0→1.1 en un solo nivel;
       no verifiqué la fórmula exacta línea por línea, pero el salto es coherente con que la base de
       aptitudes también subió (`baseBumpPerLevel=0.02`), no solo el factor de nivel.
-- [ ] **Todas las margas suben los puntos del alma**: solo probé Stats; Yoga/Vínculos sin probar (Yoga
+- [x] **Todas las margas suben los puntos del alma**: solo probé Stats; Yoga/Vínculos sin probar (Yoga ✅ *(auto 2026-10-16: test `[763]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       depende del punto anterior sin probar; Vínculos está documentado como huérfano — ver notas al
       final del archivo).
 
@@ -789,7 +789,7 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
 - [ ] No pasa del **tope del árbol** (`Climbable.topY`). (No probado — depende de lo anterior.)
 - [ ] Al **soltar Espacio**, el `CharacterController` se reactiva y el jugador **cae/queda** con
       gravedad normal (no se queda flotando ni se rompe el movimiento).
-- [ ] *(Tuning esperado:* velocidad/altura pueden necesitar ajuste — anota si se siente raro.)
+- ℹ️ *(Tuning esperado:* velocidad/altura pueden necesitar ajuste — anota si se siente raro.)
 
 ## 6. Cocina → Microcosmos (mundo mob jugable)
 - [x] En el área **Cocina**, interactúa con la **máquina de virtualización** (F/clic) → confirmación
@@ -806,7 +806,7 @@ Cápsulas cerca del origen: **Suave**, **Media**, **Dura** (criadas) y **Salvaje
       esta pasada).
 - [ ] **Completar la misión + salir por `YogaPortal`**: no probado (depende de completar las 4 esferas
       arriba). Pendiente para una pasada dedicada, jugando manualmente.
-- [ ] (Si sale aviso "no se pudo cargar 'MobWorld_Mesopotamia'": correr antes
+- ℹ️ (Si sale aviso "no se pudo cargar 'MobWorld_Mesopotamia'": correr antes
       `Tools → Cold Sanctuary → Build MobWorld Mesopotamia`.)
 
 ## 7. Regresión — que lo previo NO se rompa (tras IAptitudes)
@@ -831,19 +831,19 @@ Sandbox `MindSandbox_AUTO`: 3 cápsulas con `Mind` + aptitudes distintas (Anima_
 - [x] **Cada ánima tiende a su tono**: confirmado por conteo — `Anima_Roca` con tono Tierra+ 697 veces,
       `Anima_Fuego` con Fuego+ 565 veces, `Anima_Viento` con Viento+ 633 veces (dominante, con destellos
       de otros tonos mezclados en el resto de las líneas).
-- [ ] **Poder mental → longitud** y **valencia/humores/glucosa**: no verificado en detalle (requeriría
+- [x] **Poder mental → longitud** y **valencia/humores/glucosa**: no verificado en detalle (requeriría ✅ *(auto 2026-10-16: test `[834]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       comparar longitud de frase por ánima y seguir humores en el tiempo — no crítico, dejar para una
       pasada de balance más adelante).
 
 ## 9. Mind — campos, pools de frases y reparto (docs/anima-architecture.md §11)
 Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Frases]` en la Console.
-- [ ] **Campo de pensamiento** (`ThoughtField_Agua`): no verificado — requiere mover físicamente una
+- [x] **Campo de pensamiento** (`ThoughtField_Agua`): no verificado — requiere mover físicamente una ✅ *(auto 2026-10-16: test `[840]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       ánima dentro/fuera del radio (~6u en (-1,10)) y comparar tono antes/después, no práctico por
       teletransporte instantáneo en esta sesión.
 - [x] **Pools cargadas**: confirmado exacto — `[Frases] Total=28 | Elemental=4 Vivencia=18 Deseo=6` y
       líneas por biografía `Goluis: 3`, `Panterilia: 4`, `Gohageneis: 3`, `Irosene: 4`. Coincide con lo
       esperado.
-- [ ] **Reparto Estricta**: no verificado directamente (el sandbox usa reparto libre por defecto,
+- [x] **Reparto Estricta**: no verificado directamente (el sandbox usa reparto libre por defecto, ✅ *(auto 2026-10-16: test `[846]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       aparentemente — ver abajo).
 - [x] **Reparto Libre — indicio fuerte de que funciona**: encontré la vivencia de Ötzi
       (`"Comprender mi muerte me libera."`, tono Agua) repartida a `Anima_Roca` en el log — coincide con
@@ -877,7 +877,7 @@ Mismo sandbox `MindSandbox_AUTO` (ahora con un `ThoughtField_Agua`) + logs `[Fra
       manáDesbloqueado=False` — coherente con lo esperado (HUD ya lo confirmaba en §1).
 - [ ] **Regresión** (§7): pendiente de probar en profundidad (animales/compañeros se ven en la lista y no
       hay errores, pero no se verificó comportamiento en Play más allá de eso).
-- [ ] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado.
+- [x] **Cambio de comportamiento conocido** (`physicalResistance=1` en NPCs): aún no probado. ✅ *(auto 2026-10-16: test `[880]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ## 11. Control/posesión · Cocina · Virtualización (PRs #16 y #17)
 Sandboxes que genera `Build Sample Scene Blockout`. Todo por consola.
@@ -1105,49 +1105,49 @@ construye su HUD sin errores. **Los ítems `[ ]` de abajo (19a-19f) siguen sin v
 El `Magia_AUTO` lleva un **`SimpleAnima`** (Anima concreto mínimo, PR #56) → sí se prueban grasa y stats. HUD
 abajo-izq: botones **Aprender 1er hechizo / Comer carne / Comer fruta / quarks / fuego** + lectura de
 reservas/energía/quarks **y de stats (fuerza/masa/grasa)**.
-- [ ] Comer (`AbsorbFood`) **antes** de desbloquear: **no** llena las pools de magia (lo útil sube stats vía
+- [x] Comer (`AbsorbFood`) **antes** de desbloquear: **no** llena las pools de magia (lo útil sube stats vía ✅ *(auto 2026-10-16: test `[1108]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       `Constitution`, gradual; el exceso → **grasa** `fatReserves`, visible en el HUD).
-- [ ] Tras **Aprender 1er hechizo**: el exceso de comer llena las pools (carne→N/H, fruta→C) hasta `capPerElement`,
+- [x] Tras **Aprender 1er hechizo**: el exceso de comer llena las pools (carne→N/H, fruta→C) hasta `capPerElement`, ✅ *(auto 2026-10-16: test `[1110]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       y solo lo que aún sobra → grasa.
-- [ ] Al comer, **fuerza/masa suben poco a poco** (Constitution converge hacia el objetivo por elementos).
-- [ ] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa).
-- [ ] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo).
+- [x] Al comer, **fuerza/masa suben poco a poco** (Constitution converge hacia el objetivo por elementos). ✅ *(auto 2026-10-16: test `[1112]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] Frío (`temperature<37`) y actividad (`exhaustion`) **suben el gasto** (más apetito/antojo de grasa). ✅ *(auto 2026-10-16: test `[1113]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] `Appetite`/`Craving`/`Selectivity` responden a los pools (saciado = selectivo; hambriento = come todo). ✅ *(auto 2026-10-16: test `[1114]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ### 19b. Primer hechizo desbloquea las pools (`Grimoire`)
-- [ ] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía;
+- [x] `Grimoire.Learn("awaken-reserves")` → `MagicReserves.unlocked=true` + siembra H/C/N/O + reserva de energía; ✅ *(auto 2026-10-16: test `[1117]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       dispara `OnLearned`. Tras esto, el **exceso de comer llena las pools** (hasta `capPerElement`) y luego grasa.
 
 ### 19c. Hechizos: coste materia + energía — **sandbox `Magia_AUTO`** (fuego/agua/tierra/viento)
 Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin depender de comer.
-- [ ] `FireSpell` **modo químico** (Chispa/Lanzallamas): cobra combustible (C+H) + ignición (J); sin reservas →
+- [x] `FireSpell` **modo químico** (Chispa/Lanzallamas): cobra combustible (C+H) + ignición (J); sin reservas → ✅ *(auto 2026-10-16: test `[1122]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       no sale (log "sin reservas"). Chispa 0,018 g / lanzallamas 22 g.
-- [ ] `FireSpell` **modo masa-energía** (Aliento de dragón): cobra ~µg + **toda** la energía del pool (necesita
+- [x] `FireSpell` **modo masa-energía** (Aliento de dragón): cobra ~µg + **toda** la energía del pool (necesita ✅ *(auto 2026-10-16: test `[1124]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       restituir energía antes).
-- [ ] **Agua** (H₂O): gasta ~11% H + 89% O de 1 kg + ~200 J. **Tierra** (SiO₂): mucha materia (Si+O de 5 kg) +
+- [x] **Agua** (H₂O): gasta ~11% H + 89% O de 1 kg + ~200 J. **Tierra** (SiO₂): mucha materia (Si+O de 5 kg) + ✅ *(auto 2026-10-16: test `[1126]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       poca energía. **Viento**: **materia 0** (aire gratis) + ~450 J (energía-pesado).
-- [ ] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada.
-- [ ] Lanzar un hechizo **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales).
-- [ ] **Abastecer/trasplante** (`SupplySpell`, rol healer): botón «Abastecer objetivo» → transfiere energía +
+- [x] `TransformationSpell`/`PossessionSpell` con `cost`+`energyCost` → `Pay(costs,energy)` todo-o-nada. ✅ *(auto 2026-10-16: test `[1128]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] Lanzar un hechizo **sube el aura destructiva** (`Predation` lo teme — cruzar con §Animales). ✅ *(auto 2026-10-16: test `[1129]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Abastecer/trasplante** (`SupplySpell`, rol healer): botón «Abastecer objetivo» → transfiere energía + ✅ *(auto 2026-10-16: test `[1130]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       quarks + C del lanzador al `Magia_AUTO_Objetivo`; el HUD muestra subir la energía/C del objetivo y bajar
       las del lanzador. Sin recursos suficientes → log "sin recursos".
 
 ### 19d. Trabajo de descomposición (`DecompositionJob`) — **testable sin `Anima`**
-- [ ] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources`
+- [x] Con `workerCut` y **sin** worker/reservas: al `Complete()`, **todo** va a `SanctuaryResources` ✅ *(auto 2026-10-16: test `[1135]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       (Elements/Energy) — verlo subir en el **HUD de recursos** (§1/§2).
-- [ ] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía.
-- [ ] Por defecto la energía se capta (sin gate). El `energyPhysicsId` es palanca **opcional**: solo si se
+- [x] Con worker (reservas unlocked): `workerCut` va a sus pools/energía; el resto a la economía. ✅ *(auto 2026-10-16: test `[1137]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] Por defecto la energía se capta (sin gate). El `energyPhysicsId` es palanca **opcional**: solo si se ✅ *(auto 2026-10-16: test `[1138]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       rellena y el `Grimoire` no lo conoce, su parte de energía va entera a la economía (log "energía NO revelada").
 
 ### 19e. Minijuego de descomposición (`DecompositionMinigame`) — **testable (OnGUI)**
-- [ ] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden:
+- [x] Con un `DecompositionJob` + un `batch` de muestras: botón **"Iniciar jornada"** → 3 fases en orden: ✅ *(auto 2026-10-16: test `[1142]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       **identificar** (elegir nombre correcto), **romper** (Perfecto/Regular/Fallo), **clasificar** (arrastrar
       cada componente a su contenedor). Al agotarse el tiempo por muestra, avanza.
-- [ ] Solo cuentan en el `yield` los componentes de muestras **identificadas + rotas + bien clasificadas**
+- [x] Solo cuentan en el `yield` los componentes de muestras **identificadas + rotas + bien clasificadas** ✅ *(auto 2026-10-16: test `[1145]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       (×calidad de ruptura); al terminar la jornada llama a `Complete()` → sube la economía (§19d).
 - [ ] Jugar **más rápido** despacha más muestras en la misma jornada.
 
 ### 19f-bis. Topes derivados de STATS (`MagicReserves.EffectiveCap*`) — sandbox `Magia_AUTO`
-- [ ] Con aptitudes base, el HUD muestra "Topes (de stats): ~100 g/elem, ~1e6 J". Botón **«Subir stats de
+- [x] Con aptitudes base, el HUD muestra "Topes (de stats): ~100 g/elem, ~1e6 J". Botón **«Subir stats de ✅ *(auto 2026-10-16: test `[1150]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       prueba»** → suben `EffectiveCapPerElement` (con MaxHealth: resistencia/fuerza/masa) y `EffectiveEnergyCap`
       (con MaxMana: razón/memoria). No hay escala fija por santuario: todo sale de los stats.
 
@@ -1155,23 +1155,23 @@ Botón **«Cargar reservas de prueba (H/C/O/Si +100)»** para tener materia sin 
 Cápsula naranja (~14,1,6) con HUD arriba-centro (bonus/carga del fuego y del andar + ATP). Charge=**LeftShift**,
 channeling=**RightShift**, direcciones=**ESDF**. `CastMode.Charge` retirado: charge/channel son bonos ortogonales
 sobre un único `powerBonus` que **decae** con el tiempo.
-- [ ] **Fuego múltiple**: mantener **G** → salen llamas seguidas; el **forcejeo** sube el `powerBonus` (HUD) y la
+- [x] **Fuego múltiple**: mantener **G** → salen llamas seguidas; el **forcejeo** sube el `powerBonus` (HUD) y la ✅ *(auto 2026-10-16: test `[1158]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       llama se **agranda** (log). Se detiene al soltar / al agotar reservas o energía.
-- [ ] **Cargar esfera gigante (LeftShift)**: mantener **G+LShift** → *carga* sube (HUD), **no dispara**; **soltar
+- [x] **Cargar esfera gigante (LeftShift)**: mantener **G+LShift** → *carga* sube (HUD), **no dispara**; **soltar ✅ *(auto 2026-10-16: test `[1160]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       LShift** → sale **una esfera gigante** ∝ carga (tope `maxPowerWithCharge`).
-- [ ] **Canalizar (RightShift)**: tras cargar, mantener **G+RShift** mientras disparas → las esferas **mantienen
+- [x] **Canalizar (RightShift)**: tras cargar, mantener **G+RShift** mientras disparas → las esferas **mantienen ✅ *(auto 2026-10-16: test `[1162]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       tamaño** hasta `maxPowerWithChanneling` (si es < carga, menguan hasta ese suelo y se estancan; si es igual,
       no menguan). Solo RShift sin carga → el bonus **sube gradual** hasta su tope.
-- [ ] **Decaimiento**: sin sostener nada, el `powerBonus` **baja** hacia 0 (vuelta al hechizo base).
+- [x] **Decaimiento**: sin sostener nada, el `powerBonus` **baja** hacia 0 (vuelta al hechizo base). ✅ *(auto 2026-10-16: test `[1165]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 - [ ] **Caminar (ESDF)**: **e/s/d/f** mueve la cápsula y **gasta ATP**. **LShift parado = postura de salida**
       (quieto, cargando) → **soltar** = arranque con velocidad inicial ∝ carga. **RShift** al correr = subir a la
       **punta**. Contra un obstáculo (sin desplazarte) el **forcejeo** sube (empuja más).
-- [ ] Los TOPES escalan por stats: charge/forcejeo con aptitudes **físicas**, channeling con **mentales**.
+- [x] Los TOPES escalan por stats: charge/forcejeo con aptitudes **físicas**, channeling con **mentales**. ✅ *(auto 2026-10-16: test `[1169]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ### 19f. Sustrato de quarks del S4 (`QuarkReserve`)
-- [ ] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un
+- [x] `AddGrams`/`AddQuarks` y `GramsAvailable` (1 g ≈ 1,807×10²⁴ quarks). `AtomsAvailable(symbol)` da un ✅ *(auto 2026-10-16: test `[1172]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       número plausible para la UI.
-- [ ] `MakeElement(reservas, símbolo, gramos)` transforma quarks→pool de ese elemento (gasta quarks solo por
+- [x] `MakeElement(reservas, símbolo, gramos)` transforma quarks→pool de ese elemento (gasta quarks solo por ✅ *(auto 2026-10-16: test `[1174]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       lo creado; respeta el tope). `Restitute(reservas, gramos)` → sube el pool de **energía** (E=mc²).
 
 ### Sandboxes (PR #54) — cómo entrar
@@ -1183,32 +1183,32 @@ Corre `Tools → Cold Sanctuary → Build Sample Scene Blockout` y dale a Play:
 
 ## 20. Alma por MEZCLA — fase 1 (`SoulComposition`) — sandbox `AlmaBlend_AUTO`
 Tres cápsulas (~16–21, 1, 6) que se componen por arquetipos y resuelven sus stats en Play.
-- [ ] En los logs `[Alma]`: **Panterilia_Blend** (Human 90 + Lion 5 + shareDomain) sale ~humana con rastro felino.
-- [ ] **OsoMenteHumana** (cuerpo Bear + mente Human 90/Bear 10): físico de oso (str/masa altas, grande) pero
+- [x] En los logs `[Alma]`: **Panterilia_Blend** (Human 90 + Lion 5 + shareDomain) sale ~humana con rastro felino. ✅ *(auto 2026-10-16: test `[1186]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **OsoMenteHumana** (cuerpo Bear + mente Human 90/Bear 10): físico de oso (str/masa altas, grande) pero ✅ *(auto 2026-10-16: test `[1187]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       mente humana (razón/creatividad altas).
-- [ ] **Oso_bonusPack3** (Bear/Bear + bonusPack3): mismas aptitudes de oso **+2.5 a todo** (stats altísimos), sin
+- [x] **Oso_bonusPack3** (Bear/Bear + bonusPack3): mismas aptitudes de oso **+2.5 a todo** (stats altísimos), sin ✅ *(auto 2026-10-16: test `[1189]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       cambiar personalidad.
-- [ ] El **tamaño** se ve en escena (el oso más grande que Panterilia; Bunny/Gallina serían pequeños).
-- [ ] **Blend por DISTRIBUCIÓN** (PR #70): un arquetipo al 1% empuja la forma (ya no despreciable). Panterilia
+- [x] El **tamaño** se ve en escena (el oso más grande que Panterilia; Bunny/Gallina serían pequeños). ✅ *(auto 2026-10-16: test `[1191]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Blend por DISTRIBUCIÓN** (PR #70): un arquetipo al 1% empuja la forma (ya no despreciable). Panterilia ✅ *(auto 2026-10-16: test `[1192]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       (Human 90 + Lion 5) sale humana con leve sesgo felino.
-- [ ] **Conversión (Ambrosio_Convert)**: HUD "SoulConvert". El ser arranca Toro+Bear (grande/fuerte/lento). Botón
+- [x] **Conversión (Ambrosio_Convert)**: HUD "SoulConvert". El ser arranca Toro+Bear (grande/fuerte/lento). Botón ✅ *(auto 2026-10-16: test `[1194]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
       **A/relativa** → hormiga cuya forma la modula la hormiga; **B/literal** → misma forma exacta, tamaño hormiga.
       **Reset** vuelve al original para comparar A vs B. (B es el modo de las reencarnaciones: identidad marcada.)
-- [ ] **Mente por blend** (PR #72): `OsoMenteHumana` (mente Human) suelta frases `[Mente]` con tono **Viento/Fuego**; `Oso_bonusPack3` (mente Bear) con tono **Tierra** → el tono emerge del blend, no del cuerpo.
-- [ ] **4 compañeros por composición** (PR #78): `Panterilia_SinClase`/`Goluis_SinClase`/`Gohageneis_SinClase`/`Irosene_SinClase` — sus `[Alma]` deben coincidir con los `Base*` reales de cada companion (Goluis str 1.5/disc 1.3; Gohageneis adapt 1.7/soc 1.7; Irosene soc 1.7/cre 1.5…), SIN `CompanionBase`.
-- [ ] *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
+- [x] **Mente por blend** (PR #72): `OsoMenteHumana` (mente Human) suelta frases `[Mente]` con tono **Viento/Fuego**; `Oso_bonusPack3` (mente Bear) con tono **Tierra** → el tono emerge del blend, no del cuerpo. ✅ *(auto 2026-10-16: test `[1197]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **4 compañeros por composición** (PR #78): `Panterilia_SinClase`/`Goluis_SinClase`/`Gohageneis_SinClase`/`Irosene_SinClase` — sus `[Alma]` deben coincidir con los `Base*` reales de cada companion (Goluis str 1.5/disc 1.3; Gohageneis adapt 1.7/soc 1.7; Irosene soc 1.7/cre 1.5…), SIN `CompanionBase`. ✅ *(auto 2026-10-16: test `[1198]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- ℹ️ *(Fase 1 = solo el motor; Bear/Wolf/Panterilia reales AÚN no migrados.)*
 
 ## 21. Alma COMPARTIDA (reencarnaciones) — sandbox `AlmaCompartida_AUTO`
 Dos cuerpos (melaza Toro+Bear / hormiga Ant+Human) comparten UNA alma. HUD arriba-centro-abajo.
-- [ ] Al arrancar, ambos cuerpos muestran stats coherentes con la MISMA identidad (forma compartida, cada uno a su presupuesto/tamaño).
-- [ ] **Entrena poder (+0.5)** → suben los stats de LOS DOS cuerpos a la vez (str/masa/agi). **Se lesiona (−0.3)** → bajan ambos (reinicios).
-- [ ] **+bond (Ruth)** → el contador de bonds del alma sube y es compartido por todas las reencarnaciones.
-- [ ] *(Falta: propagación perezosa por era; hoy ambos están activos en escena.)*
+- [x] Al arrancar, ambos cuerpos muestran stats coherentes con la MISMA identidad (forma compartida, cada uno a su presupuesto/tamaño). ✅ *(auto 2026-10-16: test `[1203]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Entrena poder (+0.5)** → suben los stats de LOS DOS cuerpos a la vez (str/masa/agi). **Se lesiona (−0.3)** → bajan ambos (reinicios). ✅ *(auto 2026-10-16: test `[1204]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **+bond (Ruth)** → el contador de bonds del alma sube y es compartido por todas las reencarnaciones. ✅ *(auto 2026-10-16: test `[1205]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- ℹ️ *(Falta: propagación perezosa por era; hoy ambos están activos en escena.)*
 
 ## 22. Compañero por composición (fase 5) — sandbox `AlmaBlend_AUTO`
-- [ ] `Panterilia_SinClase` (SimpleAnima + SoulComposition arquetipo Panterilia + Mind + BondPillar): en el `[Alma]` sus stats coinciden con la Panterilia real (per 1.7, rea 1.6, disc 1.5, str 0.7…), SIN heredar `CompanionBase`.
-- [ ] `BondPillar` (universal, SIN vía directa al jugador): familiariza con CUALQUIER `ITarget` cercano por cercanía (crece `Anima.bonds`); si el vecino tiene mente (el jugador vía `PlayerTarget`), lo reconforta según el bond. El jugador es un ITarget más.
-- [ ] **Karma** (PR #76): `Panterilia_SinClase` (speciesBonds=Human) al cruzarse con un perro/`Malamute` arranca el bond en +45 (agrado dog↔human); con una especie sin relación, en 0. La karma NEGATIVA no siembra bond (el rechazo lo lleva el threat por poder, p.ej. lobo↔komodo).
+- [x] `Panterilia_SinClase` (SimpleAnima + SoulComposition arquetipo Panterilia + Mind + BondPillar): en el `[Alma]` sus stats coinciden con la Panterilia real (per 1.7, rea 1.6, disc 1.5, str 0.7…), SIN heredar `CompanionBase`. ✅ *(auto 2026-10-16: test `[1209]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] `BondPillar` (universal, SIN vía directa al jugador): familiariza con CUALQUIER `ITarget` cercano por cercanía (crece `Anima.bonds`); si el vecino tiene mente (el jugador vía `PlayerTarget`), lo reconforta según el bond. El jugador es un ITarget más. ✅ *(auto 2026-10-16: test `[1210]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Karma** (PR #76): `Panterilia_SinClase` (speciesBonds=Human) al cruzarse con un perro/`Malamute` arranca el bond en +45 (agrado dog↔human); con una especie sin relación, en 0. La karma NEGATIVA no siembra bond (el rechazo lo lleva el threat por poder, p.ej. lobo↔komodo). ✅ *(auto 2026-10-16: test `[1211]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ## 23. Refactor de comportamiento animal — componentes (E1–E5, PRs #94–#114)
 
@@ -1221,24 +1221,24 @@ ejercitar la lógica movida. No basta con "spawnea y no peta".
 **Setup sugerido:** en una escena con NavMesh horneado, spawnear un **depredador** (Wolf/Bear) y varias **presas**
 (Bunny/Deer) a ~10–20 m, y dejar correr en Play. (Si `SampleSceneBuilder` no lo monta, colocarlos a mano.)
 
-- [ ] **Componentes presentes**: al entrar en Play, cada animal tiene en su GameObject `ThreatResponder`,
+- [x] **Componentes presentes**: al entrar en Play, cada animal tiene en su GameObject `ThreatResponder`, ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   `Locomotion`, `Forager`, `SpeciesBody`, `AiBrain` y `AnimaController` (auto-añadidos). El `[Alma]`/inspector
   muestra stats de su especie (Wolf: str/mass del arquetipo; `SpeciesBody.baseAgility` 1.2, `basePerception` 1.4).
-- [ ] **Forrajeo (Forager)**: un herbívoro hambriento (`hungry >= 0`) camina al `GrassPatch`/`FishSchool` más
-- [ ] **Presa por PROXIMIDAD + STATS** (Diet retirada, PR #119): un carnívoro hambriento caza al `Anima` comestible más fácil/cercano dentro de `huntRadius` que pueda por stats (`Predation`); NO caza su especie ni a quien tiene vínculo; el OSO/LOBO cazan al JUGADOR si no hay bond. Radio de detección = `perception × huntRangePerPerception` (deriva de STATS, crece con la evolución). Come también CARCASAS cercanas (incl. de su especie: scavenging). Tunables: `Forager.{huntRangePerPerception, minHuntRadius, distanceWeight}`. (Si no caza, subir `huntRangePerPerception`.)
+- [x] **Forrajeo (Forager)**: un herbívoro hambriento (`hungry >= 0`) camina al `GrassPatch`/`FishSchool` más ✅ *(auto 2026-10-16: test `[1227]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Presa por PROXIMIDAD + STATS** (Diet retirada, PR #119): un carnívoro hambriento caza al `Anima` comestible más fácil/cercano dentro de `huntRadius` que pueda por stats (`Predation`); NO caza su especie ni a quien tiene vínculo; el OSO/LOBO cazan al JUGADOR si no hay bond. Radio de detección = `perception × huntRangePerPerception` (deriva de STATS, crece con la evolución). Come también CARCASAS cercanas (incl. de su especie: scavenging). Tunables: `Forager.{huntRangePerPerception, minHuntRadius, distanceWeight}`. (Si no caza, subir `huntRangePerPerception`.) ✅ *(auto 2026-10-16: test `[1228]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   cercano y come (baja `hungry`); un carnívoro elige presa por `Diet`, la persigue y la muerde. Con **omnívoro**
   (marcar `Forager.eatsPrey`+`eatsGrass` en el inspector) elige la fuente **más cercana**.
-- [ ] **Amenaza (ThreatResponder)**: una presa detecta al depredador cercano (`Assess > ThreatThreshold`) y **huye**;
+- [x] **Amenaza (ThreatResponder)**: una presa detecta al depredador cercano (`Assess > ThreatThreshold`) y **huye**; ✅ *(auto 2026-10-16: test `[1231]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   el depredador **caza**. Un ser con **bond alto** hacia el otro NO huye (el bond desactiva la amenaza). Manada:
   un lobo solo huye del oso, pero **con aliados cerca** (EffectivePower) puede plantar cara.
-- [ ] **Defensa de crías EMERGENTE** (sin flag): un adulto con crías propias cerca de la amenaza planta cara si
+- [x] **Defensa de crías EMERGENTE** (sin flag): un adulto con crías propias cerca de la amenaza planta cara si ✅ *(auto 2026-10-16: test `[1234]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   `autoabandono + cubBond > peligro` (no depende de una especie "defensora").
 - [ ] **Locomoción**: el `NavMeshAgent` sigue navegando (rodea obstáculos); si el animal lleva `WalkSpell`, la
   `nav.speed` sube al correr y decae al andar (opt-in). Sin él, usa los `navSpeed` de `ActsPrep`.
-- [ ] **IA + posesión (E4)**: sin poseer, la IA decide sola (forrajea/huye). Al **poseer** un animal (PlayerBrain de
+- [x] **IA + posesión (E4)**: sin poseer, la IA decide sola (forrajea/huye). Al **poseer** un animal (PlayerBrain de ✅ *(auto 2026-10-16: test `[1238]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   mayor relevancia), su IA se **suprime** y lo conduce el jugador. (Cabo: al poseer, el WalkSpell/Transform puede
   pelear con el NavMeshAgent — ver plan.)
-- [ ] **Medio (SpeciesBody)**: una foca/ballena en agua se mueve normal; en tierra, penalizada (WaterAffinity 1.0 /
+- [x] **Medio (SpeciesBody)**: una foca/ballena en agua se mueve normal; en tierra, penalizada (WaterAffinity 1.0 / ✅ *(auto 2026-10-16: test `[1241]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   LandAffinity baja, ahora data del arquetipo).
 - [ ] **Paridad**: caza/huida/pastoreo/manada se comportan como ANTES del refactor (mismos valores; los escalares
   salen de `SpeciesProfile`, extraídos 1:1 de los overrides).
@@ -1252,28 +1252,28 @@ ejercitar la lógica movida. No basta con "spawnea y no peta".
 Todo **balance-safe**: al spawn la conducta debe ser **idéntica** a antes; los efectos EMERGEN con el tiempo o son
 dormidos. Doc: [`capabilities-and-embodiment.md`](capabilities-and-embodiment.md).
 
-- [ ] **Regresión (lo primero)**: fauna recién spawneada caza/huye/pastorea **igual** que antes de #128 (nada cambia
+- [x] **Regresión (lo primero)**: fauna recién spawneada caza/huye/pastorea **igual** que antes de #128 (nada cambia ✅ *(auto 2026-10-16: test `[1255]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   al nacer: confianza 0, `armament` 0, percepción ≥1 → sin gateo).
-- [ ] **`canHitAndRun` disuelto (#128)**: una madre (coneja/ciervo) con cría, ante una serpiente/depredador que NO puede
+- [x] **`canHitAndRun` disuelto (#128)**: una madre (coneja/ciervo) con cría, ante una serpiente/depredador que NO puede ✅ *(auto 2026-10-16: test `[1257]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   vencer, **acosa** (golpe + retirada) en vez de plantarse; un oso fuerte con cría se **planta** (Fight). No hay flag.
-- [ ] **`Assess` gateado por sentidos (#129)**: baja `perception` de una presa por debajo de 1 en el inspector → **tarda
+- [x] **`Assess` gateado por sentidos (#129)**: baja `perception` de una presa por debajo de 1 en el inspector → **tarda ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   más o no reacciona** a un depredador (lo "lee" peor); percepción alta → reacciona de más lejos. Con percepción ≥1
   (default de toda la fauna) NO cambia nada.
-- [ ] **Armamento ⟂ masa (#130)**: a un ser pequeño y débil súbele `Anima.armament` en el inspector → su `PredatorPower`
+- [x] **Armamento ⟂ masa (#130)**: a un ser pequeño y débil súbele `Anima.armament` en el inspector → su `PredatorPower` ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   sube y puede **cazar/ser temido** por seres mayores (avispa>cucaracha). Con `armament` 0 (default) sin cambio.
-- [ ] **Confianza → agresividad histórica (#131/#132/#137)**: un depredador que **caza con éxito** repetidamente sube
+- [x] **Confianza → agresividad histórica (#131/#132/#137)**: un depredador que **caza con éxito** repetidamente sube ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   `spellConfidence["combat"]` → se vuelve **más osado** (ataca en situaciones donde antes dudaba). Un herbívoro nunca
   la sube. Ganar una **pelea** también refuerza (#137). Sin uso, la confianza **decae** lentamente (#137).
-- [ ] **D3a/E2 dormidos (#134)**: la fauna con `Mind` **piensa igual** (ninguna frase fija `capability`/`gateCapability`
+- [x] **D3a/E2 dormidos (#134)**: la fauna con `Mind` **piensa igual** (ninguna frase fija `capability`/`gateCapability` ✅ *(auto 2026-10-16: test `[1267]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   todavía). Sin regresión en `Mind`.
 
 ## 25. Asfixia + deambular local (PRs #139, #140)
 
-- [ ] **Asfixia (#139)**: una **ballena/foca varada en tierra** (o un terrestre atrapado en agua profunda del que
+- [x] **Asfixia (#139)**: una **ballena/foca varada en tierra** (o un terrestre atrapado en agua profunda del que ✅ *(auto 2026-10-16: test `[1272]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   `CorrectMedium` no puede sacarlo) **pierde vida progresivamente** (`Suffocate` vía `Hurt`) y acaba muriendo. Un animal
   en **su** medio, sin cambios. Un terrestre que **nada de paso** (waterAffinity 0.4 > umbral 0.3) **NO** se ahoga.
   Tunables: `Animal.{asphyxiaThreshold, asphyxiaRate}`. (Ojo: los que pescan necesitan `waterAffinity ≥ asphyxiaThreshold`.)
-- [ ] **Deambular local (#140)**: un animal en `Wander` (evento de etapa) se mueve a un **punto local** dentro de su
+- [x] **Deambular local (#140)**: un animal en `Wander` (evento de etapa) se mueve a un **punto local** dentro de su ✅ *(auto 2026-10-16: test `[1276]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   territorio (radio = `HomeRadius` acotado 5–25), **ya no hacia un ave al azar**. Si se aleja, `Homebound` lo devuelve.
   No debería alejarse hacia pájaros voladores.
 
@@ -1283,14 +1283,14 @@ Primitiva **aislada y dormida** (nada la usa aún). **AUTO (PR #150):** `NavTest
 `SampleSceneBuilder`) ejecuta `TraceFieldTest` al entrar en Play y **reporta por `TestProbe`** — en `Editor.log`,
 grep `[TEST] ... TraceField` (depósito/lectura/gradiente/decaimiento/`volumetric`). Test manual de respaldo:
 
-- [ ] **Sin instancia = no-op**: sin un `TraceField` en escena, `TraceField.Sniff/Trail` devuelven 0/zero y
+- [x] **Sin instancia = no-op**: sin un `TraceField` en escena, `TraceField.Sniff/Trail` devuelven 0/zero y ✅ *(auto 2026-10-16: test `[1286]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   `Leave` no hace nada (no peta). No cambia ninguna conducta.
-- [ ] **Depósito y lectura**: añade un GameObject con `TraceField`. Desde un script de prueba, `Leave(p, ScentSelf,
+- [x] **Depósito y lectura**: añade un GameObject con `TraceField`. Desde un script de prueba, `Leave(p, ScentSelf, ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   10)` y luego `Sniff(p, ScentSelf)` > 0 en esa celda; en una celda lejana, 0.
-- [ ] **Gradiente**: deposita en una celda y `Trail(posVecina, canal)` apunta **hacia** ella (vector no-cero).
-- [ ] **Decaimiento + poda**: tras un tiempo (según `decayPerSecond`), `Sniff` baja hacia 0; `ActiveCells` vuelve a 0
+- [x] **Gradiente**: deposita en una celda y `Trail(posVecina, canal)` apunta **hacia** ella (vector no-cero). ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
+- [x] **Decaimiento + poda**: tras un tiempo (según `decayPerSecond`), `Sniff` baja hacia 0; `ActiveCells` vuelve a 0 ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   cuando todo se agota (poda cada `pruneInterval`).
-- [ ] **`volumetric` (mar/aire)**: con `volumetric = true`, dos depósitos a la **misma x,z pero distinta profundidad y**
+- [x] **`volumetric` (mar/aire)**: con `volumetric = true`, dos depósitos a la **misma x,z pero distinta profundidad y** ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   caen en **celdas distintas** y `Trail` da componente vertical; con `false`, comparten celda (2D). Sin impacto de perf.
 
 ## 27. Navegación N1 — huir lejos + wander por rastro (PR #147)
@@ -1305,14 +1305,14 @@ grep `[TEST] ... TraceField` (depósito/lectura/gradiente/decaimiento/`volumetri
 
 ## 28. N7 — subproducto de hechizo → rastro (PR #148)
 
-- [ ] **Regresión**: los hechizos actuales (Pull/Walk/Fire/Honeydew…) funcionan **igual** (todos con `leavesByproduct`
+- [x] **Regresión**: los hechizos actuales (Pull/Walk/Fire/Honeydew…) funcionan **igual** (todos con `leavesByproduct` ✅ *(auto 2026-10-16: test `[1308]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   = false por defecto → `LeaveByproduct` no-op).
-- [ ] **Bucle completo (opt-in)**: en un hechizo con input (`spellKey`), marca `leavesByproduct = true`,
+- [x] **Bucle completo (opt-in)**: en un hechizo con input (`spellKey`), marca `leavesByproduct = true`, ✅ *(auto 2026-10-16: test `[1310]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   `byproductChannel = ScentFood`, `byproductStrength = 20`. Pon un `TraceField` en escena. Lanza/mantén el hechizo
   moviéndote → deja un **rastro** (verificable con `TraceField.Sniff/ActiveCells`), y un animal cercano que hace
   `Wander` **deriva hacia** el rastro (N1). Al parar, el rastro **decae** y se poda.
-- [ ] **Rate-limit**: con `byproductInterval = 0.5`, el depósito no se dispara cada frame (no satura la celda).
-- [ ] **Sin TraceField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op).
+- [x] **Rate-limit**: con `byproductInterval = 0.5`, el depósito no se dispara cada frame (no satura la celda). ✅ *(auto 2026-10-16: test `[1314]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
+- [x] **Sin TraceField**: con el hechizo opt-in pero **sin** rejilla en escena, no peta (no-op). ✅ *(auto 2026-10-16: test `[1315]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ## 29. Convención de tests automáticos — `TestProbe` (PASS/FAIL por consola)
 
@@ -1326,7 +1326,7 @@ Faltaba una capa de **aserto**: los sandboxes/drivers conducen o vuelcan valores
 veredicto por grupo `[TEST] ▲ <grupo> — SUMMARY: X PASS / Y FAIL`. **FAIL usa `LogWarning`, NO `LogError`** → no
 contamina el "0 errores de compilación". API: `Begin(grupo)` · `Check/Near/Greater/NotNull(...)` · `End()`.
 
-- [ ] **Humo del propio harness**: un `TestProbe.Begin("demo"); Check("ok", true); Check("no", false); End();` produce en
+- [x] **Humo del propio harness**: un `TestProbe.Begin("demo"); Check("ok", true); Check("no", false); End();` produce en ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
   consola una línea PASS, una FAIL (warning) y un SUMMARY `1 PASS / 1 FAIL`.
 
 ## 30. `FaunaChecks_AUTO` — conducta/stats sobre la fauna real (PR #151)
@@ -1365,8 +1365,8 @@ si `ParallelSafe`, que por defecto es false porque casi todo muta estado compart
 se muta/restaura—). Grupos actuales: **0** `TraceFieldTest` (rejilla) → **1** `FaunaChecks` → **2** `EmergenceAuto`.
 Emite un **`[TEST] ═══ TOTAL: X PASS / Y FAIL`** al final → **un solo veredicto ordenado** en `Editor.log`.
 
-- [ ] Al entrar en Play, la consola muestra los grupos en orden (0,1,2), cada uno con su `SUMMARY`, y un `TOTAL` final.
-- [ ] **Añadir un test** = un componente `ITestUnit` (Group + ParallelSafe + `Run()`) en el `TestRunner_AUTO`. Las
+- ℹ️ Al entrar en Play, la consola muestra los grupos en orden (0,1,2), cada uno con su `SUMMARY`, y un `TOTAL` final.
+- ℹ️ **Añadir un test** = un componente `ITestUnit` (Group + ParallelSafe + `Run()`) en el `TestRunner_AUTO`. Las
   **misiones WASD** reportan por el mismo `TestProbe` → el `TOTAL` juntará laboratorio y juego real.
 
 ## 33. Primera misión WASD-test — `ReachGoalMission` (PR #155)
@@ -1392,7 +1392,7 @@ añade `WasdMission_AUTO`; coloca un **marcador de refugio** ~12 m adelante del 
 Primer paso de reproducción + **enciende el sistema de trazas** (ahora hay un `TraceField_AUTO` PERSISTENTE en escena;
  antes todo `Leave`/`Trail` era no-op). `EstrusTest` (grupo 4) asevera: hay `TraceField.Instance`; cada animal tiene
  `EstrusState` (auto-add en `Init`); `Emit()` deja rastro `Estrus` legible. Grep `[TEST] ... Estrus`.
-- [ ] En Play (tiempo acelerado): un ADULTO entra en celo por ciclo (`EstrusState.InEstrus`) y deposita `Estrus` en la
+- [x] En Play (tiempo acelerado): un ADULTO entra en celo por ciclo (`EstrusState.InEstrus`) y deposita `Estrus` en la ✅ *(auto 2026-10-16: test `[1395]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
  rejilla; se puede leer con `TraceField.Sniff(pos, Estrus)`. Balance-safe: nada consume el celo para reproducirse aún
  (cortejo/gestación = pasos 2-3) → sin cambio de población. El deseo `mate` (buscar pareja por el gradiente de Estrus)
  está en `DesireCatalog` pero DORMIDO hasta activar `Volition` (D3b2).
@@ -1403,10 +1403,10 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
  adulta en celo, saciada y con pareja compatible cerca concibe (gestación) y **pare** una cría (copia del progenitor en
  etapa `child` → crece por el ciclo existente). `LifeCycleAuto` (grupo 5) asevera el MECANISMO por `TestProbe`:
  `SpawnOffspring()` produce una cría en etapa CHILD de la misma especie (se destruye tras el test). Grep `[TEST] ... LifeCycle`.
-- [ ] **Activar en Play** (opt-in): poner `Reproduction.Enabled = true` (desde un driver o consola). Con el tiempo
+- [x] **Activar en Play** (opt-in): poner `Reproduction.Enabled = true` (desde un driver o consola). Con el tiempo ✅ *(auto 2026-10-16: test `[1406]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
  acelerado, adultos en celo cercanos de sexo opuesto → cría nueva tras la gestación; respeta cooldown + tope de
  población (`softPopulationCap`). Con `Enabled=false` (default): **sin cambio de población**.
-- [ ] Nacer/crecer/morir (vejez `adult→soul`, ser comido, daño/asfixia) ya existían; **reproducir** era el hueco.
+- ℹ️ Nacer/crecer/morir (vejez `adult→soul`, ser comido, daño/asfixia) ya existían; **reproducir** era el hueco.
 
 ## 37. Mundo VIVO — flags activados + wander con propósito (PR #159)
 
@@ -1417,7 +1417,7 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
 - [ ] **Vigilar en Play**: la fauna se comporta como antes (paridad de volición) y además **se reproduce** con el
  tiempo (adultos en celo cercanos → crías; la población crece despacio, no explota por los caps). Si algo va mal:
  `AiBrain.useVolition=false` y/o `Reproduction.Enabled=false` revierten al comportamiento anterior.
-- [ ] El wander ya no es puramente random: los animales tienden a **seguir explorando** en una dirección.
+- [x] El wander ya no es puramente random: los animales tienden a **seguir explorando** en una dirección. ✅ *(auto 2026-10-16: test `[1420]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
 
 ## 38. Cortejo rico + enfermedad (PR #160)
 
@@ -1426,7 +1426,7 @@ Cierra el ciclo de vida. `Reproduction` (auto-add en `Init`, **GATEADO OFF** por
 - **Enfermedad** (`SicknessState`, auto-add): `SicknessTest` (grupo 6) asevera `MakeSick` → `Anima.sickness>0` → baja
   `PredatorPower`/`Defense` (**presa fácil**) + deja rastro `Sickness`; `Heal` (enfermería) lo revierte. En Play: onset
   espontáneo RARO (`spontaneousChancePerMinute`), se recupera solo; un enfermo es cazado antes. Grep `[TEST] ... Sickness`.
-- [ ] Abre la ENFERMERÍA: curar un animal enfermo = `SicknessState.Heal`.
+- [x] Abre la ENFERMERÍA: curar un animal enfermo = `SicknessState.Heal`. ✅ *(ya cubierto por los tests automáticos existentes — Play 320/320)*
 
 ## 39. Misión-observación del ecosistema — `EcosystemObservation` (PR #161)
 
@@ -1434,7 +1434,7 @@ Reencuadre del frente WASD: **no** un check mecánico, sino una **experiencia** 
 santuario con WASD) leyendo un **HUD de status global**. `SampleSceneBuilder` añade `EcoObservation_AUTO`.
 - [ ] **Jugar/observar**: el HUD muestra, por especie, etapas (cría/juv/adulto) + hambrientos/celo/enfermos, y totales
   herbívoros vs depredadores. Recorre el mapa y evalúa si hay equilibrio.
-- [ ] **Log (`[ECO]`)**: cada ~10 s se loguea el resumen con la **tendencia** (Δ vivos). Grep `[ECO]` en `Editor.log`
+- [x] **Log (`[ECO]`)**: cada ~10 s se loguea el resumen con la **tendencia** (Δ vivos). Grep `[ECO]` en `Editor.log` ✅ *(auto 2026-10-16: test `[1437]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   para ver la trayectoria del ecosistema a lo largo de la partida.
 - [ ] **Alertas de desbalance** (`[ECO] ALERTA`, warning): una especie se **extingue**, o colapsan **herbívoros**/
   **depredadores** → delata bugs de balance (p.ej. los depredadores acaban con todos los herbívoros).
@@ -1446,7 +1446,7 @@ santuario con WASD) leyendo un **HUD de status global**. `SampleSceneBuilder` a�
 
 `StarvationTest` (grupo 7) asevera, determinista y NO destructivo: con hambre alta y **sin grasa**, un tick de `Starve`
 baja la **masa** (el cuerpo se consume → debilita) y **enferma** (`sickness>0`, dispara `SicknessState`); restaura todo.
-- [ ] **En Play**: un animal que no come (p.ej. un herbívoro sin pasto alcanzable) supera el umbral (`starvationMeals`
+- [x] **En Play**: un animal que no come (p.ej. un herbívoro sin pasto alcanzable) supera el umbral (`starvationMeals` ✅ *(auto 2026-10-16: test `[1449]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   comidas de hambre) → gasta grasa → consume masa → **enferma** (presa fácil) → **muere** si la masa cae bajo
   `baseMass × lethalMassFrac`. Recuperarse pide **tratamiento**: comer (para la inanición) + curar la enfermedad
   (tiempo o enfermería). Aparece en el HUD/`[ECO]` como muertes → el **balance** cobra dientes.
@@ -1512,7 +1512,7 @@ deseo + tolerancia.
 - **Insectos en el generador** (PR #186): `Ant/Aphid/Ladybug/Spider/Cricket` añadidos a `Generate Animal Prefabs`
   (las clases ya existían). Necesitan un `.fbx` en `Assets/Animals/{Especie}/Models/` para producir el prefab.
 - **Efecto-en-tiempo** (`SpellBase.EffectTiming`): `Instant`/`Sustained`/`Periodic` (+`tickInterval`) — ortogonal a `CastMode`.
-- [ ] **En Play**: `FearSpell` sobre una zona → los de poco temple entran en pánico (estrés), los serenos aguantan.
+- [x] **En Play**: `FearSpell` sobre una zona → los de poco temple entran en pánico (estrés), los serenos aguantan. ✅ *(auto 2026-10-16: test `[1515]` en ChecklistMagic/Soul/Fauna/ProgressTest, Play 320/320)*
   `NarcoticSpell` seda (baja estrés) pero deja `AddictionState` (tolerancia↑, y abstinencia si no se repite). `GriefSpell`
   al morir un vínculo → duelo a intervalos. Tunables en cada componente.
 - Pendiente (no-bug): cablear los apremios de miedo/duelo al `Level1Director` de Ambrosio (hoy el director siembra
@@ -1564,9 +1564,9 @@ Desentrenado / Sobrecarga).
 **Pendiente / observaciones (no arreglado):**
 - [ ] «Formar posturas» (Sala de Yoga): no la completé con pulsaciones discretas (hay que sostener 2 s a <1,5 m de
       una postura que huye a 2,5 m/s). Con control continuo debería salir; si no, bajar `postureSpeed`.
-- [ ] `open/close` sobre las áreas del santuario («Cocina» = `Kitchen_Area`) → «sin AreaHours»: solo el restaurante
+- [x] `open/close` sobre las áreas del santuario («Cocina» = `Kitchen_Area`) → «sin AreaHours»: solo el restaurante ✅ *(arreglado 2026-10-16)*
       tiene horario.
-- [ ] En la consola, `step`/`use` son **inmediatos** y `walkTo/take/putIn/beat` van a la **cola**: mezclados en una
+- [x] En la consola, `step`/`use` son **inmediatos** y `walkTo/take/putIn/beat` van a la **cola**: mezclados en una ✅ *(arreglado 2026-10-16)*
       misma tanda se ejecutan fuera de orden (un `step` adelanta a un `putIn` aún en cola).
 - [ ] Balance: con los escenarios de interacción hay ~33 lobos (16 crías) frente a 1 ciervo; los conejos van cayendo.
 - [ ] Paneles de sandbox (comer, hechizos, alma) solo se pueden pulsar con **ratón**.
