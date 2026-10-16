@@ -158,7 +158,11 @@ public static class SampleSceneBuilder
                                                                    BuildMechanicsBeginner, BuildTruckMaintenance, BuildConstructionBeginner,
                                                                    BuildDispatchDemo, BuildCriaBeginner }),
         ("Prueba_Prologo",        new System.Action<Transform>[] { BuildPrologueSandbox }),
-        ("Prueba_Yoga",           new System.Action<Transform>[] { BuildUpaYogaSandbox }),
+        ("Prueba_Yoga",           new System.Action<Transform>[] { BuildUpaYogaSandbox }),   // minijuego de virtualización (cuello por teclas)
+        // UNA ESCENA POR SESIÓN de yoga (demostrador que ejecuta la secuencia en bucle; se revisan por separado).
+        ("Yoga_UpaCuello",        new System.Action<Transform>[] { BuildYogaUpaNeck }),
+        ("Yoga_Namaskar",         new System.Action<Transform>[] { BuildYogaNamaskar }),
+        ("Yoga_SaludoSol",        new System.Action<Transform>[] { BuildYogaSaludoSol }),
         ("Prueba_CamaraEmocion",  new System.Action<Transform>[] { BuildScreenEffectsSandbox, BuildEmotionOrchestraSandbox }),
         ("Prueba_Magia",          new System.Action<Transform>[] { BuildMagicSandbox, BuildSpellDemoSandbox, BuildWalkUniversalSandbox }),
         ("Prueba_Alma",           new System.Action<Transform>[] { BuildSoulBlendSandbox, BuildSharedSoulSandbox }),
@@ -1409,6 +1413,24 @@ public static class SampleSceneBuilder
         // Sin ITarget/faction: sandbox básico — la depredación real requiere Animal.
         pred.AddComponent<AiBrain>().selfRelevance = 1.5f;
         pred.AddComponent<AnimaController>();
+    }
+
+    // UNA ESCENA POR SESIÓN de yoga: un demostrador (cuerpo de cubos) que ejecuta la secuencia en bucle, para revisarla
+    // por separado. Extensible: al añadir una sesión a YogaLibrary, basta una entrada más en TestScenes + su wrapper.
+    static void BuildYogaUpaNeck(Transform parent)   => BuildYogaSessionScene(parent, "Upa-yoga de cuello");
+    static void BuildYogaNamaskar(Transform parent)  => BuildYogaSessionScene(parent, "Yoga Namaskar");
+    static void BuildYogaSaludoSol(Transform parent) => BuildYogaSessionScene(parent, "Saludo al Sol");
+
+    static void BuildYogaSessionScene(Transform parent, string session)
+    {
+        GameObject root = new GameObject($"Yoga_{session}_AUTO"); root.transform.SetParent(parent);
+        GameObject d = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        d.name = $"Yogui ({session})"; d.transform.SetParent(root.transform); d.transform.position = new Vector3(0f, 1f, 0f);
+        var r = d.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Yogui_MAT", new Color(0.8f, 0.78f, 0.9f));
+        d.AddComponent<Anima>();
+        d.AddComponent<Mind>().identity = "Yogui";
+        d.AddComponent<YogaSessionRunner>().sessionName = session;   // viste cuerpo de cubos + ejecuta la sesión en bucle
+        d.AddComponent<WorldLabel>().text = session;
     }
 
     // 1ª virtualización de yoga: solo necesita el componente en escena (UI OnGUI, arranca sola en Play).
