@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 401 tipos._
+_Total: 410 tipos._
 
 
 ## Animals
@@ -80,6 +80,7 @@ _Total: 401 tipos._
 - **AnimaNameplate** (class) — `Assets/Scripts/UI/AnimaNameplate.cs` — ETIQUETAS DE NOMBRE sobre las animas (docs/typed-spells-and-queues.md):
 - **AnimaStatusHUD** (class) — `Assets/Scripts/UI/AnimaStatusHUD.cs` — HUD de ESTADO de un Ánima (docs/consciousness-mechanics.md §2) — hace VISIBLE lo que hay que autorregular:
 - **AnimaStatusPanels** (class) — `Assets/Scripts/UI/AnimaStatusPanels.cs` — HUD DECLARATIVO de estado — la mitad de CÓDIGO (docs/consciousness-mechanics.md §UI):
+- **AnimaTarget** (class) — `Assets/Scripts/Control/AnimaTarget.cs` — Adaptador para un que no lo es por sí mismo (compañeros, la Magnate, seres por composición…).
 - **AnimaThoughtHUD** (class) — `Assets/Scripts/UI/AnimaThoughtHUD.cs` — HUD del PENSAMIENTO del ser que MANEJA el jugador (docs/microcosmos-dungbeetle-level.md §5).
 - **AnimationsName** (class) — `Assets/Scripts/AnimationsName.cs`
 - **AnymaFactory** (class) — `Assets/Scripts/Control/AnymaFactory.cs` — FÁBRICA DE ANIMAS (docs/anyma-factory-and-control.md §2) — crea variantes a partir de un .
@@ -106,11 +107,13 @@ _Total: 401 tipos._
 - **BigFiveProfile** (struct) — `Assets/Scripts/Soul/BigFive.cs` — Perfil de PERSONALIDAD Big Five / OCEAN (docs/apremios-guardian-observacion.md §8) — el modelo más usado en psicología.
 - **BirdBehavior** (class) — `Assets/Scripts/BirdBehavior.cs`
 - **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/soul-composition-blend.md):
+- **BodyMetabolismTest** (class) — `Assets/Scripts/BodyMetabolismTest.cs` — Unidad de test del METABOLISMO DEL CUERPO (docs/body-metabolism):
 - **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción).
 - **BodyPartStats** (class) — `Assets/Scripts/BodyPartStats.cs` — Physical stats for a single body part.
 - **BodyPosition** (class) — `Assets/Scripts/Asana/BodyPosition.cs` — Represents a single body part placement that composes an Asana or Exercise.
 - **BodyPositionButton** (class) — `Assets/Scripts/Asana/BodyPositionButton.cs` — Attach to each UI button in the posture interface.
 - **BodyPositionData** (class) — `Assets/Scripts/Asana/BodyPositionData.cs` — Data-only tag for one canonical BodyPosition — lives on a non-rendered GameObject, used as the data source for the Yoga hologram panel (one per BodyPart).
+- **BodyTemplate** (class) — `Assets/Scripts/Body/BodyMetabolism.cs` — PLANTILLA DE CUERPO por especie (el "template" sobre el que la vida va escribiendo).
 - **BondActivity** (class) — `Assets/Scripts/Bond/BondActivity.cs` — A practice that builds bond between the player and an IBondable target (companion, animal, object, place, natural element).
 - **BondActivityManager** (class) — `Assets/Scripts/Bond/BondActivityManager.cs` — Manages all BondActivities for the player.
 - **BondEscapeReader** (class) — `Assets/Scripts/Microcosmos/BondEscapeReader.cs` — LECTOR DE ESCAPE POR BOND — lee el estado de huida de los miembros del grupo con alto vínculo y ajusta el impulso de hogar propio para acompañarles.
@@ -148,6 +151,10 @@ _Total: 401 tipos._
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
+- **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
+- **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
+- **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
+- **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
 - **DefecationNeed** (class) — `Assets/Scripts/Composition/DefecationNeed.cs` — NECESIDAD DE DEFECAR (popó) — una pulsión como el hambre o el sueño, anclada en biología real:
@@ -196,6 +203,7 @@ _Total: 401 tipos._
 - **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
 - **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
+- **GroundGuard** (class) — `Assets/Scripts/Player/GroundGuard.cs` — SALVAGUARDA DE SUELO:
 - **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
 - **HashSetHolder** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolder.cs`
 - **HashSetHolderAnimalPopulation** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolderAnimalPopulation.cs`
@@ -399,6 +407,7 @@ _Total: 401 tipos._
 - **TypingChallenge** (class) — `Assets/Scripts/Virtualization/TypingChallenge.cs` — Acción TEMPORIZADA que se acelera con MECANOGRAFÍA (docs/kitchen-simulation.md §4b).
 - **UI** (class) — `Assets/Scripts/UI/FollowingArrays/UI.cs`
 - **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`
+- **UpaYoga** (class) — `Assets/Scripts/Asana/UpaYoga.cs` — UPA-YOGA DE CUELLO (lo PRIMERO que enseña la Magnate; docs/upa-yoga-mission.md).
 - **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/upa-yoga-mission.md).
 - **VirtualizationMachine** (class) — `Assets/Scripts/Meditation/VirtualizationMachine.cs` — The virtualization machine — the universal trigger for mob / Microcosmos missions, present in every area (docs §3).
 - **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/kitchen-simulation.md §3b).

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -109,7 +110,7 @@ public class Magnate : MonoBehaviour
         Transform yoga = yogaSpot != null ? yogaSpot : FindSpot("SalaYoga");
         Transform kitchen = kitchenSpot != null ? kitchenSpot : FindSpot("CocinaSpot");
         if (yoga != null) q.EnqueueOwn(ActionSpells.Walk(yoga));
-        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueueOwn(s);   // al llegar, practica el Saludo al Sol
+        foreach (QueuedSpell s in UpaYoga.NeckWarmup()) q.EnqueueOwn(s);   // al llegar, practica upa-yoga (su primera vez)
         if (kitchen != null) q.EnqueueOwn(ActionSpells.Walk(kitchen));
         Debug.Log($"[Magnate] guía a «{t.name}»: sala de yoga → upa-yoga → cocina.");
     }
@@ -167,22 +168,26 @@ public class Magnate : MonoBehaviour
         ActionQueue tq = t.GetComponent<ActionQueue>();
         if (tq != null) foreach (QueuedSpell s in tq.Player) if (s is MimicPoseSpell) return;
 
+        // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; una vez aprendido, se progresa al Saludo al Sol.
         Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
-        g.Learn("yoga");                                             // el recuerdo de la asana
-        // DEMOSTRACIÓN: la Magnate hace el Saludo al Sol con su cuerpo y el alumno la IMITA articulación por articulación
-        // (antes solo se le encolaba la secuencia al alumno y ella no hacía nada). Más nivel de yoga → la sigue mejor.
+        List<QueuedSpell> routine; float dur; string label;
+        if (!g.Knows("upa-yoga")) { routine = UpaYoga.NeckWarmup(); dur = UpaYoga.Duration(); label = "upa-yoga de cuello"; g.Learn("upa-yoga"); }
+        else                      { routine = SunSalutation.Sequence(); dur = SunSalutation.Duration(); label = "el Saludo al Sol"; g.Learn("yoga"); }
+
+        // DEMOSTRACIÓN: la Magnate hace la rutina con su cuerpo y el alumno la IMITA articulación por articulación.
+        // Más nivel de yoga → la sigue mejor.
         ActionQueue mine = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
         if (mine.Own.Count == 0)
-            foreach (QueuedSpell s in SunSalutation.Sequence()) mine.EnqueueOwn(s);
+            foreach (QueuedSpell s in routine) mine.EnqueueOwn(s);
         ActionQueue q = t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
         CharacterLevel cl = t.GetComponent<CharacterLevel>();
         float follow = 2f + (cl != null ? cl.yoga.level : 1);
         bool already = false;   // la Magnate enseña a menudo: no apilar una imitación por cada vez
         foreach (QueuedSpell s in q.Player) if (s is MimicPoseSpell) { already = true; break; }
-        if (!already) q.EnqueuePlayer(new MimicPoseSpell { teacher = transform, duration = SunSalutation.Duration(), follow = follow });
+        if (!already) q.EnqueuePlayer(new MimicPoseSpell { teacher = transform, duration = dur, follow = follow });
         if (cl != null) cl.GainYogaXp(10f);                          // potencia el avance (marga de Yoga)
         Mind m = t.GetComponent<Mind>();
         if (m != null) m.humores.Produce(Humor.Serotonina, 0.2f);   // el ánimo de practicar sube (ThoughtSpell-like)
-        Debug.Log($"[Magnate] enseña el Saludo al Sol a «{t.name}».");
+        Debug.Log($"[Magnate] enseña {label} a «{t.name}».");
     }
 }
