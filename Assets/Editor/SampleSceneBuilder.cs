@@ -2163,6 +2163,7 @@ public static class SampleSceneBuilder
                 if (a.GetComponent<IdleBehavior>() == null) a.gameObject.AddComponent<IdleBehavior>();
                 if (a.GetComponent<CharacterLevel>() == null) a.gameObject.AddComponent<CharacterLevel>();
                 if (a.GetComponent<GroundGuard>() == null) a.gameObject.AddComponent<GroundGuard>();
+                if (a.GetComponent<NeedsDriver>() == null) a.gameObject.AddComponent<NeedsDriver>();   // el cuerpo pide comer/dormir
                 alive++;
             }
         }

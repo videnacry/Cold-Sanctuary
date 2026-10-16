@@ -25,6 +25,7 @@ public class ActionQueue : MonoBehaviour
     public void EnqueueOwn(QueuedSpell s)    { if (s != null) _own.Add(s); }
     public void EnqueuePlayer(QueuedSpell s) { if (s != null) _player.Add(s); }
     public void ClearPlayer()                => _player.Clear();
+    public void ClearOwnForTest()            => _own.Clear();   // solo tests
     public void RemovePlayerAt(int i)        { if (i >= 0 && i < _player.Count) _player.RemoveAt(i); }
     public void MovePlayer(int from, int to)
     {
