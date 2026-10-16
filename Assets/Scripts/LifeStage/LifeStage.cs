@@ -35,7 +35,13 @@ public abstract class LifeStage
         {
             case adult: script.StartCoroutine(script.AdultStage.Live(script, timeController, script.AdultPreps, script.AdultEvents)); break;
             case child: script.StartCoroutine(script.ChildStage.Live(script, timeController, script.ChildPreps, script.ChildEvents)); break;
-            default: script.StartCoroutine(script.TeenStage.Live(script, timeController, script.TeenPreps, script.TeenEvents)); break;
+            case soul:
+                // Fin de la etapa adulta (`soul`): muere de vieja. Antes caía en el `default` → volvía a la etapa
+                // juvenil (encogía al adulto) y, con sus días ya cumplidos, se re-llamaba sin fin (recursión síncrona).
+                script.death = true;
+                Debug.Log($"[Vida] «{script.name}» ha llegado al final de su vida (vejez).");
+                break;
+            default: script.StartCoroutine(script.TeenStage.Live(script, timeController, script.TeenPreps, script.TeenEvents)); break;   // teen o sin fijar
         }
     }
     public static Vector3 GetRandomDifferenceScale(Vector3 baseScale, int pMinScaleSubstrahend, int pMaxScaleSubstrahend)

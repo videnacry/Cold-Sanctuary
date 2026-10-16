@@ -1,0 +1,118 @@
+using UnityEngine;
+
+/// <summary>
+/// ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
+/// tronco alto que se estrecha, varios PISOS de ramas largas que suben y se abren, y en la punta de cada rama una
+/// PLATAFORMA plana (con collider) donde pueden posarse animales y anidar las abejas de las nieves; algunas llevan nido.
+/// El árbol sigue siendo el mismo depredador (<see cref="IceCarnivorousTree"/>: señuelo de olor + sopor + crece al
+/// absorber), con radios a la escala del árbol. Determinista por semilla: cada árbol sale distinto pero reproducible.
+/// </summary>
+public static class CubeTree
+{
+    static Material _bark, _branch, _leaf, _platform, _nest;
+
+    static Material Mat(ref Material cache, Color c)
+    {
+        if (cache != null) return cache;
+        Shader sh = Shader.Find("Universal Render Pipeline/Lit");
+        if (sh == null) sh = Shader.Find("Standard");
+        cache = new Material(sh) { color = c };
+        if (cache.HasProperty("_BaseColor")) cache.SetColor("_BaseColor", c);
+        return cache;
+    }
+
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f)
+    {
+        var rnd = new System.Random(seed);
+        float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
+
+        Material bark = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));       // hielo opaco azulado
+        Material branchMat = Mat(ref _branch, new Color(0.70f, 0.86f, 0.92f));
+        Material leaf = Mat(ref _leaf, new Color(0.45f, 0.75f, 0.85f));       // "follaje" de escarcha
+        Material platformMat = Mat(ref _platform, new Color(0.85f, 0.94f, 0.98f));
+        Material nestMat = Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));    // nidos de miel de las abejas
+
+        GameObject root = new GameObject(name);
+        root.transform.SetParent(parent, false);
+        root.transform.position = groundPos;
+
+        // TRONCO: bloques apilados que se estrechan, con un leve giro (más orgánico que un cilindro).
+        int trunkBlocks = Mathf.Max(4, Mathf.RoundToInt(height / 2f));
+        float block = height / trunkBlocks;
+        for (int i = 0; i < trunkBlocks; i++)
+        {
+            float w = Mathf.Lerp(2.2f, 0.9f, i / (float)(trunkBlocks - 1));
+            Block(root.transform, "Tronco", new Vector3(0f, block * (i + 0.5f), 0f), new Vector3(w, block * 1.02f, w),
+                  Quaternion.Euler(0f, i * 11f, 0f), bark, true);
+        }
+        // Raíces: cuatro contrafuertes en la base.
+        for (int k = 0; k < 4; k++)
+        {
+            float a = k * 90f + R(-15f, 15f);
+            Vector3 d = Quaternion.Euler(0f, a, 0f) * Vector3.forward;
+            Block(root.transform, "Raiz", d * 1.6f + Vector3.up * 0.4f, new Vector3(0.7f, 0.8f, 2.2f),
+                  Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, true);
+        }
+
+        // RAMAS: 3 pisos; cada rama es una cadena de bloques que sube y se abre, con plataforma en la punta.
+        int nests = 0;
+        for (int tier = 0; tier < 3; tier++)
+        {
+            float y = height * Mathf.Lerp(0.38f, 0.82f, tier / 2f);
+            int count = 5 - tier;
+            float reach = Mathf.Lerp(7f, 3.5f, tier / 2f) * (height / 16f);
+            float offset = R(0f, 360f);
+            for (int b = 0; b < count; b++)
+            {
+                float yaw = offset + b * 360f / count + R(-12f, 12f);
+                float pitch = R(18f, 35f);
+                Vector3 p = new Vector3(0f, y + R(-0.6f, 0.6f), 0f);
+                int segs = 3;
+                float segLen = reach / segs;
+                float thick = Mathf.Lerp(0.7f, 0.45f, tier / 2f);
+                for (int s = 0; s < segs; s++)
+                {
+                    Vector3 dir = Quaternion.Euler(-pitch + s * 9f, yaw, 0f) * Vector3.forward;   // sube y se va aplanando
+                    Block(root.transform, "Rama", p + dir * segLen * 0.5f, new Vector3(thick, thick, segLen * 1.05f),
+                          Quaternion.LookRotation(dir), branchMat, true);
+                    p += dir * segLen;
+                    thick *= 0.8f;
+                }
+                // Plataforma de la punta (posadero) + mata de escarcha encima; a veces un nido.
+                GameObject plat = Block(root.transform, "Rama_Plataforma", p + Vector3.up * 0.1f, new Vector3(1.8f, 0.2f, 1.8f),
+                                        Quaternion.Euler(0f, yaw, 0f), platformMat, true);
+                Block(root.transform, "Escarcha", p + Vector3.up * 0.75f, Vector3.one * R(0.9f, 1.4f),
+                      Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), leaf, false);
+                if ((b + tier) % 2 == 0)
+                {
+                    Block(plat.transform.parent, "Nido_Abejas", p + new Vector3(0.5f, 0.45f, 0.2f), new Vector3(0.55f, 0.5f, 0.55f),
+                          Quaternion.identity, nestMat, false);
+                    nests++;
+                }
+            }
+        }
+        // Copa: dos bloques de escarcha en lo alto.
+        Block(root.transform, "Copa", new Vector3(0f, height + 0.8f, 0f), new Vector3(2.6f, 1.6f, 2.6f), Quaternion.Euler(0f, 20f, 0f), leaf, false);
+        Block(root.transform, "Copa", new Vector3(0f, height + 2.0f, 0f), new Vector3(1.6f, 1.2f, 1.6f), Quaternion.Euler(0f, 55f, 0f), leaf, false);
+
+        // El árbol depredador, con radios a su escala (señuelo amplio, sopor bajo la copa).
+        IceCarnivorousTree t = root.AddComponent<IceCarnivorousTree>();
+        t.lureRadius = 10f + height;
+        t.killRadius = 3f + height * 0.15f;
+        t.growthPerKill = 0.05f; t.maxScale = 1.5f;   // crece con cada presa, pero un árbol de 16 m no puede triplicarse
+        return root;
+    }
+
+    static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name;
+        g.transform.SetParent(parent, false);
+        g.transform.localPosition = localPos;
+        g.transform.localRotation = rot;
+        g.transform.localScale = size;
+        g.GetComponent<Renderer>().sharedMaterial = m;
+        if (!solid) Object.DestroyImmediate(g.GetComponent<Collider>());
+        return g;
+    }
+}

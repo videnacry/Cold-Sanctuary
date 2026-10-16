@@ -106,6 +106,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<IdealStateTest>();       // grupo 13: estado ideal (elementos por masa + actividad ACWR)
         tests.AddComponent<SensesTest>();            // grupo 14: sentidos/órganos (observar = canales según el receptor)
         tests.AddComponent<YogaTest>();              // grupo 15: yoga (postura rota el rig; Saludo al Sol = 12 asanas)
+        tests.AddComponent<BodyMetabolismTest>();    // grupo 16: cuerpo (hambre/sueño por metabolismo; células de mago)
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -2149,6 +2150,9 @@ public static class SampleSceneBuilder
             if (r == null) continue;
             Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);
             CubeHumanoid.Dress(a.gameObject, clothes, skin);
+            // CUERPO con metabolismo (hambre/sueño) para todo humano; la Magnate, por sus células de mago, no los siente.
+            if (a.GetComponent<BodyMetabolism>() == null) a.gameObject.AddComponent<BodyMetabolism>();
+            if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
             // Los compañeros (con mente, no el jugador ni la Magnate) estaban quietos: les damos cuerpo que ANDA (WalkSpell),
             // cola de acciones y vida libre (IdleBehavior → merodear). CharacterLevel para que la Magnate pueda enseñarles.
@@ -2362,7 +2366,7 @@ public static class SampleSceneBuilder
         GameObject group = new GameObject("GrassPatches_AUTO");
         group.transform.SetParent(parent);
 
-        Material grassMat = MakeMaterial("GrassPatch_MAT", new Color(0.45f, 0.6f, 0.3f));
+        Material grassMat = MakeMaterial("GrassPatch_MAT", new Color(0.60f, 0.66f, 0.55f));   // musgo de tundra (pasto de los herbívoros)
         int i = 0;
         foreach (NestSpec nest in nests)
         {
@@ -2765,24 +2769,43 @@ public static class SampleSceneBuilder
     // muerte → crece) + una colonia de abejas de las nieves que anida cerca. Primitivas (independiente de modelos).
     static void BuildIceFlora(Transform parent)
     {
+        // BOSQUE DE HIELO: varios árboles carnívoros de BLOQUES (tronco, pisos de ramas con plataformas-posadero y nidos)
+        // en vez de un único cilindro. Dan ambiente de bosque y abundancia vegetal al santuario (docs/ice-sanctuary-ecology §2).
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
-        Vector3 treePos = new Vector3(120f, 1f, 20f);
-
-        GameObject tree = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        tree.name = "ArbolCarnivoroHielo"; tree.transform.SetParent(root.transform);
-        tree.transform.position = treePos; tree.transform.localScale = new Vector3(1.5f, 3f, 1.5f);
-        var r = tree.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("IceTree_MAT", new Color(0.55f, 0.8f, 0.85f));
-        tree.AddComponent<IceCarnivorousTree>();
-        tree.AddComponent<WorldLabel>().text = "Árbol carnívoro de hielo";
+        Vector3 center = new Vector3(112f, 0f, 48f);
+        var spots = new (float x, float z, float h)[]
+        {
+            (0f, 0f, 20f), (-17f, 6f, 15f), (15f, -5f, 17f), (-6f, -18f, 14f), (9f, 17f, 18f),
+            (-20f, -14f, 13f), (24f, 14f, 15f), (-3f, 26f, 16f), (27f, -20f, 14f), (-28f, 22f, 17f),
+        };
+        GameObject first = null;
+        for (int i = 0; i < spots.Length; i++)
+        {
+            Vector3 pos = center + new Vector3(spots[i].x, 0f, spots[i].z);
+            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{i + 1}", pos, 1234 + i * 77, spots[i].h);
+            if (first == null) first = tree;
+        }
+        if (first != null)
+        {
+            WorldLabel wl = first.AddComponent<WorldLabel>();
+            wl.text = "Bosque de árboles carnívoros de hielo";
+            wl.height = 24f;
+        }
 
         GameObject beePrefab = LoadAnimalPrefab("SnowBee");
         if (beePrefab != null)
         {
-            GameObject bg = new GameObject("Abejas_nieve"); bg.transform.SetParent(root.transform);
-            FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
-            fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = treePos + new Vector3(4f, 0f, 0f), quantity = 6, minParentsCount = 1, radius = 5f } };
+            // Colmenas de abejas de las nieves junto a tres árboles (anidan en sus ramas y hacen miel de los muertos).
+            for (int k = 0; k < 3; k++)
+            {
+                GameObject bg = new GameObject($"Abejas_nieve_{k + 1}"); bg.transform.SetParent(root.transform);
+                Vector3 at = center + new Vector3(spots[k].x + 4f, 0f, spots[k].z);
+                FamilyGenerator fg = bg.AddComponent<FamilyGenerator>();
+                fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = at, quantity = 5, minParentsCount = 1, radius = 5f } };
+            }
         }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
+        Debug.Log($"[IceFlora] Bosque de hielo: {spots.Length} árboles carnívoros de bloques alrededor de {center}.");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -2879,9 +2902,10 @@ public static class SampleSceneBuilder
         GameObject group = new GameObject("HabitatCover_AUTO");
         group.transform.SetParent(parent);
 
-        Material trunkMat = MakeMaterial("Tree_Trunk_MAT", new Color(0.35f, 0.24f, 0.15f));
-        Material canopyMat = MakeMaterial("Tree_Canopy_MAT", new Color(0.20f, 0.42f, 0.22f));
-        Material bushMat = MakeMaterial("Bush_MAT", new Color(0.18f, 0.35f, 0.18f));
+        // Bioma de HIELO (docs/ice-sanctuary-ecology §2.1): cobertura de tundra helada, no bosque templado verde.
+        Material trunkMat = MakeMaterial("Tree_Trunk_MAT", new Color(0.32f, 0.34f, 0.40f));
+        Material canopyMat = MakeMaterial("Tree_Canopy_MAT", new Color(0.78f, 0.86f, 0.88f));   // copa escarchada
+        Material bushMat = MakeMaterial("Bush_MAT", new Color(0.52f, 0.58f, 0.50f));             // líquenes/musgo
 
         int propIndex = 0;
         foreach (NestSpec nest in nests)
