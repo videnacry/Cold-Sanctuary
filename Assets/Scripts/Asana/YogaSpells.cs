@@ -41,7 +41,7 @@ public class AsanaPoseSpell : QueuedSpell
     public string asanaName = "asana";
     public (BodyPart part, Vector3 euler)[] parts = System.Array.Empty<(BodyPart, Vector3)>();
     public float duration = 10f;          // tiempo TOTAL de la asana (llegar + sostener)
-    [Range(0.05f, 0.9f)] public float reachFraction = 0.3f;   // 30% del tiempo en LLEGAR a la postura; el 70% restante, SOSTENIÉNDOLA
+    [Range(0.03f, 1f)] public float reachFraction = 0.3f;   // fracción del tiempo en LLEGAR a la postura; el resto, SOSTENIÉNDOLA (asanas 0.3; upa-yoga ≈1 = el rezo tarda toda la respiración)
     public float rootHeight = -1f;        // -1 = la de pie (reposo)
     float _start = -1f;
     Quaternion[] _from;
@@ -99,7 +99,7 @@ public static class SunSalutation
     // la pelvis. Ejes (rotación local, grados): X+ flexiona hacia DELANTE (columna dobla el torso; muslo va hacia atrás;
     // espinilla dobla la rodilla), X- lleva el miembro hacia DELANTE; Z abre/eleva los brazos por los lados.
     // Hips (la pelvis, raíz del cuerpo) X+ inclina el cuerpo entero hacia delante: 80–90 = tumbado boca abajo.
-    public const float Hold = 10f;   // duración TOTAL por asana (30% llegar + 70% sostener, ver AsanaPoseSpell)
+    public const float Hold = 20f;   // duración TOTAL por asana (30% llegar + 70% sostener, ver AsanaPoseSpell)
     const float Stand = -1f;   // pelvis a la altura de pie
 
     static readonly BodyPart[] Joints =
