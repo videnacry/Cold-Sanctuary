@@ -22,6 +22,9 @@ public class Grimoire : MonoBehaviour
     [Header("Hechizos ya aprendidos (ids).")]
     public List<string> known = new List<string>();
 
+    [Tooltip("Maestro omnisciente (p. ej. la Magnate): puede enseñar cualquier hechizo aunque no lo tenga en la lista.")]
+    public bool knowsAll = false;
+
     /// <summary>Se dispara al aprender un hechizo (id) — para refrescar la UI/barras en vivo.</summary>
     public event Action<string> OnLearned;
 
@@ -31,7 +34,18 @@ public class Grimoire : MonoBehaviour
         if (reserves == null) reserves = GetComponent<MagicReserves>();
     }
 
-    public bool Knows(string id) => !string.IsNullOrEmpty(id) && known.Contains(id);
+    public bool Knows(string id) => !string.IsNullOrEmpty(id) && (knowsAll || known.Contains(id));
+
+    /// <summary>¿Puede APRENDER este hechizo ahora? (no lo sabe ya y cumple todos los prerequisitos). `missing` dice qué falta.</summary>
+    public bool CanLearn(string id, out string missing)
+    {
+        missing = null;
+        if (string.IsNullOrEmpty(id)) { missing = "(vacío)"; return false; }
+        if (known.Contains(id)) { missing = "(ya lo sabe)"; return false; }
+        foreach (string pre in SpellCatalog.Prerequisites(id))
+            if (!Knows(pre)) { missing = pre; return false; }
+        return true;
+    }
 
     /// <summary>Aprende un hechizo. El primero (`awakenSpellId`) despierta las reservas. Idempotente.</summary>
     public bool Learn(string id)

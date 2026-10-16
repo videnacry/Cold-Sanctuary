@@ -11,23 +11,36 @@ public class CookingRecipe
 {
     public string dishName = "platillo";
     public string[] steps = System.Array.Empty<string>();
+    [System.NonSerialized] public string id;   // id de catálogo (dish:…) → ingredientes/utensilios y prerequisito 'clean'
 
     public CookingRecipe() { }
     public CookingRecipe(string name, params string[] steps) { dishName = name; this.steps = steps; }
+    CookingRecipe Id(string id) { this.id = id; return this; }
+
+    /// <summary>Ingredientes/utensilios que necesita (del catálogo). Vacío si la receta no está catalogada aún.</summary>
+    public System.Collections.Generic.IEnumerable<string> RequiredItems => SpellCatalog.Items(id ?? "");
+
+    /// <summary>Lo que FALTA para poder cocinarla, dados los items disponibles (ingredientes/utensilios presentes).</summary>
+    public System.Collections.Generic.List<string> MissingItems(System.Collections.Generic.ICollection<string> available)
+    {
+        var missing = new System.Collections.Generic.List<string>();
+        foreach (string it in RequiredItems) if (available == null || !available.Contains(it)) missing.Add(it);
+        return missing;
+    }
 
     // ── Presets (los platillos que pidió el autor) ──────────────────────────────────────────────
     public static CookingRecipe HuevosRevueltos() => new CookingRecipe("Huevos revueltos",
         "ve a la nevera", "toma los huevos", "calienta la plancha", "revuelve los huevos",
-        "especia con sal y pimienta", "emplata");
+        "especia con sal y pimienta", "emplata").Id("dish:huevos-revueltos");
 
     public static CookingRecipe Ensalada() => new CookingRecipe("Ensalada",
         "toma tomates, cebollas, limón, sal, pimienta, aceite y cilantro", "lava los vegetales",
-        "corta los vegetales", "mezcla todo en el bol", "condimenta con sal, pimienta, limón y aceite", "emplata");
+        "corta los vegetales", "mezcla todo en el bol", "condimenta con sal, pimienta, limón y aceite", "emplata").Id("dish:ensalada");
 
     public static CookingRecipe Avena() => new CookingRecipe("Avena",
         "toma leche, canela, avena, soy-milk, chocolate en polvo, banana y guanábana",
         "hierve los dos tipos de leche en ollas distintas", "corta las bananas y guanábanas",
-        "agrega avena, canela y chocolate a las ollas", "mezcla", "agrega la fruta al final", "emplata");
+        "agrega avena, canela y chocolate a las ollas", "mezcla", "agrega la fruta al final", "emplata").Id("dish:avena");
 
     public static CookingRecipe YogurConFruta() => new CookingRecipe("Yogur con fruta",
         "toma yogur/kéfir y semillas de lino", "pulveriza las semillas de lino", "lava 7 frutas",

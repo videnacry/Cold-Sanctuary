@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 440 tipos._
+_Total: 441 tipos._
 
 
 ## Animals
@@ -395,6 +395,7 @@ _Total: 440 tipos._
 - **SpellConsole** (class) — `Assets/Scripts/Control/SpellConsole.cs` — LANZADOR DE HECHIZOS POR TECLADO (docs/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un hechizo":
 - **SpellDemoHUD** (class) — `Assets/Scripts/Microcosmos/SpellDemoHUD.cs` — HUD de PRUEBA (OnGUI) del sandbox `SpellDemo_AUTO`:
 - **SpellElement** (enum) — `Assets/Scripts/Transformation/ElementalSpell.cs` — Elemento de un hechizo elemental básico.
+- **SpellReq** (class) — `Assets/Scripts/Transformation/SpellCatalog.cs` — REQUISITOS de los hechizos aprendibles (docs/spell-genesis-and-sanctuary-progression).
 - **StarvationTest** (class) — `Assets/Scripts/StarvationTest.cs` — Unidad de test de la INANICIÓN (docs/testing-checklist.md §40), por `TestProbe`, determinista y NO destructiva:
 - **StatBonus** (class) — `Assets/Scripts/Composition/CharacterComposition.cs` — Aporte ADITIVO de una parte a los stats (0 = sin cambio).
 - **StateSpellsTest** (class) — `Assets/Scripts/StateSpellsTest.cs` — Test de los HECHIZOS-ESTADO (docs/apremios-guardian-observacion.md §3, testing-checklist §45), por `TestProbe`:
