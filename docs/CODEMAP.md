@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 441 tipos._
+_Total: 442 tipos._
 
 
 ## Animals
@@ -208,6 +208,7 @@ _Total: 441 tipos._
 - **FollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingArrays.cs`
 - **FollowingElement** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElement.cs`
 - **FollowingElementBehavior** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/FollowingElementBehavior.cs`
+- **FollowSpell** (class) — `Assets/Scripts/Control/FollowSpell.cs` — HECHIZO DE SEGUIR (docs/anima-architecture §11.5):
 - **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).

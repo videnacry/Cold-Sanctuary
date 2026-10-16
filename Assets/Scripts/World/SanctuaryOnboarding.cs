@@ -22,6 +22,8 @@ public class SanctuaryOnboarding : MonoBehaviour
     public bool apt = false;
     [Tooltip("La Magnate lo pone a true cuando ya lo presentó ante el santuario.")]
     public bool presented = false;
+    [Tooltip("Linduarda lo pone a true tras llevarlo a la máquina de virtualización (iniciación al Microcosmos).")]
+    public bool initiated = false;
 
     [Header("Solo para escenas AUTO (prueba en vivo de toda la cadena)")]
     public bool autoCompleteForDemo = false;
