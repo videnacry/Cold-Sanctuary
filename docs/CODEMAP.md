@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 432 tipos._
+_Total: 440 tipos._
 
 
 ## Animals
@@ -135,6 +135,12 @@ _Total: 432 tipos._
 - **ChannelMob** (class) — `Assets/Scripts/Meditation/ChannelMob.cs` — Universal "channel" archetype (docs §8):
 - **CharacterLevel** (class) — `Assets/Scripts/Progression/CharacterLevel.cs` — Progresión de un personaje por **margas del alma** (docs/creature-stats.md §Progresión):
 - **ChecklistAuto** (class) — `Assets/Scripts/ChecklistAuto.cs` — Cubre por CÓDIGO bloques de `docs/testing-checklist.md` que la guía pedía comprobar **a mano en el inspector**, para que queden con evidencia `[TEST]` en el log como el resto.
+- **ChecklistFaunaTest** (class) — `Assets/Scripts/Tests/ChecklistFaunaTest.cs` — Automatiza por `TestProbe` ítems de FAUNA de `docs/testing-checklist.md` §23–§45 que pedían observar el Play:
+- **ChecklistMagicTest** (class) — `Assets/Scripts/Tests/ChecklistMagicTest.cs` — Automatiza por `TestProbe` los ítems de MAGIA de `docs/testing-checklist.md` §19a–§19g (que pedían el HUD del sandbox `Magia_AUTO`):
+- **ChecklistProbeAnima** (class) — `Assets/Scripts/Tests/ChecklistProbeAnima.cs` — `Anima` de PRUEBA con ESPECIE configurable (solo para los tests `Checklist*Test`):
+- **ChecklistProbeSpell** (class) — `Assets/Scripts/Tests/ChecklistProbeSpell.cs` — Hechizo de PRUEBA (solo para los tests `Checklist*Test`):
+- **ChecklistProgressTest** (class) — `Assets/Scripts/Tests/ChecklistProgressTest.cs` — Automatiza por `TestProbe` ítems de PROGRESIÓN/MENTE de `docs/testing-checklist.md` que quedaron sin verificar en las pasadas manuales:
+- **ChecklistSoulTest** (class) — `Assets/Scripts/Tests/ChecklistSoulTest.cs` — Automatiza por `TestProbe` los ítems del ALMA de `docs/testing-checklist.md` §20–§22 (que pedían leer los logs `[Alma]` del sandbox `AlmaBlend_AUTO`/`AlmaCompartida_AUTO`):
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
@@ -261,6 +267,7 @@ _Total: 432 tipos._
 - **KitchenFireMission** (class) — `Assets/Scripts/Microcosmos/KitchenFireMission.cs` — Misión "llevar la comida a la cueva" — Microcosmos de la Cocina (era pre-fuego).
 - **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md):
 - **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
+- **LessonPrompt** (class) — `Assets/Scripts/UI/LessonPrompt.cs` — AVISO DE LECCIÓN (OnGUI):
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.
 - **LifeStage** (class) — `Assets/Scripts/LifeStage/LifeStage.cs`
@@ -403,6 +410,7 @@ _Total: 432 tipos._
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
 - **TeacherNPC** (class) — `Assets/Scripts/Companion/TeacherNPC.cs` — Base for any NPC that can evaluate the player's asana attempts and give feedback.
+- **TeachingSession** (class) — `Assets/Scripts/Companion/TeachingSession.cs` — ENSEÑANZA INTERACTIVA (call-and-response).
 - **TeachSpell** (class) — `Assets/Scripts/Soul/TeachSpell.cs` — HECHIZO DE ENSEÑANZA / DEMOSTRACIÓN (docs/sanctuary1-level-and-live-tests §4, spells-suprahechizo §4):
 - **Test** (class) — `Assets/Scripts/Test.cs`
 - **TestProbe** (class) — `Assets/Scripts/TestProbe.cs` — Mini-harness de PRUEBAS por consola (PASS/FAIL) — la capa que faltaba:
