@@ -102,7 +102,7 @@ public static class CubeCreature
         Spec sp = SpecFor(species);
         Transform body = new GameObject(BodyName).transform;
         body.SetParent(root.transform, false);
-        CreatureRig rig = root.GetComponent<CreatureRig>() ?? root.AddComponent<CreatureRig>();
+        if (!root.TryGetComponent(out CreatureRig rig)) rig = root.AddComponent<CreatureRig>();
         rig.humanoidAnimator = null;
         rig.bindings.Clear();
         switch (sp.plan)
@@ -115,7 +115,7 @@ public static class CubeCreature
         }
         foreach (CubeJoint j in body.GetComponentsInChildren<CubeJoint>()) j.Capture();
         rig.Rebuild();
-        CubeGait gait = root.GetComponent<CubeGait>() ?? root.AddComponent<CubeGait>();
+        if (!root.TryGetComponent(out CubeGait gait)) gait = root.AddComponent<CubeGait>();
         gait.plan = sp.plan;
         return rig;
     }

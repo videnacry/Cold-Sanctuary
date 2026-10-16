@@ -118,6 +118,7 @@ public static class SampleSceneBuilder
         BuildRestaurantSandbox(root.transform);  // RESTAURANTE jugable (cocinar platillos para todos → stock → XP + inventario). docs/kitchen-simulation.md
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
+        BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
@@ -153,6 +154,8 @@ public static class SampleSceneBuilder
         ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
         ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
         ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
+        ("Prueba_TorreGuardia",  new System.Action<Transform>[] { BuildGuardTower, PlacePlayerAtTower }),
+        ("Prueba_Restaurante",   new System.Action<Transform>[] { BuildRestaurantSandbox, PlacePlayerAtKitchen }),   // cocina real: 4 cocineros + misión «Preparar platillos»
         ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
         ("Prueba_Oficios",        new System.Action<Transform>[] { BuildGardenVirtualization, BuildForgeVirtualization, BuildExertionSandbox,
                                                                    BuildMechanicsBeginner, BuildTruckMaintenance, BuildConstructionBeginner,
@@ -2587,83 +2590,166 @@ public static class SampleSceneBuilder
         CookingStation ps = cookGo.GetComponent<CookingStation>() ?? cookGo.AddComponent<CookingStation>();
         ps.kitchen = kitchen; ps.playerDriven = true;
 
-        // 2 NPCs cocinando en paralelo (automáticos) → demuestran el reparto por equilibrio de stock.
-        for (int i = 0; i < 2; i++)
-        {
-            GameObject npc = new GameObject($"Cocinero_NPC_{i + 1}");
-            npc.transform.SetParent(rest.transform);
-            npc.AddComponent<CharacterLevel>();
-            CookingStation cs = npc.AddComponent<CookingStation>();
-            cs.kitchen = kitchen; cs.playerDriven = false;
-        }
-
-        BuildRestaurantRoom(rest.transform);   // entorno físico con primitivas (estaciones/ingredientes nombrados)
+        BuildRealKitchen(rest.transform, kitchen, stocks);   // cocina real: 4 puestos + 4 cocineros visibles + utensilios e ingredientes de cubos
     }
 
-    // RESTAURANTE físico con PRIMITIVAS por defecto (reemplazables): una sala cuadrada con suelo, estaciones
-    // (nevera, planchas, bols, ollas, mesa de emplatado) e ingredientes, cada uno con su ETIQUETA de nombre → el
-    // jugador puede cocinar ESCRIBIENDO: walkTo({destiny:"Nevera"}) → step. Muchas planchas/ollas = varios cocineros a
-    // la vez. (La sartén = bloque de altura ~1 como un plato cuadrado; huevos = cubos pequeños.) Selector de reemplazo:
-    // cambiar los primitivos por tus prefabs es arrastrarlos sobre estos GameObjects nombrados. docs/typed-spells-and-queues.md.
-    static void BuildRestaurantRoom(Transform parent)
+    // COCINA REAL (docs/kitchen-simulation.md): dentro del ÁREA de Cocina, a tamaño real y para CUATRO cocineros a la
+    // vez. Cada puesto = fogón (con sartén y olla) + tramo de encimera (tabla con cuchillo, bol, bote de utensilios).
+    // Compartido: dos neveras, estanterías de despensa llenas, fregadero, encimera de ingredientes, isla de emplatado y
+    // barra de servicio con los contenedores del stock. Todo de UNIONES DE CUBOS (KitchenProps) para que cada cosa se
+    // distinga. Los nombres son los de siempre (Nevera, Huevos, Sarten 1, Olla 1, Bol 1, Mesa de emplatado,
+    // Despensa, Plancha…), así que los hechizos walkTo/take/putIn/beat/use siguen funcionando.
+    static void BuildRealKitchen(Transform rest, RestaurantKitchen kitchen, List<RestaurantKitchen.DishStock> stocks)
     {
-        GameObject room = new GameObject("Sala"); room.transform.SetParent(parent);
-        room.transform.localPosition = new Vector3(14f, 0f, 0f);   // a un lado del santuario
+        GameObject area = GameObject.Find("Kitchen_Area");
+        GameObject roomGO = new GameObject("Sala"); roomGO.transform.SetParent(rest);
+        Transform room = roomGO.transform;
+        room.position = area != null ? area.transform.position + Vector3.up * 0.1f : new Vector3(14f, 0f, 0f);
+        if (area != null) room.rotation = area.transform.rotation * Quaternion.Euler(0f, 180f, 0f);   // el área se abre a +Z: ahí va la entrada de la sala
+        if (area != null)   // la máquina de virtualización del área, a la esquina de la entrada (no en medio de un puesto)
+            foreach (Transform t in area.GetComponentsInChildren<Transform>())
+                if (t.name.EndsWith("_VirtualizationMachine")) { t.localPosition = new Vector3(8.6f, 1f, 6.4f); t.localRotation = Quaternion.Euler(0f, -90f, 0f); }
 
-        // Suelo cuadrado grande
+        // Suelo de baldosa y contorno bajo (no tapa la vista), con la entrada al sur.
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        floor.name = "Suelo_Restaurante"; floor.transform.SetParent(room.transform);
-        floor.transform.localPosition = Vector3.zero; floor.transform.localScale = new Vector3(16f, 0.2f, 12f);
-
-        // CONTORNO bajo (0,4 m) que dibuja la sala sin tapar la vista; hueco de entrada de 3 m en el lado -Z.
-        Color edge = new Color(0.35f, 0.35f, 0.40f);
-        MakeOutline(room.transform, "Contorno N", new Vector3(0f, 0.3f, 6f), new Vector3(16f, 0.4f, 0.15f), edge);
-        MakeOutline(room.transform, "Contorno O", new Vector3(-8f, 0.3f, 0f), new Vector3(0.15f, 0.4f, 12f), edge);
-        MakeOutline(room.transform, "Contorno E", new Vector3(8f, 0.3f, 0f), new Vector3(0.15f, 0.4f, 12f), edge);
-        MakeOutline(room.transform, "Contorno S1", new Vector3(-4.75f, 0.3f, -6f), new Vector3(6.5f, 0.4f, 0.15f), edge);
-        MakeOutline(room.transform, "Contorno S2", new Vector3(4.75f, 0.3f, -6f), new Vector3(6.5f, 0.4f, 0.15f), edge);
-
-        // ESCALA REAL (jugador/humano ~1.7): encimeras a ~0.9 de alto; los útiles van ENCIMA. Nevera alta; olla/bol
-        // pequeños; huevos diminutos. Así la olla, el jugador y la cocina respetan proporciones reales.
-        Color furniture = new Color(0.72f, 0.72f, 0.78f);
-        Color metal = new Color(0.6f, 0.62f, 0.66f);
-
-        // Encimera trasera (z=5) con planchas y ollas encima; encimera de ingredientes (z=-4); mesa de emplatado (z=2).
-        MakeLabeledPrimitive(room.transform, "Encimera cocina", new Vector3(0f, 0.45f, 5f), new Vector3(13f, 0.9f, 0.8f), furniture);
-        MakeLabeledPrimitive(room.transform, "Encimera ingredientes", new Vector3(0f, 0.45f, -4f), new Vector3(13f, 0.9f, 0.8f), furniture);
-        MakeLabeledPrimitive(room.transform, "Mesa de emplatado", new Vector3(5f, 0.45f, 2f), new Vector3(2.5f, 0.9f, 1.0f), furniture);
-        MakeLabeledPrimitive(room.transform, "Nevera", new Vector3(-7f, 0.9f, 5f), new Vector3(0.8f, 1.8f, 0.7f), new Color(0.8f, 0.85f, 0.9f));
-
-        // Útiles SOBRE la encimera (tapa a y=0.9: centro 0.45 + alto/2). MEDIDAS REALES de cocina: sartén Ø~0.26 h~0.04;
-        // olla Ø~0.22 h~0.13 (≈4-5 L); bol Ø~0.18 h~0.08. Así una olla de 22 cm NO se llena con 3 huevos de 5 cm (caben ~20).
-        const float counterTop = 0.9f;
-        MakeLabeledPrimitive(room.transform, "Sarten 1", new Vector3(-4f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
-        MakeLabeledPrimitive(room.transform, "Sarten 2", new Vector3(-3f, counterTop + 0.02f, 5f), new Vector3(0.26f, 0.04f, 0.26f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 1", new Vector3(2f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
-        MakeLabeledPrimitive(room.transform, "Olla 2", new Vector3(3f, counterTop + 0.065f, 5f), new Vector3(0.22f, 0.13f, 0.22f), metal);
-        MakeLabeledPrimitive(room.transform, "Bol 1", new Vector3(0.5f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
-        MakeLabeledPrimitive(room.transform, "Bol 2", new Vector3(1.1f, counterTop + 0.04f, 2f), new Vector3(0.18f, 0.08f, 0.18f), new Color(0.9f, 0.9f, 0.85f));
-
-        // Ingredientes a TAMAÑO REAL (huevo ~5 cm; el resto, piezas ~8 cm) sobre su encimera. Cada uno sienta sobre la tapa.
-        (string label, Color col, float size)[] ingredients = {
-            ("Huevos",   new Color(0.95f, 0.9f, 0.6f),  0.05f), ("Verduras", new Color(0.4f, 0.8f, 0.4f), 0.08f),
-            ("Avena",    new Color(0.85f, 0.75f, 0.55f), 0.08f), ("Fruta",    new Color(0.9f, 0.5f, 0.6f), 0.08f),
-            ("Yogur",    new Color(0.95f, 0.95f, 0.95f), 0.08f), ("Legumbres",new Color(0.6f, 0.45f, 0.3f), 0.07f),
-        };
-        for (int i = 0; i < ingredients.Length; i++)
+        floor.name = "Suelo_Cocina"; floor.transform.SetParent(room, false);
+        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(19.4f, 0.04f, 15.4f);   // por encima del suelo del área
+        floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cocina_Baldosa_MAT", new Color(0.9f, 0.91f, 0.9f));
+        for (int i = 0; i < 20; i++)   // juntas de la baldosa
         {
-            float sz = ingredients[i].size;
-            MakeLabeledPrimitive(room.transform, ingredients[i].label, new Vector3(-6f + i * 2.4f, counterTop + sz * 0.5f, -4f),
-                                 new Vector3(sz, sz, sz), ingredients[i].col);
+            GameObject j = GameObject.CreatePrimitive(PrimitiveType.Cube); Object.DestroyImmediate(j.GetComponent<Collider>());
+            j.name = "Junta"; j.transform.SetParent(room, false);
+            bool vx = i < 10;
+            j.transform.localPosition = vx ? new Vector3(-9f + i * 2f, 0.027f, 0f) : new Vector3(0f, 0.027f, -7f + (i - 10) * 1.6f);
+            j.transform.localScale = vx ? new Vector3(0.02f, 0.01f, 15.4f) : new Vector3(19.4f, 0.01f, 0.02f);
+            j.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Cocina_Junta_MAT", new Color(0.78f, 0.8f, 0.8f));
         }
 
-        // Estante de DESPENSA (misión de inventario = abastecerlo con el hechizo `stock`).
-        GameObject shelf = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        shelf.name = "Despensa"; shelf.transform.SetParent(room.transform);
-        shelf.transform.localPosition = new Vector3(7f, 0.9f, -4f); shelf.transform.localScale = new Vector3(1.2f, 1.8f, 0.5f);
-        var sr = shelf.GetComponent<Renderer>(); if (sr != null) sr.sharedMaterial = MakeMaterial("Despensa_MAT", new Color(0.55f, 0.45f, 0.35f));
-        shelf.AddComponent<StockShelf>().label = "Despensa";
-        shelf.AddComponent<WorldLabel>().text = "Despensa";
+        // ── Pared del fondo: neveras, despensa, fregadero y los 4 puestos ──
+        KitchenProps.Fridge(room, "Nevera", new Vector3(-8.4f, 0f, 6.9f));
+        KitchenProps.Fridge(room, "Nevera 2", new Vector3(-7.5f, 0f, 6.9f));
+        Transform desp = KitchenProps.Shelving(room, "Despensa", new Vector3(-5.9f, 0f, 7.05f), 0f, 11);
+        desp.gameObject.AddComponent<StockShelf>().label = "Despensa";
+        desp.gameObject.AddComponent<WorldLabel>().text = "Despensa";
+        Transform est2 = KitchenProps.Shelving(room, "Estanteria", new Vector3(-4.1f, 0f, 7.05f), 0f, 12);
+        Transform sink = KitchenProps.Sink(room, "Fregadero", new Vector3(-2.4f, 0f, 7f));
+        var cooks = new List<KitchenCook>();
+        Color[] aprons = { new Color(0.95f, 0.95f, 0.93f), new Color(0.85f, 0.9f, 0.95f), new Color(0.95f, 0.88f, 0.85f), new Color(0.88f, 0.95f, 0.86f) };
+        for (int i = 0; i < 4; i++)
+        {
+            float x = -0.6f + i * 2.4f;
+            string n = (i + 1).ToString();
+            Transform stove = KitchenProps.Stove(room, i == 0 ? "Plancha" : $"Plancha {n}", new Vector3(x, 0f, 7f));
+            Transform counter = KitchenProps.CounterRun(room, i == 0 ? "Encimera cocina" : $"Encimera {n}", new Vector3(x + 1.0f, 0f, 7f), 1.25f);
+            Transform pan = KitchenProps.Pan(room, $"Sarten {n}", new Vector3(x - 0.18f, KitchenProps.CounterTop + 0.02f, 6.87f), 0f);
+            Transform pot = KitchenProps.Pot(room, $"Olla {n}", new Vector3(x + 0.18f, KitchenProps.CounterTop + 0.02f, 7.15f));
+            pan.SetParent(stove, true); pot.SetParent(stove, true);
+            Transform board = KitchenProps.BoardAndKnife(room, $"Tabla {n}", new Vector3(x + 0.85f, KitchenProps.CounterTop, 6.95f));
+            Transform bowl = KitchenProps.Bowl(room, $"Bol {n}", new Vector3(x + 1.3f, KitchenProps.CounterTop, 6.9f));
+            KitchenProps.UtensilCrock(room, $"Utensilios {n}", new Vector3(x + 1.45f, KitchenProps.CounterTop, 7.2f));
+            board.SetParent(counter, true); bowl.SetParent(counter, true);
+            foreach (Transform t in new[] { stove, pan, pot, board, bowl }) if (t.GetComponent<WorldLabel>() == null) { WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = t.name; wl.height = 0.5f; }
+
+            // El cocinero de este puesto (humano de cubos con delantal; lo viste DressHumanoids).
+            GameObject cook = MakeKitchenPerson(rest, $"Cocinero_{n}", room.TransformPoint(new Vector3(x + 0.4f, 1f, 5.9f)), aprons[i]);
+            cook.AddComponent<Anima>();
+            cook.AddComponent<CharacterLevel>();
+            CookingStation cs = cook.AddComponent<CookingStation>();
+            cs.kitchen = kitchen; cs.playerDriven = false; cs.externallyDriven = true;
+            KitchenCook kc = cook.AddComponent<KitchenCook>();
+            kc.stove = stove; kc.pan = pan; kc.pot = pot; kc.board = board; kc.bowl = bowl; kc.sink = sink;
+            cooks.Add(kc);
+        }
+
+        // ── Encimera de ingredientes (pared oeste) con los ingredientes de siempre, ahora reconocibles ──
+        KitchenProps.CounterRun(room, "Encimera ingredientes", new Vector3(-9.0f, 0f, 1.5f), 5.5f, 90f);
+        string[] items = { "Huevos", "Verduras", "Avena", "Fruta", "Yogur", "Legumbres" };
+        for (int i = 0; i < items.Length; i++)
+        {
+            Transform holder = KitchenProps.Root(room, items[i], new Vector3(-9.05f, KitchenProps.CounterTop, -0.6f + i * 0.85f));
+            KitchenProps.Ingredient(holder, items[i], Vector3.zero);
+            KitchenProps.Fit(holder, false);
+            WorldLabel wl = holder.gameObject.AddComponent<WorldLabel>(); wl.text = items[i]; wl.height = 0.35f;
+        }
+
+        // ── Isla de emplatado (centro) con platos apilados ──
+        Transform island = KitchenProps.CounterRun(room, "Mesa de emplatado", new Vector3(1.5f, 0f, 2f), 4.2f, 0f, 1.2f);
+        island.gameObject.AddComponent<WorldLabel>().text = "Mesa de emplatado";
+        for (int s = 0; s < 3; s++)
+            for (int p = 0; p < 4; p++) KitchenProps.Plate(island, "Plato", new Vector3(-1.6f + s * 1.6f, KitchenProps.CounterTop + p * 0.018f, 0.3f));
+        for (int l = 0; l < 3; l++)   // lámparas colgantes sobre la isla
+        {
+            Transform lamp = KitchenProps.Root(room, "Lampara", new Vector3(0f + l * 1.5f, 2.6f, 2f));
+            KitchenProps.C(lamp, Vector3.up * 0.5f, new Vector3(0.01f, 1f, 0.01f), KitchenProps.Black);
+            KitchenProps.C(lamp, Vector3.zero, new Vector3(0.3f, 0.18f, 0.3f), new Color(0.98f, 0.92f, 0.7f));
+        }
+
+        // ── Barra de servicio (junto a la entrada) con los contenedores del stock ──
+        Transform pass = KitchenProps.CounterRun(room, "Barra de servicio", new Vector3(4.5f, 0f, -5.2f), 5f, 180f);
+        pass.gameObject.AddComponent<WorldLabel>().text = "Barra de servicio";
+        for (int i = 0; i < stocks.Count; i++)
+        {
+            FoodContainer fc = stocks[i].container;
+            fc.transform.SetParent(pass, false);
+            fc.transform.localPosition = new Vector3(-2.1f + i * 0.84f, KitchenProps.CounterTop + 0.02f, 0.15f);
+            KitchenProps.C(fc.transform, new Vector3(0f, 0.02f, 0f), new Vector3(0.6f, 0.04f, 0.32f), KitchenProps.Steel, 0f, "Bandeja");
+            KitchenProps.Dish(fc.transform, fc.dishName, new Vector3(0f, 0.04f, 0f));
+        }
+
+        foreach (KitchenCook kc in cooks)
+        {
+            kc.fridges = new[] { room.Find("Nevera"), room.Find("Nevera 2") };
+            kc.pantries = new[] { desp, est2 };
+            kc.island = island; kc.pass = pass;
+        }
+
+        // Contorno bajo de la sala (entrada de 3 m al sur).
+        Color edge = new Color(0.55f, 0.58f, 0.62f);
+        MakeOutline(room, "Contorno N", new Vector3(0f, 0.2f, 7.7f), new Vector3(19.4f, 0.4f, 0.15f), edge);
+        MakeOutline(room, "Contorno O", new Vector3(-9.7f, 0.2f, 0f), new Vector3(0.15f, 0.4f, 15.4f), edge);
+        MakeOutline(room, "Contorno E", new Vector3(9.7f, 0.2f, 0f), new Vector3(0.15f, 0.4f, 15.4f), edge);
+        MakeOutline(room, "Contorno S1", new Vector3(-5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
+        MakeOutline(room, "Contorno S2", new Vector3(5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
+
+        GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
+        if (spot != null) spot.transform.position = room.TransformPoint(new Vector3(0f, -0.1f, -8.6f));
+    }
+
+    // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
+    static void BuildGuardTower(Transform parent)
+    {
+        GameObject root = new GameObject("Guardia_AUTO"); root.transform.SetParent(parent);
+        GuardTower.Build(root.transform, new Vector3(-30f, 0f, 45f));
+        (string name, Vector3 pos)[] posts =
+        {
+            ("PuestoVigia_1_Huertos", new Vector3(-20f, 0f, -55f)),
+            ("PuestoVigia_2_Rotacion", new Vector3(80f, 0f, 10f)),
+            ("PuestoVigia_3_Pinguinos", new Vector3(140f, 0f, 30f)),
+            ("PuestoVigia_4_Cocina", new Vector3(30f, 0f, 120f)),
+        };
+        foreach (var (n, p) in posts)
+        {
+            GameObject post = new GameObject(n); post.transform.SetParent(root.transform); post.transform.position = p;
+            KitchenProps.C(post.transform, new Vector3(0f, 1.5f, 0f), new Vector3(0.18f, 3f, 0.18f), new Color(0.55f, 0.45f, 0.36f), 0f, "Poste");
+            KitchenProps.C(post.transform, new Vector3(0f, 3.15f, 0f), new Vector3(0.35f, 0.4f, 0.35f), new Color(1f, 0.85f, 0.45f), 0f, "Farol");
+            KitchenProps.C(post.transform, new Vector3(0.35f, 2.6f, 0f), new Vector3(0.6f, 0.35f, 0.03f), new Color(0.75f, 0.65f, 0.88f), 0f, "Banderin");
+            WorldLabel wl = post.AddComponent<WorldLabel>(); wl.text = "Puesto de vigía"; wl.height = 3.8f;
+        }
+    }
+
+    // En su escena de prueba: el jugador empieza al pie de la escalera de la torre.
+    static void PlacePlayerAtTower(Transform root)
+    {
+        GameObject p = GameObject.Find("Player");
+        if (p != null) p.transform.position = new Vector3(-30f, 1.2f, 45f - 17f);
+    }
+
+    // En la escena de prueba de la cocina: el jugador empieza en la entrada.
+    static void PlacePlayerAtKitchen(Transform root)
+    {
+        GameObject p = GameObject.Find("Player");
+        GameObject area = GameObject.Find("Kitchen_Area");
+        if (p != null && area != null) p.transform.position = area.transform.position + new Vector3(0f, 1.2f, 9.5f);
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
@@ -2889,6 +2975,8 @@ public static class SampleSceneBuilder
             avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
         foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
             avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
+        GameObject tower = GameObject.Find("TorreDeGuardia");   // ni bajo la torre ni su escalera
+        if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
         var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 14, loose: 10);
         GameObject first = null;
         var hiveTrees = new List<Vector3>();
@@ -3222,7 +3310,7 @@ public static class SampleSceneBuilder
         var areas = new List<SanctuaryArea>
         {
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(5f, 0f, 95f), new Vector2(10f, 9f), new Color(0.75f, 0.45f, 0.30f)),
+                new Vector3(5f, 0f, 95f), new Vector2(20f, 16f), new Color(0.75f, 0.45f, 0.30f)),
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
                 new Vector3(55f, 0f, 95f), new Vector2(8f, 8f), new Color(0.85f, 0.95f, 0.90f)),

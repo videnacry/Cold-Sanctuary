@@ -47,9 +47,17 @@ public class OpenSpell : SpellBase
     public override void Cast(Anima caster, ITarget target)
     {
         GameObject go = targetObject != null ? targetObject : (caster != null ? caster.gameObject : null);
-        AreaHours h = go != null ? go.GetComponentInChildren<AreaHours>() : null;
+        if (go == null) return;
+        AreaHours h = go.GetComponentInChildren<AreaHours>();
+        // Un área del santuario sin horario propio lo recibe al abrirla/cerrarla (antes: «sin AreaHours»).
+        if (h == null && go.GetComponent<SanctuaryArea>() != null) h = go.AddComponent<AreaHours>();
         if (h == null) { Debug.Log("[Área] sin AreaHours en el objetivo."); return; }
         h.manualOverride = reset ? 0 : (close ? -1 : 1);
+        // La Cocina manda también sobre el restaurante que vive en ella.
+        SanctuaryArea sa = go.GetComponent<SanctuaryArea>();
+        if (sa != null && sa.areaType == SanctuaryAreaType.Kitchen)
+            foreach (RestaurantKitchen rk in Object.FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+                if (rk.TryGetComponent(out AreaHours rh)) rh.manualOverride = h.manualOverride;
         Debug.Log($"[Área] «{go.name}»: {(reset ? "auto (reloj)" : close ? "cerrada" : "abierta")}.");
     }
 }

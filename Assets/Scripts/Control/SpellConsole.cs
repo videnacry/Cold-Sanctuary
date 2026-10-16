@@ -254,17 +254,30 @@ public class SpellConsole : MonoBehaviour
     }
 
     // Avanza el paso de cocina del poseído (cocinar por teclado; combínalo con walkTo a cada estación).
+    // `step` y `use` van a la COLA como los demás hechizos de cocina: antes eran inmediatos y, mezclados en una tanda con
+    // walkTo/take/putIn/beat (encolados), se adelantaban (un `step` avanzaba la receta antes que el `putIn` pendiente).
     void Step(Anima self)
     {
         CookingStation cs = self.GetComponent<CookingStation>();
         if (cs == null) { Log($"«{self.name}» no está cocinando."); return; }
-        cs.AdvanceStep();
-        Log($"«{self.name}»: siguiente paso de cocina.");
+        Enqueue(self, new ActionNowSpell("siguiente paso de cocina", a => { cs.AdvanceStep(); Log($"«{a.name}»: siguiente paso de cocina."); }));
+    }
+
+    static void Enqueue(Anima self, QueuedSpell s)
+    {
+        ActionQueue q = self.GetComponent<ActionQueue>();
+        if (q == null) q = self.gameObject.AddComponent<ActionQueue>();
+        q.EnqueuePlayer(s);
     }
 
     // ACCIÓN CON RANGO (first slice de "steps = hechizos con alcance"): usar una estación (nevera/plancha…) exige estar
     // dentro del ALCANCE (del miembro; la magia lo ampliará). Si no llegas, FALLA → el jugador debe `walkTo` primero.
     void UseStation(Anima self, Dictionary<string, string> args)
+    {
+        Enqueue(self, new ActionNowSpell("usar", a => UseStationNow(a, args)));
+    }
+
+    void UseStationNow(Anima self, Dictionary<string, string> args)
     {
         string name = args.TryGetValue("destiny", out string d) ? d : (args.TryGetValue("character", out string c) ? c : null);
         if (name == null) { Log("use necesita un destiny (p. ej. Nevera)."); return; }
@@ -476,6 +489,10 @@ public class SpellConsole : MonoBehaviour
         }
         if (bestAnima != null) return bestAnima.transform;
 
+        // un ÁREA por su nombre visible («Cocina», «Huerto», «Mecánica»): antes solo valía el del GameObject (Kitchen_Area)
+        foreach (SanctuaryArea sa in FindObjectsOfType<SanctuaryArea>())
+            if (string.Equals(sa.displayName, name, System.StringComparison.OrdinalIgnoreCase)) return sa.transform;
+
         // ¿existe el anima pero fuera de alcance? entonces "no lo ve" → null (lo preguntará)
         foreach (Anima a in FindObjectsOfType<Anima>())
             if (a != self && NameMatches(a.name, name)) return null;
@@ -500,4 +517,13 @@ public class SpellConsole : MonoBehaviour
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         return p != null ? p.GetComponent<Anima>() : null;
     }
+}
+
+/// <summary>Hechizo de cola de un solo paso: ejecuta una acción instantánea en su turno (mantiene el orden de la tanda).</summary>
+public class ActionNowSpell : QueuedSpell
+{
+    readonly string _label; readonly System.Action<Anima> _act;
+    public ActionNowSpell(string label, System.Action<Anima> act) { _label = label; _act = act; }
+    public override string Label => _label;
+    public override bool Tick(Anima self) { _act?.Invoke(self); return true; }
 }

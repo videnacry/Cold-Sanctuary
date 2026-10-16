@@ -13,6 +13,8 @@ public class CookingStation : MonoBehaviour
     public RestaurantKitchen kitchen;
     [Tooltip("true = el JUGADOR avanza cada paso con `stepKey` (jugable). false = NPC automático por tiempo.")]
     public bool playerDriven = false;
+    [Tooltip("true = otro componente (KitchenCook) avanza los pasos cuando el cocinero termina cada acción física.")]
+    public bool externallyDriven = false;
     public KeyCode stepKey = KeyCode.E;
     [Tooltip("Segundos por paso cuando es NPC (automático).")]
     [Min(0.1f)] public float npcStepSeconds = 1.2f;
@@ -25,6 +27,7 @@ public class CookingStation : MonoBehaviour
     GUIStyle _style;
 
     /// <summary>Texto del paso que toca ahora (null si no hay receta). Lo leen los hechizos por paso (take/putIn/beat).</summary>
+    public string CurrentDish => _recipe != null ? _recipe.dishName : null;
     public string CurrentStep => _recipe != null && _step < _recipe.steps.Length ? _recipe.steps[_step] : null;
 
     void Start()
@@ -50,6 +53,7 @@ public class CookingStation : MonoBehaviour
             return;
         }
 
+        if (externallyDriven) return;
         bool advance = playerDriven ? Input.GetKeyDown(stepKey) : Time.time >= _next;
         if (advance) AdvanceStep();
     }
@@ -89,10 +93,10 @@ public class CookingStation : MonoBehaviour
         if (_style == null) _style = new GUIStyle(GUI.skin.label) { fontSize = 13, richText = true, wordWrap = true };
 
         var sb = new System.Text.StringBuilder();
-        if (_recipe == null) sb.AppendLine("<b>Restaurante</b>\nTodo el stock está cubierto. ¡Misión lista!");
+        if (_recipe == null) sb.AppendLine("<b>Misión «Preparar platillos»</b>\nTodo el stock está nivelado. ¡Misión cumplida!");
         else
         {
-            sb.AppendLine($"<b>Cocinando: {_recipe.dishName}</b>  <size=11>(pulsa {stepKey} para el siguiente paso)</size>");
+            sb.AppendLine($"<b>Misión «Preparar platillos» · cocinando: {_recipe.dishName}</b>  <size=11>(pulsa {stepKey} para el siguiente paso)</size>");
             for (int i = 0; i < _recipe.steps.Length; i++)
             {
                 string mark = i < _step ? "✔" : (i == _step ? "➤" : "·");
