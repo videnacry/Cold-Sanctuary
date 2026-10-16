@@ -87,5 +87,8 @@ public enum BodyPart
     LimbA, LimbB, LimbC, LimbD, LimbE, LimbF,
     // Articulaciones del cuerpo de cubos (CubeBody bípedo): codo→antebrazo, cadera→muslo, rodilla→espinilla.
     // Shoulder* = hombro (brazo entero), Hand* = muñeca, Foot* = tobillo, Chest = cintura, Neck/Head = cuello/cabeza.
-    ForearmLeft, ForearmRight, ThighLeft, ThighRight, ShinLeft, ShinRight
+    ForearmLeft, ForearmRight, ThighLeft, ThighRight, ShinLeft, ShinRight,
+    // Escápula/hombro (entre el torso y el brazo): permite ENCOGER/rodar el hombro (elevar/adelantar/atrasar) sin mover
+    // el brazo — lo que el hombro-articulación (brazo entero) no puede. Para los ejercicios de hombros del upa-yoga.
+    ScapulaLeft, ScapulaRight
 }

@@ -18,9 +18,10 @@ public class YogaTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Yoga (postura rota el rig + Saludo al Sol)");
         yield return null;
 
-        // Estructura: el Saludo al Sol son 12 asanas (no requiere cuerpo).
+        // Estructura: 12 posturas, cada una por respiraciones (1 fase para llegar + 2 de mantenimiento = 3 fases).
         var seq = SunSalutation.Sequence(0.2f);
-        TestProbe.Check("el Saludo al Sol trae 12 asanas", seq.Count == 12, $"count={seq.Count}");
+        TestProbe.Check("el Saludo al Sol son 12 posturas", SunSalutation.PostureCount == 12, $"posturas={SunSalutation.PostureCount}");
+        TestProbe.Check("la secuencia son 36 fases de respiración (12×3)", seq.Count == 36, $"count={seq.Count}");
 
         // Cuerpo de cubos bípedo + su rig (CreatureRig con huesos por BodyPart).
         GameObject subject = new GameObject("YogaTest_Subject");

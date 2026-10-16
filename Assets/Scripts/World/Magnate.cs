@@ -110,7 +110,7 @@ public class Magnate : MonoBehaviour
         Transform yoga = yogaSpot != null ? yogaSpot : FindSpot("SalaYoga");
         Transform kitchen = kitchenSpot != null ? kitchenSpot : FindSpot("CocinaSpot");
         if (yoga != null) q.EnqueueOwn(ActionSpells.Walk(yoga));
-        foreach (QueuedSpell s in UpaYoga.NeckWarmup()) q.EnqueueOwn(s);   // al llegar, practica upa-yoga (su primera vez)
+        foreach (QueuedSpell s in UpaYoga.NeckSequence()) q.EnqueueOwn(s);   // al llegar, practica upa-yoga de cuello (su primera vez)
         if (kitchen != null) q.EnqueueOwn(ActionSpells.Walk(kitchen));
         Debug.Log($"[Magnate] guía a «{t.name}»: sala de yoga → upa-yoga → cocina.");
     }
@@ -171,8 +171,9 @@ public class Magnate : MonoBehaviour
         // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; una vez aprendido, se progresa al Saludo al Sol.
         Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
         List<QueuedSpell> routine; float dur; string label;
-        if (!g.Knows("upa-yoga")) { routine = UpaYoga.NeckWarmup(); dur = UpaYoga.Duration(); label = "upa-yoga de cuello"; g.Learn("upa-yoga"); }
-        else                      { routine = SunSalutation.Sequence(); dur = SunSalutation.Duration(); label = "el Saludo al Sol"; g.Learn("yoga"); }
+        if (!g.Knows("upa-yoga"))            { routine = UpaYoga.NeckSequence(); dur = UpaYoga.Duration(); label = "upa-yoga de cuello"; g.Learn("upa-yoga"); }
+        else if (!g.Knows("yoga-namaskar")) { routine = YogaNamaskar.Sequence(); dur = YogaNamaskar.Duration(); label = "Yoga Namaskar"; g.Learn("yoga-namaskar"); }
+        else                                { routine = SunSalutation.Sequence(); dur = SunSalutation.Duration(); label = "el Saludo al Sol"; g.Learn("yoga"); }
 
         // DEMOSTRACIÓN: la Magnate hace la rutina con su cuerpo y el alumno la IMITA articulación por articulación.
         // Más nivel de yoga → la sigue mejor.
