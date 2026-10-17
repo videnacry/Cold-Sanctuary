@@ -52,6 +52,24 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
         TestProbe.Check("la escalera vertical tiene su pie interactuable", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length >= 2);
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
+
+        // SUBIR y BAJAR por la escalera vertical (un cuerpo de prueba con CharacterController, como el jugador).
+        Ladder foot = null;
+        foreach (Ladder ld in FindObjectsByType<Ladder>(FindObjectsSortMode.None)) if (!ld.top) foot = ld;
+        if (foot != null)
+        {
+            GameObject body = new GameObject("Trepador_TEST");
+            body.AddComponent<CharacterController>();
+            body.transform.position = foot.transform.position;
+            float speed = foot.speed; foot.speed = 20f;   // rápido para el test
+            yield return StartCoroutine(foot.Climb(body.transform, true));
+            float top = body.transform.position.y - foot.ladder.position.y;
+            TestProbe.Near("subir la escalera deja al cuerpo en la plataforma de la casa del árbol", top, foot.deckY + 1.2f, 0.3f);
+            yield return StartCoroutine(foot.Climb(body.transform, false));
+            TestProbe.Check("bajar la escalera lo devuelve al suelo", body.transform.position.y - foot.ladder.position.y < 2f, $"y={body.transform.position.y:0.0}");
+            foot.speed = speed;
+            Destroy(body);
+        }
         TestProbe.End();
     }
 }
