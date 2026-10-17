@@ -97,6 +97,8 @@ public class PlayerController : MonoBehaviour
     bool  _isSwimming;
 
     /// <summary>Called by WaterZone on trigger enter/exit.</summary>
+    public bool IsSwimming => _isSwimming;
+
     public void SetSwimming(bool swimming)
     {
         _isSwimming = swimming;
@@ -228,6 +230,10 @@ public class PlayerController : MonoBehaviour
     {
         // Durante el yoga, WASD las consume la sesión (control por partes): el cuerpo no camina.
         if (UpaYogaSession.Active) return;
+        // Nadando «fantasma»: si un teletransporte (tanque, microcosmos) lo sacó del agua sin pasar por el borde del
+        // trigger, el estado se quedaba en «nadando» y el cuerpo no salía del sitio. Fuera del agua y sobre suelo → anda.
+        if (_isSwimming && transform.position.y > 0.6f && Physics.Raycast(transform.position, Vector3.down, 2.2f, ~0, QueryTriggerInteraction.Ignore))
+            _isSwimming = false;
         if (_isSwimming)
         {
             HandleSwimMovement();
@@ -268,6 +274,27 @@ public class PlayerController : MonoBehaviour
     // Free 3D movement, no gravity — WASD for the horizontal plane, jumpKey/swimDownKey for
     // up/down. Reuses the same left-hand keys as on land (jumpKey doubles as "swim up") so
     // there's nothing new to learn entering the water.
+    // SALIR DEL AGUA: nadando hacia el borde de un casquete (o una orilla) que asoma poco, se sube a él (como apoyar las
+    // manos y trepar). Sin esto el CharacterController chocaba con el canto del hielo y se quedaba en el agua.
+    void TryClimbOut(Vector3 dir)
+    {
+        dir.y = 0f;
+        if (dir.sqrMagnitude < 0.01f) return;
+        dir.Normalize();
+        Vector3 ahead = transform.position + dir * (_cc.radius + 0.45f);
+        if (!Physics.Raycast(ahead + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)) return;
+        float feet = transform.position.y + _cc.center.y - _cc.height * 0.5f;
+        float climb = hit.point.y - feet;
+        if (climb < 0.1f || climb > 1.2f) return;   // nada que subir, o una pared demasiado alta
+        _cc.enabled = false;
+        transform.position = new Vector3(ahead.x, hit.point.y + (_cc.height * 0.5f - _cc.center.y) + 0.05f, ahead.z);
+        _cc.enabled = true;
+        _isSwimming = false;
+        _verticalVelocity = -2f;
+    }
+
+    const float SurfaceFloatY = 0.68f;   // pivote flotando: pies 7 cm bajo el agua (sigue en el trigger) y el borde del hielo a un escalón
+
     void HandleSwimMovement()
     {
         float h = Input.GetAxisRaw("Horizontal");
@@ -280,8 +307,12 @@ public class PlayerController : MonoBehaviour
 
         Vector3 velocity = move * swimSpeed;
         velocity.y = vertical * swimVerticalSpeed;
+        // Sin subir ni bajar a mano, FLOTA en la superficie (los pies a ras del borde del hielo): así, al llegar nadando a
+        // un casquete, el escalón para salir es pequeño y se sube andando.
+        if (Mathf.Approximately(vertical, 0f)) velocity.y = (SurfaceFloatY - transform.position.y) * 3f;
         _cc.Move(velocity * Time.deltaTime);
         _verticalVelocity = 0f;
+        TryClimbOut(move.sqrMagnitude > 0.01f ? move : (_walk != null ? _walk.LastDir : Vector3.zero));
     }
 
     // ── Perspective toggle ────────────────────────────────────────────────────

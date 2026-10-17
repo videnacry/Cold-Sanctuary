@@ -29,7 +29,7 @@ public static class PolarLandscapeBuilder
         ("Cocina",         5f,   95f, 22f),
         ("Enfermeria",    55f,   97f, 21f),
         ("Veterinaria",  105f,   95f, 17f),
-        ("SalaYoga",     108f,   35f, 17f),
+        ("SalaYoga",     109f,   38f, 21f),
         ("Mecanica_Osos",118f,  -20f, 30f),   // Mecánica + territorio de los osos
         ("Textil",        55f,  -55f, 16f),
         ("Pinguinos",     60f,  -22f, 11f),   // colonia en la orilla sur de la laguna
@@ -39,6 +39,7 @@ public static class PolarLandscapeBuilder
         ("Arrozal",      -60f,  -15f, 17f),
         ("Bosque_Comestible", -78f, 45f, 24f),
         ("Guardia",      -20f,   55f, 17f),   // la casa del árbol de guardia
+        ("Residencial",  -60f,   95f, 26f),   // arboleda residencial: los dormitorios elevados
         // Arboledas del bosque carnívoro
         ("Bosque_1", -125f, -25f, 24f), ("Bosque_2", -135f, 65f, 24f), ("Bosque_3", -100f, 125f, 22f), ("Bosque_4", -40f, 160f, 22f),
         ("Bosque_5",   60f, 165f, 22f), ("Bosque_6", 150f, 140f, 22f), ("Bosque_7", 175f,  60f, 20f), ("Bosque_8", -115f, -115f, 22f),

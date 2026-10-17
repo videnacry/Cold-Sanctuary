@@ -94,6 +94,9 @@ public class MissionSelectMenu : MonoBehaviour
         cb?.Invoke();
     }
 
+    /// <summary>Cierra sin llamar a nadie (p. ej. al salir del microcosmos con el menú abierto).</summary>
+    public void CloseSilently() { if (IsOpen) Close(); }
+
     void Close()
     {
         _onSelected = null;

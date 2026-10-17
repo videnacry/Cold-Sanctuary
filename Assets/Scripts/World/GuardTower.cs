@@ -78,6 +78,7 @@ public static class GuardTower
         top.GetComponent<Collider>().isTrigger = true; top.GetComponent<Renderer>().enabled = false;
         top.top = true; top.ladder = ladder; top.deckY = y;
 
+        SoftGround.Plant(t, groundPos + Vector3.down * 0.1f, new Vector2(14f, 14f), 11);   // colchón de musgo bajo la casa del árbol
         WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Casa del árbol de la guardia"; tl.height = y + 5f;
         return t;
     }

@@ -77,10 +77,15 @@ public class WalkSpell : SpellBase
     }
 
     // Núcleo de locomoción por Transform (self/IA, sin CharacterController): velocidad de StepSpeed + forcejeo al bloquearte.
+    /// <summary>Diagnóstico: la última velocidad y dirección pedidas (consola `queue`).</summary>
+    public float LastSpeed { get; private set; }
+    public Vector3 LastDir { get; private set; }
+
     void Locomote(Vector3 dir, bool charging, bool channeling, float dt)
     {
         bool moving = dir.sqrMagnitude >= 0.01f;
         float speed = StepSpeed(charging, channeling, moving, dt);
+        LastSpeed = speed; LastDir = dir;
         if (speed <= 0f) { _lastPos = transform.position; return; }
         dir.Normalize();
 
@@ -89,7 +94,11 @@ public class WalkSpell : SpellBase
         ReportResult(_self, moved >= blockedEpsilon);
         _lastPos = transform.position;
 
-        transform.position += dir * speed * dt;
+        // Con CharacterController (el jugador) se mueve con él: si se toca el transform a mano, el CC lo pisa en su
+        // siguiente Move (p. ej. nadando) y el cuerpo no avanzaba.
+        CharacterController cc = GetComponent<CharacterController>();
+        if (cc != null && cc.enabled) cc.Move(dir * speed * dt);
+        else transform.position += dir * speed * dt;
     }
 
     // El objetivo es siempre uno mismo (no usa la API dirigida).

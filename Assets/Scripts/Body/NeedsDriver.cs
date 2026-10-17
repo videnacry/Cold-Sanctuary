@@ -31,7 +31,15 @@ public class NeedsDriver : MonoBehaviour
         _next = Time.time + checkEvery;
         foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell) return;   // ya atendiendo una necesidad
 
-        if (!_a.asleep && _a.sleepiness >= sleepAbove) { _q.EnqueueOwn(new SleepSpell()); return; }
+        if (!_a.asleep && _a.sleepiness >= sleepAbove)
+        {
+            // A dormir a SU cama (arboleda residencial), si tiene dormitorio; si no, donde esté.
+            Bedroom room = Bedroom.Of(_a);
+            if (room != null && room.bed != null && Vector3.Distance(room.bed.position, transform.position) > 2f)
+                _q.EnqueueOwn(new WalkToSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f, giveUpAfter = 8f });
+            _q.EnqueueOwn(new SleepSpell());
+            return;
+        }
         if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new EatSpell());
     }
 }

@@ -36,7 +36,7 @@ public static class DietPreference
         {
             // Insectos del Microcosmos (cadena real): preferencias entre sus presas.
             { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.6f } } },  // especialista en pulgón
-            { "Spider",  new Dictionary<string, float> { { "Aphid", 2.0f }, { "Cricket", 2.0f }, { "Ant", 1.0f }, { "Ladybug", 0.6f } } }, // élitros duros = menos
+            { "Spider",  new Dictionary<string, float> { { "Aphid", 2.0f }, { "Cricket", 2.0f }, { "Ant", 1.0f }, { "Ladybug", 0.6f }, { "SnowBee", 2.5f } } }, // élitros duros = menos; la araña de las nieves caza abejas de las nieves
             { "Ant",     new Dictionary<string, float> { { "Aphid", 1.5f } } },                        // mirmecofilia (cuida/ordeña pulgón)
             { "Cricket", new Dictionary<string, float>() },                                            // omnívoro: neutro
 

@@ -89,6 +89,7 @@ public class Magnate : MonoBehaviour
     // (TeachingSession: ella hace cada paso y le pide el suyo) y al terminar lo encamina a la cocina. Hasta entonces el
     // recién llegado NO es del santuario y ella no lo tiene en cuenta para enseñar al rezagado.
     Anima _initiating;
+    float _logAt;
     int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = a la cocina
 
     void GoPresent()
@@ -103,7 +104,12 @@ public class Magnate : MonoBehaviour
         switch (_initPhase)
         {
             case 0:   // ir a buscarlo
-                if (Flat(t.transform.position - transform.position) > teachRadius) { PathMover.Of(this).StepToward(t.transform.position, moveSpeed); return; }
+                if (Flat(t.transform.position - transform.position) > teachRadius)
+                {
+                    float left = PathMover.Of(this).StepToward(t.transform.position, moveSpeed);
+                    if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] va a buscar a «{t.name}» ({left:0} m).");}
+                    return;
+                }
                 Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y se lo lleva a la sala de yoga (hechizo de iniciación).");
                 Mind m = t.GetComponent<Mind>();
                 if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
@@ -112,7 +118,8 @@ public class Magnate : MonoBehaviour
                 return;
             case 1:   // caminar juntos (ella delante, a su paso)
                 if (yoga == null) { _initPhase = 2; return; }
-                PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
+                float mLeft = PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
+                if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {mLeft:0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
                 if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f)
                 {
                     _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí

@@ -101,7 +101,8 @@ public static class KitchenProps
         return t;
     }
 
-    /// <summary>Fogón de 4 quemadores con mandos y horno debajo (puerta con ventana).</summary>
+    /// <summary>COCINA DE INDUCCIÓN (aquí no hay gas: todo es solar) de 4 zonas sobre vitrocerámica negra, con panel táctil,
+    /// y horno eléctrico debajo (puerta con ventana). Las zonas encendidas brillan en ámbar tenue.</summary>
     public static Transform Stove(Transform parent, string name, Vector3 pos, float yaw = 0f)
     {
         Transform t = Root(parent, name, pos, yaw);
@@ -109,14 +110,17 @@ public static class KitchenProps
         C(t, new Vector3(0f, 0.42f, -0.33f), new Vector3(0.62f, 0.5f, 0.02f), DarkSteel, 0f, "Horno");
         C(t, new Vector3(0f, 0.45f, -0.345f), new Vector3(0.42f, 0.25f, 0.01f), H("3A3F47"), 0f, "Ventana");
         C(t, new Vector3(0f, 0.72f, -0.35f), new Vector3(0.6f, 0.03f, 0.03f), Steel, 0f, "Asa_Horno");
-        C(t, new Vector3(0f, 0.905f, 0f), new Vector3(0.74f, 0.01f, 0.62f), Black, 0f, "Placa");
+        C(t, new Vector3(0f, 0.905f, 0f), new Vector3(0.74f, 0.012f, 0.62f), H("16181C"), 0f, "Vitroceramica");
         for (int i = 0; i < 4; i++)
         {
-            Vector3 b = new Vector3(i % 2 == 0 ? -0.18f : 0.18f, 0.915f, i < 2 ? -0.13f : 0.15f);
-            C(t, b, new Vector3(0.18f, 0.012f, 0.18f), H("3C3C40"), 45f, "Quemador");
-            C(t, b + Vector3.up * 0.008f, new Vector3(0.08f, 0.01f, 0.08f), H("B04A3A"), 0f, "Llama");
-            C(t, new Vector3(-0.27f + i * 0.18f, 0.83f, -0.34f), new Vector3(0.05f, 0.05f, 0.04f), Black, 0f, "Mando");
+            Vector3 b = new Vector3(i % 2 == 0 ? -0.18f : 0.18f, 0.912f, i < 2 ? -0.13f : 0.15f);
+            float r = i == 0 ? 0.11f : 0.08f;   // una zona grande y tres normales
+            for (int s = 0; s < 4; s++)   // el aro serigrafiado de la zona (4 trazos)
+                C(t, b + Quaternion.Euler(0f, s * 90f, 0f) * new Vector3(0f, 0f, r), new Vector3(r * 1.4f, 0.002f, 0.006f), H("5A5F66"), s * 90f, "Zona");
+            C(t, b + Vector3.up * 0.001f, new Vector3(r * 0.9f, 0.002f, r * 0.9f), H("3A2A22"), 45f, "Bobina");
         }
+        C(t, new Vector3(0f, 0.912f, -0.27f), new Vector3(0.5f, 0.003f, 0.05f), H("2A2D33"), 0f, "Panel_Tactil");
+        for (int k = 0; k < 5; k++) C(t, new Vector3(-0.2f + k * 0.1f, 0.914f, -0.27f), new Vector3(0.02f, 0.002f, 0.02f), H("E8A050"), 0f, "Tecla");
         Fit(t);
         return t;
     }

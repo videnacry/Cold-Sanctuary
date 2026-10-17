@@ -316,6 +316,15 @@ public class SpellConsole : MonoBehaviour
         Log(sb.ToString());
         Log($"  self: tag={self.tag} padre={(self.transform.parent != null ? self.transform.parent.name : "-")} mismo={(GameObject.FindGameObjectWithTag("Player") == self.gameObject)} · " +
             $"Player(tag): {(tagged != null ? tagged.name + " en " + tagged.transform.position.ToString("F1") + " anima=" + (tagged.GetComponent<Anima>() != null) : "ninguno")}");
+        PlayerController dpc = self.GetComponent<PlayerController>(); CharacterController dcc = self.GetComponent<CharacterController>();
+        WalkSpell dws = self.GetComponent<WalkSpell>(); CharacterLevel dcl = self.GetComponent<CharacterLevel>();
+        Log($"  control: PlayerController={(dpc != null ? dpc.enabled.ToString() : "-")} CC={(dcc != null ? dcc.enabled.ToString() : "-")} WalkSpell={(dws != null ? dws.enabled + (dws.IsCharging ? " (cargando)" : "") + $" v={dws.LastSpeed:0.00} dir={dws.LastDir}" : "-")} nadando={(dpc != null && dpc.IsSwimming)} energía={(dcl != null ? dcl.currentEnergy.ToString("0") : "-")} timeScale={Time.timeScale}");
+        var touching = new System.Text.StringBuilder();
+        foreach (Collider c in Physics.OverlapSphere(self.transform.position, 0.8f, ~0, QueryTriggerInteraction.Ignore))
+            if (!c.transform.IsChildOf(self.transform)) touching.Append(c.name).Append(' ');
+        Log($"  toca: {touching}");
+        AnimaController myAc = self.GetComponent<AnimaController>();
+        if (myAc != null) Log($"  cerebro activo: {(myAc.Active != null ? myAc.Active.GetType().Name : "ninguno")} · FollowBrain={(self.GetComponent<FollowBrain>() != null ? (self.GetComponent<FollowBrain>().target != null ? self.GetComponent<FollowBrain>().target.name : "sin objetivo") : "-")}");
         foreach (AnimaController ac in FindObjectsOfType<AnimaController>())
             if (ac.Active is PlayerBrain) Log($"  PlayerBrain activo en «{ac.name}» {ac.transform.position:F1}");
     }

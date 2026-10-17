@@ -114,6 +114,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<IslandsTest>();           // grupo 25: archipiélago (caminos a nado, laguna, casa del árbol, enfermería)
         tests.AddComponent<BodyShapeTest>();         // grupo 26: las stats físicas moldean el cuerpo (estatura, músculo, grasa)
         tests.AddComponent<GardenVisitorTest>().harePrefab = LoadAnimalPrefab("Bunny");   // grupo 27: visitantes del huerto = animas reales (hambre + dieta de cultivos)
+        tests.AddComponent<SanctuaryLifeTest>();     // grupo 28: elevado + musgo, dormitorios, solar, insectos de hielo, energía del cuerpo
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -127,6 +128,7 @@ public static class SampleSceneBuilder
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
+        ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
@@ -2020,6 +2022,8 @@ public static class SampleSceneBuilder
         // La energía (ATP) se recupera sola de las reservas: sin esto, al vaciarse (andar, nadar, la clase de yoga) el
         // jugador se quedaba CLAVADO para siempre (WalkSpell no avanza sin ATP).
         if (player.GetComponent<ATPRegenSpell>() == null) player.AddComponent<ATPRegenSpell>();
+        if (player.GetComponent<FallImpact>() == null) player.AddComponent<FallImpact>();   // las caídas hacen daño (salvo sobre el musgo o al agua)
+        if (player.TryGetComponent(out CharacterController pcc)) pcc.stepOffset = 0.45f;   // salir nadando a un casquete (borde a ~0,3 m del agua)
         if (Object.FindObjectOfType<SpellConsole>() == null)
             new GameObject("SpellConsole_AUTO").AddComponent<SpellConsole>().transform.SetParent(player.transform);
 
@@ -2728,7 +2732,7 @@ public static class SampleSceneBuilder
         MakeOutline(room, "Contorno S2", new Vector3(5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null) spot.transform.position = room.TransformPoint(new Vector3(0f, -0.1f, -8.6f));
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 8f + 8.4f + 1.5f));   // al pie de la escalera
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2765,7 +2769,7 @@ public static class SampleSceneBuilder
     {
         GameObject p = GameObject.Find("Player");
         GameObject area = GameObject.Find("Kitchen_Area");
-        if (p != null && area != null) p.transform.position = area.transform.position + new Vector3(0f, 1.2f, 9.5f);
+        if (p != null && area != null) p.transform.position = area.transform.TransformPoint(new Vector3(0f, 1.2f, 5f));   // sobre la plataforma
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
@@ -2810,7 +2814,8 @@ public static class SampleSceneBuilder
 
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
         mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
-        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+        GameObject kArea = GameObject.Find("Kitchen_Area");   // al pie de la escalera de la cocina (elevada)
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 8f + 8.4f + 1.5f)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
     // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
@@ -3003,6 +3008,7 @@ public static class SampleSceneBuilder
             avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
         foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
             avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
+        avoid.Add(new Vector3(-60f, 95f, 28f));   // la arboleda residencial (sus árboles no cazan)
         GameObject tower = GameObject.Find("CasaArbolGuardia");   // ni junto a la casa del árbol
         if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
         var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 24, loose: 12);
@@ -3035,6 +3041,14 @@ public static class SampleSceneBuilder
                 fg.families = new[] { new FamilyGenerator.Family { animalPrefab = beePrefab, position = hiveTrees[h] + new Vector3(4f, 0f, 0f), quantity = 5, minParentsCount = 1, radius = 5f } };
             }
         }
+        GameObject spiderPrefab = LoadAnimalPrefab("SnowSpider");
+        if (spiderPrefab != null)   // ARAÑAS DE LAS NIEVES: dos por árbol con colmena (acechan en el tronco)
+            for (int h = 0; h < hiveTrees.Count; h++)
+            {
+                GameObject sg = new GameObject($"Aranas_nieve_{h + 1}"); sg.transform.SetParent(root.transform);
+                FamilyGenerator sfg = sg.AddComponent<FamilyGenerator>();
+                sfg.families = new[] { new FamilyGenerator.Family { animalPrefab = spiderPrefab, position = hiveTrees[h] + new Vector3(-2f, 0f, 1f), quantity = 2, minParentsCount = 1, radius = 2f } };
+            }
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
         string ages = string.Join(", ", count.Select(kv => $"{kv.Value} {kv.Key.ToString().ToLowerInvariant()}"));
         Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {plan.Count} esparcidos ({ages}).");
@@ -3126,7 +3140,7 @@ public static class SampleSceneBuilder
     static void PlacePlayerAtInfirmary(Transform root)
     {
         GameObject p = GameObject.Find("Player"), area = GameObject.Find("Infirmary_Area");
-        if (p != null && area != null) p.transform.position = area.transform.position + new Vector3(0f, 1.2f, 8.5f);
+        if (p != null && area != null) p.transform.position = area.transform.TransformPoint(new Vector3(0f, 1.2f, 4.5f));   // sobre la plataforma
     }
 
     static void Label(Transform t, string text, float height)
@@ -3414,7 +3428,7 @@ public static class SampleSceneBuilder
                 new Vector3(105f, 0f, 95f), new Vector2(8f, 8f), new Color(0.55f, 0.75f, 0.70f)),
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(9f, 9f), new Color(0.75f, 0.65f, 0.85f)),
+                new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
 
             BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
                 new Vector3(105f, 0f, -25f), new Vector2(10f, 9f), new Color(0.55f, 0.55f, 0.60f)),
@@ -3428,6 +3442,14 @@ public static class SampleSceneBuilder
         // ÁREAS ESPACIADAS (~50 m entre vecinas, antes 25): entre ellas caben árboles y animales sin cortar el paso.
         // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
         PlantGarden(areas[areas.Count - 1].transform);
+        // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
+        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(8f, 8f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f) };
+        for (int i = 0; i < 6; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        FurnishYoga(areas[3].transform, sizes[3]);
+        // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
+        for (int i = 0; i < 6; i++)
+            SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
+        for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
         return areas.ToArray();
     }
@@ -3467,6 +3489,98 @@ public static class SampleSceneBuilder
         CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
     }
 
+
+    // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
+    // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
+    // la flora) y se sube por una ESCALERA (rampa para el NavMesh + peldaños visibles) desde el lado abierto (+Z).
+    // Barandilla de 1 m alrededor (el contorno bajo de antes no basta a 6 m de altura).
+    public const float ElevatedHeight = 6f;
+
+    static void ElevateArea(SanctuaryArea a, Vector2 size, float h)
+    {
+        Transform t = a.transform;
+        t.position += Vector3.up * h;
+        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
+        float hx = size.x * 0.5f, hz = size.y * 0.5f;
+        Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(t, false);
+
+        // Losa bajo el suelo del área + columnas (esquinas y cada ~5 m).
+        KitchenProps.C(s, new Vector3(0f, -0.18f, 0f), new Vector3(size.x + 0.4f, 0.3f, size.y + 0.4f), woodDark, 0f, "Losa");
+        for (float x = -hx + 0.4f; x <= hx - 0.39f; x += Mathf.Max(3f, (size.x - 0.8f) / Mathf.Ceil((size.x - 0.8f) / 5f)))
+            for (int sz = -1; sz <= 1; sz += 2)
+                Solid(s, new Vector3(x, -h * 0.5f - 0.15f, sz * (hz - 0.4f)), new Vector3(0.4f, h, 0.4f), wood, "Columna");
+        Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
+        Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
+
+        // Barandilla (1 m) en los tres lados cerrados y a ambos lados de la escalera.
+        float rail = 1f;
+        void Rail(Vector3 from, Vector3 to)
+        {
+            Vector3 mid = (from + to) * 0.5f, d = to - from;
+            Transform r = Solid(s, mid + Vector3.up * rail, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
+            Transform low = Solid(s, mid + Vector3.up * rail * 0.5f, new Vector3(Mathf.Abs(d.x) + 0.06f, rail, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");
+            low.GetComponent<Renderer>().enabled = false;   // barrera invisible: nadie cae, la vista no se tapa
+            int posts = Mathf.Max(2, Mathf.RoundToInt(d.magnitude / 1.5f));
+            for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * rail * 0.5f, new Vector3(0.07f, rail, 0.07f), woodDark, 0f, "Balaustre");
+        }
+        Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
+        Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
+        Rail(new Vector3(hx, 0f, -hz), new Vector3(hx, 0f, hz));
+        Rail(new Vector3(-hx, 0f, hz), new Vector3(-1.2f, 0f, hz));
+        Rail(new Vector3(1.2f, 0f, hz), new Vector3(hx, 0f, hz));
+
+        // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+3 m): si alguien cae, amortigua el golpe; y es una planta más.
+        SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 6f, size.y + 6f), size.GetHashCode());
+
+        // ESCALERA hacia +Z: rampa (invisible, para andar y para el NavMesh) + peldaños y zancas visibles.
+        float rise = 0.25f, tread = 0.35f;
+        int n = Mathf.CeilToInt(h / rise);
+        float run = n * tread;
+        Transform st = new GameObject("Escalera").transform; st.SetParent(s, false);
+        float len = Mathf.Sqrt(run * run + h * h), ang = Mathf.Atan2(h, run) * Mathf.Rad2Deg;
+        Transform ramp = Solid(st, new Vector3(0f, -h * 0.5f - 0.05f, hz + run * 0.5f), new Vector3(2f, 0.1f, len), wood, "Rampa");
+        ramp.localRotation = Quaternion.Euler(ang, 0f, 0f);
+        ramp.GetComponent<Renderer>().enabled = false;
+        for (int i = 0; i < n; i++)
+        {
+            float y = -h + (i + 0.5f) * rise, z = hz + run - (i + 0.5f) * tread;
+            KitchenProps.C(st, new Vector3(0f, y, z), new Vector3(2f, rise, tread * 1.02f), i % 2 == 0 ? wood : woodDark, 0f, "Peldaño");
+        }
+        for (int sx = -1; sx <= 1; sx += 2)
+        {
+            Transform z1 = KitchenProps.C(st, new Vector3(sx * 1.05f, -h * 0.5f + 0.4f, hz + run * 0.5f), new Vector3(0.1f, 0.25f, len), woodDark, 0f, "Zanca");
+            z1.localRotation = Quaternion.Euler(ang, 0f, 0f);
+            Transform hr = Solid(st, new Vector3(sx * 1.1f, -h * 0.5f + 1.2f, hz + run * 0.5f), new Vector3(0.06f, 0.06f, len), wood, "Pasamanos");
+            hr.localRotation = Quaternion.Euler(ang, 0f, 0f);
+        }
+    }
+
+    static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name; g.transform.SetParent(parent, false);
+        g.transform.localPosition = local; g.transform.localScale = size;
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
+        return g.transform;
+    }
+
+    // SALA DE YOGA para 30: esterillas en 6×5 con su espacio, tarima del maestro delante, cojines y campana.
+    static void FurnishYoga(Transform area, Vector2 size)
+    {
+        Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        Color[] mats = { new Color(0.72f, 0.62f, 0.86f), new Color(0.62f, 0.78f, 0.86f), new Color(0.86f, 0.7f, 0.72f), new Color(0.7f, 0.84f, 0.7f) };
+        int k = 0;
+        for (int row = 0; row < 5; row++)
+            for (int col = 0; col < 6; col++, k++)
+            {
+                Vector3 p = new Vector3(-6.25f + col * 2.5f, 0.012f, -5f + row * 2f);
+                KitchenProps.C(r, p, new Vector3(0.7f, 0.02f, 1.8f), mats[k % mats.Length], 0f, $"Esterilla_{k + 1}");
+                KitchenProps.C(r, p + new Vector3(0.45f, 0.06f, -0.75f), new Vector3(0.3f, 0.12f, 0.3f), new Color(0.9f, 0.85f, 0.75f), 45f, "Cojin");
+            }
+        KitchenProps.C(r, new Vector3(0f, 0.12f, -6.7f), new Vector3(4f, 0.24f, 1.0f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
+        KitchenProps.C(r, new Vector3(0f, 0.25f, -6.7f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 90f, "Esterilla del maestro");
+        KitchenProps.C(r, new Vector3(1.6f, 0.33f, -6.7f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
+    }
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
     const float AreaWallHeight = 0.5f;

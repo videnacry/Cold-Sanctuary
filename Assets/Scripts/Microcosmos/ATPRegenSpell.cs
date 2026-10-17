@@ -31,6 +31,10 @@ public class ATPRegenSpell : MonoBehaviour
     [Tooltip("fatReserves mínimas para poder generar energía. Por debajo: el regen se pausa.")]
     [Min(0f)] public float minFatThreshold = 0.05f;
 
+    [Tooltip("Sin grasa, la energía sale del PROPIO CUERPO (catabolismo): fracción de la recarga y masa corporal gastada por unidad.")]
+    [Range(0f, 1f)] public float basalFraction = 0.5f;
+    [Min(0f)] public float bodyMassCostPerEnergy = 0.0004f;
+
     // ── Depuración ────────────────────────────────────────────────────────
 
     /// <summary>Solo lectura — true si el regen está activo este frame.</summary>
@@ -62,18 +66,27 @@ public class ATPRegenSpell : MonoBehaviour
         // WeaknessEffect bloquea el acceso a las reservas metabólicas.
         if (_weakness != null && _weakness.blockReserveRegen) return;
 
-        // Sin reservas metabólicas suficientes: sin combustible.
-        if (_anima != null && _anima.fatReserves < minFatThreshold) return;
+        // La energía SIEMPRE sale de los elementos del cuerpo (docs/stats-as-truth): primero la GRASA de reserva; sin ella,
+        // el cuerpo se cataboliza (gasta su propia masa, más despacio, y da hambre). Así nadie se queda clavado sin energía,
+        // pero recuperarla tiene un coste real: hay que comer.
+        bool noFuel = _anima != null && _anima.fatReserves < minFatThreshold;
 
         // Generar energía.
-        float gain = Mathf.Min(regenPerSecond * Time.deltaTime,
+        float gain = Mathf.Min(regenPerSecond * (noFuel ? basalFraction : 1f) * Time.deltaTime,
                                _level.MaxEnergy - _level.currentEnergy);
 
         _level.currentEnergy += gain;
         IsRegenerating = true;
 
         // Consumir reservas metabólicas (hambre diferida).
-        if (_anima != null && fatCostPerEnergy > 0f)
+        if (!noFuel && _anima != null && fatCostPerEnergy > 0f)
             _anima.fatReserves = Mathf.Max(0f, _anima.fatReserves - gain * fatCostPerEnergy);
+        else if (noFuel && _anima != null)
+        {
+            // CATABOLISMO: masa corporal (y sus elementos C/H/O/N, si lleva Constitución) → energía; y el cuerpo pide comer.
+            _anima.bodyMass = Mathf.Max(0.3f, _anima.bodyMass - gain * bodyMassCostPerEnergy);
+            if (TryGetComponent(out Constitution con)) { con.AddElement("C", -gain * 0.0002f); con.AddElement("H", -gain * 0.0001f); }
+            if (TryGetComponent(out BodyMetabolism body)) body.hunger = Mathf.Min(1f, body.hunger + gain * 0.002f);
+        }
     }
 }

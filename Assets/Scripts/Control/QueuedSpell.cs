@@ -71,15 +71,19 @@ public class WalkToSpell : QueuedSpell
     Vector3 Steer(Vector3 from, Vector3 goal)
     {
         if (_path == null) _path = new UnityEngine.AI.NavMeshPath();
-        if (Time.time >= _repathAt || Flat(goal - _pathGoal).sqrMagnitude > 1f)
+        // Nadando entre islas (fuera del NavMesh) no recalcula: la ruta nueva saldría de la orilla de atrás (ida y vuelta).
+        bool onMesh = UnityEngine.AI.NavMesh.SamplePosition(from, out _, 1.5f, UnityEngine.AI.NavMesh.AllAreas);
+        if (_path.corners.Length == 0 || (onMesh && (Time.time >= _repathAt || Flat(goal - _pathGoal).sqrMagnitude > 4f)))
         {
-            _repathAt = Time.time + 1f; _pathGoal = goal; _corner = 1;
+            _repathAt = Time.time + 2f; _pathGoal = goal; _corner = 1;
             const int all = UnityEngine.AI.NavMesh.AllAreas;
             bool ok = UnityEngine.AI.NavMesh.SamplePosition(from, out var a, 2f, all)
                    && UnityEngine.AI.NavMesh.SamplePosition(goal, out var b, 3f, all)
                    && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, all, _path)
                    && _path.status != UnityEngine.AI.NavMeshPathStatus.PathInvalid;
             if (!ok) _path.ClearCorners();
+            else   // no dar media vuelta a una esquina ya pasada (al recalcular tras cruzar agua)
+                while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner + 1] - from).magnitude < Flat(_path.corners[_corner + 1] - _path.corners[_corner]).magnitude) _corner++;
         }
         Vector3[] c = _path.corners;
         while (_corner < c.Length && Flat(c[_corner] - from).magnitude < 0.4f) _corner++;

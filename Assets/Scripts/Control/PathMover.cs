@@ -22,7 +22,10 @@ public class PathMover : MonoBehaviour
     public float StepToward(Vector3 target, float speed)
     {
         if (_path == null) _path = new NavMeshPath();
-        if (float.IsNaN(_goal.x) || (target - _goal).sqrMagnitude > 1f || Time.time >= _repathAt) Repath(target);
+        // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
+        // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
+        bool onMesh = NavMesh.SamplePosition(transform.position, out _, 1.5f, NavMesh.AllAreas);
+        if (float.IsNaN(_goal.x) || (onMesh && ((target - _goal).sqrMagnitude > 9f || Time.time >= _repathAt))) Repath(target);
 
         Vector3 pos = transform.position;
         Vector3 next = target;
@@ -45,11 +48,16 @@ public class PathMover : MonoBehaviour
 
     void Repath(Vector3 target)
     {
-        _goal = target; _repathAt = Time.time + 1.5f; _corner = 1;
+        _goal = target; _repathAt = Time.time + 4f; _corner = 1;
         Vector3 from = transform.position, to = target;
         if (NavMesh.SamplePosition(from, out NavMeshHit a, 4f, NavMesh.AllAreas)) from = a.position;
         if (NavMesh.SamplePosition(to, out NavMeshHit b, 4f, NavMesh.AllAreas)) to = b.position;
-        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _path)) _path.ClearCorners();
+        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _path)) { _path.ClearCorners(); return; }
+        // Si ya pasó la primera esquina (p. ej. recalculó en la orilla tras cruzar un tramo de agua), no da media vuelta:
+        // empieza por la esquina que de verdad tiene delante.
+        Vector3[] c = _path.corners;
+        Vector3 here = transform.position;
+        while (_corner < c.Length - 1 && Flat(c[_corner + 1] - here) < Flat(c[_corner + 1] - c[_corner])) _corner++;
     }
 
     // Suelo bajo los pies (pivote del personaje a 1 m sobre el suelo, como la cápsula); sobre el agua, nadando.

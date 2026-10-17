@@ -46,6 +46,7 @@ public static class AnimalPrefabGenerator
         ("Grasshopper", "GrasshopperBehavior"),
         ("Meerkat",     "MeerkatBehavior"),
         ("SnowBee",     "SnowBeeBehavior"),
+        ("SnowSpider",  "SnowSpiderBehavior"),   // araña de las nieves: caza abejas en los árboles carnívoros
     };
     // NOTA: esta lista es el REGISTRO — para producir una especie nueva basta añadir su (carpeta, clase) aquí. Es
     // explícita (no auto-descubierta) a propósito, porque la carpeta y la clase no siempre coinciden (p.ej. la carpeta
@@ -122,6 +123,8 @@ public static class AnimalPrefabGenerator
         GameObject instance = new GameObject(species);
         CubeCreature.Build(instance, species);
         bool cubes = true;
+        if (species == "SnowBee") instance.AddComponent<IceInsectLife>().kind = IceInsectLife.Kind.Bee;          // vuela y pecorea su árbol
+        if (species == "SnowSpider") instance.AddComponent<IceInsectLife>().kind = IceInsectLife.Kind.Spider;    // acecha en el tronco
         instance.name = species;
 
         if (instance.GetComponent<Rigidbody>() == null)
@@ -159,7 +162,7 @@ public static class AnimalPrefabGenerator
     // Los insectos conservan la suya (su escala la decide su microcosmos).
     static void SetBaseScaleOne(Component behaviour, string species)
     {
-        if (behaviour == null || CubeCreature.IsInsect(species)) return;
+        if (behaviour == null || CubeCreature.IsMicroInsect(species)) return;
         System.Reflection.FieldInfo bodyField = behaviour.GetType().GetField("body");
         if (bodyField == null || bodyField.FieldType != typeof(Physiognomy)) return;
         Physiognomy body = (Physiognomy)bodyField.GetValue(behaviour);

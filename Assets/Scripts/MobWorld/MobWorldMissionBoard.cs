@@ -15,6 +15,10 @@ public class MobWorldMissionBoard : MonoBehaviour
 
     void OnEnable() { StartCoroutine(ShowWhenEntered()); }
 
+    // Al descargarse la escena (salir del microcosmos por el portal o el hechizo `exit`), su menú no puede quedarse abierto:
+    // bloqueaba el control del jugador ya de vuelta en el mesocosmos.
+    void OnDisable() { if (MissionSelectMenu.Instance != null) MissionSelectMenu.Instance.CloseSilently(); }
+
     IEnumerator ShowWhenEntered()
     {
         while (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsBusy) yield return null;

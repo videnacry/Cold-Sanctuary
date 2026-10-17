@@ -18,6 +18,7 @@ public static class CubeHumanoid
     /// <summary>Oculta la malla actual de <paramref name="who"/> y le pone un cuerpo de cubos articulado a su altura.</summary>
     public static CreatureRig Dress(GameObject who, Color clothes, Color skin, float height = 0f)
     {
+        skin = CubeHair.For(who.name).skin;   // cada persona con su tono de piel
         Transform old = who.transform.Find(BodyName);
         if (old != null) Object.DestroyImmediate(old.gameObject);
 
@@ -69,7 +70,9 @@ public static class CubeHumanoid
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
         // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
-        CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, new Color(0.25f, 0.18f, 0.12f), rig);
+        CubeHair.Look look = CubeHair.For(root.parent != null ? root.parent.name : "");
+        CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig);
+        CubeHair.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), look);   // cabello (y barba) de cubos
 
         for (int side = -1; side <= 1; side += 2)
         {
