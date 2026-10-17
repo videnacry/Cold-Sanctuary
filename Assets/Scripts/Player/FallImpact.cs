@@ -18,6 +18,8 @@ public class FallImpact : MonoBehaviour
     CharacterLevel _level;
     bool _airborne;
     float _peakY;
+    Vector3 _takeoff;
+    public Vector3 LastTakeoff => _takeoff;
 
     public float LastFallHeight { get; private set; }
     public float LastDamage { get; private set; }
@@ -31,7 +33,7 @@ public class FallImpact : MonoBehaviour
         if (pc != null && pc.IsSwimming) { _airborne = false; return; }  // al agua: sin golpe
         if (!_cc.isGrounded)
         {
-            if (!_airborne) { _airborne = true; _peakY = transform.position.y; }
+            if (!_airborne) { _airborne = true; _peakY = transform.position.y; _takeoff = transform.position; }
             else _peakY = Mathf.Max(_peakY, transform.position.y);
             return;
         }
@@ -50,7 +52,7 @@ public class FallImpact : MonoBehaviour
         if (dmg > 0.5f)
         {
             if (_level != null) _level.TakeDamage(dmg);
-            Debug.Log($"[Caída] «{name}» cae {height:0.0} m{(softness > 0f ? $" sobre algo blando ({softness:P0})" : "")}: {dmg:0} de daño.");
+            Debug.Log($"[Caída] «{name}» cae {height:0.0} m desde ({_takeoff.x:0.0}, {_takeoff.y:0.0}, {_takeoff.z:0.0}){(softness > 0f ? $" sobre algo blando ({softness:P0})" : "")}: {dmg:0} de daño.");
         }
         else if (softness > 0f) Debug.Log($"[Caída] «{name}» cae {height:0.0} m sobre el colchón de musgo: sin daño.");
         return dmg;

@@ -129,7 +129,7 @@ public static class ResidentialBuilder
         for (int s = -1; s <= 1; s += 2)
         {
             Solid(t, new Vector3(s * 0.7f, 0.9f, 0f), new Vector3(0.05f, 0.05f, len), new Color(0.75f, 0.7f, 0.6f), "Cuerda");
-            Transform bar = Solid(t, new Vector3(s * 0.7f, 0.45f, 0f), new Vector3(0.05f, 0.9f, len), Wood, "Barrera");
+            Transform bar = Solid(t, new Vector3(s * 0.7f, 2f, 0f), new Vector3(0.05f, 4f, len), Wood, "Barrera");   // invisible, 4 m (ni saltando): no se salta
             bar.GetComponent<Renderer>().enabled = false;
             for (float z = -len * 0.5f; z <= len * 0.5f; z += 1.2f) KitchenProps.C(t, new Vector3(s * 0.7f, 0.45f, z), new Vector3(0.04f, 0.9f, 0.04f), WoodDark, 0f, "Poste");
         }
@@ -145,6 +145,13 @@ public static class ResidentialBuilder
         ramp.GetComponent<Renderer>().enabled = false;
         for (int i = 0; i < n; i++)
             KitchenProps.C(st, new Vector3(0f, (i + 0.5f) * rise, -run + (i + 0.5f) * tread), new Vector3(2f, rise, tread * 1.02f), i % 2 == 0 ? Wood : WoodDark, 0f, "Peldaño");
+        for (int sx = -1; sx <= 1; sx += 2)
+        {
+            Transform hr = Solid(st, new Vector3(sx * 1.1f, h * 0.5f + 1f, -run * 0.5f), new Vector3(0.06f, 0.06f, len), Wood, "Pasamanos");
+            hr.localRotation = Quaternion.Euler(-ang, 0f, 0f);
+            Transform wall = Solid(st, new Vector3(sx * 1.15f, (h + 3f) * 0.5f, -run * 0.5f), new Vector3(0.08f, h + 3f, run), Wood, "Escalera_Barrera");   // pared VERTICAL del suelo a 3 m sobre la plataforma
+            wall.GetComponent<Renderer>().enabled = false;   // nadie salta de lado por la escalera
+        }
     }
 
     static void Plank(Transform parent, Vector3 local, Vector3 size, string name) => Solid(parent, local, size, Wood, name);

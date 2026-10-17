@@ -3518,7 +3518,7 @@ public static class SampleSceneBuilder
         {
             Vector3 mid = (from + to) * 0.5f, d = to - from;
             Transform r = Solid(s, mid + Vector3.up * rail, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
-            Transform low = Solid(s, mid + Vector3.up * rail * 0.5f, new Vector3(Mathf.Abs(d.x) + 0.06f, rail, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");
+            Transform low = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");   // 4 m (ni saltando): no se salta
             low.GetComponent<Renderer>().enabled = false;   // barrera invisible: nadie cae, la vista no se tapa
             int posts = Mathf.Max(2, Mathf.RoundToInt(d.magnitude / 1.5f));
             for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * rail * 0.5f, new Vector3(0.07f, rail, 0.07f), woodDark, 0f, "Balaustre");
@@ -3529,8 +3529,8 @@ public static class SampleSceneBuilder
         Rail(new Vector3(-hx, 0f, hz), new Vector3(-1.2f, 0f, hz));
         Rail(new Vector3(1.2f, 0f, hz), new Vector3(hx, 0f, hz));
 
-        // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+3 m): si alguien cae, amortigua el golpe; y es una planta más.
-        SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 6f, size.y + 6f), size.GetHashCode());
+        // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+6 m): si alguien cae, amortigua el golpe; y es una planta más.
+        SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
 
         // ESCALERA hacia +Z: rampa (invisible, para andar y para el NavMesh) + peldaños y zancas visibles.
         float rise = 0.25f, tread = 0.35f;
@@ -3552,6 +3552,8 @@ public static class SampleSceneBuilder
             z1.localRotation = Quaternion.Euler(ang, 0f, 0f);
             Transform hr = Solid(st, new Vector3(sx * 1.1f, -h * 0.5f + 1.2f, hz + run * 0.5f), new Vector3(0.06f, 0.06f, len), wood, "Pasamanos");
             hr.localRotation = Quaternion.Euler(ang, 0f, 0f);
+            Transform wall = Solid(st, new Vector3(sx * 1.15f, 1.5f - h * 0.5f, hz + run * 0.5f), new Vector3(0.08f, h + 3f, run), wood, "Escalera_Barrera");   // pared VERTICAL del suelo a 3 m sobre la plataforma
+            wall.GetComponent<Renderer>().enabled = false;   // nadie salta de lado por la escalera
         }
     }
 

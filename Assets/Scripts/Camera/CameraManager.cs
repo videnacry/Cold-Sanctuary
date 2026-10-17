@@ -89,8 +89,33 @@ public class CameraManager : MonoBehaviour
         if (_inRobbery || _transitionRoutine != null) return;
         Transform anchor = _currentMode == CameraMode.FirstPerson ? firstPersonAnchor : thirdPersonAnchor;
         if (anchor == null) return;
-        _cam.position = anchor.position;
+        _cam.position = _currentMode == CameraMode.ThirdPerson ? Unblocked(anchor) : anchor.position;
         _cam.rotation = anchor.rotation;
+    }
+
+    static readonly RaycastHit[] _occHits = new RaycastHit[16];
+
+    /// <summary>Tercera persona: si una columna, pared o tronco se interpone entre el personaje y la cámara,
+    /// la cámara se acerca hasta delante del obstáculo en vez de quedarse mirando la pared.</summary>
+    Vector3 Unblocked(Transform anchor)
+    {
+        Transform root = anchor.root;
+        Vector3 pivot = root.position + Vector3.up * 1.5f;
+        Vector3 to = anchor.position - pivot;
+        float dist = to.magnitude;
+        if (dist < 0.01f) return anchor.position;
+        Vector3 dir = to / dist;
+        int n = Physics.SphereCastNonAlloc(pivot, 0.25f, dir, _occHits, dist, ~0, QueryTriggerInteraction.Ignore);
+        float best = dist;
+        for (int i = 0; i < n; i++)
+        {
+            RaycastHit h = _occHits[i];
+            if (h.distance <= 0f || h.collider.transform.root == root) continue;
+            if (h.collider.GetComponentInParent<Anima>() != null) continue;   // otra persona o animal: no tapa del todo
+            if (!h.collider.TryGetComponent(out Renderer rr) || !rr.enabled) continue;   // barreras y rampas invisibles no tapan
+            best = Mathf.Min(best, h.distance);
+        }
+        return best < dist ? pivot + dir * Mathf.Max(0.4f, best - 0.1f) : anchor.position;
     }
 
     // ── Public API ───────────────────────────────────────────────────────────
