@@ -13,6 +13,9 @@ public class FeedVisitorMission : MeditationMissionBase
     [Tooltip("Escala de los cultivos que siembra si no hay (en el microcosmos se ven gigantes).")]
     public float sownCropScale = 1f;
 
+    [Tooltip("Animales REALES del santuario que vienen con hambre (Bunny = liebre ártica, Deer = reno). Vacío = figuras de cubos.")]
+    public GameObject[] visitorPrefabs = System.Array.Empty<GameObject>();
+
     int _species;
 
     protected override string BeginMessage =>
@@ -31,7 +34,19 @@ public class FeedVisitorMission : MeditationMissionBase
             if (away.magnitude < 11f) position = c.transform.position + (away.sqrMagnitude > 0.01f ? away.normalized : Vector3.forward) * 12f;
         }
         position.y = GroundY(position);
-        return HungryVisitorMob.Create(position, _species++);
+        GameObject prefab = visitorPrefabs != null && visitorPrefabs.Length > 0 ? visitorPrefabs[_species % visitorPrefabs.Length] : null;
+        _species++;
+        if (prefab != null)
+        {
+            // Un ANIMA compuesta del santuario: no se le ordena nada; con hambre, su IA va sola a la planta que más le apetece.
+            GameObject a = Instantiate(prefab, position, Quaternion.identity);
+            bool deer = prefab.name.Contains("Deer");
+            a.name = deer ? "Reno_visitante" : "Liebre_visitante";
+            VisitorAnimaMob v = a.AddComponent<VisitorAnimaMob>();
+            v.displayName = deer ? "reno" : "liebre ártica"; v.feminine = !deer;
+            return v;
+        }
+        return HungryVisitorMob.Create(position, _species);
     }
 
     void EnsureCrops()

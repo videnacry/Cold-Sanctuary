@@ -17,13 +17,18 @@ public class SpellConsole : MonoBehaviour
     [Tooltip("Alcance base de 'visión' para resolver destinos-anima (×percepción del poseído).")]
     [Min(1f)] public float baseVisibleRange = 20f;
 
-    bool _open;
+    bool _open, _wasOpen;
+    int _openedFrame = -1;
     string _input = "";
     readonly List<string> _log = new List<string>();
 
     void Update()
     {
         if (Input.GetKeyDown(toggleKey)) _open = !_open;
+        // Intro también abre la barra (con el hechizo propuesto ya escrito: otro Intro lo lanza).
+        else if (!_open && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) _open = true;
+        if (_open && !_wasOpen) { _openedFrame = Time.frameCount; if (string.IsNullOrEmpty(_input) && Proposed != null) _input = Proposed; }
+        _wasOpen = _open;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         PollInbox();
 #endif
@@ -80,11 +85,47 @@ public class SpellConsole : MonoBehaviour
         ("lookAt",    "lookAt({destiny:\"Magnate\"})"),
         ("cancel",    "cancel({all:false})"),
         ("look",      "look({yaw:90, pitch:0})"),
+        ("asana",     "asana({name:\"\"})"),   // hacer el paso que el maestro pide (o una asana conocida por su nombre)
     };
+
+    // ── Propuesta (lo que un maestro te pide) + qué hechizos CONOCE el poseído ───────────────────────────────────
+    static string _proposed, _proposedWhy;
+    static float _proposedUntil;
+
+    /// <summary>Un maestro/misión PROPONE un hechizo: sale arriba de las sugerencias y en la barra; Tab (o Intro con la
+    /// barra vacía) lo lanza.</summary>
+    public static void Propose(string spellLine, string why = null, float seconds = 30f)
+    { _proposed = spellLine; _proposedWhy = why; _proposedUntil = Time.time + seconds; }
+
+    static string Proposed => !string.IsNullOrEmpty(_proposed) && Time.time < _proposedUntil ? _proposed : null;
+
+    // Hechizos que se APRENDEN (id del Grimorio). Los demás son básicos (andar, mirar, usar, tomar…): siempre conocidos.
+    static readonly Dictionary<string, string> RequiresSkill = new Dictionary<string, string>
+    {
+        { "yoga", "yoga" }, { "teach", "teach" }, { "analysis", "clinico" }, { "vaccinate", "clinico" },
+    };
+
+    public static bool KnowsSpell(Anima self, string spell)
+    {
+        if (!RequiresSkill.TryGetValue(spell, out string id)) return true;
+        Grimoire g = self != null ? self.GetComponent<Grimoire>() : null;
+        return g != null && g.Knows(id);
+    }
+
+    // BARRA SIEMPRE VISIBLE (cerrada): recuerda que se puede escribir y muestra el hechizo propuesto.
+    void DrawClosedBar()
+    {
+        string p = Proposed;
+        float w = 560f, h = p != null ? 46f : 26f, x = 12f, y = Screen.height - h - 12f;
+        GUI.Box(new Rect(x - 4f, y - 2f, w + 8f, h + 4f), "");
+        var st = new GUIStyle(GUI.skin.label) { richText = true, fontSize = 13 };
+        GUI.Label(new Rect(x, y, w, 22f), "<b>✦ Hechizos</b>  <size=11>(pulsa <b>~</b> o <b>Intro</b> para escribir; Tab autocompleta)</size>", st);
+        if (p != null) GUI.Label(new Rect(x, y + 22f, w, 22f), (_proposedWhy != null ? _proposedWhy + " → " : "") + $"<b>{p}</b>  <size=11>(Intro y otra vez Intro lo lanza)</size>", st);
+    }
 
     void OnGUI()
     {
-        if (!_open) return;
+        if (!_open) { DrawClosedBar(); return; }
         float w = 560f, h = 24f, x = 12f, y = Screen.height - 240f;
         GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 212f), "");
         GUI.Label(new Rect(x, y - 2f, w, h), "<b>Grimorio</b>  (escribe y pulsa Tab para autocompletar la plantilla; Enter lanza)");
@@ -96,19 +137,31 @@ public class SpellConsole : MonoBehaviour
         string prefix = _input;
         int paren = prefix.IndexOf('(');
         if (paren >= 0) prefix = prefix.Substring(0, paren);
-        var sug = Suggest(prefix.Trim());
+        // Sugerencias = los hechizos que el poseído CONOCE (los que aún no, al final y en gris, sin autocompletar);
+        // arriba del todo, el que un maestro te está pidiendo ahora.
+        Anima me = PossessedAnima();
+        var known = new List<(string name, string template)>();
+        var unknown = new List<(string name, string template)>();
+        string p = Proposed;
+        if (p != null) known.Add(("pedido", p));
+        foreach (var s in Suggest(prefix.Trim())) (KnowsSpell(me, s.name) ? known : unknown).Add(s);
 
         Event e = Event.current;
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && sug.Count > 0)   // Tab → rellena la plantilla del 1º
-        { _input = sug[0].template; e.Use(); }
-        if (e.type == EventType.KeyDown && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter))
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && known.Count > 0)   // Tab → rellena la plantilla del 1º
+        { _input = known[0].template; e.Use(); }
+        if (e.type == EventType.KeyDown && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter) && Time.frameCount != _openedFrame)
         {
             if (!string.IsNullOrWhiteSpace(_input)) { Dispatch(_input.Trim()); _input = ""; }
+            else _open = false;   // Intro con la barra vacía la cierra
             e.Use();
         }
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape) { _open = false; e.Use(); }
 
-        for (int i = 0; i < sug.Count && i < 7; i++)
-            GUI.Label(new Rect(x, y + 48f + i * 16f, w, 16f), (i == 0 ? "➤ " : "   ") + $"<b>{sug[i].name}</b>  <size=10>{sug[i].template}</size>");
+        int row = 0;
+        for (int i = 0; i < known.Count && row < 7; i++, row++)
+            GUI.Label(new Rect(x, y + 48f + row * 16f, w, 16f), (i == 0 ? "➤ " : "   ") + $"<b>{known[i].name}</b>  <size=10>{known[i].template}</size>");
+        for (int i = 0; i < unknown.Count && row < 7; i++, row++)
+            GUI.Label(new Rect(x, y + 48f + row * 16f, w, 16f), $"   <color=#888888>{unknown[i].name}  <size=10>(aún no lo conoces)</size></color>");
         for (int i = 0; i < _log.Count && i < 2; i++)
             GUI.Label(new Rect(x, y + 48f + 7 * 16f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
     }
@@ -172,6 +225,7 @@ public class SpellConsole : MonoBehaviour
             case "bond":    CastOn<BondSpell>(self, args); break;
             case "thought": CastOn<ThoughtSpell>(self, args); break;
             case "yoga": case "surya": Yoga(self); break;
+            case "asana": case "postura": Asana(self, args); break;
             case "clean": case "limpiar": Clean(self); break;
             case "feed": case "alimentar": Feed(self); break;
             case "stock": case "abastecer": Stock(self); break;
@@ -341,6 +395,28 @@ public class SpellConsole : MonoBehaviour
     }
 
     // Yoga: encola el Saludo al Sol (12 asanas) en la cola del poseído → adopta las posturas por bodyPart.
+    // ASANA: hace el paso que el maestro te está pidiendo en la lección (TeachingSession) o, fuera de una lección, la asana
+    // conocida con ese nombre (de upa-yoga o del Saludo al Sol).
+    void Asana(Anima self, Dictionary<string, string> args)
+    {
+        TeachingSession ts = TeachingSession.For(self);
+        if (ts != null && ts.CastCurrentStep(self)) { Log($"«{self.name}» hace el paso que le pide el maestro."); return; }
+        string want = args.TryGetValue("name", out string n) ? n : (args.TryGetValue("destiny", out string d) ? d : "");
+        if (string.IsNullOrWhiteSpace(want)) { Log("¿Qué asana? asana({name:\"…\"})"); return; }
+        var all = new List<QueuedSpell>();
+        all.AddRange(UpaYoga.NeckSequence());
+        all.AddRange(SunSalutation.Sequence());
+        foreach (QueuedSpell s in all)
+            if (s is AsanaPoseSpell a && a.asanaName.ToLowerInvariant().Contains(want.ToLowerInvariant()))
+            {
+                var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+                q.EnqueuePlayer(a);
+                Log($"«{self.name}» hace {a.asanaName}.");
+                return;
+            }
+        Log($"No conozco ninguna asana llamada «{want}».");
+    }
+
     void Yoga(Anima self)
     {
         var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();

@@ -44,6 +44,7 @@ public static class CubeHumanoid
         Build(body.transform, rig, clothes, skin);
         rig.Rebuild();
         if (who.GetComponent<CubeWalkCycle>() == null) who.AddComponent<CubeWalkCycle>();   // piernas y brazos al andar
+        if (who.GetComponent<BodyShape>() == null && who.GetComponent<Magnate>() == null) who.AddComponent<BodyShape>();   // las stats físicas moldean el cuerpo
         return rig;
     }
 

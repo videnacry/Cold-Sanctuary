@@ -65,6 +65,16 @@ public class Forager : MonoBehaviour
         Vector3 pos = self.transform.position;
         GameObject prey  = eatsPrey  ? SelectPrey(self) : null;                          // presa por proximidad + stats
         GameObject grass = eatsGrass ? GrassPatch.Nearest(pos)?.gameObject : null;
+        // CULTIVOS del huerto: un herbívoro hambriento va a por la planta que más le APETECE (DietPreference por cultivo) si
+        // la percibe; si le apetece más que la hierba (apetencia ÷ distancia), la prefiere. De ahí sale «la plaga» sola.
+        GameObject crop = eatsGrass ? GardenCrop.BestFor(self.SpeciesName, pos, Mathf.Max(minHuntRadius, self.perception * 40f))?.gameObject : null;
+        if (crop != null && grass != null)
+        {
+            float cropScore = GardenCrop.Appetite(self.SpeciesName, crop.GetComponent<GardenCrop>()) / Mathf.Max(1f, Vector3.Distance(pos, crop.transform.position));
+            float grassScore = 1f / Mathf.Max(1f, Vector3.Distance(pos, grass.transform.position));
+            if (cropScore >= grassScore) grass = null; else crop = null;
+        }
+        if (crop != null) grass = crop;
         GameObject fish  = eatsFish  ? Swarm.Nearest(pos, SwarmKind.Fish)?.gameObject  : null;
         GameObject krill = eatsKrill ? Swarm.Nearest(pos, SwarmKind.Krill)?.gameObject : null;
         return Nearest(pos, prey, grass, fish, krill);
@@ -172,6 +182,8 @@ public class Forager : MonoBehaviour
         }
         else
         {
+            GardenCrop eaten = foodSource != null ? foodSource.GetComponent<GardenCrop>() : null;
+            if (eaten != null && !eaten.Bite($"«{self.name}»")) { self.busy = false; yield break; }   // el CULTIVO pierde un mordisco
             self.hungry -= feed;   // PASTO: come aquí como siempre
             yield return new WaitForSeconds(interval);
             self.hungry -= feed;

@@ -92,6 +92,13 @@ public static class MicrocosmosAreaSceneBuilder
         board.areaName = display;
         board.missions = missions;
 
+        // NavMesh propio del microcosmos (los animales visitantes son animas reales con NavMeshAgent). Por VOLUMEN: en el editor
+        // la escena del mesocosmos también está abierta y no debe entrar en este horneado.
+        var nav = ground.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
+        nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume;
+        nav.center = Vector3.up * 5f; nav.size = new Vector3(44f, 20f, 44f);
+        nav.BuildNavMesh();
+
         EditorSceneManager.SaveScene(scene, path);
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(s => s.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }

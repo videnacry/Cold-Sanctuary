@@ -22,6 +22,14 @@ public static class DietPreference
         return _catalog.TryGetValue(predator, out Dictionary<string, float> m) && m.TryGetValue(prey, out float w) ? w : 1f;
     }
 
+    /// <summary>¿Tiene esta especie una preferencia DECLARADA por esa presa/planta? (sin entrada = no la considera comida)</summary>
+    public static bool Has(string predator, string prey)
+    {
+        if (string.IsNullOrEmpty(predator) || string.IsNullOrEmpty(prey)) return false;
+        if (_catalog == null) Build();
+        return _catalog.TryGetValue(predator, out Dictionary<string, float> m) && m.ContainsKey(prey);
+    }
+
     static void Build()
     {
         _catalog = new Dictionary<string, Dictionary<string, float>>
@@ -36,6 +44,16 @@ public static class DietPreference
             // prefieren HORMIGA a GUSANO → van a por Sakshi (hormiga) antes que a por Kushal (gusano).
             { "Escarabajo", new Dictionary<string, float> { { "Ant", 3.0f }, { "Gusano", 0.3f }, { "Worm", 0.3f } } },
             { "Depredador", new Dictionary<string, float> { { "Ant", 3.0f }, { "Gusano", 0.3f }, { "Worm", 0.3f } } },
+
+            // HERBÍVOROS del santuario y los CULTIVOS del huerto (GardenCrop.CropName). La liebre ártica (Bunny) adora las hojas
+            // tiernas y la zanahoria y desdeña las aromáticas y aliáceas (por eso proteger con albahaca/cebolla funciona);
+            // el reno (Deer) busca grano y forraje.
+            { "Bunny", new Dictionary<string, float> { { "zanahoria", 3f }, { "col", 2.5f }, { "espinaca", 2.5f }, { "lenteja", 2f }, { "garbanzo", 1.5f },
+                                                       { "cilantro", 1.2f }, { "maní", 1.5f }, { "soja", 2f }, { "albahaca", 0.4f }, { "cebolla", 0.2f },
+                                                       { "ajo", 0.1f }, { "cebollín", 0.3f }, { "chile", 0.1f }, { "huacatay", 0.3f } } },
+            { "Deer",  new Dictionary<string, float> { { "avena", 2.5f }, { "maíz", 2.5f }, { "arroz", 1.5f }, { "quinoa", 1.5f }, { "teff", 1.5f },
+                                                       { "col", 1.5f }, { "lenteja", 1.5f }, { "calabaza", 1.2f }, { "tomate", 0.5f }, { "cebolla", 0.2f },
+                                                       { "ajo", 0.1f }, { "chile", 0.1f } } },
         };
     }
 }

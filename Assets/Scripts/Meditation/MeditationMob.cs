@@ -22,6 +22,9 @@ public abstract class MeditationMob : MonoBehaviour
 
     public bool IsDissolved { get; private set; }
 
+    [Tooltip("true = al resolverse NO se destruye el GameObject (p. ej. un animal real del santuario): solo este componente.")]
+    public bool keepOnDissolve;
+
     protected Transform player;
 
     protected virtual void Awake()
@@ -67,6 +70,7 @@ public abstract class MeditationMob : MonoBehaviour
         IsDissolved = true;
         OnDissolved?.Invoke(this);
         // TODO: dissolve VFX / sound before destroy.
-        Destroy(gameObject);
+        if (keepOnDissolve) Destroy(this);   // un ANIMA real (visitante) se resuelve pero sigue viviendo en el santuario
+        else Destroy(gameObject);
     }
 }

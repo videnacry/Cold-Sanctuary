@@ -56,7 +56,26 @@ public class TeachingSession : MonoBehaviour
         _stepStart = Time.time;
         _tq.EnqueueOwn(_teacherSteps[_i]);                                   // el maestro demuestra el paso
         if (_studentIsAI && _i < _studentSteps.Count) _sq.EnqueueOwn(_studentSteps[_i]);   // la IA lo hace sola
-        LessonPrompt.Show(_teacherSteps[_i].asanaName, _studentIsAI ? "" : "yoga");         // se le pide al alumno
+        // Se le pide al alumno el PASO concreto, con su hechizo listo para lanzar (la consola lo propone: Intro lo lanza).
+        string spell = $"asana({{name:\"{_teacherSteps[_i].asanaName}\"}})";
+        LessonPrompt.Show(_teacherSteps[_i].asanaName, _studentIsAI ? "" : spell);
+        if (!_studentIsAI) SpellConsole.Propose(spell, $"La Magnate te pide: {_teacherSteps[_i].asanaName}");
+    }
+
+    /// <summary>El alumno lanza el paso que se le pide (hechizo `asana`): se le encola su copia del paso actual.</summary>
+    public bool CastCurrentStep(Anima who)
+    {
+        if (who != student || _studentSteps == null || _i < 0 || _i >= _studentSteps.Count) return false;
+        ActionQueue q = who.GetComponent<ActionQueue>();
+        if (q == null) q = who.gameObject.AddComponent<ActionQueue>();
+        q.EnqueuePlayer(_studentSteps[_i]);
+        return true;
+    }
+
+    public static TeachingSession For(Anima student)
+    {
+        foreach (TeachingSession ts in FindObjectsByType<TeachingSession>(FindObjectsSortMode.None)) if (ts.student == student) return ts;
+        return null;
     }
 
     void Update()

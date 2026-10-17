@@ -93,6 +93,27 @@ public class GardenCrop : MonoBehaviour
         return best;
     }
 
+    /// <summary>Cuánto le apetece este cultivo a una especie (DietPreference por nombre de cultivo; 1 = neutro).</summary>
+    public static float Appetite(string species, GardenCrop c) => c == null || !DietPreference.Has(species, c.CropName) ? 0f : DietPreference.For(species, c.CropName);   // solo quien la tiene en su dieta
+
+    /// <summary>El cultivo que más le APETECE a <paramref name="species"/> cerca (apetencia ÷ distancia), o null. Desdeña
+    /// los que apenas le gustan (aromáticas, aliáceas) y los árboles y algas.</summary>
+    public static GardenCrop BestFor(string species, Vector3 p, float radius)
+    {
+        GardenCrop best = null; float bestScore = 0f;
+        foreach (GardenCrop c in All)
+        {
+            if (c == null || c.Eaten || IsTree(c.kind) || c.kind == Kind.Alga) continue;
+            float d = Vector3.Distance(c.transform.position, p);
+            if (d > radius) continue;
+            float a = Appetite(species, c);
+            if (a < 0.5f) continue;
+            float score = a / Mathf.Max(1f, d);
+            if (score > bestScore) { bestScore = score; best = c; }
+        }
+        return best;
+    }
+
     public static bool IsTree(Kind k) => k >= Kind.Limon && k <= Kind.Datil;
 
     // ── Construcción por bloques fusionados ─────────────────────────────────────────────────────

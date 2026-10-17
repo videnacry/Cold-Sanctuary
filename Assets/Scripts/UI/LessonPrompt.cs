@@ -31,14 +31,14 @@ public class LessonPrompt : MonoBehaviour
     {
         if (string.IsNullOrEmpty(_text) || Time.time > _until) return;
         float w = 560f, h = string.IsNullOrEmpty(_spell) ? 48f : 72f;
-        var box = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 24f, w, h);
+        var box = new Rect((Screen.width - w) * 0.5f, Screen.height - h - 84f, w, h);   // encima de la barra de hechizos
         GUI.Box(box, GUIContent.none);
         var style = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 16, wordWrap = true };
         GUI.Label(new Rect(box.x + 10, box.y + 6, box.width - 20, 28f), _text, style);
         if (!string.IsNullOrEmpty(_spell))
         {
             var sstyle = new GUIStyle(GUI.skin.label) { alignment = TextAnchor.MiddleCenter, fontSize = 14, fontStyle = FontStyle.Bold };
-            GUI.Label(new Rect(box.x + 10, box.y + 36, box.width - 20, 28f), $"Escribe: {_spell}", sstyle);
+            GUI.Label(new Rect(box.x + 10, box.y + 36, box.width - 20, 28f), $"Escribe (o Intro + Intro): {_spell}", sstyle);
         }
     }
 }

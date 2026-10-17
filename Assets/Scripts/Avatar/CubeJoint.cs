@@ -17,6 +17,7 @@ public class CubeJoint : MonoBehaviour
     [SerializeField] Quaternion _restRotation = Quaternion.identity;
     [SerializeField] Vector3 _restPosition;
     float _stretch = 1f;
+    Vector2 _girth = Vector2.one;   // grosor (x, z) del segmento: músculo/grasa (BodyShape)
 
     public float Stretch => _stretch;
     public Quaternion RestRotation => _restRotation;
@@ -35,13 +36,23 @@ public class CubeJoint : MonoBehaviour
 
     static Vector3 AlongY(Vector3 v, float s) => new Vector3(v.x, v.y * s, v.z);   // solo a lo largo del segmento
 
+    public Vector2 Girth => _girth;
+
+    /// <summary>GROSOR del segmento (ancho x, fondo z) sin cambiar su largo: músculo y grasa (lo pone <see cref="BodyShape"/>).</summary>
+    public void SetGirth(float x, float z)
+    {
+        _girth = new Vector2(Mathf.Clamp(x, 0.5f, 2.2f), Mathf.Clamp(z, 0.5f, 2.2f));
+        if (segment != null && _segBaseScale != Vector3.zero)
+            segment.localScale = new Vector3(_segBaseScale.x * _girth.x, _segBaseScale.y * _stretch, _segBaseScale.z * _girth.y);
+    }
+
     /// <summary>1 = longitud normal; &gt;1 estira, &lt;1 comprime (0.5–1.6). Las articulaciones hijas se desplazan con él.</summary>
     public void SetStretch(float factor)
     {
         _stretch = Mathf.Clamp(factor, 0.5f, 1.6f);
         if (segment != null)
         {
-            segment.localScale = new Vector3(_segBaseScale.x, _segBaseScale.y * _stretch, _segBaseScale.z);
+            segment.localScale = new Vector3(_segBaseScale.x * _girth.x, _segBaseScale.y * _stretch, _segBaseScale.z * _girth.y);
             segment.localPosition = AlongY(_segBasePos, _stretch);
         }
         for (int i = 0; i < _childJoints.Count; i++)

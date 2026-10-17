@@ -112,6 +112,8 @@ public static class SampleSceneBuilder
         tests.AddComponent<ChecklistFaunaTest>();    // grupo 23: checklist §fauna (amenaza, presa, medio, rastros, celo, inanición)
         tests.AddComponent<ChecklistProgressTest>(); // grupo 24: checklist §progresión (margas, mente, campo, ECO)
         tests.AddComponent<IslandsTest>();           // grupo 25: archipiélago (caminos a nado, laguna, casa del árbol, enfermería)
+        tests.AddComponent<BodyShapeTest>();         // grupo 26: las stats físicas moldean el cuerpo (estatura, músculo, grasa)
+        tests.AddComponent<GardenVisitorTest>().harePrefab = LoadAnimalPrefab("Bunny");   // grupo 27: visitantes del huerto = animas reales (hambre + dieta de cultivos)
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -3927,6 +3929,7 @@ public static class SampleSceneBuilder
                 "Un animal hambriento va a por el cultivo: dale de comer (F) antes de que lo muerda.", MissionCategory.LovingKindness);
             var fv = feed.gameObject.AddComponent<FeedVisitorMission>();
             fv.mission = feed; fv.targetCount = 4; fv.spawnInterval = 5f; fv.minSpawnDistance = 8f; fv.spawnRadius = 14f;
+            fv.visitorPrefabs = new[] { LoadAnimalPrefab("Bunny"), LoadAnimalPrefab("Deer") }.Where(p => p != null).ToArray();   // animales reales del santuario
             fv.reward.observationGain = 0.2f; fv.reward.coinReward = 5;
             return new[] { feed };
         }

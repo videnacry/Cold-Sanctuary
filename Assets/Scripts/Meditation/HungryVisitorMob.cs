@@ -7,7 +7,7 @@ using UnityEngine;
 /// (eso cuenta). Si llega antes a la planta, le da un mordisco, se queda masticando y vuelve a por otra: sigue con
 /// hambre hasta que alguien lo alimenta. Ya no se resuelve «solo» por pasar cerca (antes el avance subía sin hacer nada).
 /// </summary>
-public class HungryVisitorMob : MeditationMob, IInteractable
+public class HungryVisitorMob : MeditationMob, IInteractable, IHungryVisitor
 {
     public string speciesName = "liebre ártica";
     [Min(0.1f)] public float feedRadius = 2.5f;
@@ -182,33 +182,34 @@ public class HungryVisitorMob : MeditationMob, IInteractable
 public class FeedVisitorSpell : QueuedSpell
 {
     public float searchRadius = 30f, reach = 2.2f, timeout = 25f;
-    HungryVisitorMob _target;
+    MeditationMob _target;   // un IHungryVisitor (animal real o figura)
     WalkToSpell _walk;
     float _t;
 
-    public override string Label => _target != null ? $"alimentar {_target.ToThe}" : "alimentar";
+    IHungryVisitor V => _target as IHungryVisitor;
+    public override string Label => _target != null ? $"alimentar {V.ToThe}" : "alimentar";
 
     public override bool Tick(Anima self)
     {
         _t += Time.deltaTime;
-        if (_target == null || _target.Fed || _target.IsDissolved) { _target = Nearest(self.transform.position); _walk = null; }
+        if (_target == null || V.Fed || _target.IsDissolved) { _target = Nearest(self.transform.position); _walk = null; }
         if (_target == null) { Debug.Log("[Hechizo] No hay ningún visitante con hambre cerca."); return true; }
-        if (_t > timeout) { Debug.Log($"[Hechizo] No alcanzas {_target.ToThe}."); return true; }
+        if (_t > timeout) { Debug.Log($"[Hechizo] No alcanzas {V.ToThe}."); return true; }
         Vector3 d = _target.transform.position - self.transform.position; d.y = 0f;
-        if (d.magnitude <= reach) { _target.Feed($"«{self.name}»"); return true; }
+        if (d.magnitude <= reach + 0.5f) { V.Feed($"«{self.name}»"); return true; }
         if (_walk == null) _walk = new WalkToSpell { target = _target.transform, targetName = _target.name, stopDistance = reach * 0.6f, maxSpeed = true, giveUpAfter = 6f };
         if (_walk.Tick(self)) _walk = null;   // llegó (o se movió): se recalcula al siguiente paso
         return false;
     }
 
-    HungryVisitorMob Nearest(Vector3 p)
+    MeditationMob Nearest(Vector3 p)
     {
-        HungryVisitorMob best = null; float bestD = searchRadius;
-        foreach (HungryVisitorMob v in Object.FindObjectsByType<HungryVisitorMob>(FindObjectsSortMode.None))
+        MeditationMob best = null; float bestD = searchRadius;
+        foreach (MeditationMob m in Object.FindObjectsByType<MeditationMob>(FindObjectsSortMode.None))
         {
-            if (v.Fed) continue;
-            float dd = Vector3.Distance(v.transform.position, p);
-            if (dd < bestD) { bestD = dd; best = v; }
+            if (!(m is IHungryVisitor v) || v.Fed || m.IsDissolved) continue;
+            float dd = Vector3.Distance(m.transform.position, p);
+            if (dd < bestD) { bestD = dd; best = m; }
         }
         return best;
     }
