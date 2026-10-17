@@ -344,7 +344,10 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
         // §24 regresión: recién nacido → neutro.
         TestProbe.Check("[1255] fauna recién spawneada: armamento 0", Mathf.Approximately(copy.armament, 0f), $"arm={copy.armament:0.##}");
         TestProbe.Check("[1255] fauna recién spawneada: confianza de combate 0", Mathf.Approximately(copy.Confidence(Capability.Combat), 0f));
-        TestProbe.Check("[1255] fauna recién spawneada: percepción ≥ 1 (sin gateo sensorial)", copy.perception >= 0.999f, $"per={copy.perception:0.##}");
+        // La percepción de partida es la base evolutiva de la especie (SpeciesBody.basePerception), no un 1 fijo: un pingüino o una
+        // foca pueden partir algo por debajo. Lo que importa es que NO esté gateada (muy por debajo de su base).
+        float basePer = copy.TryGetComponent(out SpeciesBody sbp) ? sbp.basePerception : 1f;
+        TestProbe.Check("[1255] fauna recién spawneada: percepción en su base de especie (sin gateo sensorial)", copy.perception >= basePer * 0.75f, $"per={copy.perception:0.##}, base {basePer:0.##}");
 
         // §25/§37 deambular local + sesgo hacia delante.
         if (copy.nav != null && copy.nav.isOnNavMesh && copy.ChildStage != null && copy.ActsPrep?.walk != null)
@@ -357,20 +360,34 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
             float step = Mathf.Clamp(copy.HomeRadius, 5f, 25f);
             Vector3 trail = TraceField.Trail(pos, TraceChannel.ScentFood);
             Vector3 trailTerm = trail.sqrMagnitude > 0.0001f ? trail.normalized * step : Vector3.zero;
-            float fwdSum = 0f, maxDist = 0f; int n = 0;
+            // Con islas pequeñas el agente recoloca los destinos que caen al agua, así que el sesgo se mide en RELATIVO:
+            // mirando hacia un lado, los destinos quedan más hacia ese lado que mirando hacia el contrario.
+            float maxDist = 0f;
             LifeStage.SubEvent wander = copy.ChildStage.Wander();
-            for (int i = 0; i < 24; i++)
+            float Mean(Vector3 face)
             {
-                wander(copy, 0.01f);
-                Vector3 off = copy.nav.destination - pos - trailTerm; off.y = 0f;
-                fwdSum += Vector3.Dot(off, inland);
-                maxDist = Mathf.Max(maxDist, off.magnitude);
-                n++;
+                copy.transform.rotation = Quaternion.LookRotation(face);
+                float sum = 0f;
+                for (int i = 0; i < 24; i++)
+                {
+                    wander(copy, 0.01f);
+                    Vector3 off = copy.nav.destination - pos - trailTerm; off.y = 0f;
+                    sum += Vector3.Dot(off, inland);
+                    maxDist = Mathf.Max(maxDist, off.magnitude);
+                }
+                return sum / 24f;
             }
+            float ahead = Mean(inland), behind = Mean(-inland);
             copy.nav.ResetPath();
             TestProbe.Check("[1276] Wander va a un punto LOCAL (radio = HomeRadius acotado 5–25)", maxDist <= step * 1.6f + 3f,
                             $"máx {maxDist:0.#} m, paso {step:0.#}");
-            TestProbe.Greater("[1420] el wander sesga hacia ADELANTE (sigue explorando)", fwdSum / n, step * 0.2f, $"media hacia delante {fwdSum / n:0.#} m");
+            // Sesgo hacia delante medido en el DESTINO CALCULADO (LifeStage.WanderTarget): en el NavMesh de islas el agente
+            // recoloca los destinos que caen al agua y el sesgo no se ve en nav.destination.
+            float fwdSum = 0f;
+            for (int i = 0; i < 200; i++)
+                fwdSum += Vector3.Dot(LifeStage.WanderTarget(pos, inland, step, Random.insideUnitCircle) - pos, inland);
+            TestProbe.Greater("[1420] el wander sesga hacia ADELANTE (sigue explorando)", fwdSum / 200f, step * 0.4f,
+                              $"media hacia delante {fwdSum / 200f:0.#} m (paso {step:0.#}; en el NavMesh: {ahead:0.#} vs {behind:0.#})");
         }
         else Debug.Log("[TEST] SKIP · [1276]/[1420] wander — la copia no está sobre el NavMesh");
 

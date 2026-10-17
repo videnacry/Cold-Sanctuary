@@ -111,6 +111,7 @@ public static class SampleSceneBuilder
         tests.AddComponent<ChecklistSoulTest>();     // grupo 22: checklist §alma (blends, compañeros, alma compartida, karma)
         tests.AddComponent<ChecklistFaunaTest>();    // grupo 23: checklist §fauna (amenaza, presa, medio, rastros, celo, inanición)
         tests.AddComponent<ChecklistProgressTest>(); // grupo 24: checklist §progresión (margas, mente, campo, ECO)
+        tests.AddComponent<IslandsTest>();           // grupo 25: archipiélago (caminos a nado, laguna, casa del árbol, enfermería)
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -2523,6 +2524,7 @@ public static class SampleSceneBuilder
         {
             GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
             school.name = $"Swarm_Fish_{i}";
+            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
             school.transform.SetParent(group.transform);
             school.transform.position = positions[i];
             school.transform.localScale = new Vector3(10f, 2f, 10f);
@@ -2552,6 +2554,7 @@ public static class SampleSceneBuilder
         {
             GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
             school.name = $"Swarm_Krill_{i}";
+            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
             school.transform.SetParent(group.transform);
             school.transform.position = positions[i];
             school.transform.localScale = new Vector3(8f, 1.5f, 8f);
@@ -3166,6 +3169,7 @@ public static class SampleSceneBuilder
             cloud.name = $"Phytoplankton_{i}";
             cloud.transform.SetParent(group.transform);
             cloud.transform.position = positions[i];
+            PolarLandscapeBuilder.IgnoreForNav(cloud);
             cloud.transform.localScale = new Vector3(12f, 1f, 12f);
             cloud.GetComponent<Renderer>().sharedMaterial = planktonMat;
             Object.DestroyImmediate(cloud.GetComponent<Collider>()); // decorativo — pastado por cercanía, no por colisión

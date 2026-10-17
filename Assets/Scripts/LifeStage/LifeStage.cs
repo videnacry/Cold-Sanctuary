@@ -139,6 +139,16 @@ public abstract class LifeStage
             script.lp = script.rig.mass;
         };
     }
+    /// <summary>Destino de deambular (puro, testeable): punto local al azar dentro de `step` + sesgo hacia ADELANTE
+    /// (0,6·step) — alternación espontánea: explora sin volver por donde vino.</summary>
+    public static Vector3 WanderTarget(Vector3 pos, Vector3 forward, float step, Vector2 unitRandom)
+    {
+        Vector3 offset = new Vector3(unitRandom.x, 0f, unitRandom.y) * step;
+        forward.y = 0f;
+        if (forward.sqrMagnitude > 0.01f) offset += forward.normalized * step * 0.6f;
+        return pos + offset;
+    }
+
     public SubEvent Wander()
     {
         return (Animal script, float duration) =>
@@ -149,13 +159,9 @@ public abstract class LifeStage
             // lo devuelve si se aleja de su hogar. La navegación por LECTURA del entorno (impulsos: olor/hogar/colegueo/
             // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
             float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
-            Vector2 r = Random.insideUnitCircle * step;
-            Vector3 offset = new Vector3(r.x, 0f, r.y);
             // N8: ALTERNACIÓN ESPONTÁNEA (etología, environmental-navigation.md §2.1) — el ser saciado explora con
             // propósito, sin volver por donde vino: sesga el destino hacia ADELANTE (sigue avanzando por el territorio).
-            Vector3 fwd = script.transform.forward; fwd.y = 0f;
-            if (fwd.sqrMagnitude > 0.01f) offset += fwd.normalized * step * 0.6f;
-            Vector3 dest = script.transform.position + offset;
+            Vector3 dest = WanderTarget(script.transform.position, script.transform.forward, step, Random.insideUnitCircle);
             // N1: sesgo por LECTURA del entorno — deriva hacia el olor de comida si la rejilla lo tiene (contrafreeloading:
             // hacia la comida aun sin hambre). Sin rejilla/rastro, Trail devuelve 0 y esto NO cambia nada.
             Vector3 trail = TraceField.Trail(script.transform.position, TraceChannel.ScentFood);
