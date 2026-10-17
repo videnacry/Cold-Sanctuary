@@ -94,6 +94,7 @@ public class CameraManager : MonoBehaviour
     }
 
     static readonly RaycastHit[] _occHits = new RaycastHit[16];
+    public static string LastOccluder;
 
     /// <summary>Tercera persona: si una columna, pared o tronco se interpone entre el personaje y la cámara,
     /// la cámara se acerca hasta delante del obstáculo en vez de quedarse mirando la pared.</summary>
@@ -106,14 +107,14 @@ public class CameraManager : MonoBehaviour
         if (dist < 0.01f) return anchor.position;
         Vector3 dir = to / dist;
         int n = Physics.SphereCastNonAlloc(pivot, 0.25f, dir, _occHits, dist, ~0, QueryTriggerInteraction.Ignore);
-        float best = dist;
+        float best = dist; LastOccluder = null;
         for (int i = 0; i < n; i++)
         {
             RaycastHit h = _occHits[i];
             if (h.distance <= 0f || h.collider.transform.root == root) continue;
             if (h.collider.GetComponentInParent<Anima>() != null) continue;   // otra persona o animal: no tapa del todo
             if (!h.collider.TryGetComponent(out Renderer rr) || !rr.enabled) continue;   // barreras y rampas invisibles no tapan
-            best = Mathf.Min(best, h.distance);
+            if (h.distance < best) { best = h.distance; LastOccluder = h.collider.name; }
         }
         return best < dist ? pivot + dir * Mathf.Max(0.4f, best - 0.1f) : anchor.position;
     }

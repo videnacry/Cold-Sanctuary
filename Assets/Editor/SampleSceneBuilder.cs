@@ -2041,9 +2041,11 @@ public static class SampleSceneBuilder
             cameraPivot = pivotGO.transform;
         }
 
-        Transform thirdAnchor = player.transform.Find("ThirdPersonAnchor");
+        Transform thirdAnchor = player.transform.Find("ThirdPersonAnchor") ?? cameraPivot.Find("ThirdPersonAnchor");
         if (thirdAnchor != null && thirdAnchor.parent != cameraPivot)
             thirdAnchor.SetParent(cameraPivot, worldPositionStays: true);
+        // Tercera persona mirando un poco hacia abajo: con la cámara horizontal el personaje quedaba cortado en el borde inferior.
+        if (thirdAnchor != null) { thirdAnchor.localPosition = new Vector3(0f, 1.1f, -4.2f); thirdAnchor.localRotation = Quaternion.Euler(14f, 0f, 0f); }
 
         Transform firstAnchor = player.transform.Find("FirstPersonAnchor");
         if (firstAnchor != null && firstAnchor.parent != cameraPivot)

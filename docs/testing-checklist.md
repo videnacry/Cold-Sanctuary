@@ -1588,7 +1588,7 @@ Desentrenado / Sobrecarga).
 - [x] Sotobosque polar en Play (hierba de escarcha, arbustos de liquen, musgo, flores claras) — `[Flora] 16154 plantas`.
 - [x] Huerto con cultivos de bloques (arroz, lenteja, quinoa, maíz, tomate, espinaca, piña, banana); gigantes en el microcosmos.
 - [x] «Alimentar a los visitantes» (antes «Limpiar la plaga», que avanzaba solo al pasar cerca): virtualize Huerto → 1 → `feed` ×4 → 4/4 y ✅.
-- [ ] Probar a pie un canal: caer al agua, nadar y salir al casquete; que los animales crucen por los puentes.
+- [x] Probar a pie un canal: con W desde el huerto hacia el norte, cae al agua (`nadando=True` en z 41–71), nada y sale solo al casquete siguiente (z 84). Los animales por los puentes: sin observar aún.
 
 ### 47.y Huertos por gremio, sotobosque ártico, fauna de cubos con huesos (2026-10-16)
 - [x] Agua del mar transparente (URP Lit Transparent).
@@ -1597,3 +1597,14 @@ Desentrenado / Sobrecarga).
 - [x] Prefabs de animales regenerados como cubos con huesos (23, también foca/ballena/orca/pingüino) — menú «Rebuild Animal Prefabs (cubos con huesos)».
 - [x] Caras de cubos con expresiones (humanos y animales) — tests 104/104 en Play.
 - [ ] Revisar a ojo cada especie (proporciones, cara) y la marcha/ondulación en movimiento.
+
+### 47.z Pruebas en vivo con teclado (2026-10-17)
+- [x] Caminar con W por la enfermería elevada: la barandilla frena (`toca: Barandilla_Barrera`).
+- [x] Saltar la barandilla (W+Espacio): antes se podía (barrera de 1 m) y caía fuera del musgo con 65 de daño. Ahora las barreras invisibles miden 4 m y ya no se salta: se queda en (49.5, 7.2, 103.4).
+- [x] Caída sobre el colchón de musgo: 8 m con 10 de daño (85 % amortiguado); sobre hielo, 6 m son 43 de daño.
+- [x] Bajar la escalera de un área elevada con `walkTo`: antes la pared inclinada del lado tapaba la salida y se quedaba atascado, y además bajar contaba como caída de 6 m (42 de daño). Ahora las paredes son verticales y bajar no hace daño.
+- [x] `walkTo` hasta la casa del árbol de guardia: se clavaba contra una raíz; ahora rodea de lado cuando lleva 0,8 s sin avanzar.
+- [x] Subir por la escalera de la casa del árbol (F): llega a 12 m; tablero (F) → 1 → «Patrulla 0/4 · siguiente: 1_Arrozal».
+- [x] El rótulo de la clase de yoga («inhala: …») salía en pantalla aunque la clase fuera entre otros personajes: ahora solo cuando el alumno eres tú.
+- [x] Tercera persona: la cámara iba horizontal y Kushal quedaba cortado abajo; ahora mira 14° hacia abajo y se ve entero. Si una pared o columna tapa, se acerca.
+- [ ] Recorrer la patrulla completa (4 puestos) y bajar por la escalera de la casa del árbol.

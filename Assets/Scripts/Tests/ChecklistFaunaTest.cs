@@ -379,8 +379,11 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
             }
             float ahead = Mean(inland), behind = Mean(-inland);
             copy.nav.ResetPath();
-            TestProbe.Check("[1276] Wander va a un punto LOCAL (radio = HomeRadius acotado 5–25)", maxDist <= step * 2f + 3f,   // margen: el NavMesh puede recolocar un destino al borde de otra isla
-                            $"máx {maxDist:0.#} m, paso {step:0.#}");
+            // Radio medido en el DESTINO CALCULADO: el NavMesh de islas puede recolocar un destino que cae al agua en otra isla lejana.
+            float maxCalc = 0f;
+            for (int i = 0; i < 200; i++) maxCalc = Mathf.Max(maxCalc, Vector3.Distance(LifeStage.WanderTarget(pos, inland, step, Random.insideUnitCircle), pos));
+            TestProbe.Check("[1276] Wander va a un punto LOCAL (radio = HomeRadius acotado 5–25)", maxCalc <= step * 1.6f + 3f,
+                            $"máx {maxCalc:0.#} m, paso {step:0.#} (en el NavMesh {maxDist:0.#} m)");
             // Sesgo hacia delante medido en el DESTINO CALCULADO (LifeStage.WanderTarget): en el NavMesh de islas el agente
             // recoloca los destinos que caen al agua y el sesgo no se ve en nav.destination.
             float fwdSum = 0f;

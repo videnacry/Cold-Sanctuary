@@ -43,8 +43,8 @@ public class TeachingSession : MonoBehaviour
 
     void Start()
     {
-        _tq = teacher.GetComponent<ActionQueue>() ?? teacher.gameObject.AddComponent<ActionQueue>();
-        _sq = student.GetComponent<ActionQueue>() ?? student.gameObject.AddComponent<ActionQueue>();
+        if (!teacher.TryGetComponent(out _tq)) _tq = teacher.gameObject.AddComponent<ActionQueue>();
+        if (!student.TryGetComponent(out _sq)) _sq = student.gameObject.AddComponent<ActionQueue>();
         _studentIsAI = student.GetComponent<PlayerBrain>() == null;   // sin PlayerBrain = lo maneja la IA
         Next();
     }
@@ -58,7 +58,8 @@ public class TeachingSession : MonoBehaviour
         if (_studentIsAI && _i < _studentSteps.Count) _sq.EnqueueOwn(_studentSteps[_i]);   // la IA lo hace sola
         // Se le pide al alumno el PASO concreto, con su hechizo listo para lanzar (la consola lo propone: Intro lo lanza).
         string spell = $"asana({{name:\"{_teacherSteps[_i].asanaName}\"}})";
-        LessonPrompt.Show(_teacherSteps[_i].asanaName, _studentIsAI ? "" : spell);
+        // El rótulo en pantalla es solo para el JUGADOR: antes cualquier clase entre otros (la Magnate con un rezagado) lo mostraba.
+        if (!_studentIsAI) LessonPrompt.Show(_teacherSteps[_i].asanaName, spell);
         if (!_studentIsAI) SpellConsole.Propose(spell, $"La Magnate te pide: {_teacherSteps[_i].asanaName}");
     }
 
@@ -90,10 +91,10 @@ public class TeachingSession : MonoBehaviour
     {
         if (student != null)
         {
-            Grimoire g = student.GetComponent<Grimoire>() ?? student.gameObject.AddComponent<Grimoire>();
+            if (!student.TryGetComponent(out Grimoire g)) g = student.gameObject.AddComponent<Grimoire>();
             g.Learn(skillId);   // aprende la secuencia al completarla (ya no es un regalo instantáneo)
         }
-        LessonPrompt.Hide();
+        if (!_studentIsAI) LessonPrompt.Hide();
         Destroy(this);
     }
 

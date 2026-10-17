@@ -35,11 +35,25 @@ public class FallImpact : MonoBehaviour
         {
             if (!_airborne) { _airborne = true; _peakY = transform.position.y; _takeoff = transform.position; }
             else _peakY = Mathf.Max(_peakY, transform.position.y);
+            // Bajando escaleras o una rampa deprisa el controlador "despega" un instante en cada peldaño: si hay suelo
+            // justo debajo, no es una caída (antes bajar los 6 m de escalera contaba como caer 6 m).
+            if (GroundJustBelow()) { _peakY = transform.position.y; _takeoff = transform.position; }
             return;
         }
         if (!_airborne) return;
         _airborne = false;
         Land(_peakY - transform.position.y, SoftnessBelow());
+    }
+
+    static readonly RaycastHit[] _below = new RaycastHit[8];
+
+    bool GroundJustBelow()
+    {
+        Vector3 feet = transform.TransformPoint(_cc.center) + Vector3.down * (_cc.height * 0.5f - _cc.radius);
+        int n = Physics.SphereCastNonAlloc(feet + Vector3.up * 0.05f, _cc.radius * 0.9f, Vector3.down, _below, _cc.stepOffset + 0.35f, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+            if (_below[i].distance > 0f && _below[i].normal.y > 0.5f && _below[i].collider.transform.root != transform.root) return true;   // suelo, no una pared al lado
+        return false;
     }
 
     /// <summary>Aterriza tras caer <paramref name="height"/> m sobre una superficie de <paramref name="softness"/> (0–1).</summary>

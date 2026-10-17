@@ -322,7 +322,9 @@ public class SpellConsole : MonoBehaviour
         var touching = new System.Text.StringBuilder();
         foreach (Collider c in Physics.OverlapSphere(self.transform.position, 0.8f, ~0, QueryTriggerInteraction.Ignore))
             if (!c.transform.IsChildOf(self.transform)) touching.Append(c.name).Append(' ');
-        Log($"  toca: {touching}");
+        Log($"  toca: {touching} · cámara tapada por: {CameraManager.LastOccluder ?? "nada"}");
+        Camera camD = Camera.main; Transform anc = self.transform.Find("CameraPivot/ThirdPersonAnchor") ?? self.transform.Find("ThirdPersonAnchor");
+        if (camD != null) Log($"  cámara: rel {self.transform.InverseTransformPoint(camD.transform.position)} rot {camD.transform.eulerAngles} fov {camD.fieldOfView:0} · ancla {(anc != null ? anc.localPosition + " " + anc.localEulerAngles + " padre " + anc.parent.name : "—")}");
         AnimaController myAc = self.GetComponent<AnimaController>();
         if (myAc != null) Log($"  cerebro activo: {(myAc.Active != null ? myAc.Active.GetType().Name : "ninguno")} · FollowBrain={(self.GetComponent<FollowBrain>() != null ? (self.GetComponent<FollowBrain>().target != null ? self.GetComponent<FollowBrain>().target.name : "sin objetivo") : "-")}");
         foreach (AnimaController ac in FindObjectsOfType<AnimaController>())

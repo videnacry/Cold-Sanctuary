@@ -115,7 +115,18 @@ public class WalkToSpell : QueuedSpell
         WalkSpell walk = self.GetComponent<WalkSpell>();
         // maxSpeed = subir a la punta (channeling). Antes pasaba `charging`, que es la postura de SALIDA (quieto):
         // walkTo({maxSpeed:true}) dejaba al jugador clavado y la cola bloqueada.
-        if (walk != null) walk.Drive(Steer(self.transform.position, target.position).normalized, channeling: maxSpeed);
+        if (walk != null)
+        {
+            Vector3 dir = Steer(self.transform.position, target.position).normalized;
+            // Clavado contra una raíz, una esquina o un mueble que la ruta roza: rodearlo de lado (alternando cada 1,2 s).
+            float stuck = Time.time - _lastProgress;
+            if (stuck > 0.8f && dir.sqrMagnitude > 0.01f)
+            {
+                float side = ((int)((stuck - 0.8f) / 1.2f)) % 2 == 0 ? 1f : -1f;
+                dir = (dir * 0.35f + Vector3.Cross(Vector3.up, dir) * side).normalized;
+            }
+            walk.Drive(dir, channeling: maxSpeed);
+        }
         else
         {
             var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>();
