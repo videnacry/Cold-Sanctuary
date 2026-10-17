@@ -1,78 +1,84 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// TORRE DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b): el lugar del trabajo de guardián. Los vigías
-/// SUBEN a la torre por su escalera y en lo alto, en el <see cref="GuardBoard"/>, obtienen sus misiones: patrullar el
-/// santuario, alimentar animales, llevar heridos a la enfermería y enseñar yoga al rezagado (lo que la Magnate hace
-/// sola). Construida con cubos: cuatro pilares de madera helada, riostras, plataforma con barandilla, tejado
-/// escalonado, farol y bandera.
+/// CASA DEL ÁRBOL DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b): el puesto de los vigías es una cabaña en lo
+/// alto de uno de los árboles de hielo del santuario, pero ×2,5 de grande (40 m) y que NO caza. Se sube por una ESCALERA
+/// VERTICAL de peldaños (F al pie: subir; F arriba: bajar). Arriba, una plataforma con barandilla rodea el tronco y la
+/// cabaña guarda el <see cref="GuardBoard"/> con las misiones de vigía. Todo de cubos.
 /// </summary>
 public static class GuardTower
 {
-    public const float Height = 8f;
+    public const float TreeHeight = 40f;
+    public const float DeckHeight = 11f;   // bajo el primer piso de ramas (≈15 m): la cabaña no queda atravesada
 
     public static Transform Build(Transform parent, Vector3 groundPos)
     {
-        Transform t = new GameObject("TorreDeGuardia").transform;
-        t.SetParent(parent, true);
-        t.position = groundPos;
-        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f), roof = new Color(0.55f, 0.66f, 0.75f), ice = new Color(0.82f, 0.9f, 0.95f);
-        float half = 2.4f;
+        GameObject treeGO = CubeTree.Build(parent, "CasaArbolGuardia", groundPos, 4242, TreeHeight, carnivorous: false);
+        Transform t = treeGO.transform;
+        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f), roof = new Color(0.55f, 0.66f, 0.75f),
+              glass = new Color(0.75f, 0.88f, 0.95f), lamp = new Color(1f, 0.85f, 0.45f);
+        float y = DeckHeight, half = 4.6f;
 
-        for (int sx = -1; sx <= 1; sx += 2)
-            for (int sz = -1; sz <= 1; sz += 2)
-                Block(t, new Vector3(sx * half, Height * 0.5f, sz * half), new Vector3(0.45f, Height, 0.45f), wood, true, "Pilar");
-        for (int lv = 1; lv <= 3; lv++)   // riostras horizontales en cada lado
+        // Plataforma alrededor del tronco, con vigas de apoyo hacia el tronco.
+        Block(t, new Vector3(0f, y, 0f), new Vector3(half * 2f, 0.3f, half * 2f), woodDark, true, "Plataforma");
+        for (int i = 0; i < 4; i++)
         {
-            float y = Height * lv / 4f;
-            for (int s = -1; s <= 1; s += 2)
-            {
-                Block(t, new Vector3(0f, y, s * half), new Vector3(half * 2f, 0.2f, 0.2f), woodDark, false, "Riostra");
-                Block(t, new Vector3(s * half, y, 0f), new Vector3(0.2f, 0.2f, half * 2f), woodDark, false, "Riostra");
-            }
+            Quaternion q = Quaternion.Euler(0f, i * 90f + 45f, 0f);
+            Transform beam = Block(t, new Vector3(0f, y - 1.6f, 0f) + q * Vector3.forward * half * 0.55f, new Vector3(0.35f, 0.35f, half * 1.3f), wood, false, "Viga");
+            beam.localRotation = q * Quaternion.Euler(-35f, 0f, 0f);
         }
-        // Plataforma con barandilla (hueco al sur, donde llega la escalera).
-        Block(t, new Vector3(0f, Height, 0f), new Vector3(half * 2f + 0.8f, 0.25f, half * 2f + 0.8f), woodDark, true, "Plataforma");
-        float rh = Height + 0.6f, edge = half + 0.35f;
-        Block(t, new Vector3(0f, rh, edge), new Vector3(edge * 2f, 0.1f, 0.1f), wood, true, "Barandilla");
-        Block(t, new Vector3(-edge, rh, 0f), new Vector3(0.1f, 0.1f, edge * 2f), wood, true, "Barandilla");
-        Block(t, new Vector3(edge, rh, 0f), new Vector3(0.1f, 0.1f, edge * 2f), wood, true, "Barandilla");
-        Block(t, new Vector3(-edge * 0.6f, rh, -edge), new Vector3(edge * 0.8f, 0.1f, 0.1f), wood, true, "Barandilla");
-        Block(t, new Vector3(edge * 0.6f, rh, -edge), new Vector3(edge * 0.8f, 0.1f, 0.1f), wood, true, "Barandilla");
-        for (int i = 0; i < 8; i++)
+        // Barandilla con hueco donde llega la escalera (lado sur, -Z).
+        float rh = y + 0.75f;
+        Block(t, new Vector3(0f, rh, half), new Vector3(half * 2f, 0.1f, 0.12f), wood, true, "Barandilla");
+        Block(t, new Vector3(-half, rh, 0f), new Vector3(0.12f, 0.1f, half * 2f), wood, true, "Barandilla");
+        Block(t, new Vector3(half, rh, 0f), new Vector3(0.12f, 0.1f, half * 2f), wood, true, "Barandilla");
+        Block(t, new Vector3(-half * 0.6f, rh, -half), new Vector3(half * 0.8f, 0.1f, 0.12f), wood, true, "Barandilla");
+        Block(t, new Vector3(half * 0.6f, rh, -half), new Vector3(half * 0.8f, 0.1f, 0.12f), wood, true, "Barandilla");
+        for (float p = -half; p <= half + 0.01f; p += 1.15f)
         {
-            float a = i * 45f * Mathf.Deg2Rad;
-            Vector3 p = new Vector3(Mathf.Clamp(Mathf.Cos(a) * edge * 1.42f, -edge, edge), Height + 0.3f, Mathf.Clamp(Mathf.Sin(a) * edge * 1.42f, -edge, edge));
-            if (p.z < -edge + 0.01f && Mathf.Abs(p.x) < 0.8f) continue;   // hueco de la escalera
-            Block(t, p, new Vector3(0.1f, 0.6f, 0.1f), wood, false, "Balaustre");
+            Block(t, new Vector3(p, y + 0.45f, half), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
+            Block(t, new Vector3(-half, y + 0.45f, p), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
+            Block(t, new Vector3(half, y + 0.45f, p), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
+            if (Mathf.Abs(p) > 0.9f) Block(t, new Vector3(p, y + 0.45f, -half), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
         }
-        // Tejado: postes y una pirámide escalonada de bloques de hielo.
-        for (int sx = -1; sx <= 1; sx += 2)
-            for (int sz = -1; sz <= 1; sz += 2)
-                Block(t, new Vector3(sx * (half - 0.1f), Height + 1.4f, sz * (half - 0.1f)), new Vector3(0.2f, 2.8f, 0.2f), wood, false, "Poste");
+
+        // Cabaña al norte del tronco: paredes de tablones, puerta, ventanas y tejado escalonado.
+        Vector3 c = new Vector3(0f, y, 2.6f);
+        float cw = 6f, cd = 3.2f, ch = 2.6f;
+        Block(t, c + new Vector3(0f, ch * 0.5f, cd * 0.5f), new Vector3(cw, ch, 0.15f), wood, true, "Pared_Norte");
+        Block(t, c + new Vector3(-cw * 0.5f, ch * 0.5f, 0f), new Vector3(0.15f, ch, cd), wood, true, "Pared_Oeste");
+        Block(t, c + new Vector3(cw * 0.5f, ch * 0.5f, 0f), new Vector3(0.15f, ch, cd), wood, true, "Pared_Este");
+        Block(t, c + new Vector3(-2.1f, ch * 0.5f, -cd * 0.5f), new Vector3(1.8f, ch, 0.15f), wood, true, "Pared_Sur");
+        Block(t, c + new Vector3(2.1f, ch * 0.5f, -cd * 0.5f), new Vector3(1.8f, ch, 0.15f), wood, true, "Pared_Sur");
+        Block(t, c + new Vector3(0f, ch - 0.3f, -cd * 0.5f), new Vector3(2.4f, 0.6f, 0.15f), wood, true, "Dintel");
+        for (int s = -1; s <= 1; s += 2)
+            Block(t, c + new Vector3(s * cw * 0.5f, ch * 0.55f, 0f), new Vector3(0.17f, 0.7f, 1f), glass, false, "Ventana");
         for (int k = 0; k < 4; k++)
-            Block(t, new Vector3(0f, Height + 2.9f + k * 0.35f, 0f), new Vector3(half * 2.4f - k * 1.2f, 0.35f, half * 2.4f - k * 1.2f), k % 2 == 0 ? roof : ice, false, "Tejado");
-        Block(t, new Vector3(0f, Height + 5f, 0f), new Vector3(0.06f, 1.6f, 0.06f), woodDark, false, "Mastil");
-        Block(t, new Vector3(0.4f, Height + 5.5f, 0f), new Vector3(0.7f, 0.45f, 0.03f), new Color(0.75f, 0.65f, 0.88f), false, "Bandera");
-        Block(t, new Vector3(half - 0.3f, Height + 2.2f, half - 0.3f), new Vector3(0.25f, 0.35f, 0.25f), new Color(1f, 0.85f, 0.45f), false, "Farol");
+            Block(t, c + new Vector3(0f, ch + 0.15f + k * 0.3f, 0f), new Vector3(cw + 0.8f - k * 1.5f, 0.3f, cd + 0.8f - k * 0.7f), k % 2 == 0 ? roof : woodDark, false, "Tejado");
+        Block(t, c + new Vector3(cw * 0.5f - 0.4f, ch - 0.4f, -cd * 0.5f - 0.2f), new Vector3(0.25f, 0.35f, 0.25f), lamp, false, "Farol");
+        Block(t, c + new Vector3(0f, ch + 2.2f, 0f), new Vector3(0.06f, 1.6f, 0.06f), woodDark, false, "Mastil");
+        Block(t, c + new Vector3(0.4f, ch + 2.7f, 0f), new Vector3(0.7f, 0.45f, 0.03f), new Color(0.75f, 0.65f, 0.88f), false, "Bandera");
 
-        // Escalera recta por el sur: peldaños de 0,25 m de alto (se suben andando).
-        int steps = Mathf.CeilToInt(Height / 0.25f);
-        for (int i = 0; i < steps; i++)
-        {
-            float y = (i + 1) * 0.25f;
-            float z = -half - 0.6f - (steps - 1 - i) * 0.32f;
-            Block(t, new Vector3(0f, y - 0.125f, z), new Vector3(1.4f, 0.25f, 0.34f), i % 2 == 0 ? wood : woodDark, true, "Peldano");
-            if (i % 4 == 0)
-                for (int s = -1; s <= 1; s += 2) Block(t, new Vector3(s * 0.75f, y * 0.5f, z), new Vector3(0.12f, y, 0.12f), woodDark, false, "Zanca");
-        }
-
-        // Tablero de misiones de guardia en lo alto.
-        Transform board = Block(t, new Vector3(0f, Height + 0.95f, half - 0.3f), new Vector3(1.4f, 1f, 0.12f), new Color(0.86f, 0.78f, 0.62f), true, "Tablero de guardia");
+        // Tablero de misiones dentro de la cabaña, contra la pared norte.
+        Transform board = Block(t, c + new Vector3(0f, 1.3f, cd * 0.5f - 0.15f), new Vector3(1.6f, 1.1f, 0.08f), new Color(0.86f, 0.78f, 0.62f), true, "Tablero de guardia");
         board.gameObject.AddComponent<GuardBoard>();
         WorldLabel wl = board.gameObject.AddComponent<WorldLabel>(); wl.text = "Tablero de guardia"; wl.height = 0.9f;
-        WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Torre de guardia"; tl.height = Height + 6.5f;
+
+        // ESCALERA VERTICAL del suelo a la plataforma (lado sur): dos largueros y peldaños cada 35 cm.
+        float lz = -half - 0.35f;
+        Transform ladder = new GameObject("Escalera").transform; ladder.SetParent(t, false); ladder.localPosition = new Vector3(0f, 0f, lz);
+        for (int s = -1; s <= 1; s += 2) Block(ladder, new Vector3(s * 0.32f, (y + 1f) * 0.5f, 0f), new Vector3(0.09f, y + 1f, 0.09f), woodDark, false, "Larguero");
+        for (float h = 0.35f; h < y + 0.9f; h += 0.35f) Block(ladder, new Vector3(0f, h, 0f), new Vector3(0.64f, 0.05f, 0.06f), wood, false, "Peldano");
+        Ladder bottom = Block(ladder, new Vector3(0f, 1f, -0.6f), new Vector3(1.4f, 2f, 1.2f), Color.white, true, "Pie de la escalera").gameObject.AddComponent<Ladder>();
+        bottom.GetComponent<Collider>().isTrigger = true; bottom.GetComponent<Renderer>().enabled = false;
+        bottom.top = false; bottom.ladder = ladder; bottom.deckY = y;
+        Ladder top = Block(ladder, new Vector3(0f, y + 1f, 0.9f), new Vector3(1.4f, 2f, 1.2f), Color.white, true, "Lo alto de la escalera").gameObject.AddComponent<Ladder>();
+        top.GetComponent<Collider>().isTrigger = true; top.GetComponent<Renderer>().enabled = false;
+        top.top = true; top.ladder = ladder; top.deckY = y;
+
+        WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Casa del árbol de la guardia"; tl.height = y + 5f;
         return t;
     }
 
@@ -89,6 +95,76 @@ public static class GuardTower
     }
 }
 
+/// <summary>
+/// ESCALERA VERTICAL: F al pie = SUBIR, F arriba = BAJAR. Mientras sube, el cuerpo queda pegado a la escalera (sin
+/// gravedad ni control) y brazos y piernas alternan peldaño a peldaño. Al llegar, deja al jugador en la plataforma (o en
+/// el suelo). `ClimbAnima` también la usa la IA/los tests.
+/// </summary>
+public class Ladder : MonoBehaviour, IInteractable
+{
+    public bool top;
+    public Transform ladder;
+    public float deckY = 11f;
+    public float speed = 1.6f;   // m/s
+    static bool _busy;
+
+    public string InteractLabel => top ? "Bajar por la escalera" : "Subir a la casa del árbol";
+    public bool CanInteract => !_busy;
+
+    public void Interact()
+    {
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null && !_busy) StartCoroutine(Climb(p.transform, !top));
+    }
+
+    /// <summary>Sube (up) o baja al <paramref name="who"/> por la escalera.</summary>
+    public IEnumerator Climb(Transform who, bool up)
+    {
+        _busy = true;
+        CharacterController cc = who.GetComponent<CharacterController>();
+        var controllers = new List<Behaviour>();
+        foreach (MonoBehaviour mb in who.GetComponents<MonoBehaviour>())
+            if (mb != null && mb.enabled && (mb is PlayerController)) { controllers.Add(mb); mb.enabled = false; }
+        if (cc != null) cc.enabled = false;
+        CreatureRig rig = who.GetComponent<CreatureRig>();
+
+        Vector3 baseP = ladder.position - ladder.forward * 0.45f;            // pegado a la escalera, por fuera
+        float y0 = up ? 0.05f : deckY + 0.1f, y1 = up ? deckY + 0.1f : 0.05f;
+        who.rotation = Quaternion.LookRotation(ladder.forward);
+        float yy = y0, phase = 0f;
+        Debug.Log($"[Guardia] «{who.name}» {(up ? "sube" : "baja")} por la escalera de la casa del árbol.");
+        while (up ? yy < y1 : yy > y1)
+        {
+            yy += (up ? 1f : -1f) * speed * Time.deltaTime;
+            phase += speed * Time.deltaTime / 0.35f * Mathf.PI;
+            who.position = new Vector3(baseP.x, ladder.position.y + yy + 1f, baseP.z);   // +1: el pivote del jugador va en su centro
+            if (rig != null) Limbs(rig, phase);
+            yield return null;
+        }
+        // Al llegar arriba, un paso hacia la plataforma; abajo, un paso atrás.
+        who.position = up ? ladder.position + ladder.forward * 1.4f + Vector3.up * (deckY + 1.2f) : baseP - ladder.forward * 0.8f + Vector3.up * 1.1f;
+        if (cc != null) cc.enabled = true;
+        foreach (Behaviour b in controllers) b.enabled = true;
+        Debug.Log($"[Guardia] «{who.name}» llega {(up ? "a la casa del árbol" : "al suelo")}.");
+        _busy = false;
+    }
+
+    static void Limbs(CreatureRig rig, float phase)
+    {
+        float s = Mathf.Sin(phase);
+        Set(rig, BodyPart.ShoulderLeft, -150f + 25f * s); Set(rig, BodyPart.ShoulderRight, -150f - 25f * s);
+        Set(rig, BodyPart.ThighLeft, -40f - 30f * s);     Set(rig, BodyPart.ThighRight, -40f + 30f * s);
+        Set(rig, BodyPart.ShinLeft, 60f + 20f * s);       Set(rig, BodyPart.ShinRight, 60f - 20f * s);
+    }
+
+    static void Set(CreatureRig rig, BodyPart p, float x)
+    {
+        Transform t = rig.Get(p);
+        if (t == null) return;
+        rig.LockPose(p, 0.2f);
+        t.localRotation = Quaternion.Euler(x, 0f, 0f);
+    }
+}
 /// <summary>
 /// TABLERO DE GUARDIA (F en lo alto de la torre): lista las misiones de vigía. «Patrullar» ya se juega: recorrer los
 /// puestos de vigía del santuario (marcados con un poste y farol) con un indicador de dirección. Las demás se listan con

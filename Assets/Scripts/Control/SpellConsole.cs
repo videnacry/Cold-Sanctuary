@@ -78,6 +78,7 @@ public class SpellConsole : MonoBehaviour
         ("close",     "close({destiny:\"\"})"),
         ("virtualize", "virtualize({destiny:\"Huerto\"})"),
         ("lookAt",    "lookAt({destiny:\"Magnate\"})"),
+        ("cancel",    "cancel({all:false})"),
         ("look",      "look({yaw:90, pitch:0})"),
     };
 
@@ -181,6 +182,7 @@ public class SpellConsole : MonoBehaviour
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
+            case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "look": case "mirar": LookCmd(self, args, false); break;
             case "lookat": case "mirara": LookCmd(self, args, true); break;
@@ -393,6 +395,18 @@ public class SpellConsole : MonoBehaviour
         CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
         cs.Cast(self, null);
         Log($"«{self.name}» limpia.");
+    }
+
+    // CANCELAR: quita lo que el jugador está haciendo ahora (la cabeza de su cola) o, con all:true, toda su cola. Sin
+    // esto, una clase de yoga larga de la Magnate (imitar) bloqueaba cualquier otra orden durante minutos.
+    void CancelQueue(Anima self, Dictionary<string, string> args)
+    {
+        ActionQueue q = self.GetComponent<ActionQueue>();
+        if (q == null || q.Player.Count == 0) { Log("No hay nada que cancelar."); return; }
+        bool all = args.TryGetValue("all", out string a) && (a == "true" || a == "1");
+        string what = q.Player[0].Label;
+        if (all) q.ClearPlayer(); else q.RemovePlayerAt(0);
+        Log(all ? $"«{self.name}» cancela toda su cola." : $"«{self.name}» deja de {what}.");
     }
 
     // Alimentar como HECHIZO: va al visitante hambriento más cercano (huerto) y le da de comer al llegar.

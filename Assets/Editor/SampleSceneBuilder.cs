@@ -159,6 +159,7 @@ public static class SampleSceneBuilder
         ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
         ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
         ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
+        ("Prueba_Enfermeria",    new System.Action<Transform>[] { BuildLinduarda, PlacePlayerAtInfirmary }),   // enfermería equipada + Linduarda + análisis clínico
         ("Prueba_TorreGuardia",  new System.Action<Transform>[] { BuildGuardTower, PlacePlayerAtTower }),
         ("Prueba_Restaurante",   new System.Action<Transform>[] { BuildRestaurantSandbox, PlacePlayerAtKitchen }),   // cocina real: 4 cocineros + misión «Preparar platillos»
         ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
@@ -2242,26 +2243,24 @@ public static class SampleSceneBuilder
     {
         GameObject ground = GameObject.Find("Ground_Placeholder");
         if (ground == null) return;
-        var protect = PolarLandscapeBuilder.Protect;
-        protect.Clear();
-        protect.Add(new Vector3(5f, 0f, 32f));                           // hub del santuario (personajes, Magnate, restaurante)
-        protect.Add(new Vector3(30f, -13f, 10f));                        // aparición del jugador
-        protect.Add(new Vector3(130f, -10f, 34f));                       // osos
-        protect.Add(new Vector3(155f, 5f, 21f));                         // colonia de pingüinos (borde del hielo)
-        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
-            protect.Add(new Vector3(a.transform.position.x, a.transform.position.z, 20f));
-        foreach (Anima a in Object.FindObjectsOfType<Anima>())
-            if (a.transform.position.y > -0.5f) protect.Add(new Vector3(a.transform.position.x, a.transform.position.z, 6f));
+        // ARCHIPIÉLAGO: el hielo son las islas del diseño (PolarLandscapeBuilder.Islands); todo lo demás es agua. Ya no
+        // se fuerza hielo bajo cada objeto (eso unía las islas): se AVISA de lo que haya quedado en el agua para moverlo.
+        PolarLandscapeBuilder.Protect.Clear();
+        var wet = new List<string>();
         foreach (Renderer r in root.GetComponentsInChildren<Renderer>(true))
         {
             Transform t = r.transform;
-            if (t.IsChildOf(ground.transform) || t.name.StartsWith("Sea") || t.GetComponentInParent<IceCarnivorousTree>() != null) continue;
+            if (t.IsChildOf(ground.transform) || t.name.StartsWith("Sea") || t.name.StartsWith("Swarm") || t.name.StartsWith("Phyto")) continue;
+            if (t.GetComponentInParent<IceCarnivorousTree>() != null || t.GetComponentInParent<WorldLabel>() is WorldLabel w0 && w0.name.StartsWith("Casa")) continue;   // las ramas vuelan sobre el agua
             Bounds b = r.bounds;
             if (b.center.y < -0.5f || b.extents.x > 40f || b.extents.z > 40f) continue;
-            protect.Add(new Vector3(b.center.x, b.center.z, Mathf.Max(b.extents.x, b.extents.z) + 3f));
+            if (!PolarLandscapeBuilder.NaturalIce(b.center.x, b.center.z))
+            {
+                Transform top = t; while (top.parent != null && top.parent != root) top = top.parent;
+                string id = $"{t.name}@({b.center.x:0},{b.center.z:0})"; if (wet.Count < 40 && !wet.Contains(id)) wet.Add(id);
+            }
         }
-        foreach (IceCarnivorousTree t in Object.FindObjectsOfType<IceCarnivorousTree>())
-            protect.Add(new Vector3(t.transform.position.x, t.transform.position.z, 6f));
+        if (wet.Count > 0) Debug.LogWarning($"[Islas] {wet.Count} grupos con piezas sobre el agua: {string.Join(", ", wet.GetRange(0, Mathf.Min(15, wet.Count)))}");
 
         // El plano deja de ser suelo: queda como portador del NavMeshSurface y padre de los casquetes.
         Object.DestroyImmediate(ground.GetComponent<MeshCollider>());
@@ -2269,7 +2268,8 @@ public static class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
         int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
-        Debug.Log($"[Banquisa] Casquetes de hielo: {boxes} placas, canales con puentes y témpanos al este; {protect.Count} zonas protegidas con hielo firme.");
+        int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
+        Debug.Log($"[Islas] Archipiélago: {PolarLandscapeBuilder.Islands.Length} islas ({boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
@@ -2429,16 +2429,16 @@ public static class SampleSceneBuilder
         //   Reservados (santuario templado): Bunny×4, Deer×2, Wolf, Fox — ver git para las posiciones previas.
 
         // Oso Polar — apex del hielo; junto al borde de agua/hielo para cazar focas (homeRadius amplio ~300).
-        AddFamily("Bear", new Vector3(130f, 0f, -10f), 28f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
+        AddFamily("Bear", new Vector3(132f, 0f, -15f), 12f, NestKind.Predator);   // "Bear" = el prefab/catálogo real (el oso del hielo)
 
         ValidateNestSeparation(nests);
 
         // Marinos — sobre el Sea_Placeholder (base marina del hielo).
-        AddFamily("Whale", new Vector3(200f, -1f, 15f), 30f, NestKind.Prey, -1f);
-        AddFamily("Seal", new Vector3(180f, -1f, -20f), 15f, NestKind.Prey, -1f);
+        AddFamily("Whale", new Vector3(60f, -1f, 25f), 14f, NestKind.Prey, -1f);
+        AddFamily("Seal", new Vector3(48f, -1f, 14f), 8f, NestKind.Prey, -1f);
         // Fauna de hielo NUEVA (requieren prefab en Assets/Animals/{Especie}/{Especie}.prefab; si falta, se omiten con aviso).
-        AddFamily("Penguin", new Vector3(155f, 0f, 5f), 15f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
-        AddFamily("Orca", new Vector3(215f, -1f, -10f), 30f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
+        AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
+        AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el
         // Microcosmos Nivel 1 (mundo insecto), no para este bioma. Su generación irá en la escena del Microcosmos con
@@ -2510,8 +2510,8 @@ public static class SampleSceneBuilder
 
         Vector3[] positions =
         {
-            new Vector3(205f, -2f, 20f),
-            new Vector3(185f, -2f, -15f),
+            new Vector3(56f, -2f, 22f),
+            new Vector3(66f, -2f, 30f),
         };
 
         Material fishMat = MakeMaterial("Swarm_Fish_MAT", new Color(0.35f, 0.55f, 0.65f, 0.6f));
@@ -2539,8 +2539,8 @@ public static class SampleSceneBuilder
 
         Vector3[] positions =
         {
-            new Vector3(200f, -2f, 10f),
-            new Vector3(190f, -2f, -8f),
+            new Vector3(62f, -2f, 20f),
+            new Vector3(52f, -2f, 28f),
         };
 
         Material krillMat = MakeMaterial("Swarm_Krill_MAT", new Color(0.75f, 0.45f, 0.4f, 0.6f));
@@ -2726,13 +2726,13 @@ public static class SampleSceneBuilder
     static void BuildGuardTower(Transform parent)
     {
         GameObject root = new GameObject("Guardia_AUTO"); root.transform.SetParent(parent);
-        GuardTower.Build(root.transform, new Vector3(-30f, 0f, 45f));
+        GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f));   // en su isla, al noroeste del hub
         (string name, Vector3 pos)[] posts =
         {
-            ("PuestoVigia_1_Huertos", new Vector3(-20f, 0f, -55f)),
-            ("PuestoVigia_2_Rotacion", new Vector3(80f, 0f, 10f)),
-            ("PuestoVigia_3_Pinguinos", new Vector3(140f, 0f, 30f)),
-            ("PuestoVigia_4_Cocina", new Vector3(30f, 0f, 120f)),
+            ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
+            ("PuestoVigia_2_Rotacion", new Vector3(32f, 0f, -72f)),
+            ("PuestoVigia_3_Pinguinos", new Vector3(60f, 0f, -17f)),
+            ("PuestoVigia_4_Cocina", new Vector3(16f, 0f, 108f)),
         };
         foreach (var (n, p) in posts)
         {
@@ -2748,7 +2748,7 @@ public static class SampleSceneBuilder
     static void PlacePlayerAtTower(Transform root)
     {
         GameObject p = GameObject.Find("Player");
-        if (p != null) p.transform.position = new Vector3(-30f, 1.2f, 45f - 17f);
+        if (p != null) p.transform.position = new Vector3(-20f, 1.2f, 57f - 8f);
     }
 
     // En la escena de prueba de la cocina: el jugador empieza en la entrada.
@@ -2994,9 +2994,9 @@ public static class SampleSceneBuilder
             avoid.Add(new Vector3(a.transform.position.x, a.transform.position.z, 24f));
         foreach (GardenPlot gp in Object.FindObjectsOfType<GardenPlot>())   // los huertos tampoco van bajo un árbol carnívoro
             avoid.Add(new Vector3(gp.transform.position.x, gp.transform.position.z, gp.size.magnitude * 0.5f + 8f));
-        GameObject tower = GameObject.Find("TorreDeGuardia");   // ni bajo la torre ni su escalera
+        GameObject tower = GameObject.Find("CasaArbolGuardia");   // ni junto a la casa del árbol
         if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
-        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 14, loose: 10);
+        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 24, loose: 12);
         GameObject first = null;
         var hiveTrees = new List<Vector3>();
         var count = new Dictionary<PolarLandscapeBuilder.TreeAge, int>();
@@ -3057,6 +3057,60 @@ public static class SampleSceneBuilder
             if (p.GetComponent<Mind>() == null) p.AddComponent<Mind>().identity = "Kushal";
         }
         else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
+        BuildInfirmaryRoom(parent);   // la enfermería equipada (y Linduarda + paciente dentro)
+    }
+
+    // ENFERMERÍA equipada (docs/sanctuary1-level-and-live-tests §4): dentro del área, parte HUMANA (camas con suero y
+    // monitor, camilla, mesa del médico, botiquín, rayos X, laboratorio y analizador de sangre = estación de análisis
+    // clínico con F) y parte VETERINARIA (mesa hidráulica con lámpara, cuadra para animales grandes, jaulas, báscula y
+    // ecógrafo). Linduarda trabaja aquí y el paciente de prueba espera en la cuadra.
+    static void BuildInfirmaryRoom(Transform root)
+    {
+        GameObject area = GameObject.Find("Infirmary_Area");
+        if (area == null) return;
+        Transform r = new GameObject("Equipamiento").transform;
+        r.SetParent(area.transform, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        floor.name = "Suelo_Enfermeria"; floor.transform.SetParent(r, false);
+        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(17.6f, 0.04f, 13.6f);
+        floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Enfermeria_Suelo_MAT", new Color(0.86f, 0.94f, 0.92f));
+        // Franja que separa la parte humana (oeste) de la veterinaria (este).
+        KitchenProps.C(r, new Vector3(0f, 0.03f, 0f), new Vector3(0.12f, 0.01f, 13.6f), new Color(0.55f, 0.75f, 0.7f), 0f, "Separacion");
+
+        Color[] blankets = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f) };
+        for (int i = 0; i < 3; i++) Label(InfirmaryProps.HospitalBed(r, $"Cama {i + 1}", new Vector3(-7.4f + i * 2.1f, 0f, -5f), 0f, blankets[i]), $"Cama {i + 1}", 1.4f);
+        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-7.6f, 0f, 1.2f), 90f), "Camilla de exploración", 1.3f);
+        Label(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-4.2f, 0f, 3.8f), 180f), "Mesa del médico", 1.5f);
+        Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-8.5f, 0f, -1.6f), -90f), "Botiquín", 2.2f);
+        Label(InfirmaryProps.XRay(r, "Rayos X", new Vector3(-1.4f, 0f, -5.4f), 0f), "Rayos X", 2.6f);
+        Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(1.6f, 0f, -6.3f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);
+        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(4.2f, 0f, -6.2f), 180f);
+        an.gameObject.AddComponent<ClinicalStation>();
+        Label(an, "Analizador clínico (F)", 1.8f);
+        KitchenProps.Sink(r, "Lavamanos", new Vector3(-8.4f, 0f, 4.6f), -90f);
+
+        Label(InfirmaryProps.VetTable(r, "Mesa veterinaria", new Vector3(3.6f, 0f, 0.4f), 90f), "Mesa veterinaria", 1.4f);
+        Label(InfirmaryProps.LargeAnimalStall(r, "Cuadra", new Vector3(7f, 0f, -4.6f), 0f), "Cuadra (animales grandes)", 1.8f);
+        Label(InfirmaryProps.Cages(r, "Jaulas", new Vector3(8.4f, 0f, 1.6f), 90f), "Jaulas", 1.6f);
+        Label(InfirmaryProps.FloorScale(r, "Bascula", new Vector3(6f, 0f, 4f), 0f), "Báscula", 1.5f);
+        Label(InfirmaryProps.Ultrasound(r, "Ecografo", new Vector3(1.8f, 0f, 1.4f), 0f), "Ecógrafo", 1.6f);
+
+        // Linduarda en su mesa; el paciente de prueba (lobo «Kushal») en la cuadra.
+        GameObject l = GameObject.Find("Linduarda");
+        if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-4.2f, 1f, 2.6f));
+        GameObject p = GameObject.Find("Kushal_paciente");
+        if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(7f, 0.15f, -4.6f));
+    }
+
+    static void PlacePlayerAtInfirmary(Transform root)
+    {
+        GameObject p = GameObject.Find("Player"), area = GameObject.Find("Infirmary_Area");
+        if (p != null && area != null) p.transform.position = area.transform.position + new Vector3(0f, 1.2f, 8.5f);
+    }
+
+    static void Label(Transform t, string text, float height)
+    {
+        WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = text; wl.height = height;
     }
 
     static void BuildAnimaStatusPanels(Transform parent)
@@ -3096,9 +3150,9 @@ public static class SampleSceneBuilder
 
         Vector3[] positions =
         {
-            new Vector3(205f, -2f, 20f),
-            new Vector3(185f, -2f, -15f),
-            new Vector3(195f, -2f, 2f),
+            new Vector3(55f, -2f, 25f),
+            new Vector3(68f, -2f, 18f),
+            new Vector3(60f, -2f, 33f),
         };
 
         Material planktonMat = MakeMaterial("Phytoplankton_MAT", new Color(0.3f, 0.6f, 0.45f, 0.5f));
@@ -3244,10 +3298,10 @@ public static class SampleSceneBuilder
         GameObject maestraAsset = LoadAndImport($"{CharactersRoot}/Maestra/Models/Maestra.fbx");
         GameObject maestra = maestraAsset != null
             ? (GameObject)PrefabUtility.InstantiatePrefab(maestraAsset, charactersGroup.transform)
-            : MakePlaceholderPerson("Maestra_Post", new Vector3(50f, 1f, -10f), new Color(0.9f, 0.8f, 0.4f));
+            : MakePlaceholderPerson("Maestra_Post", new Vector3(38f, 1f, -14f), new Color(0.9f, 0.8f, 0.4f));
         maestra.name = "Maestra_Post";
         maestra.transform.SetParent(charactersGroup.transform);
-        maestra.transform.position = new Vector3(50f, 0f, -10f);
+        maestra.transform.position = new Vector3(38f, 0f, -14f);   // dentro de la isla del hub
         maestra.AddComponent<MaestraTeacher>().teacherName = "Maestra";
         WorldCharacter magnateWC = maestra.AddComponent<WorldCharacter>();
         magnateWC.characterName = "Maestra";
@@ -3332,7 +3386,7 @@ public static class SampleSceneBuilder
                 new Vector3(5f, 0f, 95f), new Vector2(20f, 16f), new Color(0.75f, 0.45f, 0.30f)),
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
-                new Vector3(55f, 0f, 95f), new Vector2(8f, 8f), new Color(0.85f, 0.95f, 0.90f)),
+                new Vector3(55f, 0f, 97f), new Vector2(18f, 14f), new Color(0.85f, 0.95f, 0.90f)),
 
             BuildAreaBox(areasGroup.transform, "VeterinaryClinic_Area", "Veterinaria", SanctuaryAreaType.VeterinaryClinic, 1,
                 new Vector3(105f, 0f, 95f), new Vector2(8f, 8f), new Color(0.55f, 0.75f, 0.70f)),
@@ -3365,10 +3419,10 @@ public static class SampleSceneBuilder
         MakePlot(garden, GardenPlot.Guild.Hortalizas, garden.TransformPoint(new Vector3(0f, 0.1f, -3.5f)), new Vector2(20f, 12f), 11, false);
         Transform parent = garden.parent;
         MakePlot(parent, GardenPlot.Guild.Milpa,            new Vector3(-45f, 0f, -75f), new Vector2(20f, 20f), 12, true);
-        MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -100f), new Vector2(18f, 14f), 13, true);
-        MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-38f, 0f, 0f),   new Vector2(22f, 16f), 14, true);
-        MakePlot(parent, GardenPlot.Guild.Rotacion,         new Vector3(55f, 0f, -5f),   new Vector2(24f, 16f), 15, true);
-        MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(55f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
+        MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -118f), new Vector2(18f, 14f), 13, true);
+        MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-60f, 0f, -15f),   new Vector2(22f, 16f), 14, true);
+        MakePlot(parent, GardenPlot.Guild.Rotacion,         new Vector3(25f, 0f, -82f),   new Vector2(24f, 16f), 15, true);
+        MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(-78f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
     }
 
     static void MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil)

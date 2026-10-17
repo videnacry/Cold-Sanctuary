@@ -13,74 +13,101 @@ using UnityEngine;
 /// </summary>
 public static class PolarLandscapeBuilder
 {
-    public const float Half = 250f;          // el hielo cubre [-250, 250]
-    const float Cell = 2.5f;                 // resolución de la banquisa
+    public const float Half = 250f;          // el mapa cubre [-250, 250]
+    const float Cell = 2.5f;                 // resolución de las islas
     const float IceTop = 0f, IceThickness = 1.5f;
-    public const float WaterLevel = -0.35f;  // el agua asoma 35 cm bajo el borde del hielo (se puede salir nadando)
+    public const float WaterLevel = -0.25f;  // el agua asoma 25 cm bajo el borde del hielo (se sale nadando: un escalón)
 
-    // Canales (grietas) que cruzan el hielo; ancho ~6 m, con puentes cada BridgeEvery m.
-    static readonly Vector2[][] Leads =
+    /// <summary>
+    /// ARCHIPIÉLAGO: cada área del santuario, cada huerto y cada arboleda vive en su propia ISLA (casquete) y entre una y
+    /// otra hay agua que se cruza NADANDO. Las islas rodean una gran LAGUNA central (sin islas) donde viven todos los
+    /// animales marinos, a la vista desde las orillas. (x, z, radio).
+    /// </summary>
+    public static readonly (string name, float x, float z, float r)[] Islands =
     {
-        new[] { new Vector2(-250f, -200f), new Vector2(-170f, -140f), new Vector2(-120f, -60f), new Vector2(-180f, 20f), new Vector2(-250f, 60f) },
-        new[] { new Vector2(-250f, 150f), new Vector2(-150f, 175f), new Vector2(-60f, 205f), new Vector2(20f, 250f) },
-        new[] { new Vector2(-60f, -250f), new Vector2(-45f, -180f), new Vector2(30f, -140f), new Vector2(110f, -165f), new Vector2(165f, -110f) },
-        new[] { new Vector2(165f, 70f), new Vector2(125f, 150f), new Vector2(60f, 185f), new Vector2(-5f, 160f), new Vector2(-40f, 250f) },
-        new[] { new Vector2(-120f, -60f), new Vector2(-65f, -55f), new Vector2(-55f, 45f), new Vector2(-100f, 100f), new Vector2(-150f, 175f) },
-        new[] { new Vector2(30f, -140f), new Vector2(60f, -100f), new Vector2(150f, -60f) },
+        ("Hub",            5f,  -10f, 42f),   // personajes, Magnate, Huerto (área) y aparición del jugador
+        ("Cocina",         5f,   95f, 22f),
+        ("Enfermeria",    55f,   97f, 21f),
+        ("Veterinaria",  105f,   95f, 17f),
+        ("SalaYoga",     108f,   35f, 17f),
+        ("Mecanica_Osos",118f,  -20f, 30f),   // Mecánica + territorio de los osos
+        ("Textil",        55f,  -55f, 16f),
+        ("Pinguinos",     60f,  -22f, 11f),   // colonia en la orilla sur de la laguna
+        ("Rotacion",      25f,  -82f, 18f),
+        ("Milpa",        -45f,  -75f, 18f),
+        ("Andina",       -10f, -118f, 15f),
+        ("Arrozal",      -60f,  -15f, 17f),
+        ("Bosque_Comestible", -78f, 45f, 24f),
+        ("Guardia",      -20f,   55f, 17f),   // la casa del árbol de guardia
+        // Arboledas del bosque carnívoro
+        ("Bosque_1", -125f, -25f, 24f), ("Bosque_2", -135f, 65f, 24f), ("Bosque_3", -100f, 125f, 22f), ("Bosque_4", -40f, 160f, 22f),
+        ("Bosque_5",   60f, 165f, 22f), ("Bosque_6", 150f, 140f, 22f), ("Bosque_7", 175f,  60f, 20f), ("Bosque_8", -115f, -115f, 22f),
+        ("Bosque_9",  -60f, -165f, 22f), ("Bosque_10", 45f, -160f, 22f), ("Bosque_11", 125f, -110f, 22f), ("Bosque_12", 190f, -55f, 18f),
     };
-    const float LeadHalfWidth = 3f, BridgeEvery = 45f, BridgeWidth = 5f;
 
-    // Témpanos del mar abierto (este): centro + radio.
-    static readonly Vector3[] Floes =
-    {
-        new Vector3(195f, 0f, 70f) , new Vector3(215f, 0f, -70f), new Vector3(185f, 0f, -125f),
-        new Vector3(230f, 0f, 125f), new Vector3(200f, 0f, 180f), new Vector3(175f, 0f, -185f), new Vector3(235f, 0f, 15f),
-    };
-    static readonly float[] FloeRadius = { 17f, 20f, 13f, 15f, 19f, 14f, 9f };
+    /// <summary>La laguna central (sin islas): aquí viven ballena, orca, focas y bancos de peces.</summary>
+    public static readonly Vector3 Lagoon = new Vector3(60f, 0f, 25f);
+    public const float LagoonRadius = 28f;
 
-    /// <summary>Zonas que deben ser hielo firme (x, z, radio) — áreas, hub, nidos, seres. Se rellena antes de BuildFloes.</summary>
+    /// <summary>Zonas que deben ser hielo firme aunque caigan fuera de una isla (se usan con moderación).</summary>
     public static readonly List<Vector3> Protect = new List<Vector3>();
 
-    static float Noise(float x, float z) => Mathf.PerlinNoise(x * 0.035f + 13.1f, z * 0.035f + 7.7f);
+    static float IslandRadius(int i, float x, float z)
+    {
+        var isl = Islands[i];
+        float a = Mathf.Atan2(z - isl.z, x - isl.x);
+        return isl.r * (1f + 0.1f * Mathf.Sin(a * 5f + i) + 0.05f * Mathf.Sin(a * 11f + 2f * i));
+    }
 
-    static float CoastX(float z) => 165f + 6f * Mathf.Sin(z * 0.05f) + 4f * Mathf.Sin(z * 0.13f + 1f);
-
-    /// <summary>¿Hay hielo en (x, z)? (antes de forzar las zonas protegidas).</summary>
+    /// <summary>¿Hay hielo en (x, z)? = dentro de alguna isla.</summary>
     public static bool NaturalIce(float x, float z)
     {
         if (Mathf.Abs(x) > Half || Mathf.Abs(z) > Half) return false;
-        if (x > CoastX(z))
+        for (int i = 0; i < Islands.Length; i++)
         {
-            for (int i = 0; i < Floes.Length; i++)
-            {
-                float dx = x - Floes[i].x, dz = z - Floes[i].z;
-                float a = Mathf.Atan2(dz, dx);
-                float r = FloeRadius[i] * (1f + 0.18f * Mathf.Sin(a * 5f + i) + 0.08f * Mathf.Sin(a * 11f + 2f * i));
-                if (dx * dx + dz * dz < r * r) return true;
-            }
-            return false;
+            float dx = x - Islands[i].x, dz = z - Islands[i].z;
+            float r = IslandRadius(i, x, z);
+            if (dx * dx + dz * dz < r * r) return true;
         }
-        Vector2 p = new Vector2(x, z);
-        foreach (Vector2[] lead in Leads)
+        return false;
+    }
+
+    /// <summary>Isla que contiene (x, z), o -1.</summary>
+    public static int IslandAt(float x, float z)
+    {
+        for (int i = 0; i < Islands.Length; i++)
         {
-            float s = 0f;
-            for (int k = 0; k < lead.Length - 1; k++)
-            {
-                Vector2 a = lead[k], b = lead[k + 1];
-                Vector2 ab = b - a; float len = ab.magnitude;
-                float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / (len * len));
-                float d = Vector2.Distance(p, a + ab * t);
-                float hw = LeadHalfWidth * (0.7f + 0.8f * Noise(x, z));
-                if (d < hw)
-                {
-                    float along = s + t * len;
-                    if (along % BridgeEvery < BridgeWidth && along > 10f) return true;   // puente de hielo
-                    return false;
-                }
-                s += len;
-            }
+            float dx = x - Islands[i].x, dz = z - Islands[i].z, r = IslandRadius(i, x, z);
+            if (dx * dx + dz * dz < r * r) return i;
         }
-        return true;
+        return -1;
+    }
+
+    /// <summary>
+    /// ENLACES DE NADO para la IA: entre islas vecinas (a menos de <paramref name="maxGap"/> m de agua) un NavMeshLink de
+    /// orilla a orilla, así compañeros y hechizos `walkTo` cruzan a nado de una isla a otra (el NavMesh no pisa agua).
+    /// </summary>
+    public static int BuildSwimLinks(Transform parent, float maxGap = 26f)
+    {
+        GameObject root = new GameObject("EnlacesDeNado"); root.transform.SetParent(parent, false);
+        int n = 0;
+        for (int i = 0; i < Islands.Length; i++)
+            for (int j = i + 1; j < Islands.Length; j++)
+            {
+                Vector3 a = new Vector3(Islands[i].x, 0f, Islands[i].z), b = new Vector3(Islands[j].x, 0f, Islands[j].z);
+                float d = Vector3.Distance(a, b), gap = d - Islands[i].r - Islands[j].r;
+                if (gap > maxGap || gap < -Mathf.Min(Islands[i].r, Islands[j].r)) continue;
+                Vector3 dir = (b - a) / d;
+                Vector3 pa = a + dir * Islands[i].r * 0.8f, pb = b - dir * Islands[j].r * 0.8f;
+                if (gap <= 0f) continue;   // se tocan: el NavMesh ya las une
+                GameObject l = new GameObject($"Nado_{Islands[i].name}_{Islands[j].name}");
+                l.transform.SetParent(root.transform, false);
+                NavMeshLink link = l.AddComponent<NavMeshLink>();
+                link.startPoint = pa; link.endPoint = pb;
+                link.width = 2f; link.bidirectional = true; link.costModifier = 3f;   // nadar cuesta más que andar
+                n++;
+            }
+        return n;
     }
 
     /// <summary>Construye la banquisa (bloques de hielo fusionados en rectángulos) como hijos de <paramref name="ground"/>.</summary>
@@ -172,19 +199,31 @@ public static class PolarLandscapeBuilder
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
         var trees = new List<(Vector3, TreeAge, float)>();
 
+        int whyEdge = 0, whyIce = 0, whyAvoid = 0, whyTree = 0;
         bool Free(Vector3 p, float minSpacing)
         {
-            if (Mathf.Abs(p.x) > Half - 8f || Mathf.Abs(p.z) > Half - 8f || p.x > CoastX(p.z) - 12f) return false;
-            if (!NaturalIce(p.x, p.z) || !NaturalIce(p.x + 3f, p.z) || !NaturalIce(p.x - 3f, p.z) || !NaturalIce(p.x, p.z + 3f) || !NaturalIce(p.x, p.z - 3f)) return false;
-            foreach (Vector3 a in avoid) if ((p.x - a.x) * (p.x - a.x) + (p.z - a.y) * (p.z - a.y) < a.z * a.z) return false;
-            foreach (var t in trees) if (Vector3.Distance(p, t.Item1) < minSpacing) return false;
+            if (Mathf.Abs(p.x) > Half - 8f || Mathf.Abs(p.z) > Half - 8f) { whyEdge++; return false; }
+            if (!NaturalIce(p.x, p.z) || !NaturalIce(p.x + 3f, p.z) || !NaturalIce(p.x - 3f, p.z) || !NaturalIce(p.x, p.z + 3f) || !NaturalIce(p.x, p.z - 3f)) { whyIce++; return false; }
+            foreach (Vector3 a in avoid) if ((p.x - a.x) * (p.x - a.x) + (p.z - a.y) * (p.z - a.y) < a.z * a.z) { whyAvoid++; return false; }
+            foreach (var t in trees) if (Vector3.Distance(p, t.Item1) < minSpacing) { whyTree++; return false; }
             return true;
         }
 
-        for (int g = 0, tries = 0; g < groves && tries < 2000; tries++)
+        // Una arboleda por isla de bosque (y, si sobran, más arboledas en esas mismas islas).
+        var forestIslands = new List<int>();
+        for (int k = 0; k < Islands.Length; k++) if (Islands[k].name.StartsWith("Bosque_")) forestIslands.Add(k);
+        int islandTries = 0;
+        for (int g = 0, tries = 0; g < groves && tries < 4000; tries++)
         {
-            Vector3 c = new Vector3(R(-Half + 20f, 150f), 0f, R(-Half + 20f, Half - 20f));
-            if (!Free(c, 45f)) continue;
+            var isl = Islands[forestIslands[g % forestIslands.Count]];
+            float jit = g < forestIslands.Count ? 0.35f : 0.65f;   // 2ª arboleda de la isla: hacia la orilla, lejos de la 1ª
+            Vector3 c = new Vector3(isl.x + R(-isl.r, isl.r) * jit, 0f, isl.z + R(-isl.r, isl.r) * jit);
+            if (!Free(c, 16f))
+            {
+                if (++islandTries > 80) { Debug.Log($"[IceFlora] la isla {isl.name} no admite otra arboleda (borde {whyEdge}, agua {whyIce}, zona a evitar {whyAvoid}, otro árbol {whyTree})."); whyEdge = whyIce = whyAvoid = whyTree = 0; islandTries = 0; g++; }
+                continue;
+            }
+            islandTries = 0;
             TreeAge motherAge = rnd.NextDouble() < 0.35 ? TreeAge.Viejo : TreeAge.Adulto;
             trees.Add((c, motherAge, HeightFor(motherAge, rnd)));
             int kids = 2 + rnd.Next(3);
@@ -201,8 +240,8 @@ public static class PolarLandscapeBuilder
         }
         for (int l = 0, tries = 0; l < loose && tries < 2000; tries++)
         {
-            Vector3 p = new Vector3(R(-Half + 15f, 150f), 0f, R(-Half + 15f, Half - 15f));
-            if (!Free(p, 22f)) continue;
+            Vector3 p = new Vector3(R(-Half + 15f, Half - 15f), 0f, R(-Half + 15f, Half - 15f));
+            if (!Free(p, 18f)) continue;
             double r = rnd.NextDouble();
             TreeAge age = r < 0.3 ? TreeAge.Brote : r < 0.6 ? TreeAge.Joven : r < 0.9 ? TreeAge.Adulto : TreeAge.Viejo;
             trees.Add((p, age, HeightFor(age, rnd)));
