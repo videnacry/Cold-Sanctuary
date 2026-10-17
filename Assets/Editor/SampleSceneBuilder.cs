@@ -2809,7 +2809,7 @@ public static class SampleSceneBuilder
         Magnate mag = m.AddComponent<Magnate>();
 
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
-        mag.yogaSpot = MakeSpot(parent, "SalaYoga", new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
+        mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
         mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
@@ -3057,15 +3057,21 @@ public static class SampleSceneBuilder
         if (wolf != null)
         {
             GameObject p = (GameObject)PrefabUtility.InstantiatePrefab(wolf);
-            p.name = "Kushal_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);
+            p.name = "Lobo_paciente"; p.transform.SetParent(root.transform); p.transform.position = new Vector3(12f, 0f, 8f);   // paciente animal (veterinaria); Kushal es el JUGADOR
             HealthRecord hr = p.AddComponent<HealthRecord>(); hr.vaccinated = false; hr.analyzed = false;
-            // Aspirante al santuario: Linduarda lo cura (análisis+vacuna), luego hace sus 3 misiones introductorias
-            // (auto-demo) → ella lo certifica apto → la Magnate lo presenta y lo lleva a yoga/cocina. Cadena EMERGENTE completa.
-            SanctuaryOnboarding on = p.AddComponent<SanctuaryOnboarding>();
-            on.autoCompleteForDemo = true;
-            if (p.GetComponent<Mind>() == null) p.AddComponent<Mind>().identity = "Kushal";
+            // (el lobo solo necesita su análisis y vacuna; no es aspirante a miembro)
         }
         else Debug.LogWarning("[Linduarda] sin prefab Wolf para el paciente demo (genera prefabs — salen cubos), se omite.");
+        // KUSHAL (el jugador) es el RECIÉN LLEGADO: empieza en la enfermería sin análisis ni vacuna, y su iniciación con
+        // Linduarda termina con su primer viaje al microcosmos (1 misión introductoria); después lo inicia la Magnate.
+        GameObject kushal = GameObject.Find("Player");
+        if (kushal != null)
+        {
+            if (!kushal.TryGetComponent(out HealthRecord khr)) khr = kushal.AddComponent<HealthRecord>();
+            khr.vaccinated = false; khr.analyzed = false;
+            if (!kushal.TryGetComponent(out SanctuaryOnboarding kon)) kon = kushal.AddComponent<SanctuaryOnboarding>();
+            kon.introMissionsRequired = 1; kon.autoCompleteForDemo = false;
+        }
         BuildInfirmaryRoom(parent);   // la enfermería equipada (y Linduarda + paciente dentro)
     }
 
@@ -3107,8 +3113,14 @@ public static class SampleSceneBuilder
         // Linduarda en su mesa; el paciente de prueba (lobo «Kushal») en la cuadra.
         GameObject l = GameObject.Find("Linduarda");
         if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-4.2f, 1f, 2.6f));
-        GameObject p = GameObject.Find("Kushal_paciente");
+        GameObject p = GameObject.Find("Lobo_paciente");
         if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(7f, 0.15f, -4.6f));
+        // Kushal (el jugador) EMPIEZA AQUÍ, junto a la primera cama: es el recién llegado.
+        GameObject kushal = GameObject.Find("Player");
+        if (kushal != null) kushal.transform.position = area.transform.TransformPoint(new Vector3(-5.5f, 1.3f, -2.6f));
+        // La doctora inicia a los recién llegados en el TANQUE de la enfermería (no en cualquier máquina).
+        VirtualizationMachine vm = area.GetComponentInChildren<VirtualizationMachine>();
+        if (l != null && vm != null && l.TryGetComponent(out Linduarda lin)) lin.virtualizationMachine = vm;
     }
 
     static void PlacePlayerAtInfirmary(Transform root)
@@ -3857,6 +3869,7 @@ public static class SampleSceneBuilder
         bc.size = new Vector3(3f, 3f, 1.5f);
         VirtualizationMachine machine = machineGO.AddComponent<VirtualizationMachine>();
         machine.areaName = displayName;
+        VirtualizationTank.Build(machineGO.transform);   // la máquina ES un tanque de agua (máscara + sumergirse)
 
         // MODO ESCENA: la máquina carga el mundo mob propio (sin shift/misiones in-place).
         if (!string.IsNullOrEmpty(mobSceneName))

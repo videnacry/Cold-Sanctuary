@@ -122,6 +122,10 @@ public class SanctuaryDirector : MonoBehaviour
     {
         yield return new WaitForSeconds(assessmentDelay);
 
+        // Un RECIÉN LLEGADO (Kushal) no es del santuario hasta terminar las iniciaciones de Linduarda y la Magnate.
+        Anima who = character.GetComponent<Anima>();
+        while (who != null && !Magnate.IsMember(who)) yield return new WaitForSeconds(2f);
+
         SanctuaryArea startArea = DetermineStartArea(character);
 
         if (startArea == null)
@@ -135,7 +139,7 @@ public class SanctuaryDirector : MonoBehaviour
 
         int spawnIdx = startArea.Residents.Count;
         character.progressionLevel = 0;
-        character.PlaceInArea(startArea, spawnIdx);
+        character.PlaceInArea(startArea, spawnIdx, teleport: !character.CompareTag("Player"));
 
         OnCharacterPlaced?.Invoke(character, startArea);
 

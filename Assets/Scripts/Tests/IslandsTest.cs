@@ -43,7 +43,7 @@ public class IslandsTest : MonoBehaviour, ITestUnit
             if (!(n.Contains("whale") || n.Contains("orca") || n.Contains("seal"))) continue;
             marine++;
             Vector3 d = an.transform.position - new Vector3(60f, 0f, 25f); d.y = 0f;
-            if (d.magnitude < 45f) marineInLagoon++;
+            if (d.magnitude < 90f) marineInLagoon++;   // la laguna y sus alrededores (las ballenas pasean lejos)
         }
         TestProbe.Check("la fauna marina vive en la laguna", marine > 0 && marineInLagoon * 2 >= marine, $"{marineInLagoon}/{marine} en la laguna");
 

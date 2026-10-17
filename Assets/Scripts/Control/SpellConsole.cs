@@ -84,6 +84,7 @@ public class SpellConsole : MonoBehaviour
         ("virtualize", "virtualize({destiny:\"Huerto\"})"),
         ("lookAt",    "lookAt({destiny:\"Magnate\"})"),
         ("cancel",    "cancel({all:false})"),
+        ("exit",      "exit"),
         ("look",      "look({yaw:90, pitch:0})"),
         ("asana",     "asana({name:\"\"})"),   // hacer el paso que el maestro pide (o una asana conocida por su nombre)
     };
@@ -238,6 +239,7 @@ public class SpellConsole : MonoBehaviour
             case "queue": case "cola": LogQueue(self); break;
             case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
+            case "exit": case "salir": if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) { MobWorldLoader.Instance.ExitMobWorld(); Log($"«{self.name}» sale del microcosmos."); } else Log("No estás en un microcosmos."); break;
             case "look": case "mirar": LookCmd(self, args, false); break;
             case "lookat": case "mirara": LookCmd(self, args, true); break;
             default: Log($"No conozco el hechizo «{cmd}»."); break;
@@ -262,6 +264,14 @@ public class SpellConsole : MonoBehaviour
         if (MobWorldLoader.Instance.IsBusy || MobWorldLoader.Instance.IsInMobWorld) { Log("Ya estás entrando o dentro de un microcosmos."); return; }
 
         bool atMachine = bestSq <= 6f * 6f;   // estar en el área, junto a su máquina
+        if (!atMachine && bestSq <= 30f * 30f)   // la máquina está aquí cerca: ir andando hasta el tanque y entonces virtualizar
+        {
+            VirtualizationMachine vmTarget = best;
+            Enqueue(self, new WalkToSpell { target = vmTarget.transform, targetName = "el tanque de virtualización", stopDistance = 2f });
+            Enqueue(self, new ActionNowSpell("entrar al tanque", a => { Log($"«{a.name}» entra al tanque de {vmTarget.areaName}."); vmTarget.EnterWithTank(a.transform); }));
+            Log($"«{self.name}» va al tanque de virtualización de {best.areaName}.");
+            return;
+        }
         if (!atMachine)
         {
             CharacterLevel cl = self.GetComponent<CharacterLevel>();
@@ -269,8 +279,9 @@ public class SpellConsole : MonoBehaviour
             if (cl.currentMana < VirtualizeManaCost) { Log($"«{self.name}»: no tienes maná suficiente ({cl.currentMana:0}/{VirtualizeManaCost:0})."); return; }
             cl.currentMana -= VirtualizeManaCost;
         }
-        Log($"«{self.name}» virtualiza el microcosmos de {best.areaName} {(atMachine ? "con la máquina" : $"con magia (−{VirtualizeManaCost:0} maná)")}.");
-        MobWorldLoader.Instance.EnterMobWorld(best.mobWorldSceneName);
+        Log($"«{self.name}» virtualiza el microcosmos de {best.areaName} {(atMachine ? "con la máquina (entra al tanque)" : $"con magia (−{VirtualizeManaCost:0} maná)")}.");
+        if (atMachine) best.EnterWithTank(self.transform);   // máscara + tanque de agua
+        else MobWorldLoader.Instance.EnterMobWorld(best.mobWorldSceneName);
     }
 
     // CÁMARA por hechizo (apuntar sin ratón): look({yaw:90, pitch:-20}) gira; lookAt({destiny:"Magnate"}) mira hacia algo.

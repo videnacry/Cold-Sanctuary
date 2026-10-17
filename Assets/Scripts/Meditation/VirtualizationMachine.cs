@@ -53,7 +53,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // Modo escena: cargar el mundo mob propio (salida vía WorldExitPortal dentro de la escena).
         if (SceneMode)
         {
-            Confirm(() => MobWorldLoader.Instance.EnterMobWorld(mobWorldSceneName));
+            Confirm(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform));
             return;
         }
 
@@ -61,6 +61,14 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (shift == null) return;
         if (MeditationSession.Instance.IsInMission) { MeditationSession.Instance.EndMission(); return; }
         Confirm(OpenSession);
+    }
+
+    /// <summary>Entra al microcosmos POR EL TANQUE: máscara, subir, sumergirse y entonces cargar la escena. Sin tanque, directo.</summary>
+    public void EnterWithTank(Transform who)
+    {
+        VirtualizationTank tank = GetComponentInChildren<VirtualizationTank>();
+        if (tank != null && who != null) StartCoroutine(tank.Enter(who, () => MobWorldLoader.Instance.EnterMobWorld(mobWorldSceneName)));
+        else MobWorldLoader.Instance.EnterMobWorld(mobWorldSceneName);
     }
 
     void Confirm(System.Action onConfirm)

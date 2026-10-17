@@ -77,43 +77,61 @@ public class Magnate : MonoBehaviour
         SanctuaryOnboarding best = null; float bestSq = float.MaxValue;
         foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
         {
-            if (o == null || !o.apt || o.presented) continue;
+            if (o == null || !o.apt || (o.presented && o != _newcomer)) continue;
             float sq = (o.transform.position - transform.position).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = o; }
         }
         return best;
     }
 
+    // HECHIZO DE INICIACIÓN DE LA MAGNATE (cuando Linduarda la llama: el aspirante ya es apto): va a buscarlo a la
+    // enfermería, se lo LLEVA (camina con él) a la SALA DE YOGA, allí le da su primera clase interactiva de upa-yoga
+    // (TeachingSession: ella hace cada paso y le pide el suyo) y al terminar lo encamina a la cocina. Hasta entonces el
+    // recién llegado NO es del santuario y ella no lo tiene en cuenta para enseñar al rezagado.
+    Anima _initiating;
+    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = a la cocina
+
     void GoPresent()
     {
         if (_newcomer == null) return;
         Anima t = _newcomer.GetComponentInParent<Anima>();
         if (t == null) { _newcomer.presented = true; _newcomer = null; return; }
-        Vector3 to = t.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > teachRadius) { transform.position += to.normalized * moveSpeed * Time.deltaTime; return; }
-
-        // Ceremonia: la maestra lo presenta como nuevo miembro, le da el upa-yoga y lo ENCAMINA a aprender un área (cocina).
-        Debug.Log($"[Magnate] presenta a «{t.name}» como nuevo miembro del santuario. Le enseña upa-yoga y lo lleva a la cocina.");
-        Teach(t);                              // upa-yoga: el recuerdo del Saludo al Sol + ánimo (ver Teach)
-        Mind m = t.GetComponent<Mind>();
-        if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
-        LeadToYogaThenKitchen(t);              // y lo LLEVA: camina a la sala de yoga, practica, y va a la cocina
-        _newcomer.presented = true;
-        _newcomer = null;
-    }
-
-    // Superhechizo de GUÍA: encola en el nuevo caminar→sala de yoga (upa-yoga: Saludo al Sol)→caminar→cocina.
-    // Reutiliza ActionSpells.Walk (= levantarse + acercarse) y SunSalutation. En el carril propio (prioritario) del cuerpo.
-    void LeadToYogaThenKitchen(Anima t)
-    {
-        ActionQueue q = t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
         Transform yoga = yogaSpot != null ? yogaSpot : FindSpot("SalaYoga");
         Transform kitchen = kitchenSpot != null ? kitchenSpot : FindSpot("CocinaSpot");
-        if (yoga != null) q.EnqueueOwn(ActionSpells.Walk(yoga));
-        foreach (QueuedSpell s in UpaYoga.NeckSequence()) q.EnqueueOwn(s);   // al llegar, practica upa-yoga de cuello (su primera vez)
-        if (kitchen != null) q.EnqueueOwn(ActionSpells.Walk(kitchen));
-        Debug.Log($"[Magnate] guía a «{t.name}»: sala de yoga → upa-yoga → cocina.");
+
+        if (_initiating != t) { _initiating = t; _initPhase = 0; Debug.Log($"[Magnate] Linduarda la llama: va a iniciar a «{t.name}»."); }
+        switch (_initPhase)
+        {
+            case 0:   // ir a buscarlo
+                if (Flat(t.transform.position - transform.position) > teachRadius) { PathMover.Of(this).StepToward(t.transform.position, moveSpeed); return; }
+                Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y se lo lleva a la sala de yoga (hechizo de iniciación).");
+                Mind m = t.GetComponent<Mind>();
+                if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
+                if (yoga != null) Queue(t).EnqueueOwn(ActionSpells.Walk(yoga));
+                _initPhase = 1;
+                return;
+            case 1:   // caminar juntos (ella delante, a su paso)
+                if (yoga == null) { _initPhase = 2; return; }
+                PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
+                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f)
+                {
+                    _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí
+                    Teach(t);
+                    _initPhase = 2;
+                }
+                return;
+            case 2:   // clase interactiva en curso
+                if (TeachingSession.For(t) != null) return;
+                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
+                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: ahora va a la cocina a aprender un oficio.");
+                _initPhase = 3;
+                _newcomer = null; _initiating = null;
+                return;
+        }
     }
+
+    static ActionQueue Queue(Anima t) => t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
+    static float Flat(Vector3 v) { v.y = 0f; return v.magnitude; }
 
     static Transform FindSpot(string n) { GameObject g = GameObject.Find(n); return g != null ? g.transform : null; }
 
@@ -141,9 +159,18 @@ public class Magnate : MonoBehaviour
         {
             Anima a = cl.GetComponent<Anima>();
             if (a == null || a == _a || a.death || a.GetComponent<Magnate>() != null) continue;
+            if (!IsMember(a)) continue;   // un recién llegado sin la iniciación de Linduarda aún NO es del santuario
             if (cl.SoulLevels < worstLv) { worstLv = cl.SoulLevels; worst = a; }
         }
         return worst;
+    }
+
+    /// <summary>¿Es ya del santuario? Un aspirante (SanctuaryOnboarding) lo es cuando Linduarda lo certifica y la Magnate
+    /// lo ha iniciado; los demás personajes ya lo son.</summary>
+    public static bool IsMember(Anima a)
+    {
+        SanctuaryOnboarding o = a != null ? a.GetComponent<SanctuaryOnboarding>() : null;
+        return o == null || (o.apt && o.presented);
     }
 
     void GoTeach()
@@ -151,7 +178,7 @@ public class Magnate : MonoBehaviour
         Vector3 to = _student.transform.position - transform.position; to.y = 0f;
         if (to.magnitude > teachRadius)
         {
-            transform.position += to.normalized * moveSpeed * Time.deltaTime;   // la guardiana se acerca
+            PathMover.Of(this).StepToward(_student.transform.position, moveSpeed);   // la guardiana se acerca (por el camino, nadando entre islas)
             return;
         }
         Teach(_student);

@@ -117,7 +117,7 @@ public class WorldCharacter : MonoBehaviour
     /// Called by SanctuaryDirector to move this character to a new area.
     /// Restarts the autonomous task loop for the new context.
     /// </summary>
-    public void PlaceInArea(SanctuaryArea area, int spawnIndex = 0)
+    public void PlaceInArea(SanctuaryArea area, int spawnIndex = 0, bool teleport = true)
     {
         if (currentArea != null)
             currentArea.RemoveResident(this);
@@ -126,8 +126,8 @@ public class WorldCharacter : MonoBehaviour
         _promotionFired = false;
         area.AddResident(this);
 
-        // Reposition
-        transform.position = area.GetSpawnPosition(spawnIndex);
+        // Reposition (el JUGADOR no se teletransporta: va andando; su área queda asignada)
+        if (teleport) transform.position = area.GetSpawnPosition(spawnIndex);
 
         // Restart autonomous loop
         StopAllCoroutines();

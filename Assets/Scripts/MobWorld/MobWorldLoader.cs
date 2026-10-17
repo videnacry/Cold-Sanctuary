@@ -44,6 +44,13 @@ public class MobWorldLoader : MonoBehaviour
         StartCoroutine(EnterRoutine(sceneName));
     }
 
+    /// <summary>Al salir de un microcosmos (después de volver al mundo base). Lo escucha p. ej. la iniciación de Linduarda.</summary>
+    public static event System.Action<string> Exited;
+
+    Vector3? _returnOverride;
+    /// <summary>Dónde reaparece el jugador al volver (p. ej. fuera del tanque de virtualización, no dentro del agua).</summary>
+    public void SetReturnPoint(Vector3 pos) => _returnOverride = pos;
+
     /// <summary>Return to the base world (called by the WorldExitPortal inside the mob scene).</summary>
     public void ExitMobWorld()
     {
@@ -75,7 +82,8 @@ public class MobWorldLoader : MonoBehaviour
         Transform spawn = FindSpawn(sceneName);
         if (_player != null)
         {
-            _returnPos = _player.position;
+            _returnPos = _returnOverride ?? _player.position;
+            _returnOverride = null;
             _returnRot = _player.rotation;
             if (spawn != null) TeleportPlayer(spawn.position, spawn.rotation);
             else Debug.LogWarning($"[MobWorldLoader] '{sceneName}' sin MobSpawnPoint — el jugador no se teletransportó.");
@@ -96,10 +104,12 @@ public class MobWorldLoader : MonoBehaviour
         AsyncOperation op = SceneManager.UnloadSceneAsync(_activeScene);
         while (op != null && !op.isDone) yield return null;
 
+        string left = _activeScene;
         IsInMobWorld = false;
         _activeScene = null;
         _player = null;
         ScreenFader.Get().FadeFromBlack(() => IsBusy = false);
+        Exited?.Invoke(left);
     }
 
     // ── Helpers ─────────────────────────────────────────────────────────────────
