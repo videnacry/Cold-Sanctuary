@@ -2014,6 +2014,9 @@ public static class SampleSceneBuilder
         // Lanzador de hechizos por TECLADO + cola de acciones (jugador programa al poseído tipo Sims).
         if (player.GetComponent<ActionQueue>() == null) player.AddComponent<ActionQueue>();
         if (player.GetComponent<GroundGuard>() == null) player.AddComponent<GroundGuard>();   // si queda bajo tierra, lo recoloca
+        // La energía (ATP) se recupera sola de las reservas: sin esto, al vaciarse (andar, nadar, la clase de yoga) el
+        // jugador se quedaba CLAVADO para siempre (WalkSpell no avanza sin ATP).
+        if (player.GetComponent<ATPRegenSpell>() == null) player.AddComponent<ATPRegenSpell>();
         if (Object.FindObjectOfType<SpellConsole>() == null)
             new GameObject("SpellConsole_AUTO").AddComponent<SpellConsole>().transform.SetParent(player.transform);
 
@@ -2230,6 +2233,7 @@ public static class SampleSceneBuilder
                 if (a.GetComponent<CharacterLevel>() == null) a.gameObject.AddComponent<CharacterLevel>();
                 if (a.GetComponent<GroundGuard>() == null) a.gameObject.AddComponent<GroundGuard>();
                 if (a.GetComponent<NeedsDriver>() == null) a.gameObject.AddComponent<NeedsDriver>();   // el cuerpo pide comer/dormir
+                if (a.GetComponent<ATPRegenSpell>() == null) a.gameObject.AddComponent<ATPRegenSpell>();   // recupera energía para seguir andando
                 alive++;
             }
         }
