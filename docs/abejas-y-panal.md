@@ -42,7 +42,7 @@ Código:
   - flores del sotobosque al pie de otros árboles, a 6–18 m;
   - un **cadáver** junto al árbol carnívoro: los nutrientes del muerto (el bucle de nutrientes del ecosistema de
     hielo; ver [ice-sanctuary-ecology.md](ice-sanctuary-ecology.md)).
-- **La araña de las nieves** sigue acechando en el tronco. Las obreras huyen y la guardiana le planta cara.
+- **La araña de las nieves** espera en su tela junto al panal (ver abajo). Las obreras huyen y la guardiana le planta cara.
 
 Prueba automática: `SanctuaryLifeTest` (la reina pone huevos en el panal).
 
