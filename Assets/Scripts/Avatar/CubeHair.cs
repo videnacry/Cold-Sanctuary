@@ -82,6 +82,8 @@ public static class CubeHair
         // Linduarda: ecuatoriana, médica, "a la moda, deportista, gimnasio a diario" → coleta alta, bata blanca, atlética.
         // (de su foto) coleta alta negra, gafas redondas doradas, pijama sanitario azul celeste sobre camiseta blanca de manga larga.
         if (n.Contains("linduarda")) return new Look(Style.Ponytail, C(0.08f, 0.06f, 0.06f), C(0.86f, 0.68f, 0.55f), C(0.25f, 0.16f, 0.1f)).Fem().Face(0.72f, 0.7f).Lips(C(0.7f, 0.38f, 0.4f)).Wear(C(0.52f, 0.72f, 0.9f), 1.6f).Pants(C(0.52f, 0.72f, 0.9f)).Sleeves(C(0.95f, 0.95f, 0.93f)).Glasses(C(0.85f, 0.7f, 0.4f)).Shoes(C(0.95f, 0.95f, 0.95f));
+        // Lizmibet: 70+ años, ecuatoriana, médica (sin referencia aún: inferido) → melena corta canosa, gafas, bata blanca.
+        if (n.Contains("lizmibet")) return new Look(Style.Short, C(0.78f, 0.76f, 0.74f), C(0.8f, 0.6f, 0.46f), C(0.25f, 0.17f, 0.1f)).Fem().Face(0.86f, 0.3f).Lips(C(0.72f, 0.42f, 0.45f)).Glasses(C(0.35f, 0.3f, 0.32f)).Wear(C(0.96f, 0.96f, 0.97f), 1.54f).Pants(C(0.4f, 0.45f, 0.55f));
         if (n.Contains("maestra")) return new Look(Style.Bun, C(0.7f, 0.7f, 0.72f), SkinLight, C(0.3f, 0.25f, 0.2f));
         // Goluis: 25 años, el de la fuerza (corpulento), jefe de cocina → cabeza rapada, barba, chaqueta de cocinero.
         // (de su foto) degradado con la parte de arriba en punta, perilla, pendiente, tatuajes en los brazos, polo claro.

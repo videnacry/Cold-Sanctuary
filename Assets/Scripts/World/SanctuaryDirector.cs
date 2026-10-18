@@ -157,7 +157,7 @@ public class SanctuaryDirector : MonoBehaviour
     static readonly System.Collections.Generic.Dictionary<string, SanctuaryAreaType> HomeArea = new System.Collections.Generic.Dictionary<string, SanctuaryAreaType>
     {
         { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
-        { "Panterilia", SanctuaryAreaType.Garden }, { "Gohageneis", SanctuaryAreaType.VehicleWorkshop },
+        { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
     };
 
     SanctuaryArea DetermineStartArea(WorldCharacter character)

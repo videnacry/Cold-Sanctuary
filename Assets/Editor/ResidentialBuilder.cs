@@ -13,11 +13,11 @@ public static class ResidentialBuilder
 
     public static readonly string[] Owners =
     {
-        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene",   // solo personajes del juego
+        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet",   // solo personajes del juego
     };
     static readonly string[] Shown =
     {
-        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene",
+        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet",
     };
 
     public static Transform Build(Transform parent, Vector3 center)
@@ -96,6 +96,11 @@ public static class ResidentialBuilder
         KitchenProps.C(t, new Vector3(0.2f, 0.8f, 1.6f), new Vector3(0.16f, 0.25f, 0.16f), new Color(1f, 0.88f, 0.55f), 0f, "Lampara");
         KitchenProps.C(t, new Vector3(1.6f, 1.2f, 1.75f), new Vector3(1f, 0.05f, 0.35f), WoodDark, 0f, "Estante");
         KitchenProps.C(t, new Vector3(1.4f, 1.33f, 1.75f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.8f, 0.6f, 0.5f), 0f, "Libros");
+        // BAÑO propio en la esquina: tabique, inodoro seco de compostaje y lavabo.
+        Solid(t, new Vector3(1.15f, h * 0.5f, -0.8f), new Vector3(0.08f, h, 2.3f), Wood, "Tabique_bano");
+        KitchenProps.C(t, new Vector3(1.75f, 0.22f, -1.5f), new Vector3(0.42f, 0.44f, 0.5f), Wood, 0f, "Inodoro_seco");
+        KitchenProps.C(t, new Vector3(1.75f, 0.45f, -1.5f), new Vector3(0.38f, 0.03f, 0.42f), Color.white, 0f, "Asiento");
+        KitchenProps.C(t, new Vector3(1.85f, 0.8f, -0.35f), new Vector3(0.45f, 0.12f, 0.35f), Color.white, 0f, "Lavabo");
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.bed = bed;

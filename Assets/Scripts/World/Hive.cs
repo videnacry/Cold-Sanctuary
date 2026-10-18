@@ -73,6 +73,23 @@ public class Hive : MonoBehaviour
         }
     }
 
+
+    /// <summary>¿El punto está dentro de la cavidad del panal?</summary>
+    public bool Inside(Vector3 p)
+    {
+        Vector3 l = transform.InverseTransformPoint(p);
+        return Mathf.Abs(l.x) < 0.48f && l.y < 0.1f && l.y > -0.9f && Mathf.Abs(l.z) < 0.53f;
+    }
+
+    /// <summary>Punto de paso para ir de dentro a fuera (o al revés): por la PIQUERA, la única abertura.</summary>
+    public Vector3 Via(Vector3 from, Vector3 target)
+    {
+        bool tIn = Inside(target), fIn = Inside(from);
+        if (tIn == fIn || entrance == null) return target;
+        Vector3 below = entrance.position + Vector3.down * 0.25f, above = entrance.position + Vector3.up * 0.18f;
+        if (!fIn) return (from - below).sqrMagnitude > 0.02f && (from - entrance.position).sqrMagnitude > 0.01f ? below : above;   // entrar
+        return (from - above).sqrMagnitude > 0.02f && (from - entrance.position).sqrMagnitude > 0.01f ? above : below;             // salir
+    }
     public int Count(Cell c) { int n = 0; foreach (Cell s in state) if (s == c) n++; return n; }
 
     public void Set(int i, Cell s)

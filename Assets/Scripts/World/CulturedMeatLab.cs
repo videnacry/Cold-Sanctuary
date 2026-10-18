@@ -30,6 +30,13 @@ public class CulturedMeatLab : MonoBehaviour
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
     public float batchGrams = 2000f;        // 2 kg por lote → 4 raciones de 500 g
     public int maxPortionsWaiting = 6;
+    [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al comedero de los depredadores).")]
+    public int kitchenPortions = 4;
+
+    /// <summary>Líneas celulares del banco: cada lote cultiva la siguiente. Los mamíferos y aves desde células satélite
+    /// del músculo; los peces y mariscos desde células de músculo de pez (crecen a 27 °C, no a 37 °C).</summary>
+    public static readonly string[] Lines = { "res", "pollo", "salmón", "cerdo", "atún", "conejo", "bacalao", "calamar", "gamba" };
+    public string Line => Lines[batches % Lines.Length];
 
     [Header("Destino")]
     public Transform feeder;                // comedero de los depredadores
@@ -102,13 +109,23 @@ public class CulturedMeatLab : MonoBehaviour
             FoodItem fi = g.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Meat; fi.grams = 500f;
             portionsMade++;
         }
-        Debug.Log($"[Carne cultivada] lote {batches} cosechado: {n} raciones de 500 g al comedero de los depredadores.");
+        string line = Lines[(batches - 1) % Lines.Length];
+        if (KitchenLarder.Instance != null) KitchenLarder.Instance.ReceiveMeat(MeatItem(line), kitchenPortions);
+        Debug.Log($"[Carne cultivada] lote {batches} ({line}) cosechado: {n} raciones de 500 g al comedero de los depredadores{(KitchenLarder.Instance != null ? $" y {kitchenPortions} a la cocina" : "")}.");
         cells = 0;
     }
 
+    /// <summary>Nombre del producto en el recetario (Gastronomy.Raw).</summary>
+    public static string MeatItem(string line) => line switch
+    {
+        "pollo" => "pollo cultivado", "cerdo" => "cerdo cultivado", "conejo" => "conejo cultivado", "salmón" => "salmón cultivado",
+        "atún" => "atún cultivado", "bacalao" => "bacalao cultivado", "calamar" => "calamar cultivado", "gamba" => "gamba cultivada",
+        _ => "res cultivada",
+    };
+
     public string Status() => stage == Stage.Proliferacion
-        ? $"Carne cultivada · {Name(stage)} · {cells:0.0e0}/{TargetCells:0.0e0} células · glucosa {glucose:P0} · pH {pH:0.00} · O₂ {dissolvedO2:P0} · 37 °C"
-        : $"Carne cultivada · {Name(stage)} · lotes {batches} · raciones {portionsMade}";
+        ? $"Carne cultivada ({Line}) · {Name(stage)} · {cells:0.0e0}/{TargetCells:0.0e0} células · glucosa {glucose:P0} · pH {pH:0.00} · O₂ {dissolvedO2:P0} · 37 °C"
+        : $"Carne cultivada ({Line}) · {Name(stage)} · lotes {batches} · raciones {portionsMade}";
 
     public static string Name(Stage s) => s switch
     {

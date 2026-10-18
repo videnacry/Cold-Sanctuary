@@ -120,7 +120,46 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
+        TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
+
+        // Servicios para turistas y personal: aseos, médica, guardia.
+        int wcs = 0; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (tt.name.StartsWith("Aseos")) wcs++;
+        TestProbe.Greater("hay aseos en las áreas humanas", wcs, 4f, $"{wcs}");
+        TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", FindByPrefix("Lizmibet"));
+        CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
+        TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
+
+        // Cocina profesional: recetario coherente, equipo instalado, cultivos plantados y obrador que encadena elaboraciones.
+        var missingEq = new System.Collections.Generic.List<string>();
+        foreach (string eq in Gastronomy.Equipment()) if (!FindByPrefix("Equipo_" + eq)) missingEq.Add(eq);
+        TestProbe.Check("la cocina tiene todo el equipo que pide la carta", missingEq.Count == 0, missingEq.Count == 0 ? $"{Gastronomy.Equipment().Count} equipos" : "falta: " + string.Join(", ", missingEq));
+        var unknown = new System.Collections.Generic.List<string>();
+        foreach (Gastronomy.Dish d in Gastronomy.Menu) foreach (string c in d.components) if (!Gastronomy.Raw.ContainsKey(c) && Gastronomy.PrepOf(c) == null) unknown.Add(c);
+        foreach (Gastronomy.Prep p in Gastronomy.Preps) foreach (string c in p.inputs) if (!Gastronomy.Raw.ContainsKey(c) && Gastronomy.PrepOf(c) == null) unknown.Add(c);
+        TestProbe.Check("cada ingrediente sale de un cultivo, del laboratorio o de una elaboración", unknown.Count == 0, string.Join(", ", unknown));
+        var planted = new System.Collections.Generic.HashSet<string>();
+        foreach (GardenCrop c in GardenCrop.All) if (c != null) planted.Add(c.kind.ToString());
+        var notPlanted = new System.Collections.Generic.List<string>();
+        foreach (var kv in Gastronomy.Raw) if (kv.Value.src == Gastronomy.Source.Cultivo && !planted.Contains(kv.Value.from)) notPlanted.Add(kv.Key);
+        TestProbe.Check("los huertos tienen los cultivos de la carta", notPlanted.Count == 0, notPlanted.Count == 0 ? $"{planted.Count} especies" : "sin plantar: " + string.Join(", ", notPlanted));
+        KitchenLarder larder = KitchenLarder.Instance;
+        TestProbe.Check("hay despensa y obrador en la cocina", larder != null);
+        if (larder != null)
+        {
+            foreach (string line in CulturedMeatLab.Lines) larder.Add(CulturedMeatLab.MeatItem(line), 10f);
+            for (int h = 0; h < 80; h++) larder.Tick(1f);   // 80 horas de juego
+            int ready = 0; foreach (Gastronomy.Dish d in Gastronomy.Menu) if (larder.CanServe(d)) ready++;
+            TestProbe.Greater("el obrador elabora sus bases (yogur, quesos, masas, tofu…)", larder.prepsDone, 15f, $"{larder.prepsDone} elaboraciones; yogur {larder.Have("yogur"):0}");
+            TestProbe.Greater("tras 80 h de mise en place casi toda la carta está lista", ready, Gastronomy.Menu.Length * 0.75f, larder.Report());
+            TestProbe.Check("la lasaña sale (pasta fresca, ragú de carne cultivada, bechamel, parmesano)", larder.Serve("Lasaña"), string.Join(", ", larder.Missing(Gastronomy.DishOf("Lasaña"))));
+        }
         TestProbe.End();
+    }
+
+    static bool FindByPrefix(string prefix)
+    {
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith(prefix)) return true;
+        return false;
     }
 
     static string QueenInfo(Hive hv)

@@ -290,6 +290,7 @@ public class IceInsectLife : MonoBehaviour
 
     float FlyTo(Vector3 p, float speed)
     {
+        if (kind == Kind.Bee && hive != null) p = hive.Via(transform.position, p);   // al panal se entra y se sale por la piquera
         Vector3 d = p - transform.position;
         float dist = d.magnitude;
         if (dist > 0.01f)

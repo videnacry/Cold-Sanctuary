@@ -55,12 +55,13 @@ public class GardenPlot : MonoBehaviour
                 // la zanahoria se espantan mutuamente la mosca; las aromáticas en flor atraen a los depredadores de plagas.
                 Rows(hx, hz, 1.8f, new[]
                 {
-                    new[] { GardenCrop.Kind.Tomate, GardenCrop.Kind.Albahaca },
-                    new[] { GardenCrop.Kind.Zanahoria, GardenCrop.Kind.Cebolla },
-                    new[] { GardenCrop.Kind.Col, GardenCrop.Kind.Cilantro },
-                    new[] { GardenCrop.Kind.Espinaca, GardenCrop.Kind.Ajo },
+                    // (el bancal da para ~6 filas: cada fila alterna 2–3 especies que se llevan bien)
+                    new[] { GardenCrop.Kind.Tomate, GardenCrop.Kind.Albahaca, GardenCrop.Kind.Pepino },
+                    new[] { GardenCrop.Kind.Zanahoria, GardenCrop.Kind.Cebolla, GardenCrop.Kind.Perejil },
+                    new[] { GardenCrop.Kind.Col, GardenCrop.Kind.Cilantro, GardenCrop.Kind.Frutilla },
+                    new[] { GardenCrop.Kind.Espinaca, GardenCrop.Kind.Ajo, GardenCrop.Kind.Romero },
                     new[] { GardenCrop.Kind.Pimiento, GardenCrop.Kind.Chile, GardenCrop.Kind.Comino },
-                    new[] { GardenCrop.Kind.Berenjena, GardenCrop.Kind.Albahaca },
+                    new[] { GardenCrop.Kind.Berenjena, GardenCrop.Kind.Albahaca, GardenCrop.Kind.Papa },
                     new[] { GardenCrop.Kind.Cebollin, GardenCrop.Kind.Zanahoria },
                 }, 0.7f);
                 Border(hx, hz, GardenCrop.Kind.Lino, 1.2f);   // flores para polinizadores en el borde sur
@@ -79,15 +80,17 @@ public class GardenPlot : MonoBehaviour
                 for (float x = -hx + 1f; x <= hx - 1f; x += 1.4f)
                     Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Amaranto : GardenCrop.Kind.Chile, new Vector3(x, 0f, hz - 1f));
                 for (float x = -hx + 1f; x <= hx - 1f; x += 2f) Plant(GardenCrop.Kind.Nopal, new Vector3(x, 0f, -hz - 0.8f));
+                for (float x = -hx + 1.6f; x <= hx - 1.6f; x += 2.4f) Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Achiote : GardenCrop.Kind.Azafran, new Vector3(x, 0f, hz + 0.1f));   // achiote y azafrán (color y aroma de la carta)
                 break;
 
             case Guild.ChacraAndina:
                 // Franjas alternas de quinoa, tarwi (lupino que abona el suelo) y choclo; huacatay y ají ahuyentan plagas.
                 Rows(hx, hz, 1.6f, new[]
                 {
-                    new[] { GardenCrop.Kind.Quinoa }, new[] { GardenCrop.Kind.Tarwi }, new[] { GardenCrop.Kind.Maiz },
-                    new[] { GardenCrop.Kind.Huacatay, GardenCrop.Kind.Chile }, new[] { GardenCrop.Kind.Quinoa }, new[] { GardenCrop.Kind.Tarwi },
-                    new[] { GardenCrop.Kind.Amaranto },
+                    new[] { GardenCrop.Kind.Quinoa, GardenCrop.Kind.Haba }, new[] { GardenCrop.Kind.Tarwi, GardenCrop.Kind.Melloco },
+                    new[] { GardenCrop.Kind.Maiz, GardenCrop.Kind.MaizMorado }, new[] { GardenCrop.Kind.Huacatay, GardenCrop.Kind.Chile, GardenCrop.Kind.Hierbaluisa },
+                    new[] { GardenCrop.Kind.Quinoa, GardenCrop.Kind.Papa }, new[] { GardenCrop.Kind.Tarwi, GardenCrop.Kind.Arveja },
+                    new[] { GardenCrop.Kind.Amaranto, GardenCrop.Kind.Cedron }, new[] { GardenCrop.Kind.MaizMorado },
                 }, 0.9f);
                 break;
 
@@ -106,6 +109,7 @@ public class GardenPlot : MonoBehaviour
                     for (float x = -hx + 0.8f; x <= hx - 0.8f; x += 1f)
                         Plant(((int)(x * 2f)) % 3 == 0 ? GardenCrop.Kind.Cebollin : GardenCrop.Kind.Soja, new Vector3(x, 0.25f, z + 2.6f));
                 }
+                for (float x = -hx + 1f; x <= hx - 1f; x += 3f) Plant(GardenCrop.Kind.Wasabi, new Vector3(x, 0f, -hz + 0.2f));   // wasabi en la orilla húmeda y fresca
                 SeaweedInNearestWater(18);
                 break;
 
@@ -114,16 +118,16 @@ public class GardenPlot : MonoBehaviour
                 // Así el suelo no se agota y las plagas de un cultivo no encuentran el mismo sitio al año siguiente.
                 Rows(hx, hz, 2.2f, new[]
                 {
-                    new[] { GardenCrop.Kind.Lenteja }, new[] { GardenCrop.Kind.Avena }, new[] { GardenCrop.Kind.Garbanzo },
-                    new[] { GardenCrop.Kind.Teff }, new[] { GardenCrop.Kind.Caupi }, new[] { GardenCrop.Kind.Mani },
-                    new[] { GardenCrop.Kind.Soja },
+                    new[] { GardenCrop.Kind.Trigo }, new[] { GardenCrop.Kind.Lenteja, GardenCrop.Kind.Arveja }, new[] { GardenCrop.Kind.Trigo, GardenCrop.Kind.Avena },
+                    new[] { GardenCrop.Kind.Garbanzo, GardenCrop.Kind.Haba }, new[] { GardenCrop.Kind.Teff, GardenCrop.Kind.Sesamo },
+                    new[] { GardenCrop.Kind.Caupi, GardenCrop.Kind.Mani }, new[] { GardenCrop.Kind.Soja },
                 }, 0.7f);
                 Border(hx, hz, GardenCrop.Kind.Lino, 1f);
                 break;
 
             default:   // BOSQUE COMESTIBLE por capas: dosel, árboles bajos, arbustos, herbáceas, trepadoras y hongos a la sombra
-                GardenCrop.Kind[] canopy = { GardenCrop.Kind.Mango, GardenCrop.Kind.Coco, GardenCrop.Kind.Guanabana, GardenCrop.Kind.Datil, GardenCrop.Kind.Almendro, GardenCrop.Kind.Olivo };
-                GardenCrop.Kind[] small = { GardenCrop.Kind.Limon, GardenCrop.Kind.Naranja, GardenCrop.Kind.Cacao, GardenCrop.Kind.Lima, GardenCrop.Kind.Canela, GardenCrop.Kind.Laurel };
+                GardenCrop.Kind[] canopy = { GardenCrop.Kind.Mango, GardenCrop.Kind.Coco, GardenCrop.Kind.Guanabana, GardenCrop.Kind.Datil, GardenCrop.Kind.Almendro, GardenCrop.Kind.Olivo, GardenCrop.Kind.Aguacate, GardenCrop.Kind.Clavo };
+                GardenCrop.Kind[] small = { GardenCrop.Kind.Limon, GardenCrop.Kind.Naranja, GardenCrop.Kind.Cacao, GardenCrop.Kind.Lima, GardenCrop.Kind.Canela, GardenCrop.Kind.Laurel, GardenCrop.Kind.Cafe, GardenCrop.Kind.Babaco };
                 int c = 0, s = 0;
                 for (float x = -hx + 4f; x <= hx - 3f; x += 7.5f)
                     for (float z = -hz + 4f; z <= hz - 3f; z += 7.5f)
@@ -138,6 +142,7 @@ public class GardenPlot : MonoBehaviour
                                   new Vector3(x + R(-3f, 3f), 0f, z + R(-3f, 3f)));
                     }
                 Border(hx, hz, GardenCrop.Kind.Sandia, 2.2f);
+                for (float x = -hx + 1f; x <= hx - 1f; x += 2.2f) Plant(((int)x) % 3 == 0 ? GardenCrop.Kind.Cana : ((int)x) % 3 == 1 ? GardenCrop.Kind.Naranjilla : GardenCrop.Kind.Mortino, new Vector3(x, 0f, hz - 0.8f));
                 break;
         }
         if (guild != Guild.BosqueComestible) Windbreak(hx, hz);

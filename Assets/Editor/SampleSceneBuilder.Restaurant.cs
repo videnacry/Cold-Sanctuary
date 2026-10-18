@@ -55,20 +55,18 @@ public static partial class SampleSceneBuilder
 
     static void BuildGourmetDining(Transform parent)
     {
+        // El COMEDOR comparte plataforma con la cocina: la cocina, al fondo y ABIERTA (sin pared, con su barra de pase), y
+        // el comedor delante, junto a la escalera. Así el público ve cocinar (cocina abierta) y el área es una sola.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
-        Vector3 kp = kitchen != null ? kitchen.transform.position : new Vector3(5f, ElevatedHeight, 95f);
-        Vector2 size = new Vector2(20f, 12f);
+        if (kitchen == null) return;
+        Vector2 size = new Vector2(22f, 14f);
         GameObject go = new GameObject("Comedor_Gourmet");
-        go.transform.SetParent(parent, false);
-        go.transform.position = new Vector3(kp.x, 0f, kp.z - 8f - 1.2f - size.y * 0.5f);   // al sur de la cocina
-        go.transform.rotation = Quaternion.Euler(0f, 180f, 0f);                               // su escalera mira al sur
-        SanctuaryArea tmp = go.AddComponent<SanctuaryArea>();
-        ElevateArea(tmp, size, ElevatedHeight);
-        Object.DestroyImmediate(tmp);   // es parte del restaurante, no un área de trabajo aparte
+        go.transform.SetParent(kitchen.transform, false);
+        go.transform.localPosition = new Vector3(0f, 0.1f, 8f);
         Transform r = go.transform;
         Color wood = new Color(0.42f, 0.28f, 0.2f), linen = new Color(0.97f, 0.97f, 0.95f), gold = new Color(0.82f, 0.68f, 0.35f), velvet = new Color(0.32f, 0.12f, 0.18f);
         KitchenProps.C(r, new Vector3(0f, 0.02f, 0f), new Vector3(size.x, 0.04f, size.y), new Color(0.48f, 0.33f, 0.22f), 0f, "Parquet");
-        for (int i = 0; i < 18; i++) KitchenProps.C(r, new Vector3(-9.45f + i * 1.11f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
+        for (int i = 0; i < 20; i++) KitchenProps.C(r, new Vector3(-size.x * 0.5f + (i + 0.5f) * size.x / 20f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
         int n = 0;
         for (int row = 0; row < 2; row++)
             for (int col = 0; col < 4; col++, n++)
@@ -102,20 +100,62 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(lamp, new Vector3(0f, -0.12f, 0f), new Vector3(0.12f, 0.05f, 0.12f), new Color(1f, 0.9f, 0.65f), 0f, "Bombilla");
             }
         // Pared de vinos al fondo y plantas en las esquinas.
-        Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(0f, 0f, size.y * 0.5f - 0.4f));
+        Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -1f), 90f);   // en el lateral (delante queda la entrada)
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");
         for (int y = 0; y < 6; y++)
             for (int x = 0; x < 14; x++)
                 KitchenProps.C(wine, new Vector3(-2.75f + x * 0.42f, 0.3f + y * 0.38f, -0.2f), new Vector3(0.09f, 0.09f, 0.04f), (x + y) % 3 == 0 ? new Color(0.35f, 0.08f, 0.12f) : new Color(0.18f, 0.28f, 0.15f), 0f, "Botella");
         for (int k = -1; k <= 1; k += 2)
         {
-            Transform pl = KitchenProps.Root(r, "Planta", new Vector3(k * (size.x * 0.5f - 0.8f), 0f, size.y * 0.5f - 0.8f));
+            Transform pl = KitchenProps.Root(r, "Planta", new Vector3(k * 2.6f, 0f, size.y * 0.5f - 0.8f));   // a los lados de la entrada
             KitchenProps.C(pl, new Vector3(0f, 0.25f, 0f), new Vector3(0.5f, 0.5f, 0.5f), new Color(0.3f, 0.3f, 0.32f), 0f, "Macetero");
             KitchenProps.C(pl, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), new Color(0.3f, 0.55f, 0.3f), 30f, "Follaje");
         }
-        WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor)"; wl.height = 3f;
+        WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor para 30)"; wl.height = 3f;
+        Aseos(r, new Vector3(-size.x * 0.5f + 0.2f + 2.85f, 0f, size.y * 0.5f - 0.9f), 180f);
     }
 
+
+    // ── Aseos (en cada área humana) ───────────────────────────────────────────────────────────────
+    // Módulo de aseos: cabinas con puerta y INODORO SECO de compostaje (sin agua ni desagüe: en el hielo no hay
+    // alcantarillado; la serrín/ceniza tapa y el compost acaba, maduro, en los huertos), una cabina ACCESIBLE más ancha,
+    // lavabos con espejo y dispensador, y el cartel. `cabins` = cabinas normales (3 para un área de 30 personas).
+    static Transform Aseos(Transform parent, Vector3 local, float yaw, int cabins = 3)
+    {
+        Transform r = KitchenProps.Root(parent, "Aseos", local, yaw);
+        Color wall = new Color(0.86f, 0.9f, 0.92f), door = new Color(0.45f, 0.62f, 0.72f), white = KitchenProps.White, steel = KitchenProps.Steel, wood = new Color(0.62f, 0.5f, 0.38f);
+        float cw = 0.95f, depth = 1.5f, h = 2.2f;
+        float total = cw * cabins + 1.5f + 1.3f;   // cabinas + accesible + zona de lavabos
+        KitchenProps.C(r, new Vector3(0f, h * 0.5f, -depth * 0.5f), new Vector3(total, h, 0.06f), wall, 0f, "Pared");
+        KitchenProps.C(r, new Vector3(0f, h + 0.03f, 0f), new Vector3(total, 0.06f, depth), wall, 0f, "Techo");
+        float x = -total * 0.5f;
+        for (int i = 0; i <= cabins; i++)
+        {
+            bool acc = i == cabins;
+            float w = acc ? 1.5f : cw;
+            KitchenProps.C(r, new Vector3(x, h * 0.5f, 0f), new Vector3(0.04f, h, depth), wall, 0f, "Tabique");
+            KitchenProps.C(r, new Vector3(x + w * 0.5f, h * 0.48f, depth * 0.5f), new Vector3(w - 0.06f, h * 0.9f, 0.04f), door, 0f, acc ? "Puerta_accesible" : "Puerta");
+            KitchenProps.C(r, new Vector3(x + w * 0.5f + w * 0.3f, 1f, depth * 0.5f + 0.03f), new Vector3(0.03f, 0.12f, 0.03f), steel, 0f, "Pomo");
+            // Inodoro seco de compostaje: caja de madera con asiento y su cubo de serrín al lado.
+            KitchenProps.C(r, new Vector3(x + w * 0.5f, 0.22f, -depth * 0.25f), new Vector3(0.42f, 0.44f, 0.55f), wood, 0f, "Inodoro_seco");
+            KitchenProps.C(r, new Vector3(x + w * 0.5f, 0.45f, -depth * 0.25f), new Vector3(0.38f, 0.03f, 0.45f), white, 0f, "Asiento");
+            KitchenProps.C(r, new Vector3(x + w * 0.5f + 0.32f, 0.15f, -depth * 0.35f), new Vector3(0.2f, 0.3f, 0.2f), new Color(0.78f, 0.66f, 0.45f), 0f, "Cubo_serrin");
+            if (acc) KitchenProps.C(r, new Vector3(x + w * 0.5f - 0.45f, 0.75f, -depth * 0.25f), new Vector3(0.04f, 0.04f, 0.6f), steel, 0f, "Barra_apoyo");
+            x += w;
+        }
+        KitchenProps.C(r, new Vector3(x, h * 0.5f, 0f), new Vector3(0.04f, h, depth), wall, 0f, "Tabique");
+        // Lavabos con espejo y dispensador de jabón.
+        for (int k = 0; k < 2; k++)
+        {
+            float lx = x + 0.35f + k * 0.6f;
+            KitchenProps.C(r, new Vector3(lx, 0.8f, -depth * 0.35f), new Vector3(0.5f, 0.12f, 0.4f), white, 0f, "Lavabo");
+            KitchenProps.C(r, new Vector3(lx, 0.88f, -depth * 0.47f), new Vector3(0.04f, 0.16f, 0.04f), steel, 0f, "Grifo");
+            KitchenProps.C(r, new Vector3(lx, 1.45f, -depth * 0.5f + 0.04f), new Vector3(0.45f, 0.6f, 0.02f), new Color(0.82f, 0.92f, 0.98f), 0f, "Espejo");
+        }
+        KitchenProps.C(r, new Vector3(x + 0.95f, 1.1f, -depth * 0.5f + 0.05f), new Vector3(0.1f, 0.18f, 0.06f), white, 0f, "Jabon");
+        WorldLabel wl = r.gameObject.AddComponent<WorldLabel>(); wl.text = "Aseos (WC)"; wl.height = h + 0.5f;
+        return r;
+    }
     // ── Estudio textil ────────────────────────────────────────────────────────────────────────────
 
     static void FurnishTextile(Transform area, Vector2 size)

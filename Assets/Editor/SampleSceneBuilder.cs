@@ -129,7 +129,7 @@ public static partial class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
-        BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet en su plataforma, junto a la cocina
+        BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
@@ -2635,7 +2635,7 @@ public static partial class SampleSceneBuilder
         GameObject area = GameObject.Find("Kitchen_Area");
         GameObject roomGO = new GameObject("Sala"); roomGO.transform.SetParent(rest);
         Transform room = roomGO.transform;
-        room.position = area != null ? area.transform.position + Vector3.up * 0.1f : new Vector3(14f, 0f, 0f);
+        room.position = area != null ? area.transform.TransformPoint(new Vector3(0f, 0.1f, -8f)) : new Vector3(14f, 0f, 0f);   // la cocina al fondo; delante, el comedor (cocina ABIERTA al público)
         if (area != null) room.rotation = area.transform.rotation * Quaternion.Euler(0f, 180f, 0f);   // el área se abre a +Z: ahí va la entrada de la sala
         if (area != null)   // la máquina de virtualización del área, a la esquina de la entrada (no en medio de un puesto)
             foreach (Transform t in area.GetComponentsInChildren<Transform>())
@@ -2736,9 +2736,10 @@ public static partial class SampleSceneBuilder
         MakeOutline(room, "Contorno S2", new Vector3(5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
 
         GourmetKitchen(room);   // aspecto de cocina abierta de restaurante gourmet
+        ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 8f + 8.4f + 1.5f));   // al pie de la escalera
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 16f + 8.4f + 1.5f));   // al pie de la escalera
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -3098,6 +3099,16 @@ public static partial class SampleSceneBuilder
         l.AddComponent<Mind>().identity = "Linduarda";
         l.AddComponent<Linduarda>();
 
+        // LIZMIBET (docs/character-irosene.md): la gran amiga de Irosene, de su misma edad (70+), llegada con ella desde
+        // Ecuador, co-abuela de Leo; también MÉDICA: atiende con Linduarda en la enfermería.
+        GameObject liz = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        liz.name = "Lizmibet"; liz.transform.SetParent(root.transform); liz.transform.position = new Vector3(10f, 1f, 8f);
+        var lr = liz.GetComponent<Renderer>(); if (lr != null) lr.sharedMaterial = MakeMaterial("Lizmibet_MAT", new Color(0.95f, 0.95f, 0.97f));
+        Anima lza = liz.AddComponent<Anima>();
+        lza.strength = 0.95f; lza.agility = 1.05f; lza.endurance = 1.2f; lza.bodyMass = 1.05f;   // activa a sus 70 y tantos
+        liz.AddComponent<Mind>().identity = "Lizmibet";
+        WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Lizmibet (médica)";
+
         GameObject wolf = LoadAnimalPrefab("Wolf");
         if (wolf != null)
         {
@@ -3132,7 +3143,7 @@ public static partial class SampleSceneBuilder
         r.SetParent(area.transform, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.name = "Suelo_Enfermeria"; floor.transform.SetParent(r, false);
-        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(17.6f, 0.04f, 13.6f);
+        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(25.6f, 0.04f, 19.6f);
         floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Enfermeria_Suelo_MAT", new Color(0.86f, 0.94f, 0.92f));
         // Franja que separa la parte humana (oeste) de la veterinaria (este).
         KitchenProps.C(r, new Vector3(0f, 0.03f, 0f), new Vector3(0.12f, 0.01f, 13.6f), new Color(0.55f, 0.75f, 0.7f), 0f, "Separacion");
@@ -3149,6 +3160,23 @@ public static partial class SampleSceneBuilder
         Label(an, "Analizador clínico (F)", 1.8f);
         KitchenProps.Sink(r, "Lavamanos", new Vector3(-8.4f, 0f, 4.6f), -90f);
 
+        // CAPACIDAD PARA 30 (residentes y turistas): sala al fondo y alas laterales con 27 camas más (30 en total), sala de
+        // espera con 10 sillas junto a la entrada y aseos.
+        Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
+        int bed = 4;
+        for (int i = 0; i < 14; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.7f + i * 1.8f, 0f, -8.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 6; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.8f, 0f, -6f + i * 2f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 7; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(11.8f, 0f, -6f + i * 2f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(4.3f, 0f, 7.8f));   // a un lado de la entrada (no la tapa)
+        for (int i = 0; i < 10; i++)
+        {
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.45f, (i / 5) * 1.2f), new Vector3(0.5f, 0.08f, 0.5f), new Color(0.45f, 0.62f, 0.72f), 0f, "Silla");
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.75f, (i / 5) * 1.2f + 0.24f), new Vector3(0.5f, 0.55f, 0.06f), new Color(0.45f, 0.62f, 0.72f), 0f, "Respaldo");
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.22f, (i / 5) * 1.2f), new Vector3(0.06f, 0.44f, 0.06f), KitchenProps.Steel, 0f, "Pata");
+        }
+        Label(wait, "Sala de espera", 1.5f);
+        Aseos(r, new Vector3(-13f + 0.2f + 2.85f, 0f, 10f - 0.9f), 180f);
+
         Label(InfirmaryProps.VetTable(r, "Mesa veterinaria", new Vector3(3.6f, 0f, 0.4f), 90f), "Mesa veterinaria", 1.4f);
         Label(InfirmaryProps.LargeAnimalStall(r, "Cuadra", new Vector3(7f, 0f, -4.6f), 0f), "Cuadra (animales grandes)", 1.8f);
         Label(InfirmaryProps.Cages(r, "Jaulas", new Vector3(8.4f, 0f, 1.6f), 90f), "Jaulas", 1.6f);
@@ -3158,6 +3186,8 @@ public static partial class SampleSceneBuilder
         // Linduarda en su mesa; el paciente de prueba (lobo «Kushal») en la cuadra.
         GameObject l = GameObject.Find("Linduarda");
         if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-4.2f, 1f, 2.6f));
+        GameObject lz = GameObject.Find("Lizmibet");
+        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-6.5f, 1f, -6.5f));   // pasando visita en la sala
         GameObject p = GameObject.Find("Lobo_paciente");
         if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(7f, 0.15f, -4.6f));
         // Kushal (el jugador) EMPIEZA AQUÍ, junto a la primera cama: es el recién llegado.
@@ -3375,6 +3405,7 @@ public static partial class SampleSceneBuilder
         gohaMood.anchors.Add(new ThoughtAnchor("hide_pain", 0.7f, 0.005f));
         gohaMood.anchors.Add(new ThoughtAnchor("trust_joy", 0.8f, 0.001f));
         gohageneis.AddComponent<Gohageneis>();
+        gohageneis.AddComponent<CarnivoreKeeper>();   // GUARDIA: patrulla y alimenta a los carnívoros para que no cacen
         gohageneis.AddComponent<WorldCharacter>().characterName = "Gohageneis";
 
         GameObject goluis = MakePlaceholderPerson("Goluis_Post", new Vector3(-5f, 1f, -5f), new Color(0.4f, 0.4f, 0.55f));
@@ -3438,10 +3469,10 @@ public static partial class SampleSceneBuilder
         var areas = new List<SanctuaryArea>
         {
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(5f, 0f, 95f), new Vector2(20f, 16f), new Color(0.75f, 0.45f, 0.30f)),
+                new Vector3(5f, 0f, 95f), new Vector2(24f, 32f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta (fondo) + comedor para 30 (delante)
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
-                new Vector3(55f, 0f, 97f), new Vector2(18f, 14f), new Color(0.85f, 0.95f, 0.90f)),
+                new Vector3(55f, 0f, 97f), new Vector2(26f, 20f), new Color(0.85f, 0.95f, 0.90f)),   // para atender a 30 personas (turistas incluidos)
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
                 new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
@@ -3466,10 +3497,15 @@ public static partial class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f) };
+        Vector2[] sizes = { new Vector2(24f, 32f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
+        // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
+        Aseos(areas[2].transform, new Vector3(-sizes[2].x * 0.5f + 0.2f + 2.85f, 0.1f, sizes[2].y * 0.5f - 0.9f), 180f);       // sala de yoga
+        Aseos(areas[3].transform, new Vector3(-sizes[3].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[3].y * 0.5f - 0.9f), 180f, 1);    // mecánica
+        Aseos(areas[4].transform, new Vector3(-sizes[4].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[4].y * 0.5f - 0.9f), 180f, 1);    // textil
+        Aseos(areas[5].transform, new Vector3(sizes[5].x * 0.5f - 0.2f - 1.9f, 0.1f, -sizes[5].y * 0.5f + 0.9f), 0f, 1);      // laboratorio
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
         GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");

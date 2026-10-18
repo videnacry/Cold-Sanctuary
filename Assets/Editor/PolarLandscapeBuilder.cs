@@ -34,7 +34,6 @@ public static class PolarLandscapeBuilder
         ("Norte:Residencial",     -60f,   95f, 30f),
         ("Norte:Guardia",         -25f,   65f, 20f),
         ("Norte:Bosque_Comestible",-82f,  52f, 26f),
-        ("Norte:Restaurante",       5f,   70f, 16f),   // el comedor gourmet al sur de la cocina y su escalera
         // 2 · CENTRO: el hub (personajes, la Magnate, el área del huerto), el arrozal, la colonia de pingüinos y el textil.
         ("Centro:Hub",              5f,  -10f, 42f),
         ("Centro:Arrozal",        -55f,  -15f, 28f),

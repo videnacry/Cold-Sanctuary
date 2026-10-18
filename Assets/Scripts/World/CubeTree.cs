@@ -120,7 +120,7 @@ public static class CubeTree
     // paralelas (panales) separadas por un "paso de abeja"; cada lámina tiene celdillas hexagonales a ambos lados (aquí,
     // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
     // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
-    static Material _wax, _honey, _cellDark, _capped;
+    static Material _wax, _honey, _cellDark, _capped, _propolis;
     static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
     {
         var rnd = new System.Random(seed);
@@ -153,7 +153,24 @@ public static class CubeTree
                     Block(root.transform, "Celdilla", new Vector3(x + side * 0.027f, y, z), new Vector3(0.012f, cell * 0.78f, cell * 0.78f), Quaternion.Euler(30f, 0f, 0f), cap ? capped : dark, false);
                 }
         }
-        Block(root.transform, "Piquera", new Vector3(0f, -h - 0.02f, 0f), new Vector3(0.3f, 0.06f, 0.18f), Quaternion.identity, dark, false);
+        Block(root.transform, "Piquera", new Vector3(0f, -0.95f + 0.08f - 0.04f, 0f), new Vector3(0.22f, 0.02f, 0.22f), Quaternion.identity, dark, false);   // la ABERTURA (entrada y salida)
+        // CAVIDAD que protege el panal (como el hueco de un árbol donde anidan las abejas melíferas): paredes de corteza
+        // alrededor de las láminas, techo pegado a la rama y suelo con UNA sola abertura (la piquera) por donde entran y
+        // salen. Las abejas sellan las rendijas con propóleo; dentro mantienen la cría a ~35 °C aunque fuera hiele.
+        Material barkM = Mat(ref _bark, new Color(0.55f, 0.72f, 0.80f));
+        Material prop = Mat(ref _propolis, new Color(0.4f, 0.26f, 0.12f));
+        float cw = 0.95f, cd = 1.05f, ch = 0.95f, wall = 0.08f;
+        Block(root.transform, "Cavidad", new Vector3(0f, 0.12f, 0f), new Vector3(cw + wall * 2f, 0.1f, cd + wall * 2f), Quaternion.identity, barkM, false);   // techo
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Block(root.transform, "Cavidad", new Vector3(s * (cw * 0.5f + wall * 0.5f), -ch * 0.5f + 0.08f, 0f), new Vector3(wall, ch, cd + wall * 2f), Quaternion.identity, barkM, false);   // laterales
+            Block(root.transform, "Cavidad", new Vector3(0f, -ch * 0.5f + 0.08f, s * (cd * 0.5f + wall * 0.5f)), new Vector3(cw, ch, wall), Quaternion.identity, barkM, false);              // delante / detrás
+        }
+        float floorY = -ch + 0.08f - wall * 0.5f, hole = 0.28f;
+        Block(root.transform, "Cavidad", new Vector3(0f, floorY, -(hole * 0.5f + (cd * 0.5f - hole * 0.5f) * 0.5f) - 0.02f), new Vector3(cw, wall, cd * 0.5f - hole * 0.5f + 0.04f), Quaternion.identity, barkM, false);   // suelo (atrás)
+        Block(root.transform, "Cavidad", new Vector3(0f, floorY, hole * 0.5f + (cd * 0.5f - hole * 0.5f) * 0.5f + 0.02f), new Vector3(cw, wall, cd * 0.5f - hole * 0.5f + 0.04f), Quaternion.identity, barkM, false);    // suelo (delante)
+        for (int s = -1; s <= 1; s += 2) Block(root.transform, "Cavidad", new Vector3(s * (hole * 0.5f + (cw * 0.5f - hole * 0.5f) * 0.5f + 0.01f), floorY, 0f), new Vector3(cw * 0.5f - hole * 0.5f, wall, hole), Quaternion.identity, barkM, false);
+        Block(root.transform, "Propoleo", new Vector3(0f, floorY - wall * 0.5f - 0.005f, 0f), new Vector3(hole + 0.06f, 0.01f, hole + 0.06f), Quaternion.identity, prop, false);   // borde de propóleo de la piquera
         root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)

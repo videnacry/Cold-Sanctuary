@@ -94,7 +94,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
     public static void Characters()
     {
-        string[] names = { "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene" };
+        string[] names = { "Player", "Magnate", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene" };
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
         Directory.CreateDirectory(dir);
         Scene scene = EditorSceneManager.NewPreviewScene();
@@ -180,7 +180,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas", "Estatuas", "Comedor_Gourmet", "Sala", "Estudio_Textil" }) Snapshot(n);
+        foreach (string n in new[] { "Kitchen_Area", "Infirmary_Area", "Nido_Abejas", "Aseos" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)

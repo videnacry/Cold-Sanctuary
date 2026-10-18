@@ -28,6 +28,9 @@ public class GardenCrop : MonoBehaviour
         Limon, Lima, Naranja, Mango, Guanabana, Almendro, Olivo, Cacao, Canela, Laurel,
         // palmeras, enredadera, fibra, hongo y alga
         Coco, Datil, Pimienta, Lino, Shiitake, Alga,
+        // ampliación para la carta del restaurante (docs/cocina-profesional.md)
+        Trigo, MaizMorado, Haba, Arveja, Melloco, Papa, Perejil, Romero, Azafran, Achiote, Sesamo, Wasabi, Pepino,
+        Frutilla, Hierbaluisa, Cedron, Cana, Naranjilla, Mortino, Babaco, Clavo, Cafe, Aguacate,
     }
 
     public Kind kind;
@@ -49,6 +52,8 @@ public class GardenCrop : MonoBehaviour
         { Kind.Maiz, "maíz" }, { Kind.Caupi, "caupí" }, { Kind.Mani, "maní" }, { Kind.Cebollin, "cebollín" }, { Kind.Curcuma, "cúrcuma" },
         { Kind.Sandia, "sandía" }, { Kind.Pina, "piña" }, { Kind.Limon, "limón" }, { Kind.Guanabana, "guanábana" }, { Kind.Datil, "dátil" },
         { Kind.Lenteja, "lenteja" }, { Kind.Frijol, "frijol" },
+        { Kind.MaizMorado, "maíz morado" }, { Kind.Azafran, "azafrán" }, { Kind.Sesamo, "sésamo" }, { Kind.Cana, "caña de azúcar" },
+        { Kind.Mortino, "mortiño" }, { Kind.Cedron, "cedrón" }, { Kind.Cafe, "café" },
     };
 
     void Awake() { _fullScale = transform.localScale; }
@@ -114,7 +119,7 @@ public class GardenCrop : MonoBehaviour
         return best;
     }
 
-    public static bool IsTree(Kind k) => k >= Kind.Limon && k <= Kind.Datil;
+    public static bool IsTree(Kind k) => (k >= Kind.Limon && k <= Kind.Datil) || k == Kind.Babaco || k == Kind.Clavo || k == Kind.Cafe || k == Kind.Aguacate;
 
     // ── Construcción por bloques fusionados ─────────────────────────────────────────────────────
 
@@ -257,6 +262,30 @@ public class GardenCrop : MonoBehaviour
             case Kind.Lino:      Flax(); break;
             case Kind.Shiitake:  MushroomLog(); break;
             case Kind.Alga:      Seaweed(); break;
+
+            case Kind.Trigo:     Cereal(12, 0.9f, 1.1f, Hex("F0D98C"), true); break;
+            case Kind.MaizMorado: Maize(); break;
+            case Kind.Haba:      LegumeBush(0.7f, 0.5f, Hex("B5D9A0"), Hex("F2F2F2")); break;
+            case Kind.Arveja:    PoleVine(1.3f, Hex("BFE3A8"), Hex("F3E2F0")); break;
+            case Kind.Melloco:   Rosette(6, 0.18f, 0.3f, 0.04f, LeafDeep, Hex("F6E58A")); break;
+            case Kind.Papa:      LegumeBush(0.6f, 0.6f, Leaf, Hex("EAD9F2")); break;
+            case Kind.Perejil:   Herb(0.3f, Hex("A3D6A0"), LeafPale, true); break;
+            case Kind.Romero:    Herb(0.7f, Hex("A9C4B0"), Hex("D9D4F2"), false); break;
+            case Kind.Azafran:   Allium(Hex("D8C6EE"), 0.05f, 0.25f); break;
+            case Kind.Achiote:   FruitBush(1.6f, Hex("F2A08C"), 0.1f, false); break;
+            case Kind.Sesamo:    Plume(4, 0.8f, 1.2f, Hex("F4EBD8")); break;
+            case Kind.Wasabi:    Rosette(5, 0.25f, 0.3f, 0.05f, Leaf, LeafPale); break;
+            case Kind.Pepino:    GroundVine(Hex("C2E3A8"), 0.25f); break;
+            case Kind.Frutilla:  Rosette(6, 0.16f, 0.2f, 0.03f, Leaf, Hex("F7A3A8")); break;
+            case Kind.Hierbaluisa: Herb(1.0f, Hex("B8DCA6"), Hex("F0EAF7"), false); break;
+            case Kind.Cedron:    Herb(1.1f, Hex("B0D3A0"), White, false); break;
+            case Kind.Cana:      Cereal(6, 1.8f, 2.6f, Hex("D6E3A8"), false); break;
+            case Kind.Naranjilla: FruitBush(1.4f, Hex("F8C98A"), 0.12f, false); break;
+            case Kind.Mortino:   FruitBush(0.6f, Hex("B9B3E8"), 0.04f, false, true); break;
+            case Kind.Babaco:    FruitTree(2.2f, 1.2f, Leaf, Hex("F4EBA0"), 0.2f); break;
+            case Kind.Clavo:     FruitTree(4.5f, 2.2f, LeafDeep, Hex("F2C2B0"), 0.03f); break;
+            case Kind.Cafe:      FruitTree(2.4f, 1.8f, LeafDeep, Hex("F2A3A0"), 0.05f); break;
+            case Kind.Aguacate:  FruitTree(5.0f, 3.4f, LeafDeep, Hex("B9D49A"), 0.14f); break;
         }
     }
 

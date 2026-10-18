@@ -81,10 +81,11 @@ public class Forager : MonoBehaviour
         GameObject meat = null;
         if (eatsPrey)
         {
-            float md = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception) * 1.5f;
+            float md = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);   // la que percibe (la que le acercan los guardias)
             foreach (GameObject g in FoodItem.GetPopulation(OrganicMaterial.Meat))
                 if (g != null && g.activeInHierarchy) { float d = Vector3.Distance(pos, g.transform.position); if (d < md) { md = d; meat = g; } }
         }
+        if (meat != null) return meat;   // una ración servida es comida «gratis»: el oportunista la prefiere a cazar (por eso los guardias se la acercan)
         return Nearest(pos, prey, grass, fish, krill, meat);
     }
 
