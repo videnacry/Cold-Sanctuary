@@ -13,13 +13,11 @@ public static class ResidentialBuilder
 
     public static readonly string[] Owners =
     {
-        "Player", "Magnate", "Linduarda", "Maestra", "Goluis", "Panterilia", "Gohageneis", "Irosene",
-        "Cocinero_1", "Cocinero_2", "Cocinero_3", "Cocinero_4",
+        "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene",   // solo personajes del juego
     };
     static readonly string[] Shown =
     {
-        "Kushal", "la Magnate", "Linduarda", "la Maestra", "Goluis", "Panterilia", "Gohageneis", "Irosene",
-        "Cocinero 1", "Cocinero 2", "Cocinero 3", "Cocinero 4",
+        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene",
     };
 
     public static Transform Build(Transform parent, Vector3 center)
@@ -99,9 +97,9 @@ public static class ResidentialBuilder
         KitchenProps.C(t, new Vector3(1.6f, 1.2f, 1.75f), new Vector3(1f, 0.05f, 0.35f), WoodDark, 0f, "Estante");
         KitchenProps.C(t, new Vector3(1.4f, 1.33f, 1.75f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.8f, 0.6f, 0.5f), 0f, "Libros");
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
-        room.owner = Owners[ownerIdx % Owners.Length];
+        room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.bed = bed;
-        WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = $"Habitación de {Shown[ownerIdx % Shown.Length]}"; wl.height = h + 1.2f;
+        WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = h + 1.2f;
         return t;
     }
 

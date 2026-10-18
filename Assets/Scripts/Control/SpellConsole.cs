@@ -677,7 +677,8 @@ public class SpellConsole : MonoBehaviour
     {
         foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
         {
-            if (filter == null ? (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) : a.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) < 0) continue;
+            bool human = !(a is Animal) && a.GetComponent<PlayableCreature>() == null;
+            if (filter == "humanos" ? !human : filter == null ? (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) : a.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) < 0) continue;
             Vector3 p = a.transform.position;
             string below = Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, out RaycastHit h, 60f, ~0, QueryTriggerInteraction.Ignore)
                 ? $"{p.y - h.point.y:0.0} m sobre {h.collider.name}" : "nada debajo";

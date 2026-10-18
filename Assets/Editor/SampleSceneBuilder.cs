@@ -2672,15 +2672,8 @@ public static class SampleSceneBuilder
             board.SetParent(counter, true); bowl.SetParent(counter, true);
             foreach (Transform t in new[] { stove, pan, pot, board, bowl }) if (t.GetComponent<WorldLabel>() == null) { WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = t.name; wl.height = 0.5f; }
 
-            // El cocinero de este puesto (humano de cubos con delantal; lo viste DressHumanoids).
-            GameObject cook = MakeKitchenPerson(rest, $"Cocinero_{n}", room.TransformPoint(new Vector3(x + 0.4f, 1f, 5.9f)), aprons[i]);
-            cook.AddComponent<Anima>();
-            cook.AddComponent<CharacterLevel>();
-            CookingStation cs = cook.AddComponent<CookingStation>();
-            cs.kitchen = kitchen; cs.playerDriven = false; cs.externallyDriven = true;
-            KitchenCook kc = cook.AddComponent<KitchenCook>();
-            kc.stove = stove; kc.pan = pan; kc.pot = pot; kc.board = board; kc.bowl = bowl; kc.sink = sink;
-            cooks.Add(kc);
+            // Sin cocineros genéricos: en la cocina trabajan los PERSONAJES del juego (Goluis, jefe de cocina, y los
+            // recién llegados como Kushal, que aprenden aquí un oficio). Los puestos quedan libres para ellos.
         }
 
         // ── Encimera de ingredientes (pared oeste) con los ingredientes de siempre, ahora reconocibles ──
@@ -2795,13 +2788,13 @@ public static class SampleSceneBuilder
     // GOLUIS en la cocina: jefe que inicia a los recién llegados (los hace seguirlo y les enseña limpiar + recetas base).
     static void BuildGoluisKitchen(Transform parent)
     {
-        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        g.name = "Goluis"; g.transform.SetParent(parent); g.transform.position = new Vector3(20f, 1f, 13f);   // junto a las estaciones de cocina
-        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Goluis_MAT", new Color(0.75f, 0.85f, 0.7f));
-        g.AddComponent<Anima>();
-        g.AddComponent<Mind>().identity = "Goluis";
-        g.AddComponent<KitchenBoss>();
-        g.AddComponent<WorldLabel>().text = "Goluis (jefe de cocina)";
+        // Un solo Goluis: el personaje (con alma, mente y ánimo) es también el jefe de cocina. Antes había otro Goluis
+        // (una cápsula) solo para la cocina: dos humanos con el mismo nombre.
+        GameObject g = GameObject.Find("Goluis_Post");
+        if (g == null) { Debug.LogWarning("[Cocina] sin Goluis_Post: la cocina se queda sin jefe."); return; }
+        if (g.GetComponent<KitchenBoss>() == null) g.AddComponent<KitchenBoss>();
+        WorldLabel wl = g.GetOrAdd<WorldLabel>();
+        wl.text = "Goluis (jefe de cocina)";
     }
 
     // LA MAGNATE en el santuario: cápsula visual + Anima + Mind("Magnate") + Magnate (estado infinito/guardiana).
@@ -3354,16 +3347,7 @@ public static class SampleSceneBuilder
         GameObject charactersGroup = new GameObject("Characters_Placed");
         charactersGroup.transform.SetParent(parent);
 
-        GameObject maestraAsset = LoadAndImport($"{CharactersRoot}/Maestra/Models/Maestra.fbx");
-        GameObject maestra = maestraAsset != null
-            ? (GameObject)PrefabUtility.InstantiatePrefab(maestraAsset, charactersGroup.transform)
-            : MakePlaceholderPerson("Maestra_Post", new Vector3(38f, 1f, -14f), new Color(0.9f, 0.8f, 0.4f));
-        maestra.name = "Maestra_Post";
-        maestra.transform.SetParent(charactersGroup.transform);
-        maestra.transform.position = new Vector3(38f, 0f, -14f);   // dentro de la isla del hub
-        maestra.AddComponent<MaestraTeacher>().teacherName = "Maestra";
-        WorldCharacter magnateWC = maestra.AddComponent<WorldCharacter>();
-        magnateWC.characterName = "Maestra";
+        // (Ya no hay «Maestra_Post»: era un humano de más. La maestra del santuario ES la Magnate; ver BuildMagnate.)
 
         // Compañeros POR COMPOSICIÓN (fase 5, CompanionBase retirado): Anima + SoulComposition(arquetipo) +
         // Mind + MoodState(curvas+anchors) + su componente de comportamiento propio.
@@ -3414,9 +3398,6 @@ public static class SampleSceneBuilder
         irosene.AddComponent<Irosene>();
         irosene.AddComponent<WorldCharacter>().characterName = "Irosene";
 
-        // The Magnate (Maestra) is the SanctuaryDirector's arrival gatekeeper.
-        SanctuaryDirector director = parent.GetComponentInChildren<SanctuaryDirector>();
-        if (director != null) director.magnateCharacter = magnateWC;
     }
 
     // ── Buildings ────────────────────────────────────────────────────────────
