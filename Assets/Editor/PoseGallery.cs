@@ -107,6 +107,7 @@ public static class PoseGallery
             SceneManager.MoveGameObjectToScene(camGO, scene);
             int w = 220, h = 460; var rt = new RenderTexture(w, h, 24); cam.targetTexture = rt;
             var tex = new Texture2D(w * names.Length, h * 2, TextureFormat.RGB24, false);
+            int fw = 260; var frt = new RenderTexture(fw, fw, 24); var faces = new Texture2D(fw * names.Length, fw, TextureFormat.RGB24, false);
             for (int i = 0; i < names.Length; i++)
             {
                 var who = new GameObject(names[i]); SceneManager.MoveGameObjectToScene(who, scene);
@@ -119,10 +120,23 @@ public static class PoseGallery
                     cam.Render(); RenderTexture.active = rt;
                     tex.ReadPixels(new Rect(0, 0, w, h), i * w, (1 - v) * h);
                 }
+                // PRIMER PLANO de la cara (a la altura de los ojos de cada uno).
+                Transform headBone = null;
+                foreach (CubeJoint j in who.GetComponentsInChildren<CubeJoint>()) if (j.part == BodyPart.Head) headBone = j.transform;
+                if (headBone != null)
+                {
+                    Vector3 hc = headBone.TransformPoint(new Vector3(0f, 0.12f, 0f));
+                    cam.targetTexture = frt; cam.fieldOfView = 30f;
+                    cam.transform.position = hc + new Vector3(0.25f, 0.05f, 0.95f); cam.transform.LookAt(hc);
+                    cam.Render(); RenderTexture.active = frt;
+                    faces.ReadPixels(new Rect(0, 0, fw, fw), i * fw, 0);
+                    cam.targetTexture = rt; cam.fieldOfView = 30f;
+                }
                 Object.DestroyImmediate(who);
             }
             tex.Apply(); RenderTexture.active = null;
             File.WriteAllBytes(Path.Combine(dir, "Personajes.png"), tex.EncodeToPNG());
+            faces.Apply(); File.WriteAllBytes(Path.Combine(dir, "Caras.png"), faces.EncodeToPNG()); Object.DestroyImmediate(faces); frt.Release();
             Object.DestroyImmediate(tex); rt.Release();
             Debug.Log($"[Personajes] retratos en Temp/PoseGallery/Personajes.png: {string.Join(", ", names)}");
         }
@@ -156,7 +170,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas" }) Snapshot(n);
+        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas", "Estatuas" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)

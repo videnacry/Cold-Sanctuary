@@ -678,12 +678,14 @@ public class SpellConsole : MonoBehaviour
         foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
         {
             bool human = !(a is Animal) && a.GetComponent<PlayableCreature>() == null;
-            if (filter == "humanos" ? !human : filter == null ? (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) : a.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) < 0) continue;
+            if (filter == "humanos" || filter == "cuerpos" ? !human : filter == null ? (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) : a.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) < 0) continue;
             Vector3 p = a.transform.position;
             string below = Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, out RaycastHit h, 60f, ~0, QueryTriggerInteraction.Ignore)
                 ? $"{p.y - h.point.y:0.0} m sobre {h.collider.name}" : "nada debajo";
             var cc = a.GetComponent<CharacterController>(); var nav = a.GetComponent<UnityEngine.AI.NavMeshAgent>();
             Log($"  {a.name} ({p.x:0.0}, {p.y:0.0}, {p.z:0.0}) {below} · cc={(cc != null ? cc.enabled.ToString() : "-")} nav={(nav != null ? (nav.enabled ? (nav.isOnNavMesh ? "on" : "OFF-mesh") : "off") : "-")}");
+            if (filter == "cuerpos" || filter == "humanos") { BodyShape bs = a.GetComponent<BodyShape>(); Log($"    stats fuerza {a.strength:0.00} agilidad {a.agility:0.00} resistencia {a.endurance:0.00} masa {a.bodyMass:0.00} → {(bs != null ? $"estatura ×{bs.Height:0.00} músculo {bs.Muscle:0.00} grasa {bs.Fat:0.00}" : "SIN BodyShape")}"); }
+            if (a.TryGetComponent(out IceInsectLife ins)) Log($"    insecto: {ins.kind} reina={ins.isQueen} edad={ins.ageDays:0.0} días · {ins.Doing} · colmena {(ins.hive != null ? ins.hive.transform.position.ToString("0") : "—")}");
         }
     }
 

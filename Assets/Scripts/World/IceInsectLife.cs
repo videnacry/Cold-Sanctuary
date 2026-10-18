@@ -15,6 +15,15 @@ public class IceInsectLife : MonoBehaviour
     public Kind kind = Kind.Bee;
     public float flySpeed = 3f;
 
+    // COLONIA (plantilla de la abeja como anima compuesta: su oficio cambia con la EDAD, como en Apis mellifera).
+    public enum Role { Reina, Limpiadora, Nodriza, Procesadora, Guardiana, Pecoreadora }
+    public Hive hive;
+    public bool isQueen;
+    public float ageDays = -1f;   // -1 = se reparte al empezar (la colonia tiene abejas de todas las edades)
+    public Role role { get; private set; }
+    int _cell = -1; float _work; Vector3 _source; bool _dancing; float _danceT; float _loadNectar;
+    public string Doing { get; private set; } = "";
+
     Animal _self;
     IceCarnivorousTree _home;
     Transform _nest;
@@ -29,10 +38,20 @@ public class IceInsectLife : MonoBehaviour
         _self = GetComponent<Animal>();
         UnityEngine.AI.NavMeshAgent nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (nav != null) nav.enabled = false;   // vuela / trepa: no anda por el NavMesh
+        if (TryGetComponent(out Rigidbody rb)) { rb.isKinematic = true; rb.useGravity = false; }   // vuela: la gravedad no la arrastra
         _home = Nearest<IceCarnivorousTree>(transform.position, 200f);
         if (_home != null)
         {
             foreach (Transform t in _home.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Nido_Abejas")) { _nest = t; break; }
+            if (_nest != null && hive == null) hive = _nest.GetComponent<Hive>();
+            if (kind == Kind.Bee && hive != null && ageDays < 0f)
+            {
+                // La primera abeja de cada colmena es la REINA; las demás, obreras de edades repartidas.
+                bool hasQueen = false;
+                foreach (IceInsectLife o in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (o != this && o.hive == hive && o.isQueen) hasQueen = true;
+                isQueen = !hasQueen;
+                ageDays = isQueen ? 30f : Random.Range(0f, 30f);
+            }
             Bounds b = TreeBounds(_home.transform);
             _radius = Mathf.Clamp(b.extents.x, 4f, 12f);
             if (kind == Kind.Spider)   // puesto de acecho: en el tronco, a media altura
@@ -47,18 +66,21 @@ public class IceInsectLife : MonoBehaviour
 
     // El cuerpo de cubos ya está a su tamaño real modificado (20–30 cm); las etapas de vida del insecto (pensadas para la
     // escala del microcosmos) lo dejaban en ~0. Se mantiene a escala 1.
-    void LateUpdate() { if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one; }
-
-    void Update()
+    // Se mueve en LateUpdate, DESPUÉS de la IA genérica del animal (merodeo de LifeStage/voluntad), que también empujaba
+    // su transform y la alejaba del panal: el insecto vuela por su cuenta.
+    void LateUpdate()
     {
+        if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
         if (_self != null && _self.death) return;
         if (kind == Kind.Bee) BeeLife(); else SpiderLife();
     }
+
 
     // ── Abeja ───────────────────────────────────────────────────────────────────────────────────
 
     void BeeLife()
     {
+        if (hive != null) { ColonyLife(); return; }
         if (_home == null) return;
         SnowSpiderBehavior spider = Nearest<SnowSpiderBehavior>(transform.position, 1.5f);
         if (spider != null) { FlyTo(transform.position + (transform.position - spider.transform.position).normalized * 3f + Vector3.up * 2f, flySpeed * 1.8f); return; }
@@ -95,6 +117,121 @@ public class IceInsectLife : MonoBehaviour
         FlyTo(target, flySpeed * 0.7f);
     }
 
+
+    // ── Colonia: el panal trabajado como en la vida real ──────────────────────────────────────────
+    // Oficio por EDAD (polietismo): 0–3 días limpiadora · 3–10 nodriza (alimenta larvas con miel y polen) · 10–18
+    // procesadora (recibe el néctar, lo abanica hasta hacerlo miel y la opercula; también fabrica cera) · 18–21 guardiana
+    // de la piquera · 21+ pecoreadora (sale a por néctar y polen, vuelve, BAILA la danza del contoneo sobre el panal —el
+    // ángulo dice la dirección de la fuente respecto al sol— y descarga el néctar en una celdilla de arriba).
+    // La REINA recorre el panal poniendo un huevo en cada celdilla limpia. De noche o con frío todas forman el RACIMO
+    // sobre el panal y tiritan para mantener la cría a ~35 °C (gastan miel).
+    void ColonyLife()
+    {
+        float daysPerSec = 1f / Mathf.Max(0.1f, hive.secondsPerDay);
+        ageDays += Time.deltaTime * daysPerSec;
+        role = isQueen ? Role.Reina : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
+        if (isQueen && transform.localScale.x < 1.3f) transform.localScale = Vector3.one * 1.35f;   // la reina, más larga
+
+        SnowSpiderBehavior spider = Nearest<SnowSpiderBehavior>(transform.position, 1.5f);
+        if (spider != null && role != Role.Guardiana) { Doing = "huye de la araña"; FlyTo(transform.position + (transform.position - spider.transform.position).normalized * 3f + Vector3.up * 2f, flySpeed * 1.8f); return; }
+
+        bool day = TimeController.timeController == null || TimeController.timeController.IsDay;
+        Doing = role.ToString();
+        if (!day)   // RACIMO de invierno/noche sobre el panal: tiritan y comen miel
+        {
+            Vector3 spot = hive.combCenter + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 0.25f;
+            FlyTo(spot, flySpeed);
+            hive.Eat(0.02f * Time.deltaTime);
+            return;
+        }
+
+        switch (role)
+        {
+            case Role.Reina:
+                if (Work(Hive.Cell.Empty, false, 1.5f)) { hive.Set(_cell, Hive.Cell.Egg); _cell = -1; }
+                break;
+            case Role.Limpiadora:
+                if (Work(Hive.Cell.Dirty, false, 2f)) { hive.Set(_cell, Hive.Cell.Empty); _cell = -1; }
+                else if (_cell < 0) Hover(0.35f);
+                break;
+            case Role.Nodriza:
+                if (Work(Hive.Cell.Larva, false, 1.2f))
+                {
+                    hive.Eat(0.5f);   // jalea / pan de abeja para la larva
+                    if (hive.Since(_cell) >= 6f) hive.Set(_cell, Hive.Cell.CappedBrood);   // a los 6 días de larva, opercula la celdilla
+                    _cell = -1;
+                }
+                else if (_cell < 0) Hover(0.35f);
+                break;
+            case Role.Procesadora:
+                if (Work(Hive.Cell.Nectar, true, 4f)) { hive.Set(_cell, Hive.Cell.Honey); hive.AddHoney(2f); _cell = -1; Debug.Log("[Colmena] el néctar, abanicado y deshidratado, ya es miel: celdilla operculada."); }
+                else if (_cell < 0) Hover(0.35f);
+                break;
+            case Role.Guardiana:
+                Vector3 gate = hive.entrance != null ? hive.entrance.position + Vector3.down * 0.15f : hive.combCenter + Vector3.down * 0.5f;
+                if (spider != null) FlyTo(spider.transform.position, flySpeed * 1.5f);   // planta cara a la araña
+                else FlyTo(gate + new Vector3(Mathf.Sin(Time.time * 2f + _angle) * 0.25f, 0f, Mathf.Cos(Time.time * 2f + _angle) * 0.25f), flySpeed * 0.5f);
+                break;
+            default: Forage(); break;
+        }
+    }
+
+    // Va a una celdilla en ese estado y trabaja ahí <paramref name="seconds"/> s; true al terminar.
+    bool Work(Hive.Cell need, bool top, float seconds)
+    {
+        if (_cell < 0 || _cell >= hive.state.Count || hive.state[_cell] != need) { _cell = hive.Find(need, transform.position, top); _work = 0f; }
+        if (_cell < 0) return false;
+        Vector3 perch = hive.Perch(_cell);
+        float dd = FlyTo(perch, Vector3.Distance(transform.position, perch) > 1.5f ? flySpeed * 1.5f : flySpeed * 0.6f); Doing = $"{role} → celdilla {_cell} a {dd:0.0} m";
+        if (dd > 0.08f) return false;
+        _work += Time.deltaTime;
+        transform.rotation = Quaternion.LookRotation(hive.cells[_cell].position - transform.position);
+        return _work >= seconds;
+    }
+
+    void Hover(float r)
+    {
+        _angle += 40f * Time.deltaTime;
+        FlyTo(hive.combCenter + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * r, flySpeed * 0.4f);
+    }
+
+    void Forage()
+    {
+        if (_dancing)   // DANZA DEL CONTONEO sobre el panal: recto contoneándose (ángulo = dirección de la fuente) y vuelta
+        {
+            _danceT += Time.deltaTime;
+            Vector3 dir = _source - hive.transform.position; dir.y = 0f; dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.forward;
+            float phase = _danceT % 2f;
+            Vector3 c = hive.combCenter;
+            Vector3 p = phase < 1f ? c + dir * (phase - 0.5f) * 0.3f + Vector3.Cross(Vector3.up, dir) * Mathf.Sin(_danceT * 40f) * 0.03f
+                                   : c + Quaternion.Euler(0f, 180f * (phase - 1f) * ((int)(_danceT / 2f) % 2 == 0 ? 1f : -1f), 0f) * dir * 0.15f;
+            transform.position = Vector3.Lerp(transform.position, p, 10f * Time.deltaTime);
+            if (_danceT >= 6f)
+            {
+                _dancing = false;
+                Debug.Log($"[Colmena] una pecoreadora baila la danza del contoneo: fuente a {Vector3.Distance(_source, hive.transform.position):0} m hacia {(dir.x >= 0 ? "el este" : "el oeste")}.");
+            }
+            return;
+        }
+        if (_loadNectar > 0f)   // de vuelta: descarga el néctar en una celdilla de arriba
+        {
+            if (Work(Hive.Cell.Empty, true, 1f)) { hive.Set(_cell, Hive.Cell.Nectar); _cell = -1; _loadNectar = 0f; }
+            else if (_cell < 0) { _loadNectar = 0f; }   // panal lleno: se lo dan a una procesadora (aquí, se pierde)
+            return;
+        }
+        if (_source == Vector3.zero || Random.value < 0.0005f)
+        {
+            // Una fuente: el cadáver más cercano al árbol (nutrientes) o flores al pie de otros árboles (sotobosque).
+            if ((_carcass == null || !_carcass.death) && Time.time >= _nextSearch) { _nextSearch = Time.time + 2f; _carcass = NearestCarcass(); }
+            Vector2 r = Random.insideUnitCircle.normalized * Random.Range(6f, 18f);
+            _source = _carcass != null ? _carcass.transform.position : _home.transform.position + new Vector3(r.x, 0f, r.y);
+        }
+        if (FlyTo(_source + Vector3.up * 0.4f, flySpeed) < 0.5f)
+        {
+            _work += Time.deltaTime;
+            if (_work > 2.5f) { _work = 0f; _loadNectar = 1f; _dancing = true; _danceT = 0f; _cell = -1; }
+        }
+    }
     Animal NearestCarcass()
     {
         Animal best = null; float bd = 30f;

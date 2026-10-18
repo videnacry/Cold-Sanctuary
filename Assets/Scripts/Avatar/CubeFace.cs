@@ -90,7 +90,7 @@ public class CubeFace : MonoBehaviour
     /// hocico (0 = cara plana humana). Registra los huesos de la cara en el rig.
     /// </summary>
     public static CubeFace Build(Transform head, Vector3 center, Vector3 size, float snout, Color skin, Color eyeColor, CreatureRig rig,
-                                 Transform earL = null, Transform earR = null, Color? lips = null)
+                                 Transform earL = null, Transform earR = null, Color? lips = null, bool feminine = false, Color? browColor = null)
     {
         CubeFace f = head.gameObject.AddComponent<CubeFace>();
         Color dark = new Color(0.12f, 0.12f, 0.14f), white = new Color(0.97f, 0.97f, 0.95f), lip = lips ?? skin * 0.8f + new Color(0.1f, 0f, 0f, 1f);   // labios pintados si el diseño los lleva
@@ -100,20 +100,38 @@ public class CubeFace : MonoBehaviour
         for (int s = -1; s <= 1; s += 2)
         {
             Vector3 ep = new Vector3(eyeX * s, eyeY, front + 0.001f);
-            Cube(head, "Ojo", ep, new Vector3(eye, eye, eye * 0.2f), white);
-            Cube(head, "Pupila", ep + new Vector3(0f, 0f, eye * 0.12f), new Vector3(eye * 0.5f, eye * 0.55f, eye * 0.1f), eyeColor);
+            bool human = snout <= 0f;
+            if (human)
+            {
+                // OJO humano: esclerótica almendrada (más ancha que alta), iris de color con pupila y un brillo; en las
+                // mujeres del diseño, línea de pestañas/delineado arriba (sus referencias lo llevan).
+                Cube(head, "Ojo", ep, new Vector3(eye * 1.35f, eye * 0.78f, eye * 0.2f), white);
+                Cube(head, "Iris", ep + new Vector3(0f, -eye * 0.02f, eye * 0.11f), new Vector3(eye * 0.62f, eye * 0.66f, eye * 0.06f), eyeColor);
+                Cube(head, "Pupila", ep + new Vector3(0f, -eye * 0.02f, eye * 0.15f), new Vector3(eye * 0.28f, eye * 0.3f, eye * 0.04f), dark);
+                Cube(head, "Brillo", ep + new Vector3(eye * 0.12f * s, eye * 0.12f, eye * 0.18f), new Vector3(eye * 0.12f, eye * 0.12f, eye * 0.02f), white);
+                if (feminine) Cube(head, "Pestanas", ep + new Vector3(eye * 0.1f * s, eye * 0.4f, eye * 0.16f), new Vector3(eye * 1.5f, eye * 0.12f, eye * 0.05f), dark);
+            }
+            else
+            {
+                Cube(head, "Ojo", ep, new Vector3(eye, eye, eye * 0.2f), white);
+                Cube(head, "Pupila", ep + new Vector3(0f, 0f, eye * 0.12f), new Vector3(eye * 0.5f, eye * 0.55f, eye * 0.1f), eyeColor);
+            }
             // Párpado: pivote arriba del ojo; escalar su Y lo baja (cerrar) sin moverse de sitio.
             Transform lid = Pivot(head, s < 0 ? "Parpado_L" : "Parpado_R", ep + new Vector3(0f, eye * 0.5f, eye * 0.18f));
             Cube(lid, "Parpado", new Vector3(0f, -0.5f, 0f), new Vector3(1f, 1f, 1f), skin * 0.92f + new Color(0, 0, 0, 1));
             lid.localScale = new Vector3(eye * 1.15f, eye * 0.75f, eye * 0.12f);
             Transform brow = Pivot(head, s < 0 ? "Ceja_L" : "Ceja_R", new Vector3(eyeX * s, eyeY + eye * 0.85f, front + 0.005f));
-            Cube(brow, "Ceja", Vector3.zero, new Vector3(eye * 1.3f, eye * 0.22f, eye * 0.18f), dark);
+            Color bc = browColor ?? dark;
+            Transform b = Cube(brow, "Ceja", Vector3.zero, new Vector3(eye * 1.4f, eye * (feminine ? 0.16f : 0.26f), eye * 0.18f), bc);
+            if (feminine) b.localRotation = Quaternion.Euler(0f, 0f, -s * 8f);   // ceja arqueada
             if (s < 0) { f.lidL = lid; f.browL = brow; } else { f.lidR = lid; f.browR = brow; }
             f._browBaseY = brow.localPosition.y;
             Bind(rig, s < 0 ? BodyPart.EyelidLeft : BodyPart.EyelidRight, lid);
             Bind(rig, s < 0 ? BodyPart.BrowLeft : BodyPart.BrowRight, brow);
         }
         f._lidScale = f.lidL.localScale;
+        // Ojos ABIERTOS desde el principio (el párpado entero los tapaba hasta que corría el primer fotograma).
+        foreach (Transform l in new[] { f.lidL, f.lidR }) if (l != null) l.localScale = new Vector3(f._lidScale.x, f._lidScale.y * 0.4f, f._lidScale.z);
 
         // Hocico (animales) o nariz (humanos), boca con comisuras y mandíbula articulada.
         float mouthY = center.y - size.y * 0.28f;
@@ -126,12 +144,30 @@ public class CubeFace : MonoBehaviour
             Bind(rig, BodyPart.Snout, sn);
             mz = front + snout * 0.9f;
         }
-        else Cube(head, "Nariz", new Vector3(0f, center.y - size.y * 0.05f, front + size.z * 0.05f), new Vector3(size.x * 0.12f, size.y * 0.16f, size.z * 0.12f), skin * 0.95f + new Color(0, 0, 0, 1));
+        else
+        {
+            // NARIZ: tabique, punta y aletas con los orificios; MEJILLAS algo sonrosadas; OREJAS a los lados; MENTÓN.
+            Color nose = skin * 0.95f + new Color(0, 0, 0, 1);
+            Cube(head, "Tabique", new Vector3(0f, center.y + size.y * 0.02f, front + size.z * 0.03f), new Vector3(size.x * 0.09f, size.y * 0.2f, size.z * 0.06f), nose);
+            Cube(head, "Nariz", new Vector3(0f, center.y - size.y * 0.09f, front + size.z * 0.07f), new Vector3(size.x * 0.16f, size.y * 0.08f, size.z * 0.1f), nose);
+            for (int s = -1; s <= 1; s += 2)
+            {
+                Cube(head, "Orificio", new Vector3(s * size.x * 0.035f, center.y - size.y * 0.13f, front + size.z * 0.08f), new Vector3(size.x * 0.03f, size.y * 0.015f, size.z * 0.04f), skin * 0.55f + new Color(0, 0, 0, 1));
+                Cube(head, "Mejilla", new Vector3(s * size.x * 0.3f, center.y - size.y * 0.05f, front + 0.001f), new Vector3(size.x * 0.14f, size.y * 0.08f, 0.004f), Color.Lerp(skin, new Color(0.9f, 0.45f, 0.45f), 0.25f));
+                Cube(head, "Oreja", new Vector3(s * (size.x * 0.5f + 0.012f), center.y + size.y * 0.02f, center.z - size.z * 0.05f), new Vector3(0.025f, size.y * 0.3f, size.z * 0.22f), skin * 0.95f + new Color(0, 0, 0, 1));
+            }
+            Cube(head, "Menton", new Vector3(0f, center.y - size.y * 0.47f, front - size.z * 0.12f), new Vector3(size.x * 0.4f, size.y * 0.08f, size.z * 0.3f), skin);
+        }
 
         Transform jaw = Pivot(head, "Mandibula", new Vector3(0f, mouthY, front - size.z * 0.35f));
         float jawLen = (mz - (front - size.z * 0.35f));
         Cube(jaw, "Mandibula", new Vector3(0f, -size.y * 0.06f, jawLen * 0.5f), new Vector3(size.x * (snout > 0f ? 0.5f : 0.7f), size.y * 0.12f, jawLen), skin);
         Cube(jaw, "Boca", new Vector3(0f, size.y * 0.005f, jawLen - 0.002f), new Vector3(size.x * 0.34f, size.y * 0.035f, size.z * 0.03f), lip);
+        if (snout <= 0f)   // labios: superior (con arco de cupido) e inferior, algo más grueso
+        {
+            Cube(head, "Labio_sup", new Vector3(0f, mouthY + size.y * 0.035f, front + 0.004f), new Vector3(size.x * 0.32f, size.y * 0.028f, 0.012f), lip);
+            Cube(jaw, "Labio_inf", new Vector3(0f, -size.y * 0.025f, jawLen + 0.002f), new Vector3(size.x * 0.28f, size.y * 0.035f, 0.012f), lip);
+        }
         f.jaw = jaw; Bind(rig, BodyPart.Jaw, jaw);
         for (int s = -1; s <= 1; s += 2)
         {
@@ -158,7 +194,7 @@ public class CubeFace : MonoBehaviour
         return t;
     }
 
-    static void Cube(Transform parent, string name, Vector3 local, Vector3 size, Color c)
+    static Transform Cube(Transform parent, string name, Vector3 local, Vector3 size, Color c)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name;
@@ -168,5 +204,6 @@ public class CubeFace : MonoBehaviour
         g.transform.localPosition = local;
         g.transform.localScale = size;
         g.GetComponent<Renderer>().sharedMaterial = CubeCreature.Mat(c);
+        return g.transform;
     }
 }

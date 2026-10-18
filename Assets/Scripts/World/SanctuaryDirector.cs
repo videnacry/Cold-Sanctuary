@@ -152,13 +152,24 @@ public class SanctuaryDirector : MonoBehaviour
     /// Returns the highest-tier area the character currently qualifies for.
     /// Falls back to allAreas[0] (the lowest tier) if nothing matches.
     /// </summary>
+    // Dónde trabaja cada personaje según sus fichas (docs/world-simulation.md): Goluis dirige la cocina, Irosene destaca en
+    // el textil, Panterilia lleva la limpieza (y la farmacia, aún sin área: va al huerto), Gohageneis a la mecánica.
+    static readonly System.Collections.Generic.Dictionary<string, SanctuaryAreaType> HomeArea = new System.Collections.Generic.Dictionary<string, SanctuaryAreaType>
+    {
+        { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
+        { "Panterilia", SanctuaryAreaType.Garden }, { "Gohageneis", SanctuaryAreaType.VehicleWorkshop },
+    };
+
     SanctuaryArea DetermineStartArea(WorldCharacter character)
     {
         if (allAreas == null || allAreas.Length == 0) return null;
+        if (character.characterName != null && HomeArea.TryGetValue(character.characterName, out SanctuaryAreaType home))
+            foreach (var area in allAreas) if (area.areaType == home) return area;
 
         SanctuaryArea best = null;
         foreach (var area in allAreas)   // sorted ascending by tier
         {
+            if (area.progressionTier >= 3) continue;   // los laboratorios (nivel 3+) se ganan ascendiendo, no al llegar
             if (area.MeetsRequirements(character.Strength, character.Satisfaction, character.Observation))
                 best = area;
         }

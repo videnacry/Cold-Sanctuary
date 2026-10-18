@@ -154,6 +154,7 @@ public static class CubeTree
                 }
         }
         Block(root.transform, "Piquera", new Vector3(0f, -h - 0.02f, 0f), new Vector3(0.3f, 0.06f, 0.18f), Quaternion.identity, dark, false);
+        root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
     {

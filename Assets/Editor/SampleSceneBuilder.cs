@@ -3079,7 +3079,9 @@ public static class SampleSceneBuilder
         GameObject l = GameObject.CreatePrimitive(PrimitiveType.Capsule);
         l.name = "Linduarda"; l.transform.SetParent(root.transform); l.transform.position = new Vector3(8f, 1f, 8f);
         var r = l.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial("Linduarda_MAT", new Color(0.9f, 0.8f, 0.85f));
-        l.AddComponent<Anima>();
+        Anima la = l.AddComponent<Anima>();
+        // Deportista, gimnasio a diario (docs/character-linduarda.md): ágil y resistente, fuerza algo por encima de la media.
+        la.strength = 1.15f; la.agility = 1.35f; la.endurance = 1.45f; la.bodyMass = 1.05f;
         l.AddComponent<Mind>().identity = "Linduarda";
         l.AddComponent<Linduarda>();
 
@@ -3595,6 +3597,7 @@ public static class SampleSceneBuilder
         KitchenProps.C(r, new Vector3(0f, 0.12f, -6.7f), new Vector3(4f, 0.24f, 1.0f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
         KitchenProps.C(r, new Vector3(0f, 0.25f, -6.7f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 90f, "Esterilla del maestro");
         KitchenProps.C(r, new Vector3(1.6f, 0.33f, -6.7f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
+        YogaStatues.Build(r, -size.y * 0.5f);   // Patanjali, Buda, Aum y Shiva al fondo, tras la tarima
     }
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).
@@ -3988,10 +3991,13 @@ public static class SampleSceneBuilder
             return;
         }
 
-        // Máquina de virtualización en la entrada abierta (+Z).
+        // Máquina de virtualización en una ESQUINA del área (junto a la entrada, +X +Z), mirando al centro: no corta el paso.
         GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
         machineGO.transform.SetParent(area.transform, worldPositionStays: false);
-        machineGO.transform.localPosition = new Vector3(0f, 1f, 4.2f);
+        Transform mat = area.transform.Find("Mat");
+        Vector2 sz = mat != null ? new Vector2(mat.localScale.x, mat.localScale.z) : new Vector2(10f, 10f);
+        machineGO.transform.localPosition = new Vector3(sz.x * 0.5f - 1.7f, 1f, sz.y * 0.5f - 1.9f);
+        machineGO.transform.localRotation = Quaternion.Euler(0f, 45f, 0f);   // la puerta (−Z del tanque) mira al centro del área
         BoxCollider bc = machineGO.AddComponent<BoxCollider>();
         bc.isTrigger = true;
         bc.size = new Vector3(3f, 3f, 1.5f);

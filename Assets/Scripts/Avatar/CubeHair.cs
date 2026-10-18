@@ -30,13 +30,14 @@ public static class CubeHair
         // Capas de ropa del torso: CHALECO (pecho) sobre camiseta (mangas cortas de otro color), CORSÉ en la cintura, BOTAS altas.
         public Color upperSleeves, waist, boots; public bool hasUpperSleeves, hasWaist, hasBoots;
         public bool upperTattoo, wristband, chain, rifle;   // tatuaje en el brazo, muñequera, cadena de cartera, rifle a la espalda
+        public bool feminine;                                // cejas finas arqueadas y pestañas/delineado
         public Look(Style s, Color h, Color sk, Color e, bool b = false)
         {
             style = s; hair = h; skin = sk; eyes = e; beard = b; height = 0f; clothes = default; hasClothes = false;
             pants = sleeves = shoes = glasses = cap = capLogo = default; hasPants = hasSleeves = shorts = hasShoes = hasGlasses = hasCap = false;
             beardStyle = b ? Beard.Full : Beard.None; tattoos = earring = false;
             beanie = lips = upperSleeves = waist = boots = default; hasBeanie = hasLips = hasUpperSleeves = hasWaist = hasBoots = false;
-            upperTattoo = wristband = chain = rifle = false;
+            upperTattoo = wristband = chain = rifle = false; feminine = false;
         }
         public Look Wear(Color c, float m = 0f) { clothes = c; hasClothes = true; height = m; return this; }
         public Look Pants(Color c, bool shortPants = false) { pants = c; hasPants = true; shorts = shortPants; return this; }
@@ -49,6 +50,7 @@ public static class CubeHair
         public Look Tattoos() { tattoos = true; return this; }
         public Look Earring() { earring = true; return this; }
         public Look Beanie(Color c) { beanie = c; hasBeanie = true; return this; }
+        public Look Fem() { feminine = true; return this; }
         public Look Lips(Color c) { lips = c; hasLips = true; return this; }
         public Look Stubble() { beard = true; beardStyle = Beard.Stubble; return this; }
         public Look Vest(Color shirt) { upperSleeves = shirt; hasUpperSleeves = true; return this; }   // clothes = chaleco; shirt = camiseta
@@ -74,22 +76,22 @@ public static class CubeHair
         // (de su hoja de diseño) bob azul noche con flequillo recto y mechones largos a los lados, ojos marrones, labios
         // morados; blusa blanca de cuello alto, bolero morado de mangas abullonadas, corsé granate con ribete dorado,
         // pantalón bombacho celeste y botas altas azul marino con cordones. Piel clara amarillenta.
-        if (n.Contains("magnate")) return new Look(Style.Bob, C(0.13f, 0.2f, 0.3f), C(0.95f, 0.87f, 0.68f), C(0.32f, 0.2f, 0.1f)).Lips(C(0.35f, 0.22f, 0.45f)).Wear(C(0.95f, 0.95f, 0.95f), 1.66f).Vest(C(0.5f, 0.15f, 0.42f)).Sleeves(C(0.5f, 0.15f, 0.42f)).Corset(C(0.4f, 0.16f, 0.13f)).Pants(C(0.72f, 0.85f, 0.9f)).Boots(C(0.15f, 0.17f, 0.3f));
+        if (n.Contains("magnate")) return new Look(Style.Bob, C(0.13f, 0.2f, 0.3f), C(0.95f, 0.87f, 0.68f), C(0.32f, 0.2f, 0.1f)).Fem().Lips(C(0.35f, 0.22f, 0.45f)).Wear(C(0.95f, 0.95f, 0.95f), 1.66f).Vest(C(0.5f, 0.15f, 0.42f)).Sleeves(C(0.5f, 0.15f, 0.42f)).Corset(C(0.4f, 0.16f, 0.13f)).Pants(C(0.72f, 0.85f, 0.9f)).Boots(C(0.15f, 0.17f, 0.3f));
         // Linduarda: ecuatoriana, médica, "a la moda, deportista, gimnasio a diario" → coleta alta, bata blanca, atlética.
         // (de su foto) coleta alta negra, gafas redondas doradas, pijama sanitario azul celeste sobre camiseta blanca de manga larga.
-        if (n.Contains("linduarda")) return new Look(Style.Ponytail, C(0.08f, 0.06f, 0.06f), C(0.86f, 0.68f, 0.55f), C(0.25f, 0.16f, 0.1f)).Wear(C(0.52f, 0.72f, 0.9f), 1.6f).Pants(C(0.52f, 0.72f, 0.9f)).Sleeves(C(0.95f, 0.95f, 0.93f)).Glasses(C(0.85f, 0.7f, 0.4f)).Shoes(C(0.95f, 0.95f, 0.95f));
+        if (n.Contains("linduarda")) return new Look(Style.Ponytail, C(0.08f, 0.06f, 0.06f), C(0.86f, 0.68f, 0.55f), C(0.25f, 0.16f, 0.1f)).Fem().Lips(C(0.7f, 0.38f, 0.4f)).Wear(C(0.52f, 0.72f, 0.9f), 1.6f).Pants(C(0.52f, 0.72f, 0.9f)).Sleeves(C(0.95f, 0.95f, 0.93f)).Glasses(C(0.85f, 0.7f, 0.4f)).Shoes(C(0.95f, 0.95f, 0.95f));
         if (n.Contains("maestra")) return new Look(Style.Bun, C(0.7f, 0.7f, 0.72f), SkinLight, C(0.3f, 0.25f, 0.2f));
         // Goluis: 25 años, el de la fuerza (corpulento), jefe de cocina → cabeza rapada, barba, chaqueta de cocinero.
         // (de su foto) degradado con la parte de arriba en punta, perilla, pendiente, tatuajes en los brazos, polo claro.
         if (n.Contains("goluis")) return new Look(Style.Fade, C(0.1f, 0.08f, 0.07f), C(0.74f, 0.55f, 0.42f), C(0.18f, 0.12f, 0.08f)).Goatee().Earring().Tattoos().Wear(C(0.93f, 0.9f, 0.86f), 1.75f).Pants(C(0.2f, 0.22f, 0.28f));
         // Panterilia: 42 años, la de la percepción (delgada), alma con un 5 % de león → melena leonada, ojos ámbar.
-        if (n.Contains("panterilia")) return new Look(Style.Long, C(0.66f, 0.46f, 0.22f), SkinMid, C(0.78f, 0.58f, 0.18f)).Wear(C(0.45f, 0.5f, 0.32f), 1.68f);
+        if (n.Contains("panterilia")) return new Look(Style.Long, C(0.66f, 0.46f, 0.22f), SkinMid, C(0.78f, 0.58f, 0.18f)).Fem().Wear(C(0.45f, 0.5f, 0.32f), 1.68f);
         // Gohageneis: 28 años, "el Papi", nómada desde Venezuela (Colombia, Perú, Ecuador, España, EE. UU.), ágil.
         // (de su foto) pelo corto bajo una gorra azul con la «V» amarilla y roja, sin barba, atlético, bañador rojo.
         if (n.Contains("gohageneis")) return new Look(Style.Fade, C(0.07f, 0.06f, 0.06f), C(0.66f, 0.46f, 0.33f), C(0.2f, 0.13f, 0.08f)).Cap(C(0.15f, 0.3f, 0.75f), C(0.98f, 0.8f, 0.15f)).Wear(C(0.95f, 0.95f, 0.93f), 1.76f).Pants(C(0.85f, 0.12f, 0.12f), true);
         // Irosene: 70+ años, ecuatoriana, madre de 9; hoy corre, escala y bucea; destaca en el textil → canas cortas, tejido andino.
         // (de su foto) melena larga ondulada rubia con canas y flequillo, piel clara, ojos azul grisáceo.
-        if (n.Contains("irosene")) return new Look(Style.LongWavy, C(0.86f, 0.8f, 0.64f), C(0.93f, 0.76f, 0.66f), C(0.45f, 0.58f, 0.62f)).Wear(C(0.85f, 0.32f, 0.3f), 1.55f);
+        if (n.Contains("irosene")) return new Look(Style.LongWavy, C(0.86f, 0.8f, 0.64f), C(0.93f, 0.76f, 0.66f), C(0.45f, 0.58f, 0.62f)).Fem().Lips(C(0.82f, 0.55f, 0.55f)).Wear(C(0.85f, 0.32f, 0.3f), 1.55f);
         if (n.Contains("cocinero")) return new Look(Style.ChefHat, C(0.25f, 0.18f, 0.12f), Pick(n, SkinLight, SkinMid, SkinTan, SkinDark), C(0.25f, 0.18f, 0.12f)).Wear(C(0.95f, 0.95f, 0.93f));
         Style[] st = { Style.Short, Style.Long, Style.Bun, Style.Ponytail, Style.Curly };
         Color[] hc = { C(0.15f, 0.1f, 0.08f), C(0.4f, 0.26f, 0.15f), C(0.85f, 0.7f, 0.4f), C(0.6f, 0.2f, 0.1f), C(0.55f, 0.55f, 0.58f) };
@@ -142,7 +144,7 @@ public static class CubeHair
                         P(h, new Vector3(s * (size.x * 0.5f + 0.02f), center.y - size.y * (len * 0.5f - 0.3f), center.z - size.z * 0.05f), new Vector3(0.04f, size.y * len, size.z * 0.7f), c);
                         if (look.style == Style.Bob) P(h, new Vector3(s * (size.x * 0.42f), center.y - size.y * 0.55f, center.z + size.z * 0.35f), new Vector3(0.05f, size.y * 0.75f, 0.05f), c);   // mechones largos delante
                     }
-                    if (look.style == Style.Bob) P(h, new Vector3(0f, top - 0.04f, center.z + size.z * 0.5f + 0.012f), new Vector3(w * 0.98f, 0.075f, 0.03f), c);   // flequillo recto
+                    if (look.style == Style.Bob) P(h, new Vector3(0f, top - 0.022f, center.z + size.z * 0.5f + 0.012f), new Vector3(w * 0.98f, 0.045f, 0.03f), c);   // flequillo recto (por encima de las cejas)
                 }
                 if (look.style == Style.Long || look.style == Style.LongWavy)
                 {
@@ -180,7 +182,7 @@ public static class CubeHair
         }
         else if (look.beardStyle == Beard.Stubble)   // BARBA DE UNOS DÍAS: sombra fina en mentón y mejillas
         {
-            Color sh = Color.Lerp(look.skin, c, 0.45f);
+            Color sh = Color.Lerp(look.skin, c, 0.22f);   // sombra suave, no una máscara
             P(h, new Vector3(0f, center.y - size.y * 0.4f, front + 0.003f), new Vector3(size.x * 0.6f, size.y * 0.14f, 0.008f), sh);
             for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * size.x * 0.33f, center.y - size.y * 0.22f, front + 0.002f), new Vector3(size.x * 0.12f, size.y * 0.2f, 0.008f), sh);
         }

@@ -95,6 +95,32 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("el lote pasa por la proliferación en biorreactor", sawProliferation);
             TestProbe.Greater("…y cosecha raciones de carne para los depredadores", lab.portionsMade, 0f, $"{lab.portionsMade} raciones");
         }
+
+        // Colmena: la reina pone huevos en las celdillas y las obreras tienen oficios distintos según su edad.
+        Hive hv = null;
+        foreach (Hive h in Hive.All) { foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; } if (hv != null) break; }
+        TestProbe.Check("hay una colmena con abejas", hv != null);
+        if (hv != null)
+        {
+            var roles = new System.Collections.Generic.HashSet<IceInsectLife.Role>();
+            bool queen = false;
+            foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == hv) { roles.Add(b.role); queen |= b.isQueen; }
+            TestProbe.Check("la colonia tiene reina", queen);
+            float old = hv.secondsPerDay; hv.secondsPerDay = 1f;
+            float t2 = Time.time;
+            while (hv.Count(Hive.Cell.Egg) + hv.Count(Hive.Cell.Larva) == 0 && Time.time - t2 < 40f) yield return null;
+            TestProbe.Greater("la reina pone huevos en las celdillas del panal", hv.Count(Hive.Cell.Egg) + hv.Count(Hive.Cell.Larva), 0f,
+                              $"huevos {hv.Count(Hive.Cell.Egg)} larvas {hv.Count(Hive.Cell.Larva)} miel {hv.Count(Hive.Cell.Honey)} polen {hv.Count(Hive.Cell.Pollen)} vacías {hv.Count(Hive.Cell.Empty)} · {QueenInfo(hv)}");
+            hv.secondsPerDay = old;
+        }
         TestProbe.End();
+    }
+
+    static string QueenInfo(Hive hv)
+    {
+        foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
+            if (b.hive == hv && b.isQueen)
+                return $"reina a {Vector3.Distance(b.transform.position, hv.transform.position):0.0} m, oficio {b.role} ({b.Doing}), día={(TimeController.timeController == null || TimeController.timeController.IsDay)}, muerta={b.GetComponent<Animal>()?.death}";
+        return "sin reina";
     }
 }

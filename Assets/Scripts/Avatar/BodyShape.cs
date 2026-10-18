@@ -79,7 +79,7 @@ public class BodyShape : MonoBehaviour
 
         // Armazón: lo que fuerza Y agilidad sostienen (un ser alto es pesado, fuerte y aún ágil). Su exceso sobre 1 = estatura.
         float frame = Mathf.Min(mass, 0.5f * (str + agi));
-        float height = 1f + Mathf.Clamp(0.12f * (frame - 1f), -0.12f, 0.12f);
+        float height = 1f + Mathf.Clamp(0.2f * (frame - 1f), -0.15f, 0.15f);   // más marcado: antes ±2 % no se notaba
         // Músculo: la fuerza por encima de lo que el armazón trae de serie.
         float muscle = Mathf.Clamp(str - 0.5f * frame - 0.5f, -0.4f, 1.5f);
         // Grasa: el peso que no explican armazón ni músculo; la resistencia la quema.
@@ -107,8 +107,8 @@ public class BodyShape : MonoBehaviour
             Group g = GroupOf(kv.Key);
             float m = Muscle * (g == Group.Arm ? arms : g == Group.Leg ? legs : g == Group.Trunk ? trunk : 0.5f) * (1f - 0.4f * lean);
             float f = Fat * FatShare(kv.Key);
-            float w = 1f + 0.35f * m + 0.55f * f;               // ancho
-            float d = 1f + 0.30f * m + (g == Group.Trunk ? 0.8f : 0.5f) * f;   // fondo (la tripa sale hacia delante)
+            float w = 1f + 0.65f * m + 0.9f * f;                // ancho (más marcado: con stats ~1±0,5 los cuerpos se veían iguales)
+            float d = 1f + 0.5f * m + (g == Group.Trunk ? 1.2f : 0.7f) * f;   // fondo (la tripa sale hacia delante)
             Vector2 cur = kv.Value.Girth;
             kv.Value.SetGirth(Mathf.Lerp(cur.x, w, k), Mathf.Lerp(cur.y, d, k));
         }
