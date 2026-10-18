@@ -69,53 +69,52 @@ public static class SoftMesh
         mf.sharedMesh = Rounded(round, topScale, bottomScale, seg);
     }
 
-    /// <summary>Suaviza TODO el cuerpo de una persona: cada segmento con su perfil (miembros como cápsulas que se afinan
-    /// hacia la articulación de abajo, torso ensanchado arriba, cabeza ovalada) y los detalles (cara, pelo, ropa) con
-    /// cantos redondeados.</summary>
-    public static void Soften(Transform root)
+    /// <summary>Suaviza el CUERPO de una persona de forma UNIFORME: el tronco (cadera → lumbar → tórax) se ahúsa para que
+    /// cada tramo empalme con el siguiente al mismo ancho, formando una silueta continua y simétrica —hombros, cintura
+    /// estrecha y caderas (más marcadas en una silueta femenina)— y los miembros son cápsulas que se afinan hacia la
+    /// articulación de abajo y se solapan con la de arriba (sin huecos). La CABEZA y la cara se quedan como estaban (de una
+    /// pieza, sin «capas»); el pelo lleva cantos suaves.</summary>
+    public static void Soften(Transform root, bool feminine = false)
     {
         foreach (MeshFilter mf in root.GetComponentsInChildren<MeshFilter>(true))
         {
             if (mf.sharedMesh == null || !mf.sharedMesh.name.StartsWith("Cube")) continue;   // solo los cubos de primitiva
             string n = mf.gameObject.name;
-            (float r, float top, float bot, int seg, float ext) p = Profile(n, mf.transform.localScale);
-            mf.sharedMesh = Rounded(p.r, p.top, p.bot, p.seg, p.ext);
+            bool inHead = false;
+            for (Transform t = mf.transform.parent; t != null && t != root; t = t.parent) if (t.name == "Head") { inHead = true; break; }
+            if (inHead && n != "Pelo") continue;   // la cara, de una pieza
+            (float r, float top, float bot, int seg, float ext)? p = Profile(n, feminine);
+            if (p == null) continue;
+            var v = p.Value;
+            mf.sharedMesh = Rounded(v.r, v.top, v.bot, v.seg, v.ext);
         }
     }
 
-    static (float, float, float, int, float) Profile(string n, Vector3 s)
+    // Anchos del tronco (m) en cada empalme, de abajo arriba: ingle, cadera alta, cintura, bajo el pecho, hombros.
+    // Segmentos: cadera 0,34 de ancho; lumbar 0,36; tórax 0,40 → escala = ancho deseado / ancho del segmento.
+    static (float r, float top, float bot, int seg, float ext)? Profile(string n, bool fem)
     {
         if (n.EndsWith("_cubo"))
         {
             string part = n.Substring(0, n.Length - 5);
+            float groin = fem ? 0.36f : 0.32f, hipTop = fem ? 0.35f : 0.32f, waist = fem ? 0.27f : 0.31f, underChest = fem ? 0.29f : 0.34f, shoulders = fem ? 0.36f : 0.42f;
             switch (part)
             {
-                case "Head": return (0.3f, 1f, 0.96f, 7, 1f);
-                case "Neck": return (0.48f, 0.92f, 1f, 5, 1.6f);
-                case "Chest": return (0.2f, 1.04f, 0.94f, 6, 1.12f);         // tórax: ancho en los hombros, cintura más estrecha
-                case "Back": return (0.18f, 0.94f, 1f, 6, 1.25f);            // lumbar: de la cintura a la cadera
-                case "Hips": return (0.22f, 0.98f, 1f, 6, 1.15f);
-                case "ShoulderLeft": case "ShoulderRight": return (0.46f, 1f, 0.84f, 6, 1.12f);   // brazo: se afina al codo
-                case "ForearmLeft": case "ForearmRight": return (0.46f, 1f, 0.8f, 6, 1.12f);     // antebrazo: se afina a la muñeca
-                case "ThighLeft": case "ThighRight": return (0.46f, 1f, 0.78f, 6, 1.1f);         // muslo: grueso arriba, rodilla fina
-                case "ShinLeft": case "ShinRight": return (0.46f, 1f, 0.74f, 6, 1.1f);           // pantorrilla → tobillo
-                case "HandLeft": case "HandRight": return (0.4f, 1f, 0.85f, 5, 1f);
-                case "FootLeft": case "FootRight": return (0.35f, 0.9f, 1f, 5, 1f);
-                case "ScapulaLeft": case "ScapulaRight": return (0.4f, 1f, 1f, 5, 1.1f);
-                default: return (0.4f, 1f, 1f, 5, 1f);
+                case "Hips": return (0.14f, hipTop / 0.34f, groin / 0.34f, 5, 1.04f);
+                case "Back": return (0.12f, waist / 0.36f, hipTop / 0.36f, 5, 1.04f);
+                case "Chest": return (0.14f, shoulders / 0.4f, underChest / 0.4f, 5, 1.04f);
+                case "Neck": return (0.4f, 1f, 1f, 4, 1.5f);
+                case "ShoulderLeft": case "ShoulderRight": return (0.4f, 1f, 0.86f, 5, 1.1f);   // brazo: se afina al codo
+                case "ForearmLeft": case "ForearmRight": return (0.4f, 1f, 0.8f, 5, 1.1f);     // antebrazo: a la muñeca
+                case "ThighLeft": case "ThighRight": return (0.4f, fem ? 1.14f : 1f, fem ? 0.74f : 0.78f, 5, 1.08f);   // muslo: grueso arriba (más en la silueta femenina: caderas), rodilla fina
+                case "ShinLeft": case "ShinRight": return (0.4f, 1f, 0.74f, 5, 1.08f);         // pantorrilla → tobillo
+                case "HandLeft": case "HandRight": return (0.3f, 1f, 0.9f, 4, 1f);
+                case "FootLeft": case "FootRight": return (0.3f, 0.9f, 1f, 4, 1f);
+                case "ScapulaLeft": case "ScapulaRight": return (0.35f, 1f, 1f, 4, 1.05f);
+                default: return null;   // la cabeza, tal cual
             }
         }
-        switch (n)
-        {
-            case "Cara_media": return (0.22f, 1f, 0.92f, 6, 1.08f);
-            case "Mandibula_forma": return (0.3f, 1f, 0.78f, 6, 1.05f);   // mentón más estrecho
-            case "Pomulo": return (0.5f, 1f, 1f, 4, 1f);
-            case "Pelo": return (0.25f, 1f, 1f, 3, 1f);
-            case "Musculo": case "Grasa": return (0.5f, 1f, 1f, 5, 1f);
-        }
-        float thin = Mathf.Min(s.x, Mathf.Min(s.y, s.z)), thick = Mathf.Max(s.x, Mathf.Max(s.y, s.z));
-        // Piezas muy pequeñas o planas (pestañas, juntas, rayas): canto suave y pocas subdivisiones.
-        if (thick < 0.03f || thin / Mathf.Max(1e-4f, thick) < 0.08f) return (0.3f, 1f, 1f, 2, 1f);
-        return (0.3f, 1f, 1f, 3, 1f);
+        if (n == "Pelo") return (0.25f, 1f, 1f, 3, 1f);
+        return null;   // ropa y detalles: como estaban
     }
 }

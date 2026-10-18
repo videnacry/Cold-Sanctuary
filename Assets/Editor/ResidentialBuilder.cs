@@ -31,11 +31,12 @@ public static class ResidentialBuilder
         for (int i = 0; i < 4; i++) Solid(root, new Vector3(i % 2 == 0 ? -2.6f : 2.6f, DeckY * 0.5f, i < 2 ? -2.6f : 2.6f), new Vector3(0.4f, DeckY, 0.4f), Wood, "Columna");
         Stairs(root, new Vector3(0f, 0f, -3f), DeckY);
 
-        // Árboles de apoyo en anillo (r 12, a 30°+60°k).
+        // Árboles de apoyo en anillo (r 13, a 30°+60°k; el de 270° desplazado para no tapar la escalera de la entrada).
         var trees = new Vector3[6];
         for (int k = 0; k < 6; k++)
         {
-            float a = (30f + 60f * k) * Mathf.Deg2Rad;
+            float deg = 30f + 60f * k; if (k == 4) deg = 287f;   // el de 270° se aparta: ahí baja la escalera de la entrada
+            float a = deg * Mathf.Deg2Rad;
             trees[k] = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)) * 13f;
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 22f, carnivorous: false);
         }

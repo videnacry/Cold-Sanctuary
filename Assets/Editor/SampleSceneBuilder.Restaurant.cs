@@ -55,23 +55,29 @@ public static partial class SampleSceneBuilder
 
     static void BuildGourmetDining(Transform parent)
     {
-        // El COMEDOR comparte plataforma con la cocina: la cocina, al fondo y ABIERTA (sin pared, con su barra de pase), y
-        // el comedor delante, junto a la escalera. Así el público ve cocinar (cocina abierta) y el área es una sola.
+        // COCINA EN EL CENTRO y el COMEDOR ALREDEDOR, en la misma plataforma: la cocina es abierta (sin paredes, con su
+        // barra de pase, la barra de sushi y la cafetera hacia el público), y las mesas la rodean por los cuatro lados,
+        // así cualquier comensal ve cocinar. 10 mesas de 4 = 40 cubiertos (base de 30 turistas + personal).
         GameObject kitchen = GameObject.Find("Kitchen_Area");
         if (kitchen == null) return;
-        Vector2 size = new Vector2(22f, 14f);
+        Vector2 size = new Vector2(40f, 38f);   // toda la plataforma (el suelo de la cocina queda encima, en el centro)
         GameObject go = new GameObject("Comedor_Gourmet");
         go.transform.SetParent(kitchen.transform, false);
-        go.transform.localPosition = new Vector3(0f, 0.1f, 8f);
+        go.transform.localPosition = new Vector3(0f, 0.1f, 0f);
         Transform r = go.transform;
         Color wood = new Color(0.42f, 0.28f, 0.2f), linen = new Color(0.97f, 0.97f, 0.95f), gold = new Color(0.82f, 0.68f, 0.35f), velvet = new Color(0.32f, 0.12f, 0.18f);
         KitchenProps.C(r, new Vector3(0f, 0.02f, 0f), new Vector3(size.x, 0.04f, size.y), new Color(0.48f, 0.33f, 0.22f), 0f, "Parquet");
         for (int i = 0; i < 20; i++) KitchenProps.C(r, new Vector3(-size.x * 0.5f + (i + 0.5f) * size.x / 20f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
-        int n = 0;
-        for (int row = 0; row < 2; row++)
-            for (int col = 0; col < 4; col++, n++)
+        // Anillo de mesas: 4 delante (junto a la entrada), 2 al fondo y 2 a cada lado de la cocina.
+        Vector3[] tables =
+        {
+            new Vector3(-13.5f, 0f, 12.5f), new Vector3(-4.5f, 0f, 13.5f), new Vector3(4.5f, 0f, 13.5f), new Vector3(13.5f, 0f, 12.5f),
+            new Vector3(-16f, 0f, 3.5f), new Vector3(-16f, 0f, -4.5f), new Vector3(16f, 0f, 3.5f), new Vector3(16f, 0f, -4.5f),
+            new Vector3(5f, 0f, -12.5f), new Vector3(13f, 0f, -12.5f),
+        };
+        for (int n = 0; n < tables.Length; n++)
             {
-                Transform t = KitchenProps.Root(r, $"Mesa_{n + 1}", new Vector3(-6.6f + col * 4.4f, 0f, -2.2f + row * 4.2f));
+                Transform t = KitchenProps.Root(r, $"Mesa_{n + 1}", tables[n]);
                 KitchenProps.C(t, new Vector3(0f, 0.38f, 0f), new Vector3(0.1f, 0.76f, 0.1f), wood, 0f, "Pata");
                 KitchenProps.C(t, new Vector3(0f, 0.765f, 0f), new Vector3(1.3f, 0.03f, 1.3f), linen, 0f, "Mantel");
                 KitchenProps.C(t, new Vector3(0f, 0.6f, 0f), new Vector3(1.32f, 0.3f, 1.32f), linen, 0f, "Caida_mantel");
@@ -100,7 +106,7 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(lamp, new Vector3(0f, -0.12f, 0f), new Vector3(0.12f, 0.05f, 0.12f), new Color(1f, 0.9f, 0.65f), 0f, "Bombilla");
             }
         // Pared de vinos al fondo y plantas en las esquinas.
-        Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -1f), 90f);   // en el lateral (delante queda la entrada)
+        Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -13f), 90f);   // en el lateral del fondo (delante queda la entrada)
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");
         for (int y = 0; y < 6; y++)
             for (int x = 0; x < 14; x++)
@@ -112,7 +118,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(pl, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), new Color(0.3f, 0.55f, 0.3f), 30f, "Follaje");
         }
         WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor para 30)"; wl.height = 3f;
-        Aseos(r, new Vector3(-size.x * 0.5f + 0.2f + 2.85f, 0f, size.y * 0.5f - 0.9f), 180f);
+        Aseos(r, new Vector3(-8f, 0f, -size.y * 0.5f + 0.9f), 0f);   // al fondo, entre la pared de vinos y las mesas
     }
 
 

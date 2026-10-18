@@ -2636,11 +2636,11 @@ public static partial class SampleSceneBuilder
         GameObject area = GameObject.Find("Kitchen_Area");
         GameObject roomGO = new GameObject("Sala"); roomGO.transform.SetParent(rest);
         Transform room = roomGO.transform;
-        room.position = area != null ? area.transform.TransformPoint(new Vector3(0f, 0.1f, -8f)) : new Vector3(14f, 0f, 0f);   // la cocina al fondo; delante, el comedor (cocina ABIERTA al público)
+        room.position = area != null ? area.transform.TransformPoint(new Vector3(0f, 0.1f, 0f)) : new Vector3(14f, 0f, 0f);   // la cocina en el CENTRO y el comedor alrededor (cocina ABIERTA al público)
         if (area != null) room.rotation = area.transform.rotation * Quaternion.Euler(0f, 180f, 0f);   // el área se abre a +Z: ahí va la entrada de la sala
         if (area != null)   // la máquina de virtualización del área, a la esquina de la entrada (no en medio de un puesto)
             foreach (Transform t in area.GetComponentsInChildren<Transform>())
-                if (t.name.EndsWith("_VirtualizationMachine")) { t.localPosition = new Vector3(8.6f, 1f, 6.4f); t.localRotation = Quaternion.Euler(0f, -90f, 0f); }
+                if (t.name.EndsWith("_VirtualizationMachine")) { t.localPosition = new Vector3(18.4f, 1f, -17.4f); t.localRotation = Quaternion.Euler(0f, -45f, 0f); }   // en la esquina del fondo, fuera del paso y de las mesas
 
         // Suelo de baldosa y contorno bajo (no tapa la vista), con la entrada al sur.
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -2740,7 +2740,7 @@ public static partial class SampleSceneBuilder
         ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 16f + 8.4f + 1.5f));   // al pie de la escalera
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + 8.4f + 1.5f));   // al pie de la escalera
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2777,7 +2777,7 @@ public static partial class SampleSceneBuilder
     {
         GameObject p = GameObject.Find("Player");
         GameObject area = GameObject.Find("Kitchen_Area");
-        if (p != null && area != null) p.transform.position = area.transform.TransformPoint(new Vector3(0f, 1.2f, 5f));   // sobre la plataforma
+        if (p != null && area != null) p.transform.position = area.transform.TransformPoint(new Vector3(0f, 1.2f, 12f));   // sobre la plataforma, en el comedor frente a la cocina
     }
 
     static void MakeLabeledPrimitive(Transform parent, string label, Vector3 pos, Vector3 scale, Color col)
@@ -3492,7 +3492,7 @@ public static partial class SampleSceneBuilder
         var areas = new List<SanctuaryArea>
         {
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(5f, 0f, 95f), new Vector2(24f, 32f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta (fondo) + comedor para 30 (delante)
+                new Vector3(5f, 0f, 95f), new Vector2(40f, 38f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta en el CENTRO y el comedor (para 30+) alrededor
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
                 new Vector3(55f, 0f, 97f), new Vector2(26f, 20f), new Color(0.85f, 0.95f, 0.90f)),   // para atender a 30 personas (turistas incluidos)
@@ -3525,7 +3525,7 @@ public static partial class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(24f, 32f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f) };
+        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura

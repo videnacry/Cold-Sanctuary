@@ -110,7 +110,7 @@ public static class CubeHumanoid
         }
 
         Details(root, look);   // (el rig aún no tiene el mapa de huesos: se buscan por su articulación)
-        SoftMesh.Soften(root);  // más polígonos: miembros como cápsulas ahusadas, cabeza ovalada, cantos redondeados
+        SoftMesh.Soften(root, look.feminine);  // silueta continua y simétrica (cintura, hombros, caderas); la cara de una pieza
         foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) j.Capture();
     }
 
@@ -190,6 +190,13 @@ public static class CubeHumanoid
                 Deco(chest, new Vector3(0f, 0.175f, 0.126f), new Vector3(0.028f, 0.008f, 0.004f), look.necklace);
             }
         }
+        if (look.rings)   // ANILLOS: aros de metal en varios dedos de las dos manos
+            foreach (BodyPart hp in new[] { BodyPart.HandLeft, BodyPart.HandRight })
+            {
+                Transform hand = Bone(hp); if (hand == null) continue;
+                for (int i = 0; i < 2; i++) Deco(hand, new Vector3(-0.02f + i * 0.03f, -0.085f, 0f), new Vector3(0.022f, 0.012f, 0.056f), i == 0 ? new Color(0.85f, 0.7f, 0.3f) : new Color(0.78f, 0.78f, 0.82f));
+            }
+        if (look.earring && look.rings) { Transform hd = Bone(BodyPart.Head); if (hd != null) Deco(hd, new Vector3(0.132f, 0.1f, 0f), new Vector3(0.016f, 0.016f, 0.016f), new Color(0.85f, 0.85f, 0.88f)); }   // pendiente también en la otra oreja
         if (look.rifle && chest != null)   // RIFLE colgado a la espalda, en diagonal, con su correa
         {
             Transform r = new GameObject("Rifle").transform; r.SetParent(chest, false);

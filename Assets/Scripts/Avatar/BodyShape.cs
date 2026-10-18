@@ -173,8 +173,9 @@ public class BodyShape : MonoBehaviour
         // Escala con el segmento (su grosor ya incluye músculo/grasa) y con la cantidad; el relieve sale hacia fuera.
         Vector2 g2 = j.Girth;
         Vector3 off = new Vector3(local.x * g2.x, local.y, local.z * g2.y);
-        t.localPosition = off + new Vector3(0f, 0f, Mathf.Sign(local.z) * size.z * 0.25f * amount);
-        t.localScale = new Vector3(size.x * g2.x * (0.6f + 0.4f * amount), size.y * (0.7f + 0.3f * amount), size.z * amount);
+        // HUNDIDO en el segmento: solo asoma su curva, para que se funda con el cuerpo en vez de parecer una bola pegada.
+        t.localPosition = off - new Vector3(Mathf.Sign(local.x) * Mathf.Min(Mathf.Abs(local.x), size.x * 0.15f) * (local.z == 0f ? 1f : 0f), 0f, Mathf.Sign(local.z) * size.z * 0.35f * amount);
+        t.localScale = new Vector3(size.x * g2.x * (0.75f + 0.45f * amount), size.y * (0.85f + 0.35f * amount), size.z * amount * 1.6f);
     }
     // Reparto de la GRASA por segmento (androide + ginoide; poca en extremidades distales).
     static float FatShare(BodyPart p)
