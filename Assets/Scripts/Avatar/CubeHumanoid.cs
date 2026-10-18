@@ -68,18 +68,20 @@ public static class CubeHumanoid
         CubeHair.Look look = CubeHair.For(root.parent != null ? root.parent.name : "");
         Material cloth = Mat(clothes), flesh = Mat(skin), dark = look.hasPants ? Mat(look.pants) : Mat(clothes * 0.6f + new Color(0, 0, 0, 1));
         Material forearm = look.hasSleeves ? Mat(look.sleeves) : flesh;   // manga larga (camiseta interior) o brazo al aire
-        Material shin = look.shorts ? flesh : dark;                         // pantalón corto: espinillas al aire
-        Material shoe = look.hasShoes ? Mat(look.shoes) : look.shorts ? Mat(new Color(0.9f, 0.9f, 0.9f)) : dark;
+        Material upperArm = look.hasUpperSleeves ? Mat(look.upperSleeves) : cloth;   // chaleco: las mangas son de la camiseta de debajo
+        Material belly = look.hasWaist ? Mat(look.waist) : cloth;                    // corsé en la cintura
+        Material shin = look.hasBoots ? Mat(look.boots) : look.shorts ? flesh : dark;   // botas altas / pantalón corto
+        Material shoe = look.hasBoots ? Mat(look.boots) : look.hasShoes ? Mat(look.shoes) : look.shorts ? Mat(new Color(0.9f, 0.9f, 0.9f)) : dark;
 
         // Pelvis (cadera) a la altura de la cadera; todo cuelga de aquí.
         CubeJoint hips  = Joint(root, BodyPart.Hips,  new Vector3(0f, 0.95f, 0f), new Vector3(0.34f, 0.2f, 0.22f), Vector3.zero, dark, rig);
         // Columna en DOS tramos (lumbar = Back, torácica = Chest) para que flexiones y extensiones se repartan y se curven.
-        CubeJoint lumbar = Joint(hips.transform, BodyPart.Back, new Vector3(0f, 0.1f, 0f), new Vector3(0.36f, 0.24f, 0.22f), new Vector3(0f, 0.12f, 0f), cloth, rig);
+        CubeJoint lumbar = Joint(hips.transform, BodyPart.Back, new Vector3(0f, 0.1f, 0f), new Vector3(0.36f, 0.24f, 0.22f), new Vector3(0f, 0.12f, 0f), belly, rig);
         CubeJoint waist = Joint(lumbar.transform, BodyPart.Chest, new Vector3(0f, 0.24f, 0f), new Vector3(0.4f, 0.3f, 0.24f), new Vector3(0f, 0.15f, 0f), cloth, rig);
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
         // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
-        CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig);
+        CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig, null, null, look.hasLips ? look.lips : (Color?)null);
         CubeHair.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), look);   // cabello (y barba) de cubos
 
         for (int side = -1; side <= 1; side += 2)
@@ -91,7 +93,7 @@ public static class CubeHumanoid
                 new Vector3(0.08f * side, 0.26f, 0f), new Vector3(0.14f, 0.1f, 0.12f), new Vector3(0.09f * side, -0.02f, 0f), cloth, rig);
             // Brazo: escápula → hombro → codo → muñeca.
             CubeJoint sh = Joint(scap.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight,
-                new Vector3(0.18f * side, -0.04f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
+                new Vector3(0.18f * side, -0.04f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), upperArm, rig);
             CubeJoint el = Joint(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight,
                 new Vector3(0f, -0.3f, 0f), new Vector3(0.09f, 0.27f, 0.09f), new Vector3(0f, -0.135f, 0f), forearm, rig);
             if (look.tattoos && !look.hasSleeves) Tattoo(el.transform, side);
@@ -106,6 +108,7 @@ public static class CubeHumanoid
                 new Vector3(0f, -0.4f, 0f), new Vector3(0.12f, 0.06f, 0.24f), new Vector3(0f, -0.03f, 0.06f), shoe, rig);
         }
 
+        Details(root, look);   // (el rig aún no tiene el mapa de huesos: se buscan por su articulación)
         foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) j.Capture();
     }
 
@@ -125,6 +128,58 @@ public static class CubeHumanoid
             g.transform.localRotation = Quaternion.Euler(i * 25f, 0f, 0f);
             g.GetComponent<Renderer>().sharedMaterial = ink;
         }
+    }
+
+    // DETALLES de la ropa y complementos del diseño de cada personaje (cubos pegados a sus huesos: se mueven con ellos).
+    static void Details(Transform root, CubeHair.Look look)
+    {
+        Transform Bone(BodyPart p) { foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) if (j.part == p) return j.transform; return null; }
+        Transform chest = Bone(BodyPart.Chest), back = Bone(BodyPart.Back);
+        if (look.hasUpperSleeves && !look.hasWaist && chest != null)   // CHALECO abierto: se ve la camiseta delante y el borrego
+        {
+            Deco(chest, new Vector3(0f, 0.15f, 0.122f), new Vector3(0.14f, 0.3f, 0.004f), look.upperSleeves);
+            if (back != null) Deco(back, new Vector3(0f, 0.12f, 0.112f), new Vector3(0.12f, 0.24f, 0.004f), look.upperSleeves);
+            for (int s = -1; s <= 1; s += 2) Deco(chest, new Vector3(s * 0.085f, 0.24f, 0.124f), new Vector3(0.035f, 0.12f, 0.006f), new Color(0.35f, 0.28f, 0.24f));   // cuello de borrego
+            Deco(chest, new Vector3(0.12f, 0.2f, 0.124f), new Vector3(0.022f, 0.022f, 0.004f), new Color(0.95f, 0.8f, 0.1f));   // chapas
+            Deco(chest, new Vector3(0.09f, 0.21f, 0.124f), new Vector3(0.012f, 0.012f, 0.004f), new Color(0.85f, 0.1f, 0.1f));
+        }
+        if (look.hasWaist && chest != null)   // BLUSA de cuello alto y escote; ribete dorado del corsé
+        {
+            Deco(chest, new Vector3(0f, 0.31f, -0.02f), new Vector3(0.24f, 0.08f, 0.2f), look.clothes);
+            if (back != null) Deco(back, new Vector3(0f, 0.235f, 0f), new Vector3(0.37f, 0.015f, 0.225f), new Color(0.85f, 0.68f, 0.3f));
+            if (back != null) Deco(back, new Vector3(0f, 0.12f, 0.112f), new Vector3(0.06f, 0.2f, 0.004f), new Color(0.85f, 0.68f, 0.3f));
+        }
+        if (look.upperTattoo)
+        {
+            Transform sh = Bone(BodyPart.ShoulderRight);
+            if (sh != null) { Deco(sh, new Vector3(0.051f, -0.22f, 0f), new Vector3(0.004f, 0.045f, 0.045f), new Color(0.15f, 0.15f, 0.2f), 45f); Deco(sh, new Vector3(0.053f, -0.22f, 0f), new Vector3(0.004f, 0.014f, 0.014f), new Color(0.15f, 0.15f, 0.2f)); }
+        }
+        if (look.wristband) { Transform fa = Bone(BodyPart.ForearmLeft); if (fa != null) Deco(fa, new Vector3(0f, -0.24f, 0f), new Vector3(0.1f, 0.05f, 0.1f), new Color(0.12f, 0.12f, 0.14f)); }
+        if (look.chain)
+        {
+            Transform hips = Bone(BodyPart.Hips);
+            if (hips != null) for (int i = 0; i < 6; i++) Deco(hips, new Vector3(0.175f, -0.05f - i * 0.035f, 0.03f - i * 0.012f), new Vector3(0.012f, 0.022f, 0.012f), new Color(0.65f, 0.67f, 0.7f));
+        }
+        if (look.rifle && chest != null)   // RIFLE colgado a la espalda, en diagonal, con su correa
+        {
+            Transform r = new GameObject("Rifle").transform; r.SetParent(chest, false);
+            r.localPosition = new Vector3(0f, 0.12f, -0.15f); r.localRotation = Quaternion.Euler(0f, 0f, 35f);
+            Deco(r, new Vector3(0f, -0.25f, 0f), new Vector3(0.05f, 0.35f, 0.04f), new Color(0.45f, 0.14f, 0.18f));   // culata
+            Deco(r, new Vector3(0f, 0.18f, 0f), new Vector3(0.025f, 0.6f, 0.025f), new Color(0.2f, 0.2f, 0.22f));     // cañón
+            Deco(r, new Vector3(0f, 0.02f, -0.035f), new Vector3(0.035f, 0.22f, 0.035f), new Color(0.15f, 0.15f, 0.17f)); // mira
+            Deco(chest, new Vector3(0f, 0.14f, 0f), new Vector3(0.42f, 0.03f, 0.26f), new Color(0.2f, 0.2f, 0.2f), 0f, 35f);   // correa cruzada
+        }
+    }
+
+    static void Deco(Transform parent, Vector3 pos, Vector3 size, Color c, float xRot = 0f, float zRot = 0f)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = "Detalle";
+        Object.DestroyImmediate(g.GetComponent<Collider>());
+        g.transform.SetParent(parent, false);
+        g.transform.localPosition = pos; g.transform.localScale = size;
+        g.transform.localRotation = Quaternion.Euler(xRot, 0f, zRot);
+        g.GetComponent<Renderer>().sharedMaterial = Mat(c);
     }
     static CubeJoint Joint(Transform parent, BodyPart part, Vector3 pivot, Vector3 size, Vector3 cubeOffset, Material mat, CreatureRig rig)
     {

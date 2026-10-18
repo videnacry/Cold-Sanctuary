@@ -7,8 +7,8 @@ using UnityEngine;
 /// </summary>
 public static class CubeHair
 {
-    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy }
-    public enum Beard { None, Full, Goatee }
+    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy, Medium, Bob }
+    public enum Beard { None, Full, Goatee, Stubble }
 
     public struct Look
     {
@@ -25,11 +25,18 @@ public static class CubeHair
         public Color cap, capLogo; public bool hasCap;
         public Beard beardStyle;
         public bool tattoos, earring;
+        public Color beanie; public bool hasBeanie;          // gorro de lana
+        public Color lips; public bool hasLips;              // labios pintados
+        // Capas de ropa del torso: CHALECO (pecho) sobre camiseta (mangas cortas de otro color), CORSÉ en la cintura, BOTAS altas.
+        public Color upperSleeves, waist, boots; public bool hasUpperSleeves, hasWaist, hasBoots;
+        public bool upperTattoo, wristband, chain, rifle;   // tatuaje en el brazo, muñequera, cadena de cartera, rifle a la espalda
         public Look(Style s, Color h, Color sk, Color e, bool b = false)
         {
             style = s; hair = h; skin = sk; eyes = e; beard = b; height = 0f; clothes = default; hasClothes = false;
             pants = sleeves = shoes = glasses = cap = capLogo = default; hasPants = hasSleeves = shorts = hasShoes = hasGlasses = hasCap = false;
             beardStyle = b ? Beard.Full : Beard.None; tattoos = earring = false;
+            beanie = lips = upperSleeves = waist = boots = default; hasBeanie = hasLips = hasUpperSleeves = hasWaist = hasBoots = false;
+            upperTattoo = wristband = chain = rifle = false;
         }
         public Look Wear(Color c, float m = 0f) { clothes = c; hasClothes = true; height = m; return this; }
         public Look Pants(Color c, bool shortPants = false) { pants = c; hasPants = true; shorts = shortPants; return this; }
@@ -41,6 +48,13 @@ public static class CubeHair
         public Look Shaven() { beard = false; beardStyle = Beard.None; return this; }
         public Look Tattoos() { tattoos = true; return this; }
         public Look Earring() { earring = true; return this; }
+        public Look Beanie(Color c) { beanie = c; hasBeanie = true; return this; }
+        public Look Lips(Color c) { lips = c; hasLips = true; return this; }
+        public Look Stubble() { beard = true; beardStyle = Beard.Stubble; return this; }
+        public Look Vest(Color shirt) { upperSleeves = shirt; hasUpperSleeves = true; return this; }   // clothes = chaleco; shirt = camiseta
+        public Look Corset(Color c) { waist = c; hasWaist = true; return this; }
+        public Look Boots(Color c) { boots = c; hasBoots = true; return this; }
+        public Look Extras(bool upperTat = false, bool band = false, bool walletChain = false, bool backRifle = false) { upperTattoo = upperTat; wristband = band; chain = walletChain; rifle = backRifle; return this; }
     }
 
     static Color C(float r, float g, float b) => new Color(r, g, b);
@@ -52,9 +66,15 @@ public static class CubeHair
     {
         string n = (name ?? "").ToLowerInvariant();
         // Kushal: nombre de origen nepalí/indio (inferido; la ficha no da nacionalidad). 1,75 m (DEVLOG).
-        if (n.Contains("player") || n.Contains("kushal")) return new Look(Style.Short, C(0.08f, 0.07f, 0.07f), C(0.66f, 0.48f, 0.34f), C(0.2f, 0.13f, 0.08f)).Wear(C(0.22f, 0.45f, 0.5f));
+        // (de su hoja de diseño) media melena negra, gorro de lana rojo, gafas redondas, barba de unos días; chaleco morado con
+        // borrego sobre camiseta azul marino, vaqueros verde oscuro rotos con cadena, muñequera, zapatillas grises de bota,
+        // tatuaje en el brazo y un rifle colgado a la espalda. Piel clara rosada.
+        if (n.Contains("player") || n.Contains("kushal")) return new Look(Style.Medium, C(0.07f, 0.06f, 0.07f), C(0.84f, 0.66f, 0.6f), C(0.22f, 0.16f, 0.12f)).Stubble().Beanie(C(0.55f, 0.1f, 0.14f)).Glasses(C(0.3f, 0.3f, 0.32f)).Wear(C(0.36f, 0.12f, 0.45f)).Vest(C(0.1f, 0.1f, 0.33f)).Pants(C(0.08f, 0.28f, 0.22f)).Shoes(C(0.62f, 0.64f, 0.68f)).Extras(upperTat: true, band: true, walletChain: true, backRifle: true);
         // La Magnate: sin ficha de aspecto; maga de células infinitas → canas plateadas, túnica violeta de maestra.
-        if (n.Contains("magnate")) return new Look(Style.Long, C(0.9f, 0.9f, 0.94f), SkinLight, C(0.45f, 0.6f, 0.85f)).Wear(C(0.42f, 0.3f, 0.62f), 1.7f);
+        // (de su hoja de diseño) bob azul noche con flequillo recto y mechones largos a los lados, ojos marrones, labios
+        // morados; blusa blanca de cuello alto, bolero morado de mangas abullonadas, corsé granate con ribete dorado,
+        // pantalón bombacho celeste y botas altas azul marino con cordones. Piel clara amarillenta.
+        if (n.Contains("magnate")) return new Look(Style.Bob, C(0.13f, 0.2f, 0.3f), C(0.95f, 0.87f, 0.68f), C(0.32f, 0.2f, 0.1f)).Lips(C(0.35f, 0.22f, 0.45f)).Wear(C(0.95f, 0.95f, 0.95f), 1.66f).Vest(C(0.5f, 0.15f, 0.42f)).Sleeves(C(0.5f, 0.15f, 0.42f)).Corset(C(0.4f, 0.16f, 0.13f)).Pants(C(0.72f, 0.85f, 0.9f)).Boots(C(0.15f, 0.17f, 0.3f));
         // Linduarda: ecuatoriana, médica, "a la moda, deportista, gimnasio a diario" → coleta alta, bata blanca, atlética.
         // (de su foto) coleta alta negra, gafas redondas doradas, pijama sanitario azul celeste sobre camiseta blanca de manga larga.
         if (n.Contains("linduarda")) return new Look(Style.Ponytail, C(0.08f, 0.06f, 0.06f), C(0.86f, 0.68f, 0.55f), C(0.25f, 0.16f, 0.1f)).Wear(C(0.52f, 0.72f, 0.9f), 1.6f).Pants(C(0.52f, 0.72f, 0.9f)).Sleeves(C(0.95f, 0.95f, 0.93f)).Glasses(C(0.85f, 0.7f, 0.4f)).Shoes(C(0.95f, 0.95f, 0.95f));
@@ -111,6 +131,19 @@ public static class CubeHair
                 P(h, new Vector3(0f, center.y + size.y * 0.15f, back - 0.012f), new Vector3(w, size.y * 0.75f, 0.03f), c);
                 for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * (size.x * 0.5f + 0.012f), center.y + size.y * 0.25f, center.z - size.z * 0.15f), new Vector3(0.03f, size.y * 0.5f, size.z * 0.6f), c);
                 P(h, new Vector3(0f, top - 0.02f, center.z + size.z * 0.5f - 0.005f), new Vector3(w * 0.85f, 0.05f, 0.025f), c);
+                if (look.style == Style.Medium || look.style == Style.Bob)
+                {
+                    // MEDIA MELENA (por los hombros) o BOB (a la mandíbula, con mechones largos delante): cortinas a los lados y
+                    // detrás; el bob con FLEQUILLO RECTO grueso sobre las cejas.
+                    float len = look.style == Style.Medium ? 0.85f : 0.6f;
+                    P(h, new Vector3(0f, center.y - size.y * (len * 0.5f - 0.25f), back - 0.02f), new Vector3(w * 1.05f, size.y * len, 0.04f), c);
+                    for (int s = -1; s <= 1; s += 2)
+                    {
+                        P(h, new Vector3(s * (size.x * 0.5f + 0.02f), center.y - size.y * (len * 0.5f - 0.3f), center.z - size.z * 0.05f), new Vector3(0.04f, size.y * len, size.z * 0.7f), c);
+                        if (look.style == Style.Bob) P(h, new Vector3(s * (size.x * 0.42f), center.y - size.y * 0.55f, center.z + size.z * 0.35f), new Vector3(0.05f, size.y * 0.75f, 0.05f), c);   // mechones largos delante
+                    }
+                    if (look.style == Style.Bob) P(h, new Vector3(0f, top - 0.04f, center.z + size.z * 0.5f + 0.012f), new Vector3(w * 0.98f, 0.075f, 0.03f), c);   // flequillo recto
+                }
                 if (look.style == Style.Long || look.style == Style.LongWavy)
                 {
                     P(h, new Vector3(0f, center.y - size.y * 0.55f, back - 0.02f), new Vector3(w * 1.05f, size.y * 1.1f, 0.04f), c);
@@ -145,6 +178,12 @@ public static class CubeHair
             P(h, new Vector3(0f, center.y - size.y * 0.42f, center.z + size.z * 0.42f), new Vector3(size.x * 0.75f, size.y * 0.25f, 0.06f), c);
             for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * size.x * 0.42f, center.y - size.y * 0.2f, center.z + size.z * 0.3f), new Vector3(0.03f, size.y * 0.35f, 0.08f), c);
         }
+        else if (look.beardStyle == Beard.Stubble)   // BARBA DE UNOS DÍAS: sombra fina en mentón y mejillas
+        {
+            Color sh = Color.Lerp(look.skin, c, 0.45f);
+            P(h, new Vector3(0f, center.y - size.y * 0.4f, front + 0.003f), new Vector3(size.x * 0.6f, size.y * 0.14f, 0.008f), sh);
+            for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * size.x * 0.33f, center.y - size.y * 0.22f, front + 0.002f), new Vector3(size.x * 0.12f, size.y * 0.2f, 0.008f), sh);
+        }
         else if (look.beardStyle == Beard.Goatee)   // PERILLA: solo en la barbilla
             P(h, new Vector3(0f, center.y - size.y * 0.44f, front + 0.005f), new Vector3(size.x * 0.32f, size.y * 0.16f, 0.03f), c);
 
@@ -169,6 +208,13 @@ public static class CubeHair
             P(h, new Vector3(-0.015f, top + 0.06f, front + 0.008f), new Vector3(0.012f, 0.05f, 0.005f), look.capLogo);   // «V»
             P(h, new Vector3(0.015f, top + 0.06f, front + 0.008f), new Vector3(0.012f, 0.05f, 0.005f), look.capLogo);
             P(h, new Vector3(0f, top + 0.035f, front + 0.009f), new Vector3(0.014f, 0.012f, 0.005f), new Color(0.85f, 0.15f, 0.15f));
+        }
+
+        if (look.hasBeanie)   // GORRO DE LANA con el borde doblado
+        {
+            P(h, new Vector3(0f, top + 0.06f, center.z - 0.005f), new Vector3(w + 0.015f, 0.12f, d + 0.015f), look.beanie);
+            P(h, new Vector3(0f, top + 0.005f, center.z - 0.005f), new Vector3(w + 0.03f, 0.045f, d + 0.03f), look.beanie * 0.85f + new Color(0, 0, 0, 1));
+            for (int k = -2; k <= 2; k++) P(h, new Vector3(k * w * 0.18f, top + 0.06f, center.z + d * 0.5f + 0.01f), new Vector3(0.008f, 0.1f, 0.005f), look.beanie * 0.7f + new Color(0, 0, 0, 1));   // canalé
         }
 
         if (look.earring)   // PENDIENTE

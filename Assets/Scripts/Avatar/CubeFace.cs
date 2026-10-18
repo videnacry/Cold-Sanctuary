@@ -90,10 +90,10 @@ public class CubeFace : MonoBehaviour
     /// hocico (0 = cara plana humana). Registra los huesos de la cara en el rig.
     /// </summary>
     public static CubeFace Build(Transform head, Vector3 center, Vector3 size, float snout, Color skin, Color eyeColor, CreatureRig rig,
-                                 Transform earL = null, Transform earR = null)
+                                 Transform earL = null, Transform earR = null, Color? lips = null)
     {
         CubeFace f = head.gameObject.AddComponent<CubeFace>();
-        Color dark = new Color(0.12f, 0.12f, 0.14f), white = new Color(0.97f, 0.97f, 0.95f), lip = skin * 0.8f + new Color(0.1f, 0f, 0f, 1f);
+        Color dark = new Color(0.12f, 0.12f, 0.14f), white = new Color(0.97f, 0.97f, 0.95f), lip = lips ?? skin * 0.8f + new Color(0.1f, 0f, 0f, 1f);   // labios pintados si el diseño los lleva
         float front = center.z + size.z * 0.5f;
         float eyeY = center.y + size.y * 0.12f, eyeX = size.x * 0.24f, eye = Mathf.Min(size.x, size.y) * 0.2f;
 

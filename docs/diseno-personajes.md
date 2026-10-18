@@ -23,8 +23,8 @@ Para ver los retratos: menú **Tools > Cold Sanctuary > Character Gallery**, que
 
 | Persona | Lo documentado | Diseño |
 |---|---|---|
-| **Kushal** (jugador) | Recién llegado; 1,75 m (DEVLOG). Sin edad ni nacionalidad. | **Inferido**: el nombre es nepalí o indio ("hábil, bienestar"). Piel morena, pelo negro corto, ojos marrón oscuro. Parka azul petróleo. |
-| **La Magnate** | Maestra del santuario, maga de células con stats infinitas; su base es el 5.º santuario. Sin aspecto ni edad. | **Inferido**: 1,70 m, melena larga plateada, ojos azules, túnica violeta de maestra. |
+| **Kushal** (jugador) | Recién llegado; 1,75 m (DEVLOG). Sin edad ni nacionalidad. | **Según su hoja de diseño:** media melena negra, gorro de lana rojo, gafas redondas, barba de unos días, piel clara rosada. Chaleco morado con cuello de borrego y chapas sobre camiseta azul marino, vaqueros verde oscuro con cadena, muñequera, zapatillas grises de bota, tatuaje en el brazo y un rifle colgado a la espalda. |
+| **La Magnate** | Maestra del santuario, maga de células con stats infinitas; su base es el 5.º santuario. Sin aspecto ni edad. | **Según su hoja de diseño:** 1,66 m. Bob azul noche con flequillo recto y mechones largos delante, ojos marrones, labios morados, piel clara amarillenta. Blusa blanca de cuello alto, bolero morado de mangas abullonadas, corsé granate con ribete dorado, pantalón bombacho celeste y botas altas azul marino. |
 | **Linduarda** | Médica ecuatoriana que estudió en Ucrania; antes fue camarera en EE. UU. "A la moda, deportista… gimnasio a diario". | **Según su captura de referencia:** 1,60 m. Coleta alta negra, gafas redondas doradas, piel clara-morena. Pijama sanitario azul celeste sobre camiseta blanca de manga larga. |
 | **Goluis** | 25 años; el personaje de la fuerza, corpulento; jefe de cocina; de adolescente estuvo en una banda. Sin nacionalidad. | **Según su captura:** 1,75 m, corpulento. Pelo degradado con la parte de arriba en punta, perilla, pendiente, tatuajes en los antebrazos. Polo claro. |
 | **Panterilia** | 42 años; el personaje de la percepción, delgada; dirige la limpieza y la farmacia; alma 90 % humana y 5 % león. Sin nacionalidad. | 1,68 m, delgada. Melena leonada, ojos ámbar (el toque del león). Ropa verde oliva. |
@@ -34,5 +34,5 @@ Para ver los retratos: menú **Tools > Cold Sanctuary > Character Gallery**, que
 ## Pendiente de confirmar
 
 1. La nacionalidad de Kushal, Goluis y Panterilia.
-2. El aspecto de la Magnate (edad aparente, pelo, ropa).
-3. Capturas de referencia de Kushal, la Magnate y Panterilia, si las hay.
+2. El aspecto de Panterilia (no hay referencia todavía).
+3. ¿El rifle de Kushal es de dardos tranquilizantes? El santuario no mata animales.
