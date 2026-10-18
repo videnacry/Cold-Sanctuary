@@ -15,8 +15,10 @@ public class Hive : MonoBehaviour
 {
     public enum Cell { Empty, Dirty, Egg, Larva, CappedBrood, Nectar, Honey, Pollen }
 
-    [Tooltip("Segundos de juego por día de abeja.")]
-    public float secondsPerDay = 20f;
+    [Tooltip("Segundos reales por día de abeja; 0 = el día de juego del reloj (Clock: 1 h por defecto).")]
+    public float secondsPerDay = 0f;
+    /// <summary>Segundos reales de un día de abeja (el del reloj del juego salvo que se fije otro).</summary>
+    public float DaySeconds => secondsPerDay > 0f ? secondsPerDay : (TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay : 3600f);
     [Tooltip("Máximo de abejas de la colonia (las que nacen de más no se crean).")]
     public int maxBees = 12;
 
@@ -61,7 +63,7 @@ public class Hive : MonoBehaviour
 
     void Update()
     {
-        float days = Time.deltaTime / Mathf.Max(0.1f, secondsPerDay);
+        float days = Time.deltaTime / Mathf.Max(0.1f, DaySeconds);
         for (int i = 0; i < cells.Count; i++)
         {
             _since[i] += days;

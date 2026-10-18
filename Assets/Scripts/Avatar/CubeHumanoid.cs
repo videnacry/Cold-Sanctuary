@@ -68,7 +68,7 @@ public static class CubeHumanoid
         CubeHair.Look look = CubeHair.For(root.parent != null ? root.parent.name : "");
         Material cloth = Mat(clothes), flesh = Mat(skin), dark = look.hasPants ? Mat(look.pants) : Mat(clothes * 0.6f + new Color(0, 0, 0, 1));
         Material forearm = look.hasSleeves ? Mat(look.sleeves) : flesh;   // manga larga (camiseta interior) o brazo al aire
-        Material upperArm = look.hasUpperSleeves ? Mat(look.upperSleeves) : cloth;   // chaleco: las mangas son de la camiseta de debajo
+        Material upperArm = look.sleeveless ? flesh : look.hasUpperSleeves ? Mat(look.upperSleeves) : cloth;   // sin mangas / chaleco: las mangas son de la camiseta de debajo
         Material belly = look.hasWaist ? Mat(look.waist) : cloth;                    // corsé en la cintura
         Material shin = look.hasBoots ? Mat(look.boots) : look.shorts ? flesh : dark;   // botas altas / pantalón corto
         Material shoe = look.hasBoots ? Mat(look.boots) : look.hasShoes ? Mat(look.shoes) : look.shorts ? Mat(new Color(0.9f, 0.9f, 0.9f)) : dark;
@@ -110,6 +110,7 @@ public static class CubeHumanoid
         }
 
         Details(root, look);   // (el rig aún no tiene el mapa de huesos: se buscan por su articulación)
+        SoftMesh.Soften(root);  // más polígonos: miembros como cápsulas ahusadas, cabeza ovalada, cantos redondeados
         foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) j.Capture();
     }
 
@@ -160,6 +161,34 @@ public static class CubeHumanoid
         {
             Transform hips = Bone(BodyPart.Hips);
             if (hips != null) for (int i = 0; i < 6; i++) Deco(hips, new Vector3(0.175f, -0.05f - i * 0.035f, 0.03f - i * 0.012f), new Vector3(0.012f, 0.022f, 0.012f), new Color(0.65f, 0.67f, 0.7f));
+        }
+        if (look.hasStole && chest != null)   // CHAL/ESTOLA: tela cruzada del hombro izquierdo a la cadera derecha, por delante y por detrás
+        {
+            for (int k = 0; k < 2; k++)
+            {
+                float zf = k == 0 ? 0.125f : -0.125f;
+                Deco(chest, new Vector3(0f, 0.12f, zf), new Vector3(0.1f, 0.42f, 0.012f), look.stole, 0f, 38f);
+                Deco(chest, new Vector3(0.012f, 0.12f, zf + (k == 0 ? 0.002f : -0.002f)), new Vector3(0.02f, 0.42f, 0.012f), Color.Lerp(look.stole, new Color(0.2f, 0.6f, 0.6f), 0.7f), 0f, 38f);   // ribete turquesa
+            }
+            Deco(chest, new Vector3(-0.17f, 0.27f, 0f), new Vector3(0.1f, 0.05f, 0.26f), look.stole);   // sobre el hombro
+            if (back != null) Deco(back, new Vector3(0.1f, 0.0f, 0.118f), new Vector3(0.22f, 0.12f, 0.012f), look.stole, 0f, 25f);   // caída sobre el regazo
+        }
+        if (look.hasNecklace && chest != null)   // COLLAR: cadena (con cruz) o guirnalda de cuentas/flores
+        {
+            int beads = look.necklaceCross ? 9 : 13;
+            for (int i = 0; i < beads; i++)
+            {
+                float u = i / (float)(beads - 1) * 2f - 1f;   // −1…1 de un lado al otro
+                float y = 0.29f - (1f - u * u) * (look.necklaceCross ? 0.1f : 0.2f);
+                float bead = look.necklaceCross ? 0.008f : 0.02f;
+                Color bc = look.necklaceCross ? look.necklace : (i % 3 == 0 ? new Color(0.25f, 0.6f, 0.3f) : i % 3 == 1 ? look.necklace : new Color(0.97f, 0.97f, 0.93f));
+                Deco(chest, new Vector3(u * 0.09f, y, 0.122f + (1f - u * u) * 0.004f), Vector3.one * bead, bc);
+            }
+            if (look.necklaceCross)
+            {
+                Deco(chest, new Vector3(0f, 0.165f, 0.126f), new Vector3(0.008f, 0.045f, 0.004f), look.necklace);
+                Deco(chest, new Vector3(0f, 0.175f, 0.126f), new Vector3(0.028f, 0.008f, 0.004f), look.necklace);
+            }
         }
         if (look.rifle && chest != null)   // RIFLE colgado a la espalda, en diagonal, con su correa
         {

@@ -126,6 +126,11 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int wcs = 0; foreach (Transform tt in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (tt.name.StartsWith("Aseos")) wcs++;
         TestProbe.Greater("hay aseos en las áreas humanas", wcs, 4f, $"{wcs}");
         TestProbe.Check("Lizmibet (médica, amiga de Irosene) está en el santuario", FindByPrefix("Lizmibet"));
+        Clock clock = FindAnyObjectByType<Clock>();
+        float dayMin = TimeController.timeController.RealMinutesPerDay;
+        TestProbe.Check("un día de juego dura lo configurado en el reloj (1 h por defecto)", clock != null && Mathf.Abs(dayMin - clock.realMinutesPerDay) < 0.5f, $"{dayMin:0.#} min");
+        TestProbe.Check("hay área de Construcción con maquinaria y material", FindByPrefix("Construction_Area") && FindByPrefix("Miniexcavadora") && FindByPrefix("Hormigonera"));
+        TestProbe.Check("el jefe de construcción, Sadhguru y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Sadhguru") && FindByPrefix("Andrea"));
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
         TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
 

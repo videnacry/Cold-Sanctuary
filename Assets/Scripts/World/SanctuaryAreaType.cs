@@ -30,4 +30,7 @@ public enum SanctuaryAreaType
 
     // ── Tier 5 — expert ──────────────────────────────────────────────────────
     MonsterSection,       // Sección de monstruos — containment, language, healing
+
+    // ── Añadidas después (al final para no mover los valores guardados en la escena) ──
+    Construction,         // Construcción — obras y reparaciones de las áreas humanas; guarda maquinaria y material
 }

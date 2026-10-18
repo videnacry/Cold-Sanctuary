@@ -13,8 +13,32 @@ public class TimeController
     public void SetTimeSpeed (byte pTimeSpeed)
     {
         TimeSpeed = pTimeSpeed;
-        TimeSpeedMinuteSecs = 60 / pTimeSpeed;
+        TimeSpeedMinuteSecs = 60f / pTimeSpeed;
     }
+
+    // ── Calendario (configurable en `Clock`) ─────────────────────────────────────
+    // DURACIÓN DEL DÍA: minutos REALES que dura un día de juego (por defecto 60: un día = 1 hora). Todo lo que depende del
+    // tiempo (hambre por gasto de energía, metabolismo basal, sueño día/noche, digestión, gestaciones, crecimiento de la
+    // colmena, producción de las áreas, obrador de la cocina) lee de aquí, así que cambiar este número lo recalibra todo.
+    public float RealMinutesPerDay => TimeSpeedMinuteSecs * 1440f / 60f;
+    /// <summary>Segundos reales que dura un día de juego.</summary>
+    public float SecondsPerGameDay => TimeSpeedMinuteSecs * 1440f;
+    /// <summary>Días de juego que dura un AÑO de vida (estaciones comprimidas): los calendarios biológicos (gestación,
+    /// intervalo entre crías, madurez) se expresan en meses y se escalan a este año. Por defecto 28 (4 estaciones de 7 días).</summary>
+    public float DaysPerYear = 28f;
+
+    /// <summary>Fija cuántos minutos reales dura un día de juego (1 h → un minuto de juego = 2,5 s reales).</summary>
+    public void SetDayLength(float realMinutes)
+    {
+        realMinutes = Mathf.Max(0.5f, realMinutes);
+        TimeSpeedMinuteSecs = realMinutes * 60f / 1440f;
+        TimeSpeed = (byte)Mathf.Clamp(Mathf.RoundToInt(60f / TimeSpeedMinuteSecs), 1, 255);
+    }
+
+    /// <summary>Segundos REALES que duran <paramref name="months"/> meses biológicos en el calendario del santuario.</summary>
+    public float SecondsForMonths(float months) => months / 12f * DaysPerYear * SecondsPerGameDay;
+    /// <summary>Segundos REALES que duran <paramref name="days"/> días de juego.</summary>
+    public float SecondsForDays(float days) => days * SecondsPerGameDay;
 
     // ── Reloj del día ────────────────────────────────────────────────────────────
     // La VELOCIDAD (TimeSpeed) hace correr las horas; solo falta la HORA INICIAL (al Play). El componente `Clock` da el

@@ -94,7 +94,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
     public static void Characters()
     {
-        string[] names = { "Player", "Magnate", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene" };
+        string[] names = { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" };
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
         Directory.CreateDirectory(dir);
         Scene scene = EditorSceneManager.NewPreviewScene();
@@ -119,7 +119,8 @@ public static class PoseGallery
                 {
                     { "Linduarda", new Vector4(1.15f, 1.35f, 1.45f, 1.05f) }, { "Goluis", new Vector4(1.5f, 0.9f, 1.4f, 1.29f) },
                     { "Panterilia", new Vector4(0.7f, 0.95f, 0.9f, 0.79f) }, { "Gohageneis", new Vector4(1.1f, 1.2f, 1.3f, 1.09f) },
-                    { "Irosene", new Vector4(1.2f, 1.2f, 1.3f, 1.29f) },
+                    { "Irosene", new Vector4(1.2f, 1.2f, 1.3f, 1.29f) }, { "Lizmibet", new Vector4(0.95f, 1.05f, 1.2f, 1.05f) },
+                    { "JefeConstruccion", new Vector4(1.3f, 0.95f, 1.25f, 1.15f) }, { "Sadhguru", new Vector4(1.0f, 1.2f, 1.4f, 1.0f) }, { "Andrea", new Vector4(1.15f, 1.2f, 1.2f, 1.0f) },
                 };
                 if (an != null && st.TryGetValue(names[i], out Vector4 sv)) { an.strength = sv.x; an.agility = sv.y; an.endurance = sv.z; an.bodyMass = sv.w; }
                 if (who.TryGetComponent(out BodyShape bsh)) bsh.Apply(true);
@@ -180,7 +181,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Kitchen_Area", "Infirmary_Area", "Nido_Abejas", "Aseos" }) Snapshot(n);
+        foreach (string n in new[] { "Construction_Area", "YogaRoom_Area" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)

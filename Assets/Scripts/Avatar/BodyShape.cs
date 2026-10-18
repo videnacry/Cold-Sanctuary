@@ -160,6 +160,7 @@ public class BodyShape : MonoBehaviour
             if (amount < 0.05f) return;
             GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
             g.name = id;
+            SoftMesh.Apply(g, 0.5f, 1f, 1f, 5);   // relieve redondeado (músculo, grasa), no un ladrillo
             if (Application.isPlaying) Object.Destroy(g.GetComponent<Collider>()); else Object.DestroyImmediate(g.GetComponent<Collider>());
             g.transform.SetParent(j.transform, false);
             Renderer src = j.segment.GetComponent<Renderer>();

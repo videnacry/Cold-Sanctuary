@@ -73,7 +73,7 @@ public class ChecklistAuto : MonoBehaviour, ITestUnit
     {
         TimeController tc = TimeController.timeController;
         if (!TestProbe.NotNull("hay TimeController", tc)) yield break;
-        byte original = tc.TimeSpeed;
+        float originalDay = tc.RealMinutesPerDay;   // la duración del día configurada (Clock)
 
         tc.SetTimeSpeed(1);
         float secsAt1 = tc.TimeSpeedMinuteSecs;
@@ -106,6 +106,6 @@ public class ChecklistAuto : MonoBehaviour, ITestUnit
         TestProbe.Greater("a x20 produce MÁS que a x1", fast, slow, $"x1 +{slow:F2} vs x20 +{fast:F2} Food/s");
 
         Object.Destroy(go);
-        tc.SetTimeSpeed(original);      // restaurar: otras unidades/el juego leen la velocidad global
+        tc.SetDayLength(originalDay);   // restaurar: otras unidades/el juego leen la velocidad global
     }
 }

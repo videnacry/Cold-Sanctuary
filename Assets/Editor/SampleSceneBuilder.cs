@@ -131,6 +131,7 @@ public static partial class SampleSceneBuilder
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
+        PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         BakeNavMesh();
@@ -3086,6 +3087,20 @@ public static partial class SampleSceneBuilder
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
     // salud, lanza el status global y va a atenderlo (análisis + vacuna). Guion EMERGENTE (no scriptado).
+    /// <summary>Un personaje del juego (cápsula que <c>DressHumanoids</c> viste con su aspecto de CubeHair.For).</summary>
+    static GameObject MakeCharacter(Transform parent, string name, string label, Vector3 pos, Color clothes, float strength, float agility, float endurance, float mass)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        g.name = name; g.transform.SetParent(parent); g.transform.position = pos;
+        var r = g.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial(name + "_MAT", clothes);
+        Anima a = g.AddComponent<Anima>();
+        a.strength = strength; a.agility = agility; a.endurance = endurance; a.bodyMass = mass;
+        g.AddComponent<Mind>().identity = name;
+        g.AddComponent<WorldLabel>().text = label;
+        g.AddComponent<WorldCharacter>().characterName = name;
+        return g;
+    }
+
     static void BuildLinduarda(Transform parent)
     {
         GameObject root = new GameObject("Enfermeria_AUTO"); root.transform.SetParent(parent);
@@ -3108,6 +3123,14 @@ public static partial class SampleSceneBuilder
         lza.strength = 0.95f; lza.agility = 1.05f; lza.endurance = 1.2f; lza.bodyMass = 1.05f;   // activa a sus 70 y tantos
         liz.AddComponent<Mind>().identity = "Lizmibet";
         WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Lizmibet (médica)";
+        liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
+
+        // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
+        // humanas desde el área de Construcción (maquinaria y material). SADHGURU da las clases en el centro de yoga.
+        // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
+        MakeCharacter(root.transform, "JefeConstruccion", "Jefe de construcción (esposo de Lizmibet)", new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
+        MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
 
         GameObject wolf = LoadAnimalPrefab("Wolf");
         if (wolf != null)
@@ -3488,6 +3511,11 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
                 new Vector3(118f, 0f, 6f), new Vector2(16f, 12f), new Color(0.85f, 0.7f, 0.68f)),
 
+            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
+            // maquinaria y el material. La dirige el esposo de Lizmibet. En el hub, al oeste del huerto.
+            BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
+                new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.72f, 0.4f)),
+
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
                 new Vector3(5f, 0f, -30f), new Vector2(24f, 20f), new Color(0.50f, 0.70f, 0.40f)),
         };
@@ -3497,15 +3525,17 @@ public static partial class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(24f, 32f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f) };
+        Vector2[] sizes = { new Vector2(24f, 32f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
+        FurnishConstruction(areas[6].transform, sizes[6]);   // maquinaria, material, herramientas y taller de obra
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Aseos(areas[2].transform, new Vector3(-sizes[2].x * 0.5f + 0.2f + 2.85f, 0.1f, sizes[2].y * 0.5f - 0.9f), 180f);       // sala de yoga
         Aseos(areas[3].transform, new Vector3(-sizes[3].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[3].y * 0.5f - 0.9f), 180f, 1);    // mecánica
         Aseos(areas[4].transform, new Vector3(-sizes[4].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[4].y * 0.5f - 0.9f), 180f, 1);    // textil
         Aseos(areas[5].transform, new Vector3(sizes[5].x * 0.5f - 0.2f - 1.9f, 0.1f, -sizes[5].y * 0.5f + 0.9f), 0f, 1);      // laboratorio
+        Aseos(areas[6].transform, new Vector3(sizes[6].x * 0.5f - 0.2f - 1.9f, 0.1f, sizes[6].y * 0.5f - 0.9f), 180f, 1);    // construcción
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
         GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");

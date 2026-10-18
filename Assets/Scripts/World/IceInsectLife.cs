@@ -142,7 +142,7 @@ public class IceInsectLife : MonoBehaviour
     // sobre el panal y tiritan para mantener la cría a ~35 °C (gastan miel).
     void ColonyLife()
     {
-        float daysPerSec = 1f / Mathf.Max(0.1f, hive.secondsPerDay);
+        float daysPerSec = 1f / Mathf.Max(0.1f, hive.DaySeconds);
         ageDays += Time.deltaTime * daysPerSec;
         role = isQueen ? Role.Reina : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
         if (isQueen && transform.localScale.x < 1.3f) transform.localScale = Vector3.one * 1.35f;   // la reina, más larga

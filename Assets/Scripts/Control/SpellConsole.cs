@@ -288,6 +288,15 @@ public class SpellConsole : MonoBehaviour
             case "where": case "donde": LogWhere(args.TryGetValue("destiny", out string wf) ? wf : null); break;
             case "censo": case "census": foreach (string c in AnimalVitals.Census()) Log("  " + c); break;
             case "hora": case "hour": if (TimeController.timeController != null && float.TryParse(args.TryGetValue("destiny", out string hv) ? hv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hh)) { TimeController.timeController.SetHour(hh); Log($"Son las {hh:00}:00."); } break;
+            case "dia": case "día": case "day":   // dia(N): un día de juego dura N minutos reales (sin N: muestra el calendario)
+                if (TimeController.timeController != null)
+                {
+                    TimeController tcd = TimeController.timeController;
+                    if (float.TryParse(args.TryGetValue("destiny", out string dv) ? dv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float dm))
+                    { Clock ck = FindAnyObjectByType<Clock>(); if (ck != null) ck.SetDayLength(dm); else tcd.SetDayLength(dm); }
+                    Log($"Un día de juego dura {tcd.RealMinutesPerDay:0.#} min reales (1 min de juego = {tcd.TimeSpeedMinuteSecs:0.##} s); un año = {tcd.DaysPerYear:0} días. Son las {tcd.Hour:00.0} h.");
+                }
+                break;
             case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "exit": case "salir": if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) { MobWorldLoader.Instance.ExitMobWorld(); Log($"«{self.name}» sale del microcosmos."); } else Log("No estás en un microcosmos."); break;

@@ -30,9 +30,14 @@ Para ver los retratos: menú **Tools > Cold Sanctuary > Character Gallery**, que
 | **Panterilia** | 42 años; el personaje de la percepción, delgada; dirige la limpieza y la farmacia; alma 90 % humana y 5 % león. Sin nacionalidad. | 1,68 m, delgada. Melena leonada, ojos ámbar (el toque del león). Ropa verde oliva. |
 | **Gohageneis** | 28 años, "el Papi"; dejó su casa a los 16: Venezuela → Colombia → Perú → Ecuador → España → EE. UU.; equilibrado tirando a ágil. | **Según su captura:** 1,76 m, atlético. Pelo corto, sin barba, gorra azul con la «V» amarilla y roja (la de Venezuela). Camiseta blanca y pantalón corto rojo. |
 | **Irosene** | Más de 70 años, ecuatoriana, madre de 9; antes con sobrepeso y secuelas de un cáncer, hoy corre, escala y bucea; destaca en el textil. | **Según su captura:** 1,55 m. Melena larga y ondulada, rubia con canas, con flequillo. Piel clara, ojos azul grisáceo. Tejido andino coral. |
+| **Lizmibet** | Más de 70 años, ecuatoriana, médica; la gran amiga de Irosene. | **Según su foto:** 1,55 m. Pelo corto rizado y voluminoso castaño cobrizo, gafas finas plateadas, piel clara. Vestido blanco campesino de manga larga hasta los tobillos y sandalias blancas. Trabaja en la enfermería. |
+| **Jefe de construcción** (esposo de Lizmibet) | Dirige las obras y reparaciones de las áreas humanas (`construction-simulation.md`). Nombre por confirmar. | **Según su foto:** 1,68 m, robusto. Pelo corto oscuro entrecano peinado hacia atrás, gafas de sol oscuras, piel morena clara. Polo gris claro, bermudas verde salvia con cinturón, chanclas negras y reloj. Trabaja en el área de Construcción. |
+| **Sadhguru** | Da las clases en el centro de yoga (la práctica de cuello de upa-yoga, `upa-yoga-mission.md`). | **Según su foto:** 1,72 m. Turbante crema con una franja granate, barba larga blanca y bigote poblado, piel morena. Camiseta sin mangas verde agua, dhoti blanco, chal blanco con ribete turquesa, guirnalda de flores, descalzo. En la tarima de la sala de yoga. |
+| **Andrea** | Uno de los dueños del santuario. | **Según su foto:** 1,78 m, joven. Pelo castaño oscuro ondulado y rizado con volumen arriba, pendientes, cadena plateada con cruz, pulsera, camiseta y pantalón corto negros. En el comedor del restaurante. |
 
 ## Pendiente de confirmar
 
 1. La nacionalidad de Kushal, Goluis y Panterilia.
 2. El aspecto de Panterilia (no hay referencia todavía).
 3. ¿El rifle de Kushal es de dardos tranquilizantes? El santuario no mata animales.
+4. El nombre del esposo de Lizmibet.

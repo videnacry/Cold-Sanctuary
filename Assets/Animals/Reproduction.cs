@@ -79,14 +79,16 @@ public class Reproduction : MonoBehaviour
     void Conceive()
     {
         _pregnant = true;
-        int speed = TimeController.timeController != null ? Mathf.Max(1, TimeController.timeController.TimeSpeed) : 1;
-        _birthTime = Time.time + gestationSeconds / speed;   // gestación acelerada por la velocidad de juego
+        // GESTACIÓN real de la especie (meses) escalada al calendario del santuario (Clock: día y año configurables).
+        TimeController tc = TimeController.timeController;
+        _birthTime = Time.time + (tc != null ? tc.SecondsForMonths(Calendar(_animal.SpeciesName).gestationMonths) : gestationSeconds);
     }
 
     void GiveBirth()
     {
         _pregnant = false;
-        _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, SpeciesInterval(_animal.SpeciesName));   // una cría por temporada, no cada minuto
+        TimeController tcb = TimeController.timeController;
+        _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, tcb != null ? tcb.SecondsForMonths(Calendar(_animal.SpeciesName).intervalMonths) : 600f);   // una cría por temporada (calendario real de la especie)
         SpawnOffspring();
     }
 
@@ -102,9 +104,14 @@ public class Reproduction : MonoBehaviour
 
     // Tiempo mínimo entre partos de una misma madre (≈ una temporada de cría; se recalibra con el calendario del juego).
 
-    static float SpeciesInterval(string sp) => sp switch
+    /// <summary>Calendario reproductor REAL por especie (meses): gestación e intervalo mínimo entre partos de la misma madre.
+    /// Foca común 10–11 m, cría anual; pingüino emperador ~2 m de incubación, anual; oso polar ~8 m (implantación
+    /// diferida), cada 3 años; ballena jorobada ~11,5 m, cada 2–3 años; orca ~17 m, cada ~5 años; zorro ártico ~52 días;
+    /// lobo ~63 días, ambos anuales.</summary>
+    public static (float gestationMonths, float intervalMonths) Calendar(string sp) => sp switch
     {
-        "Seal" => 240f, "Penguin" => 200f, "Bear" => 480f, "PolarBear" => 480f, "Whale" => 600f, "Orca" => 720f, _ => 60f,
+        "Seal" => (10.5f, 12f), "Penguin" => (2f, 12f), "Bear" => (8f, 36f), "PolarBear" => (8f, 36f),
+        "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f), _ => (2f, 12f),
     };
     public Animal SpawnOffspring()
     {
