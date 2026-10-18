@@ -181,7 +181,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Kitchen_Area", "ArboledaResidencial" }) Snapshot(n);
+        foreach (string n in new[] { "Kitchen_Area" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)

@@ -3065,17 +3065,29 @@ public static partial class SampleSceneBuilder
         // las áreas elevadas quedan entre sus troncos (la gente vive con la naturaleza, no en un claro aparte).
         var rndF = new System.Random(5150);
         int fused = 0;
+        // Huella de cada área (sus piezas, con 3 m de margen): ningún árbol crece DENTRO de una plataforma.
+        var prints = new List<Bounds>();
+        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
+        {
+            Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
+            Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
+            bb.Expand(new Vector3(6f, 0f, 6f)); prints.Add(bb);
+        }
+        bool InsideArea(Vector3 q) { foreach (Bounds bb in prints) if (q.x > bb.min.x && q.x < bb.max.x && q.z > bb.min.z && q.z < bb.max.z) return true; return false; }
         foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
         {
             Vector3 c = a.transform.position; c.y = 0f;
+            Renderer[] ars = a.GetComponentsInChildren<Renderer>();
+            float reach = 16f;
+            if (ars.Length > 0) { Bounds ab = ars[0].bounds; foreach (Renderer rr in ars) ab.Encapsulate(rr.bounds); reach = Mathf.Max(16f, new Vector2(ab.extents.x, ab.extents.z).magnitude + 3f); }
             for (int k = 0; k < 3; k++)
             {
                 float ang = (k * 120f + 30f + (float)rndF.NextDouble() * 30f) * Mathf.Deg2Rad;   // nunca delante de la escalera (+Z)
                 if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
-                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (16f + (float)rndF.NextDouble() * 4f);
+                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (reach + (float)rndF.NextDouble() * 4f);
                 bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
                 for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
-                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z)) continue;
+                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
                 GameObject dining = GameObject.Find("Comedor_Gourmet");
                 if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
                 CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false);
