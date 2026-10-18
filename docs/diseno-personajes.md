@@ -30,10 +30,9 @@ Para ver los retratos: menú **Tools > Cold Sanctuary > Character Gallery**, que
 | **Panterilia** | 42 años; el personaje de la percepción, delgada; dirige la limpieza y la farmacia; alma 90 % humana y 5 % león. Sin nacionalidad. | 1,68 m, delgada. Melena leonada, ojos ámbar (el toque del león). Ropa verde oliva. |
 | **Gohageneis** | 28 años, "el Papi"; dejó su casa a los 16: Venezuela → Colombia → Perú → Ecuador → España → EE. UU.; equilibrado tirando a ágil. | **Según su captura:** 1,76 m, atlético. Pelo corto, sin barba, gorra azul con la «V» amarilla y roja (la de Venezuela). Camiseta blanca y pantalón corto rojo. |
 | **Irosene** | Más de 70 años, ecuatoriana, madre de 9; antes con sobrepeso y secuelas de un cáncer, hoy corre, escala y bucea; destaca en el textil. | **Según su captura:** 1,55 m. Melena larga y ondulada, rubia con canas, con flequillo. Piel clara, ojos azul grisáceo. Tejido andino coral. |
-| **Cocineros** | Personajes genéricos de la cocina. | Gorro y chaqueta blancos; tono de piel variado. |
 
 ## Pendiente de confirmar
 
 1. La nacionalidad de Kushal, Goluis y Panterilia.
 2. El aspecto de la Magnate (edad aparente, pelo, ropa).
-3. Si alguien lleva algo propio, como gafas, tatuajes o una prenda concreta.
+3. Capturas de referencia de Kushal, la Magnate y Panterilia, si las hay.
