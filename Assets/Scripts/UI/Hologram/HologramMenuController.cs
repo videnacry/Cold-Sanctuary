@@ -63,12 +63,12 @@ public class HologramMenuController : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(menuToggleKey))
+        if (GameKeys.GetKeyDown(menuToggleKey))
         {
             if (_menuOpen) CloseAll();
             else OpenRoot();
         }
-        else if (_menuOpen && Input.GetKeyDown(KeyCode.Escape))
+        else if (_menuOpen && GameKeys.GetKeyDown(KeyCode.Escape))
         {
             CloseAll();
         }

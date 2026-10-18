@@ -62,7 +62,7 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(attackKey)) TryAttack();
+        if (GameKeys.GetKeyDown(attackKey)) TryAttack();
     }
 
     // ── Attack ────────────────────────────────────────────────────────────────

@@ -65,7 +65,7 @@ public class FormicAcidSpray : SpellBase
             }
         }
 
-        if (_self != null && Input.GetKeyDown(sprayKey) && CanCast(_self, null))
+        if (_self != null && GameKeys.GetKeyDown(sprayKey) && CanCast(_self, null))
         {
             if (!PayEnergy(_self)) { Debug.Log("[Ácido] Sin energía para lanzar."); return; }
             Cast(_self, null);

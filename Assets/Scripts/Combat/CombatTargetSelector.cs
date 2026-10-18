@@ -72,8 +72,8 @@ public class CombatTargetSelector : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(cycleKey))    CycleTarget();
-        if (Input.GetKeyDown(deselectKey)) Deselect();
+        if (GameKeys.GetKeyDown(cycleKey))    CycleTarget();
+        if (GameKeys.GetKeyDown(deselectKey)) Deselect();
     }
 
     // ── Public API ────────────────────────────────────────────────────────────

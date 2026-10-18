@@ -28,10 +28,10 @@ public class KitchenBoss : MonoBehaviour
     void Awake()
     {
         _a = GetComponent<Anima>();
-        _g = GetComponent<Grimoire>() ?? gameObject.AddComponent<Grimoire>();
+        _g = this.GetOrAdd<Grimoire>();
         _g.knowsAll = true;   // el jefe sabe todo lo de la cocina → puede enseñarlo
-        _follow = GetComponent<FollowSpell>() ?? gameObject.AddComponent<FollowSpell>();
-        _teach = GetComponent<TeachSpell>() ?? gameObject.AddComponent<TeachSpell>();
+        _follow = this.GetOrAdd<FollowSpell>();
+        _teach = this.GetOrAdd<TeachSpell>();
         _next = Time.time + 2f;
     }
 

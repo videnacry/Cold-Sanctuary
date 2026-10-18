@@ -32,7 +32,7 @@ public static class CubeBody
     public static void Build(GameObject root, string species)
     {
         List<Part> parts = PartsOf(PlanFor(species));
-        CreatureRig rig = root.GetComponent<CreatureRig>() ?? root.AddComponent<CreatureRig>();
+        CreatureRig rig = root.GetOrAdd<CreatureRig>();
         foreach (Part p in parts)
         {
             GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);

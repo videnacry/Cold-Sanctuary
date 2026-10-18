@@ -172,19 +172,19 @@ public class PlayerController : MonoBehaviour
         // Mouse look only while cameraLookButton is held (see HandleCursorToggle) — the
         // cursor gets locked for the duration of the hold so the delta doesn't run out at
         // the screen edge, then released so the other button stays free for UI/interact.
-        if (Input.GetKey(cameraLookButton))
+        if (GameKeys.GetKey(cameraLookButton))
         {
-            yaw   += Input.GetAxis("Mouse X") * mouseSensitivityX;
-            pitch -= Input.GetAxis("Mouse Y") * mouseSensitivityY;
+            yaw   += GameKeys.GetAxis("Mouse X") * mouseSensitivityX;
+            pitch -= GameKeys.GetAxis("Mouse Y") * mouseSensitivityY;
         }
 
         // Keyboard look (arrow keys — additive with mouse)
         if (enableKeyboardLook)
         {
-            if (Input.GetKey(lookRightKey)) yaw   += keyboardYawSpeed   * Time.deltaTime;
-            if (Input.GetKey(lookLeftKey))  yaw   -= keyboardYawSpeed   * Time.deltaTime;
-            if (Input.GetKey(lookDownKey))  pitch += keyboardPitchSpeed  * Time.deltaTime;
-            if (Input.GetKey(lookUpKey))    pitch -= keyboardPitchSpeed  * Time.deltaTime;
+            if (GameKeys.GetKey(lookRightKey)) yaw   += keyboardYawSpeed   * Time.deltaTime;
+            if (GameKeys.GetKey(lookLeftKey))  yaw   -= keyboardYawSpeed   * Time.deltaTime;
+            if (GameKeys.GetKey(lookDownKey))  pitch += keyboardPitchSpeed  * Time.deltaTime;
+            if (GameKeys.GetKey(lookUpKey))    pitch -= keyboardPitchSpeed  * Time.deltaTime;
         }
 
         // Apply yaw to the player body
@@ -241,24 +241,24 @@ public class PlayerController : MonoBehaviour
         }
 
         // Horizontal (dirección cámara-relativa; la velocidad la da el WalkSpell si está — locomoción universal).
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = GameKeys.GetAxisRaw("Horizontal");
+        float v = GameKeys.GetAxisRaw("Vertical");
         Vector3 move = Vector3.ClampMagnitude(transform.right * h + transform.forward * v, 1f);
         float speed;
         if (_walk != null)
         {
-            bool charging   = Input.GetKey(_walk.chargeKey);     // LeftShift parado = postura de salida
-            bool channeling = Input.GetKey(_walk.channelKey);    // RightShift = subir a la punta
+            bool charging   = GameKeys.GetKey(_walk.chargeKey);     // LeftShift parado = postura de salida
+            bool channeling = GameKeys.GetKey(_walk.channelKey);    // RightShift = subir a la punta
             speed = _walk.StepSpeed(charging, channeling, move.sqrMagnitude > 0.01f, Time.deltaTime);
             if (_walk.IsCharging) move = Vector3.zero;            // cargando: quieto tomando postura (con gravedad)
         }
-        else speed = Input.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
+        else speed = GameKeys.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
 
         // Vertical / gravity
         if (_cc.isGrounded)
         {
             _verticalVelocity = -2f; // keep grounded
-            if (Input.GetKeyDown(jumpKey))
+            if (GameKeys.GetKeyDown(jumpKey))
                 _verticalVelocity = Mathf.Sqrt(jumpHeight * 2f * gravity);
         }
         else
@@ -297,13 +297,13 @@ public class PlayerController : MonoBehaviour
 
     void HandleSwimMovement()
     {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
+        float h = GameKeys.GetAxisRaw("Horizontal");
+        float v = GameKeys.GetAxisRaw("Vertical");
         Vector3 move = Vector3.ClampMagnitude(transform.right * h + transform.forward * v, 1f);
 
         float vertical = 0f;
-        if (Input.GetKey(jumpKey))     vertical += 1f;
-        if (Input.GetKey(swimDownKey)) vertical -= 1f;
+        if (GameKeys.GetKey(jumpKey))     vertical += 1f;
+        if (GameKeys.GetKey(swimDownKey)) vertical -= 1f;
 
         Vector3 velocity = move * swimSpeed;
         velocity.y = vertical * swimVerticalSpeed;
@@ -319,7 +319,7 @@ public class PlayerController : MonoBehaviour
 
     void HandlePerspectiveToggle()
     {
-        if (!Input.GetKeyDown(perspectiveToggleKey)) return;
+        if (!GameKeys.GetKeyDown(perspectiveToggleKey)) return;
         // V es también "jugar con criatura": junto a una, la tecla es del juego, no de la cámara (antes giraba la vista a cada toque).
         if (TryGetComponent(out PlayController play) && play.playKey == perspectiveToggleKey && play.HasTargetInRange) return;
         if (CameraManager.Instance == null) return;
@@ -340,11 +340,11 @@ public class PlayerController : MonoBehaviour
     {
         if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) return;
 
-        if (Input.GetKeyDown(cameraLookButton))
+        if (GameKeys.GetKeyDown(cameraLookButton))
             SetCursorLocked(true);
-        else if (Input.GetKeyUp(cameraLookButton))
+        else if (GameKeys.GetKeyUp(cameraLookButton))
             SetCursorLocked(false);
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (GameKeys.GetKeyDown(KeyCode.Escape))
             SetCursorLocked(false);
     }
 

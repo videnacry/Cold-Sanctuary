@@ -40,7 +40,7 @@ public class AvatarController : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKeyDown(switchKey)) return;
+        if (!GameKeys.GetKeyDown(switchKey)) return;
         if (!inSimulation && !canSwitchOutsideSim) return;
         CycleNext();
     }

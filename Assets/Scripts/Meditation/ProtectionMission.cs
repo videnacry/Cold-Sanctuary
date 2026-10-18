@@ -92,7 +92,7 @@ public class ProtectionMission : MonoBehaviour
         if (wardPrefab != null)
         {
             go = Instantiate(wardPrefab, transform.position, Quaternion.identity);
-            _ward = go.GetComponent<ProtectMob>() ?? go.AddComponent<ProtectMob>();
+            _ward = go.GetOrAdd<ProtectMob>();
         }
         else
         {
@@ -130,7 +130,7 @@ public class ProtectionMission : MonoBehaviour
         if (attackerPrefab != null)
         {
             GameObject go = Instantiate(attackerPrefab, pos, Quaternion.identity);
-            mob = go.GetComponent<WardAttackerMob>() ?? go.AddComponent<WardAttackerMob>();
+            mob = go.GetOrAdd<WardAttackerMob>();
         }
         else
         {

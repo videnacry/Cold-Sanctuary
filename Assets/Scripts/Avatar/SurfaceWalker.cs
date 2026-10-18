@@ -61,8 +61,8 @@ public class SurfaceWalker : MonoBehaviour
 
     void SurfaceMove()
     {
-        float turn = controlEnabled ? Input.GetAxisRaw("Horizontal") : 0f;
-        float fwd  = controlEnabled ? Input.GetAxisRaw("Vertical")   : 0f;
+        float turn = controlEnabled ? GameKeys.GetAxisRaw("Horizontal") : 0f;
+        float fwd  = controlEnabled ? GameKeys.GetAxisRaw("Vertical")   : 0f;
 
         // Turn around the current up.
         if (turn != 0f)
@@ -117,9 +117,9 @@ public class SurfaceWalker : MonoBehaviour
         _up = Vector3.up;
         if (!controlEnabled) return;
 
-        float turn = Input.GetAxisRaw("Horizontal");
-        float fwd  = Input.GetAxisRaw("Vertical");
-        float vert = (Input.GetKey(ascendKey) ? 1f : 0f) - (Input.GetKey(descendKey) ? 1f : 0f);
+        float turn = GameKeys.GetAxisRaw("Horizontal");
+        float fwd  = GameKeys.GetAxisRaw("Vertical");
+        float vert = (GameKeys.GetKey(ascendKey) ? 1f : 0f) - (GameKeys.GetKey(descendKey) ? 1f : 0f);
 
         if (turn != 0f)
             transform.Rotate(Vector3.up, turn * turnSpeed * Time.deltaTime, Space.World);

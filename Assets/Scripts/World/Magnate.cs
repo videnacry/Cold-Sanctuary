@@ -39,9 +39,9 @@ public class Magnate : MonoBehaviour
     {
         _a = GetComponent<Anima>();
         MaxOut();
-        AiBrain ai = GetComponent<AiBrain>() ?? gameObject.AddComponent<AiBrain>();
+        AiBrain ai = this.GetOrAdd<AiBrain>();
         ai.selfRelevance = 99999f;   // nadie la posee
-        _pacify = GetComponent<PacifySpell>() ?? gameObject.AddComponent<PacifySpell>();
+        _pacify = this.GetOrAdd<PacifySpell>();
         _pacify.force = 2f;
         _nextTeach = Time.time + 3f;
     }
@@ -137,7 +137,7 @@ public class Magnate : MonoBehaviour
         }
     }
 
-    static ActionQueue Queue(Anima t) => t.GetComponent<ActionQueue>() ?? t.gameObject.AddComponent<ActionQueue>();
+    static ActionQueue Queue(Anima t) => t.GetOrAdd<ActionQueue>();
     static float Flat(Vector3 v) { v.y = 0f; return v.magnitude; }
 
     static Transform FindSpot(string n) { GameObject g = GameObject.Find(n); return g != null ? g.transform : null; }
@@ -203,7 +203,7 @@ public class Magnate : MonoBehaviour
 
         // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; luego Yoga Namaskar; luego el Saludo al Sol.
         // (El Grimoire se aprende al COMPLETAR la lección, en TeachingSession.Finish, no al empezarla.)
-        Grimoire g = t.GetComponent<Grimoire>() ?? t.gameObject.AddComponent<Grimoire>();
+        if (!t.TryGetComponent(out Grimoire g)) g = t.gameObject.AddComponent<Grimoire>();
         System.Func<List<QueuedSpell>> builder; string learn, label;
         if (!g.Knows("upa-yoga"))           { builder = () => UpaYoga.NeckSequence();   learn = "upa-yoga";      label = "upa-yoga de cuello"; }
         else if (!g.Knows("yoga-namaskar")) { builder = () => YogaNamaskar.Sequence();  learn = "yoga-namaskar"; label = "Yoga Namaskar"; }

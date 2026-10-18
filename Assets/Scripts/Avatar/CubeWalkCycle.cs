@@ -16,6 +16,8 @@ public class CubeWalkCycle : MonoBehaviour
     CreatureRig _rig;
     Vector3 _last;
     float _phase, _blend;
+    public float Blend => _blend;
+    public float LastSpeed { get; private set; }
 
     void Awake() { _rig = GetComponent<CreatureRig>(); _last = transform.position; }
 
@@ -24,7 +26,7 @@ public class CubeWalkCycle : MonoBehaviour
         if (_rig == null || Time.deltaTime <= 0f) return;
         Vector3 d = transform.position - _last; d.y = 0f;
         _last = transform.position;
-        float speed = d.magnitude / Time.deltaTime;
+        float speed = d.magnitude / Time.deltaTime; LastSpeed = speed;
         float target = speed > 0.2f ? Mathf.Clamp01(speed / 1.5f) : 0f;
         bool wasWalking = _blend > 0.01f;
         _blend = Mathf.MoveTowards(_blend, target, 3f * Time.deltaTime);

@@ -30,9 +30,9 @@ public class Linduarda : MonoBehaviour
     {
         _a = GetComponent<Anima>();
         MobWorldLoader.Exited += OnBackFromMicro;
-        _vax = GetComponent<VaccinateSpell>() ?? gameObject.AddComponent<VaccinateSpell>();
-        _analysis = GetComponent<ClinicalAnalysisSpell>() ?? gameObject.AddComponent<ClinicalAnalysisSpell>();
-        _follow = GetComponent<FollowSpell>() ?? gameObject.AddComponent<FollowSpell>();
+        _vax = this.GetOrAdd<VaccinateSpell>();
+        _analysis = this.GetOrAdd<ClinicalAnalysisSpell>();
+        _follow = this.GetOrAdd<FollowSpell>();
         _next = Time.time + 1f;   // al empezar el juego lanza el status global enseguida
     }
 

@@ -23,7 +23,7 @@ public class Cleaner : MonoBehaviour
         {
             if (Time.time >= _nextAuto) { _nextAuto = Time.time + autoInterval; TryClean(); }
         }
-        else if (Input.GetKeyDown(cleanKey))
+        else if (GameKeys.GetKeyDown(cleanKey))
         {
             TryClean();
         }

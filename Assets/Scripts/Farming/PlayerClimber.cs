@@ -43,7 +43,7 @@ public class PlayerClimber : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKey(climbKey)) { StopClimb(); return; }
+        if (!GameKeys.GetKey(climbKey)) { StopClimb(); return; }
 
         Climbable target = FindClimbable();
         if (target == null) { StopClimb(); return; }

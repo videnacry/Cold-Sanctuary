@@ -45,7 +45,7 @@ public class AiBrain : MonoBehaviour, IBrain
         {
             if (useVolition)   // D3b1: el motor de volición decide (paridad tras flag); OFF = prioridad fija de siempre.
             {
-                if (_volition == null) _volition = _animal.GetComponent<Volition>() ?? _animal.gameObject.AddComponent<Volition>();
+                if (_volition == null) _volition = _animal.GetOrAdd<Volition>();
                 _volition.Tick(_animal);
             }
             else _animal.ActiveBehaveTick();

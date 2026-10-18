@@ -42,7 +42,7 @@ public class PlayerBrain : MonoBehaviour, IBrain
         if (_walk != null) { _walk.DriveFromInput(); return; }
 
         // Fallback para cuerpos sin WalkSpell: movimiento propio (ejes por defecto de Unity: WASD / flechas).
-        Vector3 move = new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+        Vector3 move = new Vector3(GameKeys.GetAxis("Horizontal"), 0f, GameKeys.GetAxis("Vertical"));
         if (move.sqrMagnitude > 1f) move.Normalize();
 
         if (_cc != null && _cc.enabled) _cc.SimpleMove(move * moveSpeed);          // respeta gravedad/colisiones

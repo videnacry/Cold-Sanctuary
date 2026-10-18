@@ -29,7 +29,7 @@ public class RootInquiryMission : MeditationMissionBase
         if (absorbentPrefab != null)
         {
             GameObject go = Instantiate(absorbentPrefab, position, Quaternion.identity);
-            mob = go.GetComponent<AbsorbentThoughtMob>() ?? go.AddComponent<AbsorbentThoughtMob>();
+            mob = go.GetOrAdd<AbsorbentThoughtMob>();
         }
         else
         {

@@ -78,7 +78,7 @@ public class FireSpell : SpellBase
 
         if (IsCharging) { _fireTimer = 0f; return; } // cargando la esfera gigante: no dispara repetido
 
-        if (Input.GetKey(spellKey))                  // mantener tecla → disparo múltiple
+        if (GameKeys.GetKey(spellKey))                  // mantener tecla → disparo múltiple
         {
             _fireTimer -= dt;
             if (_fireTimer <= 0f)

@@ -39,7 +39,7 @@ public static class CubeHumanoid
         body.transform.localPosition = new Vector3(0f, feetY / Mathf.Max(0.01f, who.transform.lossyScale.y), 0f);
         body.transform.localScale = Vector3.one * s;
 
-        CreatureRig rig = who.GetComponent<CreatureRig>() ?? who.AddComponent<CreatureRig>();
+        CreatureRig rig = who.GetOrAdd<CreatureRig>();
         rig.humanoidAnimator = null;      // manda el cuerpo de cubos, no los huesos del .fbx
         rig.bindings.Clear();
         Build(body.transform, rig, clothes, skin);

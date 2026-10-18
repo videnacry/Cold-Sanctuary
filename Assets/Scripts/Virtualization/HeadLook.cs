@@ -45,10 +45,10 @@ public class HeadLook : MonoBehaviour
         if (UpaYogaSession.Active) return;    // durante el yoga, IJKL las consume la sesión (no mueven la cámara)
 
         float dy = 0f, dp = 0f;
-        if (Input.GetKey(right)) dy += 1f;
-        if (Input.GetKey(left)) dy -= 1f;
-        if (Input.GetKey(up)) dp -= 1f;     // mirar arriba = pitch negativo
-        if (Input.GetKey(down)) dp += 1f;
+        if (GameKeys.GetKey(right)) dy += 1f;
+        if (GameKeys.GetKey(left)) dy -= 1f;
+        if (GameKeys.GetKey(up)) dp -= 1f;     // mirar arriba = pitch negativo
+        if (GameKeys.GetKey(down)) dp += 1f;
 
         _yaw = Mathf.Clamp(_yaw + dy * speed * Time.deltaTime, -yawLimit, yawLimit);
         _pitch = Mathf.Clamp(_pitch + dp * speed * Time.deltaTime, -pitchLimit, pitchLimit);

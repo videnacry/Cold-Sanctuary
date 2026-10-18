@@ -39,7 +39,7 @@ public class PlayerCore : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(swapKey)) SwapToNearest();
+        if (GameKeys.GetKeyDown(swapKey)) SwapToNearest();
         if (followCamera) FollowBody();
     }
 

@@ -30,7 +30,7 @@ public class HealingMission : MeditationMissionBase
         if (healMobPrefab != null)
         {
             GameObject go = Instantiate(healMobPrefab, position, Quaternion.identity);
-            mob = go.GetComponent<HealMob>() ?? go.AddComponent<HealMob>();
+            mob = go.GetOrAdd<HealMob>();
         }
         else
         {

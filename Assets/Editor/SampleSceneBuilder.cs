@@ -2222,7 +2222,7 @@ public static class SampleSceneBuilder
         foreach (Anima a in Object.FindObjectsOfType<Anima>())
         {
             if (a is Animal || a.GetComponent<PlayableCreature>() != null) continue;
-            if (a.GetComponentInChildren<CubeJoint>() != null) continue;   // ya vestido
+            if (a.GetComponentInChildren<CubeJoint>() != null) { a.GetOrAdd<CubeWalkCycle>(); continue; }   // ya vestido (pero que ande: al jugador le faltaba)
             Renderer r = a.GetComponentInChildren<Renderer>();
             if (r == null) continue;
             Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);

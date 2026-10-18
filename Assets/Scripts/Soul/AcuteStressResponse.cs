@@ -87,7 +87,7 @@ public class AcuteStressResponse : MonoBehaviour
         if (nowTakeover && !InTakeover)
         {
             InTakeover = true;
-            var q = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
+            var q = this.GetOrAdd<ActionQueue>();
             q.EnqueueOwn(new BodyReflexSpell(this));   // se autodisuelve cuando baja el apremio (Tick lee InTakeover)
         }
         else if (!nowTakeover) InTakeover = false;

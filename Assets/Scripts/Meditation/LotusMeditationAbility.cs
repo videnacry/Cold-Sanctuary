@@ -33,7 +33,7 @@ public class LotusMeditationAbility : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKeyDown(meditateKey)) return;
+        if (!GameKeys.GetKeyDown(meditateKey)) return;
         if (!hasMobMissionSpell) return;
         if (shift == null) return;
         if (MeditationSession.Instance.IsInMission || MeditationSession.Instance.IsBusy) return;

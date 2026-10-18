@@ -93,7 +93,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (!_isPlaying) return;
 
-        if (Input.GetKeyDown(advanceKey) || Input.GetKeyDown(advanceKeyAlt)
+        if (GameKeys.GetKeyDown(advanceKey) || GameKeys.GetKeyDown(advanceKeyAlt)
             || Input.GetMouseButtonDown(0))
         {
             if (panel != null && panel.IsTyping)

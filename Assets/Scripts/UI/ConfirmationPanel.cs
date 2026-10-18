@@ -63,9 +63,9 @@ public class ConfirmationPanel : MonoBehaviour
     {
         if (!IsVisible) return;
 
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (GameKeys.GetKeyDown(KeyCode.Return))
             OnConfirmClicked();
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (GameKeys.GetKeyDown(KeyCode.Escape))
             OnCancelClicked();
     }
 

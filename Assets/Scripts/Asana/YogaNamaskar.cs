@@ -44,9 +44,10 @@ public static class YogaNamaskar
     static (BodyPart, Vector3)[] Forward => Join(new[] { J(BodyPart.ShoulderLeft, -90, 6), J(BodyPart.ShoulderRight, -90, -6),
         J(BodyPart.ForearmLeft, 0, -8), J(BodyPart.ForearmRight, 0, 8) }, Palms);
 
-    // Cuclillas profunda (plantas en el suelo): caderas muy flexionadas, rodillas dobladas, pies planos.
-    static (BodyPart, Vector3)[] SquatLegs => new[] { J(BodyPart.ThighLeft, -112), J(BodyPart.ThighRight, -112),
-        J(BodyPart.ShinLeft, 145), J(BodyPart.ShinRight, 145), J(BodyPart.FootLeft, 12), J(BodyPart.FootRight, 12) };
+    // Rodillas ABIERTAS hacia fuera (malasana: sin abrirlas los muslos chocan con el torso), espalda algo inclinada y
+    // planta del pie PLANA en el suelo (el pie compensa los 33° que acaba girado tras muslo + espinilla).
+    static (BodyPart, Vector3)[] SquatLegs => new[] { J(BodyPart.ThighLeft, -112, -22), J(BodyPart.ThighRight, -112, 22),
+        J(BodyPart.ShinLeft, 145), J(BodyPart.ShinRight, 145), J(BodyPart.FootLeft, -33), J(BodyPart.FootRight, -33), J(BodyPart.Back, 12) };
 
     public static List<QueuedSpell> Sequence(float breath = Breath, float balasanaHold = BalasanaHold)
     {
@@ -91,7 +92,15 @@ public static class YogaNamaskar
             foreach (var s in set) if (s.part == Joints[i]) e = s.euler;
             all[i] = (Joints[i], e);
         }
-        return new AsanaPoseSpell { asanaName = $"{name} · {breath}", parts = all, duration = duration, reachFraction = reach, rootHeight = rootHeight };
+        // Rezo al pecho: las palmas se JUNTAN delante del esternón por IK (con solo ángulos los codos se metían en el torso).
+        bool prayer = false;
+        foreach (var s in set) if (s.part == BodyPart.ForearmLeft && Mathf.Approximately(s.euler.x, -105f)) prayer = true;
+        bool overhead = false;   // rezo SOBRE la cabeza: las palmas también se juntan (con solo ángulos quedaban separadas)
+        foreach (var s in set) if (s.part == BodyPart.ShoulderLeft && Mathf.Approximately(s.euler.x, -172f)) overhead = true;
+        var reaches = prayer ? new[] { (BodyPart.HandLeft, new Vector3(-0.035f, 1.34f, 0.27f)), (BodyPart.HandRight, new Vector3(0.035f, 1.34f, 0.27f)) }
+                    : overhead ? new[] { (BodyPart.HandLeft, new Vector3(-0.035f, 2.07f, 0.1f)), (BodyPart.HandRight, new Vector3(0.035f, 2.07f, 0.1f)) }
+                    : System.Array.Empty<(BodyPart, Vector3)>();
+        return new AsanaPoseSpell { asanaName = $"{name} · {breath}", parts = all, duration = duration, reachFraction = reach, rootHeight = rootHeight, reaches = reaches };
     }
 
     static AsanaPoseSpell Balasana(float hold)

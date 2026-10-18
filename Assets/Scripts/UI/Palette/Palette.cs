@@ -66,7 +66,7 @@ public class Palette : FollowingArrays
         foreach (PaletteElementData data in GetVisibleElements())
         {
             GameObject go = Instantiate(elementPrefab, user.transform);
-            PaletteElement el = go.GetComponent<PaletteElement>() ?? go.AddComponent<PaletteElement>();
+            PaletteElement el = go.GetOrAdd<PaletteElement>();
             el.Configure(data, GetPlayerBond());
             el.OnActivated += HandleElementActivated;
             spawnedElements.Add(el);

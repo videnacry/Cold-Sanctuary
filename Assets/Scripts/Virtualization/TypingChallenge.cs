@@ -49,7 +49,7 @@ public class TypingChallenge : MonoBehaviour
         if (!Running) return;
         _remaining -= Time.deltaTime;
 
-        foreach (char c in Input.inputString)
+        foreach (char c in GameKeys.inputString)
         {
             if (c == '\b') { if (_buffer.Length > 0) _buffer = _buffer.Substring(0, _buffer.Length - 1); }
             else if (c == '\n' || c == '\r' || c == ' ') SubmitWord();

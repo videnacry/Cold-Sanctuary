@@ -48,11 +48,11 @@ public class MissionSelectMenu : MonoBehaviour
     {
         if (!IsOpen) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape)) { Cancel(); return; }
+        if (GameKeys.GetKeyDown(KeyCode.Escape)) { Cancel(); return; }
 
         // Number keys 1..9 → pick the Nth listed mission
         for (int i = 0; i < _missions.Count && i < 9; i++)
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+            if (GameKeys.GetKeyDown(KeyCode.Alpha1 + i))
                 { Select(_missions[i]); return; }
     }
 

@@ -17,7 +17,7 @@ public class UI : FollowingArrays
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (GameKeys.GetKeyDown(KeyCode.Escape))
         {
             if (this.parentFollowingArrays)
             {
@@ -32,7 +32,7 @@ public class UI : FollowingArrays
                 this.HideArrays();
             }
         }
-        if (this.GetComponent<Renderer>().enabled && !this.parentFollowingArrays && Input.GetKeyDown(KeyCode.Z))
+        if (this.GetComponent<Renderer>().enabled && !this.parentFollowingArrays && GameKeys.GetKeyDown(KeyCode.Z))
         {
             this.ShowArrays();
             if (this.parentFollowingArrays) this.parentFollowingArrays.enabled = false;
@@ -40,11 +40,11 @@ public class UI : FollowingArrays
         else
         {
             int uiFollowingArraySelectedIndex = 100;
-            if (Input.GetKeyDown(KeyCode.Z)) uiFollowingArraySelectedIndex = 0;
-            if (Input.GetKeyDown(KeyCode.X)) uiFollowingArraySelectedIndex = 1;
-            if (Input.GetKeyDown(KeyCode.C)) uiFollowingArraySelectedIndex = 2;
-            if (Input.GetKeyDown(KeyCode.V)) uiFollowingArraySelectedIndex = 3;
-            if (Input.GetKeyDown(KeyCode.B)) uiFollowingArraySelectedIndex = 4;
+            if (GameKeys.GetKeyDown(KeyCode.Z)) uiFollowingArraySelectedIndex = 0;
+            if (GameKeys.GetKeyDown(KeyCode.X)) uiFollowingArraySelectedIndex = 1;
+            if (GameKeys.GetKeyDown(KeyCode.C)) uiFollowingArraySelectedIndex = 2;
+            if (GameKeys.GetKeyDown(KeyCode.V)) uiFollowingArraySelectedIndex = 3;
+            if (GameKeys.GetKeyDown(KeyCode.B)) uiFollowingArraySelectedIndex = 4;
             if (this.uiFollowingArrayElementsFollowingArrays.Length >= (uiFollowingArraySelectedIndex + 1)) 
             {
                 this.uiFollowingArrayElementsFollowingArrays[uiFollowingArraySelectedIndex].ShowArrays();

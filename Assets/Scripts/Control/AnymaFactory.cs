@@ -40,7 +40,7 @@ public class AnymaFactory : MonoBehaviour
         GameObject go = new GameObject(string.IsNullOrEmpty(species) ? "Anima" : species);
         go.transform.position = pos;
         go.AddComponent<Animal>();
-        SpeciesBody sb = go.GetComponent<SpeciesBody>() ?? go.AddComponent<SpeciesBody>();
+        SpeciesBody sb = go.GetOrAdd<SpeciesBody>();
         if (!string.IsNullOrEmpty(species)) sb.species = species;   // antes del Init → los catálogos usan esta especie
         go.AddComponent<Mind>();
         // Cuerpo de CUBOS CON HUESOS a tamaño real (animales) o el bípedo de partes (humanos/compañeros).

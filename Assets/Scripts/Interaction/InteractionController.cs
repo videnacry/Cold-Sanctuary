@@ -90,7 +90,7 @@ public class InteractionController : MonoBehaviour
 
     void HandleKeyboardInteract()
     {
-        if (!Input.GetKeyDown(interactKey)) return;
+        if (!GameKeys.GetKeyDown(interactKey)) return;
         _nearest?.Interact();
     }
 

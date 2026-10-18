@@ -100,7 +100,7 @@ public class CombatAbilityBar : MonoBehaviour
     {
         for (int i = 0; i < _bar.Count && i < 10; i++)
         {
-            if (Input.GetKeyDown(_bar[i].hotkey))
+            if (GameKeys.GetKeyDown(_bar[i].hotkey))
             {
                 var target = CombatTargetSelector.Instance?.CurrentIngredientMob;
                 if (target != null) UseAbility(i, target);

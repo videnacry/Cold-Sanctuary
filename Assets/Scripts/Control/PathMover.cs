@@ -16,7 +16,7 @@ public class PathMover : MonoBehaviour
     float _repathAt;
     const float WaterY = -0.25f;
 
-    public static PathMover Of(Component c) => c.GetComponent<PathMover>() ?? c.gameObject.AddComponent<PathMover>();
+    public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
 
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)

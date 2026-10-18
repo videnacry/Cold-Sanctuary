@@ -37,7 +37,7 @@ public class VirtualPointer : MonoBehaviour
         if (TypingChallenge.Active) return;   // mientras se teclea, no se interactúa ni se apunta
 
         // Teclado: confirmar sobre lo que esté en el centro.
-        if (Input.GetKeyDown(confirmKey) && _hover != null) Interact(_hover);
+        if (GameKeys.GetKeyDown(confirmKey) && _hover != null) Interact(_hover);
 
         // Ratón: su propio cursor (clic izq. interactúa donde apunta).
         if (mouseInteract && Input.mousePresent && Input.GetMouseButtonDown(0))

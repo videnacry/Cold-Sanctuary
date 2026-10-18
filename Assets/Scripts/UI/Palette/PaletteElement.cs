@@ -65,7 +65,7 @@ public class PaletteElement : MonoBehaviour
     {
         if (state != ElementState.UI) return;
         if (data == null || isLocked || data.shortcut == KeyCode.None) return;
-        if (Input.GetKeyDown(data.shortcut)) Activate();
+        if (GameKeys.GetKeyDown(data.shortcut)) Activate();
     }
 
     public void Activate()

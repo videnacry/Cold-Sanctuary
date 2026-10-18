@@ -43,12 +43,12 @@ public class WalkSpell : SpellBase
     public void DriveFromInput()
     {
         Vector3 dir = Vector3.zero;
-        if (Input.GetKey(forwardKey)) dir.z += 1f;
-        if (Input.GetKey(backKey))    dir.z -= 1f;
-        if (Input.GetKey(rightKey))   dir.x += 1f;
-        if (Input.GetKey(leftKey))    dir.x -= 1f;
-        bool charging   = chargeKey  != KeyCode.None && Input.GetKey(chargeKey);
-        bool channeling = channelKey != KeyCode.None && Input.GetKey(channelKey);
+        if (GameKeys.GetKey(forwardKey)) dir.z += 1f;
+        if (GameKeys.GetKey(backKey))    dir.z -= 1f;
+        if (GameKeys.GetKey(rightKey))   dir.x += 1f;
+        if (GameKeys.GetKey(leftKey))    dir.x -= 1f;
+        bool charging   = chargeKey  != KeyCode.None && GameKeys.GetKey(chargeKey);
+        bool channeling = channelKey != KeyCode.None && GameKeys.GetKey(channelKey);
         Locomote(dir, charging, channeling, Time.deltaTime);
     }
 

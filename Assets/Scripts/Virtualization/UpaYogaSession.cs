@@ -151,10 +151,10 @@ public class UpaYogaSession : MonoBehaviour
     {
         if (!_running)
         {
-            if (_armed && Input.GetKeyDown(startKey)) Begin();
+            if (_armed && GameKeys.GetKeyDown(startKey)) Begin();
             return;
         }
-        if (Input.GetKeyDown(KeyCode.Escape)) { End(); return; }
+        if (GameKeys.GetKeyDown(KeyCode.Escape)) { End(); return; }
         _song += Time.deltaTime;
         _breathT += Time.deltaTime; if (_breathT >= halfBreath * 2f) _breathT -= halfBreath * 2f;
         _tremble = Mathf.Max(0f, _tremble - Time.deltaTime * 0.6f);
@@ -163,7 +163,7 @@ public class UpaYogaSession : MonoBehaviour
         // Aciertos: al pulsar una tecla de carril, busca la ficha más cercana dentro de la ventana.
         for (int lane = 0; lane < LaneKey.Length; lane++)
         {
-            if (!Input.GetKeyDown(LaneKey[lane])) continue;
+            if (!GameKeys.GetKeyDown(LaneKey[lane])) continue;
             Note best = null; float bestD = hitWindow;
             foreach (Note nt in _notes)
             {
@@ -194,7 +194,7 @@ public class UpaYogaSession : MonoBehaviour
         }
 
         // Avance: F salta siempre; las fases de movimiento auto-avanzan al acabar; las de postura esperan F.
-        bool advance = Input.GetKeyDown(nextKey);
+        bool advance = GameKeys.GetKeyDown(nextKey);
         if (!advance)
         {
             Phase p = Sequence[_i];
@@ -215,10 +215,10 @@ public class UpaYogaSession : MonoBehaviour
         if (_i >= 2 && _i <= 5)                                     // fases de CUELLO
         {
             if (neck == null) return;
-            if (Input.GetKey(KeyCode.L)) _yaw += partSpeed * Time.deltaTime;
-            if (Input.GetKey(KeyCode.J)) _yaw -= partSpeed * Time.deltaTime;
-            if (Input.GetKey(KeyCode.K)) _pitch += partSpeed * Time.deltaTime;
-            if (Input.GetKey(KeyCode.I)) _pitch -= partSpeed * Time.deltaTime;
+            if (GameKeys.GetKey(KeyCode.L)) _yaw += partSpeed * Time.deltaTime;
+            if (GameKeys.GetKey(KeyCode.J)) _yaw -= partSpeed * Time.deltaTime;
+            if (GameKeys.GetKey(KeyCode.K)) _pitch += partSpeed * Time.deltaTime;
+            if (GameKeys.GetKey(KeyCode.I)) _pitch -= partSpeed * Time.deltaTime;
             _yaw = Mathf.Clamp(_yaw, -yawLimit, yawLimit);
             _pitch = Mathf.Clamp(_pitch, -pitchLimit, pitchLimit);
             neck.localRotation = _neckHome * Quaternion.Euler(_pitch + jit, _yaw + jit, 0f);
@@ -227,13 +227,13 @@ public class UpaYogaSession : MonoBehaviour
         {
             if (rightShoulder != null)
             {
-                float d = (Input.GetKey(KeyCode.I) ? 1f : 0f) - (Input.GetKey(KeyCode.K) ? 1f : 0f);
+                float d = (GameKeys.GetKey(KeyCode.I) ? 1f : 0f) - (GameKeys.GetKey(KeyCode.K) ? 1f : 0f);
                 _rSh = Mathf.Clamp(_rSh + d * partSpeed * Time.deltaTime, -shoulderLimit, shoulderLimit);
                 rightShoulder.localRotation = _rShHome * Quaternion.Euler(_rSh + jit, 0f, 0f);
             }
             if (leftShoulder != null)
             {
-                float d = (Input.GetKey(KeyCode.W) ? 1f : 0f) - (Input.GetKey(KeyCode.S) ? 1f : 0f);
+                float d = (GameKeys.GetKey(KeyCode.W) ? 1f : 0f) - (GameKeys.GetKey(KeyCode.S) ? 1f : 0f);
                 _lSh = Mathf.Clamp(_lSh + d * partSpeed * Time.deltaTime, -shoulderLimit, shoulderLimit);
                 leftShoulder.localRotation = _lShHome * Quaternion.Euler(_lSh + jit, 0f, 0f);
             }
@@ -314,7 +314,7 @@ public class UpaYogaSession : MonoBehaviour
         {
             Vector2 off = LaneActive(lane, leftActive, rightActive) ? shk : Vector2.zero;
             Color old = GUI.color;
-            if (Application.isPlaying && Input.GetKey(LaneKey[lane])) GUI.color = new Color(0.6f, 1f, 0.6f);
+            if (Application.isPlaying && GameKeys.GetKey(LaneKey[lane])) GUI.color = new Color(0.6f, 1f, 0.6f);
             GUI.Box(new Rect(lx[lane] - k * 0.5f + off.x, ly[lane] - k * 0.5f + off.y, k, k), LaneLetter[lane]);
             GUI.color = old;
         }

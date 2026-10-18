@@ -16,7 +16,7 @@ public class FollowSpell : SpellBase
     {
         Component comp = target as Component;
         if (comp == null || caster == null) return;
-        FollowBrain fb = comp.GetComponent<FollowBrain>() ?? comp.gameObject.AddComponent<FollowBrain>();
+        if (!comp.TryGetComponent(out FollowBrain fb)) fb = comp.gameObject.AddComponent<FollowBrain>();
         fb.target = caster.transform;
         fb.relevance = Mathf.Max(fb.relevance, followerRelevance);
         LeaveByproduct();

@@ -101,10 +101,10 @@ public abstract class SpellBase : MonoBehaviour
         switch (castMode)
         {
             case CastMode.Instant:
-                if (Input.GetKeyDown(spellKey)) { OnCastPressed(); LeaveByproduct(); }
+                if (GameKeys.GetKeyDown(spellKey)) { OnCastPressed(); LeaveByproduct(); }
                 break;
             case CastMode.Repeat:
-                if (Input.GetKey(spellKey))
+                if (GameKeys.GetKey(spellKey))
                 {
                     _repeatTimer -= Time.deltaTime;
                     if (_repeatTimer <= 0f) { OnCastPressed(); LeaveByproduct(); _repeatTimer = repeatCooldown; }
@@ -112,9 +112,9 @@ public abstract class SpellBase : MonoBehaviour
                 else _repeatTimer = 0f;
                 break;
             case CastMode.Channel:
-                if (Input.GetKeyDown(spellKey)) OnChannelStart();
-                if (Input.GetKey(spellKey)) { OnChannelTick(Time.deltaTime); LeaveByproduct(); }
-                if (Input.GetKeyUp(spellKey)) OnChannelEnd();
+                if (GameKeys.GetKeyDown(spellKey)) OnChannelStart();
+                if (GameKeys.GetKey(spellKey)) { OnChannelTick(Time.deltaTime); LeaveByproduct(); }
+                if (GameKeys.GetKeyUp(spellKey)) OnChannelEnd();
                 break;
         }
     }
@@ -177,8 +177,8 @@ public abstract class SpellBase : MonoBehaviour
     /// subclase self-driven. Para conducción por brain, usa la sobrecarga con `charging`/`channeling` explícitos.</summary>
     protected void TickPowerBonus(Anima c, float dt)
         => TickPowerBonus(c, dt,
-            chargeKey  != KeyCode.None && Input.GetKey(chargeKey),
-            channelKey != KeyCode.None && Input.GetKey(channelKey));
+            chargeKey  != KeyCode.None && GameKeys.GetKey(chargeKey),
+            channelKey != KeyCode.None && GameKeys.GetKey(channelKey));
 
     /// <summary>Actualiza el powerBonus con intención de carga/channel EXPLÍCITA (la pasa el brain que conduce, o
     /// el propio input). El FORCEJEO se sube aparte con <see cref="ReportResult"/> al fallar.</summary>

@@ -17,21 +17,63 @@ public class SpellConsole : MonoBehaviour
     [Tooltip("Alcance base de 'visión' para resolver destinos-anima (×percepción del poseído).")]
     [Min(1f)] public float baseVisibleRange = 20f;
 
-    bool _open, _wasOpen;
+    bool _open;
     int _openedFrame = -1;
     string _input = "";
     readonly List<string> _log = new List<string>();
 
+    /// <summary>¿El lanzador está abierto? Mientras lo esté, el teclado es SOLO suyo (<see cref="GameKeys"/> enmudece).</summary>
+    public static bool Capturing { get; private set; }
+
+    // Respuesta del último hechizo, visible unos segundos aunque el lanzador esté cerrado.
+    string _feedback; float _feedbackUntil; bool _feedbackBad;
+
     void Update()
     {
-        if (Input.GetKeyDown(toggleKey)) _open = !_open;
-        // Intro también abre la barra (con el hechizo propuesto ya escrito: otro Intro lo lanza).
-        else if (!_open && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))) _open = true;
-        if (_open && !_wasOpen) { _openedFrame = Time.frameCount; if (string.IsNullOrEmpty(_input) && Proposed != null) _input = Proposed; }
-        _wasOpen = _open;
+        if (!_open)
+        {
+            // ~ o Intro abren el lanzador (con el hechizo propuesto ya escrito: otro Intro lo lanza).
+            if (Input.GetKeyDown(toggleKey) || Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Open();
+        }
+        else if (Time.frameCount != _openedFrame)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(toggleKey)) { _input = ""; Close(); }   // salir SIN lanzar (y sin guardar lo escrito)
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Submit();
+        }
+        Capturing = _open;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
         PollInbox();
 #endif
+    }
+
+    void OnDisable() { Capturing = false; }
+
+    void Open()
+    {
+        _open = true; _openedFrame = Time.frameCount; Capturing = true;
+        if (string.IsNullOrEmpty(_input) && Proposed != null) _input = Proposed;
+    }
+
+    void Close() { _open = false; Capturing = false; GUI.FocusControl(null); }
+
+    // Intro: lanza lo escrito y cierra (el teclado vuelve al juego). Con la barra vacía, solo cierra.
+    void Submit()
+    {
+        string line = (_input ?? "").Replace("`", "").Replace("~", "").Trim();
+        _input = "";
+        Close();
+        if (line.Length == 0) return;
+        int before = _logSeq;
+        Dispatch(line);
+        string answer = _logSeq != before ? _log[_log.Count - 1] : $"Lanzado: {line}";
+        Feedback(answer);
+    }
+
+    void Feedback(string s)
+    {
+        _feedback = s; _feedbackUntil = Time.time + 6f;
+        string l = s.ToLowerInvariant();
+        _feedbackBad = l.Contains("¿dónde") || l.Contains("no ") || l.Contains("necesita") || l.Contains("desconocido") || l.Contains("no conoces");
     }
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -120,8 +162,19 @@ public class SpellConsole : MonoBehaviour
         float w = 560f, h = p != null ? 46f : 26f, x = 12f, y = Screen.height - h - 12f;
         GUI.Box(new Rect(x - 4f, y - 2f, w + 8f, h + 4f), "");
         var st = new GUIStyle(GUI.skin.label) { richText = true, fontSize = 13 };
-        GUI.Label(new Rect(x, y, w, 22f), "<b>✦ Hechizos</b>  <size=11>(pulsa <b>~</b> o <b>Intro</b> para escribir; Tab autocompleta)</size>", st);
+        GUI.Label(new Rect(x, y, w, 22f), "<b>✦ Hechizos</b>  <size=11>(<b>Intro</b> o <b>~</b> para escribir)</size>", st);
         if (p != null) GUI.Label(new Rect(x, y + 22f, w, 22f), (_proposedWhy != null ? _proposedWhy + " → " : "") + $"<b>{p}</b>  <size=11>(Intro y otra vez Intro lo lanza)</size>", st);
+        DrawFeedback(y);
+    }
+
+    // Respuesta del último hechizo (verde si salió, ámbar si no), justo encima de la barra.
+    void DrawFeedback(float barY)
+    {
+        if (string.IsNullOrEmpty(_feedback) || Time.time > _feedbackUntil) return;
+        var st = new GUIStyle(GUI.skin.label) { richText = true, fontSize = 14, wordWrap = true };
+        Rect r = new Rect(12f, barY - 34f, 560f, 28f);
+        GUI.Box(new Rect(r.x - 4f, r.y - 2f, r.width + 8f, r.height + 4f), "");
+        GUI.Label(r, $"<color={(_feedbackBad ? "#ffcc66" : "#9fe8a0")}>{(_feedbackBad ? "✗" : "✓")} {_feedback}</color>", st);
     }
 
     void OnGUI()
@@ -129,7 +182,7 @@ public class SpellConsole : MonoBehaviour
         if (!_open) { DrawClosedBar(); return; }
         float w = 560f, h = 24f, x = 12f, y = Screen.height - 240f;
         GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 212f), "");
-        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Grimorio</b>  (escribe y pulsa Tab para autocompletar la plantilla; Enter lanza)");
+        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Grimorio</b>  (Tab autocompleta · <b>Intro</b> lanza · <b>Esc</b> sale sin lanzar) — mientras escribes, Kushal no se mueve");
         GUI.SetNextControlName("spellInput");
         _input = GUI.TextField(new Rect(x, y + 20f, w, h), _input);
         GUI.FocusControl("spellInput");
@@ -150,13 +203,7 @@ public class SpellConsole : MonoBehaviour
         Event e = Event.current;
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && known.Count > 0)   // Tab → rellena la plantilla del 1º
         { _input = known[0].template; e.Use(); }
-        if (e.type == EventType.KeyDown && (e.keyCode == KeyCode.Return || e.keyCode == KeyCode.KeypadEnter) && Time.frameCount != _openedFrame)
-        {
-            if (!string.IsNullOrWhiteSpace(_input)) { Dispatch(_input.Trim()); _input = ""; }
-            else _open = false;   // Intro con la barra vacía la cierra
-            e.Use();
-        }
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape) { _open = false; e.Use(); }
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape) { _input = ""; Close(); e.Use(); }
 
         int row = 0;
         for (int i = 0; i < known.Count && row < 7; i++, row++)
@@ -188,7 +235,8 @@ public class SpellConsole : MonoBehaviour
         return outp;
     }
 
-    void Log(string s) { _log.Add(s); if (_log.Count > 10) _log.RemoveAt(0); Debug.Log($"[Hechizo] {s}"); }
+    int _logSeq;
+    void Log(string s) { _logSeq++; _log.Add(s); if (_log.Count > 10) _log.RemoveAt(0); Debug.Log($"[Hechizo] {s}"); }
 
     // ── Parse + dispatch ────────────────────────────────────────────────────────────────────────
     void Dispatch(string line)
@@ -237,6 +285,7 @@ public class SpellConsole : MonoBehaviour
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
+            case "where": case "donde": LogWhere(); break;
             case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "exit": case "salir": if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) { MobWorldLoader.Instance.ExitMobWorld(); Log($"«{self.name}» sale del microcosmos."); } else Log("No estás en un microcosmos."); break;
@@ -325,6 +374,9 @@ public class SpellConsole : MonoBehaviour
         Log($"  toca: {touching} · cámara tapada por: {CameraManager.LastOccluder ?? "nada"}");
         Camera camD = Camera.main; Transform anc = self.transform.Find("CameraPivot/ThirdPersonAnchor") ?? self.transform.Find("ThirdPersonAnchor");
         if (camD != null) Log($"  cámara: rel {self.transform.InverseTransformPoint(camD.transform.position)} rot {camD.transform.eulerAngles} fov {camD.fieldOfView:0} · ancla {(anc != null ? anc.localPosition + " " + anc.localEulerAngles + " padre " + anc.parent.name : "—")}");
+        CubeWalkCycle wcD = self.GetComponentInChildren<CubeWalkCycle>(); CreatureRig rgD = self.GetComponentInChildren<CreatureRig>();
+        Transform thD = rgD != null ? rgD.Get(BodyPart.ThighLeft) : null;
+        Log($"  andar: ciclo={(wcD != null ? $"{wcD.enabled} blend {wcD.Blend:0.00} v {wcD.LastSpeed:0.0}" : "NO")} rig={(rgD != null ? rgD.gameObject.name : "NO")} muslo={(thD != null ? thD.localEulerAngles.ToString() : "NO")} bloqueado={(rgD != null && rgD.IsPoseLocked(BodyPart.ThighLeft))} timeScale={Time.timeScale}");
         AnimaController myAc = self.GetComponent<AnimaController>();
         if (myAc != null) Log($"  cerebro activo: {(myAc.Active != null ? myAc.Active.GetType().Name : "ninguno")} · FollowBrain={(self.GetComponent<FollowBrain>() != null ? (self.GetComponent<FollowBrain>().target != null ? self.GetComponent<FollowBrain>().target.name : "sin objetivo") : "-")}");
         foreach (AnimaController ac in FindObjectsOfType<AnimaController>())
@@ -379,7 +431,7 @@ public class SpellConsole : MonoBehaviour
         GameObject station = ResolveStation(self, name);
         if (station == null) { Log($"«{self.name}»: ¿Dónde está {name}?"); return; }
         spell.target = station; spell.targetName = station.name;
-        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
         q.EnqueuePlayer(spell);
         Log($"«{self.name}» → {spell.Label}.");
     }
@@ -431,7 +483,7 @@ public class SpellConsole : MonoBehaviour
         foreach (QueuedSpell s in all)
             if (s is AsanaPoseSpell a && a.asanaName.ToLowerInvariant().Contains(want.ToLowerInvariant()))
             {
-                var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+                if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
                 q.EnqueuePlayer(a);
                 Log($"«{self.name}» hace {a.asanaName}.");
                 return;
@@ -441,7 +493,7 @@ public class SpellConsole : MonoBehaviour
 
     void Yoga(Anima self)
     {
-        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
         foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
         Log($"«{self.name}» empieza el Saludo al Sol (12 asanas).");
     }
@@ -452,7 +504,7 @@ public class SpellConsole : MonoBehaviour
         string name = args.TryGetValue("destiny", out string d) ? d : "self";
         GameObject go = ResolveObject(self, name);
         if (go == null) { Log($"«{self.name}»: no encuentro {name}."); return; }
-        StatusSpell sp = self.GetComponent<StatusSpell>() ?? self.gameObject.AddComponent<StatusSpell>();
+        if (!self.TryGetComponent(out StatusSpell sp)) sp = self.gameObject.AddComponent<StatusSpell>();
         sp.targetObject = go;
         sp.visible = !(args.TryGetValue("visible", out string v) && (v == "false" || v == "0"));   // visible:false = ocultar
         if (args.TryGetValue("seconds", out string s) && float.TryParse(s, out float sec)) sp.seconds = sec;
@@ -466,7 +518,7 @@ public class SpellConsole : MonoBehaviour
         string name = args.TryGetValue("destiny", out string d) ? d : null;
         GameObject go = name != null ? ResolveObject(self, name) : null;
         if (go == null) { Log("¿qué área? (destiny)"); return; }
-        OpenSpell sp = self.GetComponent<OpenSpell>() ?? self.gameObject.AddComponent<OpenSpell>();
+        if (!self.TryGetComponent(out OpenSpell sp)) sp = self.gameObject.AddComponent<OpenSpell>();
         sp.targetObject = go; sp.close = close;
         sp.reset = args.TryGetValue("reset", out string r) && (r == "true" || r == "1");
         sp.Cast(self, null);
@@ -490,7 +542,7 @@ public class SpellConsole : MonoBehaviour
     // Limpieza como HECHIZO: limpia la mancha más cercana dentro del alcance (falla si no hay/estás lejos).
     void Clean(Anima self)
     {
-        CleanSpell cs = self.GetComponent<CleanSpell>() ?? self.gameObject.AddComponent<CleanSpell>();
+        if (!self.TryGetComponent(out CleanSpell cs)) cs = self.gameObject.AddComponent<CleanSpell>();
         cs.Cast(self, null);
         Log($"«{self.name}» limpia.");
     }
@@ -510,7 +562,7 @@ public class SpellConsole : MonoBehaviour
     // Alimentar como HECHIZO: va al visitante hambriento más cercano (huerto) y le da de comer al llegar.
     void Feed(Anima self)
     {
-        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
         q.EnqueuePlayer(new FeedVisitorSpell());
         Log($"«{self.name}» va a dar de comer al visitante hambriento más cercano.");
     }
@@ -518,7 +570,7 @@ public class SpellConsole : MonoBehaviour
     // Abastecer como HECHIZO (inventario): llena el estante más cercano dentro del alcance.
     void Stock(Anima self)
     {
-        StockSpell ss = self.GetComponent<StockSpell>() ?? self.gameObject.AddComponent<StockSpell>();
+        if (!self.TryGetComponent(out StockSpell ss)) ss = self.gameObject.AddComponent<StockSpell>();
         ss.Cast(self, null);
         Log($"«{self.name}» abastece.");
     }
@@ -531,7 +583,7 @@ public class SpellConsole : MonoBehaviour
                     : args.TryGetValue("character", out string c) ? c : null;
         ITarget it = name == null ? null : IsSelf(name) ? TargetOf(self) : ResolveAnimaAnywhere(name);
         if (it == null) { Log($"«{self.name}»: no encuentro a {name}."); return; }
-        T spell = self.GetComponent<T>() ?? self.gameObject.AddComponent<T>();
+        if (!self.TryGetComponent(out T spell)) spell = self.gameObject.AddComponent<T>();
         if (args.TryGetValue("amount", out string am) && float.TryParse(am, out float amt)) spell.force = amt;
         if (spell is ThoughtSpell ts) ts.positive = !(args.TryGetValue("positive", out string p) && (p == "false" || p == "0"));
         if (spell is TeachSpell te && args.TryGetValue("skill", out string sk)) te.skillId = sk;
@@ -575,11 +627,16 @@ public class SpellConsole : MonoBehaviour
             // el poseído no lo ve/encuentra → lo "piensa"
             Mind m = self.GetComponent<Mind>();
             if (m != null) { m.lastThought = $"¿Dónde está {name}?"; m.lastPositive = false; m.lastIntensity = 0.6f; m.lastThoughtTime = Time.time; }
+            // ¿Existe pero no lo ve? Se lo dice con la distancia y el rumbo (antes solo "¿Dónde está?", sin pista).
+            Anima far = null; float farD = float.MaxValue;
+            foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
+                if (a != self && !a.death && NameMatches(a.name, name)) { float dd = Vector3.Distance(a.transform.position, self.transform.position); if (dd < farD) { farD = dd; far = a; } }
+            if (far != null) { Log($"No ves a {name} desde aquí: está a {farD:0} m hacia el {Rumbo(far.transform.position - self.transform.position)}. Acércate o ve a un área (walkTo({{destiny:\"Cocina\"}}))."); return; }
             Log($"«{self.name}»: ¿Dónde está {name}?");
             return;
         }
 
-        var q = self.GetComponent<ActionQueue>() ?? self.gameObject.AddComponent<ActionQueue>();
+        if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
         var spell = new WalkToSpell { target = target, targetName = name };
         spell.maxSpeed = args.TryGetValue("maxspeed", out string ms) && (ms == "true" || ms == "1");
         if (args.TryGetValue("distance", out string ds) && float.TryParse(ds, out float dist)) spell.stopDistance = dist;
@@ -614,6 +671,27 @@ public class SpellConsole : MonoBehaviour
         return area != null ? area.transform : null;
     }
 
+
+    // DIAGNÓSTICO: dónde está cada humano, a cuánto del suelo que tiene debajo y qué hace (¿alguien flotando?).
+    void LogWhere()
+    {
+        foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
+        {
+            if (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) continue;
+            Vector3 p = a.transform.position;
+            string below = Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, out RaycastHit h, 60f, ~0, QueryTriggerInteraction.Ignore)
+                ? $"{p.y - h.point.y:0.0} m sobre {h.collider.name}" : "nada debajo";
+            var cc = a.GetComponent<CharacterController>(); var nav = a.GetComponent<UnityEngine.AI.NavMeshAgent>();
+            Log($"  {a.name} ({p.x:0.0}, {p.y:0.0}, {p.z:0.0}) {below} · cc={(cc != null ? cc.enabled.ToString() : "-")} nav={(nav != null ? (nav.enabled ? (nav.isOnNavMesh ? "on" : "OFF-mesh") : "off") : "-")}");
+        }
+    }
+
+    static string Rumbo(Vector3 d)
+    {
+        float ang = Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg; if (ang < 0f) ang += 360f;
+        string[] n = { "norte", "noreste", "este", "sureste", "sur", "suroeste", "oeste", "noroeste" };
+        return n[Mathf.RoundToInt(ang / 45f) % 8];
+    }
     static bool NameMatches(string objName, string query)
     {
         if (string.IsNullOrEmpty(objName)) return false;

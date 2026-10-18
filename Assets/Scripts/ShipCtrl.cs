@@ -25,8 +25,8 @@ public class ShipCtrl : MonoBehaviour
         upAngle = Camera.main.transform.localEulerAngles.y;
         rightAngle = Camera.main.transform.localEulerAngles.x;
         eulerAngles = transform.rotation.eulerAngles;
-        xAngle = Input.GetAxis("Mouse X");
-        yAngle = Input.GetAxis("Mouse Y");
+        xAngle = GameKeys.GetAxis("Mouse X");
+        yAngle = GameKeys.GetAxis("Mouse Y");
         camAngles = Camera.main.transform.localEulerAngles;
         ani.Play("Idle");
         ani.speed = speed;
@@ -34,36 +34,36 @@ public class ShipCtrl : MonoBehaviour
         //Movimiento del helicóptero(arriba,abajo,izquierda y derecha)
 
         rig.AddForce(transform.TransformDirection(Vector3.up)*speed,ForceMode.Acceleration);
-        if (Input.GetKey(KeyCode.W))
+        if (GameKeys.GetKey(KeyCode.W))
         {
             if (speed < 13)
             {
                 speed+=1;
             }
         }
-        else if (Input.GetKey(KeyCode.S))
+        else if (GameKeys.GetKey(KeyCode.S))
         {
             if (speed > 0)
             {
                 speed-=1;
             }
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (GameKeys.GetKey(KeyCode.A))
         {
             transform.localRotation=Quaternion.Euler(this.eulerAngles.x,this.eulerAngles.y-1,this.eulerAngles.z);
         }
-        else if (Input.GetKey(KeyCode.D))
+        else if (GameKeys.GetKey(KeyCode.D))
         {
             transform.localRotation = Quaternion.Euler(this.eulerAngles.x, this.eulerAngles.y + 1, this.eulerAngles.z);
         }
-        else if (Input.GetKey(KeyCode.F))
+        else if (GameKeys.GetKey(KeyCode.F))
         {
             ani.Play("Shoot");
         }
 
         //Movimiento del helicóptero
 
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (GameKeys.GetKey(KeyCode.Mouse0))
         {
             transform.Rotate(-yAngle, 0, xAngle);
         }

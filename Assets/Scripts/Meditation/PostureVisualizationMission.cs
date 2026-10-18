@@ -33,7 +33,7 @@ public class PostureVisualizationMission : MeditationMissionBase
         if (thoughtPrefab != null)
         {
             GameObject go = Instantiate(thoughtPrefab, position, Quaternion.identity);
-            mob = go.GetComponent<EphemeralThoughtMob>() ?? go.AddComponent<EphemeralThoughtMob>();
+            mob = go.GetOrAdd<EphemeralThoughtMob>();
         }
         else
         {

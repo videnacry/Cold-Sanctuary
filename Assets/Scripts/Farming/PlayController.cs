@@ -25,7 +25,7 @@ public class PlayController : MonoBehaviour
 
     void Update()
     {
-        if (!Input.GetKeyDown(playKey)) return;
+        if (!GameKeys.GetKeyDown(playKey)) return;
         if (Time.time - _lastPlay < playCooldown) return;
 
         PlayableCreature target = FindNearestPlayable();

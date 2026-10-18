@@ -20,7 +20,7 @@ public class YogaSessionRunner : MonoBehaviour
     {
         if (GetComponent<CreatureRig>() == null || transform.Find(CubeHumanoid.BodyName) == null)
             CubeHumanoid.Dress(gameObject, clothes, skin);
-        _q = GetComponent<ActionQueue>() ?? gameObject.AddComponent<ActionQueue>();
+        _q = this.GetOrAdd<ActionQueue>();
         Enqueue();
     }
 

@@ -28,8 +28,8 @@ public class GuardBoard : MonoBehaviour, IInteractable
     void Update()
     {
         if (!_open) return;
-        if (Input.GetKeyDown(KeyCode.Escape)) _open = false;
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { StartPatrol(); _open = false; }
+        if (GameKeys.GetKeyDown(KeyCode.Escape)) _open = false;
+        if (GameKeys.GetKeyDown(KeyCode.Alpha1)) { StartPatrol(); _open = false; }
     }
 
     /// <summary>Arranca la patrulla (también desde la consola de hechizos o los tests).</summary>

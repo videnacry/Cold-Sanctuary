@@ -28,7 +28,7 @@ public class TeachSpell : SpellBase
     {
         Component comp = target as Component;
         if (comp == null) return;
-        Grimoire g = comp.GetComponent<Grimoire>() ?? comp.gameObject.AddComponent<Grimoire>();
+        if (!comp.TryGetComponent(out Grimoire g)) g = comp.gameObject.AddComponent<Grimoire>();
         // El aprendiz debe cumplir los prerequisitos (p. ej. saber Yoga Namaskar antes del Saludo al Sol).
         if (!g.CanLearn(skillId, out string missing))
         {

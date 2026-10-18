@@ -46,7 +46,7 @@ public class HoneydewSpell : SpellBase
 
     void Update()
     {
-        if (_self == null || !Input.GetKeyDown(castKey)) return;
+        if (_self == null || !GameKeys.GetKeyDown(castKey)) return;
         var target = CombatTargetSelector.Instance?.CurrentTarget;
         if (charges <= 0) { Debug.Log("[Maleza] Sin cargas. Recolecta más melaza."); return; }
         if (CanCast(_self, target ?? _self.GetComponent<ITarget>()))

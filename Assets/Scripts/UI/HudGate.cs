@@ -63,7 +63,7 @@ public static class HudGate
     {
         void Update()
         {
-            if (!Input.GetKeyDown(ToggleKey)) return;
+            if (!GameKeys.GetKeyDown(ToggleKey)) return;
             ShowAll = !ShowAll;
             Debug.Log($"[HUD] Modo prueba {(ShowAll ? "ON: todos los paneles de sandbox visibles" : "OFF: solo los de cerca")} (F1).");
         }

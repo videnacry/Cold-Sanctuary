@@ -30,7 +30,7 @@ public class AsanaFormationMission : MeditationMissionBase
         if (posturePrefab != null)
         {
             GameObject go = Instantiate(posturePrefab, position, Quaternion.identity);
-            mob = go.GetComponent<PostureFormMob>() ?? go.AddComponent<PostureFormMob>();
+            mob = go.GetOrAdd<PostureFormMob>();
         }
         else
         {

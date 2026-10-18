@@ -168,7 +168,7 @@ public class BeatSpell : KitchenStepSpell
 public class KitchenHands : MonoBehaviour
 {
     public string held;
-    public static KitchenHands Of(Anima self) => self.GetComponent<KitchenHands>() ?? self.gameObject.AddComponent<KitchenHands>();
+    public static KitchenHands Of(Anima self) => self.GetOrAdd<KitchenHands>();
 }
 
 /// <summary>Un RECIPIENTE de cocina y su contenido. Las primitivas del restaurante cuyo nombre es de recipiente

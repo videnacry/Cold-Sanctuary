@@ -32,7 +32,7 @@ public class ChannelMission : MeditationMissionBase
         if (channelMobPrefab != null)
         {
             GameObject go = Instantiate(channelMobPrefab, position, Quaternion.identity);
-            mob = go.GetComponent<ChannelMob>() ?? go.AddComponent<ChannelMob>();
+            mob = go.GetOrAdd<ChannelMob>();
         }
         else
         {

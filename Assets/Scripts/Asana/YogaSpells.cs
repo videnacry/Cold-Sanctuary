@@ -75,6 +75,26 @@ public class AsanaPoseSpell : QueuedSpell
         // mantiene el 30/70 sin cambiar nada más. Entra con aceleración y frena (SmoothStep).
         float transition = Mathf.Max(0.01f, reachFraction * duration);
         float t = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - _start) / transition));
+        Apply(self, rig, t);
+        return Time.time - _start >= duration;
+    }
+
+    /// <summary>Coloca el cuerpo en la postura FINAL de golpe (sin transición): galería de posturas y pruebas visuales.</summary>
+    public void ApplyFinal(Anima self)
+    {
+        CreatureRig rig = self.GetComponent<CreatureRig>();
+        if (rig == null) return;
+        Transform hips = rig.Get(BodyPart.Hips); if (hips != null) _rootFrom = hips.localPosition;
+        Transform thL = rig.Get(BodyPart.ThighLeft), thR = rig.Get(BodyPart.ThighRight);
+        if (thL != null) _thighFromL = thL.localPosition;
+        if (thR != null) _thighFromR = thR.localPosition;
+        _from = new Quaternion[parts.Length];
+        for (int i = 0; i < parts.Length; i++) _from[i] = Quaternion.identity;
+        Apply(self, rig, 1f);
+    }
+
+    void Apply(Anima self, CreatureRig rig, float t)
+    {
         if (rig != null)
         {
             for (int i = 0; i < parts.Length; i++)
@@ -105,18 +125,42 @@ public class AsanaPoseSpell : QueuedSpell
                 Transform root = hips != null && hips.parent != null ? hips.parent : self.transform;
                 foreach (var rc in reaches) Reach(rig, root, rc.end, rc.localTarget, t);
             }
+
+            // APOYO EN EL SUELO: el punto más bajo del cuerpo toca el suelo (y = 0 del cuerpo). Sin esto las posturas
+            // sentadas flotaban (piernas dobladas con la pelvis a la altura de pie) y la silla se hundía en el suelo.
+            if (hj != null) Ground(rig, hips);
         }
-        return Time.time - _start >= duration;
     }
 
+
+    static void Ground(CreatureRig rig, Transform hips)
+    {
+        Transform body = hips.parent; if (body == null) return;
+        float lowest = float.MaxValue;
+        foreach (CubeJoint j in hips.GetComponentsInChildren<CubeJoint>())
+        {
+            Transform s = j.segment; if (s == null) continue;
+            for (int c = 0; c < 8; c++)
+            {
+                Vector3 corner = new Vector3((c & 1) == 0 ? -0.5f : 0.5f, (c & 2) == 0 ? -0.5f : 0.5f, (c & 4) == 0 ? -0.5f : 0.5f);
+                lowest = Mathf.Min(lowest, body.InverseTransformPoint(s.TransformPoint(corner)).y);
+            }
+        }
+        if (lowest < float.MaxValue) hips.localPosition -= new Vector3(0f, lowest, 0f);
+    }
     static void Stance(CreatureRig rig, BodyPart part, float targetX, Vector3 from, float t)
     {
         Transform th = rig.Get(part); if (th == null) return;
         CubeJoint cj = th.GetComponent<CubeJoint>();
         Vector3 rest = cj != null ? cj.RestPosition : th.localPosition;
+        // "Talones juntos" = piernas UNA AL LADO DE LA OTRA, no en el mismo sitio (antes las dos se metían en el centro).
+        float minX = (cj != null && cj.segment != null ? cj.segment.localScale.x * 0.5f : 0.07f) + 0.005f;
+        if (Mathf.Abs(targetX) < minX) targetX = Mathf.Sign(rest.x) * minX;
         th.localPosition = Vector3.Lerp(from, new Vector3(targetX, rest.y, rest.z), t);
         rig.LockPose(part);
     }
+
+    static readonly Vector3 ChestRest = new Vector3(0f, 1.29f, 0f);   // pivote del pecho de pie (cadera 0,95 + lumbar 0,1 + 0,24)
 
     static void Reach(CreatureRig rig, Transform root, BodyPart end, Vector3 localTarget, float t)
     {
@@ -131,10 +175,14 @@ public class AsanaPoseSpell : QueuedSpell
         }
         Transform endT = rig.Get(end), midT = rig.Get(midP), rootT = rig.Get(rootP);
         if (endT == null || midT == null || rootT == null) return;
-        Vector3 world = root.TransformPoint(localTarget);
+        // Al SUELO (y < 0,3): punto fijo del cuerpo. Al CUERPO (rezo al pecho, sobre la cabeza…): relativo al PECHO, que
+        // sigue a la pelvis y a la columna (en cuclillas o inclinado las manos no atraviesan la cabeza ni el torso).
+        Transform chest = rig.Get(BodyPart.Chest);
+        Vector3 world = localTarget.y < 0.3f || chest == null ? root.TransformPoint(localTarget) : chest.TransformPoint(localTarget - ChestRest);
         bool arm = end == BodyPart.HandLeft || end == BodyPart.HandRight;
-        // Codo hacia abajo-atrás; rodilla hacia delante.
-        Vector3 pole = midT.position + (arm ? (-root.up * 0.3f - root.forward * 0.1f) : (root.forward * 0.3f));
+        // Codo hacia FUERA y abajo (antes hacia atrás: en el rezo se metía dentro del torso); rodilla hacia delante.
+        float side = Mathf.Sign(root.InverseTransformPoint(rootT.position).x);
+        Vector3 pole = midT.position + (arm ? (root.right * side * 0.35f - root.up * 0.2f) : (root.forward * 0.3f));
         TwoBoneIK.Solve(rootT, midT, endT, world, pole, t);
         rig.LockPose(rootP); rig.LockPose(midP); rig.LockPose(end);
     }
@@ -202,7 +250,7 @@ public static class SunSalutation
 
     // Alcances de ejemplo (IK): palmas juntas delante del pecho (Pranamasana) y diez dedos al suelo junto a los pies
     // (Uttanasana). Coordenadas en el cuerpo NATIVO (pies y≈0, cadera y≈0.95). Opt-in: el resto de posturas no usan IK.
-    static (BodyPart, Vector3)[] PalmsTogether => new[] { (BodyPart.HandLeft, new Vector3(0f, 1.25f, 0.20f)), (BodyPart.HandRight, new Vector3(0f, 1.25f, 0.20f)) };
+    static (BodyPart, Vector3)[] PalmsTogether => new[] { (BodyPart.HandLeft, new Vector3(-0.035f, 1.34f, 0.27f)), (BodyPart.HandRight, new Vector3(0.035f, 1.34f, 0.27f)) };
     static (BodyPart, Vector3)[] HandsToFloor => new[] { (BodyPart.HandLeft, new Vector3(-0.09f, 0.03f, 0.14f)), (BodyPart.HandRight, new Vector3(0.09f, 0.03f, 0.14f)) };
 
     // Las 12 posturas: altura de pelvis (root), anchura de pies (stance; 0 = talones juntos, −1 = no tocar), huesos y alcance IK.

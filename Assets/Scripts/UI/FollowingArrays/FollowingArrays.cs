@@ -23,9 +23,9 @@ public class FollowingArrays : MonoBehaviour
     {
         if (this.parentFollowingArrays)
             if (!this.parentFollowingArrays.enabled) 
-                if (Input.GetKeyDown(KeyCode.Escape)) this.HideArrays();
+                if (GameKeys.GetKeyDown(KeyCode.Escape)) this.HideArrays();
         if (!this.parentFollowingArrays)
-            if (Input.GetKeyDown(KeyCode.Z)) this.ShowArrays();
+            if (GameKeys.GetKeyDown(KeyCode.Z)) this.ShowArrays();
     }
     public void SetWholeGameObjectRenderer(bool val)
     {

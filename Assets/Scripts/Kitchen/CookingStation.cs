@@ -54,7 +54,7 @@ public class CookingStation : MonoBehaviour
         }
 
         if (externallyDriven) return;
-        bool advance = playerDriven ? Input.GetKeyDown(stepKey) : Time.time >= _next;
+        bool advance = playerDriven ? GameKeys.GetKeyDown(stepKey) : Time.time >= _next;
         if (advance) AdvanceStep();
     }
 

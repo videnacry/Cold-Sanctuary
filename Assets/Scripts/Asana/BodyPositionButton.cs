@@ -28,7 +28,7 @@ public class BodyPositionButton : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(bodyPosition.hotkey))
+        if (GameKeys.GetKeyDown(bodyPosition.hotkey))
             OnPressed();
     }
 
