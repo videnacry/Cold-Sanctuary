@@ -71,6 +71,7 @@ public class DefecationNeed : MonoBehaviour
     public void Defecate()
     {
         urge = 0f;
+        if (TryGetComponent(out AnimalVitals v)) v.Defecated();   // censo
         _anima.satisfaction = Mathf.Clamp01(_anima.satisfaction + 0.1f);           // el alivio da algo de satisfacción
         _anima.stress = Mathf.Max(0f, _anima.stress - 0.05f);
 

@@ -146,6 +146,8 @@ public class IceInsectLife : MonoBehaviour
         ageDays += Time.deltaTime * daysPerSec;
         role = isQueen ? Role.Reina : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
         if (isQueen && transform.localScale.x < 1.3f) transform.localScale = Vector3.one * 1.35f;   // la reina, más larga
+        // COMEN MIEL de su colmena (las nodrizas alimentan a la reina con jalea): sin esto siempre tenían hambre.
+        if (_self != null && _self.hungry >= 0f && hive.honeyStock > 0.5f && Vector3.Distance(transform.position, hive.combCenter) < 1.5f) { hive.Eat(0.5f); _self.hungry = -0.6f; }
 
         SnowSpiderBehavior spider = Nearest<SnowSpiderBehavior>(transform.position, 1.5f);
         if (spider != null && role != Role.Guardiana) { Doing = "huye de la araña"; FlyTo(transform.position + (transform.position - spider.transform.position).normalized * 3f + Vector3.up * 2f, flySpeed * 1.8f); return; }
@@ -274,6 +276,7 @@ public class IceInsectLife : MonoBehaviour
             if (FlyTo(bee.transform.position, 6f) < 0.25f)   // salto + mordisco con veneno
             {
                 bee.death = true;
+                if (_self != null) _self.hungry = -0.8f;   // se la come: queda saciada un buen rato
                 _strikeCooldown = 20f;
                 Debug.Log("[Hielo] La araña de las nieves caza a una abeja de las nieves junto a su árbol.");
             }

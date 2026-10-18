@@ -2450,9 +2450,16 @@ public static partial class SampleSceneBuilder
 
         // Marinos — sobre el Sea_Placeholder (base marina del hielo).
         AddFamily("Whale", new Vector3(60f, -1f, 25f), 14f, NestKind.Prey, -1f);
+        // POBLACIÓN EQUILIBRADA (pirámide trófica): más presas que depredadores, repartidas por la laguna. Peces/krill (bancos)
+        // → 3 grupos de focas (6 adultas + 3 crías) y 2 de ballenas (4 + 2) y pingüinos (4 + 4) → 1 familia de osos (2 + 1)
+        // y un pod de orcas (2 + 1).
         AddFamily("Seal", new Vector3(48f, -1f, 14f), 8f, NestKind.Prey, -1f);
+        AddFamily("Seal", new Vector3(74f, -1f, 36f), 8f, NestKind.Prey, -1f);
+        AddFamily("Seal", new Vector3(66f, -1f, 8f), 8f, NestKind.Prey, -1f);
+        AddFamily("Whale", new Vector3(50f, -1f, 34f), 14f, NestKind.Prey, -1f);
         // Fauna de hielo NUEVA (requieren prefab en Assets/Animals/{Especie}/{Especie}.prefab; si falta, se omiten con aviso).
         AddFamily("Penguin", new Vector3(60f, 0f, -22f), 6f, NestKind.Prey, 0f);      // colonia en el borde hielo/agua; presa de foca/orca
+        AddFamily("Penguin", new Vector3(66f, 0f, -19f), 6f, NestKind.Prey, 0f);
         AddFamily("Orca", new Vector3(72f, -1f, 32f), 12f, NestKind.Predator, -1f);  // apex marino; caza focas/ballenas
 
         // NOTA (2026-09-01): los 5 insectos (Ant/Aphid/Ladybug/Spider/Cricket) NO van aquí — se crearon para el

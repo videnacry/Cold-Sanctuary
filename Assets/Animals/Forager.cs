@@ -40,7 +40,7 @@ public class Forager : MonoBehaviour
             case "Bunny": case "Deer":               eatsGrass = true; break;
             case "Whale": case "Seal":               eatsFish = true; break;                    // consumidores marinos (beluga/foca: pescan)
             case "Penguin":                          eatsFish = true; eatsKrill = true; break;  // pesca peces Y krill
-            case "Orca":                             eatsPrey = true; break;                    // apex: caza focas/ballenas (presa por stats)
+            case "Orca":                             eatsPrey = true; eatsFish = true; break;   // apex: caza focas, y también come peces (como las orcas residentes)
             // Insectos
             case "Ant":                              eatsPrey = true; break;                    // carnívora; caza invertebrados pequeños
             case "Aphid":                            eatsGrass = true; break;                   // savia de plantas
@@ -77,7 +77,15 @@ public class Forager : MonoBehaviour
         if (crop != null) grass = crop;
         GameObject fish  = eatsFish  ? Swarm.Nearest(pos, SwarmKind.Fish)?.gameObject  : null;
         GameObject krill = eatsKrill ? Swarm.Nearest(pos, SwarmKind.Krill)?.gameObject : null;
-        return Nearest(pos, prey, grass, fish, krill);
+        // COMEDERO: raciones de carne (p. ej. la carne cultivada del laboratorio) que un carnívoro hambriento percibe cerca.
+        GameObject meat = null;
+        if (eatsPrey)
+        {
+            float md = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception) * 1.5f;
+            foreach (GameObject g in FoodItem.GetPopulation(OrganicMaterial.Meat))
+                if (g != null && g.activeInHierarchy) { float d = Vector3.Distance(pos, g.transform.position); if (d < md) { md = d; meat = g; } }
+        }
+        return Nearest(pos, prey, grass, fish, krill, meat);
     }
 
     /// <summary>PRESA por PROXIMIDAD + STATS (reemplaza la `Diet`): `OverlapSphere` busca `Anima`s comestibles

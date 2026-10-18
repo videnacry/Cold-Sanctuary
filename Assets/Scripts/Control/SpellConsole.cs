@@ -286,6 +286,8 @@ public class SpellConsole : MonoBehaviour
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
             case "where": case "donde": LogWhere(args.TryGetValue("destiny", out string wf) ? wf : null); break;
+            case "censo": case "census": foreach (string c in AnimalVitals.Census()) Log("  " + c); break;
+            case "hora": case "hour": if (TimeController.timeController != null && float.TryParse(args.TryGetValue("destiny", out string hv) ? hv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hh)) { TimeController.timeController.SetHour(hh); Log($"Son las {hh:00}:00."); } break;
             case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "exit": case "salir": if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) { MobWorldLoader.Instance.ExitMobWorld(); Log($"«{self.name}» sale del microcosmos."); } else Log("No estás en un microcosmos."); break;

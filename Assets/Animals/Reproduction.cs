@@ -50,7 +50,7 @@ public class Reproduction : MonoBehaviour
         if (Time.time < _cooldownUntil) return false;
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
-        if (_animal.Population.Count >= softPopulationCap) return false;
+        if (LivingCount() >= softPopulationCap) return false;   // cuenta solo los VIVOS (antes contaba también los cadáveres)
         return true;
     }
 
@@ -86,12 +86,26 @@ public class Reproduction : MonoBehaviour
     void GiveBirth()
     {
         _pregnant = false;
-        _cooldownUntil = Time.time + cooldownSeconds;
+        _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, SpeciesInterval(_animal.SpeciesName));   // una cría por temporada, no cada minuto
         SpawnOffspring();
     }
 
     /// <summary>Pare una cría: copia del progenitor puesta en etapa `child` (crece por `Animal.Init`→`LifeStage`).
     /// Devuelve el `Animal` de la cría. Público para el test del ciclo de vida.</summary>
+
+    int LivingCount()
+    {
+        int n = 0;
+        foreach (GameObject g in _animal.Population) if (g != null && g.TryGetComponent(out Animal a) && !a.death) n++;
+        return n;
+    }
+
+    // Tiempo mínimo entre partos de una misma madre (≈ una temporada de cría; se recalibra con el calendario del juego).
+
+    static float SpeciesInterval(string sp) => sp switch
+    {
+        "Seal" => 240f, "Penguin" => 200f, "Bear" => 480f, "PolarBear" => 480f, "Whale" => 600f, "Orca" => 720f, _ => 60f,
+    };
     public Animal SpawnOffspring()
     {
         Vector3 pos = transform.position + new Vector3(Random.Range(-2f, 2f), 0f, Random.Range(-2f, 2f));
@@ -102,6 +116,7 @@ public class Reproduction : MonoBehaviour
         {
             // Antes de que corra su Start/Init (Unity lo difiere): arranca como CRÍA y crece desde ahí.
             ba.lifeStage = LifeStage.child;
+            ba.inheritedHome = _animal.HomeOrigin;   // su hogar es el de la madre, no el punto exacto donde nació
             ba.sex = Random.value < 0.5f ? Sex.female : Sex.male;
         }
         return ba;

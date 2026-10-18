@@ -61,6 +61,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     // HomeOrigin = estado por-instancia (se fija en Init/FamilyGenerator). HomeRadius = data de especie (SpeciesBody). Etapa 5.
     public Vector3 HomeOrigin { get; set; }
+    [System.NonSerialized] public Vector3? inheritedHome;   // la cría hereda el hogar de la madre (antes, el sitio donde nacía: la orilla)
     public float HomeRadius => _speciesBody != null ? _speciesBody.homeRadius : 100f;
 
 
@@ -227,7 +228,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (Group == null) Group = Family.Of(SpeciesArchetype);   // estructura familiar de la especie (data); RenderFamily la reemplaza
         Population.Add(gameObject);
         wholePopulation.Add(gameObject);
-        HomeOrigin = transform.position;
+        HomeOrigin = inheritedHome ?? transform.position;
         nav = GetComponent<NavMeshAgent>();
         _threat = GetComponent<ThreatResponder>();                       // etapa 1: la política luchar/huir es un componente
         if (_threat == null) _threat = gameObject.AddComponent<ThreatResponder>();
@@ -240,6 +241,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<EstrusState>() == null) gameObject.AddComponent<EstrusState>();   // celo (hechizo-estado): ciclo → deposita Estrus. Reproducción paso 1.
         if (GetComponent<Reproduction>() == null) gameObject.AddComponent<Reproduction>();  // cortejo→concepción→parto (gateado OFF por defecto). Reproducción pasos 2-3.
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
+        if (GetComponent<DefecationNeed>() == null) gameObject.AddComponent<DefecationNeed>();   // ir al baño: antes ningún animal lo tenía
+        if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
+        string spm = SpeciesArchetype;
+        if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
         if (GetComponent<SleepCycle>() == null) gameObject.AddComponent<SleepCycle>();   // sueño día/noche: dispara la compuerta `asleep` por el reloj (Clock); despierta ante amenazas.
         if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos-dungbeetle-level.md §3.
         if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/anyma-factory-and-control.md §1.
@@ -670,6 +675,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     // Collision
     public void OnCollisionEnter(Collision collision)
     {
+        if (GetComponent<MarineLife>() != null) return;   // los marinos nadan: no se les pega al NavMesh del hielo
         nav.enabled = true;
         GetComponent<BoxCollider>().enabled = false;
     }
