@@ -112,8 +112,69 @@ public class BodyShape : MonoBehaviour
             Vector2 cur = kv.Value.Girth;
             kv.Value.SetGirth(Mathf.Lerp(cur.x, w, k), Mathf.Lerp(cur.y, d, k));
         }
+        UpdateAnatomy();
     }
 
+
+    // ── ANATOMÍA VISIBLE ─────────────────────────────────────────────────────────────────────────
+    // El grosor de los segmentos dice "más ancho", pero no DÓNDE está el músculo o la grasa. Encima de cada segmento se
+    // modelan los volúmenes reales (de la misma tela/piel que el segmento, así se ven como relieve de la ropa):
+    //   MÚSCULO → pectorales, deltoides, bíceps, cuádriceps, gemelos, glúteos y, si hay poca grasa, la tableta abdominal.
+    //   GRASA   → barriga (más baja y adelantada), michelines en las caderas, papada y el pecho más blando.
+    //   Mujer   → pecho y caderas algo más anchas (de serie, más con la grasa).
+    readonly Dictionary<string, Transform> _anat = new Dictionary<string, Transform>();
+    bool? _fem;
+
+    void UpdateAnatomy()
+    {
+        if (_body == null) return;   // solo cuerpos humanos de cubos
+        if (_fem == null) _fem = CubeHair.For(name).feminine;
+        float m = Mathf.Max(0f, Muscle), f = Mathf.Max(0f, Fat), fem = _fem.Value ? 1f : 0f;
+        float lean = Mathf.Clamp01(1f - f * 2.5f);   // la grasa tapa la definición
+        for (int s = -1; s <= 1; s += 2)
+        {
+            string sd = s < 0 ? "L" : "R";
+            Bump($"Pectoral_{sd}", BodyPart.Chest, new Vector3(s * 0.09f, 0.2f, 0.12f), new Vector3(0.15f, 0.11f, 0.05f), m * (1f - fem) * 1.2f + f * 0.5f);
+            Bump($"Pecho_{sd}", BodyPart.Chest, new Vector3(s * 0.085f, 0.16f, 0.12f), new Vector3(0.13f, 0.11f, 0.08f), fem * (0.8f + f * 0.8f));
+            Bump($"Deltoides_{sd}", s < 0 ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, new Vector3(0f, -0.04f, 0f), new Vector3(0.12f, 0.1f, 0.12f), m * 1.3f);
+            Bump($"Biceps_{sd}", s < 0 ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight, new Vector3(0f, -0.17f, 0.04f), new Vector3(0.08f, 0.12f, 0.05f), m * 1.5f * lean + f * 0.3f);
+            Bump($"Cuadriceps_{sd}", s < 0 ? BodyPart.ThighLeft : BodyPart.ThighRight, new Vector3(0f, -0.17f, 0.06f), new Vector3(0.12f, 0.22f, 0.05f), m * 1.2f + f * 0.4f);
+            Bump($"Gemelo_{sd}", s < 0 ? BodyPart.ShinLeft : BodyPart.ShinRight, new Vector3(0f, -0.12f, -0.055f), new Vector3(0.09f, 0.14f, 0.05f), m * 1.2f + 0.2f);
+            Bump($"Gluteo_{sd}", BodyPart.Hips, new Vector3(s * 0.08f, -0.04f, -0.1f), new Vector3(0.15f, 0.14f, 0.07f), 0.35f + m * 0.8f + f * 1.0f + fem * 0.4f);
+            Bump($"Michelin_{sd}", BodyPart.Hips, new Vector3(s * 0.17f, 0.06f, 0f), new Vector3(0.06f, 0.08f, 0.18f), (f - 0.15f) * 2f + fem * 0.4f);
+        }
+        for (int r = 0; r < 3; r++)   // tableta: 2 × 3 en el abdomen (solo con músculo y poca grasa)
+            for (int s = -1; s <= 1; s += 2)
+                Bump($"Abdominal_{r}_{s}", BodyPart.Back, new Vector3(s * 0.045f, 0.2f - r * 0.065f, 0.112f), new Vector3(0.07f, 0.05f, 0.025f), (m - 0.15f) * 2.5f * lean);
+        Bump("Barriga", BodyPart.Back, new Vector3(0f, 0.07f, 0.11f), new Vector3(0.3f, 0.17f, 0.12f), (f - 0.1f) * 2.2f);
+        Bump("Papada", BodyPart.Neck, new Vector3(0f, 0.06f, 0.05f), new Vector3(0.12f, 0.05f, 0.06f), (f - 0.4f) * 2f);
+    }
+
+    // Un volumen pegado al hueso (en el espacio del hueso, como su cubo) que crece con `amount` (0 = no se ve).
+    void Bump(string id, BodyPart part, Vector3 local, Vector3 size, float amount)
+    {
+        if (!_joints.TryGetValue(part, out CubeJoint j) || j.segment == null) return;
+        amount = Mathf.Clamp(amount, 0f, 1.6f);
+        if (!_anat.TryGetValue(id, out Transform t) || t == null)
+        {
+            if (amount < 0.05f) return;
+            GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            g.name = id;
+            if (Application.isPlaying) Object.Destroy(g.GetComponent<Collider>()); else Object.DestroyImmediate(g.GetComponent<Collider>());
+            g.transform.SetParent(j.transform, false);
+            Renderer src = j.segment.GetComponent<Renderer>();
+            if (src != null) g.GetComponent<Renderer>().sharedMaterial = src.sharedMaterial;
+            _anat[id] = t = g.transform;
+        }
+        bool show = amount >= 0.05f;
+        if (t.gameObject.activeSelf != show) t.gameObject.SetActive(show);
+        if (!show) return;
+        // Escala con el segmento (su grosor ya incluye músculo/grasa) y con la cantidad; el relieve sale hacia fuera.
+        Vector2 g2 = j.Girth;
+        Vector3 off = new Vector3(local.x * g2.x, local.y, local.z * g2.y);
+        t.localPosition = off + new Vector3(0f, 0f, Mathf.Sign(local.z) * size.z * 0.25f * amount);
+        t.localScale = new Vector3(size.x * g2.x * (0.6f + 0.4f * amount), size.y * (0.7f + 0.3f * amount), size.z * amount);
+    }
     // Reparto de la GRASA por segmento (androide + ginoide; poca en extremidades distales).
     static float FatShare(BodyPart p)
     {

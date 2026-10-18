@@ -113,6 +113,16 @@ public static class PoseGallery
                 var who = new GameObject(names[i]); SceneManager.MoveGameObjectToScene(who, scene);
                 who.AddComponent<Anima>();
                 CubeHumanoid.Dress(who, Color.gray, Color.gray);
+                // Sus stats (los de la escena) para que el cuerpo salga como en el juego: estatura, músculo y grasa.
+                Anima an = who.GetComponent<Anima>();
+                var st = new System.Collections.Generic.Dictionary<string, Vector4>
+                {
+                    { "Linduarda", new Vector4(1.15f, 1.35f, 1.45f, 1.05f) }, { "Goluis", new Vector4(1.5f, 0.9f, 1.4f, 1.29f) },
+                    { "Panterilia", new Vector4(0.7f, 0.95f, 0.9f, 0.79f) }, { "Gohageneis", new Vector4(1.1f, 1.2f, 1.3f, 1.09f) },
+                    { "Irosene", new Vector4(1.2f, 1.2f, 1.3f, 1.29f) },
+                };
+                if (an != null && st.TryGetValue(names[i], out Vector4 sv)) { an.strength = sv.x; an.agility = sv.y; an.endurance = sv.z; an.bodyMass = sv.w; }
+                if (who.TryGetComponent(out BodyShape bsh)) bsh.Apply(true);
                 for (int v = 0; v < 2; v++)
                 {
                     cam.transform.position = v == 0 ? new Vector3(0f, 1.05f, 4.6f) : new Vector3(4.6f, 1.05f, 0f);
@@ -170,7 +180,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas", "Estatuas" }) Snapshot(n);
+        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas", "Estatuas", "Comedor_Gourmet", "Sala", "Estudio_Textil" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)

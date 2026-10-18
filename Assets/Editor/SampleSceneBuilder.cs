@@ -20,7 +20,7 @@ using UnityEngine.AI;
 /// Uso: menu Tools > Cold Sanctuary > Build Sample Scene Blockout.
 /// </summary>
 [InitializeOnLoad]
-public static class SampleSceneBuilder
+public static partial class SampleSceneBuilder
 {
     const string RootName = "LevelDressing_AUTO";
     const string AnimalsRoot = "Assets/Animals";
@@ -129,6 +129,7 @@ public static class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
+        BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet en su plataforma, junto a la cocina
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
@@ -2272,7 +2273,8 @@ public static class SampleSceneBuilder
                 string id = $"{t.name}@({b.center.x:0},{b.center.z:0})"; if (wet.Count < 40 && !wet.Contains(id)) wet.Add(id);
             }
         }
-        wet.RemoveAll(w => w.StartsWith("Rama") || w.StartsWith("Escarcha") || w.StartsWith("Nido_Abejas") || w.StartsWith("Hoja"));   // ramas que vuelan sobre el agua: normal
+        string[] airy = { "Rama", "Escarcha", "Nido_Abejas", "Hoja", "Panal", "Celdilla", "Cera_de_union", "Borde_panal", "Piquera" };
+        wet.RemoveAll(w => System.Array.Exists(airy, a => w.StartsWith(a)));   // ramas que vuelan sobre el agua: normal
         if (wet.Count > 0) Debug.LogWarning($"[Islas] {wet.Count} grupos con piezas sobre el agua: {string.Join(", ", wet)}");
 
         // El plano deja de ser suelo: queda como portador del NavMeshSurface y padre de los casquetes.
@@ -2726,6 +2728,8 @@ public static class SampleSceneBuilder
         MakeOutline(room, "Contorno S1", new Vector3(-5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
         MakeOutline(room, "Contorno S2", new Vector3(5.7f, 0.2f, -7.7f), new Vector3(8f, 0.4f, 0.15f), edge);
 
+        GourmetKitchen(room);   // aspecto de cocina abierta de restaurante gourmet
+
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
         if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 8f + 8.4f + 1.5f));   // al pie de la escalera
     }
@@ -3063,6 +3067,8 @@ public static class SampleSceneBuilder
                 bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
                 for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
                 if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z)) continue;
+                GameObject dining = GameObject.Find("Comedor_Gourmet");
+                if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
                 CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false);
                 fused++;
             }
@@ -3437,7 +3443,7 @@ public static class SampleSceneBuilder
                 new Vector3(105f, 0f, -25f), new Vector2(10f, 9f), new Color(0.55f, 0.55f, 0.60f)),
 
             BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                new Vector3(55f, 0f, -55f), new Vector2(8f, 8f), new Color(0.85f, 0.60f, 0.65f)),
+                new Vector3(55f, 0f, -55f), new Vector2(12f, 10f), new Color(0.85f, 0.60f, 0.65f)),   // más grande: telares, rueca, tintes…
 
             // LABORATORIO DE CARNE CULTIVADA (área propia, nivel 3; docs/carne-cultivada.md): carne para los depredadores
             // sin matar animales. En el casquete Este, cerca del territorio de los osos (su comedero).
@@ -3453,9 +3459,10 @@ public static class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f), new Vector2(16f, 12f) };
+        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
+        FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
         GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");

@@ -81,6 +81,7 @@ public static class CubeHumanoid
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
         // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
+        FaceShape(head, look, flesh);
         CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig, null, null, look.hasLips ? look.lips : (Color?)null, look.feminine, Color.Lerp(look.hair, Color.black, 0.35f));
         CubeHair.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), look);   // cabello (y barba) de cubos
 
@@ -180,6 +181,34 @@ public static class CubeHumanoid
         g.transform.localPosition = pos; g.transform.localScale = size;
         g.transform.localRotation = Quaternion.Euler(xRot, 0f, zRot);
         g.GetComponent<Renderer>().sharedMaterial = Mat(c);
+    }
+
+    // FORMA DE LA CARA: el cráneo (arriba, ancho) y la parte de abajo (mejillas → mandíbula → mentón) más estrecha, en vez
+    // de un cubo: la cabeza humana es más estrecha en la mandíbula que en los pómulos. `look.jaw` da el ancho de la
+    // mandíbula (cara redonda ≈ 0,9; ovalada ≈ 0,78; en corazón/afilada ≈ 0,68) y `look.cheeks` marca los pómulos.
+    static void FaceShape(CubeJoint head, CubeHair.Look look, Material flesh)
+    {
+        Transform seg = head.segment; if (seg == null) return;
+        Vector3 s = seg.localScale;   // 0,24 × 0,26 × 0,24
+        float upper = s.y * 0.6f;
+        seg.localScale = new Vector3(s.x, upper, s.z);
+        seg.localPosition = new Vector3(0f, s.y - upper * 0.5f, 0f);
+        float jaw = look.jaw > 0f ? look.jaw : 0.8f, lowH = s.y - upper;
+        Part(head.transform, "Cara_media", new Vector3(0f, lowH * 0.72f, 0.004f), new Vector3(s.x * Mathf.Lerp(jaw, 1f, 0.6f), lowH * 0.56f, s.z * 0.97f), flesh);   // mejillas
+        Part(head.transform, "Mandibula_forma", new Vector3(0f, lowH * 0.24f, 0.012f), new Vector3(s.x * jaw, lowH * 0.48f, s.z * 0.9f), flesh);              // mandíbula
+        if (look.cheeks > 0f)
+            for (int k = -1; k <= 1; k += 2)
+                Part(head.transform, "Pomulo", new Vector3(k * s.x * 0.36f, upper * 0.0f + lowH * 0.95f, s.z * 0.42f), new Vector3(s.x * 0.18f, s.y * 0.07f, s.z * 0.14f * look.cheeks), flesh);
+    }
+
+    static void Part(Transform parent, string name, Vector3 local, Vector3 size, Material m)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = name;
+        Object.DestroyImmediate(g.GetComponent<Collider>());
+        g.transform.SetParent(parent, false);
+        g.transform.localPosition = local; g.transform.localScale = size;
+        g.GetComponent<Renderer>().sharedMaterial = m;
     }
     static CubeJoint Joint(Transform parent, BodyPart part, Vector3 pivot, Vector3 size, Vector3 cubeOffset, Material mat, CreatureRig rig)
     {

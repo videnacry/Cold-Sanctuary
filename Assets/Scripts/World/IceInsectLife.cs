@@ -23,6 +23,9 @@ public class IceInsectLife : MonoBehaviour
     public Role role { get; private set; }
     int _cell = -1; float _work; Vector3 _source; bool _dancing; float _danceT; float _loadNectar;
     public string Doing { get; private set; } = "";
+    public SpiderWeb web;          // (araña) su tela
+    public bool Stuck => Time.time < _stuckUntil;
+    float _stuckUntil, _freeUntil; // (abeja) pegada en una tela
 
     Animal _self;
     IceCarnivorousTree _home;
@@ -54,12 +57,21 @@ public class IceInsectLife : MonoBehaviour
             }
             Bounds b = TreeBounds(_home.transform);
             _radius = Mathf.Clamp(b.extents.x, 4f, 12f);
-            if (kind == Kind.Spider)   // puesto de acecho: en el tronco, a media altura
+            if (kind == Kind.Spider)
             {
-                Vector3 d = Random.insideUnitSphere; d.y = 0f; d = d.sqrMagnitude > 0.01f ? d.normalized : Vector3.forward;
-                _perch = _home.transform.position + d * 1.1f + Vector3.up * Random.Range(2f, 5f);
+                // TELA ORBICULAR junto al panal (por donde pasan las abejas) y la araña en su centro. Antes acechaba "en el
+                // tronco", pero el punto quedaba DENTRO del tronco (y las abejas y arañas aparecían dentro del árbol).
+                Vector3 anchor = _nest != null ? _nest.position : _home.transform.position + Vector3.up * 6f;
+                Vector3 outward = anchor - _home.transform.position; outward.y = 0f;
+                outward = outward.sqrMagnitude > 0.01f ? outward.normalized : Vector3.forward;
+                Vector3 side = Vector3.Cross(Vector3.up, outward) * (Random.value < 0.5f ? 1f : -1f);
+                Vector3 c = anchor + outward * 0.8f + side * 1.4f + Vector3.down * 0.9f;
+                web = SpiderWeb.Build(c, side, 0.9f, _home.transform);
+                _perch = c;
                 transform.position = _perch;
             }
+            else if (hive != null)   // la abeja empieza en su panal, no a ras de suelo junto al tronco
+                transform.position = hive.combCenter + Random.insideUnitSphere * 0.4f + Vector3.down * 0.2f;
         }
         _angle = Random.value * 360f; _height = Random.Range(3f, 9f);
     }
@@ -80,6 +92,9 @@ public class IceInsectLife : MonoBehaviour
 
     void BeeLife()
     {
+        if (Time.time < _stuckUntil) { Doing = "pegada en una telaraña"; transform.position += Random.insideUnitSphere * 0.004f; return; }   // se agita
+        if (Time.time > _freeUntil) foreach (SpiderWeb w in SpiderWeb.All)
+            if (w.Catches(transform.position)) { _stuckUntil = Time.time + 5f; _freeUntil = _stuckUntil + 4f; Debug.Log("[Hielo] Una abeja de las nieves queda pegada en una telaraña."); return; }
         if (hive != null) { ColonyLife(); return; }
         if (_home == null) return;
         SnowSpiderBehavior spider = Nearest<SnowSpiderBehavior>(transform.position, 1.5f);
@@ -251,6 +266,9 @@ public class IceInsectLife : MonoBehaviour
         if (_home == null) return;
         _strikeCooldown -= Time.deltaTime;
         SnowBeeBehavior bee = Nearest<SnowBeeBehavior>(transform.position, 1.6f);
+        if (web != null)   // primero, la que está pegada en SU tela
+            foreach (IceInsectLife o in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
+                if (o.kind == Kind.Bee && o.Stuck && web.Catches(o.transform.position) && o.TryGetComponent(out SnowBeeBehavior sb)) { bee = sb; break; }
         if (bee != null && !bee.death && _strikeCooldown <= 0f)
         {
             if (FlyTo(bee.transform.position, 6f) < 0.25f)   // salto + mordisco con veneno
@@ -261,8 +279,8 @@ public class IceInsectLife : MonoBehaviour
             }
             return;
         }
-        FlyTo(_perch, 1.2f);   // vuelve a su puesto en el tronco (trepa)
-        transform.rotation = Quaternion.LookRotation(Vector3.down + (transform.position - _home.transform.position).normalized * 0.3f);
+        FlyTo(_perch, 1.2f);   // vuelve al centro de su tela
+        if (web != null) transform.rotation = Quaternion.LookRotation(Vector3.down, web.transform.forward); else transform.rotation = Quaternion.LookRotation(Vector3.down + (transform.position - _home.transform.position).normalized * 0.3f);
     }
 
     // ── Utilidades ──────────────────────────────────────────────────────────────────────────────

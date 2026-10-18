@@ -45,3 +45,15 @@ Código:
 - **La araña de las nieves** sigue acechando en el tronco. Las obreras huyen y la guardiana le planta cara.
 
 Prueba automática: `SanctuaryLifeTest` (la reina pone huevos en el panal).
+
+## Arañas de las nieves y su tela
+
+La ecología del santuario ([ice-sanctuary-ecology.md](ice-sanctuary-ecology.md)) solo decía que la araña "caza abejas
+cerca del árbol"; no hablaba de telas. Ahora es una **tejedora orbicular**, como las *Araneidae*:
+
+- Tiende una tela de radios con espiral pegajosa (`SpiderWeb`) junto al panal, por donde pasan las abejas, y espera en
+  el centro.
+- La abeja que cruza la tela queda pegada unos segundos, agitándose. La araña va a por ella primero; si no, caza a la
+  que pase a su alcance.
+- Antes acechaba "en el tronco", en un punto que quedaba dentro del tronco. Abejas y arañas aparecían dentro del árbol:
+  ahora la araña nace en su tela y las abejas, en su panal.
