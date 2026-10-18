@@ -13,7 +13,7 @@ public class PathMover : MonoBehaviour
     NavMeshPath _path;
     int _corner;
     Vector3 _goal = new Vector3(float.NaN, 0f, 0f);
-    float _repathAt;
+    float _repathAt, _cliffLog;
     const float WaterY = -0.25f;
 
     public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
@@ -36,15 +36,30 @@ public class PathMover : MonoBehaviour
         }
         Vector3 d = next - pos; d.y = 0f;
         float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
+        // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
+        // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
+        bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
+        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) return Flat(target - pos);
         if (d.sqrMagnitude > 1e-6f)
         {
             pos += d.normalized * step;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
         }
         pos.y = GroundY(pos, transform.position.y);
+        // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
+        // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
+        if (pos.y < transform.position.y - 1.2f)
+        {
+            if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
+            return Flat(target - transform.position);
+        }
         transform.position = pos;
         return Flat(target - pos);
     }
+
+    // ¿Ese punto sigue sobre el NavMesh, a la misma altura (no el suelo 6 m más abajo ni un borde a medio metro)?
+    static bool StaysOnMesh(Vector3 p, float feetY)
+        => NavMesh.SamplePosition(p, out NavMeshHit h, 1.5f, NavMesh.AllAreas) && Flat(h.position - p) < 0.2f && Mathf.Abs(h.position.y - feetY) < 1.2f;
 
     void Repath(Vector3 target)
     {
@@ -64,8 +79,12 @@ public class PathMover : MonoBehaviour
     float GroundY(Vector3 p, float current)
     {
         Vector3 o = new Vector3(p.x, current + 2f, p.z);
+        // El MÁS ALTO que quede a un escalón de los pies (RaycastAll no viene ordenado: antes tomaba uno cualquiera y podía
+        // subirse a una rama o a un tejado que tenía encima).
+        float feet = current - PivotHeight, best = float.NegativeInfinity;
         foreach (RaycastHit h in Physics.RaycastAll(o, Vector3.down, 30f, ~0, QueryTriggerInteraction.Ignore))
-            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f) return Mathf.Max(h.point.y, WaterY) + PivotHeight;
+            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f && h.point.y <= feet + 0.8f && h.point.y > best) best = h.point.y;
+        if (!float.IsNegativeInfinity(best)) return Mathf.Max(best, WaterY) + PivotHeight;
         return WaterY + PivotHeight * 0.6f;   // en el agua: medio cuerpo sumergido
     }
 

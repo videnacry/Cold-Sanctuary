@@ -38,7 +38,7 @@ public static class CubeTree
 
         // EDAD por altura: brote (<6 m) un piso y sin posaderos; joven (<12 m) dos pisos; adulto tres; viejo (≥20 m) con
         // más raíces y una rama seca. El grosor sigue a la altura.
-        float girth = Mathf.Clamp(height / 16f, 0.3f, 1.35f);
+        float girth = Mathf.Clamp(height / 16f, 0.3f, height > 60f ? 2.1f : 1.35f);   // el gigante de 83 m, más grueso
         int tiers = height < 6f ? 1 : height < 12f ? 2 : 3;
         bool old = height >= 20f;
         // TRONCO: bloques apilados que se estrechan, con un leve giro (más orgánico que un cilindro).

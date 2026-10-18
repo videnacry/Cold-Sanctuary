@@ -285,7 +285,7 @@ public class SpellConsole : MonoBehaviour
             case "open": case "abrir": AreaCmd(self, args, false); break;
             case "close": case "cerrar": AreaCmd(self, args, true); break;
             case "queue": case "cola": LogQueue(self); break;
-            case "where": case "donde": LogWhere(); break;
+            case "where": case "donde": LogWhere(args.TryGetValue("destiny", out string wf) ? wf : null); break;
             case "cancel": case "cancelar": CancelQueue(self, args); break;
             case "virtualize": case "virtualizar": Virtualize(self, args); break;
             case "exit": case "salir": if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) { MobWorldLoader.Instance.ExitMobWorld(); Log($"«{self.name}» sale del microcosmos."); } else Log("No estás en un microcosmos."); break;
@@ -673,11 +673,11 @@ public class SpellConsole : MonoBehaviour
 
 
     // DIAGNÓSTICO: dónde está cada humano, a cuánto del suelo que tiene debajo y qué hace (¿alguien flotando?).
-    void LogWhere()
+    void LogWhere(string filter)
     {
         foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
         {
-            if (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) continue;
+            if (filter == null ? (a is Animal || a.GetComponentInChildren<CubeJoint>() == null) : a.name.IndexOf(filter, System.StringComparison.OrdinalIgnoreCase) < 0) continue;
             Vector3 p = a.transform.position;
             string below = Physics.Raycast(p + Vector3.up * 0.5f, Vector3.down, out RaycastHit h, 60f, ~0, QueryTriggerInteraction.Ignore)
                 ? $"{p.y - h.point.y:0.0} m sobre {h.collider.name}" : "nada debajo";

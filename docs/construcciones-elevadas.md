@@ -20,11 +20,11 @@ Además de la altura:
 
 ## Lo que hay en el juego
 
-- **Áreas elevadas a 6 m:** cocina, enfermería, veterinaria, sala de yoga, mecánica y estudio textil (`SampleSceneBuilder.ElevateArea`).
+- **Áreas elevadas a 6 m:** cocina, enfermería (una sola, para personas y animales: no hay veterinaria aparte), sala de yoga, mecánica y estudio textil (`SampleSceneBuilder.ElevateArea`).
   - Se apoyan en columnas y se sube por una escalera: una rampa invisible para andar y para la navegación, más peldaños, zancas y pasamanos.
   - Tienen barandilla de 1 m (una barrera invisible y unos balaustres visibles).
 - **Sala de yoga para 30 personas:** 18 × 15 m, con 30 esterillas en 6 × 5 y cojines, la tarima del maestro y un cuenco tibetano.
-- **Casa del árbol de guardia:** un árbol de hielo de 40 m que no caza, con su cabaña a 11 m y escalera vertical.
+- **Casa del árbol de guardia:** el único árbol gigante, de 83 m (el resto de árboles de hielo mide 20–40 m de adulto), que no caza, con su cabaña a 11 m y escalera vertical.
 - **Arboleda residencial** (su propia isla, al noroeste), con un dormitorio por persona:
   - una plataforma central a 7 m con su escalera;
   - seis árboles que no cazan;
@@ -37,3 +37,15 @@ Además de la altura:
   - una fila de paneles sobre postes junto a cada edificio y un campo solar en el hub (`SolarArray`);
   - generan energía de día, con un máximo al mediodía y nada de noche;
   - las cocinas son de **inducción**: vitrocerámica con zonas y panel táctil, sin llama, y horno eléctrico.
+
+## Casquetes y árboles (2026-10-18)
+
+- **Seis casquetes como máximo**, cada uno una masa de hielo continua (`PolarLandscapeBuilder.Islands`, lóbulos `Casquete:Nombre`):
+  1. **Norte**: la aldea (cocina, enfermería, arboleda residencial, casa del árbol de guardia, bosque comestible).
+  2. **Centro**: el hub, la Magnate, el área del huerto, el arrozal, los pingüinos y el textil.
+  3. **Sur**: los huertos-gremio (rotación, milpa, andino).
+  4. **Este**: sala de yoga, mecánica y los osos.
+  5. **Bosque Oeste** y 6. **Bosque Norte**: los árboles carnívoros de hielo, salvajes, con abejas y arañas de las nieves.
+- **Árboles y áreas fusionados**: junto a cada área crecen tres árboles grandes que no cazan (24–36 m); el bosque
+  carnívoro queda solo en los dos casquetes salvajes. Menos árboles que antes.
+- **Alturas**: los adultos miden 22–32 m y los viejos 32–40 m; los jóvenes y brotes, menos porque aún crecen.

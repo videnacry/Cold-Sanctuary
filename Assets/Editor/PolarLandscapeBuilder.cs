@@ -19,32 +19,49 @@ public static class PolarLandscapeBuilder
     public const float WaterLevel = -0.25f;  // el agua asoma 25 cm bajo el borde del hielo (se sale nadando: un escalón)
 
     /// <summary>
-    /// ARCHIPIÉLAGO: cada área del santuario, cada huerto y cada arboleda vive en su propia ISLA (casquete) y entre una y
-    /// otra hay agua que se cruza NADANDO. Las islas rodean una gran LAGUNA central (sin islas) donde viven todos los
-    /// animales marinos, a la vista desde las orillas. (x, z, radio).
+    /// SEIS CASQUETES (no más): cada casquete es una masa de hielo continua hecha de varios LÓBULOS (círculos que se
+    /// solapan), y entre casquetes hay agua que se cruza NADANDO. Las áreas humanas y la naturaleza comparten casquete
+    /// (los árboles crecen junto a las áreas elevadas). Rodean una gran LAGUNA central donde viven los animales marinos.
+    /// (casquete, x, z, radio). Los lóbulos de un mismo casquete se solapan; entre casquetes quedan ≥ 8 m de agua.
     /// </summary>
     public static readonly (string name, float x, float z, float r)[] Islands =
     {
-        ("Hub",            5f,  -10f, 42f),   // personajes, Magnate, Huerto (área) y aparición del jugador
-        ("Cocina",         5f,   95f, 22f),
-        ("Enfermeria",    55f,   97f, 21f),
-        ("Veterinaria",  105f,   95f, 17f),
-        ("SalaYoga",     109f,   38f, 21f),
-        ("Mecanica_Osos",118f,  -20f, 30f),   // Mecánica + territorio de los osos
-        ("Textil",        55f,  -55f, 16f),
-        ("Pinguinos",     60f,  -22f, 11f),   // colonia en la orilla sur de la laguna
-        ("Rotacion",      25f,  -82f, 18f),
-        ("Milpa",        -45f,  -75f, 18f),
-        ("Andina",       -10f, -118f, 15f),
-        ("Arrozal",      -60f,  -15f, 17f),
-        ("Bosque_Comestible", -78f, 45f, 24f),
-        ("Guardia",      -20f,   55f, 17f),   // la casa del árbol de guardia
-        ("Residencial",  -60f,   95f, 26f),   // arboleda residencial: los dormitorios elevados
-        // Arboledas del bosque carnívoro
-        ("Bosque_1", -125f, -25f, 24f), ("Bosque_2", -135f, 65f, 24f), ("Bosque_3", -100f, 125f, 22f), ("Bosque_4", -40f, 160f, 22f),
-        ("Bosque_5",   60f, 165f, 22f), ("Bosque_6", 150f, 140f, 22f), ("Bosque_7", 175f,  60f, 20f), ("Bosque_8", -115f, -115f, 22f),
-        ("Bosque_9",  -60f, -165f, 22f), ("Bosque_10", 45f, -160f, 22f), ("Bosque_11", 125f, -110f, 22f), ("Bosque_12", 190f, -55f, 18f),
+        // 1 · NORTE (la aldea): cocina, enfermería (una sola, para personas y animales), arboleda residencial,
+        //     casa del árbol de guardia y el bosque comestible.
+        ("Norte:Cocina",            5f,   95f, 30f),
+        ("Norte:Enfermeria",       55f,   97f, 28f),
+        ("Norte:Paso",            -28f,   95f, 22f),
+        ("Norte:Residencial",     -60f,   95f, 30f),
+        ("Norte:Guardia",         -25f,   65f, 20f),
+        ("Norte:Bosque_Comestible",-82f,  52f, 26f),
+        // 2 · CENTRO: el hub (personajes, la Magnate, el área del huerto), el arrozal, la colonia de pingüinos y el textil.
+        ("Centro:Hub",              5f,  -10f, 42f),
+        ("Centro:Arrozal",        -55f,  -15f, 28f),
+        ("Centro:Pinguinos",       55f,  -22f, 18f),
+        ("Centro:Textil",          52f,  -52f, 18f),
+        // 3 · SUR: los huertos-gremio (rotación, milpa, andino).
+        ("Sur:Rotacion",           15f,  -95f, 22f),
+        ("Sur:Paso",              -15f,  -90f, 20f),
+        ("Sur:Milpa",             -45f,  -80f, 24f),
+        ("Sur:Andina",            -10f, -118f, 22f),
+        // 4 · ESTE: sala de yoga, mecánica y el territorio de los osos.
+        ("Este:SalaYoga",         109f,   38f, 24f),
+        ("Este:Paso",             114f,   10f, 20f),
+        ("Este:Mecanica_Osos",    118f,  -20f, 30f),
+        // 5 · BOSQUE OESTE (salvaje): árboles carnívoros de hielo, abejas y arañas de las nieves.
+        ("BosqueOeste:Bosque_1", -140f,  -30f, 34f),
+        ("BosqueOeste:Bosque_2", -150f,    5f, 26f),
+        ("BosqueOeste:Bosque_3", -160f,   45f, 32f),
+        // 6 · BOSQUE NORTE (salvaje).
+        ("BosqueNorte:Bosque_4",   40f,  175f, 32f),
+        ("BosqueNorte:Bosque_5",   75f,  170f, 24f),
+        ("BosqueNorte:Bosque_6",  110f,  160f, 30f),
     };
+
+    /// <summary>Nombre del casquete al que pertenece el lóbulo <paramref name="i"/> (hay 6).</summary>
+    public static string CapOf(int i) => Islands[i].name.Split(':')[0];
+
+    public const int CapCount = 6;
 
     /// <summary>La laguna central (sin islas): aquí viven ballena, orca, focas y bancos de peces.</summary>
     public static readonly Vector3 Lagoon = new Vector3(60f, 0f, 25f);
@@ -57,7 +74,7 @@ public static class PolarLandscapeBuilder
     {
         var isl = Islands[i];
         float a = Mathf.Atan2(z - isl.z, x - isl.x);
-        return isl.r * (1f + 0.1f * Mathf.Sin(a * 5f + i) + 0.05f * Mathf.Sin(a * 11f + 2f * i));
+        return isl.r * (1f + 0.06f * Mathf.Sin(a * 5f + i) + 0.03f * Mathf.Sin(a * 11f + 2f * i));   // orilla irregular, sin unir casquetes
     }
 
     /// <summary>¿Hay hielo en (x, z)? = dentro de alguna isla.</summary>
@@ -184,9 +201,9 @@ public static class PolarLandscapeBuilder
         switch (age)
         {
             case TreeAge.Brote: return Mathf.Lerp(2.5f, 4.5f, r);
-            case TreeAge.Joven: return Mathf.Lerp(7f, 10f, r);
-            case TreeAge.Adulto: return Mathf.Lerp(14f, 18f, r);
-            default: return Mathf.Lerp(20f, 24f, r);
+            case TreeAge.Joven: return Mathf.Lerp(9f, 14f, r);
+            case TreeAge.Adulto: return Mathf.Lerp(22f, 32f, r);   // los árboles de hielo adultos: 20–40 m
+            default: return Mathf.Lerp(32f, 40f, r);
         }
     }
 
@@ -212,7 +229,7 @@ public static class PolarLandscapeBuilder
 
         // Una arboleda por isla de bosque (y, si sobran, más arboledas en esas mismas islas).
         var forestIslands = new List<int>();
-        for (int k = 0; k < Islands.Length; k++) if (Islands[k].name.StartsWith("Bosque_")) forestIslands.Add(k);
+        for (int k = 0; k < Islands.Length; k++) if (Islands[k].name.StartsWith("Bosque")) forestIslands.Add(k);   // solo los casquetes salvajes
         int islandTries = 0;
         for (int g = 0, tries = 0; g < groves && tries < 4000; tries++)
         {

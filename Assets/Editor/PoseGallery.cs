@@ -89,6 +89,68 @@ public static class PoseGallery
         finally { EditorSceneManager.ClosePreviewScene(scene); }
     }
 
+
+    /// <summary>RETRATOS de las personas del santuario (de frente y de lado, a escala real) en Temp/PoseGallery/Personajes.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
+    public static void Characters()
+    {
+        string[] names = { "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Cocinero_1" };
+        string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
+        Directory.CreateDirectory(dir);
+        Scene scene = EditorSceneManager.NewPreviewScene();
+        try
+        {
+            var lightGO = new GameObject("Luz"); var light = lightGO.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.2f;
+            lightGO.transform.rotation = Quaternion.Euler(40f, -30f, 0f); SceneManager.MoveGameObjectToScene(lightGO, scene);
+            var camGO = new GameObject("Cam"); var cam = camGO.AddComponent<Camera>();
+            cam.scene = scene; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.93f, 0.95f, 0.98f); cam.fieldOfView = 30f;
+            SceneManager.MoveGameObjectToScene(camGO, scene);
+            int w = 220, h = 460; var rt = new RenderTexture(w, h, 24); cam.targetTexture = rt;
+            var tex = new Texture2D(w * names.Length, h * 2, TextureFormat.RGB24, false);
+            for (int i = 0; i < names.Length; i++)
+            {
+                var who = new GameObject(names[i]); SceneManager.MoveGameObjectToScene(who, scene);
+                who.AddComponent<Anima>();
+                CubeHumanoid.Dress(who, Color.gray, Color.gray);
+                for (int v = 0; v < 2; v++)
+                {
+                    cam.transform.position = v == 0 ? new Vector3(0f, 1.05f, 4.6f) : new Vector3(4.6f, 1.05f, 0f);
+                    cam.transform.LookAt(new Vector3(0f, 0.95f, 0f));
+                    cam.Render(); RenderTexture.active = rt;
+                    tex.ReadPixels(new Rect(0, 0, w, h), i * w, (1 - v) * h);
+                }
+                Object.DestroyImmediate(who);
+            }
+            tex.Apply(); RenderTexture.active = null;
+            File.WriteAllBytes(Path.Combine(dir, "Personajes.png"), tex.EncodeToPNG());
+            Object.DestroyImmediate(tex); rt.Release();
+            Debug.Log($"[Personajes] retratos en Temp/PoseGallery/Personajes.png: {string.Join(", ", names)}");
+        }
+        finally { EditorSceneManager.ClosePreviewScene(scene); }
+    }
+
+    /// <summary>MAPA desde arriba de la escena abierta (casquetes, áreas, árboles) en Temp/PoseGallery/Mapa.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Map (PNG desde arriba)")]
+    public static void Map()
+    {
+        var camGO = new GameObject("MapCam_TEMP");
+        try
+        {
+            var cam = camGO.AddComponent<Camera>();
+            cam.orthographic = true; cam.orthographicSize = 255f;
+            cam.transform.position = new Vector3(0f, 400f, 0f); cam.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            cam.farClipPlane = 1000f; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.2f, 0.35f, 0.5f);
+            var rt = new RenderTexture(1024, 1024, 24); cam.targetTexture = rt; cam.Render();
+            RenderTexture.active = rt;
+            var tex = new Texture2D(1024, 1024, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1024, 1024), 0, 0); tex.Apply();
+            RenderTexture.active = null;
+            string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery"); Directory.CreateDirectory(dir);
+            File.WriteAllBytes(Path.Combine(dir, "Mapa.png"), tex.EncodeToPNG());
+            Object.DestroyImmediate(tex); rt.Release();
+            Debug.Log("[Mapa] Temp/PoseGallery/Mapa.png");
+        }
+        finally { Object.DestroyImmediate(camGO); }
+    }
     // Pares de segmentos NO contiguos cuyos cubos se meten uno dentro del otro (más de 3 cm de solape en los 3 ejes,
     // medido en el espacio del primero con su caja orientada, no la AABB del mundo).
     static string Clashes(GameObject who)

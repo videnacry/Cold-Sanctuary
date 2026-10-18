@@ -257,7 +257,6 @@ public static class SampleSceneBuilder
         AddAreaProducer("VehicleWorkshop_Area",  SanctuaryResource.Materials, 14f, 16f);
         AddAreaProducer("TextileStudio_Area",    SanctuaryResource.Materials, 10f, 14f);
         AddAreaProducer("Infirmary_Area",        SanctuaryResource.Research,   8f, 12f);
-        AddAreaProducer("VeterinaryClinic_Area", SanctuaryResource.Research,   8f, 12f);
 
         Debug.Log("[SampleSceneBuilder] Economía de santuario cableada: SanctuaryResources + HUD + AreaProducers por área.");
     }
@@ -2222,7 +2221,7 @@ public static class SampleSceneBuilder
         foreach (Anima a in Object.FindObjectsOfType<Anima>())
         {
             if (a is Animal || a.GetComponent<PlayableCreature>() != null) continue;
-            if (a.GetComponentInChildren<CubeJoint>() != null) { a.GetOrAdd<CubeWalkCycle>(); continue; }   // ya vestido (pero que ande: al jugador le faltaba)
+            // Ya vestido o no, se (re)viste: así cada cambio de aspecto (docs/diseno-personajes.md) llega a la escena.
             Renderer r = a.GetComponentInChildren<Renderer>();
             if (r == null) continue;
             Color clothes = r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.5f, 0.6f);
@@ -2273,7 +2272,8 @@ public static class SampleSceneBuilder
                 string id = $"{t.name}@({b.center.x:0},{b.center.z:0})"; if (wet.Count < 40 && !wet.Contains(id)) wet.Add(id);
             }
         }
-        if (wet.Count > 0) Debug.LogWarning($"[Islas] {wet.Count} grupos con piezas sobre el agua: {string.Join(", ", wet.GetRange(0, Mathf.Min(15, wet.Count)))}");
+        wet.RemoveAll(w => w.StartsWith("Rama") || w.StartsWith("Escarcha") || w.StartsWith("Nido_Abejas") || w.StartsWith("Hoja"));   // ramas que vuelan sobre el agua: normal
+        if (wet.Count > 0) Debug.LogWarning($"[Islas] {wet.Count} grupos con piezas sobre el agua: {string.Join(", ", wet)}");
 
         // El plano deja de ser suelo: queda como portador del NavMeshSurface y padre de los casquetes.
         Object.DestroyImmediate(ground.GetComponent<MeshCollider>());
@@ -2282,7 +2282,7 @@ public static class SampleSceneBuilder
         ground.transform.localScale = Vector3.one;
         int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
-        Debug.Log($"[Islas] Archipiélago: {PolarLandscapeBuilder.Islands.Length} islas ({boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
+        Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} casquetes ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
@@ -2745,7 +2745,7 @@ public static class SampleSceneBuilder
         (string name, Vector3 pos)[] posts =
         {
             ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
-            ("PuestoVigia_2_Rotacion", new Vector3(32f, 0f, -72f)),
+            ("PuestoVigia_2_Rotacion", new Vector3(18f, 0f, -86f)),
             ("PuestoVigia_3_Pinguinos", new Vector3(60f, 0f, -17f)),
             ("PuestoVigia_4_Cocina", new Vector3(16f, 0f, 108f)),
         };
@@ -3013,7 +3013,7 @@ public static class SampleSceneBuilder
         avoid.Add(new Vector3(-60f, 95f, 28f));   // la arboleda residencial (sus árboles no cazan)
         GameObject tower = GameObject.Find("CasaArbolGuardia");   // ni junto a la casa del árbol
         if (tower != null) avoid.Add(new Vector3(tower.transform.position.x, tower.transform.position.z - 6f, 22f));
-        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 24, loose: 12);
+        var plan = PolarLandscapeBuilder.PlanForest(avoid, 9173, groves: 9, loose: 0);   // menos árboles: solo en los dos casquetes salvajes
         GameObject first = null;
         var hiveTrees = new List<Vector3>();
         var count = new Dictionary<PolarLandscapeBuilder.TreeAge, int>();
@@ -3054,6 +3054,27 @@ public static class SampleSceneBuilder
         else Debug.LogWarning("[IceFlora] sin prefab SnowBee (genera prefabs — salen cubos si no hay .fbx), se omiten las abejas.");
         string ages = string.Join(", ", count.Select(kv => $"{kv.Value} {kv.Key.ToString().ToLowerInvariant()}"));
         Debug.Log($"[IceFlora] Árboles carnívoros de bloques: {plan.Count} esparcidos ({ages}).");
+
+        // NATURALEZA Y ÁREAS FUSIONADAS: junto a cada área humana crecen árboles de hielo grandes (24–36 m) que NO cazan;
+        // las áreas elevadas quedan entre sus troncos (la gente vive con la naturaleza, no en un claro aparte).
+        var rndF = new System.Random(5150);
+        int fused = 0;
+        foreach (SanctuaryArea a in Object.FindObjectsOfType<SanctuaryArea>())
+        {
+            Vector3 c = a.transform.position; c.y = 0f;
+            for (int k = 0; k < 3; k++)
+            {
+                float ang = (k * 120f + 30f + (float)rndF.NextDouble() * 30f) * Mathf.Deg2Rad;   // nunca delante de la escalera (+Z)
+                if (Mathf.Sin(ang) > 0.85f) ang += 0.6f;
+                Vector3 p = c + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * (16f + (float)rndF.NextDouble() * 4f);
+                bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
+                for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
+                if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z)) continue;
+                CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false);
+                fused++;
+            }
+        }
+        Debug.Log($"[IceFlora] {fused} árboles junto a las áreas (no cazan).");
     }
 
     // LINDUARDA en la enfermería + un paciente demo (Kushal) con HealthRecord en false → ella, por su pensamiento de
@@ -3426,9 +3447,6 @@ public static class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
                 new Vector3(55f, 0f, 97f), new Vector2(18f, 14f), new Color(0.85f, 0.95f, 0.90f)),
 
-            BuildAreaBox(areasGroup.transform, "VeterinaryClinic_Area", "Veterinaria", SanctuaryAreaType.VeterinaryClinic, 1,
-                new Vector3(105f, 0f, 95f), new Vector2(8f, 8f), new Color(0.55f, 0.75f, 0.70f)),
-
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
                 new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
 
@@ -3445,11 +3463,13 @@ public static class SampleSceneBuilder
         // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
         PlantGarden(areas[areas.Count - 1].transform);
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
-        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(8f, 8f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f) };
-        for (int i = 0; i < 6; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
-        FurnishYoga(areas[3].transform, sizes[3]);
+        // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
+        // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
+        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f) };
+        for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        FurnishYoga(areas[2].transform, sizes[2]);
         // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < sizes.Length; i++)
             SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
@@ -3936,7 +3956,6 @@ public static class SampleSceneBuilder
         ("YogaRoom_Area",         "Sala de Yoga",   "SalaYoga",    new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga),
         ("Garden_Area",           "Huerto",         "Huerto",      new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel),
         ("Infirmary_Area",        "Enfermería",     "Enfermeria",  new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal),
-        ("VeterinaryClinic_Area", "Veterinaria",    "Veterinaria", new Color(0.55f, 0.75f, 0.70f), MissionKind.Heal),
         ("TextileStudio_Area",    "Estudio Textil", "Textil",      new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel),
         ("VehicleWorkshop_Area",  "Mecánica",       "Mecanica",    new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel),
     };

@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public static class GuardTower
 {
-    public const float TreeHeight = 40f;
+    public const float TreeHeight = 83f;   // caso ÚNICO: el árbol de la guardia mide 83 m (los demás, 20–40 m)
     public const float DeckHeight = 11f;   // bajo el primer piso de ramas (≈15 m): la cabaña no queda atravesada
 
     public static Transform Build(Transform parent, Vector3 groundPos)

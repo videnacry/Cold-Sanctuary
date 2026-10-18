@@ -101,9 +101,10 @@ public class GardenPlot : MonoBehaviour
                         Plant(GardenCrop.Kind.Arroz, new Vector3(x, 0f, z));
                         Plant(GardenCrop.Kind.Arroz, new Vector3(x, 0f, z + 1.4f));
                     }
-                    Bed(new Vector3(0f, 0f, z + 2.6f), new Vector3(size.x - 1f, 0.12f, 0.6f), new Color(0.66f, 0.6f, 0.55f));
+                    PaddyWater(new Vector3(0f, 0f, z + 0.7f), size.x - 1f, 2.6f);   // la terraza INUNDADA donde crece el arroz
+                    Bed(new Vector3(0f, 0f, z + 2.6f), new Vector3(size.x - 1f, 0.25f, 0.7f), new Color(0.52f, 0.44f, 0.36f));   // caballón de tierra
                     for (float x = -hx + 0.8f; x <= hx - 0.8f; x += 1f)
-                        Plant(((int)(x * 2f)) % 3 == 0 ? GardenCrop.Kind.Cebollin : GardenCrop.Kind.Soja, new Vector3(x, 0.12f, z + 2.6f));
+                        Plant(((int)(x * 2f)) % 3 == 0 ? GardenCrop.Kind.Cebollin : GardenCrop.Kind.Soja, new Vector3(x, 0.25f, z + 2.6f));
                 }
                 SeaweedInNearestWater(18);
                 break;
@@ -150,10 +151,10 @@ public class GardenPlot : MonoBehaviour
         for (float z = -hz + 1.2f; z <= hz - 1.2f; z += rowGap, r++)
         {
             GardenCrop.Kind[] row = rows[r % rows.Length];
-            Bed(new Vector3(0f, 0f, z), new Vector3(size.x - 1.6f, 0.08f, 0.9f), new Color(0.62f, 0.55f, 0.50f));
+            RaisedBed(new Vector3(0f, 0f, z), size.x - 1.6f, 0.9f);
             int i = 0;
             for (float x = -hx + 1.2f; x <= hx - 1.2f; x += step * Spacing(row[0]), i++)
-                Plant(row[i % row.Length], new Vector3(x, 0.08f, z + R(-0.1f, 0.1f)));
+                Plant(row[i % row.Length], new Vector3(x, BedHeight, z + R(-0.1f, 0.1f)));
         }
     }
 
@@ -207,6 +208,33 @@ public class GardenPlot : MonoBehaviour
         Plants++;
     }
 
+
+    // BANCAL ELEVADO: un cajón de tablas (30 cm) relleno de tierra oscura con surcos, como los de un huerto real. Antes era
+    // una losa plana del color del suelo y no se distinguía. La tierra levantada se calienta antes y drena mejor (en el hielo,
+    // además, aísla las raíces del frío).
+    public const float BedHeight = 0.3f;
+
+    void RaisedBed(Vector3 local, float length, float width)
+    {
+        Color wood = new Color(0.55f, 0.42f, 0.30f), soil = new Color(0.30f, 0.22f, 0.16f), furrow = new Color(0.22f, 0.16f, 0.12f);
+        float t = 0.06f, h = BedHeight;
+        Bed(local + new Vector3(0f, 0f, -width * 0.5f), new Vector3(length, h, t), wood);   // tablas largas
+        Bed(local + new Vector3(0f, 0f,  width * 0.5f), new Vector3(length, h, t), wood);
+        Bed(local + new Vector3(-length * 0.5f, 0f, 0f), new Vector3(t, h, width + t), wood);   // cabeceras
+        Bed(local + new Vector3( length * 0.5f, 0f, 0f), new Vector3(t, h, width + t), wood);
+        for (float x = -length * 0.5f + 1.5f; x < length * 0.5f - 0.5f; x += 1.5f)            // estacas que sujetan las tablas
+            for (int s = -1; s <= 1; s += 2)
+                Bed(local + new Vector3(x, 0f, s * (width * 0.5f + t)), new Vector3(t, h + 0.06f, t), wood * 0.85f);
+        Bed(local, new Vector3(length - t, h - 0.03f, width - t), soil);                      // la tierra
+        for (int k = -1; k <= 1; k += 2)                                                       // dos surcos a lo largo
+            Bed(local + new Vector3(0f, h - 0.03f, k * width * 0.22f), new Vector3(length - 0.3f, 0.015f, 0.08f), furrow);
+    }
+
+    // Lámina de agua somera de una terraza de arroz (se ve el agua entre las matas).
+    void PaddyWater(Vector3 local, float length, float depth)
+    {
+        Bed(local, new Vector3(length, 0.05f, depth), new Color(0.55f, 0.72f, 0.80f));
+    }
     void Bed(Vector3 local, Vector3 size3, Color c)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);

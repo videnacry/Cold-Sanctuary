@@ -18,8 +18,13 @@ public static class CubeHumanoid
     /// <summary>Oculta la malla actual de <paramref name="who"/> y le pone un cuerpo de cubos articulado a su altura.</summary>
     public static CreatureRig Dress(GameObject who, Color clothes, Color skin, float height = 0f)
     {
-        skin = CubeHair.For(who.name).skin;   // cada persona con su tono de piel
+        CubeHair.Look look = CubeHair.For(who.name);
+        skin = look.skin;                              // cada persona con su tono de piel…
+        if (look.hasClothes) clothes = look.clothes;   // …su ropa (bata, chaqueta de cocina, tejido andino…)
+        if (height <= 0f && look.height > 0f) height = look.height;   // …y su estatura (docs/diseno-personajes.md)
         Transform old = who.transform.Find(BodyName);
+        // VOLVER A VESTIR: el cuerpo anterior dice dónde están los pies (la malla original ya está oculta).
+        float? oldFeet = old != null ? old.localPosition.y * who.transform.lossyScale.y : (float?)null;
         if (old != null) Object.DestroyImmediate(old.gameObject);
 
         // Altura y suelo a partir de lo que se veía (cápsula centrada en el origen o .fbx con los pies en el origen).
@@ -31,7 +36,7 @@ public static class CubeHumanoid
             r.enabled = false;   // se queda el componente (por si se quiere volver a la malla); deja de verse
         }
         float h = height > 0f ? height : (any && b.size.y > 0.3f ? b.size.y : 1.75f);
-        float feetY = any ? b.min.y - who.transform.position.y : 0f;
+        float feetY = oldFeet ?? (any ? b.min.y - who.transform.position.y : 0f);
 
         GameObject body = new GameObject(BodyName);
         body.transform.SetParent(who.transform, false);

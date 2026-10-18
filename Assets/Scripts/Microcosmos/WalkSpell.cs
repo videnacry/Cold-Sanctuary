@@ -98,10 +98,42 @@ public class WalkSpell : SpellBase
         // siguiente Move (p. ej. nadando) y el cuerpo no avanzaba.
         CharacterController cc = GetComponent<CharacterController>();
         if (cc != null && cc.enabled) cc.Move(dir * speed * dt);
+        else if (transform.Find(CubeHumanoid.BodyName) != null) MoveOnGround(dir * speed * dt);   // personas: sobre el suelo, sin pasos al vacío
         else transform.position += dir * speed * dt;
     }
 
     // El objetivo es siempre uno mismo (no usa la API dirigida).
     public override bool CanCast(Anima caster, ITarget target) => true;
     public override void Cast(Anima caster, ITarget target) { }
+
+    static readonly RaycastHit[] _hits = new RaycastHit[12];
+
+    // SIN CharacterController (compañeros): se mueve sobre el suelo que pisa. Sube y baja peldaños y rampas, pero no da un
+    // paso al vacío: antes, al merodear por una plataforma elevada, seguían recto por encima de la barandilla y quedaban
+    // flotando en el aire a 6 m. Sobre el agua sigue (nada); en el hielo, a ras de suelo.
+    void MoveOnGround(Vector3 delta)
+    {
+        Vector3 p = transform.position;
+        float feet = FeetY();
+        Vector3 next = p + delta;
+        int n = Physics.RaycastNonAlloc(new Vector3(next.x, feet + 1.2f, next.z), Vector3.down, _hits, 40f, ~0, QueryTriggerInteraction.Ignore);
+        float best = float.NegativeInfinity;
+        for (int i = 0; i < n; i++)
+            if (!_hits[i].transform.IsChildOf(transform) && _hits[i].collider.GetComponentInParent<Anima>() == null && _hits[i].point.y <= feet + 0.6f && _hits[i].point.y > best)
+                best = _hits[i].point.y;
+        if (!float.IsNegativeInfinity(best) && best > -0.5f)
+        {
+            if (best < feet - 1.2f) return;            // borde: no salta al vacío
+            next.y = p.y + (best - feet);              // pisa el suelo (peldaño, rampa)
+        }
+        transform.position = next;
+    }
+
+    float FeetY()
+    {
+        Transform body = transform.Find(CubeHumanoid.BodyName);
+        if (body != null) return body.position.y;
+        if (TryGetComponent(out CapsuleCollider c)) return transform.TransformPoint(c.center).y - c.height * 0.5f * transform.lossyScale.y;
+        return transform.position.y - 1f;
+    }
 }
