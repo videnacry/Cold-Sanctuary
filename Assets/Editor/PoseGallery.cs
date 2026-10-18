@@ -156,7 +156,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada" }) Snapshot(n);
+        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada", "Nido_Abejas" }) Snapshot(n);
     }
 
     public static void Snapshot(string objectName)
@@ -170,7 +170,8 @@ public static class PoseGallery
         {
             var cam = camGO.AddComponent<Camera>(); cam.fieldOfView = 45f; cam.nearClipPlane = 0.05f;
             float d = b.extents.magnitude * 2.1f;
-            cam.transform.position = b.center + (go.transform.rotation * new Vector3(0.6f, 0.55f, -1f)).normalized * d;
+            Vector3 view = objectName.StartsWith("Nido") ? new Vector3(0.5f, -0.25f, -1f) : new Vector3(0.6f, 0.55f, -1f);   // los panales cuelgan: se miran desde abajo
+            cam.transform.position = b.center + (go.transform.rotation * view).normalized * d;
             cam.transform.LookAt(b.center);
             var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
             RenderTexture.active = rt;

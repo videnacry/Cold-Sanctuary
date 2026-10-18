@@ -92,8 +92,7 @@ public static class CubeTree
                       Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), leaf, false);
                 if (height >= 12f && (b + tier) % 2 == 0)
                 {
-                    Block(plat.transform.parent, "Nido_Abejas", p + new Vector3(0.5f, 0.45f, 0.2f), new Vector3(0.55f, 0.5f, 0.55f),
-                          Quaternion.identity, nestMat, false);
+                    Honeycomb(plat.transform.parent, p + new Vector3(0.5f, -0.05f, 0.2f), nestMat, (b * 7 + tier) * 13);
                     nests++;
                 }
             }
@@ -116,6 +115,46 @@ public static class CubeTree
         return root;
     }
 
+
+    // PANALES de las abejas de las nieves (20 cm): una colonia silvestre cuelga de la rama varias láminas de cera
+    // paralelas (panales) separadas por un "paso de abeja"; cada lámina tiene celdillas hexagonales a ambos lados (aquí,
+    // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
+    // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
+    static Material _wax, _honey, _cellDark, _capped;
+    static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
+    {
+        var rnd = new System.Random(seed);
+        Material wax = Mat(ref _wax, new Color(0.93f, 0.8f, 0.42f));
+        Material honey = Mat(ref _honey, new Color(0.85f, 0.55f, 0.12f));
+        Material dark = Mat(ref _cellDark, new Color(0.45f, 0.3f, 0.12f));
+        Material capped = Mat(ref _capped, new Color(0.98f, 0.9f, 0.62f));
+        GameObject root = new GameObject("Nido_Abejas");
+        root.transform.SetParent(parent, false);
+        root.transform.localPosition = localTop;
+        root.transform.localRotation = Quaternion.Euler(0f, (float)rnd.NextDouble() * 360f, 0f);
+        Block(root.transform, "Cera_de_union", new Vector3(0f, 0.04f, 0f), new Vector3(0.95f, 0.08f, 0.75f), Quaternion.identity, wax, false);
+        const int combs = 4; const float gap = 0.18f, w = 0.85f, h = 0.75f, cell = 0.07f;
+        for (int c = 0; c < combs; c++)
+        {
+            float x = (c - (combs - 1) * 0.5f) * gap;
+            float hh = h * (c == 0 || c == combs - 1 ? 0.8f : 1f);   // los de fuera, algo más cortos (forma de lengua)
+            Transform comb = Block(root.transform, "Panal", new Vector3(x, -hh * 0.5f, 0f), new Vector3(0.05f, hh, w), Quaternion.identity, honey, false).transform;
+            Block(root.transform, "Borde_panal", new Vector3(x, -hh + 0.02f, 0f), new Vector3(0.06f, 0.05f, w * 0.7f), Quaternion.identity, wax, false);
+            if (c != 0 && c != combs - 1) continue;   // celdillas visibles solo en las caras exteriores
+            float side = c == 0 ? -1f : 1f;
+            int rows = Mathf.FloorToInt((hh - 0.08f) / (cell * 0.87f)), cols = Mathf.FloorToInt((w - 0.08f) / cell);
+            for (int rr = 0; rr < rows; rr++)
+                for (int k = 0; k < cols; k++)
+                {
+                    float z = -w * 0.5f + 0.05f + k * cell + (rr % 2) * cell * 0.5f;
+                    if (z > w * 0.5f - 0.04f) continue;
+                    float y = -0.06f - rr * cell * 0.87f;
+                    bool cap = rnd.NextDouble() < 0.45 || y > -0.25f;   // la miel se guarda arriba: operculada
+                    Block(root.transform, "Celdilla", new Vector3(x + side * 0.027f, y, z), new Vector3(0.012f, cell * 0.78f, cell * 0.78f), Quaternion.Euler(30f, 0f, 0f), cap ? capped : dark, false);
+                }
+        }
+        Block(root.transform, "Piquera", new Vector3(0f, -h - 0.02f, 0f), new Vector3(0.3f, 0.06f, 0.18f), Quaternion.identity, dark, false);
+    }
     static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);

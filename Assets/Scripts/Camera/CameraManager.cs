@@ -89,8 +89,37 @@ public class CameraManager : MonoBehaviour
         if (_inRobbery || _transitionRoutine != null) return;
         Transform anchor = _currentMode == CameraMode.FirstPerson ? firstPersonAnchor : thirdPersonAnchor;
         if (anchor == null) return;
-        _cam.position = _currentMode == CameraMode.ThirdPerson ? Unblocked(anchor) : anchor.position;
-        _cam.rotation = anchor.rotation;
+        Vector3 pos = _currentMode == CameraMode.ThirdPerson ? Unblocked(anchor) : anchor.position;
+        Quaternion rot = anchor.rotation;
+
+        // EJERCICIOS DE CUELLO (y cualquier asana que mueva la cabeza): la cámara pasa a los OJOS de Kushal y gira con su
+        // cabeza (barbilla al pecho → mira al suelo; cabeza atrás → al cielo; cara a un lado → mira a ese lado).
+        Transform head = HeadUnderYoga(anchor.root);
+        _headBlend = Mathf.MoveTowards(_headBlend, head != null ? 1f : 0f, Time.deltaTime * 2.5f);
+        if (_headBlend > 0f && (head != null || _lastHead != null))
+        {
+            Transform h = head != null ? head : _lastHead;
+            Vector3 eyes = h.TransformPoint(new Vector3(0f, 0.14f, 0.16f));
+            Quaternion look = Quaternion.LookRotation(h.forward, h.up);
+            float s = Mathf.SmoothStep(0f, 1f, _headBlend);
+            pos = Vector3.Lerp(pos, eyes, s);
+            rot = Quaternion.Slerp(rot, look, s);
+        }
+        if (head != null) _lastHead = head;
+        _cam.position = pos;
+        _cam.rotation = rot;
+    }
+
+    float _headBlend;
+    Transform _lastHead;
+
+    // La cabeza del jugador si el yoga la está colocando ahora (cuello/cabeza bloqueados por una asana); si no, null.
+    static Transform HeadUnderYoga(Transform playerRoot)
+    {
+        if (playerRoot == null || !playerRoot.TryGetComponent(out CreatureRig rig)) return null;
+        if (!rig.IsPoseLocked(BodyPart.Head) && !rig.IsPoseLocked(BodyPart.Neck)) return null;
+        if (rig.IsPoseLocked(BodyPart.ThighLeft)) return null;   // asana de cuerpo entero (saludo al sol…): cámara normal
+        return rig.Get(BodyPart.Head);
     }
 
     static readonly RaycastHit[] _occHits = new RaycastHit[16];
