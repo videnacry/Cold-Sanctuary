@@ -70,6 +70,31 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Greater("sin grasa, la energía se recupera…", cl.currentEnergy, 0.1f);
         TestProbe.Check("…pero gastando masa del propio cuerpo", an.bodyMass < 1f, $"masa {an.bodyMass:0.0000}");
         Destroy(g);
+
+        // Tanque de virtualización: pecera con escotilla horizontal; al abrirla se enciende el campo que sujeta el agua.
+        VirtualizationTank tank = FindAnyObjectByType<VirtualizationTank>();
+        TestProbe.Check("hay tanque de virtualización (pecera)", tank != null);
+        if (tank != null)
+        {
+            yield return tank.Hatch(true);
+            TestProbe.Check("la escotilla horizontal se abre con el campo magnético encendido", tank.HatchOpen && tank.FieldOn);
+            yield return tank.Hatch(false);
+            TestProbe.Check("…y se cierra (campo apagado)", !tank.HatchOpen && !tank.FieldOn);
+        }
+
+        // Carne cultivada: el laboratorio pasa por todas las fases y deja raciones de carne en el comedero de los depredadores.
+        CulturedMeatLab lab = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
+        TestProbe.Check("hay laboratorio de carne cultivada", lab != null);
+        if (lab != null)
+        {
+            float oldSpeed = lab.speed; lab.speed = 400f;
+            bool sawProliferation = false;
+            float t1 = Time.time;
+            while (lab.portionsMade == 0 && Time.time - t1 < 8f) { sawProliferation |= lab.stage == CulturedMeatLab.Stage.Proliferacion; yield return null; }
+            lab.speed = oldSpeed;
+            TestProbe.Check("el lote pasa por la proliferación en biorreactor", sawProliferation);
+            TestProbe.Greater("…y cosecha raciones de carne para los depredadores", lab.portionsMade, 0f, $"{lab.portionsMade} raciones");
+        }
         TestProbe.End();
     }
 }

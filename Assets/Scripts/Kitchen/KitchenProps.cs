@@ -20,6 +20,16 @@ public static class KitchenProps
         m = new Material(sh) { color = c, name = $"Cocina_{ColorUtility.ToHtmlStringRGB(c)}" };
         if (m.HasProperty("_BaseColor")) m.SetColor("_BaseColor", c);
         if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", 0.35f);
+        if (c.a < 0.99f && m.HasProperty("_Surface"))   // TRANSPARENTE (cristal, agua de una pecera): URP Lit en modo alfa
+        {
+            m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", 0f);
+            m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            m.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            m.SetFloat("_ZWrite", 0f); m.SetFloat("_Smoothness", 0.92f);
+            m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            m.SetOverrideTag("RenderType", "Transparent");
+            m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+        }
         return _mats[c] = m;
     }
 

@@ -3437,6 +3437,11 @@ public static class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
                 new Vector3(55f, 0f, -55f), new Vector2(8f, 8f), new Color(0.85f, 0.60f, 0.65f)),
 
+            // LABORATORIO DE CARNE CULTIVADA (área propia, nivel 3; docs/carne-cultivada.md): carne para los depredadores
+            // sin matar animales. En el casquete Este, cerca del territorio de los osos (su comedero).
+            BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
+                new Vector3(118f, 0f, 6f), new Vector2(16f, 12f), new Color(0.85f, 0.7f, 0.68f)),
+
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
                 new Vector3(5f, 0f, -30f), new Vector2(24f, 20f), new Color(0.50f, 0.70f, 0.40f)),
         };
@@ -3446,9 +3451,14 @@ public static class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f) };
+        Vector2[] sizes = { new Vector2(20f, 16f), new Vector2(18f, 14f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(8f, 8f), new Vector2(16f, 12f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
+        // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
+        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
+        KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
+        WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
+        CulturedMeatLab.Build(areas[5].transform, sizes[5], feeder.transform);
         // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
         for (int i = 0; i < sizes.Length; i++)
             SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);

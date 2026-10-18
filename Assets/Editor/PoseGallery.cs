@@ -151,6 +151,38 @@ public static class PoseGallery
         }
         finally { Object.DestroyImmediate(camGO); }
     }
+
+    /// <summary>FOTOS de objetos de la escena abierta (el tanque, el laboratorio…) en Temp/PoseGallery/Foto_*.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
+    public static void Snapshots()
+    {
+        foreach (string n in new[] { "Tanque", "Laboratorio_CarneCultivada" }) Snapshot(n);
+    }
+
+    public static void Snapshot(string objectName)
+    {
+        GameObject go = GameObject.Find(objectName);
+        if (go == null) { Debug.LogWarning($"[Foto] no encuentro «{objectName}»"); return; }
+        Bounds b = new Bounds(go.transform.position, Vector3.zero);
+        foreach (Renderer r in go.GetComponentsInChildren<Renderer>()) b.Encapsulate(r.bounds);
+        var camGO = new GameObject("FotoCam_TEMP");
+        try
+        {
+            var cam = camGO.AddComponent<Camera>(); cam.fieldOfView = 45f; cam.nearClipPlane = 0.05f;
+            float d = b.extents.magnitude * 2.1f;
+            cam.transform.position = b.center + (go.transform.rotation * new Vector3(0.6f, 0.55f, -1f)).normalized * d;
+            cam.transform.LookAt(b.center);
+            var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
+            RenderTexture.active = rt;
+            var tex = new Texture2D(1100, 700, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1100, 700), 0, 0); tex.Apply();
+            RenderTexture.active = null;
+            string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery"); Directory.CreateDirectory(dir);
+            File.WriteAllBytes(Path.Combine(dir, $"Foto_{objectName}.png"), tex.EncodeToPNG());
+            Object.DestroyImmediate(tex); rt.Release();
+            Debug.Log($"[Foto] Temp/PoseGallery/Foto_{objectName}.png");
+        }
+        finally { Object.DestroyImmediate(camGO); }
+    }
     // Pares de segmentos NO contiguos cuyos cubos se meten uno dentro del otro (más de 3 cm de solape en los 3 ejes,
     // medido en el espacio del primero con su caja orientada, no la AABB del mundo).
     static string Clashes(GameObject who)
