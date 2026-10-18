@@ -94,14 +94,14 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
     public static void Characters()
     {
-        string[] names = { "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Cocinero_1" };
+        string[] names = { "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene" };
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
         Directory.CreateDirectory(dir);
         Scene scene = EditorSceneManager.NewPreviewScene();
         try
         {
             var lightGO = new GameObject("Luz"); var light = lightGO.AddComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.2f;
-            lightGO.transform.rotation = Quaternion.Euler(40f, -30f, 0f); SceneManager.MoveGameObjectToScene(lightGO, scene);
+            lightGO.transform.rotation = Quaternion.Euler(30f, 160f, 0f); SceneManager.MoveGameObjectToScene(lightGO, scene);   // luz de frente
             var camGO = new GameObject("Cam"); var cam = camGO.AddComponent<Camera>();
             cam.scene = scene; cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.93f, 0.95f, 0.98f); cam.fieldOfView = 30f;
             SceneManager.MoveGameObjectToScene(camGO, scene);

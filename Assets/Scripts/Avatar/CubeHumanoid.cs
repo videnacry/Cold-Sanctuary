@@ -65,7 +65,11 @@ public static class CubeHumanoid
 
     static void Build(Transform root, CreatureRig rig, Color clothes, Color skin)
     {
-        Material cloth = Mat(clothes), flesh = Mat(skin), dark = Mat(clothes * 0.6f + new Color(0, 0, 0, 1));
+        CubeHair.Look look = CubeHair.For(root.parent != null ? root.parent.name : "");
+        Material cloth = Mat(clothes), flesh = Mat(skin), dark = look.hasPants ? Mat(look.pants) : Mat(clothes * 0.6f + new Color(0, 0, 0, 1));
+        Material forearm = look.hasSleeves ? Mat(look.sleeves) : flesh;   // manga larga (camiseta interior) o brazo al aire
+        Material shin = look.shorts ? flesh : dark;                         // pantalón corto: espinillas al aire
+        Material shoe = look.hasShoes ? Mat(look.shoes) : look.shorts ? Mat(new Color(0.9f, 0.9f, 0.9f)) : dark;
 
         // Pelvis (cadera) a la altura de la cadera; todo cuelga de aquí.
         CubeJoint hips  = Joint(root, BodyPart.Hips,  new Vector3(0f, 0.95f, 0f), new Vector3(0.34f, 0.2f, 0.22f), Vector3.zero, dark, rig);
@@ -75,7 +79,6 @@ public static class CubeHumanoid
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
         // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
-        CubeHair.Look look = CubeHair.For(root.parent != null ? root.parent.name : "");
         CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig);
         CubeHair.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), look);   // cabello (y barba) de cubos
 
@@ -90,21 +93,39 @@ public static class CubeHumanoid
             CubeJoint sh = Joint(scap.transform, left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight,
                 new Vector3(0.18f * side, -0.04f, 0f), new Vector3(0.1f, 0.3f, 0.1f), new Vector3(0f, -0.15f, 0f), cloth, rig);
             CubeJoint el = Joint(sh.transform, left ? BodyPart.ForearmLeft : BodyPart.ForearmRight,
-                new Vector3(0f, -0.3f, 0f), new Vector3(0.09f, 0.27f, 0.09f), new Vector3(0f, -0.135f, 0f), flesh, rig);
+                new Vector3(0f, -0.3f, 0f), new Vector3(0.09f, 0.27f, 0.09f), new Vector3(0f, -0.135f, 0f), forearm, rig);
+            if (look.tattoos && !look.hasSleeves) Tattoo(el.transform, side);
             Joint(el.transform, left ? BodyPart.HandLeft : BodyPart.HandRight,
                 new Vector3(0f, -0.27f, 0f), new Vector3(0.08f, 0.1f, 0.05f), new Vector3(0f, -0.05f, 0f), flesh, rig);
             // Pierna: cadera → rodilla → tobillo.
             CubeJoint th = Joint(hips.transform, left ? BodyPart.ThighLeft : BodyPart.ThighRight,
                 new Vector3(0.1f * side, -0.05f, 0f), new Vector3(0.14f, 0.42f, 0.14f), new Vector3(0f, -0.21f, 0f), dark, rig);
             CubeJoint kn = Joint(th.transform, left ? BodyPart.ShinLeft : BodyPart.ShinRight,
-                new Vector3(0f, -0.42f, 0f), new Vector3(0.12f, 0.4f, 0.12f), new Vector3(0f, -0.2f, 0f), dark, rig);
+                new Vector3(0f, -0.42f, 0f), new Vector3(0.12f, 0.4f, 0.12f), new Vector3(0f, -0.2f, 0f), shin, rig);
             Joint(kn.transform, left ? BodyPart.FootLeft : BodyPart.FootRight,
-                new Vector3(0f, -0.4f, 0f), new Vector3(0.12f, 0.06f, 0.24f), new Vector3(0f, -0.03f, 0.06f), dark, rig);
+                new Vector3(0f, -0.4f, 0f), new Vector3(0.12f, 0.06f, 0.24f), new Vector3(0f, -0.03f, 0.06f), shoe, rig);
         }
 
         foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) j.Capture();
     }
 
+
+    // TATUAJES en el antebrazo: unos trazos de tinta sobre la piel (por fuera del brazo), que se mueven con él.
+    static void Tattoo(Transform forearm, int side)
+    {
+        Material ink = Mat(new Color(0.16f, 0.17f, 0.22f));
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            g.name = "Tatuaje";
+            Object.DestroyImmediate(g.GetComponent<Collider>());
+            g.transform.SetParent(forearm, false);
+            g.transform.localPosition = new Vector3(side * 0.046f, -0.06f - i * 0.045f, (i % 2 == 0 ? 0.012f : -0.012f));
+            g.transform.localScale = new Vector3(0.004f, 0.028f, 0.022f);
+            g.transform.localRotation = Quaternion.Euler(i * 25f, 0f, 0f);
+            g.GetComponent<Renderer>().sharedMaterial = ink;
+        }
+    }
     static CubeJoint Joint(Transform parent, BodyPart part, Vector3 pivot, Vector3 size, Vector3 cubeOffset, Material mat, CreatureRig rig)
     {
         GameObject jointGO = new GameObject(part.ToString());
