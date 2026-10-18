@@ -287,6 +287,11 @@ public class SpellConsole : MonoBehaviour
             case "queue": case "cola": LogQueue(self); break;
             case "where": case "donde": LogWhere(args.TryGetValue("destiny", out string wf) ? wf : null); break;
             case "censo": case "census": foreach (string c in AnimalVitals.Census()) Log("  " + c); break;
+            case "jornada": case "workday":   // plan del día, quién hace qué y el equilibrio (¿faltan personas o misiones?)
+                if (WorkdayDirector.Instance == null) { Log("No hay jornada en esta escena."); break; }
+                if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
+                foreach (string jl in WorkdayDirector.Instance.Report()) Log("  " + jl);
+                break;
             case "hora": case "hour": if (TimeController.timeController != null && float.TryParse(args.TryGetValue("destiny", out string hv) ? hv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hh)) { TimeController.timeController.SetHour(hh); Log($"Son las {hh:00}:00."); } break;
             case "dia": case "día": case "day":   // dia(N): un día de juego dura N minutos reales (sin N: muestra el calendario)
                 if (TimeController.timeController != null)

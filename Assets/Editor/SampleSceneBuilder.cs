@@ -131,6 +131,8 @@ public static partial class SampleSceneBuilder
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
+        new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
+        { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
@@ -3527,6 +3529,16 @@ public static partial class SampleSceneBuilder
             // maquinaria y el material. La dirige el esposo de Lizmibet. En el hub, al oeste del huerto.
             BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
                 new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.72f, 0.4f)),
+            // ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md): gimnasio abierto; ballet, dojo y calistenia EN OBRAS.
+            BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
+                new Vector3(30f, 0f, 8f), new Vector2(14f, 12f), new Color(0.55f, 0.6f, 0.7f)),
+            BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
+                new Vector3(12f, 0f, 24f), new Vector2(10f, 9f), new Color(0.9f, 0.75f, 0.8f)),
+            BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
+                new Vector3(-5f, 0f, 22f), new Vector2(10f, 9f), new Color(0.8f, 0.7f, 0.55f)),
+            BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
+                new Vector3(-28f, 0f, -12f), new Vector2(10f, 9f), new Color(0.65f, 0.75f, 0.6f)),
+
 
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
                 new Vector3(5f, 0f, -30f), new Vector2(24f, 20f), new Color(0.50f, 0.70f, 0.40f)),
@@ -3537,11 +3549,15 @@ public static partial class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f) };
+        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(14f, 12f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(areas[6].transform, sizes[6]);   // maquinaria, material, herramientas y taller de obra
+        FurnishGym(areas[7].transform, sizes[7]);                                                   // gimnasio abierto
+        MakeConstructionSite(areas[8].transform, sizes[8], "Sala de Ballet", 5);                     // en obras: material de un día a pie de obra
+        MakeConstructionSite(areas[9].transform, sizes[9], "Dojo (artes marciales)", 6);
+        MakeConstructionSite(areas[10].transform, sizes[10], "Parque de calistenia", 4);
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Aseos(areas[2].transform, new Vector3(-sizes[2].x * 0.5f + 0.2f + 2.85f, 0.1f, sizes[2].y * 0.5f - 0.9f), 180f);       // sala de yoga
         Aseos(areas[3].transform, new Vector3(-sizes[3].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[3].y * 0.5f - 0.9f), 180f, 1);    // mecánica

@@ -53,11 +53,15 @@ public class TimeController
         if (TimeSpeedMinuteSecs > 0.0001f) _gameMinutes += realDeltaSeconds / TimeSpeedMinuteSecs;
     }
 
+    /// <summary>DÍA de juego (0 = el del Play): cuántas medianoches han pasado desde startHour.</summary>
+    public int Day => Mathf.FloorToInt((startHour + _gameMinutes / 60f) / 24f) + _dayOffset;
+    int _dayOffset;
+
     /// <summary>Hora del día [0,24): parte de startHour y corre con la velocidad.</summary>
     public float Hour => Mod(startHour + _gameMinutes / 60f, 24f);
 
     /// <summary>Fija la hora del día directamente (tests, o mecánicas como "dormir hasta el amanecer").</summary>
-    public void SetHour(float hour) { startHour = Mod(hour, 24f); _gameMinutes = 0f; }
+    public void SetHour(float hour) { int d = Day; float h = Mod(hour, 24f); if (h < Hour) d++; startHour = h; _gameMinutes = 0f; _dayOffset = d; }   // adelantar la hora nunca hace retroceder el día
 
     /// <summary>¿Es de día? (fotosíntesis del fitoplancton; a futuro, ciclos de sueño). Aprox. 6:00–18:00.</summary>
     public bool IsDay { get { float h = Hour; return h >= 6f && h < 18f; } }

@@ -8,7 +8,9 @@ using UnityEngine;
 /// </summary>
 public static class GameKeys
 {
-    static bool Muted => SpellConsole.Capturing;
+    /// <summary>Un menú propio (p. ej. el de la máquina de virtualización) se queda con el teclado.</summary>
+    public static bool MenuOpen;
+    static bool Muted => SpellConsole.Capturing || MenuOpen;
     public static bool GetKey(KeyCode k) => !Muted && Input.GetKey(k);
     public static bool GetKey(string k) => !Muted && Input.GetKey(k);
     public static bool GetKeyDown(KeyCode k) => !Muted && Input.GetKeyDown(k);

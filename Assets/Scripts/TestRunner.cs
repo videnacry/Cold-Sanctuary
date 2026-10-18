@@ -20,8 +20,12 @@ public class TestRunner : MonoBehaviour
     [Tooltip("Espera inicial para que FamilyGenerator + Init de la fauna asienten antes de correr las unidades.")]
     public float startDelay = 1.6f;
 
+    /// <summary>¿Están corriendo las pruebas? (la puerta de la enfermería y la jornada no interfieren con ellas)</summary>
+    public static bool Running { get; private set; }
+
     IEnumerator Start()
     {
+        Running = true;
         yield return new WaitForSeconds(startDelay);
         TestProbe.ResetTotals();
 
@@ -56,6 +60,7 @@ public class TestRunner : MonoBehaviour
         }
 
         TestProbe.Total();
+        Running = false;
     }
 }
 }

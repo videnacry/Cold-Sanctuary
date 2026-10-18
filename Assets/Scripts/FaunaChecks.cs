@@ -28,7 +28,8 @@ public class FaunaChecks : MonoBehaviour, ITestUnit
         if (!TestProbe.Greater("hay fauna viva", alive.Count, 0)) { TestProbe.End(); yield break; }
 
         // ── Wiring del refactor por componentes (#108–#126) ──────────────────────
-        Animal s = alive[0];
+        // Un herbívoro: los carnívoros ya pueden haber cazado antes de la prueba (con el día de 1 h el tiempo corre 24×).
+        Animal s = alive.Find(x => x.Forage != null && !x.Forage.eatsPrey) ?? alive[0];
         TestProbe.NotNull("ThreatResponder presente", s.GetComponent<ThreatResponder>());
         TestProbe.NotNull("Locomotion presente", s.GetComponent<Locomotion>());
         TestProbe.NotNull("Forager presente", s.GetComponent<Forager>());

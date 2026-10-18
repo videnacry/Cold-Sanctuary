@@ -33,4 +33,8 @@ public enum SanctuaryAreaType
 
     // ── Añadidas después (al final para no mover los valores guardados en la escena) ──
     Construction,         // Construcción — obras y reparaciones de las áreas humanas; guarda maquinaria y material
+    Gym,                  // Gimnasio — entrenamiento de fuerza (entrenamiento diario de 2 h)
+    Ballet,               // Sala de ballet — en obras al empezar
+    MartialArts,          // Dojo de artes marciales — en obras al empezar
+    Calisthenics,         // Parque de calistenia — en obras al empezar
 }

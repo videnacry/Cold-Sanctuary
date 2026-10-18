@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -158,6 +159,56 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Greater("tras 80 h de mise en place casi toda la carta está lista", ready, Gastronomy.Menu.Length * 0.75f, larder.Report());
             TestProbe.Check("la lasaña sale (pasta fresca, ragú de carne cultivada, bechamel, parmesano)", larder.Serve("Lasaña"), string.Join(", ", larder.Missing(Gastronomy.DishOf("Lasaña"))));
         }
+
+        // JORNADA Y ROTACIÓN (docs/jornada-y-rotacion.md): lógica pura del reparto.
+        var ro = new WorkRoster();
+        ro.areas.AddRange(new[] { "A", "B", "C" });
+        WorkRoster.Worker w1 = ro.Add("W1"), w2 = ro.Add("W2");
+        System.Func<System.Collections.Generic.List<WorkRoster.Mission>> todays = () => new System.Collections.Generic.List<WorkRoster.Mission>
+        {
+            new WorkRoster.Mission("A", "a1", "a1", 2f, true), new WorkRoster.Mission("A", "a2", "a2", 1f),
+            new WorkRoster.Mission("B", "b1", "b1", 2f, true), new WorkRoster.Mission("B", "b2", "b2", 2f),
+            new WorkRoster.Mission("C", "c1", "c1", 1f, true), new WorkRoster.Mission("C", "c2", "c2", 1f),
+        };
+        var d0 = ro.Plan(0, todays());
+        var d1 = ro.Plan(1, todays());
+        TestProbe.Check("el orden de áreas rota cada día (la última pasa a ser la primera)", d1.areaOrder[0] == "C" && d1.areaOrder[1] == "A", string.Join(",", d1.areaOrder));
+        string firstD0 = d0.Of(w1).First().mission.area, firstD1 = d1.Of(w1).First().mission.area;
+        TestProbe.Check("la primera persona empieza cada día por un área distinta", firstD0 != firstD1, $"{firstD0} → {firstD1}");
+        TestProbe.Check("nadie pasa de sus 5 h de trabajo", d0.work.GroupBy(a => a.worker).All(g => g.Sum(a => a.mission.hours) <= WorkRoster.WorkHours + 1e-3f));
+        var cMission = d1.Of(w1).FirstOrDefault(a => a.mission.area == "C");
+        TestProbe.Check("se da primero la misión que esa persona nunca ha hecho", cMission == null || w1.Count(cMission.mission.id) == 1, cMission != null ? cMission.mission.id : "—");
+        var solo = new WorkRoster(); solo.areas.Add("X"); solo.Add("Solo");
+        var heavy = new System.Collections.Generic.List<WorkRoster.Mission>();
+        for (int i = 0; i < 6; i++) heavy.Add(new WorkRoster.Mission("X", "m" + i, "m" + i, 2f, true));
+        heavy.Add(new WorkRoster.Mission("X", "extra", "extra", 2f));
+        var hp = solo.Plan(0, heavy);
+        TestProbe.Check("si faltan personas, la Magnate se divide y cubre todas las obligatorias", hp.clones.Count > 0 && hp.backlog.All(m => !m.mandatory), $"{hp.clones.Count} clones, {hp.backlog.Count} pendientes");
+        TestProbe.Check("las que no se cubren pasan a mañana y son las primeras", hp.backlog.Count == 1 && solo.Plan(1, new System.Collections.Generic.List<WorkRoster.Mission>()).work.Any(a => a.mission.id == "extra"));
+        TestProbe.Check("el informe dice si faltan personas", WorkRoster.Balance(hp, 1).Any(s => s.StartsWith("Faltan personas")));
+
+        // En la escena: la jornada reparte al personal real, con entrenamiento y obras.
+        WorkdayDirector wd = FindAnyObjectByType<WorkdayDirector>();
+        TestProbe.Check("hay director de la jornada", wd != null);
+        if (wd != null)
+        {
+            var plan = wd.PlanDay(100);
+            TestProbe.Greater("la jornada reparte misiones al personal", plan.work.Count, 5f, $"{plan.work.Count} misiones, {wd.roster.workers.Count} personas, {plan.clones.Count} clones");
+            TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
+            TestProbe.Check("cada persona tiene entrenamiento (yoga o gimnasio)", wd.roster.workers.All(w => plan.training.ContainsKey(w)), string.Join(", ", wd.OpenTraining()));
+            TestProbe.Check("hay misiones de obra para las áreas en construcción", plan.work.Any(a => a.mission.id.StartsWith("obra_trabajo_")));
+            ConstructionProject site = ConstructionProject.All.FirstOrDefault(p => !p.Finished);
+            if (site != null)
+            {
+                int before = site.daysDone;
+                WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_material_" + site.title, "", 1f), "test");
+                WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_trabajo_" + site.title, "", 2f), "test");
+                TestProbe.Check("llevar el material y trabajar la obra la avanza un día", site.daysDone == before + 1, $"{site.title}: {site.daysDone}/{site.daysRequired}");
+            }
+            TestProbe.Check("la máquina ofrece misiones de virtualización del área", AreaWork.OfArea("Cocina", ConstructionProject.All, 0).Count > 0);
+        }
+        TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
+        TestProbe.Check("ballet, dojo y calistenia están en obras; el gimnasio abierto", ConstructionProject.All.Count >= 3 && FindByPrefix("Gym_Area"));
         TestProbe.End();
     }
 
