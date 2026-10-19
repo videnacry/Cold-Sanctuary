@@ -64,14 +64,51 @@ public class KitchenLarder : MonoBehaviour
             prepsDone++;
             Debug.Log($"[Cocina] Elaboración lista: {b.prep.name} ×{b.prep.portions} ({b.prep.equipment}{(b.prep.restHours > 0 ? $", {Hours(b.prep.restHours)} de reposo" : "")}).");
         }
-        Plan();
+        if (autoPlan) Plan();
     }
+
+    [Tooltip("Si está activo, el obrador arranca solo sus tandas. En el santuario lo apaga la jornada: cada elaboración es una MISIÓN de alguien (WorkdayDirector).")]
+    public bool autoPlan = true;
+    List<Gastronomy.Prep> _collect;
 
     // Mise en place: por cada platillo de la carta, asegura sus elaboraciones (y las de éstas).
     void Plan()
     {
         foreach (Gastronomy.Dish d in Gastronomy.Menu)
             foreach (string c in d.components) Ensure(c, prepAhead, 0);
+    }
+
+    /// <summary>Las elaboraciones que HACEN FALTA y se pueden empezar ya (hay sus ingredientes): de aquí salen las misiones
+    /// de cocina del día. No arranca nada.</summary>
+    public List<Gastronomy.Prep> Needed(int max)
+    {
+        _collect = new List<Gastronomy.Prep>();
+        foreach (Gastronomy.Dish d in Gastronomy.Menu)
+            foreach (string c in d.components) Ensure(c, prepAhead, 0);
+        var l = _collect; _collect = null;
+        return l.Count > max ? l.GetRange(0, max) : l;
+    }
+
+    /// <summary>Alguien hace la elaboración (misión de cocina): gasta sus ingredientes y empieza su tanda (con su reposo).</summary>
+    public bool StartPrep(string name, string who)
+    {
+        Gastronomy.Prep p = Gastronomy.PrepOf(name);
+        if (p == null) return false;
+        foreach (string inp in p.inputs) if (Have(inp) < 1f) return false;
+        foreach (string inp in p.inputs) Take(inp, 1f);
+        running.Add(new Batch { prep = p, hoursLeft = p.restHours });   // el trabajo activo ya lo hizo la persona
+        Debug.Log($"[Cocina] {who} elabora «{p.name}» en {p.equipment}{(p.restHours > 0 ? $" (ahora reposa {Hours(p.restHours)})" : "")}.");
+        return true;
+    }
+
+    /// <summary>El servicio: emplata hasta <paramref name="n"/> raciones de la carta que estén listas (platillos compuestos).</summary>
+    public int ServeService(int n, string who)
+    {
+        int served = 0;
+        for (int round = 0; round < n && served < n; round++)
+            foreach (Gastronomy.Dish d in Gastronomy.Menu) { if (served >= n) break; if (CanServe(d) && Serve(d.name)) served++; }
+        Debug.Log($"[Cocina] {who}: servicio con {served} platos de la carta.");
+        return served;
     }
 
     void Ensure(string item, float want, int depth)
@@ -83,6 +120,7 @@ public class KitchenLarder : MonoBehaviour
         bool ready = true;
         foreach (string inp in p.inputs) if (Have(inp) < 1f) { ready = false; Ensure(inp, 1f, depth + 1); }
         if (!ready || running.Count >= maxConcurrent) return;
+        if (_collect != null) { if (!_collect.Contains(p)) _collect.Add(p); return; }   // solo listar (misiones)
         foreach (string inp in p.inputs) Take(inp, 1f);
         running.Add(new Batch { prep = p, hoursLeft = p.activeMin / 60f + p.restHours });
     }

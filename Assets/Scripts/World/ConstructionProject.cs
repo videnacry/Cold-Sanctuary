@@ -47,7 +47,9 @@ public class ConstructionProject : MonoBehaviour
     /// <summary>Misión «Llevar material»: dejan en la obra los palés de un día de trabajo.</summary>
     public void DeliverMaterial(string who)
     {
-        if (Finished) return;
+        if (Finished || materialOnSite) return;
+        // Del ALMACÉN de Construcción (guadua, bahareque, micelio, cuerda); sin almacén (escenas de prueba), llega sin más.
+        if (MaterialStore.Instance != null && !MaterialStore.Instance.TakeDayKit(who, title)) return;
         materialOnSite = true;
         Debug.Log($"[Obra] {who} lleva el material del día a «{title}».");
         Refresh();

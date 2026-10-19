@@ -13,6 +13,7 @@ public class InfirmaryGate : MonoBehaviour
     public float radius = 2.2f;
     public int blockedCount { get; private set; }
     float _msgUntil; string _msg;
+    GameObject _guard;
 
     /// <summary>¿Puede salir? Cuando ya está analizado, vacunado y certificado (o no es un recién llegado).</summary>
     public static bool Cleared(GameObject who)
@@ -28,11 +29,11 @@ public class InfirmaryGate : MonoBehaviour
     void Update()
     {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
-        if (ColdSanctuary.TestRunner.Running || p == null || Cleared(p)) return;   // (las pruebas mueven al jugador libremente)
+        if (ColdSanctuary.TestRunner.Running || p == null || Cleared(p)) { if (_guard != null) { Destroy(_guard); _guard = null; } return; }   // iniciado (o pruebas): el clon se disuelve
         Vector3 exit = transform.TransformPoint(exitLocal);
-        // La Magnate vigila la salida (si no está ocupada presentando a alguien).
-        GameObject mag = GameObject.Find("Magnate");
-        if (mag != null && (mag.transform.position - exit).sqrMagnitude > 1f) mag.transform.position = exit + transform.forward * 0.3f;
+        // Un CLON de la Magnate vigila la salida (ella puede dividirse: la original sigue con lo suyo; antes la movíamos
+        // a ella y entraba en bucle en la escalera, tironeada entre la guardia y sus otras tareas).
+        if (_guard == null) { _guard = WorkdayDirector.SpawnMagnateBody("Magnate (clon guardiana: sin iniciación no se sale)"); _guard.transform.position = exit; _guard.transform.rotation = Quaternion.LookRotation(-transform.forward); }
         Vector3 d = p.transform.position - exit; d.y = 0f;
         if (d.magnitude < radius)
         {

@@ -67,11 +67,11 @@ public static partial class SampleSceneBuilder
         Transform mat = KitchenProps.Root(area, "Material_del_dia", new Vector3(hx - 2f, 0.1f, 1f));
         KitchenProps.C(mat, new Vector3(-0.7f, 0.06f, 0f), new Vector3(1.1f, 0.12f, 1.1f), TWood, 0f, "Pale");
         for (int y = 0; y < 4; y++) for (int i = 0; i < 4; i++)
-            KitchenProps.C(mat, new Vector3(-1.08f + i * 0.25f, 0.18f + y * 0.1f, 0f), new Vector3(0.22f, 0.09f, 1f), new Color(0.72f, 0.36f, 0.26f), 0f, "Ladrillo");
+            KitchenProps.C(mat, new Vector3(-1.08f + i * 0.25f, 0.18f + y * 0.1f, 0f), new Vector3(0.22f, 0.09f, 1f), new Color(0.62f, 0.5f, 0.38f), 0f, "Barro_con_paja");
         KitchenProps.C(mat, new Vector3(0.7f, 0.06f, 0f), new Vector3(1.1f, 0.12f, 1.1f), TWood, 0f, "Pale");
-        for (int y = 0; y < 3; y++) KitchenProps.C(mat, new Vector3(0.7f, 0.2f + y * 0.15f, 0f), new Vector3(0.95f, 0.14f, 0.45f), new Color(0.86f, 0.84f, 0.78f), 0f, "Saco_cemento");
-        for (int i = 0; i < 5; i++) KitchenProps.C(mat, new Vector3(0f, 0.08f + i * 0.1f, 1.1f), new Vector3(2.4f, 0.08f, 0.18f), TWood, 0f, "Tablon");
-        WorldLabel ml = mat.gameObject.AddComponent<WorldLabel>(); ml.text = "Material de un día de obra"; ml.height = 1f;
+        for (int y = 0; y < 3; y++) KitchenProps.C(mat, new Vector3(0.7f, 0.2f + y * 0.15f, 0f), new Vector3(0.95f, 0.14f, 0.45f), new Color(0.93f, 0.9f, 0.82f), 0f, "Panel_micelio");
+        for (int i = 0; i < 5; i++) KitchenProps.C(mat, new Vector3(0f, 0.08f + i * 0.1f, 1.1f), new Vector3(2.8f, 0.09f, 0.09f), new Color(0.78f, 0.74f, 0.42f), 0f, "Guadua");
+        WorldLabel ml = mat.gameObject.AddComponent<WorldLabel>(); ml.text = "Material de un día de obra: 4 guaduas, barro con paja, 2 paneles de micelio, cuerda"; ml.height = 1f;
         for (int i = 0; i < 3; i++) KitchenProps.C(area, new Vector3(-1f + i * 0.8f, 0.3f, hz - 0.6f), new Vector3(0.25f, 0.4f, 0.25f), new Color(0.95f, 0.45f, 0.15f), 45f, "Cono");
         ConstructionProject cp = area.gameObject.AddComponent<ConstructionProject>();
         cp.title = title; cp.daysRequired = days;

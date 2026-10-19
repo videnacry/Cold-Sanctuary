@@ -16,6 +16,10 @@ public static partial class SampleSceneBuilder
     static void FurnishConstruction(Transform area, Vector2 size)
     {
         Transform r = new GameObject("Construccion").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+        // ALMACÉN DE MATERIAL (todo de plantas: guadua del bambusal, bahareque, micelio, cáñamo; docs/construccion-sostenible.md).
+        Transform store = KitchenProps.Root(r, "Almacen_material", new Vector3(0f, 0f, 0f));
+        store.gameObject.AddComponent<WorldLabel>().height = 3.6f;
+        store.gameObject.AddComponent<MaterialStore>();
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
 
         // ── Maquinaria (al fondo, −Z) ──
@@ -57,16 +61,16 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(bricks, new Vector3(0f, 0.06f, 0f), new Vector3(1.1f, 0.12f, 1.1f), CWood, 0f, "Pale");
         for (int y = 0; y < 5; y++) for (int i = 0; i < 4; i++)
             KitchenProps.C(bricks, new Vector3(-0.38f + i * 0.25f, 0.18f + y * 0.1f, 0f), new Vector3(0.22f, 0.09f, 1.0f), Color.Lerp(CBrick, CDark, (i + y) % 3 * 0.06f), 0f, "Ladrillo");
-        CLabel(bricks, "Ladrillo", 1f);
+        CLabel(bricks, "Adobe (tierra y paja)", 1f);
         Transform cement = CPiece(r, "Cemento", new Vector3(-hx + 1.4f, 0f, 2.6f), 90f);
         KitchenProps.C(cement, new Vector3(0f, 0.06f, 0f), new Vector3(1.1f, 0.12f, 1.1f), CWood, 0f, "Pale");
         for (int y = 0; y < 4; y++) for (int i = 0; i < 2; i++)
             KitchenProps.C(cement, new Vector3(-0.25f + i * 0.5f, 0.2f + y * 0.15f, 0f), new Vector3(0.45f, 0.14f, 0.95f), new Color(0.86f, 0.84f, 0.78f), (y % 2) * 90f, "Saco");
-        CLabel(cement, "Cemento", 0.9f);
+        CLabel(cement, "Paneles de micelio", 0.9f);
         Transform wood = CPiece(r, "Madera", new Vector3(-hx + 1.4f, 0f, -1.6f), 90f);
         for (int y = 0; y < 4; y++) for (int i = 0; i < 6; i++)
             KitchenProps.C(wood, new Vector3(-0.5f + i * 0.2f, 0.1f + y * 0.12f, 0f), new Vector3(0.18f, 0.1f, 3f), Color.Lerp(CWood, Color.white, (i % 2) * 0.1f), 0f, "Tablon");
-        CLabel(wood, "Madera", 0.8f);
+        CLabel(wood, "Guadua curada (bambú)", 0.8f);
         Transform steel = CPiece(r, "Vigas_acero", new Vector3(-hx + 3.4f, 0f, -0.2f), 90f);
         for (int i = 0; i < 4; i++)
         {
@@ -75,7 +79,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(steel, new Vector3(x, 0.24f, 0f), new Vector3(0.025f, 0.22f, 3.4f), CSteel, 0f, "Alma");
             KitchenProps.C(steel, new Vector3(x, 0.36f, 0f), new Vector3(0.25f, 0.025f, 3.4f), CSteel, 0f, "Ala");
         }
-        CLabel(steel, "Vigas de acero", 0.8f);
+        CLabel(steel, "Vigas de guadua laminada", 0.8f);
         Transform pipes = CPiece(r, "Tuberias", new Vector3(-hx + 3.4f, 0f, 2.6f), 90f);
         KitchenProps.C(pipes, new Vector3(0f, 0.5f, -1.2f), new Vector3(1.4f, 1f, 0.08f), CDark, 0f, "Soporte");
         KitchenProps.C(pipes, new Vector3(0f, 0.5f, 1.2f), new Vector3(1.4f, 1f, 0.08f), CDark, 0f, "Soporte");

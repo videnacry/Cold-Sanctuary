@@ -88,11 +88,11 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay laboratorio de carne cultivada", lab != null);
         if (lab != null)
         {
-            float oldSpeed = lab.speed; lab.speed = 400f;
+            float oldSpeed = lab.speed; lab.speed = 400f; bool oldStaff = lab.requiresStaff; lab.requiresStaff = false;   // (en el juego, iniciar y cosechar son misiones)
             bool sawProliferation = false;
             float t1 = Time.time;
             while (lab.portionsMade == 0 && Time.time - t1 < 8f) { sawProliferation |= lab.stage == CulturedMeatLab.Stage.Proliferacion; yield return null; }
-            lab.speed = oldSpeed;
+            lab.speed = oldSpeed; lab.requiresStaff = oldStaff;
             TestProbe.Check("el lote pasa por la proliferación en biorreactor", sawProliferation);
             TestProbe.Greater("…y cosecha raciones de carne para los depredadores", lab.portionsMade, 0f, $"{lab.portionsMade} raciones");
         }
@@ -152,8 +152,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay despensa y obrador en la cocina", larder != null);
         if (larder != null)
         {
+            bool oldAuto = larder.autoPlan; larder.autoPlan = true;   // la prueba deja que el obrador se organice solo
             foreach (string line in CulturedMeatLab.Lines) larder.Add(CulturedMeatLab.MeatItem(line), 10f);
             for (int h = 0; h < 80; h++) larder.Tick(1f);   // 80 horas de juego
+            larder.autoPlan = oldAuto;
             int ready = 0; foreach (Gastronomy.Dish d in Gastronomy.Menu) if (larder.CanServe(d)) ready++;
             TestProbe.Greater("el obrador elabora sus bases (yogur, quesos, masas, tofu…)", larder.prepsDone, 15f, $"{larder.prepsDone} elaboraciones; yogur {larder.Have("yogur"):0}");
             TestProbe.Greater("tras 80 h de mise en place casi toda la carta está lista", ready, Gastronomy.Menu.Length * 0.75f, larder.Report());
@@ -209,6 +211,30 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
         TestProbe.Check("ballet, dojo y calistenia están en obras; el gimnasio abierto", ConstructionProject.All.Count >= 3 && FindByPrefix("Gym_Area"));
+
+        // OBRA SOSTENIBLE: el material sale del bambusal, el barro con paja, el micelio y el cáñamo.
+        MaterialStore ms = MaterialStore.Instance;
+        TestProbe.Check("hay almacén de material de construcción", ms != null);
+        if (ms != null)
+        {
+            int g0 = ms.Have(MaterialStore.Guadua), grove0 = ms.groveMature;
+            bool kit = ms.TakeDayKit("test", "prueba");
+            TestProbe.Check("un día de obra gasta guadua, bahareque, micelio y cuerda", kit && ms.Have(MaterialStore.Guadua) == g0 - 4, ms.Summary());
+            ms.HarvestGuadua("test", 3);
+            TestProbe.Check("cortar guadua saca cañas maduras del bambusal y las pone a curar", ms.groveMature == grove0 - 3 && ms.Processing(MaterialStore.Guadua) >= 3);
+        }
+        int bamboo = 0; foreach (GardenCrop c in GardenCrop.All) if (c != null && c.kind == GardenCrop.Kind.Bambu) bamboo++;
+        TestProbe.Greater("hay un bambusal de guadua", bamboo, 3f, $"{bamboo} matas");
+
+        // Laboratorio y cocina: su producción la hacen PERSONAS (misiones de la jornada).
+        CulturedMeatLab lab2 = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
+        if (lab2 != null)
+            TestProbe.Check("el laboratorio necesita a alguien para iniciar y cosechar los lotes", lab2.requiresStaff);
+        if (KitchenLarder.Instance != null) KitchenLarder.Instance.ServeService(40, "test");   // un servicio grande vacía la despensa: hay que volver a elaborar
+        var todayMissions = AreaWork.Today(5, ConstructionProject.All);
+        TestProbe.Check("las elaboraciones de la cocina (queso, harina, pasta…) son misiones", todayMissions.Any(m => m.id.StartsWith("prep_")), string.Join(", ", todayMissions.Where(m => m.id.StartsWith("prep_")).Select(m => m.title).Take(4)));
+        TestProbe.Check("hay misiones de limpieza en las áreas", todayMissions.Count(m => m.title.StartsWith("Limpieza")) >= 5);
+        TestProbe.Check("iniciar y cosechar lotes del laboratorio son misiones", todayMissions.Any(m => m.id == "lab_iniciar") && todayMissions.Any(m => m.id == "lab_cosechar"));
         TestProbe.End();
     }
 

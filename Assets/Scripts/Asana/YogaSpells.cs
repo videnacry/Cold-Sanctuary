@@ -129,6 +129,14 @@ public class AsanaPoseSpell : QueuedSpell
             // APOYO EN EL SUELO: el punto más bajo del cuerpo toca el suelo (y = 0 del cuerpo). Sin esto las posturas
             // sentadas flotaban (piernas dobladas con la pelvis a la altura de pie) y la silla se hundía en el suelo.
             if (hj != null) Ground(rig, hips);
+            // Las manos/pies que van AL SUELO se vuelven a colocar tras apoyar el cuerpo (el apoyo mueve la pelvis).
+            if (hj != null && reaches != null && reaches.Length > 0)
+            {
+                Transform root = hips.parent != null ? hips.parent : self.transform;
+                bool any = false;
+                foreach (var rc in reaches) if (rc.localTarget.y < 0.3f) { Reach(rig, root, rc.end, rc.localTarget, t); any = true; }
+                if (any) Ground(rig, hips);
+            }
         }
     }
 
@@ -251,26 +259,102 @@ public static class SunSalutation
     // Alcances de ejemplo (IK): palmas juntas delante del pecho (Pranamasana) y diez dedos al suelo junto a los pies
     // (Uttanasana). Coordenadas en el cuerpo NATIVO (pies y≈0, cadera y≈0.95). Opt-in: el resto de posturas no usan IK.
     static (BodyPart, Vector3)[] PalmsTogether => new[] { (BodyPart.HandLeft, new Vector3(-0.035f, 1.34f, 0.27f)), (BodyPart.HandRight, new Vector3(0.035f, 1.34f, 0.27f)) };
-    static (BodyPart, Vector3)[] HandsToFloor => new[] { (BodyPart.HandLeft, new Vector3(-0.09f, 0.03f, 0.14f)), (BodyPart.HandRight, new Vector3(0.09f, 0.03f, 0.14f)) };
+    static (BodyPart, Vector3)[] HandsToFloor => FloorHands(0.16f, 0.2f);
+    /// <summary>Palmas en el suelo a ±<paramref name="x"/> del centro y <paramref name="z"/> por delante de la pelvis.</summary>
+    public static (BodyPart, Vector3)[] FloorHands(float x, float z) => new[] { (BodyPart.HandLeft, new Vector3(-x, 0.03f, z)), (BodyPart.HandRight, new Vector3(x, 0.03f, z)) };
+
+    // BISAGRA DE CADERA: la flexión hacia delante sale de la PELVIS (Hips X+), no solo de la columna; los muslos giran al
+    // revés para que las piernas sigan verticales. Así el torso baja de verdad y las manos llegan al suelo.
+    public static (BodyPart, Vector3)[] Hinge(float hip, float legsFromVertical = 0f) => new[] { J(BodyPart.Hips, hip), J(BodyPart.ThighLeft, legsFromVertical - hip), J(BodyPart.ThighRight, legsFromVertical - hip) };
+
+    // ── Las posturas, una a una (las usan el Saludo al Sol y la Serie Primaria de Ashtanga) ──
+    /// <summary>UTTANASANA: piernas rectas, pliegue desde la cadera, el pecho hacia los muslos, la cabeza colgando y las
+    /// palmas planas en el suelo a los lados de los pies.</summary>
+    public static (BodyPart, Vector3)[] Uttanasana => Join(Hinge(112f), Spine(32), new[] { J(BodyPart.Head, 15) }, HandsDown(140));
+    /// <summary>ARDHA UTTANASANA (media flexión): espalda plana y larga, horizontal, mirada al frente; manos a las espinillas.</summary>
+    public static (BodyPart, Vector3)[] ArdhaUttanasana => Join(Hinge(88f), Spine(-6), new[] { J(BodyPart.Head, -30) }, HandsDown(88));
+    /// <summary>ASHWA SANCHALANASANA (zancada): pie delantero entre las manos (rodilla sobre el tobillo), la pierna de atrás
+    /// estirada con la rodilla en el suelo, el torso inclinado sobre el muslo y las palmas en el suelo junto al pie.</summary>
+    public static (BodyPart, Vector3)[] Sanchalanasana(bool leftForward) => new[]
+    {
+        J(BodyPart.Hips, 48f), J(BodyPart.Back, 22f), J(BodyPart.Chest, 18f), J(BodyPart.Head, -45f),
+        J(leftForward ? BodyPart.ThighLeft : BodyPart.ThighRight, -140f), J(leftForward ? BodyPart.ShinLeft : BodyPart.ShinRight, 94f),   // espinilla delantera VERTICAL: rodilla sobre el tobillo
+        J(leftForward ? BodyPart.ThighRight : BodyPart.ThighLeft, 28f), J(leftForward ? BodyPart.ShinRight : BodyPart.ShinLeft, 30f),
+        J(leftForward ? BodyPart.FootRight : BodyPart.FootLeft, 55f),
+        J(BodyPart.ShoulderLeft, -88f), J(BodyPart.ShoulderRight, -88f),
+    };
+    /// <summary>CHATURANGA DANDASANA: cuerpo recto como una tabla, muy cerca del suelo, codos doblados a 90° pegados a las
+    /// costillas (antebrazos verticales, manos bajo los codos), sobre las puntas de los pies.</summary>
+    public static (BodyPart, Vector3)[] Chaturanga => new[]
+    {
+        J(BodyPart.Hips, 80f), J(BodyPart.Head, -12f), J(BodyPart.FootLeft, 0f), J(BodyPart.FootRight, 0f),
+        J(BodyPart.ShoulderLeft, 20f), J(BodyPart.ShoulderRight, 20f), J(BodyPart.ForearmLeft, -100f), J(BodyPart.ForearmRight, -100f),
+    };
+    /// <summary>URDHVA MUKHA SVANASANA (perro boca arriba): brazos rectos y verticales, pecho abierto hacia delante y arriba,
+    /// espalda arqueada, piernas estiradas con el empeine en el suelo y los muslos despegados, mirada arriba.</summary>
+    public static (BodyPart, Vector3)[] UrdhvaMukha => new[]
+    {
+        J(BodyPart.Hips, 88f), J(BodyPart.Back, -30f), J(BodyPart.Chest, -28f), J(BodyPart.Neck, -10f), J(BodyPart.Head, -25f),
+        J(BodyPart.FootLeft, 75f), J(BodyPart.FootRight, 75f), J(BodyPart.ShoulderLeft, -28f), J(BodyPart.ShoulderRight, -28f),
+    };
+    /// <summary>ADHO MUKHA SVANASANA (perro boca abajo): una V invertida, la cadera en lo más alto; brazos rectos en línea
+    /// con la espalda (orejas entre los brazos), piernas rectas con los talones hacia el suelo.</summary>
+    public static (BodyPart, Vector3)[] AdhoMukha => Join(Hinge(124f, 36f), new[] { J(BodyPart.Head, 20f), J(BodyPart.ShoulderLeft, -172f), J(BodyPart.ShoulderRight, -172f), J(BodyPart.FootLeft, -25f), J(BodyPart.FootRight, -25f) });
+
+    // Dónde quedan las manos (en el marco del cuerpo de pie; la pelvis en z = 0): delante de los pies, bajo los hombros…
+    public static (BodyPart, Vector3)[] UttanasanaHands => FloorHands(0.17f, 0.22f);
+    public static (BodyPart, Vector3)[] SanchalanaHands => FloorHands(0.24f, 0.55f);
+    public static (BodyPart, Vector3)[] ChaturangaHands => FloorHands(0.2f, 0.42f);
+    public static (BodyPart, Vector3)[] UrdhvaHands => FloorHands(0.2f, 0.38f);
+    public static (BodyPart, Vector3)[] AdhoMukhaHands => FloorHands(0.2f, 1.0f);
 
     // Las 12 posturas: altura de pelvis (root), anchura de pies (stance; 0 = talones juntos, −1 = no tocar), huesos y alcance IK.
     static readonly (string name, float root, float stance, System.Func<(BodyPart, Vector3)[]> set, System.Func<(BodyPart, Vector3)[]> reaches)[] Postures =
     {
         ("Pranamasana (oración)",                 Stand, 0f,   () => Prayer, () => PalmsTogether),
         ("Hasta Uttanasana (brazos arriba)",      Stand, 0f,   () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) }), null),
-        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) }), () => HandsToFloor),
-        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Join(Lunge(true), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) }), null),
+        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Uttanasana, () => UttanasanaHands),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Sanchalanasana(true), () => SanchalanaHands),
         ("Dandasana (plancha)",                   0.5f,  -1f,  () => Join(new[] { J(BodyPart.Hips, 72), J(BodyPart.FootLeft, 25), J(BodyPart.FootRight, 25), J(BodyPart.Head, -20) }, HandsDown(72)), null),
         ("Ashtanga Namaskara (ocho miembros)",    0.30f, -1f,  () => Join(new[] { J(BodyPart.Hips, 48), J(BodyPart.ThighLeft, -20), J(BodyPart.ThighRight, -20),
                                                                            J(BodyPart.ShinLeft, 70), J(BodyPart.ShinRight, 70), J(BodyPart.Head, 10),
                                                                            J(BodyPart.ShoulderLeft, -25), J(BodyPart.ShoulderRight, -25), J(BodyPart.ForearmLeft, -110), J(BodyPart.ForearmRight, -110) }, Spine(55)), null),
         ("Bhujangasana (cobra)",                  0.5f,  -1f,  () => Join(new[] { J(BodyPart.Hips, 90), J(BodyPart.FootLeft, 80), J(BodyPart.FootRight, 80), J(BodyPart.Head, -25) }, Spine(-60), HandsDown(30)), null),
-        ("Adho Mukha Svanasana (perro boca abajo)", Stand, 0f, () => Join(new[] { J(BodyPart.ThighLeft, 50), J(BodyPart.ThighRight, 50), J(BodyPart.Head, 20) }, Spine(80), ArmsUp), null),
-        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Join(Lunge(false), Spine(35), HandsDown(60), new[] { J(BodyPart.Head, -35) }), null),
-        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) }), () => HandsToFloor),
+        ("Adho Mukha Svanasana (perro boca abajo)", Stand, 0f, () => AdhoMukha, () => AdhoMukhaHands),
+        ("Ashwa Sanchalanasana (zancada)",        0.5f,  -1f,  () => Sanchalanasana(false), () => SanchalanaHands),
+        ("Uttanasana (flexión adelante)",         Stand, 0f,   () => Uttanasana, () => UttanasanaHands),
         ("Hasta Uttanasana (brazos arriba)",      Stand, 0f,   () => Join(ArmsUp, Spine(-30), new[] { J(BodyPart.Head, -15) }), null),
         ("Pranamasana (oración)",                 Stand, 0f,   () => Prayer, () => PalmsTogether),
     };
+
+    /// <summary>SURYA NAMASKARA A de ASHTANGA (la apertura de la Serie Primaria): Samasthitih, Urdhva Vrksasana, Uttanasana,
+    /// Ardha Uttanasana, Chaturanga Dandasana, Urdhva Mukha Svanasana, Adho Mukha Svanasana (5 respiraciones), Ardha
+    /// Uttanasana, Uttanasana, Urdhva Vrksasana y Samasthitih. Un movimiento por respiración (vinyasa).</summary>
+    public static List<QueuedSpell> AshtangaA(float breath = Breath)
+    {
+        var steps = new (string name, float root, float stance, (BodyPart, Vector3)[] set, (BodyPart, Vector3)[] reaches, int holdPhases)[]
+        {
+            ("Samasthitih (de pie)", Stand, 0f, new (BodyPart, Vector3)[0], null, 1),
+            ("Urdhva Vrksasana (brazos arriba)", Stand, 0f, Join(ArmsUp, Spine(-12), new[] { J(BodyPart.Head, -25) }), null, 1),
+            ("Uttanasana (flexión adelante)", Stand, 0f, Uttanasana, UttanasanaHands, 1),
+            ("Ardha Uttanasana (media flexión)", Stand, 0f, ArdhaUttanasana, null, 1),
+            ("Chaturanga Dandasana", 0.3f, -1f, Chaturanga, ChaturangaHands, 1),
+            ("Urdhva Mukha Svanasana (perro boca arriba)", 0.2f, -1f, UrdhvaMukha, UrdhvaHands, 1),
+            ("Adho Mukha Svanasana (perro boca abajo)", Stand, 0f, AdhoMukha, AdhoMukhaHands, 9),
+            ("Ardha Uttanasana (media flexión)", Stand, 0f, ArdhaUttanasana, null, 1),
+            ("Uttanasana (flexión adelante)", Stand, 0f, Uttanasana, UttanasanaHands, 1),
+            ("Urdhva Vrksasana (brazos arriba)", Stand, 0f, Join(ArmsUp, Spine(-12), new[] { J(BodyPart.Head, -25) }), null, 1),
+            ("Samasthitih (de pie)", Stand, 0f, new (BodyPart, Vector3)[0], null, 1),
+        };
+        var seq = new List<QueuedSpell>();
+        int phase = 0;
+        foreach (var s in steps)
+        {
+            seq.Add(Pose($"{s.name} · {Lbl(phase)}", breath, 1f, s.root, s.set, s.stance, s.reaches)); phase++;
+            for (int i = 0; i < s.holdPhases; i++) { seq.Add(Pose($"{s.name} · mantén ({Lbl(phase)})", breath, 1f, s.root, s.set, s.stance, s.reaches)); phase++; }
+        }
+        return seq;
+    }
 
     /// <summary>Saludo al Sol POR RESPIRACIONES: cada postura = 1 fase para llegar (se mueve toda la respiración) + 2 fases
     /// de mantenimiento (= 1 respiración completa). A 8 s/fase son 24 s/postura. Las fases alternan inhalar/exhalar.</summary>

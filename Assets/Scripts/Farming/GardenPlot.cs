@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public class GardenPlot : MonoBehaviour
 {
-    public enum Guild { Hortalizas, Milpa, ChacraAndina, Arrozal, Rotacion, BosqueComestible }
+    public enum Guild { Hortalizas, Milpa, ChacraAndina, Arrozal, Rotacion, BosqueComestible, Bambusal }
 
     public Guild guild;
     public Vector2 size = new Vector2(20f, 16f);
@@ -36,6 +36,7 @@ public class GardenPlot : MonoBehaviour
             case Guild.ChacraAndina: return "Chacra andina";
             case Guild.Arrozal: return "Arrozal";
             case Guild.Rotacion: return "Campo de rotación: legumbres y granos";
+            case Guild.Bambusal: return "Bambusal (guadua y cáñamo para construir)";
             default: return "Bosque comestible";
         }
     }
@@ -123,6 +124,15 @@ public class GardenPlot : MonoBehaviour
                     new[] { GardenCrop.Kind.Caupi, GardenCrop.Kind.Mani }, new[] { GardenCrop.Kind.Soja },
                 }, 0.7f);
                 Border(hx, hz, GardenCrop.Kind.Lino, 1f);
+                break;
+
+            case Guild.Bambusal:
+                // BAMBUSAL: matas de guadua (cada mata, un rizoma con varias cañas de distintas edades) separadas para cortar
+                // las maduras sin dañar el rizoma, y un borde de cáñamo (fibra para cuerda y cañamiza para el micelio).
+                for (float x = -hx + 2f; x <= hx - 2f; x += 3.5f)
+                    for (float z = -hz + 2f; z <= hz - 3f; z += 3.5f)
+                        Plant(GardenCrop.Kind.Bambu, new Vector3(x + R(-0.4f, 0.4f), 0f, z + R(-0.4f, 0.4f)));
+                for (float x = -hx + 0.8f; x <= hx - 0.8f; x += 1.1f) Plant(GardenCrop.Kind.Canamo, new Vector3(x, 0f, hz - 1f));
                 break;
 
             default:   // BOSQUE COMESTIBLE por capas: dosel, árboles bajos, arbustos, herbáceas, trepadoras y hongos a la sombra

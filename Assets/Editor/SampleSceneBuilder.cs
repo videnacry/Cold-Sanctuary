@@ -3590,6 +3590,7 @@ public static partial class SampleSceneBuilder
         MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-60f, 0f, -15f),   new Vector2(22f, 16f), 14, true);
         MakePlot(parent, GardenPlot.Guild.Rotacion,         new Vector3(25f, 0f, -82f),   new Vector2(24f, 16f), 15, true);
         MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(-78f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
+        MakePlot(parent, GardenPlot.Guild.Bambusal,         new Vector3(-42f, 0f, 0f),    new Vector2(16f, 12f), 17, true);   // guadua y cáñamo: el material de Construcción
     }
 
     static void MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil)

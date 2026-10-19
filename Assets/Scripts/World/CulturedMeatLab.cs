@@ -30,6 +30,14 @@ public class CulturedMeatLab : MonoBehaviour
     public double cellsPerGram = 2.5e8;     // músculo: ≈ 2–3·10⁸ células por gramo
     public float batchGrams = 2000f;        // 2 kg por lote → 4 raciones de 500 g
     public int maxPortionsWaiting = 6;
+    [Tooltip("En el santuario el laboratorio NO va solo: iniciar cada lote y cosecharlo son MISIONES de la jornada (alguien tiene que hacerlas). Proliferar y diferenciar sí van solos en el biorreactor.")]
+    public bool requiresStaff = true;
+    bool _startOrdered, _harvestOrdered;
+    public bool WaitingForStaff => requiresStaff && ((stage == Stage.Biopsia && !_startOrdered) || (stage == Stage.Cosecha && !_harvestOrdered));
+    /// <summary>Misión «Iniciar un lote»: biopsia del banco, medio y siembra.</summary>
+    public void OrderStart(string who) { _startOrdered = true; Debug.Log($"[Carne cultivada] {who} inicia el lote de {Line} (vial del banco, medio y siembra en el biorreactor)."); }
+    /// <summary>Misión «Cosechar el lote»: cosecha y formado (si aún no está listo, queda encargado).</summary>
+    public void OrderHarvest(string who) { _harvestOrdered = true; Debug.Log($"[Carne cultivada] {who} cosecha y da forma al lote de {Line}."); }
     [Tooltip("Raciones de cada lote que van a la cocina del restaurante (el resto, al comedero de los depredadores).")]
     public int kitchenPortions = 4;
 
@@ -63,7 +71,7 @@ public class CulturedMeatLab : MonoBehaviour
         _t += dt;
         switch (stage)
         {
-            case Stage.Biopsia: if (_t >= biopsySeconds) Next(Stage.Banco); break;
+            case Stage.Biopsia: if (_t >= biopsySeconds && (!requiresStaff || _startOrdered)) { _startOrdered = false; Next(Stage.Banco); } break;   // alguien tiene que iniciar el lote
             case Stage.Banco: if (_t >= bankSeconds) { cells = seedCells; Next(Stage.Medio); } break;
             case Stage.Medio: if (_t >= mediumSeconds) { glucose = 1f; pH = 7.35f; Next(Stage.Proliferacion); } break;
             case Stage.Proliferacion:
@@ -78,7 +86,7 @@ public class CulturedMeatLab : MonoBehaviour
                 break;
             case Stage.Diferenciacion: if (_t >= differentiationSeconds) Next(Stage.Cosecha); break;
             case Stage.Cosecha:
-                if (_t >= harvestSeconds) { Harvest(); Next(Stage.Biopsia); }
+                if (_t >= harvestSeconds && (!requiresStaff || _harvestOrdered)) { _harvestOrdered = false; Harvest(); Next(Stage.Biopsia); }   // y cosecharlo
                 break;
         }
         if (console != null) console.text = Status();
@@ -123,7 +131,9 @@ public class CulturedMeatLab : MonoBehaviour
         _ => "res cultivada",
     };
 
-    public string Status() => stage == Stage.Proliferacion
+    public string Status() => WaitingForStaff
+        ? $"Carne cultivada ({Line}) · {Name(stage)} · ESPERA a que alguien {(stage == Stage.Biopsia ? "inicie el lote" : "coseche el lote")} (misión de la jornada)"
+        : stage == Stage.Proliferacion
         ? $"Carne cultivada ({Line}) · {Name(stage)} · {cells:0.0e0}/{TargetCells:0.0e0} células · glucosa {glucose:P0} · pH {pH:0.00} · O₂ {dissolvedO2:P0} · 37 °C"
         : $"Carne cultivada ({Line}) · {Name(stage)} · lotes {batches} · raciones {portionsMade}";
 

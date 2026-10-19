@@ -30,17 +30,17 @@ public static class AshtangaPrimary
         int holdPhases = Mathf.Max(0, holdBreaths) * 2;   // una respiración = 2 fases
 
         // APERTURA: Surya Namaskara A (reutilizado).
-        seq.AddRange(SunSalutation.Sequence(breath));
+        seq.AddRange(SunSalutation.AshtangaA(breath));   // Surya Namaskara A de Ashtanga (chaturanga, perro boca arriba y abajo)
 
         // DE PIE (sagitales).
         Posture(seq, ref phase, breath, holdPhases, "Padangusthasana (dedos de pie)", Stand, 0.25f,
-            Join(Spine(110), HandsDown(100), new[] { J(BodyPart.Head, 15) }), Floor());
+            SunSalutation.Uttanasana, SunSalutation.FloorHands(0.1f, 0.2f));   // pliegue desde la cadera; índice y corazón agarran los dedos gordos
         Posture(seq, ref phase, breath, holdPhases, "Utkatasana (silla)", 0.75f, 0f,
             Join(ArmsUp, new[] { J(BodyPart.ThighLeft, -30), J(BodyPart.ThighRight, -30), J(BodyPart.ShinLeft, 45), J(BodyPart.ShinRight, 45) }, Spine(20)));
         Posture(seq, ref phase, breath, holdPhases, "Virabhadrasana I (guerrero I)", 0.6f, -1f,
             Join(Lunge(true), ArmsUp, Spine(-10), new[] { J(BodyPart.Head, -10) }));
         Posture(seq, ref phase, breath, holdPhases, "Prasarita Padottanasana (piernas abiertas)", Stand, 0.9f,
-            Join(Spine(115), HandsDown(100), new[] { J(BodyPart.Head, 15) }), Floor());
+            Join(SunSalutation.Hinge(105f), Spine(40), HandsDown(140), new[] { J(BodyPart.Head, 15) }), SunSalutation.FloorHands(0.16f, 0.05f));   // coronilla hacia el suelo, manos entre los pies
 
         // SENTADAS (Yoga Chikitsa, núcleo).
         Posture(seq, ref phase, breath, holdPhases, "Dandasana (bastón)", Seat, 0.12f,
@@ -66,7 +66,7 @@ public static class AshtangaPrimary
 
     /// <summary>Duración aproximada (para quien la imita).</summary>
     public static float Duration(float breath = Breath, int holdBreaths = 5)
-        => SunSalutation.Duration(breath) + (10 * (1 + holdBreaths * 2) + 15) * breath;
+        => SunSalutation.AshtangaA(breath).Count * breath + (10 * (1 + holdBreaths * 2) + 15) * breath;
 
     // Una postura = 1 fase para llegar + holdPhases fases de mantenimiento (misma pose).
     static void Posture(List<QueuedSpell> seq, ref int phase, float breath, int holdPhases, string name, float root, float stance,

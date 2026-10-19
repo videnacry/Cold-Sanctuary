@@ -31,6 +31,8 @@ public class GardenCrop : MonoBehaviour
         // ampliación para la carta del restaurante (docs/cocina-profesional.md)
         Trigo, MaizMorado, Haba, Arveja, Melloco, Papa, Perejil, Romero, Azafran, Achiote, Sesamo, Wasabi, Pepino,
         Frutilla, Hierbaluisa, Cedron, Cana, Naranjilla, Mortino, Babaco, Clavo, Cafe, Aguacate,
+        // materiales de construcción (docs/construccion-sostenible.md)
+        Bambu, Canamo,
     }
 
     public Kind kind;
@@ -54,6 +56,7 @@ public class GardenCrop : MonoBehaviour
         { Kind.Lenteja, "lenteja" }, { Kind.Frijol, "frijol" },
         { Kind.MaizMorado, "maíz morado" }, { Kind.Azafran, "azafrán" }, { Kind.Sesamo, "sésamo" }, { Kind.Cana, "caña de azúcar" },
         { Kind.Mortino, "mortiño" }, { Kind.Cedron, "cedrón" }, { Kind.Cafe, "café" },
+        { Kind.Bambu, "guadua (bambú)" }, { Kind.Canamo, "cáñamo" },
     };
 
     void Awake() { _fullScale = transform.localScale; }
@@ -286,6 +289,8 @@ public class GardenCrop : MonoBehaviour
             case Kind.Clavo:     FruitTree(4.5f, 2.2f, LeafDeep, Hex("F2C2B0"), 0.03f); break;
             case Kind.Cafe:      FruitTree(2.4f, 1.8f, LeafDeep, Hex("F2A3A0"), 0.05f); break;
             case Kind.Aguacate:  FruitTree(5.0f, 3.4f, LeafDeep, Hex("B9D49A"), 0.14f); break;
+            case Kind.Bambu:     Cereal(7, 6.5f, 9f, Hex("B7D7A2"), false); break;   // guadua: cañas altas en mata (rizoma)
+            case Kind.Canamo:    Cereal(10, 1.8f, 2.4f, Hex("A8CC9C"), false); break;
         }
     }
 

@@ -36,6 +36,7 @@ public class WorkdayDirector : MonoBehaviour
 
     void Start()
     {
+        if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // la cocina produce por misiones desde el primer día
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
             if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(a.displayName)) roster.areas.Add(a.displayName);
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)
@@ -76,6 +77,7 @@ public class WorkdayDirector : MonoBehaviour
     public WorkRoster.DayPlan PlanDay(int day)
     {
         SyncStaff();
+        if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // en el santuario cada elaboración es una misión de alguien
         roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
@@ -120,6 +122,48 @@ public class WorkdayDirector : MonoBehaviour
         }
         foreach (var kv in _clones)
             if (kv.Value != null) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, alwaysMove: true); }
+        HoldPlayer(h);
+    }
+
+    // EL JUGADOR TAMBIÉN ESTÁ BLOQUEADO durante la jornada: si sale del área de lo que le toca (trabajo, comida o
+    // entrenamiento), vuelve a ella con un aviso. La Guardia patrulla por todo el santuario: ahí no se le retiene.
+    string _holdMsg; float _holdMsgUntil;
+    public int playerHeldBack { get; private set; }
+    readonly Dictionary<string, float> _areaRadius = new Dictionary<string, float>();
+
+    void HoldPlayer(float h)
+    {
+        WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
+        GameObject p = GameObject.FindGameObjectWithTag("Player"); if (p == null) return;
+        if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
+        string area = Where(me, h, out string doing);
+        if (area == null || area == AreaWork.Guard) return;
+        Vector3 c = AreaPoint(area, "centro"); if (c == Vector3.zero) return;
+        float r = AreaRadius(area);
+        Vector3 d = p.transform.position - c; d.y = 0f;
+        if (d.magnitude <= r) return;
+        CharacterController cc = p.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+        p.transform.position = AreaPoint(area, "Player");
+        if (cc != null) cc.enabled = true;
+        playerHeldBack++;
+        _holdMsg = $"Jornada: ahora te toca «{doing}» en {area}. Hasta las 16:00 no hay tiempo libre."; _holdMsgUntil = Time.time + 4f;
+        Debug.Log("[Jornada] " + _holdMsg);
+    }
+
+    float AreaRadius(string area)
+    {
+        if (_areaRadius.TryGetValue(area, out float r)) return r;
+        r = 14f;
+        foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
+            if (a.displayName == area)
+            {
+                Renderer[] rs = a.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) break;
+                Bounds b = rs[0].bounds; foreach (Renderer x in rs) b.Encapsulate(x.bounds);
+                r = new Vector2(b.extents.x, b.extents.z).magnitude + 2f; break;
+            }
+        _areaRadius[area] = r;
+        return r;
     }
 
     /// <summary>Dónde debe estar <paramref name="w"/> a la hora <paramref name="h"/> (área) y qué hace; null = libre.</summary>
@@ -208,11 +252,26 @@ public class WorkdayDirector : MonoBehaviour
             string title = m.id.Substring(m.id.StartsWith("obra_material_") ? 14 : 13);
             foreach (ConstructionProject p in ConstructionProject.All)
                 if (p.title == title) { if (m.id.StartsWith("obra_material_")) p.DeliverMaterial(who); else p.WorkDay(who); }
+            return;
         }
+        MaterialStore store = MaterialStore.Instance;
+        KitchenLarder larder = KitchenLarder.Instance;
+        CulturedMeatLab lab = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
+        switch (m.id)
+        {
+            case "mat_guadua": store?.HarvestGuadua(who); return;
+            case "mat_bahareque": store?.MakeBahareque(who); return;
+            case "mat_micelio": store?.GrowMycelium(who); return;
+            case "mat_cuerda": store?.TwistRope(who); return;
+            case "lab_iniciar": lab?.OrderStart(who); return;
+            case "lab_cosechar": lab?.OrderHarvest(who); return;
+            case "coc_servicio": larder?.ServeService(12, who); return;
+        }
+        if (m.id.StartsWith("prep_") && larder != null) larder.StartPrep(m.id.Substring(5), who);
     }
 
     // Un cuerpo de la Magnate (copia de su cuerpo de cubos) sin su conducta: para clones de trabajo e iniciaciones.
-    GameObject SpawnMagnateBody(string label)
+    public static GameObject SpawnMagnateBody(string label)
     {
         GameObject mag = GameObject.Find("Magnate");
         GameObject g = new GameObject(label);
@@ -256,6 +315,7 @@ public class WorkdayDirector : MonoBehaviour
     // ── HUD del jugador: su itinerario de hoy ──
     void OnGUI()
     {
+        if (Time.time < _holdMsgUntil && !string.IsNullOrEmpty(_holdMsg)) GUI.Box(new Rect(Screen.width * 0.5f - 300, Screen.height - 120, 600, 40), _holdMsg);
         if (today == null || TC == null) return;
         WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
         float h = TC.Hour;

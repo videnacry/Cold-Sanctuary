@@ -74,6 +74,15 @@ public static class PoseGallery
                         segs.Add((j.part.ToString(), r.bounds, j.transform));
                     }
                     string clash = Clashes(who);
+                    // MANOS AL SUELO: si la postura las pide en el suelo, su punto más bajo debe tocarlo.
+                    string hands = "";
+                    foreach (var rc in pose.reaches)
+                    {
+                        if (rc.localTarget.y >= 0.3f) continue;
+                        foreach (CubeJoint j in who.GetComponentsInChildren<CubeJoint>())
+                            if (j.part == rc.end && j.segment != null) { float hy = j.segment.GetComponent<Renderer>().bounds.min.y; if (hy > 0.06f) hands += $"{rc.end} a {hy:0.00} m del suelo; "; }
+                    }
+                    if (hands.Length > 0) clash += (clash.Length > 0 ? "; " : "") + "NO LLEGA AL SUELO: " + hands;
                     string file = $"{Safe(s.name)}_{idx:00}.png";
                     Shoot(cam, rt, who.transform, Path.Combine(dir, file), pose.asanaName);
                     bool bad = lowest > 0.12f || clash.Length > 0;
