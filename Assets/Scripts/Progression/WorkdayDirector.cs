@@ -118,10 +118,10 @@ public class WorkdayDirector : MonoBehaviour
             GameObject g = Body(w.name);
             if (g == null || g.CompareTag("Player")) continue;
             string where = Where(w, h, out string doing);
-            Drive(g, where, doing);
+            Drive(g, where, doing, Current(w, h)?.mission.id);
         }
         foreach (var kv in _clones)
-            if (kv.Value != null) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, alwaysMove: true); }
+            if (kv.Value != null) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, null, alwaysMove: true); }
         HoldPlayer(h);
     }
 
@@ -181,19 +181,41 @@ public class WorkdayDirector : MonoBehaviour
         return null;
     }
 
-    void Drive(GameObject g, string area, string doing, bool alwaysMove = false)
+    /// <summary>La misión que <paramref name="w"/> está haciendo a la hora <paramref name="h"/> (null si ninguna).</summary>
+    public WorkRoster.Assignment Current(WorkRoster.Worker w, float h)
+    {
+        if (today == null) return null;
+        foreach (WorkRoster.Assignment a in today.work) if (a.worker == w && h >= a.start && h < a.start + a.mission.hours) return a;
+        return null;
+    }
+
+    /// <summary>¿Hay algún recién llegado sin iniciar? (Linduarda lo atiende antes que nada: es la médica que lo recibe)</summary>
+    static bool NewcomerWaiting()
+    {
+        foreach (SanctuaryOnboarding o in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None)) if (o != null && !o.apt) return true;
+        return false;
+    }
+
+    // TODOS SIGUEN SU MISIÓN: las conductas propias (Linduarda en la enfermería, el guardia que lleva raciones) solo
+    // funcionan cuando la misión de ese momento es la suya; si no, se apagan y el personaje va al área que le toca.
+    // El que tenga la misión «Patrulla y raciones a los carnívoros» recibe la conducta de guardia, sea quien sea.
+    void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
-        WorldLabel wl = g.GetComponent<WorldLabel>();
-        bool ownDriver = g.GetComponent<Linduarda>() != null || g.GetComponent<CarnivoreKeeper>() != null || g.GetComponent<Magnate>() != null;
+        Linduarda lin = g.GetComponent<Linduarda>();
+        CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
+        bool guardDuty = missionId == "gua_carnivoros";
+        if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
+        if (keeper != null) keeper.enabled = guardDuty;
+        if (lin != null) lin.enabled = area == null || area == "Enfermería" || NewcomerWaiting();
         if (area == null)
         {
-            if (idle != null && !idle.enabled && g.GetComponent<CarnivoreKeeper>() == null) idle.enabled = true;   // libre
+            if (idle != null && !idle.enabled) idle.enabled = true;   // libre
             SetStatus(g, null);
             return;
         }
         SetStatus(g, doing);
-        if (ownDriver && !alwaysMove) return;   // Linduarda, el guardia y la Magnate cumplen su trabajo con su propia conducta
+        if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) return;   // su conducta propia hace ESTA misión
         if (idle != null && idle.enabled) idle.enabled = false;
         Vector3 to = AreaPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
