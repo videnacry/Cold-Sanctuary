@@ -81,7 +81,7 @@ public static class CubeHumanoid
         CubeJoint neck  = Joint(waist.transform, BodyPart.Neck, new Vector3(0f, 0.28f, 0f), new Vector3(0.1f, 0.08f, 0.1f), new Vector3(0f, 0.04f, 0f), flesh, rig);
         CubeJoint head = Joint(neck.transform, BodyPart.Head, new Vector3(0f, 0.08f, 0f), new Vector3(0.24f, 0.26f, 0.24f), new Vector3(0f, 0.13f, 0f), flesh, rig);
         // Cara de cubos (ojos, párpados, cejas, nariz, mandíbula, comisuras) → expresiones faciales (CubeFace).
-        FaceShape(head, look, flesh);
+        // Cara de UNA pieza (la cabeza es un solo cubo; los rasgos van encima).
         CubeFace.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), 0f, skin, look.eyes, rig, null, null, look.hasLips ? look.lips : (Color?)null, look.feminine, Color.Lerp(look.hair, Color.black, 0.35f));
         CubeHair.Build(head.transform, new Vector3(0f, 0.13f, 0f), new Vector3(0.24f, 0.26f, 0.24f), look);   // cabello (y barba) de cubos
 
@@ -110,7 +110,8 @@ public static class CubeHumanoid
         }
 
         Details(root, look);   // (el rig aún no tiene el mapa de huesos: se buscan por su articulación)
-        SoftMesh.Soften(root, look.feminine);  // silueta continua y simétrica (cintura, hombros, caderas); la cara de una pieza
+        // (Cuerpo de CUBOS: así la separación entre miembros se nota menos y la forma es más amable. Las stats se ven en el
+        // grosor de cada segmento y en los relieves de músculo y grasa de BodyShape.)
         foreach (CubeJoint j in root.GetComponentsInChildren<CubeJoint>()) j.Capture();
     }
 
