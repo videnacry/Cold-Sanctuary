@@ -21,6 +21,7 @@ public class PathMover : MonoBehaviour
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
+        if (Ladder.IsClimbing(transform)) return Flat(target - transform.position);
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
         // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
@@ -34,6 +35,7 @@ public class PathMover : MonoBehaviour
             while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
             next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
         }
+        if (Ladder.AutoClimb(transform, next)) return Flat(target - pos);   // al pie (o arriba) de una escalera: trepa
         Vector3 d = next - pos; d.y = 0f;
         float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
         // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un

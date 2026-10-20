@@ -63,7 +63,7 @@ public class WalkToSpell : QueuedSpell
     UnityEngine.AI.NavMeshPath _path;
     int _corner;
     float _repathAt;
-    Vector3 _pathGoal;
+    Vector3 _pathGoal, _nextCorner;
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
 
@@ -87,6 +87,7 @@ public class WalkToSpell : QueuedSpell
         }
         Vector3[] c = _path.corners;
         while (_corner < c.Length && Flat(c[_corner] - from).magnitude < 0.4f) _corner++;
+        if (c.Length >= 2 && _corner < c.Length) _nextCorner = c[_corner]; else _nextCorner = goal;
         return c.Length >= 2 && _corner < c.Length ? Flat(c[_corner] - from) : Flat(goal - from);
     }
 
@@ -118,6 +119,8 @@ public class WalkToSpell : QueuedSpell
         if (walk != null)
         {
             Vector3 dir = Steer(self.transform.position, target.position).normalized;
+            // La ruta sube (o baja) por una escalera vertical: al llegar a su pie, trepa (no cuenta como atasco).
+            if (Ladder.AutoClimb(self.transform, _nextCorner)) { _lastProgress = Time.time; return false; }
             // Clavado contra una raíz, una esquina o un mueble que la ruta roza: rodearlo de lado (alternando cada 1,2 s).
             float stuck = Time.time - _lastProgress;
             if (stuck > 0.8f && dir.sqrMagnitude > 0.01f)
