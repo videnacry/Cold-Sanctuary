@@ -70,6 +70,7 @@ public static class ResidentialBuilder
     // columnas (r 22), y los puentes que las unen, con altura libre para andar. Las ramas de los árboles la esquivan.
     static bool Built(Vector3 q)
     {
+        if (Mathf.Abs(q.x) < 1.8f && q.z < -3f && q.z > -7f && q.y < DeckY + 3f) return true;   // la escalera vertical al borde (toda su altura)
         if (q.y < DeckY - 1.5f || q.y > DeckY + 5f) return false;
         Vector2 h = new Vector2(q.x, q.z);
         if (h.magnitude < 6.5f) return true;                                     // plataforma central
