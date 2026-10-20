@@ -2779,7 +2779,7 @@ public static partial class SampleSceneBuilder
         ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + 0.35f + Ladder.FootOffset));   // al pie de la escalera vertical
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset));   // al pie de la escalera vertical
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2862,7 +2862,7 @@ public static partial class SampleSceneBuilder
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
         mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
         GameObject kArea = GameObject.Find("Kitchen_Area");   // al pie de la escalera de la cocina (elevada)
-        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + 0.35f + Ladder.FootOffset)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
     // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
@@ -3700,7 +3700,7 @@ public static partial class SampleSceneBuilder
         SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
 
         // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
-        Ladder.Build(s, new Vector3(0f, -h, hz + 0.35f), 180f, h, wood, woodDark);
+        Ladder.Build(s, new Vector3(0f, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)

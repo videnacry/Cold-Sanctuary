@@ -19,6 +19,7 @@ public class Ladder : MonoBehaviour, IInteractable
     public float speed = 1.6f;   // m/s a aptitudes 1 (se escala por fuerza·agilidad)
 
     public const float FootOffset = 1.25f;   // el pie de la escalera queda a esto de ella, por fuera (para colocar cosas al pie)
+    public const float Gap = 0.06f;          // del borde de la plataforma al eje de la escalera: pegada, sin hueco por donde caer
 
     static readonly List<Ladder> _all = new List<Ladder>();
     static readonly HashSet<Transform> _climbing = new HashSet<Transform>();

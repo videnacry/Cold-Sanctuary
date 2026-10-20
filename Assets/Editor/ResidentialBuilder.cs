@@ -29,7 +29,7 @@ public static class ResidentialBuilder
         // Plataforma central (8 × 8) y su ESCALERA VERTICAL por el lado sur (por ahí se llega desde la entrada).
         Plank(root, new Vector3(0f, DeckY, 0f), new Vector3(8f, 0.3f, 8f), "Plataforma central");
         for (int i = 0; i < 4; i++) Solid(root, new Vector3(i % 2 == 0 ? -3.6f : 3.6f, DeckY * 0.5f, i < 2 ? -3.6f : 3.6f), new Vector3(0.5f, DeckY, 0.5f), Wood, "Columna");
-        Ladder.Build(root, new Vector3(0f, 0f, -4.35f), 0f, DeckY, Wood, WoodDark);
+        Ladder.Build(root, new Vector3(0f, 0f, -4f - Ladder.Gap), 0f, DeckY, Wood, WoodDark);   // pegada al borde: sin hueco
 
         // Árboles de apoyo en anillo (r 13, a 30°+60°k; el de 270° desplazado para no tapar la escalera de la entrada).
         var trees = new Vector3[6];

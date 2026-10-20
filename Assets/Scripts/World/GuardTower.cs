@@ -67,7 +67,7 @@ public static class GuardTower
         WorldLabel wl = board.gameObject.AddComponent<WorldLabel>(); wl.text = "Tablero de guardia"; wl.height = 0.9f;
 
         // ESCALERA VERTICAL del suelo a la plataforma (lado sur, por el hueco de la barandilla).
-        Ladder.Build(t, new Vector3(0f, 0f, -half - 0.35f), 0f, y, wood, woodDark);
+        Ladder.Build(t, new Vector3(0f, 0f, -half - Ladder.Gap), 0f, y, wood, woodDark);
 
         SoftGround.Plant(t, groundPos + Vector3.down * 0.1f, new Vector2(14f, 14f), 11);   // colchón de musgo bajo la casa del árbol
         WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Casa del árbol de la guardia"; tl.height = y + 5f;
