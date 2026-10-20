@@ -1,6 +1,6 @@
 # Transporte entre plataformas: puentes y alfombras voladoras
 
-- Las plataformas **cercanas** (a menos de 25 m y enfrentadas al menos 8 m) se unen con **puentes de 8 m de ancho**:
+- Las plataformas **cercanas** (a menos de 32 m) se unen con **puentes de 8 m de ancho** (rectos, a veces en diagonal; primero las más cercanas, sin puentes de sobra):
   por ejemplo el restaurante y la enfermería. Dentro de un grupo se va andando.
 - Cada **grupo** de plataformas unidas por puentes tiene **una pista de aterrizaje** (y la arboleda residencial, la suya):
   - es como una sala de yoga con **esterillas grandes**: son **alfombras voladoras**;

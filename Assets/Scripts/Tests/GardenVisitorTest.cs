@@ -47,7 +47,7 @@ public class GardenVisitorTest : MonoBehaviour, ITestUnit
 
         TestProbe.Check("darle de comer la sacia", v.Feed("el test") && an.hungry < 0f, $"hambre {(an != null ? an.hungry : 0f):0.0}");
         float t0 = Time.time;
-        while (!v.IsDissolved && Time.time - t0 < 3f) yield return null;
+        while (!v.IsDissolved && Time.time - t0 < 14f) yield return null;   // se sienta a comer (6 s) y se marcha (4 s)
         TestProbe.Check("la misión la cuenta (resuelta) y la liebre SIGUE en el santuario", v == null || v.IsDissolved ? hare != null : false);
 
         Destroy(hare); Destroy(beds);

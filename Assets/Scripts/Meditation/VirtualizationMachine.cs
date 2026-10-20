@@ -115,8 +115,12 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     {
         if (ChoiceDialog.IsOpen) return;
         var opts = new System.Collections.Generic.List<string> { "Virtualización: misiones de trabajo de esta área", "Simulación: el microcosmos del área", "Virtualización: misiones de otras áreas" };
+        // En el RESTAURANTE, la virtualización estrella va primero: el servicio a los turistas (eres el cocinero).
+        bool kitchen = areaName == "Cocina";
+        if (kitchen) opts.Insert(0, "Virtualización: servicio a los turistas (cocinar los pedidos)");
         ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i =>
         {
+            if (kitchen) { if (i == 0) { ChooseId("coc_servicio"); return; } i--; }
             if (i == 0) ShowArea(areaName);
             else if (i == 1) EnterSimulation();
             else ShowAreas();
@@ -139,6 +143,12 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         foreach (WorkRoster.Mission m in list) opts.Add($"{m.title} ({m.hours:0.#} h)");
         opts.Add("← Volver");
         ChoiceDialog.Show($"Virtualización · {area}", opts.ToArray(), i => { if (i >= list.Count) ShowMenu(); else Choose(list[i]); }, ShowMenu);
+    }
+
+    void ChooseId(string id)
+    {
+        foreach (WorkRoster.Mission m in TodayMissions()) if (m.id == id) { Choose(m); return; }
+        foreach (WorkRoster.Mission m in AreaWork.Catalog) if (m.id == id) { Choose(m.Copy()); return; }
     }
 
     void Choose(WorkRoster.Mission m)

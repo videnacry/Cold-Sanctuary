@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    const float BridgeWidth = 8f, MaxBridge = 25f, PadSize = 14f;
+    const float BridgeWidth = 8f, PadSize = 14f;
 
     struct Plat { public Transform t; public string name; public Vector2 c, half; public int group; }
 
@@ -28,22 +28,24 @@ public static partial class SampleSceneBuilder
         var bridgeRects = new List<Rect>();
         Transform root = new GameObject("Transporte_Plataformas").transform; root.SetParent(parent, false);
 
-        // PUENTES de 8 m entre plataformas cercanas que se enfrentan (rectos, sin cruzar otra área).
-        int bridges = 0;
+        // PUENTES de 8 m entre plataformas cercanas (rectos, pueden ir en diagonal; sin cruzar otra área). Se unen primero
+        // las más cercanas y solo si aún no estaban conectadas (como un árbol): menos puentes, menos grupos, menos pistas.
+        var links = new List<(int i, int j, Vector2 from, Vector2 to, int sa, int sb, float gap)>();
         for (int i = 0; i < plats.Count; i++)
             for (int j = i + 1; j < plats.Count; j++)
-            {
-                if (!StraightLink(plats[i], plats[j], out Vector2 from, out Vector2 to, out int sideA, out int sideB, out float along)) continue;
-                Rect r = BridgeRect(from, to);
-                bool blocked = false;
-                for (int k = 0; k < plats.Count && !blocked; k++) if (k != i && k != j && Inflate(PRect(plats[k]), 1f).Overlaps(r)) blocked = true;
-                if (blocked) continue;
-                Bridge(root, new Vector3(from.x, ElevatedHeight, from.y), new Vector3(to.x, ElevatedHeight, to.y), BridgeWidth, $"Puente_{plats[i].name}_{plats[j].name}");
-                OpenRail(plats[i], sideA, along); OpenRail(plats[j], sideB, along);
-                bridgeRects.Add(r); bridges++;
-                int gi = plats[i].group, gj = plats[j].group;
-                for (int k = 0; k < plats.Count; k++) if (plats[k].group == gj) { var q = plats[k]; q.group = gi; plats[k] = q; }
-            }
+                if (Link(plats[i], plats[j], out Vector2 from, out Vector2 to, out int sa, out int sb) && !Crosses(plats, i, j, from, to))
+                    links.Add((i, j, from, to, sa, sb, Vector2.Distance(from, to)));
+        links.Sort((x, y) => x.gap.CompareTo(y.gap));
+        int bridges = 0;
+        foreach (var l in links)
+        {
+            int gi = plats[l.i].group, gj = plats[l.j].group;
+            if (gi == gj) continue;
+            Bridge(root, new Vector3(l.from.x, ElevatedHeight, l.from.y), new Vector3(l.to.x, ElevatedHeight, l.to.y), BridgeWidth, $"Puente_{plats[l.i].name}_{plats[l.j].name}");
+            OpenRail(plats[l.i], l.sa, l.sa < 2 ? l.from.y : l.from.x); OpenRail(plats[l.j], l.sb, l.sb < 2 ? l.to.y : l.to.x);
+            bridgeRects.Add(SegRect(l.from, l.to)); bridges++;
+            for (int k = 0; k < plats.Count; k++) if (plats[k].group == gj) { var q = plats[k]; q.group = gi; plats[k] = q; }
+        }
 
         // UNA PISTA por grupo, junto a una de sus áreas (la mayor), en un lado libre.
         var taken = new List<Rect>(bridgeRects);
@@ -59,7 +61,7 @@ public static partial class SampleSceneBuilder
             bool placed = false;
             foreach (Plat m in members)
             {
-                foreach (int side in new[] { 1, 0, 3, 2 })   // -X, +X, -Z, +Z (por +Z sube la escalera)
+                foreach (int side in new[] { 1, 0, 3 })   // -X, +X, -Z (por +Z sube la escalera)
                 {
                     Vector2 dir = SideDir(side);
                     float halfAlong = side < 2 ? m.half.x : m.half.y;
@@ -76,7 +78,7 @@ public static partial class SampleSceneBuilder
                     float along = side < 2 ? m.c.y : m.c.x;
                     OpenRail(m, side, along);
                     OpenRailPad(pad, 3, 0f, BridgeWidth);
-                    taken.Add(pr); taken.Add(BridgeRect(edgeA, edgeB)); pads++; placed = true;
+                    taken.Add(pr); taken.Add(SegRect(edgeA, edgeB)); pads++; placed = true;
                     break;
                 }
                 if (placed) break;
@@ -106,46 +108,48 @@ public static partial class SampleSceneBuilder
     static Rect Inflate(Rect r, float m) => new Rect(r.x - m, r.y - m, r.width + 2f * m, r.height + 2f * m);
     static Vector2 SideDir(int side) => side == 0 ? Vector2.right : side == 1 ? Vector2.left : side == 2 ? Vector2.up : Vector2.down;
 
-    static Rect BridgeRect(Vector2 a, Vector2 b)
+    const float MaxLink = 32f;
+
+    // Puente entre los lados que se miran: el lado de A según hacia dónde está B (eje dominante) y el opuesto de B; el
+    // punto de cada lado, lo más cerca posible del otro, sin pegarse a las esquinas (cabe el hueco de 8 m). Evita la
+    // escalera vertical (centro del lado +Z).
+    static bool Link(Plat A, Plat B, out Vector2 from, out Vector2 to, out int sa, out int sb)
     {
-        bool alongX = Mathf.Abs(b.x - a.x) > Mathf.Abs(b.y - a.y);
-        float w = BridgeWidth * 0.5f;
-        return alongX ? new Rect(Mathf.Min(a.x, b.x), a.y - w, Mathf.Abs(b.x - a.x), BridgeWidth)
-                      : new Rect(a.x - w, Mathf.Min(a.y, b.y), BridgeWidth, Mathf.Abs(b.y - a.y));
+        Vector2 d = B.c - A.c;
+        bool x = Mathf.Abs(d.x) / (A.half.x + B.half.x) > Mathf.Abs(d.y) / (A.half.y + B.half.y);
+        sa = x ? (d.x > 0 ? 0 : 1) : (d.y > 0 ? 2 : 3); sb = x ? (sa == 0 ? 1 : 0) : (sa == 2 ? 3 : 2);
+        from = SidePoint(A, sa, x ? B.c.y : B.c.x);
+        to = SidePoint(B, sb, x ? from.y : from.x);
+        from = SidePoint(A, sa, x ? to.y : to.x);
+        float gap = Vector2.Distance(from, to);
+        return gap > 0.5f && gap <= MaxLink && (x ? (to.x - from.x) * d.x > 0f : (to.y - from.y) * d.y > 0f);
     }
 
-    // ¿Se enfrentan con al menos 8 m de lado común y a menos de 25 m? Puente recto entre sus bordes.
-    static bool StraightLink(Plat A, Plat B, out Vector2 from, out Vector2 to, out int sideA, out int sideB, out float along)
+    static Vector2 SidePoint(Plat p, int side, float alongWorld)
     {
-        from = to = Vector2.zero; sideA = sideB = 0; along = 0f;
-        Rect a = PRect(A), b = PRect(B);
-        float ox0 = Mathf.Max(a.xMin, b.xMin), ox1 = Mathf.Min(a.xMax, b.xMax);
-        float oz0 = Mathf.Max(a.yMin, b.yMin), oz1 = Mathf.Min(a.yMax, b.yMax);
-        if (ox1 - ox0 >= BridgeWidth + 1f)   // se enfrentan en Z
+        float half = side < 2 ? p.half.y : p.half.x, margin = BridgeWidth * 0.5f + 0.5f;
+        float center = side < 2 ? p.c.y : p.c.x;
+        float u = half > margin ? Mathf.Clamp(alongWorld - center, -half + margin, half - margin) : 0f;
+        if (side == 2 && Mathf.Abs(u) < BridgeWidth * 0.5f + 1f && half > BridgeWidth + 1.5f) u = u >= 0f ? BridgeWidth * 0.5f + 1f : -(BridgeWidth * 0.5f + 1f);   // no encima de la escalera
+        return side == 0 ? new Vector2(p.c.x + p.half.x, center + u) : side == 1 ? new Vector2(p.c.x - p.half.x, center + u)
+             : side == 2 ? new Vector2(center + u, p.c.y + p.half.y) : new Vector2(center + u, p.c.y - p.half.y);
+    }
+
+    static bool Crosses(List<Plat> plats, int i, int j, Vector2 a, Vector2 b)
+    {
+        for (int k = 0; k < plats.Count; k++)
         {
-            along = (ox0 + ox1) * 0.5f;
-            // No llegar por encima de la escalera vertical (en el centro del lado +Z del área de abajo): se aparta.
-            float ladderX = a.yMax <= b.yMin ? A.c.x : B.c.x;
-            if (Mathf.Abs(along - ladderX) < BridgeWidth * 0.5f + 1f)
-            {
-                float lo = ox0 + BridgeWidth * 0.5f, hi = ox1 - BridgeWidth * 0.5f;
-                float right = ladderX + BridgeWidth * 0.5f + 1f, left = ladderX - BridgeWidth * 0.5f - 1f;
-                if (right <= hi) along = right; else if (left >= lo) along = left;
-            }
-            if (a.yMax <= b.yMin) { from = new Vector2(along, a.yMax); to = new Vector2(along, b.yMin); sideA = 2; sideB = 3; }
-            else if (b.yMax <= a.yMin) { from = new Vector2(along, a.yMin); to = new Vector2(along, b.yMax); sideA = 3; sideB = 2; }
-            else return false;
+            if (k == i || k == j) continue;
+            Rect r = Inflate(PRect(plats[k]), BridgeWidth * 0.5f + 1f);
+            for (int s = 1; s < 20; s++) if (r.Contains(Vector2.Lerp(a, b, s / 20f))) return true;
         }
-        else if (oz1 - oz0 >= BridgeWidth + 1f)   // se enfrentan en X
-        {
-            along = (oz0 + oz1) * 0.5f;
-            if (a.xMax <= b.xMin) { from = new Vector2(a.xMax, along); to = new Vector2(b.xMin, along); sideA = 0; sideB = 1; }
-            else if (b.xMax <= a.xMin) { from = new Vector2(a.xMin, along); to = new Vector2(b.xMax, along); sideA = 1; sideB = 0; }
-            else return false;
-        }
-        else return false;
-        float gap = Vector2.Distance(from, to);
-        return gap > 0.5f && gap <= MaxBridge;
+        return false;
+    }
+
+    static Rect SegRect(Vector2 a, Vector2 b)
+    {
+        float w = BridgeWidth * 0.5f;
+        return new Rect(Mathf.Min(a.x, b.x) - w, Mathf.Min(a.y, b.y) - w, Mathf.Abs(b.x - a.x) + 2f * w, Mathf.Abs(b.y - a.y) + 2f * w);
     }
 
     // Tablero, barandillas (con barrera invisible de 4 m) y pilares.
