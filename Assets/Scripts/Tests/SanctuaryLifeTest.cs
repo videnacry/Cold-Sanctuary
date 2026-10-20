@@ -30,9 +30,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
 
         // Áreas elevadas.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
-        TestProbe.Check("la cocina está elevada (≥ 5 m)", kitchen != null && kitchen.transform.position.y >= 5f, kitchen != null ? $"{kitchen.transform.position.y:0.0} m" : "sin cocina");
+        TestProbe.Check("la cocina está elevada (12 m)", kitchen != null && kitchen.transform.position.y >= 11f, kitchen != null ? $"{kitchen.transform.position.y:0.0} m" : "sin cocina");
         GameObject garden = GameObject.Find("Garden_Area");
-        TestProbe.Check("el huerto sigue a ras de suelo", garden != null && garden.transform.position.y < 1f);
+        TestProbe.Check("el huerto también está elevado (los cultivos no dan sombra al bosque)", garden != null && garden.transform.position.y >= 10f, garden != null ? $"{garden.transform.position.y:0.0} m" : "sin huerto");
 
         // Dormitorios.
         TestProbe.Greater("hay un dormitorio por persona (12)", Bedroom.All.Count, 11f);
@@ -259,6 +259,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
         int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;
         TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
+        int machines = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("Maquina_")) machines++;
+        TestProbe.Greater("el gimnasio tiene 10 tipos de máquina × 3", machines, 29f, $"{machines} máquinas");
+        TestProbe.Check("la cocina es céntrica: seis puestos completos y neveras en el centro", FindByPrefix("Puesto_6") && FindByPrefix("Nevera 6"));
+        TestProbe.Check("la sala de yoga tiene la plataforma en el centro y 30 esterillas", FindByPrefix("Esterilla_30") && FindByPrefix("Tarima del maestro"));
         TestProbe.End();
     }
 

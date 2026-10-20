@@ -23,6 +23,9 @@ public static class CubeTree
 
     public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true)
     {
+        // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
+        // guardián, de 83 m, ya tiene su altura fijada y no se escala).
+        if (height < 80f) height *= 1.3f;
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
 
