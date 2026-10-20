@@ -66,7 +66,7 @@ public class Linduarda : MonoBehaviour
     void AccompanyNewcomer()
     {
         SanctuaryOnboarding o = null;
-        foreach (SanctuaryOnboarding x in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None))
+        foreach (SanctuaryOnboarding x in SceneCache.All<SanctuaryOnboarding>(0.5f))
             if (x != null && x.initiated && !x.apt) { o = x; break; }
         if (o == null) return;
         Vector3 to = o.transform.position - transform.position; to.y = 0f;

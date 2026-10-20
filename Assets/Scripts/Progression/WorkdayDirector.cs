@@ -60,7 +60,15 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…).</summary>
-    public static GameObject Body(string n) => GameObject.Find(n) ?? GameObject.Find(n + "_Post");
+    static readonly Dictionary<string, GameObject> _bodies = new Dictionary<string, GameObject>();
+    /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…). Cacheado: buscar por nombre cada frame era lo más caro de la jornada.</summary>
+    public static GameObject Body(string n)
+    {
+        if (_bodies.TryGetValue(n, out GameObject g) && g != null) return g;
+        g = GameObject.Find(n) ?? GameObject.Find(n + "_Post");
+        _bodies[n] = g;
+        return g;
+    }
 
     void SyncStaff()
     {
@@ -129,13 +137,15 @@ public class WorkdayDirector : MonoBehaviour
     // EL JUGADOR TAMBIÉN ESTÁ BLOQUEADO durante la jornada: si sale del área de lo que le toca (trabajo, comida o
     // entrenamiento), vuelve a ella con un aviso. La Guardia patrulla por todo el santuario: ahí no se le retiene.
     string _holdMsg; float _holdMsgUntil;
+    GameObject _player;
     public int playerHeldBack { get; private set; }
     readonly Dictionary<string, float> _areaRadius = new Dictionary<string, float>();
 
     void HoldPlayer(float h)
     {
         WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
-        GameObject p = GameObject.FindGameObjectWithTag("Player"); if (p == null) return;
+        if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
+        GameObject p = _player; if (p == null) return;
         if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
         string area = Where(me, h, out string doing);
         if (area == null || area == AreaWork.Guard) return;
@@ -191,9 +201,13 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>¿Hay algún recién llegado sin iniciar? (Linduarda lo atiende antes que nada: es la médica que lo recibe)</summary>
+    static float _newcomerCheck = -1f; static bool _newcomerCached;
     static bool NewcomerWaiting()
     {
-        foreach (SanctuaryOnboarding o in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None)) if (o != null && !o.apt) return true;
+        if (Time.time < _newcomerCheck) return _newcomerCached;   // (una vez por segundo: antes era una búsqueda por personaje y frame)
+        _newcomerCheck = Time.time + 1f; _newcomerCached = false;
+        foreach (SanctuaryOnboarding o in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None)) if (o != null && !o.apt) { _newcomerCached = true; break; }
+        return _newcomerCached;
         return false;
     }
 
@@ -278,11 +292,21 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>Un punto del área (repartidos por persona para que no se amontonen).</summary>
+    static readonly Dictionary<string, Transform> _areas = new Dictionary<string, Transform>();
+    /// <summary>El área por su nombre visible (cacheada).</summary>
+    public static Transform AreaTransform(string area)
+    {
+        if (area == null) return null;
+        if (_areas.TryGetValue(area, out Transform t) && t != null) return t;
+        foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) _areas[a.displayName] = a.transform;
+        return _areas.TryGetValue(area, out t) ? t : null;
+    }
+
     public static Vector3 AreaPoint(string area, string who)
     {
         Transform t = null;
-        if (area == AreaWork.Guard) { GameObject gt = GameObject.Find("Guardia_AUTO"); t = gt != null ? gt.transform : null; }
-        else foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) if (a.displayName == area) { t = a.transform; break; }
+        if (area == AreaWork.Guard) { GameObject gt = Body("Guardia_AUTO"); t = gt != null ? gt.transform : null; }
+        else t = AreaTransform(area);
         if (t == null) return Vector3.zero;
         int hsh = Mathf.Abs((who ?? "").GetHashCode());
         Vector3 off = new Vector3((hsh % 5 - 2) * 1.2f, 1f, ((hsh / 5) % 3 - 1) * 1.2f + 2f);

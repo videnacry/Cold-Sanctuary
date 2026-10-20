@@ -51,7 +51,7 @@ public class InfirmaryGate : MonoBehaviour
         if (ColdSanctuary.TestRunner.Running) { Clear(); return; }
         // Recién llegados: cualquier Anima con iniciación pendiente.
         var current = new HashSet<Anima>();
-        foreach (SanctuaryOnboarding o in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None))
+        foreach (SanctuaryOnboarding o in SceneCache.All<SanctuaryOnboarding>(0.5f))
         {
             Anima a = o != null ? o.GetComponent<Anima>() : null;
             if (a == null || Cleared(a.gameObject)) continue;
