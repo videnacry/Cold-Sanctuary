@@ -247,6 +247,11 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             sc.Enter("");
             TestProbe.Check("Intro con la entrada vacía lanza el hechizo con lo dado", sc.PendingSpell == null && sc.LastLog.Length > 0, sc.LastLog);
             sc.Enter("cancel"); sc.Enter("");
+            // ATENCIÓN VISUAL: «enfocar» fija la mirada (y la cámara en 1ª persona la acerca).
+            sc.Enter("enfocar"); sc.Enter("Magnate"); sc.Enter("");
+            VisualAttention pva = VisualAttention.Player;
+            TestProbe.Check("el hechizo «enfocar» fija la atención visual del jugador", pva != null && pva.focus != null && pva.conscious, pva != null && pva.focus != null ? pva.focus.name : "sin foco");
+            TestProbe.Check("la atención acerca lo enfocado (zoom de la cámara en 1ª persona)", pva != null && pva.ZoomDegrees > 0f, pva != null ? $"{pva.ZoomDegrees:0.#}°" : "—");
         }
 
         // VIDA DIARIA: restaurante con sillas para todos, aseos, camas; fauna en proporción a los humanos.

@@ -82,6 +82,10 @@ public class VirtualizationTank : MonoBehaviour
         if (cc != null) cc.enabled = false;
         if (pc != null) pc.enabled = false;
 
+        // CÁMARA PANORÁMICA: mientras entra, se ve desde fuera cómo se pone la máscara, cruza la pared de agua, la máquina
+        // se enciende (burbujas) y cierra los ojos; luego, el cambio de escena.
+        if (pc != null && CameraManager.Instance != null)
+            CameraManager.Instance.RequestRobbery(new CameraRobbery { type = RobberyType.OrbitTarget, orbitTarget = transform, holdDuration = 6.5f, returnOnFinish = true });
         yield return Move(who, front.position + Vector3.up * 1f, 0.6f);
         who.rotation = Quaternion.LookRotation(transform.position - front.position);
         Transform mask = PutMask(who);
@@ -92,6 +96,12 @@ public class VirtualizationTank : MonoBehaviour
         yield return Move(who, transform.position + Vector3.up * (Base + 1.0f), 1.4f);   // cruza la pared de agua y queda dentro
         yield return Hatch(false);
         Debug.Log($"[Virtualización] «{who.name}» está sumergido y la puerta, cerrada: empieza la virtualización.");
+        // LA MÁQUINA SE ENCIENDE: lo lleva al CENTRO del tanque, lo rodean burbujas y cierra los ojos.
+        yield return Move(who, transform.position + Vector3.up * (Base + 1.2f), 0.6f);
+        StartCoroutine(Bubbles(who.position, 2.5f));
+        who.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 3f);
+        Debug.Log($"[Virtualización] La máquina se enciende: «{who.name}», en el centro, rodeado de burbujas, cierra los ojos.");
+        yield return new WaitForSeconds(1.8f);
         yield return new WaitForSeconds(0.5f);
 
         MobWorldLoader.Instance.SetReturnPoint(front.position + Vector3.up * 1.1f);
@@ -101,6 +111,28 @@ public class VirtualizationTank : MonoBehaviour
         if (cc != null) cc.enabled = true;
         if (pc != null) pc.enabled = true;
         _busy = false;
+    }
+
+    // Burbujas que suben alrededor de quien está dentro (cubitos translúcidos que se desvanecen).
+    IEnumerator Bubbles(Vector3 at, float seconds)
+    {
+        var list = new System.Collections.Generic.List<(Transform t, float speed)>();
+        for (float t = 0f; t < seconds; t += Time.deltaTime)
+        {
+            if (list.Count < 60 && Random.value < 0.6f)
+            {
+                GameObject b = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                Destroy(b.GetComponent<Collider>());
+                b.name = "Burbuja"; b.transform.SetParent(transform, true);
+                b.transform.position = at + new Vector3(Random.Range(-0.6f, 0.6f), Random.Range(-1f, 0f), Random.Range(-0.6f, 0.6f));
+                b.transform.localScale = Vector3.one * Random.Range(0.03f, 0.08f);
+                b.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.85f, 0.95f, 1f, 0.55f));
+                list.Add((b.transform, Random.Range(0.6f, 1.4f)));
+            }
+            foreach (var p in list) if (p.t != null) p.t.position += Vector3.up * p.speed * Time.deltaTime;
+            yield return null;
+        }
+        foreach (var p in list) if (p.t != null) Destroy(p.t.gameObject);
     }
 
     /// <summary>Abre o cierra la puerta delantera (las hojas se deslizan a los lados); el campo magnético se enciende al

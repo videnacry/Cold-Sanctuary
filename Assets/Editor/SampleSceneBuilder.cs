@@ -2233,6 +2233,15 @@ public static partial class SampleSceneBuilder
             // CUERPO con metabolismo (hambre/sueño) para todo humano; la Magnate, por sus células de mago, no los siente.
             if (a.GetComponent<BodyMetabolism>() == null) a.gameObject.AddComponent<BodyMetabolism>();
             if (a.GetComponent<BodyAging>() == null) a.gameObject.AddComponent<BodyAging>();   // edad = efecto del cuerpo
+            // ATENCIÓN VISUAL (docs/atencion-visual.md): cada persona con su perfil de mirada.
+            if (a.GetComponent<Mind>() != null || a.CompareTag("Player"))
+            {
+                VisualAttention va = a.GetComponent<VisualAttention>() ?? a.gameObject.AddComponent<VisualAttention>();
+                va.fieldOfView = 200f; va.range = 30f;   // ojos humanos: ~200° de campo, ~120° binocular al frente
+                string nm = a.name;
+                va.ApplyProfile(nm.StartsWith("Gohageneis") ? VisualAttention.Profile.Vigilante : nm.StartsWith("Irosene") || nm.StartsWith("Goluis") ? VisualAttention.Profile.Esteta
+                    : nm.StartsWith("Sadhguru") || nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
+            }
             if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
             // Los compañeros (con mente, no el jugador ni la Magnate) estaban quietos: les damos cuerpo que ANDA (WalkSpell),
@@ -2770,7 +2779,7 @@ public static partial class SampleSceneBuilder
         ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + 8.4f + 1.5f));   // al pie de la escalera
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(StairTower.LaneOffset, -ElevatedHeight, 19f - 2f));   // al pie de la escalera en torre (sale bajo el borde de la plataforma)
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2853,7 +2862,7 @@ public static partial class SampleSceneBuilder
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
         mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
         GameObject kArea = GameObject.Find("Kitchen_Area");   // al pie de la escalera de la cocina (elevada)
-        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 8f + 8.4f + 1.5f)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(StairTower.LaneOffset, -ElevatedHeight, 19f - 2f)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
     // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
@@ -3559,7 +3568,7 @@ public static partial class SampleSceneBuilder
                 new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.72f, 0.4f)),
             // ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md): gimnasio abierto; ballet, dojo y calistenia EN OBRAS.
             BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
-                new Vector3(30f, 0f, 8f), new Vector2(14f, 12f), new Color(0.55f, 0.6f, 0.7f)),
+                new Vector3(26f, 0f, 6f), new Vector2(22f, 16f), new Color(0.55f, 0.6f, 0.7f)),   // 30 máquinas (10 tipos × 3) + zona libre
             BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
                 new Vector3(12f, 0f, 24f), new Vector2(10f, 9f), new Color(0.9f, 0.75f, 0.8f)),
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
@@ -3577,8 +3586,9 @@ public static partial class SampleSceneBuilder
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(14f, 12f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f) };
+        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f) };
         for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también, con sus bancales
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(areas[6].transform, sizes[6]);   // maquinaria, material, herramientas y taller de obra
@@ -3639,6 +3649,9 @@ public static partial class SampleSceneBuilder
                 guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f));
         }
         CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
+        // Los CULTIVOS también van ELEVADOS (docs/construcciones-elevadas.md): el huerto no deja el suelo del bosque en
+        // sombra ni lo pisa; abajo crece el musgo y pasan los animales.
+        if (withSoil) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), ElevatedHeight);
     }
 
 
@@ -3646,11 +3659,13 @@ public static partial class SampleSceneBuilder
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
     // la flora) y se sube por una ESCALERA (rampa para el NavMesh + peldaños visibles) desde el lado abierto (+Z).
     // Barandilla de 1 m alrededor (el contorno bajo de antes no basta a 6 m de altura).
-    public const float ElevatedHeight = 6f;
+    public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
-    static void ElevateArea(SanctuaryArea a, Vector2 size, float h)
+    static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
+
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera en torre.</summary>
+    static void Elevate(Transform t, Vector2 size, float h)
     {
-        Transform t = a.transform;
         t.position += Vector3.up * h;
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
@@ -3678,35 +3693,14 @@ public static partial class SampleSceneBuilder
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
         Rail(new Vector3(hx, 0f, -hz), new Vector3(hx, 0f, hz));
-        Rail(new Vector3(-hx, 0f, hz), new Vector3(-1.2f, 0f, hz));
-        Rail(new Vector3(1.2f, 0f, hz), new Vector3(hx, 0f, hz));
+        Rail(new Vector3(-hx, 0f, hz), new Vector3(-StairTower.LaneOffset - StairTower.LaneWidth * 0.5f, 0f, hz));   // hueco = el carril de bajada de la torre
+        Rail(new Vector3(-0.05f, 0f, hz), new Vector3(hx, 0f, hz));
 
         // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+6 m): si alguien cae, amortigua el golpe; y es una planta más.
         SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
 
-        // ESCALERA hacia +Z: rampa (invisible, para andar y para el NavMesh) + peldaños y zancas visibles.
-        float rise = 0.25f, tread = 0.35f;
-        int n = Mathf.CeilToInt(h / rise);
-        float run = n * tread;
-        Transform st = new GameObject("Escalera").transform; st.SetParent(s, false);
-        float len = Mathf.Sqrt(run * run + h * h), ang = Mathf.Atan2(h, run) * Mathf.Rad2Deg;
-        Transform ramp = Solid(st, new Vector3(0f, -h * 0.5f - 0.05f, hz + run * 0.5f), new Vector3(2f, 0.1f, len), wood, "Rampa");
-        ramp.localRotation = Quaternion.Euler(ang, 0f, 0f);
-        ramp.GetComponent<Renderer>().enabled = false;
-        for (int i = 0; i < n; i++)
-        {
-            float y = -h + (i + 0.5f) * rise, z = hz + run - (i + 0.5f) * tread;
-            KitchenProps.C(st, new Vector3(0f, y, z), new Vector3(2f, rise, tread * 1.02f), i % 2 == 0 ? wood : woodDark, 0f, "Peldaño");
-        }
-        for (int sx = -1; sx <= 1; sx += 2)
-        {
-            Transform z1 = KitchenProps.C(st, new Vector3(sx * 1.05f, -h * 0.5f + 0.4f, hz + run * 0.5f), new Vector3(0.1f, 0.25f, len), woodDark, 0f, "Zanca");
-            z1.localRotation = Quaternion.Euler(ang, 0f, 0f);
-            Transform hr = Solid(st, new Vector3(sx * 1.1f, -h * 0.5f + 1.2f, hz + run * 0.5f), new Vector3(0.06f, 0.06f, len), wood, "Pasamanos");
-            hr.localRotation = Quaternion.Euler(ang, 0f, 0f);
-            Transform wall = Solid(st, new Vector3(sx * 1.15f, 1.5f - h * 0.5f, hz + run * 0.5f), new Vector3(0.08f, h + 3f, run), wood, "Escalera_Barrera");   // pared VERTICAL del suelo a 3 m sobre la plataforma
-            wall.GetComponent<Renderer>().enabled = false;   // nadie salta de lado por la escalera
-        }
+        // ESCALERA EN TORRE hacia +Z (tramos de ~3 m en zigzag con rellanos): a 12 m una escalera recta mediría 17 m.
+        StairTower.Build(s, new Vector3(0f, 0f, hz), h, wood, woodDark, 1f);
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)

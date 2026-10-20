@@ -179,6 +179,8 @@ public class SpellConsole : MonoBehaviour
                     foreach (var a in wd.today.Of(w)) if (a.start >= TimeController.timeController.Hour) { Add(a.mission.area); break; }
                 }
             }
+            VisualAttention myVa = me != null ? me.GetComponent<VisualAttention>() : null;
+            if (myVa != null) foreach (var rk in myVa.Ranking(6)) Add(rk.t.name.Replace("_Post", ""));   // lo que más le llama la ATENCIÓN ahora
             if (me != null)
             {
                 var near = new List<(float score, string name)>();
@@ -264,6 +266,7 @@ public class SpellConsole : MonoBehaviour
         ("exit",      "exit"),
         ("look",      "look({yaw:90, pitch:0})"),
         ("asana",     "asana({name:\"\"})"),   // hacer el paso que el maestro pide (o una asana conocida por su nombre)
+        ("enfocar",   "enfocar({destiny:\"\", seconds:8})"),   // fijar la atención visual en algo (la cámara lo acerca)
     };
 
     // ── Propuesta (lo que un maestro te pide) + qué hechizos CONOCE el poseído ───────────────────────────────────
@@ -451,6 +454,19 @@ public class SpellConsole : MonoBehaviour
                     if (tpP != null && c3.Length == 3 && float.TryParse(c3[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float tx) && float.TryParse(c3[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float ty) && float.TryParse(c3[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float tz))
                     { CharacterController tcc = tpP.GetComponent<CharacterController>(); if (tcc) tcc.enabled = false; tpP.transform.position = new Vector3(tx, ty, tz); if (tcc) tcc.enabled = true; Log($"Kushal aparece en ({tx:0.#}, {ty:0.#}, {tz:0.#})."); }
                     else Log("tp: escribe tp({destiny:\"x y z\"}).");
+                }
+                break;
+            case "enfocar": case "focus":   // ATENCIÓN VISUAL a conciencia: fija la mirada en algo (la cámara en 1ª persona lo acerca)
+                {
+                    VisualAttention va = self.GetComponent<VisualAttention>() ?? self.gameObject.AddComponent<VisualAttention>();
+                    string who = args.TryGetValue("destiny", out string fd) ? Clean(fd) : "";
+                    Transform tgt = null;
+                    if (who.Length == 0) { var rk = va.Ranking(1); if (rk.Count > 0) tgt = rk[0].t; }   // sin destino: lo más saliente
+                    else { GameObject g = FindNearestNamed(who, self.transform.position); if (g != null) tgt = g.transform; }
+                    float secs = args.TryGetValue("seconds", out string fs) && float.TryParse(fs, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float sv) ? sv : 8f;
+                    if (tgt == null) { Log($"¿Dónde está «{who}»? No lo ves."); break; }
+                    va.FocusOn(tgt, secs);
+                    Log($"{self.name} enfoca «{tgt.name}» ({secs:0} s).");
                 }
                 break;
             case "jornada": case "workday":   // plan del día, quién hace qué y el equilibrio (¿faltan personas o misiones?)

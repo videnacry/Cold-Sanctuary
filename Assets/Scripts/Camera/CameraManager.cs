@@ -318,7 +318,9 @@ public class CameraManager : MonoBehaviour
         }
         else
         {
-            Camera.main.fieldOfView = Mathf.MoveTowards(Camera.main.fieldOfView, baseFOV, Time.deltaTime * 10f);
+            // ATENCIÓN VISUAL: en primera persona, lo enfocado se "acerca" (la atención se estrecha) y vuelve a abrirse.
+            float zoom = _currentMode == CameraMode.FirstPerson && VisualAttention.Player != null ? VisualAttention.Player.ZoomDegrees : 0f;
+            Camera.main.fieldOfView = Mathf.MoveTowards(Camera.main.fieldOfView, baseFOV - zoom, Time.deltaTime * 6f);
         }
 
         // Blackout from sleepiness
