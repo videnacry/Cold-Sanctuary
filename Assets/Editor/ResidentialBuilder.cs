@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md): los dormitorios de los humanos, todos ELEVADOS a 7 m. En el
-/// centro, una plataforma con escalera; alrededor, seis árboles grandes (no carnívoros). Seis cabañas se APOYAN EN DOS
+/// centro, una plataforma con escalera vertical; alrededor, seis árboles grandes (no carnívoros). Seis cabañas se APOYAN EN DOS
 /// ÁRBOLES a la vez (vigas a cada tronco) y otras seis, más afuera, se sostienen sobre COLUMNAS. Pasarelas colgantes
 /// las unen. Cada cabaña es el dormitorio de una persona: cama, mesilla con lámpara, estante, ventana, puerta y su nombre.
 /// </summary>
@@ -26,14 +26,10 @@ public static class ResidentialBuilder
         root.SetParent(parent, true);
         root.position = center;
 
-        // Plataforma central y su escalera (rampa para andar + peldaños).
-        // Plataforma central (8 × 8) con el HUECO de la escalera en torre en medio: se baja por dentro, sin cruzar los puentes.
-        Plank(root, new Vector3(-3.3f, DeckY, -0.6f), new Vector3(1.4f, 0.3f, 6.8f), "Plataforma central");
-        Plank(root, new Vector3(3.3f, DeckY, -0.6f), new Vector3(1.4f, 0.3f, 6.8f), "Plataforma central");
-        Plank(root, new Vector3(0f, DeckY, 3.15f), new Vector3(8f, 0.3f, 1.7f), "Plataforma central");
-        Plank(root, new Vector3(0f, DeckY, -3.65f), new Vector3(8f, 0.3f, 0.7f), "Plataforma central");
+        // Plataforma central (8 × 8) y su ESCALERA VERTICAL por el lado sur (por ahí se llega desde la entrada).
+        Plank(root, new Vector3(0f, DeckY, 0f), new Vector3(8f, 0.3f, 8f), "Plataforma central");
         for (int i = 0; i < 4; i++) Solid(root, new Vector3(i % 2 == 0 ? -3.6f : 3.6f, DeckY * 0.5f, i < 2 ? -3.6f : 3.6f), new Vector3(0.5f, DeckY, 0.5f), Wood, "Columna");
-        StairTower.Build(root, new Vector3(0f, DeckY, -3.3f), DeckY, Wood, WoodDark, 1f);   // escalera en torre (12 m) por el hueco central
+        Ladder.Build(root, new Vector3(0f, 0f, -4f - Ladder.Gap), 0f, DeckY, Wood, WoodDark);   // pegada al borde: sin hueco
 
         // Árboles de apoyo en anillo (r 13, a 30°+60°k; el de 270° desplazado para no tapar la escalera de la entrada).
         var trees = new Vector3[6];
@@ -152,25 +148,6 @@ public static class ResidentialBuilder
             Transform bar = Solid(t, new Vector3(s * 2f, 2f, 0f), new Vector3(0.05f, 4f, len), Wood, "Barrera");   // invisible, 4 m (ni saltando): no se salta
             bar.GetComponent<Renderer>().enabled = false;
             for (float z = -len * 0.5f; z <= len * 0.5f; z += 1.2f) KitchenProps.C(t, new Vector3(s * 2f, 0.45f, z), new Vector3(0.04f, 0.9f, 0.04f), WoodDark, 0f, "Poste");
-        }
-    }
-
-    static void Stairs(Transform root, Vector3 top, float h)
-    {
-        float rise = 0.25f, tread = 0.35f; int n = Mathf.CeilToInt(h / rise); float run = n * tread;
-        Transform st = new GameObject("Escalera").transform; st.SetParent(root, false); st.localPosition = new Vector3(top.x, 0f, top.z);
-        float len = Mathf.Sqrt(run * run + h * h), ang = Mathf.Atan2(h, run) * Mathf.Rad2Deg;
-        Transform ramp = Solid(st, new Vector3(0f, h * 0.5f - 0.05f, -run * 0.5f), new Vector3(2f, 0.1f, len), Wood, "Rampa");
-        ramp.localRotation = Quaternion.Euler(-ang, 0f, 0f);
-        ramp.GetComponent<Renderer>().enabled = false;
-        for (int i = 0; i < n; i++)
-            KitchenProps.C(st, new Vector3(0f, (i + 0.5f) * rise, -run + (i + 0.5f) * tread), new Vector3(2f, rise, tread * 1.02f), i % 2 == 0 ? Wood : WoodDark, 0f, "Peldaño");
-        for (int sx = -1; sx <= 1; sx += 2)
-        {
-            Transform hr = Solid(st, new Vector3(sx * 1.1f, h * 0.5f + 1f, -run * 0.5f), new Vector3(0.06f, 0.06f, len), Wood, "Pasamanos");
-            hr.localRotation = Quaternion.Euler(-ang, 0f, 0f);
-            Transform wall = Solid(st, new Vector3(sx * 1.15f, (h + 3f) * 0.5f, -run * 0.5f), new Vector3(0.08f, h + 3f, run), Wood, "Escalera_Barrera");   // pared VERTICAL del suelo a 3 m sobre la plataforma
-            wall.GetComponent<Renderer>().enabled = false;   // nadie salta de lado por la escalera
         }
     }
 

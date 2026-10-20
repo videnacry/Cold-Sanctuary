@@ -2779,7 +2779,7 @@ public static partial class SampleSceneBuilder
         ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
         GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(StairTower.LaneOffset, -ElevatedHeight, 19f - 2f));   // al pie de la escalera en torre (sale bajo el borde de la plataforma)
+        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset));   // al pie de la escalera vertical
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2862,7 +2862,7 @@ public static partial class SampleSceneBuilder
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
         mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
         GameObject kArea = GameObject.Find("Kitchen_Area");   // al pie de la escalera de la cocina (elevada)
-        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(StairTower.LaneOffset, -ElevatedHeight, 19f - 2f)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
     // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
@@ -3657,13 +3657,13 @@ public static partial class SampleSceneBuilder
 
     // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
-    // la flora) y se sube por una ESCALERA (rampa para el NavMesh + peldaños visibles) desde el lado abierto (+Z).
+    // la flora) y se sube por una ESCALERA VERTICAL (con su enlace del NavMesh) desde el lado abierto (+Z).
     // Barandilla de 1 m alrededor (el contorno bajo de antes no basta a 6 m de altura).
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
 
-    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera en torre.</summary>
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera vertical.</summary>
     static void Elevate(Transform t, Vector2 size, float h)
     {
         t.position += Vector3.up * h;
@@ -3693,14 +3693,14 @@ public static partial class SampleSceneBuilder
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
         Rail(new Vector3(hx, 0f, -hz), new Vector3(hx, 0f, hz));
-        Rail(new Vector3(-hx, 0f, hz), new Vector3(-StairTower.LaneOffset - StairTower.LaneWidth * 0.5f, 0f, hz));   // hueco = el carril de bajada de la torre
-        Rail(new Vector3(-0.05f, 0f, hz), new Vector3(hx, 0f, hz));
+        Rail(new Vector3(-hx, 0f, hz), new Vector3(-0.6f, 0f, hz));   // hueco = donde llega la escalera vertical
+        Rail(new Vector3(0.6f, 0f, hz), new Vector3(hx, 0f, hz));
 
         // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+6 m): si alguien cae, amortigua el golpe; y es una planta más.
         SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
 
-        // ESCALERA EN TORRE hacia +Z (tramos de ~3 m en zigzag con rellanos): a 12 m una escalera recta mediría 17 m.
-        StairTower.Build(s, new Vector3(0f, 0f, hz), h, wood, woodDark, 1f);
+        // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
+        Ladder.Build(s, new Vector3(0f, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)

@@ -83,6 +83,7 @@ public class WalkSpell : SpellBase
 
     void Locomote(Vector3 dir, bool charging, bool channeling, float dt)
     {
+        if (Ladder.IsClimbing(transform)) return;   // en una escalera: la escalera lo lleva
         bool moving = dir.sqrMagnitude >= 0.01f;
         float speed = StepSpeed(charging, channeling, moving, dt);
         LastSpeed = speed; LastDir = dir;

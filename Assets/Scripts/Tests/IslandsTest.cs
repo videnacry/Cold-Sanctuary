@@ -51,6 +51,8 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         TestProbe.NotNull("la casa del árbol de guardia existe", tree);
         TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
         TestProbe.Check("la escalera vertical tiene su pie interactuable", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length >= 2);
+        TestProbe.Check("las escaleras verticales tienen su enlace del NavMesh (la IA trepa)", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length > 0
+            && System.Array.TrueForAll(FindObjectsByType<Ladder>(FindObjectsSortMode.None), l => l.ladder != null && l.ladder.GetComponent<Unity.AI.Navigation.NavMeshLink>() != null));
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
 
         // SUBIR y BAJAR por la escalera vertical (un cuerpo de prueba con CharacterController, como el jugador).

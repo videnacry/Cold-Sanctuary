@@ -1,8 +1,8 @@
 using UnityEngine;
 
 /// <summary>
-/// Trepar (docs/creature-stats.md §Pools derivados → "Trepar"). Cerca de un <see cref="Climbable"/>,
-/// mantén la tecla de trepar para subir:
+/// Trepar (docs/creature-stats.md §Pools derivados → "Trepar"). Junto a una <see cref="Ladder"/> (escalera vertical),
+/// la tecla de trepar la sube o la baja entera. Cerca de un <see cref="Climbable"/>, mantén la tecla de trepar para subir:
 ///   - **Requiere fuerza mínima** para poder trepar.
 ///   - **Velocidad ∝ strength · agility.**
 ///   - **Altura máxima ∝ strength / bodyMass** (potencia-peso), tope en `Climbable.topY`.
@@ -43,6 +43,12 @@ public class PlayerClimber : MonoBehaviour
 
     void Update()
     {
+        // ESCALERA VERTICAL al alcance: la tecla de trepar también la sube (o la baja, desde arriba), como F.
+        if (GameKeys.GetKeyDown(climbKey) && !_climbing && !Ladder.IsClimbing(transform))
+        {
+            Ladder ladder = Ladder.Nearest(transform.position, detectRange + 1f);
+            if (ladder != null && ladder.TryClimb(transform)) return;
+        }
         if (!GameKeys.GetKey(climbKey)) { StopClimb(); return; }
 
         Climbable target = FindClimbable();

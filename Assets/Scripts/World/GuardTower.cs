@@ -66,17 +66,8 @@ public static class GuardTower
         board.gameObject.AddComponent<GuardBoard>();
         WorldLabel wl = board.gameObject.AddComponent<WorldLabel>(); wl.text = "Tablero de guardia"; wl.height = 0.9f;
 
-        // ESCALERA VERTICAL del suelo a la plataforma (lado sur): dos largueros y peldaños cada 35 cm.
-        float lz = -half - 0.35f;
-        Transform ladder = new GameObject("Escalera").transform; ladder.SetParent(t, false); ladder.localPosition = new Vector3(0f, 0f, lz);
-        for (int s = -1; s <= 1; s += 2) Block(ladder, new Vector3(s * 0.32f, (y + 1f) * 0.5f, 0f), new Vector3(0.09f, y + 1f, 0.09f), woodDark, false, "Larguero");
-        for (float h = 0.35f; h < y + 0.9f; h += 0.35f) Block(ladder, new Vector3(0f, h, 0f), new Vector3(0.64f, 0.05f, 0.06f), wood, false, "Peldano");
-        Ladder bottom = Block(ladder, new Vector3(0f, 1f, -0.6f), new Vector3(1.4f, 2f, 1.2f), Color.white, true, "Pie de la escalera").gameObject.AddComponent<Ladder>();
-        bottom.GetComponent<Collider>().isTrigger = true; bottom.GetComponent<Renderer>().enabled = false;
-        bottom.top = false; bottom.ladder = ladder; bottom.deckY = y;
-        Ladder top = Block(ladder, new Vector3(0f, y + 1f, 0.9f), new Vector3(1.4f, 2f, 1.2f), Color.white, true, "Lo alto de la escalera").gameObject.AddComponent<Ladder>();
-        top.GetComponent<Collider>().isTrigger = true; top.GetComponent<Renderer>().enabled = false;
-        top.top = true; top.ladder = ladder; top.deckY = y;
+        // ESCALERA VERTICAL del suelo a la plataforma (lado sur, por el hueco de la barandilla).
+        Ladder.Build(t, new Vector3(0f, 0f, -half - Ladder.Gap), 0f, y, wood, woodDark);
 
         SoftGround.Plant(t, groundPos + Vector3.down * 0.1f, new Vector2(14f, 14f), 11);   // colchón de musgo bajo la casa del árbol
         WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Casa del árbol de la guardia"; tl.height = y + 5f;

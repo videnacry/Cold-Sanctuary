@@ -264,6 +264,7 @@ public class SpellConsole : MonoBehaviour
         ("lookAt",    "lookAt({destiny:\"Magnate\"})"),
         ("cancel",    "cancel({all:false})"),
         ("exit",      "exit"),
+        ("climb",     "climb"),   // subir (o bajar) por la escalera vertical más cercana
         ("look",      "look({yaw:90, pitch:0})"),
         ("asana",     "asana({name:\"\"})"),   // hacer el paso que el maestro pide (o una asana conocida por su nombre)
         ("enfocar",   "enfocar({destiny:\"\", seconds:8})"),   // fijar la atención visual en algo (la cámara lo acerca)
@@ -436,6 +437,7 @@ public class SpellConsole : MonoBehaviour
             case "asana": case "postura": Asana(self, args); break;
             case "clean": case "limpiar": Clean(self); break;
             case "feed": case "alimentar": Feed(self); break;
+            case "climb": case "trepar": case "subir": case "bajar": Climb(self); break;
             case "stock": case "abastecer": Stock(self); break;
             case "teach": case "ensenar": CastOn<TeachSpell>(self, args); break;
             case "analysis": case "analisis": CastOn<ClinicalAnalysisSpell>(self, args); break;
@@ -761,6 +763,14 @@ public class SpellConsole : MonoBehaviour
     }
 
     // Alimentar como HECHIZO: va al visitante hambriento más cercano (huerto) y le da de comer al llegar.
+    // TREPAR como hechizo: va a la escalera vertical más cercana y la sube (o la baja, si está arriba).
+    void Climb(Anima self)
+    {
+        if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();
+        q.EnqueuePlayer(new ClimbLadderSpell());
+        Log($"«{self.name}» va a la escalera más cercana.");
+    }
+
     void Feed(Anima self)
     {
         if (!self.TryGetComponent(out ActionQueue q)) q = self.gameObject.AddComponent<ActionQueue>();

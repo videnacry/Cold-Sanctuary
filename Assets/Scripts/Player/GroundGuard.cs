@@ -21,6 +21,7 @@ public class GroundGuard : MonoBehaviour
         if (Time.time < _next) return;
         _next = Time.time + checkEvery;
         if (_cc != null && !_cc.enabled) return;   // trepando / en transición de escena: no tocar
+        if (Ladder.IsClimbing(transform)) return;  // en una escalera vertical (compañeros sin CharacterController)
 
         Vector3 p = transform.position;
         // PIES: con CharacterController, su base; sin él (compañeros), la base de su cuerpo de cubos o de su cápsula. Antes
