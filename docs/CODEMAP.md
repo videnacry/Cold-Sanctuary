@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 491 tipos._
+_Total: 494 tipos._
 
 
 ## Animals
@@ -71,6 +71,7 @@ _Total: 491 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
+- **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
 
 ## Scripts
 
@@ -361,6 +362,7 @@ _Total: 491 tipos._
 - **PathMover** (class) — `Assets/Scripts/Control/PathMover.cs` — ANDAR DE VERDAD hacia un punto (para personajes que se mueven por código:
 - **PatrolMission** (class) — `Assets/Scripts/World/PatrolMission.cs` — PATRULLA:
 - **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
+- **PerfProbe** (class) — `Assets/Scripts/UI/PerfProbe.cs` — SONDA DE RENDIMIENTO (consola:
 - **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
 - **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
 - **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
@@ -411,6 +413,7 @@ _Total: 491 tipos._
 - **SanctuaryResource** (enum) — `Assets/Scripts/Economy/SanctuaryResource.cs` — Recursos globales de un santuario (Mesocosmos / Macrocosmos, ver docs/world-topology-and-planes.md §4 y §7).
 - **SanctuaryResourceHUD** (class) — `Assets/Scripts/UI/SanctuaryResourceHUD.cs` — HUD PROTOTIPO (OnGUI) de los recursos del santuario activo (docs/world-topology-and-planes.md §7):
 - **SanctuaryResources** (class) — `Assets/Scripts/Economy/SanctuaryResources.cs` — Libro mayor (ledger) de recursos del santuario ACTIVO (docs/world-topology-and-planes.md §4/§7).
+- **SceneCache** (class) — `Assets/Scripts/World/SceneCache.cs` — CACHÉ DE BÚSQUEDAS EN ESCENA.
 - **ScentEmitter** (class) — `Assets/Scripts/Microcosmos/ScentEmitter.cs` — EMISOR DE OLOR — cualquier objeto (comida, cadáver, nido) puede convertirse en fuente de atracción olfativa para depredadores cercanos.
 - **ScentScanner** (class) — `Assets/Scripts/Microcosmos/ScentScanner.cs` — ESCÁNER DE OLOR — detecta cercanos y genera un impulso de ATRACCIÓN hacia la fuente más intensa.
 - **ScreenEffects** (class) — `Assets/Scripts/Camera/ScreenEffects.cs` — Efectos de pantalla por ESTADO (docs/stats-as-truth.md §6 · "cámara artística").
