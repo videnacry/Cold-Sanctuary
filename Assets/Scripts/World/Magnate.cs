@@ -75,7 +75,7 @@ public class Magnate : MonoBehaviour
     SanctuaryOnboarding FindNewcomer()
     {
         SanctuaryOnboarding best = null; float bestSq = float.MaxValue;
-        foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
+        foreach (SanctuaryOnboarding o in SceneCache.All<SanctuaryOnboarding>(0.5f))
         {
             if (o == null || !o.apt || (o.presented && o != _newcomer)) continue;
             float sq = (o.transform.position - transform.position).sqrMagnitude;

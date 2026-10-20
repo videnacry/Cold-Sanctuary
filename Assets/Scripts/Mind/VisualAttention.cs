@@ -76,7 +76,7 @@ public class VisualAttention : MonoBehaviour
         if (conscious && Time.time < _holdUntil) return;
         conscious = false;
         if (Time.time < _next) return;
-        _next = Time.time + 0.25f;
+        _next = Time.time + 0.25f + Random.Range(0f, 0.1f);   // escalonado: no escanean todos en el mismo frame
         if (_a != null && _a.asleep) { focus = null; return; }   // dormido no se ve nada
         var best = Scan(out float s);
         if (best != focus && best != null) Focused?.Invoke(best);   // enfoca (sin pensarlo)
@@ -87,7 +87,8 @@ public class VisualAttention : MonoBehaviour
     public List<(Transform t, float score)> Ranking(int max = 8)
     {
         var l = new List<(Transform, float)>();
-        foreach (Anima o in FindObjectsByType<Anima>(FindObjectsSortMode.None))
+        _missionArea = MissionArea();   // una vez por escaneo (antes, una búsqueda de áreas por cada candidato)
+        foreach (Anima o in AllAnimas())
         {
             if (o == null || o == _a || o.death) continue;
             float sc = Salience(o.transform, o);
@@ -132,7 +133,13 @@ public class VisualAttention : MonoBehaviour
 
     // Contraste del color dominante del objeto con un fondo de hielo/nieve (claro y frío).
     static readonly Color Background = new Color(0.85f, 0.9f, 0.95f);
+    static readonly Dictionary<Transform, float> _contrast = new Dictionary<Transform, float>();
     static float Contrast(Transform t)
+    {
+        if (_contrast.TryGetValue(t, out float cached)) return cached;
+        float v0 = ContrastOf(t); _contrast[t] = v0; return v0;   // el color no cambia: se calcula una vez
+    }
+    static float ContrastOf(Transform t)
     {
         Renderer r = t.GetComponentInChildren<Renderer>();
         if (r == null || r.sharedMaterial == null) return 0f;
@@ -142,17 +149,24 @@ public class VisualAttention : MonoBehaviour
         return Mathf.Clamp01(lum * 0.6f + chroma * 0.8f);
     }
 
-    // Lo que tiene que ver con mi misión de ahora (la persona a la que acompaño, el área a la que voy) importa más.
-    float MissionRelevance(Transform t)
+    // Lo que tiene que ver con mi misión de ahora (el área a la que voy) importa más.
+    Transform _missionArea;
+    float MissionRelevance(Transform t) => _missionArea != null && Vector3.Distance(_missionArea.position, t.position) < 15f ? 0.6f : 0f;
+
+    Transform MissionArea()
     {
         WorkdayDirector wd = WorkdayDirector.Instance;
-        if (wd == null || wd.today == null || TimeController.timeController == null) return 0f;
+        if (wd == null || wd.today == null || TimeController.timeController == null) return null;
         WorkRoster.Worker w = wd.roster.Find(CompareTag("Player") ? "Player" : name.Replace("_Post", ""));
-        if (w == null) return 0f;
-        string area = wd.Where(w, TimeController.timeController.Hour, out _);
-        if (area == null) return 0f;
-        foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
-            if (a.displayName == area && Vector3.Distance(a.transform.position, t.position) < 15f) return 0.6f;
-        return 0f;
+        if (w == null) return null;
+        return WorkdayDirector.AreaTransform(wd.Where(w, TimeController.timeController.Hour, out _));
+    }
+
+    // La lista de animas, compartida por todos y refrescada cada 2 s (antes cada anima la buscaba en cada escaneo).
+    static Anima[] _all = new Anima[0]; static float _allAt = -10f;
+    static Anima[] AllAnimas()
+    {
+        if (Time.time - _allAt > 2f) { _all = FindObjectsByType<Anima>(FindObjectsSortMode.None); _allAt = Time.time; }
+        return _all;
     }
 }

@@ -252,7 +252,7 @@ public class IceInsectLife : MonoBehaviour
     Animal NearestCarcass()
     {
         Animal best = null; float bd = 30f;
-        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None))
+        foreach (Animal a in Cached<Animal>())
         {
             if (a == null || !a.death || a == _self) continue;
             float d = Vector3.Distance(a.transform.position, _home.transform.position);
@@ -269,8 +269,8 @@ public class IceInsectLife : MonoBehaviour
         _strikeCooldown -= Time.deltaTime;
         SnowBeeBehavior bee = Nearest<SnowBeeBehavior>(transform.position, 1.6f);
         if (web != null)   // primero, la que está pegada en SU tela
-            foreach (IceInsectLife o in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None))
-                if (o.kind == Kind.Bee && o.Stuck && web.Catches(o.transform.position) && o.TryGetComponent(out SnowBeeBehavior sb)) { bee = sb; break; }
+            foreach (IceInsectLife o in Cached<IceInsectLife>())
+                if (o != null && o.kind == Kind.Bee && o.Stuck && web.Catches(o.transform.position) && o.TryGetComponent(out SnowBeeBehavior sb)) { bee = sb; break; }
         if (bee != null && !bee.death && _strikeCooldown <= 0f)
         {
             if (FlyTo(bee.transform.position, 6f) < 0.25f)   // salto + mordisco con veneno
@@ -302,11 +302,22 @@ public class IceInsectLife : MonoBehaviour
         return dist;
     }
 
+    // LISTAS COMPARTIDAS (refrescadas cada segundo): antes cada insecto buscaba en toda la escena varias veces por frame.
+    static readonly System.Collections.Generic.Dictionary<System.Type, (Object[] items, float at)> _cache = new System.Collections.Generic.Dictionary<System.Type, (Object[], float)>();
+    static T[] Cached<T>() where T : Object
+    {
+        if (_cache.TryGetValue(typeof(T), out var c) && Time.time - c.at < 1f) return (T[])c.items;
+        T[] items = FindObjectsByType<T>(FindObjectsSortMode.None);
+        _cache[typeof(T)] = (items, Time.time);
+        return items;
+    }
+
     static T Nearest<T>(Vector3 p, float r) where T : Component
     {
         T best = null; float bd = r;
-        foreach (T c in FindObjectsByType<T>(FindObjectsSortMode.None))
+        foreach (T c in Cached<T>())
         {
+            if (c == null) continue;
             float d = Vector3.Distance(c.transform.position, p);
             if (d < bd) { bd = d; best = c; }
         }

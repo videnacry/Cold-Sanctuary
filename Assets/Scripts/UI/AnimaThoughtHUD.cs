@@ -25,10 +25,10 @@ public class AnimaThoughtHUD : MonoBehaviour
     // mueve al jugador de cuerpo). Cae al tag Player si no hay posesión activa.
     Mind ControlledMind()
     {
-        if (Time.time < _recheck && _cached != null) return _cached;
+        if (Time.time < _recheck) return _cached;   // antes, sin pensamiento (_cached null) re-buscaba en CADA evento de GUI
         _recheck = Time.time + 0.5f;
 
-        foreach (AnimaController ac in FindObjectsOfType<AnimaController>())
+        foreach (AnimaController ac in SceneCache.All<AnimaController>())
             if (ac != null && ac.Active is PlayerBrain && ac.TryGetComponent(out Mind m)) return _cached = m;
 
         GameObject p = GameObject.FindGameObjectWithTag("Player");

@@ -21,15 +21,17 @@ public class AnimaNameplate : MonoBehaviour
 
     void OnGUI()
     {
+        if (Event.current.type != EventType.Repaint) return;   // solo se pinta en Repaint (antes se recorría todo también en Layout)
         Camera cam = Camera.main;
         if (cam == null) return;
         if (_style == null) _style = new GUIStyle(GUI.skin.label) { fontSize = 11, alignment = TextAnchor.MiddleCenter, richText = true };
 
-        if (Time.time >= _nextScan) { _nextScan = Time.time + 0.5f; _animas = FindObjectsOfType<Anima>(); _labels = FindObjectsOfType<WorldLabel>(); }
+        if (Time.time >= _nextScan) { _nextScan = Time.time + 0.5f; _animas = SceneCache.All<Anima>(); _labels = SceneCache.All<WorldLabel>(2f); }
 
         foreach (Anima a in _animas)
         {
             if (a == null || a.death) continue;
+            if ((a.transform.position - cam.transform.position).sqrMagnitude > maxDistance * maxDistance) continue;   // lejos: ni se busca su mente
             Mind m = a.GetComponent<Mind>();
             string label = m != null && !string.IsNullOrEmpty(m.identity) ? m.identity : a.name;
             Draw(cam, a.transform.position + Vector3.up * headHeight, label, "E8E8E8");
@@ -37,6 +39,7 @@ public class AnimaNameplate : MonoBehaviour
         foreach (WorldLabel wl in _labels)   // muebles/ingredientes/estaciones (cocina por teclado)
         {
             if (wl == null || string.IsNullOrEmpty(wl.text)) continue;
+            if ((wl.transform.position - cam.transform.position).sqrMagnitude > maxDistance * maxDistance) continue;
             Draw(cam, wl.transform.position + Vector3.up * wl.height, wl.text, "C7E8FF");
         }
     }

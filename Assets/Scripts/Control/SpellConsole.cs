@@ -456,6 +456,9 @@ public class SpellConsole : MonoBehaviour
                     else Log("tp: escribe tp({destiny:\"x y z\"}).");
                 }
                 break;
+            case "rendimiento": case "perf":   // mide unos segundos y escribe en el log qué cuesta (fases, dibujado, scripts)
+                { PerfProbe probe = PerfProbe.Instance != null ? PerfProbe.Instance : new GameObject("PerfProbe").AddComponent<PerfProbe>(); probe.Run(); Log("Midiendo el rendimiento (240 frames)… mira el log [Rendimiento]."); }
+                break;
             case "enfocar": case "focus":   // ATENCIÓN VISUAL a conciencia: fija la mirada en algo (la cámara en 1ª persona lo acerca)
                 {
                     VisualAttention va = self.GetComponent<VisualAttention>() ?? self.gameObject.AddComponent<VisualAttention>();
