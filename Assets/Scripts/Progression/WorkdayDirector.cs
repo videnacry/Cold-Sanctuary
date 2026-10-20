@@ -208,6 +208,7 @@ public class WorkdayDirector : MonoBehaviour
         if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
         if (lin != null) lin.enabled = area == null || area == "Enfermería" || NewcomerWaiting();
+        if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (area == null)
         {
             if (idle != null && !idle.enabled) idle.enabled = true;   // libre

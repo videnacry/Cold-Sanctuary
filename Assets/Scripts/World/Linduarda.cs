@@ -57,6 +57,27 @@ public class Linduarda : MonoBehaviour
         if (_initiate != null) { Initiate(); return; }   // llevando a un recién llegado al Micro: prioridad
         if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
+        else AccompanyNewcomer();
+    }
+
+    // ACOMPAÑAR al recién llegado que ya está curado pero aún no ha hecho su primera virtualización: Linduarda no lo
+    // deja solo (lo sigue por la enfermería) y le RECUERDA qué tiene que hacer cada cierto tiempo, hasta que lo haga.
+    float _nextReminder;
+    void AccompanyNewcomer()
+    {
+        SanctuaryOnboarding o = null;
+        foreach (SanctuaryOnboarding x in FindObjectsByType<SanctuaryOnboarding>(FindObjectsSortMode.None))
+            if (x != null && x.initiated && !x.apt) { o = x; break; }
+        if (o == null) return;
+        Vector3 to = o.transform.position - transform.position; to.y = 0f;
+        if (to.magnitude > reach + 0.8f) PathMover.Of(this).StepToward(o.transform.position, moveSpeed);
+        if (Time.time < _nextReminder || o.GetComponent<PlayerController>() == null) return;
+        _nextReminder = Time.time + 25f;
+        if (virtualizationMachine == null) virtualizationMachine = FindObjectOfType<VirtualizationMachine>();
+        string spell = virtualizationMachine != null ? $"virtualize({{destiny:\"{virtualizationMachine.areaName}\"}})" : "virtualize";
+        LessonPrompt.Show("Linduarda: aún te falta tu primera virtualización. Ven al tanque, ponte la máscara y entra.", spell, 20f);
+        SpellConsole.Propose(spell, "Linduarda te espera en el tanque", 25f);
+        Debug.Log("[Linduarda] recuerda al recién llegado que le falta su primera virtualización (lo acompaña por la enfermería).");
     }
 
     // MUESTRAS: Linduarda extrae sangre (un tubo de ensayo en su mano) y la lleva al analizador clínico de la enfermería.

@@ -287,6 +287,16 @@ public class SpellConsole : MonoBehaviour
             case "queue": case "cola": LogQueue(self); break;
             case "where": case "donde": LogWhere(args.TryGetValue("destiny", out string wf) ? wf : null); break;
             case "censo": case "census": foreach (string c in AnimalVitals.Census()) Log("  " + c); break;
+            case "tp":   // (depuración) tp({destiny:"x y z"}): teletransporta al jugador; sirve para probar guardias y bloqueos
+                {
+                    string tv = args.TryGetValue("destiny", out string tvs) ? tvs : "";
+                    string[] c3 = tv.Split(new[] { ',', ' ' }, System.StringSplitOptions.RemoveEmptyEntries);
+                    GameObject tpP = GameObject.FindGameObjectWithTag("Player");
+                    if (tpP != null && c3.Length == 3 && float.TryParse(c3[0], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float tx) && float.TryParse(c3[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float ty) && float.TryParse(c3[2], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float tz))
+                    { CharacterController tcc = tpP.GetComponent<CharacterController>(); if (tcc) tcc.enabled = false; tpP.transform.position = new Vector3(tx, ty, tz); if (tcc) tcc.enabled = true; Log($"Kushal aparece en ({tx:0.#}, {ty:0.#}, {tz:0.#})."); }
+                    else Log("tp: escribe tp({destiny:\"x y z\"}).");
+                }
+                break;
             case "jornada": case "workday":   // plan del día, quién hace qué y el equilibrio (¿faltan personas o misiones?)
                 if (WorkdayDirector.Instance == null) { Log("No hay jornada en esta escena."); break; }
                 if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
