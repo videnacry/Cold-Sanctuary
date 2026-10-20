@@ -30,6 +30,16 @@ public class SpellConsole : MonoBehaviour
 
     void Update()
     {
+        // Un DIÁLOGO abierto secuestra Intro: el lanzador se oculta (y no se abre con el Intro que cierra el diálogo).
+        if (GameKeys.DialogOpen || Time.frameCount - ChoiceDialog.ClosedFrame <= 1)
+        {
+            if (_open) { _open = false; if (Event.current != null) GUI.FocusControl(null); }
+            Capturing = false;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+            PollInbox();
+#endif
+            return;
+        }
         if (!_open)
         {
             // ~ o Intro abren el lanzador (con el hechizo propuesto ya escrito: otro Intro lo lanza).
@@ -318,6 +328,7 @@ public class SpellConsole : MonoBehaviour
 
     void OnGUI()
     {
+        if (GameKeys.DialogOpen) return;   // oculto mientras hay un diálogo
         if (!_open) { DrawClosedBar(); return; }
         float w = 560f, h = 24f, x = 12f, y = Screen.height - 260f;
         GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 232f), "");

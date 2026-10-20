@@ -51,8 +51,8 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     public void Interact()
     {
         // VIRTUALIZACIÓN o SIMULACIÓN: la máquina sirve para las dos. Primero se elige (docs/jornada-y-rotacion.md).
-        if (WorkdayDirector.Instance != null && _menu == 0 && !(!SceneMode && MeditationSession.Instance.IsInMission)) { _menu = 1; GameKeys.MenuOpen = true; return; }
-        EnterSimulation();
+        if (!SceneMode && MeditationSession.Instance.IsInMission) { EnterSimulation(); return; }   // dentro de una misión in-place: salir
+        ShowMenu();
     }
 
     /// <summary>SIMULACIÓN: el microcosmos (o el mundo mob) del área.</summary>
@@ -61,7 +61,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // Modo escena: cargar el mundo mob propio (salida vía WorldExitPortal dentro de la escena).
         if (SceneMode)
         {
-            Confirm(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform));
+            EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform);   // ya se eligió en el diálogo
             return;
         }
 
@@ -102,57 +102,47 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
             enterAnimation: () => onEnterAnimation?.Invoke());
     }
 
-    // ── Menú: 1 virtualización (misiones de trabajo del área) · 2 simulación (microcosmos) · 3 misiones de otras áreas ──
-    // Todas las misiones del catálogo son accesibles desde cualquier máquina (las áreas sin máquina, como el laboratorio,
-    // el gimnasio, la obra o la guardia, por la opción 3). Listas de 8 por página: 9 pasa de página.
-    int _menu;   // 0 cerrado · 1 elegir modo · 2 elegir misión · 3 elegir área
-    System.Collections.Generic.List<WorkRoster.Mission> _list;
-    System.Collections.Generic.List<string> _areas;
-    string _listArea;
-    int _page;
+    // ── Diálogo al TOCAR la máquina (o F): virtualización (misiones de trabajo, cada una en su escena) o simulación ──
+    // Se elige con ↑/↓ + Intro o con clic (ChoiceDialog). Todas las misiones del catálogo son accesibles desde cualquier
+    // máquina (las áreas sin máquina, como el laboratorio, el gimnasio, la obra o la guardia, por «otras áreas»).
     string _toast; float _toastUntil;
-    const int PerPage = 8;
 
     System.Collections.Generic.List<WorkRoster.Mission> TodayMissions() =>
         AreaWork.Today(TimeController.timeController != null ? TimeController.timeController.Day : 0, ConstructionProject.All);
 
-    void Update()
+    /// <summary>Abre el diálogo de la máquina.</summary>
+    public void ShowMenu()
     {
-        if (_menu == 0) return;
-        if (Input.GetKeyDown(KeyCode.Escape)) { Close(); return; }
-        int k = -1;
-        for (int i = 1; i <= 9; i++) if (Input.GetKeyDown(KeyCode.Alpha0 + i) || Input.GetKeyDown(KeyCode.Keypad0 + i)) k = i;
-        if (k < 0) return;
-        if (_menu == 1)
+        if (ChoiceDialog.IsOpen) return;
+        var opts = new System.Collections.Generic.List<string> { "Virtualización: misiones de trabajo de esta área", "Simulación: el microcosmos del área", "Virtualización: misiones de otras áreas" };
+        ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i =>
         {
-            if (k == 1) OpenArea(areaName);
-            else if (k == 2) { Close(); EnterSimulation(); }
-            else if (k == 3)
-            {
-                _areas = new System.Collections.Generic.List<string>();
-                foreach (WorkRoster.Mission m in TodayMissions()) if (!_areas.Contains(m.area)) _areas.Add(m.area);
-                _menu = 3; _page = 0;
-            }
-            return;
-        }
-        int count = _menu == 2 ? (_list?.Count ?? 0) : (_areas?.Count ?? 0);
-        if (k == 9) { if ((_page + 1) * PerPage < count) _page++; else _page = 0; return; }
-        int idx = _page * PerPage + k - 1;
-        if (idx >= count) return;
-        if (_menu == 3) { OpenArea(_areas[idx]); return; }
-        Choose(_list[idx]);
+            if (i == 0) ShowArea(areaName);
+            else if (i == 1) EnterSimulation();
+            else ShowAreas();
+        });
     }
 
-    void OpenArea(string area)
+    void ShowAreas()
     {
-        _listArea = area; _page = 0; _menu = 2;
-        _list = new System.Collections.Generic.List<WorkRoster.Mission>();
-        foreach (WorkRoster.Mission m in TodayMissions()) if (m.area == area) _list.Add(m);
+        var areas = new System.Collections.Generic.List<string>();
+        foreach (WorkRoster.Mission m in TodayMissions()) if (!areas.Contains(m.area)) areas.Add(m.area);
+        areas.Add("← Volver");
+        ChoiceDialog.Show("Virtualización · elige el área", areas.ToArray(), i => { if (i == areas.Count - 1) ShowMenu(); else ShowArea(areas[i]); }, ShowMenu);
+    }
+
+    void ShowArea(string area)
+    {
+        var list = new System.Collections.Generic.List<WorkRoster.Mission>();
+        foreach (WorkRoster.Mission m in TodayMissions()) if (m.area == area) list.Add(m);
+        var opts = new System.Collections.Generic.List<string>();
+        foreach (WorkRoster.Mission m in list) opts.Add($"{m.title} ({m.hours:0.#} h)");
+        opts.Add("← Volver");
+        ChoiceDialog.Show($"Virtualización · {area}", opts.ToArray(), i => { if (i >= list.Count) ShowMenu(); else Choose(list[i]); }, ShowMenu);
     }
 
     void Choose(WorkRoster.Mission m)
     {
-        Close();
         // Cada misión se practica EN SU ESCENA (Virtual_<clave>): se recorren sus pasos y al terminar cuenta como hecha.
         string scene = VirtualMissions.SceneName(m.id);
         if (Application.CanStreamedLevelBeLoaded(scene) && MobWorldLoader.Instance != null && !MobWorldLoader.Instance.IsInMobWorld)
@@ -161,37 +151,21 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
             EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, scene);
             return;
         }
-        WorkdayDirector.Instance.PlayerVirtualizes(m);   // sin escena generada: se cuenta al momento
+        if (WorkdayDirector.Instance != null) WorkdayDirector.Instance.PlayerVirtualizes(m);   // sin escena generada: se cuenta al momento
         _toast = $"Virtualización: «{m.title}» completada."; _toastUntil = Time.time + 4f;
     }
 
-    void Close() { _menu = 0; GameKeys.MenuOpen = false; }
+    // Al TOCARLA el jugador se muestra el diálogo (no hace falta pulsar nada).
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player") || !CanInteract) return;
+        if (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsBusy || MobWorldLoader.Instance.IsInMobWorld)) return;
+        ShowMenu();
+    }
 
     void OnGUI()
     {
-        if (_menu == 0) { if (Time.time < _toastUntil) GUI.Box(new Rect(Screen.width * 0.5f - 220, 60, 440, 28), _toast); return; }
-        var lines = new System.Collections.Generic.List<string>();
-        if (_menu == 1)
-        {
-            lines.Add($"Máquina de {areaName}");
-            lines.Add("1 · Virtualización: misiones de trabajo del área");
-            lines.Add("2 · Simulación: el microcosmos");
-            lines.Add("3 · Virtualización: misiones de otras áreas");
-        }
-        else
-        {
-            bool areas = _menu == 3;
-            int count = areas ? (_areas?.Count ?? 0) : (_list?.Count ?? 0);
-            lines.Add(areas ? "Virtualización · elige el área" : $"Virtualización · {_listArea}");
-            if (count == 0) lines.Add("(esta área aún no tiene misiones de trabajo)");
-            for (int i = _page * PerPage, n = 1; i < count && n <= PerPage; i++, n++)
-                lines.Add(areas ? $"{n} · {_areas[i]}" : $"{n} · {_list[i].title} ({_list[i].hours:0.#} h)");
-            if (count > PerPage) lines.Add($"9 · más (página {_page + 1}/{(count + PerPage - 1) / PerPage})");
-        }
-        lines.Add("Esc · salir");
-        float w = 620, h = 26 + lines.Count * 22;
-        GUI.Box(new Rect(Screen.width * 0.5f - w * 0.5f, Screen.height * 0.5f - h * 0.5f, w, h), "");
-        for (int i = 0; i < lines.Count; i++) GUI.Label(new Rect(Screen.width * 0.5f - w * 0.5f + 12, Screen.height * 0.5f - h * 0.5f + 8 + i * 22, w - 24, 22), lines[i]);
+        if (Time.time < _toastUntil) GUI.Box(new Rect(Screen.width * 0.5f - 220, 60, 440, 28), _toast);
     }
 
     // ── Startup / Gizmos ────────────────────────────────────────────────────────

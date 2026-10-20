@@ -85,7 +85,7 @@ public class NewcomerInitiator : MonoBehaviour
             LessonPrompt.Show($"{Who}: ponte la máscara y entra al tanque de virtualización", spell, 40f);
             SpellConsole.Propose(spell, $"{Who} te pide entrar al tanque", 60f);
         }
-        else if (vm.CanInteract) vm.Interact();
+
         FollowSpell.Stop(t);
         _leading.initiated = true;
         _leading = null;

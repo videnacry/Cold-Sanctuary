@@ -10,7 +10,9 @@ public static class GameKeys
 {
     /// <summary>Un menú propio (p. ej. el de la máquina de virtualización) se queda con el teclado.</summary>
     public static bool MenuOpen;
-    static bool Muted => SpellConsole.Capturing || MenuOpen;
+    /// <summary>Hay un diálogo abierto (opciones, confirmación, menú de misiones): secuestra Intro y oculta el lanzador.</summary>
+    public static bool DialogOpen => MenuOpen || ChoiceDialog.IsOpen || ConfirmationPanel.IsVisible || (MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen);
+    static bool Muted => SpellConsole.Capturing || MenuOpen || ChoiceDialog.IsOpen;   // (los paneles de UI leen sus teclas por aquí: no se mutean a sí mismos)
     public static bool GetKey(KeyCode k) => !Muted && Input.GetKey(k);
     public static bool GetKey(string k) => !Muted && Input.GetKey(k);
     public static bool GetKeyDown(KeyCode k) => !Muted && Input.GetKeyDown(k);
