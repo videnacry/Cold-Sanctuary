@@ -1,0 +1,243 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+/// TRANSPORTE ENTRE PLATAFORMAS (docs/transporte-alfombras.md):
+/// - Las plataformas CERCANAS (p. ej. el restaurante y la enfermería) se unen con PUENTES de 8 m de ancho.
+/// - Cada GRUPO de plataformas unidas por puentes tiene UNA pista de aterrizaje de ALFOMBRAS VOLADORAS (como una sala
+///   de yoga con esterillas grandes), unida a una de sus áreas por un puente. La arboleda residencial tiene la suya.
+/// Así hay menos pistas y menos necesidad de volar: dentro de un grupo se va andando por los puentes.
+/// </summary>
+public static partial class SampleSceneBuilder
+{
+    const float BridgeWidth = 8f, MaxBridge = 25f, PadSize = 14f;
+
+    struct Plat { public Transform t; public string name; public Vector2 c, half; public int group; }
+
+    static readonly Dictionary<Transform, List<(int side, float a, float b)>> _openings = new Dictionary<Transform, List<(int, float, float)>>();
+
+    static void BuildBridgesAndPads(Transform parent, SanctuaryArea[] areas, Vector2[] sizes)
+    {
+        _openings.Clear();
+        var plats = new List<Plat>();
+        for (int i = 0; i < areas.Length && i < sizes.Length; i++)
+        {
+            Vector3 p = areas[i].transform.position;
+            plats.Add(new Plat { t = areas[i].transform, name = areas[i].displayName, c = new Vector2(p.x, p.z), half = sizes[i] * 0.5f, group = i });
+        }
+        var bridgeRects = new List<Rect>();
+        Transform root = new GameObject("Transporte_Plataformas").transform; root.SetParent(parent, false);
+
+        // PUENTES de 8 m entre plataformas cercanas que se enfrentan (rectos, sin cruzar otra área).
+        int bridges = 0;
+        for (int i = 0; i < plats.Count; i++)
+            for (int j = i + 1; j < plats.Count; j++)
+            {
+                if (!StraightLink(plats[i], plats[j], out Vector2 from, out Vector2 to, out int sideA, out int sideB, out float along)) continue;
+                Rect r = BridgeRect(from, to);
+                bool blocked = false;
+                for (int k = 0; k < plats.Count && !blocked; k++) if (k != i && k != j && Inflate(PRect(plats[k]), 1f).Overlaps(r)) blocked = true;
+                if (blocked) continue;
+                Bridge(root, new Vector3(from.x, ElevatedHeight, from.y), new Vector3(to.x, ElevatedHeight, to.y), BridgeWidth, $"Puente_{plats[i].name}_{plats[j].name}");
+                OpenRail(plats[i], sideA, along); OpenRail(plats[j], sideB, along);
+                bridgeRects.Add(r); bridges++;
+                int gi = plats[i].group, gj = plats[j].group;
+                for (int k = 0; k < plats.Count; k++) if (plats[k].group == gj) { var q = plats[k]; q.group = gi; plats[k] = q; }
+            }
+
+        // UNA PISTA por grupo, junto a una de sus áreas (la mayor), en un lado libre.
+        var taken = new List<Rect>(bridgeRects);
+        foreach (Plat p in plats) taken.Add(Inflate(PRect(p), 3f));
+        foreach (Rect g in Gardens) taken.Add(g);
+        taken.Add(new Rect(-60f - 34f, 95f - 34f, 68f, 68f));   // la arboleda residencial
+        var groups = new Dictionary<int, List<Plat>>();
+        foreach (Plat p in plats) { if (!groups.ContainsKey(p.group)) groups[p.group] = new List<Plat>(); groups[p.group].Add(p); }
+        int pads = 0;
+        foreach (var kv in groups)
+        {
+            var members = kv.Value; members.Sort((a, b) => (b.half.x * b.half.y).CompareTo(a.half.x * a.half.y));
+            bool placed = false;
+            foreach (Plat m in members)
+            {
+                foreach (int side in new[] { 1, 0, 3, 2 })   // -X, +X, -Z, +Z (por +Z sube la escalera)
+                {
+                    Vector2 dir = SideDir(side);
+                    float halfAlong = side < 2 ? m.half.x : m.half.y;
+                    Vector2 c = m.c + dir * (halfAlong + 6f + PadSize * 0.5f);
+                    Rect pr = new Rect(c.x - PadSize * 0.5f - 3f, c.y - PadSize * 0.5f - 3f, PadSize + 6f, PadSize + 6f);
+                    bool clash = false; foreach (Rect t in taken) if (t.Overlaps(pr) && !(t.center == Inflate(PRect(m), 3f).center)) { clash = true; break; }
+                    if (clash) continue;
+                    var names = new List<string>(); var centers = new List<Vector3>();
+                    foreach (Plat x in members) { names.Add(x.name); centers.Add(new Vector3(x.c.x, ElevatedHeight, x.c.y)); }
+                    // La pista mira con su −Z al área (por ahí llega el puente); su escalera queda al otro lado.
+                    Transform pad = Pad(root, new Vector3(c.x, 0f, c.y), Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.y)), string.Join(" + ", names), centers.ToArray());
+                    Vector2 edgeA = m.c + dir * halfAlong, edgeB = c - dir * PadSize * 0.5f;
+                    Bridge(root, new Vector3(edgeA.x, ElevatedHeight, edgeA.y), new Vector3(edgeB.x, ElevatedHeight, edgeB.y), BridgeWidth, $"Puente_pista_{m.name}");
+                    float along = side < 2 ? m.c.y : m.c.x;
+                    OpenRail(m, side, along);
+                    OpenRailPad(pad, 3, 0f, BridgeWidth);
+                    taken.Add(pr); taken.Add(BridgeRect(edgeA, edgeB)); pads++; placed = true;
+                    break;
+                }
+                if (placed) break;
+            }
+            if (!placed) Debug.LogWarning($"[Transporte] Sin sitio para la pista de {members[0].name}.");
+        }
+
+        // ARBOLEDA RESIDENCIAL: su pista, hacia fuera de la cabaña exterior de 300°, con un puente de 4 m.
+        Vector3 rc = new Vector3(-60f, 0f, 95f);
+        Vector3 rd = new Vector3(Mathf.Cos(300f * Mathf.Deg2Rad), 0f, Mathf.Sin(300f * Mathf.Deg2Rad));
+        Vector3 padC = rc + rd * (25f + 5f + PadSize * 0.5f);
+        Transform rpad = Pad(root, padC, Quaternion.LookRotation(rd), "Arboleda residencial (habitaciones)", new[] { rc + Vector3.up * ElevatedHeight });
+        Bridge(root, rc + rd * 25f + Vector3.up * ElevatedHeight, rc + rd * 30f + Vector3.up * ElevatedHeight, 4f, "Puente_pista_residencial");
+        OpenRailPad(rpad, 3, 0f, 4f);
+        pads++;
+        Debug.Log($"[Transporte] {bridges} puentes de 8 m entre plataformas cercanas y {pads} pistas de alfombras voladoras (una por grupo).");
+    }
+
+    // Los huertos elevados (MakePlot): no poner pistas encima.
+    static readonly Rect[] Gardens =
+    {
+        new Rect(-45f - 13f, -75f - 13f, 26f, 26f), new Rect(-10f - 12f, -118f - 10f, 24f, 20f), new Rect(-60f - 14f, -15f - 11f, 28f, 22f),
+        new Rect(25f - 15f, -82f - 11f, 30f, 22f), new Rect(-78f - 18f, 45f - 16f, 36f, 32f), new Rect(-42f - 11f, 0f - 9f, 22f, 18f),
+    };
+
+    static Rect PRect(Plat p) => new Rect(p.c.x - p.half.x, p.c.y - p.half.y, p.half.x * 2f, p.half.y * 2f);
+    static Rect Inflate(Rect r, float m) => new Rect(r.x - m, r.y - m, r.width + 2f * m, r.height + 2f * m);
+    static Vector2 SideDir(int side) => side == 0 ? Vector2.right : side == 1 ? Vector2.left : side == 2 ? Vector2.up : Vector2.down;
+
+    static Rect BridgeRect(Vector2 a, Vector2 b)
+    {
+        bool alongX = Mathf.Abs(b.x - a.x) > Mathf.Abs(b.y - a.y);
+        float w = BridgeWidth * 0.5f;
+        return alongX ? new Rect(Mathf.Min(a.x, b.x), a.y - w, Mathf.Abs(b.x - a.x), BridgeWidth)
+                      : new Rect(a.x - w, Mathf.Min(a.y, b.y), BridgeWidth, Mathf.Abs(b.y - a.y));
+    }
+
+    // ¿Se enfrentan con al menos 8 m de lado común y a menos de 25 m? Puente recto entre sus bordes.
+    static bool StraightLink(Plat A, Plat B, out Vector2 from, out Vector2 to, out int sideA, out int sideB, out float along)
+    {
+        from = to = Vector2.zero; sideA = sideB = 0; along = 0f;
+        Rect a = PRect(A), b = PRect(B);
+        float ox0 = Mathf.Max(a.xMin, b.xMin), ox1 = Mathf.Min(a.xMax, b.xMax);
+        float oz0 = Mathf.Max(a.yMin, b.yMin), oz1 = Mathf.Min(a.yMax, b.yMax);
+        if (ox1 - ox0 >= BridgeWidth + 1f)   // se enfrentan en Z
+        {
+            along = (ox0 + ox1) * 0.5f;
+            // No llegar por encima de la escalera vertical (en el centro del lado +Z del área de abajo): se aparta.
+            float ladderX = a.yMax <= b.yMin ? A.c.x : B.c.x;
+            if (Mathf.Abs(along - ladderX) < BridgeWidth * 0.5f + 1f)
+            {
+                float lo = ox0 + BridgeWidth * 0.5f, hi = ox1 - BridgeWidth * 0.5f;
+                float right = ladderX + BridgeWidth * 0.5f + 1f, left = ladderX - BridgeWidth * 0.5f - 1f;
+                if (right <= hi) along = right; else if (left >= lo) along = left;
+            }
+            if (a.yMax <= b.yMin) { from = new Vector2(along, a.yMax); to = new Vector2(along, b.yMin); sideA = 2; sideB = 3; }
+            else if (b.yMax <= a.yMin) { from = new Vector2(along, a.yMin); to = new Vector2(along, b.yMax); sideA = 3; sideB = 2; }
+            else return false;
+        }
+        else if (oz1 - oz0 >= BridgeWidth + 1f)   // se enfrentan en X
+        {
+            along = (oz0 + oz1) * 0.5f;
+            if (a.xMax <= b.xMin) { from = new Vector2(a.xMax, along); to = new Vector2(b.xMin, along); sideA = 0; sideB = 1; }
+            else if (b.xMax <= a.xMin) { from = new Vector2(a.xMin, along); to = new Vector2(b.xMax, along); sideA = 1; sideB = 0; }
+            else return false;
+        }
+        else return false;
+        float gap = Vector2.Distance(from, to);
+        return gap > 0.5f && gap <= MaxBridge;
+    }
+
+    // Tablero, barandillas (con barrera invisible de 4 m) y pilares.
+    static void Bridge(Transform root, Vector3 a, Vector3 b, float width, string name)
+    {
+        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
+        Vector3 d = b - a; d.y = 0f; float len = d.magnitude; if (len < 0.1f) return;
+        Transform t = new GameObject(name).transform; t.SetParent(root, false);
+        t.position = (a + b) * 0.5f; t.rotation = Quaternion.LookRotation(d);
+        Solid(t, new Vector3(0f, -0.15f, 0f), new Vector3(width, 0.3f, len + 0.6f), woodDark, "Tablero");
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Solid(t, new Vector3(s * width * 0.5f, 1f, 0f), new Vector3(0.08f, 0.08f, len), wood, "Barandilla");
+            Transform bar = Solid(t, new Vector3(s * width * 0.5f, 2f, 0f), new Vector3(0.06f, 4f, len), wood, "Barandilla_Barrera");
+            bar.GetComponent<Renderer>().enabled = false;
+            int posts = Mathf.Max(2, Mathf.RoundToInt(len / 1.5f));
+            for (int i = 0; i <= posts; i++) KitchenProps.C(t, new Vector3(s * width * 0.5f, 0.5f, -len * 0.5f + len * i / posts), new Vector3(0.07f, 1f, 0.07f), woodDark, 0f, "Balaustre");
+            for (float z = -len * 0.5f + 2f; z < len * 0.5f - 1f; z += 6f)
+                Solid(t, new Vector3(s * (width * 0.5f - 0.3f), -a.y * 0.5f - 0.15f, z), new Vector3(0.4f, a.y, 0.4f), wood, "Pilar");
+        }
+    }
+
+    // Abre un hueco de 8 m en la barandilla del lado <side> de un área (donde llega un puente).
+    static void OpenRail(Plat p, int side, float alongWorld)
+    {
+        float centerLocal = side < 2 ? alongWorld - p.c.y : alongWorld - p.c.x;
+        OpenRailIn(p.t, p.half, side, centerLocal, BridgeWidth);
+    }
+
+    static void OpenRailPad(Transform pad, int side, float center, float width) => OpenRailIn(pad, new Vector2(PadSize, PadSize) * 0.5f, side, center, width);
+
+    static void OpenRailIn(Transform area, Vector2 half, int side, float center, float width)
+    {
+        Transform s = area.Find("Estructura_Elevada"); if (s == null) return;
+        if (!_openings.TryGetValue(area, out var list)) _openings[area] = list = new List<(int, float, float)>();
+        list.Add((side, center - width * 0.5f, center + width * 0.5f));
+        // Borra la barandilla de ese lado y la rehace con los huecos (puentes y, en +Z, la escalera).
+        float edge = side < 2 ? half.x : half.y; float sign = side % 2 == 0 ? 1f : -1f;
+        var kill = new List<GameObject>();
+        foreach (Transform c in s)
+        {
+            if (c.name != "Barandilla" && c.name != "Barandilla_Barrera" && c.name != "Balaustre") continue;
+            float perp = side < 2 ? c.localPosition.x : c.localPosition.z;
+            if (Mathf.Abs(perp - sign * edge) < 0.2f) kill.Add(c.gameObject);
+        }
+        foreach (GameObject g in kill) Object.DestroyImmediate(g);
+        float halfAlong = side < 2 ? half.y : half.x;
+        var gaps = new List<(float a, float b)>();
+        if (side == 2) gaps.Add((-0.6f, 0.6f));   // la escalera vertical
+        foreach (var o in list) if (o.side == side) gaps.Add((o.a, o.b));
+        gaps.Sort((x, y) => x.a.CompareTo(y.a));
+        float cur = -halfAlong;
+        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
+        void Seg(float a, float b)
+        {
+            if (b - a < 0.2f) return;
+            Vector3 P(float u) => side < 2 ? new Vector3(sign * edge, 0f, u) : new Vector3(u, 0f, sign * edge);
+            Vector3 from = P(a), to = P(b), mid = (from + to) * 0.5f, d = to - from;
+            Solid(s, mid + Vector3.up, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
+            Transform bar = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");
+            bar.GetComponent<Renderer>().enabled = false;
+            int posts = Mathf.Max(1, Mathf.RoundToInt(d.magnitude / 1.5f));
+            for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * 0.5f, new Vector3(0.07f, 1f, 0.07f), woodDark, 0f, "Balaustre");
+        }
+        foreach (var g in gaps) { Seg(cur, Mathf.Clamp(g.a, -halfAlong, halfAlong)); cur = Mathf.Max(cur, Mathf.Clamp(g.b, -halfAlong, halfAlong)); }
+        Seg(cur, halfAlong);
+    }
+
+    // PISTA: plataforma elevada (como las áreas) con ALFOMBRAS VOLADORAS como esterillas grandes.
+    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members)
+    {
+        Transform t = new GameObject($"Pista_Alfombras_{label}").transform; t.SetParent(root, false);
+        t.position = ground; t.rotation = rot;
+        Elevate(t, new Vector2(PadSize, PadSize), ElevatedHeight);
+        KitchenProps.C(t, new Vector3(0f, 0.02f, 0f), new Vector3(PadSize - 0.4f, 0.04f, PadSize - 0.4f), new Color(0.86f, 0.82f, 0.74f), 0f, "Suelo_pista");
+        CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
+        pad.displayName = label; pad.members = members;
+        var slots = new List<Vector3>();
+        for (int r = 0; r < 2; r++) for (int c = 0; c < 4; c++) slots.Add(new Vector3(-4.5f + c * 3f, 0.08f, -2.6f + r * 5f));
+        pad.slots = slots.ToArray();
+        Color[] colors = { new Color(0.75f, 0.2f, 0.25f), new Color(0.2f, 0.35f, 0.7f), new Color(0.85f, 0.6f, 0.15f), new Color(0.3f, 0.6f, 0.4f), new Color(0.55f, 0.3f, 0.65f), new Color(0.15f, 0.55f, 0.6f) };
+        for (int i = 0; i < 6; i++)   // 6 alfombras posadas; quedan 2 huecos para las que lleguen
+        {
+            Transform c = new GameObject($"Alfombra_{i + 1}").transform; c.SetParent(t, false);
+            c.localPosition = slots[i];
+            BoxCollider bc = c.gameObject.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.center = new Vector3(0f, 0.6f, 0f); bc.size = new Vector3(2.3f, 1.2f, 3.4f);
+            KitchenProps.C(c, Vector3.zero, new Vector3(2.2f, 0.05f, 3.2f), colors[i % colors.Length], 0f, "Tejido");
+            KitchenProps.C(c, new Vector3(0f, 0.01f, 0f), new Vector3(1.6f, 0.05f, 2.6f), new Color(0.95f, 0.85f, 0.45f), 0f, "Dibujo");
+            for (int e = -1; e <= 1; e += 2) KitchenProps.C(c, new Vector3(0f, 0.005f, e * 1.68f), new Vector3(2.1f, 0.02f, 0.16f), Color.white, 0f, "Flecos");
+            FlyingCarpet fc = c.gameObject.AddComponent<FlyingCarpet>(); fc.pad = pad;
+        }
+        WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = $"Pista de alfombras · {label}"; wl.height = 3f;
+        return t;
+    }
+}

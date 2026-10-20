@@ -302,6 +302,7 @@ public class WorkdayDirector : MonoBehaviour
         Vector3 to = AreaPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
+            if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
             if (alwaysMove && g.GetComponent<Anima>() == null) g.transform.position = Vector3.MoveTowards(g.transform.position, to, walkSpeed * 3f * Time.deltaTime);
             else PathMover.Of(g.transform).StepToward(to, walkSpeed);
         }

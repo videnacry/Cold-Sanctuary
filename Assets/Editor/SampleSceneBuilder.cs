@@ -3601,6 +3601,9 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
         CulturedMeatLab.Build(areas[5].transform, sizes[5], feeder.transform);
+        // PUENTES de 8 m entre plataformas cercanas y una PISTA de alfombras voladoras por grupo (docs/transporte-alfombras.md).
+        var allSizes = new List<Vector2>(sizes) { new Vector2(24f, 20f) };
+        BuildBridgesAndPads(areasGroup.transform, areas.ToArray(), allSizes.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
         for (int i = 0; i < sizes.Length; i++)
             SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
