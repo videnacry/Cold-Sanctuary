@@ -122,16 +122,80 @@ public class WorkdayDirector : MonoBehaviour
             if (kv.Value != null && today.work.Where(x => x.worker == kv.Key).All(x => _done.Contains(x))) { Destroy(kv.Value); _clones.Remove(kv.Key); Debug.Log($"[Jornada] {kv.Key.name} termina y se disuelve."); }
         for (int i = _initiators.Count - 1; i >= 0; i--) if (_initiators[i].go == null || h >= _initiators[i].until) { if (_initiators[i].go != null) Destroy(_initiators[i].go); _initiators.RemoveAt(i); }
 
+        if (!_placed) PlaceAtStart(h);
+        UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
         {
             GameObject g = Body(w.name);
-            if (g == null || g.CompareTag("Player")) continue;
+            if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
             string where = Where(w, h, out string doing);
             Drive(g, where, doing, Current(w, h)?.mission.id);
         }
         foreach (var kv in _clones)
-            if (kv.Value != null) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, null, alwaysMove: true); }
+            if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, null, alwaysMove: true); }
         HoldPlayer(h);
+    }
+
+    // ARRANQUE: lo primero es la asignación de itinerarios; con ella cada uno aparece YA en el área de su primer turno
+    // (como si el reloj empezara justo al comenzar la jornada). El jugador, recién llegado, sigue en la enfermería.
+    bool _placed;
+    void PlaceAtStart(float h)
+    {
+        _placed = true;
+        int n = 0;
+        foreach (WorkRoster.Worker w in roster.workers)
+        {
+            GameObject g = Body(w.name);
+            if (g == null || g.CompareTag("Player")) continue;
+            string area = Where(w, h, out _);
+            if (area == null) continue;
+            Vector3 p = AreaPoint(area, g.name); if (p == Vector3.zero) continue;
+            Teleport(g.transform, p); n++;
+        }
+        foreach (var kv in _clones) if (kv.Value != null) { string area = Where(kv.Key, h, out _); Vector3 p = area != null ? AreaPoint(area, kv.Key.name) : Vector3.zero; if (p != Vector3.zero) Teleport(kv.Value.transform, p); }
+        Debug.Log($"[Jornada] Arranque: itinerarios asignados y {n} personajes colocados en el área de su primer turno.");
+    }
+
+    public static void Teleport(Transform t, Vector3 p)
+    {
+        UnityEngine.AI.NavMeshAgent ag = t.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (ag != null && ag.enabled && ag.isOnNavMesh) { ag.Warp(p); return; }
+        CharacterController cc = t.GetComponent<CharacterController>();
+        if (cc != null) cc.enabled = false;
+        t.position = p;
+        if (cc != null) cc.enabled = true;
+    }
+
+    /// <summary>Quien hace ahora la misión <paramref name="missionId"/> (cuerpos de personas y clones de la Magnate).</summary>
+    public List<GameObject> DoingNow(string missionId, float h)
+    {
+        var l = new List<GameObject>();
+        if (today == null) return l;
+        foreach (WorkRoster.Assignment a in today.work)
+        {
+            if (a.mission.id != missionId || h < a.start || h >= a.start + a.mission.hours) continue;
+            GameObject g = a.worker.clone ? (_clones.TryGetValue(a.worker, out GameObject c) ? c : null) : Body(a.worker.name);
+            if (g != null && !g.CompareTag("Player")) l.Add(g);
+        }
+        return l;
+    }
+
+    /// <summary>Los guardias de iniciación de ahora (misión «Vigilar a los recién llegados»).</summary>
+    public List<GameObject> InitiationGuardsNow() => TC != null ? DoingNow("gua_recienllegados", TC.Hour) : new List<GameObject>();
+
+    // INICIADOR: quien tenga ahora la misión de iniciación lanza «iniciar» sobre los recién llegados.
+    void UpdateInitiator(float h)
+    {
+        List<GameObject> who = DoingNow("enf_iniciacion", h);
+        NewcomerInitiator.Current = who.Count > 0 ? who[0].GetOrAdd<NewcomerInitiator>() : null;
+    }
+
+    // Personajes que su misión mueve por sí misma ahora (el iniciador con un recién llegado, los guardias de iniciación).
+    static bool OnOwnDuty(GameObject g)
+    {
+        NewcomerInitiator ni = g.GetComponent<NewcomerInitiator>();
+        if (ni != null && ni.Busy) return true;
+        return InfirmaryGate.IsWarden(g);
     }
 
     // EL JUGADOR TAMBIÉN ESTÁ BLOQUEADO durante la jornada: si sale del área de lo que le toca (trabajo, comida o

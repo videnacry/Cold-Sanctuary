@@ -21,10 +21,8 @@ public class Linduarda : MonoBehaviour
     Anima _a;
     VaccinateSpell _vax;
     ClinicalAnalysisSpell _analysis;
-    FollowSpell _follow;
     float _next;
     HealthRecord _patient;
-    SanctuaryOnboarding _initiate;
 
     void Awake()
     {
@@ -32,7 +30,7 @@ public class Linduarda : MonoBehaviour
         MobWorldLoader.Exited += OnBackFromMicro;
         _vax = this.GetOrAdd<VaccinateSpell>();
         _analysis = this.GetOrAdd<ClinicalAnalysisSpell>();
-        _follow = this.GetOrAdd<FollowSpell>();
+        NewcomerInitiator.Fallback = this.GetOrAdd<NewcomerInitiator>();   // fuera de la jornada, la iniciación la hace ella
         _next = Time.time + 1f;   // al empezar el juego lanza el status global enseguida
     }
 
@@ -54,30 +52,8 @@ public class Linduarda : MonoBehaviour
     {
         if (_a == null || _a.death) return;
         if (_sample != null) { CarrySample(); return; }   // llevando la muestra al analizador
-        if (_initiate != null) { Initiate(); return; }   // llevando a un recién llegado al Micro: prioridad
         if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
-        else AccompanyNewcomer();
-    }
-
-    // ACOMPAÑAR al recién llegado que ya está curado pero aún no ha hecho su primera virtualización: Linduarda no lo
-    // deja solo (lo sigue por la enfermería) y le RECUERDA qué tiene que hacer cada cierto tiempo, hasta que lo haga.
-    float _nextReminder;
-    void AccompanyNewcomer()
-    {
-        SanctuaryOnboarding o = null;
-        foreach (SanctuaryOnboarding x in SceneCache.All<SanctuaryOnboarding>(0.5f))
-            if (x != null && x.initiated && !x.apt) { o = x; break; }
-        if (o == null) return;
-        Vector3 to = o.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach + 0.8f) PathMover.Of(this).StepToward(o.transform.position, moveSpeed);
-        if (Time.time < _nextReminder || o.GetComponent<PlayerController>() == null) return;
-        _nextReminder = Time.time + 25f;
-        if (virtualizationMachine == null) virtualizationMachine = FindObjectOfType<VirtualizationMachine>();
-        string spell = virtualizationMachine != null ? $"virtualize({{destiny:\"{virtualizationMachine.areaName}\"}})" : "virtualize";
-        LessonPrompt.Show("Linduarda: aún te falta tu primera virtualización. Ven al tanque, ponte la máscara y entra.", spell, 20f);
-        SpellConsole.Propose(spell, "Linduarda te espera en el tanque", 25f);
-        Debug.Log("[Linduarda] recuerda al recién llegado que le falta su primera virtualización (lo acompaña por la enfermería).");
     }
 
     // MUESTRAS: Linduarda extrae sangre (un tubo de ensayo en su mano) y la lleva al analizador clínico de la enfermería.
@@ -102,31 +78,6 @@ public class Linduarda : MonoBehaviour
         if (to.magnitude > reach) { PathMover.Of(this).StepToward(st.transform.position, moveSpeed); return; }
         Destroy(_sample.gameObject); _sample = null;
         Debug.Log($"[Clínico] Linduarda analiza la muestra de «{_sampleOf}» en el analizador: apto para seguir (falta la vacuna).");
-    }
-
-    // INICIACIÓN: tras curar a un recién llegado, lo lleva a la máquina de virtualización y lo envía al Microcosmos.
-    // (Parte de su pensamiento de salud: analizar → mientras se procesa, iniciarlo en el Micro.) Usa FollowSpell para guiarlo.
-    void Initiate()
-    {
-        Anima t = _initiate.GetComponentInParent<Anima>();
-        if (virtualizationMachine == null) virtualizationMachine = FindObjectOfType<VirtualizationMachine>();
-        if (t == null || virtualizationMachine == null) { _initiate.initiated = true; _initiate = null; return; }
-
-        Vector3 to = virtualizationMachine.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { PathMover.Of(this).StepToward(virtualizationMachine.transform.position, moveSpeed); return; }  // la doctora va a la máquina (el nuevo la sigue) andando, no en línea recta
-
-        Debug.Log($"[Linduarda] inicia a «{t.name}»: le explica el tanque de virtualización (máscara, entrar al agua) y lo envía al Microcosmos por primera vez.");
-        if (t.GetComponent<PlayerController>() != null)
-        {
-            // El JUGADOR lo hace él: se le pide y se le propone el hechizo (o F en la máquina).
-            string spell = $"virtualize({{destiny:\"{virtualizationMachine.areaName}\"}})";
-            LessonPrompt.Show("Linduarda: ponte la máscara y entra al tanque de virtualización", spell, 40f);
-            SpellConsole.Propose(spell, "Linduarda te pide entrar al tanque", 60f);
-        }
-        else if (virtualizationMachine.CanInteract) virtualizationMachine.Interact();
-        FollowSpell.Stop(t);
-        _initiate.initiated = true;
-        _initiate = null;
     }
 
     // Segundo impulso de la doctora: CERTIFICAR APTO a quien ya está sano y completó sus 3 misiones introductorias.
@@ -171,13 +122,7 @@ public class Linduarda : MonoBehaviour
         if (!_patient.NeedsCare)
         {
             Debug.Log($"[Linduarda] atendió a «{_patient.name}» (vacunado + analizado).");
-            // Si es un recién llegado sin iniciar, nace la iniciación: lo hace seguirla a la máquina de virtualización.
-            SanctuaryOnboarding onb = _patient.GetComponent<SanctuaryOnboarding>();
-            if (onb != null && !onb.initiated)
-            {
-                _initiate = onb;
-                if (it != null) _follow.Cast(_a, it);   // «sígueme»
-            }
+            // Si es un recién llegado, sigue su INICIACIÓN quien tenga hoy esa misión (NewcomerInitiator), no siempre ella.
             _patient = null;
         }
     }
