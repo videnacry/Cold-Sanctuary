@@ -31,15 +31,10 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(rack, new Vector3(-1.3f + i * 0.52f, -0.18f, 0f), new Vector3(0.01f, 0.3f, 0.01f), copper, 0f, "Gancho");
             KitchenProps.C(rack, new Vector3(-1.3f + i * 0.52f, -0.42f, 0f), new Vector3(0.24f, 0.16f, 0.24f), copper, 0f, "Cazo_cobre");
         }
-        // Pase de emplatado: lámparas de calor rojizas y el riel de comandas.
+        // Pase de emplatado: el riel de comandas (sin lámparas colgadas: no hay techo).
         Transform pass = room.Find("Barra de servicio");
         if (pass != null)
         {
-            for (int i = 0; i < 4; i++)
-            {
-                Transform l = KitchenProps.C(pass, new Vector3(-1.8f + i * 1.2f, 1.75f, 0.15f), new Vector3(0.35f, 0.08f, 0.35f), brass, 0f, "Lampara_calor");
-                KitchenProps.C(l, new Vector3(0f, -0.6f, 0f), new Vector3(0.8f, 0.2f, 0.8f), new Color(1f, 0.45f, 0.2f), 0f, "Luz_calor");
-            }
             KitchenProps.C(pass, new Vector3(0f, 1.45f, 0.45f), new Vector3(4.6f, 0.03f, 0.03f), KitchenProps.Steel, 0f, "Riel_comandas");
             for (int i = 0; i < 5; i++) KitchenProps.C(pass, new Vector3(-1.8f + i * 0.9f, 1.36f, 0.45f), new Vector3(0.1f, 0.15f, 0.005f), Color.white, 0f, "Comanda");
         }
@@ -100,10 +95,6 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(t, new Vector3(0f, 0.94f, 0f), new Vector3(0.02f, 0.04f, 0.02f), new Color(1f, 0.75f, 0.3f), 0f, "Llama_vela");
                 KitchenProps.C(t, new Vector3(0.18f, 0.84f, 0.12f), new Vector3(0.06f, 0.12f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.4f), 0f, "Florero");
                 KitchenProps.C(t, new Vector3(0.18f, 0.93f, 0.12f), new Vector3(0.09f, 0.07f, 0.09f), new Color(0.95f, 0.85f, 0.9f), 0f, "Flor");
-                Transform lamp = KitchenProps.Root(r, $"Lampara_mesa_{n + 1}", t.localPosition + new Vector3(0f, 2.4f, 0f));
-                KitchenProps.C(lamp, new Vector3(0f, 0.5f, 0f), new Vector3(0.01f, 1f, 0.01f), KitchenProps.Black);
-                KitchenProps.C(lamp, Vector3.zero, new Vector3(0.35f, 0.2f, 0.35f), gold, 0f, "Pantalla");
-                KitchenProps.C(lamp, new Vector3(0f, -0.12f, 0f), new Vector3(0.12f, 0.05f, 0.12f), new Color(1f, 0.9f, 0.65f), 0f, "Bombilla");
             }
         // Pared de vinos al fondo y plantas en las esquinas.
         Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -13f), 90f);   // en el lateral del fondo (delante queda la entrada)

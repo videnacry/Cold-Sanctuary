@@ -132,11 +132,6 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(wb, new Vector3(0f, 0.2f, 0.55f), new Vector3(0.1f, 0.35f, 0.35f), CDark, 0f, "Rueda");
             for (int s = -1; s <= 1; s += 2) KitchenProps.C(wb, new Vector3(s * 0.25f, 0.45f, -0.55f), new Vector3(0.04f, 0.04f, 0.7f), CSteel, 0f, "Mango");
         }
-        Transform tickets = CPiece(r, "Pizarra_avisos", new Vector3(1.0f, 0f, hz - 1.0f), 180f);
-        KitchenProps.C(tickets, new Vector3(0f, 0.8f, 0f), new Vector3(0.06f, 1.6f, 0.06f), CDark, 0f, "Pie");
-        KitchenProps.C(tickets, new Vector3(0f, 1.6f, 0f), new Vector3(1.4f, 0.9f, 0.04f), new Color(0.15f, 0.25f, 0.2f), 0f, "Pizarra");
-        for (int i = 0; i < 4; i++) KitchenProps.C(tickets, new Vector3(-0.45f + i * 0.3f, 1.65f, -0.03f), new Vector3(0.2f, 0.25f, 0.005f), i == 0 ? new Color(1f, 0.85f, 0.4f) : Color.white, 0f, "Aviso");
-        CLabel(tickets, "Avisos de reparación (tuberías, luz, puertas, ventanas, tejados)", 2.3f);
         // Conos y casco del jefe de obra.
         for (int i = 0; i < 3; i++) KitchenProps.C(r, new Vector3(-hx + 0.6f + i * 0.6f, 0.2f, hz - 0.8f), new Vector3(0.25f, 0.4f, 0.25f), COrange, 45f, "Cono");
         KitchenProps.C(r, new Vector3(-0.8f, KitchenProps.CounterTop + 0.08f, hz - 2.6f), new Vector3(0.28f, 0.14f, 0.3f), CYellow, 0f, "Casco");

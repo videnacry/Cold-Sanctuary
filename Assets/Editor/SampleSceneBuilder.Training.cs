@@ -20,18 +20,19 @@ public static partial class SampleSceneBuilder
         Transform r = new GameObject("Gimnasio").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(size.x - 0.4f, 0.02f, size.y - 0.4f), TRubber, 0f, "Suelo_caucho");
-        // Espejos (pared del fondo) y cuadros de gorilas (laterales): el gorila, símbolo de fuerza tranquila.
-        for (int i = 0; i < 6; i++) KitchenProps.C(r, new Vector3(-hx + 1.8f + i * 3.4f, 1.3f, -hz + 0.25f), new Vector3(3.2f, 2f, 0.03f), new Color(0.75f, 0.85f, 0.9f), 0f, "Espejo");
+        // Sin espejos ni cuadros (no hay paredes): el gorila, símbolo de fuerza tranquila, está en ESTATUAS de cubos sobre
+        // un pedestal, a los lados de la sala.
+        Color fur = new Color(0.15f, 0.15f, 0.16f), skin = new Color(0.35f, 0.3f, 0.28f), stone = new Color(0.8f, 0.78f, 0.74f);
         for (int s = -1; s <= 1; s += 2)
             for (int i = 0; i < 3; i++)
             {
-                Transform pic = KitchenProps.Root(r, "Cuadro_gorila", new Vector3(s * (hx - 0.25f), 1.6f, -hz + 3f + i * 4.5f), s * -90f);
-                KitchenProps.C(pic, Vector3.zero, new Vector3(1.4f, 1.1f, 0.04f), new Color(0.85f, 0.8f, 0.7f), 0f, "Marco");
-                KitchenProps.C(pic, new Vector3(0f, -0.15f, -0.03f), new Vector3(0.7f, 0.5f, 0.02f), new Color(0.15f, 0.15f, 0.16f), 0f, "Gorila_cuerpo");
-                KitchenProps.C(pic, new Vector3(0f, 0.22f, -0.03f), new Vector3(0.32f, 0.3f, 0.02f), new Color(0.15f, 0.15f, 0.16f), 0f, "Gorila_cabeza");
-                KitchenProps.C(pic, new Vector3(0f, 0.2f, -0.04f), new Vector3(0.2f, 0.12f, 0.01f), new Color(0.35f, 0.3f, 0.28f), 0f, "Gorila_cara");
-                for (int a = -1; a <= 1; a += 2) KitchenProps.C(pic, new Vector3(a * 0.42f, -0.2f, -0.03f), new Vector3(0.16f, 0.5f, 0.02f), new Color(0.15f, 0.15f, 0.16f), a * 12f, "Gorila_brazo");
-                WorldLabel gl = pic.gameObject.AddComponent<WorldLabel>(); gl.text = "Gorila"; gl.height = 0.8f;
+                Transform g = KitchenProps.Root(r, "Estatua_gorila", new Vector3(s * (hx - 0.8f), 0f, -hz + 3f + i * 4.5f), s * -90f);
+                KitchenProps.C(g, new Vector3(0f, 0.25f, 0f), new Vector3(0.9f, 0.5f, 0.9f), stone, 0f, "Pedestal");
+                KitchenProps.C(g, new Vector3(0f, 0.95f, 0f), new Vector3(0.7f, 0.9f, 0.55f), fur, 0f, "Gorila_cuerpo");
+                KitchenProps.C(g, new Vector3(0f, 1.6f, -0.08f), new Vector3(0.36f, 0.36f, 0.34f), fur, 0f, "Gorila_cabeza");
+                KitchenProps.C(g, new Vector3(0f, 1.56f, -0.26f), new Vector3(0.22f, 0.16f, 0.04f), skin, 0f, "Gorila_cara");
+                for (int a = -1; a <= 1; a += 2) KitchenProps.C(g, new Vector3(a * 0.45f, 0.85f, -0.05f), new Vector3(0.2f, 0.8f, 0.2f), fur, a * 10f, "Gorila_brazo");
+                WorldLabel gl = g.gameObject.AddComponent<WorldLabel>(); gl.text = "Gorila"; gl.height = 2.1f;
             }
 
         // 10 tipos de máquina (grupo muscular) × 3: filas de 6, en la mitad izquierda; la derecha queda LIBRE.

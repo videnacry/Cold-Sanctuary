@@ -99,8 +99,11 @@ Las marcadas con * son obligatorias cada día.
 ## Máquina de virtualización (y de simulación)
 
 Al usarla se elige:
-1. **Virtualización**: las misiones de trabajo del área. Practicarla la registra y aplica su efecto; por ejemplo, la obra avanza.
+1. **Virtualización**: las misiones de trabajo del área. Cada misión tiene **su propia escena** (`Virtual_<clave>`, menú «Build escenas de virtualización»): se recorren sus pasos en orden (puestos numerados, F) y al terminar se registra y aplica su efecto; por ejemplo, la obra avanza.
 2. **Simulación**: el microcosmos del área (lo de siempre).
+3. **Misiones de otras áreas**: todas las del catálogo son accesibles desde cualquier máquina (laboratorio, gimnasio, obra y guardia no tienen máquina propia).
+
+La misión de la **Enfermería** es **iniciar a un turista**: recibirlo, análisis, vacuna, explicarle las normas y acompañarlo a su primera virtualización; el turista te sigue por la escena.
 
 ## Pendiente
 

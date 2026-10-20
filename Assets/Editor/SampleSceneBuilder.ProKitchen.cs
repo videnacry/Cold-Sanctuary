@@ -54,14 +54,8 @@ public static partial class SampleSceneBuilder
         Eq(room, "marmita a presión", new Vector3(10.9f, 0f, -3.1f), 90f);
         Eq(room, "marmita", new Vector3(10.9f, 0f, -4.6f), 90f);
 
-        // La despensa/obrador que planifica las elaboraciones (yogur, quesos, masas…) y su pizarra de estado.
+        // La despensa/obrador que planifica las elaboraciones (yogur, quesos, masas…).
         room.gameObject.AddComponent<KitchenLarder>();
-        Transform board = KitchenProps.Root(room, "Pizarra_Carta", new Vector3(0f, 0f, -7.9f), 180f);
-        KitchenProps.C(board, new Vector3(0f, 1.9f, 0f), new Vector3(3.4f, 1.6f, 0.06f), new Color(0.12f, 0.13f, 0.12f), 0f, "Pizarra");
-        KitchenProps.C(board, new Vector3(0f, 1.9f, 0.04f), new Vector3(3.55f, 1.75f, 0.03f), EqWood, 0f, "Marco");
-        var sb = new System.Text.StringBuilder("CARTA\n");
-        foreach (Gastronomy.Dish d in Gastronomy.Menu) sb.Append(d.name).Append(" · ");
-        board.gameObject.AddComponent<WorldLabel>().text = sb.ToString();
     }
 
     /// <summary>Una máquina del recetario: cuerpo con su silueta propia, detalles y cartel.</summary>

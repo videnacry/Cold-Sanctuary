@@ -73,7 +73,7 @@ public class SpellConsole : MonoBehaviour
     void ResetSteps() { _spell = null; _paramDefs.Clear(); _given.Clear(); _paramIdx = 0; _sel = -1; }
 
     /// <summary>Como si se escribiera <paramref name="text"/> y se pulsara Intro (pruebas del lanzador por pasos).</summary>
-    public void Enter(string text) { _open = true; _input = text ?? ""; Submit(); }
+    public void Enter(string text) { _open = true; _input = text ?? ""; _sel = -1; Submit(); }
     /// <summary>El hechizo elegido en el paso 1 (null si aún no hay) y el parámetro que se pide ahora.</summary>
     public string PendingSpell => _spell;
     public string PendingParam => _spell != null && _paramIdx < _paramDefs.Count ? _paramDefs[_paramIdx].key : null;
@@ -82,15 +82,15 @@ public class SpellConsole : MonoBehaviour
     void MoveSelection(int d)
     {
         if (_choices.Count == 0) return;
-        _sel = (_sel + d + _choices.Count) % _choices.Count;
-        _input = _choices[_sel];
-        _moveCaret = true;
+        _sel = (_sel + d + _choices.Count) % _choices.Count;   // solo mueve la SELECCIÓN: lo escrito no cambia (ni las sugerencias que filtra)
     }
     bool _moveCaret;
+    string _typed = "";
 
     void Submit()
     {
-        string line = (_input ?? "").Replace("`", "").Replace("~", "").Trim();
+        // Si se eligió una sugerencia con ↑/↓, Intro toma ESA (lo escrito solo sirve para filtrar las sugerencias).
+        string line = (_sel >= 0 && _sel < _choices.Count ? _choices[_sel] : (_input ?? "")).Replace("`", "").Replace("~", "").Trim();
         _input = ""; _sel = -1;
 
         if (_spell == null)
@@ -334,6 +334,7 @@ public class SpellConsole : MonoBehaviour
         }
         GUI.SetNextControlName("spellInput");
         _input = GUI.TextField(new Rect(x, y + 30f, w, h), _input);
+        if (_input != _typed) { _typed = _input; _sel = -1; }   // al escribir, la selección vuelve a la primera sugerencia
         GUI.FocusControl("spellInput");
         if (_moveCaret) { _moveCaret = false; var te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl); if (te != null) { te.text = _input; te.MoveTextEnd(); } }
 
@@ -360,8 +361,7 @@ public class SpellConsole : MonoBehaviour
         else if (_paramIdx < _paramDefs.Count)
         {
             var pd = _paramDefs[_paramIdx];
-            bool browsing = _sel >= 0 && _sel < _choices.Count && _input == _choices[_sel];
-            foreach (string s in ValueSuggestions(pd.key, pd.def, browsing ? "" : _input.Trim())) { _choices.Add(s); rows.Add(s); }
+            foreach (string s in ValueSuggestions(pd.key, pd.def, _input.Trim())) { _choices.Add(s); rows.Add(s); }
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && _choices.Count > 0) { _input = _choices[Mathf.Max(0, _sel)]; _moveCaret = true; e.Use(); }
         }
         if (_sel >= _choices.Count) _sel = -1;

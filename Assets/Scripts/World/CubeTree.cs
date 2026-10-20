@@ -21,7 +21,7 @@ public static class CubeTree
         return cache;
     }
 
-    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true)
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null)
     {
         // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
         // guardián, de 83 m, ya tiene su altura fijada y no se escala).
@@ -78,6 +78,19 @@ public static class CubeTree
                 Vector3 p = new Vector3(0f, y + R(-0.6f, 0.6f), 0f);
                 int segs = 3;
                 float segLen = reach / segs;
+                // Si la rama chocaría con una construcción (cabaña, puente, plataforma: `blocked`, en coordenadas de mundo), se
+                // gira buscando un hueco libre; si no lo hay, ese árbol no echa esa rama (no debe cerrar el paso).
+                if (blocked != null)
+                {
+                    bool ok = false;
+                    for (int tryN = 0; tryN < 8 && !ok; tryN++)
+                    {
+                        float yy = yaw + tryN * 45f;
+                        ok = !BranchHits(root.transform, p, yy, pitch, segLen, segs, blocked);
+                        if (ok) yaw = yy;
+                    }
+                    if (!ok) continue;
+                }
                 float thick = Mathf.Lerp(0.7f, 0.45f, tf) * Mathf.Max(0.5f, girth);
                 for (int s = 0; s < segs; s++)
                 {
@@ -176,6 +189,18 @@ public static class CubeTree
         Block(root.transform, "Propoleo", new Vector3(0f, floorY - wall * 0.5f - 0.005f, 0f), new Vector3(hole + 0.06f, 0.01f, hole + 0.06f), Quaternion.identity, prop, false);   // borde de propóleo de la piquera
         root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
+    // ¿Algún punto de la rama (cadena de segmentos y su plataforma de la punta, con margen) cae en zona bloqueada?
+    static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)
+    {
+        for (int s = 0; s < segs; s++)
+        {
+            Vector3 dir = Quaternion.Euler(-pitch + s * 9f, yaw, 0f) * Vector3.forward;
+            for (int k = 1; k <= 3; k++) if (blocked(root.TransformPoint(p + dir * segLen * k / 3f))) return true;
+            p += dir * segLen;
+        }
+        return blocked(root.TransformPoint(p + Vector3.up * 0.8f)) || blocked(root.TransformPoint(p + Vector3.up * 1.6f));   // posadero y escarcha
+    }
+
     static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);

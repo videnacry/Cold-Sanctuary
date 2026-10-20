@@ -2741,12 +2741,6 @@ public static partial class SampleSceneBuilder
         island.gameObject.AddComponent<WorldLabel>().text = "Mesa de emplatado";
         for (int s = 0; s < 3; s++)
             for (int p = 0; p < 4; p++) KitchenProps.Plate(island, "Plato", new Vector3(-1.6f + s * 1.6f, KitchenProps.CounterTop + p * 0.018f, 0.3f));
-        for (int l = 0; l < 3; l++)   // lámparas colgantes sobre la isla
-        {
-            Transform lamp = KitchenProps.Root(room, "Lampara", new Vector3(0f + l * 1.5f, 2.6f, -2.6f));
-            KitchenProps.C(lamp, Vector3.up * 0.5f, new Vector3(0.01f, 1f, 0.01f), KitchenProps.Black);
-            KitchenProps.C(lamp, Vector3.zero, new Vector3(0.3f, 0.18f, 0.3f), new Color(0.98f, 0.92f, 0.7f));
-        }
 
         // ── Barra de servicio (junto a la entrada) con los contenedores del stock ──
         Transform pass = KitchenProps.CounterRun(room, "Barra de servicio", new Vector3(4.5f, 0f, -5.2f), 5f, 180f);
