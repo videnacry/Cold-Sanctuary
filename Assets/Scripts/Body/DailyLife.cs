@@ -34,6 +34,10 @@ public static class DailyPoses
         (BodyPart.ShoulderLeft, new Vector3(-40, 0, 0)), (BodyPart.ShoulderRight, new Vector3(-40, 0, 0)), (BodyPart.ForearmLeft, new Vector3(-50, 0, 0)), (BodyPart.ForearmRight, new Vector3(-50, 0, 0)));
     /// <summary>Tumbado boca arriba (en la cama).</summary>
     public static AsanaPoseSpell Lie() => Make("tumbado", 0.12f, (BodyPart.Hips, new Vector3(-90, 0, 0)));
+    /// <summary>Meditación (piernas cruzadas, espalda recta, manos en el regazo): Sadhguru en la plataforma en su tiempo libre.</summary>
+    public static AsanaPoseSpell Meditate() => Make("meditación", 0.5f, (BodyPart.ThighLeft, new Vector3(-80, 0, 38)), (BodyPart.ThighRight, new Vector3(-80, 0, -38)),
+        (BodyPart.ShinLeft, new Vector3(140, 0, 0)), (BodyPart.ShinRight, new Vector3(140, 0, 0)),
+        (BodyPart.ShoulderLeft, new Vector3(-20, 0, 8)), (BodyPart.ShoulderRight, new Vector3(-20, 0, -8)), (BodyPart.ForearmLeft, new Vector3(-60, 0, -30)), (BodyPart.ForearmRight, new Vector3(-60, 0, 30)));
     /// <summary>De pie (deshace sentarse o tumbarse).</summary>
     public static AsanaPoseSpell Stand() => Make("de pie", -1f);
 }

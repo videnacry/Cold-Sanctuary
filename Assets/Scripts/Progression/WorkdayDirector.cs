@@ -212,12 +212,14 @@ public class WorkdayDirector : MonoBehaviour
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (area == null)
         {
+            if (g.name == "Sadhguru") { if (idle != null) idle.enabled = false; SadhguruMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
             if (idle != null && !idle.enabled) idle.enabled = true;   // libre
             SetStatus(g, null);
             return;
         }
         SetStatus(g, doing);
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) return;   // su conducta propia hace ESTA misión
+        if (YogaClass(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         Vector3 to = AreaPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
@@ -225,6 +227,46 @@ public class WorkdayDirector : MonoBehaviour
             if (alwaysMove && g.GetComponent<Anima>() == null) g.transform.position = Vector3.MoveTowards(g.transform.position, to, walkSpeed * 3f * Time.deltaTime);
             else PathMover.Of(g.transform).StepToward(to, walkSpeed);
         }
+    }
+
+    // ── SALA DE YOGA ─────────────────────────────────────────────────────────────────────────────
+    // La CLASE (misión de grupo): el guía hace la secuencia en la plataforma central, el demostrador la hace entre los
+    // alumnos y los correctores van de esterilla en esterilla. En su tiempo libre, SADHGURU medita en la plataforma,
+    // inmóvil como una estatua más.
+    static Transform _yogaRoom;
+    static Vector3 YogaPoint(Vector3 local)
+    {
+        if (_yogaRoom == null) { GameObject y = GameObject.Find("YogaRoom_Area"); _yogaRoom = y != null ? y.transform : null; }
+        return _yogaRoom != null ? _yogaRoom.TransformPoint(local) : Vector3.zero;
+    }
+
+    /// <summary>Si la misión es de la clase de yoga, coloca al personaje en su papel; true = ya lo maneja.</summary>
+    bool YogaClass(GameObject g, string missionId)
+    {
+        if (missionId == null || !missionId.StartsWith("yog_") || missionId == "yog_sala" || missionId == "yog_aseos") return false;
+        Vector3 to = missionId == "yog_guia" ? YogaPoint(new Vector3(0f, 0.6f, 0f))
+                   : missionId == "yog_demo" ? YogaPoint(new Vector3(0f, 0.2f, -3.4f * 0.82f))
+                   : YogaPoint(new Vector3(Mathf.Cos(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 4.4f, 0.2f, Mathf.Sin(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 3.6f));   // los correctores rondan entre los anillos
+        if ((g.transform.position - to).sqrMagnitude > 1f) { PathMover.Of(g.transform).StepToward(to, walkSpeed); return true; }
+        if (missionId == "yog_guia" || missionId == "yog_demo")
+        {
+            Vector3 face = YogaPoint(Vector3.zero) - g.transform.position; face.y = 0f;
+            if (missionId == "yog_demo" && face.sqrMagnitude > 0.01f) g.transform.rotation = Quaternion.LookRotation(face);
+            ActionQueue q = g.GetComponent<ActionQueue>();
+            if (q != null && q.Own.Count == 0) foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueueOwn(s);   // la secuencia, a la perfección
+        }
+        return true;
+    }
+
+    void SadhguruMeditates(GameObject g)
+    {
+        Anima me = g.GetComponent<Anima>(); ActionQueue mq = g.GetComponent<ActionQueue>();
+        if (me == null || me.asleep || (mq != null && mq.Own.Count > 0)) return;   // comer, el baño y dormir van antes
+        Vector3 to = YogaPoint(new Vector3(0f, 0.6f, 0f));
+        if ((g.transform.position - to).sqrMagnitude > 1f) { PathMover.Of(g.transform).StepToward(to, walkSpeed); return; }
+        Anima a = g.GetComponent<Anima>();
+        if (a != null) DailyPoses.Meditate().ApplyFinal(a);
+        g.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 2f);   // ojos cerrados
     }
 
     static readonly Dictionary<GameObject, string> _baseLabel = new Dictionary<GameObject, string>();

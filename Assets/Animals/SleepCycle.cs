@@ -31,7 +31,25 @@ public class SleepCycle : MonoBehaviour
 
     void Awake() => _animal = GetComponent<Animal>();
 
-    void Update() { if (!Suspended) Evaluate(); }
+    void Update() { if (!Suspended && !GoingToRest()) Evaluate(); }
+
+    // A DORMIR A SU SITIO: al caer su hora de descanso, antes de dormirse vuelve a su nido/hogar (HomeOrigin); si en un
+    // rato no llega, se acomoda donde esté (un sitio cercano). Los marinos (MarineLife) y los insectos (la colmena) tienen
+    // su propia forma de descansar.
+    float _restTry = -1f, _nextGo;
+    bool GoingToRest()
+    {
+        if (_animal == null || _animal.death || _animal.asleep || _animal.aware) { _restTry = -1f; return false; }
+        TimeController tc = TimeController.timeController;
+        bool night = tc != null && !tc.IsDay;
+        bool restTime = nocturnal ? !night : night;
+        if (!restTime || GetComponent<MarineLife>() != null || GetComponent<IceInsectLife>() != null) { _restTry = -1f; return false; }
+        if (_restTry < 0f) _restTry = Time.time;
+        Vector3 home = _animal.HomeOrigin; Vector3 d = home - transform.position; d.y = 0f;
+        if (d.magnitude < 6f || Time.time - _restTry > 90f) return false;   // ya en su nido (o se acomoda aquí)
+        if (Time.time >= _nextGo && _animal.Loco != null) { _nextGo = Time.time + 3f; _animal.Loco.GoTo(home); }
+        return true;
+    }
 
     /// <summary>Decide dormir/despertar por el reloj del día. Público y determinista (el test lo llama directo).</summary>
     public void Evaluate()

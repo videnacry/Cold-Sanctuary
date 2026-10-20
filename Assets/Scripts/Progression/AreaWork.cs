@@ -11,6 +11,7 @@ public static class AreaWork
     public const string Guard = "Guardia";   // no es un SanctuaryArea: la torre y los puestos de vigía
 
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
+    static WorkRoster.Mission G(string area, string id, string title, string group) => new WorkRoster.Mission(area, id, title, 1f, true) { group = group };   // misión de grupo (a la vez)
 
     /// <summary>Misiones fijas de cada área (sin las de obras, que dependen de qué obras haya abiertas).</summary>
     public static readonly WorkRoster.Mission[] Catalog =
@@ -26,7 +27,11 @@ public static class AreaWork
         M("Huerto", "hue_riego", "Riego y deshierbe de los huertos", 2f, true),
         M("Huerto", "hue_cosecha", "Cosecha para la cocina", 1f),
         M("Huerto", "hue_visitantes", "Alimentar a los visitantes del huerto", 1f),
-        M("Sala de Yoga", "yog_clase", "Clase de yoga para turistas", 1f, true),
+        G("Sala de Yoga", "yog_guia", "Clase de yoga: guiar desde la plataforma central (objetivo 1)", "clase_yoga"),
+        G("Sala de Yoga", "yog_demo", "Clase de yoga: demostrar entre los alumnos (objetivo 2)", "clase_yoga"),
+        G("Sala de Yoga", "yog_corrige_1", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
+        G("Sala de Yoga", "yog_corrige_2", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
+        M("Cocina", "coc_atender", "Atender a los comensales en la barra (servir los pedidos)", 2f, true),
         M("Sala de Yoga", "yog_sala", "Preparar y limpiar la sala de yoga", 1f),
         M("Mecánica", "mec_vehiculos", "Mantenimiento de vehículos", 2f),
         M("Mecánica", "mec_maquinas", "Reparar maquinaria de las áreas", 1f),

@@ -16,20 +16,23 @@ public static partial class SampleSceneBuilder
 
     static void ProKitchen(Transform room)
     {
-        // ── Dentro, pared este (de cara al oeste) ──
-        Eq(room, "horno mixto", new Vector3(9.0f, 0f, 5.0f), 90f);
-        Eq(room, "horno de pizza (eléctrico)", new Vector3(9.0f, 0f, 3.3f), 90f);
-        Eq(room, "arrocera", new Vector3(9.0f, 0f, 1.9f), 90f);
-        Eq(room, "vaporera", new Vector3(9.0f, 0f, 1.0f), 90f);
-        Eq(room, "batidora planetaria", new Vector3(9.0f, 0f, -0.1f), 90f);
-        Eq(room, "amasadora espiral", new Vector3(9.0f, 0f, -1.3f), 90f);
-        Eq(room, "laminadora de pasta", new Vector3(9.0f, 0f, -2.7f), 90f);
-        // ── Isla de fuego (inducción: aquí todo es eléctrico y solar) ──
-        Eq(room, "wok de inducción", new Vector3(-7.2f, 0f, 3.6f), 0f);
-        Eq(room, "paellero de inducción", new Vector3(-6.0f, 0f, 3.6f), 0f);
-        Eq(room, "trompo vertical (inducción)", new Vector3(-4.8f, 0f, 3.6f), 0f);
-        Eq(room, "fogón de inducción", new Vector3(-3.6f, 0f, 3.6f), 0f);
-        Eq(room, "comal", new Vector3(-2.5f, 0f, 3.6f), 0f);
+        // ── En cada PUESTO del borde, dos máquinas a sus lados (el cocinero elabora y cocina en su sitio) ──
+        string[][] perStation =
+        {
+            new[] { "horno mixto", "batidora planetaria" }, new[] { "horno de pizza (eléctrico)", "amasadora espiral" },
+            new[] { "wok de inducción", "arrocera" }, new[] { "laminadora de pasta", "vaporera" },
+            new[] { "paellero de inducción", "trompo vertical (inducción)" }, new[] { "fogón de inducción", "comal" },
+        };
+        for (int i = 0; i < perStation.Length; i++)
+        {
+            Transform st = room.Find($"Puesto_{i + 1}");
+            if (st == null) continue;
+            for (int k = 0; k < 2; k++)
+            {
+                Vector3 local = room.InverseTransformPoint(st.TransformPoint(new Vector3(k == 0 ? -2.1f : 2.15f, 0f, 0f)));
+                Eq(room, perStation[i][k], new Vector3(local.x, 0f, local.z), st.localEulerAngles.y);
+            }
+        }
         // ── De cara al público (cocina abierta) ──
         Eq(room, "barra de sushi", new Vector3(-5.6f, 0f, -6.4f), 180f);
         Eq(room, "cafetera espresso", new Vector3(-3.0f, 0f, -6.4f), 180f);

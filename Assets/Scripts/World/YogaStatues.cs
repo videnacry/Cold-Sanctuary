@@ -22,6 +22,17 @@ public static class YogaStatues
         Shiva(root, new Vector3(3.4f, 0f, backZ + 0.7f));
     }
 
+    /// <summary>Las cuatro estatuas en las ESQUINAS de la sala, mirando a la plataforma central.</summary>
+    public static void BuildCorners(Transform room, float hx, float hz)
+    {
+        Transform root = new GameObject("Estatuas").transform; root.SetParent(room, false);
+        Patanjali(root, new Vector3(-hx + 1.3f, 0f, -hz + 1.3f));
+        Buddha(root, new Vector3(hx - 1.3f, 0f, -hz + 1.3f));
+        Aum(root, new Vector3(hx - 1.3f, 0f, hz - 1.6f));
+        Shiva(root, new Vector3(-hx + 1.3f, 0f, hz - 1.6f));
+        foreach (Transform s in root) { Vector3 d = -s.localPosition; d.y = 0f; if (d.sqrMagnitude > 0.01f) s.localRotation = Quaternion.LookRotation(d); }
+    }
+
     static Transform Root(Transform parent, string name, Vector3 pos, string label, float labelH)
     {
         Transform t = new GameObject(name).transform; t.SetParent(parent, false); t.localPosition = pos;

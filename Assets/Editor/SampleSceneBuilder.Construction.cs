@@ -163,7 +163,7 @@ public static partial class SampleSceneBuilder
             GameObject g = GameObject.Find(who), a = GameObject.Find(area);
             if (g != null && a != null) g.transform.position = a.transform.TransformPoint(local);
         }
-        Put("Sadhguru", "YogaRoom_Area", new Vector3(0f, 1.3f, -6.7f));          // en la tarima del maestro, de cara a las 30 esterillas
+        Put("Sadhguru", "YogaRoom_Area", new Vector3(0f, 1.5f, 0f));             // en la plataforma central, rodeado de las 30 esterillas
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1f, 1f, 3.2f)); // junto al banco de trabajo y la pizarra de avisos
         Put("Andrea", "Kitchen_Area", new Vector3(3f, 1f, 9f));                   // en el comedor: el restaurante es una vía de ingresos
     }

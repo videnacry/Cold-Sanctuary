@@ -20,11 +20,11 @@ public static partial class SampleSceneBuilder
         if (floor != null) floor.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(slate);
         foreach (Transform t in room) if (t.name == "Junta") t.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.14f, 0.15f, 0.17f));
         // Pared del fondo de azulejo verde botella con un friso de latón.
-        KitchenProps.C(room, new Vector3(0f, 1.5f, 7.65f), new Vector3(19.2f, 3f, 0.05f), tile, 0f, "Pared_Azulejo");
+        KitchenProps.C(room, new Vector3(0f, 0.75f, 7.65f), new Vector3(19.2f, 1.5f, 0.05f), tile, 0f, "Pared_Azulejo");   // zócalo bajo: la cocina es abierta por los cuatro lados
         KitchenProps.C(room, new Vector3(0f, 1.05f, 7.6f), new Vector3(19.2f, 0.04f, 0.04f), brass, 0f, "Friso_Laton");
-        for (int i = 0; i < 24; i++) KitchenProps.C(room, new Vector3(-9.4f + i * 0.82f, 1.5f, 7.62f), new Vector3(0.01f, 3f, 0.01f), new Color(0.08f, 0.2f, 0.16f), 0f, "Junta_Azulejo");
+        for (int i = 0; i < 24; i++) KitchenProps.C(room, new Vector3(-9.4f + i * 0.82f, 0.75f, 7.62f), new Vector3(0.01f, 1.5f, 0.01f), new Color(0.08f, 0.2f, 0.16f), 0f, "Junta_Azulejo");
         // Botellero de cobre con cazos colgados sobre la isla.
-        Transform rack = KitchenProps.Root(room, "Botellero_cobre", new Vector3(0.8f, 2.35f, 2f));
+        Transform rack = KitchenProps.Root(room, "Botellero_cobre", new Vector3(1.5f, 2.35f, -2.6f));   // sobre la isla de emplatado
         KitchenProps.C(rack, Vector3.zero, new Vector3(3f, 0.05f, 0.05f), copper, 0f, "Barra");
         for (int i = 0; i < 6; i++)
         {
@@ -46,8 +46,8 @@ public static partial class SampleSceneBuilder
         // Hierbas aromáticas frescas en la encimera (macetas de cubos).
         for (int i = 0; i < 5; i++)
         {
-            Transform pot = KitchenProps.C(room, new Vector3(-8.6f + i * 0.35f, KitchenProps.CounterTop + 0.08f, 1.5f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
-            KitchenProps.C(room, new Vector3(-8.6f + i * 0.35f, KitchenProps.CounterTop + 0.24f, 1.5f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
+            Transform pot = KitchenProps.C(room, new Vector3(1.6f + i * 0.3f, KitchenProps.CounterTop + 0.08f, 0.7f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
+            KitchenProps.C(room, new Vector3(1.6f + i * 0.3f, KitchenProps.CounterTop + 0.24f, 0.7f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
         }
     }
 

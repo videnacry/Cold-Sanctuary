@@ -24,10 +24,11 @@ public class WorkRoster
     public class Mission
     {
         public string id, area, title;
+        public string group;     // misiones que se hacen JUNTAS a la vez (la clase de yoga: guía, demostrador y correctores)
         public float hours;
         public bool mandatory;   // debe cubrirse cada día (iniciación de turistas, vigilar a los recién llegados…)
         public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; }
-        public Mission Copy() => new Mission(area, id, title, hours, mandatory);
+        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
     }
 
@@ -98,6 +99,7 @@ public class WorkRoster
         plan.hoursStaff = workers.Count * WorkHours;
 
         var used = workers.ToDictionary(w => w, w => 0f);
+        AssignGroups(plan, pools, used);   // primero las de grupo: todas a la misma hora, cada una a una persona distinta
         RunRounds(plan, pools, workers, used);
 
         // Obligatorias sin cubrir: la Magnate se divide (clones de 5 h) hasta cubrirlas todas.
@@ -122,6 +124,39 @@ public class WorkRoster
         return plan;
     }
 
+
+    // MISIONES DE GRUPO: se hacen a la vez (p. ej. la clase de yoga necesita mínimo 4: guía en la plataforma, demostrador
+    // y dos correctores). Se asignan al principio de la jornada (8:00), cada una a una persona distinta que rota cada día;
+    // dentro del grupo, a cada uno el papel que menos ha hecho.
+    void AssignGroups(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
+    {
+        var groups = new Dictionary<string, List<Mission>>();
+        foreach (var pool in pools.Values)
+            foreach (Mission m in pool) if (!string.IsNullOrEmpty(m.group)) { if (!groups.TryGetValue(m.group, out var g)) groups[m.group] = g = new List<Mission>(); g.Add(m); }
+        int offset = plan.day * 3;
+        foreach (var kv in groups)
+        {
+            var roles = kv.Value;
+            if (workers.Count < roles.Count) continue;   // sin gente suficiente: quedan para los clones
+            var crew = new List<Worker>();
+            for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
+            {
+                Worker w = workers[(offset + i) % workers.Count];
+                if (used[w] <= 0f && !crew.Contains(w)) crew.Add(w);
+            }
+            if (crew.Count < roles.Count) continue;
+            offset += roles.Count;
+            var pending = new List<Mission>(roles);
+            foreach (Worker w in crew)
+            {
+                Mission best = null;
+                foreach (Mission m in pending) if (best == null || w.Count(m.id) < w.Count(best.id)) best = m;
+                pending.Remove(best);
+                pools[best.area].Remove(best);
+                Assign(plan, w, best, used);
+            }
+        }
+    }
     // Vueltas por las áreas: de cada área, una misión a la primera persona a la que le quepa.
     void RunRounds(DayPlan plan, Dictionary<string, List<Mission>> pools, List<Worker> staff, Dictionary<Worker, float> used)
     {
