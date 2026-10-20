@@ -78,6 +78,7 @@ public class WorkdayDirector : MonoBehaviour
     {
         SyncStaff();
         if (KitchenLarder.Instance != null) KitchenLarder.Instance.autoPlan = false;   // en el santuario cada elaboración es una misión de alguien
+        PopulationPlan.Humans = Mathf.Max(PopulationPlan.Humans, roster.workers.Count + 2);   // el personal + la Magnate + el recién llegado: la fauna se dimensiona con ellos
         roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();

@@ -2427,8 +2427,13 @@ public static partial class SampleSceneBuilder
 
         var nests = new System.Collections.Generic.List<NestSpec>();
         var families = new System.Collections.Generic.List<FamilyGenerator.Family>();
+        // EQUILIBRIO con los humanos (PopulationPlan): cada especie reparte su objetivo entre sus grupos.
+        var groupsOf = new System.Collections.Generic.Dictionary<string, int> { { "Bear", 1 }, { "Seal", 3 }, { "Whale", 2 }, { "Penguin", 2 }, { "Orca", 1 } };
+        var used = new System.Collections.Generic.Dictionary<string, int>();
         void AddFamily(string species, Vector3 pos, float radius, NestKind kind, float height = 0f)
         {
+            int gi = used.TryGetValue(species, out int u) ? u : 0; used[species] = gi + 1;
+            int qty = groupsOf.TryGetValue(species, out int gn) ? PopulationPlan.Split(species, gn)[Mathf.Min(gi, gn - 1)] : 0;
             nests.Add(new NestSpec { species = species, position = pos, radius = radius, kind = kind, height = height });
 
             GameObject prefab = LoadAnimalPrefab(species);
@@ -2437,7 +2442,7 @@ public static partial class SampleSceneBuilder
                 Debug.LogWarning($"[SampleSceneBuilder] WildlifePopulation: no se encontro el prefab de {species}, se omite esa familia.");
                 return;
             }
-            families.Add(new FamilyGenerator.Family { animalPrefab = prefab, position = pos, radius = radius, renderHeight = height });
+            families.Add(new FamilyGenerator.Family { animalPrefab = prefab, position = pos, radius = radius, renderHeight = height, quantity = qty });   // qty 0 = el tamaño de su familia
         }
 
         // SANTUARIO 1 = HIELO (docs/ice-sanctuary-ecology.md). El suelo ya es nieve (Ground_Snow_MAT); la

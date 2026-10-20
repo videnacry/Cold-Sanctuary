@@ -29,7 +29,7 @@ public class NeedsDriver : MonoBehaviour
     {
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
         _next = Time.time + checkEvery;
-        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell) return;   // ya atendiendo una necesidad
+        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell) return;   // ya atendiendo una necesidad
 
         if (!_a.asleep && _a.sleepiness >= sleepAbove)
         {
@@ -40,7 +40,8 @@ public class NeedsDriver : MonoBehaviour
             _q.EnqueueOwn(new SleepSpell());
             return;
         }
-        if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new EatSpell());
+        if (!_a.asleep && _body.toilet >= 0.85f) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
+        if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
     }
 }
 
@@ -101,6 +102,18 @@ public class SleepSpell : QueuedSpell
         if (!_started)
         {
             _started = true; self.asleep = true;
+            // EN SU CAMA: se tumba boca arriba encima y cierra los ojos (si la tiene a mano; si no, duerme donde esté).
+            Bedroom room = Bedroom.Of(self);
+            if (room != null && room.bed != null && Vector3.Distance(room.bed.position, self.transform.position) < 3f)
+            {
+                CharacterController cc = self.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
+                self.transform.position = room.bed.position + Vector3.up * 0.45f;
+                self.transform.rotation = room.bed.rotation;
+                if (cc != null) cc.enabled = true;
+                DailyPoses.Lie().ApplyFinal(self);
+                Debug.Log($"[Cuerpo] «{self.name}» se acuesta en su cama ({room.name}).");
+            }
+            self.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 3600f);
             Debug.Log($"[Cuerpo] «{self.name}» se duerme.");
             // SALTO TEMPORAL: si es el cuerpo que maneja el JUGADOR, el juego pasa directo al amanecer (no se corta).
             // La claridad va atada al reloj (TimeController.IsDay), así que al fijar la hora cambia el día/noche.
@@ -112,9 +125,12 @@ public class SleepSpell : QueuedSpell
                 Debug.Log($"[Tiempo] «{self.name}» duerme → salto al amanecer ({WakeHour:0.0} h).");
             }
         }
+        if (!(self.aware || self.sleepiness < 0.1f) && Bedroom.Of(self) != null) DailyPoses.Lie().ApplyFinal(self);   // sigue tumbado
         if (self.aware || self.sleepiness < 0.1f)
         {
             self.asleep = false;
+            DailyPoses.Stand().ApplyFinal(self);
+            self.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Neutral, 0.1f);
             Debug.Log($"[Cuerpo] «{self.name}» se despierta{(self.aware ? " (amenaza)" : " descansado")}.");
             return true;
         }

@@ -235,6 +235,30 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("las elaboraciones de la cocina (queso, harina, pasta…) son misiones", todayMissions.Any(m => m.id.StartsWith("prep_")), string.Join(", ", todayMissions.Where(m => m.id.StartsWith("prep_")).Select(m => m.title).Take(4)));
         TestProbe.Check("hay misiones de limpieza en las áreas", todayMissions.Count(m => m.title.StartsWith("Limpieza")) >= 5);
         TestProbe.Check("iniciar y cosechar lotes del laboratorio son misiones", todayMissions.Any(m => m.id == "lab_iniciar") && todayMissions.Any(m => m.id == "lab_cosechar"));
+
+        // LANZADOR POR PASOS: hechizo → parámetros → Intro vacío lanza.
+        SpellConsole sc = FindAnyObjectByType<SpellConsole>();
+        if (sc != null)
+        {
+            sc.Enter("walk");
+            TestProbe.Check("paso 1: «walk» + Intro elige walkTo y pide su primer parámetro", sc.PendingSpell == "walkTo" && sc.PendingParam == "destiny", $"{sc.PendingSpell} · {sc.PendingParam}");
+            sc.Enter("Magnate");
+            TestProbe.Check("paso 2: el valor se fija y pasa al siguiente parámetro", sc.PendingSpell == "walkTo" && sc.PendingParam == "maxSpeed", sc.PendingParam);
+            sc.Enter("");
+            TestProbe.Check("Intro con la entrada vacía lanza el hechizo con lo dado", sc.PendingSpell == null && sc.LastLog.Length > 0, sc.LastLog);
+            sc.Enter("cancel"); sc.Enter("");
+        }
+
+        // VIDA DIARIA: restaurante con sillas para todos, aseos, camas; fauna en proporción a los humanos.
+        int seats = 0; GameObject dn = GameObject.Find("Comedor_Gourmet");
+        if (dn != null) foreach (Transform t in dn.GetComponentsInChildren<Transform>()) if (t.name == "Asiento") seats++;
+        TestProbe.Greater("el comedor tiene sillas para 30 comensales", seats, 29f, $"{seats} sillas");
+        int wcSeats = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Inodoro_seco") wcSeats++;
+        TestProbe.Greater("hay inodoros a los que ir al baño", wcSeats, 5f, $"{wcSeats}");
+        var census = new System.Collections.Generic.Dictionary<string, int>();
+        foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
+        int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;
+        TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
         TestProbe.End();
     }
 

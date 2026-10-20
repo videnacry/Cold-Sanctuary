@@ -42,6 +42,7 @@ public class BodyMetabolism : MonoBehaviour
 {
     public string species = "Human";
     [Range(0f, 1f)] public float hunger;   // 0 = saciado, 1 = hambre plena
+    [Range(0f, 1f)] public float toilet;   // ganas de ir al baño: suben con el tiempo y con cada comida (≈ cada 5–6 h)
 
     Anima _a;
     BodyTemplate _t;
@@ -87,6 +88,7 @@ public class BodyMetabolism : MonoBehaviour
         float kleiber = Mathf.Pow(massKg / _t.adultMassKg, 0.75f);
         float awakeFactor = _a.asleep ? 0.6f : 1f;   // dormido se gasta menos
         hunger = Mathf.Clamp01(hunger + gameHours / _t.hoursToHungry * kleiber * awakeFactor * needs);
+        toilet = Mathf.Clamp01(toilet + gameHours / 6f * awakeFactor * needs);
 
         // SUEÑO: presión homeostática (sube despierto, baja dormido) + empuje circadiano alrededor de sleepiestHour.
         if (_a.asleep) _a.sleepiness = Mathf.Clamp01(_a.sleepiness - gameHours / _t.hoursAsleepToRested);

@@ -37,8 +37,10 @@ public class SpellConsole : MonoBehaviour
         }
         else if (Time.frameCount != _openedFrame)
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(toggleKey)) { _input = ""; Close(); }   // salir SIN lanzar (y sin guardar lo escrito)
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(toggleKey)) { _input = ""; ResetSteps(); Close(); }   // salir SIN lanzar (y sin guardar lo escrito)
             else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) Submit();
+            else if (Input.GetKeyDown(KeyCode.DownArrow)) MoveSelection(+1);
+            else if (Input.GetKeyDown(KeyCode.UpArrow)) MoveSelection(-1);
         }
         Capturing = _open;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -54,19 +56,152 @@ public class SpellConsole : MonoBehaviour
         if (string.IsNullOrEmpty(_input) && Proposed != null) _input = Proposed;
     }
 
-    void Close() { _open = false; Capturing = false; GUI.FocusControl(null); }
+    void Close() { _open = false; Capturing = false; if (Event.current != null) GUI.FocusControl(null); }   // (desde código/pruebas no hay evento de GUI)
 
-    // Intro: lanza lo escrito y cierra (el teclado vuelve al juego). Con la barra vacía, solo cierra.
+    // ── LANZADOR POR PASOS ─────────────────────────────────────────────────────────────────────────
+    // 1) Primera entrada: el HECHIZO (escribe o elige con ↑/↓ y pulsa Intro). 2) Entradas siguientes: sus PARÁMETROS, uno
+    // por uno (con sugerencias de valor: lugares del itinerario, personas cercanas por vínculo…); cada Intro fija uno y pasa
+    // al siguiente; «nombre:valor» fija uno concreto. 3) Intro con la entrada VACÍA lanza el hechizo (los parámetros que no
+    // se dieron usan su valor por defecto). Escribir la línea completa «hechizo({…})» sigue funcionando.
+    string _spell;                                              // hechizo elegido (null = paso 1)
+    List<(string key, string def)> _paramDefs = new List<(string, string)>();
+    readonly Dictionary<string, string> _given = new Dictionary<string, string>();
+    int _paramIdx;
+    List<string> _choices = new List<string>();                 // sugerencias visibles (para ↑/↓)
+    int _sel = -1;
+
+    void ResetSteps() { _spell = null; _paramDefs.Clear(); _given.Clear(); _paramIdx = 0; _sel = -1; }
+
+    /// <summary>Como si se escribiera <paramref name="text"/> y se pulsara Intro (pruebas del lanzador por pasos).</summary>
+    public void Enter(string text) { _open = true; _input = text ?? ""; Submit(); }
+    /// <summary>El hechizo elegido en el paso 1 (null si aún no hay) y el parámetro que se pide ahora.</summary>
+    public string PendingSpell => _spell;
+    public string PendingParam => _spell != null && _paramIdx < _paramDefs.Count ? _paramDefs[_paramIdx].key : null;
+    public string LastLog => _log.Count > 0 ? _log[_log.Count - 1] : "";
+
+    void MoveSelection(int d)
+    {
+        if (_choices.Count == 0) return;
+        _sel = (_sel + d + _choices.Count) % _choices.Count;
+        _input = _choices[_sel];
+        _moveCaret = true;
+    }
+    bool _moveCaret;
+
     void Submit()
     {
         string line = (_input ?? "").Replace("`", "").Replace("~", "").Trim();
-        _input = "";
+        _input = ""; _sel = -1;
+
+        if (_spell == null)
+        {
+            if (line.Length == 0) { Close(); return; }
+            if (line.Contains("(") || line.StartsWith("pedido")) { if (line.StartsWith("pedido") && Proposed != null) line = Proposed; Cast(line); return; }   // línea completa (como antes)
+            var s = Suggest(line);
+            string name = s.Count > 0 ? s[0].name : line;
+            string template = s.Count > 0 ? s[0].template : name;
+            _paramDefs = ParseParams(template);
+            if (_paramDefs.Count == 0) { Cast(name); return; }   // sin parámetros: se lanza ya
+            _spell = name; _paramIdx = 0; _given.Clear();
+            return;
+        }
+        if (line.Length == 0)   // vacío: no hay más parámetros → se lanza
+        {
+            // Un destino obligatorio sin dar: el primero que sugiere su interés (la misión de ahora, la persona más cercana…).
+            foreach (var p in _paramDefs)
+                if (p.key == "destiny" && p.def.Length == 0 && !_given.ContainsKey("destiny"))
+                { var vs = ValueSuggestions("destiny", "", ""); if (vs.Count > 0) _given["destiny"] = vs[0]; }
+            Cast(BuildLine());
+            return;
+        }
+        int colon = line.IndexOf(':');
+        if (colon > 0 && _paramDefs.Exists(p => p.key == line.Substring(0, colon).Trim()))
+            _given[line.Substring(0, colon).Trim()] = line.Substring(colon + 1).Trim().Trim('"');
+        else if (_paramIdx < _paramDefs.Count) _given[_paramDefs[_paramIdx].key] = line.Trim('"');
+        _paramIdx = System.Math.Min(_paramIdx + 1, _paramDefs.Count);
+        if (_paramIdx >= _paramDefs.Count) Cast(BuildLine());   // ya están todos: se lanza
+    }
+
+    void Cast(string line)
+    {
+        ResetSteps();
         Close();
-        if (line.Length == 0) return;
         int before = _logSeq;
         Dispatch(line);
         string answer = _logSeq != before ? _log[_log.Count - 1] : $"Lanzado: {line}";
         Feedback(answer);
+    }
+
+    string BuildLine()
+    {
+        if (_given.Count == 0) return _spell;   // todo por defecto: el hechizo lo resuelve (p. ej. walkTo sin destino)
+        var parts = new List<string>();
+        foreach (var p in _paramDefs)
+        {
+            if (!_given.TryGetValue(p.key, out string v)) continue;
+            bool raw = v == "true" || v == "false" || float.TryParse(v, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out _);
+            parts.Add($"{p.key}:{(raw ? v : "\"" + v + "\"")}");
+        }
+        return $"{_spell}({{{string.Join(", ", parts)}}})";
+    }
+
+    static List<(string key, string def)> ParseParams(string template)
+    {
+        var l = new List<(string, string)>();
+        int a = template.IndexOf('{'), b = template.LastIndexOf('}');
+        if (a < 0 || b <= a) return l;
+        foreach (string part in template.Substring(a + 1, b - a - 1).Split(','))
+        {
+            int c = part.IndexOf(':'); if (c <= 0) continue;
+            l.Add((part.Substring(0, c).Trim(), part.Substring(c + 1).Trim().Trim('"')));
+        }
+        return l;
+    }
+
+    /// <summary>Sugerencias de VALOR para un parámetro, según los intereses del poseído: para un destino, primero los
+    /// lugares de su itinerario (la misión de ahora y la siguiente), luego las personas cercanas por vínculo, luego las
+    /// áreas; para sí/no, true/false; si no, el valor por defecto.</summary>
+    List<string> ValueSuggestions(string key, string def, string typed)
+    {
+        var l = new List<string>();
+        void Add(string s) { if (!string.IsNullOrEmpty(s) && !l.Contains(s)) l.Add(s); }
+        Anima me = PossessedAnima();
+        if (key == "destiny" || key == "item")
+        {
+            WorkdayDirector wd = WorkdayDirector.Instance;
+            if (wd != null && wd.today != null && TimeController.timeController != null)
+            {
+                WorkRoster.Worker w = wd.roster.Find("Player");
+                if (w != null)
+                {
+                    string now = wd.Where(w, TimeController.timeController.Hour, out _);
+                    Add(now);
+                    foreach (var a in wd.today.Of(w)) if (a.start >= TimeController.timeController.Hour) { Add(a.mission.area); break; }
+                }
+            }
+            if (me != null)
+            {
+                var near = new List<(float score, string name)>();
+                foreach (Anima a in FindObjectsByType<Anima>(FindObjectsSortMode.None))
+                {
+                    if (a == null || a == me || a.death) continue;
+                    float dist = Vector3.Distance(a.transform.position, me.transform.position);
+                    if (dist > baseVisibleRange * 2f) continue;
+                    ITarget t = a.GetComponent<ITarget>();
+                    Bond b = t != null ? me.GetBond(t) : null;
+                    float bond = b != null ? Mathf.Abs(b.value) : 0f;   // los dos extremos (amor y rechazo) llaman la atención
+                    near.Add((bond * 2f - dist * 0.1f, a.name.Replace("_Post", "")));
+                }
+                near.Sort((x, y) => y.score.CompareTo(x.score));
+                for (int i = 0; i < near.Count && i < 6; i++) Add(near[i].name);
+            }
+            foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) Add(a.displayName);
+        }
+        else if (def == "true" || def == "false") { Add("true"); Add("false"); }
+        Add(def);
+        if (!string.IsNullOrEmpty(typed))
+            l = l.FindAll(s => s.ToLowerInvariant().Contains(typed.ToLowerInvariant()));
+        return l;
     }
 
     void Feedback(string s)
@@ -180,38 +315,59 @@ public class SpellConsole : MonoBehaviour
     void OnGUI()
     {
         if (!_open) { DrawClosedBar(); return; }
-        float w = 560f, h = 24f, x = 12f, y = Screen.height - 240f;
-        GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 212f), "");
-        GUI.Label(new Rect(x, y - 2f, w, h), "<b>Grimorio</b>  (Tab autocompleta · <b>Intro</b> lanza · <b>Esc</b> sale sin lanzar) — mientras escribes, Kushal no se mueve");
+        float w = 560f, h = 24f, x = 12f, y = Screen.height - 260f;
+        GUI.Box(new Rect(x - 4f, y - 4f, w + 8f, h + 232f), "");
+        var rich = new GUIStyle(GUI.skin.label) { richText = true };
+        string head = _spell == null
+            ? "<b>Grimorio</b> · paso 1: el HECHIZO (↑/↓ elige · <b>Intro</b> confirma · <b>Esc</b> sale)"
+            : $"<b>{_spell}</b> · parámetro <b>{(_paramIdx < _paramDefs.Count ? _paramDefs[_paramIdx].key : "—")}</b> (↑/↓ elige · <b>Intro</b> fija · <b>Intro vacío</b> lanza)";
+        GUI.Label(new Rect(x, y - 2f, w, h), head, rich);
+        if (_spell != null)
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (var p in _paramDefs) sb.Append(_given.TryGetValue(p.key, out string v) ? $"<b>{p.key}</b>={v}  " : $"<color=#888888>{p.key}={(p.def.Length > 0 ? p.def : "…")}</color>  ");
+            GUI.Label(new Rect(x, y + 14f, w, 16f), sb.ToString(), rich);
+        }
         GUI.SetNextControlName("spellInput");
-        _input = GUI.TextField(new Rect(x, y + 20f, w, h), _input);
+        _input = GUI.TextField(new Rect(x, y + 30f, w, h), _input);
         GUI.FocusControl("spellInput");
-
-        // Sugerencias (difusas): el prefijo = lo escrito antes del '('. Vacío → muestra todo (vista del grimorio).
-        string prefix = _input;
-        int paren = prefix.IndexOf('(');
-        if (paren >= 0) prefix = prefix.Substring(0, paren);
-        // Sugerencias = los hechizos que el poseído CONOCE (los que aún no, al final y en gris, sin autocompletar);
-        // arriba del todo, el que un maestro te está pidiendo ahora.
-        Anima me = PossessedAnima();
-        var known = new List<(string name, string template)>();
-        var unknown = new List<(string name, string template)>();
-        string p = Proposed;
-        if (p != null) known.Add(("pedido", p));
-        foreach (var s in Suggest(prefix.Trim())) (KnowsSpell(me, s.name) ? known : unknown).Add(s);
+        if (_moveCaret) { _moveCaret = false; var te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl); if (te != null) { te.text = _input; te.MoveTextEnd(); } }
 
         Event e = Event.current;
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && known.Count > 0)   // Tab → rellena la plantilla del 1º
-        { _input = known[0].template; e.Use(); }
-        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape) { _input = ""; Close(); e.Use(); }
+        if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Escape) { _input = ""; ResetSteps(); Close(); e.Use(); }
 
-        int row = 0;
-        for (int i = 0; i < known.Count && row < 7; i++, row++)
-            GUI.Label(new Rect(x, y + 48f + row * 16f, w, 16f), (i == 0 ? "➤ " : "   ") + $"<b>{known[i].name}</b>  <size=10>{known[i].template}</size>");
-        for (int i = 0; i < unknown.Count && row < 7; i++, row++)
-            GUI.Label(new Rect(x, y + 48f + row * 16f, w, 16f), $"   <color=#888888>{unknown[i].name}  <size=10>(aún no lo conoces)</size></color>");
+        var rows = new List<string>();
+        _choices = new List<string>();
+        if (_spell == null)
+        {
+            string prefix = _input; int paren = prefix.IndexOf('('); if (paren >= 0) prefix = prefix.Substring(0, paren);
+            Anima me = PossessedAnima();
+            string p = Proposed;
+            if (p != null) { _choices.Add(p); rows.Add($"<b>pedido</b>  <size=10>{p}</size>"); }
+            var unknown = new List<string>();
+            foreach (var s in Suggest(prefix.Trim()))
+            {
+                if (KnowsSpell(me, s.name)) { _choices.Add(s.name); rows.Add($"<b>{s.name}</b>  <size=10>{s.template}</size>"); }
+                else unknown.Add($"<color=#888888>{s.name}  <size=10>(aún no lo conoces)</size></color>");
+            }
+            rows.AddRange(unknown);
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && _choices.Count > 0) { _input = _choices[Mathf.Max(0, _sel)]; _moveCaret = true; e.Use(); }
+        }
+        else if (_paramIdx < _paramDefs.Count)
+        {
+            var pd = _paramDefs[_paramIdx];
+            bool browsing = _sel >= 0 && _sel < _choices.Count && _input == _choices[_sel];
+            foreach (string s in ValueSuggestions(pd.key, pd.def, browsing ? "" : _input.Trim())) { _choices.Add(s); rows.Add(s); }
+            if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && _choices.Count > 0) { _input = _choices[Mathf.Max(0, _sel)]; _moveCaret = true; e.Use(); }
+        }
+        if (_sel >= _choices.Count) _sel = -1;
+        for (int i = 0; i < rows.Count && i < 9; i++)
+        {
+            bool on = i < _choices.Count && (i == _sel || (_sel < 0 && i == 0));
+            GUI.Label(new Rect(x, y + 58f + i * 16f, w, 16f), (on ? "➤ " : "   ") + rows[i], rich);
+        }
         for (int i = 0; i < _log.Count && i < 2; i++)
-            GUI.Label(new Rect(x, y + 48f + 7 * 16f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
+            GUI.Label(new Rect(x, y + 58f + 9 * 16f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
     }
 
     // Búsqueda difusa (tolerante a fallos): startsWith > contiene > solape de caracteres. Ordena por similitud.

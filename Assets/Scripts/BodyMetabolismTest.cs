@@ -49,7 +49,7 @@ public class BodyMetabolismTest : MonoBehaviour, ITestUnit
         NeedsDriver nd = n.AddComponent<NeedsDriver>(); nd.checkEvery = 0f;
         nb.hunger = 0.9f;
         yield return null; yield return null;
-        bool eat = false; foreach (QueuedSpell s in nq.Own) if (s is EatSpell) eat = true;
+        bool eat = false; foreach (QueuedSpell s in nq.Own) if (s is EatSpell || s is DineSpell) eat = true;   // comer = ir al restaurante
         TestProbe.Check("con hambre el cuerpo encola COMER (carril propio)", eat);
         nq.ClearOwnForTest(); nb.hunger = 0f; na.sleepiness = 0.95f;
         yield return null; yield return null;

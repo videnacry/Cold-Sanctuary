@@ -51,6 +51,8 @@ public class Reproduction : MonoBehaviour
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
         if (LivingCount() >= softPopulationCap) return false;   // cuenta solo los VIVOS (antes contaba también los cadáveres)
+        int planCap = PopulationPlan.Cap(_animal.SpeciesName);
+        if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de 1,5× lo que toca (PopulationPlan)
         return true;
     }
 
