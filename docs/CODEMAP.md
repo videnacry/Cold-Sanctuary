@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 524 tipos._
+_Total: 535 tipos._
 
 
 ## Animals
@@ -57,6 +57,7 @@ _Total: 524 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
+- **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md):
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
@@ -128,6 +129,7 @@ _Total: 524 tipos._
 - **BirdBehavior** (class) — `Assets/Scripts/BirdBehavior.cs`
 - **BlendSlot** (class) — `Assets/Scripts/Soul/BlendSlot.cs` — Una ranura de MEZCLA (docs/soul-composition-blend.md):
 - **BodyAging** (class) — `Assets/Scripts/Body/BodyAging.cs` — EDAD COMO EFECTO DE LOS STATS (etapa 3 del cuerpo unificado):
+- **BodyInjuries** (class) — `Assets/Scripts/Body/BodyInjuries.cs` — HERIDAS PERMANENTES de un cuerpo (secuelas curadas:
 - **BodyMetabolismTest** (class) — `Assets/Scripts/BodyMetabolismTest.cs` — Unidad de test del METABOLISMO DEL CUERPO (docs/body-metabolism):
 - **BodyPartReactor** (class) — `Assets/Scripts/Emotion/BodyPartReactor.cs` — Una "parte" de la **orquesta** emocional (docs/emotion-model.md §orquesta / traducción).
 - **BodyPartStats** (class) — `Assets/Scripts/BodyPartStats.cs` — Physical stats for a single body part.
@@ -143,6 +145,7 @@ _Total: 524 tipos._
 - **BondPillar** (class) — `Assets/Scripts/Soul/BondPillar.cs` — PILAR SOCIAL / de BONDS por COMPOSICIÓN (docs/anima-architecture.md · soul-relations-reincarnation §2 — fase 5).
 - **BondSpell** (class) — `Assets/Scripts/Soul/BondSpell.cs` — HECHIZO DE MANIPULACIÓN DE VÍNCULO (docs/anyma-factory-and-control.md §3:
 - **BondType** (enum) — `Assets/Scripts/Bond.cs`
+- **BreadSource** (class) — `Assets/Scripts/Compassion/BreadSource.cs` — De dónde sale la COMIDA de los escondidos:
 - **BreakfastCook** (class) — `Assets/Scripts/Kitchen/BreakfastCook.cs` — El loop de cocinar el desayuno (docs/kitchen-simulation.md §3).
 - **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
 - **CameraZoneTrigger** (class) — `Assets/Scripts/Camera/CameraZoneTrigger.cs` — Attach to a trigger collider surrounding a zone (e.g.
@@ -178,6 +181,7 @@ _Total: 524 tipos._
 - **CombatAbilityBar** (class) — `Assets/Scripts/Combat/CombatAbilityBar.cs` — Manages the player's equipped ability bar (up to 10 slots, keys 1–0).
 - **CombatTargetSelector** (class) — `Assets/Scripts/Combat/CombatTargetSelector.cs` — Sistema de selección de target (Tab-targeting + clic).
 - **CommunicationSpell** (class) — `Assets/Scripts/Mind/CommunicationSpell.cs` — HECHIZO DE COMUNICACIÓN — "todas las animas pueden hablar entre sí".
+- **CompassionMission** (class) — `Assets/Scripts/Compassion/CompassionMission.cs` — SIMULACIÓN DE COMPASIÓN (docs/compassion-simulations.md):
 - **ComponentExt** (class) — `Assets/Scripts/Control/ComponentExt.cs` — `GetComponent&lt;T&gt;() ?? AddComponent&lt;T&gt;()` NO funciona en el editor:
 - **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
 - **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/jornada-y-rotacion.md):
@@ -268,6 +272,7 @@ _Total: 524 tipos._
 - **HelpRequest** (class) — `Assets/Scripts/Control/HelpRequest.cs` — Lado EMISOR de una petición entre personajes (docs/anima-architecture.md §11.7).
 - **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7).
 - **HideFollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/HideFollowingArrays.cs`
+- **HidingPlace** (class) — `Assets/Scripts/Compassion/HidingPlace.cs` — ESCONDITE de las simulaciones de compasión:
 - **Hive** (class) — `Assets/Scripts/World/Hive.cs` — COLMENA de las abejas de las nieves:
 - **Hologram** (class) — `Assets/Scripts/UI/Hologram/Hologram.cs` — One reusable, poolable flat UI card.
 - **HologramCorner** (enum) — `Assets/Scripts/UI/Hologram/HologramMenuController.cs`
@@ -359,6 +364,7 @@ _Total: 524 tipos._
 - **MoodDynamics** (class) — `Assets/Scripts/Soul/MoodDynamics.cs` — DINÁMICA de humores/estrés (docs/soul-relations-reincarnation §2b).
 - **MoodState** (class) — `Assets/Scripts/Companion/MoodState.cs` — Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad — **extraído de `CompanionBase`** (que se retira, fase 5).
 - **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
+- **NameJar** (class) — `Assets/Scripts/Compassion/NameJar.cs` — LOS FRASCOS BAJO EL MANZANO:
 - **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3):
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
 - **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
@@ -381,7 +387,10 @@ _Total: 524 tipos._
 - **PaletteGroup** (class) — `Assets/Scripts/UI/Palette/PaletteGroup.cs`
 - **PaletteResult** (struct) — `Assets/Scripts/UI/Palette/IPaletteEvaluator.cs`
 - **Panterilia** (class) — `Assets/Scripts/Companion/Companions/Panterilia.cs` — Panterilia — limpieza, nutrición, observación.
+- **PaperForge** (class) — `Assets/Scripts/Compassion/PaperForge.cs` — Donde se hacen PAPELES FALSOS:
+- **Passage** (class) — `Assets/Scripts/Compassion/Passage.cs` — PASO para cruzar sin ser visto:
 - **PathMover** (class) — `Assets/Scripts/Control/PathMover.cs` — ANDAR DE VERDAD hacia un punto (para personajes que se mueven por código:
+- **Patrol** (class) — `Assets/Scripts/Compassion/Patrol.cs` — PATRULLA genérica (sin uniformes ni símbolos):
 - **PatrolMission** (class) — `Assets/Scripts/World/PatrolMission.cs` — PATRULLA:
 - **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
 - **PerfProbe** (class) — `Assets/Scripts/UI/PerfProbe.cs` — SONDA DE RENDIMIENTO (consola:
@@ -420,6 +429,7 @@ _Total: 524 tipos._
 - **QueuedSpell** (class) — `Assets/Scripts/Control/QueuedSpell.cs` — Un HECHIZO EN COLA (docs/typed-spells-and-queues.md):
 - **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33).
 - **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
+- **Refugee** (class) — `Assets/Scripts/Compassion/Refugee.cs` — Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/compassion-simulations.md):
 - **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
 - **Respawn** (class) — `Assets/Scripts/Respawn.cs`
 - **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina).
@@ -428,6 +438,7 @@ _Total: 524 tipos._
 - **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
 - **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
 - **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):
+- **SafeHaven** (class) — `Assets/Scripts/Compassion/SafeHaven.cs` — DESTINO SEGURO:
 - **SanctuaryArea** (class) — `Assets/Scripts/World/SanctuaryArea.cs` — A zone inside Cold Sanctuary.
 - **SanctuaryAreaType** (enum) — `Assets/Scripts/World/SanctuaryAreaType.cs` — All zones in Cold Sanctuary, ordered roughly by progression tier.
 - **SanctuaryDirector** (class) — `Assets/Scripts/World/SanctuaryDirector.cs` — The Magnate's world management component — the brain of the sanctuary's autonomous simulation.

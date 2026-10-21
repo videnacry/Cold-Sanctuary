@@ -150,6 +150,8 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
         try { MicrocosmosAreaSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e.Message}"); }
+        try { CompassionSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las simulaciones de compasión: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
@@ -1100,9 +1102,15 @@ public static partial class SampleSceneBuilder
         pintor.AddComponent<AiBrain>().selfRelevance = 1f;
         pintor.AddComponent<AnimaController>();
 
-        GameObject anciano = Cast(group.transform, "Anciano", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
-            new Color(0.50f, 0.46f, 0.40f), "", "anciano fragil de la banda", "", "necesita que lo carguen al refugio",
+        // SHANIDAR: el anciano herido que la banda cuida. Lleva el nombre y las heridas del neandertal Shanidar 1 (sin
+        // antebrazo derecho, ojo izquierdo dañado, cojera, sordera), que llegó a viejo porque su grupo lo cuidó
+        // (doi 10.1371/journal.pone.0186684). Ver docs/compassion-simulations.md.
+        GameObject anciano = Cast(group.transform, "Shanidar", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
+            new Color(0.50f, 0.46f, 0.40f), "", "anciano herido de la banda: sin antebrazo derecho, medio ciego y sordo, cojo; vive porque lo cuidan",
+            "", "necesita que lo carguen al refugio",
             new[] { ("Ant", 90f), ("Human", 10f) }, new[] { ("Human", 40f), ("Ant", 60f) });
+        BodyInjuries wounds = anciano.AddComponent<BodyInjuries>();
+        wounds.missingRightForearm = true; wounds.blindLeftEye = true; wounds.limp = true; wounds.hearingLoss = true;
         anciano.AddComponent<WeakOne>();
         anciano.AddComponent<AiBrain>().selfRelevance = 1f;
         anciano.AddComponent<AnimaController>();
