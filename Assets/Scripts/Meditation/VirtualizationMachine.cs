@@ -46,7 +46,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     public bool CanInteract =>
         SceneMode
             ? (MobWorldLoader.Instance != null && !MobWorldLoader.Instance.IsBusy && !MobWorldLoader.Instance.IsInMobWorld)
-            : (shift != null && !MeditationSession.Instance.IsBusy);
+            : (shift == null || !MeditationSession.Instance.IsBusy);   // sin microcosmos: solo virtualización
 
     public void Interact()
     {
@@ -114,25 +114,14 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     public void ShowMenu()
     {
         if (ChoiceDialog.IsOpen) return;
-        var opts = new System.Collections.Generic.List<string> { "Virtualización: misiones de trabajo de esta área", "Simulación: el microcosmos del área", "Virtualización: misiones de otras áreas" };
-        // En el RESTAURANTE, la virtualización estrella va primero: el servicio a los turistas (eres el cocinero).
-        bool kitchen = areaName == "Cocina";
-        if (kitchen) opts.Insert(0, "Virtualización: servicio a los turistas (cocinar los pedidos)");
-        ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i =>
-        {
-            if (kitchen) { if (i == 0) { ChooseId("coc_servicio"); return; } i--; }
-            if (i == 0) ShowArea(areaName);
-            else if (i == 1) EnterSimulation();
-            else ShowAreas();
-        });
-    }
-
-    void ShowAreas()
-    {
-        var areas = new System.Collections.Generic.List<string>();
-        foreach (WorkRoster.Mission m in TodayMissions()) if (!areas.Contains(m.area)) areas.Add(m.area);
-        areas.Add("← Volver");
-        ChoiceDialog.Show("Virtualización · elige el área", areas.ToArray(), i => { if (i == areas.Count - 1) ShowMenu(); else ShowArea(areas[i]); }, ShowMenu);
+        // Cada máquina, SOLO lo de su área: sus misiones de trabajo (virtualización) y su microcosmos (simulación), si lo hay.
+        var opts = new System.Collections.Generic.List<string>();
+        var acts = new System.Collections.Generic.List<System.Action>();
+        if (areaName == "Cocina") { opts.Add("Virtualización: servicio a los turistas (eres el cocinero)"); acts.Add(() => ChooseId("coc_servicio")); }
+        if (areaName == "Enfermería") { opts.Add("Virtualización: iniciar a un turista (análisis, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
+        opts.Add("Virtualización: misiones de trabajo de esta área"); acts.Add(() => ShowArea(areaName));
+        if (SceneMode || shift != null) { opts.Add("Simulación: el microcosmos del área"); acts.Add(EnterSimulation); }
+        ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i => acts[i](), null, transform, 4.5f);
     }
 
     void ShowArea(string area)
@@ -142,7 +131,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         var opts = new System.Collections.Generic.List<string>();
         foreach (WorkRoster.Mission m in list) opts.Add($"{m.title} ({m.hours:0.#} h)");
         opts.Add("← Volver");
-        ChoiceDialog.Show($"Virtualización · {area}", opts.ToArray(), i => { if (i >= list.Count) ShowMenu(); else Choose(list[i]); }, ShowMenu);
+        ChoiceDialog.Show($"Virtualización · {area}", opts.ToArray(), i => { if (i >= list.Count) ShowMenu(); else Choose(list[i]); }, ShowMenu, transform, 4.5f);
     }
 
     void ChooseId(string id)
@@ -153,16 +142,18 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
 
     void Choose(WorkRoster.Mission m)
     {
-        // Cada misión se practica EN SU ESCENA (Virtual_<clave>): se recorren sus pasos y al terminar cuenta como hecha.
-        string scene = VirtualMissions.SceneName(m.id);
-        if (Application.CanStreamedLevelBeLoaded(scene) && MobWorldLoader.Instance != null && !MobWorldLoader.Instance.IsInMobWorld)
+        // La misión se practica EN EL ÁREA REAL (la de esta máquina, con sus muebles y su gente): se entra al tanque, se
+        // «despierta» dentro de la virtualización delante de la máquina y una baliza guía cada paso.
+        Transform who = GameObject.FindGameObjectWithTag("Player")?.transform;
+        VirtualizationTank tank = GetComponentInChildren<VirtualizationTank>();
+        Transform front = tank != null && tank.front != null ? tank.front : transform;
+        Transform area = transform.parent != null ? transform.parent : transform;
+        void Go()
         {
-            VirtualMissionRunner.Pending = m;
-            EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, scene);
-            return;
+            if (who != null) WorkdayDirector.Teleport(who, front.position + Vector3.up * 0.1f);
+            VirtualInPlace.Begin(m, area, front);
         }
-        if (WorkdayDirector.Instance != null) WorkdayDirector.Instance.PlayerVirtualizes(m);   // sin escena generada: se cuenta al momento
-        _toast = $"Virtualización: «{m.title}» completada."; _toastUntil = Time.time + 4f;
+        if (tank != null && who != null) StartCoroutine(tank.Enter(who, Go)); else Go();
     }
 
     // Al TOCARLA el jugador se muestra el diálogo (no hace falta pulsar nada).

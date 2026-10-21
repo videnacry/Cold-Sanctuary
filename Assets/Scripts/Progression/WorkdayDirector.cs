@@ -41,6 +41,8 @@ public class WorkdayDirector : MonoBehaviour
             if (a.GetComponent<ConstructionProject>() == null && !IsTraining(a.areaType) && !roster.areas.Contains(a.displayName)) roster.areas.Add(a.displayName);
         roster.areas.Sort(System.StringComparer.Ordinal);   // orden base estable (día 0)
         if (!roster.areas.Contains(AreaWork.Guard)) roster.areas.Add(AreaWork.Guard);
+        // LO PRIMERO al empezar: la jornada y cada uno ya en su área (sin pasar unos segundos en su sitio antiguo).
+        if (TC != null && !ColdSanctuary.TestRunner.Running && FindAnyObjectByType<ColdSanctuary.TestRunner>() == null) { float h = TC.Hour; if (h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) { PlanDay(TC.Day); Tick(h); } }
     }
 
     static bool IsTraining(SanctuaryAreaType t) => t == SanctuaryAreaType.Gym || t == SanctuaryAreaType.Ballet || t == SanctuaryAreaType.MartialArts || t == SanctuaryAreaType.Calisthenics;
@@ -426,15 +428,23 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     // Un cuerpo de la Magnate (copia de su cuerpo de cubos) sin su conducta: para clones de trabajo e iniciaciones.
-    public static GameObject SpawnMagnateBody(string label)
+    public static GameObject SpawnMagnateBody(string label) => SpawnBodyCopy("Magnate", label);
+
+    /// <summary>Una copia del cuerpo de cubos de <paramref name="source"/> (sin su conducta), de pie: clones, turistas virtuales…</summary>
+    public static GameObject SpawnBodyCopy(string source, string label)
     {
-        GameObject mag = GameObject.Find("Magnate");
+        GameObject src = GameObject.Find(source);
         GameObject g = new GameObject(label);
-        if (mag != null)
+        if (src != null)
         {
-            Transform body = mag.transform.Find(CubeHumanoid.BodyName);
-            if (body != null) { Transform b = Instantiate(body.gameObject, g.transform, false).transform; b.localPosition = body.localPosition; b.localScale = body.localScale; }
-            g.transform.position = mag.transform.position + Vector3.right * 1.5f;
+            Transform body = src.transform.Find(CubeHumanoid.BodyName);
+            if (body != null)
+            {
+                Transform b = Instantiate(body.gameObject, g.transform, false).transform; b.localPosition = body.localPosition; b.localScale = body.localScale;
+                // La copia sale DE PIE: si el original estaba en una asana (yoga, enseñando), la copia no se queda congelada en ella.
+                ClonePose.Rest(b);
+            }
+            g.transform.position = src.transform.position + Vector3.right * 1.5f;
         }
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = label; wl.height = 2.1f;
         return g;

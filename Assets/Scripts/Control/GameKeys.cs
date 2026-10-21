@@ -12,7 +12,7 @@ public static class GameKeys
     public static bool MenuOpen;
     /// <summary>Hay un diálogo abierto (opciones, confirmación, menú de misiones): secuestra Intro y oculta el lanzador.</summary>
     public static bool DialogOpen => MenuOpen || ChoiceDialog.IsOpen || ConfirmationPanel.IsVisible || (MissionSelectMenu.Instance != null && MissionSelectMenu.Instance.IsOpen);
-    static bool Muted => SpellConsole.Capturing || MenuOpen || ChoiceDialog.IsOpen;   // (los paneles de UI leen sus teclas por aquí: no se mutean a sí mismos)
+    static bool Muted => SpellConsole.Capturing || MenuOpen;   // los diálogos de opciones NO bloquean el teclado (solo ocultan el lanzador): uno se puede alejar y se cierran
     public static bool GetKey(KeyCode k) => !Muted && Input.GetKey(k);
     public static bool GetKey(string k) => !Muted && Input.GetKey(k);
     public static bool GetKeyDown(KeyCode k) => !Muted && Input.GetKeyDown(k);

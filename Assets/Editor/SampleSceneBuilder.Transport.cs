@@ -18,7 +18,7 @@ public static partial class SampleSceneBuilder
 
     static void BuildBridgesAndPads(Transform parent, SanctuaryArea[] areas, Vector2[] sizes)
     {
-        _openings.Clear();
+        _openings.Clear(); _landings.Clear();
         var plats = new List<Plat>();
         for (int i = 0; i < areas.Length && i < sizes.Length; i++)
         {
@@ -172,11 +172,43 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // Abre un hueco de 8 m en la barandilla del lado <side> de un área (donde llega un puente).
+    // LLEGADAS DE LOS PUENTES: el paso de 8 m (y 4 m hacia dentro) debe quedar libre de muebles (camas, mesas…), si no
+    // el puente desemboca contra ellos. Se apuntan al construir y se despejan al final, con todo ya amueblado.
+    static readonly List<(Transform area, Vector2 half, int side, float center)> _landings = new List<(Transform, Vector2, int, float)>();
+
+    static void ClearBridgeLandings()
+    {
+        int removed = 0;
+        foreach (var l in _landings)
+        {
+            if (l.area == null) continue;
+            var kill = new List<GameObject>();
+            foreach (Transform c in l.area)
+            {
+                if (c.name == "Estructura_Elevada" || c.name == "Mat" || c.GetComponent<VirtualizationMachine>() != null) continue;
+                if (c.childCount == 0) { if (InLanding(l, c)) kill.Add(c.gameObject); continue; }
+                foreach (Transform item in c) if (InLanding(l, item) && item.GetComponentInChildren<Renderer>() != null && !item.name.StartsWith("Suelo")) kill.Add(item.gameObject);
+            }
+            foreach (GameObject g in kill) { Object.DestroyImmediate(g); removed++; }
+        }
+        Debug.Log($"[Transporte] Llegadas de los puentes despejadas: {removed} muebles apartados del paso.");
+        _landings.Clear();
+    }
+
+    static bool InLanding((Transform area, Vector2 half, int side, float center) l, Transform t)
+    {
+        Vector3 p = l.area.InverseTransformPoint(t.position);
+        float depth = l.side == 0 ? l.half.x - p.x : l.side == 1 ? p.x + l.half.x : l.side == 2 ? l.half.y - p.z : p.z + l.half.y;
+        float along = l.side < 2 ? p.z : p.x;
+        return depth < 4f && Mathf.Abs(along - l.center) < BridgeWidth * 0.5f + 0.6f;
+    }
+
+    // Abre un hueco de 8 m en la barandilla del lado <side> de un área (donde llega un puente) y apunta su llegada.
     static void OpenRail(Plat p, int side, float alongWorld)
     {
         float centerLocal = side < 2 ? alongWorld - p.c.y : alongWorld - p.c.x;
         OpenRailIn(p.t, p.half, side, centerLocal, BridgeWidth);
+        _landings.Add((p.t, p.half, side, centerLocal));
     }
 
     static void OpenRailPad(Transform pad, int side, float center, float width) => OpenRailIn(pad, new Vector2(PadSize, PadSize) * 0.5f, side, center, width);
@@ -224,7 +256,7 @@ public static partial class SampleSceneBuilder
         Transform t = new GameObject($"Pista_Alfombras_{label}").transform; t.SetParent(root, false);
         t.position = ground; t.rotation = rot;
         Elevate(t, new Vector2(PadSize, PadSize), ElevatedHeight);
-        KitchenProps.C(t, new Vector3(0f, 0.02f, 0f), new Vector3(PadSize - 0.4f, 0.04f, PadSize - 0.4f), new Color(0.86f, 0.82f, 0.74f), 0f, "Suelo_pista");
+        Solid(t, new Vector3(0f, -0.05f, 0f), new Vector3(PadSize, 0.14f, PadSize), new Color(0.86f, 0.82f, 0.74f), "Suelo_pista");   // SÓLIDO (antes sin collider: se caía uno al subir a la alfombra)
         CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
         pad.displayName = label; pad.members = members;
         var slots = new List<Vector3>();

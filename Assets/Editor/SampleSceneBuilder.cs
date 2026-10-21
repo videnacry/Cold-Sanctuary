@@ -152,6 +152,7 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
     }
 
@@ -3219,6 +3220,15 @@ public static partial class SampleSceneBuilder
         Color[] blankets = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f) };
         for (int i = 0; i < 3; i++) Label(InfirmaryProps.HospitalBed(r, $"Cama {i + 1}", new Vector3(-7.4f + i * 2.1f, 0f, -5f), 0f, blankets[i]), $"Cama {i + 1}", 1.4f);
         Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-7.6f, 0f, 1.2f), 90f), "Camilla de exploración", 1.3f);
+        // SILLA DE EXÁMENES (iniciación: constantes, pupilas, extracción y vacuna): sentado, con reposabrazos para el brazo.
+        Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-5.6f, 0f, -0.6f), 90f);
+        Color seatC = new Color(0.35f, 0.55f, 0.65f);
+        KitchenProps.C(exam, new Vector3(0f, 0.45f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
+        KitchenProps.C(exam, new Vector3(0f, 0.85f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
+        KitchenProps.C(exam, new Vector3(0.36f, 0.68f, 0.05f), new Vector3(0.1f, 0.06f, 0.6f), seatC, 0f, "Reposabrazos");
+        KitchenProps.C(exam, new Vector3(0f, 0.2f, 0f), new Vector3(0.08f, 0.4f, 0.08f), KitchenProps.Steel, 0f, "Pie");
+        KitchenProps.C(exam, new Vector3(0.75f, 0.45f, 0.3f), new Vector3(0.4f, 0.9f, 0.4f), KitchenProps.Steel, 0f, "Carrito_examen");   // tensiómetro, linterna, tubos y vacunas
+        Label(exam, "Silla de exámenes (iniciación)", 1.4f);
         Label(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-4.2f, 0f, 3.8f), 180f), "Mesa del médico", 1.5f);
         Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-8.5f, 0f, -1.6f), -90f), "Botiquín", 2.2f);
         Label(InfirmaryProps.XRay(r, "Rayos X", new Vector3(-1.4f, 0f, -5.4f), 0f), "Rayos X", 2.6f);
@@ -4093,6 +4103,10 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel, MobWorldSceneBuilder.SceneName); // modo escena → mundo mob propio
         foreach (var m in MicroAreas)   // cada área → su escena de microcosmos
             WireMeditationArea(parent, m.areaGo, m.display, m.tint, m.kind, MicroSceneName(m.key));
+        // Cada máquina solo tiene lo de SU área: las áreas con misiones y sin microcosmos también tienen la suya (solo virtualización).
+        WireMeditationArea(parent, "CulturedMeatLab_Area", "Carne Cultivada", new Color(0.85f, 0.7f, 0.68f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "Gym_Area", "Gimnasio", new Color(0.55f, 0.6f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
@@ -4115,7 +4129,7 @@ public static partial class SampleSceneBuilder
     }
 
     static void WireMeditationArea(Transform parent, string areaName, string displayName, Color tint,
-                                    MissionKind kind, string mobSceneName = null)
+                                    MissionKind kind, string mobSceneName = null, bool virtualOnly = false)
     {
         GameObject area = GameObject.Find(areaName);
         if (area == null)
@@ -4137,6 +4151,7 @@ public static partial class SampleSceneBuilder
         VirtualizationMachine machine = machineGO.AddComponent<VirtualizationMachine>();
         machine.areaName = displayName;
         VirtualizationTank.Build(machineGO.transform);   // la máquina ES un tanque de agua (máscara + sumergirse)
+        if (virtualOnly) return;   // solo VIRTUALIZACIÓN (misiones de trabajo del área): esta área aún no tiene microcosmos
 
         // MODO ESCENA: la máquina carga el mundo mob propio (sin shift/misiones in-place).
         if (!string.IsNullOrEmpty(mobSceneName))

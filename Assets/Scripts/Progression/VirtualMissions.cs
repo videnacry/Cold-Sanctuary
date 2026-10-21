@@ -43,7 +43,7 @@ public static class VirtualMissions
     {
         switch (Key(id))
         {
-            case "enf_iniciacion": return new[] { "Recibir al turista en la entrada", "Análisis de sangre", "Vacuna", "Explicarle las normas del santuario", "Acompañarle a su primera virtualización" };
+            case "enf_iniciacion": return new[] { "Recibir al turista en la entrada", "Sentarle en la silla de exámenes", "Tomarle la tensión, el pulso y la temperatura", "Mirarle las pupilas con la linterna", "Extraerle sangre del brazo", "Llevar la muestra al analizador", "Vacunarle en el hombro", "Explicarle las normas del santuario", "Acompañarle al tanque: su primera virtualización" };
             case "enf_visita": return new[] { "Revisar la historia de cada paciente", "Tomar constantes", "Curar las heridas", "Dar la medicación" };
             case "enf_animales": return new[] { "Sujetar al animal con calma", "Tomar la muestra", "Analizarla", "Vacunar" };
             case "enf_inventario": return new[] { "Desinfectar camillas y superficies", "Contar el material", "Reponer el botiquín" };
@@ -84,6 +84,22 @@ public static class VirtualMissions
         }
     }
 
+
+    /// <summary>
+    /// Dónde se hace cada paso EN EL ÁREA REAL: nombre de un objeto del área (o «@entrada», «@maquina»); null = un mueble
+    /// del área elegido solo. Así la virtualización reutiliza la enfermería, la cocina… de verdad.
+    /// </summary>
+    public static string[] Anchors(string id)
+    {
+        switch (Key(id))
+        {
+            case "enf_iniciacion": return new[] { "@entrada", "Silla_examen", "Silla_examen", "Silla_examen", "Silla_examen", "Analizador clinico", "Silla_examen", "Mesa del medico", "@maquina" };
+            case "enf_visita": return new[] { "Cama 1", "Cama 2", "Cama 3", "Botiquin" };
+            case "enf_animales": return new[] { "Cuadra", "Mesa veterinaria", "Laboratorio", "Mesa veterinaria" };
+            case "enf_inventario": return new[] { "Camilla", "Botiquin", "Botiquin" };
+            default: return null;
+        }
+    }
     public static Color Tint(string area)
     {
         switch (area)

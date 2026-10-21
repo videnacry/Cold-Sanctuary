@@ -376,11 +376,16 @@ public class SpellConsole : MonoBehaviour
             if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Tab && _choices.Count > 0) { _input = _choices[Mathf.Max(0, _sel)]; _moveCaret = true; e.Use(); }
         }
         if (_sel >= _choices.Count) _sel = -1;
-        for (int i = 0; i < rows.Count && i < 9; i++)
+        // La lista se DESPLAZA con la selección (antes se quedaba en las 9 primeras y no se veían los de abajo).
+        int first = Mathf.Clamp(_sel - 4, 0, Mathf.Max(0, rows.Count - 9));
+        for (int k = 0; k < 9 && first + k < rows.Count; k++)
         {
+            int i = first + k;
             bool on = i < _choices.Count && (i == _sel || (_sel < 0 && i == 0));
-            GUI.Label(new Rect(x, y + 58f + i * 16f, w, 16f), (on ? "➤ " : "   ") + rows[i], rich);
+            GUI.Label(new Rect(x, y + 58f + k * 16f, w, 16f), (on ? "➤ " : "   ") + rows[i], rich);
         }
+        if (first > 0) GUI.Label(new Rect(x + w - 30f, y + 58f, 30f, 16f), "▲", rich);
+        if (first + 9 < rows.Count) GUI.Label(new Rect(x + w - 30f, y + 58f + 8 * 16f, 30f, 16f), "▼", rich);
         for (int i = 0; i < _log.Count && i < 2; i++)
             GUI.Label(new Rect(x, y + 58f + 9 * 16f + i * 16f, w, 16f), _log[_log.Count - 1 - i]);
     }

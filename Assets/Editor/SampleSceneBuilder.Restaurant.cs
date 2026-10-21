@@ -23,15 +23,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(room, new Vector3(0f, 0.75f, 7.65f), new Vector3(19.2f, 1.5f, 0.05f), tile, 0f, "Pared_Azulejo");   // zócalo bajo: la cocina es abierta por los cuatro lados
         KitchenProps.C(room, new Vector3(0f, 1.05f, 7.6f), new Vector3(19.2f, 0.04f, 0.04f), brass, 0f, "Friso_Laton");
         for (int i = 0; i < 24; i++) KitchenProps.C(room, new Vector3(-9.4f + i * 0.82f, 0.75f, 7.62f), new Vector3(0.01f, 1.5f, 0.01f), new Color(0.08f, 0.2f, 0.16f), 0f, "Junta_Azulejo");
-        // Botellero de cobre con cazos colgados sobre la isla.
-        Transform rack = KitchenProps.Root(room, "Botellero_cobre", new Vector3(1.5f, 2.35f, -2.6f));   // sobre la isla de emplatado
-        KitchenProps.C(rack, Vector3.zero, new Vector3(3f, 0.05f, 0.05f), copper, 0f, "Barra");
-        for (int i = 0; i < 6; i++)
-        {
-            KitchenProps.C(rack, new Vector3(-1.3f + i * 0.52f, -0.18f, 0f), new Vector3(0.01f, 0.3f, 0.01f), copper, 0f, "Gancho");
-            KitchenProps.C(rack, new Vector3(-1.3f + i * 0.52f, -0.42f, 0f), new Vector3(0.24f, 0.16f, 0.24f), copper, 0f, "Cazo_cobre");
-        }
-        // Pase de emplatado: el riel de comandas (sin lámparas colgadas: no hay techo).
+        // Sin nada colgado (no hay techo): ni botellero de cobre, ni lámparas, ni campanas extractoras. Pase: el riel de comandas.
         Transform pass = room.Find("Barra de servicio");
         if (pass != null)
         {

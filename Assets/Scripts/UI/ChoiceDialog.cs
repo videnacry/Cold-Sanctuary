@@ -19,6 +19,7 @@ public class ChoiceDialog : MonoBehaviour
     Action<int> _onPick;
     Action _onCancel;
     int _sel, _openedFrame;
+    Transform _anchor, _player; float _radius;
     const int Visible = 10;
 
     static ChoiceDialog Get()
@@ -29,10 +30,12 @@ public class ChoiceDialog : MonoBehaviour
         return _i = go.AddComponent<ChoiceDialog>();
     }
 
-    public static void Show(string title, string[] options, Action<int> onPick, Action onCancel = null)
+    /// <summary>Abre el diálogo. Con <paramref name="anchor"/>, se cierra solo si el jugador se aleja más de <paramref name="radius"/> m.</summary>
+    public static void Show(string title, string[] options, Action<int> onPick, Action onCancel = null, Transform anchor = null, float radius = 4.5f)
     {
         ChoiceDialog d = Get();
         d._title = title; d._options = options ?? new string[0]; d._onPick = onPick; d._onCancel = onCancel;
+        d._anchor = anchor; d._radius = radius;
         d._sel = 0; d._open = true; d._openedFrame = Time.frameCount;
     }
 
@@ -55,6 +58,11 @@ public class ChoiceDialog : MonoBehaviour
 
     void Update()
     {
+        if (_open && _anchor != null)   // alejarse lo cierra (no bloquea nada: solo oculta el lanzador mientras está)
+        {
+            if (_player == null) { GameObject p = GameObject.FindGameObjectWithTag("Player"); _player = p != null ? p.transform : null; }
+            if (_player != null) { Vector3 d = _player.position - _anchor.position; d.y = 0f; if (d.magnitude > _radius) { Close(); return; } }
+        }
         if (!_open || Time.frameCount == _openedFrame || _options.Length == 0 && !Input.GetKeyDown(KeyCode.Escape)) return;
         if (Input.GetKeyDown(KeyCode.Escape)) { Action c = _onCancel; Close(); c?.Invoke(); return; }
         if (Input.GetKeyDown(KeyCode.DownArrow)) _sel = (_sel + 1) % _options.Length;

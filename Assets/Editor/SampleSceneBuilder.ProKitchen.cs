@@ -86,7 +86,6 @@ public static partial class SampleSceneBuilder
                 else if (name.StartsWith("paellero")) { KitchenProps.C(t, new Vector3(0f, 0.93f, 0f), new Vector3(0.8f, 0.05f, 0.6f), new Color(0.3f, 0.3f, 0.32f), 0f, "Paellera"); KitchenProps.C(t, new Vector3(0f, 0.96f, 0f), new Vector3(0.7f, 0.02f, 0.5f), new Color(0.95f, 0.75f, 0.3f), 0f, "Arroz_azafran"); }
                 else if (name == "comal") KitchenProps.C(t, new Vector3(0f, 0.93f, 0f), new Vector3(0.85f, 0.03f, 0.6f), new Color(0.2f, 0.18f, 0.17f), 0f, "Plancha_comal");
                 else for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.25f + i * 0.5f, 1.0f, 0f), new Vector3(0.3f, 0.18f, 0.3f), EqSteel, 0f, "Olla");
-                KitchenProps.C(t, new Vector3(0f, 2.3f, 0f), new Vector3(1.15f, 0.25f, 0.85f), EqSteel, 0f, "Campana");
                 break;
             case "trompo vertical (inducción)":
                 KitchenProps.C(t, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.7f), EqSteel, 0f, "Cuerpo");

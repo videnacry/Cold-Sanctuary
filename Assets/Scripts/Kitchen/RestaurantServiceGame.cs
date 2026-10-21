@@ -15,6 +15,9 @@ public class RestaurantServiceGame : MonoBehaviour
     public Material skin, plateMat, foodMat;
     public int target = 5;
     public float spawnEvery = 7f, cookSeconds = 3f, eatSeconds = 8f, walkSpeed = 2.6f;
+    [Tooltip("Turistas como copias de cuerpos de gente del santuario (en el restaurante real) en vez de figuras simples.")]
+    public bool copies;
+    public float seatHeight = 0.45f, plateAhead = 0.95f, plateUp = 0.45f;
 
     enum State { Arriving, Waiting, Cooking, Ready, Called, ToTable, Eating, Leaving, Gone }
     class Order
@@ -31,6 +34,56 @@ public class RestaurantServiceGame : MonoBehaviour
     string _toast; float _toastUntil;
 
     public int Served => _served;
+    public Transform returnPoint;
+
+    void OnDestroy() { foreach (Order o in _orders) { if (o.plate != null) Destroy(o.plate.gameObject); if (o.body != null) Destroy(o.body.gameObject); } }
+
+    /// <summary>
+    /// El SERVICIO en el restaurante REAL (la cocina y el comedor del santuario): fogón de un puesto, la barra de servicio
+    /// como pase, las sillas del comedor y la entrada de la plataforma; los turistas son copias de gente del santuario.
+    /// </summary>
+    public static RestaurantServiceGame StartInRestaurant(Transform area, Transform returnPoint, WorkRoster.Mission m)
+    {
+        Transform pass = VirtualInPlace.FindDeep(area, "Barra de servicio");
+        Transform stove = null;
+        foreach (Transform t in area.GetComponentsInChildren<Transform>(true))
+            if (t.name.Contains("fogón") || t.name.Contains("Fogon") || t.name.StartsWith("Puesto_1")) { stove = t; break; }
+        var seats = new List<Transform>();
+        Transform dining = VirtualInPlace.FindDeep(area, "Comedor_Gourmet");
+        if (dining != null) foreach (Transform t in dining.GetComponentsInChildren<Transform>()) if (t.name == "Asiento" && seats.Count < 12) seats.Add(t);
+        if (pass == null || stove == null || seats.Count == 0) { Debug.LogWarning("[Restaurante] No encuentro la cocina/comedor reales: se usa la escena aparte."); return null; }
+
+        var go = new GameObject("Servicio_virtual");
+        var g = go.AddComponent<RestaurantServiceGame>();
+        g.copies = true; g.returnPoint = returnPoint;
+        Transform mat = area.Find("Mat"); float hz = mat != null ? mat.localScale.z * 0.5f : 10f;
+        g.entrance = Mark(go.transform, "Entrada", area.TransformPoint(new Vector3(1.5f, 0.15f, hz - 1.5f)));
+        g.exit = Mark(go.transform, "Salida", area.TransformPoint(new Vector3(-1.5f, 0.15f, hz - 1.5f)));
+        Vector3 pf = pass.position; pf.y = area.position.y + 0.15f;
+        Transform passMark = Mark(go.transform, "Pase", pf); passMark.rotation = pass.rotation;
+        g.pass = passMark;
+        g.waiting = Mark(go.transform, "Cola", pf + pass.forward * 2.2f); g.waiting.rotation = pass.rotation;
+        g.seats = seats.ToArray(); g.seatHeight = 0.45f; g.plateAhead = 0.55f; g.plateUp = 0.32f;
+        Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
+        g.plateMat = new Material(sh) { color = Color.white }; g.foodMat = new Material(sh) { color = new Color(0.8f, 0.45f, 0.25f) };
+        // El fogón y la campana del pase, en los sitios reales.
+        Station(go.transform, g, stove.position, false, "Fogón del puesto (F: cocinar el pedido)");
+        Station(go.transform, g, pass.position + Vector3.up * 0.2f, true, "Campana del pase (F: llamar por número)");
+        VirtualMissionRunner.Pending = m;
+        Debug.Log("[Restaurante] Virtualización del servicio en la cocina y el comedor REALES del santuario.");
+        return g;
+    }
+
+    static Transform Mark(Transform parent, string name, Vector3 p) { var t = new GameObject(name).transform; t.SetParent(parent, true); t.position = p; return t; }
+
+    static void Station(Transform parent, RestaurantServiceGame g, Vector3 p, bool bell, string label)
+    {
+        var t = new GameObject(bell ? "Campana_virtual" : "Fogon_virtual").transform; t.SetParent(parent, true); t.position = p;
+        var c = t.gameObject.AddComponent<SphereCollider>(); c.isTrigger = true; c.radius = 1.2f;
+        var s = t.gameObject.AddComponent<RestaurantServiceStation>(); s.game = g; s.bell = bell;
+        WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = label; wl.height = 1.3f;
+    }
+
 
     void Start() { _spawnAt = Time.time + 1f; }
 
@@ -41,7 +94,13 @@ public class RestaurantServiceGame : MonoBehaviour
         if (_exitAt > 0f && Time.time >= _exitAt)
         {
             _exitAt = -1f;
-            if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) MobWorldLoader.Instance.ExitMobWorld();
+            if (returnPoint != null)   // en el restaurante real: se «despierta» delante de la máquina
+            {
+                GameObject pl = GameObject.FindGameObjectWithTag("Player");
+                if (pl != null) WorkdayDirector.Teleport(pl.transform, returnPoint.position + Vector3.up * 0.1f);
+                Destroy(gameObject);
+            }
+            else if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) MobWorldLoader.Instance.ExitMobWorld();
         }
     }
 
@@ -60,6 +119,13 @@ public class RestaurantServiceGame : MonoBehaviour
 
     Transform Tourist(int n)
     {
+        if (copies)
+        {
+            string[] who = { "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };
+            GameObject c = WorkdayDirector.SpawnBodyCopy(who[n % who.Length], $"Turista_{n}");
+            c.transform.SetParent(transform, true);
+            return c.transform;
+        }
         var root = new GameObject($"Turista_{n}").transform;
         root.SetParent(transform, true);
         Material shirt = shirts.Length > 0 ? shirts[n % shirts.Length] : null;
@@ -114,8 +180,9 @@ public class RestaurantServiceGame : MonoBehaviour
                 if (Walk(o, seats[o.seat].position))
                 {
                     o.body.rotation = seats[o.seat].rotation;
-                    o.body.position = seats[o.seat].position + Vector3.down * 0.4f;   // sentado
-                    o.plate.SetParent(seats[o.seat], false); o.plate.localPosition = new Vector3(0f, 0.45f, 0.95f);   // en la mesa
+                    if (copies) { Vector3 sp = seats[o.seat].position; o.body.position = new Vector3(sp.x, sp.y - seatHeight, sp.z); ClonePose.Apply(o.body.Find(CubeHumanoid.BodyName), DailyPoses.Sit()); }
+                    else o.body.position = seats[o.seat].position + Vector3.down * 0.4f;   // sentado
+                    o.plate.SetParent(null, true); o.plate.position = seats[o.seat].position + seats[o.seat].forward * plateAhead + Vector3.up * plateUp;   // en la mesa, delante
                     o.timer = Time.time + eatSeconds; o.state = State.Eating;
                 }
                 break;
@@ -124,7 +191,7 @@ public class RestaurantServiceGame : MonoBehaviour
                 if (Time.time >= o.timer)
                 {
                     if (o.plate != null) Destroy(o.plate.gameObject);
-                    o.body.position += Vector3.up * 0.4f;
+                    if (copies) ClonePose.Rest(o.body.Find(CubeHumanoid.BodyName)); else o.body.position += Vector3.up * 0.4f;
                     o.state = State.Leaving; _served++;
                     Debug.Log($"[Restaurante] El turista #{o.number} termina de comer y se va ({_served}/{target} servidos).");
                     if (_served >= target && !_done) Complete();

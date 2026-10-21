@@ -40,6 +40,29 @@ public static class DailyPoses
         (BodyPart.ShoulderLeft, new Vector3(-20, 0, 8)), (BodyPart.ShoulderRight, new Vector3(-20, 0, -8)), (BodyPart.ForearmLeft, new Vector3(-60, 0, -30)), (BodyPart.ForearmRight, new Vector3(-60, 0, 30)));
     /// <summary>De pie (deshace sentarse o tumbarse).</summary>
     public static AsanaPoseSpell Stand() => Make("de pie", -1f);
+
+    // ── EXAMEN DE INICIACIÓN (enfermería): posturas del que EXAMINA y del EXAMINADO ──
+    /// <summary>Paciente sentado con el brazo derecho extendido y apoyado (tensión, extracción de sangre).</summary>
+    public static AsanaPoseSpell PatientArmOut() => Make("brazo extendido", 0.5f, (BodyPart.ThighLeft, new Vector3(-90, 0, 0)), (BodyPart.ThighRight, new Vector3(-90, 0, 0)),
+        (BodyPart.ShinLeft, new Vector3(90, 0, 0)), (BodyPart.ShinRight, new Vector3(90, 0, 0)),
+        (BodyPart.ShoulderRight, new Vector3(-80, 0, -15)), (BodyPart.ShoulderLeft, new Vector3(-30, 0, 0)), (BodyPart.ForearmLeft, new Vector3(-60, 0, 0)));
+    /// <summary>Paciente sentado, la cabeza un poco alzada y quieta (le miran las pupilas).</summary>
+    public static AsanaPoseSpell PatientHeadUp() => Make("cabeza alzada", 0.5f, (BodyPart.ThighLeft, new Vector3(-90, 0, 0)), (BodyPart.ThighRight, new Vector3(-90, 0, 0)),
+        (BodyPart.ShinLeft, new Vector3(90, 0, 0)), (BodyPart.ShinRight, new Vector3(90, 0, 0)), (BodyPart.Neck, new Vector3(-12, 0, 0)),
+        (BodyPart.ShoulderLeft, new Vector3(-35, 0, 0)), (BodyPart.ShoulderRight, new Vector3(-35, 0, 0)), (BodyPart.ForearmLeft, new Vector3(-55, 0, 0)), (BodyPart.ForearmRight, new Vector3(-55, 0, 0)));
+    /// <summary>Paciente sentado con el hombro izquierdo descubierto hacia fuera (vacuna en el deltoides).</summary>
+    public static AsanaPoseSpell PatientShoulder() => Make("hombro para la vacuna", 0.5f, (BodyPart.ThighLeft, new Vector3(-90, 0, 0)), (BodyPart.ThighRight, new Vector3(-90, 0, 0)),
+        (BodyPart.ShinLeft, new Vector3(90, 0, 0)), (BodyPart.ShinRight, new Vector3(90, 0, 0)), (BodyPart.ShoulderLeft, new Vector3(0, 0, 25)), (BodyPart.Neck, new Vector3(0, 25, 0)),
+        (BodyPart.ShoulderRight, new Vector3(-35, 0, 0)), (BodyPart.ForearmRight, new Vector3(-55, 0, 0)));
+    /// <summary>El que examina, inclinado, con las dos manos delante (tensión, extracción: sujeta el brazo y la aguja).</summary>
+    public static AsanaPoseSpell ExaminerHands() => Make("examinar con las manos", -1f, (BodyPart.Back, new Vector3(18, 0, 0)),
+        (BodyPart.ShoulderLeft, new Vector3(-65, 0, 10)), (BodyPart.ShoulderRight, new Vector3(-65, 0, -10)), (BodyPart.ForearmLeft, new Vector3(-35, 0, 0)), (BodyPart.ForearmRight, new Vector3(-35, 0, 0)));
+    /// <summary>El que examina las pupilas: la linterna (mano derecha) a la altura de los ojos del paciente.</summary>
+    public static AsanaPoseSpell ExaminerPenlight() => Make("linterna en las pupilas", -1f, (BodyPart.Back, new Vector3(12, 0, 0)), (BodyPart.Neck, new Vector3(10, 0, 0)),
+        (BodyPart.ShoulderRight, new Vector3(-95, 0, -10)), (BodyPart.ForearmRight, new Vector3(-30, 0, 0)), (BodyPart.ShoulderLeft, new Vector3(-50, 0, 15)), (BodyPart.ForearmLeft, new Vector3(-60, 0, 0)));
+    /// <summary>El que vacuna: brazo derecho a la altura del hombro del paciente, con la jeringa.</summary>
+    public static AsanaPoseSpell ExaminerSyringe() => Make("vacunar", -1f, (BodyPart.Back, new Vector3(10, 0, 0)),
+        (BodyPart.ShoulderRight, new Vector3(-80, 0, 0)), (BodyPart.ForearmRight, new Vector3(-45, 0, 0)), (BodyPart.ShoulderLeft, new Vector3(-60, 0, 15)), (BodyPart.ForearmLeft, new Vector3(-30, 0, 0)));
 }
 
 /// <summary>COMER EN EL RESTAURANTE: va a la barra de servicio, pide (toma una ración del pase), busca una silla libre,
