@@ -94,7 +94,7 @@ public static partial class SampleSceneBuilder
         Bridge(root, rc + rd * 25f + Vector3.up * ElevatedHeight, rc + rd * 30f + Vector3.up * ElevatedHeight, 4f, "Puente_pista_residencial");
         OpenRailPad(rpad, 3, 0f, 4f);
         pads++;
-        Debug.Log($"[Transporte] {bridges} puentes de 8 m entre plataformas cercanas y {pads} pistas de alfombras voladoras (una por grupo).");
+        Debug.Log($"[Transporte] {bridges} puentes de 8 m (por cercanía, de {links.Count} posibles) y {pads} pistas de alfombras voladoras (una por grupo).");
     }
 
     // Los huertos elevados (MakePlot): no poner pistas encima.

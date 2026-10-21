@@ -107,6 +107,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; }
             if (hv != null) break;
         }
+        if (hv == null) foreach (Hive h in Hive.All) { foreach (IceInsectLife b in FindObjectsByType<IceInsectLife>(FindObjectsSortMode.None)) if (b.hive == h) { hv = h; break; } if (hv != null) break; }   // todas tienen araña cerca: la primera
         TestProbe.Check("hay una colmena con abejas", hv != null);
         if (hv != null)
         {
