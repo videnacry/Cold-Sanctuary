@@ -12,15 +12,70 @@
     },
     "gbif": {
       "command": "npx",
-      "args": ["-y", "@cyanheads/gbif-biodiversity-mcp-server@0.7.5"]
+      "args": [
+        "-y",
+        "@cyanheads/gbif-biodiversity-mcp-server@0.7.5"
+      ]
     },
     "eol": {
       "command": "npx",
-      "args": ["-y", "@pipeworx/mcp-eol@0.1.2"]
+      "args": [
+        "-y",
+        "@pipeworx/mcp-eol@0.1.2"
+      ]
     },
     "blender": {
       "command": "uvx",
-      "args": ["blender-mcp==2.0.0"]
+      "args": [
+        "blender-mcp==2.0.0"
+      ]
+    },
+    "pubchem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@cyanheads/pubchem-mcp-server@0.7.0"
+      ]
+    },
+    "usda-food": {
+      "command": "uvx",
+      "args": [
+        "usda-mcp==0.1.0"
+      ]
+    },
+    "openfoodfacts": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-openfoodfacts@0.1.2"
+      ]
+    },
+    "wger": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-wger@1.0.2"
+      ]
+    },
+    "cropgraph": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@cropgraph/mcp@3.5.0"
+      ]
+    },
+    "openalex": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-openalex@0.1.2"
+      ]
+    },
+    "arxiv": {
+      "command": "uvx",
+      "args": [
+        "arxiv-mcp-server==0.8.2"
+      ]
     }
   }
 }
