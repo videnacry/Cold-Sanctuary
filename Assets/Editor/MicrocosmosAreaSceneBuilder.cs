@@ -112,7 +112,7 @@ public static class MicrocosmosAreaSceneBuilder
     }
 
 
-    static void Finish(Scene scene, string path, Scene prev)
+    internal static void Finish(Scene scene, string path, Scene prev)
     {
         MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, path);

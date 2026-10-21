@@ -21,7 +21,9 @@ public static class AreaMicrocosmos
     public const float AreaScale = 10f;
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
-    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o)
+    /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
+    /// el Transform dado, sobre el suelo del área, y devuelve cuántos personajes vistió.</param>
+    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
         int dressed = 0;
@@ -66,7 +68,8 @@ public static class AreaMicrocosmos
         portal.AddComponent<WorldExitPortal>().label = "Salir del microcosmos";
 
         Transform cast = new GameObject("Elenco").transform; cast.SetParent(story, false);
-        if (kind == SampleSceneBuilder.MissionKind.Heal) dressed = InfirmaryStory(cast);
+        if (storyOverride != null) dressed = storyOverride(cast);
+        else if (kind == SampleSceneBuilder.MissionKind.Heal) dressed = InfirmaryStory(cast);
         else if (kind == SampleSceneBuilder.MissionKind.KitchenChannel) dressed = KitchenStory(cast);
         else if (kind == SampleSceneBuilder.MissionKind.GardenChannel) dressed = GardenStory(cast);
         else dressed = TribeStory(cast, display, 8);
@@ -86,7 +89,7 @@ public static class AreaMicrocosmos
         root.transform.position = o;
 
         // Las misiones del área (yoga, textil, mecánica) siguen en su tablero.
-        if (kind == SampleSceneBuilder.MissionKind.Yoga || kind == SampleSceneBuilder.MissionKind.Channel)
+        if (storyOverride == null && (kind == SampleSceneBuilder.MissionKind.Yoga || kind == SampleSceneBuilder.MissionKind.Channel))
         {
             MobMission[] missions = SampleSceneBuilder.BuildAreaMissions(root.transform, root.transform, display, tint, kind);
             foreach (MobMission m in missions) { if (m == null) continue; m.transform.position = story.TransformPoint(new Vector3(0f, 0f, 6f)); foreach (MeditationMissionBase b in m.GetComponents<MeditationMissionBase>()) b.endMode = MissionEndMode.Standalone; }
@@ -313,7 +316,7 @@ public static class AreaMicrocosmos
     // ── Piezas ────────────────────────────────────────────────────────────────────────────────────────────────────
 
     // Una HORMIGA HUMANIZADA: bípeda, con cara; NavMeshAgent para rodear los muebles gigantes.
-    static GameObject Ant(Transform root, string name, Vector3 pos, Color c, float height, float bulk)
+    internal static GameObject Ant(Transform root, string name, Vector3 pos, Color c, float height, float bulk)
     {
         var g = new GameObject(name);
         g.transform.SetParent(root, false); g.transform.localPosition = pos;
@@ -417,9 +420,9 @@ public static class AreaMicrocosmos
         }
     }
 
-    static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Material m, bool solid) => Box(parent, name, local, size, Quaternion.identity, m, solid);
+    internal static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Material m, bool solid) => Box(parent, name, local, size, Quaternion.identity, m, solid);
 
-    static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Quaternion rot, Material m, bool solid)
+    internal static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         var g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name; g.transform.SetParent(parent, false);
@@ -430,7 +433,7 @@ public static class AreaMicrocosmos
     }
 
     static readonly Dictionary<string, Material> _mats = new Dictionary<string, Material>();
-    static Material Mat(string name, Color c)
+    internal static Material Mat(string name, Color c)
     {
         if (_mats.TryGetValue(name, out Material cached) && cached != null) return cached;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
