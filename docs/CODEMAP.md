@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 523 tipos._
+_Total: 524 tipos._
 
 
 ## Animals
@@ -320,6 +320,7 @@ _Total: 523 tipos._
 - **Linduarda** (class) — `Assets/Scripts/World/Linduarda.cs` — LINDUARDA, la doctora (docs/character-linduarda, sanctuary1 §4) — hechicera avanzada cuyo **pensamiento custom** es **asegurar la salud del santuario**.
 - **Lod** (class) — `Assets/Scripts/Lod.cs` — LOD de simulación (docs/checklist.md — análisis de escala):
 - **LotusMeditationAbility** (class) — `Assets/Scripts/Meditation/LotusMeditationAbility.cs` — The lotus path into the Microcosmos — the endgame alternative to the machine (docs §1, §3).
+- **Lucidity** (class) — `Assets/Scripts/Soul/Lucidity.cs` — LUCIDEZ de los insectos con mente humana (los entomántropos:
 - **MaestraTeacher** (class) — `Assets/Scripts/Companion/MaestraTeacher.cs` — Personality:
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
