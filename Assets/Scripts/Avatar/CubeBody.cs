@@ -32,6 +32,8 @@ public static class CubeBody
 
     public static void Build(GameObject root, string species)
     {
+        // Los INSECTOS y arañas tienen su propio cuerpo articulado según su morfología real (CubeInsect + docs/insect-morphology.md).
+        if (PlanFor(species) == Plan.Insect) { CubeInsect.Dress(root, species, new Color(0.35f, 0.25f, 0.18f), 1f); return; }
         List<Part> parts = PartsOf(PlanFor(species));
         CreatureRig rig = root.GetOrAdd<CreatureRig>();
         foreach (Part p in parts)
@@ -89,19 +91,6 @@ public static class CubeBody
     {
         switch (plan)
         {
-            case Plan.Insect: return new List<Part> {
-                new Part(BodyPart.Head,  new Vector3(0f, 0.28f, 0.16f), new Vector3(0.14f, 0.12f, 0.12f)),
-                new Part(BodyPart.AntennaLeft,  new Vector3(-0.05f, 0.4f, 0.22f), new Vector3(0.02f, 0.14f, 0.02f)),
-                new Part(BodyPart.AntennaRight, new Vector3( 0.05f, 0.4f, 0.22f), new Vector3(0.02f, 0.14f, 0.02f)),
-                new Part(BodyPart.Chest, new Vector3(0f, 0.26f, 0f),   new Vector3(0.18f, 0.14f, 0.2f)),   // tórax
-                new Part(BodyPart.Tail,  new Vector3(0f, 0.24f, -0.22f), new Vector3(0.16f, 0.14f, 0.26f)), // abdomen
-                new Part(BodyPart.LimbA, new Vector3(-0.14f, 0.12f, 0.08f), new Vector3(0.03f, 0.2f, 0.03f)),
-                new Part(BodyPart.LimbB, new Vector3( 0.14f, 0.12f, 0.08f), new Vector3(0.03f, 0.2f, 0.03f)),
-                new Part(BodyPart.LimbC, new Vector3(-0.15f, 0.12f, 0f),    new Vector3(0.03f, 0.2f, 0.03f)),
-                new Part(BodyPart.LimbD, new Vector3( 0.15f, 0.12f, 0f),    new Vector3(0.03f, 0.2f, 0.03f)),
-                new Part(BodyPart.LimbE, new Vector3(-0.14f, 0.12f, -0.08f),new Vector3(0.03f, 0.2f, 0.03f)),
-                new Part(BodyPart.LimbF, new Vector3( 0.14f, 0.12f, -0.08f),new Vector3(0.03f, 0.2f, 0.03f)),
-            };
             case Plan.Fish: return new List<Part> {
                 new Part(BodyPart.Head,  new Vector3(0f, 0.5f, 0.6f),  new Vector3(0.4f, 0.4f, 0.4f)),
                 new Part(BodyPart.Chest, new Vector3(0f, 0.5f, 0f),    new Vector3(0.5f, 0.5f, 1.0f)),   // cuerpo

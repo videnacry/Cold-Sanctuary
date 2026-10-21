@@ -114,9 +114,9 @@ public static class AreaMicrocosmos
             Color c = r != null && r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.4f, 0.3f);
             bool aphid = a.name.Contains("Ambrosio");
             // Los depredadores siguen siendo INSECTOS (a escala de la hormiga); las hormigas, humanizadas.
-            if (a.name.Contains("Mariquita")) { CubeInsect.Dress(a.gameObject, CubeInsect.Kind.Beetle, c, 2.4f); n++; continue; }
-            if (a.name.Contains("Escarabajo")) { CubeInsect.Dress(a.gameObject, CubeInsect.Kind.Beetle, c, 5f); n++; continue; }
-            if (a.name.Contains("Ara")) { CubeInsect.Dress(a.gameObject, CubeInsect.Kind.Spider, c, 4f); n++; continue; }
+            if (a.name.Contains("Mariquita")) { CubeInsect.Dress(a.gameObject, "Ladybug", c, 2.4f); n++; continue; }
+            if (a.name.Contains("Escarabajo")) { CubeInsect.Dress(a.gameObject, "DungBeetle", c, 5f); n++; continue; }
+            if (a.name.Contains("Ara")) { CubeInsect.Dress(a.gameObject, "Spider", c, 4f); n++; continue; }
             CubeInsect.DressHuman(a.gameObject, c, aphid ? AntHeight * 1.2f : AntHeight, aphid ? 1.6f : 1f, aphid);
             n++;
         }
@@ -268,12 +268,33 @@ public static class AreaMicrocosmos
                 holder.gameObject.AddComponent<MicroSize>().length = len;
                 GameObject a = (GameObject)PrefabUtility.InstantiatePrefab(prefab);
                 a.transform.SetParent(holder, false); a.transform.localPosition = Vector3.zero;
-                Renderer[] rs = a.GetComponentsInChildren<Renderer>();   // y ya en el editor, a su tamaño
-                if (rs.Length > 0) { Bounds b = rs[0].bounds; foreach (Renderer x in rs) b.Encapsulate(x.bounds); float now = Mathf.Max(b.size.x, b.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
+                // FORMA REAL (docs/insect-morphology.md): el cuerpo de cubos articulado de su especie sustituye al modelo;
+                // la conducta, el ciclo de vida y la biología siguen siendo los del prefab.
+                foreach (Renderer x in a.GetComponentsInChildren<Renderer>(true)) x.enabled = false;
+                CubeInsect.Dress(a, sp, SpeciesColor(sp), 1f);
+                Bounds bb = default; bool any = false;
+                foreach (Renderer x in a.GetComponentsInChildren<Renderer>()) { if (!x.enabled) continue; if (!any) { bb = x.bounds; any = true; } else bb.Encapsulate(x.bounds); }
+                if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
                 placed++;
             }
         }
         return placed;
+    }
+
+    static Color SpeciesColor(string sp)
+    {
+        switch (sp)
+        {
+            case "Ladybug": return new Color(0.85f, 0.12f, 0.1f);
+            case "DungBeetle": return new Color(0.15f, 0.12f, 0.1f);
+            case "Grasshopper": return new Color(0.45f, 0.62f, 0.25f);
+            case "Cricket": return new Color(0.22f, 0.16f, 0.1f);
+            case "Mantis": return new Color(0.4f, 0.68f, 0.3f);
+            case "Antlion": return new Color(0.62f, 0.52f, 0.38f);
+            case "Termite": return new Color(0.9f, 0.85f, 0.72f);
+            case "Aphid": return new Color(0.55f, 0.78f, 0.35f);
+            default: return new Color(0.3f, 0.2f, 0.15f);
+        }
     }
 
     static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Material m, bool solid) => Box(parent, name, local, size, Quaternion.identity, m, solid);

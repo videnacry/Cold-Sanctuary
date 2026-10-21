@@ -16,7 +16,9 @@ public class MicroSize : MonoBehaviour
         _next = Time.time + 0.5f;
         Renderer[] rs = GetComponentsInChildren<Renderer>();
         if (rs.Length == 0) return;
-        Bounds b = rs[0].bounds; foreach (Renderer r in rs) b.Encapsulate(r.bounds);
+        bool any = false; Bounds b = default;
+        foreach (Renderer r in rs) { if (!r.enabled) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        if (!any) return;
         float now = Mathf.Max(b.size.x, b.size.z);
         if (now < 1e-4f) return;
         float k = length / now;
