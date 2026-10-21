@@ -144,6 +144,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// aptitudes NO gestionadas por `Base*` (fuerza/masa/aguante/adaptabilidad + mentales) desde el arquetipo →
     /// migración fase 3 (mitad segura): los animales dejan de tener aptitudes planas (todas 1). null = sin cambio.</summary>
     protected virtual string SpeciesArchetype => null;
+    /// <summary>Clave del FÍSICO (tamaño/masa, `Physiognomy`) cuando una variante comparte todo lo demás con su especie
+    /// base (la araña de las nieves es una araña de ~30 cm). Por defecto, el arquetipo.</summary>
+    protected virtual string BodyArchetype => SpeciesArchetype;
     // La especie para relaciones/karma sale del componente SpeciesBody (etapa 5); si aún no está, del arquetipo de la clase.
     public override string SpeciesName => _speciesBody != null && !string.IsNullOrEmpty(_speciesBody.species)
         ? _speciesBody.species : SpeciesArchetype;
@@ -171,7 +174,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
     public override void RespondToThreat(GameObject threat)
     {
-        if (threat == null) return;
+        if (threat == null || Metamorphosis.IsPupa(this)) return;   // la pupa no puede huir
         StartCoroutine(Escape(false, new System.Collections.Generic.List<GameObject> { threat }));
     }
 
@@ -245,7 +248,8 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
         string spm = SpeciesArchetype;
         if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
-        if (GetComponent<SleepCycle>() == null) gameObject.AddComponent<SleepCycle>();   // sueño día/noche: dispara la compuerta `asleep` por el reloj (Clock); despierta ante amenazas.
+        SleepCycle sleep = GetComponent<SleepCycle>();
+        if (sleep == null) { sleep = gameObject.AddComponent<SleepCycle>(); sleep.nocturnal = SleepCycle.IsNocturnal(spm); }   // sueño día/noche por el reloj (Clock); los nocturnos duermen de día; despierta ante amenazas.
         if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos-dungbeetle-level.md §3.
         if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/anyma-factory-and-control.md §1.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
@@ -257,8 +261,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             if (ActsPrep != null && ActsPrep.walk != null && ActsPrep.run != null)
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
-        Body = Physiognomy.Of(SpeciesArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
+        Body = Physiognomy.Of(BodyArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
         _stages = StageProfile.Of(SpeciesArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
+        if (_stages.development == StageProfile.Development.Complete && GetComponent<Metamorphosis>() == null)
+            gameObject.AddComponent<Metamorphosis>();   // larva → pupa (quieta, no come) → adulto. docs/insect-biology-audit.md
         ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);
         TeenStage  = new Adolescence(_stages.teenDays, _stages.teenMin, _stages.teenMax);
         AdultStage = new Adulthood(_stages.adultDays, _stages.adultMin, _stages.adultMax);

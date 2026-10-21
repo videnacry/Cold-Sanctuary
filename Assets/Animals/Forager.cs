@@ -21,6 +21,8 @@ public class Forager : MonoBehaviour
     public bool eatsFish;
     [Tooltip("Come KRILL (Swarm de clase Krill) — dieta propia distinta del pez.")]
     public bool eatsKrill;
+    [Tooltip("Come EXCREMENTO (coprófago: escarabajo pelotero). Lo prefiere a cualquier otra fuente que perciba.")]
+    public bool eatsDung;
     [Tooltip("Alcance de detección de presa POR PERCEPCIÓN: radio = perception × esto (deriva de stats; crece con la " +
              "evolución de la percepción). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
     public float huntRangePerPerception = 80f;
@@ -48,7 +50,7 @@ public class Forager : MonoBehaviour
             case "Spider":                           eatsPrey = true; break;                    // depredadora; emboscada
             case "Cricket":                          eatsGrass = true; eatsPrey = true; break;  // omnívora oportunista
             case "Termite":                          eatsGrass = true; break;                   // cosechadora: corta hierba/celulosa
-            case "DungBeetle":                       eatsGrass = true; break;                   // descomponedor: detrito/materia vegetal
+            case "DungBeetle":                       eatsDung = true; eatsGrass = true; break;  // coprófago: excremento de herbívoros (doi 10.1371/journal.pone.0304908); detrito vegetal si no hay
             case "Grasshopper":                      eatsGrass = true; break;                   // herbívoro de pasto (fase enjambre)
             case "Antlion":                          eatsPrey = true; break;                    // emboscada en embudo
             case "Mantis":                           eatsPrey = true; break;                    // depredadora de emboscada
@@ -84,6 +86,15 @@ public class Forager : MonoBehaviour
             float md = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);   // la que percibe (la que le acercan los guardias)
             foreach (GameObject g in FoodItem.GetPopulation(OrganicMaterial.Meat))
                 if (g != null && g.activeInHierarchy) { float d = Vector3.Distance(pos, g.transform.position); if (d < md) { md = d; meat = g; } }
+        }
+        // EXCREMENTO (coprófago): el pelotero lo huele y va a por él antes que a nada (DefecationNeed lo deja en el suelo).
+        if (eatsDung)
+        {
+            float dd = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);
+            GameObject dung = null;
+            foreach (GameObject g in FoodItem.GetPopulation(OrganicMaterial.Dung))
+                if (g != null && g.activeInHierarchy) { float d = Vector3.Distance(pos, g.transform.position); if (d < dd) { dd = d; dung = g; } }
+            if (dung != null) return dung;
         }
         if (meat != null) return meat;   // una ración servida es comida «gratis»: el oportunista la prefiere a cazar (por eso los guardias se la acercan)
         return Nearest(pos, prey, grass, fish, krill, meat);
@@ -159,7 +170,7 @@ public class Forager : MonoBehaviour
     /// bajando el hambre; si es un banco de peces, lo reduce (`Graze`). Movido desde `Herbivore.Feed` (etapa 3).</summary>
     public IEnumerator Graze(Animal self)
     {
-        if (self == null || (self.lifeStage != LifeStage.adult && self.lifeStage != LifeStage.teen)) yield break;
+        if (!Metamorphosis.CanForage(self)) yield break;   // juvenil/adulto; la pupa nunca; la larva solo si la especie lo hace
         self.busy = true;
 
         GameObject food = SelectTarget(self);
@@ -170,7 +181,7 @@ public class Forager : MonoBehaviour
         if (foodSource != null && self.nav != null && self.nav.isOnNavMesh)
         {
             float walkInterval = TimeController.timeController.TimeSpeedMinuteSecs / 30;
-            while (Vector3.Distance(self.transform.position, foodSource.position) > 3f)
+            while (foodSource != null && Vector3.Distance(self.transform.position, foodSource.position) > 3f)   // la boñiga puede desaparecer (comida o deshecha)
             {
                 self.Loco.Walk(foodSource.position, walkInterval);
                 yield return new WaitForSeconds(walkInterval);
@@ -191,6 +202,15 @@ public class Forager : MonoBehaviour
         }
         else
         {
+            FoodItem item = foodSource != null ? foodSource.GetComponent<FoodItem>() : null;
+            if (item != null)   // comida en el suelo (p. ej. excremento para el pelotero): se gasta al comerla
+            {
+                Eat(self, item, item.gameObject, feed);
+                yield return new WaitForSeconds(interval);
+                if (item != null && !item.Consumed) Eat(self, item, item.gameObject, feed);
+                self.busy = false;
+                yield break;
+            }
             GardenCrop eaten = foodSource != null ? foodSource.GetComponent<GardenCrop>() : null;
             if (eaten != null && !eaten.Bite($"«{self.name}»")) { self.busy = false; yield break; }   // el CULTIVO pierde un mordisco
             self.hungry -= feed;   // PASTO: come aquí como siempre
@@ -205,7 +225,7 @@ public class Forager : MonoBehaviour
     /// (`Predation` decide en `Diet.SelectPrey`).</summary>
     public IEnumerator Hunt(Animal self)
     {
-        if (self == null || (self.lifeStage != LifeStage.teen && self.lifeStage != LifeStage.adult)) yield break;
+        if (!Metamorphosis.CanForage(self)) yield break;   // la larva de mariquita/hormiga león también caza; la pupa no
 
         GameObject prey = SelectTarget(self);
         if (prey == null)

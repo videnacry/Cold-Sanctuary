@@ -125,7 +125,7 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
 
         Animal herb = null;
         foreach (Animal a in alive)
-            if (a.Forage.eatsGrass && !a.Forage.eatsPrey && !a.Forage.eatsFish && !a.Forage.eatsKrill) { herb = a; break; }
+            if (a.Forage.eatsGrass && !a.Forage.eatsPrey && !a.Forage.eatsFish && !a.Forage.eatsKrill && !a.Forage.eatsDung) { herb = a; break; }
         if (herb != null && GrassPatch.All.Count > 0)
         {
             GameObject sel = herb.Forage.SelectTarget(herb);

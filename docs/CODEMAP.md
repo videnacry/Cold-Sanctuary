@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 494 tipos._
+_Total: 523 tipos._
 
 
 ## Animals
@@ -31,6 +31,7 @@ _Total: 494 tipos._
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
 - **MantisBehavior** (class) — `Assets/Animals/Mantis/MantisBehavior.cs`
 - **MeerkatBehavior** (class) — `Assets/Animals/Meerkat/MeerkatBehavior.cs`
+- **Metamorphosis** (class) — `Assets/Animals/Metamorphosis.cs` — METAMORFOSIS de los insectos (docs/insect-biology-audit.md).
 - **OrcaBehavior** (class) — `Assets/Animals/Orca/OrcaBehavior.cs`
 - **PenguinBehavior** (class) — `Assets/Animals/Penguin/PenguinBehavior.cs`
 - **Physiognomy** (class) — `Assets/Animals/Physiognomy.cs`
@@ -55,12 +56,14 @@ _Total: 494 tipos._
 
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
+- **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
@@ -69,9 +72,11 @@ _Total: 494 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/cocina-profesional.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE ENTRE PLATAFORMAS (docs/transporte-alfombras.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
+- **VirtualMissionSceneBuilder** (class) — `Assets/Editor/VirtualMissionSceneBuilder.cs` — ESCENAS DE VIRTUALIZACIÓN, UNA POR MISIÓN (VirtualMissions).
 
 ## Scripts
 
@@ -142,6 +147,7 @@ _Total: 494 tipos._
 - **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
 - **CameraZoneTrigger** (class) — `Assets/Scripts/Camera/CameraZoneTrigger.cs` — Attach to a trigger collider surrounding a zone (e.g.
 - **CarnivoreKeeper** (class) — `Assets/Scripts/World/CarnivoreKeeper.cs` — GUARDIA DEL SANTUARIO:
+- **CarpetPad** (class) — `Assets/Scripts/World/CarpetPad.cs` — PISTA DE ATERRIZAJE DE ALFOMBRAS VOLADORAS (docs/transporte-alfombras.md).
 - **CarryToRefuge** (class) — `Assets/Scripts/Prologue/CarryToRefuge.cs` — Misión de CUIDADO:
 - **CastMode** (enum) — `Assets/Scripts/Transformation/SpellBase.cs` — Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos).
 - **CaveTrigger** (class) — `Assets/Scripts/Microcosmos/CaveTrigger.cs` — Zona "cueva" — detecta cuando un ítem de comida entra en su trigger y notifica a para registrarlo como recogido.
@@ -157,12 +163,14 @@ _Total: 494 tipos._
 - **ChecklistSoulTest** (class) — `Assets/Scripts/Tests/ChecklistSoulTest.cs` — Automatiza por `TestProbe` los ítems del ALMA de `docs/testing-checklist.md` §20–§22 (que pedían leer los logs `[Alma]` del sandbox `AlmaBlend_AUTO`/`AlmaCompartida_AUTO`):
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
+- **ChoiceDialog** (class) — `Assets/Scripts/UI/ChoiceDialog.cs` — DIÁLOGO DE OPCIONES (máquina de virtualización, alfombras voladoras…):
 - **Cleaner** (class) — `Assets/Scripts/Kitchen/Cleaner.cs` — Limpia manchas () por proximidad (docs/kitchen-simulation.md §5).
 - **CleanSpell** (class) — `Assets/Scripts/Kitchen/CleanSpell.cs` — HECHIZO DE LIMPIEZA (docs/spells-suprahechizo §; sanctuary1 onboarding):
 - **Climbable** (class) — `Assets/Scripts/Farming/Climbable.cs` — Marca un objeto por el que se puede TREPAR (árbol, pared).
 - **ClinicalAnalysisSpell** (class) — `Assets/Scripts/Soul/ClinicalSpells.cs` — HECHIZO DE ANÁLISIS CLÍNICO (docs/sanctuary1-level-and-live-tests §4) — el que lanza Linduarda en la enfermería al recibir a Kushal:
 - **ClinicalStation** (class) — `Assets/Scripts/World/ClinicalStation.cs` — ESTACIÓN DE ANÁLISIS CLÍNICO (el analizador de sangre):
 - **Clock** (class) — `Assets/Scripts/Time/Clock.cs` — Hace correr el RELOJ del juego:
+- **ClonePose** (class) — `Assets/Scripts/Body/ClonePose.cs` — Posturas para CUERPOS COPIADOS (clones de la Magnate, turistas virtuales):
 - **ClothingCraftingArea** (class) — `Assets/Scripts/Clothing/ClothingCraftingArea.cs` — The sanctuary's clothing crafting workshop.
 - **ClothingRecipe** (class) — `Assets/Scripts/Clothing/ClothingRecipe.cs` — Defines one clothing item craftable in the ClothingCraftingArea.
 - **CoinWallet** (class) — `Assets/Scripts/Economy/CoinWallet.cs` — Tracks the player's coin balance.
@@ -184,6 +192,7 @@ _Total: 494 tipos._
 - **CubeGait** (class) — `Assets/Scripts/Avatar/CubeGait.cs` — MARCHA de la fauna de cubos ():
 - **CubeHair** (class) — `Assets/Scripts/Avatar/CubeHair.cs` — ASPECTO de cada persona (cabello, piel, ojos, barba) para el cuerpo de cubos:
 - **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.cs` — ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/insect-morphology.md (InsectMorphology):
 - **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
 - **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
 - **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
@@ -223,6 +232,7 @@ _Total: 494 tipos._
 - **FearSpell** (class) — `Assets/Scripts/Microcosmos/FearSpell.cs` — Hechizo de MIEDO (docs/sanctuary-second-lap-and-fear.md, apremios §3):
 - **FeedVisitorMission** (class) — `Assets/Scripts/Meditation/FeedVisitorMission.cs` — «ALIMENTAR A LOS VISITANTES» (huerto; antes «Limpiar la plaga»):
 - **FireTier** (enum) — `Assets/Scripts/Transformation/FireSpell.cs` — Presets documentados de fuego (docs/magic-metabolism-progression.md §13).
+- **FlyingCarpet** (class) — `Assets/Scripts/World/FlyingCarpet.cs` — ALFOMBRA VOLADORA (una esterilla grande de la pista de aterrizaje).
 - **FollowBrain** (class) — `Assets/Scripts/Control/FollowBrain.cs` — Cerebro de IA que hace que el ser SIGA a un objetivo (docs/anima-architecture.md §11.5).
 - **FollowingArrayInArray** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInArray .cs`
 - **FollowingArrayInScript** (struct) — `Assets/Scripts/UI/FollowingArrays/FollowingArrayInScript.cs`
@@ -288,6 +298,7 @@ _Total: 494 tipos._
 - **InfirmaryGate** (class) — `Assets/Scripts/World/InfirmaryGate.cs` — LA INICIACIÓN ES BLOQUEANTE (docs/jornada-y-rotacion.md).
 - **InfirmaryProps** (class) — `Assets/Scripts/World/InfirmaryProps.cs` — MOBILIARIO Y MAQUINARIA DE LA ENFERMERÍA (docs/sanctuary1-level-and-live-tests §4:
 - **IngredientMob** (class) — `Assets/Scripts/Combat/IngredientMob.cs` — An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
+- **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.cs` — MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/insect-morphology.md:
 - **InteractionController** (class) — `Assets/Scripts/Interaction/InteractionController.cs` — Attached to the Player.
 - **Inventory** (class) — `Assets/Scripts/Economy/Inventory.cs` — The player's inventory.
 - **Irosene** (class) — `Assets/Scripts/Companion/Companions/Irosene.cs` — Irosene (70+) — pasión, motivación, sociabilidad.
@@ -322,6 +333,15 @@ _Total: 494 tipos._
 - **MeditationSession** (class) — `Assets/Scripts/Meditation/MeditationSession.cs` — Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
+- **MicroFood** (class) — `Assets/Scripts/Microcosmos/MicroFood.cs` — Un RESTO DE COMIDA (o una hoja, en el huerto) que las hormigas recogen y llevan a la guarida.
+- **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (microcosmos de la Cocina):
+- **MicroGardener** (class) — `Assets/Scripts/Microcosmos/MicroGardener.cs` — CULTIVADORA DE HONGO (microcosmos del Huerto):
+- **MicroLair** (class) — `Assets/Scripts/Microcosmos/MicroLair.cs` — La GUARIDA de la tribu:
+- **MicroLeader** (class) — `Assets/Scripts/Microcosmos/MicroLeader.cs` — LA LÍDER de la tribu (Medea renacida, microcosmos de la Cocina):
+- **MicroLounger** (class) — `Assets/Scripts/Microcosmos/MicroLounger.cs` — NASATYA (Ambrosio renacido):
+- **MicroMove** (class) — `Assets/Scripts/Microcosmos/MicroMove.cs` — Andar en el microcosmos:
+- **MicroSize** (class) — `Assets/Scripts/Microcosmos/MicroSize.cs` — TAMAÑO EN EL MICROCOSMOS:
+- **MicroTeacher** (class) — `Assets/Scripts/Microcosmos/MicroTeacher.cs` — LA SEMBRADORA (Ruth renacida, microcosmos del Huerto):
 - **MigrationDiagnostics** (class) — `Assets/Scripts/MigrationDiagnostics.cs` — Diagnóstico de migración (TEMPORAL).
 - **Mind** (class) — `Assets/Scripts/Mind/Mind.cs` — El pilar MENTE de un ánima (docs/anima-architecture.md §3, §6, §10) — MVP.
 - **MindChannel** (enum) — `Assets/Scripts/MindChannel.cs` — Identifies which mental/emotional stat to target when restoring or draining.
@@ -342,6 +362,7 @@ _Total: 494 tipos._
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
 - **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
 - **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
+- **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md):
 - **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
 - **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.
 - **NutrientNeed** (class) — `Assets/Scripts/Composition/Metabolism.cs` — Necesidad de un NUTRIENTE (proteína/grasa/carbohidrato/minerales):
@@ -401,6 +422,8 @@ _Total: 494 tipos._
 - **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
 - **Respawn** (class) — `Assets/Scripts/Respawn.cs`
 - **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina).
+- **RestaurantServiceGame** (class) — `Assets/Scripts/Kitchen/RestaurantServiceGame.cs` — VIRTUALIZACIÓN «SERVICIO DEL RESTAURANTE» (escena Virtual_coc_servicio):
+- **RestaurantServiceStation** (class) — `Assets/Scripts/Kitchen/RestaurantServiceStation.cs` — Puesto del servicio del restaurante virtual:
 - **RiverCurrent** (class) — `Assets/Scripts/Microcosmos/RiverCurrent.cs` — CORRIENTE DE RÍO (docs/microcosmos-sakshi-origin.md §4) — una ZONA (trigger) que **arrastra aguas abajo** a las ánimas que caen dentro, con **combate de stats** (la masa resiste:
 - **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
 - **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):
@@ -485,9 +508,15 @@ _Total: 494 tipos._
 - **UIFollowingArrayElement** (struct) — `Assets/Scripts/UI/FollowingArrays/UIFollowingArray.cs`
 - **UpaYoga** (class) — `Assets/Scripts/Asana/UpaYoga.cs` — UPA-YOGA DE CUELLO Y HOMBROS — lo PRIMERO que enseña la Magnate (antes de Yoga Namaskar y del Saludo al Sol).
 - **UpaYogaSession** (class) — `Assets/Scripts/Virtualization/UpaYogaSession.cs` — Primera virtualización de YOGA — **upa-yoga de cuello** ("Yoga for Success" de Sadhguru) en el Mesocosmos (docs/upa-yoga-mission.md).
+- **VirtualFollower** (class) — `Assets/Scripts/Progression/VirtualFollower.cs` — El turista de la iniciación:
+- **VirtualInPlace** (class) — `Assets/Scripts/Progression/VirtualInPlace.cs` — Arranca una VIRTUALIZACIÓN EN EL ÁREA REAL (la de la máquina):
 - **VirtualizationMachine** (class) — `Assets/Scripts/Meditation/VirtualizationMachine.cs` — The virtualization machine — the universal trigger for mob / Microcosmos missions, present in every area (docs §3).
 - **VirtualizationTank** (class) — `Assets/Scripts/Meditation/VirtualizationTank.cs` — TANQUE DE VIRTUALIZACIÓN = una PECERA cuadrada y transparente, llena de agua, apoyada en el suelo (sobre un zócalo bajo).
+- **VirtualMissionRunner** (class) — `Assets/Scripts/Progression/VirtualMissionRunner.cs` — VIRTUALIZACIÓN EN EL ÁREA REAL:
+- **VirtualMissions** (class) — `Assets/Scripts/Progression/VirtualMissions.cs` — MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/jornada-y-rotacion.md).
+- **VirtualMissionStation** (class) — `Assets/Scripts/Progression/VirtualMissionStation.cs` — Un paso de la misión:
 - **VirtualPointer** (class) — `Assets/Scripts/Virtualization/VirtualPointer.cs` — Mira de virtualización (docs/kitchen-simulation.md §3b).
+- **VirtualSceneBootstrap** (class) — `Assets/Scripts/Progression/VirtualSceneBootstrap.cs` — ARRANQUE DE UNA ESCENA DE VIRTUALIZACIÓN (Virtual_&lt;clave&gt;):
 - **VirtualTask** (class) — `Assets/Scripts/Virtualization/VirtualTask.cs` — Base de una TAREA de virtualización que recibe pasos del (docs kitchen-simulation.md §3b).
 - **VisualAttention** (class) — `Assets/Scripts/Mind/VisualAttention.cs` — ATENCIÓN VISUAL (docs/atencion-visual.md).
 - **WalkSpell** (class) — `Assets/Scripts/Microcosmos/WalkSpell.cs` — Hechizo CAMINAR — la **contraparte de Jalar aplicada a UNO MISMO** (docs/stats-as-truth.md §hechizos), sobre el sistema unificado de `powerBonus` de `SpellBase`.

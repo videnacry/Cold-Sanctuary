@@ -21,6 +21,12 @@ public class SleepCycle : MonoBehaviour
 {
     [Tooltip("Nocturno: duerme de DÍA en vez de por la noche.")]
     public bool nocturnal = false;
+
+    /// <summary>Especies NOCTURNAS (data; `Animal.Init` lo copia a `nocturnal`). Grillo: los machos cantan al anochecer y
+    /// de noche; hormiga león: el adulto vuela de noche (la larva acecha a cualquier hora); araña (arquetipo araña lobo):
+    /// caza sobre todo de noche. Abejas, mariquitas, saltamontes, mantis y peloteros diurnos (el pelotero rodador se
+    /// orienta por el sol; los nocturnos usan la Vía Láctea, doi 10.1016/j.cub.2012.12.034). [A] salvo cita.</summary>
+    public static bool IsNocturnal(string species) => species == "Cricket" || species == "Antlion" || species == "Spider";
     [Tooltip("Solo maduros (adulto/juvenil) duermen el ciclo; las crías siguen despiertas aquí (su ritmo lo llevan otros).")]
     public bool onlyMature = false;
 

@@ -287,5 +287,40 @@ public static class PhrasePools
         Especie("Malamute", ElementalTone.Tierra,
             new[] { "Tiro con ganas.", "Mi humano es mi manada.", "El frío no me para." },
             new[] { "Me han dejado atado.", "Echo de menos a los míos.", "Aúllo a la puerta." }),
+
+        // ── Insectos (docs/insect-biology-audit.md): cada frase nace de su biología real ──────────────────
+        Especie("Ant", ElementalTone.Tierra,   // feromona de rastro, trofalaxia, cuidar pulgones
+            new[] { "El rastro huele a los míos.", "Comparto lo que traigo en el buche.", "Ordeño a los pulgones y los guardo." },
+            new[] { "Se perdió el rastro.", "Huelo a otra colonia.", "Sin el nido no soy nada." }),
+        Especie("Aphid", ElementalTone.Agua,   // savia, melaza, nacer sin padre
+            new[] { "Bebo savia sin parar.", "Mis hijas ya nacen dentro de mí.", "Las hormigas me guardan a cambio de melaza." },
+            new[] { "Una mariquita se acerca.", "La hoja se seca.", "Somos demasiadas en esta rama." }),
+        Especie("Ladybug", ElementalTone.Fuego,   // cazadora de pulgones, sangre refleja amarga
+            new[] { "Huelo pulgones en esa hoja.", "Mis colores avisan: sé amarga.", "Despliego las alas y me voy." },
+            new[] { "Las hormigas defienden su rebaño.", "No queda un pulgón.", "Me hago la muerta." }),
+        Especie("Spider", ElementalTone.Tierra,   // acecho, vibración, seda
+            new[] { "Siento cada vibración del suelo.", "Espero quieta; la presa viene sola.", "Mi seda me sostiene." },
+            new[] { "Algo más grande me busca.", "La presa se ha escapado.", "La noche se acaba sin cazar." }),
+        Especie("Cricket", ElementalTone.Viento,   // canto por estridulación, de noche
+            new[] { "Froto las alas y canto.", "De noche mi canto llega lejos.", "Una hembra responde a mi llamada." },
+            new[] { "Mi canto atrae también a quien me caza.", "Otro macho canta más fuerte.", "Me callo cuando algo vibra cerca." }),
+        Especie("Termite", ElementalTone.Tierra,   // celulosa, montículo, ciegas
+            new[] { "Corto hierba para el nido.", "Juntas levantamos el montículo.", "La reina pone y la colonia crece." },
+            new[] { "Una brecha en el túnel.", "Las hormigas atacan el nido.", "El sol me seca: vuelvo a la sombra." }),
+        Especie("DungBeetle", ElementalTone.Tierra,   // excremento, bola, orientación por el cielo
+            new[] { "Huelo una boñiga fresca.", "Ruedo la bola en línea recta, mirando al cielo.", "En esta bola crecerá mi cría." },
+            new[] { "Otro me quiere robar la bola.", "Se nubla y pierdo el rumbo.", "La boñiga se secó." }),
+        Especie("Grasshopper", ElementalTone.Viento,   // pasto, salto, fase gregaria
+            new[] { "Hierba tierna por todas partes.", "Un salto y estoy lejos.", "Con tantos juntos, vamos todos." },
+            new[] { "Demasiados empujando.", "El pasto se acaba.", "Una sombra arriba: salto." }),
+        Especie("Antlion", ElementalTone.Tierra,   // embudo de arena, espera larguísima
+            new[] { "Cavo el embudo hacia atrás.", "Algo resbala por la arena.", "Lanzo arena y cae al fondo." },
+            new[] { "Hace días que nada cae.", "La lluvia deshizo mi embudo.", "Sigo esperando." }),
+        Especie("Mantis", ElementalTone.Viento,   // acecho inmóvil, golpe de patas raptoras
+            new[] { "Me quedo quieta como una hoja.", "Giro la cabeza y la sigo.", "Un golpe y la tengo." },
+            new[] { "Se dio cuenta y huyó.", "Algo me ve a mí.", "Hambre, y nada se mueve." }),
+        Especie("SnowBee", ElementalTone.Agua,   // danza, colmena, racimo contra el frío
+            new[] { "Bailo para decir dónde está la comida.", "En el racimo, juntas, no hay frío.", "La miel guarda el verano." },
+            new[] { "La reina huele débil.", "El frío entra en el panal.", "Algo acecha en el tronco." }),
     };
 }
