@@ -76,6 +76,33 @@
       "args": [
         "arxiv-mcp-server==0.8.2"
       ]
+    },
+    "sympy": {
+      "command": "uvx",
+      "args": [
+        "mcp-sympy==0.1.0"
+      ]
+    },
+    "nasa": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-nasa@0.1.2"
+      ]
+    },
+    "wikipedia": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-wikipedia@0.1.2"
+      ]
+    },
+    "wikidata": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@pipeworx/mcp-wikidata@0.1.2"
+      ]
     }
   }
 }
