@@ -19,13 +19,14 @@ public static class CubeBody
     {
         if (string.IsNullOrEmpty(species)) return Plan.Biped;
         string s = species.ToLowerInvariant();
+        // Bípedos PRIMERO: "panterilia" contiene "ant" y caía en Insect.
+        if (s.Contains("human") || s.Contains("meerkat") || s.Contains("mono") || s.Contains("panterilia") ||
+            s.Contains("goluis") || s.Contains("irosene")) return Plan.Biped;
         if (s.Contains("ant") || s.Contains("aphid") || s.Contains("ladybug") || s.Contains("spider") || s.Contains("cricket") ||
             s.Contains("termite") || s.Contains("beetle") || s.Contains("antlion") || s.Contains("mantis") || s.Contains("grasshopper") ||
             s.Contains("bee")) return Plan.Insect;
         if (s.Contains("whale") || s.Contains("seal") || s.Contains("orca") || s.Contains("fish")) return Plan.Fish;
         if (s.Contains("penguin") || s.Contains("bird") || s.Contains("gallina")) return Plan.Bird;
-        if (s.Contains("human") || s.Contains("meerkat") || s.Contains("mono") || s.Contains("panterilia") ||
-            s.Contains("goluis") || s.Contains("irosene")) return Plan.Biped;
         return Plan.Quadruped;   // wolf/bunny/fox/deer/bear/malamute…
     }
 
