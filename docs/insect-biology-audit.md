@@ -121,8 +121,12 @@ Código: `Lucidity` (`Assets/Scripts/Soul/`), añadido en `Animal.Init` a los 12
 (calma, sociabilidad, disciplina) y el tono siguen siendo los de la especie. La postura erguida la dibuja `CubeInsect`
 (hilo de Unity) leyendo `Lucid`/`LegsOnGround`.
 
-Nombres (propuesta pendiente de Berón): **entomántropos** para todos; **mirmidones** (hormigas), **melisas** (abejas),
-**aracnes** (arañas), **titones** (grillos y saltamontes) y **mantis** (ya significa «adivina» en griego).
+Nombres (Berón, 2026-10-21):
+- **En diseño y docs**, para todo el grupo, valen los nombres descriptivos: insecto-humano, humano-insecto,
+  hombre-insecto, mujer-insecto o **entomántropos**.
+- **En el juego**, cada especie lleva su nombre mítico: **mirmidones** (hormigas), **melisas** (abejas), **aracnes**
+  (arañas), **titones** (grillos y saltamontes) y **mantis** (ya significa «adivina» en griego). Las especies nuevas
+  reciben el suyo cuando aparezcan.
 
 ## Mirmidones (hormigas humanas)
 
