@@ -40,7 +40,7 @@ public static class MicrocosmosAreaSceneBuilder
 
         // ENFERMERÍA: su microcosmos es la historia de AMBROSIO (su muerte camino de la cueva), en un mundo extenso de antes
         // del fuego, dentro de la enfermería vista a escala de insecto (×10: el jugador es una hormiga).
-        // TODAS las áreas: el área gigante, poblada por insectos a escala humana y hormigas humanizadas, con su historia.
+        // TODAS las áreas: el área gigante, poblada por insectos a escala humana y MIRMIDONES (hormigas humanas), con su historia.
         AreaMicrocosmos.Build(areaGo, display, kind, tint, o); MicroWater.SurroundScene(scene); Finish(scene, path, prev); return;
         // Suelo del microcosmos (40×40) con el color del área, y "decorado gigante" (lo que en el mundo real es pequeño).
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);

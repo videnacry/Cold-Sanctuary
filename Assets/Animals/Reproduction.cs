@@ -126,7 +126,7 @@ public class Reproduction : MonoBehaviour
             if (g == null || g == gameObject || !g.TryGetComponent(out Animal o) || o.death) continue;
             if (o.sex != Sex.female || o.lifeStage != LifeStage.adult) continue;
             if (Vector3.Distance(o.HomeOrigin, _animal.HomeOrigin) > r) continue;
-            if (o.GetInstanceID() < _animal.GetInstanceID()) return false;
+            if (string.CompareOrdinal(o.name + o.HomeOrigin, _animal.name + _animal.HomeOrigin) < 0) return false;   // desempate estable entre hembras (GetInstanceID está obsoleto en Unity 6)
         }
         return true;
     }

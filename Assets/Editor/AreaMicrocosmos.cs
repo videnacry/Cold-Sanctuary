@@ -90,7 +90,7 @@ public static class AreaMicrocosmos
         float span = 300f; if (src != null) { Renderer[] rr = src.GetComponentsInChildren<Renderer>(); if (rr.Length > 0) { Bounds bb = rr[0].bounds; foreach (Renderer x in rr) bb.Encapsulate(x.bounds); span = Mathf.Max(300f, Mathf.Max(bb.size.x, bb.size.z) * AreaScale + 40f); } }
         nav.center = Vector3.up * 15f; nav.size = new Vector3(span, 60f, span);
         nav.BuildNavMesh();
-        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale}, {dressed} hormigas humanizadas/insectos de la historia y {animals} animales a escala de hormiga.");
+        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale}, {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
     }
 
     // ── HISTORIAS ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -113,11 +113,11 @@ public static class AreaMicrocosmos
             Renderer r = a.GetComponent<Renderer>();
             Color c = r != null && r.sharedMaterial != null ? r.sharedMaterial.color : new Color(0.5f, 0.4f, 0.3f);
             bool aphid = a.name.Contains("Ambrosio");
-            // Los depredadores siguen siendo INSECTOS (a escala de la hormiga); las hormigas, humanizadas.
+            // Los depredadores siguen siendo INSECTOS (a escala de la hormiga); las hormigas, MIRMIDONES (hormigas humanas).
             if (a.name.Contains("Mariquita")) { CubeInsect.Dress(a.gameObject, "Ladybug", c, 2.4f); n++; continue; }
             if (a.name.Contains("Escarabajo")) { CubeInsect.Dress(a.gameObject, "DungBeetle", c, 5f); n++; continue; }
             if (a.name.Contains("Ara")) { CubeInsect.Dress(a.gameObject, "Spider", c, 4f); n++; continue; }
-            CubeInsect.DressHuman(a.gameObject, c, aphid ? AntHeight * 1.2f : AntHeight, aphid ? 1.6f : 1f, aphid);
+            CubeInsect.DressMyrmidon(a.gameObject, c, aphid ? AntHeight * 1.2f : AntHeight, aphid ? 1.6f : 1f, aphid);
             n++;
         }
         return n;
@@ -171,7 +171,7 @@ public static class AreaMicrocosmos
         for (int i = 0; i < 10; i++)
         {
             float a = i * 36f * Mathf.Deg2Rad;
-            Ant(root, $"Hormiga_{i + 1}", new Vector3(-14f + Mathf.Cos(a) * 8f, 0f, Mathf.Sin(a) * 8f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
+            Ant(root, $"Mirmidón_{i + 1}", new Vector3(-14f + Mathf.Cos(a) * 8f, 0f, Mathf.Sin(a) * 8f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
             n++;
         }
         return n;
@@ -185,7 +185,7 @@ public static class AreaMicrocosmos
         for (int i = 0; i < count; i++)
         {
             float a = i * (360f / count) * Mathf.Deg2Rad;
-            Ant(root, $"Hormiga_{i + 1}", new Vector3(Mathf.Cos(a) * 10f, 0f, Mathf.Sin(a) * 10f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
+            Ant(root, $"Mirmidón_{i + 1}", new Vector3(Mathf.Cos(a) * 10f, 0f, Mathf.Sin(a) * 10f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
         }
         return count;
     }
@@ -200,7 +200,7 @@ public static class AreaMicrocosmos
         g.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
         var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
         var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
-        CubeInsect.DressHuman(g, c, height, bulk);
+        CubeInsect.DressMyrmidon(g, c, height, bulk);
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
         return g;
     }

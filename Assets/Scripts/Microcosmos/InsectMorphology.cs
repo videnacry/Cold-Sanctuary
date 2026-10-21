@@ -23,6 +23,7 @@ public static class InsectMorphology
         public float mandibleOpen = 10f;         // apertura en reposo (°)
         public bool raptorial, jumper, elytra, beeWings, wings, siphons, stylet, backward;
         public float bodyHeight = 0.12f;         // altura del vientre sobre el suelo (en L)
+        public Spec MemberwiseCloneSpec() => (Spec)MemberwiseClone();
     }
 
     static readonly Dictionary<string, Spec> _all = new Dictionary<string, Spec>
@@ -47,6 +48,9 @@ public static class InsectMorphology
             legs = new[] { new[] { 0.18f, 0.18f, 0.08f }, new[] { 0.18f, 0.18f, 0.08f }, new[] { 0.18f, 0.18f, 0.08f } }, legWidth = 0.025f, antenna = 0.35f, mandible = 0.05f },
         ["SnowBee"] = new Spec { name = "SnowBee", body = new[] { new Seg("Cabeza", 0.18f, 0.24f), new Seg("Torax", 0.32f, 0.38f), new Seg("Abdomen", 0.50f, 0.40f) },
             legs = new[] { new[] { 0.22f, 0.25f, 0.20f }, new[] { 0.22f, 0.25f, 0.20f }, new[] { 0.22f, 0.25f, 0.20f } }, legWidth = 0.04f, antenna = 0.30f, elbowedAntenna = true, beeWings = true },
+        // Hormiga león ADULTA (alada, como un caballito del diablo): abdomen largo y fino, alas plegadas en tejado, antenas en maza.
+        ["AntlionAdult"] = new Spec { name = "AntlionAdult", body = new[] { new Seg("Cabeza", 0.07f, 0.09f), new Seg("Torax", 0.13f, 0.09f), new Seg("Abdomen", 0.80f, 0.05f) },
+            legs = new[] { new[] { 0.10f, 0.10f, 0.05f }, new[] { 0.10f, 0.10f, 0.05f }, new[] { 0.12f, 0.12f, 0.05f } }, legWidth = 0.015f, antenna = 0.18f, wings = true, bodyHeight = 0.08f },
         ["Spider"] = new Spec { name = "Spider", spider = true, body = new[] { new Seg("Cefalotorax", 0.45f, 0.38f, 0.3f), new Seg("Abdomen", 0.55f, 0.45f, 0.4f) },
             legs = new[] { Sp(1.4f), Sp(1.2f), Sp(1.0f), Sp(1.3f) }, antenna = 0f, bodyHeight = 0.18f },
     };
@@ -55,6 +59,11 @@ public static class InsectMorphology
     static float[] Sp(float total) => new[] { 0.28f * total, 0.10f * total, 0.24f * total, 0.24f * total, 0.10f * total };
 
     /// <summary>La ficha de una especie (por nombre de prefab/especie; tolera «SnowSpider», «Mariquita», etc.).</summary>
+    public static Spec Named(string n) => _all.TryGetValue(n, out Spec s) ? s : null;
+
+    /// <summary>Copia de la ficha SIN alas ni élitros (las NINFAS de los hemimetábolos).</summary>
+    public static Spec Wingless(Spec s) { var c = (Spec)s.MemberwiseCloneSpec(); c.wings = false; c.beeWings = false; return c; }
+
     public static Spec For(string species)
     {
         if (string.IsNullOrEmpty(species)) return _all["Ant"];

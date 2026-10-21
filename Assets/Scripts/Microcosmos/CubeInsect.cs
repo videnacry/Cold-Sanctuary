@@ -11,7 +11,7 @@ using UnityEngine;
 /// - la marcha: TRÍPODE alterno en los insectos y TETRÁPODO alterno en las arañas (balanceo de la coxa y alzado del
 ///   trocánter en la fase de vuelo de cada pata).
 /// La forma es visual: el cuerpo físico (collider, Anima, NavMeshAgent) sigue siendo el del anfitrión.
-/// Las HORMIGAS HUMANAS del microcosmos (DressHuman) son bípedas y con cara, pero con antena acodada y patas de hormiga.
+/// Los MIRMIDONES (las hormigas humanas del microcosmos, DressMyrmidon) son bípedos y con cara, pero con antena acodada y patas de hormiga.
 /// </summary>
 public class CubeInsect : MonoBehaviour
 {
@@ -25,9 +25,76 @@ public class CubeInsect : MonoBehaviour
 
     // ══ INSECTOS Y ARAÑAS, según su morfología ══════════════════════════════════════════════════════════════════
     /// <summary>Viste a <paramref name="host"/> como la especie <paramref name="species"/> de <paramref name="length"/> m de largo (L).</summary>
-    public static CubeInsect Dress(GameObject host, string species, Color body, float length)
+    // Lo que se dibujó (para redibujar al cambiar de fase: larva → pupa → adulto, o ninfa → adulto).
+    public string species;
+    public Color tint;
+    public float lengthL = 1f;
+    Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;
+    float _nextPhaseCheck;
+
+    public static CubeInsect Dress(GameObject host, string species, Color body, float length) => Dress(host, species, body, length, Metamorphosis.Phase.Adult);
+
+    /// <summary>
+    /// Viste según la FASE de su metamorfosis (Metamorphosis.PhaseOf): LARVA (gusano segmentado; con patitas si la especie
+    /// caza de larva, como la mariquita), PUPA (inmóvil, con las patas plegadas), NINFA (el adulto sin alas) o ADULTO. La
+    /// hormiga león es al revés de lo que parece: la larva es el cazador de embudo y el ADULTO es alado.
+    /// </summary>
+    public static CubeInsect Dress(GameObject host, string species, Color body, float length, Metamorphosis.Phase phase)
     {
         InsectMorphology.Spec sp = InsectMorphology.For(species);
+        CubeInsect ci;
+        if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Adult) ci = Build(host, InsectMorphology.Named("AntlionAdult"), body, length);
+        else if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Larva) ci = Build(host, sp, body, length);
+        else if (phase == Metamorphosis.Phase.Larva) ci = Grub(host, sp, body, length, sp.name == "Ladybug" || sp.name == "Antlion");
+        else if (phase == Metamorphosis.Phase.Pupa) ci = Pupa(host, body, length);
+        else if (phase == Metamorphosis.Phase.Nymph) ci = Build(host, InsectMorphology.Wingless(sp), body, length);
+        else ci = Build(host, sp, body, length);
+        ci.species = species; ci.tint = body; ci.lengthL = length; ci._shown = phase;
+        return ci;
+    }
+
+    // LARVA: gusano de segmentos que se estrechan, pálido y blando, con la cabeza oscura; patitas si caza de larva.
+    static CubeInsect Grub(GameObject host, InsectMorphology.Spec sp, Color body, float length, bool legs)
+    {
+        Transform root = NewRoot(host, length, out CubeInsect ci);
+        Color pale = Color.Lerp(body, new Color(0.95f, 0.92f, 0.85f), 0.65f), dark = body * 0.5f; dark.a = 1f;
+        int n = 8;
+        for (int i = 0; i < n; i++)
+        {
+            float t = i / (float)(n - 1), w = Mathf.Lerp(0.2f, 0.12f, Mathf.Abs(t - 0.35f) * 1.6f);
+            Part(root, "Segmento", new Vector3(0f, w * 0.5f, 0.45f - t * 0.9f), new Vector3(w, w * 0.9f, 0.12f), i == 0 ? dark : pale);
+        }
+        if (legs) for (int p = 0; p < 3; p++) for (int s = -1; s <= 1; s += 2) Part(root, "Patita", new Vector3(s * 0.12f, 0.03f, 0.3f - p * 0.08f), new Vector3(0.1f, 0.02f, 0.02f), dark);
+        return ci;
+    }
+
+    // PUPA: inmóvil, ovalada, con las patas y las alas plegadas contra el cuerpo.
+    static CubeInsect Pupa(GameObject host, Color body, float length)
+    {
+        Transform root = NewRoot(host, length, out CubeInsect ci);
+        Color tan = Color.Lerp(body, new Color(0.8f, 0.68f, 0.45f), 0.6f), line = tan * 0.7f; line.a = 1f;
+        Part(root, "Pupa_cabeza", new Vector3(0f, 0.11f, 0.32f), new Vector3(0.2f, 0.18f, 0.18f), tan);
+        Part(root, "Pupa_torax", new Vector3(0f, 0.13f, 0.1f), new Vector3(0.26f, 0.24f, 0.28f), tan);
+        Part(root, "Pupa_abdomen", new Vector3(0f, 0.12f, -0.2f), new Vector3(0.24f, 0.22f, 0.38f), tan);
+        for (int s = -1; s <= 1; s += 2) Part(root, "Patas_plegadas", new Vector3(s * 0.06f, 0.02f, 0.1f), new Vector3(0.03f, 0.02f, 0.4f), line);
+        return ci;
+    }
+
+    static Transform NewRoot(GameObject host, float length, out CubeInsect ci)
+    {
+        foreach (MeshRenderer mr in host.GetComponents<MeshRenderer>()) mr.enabled = false;
+        Transform old = host.transform.Find("Insecto"); if (old != null) DestroyNow(old.gameObject);
+        var root = new GameObject("Insecto").transform;
+        root.SetParent(host.transform, false);
+        Vector3 ls = host.transform.lossyScale;
+        root.localScale = new Vector3(1f / Mathf.Max(0.001f, ls.x), 1f / Mathf.Max(0.001f, ls.y), 1f / Mathf.Max(0.001f, ls.z)) * length;
+        ci = host.GetComponent<CubeInsect>() ?? host.AddComponent<CubeInsect>();
+        ci._legs.Clear(); ci._limbs.Clear(); ci._jaws.Clear(); ci._wings.Clear();
+        return root;
+    }
+
+    static CubeInsect Build(GameObject host, InsectMorphology.Spec sp, Color body, float length)
+    {
         foreach (MeshRenderer mr in host.GetComponents<MeshRenderer>()) mr.enabled = false;
         Transform old = host.transform.Find("Insecto"); if (old != null) DestroyNow(old.gameObject);
         var root = new GameObject("Insecto").transform;
@@ -215,14 +282,14 @@ public class CubeInsect : MonoBehaviour
 
     static void DestroyNow(Object o) { if (o == null) return; if (Application.isPlaying) Destroy(o); else DestroyImmediate(o); }
 
-    // ══ HORMIGA HUMANA (los humanos del microcosmos): bípeda, erguida, con cara; antena acodada y patas de hormiga ══
+    // ══ MIRMIDÓN (hormiga humana: los humanos del microcosmos): bípeda, erguida, con cara; antena acodada y patas de hormiga ══
     /// <summary>
-    /// Viste a <paramref name="host"/> como HORMIGA HUMANA de <paramref name="height"/> m: de pie sobre las patas traseras
+    /// Viste a <paramref name="host"/> como MIRMIDÓN (hormiga humana) de <paramref name="height"/> m: de pie sobre las patas traseras
     /// (fémur, tibia y tarso con las proporciones de la P3 de la hormiga), brazos (P1) y bracitos (P2), tórax erguido, el
     /// gáster detrás como una cola y una cabeza con cara (ojos, cejas, boca), mandíbulas y ANTENAS ACODADAS.
     /// <paramref name="bulk"/> la hace más ancha (Nasatya); <paramref name="aphid"/> = pulgón (cuerpo de pera, sin gáster).
     /// </summary>
-    public static CubeInsect DressHuman(GameObject host, Color body, float height, float bulk = 1f, bool aphid = false)
+    public static CubeInsect DressMyrmidon(GameObject host, Color body, float height, float bulk = 1f, bool aphid = false)
     {
         foreach (MeshRenderer mr in host.GetComponents<MeshRenderer>()) mr.enabled = false;
         Transform old = host.transform.Find("Insecto"); if (old != null) DestroyNow(old.gameObject);
@@ -311,6 +378,13 @@ public class CubeInsect : MonoBehaviour
 
     void Update()
     {
+        // METAMORFOSIS: si cambia de fase (larva → pupa → adulto, ninfa → adulto), se redibuja.
+        if (!string.IsNullOrEmpty(species) && Time.time >= _nextPhaseCheck)
+        {
+            _nextPhaseCheck = Time.time + 1f;
+            Animal an = GetComponent<Animal>();
+            if (an != null) { Metamorphosis.Phase ph = Metamorphosis.PhaseOf(an); if (ph != _shown) { Dress(gameObject, species, tint, lengthL, ph); Awake(); } }
+        }
         Vector3 v = (transform.position - _last) / Mathf.Max(Time.deltaTime, 1e-4f); v.y = 0f;
         _last = transform.position;
         if (_seed < 0f) _seed = Random.Range(0f, 100f);
