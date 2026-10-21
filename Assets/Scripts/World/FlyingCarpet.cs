@@ -41,7 +41,7 @@ public class FlyingCarpet : MonoBehaviour
         int off = arrived ? 1 : 0;
         ChoiceDialog.Show(arrived ? $"Has llegado a {pad?.displayName}" : "Alfombra voladora · ¿a dónde vamos?", opts.ToArray(),
             i => { if (i >= off) Fly(who, dests[i - off]); else _ignoreUntil = Time.time + 2f; },
-            () => _ignoreUntil = Time.time + 2f);
+            () => _ignoreUntil = Time.time + 2f, transform, 3.5f);   // alejarse lo cierra
     }
 
     /// <summary>Lleva a <paramref name="who"/> sentado hasta la pista <paramref name="to"/>.</summary>

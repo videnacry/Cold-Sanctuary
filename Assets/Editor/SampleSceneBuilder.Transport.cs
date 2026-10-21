@@ -178,30 +178,35 @@ public static partial class SampleSceneBuilder
 
     static void ClearBridgeLandings()
     {
-        int removed = 0;
+        int moved = 0;
         foreach (var l in _landings)
         {
             if (l.area == null) continue;
-            var kill = new List<GameObject>();
+            Vector3 inward = l.side == 0 ? Vector3.left : l.side == 1 ? Vector3.right : l.side == 2 ? Vector3.back : Vector3.forward;   // local, hacia dentro
             foreach (Transform c in l.area)
             {
-                if (c.name == "Estructura_Elevada" || c.name == "Mat" || c.GetComponent<VirtualizationMachine>() != null) continue;
-                if (c.childCount == 0) { if (InLanding(l, c)) kill.Add(c.gameObject); continue; }
-                foreach (Transform item in c) if (InLanding(l, item) && item.GetComponentInChildren<Renderer>() != null && !item.name.StartsWith("Suelo")) kill.Add(item.gameObject);
+                if (c.name == "Estructura_Elevada" || c.name == "Mat" || c.childCount == 0 || c.GetComponent<VirtualizationMachine>() != null) continue;
+                foreach (Transform item in c)
+                {
+                    if (item.name.StartsWith("Suelo") || item.GetComponentInChildren<Renderer>() == null || !InLanding(l, item, out float depth)) continue;
+                    // Se APARTA hacia dentro (no se borra): el paso del puente queda libre y no se pierde nada.
+                    item.position += l.area.TransformDirection(inward) * (4.3f - depth);
+                    moved++;
+                }
             }
-            foreach (GameObject g in kill) { Object.DestroyImmediate(g); removed++; }
         }
-        Debug.Log($"[Transporte] Llegadas de los puentes despejadas: {removed} muebles apartados del paso.");
+        Debug.Log($"[Transporte] Llegadas de los puentes despejadas: {moved} muebles apartados del paso.");
         _landings.Clear();
     }
 
-    static bool InLanding((Transform area, Vector2 half, int side, float center) l, Transform t)
+    static bool InLanding((Transform area, Vector2 half, int side, float center) l, Transform t, out float depth)
     {
         Vector3 p = l.area.InverseTransformPoint(t.position);
-        float depth = l.side == 0 ? l.half.x - p.x : l.side == 1 ? p.x + l.half.x : l.side == 2 ? l.half.y - p.z : p.z + l.half.y;
+        depth = l.side == 0 ? l.half.x - p.x : l.side == 1 ? p.x + l.half.x : l.side == 2 ? l.half.y - p.z : p.z + l.half.y;
         float along = l.side < 2 ? p.z : p.x;
         return depth < 4f && Mathf.Abs(along - l.center) < BridgeWidth * 0.5f + 0.6f;
     }
+
 
     // Abre un hueco de 8 m en la barandilla del lado <side> de un área (donde llega un puente) y apunta su llegada.
     static void OpenRail(Plat p, int side, float alongWorld)
