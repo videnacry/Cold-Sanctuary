@@ -4,25 +4,40 @@ La **simulación** de la máquina de la enfermería es el microcosmos del **alba
 (ver [microcosmos-level1.md](microcosmos-level1.md)): Sakshi, Ambrosio el pulgón, las gemelas, la tribu de Héspero
 y la muerte de Ambrosio camino de la cueva.
 
-## Escala: la enfermería vista por un insecto
+## Escala: el jugador es una hormiga
 
-- El microcosmos es una **ampliación** del área a la que pertenece: aquí, la enfermería.
-- **Cuánto crece:**
-  - El santuario mide unos 200 × 215 m (≈ 43 000 m²) y su 30 % son ≈ 13 000 m².
-  - La enfermería mide 26 × 20 m = 520 m².
-  - Para ocupar ese 30 % se amplía **×5** en cada lado (×25 en superficie): ≈ 130 × 100 m.
-- Sus muebles (camas, camilla, analizador, rayos X…) son **montañas y mesetas**.
-- En el **claro central** (≈ 48 × 48 m) transcurre la historia, con su cueva.
+- **El jugador (≈ 1,8 m) es una hormiga:** el mundo se ve como si midiera ~5 mm.
+- **Los insectos** ocupan el lugar de las personas y los animales.
+- **La enfermería** se amplía **×10** (≈ 260 × 200 m). Sus muebles (camas, camilla, analizador…) son montañas y mesetas.
+- **La historia** va en el claro central, con la cueva:
+  - Se escala ×2,25 para que cada hormiga mida lo que el jugador.
+  - Su elenco son **insectos articulados de cubos**: cabeza, tórax y abdomen, seis patas que se mueven en trípode, antenas y mandíbulas. Ambrosio es un pulgón en forma de pera, con sus sifones.
 
-## Mundo antes del fuego (sabana)
+## Flora a escala de hormiga
 
-- **Flora:**
-  - hierbas altas, helechos y setas;
-  - musgo, piedras y acacias enanas.
-- **Fauna** (prefabs del santuario):
-  - hormigas león, con su **embudo de arena**;
-  - escarabajos peloteros, con su **bola**;
-  - termitas, mantis, grillos, saltamontes, pulgones y mariquitas.
-- El **NavMesh** cubre todo el mundo (≈ 150 × 150 m).
+| Planta | Tamaño | Hace de |
+|---|---|---|
+| Musgo | 0,4–1,2 m | hierba |
+| Hongos | 2–6 m | arbustos y árboles pequeños |
+| Briznas de hierba | 10–25 m | árboles |
+| Helechos | 12–22 m | árboles grandes |
+| Granos de arena y semillas | — | rocas y troncos |
 
-Código: `MicrocosmosAreaSceneBuilder.BuildInfirmaryMicrocosmos` (menú «Build Microcosmos por área»).
+## Fauna antes del fuego (tamaño relativo a la hormiga)
+
+| Animal | Largo | Rastro |
+|---|---|---|
+| Pulgón | 1 m | |
+| Termita | 1,6 m | |
+| Mariquita | 2,4 m | |
+| Hormiga león | 3 m | embudo de arena de 10 m |
+| Grillo | 5 m | |
+| Escarabajo pelotero | 5 m | bola de 4 m |
+| Saltamontes | 7 m | |
+| Mantis | 10 m | |
+
+## Salida
+
+- El **portal de salida** funciona como la máquina: al acercarte sale el diálogo para salir.
+
+Código: `MicrocosmosAreaSceneBuilder.BuildInfirmaryMicrocosmos`, `CubeInsect` (menú «Build Microcosmos por área»).

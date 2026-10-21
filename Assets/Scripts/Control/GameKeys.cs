@@ -19,7 +19,16 @@ public static class GameKeys
     public static bool GetKeyDown(string k) => !Muted && Input.GetKeyDown(k);
     public static bool GetKeyUp(KeyCode k) => !Muted && Input.GetKeyUp(k);
     public static bool GetKeyUp(string k) => !Muted && Input.GetKeyUp(k);
-    public static float GetAxis(string a) => Muted ? 0f : Input.GetAxis(a);
-    public static float GetAxisRaw(string a) => Muted ? 0f : Input.GetAxisRaw(a);
+    public static float GetAxis(string a) => Muted ? 0f : Move(a) ?? Input.GetAxis(a);
+    public static float GetAxisRaw(string a) => Muted ? 0f : Move(a) ?? Input.GetAxisRaw(a);
+
+    // El personaje se mueve SOLO con WASD: las FLECHAS quedan para navegar los diálogos (alfombras, máquinas…) y el
+    // lanzador, sin que el personaje se mueva a la vez.
+    static float? Move(string a)
+    {
+        if (a == "Horizontal") return (Input.GetKey(KeyCode.D) ? 1f : 0f) - (Input.GetKey(KeyCode.A) ? 1f : 0f);
+        if (a == "Vertical") return (Input.GetKey(KeyCode.W) ? 1f : 0f) - (Input.GetKey(KeyCode.S) ? 1f : 0f);
+        return null;
+    }
     public static string inputString => Muted ? "" : Input.inputString;
 }

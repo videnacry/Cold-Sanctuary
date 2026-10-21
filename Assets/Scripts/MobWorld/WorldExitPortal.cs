@@ -34,10 +34,18 @@ public class WorldExitPortal : MonoBehaviour, IInteractable
             MeditationSession.Instance.EndMission();
     }
 
+    // Como la máquina de virtualización: al ACERCARSE se muestra el diálogo para salir (flechas + Intro o clic).
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player") || !CanInteract || ChoiceDialog.IsOpen) return;
+        ChoiceDialog.Show("Salida del mundo virtual", new[] { label, "Seguir aquí" }, i => { if (i == 0 && CanInteract) Interact(); }, null, transform, 4f);
+    }
+
     void Start()
     {
         var col = GetComponent<Collider>();
         if (col != null && !col.isTrigger) col.isTrigger = true;
+        if (col is BoxCollider bc) bc.size = new Vector3(2f, 1.5f, 14f);   // el diálogo sale al acercarse (≈ 2 m delante y detrás)
     }
 
     void OnDrawGizmosSelected()
