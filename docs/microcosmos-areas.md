@@ -12,7 +12,10 @@ Es como si de pronto el mundo fuera de insectos.
   - con brazos y bracitos;
   - con cara (ojos con pupila y brillo, cejas, boca, mandíbulas) y antenas;
   - con intelecto humano: recogen, cultivan y lideran.
-- **El área del santuario se amplía ×10:** sus muebles son montañas.
+- **El área del santuario se amplía ×10:** sus muebles son montañas. El área queda **entera** (la cocina se reconoce:
+  barra, fogones, mesas del comedor): la historia se coloca en el **hueco más libre de su suelo** y solo se aparta el
+  mueble que pisa. El bosque a escala de hormiga (musgo, briznas, helechos) y su fauna crecen **fuera** del área, hasta
+  el agua.
 - **Flora a escala:**
   - el musgo y los hongos hacen de hierba y arbustos;
   - las briznas de hierba y los helechos, de árboles.
