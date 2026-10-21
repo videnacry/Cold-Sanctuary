@@ -189,7 +189,12 @@ public class WorkdayDirector : MonoBehaviour
     void UpdateInitiator(float h)
     {
         List<GameObject> who = DoingNow("enf_iniciacion", h);
-        NewcomerInitiator.Current = who.Count > 0 ? who[0].GetOrAdd<NewcomerInitiator>() : null;
+        GameObject g = who.Count > 0 ? who[0] : null;
+        // Si a esta hora nadie la tiene, la hace quien la tenga HOY (el hechizo compuesto lo conoce quien está de turno).
+        if (g == null && today != null)
+            foreach (WorkRoster.Assignment a in today.work)
+                if (a.mission.id == "enf_iniciacion") { g = a.worker.clone ? (_clones.TryGetValue(a.worker, out GameObject c) ? c : null) : Body(a.worker.name); if (g != null && !g.CompareTag("Player")) break; g = null; }
+        NewcomerInitiator.Current = g != null ? g.GetOrAdd<NewcomerInitiator>() : null;
     }
 
     // Personajes que su misión mueve por sí misma ahora (el iniciador con un recién llegado, los guardias de iniciación).

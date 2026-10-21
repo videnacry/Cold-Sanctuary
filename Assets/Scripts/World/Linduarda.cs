@@ -95,6 +95,7 @@ public class Linduarda : MonoBehaviour
         foreach (HealthRecord h in FindObjectsOfType<HealthRecord>())
         {
             if (h == null || !h.NeedsCare || h.GetComponent<Linduarda>() != null) continue;
+            if (NewcomerInitiator.Active != null && h.TryGetComponent(out SanctuaryOnboarding ob) && !ob.apt) continue;   // a los recién llegados los examina quien hace la iniciación
             float sq = (h.transform.position - transform.position).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = h; }
         }
