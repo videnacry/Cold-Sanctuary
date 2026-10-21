@@ -35,9 +35,12 @@ public static class DietPreference
         _catalog = new Dictionary<string, Dictionary<string, float>>
         {
             // Insectos del Microcosmos (cadena real): preferencias entre sus presas.
-            { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.6f } } },  // especialista en pulgón
+            // Mariquita: especialista en pulgón (también cochinillas y ácaros); un grillo le queda grande → casi nunca.
+            { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.05f } } },
             { "Spider",  new Dictionary<string, float> { { "Aphid", 2.0f }, { "Cricket", 2.0f }, { "Ant", 1.0f }, { "Ladybug", 0.6f }, { "SnowBee", 2.5f } } }, // élitros duros = menos; la araña de las nieves caza abejas de las nieves
-            { "Ant",     new Dictionary<string, float> { { "Aphid", 1.5f } } },                        // mirmecofilia (cuida/ordeña pulgón)
+            // Mirmecofilia: la hormiga CUIDA y ordeña al pulgón (melaza, HoneydewProducer), no lo caza. Un peso alto aquí la
+            // hacía preferirlo como PRESA en Forager.SelectPrey; casi nulo = solo si no queda nada más.
+            { "Ant",     new Dictionary<string, float> { { "Aphid", 0.05f } } },
             { "Cricket", new Dictionary<string, float>() },                                            // omnívoro: neutro
 
             // Depredadores de HORMIGAS (p.ej. el escarabajo del anillo / el depredador débil del nivel de Sakshi):
