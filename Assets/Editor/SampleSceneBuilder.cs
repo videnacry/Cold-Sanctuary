@@ -4090,6 +4090,7 @@ public static partial class SampleSceneBuilder
     // el decorado). Se entra con el hechizo de virtualización: desde la máquina del área, o con magia (consola `virtualize`).
     internal static readonly (string areaGo, string display, string key, Color tint, MissionKind kind)[] MicroAreas =
     {
+        ("Kitchen_Area",          "Cocina",         "Cocina",      new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel),   // la era del fuego: las reencarnaciones
         ("YogaRoom_Area",         "Sala de Yoga",   "SalaYoga",    new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga),
         ("Garden_Area",           "Huerto",         "Huerto",      new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel),
         ("Infirmary_Area",        "Enfermería",     "Enfermeria",  new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal),
@@ -4100,7 +4101,6 @@ public static partial class SampleSceneBuilder
 
     static void BuildMeditationContent(Transform parent)
     {
-        WireMeditationArea(parent, "Kitchen_Area",          "Cocina",         new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel, MobWorldSceneBuilder.SceneName); // modo escena → mundo mob propio
         foreach (var m in MicroAreas)   // cada área → su escena de microcosmos
             WireMeditationArea(parent, m.areaGo, m.display, m.tint, m.kind, MicroSceneName(m.key));
         // Cada máquina solo tiene lo de SU área: las áreas con misiones y sin microcosmos también tienen la suya (solo virtualización).

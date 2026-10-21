@@ -142,8 +142,15 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
 
     void Choose(WorkRoster.Mission m)
     {
-        // La misión se practica EN EL ÁREA REAL (la de esta máquina, con sus muebles y su gente): se entra al tanque, se
-        // «despierta» dentro de la virtualización delante de la máquina y una baliza guía cada paso.
+        // Cada virtualización tiene SU ESCENA (Virtual_<clave>), con una copia del área real y de su gente: se entra por el
+        // tanque y se carga. (Si aún no se ha generado, se juega en el área real como respaldo.)
+        string scene = VirtualMissions.SceneName(m.id);
+        if (Application.CanStreamedLevelBeLoaded(scene) && MobWorldLoader.Instance != null && !MobWorldLoader.Instance.IsInMobWorld)
+        {
+            VirtualMissionRunner.Pending = m;
+            EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, scene);
+            return;
+        }
         Transform who = GameObject.FindGameObjectWithTag("Player")?.transform;
         VirtualizationTank tank = GetComponentInChildren<VirtualizationTank>();
         Transform front = tank != null && tank.front != null ? tank.front : transform;

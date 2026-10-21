@@ -74,6 +74,7 @@ public static class VirtualInPlace
         string[] who = { "Goluis", "Panterilia", "Gohageneis", "Irosene", "Andrea" };
         string src = who[Random.Range(0, who.Length)];
         GameObject tourist = WorkdayDirector.SpawnBodyCopy(src, "Turista (virtual)");
+        tourist.transform.SetParent(r.transform, true);   // se va con la virtualización
         Transform entrance = r.stations[0].transform;
         tourist.transform.position = entrance.position + Vector3.right * 1.2f;
         var follow = tourist.AddComponent<VirtualFollower>();

@@ -40,74 +40,81 @@ public static class VirtualMissionSceneBuilder
         sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
         sun.AddComponent<Light>().type = LightType.Directional;
 
-        var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        ground.name = "Ground"; ground.transform.position = o; ground.transform.localScale = new Vector3(3f, 1f, 3f);
-        ground.GetComponent<Renderer>().sharedMaterial = Mat($"Virtual_{area}_Suelo", Color.Lerp(tint, Color.white, 0.45f));
+        // La COPIA DEL ÁREA REAL del santuario (sus muebles, con los mismos nombres: así los pasos se anclan a la camilla,
+        // al analizador, a la cocina…), sin conducta, en el origen de la escena.
+        Transform areaRoot = null; float hz = 8f;
+        GameObject src = AreaGo(area) != null ? GameObject.Find(AreaGo(area)) : null;
+        if (src != null)
+        {
+            GameObject copy = Object.Instantiate(src);
+            copy.name = $"{area}_virtual";
+            foreach (MonoBehaviour mb in copy.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
+            foreach (Transform t in copy.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
+            Transform es = copy.transform.Find("Estructura_Elevada"); if (es != null) Object.DestroyImmediate(es.gameObject);
+            copy.transform.SetPositionAndRotation(o, Quaternion.identity);
+            areaRoot = copy.transform;
+            Transform mat = areaRoot.Find("Mat"); if (mat != null) hz = mat.localScale.z * 0.5f;
+        }
+        else
+        {
+            var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            ground.name = "Ground"; ground.transform.position = o; ground.transform.localScale = new Vector3(3f, 1f, 3f);
+            ground.GetComponent<Renderer>().sharedMaterial = Mat($"Virtual_{area}_Suelo", Color.Lerp(tint, Color.white, 0.45f));
+        }
 
+        // Se aparece en la entrada del área (su lado +Z); el portal de salida, justo al lado.
         var spawn = new GameObject("MobSpawnPoint");
-        spawn.transform.SetPositionAndRotation(o + new Vector3(0f, 1f, -8f), Quaternion.LookRotation(Vector3.forward));
+        spawn.transform.SetPositionAndRotation(o + new Vector3(1.5f, 1f, hz - 2f), Quaternion.LookRotation(Vector3.back));
         spawn.AddComponent<MobSpawnPoint>();
-
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
         portal.name = "WorldExitPortal";
-        portal.transform.position = o + new Vector3(0f, 1f, -11f);
+        portal.transform.position = o + new Vector3(-2.5f, 1f, hz - 1f);
         portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = Mat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>().label = "Salir de la virtualización";
 
+        // Al cargarse, la misión se monta sobre la copia del área (pasos guiados, turista, servicio…) y llegan las copias
+        // de la gente que trabaja en esa área.
         var root = new GameObject($"Virtualizacion_{key}");
         root.transform.position = o;
-        var runner = root.AddComponent<VirtualMissionRunner>();
-        runner.key = key; runner.title = title;
+        var boot = root.AddComponent<VirtualSceneBootstrap>();
+        boot.key = key; boot.title = title; boot.area = area; boot.areaRoot = areaRoot; boot.spawn = spawn.transform;
+        boot.staff = Staff(area);
         WorldLabel tl = root.AddComponent<WorldLabel>(); tl.text = $"{area} · {title}"; tl.height = 4f;
-
-        // SERVICIO DEL RESTAURANTE: escena propia de juego (cocinero, pedidos por número, turistas que comen y se van).
-        if (key == "coc_servicio")
-        {
-            Object.DestroyImmediate(runner);
-            BuildRestaurantService(root.transform, o);
-            Save(scene, path, prev);
-            return;
-        }
-
-        // Los pasos en arco (de izquierda a derecha) delante del jugador.
-        string[] steps = VirtualMissions.Steps(key);
-        var stations = new List<VirtualMissionStation>();
-        Material stMat = Mat($"Virtual_{area}_Puesto", tint), tankMat = Mat("Virtual_Tanque", new Color(0.3f, 0.65f, 0.9f, 1f));
-        for (int s = 0; s < steps.Length; s++)
-        {
-            float a = Mathf.Lerp(-60f, 60f, steps.Length > 1 ? s / (float)(steps.Length - 1) : 0.5f) * Mathf.Deg2Rad;
-            Vector3 p = o + new Vector3(Mathf.Sin(a) * 7f, 0f, -1f + Mathf.Cos(a) * 7f);
-            bool tank = key == "enf_iniciacion" && s == steps.Length - 1;   // la primera virtualización del turista: un tanque
-            var st = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            st.name = $"Paso_{s + 1}";
-            st.transform.SetParent(root.transform, true);
-            st.transform.position = p + Vector3.up * (tank ? 1.2f : 0.5f);
-            st.transform.localScale = tank ? new Vector3(1.8f, 2.4f, 1.8f) : new Vector3(1.2f, 1f, 1.2f);
-            st.GetComponent<Renderer>().sharedMaterial = tank ? tankMat : stMat;
-            var vs = st.AddComponent<VirtualMissionStation>();
-            vs.runner = runner; vs.step = steps[s];
-            WorldLabel wl = st.AddComponent<WorldLabel>(); wl.text = $"{s + 1} · {steps[s]}"; wl.height = tank ? 1.6f : 1.1f;
-            stations.Add(vs);
-        }
-        runner.stations = stations.ToArray();
-
-        // INICIACIÓN: el turista recién llegado, que te sigue de paso en paso.
-        if (key == "enf_iniciacion")
-        {
-            var tourist = new GameObject("Turista");
-            tourist.transform.SetParent(root.transform, true);
-            tourist.transform.position = o + new Vector3(1.5f, 0f, -7f);
-            Material shirt = Mat("Virtual_Turista_Camisa", new Color(0.95f, 0.6f, 0.3f)), skin = Mat("Virtual_Turista_Piel", new Color(0.92f, 0.76f, 0.62f));
-            Part(tourist.transform, new Vector3(0f, 0.45f, 0f), new Vector3(0.35f, 0.9f, 0.3f), Mat("Virtual_Turista_Pantalon", new Color(0.3f, 0.35f, 0.5f)));
-            Part(tourist.transform, new Vector3(0f, 1.25f, 0f), new Vector3(0.5f, 0.7f, 0.3f), shirt);
-            Part(tourist.transform, new Vector3(0f, 1.8f, 0f), new Vector3(0.3f, 0.3f, 0.3f), skin);
-            tourist.AddComponent<VirtualFollower>();
-            WorldLabel twl = tourist.AddComponent<WorldLabel>(); twl.text = "Turista"; twl.height = 2.2f;
-        }
-
         Save(scene, path, prev);
+    }
+
+    static string AreaGo(string area)
+    {
+        switch (area)
+        {
+            case "Enfermería": case "Guardia": return "Infirmary_Area";
+            case "Cocina": return "Kitchen_Area";
+            case "Huerto": return "Garden_Area";
+            case "Sala de Yoga": return "YogaRoom_Area";
+            case "Mecánica": return "VehicleWorkshop_Area";
+            case "Estudio Textil": return "TextileStudio_Area";
+            case "Carne Cultivada": return "CulturedMeatLab_Area";
+            case "Gimnasio": return "Gym_Area";
+            case "Construcción": return "Construction_Area";
+            default: return null;
+        }
+    }
+
+    // Quién suele trabajar en cada área (sus cuerpos se copian en la escena).
+    static string[] Staff(string area)
+    {
+        switch (area)
+        {
+            case "Enfermería": return new[] { "Linduarda", "Lizmibet" };
+            case "Cocina": return new[] { "Andrea", "Goluis" };
+            case "Sala de Yoga": return new[] { "Sadhguru" };
+            case "Construcción": return new[] { "JefeConstruccion" };
+            case "Estudio Textil": return new[] { "Irosene" };
+            case "Huerto": return new[] { "Panterilia" };
+            default: return new[] { "Gohageneis" };
+        }
     }
 
     static void Save(Scene scene, string path, Scene prev)

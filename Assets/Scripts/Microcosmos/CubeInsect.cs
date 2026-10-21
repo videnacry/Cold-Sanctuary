@@ -84,32 +84,103 @@ public class CubeInsect : MonoBehaviour
 
     static void DestroyNow(Object o) { if (o == null) return; if (Application.isPlaying) Destroy(o); else DestroyImmediate(o); }
 
+    // ── HORMIGA HUMANIZADA (los humanos del microcosmos): BÍPEDA, erguida, con CARA (ojos, cejas, boca) ─────────────
+    readonly List<(Transform t, int side, bool arm)> _limbs = new List<(Transform, int, bool)>();
+
+    /// <summary>
+    /// Viste a <paramref name="host"/> como HORMIGA HUMANIZADA de <paramref name="height"/> m: de pie sobre las patas
+    /// traseras (piernas), con dos brazos y dos bracitos (las patas del medio), tórax erguido, el gáster detrás como una
+    /// cola y una cabeza con cara (ojos grandes, cejas, boca) y antenas. <paramref name="bulk"/> la hace más ancha
+    /// (Nasatya, la «almohada gigante»); <paramref name="aphid"/> = pulgón (cuerpo de pera, sin gáster de hormiga).
+    /// </summary>
+    public static CubeInsect DressHuman(GameObject host, Color body, float height, float bulk = 1f, bool aphid = false)
+    {
+        foreach (MeshRenderer mr in host.GetComponents<MeshRenderer>()) mr.enabled = false;
+        Transform old = host.transform.Find("Insecto"); if (old != null) DestroyNow(old.gameObject);
+        var root = new GameObject("Insecto").transform;
+        root.SetParent(host.transform, false);
+        Vector3 ls = host.transform.lossyScale;
+        root.localScale = new Vector3(1f / Mathf.Max(0.001f, ls.x), 1f / Mathf.Max(0.001f, ls.y), 1f / Mathf.Max(0.001f, ls.z)) * height;
+        MeshFilter mf = host.GetComponent<MeshFilter>();
+        bool capsule = mf != null && mf.sharedMesh != null && mf.sharedMesh.name.Contains("Capsule");
+        root.localPosition = capsule ? Vector3.down * 1f : Vector3.zero;   // los pies en el suelo
+        var ci = host.GetComponent<CubeInsect>() ?? host.AddComponent<CubeInsect>();
+        ci._legs.Clear(); ci._limbs.Clear();
+        Color dark = body * 0.55f; dark.a = 1f;
+        float w = bulk;
+        // Piernas (patas traseras), de cadera a pie.
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var hip = new GameObject(s < 0 ? "Pierna_I" : "Pierna_D").transform; hip.SetParent(root, false); hip.localPosition = new Vector3(s * 0.07f * w, 0.46f, 0f);
+            Part(hip, "Muslo", new Vector3(0f, -0.11f, 0f), new Vector3(0.06f * w, 0.24f, 0.06f), dark);
+            Part(hip, "Tibia", new Vector3(0f, -0.34f, 0.01f), new Vector3(0.045f, 0.24f, 0.045f), dark);
+            Part(hip, "Pie", new Vector3(0f, -0.455f, 0.04f), new Vector3(0.06f, 0.025f, 0.12f), dark);
+            ci._limbs.Add((hip, s, false));
+        }
+        if (aphid) Part(root, "Cuerpo", new Vector3(0f, 0.6f, -0.02f), new Vector3(0.36f * w, 0.36f, 0.3f * w), body);   // pera blanda
+        else
+        {
+            Part(root, "Gaster", new Vector3(0f, 0.5f, -0.16f), new Vector3(0.2f * w, 0.18f, 0.26f), body, 25f);   // el abdomen, detrás, como una cola
+            Part(root, "Peciolo", new Vector3(0f, 0.5f, -0.04f), new Vector3(0.05f, 0.06f, 0.06f), dark);
+            Part(root, "Torax", new Vector3(0f, 0.66f, 0f), new Vector3(0.16f * w, 0.26f, 0.12f * w), body);
+        }
+        // Brazos (patas delanteras) y bracitos (las del medio).
+        for (int s = -1; s <= 1; s += 2)
+        {
+            var sh = new GameObject(s < 0 ? "Brazo_I" : "Brazo_D").transform; sh.SetParent(root, false); sh.localPosition = new Vector3(s * 0.11f * w, 0.76f, 0f);
+            Part(sh, "Brazo", new Vector3(0f, -0.1f, 0f), new Vector3(0.04f, 0.2f, 0.04f), dark);
+            Part(sh, "Antebrazo", new Vector3(0f, -0.27f, 0.02f), new Vector3(0.035f, 0.17f, 0.035f), dark);
+            Part(sh, "Mano", new Vector3(0f, -0.37f, 0.03f), new Vector3(0.05f, 0.04f, 0.04f), dark);
+            ci._limbs.Add((sh, s, true));
+            Part(root, "Bracito", new Vector3(s * 0.1f * w, 0.62f, 0.02f), new Vector3(0.025f, 0.025f, 0.12f), dark, 20f, s * 30f);
+        }
+        // Cabeza con CARA: ojos grandes (con pupila y brillo), cejas, boca y mandíbulas pequeñas; antenas.
+        Transform head = Part(root, "Cabeza", new Vector3(0f, 0.9f, 0.01f), new Vector3(0.2f, 0.18f, 0.17f), body);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Part(root, "Ojo", new Vector3(s * 0.05f, 0.92f, 0.09f), new Vector3(0.055f, 0.06f, 0.012f), Color.white);
+            Part(root, "Pupila", new Vector3(s * 0.05f, 0.915f, 0.097f), new Vector3(0.028f, 0.035f, 0.01f), new Color(0.08f, 0.06f, 0.05f));
+            Part(root, "Brillo", new Vector3(s * 0.045f, 0.925f, 0.103f), new Vector3(0.01f, 0.01f, 0.006f), Color.white);
+            Part(root, "Ceja", new Vector3(s * 0.05f, 0.965f, 0.09f), new Vector3(0.06f, 0.012f, 0.012f), dark, 0f, 0f);
+            Part(root, "Mandibula", new Vector3(s * 0.035f, 0.83f, 0.08f), new Vector3(0.02f, 0.02f, 0.05f), dark, 0f, -s * 30f);
+            Part(root, "Antena", new Vector3(s * 0.05f, 1.04f, 0.04f), new Vector3(0.015f, 0.16f, 0.015f), dark, -20f, 0f).localRotation = Quaternion.Euler(-20f, 0f, -s * 25f);
+        }
+        Part(root, "Boca", new Vector3(0f, 0.855f, 0.087f), new Vector3(0.06f, 0.012f, 0.01f), new Color(0.25f, 0.1f, 0.1f));
+        return ci;
+    }
+
     void Awake()
     {
-        if (_legs.Count == 0)
-        {
-            Transform root = transform.Find("Insecto");
-            if (root != null)
-                foreach (Transform t in root)
-                    if (t.name.StartsWith("Pata_")) _legs.Add((t, t.name.EndsWith("I") ? -1 : 1, t.name[5] - '0'));
-        }
+        Transform root = transform.Find("Insecto");
+        if (root != null && _legs.Count == 0 && _limbs.Count == 0)
+            foreach (Transform t in root)
+            {
+                if (t.name.StartsWith("Pata_")) _legs.Add((t, t.name.EndsWith("I") ? -1 : 1, t.name[5] - '0'));
+                else if (t.name.StartsWith("Pierna_")) _limbs.Add((t, t.name.EndsWith("I") ? -1 : 1, false));
+                else if (t.name.StartsWith("Brazo_")) _limbs.Add((t, t.name.EndsWith("I") ? -1 : 1, true));
+            }
         _last = transform.position;
     }
 
-    // Trípode alterno: patas 0 y 2 de un lado con la 1 del otro; balanceo proporcional a la velocidad.
+    // Insectos: trípode alterno. Hormigas humanizadas: piernas y brazos alternos, como al andar una persona.
     void Update()
     {
         Vector3 v = (transform.position - _last) / Mathf.Max(Time.deltaTime, 1e-4f); v.y = 0f;
         _last = transform.position;
         float speed = v.magnitude;
-        _phase += speed * Time.deltaTime * 6f;
-        float amp = Mathf.Clamp01(speed / 1.5f) * 22f;
+        _phase += speed * Time.deltaTime * 4f;
+        float amp = Mathf.Clamp01(speed / 1.5f) * 25f;
         foreach (var (t, side, pair) in _legs)
         {
             if (t == null) continue;
             int group = (pair % 2 == 0) == (side < 0) ? 0 : 1;
-            float swing = Mathf.Sin(_phase + group * Mathf.PI) * amp;
-            t.localRotation = Quaternion.Euler(0f, side * (60f + (pair - 1) * 25f) + swing, 0f);
+            t.localRotation = Quaternion.Euler(0f, side * (60f + (pair - 1) * 25f) + Mathf.Sin(_phase + group * Mathf.PI) * amp, 0f);
+        }
+        foreach (var (t, side, arm) in _limbs)
+        {
+            if (t == null) continue;
+            float s = Mathf.Sin(_phase + (side < 0 ? 0f : Mathf.PI)) * amp * (arm ? -0.8f : 1f);
+            t.localRotation = Quaternion.Euler(s, 0f, 0f);
         }
     }
 }
