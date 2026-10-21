@@ -4,4 +4,5 @@ public enum OrganicMaterial
     Fish,
     Fruit,
     Grass,
+    Dung,   // excremento: celulosa sin digerir + microbios (comida del escarabajo pelotero)
 }

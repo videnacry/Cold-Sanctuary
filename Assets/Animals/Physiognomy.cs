@@ -60,6 +60,9 @@ public class Physiognomy
             { "Grasshopper", new Physiognomy(new Vector3(0.006f, 0.004f, 0.007f), 0.003f, 0.10f, 0.20f, 0.05f) },
             { "Meerkat",     new Physiognomy(new Vector3(0.006f, 0.008f, 0.010f), 0.004f, 0.12f, 0.20f, 0.06f) },
             { "SnowBee",     new Physiognomy(new Vector3(0.004f, 0.003f, 0.004f), 0.001f, 0.08f, 0.12f, 0.04f) },
+            // Araña de las nieves (docs/ice-sanctuary-ecology.md): ~30 cm. Su cuerpo de cubos ya mide eso a escala 1
+            // (IceInsectLife la mantiene ahí); masa como la de la mayor araña real, la tarántula Goliat (~175 g). [A]
+            { "SnowSpider",  new Physiognomy(new Vector3(1f, 1f, 1f), 0.175f, 0.10f, 0.25f, 0.06f) },
         };
     }
 

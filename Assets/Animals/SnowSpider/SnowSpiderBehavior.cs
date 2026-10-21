@@ -9,6 +9,7 @@ using UnityEngine;
 public class SnowSpiderBehavior : Animal
 {
     protected override string SpeciesArchetype => "Spider";
+    protected override string BodyArchetype => "SnowSpider";   // todo de araña salvo el físico: ~30 cm, no 7 mm
 
     void Start() => base.Init();
 

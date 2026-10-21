@@ -245,6 +245,8 @@ public abstract class LifeStage
         foreach (FoodItem food in FoodItem.GetAll())
         {
             if (food == null || food.Consumed) continue;
+            // El excremento solo se lo llevan a las crías los coprófagos (el pelotero aprovisiona la bola-nido).
+            if (food.material == OrganicMaterial.Dung && (script.Forage == null || !script.Forage.eatsDung)) continue;
             if (Vector3.Distance(script.transform.position, food.transform.position) < script.HomeRadius)
                 return food;
         }

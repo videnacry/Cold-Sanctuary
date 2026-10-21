@@ -161,6 +161,7 @@ public class Metabolism : MonoBehaviour
             case OrganicMaterial.Fish:  a = "protein"; b = "fat";      wa = 0.6f; wb = 0.4f; break;
             case OrganicMaterial.Fruit: a = "carb";    b = "minerals"; wa = 0.8f; wb = 0.2f; break;
             case OrganicMaterial.Grass: a = "carb";    b = "minerals"; wa = 0.7f; wb = 0.3f; break;
+            case OrganicMaterial.Dung:  a = "carb";    b = "minerals"; wa = 0.6f; wb = 0.4f; break;   // >86 % celulosa (doi 10.1371/journal.pone.0079061)
             default:                    a = "carb";    b = "carb";     wa = 1f;   wb = 0f;   break;
         }
         string c = Craving;   // antojo → come más de la parte que le da lo que le falta
@@ -178,7 +179,8 @@ public class Metabolism : MonoBehaviour
             case OrganicMaterial.Meat:
             case OrganicMaterial.Fish:  return nutrient == "protein" || nutrient == "fat";
             case OrganicMaterial.Fruit:
-            case OrganicMaterial.Grass: return nutrient == "carb" || nutrient == "minerals";
+            case OrganicMaterial.Grass:
+            case OrganicMaterial.Dung:  return nutrient == "carb" || nutrient == "minerals";
             default:                    return nutrient == "carb";
         }
     }

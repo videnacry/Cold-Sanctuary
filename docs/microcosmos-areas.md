@@ -4,8 +4,10 @@ Es como si de pronto el mundo fuera de insectos.
 
 ## Escala
 
-- **El jugador (≈ 1,8 m) es una hormiga.**
-- **Las hormigas son los humanos del microcosmos:**
+- **El jugador (≈ 1,8 m) es un mirmidón.**
+- **Los mirmidones (hormigas humanas) son los humanos del microcosmos.** El nombre viene del mito: Zeus convirtió a las
+  hormigas de Egina en personas (Ovidio, *Metamorfosis* VII). La especie `Ant` del ecosistema es otra cosa: la hormiga real.
+  Los mirmidones son:
   - bípedas, sobre las patas traseras;
   - con brazos y bracitos;
   - con cara (ojos con pupila y brillo, cejas, boca, mandíbulas) y antenas;
@@ -36,7 +38,7 @@ Es como si de pronto el mundo fuera de insectos.
   - Así la tribu pasa de recolectar a cultivar.
 - **Sala de Yoga, Estudio Textil y Mecánica:** la tribu vive en su área gigante, con su guarida y sus recolectoras; las misiones siguen en el tablero.
 
-**Forma real de los insectos** ([insect-morphology.md](insect-morphology.md)): `CubeInsect.Dress` construye cada especie con los datos de la guía (`InsectMorphology`): segmentos del cuerpo, patas de 5 segmentos (8 de 7 en arañas) en su pose de reposo y marcha en trípode o tetrápodo; antenas acodadas, mandíbulas que se abren, élitros, dos pares de alas en la abeja, patas raptoras (mantis) y saltadoras (saltamontes, grillo), sifones y estilete (pulgón), quelíceros y pedipalpos (arañas). La fauna del microcosmos usa este cuerpo; su conducta, ciclo de vida y biología siguen siendo los del prefab. Las hormigas humanas llevan antena acodada, mandíbulas que se abren y patas con las proporciones de la hormiga.
+**Forma real de los insectos** ([insect-morphology.md](insect-morphology.md)): `CubeInsect.Dress` construye cada especie con los datos de la guía (`InsectMorphology`): segmentos del cuerpo, patas de 5 segmentos (8 de 7 en arañas) en su pose de reposo y marcha en trípode o tetrápodo; antenas acodadas, mandíbulas que se abren, élitros, dos pares de alas en la abeja, patas raptoras (mantis) y saltadoras (saltamontes, grillo), sifones y estilete (pulgón), quelíceros y pedipalpos (arañas). La fauna del microcosmos usa este cuerpo; su conducta, ciclo de vida y biología siguen siendo los del prefab. Los mirmidones llevan antena acodada, mandíbulas que se abren y patas con las proporciones de la hormiga.
 
 Código: `AreaMicrocosmos` (menú «Build Microcosmos por área»), `CubeInsect.DressHuman`, `MicroForager`, `MicroTeacher`,
 `MicroGardener`, `MicroLeader`, `MicroLounger`, `MicroSize`.

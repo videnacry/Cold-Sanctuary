@@ -4,7 +4,7 @@ Ficha para modelar los artrópodos del microcosmos con **cubos articulados** (`C
 largo y ancho relativos al cuerpo, el ángulo de reposo y el rango de cada articulación. Solo trae datos: `CubeInsect` y
 las escenas los lleva el hilo de pruebas en vivo en Unity.
 
-Las **hormigas del microcosmos son humanizadas** (bípedas, con cara: `CubeInsect.DressHuman`). En ellas la morfología
+Las hormigas del microcosmos son **mirmidones**, hormigas humanas (bípedas, con cara: `CubeInsect.DressHuman`). En ellas la morfología
 real se aplica a los **segmentos de las patas y a la antena acodada**, no a la postura.
 
 ## Convenciones
@@ -39,7 +39,7 @@ Un insecto tiene seis patas con **5 segmentos** cada una. Cada especie solo camb
 
 ## Hormiga (`Ant`)
 
-Sirve para las patas y la antena de la hormiga humanizada, y para hormigas no humanizadas si alguna escena las pide.
+Sirve para las patas y la antena de los mirmidones, y para las hormigas reales (`Ant`) si alguna escena las pide.
 
 | Segmento | Largo/L | Ancho/L | Reposo | Rango | Fuente |
 |---|---|---|---|---|---|

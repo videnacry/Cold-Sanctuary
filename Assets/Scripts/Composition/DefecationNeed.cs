@@ -76,14 +76,59 @@ public class DefecationNeed : MonoBehaviour
         _anima.stress = Mathf.Max(0f, _anima.stress - 0.05f);
 
         Vector3 pos = transform.position + transform.forward * -0.3f;              // detrás del ser
-        if (fecesPrefab != null)
+        GameObject feces = fecesPrefab != null ? Instantiate(fecesPrefab, pos, Quaternion.identity) : MakeDung(pos);
+        if (feces == null) return;
+        if (scentRadius > 0f && feces.GetComponent<ScentEmitter>() == null)
         {
-            GameObject feces = Instantiate(fecesPrefab, pos, Quaternion.identity);
-            if (scentRadius > 0f && feces.GetComponent<ScentEmitter>() == null)
-            {
-                ScentEmitter se = feces.AddComponent<ScentEmitter>();
-                se.radius = scentRadius;
-            }
+            ScentEmitter se = feces.AddComponent<ScentEmitter>();
+            se.radius = scentRadius;
         }
+        if (feces.GetComponent<FoodItem>() == null)   // el excremento es COMIDA del pelotero (Forager.eatsDung)
+        {
+            FoodItem f = feces.AddComponent<FoodItem>();
+            f.material = OrganicMaterial.Dung;
+            f.grams = DungGrams();
+        }
+        // Se descompone (lo entierran los peloteros, lo deshacen hongos y lluvia): desaparece en unos días de juego.
+        float day = TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay : 3600f;
+        Destroy(feces, day * dungDays);
+    }
+
+    [Tooltip("Días de juego que tarda el excremento en deshacerse si nadie lo come.")]
+    [Min(0.1f)] public float dungDays = 3f;
+    [Tooltip("Horas de juego mínimas entre dos boñigas del mismo ser (sin prefab).")]
+    [Min(0f)] public float dungEveryHours = 2f;
+    const int maxDungInScene = 150;
+    float _nextDung;
+
+    // Masa del excremento: ~1 % de la masa corporal por deposición (aprox. [A]); mínimo 5 g.
+    float DungGrams() => Mathf.Max(5f, (_animal != null && _animal.rig != null ? _animal.rig.mass : 1f) * 10f);
+
+    /// <summary>Sin prefab: una boñiga de cubo parda, solo para los HERBÍVOROS de ≥1 kg (su excremento es el que comen
+    /// los peloteros; el de un insecto es polvo). Sin collider, para no estorbar al NavMesh.</summary>
+    GameObject MakeDung(Vector3 pos)
+    {
+        if (_animal == null || _animal.Forage == null || !_animal.Forage.eatsGrass) return null;
+        float mass = _animal.rig != null ? _animal.rig.mass : 0f;
+        if (mass < 1f) return null;
+        // Un herbívoro grande deja ~10–15 boñigas al día [A]: como mucho una cada `dungEveryHours` de juego, y un tope
+        // global para no llenar la escena de cubos.
+        float hour = TimeController.timeController != null ? TimeController.timeController.SecondsPerGameDay / 24f : 150f;
+        if (Time.time < _nextDung || FoodItem.GetPopulation(OrganicMaterial.Dung).Count >= maxDungInScene) return null;
+        _nextDung = Time.time + hour * dungEveryHours;
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        g.name = "Excremento";
+        Object.Destroy(g.GetComponent<Collider>());
+        float side = Mathf.Clamp(0.05f * Mathf.Pow(mass, 1f / 3f), 0.05f, 0.4f);   // crece con la raíz cúbica de la masa
+        g.transform.position = pos;
+        g.transform.localScale = new Vector3(side, side * 0.4f, side);
+        Renderer r = g.GetComponent<Renderer>();
+        if (r != null)
+        {
+            Color c = new Color(0.32f, 0.22f, 0.1f);
+            r.material.color = c;
+            if (r.material.HasProperty("_BaseColor")) r.material.SetColor("_BaseColor", c);
+        }
+        return g;
     }
 }

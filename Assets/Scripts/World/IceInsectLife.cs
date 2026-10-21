@@ -35,6 +35,7 @@ public class IceInsectLife : MonoBehaviour
     Animal _carcass;
     bool _carrying;
     float _strikeCooldown, _nextSearch;
+    bool _queenLongevity;
 
     void Start()
     {
@@ -84,6 +85,8 @@ public class IceInsectLife : MonoBehaviour
     {
         if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
         if (_self != null && _self.death) return;
+        // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
+        if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
         if (kind == Kind.Bee) BeeLife(); else SpiderLife();
     }
 

@@ -40,7 +40,10 @@ public class Reproduction : MonoBehaviour
 
         if (_pregnant) { if (Time.time >= _birthTime) GiveBirth(); return; }
         if (!CanConceive()) return;
-        if (FindMate() != null) Conceive();
+        string sp = _animal.SpeciesName;
+        // Pulgón: partenogénesis (hembras que paren hijas sin macho). Reina de hormiga/termita: guarda el esperma del
+        // vuelo nupcial y pone sin volver a aparearse. El resto necesita pareja.
+        if (Parthenogenetic(sp) || Eusocial(sp) || FindMate() != null) Conceive();
     }
 
     bool CanConceive()
@@ -50,6 +53,8 @@ public class Reproduction : MonoBehaviour
         if (Time.time < _cooldownUntil) return false;
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
+        if (HiveBreeds(_animal.SpeciesName)) return false;          // la abeja nace del panal (Hive), no de aquí
+        if (Eusocial(_animal.SpeciesName) && !IsColonyQueen()) return false;   // solo la reina pone; las obreras son estériles
         if (LivingCount() >= softPopulationCap) return false;   // cuenta solo los VIVOS (antes contaba también los cadáveres)
         int planCap = PopulationPlan.Cap(_animal.SpeciesName);
         if (planCap > 0 && LivingCount() >= planCap) return false;   // equilibrio con los humanos: no más de 1,5× lo que toca (PopulationPlan)
@@ -104,6 +109,28 @@ public class Reproduction : MonoBehaviour
         return n;
     }
 
+    /// <summary>Se reproduce sin macho (partenogénesis cíclica del pulgón, doi 10.3897/compcytogen.18.136095).</summary>
+    public static bool Parthenogenetic(string sp) => sp == "Aphid";
+    /// <summary>Eusocial: en la colonia solo pone la reina (hormiga, termita). [A]</summary>
+    public static bool Eusocial(string sp) => sp == "Ant" || sp == "Termite";
+    /// <summary>La cría de la especie la lleva otro sistema (abeja de las nieves → `Hive`: huevo, larva, pupa en celdillas).</summary>
+    public static bool HiveBreeds(string sp) => sp == "SnowBee";
+
+    // La REINA de una colonia = la hembra adulta más antigua del nido (el menor id de instancia entre las hembras adultas
+    // vivas de su especie que comparten hogar). Determinista y sin campo nuevo en escena.
+    bool IsColonyQueen()
+    {
+        float r = Mathf.Max(5f, _animal.HomeRadius * 2f);
+        foreach (GameObject g in _animal.Population)
+        {
+            if (g == null || g == gameObject || !g.TryGetComponent(out Animal o) || o.death) continue;
+            if (o.sex != Sex.female || o.lifeStage != LifeStage.adult) continue;
+            if (Vector3.Distance(o.HomeOrigin, _animal.HomeOrigin) > r) continue;
+            if (o.GetInstanceID() < _animal.GetInstanceID()) return false;
+        }
+        return true;
+    }
+
     // Tiempo mínimo entre partos de una misma madre (≈ una temporada de cría; se recalibra con el calendario del juego).
 
     /// <summary>Calendario reproductor REAL por especie (meses): gestación e intervalo mínimo entre partos de la misma madre.
@@ -120,6 +147,21 @@ public class Reproduction : MonoBehaviour
         "Seal" => (10.5f, 12f), "Penguin" => (2f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
         "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f),
         "Malamute" => (2.1f, 7f), "Deer" => (7.3f, 12f), "Bunny" => (1f, 1.5f), "Meerkat" => (2.3f, 4f),
+        // INSECTOS (docs/insect-biology-audit.md): "gestación" = del apareamiento a que sale la cría (incubación del
+        // huevo; en el pulgón, la ninfa ya formada dentro de la madre), e "intervalo" = entre una cría y la siguiente de
+        // la misma madre. Cada parto aquí es UNA cría, así que el intervalo es corto: ponen muchas, de una en una. El
+        // tope de población (softPopulationCap / PopulationPlan) frena el resto. [A] = entomología general; calibrar
+        // en vivo (cambian la dinámica del ecosistema).
+        "Aphid" => (0.2f, 0.05f),       // vivíparo: pare ninfas vivas, varias al día [A]
+        "Ant" => (0.4f, 0.1f),          // huevo ≈1–2 sem; la reina pone sin parar [A]
+        "Termite" => (0.8f, 0.1f),      // huevo ≈3–4 sem; la reina pone sin parar [A]
+        "Ladybug" => (0.15f, 0.2f),     // huevo ≈4–5 días; puestas repetidas durante semanas [A]
+        "Cricket" => (0.5f, 0.15f),     // huevo ≈2 sem en el suelo [A]
+        "Grasshopper" => (1f, 0.5f),    // ooteca en el suelo ≈1 mes (sin diapausa en la sabana) [A]
+        "Mantis" => (1.2f, 0.4f),       // ooteca ≈3–6 sem; varias por hembra [A]
+        "DungBeetle" => (0.3f, 1f),     // un huevo por bola-nido; pocas bolas: estratega K entre los insectos [A]
+        "Antlion" => (1f, 0.3f),        // huevo en la arena ≈1 mes; el adulto vive pocas semanas [A]
+        "Spider" => (0.8f, 1f),         // saco de huevos ≈2–4 sem; pocos sacos [A]
         _ => (2f, 12f),
     };
     public Animal SpawnOffspring()
