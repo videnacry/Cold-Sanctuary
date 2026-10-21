@@ -106,6 +106,24 @@ segundo PR (ver «Qué se cambió»); falta calibrarlo en una prueba en vivo.
 
 - **Reina de la abeja de las nieves.** `IceInsectLife` le alarga la etapa adulta a 3 años (las obreras, 150 días).
 
+## Lucidez: insectos con mente humana y postura de centauro (2026-10-21)
+
+Berón: **todos** los insectos tienen cara e inteligencia humana, y viven entre dos mundos.
+
+- **Lúcidos** (en calma, saciados, sin alerta, sin correr): se enderezan como centauros, con la cabeza alta, y el primer
+  par de patas libre como brazos. La hormiga anda a 4 patas con 2 brazos; la araña, a 6 con 2 brazos. Piensan más a menudo.
+- **Animales** (estrés, hambre, amenaza, huida, carrera, o `AcuteStressResponse.InTakeover`): el cuerpo toma el control.
+  La hormiga baja a 6 patas y la araña a 8, y piensan menos.
+
+Código: `Lucidity` (`Assets/Scripts/Soul/`), añadido en `Animal.Init` a los 12 artrópodos. Expone `Clarity` (0..1),
+`Lucid`, `Limbs` y `LegsOnGround`, con histéresis 0,6/0,4. Larvas, pupas y dormidos nunca están lúcidos.
+`Lucidity.GiveHumanIntellect` sube razonamiento, memoria y creatividad al menos al nivel humano. El temperamento
+(calma, sociabilidad, disciplina) y el tono siguen siendo los de la especie. La postura erguida la dibuja `CubeInsect`
+(hilo de Unity) leyendo `Lucid`/`LegsOnGround`.
+
+Nombres (propuesta pendiente de Berón): **entomántropos** para todos; **mirmidones** (hormigas), **melisas** (abejas),
+**aracnes** (arañas), **titones** (grillos y saltamontes) y **mantis** (ya significa «adivina» en griego).
+
 ## Mirmidones (hormigas humanas)
 
 En el microcosmos, las "hormigas" son **personas con forma de hormiga** (bípedas, con cara: `CubeInsect.DressHuman`), no

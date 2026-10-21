@@ -275,6 +275,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (_speciesBody == null) _speciesBody = gameObject.AddComponent<SpeciesBody>();
         if (string.IsNullOrEmpty(_speciesBody.species)) _speciesBody.species = SpeciesArchetype;   // por defecto, el de la clase
         _speciesBody.Apply(this);                      // aptitudes + medio + fija agility/perception/sensibility base
+        if (Lucidity.IsArthropod(spm))                 // ENTOMÁNTROPOS: insectos con mente humana; erguidos (centauro) en calma
+        {
+            Lucidity.GiveHumanIntellect(this);
+            if (GetComponent<Lucidity>() == null) gameObject.AddComponent<Lucidity>();
+        }
         RecomputeAutoabandono();                       // autoabandono deriva de entrega↔autoconservación (stats/bonds)
         Mind mind = GetComponent<Mind>();
         if (mind != null) HumorProfile.Apply(this, mind.humores);   // humores base por personalidad (si tiene Mente)
