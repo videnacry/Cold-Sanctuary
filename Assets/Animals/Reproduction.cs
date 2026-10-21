@@ -109,11 +109,18 @@ public class Reproduction : MonoBehaviour
     /// <summary>Calendario reproductor REAL por especie (meses): gestación e intervalo mínimo entre partos de la misma madre.
     /// Foca común 10–11 m, cría anual; pingüino emperador ~2 m de incubación, anual; oso polar ~8 m (implantación
     /// diferida), cada 3 años; ballena jorobada ~11,5 m, cada 2–3 años; orca ~17 m, cada ~5 años; zorro ártico ~52 días;
-    /// lobo ~63 días, ambos anuales.</summary>
+    /// lobo ~63 días, ambos anuales. Verificado en PubMed (2026-10-21): perro 63 ± 2 d desde la ovulación
+    /// (doi 10.1111/j.1439-0531.2011.01773.x) → malamute; reno 198–240 d, partos sincronizados anuales
+    /// (doi 10.1016/j.theriogenology.2009.01.022) → ciervo; oso pardo intervalo entre partos ~2,4 años
+    /// (doi 10.1371/journal.pone.0176251) → Bear. Conejo ~31 d (re-cría casi inmediata) y suricata ~70 d son
+    /// valores de referencia general (PubMed no los da directos); la suricata dominante cría varias veces al año
+    /// (doi 10.1111/j.1365-2656.2007.01318.x).</summary>
     public static (float gestationMonths, float intervalMonths) Calendar(string sp) => sp switch
     {
-        "Seal" => (10.5f, 12f), "Penguin" => (2f, 12f), "Bear" => (8f, 36f), "PolarBear" => (8f, 36f),
-        "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f), _ => (2f, 12f),
+        "Seal" => (10.5f, 12f), "Penguin" => (2f, 12f), "Bear" => (8f, 29f), "PolarBear" => (8f, 36f),
+        "Whale" => (11.5f, 30f), "Orca" => (17f, 60f), "Fox" => (1.7f, 12f), "Wolf" => (2.1f, 12f),
+        "Malamute" => (2.1f, 7f), "Deer" => (7.3f, 12f), "Bunny" => (1f, 1.5f), "Meerkat" => (2.3f, 4f),
+        _ => (2f, 12f),
     };
     public Animal SpawnOffspring()
     {
