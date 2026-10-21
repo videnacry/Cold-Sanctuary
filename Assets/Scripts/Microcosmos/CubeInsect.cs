@@ -20,6 +20,7 @@ public class CubeInsect : MonoBehaviour
     /// <summary>0 = tranquilo (erguido, centauro, con brazos) · 1 = el cuerpo manda (a todas las patas). Lo puede fijar la conducta (miedo, hambre…); si no, se deduce de la velocidad.</summary>
     public float agitation = -1f;   // −1 = automático (por la velocidad)
     float _calm = 1f;
+    Lucidity _lucidity; bool _lucidityChecked;
     readonly List<Leg> _legs = new List<Leg>();
     readonly List<(Transform t, int side, bool arm)> _limbs = new List<(Transform, int, bool)>();
     readonly List<(Transform t, float open, int side)> _jaws = new List<(Transform, float, int)>();
@@ -392,7 +393,9 @@ public class CubeInsect : MonoBehaviour
         // CENTAURO: tranquilo → erguido (torso arriba, cabeza al frente, patas delanteras como brazos); el cuerpo manda
         // (corre, o la conducta lo agita: miedo, hambre…) → a todas las patas, como un animal.
         float Lw = transform.Find("Insecto") != null ? transform.Find("Insecto").lossyScale.z : 1f;
-        float target = agitation >= 0f ? agitation : (speed > 1.8f * Mathf.Max(0.1f, Lw) ? 1f : 0f);
+        // Postura según la MENTE (Lucidity): lúcido = erguido, con brazos; si no, el cuerpo manda. Sin Lucidity, por la velocidad.
+        if (_lucidity == null && !_lucidityChecked) { _lucidity = GetComponent<Lucidity>(); _lucidityChecked = true; }
+        float target = agitation >= 0f ? agitation : _lucidity != null ? (_lucidity.Lucid ? 0f : 1f) : (speed > 1.8f * Mathf.Max(0.1f, Lw) ? 1f : 0f);
         if (_torso != null) _calm = Mathf.MoveTowards(_calm, 1f - target, Time.deltaTime * 2.5f);
         if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-75f * _calm, 0f, 0f);
         if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(75f * _calm, 0f, 0f);
