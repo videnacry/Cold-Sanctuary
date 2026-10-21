@@ -88,6 +88,7 @@ public static class MobWorldSceneBuilder
 
         missionGO.AddComponent<MobWorldMission>(); // arranca la misión al entrar a la escena
 
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings(ScenePath);
         EditorSceneManager.CloseScene(scene, removeScene: true);

@@ -75,6 +75,7 @@ public static class MicrocosmosSceneBuilder
 
         BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
 
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, ScenePath);
         AddToBuildSettings(ScenePath);
         EditorSceneManager.CloseScene(scene, removeScene: true);
@@ -200,6 +201,7 @@ public static class MicrocosmosSceneBuilder
 
         BakeMicroNavMesh();
 
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, ScenePath0);
         AddToBuildSettings(ScenePath0);
         EditorSceneManager.CloseScene(scene, removeScene: true);

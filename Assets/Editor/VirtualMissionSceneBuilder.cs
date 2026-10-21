@@ -112,6 +112,7 @@ public static class VirtualMissionSceneBuilder
 
     static void Save(Scene scene, string path, Scene prev)
     {
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, path);
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(sc => sc.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }

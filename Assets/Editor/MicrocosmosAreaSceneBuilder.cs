@@ -102,6 +102,7 @@ public static class MicrocosmosAreaSceneBuilder
         nav.center = Vector3.up * 5f; nav.size = new Vector3(44f, 20f, 44f);
         nav.BuildNavMesh();
 
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, path);
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(s => s.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }
@@ -112,6 +113,7 @@ public static class MicrocosmosAreaSceneBuilder
 
     static void Finish(Scene scene, string path, Scene prev)
     {
+        MicroWater.SurroundScene(scene);
         EditorSceneManager.SaveScene(scene, path);
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(s => s.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }
