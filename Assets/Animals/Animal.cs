@@ -246,6 +246,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
         if (GetComponent<DefecationNeed>() == null) gameObject.AddComponent<DefecationNeed>();   // ir al baño: antes ningún animal lo tenía
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
+        if (SpeciesScaleFix.Has(SpeciesName) && GetComponent<SpeciesScaleFix>() == null) gameObject.AddComponent<SpeciesScaleFix>();   // tamaño real respecto al humano (el oso no mide 8 m)
         string spm = SpeciesArchetype;
         if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
         SleepCycle sleep = GetComponent<SleepCycle>();

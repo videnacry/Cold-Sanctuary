@@ -11,7 +11,8 @@ using UnityEngine;
 public static class ScaleAudit
 {
     // Largo real del adulto (m): cabeza a cola o, en los erguidos (pingüino), la altura. [A] aproximaciones de manual.
-    static readonly Dictionary<string, float> Real = new Dictionary<string, float>
+    static Dictionary<string, float> Real => _real;
+    static readonly Dictionary<string, float> _real = new Dictionary<string, float>(SpeciesScaleFix.Real)
     {
         ["Bear"] = 2.2f, ["PolarBear"] = 2.2f, ["Seal"] = 1.6f, ["Penguin"] = 1.1f, ["Whale"] = 15f, ["Orca"] = 7f,
         ["Wolf"] = 1.4f, ["Malamute"] = 1.0f, ["Fox"] = 0.65f, ["Bunny"] = 0.6f, ["Deer"] = 1.9f, ["Meerkat"] = 0.3f,
