@@ -52,7 +52,7 @@ public static class AreaMicrocosmos
         var floors = new List<Renderer>(); _blocked.Clear();
         if (giant != null) foot = Classify(giant, floors, _blocked);
         Vector3 anchor = Vector3.zero; float free = 50f;
-        if (giant != null) anchor = FreeSpot(foot, _blocked, out free);
+        if (giant != null) anchor = FreeSpot(foot, floors, _blocked, out free);
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
@@ -103,7 +103,7 @@ public static class AreaMicrocosmos
         float span = r1 * 2f + 20f;
         nav.center = Vector3.up * 15f; nav.size = new Vector3(span, 60f, span);
         nav.BuildNavMesh();
-        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale} entera (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
+        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale} entera (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
     }
 
     // ── Dónde cabe la historia dentro del área ───────────────────────────────────────────────────────────────────
@@ -121,7 +121,8 @@ public static class AreaMicrocosmos
         {
             Bounds b = r.bounds;
             if (!any) { foot = b; any = true; } else foot.Encapsulate(b);
-            if (IsFloor(b)) floors.Add(r); else blocked.Add(b);
+            if (IsFloor(b)) { if (b.size.x > 4f && b.size.z > 4f) floors.Add(r); }   // suelo (no un tapete suelto)
+            else blocked.Add(b);
         }
         return any ? foot : new Bounds(Vector3.zero, new Vector3(100f, 1f, 100f));
     }
@@ -132,19 +133,35 @@ public static class AreaMicrocosmos
         return Mathf.Sqrt(dx * dx + dz * dz);
     }
 
-    /// <summary>El punto del suelo del área más alejado de cualquier mueble (rejilla de 6 m).</summary>
-    static Vector3 FreeSpot(Bounds foot, List<Bounds> blocked, out float free)
+    /// <summary>El punto del SUELO del área más alejado de cualquier mueble y del borde del suelo (rejilla de 6 m). Solo
+    /// cuentan puntos que pisan un suelo del área: la huella incluye escaleras, rótulos y piezas que sobresalen, y sin
+    /// esto el «hueco más libre» caía fuera de la plataforma (en la Cocina daba 127 m libres, lejos de los muebles).</summary>
+    static Vector3 FreeSpot(Bounds foot, List<Renderer> floors, List<Bounds> blocked, out float free)
     {
         Vector3 best = new Vector3(foot.center.x, 0f, foot.center.z); free = 0f;
-        if (blocked.Count == 0) { free = Mathf.Min(foot.extents.x, foot.extents.z); return best; }
         float inset = Mathf.Min(10f, Mathf.Min(foot.extents.x, foot.extents.z) * 0.5f);
         for (float x = foot.min.x + inset; x <= foot.max.x - inset; x += 6f)
             for (float z = foot.min.z + inset; z <= foot.max.z - inset; z += 6f)
             {
-                var p = new Vector3(x, 0f, z); float d = float.MaxValue;
+                var p = new Vector3(x, 0f, z);
+                float d = floors.Count == 0 ? float.MaxValue : EdgeDist(p, floors);
+                if (d <= free) continue;   // fuera del suelo (0) o más cerca del borde que el mejor
                 foreach (Bounds b in blocked) { d = Mathf.Min(d, DistXZ(b, p)); if (d <= free) break; }
                 if (d > free) { free = d; best = p; }
             }
+        return best;
+    }
+
+    /// <summary>Distancia de <paramref name="p"/> al borde del suelo más grande que lo cubre (0 si no pisa ninguno).</summary>
+    static float EdgeDist(Vector3 p, List<Renderer> floors)
+    {
+        float best = 0f;
+        foreach (Renderer r in floors)
+        {
+            Bounds b = r.bounds;
+            if (p.x < b.min.x || p.x > b.max.x || p.z < b.min.z || p.z > b.max.z) continue;
+            best = Mathf.Max(best, Mathf.Min(Mathf.Min(p.x - b.min.x, b.max.x - p.x), Mathf.Min(p.z - b.min.z, b.max.z - p.z)));
+        }
         return best;
     }
 
