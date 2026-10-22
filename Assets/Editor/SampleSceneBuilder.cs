@@ -3792,8 +3792,12 @@ public static partial class SampleSceneBuilder
             if (hx > len) { cands.Add((new Vector3(-hx * 0.5f, 0f, -hz + 0.7f), 0f)); cands.Add((new Vector3(hx * 0.5f, 0f, -hz + 0.7f), 0f)); }
             if (hz * 2f > len + 1f) { cands.Add((new Vector3(-hx + 0.7f, 0f, -hz * 0.3f), 90f)); cands.Add((new Vector3(hx - 0.7f, 0f, -hz * 0.3f), -90f)); }
             (Vector3 p, float yaw) pick = cands[0]; bool free = false;
+            _openings.TryGetValue(top, out var gaps);   // donde llega un puente (lado, tramo): ahí no
             foreach (var c in cands)
             {
+                int side = c.yaw == 0f ? 3 : c.yaw > 0f ? 1 : 0;
+                float along = side == 3 ? c.p.x : c.p.z;
+                if (gaps != null && gaps.Exists(o => o.side == side && o.b > along - len * 0.5f - 1f && o.a < along + len * 0.5f + 1.5f)) continue;
                 Quaternion q = top.rotation * Quaternion.Euler(0f, c.yaw, 0f);
                 Vector3 centre = top.TransformPoint(c.p) + q * new Vector3(0.45f, 0f, 0f) + Vector3.up * (height * 0.5f + 0.3f);
                 Vector3 ext = q * new Vector3(len * 0.5f + 1f, 0f, 0.6f);
