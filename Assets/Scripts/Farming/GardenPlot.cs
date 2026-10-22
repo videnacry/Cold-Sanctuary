@@ -193,23 +193,25 @@ public class GardenPlot : MonoBehaviour
 
     void SeaweedInNearestWater(int n)
     {
-        // Busca agua (el rayo no toca hielo: cae al fondo marino) en anillos alrededor de la parcela.
-        for (float rad = size.x * 0.6f; rad < 60f; rad += 3f)
-            for (int a = 0; a < 24; a++)
+        // Busca agua (el rayo no toca hielo: cae al fondo marino) en anillos alrededor de la parcela. Antes plantaba solo
+        // alrededor del PRIMER punto de agua y se rendía: si era un canal estrecho (o algo nuevo tapaba el agua junto a la
+        // orilla), no quedaba ni un alga y la carta perdía nori y kombu. Ahora sigue buscando hasta plantar las n.
+        int placed = 0;
+        for (float rad = size.x * 0.6f; rad < 120f && placed < n; rad += 3f)
+            for (int a = 0; a < 24 && placed < n; a++)
             {
                 float ang = a * Mathf.PI / 12f;
                 Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
                 if (!IsWater(p)) continue;
-                int placed = 0;
                 for (int k = 0; k < n * 3 && placed < n; k++)
                 {
                     Vector3 q = p + new Vector3(R(-4f, 4f), 0f, R(-4f, 4f));
                     if (!IsWater(q)) continue;
-                    GardenCrop.Build(_root, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + k);
+                    GardenCrop.Build(_root, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + placed);
                     placed++; Plants++;
                 }
-                return;
             }
+        if (placed == 0) Debug.LogWarning($"[Huerto] {name}: no encuentro agua a menos de 120 m para cultivar el alga (nori/kombu).");
     }
 
     static bool IsWater(Vector3 p) =>
