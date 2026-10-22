@@ -150,6 +150,10 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
         try { MicrocosmosAreaSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e.Message}"); }
+        try { CompassionSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las simulaciones de compasión: {e.Message}"); }
+        try { MythSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena de Egina (mirmidones): {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
@@ -1100,9 +1104,15 @@ public static partial class SampleSceneBuilder
         pintor.AddComponent<AiBrain>().selfRelevance = 1f;
         pintor.AddComponent<AnimaController>();
 
-        GameObject anciano = Cast(group.transform, "Anciano", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
-            new Color(0.50f, 0.46f, 0.40f), "", "anciano fragil de la banda", "", "necesita que lo carguen al refugio",
+        // SHANIDAR: el anciano herido que la banda cuida. Lleva el nombre y las heridas del neandertal Shanidar 1 (sin
+        // antebrazo derecho, ojo izquierdo dañado, cojera, sordera), que llegó a viejo porque su grupo lo cuidó
+        // (doi 10.1371/journal.pone.0186684). Ver docs/compassion-simulations.md.
+        GameObject anciano = Cast(group.transform, "Shanidar", new Vector3(-29.4f, 1f, 19.5f), new Vector3(0.5f, 0.5f, 0.6f),
+            new Color(0.50f, 0.46f, 0.40f), "", "anciano herido de la banda: sin antebrazo derecho, medio ciego y sordo, cojo; vive porque lo cuidan",
+            "", "necesita que lo carguen al refugio",
             new[] { ("Ant", 90f), ("Human", 10f) }, new[] { ("Human", 40f), ("Ant", 60f) });
+        BodyInjuries wounds = anciano.AddComponent<BodyInjuries>();
+        wounds.missingRightForearm = true; wounds.blindLeftEye = true; wounds.limp = true; wounds.hearingLoss = true;
         anciano.AddComponent<WeakOne>();
         anciano.AddComponent<AiBrain>().selfRelevance = 1f;
         anciano.AddComponent<AnimaController>();
@@ -3218,10 +3228,10 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(r, new Vector3(0f, 0.03f, 0f), new Vector3(0.12f, 0.01f, 13.6f), new Color(0.55f, 0.75f, 0.7f), 0f, "Separacion");
 
         Color[] blankets = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f) };
-        for (int i = 0; i < 3; i++) Label(InfirmaryProps.HospitalBed(r, $"Cama {i + 1}", new Vector3(-7.4f + i * 2.1f, 0f, -5f), 0f, blankets[i]), $"Cama {i + 1}", 1.4f);
-        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-7.6f, 0f, 1.2f), 90f), "Camilla de exploración", 1.3f);
+        for (int i = 0; i < 3; i++) Label(InfirmaryProps.HospitalBed(r, $"Cama {i + 1}", new Vector3(-7.4f + i * 2.1f, 0f, -4.8f), 0f, blankets[i]), $"Cama {i + 1}", 1.4f);   // urgencias: a pie de suelo
+        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-6.9f, 0f, 1.2f), 90f), "Camilla de exploración", 1.3f);
         // SILLA DE EXÁMENES (iniciación: constantes, pupilas, extracción y vacuna): sentado, con reposabrazos para el brazo.
-        Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-5.6f, 0f, -0.6f), 90f);
+        Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-5.2f, 0f, -0.6f), 90f);
         Color seatC = new Color(0.35f, 0.55f, 0.65f);
         KitchenProps.C(exam, new Vector3(0f, 0.45f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
         KitchenProps.C(exam, new Vector3(0f, 0.85f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
@@ -3230,21 +3240,36 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(exam, new Vector3(0.75f, 0.45f, 0.3f), new Vector3(0.4f, 0.9f, 0.4f), KitchenProps.Steel, 0f, "Carrito_examen");   // tensiómetro, linterna, tubos y vacunas
         Label(exam, "Silla de exámenes (iniciación)", 1.4f);
         Label(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-4.2f, 0f, 3.8f), 180f), "Mesa del médico", 1.5f);
-        Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-8.5f, 0f, -1.6f), -90f), "Botiquín", 2.2f);
-        Label(InfirmaryProps.XRay(r, "Rayos X", new Vector3(-1.4f, 0f, -5.4f), 0f), "Rayos X", 2.6f);
-        Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(1.6f, 0f, -6.3f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);
-        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(4.2f, 0f, -6.2f), 180f);
+        Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-7.8f, 0f, -1.6f), -90f), "Botiquín", 2.2f);
+        Label(InfirmaryProps.XRay(r, "Rayos X", new Vector3(-1.4f, 0f, -4.6f), 0f), "Rayos X", 2.6f);
+        Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(1.6f, 0f, -5.2f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);
+        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(4.2f, 0f, -5.2f), 180f);
         an.gameObject.AddComponent<ClinicalStation>();
         Label(an, "Analizador clínico (F)", 1.8f);
-        KitchenProps.Sink(r, "Lavamanos", new Vector3(-8.4f, 0f, 4.6f), -90f);
+        KitchenProps.Sink(r, "Lavamanos", new Vector3(-7.8f, 0f, 4.6f), -90f);
 
-        // CAPACIDAD PARA 30 (residentes y turistas): sala al fondo y alas laterales con 27 camas más (30 en total), sala de
-        // espera con 10 sillas junto a la entrada y aseos.
+        // CAPACIDAD PARA 30 (residentes y turistas): las otras 27 camas, ARRIBA, en una GALERÍA EN U de 2,2 m (plataforma
+        // hija: alas oeste y este + fondo) con dos escaleras inclinadas (la oeste junto a la entrada; la este, de lado). Abajo ya no hay filas de camas
+        // contra las paredes: exploración al oeste, veterinaria al este y el paso libre (docs/construcciones-elevadas.md §Pisos).
         Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
         int bed = 4;
-        for (int i = 0; i < 14; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.7f + i * 1.8f, 0f, -8.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 6; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.8f, 0f, -6f + i * 2f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 7; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(11.8f, 0f, -6f + i * 2f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        float g = MezzanineHeight;
+        Transform west = Deck(r, "Galeria_oeste", new Vector3(-10.6f, 0f, -2.2f), new Vector2(4.4f, 15.2f));
+        Transform east = Deck(r, "Galeria_este", new Vector3(10.6f, 0f, -2.2f), new Vector2(4.4f, 15.2f));
+        Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -7.9f), new Vector2(16.8f, 3.8f));
+        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.7f, g, -8.6f + i * 1.65f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-7.4f + i * 1.85f, g, -8.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(11.7f, g, -8.6f + i * 1.65f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        // Barandillas en los bordes interiores (y en el frente de las alas, con el hueco de su escalera).
+        float run = StairRun();
+        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(-8.4f, g, 5.4f));
+        DeckRail(r, new Vector3(8.4f, g, -6f), new Vector3(8.4f, g, 2.8f)); DeckRail(r, new Vector3(8.4f, g, 4.2f), new Vector3(8.4f, g, 5.4f));
+        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(8.4f, g, -6f));
+        DeckRail(r, new Vector3(-12.8f, g, 5.4f), new Vector3(-11.4f, g, 5.4f)); DeckRail(r, new Vector3(-9.8f, g, 5.4f), new Vector3(-8.4f, g, 5.4f));
+        DeckRail(r, new Vector3(8.4f, g, 5.4f), new Vector3(12.8f, g, 5.4f));
+        InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-10.6f, 0f, 5.4f + run), 180f);
+        InclinedStair(r, "Escalera_galeria_este", new Vector3(8.4f - run, 0f, 3.5f), 90f);   // de lado: al frente del ala está el tanque
+        Label(west, "Sala de camas (oeste)", 1.8f); Label(east, "Sala de camas (este)", 1.8f); Label(back, "Sala de camas (fondo)", 1.8f);
         Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(4.3f, 0f, 7.8f));   // a un lado de la entrada (no la tapa)
         for (int i = 0; i < 10; i++)
         {
@@ -3253,21 +3278,21 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.22f, (i / 5) * 1.2f), new Vector3(0.06f, 0.44f, 0.06f), KitchenProps.Steel, 0f, "Pata");
         }
         Label(wait, "Sala de espera", 1.5f);
-        Aseos(r, new Vector3(-13f + 0.2f + 2.85f, 0f, 10f - 0.9f), 180f);
+        Aseos(r, new Vector3(-4.7f, 0f, 10f - 0.9f), 180f);   // junto a la entrada, entre la escalera oeste y la vertical
 
         Label(InfirmaryProps.VetTable(r, "Mesa veterinaria", new Vector3(3.6f, 0f, 0.4f), 90f), "Mesa veterinaria", 1.4f);
-        Label(InfirmaryProps.LargeAnimalStall(r, "Cuadra", new Vector3(7f, 0f, -4.6f), 0f), "Cuadra (animales grandes)", 1.8f);
-        Label(InfirmaryProps.Cages(r, "Jaulas", new Vector3(8.4f, 0f, 1.6f), 90f), "Jaulas", 1.6f);
-        Label(InfirmaryProps.FloorScale(r, "Bascula", new Vector3(6f, 0f, 4f), 0f), "Báscula", 1.5f);
+        Label(InfirmaryProps.LargeAnimalStall(r, "Cuadra", new Vector3(6.4f, 0f, -4.2f), 0f), "Cuadra (animales grandes)", 1.8f);
+        Label(InfirmaryProps.Cages(r, "Jaulas", new Vector3(7.2f, 0f, 1.6f), 90f), "Jaulas", 1.6f);
+        Label(InfirmaryProps.FloorScale(r, "Bascula", new Vector3(5.8f, 0f, 5.8f), 0f), "Báscula", 1.5f);
         Label(InfirmaryProps.Ultrasound(r, "Ecografo", new Vector3(1.8f, 0f, 1.4f), 0f), "Ecógrafo", 1.6f);
 
         // Linduarda en su mesa; el paciente de prueba (lobo «Kushal») en la cuadra.
         GameObject l = GameObject.Find("Linduarda");
         if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-4.2f, 1f, 2.6f));
         GameObject lz = GameObject.Find("Lizmibet");
-        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-6.5f, 1f, -6.5f));   // pasando visita en la sala
+        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-10.4f, 0.1f + MezzanineHeight + 1f, -3f));   // pasando visita en la galería
         GameObject p = GameObject.Find("Lobo_paciente");
-        if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(7f, 0.15f, -4.6f));
+        if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(6.4f, 0.15f, -4.2f));
         // Kushal (el jugador) EMPIEZA AQUÍ, junto a la primera cama: es el recién llegado.
         GameObject kushal = GameObject.Find("Player");
         if (kushal != null) kushal.transform.position = area.transform.TransformPoint(new Vector3(-5.5f, 1.3f, -2.6f));
@@ -3591,8 +3616,14 @@ public static partial class SampleSceneBuilder
         // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
         Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f) };
-        for (int i = 0; i < sizes.Length; i++) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        // PISOS (docs/construcciones-elevadas.md §Pisos): el BALLET es el piso de arriba de la sala de YOGA y el DOJO el del
+        // GIMNASIO (10 m más arriba, sin tapar la vista): una base, dos salas, sin plataforma ni puente aparte.
+        const int Ballet = 8, Dojo = 9;
+        for (int i = 0; i < sizes.Length; i++) if (i != Ballet && i != Dojo) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        sizes[Ballet] = StackOn(areas[Ballet].transform, areas[2].transform, sizes[2]);
+        sizes[Dojo] = StackOn(areas[Dojo].transform, areas[7].transform, sizes[7]);
         ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también, con sus bancales
+        UpperGarden(areas[areas.Count - 1].transform, new Vector2(24f, 20f));         // y encima, a 10 m, el segundo huerto
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(areas[6].transform, sizes[6]);   // maquinaria, material, herramientas y taller de obra
@@ -3612,10 +3643,17 @@ public static partial class SampleSceneBuilder
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
         CulturedMeatLab.Build(areas[5].transform, sizes[5], feeder.transform);
         // PUENTES de 8 m entre plataformas cercanas y una PISTA de alfombras voladoras por grupo (docs/transporte-alfombras.md).
-        var allSizes = new List<Vector2>(sizes) { new Vector2(24f, 20f) };
-        BuildBridgesAndPads(areasGroup.transform, areas.ToArray(), allSizes.ToArray());
+        // (Los pisos de arriba no llevan puente propio: se llega por la escalera desde el de abajo.)
+        var ground = new List<SanctuaryArea>(); var groundSizes = new List<Vector2>();
+        for (int i = 0; i < areas.Count; i++)
+        {
+            if (i == Ballet || i == Dojo) continue;
+            ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
+        }
+        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
         for (int i = 0; i < sizes.Length; i++)
+            if (i != Ballet && i != Dojo)
             SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
@@ -3633,12 +3671,20 @@ public static partial class SampleSceneBuilder
         MakePlot(parent, GardenPlot.Guild.Milpa,            new Vector3(-45f, 0f, -75f), new Vector2(20f, 20f), 12, true);
         MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -118f), new Vector2(18f, 14f), 13, true);
         MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-60f, 0f, -15f),   new Vector2(22f, 16f), 14, true);
-        MakePlot(parent, GardenPlot.Guild.Rotacion,         new Vector3(25f, 0f, -82f),   new Vector2(24f, 16f), 15, true);
+        // (La ROTACIÓN ya no tiene base propia: es el piso de arriba del Huerto, ver UpperGarden.)
         MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(-78f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
         MakePlot(parent, GardenPlot.Guild.Bambusal,         new Vector3(-42f, 0f, 0f),    new Vector2(16f, 12f), 17, true);   // guadua y cáñamo: el material de Construcción
     }
 
-    static void MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil)
+    // SEGUNDO HUERTO en la misma base: el de ROTACIÓN, 10 m sobre el Huerto (dos huertos, una base, sin puente aparte).
+    static void UpperGarden(Transform garden, Vector2 gardenSize)
+    {
+        Vector2 size = new Vector2(gardenSize.x - 2f, gardenSize.y - SetBack - 2f);   // + 2 m de suelo alrededor = el piso
+        GameObject go = MakePlot(garden.parent, GardenPlot.Guild.Rotacion, garden.TransformPoint(new Vector3(0f, 0f, -SetBack * 0.5f)), size, 15, true, upperOf: garden);
+        go.transform.rotation = garden.rotation;
+    }
+
+    static GameObject MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil, Transform upperOf = null)
     {
         GameObject go = new GameObject($"Huerto_{guild}");
         go.transform.SetParent(parent, true);
@@ -3658,7 +3704,9 @@ public static partial class SampleSceneBuilder
         CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
         // Los CULTIVOS también van ELEVADOS (docs/construcciones-elevadas.md): el huerto no deja el suelo del bosque en
         // sombra ni lo pisa; abajo crece el musgo y pasan los animales.
-        if (withSoil) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), ElevatedHeight);
+        if (upperOf != null) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), UpperFloorGap, groundBelow: false, ladderX: -(size.x + 2f) * 0.3f);
+        else if (withSoil) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), ElevatedHeight);
+        return go;
     }
 
 
@@ -3670,8 +3718,10 @@ public static partial class SampleSceneBuilder
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
 
-    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera vertical.</summary>
-    static void Elevate(Transform t, Vector2 size, float h)
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera vertical.
+    /// <paramref name="groundBelow"/> = false para un PISO SUPERIOR (debajo hay otra plataforma, no el suelo: sin colchón de
+    /// musgo); <paramref name="ladderX"/> desplaza la escalera (y el hueco de la barandilla) a lo largo del lado +Z.</summary>
+    static void Elevate(Transform t, Vector2 size, float h, bool groundBelow = true, float ladderX = 0f)
     {
         t.position += Vector3.up * h;
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
@@ -3700,14 +3750,14 @@ public static partial class SampleSceneBuilder
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
         Rail(new Vector3(hx, 0f, -hz), new Vector3(hx, 0f, hz));
-        Rail(new Vector3(-hx, 0f, hz), new Vector3(-0.6f, 0f, hz));   // hueco = donde llega la escalera vertical
-        Rail(new Vector3(0.6f, 0f, hz), new Vector3(hx, 0f, hz));
+        Rail(new Vector3(-hx, 0f, hz), new Vector3(ladderX - 0.6f, 0f, hz));   // hueco = donde llega la escalera vertical
+        Rail(new Vector3(ladderX + 0.6f, 0f, hz), new Vector3(hx, 0f, hz));
 
         // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+6 m): si alguien cae, amortigua el golpe; y es una planta más.
-        SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
+        if (groundBelow) SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
 
         // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
-        Ladder.Build(s, new Vector3(0f, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
+        Ladder.Build(s, new Vector3(ladderX, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)

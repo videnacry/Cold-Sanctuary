@@ -49,3 +49,27 @@ Además de la altura:
 - **Árboles y áreas fusionados**: junto a cada área crecen tres árboles grandes que no cazan (24–36 m); el bosque
   carnívoro queda solo en los dos casquetes salvajes. Menos árboles que antes.
 - **Alturas**: los adultos miden 22–32 m y los viejos 32–40 m; los jóvenes y brotes, menos porque aún crecen.
+
+## Pisos: plataformas hijas y bases de dos pisos (2026-10-22)
+
+Para tener **caminos amplios y ordenados** y menos plataformas sueltas con puentes, una misma base puede crecer hacia
+arriba (`SampleSceneBuilder.Levels.cs`):
+
+- **Plataforma hija (entreplanta)** de **2,2 m** dentro de la plataforma, sobre postes solo en su perímetro, con
+  **escalera inclinada** (30°, rampa para andar y para el NavMesh) y barandilla de 1 m (`Deck`, `DeckRail`,
+  `InclinedStair`).
+  - **Enfermería:** las 27 camas de hospitalización suben a una **galería en U** (alas oeste y este de 4,4 m + fondo de
+    3,8 m), con dos escaleras (la oeste junto a la entrada; la este, de lado, porque al frente está el tanque). Abajo
+    quedan las 3 camas de urgencias, la exploración (oeste), la veterinaria (este) y el paso libre desde la entrada.
+- **Piso superior a 10 m** (no tapa la vista del de abajo): columnas solo en el perímetro y escalera vertical desde el
+  piso de abajo, a un lado del eje (`StackOn`). Es **3 m más corto** por el lado de la entrada: ahí apoya su escalera.
+  Sin puente propio.
+  - **Sala de Ballet** sobre la **Sala de Yoga**.
+  - **Dojo** sobre el **Gimnasio**.
+  - **Huerto de rotación** sobre el **Huerto** (dos huertos, una base).
+- **Residencias:** cada cabaña entre árboles tiene **otra encima a 5 m** sobre cuatro columnas, con escalera vertical
+  desde su pasarela. Se quitan el anillo exterior de cabañas sobre columnas y sus seis pasarelas. La pista de alfombras
+  sale ahora de la cabaña de 0°.
+
+Pendiente: aplicar la misma idea a la cocina (barra de pase o despensa en entreplanta) y a los talleres. Las misiones del
+microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).

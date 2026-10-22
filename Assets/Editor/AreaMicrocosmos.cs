@@ -21,23 +21,20 @@ public static class AreaMicrocosmos
     public const float AreaScale = 10f;
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
-    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o)
+    /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
+    /// el Transform dado, sobre el suelo del área, y devuelve cuántos personajes vistió.</param>
+    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
-        float clear = 50f;
         int dressed = 0;
 
-        // 1) La HISTORIA del área (en el claro central).
-        if (kind == SampleSceneBuilder.MissionKind.Heal) dressed = InfirmaryStory(root.transform);
-        else if (kind == SampleSceneBuilder.MissionKind.KitchenChannel) dressed = KitchenStory(root.transform);
-        else if (kind == SampleSceneBuilder.MissionKind.GardenChannel) dressed = GardenStory(root.transform);
-        else dressed = TribeStory(root.transform, display, 8);
-
-        // 2) El ÁREA del santuario, ×10, alrededor (sin conducta), con el claro libre.
-        GameObject src = GameObject.Find(areaGo);
+        // 1) El ÁREA del santuario, ×10, ENTERA (sin conducta): el microcosmos ES el área vista desde el suelo, con sus
+        //    muebles convertidos en montañas. Antes se vaciaba un claro de 50 m en el centro para la historia, y en la
+        //    cocina (cocina abierta en el centro, comedor alrededor) eso borraba justo la cocina: ya no se reconocía.
+        GameObject src = GameObject.Find(areaGo), giant = null;
         if (src != null)
         {
-            GameObject giant = Object.Instantiate(src);
+            giant = Object.Instantiate(src);
             giant.name = $"{display}_gigante";
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
@@ -45,52 +42,178 @@ public static class AreaMicrocosmos
             giant.transform.SetParent(root.transform, false);
             giant.transform.localPosition = Vector3.zero; giant.transform.localRotation = Quaternion.identity;
             giant.transform.localScale = Vector3.one * AreaScale;
-            var kill = new List<GameObject>();
             foreach (Transform c in giant.transform)
-            {
-                if (c.name == "Mat" || c.name.StartsWith("Suelo")) { c.localPosition = new Vector3(c.localPosition.x, -0.02f, c.localPosition.z); continue; }   // su suelo, bajo el del claro
-                if (c.childCount > 0 && (c.name == "Equipamiento" || c.name.StartsWith("Gimnasio") || c.name.StartsWith("Esterillas")))
-                { foreach (Transform it in c) { Vector3 p = it.position; if (Mathf.Abs(p.x) < clear && Mathf.Abs(p.z) < clear) kill.Add(it.gameObject); } continue; }
-                Vector3 q = c.position; if (Mathf.Abs(q.x) < clear && Mathf.Abs(q.z) < clear) kill.Add(c.gameObject);
-            }
-            foreach (GameObject g in kill) if (g != null) Object.DestroyImmediate(g);
+                if (c.name == "Mat" || c.name.StartsWith("Suelo")) c.localPosition = new Vector3(c.localPosition.x, -0.02f, c.localPosition.z);   // su suelo, bajo el resto
         }
         else Debug.LogWarning($"[Microcosmos] No encuentro {areaGo} (abre la escena principal): sin área gigante.");
 
-        // Suelo del claro.
-        Box(root.transform, "Suelo_claro", new Vector3(0f, -0.05f, 0f), new Vector3(clear * 2f + 20f, 0.1f, clear * 2f + 20f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
+        // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
+        Bounds foot = new Bounds(Vector3.zero, new Vector3(100f, 1f, 100f));
+        var floors = new List<Renderer>(); _blocked.Clear();
+        if (giant != null) foot = Classify(giant, floors, _blocked);
+        Vector3 anchor = Vector3.zero; float free = 50f;
+        if (giant != null) anchor = FreeSpot(foot, _blocked, out free);
+        anchor.y = FloorAt(anchor, floors, 0f);
+        var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
-        // 3) Flora y fauna a escala de hormiga.
-        int animals = Nature(root.transform, clear + 2f, 140f, display.GetHashCode());
-
-        root.transform.position = o;
-
-        // Entrada y salida (el portal muestra su diálogo al acercarse).
-        var spawn = new GameObject("MobSpawnPoint"); spawn.transform.SetParent(root.transform, false);
+        // Entrada y salida, dentro del hueco de la historia (el portal muestra su diálogo al acercarse).
+        var spawn = new GameObject("MobSpawnPoint"); spawn.transform.SetParent(story, false);
         spawn.transform.localPosition = new Vector3(0f, 1f, -14f); spawn.transform.localRotation = Quaternion.LookRotation(Vector3.forward);
         spawn.AddComponent<MobSpawnPoint>();
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "WorldExitPortal"; portal.transform.SetParent(root.transform, false);
+        portal.name = "WorldExitPortal"; portal.transform.SetParent(story, false);
         portal.transform.localPosition = new Vector3(0f, 1.5f, -20f); portal.transform.localScale = new Vector3(2f, 3f, 0.3f);
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = Mat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>().label = "Salir del microcosmos";
 
+        Transform cast = new GameObject("Elenco").transform; cast.SetParent(story, false);
+        if (storyOverride != null) dressed = storyOverride(cast);
+        else if (kind == SampleSceneBuilder.MissionKind.Heal) dressed = InfirmaryStory(cast);
+        else if (kind == SampleSceneBuilder.MissionKind.KitchenChannel) dressed = KitchenStory(cast);
+        else if (kind == SampleSceneBuilder.MissionKind.GardenChannel) dressed = GardenStory(cast);
+        else dressed = TribeStory(cast, display, 8);
+
+        // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
+        int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
+        if (giant == null)
+            Box(root.transform, "Suelo_claro", new Vector3(0f, -0.05f, 0f), new Vector3(120f, 0.1f, 120f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
+
+        // 4) Fuera del área (alrededor, hasta el agua): el bosque a escala de hormiga — musgo = hierba, briznas y helechos =
+        //    árboles — y su fauna. Dentro del área no crece nada: es la sala del santuario.
+        float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
+        float groundY = giant != null ? FloorAt(foot.center, floors, 0f) - 0.02f : 0f;
+        Box(root.transform, "Suelo_bosque", new Vector3(foot.center.x, groundY - 0.05f, foot.center.z), new Vector3(r1 * 2f + 20f, 0.1f, r1 * 2f + 20f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
+        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r0, r1, giant == null, display.GetHashCode());
+
+        root.transform.position = o;
+
         // Las misiones del área (yoga, textil, mecánica) siguen en su tablero.
-        if (kind == SampleSceneBuilder.MissionKind.Yoga || kind == SampleSceneBuilder.MissionKind.Channel)
+        if (storyOverride == null && (kind == SampleSceneBuilder.MissionKind.Yoga || kind == SampleSceneBuilder.MissionKind.Channel))
         {
             MobMission[] missions = SampleSceneBuilder.BuildAreaMissions(root.transform, root.transform, display, tint, kind);
-            foreach (MobMission m in missions) { if (m == null) continue; m.transform.position = o + new Vector3(0f, 0f, 6f); foreach (MeditationMissionBase b in m.GetComponents<MeditationMissionBase>()) b.endMode = MissionEndMode.Standalone; }
+            foreach (MobMission m in missions) { if (m == null) continue; m.transform.position = story.TransformPoint(new Vector3(0f, 0f, 6f)); foreach (MeditationMissionBase b in m.GetComponents<MeditationMissionBase>()) b.endMode = MissionEndMode.Standalone; }
             var board = root.AddComponent<MobWorldMissionBoard>(); board.areaName = display; board.missions = missions;
         }
 
         var navGo = new GameObject("NavMesh_Microcosmos"); navGo.transform.SetParent(root.transform, false);
+        navGo.transform.localPosition = new Vector3(foot.center.x, 0f, foot.center.z);
         var nav = navGo.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
         nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume;
-        float span = 300f; if (src != null) { Renderer[] rr = src.GetComponentsInChildren<Renderer>(); if (rr.Length > 0) { Bounds bb = rr[0].bounds; foreach (Renderer x in rr) bb.Encapsulate(x.bounds); span = Mathf.Max(300f, Mathf.Max(bb.size.x, bb.size.z) * AreaScale + 40f); } }
+        float span = r1 * 2f + 20f;
         nav.center = Vector3.up * 15f; nav.size = new Vector3(span, 60f, span);
         nav.BuildNavMesh();
-        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale}, {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
+        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale} entera (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
+    }
+
+    // ── Dónde cabe la historia dentro del área ───────────────────────────────────────────────────────────────────
+
+    // Bloques sólidos del área gigante (lo que no es suelo); restos de comida y briznas los evitan.
+    static readonly List<Bounds> _blocked = new List<Bounds>();
+
+    static bool IsFloor(Bounds b) => b.size.y < 1.5f && b.max.y < 3f;
+
+    /// <summary>Separa el SUELO (planos bajos) de los MUEBLES (bloques) y devuelve la huella del área.</summary>
+    static Bounds Classify(GameObject giant, List<Renderer> floors, List<Bounds> blocked)
+    {
+        Bounds foot = default; bool any = false;
+        foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
+        {
+            Bounds b = r.bounds;
+            if (!any) { foot = b; any = true; } else foot.Encapsulate(b);
+            if (IsFloor(b)) floors.Add(r); else blocked.Add(b);
+        }
+        return any ? foot : new Bounds(Vector3.zero, new Vector3(100f, 1f, 100f));
+    }
+
+    static float DistXZ(Bounds b, Vector3 p)
+    {
+        float dx = Mathf.Max(b.min.x - p.x, 0f, p.x - b.max.x), dz = Mathf.Max(b.min.z - p.z, 0f, p.z - b.max.z);
+        return Mathf.Sqrt(dx * dx + dz * dz);
+    }
+
+    /// <summary>El punto del suelo del área más alejado de cualquier mueble (rejilla de 6 m).</summary>
+    static Vector3 FreeSpot(Bounds foot, List<Bounds> blocked, out float free)
+    {
+        Vector3 best = new Vector3(foot.center.x, 0f, foot.center.z); free = 0f;
+        if (blocked.Count == 0) { free = Mathf.Min(foot.extents.x, foot.extents.z); return best; }
+        float inset = Mathf.Min(10f, Mathf.Min(foot.extents.x, foot.extents.z) * 0.5f);
+        for (float x = foot.min.x + inset; x <= foot.max.x - inset; x += 6f)
+            for (float z = foot.min.z + inset; z <= foot.max.z - inset; z += 6f)
+            {
+                var p = new Vector3(x, 0f, z); float d = float.MaxValue;
+                foreach (Bounds b in blocked) { d = Mathf.Min(d, DistXZ(b, p)); if (d <= free) break; }
+                if (d > free) { free = d; best = p; }
+            }
+        return best;
+    }
+
+    /// <summary>Altura del suelo del área en ese punto (la cara de arriba del plano más alto que lo cubre).</summary>
+    static float FloorAt(Vector3 p, List<Renderer> floors, float fallback)
+    {
+        float y = float.MinValue;
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z) y = Mathf.Max(y, b.max.y);
+        }
+        return y == float.MinValue ? fallback : y;
+    }
+
+    /// <summary>Aparta SOLO los muebles que pisa la historia (su guarida, su gente, el portal); el resto del área queda.</summary>
+    static int ClearUnder(Transform story, Transform giant, Bounds foot)
+    {
+        Bounds core = default; bool any = false;
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.GetComponentInParent<MicroFood>() != null) continue;   // los restos se recolocan luego
+            if (!any) { core = r.bounds; any = true; } else core.Encapsulate(r.bounds);
+        }
+        if (!any) return 0;
+        core.Expand(new Vector3(2f, 0f, 2f));
+        var kill = new HashSet<GameObject>();
+        foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
+        {
+            Bounds b = r.bounds;
+            if (IsFloor(b) || b.max.x < core.min.x || b.min.x > core.max.x || b.max.z < core.min.z || b.min.z > core.max.z) continue;
+            kill.Add(Piece(r.transform, giant, foot).gameObject);
+        }
+        foreach (GameObject g in kill) if (g != null) Object.DestroyImmediate(g);
+        _blocked.Clear();
+        foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) if (!IsFloor(r.bounds)) _blocked.Add(r.bounds);
+        // Restos de comida que hayan caído dentro de un mueble: al suelo libre más cercano de su zona.
+        foreach (MicroFood f in story.GetComponentsInChildren<MicroFood>(true))
+            for (int k = 0; k < 12 && Blocked(f.transform.position); k++)
+            {
+                Vector2 r = Random.insideUnitCircle * f.spread * 0.5f;
+                f.transform.position = new Vector3(story.position.x + r.x, f.transform.position.y, story.position.z + r.y);
+            }
+        return kill.Count;
+    }
+
+    // El MUEBLE entero al que pertenece un cubo (la mesa, no su pata): el hijo del área si es pequeño, o el de su grupo.
+    static Transform Piece(Transform t, Transform giant, Bounds foot)
+    {
+        Transform top = t;
+        while (top.parent != null && top.parent != giant) top = top.parent;
+        if (top == t || Footprint(top) < 0.15f * foot.size.x * foot.size.z) return top;
+        Transform piece = t;
+        while (piece.parent != null && piece.parent != top) piece = piece.parent;
+        return piece;
+    }
+
+    static float Footprint(Transform t)
+    {
+        Bounds b = default; bool any = false;
+        foreach (Renderer r in t.GetComponentsInChildren<Renderer>()) { if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        return any ? b.size.x * b.size.z : 0f;
+    }
+
+    static bool Blocked(Vector3 p)
+    {
+        foreach (Bounds b in _blocked) if (p.x > b.min.x && p.x < b.max.x && p.z > b.min.z && p.z < b.max.z && p.y < b.max.y) return true;
+        return false;
     }
 
     // ── HISTORIAS ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -193,7 +316,7 @@ public static class AreaMicrocosmos
     // ── Piezas ────────────────────────────────────────────────────────────────────────────────────────────────────
 
     // Una HORMIGA HUMANIZADA: bípeda, con cara; NavMeshAgent para rodear los muebles gigantes.
-    static GameObject Ant(Transform root, string name, Vector3 pos, Color c, float height, float bulk)
+    internal static GameObject Ant(Transform root, string name, Vector3 pos, Color c, float height, float bulk)
     {
         var g = new GameObject(name);
         g.transform.SetParent(root, false); g.transform.localPosition = pos;
@@ -232,18 +355,18 @@ public static class AreaMicrocosmos
     }
 
     // FLORA y FAUNA a escala de hormiga, en el anillo entre el claro y el borde.
-    static int Nature(Transform root, float r0, float r1, int seed)
+    static int Nature(Transform root, Vector3 center, float r0, float r1, bool openGround, int seed)
     {
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
         Vector3 Ring(float a0, float a1) { float a = R(0f, Mathf.PI * 2f), r = R(a0, a1); return new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r); }
-        var flora = new GameObject("Flora_a_escala").transform; flora.SetParent(root, false);
+        var flora = new GameObject("Flora_a_escala").transform; flora.SetParent(root, false); flora.localPosition = center;
         Material grass = Mat("Micro_Hierba", new Color(0.62f, 0.68f, 0.3f)), grassDry = Mat("Micro_Hierba_seca", new Color(0.78f, 0.72f, 0.42f));
         Material fern = Mat("Micro_Helecho", new Color(0.25f, 0.5f, 0.25f)), fernStem = Mat("Micro_Helecho_tallo", new Color(0.3f, 0.4f, 0.2f));
         Material stem = Mat("Micro_Pie_Seta", new Color(0.9f, 0.86f, 0.75f)), cap = Mat("Micro_Sombrero", new Color(0.7f, 0.35f, 0.2f));
         Material moss = Mat("Micro_Musgo", new Color(0.3f, 0.45f, 0.2f)), mossTip = Mat("Micro_Musgo_punta", new Color(0.45f, 0.6f, 0.25f));
         Material rock = Mat("Micro_Grano", new Color(0.55f, 0.52f, 0.48f));
-        for (int i = 0; i < 260; i++) { Vector3 p = Ring(i < 60 ? 16f : r0, r1); for (int k = 0; k < 4; k++) { float hh = R(0.4f, 1.2f); Box(flora, "Musgo", p + new Vector3(R(-0.6f, 0.6f), hh * 0.5f, R(-0.6f, 0.6f)), new Vector3(0.18f, hh, 0.18f), Quaternion.Euler(R(-8f, 8f), 0f, R(-8f, 8f)), k % 2 == 0 ? moss : mossTip, false); } }
+        for (int i = 0; i < 260; i++) { Vector3 p = Ring(i < 60 && openGround ? 16f : r0, r1); for (int k = 0; k < 4; k++) { float hh = R(0.4f, 1.2f); Box(flora, "Musgo", p + new Vector3(R(-0.6f, 0.6f), hh * 0.5f, R(-0.6f, 0.6f)), new Vector3(0.18f, hh, 0.18f), Quaternion.Euler(R(-8f, 8f), 0f, R(-8f, 8f)), k % 2 == 0 ? moss : mossTip, false); } }
         for (int i = 0; i < 45; i++) { Vector3 p = Ring(r0, r1); float hh = R(2f, 6f); Box(flora, "Hongo_pie", p + Vector3.up * hh * 0.5f, new Vector3(hh * 0.15f, hh, hh * 0.15f), Quaternion.identity, stem, true); Box(flora, "Hongo_sombrero", p + Vector3.up * hh, new Vector3(hh * 0.8f, hh * 0.18f, hh * 0.8f), Quaternion.Euler(0f, R(0f, 90f), 0f), cap, false); }
         for (int i = 0; i < 90; i++) { Vector3 p = Ring(r0, r1); float hh = R(10f, 25f), lean = R(-18f, 18f), yaw = R(0f, 180f); Material m = i % 3 == 0 ? grassDry : grass; Box(flora, "Brizna", p + Vector3.up * hh * 0.3f, new Vector3(0.25f, hh * 0.6f, 1.2f), Quaternion.Euler(lean * 0.4f, yaw, 0f), m, true); Box(flora, "Brizna_punta", p + Quaternion.Euler(0f, yaw, 0f) * new Vector3(0f, hh * 0.78f, Mathf.Sin(lean * Mathf.Deg2Rad) * hh * 0.25f), new Vector3(0.2f, hh * 0.4f, 0.8f), Quaternion.Euler(lean, yaw, 0f), m, false); }
         for (int i = 0; i < 25; i++) { Vector3 p = Ring(r0 + 10f, r1); float hh = R(12f, 22f); Box(flora, "Helecho_tallo", p + Vector3.up * hh * 0.5f, new Vector3(0.6f, hh, 0.6f), Quaternion.identity, fernStem, true); for (int k = 0; k < 7; k++) Box(flora, "Helecho_fronda", p + Vector3.up * hh + Quaternion.Euler(0f, k * 51f, 0f) * new Vector3(0f, -1.5f, 5f), new Vector3(2.4f, 0.2f, 11f), Quaternion.Euler(-20f, k * 51f, 0f), fern, false); }
@@ -251,7 +374,7 @@ public static class AreaMicrocosmos
 
         // FAUNA: cada bicho cuelga de un padre MicroSize que lo mantiene a su tamaño relativo a la hormiga (el prefab
         // fija su propia escala al nacer; por eso antes se veían diminutos).
-        var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false);
+        var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false); fauna.localPosition = center;
         Material sand = Mat("Micro_Arena", new Color(0.82f, 0.72f, 0.5f)), dung = Mat("Micro_Estiercol", new Color(0.35f, 0.25f, 0.15f));
         (string sp, int n, float len)[] list = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         int placed = 0;
@@ -297,9 +420,9 @@ public static class AreaMicrocosmos
         }
     }
 
-    static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Material m, bool solid) => Box(parent, name, local, size, Quaternion.identity, m, solid);
+    internal static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Material m, bool solid) => Box(parent, name, local, size, Quaternion.identity, m, solid);
 
-    static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Quaternion rot, Material m, bool solid)
+    internal static Transform Box(Transform parent, string name, Vector3 local, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         var g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name; g.transform.SetParent(parent, false);
@@ -310,7 +433,7 @@ public static class AreaMicrocosmos
     }
 
     static readonly Dictionary<string, Material> _mats = new Dictionary<string, Material>();
-    static Material Mat(string name, Color c)
+    internal static Material Mat(string name, Color c)
     {
         if (_mats.TryGetValue(name, out Material cached) && cached != null) return cached;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
