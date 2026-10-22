@@ -130,15 +130,30 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
         TestProbe.Check("el comedor tiene dos galerías con mesas y escalera inclinada", upTables >= 6 && GameObject.Find("Escalera_comedor_oeste") != null && GameObject.Find("Escalera_comedor_este") != null, $"{upTables} mesas arriba");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
+        var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
         {
             var plats = new System.Collections.Generic.List<Bounds>();
             foreach (SanctuaryArea sa in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
-            { Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue; Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds); plats.Add(bb); }
+            {
+                // Solo lo construido: las crías, pacientes y personajes que viven dentro de un área se mueven en Play y
+                // estirarían su caja (una cría que se asoma al borde no es la plataforma).
+                bool any = false; Bounds bb = default;
+                foreach (Renderer rr in sa.GetComponentsInChildren<Renderer>())
+                {
+                    if (rr.GetComponentInParent<Anima>() != null) continue;
+                    if (!any) { bb = rr.bounds; any = true; } else bb.Encapsulate(rr.bounds);
+                }
+                if (any) plats.Add(bb);
+            }
             foreach (Transform tt in flora.GetComponentsInChildren<Transform>())
-                if (tt.name == "Rama" && plats.Exists(pb => pb.Contains(tt.position))) pierced++;
+                if (tt.name == "Rama" && plats.Exists(pb => pb.Contains(tt.position)))
+                {
+                    pierced++;
+                    if (piercedWho.Count < 4 && tt.parent != null && !piercedWho.Contains(tt.parent.name)) piercedWho.Add(tt.parent.name);
+                }
         }
-        TestProbe.Check("ninguna rama de árbol atraviesa una plataforma de área", pierced == 0, $"{pierced} ramas");
+        TestProbe.Check("ninguna rama de árbol atraviesa una plataforma de área", pierced == 0, $"{pierced} ramas {string.Join(", ", piercedWho)}");
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));

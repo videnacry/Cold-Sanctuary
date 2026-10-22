@@ -56,6 +56,15 @@ public static class FurnitureSpacing
         return bad;
     }
 
+    /// <summary>¿<paramref name="item"/> (un mueble de la tabla) queda sin su pasillo respecto a otro mueble de
+    /// <paramref name="scope"/>? false si no es un tipo medido.</summary>
+    public static bool TooClose(Transform item, Transform scope)
+    {
+        if (GapFor(item.name) < 0f) return false;
+        foreach (var (a, b, _, _) in Violations(scope)) if (a == item || b == item) return true;
+        return false;
+    }
+
     /// <summary>Revisa todas las áreas humanas y avisa por consola de cada par demasiado junto.</summary>
     public static int Report()
     {

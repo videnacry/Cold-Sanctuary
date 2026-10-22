@@ -118,7 +118,7 @@ public static partial class SampleSceneBuilder
     static readonly List<(int roof, string label, Vector3[] members)> _padGroups = new List<(int, string, Vector3[])>();
 
     /// <summary>Coloca cada pista de alfombras como PISO SUPERIOR (a 10 m) del piso más alto de su área: busca, en una
-    /// rejilla de 2 m, el sitio donde sus columnas del borde y el pie de su escalera no caen sobre muebles. Después la
+    /// rejilla de 1 m, el sitio donde sus columnas del borde y el pie de su escalera no caen sobre muebles. Después la
     /// pista pasa a ser ese "piso más alto" (sus paneles solares van en su borde).</summary>
     static void PlaceStackedPads()
     {
@@ -154,8 +154,8 @@ public static partial class SampleSceneBuilder
                 return n;
             }
             Vector3 best = Vector3.zero; int bestN = int.MaxValue;
-            for (float z = -hz; z <= hz + 0.01f && bestN > 0; z += 2f)
-                for (float x = -hx; x <= hx + 0.01f && bestN > 0; x += 2f)
+            for (float z = -hz; z <= hz + 0.01f && bestN > 0; z += 1f)
+                for (float x = -hx; x <= hx + 0.01f && bestN > 0; x += 1f)
                 {
                     int n = Hits(new Vector3(x, 0f, z));
                     if (n < bestN) { bestN = n; best = new Vector3(x, 0f, z); }
@@ -260,8 +260,17 @@ public static partial class SampleSceneBuilder
                 foreach (Transform item in c)
                 {
                     if (item.name.StartsWith("Suelo") || item.GetComponentInChildren<Renderer>() == null || !InLanding(l, item, out float depth)) continue;
-                    // Se APARTA hacia dentro (no se borra): el paso del puente queda libre y no se pierde nada.
-                    item.position += l.area.TransformDirection(inward) * (4.3f - depth);
+                    // Se APARTA hacia dentro (no se borra): el paso del puente queda libre y no se pierde nada. Si ahí queda
+                    // pegado a otro mueble (sin su pasillo, FurnitureSpacing), se desliza a lo largo del borde hasta un hueco.
+                    Vector3 start = item.position, inW = l.area.TransformDirection(inward);
+                    Vector3 alongW = l.area.TransformDirection(l.side < 2 ? Vector3.forward : Vector3.right);
+                    item.position = start + inW * (4.3f - depth);
+                    for (int k = 1; k <= 120 && (FurnitureSpacing.TooClose(item, c) || InLanding(l, item, out _)); k++)
+                    {
+                        int along = k % 24, deeper = k / 24;   // a lo largo del borde (0,5 m, −0,5, 1, −1…) y, si no, más adentro
+                        float slide = (along + 1) / 2 * 0.5f * (along % 2 == 0 ? 1f : -1f);
+                        item.position = start + inW * (4.3f - depth + deeper) + alongW * slide;
+                    }
                     moved++;
                 }
             }

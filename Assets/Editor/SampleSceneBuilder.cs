@@ -3068,8 +3068,13 @@ public static partial class SampleSceneBuilder
         built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las pistas de alfombras, encima de las áreas
         foreach (Component sa in built)
         {
-            Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
-            Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
+            bool any = false; Bounds bb = default;
+            foreach (Renderer rr in sa.GetComponentsInChildren<Renderer>())
+            {
+                if (rr.GetComponentInParent<Anima>() != null) continue;   // solo lo construido (no las crías ni los pacientes)
+                if (!any) { bb = rr.bounds; any = true; } else bb.Encapsulate(rr.bounds);
+            }
+            if (!any) continue;
             bb.Expand(new Vector3(3f, 3f, 3f)); volumes.Add(bb);
         }
         bool Built(Vector3 q) { foreach (Bounds bb in volumes) if (bb.Contains(q)) return true; return false; }
@@ -3755,11 +3760,15 @@ public static partial class SampleSceneBuilder
                 int side = c.yaw == 0f ? 3 : c.yaw > 0f ? 1 : 0;
                 float along = side == 3 ? c.p.x : c.p.z;
                 if (gaps != null && gaps.Exists(o => o.side == side && o.b > along - len * 0.5f - 1f && o.a < along + len * 0.5f + 1.5f)) continue;
+                // Los paneles van a 3 m: por debajo se pasa. Solo estorban sus POSTES (cada 2,2 m, delante y detrás) y la caja
+                // del inversor y las baterías, a un extremo.
                 Quaternion q = top.rotation * Quaternion.Euler(0f, c.yaw, 0f);
-                Vector3 centre = top.TransformPoint(c.p) + q * new Vector3(0.45f, 0f, 0f) + Vector3.up * (height * 0.5f + 0.3f);
-                Vector3 ext = q * new Vector3(len * 0.5f + 1f, 0f, 0.6f);
-                Bounds strip = new Bounds(centre, new Vector3(Mathf.Abs(ext.x) * 2f, height, Mathf.Abs(ext.z) * 2f));
-                if (!blockers.Exists(b => b.Intersects(strip))) { pick = c; free = true; break; }
+                Vector3 basePos = top.TransformPoint(c.p);
+                var feet = new List<Bounds> { new Bounds(basePos + q * new Vector3(len * 0.5f + 0.6f, 1f, 0f), new Vector3(0.9f, 2f, 0.9f)) };
+                for (int i = 0; i <= 6; i += 2)
+                    for (int f = -1; f <= 1; f += 2)
+                        feet.Add(new Bounds(basePos + q * new Vector3(-len * 0.5f + i * 1.1f, height * 0.5f, f * 0.4f), new Vector3(0.4f, height, 0.4f)));
+                if (!blockers.Exists(b => feet.Exists(ft => ft.Intersects(b)))) { pick = c; free = true; break; }
             }
             SolarArray.Build(top, $"Paneles_{name}", top.TransformPoint(pick.p + Vector3.up * 0.1f), top.eulerAngles.y + pick.yaw, 6, height);
             placed++;
