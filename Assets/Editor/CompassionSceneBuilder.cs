@@ -262,14 +262,8 @@ public static class CompassionSceneBuilder
 
     static void Dress1940s(Transform p, float height, Hat hat)
     {
-        Material felt = AreaMicrocosmos.Mat("Compasion_Fieltro", new Color(0.22f, 0.2f, 0.18f)), wool = AreaMicrocosmos.Mat("Compasion_Lana", new Color(0.55f, 0.18f, 0.16f));
-        if (hat == Hat.Brimmed)
-        {
-            AreaMicrocosmos.Box(p, "Sombrero_ala", new Vector3(0f, height + 0.02f, 0f), new Vector3(0.55f, 0.04f, 0.55f), felt, false);
-            AreaMicrocosmos.Box(p, "Sombrero_copa", new Vector3(0f, height + 0.12f, 0f), new Vector3(0.32f, 0.18f, 0.32f), felt, false);
-        }
-        else if (hat == Hat.Cap) AreaMicrocosmos.Box(p, "Gorra", new Vector3(0f, height + 0.04f, 0.05f), new Vector3(0.36f, 0.08f, 0.42f), felt, false);
-        AreaMicrocosmos.Box(p, "Bufanda", new Vector3(0f, height * 0.8f, 0f), new Vector3(0.4f, 0.1f, 0.35f), wool, false);
+        // La ropa va EN el cuerpo centauro (CubeInsect): sigue al torso y a la cabeza al enderezarse o agacharse.
+        CubeInsect.Wear1940s(p.gameObject, new Color(0.32f, 0.3f, 0.27f), hat == Hat.Brimmed ? CubeInsect.Hat.Brimmed : hat == Hat.Cap ? CubeInsect.Hat.Cap : CubeInsect.Hat.None);
     }
 
     static int RefugeeAt(Transform parent, string name, Vector3 pos, float height, float homeRadius)

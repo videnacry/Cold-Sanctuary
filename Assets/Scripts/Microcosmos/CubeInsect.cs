@@ -349,6 +349,84 @@ public class CubeInsect : MonoBehaviour
         return ci;
     }
 
+    // ══ ROPA Y HERIDAS (sobre el cuerpo centauro: siguen al torso y a la cabeza cuando se enderezan o se agachan) ══════
+    public enum Hat { None, Brimmed, Cap }
+
+    // La cabeza («Cuello» la lleva) y el torso, y la caja de la cabeza en el marco del cuello.
+    static bool Anchors(GameObject host, out Transform torso, out Transform neck, out Bounds head)
+    {
+        torso = FindDeep(host.transform, "Torso"); neck = FindDeep(host.transform, "Cuello"); head = default;
+        if (torso == null || neck == null) return false;
+        Transform h = null; foreach (Transform t in neck) if (t.name == "Cabeza" && t.GetComponent<Renderer>() != null) h = t;
+        if (h == null) foreach (Transform t in neck) if (t.GetComponent<Renderer>() != null) { h = t; break; }
+        head = h != null ? new Bounds(h.localPosition, h.localScale) : new Bounds(Vector3.zero, Vector3.one * 0.2f);
+        return true;
+    }
+
+    /// <summary>Ropa GRIEGA (Egina): quitón sobre el torso con su cinturón, corona de encina y barba.</summary>
+    public static void WearGreek(GameObject host, Color chiton, bool wreath, bool beard)
+    {
+        if (!Anchors(host, out Transform torso, out Transform neck, out Bounds head)) return;
+        Color belt = new Color(0.55f, 0.4f, 0.2f);
+        Part(torso, "Quiton", new Vector3(0f, 0f, 0.08f), new Vector3(head.size.x * 1.25f, head.size.y * 1.4f, 0.24f), chiton);
+        Part(torso, "Quiton_falda", new Vector3(0f, 0f, -0.06f), new Vector3(head.size.x * 1.4f, head.size.y * 1.6f, 0.1f), chiton);
+        Part(torso, "Cinturon", new Vector3(0f, 0f, 0.02f), new Vector3(head.size.x * 1.3f, head.size.y * 1.45f, 0.03f), belt);
+        if (wreath)
+            for (int k = 0; k < 8; k++)
+            {
+                float a = k * Mathf.PI / 4f;
+                Part(neck, "Corona_encina", head.center + new Vector3(Mathf.Cos(a) * head.extents.x * 1.05f, head.extents.y * 0.85f, Mathf.Sin(a) * head.extents.z * 1.05f), new Vector3(head.size.x * 0.22f, head.size.y * 0.16f, head.size.x * 0.22f), new Color(0.25f, 0.42f, 0.2f));
+            }
+        if (beard) Part(neck, "Barba", head.center + new Vector3(0f, -head.extents.y * 0.75f, head.extents.z * 0.9f), new Vector3(head.size.x * 0.7f, head.size.y * 0.55f, head.size.z * 0.3f), new Color(0.92f, 0.92f, 0.9f));
+    }
+
+    /// <summary>Ropa de los AÑOS 40 (Le Chambon, Irena Sendler): abrigo sobre el torso, bufanda y sombrero de ala o gorra.</summary>
+    public static void Wear1940s(GameObject host, Color coat, Hat hat)
+    {
+        if (!Anchors(host, out Transform torso, out Transform neck, out Bounds head)) return;
+        Color felt = new Color(0.22f, 0.2f, 0.18f), wool = new Color(0.55f, 0.18f, 0.16f);
+        Part(torso, "Abrigo", new Vector3(0f, 0f, 0.06f), new Vector3(head.size.x * 1.3f, head.size.y * 1.5f, 0.28f), coat);
+        for (int k = 0; k < 3; k++) Part(torso, "Boton", new Vector3(0f, head.size.y * 0.76f, 0.02f + k * 0.07f), new Vector3(0.02f, 0.01f, 0.02f), new Color(0.15f, 0.12f, 0.1f));
+        Part(neck, "Bufanda", head.center + new Vector3(0f, -head.extents.y * 1.1f, -head.extents.z * 0.4f), new Vector3(head.size.x * 1.1f, head.size.y * 0.3f, head.size.z * 1.0f), wool);
+        if (hat == Hat.Brimmed)
+        {
+            Part(neck, "Sombrero_ala", head.center + Vector3.up * head.extents.y * 1.05f, new Vector3(head.size.x * 1.7f, head.size.y * 0.12f, head.size.z * 1.7f), felt);
+            Part(neck, "Sombrero_copa", head.center + Vector3.up * head.extents.y * 1.45f, new Vector3(head.size.x * 1.0f, head.size.y * 0.55f, head.size.z * 1.0f), felt);
+        }
+        else if (hat == Hat.Cap)
+        {
+            Part(neck, "Gorra", head.center + Vector3.up * head.extents.y * 1.1f, new Vector3(head.size.x * 1.1f, head.size.y * 0.3f, head.size.z * 1.05f), felt);
+            Part(neck, "Visera", head.center + new Vector3(0f, head.extents.y * 0.95f, head.extents.z * 1.3f), new Vector3(head.size.x * 0.9f, head.size.y * 0.06f, head.size.z * 0.5f), felt);
+        }
+    }
+
+    /// <summary>
+    /// HERIDAS (BodyInjuries): sin antebrazo derecho (falta desde el codo de la pata/brazo delantero derecho), el ojo
+    /// izquierdo cerrado (un párpado en lugar del ojo) y la cojera (una pata trasera pisa menos y el cuerpo cabecea).
+    /// </summary>
+    public static void DrawInjuries(GameObject host, BodyInjuries inj)
+    {
+        if (inj == null) return;
+        CubeInsect ci = host.GetComponent<CubeInsect>();
+        if (inj.missingRightForearm)
+            foreach (Transform t in host.GetComponentsInChildren<Transform>(true))
+                if (t.name == "Pata_0_D") { Transform tib = FindDeep(t, "Tibia_art"); if (tib != null) tib.gameObject.SetActive(false); Transform mu = FindDeep(t, "Femur"); if (mu != null) Part(mu.parent, "Munon", mu.localPosition + Vector3.forward * mu.localScale.z * 0.5f, new Vector3(mu.localScale.x * 1.3f, mu.localScale.y * 1.3f, mu.localScale.x * 1.3f), new Color(0.7f, 0.55f, 0.5f)); }
+        if (inj.blindLeftEye)
+        {
+            Transform neck = FindDeep(host.transform, "Cuello");
+            if (neck != null)
+            {
+                Transform eye = null, pupil = null, shine = null;
+                foreach (Transform t in neck) { if (t.localPosition.x >= 0f) continue; if (t.name == "Ojo") eye = t; if (t.name == "Pupila") pupil = t; if (t.name == "Brillo") shine = t; }
+                if (pupil != null) pupil.gameObject.SetActive(false);
+                if (shine != null) shine.gameObject.SetActive(false);
+                if (eye != null) { eye.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.45f, 0.3f, 0.28f)); eye.localScale = new Vector3(eye.localScale.x, eye.localScale.y * 0.25f, eye.localScale.z); }   // párpado cerrado
+            }
+        }
+        if (ci != null) ci._limp = inj.limp;
+    }
+    bool _limp, _injuriesDrawn;
+
     // ══ MOVIMIENTO ═════════════════════════════════════════════════════════════════════════════════════════════
     void Awake()
     {
@@ -376,6 +454,8 @@ public class CubeInsect : MonoBehaviour
 
     void Update()
     {
+        // HERIDAS (BodyInjuries): se dibujan en cuanto se aplican (sin antebrazo, ojo cerrado, cojera).
+        if (!_injuriesDrawn && Time.time >= _nextPhaseCheck) { BodyInjuries inj = GetComponent<BodyInjuries>(); if (inj == null) _injuriesDrawn = true; else if (inj.Applied) { DrawInjuries(gameObject, inj); _injuriesDrawn = true; } }
         // METAMORFOSIS: si cambia de fase (larva → pupa → adulto, ninfa → adulto), se redibuja.
         if (!string.IsNullOrEmpty(species) && Time.time >= _nextPhaseCheck)
         {
@@ -405,7 +485,8 @@ public class CubeInsect : MonoBehaviour
             if (l.coxa == null) continue;
             int group = (l.pair % 2 == 0) == (l.side < 0) ? 0 : 1;
             float ph = Mathf.Sin(_phase + group * Mathf.PI);
-            Quaternion cx = l.coxaRest * Quaternion.Euler(0f, ph * amp * l.side, 0f);
+            float la = _limp && l.side > 0 && l.pair == _legs[_legs.Count - 1].pair ? 0.3f : 1f;   // cojera: la trasera derecha apenas da el paso
+            Quaternion cx = l.coxaRest * Quaternion.Euler(0f, ph * amp * la * l.side, 0f);
             Quaternion tr = l.trochRest * Quaternion.Euler(-Mathf.Max(0f, ph) * amp * 0.6f, 0f, 0f);   // se alza en la fase de vuelo
             if (l.pair == 0 && _torso != null)   // brazos cuando está erguido (balanceo suave al andar)
             {

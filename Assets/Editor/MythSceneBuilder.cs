@@ -216,15 +216,8 @@ public static class MythSceneBuilder
     // dibujará en detalle.)
     static void DressGreek(Transform p, float height, Color chiton, bool wreath, bool beard)
     {
-        AreaMicrocosmos.Box(p, "Quiton", new Vector3(0f, height * 0.5f, 0f), new Vector3(0.5f, height * 0.42f, 0.38f), AreaMicrocosmos.Mat($"Egina_Quiton_{ColorUtility.ToHtmlStringRGB(chiton)}", chiton), false);
-        AreaMicrocosmos.Box(p, "Cinturon", new Vector3(0f, height * 0.55f, 0f), new Vector3(0.52f, 0.05f, 0.4f), AreaMicrocosmos.Mat("Egina_Cinturon", new Color(0.55f, 0.4f, 0.2f)), false);
-        if (wreath)
-            for (int k = 0; k < 8; k++)
-            {
-                float a = k * Mathf.PI / 4f;
-                AreaMicrocosmos.Box(p, "Corona_encina", new Vector3(Mathf.Cos(a) * 0.17f, height + 0.02f, Mathf.Sin(a) * 0.17f), new Vector3(0.09f, 0.05f, 0.09f), AreaMicrocosmos.Mat("Egina_Encina", new Color(0.25f, 0.42f, 0.2f)), false);
-            }
-        if (beard) AreaMicrocosmos.Box(p, "Barba", new Vector3(0f, height * 0.86f, 0.14f), new Vector3(0.2f, 0.18f, 0.08f), AreaMicrocosmos.Mat("Egina_Barba", new Color(0.92f, 0.92f, 0.9f)), false);
+        // La ropa va EN el cuerpo centauro (CubeInsect): quitón y cinturón en el torso; corona y barba en la cabeza.
+        CubeInsect.WearGreek(p.gameObject, chiton, wreath, beard);
     }
 
     static Transform Spot(Transform parent, string name, Vector3 local)
