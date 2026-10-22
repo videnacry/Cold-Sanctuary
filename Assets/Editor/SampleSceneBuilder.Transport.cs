@@ -86,12 +86,13 @@ public static partial class SampleSceneBuilder
             if (!placed) Debug.LogWarning($"[Transporte] Sin sitio para la pista de {members[0].name}.");
         }
 
-        // ARBOLEDA RESIDENCIAL: su pista, hacia fuera de la cabaña exterior de 300°, con un puente de 4 m.
+        // ARBOLEDA RESIDENCIAL: su pista, hacia fuera de la cabaña de 0° (entre dos árboles; las de arriba van encima), con
+        // un puente de 4 m desde su lado exterior (r 15).
         Vector3 rc = new Vector3(-60f, 0f, 95f);
-        Vector3 rd = new Vector3(Mathf.Cos(300f * Mathf.Deg2Rad), 0f, Mathf.Sin(300f * Mathf.Deg2Rad));
-        Vector3 padC = rc + rd * (25f + 5f + PadSize * 0.5f);
+        Vector3 rd = new Vector3(Mathf.Cos(ResidentialBuilder.PadAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(ResidentialBuilder.PadAngle * Mathf.Deg2Rad));
+        Vector3 padC = rc + rd * (15f + 5f + PadSize * 0.5f);
         Transform rpad = Pad(root, padC, Quaternion.LookRotation(rd), "Arboleda residencial (habitaciones)", new[] { rc + Vector3.up * ElevatedHeight });
-        Bridge(root, rc + rd * 25f + Vector3.up * ElevatedHeight, rc + rd * 30f + Vector3.up * ElevatedHeight, 4f, "Puente_pista_residencial");
+        Bridge(root, rc + rd * 15f + Vector3.up * ElevatedHeight, rc + rd * 20f + Vector3.up * ElevatedHeight, 4f, "Puente_pista_residencial");
         OpenRailPad(rpad, 3, 0f, 4f);
         pads++;
         Debug.Log($"[Transporte] {bridges} puentes de 8 m (por cercanía, de {links.Count} posibles) y {pads} pistas de alfombras voladoras (una por grupo).");
