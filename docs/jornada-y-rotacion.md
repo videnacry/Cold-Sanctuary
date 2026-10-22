@@ -5,7 +5,7 @@ Diseño de Berón (2026-10-18). Código:
 - `WorkdayDirector.cs`: la jornada en el juego.
 - `AreaWork.cs`: catálogo de misiones.
 - `World/ConstructionProject.cs`: obras.
-- `World/InfirmaryGate.cs`: salida de la enfermería.
+- `World/InfirmaryGate.cs`: salida de la enfermería; `World/MagnateWarden.cs`: la Magnate devuelve a quien abandona su puesto.
 
 ## La jornada (8 h, todos los días)
 
@@ -17,7 +17,7 @@ Diseño de Berón (2026-10-18). Código:
 | 14:00–16:00 | Entrenamiento (2 h): virtualizaciones de yoga, gimnasio… |
 | 16:00 → | **Libre**: cada uno va donde quiere y hace lo que quiere (el jugador también) |
 
-Durante las 8 h los personajes están **bloqueados** en su itinerario: van al área de su misión y se quedan allí. El jugador ve su itinerario en pantalla. Consola: `jornada` (plan del día y equilibrio).
+Durante las 8 h los personajes van al área de su misión y se quedan allí. **Nadie queda encerrado** (2026-10-22): si alguien abandona su puesto, la **Magnate** (que conoce todos los hechizos, también teletransportarse) aparece de pronto delante de él, le dice que vuelva y lo teletransporta de vuelta dentro del área (`World/MagnateWarden.cs`). El jugador ve su itinerario en pantalla. Consola: `jornada` (plan del día y equilibrio).
 
 ## Reparto (rotación)
 
@@ -65,7 +65,6 @@ Las marcadas con * son obligatorias cada día.
 - **Carne Cultivada**: Biorreactores* (1 h)
 - **Gimnasio**: Mantenimiento (1 h)
 - **Guardia**:
-  - Vigilar a los recién llegados* (2 h)
   - Patrulla y raciones a los carnívoros* (2 h)
 - **Construcción**, por cada obra abierta:
   - Llevar el material del día* (1 h)
@@ -87,11 +86,12 @@ Las marcadas con * son obligatorias cada día.
 
 - **Recién llegados** (Kushal, turistas) no están registrados en el santuario:
   - No pueden **salir de la enfermería** hasta hacerse análisis y vacuna y completar la iniciación con Linduarda.
-  - La **Magnate** se planta en la salida y los devuelve dentro con un aviso.
+  - Pueden intentar salir (no hay bloqueo en la puerta), pero la **Magnate** se teletransporta delante del que sale,
+    le explica que aún no es del santuario y lo teletransporta de vuelta dentro. Sustituye a los guardias que lo
+    perseguían y lo arrastraban («jalar»), que se movían de forma rara.
   - Dentro de la enfermería se mueven libres; Linduarda los busca para seguir.
 - **Misiones de iniciación**:
   - La de recién llegados y turistas es una **misión obligatoria de la Enfermería**.
-  - **Vigilar a los recién llegados** es una obligatoria de la **Guardia**.
   - Cada día alguien hace cada una, según la rotación.
 - **Misión nueva**: si la rotación da a alguien una misión que nunca ha hecho, la **Magnate** aparece a su lado y lo inicia. Es la mímica: ella lanza los hechizos y el otro los repite, como en el yoga.
 - **Personajes antiguos**: los que no son recién llegados (Andrea, Goluis…) son miembros desde el principio y entran en la rotación el primer día.
@@ -107,7 +107,7 @@ La misión de la **Enfermería** es **iniciar a un turista**: recibirlo, anális
 
 ## Pendiente
 
-- Que el jugador quede bloqueado de verdad en su misión durante la jornada (ahora la ve en el HUD; los personajes sí van a su área).
+- ~~Que el jugador quede bloqueado de verdad en su misión durante la jornada~~ Hecho con la Magnate (2026-10-22).
 - Que Linduarda persiga al jugador por la enfermería pidiéndole que siga la iniciación.
 - Iniciación con TeachingSession real (pasos de la misión) en vez del aviso de la Magnate.
 - Turistas que llegan cada día y pasan por la iniciación de la enfermería.

@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 546 tipos._
+_Total: 547 tipos._
 
 
 ## Animals
@@ -338,6 +338,7 @@ _Total: 546 tipos._
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
 - **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
+- **MagnateWarden** (class) — `Assets/Scripts/World/MagnateWarden.cs` — LA MAGNATE GUARDA LOS PUESTOS (Berón 2026-10-22).
 - **MarineGuard** (class) — `Assets/Scripts/World/MarineGuard.cs` — LOS CETÁCEOS NO PISAN EL HIELO:
 - **MarineLife** (class) — `Assets/Scripts/World/MarineLife.cs` — VIDA MARINA (focas, ballenas, orcas):
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
