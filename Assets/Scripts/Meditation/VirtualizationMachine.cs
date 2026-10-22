@@ -129,8 +129,20 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // FÍSICA (docs/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
         // de Newton, Curie y Einstein; Eratóstenes, el primer tramo, tiene el suyo.
         if (areaName == "Planta Atómica" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes")) { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
+        // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
+        foreach (var (area, label, scene) in StoryScenes)
+            if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
         ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i => acts[i](), null, transform, 4.5f);
     }
+
+    static readonly (string area, string label, string scene)[] StoryScenes =
+    {
+        ("Sala de Yoga", "Simulación: Patanjali y los ocho miembros del yoga", "Microcosmos_Patanjali"),
+        ("Gimnasio",     "Simulación: la tregua de Navidad, Flandes 1914 (Primera Guerra Mundial)", "Microcosmos_Tregua1914"),
+        ("Enfermería",   "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
+        ("Enfermería",   "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
+        ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
+    };
 
     void ShowArea(string area)
     {

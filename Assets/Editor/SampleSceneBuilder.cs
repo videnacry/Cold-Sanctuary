@@ -156,6 +156,8 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena de Egina (mirmidones): {e.Message}"); }
         try { PhysicsSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar el microcosmos de la planta atómica: {e.Message}"); }
+        try { StorySceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
