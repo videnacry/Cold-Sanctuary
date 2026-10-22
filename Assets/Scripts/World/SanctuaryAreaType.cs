@@ -37,4 +37,5 @@ public enum SanctuaryAreaType
     Ballet,               // Sala de ballet — en obras al empezar
     MartialArts,          // Dojo de artes marciales — en obras al empezar
     Calisthenics,         // Parque de calistenia — en obras al empezar
+    AtomicPlant,          // Planta atómica — reactor de investigación (isótopos para el hospital, física), docs/atomic-plant.md
 }

@@ -71,6 +71,9 @@ public static class VirtualMissions
             case "lab_limpieza": return new[] { "Limpiar las superficies", "Esterilizar el material", "Ordenar el laboratorio" };
             case "con_almacen": return new[] { "Contar el material", "Contar las herramientas", "Apuntar lo que falta" };
             case "gym_mantener": return new[] { "Revisar las máquinas", "Engrasar y ajustar", "Probarlas" };
+            case "pla_operar": return new[] { "Coger el dosímetro", "Comprobar la piscina desde el puente", "Arrancar: sacar las barras hasta crítico", "Subir a potencia y vigilar el periodo", "Parar: meter las barras" };
+            case "pla_isotopos": return new[] { "Coger el dosímetro", "Mandar el molibdeno al núcleo", "Recuperar la cápsula", "Cargar el generador en la celda caliente", "Pasar por el pórtico de contaminación" };
+            case "pla_ronda": return new[] { "Leer la conductividad y cambiar resinas", "Revisar la bomba y el intercambiador", "Revisar la torre de refrigeración", "Medir la tasa de dosis con el Geiger" };
             case "gua_recienllegados": return new[] { "Ir a la salida de la enfermería", "Vigilar a los recién llegados", "Devolver dentro al que salga" };
             case "gua_carnivoros": return new[] { "Recoger las raciones", "Patrullar el perímetro", "Dar las raciones a los carnívoros" };
             case "obra_material": return new[] { "Cargar el material en el almacén", "Llevarlo a la obra", "Descargarlo a pie de obra" };
@@ -97,6 +100,9 @@ public static class VirtualMissions
             case "enf_visita": return new[] { "Cama 1", "Cama 2", "Cama 3", "Botiquin" };
             case "enf_animales": return new[] { "Cuadra", "Mesa veterinaria", "Laboratorio", "Mesa veterinaria" };
             case "enf_inventario": return new[] { "Camilla", "Botiquin", "Botiquin" };
+            case "pla_operar": return new[] { "Taquilla_dosimetros", "Puente_piscina", "Consola_reactor", "Consola_reactor", "Consola_reactor" };
+            case "pla_isotopos": return new[] { "Taquilla_dosimetros", "Conejo_neumatico", "Conejo_neumatico", "Celda_caliente", "Portico_contaminacion" };
+            case "pla_ronda": return new[] { "Purificacion", "Bomba_e_intercambiador", "Torre_refrigeracion", "Contador_Geiger" };
             default: return null;
         }
     }
@@ -113,6 +119,7 @@ public static class VirtualMissions
             case "Carne Cultivada": return new Color(0.9f, 0.75f, 0.75f);
             case "Gimnasio": return new Color(0.5f, 0.55f, 0.65f);
             case "Construcción": return new Color(0.7f, 0.6f, 0.45f);
+            case "Planta Atómica": return new Color(0.8f, 0.82f, 0.78f);
             default: return new Color(0.6f, 0.65f, 0.7f);
         }
     }
