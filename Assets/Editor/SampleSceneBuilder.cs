@@ -3749,16 +3749,26 @@ public static partial class SampleSceneBuilder
             var blockers = new List<Bounds>();
             foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
                 if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + height + 0.6f) blockers.Add(rr.bounds);
-            // Candidatos (local: centro de la fila y giro): fondo al centro y a los lados; laterales.
-            var cands = new List<(Vector3 p, float yaw)> { (new Vector3(0f, 0f, -hz + 0.7f), 0f) };
-            if (hx > len) { cands.Add((new Vector3(-hx * 0.5f, 0f, -hz + 0.7f), 0f)); cands.Add((new Vector3(hx * 0.5f, 0f, -hz + 0.7f), 0f)); }
-            if (hz * 2f > len + 1f) { cands.Add((new Vector3(-hx + 0.7f, 0f, -hz * 0.3f), 90f)); cands.Add((new Vector3(hx - 0.7f, 0f, -hz * 0.3f), -90f)); }
+            // Candidatos (local: centro de la fila y giro), por orden de preferencia: fondo, laterales y, si no, el frente;
+            // en cada borde, del centro hacia los extremos (cada cuarto del tramo libre).
+            var cands = new List<(Vector3 p, float yaw)>();
+            float[] steps = { 0f, -0.25f, 0.25f, -0.5f, 0.5f };
+            void Edge(float yaw, float halfLen, System.Func<float, Vector3> at)
+            {
+                float room = halfLen - len * 0.5f - 0.6f; if (room < 0f) return;
+                foreach (float s in steps) cands.Add((at(s * 2f * room), yaw));
+            }
+            Edge(0f, hx, a => new Vector3(a, 0f, -hz + 0.7f));
+            Edge(90f, hz, a => new Vector3(-hx + 0.7f, 0f, a));
+            Edge(-90f, hz, a => new Vector3(hx - 0.7f, 0f, a));
+            Edge(180f, hx, a => new Vector3(a, 0f, hz - 0.7f));
+            if (cands.Count == 0) cands.Add((new Vector3(0f, 0f, -hz + 0.7f), 0f));
             (Vector3 p, float yaw) pick = cands[0]; bool free = false;
             _openings.TryGetValue(top, out var gaps);   // donde llega un puente (lado, tramo): ahí no
             foreach (var c in cands)
             {
-                int side = c.yaw == 0f ? 3 : c.yaw > 0f ? 1 : 0;
-                float along = side == 3 ? c.p.x : c.p.z;
+                int side = c.yaw == 0f ? 3 : c.yaw == 180f ? 2 : c.yaw > 0f ? 1 : 0;
+                float along = side >= 2 ? c.p.x : c.p.z;
                 if (gaps != null && gaps.Exists(o => o.side == side && o.b > along - len * 0.5f - 1f && o.a < along + len * 0.5f + 1.5f)) continue;
                 // Los paneles van a 3 m: por debajo se pasa. Solo estorban sus POSTES (cada 2,2 m, delante y detrás) y la caja
                 // del inversor y las baterías, a un extremo.

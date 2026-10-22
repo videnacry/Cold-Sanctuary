@@ -264,19 +264,34 @@ public static partial class SampleSceneBuilder
                     // pegado a otro mueble (sin su pasillo, FurnitureSpacing), se desliza a lo largo del borde hasta un hueco.
                     Vector3 start = item.position, inW = l.area.TransformDirection(inward);
                     Vector3 alongW = l.area.TransformDirection(l.side < 2 ? Vector3.forward : Vector3.right);
-                    item.position = start + inW * (4.3f - depth);
-                    for (int k = 1; k <= 120 && (FurnitureSpacing.TooClose(item, c) || InLanding(l, item, out _)); k++)
+                    // Si ningún hueco cumple del todo, se queda en el sitio fuera del paso con MENOS choques (no en el último
+                    // probado) y se avisa por consola.
+                    Vector3 best = start + inW * (4.3f - depth); int bestHits = int.MaxValue;
+                    for (int k = 0; k < 360; k++)
                     {
                         int along = k % 24, deeper = k / 24;   // a lo largo del borde (0,5 m, −0,5, 1, −1…) y, si no, más adentro
                         float slide = (along + 1) / 2 * 0.5f * (along % 2 == 0 ? 1f : -1f);
                         item.position = start + inW * (4.3f - depth + deeper) + alongW * slide;
+                        if (InLanding(l, item, out _) || !InsideArea(l, item)) continue;
+                        int hits = FurnitureSpacing.CloseCount(item, c);
+                        if (hits < bestHits) { bestHits = hits; best = item.position; }
+                        if (hits == 0) break;
                     }
+                    item.position = best;
+                    if (bestHits > 0 && bestHits != int.MaxValue) Debug.LogWarning($"[Transporte] «{item.name}» apartado del puente sin hueco con pasillo en «{l.area.name}».");
                     moved++;
                 }
             }
         }
         Debug.Log($"[Transporte] Llegadas de los puentes despejadas: {moved} muebles apartados del paso.");
         _landings.Clear();
+    }
+
+    // ¿Sigue dentro de la plataforma (con 0,8 m de margen al borde)?
+    static bool InsideArea((Transform area, Vector2 half, int side, float center) l, Transform t)
+    {
+        Vector3 p = l.area.InverseTransformPoint(t.position);
+        return Mathf.Abs(p.x) < l.half.x - 0.8f && Mathf.Abs(p.z) < l.half.y - 0.8f;
     }
 
     static bool InLanding((Transform area, Vector2 half, int side, float center) l, Transform t, out float depth)

@@ -56,13 +56,13 @@ public static class FurnitureSpacing
         return bad;
     }
 
-    /// <summary>¿<paramref name="item"/> (un mueble de la tabla) queda sin su pasillo respecto a otro mueble de
-    /// <paramref name="scope"/>? false si no es un tipo medido.</summary>
-    public static bool TooClose(Transform item, Transform scope)
+    /// <summary>Con cuántos muebles de <paramref name="scope"/> queda <paramref name="item"/> sin su pasillo (0 si no es un tipo medido).</summary>
+    public static int CloseCount(Transform item, Transform scope)
     {
-        if (GapFor(item.name) < 0f) return false;
-        foreach (var (a, b, _, _) in Violations(scope)) if (a == item || b == item) return true;
-        return false;
+        if (GapFor(item.name) < 0f) return 0;
+        int n = 0;
+        foreach (var (a, b, _, _) in Violations(scope)) if (a == item || b == item) n++;
+        return n;
     }
 
     /// <summary>Revisa todas las áreas humanas y avisa por consola de cada par demasiado junto.</summary>
