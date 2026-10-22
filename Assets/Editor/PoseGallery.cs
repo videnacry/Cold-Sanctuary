@@ -215,7 +215,8 @@ public static class PoseGallery
             Vector3 eye = cam.transform.position;
             float toObject = Mathf.Sqrt(b.SqrDistance(eye));
             foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
-                if (r.enabled && !r.transform.IsChildOf(go.transform) && GeometryUtility.TestPlanesAABB(frustum, r.bounds)
+                if (r.enabled && !r.transform.IsChildOf(go.transform) && r.bounds.size.magnitude < b.size.magnitude   // el hielo y el mar, más grandes que el área, se quedan
+                    && GeometryUtility.TestPlanesAABB(frustum, r.bounds)
                     && Vector3.Distance(eye, r.bounds.ClosestPoint(eye)) < toObject)
                 { r.enabled = false; hidden.Add(r); }
             var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
