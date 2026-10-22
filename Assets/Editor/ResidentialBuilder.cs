@@ -1,14 +1,17 @@
 using UnityEngine;
 
 /// <summary>
-/// ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md): los dormitorios de los humanos, todos ELEVADOS a 7 m. En el
+/// ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md): los dormitorios de los humanos, todos ELEVADOS a 12 m. En el
 /// centro, una plataforma con escalera vertical; alrededor, seis árboles grandes (no carnívoros). Seis cabañas se APOYAN EN DOS
-/// ÁRBOLES a la vez (vigas a cada tronco) y otras seis, más afuera, se sostienen sobre COLUMNAS. Pasarelas colgantes
-/// las unen. Cada cabaña es el dormitorio de una persona: cama, mesilla con lámpara, estante, ventana, puerta y su nombre.
+/// ÁRBOLES a la vez (vigas a cada tronco) y, ENCIMA de cada una, a 5 m, otra cabaña sobre cuatro columnas, con su escalera
+/// vertical desde la pasarela (§Pisos: antes eran seis cabañas más afuera con seis pasarelas más). Cada cabaña es el
+/// dormitorio de una persona: cama, mesilla, armario y su nombre.
 /// </summary>
 public static class ResidentialBuilder
 {
     public const float DeckY = 12f;   // como las demás áreas humanas: a 12 m, el bosque no queda en sombra
+    public const float StoryGap = 5f; // de una cabaña a la de encima
+    public const float PadAngle = 0f; // hacia dónde sale la pista de alfombras (desde la cabaña de 0°)
     static readonly Color Wood = new Color(0.62f, 0.52f, 0.42f), WoodDark = new Color(0.48f, 0.4f, 0.33f), Roof = new Color(0.55f, 0.66f, 0.75f);
 
     public static readonly string[] Owners =
@@ -54,14 +57,14 @@ public static class ResidentialBuilder
             Beam(root, c + Vector3.up * (DeckY - 0.35f), t2 + Vector3.up * (DeckY - 0.35f));
             Bridge(root, dir * 4f, dir * 9f);
 
-            // Cabaña SOBRE COLUMNAS, detrás (más afuera, en la misma dirección), unida por una pasarela a la puerta trasera.
-            Vector3 dir2 = dir;
-            Vector3 c2 = dir2 * 22f;
-            Transform cab2 = Cabin(root, c2, -dir2, owner++, $"Cabaña sobre columnas {k + 1}");
-            for (int i = 0; i < 4; i++) Solid(cab2, new Vector3(i % 2 == 0 ? -3.2f : 3.2f, -DeckY * 0.5f, i < 2 ? -2.7f : 2.7f), new Vector3(0.4f, DeckY, 0.4f), Wood, "Columna");
-            Bridge(root, c + dir * 3f, c2 - dir * 3f);
+            // Cabaña de ARRIBA, 5 m sobre la de abajo, en cuatro columnas que se apoyan en sus esquinas; se sube por una
+            // escalera vertical desde la pasarela, a un lado de la puerta de abajo.
+            Transform cab2 = Cabin(root, c + Vector3.up * StoryGap, -dir, owner++, $"Cabaña de arriba {k + 1}");
+            for (int i = 0; i < 4; i++) Solid(cab2, new Vector3(i % 2 == 0 ? -3.2f : 3.2f, -StoryGap * 0.5f, i < 2 ? -2.7f : 2.7f), new Vector3(0.3f, StoryGap, 0.3f), Wood, "Columna");
+            Vector3 side = Vector3.Cross(Vector3.up, dir).normalized;
+            Ladder.Build(root, dir * (12f - 3f - Ladder.Gap) + side * 1.4f + Vector3.up * DeckY, Quaternion.LookRotation(dir).eulerAngles.y, StoryGap, Wood, WoodDark);
         }
-        SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(56f, 56f), 77);   // colchón de musgo bajo toda la arboleda
+        SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(40f, 40f), 77);   // colchón de musgo bajo toda la arboleda
         WorldLabel wl = root.gameObject.AddComponent<WorldLabel>(); wl.text = "Arboleda residencial"; wl.height = DeckY + 5f;
         return root;
     }
@@ -71,17 +74,17 @@ public static class ResidentialBuilder
     static bool Built(Vector3 q)
     {
         if (Mathf.Abs(q.x) < 1.8f && q.z < -3f && q.z > -7f && q.y < DeckY + 3f) return true;   // la escalera vertical al borde (toda su altura)
-        { Vector2 d3 = new Vector2(Mathf.Cos(300f * Mathf.Deg2Rad), Mathf.Sin(300f * Mathf.Deg2Rad)); Vector2 hq = new Vector2(q.x, q.z); float al = Vector2.Dot(hq, d3); if (al > 24f && al < 47f && Mathf.Abs(d3.x * hq.y - d3.y * hq.x) < 9f && q.y > DeckY - 3f) return true; }   // la pista de alfombras y su puente
-        if (q.y < DeckY - 1.5f || q.y > DeckY + 5f) return false;
+        { Vector2 d3 = new Vector2(Mathf.Cos(PadAngle * Mathf.Deg2Rad), Mathf.Sin(PadAngle * Mathf.Deg2Rad)); Vector2 hq = new Vector2(q.x, q.z); float al = Vector2.Dot(hq, d3); if (al > 14f && al < 37f && Mathf.Abs(d3.x * hq.y - d3.y * hq.x) < 9f && q.y > DeckY - 3f) return true; }   // la pista de alfombras y su puente
+        if (q.y < DeckY - 1.5f || q.y > DeckY + StoryGap + 5f) return false;   // dos pisos de cabañas
         Vector2 h = new Vector2(q.x, q.z);
         if (h.magnitude < 6.5f) return true;                                     // plataforma central
         for (int k = 0; k < 6; k++)
         {
             float a = 60f * k * Mathf.Deg2Rad;
             Vector2 d = new Vector2(Mathf.Cos(a), Mathf.Sin(a));
-            if ((h - d * 12f).magnitude < 5.6f || (h - d * 22f).magnitude < 5.6f) return true;   // cabañas (7 × 6 m y margen)
+            if ((h - d * 12f).magnitude < 5.6f) return true;   // cabañas (7 × 6 m y margen), las dos plantas
             float along = Vector2.Dot(h, d);
-            if (along > 3f && along < 20f && Mathf.Abs(d.x * h.y - d.y * h.x) < 2.8f) return true;   // puentes (4 m de ancho)
+            if (q.y < DeckY + 5f && along > 3f && along < 10f && Mathf.Abs(d.x * h.y - d.y * h.x) < 2.8f) return true;   // pasarelas (4 m de ancho)
         }
         return false;
     }
