@@ -190,7 +190,7 @@ public static class PoseGallery
     [MenuItem("Tools/Cold Sanctuary/Snapshots (tanque y laboratorio)")]
     public static void Snapshots()
     {
-        foreach (string n in new[] { "ArboledaResidencial", "Infirmary_Area", "Huerto_Rotacion", "Kitchen_Area", "Construction_Area", "CubCare_Area" }) Snapshot(n);
+        foreach (string n in new[] { "ArboledaResidencial", "Infirmary_Area", "Huerto_Rotacion", "Kitchen_Area", "Galeria_comedor_este", "Construction_Area", "CubCare_Area" }) Snapshot(n);   // la galería, de cerca: desde lejos 2,2 m no se distinguen
     }
 
     public static void Snapshot(string objectName)
@@ -208,12 +208,15 @@ public static class PoseGallery
             Vector3 view = objectName.StartsWith("Nido") ? new Vector3(0.5f, -0.25f, -1f) : new Vector3(0.6f, 0.55f, -1f);   // los panales cuelgan: se miran desde abajo
             cam.transform.position = b.center + (go.transform.rotation * view).normalized * d;
             cam.transform.LookAt(b.center);
-            // Lo que no es del objeto y queda ENTRE la cámara y él (un árbol en primer plano, otra área) se oculta durante
-            // la foto, para que no tape ni parezca que atraviesa lo fotografiado.
-            Ray sight = new Ray(cam.transform.position, b.center - cam.transform.position);
-            float toObject = Vector3.Distance(cam.transform.position, b.center) - b.extents.magnitude * 0.5f;
+            // Lo que no es del objeto, entra en el encuadre y está MÁS CERCA de la cámara que el objeto (un árbol en primer
+            // plano, otra área) se oculta durante la foto, para que no tape ni parezca que atraviesa lo fotografiado.
+            cam.aspect = 1100f / 700f;
+            Plane[] frustum = GeometryUtility.CalculateFrustumPlanes(cam);
+            Vector3 eye = cam.transform.position;
+            float toObject = Mathf.Sqrt(b.SqrDistance(eye));
             foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
-                if (r.enabled && !r.transform.IsChildOf(go.transform) && r.bounds.IntersectRay(sight, out float hit) && hit < toObject)
+                if (r.enabled && !r.transform.IsChildOf(go.transform) && GeometryUtility.TestPlanesAABB(frustum, r.bounds)
+                    && Vector3.Distance(eye, r.bounds.ClosestPoint(eye)) < toObject)
                 { r.enabled = false; hidden.Add(r); }
             var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
             RenderTexture.active = rt;
