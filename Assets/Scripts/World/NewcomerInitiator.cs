@@ -39,7 +39,7 @@ public class NewcomerInitiator : MonoBehaviour
     {
         if (_machine != null) return _machine;
         foreach (VirtualizationMachine vm in SceneCache.All<VirtualizationMachine>(2f))
-            if (vm != null && vm.areaName == "Enfermería") return _machine = vm;
+            if (vm != null && vm.areaName == AreaWork.Hospital) return _machine = vm;
         return _machine = FindAnyObjectByType<VirtualizationMachine>();
     }
 

@@ -280,11 +280,11 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Greater("el comedor tiene sillas para 30 comensales", seats, 29f, $"{seats} sillas");
         int wcSeats = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Inodoro_seco") wcSeats++;
         TestProbe.Greater("hay inodoros a los que ir al baño", wcSeats, 5f, $"{wcSeats}");
-        TestProbe.Check("la iniciación de turistas de la enfermería es una misión de virtualización con su escena", Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName("enf_iniciacion")) && VirtualMissions.Steps("enf_iniciacion").Length >= 4);
+        TestProbe.Check("la iniciación de turistas del hospital es una misión de virtualización con su escena", Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName("enf_iniciacion")) && VirtualMissions.Steps("enf_iniciacion").Length >= 4);
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
         TestProbe.Greater("hay pistas de alfombras voladoras (una por grupo de plataformas)", CarpetPad.All.Count, 1f, string.Join(" · ", CarpetPad.All.Select(p => p.displayName)));
-        TestProbe.Check("el restaurante y la enfermería están unidos por un puente de 8 m", GameObject.Find("Puente_Restaurante_Enfermería") != null || FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") && t.name.Contains("Enfermer") && !t.name.Contains("pista")));
+        TestProbe.Check("el restaurante y el hospital están unidos por un puente de 8 m", FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") && t.name.Contains(AreaWork.Hospital) && !t.name.Contains("pista")));
         var census = new System.Collections.Generic.Dictionary<string, int>();
         foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
         int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;

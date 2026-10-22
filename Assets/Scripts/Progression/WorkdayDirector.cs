@@ -151,10 +151,10 @@ public class WorkdayDirector : MonoBehaviour
             if (g == null || g.CompareTag("Player")) continue;
             string area = Where(w, h, out _);
             if (area == null) continue;
-            Vector3 p = AreaPoint(area, g.name); if (p == Vector3.zero) continue;
+            Vector3 p = WorkPoint(area, g.name); if (p == Vector3.zero) continue;
             Teleport(g.transform, p); n++;
         }
-        foreach (var kv in _clones) if (kv.Value != null) { string area = Where(kv.Key, h, out _); Vector3 p = area != null ? AreaPoint(area, kv.Key.name) : Vector3.zero; if (p != Vector3.zero) Teleport(kv.Value.transform, p); }
+        foreach (var kv in _clones) if (kv.Value != null) { string area = Where(kv.Key, h, out _); Vector3 p = area != null ? WorkPoint(area, kv.Key.name) : Vector3.zero; if (p != Vector3.zero) Teleport(kv.Value.transform, p); }
         Debug.Log($"[Jornada] Arranque: itinerarios asignados y {n} personajes colocados en el área de su primer turno.");
     }
 
@@ -293,7 +293,8 @@ public class WorkdayDirector : MonoBehaviour
         bool guardDuty = missionId == "gua_carnivoros";
         if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
-        if (lin != null) lin.enabled = area == null || area == "Enfermería" || NewcomerWaiting();
+        if (area != AreaWork.Hospital) HospitalStation.Release(g.name);   // su puesto médico queda libre para otro
+        if (lin != null) lin.enabled = area == null || area == AreaWork.Hospital || NewcomerWaiting();
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (area == null)
         {
@@ -306,7 +307,7 @@ public class WorkdayDirector : MonoBehaviour
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) return;   // su conducta propia hace ESTA misión
         if (YogaClass(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
-        Vector3 to = AreaPoint(area, g.name);
+        Vector3 to = WorkPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
             if (g.GetComponent<Anima>() != null && CarpetPad.Route(g, ref to)) return;   // otro grupo de plataformas: en alfombra voladora
@@ -372,6 +373,14 @@ public class WorkdayDirector : MonoBehaviour
         if (_areas.TryGetValue(area, out Transform t) && t != null) return t;
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) _areas[a.displayName] = a.transform;
         return _areas.TryGetValue(area, out t) ? t : null;
+    }
+
+    /// <summary>Dónde trabaja <paramref name="who"/> en <paramref name="area"/>: en el HOSPITAL, en uno de sus 8 puestos médicos
+    /// (docs/hospital.md); en el resto (o si los puestos están llenos), un punto del área.</summary>
+    static Vector3 WorkPoint(string area, string who)
+    {
+        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return post.StandPoint; }
+        return AreaPoint(area, who);
     }
 
     public static Vector3 AreaPoint(string area, string who)

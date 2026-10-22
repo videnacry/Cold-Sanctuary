@@ -26,8 +26,10 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>ENTREPLANTA: una plataforma hija de <paramref name="size"/> con su cara de arriba a <paramref name="h"/>,
-    /// sobre postes finos en el perímetro (cada ~4 m). Devuelve el Transform a la altura de la cara de arriba.</summary>
-    static Transform Deck(Transform parent, string name, Vector3 center, Vector2 size, float h = MezzanineHeight)
+    /// sobre postes finos en el perímetro (cada ~4 m). <paramref name="noPosts"/> = lado sin postes (x/y = −1/+1: el borde
+    /// −X/+X o −Z/+Z), p. ej. el que da al borde de la plataforma, por donde puede llegar un puente.
+    /// Devuelve el Transform a la altura de la cara de arriba.</summary>
+    static Transform Deck(Transform parent, string name, Vector3 center, Vector2 size, float h = MezzanineHeight, Vector2Int noPosts = default)
     {
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
         Transform d = new GameObject(name).transform; d.SetParent(parent, false); d.localPosition = center;
@@ -38,6 +40,7 @@ public static partial class SampleSceneBuilder
             for (int k = 0; k <= nz; k++)
             {
                 if (i != 0 && i != nx && k != 0 && k != nz) continue;   // solo el perímetro: debajo queda libre
+                if ((noPosts.x < 0 && i == 0) || (noPosts.x > 0 && i == nx) || (noPosts.y < 0 && k == 0) || (noPosts.y > 0 && k == nz)) continue;
                 Solid(d, new Vector3(-hx + 2f * hx * i / nx, (h - 0.15f) * 0.5f, -hz + 2f * hz * k / nz), new Vector3(0.12f, h - 0.15f, 0.12f), wood, "Poste");
             }
         Transform top = new GameObject("Encima").transform; top.SetParent(d, false); top.localPosition = Vector3.up * h;

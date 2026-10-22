@@ -13,7 +13,7 @@ public class PrologueSequence : MonoBehaviour
     [TextArea]
     public string[] beats =
     {
-        "Enfermería: exámenes médicos y vacuna del recién llegado (chequeo).",
+        "Hospital: exámenes médicos y vacuna del recién llegado (chequeo).",
         "Kushal curiosea → prueba la máquina de avatares (VirtualizationMachine) → entra al Microcosmos (pre-fuego).",
         "Era de La Recolectora: apoya y anima a los débiles; llévalos a la cueva-refugio (CarryToRefuge).",
         "Ve a la sala de meditación para volver al Mesocosmos.",

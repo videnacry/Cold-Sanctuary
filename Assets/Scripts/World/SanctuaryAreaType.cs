@@ -8,7 +8,7 @@ public enum SanctuaryAreaType
     CubCare,              // Criado — first area for newcomers with low stats
     Cleaning,             // Limpieza — Panterilia's first domain
     Kitchen,              // Cocina — Goluis's domain
-    Infirmary,            // Enfermería — primeros auxilios, cuidado del jugador y las crías
+    Infirmary,            // Hospital (antes Enfermería): personas abajo, animales arriba (docs/hospital.md)
     VeterinaryClinic,     // Veterinaria — cuidado médico animal
     YogaRoom,             // Sala de yoga — asanas y ejercicios básicos
 

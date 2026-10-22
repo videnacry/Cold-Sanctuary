@@ -173,7 +173,7 @@ public static partial class SampleSceneBuilder
         ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
         ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
         ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
-        ("Prueba_Enfermeria",    new System.Action<Transform>[] { BuildLinduarda, PlacePlayerAtInfirmary }),   // enfermería equipada + Linduarda + análisis clínico
+        ("Prueba_Hospital",      new System.Action<Transform>[] { BuildLinduarda, PlacePlayerAtInfirmary }),   // hospital equipado + Linduarda + análisis clínico
         ("Prueba_TorreGuardia",  new System.Action<Transform>[] { BuildGuardTower, PlacePlayerAtTower }),
         ("Prueba_Restaurante",   new System.Action<Transform>[] { BuildRestaurantSandbox, PlacePlayerAtKitchen }),   // cocina real: 4 cocineros + misión «Preparar platillos»
         ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
@@ -3206,98 +3206,7 @@ public static partial class SampleSceneBuilder
             if (!kushal.TryGetComponent(out SanctuaryOnboarding kon)) kon = kushal.AddComponent<SanctuaryOnboarding>();
             kon.introMissionsRequired = 1; kon.autoCompleteForDemo = false;
         }
-        BuildInfirmaryRoom(parent);   // la enfermería equipada (y Linduarda + paciente dentro)
-    }
-
-    // ENFERMERÍA equipada (docs/sanctuary1-level-and-live-tests §4): dentro del área, parte HUMANA (camas con suero y
-    // monitor, camilla, mesa del médico, botiquín, rayos X, laboratorio y analizador de sangre = estación de análisis
-    // clínico con F) y parte VETERINARIA (mesa hidráulica con lámpara, cuadra para animales grandes, jaulas, báscula y
-    // ecógrafo). Linduarda trabaja aquí y el paciente de prueba espera en la cuadra.
-    static void BuildInfirmaryRoom(Transform root)
-    {
-        GameObject area = GameObject.Find("Infirmary_Area");
-        if (area == null) return;
-        Transform r = new GameObject("Equipamiento").transform;
-        r.SetParent(area.transform, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        floor.name = "Suelo_Enfermeria"; floor.transform.SetParent(r, false);
-        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(25.6f, 0.04f, 19.6f);
-        floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Enfermeria_Suelo_MAT", new Color(0.86f, 0.94f, 0.92f));
-        // Franja que separa la parte humana (oeste) de la veterinaria (este).
-        KitchenProps.C(r, new Vector3(0f, 0.03f, 0f), new Vector3(0.12f, 0.01f, 13.6f), new Color(0.55f, 0.75f, 0.7f), 0f, "Separacion");
-
-        Color[] blankets = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f) };
-        for (int i = 0; i < 3; i++) Label(InfirmaryProps.HospitalBed(r, $"Cama {i + 1}", new Vector3(-7.4f + i * 2.1f, 0f, -4.8f), 0f, blankets[i]), $"Cama {i + 1}", 1.4f);   // urgencias: a pie de suelo
-        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-6.9f, 0f, 1.2f), 90f), "Camilla de exploración", 1.3f);
-        // SILLA DE EXÁMENES (iniciación: constantes, pupilas, extracción y vacuna): sentado, con reposabrazos para el brazo.
-        Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-5.2f, 0f, -0.6f), 90f);
-        Color seatC = new Color(0.35f, 0.55f, 0.65f);
-        KitchenProps.C(exam, new Vector3(0f, 0.45f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
-        KitchenProps.C(exam, new Vector3(0f, 0.85f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
-        KitchenProps.C(exam, new Vector3(0.36f, 0.68f, 0.05f), new Vector3(0.1f, 0.06f, 0.6f), seatC, 0f, "Reposabrazos");
-        KitchenProps.C(exam, new Vector3(0f, 0.2f, 0f), new Vector3(0.08f, 0.4f, 0.08f), KitchenProps.Steel, 0f, "Pie");
-        KitchenProps.C(exam, new Vector3(0.75f, 0.45f, 0.3f), new Vector3(0.4f, 0.9f, 0.4f), KitchenProps.Steel, 0f, "Carrito_examen");   // tensiómetro, linterna, tubos y vacunas
-        Label(exam, "Silla de exámenes (iniciación)", 1.4f);
-        Label(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-4.2f, 0f, 3.8f), 180f), "Mesa del médico", 1.5f);
-        Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-7.8f, 0f, -1.6f), -90f), "Botiquín", 2.2f);
-        Label(InfirmaryProps.XRay(r, "Rayos X", new Vector3(-1.4f, 0f, -4.6f), 0f), "Rayos X", 2.6f);
-        Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(1.6f, 0f, -5.2f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);
-        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(4.2f, 0f, -5.2f), 180f);
-        an.gameObject.AddComponent<ClinicalStation>();
-        Label(an, "Analizador clínico (F)", 1.8f);
-        KitchenProps.Sink(r, "Lavamanos", new Vector3(-7.8f, 0f, 4.6f), -90f);
-
-        // CAPACIDAD PARA 30 (residentes y turistas): las otras 27 camas, ARRIBA, en una GALERÍA EN U de 2,2 m (plataforma
-        // hija: alas oeste y este + fondo) con dos escaleras inclinadas (la oeste junto a la entrada; la este, de lado). Abajo ya no hay filas de camas
-        // contra las paredes: exploración al oeste, veterinaria al este y el paso libre (docs/construcciones-elevadas.md §Pisos).
-        Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
-        int bed = 4;
-        float g = MezzanineHeight;
-        Transform west = Deck(r, "Galeria_oeste", new Vector3(-10.6f, 0f, -2.2f), new Vector2(4.4f, 15.2f));
-        Transform east = Deck(r, "Galeria_este", new Vector3(10.6f, 0f, -2.2f), new Vector2(4.4f, 15.2f));
-        Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -7.9f), new Vector2(16.8f, 3.8f));
-        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.7f, g, -8.6f + i * 1.65f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-7.4f + i * 1.85f, g, -8.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(11.7f, g, -8.6f + i * 1.65f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        // Barandillas en los bordes interiores (y en el frente de las alas, con el hueco de su escalera).
-        float run = StairRun();
-        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(-8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(8.4f, g, -6f), new Vector3(8.4f, g, 2.8f)); DeckRail(r, new Vector3(8.4f, g, 4.2f), new Vector3(8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(8.4f, g, -6f));
-        DeckRail(r, new Vector3(-12.8f, g, 5.4f), new Vector3(-11.4f, g, 5.4f)); DeckRail(r, new Vector3(-9.8f, g, 5.4f), new Vector3(-8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(8.4f, g, 5.4f), new Vector3(12.8f, g, 5.4f));
-        InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-10.6f, 0f, 5.4f + run), 180f);
-        InclinedStair(r, "Escalera_galeria_este", new Vector3(8.4f - run, 0f, 3.5f), 90f);   // de lado: al frente del ala está el tanque
-        Label(west, "Sala de camas (oeste)", 1.8f); Label(east, "Sala de camas (este)", 1.8f); Label(back, "Sala de camas (fondo)", 1.8f);
-        Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(4.3f, 0f, 7.8f));   // a un lado de la entrada (no la tapa)
-        for (int i = 0; i < 10; i++)
-        {
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.45f, (i / 5) * 1.2f), new Vector3(0.5f, 0.08f, 0.5f), new Color(0.45f, 0.62f, 0.72f), 0f, "Silla");
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.75f, (i / 5) * 1.2f + 0.24f), new Vector3(0.5f, 0.55f, 0.06f), new Color(0.45f, 0.62f, 0.72f), 0f, "Respaldo");
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.22f, (i / 5) * 1.2f), new Vector3(0.06f, 0.44f, 0.06f), KitchenProps.Steel, 0f, "Pata");
-        }
-        Label(wait, "Sala de espera", 1.5f);
-        Aseos(r, new Vector3(-4.7f, 0f, 10f - 0.9f), 180f);   // junto a la entrada, entre la escalera oeste y la vertical
-
-        Label(InfirmaryProps.VetTable(r, "Mesa veterinaria", new Vector3(3.6f, 0f, 0.4f), 90f), "Mesa veterinaria", 1.4f);
-        Label(InfirmaryProps.LargeAnimalStall(r, "Cuadra", new Vector3(6.4f, 0f, -4.2f), 0f), "Cuadra (animales grandes)", 1.8f);
-        Label(InfirmaryProps.Cages(r, "Jaulas", new Vector3(7.2f, 0f, 1.6f), 90f), "Jaulas", 1.6f);
-        Label(InfirmaryProps.FloorScale(r, "Bascula", new Vector3(5.8f, 0f, 5.8f), 0f), "Báscula", 1.5f);
-        Label(InfirmaryProps.Ultrasound(r, "Ecografo", new Vector3(1.8f, 0f, 1.4f), 0f), "Ecógrafo", 1.6f);
-
-        // Linduarda en su mesa; el paciente de prueba (lobo «Kushal») en la cuadra.
-        GameObject l = GameObject.Find("Linduarda");
-        if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-4.2f, 1f, 2.6f));
-        GameObject lz = GameObject.Find("Lizmibet");
-        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-10.4f, 0.1f + MezzanineHeight + 1f, -3f));   // pasando visita en la galería
-        GameObject p = GameObject.Find("Lobo_paciente");
-        if (p != null) p.transform.position = area.transform.TransformPoint(new Vector3(6.4f, 0.15f, -4.2f));
-        // Kushal (el jugador) EMPIEZA AQUÍ, junto a la primera cama: es el recién llegado.
-        GameObject kushal = GameObject.Find("Player");
-        if (kushal != null) kushal.transform.position = area.transform.TransformPoint(new Vector3(-5.5f, 1.3f, -2.6f));
-        // La doctora inicia a los recién llegados en el TANQUE de la enfermería (no en cualquier máquina).
-        VirtualizationMachine vm = area.GetComponentInChildren<VirtualizationMachine>();
-        if (l != null && vm != null && l.TryGetComponent(out Linduarda lin)) lin.virtualizationMachine = vm;
+        BuildHospital(parent);   // el HOSPITAL equipado, de 2 plantas (y Linduarda + paciente dentro) — docs/hospital.md
     }
 
     static void PlacePlayerAtInfirmary(Transform root)
@@ -3573,8 +3482,8 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
                 new Vector3(5f, 0f, 95f), new Vector2(40f, 38f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta en el CENTRO y el comedor (para 30+) alrededor
 
-            BuildAreaBox(areasGroup.transform, "Infirmary_Area", "Enfermería", SanctuaryAreaType.Infirmary, 1,
-                new Vector3(55f, 0f, 97f), new Vector2(26f, 20f), new Color(0.85f, 0.95f, 0.90f)),   // para atender a 30 personas (turistas incluidos)
+            BuildAreaBox(areasGroup.transform, "Infirmary_Area", AreaWork.Hospital, SanctuaryAreaType.Infirmary, 1,
+                new Vector3(55f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md)
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
                 new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
@@ -3616,9 +3525,9 @@ public static partial class SampleSceneBuilder
         // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
         PlantGarden(areas[areas.Count - 1].transform);
         // Todo lo construido, ELEVADO (6 m, sobre columnas, con escalera): el suelo queda para la naturaleza. El huerto no.
-        // UNA SOLA ENFERMERÍA para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"):
-        // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
-        Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(26f, 20f) };
+        // UN SOLO HOSPITAL para personas y animales (docs/area-progression.md: "Una sola Enfermería que cuida a TODOS"; docs/hospital.md):
+        // ya no hay veterinaria aparte: el hospital veterinario (y el paciente lobo) es su planta alta.
+        Vector2[] sizes = { new Vector2(40f, 38f), HospitalSize, new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(26f, 20f) };
         // PISOS (docs/construcciones-elevadas.md §Pisos): el BALLET es el piso de arriba de la sala de YOGA y el DOJO el del
         // GIMNASIO (10 m más arriba, sin tapar la vista): una base, dos salas, sin plataforma ni puente aparte. Igual los
         // TALLERES: el ESTUDIO TEXTIL sobre la CONSTRUCCIÓN. (La Mecánica, de 10 × 9, es pequeña para cargar otro piso.)
@@ -4148,7 +4057,7 @@ public static partial class SampleSceneBuilder
         ("Kitchen_Area",          "Cocina",         "Cocina",      new Color(0.75f, 0.45f, 0.30f), MissionKind.KitchenChannel),   // la era del fuego: las reencarnaciones
         ("YogaRoom_Area",         "Sala de Yoga",   "SalaYoga",    new Color(0.75f, 0.65f, 0.85f), MissionKind.Yoga),
         ("Garden_Area",           "Huerto",         "Huerto",      new Color(0.50f, 0.70f, 0.40f), MissionKind.GardenChannel),
-        ("Infirmary_Area",        "Enfermería",     "Enfermeria",  new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal),
+        ("Infirmary_Area",        AreaWork.Hospital, "Hospital",  new Color(0.85f, 0.95f, 0.90f), MissionKind.Heal),
         ("TextileStudio_Area",    "Estudio Textil", "Textil",      new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel),
         ("VehicleWorkshop_Area",  "Mecánica",       "Mecanica",    new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel),
     };

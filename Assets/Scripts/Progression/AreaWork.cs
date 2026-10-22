@@ -9,6 +9,7 @@ using System.Collections.Generic;
 public static class AreaWork
 {
     public const string Guard = "Guardia";   // no es un SanctuaryArea: la torre y los puestos de vigía
+    public const string Hospital = "Hospital";   // la antigua Enfermería (docs/hospital.md)
 
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
     static WorkRoster.Mission G(string area, string id, string title, string group) => new WorkRoster.Mission(area, id, title, 1f, true) { group = group };   // misión de grupo (a la vez)
@@ -16,10 +17,14 @@ public static class AreaWork
     /// <summary>Misiones fijas de cada área (sin las de obras, que dependen de qué obras haya abiertas).</summary>
     public static readonly WorkRoster.Mission[] Catalog =
     {
-        M("Enfermería", "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true),
-        M("Enfermería", "enf_visita", "Pasar visita y curas", 2f, true),
-        M("Enfermería", "enf_animales", "Análisis y vacunas de animales", 1f),
-        M("Enfermería", "enf_inventario", "Limpieza e inventario de la enfermería", 1f),
+        M(Hospital, "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true),
+        M(Hospital, "enf_visita", "Pasar visita y curas en las salas de camas", 2f, true),
+        M(Hospital, "enf_animales", "Análisis y vacunas de animales", 1f),
+        M(Hospital, "enf_inventario", "Limpieza, esterilización e inventario del hospital", 1f),
+        M(Hospital, "hos_urgencias", "Guardia de urgencias (triaje y reanimación)", 2f, true),
+        M(Hospital, "hos_quirofano", "Quirófano: cirugía programada (cirujano + anestesista)", 2f),
+        M(Hospital, "hos_uci", "Cuidados intensivos (UCI)", 2f),
+        M(Hospital, "hos_veterinaria", "Hospital veterinario (planta alta): consulta y hospitalización de animales", 2f),
         M("Cocina", "coc_servicio", "Servicio del restaurante (cocinar la carta)", 2f, true),
         M("Cocina", "coc_limpieza", "Limpieza e inventario de la cocina", 1f, true),
         M("Cocina", "coc_obrador", "Elaboraciones del obrador (pan, quesos, fermentos)", 2f),
@@ -57,7 +62,7 @@ public static class AreaWork
 
     static readonly (string area, string what)[] Repairs =
     {
-        ("Enfermería", "tubería que gotea"), ("Cocina", "enchufe del obrador"), ("Sala de Yoga", "ventana que no cierra"),
+        (Hospital, "tubería que gotea"), ("Cocina", "enchufe del obrador"), ("Sala de Yoga", "ventana que no cierra"),
         ("Estudio Textil", "puerta descolgada"), ("Mecánica", "tejado con goteras"), ("Gimnasio", "foco fundido"),
     };
 

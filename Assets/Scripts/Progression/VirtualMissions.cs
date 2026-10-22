@@ -5,7 +5,7 @@ using UnityEngine;
 /// MISIONES DE VIRTUALIZACIÓN CON ESCENA PROPIA (docs/jornada-y-rotacion.md). Todas las misiones de trabajo del catálogo
 /// (AreaWork) se practican DENTRO de la máquina de virtualización, cada una en su escena «Virtual_&lt;clave&gt;»: se recorren
 /// sus pasos en orden (puestos numerados, F para hacerlo) y al terminar la misión cuenta como hecha (WorkdayDirector).
-/// La de la ENFERMERÍA es iniciar a un turista: recibirlo, análisis, vacuna, normas y acompañarlo a su primera
+/// La del HOSPITAL (antes enfermería) es iniciar a un turista: recibirlo, análisis, vacuna, normas y acompañarlo a su primera
 /// virtualización (el turista te sigue por la escena).
 /// Las misiones que dependen del día (elaboraciones, obras, material, reparaciones) comparten escena por familia.
 /// </summary>
@@ -46,7 +46,11 @@ public static class VirtualMissions
             case "enf_iniciacion": return new[] { "Recibir al turista en la entrada", "Sentarle en la silla de exámenes", "Tomarle la tensión, el pulso y la temperatura", "Mirarle las pupilas con la linterna", "Extraerle sangre del brazo", "Llevar la muestra al analizador", "Vacunarle en el hombro", "Explicarle las normas del santuario", "Acompañarle al tanque: su primera virtualización" };
             case "enf_visita": return new[] { "Revisar la historia de cada paciente", "Tomar constantes", "Curar las heridas", "Dar la medicación" };
             case "enf_animales": return new[] { "Sujetar al animal con calma", "Tomar la muestra", "Analizarla", "Vacunar" };
-            case "enf_inventario": return new[] { "Desinfectar camillas y superficies", "Contar el material", "Reponer el botiquín" };
+            case "enf_inventario": return new[] { "Desinfectar camillas y superficies", "Esterilizar el instrumental en el autoclave", "Contar el material", "Reponer el botiquín" };
+            case "hos_urgencias": return new[] { "Triaje: ¿quién va primero?", "Vía aérea y respiración", "Circulación: vía y sueros", "Estabilizar y decidir: planta, UCI o quirófano" };
+            case "hos_quirofano": return new[] { "Lista de verificación de cirugía segura (OMS)", "Lavado quirúrgico", "Anestesia", "Operar", "Pasar a cuidados intensivos" };
+            case "hos_uci": return new[] { "Revisar el ventilador", "Tomar constantes", "Ajustar la medicación", "Anotar en la historia" };
+            case "hos_veterinaria": return new[] { "Pesar al animal (dosis por kilo)", "Explorarlo en la mesa", "Hacerle una ecografía", "Instalarlo en su box" };
             case "coc_servicio": return new[] { "Leer las comandas", "Cocinar el primer plato", "Cocinar el segundo plato", "Emplatar", "Pasar al pase" };
             case "coc_limpieza": return new[] { "Fregar los fuegos", "Limpiar las neveras", "Contar el stock", "Apuntar lo que falta" };
             case "coc_obrador": case "prep": return new[] { "Pesar los ingredientes", "Amasar o mezclar", "Fermentar o madurar", "Guardar en la despensa" };
@@ -95,8 +99,12 @@ public static class VirtualMissions
         {
             case "enf_iniciacion": return new[] { "@entrada", "Silla_examen", "Silla_examen", "Silla_examen", "Silla_examen", "Analizador clinico", "Silla_examen", "Mesa del medico", "@maquina" };
             case "enf_visita": return new[] { "Cama 1", "Cama 2", "Cama 3", "Botiquin" };
-            case "enf_animales": return new[] { "Cuadra", "Mesa veterinaria", "Laboratorio", "Mesa veterinaria" };
-            case "enf_inventario": return new[] { "Camilla", "Botiquin", "Botiquin" };
+            case "enf_animales": return new[] { "Cuadra 1", "Mesa veterinaria", "Laboratorio", "Mesa veterinaria" };
+            case "enf_inventario": return new[] { "Camilla", "Autoclave", "Botiquin", "Botiquin" };
+            case "hos_urgencias": return new[] { "Triaje", "Carro_de_parada", "Carro_de_parada", "Cama 1" };
+            case "hos_quirofano": return new[] { "Quirofano", "Lavado_quirurgico", "Anestesia", "Quirofano", "UCI 1" };
+            case "hos_uci": return new[] { "UCI 1", "UCI 2", "UCI 3", "Control_UCI" };
+            case "hos_veterinaria": return new[] { "Bascula", "Mesa veterinaria", "Ecografo veterinario", "Box 1" };
             default: return null;
         }
     }
@@ -104,7 +112,7 @@ public static class VirtualMissions
     {
         switch (area)
         {
-            case "Enfermería": return new Color(0.85f, 0.95f, 0.9f);
+            case AreaWork.Hospital: return new Color(0.85f, 0.95f, 0.9f);
             case "Cocina": return new Color(0.75f, 0.45f, 0.3f);
             case "Huerto": return new Color(0.5f, 0.7f, 0.4f);
             case "Sala de Yoga": return new Color(0.75f, 0.65f, 0.85f);

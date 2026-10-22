@@ -13,7 +13,7 @@ public static class MicroSnapshot
     [MenuItem("Tools/Cold Sanctuary/Fotos de los microcosmos (PNG)")]
     public static void All()
     {
-        foreach (string key in new[] { "Cocina", "Enfermeria", "Huerto", "SalaYoga", "Textil", "Mecanica", "LeChambon", "IrenaSendler" }) Shoot(key);
+        foreach (string key in new[] { "Cocina", "Hospital", "Huerto", "SalaYoga", "Textil", "Mecanica", "LeChambon", "IrenaSendler" }) Shoot(key);
     }
 
     static void Shoot(string key)
