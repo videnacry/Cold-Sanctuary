@@ -44,7 +44,7 @@ public class AnimalVitals : MonoBehaviour
         var lines = new List<string>();
         foreach (var kv in by)
         {
-            int child = 0, teen = 0, adult = 0, hungry = 0, sleeping = 0, ate = 0, pooped = 0, wander = 0, stuck = 0, inWater = 0, female = 0;
+            int child = 0, teen = 0, adult = 0, hungry = 0, sleeping = 0, ate = 0, pooped = 0, wander = 0, stuck = 0, inWater = 0, female = 0, habit = 0;
             foreach (Animal a in kv.Value)
             {
                 if (a.lifeStage == LifeStage.child) child++; else if (a.lifeStage == LifeStage.teen) teen++; else adult++;
@@ -52,15 +52,17 @@ public class AnimalVitals : MonoBehaviour
                 if (a.asleep) sleeping++;
                 if (a.sex == Sex.female) female++;
                 if (a.transform.position.y < -0.3f) inWater++;
+                bool natural = a.TryGetComponent(out Habit h) && h.Active;   // acechando, posado, en su respiradero: quieto a propósito
+                if (natural) habit++;
                 if (a.TryGetComponent(out AnimalVitals v))
                 {
                     if (v.meals > 0) ate++;
                     if (v.defecations > 0) pooped++;
                     if (v.walked > 10f) wander++;
-                    if (!a.asleep && Time.time - v.stillSince > 60f) stuck++;
+                    if (!a.asleep && !natural && Time.time - v.stillSince > 60f) stuck++;
                 }
             }
-            lines.Add($"{kv.Key}: {kv.Value.Count} (crías {child}, jóvenes {teen}, adultos {adult}; hembras {female}) · con hambre {hungry} · durmiendo {sleeping} · han comido {ate} · han ido al baño {pooped} · han merodeado {wander} · quietos >1 min {stuck} · en el agua {inWater}");
+            lines.Add($"{kv.Key}: {kv.Value.Count} (crías {child}, jóvenes {teen}, adultos {adult}; hembras {female}) · con hambre {hungry} · durmiendo {sleeping} · han comido {ate} · han ido al baño {pooped} · han merodeado {wander} · en un hábito natural {habit} · quietos >1 min {stuck} · en el agua {inWater}");
         }
         return lines;
     }

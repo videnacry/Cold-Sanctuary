@@ -77,6 +77,14 @@ public class Forager : MonoBehaviour
             if (cropScore >= grassScore) grass = null; else crop = null;
         }
         if (crop != null) grass = crop;
+        // PLANTAS DEL ENTORNO (Affordance + Ethogram, docs/natural-interactions.md): savia, semillas, hierba, hongos,
+        // estiércol… lo que la especie come de verdad. Solo para quien PASTA (el cazador las usa vía su hábito: un oso
+        // que come bayas no deja de cazar por tenerlas más cerca).
+        if (!eatsPrey)
+        {
+            GameObject plant = NearestPlant(self, pos);
+            if (plant != null && (grass == null || (plant.transform.position - pos).sqrMagnitude < (grass.transform.position - pos).sqrMagnitude)) grass = plant;
+        }
         GameObject fish  = eatsFish  ? Swarm.Nearest(pos, SwarmKind.Fish)?.gameObject  : null;
         GameObject krill = eatsKrill ? Swarm.Nearest(pos, SwarmKind.Krill)?.gameObject : null;
         // COMEDERO: raciones de carne (p. ej. la carne cultivada del laboratorio) que un carnívoro hambriento percibe cerca.
@@ -135,6 +143,20 @@ public class Forager : MonoBehaviour
             if (score > bestScore) { bestScore = score; best = a.gameObject; }
         }
         return best;
+    }
+
+    // El interactuable comestible más cercano para la especie (lo que su Ethogram dice que come), con existencias.
+    GameObject NearestPlant(Animal self, Vector3 pos)
+    {
+        float radius = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);
+        Affordance best = null; float bd = radius;
+        foreach (EthoAct e in Ethogram.Of(self.SpeciesName))
+        {
+            if (!Ethogram.Eats(self.SpeciesName, e.kind)) continue;
+            Affordance a = Affordance.Nearest(e.kind, pos, bd, self);
+            if (a != null && a.gameObject != self.gameObject) { bd = Vector3.Distance(pos, a.transform.position); best = a; }
+        }
+        return best != null ? best.gameObject : null;
     }
 
     static GameObject Nearest(Vector3 pos, params GameObject[] gos)
@@ -211,6 +233,9 @@ public class Forager : MonoBehaviour
                 self.busy = false;
                 yield break;
             }
+            Affordance plant = null;
+            if (foodSource != null) foreach (Affordance af in foodSource.GetComponents<Affordance>()) if (Ethogram.Eats(self.SpeciesName, af.kind)) { plant = af; break; }
+            if (plant != null && plant.Take(0.5f, self) <= 0f) { self.busy = false; yield break; }   // la planta se gasta y rebrota
             GardenCrop eaten = foodSource != null ? foodSource.GetComponent<GardenCrop>() : null;
             if (eaten != null && !eaten.Bite($"«{self.name}»")) { self.busy = false; yield break; }   // el CULTIVO pierde un mordisco
             self.hungry -= feed;   // PASTO: come aquí como siempre

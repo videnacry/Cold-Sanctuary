@@ -128,6 +128,15 @@ public static class DesireCatalog
             self => { if (self.nav != null && self.nav.isOnNavMesh) self.nav.SetDestination(self.HomeOrigin); },
             "homebound"),
 
+        // HÁBITO NATURAL (docs/natural-interactions.md): lo que la especie HACE en la naturaleza con su entorno —chupar
+        // savia, cortar hierba para el termitero, acechar en un respiradero, llevar guijarros al nido, asolearse— sobre un
+        // Affordance real, según su Ethogram. Gana al merodeo al azar (explore) cuando el ser está en calma y tiene algo
+        // que hacer cerca; el hambre/amenaza/cría lo superan. Lo ejecuta el componente Habit (se añade solo).
+        new Desire("habit",
+            self => { Habit h = self.GetComponent<Habit>(); if (h == null) h = self.gameObject.AddComponent<Habit>(); return h.HasOptions() ? W_HABIT * Lucidity.ClarityOf(self) : 0f; },
+            self => self.GetComponent<Habit>()?.Step(),
+            "habit"),
+
         // EXPLORAR (impulso de base del ser SACIADO — curiosidad/neophilia, docs/environmental-navigation.md §N5/N8):
         // necesidad BAJA (solo gana cuando no hay hambre/amenaza/social) y ESCALADA por la mente curiosa (razón+creatividad)
         // → los curiosos exploran más; los apáticos se quedan. Despacha un vagabundeo corto.
@@ -147,6 +156,7 @@ public static class DesireCatalog
     const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
     const float W_NURSE   = 1.0f;    // nutrir a la cría: fuerte (× afabilidad) → un padre atiende a su cría hambrienta
     const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
+    const float W_HABIT   = 0.2f;    // hábitos naturales: por encima del merodeo y del volver a casa; el hambre/social/cría lo superan
 
     // Cría más necesitada: recorre los bonds, busca Animal en etapa CRÍA ('c') y hambrienta; devuelve urgencia = vínculo×hambre.
     static Animal CubNeed(Animal self, out float need)

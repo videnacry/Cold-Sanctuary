@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 545 tipos._
+_Total: 549 tipos._
 
 
 ## Animals
@@ -26,6 +26,8 @@ _Total: 545 tipos._
 - **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
 - **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
 - **GrasshopperBehavior** (class) — `Assets/Animals/Grasshopper/GrasshopperBehavior.cs`
+- **Habit** (class) — `Assets/Animals/Habit.cs` — HÁBITO NATURAL (docs/natural-interactions.md):
+- **HabitEffect** (enum) — `Assets/Animals/Ethogram.cs` — Qué le hace al ser una actividad de su etograma.
 - **LadybugBehavior** (class) — `Assets/Animals/Ladybug/LadybugBehavior.cs`
 - **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
@@ -93,6 +95,7 @@ _Total: 545 tipos._
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
 - **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
+- **AffordanceKind** (enum) — `Assets/Scripts/World/Affordance.cs` — Qué ofrece un elemento del entorno a un ser vivo (docs/natural-interactions.md).
 - **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
 - **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
 - **Anima** (class) — `Assets/Scripts/Anima.cs`
@@ -347,7 +350,7 @@ _Total: 545 tipos._
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
 - **MicroFood** (class) — `Assets/Scripts/Microcosmos/MicroFood.cs` — Un RESTO DE COMIDA (o una hoja, en el huerto) que las hormigas recogen y llevan a la guarida.
-- **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (microcosmos de la Cocina):
+- **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (los mirmidones):
 - **MicroGardener** (class) — `Assets/Scripts/Microcosmos/MicroGardener.cs` — CULTIVADORA DE HONGO (microcosmos del Huerto):
 - **MicroLair** (class) — `Assets/Scripts/Microcosmos/MicroLair.cs` — La GUARIDA de la tribu:
 - **MicroLeader** (class) — `Assets/Scripts/Microcosmos/MicroLeader.cs` — LA LÍDER de la tribu (Medea renacida, microcosmos de la Cocina):
@@ -418,6 +421,7 @@ _Total: 545 tipos._
 - **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
 - **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
 - **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
+- **PolarHabitats** (class) — `Assets/Scripts/World/PolarHabitats.cs` — HÁBITATS DEL SANTUARIO DE HIELO (docs/natural-interactions.md):
 - **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR (docs/ice-sanctuary-ecology.md):
 - **PopulationPlan** (class) — `Assets/Scripts/World/PopulationPlan.cs` — EQUILIBRIO DE ESPECIES (docs/ice-sanctuary-ecology.md):
 - **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.

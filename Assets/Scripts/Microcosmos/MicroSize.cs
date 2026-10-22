@@ -9,6 +9,27 @@ public class MicroSize : MonoBehaviour
 {
     public float length = 2f;
     float _next;
+    UnityEngine.AI.NavMeshAgent _agent;
+
+    // El bicho es un Animal con NavMeshAgent, pero cuelga de un padre ESCALADO (cientos de veces): el agente heredaba un
+    // radio y una altura absurdos y no quedaba sobre el NavMesh del microcosmos → la IA no podía moverlo (insectos quietos).
+    // Se le da un tamaño de agente acorde a su largo y se le posa en el NavMesh más cercano.
+    void Start()
+    {
+        _agent = GetComponentInChildren<UnityEngine.AI.NavMeshAgent>();
+        FitAgent();
+        if (_agent != null && UnityEngine.AI.NavMesh.SamplePosition(_agent.transform.position, out UnityEngine.AI.NavMeshHit hit, length * 3f + 10f, UnityEngine.AI.NavMesh.AllAreas))
+            _agent.Warp(hit.position);
+    }
+
+    void FitAgent()
+    {
+        if (_agent == null) return;
+        float s = Mathf.Max(1e-4f, Mathf.Max(_agent.transform.lossyScale.x, _agent.transform.lossyScale.z));
+        _agent.radius = Mathf.Clamp(length * 0.25f, 0.3f, 3f) / s;
+        _agent.height = Mathf.Clamp(length * 0.4f, 0.5f, 6f) / Mathf.Max(1e-4f, _agent.transform.lossyScale.y);
+        _agent.baseOffset = 0f;
+    }
 
     void LateUpdate()
     {
@@ -22,6 +43,6 @@ public class MicroSize : MonoBehaviour
         float now = Mathf.Max(b.size.x, b.size.z);
         if (now < 1e-4f) return;
         float k = length / now;
-        if (Mathf.Abs(k - 1f) > 0.05f) transform.localScale *= Mathf.Clamp(k, 0.01f, 1000f);
+        if (Mathf.Abs(k - 1f) > 0.05f) { transform.localScale *= Mathf.Clamp(k, 0.01f, 1000f); FitAgent(); }
     }
 }
