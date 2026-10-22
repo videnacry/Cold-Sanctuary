@@ -131,6 +131,7 @@ public static partial class SampleSceneBuilder
             var blockers = new List<Bounds>();
             foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
                 if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + UpperFloorGap) blockers.Add(rr.bounds);
+            _openings.TryGetValue(top, out var gaps);
             int Hits(Vector3 c)
             {
                 int n = 0; float h = PadSize * 0.5f;
@@ -138,7 +139,14 @@ public static partial class SampleSceneBuilder
                 for (int i = 0; i < 4; i++) { float x = -h + i * (2f * h / 3f); pts.Add(new Vector3(x, 0f, -h)); pts.Add(new Vector3(x, 0f, h)); }   // columnas de delante y detrás
                 foreach (Vector3 q in pts)
                 {
-                    Vector3 w = top.TransformPoint(c + q) + Vector3.up * 1.5f;
+                    Vector3 lp = c + q;   // ¿cae en la llegada de un puente? (4,5 m hacia dentro del hueco)
+                    if (gaps != null && gaps.Exists(o =>
+                    {
+                        float depth = o.side == 0 ? size.x * 0.5f - lp.x : o.side == 1 ? lp.x + size.x * 0.5f : o.side == 2 ? size.y * 0.5f - lp.z : lp.z + size.y * 0.5f;
+                        float along = o.side < 2 ? lp.z : lp.x;
+                        return depth < 4.5f && along > o.a - 0.6f && along < o.b + 0.6f;
+                    })) { n++; continue; }
+                    Vector3 w = top.TransformPoint(lp) + Vector3.up * 1.5f;
                     Bounds b = new Bounds(w, new Vector3(1.4f, 2.4f, 1.4f));
                     foreach (Bounds bl in blockers) if (bl.Intersects(b)) { n++; break; }
                 }
