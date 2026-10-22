@@ -102,7 +102,7 @@ public static partial class SampleSceneBuilder
             Solid(p, new Vector3(-hx + seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
             Solid(p, new Vector3(hx - seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
         }
-        WorldLabel wl = p.gameObject.AddComponent<WorldLabel>(); wl.text = $"{title}\n<size=70%>{fact}</size>"; wl.height = 2.2f;
+        WorldLabel wl = p.gameObject.AddComponent<WorldLabel>(); wl.text = $"{title}\n{fact}"; wl.height = 2.2f;
         return p;
     }
 
