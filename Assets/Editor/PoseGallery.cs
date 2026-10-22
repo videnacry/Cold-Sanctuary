@@ -200,6 +200,7 @@ public static class PoseGallery
         Bounds b = new Bounds(go.transform.position, Vector3.zero);
         foreach (Renderer r in go.GetComponentsInChildren<Renderer>()) b.Encapsulate(r.bounds);
         var camGO = new GameObject("FotoCam_TEMP");
+        var hidden = new List<Renderer>();
         try
         {
             var cam = camGO.AddComponent<Camera>(); cam.fieldOfView = 45f; cam.nearClipPlane = 0.05f;
@@ -207,6 +208,13 @@ public static class PoseGallery
             Vector3 view = objectName.StartsWith("Nido") ? new Vector3(0.5f, -0.25f, -1f) : new Vector3(0.6f, 0.55f, -1f);   // los panales cuelgan: se miran desde abajo
             cam.transform.position = b.center + (go.transform.rotation * view).normalized * d;
             cam.transform.LookAt(b.center);
+            // Lo que no es del objeto y queda ENTRE la cámara y él (un árbol en primer plano, otra área) se oculta durante
+            // la foto, para que no tape ni parezca que atraviesa lo fotografiado.
+            Ray sight = new Ray(cam.transform.position, b.center - cam.transform.position);
+            float toObject = Vector3.Distance(cam.transform.position, b.center) - b.extents.magnitude * 0.5f;
+            foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+                if (r.enabled && !r.transform.IsChildOf(go.transform) && r.bounds.IntersectRay(sight, out float hit) && hit < toObject)
+                { r.enabled = false; hidden.Add(r); }
             var rt = new RenderTexture(1100, 700, 24); cam.targetTexture = rt; cam.Render();
             RenderTexture.active = rt;
             var tex = new Texture2D(1100, 700, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 1100, 700), 0, 0); tex.Apply();
@@ -214,9 +222,9 @@ public static class PoseGallery
             string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery"); Directory.CreateDirectory(dir);
             File.WriteAllBytes(Path.Combine(dir, $"Foto_{objectName}.png"), tex.EncodeToPNG());
             Object.DestroyImmediate(tex); rt.Release();
-            Debug.Log($"[Foto] Temp/PoseGallery/Foto_{objectName}.png");
+            Debug.Log($"[Foto] Temp/PoseGallery/Foto_{objectName}.png ({hidden.Count} piezas en primer plano ocultas)");
         }
-        finally { Object.DestroyImmediate(camGO); }
+        finally { foreach (Renderer r in hidden) if (r != null) r.enabled = true; Object.DestroyImmediate(camGO); }
     }
     // Pares de segmentos NO contiguos cuyos cubos se meten uno dentro del otro (más de 3 cm de solape en los 3 ejes,
     // medido en el espacio del primero con su caja orientada, no la AABB del mundo).
