@@ -55,7 +55,7 @@ public static partial class SampleSceneBuilder
         Color wood = new Color(0.42f, 0.28f, 0.2f), linen = new Color(0.97f, 0.97f, 0.95f), gold = new Color(0.82f, 0.68f, 0.35f), velvet = new Color(0.32f, 0.12f, 0.18f);
         KitchenProps.C(r, new Vector3(0f, 0.02f, 0f), new Vector3(size.x, 0.04f, size.y), new Color(0.48f, 0.33f, 0.22f), 0f, "Parquet");
         for (int i = 0; i < 20; i++) KitchenProps.C(r, new Vector3(-size.x * 0.5f + (i + 0.5f) * size.x / 20f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
-        // Mesas: 4 delante (junto a la entrada) y 2 al fondo, en el suelo; las de los LADOS suben a dos GALERÍAS de 2,2 m
+        // Mesas: 4 delante (junto a la entrada) y 2 al fondo, en el suelo; las de los LADOS suben a dos GALERÍAS de 3 m (sin barandilla; por debajo se pasa de pie)
         // (docs/construcciones-elevadas.md §Pisos): 3 mesas en cada una, con vista a la cocina abierta, y abajo queda un
         // paso ancho alrededor de la cocina. 12 mesas de 4 = 48 cubiertos (base de 30 turistas + personal).
         int mesa = 0;
@@ -94,11 +94,6 @@ public static partial class SampleSceneBuilder
         {
             Transform top = Deck(r, k < 0 ? "Galeria_comedor_oeste" : "Galeria_comedor_este", new Vector3(k * gx, 0f, 0f), new Vector2(4.6f, 2f * gz));
             for (int j = -1; j <= 1; j++) Table(top, new Vector3(0f, 0f, j * 6f));
-            float inner = k * (gx - 2.3f);
-            DeckRail(r, new Vector3(inner, g, -gz), new Vector3(inner, g, gz));                                   // hacia la cocina
-            DeckRail(r, new Vector3(inner, g, -gz), new Vector3(k * 19.7f, g, -gz));                               // el fondo
-            DeckRail(r, new Vector3(inner, g, gz), new Vector3(k * (gx - 0.8f), g, gz));                            // a los lados de donde llega la escalera
-            DeckRail(r, new Vector3(k * (gx + 0.8f), g, gz), new Vector3(k * 19.7f, g, gz));
             InclinedStair(r, k < 0 ? "Escalera_comedor_oeste" : "Escalera_comedor_este", new Vector3(k * gx, 0f, gz + run), 180f);   // al borde de +Z
         }
         int up = 0; foreach (Transform t in r.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Mesa_") && t.position.y > r.position.y + 1.5f) up++;

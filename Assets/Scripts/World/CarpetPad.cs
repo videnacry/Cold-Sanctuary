@@ -72,7 +72,7 @@ public class CarpetPad : MonoBehaviour
         if (FlyingCarpet.Riding(g)) return true;
         CarpetPad a = For(g.transform.position), b = For(to);
         if (a == null || b == null || a == b) return false;
-        if (Flat(g.transform.position - a.transform.position) > 36f) { to = a.transform.position; return false; }   // andar a la pista
+        if ((g.transform.position - a.transform.position).sqrMagnitude > 36f) { to = a.transform.position; return false; }   // andar (y subir) a la pista: puede estar encima de un área
         FlyingCarpet c = a.IdleCarpet(g.transform.position);
         if (c == null) return false;
         c.Fly(g, b);

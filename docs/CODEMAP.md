@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 545 tipos._
+_Total: 547 tipos._
 
 
 ## Animals
@@ -252,6 +252,7 @@ _Total: 545 tipos._
 - **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
+- **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO MÍNIMO ENTRE MUEBLES (Berón 2026-10-22:
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
 - **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):
@@ -337,6 +338,7 @@ _Total: 545 tipos._
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
 - **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
+- **MagnateWarden** (class) — `Assets/Scripts/World/MagnateWarden.cs` — LA MAGNATE GUARDA LOS PUESTOS (Berón 2026-10-22).
 - **MarineGuard** (class) — `Assets/Scripts/World/MarineGuard.cs` — LOS CETÁCEOS NO PISAN EL HIELO:
 - **MarineLife** (class) — `Assets/Scripts/World/MarineLife.cs` — VIDA MARINA (focas, ballenas, orcas):
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`

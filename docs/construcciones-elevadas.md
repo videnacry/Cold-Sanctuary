@@ -58,9 +58,10 @@ Además de la altura:
 Para tener **caminos amplios y ordenados** y menos plataformas sueltas con puentes, una misma base puede crecer hacia
 arriba (`SampleSceneBuilder.Levels.cs`):
 
-- **Plataforma hija (entreplanta)** de **2,2 m** dentro de la plataforma, sobre postes solo en su perímetro, con
-  **escalera inclinada** (30°, rampa para andar y para el NavMesh) y barandilla de 1 m (`Deck`, `DeckRail`,
-  `InclinedStair`).
+- **Plataforma hija (entreplanta)** de **3 m** dentro de la plataforma (debajo se pasa de pie sin chocar con la losa),
+  sobre postes solo en su perímetro, con **escalera inclinada** de 38° (rampa para andar y para el NavMesh) y **sin
+  barandilla** (`Deck`, `InclinedStair`).
+  - **Gimnasio:** 15 máquinas abajo y 15 en una entreplanta sobre la mitad izquierda, con pasillos de 1,5 m.
   - **Enfermería:** las 27 camas de hospitalización suben a una **galería en U** (alas oeste y este de 4,4 m + fondo de
     3,8 m), con dos escaleras (la oeste junto a la entrada; la este, de lado, porque al frente está el tanque). Abajo
     quedan las 3 camas de urgencias, la exploración (oeste), la veterinaria (este) y el paso libre desde la entrada.
@@ -80,3 +81,18 @@ arriba (`SampleSceneBuilder.Levels.cs`):
   sale ahora de la cabaña de 0°.
 
 Las misiones del microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).
+
+## Barandillas, paneles y pistas (2026-10-22, Berón)
+
+- **Sin barandillas visibles** en las áreas humanas. En el borde exterior de cada plataforma elevada queda solo una
+  **barrera invisible** de 4 m, para que nadie caiga de 12 m. Las entreplantas no llevan nada.
+- **Paneles solares en lo más alto**: cada edificio lleva su fila en el borde de su piso más alto, sobre postes de 3 m
+  (`PlaceRooftopSolar`). Se busca un borde libre de muebles: primero el fondo, luego los laterales, nunca el frente.
+- **Pista de alfombras como piso superior**: la pista de cada grupo va a 10 m encima del piso más alto de su área
+  mayor, si ese piso cabe 14 × 14 m (`PlaceStackedPads`); sus columnas buscan sitio libre de muebles. Así no ocupa
+  terreno ni necesita puente; se sube por su escalera vertical. Solo si no cabe en ningún piso del grupo se hace
+  aparte, como antes. La de la arboleda residencial sigue aparte.
+- **Huertos sin bancales**: las filas van directas en el suelo (los bancales eran solo adorno).
+- **Espacio mínimo por tipo de mueble** (`FurnitureSpacing`): máquinas de gimnasio, mesas, camas, puestos de cocina,
+  telares y aseos piden un pasillo libre (0,8–0,9 m). El Build avisa con `[Espacio]` de cada par demasiado junto, y
+  `SanctuaryLifeTest` exige que las máquinas del gimnasio no se apilen.

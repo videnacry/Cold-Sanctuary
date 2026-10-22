@@ -2,7 +2,7 @@
 
 - Las plataformas **cercanas** (a menos de 32 m) se unen con **puentes de 8 m de ancho** (rectos, a veces en diagonal; primero las más cercanas, sin puentes de sobra):
   por ejemplo el restaurante y la enfermería. Dentro de un grupo se va andando.
-- Cada **grupo** de plataformas unidas por puentes tiene **una pista de aterrizaje** (y la arboleda residencial, la suya):
+- Cada **grupo** de plataformas unidas por puentes tiene **una pista de aterrizaje** (y la arboleda residencial, la suya). Desde 2026-10-22 la pista es el **piso de arriba** (a 10 m) del área mayor del grupo, no una plataforma aparte (ver `construcciones-elevadas.md`):
   - es como una sala de yoga con **esterillas grandes**: son **alfombras voladoras**;
   - va pegada a una de sus áreas (la mayor, por un lado libre) con un puente.
 - Las alfombras son **automáticas**:

@@ -53,7 +53,7 @@ public static class VirtualMissions
             case "coc_sala": return new[] { "Recibir a los turistas", "Llevarles a su mesa", "Tomar nota", "Servir" };
             case "coc_atender": return new[] { "Tomar el pedido en la barra", "Recoger el plato del pase", "Servirlo" };
             case "coc_comedor": return new[] { "Recoger las mesas", "Limpiar el comedor", "Limpiar los aseos" };
-            case "hue_riego": return new[] { "Abrir el riego", "Regar los bancales", "Quitar las malas hierbas" };
+            case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Quitar las malas hierbas" };
             case "hue_cosecha": return new[] { "Cosechar lo maduro", "Llenar las cestas", "Llevarlas a la cocina" };
             case "hue_visitantes": return new[] { "Ver qué animal tiene hambre", "Darle de comer", "Proteger el cultivo" };
             case "yog_guia": return new[] { "Subir a la plataforma central", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };
@@ -71,7 +71,6 @@ public static class VirtualMissions
             case "lab_limpieza": return new[] { "Limpiar las superficies", "Esterilizar el material", "Ordenar el laboratorio" };
             case "con_almacen": return new[] { "Contar el material", "Contar las herramientas", "Apuntar lo que falta" };
             case "gym_mantener": return new[] { "Revisar las máquinas", "Engrasar y ajustar", "Probarlas" };
-            case "gua_recienllegados": return new[] { "Ir a la salida de la enfermería", "Vigilar a los recién llegados", "Devolver dentro al que salga" };
             case "gua_carnivoros": return new[] { "Recoger las raciones", "Patrullar el perímetro", "Dar las raciones a los carnívoros" };
             case "obra_material": return new[] { "Cargar el material en el almacén", "Llevarlo a la obra", "Descargarlo a pie de obra" };
             case "obra_trabajo": return new[] { "Montar la estructura de guadua", "Rellenar con bahareque", "Colocar los paneles" };

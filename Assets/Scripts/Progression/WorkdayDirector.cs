@@ -182,9 +182,6 @@ public class WorkdayDirector : MonoBehaviour
         return l;
     }
 
-    /// <summary>Los guardias de iniciación de ahora (misión «Vigilar a los recién llegados»).</summary>
-    public List<GameObject> InitiationGuardsNow() => TC != null ? DoingNow("gua_recienllegados", TC.Hour) : new List<GameObject>();
-
     // INICIADOR: quien tenga ahora la misión de iniciación lanza «iniciar» sobre los recién llegados.
     void UpdateInitiator(float h)
     {
@@ -197,17 +194,18 @@ public class WorkdayDirector : MonoBehaviour
         NewcomerInitiator.Current = g != null ? g.GetOrAdd<NewcomerInitiator>() : null;
     }
 
-    // Personajes que su misión mueve por sí misma ahora (el iniciador con un recién llegado, los guardias de iniciación).
+    // Personajes que su misión mueve por sí misma ahora (el iniciador con un recién llegado) o que la Magnate está
+    // devolviendo a su sitio.
     static bool OnOwnDuty(GameObject g)
     {
         NewcomerInitiator ni = g.GetComponent<NewcomerInitiator>();
         if (ni != null && ni.Busy) return true;
-        return InfirmaryGate.IsWarden(g);
+        return MagnateWarden.Instance.Handling(g);
     }
 
-    // EL JUGADOR TAMBIÉN ESTÁ BLOQUEADO durante la jornada: si sale del área de lo que le toca (trabajo, comida o
-    // entrenamiento), vuelve a ella con un aviso. La Guardia patrulla por todo el santuario: ahí no se le retiene.
-    string _holdMsg; float _holdMsgUntil;
+    // NADIE ABANDONA SU PUESTO durante la jornada: si el jugador sale del área de lo que le toca (trabajo, comida o
+    // entrenamiento), la Magnate se teletransporta delante de él y lo devuelve (MagnateWarden). No hay paredes: puede
+    // intentarlo. La Guardia patrulla por todo el santuario: ahí no se le retiene.
     GameObject _player;
     public int playerHeldBack { get; private set; }
     readonly Dictionary<string, float> _areaRadius = new Dictionary<string, float>();
@@ -223,14 +221,9 @@ public class WorkdayDirector : MonoBehaviour
         Vector3 c = AreaPoint(area, "centro"); if (c == Vector3.zero) return;
         float r = AreaRadius(area);
         Vector3 d = p.transform.position - c; d.y = 0f;
-        if (d.magnitude <= r) return;
-        CharacterController cc = p.GetComponent<CharacterController>();
-        if (cc != null) cc.enabled = false;
-        p.transform.position = AreaPoint(area, "Player");
-        if (cc != null) cc.enabled = true;
+        if (d.magnitude <= r || MagnateWarden.Instance.Handling(p)) return;
         playerHeldBack++;
-        _holdMsg = $"Jornada: ahora te toca «{doing}» en {area}. Hasta las 16:00 no hay tiempo libre."; _holdMsgUntil = Time.time + 4f;
-        Debug.Log("[Jornada] " + _holdMsg);
+        MagnateWarden.Bring(p, AreaPoint(area, "Player"), $"Ahora te toca «{doing}» en {area}. Hasta las 16:00 nadie deja su puesto.");
     }
 
     float AreaRadius(string area)
@@ -485,7 +478,6 @@ public class WorkdayDirector : MonoBehaviour
     // ── HUD del jugador: su itinerario de hoy ──
     void OnGUI()
     {
-        if (Time.time < _holdMsgUntil && !string.IsNullOrEmpty(_holdMsg)) GUI.Box(new Rect(Screen.width * 0.5f - 300, Screen.height - 120, 600, 40), _holdMsg);
         if (today == null || TC == null) return;
         WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
         float h = TC.Hour;
