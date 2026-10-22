@@ -36,6 +36,7 @@ public static class AreaMicrocosmos
         {
             giant = Object.Instantiate(src);
             giant.name = $"{display}_gigante";
+            CopyAttached(areaGo, src.transform, giant.transform);
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
@@ -107,6 +108,34 @@ public static class AreaMicrocosmos
     }
 
     // ── Dónde cabe la historia dentro del área ───────────────────────────────────────────────────────────────────
+
+    // Partes del área que el constructor NO cuelga de su GameObject (y que el área ×10 necesita para reconocerse). La
+    // COCINA de verdad (puestos, neveras, barra de pase) vive en Restaurante_AUTO/Sala, no bajo Kitchen_Area: sin
+    // copiarla, el microcosmos de la cocina era solo el comedor, con un hueco vacío en medio (el «hueco de 127 m»).
+    static readonly Dictionary<string, string[]> Attached = new Dictionary<string, string[]>
+    {
+        { "Kitchen_Area", new[] { "Restaurante_AUTO/Sala" } },
+    };
+
+    /// <summary>Copia en <paramref name="copy"/> (el área recién clonada, aún a escala 1) las partes de <see cref="Attached"/>,
+    /// con su misma pose relativa al área.</summary>
+    static void CopyAttached(string areaGo, Transform src, Transform copy)
+    {
+        if (!Attached.TryGetValue(areaGo, out string[] paths)) return;
+        foreach (string path in paths)
+        {
+            string[] parts = path.Split('/');
+            GameObject top = GameObject.Find(parts[0]);
+            Transform part = top == null ? null : parts.Length > 1 ? top.transform.Find(string.Join("/", parts, 1, parts.Length - 1)) : top.transform;
+            if (part == null) { Debug.LogWarning($"[Microcosmos] {areaGo}: no encuentro {path}; el área ×10 irá sin esa parte."); continue; }
+            Transform c = Object.Instantiate(part.gameObject).transform;
+            c.name = part.name;
+            c.SetParent(copy, false);
+            c.localPosition = src.InverseTransformPoint(part.position);
+            c.localRotation = Quaternion.Inverse(src.rotation) * part.rotation;
+            c.localScale = part.lossyScale;
+        }
+    }
 
     // Bloques sólidos del área gigante (lo que no es suelo); restos de comida y briznas los evitan.
     static readonly List<Bounds> _blocked = new List<Bounds>();

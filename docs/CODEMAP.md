@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 542 tipos._
+_Total: 545 tipos._
 
 
 ## Animals
@@ -64,6 +64,7 @@ _Total: 542 tipos._
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
@@ -71,6 +72,7 @@ _Total: 542 tipos._
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
 - **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Levels.cs` — ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/cocina-profesional.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
@@ -192,6 +194,7 @@ _Total: 542 tipos._
 - **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
 - **CriaCareTarget** (class) — `Assets/Scripts/Prologue/CriaCareTarget.cs` — Engancha la rutina de cuidado a los DRIVES REALES de una cría (`Animal`) — docs/cria-simulation.md §2/§3, fauna-gameplay.md.
+- **CriaFeeder** (class) — `Assets/Scripts/Prologue/CriaFeeder.cs` — TOMAS PROGRAMADAS de un recinto de la Cría (docs/cria-simulation.md):
 - **CubeBody** (class) — `Assets/Scripts/Avatar/CubeBody.cs` — MODELO CORPORAL DE CUBOS (estilo Minecraft) — construye el cuerpo de un anyma como un GRUPO DE CUBOS, uno por PARTE del cuerpo (`BodyPart`), y **cablea el `CreatureRig`** para que las **asanas/yoga** 
 - **CubeCreature** (class) — `Assets/Scripts/Avatar/CubeCreature.cs` — FAUNA DE CUBOS CON HUESOS (docs/anyma-factory-and-control §1):
 - **CubeFace** (class) — `Assets/Scripts/Avatar/CubeFace.cs` — CARA DE CUBOS con EXPRESIONES:

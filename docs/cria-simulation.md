@@ -57,6 +57,24 @@ suyos**.
 - **Tema:** cuidar al débil e "inútil para sobrevivir" **por amor** = la semilla del santuario. Enlaza con
   el "no abandonar al débil" de Nasatya/La Sembradora y con el prólogo.
 
+## 5b. El área en el santuario (2026-10-22)
+`CubCare_Area` («Cría», `SampleSceneBuilder.Cria.cs`), 26 × 20 m elevada a 12 m, en el sitio que dejó el Estudio
+Textil al subir sobre la Construcción. Es una sala de crías **del hielo**, como un centro de rescate:
+- **Recintos** con muro de 1,2 m (con collider) y la puerta al pasillo: **oseznos polares** (con guarida cálida),
+  **crías de foca** (con piscina), **guardería de pingüinos** y **cachorros de malamute**. Las crías son las de
+  verdad: el prefab de la especie con `lifeStage = child`.
+- Cada recinto tiene sus **puestos de cuidado** (leer estado → calmar → alimentar → asear → arrullar) con su propia
+  estación (`Cria_<especie>`), que un `CriaCareTarget` en cada cría traduce a drives reales: el bond se gana.
+- **Tomas programadas** (`CriaFeeder`): el equipo da la toma cada 2 min a las crías con hambre, así no cazan ni
+  pescan dentro ni mueren si el jugador no viene. El bond solo lo gana quien las cuida.
+- **Cocina de leche** (biberones, báscula, nevera, fregadero), **almacén** (biberón / comida / paja), **pizarra de
+  tomas y pesos**, aseos, máquina de virtualización (solo misiones de trabajo).
+- Misiones de trabajo (`AreaWork`): tomas y pesaje (diaria), limpiar recintos (diaria), ganar el vínculo de una cría.
+- Se retiraron las crías templadas sueltas (conejo/zorro/lobo/ciervo) que `BuildAnimals` ponía sin nido.
+
+Pendiente: el microcosmos de la Cría (El Perro de Oberkassel, §5), la limpieza de los recintos con `DirtArea`, y
+contrastar con fuentes los datos de los carteles (peso del osezno al nacer, destete de foca y malamute).
+
 ## 6. Estado y pendientes
 - **Hecho (scaffold):** `CriaBeginner_AUTO` (limpiar→abastecer→rutina→nido) reusando el motor + la fauna
   existente (`Animal`/`LifeStage`/`PostNatal`/`Family`).

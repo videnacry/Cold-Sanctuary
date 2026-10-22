@@ -61,15 +61,19 @@ arriba (`SampleSceneBuilder.Levels.cs`):
   - **Enfermería:** las 27 camas de hospitalización suben a una **galería en U** (alas oeste y este de 4,4 m + fondo de
     3,8 m), con dos escaleras (la oeste junto a la entrada; la este, de lado, porque al frente está el tanque). Abajo
     quedan las 3 camas de urgencias, la exploración (oeste), la veterinaria (este) y el paso libre desde la entrada.
+  - **Restaurante:** las mesas de los lados suben a dos **galerías de comedor** (oeste y este, 4,6 × 18 m), 3 mesas en
+    cada una con vista a la cocina abierta y escalera inclinada al borde de +Z. Abajo queda un paso de ~5 m alrededor de
+    la cocina. 12 mesas de 4 = 48 cubiertos.
 - **Piso superior a 10 m** (no tapa la vista del de abajo): columnas solo en el perímetro y escalera vertical desde el
   piso de abajo, a un lado del eje (`StackOn`). Es **3 m más corto** por el lado de la entrada: ahí apoya su escalera.
   Sin puente propio.
   - **Sala de Ballet** sobre la **Sala de Yoga**.
   - **Dojo** sobre el **Gimnasio**.
   - **Huerto de rotación** sobre el **Huerto** (dos huertos, una base).
+  - **Estudio Textil** sobre la **Construcción** (taller sobre taller; el textil queda de 18 × 11 m). La Mecánica
+    (10 × 9) es pequeña para cargar otro piso: sus columnas y la escalera chocarían con los aseos y la máquina.
 - **Residencias:** cada cabaña entre árboles tiene **otra encima a 5 m** sobre cuatro columnas, con escalera vertical
   desde su pasarela. Se quitan el anillo exterior de cabañas sobre columnas y sus seis pasarelas. La pista de alfombras
   sale ahora de la cabaña de 0°.
 
-Pendiente: aplicar la misma idea a la cocina (barra de pase o despensa en entreplanta) y a los talleres. Las misiones del
-microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).
+Las misiones del microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).
