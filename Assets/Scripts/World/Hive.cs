@@ -63,6 +63,7 @@ public class Hive : MonoBehaviour
 
     void Update()
     {
+        MoveAt6();
         float days = Time.deltaTime / Mathf.Max(0.1f, DaySeconds);
         for (int i = 0; i < cells.Count; i++)
         {
@@ -76,6 +77,35 @@ public class Hive : MonoBehaviour
     }
 
 
+
+    // MUDANZA DIARIA (abejas de hielo): cada día a las 6:00 la colonia cambia de árbol y se lleva su panal consigo: lo
+    // coloca bajo el posadero (plataforma de rama) libre de otro árbol cercano. Las abejas lo siguen (vuelven a su panal).
+    int _movedDay = int.MinValue;
+    public int moves { get; private set; }
+
+    void MoveAt6()
+    {
+        TimeController tc = TimeController.timeController;
+        if (tc == null || ColdSanctuary.TestRunner.Running) return;
+        if (_movedDay == int.MinValue) { _movedDay = tc.Hour >= 6f ? tc.Day : tc.Day - 1; return; }   // el día del arranque no cuenta
+        if (tc.Day == _movedDay || tc.Hour < 6f) return;
+        _movedDay = tc.Day;
+        Transform myTree = transform.parent;
+        Transform best = null; float bd = float.MaxValue;
+        foreach (Transform t in SceneCache.All<Transform>(30f))
+        {
+            if (t == null || t.name != "Rama_Plataforma" || t.parent == myTree || t.parent == null) continue;
+            bool taken = false; foreach (Hive h in All) if (h != this && h.transform.parent == t.parent && (h.transform.position - t.position).sqrMagnitude < 4f) { taken = true; break; }
+            if (taken) continue;
+            float d = (t.position - transform.position).sqrMagnitude;
+            if (d > 4f && d < bd) { bd = d; best = t; }
+        }
+        if (best == null) return;
+        transform.SetParent(best.parent, true);
+        transform.position = best.position + new Vector3(0.5f, -0.05f, 0.2f);
+        moves++;
+        Debug.Log($"[Hielo] Las 6:00: la colonia de «{name}» se muda con su panal a «{best.parent.name}» ({Mathf.Sqrt(bd):0} m).");
+    }
     /// <summary>¿El punto está dentro de la cavidad del panal?</summary>
     public bool Inside(Vector3 p)
     {

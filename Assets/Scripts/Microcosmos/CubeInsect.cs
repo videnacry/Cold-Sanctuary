@@ -247,17 +247,27 @@ public class CubeInsect : MonoBehaviour
             c.SetParent(headPart ? neck : torso, true);
         }
         if (sp.body.Length < 3 || sp.spider) Part(torso, "Pecho", new Vector3(0f, 0f, 0.06f), new Vector3(head.wid * 0.9f, chestH * 0.8f, 0.14f), body);   // un pecho al que se unen los brazos
-        // Cara: ojos (con pupila y brillo), cejas y boca en el frente de la cabeza.
-        Vector3 hf = neck.InverseTransformPoint(pivot.TransformPoint(new Vector3(0f, headY, headZ + head.len * 0.5f + 0.002f)));
-        float ew = head.wid * 0.28f, eh = head.hei * 0.3f;
+        // La cabeza (en la araña, que no la tiene separada, se le hace una sobre el pecho) y su CARA en el frente:
+        // ojos (con pupila y brillo), cejas y boca, siempre DENTRO de la cabeza.
+        Transform hc = null; foreach (Transform t in neck) if (t.name == head.name && t.GetComponent<Renderer>() != null) hc = t;
+        if (hc == null) { hc = Part(neck, "Cabeza", new Vector3(0f, 0.08f, 0.06f), new Vector3(0.22f, 0.18f, 0.18f), body); if (!sp.spider) hc.name = "Cabeza_humana"; }
+        Vector3 hf = hc.localPosition + new Vector3(0f, 0f, hc.localScale.z * 0.5f + 0.002f);
+        float hw = hc.localScale.x, hh = hc.localScale.y;
+        float ew = hw * 0.28f, eh = hh * 0.3f;
         for (int s = -1; s <= 1; s += 2)
         {
-            Part(neck, "Ojo", hf + new Vector3(s * head.wid * 0.24f, head.hei * 0.12f, 0f), new Vector3(ew, eh, 0.006f), Color.white);
-            Part(neck, "Pupila", hf + new Vector3(s * head.wid * 0.24f, head.hei * 0.1f, 0.004f), new Vector3(ew * 0.5f, eh * 0.55f, 0.005f), new Color(0.08f, 0.06f, 0.05f));
-            Part(neck, "Brillo", hf + new Vector3(s * head.wid * 0.21f, head.hei * 0.16f, 0.007f), new Vector3(ew * 0.18f, eh * 0.18f, 0.004f), Color.white);
-            Part(neck, "Ceja", hf + new Vector3(s * head.wid * 0.24f, head.hei * 0.32f, 0.003f), new Vector3(ew * 1.1f, head.hei * 0.05f, 0.005f), dark);
+            Part(neck, "Ojo", hf + new Vector3(s * hw * 0.24f, hh * 0.12f, 0f), new Vector3(ew, eh, 0.006f), Color.white);
+            Part(neck, "Pupila", hf + new Vector3(s * hw * 0.24f, hh * 0.1f, 0.004f), new Vector3(ew * 0.5f, eh * 0.55f, 0.005f), new Color(0.08f, 0.06f, 0.05f));
+            Part(neck, "Brillo", hf + new Vector3(s * hw * 0.21f, hh * 0.16f, 0.007f), new Vector3(ew * 0.18f, eh * 0.18f, 0.004f), Color.white);
+            Part(neck, "Ceja", hf + new Vector3(s * hw * 0.24f, hh * 0.32f, 0.003f), new Vector3(ew * 1.1f, hh * 0.05f, 0.005f), dark);
         }
-        Part(neck, "Boca", hf + new Vector3(0f, -head.hei * 0.22f, 0.003f), new Vector3(head.wid * 0.3f, head.hei * 0.05f, 0.005f), new Color(0.25f, 0.1f, 0.1f));
+        Part(neck, "Boca", hf + new Vector3(0f, -hh * 0.22f, 0.003f), new Vector3(hw * 0.3f, hh * 0.05f, 0.005f), new Color(0.25f, 0.1f, 0.1f));
+        // COLUMNA HUMANA: un cubo más entre la cintura y el tórax, para que al enderezarse quede erguido de verdad (y no
+        // agachado): la cintura es la articulación que se levanta; el tórax, la cabeza y los brazos van encima.
+        float spine = 0.22f;
+        var waist = new GameObject("Cintura").transform; waist.SetParent(pivot, false); waist.localPosition = torso.localPosition;
+        torso.SetParent(waist, true); torso.localPosition = new Vector3(0f, 0f, spine);
+        Part(waist, "Columna", new Vector3(0f, 0f, spine * 0.5f), new Vector3(Mathf.Max(0.06f, head.wid * 0.45f), Mathf.Max(0.06f, chestH * 0.6f), spine), body);
         // Manos en las patas delanteras (al final del tarso).
         foreach (Leg l in ci._legs)
             if (l.pair == 0)
@@ -269,7 +279,7 @@ public class CubeInsect : MonoBehaviour
                 l.armTroch = Quaternion.Euler(-10f, 0f, 0f);
                 l.tibia = FindDeep(l.coxa, "Tibia_art"); if (l.tibia != null) { l.tibiaRest = l.tibia.localRotation; l.armTibia = Quaternion.Euler(-70f, 0f, 0f); }
             }
-        ci._torso = torso; ci._neck = neck; ci._torsoRest = torso.localRotation; ci._neckRest = neck.localRotation;
+        ci._torso = waist; ci._neck = neck; ci._torsoRest = waist.localRotation; ci._neckRest = neck.localRotation;
         return ci;
     }
 
@@ -447,7 +457,7 @@ public class CubeInsect : MonoBehaviour
             else if (t.name.StartsWith("Ala_")) _wings.Add(t);
         }
         _spider = root.GetComponentsInChildren<Transform>(true).Length > 0 && root.Find("Pivote/Queliceros") != null;
-        _torso = FindDeep(root, "Torso"); _neck = FindDeep(root, "Cuello"); _torsoRest = Quaternion.identity; _neckRest = Quaternion.identity;
+        _torso = FindDeep(root, "Cintura") ?? FindDeep(root, "Torso"); _neck = FindDeep(root, "Cuello"); _torsoRest = Quaternion.identity; _neckRest = Quaternion.identity;
         _last = transform.position;
         if (_seed < 0f) _seed = Random.Range(0f, 100f);
     }
@@ -477,8 +487,8 @@ public class CubeInsect : MonoBehaviour
         if (_lucidity == null && !_lucidityChecked) { _lucidity = GetComponent<Lucidity>(); _lucidityChecked = true; }
         float target = agitation >= 0f ? agitation : _lucidity != null ? (_lucidity.Lucid ? 0f : 1f) : (speed > 1.8f * Mathf.Max(0.1f, Lw) ? 1f : 0f);
         if (_torso != null) _calm = Mathf.MoveTowards(_calm, 1f - target, Time.deltaTime * 2.5f);
-        if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-75f * _calm, 0f, 0f);
-        if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(75f * _calm, 0f, 0f);
+        if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-88f * _calm, 0f, 0f);
+        if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(88f * _calm, 0f, 0f);
         // Marcha: TRÍPODE alterno (P1 izq + P2 der + P3 izq, y luego las otras) o TETRÁPODO en arañas; erguido, sin las delanteras.
         foreach (Leg l in _legs)
         {
