@@ -43,8 +43,9 @@ with South Pole allows remote knee surgery* (hospimedica.com).
 - **Este**: sala de espera (10), farmacia, rayos X, ecografía, paritorio, laboratorio, analizador clínico, banco de
   sangre, **quirófano** (mesa, lámpara, anestesia, instrumental), lavado quirúrgico, autoclave y planta de oxígeno.
   El tanque de virtualización sigue en la esquina +X +Z.
-- **Galería en U a 3 m** (oeste 11 + fondo 10 + este 9 = **30 camas de planta**, Cama 4-33), sin barandillas; el
-  cabecero da al borde exterior y por dentro queda un pasillo de ~1,5 m al que llegan las dos escaleras inclinadas.
+- **Galería en U a 3 m** (oeste 10 + fondo 12 + este 8 = **30 camas de planta**, Cama 4-33), sin barandillas, a 2 m
+  de eje a eje (0,9 m de pasillo entre camas, `FurnitureSpacing`; gotero y monitor detrás del cabecero); el
+  cabecero da al borde exterior y por dentro queda un pasillo de ~1,3 m al que llegan las dos escaleras inclinadas.
   Sin postes en el borde exterior (por ahí llegan los puentes).
 
 **Planta alta, a 10 m (animales)** — hija del área (`Planta_veterinaria`, `StackOn`), escalera vertical en su borde +Z:

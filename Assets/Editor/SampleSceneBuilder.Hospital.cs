@@ -16,7 +16,10 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     public static readonly Vector2 HospitalSize = new Vector2(32f, 26f);
-    public const float HospitalBedDeck = 3f;   // galería de camas: a 3 m se pasa de pie por debajo (a 2,2 m se chocaba)
+    public const float HospitalBedDeck = 3f;
+    // Cama de 1,07 m de ancho (barandas; gotero y monitor van detrás del cabecero) + 0,9 m de pasillo entre camas
+    // (FurnitureSpacing: acceso por los dos lados) → 2 m de eje a eje.
+    const float BedPitch = 2f;   // galería de camas: a 3 m se pasa de pie por debajo (a 2,2 m se chocaba)
 
     static Transform Station(Transform t, HospitalService service, string label, float height, bool doctorPost = false, Vector3? stand = null)
     {
@@ -41,20 +44,20 @@ public static partial class SampleSceneBuilder
         // Pasillo central (entrada → fondo), libre de muebles: 3 m de ancho.
         KitchenProps.C(r, new Vector3(0f, 0.03f, 1.9f), new Vector3(3f, 0.01f, HospitalSize.y - 7.6f), new Color(0.72f, 0.86f, 0.84f), 0f, "Pasillo_central");
 
-        // ── GALERÍA DE CAMAS a 3 m (en U, sin barandillas): 11 al oeste, 10 al fondo, 9 al este = 30 camas de planta ──
+        // ── GALERÍA DE CAMAS a 3 m (en U, sin barandillas): 10 al oeste, 12 al fondo, 8 al este = 30 camas de planta ──
         // Sin postes en el borde que da al exterior de la plataforma (por ahí llegan los puentes).
         float g = HospitalBedDeck, run = StairRun(g);
         Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
-        Transform west = Deck(r, "Galeria_oeste", new Vector3(-hx + 2.2f, 0f, -3.5f), new Vector2(4.4f, 19f), g, new Vector2Int(-1, -1));
-        Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -hz + 1.9f), new Vector2(HospitalSize.x - 8.8f, 3.8f), g, new Vector2Int(0, -1));
-        Transform east = Deck(r, "Galeria_este", new Vector3(hx - 2.2f, 0f, -5.5f), new Vector2(4.4f, 15f), g, new Vector2Int(1, -1));
+        Transform west = Deck(r, "Galeria_oeste", new Vector3(-hx + 2.2f, 0f, -3f), new Vector2(4.4f, 20f), g, new Vector2Int(-1, -1));
+        Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -hz + 2.2f), new Vector2(HospitalSize.x - 8.8f, 4.4f), g, new Vector2Int(0, -1));
+        Transform east = Deck(r, "Galeria_este", new Vector3(hx - 2.2f, 0f, -4.5f), new Vector2(4.4f, 17f), g, new Vector2Int(1, -1));
         int bed = 4;   // las camas 1-3 son las de observación de urgencias (abajo)
         // Cabecero hacia el borde exterior; hacia dentro queda un pasillo de ~1,5 m por el que llegan las escaleras.
-        for (int i = 0; i < 11; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 1.9f, g, -12f + i * 1.7f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 10; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-8.55f + i * 1.9f, g, -hz + 1.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(hx - 1.9f, g, -12f + i * 1.7f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-hx + 3.6f, 0f, 6f + run), 180f, g);
-        InclinedStair(r, "Escalera_galeria_este", new Vector3(hx - 3.6f, 0f, 2f + run), 180f, g);
+        for (int i = 0; i < 10; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 2f, g, -12.4f + i * BedPitch), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 12; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11f + i * BedPitch, g, -hz + 2.2f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        for (int i = 0; i < 8; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(hx - 2f, g, -12.4f + i * BedPitch), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-hx + 3.6f, 0f, 7f + run), 180f, g);
+        InclinedStair(r, "Escalera_galeria_este", new Vector3(hx - 3.6f, 0f, 4f + run), 180f, g);
         Label(west, "Sala de camas (oeste)", 1.8f); Label(east, "Sala de camas (este)", 1.8f); Label(back, "Sala de camas (fondo)", 1.8f);
 
         // ── PLANTA BAJA, OESTE: entrada, urgencias, consultas (iniciación) y UCI ──
@@ -143,7 +146,7 @@ public static partial class SampleSceneBuilder
         GameObject l = GameObject.Find("Linduarda");
         if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-6.6f, 1f, 1.9f));
         GameObject lz = GameObject.Find("Lizmibet");
-        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-hx + 2.2f, 0.1f + g + 1f, -3.5f));
+        if (lz != null) lz.transform.position = area.transform.TransformPoint(new Vector3(-hx + 3.7f, 0.1f + g + 1f, -3.5f));
         GameObject p = GameObject.Find("Lobo_paciente");
         if (p != null) p.transform.position = v.TransformPoint(new Vector3(-10.5f, 0.15f, -uz + 1.8f));
         // Kushal (el jugador) EMPIEZA AQUÍ, junto a las camas de observación: es el recién llegado.

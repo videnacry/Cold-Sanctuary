@@ -31,13 +31,14 @@ public static class InfirmaryProps
         C(t, new Vector3(0f, 0.85f, -1.02f), new Vector3(1f, 0.75f, 0.06f), Mint, 0f, "Cabecero");
         C(t, new Vector3(0f, 0.7f, 1.02f), new Vector3(1f, 0.45f, 0.06f), Mint, 0f, "Piecero");
         for (int s = -1; s <= 1; s += 2) C(t, new Vector3(0.52f * s, 0.82f, -0.3f), new Vector3(0.03f, 0.18f, 0.8f), Steel, 0f, "Baranda");
-        // Gotero (suero) y monitor de constantes junto a la cabecera.
-        Transform iv = KitchenProps.Root(t, "Gotero", new Vector3(-0.75f, 0f, -0.85f));
+        // Gotero (suero) y monitor de constantes DETRÁS del cabecero: la cama no ocupa más ancho que sus barandas y entre
+        // camas queda el pasillo (FurnitureSpacing).
+        Transform iv = KitchenProps.Root(t, "Gotero", new Vector3(-0.3f, 0f, -1.3f));
         C(iv, new Vector3(0f, 0.9f, 0f), new Vector3(0.03f, 1.8f, 0.03f), Steel, 0f, "Pie");
         C(iv, new Vector3(0f, 0.02f, 0f), new Vector3(0.4f, 0.04f, 0.4f), Steel, 45f, "Base");
         C(iv, new Vector3(0.1f, 1.75f, 0f), new Vector3(0.2f, 0.02f, 0.02f), Steel, 0f, "Gancho");
         C(iv, new Vector3(0.17f, 1.6f, 0f), new Vector3(0.1f, 0.18f, 0.04f), H("DDEFF6"), 0f, "Bolsa");
-        Transform mon = KitchenProps.Root(t, "Monitor", new Vector3(0.78f, 0f, -0.9f));
+        Transform mon = KitchenProps.Root(t, "Monitor", new Vector3(0.3f, 0f, -1.3f));
         C(mon, new Vector3(0f, 0.6f, 0f), new Vector3(0.05f, 1.2f, 0.05f), Steel, 0f, "Pie");
         C(mon, new Vector3(0f, 1.3f, 0f), new Vector3(0.4f, 0.3f, 0.08f), Dark, 0f, "Carcasa");
         C(mon, new Vector3(0f, 1.3f, 0.045f), new Vector3(0.34f, 0.22f, 0.005f), Screen, 0f, "Pantalla");
