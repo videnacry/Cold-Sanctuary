@@ -143,6 +143,8 @@ Con figuras religiosas o filosóficas: contar **lo que enseñaron y lo que se sa
 
 ## 5. Orden propuesto para construir
 
+> **Hecho (2026-10-22)**: Nightingale, los Wright, Eratóstenes y Buda, más Patanjali y la tregua de Navidad de 1914 — ver [`microcosmos-historias.md`](microcosmos-historias.md).
+
 1. **Nightingale** en la Enfermería: reusa la limpieza, las camas de la galería y los datos.
 2. **La bicicleta** (los Wright) en la Mecánica: enseña las máquinas simples.
 3. **Eratóstenes** como primer tramo de la planta atómica: una sola misión, muy visual.
