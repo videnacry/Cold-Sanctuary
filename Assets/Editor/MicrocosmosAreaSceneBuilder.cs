@@ -112,6 +112,21 @@ public static class MicrocosmosAreaSceneBuilder
     }
 
 
+    /// <summary>Una escena de microcosmos con HISTORIA PROPIA (compasión, mitos…) sobre un área del santuario ×10.</summary>
+    internal static void BuildStoryScene(string areaGo, string display, string sceneName, Color tint, Vector3 o, System.Func<Transform, int> story)
+    {
+        if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
+        string path = $"Assets/Scenes/{sceneName}.unity";
+        Scene prev = EditorSceneManager.GetActiveScene();
+        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        SceneManager.SetActiveScene(scene);
+        var sun = new GameObject("Sun");
+        sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
+        sun.AddComponent<Light>().type = LightType.Directional;
+        AreaMicrocosmos.Build(areaGo, display, SampleSceneBuilder.MissionKind.Channel, tint, o, story);
+        Finish(scene, path, prev);
+    }
+
     internal static void Finish(Scene scene, string path, Scene prev)
     {
         MicroWater.SurroundScene(scene);

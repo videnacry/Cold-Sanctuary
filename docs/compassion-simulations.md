@@ -81,6 +81,22 @@ Vivió hasta viejo porque su grupo lo cuidó, y por eso es el primer gesto de co
 - `BodyInjuries` baja las aptitudes afectadas (percepción por el ojo y el oído, agilidad por la cojera, fuerza por el
   brazo) y deja los datos para que el cuerpo de cubos dibuje el brazo que falta, el ojo cerrado y la marcha coja.
 
+## Reencarnaciones (ficción, 2026-10-22)
+
+Como en todo microcosmos, el elenco de la enfermería renace aquí **con su nombre** (los históricos reales conservan el suyo):
+
+| | Le Chambon | Irena Sendler |
+|---|---|---|
+| Ruth | granjera que esconde en su granja | madre de acogida |
+| Atlas | el panadero (pan para los escondidos) | conductor de la ambulancia |
+| Medea | guía hacia Suiza | madre superiora del convento |
+| Héspero | jefe de estación | guía de las alcantarillas |
+| Sakshi | cuenta a los que llegan | la red de Irena |
+| Shanidar | anciano de la meseta | anciano del orfanato |
+| Ambrosio, Momo | entre los refugiados | entre los niños |
+
+Las dos usan `HistoryCard` (intro + historia real con fuentes), compartida con Egina ([`microcosmos-myrmidons.md`](microcosmos-myrmidons.md)).
+
 ## Pendiente
 
 - Cuerpo de cubos (hilo de Unity):
