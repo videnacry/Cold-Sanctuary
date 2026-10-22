@@ -26,7 +26,7 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
 
         TestProbe.Check("hay NavMesh en el hub", OnMesh(hub, out Vector3 a));
-        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("la Cocina", new Vector3(5f, 0f, 84f)), ("la Enfermería", new Vector3(55f, 0f, 106f)) })
+        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("la Cocina", new Vector3(5f, 0f, 84f)), ("el Hospital", new Vector3(55f, 0f, 106f)) })
         {
             bool onB = OnMesh(target, out Vector3 b);
             var path = new NavMeshPath();

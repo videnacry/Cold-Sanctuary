@@ -219,5 +219,212 @@ public static class InfirmaryProps
         KitchenProps.Fit(t);
         return t;
     }
-}
 
+    // ── HOSPITAL (docs/hospital.md): lo que un hospital AISLADO necesita para tratar todos los casos ────────────────
+
+    /// <summary>Mesa quirúrgica articulada sobre columna, con reposabrazos en cruz y la sábana verde.</summary>
+    public static Transform OperatingTable(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.04f, 0f), new Vector3(0.7f, 0.08f, 1.1f), Dark, 0f, "Base");
+        C(t, new Vector3(0f, 0.45f, 0f), new Vector3(0.3f, 0.75f, 0.3f), Steel, 0f, "Columna");
+        C(t, new Vector3(0f, 0.86f, 0f), new Vector3(0.55f, 0.08f, 2f), Steel, 0f, "Tablero");
+        C(t, new Vector3(0f, 0.93f, 0f), new Vector3(0.52f, 0.06f, 1.95f), H("3B7A5E"), 0f, "Sabana_quirurgica");
+        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * 0.55f, 0.88f, -0.45f), new Vector3(0.6f, 0.04f, 0.16f), Steel, 0f, "Reposabrazos");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Lámpara quirúrgica de techo (sin sombras): cúpula doble sobre un brazo desde un pie de 2,6 m.</summary>
+    public static Transform SurgicalLight(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.03f, 0f), new Vector3(0.6f, 0.06f, 0.6f), Dark, 45f, "Base");
+        C(t, new Vector3(0f, 1.3f, 0f), new Vector3(0.08f, 2.6f, 0.08f), Steel, 0f, "Pie");
+        C(t, new Vector3(0f, 2.55f, 0.5f), new Vector3(0.06f, 0.06f, 1f), Steel, 0f, "Brazo");
+        for (int k = -1; k <= 1; k += 2)
+        {
+            C(t, new Vector3(k * 0.32f, 2.3f, 1f), new Vector3(0.55f, 0.12f, 0.55f), White, 0f, "Cupula");
+            C(t, new Vector3(k * 0.32f, 2.23f, 1f), new Vector3(0.45f, 0.02f, 0.45f), H("FFF6D8"), 0f, "Luz");
+        }
+        KitchenProps.Fit(t, false);
+        return t;
+    }
+
+    /// <summary>Máquina de anestesia: carro con vaporizador, fuelle del ventilador, monitor y bombonas de O₂.</summary>
+    public static Transform AnesthesiaMachine(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.55f, 0f), new Vector3(0.7f, 1.1f, 0.6f), H("E6ECEF"), 0f, "Carro");
+        C(t, new Vector3(0f, 1.12f, -0.1f), new Vector3(0.72f, 0.04f, 0.5f), Steel, 0f, "Mesa");
+        C(t, new Vector3(-0.2f, 1.25f, 0.15f), new Vector3(0.12f, 0.22f, 0.12f), H("E3B341"), 0f, "Vaporizador");
+        C(t, new Vector3(0.22f, 1.28f, 0.1f), new Vector3(0.16f, 0.3f, 0.16f), Glass, 0f, "Fuelle");
+        C(t, new Vector3(0f, 1.6f, 0.2f), new Vector3(0.5f, 0.35f, 0.06f), Dark, 0f, "Monitor");
+        C(t, new Vector3(0f, 1.6f, 0.165f), new Vector3(0.44f, 0.28f, 0.005f), Screen, 0f, "Pantalla");
+        for (int k = 0; k < 2; k++) C(t, new Vector3(-0.2f + k * 0.4f, 0.45f, 0.4f), new Vector3(0.16f, 0.9f, 0.16f), H("F2F2F2"), 0f, "Bombona_O2");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Mesa de instrumental (Mayo) con bisturí, pinzas y gasas.</summary>
+    public static Transform InstrumentTable(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(0.05f, 1f, 0.05f), Steel, 0f, "Pie");
+        C(t, new Vector3(0f, 1.02f, 0f), new Vector3(0.8f, 0.03f, 0.5f), Steel, 0f, "Bandeja");
+        for (int i = 0; i < 6; i++) C(t, new Vector3(-0.3f + i * 0.12f, 1.045f, -0.05f), new Vector3(0.02f, 0.01f, 0.18f), H("C9D1D4"), 0f, "Instrumento");
+        C(t, new Vector3(0.25f, 1.05f, 0.15f), new Vector3(0.15f, 0.03f, 0.12f), White, 0f, "Gasas");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Lavabo quirúrgico (lavado de manos de 3-5 min antes de operar), de dos senos con grifo de codo.</summary>
+    public static Transform ScrubSink(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.45f, 0f), new Vector3(1.4f, 0.9f, 0.55f), Steel, 0f, "Mueble");
+        for (int k = -1; k <= 1; k += 2)
+        {
+            C(t, new Vector3(k * 0.35f, 0.86f, 0f), new Vector3(0.55f, 0.06f, 0.4f), Dark, 0f, "Seno");
+            C(t, new Vector3(k * 0.35f, 1.15f, 0.22f), new Vector3(0.04f, 0.5f, 0.04f), Steel, 0f, "Grifo_codo");
+        }
+        C(t, new Vector3(0f, 1.5f, 0.27f), new Vector3(1.4f, 0.4f, 0.02f), H("CFE3EA"), 0f, "Protocolo_lavado");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Autoclave de esterilización (vapor a 121-134 °C): caja con puerta redonda y su carro de bandejas.</summary>
+    public static Transform Autoclave(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), Dark, 0f, "Mueble");
+        C(t, new Vector3(0f, 1.3f, 0f), new Vector3(1f, 0.8f, 0.75f), H("D9DEE0"), 0f, "Camara");
+        C(t, new Vector3(0f, 1.3f, -0.38f), new Vector3(0.55f, 0.55f, 0.03f), Steel, 0f, "Puerta");
+        C(t, new Vector3(0.38f, 1.55f, -0.38f), new Vector3(0.15f, 0.1f, 0.01f), Glow, 0f, "Display");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Ventilador mecánico de UCI (carro con pantalla y tubuladuras).</summary>
+    public static Transform Ventilator(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.4f, 0f), new Vector3(0.45f, 0.8f, 0.4f), H("E6ECEF"), 0f, "Carro");
+        C(t, new Vector3(0f, 1.1f, 0f), new Vector3(0.4f, 0.55f, 0.3f), White, 0f, "Ventilador");
+        C(t, new Vector3(0f, 1.15f, -0.155f), new Vector3(0.32f, 0.3f, 0.005f), Screen, 0f, "Pantalla");
+        C(t, new Vector3(-0.1f, 1.15f, -0.16f), new Vector3(0.16f, 0.01f, 0.003f), Glow, 0f, "Curva_presion");
+        C(t, new Vector3(0.25f, 0.95f, -0.1f), new Vector3(0.04f, 0.04f, 0.6f), H("B8D4E8"), 0f, "Tubuladura");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Carro de parada (reanimación): desfibrilador encima, cajones de vía aérea y fármacos.</summary>
+    public static Transform CrashCart(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(0.7f, 0.95f, 0.5f), Red, 0f, "Carro");
+        for (int i = 0; i < 4; i++) C(t, new Vector3(0f, 0.2f + i * 0.22f, -0.255f), new Vector3(0.6f, 0.17f, 0.01f), H("C85A5A"), 0f, "Cajon");
+        C(t, new Vector3(0f, 1.1f, 0f), new Vector3(0.4f, 0.25f, 0.3f), H("F0C330"), 0f, "Desfibrilador");
+        C(t, new Vector3(0f, 1.12f, -0.155f), new Vector3(0.2f, 0.12f, 0.005f), Screen, 0f, "Pantalla");
+        C(t, new Vector3(0.28f, 0.6f, 0.15f), new Vector3(0.12f, 0.9f, 0.12f), H("F2F2F2"), 0f, "Bombona_O2");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Nevera del banco de sangre (2-6 °C) con bolsas de concentrado de hematíes.</summary>
+    public static Transform BloodBankFridge(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.95f, 0f), new Vector3(0.75f, 1.9f, 0.65f), White, 0f, "Nevera");
+        C(t, new Vector3(0f, 1.05f, -0.33f), new Vector3(0.65f, 1.5f, 0.01f), Glass, 0f, "Puerta");
+        for (int lv = 0; lv < 4; lv++)
+            for (int k = 0; k < 4; k++)
+                C(t, new Vector3(-0.24f + k * 0.16f, 0.5f + lv * 0.36f, -0.1f), new Vector3(0.12f, 0.2f, 0.04f), H("9E1B2B"), 0f, "Bolsa_sangre");
+        C(t, new Vector3(0.25f, 1.85f, -0.335f), new Vector3(0.15f, 0.06f, 0.005f), Glow, 0f, "Termometro");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Estantería de farmacia con cajas de medicamentos y su mostrador.</summary>
+    public static Transform PharmacyShelf(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 1f, 0.25f), new Vector3(2.4f, 2f, 0.4f), White, 0f, "Estanteria");
+        Color[] box = { H("F2C46D"), H("8FC1E3"), H("E58E8E"), H("A8D8A0"), H("D6C1E8") };
+        for (int lv = 0; lv < 4; lv++)
+            for (int k = 0; k < 8; k++)
+                C(t, new Vector3(-1.05f + k * 0.3f, 0.35f + lv * 0.45f, 0.1f), new Vector3(0.22f, 0.18f, 0.14f), box[(k + lv) % box.Length], 0f, "Caja_medicamento");
+        C(t, new Vector3(0f, 0.5f, -0.55f), new Vector3(2.4f, 1f, 0.5f), Wood, 0f, "Mostrador");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Puesto de telemedicina: pantalla grande, cámara y antena para consultar a especialistas a miles de km.</summary>
+    public static Transform Telemedicine(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = DoctorDesk(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 1.55f, 0.3f), new Vector3(1.2f, 0.7f, 0.05f), Dark, 0f, "Pantalla_grande");
+        C(t, new Vector3(0f, 1.55f, 0.27f), new Vector3(1.1f, 0.6f, 0.005f), H("3C6E8F"), 0f, "Especialista");
+        C(t, new Vector3(0f, 1.95f, 0.28f), new Vector3(0.12f, 0.06f, 0.06f), Black, 0f, "Camara");
+        C(t, new Vector3(0.6f, 2.2f, 0.35f), new Vector3(0.04f, 0.9f, 0.04f), Steel, 0f, "Antena");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Concentrador de oxígeno (PSA): saca el O₂ del aire, sin depender de bombonas que lleguen de fuera.</summary>
+    public static Transform OxygenPlant(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.6f, 0f), new Vector3(1.2f, 1.2f, 0.8f), H("DCE3E8"), 0f, "Compresor");
+        for (int k = 0; k < 2; k++) C(t, new Vector3(-0.3f + k * 0.6f, 1.75f, 0f), new Vector3(0.3f, 1.1f, 0.3f), H("6FA8DC"), 0f, "Tamiz_zeolita");
+        C(t, new Vector3(0.85f, 0.9f, 0f), new Vector3(0.4f, 1.8f, 0.4f), H("F2F2F2"), 0f, "Deposito_O2");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Cama de partos (paritorio): respaldo alto, perneras y cuna térmica al lado para el recién nacido.</summary>
+    public static Transform DeliveryBed(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        C(t, new Vector3(0f, 0.4f, 0f), new Vector3(0.8f, 0.8f, 1.4f), White, 0f, "Base");
+        C(t, new Vector3(0f, 0.85f, 0f), new Vector3(0.8f, 0.12f, 1.4f), Blue, 0f, "Colchon");
+        C(t, new Vector3(0f, 1.15f, -0.65f), new Vector3(0.8f, 0.12f, 0.6f), Blue, 0f, "Respaldo").localRotation = Quaternion.Euler(-50f, 0f, 0f);
+        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * 0.3f, 1.05f, 0.85f), new Vector3(0.12f, 0.1f, 0.35f), Steel, 0f, "Pernera");
+        Transform crib = KitchenProps.Root(t, "Cuna_termica", new Vector3(1.1f, 0f, 0f));
+        C(crib, new Vector3(0f, 0.45f, 0f), new Vector3(0.6f, 0.9f, 0.5f), H("E6ECEF"), 0f, "Carro");
+        C(crib, new Vector3(0f, 0.95f, 0f), new Vector3(0.6f, 0.1f, 0.5f), H("F6E3B4"), 0f, "Cuna");
+        C(crib, new Vector3(0f, 1.8f, 0f), new Vector3(0.6f, 0.08f, 0.5f), H("F08A5D"), 0f, "Calefactor_radiante");
+        C(crib, new Vector3(0.28f, 1.4f, 0f), new Vector3(0.04f, 0.8f, 0.04f), Steel, 0f, "Pie");
+        KitchenProps.Fit(t);
+        return t;
+    }
+
+    /// <summary>Box de AISLAMIENTO (infecciosos): cama dentro de mamparas de cristal con antesala; deja la entrada abierta.</summary>
+    public static Transform IsolationRoom(Transform parent, string name, Vector3 pos, float yaw, Color blanket)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        HospitalBed(t, "Cama_aislamiento", Vector3.zero, 0f, blanket);
+        float w = 2.6f, d = 3.2f, h = 2.3f;
+        C(t, new Vector3(0f, h * 0.5f, -d * 0.5f), new Vector3(w, h, 0.04f), Glass, 0f, "Mampara");
+        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * w * 0.5f, h * 0.5f, 0f), new Vector3(0.04f, h, d), Glass, 0f, "Mampara");
+        C(t, new Vector3(-w * 0.3f, h * 0.5f, d * 0.5f), new Vector3(w * 0.4f, h, 0.04f), Glass, 0f, "Mampara");
+        C(t, new Vector3(w * 0.3f, 1.3f, d * 0.5f + 0.25f), new Vector3(0.5f, 0.4f, 0.3f), White, 0f, "EPI_antesala");
+        KitchenProps.Fit(t, false);   // se entra: el box no es un bloque macizo
+        return t;
+    }
+
+    /// <summary>Box de hospitalización veterinaria (perrera grande / corral pequeño) con puerta de barrotes y manta.</summary>
+    public static Transform Kennel(Transform parent, string name, Vector3 pos, float yaw)
+    {
+        Transform t = KitchenProps.Root(parent, name, pos, yaw);
+        float w = 1.4f, d = 1.8f, h = 1.3f;
+        C(t, new Vector3(0f, 0.03f, 0f), new Vector3(w, 0.06f, d), H("BFC9CC"), 0f, "Suelo");
+        C(t, new Vector3(0f, h * 0.5f, -d * 0.5f), new Vector3(w, h, 0.05f), Mint, 0f, "Fondo");
+        for (int s = -1; s <= 1; s += 2) C(t, new Vector3(s * w * 0.5f, h * 0.5f, 0f), new Vector3(0.05f, h, d), Mint, 0f, "Lateral");
+        for (int b = 0; b < 8; b++) C(t, new Vector3(-w * 0.45f + b * w * 0.9f / 7f, h * 0.5f, d * 0.5f), new Vector3(0.03f, h, 0.03f), Steel, 0f, "Barrote");
+        C(t, new Vector3(0f, 0.09f, -0.2f), new Vector3(w * 0.7f, 0.06f, d * 0.5f), Blue, 0f, "Manta");
+        C(t, new Vector3(w * 0.3f, 0.1f, d * 0.3f), new Vector3(0.25f, 0.1f, 0.25f), Steel, 0f, "Cuenco");
+        KitchenProps.Fit(t, false);   // el animal entra en su box
+        return t;
+    }
+}

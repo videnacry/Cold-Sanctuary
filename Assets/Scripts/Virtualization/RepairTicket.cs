@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class RepairTicket : MonoBehaviour
 {
-    [Tooltip("Área donde está la avería (Cocina, Textil, Enfermería…).")]
+    [Tooltip("Área donde está la avería (Cocina, Textil, Hospital…).")]
     public string area = "Cocina";
     [Tooltip("Qué está averiado (nevera, horno, telar, tubería…).")]
     public string what = "nevera";

@@ -89,7 +89,7 @@ public static class VirtualMissionSceneBuilder
     {
         switch (area)
         {
-            case "Enfermería": case "Guardia": return "Infirmary_Area";
+            case AreaWork.Hospital: case "Guardia": return "Infirmary_Area";
             case "Cocina": return "Kitchen_Area";
             case "Huerto": return "Garden_Area";
             case "Sala de Yoga": return "YogaRoom_Area";
@@ -108,7 +108,7 @@ public static class VirtualMissionSceneBuilder
     {
         switch (area)
         {
-            case "Enfermería": return new[] { "Linduarda", "Lizmibet" };
+            case AreaWork.Hospital: return new[] { "Linduarda", "Lizmibet" };
             case "Cocina": return new[] { "Andrea", "Goluis" };
             case "Sala de Yoga": return new[] { "Sadhguru" };
             case "Construcción": return new[] { "JefeConstruccion" };

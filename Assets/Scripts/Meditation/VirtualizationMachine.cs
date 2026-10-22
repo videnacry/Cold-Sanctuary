@@ -118,12 +118,12 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         var opts = new System.Collections.Generic.List<string>();
         var acts = new System.Collections.Generic.List<System.Action>();
         if (areaName == "Cocina") { opts.Add("Virtualización: servicio a los turistas (eres el cocinero)"); acts.Add(() => ChooseId("coc_servicio")); }
-        if (areaName == "Enfermería") { opts.Add("Virtualización: iniciar a un turista (análisis, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
+        if (areaName == AreaWork.Hospital) { opts.Add("Virtualización: iniciar a un turista (análisis, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
         opts.Add("Virtualización: misiones de trabajo de esta área"); acts.Add(() => ShowArea(areaName));
         if (SceneMode || shift != null) { opts.Add("Simulación: el microcosmos del área"); acts.Add(EnterSimulation); }
         // Simulaciones de COMPASIÓN (docs/compassion-simulations.md): momentos históricos reales, sobre esta misma área agrandada.
         if (areaName == "Cocina") { opts.Add("Simulación: Le Chambon-sur-Lignon, 1942 (el pueblo que escondió a miles)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_LeChambon")); }
-        if (areaName == "Enfermería") { opts.Add("Simulación: Irena Sendler, Varsovia 1942 (los niños del gueto)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_IrenaSendler")); }
+        if (areaName == AreaWork.Hospital) { opts.Add("Simulación: Irena Sendler, Varsovia 1942 (los niños del gueto)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_IrenaSendler")); }
         // MITO (docs/microcosmos-myrmidons.md): Egina y los mirmidones, sobre la Construcción agrandada.
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
         ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i => acts[i](), null, transform, 4.5f);

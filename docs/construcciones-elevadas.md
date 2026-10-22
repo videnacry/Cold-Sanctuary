@@ -20,7 +20,7 @@ Además de la altura:
 
 ## Lo que hay en el juego
 
-- **Áreas elevadas a 6 m:** cocina, enfermería (una sola, para personas y animales: no hay veterinaria aparte), sala de yoga, mecánica y estudio textil (`SampleSceneBuilder.ElevateArea`).
+- **Áreas elevadas a 6 m:** cocina, hospital (uno solo, para personas y animales: la veterinaria es su planta alta), sala de yoga, mecánica y estudio textil (`SampleSceneBuilder.ElevateArea`).
   - Se apoyan en columnas y se sube por una escalera: una rampa invisible para andar y para la navegación, más peldaños, zancas y pasamanos.
   - Tienen barandilla de 1 m (una barrera invisible y unos balaustres visibles).
 - **Sala de yoga para 30 personas:** 18 × 15 m, con 30 esterillas en 6 × 5 y cojines, la tarima del maestro y un cuenco tibetano.
@@ -41,7 +41,7 @@ Además de la altura:
 ## Casquetes y árboles (2026-10-18)
 
 - **Seis casquetes como máximo**, cada uno una masa de hielo continua (`PolarLandscapeBuilder.Islands`, lóbulos `Casquete:Nombre`):
-  1. **Norte**: la aldea (cocina, enfermería, arboleda residencial, casa del árbol de guardia, bosque comestible).
+  1. **Norte**: la aldea (cocina, hospital, arboleda residencial, casa del árbol de guardia, bosque comestible).
   2. **Centro**: el hub, la Magnate, el área del huerto, el arrozal, los pingüinos y el textil.
   3. **Sur**: los huertos-gremio (rotación, milpa, andino).
   4. **Este**: sala de yoga, mecánica y los osos.
@@ -58,13 +58,13 @@ Además de la altura:
 Para tener **caminos amplios y ordenados** y menos plataformas sueltas con puentes, una misma base puede crecer hacia
 arriba (`SampleSceneBuilder.Levels.cs`):
 
-- **Plataforma hija (entreplanta)** de **3 m** dentro de la plataforma (debajo se pasa de pie sin chocar con la losa),
-  sobre postes solo en su perímetro, con **escalera inclinada** de 38° (rampa para andar y para el NavMesh) y **sin
-  barandilla** (`Deck`, `InclinedStair`).
-  - **Gimnasio:** 15 máquinas abajo y 15 en una entreplanta sobre la mitad izquierda, con pasillos de 1,5 m.
-  - **Enfermería:** las 27 camas de hospitalización suben a una **galería en U** (alas oeste y este de 4,4 m + fondo de
-    3,8 m), con dos escaleras (la oeste junto a la entrada; la este, de lado, porque al frente está el tanque). Abajo
-    quedan las 3 camas de urgencias, la exploración (oeste), la veterinaria (este) y el paso libre desde la entrada.
+- **Plataforma hija (entreplanta)** de **2,2 m** dentro de la plataforma, sobre postes solo en su perímetro, con
+  **escalera inclinada** (30°, rampa para andar y para el NavMesh) y barandilla de 1 m (`Deck`, `DeckRail`,
+  `InclinedStair`).
+  - **Hospital** (antes Enfermería; [`hospital.md`](hospital.md)): las 30 camas de planta en una **galería en U a 3 m**
+    (sin barandillas ni postes en el borde exterior, por donde llegan los puentes), con pasillo interior de ~1,5 m y dos
+    escaleras inclinadas. Debajo se pasa de pie; abajo quedan urgencias, consultas, UCI, quirófano, imagen, laboratorio.
+    Encima, a 10 m, el **hospital veterinario** (planta alta, hija del área).
   - **Restaurante:** las mesas de los lados suben a dos **galerías de comedor** (oeste y este, 4,6 × 18 m), 3 mesas en
     cada una con vista a la cocina abierta y escalera inclinada al borde de +Z. Abajo queda un paso de ~5 m alrededor de
     la cocina. 12 mesas de 4 = 48 cubiertos.
@@ -81,18 +81,3 @@ arriba (`SampleSceneBuilder.Levels.cs`):
   sale ahora de la cabaña de 0°.
 
 Las misiones del microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).
-
-## Barandillas, paneles y pistas (2026-10-22, Berón)
-
-- **Sin barandillas visibles** en las áreas humanas. En el borde exterior de cada plataforma elevada queda solo una
-  **barrera invisible** de 4 m, para que nadie caiga de 12 m. Las entreplantas no llevan nada.
-- **Paneles solares en lo más alto**: cada edificio lleva su fila en el borde de su piso más alto, sobre postes de 3 m
-  (`PlaceRooftopSolar`). Se busca un borde libre de muebles: primero el fondo, luego los laterales, nunca el frente.
-- **Pista de alfombras como piso superior**: la pista de cada grupo va a 10 m encima del piso más alto de su área
-  mayor, si ese piso cabe 14 × 14 m (`PlaceStackedPads`); sus columnas buscan sitio libre de muebles. Así no ocupa
-  terreno ni necesita puente; se sube por su escalera vertical. Solo si no cabe en ningún piso del grupo se hace
-  aparte, como antes. La de la arboleda residencial sigue aparte.
-- **Huertos sin bancales**: las filas van directas en el suelo (los bancales eran solo adorno).
-- **Espacio mínimo por tipo de mueble** (`FurnitureSpacing`): máquinas de gimnasio, mesas, camas, puestos de cocina,
-  telares y aseos piden un pasillo libre (0,8–0,9 m). El Build avisa con `[Espacio]` de cada par demasiado junto, y
-  `SanctuaryLifeTest` exige que las máquinas del gimnasio no se apilen.
