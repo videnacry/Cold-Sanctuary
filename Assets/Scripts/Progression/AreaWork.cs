@@ -51,6 +51,9 @@ public static class AreaWork
         M("Cría", "cri_vinculo", "Cuidar una cría hasta ganar su vínculo (leer, calmar, alimentar, asear)", 2f),
         M("Gimnasio", "gym_limpieza", "Limpieza del gimnasio", 0.5f),
         M("Gimnasio", "gym_mantener", "Mantenimiento del gimnasio", 1f),
+        M("Planta Atómica", "pla_operar", "Operar el reactor: arranque, subir a potencia y parada (consola)", 1f),
+        M("Planta Atómica", "pla_isotopos", "Irradiar molibdeno para el generador de Tc-99m del hospital", 1f),
+        M("Planta Atómica", "pla_ronda", "Ronda de la planta: resinas, bomba, torre y protección radiológica", 1f),
         M(Guard, "gua_recienllegados", "Vigilar a los recién llegados (no salen sin iniciación)", 2f, true),
         M(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true),
     };

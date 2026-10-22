@@ -99,6 +99,7 @@ public static class VirtualMissionSceneBuilder
             case "Gimnasio": return "Gym_Area";
             case "Construcción": return "Construction_Area";
             case "Cría": return "CubCare_Area";
+            case "Planta Atómica": return "AtomicPlant_Area";
             default: return null;
         }
     }

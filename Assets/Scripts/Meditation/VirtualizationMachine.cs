@@ -126,6 +126,9 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (areaName == "Enfermería") { opts.Add("Simulación: Irena Sendler, Varsovia 1942 (los niños del gueto)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_IrenaSendler")); }
         // MITO (docs/microcosmos-myrmidons.md): Egina y los mirmidones, sobre la Construcción agrandada.
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
+        // FÍSICA (docs/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
+        // de Newton, Curie y Einstein; Eratóstenes, el primer tramo, tiene el suyo.
+        if (areaName == "Planta Atómica" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes")) { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
         // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
         foreach (var (area, label, scene) in StoryScenes)
             if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
