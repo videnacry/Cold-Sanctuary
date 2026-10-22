@@ -3776,6 +3776,27 @@ public static partial class SampleSceneBuilder
     /// <summary>PANELES SOLARES EN LO MÁS ALTO (Berón 2026-10-22: que tomen el máximo de luz): una fila sobre postes de
     /// 3 m en un BORDE del piso más alto de cada edificio, mirando al sol. Busca un tramo de borde libre (fondo, luego los
     /// laterales; nunca el frente, por donde llega la escalera) para que los postes no caigan sobre muebles ni pasos.</summary>
+    /// <summary>Si un área tiene DENTRO un piso más alto (hijo montado con <c>StackOn</c>/<c>Elevate</c>, p. ej. la planta
+    /// veterinaria del hospital), ese es su piso más alto: se reconoce por su "Estructura_Elevada" y su tamaño por la losa.</summary>
+    static void ResolveInnerUpperFloors()
+    {
+        for (int i = 0; i < _roofs.Count; i++)
+        {
+            var (top, size, name) = _roofs[i];
+            if (top == null) continue;
+            Transform best = null; Vector2 bestSize = size;
+            foreach (Transform s in top.GetComponentsInChildren<Transform>())
+            {
+                if (s.name != "Estructura_Elevada" || s.parent == top || s.parent.position.y < top.position.y + 5f) continue;
+                if (best != null && s.parent.position.y <= best.position.y) continue;
+                Transform losa = s.Find("Losa");
+                if (losa == null) continue;
+                best = s.parent; bestSize = new Vector2(losa.localScale.x - 0.4f, losa.localScale.z - 0.4f);
+            }
+            if (best != null) _roofs[i] = (best, bestSize, name);
+        }
+    }
+
     static void PlaceRooftopSolar()
     {
         const float height = 3f, len = 6.6f;

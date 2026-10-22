@@ -122,6 +122,7 @@ public static partial class SampleSceneBuilder
     /// pista pasa a ser ese "piso más alto" (sus paneles solares van en su borde).</summary>
     static void PlaceStackedPads()
     {
+        ResolveInnerUpperFloors();   // pisos altos montados dentro de un área (la planta veterinaria del hospital)
         Transform root = GameObject.Find("Transporte_Plataformas")?.transform;
         foreach (var (ri, label, members) in _padGroups)
         {
