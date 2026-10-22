@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 574 tipos._
+_Total: 575 tipos._
 
 
 ## Animals
@@ -512,6 +512,7 @@ _Total: 574 tipos._
 - **SoulMarga** (class) — `Assets/Scripts/Progression/SoulMarga.cs` — Una "marga del alma" (docs/creature-stats.md §Progresión):
 - **SoulRecord** (class) — `Assets/Scripts/Microcosmos/SoulRecord.cs` — Ficha de ALMA del mundo insecto (docs/microcosmos-insects.md §13).
 - **SpeciesKarma** (class) — `Assets/Scripts/Soul/SpeciesKarma.cs` — Resuelve la RELACIÓN kármica base de un ser hacia una especie (docs/soul-relations-reincarnation §2).
+- **SpeciesScaleFix** (class) — `Assets/Scripts/World/SpeciesScaleFix.cs` — ESCALA REAL de los animales del santuario respecto al humano (≈ 1,75 m).
 - **SpellConsole** (class) — `Assets/Scripts/Control/SpellConsole.cs` — LANZADOR DE HECHIZOS POR TECLADO (docs/typed-spells-and-queues.md) — la otra cara del principio "toda acción es un hechizo":
 - **SpellDemoHUD** (class) — `Assets/Scripts/Microcosmos/SpellDemoHUD.cs` — HUD de PRUEBA (OnGUI) del sandbox `SpellDemo_AUTO`:
 - **SpellElement** (enum) — `Assets/Scripts/Transformation/ElementalSpell.cs` — Elemento de un hechizo elemental básico.
