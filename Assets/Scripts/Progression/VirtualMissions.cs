@@ -57,7 +57,7 @@ public static class VirtualMissions
             case "coc_sala": return new[] { "Recibir a los turistas", "Llevarles a su mesa", "Tomar nota", "Servir" };
             case "coc_atender": return new[] { "Tomar el pedido en la barra", "Recoger el plato del pase", "Servirlo" };
             case "coc_comedor": return new[] { "Recoger las mesas", "Limpiar el comedor", "Limpiar los aseos" };
-            case "hue_riego": return new[] { "Abrir el riego", "Regar los bancales", "Quitar las malas hierbas" };
+            case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Quitar las malas hierbas" };
             case "hue_cosecha": return new[] { "Cosechar lo maduro", "Llenar las cestas", "Llevarlas a la cocina" };
             case "hue_visitantes": return new[] { "Ver qué animal tiene hambre", "Darle de comer", "Proteger el cultivo" };
             case "yog_guia": return new[] { "Subir a la plataforma central", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };
@@ -75,7 +75,9 @@ public static class VirtualMissions
             case "lab_limpieza": return new[] { "Limpiar las superficies", "Esterilizar el material", "Ordenar el laboratorio" };
             case "con_almacen": return new[] { "Contar el material", "Contar las herramientas", "Apuntar lo que falta" };
             case "gym_mantener": return new[] { "Revisar las máquinas", "Engrasar y ajustar", "Probarlas" };
-            case "gua_recienllegados": return new[] { "Ir a la salida de la enfermería", "Vigilar a los recién llegados", "Devolver dentro al que salga" };
+            case "pla_operar": return new[] { "Coger el dosímetro", "Comprobar la piscina desde el puente", "Arrancar: sacar las barras hasta crítico", "Subir a potencia y vigilar el periodo", "Parar: meter las barras" };
+            case "pla_isotopos": return new[] { "Coger el dosímetro", "Mandar el molibdeno al núcleo", "Recuperar la cápsula", "Cargar el generador en la celda caliente", "Pasar por el pórtico de contaminación" };
+            case "pla_ronda": return new[] { "Leer la conductividad y cambiar resinas", "Revisar la bomba y el intercambiador", "Revisar la torre de refrigeración", "Medir la tasa de dosis con el Geiger" };
             case "gua_carnivoros": return new[] { "Recoger las raciones", "Patrullar el perímetro", "Dar las raciones a los carnívoros" };
             case "obra_material": return new[] { "Cargar el material en el almacén", "Llevarlo a la obra", "Descargarlo a pie de obra" };
             case "obra_trabajo": return new[] { "Montar la estructura de guadua", "Rellenar con bahareque", "Colocar los paneles" };
@@ -105,6 +107,9 @@ public static class VirtualMissions
             case "hos_quirofano": return new[] { "Quirofano", "Lavado_quirurgico", "Anestesia", "Quirofano", "UCI 1" };
             case "hos_uci": return new[] { "UCI 1", "UCI 2", "UCI 3", "Control_UCI" };
             case "hos_veterinaria": return new[] { "Bascula", "Mesa veterinaria", "Ecografo veterinario", "Box 1" };
+            case "pla_operar": return new[] { "Taquilla_dosimetros", "Puente_piscina", "Consola_reactor", "Consola_reactor", "Consola_reactor" };
+            case "pla_isotopos": return new[] { "Taquilla_dosimetros", "Conejo_neumatico", "Conejo_neumatico", "Celda_caliente", "Portico_contaminacion" };
+            case "pla_ronda": return new[] { "Purificacion", "Bomba_e_intercambiador", "Torre_refrigeracion", "Contador_Geiger" };
             default: return null;
         }
     }
@@ -121,6 +126,7 @@ public static class VirtualMissions
             case "Carne Cultivada": return new Color(0.9f, 0.75f, 0.75f);
             case "Gimnasio": return new Color(0.5f, 0.55f, 0.65f);
             case "Construcción": return new Color(0.7f, 0.6f, 0.45f);
+            case "Planta Atómica": return new Color(0.8f, 0.82f, 0.78f);
             default: return new Color(0.6f, 0.65f, 0.7f);
         }
     }

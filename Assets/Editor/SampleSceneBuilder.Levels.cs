@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos): en vez de una plataforma por área unida por puentes, una
 /// misma base puede tener
-/// - PLATAFORMAS HIJAS (entreplantas) de 2,2 m con ESCALERA INCLINADA, dentro de la plataforma: p. ej. las camas de la
+/// - PLATAFORMAS HIJAS (entreplantas) de 3 m con ESCALERA INCLINADA, dentro de la plataforma: p. ej. las camas de la
 ///   enfermería en una galería en U, que deja el suelo libre para pasillos anchos;
 /// - un PISO SUPERIOR a 10 m (no tapa la vista del de abajo), con columnas solo en el perímetro y escalera vertical
 ///   desde el piso de abajo: yoga + ballet, gimnasio + dojo, dos huertos en la misma base.
@@ -11,7 +11,8 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    public const float UpperFloorGap = 10f, MezzanineHeight = 2.2f;
+    public const float UpperFloorGap = 10f, MezzanineHeight = 3f;   // 3 m: debajo se pasa de pie sin chocar con la losa
+    const float StairAngle = 38f;   // pendiente de las escaleras inclinadas (una escalera de casa ronda los 35–40°)
     const float SetBack = 3f;   // el piso de arriba es 3 m más corto por +Z: ahí queda el pie de su escalera
 
     /// <summary>Pone <paramref name="upper"/> como PISO SUPERIOR de <paramref name="lower"/> (ya elevada), 10 m más arriba.
@@ -47,29 +48,16 @@ public static partial class SampleSceneBuilder
         return top;
     }
 
-    /// <summary>Barandilla de 1 m en el borde de una entreplanta (de <paramref name="from"/> a <paramref name="to"/>, en
-    /// coordenadas del padre, a la altura de la cara de arriba), con barrera invisible para no caer.</summary>
-    static void DeckRail(Transform parent, Vector3 from, Vector3 to)
-    {
-        Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
-        Vector3 mid = (from + to) * 0.5f, d = to - from;
-        Solid(parent, mid + Vector3.up * 1f, new Vector3(Mathf.Abs(d.x) + 0.06f, 0.06f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla");
-        Transform bar = Solid(parent, mid + Vector3.up * 1.1f, new Vector3(Mathf.Abs(d.x) + 0.05f, 2.2f, Mathf.Abs(d.z) + 0.05f), wood, "Barandilla_Barrera");
-        bar.GetComponent<Renderer>().enabled = false;
-        int posts = Mathf.Max(2, Mathf.RoundToInt(d.magnitude / 1.2f));
-        for (int i = 0; i <= posts; i++) KitchenProps.C(parent, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * 0.5f, new Vector3(0.05f, 1f, 0.05f), woodDark, 0f, "Balaustre");
-    }
-
-    /// <summary>ESCALERA INCLINADA (30°) de <paramref name="h"/> m: el pie en <paramref name="foot"/> (en el suelo del padre)
+    /// <summary>ESCALERA INCLINADA (<see cref="StairAngle"/>) de <paramref name="h"/> m: el pie en <paramref name="foot"/> (en el suelo del padre)
     /// y sube hacia <paramref name="yaw"/>. Rampa invisible (para andar y para el NavMesh) + peldaños, zancas y pasamanos.</summary>
     static void InclinedStair(Transform parent, string name, Vector3 foot, float yaw, float h = MezzanineHeight, float width = 1.4f)
     {
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
-        float run = h / Mathf.Tan(30f * Mathf.Deg2Rad), len = Mathf.Sqrt(run * run + h * h);
+        float run = h / Mathf.Tan(StairAngle * Mathf.Deg2Rad), len = Mathf.Sqrt(run * run + h * h);
         Transform s = new GameObject(name).transform; s.SetParent(parent, false);
         s.localPosition = foot; s.localRotation = Quaternion.Euler(0f, yaw, 0f);
         Transform ramp = Solid(s, new Vector3(0f, h * 0.5f, run * 0.5f), new Vector3(width, 0.05f, len), wood, "Rampa");
-        ramp.localRotation = Quaternion.Euler(-30f, 0f, 0f);
+        ramp.localRotation = Quaternion.Euler(-StairAngle, 0f, 0f);
         ramp.GetComponent<Renderer>().enabled = false;
         int steps = Mathf.CeilToInt(h / 0.18f);
         for (int i = 0; i < steps; i++)
@@ -80,13 +68,13 @@ public static partial class SampleSceneBuilder
         for (int k = -1; k <= 1; k += 2)
         {
             Transform z1 = KitchenProps.C(s, new Vector3(k * width * 0.5f, h * 0.5f, run * 0.5f), new Vector3(0.08f, 0.25f, len), woodDark, 0f, "Zanca");
-            z1.localRotation = Quaternion.Euler(-30f, 0f, 0f);
+            z1.localRotation = Quaternion.Euler(-StairAngle, 0f, 0f);
             Transform rail = KitchenProps.C(s, new Vector3(k * width * 0.5f, h * 0.5f + 0.9f, run * 0.5f), new Vector3(0.05f, 0.05f, len), wood, 0f, "Pasamanos");
-            rail.localRotation = Quaternion.Euler(-30f, 0f, 0f);
+            rail.localRotation = Quaternion.Euler(-StairAngle, 0f, 0f);
         }
         WorldLabel wl = s.gameObject.AddComponent<WorldLabel>(); wl.text = "Escalera"; wl.height = h + 0.6f;
     }
 
     /// <summary>Largo (en planta) de una escalera inclinada de <paramref name="h"/> m.</summary>
-    static float StairRun(float h = MezzanineHeight) => h / Mathf.Tan(30f * Mathf.Deg2Rad);
+    static float StairRun(float h = MezzanineHeight) => h / Mathf.Tan(StairAngle * Mathf.Deg2Rad);
 }

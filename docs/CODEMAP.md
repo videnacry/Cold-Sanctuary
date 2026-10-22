@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 550 tipos._
+_Total: 574 tipos._
 
 
 ## Animals
@@ -26,6 +26,8 @@ _Total: 550 tipos._
 - **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
 - **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
 - **GrasshopperBehavior** (class) — `Assets/Animals/Grasshopper/GrasshopperBehavior.cs`
+- **Habit** (class) — `Assets/Animals/Habit.cs` — HÁBITO NATURAL (docs/natural-interactions.md):
+- **HabitEffect** (enum) — `Assets/Animals/Ethogram.cs` — Qué le hace al ser una actividad de su etograma.
 - **LadybugBehavior** (class) — `Assets/Animals/Ladybug/LadybugBehavior.cs`
 - **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
@@ -68,9 +70,11 @@ _Total: 550 tipos._
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
+- **PhysicsSceneBuilder** (class) — `Assets/Editor/PhysicsSceneBuilder.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
 - **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
 - **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` — PLANTA ATÓMICA (docs/atomic-plant.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Hospital.cs` — EL HOSPITAL (antes Enfermería; docs/hospital.md).
@@ -80,6 +84,7 @@ _Total: 550 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE ENTRE PLATAFORMAS (docs/transporte-alfombras.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
+- **ScaleAudit** (class) — `Assets/Editor/ScaleAudit.cs` — AUDITORÍA DE ESCALA (menú):
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.cs` — MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias.md):
@@ -95,6 +100,7 @@ _Total: 550 tipos._
 - **AddictionState** (class) — `Assets/Scripts/Soul/AddictionState.cs` — ADICCIÓN (docs/apremios-guardian-observacion.md §3) — la sombra del estupefaciente.
 - **Adolescence** (class) — `Assets/Scripts/LifeStage/Adolescence.cs`
 - **Adulthood** (class) — `Assets/Scripts/LifeStage/Adulthood.cs`
+- **AffordanceKind** (enum) — `Assets/Scripts/World/Affordance.cs` — Qué ofrece un elemento del entorno a un ser vivo (docs/natural-interactions.md).
 - **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
 - **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
 - **Anima** (class) — `Assets/Scripts/Anima.cs`
@@ -191,6 +197,7 @@ _Total: 550 tipos._
 - **ComponentExt** (class) — `Assets/Scripts/Control/ComponentExt.cs` — `GetComponent&lt;T&gt;() ?? AddComponent&lt;T&gt;()` NO funciona en el editor:
 - **ConfirmationPanel** (class) — `Assets/Scripts/UI/ConfirmationPanel.cs` — Modal yes/no confirmation panel — separate from the linear DialogueSystem.
 - **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/jornada-y-rotacion.md):
+- **ContaminationMonitor** (class) — `Assets/Scripts/AtomicPlant/ContaminationMonitor.cs` — PÓRTICO DE CONTAMINACIÓN de manos y pies (salida de la zona controlada):
 - **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
 - **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §...
 - **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
@@ -208,6 +215,7 @@ _Total: 550 tipos._
 - **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
 - **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
 - **CulturedMeatLab** (class) — `Assets/Scripts/World/CulturedMeatLab.cs` — LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/carne-cultivada.md):
+- **CurieElectrometerLesson** (class) — `Assets/Scripts/AtomicPlant/CurieElectrometerLesson.cs` — EL MÉTODO DE MARIE CURIE (1898, «Rayos emitidos por los compuestos del uranio y del torio», Comptes Rendus 126):
 - **DailyPoses** (class) — `Assets/Scripts/Body/DailyLife.cs` — VIDA DIARIA del cuerpo humano (docs/vida-diaria.md):
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
@@ -220,9 +228,11 @@ _Total: 550 tipos._
 - **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
 - **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A).
 - **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5):
+- **DosimeterRack** (class) — `Assets/Scripts/AtomicPlant/DosimeterRack.cs` — TAQUILLA DE DOSÍMETROS (entrada de la planta):
 - **DrivePreparation** (class) — `Assets/Scripts/DrivePreparation.cs`
 - **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/kitchen-simulation.md §6).
 - **EcosystemObservation** (class) — `Assets/Scripts/EcosystemObservation.cs` — Misión-OBSERVACIÓN (WASD) del mundo vivo (docs/testing-checklist.md §39).
+- **EinsteinMassLesson** (class) — `Assets/Scripts/AtomicPlant/EinsteinMassLesson.cs` — E = mc² (Einstein, 1905:
 - **ElementalTone** (enum) — `Assets/Scripts/Mind/ElementalTone.cs` — Tono elemental de un ánima (personalidad/temperamento):
 - **ElementAmount** (class) — `Assets/Scripts/Composition/Constitution.cs` — Cantidad de un elemento (símbolo de la tabla periódica, `Chemistry`).
 - **ElementCost** (class) — `Assets/Scripts/Transformation/MagicReserves.cs` — Coste de un hechizo en elementos (docs/magic-metabolism-progression.md §1).
@@ -254,6 +264,7 @@ _Total: 550 tipos._
 - **FoodContainer** (class) — `Assets/Scripts/Kitchen/FoodContainer.cs` — Contenedor de servicio (docs/kitchen-simulation.md §3/§6):
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
+- **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO MÍNIMO ENTRE MUEBLES (Berón 2026-10-22:
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
 - **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):
@@ -291,6 +302,7 @@ _Total: 550 tipos._
 - **HoneydewProducer** (class) — `Assets/Scripts/Microcosmos/HoneydewProducer.cs` — El PULGÓN produce **melaza** (honeydew) cada cierto tiempo — el "líquido codiciado" por el que las hormigas lo cuidan y ordeñan (**mirmecofilia**, docs/microcosmos-insects.md §2).
 - **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
 - **HospitalService** (enum) — `Assets/Scripts/World/HospitalStation.cs` — Servicios de un hospital aislado (docs/hospital.md):
+- **HotCell** (class) — `Assets/Scripts/AtomicPlant/HotCell.cs` — LA CELDA CALIENTE:
 - **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
 - **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
@@ -340,17 +352,19 @@ _Total: 550 tipos._
 - **MagicAura** (class) — `Assets/Scripts/Transformation/MagicAura.cs` — Aura mágica de un `Anima` (docs/stats-as-truth.md §2):
 - **MagicSandboxDriver** (class) — `Assets/Scripts/Transformation/MagicSandboxDriver.cs` — Driver de PRUEBA (OnGUI) del bucle de magia para el sandbox `Magia_AUTO` (docs/testing-checklist.md §15b/c/f).
 - **Magnate** (class) — `Assets/Scripts/World/Magnate.cs` — LA MAGNATE (docs/anyma-factory-and-control.md §Magnate) — la maestra del santuario.
+- **MagnateWarden** (class) — `Assets/Scripts/World/MagnateWarden.cs` — LA MAGNATE GUARDA LOS PUESTOS (Berón 2026-10-22).
 - **MarineGuard** (class) — `Assets/Scripts/World/MarineGuard.cs` — LOS CETÁCEOS NO PISAN EL HIELO:
 - **MarineLife** (class) — `Assets/Scripts/World/MarineLife.cs` — VIDA MARINA (focas, ballenas, orcas):
 - **MaterializationExecutor** (class) — `Assets/Scripts/UI/Palette/MaterializationExecutor.cs`
 - **MaterialStore** (class) — `Assets/Scripts/World/MaterialStore.cs` — ALMACÉN DE MATERIAL de Construcción (docs/construccion-sostenible.md).
+- **MedicalIsotopes** (class) — `Assets/Scripts/AtomicPlant/PneumaticTransfer.cs` — ISÓTOPOS PARA EL HOSPITAL (no hay otro a miles de km):
 - **MeditationMob** (class) — `Assets/Scripts/Meditation/MeditationMob.cs` — Base for mobs that live inside a meditation / Microcosmos mission (docs §8).
 - **MeditationReward** (class) — `Assets/Scripts/Meditation/MeditationReward.cs` — Reusable reward block for meditation / Microcosmos missions (docs §7).
 - **MeditationSession** (class) — `Assets/Scripts/Meditation/MeditationSession.cs` — Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
 - **MicroFood** (class) — `Assets/Scripts/Microcosmos/MicroFood.cs` — Un RESTO DE COMIDA (o una hoja, en el huerto) que las hormigas recogen y llevan a la guarida.
-- **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (microcosmos de la Cocina):
+- **MicroForager** (class) — `Assets/Scripts/Microcosmos/MicroForager.cs` — RECOLECTORA de la tribu (los mirmidones):
 - **MicroGardener** (class) — `Assets/Scripts/Microcosmos/MicroGardener.cs` — CULTIVADORA DE HONGO (microcosmos del Huerto):
 - **MicroLair** (class) — `Assets/Scripts/Microcosmos/MicroLair.cs` — La GUARIDA de la tribu:
 - **MicroLeader** (class) — `Assets/Scripts/Microcosmos/MicroLeader.cs` — LA LÍDER de la tribu (Medea renacida, microcosmos de la Cocina):
@@ -384,6 +398,7 @@ _Total: 550 tipos._
 - **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
 - **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
 - **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md):
+- **NewtonCannonLesson** (class) — `Assets/Scripts/AtomicPlant/NewtonCannonLesson.cs` — EL CAÑÓN DE NEWTON (su «Tratado del sistema del mundo»; gravitación de los Principia, 1687):
 - **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
 - **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.
 - **NutrientNeed** (class) — `Assets/Scripts/Composition/Metabolism.cs` — Necesidad de un NUTRIENTE (proteína/grasa/carbohidrato/minerales):
@@ -409,10 +424,15 @@ _Total: 550 tipos._
 - **PerceptChannel** (enum) — `Assets/Scripts/Soul/PerceptChannel.cs` — CANALES DE INFORMACIÓN de la percepción (docs/consciousness-mechanics.md §3) — QUÉ se extrae al observar, con independencia de POR QUÉ órgano.
 - **PerfProbe** (class) — `Assets/Scripts/UI/PerfProbe.cs` — SONDA DE RENDIMIENTO (consola:
 - **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
+- **PersonalDosimeter** (class) — `Assets/Scripts/AtomicPlant/PersonalDosimeter.cs` — EL DOSÍMETRO PERSONAL (se recoge en la taquilla de la entrada):
 - **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
 - **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
+- **PhysicsHistoryMission** (class) — `Assets/Scripts/AtomicPlant/PhysicsHistoryMission.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
+- **PhysicsLesson** (class) — `Assets/Scripts/AtomicPlant/PhysicsLesson.cs` — UNA LECCIÓN DE FÍSICA del microcosmos de la planta atómica (docs/atomic-plant.md §Microcosmos):
 - **Phytoplankton** (class) — `Assets/Scripts/World/Phytoplankton.cs` — FITOPLANCTON:
 - **PlaneMessenger** (class) — `Assets/Scripts/Prologue/PlaneMessenger.cs` — Mensajes que cruzan entre planos (docs/area-progression.md "Apertura"):
+- **PlantEquipment** (class) — `Assets/Scripts/AtomicPlant/PlantEquipment.cs` — LOS EQUIPOS DE LA PLANTA que no son la consola, cada uno con su trabajo real (F):
+- **PlantNotice** (class) — `Assets/Scripts/AtomicPlant/PlantNotice.cs` — Avisos de la planta atómica en pantalla (vía , que también los deja en el log).
 - **PlayableCreature** (class) — `Assets/Scripts/Farming/PlayableCreature.cs` — Farming NO-violento (docs/world-topology-and-planes.md §4.1).
 - **PlayController** (class) — `Assets/Scripts/Farming/PlayController.cs` — Input de "juego" del jugador para el farming no-violento (docs/world-topology-and-planes.md §4.1, MVP).
 - **PlayerBrain** (class) — `Assets/Scripts/Control/PlayerBrain.cs` — El input del JUGADOR como un cerebro más (docs/anima-architecture.md §11.5:
@@ -422,6 +442,7 @@ _Total: 550 tipos._
 - **PlayerCore** (class) — `Assets/Scripts/Control/PlayerCore.cs` — El "alma"/input PERSISTENTE del jugador (docs/anima-architecture.md §11.5).
 - **PlayerStats** (class) — `Assets/Scripts/Player/PlayerStats.cs` — Holds all runtime stats for the player.
 - **PlayerTarget** (class) — `Assets/Scripts/PlayerTarget.cs` — Añadir al GameObject del jugador para que los animales puedan tratarlo como presa o amenaza.
+- **PolarHabitats** (class) — `Assets/Scripts/World/PolarHabitats.cs` — HÁBITATS DEL SANTUARIO DE HIELO (docs/natural-interactions.md):
 - **PolarUnderstory** (class) — `Assets/Scripts/World/PolarUnderstory.cs` — SOTOBOSQUE POLAR (docs/ice-sanctuary-ecology.md):
 - **PopulationPlan** (class) — `Assets/Scripts/World/PopulationPlan.cs` — EQUILIBRIO DE ESPECIES (docs/ice-sanctuary-ecology.md):
 - **PositionEvaluation** (struct) — `Assets/Scripts/Asana/PositionEvaluation.cs` — How well a single body part position was executed during an asana attempt.
@@ -441,10 +462,13 @@ _Total: 550 tipos._
 - **PullSpell** (class) — `Assets/Scripts/Microcosmos/PullSpell.cs` — Hechizo JALAR — Kushal atrae a otro ser hacia sí inyectando un en el del objetivo.
 - **QuarkReserve** (class) — `Assets/Scripts/Transformation/QuarkReserve.cs` — SUSTRATO DE QUARKS del S4 (docs/magic-metabolism-progression.md §16).
 - **QueuedSpell** (class) — `Assets/Scripts/Control/QueuedSpell.cs` — Un HECHIZO EN COLA (docs/typed-spells-and-queues.md):
+- **RadiationSource** (class) — `Assets/Scripts/AtomicPlant/RadiationSource.cs` — UNA FUENTE DE RADIACIÓN en la planta atómica (docs/atomic-plant.md §Protección radiológica):
 - **ReachGoalMission** (class) — `Assets/Scripts/ReachGoalMission.cs` — Primera misión JUGABLE (WASD) que además es un TEST del juego real (docs/testing-checklist.md §33).
+- **ReactorConsole** (class) — `Assets/Scripts/AtomicPlant/ReactorConsole.cs` — LA CONSOLA DEL REACTOR (sala de control):
 - **RealityShiftController** (class) — `Assets/Scripts/Meditation/RealityShiftController.cs` — Generalizes KitchenScaleController:
 - **Refugee** (class) — `Assets/Scripts/Compassion/Refugee.cs` — Una persona a la que hay que PONER A SALVO en las simulaciones de compasión (docs/compassion-simulations.md):
 - **RepairTicket** (class) — `Assets/Scripts/Virtualization/RepairTicket.cs` — Un TICKET de avería (docs/forge-simulation.md §5):
+- **ResearchReactor** (class) — `Assets/Scripts/AtomicPlant/ResearchReactor.cs` — EL REACTOR DE LA PLANTA ATÓMICA (docs/atomic-plant.md):
 - **Respawn** (class) — `Assets/Scripts/Respawn.cs`
 - **RestaurantKitchen** (class) — `Assets/Scripts/Kitchen/RestaurantKitchen.cs` — GESTOR del RESTAURANTE (cocina jugable, docs/kitchen-simulation.md + spell-genesis §cocina).
 - **RestaurantServiceGame** (class) — `Assets/Scripts/Kitchen/RestaurantServiceGame.cs` — VIRTUALIZACIÓN «SERVICIO DEL RESTAURANTE» (escena Virtual_coc_servicio):

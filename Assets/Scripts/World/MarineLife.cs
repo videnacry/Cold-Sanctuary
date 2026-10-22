@@ -15,7 +15,7 @@ using UnityEngine.AI;
 /// </summary>
 public class MarineLife : MonoBehaviour
 {
-    static readonly Vector3 Lagoon = new Vector3(60f, 0f, 25f);   // = PolarLandscapeBuilder.Lagoon
+    public static readonly Vector3 Lagoon = new Vector3(60f, 0f, 25f);   // = PolarLandscapeBuilder.Lagoon
     const float LagoonRadius = 26f, SwimY = -1f;
 
     public float speed = 2f;
@@ -27,6 +27,9 @@ public class MarineLife : MonoBehaviour
     bool _onIce;
     Vector3 _beach;
     float _angleSeed, _nextKill;
+    // Etograma marino (Ethogram, docs/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
+    Affordance _haul, _spot;
+    float _nextSpot, _spotUntil;
     static int _count;
 
     public bool OnIce => _onIce;
@@ -59,6 +62,7 @@ public class MarineLife : MonoBehaviour
                 bool wake = (_a.hungry >= 0.2f) || (!night && Time.time > _restUntil);
                 if (!wake) { Settle(); return; }
                 _onIce = false; _restCooldown = Time.time + Random.Range(40f, 90f);
+                if (_haul != null) { _haul.Release(_a); _haul = null; _beach = Vector3.zero; }
                 _target = Lagoon + Random.insideUnitSphere * 10f; _target.y = SwimY;
             }
             else if ((night || (_a.hungry < -0.2f && Time.time > _restCooldown)) && _a.lifeStage != LifeStage.child)
@@ -111,6 +115,7 @@ public class MarineLife : MonoBehaviour
             Animal male = NearestAdult(Sex.male);
             if (male != null) { Move(male.transform.position, speed, false); return; }
         }
+        if (Habitat()) return;
         if (Time.time > _nextPick || (transform.position - _target).sqrMagnitude < 1f)
         {
             Vector2 r = Random.insideUnitCircle * LagoonRadius;
@@ -146,9 +151,46 @@ public class MarineLife : MonoBehaviour
         return dist;
     }
 
+    // SACIADOS: lo que su especie hace con el entorno marino (Ethogram). Foca → sube a RESPIRAR por un respiradero del
+    // hielo (y lo mantiene abierto; el oso que acecha allí la ve salir). Ballena → se FROTA contra la grava para mudar.
+    // Orca → patrulla junto a los témpanos donde descansan las focas. true = está en ello.
+    bool Habitat()
+    {
+        string sp = _a.SpeciesName;
+        if (_spot == null)
+        {
+            if (Time.time < _nextSpot) return false;
+            _nextSpot = Time.time + Random.Range(40f, 100f);
+            AffordanceKind k = sp == "Seal" ? AffordanceKind.BreathingHole : sp == "Whale" ? AffordanceKind.RubbingGravel : AffordanceKind.HaulOut;
+            _spot = Affordance.Nearest(k, transform.position, 90f, k == AffordanceKind.HaulOut ? null : _a);
+            if (sp == "Orca" && _spot != null && (_spot.lastUser == null || Time.time - _spot.lastUseTime > 200f)) _spot = null;   // solo los témpanos con focas recientes
+            if (_spot == null) return false;
+            _spotUntil = -1f;
+        }
+        Vector3 at = _spot.transform.position;
+        if (sp == "Orca") { Vector3 off = (Lagoon - at); off.y = 0f; at += off.normalized * 4f; }
+        at.y = SwimY;
+        if (_spotUntil < 0f)
+        {
+            if (Move(at, speed, false) > 1.2f) return true;
+            if (sp != "Orca" && !_spot.Occupy(_a)) { _spot = null; return false; }
+            _spotUntil = Time.time + (sp == "Seal" ? Random.Range(10f, 18f) : Random.Range(15f, 30f));
+            Debug.Log($"[Marinos] «{name}» {(sp == "Seal" ? "sale a respirar por su respiradero" : sp == "Whale" ? "se frota contra la grava para mudar la piel" : "patrulla junto a los témpanos de las focas")}.");
+        }
+        if (sp == "Seal") { transform.position = new Vector3(at.x, -0.25f, at.z); _spot.Touch(_a); }   // asoma la cabeza: el oso que acecha la ve
+        else if (sp == "Whale") transform.rotation *= Quaternion.Euler(0f, 0f, 40f * Time.deltaTime);   // rueda sobre la grava
+        if (Time.time < _spotUntil) return true;
+        _spot.Release(_a); _spot = null;
+        return false;
+    }
+
     // Un punto de la orilla de la laguna (hielo a ras del agua) en una dirección propia de cada foca, separado de las demás.
+    // Primero, un DESCANSADERO (HaulOut) libre del entorno; si no hay, uno propio por su ángulo.
     Vector3 FindBeach()
     {
+        _haul = Affordance.Nearest(AffordanceKind.HaulOut, transform.position, 120f, _a);
+        if (_haul != null && _haul.Occupy(_a)) { _haul.Touch(_a); return _haul.transform.position + Vector3.up * 0.25f; }
+        _haul = null;
         float baseAngle = _angleSeed + Random.Range(-15f, 15f);
         for (int tries = 0; tries < 12; tries++)
         {

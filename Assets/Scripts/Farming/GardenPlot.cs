@@ -56,7 +56,7 @@ public class GardenPlot : MonoBehaviour
                 // la zanahoria se espantan mutuamente la mosca; las aromáticas en flor atraen a los depredadores de plagas.
                 Rows(hx, hz, 1.8f, new[]
                 {
-                    // (el bancal da para ~6 filas: cada fila alterna 2–3 especies que se llevan bien)
+                    // (~6 filas: cada fila alterna 2–3 especies que se llevan bien)
                     new[] { GardenCrop.Kind.Tomate, GardenCrop.Kind.Albahaca, GardenCrop.Kind.Pepino },
                     new[] { GardenCrop.Kind.Zanahoria, GardenCrop.Kind.Cebolla, GardenCrop.Kind.Perejil },
                     new[] { GardenCrop.Kind.Col, GardenCrop.Kind.Cilantro, GardenCrop.Kind.Frutilla },
@@ -166,10 +166,9 @@ public class GardenPlot : MonoBehaviour
         for (float z = -hz + 1.2f; z <= hz - 1.2f; z += rowGap, r++)
         {
             GardenCrop.Kind[] row = rows[r % rows.Length];
-            RaisedBed(new Vector3(0f, 0f, z), size.x - 1.6f, 0.9f);
             int i = 0;
             for (float x = -hx + 1.2f; x <= hx - 1.2f; x += step * Spacing(row[0]), i++)
-                Plant(row[i % row.Length], new Vector3(x, BedHeight, z + R(-0.1f, 0.1f)));
+                Plant(row[i % row.Length], new Vector3(x, 0f, z + R(-0.1f, 0.1f)));
         }
     }
 
@@ -224,26 +223,7 @@ public class GardenPlot : MonoBehaviour
     }
 
 
-    // BANCAL ELEVADO: un cajón de tablas (30 cm) relleno de tierra oscura con surcos, como los de un huerto real. Antes era
-    // una losa plana del color del suelo y no se distinguía. La tierra levantada se calienta antes y drena mejor (en el hielo,
-    // además, aísla las raíces del frío).
-    public const float BedHeight = 0.3f;
-
-    void RaisedBed(Vector3 local, float length, float width)
-    {
-        Color wood = new Color(0.55f, 0.42f, 0.30f), soil = new Color(0.30f, 0.22f, 0.16f), furrow = new Color(0.22f, 0.16f, 0.12f);
-        float t = 0.06f, h = BedHeight;
-        Bed(local + new Vector3(0f, 0f, -width * 0.5f), new Vector3(length, h, t), wood);   // tablas largas
-        Bed(local + new Vector3(0f, 0f,  width * 0.5f), new Vector3(length, h, t), wood);
-        Bed(local + new Vector3(-length * 0.5f, 0f, 0f), new Vector3(t, h, width + t), wood);   // cabeceras
-        Bed(local + new Vector3( length * 0.5f, 0f, 0f), new Vector3(t, h, width + t), wood);
-        for (float x = -length * 0.5f + 1.5f; x < length * 0.5f - 0.5f; x += 1.5f)            // estacas que sujetan las tablas
-            for (int s = -1; s <= 1; s += 2)
-                Bed(local + new Vector3(x, 0f, s * (width * 0.5f + t)), new Vector3(t, h + 0.06f, t), wood * 0.85f);
-        Bed(local, new Vector3(length - t, h - 0.03f, width - t), soil);                      // la tierra
-        for (int k = -1; k <= 1; k += 2)                                                       // dos surcos a lo largo
-            Bed(local + new Vector3(0f, h - 0.03f, k * width * 0.22f), new Vector3(length - 0.3f, 0.015f, 0.08f), furrow);
-    }
+    // (Sin bancales elevados: eran solo adorno y no se veían bien — Berón, 2026-10-22. Las filas van directas en el suelo.)
 
     // Lámina de agua somera de una terraza de arroz (se ve el agua entre las matas).
     void PaddyWater(Vector3 local, float length, float depth)

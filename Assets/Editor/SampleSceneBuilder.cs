@@ -130,12 +130,15 @@ public static partial class SampleSceneBuilder
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
+        PlaceStackedPads();    // pistas de alfombras como piso de arriba de su área mayor (ya con los muebles puestos)
+        PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
+        FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -154,6 +157,8 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las simulaciones de compasión: {e.Message}"); }
         try { MythSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena de Egina (mirmidones): {e.Message}"); }
+        try { PhysicsSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar el microcosmos de la planta atómica: {e.Message}"); }
         try { StorySceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
 
@@ -220,6 +225,8 @@ public static partial class SampleSceneBuilder
                 catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
             }
             DressHumanoids();
+            PlaceStackedPads();
+            PlaceRooftopSolar();
             BakeNavMesh();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             if (!buildScenes.Exists(s => s.path == path)) buildScenes.Add(new EditorBuildSettingsScene(path, true));
@@ -268,6 +275,7 @@ public static partial class SampleSceneBuilder
         AddAreaProducer("VehicleWorkshop_Area",  SanctuaryResource.Materials, 14f, 16f);
         AddAreaProducer("TextileStudio_Area",    SanctuaryResource.Materials, 10f, 14f);
         AddAreaProducer("Infirmary_Area",        SanctuaryResource.Research,   8f, 12f);
+        AddAreaProducer("AtomicPlant_Area",      SanctuaryResource.Research,   6f, 10f);   // isótopos, análisis y física
 
         Debug.Log("[SampleSceneBuilder] Economía de santuario cableada: SanctuaryResources + HUD + AreaProducers por área.");
     }
@@ -2314,6 +2322,19 @@ public static partial class SampleSceneBuilder
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
         under.AddComponent<PolarUnderstory>();
+
+        // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
+        // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
+        GameObject hab = new GameObject("HabitatsPolares_AUTO");
+        hab.transform.SetParent(root, false);
+        PolarHabitats ph = hab.AddComponent<PolarHabitats>();
+        var penguins = System.Array.Find(PolarLandscapeBuilder.Islands, isl => isl.name == "Centro:Pinguinos");
+        Vector3 pc = new Vector3(penguins.x, 0f, penguins.z), toLagoon = (PolarLandscapeBuilder.Lagoon - pc); toLagoon.y = 0f;
+        ph.pebbleBeach = pc + toLagoon.normalized * (penguins.r - 4f);   // la orilla de la colonia que da a la laguna
+        var dens = new System.Collections.Generic.List<Vector3>();
+        foreach (var lobe in PolarLandscapeBuilder.Islands)
+            if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
+        ph.denSites = dens.ToArray();
     }
 
     static void BakeNavMesh()
@@ -3043,7 +3064,9 @@ public static partial class SampleSceneBuilder
         // las ramas lo esquivan, como en la arboleda residencial. Las áreas apiladas (el textil sobre la Construcción a
         // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
         var volumes = new List<Bounds>();
-        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
+        var built = new List<Component>(Object.FindObjectsOfType<SanctuaryArea>());
+        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las pistas de alfombras, encima de las áreas
+        foreach (Component sa in built)
         {
             Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
             Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
@@ -3537,7 +3560,7 @@ public static partial class SampleSceneBuilder
         var upper = new Dictionary<int, int> { { Ballet, 2 }, { Dojo, 7 }, { Textile, 6 } };   // piso de arriba → el de abajo
         for (int i = 0; i < sizes.Length; i++) if (!upper.ContainsKey(i)) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         foreach (var kv in upper) sizes[kv.Key] = StackOn(areas[kv.Key].transform, areas[kv.Value].transform, sizes[kv.Value]);
-        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también, con sus bancales
+        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también
         UpperGarden(areas[areas.Count - 1].transform, new Vector2(24f, 20f));         // y encima, a 10 m, el segundo huerto
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
@@ -3566,11 +3589,20 @@ public static partial class SampleSceneBuilder
             if (upper.ContainsKey(i)) continue;
             ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
         }
-        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
-        // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
+        _roofs.Clear();   // piso más alto de cada edificio: ahí van su pista de alfombras (si le toca) y sus paneles solares
+        // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física). Va aparte de la
+        // lista de arriba para no mover los índices (el Huerto es el último).
+        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant); groundSizes.Add(AtomicPlantSize);
         for (int i = 0; i < sizes.Length; i++)
-            if (!upper.ContainsKey(i))
-            SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
+        {
+            if (upper.ContainsKey(i)) continue;
+            int top = i; foreach (var kv in upper) if (kv.Value == i) top = kv.Key;
+            _roofs.Add((areas[top].transform, sizes[top], areas[i].displayName));
+        }
+        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
+        // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
+        // reciben y sin ocupar suelo): se colocan al final del Build (`PlaceRooftopSolar`), cuando ya están los muebles,
+        // para buscar un borde libre. Y un campo en el hub.
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
         return areas.ToArray();
@@ -3629,12 +3661,12 @@ public static partial class SampleSceneBuilder
     // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
     // la flora) y se sube por una ESCALERA VERTICAL (con su enlace del NavMesh) desde el lado abierto (+Z).
-    // Barandilla de 1 m alrededor (el contorno bajo de antes no basta a 6 m de altura).
+    // Borde con barrera invisible (sin barandilla visible).
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
 
-    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera vertical.
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barrera invisible y escalera vertical.
     /// <paramref name="groundBelow"/> = false para un PISO SUPERIOR (debajo hay otra plataforma, no el suelo: sin colchón de
     /// musgo); <paramref name="ladderX"/> desplaza la escalera (y el hueco de la barandilla) a lo largo del lado +Z.</summary>
     static void Elevate(Transform t, Vector2 size, float h, bool groundBelow = true, float ladderX = 0f)
@@ -3652,16 +3684,14 @@ public static partial class SampleSceneBuilder
         Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
         Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
 
-        // Barandilla (1 m) en los tres lados cerrados y a ambos lados de la escalera.
-        float rail = 1f;
+        // SIN BARANDILLA VISIBLE (Berón, 2026-10-22: se quitan las barandillas de las áreas humanas): en el borde exterior
+        // solo queda una BARRERA INVISIBLE de 4 m, en los tres lados cerrados y a ambos lados de la escalera, para que
+        // nadie caiga de 12 m; no tapa la vista ni ocupa sitio dentro del área.
         void Rail(Vector3 from, Vector3 to)
         {
             Vector3 mid = (from + to) * 0.5f, d = to - from;
-            Transform r = Solid(s, mid + Vector3.up * rail, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
             Transform low = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");   // 4 m (ni saltando): no se salta
-            low.GetComponent<Renderer>().enabled = false;   // barrera invisible: nadie cae, la vista no se tapa
-            int posts = Mathf.Max(2, Mathf.RoundToInt(d.magnitude / 1.5f));
-            for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * rail * 0.5f, new Vector3(0.07f, rail, 0.07f), woodDark, 0f, "Balaustre");
+            low.GetComponent<Renderer>().enabled = false;
         }
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
@@ -3674,6 +3704,68 @@ public static partial class SampleSceneBuilder
 
         // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
         Ladder.Build(s, new Vector3(ladderX, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
+    }
+
+    // Piso más alto de cada edificio (y su tamaño), para sus paneles solares.
+    static readonly List<(Transform top, Vector2 size, string name)> _roofs = new List<(Transform, Vector2, string)>();
+
+    /// <summary>PANELES SOLARES EN LO MÁS ALTO (Berón 2026-10-22: que tomen el máximo de luz): una fila sobre postes de
+    /// 3 m en un BORDE del piso más alto de cada edificio, mirando al sol. Busca un tramo de borde libre (fondo, luego los
+    /// laterales; nunca el frente, por donde llega la escalera) para que los postes no caigan sobre muebles ni pasos.</summary>
+    /// <summary>Si un área tiene DENTRO un piso más alto (hijo montado con <c>StackOn</c>/<c>Elevate</c>, p. ej. la planta
+    /// veterinaria del hospital), ese es su piso más alto: se reconoce por su "Estructura_Elevada" y su tamaño por la losa.</summary>
+    static void ResolveInnerUpperFloors()
+    {
+        for (int i = 0; i < _roofs.Count; i++)
+        {
+            var (top, size, name) = _roofs[i];
+            if (top == null) continue;
+            Transform best = null; Vector2 bestSize = size;
+            foreach (Transform s in top.GetComponentsInChildren<Transform>())
+            {
+                if (s.name != "Estructura_Elevada" || s.parent == top || s.parent.position.y < top.position.y + 5f) continue;
+                if (best != null && s.parent.position.y <= best.position.y) continue;
+                Transform losa = s.Find("Losa");
+                if (losa == null) continue;
+                best = s.parent; bestSize = new Vector2(losa.localScale.x - 0.4f, losa.localScale.z - 0.4f);
+            }
+            if (best != null) _roofs[i] = (best, bestSize, name);
+        }
+    }
+
+    static void PlaceRooftopSolar()
+    {
+        const float height = 3f, len = 6.6f;
+        int placed = 0;
+        foreach (var (top, size, name) in _roofs)
+        {
+            if (top == null) continue;
+            float hx = size.x * 0.5f, hz = size.y * 0.5f, floorY = top.position.y;
+            var blockers = new List<Bounds>();
+            foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
+                if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + height + 0.6f) blockers.Add(rr.bounds);
+            // Candidatos (local: centro de la fila y giro): fondo al centro y a los lados; laterales.
+            var cands = new List<(Vector3 p, float yaw)> { (new Vector3(0f, 0f, -hz + 0.7f), 0f) };
+            if (hx > len) { cands.Add((new Vector3(-hx * 0.5f, 0f, -hz + 0.7f), 0f)); cands.Add((new Vector3(hx * 0.5f, 0f, -hz + 0.7f), 0f)); }
+            if (hz * 2f > len + 1f) { cands.Add((new Vector3(-hx + 0.7f, 0f, -hz * 0.3f), 90f)); cands.Add((new Vector3(hx - 0.7f, 0f, -hz * 0.3f), -90f)); }
+            (Vector3 p, float yaw) pick = cands[0]; bool free = false;
+            _openings.TryGetValue(top, out var gaps);   // donde llega un puente (lado, tramo): ahí no
+            foreach (var c in cands)
+            {
+                int side = c.yaw == 0f ? 3 : c.yaw > 0f ? 1 : 0;
+                float along = side == 3 ? c.p.x : c.p.z;
+                if (gaps != null && gaps.Exists(o => o.side == side && o.b > along - len * 0.5f - 1f && o.a < along + len * 0.5f + 1.5f)) continue;
+                Quaternion q = top.rotation * Quaternion.Euler(0f, c.yaw, 0f);
+                Vector3 centre = top.TransformPoint(c.p) + q * new Vector3(0.45f, 0f, 0f) + Vector3.up * (height * 0.5f + 0.3f);
+                Vector3 ext = q * new Vector3(len * 0.5f + 1f, 0f, 0.6f);
+                Bounds strip = new Bounds(centre, new Vector3(Mathf.Abs(ext.x) * 2f, height, Mathf.Abs(ext.z) * 2f));
+                if (!blockers.Exists(b => b.Intersects(strip))) { pick = c; free = true; break; }
+            }
+            SolarArray.Build(top, $"Paneles_{name}", top.TransformPoint(pick.p + Vector3.up * 0.1f), top.eulerAngles.y + pick.yaw, 6, height);
+            placed++;
+            if (!free) Debug.LogWarning($"[Solar] «{name}»: ningún borde libre del todo; los paneles van al fondo.");
+        }
+        Debug.Log($"[Solar] {placed} filas de paneles en el piso más alto de cada edificio.");
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)
@@ -4074,6 +4166,7 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Gym_Area", "Gimnasio", new Color(0.55f, 0.6f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "AtomicPlant_Area", "Planta Atómica", new Color(0.8f, 0.82f, 0.78f), MissionKind.Channel, PhysicsSceneBuilder.SceneName);   // Newton, Curie, Einstein
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
