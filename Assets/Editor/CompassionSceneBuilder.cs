@@ -1,7 +1,5 @@
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md): momentos históricos reales en que una persona o un pueblo
@@ -25,22 +23,8 @@ public static class CompassionSceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build simulaciones de compasión")]
     public static void BuildAll()
     {
-        if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
         int i = 0;
-        foreach (var s in Sims)
-        {
-            Vector3 o = new Vector3(6000f + i * 900f, 0f, 8000f);
-            string path = $"Assets/Scenes/{s.scene}.unity";
-            Scene prev = EditorSceneManager.GetActiveScene();
-            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-            SceneManager.SetActiveScene(scene);
-            var sun = new GameObject("Sun");
-            sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
-            sun.AddComponent<Light>().type = LightType.Directional;
-            AreaMicrocosmos.Build(s.areaGo, s.display, SampleSceneBuilder.MissionKind.Channel, s.tint, o, s.story);
-            MicrocosmosAreaSceneBuilder.Finish(scene, path, prev);
-            i++;
-        }
+        foreach (var s in Sims) MicrocosmosAreaSceneBuilder.BuildStoryScene(s.areaGo, s.display, s.scene, s.tint, new Vector3(6000f + i++ * 900f, 0f, 8000f), s.story);
         Debug.Log($"[Compasión] {i} simulaciones de compasión generadas.");
     }
 
@@ -76,7 +60,16 @@ public static class CompassionSceneBuilder
         n += Person(t, "Daniel Trocmé", new Vector3(14f, 0f, 5f), new Color(0.3f, 0.35f, 0.3f), Hat.None);
         n += Person(t, "Édouard Theis", new Vector3(18f, 0f, -3f), new Color(0.2f, 0.22f, 0.28f), Hat.Brimmed);
 
-        string[] names = { "Hanna", "Max", "Rachel", "Pierre-Jacques", "Ruth", "Simon", "Liliane", "Jakob", "Esther", "Marcel" };
+        // LAS REENCARNACIONES (ficción del juego, ver docs/compassion-simulations.md §Reencarnaciones): el elenco de la
+        // enfermería renace aquí con su nombre. Ambrosio y Momo llegan en el tren; el resto, del pueblo.
+        n += Person(t, "Ruth · la campesina de la granja", new Vector3(-18f, 0f, -12.5f), new Color(0.45f, 0.4f, 0.25f), Hat.None);
+        n += Person(t, "Atlas · el panadero", new Vector3(-4f, 0f, -6.5f), new Color(0.85f, 0.82f, 0.75f), Hat.Cap);
+        n += Person(t, "Medea · guía hacia Suiza", new Vector3(21f, 0f, -21f), new Color(0.3f, 0.12f, 0.15f), Hat.Brimmed);
+        n += Person(t, "Héspero · el jefe de estación", new Vector3(-18f, 0f, 22.5f), new Color(0.15f, 0.2f, 0.35f), Hat.Cap);
+        n += Person(t, "Sakshi · la que cuenta a los que llegan", new Vector3(-15f, 0f, 18f), new Color(0.35f, 0.4f, 0.45f), Hat.None);
+        n += Person(t, "Shanidar · el anciano del plateau", new Vector3(3f, 0f, 17f), new Color(0.4f, 0.37f, 0.32f), Hat.Brimmed);
+
+        string[] names = { "Hanna", "Max", "Rachel", "Pierre-Jacques", "Ambrosio", "Simon", "Liliane", "Jakob", "Esther", "Momo" };
         for (int i = 0; i < names.Length; i++)
             n += RefugeeAt(t, names[i], new Vector3(-24f + (i % 5) * 1.6f, 0f, 16f - (i / 5) * 1.6f), i % 3 == 0 ? 1.4f : 1.8f, 5f);
 
@@ -84,12 +77,13 @@ public static class CompassionSceneBuilder
         PatrolAt(t, "Patrulla", new[] { new Vector3(2f, 0f, 18f), new Vector3(2f, 0f, -20f) });
 
         var m = t.gameObject.AddComponent<CompassionMission>();
-        m.title = "Le Chambon-sur-Lignon, 1942";
+        var card = t.GetComponent<HistoryCard>();
+        m.title = card.title = "Le Chambon-sur-Lignon, 1942";
         m.goal = 10;
-        m.intro = "Francia ocupada. En el plateau de Vivarais-Lignon, un pueblo protestante de montaña abre sus casas a quien huye, sobre todo a niños judíos. " +
+        card.intro = "Francia ocupada. En el plateau de Vivarais-Lignon, un pueblo protestante de montaña abre sus casas a quien huye, sobre todo a niños judíos. " +
                   "Llegan en tren. Recíbelos (E: «sígueme»), escóndelos en casas, granjas, la pensión o la escuela, llévales pan de la panadería, " +
                   "consíguales papeles en el taller de Oscar o guíalos hacia Suiza. Que no te vean las patrullas con alguien sin papeles.";
-        m.history = new[]
+        card.history = new[]
         {
             "Entre 1940 y 1944, los habitantes de Le Chambon-sur-Lignon y de los pueblos del plateau acogieron y escondieron a miles de personas perseguidas — se estima que entre 3.000 y 5.000, muchas de ellas niños judíos — en sus casas, granjas, pensiones y escuelas.",
             "Los animaban el pastor André Trocmé, su esposa Magda y el pastor Édouard Theis. Cuando alguien llamaba a la puerta, Magda decía: «Naturalmente, entre, entre».",
@@ -97,7 +91,7 @@ public static class CompassionSceneBuilder
             "Daniel Trocmé, primo de André, dirigía la Maison des Roches: fue detenido en 1943 y murió en el campo de Majdanek en 1944.",
             "En 1990 Yad Vashem reconoció a todo el pueblo como Justos entre las Naciones, uno de los poquísimos reconocimientos colectivos.",
         };
-        m.sources = new[]
+        card.sources = new[]
         {
             "United States Holocaust Memorial Museum, Holocaust Encyclopedia: «Le Chambon-sur-Lignon».",
             "Yad Vashem, The Righteous Among the Nations: «Le Chambon-sur-Lignon» y «André and Magda Trocmé».",
@@ -154,7 +148,15 @@ public static class CompassionSceneBuilder
         n += Person(t, "Irena Sendler", g + new Vector3(gx + 3f, 0f, -gz + 1f), new Color(0.3f, 0.32f, 0.4f), Hat.Brimmed);
         n += Person(t, "Jadwiga Piotrowska", new Vector3(0f, 0f, -22f), new Color(0.38f, 0.3f, 0.3f), Hat.None);
 
-        string[] names = { "Elżbieta", "Michał", "Bieta", "Jerzy", "Hanna", "Piotr", "Lea", "Szymon", "Ruta", "Józef" };
+        // LAS REENCARNACIONES (ficción del juego): Ambrosio y Momo, entre los niños del gueto; el resto, en la red.
+        n += Person(t, "Atlas · el conductor de la ambulancia", new Vector3(19.5f, 0f, 12f), new Color(0.2f, 0.22f, 0.25f), Hat.Cap);
+        n += Person(t, "Héspero · el guía de las alcantarillas", new Vector3(7.5f, 0f, -21.5f), new Color(0.25f, 0.22f, 0.18f), Hat.Cap);
+        n += Person(t, "Medea · la madre superiora", new Vector3(18f, 0f, -6f), new Color(0.1f, 0.1f, 0.12f), Hat.None);
+        n += Person(t, "Ruth · la madre de acogida", new Vector3(14f, 0f, 19f), new Color(0.45f, 0.35f, 0.3f), Hat.None);
+        n += Person(t, "Sakshi · de la red de Irena", new Vector3(6.5f, 0f, 8f), new Color(0.35f, 0.4f, 0.45f), Hat.Brimmed);
+        n += Person(t, "Shanidar · el anciano del orfanato", new Vector3(18f, 0f, 4f), new Color(0.4f, 0.37f, 0.32f), Hat.None);
+
+        string[] names = { "Elżbieta", "Michał", "Bieta", "Jerzy", "Ambrosio", "Momo", "Lea", "Szymon", "Ruta", "Józef" };
         for (int i = 0; i < names.Length; i++)
             n += RefugeeAt(t, names[i], g + new Vector3(-2f + (i % 4) * 1.6f, 0f, -2f + (i / 4) * 1.8f), 1.3f, 9f);
 
@@ -162,14 +164,15 @@ public static class CompassionSceneBuilder
         PatrolAt(t, "Patrulla", new[] { new Vector3(-6f, 0f, -14f), new Vector3(20f, 0f, -14f) });
 
         var m = t.gameObject.AddComponent<CompassionMission>();
-        m.title = "Irena Sendler, Varsovia 1942";
+        var card = t.GetComponent<HistoryCard>();
+        m.title = card.title = "Irena Sendler, Varsovia 1942";
         m.goal = 10;
         m.recordNames = true;
-        m.intro = "Varsovia ocupada. Irena Sendler, trabajadora social del ayuntamiento, tiene un pase sanitario para entrar al gueto. " +
+        card.intro = "Varsovia ocupada. Irena Sendler, trabajadora social del ayuntamiento, tiene un pase sanitario para entrar al gueto. " +
                   "Los niños no pueden salir por la puerta: sácalos por el tribunal de dos puertas, las alcantarillas o la ambulancia, " +
                   "consíguales papeles en la oficina de Żegota y llévalos al convento, al orfanato o a una familia. " +
                   "Cada nombre real queda escrito en el frasco bajo el manzano, para devolverlos algún día a los suyos.";
-        m.history = new[]
+        card.history = new[]
         {
             "Irena Sendler (1910–2008) trabajaba en el Departamento de Bienestar Social de Varsovia y, con un pase del servicio de control de epidemias, podía entrar al gueto.",
             "Desde 1942, al frente de la sección infantil de Żegota (el Consejo de Ayuda a los Judíos), ella y su red sacaron del gueto a unos 2.500 niños: en ambulancias, por el edificio del tribunal, por pasos subterráneos y alcantarillas, escondidos en cajas y sacos.",
@@ -177,7 +180,7 @@ public static class CompassionSceneBuilder
             "En 1943 la detuvo la Gestapo y fue condenada a muerte; Żegota sobornó a un guardia y logró salir. Yad Vashem la reconoció como Justa entre las Naciones en 1965.",
             "Ella decía que cada niño salvado era la justificación de su existencia en la Tierra, y no un título de gloria.",
         };
-        m.sources = new[]
+        card.sources = new[]
         {
             "Yad Vashem, The Righteous Among the Nations: «Irena Sendler».",
             "POLIN Museum / Polscy Sprawiedliwi (Polish Righteous): «Irena Sendlerowa».",

@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 536 tipos._
+_Total: 542 tipos._
 
 
 ## Animals
@@ -66,6 +66,7 @@ _Total: 536 tipos._
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
+- **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
 - **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
 - **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md):
@@ -257,6 +258,7 @@ _Total: 536 tipos._
 - **Gohageneis** (class) — `Assets/Scripts/Companion/Companions/Gohageneis.cs` — El Papi Gohageneis — celebración, arte de vivir, restauración emocional.
 - **Goluis** (class) — `Assets/Scripts/Companion/Companions/Goluis.cs` — El Maestro Goluis — cocina, doble turno, presión y resistencia.
 - **GrassPatch** (class) — `Assets/Scripts/World/GrassPatch.cs` — Marks a flat grazing area.
+- **GreekBuildSite** (class) — `Assets/Scripts/Microcosmos/GreekBuildSite.cs` — La OBRA de un edificio griego que se alza con la piedra que traen los trabajadores (un :
 - **GriefSpell** (class) — `Assets/Scripts/Microcosmos/GriefSpell.cs` — DUELO (docs/apremios-guardian-observacion.md §3, microcosmos-level1 §Beats) — el hechizo-estado de la pérdida:
 - **Grimoire** (class) — `Assets/Scripts/Transformation/Grimoire.cs` — GRIMORIO — registro de hechizos APRENDIDOS por un `Anima` (docs/magic-metabolism-progression.md).
 - **GrimoireTest** (class) — `Assets/Scripts/GrimoireTest.cs` — Unidad de test del REPERTORIO de doble vía (docs/capabilities-and-embodiment.md §2), por `TestProbe`.
@@ -274,6 +276,7 @@ _Total: 536 tipos._
 - **HelpResponder** (class) — `Assets/Scripts/Control/HelpResponder.cs` — Lado RECEPTOR de una petición entre personajes (docs/anima-architecture.md §11.7).
 - **HideFollowingArrays** (class) — `Assets/Scripts/UI/FollowingArrays/HideFollowingArrays.cs`
 - **HidingPlace** (class) — `Assets/Scripts/Compassion/HidingPlace.cs` — ESCONDITE de las simulaciones de compasión:
+- **HistoryCard** (class) — `Assets/Scripts/Mission/HistoryCard.cs` — TARJETA DE HISTORIA de las simulaciones históricas y míticas del microcosmos (compasión, mirmidones…):
 - **Hive** (class) — `Assets/Scripts/World/Hive.cs` — COLMENA de las abejas de las nieves:
 - **Hologram** (class) — `Assets/Scripts/UI/Hologram/Hologram.cs` — One reusable, poolable flat UI card.
 - **HologramCorner** (enum) — `Assets/Scripts/UI/Hologram/HologramMenuController.cs`
@@ -365,6 +368,9 @@ _Total: 536 tipos._
 - **MoodDynamics** (class) — `Assets/Scripts/Soul/MoodDynamics.cs` — DINÁMICA de humores/estrés (docs/soul-relations-reincarnation §2b).
 - **MoodState** (class) — `Assets/Scripts/Companion/MoodState.cs` — Estado interno de un compañero (mood/fatiga/anchors) + vínculo con el jugador + efecto de proximidad — **extraído de `CompanionBase`** (que se retira, fase 5).
 - **MovementImpulse** (struct) — `Assets/Scripts/Microcosmos/MovementImpulse.cs` — Un IMPULSO DE DIRECCIÓN — vector normalizado + magnitud que contribuye a la decisión de movimiento de un ser (docs/stats-as-truth.md §impulsos).
+- **MythMission** (class) — `Assets/Scripts/Microcosmos/MythMission.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):
+- **MythRecruit** (class) — `Assets/Scripts/Microcosmos/MythRecruit.cs` — Un insecto-humano de EGINA que aún no se ha unido al reino de Éaco (docs/microcosmos-myrmidons.md).
+- **MythRecruiter** (class) — `Assets/Scripts/Microcosmos/MythRecruiter.cs` — ZEUS en Egina (docs/microcosmos-myrmidons.md), en su versión humana:
 - **NameJar** (class) — `Assets/Scripts/Compassion/NameJar.cs` — LOS FRASCOS BAJO EL MANZANO:
 - **NarcoticSpell** (class) — `Assets/Scripts/Microcosmos/NarcoticSpell.cs` — Hechizo ESTUPEFACIENTE (docs/apremios-guardian-observacion.md §3):
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
