@@ -157,6 +157,10 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las simulaciones de compasión: {e.Message}"); }
         try { MythSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena de Egina (mirmidones): {e.Message}"); }
+        try { PhysicsSceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar el microcosmos de la planta atómica: {e.Message}"); }
+        try { StorySceneBuilder.BuildAll(); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
@@ -271,6 +275,7 @@ public static partial class SampleSceneBuilder
         AddAreaProducer("VehicleWorkshop_Area",  SanctuaryResource.Materials, 14f, 16f);
         AddAreaProducer("TextileStudio_Area",    SanctuaryResource.Materials, 10f, 14f);
         AddAreaProducer("Infirmary_Area",        SanctuaryResource.Research,   8f, 12f);
+        AddAreaProducer("AtomicPlant_Area",      SanctuaryResource.Research,   6f, 10f);   // isótopos, análisis y física
 
         Debug.Log("[SampleSceneBuilder] Economía de santuario cableada: SanctuaryResources + HUD + AreaProducers por área.");
     }
@@ -3572,6 +3577,9 @@ public static partial class SampleSceneBuilder
             ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
         }
         _roofs.Clear();   // piso más alto de cada edificio: ahí van su pista de alfombras (si le toca) y sus paneles solares
+        // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física). Va aparte de la
+        // lista de arriba para no mover los índices (el Huerto es el último).
+        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant); groundSizes.Add(AtomicPlantSize);
         for (int i = 0; i < sizes.Length; i++)
         {
             if (upper.ContainsKey(i)) continue;
@@ -4145,6 +4153,7 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Gym_Area", "Gimnasio", new Color(0.55f, 0.6f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "AtomicPlant_Area", "Planta Atómica", new Color(0.8f, 0.82f, 0.78f), MissionKind.Channel, PhysicsSceneBuilder.SceneName);   // Newton, Curie, Einstein
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");

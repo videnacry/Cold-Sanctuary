@@ -360,7 +360,7 @@ public class CubeInsect : MonoBehaviour
     }
 
     // ══ ROPA Y HERIDAS (sobre el cuerpo centauro: siguen al torso y a la cabeza cuando se enderezan o se agachan) ══════
-    public enum Hat { None, Brimmed, Cap }
+    public enum Hat { None, Brimmed, Cap, Bonnet, Spike, Turban }
 
     // La cabeza («Cuello» la lleva) y el torso, y la caja de la cabeza en el marco del cuello.
     static bool Anchors(GameObject host, out Transform torso, out Transform neck, out Bounds head)
@@ -398,6 +398,14 @@ public class CubeInsect : MonoBehaviour
         Part(torso, "Abrigo", new Vector3(0f, 0f, 0.06f), new Vector3(head.size.x * 1.3f, head.size.y * 1.5f, 0.28f), coat);
         for (int k = 0; k < 3; k++) Part(torso, "Boton", new Vector3(0f, head.size.y * 0.76f, 0.02f + k * 0.07f), new Vector3(0.02f, 0.01f, 0.02f), new Color(0.15f, 0.12f, 0.1f));
         Part(neck, "Bufanda", head.center + new Vector3(0f, -head.extents.y * 1.1f, -head.extents.z * 0.4f), new Vector3(head.size.x * 1.1f, head.size.y * 0.3f, head.size.z * 1.0f), wool);
+        WearHat(host, hat);
+    }
+
+    /// <summary>Solo el tocado (sobre cualquier ropa: quitón, abrigo…).</summary>
+    public static void WearHat(GameObject host, Hat hat)
+    {
+        if (!Anchors(host, out _, out Transform neck, out Bounds head)) return;
+        Color felt = new Color(0.22f, 0.2f, 0.18f);
         if (hat == Hat.Brimmed)
         {
             Part(neck, "Sombrero_ala", head.center + Vector3.up * head.extents.y * 1.05f, new Vector3(head.size.x * 1.7f, head.size.y * 0.12f, head.size.z * 1.7f), felt);
@@ -408,6 +416,15 @@ public class CubeInsect : MonoBehaviour
             Part(neck, "Gorra", head.center + Vector3.up * head.extents.y * 1.1f, new Vector3(head.size.x * 1.1f, head.size.y * 0.3f, head.size.z * 1.05f), felt);
             Part(neck, "Visera", head.center + new Vector3(0f, head.extents.y * 0.95f, head.extents.z * 1.3f), new Vector3(head.size.x * 0.9f, head.size.y * 0.06f, head.size.z * 0.5f), felt);
         }
+        else if (hat == Hat.Bonnet)   // cofia blanca de enfermera (Escútari, 1854)
+            Part(neck, "Cofia", head.center + new Vector3(0f, head.extents.y * 0.9f, -head.extents.z * 0.2f), new Vector3(head.size.x * 1.15f, head.size.y * 0.4f, head.size.z * 1.1f), new Color(0.96f, 0.96f, 0.94f));
+        else if (hat == Hat.Spike)    // casco de pincho alemán de 1914 (Pickelhaube), con su funda de tela
+        {
+            Part(neck, "Casco", head.center + Vector3.up * head.extents.y * 1.05f, new Vector3(head.size.x * 1.15f, head.size.y * 0.45f, head.size.z * 1.2f), new Color(0.45f, 0.45f, 0.38f));
+            Part(neck, "Pincho", head.center + Vector3.up * head.extents.y * 1.6f, new Vector3(head.size.x * 0.12f, head.size.y * 0.35f, head.size.x * 0.12f), new Color(0.45f, 0.45f, 0.38f));
+        }
+        else if (hat == Hat.Turban)   // tela enrollada (India antigua)
+            Part(neck, "Turbante", head.center + Vector3.up * head.extents.y * 1.0f, new Vector3(head.size.x * 1.2f, head.size.y * 0.5f, head.size.z * 1.2f), new Color(0.95f, 0.9f, 0.8f));
     }
 
     /// <summary>
