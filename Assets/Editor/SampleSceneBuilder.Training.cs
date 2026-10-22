@@ -20,32 +20,25 @@ public static partial class SampleSceneBuilder
         Transform r = new GameObject("Gimnasio").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         KitchenProps.C(r, new Vector3(0f, 0.01f, 0f), new Vector3(size.x - 0.4f, 0.02f, size.y - 0.4f), TRubber, 0f, "Suelo_caucho");
-        // Sin espejos ni cuadros (no hay paredes): el gorila, símbolo de fuerza tranquila, está en ESTATUAS de cubos sobre
-        // un pedestal, a los lados de la sala.
-        Color fur = new Color(0.15f, 0.15f, 0.16f), skin = new Color(0.35f, 0.3f, 0.28f), stone = new Color(0.8f, 0.78f, 0.74f);
-        for (int s = -1; s <= 1; s += 2)
-            for (int i = 0; i < 3; i++)
-            {
-                Transform g = KitchenProps.Root(r, "Estatua_gorila", new Vector3(s * (hx - 0.8f), 0f, -hz + 3f + i * 4.5f), s * -90f);
-                KitchenProps.C(g, new Vector3(0f, 0.25f, 0f), new Vector3(0.9f, 0.5f, 0.9f), stone, 0f, "Pedestal");
-                KitchenProps.C(g, new Vector3(0f, 0.95f, 0f), new Vector3(0.7f, 0.9f, 0.55f), fur, 0f, "Gorila_cuerpo");
-                KitchenProps.C(g, new Vector3(0f, 1.6f, -0.08f), new Vector3(0.36f, 0.36f, 0.34f), fur, 0f, "Gorila_cabeza");
-                KitchenProps.C(g, new Vector3(0f, 1.56f, -0.26f), new Vector3(0.22f, 0.16f, 0.04f), skin, 0f, "Gorila_cara");
-                for (int a = -1; a <= 1; a += 2) KitchenProps.C(g, new Vector3(a * 0.45f, 0.85f, -0.05f), new Vector3(0.2f, 0.8f, 0.2f), fur, a * 10f, "Gorila_brazo");
-                WorldLabel gl = g.gameObject.AddComponent<WorldLabel>(); gl.text = "Gorila"; gl.height = 2.1f;
-            }
-
-        // 10 tipos de máquina (grupo muscular) × 3: filas de 6, en la mitad izquierda; la derecha queda LIBRE.
+        // DOS PISOS DE MÁQUINAS (Berón 2026-10-22): 10 tipos × 3 = 30 máquinas, 15 abajo y 15 en una ENTREPLANTA de 3 m
+        // sobre la mitad izquierda, con escalera inclinada. Así cada máquina tiene su pasillo (2,6 × 3,2 m de paso, más
+        // que el mínimo de 0,6–0,9 m entre máquinas de las guías de gimnasios) y nadie tiene que pasar por encima.
+        // (Las estatuas de gorila se quitaron: eran adorno y quitaban sitio.)
         string[] types = { "Press de pecho", "Press de hombros", "Jalón al pecho (espalda)", "Remo sentado", "Prensa de piernas",
                            "Extensión de cuádriceps", "Curl femoral", "Hip thrust (glúteos)", "Gemelos", "Curl de bíceps y tríceps" };
+        Vector3 deckC = new Vector3(-4.6f, 0f, -2.5f);
+        Transform upper = Deck(r, "Entreplanta_maquinas", deckC, new Vector2(12.4f, 10.4f));
+        InclinedStair(r, "Escalera_entreplanta", new Vector3(-1.2f, 0f, deckC.z + 5.2f + StairRun()), 180f);
         int k = 0;
         for (int t = 0; t < types.Length; t++)
             for (int c = 0; c < 3; c++, k++)
             {
-                int col = k % 6, row = k / 6;
-                Vector3 p = new Vector3(-hx + 1.4f + col * 1.9f, 0f, -hz + 1.9f + row * 2.5f);
-                GymMachine(r, $"{types[t]} {c + 1}", t, p);
+                int slot = k % 15, col = slot % 5, row = slot / 5;
+                Vector3 p = new Vector3(-10f + col * 2.6f, 0f, -6f + row * 3.2f);
+                if (k < 15) GymMachine(r, $"{types[t]} {c + 1}", t, p);
+                else GymMachine(upper, $"{types[t]} {c + 1}", t, p - deckC);   // arriba, mismas posiciones sobre la entreplanta
             }
+        upper.gameObject.AddComponent<WorldLabel>().text = "Máquinas (piso de arriba)";
 
         // ZONA LIBRE: esterillas, kettlebells, mancuernas, barra de dominadas, sacos.
         float fx = hx - 4f;

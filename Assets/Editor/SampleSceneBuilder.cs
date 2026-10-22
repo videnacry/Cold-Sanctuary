@@ -130,12 +130,15 @@ public static partial class SampleSceneBuilder
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
+        PlaceStackedPads();    // pistas de alfombras como piso de arriba de su área mayor (ya con los muebles puestos)
+        PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
         PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
+        FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -218,6 +221,8 @@ public static partial class SampleSceneBuilder
                 catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
             }
             DressHumanoids();
+            PlaceStackedPads();
+            PlaceRooftopSolar();
             BakeNavMesh();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
             if (!buildScenes.Exists(s => s.path == path)) buildScenes.Add(new EditorBuildSettingsScene(path, true));
@@ -3041,7 +3046,9 @@ public static partial class SampleSceneBuilder
         // las ramas lo esquivan, como en la arboleda residencial. Las áreas apiladas (el textil sobre la Construcción a
         // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
         var volumes = new List<Bounds>();
-        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
+        var built = new List<Component>(Object.FindObjectsOfType<SanctuaryArea>());
+        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las pistas de alfombras, encima de las áreas
+        foreach (Component sa in built)
         {
             Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
             Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
@@ -3620,7 +3627,7 @@ public static partial class SampleSceneBuilder
         var upper = new Dictionary<int, int> { { Ballet, 2 }, { Dojo, 7 }, { Textile, 6 } };   // piso de arriba → el de abajo
         for (int i = 0; i < sizes.Length; i++) if (!upper.ContainsKey(i)) ElevateArea(areas[i], sizes[i], ElevatedHeight);
         foreach (var kv in upper) sizes[kv.Key] = StackOn(areas[kv.Key].transform, areas[kv.Value].transform, sizes[kv.Value]);
-        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también, con sus bancales
+        ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también
         UpperGarden(areas[areas.Count - 1].transform, new Vector2(24f, 20f));         // y encima, a 10 m, el segundo huerto
         FurnishYoga(areas[2].transform, sizes[2]);
         FurnishTextile(areas[4].transform, sizes[4]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
@@ -3649,11 +3656,17 @@ public static partial class SampleSceneBuilder
             if (upper.ContainsKey(i)) continue;
             ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
         }
-        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
-        // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
+        _roofs.Clear();   // piso más alto de cada edificio: ahí van su pista de alfombras (si le toca) y sus paneles solares
         for (int i = 0; i < sizes.Length; i++)
-            if (!upper.ContainsKey(i))
-            SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
+        {
+            if (upper.ContainsKey(i)) continue;
+            int top = i; foreach (var kv in upper) if (kv.Value == i) top = kv.Key;
+            _roofs.Add((areas[top].transform, sizes[top], areas[i].displayName));
+        }
+        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
+        // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
+        // reciben y sin ocupar suelo): se colocan al final del Build (`PlaceRooftopSolar`), cuando ya están los muebles,
+        // para buscar un borde libre. Y un campo en el hub.
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
         return areas.ToArray();
@@ -3755,6 +3768,43 @@ public static partial class SampleSceneBuilder
 
         // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
         Ladder.Build(s, new Vector3(ladderX, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
+    }
+
+    // Piso más alto de cada edificio (y su tamaño), para sus paneles solares.
+    static readonly List<(Transform top, Vector2 size, string name)> _roofs = new List<(Transform, Vector2, string)>();
+
+    /// <summary>PANELES SOLARES EN LO MÁS ALTO (Berón 2026-10-22: que tomen el máximo de luz): una fila sobre postes de
+    /// 3 m en un BORDE del piso más alto de cada edificio, mirando al sol. Busca un tramo de borde libre (fondo, luego los
+    /// laterales; nunca el frente, por donde llega la escalera) para que los postes no caigan sobre muebles ni pasos.</summary>
+    static void PlaceRooftopSolar()
+    {
+        const float height = 3f, len = 6.6f;
+        int placed = 0;
+        foreach (var (top, size, name) in _roofs)
+        {
+            if (top == null) continue;
+            float hx = size.x * 0.5f, hz = size.y * 0.5f, floorY = top.position.y;
+            var blockers = new List<Bounds>();
+            foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
+                if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + height + 0.6f) blockers.Add(rr.bounds);
+            // Candidatos (local: centro de la fila y giro): fondo al centro y a los lados; laterales.
+            var cands = new List<(Vector3 p, float yaw)> { (new Vector3(0f, 0f, -hz + 0.7f), 0f) };
+            if (hx > len) { cands.Add((new Vector3(-hx * 0.5f, 0f, -hz + 0.7f), 0f)); cands.Add((new Vector3(hx * 0.5f, 0f, -hz + 0.7f), 0f)); }
+            if (hz * 2f > len + 1f) { cands.Add((new Vector3(-hx + 0.7f, 0f, -hz * 0.3f), 90f)); cands.Add((new Vector3(hx - 0.7f, 0f, -hz * 0.3f), -90f)); }
+            (Vector3 p, float yaw) pick = cands[0]; bool free = false;
+            foreach (var c in cands)
+            {
+                Quaternion q = top.rotation * Quaternion.Euler(0f, c.yaw, 0f);
+                Vector3 centre = top.TransformPoint(c.p) + q * new Vector3(0.45f, 0f, 0f) + Vector3.up * (height * 0.5f + 0.3f);
+                Vector3 ext = q * new Vector3(len * 0.5f + 1f, 0f, 0.6f);
+                Bounds strip = new Bounds(centre, new Vector3(Mathf.Abs(ext.x) * 2f, height, Mathf.Abs(ext.z) * 2f));
+                if (!blockers.Exists(b => b.Intersects(strip))) { pick = c; free = true; break; }
+            }
+            SolarArray.Build(top, $"Paneles_{name}", top.TransformPoint(pick.p + Vector3.up * 0.1f), top.eulerAngles.y + pick.yaw, 6, height);
+            placed++;
+            if (!free) Debug.LogWarning($"[Solar] «{name}»: ningún borde libre del todo; los paneles van al fondo.");
+        }
+        Debug.Log($"[Solar] {placed} filas de paneles en el piso más alto de cada edificio.");
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)

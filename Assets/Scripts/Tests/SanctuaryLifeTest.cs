@@ -291,6 +291,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
         int machines = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("Maquina_")) machines++;
         TestProbe.Greater("el gimnasio tiene 10 tipos de máquina × 3", machines, 29f, $"{machines} máquinas");
+        GameObject gym = GameObject.Find("Gym_Area");
+        int tight = gym != null ? FurnitureSpacing.Violations(gym.transform).Count : -1;
+        TestProbe.Check("las máquinas del gimnasio tienen su pasillo (no se apilan)", tight == 0, $"{tight} pares demasiado juntos");
         TestProbe.Check("la cocina es céntrica: seis puestos completos y neveras en el centro", FindByPrefix("Puesto_6") && FindByPrefix("Nevera 6"));
         TestProbe.Check("la sala de yoga tiene la plataforma en el centro y 30 esterillas", FindByPrefix("Esterilla_30") && FindByPrefix("Tarima del maestro"));
         TestProbe.End();

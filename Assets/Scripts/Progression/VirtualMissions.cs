@@ -53,7 +53,7 @@ public static class VirtualMissions
             case "coc_sala": return new[] { "Recibir a los turistas", "Llevarles a su mesa", "Tomar nota", "Servir" };
             case "coc_atender": return new[] { "Tomar el pedido en la barra", "Recoger el plato del pase", "Servirlo" };
             case "coc_comedor": return new[] { "Recoger las mesas", "Limpiar el comedor", "Limpiar los aseos" };
-            case "hue_riego": return new[] { "Abrir el riego", "Regar los bancales", "Quitar las malas hierbas" };
+            case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Quitar las malas hierbas" };
             case "hue_cosecha": return new[] { "Cosechar lo maduro", "Llenar las cestas", "Llevarlas a la cocina" };
             case "hue_visitantes": return new[] { "Ver qué animal tiene hambre", "Darle de comer", "Proteger el cultivo" };
             case "yog_guia": return new[] { "Subir a la plataforma central", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };

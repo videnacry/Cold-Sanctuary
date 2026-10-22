@@ -47,7 +47,11 @@ public static partial class SampleSceneBuilder
             for (int k = 0; k < plats.Count; k++) if (plats[k].group == gj) { var q = plats[k]; q.group = gi; plats[k] = q; }
         }
 
-        // UNA PISTA por grupo, junto a una de sus áreas (la mayor), en un lado libre.
+        // UNA PISTA por grupo. Va ENCIMA del piso más alto de su área mayor, como un piso más de la plataforma multinivel
+        // (Berón 2026-10-22: la pista no ocupa terreno aparte ni necesita su puente); las alfombras llegan desde el cielo
+        // abierto. Su sitio exacto en ese piso se elige al final (`PlaceStackedPads`), con los muebles ya puestos. Solo si
+        // ningún piso del grupo cabe una pista de 14 × 14 m se hace aparte, junto a un área, como antes.
+        _padGroups.Clear();
         var taken = new List<Rect>(bridgeRects);
         foreach (Plat p in plats) taken.Add(Inflate(PRect(p), 3f));
         foreach (Rect g in Gardens) taken.Add(g);
@@ -58,6 +62,18 @@ public static partial class SampleSceneBuilder
         foreach (var kv in groups)
         {
             var members = kv.Value; members.Sort((a, b) => (b.half.x * b.half.y).CompareTo(a.half.x * a.half.y));
+            var allNames = new List<string>(); var allCenters = new List<Vector3>();
+            foreach (Plat x in members) { allNames.Add(x.name); allCenters.Add(new Vector3(x.c.x, ElevatedHeight, x.c.y)); }
+            bool stacked = false;
+            foreach (Plat m in members)
+            {
+                int ri = _roofs.FindIndex(rf => rf.name == m.name);
+                if (ri < 0 || _roofs[ri].size.x < PadSize + 2f || _roofs[ri].size.y < PadSize + 2f) continue;
+                _padGroups.Add((ri, string.Join(" + ", allNames), allCenters.ToArray()));
+                stacked = true; pads++;
+                break;
+            }
+            if (stacked) continue;
             bool placed = false;
             foreach (Plat m in members)
             {
@@ -96,6 +112,51 @@ public static partial class SampleSceneBuilder
         OpenRailPad(rpad, 3, 0f, 4f);
         pads++;
         Debug.Log($"[Transporte] {bridges} puentes de 8 m (por cercanía, de {links.Count} posibles) y {pads} pistas de alfombras voladoras (una por grupo).");
+    }
+
+    // Pistas que van ENCIMA de un piso (índice en `_roofs`, nombre del grupo, centros de sus áreas).
+    static readonly List<(int roof, string label, Vector3[] members)> _padGroups = new List<(int, string, Vector3[])>();
+
+    /// <summary>Coloca cada pista de alfombras como PISO SUPERIOR (a 10 m) del piso más alto de su área: busca, en una
+    /// rejilla de 2 m, el sitio donde sus columnas del borde y el pie de su escalera no caen sobre muebles. Después la
+    /// pista pasa a ser ese "piso más alto" (sus paneles solares van en su borde).</summary>
+    static void PlaceStackedPads()
+    {
+        Transform root = GameObject.Find("Transporte_Plataformas")?.transform;
+        foreach (var (ri, label, members) in _padGroups)
+        {
+            var (top, size, name) = _roofs[ri];
+            if (top == null) continue;
+            float hx = size.x * 0.5f - PadSize * 0.5f - 0.5f, hz = size.y * 0.5f - PadSize * 0.5f - 0.5f, floorY = top.position.y;
+            var blockers = new List<Bounds>();
+            foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
+                if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + UpperFloorGap) blockers.Add(rr.bounds);
+            int Hits(Vector3 c)
+            {
+                int n = 0; float h = PadSize * 0.5f;
+                var pts = new List<Vector3> { new Vector3(-h, 0f, 0f), new Vector3(h, 0f, 0f), new Vector3(0f, 0f, h + 1f) };   // columnas de los lados y pie de la escalera
+                for (int i = 0; i < 4; i++) { float x = -h + i * (2f * h / 3f); pts.Add(new Vector3(x, 0f, -h)); pts.Add(new Vector3(x, 0f, h)); }   // columnas de delante y detrás
+                foreach (Vector3 q in pts)
+                {
+                    Vector3 w = top.TransformPoint(c + q) + Vector3.up * 1.5f;
+                    Bounds b = new Bounds(w, new Vector3(1.4f, 2.4f, 1.4f));
+                    foreach (Bounds bl in blockers) if (bl.Intersects(b)) { n++; break; }
+                }
+                return n;
+            }
+            Vector3 best = Vector3.zero; int bestN = int.MaxValue;
+            for (float z = -hz; z <= hz + 0.01f && bestN > 0; z += 2f)
+                for (float x = -hx; x <= hx + 0.01f && bestN > 0; x += 2f)
+                {
+                    int n = Hits(new Vector3(x, 0f, z));
+                    if (n < bestN) { bestN = n; best = new Vector3(x, 0f, z); }
+                }
+            Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, UpperFloorGap, false);
+            _roofs[ri] = (pad, new Vector2(PadSize, PadSize), name);
+            if (bestN > 0) Debug.LogWarning($"[Transporte] Pista sobre «{name}»: {bestN} columnas tocan muebles (no hay hueco del todo libre).");
+            else Debug.Log($"[Transporte] Pista de alfombras como piso superior de «{name}» ({label}).");
+        }
+        _padGroups.Clear();
     }
 
     // Los huertos elevados (MakePlot): no poner pistas encima.
@@ -254,11 +315,11 @@ public static partial class SampleSceneBuilder
     }
 
     // PISTA: plataforma elevada (como las áreas) con ALFOMBRAS VOLADORAS como esterillas grandes.
-    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members)
+    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members, float height = ElevatedHeight, bool groundBelow = true)
     {
         Transform t = new GameObject($"Pista_Alfombras_{label}").transform; t.SetParent(root, false);
         t.position = ground; t.rotation = rot;
-        Elevate(t, new Vector2(PadSize, PadSize), ElevatedHeight);
+        Elevate(t, new Vector2(PadSize, PadSize), height, groundBelow);
         Solid(t, new Vector3(0f, -0.05f, 0f), new Vector3(PadSize, 0.14f, PadSize), new Color(0.86f, 0.82f, 0.74f), "Suelo_pista");   // SÓLIDO (antes sin collider: se caía uno al subir a la alfombra)
         CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
         pad.displayName = label; pad.members = members;
