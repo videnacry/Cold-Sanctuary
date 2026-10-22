@@ -139,8 +139,8 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
     {
         ("Sala de Yoga", "Simulación: Patanjali y los ocho miembros del yoga", "Microcosmos_Patanjali"),
         ("Gimnasio",     "Simulación: la tregua de Navidad, Flandes 1914 (Primera Guerra Mundial)", "Microcosmos_Tregua1914"),
-        ("Enfermería",   "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
-        ("Enfermería",   "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
+        (AreaWork.Hospital, "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
+        (AreaWork.Hospital, "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
         ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
     };
 
