@@ -30,6 +30,7 @@ public static class MicrocosmosAreaSceneBuilder
     static void Build(string sceneName, string display, Color tint, SampleSceneBuilder.MissionKind kind, Vector3 o, string areaGo)
     {
         string path = $"Assets/Scenes/{sceneName}.unity";
+        DropUntitled();
         Scene prev = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
@@ -117,14 +118,41 @@ public static class MicrocosmosAreaSceneBuilder
     {
         if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
         string path = $"Assets/Scenes/{sceneName}.unity";
+        DropUntitled();
         Scene prev = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
-        var sun = new GameObject("Sun");
-        sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
-        sun.AddComponent<Light>().type = LightType.Directional;
-        AreaMicrocosmos.Build(areaGo, display, SampleSceneBuilder.MissionKind.Channel, tint, o, story);
+        try
+        {
+            var sun = new GameObject("Sun");
+            sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
+            sun.AddComponent<Light>().type = LightType.Directional;
+            AreaMicrocosmos.Build(areaGo, display, SampleSceneBuilder.MissionKind.Channel, tint, o, story);
+        }
+        catch
+        {
+            // Si la historia falla a medias, la escena nueva (sin título y sin guardar) se cierra: si se quedara abierta,
+            // el siguiente NewScene aditivo lanzaría «Cannot create a new scene additively with an untitled scene unsaved».
+            EditorSceneManager.CloseScene(scene, removeScene: true);
+            if (prev.IsValid()) SceneManager.SetActiveScene(prev);
+            throw;
+        }
         Finish(scene, path, prev);
+    }
+
+    /// <summary>Cierra las escenas SIN TÍTULO que haya dejado abiertas un constructor que falló (con ellas Unity no deja
+    /// crear otra escena aditiva). Si es la única escena cargada, reabre la principal.</summary>
+    internal static void DropUntitled()
+    {
+        for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
+        {
+            Scene s = SceneManager.GetSceneAt(i);
+            if (!string.IsNullOrEmpty(s.path)) continue;
+            if (SceneManager.sceneCount > 1) { Debug.LogWarning("[Microcosmos] Cierro una escena sin título que quedó abierta."); EditorSceneManager.CloseScene(s, removeScene: true); }
+            else if (System.IO.File.Exists("Assets/Scenes/SampleScene.unity")) EditorSceneManager.OpenScene("Assets/Scenes/SampleScene.unity", OpenSceneMode.Single);
+        }
+        if (!SceneManager.GetActiveScene().IsValid() || string.IsNullOrEmpty(SceneManager.GetActiveScene().path))
+            for (int i = 0; i < SceneManager.sceneCount; i++) if (!string.IsNullOrEmpty(SceneManager.GetSceneAt(i).path)) { SceneManager.SetActiveScene(SceneManager.GetSceneAt(i)); break; }
     }
 
     internal static void Finish(Scene scene, string path, Scene prev)
