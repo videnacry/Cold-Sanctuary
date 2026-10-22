@@ -2322,6 +2322,19 @@ public static partial class SampleSceneBuilder
         GameObject under = new GameObject("SotobosquePolar_AUTO");
         under.transform.SetParent(root, false);
         under.AddComponent<PolarUnderstory>();
+
+        // Lo que la fauna polar USA (docs/natural-interactions.md): descansaderos y respiraderos de foca, guijarros de la
+        // colonia de pingüinos, guaridas de nieve de los osos y grava de las ballenas.
+        GameObject hab = new GameObject("HabitatsPolares_AUTO");
+        hab.transform.SetParent(root, false);
+        PolarHabitats ph = hab.AddComponent<PolarHabitats>();
+        var penguins = System.Array.Find(PolarLandscapeBuilder.Islands, isl => isl.name == "Centro:Pinguinos");
+        Vector3 pc = new Vector3(penguins.x, 0f, penguins.z), toLagoon = (PolarLandscapeBuilder.Lagoon - pc); toLagoon.y = 0f;
+        ph.pebbleBeach = pc + toLagoon.normalized * (penguins.r - 4f);   // la orilla de la colonia que da a la laguna
+        var dens = new System.Collections.Generic.List<Vector3>();
+        foreach (var lobe in PolarLandscapeBuilder.Islands)
+            if (lobe.name == "Este:Mecanica_Osos" || lobe.name.StartsWith("BosqueNorte")) dens.Add(new Vector3(lobe.x + lobe.r * 0.4f, 0f, lobe.z - lobe.r * 0.3f));
+        ph.denSites = dens.ToArray();
     }
 
     static void BakeNavMesh()

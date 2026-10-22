@@ -14,7 +14,8 @@ using UnityEngine.Rendering;
 ///   · Sauce ártico: ramas leñosas rastreras con hojas ovaladas y amentos erguidos.
 ///   · Camarina: arbusto bajo de hojas aciculares con bayas.
 ///   · Liquen de reno: matas ramificadas gris verdoso.
-/// Se genera al arrancar (determinista) y se fusiona en pocas mallas por trozo y color.
+/// Se genera al arrancar (determinista) y se fusiona en pocas mallas por trozo y color. Las manchas de sauce, camarina y
+/// liquen además son <see cref="Affordance"/> (comida que se gasta y rebrota).
 /// </summary>
 public class PolarUnderstory : MonoBehaviour
 {
@@ -105,6 +106,15 @@ public class PolarUnderstory : MonoBehaviour
             Quaternion yaw = Quaternion.Euler(0f, R(0f, 360f), 0f);
             // Un pequeño grupo de la misma especie (así crecen: en manchas).
             int species = _rnd.Next(8), group = 1 + _rnd.Next(3);
+            // Las que algo COME son interactuables (docs/natural-interactions.md): sauce ártico (liebre), camarina (bayas:
+            // oso en verano) y liquen de reno (reno). Un punto por mancha; se gastan y rebrotan.
+            AffordanceKind food = species == 5 ? AffordanceKind.Willow : species == 6 ? AffordanceKind.Berry : AffordanceKind.Lichen;
+            if (species >= 5)
+            {
+                var spot = new GameObject($"Planta_{food}");
+                spot.transform.SetParent(transform, false); spot.transform.position = p;
+                Affordance.Put(spot, food, group, group, 0.0005f);
+            }
             for (int k = 0; k < group; k++)
             {
                 Vector3 q = p + yaw * new Vector3(R(-0.7f, 0.7f), 0f, R(-0.7f, 0.7f));

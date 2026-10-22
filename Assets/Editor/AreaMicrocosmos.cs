@@ -80,12 +80,20 @@ public static class AreaMicrocosmos
         if (giant == null)
             Box(root.transform, "Suelo_claro", new Vector3(0f, -0.05f, 0f), new Vector3(120f, 0.1f, 120f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
 
-        // 4) Fuera del área (alrededor, hasta el agua): el bosque a escala de hormiga — musgo = hierba, briznas y helechos =
-        //    árboles — y su fauna. Dentro del área no crece nada: es la sala del santuario.
+        // 4) La FLORA a escala de hormiga — musgo = hierba, briznas y helechos = árboles — crece por TODA la superficie, hasta
+        //    el agua: también por el suelo libre del área (entre sus muebles gigantes), menos en el claro de la historia. Cada
+        //    planta es un interactuable (Affordance) que algún insecto usa; y su fauna.
         float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
         float groundY = giant != null ? FloorAt(foot.center, floors, 0f) - 0.02f : 0f;
         Box(root.transform, "Suelo_bosque", new Vector3(foot.center.x, groundY - 0.05f, foot.center.z), new Vector3(r1 * 2f + 20f, 0.1f, r1 * 2f + 20f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
-        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r0, r1, giant == null, display.GetHashCode());
+        Bounds storyCore = new Bounds(anchor, Vector3.zero);   // lo que ocupa la historia (guarida, cueva, bancal…): ahí no crece nada
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
+        {
+            Bounds rb = r.bounds;
+            if (r.GetComponentInParent<MicroFood>() != null || (rb.size.y < 0.5f && Mathf.Max(rb.size.x, rb.size.z) > 40f)) continue;   // restos y suelos/agua de la historia no cuentan
+            storyCore.Encapsulate(rb);
+        }
+        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r1, display.GetHashCode(), storyCore, giant != null ? foot : (Bounds?)null, floors);
 
         root.transform.position = o;
 
@@ -400,8 +408,16 @@ public static class AreaMicrocosmos
         }
     }
 
-    // FLORA y FAUNA a escala de hormiga, en el anillo entre el claro y el borde.
-    static int Nature(Transform root, Vector3 center, float r0, float r1, bool openGround, int seed)
+    // FLORA y FAUNA a escala de hormiga por toda la superficie (docs/natural-interactions.md). Nada es solo decorado:
+    // cada planta, piedra o mancha de arena lleva el Affordance de lo que los insectos hacen con ella de verdad.
+    //   · Brizna (pasto): hierba que comen saltamontes y grillos y que cortan las termitas; savia para el pulgón; posadero
+    //     para asolearse (saltamontes) o tender la tela (araña); y espiga de SEMILLAS que cosechan los mirmidones.
+    //   · Helecho: savia, hojas que la tribu lleva al jardín de hongos, posadero de la mantis y refugio bajo sus frondas.
+    //   · Hongo: comida de las termitas cultivadoras y refugio bajo el sombrero.
+    //   · Flor: polen/néctar (mariquita) y el sitio donde la mantis acecha a los que vienen a la flor.
+    //   · Musgo y piedra: refugio húmedo (grillo en su madriguera, mariquitas agregadas).
+    //   · Arena fina: donde la hormiga león cava su embudo. · Boñiga: lo que rueda el pelotero.
+    static int Nature(Transform root, Vector3 center, float r1, int seed, Bounds story, Bounds? area, List<Renderer> floors)
     {
         var rnd = new System.Random(seed);
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
@@ -411,17 +427,112 @@ public static class AreaMicrocosmos
         Material fern = Mat("Micro_Helecho", new Color(0.25f, 0.5f, 0.25f)), fernStem = Mat("Micro_Helecho_tallo", new Color(0.3f, 0.4f, 0.2f));
         Material stem = Mat("Micro_Pie_Seta", new Color(0.9f, 0.86f, 0.75f)), cap = Mat("Micro_Sombrero", new Color(0.7f, 0.35f, 0.2f));
         Material moss = Mat("Micro_Musgo", new Color(0.3f, 0.45f, 0.2f)), mossTip = Mat("Micro_Musgo_punta", new Color(0.45f, 0.6f, 0.25f));
-        Material rock = Mat("Micro_Grano", new Color(0.55f, 0.52f, 0.48f));
-        for (int i = 0; i < 260; i++) { Vector3 p = Ring(i < 60 && openGround ? 16f : r0, r1); for (int k = 0; k < 4; k++) { float hh = R(0.4f, 1.2f); Box(flora, "Musgo", p + new Vector3(R(-0.6f, 0.6f), hh * 0.5f, R(-0.6f, 0.6f)), new Vector3(0.18f, hh, 0.18f), Quaternion.Euler(R(-8f, 8f), 0f, R(-8f, 8f)), k % 2 == 0 ? moss : mossTip, false); } }
-        for (int i = 0; i < 45; i++) { Vector3 p = Ring(r0, r1); float hh = R(2f, 6f); Box(flora, "Hongo_pie", p + Vector3.up * hh * 0.5f, new Vector3(hh * 0.15f, hh, hh * 0.15f), Quaternion.identity, stem, true); Box(flora, "Hongo_sombrero", p + Vector3.up * hh, new Vector3(hh * 0.8f, hh * 0.18f, hh * 0.8f), Quaternion.Euler(0f, R(0f, 90f), 0f), cap, false); }
-        for (int i = 0; i < 90; i++) { Vector3 p = Ring(r0, r1); float hh = R(10f, 25f), lean = R(-18f, 18f), yaw = R(0f, 180f); Material m = i % 3 == 0 ? grassDry : grass; Box(flora, "Brizna", p + Vector3.up * hh * 0.3f, new Vector3(0.25f, hh * 0.6f, 1.2f), Quaternion.Euler(lean * 0.4f, yaw, 0f), m, true); Box(flora, "Brizna_punta", p + Quaternion.Euler(0f, yaw, 0f) * new Vector3(0f, hh * 0.78f, Mathf.Sin(lean * Mathf.Deg2Rad) * hh * 0.25f), new Vector3(0.2f, hh * 0.4f, 0.8f), Quaternion.Euler(lean, yaw, 0f), m, false); }
-        for (int i = 0; i < 25; i++) { Vector3 p = Ring(r0 + 10f, r1); float hh = R(12f, 22f); Box(flora, "Helecho_tallo", p + Vector3.up * hh * 0.5f, new Vector3(0.6f, hh, 0.6f), Quaternion.identity, fernStem, true); for (int k = 0; k < 7; k++) Box(flora, "Helecho_fronda", p + Vector3.up * hh + Quaternion.Euler(0f, k * 51f, 0f) * new Vector3(0f, -1.5f, 5f), new Vector3(2.4f, 0.2f, 11f), Quaternion.Euler(-20f, k * 51f, 0f), fern, false); }
-        for (int i = 0; i < 70; i++) { Vector3 p = Ring(r0, r1); float s = R(1.5f, 6f); Box(flora, "Grano", p + Vector3.up * s * 0.4f, new Vector3(s, s * 0.8f, s * 1.1f), Quaternion.Euler(R(0f, 25f), R(0f, 90f), R(0f, 15f)), rock, true); }
+        Material rock = Mat("Micro_Grano", new Color(0.55f, 0.52f, 0.48f)), seedMat = Mat("Micro_Espiga", new Color(0.82f, 0.7f, 0.42f));
+        Material petal = Mat("Micro_Petalo", new Color(0.97f, 0.95f, 0.9f)), petal2 = Mat("Micro_Petalo_lila", new Color(0.8f, 0.6f, 0.9f)), pollen = Mat("Micro_Polen", new Color(0.98f, 0.8f, 0.2f));
+        Material sand = Mat("Micro_Arena", new Color(0.82f, 0.72f, 0.5f)), dung = Mat("Micro_Estiercol", new Color(0.35f, 0.25f, 0.15f));
+
+        // Rejilla con jitter (una planta por celda, sin amontonarse) sobre todo el disco hasta el agua.
+        const float cell = 12f, storyClear = 20f;
+        var sandPits = new List<Vector3>(); var dungs = new List<Vector3>();
+        int placed0 = 0;
+        for (float x = -r1; x <= r1; x += cell)
+            for (float z = -r1; z <= r1; z += cell)
+            {
+                Vector3 p = new Vector3(x + R(-cell * 0.4f, cell * 0.4f), 0f, z + R(-cell * 0.4f, cell * 0.4f));
+                if (p.magnitude > r1) continue;
+                Vector3 w = center + p;   // posición en el espacio del microcosmos (el área gigante está en el mismo)
+                if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) continue;   // el claro de la historia
+                if (area.HasValue && InsideXZ(area.Value, w, 4f))
+                {
+                    // Dentro del área: solo sobre su suelo libre (entre muebles), a la altura de ese suelo.
+                    if (floors.Count > 0 && EdgeDist(w, floors) < 2f) continue;
+                    if (NearBlocked(w, 3f)) continue;
+                    p.y = FloorAt(w, floors, center.y) - center.y;
+                }
+                float roll = R(0f, 100f);
+                if (roll < 27f) Grass(p);
+                else if (roll < 40f) Moss(p);
+                else if (roll < 50f) Fungus(p);
+                else if (roll < 59f) Fern(p);
+                else if (roll < 67f) Flower(p);
+                else if (roll < 81f) Stone(p);
+                else if (roll < 86f) { Transform a = Plant("Arena_fina", p); Box(a, "Arena", Vector3.up * 0.03f, new Vector3(9f, 0.06f, 9f), Quaternion.identity, sand, false); Affordance.Put(a.gameObject, AffordanceKind.SandPit, 1); sandPits.Add(p); }
+                else if (roll < 89f) { Transform d = Plant("Boñiga", p); Box(d, "Estiercol", Vector3.up * 0.9f, new Vector3(4f, 1.8f, 3.5f), Quaternion.identity, dung, true); Affordance.Put(d.gameObject, AffordanceKind.Dung, 2, 3f, 0.001f); dungs.Add(p); }
+                else continue;   // suelo desnudo: también hace falta sitio para pasar
+                placed0++;
+            }
+
+        // Cada planta: un nodo SIN escala en su pie (lleva los Affordance) y sus piezas como hijos (sin deformarse).
+        Transform Plant(string name, Vector3 p) { var g = new GameObject(name).transform; g.SetParent(flora, false); g.localPosition = p; g.localRotation = Quaternion.Euler(0f, R(0f, 360f), 0f); return g; }
+
+        void Grass(Vector3 p)
+        {
+            float hh = R(10f, 25f), lean = R(-18f, 18f);
+            Transform b = Plant("Brizna", p);
+            Box(b, "Tallo", Vector3.up * hh * 0.3f, new Vector3(0.25f, hh * 0.6f, 1.2f), Quaternion.Euler(lean * 0.4f, 0f, 0f), rnd.Next(3) == 0 ? grassDry : grass, true);
+            Box(b, "Punta", new Vector3(0f, hh * 0.78f, Mathf.Sin(lean * Mathf.Deg2Rad) * hh * 0.25f), new Vector3(0.2f, hh * 0.4f, 0.8f), Quaternion.Euler(lean, 0f, 0f), grass, false);
+            Affordance.Put(b.gameObject, AffordanceKind.Grass, 2, 1f, 0.004f);
+            Affordance.Put(b.gameObject, AffordanceKind.PlantSap, 3, 1f, 0.01f);
+            Affordance.Put(b.gameObject, AffordanceKind.Perch, 1);
+            if (rnd.Next(2) == 0)
+            {
+                // Espiga madura: las semillas caen al pie y los mirmidones las cosechan.
+                Box(b, "Espiga", new Vector3(0f, hh * 0.95f, Mathf.Sin(lean * Mathf.Deg2Rad) * hh * 0.35f), new Vector3(0.7f, 2.5f, 1.2f), Quaternion.Euler(lean, 0f, 0f), seedMat, false);
+                Transform seeds = Plant("Semillas", p + new Vector3(1.6f, 0f, 0f));
+                Box(seeds, "Semilla", Vector3.up * 0.25f, new Vector3(0.6f, 0.4f, 0.8f), Quaternion.identity, seedMat, false);
+                Box(seeds, "Semilla", new Vector3(0.7f, 0.2f, 0.3f), new Vector3(0.5f, 0.35f, 0.7f), Quaternion.Euler(0f, 40f, 0f), seedMat, false);
+                Affordance.Put(seeds.gameObject, AffordanceKind.Seed, 2, 3f, 0.003f);
+            }
+        }
+        void Moss(Vector3 p)
+        {
+            Transform m = Plant("Musgo", p);
+            Box(m, "Cojin", Vector3.up * 0.5f, new Vector3(3f, 1f, 3f), Quaternion.identity, moss, false);
+            for (int k = 0; k < 3; k++) Box(m, "Musgo_punta", new Vector3(R(-1f, 1f), 1.15f, R(-1f, 1f)), new Vector3(0.25f, 0.5f, 0.25f), Quaternion.identity, mossTip, false);
+            Affordance.Put(m.gameObject, AffordanceKind.Shelter, 2);
+        }
+        void Fungus(Vector3 p)
+        {
+            float hh = R(2f, 6f);
+            Transform f = Plant("Hongo", p);
+            Box(f, "Pie", Vector3.up * hh * 0.5f, new Vector3(hh * 0.15f, hh, hh * 0.15f), Quaternion.identity, stem, true);
+            Box(f, "Sombrero", Vector3.up * hh, new Vector3(hh * 0.8f, hh * 0.18f, hh * 0.8f), Quaternion.identity, cap, false);
+            Affordance.Put(f.gameObject, AffordanceKind.Fungus, 3, 2f, 0.003f);
+            Affordance.Put(f.gameObject, AffordanceKind.Shelter, 2);
+        }
+        void Fern(Vector3 p)
+        {
+            float hh = R(12f, 22f);
+            Transform t = Plant("Helecho", p);
+            Box(t, "Tallo", Vector3.up * hh * 0.5f, new Vector3(0.6f, hh, 0.6f), Quaternion.identity, fernStem, true);
+            for (int k = 0; k < 7; k++) Box(t, "Fronda", Vector3.up * hh + Quaternion.Euler(0f, k * 51f, 0f) * new Vector3(0f, -1.5f, 5f), new Vector3(2.4f, 0.2f, 11f), Quaternion.Euler(-20f, k * 51f, 0f), fern, false);
+            Affordance.Put(t.gameObject, AffordanceKind.PlantSap, 4, 1f, 0.01f);
+            Affordance.Put(t.gameObject, AffordanceKind.Leaf, 3, 3f, 0.002f);
+            Affordance.Put(t.gameObject, AffordanceKind.Perch, 1);
+            Affordance.Put(t.gameObject, AffordanceKind.Shelter, 2);
+        }
+        void Flower(Vector3 p)
+        {
+            float hh = R(8f, 16f);
+            Transform t = Plant("Flor", p);
+            Box(t, "Tallo", Vector3.up * hh * 0.5f, new Vector3(0.4f, hh, 0.4f), Quaternion.identity, fernStem, true);
+            Material pm = rnd.Next(2) == 0 ? petal : petal2;
+            for (int k = 0; k < 5; k++) Box(t, "Petalo", Vector3.up * hh + Quaternion.Euler(0f, k * 72f, 0f) * new Vector3(0f, 0f, 2.2f), new Vector3(2f, 0.15f, 3.2f), Quaternion.Euler(-12f, k * 72f, 0f), pm, false);
+            Box(t, "Centro", Vector3.up * (hh + 0.2f), new Vector3(1.8f, 0.5f, 1.8f), Quaternion.identity, pollen, false);
+            Affordance.Put(t.gameObject, AffordanceKind.Flower, 2, 1f, 0.004f);
+            Affordance.Put(t.gameObject, AffordanceKind.Perch, 1);
+        }
+        void Stone(Vector3 p)
+        {
+            float sz = R(1.5f, 6f);
+            Transform g = Plant("Piedra", p);
+            Box(g, "Roca", Vector3.up * sz * 0.4f, new Vector3(sz, sz * 0.8f, sz * 1.1f), Quaternion.Euler(R(0f, 25f), 0f, R(0f, 15f)), rock, true);
+            Affordance.Put(g.gameObject, AffordanceKind.Shelter, 2);
+        }
 
         // FAUNA: cada bicho cuelga de un padre MicroSize que lo mantiene a su tamaño relativo a la hormiga (el prefab
         // fija su propia escala al nacer; por eso antes se veían diminutos).
         var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false); fauna.localPosition = center;
-        Material sand = Mat("Micro_Arena", new Color(0.82f, 0.72f, 0.5f)), dung = Mat("Micro_Estiercol", new Color(0.35f, 0.25f, 0.15f));
         (string sp, int n, float len)[] list = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         int placed = 0;
         foreach (var (sp, n, len) in list)
@@ -429,9 +540,10 @@ public static class AreaMicrocosmos
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Animals/{sp}/{sp}.prefab");
             for (int i = 0; i < n; i++)
             {
-                Vector3 p = Ring(r0, r1 - 10f);
-                if (sp == "Antlion") for (int k = 0; k < 5; k++) Box(fauna, "Embudo_arena", p + Vector3.up * (0.02f + k * 0.02f), new Vector3(10f - k * 1.9f, 0.08f, 10f - k * 1.9f), Quaternion.Euler(0f, k * 18f, 0f), sand, false);
-                if (sp == "DungBeetle") Box(fauna, "Bola_estiercol", p + new Vector3(4f, 2f, 0f), Vector3.one * 4f, Quaternion.Euler(R(0f, 90f), R(0f, 90f), 0f), dung, true);
+                // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga.
+                Vector3 p = sp == "Antlion" && sandPits.Count > 0 ? sandPits[rnd.Next(sandPits.Count)]
+                          : sp == "DungBeetle" && dungs.Count > 0 ? dungs[rnd.Next(dungs.Count)] + new Vector3(5f, 0f, 0f)
+                          : Ring(storyClear, r1 - 10f);
                 if (prefab == null) continue;
                 var holder = new GameObject($"{sp}_a_escala").transform; holder.SetParent(fauna, false); holder.localPosition = p;
                 holder.gameObject.AddComponent<MicroSize>().length = len;
@@ -447,7 +559,16 @@ public static class AreaMicrocosmos
                 placed++;
             }
         }
+        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas por toda la superficie (radio {r1:0} m).");
         return placed;
+    }
+
+    static bool InsideXZ(Bounds b, Vector3 p, float margin) => p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin;
+
+    static bool NearBlocked(Vector3 p, float margin)
+    {
+        foreach (Bounds b in _blocked) if (p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin) return true;
+        return false;
     }
 
     static Color SpeciesColor(string sp)
