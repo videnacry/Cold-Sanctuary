@@ -3037,6 +3037,17 @@ public static partial class SampleSceneBuilder
         // sueltos, esparcidos por todo el hielo (docs/ice-sanctuary-ecology §2). Lejos de las áreas, del hub, de los nidos
         // y de los canales, para no cortar el paso. Los brotes aún no cazan; los viejos tienen más raíces y una rama seca.
         GameObject root = new GameObject("FloraHielo_AUTO"); root.transform.SetParent(parent);
+        // VOLUMEN de cada área (todas sus piezas: plataforma, pisos superiores, galerías, barandillas, con 1,5 m de margen):
+        // las ramas lo esquivan, como en la arboleda residencial. Las áreas apiladas (el textil sobre la Construcción a
+        // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
+        var volumes = new List<Bounds>();
+        foreach (SanctuaryArea sa in Object.FindObjectsOfType<SanctuaryArea>())
+        {
+            Renderer[] rs = sa.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
+            Bounds bb = rs[0].bounds; foreach (Renderer rr in rs) bb.Encapsulate(rr.bounds);
+            bb.Expand(new Vector3(3f, 3f, 3f)); volumes.Add(bb);
+        }
+        bool Built(Vector3 q) { foreach (Bounds bb in volumes) if (bb.Contains(q)) return true; return false; }
         var avoid = new List<Vector3>
         {
             new Vector3(5f, 0f, 38f),       // hub
@@ -3058,7 +3069,7 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < plan.Count; i++)
         {
             var (pos, age, h) = plan[i];
-            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{age}_{i + 1}", pos, 1234 + i * 77, h);
+            GameObject tree = CubeTree.Build(root.transform, $"ArbolCarnivoroHielo_{age}_{i + 1}", pos, 1234 + i * 77, h, blocked: Built);
             count[age] = count.TryGetValue(age, out int c) ? c + 1 : 1;
             if (first == null && age != PolarLandscapeBuilder.TreeAge.Brote) first = tree;
             if (age >= PolarLandscapeBuilder.TreeAge.Adulto && hiveTrees.Count < 4 && i % 3 == 0) hiveTrees.Add(pos);
@@ -3122,7 +3133,7 @@ public static partial class SampleSceneBuilder
                 if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
                 GameObject dining = GameObject.Find("Comedor_Gourmet");
                 if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
-                CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false);
+                CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false, blocked: Built);
                 fused++;
             }
         }

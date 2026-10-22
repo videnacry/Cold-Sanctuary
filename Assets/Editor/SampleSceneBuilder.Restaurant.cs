@@ -101,6 +101,8 @@ public static partial class SampleSceneBuilder
             DeckRail(r, new Vector3(k * (gx + 0.8f), g, gz), new Vector3(k * 19.7f, g, gz));
             InclinedStair(r, k < 0 ? "Escalera_comedor_oeste" : "Escalera_comedor_este", new Vector3(k * gx, 0f, gz + run), 180f);   // al borde de +Z
         }
+        int up = 0; foreach (Transform t in r.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Mesa_") && t.position.y > r.position.y + 1.5f) up++;
+        Debug.Log($"[Restaurante] comedor: {mesa - up} mesas en la planta y {up} en las dos galerías de {g:0.#} m, con sus escaleras inclinadas.");
         // Pared de vinos al fondo y plantas en las esquinas.
         Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -13f), 90f);   // en el lateral del fondo (delante queda la entrada)
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");

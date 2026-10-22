@@ -48,6 +48,9 @@ Además de la altura:
   5. **Bosque Oeste** y 6. **Bosque Norte**: los árboles carnívoros de hielo, salvajes, con abejas y arañas de las nieves.
 - **Árboles y áreas fusionados**: junto a cada área crecen tres árboles grandes que no cazan (24–36 m); el bosque
   carnívoro queda solo en los dos casquetes salvajes. Menos árboles que antes.
+- **Las ramas esquivan las áreas** (2026-10-22): cada rama comprueba el volumen de todas las áreas (plataforma, pisos
+  superiores como el textil sobre la Construcción, galerías; 3 m de margen) y gira buscando hueco, o no crece. Igual que
+  en la arboleda residencial. `SanctuaryLifeTest` verifica que ninguna rama atraviese una plataforma.
 - **Alturas**: los adultos miden 22–32 m y los viejos 32–40 m; los jóvenes y brotes, menos porque aún crecen.
 
 ## Pisos: plataformas hijas y bases de dos pisos (2026-10-22)
