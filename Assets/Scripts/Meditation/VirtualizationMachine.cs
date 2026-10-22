@@ -126,8 +126,20 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (areaName == AreaWork.Hospital) { opts.Add("Simulación: Irena Sendler, Varsovia 1942 (los niños del gueto)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_IrenaSendler")); }
         // MITO (docs/microcosmos-myrmidons.md): Egina y los mirmidones, sobre la Construcción agrandada.
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
+        // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
+        foreach (var (area, label, scene) in StoryScenes)
+            if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
         ChoiceDialog.Show($"Máquina de virtualización · {areaName}", opts.ToArray(), i => acts[i](), null, transform, 4.5f);
     }
+
+    static readonly (string area, string label, string scene)[] StoryScenes =
+    {
+        ("Sala de Yoga", "Simulación: Patanjali y los ocho miembros del yoga", "Microcosmos_Patanjali"),
+        ("Gimnasio",     "Simulación: la tregua de Navidad, Flandes 1914 (Primera Guerra Mundial)", "Microcosmos_Tregua1914"),
+        (AreaWork.Hospital, "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
+        (AreaWork.Hospital, "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
+        ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
+    };
 
     void ShowArea(string area)
     {

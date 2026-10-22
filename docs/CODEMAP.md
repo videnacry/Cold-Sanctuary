@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 547 tipos._
+_Total: 550 tipos._
 
 
 ## Animals
@@ -82,6 +82,7 @@ _Total: 547 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.cs` — MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias.md):
 - **VirtualMissionSceneBuilder** (class) — `Assets/Editor/VirtualMissionSceneBuilder.cs` — ESCENAS DE VIRTUALIZACIÓN, UNA POR MISIÓN (VirtualMissions).
 
 ## Scripts
@@ -355,6 +356,7 @@ _Total: 547 tipos._
 - **MicroLeader** (class) — `Assets/Scripts/Microcosmos/MicroLeader.cs` — LA LÍDER de la tribu (Medea renacida, microcosmos de la Cocina):
 - **MicroLounger** (class) — `Assets/Scripts/Microcosmos/MicroLounger.cs` — NASATYA (Ambrosio renacido):
 - **MicroMove** (class) — `Assets/Scripts/Microcosmos/MicroMove.cs` — Andar en el microcosmos:
+- **MicroRoutine** (class) — `Assets/Scripts/Microcosmos/MicroRoutine.cs` — La RUTINA de un mirmidón de las historias (docs/microcosmos-historias.md):
 - **MicroSize** (class) — `Assets/Scripts/Microcosmos/MicroSize.cs` — TAMAÑO EN EL MICROCOSMOS:
 - **MicroTeacher** (class) — `Assets/Scripts/Microcosmos/MicroTeacher.cs` — LA SEMBRADORA (Ruth renacida, microcosmos del Huerto):
 - **MigrationDiagnostics** (class) — `Assets/Scripts/MigrationDiagnostics.cs` — Diagnóstico de migración (TEMPORAL).
@@ -502,6 +504,7 @@ _Total: 547 tipos._
 - **StockingTask** (class) — `Assets/Scripts/Virtualization/StockingTask.cs` — Tarea de ABASTECER / ORDENAR (docs/kitchen-simulation.md §2, docs/forge-simulation.md §1):
 - **StockShelf** (class) — `Assets/Scripts/Kitchen/StockShelf.cs` — ESTANTE a abastecer (misiones de INVENTARIO, docs/sanctuary1 §4):
 - **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
+- **StoryMission** (class) — `Assets/Scripts/Mission/StoryMission.cs` — MISIÓN DE HISTORIA POR PASOS (docs/microcosmos-historias.md):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
