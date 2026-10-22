@@ -3247,7 +3247,7 @@ public static partial class SampleSceneBuilder
         Label(an, "Analizador clínico (F)", 1.8f);
         KitchenProps.Sink(r, "Lavamanos", new Vector3(-7.8f, 0f, 4.6f), -90f);
 
-        // CAPACIDAD PARA 30 (residentes y turistas): las otras 27 camas, ARRIBA, en una GALERÍA EN U de 2,2 m (plataforma
+        // CAPACIDAD PARA 30 (residentes y turistas): las otras 27 camas, ARRIBA, en una GALERÍA EN U de 3 m (plataforma
         // hija: alas oeste y este + fondo) con dos escaleras inclinadas (la oeste junto a la entrada; la este, de lado). Abajo ya no hay filas de camas
         // contra las paredes: exploración al oeste, veterinaria al este y el paso libre (docs/construcciones-elevadas.md §Pisos).
         Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
@@ -3259,13 +3259,7 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-11.7f, g, -8.6f + i * 1.65f), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
         for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-7.4f + i * 1.85f, g, -8.7f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
         for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(11.7f, g, -8.6f + i * 1.65f), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        // Barandillas en los bordes interiores (y en el frente de las alas, con el hueco de su escalera).
-        float run = StairRun();
-        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(-8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(8.4f, g, -6f), new Vector3(8.4f, g, 2.8f)); DeckRail(r, new Vector3(8.4f, g, 4.2f), new Vector3(8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(-8.4f, g, -6f), new Vector3(8.4f, g, -6f));
-        DeckRail(r, new Vector3(-12.8f, g, 5.4f), new Vector3(-11.4f, g, 5.4f)); DeckRail(r, new Vector3(-9.8f, g, 5.4f), new Vector3(-8.4f, g, 5.4f));
-        DeckRail(r, new Vector3(8.4f, g, 5.4f), new Vector3(12.8f, g, 5.4f));
+        float run = StairRun();   // sin barandillas (Berón 2026-10-22): las galerías quedan abiertas
         InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-10.6f, 0f, 5.4f + run), 180f);
         InclinedStair(r, "Escalera_galeria_este", new Vector3(8.4f - run, 0f, 3.5f), 90f);   // de lado: al frente del ala está el tanque
         Label(west, "Sala de camas (oeste)", 1.8f); Label(east, "Sala de camas (este)", 1.8f); Label(back, "Sala de camas (fondo)", 1.8f);
@@ -3718,12 +3712,12 @@ public static partial class SampleSceneBuilder
     // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
     // la flora) y se sube por una ESCALERA VERTICAL (con su enlace del NavMesh) desde el lado abierto (+Z).
-    // Barandilla de 1 m alrededor (el contorno bajo de antes no basta a 6 m de altura).
+    // Borde con barrera invisible (sin barandilla visible).
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
 
-    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barandilla y escalera vertical.
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barrera invisible y escalera vertical.
     /// <paramref name="groundBelow"/> = false para un PISO SUPERIOR (debajo hay otra plataforma, no el suelo: sin colchón de
     /// musgo); <paramref name="ladderX"/> desplaza la escalera (y el hueco de la barandilla) a lo largo del lado +Z.</summary>
     static void Elevate(Transform t, Vector2 size, float h, bool groundBelow = true, float ladderX = 0f)
@@ -3741,16 +3735,14 @@ public static partial class SampleSceneBuilder
         Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
         Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
 
-        // Barandilla (1 m) en los tres lados cerrados y a ambos lados de la escalera.
-        float rail = 1f;
+        // SIN BARANDILLA VISIBLE (Berón, 2026-10-22: se quitan las barandillas de las áreas humanas): en el borde exterior
+        // solo queda una BARRERA INVISIBLE de 4 m, en los tres lados cerrados y a ambos lados de la escalera, para que
+        // nadie caiga de 12 m; no tapa la vista ni ocupa sitio dentro del área.
         void Rail(Vector3 from, Vector3 to)
         {
             Vector3 mid = (from + to) * 0.5f, d = to - from;
-            Transform r = Solid(s, mid + Vector3.up * rail, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
             Transform low = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");   // 4 m (ni saltando): no se salta
-            low.GetComponent<Renderer>().enabled = false;   // barrera invisible: nadie cae, la vista no se tapa
-            int posts = Mathf.Max(2, Mathf.RoundToInt(d.magnitude / 1.5f));
-            for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * rail * 0.5f, new Vector3(0.07f, rail, 0.07f), woodDark, 0f, "Balaustre");
+            low.GetComponent<Renderer>().enabled = false;
         }
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
         Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));

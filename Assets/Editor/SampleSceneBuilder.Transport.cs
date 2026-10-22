@@ -246,11 +246,8 @@ public static partial class SampleSceneBuilder
             if (b - a < 0.2f) return;
             Vector3 P(float u) => side < 2 ? new Vector3(sign * edge, 0f, u) : new Vector3(u, 0f, sign * edge);
             Vector3 from = P(a), to = P(b), mid = (from + to) * 0.5f, d = to - from;
-            Solid(s, mid + Vector3.up, new Vector3(Mathf.Abs(d.x) + 0.08f, 0.08f, Mathf.Abs(d.z) + 0.08f), wood, "Barandilla");
-            Transform bar = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");
+            Transform bar = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");   // solo la barrera invisible
             bar.GetComponent<Renderer>().enabled = false;
-            int posts = Mathf.Max(1, Mathf.RoundToInt(d.magnitude / 1.5f));
-            for (int i = 0; i <= posts; i++) KitchenProps.C(s, Vector3.Lerp(from, to, i / (float)posts) + Vector3.up * 0.5f, new Vector3(0.07f, 1f, 0.07f), woodDark, 0f, "Balaustre");
         }
         foreach (var g in gaps) { Seg(cur, Mathf.Clamp(g.a, -halfAlong, halfAlong)); cur = Mathf.Max(cur, Mathf.Clamp(g.b, -halfAlong, halfAlong)); }
         Seg(cur, halfAlong);
