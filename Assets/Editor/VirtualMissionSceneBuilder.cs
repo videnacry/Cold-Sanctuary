@@ -32,6 +32,7 @@ public static class VirtualMissionSceneBuilder
     {
         string sceneName = "Virtual_" + key, path = $"Assets/Scenes/{sceneName}.unity";
         Color tint = VirtualMissions.Tint(area);
+        MicrocosmosAreaSceneBuilder.DropUntitled();   // una escena sin título que dejó otro constructor bloquearía NewScene
         Scene prev = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
