@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 542 tipos._
+_Total: 543 tipos._
 
 
 ## Animals
@@ -64,6 +64,7 @@ _Total: 542 tipos._
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
 - **MythSceneBuilder** (class) — `Assets/Editor/MythSceneBuilder.cs` — EGINA, EL REINO DE LOS MIRMIDONES (docs/microcosmos-myrmidons.md):

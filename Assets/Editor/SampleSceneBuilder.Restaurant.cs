@@ -55,39 +55,52 @@ public static partial class SampleSceneBuilder
         Color wood = new Color(0.42f, 0.28f, 0.2f), linen = new Color(0.97f, 0.97f, 0.95f), gold = new Color(0.82f, 0.68f, 0.35f), velvet = new Color(0.32f, 0.12f, 0.18f);
         KitchenProps.C(r, new Vector3(0f, 0.02f, 0f), new Vector3(size.x, 0.04f, size.y), new Color(0.48f, 0.33f, 0.22f), 0f, "Parquet");
         for (int i = 0; i < 20; i++) KitchenProps.C(r, new Vector3(-size.x * 0.5f + (i + 0.5f) * size.x / 20f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
-        // Anillo de mesas: 4 delante (junto a la entrada), 2 al fondo y 2 a cada lado de la cocina.
-        Vector3[] tables =
+        // Mesas: 4 delante (junto a la entrada) y 2 al fondo, en el suelo; las de los LADOS suben a dos GALERÍAS de 2,2 m
+        // (docs/construcciones-elevadas.md §Pisos): 3 mesas en cada una, con vista a la cocina abierta, y abajo queda un
+        // paso ancho alrededor de la cocina. 12 mesas de 4 = 48 cubiertos (base de 30 turistas + personal).
+        int mesa = 0;
+        void Table(Transform parent, Vector3 pos)
         {
-            new Vector3(-13.5f, 0f, 12.5f), new Vector3(-4.5f, 0f, 13.5f), new Vector3(4.5f, 0f, 13.5f), new Vector3(13.5f, 0f, 12.5f),
-            new Vector3(-16f, 0f, 3.5f), new Vector3(-16f, 0f, -4.5f), new Vector3(16f, 0f, 3.5f), new Vector3(16f, 0f, -4.5f),
-            new Vector3(5f, 0f, -12.5f), new Vector3(13f, 0f, -12.5f),
-        };
-        for (int n = 0; n < tables.Length; n++)
+            Transform t = KitchenProps.Root(parent, $"Mesa_{++mesa}", pos);
+            KitchenProps.C(t, new Vector3(0f, 0.38f, 0f), new Vector3(0.1f, 0.76f, 0.1f), wood, 0f, "Pata");
+            KitchenProps.C(t, new Vector3(0f, 0.765f, 0f), new Vector3(1.3f, 0.03f, 1.3f), linen, 0f, "Mantel");
+            KitchenProps.C(t, new Vector3(0f, 0.6f, 0f), new Vector3(1.32f, 0.3f, 1.32f), linen, 0f, "Caida_mantel");
+            for (int s = 0; s < 4; s++)   // cuatro cubiertos
             {
-                Transform t = KitchenProps.Root(r, $"Mesa_{n + 1}", tables[n]);
-                KitchenProps.C(t, new Vector3(0f, 0.38f, 0f), new Vector3(0.1f, 0.76f, 0.1f), wood, 0f, "Pata");
-                KitchenProps.C(t, new Vector3(0f, 0.765f, 0f), new Vector3(1.3f, 0.03f, 1.3f), linen, 0f, "Mantel");
-                KitchenProps.C(t, new Vector3(0f, 0.6f, 0f), new Vector3(1.32f, 0.3f, 1.32f), linen, 0f, "Caida_mantel");
-                for (int s = 0; s < 4; s++)   // cuatro cubiertos
-                {
-                    Quaternion q = Quaternion.Euler(0f, s * 90f, 0f);
-                    Vector3 seat = q * new Vector3(0f, 0f, 0.42f);
-                    KitchenProps.C(t, seat + new Vector3(0f, 0.785f, 0f), new Vector3(0.3f, 0.01f, 0.3f), gold, s * 90f, "Bajoplato");
-                    KitchenProps.C(t, seat + new Vector3(0f, 0.795f, 0f), new Vector3(0.24f, 0.012f, 0.24f), Color.white, s * 90f, "Plato");
-                    KitchenProps.C(t, seat + q * new Vector3(0.2f, 0.785f, 0f), new Vector3(0.02f, 0.005f, 0.18f), KitchenProps.Steel, s * 90f, "Cuchillo");
-                    KitchenProps.C(t, seat + q * new Vector3(-0.2f, 0.785f, 0f), new Vector3(0.02f, 0.005f, 0.18f), KitchenProps.Steel, s * 90f, "Tenedor");
-                    KitchenProps.C(t, seat + q * new Vector3(0.18f, 0.84f, -0.18f), new Vector3(0.06f, 0.1f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.35f), 0f, "Copa");
-                    // Silla tapizada
-                    Vector3 cp = q * new Vector3(0f, 0f, 0.95f);
-                    KitchenProps.C(t, cp + new Vector3(0f, 0.45f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");
-                    KitchenProps.C(t, cp + q * new Vector3(0f, 0.8f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
-                    for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.2f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.4f, 0.04f), wood, 0f, "Pata_silla");
-                }
-                KitchenProps.C(t, new Vector3(0f, 0.85f, 0f), new Vector3(0.05f, 0.14f, 0.05f), new Color(1f, 0.95f, 0.85f), 0f, "Vela");
-                KitchenProps.C(t, new Vector3(0f, 0.94f, 0f), new Vector3(0.02f, 0.04f, 0.02f), new Color(1f, 0.75f, 0.3f), 0f, "Llama_vela");
-                KitchenProps.C(t, new Vector3(0.18f, 0.84f, 0.12f), new Vector3(0.06f, 0.12f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.4f), 0f, "Florero");
-                KitchenProps.C(t, new Vector3(0.18f, 0.93f, 0.12f), new Vector3(0.09f, 0.07f, 0.09f), new Color(0.95f, 0.85f, 0.9f), 0f, "Flor");
+                Quaternion q = Quaternion.Euler(0f, s * 90f, 0f);
+                Vector3 seat = q * new Vector3(0f, 0f, 0.42f);
+                KitchenProps.C(t, seat + new Vector3(0f, 0.785f, 0f), new Vector3(0.3f, 0.01f, 0.3f), gold, s * 90f, "Bajoplato");
+                KitchenProps.C(t, seat + new Vector3(0f, 0.795f, 0f), new Vector3(0.24f, 0.012f, 0.24f), Color.white, s * 90f, "Plato");
+                KitchenProps.C(t, seat + q * new Vector3(0.2f, 0.785f, 0f), new Vector3(0.02f, 0.005f, 0.18f), KitchenProps.Steel, s * 90f, "Cuchillo");
+                KitchenProps.C(t, seat + q * new Vector3(-0.2f, 0.785f, 0f), new Vector3(0.02f, 0.005f, 0.18f), KitchenProps.Steel, s * 90f, "Tenedor");
+                KitchenProps.C(t, seat + q * new Vector3(0.18f, 0.84f, -0.18f), new Vector3(0.06f, 0.1f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.35f), 0f, "Copa");
+                // Silla tapizada
+                Vector3 cp = q * new Vector3(0f, 0f, 0.95f);
+                KitchenProps.C(t, cp + new Vector3(0f, 0.45f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");
+                KitchenProps.C(t, cp + q * new Vector3(0f, 0.8f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
+                for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.2f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.4f, 0.04f), wood, 0f, "Pata_silla");
             }
+            KitchenProps.C(t, new Vector3(0f, 0.85f, 0f), new Vector3(0.05f, 0.14f, 0.05f), new Color(1f, 0.95f, 0.85f), 0f, "Vela");
+            KitchenProps.C(t, new Vector3(0f, 0.94f, 0f), new Vector3(0.02f, 0.04f, 0.02f), new Color(1f, 0.75f, 0.3f), 0f, "Llama_vela");
+            KitchenProps.C(t, new Vector3(0.18f, 0.84f, 0.12f), new Vector3(0.06f, 0.12f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.4f), 0f, "Florero");
+            KitchenProps.C(t, new Vector3(0.18f, 0.93f, 0.12f), new Vector3(0.09f, 0.07f, 0.09f), new Color(0.95f, 0.85f, 0.9f), 0f, "Flor");
+        }
+        foreach (Vector3 p in new[] { new Vector3(-13.5f, 0f, 12.5f), new Vector3(-4.5f, 0f, 13.5f), new Vector3(4.5f, 0f, 13.5f), new Vector3(13.5f, 0f, 12.5f),
+                                      new Vector3(5f, 0f, -12.5f), new Vector3(13f, 0f, -12.5f) })
+            Table(r, p);
+        const float gx = 17.4f, gz = 9f;   // centro de cada galería en X; llegan de z = -9 a z = +9
+        float g = MezzanineHeight, run = StairRun();
+        for (int k = -1; k <= 1; k += 2)
+        {
+            Transform top = Deck(r, k < 0 ? "Galeria_comedor_oeste" : "Galeria_comedor_este", new Vector3(k * gx, 0f, 0f), new Vector2(4.6f, 2f * gz));
+            for (int j = -1; j <= 1; j++) Table(top, new Vector3(0f, 0f, j * 6f));
+            float inner = k * (gx - 2.3f);
+            DeckRail(r, new Vector3(inner, g, -gz), new Vector3(inner, g, gz));                                   // hacia la cocina
+            DeckRail(r, new Vector3(inner, g, -gz), new Vector3(k * 19.7f, g, -gz));                               // el fondo
+            DeckRail(r, new Vector3(inner, g, gz), new Vector3(k * (gx - 0.8f), g, gz));                            // a los lados de donde llega la escalera
+            DeckRail(r, new Vector3(k * (gx + 0.8f), g, gz), new Vector3(k * 19.7f, g, gz));
+            InclinedStair(r, k < 0 ? "Escalera_comedor_oeste" : "Escalera_comedor_este", new Vector3(k * gx, 0f, gz + run), 180f);   // al borde de +Z
+        }
         // Pared de vinos al fondo y plantas en las esquinas.
         Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -13f), 90f);   // en el lateral del fondo (delante queda la entrada)
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");

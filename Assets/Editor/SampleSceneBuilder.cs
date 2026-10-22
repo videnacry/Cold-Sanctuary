@@ -3617,11 +3617,12 @@ public static partial class SampleSceneBuilder
         // ya no hay veterinaria aparte; la mesa veterinaria y el paciente lobo están dentro de la enfermería.
         Vector2[] sizes = { new Vector2(40f, 38f), new Vector2(26f, 20f), new Vector2(18f, 15f), new Vector2(10f, 9f), new Vector2(12f, 10f), new Vector2(16f, 12f), new Vector2(18f, 14f), new Vector2(22f, 16f), new Vector2(10f, 9f), new Vector2(10f, 9f), new Vector2(10f, 9f) };
         // PISOS (docs/construcciones-elevadas.md §Pisos): el BALLET es el piso de arriba de la sala de YOGA y el DOJO el del
-        // GIMNASIO (10 m más arriba, sin tapar la vista): una base, dos salas, sin plataforma ni puente aparte.
-        const int Ballet = 8, Dojo = 9;
-        for (int i = 0; i < sizes.Length; i++) if (i != Ballet && i != Dojo) ElevateArea(areas[i], sizes[i], ElevatedHeight);
-        sizes[Ballet] = StackOn(areas[Ballet].transform, areas[2].transform, sizes[2]);
-        sizes[Dojo] = StackOn(areas[Dojo].transform, areas[7].transform, sizes[7]);
+        // GIMNASIO (10 m más arriba, sin tapar la vista): una base, dos salas, sin plataforma ni puente aparte. Igual los
+        // TALLERES: el ESTUDIO TEXTIL sobre la CONSTRUCCIÓN. (La Mecánica, de 10 × 9, es pequeña para cargar otro piso.)
+        const int Ballet = 8, Dojo = 9, Textile = 4;
+        var upper = new Dictionary<int, int> { { Ballet, 2 }, { Dojo, 7 }, { Textile, 6 } };   // piso de arriba → el de abajo
+        for (int i = 0; i < sizes.Length; i++) if (!upper.ContainsKey(i)) ElevateArea(areas[i], sizes[i], ElevatedHeight);
+        foreach (var kv in upper) sizes[kv.Key] = StackOn(areas[kv.Key].transform, areas[kv.Value].transform, sizes[kv.Value]);
         ElevateArea(areas[areas.Count - 1], new Vector2(24f, 20f), ElevatedHeight);   // el Huerto (área) también, con sus bancales
         UpperGarden(areas[areas.Count - 1].transform, new Vector2(24f, 20f));         // y encima, a 10 m, el segundo huerto
         FurnishYoga(areas[2].transform, sizes[2]);
@@ -3634,7 +3635,7 @@ public static partial class SampleSceneBuilder
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Aseos(areas[2].transform, new Vector3(-sizes[2].x * 0.5f + 0.9f, 0.1f, 0f), 90f);       // sala de yoga (en el lateral: las esquinas son de las estatuas)
         Aseos(areas[3].transform, new Vector3(-sizes[3].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[3].y * 0.5f - 0.9f), 180f, 1);    // mecánica
-        Aseos(areas[4].transform, new Vector3(-sizes[4].x * 0.5f + 0.2f + 1.9f, 0.1f, sizes[4].y * 0.5f - 0.9f), 180f, 1);    // textil
+        Aseos(areas[4].transform, new Vector3(4.4f, 0.1f, -sizes[4].y * 0.5f + 0.9f), 0f, 1);    // textil (al fondo, junto a los ovillos: delante, a −X, llega la escalera del piso)
         Aseos(areas[5].transform, new Vector3(sizes[5].x * 0.5f - 0.2f - 1.9f, 0.1f, -sizes[5].y * 0.5f + 0.9f), 0f, 1);      // laboratorio
         Aseos(areas[6].transform, new Vector3(sizes[6].x * 0.5f - 0.2f - 1.9f, 0.1f, sizes[6].y * 0.5f - 0.9f), 180f, 1);    // construcción
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada.
@@ -3647,13 +3648,13 @@ public static partial class SampleSceneBuilder
         var ground = new List<SanctuaryArea>(); var groundSizes = new List<Vector2>();
         for (int i = 0; i < areas.Count; i++)
         {
-            if (i == Ballet || i == Dojo) continue;
+            if (upper.ContainsKey(i)) continue;
             ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
         }
         BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Una fila de paneles (sobre postes) junto a cada edificio y un campo en el hub.
         for (int i = 0; i < sizes.Length; i++)
-            if (i != Ballet && i != Dojo)
+            if (!upper.ContainsKey(i))
             SolarArray.Build(areasGroup.transform, $"Paneles_{areas[i].displayName}", areas[i].transform.TransformPoint(new Vector3(-(sizes[i].x * 0.5f + 4f), -ElevatedHeight, 0f)), areas[i].transform.eulerAngles.y + 90f, 6);
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
