@@ -2,9 +2,11 @@
 
 - Las plataformas **cercanas** (a menos de 32 m) se unen con **puentes de 8 m de ancho** (rectos, a veces en diagonal; primero las más cercanas, sin puentes de sobra):
   por ejemplo el restaurante y la enfermería. Dentro de un grupo se va andando.
-- Cada **grupo** de plataformas unidas por puentes tiene **una pista de aterrizaje** (y la arboleda residencial, la suya). Desde 2026-10-22 la pista es el **piso de arriba** (a 10 m) del área mayor del grupo, no una plataforma aparte (ver `construcciones-elevadas.md`):
-  - es como una sala de yoga con **esterillas grandes**: son **alfombras voladoras**;
-  - va pegada a una de sus áreas (la mayor, por un lado libre) con un puente.
+- Cada **plataforma** tiene **su pista de aterrizaje** encima de su piso más alto, a 10 m, como un piso más de la plataforma multinivel (Berón 2026-10-23). Es también una **vía de escape** por el techo si la estructura falla. La arboleda residencial tiene la suya.
+  - Es como una sala de yoga con **esterillas grandes**, que son **alfombras voladoras**.
+  - Solo si ninguna plataforma de un grupo tiene sitio para una pista de 14 × 14 m se hace una aparte, unida con un puente.
+  - Entre plataformas del **mismo grupo** (unidas por puentes) los trabajadores van andando (`CarpetPad.group`). Las alfombras se usan para ir a otro grupo.
+  - Pendiente: la **segunda pista abajo** en las plataformas de varios pisos (la otra vía de escape).
 - Las alfombras son **automáticas**:
   - Al **tocarla** se muestran los destinos (las otras pistas) en un diálogo: ↑/↓ + Intro o clic.
   - La cámara pasa a **3ª persona**; el pasajero va **sentado** mientras la alfombra sube, cruza y baja.

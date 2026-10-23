@@ -13,7 +13,6 @@ public class InfirmaryGate : MonoBehaviour
     [Tooltip("Punto de vuelta dentro de la enfermería, en coordenadas locales del área (junto a la entrada).")]
     public Vector3 backLocal = new Vector3(0f, 1.3f, 5.4f);
     float _next;
-    Bounds _inside; bool _hasBounds;
 
     /// <summary>¿Puede salir? Cuando ya está analizado, vacunado y certificado (o no es un recién llegado).</summary>
     public static bool Cleared(GameObject who)
@@ -26,14 +25,14 @@ public class InfirmaryGate : MonoBehaviour
         return health && initiated;
     }
 
-    void Bounds()
-    {
-        if (_hasBounds) return;
-        Transform mat = transform.Find("Mat");
-        if (mat != null && mat.GetComponent<Renderer>() != null) { _inside = mat.GetComponent<Renderer>().bounds; _inside.Expand(new Vector3(1f, 8f, 1f)); _hasBounds = true; }
-    }
+    SanctuaryArea _area;
 
-    bool Inside(Vector3 p) { Bounds(); return !_hasBounds || _inside.Contains(p); }
+    // Dentro = en cualquier parte del área, también en la entreplanta de las camas y en la planta de arriba.
+    bool Inside(Vector3 p)
+    {
+        if (_area == null) _area = GetComponent<SanctuaryArea>();
+        return _area == null || _area.Contains(p);
+    }
 
     void Update()
     {

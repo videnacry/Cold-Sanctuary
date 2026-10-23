@@ -47,10 +47,11 @@ public static partial class SampleSceneBuilder
             for (int k = 0; k < plats.Count; k++) if (plats[k].group == gj) { var q = plats[k]; q.group = gi; plats[k] = q; }
         }
 
-        // UNA PISTA por grupo. Va ENCIMA del piso más alto de su área mayor, como un piso más de la plataforma multinivel
-        // (Berón 2026-10-22: la pista no ocupa terreno aparte ni necesita su puente); las alfombras llegan desde el cielo
-        // abierto. Su sitio exacto en ese piso se elige al final (`PlaceStackedPads`), con los muebles ya puestos. Solo si
-        // ningún piso del grupo cabe una pista de 14 × 14 m se hace aparte, junto a un área, como antes.
+        // UNA PISTA POR PLATAFORMA, encima de su piso más alto, como un piso más de la plataforma multinivel (Berón
+        // 2026-10-22/23: es también una VÍA DE ESCAPE por el techo si la estructura falla; no ocupa terreno aparte ni
+        // necesita puente). Las alfombras llegan desde el cielo abierto. Su sitio exacto en ese piso se elige al final
+        // (`PlaceStackedPads`), con los muebles ya puestos. Solo si NINGUNA plataforma del grupo cabe una pista de
+        // 14 × 14 m se hace aparte, junto a un área, como antes. Dentro de un grupo (unido por puentes) se va andando.
         _padGroups.Clear();
         var taken = new List<Rect>(bridgeRects);
         foreach (Plat p in plats) taken.Add(Inflate(PRect(p), 3f));
@@ -62,16 +63,13 @@ public static partial class SampleSceneBuilder
         foreach (var kv in groups)
         {
             var members = kv.Value; members.Sort((a, b) => (b.half.x * b.half.y).CompareTo(a.half.x * a.half.y));
-            var allNames = new List<string>(); var allCenters = new List<Vector3>();
-            foreach (Plat x in members) { allNames.Add(x.name); allCenters.Add(new Vector3(x.c.x, ElevatedHeight, x.c.y)); }
             bool stacked = false;
             foreach (Plat m in members)
             {
                 int ri = _roofs.FindIndex(rf => rf.name == m.name);
                 if (ri < 0 || _roofs[ri].size.x < PadSize + 2f || _roofs[ri].size.y < PadSize + 2f) continue;
-                _padGroups.Add((ri, string.Join(" + ", allNames), allCenters.ToArray()));
+                _padGroups.Add((ri, m.name, new[] { new Vector3(m.c.x, ElevatedHeight, m.c.y) }, kv.Key));
                 stacked = true; pads++;
-                break;
             }
             if (stacked) continue;
             bool placed = false;
@@ -88,7 +86,7 @@ public static partial class SampleSceneBuilder
                     var names = new List<string>(); var centers = new List<Vector3>();
                     foreach (Plat x in members) { names.Add(x.name); centers.Add(new Vector3(x.c.x, ElevatedHeight, x.c.y)); }
                     // La pista mira con su −Z al área (por ahí llega el puente); su escalera queda al otro lado.
-                    Transform pad = Pad(root, new Vector3(c.x, 0f, c.y), Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.y)), string.Join(" + ", names), centers.ToArray());
+                    Transform pad = Pad(root, new Vector3(c.x, 0f, c.y), Quaternion.LookRotation(new Vector3(dir.x, 0f, dir.y)), string.Join(" + ", names), centers.ToArray(), kv.Key);
                     Vector2 edgeA = m.c + dir * halfAlong, edgeB = c - dir * PadSize * 0.5f;
                     Bridge(root, new Vector3(edgeA.x, ElevatedHeight, edgeA.y), new Vector3(edgeB.x, ElevatedHeight, edgeB.y), BridgeWidth, $"Puente_pista_{m.name}");
                     float along = side < 2 ? m.c.y : m.c.x;
@@ -107,15 +105,16 @@ public static partial class SampleSceneBuilder
         Vector3 rc = new Vector3(-60f, 0f, 95f);
         Vector3 rd = new Vector3(Mathf.Cos(ResidentialBuilder.PadAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(ResidentialBuilder.PadAngle * Mathf.Deg2Rad));
         Vector3 padC = rc + rd * (15f + 5f + PadSize * 0.5f);
-        Transform rpad = Pad(root, padC, Quaternion.LookRotation(rd), "Arboleda residencial (habitaciones)", new[] { rc + Vector3.up * ElevatedHeight });
+        Transform rpad = Pad(root, padC, Quaternion.LookRotation(rd), "Arboleda residencial (habitaciones)", new[] { rc + Vector3.up * ElevatedHeight }, ResidentialGroup);
         Bridge(root, rc + rd * 15f + Vector3.up * ElevatedHeight, rc + rd * 20f + Vector3.up * ElevatedHeight, 4f, "Puente_pista_residencial");
         OpenRailPad(rpad, 3, 0f, 4f);
         pads++;
-        Debug.Log($"[Transporte] {bridges} puentes de 8 m (por cercanía, de {links.Count} posibles) y {pads} pistas de alfombras voladoras (una por grupo).");
+        Debug.Log($"[Transporte] {bridges} puentes de 8 m (por cercanía, de {links.Count} posibles) y {pads} pistas de alfombras voladoras (una por plataforma).");
     }
 
-    // Pistas que van ENCIMA de un piso (índice en `_roofs`, nombre del grupo, centros de sus áreas).
-    static readonly List<(int roof, string label, Vector3[] members)> _padGroups = new List<(int, string, Vector3[])>();
+    // Pistas que van ENCIMA de un piso (índice en `_roofs`, nombre, centro de su área, grupo de puentes).
+    static readonly List<(int roof, string label, Vector3[] members, int group)> _padGroups = new List<(int, string, Vector3[], int)>();
+    const int ResidentialGroup = -100;
 
     /// <summary>Coloca cada pista de alfombras como PISO SUPERIOR (a 10 m) del piso más alto de su área: busca, en una
     /// rejilla de 1 m, el sitio donde sus columnas del borde y el pie de su escalera no caen sobre muebles. Después la
@@ -124,7 +123,7 @@ public static partial class SampleSceneBuilder
     {
         ResolveInnerUpperFloors();   // pisos altos montados dentro de un área (la planta veterinaria del hospital)
         Transform root = GameObject.Find("Transporte_Plataformas")?.transform;
-        foreach (var (ri, label, members) in _padGroups)
+        foreach (var (ri, label, members, group) in _padGroups)
         {
             var (top, size, name) = _roofs[ri];
             if (top == null) continue;
@@ -160,7 +159,7 @@ public static partial class SampleSceneBuilder
                     int n = Hits(new Vector3(x, 0f, z));
                     if (n < bestN) { bestN = n; best = new Vector3(x, 0f, z); }
                 }
-            Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, UpperFloorGap, false);
+            Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, group, UpperFloorGap, false);
             _roofs[ri] = (pad, new Vector2(PadSize, PadSize), name);
             if (bestN > 0) Debug.LogWarning($"[Transporte] Pista sobre «{name}»: {bestN} columnas tocan muebles (no hay hueco del todo libre).");
             else Debug.Log($"[Transporte] Pista de alfombras como piso superior de «{name}» ({label}).");
@@ -348,14 +347,14 @@ public static partial class SampleSceneBuilder
     }
 
     // PISTA: plataforma elevada (como las áreas) con ALFOMBRAS VOLADORAS como esterillas grandes.
-    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members, float height = ElevatedHeight, bool groundBelow = true)
+    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members, int group, float height = ElevatedHeight, bool groundBelow = true)
     {
         Transform t = new GameObject($"Pista_Alfombras_{label}").transform; t.SetParent(root, false);
         t.position = ground; t.rotation = rot;
         Elevate(t, new Vector2(PadSize, PadSize), height, groundBelow);
         Solid(t, new Vector3(0f, -0.05f, 0f), new Vector3(PadSize, 0.14f, PadSize), new Color(0.86f, 0.82f, 0.74f), "Suelo_pista");   // SÓLIDO (antes sin collider: se caía uno al subir a la alfombra)
         CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
-        pad.displayName = label; pad.members = members;
+        pad.displayName = label; pad.members = members; pad.group = group;
         var slots = new List<Vector3>();
         for (int r = 0; r < 2; r++) for (int c = 0; c < 4; c++) slots.Add(new Vector3(-4.5f + c * 3f, 0.08f, -2.6f + r * 5f));
         pad.slots = slots.ToArray();
