@@ -27,8 +27,14 @@ public class WorkRoster
         public string group;     // misiones que se hacen JUNTAS a la vez (la clase de yoga: guía, demostrador y correctores)
         public float hours;
         public bool mandatory;   // debe cubrirse cada día (iniciación de turistas, vigilar a los recién llegados…)
+        // ESPACIO DE LA TAREA (lo que mide la Magnate): además de su área, otras áreas por las que la tarea hace ir
+        // (llevar la cosecha a la cocina, reparar en otra área), la obra en la que se trabaja, o TODAS las áreas
+        // (reparar maquinaria allí donde esté).
+        public string[] also = new string[0];
+        public string site;      // título de la obra (ConstructionProject) donde se trabaja
+        public bool roams;
         public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; }
-        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group };
+        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
     }
 

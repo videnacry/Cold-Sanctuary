@@ -165,6 +165,19 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la Magnate cuenta la entreplanta de las camas como parte del hospital (y fuera, no)",
                 ha.Contains(bed.transform.position + Vector3.up * 1.1f) && !ha.Contains(outside), $"cama en {bed.transform.position}");
         }
+        // El espacio de la tarea: quien repara en la Cocina con una misión de Construcción sigue en su puesto; con el
+        // inventario del almacén (solo Construcción), en la Cocina no.
+        GameObject kit = GameObject.Find("Kitchen_Area");
+        if (kit != null)
+        {
+            var dayMissions = AreaWork.Today(0, ConstructionProject.All);
+            var fixKitchen = dayMissions.FirstOrDefault(m => m.id == "rep_Cocina") ?? AreaWork.Today(1, ConstructionProject.All).FirstOrDefault(m => m.id == "rep_Cocina");
+            var store = dayMissions.FirstOrDefault(m => m.id == "con_almacen");
+            Vector3 inKitchen = kit.transform.position + Vector3.up * 1.1f;
+            if (fixKitchen != null && store != null)
+                TestProbe.Check("la Magnate cuenta el espacio de la tarea (reparar en la Cocina sí, el almacén no)",
+                    WorkdayDirector.InWorkspace(fixKitchen, "Construcción", inKitchen) && !WorkdayDirector.InWorkspace(store, "Construcción", inKitchen));
+        }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
