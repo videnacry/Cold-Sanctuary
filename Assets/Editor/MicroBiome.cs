@@ -30,6 +30,7 @@ public static class MicroBiome
     {
         public string title;     // región y era, para el cartel y el log
         public bool winter;      // casi todo aletargado: menos fauna, escarcha o nieve en el suelo
+        public Color ground = new Color(0.45f, 0.36f, 0.25f);   // la tierra de alrededor
         public Plant[] plants;
         public Bug[] bugs;
     }
@@ -43,7 +44,7 @@ public static class MicroBiome
         switch (display)
         {
             // ── Kapilavastu / Lumbini (Terai del Nepal), s. V a. C., tras el monzón (oct–nov) ──
-            case "Kapilavastu": return new Biome { title = "Terai del Nepal, s. V a. C. (otoño, tras el monzón)", plants = new[] {
+            case "Kapilavastu": return new Biome { title = "Terai del Nepal, s. V a. C. (otoño, tras el monzón)", ground = C(0.5f, 0.4f, 0.28f), plants = new[] {
                 new Plant(Kind.Grass, 22, "Arroz (Oryza sativa)", 100, C(0.55f, 0.68f, 0.25f), C(0.85f, 0.72f, 0.35f)),
                 new Plant(Kind.Grass, 14, "Hierba kusha (Desmostachya bipinnata)", 90, C(0.55f, 0.62f, 0.5f), C(0.7f, 0.68f, 0.55f)),
                 new Plant(Kind.Grass, 12, "Grama durva (Cynodon dactylon)", 20, C(0.4f, 0.65f, 0.25f), C(0.5f, 0.6f, 0.3f)),
@@ -62,7 +63,7 @@ public static class MicroBiome
                 new Bug("Aphid", 6, 2, C(0.55f, 0.75f, 0.35f), "Pulgón del arroz") } };
 
             // ── Llanura del Ganges, s. II a. C., invierno seco – primavera (feb–mar) ──
-            case "Patanjali": return new Biome { title = "Llanura del Ganges, s. II a. C. (invierno seco)", plants = new[] {
+            case "Patanjali": return new Biome { title = "Llanura del Ganges, s. II a. C. (invierno seco)", ground = C(0.7f, 0.6f, 0.45f), plants = new[] {
                 new Plant(Kind.Grass, 18, "Hierba kusha (Desmostachya bipinnata), el asiento de las ásanas", 90, C(0.55f, 0.62f, 0.5f), C(0.7f, 0.68f, 0.55f)),
                 new Plant(Kind.Grass, 16, "Cebada madurando (Hordeum vulgare)", 80, C(0.65f, 0.7f, 0.35f), C(0.88f, 0.8f, 0.5f)),
                 new Plant(Kind.Grass, 10, "Grama durva (Cynodon dactylon)", 20, C(0.4f, 0.65f, 0.25f), C(0.5f, 0.6f, 0.3f)),
@@ -79,7 +80,7 @@ public static class MicroBiome
                 new Bug("DungBeetle", 3, 25, C(0.12f, 0.1f, 0.08f), "Escarabajo pelotero") } };
 
             // ── Varsovia, otoño–invierno de 1942: escombros, grietas y hierbas ruderales ──
-            case "Irena Sendler": return new Biome { title = "Varsovia, 1942 (otoño–invierno)", winter = true, plants = new[] {
+            case "Irena Sendler": return new Biome { title = "Varsovia, 1942 (otoño–invierno)", winter = true, ground = C(0.48f, 0.45f, 0.42f), plants = new[] {
                 new Plant(Kind.Flower, 10, "Llantén mayor (Plantago major)", 20, C(0.25f, 0.42f, 0.2f), C(0.45f, 0.4f, 0.3f)),
                 new Plant(Kind.Grass, 16, "Poa anual (Poa annua)", 12, C(0.55f, 0.68f, 0.4f), C(0.6f, 0.65f, 0.45f)),
                 new Plant(Kind.Moss, 14, "Musgo plateado de las grietas (Bryum argenteum)", 1, C(0.6f, 0.68f, 0.58f), C(0.75f, 0.8f, 0.72f)),
@@ -93,7 +94,7 @@ public static class MicroBiome
                 new Bug("Ant", 3, 4, C(0.15f, 0.12f, 0.1f), "Hormiga negra (Lasius niger), al sol") } };
 
             // ── Le Chambon-sur-Lignon (meseta del Vivarais-Lignon, ~1000 m), otoño de 1942 ──
-            case "Le Chambon-sur-Lignon": return new Biome { title = "Meseta del Vivarais-Lignon, 1942 (otoño)", plants = new[] {
+            case "Le Chambon-sur-Lignon": return new Biome { title = "Meseta del Vivarais-Lignon, 1942 (otoño)", ground = C(0.36f, 0.3f, 0.22f), plants = new[] {
                 new Plant(Kind.Shrub, 14, "Arándano (Vaccinium myrtillus)", 30, C(0.6f, 0.3f, 0.2f), C(0.2f, 0.2f, 0.4f)),
                 new Plant(Kind.Shrub, 12, "Brezo (Calluna vulgaris)", 35, C(0.3f, 0.35f, 0.22f), C(0.7f, 0.45f, 0.7f)),
                 new Plant(Kind.Shrub, 6, "Piorno (Cytisus oromediterraneus)", 70, C(0.2f, 0.35f, 0.18f), C(0.25f, 0.4f, 0.2f)),
@@ -112,7 +113,7 @@ public static class MicroBiome
                 new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)") } };
 
             // ── Escútari (Üsküdar), invierno de 1854–55: el cementerio de Karacaahmet junto al cuartel ──
-            case "Escútari": return new Biome { title = "Escútari, Estambul, invierno de 1854–55", winter = true, plants = new[] {
+            case "Escútari": return new Biome { title = "Escútari, Estambul, invierno de 1854–55", winter = true, ground = C(0.42f, 0.36f, 0.28f), plants = new[] {
                 new Plant(Kind.Moss, 14, "Hiedra rastrera (Hedera helix)", 10, C(0.15f, 0.32f, 0.15f), C(0.2f, 0.4f, 0.2f)),
                 new Plant(Kind.Flower, 8, "Ciclamen de invierno (Cyclamen coum)", 8, C(0.2f, 0.3f, 0.2f), C(0.85f, 0.2f, 0.55f)),
                 new Plant(Kind.Flower, 8, "Malva (Malva sylvestris)", 50, C(0.35f, 0.5f, 0.3f), C(0.7f, 0.5f, 0.8f)),
@@ -127,7 +128,7 @@ public static class MicroBiome
                 new Bug("Ant", 3, 7, C(0.18f, 0.12f, 0.1f), "Hormiga segadora (Messor), en un día templado") } };
 
             // ── Flandes (saliente de Ypres), Nochebuena de 1914: helada dura sobre el barro ──
-            case "Tregua 1914": return new Biome { title = "Flandes, diciembre de 1914 (helada)", winter = true, plants = new[] {
+            case "Tregua 1914": return new Biome { title = "Flandes, diciembre de 1914 (helada)", winter = true, ground = C(0.33f, 0.28f, 0.22f), plants = new[] {
                 new Plant(Kind.Grass, 18, "Ballico de pasto (Lolium perenne) escarchado", 20, C(0.45f, 0.55f, 0.35f), C(0.85f, 0.88f, 0.9f)),
                 new Plant(Kind.Flower, 8, "Pamplina (Stellaria media), en flor en invierno", 10, C(0.4f, 0.65f, 0.3f), C(0.97f, 0.97f, 0.97f)),
                 new Plant(Kind.Flower, 6, "Ranúnculo rastrero (Ranunculus repens), roseta", 15, C(0.25f, 0.42f, 0.2f), C(0.3f, 0.45f, 0.25f)),
@@ -142,7 +143,7 @@ public static class MicroBiome
                 new Bug("DungBeetle", 4, 12, C(0.08f, 0.08f, 0.1f), "Carábido de invierno (Nebria brevicollis)") } };
 
             // ── Kill Devil Hills, 17 de diciembre de 1903: la duna de los Wright ──
-            case "Dayton": return new Biome { title = "Kill Devil Hills, diciembre de 1903 (duna)", winter = true, plants = new[] {
+            case "Dayton": return new Biome { title = "Kill Devil Hills, diciembre de 1903 (duna)", winter = true, ground = C(0.86f, 0.78f, 0.6f), plants = new[] {
                 new Plant(Kind.Grass, 16, "Barrón americano (Ammophila breviligulata)", 80, C(0.75f, 0.68f, 0.45f), C(0.82f, 0.75f, 0.5f)),
                 new Plant(Kind.Grass, 10, "Avena de mar (Uniola paniculata)", 140, C(0.72f, 0.65f, 0.42f), C(0.88f, 0.78f, 0.45f)),
                 new Plant(Kind.Shrub, 8, "Brezo de playa (Hudsonia tomentosa)", 15, C(0.6f, 0.65f, 0.58f), C(0.7f, 0.72f, 0.65f)),
@@ -156,7 +157,7 @@ public static class MicroBiome
                 new Bug("Ladybug", 3, 6, C(0.95f, 0.45f, 0.15f), "Mariquita de 9 puntos (Coccinella novemnotata), invernando") } };
 
             // ── Egina, Grecia arcaica (mito de los mirmidones), final de primavera ──
-            case "Egina": return new Biome { title = "Egina, Grecia arcaica (final de primavera)", plants = new[] {
+            case "Egina": return new Biome { title = "Egina, Grecia arcaica (final de primavera)", ground = C(0.66f, 0.45f, 0.32f), plants = new[] {
                 new Plant(Kind.Shrub, 14, "Tomillo de Creta (Thymbra capitata)", 35, C(0.5f, 0.55f, 0.45f), C(0.75f, 0.45f, 0.7f)),
                 new Plant(Kind.Shrub, 10, "Pimpinela espinosa (Sarcopoterium spinosum)", 45, C(0.55f, 0.6f, 0.5f), C(0.75f, 0.25f, 0.2f)),
                 new Plant(Kind.Flower, 8, "Jara de Creta (Cistus creticus)", 70, C(0.5f, 0.58f, 0.45f), C(0.92f, 0.55f, 0.75f)),
@@ -175,7 +176,7 @@ public static class MicroBiome
                 new Bug("SnowBee", 4, 13, C(0.75f, 0.55f, 0.2f), "Abeja melífera griega (Apis mellifera cecropia)") } };
 
             // ── Alejandría y Siene (Asuán), solsticio de verano de ~240 a. C. ──
-            case "Alejandría": return new Biome { title = "Egipto, ~240 a. C. (solsticio de verano)", plants = new[] {
+            case "Alejandría": return new Biome { title = "Egipto, ~240 a. C. (solsticio de verano)", ground = C(0.88f, 0.76f, 0.52f), plants = new[] {
                 new Plant(Kind.Grass, 12, "Rastrojo de trigo almidonero (Triticum dicoccum)", 20, C(0.85f, 0.75f, 0.45f), C(0.9f, 0.8f, 0.5f)),
                 new Plant(Kind.Grass, 10, "Hierba halfa (Desmostachya bipinnata)", 90, C(0.55f, 0.62f, 0.5f), C(0.7f, 0.68f, 0.55f)),
                 new Plant(Kind.Grass, 8, "Grama (Cynodon dactylon)", 20, C(0.45f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
@@ -195,7 +196,7 @@ public static class MicroBiome
                 new Bug("SnowBee", 3, 12, C(0.9f, 0.7f, 0.25f), "Abeja egipcia (Apis mellifera lamarckii)") } };
 
             // ── Newton, Curie, Einstein: un jardín templado de Europa occidental, final del verano ──
-            case "Planta Atómica": return new Biome { title = "Jardín de Europa occidental (Woolsthorpe, París, Berna; final del verano)", plants = new[] {
+            case "Planta Atómica": return new Biome { title = "Jardín de Europa occidental (Woolsthorpe, París, Berna; final del verano)", ground = C(0.36f, 0.48f, 0.25f), plants = new[] {
                 new Plant(Kind.Grass, 22, "Césped de ballico (Lolium perenne)", 15, C(0.35f, 0.6f, 0.25f), C(0.45f, 0.62f, 0.3f)),
                 new Plant(Kind.Flower, 10, "Margarita (Bellis perennis)", 6, C(0.3f, 0.5f, 0.25f), C(0.98f, 0.97f, 0.95f)),
                 new Plant(Kind.Flower, 10, "Trébol blanco (Trifolium repens)", 10, C(0.3f, 0.55f, 0.25f), C(0.95f, 0.95f, 0.92f)),
@@ -212,7 +213,7 @@ public static class MicroBiome
                 new Bug("SnowBee", 4, 18, C(0.2f, 0.18f, 0.12f), "Abejorro (Bombus terrestris)") } };
 
             // ── Ambrosio y la era del fuego: taiga prehistórica (verano corto) ──
-            case "Hospital": case "Cocina": return new Biome { title = "Taiga prehistórica, antes del fuego (verano corto)", plants = new[] {
+            case "Hospital": case "Cocina": return new Biome { title = "Taiga prehistórica, antes del fuego (verano corto)", ground = C(0.3f, 0.26f, 0.18f), plants = new[] {
                 new Plant(Kind.Moss, 20, "Musgo de Schreber (Pleurozium schreberi)", 10, C(0.55f, 0.62f, 0.25f), C(0.7f, 0.72f, 0.3f)),
                 new Plant(Kind.Moss, 10, "Liquen de reno (Cladonia rangiferina)", 7, C(0.78f, 0.8f, 0.78f), C(0.85f, 0.86f, 0.84f)),
                 new Plant(Kind.Shrub, 10, "Arándano rojo (Vaccinium vitis-idaea)", 20, C(0.15f, 0.35f, 0.18f), C(0.8f, 0.1f, 0.12f)),

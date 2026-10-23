@@ -96,7 +96,10 @@ public static class AreaMicrocosmos
         //    planta es un interactuable (Affordance) que algún insecto usa; y su fauna.
         float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
         float groundY = giant != null ? FloorAt(foot.center, floors, 0f) - 0.02f : 0f;
-        Box(root.transform, "Suelo_bosque", new Vector3(foot.center.x, groundY - 0.05f, foot.center.z), new Vector3(r1 * 2f + 20f, 0.1f, r1 * 2f + 20f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
+        // El suelo de alrededor, del color de su tierra (arena de Egipto, barro helado de Flandes, mantillo de la taiga…).
+        MicroBiome.Biome bio = MicroBiome.For(display);
+        Color soil = bio != null ? bio.ground : new Color(0.45f, 0.36f, 0.25f);
+        Box(root.transform, "Suelo_bosque", new Vector3(foot.center.x, groundY - 0.05f, foot.center.z), new Vector3(r1 * 2f + 20f, 0.1f, r1 * 2f + 20f), Mat("Micro_Tierra_" + (bio != null ? display : "generica"), soil), true);
         Bounds storyCore = new Bounds(anchor, Vector3.zero);   // lo que ocupa la historia (guarida, cueva, bancal…): ahí no crece nada
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
         {
