@@ -74,3 +74,15 @@ agente acorde a su largo y lo posa en el NavMesh (`Warp`). A falta de NavMesh, e
 - Celo/cortejo y crianza ligados a estos lugares (la foca pare en una guarida de nieve sobre su respiradero; el pingüino
   incuba en su nido de guijarros).
 - Liebre y reno no están en el bioma: su sauce y liquen ya son comida si se añaden.
+
+## Arreglo 2026-10-23: hábitos en el mundo principal
+
+La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el santuario («en un hábito natural» = 0):
+- **Permiso caducado por LOD.** `Habit` vive de un permiso que renueva cada tick de volición; los animales lejos del
+  jugador deciden hasta `Lod.maxSlow`× más despacio, así que el permiso caducaba antes del siguiente tick y el hábito se
+  soltaba antes de llegar a su sitio. Ahora el permiso se estira con `Lod.SlowFactor`.
+- **Descanso en su sitio.** Cansado y con guarida/descansadero/refugio cerca, el deseo «habit» absorbe al «rest»: el oso
+  va a su guarida de nieve, el pingüino al descansadero o a la piña, en vez de pararse donde esté.
+- **Marinos en el censo.** Focas/ballenas/orcas hacen su etograma dentro de `MarineLife` (`InHabitat`), y ahora cuentan.
+  El censo añade «con sitio cerca» para distinguir «no encuentra Affordances» de «no gana el deseo».
+- **Ordeño.** `MicroForager` va a un pulgón con melaza (≥ 0,3) dentro de `milkRadius` aunque haya semillas más cerca.

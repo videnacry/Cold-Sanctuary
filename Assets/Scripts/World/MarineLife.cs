@@ -29,6 +29,10 @@ public class MarineLife : MonoBehaviour
     float _angleSeed, _nextKill;
     // Etograma marino (Ethogram, docs/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
     Affordance _haul, _spot;
+
+    /// <summary>¿Está en un hábito natural (respirando por su respiradero, frotándose en la grava, patrullando los témpanos,
+    /// descansando en un descansadero)? Lo cuenta el censo de <see cref="AnimalVitals"/>.</summary>
+    public bool InHabitat => _spot != null || _haul != null;
     float _nextSpot, _spotUntil;
     static int _count;
 

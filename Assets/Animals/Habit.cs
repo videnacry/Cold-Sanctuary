@@ -27,7 +27,7 @@ public class Habit : MonoBehaviour
     Vector3 _dest;
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
-    bool _hasOptions;
+    bool _hasOptions, _canRest;
     static int _logged;
 
     void Awake() { _a = GetComponent<Animal>(); }
@@ -41,7 +41,9 @@ public class Habit : MonoBehaviour
 
     bool Marine => GetComponent<MarineLife>() != null;
     float Radius => (searchRadius + 40f * _a.perception) * (GetComponentInParent<MicroSize>() != null ? 2f : 1f);
-    float Lease => (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 2f) * 3f + 2f;
+    // El permiso dura ~3 ticks de volición. Los lejanos al jugador deciden hasta Lod.maxSlow× más despacio: el permiso se
+    // estira igual, si no caducaba antes del siguiente tick y el hábito nunca llegaba a su sitio (mundo principal, 2026-10-23).
+    float Lease => ((TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 2f) / 0.8f * Lod.SlowFactor(transform.position)) * 3f + 2f;
 
     /// <summary>¿Tiene algo natural que hacer cerca? (cacheado; lo consulta la volición cada tick).</summary>
     public bool HasOptions()
@@ -52,12 +54,25 @@ public class Habit : MonoBehaviour
         if (Time.time >= _nextScan)
         {
             _nextScan = Time.time + 3f;
-            _hasOptions = false;
+            _hasOptions = _canRest = false;
             foreach (EthoAct e in Ethogram.Of(_a.SpeciesName))
-                if (Find(e) != null || (e.effect == HabitEffect.Huddle && Night)) { _hasOptions = true; break; }
+                if (Find(e) != null || (e.effect == HabitEffect.Huddle && Night))
+                {
+                    _hasOptions = true;
+                    if (IsRest(e.effect)) _canRest = true;
+                }
         }
         return _hasOptions;
     }
+
+    /// <summary>¿Tiene cerca un sitio natural donde DESCANSAR (guarida, descansadero, refugio, la piña de la colonia)?
+    /// Entonces el cansancio lo lleva allí en vez de pararse donde esté (lo lee el deseo «habit»).</summary>
+    public bool CanRestHere => HasOptions() && _canRest;
+
+    static bool IsRest(HabitEffect e) => e == HabitEffect.Rest || e == HabitEffect.Huddle || e == HabitEffect.Shelter || e == HabitEffect.Bask;
+
+    // Cansancio como el deseo «rest» (0..1).
+    float Tired => Mathf.Clamp01((_a.sleepiness + _a.mentalFatigue) * 0.5f);
 
     /// <summary>Lo llama el deseo «habit»: renueva el permiso y, si no hace nada, empieza una actividad.</summary>
     public void Step()
@@ -89,7 +104,7 @@ public class Habit : MonoBehaviour
         for (int i = 0; i < acts.Length; i++)
         {
             found[i] = Find(acts[i]);
-            if (found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night)) total += acts[i].weight;
+            if (found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night)) total += W(acts[i]);
         }
         if (total <= 0f) { _cool = Time.time + 5f; return; }
         float r = Random.value * total;
@@ -97,7 +112,7 @@ public class Habit : MonoBehaviour
         {
             bool ok = found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night);
             if (!ok) continue;
-            r -= acts[i].weight;
+            r -= W(acts[i]);
             if (r > 0f && i < acts.Length - 1) continue;
             _act = acts[i]; _target = found[i];
             if (_act.effect == HabitEffect.Huddle) { if (!Colony(out _dest)) { _cool = Time.time + 5f; return; } }
@@ -106,6 +121,9 @@ public class Habit : MonoBehaviour
             return;
         }
     }
+
+    // Peso de un acto: cansado → prefiere los de descanso (ir a la guarida / al descansadero / apiñarse).
+    float W(EthoAct e) => e.weight * (IsRest(e.effect) ? 1f + 4f * Tired : 1f);
 
     // Centro de los de su especie cercanos (para apiñarse).
     bool Colony(out Vector3 c)

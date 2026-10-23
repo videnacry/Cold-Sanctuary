@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 575 tipos._
+_Total: 578 tipos._
 
 
 ## Animals
@@ -64,6 +64,7 @@ _Total: 575 tipos._
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
+- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
@@ -216,6 +217,7 @@ _Total: 575 tipos._
 - **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
 - **CulturedMeatLab** (class) — `Assets/Scripts/World/CulturedMeatLab.cs` — LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/carne-cultivada.md):
 - **CurieElectrometerLesson** (class) — `Assets/Scripts/AtomicPlant/CurieElectrometerLesson.cs` — EL MÉTODO DE MARIE CURIE (1898, «Rayos emitidos por los compuestos del uranio y del torio», Comptes Rendus 126):
+- **Cyclotron** (class) — `Assets/Scripts/AtomicPlant/Cyclotron.cs` — EL CICLOTRÓN MÉDICO (docs/atomic-plant.md §7), en la planta de arriba de la planta atómica:
 - **DailyPoses** (class) — `Assets/Scripts/Body/DailyLife.cs` — VIDA DIARIA del cuerpo humano (docs/vida-diaria.md):
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
@@ -265,6 +267,7 @@ _Total: 575 tipos._
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
 - **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO MÍNIMO ENTRE MUEBLES (Berón 2026-10-22:
+- **GalleryExplorer** (class) — `Assets/Scripts/Control/GalleryExplorer.cs` — EXPLORADOR de las escenas de validación (galería de insectos-humanos, sala de microcosmos):
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
 - **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):

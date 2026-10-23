@@ -10,6 +10,8 @@ public class MicroForager : MonoBehaviour
 {
     public float speed = 3f;
     public int delivered;
+    [Tooltip("Hasta dónde va a ordeñar un pulgón aunque haya semillas más cerca.")]
+    public float milkRadius = 60f;
     MicroFood _target;
     Affordance _source;
     GameObject _load;
@@ -68,8 +70,15 @@ public class MicroForager : MonoBehaviour
         }
         Affordance seed = Affordance.Nearest(AffordanceKind.Seed, transform.position, Mathf.Sqrt(bd));
         if (seed != null) bd = (seed.transform.position - transform.position).sqrMagnitude;
-        Affordance milk = Affordance.Nearest(AffordanceKind.Honeydew, transform.position, Mathf.Sqrt(bd));
-        if (milk != null && milk.Stock < 0.3f) milk = null;
+        // La melaza vale más que una semilla (azúcar líquido, recurso renovable que la colonia defiende): se va a por un
+        // pulgón con gota aunque haya semillas más cerca, dentro de un radio de ordeño.
+        Affordance milk = null; float md = Mathf.Max(bd, milkRadius * milkRadius);
+        foreach (Affordance a in Affordance.Of(AffordanceKind.Honeydew))
+        {
+            if (a == null || !a.isActiveAndEnabled || a.Stock < 0.3f || !a.Free(null)) continue;
+            float d = (a.transform.position - transform.position).sqrMagnitude;
+            if (d < md) { md = d; milk = a; }
+        }
         _source = milk != null ? milk : seed;
         _target = _source != null ? null : best;
         return _source != null || _target != null;
