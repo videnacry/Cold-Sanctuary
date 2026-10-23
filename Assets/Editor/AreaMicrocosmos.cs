@@ -54,6 +54,14 @@ public static class AreaMicrocosmos
         if (giant != null) foot = Classify(giant, floors, _blocked);
         Vector3 anchor = Vector3.zero; float free = 50f;
         if (giant != null) anchor = FreeSpot(foot, floors, _blocked, out free);
+        // HOSPITAL: la historia va DENTRO, por su pasillo central (30 m de ancho a ×10), empezando junto a la entrada; el hueco
+        // «más libre» caía en el borde y la historia quedaba fuera del hospital (Berón, 2026-10-23).
+        Transform aisle = giant != null && kind == SampleSceneBuilder.MissionKind.Heal ? FindDeep(giant.transform, "Pasillo_central") : null;
+        if (aisle != null && aisle.GetComponent<Renderer>() != null)
+        {
+            Bounds ab = aisle.GetComponent<Renderer>().bounds;
+            anchor = new Vector3(ab.center.x, 0f, ab.min.z + 30f); free = ab.size.x;
+        }
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
@@ -219,6 +227,12 @@ public static class AreaMicrocosmos
     }
 
     /// <summary>Aparta SOLO los muebles que pisa la historia (su guarida, su gente, el portal); el resto del área queda.</summary>
+    static Transform FindDeep(Transform root, string name)
+    {
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true)) if (t.name == name) return t;
+        return null;
+    }
+
     static int ClearUnder(Transform story, Transform giant, Bounds foot)
     {
         // Solo se aparta el mueble que CHOCA con una pieza sólida de la historia (no todo lo que cae dentro de la caja que la
@@ -293,14 +307,21 @@ public static class AreaMicrocosmos
             foreach (Transform t in story.GetComponentsInChildren<Transform>(true)) if (t != null && t.name == dup) { Object.DestroyImmediate(t.gameObject); break; }
         story.localScale = Vector3.one * StoryScale;
         // Los dos sandboxes se montan con su propio desplazamiento en el mundo (a cientos de metros): se traen junto al hueco de
-        // la historia, la cueva a un lado y el bosque al otro, para que se mezclen con el hospital en vez de taparlo entero.
-        float[] at = { -22f, 40f }; int k = 0;
+        // la historia, a lo largo del pasillo central (+z, hacia el fondo): primero la cueva y luego el bosque, mezclados con
+        // las camas y el equipo de los lados en vez de taparlo entero. La entrada y el portal quedan detrás (−z).
+        float[] at = { 25f, 90f }; int k = 0;
         foreach (Transform top in story)
         {
             Renderer[] rs = top.GetComponentsInChildren<Renderer>(true); if (rs.Length == 0) continue;
             Bounds bb = rs[0].bounds; foreach (Renderer r in rs) bb.Encapsulate(r.bounds);
-            Vector3 want = story.position + new Vector3(at[Mathf.Min(k++, at.Length - 1)], 0f, 0f);
-            top.position += new Vector3(want.x - bb.center.x, 0f, want.z - bb.center.z);
+            Vector3 want = story.position + new Vector3(0f, 0f, at[Mathf.Min(k++, at.Length - 1)]);
+            // Su suelo (el del bosque, el de la cueva) quedaba ~3 m BAJO el suelo del hospital: el elenco andaba enterrado. Se
+            // sube a ras del suelo del hospital y ese suelo propio se oculta: se pisa el del hospital, con el bosque encima.
+            float floorTop = float.MinValue; var ownFloors = new List<Renderer>();
+            foreach (Renderer r in rs) { Bounds b = r.bounds; if (b.size.y < 0.5f && Mathf.Max(b.size.x, b.size.z) > 6f) { ownFloors.Add(r); floorTop = Mathf.Max(floorTop, b.max.y); } }
+            float dy = floorTop > float.MinValue ? story.position.y - floorTop : 0f;
+            top.position += new Vector3(want.x - bb.center.x, dy, want.z - bb.center.z);
+            foreach (Renderer r in ownFloors) { r.enabled = false; Collider c = r.GetComponent<Collider>(); if (c != null) c.enabled = false; }
         }
         int n = 0;
         foreach (MeshFilter mfa in story.GetComponentsInChildren<MeshFilter>(true))   // todas las cápsulas: el elenco y los depredadores
