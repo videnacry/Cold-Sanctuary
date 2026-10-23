@@ -159,12 +159,59 @@ public static partial class SampleSceneBuilder
                     int n = Hits(new Vector3(x, 0f, z));
                     if (n < bestN) { bestN = n; best = new Vector3(x, 0f, z); }
                 }
+            // VARIOS PISOS → también una pista ABAJO (Berón 2026-10-23: dos vías de escape, el techo y abajo).
+            SanctuaryArea baseArea = System.Array.Find(Object.FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None), x => x.displayName == name);
+            if (baseArea != null && top.position.y > baseArea.transform.position.y + 5f) BottomPad(root, baseArea, label, members, group);
             Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, group, UpperFloorGap, false);
             _roofs[ri] = (pad, new Vector2(PadSize, PadSize), name);
             if (bestN > 0) Debug.LogWarning($"[Transporte] Pista sobre «{name}»: {bestN} columnas tocan muebles (no hay hueco del todo libre).");
             else Debug.Log($"[Transporte] Pista de alfombras como piso superior de «{name}» ({label}).");
         }
         _padGroups.Clear();
+    }
+
+    const float BottomPadHeight = 6f;   // ≥ 6 m: la naturaleza de debajo queda libre (y 6 m más arriba, el piso del área)
+
+    /// <summary>PISTA DE ABAJO de un edificio de varios pisos: colgada a 6 m bajo su plataforma base, entre las columnas,
+    /// asomando 3 m por un lado sin puente. Una escalera de mano sube de la pista al borde del piso (hueco en la barrera) y
+    /// otra baja al suelo. Las alfombras salen primero de lado y luego suben (<see cref="CarpetPad.exitDir"/>).</summary>
+    static void BottomPad(Transform root, SanctuaryArea a, string label, Vector3[] members, int group)
+    {
+        Transform t = a.transform, mat = t.Find("Mat"), s = t.Find("Estructura_Elevada");
+        if (mat == null || s == null) return;
+        Vector2 half = new Vector2(mat.localScale.x, mat.localScale.z) * 0.5f;
+        _openings.TryGetValue(t, out var gaps);
+        foreach (int side in new[] { 3, 1, 0 })   // −Z, −X, +X (por +Z sube la escalera del área)
+        {
+            float halfAlong = side < 2 ? half.x : half.y;   // distancia del centro a ese borde
+            float halfSide = side < 2 ? half.y : half.x;    // medio largo de ese borde
+            if (halfSide * 2f < PadSize || halfAlong * 2f < PadSize) continue;
+            // La escalera al piso, entre dos columnas (en ±Z las hay cada ~5 m; en ±X solo en el centro).
+            float along = 2.5f;
+            if (side >= 2)
+            {
+                float span = half.x * 2f - 0.8f, step = Mathf.Max(3f, span / Mathf.Ceil(span / 5f));
+                along = -half.x + 0.4f + step * 0.5f;
+                for (float x = along; x < half.x; x += step) if (Mathf.Abs(x) < Mathf.Abs(along)) along = x;
+            }
+            if (gaps != null && gaps.Exists(o => o.side == side && o.a < along + 2f && o.b > along - 2f)) continue;   // ahí llega un puente
+            Vector3 outL = side == 0 ? Vector3.right : side == 1 ? Vector3.left : side == 2 ? Vector3.forward : Vector3.back;
+            Vector3 alongL = side < 2 ? Vector3.forward : Vector3.right;
+            Vector3 padL = outL * (halfAlong - PadSize * 0.5f + 3f);   // asoma 3 m
+            Vector3 groundW = t.TransformPoint(padL) - Vector3.up * ElevatedHeight;
+            Quaternion rot = Quaternion.LookRotation(t.TransformDirection(-outL));   // su −Z mira hacia fuera; su escalera al suelo, bajo el edificio
+            Transform pad = Pad(root != null ? root : t, groundW, rot, label + " · salida de abajo", members, group, BottomPadHeight, false);
+            pad.GetComponent<CarpetPad>().exitDir = t.TransformDirection(outL);
+            // Escalera de la pista al piso, por fuera del borde, y su hueco en la barrera.
+            float yaw = Quaternion.LookRotation(-outL).eulerAngles.y;
+            Ladder.Build(s, outL * (halfAlong + Ladder.Gap) + alongL * along - Vector3.up * (ElevatedHeight - BottomPadHeight), yaw, ElevatedHeight - BottomPadHeight,
+                new Color(0.62f, 0.52f, 0.42f), new Color(0.48f, 0.4f, 0.33f));
+            OpenRailIn(t, half, side, along, 1.2f);
+            _landings.Add((t, half, side, along));   // lo que estorbe en lo alto de la escalera se aparta
+            Debug.Log($"[Transporte] Pista de abajo (a {BottomPadHeight:0} m) bajo «{a.displayName}», asomando por el lado {side}.");
+            return;
+        }
+        Debug.LogWarning($"[Transporte] «{a.displayName}»: sin lado libre para su pista de abajo.");
     }
 
     // Los huertos elevados (MakePlot): no poner pistas encima.

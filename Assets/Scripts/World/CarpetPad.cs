@@ -17,6 +17,8 @@ public class CarpetPad : MonoBehaviour
     public Vector3[] members = new Vector3[0];
     [Tooltip("Grupo de plataformas unidas por puentes: entre pistas del mismo grupo se va andando, no en alfombra.")]
     public int group;
+    [Tooltip("Pista BAJO un edificio (salida de abajo): hacia dónde salen las alfombras antes de subir (mundo; cero = cielo abierto).")]
+    public Vector3 exitDir;
     [Tooltip("Huecos de aterrizaje (dónde se posa cada alfombra), en coordenadas locales.")]
     public Vector3[] slots = new Vector3[0];
 

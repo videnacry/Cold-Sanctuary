@@ -323,6 +323,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
         TestProbe.Greater("hay pistas de alfombras voladoras (una encima de cada plataforma)", CarpetPad.All.Count, 1f, string.Join(" · ", CarpetPad.All.Select(p => p.displayName)));
+        TestProbe.Greater("los edificios de varios pisos tienen también su pista de abajo (2.ª vía de escape)", CarpetPad.All.Count(p => p.exitDir.sqrMagnitude > 0.01f), 0f, string.Join(" · ", CarpetPad.All.Where(p => p.exitDir.sqrMagnitude > 0.01f).Select(p => p.displayName)));
         TestProbe.Check("el restaurante y el hospital están unidos por un puente de 8 m", FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") && t.name.Contains(AreaWork.Hospital) && !t.name.Contains("pista")));
         var census = new System.Collections.Generic.Dictionary<string, int>();
         foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;

@@ -66,7 +66,11 @@ public class FlyingCarpet : MonoBehaviour
         if (player && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(CameraMode.ThirdPerson, forced: true);
         Debug.Log($"[Alfombra] «{who.name}» se sienta en la alfombra y vuela de {pad?.displayName} a {to.displayName}.");
 
-        Vector3 from = transform.position, dest = to.FreeSlot(this);
+        Vector3 start = transform.position, end = to.FreeSlot(this);
+        // Una pista BAJO un edificio (la salida de abajo): primero sale de debajo en horizontal, y al llegar a una así
+        // entra igual; si no, al subir atravesaría el piso de encima.
+        Vector3 from = Clear(pad, start), dest = Clear(to, end);
+        yield return Slide(who, start, from);
         float top = Mathf.Max(from.y, dest.y) + cruise;
         float dist = Vector3.Distance(new Vector3(from.x, 0f, from.z), new Vector3(dest.x, 0f, dest.z));
         float T = Mathf.Max(3f, (dist + 2f * cruise) / speed), t = 0f;
@@ -83,7 +87,8 @@ public class FlyingCarpet : MonoBehaviour
             if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
             yield return null;
         }
-        transform.position = dest;
+        yield return Slide(who, dest, end);
+        transform.position = end; dest = end;
         pad = to;
         // DESEMBARCAR: se levanta al lado de la alfombra.
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
@@ -97,6 +102,35 @@ public class FlyingCarpet : MonoBehaviour
         _ignoreUntil = Time.time + 1f;
         Debug.Log($"[Alfombra] «{who.name}» llega a {to.displayName} y se baja.");
         if (player) Offer(who, true);   // por contacto: vuelve a ver las opciones (seguir o bajarse)
+    }
+
+    // Desde <paramref name="p"/>, hacia la salida de su pista, el primer punto con el cielo libre encima (+1,5 m).
+    static Vector3 Clear(CarpetPad pad, Vector3 p)
+    {
+        if (pad == null || pad.exitDir.sqrMagnitude < 0.01f) return p;
+        Vector3 d = Flat(pad.exitDir).normalized;
+        for (int i = 0; i <= 30; i++)
+        {
+            Vector3 q = p + d * i;
+            if (!Physics.Raycast(q + Vector3.up * 2.5f, Vector3.up, 40f, ~0, QueryTriggerInteraction.Ignore)) return q + d * 1.5f;
+        }
+        return p + d * 30f;
+    }
+
+    // Desliza la alfombra (con su pasajero sentado) en línea recta, a 3 m/s.
+    IEnumerator Slide(GameObject who, Vector3 a, Vector3 b)
+    {
+        float T = Vector3.Distance(a, b) / 3f, t = 0f;
+        if (T < 0.05f) yield break;
+        Quaternion face = Quaternion.LookRotation(Flat(b - a));
+        while (t < T && who != null)
+        {
+            t += Time.deltaTime;
+            Vector3 p = Vector3.Lerp(a, b, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t / T)));
+            transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 4f));
+            who.transform.SetPositionAndRotation(p + Vector3.up * 0.12f, transform.rotation);
+            yield return null;
+        }
     }
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
