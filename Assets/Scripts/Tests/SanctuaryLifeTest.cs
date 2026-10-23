@@ -167,13 +167,13 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         // El espacio de la tarea: quien repara en la Cocina con una misión de Construcción sigue en su puesto; con el
         // inventario del almacén (solo Construcción), en la Cocina no.
-        GameObject kit = GameObject.Find("Kitchen_Area");
-        if (kit != null)
+        GameObject kitchenGo = GameObject.Find("Kitchen_Area");
+        if (kitchenGo != null)
         {
             var dayMissions = AreaWork.Today(0, ConstructionProject.All);
             var fixKitchen = dayMissions.FirstOrDefault(m => m.id == "rep_Cocina") ?? AreaWork.Today(1, ConstructionProject.All).FirstOrDefault(m => m.id == "rep_Cocina");
             var store = dayMissions.FirstOrDefault(m => m.id == "con_almacen");
-            Vector3 inKitchen = kit.transform.position + Vector3.up * 1.1f;
+            Vector3 inKitchen = kitchenGo.transform.position + Vector3.up * 1.1f;
             if (fixKitchen != null && store != null)
                 TestProbe.Check("la Magnate cuenta el espacio de la tarea (reparar en la Cocina sí, el almacén no)",
                     WorkdayDirector.InWorkspace(fixKitchen, "Construcción", inKitchen) && !WorkdayDirector.InWorkspace(store, "Construcción", inKitchen));
