@@ -99,3 +99,7 @@ La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el sant
   volición despacha directo (ese reflejo es justo «la IA conduce»).
 - **Recolectoras en los microcosmos de historia** (Patanjali, Planta Atómica, Hospital…): si el elenco no trae ninguna
   `MicroForager`, `AreaMicrocosmos.ForagingBand` añade una guarida y 6 recolectoras junto al claro.
+- **4ª prueba**: la pesca desde la orilla saciaba con la masa de las crías del banco (gramos) → el pingüino seguía con
+  hambre y «eat» ganaba siempre; ahora cada zambullida sacia como una comida (`feed`). Las recolectoras (`MicroForager`)
+  abandonan un objetivo al que no se acercan en `stallSeconds` (tras una pared / en otro piso del NavMesh) y lo evitan
+  90 s: antes se quedaban plantadas (0 entregas en Hospital/Patanjali). Log `[Hábito] … empieza a hacer melaza`.

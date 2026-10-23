@@ -28,7 +28,7 @@ public class Habit : MonoBehaviour
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
     bool _hasOptions, _canRest, _canFeed;
-    static int _logged;
+    static int _logged, _honeyLogged;
 
     void Awake() { _a = GetComponent<Animal>(); }
 
@@ -40,6 +40,7 @@ public class Habit : MonoBehaviour
         foreach (Affordance f in a.GetComponents<Affordance>()) if (f.kind == AffordanceKind.Honeydew) return f;
         Affordance h = Affordance.Put(a.gameObject, AffordanceKind.Honeydew, 2, 0f, 0f);
         h.maxStock = 1f;
+        if (_honeyLogged++ < 5) Debug.Log($"[Hábito] «{a.name}» (pulgón) empieza a hacer melaza (savia → gotas que las hormigas ordeñan; ordeño desde {(Eras.Allows(Eras.Capability.Dairying) ? "ya" : "el Neolítico")}).");
         return h;
     }
 

@@ -232,8 +232,12 @@ public class Forager : MonoBehaviour
             // Si se quedó en la ORILLA (va a pie y el banco está en el agua), se zambulle desde el borde y pesca un bocado
             // (el pingüino y el oso pescan así desde el hielo); si está lejos, no hay pesca.
             float gap = Vector3.Distance(self.transform.position, foodSource.position);
-            if (gap > 3f && gap < shoreFishingReach) Eat(self, fs, fs.gameObject, feed);
+            bool shore = gap > 3f && gap < shoreFishingReach;
+            // Cada zambullida saca unos peces del banco y sacia como una comida (Swarm.Consume da solo la masa de las
+            // crías del banco —gramos—, muy poco para un pingüino de 30 kg: seguía con hambre y «eat» ganaba siempre).
+            if (shore) { fs.Consume(1f); self.hungry -= feed; }
             yield return new WaitForSeconds(interval);
+            if (shore) { fs.Consume(1f); self.hungry -= feed; }
         }
         else
         {

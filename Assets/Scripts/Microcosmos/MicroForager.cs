@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +17,28 @@ public class MicroForager : MonoBehaviour
     Affordance _source;
     GameObject _load;
 
+    // INALCANZABLES: por NavMesh el agente se para donde puede (tras una pared, en otro piso) y no llegaba nunca → la
+    // recolectora se quedaba plantada para siempre (0 entregas en Hospital/Patanjali). Si no avanza en `stallSeconds`,
+    // abandona ese objetivo y lo evita un rato.
+    [Tooltip("Segundos sin acercarse a su objetivo antes de darlo por inalcanzable.")]
+    public float stallSeconds = 6f;
+    readonly Dictionary<Object, float> _skip = new Dictionary<Object, float>();
+    Object _goal;
+    float _bestDist, _stallSince;
+
+    // Un paso hacia el objetivo, vigilando que se acerque. null = inalcanzable (lo apunta y lo suelta el llamador).
+    bool? Go(Object goal, Vector3 to, float arrive)
+    {
+        if (goal != _goal) { _goal = goal; _bestDist = float.MaxValue; _stallSince = Time.time; }
+        if (MicroMove.Step(transform, to, speed, arrive)) { _goal = null; return true; }
+        Vector3 d = to - transform.position; d.y = 0f;
+        if (d.magnitude < _bestDist - 0.3f) { _bestDist = d.magnitude; _stallSince = Time.time; }
+        else if (Time.time - _stallSince > stallSeconds) { _skip[goal] = Time.time + 90f; _goal = null; return null; }
+        return false;
+    }
+
+    bool Skipped(Object o) => o != null && _skip.TryGetValue(o, out float until) && Time.time < until;
+
     void Update()
     {
         if (_load != null) { Deliver(); return; }
@@ -23,7 +46,9 @@ public class MicroForager : MonoBehaviour
         if (_target == null || (_target.carrier != null && _target.carrier != transform)) { if (!Pick()) return; if (_source != null) return; }
         if (_target.carrier == null)
         {
-            if (!MicroMove.Step(transform, _target.transform.position, speed)) return;
+            bool? got = Go(_target, _target.transform.position, 1.2f);
+            if (got == null) { _target = null; return; }
+            if (got == false) return;
             _target.carrier = transform; _target.transform.SetParent(transform, true);
             _target.transform.localPosition = Vector3.up * 2.1f;   // sobre la cabeza
             return;
@@ -39,7 +64,9 @@ public class MicroForager : MonoBehaviour
     void Harvest()
     {
         if (!_source.isActiveAndEnabled || _source.Stock < 0.2f) { _source = null; return; }
-        if (!MicroMove.Step(transform, _source.transform.position, speed, 2.5f)) return;
+        bool? at = Go(_source, _source.transform.position, 2.5f);
+        if (at == null) { _source = null; return; }
+        if (at == false) return;
         if (_source.Take(_source.kind == AffordanceKind.Honeydew ? 0.3f : 1f) <= 0f) { _source = null; return; }
         _load = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _load.name = _source.kind == AffordanceKind.Honeydew ? "Gota_melaza" : "Semilla";
@@ -64,12 +91,17 @@ public class MicroForager : MonoBehaviour
         MicroFood best = null; float bd = float.MaxValue;
         foreach (MicroFood f in MicroFood.All)
         {
-            if (f.carrier != null || f.leaf) continue;
+            if (f.carrier != null || f.leaf || Skipped(f)) continue;
             float d = (f.transform.position - transform.position).sqrMagnitude;
             if (d < bd) { bd = d; best = f; }
         }
-        Affordance seed = Affordance.Nearest(AffordanceKind.Seed, transform.position, Mathf.Sqrt(bd));
-        if (seed != null) bd = (seed.transform.position - transform.position).sqrMagnitude;
+        Affordance seed = null;
+        foreach (Affordance a in Affordance.Of(AffordanceKind.Seed))
+        {
+            if (a == null || !a.isActiveAndEnabled || !a.Available(null) || Skipped(a)) continue;
+            float d = (a.transform.position - transform.position).sqrMagnitude;
+            if (d < bd) { bd = d; seed = a; }
+        }
         // La melaza vale más que una semilla (azúcar líquido, recurso renovable que la colonia defiende): se va a por un
         // pulgón con gota aunque haya semillas más cerca, dentro de un radio de ordeño.
         // Solo desde el Neolítico (los mirmidones son humanos: ordeñar = ganadería lechera, Eras.Capability.Dairying).
@@ -77,7 +109,7 @@ public class MicroForager : MonoBehaviour
         foreach (Affordance a in Affordance.Of(AffordanceKind.Honeydew))
         {
             if (!Eras.Allows(Eras.Capability.Dairying)) break;
-            if (a == null || !a.isActiveAndEnabled || a.Stock < 0.3f || !a.Free(null)) continue;
+            if (a == null || !a.isActiveAndEnabled || a.Stock < 0.3f || !a.Free(null) || Skipped(a)) continue;
             float d = (a.transform.position - transform.position).sqrMagnitude;
             if (d < md) { md = d; milk = a; }
         }
