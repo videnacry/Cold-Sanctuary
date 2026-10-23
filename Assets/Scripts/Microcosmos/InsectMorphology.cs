@@ -24,7 +24,43 @@ public static class InsectMorphology
         public bool raptorial, jumper, elytra, beeWings, wings, siphons, stylet, backward;
         public float bodyHeight = 0.12f;         // altura del vientre sobre el suelo (en L)
         public int armPairs = 1;                 // pares delanteros que son BRAZOS al erguirse (mantis: 2 → anda a dos patas, con 4 brazos)
+        // DIMORFISMO SEXUAL (ForSex): cuerno del macho, oviscapto de la hembra, bulbos de los pedipalpos del macho de araña.
+        public bool horn, palpBulbs;
+        public float ovipositor;                 // largo del oviscapto (en L; 0 = sin)
         public Spec MemberwiseCloneSpec() => (Spec)MemberwiseClone();
+    }
+
+    /// <summary>
+    /// La ficha de la especie para su SEXO (Berón, 2026-10-23). Rasgos de manual, exagerados lo justo para verse en cubos:
+    /// - Hormiga: la obrera (hembra) es la ficha; el MACHO es alado (dos pares), de cabeza pequeña y mandíbulas cortas.
+    /// - Pulgón: la hembra áptera (partenogénica) es la ficha; el macho, alado y de abdomen menor (sale en otoño).
+    /// - Pelotero: el macho lleva CUERNO en la cabeza (Onthophagus). Mariquita: casi iguales (la hembra algo mayor).
+    /// - Saltamontes: la hembra, ~20 % mayor y con las valvas del oviscapto; el macho, menor.
+    /// - Grillo: la hembra lleva un OVISCAPTO largo como una aguja; el macho canta (tiene el aparato en las alas).
+    /// - Mantis: la hembra mucho más robusta (abdomen ancho); el macho esbelto, de antenas más largas.
+    /// - Termita: las obreras son machos y hembras iguales (sin dimorfismo visible); solo la reina engorda (fisogastria).
+    /// - Abeja: la obrera (hembra) es la ficha; el ZÁNGANO (macho), más robusto y de cabeza mayor.
+    /// - Araña lobo: la hembra, de abdomen grande; el macho, menor y con BULBOS en los pedipalpos (órganos copuladores).
+    /// </summary>
+    public static Spec ForSex(Spec s, bool female)
+    {
+        if (s == null) return null;
+        var c = s.MemberwiseCloneSpec();
+        c.body = (Seg[])s.body.Clone();
+        void Scale(string seg, float len, float wid) { for (int i = 0; i < c.body.Length; i++) if (c.body[i].name == seg) { c.body[i].len *= len; c.body[i].wid *= wid; c.body[i].hei *= wid; } }
+        switch (s.name)
+        {
+            case "Ant": if (!female) { c.beeWings = true; c.mandible *= 0.5f; Scale("Cabeza", 0.75f, 0.75f); Scale("Gaster", 0.9f, 0.85f); } break;
+            case "Aphid": if (!female) { c.beeWings = true; Scale("Abdomen", 0.7f, 0.75f); } break;
+            case "DungBeetle": if (!female) c.horn = true; break;
+            case "Ladybug": if (female) Scale("Elitros", 1.05f, 1.05f); break;
+            case "Grasshopper": if (female) { Scale("Abdomen", 1.2f, 1.15f); c.ovipositor = 0.06f; } else Scale("Abdomen", 0.9f, 0.9f); break;
+            case "Cricket": if (female) c.ovipositor = 0.5f; break;
+            case "Mantis": if (female) Scale("Abdomen", 1.1f, 1.4f); else { Scale("Abdomen", 0.9f, 0.75f); c.antenna *= 1.4f; } break;
+            case "SnowBee": if (!female) { Scale("Cabeza", 1.15f, 1.15f); Scale("Abdomen", 0.95f, 1.1f); } break;
+            case "Spider": if (female) Scale("Abdomen", 1.2f, 1.2f); else { Scale("Abdomen", 0.8f, 0.8f); c.palpBulbs = true; } break;
+        }
+        return c;
     }
 
     static readonly Dictionary<string, Spec> _all = new Dictionary<string, Spec>

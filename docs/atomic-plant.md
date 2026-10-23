@@ -98,3 +98,31 @@ Geiger). Pasos y anclas en `VirtualMissions`.
 - Pulsos del TRIGA (cinética completa, sin salto inmediato) para la demostración de seguridad inherente.
 - Fermi y la pila de Chicago (1942), Rutherford, Becquerel: más peldaños de la escalera.
 - Ropa de época propia (peluca de Newton, vestido de Curie): hoy usan el abrigo de `Wear1940s`.
+
+## 7. Planta de arriba: el ciclotrón médico (`Cyclotron`, `CyclotronConsole`, `FdgSynthesis`)
+
+> Berón, 2026-10-23: «¿acelerador de partículas en la planta atómica?». Un acelerador grande (sincrotrón, LHC) no cabe
+> en el santuario; lo que tienen los hospitales es un **ciclotrón compacto para el PET**, y complementa al reactor:
+> el reactor da isótopos ricos en NEUTRONES (Mo-99 → Tc-99m); el ciclotrón, ricos en PROTONES (F-18).
+
+- **Dónde**: un piso apilado sobre la planta (`Planta_ciclotron`, `StackOn`, 24 × 15 m), con su escalera. Ciclotrón
+  autoblindado al oeste, consola en medio, celda de síntesis de FDG al este, unidas por la línea blindada del blanco.
+- **La máquina** (tipo GE PETtrace): iones H⁻ de una fuente PIG interna; campo medio ≈ 1,8 T; RF 27,2 MHz (protones);
+  «Des» a ≈ 35 kV; protones de 16,5 MeV; extracción por lámina de carbono (arranca los electrones, la carga cambia de
+  signo y la órbita se abre hacia el blanco). Autoblindaje pegado a la máquina (como los modelos de hospital): fuera se
+  mide poco aunque dentro haya neutrones.
+- **Física que enseña** (calculada en `Cyclotron`): f = qB/2πm ≈ 27,4 MHz a 1,8 T (no depende de la velocidad);
+  radio final r = p/qB ≈ 0,33 m; ≈ 236 vueltas (2 × 35 keV por vuelta).
+- **Producción**: ¹⁸O(p,n)¹⁸F sobre agua enriquecida (> 97 %). A = Y_sat·I·(1 − e^(−λt)), Y_sat ≈ 8,3 GBq/µA,
+  T½ = 109,77 min. A 60 µA y 2 h ≈ 265 GBq al final de la irradiación; más de 2–3 h apenas suma. Tiempo comprimido
+  como el conejo neumático (1 s real = 10 min).
+- **FDG**: síntesis automática de ~25 min con rendimiento ~60 %; una PET de adulto ≈ 370 MBq. Los lotes van a
+  `MedicalIsotopes.Fdg` para el hospital (caducan en horas: por eso se hace al lado).
+- **Misión**: `pla_ciclotron` (Planta Atómica, también Hospital): dosímetro → arrancar el haz → parar y mandar el F-18
+  → sintetizar FDG.
+- **Pendiente**: que el hospital haga PET con `MedicalIsotopes.Fdg`; un acelerador lineal o un sincrotrón pequeño para el
+  peldaño de los quarks (S4).
+
+Fuentes del §7: WBIC Cambridge, «PETtrace» (wbic.cam.ac.uk/pettrace): 1,8 T, 27,2 MHz, 35 kV, 16,5 MeV, láminas de
+carbono; GE HealthCare, PETtrace 800 (capacidades de F-18 por 2 h); IJRR (ijrr.com, a_id=17), blanco de agua de 18 MeV:
+saturación ≈ 8,3 GBq/µA; IBA Cyclone KIUBE (18 MeV, autoblindado); NNDC (T½ del F-18).

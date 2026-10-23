@@ -13,6 +13,9 @@ public static class MedicalIsotopes
 
     public const float Mo99HalfLifeHours = 65.94f;
 
+    /// <summary>Lotes de FDG (F-18) entregados por el ciclotrón: (actividad en Bq, momento). Caducan en horas.</summary>
+    public static readonly List<(float bq, float at)> Fdg = new List<(float, float)>();
+
     /// <summary>Actividad de Mo-99 que queda ahora (cae a la mitad cada 65,94 h de juego comprimido).</summary>
     public static float Mo99Now(float hoursPerSecond)
     {

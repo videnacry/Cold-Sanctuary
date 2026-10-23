@@ -24,7 +24,51 @@ public static partial class SampleSceneBuilder
             AtomicPlantCenter, AtomicPlantSize, new Color(0.8f, 0.82f, 0.78f));
         Elevate(a.transform, AtomicPlantSize, ElevatedHeight);
         FurnishAtomicPlant(a.transform, ElevatedHeight);
+        // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
+        // planta veterinaria del hospital: el F-18 del PET se hace aquí, junto a su celda de síntesis.
+        Transform up = new GameObject("Planta_ciclotron").transform; up.SetParent(a.transform, false);
+        FurnishCyclotronFloor(up, StackOn(up, a.transform, AtomicPlantSize));
         return a;
+    }
+
+    /// <summary>
+    /// El ciclotrón AUTOBLINDADO (como los GE PETtrace o IBA Cyclone de los hospitales: el blindaje va pegado a la máquina,
+    /// sin búnker de 2 m), su consola y la celda de síntesis de FDG. docs/atomic-plant.md §7.
+    /// </summary>
+    static void FurnishCyclotronFloor(Transform up, Vector2 size)
+    {
+        Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.y), new Color(0.78f, 0.8f, 0.76f), "Suelo_ciclotron");
+        Transform r = new GameObject("Ciclotron_sala").transform; r.SetParent(up, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
+
+        // ── CICLOTRÓN: el imán (yugo de hierro y bobinas), las «Des», el blanco de agua y el autoblindaje ──
+        Transform cyc = Equip(r, "Ciclotron", new Vector3(-5f, 0f, -3.5f), 0f, (t) =>
+        {
+            for (int s = -1; s <= 1; s += 2) KitchenProps.C(t, new Vector3(s * 1.55f, 1.15f, 0f), new Vector3(0.9f, 2.3f, 2.3f), ApConcrete, 0f, "Autoblindaje");   // abierto por el medio para verlo
+            KitchenProps.C(t, new Vector3(0f, 0.25f, 0f), new Vector3(2.2f, 0.5f, 2.2f), new Color(0.2f, 0.3f, 0.55f), 0f, "Yugo_iman");
+            KitchenProps.C(t, new Vector3(0f, 1.75f, 0f), new Vector3(2.2f, 0.5f, 2.2f), new Color(0.2f, 0.3f, 0.55f), 0f, "Yugo_iman");
+            KitchenProps.C(t, new Vector3(0f, 0.9f, 0f), new Vector3(1.6f, 0.8f, 1.6f), new Color(0.75f, 0.45f, 0.25f), 0f, "Bobinas_cobre");
+            for (int s = -1; s <= 1; s += 2) KitchenProps.C(t, new Vector3(s * 0.35f, 1f, 0f), new Vector3(0.6f, 0.06f, 1.2f), ApSteel, 0f, "De_RF");
+            KitchenProps.C(t, new Vector3(0f, 1f, 1.2f), new Vector3(0.25f, 0.25f, 0.3f), ApYellow, 0f, "Blanco_agua_O18");
+        }, "Ciclotrón (protones de 16,5 MeV · F-18)");
+        Cyclotron cy = cyc.gameObject.AddComponent<Cyclotron>();
+        var src = new GameObject("Fuente_ciclotron"); src.transform.SetParent(cyc, false); src.transform.localPosition = new Vector3(0f, 1f, 1.2f);
+        cy.neutrons = src.AddComponent<RadiationSource>(); cy.neutrons.microSvPerHourAt1m = 0f; cy.neutrons.shielding = 1e-4f;
+
+        // ── CONSOLA (mira al ciclotrón) y CELDA DE SÍNTESIS DE FDG (la línea blindada del blanco llega a ella) ──
+        Transform console = Equip(r, "Consola_ciclotron", new Vector3(2f, 0f, -4.5f), -90f, (t) =>
+        {
+            KitchenProps.C(t, new Vector3(0f, 0.45f, 0f), new Vector3(2.2f, 0.9f, 0.8f), new Color(0.82f, 0.82f, 0.78f), 0f, "Mesa_consola");
+            KitchenProps.C(t, new Vector3(0f, 1.15f, -0.25f), new Vector3(2f, 0.6f, 0.1f), new Color(0.15f, 0.18f, 0.2f), 0f, "Pantallas");
+        }, "Consola del ciclotrón");
+        Transform fdg = Equip(r, "Celda_sintesis_FDG", new Vector3(7f, 0f, -3.5f), -90f, (t) =>
+        {
+            KitchenProps.C(t, new Vector3(0f, 0.9f, 0f), new Vector3(1.8f, 1.8f, 1.4f), ApLead, 0f, "Plomo");
+            KitchenProps.C(t, new Vector3(0f, 1.25f, 0.71f), new Vector3(0.8f, 0.45f, 0.04f), ApGlass, 0f, "Vidrio_plomado");
+        }, "Celda de síntesis de FDG (PET)");
+        CyclotronConsole cc = console.gameObject.AddComponent<CyclotronConsole>();
+        cc.cyclotron = cy; cc.synthesis = fdg.gameObject.AddComponent<FdgSynthesis>();
+        // La línea blindada del blanco a la celda, por el suelo (pasa por detrás de la consola).
+        KitchenProps.C(r, new Vector3(1f, 0.04f, -2.3f), new Vector3(12f, 0.08f, 0.12f), ApLead, 0f, "Linea_blindada_F18");
     }
 
     static void FurnishAtomicPlant(Transform area, float h)

@@ -60,6 +60,7 @@ public static class AreaWork
         M("Planta Atómica", "pla_operar", "Operar el reactor: arranque, subir a potencia y parada (consola)", 1f),
         Also(M("Planta Atómica", "pla_isotopos", "Irradiar molibdeno para el generador de Tc-99m del hospital", 1f), Hospital),
         M("Planta Atómica", "pla_ronda", "Ronda de la planta: resinas, bomba, torre y protección radiológica", 1f),
+        Also(M("Planta Atómica", "pla_ciclotron", "Producir F-18 en el ciclotrón y sintetizar FDG para el PET del hospital", 1f), Hospital),
         M(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true),
     };
 

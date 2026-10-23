@@ -78,6 +78,7 @@ public static class VirtualMissions
             case "pla_operar": return new[] { "Coger el dosímetro", "Comprobar la piscina desde el puente", "Arrancar: sacar las barras hasta crítico", "Subir a potencia y vigilar el periodo", "Parar: meter las barras" };
             case "pla_isotopos": return new[] { "Coger el dosímetro", "Mandar el molibdeno al núcleo", "Recuperar la cápsula", "Cargar el generador en la celda caliente", "Pasar por el pórtico de contaminación" };
             case "pla_ronda": return new[] { "Leer la conductividad y cambiar resinas", "Revisar la bomba y el intercambiador", "Revisar la torre de refrigeración", "Medir la tasa de dosis con el Geiger" };
+            case "pla_ciclotron": return new[] { "Coger el dosímetro", "Arrancar el haz del ciclotrón", "Parar el haz y mandar el F-18", "Sintetizar la FDG en la celda" };
             case "gua_carnivoros": return new[] { "Recoger las raciones", "Patrullar el perímetro", "Dar las raciones a los carnívoros" };
             case "obra_material": return new[] { "Cargar el material en el almacén", "Llevarlo a la obra", "Descargarlo a pie de obra" };
             case "obra_trabajo": return new[] { "Montar la estructura de guadua", "Rellenar con bahareque", "Colocar los paneles" };
@@ -110,6 +111,7 @@ public static class VirtualMissions
             case "pla_operar": return new[] { "Taquilla_dosimetros", "Puente_piscina", "Consola_reactor", "Consola_reactor", "Consola_reactor" };
             case "pla_isotopos": return new[] { "Taquilla_dosimetros", "Conejo_neumatico", "Conejo_neumatico", "Celda_caliente", "Portico_contaminacion" };
             case "pla_ronda": return new[] { "Purificacion", "Bomba_e_intercambiador", "Torre_refrigeracion", "Contador_Geiger" };
+            case "pla_ciclotron": return new[] { "Taquilla_dosimetros", "Consola_ciclotron", "Consola_ciclotron", "Celda_sintesis_FDG" };
             default: return null;
         }
     }

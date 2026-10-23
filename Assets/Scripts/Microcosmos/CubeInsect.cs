@@ -34,6 +34,7 @@ public class CubeInsect : MonoBehaviour
     public string species;
     public Color tint;
     public float lengthL = 1f;
+    public bool female = true;   // el sexo dibujado (InsectMorphology.ForSex); si el Animal es del otro, se redibuja
     Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;
     float _nextPhaseCheck;
 
@@ -44,9 +45,9 @@ public class CubeInsect : MonoBehaviour
     /// caza de larva, como la mariquita), PUPA (inmóvil, con las patas plegadas), NINFA (el adulto sin alas) o ADULTO. La
     /// hormiga león es al revés de lo que parece: la larva es el cazador de embudo y el ADULTO es alado.
     /// </summary>
-    public static CubeInsect Dress(GameObject host, string species, Color body, float length, Metamorphosis.Phase phase)
+    public static CubeInsect Dress(GameObject host, string species, Color body, float length, Metamorphosis.Phase phase, bool female = true)
     {
-        InsectMorphology.Spec sp = InsectMorphology.For(species);
+        InsectMorphology.Spec sp = InsectMorphology.ForSex(InsectMorphology.For(species), female);   // macho o hembra (dimorfismo)
         CubeInsect ci;
         if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Adult) ci = Build(host, InsectMorphology.Named("AntlionAdult"), body, length);
         else if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Larva) ci = Build(host, sp, body, length);
@@ -54,7 +55,7 @@ public class CubeInsect : MonoBehaviour
         else if (phase == Metamorphosis.Phase.Pupa) ci = Pupa(host, body, length);
         else if (phase == Metamorphosis.Phase.Nymph) ci = Build(host, InsectMorphology.Wingless(sp), body, length);
         else ci = Build(host, sp, body, length);
-        ci.species = species; ci.tint = body; ci.lengthL = length; ci._shown = phase;
+        ci.species = species; ci.tint = body; ci.lengthL = length; ci._shown = phase; ci.female = female;
         return ci;
     }
 
@@ -204,7 +205,16 @@ public class CubeInsect : MonoBehaviour
             {
                 Part(pivot, "Queliceros", new Vector3(s * 0.04f, y0 + 0.02f, ct.z + ct.len * 0.5f + 0.02f), new Vector3(0.06f, 0.12f, 0.06f), dark, 20f, 0f);
                 Part(pivot, "Pedipalpo", new Vector3(s * 0.09f, y0 + 0.03f, ct.z + ct.len * 0.5f + 0.1f), new Vector3(0.02f, 0.02f, 0.25f), dark, 15f, s * 15f);
+                // MACHO: los bulbos copuladores en la punta de los pedipalpos, como guantes de boxeo.
+                if (sp.palpBulbs) Part(pivot, "Bulbo_pedipalpo", new Vector3(s * 0.12f, y0 + 0.06f, ct.z + ct.len * 0.5f + 0.22f), new Vector3(0.07f, 0.07f, 0.08f), dark);
             }
+        }
+        // DIMORFISMO: el cuerno del macho de pelotero (en la cabeza, hacia arriba y atrás) y el oviscapto de la hembra.
+        if (sp.horn) Part(pivot, "Cuerno", new Vector3(0f, headY + head.hei * 0.6f, headZ), new Vector3(0.05f, 0.25f, 0.05f), dark, -25f, 0f);
+        if (sp.ovipositor > 0f)
+        {
+            var tail = segZ[sp.body[sp.body.Length - 1].name];
+            Part(pivot, "Oviscapto", new Vector3(0f, y0 + tail.hei * 0.4f, tail.z - tail.len * 0.5f - sp.ovipositor * 0.5f), new Vector3(0.02f, 0.025f, sp.ovipositor), dark, -8f, 0f);
         }
 
         // PATAS: de la coxa al tarso, con la pose de reposo de la ficha; luego se apoya el cuerpo para que los tarsos toquen el suelo.
@@ -490,6 +500,23 @@ public class CubeInsect : MonoBehaviour
         if (_seed < 0f) _seed = Random.Range(0f, 100f);
     }
 
+    /// <summary>Fija la postura YA (también en el editor, sin esperar a Update): erguido (centauro, con brazos) o animal
+    /// (a todas las patas). La deja fijada para el Play (<see cref="agitation"/>). Lo usa la galería de insectos-humanos.</summary>
+    public void PoseNow(bool upright)
+    {
+        if (_legs.Count == 0) Awake();
+        agitation = upright ? 0f : 1f; _calm = upright ? 1f : 0f;
+        if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-88f * _calm, 0f, 0f);
+        if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(88f * _calm, 0f, 0f);
+        foreach (Leg l in _legs)
+        {
+            if (l.coxa == null || !l.arm) continue;
+            l.coxa.localRotation = Quaternion.Slerp(l.coxaRest, l.armCoxa, _calm);
+            if (l.troch != null) l.troch.localRotation = Quaternion.Slerp(l.trochRest, l.armTroch, _calm);
+            if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.tibiaRest, l.armTibia, _calm);
+        }
+    }
+
     void Update()
     {
         // HERIDAS (BodyInjuries): se dibujan en cuanto se aplican (sin antebrazo, ojo cerrado, cojera).
@@ -499,7 +526,12 @@ public class CubeInsect : MonoBehaviour
         {
             _nextPhaseCheck = Time.time + 1f;
             Animal an = GetComponent<Animal>();
-            if (an != null) { Metamorphosis.Phase ph = Metamorphosis.PhaseOf(an); if (ph != _shown) { Dress(gameObject, species, tint, lengthL, ph); Awake(); } }
+            if (an != null)
+            {
+                Metamorphosis.Phase ph = Metamorphosis.PhaseOf(an);
+                bool fem = an.sex != Sex.male;   // macho o hembra según el animal (dimorfismo sexual)
+                if (ph != _shown || fem != female) { Dress(gameObject, species, tint, lengthL, ph, fem); Awake(); }
+            }
         }
         Vector3 v = (transform.position - _last) / Mathf.Max(Time.deltaTime, 1e-4f); v.y = 0f;
         _last = transform.position;
