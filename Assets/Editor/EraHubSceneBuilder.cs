@@ -13,12 +13,15 @@ using UnityEngine.SceneManagement;
 public static class EraHubSceneBuilder
 {
     const string ScenePath = "Assets/Scenes/Sala_de_Eras.unity";
-    static readonly Vector3 Origin = new Vector3(-5000f, 0f, 5000f);
+    static readonly Vector3 Origin = new Vector3(-9000f, 0f, -9000f);   // lejos de todos los microcosmos (se cargan encima, en aditivo)
 
     // (escena, nombre del microcosmos en Eras/MicroBiome, historia)
     static readonly (string scene, string display, string story)[] All =
     {
+        ("Microcosmos_Scene0_SakshiRio", "Sakshi (el río)", "el origen de Sakshi: el primer viaje de Kushal"),
+        ("Microcosmos_Scene1_Ambrosio", "Ambrosio (nivel 1)", "Ambrosio: el nivel 1 del microcosmos"),
         ("Microcosmos_Hospital", "Hospital", "Ambrosio, antes del fuego"),
+        ("MobWorld_Mesopotamia", "Mesopotamia", "la ciudad-insecto del amanecer de Mesopotamia"),
         ("Microcosmos_Cocina", "Cocina", "la era del fuego: las reencarnaciones"),
         ("Microcosmos_SalaYoga", "Sala de Yoga", "una tribu (Sala de Yoga)"),
         ("Microcosmos_Textil", "Estudio Textil", "una tribu (Estudio Textil)"),
@@ -75,8 +78,11 @@ public static class EraHubSceneBuilder
         Debug.Log($"[Eras] Sala de Eras: {list.Count} portales del {Eras.Format(list[0].year)} al {Eras.Format(list[list.Count - 1].year)} → {ScenePath}");
 
         EditorSceneManager.SaveScene(scene, ScenePath);
+        // Fuera de la lista las escenas de antes del hospital que ya no genera nadie (los archivos se quedan).
         var bs = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-        if (!bs.Exists(s => s.path == ScenePath)) { bs.Add(new EditorBuildSettingsScene(ScenePath, true)); EditorBuildSettings.scenes = bs.ToArray(); }
+        bs.RemoveAll(s => s.path == "Assets/Scenes/Microcosmos_Enfermeria.unity" || s.path == "Assets/Scenes/Microcosmos_Veterinaria.unity");
+        if (!bs.Exists(s => s.path == ScenePath)) bs.Add(new EditorBuildSettingsScene(ScenePath, true));
+        EditorBuildSettings.scenes = bs.ToArray();
         EditorSceneManager.CloseScene(scene, removeScene: true);
         if (prev.IsValid()) SceneManager.SetActiveScene(prev);
     }

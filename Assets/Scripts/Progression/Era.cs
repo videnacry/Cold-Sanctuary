@@ -61,7 +61,10 @@ public static class Eras
     {
         switch (display)
         {
+            case "Sakshi (el río)":       return (-1100000, "el río del origen de Sakshi, antes de Ambrosio");
+            case "Ambrosio (nivel 1)":
             case "Hospital":              return (-1000000, "taiga, antes del fuego (Ambrosio)");
+            case "Mesopotamia":           return (-3500, "Uruk, en el amanecer de las ciudades");
             case "Cocina":                return (-400000, "la era del fuego (las reencarnaciones)");
             case "Huerto":                return (-9500, "los primeros cultivos (La Sembradora)");
             case "Sala de Yoga": case "Estudio Textil": case "Mecánica": return (-40000, "una tribu del Paleolítico");
