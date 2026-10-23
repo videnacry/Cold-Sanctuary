@@ -65,6 +65,11 @@ public class MagnateWarden : MonoBehaviour
     public static void Bring(GameObject who, Vector3 back, string why)
     {
         if (who == null || Blocked(who) || Instance.Handling(who)) return;
+        // Solo si la Magnate sigue CONVENCIDA (Convictions; se cambia con el hechizo «reemplazar»): guardar los puestos o,
+        // con un recién llegado, que nadie salga sin iniciarse.
+        Magnate mg = FindAnyObjectByType<Magnate>();
+        string need = why != null && why.Contains("iniciación") ? "iniciar_a_los_recien_llegados" : "guardar_los_puestos";
+        if (mg != null && !Convictions.Of(mg.gameObject).Has(need)) return;
         Instance.StartCoroutine(Instance.Run(who, back, why));
     }
 

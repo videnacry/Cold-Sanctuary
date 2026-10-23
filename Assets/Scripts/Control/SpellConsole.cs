@@ -209,6 +209,18 @@ public class SpellConsole : MonoBehaviour
             }
             foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) Add(a.displayName);
         }
+        else if (key == "quitar" || key == "poner")
+        {
+            // CONVICCIONES: para quitar, las que tiene el objetivo; para poner, las del catálogo que aún no tiene.
+            string who = _given.TryGetValue("destiny", out string gd) ? Clean(gd) : "Magnate";
+            GameObject tg = me != null ? FindNearestNamed(who, me.transform.position) : GameObject.Find(who);
+            Convictions cv = Convictions.Of(tg);
+            if (cv != null)
+            {
+                if (key == "quitar") foreach (string id in cv.held) Add(id);
+                else foreach (string id in Convictions.Catalog.Keys) if (!cv.Has(id)) Add(id);
+            }
+        }
         else if (def == "true" || def == "false") { Add("true"); Add("false"); }
         Add(def);
         if (!string.IsNullOrEmpty(typed))
@@ -252,6 +264,8 @@ public class SpellConsole : MonoBehaviour
     // ve sugerencias (tolera fallos, ordena por similitud) y con Tab rellena la plantilla y cambia las properties.
     static readonly (string name, string template)[] Spells =
     {
+        ("reemplazar", "reemplazar({destiny:\"Magnate\", quitar:\"\", poner:\"\"})"),   // cambiar una CONVICCIÓN (Convictions)
+        ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
         ("take",      "take({item:\"Huevos\"})"),
@@ -297,8 +311,12 @@ public class SpellConsole : MonoBehaviour
         { "yoga", "yoga" }, { "teach", "teach" }, { "analysis", "clinico" }, { "vaccinate", "clinico" },
     };
 
+    /// <summary>LANZADOR ADMIN (hechizo <c>admin</c>): se conocen TODOS los hechizos del juego, sin aprenderlos.</summary>
+    public static bool Admin;
+
     public static bool KnowsSpell(Anima self, string spell)
     {
+        if (Admin) return true;
         if (!RequiresSkill.TryGetValue(spell, out string id)) return true;
         Grimoire g = self != null ? self.GetComponent<Grimoire>() : null;
         return g != null && g.Knows(id);
@@ -489,6 +507,21 @@ public class SpellConsole : MonoBehaviour
                     va.FocusOn(tgt, secs);
                     Log($"{self.name} enfoca «{tgt.name}» ({secs:0} s).");
                 }
+                break;
+            case "reemplazar": case "replace":   // cambia una CONVICCIÓN de alguien (Convictions): quitar una y/o poner otra
+                {
+                    string who = args.TryGetValue("destiny", out string rd) ? Clean(rd) : "Magnate";
+                    GameObject tg = FindNearestNamed(who, self.transform.position);
+                    if (tg == null) { Log($"¿Dónde está «{who}»?"); break; }
+                    Convictions cv = Convictions.Of(tg);
+                    string q = args.TryGetValue("quitar", out string rq) ? Clean(rq) : "", pn = args.TryGetValue("poner", out string rp) ? Clean(rp) : "";
+                    Log(cv.Replace(q, pn));
+                    Log($"  Convicciones de «{tg.name}»: " + (cv.held.Count == 0 ? "ninguna" : string.Join(" · ", cv.held)));
+                }
+                break;
+            case "admin":   // LANZADOR ADMIN: todos los hechizos del juego, sin aprenderlos
+                Admin = !args.TryGetValue("on", out string ao) || Clean(ao) != "false";
+                Log(Admin ? "Lanzador admin: conoces todos los hechizos del juego." : "Lanzador normal: solo los hechizos aprendidos.");
                 break;
             case "jornada": case "workday":   // plan del día, quién hace qué y el equilibrio (¿faltan personas o misiones?)
                 if (WorkdayDirector.Instance == null) { Log("No hay jornada en esta escena."); break; }
