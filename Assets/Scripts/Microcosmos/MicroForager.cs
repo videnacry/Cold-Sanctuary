@@ -72,9 +72,11 @@ public class MicroForager : MonoBehaviour
         if (seed != null) bd = (seed.transform.position - transform.position).sqrMagnitude;
         // La melaza vale más que una semilla (azúcar líquido, recurso renovable que la colonia defiende): se va a por un
         // pulgón con gota aunque haya semillas más cerca, dentro de un radio de ordeño.
+        // Solo desde el Neolítico (los mirmidones son humanos: ordeñar = ganadería lechera, Eras.Capability.Dairying).
         Affordance milk = null; float md = Mathf.Max(bd, milkRadius * milkRadius);
         foreach (Affordance a in Affordance.Of(AffordanceKind.Honeydew))
         {
+            if (!Eras.Allows(Eras.Capability.Dairying)) break;
             if (a == null || !a.isActiveAndEnabled || a.Stock < 0.3f || !a.Free(null)) continue;
             float d = (a.transform.position - transform.position).sqrMagnitude;
             if (d < md) { md = d; milk = a; }
