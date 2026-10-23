@@ -233,20 +233,24 @@ public class CubeInsect : MonoBehaviour
         // la araña a 6). Cuando el cuerpo toma el control (corre, huye, tiene miedo o hambre) baja el torso y vuelve a ser
         // un animal a 6 (u 8) patas. La cabeza lleva CARA (ojos, cejas y boca) y un cuello que la mantiene mirando al frente.
         float pivotZ = sp.body.Length >= 3 ? segZ[sp.body[1].name].z - segZ[sp.body[1].name].len * 0.5f : segZ[sp.body[sp.body.Length > 1 ? 1 : 0].name].z;
-        if (sp.spider) pivotZ = segZ["Cefalotorax"].z;
+        // ARAÑA: la cintura va detrás del cefalotórax, que se endereza entero (con los quelíceros y el 1.er par como brazos);
+        // antes giraba desde su centro y apenas se levantaba.
+        if (sp.spider) pivotZ = segZ["Cefalotorax"].z - segZ["Cefalotorax"].len * 0.5f;
         // MANTIS (2 pares de brazos): la cintura va entre el 2.º y el 3.er par; se yergue sobre las dos patas de atrás.
         if (sp.armPairs >= 2 && pairs >= 3) pivotZ = tx.z - tx.len * 0.2f;
         float chestH = sp.body.Length >= 3 ? segZ[sp.body[1].name].hei : head.hei;
         var torso = new GameObject("Torso").transform; torso.SetParent(pivot, false); torso.localPosition = new Vector3(0f, y0 + chestH * 0.5f, pivotZ);
         var neck = new GameObject("Cuello").transform; neck.SetParent(torso, false);
         neck.localPosition = torso.InverseTransformPoint(pivot.TransformPoint(new Vector3(0f, headY, headZ - head.len * 0.5f)));
+        // En la araña el cuello sale del FRENTE y lo alto del cefalotórax: su cabeza quedaba metida dentro y no se le veía la cara.
+        if (sp.spider) neck.localPosition = torso.InverseTransformPoint(pivot.TransformPoint(new Vector3(0f, y0 + head.hei, headZ + head.len * 0.5f)));
         var move = new List<Transform>();
         bool ArmLeg(Transform c) => c.name.StartsWith("Pata_") && c.name.Length > 5 && c.name[5] - '0' < sp.armPairs;
         foreach (Transform c in pivot) if (c != torso && c.localPosition.z > pivotZ + 1e-3f && !(c.name.StartsWith("Pata_") && !ArmLeg(c))) move.Add(c);
         foreach (Transform c in pivot) if (ArmLeg(c) && !move.Contains(c)) move.Add(c);
         foreach (Transform c in move)
         {
-            bool headPart = c.name == head.name || c.name == "Antena" || c.name == "Mandibula" || c.name == "Queliceros";
+            bool headPart = (c.name == head.name && !sp.spider) || c.name == "Antena" || c.name == "Mandibula" || c.name == "Queliceros";
             c.SetParent(headPart ? neck : torso, true);
         }
         if (sp.body.Length < 3 || sp.spider) Part(torso, "Pecho", new Vector3(0f, 0f, 0.06f), new Vector3(head.wid * 0.9f, chestH * 0.8f, 0.14f), body);   // un pecho al que se unen los brazos
