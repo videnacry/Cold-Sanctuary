@@ -154,6 +154,17 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                 }
         }
         TestProbe.Check("ninguna rama de árbol atraviesa una plataforma de área", pierced == 0, $"{pierced} ramas {string.Join(", ", piercedWho)}");
+        // La Magnate mide el ÁREA entera: quien está en la entreplanta de las camas (3 m) o en la planta de arriba sigue en
+        // su puesto; un paso fuera de la planta, no (Berón 2026-10-23: lo devolvía estando en la plataforma de las camas).
+        GameObject hosp = GameObject.Find("Infirmary_Area"), bed = GameObject.Find("Cama 4");
+        SanctuaryArea ha = hosp != null ? hosp.GetComponent<SanctuaryArea>() : null;
+        Transform hmat = hosp != null ? hosp.transform.Find("Mat") : null;
+        if (ha != null && bed != null && hmat != null)
+        {
+            Vector3 outside = hosp.transform.TransformPoint(new Vector3(hmat.localScale.x * 0.5f + 4f, 1f, 0f));
+            TestProbe.Check("la Magnate cuenta la entreplanta de las camas como parte del hospital (y fuera, no)",
+                ha.Contains(bed.transform.position + Vector3.up * 1.1f) && !ha.Contains(outside), $"cama en {bed.transform.position}");
+        }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
@@ -298,7 +309,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la iniciación de turistas del hospital es una misión de virtualización con su escena", Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName("enf_iniciacion")) && VirtualMissions.Steps("enf_iniciacion").Length >= 4);
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
-        TestProbe.Greater("hay pistas de alfombras voladoras (una por grupo de plataformas)", CarpetPad.All.Count, 1f, string.Join(" · ", CarpetPad.All.Select(p => p.displayName)));
+        TestProbe.Greater("hay pistas de alfombras voladoras (una encima de cada plataforma)", CarpetPad.All.Count, 1f, string.Join(" · ", CarpetPad.All.Select(p => p.displayName)));
         TestProbe.Check("el restaurante y el hospital están unidos por un puente de 8 m", FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") && t.name.Contains(AreaWork.Hospital) && !t.name.Contains("pista")));
         var census = new System.Collections.Generic.Dictionary<string, int>();
         foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;

@@ -105,4 +105,34 @@ public class SanctuaryArea : MonoBehaviour
             return hit.point + Vector3.up * 1.1f;
         return p + Vector3.up * 1.1f;
     }
+
+    // ── ¿Dentro del área? ────────────────────────────────────────────────────
+
+    float _top = -1f;
+
+    /// <summary>¿Está <paramref name="p"/> dentro del área? Cuenta la PLANTA entera (la alfombra «Mat» más
+    /// <paramref name="margin"/>) y en altura todo lo que el área tiene encima: entreplantas (camas, mesas, máquinas a
+    /// 3 m) y pisos superiores propios (la planta veterinaria del hospital). Un área apilada que sea OTRA área (el dojo
+    /// sobre el gimnasio) no cuenta. Lo usan la Magnate y la jornada para saber si alguien dejó su puesto.</summary>
+    public bool Contains(Vector3 p, float margin = 1f)
+    {
+        Transform mat = transform.Find("Mat");
+        Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
+        Vector3 l = transform.InverseTransformPoint(p);
+        if (Mathf.Abs(l.x) > half.x + margin || Mathf.Abs(l.z) > half.z + margin) return false;
+        return l.y > -2f && l.y < Top() + 3f;
+    }
+
+    // Altura local de lo más alto del área (sin seres ni otras áreas apiladas); se calcula una vez.
+    float Top()
+    {
+        if (_top >= 0f) return _top;
+        _top = 4f;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            if (r.GetComponentInParent<Anima>() != null || r.GetComponentInParent<SanctuaryArea>() != this) continue;
+            _top = Mathf.Max(_top, transform.InverseTransformPoint(r.bounds.max).y);
+        }
+        return _top;
+    }
 }

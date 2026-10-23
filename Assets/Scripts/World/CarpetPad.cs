@@ -15,6 +15,8 @@ public class CarpetPad : MonoBehaviour
     public string displayName = "Pista";
     [Tooltip("Centros de las áreas del grupo (para saber a qué pista va cada destino).")]
     public Vector3[] members = new Vector3[0];
+    [Tooltip("Grupo de plataformas unidas por puentes: entre pistas del mismo grupo se va andando, no en alfombra.")]
+    public int group;
     [Tooltip("Huecos de aterrizaje (dónde se posa cada alfombra), en coordenadas locales.")]
     public Vector3[] slots = new Vector3[0];
 
@@ -71,7 +73,7 @@ public class CarpetPad : MonoBehaviour
     {
         if (FlyingCarpet.Riding(g)) return true;
         CarpetPad a = For(g.transform.position), b = For(to);
-        if (a == null || b == null || a == b) return false;
+        if (a == null || b == null || a == b || a.group == b.group) return false;   // mismo grupo: andando por los puentes
         if ((g.transform.position - a.transform.position).sqrMagnitude > 36f) { to = a.transform.position; return false; }   // andar (y subir) a la pista: puede estar encima de un área
         FlyingCarpet c = a.IdleCarpet(g.transform.position);
         if (c == null) return false;

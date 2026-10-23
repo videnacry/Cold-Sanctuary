@@ -208,7 +208,6 @@ public class WorkdayDirector : MonoBehaviour
     // intentarlo. La Guardia patrulla por todo el santuario: ahí no se le retiene.
     GameObject _player;
     public int playerHeldBack { get; private set; }
-    readonly Dictionary<string, float> _areaRadius = new Dictionary<string, float>();
 
     void HoldPlayer(float h)
     {
@@ -218,27 +217,10 @@ public class WorkdayDirector : MonoBehaviour
         if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
         string area = Where(me, h, out string doing);
         if (area == null || area == AreaWork.Guard) return;
-        Vector3 c = AreaPoint(area, "centro"); if (c == Vector3.zero) return;
-        float r = AreaRadius(area);
-        Vector3 d = p.transform.position - c; d.y = 0f;
-        if (d.magnitude <= r || MagnateWarden.Instance.Handling(p)) return;
+        SanctuaryArea sa = AreaTransform(area)?.GetComponent<SanctuaryArea>(); if (sa == null) return;
+        if (sa.Contains(p.transform.position) || MagnateWarden.Instance.Handling(p)) return;   // toda el área cuenta: entreplantas y pisos de arriba
         playerHeldBack++;
         MagnateWarden.Bring(p, AreaPoint(area, "Player"), $"Ahora te toca «{doing}» en {area}. Hasta las 16:00 nadie deja su puesto.");
-    }
-
-    float AreaRadius(string area)
-    {
-        if (_areaRadius.TryGetValue(area, out float r)) return r;
-        r = 14f;
-        foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
-            if (a.displayName == area)
-            {
-                Renderer[] rs = a.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) break;
-                Bounds b = rs[0].bounds; foreach (Renderer x in rs) b.Encapsulate(x.bounds);
-                r = new Vector2(b.extents.x, b.extents.z).magnitude + 2f; break;
-            }
-        _areaRadius[area] = r;
-        return r;
     }
 
     /// <summary>Dónde debe estar <paramref name="w"/> a la hora <paramref name="h"/> (área) y qué hace; null = libre.</summary>
