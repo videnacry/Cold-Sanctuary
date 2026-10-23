@@ -52,12 +52,13 @@ public static partial class SampleSceneBuilder
         Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -hz + 2.2f), new Vector2(HospitalSize.x - 8.8f, 4.4f), g, new Vector2Int(0, -1));
         Transform east = Deck(r, "Galeria_este", new Vector3(hx - 2.2f, 0f, -5f), new Vector2(4.4f, 16f), g, new Vector2Int(1, -1));   // acaba en z = 3: el pie de su escalera no llega al tanque
         float[] westZ = { -11.5f, -8f, -4.5f, -1f, 2.5f }, backX = { -9.6f, -4.8f, 0f, 4.8f, 9.6f }, eastZ = { -11.5f, -8.4f, -5.3f, -2.2f, 0.9f };
+        float[] westZLow = { -12f, -9.5f, -7f, -4.5f, -2f };   // abajo, el oeste se aparta de la sala de aislamiento (z ≳ 1)
         int bed = 4;   // las camas 1-3 son las de observación de urgencias (abajo, junto a la entrada)
         // Cabecero hacia el borde exterior; hacia dentro queda un pasillo de ~1,5 m por el que llegan las escaleras.
         foreach (float y in new[] { g, 0f })   // arriba (en la galería) y debajo (a ras de suelo, bajo la galería)
         {
             string where = y > 0f ? "galería" : "bajo la galería";
-            for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 2f, y, westZ[i]), 90f, bl[i % 4]), $"Cama {bed} ({where})", 1.4f);
+            for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 2f, y, (y > 0f ? westZ : westZLow)[i]), 90f, bl[i % 4]), $"Cama {bed} ({where})", 1.4f);
             for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(backX[i], y, -hz + 2.2f), 0f, bl[(i + 1) % 4]), $"Cama {bed} ({where})", 1.4f);
             for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(hx - 2f, y, eastZ[i]), -90f, bl[(i + 2) % 4]), $"Cama {bed} ({where})", 1.4f);
         }

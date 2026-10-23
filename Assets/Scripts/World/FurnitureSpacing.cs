@@ -18,6 +18,7 @@ public static class FurnitureSpacing
         ("Maquina_", 0.9f),     // gimnasio
         ("Mesa_", 0.9f),        // comedor (la mesa con sus sillas)
         ("Cama ", 0.9f),        // camas de hospital
+        ("Cama_", 0.9f),        // camas de salas propias (aislamiento): se miden contra las de la planta
         ("Puesto_", 0.9f),      // puestos de cocina
         ("Telar", 0.8f),
         ("Aseos", 0.9f),

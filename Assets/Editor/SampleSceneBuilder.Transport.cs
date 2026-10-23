@@ -10,7 +10,7 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    const float BridgeWidth = 8f, PadSize = 14f;
+    const float BridgeWidth = 8f, PadSize = 14f, MinPadSize = 12f;   // en un piso alto estrecho (13 m), una pista de 12 m
 
     struct Plat { public Transform t; public string name; public Vector2 c, half; public int group; }
 
@@ -18,7 +18,7 @@ public static partial class SampleSceneBuilder
 
     static void BuildBridgesAndPads(Transform parent, SanctuaryArea[] areas, Vector2[] sizes)
     {
-        _openings.Clear(); _landings.Clear();
+        _openings.Clear(); _landings.Clear(); _groupOf.Clear();
         var plats = new List<Plat>();
         for (int i = 0; i < areas.Length && i < sizes.Length; i++)
         {
@@ -63,11 +63,12 @@ public static partial class SampleSceneBuilder
         foreach (var kv in groups)
         {
             var members = kv.Value; members.Sort((a, b) => (b.half.x * b.half.y).CompareTo(a.half.x * a.half.y));
+            foreach (Plat m in members) _groupOf[m.name] = kv.Key;
             bool stacked = false;
             foreach (Plat m in members)
             {
                 int ri = _roofs.FindIndex(rf => rf.name == m.name);
-                if (ri < 0 || _roofs[ri].size.x < PadSize + 2f || _roofs[ri].size.y < PadSize + 2f) continue;
+                if (ri < 0 || _roofs[ri].size.x < MinPadSize + 1f || _roofs[ri].size.y < MinPadSize + 1f) continue;
                 _padGroups.Add((ri, m.name, new[] { new Vector3(m.c.x, ElevatedHeight, m.c.y) }, kv.Key));
                 stacked = true; pads++;
             }
@@ -115,6 +116,7 @@ public static partial class SampleSceneBuilder
     // Pistas que van ENCIMA de un piso (índice en `_roofs`, nombre, centro de su área, grupo de puentes).
     static readonly List<(int roof, string label, Vector3[] members, int group)> _padGroups = new List<(int, string, Vector3[], int)>();
     const int ResidentialGroup = -100;
+    static readonly Dictionary<string, int> _groupOf = new Dictionary<string, int>();   // plataforma → su grupo de puentes
 
     /// <summary>Coloca cada pista de alfombras como PISO SUPERIOR (a 10 m) del piso más alto de su área: busca, en una
     /// rejilla de 1 m, el sitio donde sus columnas del borde y el pie de su escalera no caen sobre muebles. Después la
@@ -123,18 +125,29 @@ public static partial class SampleSceneBuilder
     {
         ResolveInnerUpperFloors();   // pisos altos montados dentro de un área (la planta veterinaria del hospital)
         Transform root = GameObject.Find("Transporte_Plataformas")?.transform;
+        // VARIOS PISOS → una pista ABAJO, tenga o no sitio para la de arriba (Berón 2026-10-23: dos vías de escape, el
+        // techo y abajo; toda plataforma de más de un piso tiene las dos).
+        SanctuaryArea[] areas = Object.FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None);
+        foreach (var (top, _, name) in _roofs)
+        {
+            SanctuaryArea baseArea = System.Array.Find(areas, x => x.displayName == name);
+            if (top == null || baseArea == null || top.position.y < baseArea.transform.position.y + 5f) continue;
+            int grp = _groupOf.TryGetValue(name, out int gg) ? gg : -200 - _roofs.FindIndex(r => r.name == name);
+            BottomPad(root, baseArea, name, new[] { baseArea.transform.position }, grp);
+        }
         foreach (var (ri, label, members, group) in _padGroups)
         {
             var (top, size, name) = _roofs[ri];
             if (top == null) continue;
-            float hx = size.x * 0.5f - PadSize * 0.5f - 0.5f, hz = size.y * 0.5f - PadSize * 0.5f - 0.5f, floorY = top.position.y;
+            float ps = Mathf.Min(PadSize, Mathf.Min(size.x, size.y) - 1f);   // 14 m, o 12–13 si el piso de arriba es estrecho
+            float hx = size.x * 0.5f - ps * 0.5f - 0.5f, hz = size.y * 0.5f - ps * 0.5f - 0.5f, floorY = top.position.y;
             var blockers = new List<Bounds>();
             foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
                 if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + UpperFloorGap) blockers.Add(rr.bounds);
             _openings.TryGetValue(top, out var gaps);
             int Hits(Vector3 c)
             {
-                int n = 0; float h = PadSize * 0.5f;
+                int n = 0; float h = ps * 0.5f;
                 var pts = new List<Vector3> { new Vector3(-h, 0f, 0f), new Vector3(h, 0f, 0f), new Vector3(0f, 0f, h + 1f) };   // columnas de los lados y pie de la escalera
                 for (int i = 0; i < 4; i++) { float x = -h + i * (2f * h / 3f); pts.Add(new Vector3(x, 0f, -h)); pts.Add(new Vector3(x, 0f, h)); }   // columnas de delante y detrás
                 foreach (Vector3 q in pts)
@@ -159,11 +172,8 @@ public static partial class SampleSceneBuilder
                     int n = Hits(new Vector3(x, 0f, z));
                     if (n < bestN) { bestN = n; best = new Vector3(x, 0f, z); }
                 }
-            // VARIOS PISOS → también una pista ABAJO (Berón 2026-10-23: dos vías de escape, el techo y abajo).
-            SanctuaryArea baseArea = System.Array.Find(Object.FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None), x => x.displayName == name);
-            if (baseArea != null && top.position.y > baseArea.transform.position.y + 5f) BottomPad(root, baseArea, label, members, group);
-            Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, group, UpperFloorGap, false);
-            _roofs[ri] = (pad, new Vector2(PadSize, PadSize), name);
+            Transform pad = Pad(root != null ? root : top, top.TransformPoint(best + Vector3.up * 0.1f), top.rotation, label, members, group, UpperFloorGap, false, ps);
+            _roofs[ri] = (pad, new Vector2(ps, ps), name);
             if (bestN > 0) Debug.LogWarning($"[Transporte] Pista sobre «{name}»: {bestN} columnas tocan muebles (no hay hueco del todo libre).");
             else Debug.Log($"[Transporte] Pista de alfombras como piso superior de «{name}» ({label}).");
         }
@@ -394,12 +404,12 @@ public static partial class SampleSceneBuilder
     }
 
     // PISTA: plataforma elevada (como las áreas) con ALFOMBRAS VOLADORAS como esterillas grandes.
-    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members, int group, float height = ElevatedHeight, bool groundBelow = true)
+    static Transform Pad(Transform root, Vector3 ground, Quaternion rot, string label, Vector3[] members, int group, float height = ElevatedHeight, bool groundBelow = true, float size = PadSize)
     {
         Transform t = new GameObject($"Pista_Alfombras_{label}").transform; t.SetParent(root, false);
         t.position = ground; t.rotation = rot;
-        Elevate(t, new Vector2(PadSize, PadSize), height, groundBelow);
-        Solid(t, new Vector3(0f, -0.05f, 0f), new Vector3(PadSize, 0.14f, PadSize), new Color(0.86f, 0.82f, 0.74f), "Suelo_pista");   // SÓLIDO (antes sin collider: se caía uno al subir a la alfombra)
+        Elevate(t, new Vector2(size, size), height, groundBelow);
+        Solid(t, new Vector3(0f, -0.05f, 0f), new Vector3(size, 0.14f, size), new Color(0.86f, 0.82f, 0.74f), "Suelo_pista");   // SÓLIDO (antes sin collider: se caía uno al subir a la alfombra)
         CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
         pad.displayName = label; pad.members = members; pad.group = group;
         var slots = new List<Vector3>();
