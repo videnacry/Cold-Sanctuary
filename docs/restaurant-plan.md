@@ -91,3 +91,17 @@ Preguntas abiertas:
   - 2 puestos de fermentos.
 
   Los equipos grandes y de uso compartido van una sola vez: el horno de pisos, la cava, las cámaras y el lavavajillas.
+
+## 6. Puestos de cocina COMPLETOS en anillo (Berón, 2026-10-23)
+- Cada uno de los **8 puestos** es una **estación integrada completa**, con todo lo que pide la carta, para que los 8 cocineros puedan hacer **el mismo platillo a la vez**. Los equipos de la carta (`Gastronomy.Equipment`) son:
+  - horno mixto;
+  - marmita y marmita a presión;
+  - paellero, wok y fogón de inducción;
+  - trompo vertical;
+  - horno de pizza;
+  - vaporera;
+  - abatidor;
+  - barra fría (sushi y montaje);
+  - fregadero de puesto.
+- **Forma de cada puesto:** una U de unos 11 m de encimera (la línea caliente pegada, como en la realidad) con un pasillo interior de 1,2 m. Huella de unos 5 × 4 m (≈ 25 m²).
+- **Distribución:** los 8 puestos en **anillo** alrededor del **pase central**, con 2 m libres entre puestos (≈ 200 m² más el paso). Los obradores, almacenes y lavado van por fuera del anillo, y el comedor está en el anillo de arriba.
