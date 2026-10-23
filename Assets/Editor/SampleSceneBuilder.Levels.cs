@@ -3,19 +3,19 @@ using UnityEngine;
 /// <summary>
 /// ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos): en vez de una plataforma por área unida por puentes, una
 /// misma base puede tener
-/// - PLATAFORMAS HIJAS (entreplantas) de 3 m con ESCALERA INCLINADA, dentro de la plataforma: p. ej. las camas de la
+/// - PLATAFORMAS HIJAS (entreplantas) de 4 m con ESCALERA INCLINADA, dentro de la plataforma: p. ej. las camas de la
 ///   enfermería en una galería en U, que deja el suelo libre para pasillos anchos;
-/// - un PISO SUPERIOR a 10 m (no tapa la vista del de abajo), con columnas solo en el perímetro y escalera vertical
+/// - un PISO SUPERIOR a 11 m (no tapa la vista del de abajo), con columnas solo en el perímetro y escalera vertical
 ///   desde el piso de abajo: yoga + ballet, gimnasio + dojo, dos huertos en la misma base.
 /// Así hay menos plataformas separadas y menos puentes.
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    public const float UpperFloorGap = 10f, MezzanineHeight = 3f;   // 3 m: debajo se pasa de pie sin chocar con la losa
+    public const float UpperFloorGap = 11f, MezzanineHeight = 4f;   // +1 m (Berón 2026-10-23): debajo se pasa holgado, sin chocar con la losa
     const float StairAngle = 38f;   // pendiente de las escaleras inclinadas (una escalera de casa ronda los 35–40°)
     const float SetBack = 3f;   // el piso de arriba es 3 m más corto por +Z: ahí queda el pie de su escalera
 
-    /// <summary>Pone <paramref name="upper"/> como PISO SUPERIOR de <paramref name="lower"/> (ya elevada), 10 m más arriba.
+    /// <summary>Pone <paramref name="upper"/> como PISO SUPERIOR de <paramref name="lower"/> (ya elevada), 11 m más arriba.
     /// Devuelve el tamaño del piso (el de abajo, 3 m más corto por +Z, donde baja su escalera).</summary>
     static Vector2 StackOn(Transform upper, Transform lower, Vector2 lowerSize)
     {

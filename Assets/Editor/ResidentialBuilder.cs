@@ -10,7 +10,7 @@ using UnityEngine;
 public static class ResidentialBuilder
 {
     public const float DeckY = 12f;   // como las demás áreas humanas: a 12 m, el bosque no queda en sombra
-    public const float StoryGap = 5f; // de una cabaña a la de encima
+    public const float StoryGap = 6f; // de una cabaña a la de encima (+1 m, Berón 2026-10-23)
     public const float PadAngle = 0f; // hacia dónde sale la pista de alfombras (desde la cabaña de 0°)
     static readonly Color Wood = new Color(0.62f, 0.52f, 0.42f), WoodDark = new Color(0.48f, 0.4f, 0.33f), Roof = new Color(0.55f, 0.66f, 0.75f);
 

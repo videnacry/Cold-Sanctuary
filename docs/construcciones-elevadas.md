@@ -58,17 +58,17 @@ Además de la altura:
 Para tener **caminos amplios y ordenados** y menos plataformas sueltas con puentes, una misma base puede crecer hacia
 arriba (`SampleSceneBuilder.Levels.cs`):
 
-- **Plataforma hija (entreplanta)** de **2,2 m** dentro de la plataforma, sobre postes solo en su perímetro, con
-  **escalera inclinada** (30°, rampa para andar y para el NavMesh) y barandilla de 1 m (`Deck`, `DeckRail`,
-  `InclinedStair`).
-  - **Hospital** (antes Enfermería; [`hospital.md`](hospital.md)): las 30 camas de planta en una **galería en U a 3 m**
+- **Plataforma hija (entreplanta)** de **4 m** dentro de la plataforma (2,2 → 3 → 4 m: Berón 2026-10-23 pidió 1 m más para
+  pasar holgado), sobre postes solo en su perímetro, con **escalera inclinada** (38°, rampa para andar y para el NavMesh),
+  sin barandilla (`Deck`, `InclinedStair`).
+  - **Hospital** (antes Enfermería; [`hospital.md`](hospital.md)): las 30 camas de planta en una **galería en U a 4 m**: **15 encima y 15 debajo** (5 por lado en cada nivel)
     (sin barandillas ni postes en el borde exterior, por donde llegan los puentes), con pasillo interior de ~1,5 m y dos
     escaleras inclinadas. Debajo se pasa de pie; abajo quedan urgencias, consultas, UCI, quirófano, imagen, laboratorio.
-    Encima, a 10 m, el **hospital veterinario** (planta alta, hija del área).
+    Encima, a 11 m, el **hospital veterinario** (planta alta, hija del área).
   - **Restaurante:** las mesas de los lados suben a dos **galerías de comedor** (oeste y este, 4,6 × 18 m), 3 mesas en
     cada una con vista a la cocina abierta y escalera inclinada al borde de +Z. Abajo queda un paso de ~5 m alrededor de
     la cocina. 12 mesas de 4 = 48 cubiertos.
-- **Piso superior a 10 m** (no tapa la vista del de abajo): columnas solo en el perímetro y escalera vertical desde el
+- **Piso superior a 11 m** (antes 10) (no tapa la vista del de abajo): columnas solo en el perímetro y escalera vertical desde el
   piso de abajo, a un lado del eje (`StackOn`). Es **3 m más corto** por el lado de la entrada: ahí apoya su escalera.
   Sin puente propio.
   - **Sala de Ballet** sobre la **Sala de Yoga**.
@@ -76,7 +76,7 @@ arriba (`SampleSceneBuilder.Levels.cs`):
   - **Huerto de rotación** sobre el **Huerto** (dos huertos, una base).
   - **Estudio Textil** sobre la **Construcción** (taller sobre taller; el textil queda de 18 × 11 m). La Mecánica
     (10 × 9) es pequeña para cargar otro piso: sus columnas y la escalera chocarían con los aseos y la máquina.
-- **Residencias:** cada cabaña entre árboles tiene **otra encima a 5 m** sobre cuatro columnas, con escalera vertical
+- **Residencias:** cada cabaña entre árboles tiene **otra encima a 6 m** sobre cuatro columnas, con escalera vertical
   desde su pasarela. Se quitan el anillo exterior de cabañas sobre columnas y sus seis pasarelas. La pista de alfombras
   sale ahora de la cabaña de 0°.
 

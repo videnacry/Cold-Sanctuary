@@ -26,9 +26,9 @@ public static partial class SampleSceneBuilder
         // (Las estatuas de gorila se quitaron: eran adorno y quitaban sitio.)
         string[] types = { "Press de pecho", "Press de hombros", "Jalón al pecho (espalda)", "Remo sentado", "Prensa de piernas",
                            "Extensión de cuádriceps", "Curl femoral", "Hip thrust (glúteos)", "Gemelos", "Curl de bíceps y tríceps" };
-        Vector3 deckC = new Vector3(-4.6f, 0f, -2.5f);
-        Transform upper = Deck(r, "Entreplanta_maquinas", deckC, new Vector2(12.4f, 10.4f));
-        InclinedStair(r, "Escalera_entreplanta", new Vector3(-1.2f, 0f, deckC.z + 5.2f + StairRun()), 180f);
+        Vector3 deckC = new Vector3(-4.6f, 0f, -3f);   // de z = −8 a +2: la escalera (4 m de alto, más larga) cabe antes del borde
+        Transform upper = Deck(r, "Entreplanta_maquinas", deckC, new Vector2(12.4f, 10f));
+        InclinedStair(r, "Escalera_entreplanta", new Vector3(-3f, 0f, deckC.z + 5f + StairRun()), 180f);   // a un lado de la escalera de mano (x = 0)
         int k = 0;
         for (int t = 0; t < types.Length; t++)
             for (int c = 0; c < 3; c++, k++)

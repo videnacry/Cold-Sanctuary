@@ -2,7 +2,7 @@
 
 Pedido de Berón (2026-10-22): la enfermería pasa a **hospital**, porque no hay otro a miles de km. Debe poder tratar
 **todos los casos**, tener equipo para **8 médicos a la vez**, **quirófano**, cuidar al **mismo número de personas que de
-animales**, y crecer **a dos plantas**. Las camas de la plataforma hija suben a **3 m** (a 2,2 m Kushal chocaba) y **sin
+animales**, y crecer **a dos plantas**. Las camas de la plataforma hija suben a **4 m** (a 2,2 m Kushal chocaba; 2026-10-23, +1 m) y **sin
 barandillas**.
 
 Código: `Assets/Editor/SampleSceneBuilder.Hospital.cs` (`BuildHospital`), muebles en `InfirmaryProps`, puestos
@@ -43,12 +43,11 @@ with South Pole allows remote knee surgery* (hospimedica.com).
 - **Este**: sala de espera (10), farmacia, rayos X, ecografía, paritorio, laboratorio, analizador clínico, banco de
   sangre, **quirófano** (mesa, lámpara, anestesia, instrumental), lavado quirúrgico, autoclave y planta de oxígeno.
   El tanque de virtualización sigue en la esquina +X +Z.
-- **Galería en U a 3 m** (oeste 10 + fondo 11 + este 9 = **30 camas de planta**, Cama 4-33), sin barandillas, a 2,1 m
-  de eje a eje (0,9 m de pasillo entre camas, `FurnitureSpacing`; gotero y monitor detrás del cabecero); el
-  cabecero da al borde exterior y por dentro queda un pasillo de ~1,3 m al que llegan las dos escaleras inclinadas.
-  Sin postes en el borde exterior (por ahí llegan los puentes).
+- **Galería en U a 4 m** con **30 camas de planta** (Cama 4-33): **15 encima** (Cama 4-18) y **15 debajo**, a ras de suelo bajo la galería (Cama 19-33). Son 5 por lado en cada nivel: oeste, fondo y este.
+  - Entre cama y cama quedan ~1,5–3,8 m: se pasa por los dos lados, como piden las guías de hospital (≥ 0,9 m).
+  - Sin barandillas. El cabecero da al borde exterior, y por dentro queda un pasillo al que llegan las dos escaleras inclinadas. La galería este acaba en z = 3 para que su escalera no choque con el tanque.
 
-**Planta alta, a 10 m (animales)** — hija del área (`Planta_veterinaria`, `StackOn`), escalera vertical en su borde +Z:
+**Planta alta, a 11 m (animales)** — hija del área (`Planta_veterinaria`, `StackOn`), escalera vertical en su borde +Z:
 
 - **30 plazas**: 6 cuadras (oso, foca, lobo), 16 boxes, 8 jaulas (pingüino, zorro, aves).
 - Consulta veterinaria (mesa hidráulica, ecógrafo, báscula: la anestesia va por kilo), quirófano veterinario con su

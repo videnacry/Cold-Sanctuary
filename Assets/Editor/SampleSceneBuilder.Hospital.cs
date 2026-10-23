@@ -6,9 +6,9 @@ using UnityEngine;
 /// (cirujano + anestesista, esterilización, lavado quirúrgico), UCI, paritorio, aislamiento, imagen, laboratorio y banco
 /// de sangre, farmacia, oxígeno propio y telemedicina. Dos plantas sobre la misma base:
 /// - PLANTA BAJA (personas): servicios a pie de suelo con pasillos de ≥ 3 m, y las 30 CAMAS DE PLANTA en una galería en U
-///   a 3 m (plataforma hija, sin barandillas; por debajo se pasa de pie). Aquí sigue la iniciación (silla de exámenes,
+///   a 4 m (plataforma hija, sin barandillas; por debajo se pasa de pie). Aquí sigue la iniciación (silla de exámenes,
 ///   analizador clínico, mesa del médico y el tanque de virtualización).
-/// - PLANTA ALTA, a 10 m (animales): hospital veterinario con 30 PLAZAS (6 cuadras, 16 boxes, 8 jaulas), consulta y
+/// - PLANTA ALTA, a 11 m (animales): hospital veterinario con 30 PLAZAS (6 cuadras, 16 boxes, 8 jaulas), consulta y
 ///   quirófano veterinarios. Mismo número de plazas para animales que camas para personas.
 /// 8 PUESTOS MÉDICOS (HospitalStation.doctorPost): urgencias, 2 consultas, UCI, cirujano, anestesista, veterinaria y
 /// cirugía veterinaria; la jornada coloca a cada médico en uno libre.
@@ -16,10 +16,9 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     public static readonly Vector2 HospitalSize = new Vector2(32f, 26f);
-    public const float HospitalBedDeck = 3f;
+    public const float HospitalBedDeck = MezzanineHeight;
     // Cama de ~1,12 m de ancho medida (barandas y ruedas; gotero y monitor van detrás del cabecero) + 0,9 m de pasillo
     // entre camas (FurnitureSpacing: acceso por los dos lados) + margen → 2,1 m de eje a eje.
-    const float BedPitch = 2.1f;
 
     static Transform Station(Transform t, HospitalService service, string label, float height, bool doctorPost = false, Vector3? stand = null)
     {
@@ -44,20 +43,26 @@ public static partial class SampleSceneBuilder
         // Pasillo central (entrada → fondo), libre de muebles: 3 m de ancho.
         KitchenProps.C(r, new Vector3(0f, 0.03f, 1.9f), new Vector3(3f, 0.01f, HospitalSize.y - 7.6f), new Color(0.72f, 0.86f, 0.84f), 0f, "Pasillo_central");
 
-        // ── GALERÍA DE CAMAS a 3 m (en U, sin barandillas): 10 al oeste, 11 al fondo, 9 al este = 30 camas de planta ──
+        // ── GALERÍA DE CAMAS (en U, sin barandillas): MITAD DE LAS CAMAS ENCIMA y MITAD DEBAJO (Berón 2026-10-23), 5 por
+        // lado en cada nivel, con ~1,5–3 m entre cama y cama para pasar por los dos lados = 30 camas de planta.
         // Sin postes en el borde que da al exterior de la plataforma (por ahí llegan los puentes).
         float g = HospitalBedDeck, run = StairRun(g);
         Color[] bl = { new Color(0.62f, 0.8f, 0.92f), new Color(0.75f, 0.9f, 0.8f), new Color(0.95f, 0.85f, 0.7f), new Color(0.9f, 0.78f, 0.85f) };
         Transform west = Deck(r, "Galeria_oeste", new Vector3(-hx + 2.2f, 0f, -3f), new Vector2(4.4f, 20f), g, new Vector2Int(-1, -1));
         Transform back = Deck(r, "Galeria_fondo", new Vector3(0f, 0f, -hz + 2.2f), new Vector2(HospitalSize.x - 8.8f, 4.4f), g, new Vector2Int(0, -1));
-        Transform east = Deck(r, "Galeria_este", new Vector3(hx - 2.2f, 0f, -4f), new Vector2(4.4f, 18f), g, new Vector2Int(1, -1));
-        int bed = 4;   // las camas 1-3 son las de observación de urgencias (abajo)
+        Transform east = Deck(r, "Galeria_este", new Vector3(hx - 2.2f, 0f, -5f), new Vector2(4.4f, 16f), g, new Vector2Int(1, -1));   // acaba en z = 3: el pie de su escalera no llega al tanque
+        float[] westZ = { -11.5f, -8f, -4.5f, -1f, 2.5f }, backX = { -9.6f, -4.8f, 0f, 4.8f, 9.6f }, eastZ = { -11.5f, -8.4f, -5.3f, -2.2f, 0.9f };
+        int bed = 4;   // las camas 1-3 son las de observación de urgencias (abajo, junto a la entrada)
         // Cabecero hacia el borde exterior; hacia dentro queda un pasillo de ~1,5 m por el que llegan las escaleras.
-        for (int i = 0; i < 10; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 2f, g, -12.5f + i * BedPitch), 90f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 11; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-10.5f + i * BedPitch, g, -hz + 2.2f), 0f, bl[i % 4]), $"Cama {bed}", 1.4f);
-        for (int i = 0; i < 9; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(hx - 2f, g, -12.5f + i * BedPitch), -90f, bl[i % 4]), $"Cama {bed}", 1.4f);
+        foreach (float y in new[] { g, 0f })   // arriba (en la galería) y debajo (a ras de suelo, bajo la galería)
+        {
+            string where = y > 0f ? "galería" : "bajo la galería";
+            for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(-hx + 2f, y, westZ[i]), 90f, bl[i % 4]), $"Cama {bed} ({where})", 1.4f);
+            for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(backX[i], y, -hz + 2.2f), 0f, bl[(i + 1) % 4]), $"Cama {bed} ({where})", 1.4f);
+            for (int i = 0; i < 5; i++, bed++) Label(InfirmaryProps.HospitalBed(r, $"Cama {bed}", new Vector3(hx - 2f, y, eastZ[i]), -90f, bl[(i + 2) % 4]), $"Cama {bed} ({where})", 1.4f);
+        }
         InclinedStair(r, "Escalera_galeria_oeste", new Vector3(-hx + 3.6f, 0f, 7f + run), 180f, g);
-        InclinedStair(r, "Escalera_galeria_este", new Vector3(hx - 3.6f, 0f, 5f + run), 180f, g);
+        InclinedStair(r, "Escalera_galeria_este", new Vector3(hx - 3.6f, 0f, 3f + run), 180f, g);
         Label(west, "Sala de camas (oeste)", 1.8f); Label(east, "Sala de camas (este)", 1.8f); Label(back, "Sala de camas (fondo)", 1.8f);
 
         // ── PLANTA BAJA, OESTE: entrada, urgencias, consultas (iniciación) y UCI ──
@@ -121,7 +126,7 @@ public static partial class SampleSceneBuilder
         Station(InfirmaryProps.Autoclave(r, "Autoclave", new Vector3(10.6f, 0f, -4.4f), -90f), HospitalService.Esterilizacion, "Esterilización (autoclave)", 2f, false, new Vector3(0f, 0f, -1f));
         Station(InfirmaryProps.OxygenPlant(r, "Planta_oxigeno", new Vector3(10.4f, 0f, -7.6f), -90f), HospitalService.Oxigeno, "Planta de oxígeno", 2.6f, false, new Vector3(0f, 0f, -1.1f));
 
-        // ── PLANTA ALTA (a 10 m): HOSPITAL VETERINARIO con 30 plazas ──
+        // ── PLANTA ALTA (a 11 m): HOSPITAL VETERINARIO con 30 plazas ──
         Transform up = new GameObject("Planta_veterinaria").transform; up.SetParent(area.transform, false);
         Vector2 us = StackOn(up, area.transform, HospitalSize);
         float ux = us.x * 0.5f, uz = us.y * 0.5f;
@@ -140,7 +145,7 @@ public static partial class SampleSceneBuilder
         InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet", new Vector3(4.2f, 0f, 2.6f), 90f);
         Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria", new Vector3(7.4f, 0f, 2.6f), -90f), HospitalService.Anestesia, "Anestesia veterinaria", 2f, false, new Vector3(0f, 0f, -0.9f));
         Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(5.4f, 0f, 6.8f), 180f), "Farmacia veterinaria", 2.2f);
-        Debug.Log($"[Hospital] 2 plantas: {bed - 1} camas para personas (3 de observación + 30 de planta en la galería a {g} m) y {place - 1} plazas para animales; {Object.FindObjectsByType<HospitalStation>(FindObjectsSortMode.None).Length} puestos interactivos.");
+        Debug.Log($"[Hospital] 2 plantas: {bed - 1} camas para personas (3 de observación + 30 de planta: 15 en la galería a {g} m y 15 debajo) y {place - 1} plazas para animales; {Object.FindObjectsByType<HospitalStation>(FindObjectsSortMode.None).Length} puestos interactivos.");
 
         // Linduarda en su mesa; Lizmibet pasando visita en la galería; el paciente de prueba (lobo) arriba, en una cuadra.
         GameObject l = GameObject.Find("Linduarda");
