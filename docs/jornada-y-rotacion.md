@@ -19,6 +19,19 @@ Diseño de Berón (2026-10-18). Código:
 
 Durante las 8 h los personajes van al área de su misión y se quedan allí. **Nadie queda encerrado** (2026-10-22): si alguien abandona su puesto, la **Magnate** (que conoce todos los hechizos, también teletransportarse) aparece de pronto delante de él, le dice que vuelva y lo teletransporta de vuelta dentro del área (`World/MagnateWarden.cs`). El jugador ve su itinerario en pantalla. Consola: `jornada` (plan del día y equilibrio).
 
+**Qué cuenta como «su puesto»** (2026-10-23). La Magnate mide el **espacio que necesita la tarea**, no solo un punto (`WorkdayDirector.InWorkspace`):
+- **Su área entera**, con entreplantas y pisos de arriba (`SanctuaryArea.Contains`), y todas las áreas que se llaman igual. El Huerto incluye también sus parcelas y el bambusal.
+- **Las áreas por las que la tarea hace ir** (`Mission.also`):
+  - llevar la cosecha a la Cocina;
+  - la carne cultivada a la Cocina y la Cría;
+  - las reparaciones, del almacén de Construcción al área averiada;
+  - el material (guadua, micelio, cuerda) al almacén;
+  - el Tc-99m al Hospital;
+  - los análisis de animales en la Cría.
+- **La obra** en la que se trabaja (`Mission.site`).
+- **Cualquier área** si la tarea las recorre todas (`Mission.roams`: reparar maquinaria).
+- **De camino**: en un puente, una pista, una alfombra o una escalera se le deja pasar hasta 90 s. Quedarse ahí no es trabajar.
+
 ## Reparto (rotación)
 
 1. Cada día hay una **lista de misiones por área**. Primero van las que quedaron **pendientes** ayer, luego las **obligatorias** del día y después el resto.

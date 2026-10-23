@@ -217,10 +217,62 @@ public class WorkdayDirector : MonoBehaviour
         if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
         string area = Where(me, h, out string doing);
         if (area == null || area == AreaWork.Guard) return;
-        SanctuaryArea sa = AreaTransform(area)?.GetComponent<SanctuaryArea>(); if (sa == null) return;
-        if (sa.Contains(p.transform.position) || MagnateWarden.Instance.Handling(p)) return;   // toda el área cuenta: entreplantas y pisos de arriba
+        if (AreaTransform(area) == null || MagnateWarden.Instance.Handling(p)) return;
+        Vector3 pos = p.transform.position;
+        if (InWorkspace(Current(me, h)?.mission, area, pos)) { _transitSince = -1f; return; }
+        // DE CAMINO (en un puente, en una pista, en alfombra, en una escalera): se le deja pasar un rato, que las tareas
+        // de varias áreas obligan a cruzar; quedarse ahí no es trabajar.
+        if (InTransit(p))
+        {
+            if (_transitSince < 0f) _transitSince = Time.time;
+            if (Time.time - _transitSince < MaxTransit) return;
+        }
+        _transitSince = -1f;
         playerHeldBack++;
         MagnateWarden.Bring(p, AreaPoint(area, "Player"), $"Ahora te toca «{doing}» en {area}. Hasta las 16:00 nadie deja su puesto.");
+    }
+
+    float _transitSince = -1f;
+    const float MaxTransit = 90f;
+
+    /// <summary>¿Está <paramref name="pos"/> en el espacio que su tarea necesita? Su área (todas las que se llaman así,
+    /// con entreplantas y pisos de arriba), las áreas por las que la tarea hace ir, la obra en la que se trabaja, los
+    /// huertos si la tarea es del Huerto, o cualquier área si la tarea recorre todas (reparar maquinaria).</summary>
+    public static bool InWorkspace(WorkRoster.Mission m, string area, Vector3 pos)
+    {
+        if (InAreaNamed(area, pos)) return true;
+        if (m == null) return false;
+        foreach (string x in m.also) if (InAreaNamed(x, pos)) return true;
+        if (m.roams && SceneCache.All<SanctuaryArea>(2f).Any(a => a != null && a.Contains(pos))) return true;
+        if (m.site != null)
+            foreach (ConstructionProject cp in ConstructionProject.All)
+                if (cp != null && cp.title == m.site && cp.Area != null && cp.Area.Contains(pos, 3f)) return true;
+        return false;
+    }
+
+    // Todas las áreas con ese nombre (y, para el Huerto, sus parcelas y el bambusal, que están en el suelo).
+    static bool InAreaNamed(string name, Vector3 pos)
+    {
+        foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
+            if (a != null && a.displayName == name && a.Contains(pos)) return true;
+        if (name == "Huerto")
+            foreach (GardenPlot g in SceneCache.All<GardenPlot>(2f))
+            {
+                if (g == null) continue;
+                Vector3 l = g.transform.InverseTransformPoint(pos);
+                if (Mathf.Abs(l.x) < g.size.x * 0.5f + 2f && Mathf.Abs(l.z) < g.size.y * 0.5f + 2f && l.y > -2f && l.y < 8f) return true;
+            }
+        return false;
+    }
+
+    // En un puente o una pista de alfombras, volando o trepando una escalera.
+    static bool InTransit(GameObject p)
+    {
+        if (FlyingCarpet.Riding(p) || Ladder.IsClimbing(p.transform)) return true;
+        if (!Physics.Raycast(p.transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)) return false;
+        for (Transform t = hit.transform; t != null; t = t.parent)
+            if (t.name.StartsWith("Puente_") || t.name.StartsWith("Pista_Alfombras")) return true;
+        return false;
     }
 
     /// <summary>Dónde debe estar <paramref name="w"/> a la hora <paramref name="h"/> (área) y qué hace; null = libre.</summary>
