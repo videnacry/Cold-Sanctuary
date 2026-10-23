@@ -32,6 +32,7 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 - **La obra** en la que se trabaja (`Mission.site`).
 - **Cualquier área** si la tarea las recorre todas (`Mission.roams`: reparar maquinaria).
 - **De camino**: en un puente, una pista, una alfombra o una escalera se le deja pasar hasta 90 s. Quedarse ahí no es trabajar.
+- **Fuera de su alcance** (`MagnateWarden.Blocked`, Berón 2026-10-23): mientras vuela en alfombra o está en el microcosmos (o entrando/saliendo), la Magnate no trae a nadie. Cualquier sistema puede bloquear su alcance para todos con `MagnateWarden.Lock(clave, true)` y quitar su bloqueo con `Lock(clave, false)`.
 
 ## Reparto (rotación)
 

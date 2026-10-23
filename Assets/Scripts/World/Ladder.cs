@@ -70,10 +70,23 @@ public class Ladder : MonoBehaviour, IInteractable
             Vector3 d = l.transform.position - who.position;
             if (Mathf.Abs(d.y) > 2.5f) continue;
             d.y = 0f;
-            if (d.magnitude <= 2f) return l.TryClimb(who);
+            if (d.magnitude > 2f) continue;
+            // Solo si la ruta CRUZA esta escalera: la esquina siguiente es su otro extremo. Antes bastaba con que el destino
+            // quedara más arriba (o abajo) estando junto a ella; si el destino caía unos metros por encima o por debajo de
+            // donde se le puede llegar (p. ej. el punto del área bajo una entreplanta), subía, el destino seguía «abajo»,
+            // bajaba, seguía «arriba»… y se quedaba subiendo y bajando sin parar.
+            Vector3 other = l.top ? l.FootLanding : l.TopLanding;
+            Vector3 o = nextCorner - other;
+            if (Mathf.Abs(o.y) > 2.5f) continue;
+            o.y = 0f;
+            if (o.magnitude <= 3f) return l.TryClimb(who);
         }
         return false;
     }
+
+    // Donde se pisa al pie y arriba (los dos extremos del enlace del NavMesh).
+    Vector3 FootLanding => ladder.TransformPoint(new Vector3(0f, 0f, -FootOffset));
+    Vector3 TopLanding => ladder.TransformPoint(new Vector3(0f, deckY, 1.6f));
 
     /// <summary>Sube (up) o baja al <paramref name="who"/> por la escalera.</summary>
     public IEnumerator Climb(Transform who, bool up)

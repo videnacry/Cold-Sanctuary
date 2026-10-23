@@ -43,11 +43,28 @@ public class MagnateWarden : MonoBehaviour
 
     readonly HashSet<GameObject> _magnates = new HashSet<GameObject>();
 
+    // ── FUERA DE SU ALCANCE (Berón 2026-10-23) ───────────────────────────────────────────────────────────────────
+    static readonly HashSet<object> _locks = new HashSet<object>();
+
+    /// <summary>Bloquea (o desbloquea) su alcance para TODOS mientras <paramref name="by"/> lo pida (una escena, una
+    /// misión…). Cada quien quita solo su propio bloqueo.</summary>
+    public static void Lock(object by, bool on) { if (by == null) return; if (on) _locks.Add(by); else _locks.Remove(by); }
+
+    /// <summary>¿Está <paramref name="who"/> fuera del alcance de la Magnate ahora? Volando en alfombra, dentro del
+    /// microcosmos (o entrando/saliendo de él) o con un bloqueo activo: no se le trae de vuelta.</summary>
+    public static bool Blocked(GameObject who)
+    {
+        _locks.RemoveWhere(k => k == null || (k is Object o && o == null));
+        if (_locks.Count > 0) return true;
+        if (FlyingCarpet.Riding(who)) return true;
+        return MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy);
+    }
+
     /// <summary>La Magnate aparece delante de <paramref name="who"/>, le dice <paramref name="why"/> y lo lleva a
     /// <paramref name="back"/> (dentro de su área). No hace nada si ya está en ello.</summary>
     public static void Bring(GameObject who, Vector3 back, string why)
     {
-        if (who == null || Instance.Handling(who)) return;
+        if (who == null || Blocked(who) || Instance.Handling(who)) return;
         Instance.StartCoroutine(Instance.Run(who, back, why));
     }
 

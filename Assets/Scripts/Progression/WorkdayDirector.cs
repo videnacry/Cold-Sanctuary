@@ -215,7 +215,7 @@ public class WorkdayDirector : MonoBehaviour
         WorkRoster.Worker me = roster.Find("Player"); if (me == null) return;
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         GameObject p = _player; if (p == null) return;
-        if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
+        if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
         string area = Where(me, h, out string doing);
         if (area == null || area == AreaWork.Guard) return;

@@ -186,6 +186,13 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                 TestProbe.Check("la Magnate cuenta el espacio de la tarea (reparar en la Cocina sí, el almacén no)",
                     WorkdayDirector.InWorkspace(fixKitchen, "Construcción", inKitchen) && !WorkdayDirector.InWorkspace(store, "Construcción", inKitchen));
         }
+        {
+            GameObject who = GameObject.FindGameObjectWithTag("Player");
+            object key = new object();
+            MagnateWarden.Lock(key, true); bool locked = MagnateWarden.Blocked(who);
+            MagnateWarden.Lock(key, false); bool free = !MagnateWarden.Blocked(who);
+            TestProbe.Check("el alcance de la Magnate se puede bloquear (y se libera al quitar el bloqueo)", locked && free);
+        }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");
         TestProbe.Check("la colmena está en una cavidad con piquera (entrada)", FindByPrefix("Piquera"));
