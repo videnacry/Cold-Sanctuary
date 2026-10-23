@@ -24,16 +24,17 @@ public class MicroForager : MonoBehaviour
     public float stallSeconds = 6f;
     readonly Dictionary<Object, float> _skip = new Dictionary<Object, float>();
     Object _goal;
-    float _bestDist, _stallSince;
+    float _bestDist, _stallSince, _goalSince;
 
     // Un paso hacia el objetivo, vigilando que se acerque. null = inalcanzable (lo apunta y lo suelta el llamador).
     bool? Go(Object goal, Vector3 to, float arrive)
     {
-        if (goal != _goal) { _goal = goal; _bestDist = float.MaxValue; _stallSince = Time.time; }
+        if (goal != _goal) { _goal = goal; _bestDist = float.MaxValue; _stallSince = _goalSince = Time.time; }
         if (MicroMove.Step(transform, to, speed, arrive)) { _goal = null; return true; }
         Vector3 d = to - transform.position; d.y = 0f;
         if (d.magnitude < _bestDist - 0.3f) { _bestDist = d.magnitude; _stallSince = Time.time; }
-        else if (Time.time - _stallSince > stallSeconds)
+        // Sin avanzar en stallSeconds, o demasiado rato con el mismo (resbalando contra una pared el agente «avanza» a ratos).
+        else if (Time.time - _stallSince > stallSeconds || Time.time - _goalSince > stallSeconds * 8f)
         {
             _skip[goal] = Time.time + 90f; _goal = null;
             if (++_fails >= 3) CrossCountry();

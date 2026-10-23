@@ -409,6 +409,10 @@ public static class AreaMicrocosmos
     static int ForagingBand(Transform root, Vector3 at, int count)
     {
         Lair(root, at, "Guarida de las recolectoras");
+        // Restos junto a la guarida (como TribeStory): donde el área gigante tapa el suelo (el Hospital ×10 ocupa casi todo
+        // y sus paredes cierran tres lados) la flora queda a >130 m y las recolectoras no tenían nada al alcance.
+        Transform scraps = new GameObject("Restos_de_la_guarida").transform; scraps.SetParent(root, false); scraps.localPosition = at;
+        Food(scraps, false, 12, 24f);   // en anillo de 14–24 m alrededor de la guarida
         for (int i = 0; i < count; i++)
         {
             float a = i * (360f / count) * Mathf.Deg2Rad;
