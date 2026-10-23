@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 580 tipos._
+_Total: 583 tipos._
 
 
 ## Animals
@@ -62,6 +62,7 @@ _Total: 580 tipos._
 - **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md):
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
+- **EraHubSceneBuilder** (class) — `Assets/Editor/EraHubSceneBuilder.cs` — SALA DE ERAS (Berón, 2026-10-23:
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23:
@@ -201,6 +202,7 @@ _Total: 580 tipos._
 - **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/jornada-y-rotacion.md):
 - **ContaminationMonitor** (class) — `Assets/Scripts/AtomicPlant/ContaminationMonitor.cs` — PÓRTICO DE CONTAMINACIÓN de manos y pies (salida de la zona controlada):
 - **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+- **Convictions** (class) — `Assets/Scripts/Mind/Convictions.cs` — CONVICCIONES (Berón, 2026-10-23:
 - **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §...
 - **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
@@ -246,6 +248,7 @@ _Total: 580 tipos._
 - **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md).
 - **EmotionReader** (class) — `Assets/Scripts/Emotion/EmotionReader.cs` — LEGIBILIDAD (docs/emotion-model.md §6):
 - **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
+- **EraPortal** (class) — `Assets/Scripts/Microcosmos/EraPortal.cs` — Portal de la SALA DE ERAS (escena de validación):
 - **Eras** (class) — `Assets/Scripts/Progression/Era.cs` — ERAS (Berón, 2026-10-23:
 - **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
