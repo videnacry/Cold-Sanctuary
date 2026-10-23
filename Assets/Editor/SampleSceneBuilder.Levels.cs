@@ -77,4 +77,51 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Largo (en planta) de una escalera inclinada de <paramref name="h"/> m.</summary>
     static float StairRun(float h = MezzanineHeight) => h / Mathf.Tan(StairAngle * Mathf.Deg2Rad);
+
+    /// <summary>
+    /// ANILLO (Berón, 2026-10-23): plataforma hija CUADRADA Y COMPLETA alrededor de una planta de <paramref name="floor"/>, a
+    /// <paramref name="h"/> m sobre ella, de <paramref name="width"/> m de ancho, con solo el <paramref name="inside"/> (20 %)
+    /// sobre la planta y el resto VOLANDO fuera del borde, para no quitarle sitio. Sin postes (voladizo) y con barrera
+    /// invisible por fuera y por dentro (menos en el hueco de sus dos escaleras, en el centro de los lados ±Z).
+    /// Devuelve la raíz (a la altura de la cara de arriba). <see cref="RingPoint"/> recorre su línea central.
+    /// </summary>
+    static Transform RingDeck(Transform parent, string name, Vector2 floor, float h = MezzanineHeight, float width = 10f, float inside = 0.2f)
+    {
+        Color woodDark = new Color(0.48f, 0.4f, 0.33f), wood = new Color(0.62f, 0.52f, 0.42f);
+        float inn = width * inside, hx = floor.x * 0.5f - inn, hz = floor.y * 0.5f - inn, ox = hx + width, oz = hz + width;
+        Transform ring = new GameObject(name).transform; ring.SetParent(parent, false); ring.localPosition = Vector3.up * h;
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Solid(ring, new Vector3(0f, -0.075f, s * (hz + width * 0.5f)), new Vector3(2f * ox, 0.15f, width), woodDark, "Losa_anillo");
+            Solid(ring, new Vector3(s * (hx + width * 0.5f), -0.075f, 0f), new Vector3(width, 0.15f, 2f * hz), woodDark, "Losa_anillo");
+            KitchenProps.C(ring, new Vector3(0f, -0.3f, s * (oz - 0.15f)), new Vector3(2f * ox, 0.3f, 0.3f), wood, 0f, "Viga_borde");
+            KitchenProps.C(ring, new Vector3(s * (ox - 0.15f), -0.3f, 0f), new Vector3(0.3f, 0.3f, 2f * oz), wood, 0f, "Viga_borde");
+        }
+        void Barrier(Vector3 c, Vector3 size) { Transform b = Solid(ring, c + Vector3.up * 2f, size, wood, "Barrera_anillo"); b.GetComponent<Renderer>().enabled = false; }
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Barrier(new Vector3(0f, 0f, s * oz), new Vector3(2f * ox, 4f, 0.06f));
+            Barrier(new Vector3(s * ox, 0f, 0f), new Vector3(0.06f, 4f, 2f * oz));
+            Barrier(new Vector3(s * hx, 0f, 0f), new Vector3(0.06f, 4f, 2f * hz));
+            for (int k = -1; k <= 1; k += 2) Barrier(new Vector3(k * (hx + 1f) * 0.5f, 0f, s * hz), new Vector3(hx - 1f, 4f, 0.06f));   // hueco de 2 m en el centro: la escalera
+        }
+        return ring;
+    }
+
+    /// <summary>Punto y orientación a la distancia <paramref name="s"/> por la línea central del anillo (empieza en el centro
+    /// del lado +Z y gira en sentido horario). yaw = la cama atravesada al anillo (su largo a lo ancho).</summary>
+    static (Vector3 p, float yaw, bool corner) RingPoint(Vector2 floor, float s, float width = 10f, float inside = 0.2f)
+    {
+        float inn = width * inside, cx = floor.x * 0.5f - inn + width * 0.5f, cz = floor.y * 0.5f - inn + width * 0.5f;
+        float per = 4f * (cx + cz); s = Mathf.Repeat(s, per);
+        float a = cx, b = 2f * cz, c = 2f * cx, d = 2f * cz;   // tramos: +Z (mitad derecha), +X, −Z, −X, +Z (mitad izquierda)
+        bool Corner(float along, float len) => along < width * 0.5f || along > len - width * 0.5f;
+        if (s < a) return (new Vector3(s, 0f, cz), 0f, s > a - width * 0.5f);
+        s -= a; if (s < b) return (new Vector3(cx, 0f, cz - s), 90f, Corner(s, b));
+        s -= b; if (s < c) return (new Vector3(cx - s, 0f, -cz), 0f, Corner(s, c));
+        s -= c; if (s < d) return (new Vector3(-cx, 0f, -cz + s), 90f, Corner(s, d));
+        s -= d; return (new Vector3(-cx + s, 0f, cz), 0f, s < width * 0.5f);
+    }
+
+    static float RingLength(Vector2 floor, float width = 10f, float inside = 0.2f) => 4f * (floor.x * 0.5f + floor.y * 0.5f - 2f * width * inside + width);
 }
