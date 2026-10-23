@@ -85,6 +85,10 @@ public static class AreaMicrocosmos
         else if (kind == SampleSceneBuilder.MissionKind.KitchenChannel) dressed = KitchenStory(cast);
         else if (kind == SampleSceneBuilder.MissionKind.GardenChannel) dressed = GardenStory(cast);
         else dressed = TribeStory(cast, display, 8);
+        // Las historias propias (Patanjali, Planta Atómica, Hospital…) traen su elenco pero ninguna recolectora: sin ellas los
+        // mirmidones de ese microcosmos no viven del entorno (semillas; melaza desde el Neolítico, Eras.Dairying). Se añade
+        // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
+        if (cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
         int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
@@ -399,6 +403,18 @@ public static class AreaMicrocosmos
             n++;
         }
         return n;
+    }
+
+    // CUADRILLA DE RECOLECTORAS para los microcosmos de historia: su guarida y unas mirmidonas que recogen lo que da el entorno.
+    static int ForagingBand(Transform root, Vector3 at, int count)
+    {
+        Lair(root, at, "Guarida de las recolectoras");
+        for (int i = 0; i < count; i++)
+        {
+            float a = i * (360f / count) * Mathf.Deg2Rad;
+            Ant(root, $"Recolectora_{i + 1}", at + new Vector3(Mathf.Cos(a) * 8f, 0f, Mathf.Sin(a) * 8f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
+        }
+        return count;
     }
 
     // RESTO DE ÁREAS: la tribu en su área gigante, con su guarida y sus recolectoras.

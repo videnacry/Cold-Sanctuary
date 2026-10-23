@@ -93,3 +93,9 @@ La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el sant
 - **Comer por hábito**: con hambre y comida natural cerca (savia, bayas, liquen, respiradero para el oso), «habit»
   compite con «eat» de igual a igual y prefiere los actos de comer.
 - **Censo** (diagnóstico): «ocupados» (`busy`) y el último deseo ganador por especie.
+- **Cuerpo al mando bloqueaba la volición** (3ª prueba): con hambre/alerta ≥ `takeoverArousal`, `AcuteStressResponse`
+  mete su reflejo en el carril `own` de la `ActionQueue`, y la volición seguía encolando en el carril opcional, que no
+  corre mientras `own` tenga algo → el deseo ganador (comer, hábito) no se ejecutaba nunca. Ahora, con `own` ocupado, la
+  volición despacha directo (ese reflejo es justo «la IA conduce»).
+- **Recolectoras en los microcosmos de historia** (Patanjali, Planta Atómica, Hospital…): si el elenco no trae ninguna
+  `MicroForager`, `AreaMicrocosmos.ForagingBand` añade una guarida y 6 recolectoras junto al claro.
