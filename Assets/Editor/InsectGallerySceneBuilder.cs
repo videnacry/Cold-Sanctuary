@@ -71,6 +71,9 @@ public static class InsectGallerySceneBuilder
         GalleryExplorer.Spawn(Origin + new Vector3(Step, 0.1f, -8f), 0f).transform.SetParent(null);
 
         EditorSceneManager.SaveScene(scene, ScenePath);
+        // En la lista de escenas (Build Settings), para encontrarla en el selector.
+        var list = new System.Collections.Generic.List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+        if (!list.Exists(s => s.path == ScenePath)) { list.Add(new EditorBuildSettingsScene(ScenePath, true)); EditorBuildSettings.scenes = list.ToArray(); }
         EditorSceneManager.CloseScene(scene, removeScene: true);
         if (prev.IsValid()) SceneManager.SetActiveScene(prev);
         Debug.Log($"[Galería] {n} especies: pareja erguida (♀ y ♂), postura animal y ciclo de vida → {ScenePath} (capturas en Temp/PoseGallery/Galeria_InsectosHumanos_N.png).");
