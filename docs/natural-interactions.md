@@ -103,3 +103,6 @@ La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el sant
   hambre y «eat» ganaba siempre; ahora cada zambullida sacia como una comida (`feed`). Las recolectoras (`MicroForager`)
   abandonan un objetivo al que no se acercan en `stallSeconds` (tras una pared / en otro piso del NavMesh) y lo evitan
   90 s: antes se quedaban plantadas (0 entregas en Hospital/Patanjali). Log `[Hábito] … empieza a hacer melaza`.
+- **5ª prueba**: el ordeño busca pulgones con gota en todo el microcosmos (`milkRadius` 250; los pulgones viven en la
+  flora, lejos de la guarida). Si una recolectora falla 3 objetivos seguidos por el NavMesh (su trozo de suelo aislado),
+  desactiva su agente y va a campo través (log `[Micro] … va a campo través`). Log `[Micro] … ordeña la melaza`.

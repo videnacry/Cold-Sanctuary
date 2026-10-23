@@ -12,7 +12,7 @@ public class MicroForager : MonoBehaviour
     public float speed = 3f;
     public int delivered;
     [Tooltip("Hasta dónde va a ordeñar un pulgón aunque haya semillas más cerca.")]
-    public float milkRadius = 60f;
+    public float milkRadius = 250f;   // todo el microcosmos: un pulgón con gota compensa la caminata
     MicroFood _target;
     Affordance _source;
     GameObject _load;
@@ -33,8 +33,27 @@ public class MicroForager : MonoBehaviour
         if (MicroMove.Step(transform, to, speed, arrive)) { _goal = null; return true; }
         Vector3 d = to - transform.position; d.y = 0f;
         if (d.magnitude < _bestDist - 0.3f) { _bestDist = d.magnitude; _stallSince = Time.time; }
-        else if (Time.time - _stallSince > stallSeconds) { _skip[goal] = Time.time + 90f; _goal = null; return null; }
+        else if (Time.time - _stallSince > stallSeconds)
+        {
+            _skip[goal] = Time.time + 90f; _goal = null;
+            if (++_fails >= 3) CrossCountry();
+            return null;
+        }
         return false;
+    }
+
+    int _fails;
+    static int _milked;
+
+    // Tres objetivos seguidos sin camino por el NavMesh (su trozo de suelo está aislado: Patanjali, Hospital): deja el
+    // NavMesh y va a CAMPO TRAVÉS, en línea recta, como un insecto que trepa por encima de lo que encuentra.
+    void CrossCountry()
+    {
+        var ag = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (ag == null || !ag.enabled) return;
+        ag.enabled = false;
+        _skip.Clear();
+        Debug.Log($"[Micro] «{name}» no encuentra camino por el suelo: va a campo través.");
     }
 
     bool Skipped(Object o) => o != null && _skip.TryGetValue(o, out float until) && Time.time < until;
@@ -55,8 +74,8 @@ public class MicroForager : MonoBehaviour
         }
         MicroLair lair = MicroLair.Nearest(transform.position);
         if (lair == null) return;
-        if (!MicroMove.Step(transform, lair.transform.position, speed, 3f)) return;
-        lair.stock++; delivered++;
+        if (Go(lair, lair.transform.position, 3f) != true) return;
+        lair.stock++; delivered++; _fails = 0;
         _target.Respawn(); _target = null;
     }
 
@@ -68,6 +87,7 @@ public class MicroForager : MonoBehaviour
         if (at == null) { _source = null; return; }
         if (at == false) return;
         if (_source.Take(_source.kind == AffordanceKind.Honeydew ? 0.3f : 1f) <= 0f) { _source = null; return; }
+        if (_source.kind == AffordanceKind.Honeydew && _milked++ < 5) Debug.Log($"[Micro] «{name}» ordeña la melaza de «{_source.name}» y la lleva a la guarida.");
         _load = GameObject.CreatePrimitive(PrimitiveType.Cube);
         _load.name = _source.kind == AffordanceKind.Honeydew ? "Gota_melaza" : "Semilla";
         Destroy(_load.GetComponent<Collider>());
@@ -81,8 +101,8 @@ public class MicroForager : MonoBehaviour
     {
         MicroLair lair = MicroLair.Nearest(transform.position);
         if (lair == null) return;
-        if (!MicroMove.Step(transform, lair.transform.position, speed, 3f)) return;
-        lair.stock++; delivered++;
+        if (Go(lair, lair.transform.position, 3f) != true) return;
+        lair.stock++; delivered++; _fails = 0;
         Destroy(_load); _load = null;
     }
 
