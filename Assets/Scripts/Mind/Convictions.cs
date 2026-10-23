@@ -42,7 +42,7 @@ public class Convictions : MonoBehaviour
         bool put = !string.IsNullOrEmpty(add) && Catalog.ContainsKey(add) && !held.Contains(add);
         if (put) held.Add(add);
         if (!had && !put) return $"«{name}» no tiene «{remove}» y no hay nada que poner.";
-        return $"«{name}» " + (had ? $"ya no piensa «{Text(remove)}»" : "") + (had && put ? "; ahora piensa " : put ? "ahora piensa " : "") + (put ? $"«{Text(add)}»" : "") + ".";
+        return $"«{name}» " + (had ? $"ya no piensa «{Text(remove).TrimEnd('.')}»" : "") + (had && put ? "; ahora piensa " : put ? "ahora piensa " : "") + (put ? $"«{Text(add).TrimEnd('.')}»" : "") + ".";
     }
 
     public static string Text(string id) => id != null && Catalog.TryGetValue(id, out string t) ? t : id;

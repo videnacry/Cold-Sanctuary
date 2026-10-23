@@ -83,6 +83,7 @@ public static class EraHubSceneBuilder
         bs.RemoveAll(s => s.path == "Assets/Scenes/Microcosmos_Enfermeria.unity" || s.path == "Assets/Scenes/Microcosmos_Veterinaria.unity");
         if (!bs.Exists(s => s.path == ScenePath)) bs.Add(new EditorBuildSettingsScene(ScenePath, true));
         EditorBuildSettings.scenes = bs.ToArray();
+        AssetDatabase.SaveAssets();   // que la lista quede escrita en ProjectSettings ya
         EditorSceneManager.CloseScene(scene, removeScene: true);
         if (prev.IsValid()) SceneManager.SetActiveScene(prev);
     }
