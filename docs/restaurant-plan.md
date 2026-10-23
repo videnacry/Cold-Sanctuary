@@ -72,3 +72,22 @@ Preguntas abiertas:
 - **Ancho:** unos 10 m. Fila central de mesas de 4 con sus sillas (unos 2,2 m) y **4 m libres a cada lado**.
 - **Posición:** solo el **20 % sobre la planta** (unos 2 m) y el **80 % volando por fuera** (unos 8 m), para no quitar sitio a la cocina.
 - **Anillo de camas del hospital:** lo mismo, con 4 m de paso a cada lado de la cama.
+
+## 5. Personal y puestos (Berón, 2026-10-23)
+- **8 personas:**
+  - 4 cocineros: 3 en la línea y 1 en el pase, que sube los platos a la sala;
+  - 2 en preparación: panadería y pasta, y lácteos y fermentos;
+  - 2 en limpieza: la cocina y el lavado, y el comedor del anillo.
+- **CAJA** en el anillo, junto a la entrada desde el puente. La atiende el cocinero que esté libre.
+- En el restaurante todos saben cocinar. Si la cocina se satura, los de preparación y limpieza **entran a cocinar**. Por eso la línea tiene **8 puestos de trabajo**, uno por persona:
+  - 2 fuegos e inducción;
+  - 2 horno y plancha;
+  - 2 frío y sushi;
+  - 2 pase.
+- **Obradores DUPLICADOS:** cada estación, por dos, para hacer la misma tarea a la vez:
+  - 2 puestos de panadería: amasadora y mesa;
+  - 2 de pasta: mesa y laminadora;
+  - 2 cubas de quesería;
+  - 2 puestos de fermentos.
+
+  Los equipos grandes y de uso compartido van una sola vez: el horno de pisos, la cava, las cámaras y el lavavajillas.
