@@ -119,8 +119,31 @@ public class SanctuaryArea : MonoBehaviour
         Transform mat = transform.Find("Mat");
         Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
         Vector3 l = transform.InverseTransformPoint(p);
-        if (Mathf.Abs(l.x) > half.x + margin || Mathf.Abs(l.z) > half.z + margin) return false;
+        float ring = RingReach();
+        bool onMat = Mathf.Abs(l.x) <= half.x + margin && Mathf.Abs(l.z) <= half.z + margin;
+        if (!onMat && (ring <= 0f || l.y < _ringMinY - 0.5f || Mathf.Abs(l.x) > half.x + margin + ring || Mathf.Abs(l.z) > half.z + margin + ring)) return false;   // fuera de la planta: solo sobre el anillo
         return l.y > -2f && l.y < Top() + 3f;
+    }
+
+    // ANILLOS (RingDeck, Berón 2026-10-23): las plataformas hijas en anillo vuelan ~8 m fuera del borde y son del área.
+    float _ringReach = -1f, _ringMinY = float.MaxValue;
+    float RingReach()
+    {
+        if (_ringReach >= 0f) return _ringReach;
+        _ringReach = 0f;
+        Transform mat = transform.Find("Mat");
+        Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
+        foreach (Transform t in GetComponentsInChildren<Transform>(true))
+        {
+            if (!t.name.StartsWith("Anillo_")) continue;
+            foreach (Renderer r in t.GetComponentsInChildren<Renderer>(true))
+            {
+                Vector3 c = transform.InverseTransformPoint(r.bounds.center), e = r.bounds.extents;
+                _ringMinY = Mathf.Min(_ringMinY, transform.InverseTransformPoint(r.bounds.min).y);
+                _ringReach = Mathf.Max(_ringReach, Mathf.Abs(c.x) + e.x - half.x, Mathf.Abs(c.z) + e.z - half.z);
+            }
+        }
+        return _ringReach;
     }
 
     /// <summary>¿Está <paramref name="p"/> en el EDIFICIO de esta área? Es toda la columna de plataformas apiladas sobre su
@@ -157,7 +180,8 @@ public class SanctuaryArea : MonoBehaviour
         Transform mat = transform.Find("Mat");
         Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
         Vector3 l = transform.InverseTransformPoint(p);
-        return Mathf.Abs(l.x) <= half.x + margin && Mathf.Abs(l.z) <= half.z + margin;
+        float ring = RingReach();
+        return Mathf.Abs(l.x) <= half.x + margin + ring && Mathf.Abs(l.z) <= half.z + margin + ring;
     }
 
     // Altura local de lo más alto del área (sin seres ni otras áreas apiladas); se calcula una vez.

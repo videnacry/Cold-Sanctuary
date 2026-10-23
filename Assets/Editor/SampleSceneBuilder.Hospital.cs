@@ -55,16 +55,19 @@ public static partial class SampleSceneBuilder
         int bed = 1;
         // Camas por el ANILLO, atravesadas (2 m libres entre camas = 3,1 m de eje; 4 m de paso a cada lado), sin las esquinas
         // ni el hueco de las escaleras (centro de los lados ±Z).
+        var ringNext = new System.Collections.Generic.Dictionary<Transform, float>();   // por dónde va cada anillo (las categorías siguen una tras otra)
         int RingBeds(Transform ring, Vector2 floor, int count, string category)
         {
             int placed = 0;
-            for (float s = 1.55f; s < RingLength(floor) && placed < count; s += 3.1f)
+            float s = ringNext.TryGetValue(ring, out float sv) ? sv : 1.55f;
+            for (; s < RingLength(floor) && placed < count; s += 3.1f)
             {
                 var (p, yaw, corner) = RingPoint(floor, s);
                 if (corner || (Mathf.Abs(p.x) < 3f && Mathf.Abs(p.z) > floor.y * 0.5f - 2f)) continue;
                 Label(InfirmaryProps.HospitalBed(ring, $"Cama {bed}", p, yaw, bl[bed % 4]), $"Cama {bed} ({category})", 1.4f);
                 bed++; placed++;
             }
+            ringNext[ring] = s;
             return placed;
         }
         void RingStairs(Transform parent, Vector2 floor, string tag)
