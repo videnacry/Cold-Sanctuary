@@ -112,8 +112,8 @@ public class SanctuaryArea : MonoBehaviour
 
     /// <summary>¿Está <paramref name="p"/> dentro del área? Cuenta la PLANTA entera (la alfombra «Mat» más
     /// <paramref name="margin"/>) y en altura todo lo que el área tiene encima: entreplantas (camas, mesas, máquinas a
-    /// 3 m) y pisos superiores propios (la planta veterinaria del hospital). Un área apilada que sea OTRA área (el dojo
-    /// sobre el gimnasio) no cuenta. Lo usan la Magnate y la jornada para saber si alguien dejó su puesto.</summary>
+    /// 4 m) y pisos superiores propios (la planta veterinaria del hospital). Un área apilada que sea OTRA área (el dojo
+    /// sobre el gimnasio) no cuenta: para el puesto de trabajo se usa <see cref="InBuilding"/>.</summary>
     public bool Contains(Vector3 p, float margin = 1f)
     {
         Transform mat = transform.Find("Mat");
@@ -121,6 +121,43 @@ public class SanctuaryArea : MonoBehaviour
         Vector3 l = transform.InverseTransformPoint(p);
         if (Mathf.Abs(l.x) > half.x + margin || Mathf.Abs(l.z) > half.z + margin) return false;
         return l.y > -2f && l.y < Top() + 3f;
+    }
+
+    /// <summary>¿Está <paramref name="p"/> en el EDIFICIO de esta área? Es toda la columna de plataformas apiladas sobre su
+    /// planta: el piso de abajo y el de arriba aunque sean otra área (gimnasio + dojo, yoga + ballet), sus entreplantas, la
+    /// pista de alfombras de arriba y la de abajo (colgada 6 m bajo la base, asomando 3 m). Berón 2026-10-23: quien
+    /// trabaja en un área puede moverse por todo su edificio; el suelo de debajo NO cuenta.</summary>
+    public bool InBuilding(Vector3 p)
+    {
+        float lo = float.MaxValue, hi = float.MinValue;
+        foreach (SanctuaryArea a in Building) { lo = Mathf.Min(lo, a.transform.position.y); hi = Mathf.Max(hi, a.transform.position.y + a.Top()); }
+        if (p.y < lo - 7f || p.y > hi + 15f) return false;   // de la pista de abajo (−6 m) a la de arriba (+11 m y su gente)
+        foreach (SanctuaryArea a in Building) if (a.InFootprint(p, 3.3f)) return true;
+        return false;
+    }
+
+    List<SanctuaryArea> _building;
+
+    /// <summary>Las áreas del mismo edificio: esta y las apiladas encima o debajo (sus plantas se solapan).</summary>
+    public List<SanctuaryArea> Building
+    {
+        get
+        {
+            if (_building != null) return _building;
+            _building = new List<SanctuaryArea> { this };
+            foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
+                if (a != this && Mathf.Abs(a.transform.position.y - transform.position.y) > 3f && (InFootprint(a.transform.position, 0f) || a.InFootprint(transform.position, 0f)))
+                    _building.Add(a);
+            return _building;
+        }
+    }
+
+    bool InFootprint(Vector3 p, float margin)
+    {
+        Transform mat = transform.Find("Mat");
+        Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
+        Vector3 l = transform.InverseTransformPoint(p);
+        return Mathf.Abs(l.x) <= half.x + margin && Mathf.Abs(l.z) <= half.z + margin;
     }
 
     // Altura local de lo más alto del área (sin seres ni otras áreas apiladas); se calcula una vez.

@@ -185,6 +185,7 @@ public class WorkdayDirector : MonoBehaviour
     // INICIADOR: quien tenga ahora la misión de iniciación lanza «iniciar» sobre los recién llegados.
     void UpdateInitiator(float h)
     {
+        if (NewcomerInitiator.Current != null && NewcomerInitiator.Current.InProgress) return;   // quien la empezó, la termina
         List<GameObject> who = DoingNow("enf_iniciacion", h);
         GameObject g = who.Count > 0 ? who[0] : null;
         // Si a esta hora nadie la tiene, la hace quien la tenga HOY (el hechizo compuesto lo conoce quien está de turno).
@@ -215,6 +216,7 @@ public class WorkdayDirector : MonoBehaviour
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         GameObject p = _player; if (p == null) return;
         if (MobWorldLoader.Instance != null && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)) return;   // dentro del microcosmos
+        if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
         string area = Where(me, h, out string doing);
         if (area == null || area == AreaWork.Guard) return;
         if (AreaTransform(area) == null || MagnateWarden.Instance.Handling(p)) return;
@@ -235,15 +237,15 @@ public class WorkdayDirector : MonoBehaviour
     float _transitSince = -1f;
     const float MaxTransit = 90f;
 
-    /// <summary>¿Está <paramref name="pos"/> en el espacio que su tarea necesita? Su área (todas las que se llaman así,
-    /// con entreplantas y pisos de arriba), las áreas por las que la tarea hace ir, la obra en la que se trabaja, los
+    /// <summary>¿Está <paramref name="pos"/> en el espacio que su tarea necesita? El EDIFICIO de su área (todas las que se
+    /// llaman así, con entreplantas, pisos de arriba aunque sean otra área, y sus pistas de alfombras), las áreas por las que la tarea hace ir, la obra en la que se trabaja, los
     /// huertos si la tarea es del Huerto, o cualquier área si la tarea recorre todas (reparar maquinaria).</summary>
     public static bool InWorkspace(WorkRoster.Mission m, string area, Vector3 pos)
     {
         if (InAreaNamed(area, pos)) return true;
         if (m == null) return false;
         foreach (string x in m.also) if (InAreaNamed(x, pos)) return true;
-        if (m.roams && SceneCache.All<SanctuaryArea>(2f).Any(a => a != null && a.Contains(pos))) return true;
+        if (m.roams && SceneCache.All<SanctuaryArea>(2f).Any(a => a != null && a.InBuilding(pos))) return true;
         if (m.site != null)
             foreach (ConstructionProject cp in ConstructionProject.All)
                 if (cp != null && cp.title == m.site && cp.Area != null && cp.Area.Contains(pos, 3f)) return true;
@@ -254,7 +256,7 @@ public class WorkdayDirector : MonoBehaviour
     static bool InAreaNamed(string name, Vector3 pos)
     {
         foreach (SanctuaryArea a in SceneCache.All<SanctuaryArea>(2f))
-            if (a != null && a.displayName == name && a.Contains(pos)) return true;
+            if (a != null && a.displayName == name && a.InBuilding(pos)) return true;
         if (name == "Huerto")
             foreach (GardenPlot g in SceneCache.All<GardenPlot>(2f))
             {

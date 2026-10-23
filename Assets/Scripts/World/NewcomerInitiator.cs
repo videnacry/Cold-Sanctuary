@@ -17,7 +17,19 @@ public class NewcomerInitiator : MonoBehaviour
 
     /// <summary>Quien lanza la iniciación ahora (lo fija la jornada) y quien la cubre sin jornada.</summary>
     public static NewcomerInitiator Current, Fallback;
-    public static NewcomerInitiator Active => Current != null ? Current : Fallback;
+    /// <summary>Quien la lanza ahora. Quien ya la empezó la TERMINA aunque cambie el turno (antes, al cambiar de hora otro
+    /// médico tomaba el relevo y el primero se iba a su puesto, p. ej. a la planta de arriba, dejando el examen a medias).</summary>
+    public static NewcomerInitiator Active
+    {
+        get
+        {
+            if (Current != null && Current.InProgress) return Current;
+            if (Fallback != null && Fallback.InProgress) return Fallback;
+            return Current != null ? Current : Fallback;
+        }
+    }
+    /// <summary>¿Tiene una iniciación a medias (examen o camino al tanque)?</summary>
+    public bool InProgress => _exam != null || _leading != null;
     public bool IsActive => Active == this;
 
     /// <summary>¿Está ocupado con un recién llegado? (la jornada no lo mueve entonces).</summary>

@@ -165,6 +165,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la Magnate cuenta la entreplanta de las camas como parte del hospital (y fuera, no)",
                 ha.Contains(bed.transform.position + Vector3.up * 1.1f) && !ha.Contains(outside), $"cama en {bed.transform.position}");
         }
+        // El EDIFICIO entero cuenta (Berón 2026-10-23): quien trabaja en el gimnasio puede subir al dojo de encima; el suelo
+        // de debajo del hospital, no.
+        SanctuaryArea gymA = GameObject.Find("Gym_Area")?.GetComponent<SanctuaryArea>();
+        SanctuaryArea dojoA = GameObject.Find("MartialArts_Area")?.GetComponent<SanctuaryArea>();
+        if (gymA != null && dojoA != null && ha != null)
+            TestProbe.Check("el puesto es el edificio entero (gimnasio → dojo de arriba sí; bajo el hospital, no)",
+                gymA.InBuilding(dojoA.transform.position + Vector3.up * 1.1f) && !ha.InBuilding(new Vector3(hosp.transform.position.x, 1f, hosp.transform.position.z)),
+                $"dojo en {dojoA.transform.position}");
         // El espacio de la tarea: quien repara en la Cocina con una misión de Construcción sigue en su puesto; con el
         // inventario del almacén (solo Construcción), en la Cocina no.
         GameObject kitchenGo = GameObject.Find("Kitchen_Area");

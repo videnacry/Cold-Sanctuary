@@ -27,11 +27,11 @@ public class InfirmaryGate : MonoBehaviour
 
     SanctuaryArea _area;
 
-    // Dentro = en cualquier parte del área, también en la entreplanta de las camas y en la planta de arriba.
+    // Dentro = en cualquier parte del EDIFICIO del hospital: entreplanta de las camas, planta de arriba y sus pistas.
     bool Inside(Vector3 p)
     {
         if (_area == null) _area = GetComponent<SanctuaryArea>();
-        return _area == null || _area.Contains(p);
+        return _area == null || _area.InBuilding(p);
     }
 
     void Update()
