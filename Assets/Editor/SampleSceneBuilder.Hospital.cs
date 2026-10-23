@@ -184,34 +184,89 @@ public static partial class SampleSceneBuilder
         int gen = RingBeds(ring1, s1, 20, "hospitalización");
         Label(ring1, "Anillo de camas: recuperación y hospitalización", 2.2f);
         int humanBeds = bed - 1;
-        // ── PLANTA 2 (encima de la hospitalización): HOSPITAL VETERINARIO con 30 plazas ──
+        // ══ PLANTA 2: HOSPITAL VETERINARIO (docs/vet-hospital-plan.md) ═══════════════════════════════════════════════
+        // 4 alas con 4 puestos iguales por tarea (4 veterinarios a la vez ante una avalancha): clínica (4 mesas de
+        // tratamiento, 4 quirófanos, rayos X + eco, laboratorio, farmacia, báscula), perros/lobos/zorros (perreras en
+        // batería y jaulas), servicio (cocina de dietas con congelador, sala fría de pingüinos) y, en su ANILLO, los grandes
+        // animales: boxes de osos de 4 × 3 m en batería con su jaula de contención y corrales de foca con piscina salada.
         Transform up = new GameObject("Planta_veterinaria").transform; up.SetParent(area.transform, false);
         Vector2 us = StackOn(up, p1, s1);
         float ux = us.x * 0.5f, uz = us.y * 0.5f;
         Transform uf = Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.82f, 0.9f, 0.86f), "Suelo_veterinaria");
-        Label(uf, "Hospital veterinario (planta alta)", 2.2f);
+        Label(uf, "Hospital veterinario (planta 2)", 2.2f);
         Transform v = new GameObject("Equipamiento_veterinario").transform; v.SetParent(up, false); v.localPosition = new Vector3(0f, 0.1f, 0f);
+        Color vz = new Color(0.86f, 0.9f, 0.8f);
         int place = 1;
-        for (int i = 0; i < 6; i++, place++) Label(InfirmaryProps.LargeAnimalStall(v, $"Cuadra {i + 1}", new Vector3(-10.5f + i * 4.2f, 0f, -uz + 1.8f), 0f), $"Plaza {place}: cuadra (oso, foca, lobo)", 1.8f);
-        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 1}", new Vector3(-ux + 1.4f, 0f, -6f + i * 1.7f), 90f), $"Plaza {place}: box", 1.6f);
-        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 9}", new Vector3(ux - 1.4f, 0f, -6f + i * 1.7f), -90f), $"Plaza {place}: box", 1.6f);
-        for (int i = 0; i < 2; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas {i + 1}", new Vector3(-1.2f + i * 2.4f, 0f, -5.4f), 0f), $"Plazas {place}-{place + 3}: jaulas (pingüino, zorro, aves)", 1.6f);
-        Station(InfirmaryProps.VetTable(v, "Mesa veterinaria", new Vector3(-5f, 0f, 2.6f), 90f), HospitalService.Veterinaria, "Consulta veterinaria", 1.4f, true, new Vector3(0f, 0f, -1.1f));
-        Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(-3.2f, 0f, 2.8f), 0f), HospitalService.Imagen, "Ecógrafo", 1.6f);
-        Label(InfirmaryProps.FloorScale(v, "Bascula", new Vector3(-5f, 0f, 6.4f), 0f), "Báscula (dosis por kilo)", 1.5f);
-        Station(InfirmaryProps.VetTable(v, "Quirofano veterinario", new Vector3(5.4f, 0f, 2.6f), 90f), HospitalService.CirugiaVeterinaria, "Quirófano veterinario", 1.4f, true, new Vector3(0f, 0f, -1.1f));
-        InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet", new Vector3(4.2f, 0f, 2.6f), 90f);
-        Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria", new Vector3(7.4f, 0f, 2.6f), -90f), HospitalService.Anestesia, "Anestesia veterinaria", 2f, false, new Vector3(0f, 0f, -0.9f));
-        Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(5.4f, 0f, 6.8f), 180f), "Farmacia veterinaria", 2.2f);
+        // ALA PERROS / LOBOS / ZORROS (oeste): 16 perreras en dos filas enfrentadas (batería, pasillo de 2 m) y 8 jaulas.
+        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 1}", new Vector3(-14.6f + i * 1.45f, 0f, -uz + 2.4f), 0f), $"Plaza {place}: perrera", 1.6f);
+        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 9}", new Vector3(-14.6f + i * 1.45f, 0f, -uz + 6.2f), 180f), $"Plaza {place}: perrera", 1.6f);
+        for (int i = 0; i < 2; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas {i + 1}", new Vector3(-13.6f + i * 3.4f, 0f, 1.8f), 0f), $"Plazas {place}-{place + 3}: jaulas (zorro, aves)", 1.6f);
+        Zone(v, "Pediluvio", new Vector3(-4.2f, 0f, -uz + 4.3f), new Vector2(1.2f, 1.6f), new Color(0.55f, 0.75f, 0.85f));
+        // ALA CLÍNICA (centro): 4 mesas de tratamiento en fila (una con la báscula), y 4 quirófanos de 5 × 5 m.
+        for (int i = 0; i < 4; i++)
+            Station(InfirmaryProps.VetTable(v, i == 0 ? "Mesa veterinaria" : $"Mesa veterinaria {i + 1}", new Vector3(-13.4f + i * 3.6f, 0f, 6.6f), 90f), HospitalService.Veterinaria, $"Tratamiento veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
+        Label(InfirmaryProps.FloorScale(v, "Bascula", new Vector3(-13.4f, 0f, 9.2f), 0f), "Báscula (dosis por kilo)", 1.5f);
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 c = new Vector3(0.6f + (i % 2) * 5.4f, 0f, -6.6f + (i / 2) * 5.4f);
+            string sfx = i == 0 ? "" : $" {i + 1}";
+            Zone(v, "Sala_quirofano_vet", c, new Vector2(5f, 5f), zoneQ);
+            Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
+            InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
+            Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria" + sfx, c + new Vector3(1.6f, 0f, 0f), -90f), HospitalService.Anestesia, $"Anestesia veterinaria {i + 1}", 2f, false, new Vector3(0f, 0f, -0.9f));
+        }
+        // ALA DE DIAGNÓSTICO Y SERVICIO (este): rayos X blindado (4 × 4 m), eco, laboratorio, farmacia, cocina de dietas
+        // (con congelador a −18 °C para el pescado) y la sala fría de los pingüinos (0–10 °C).
+        Zone(v, "Sala_rayos_X_vet", new Vector3(12.6f, 0f, 6.4f), new Vector2(4.4f, 4.4f), zoneW);
+        Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 6.4f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
+        Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(7.6f, 0f, 7f), 0f), HospitalService.Imagen, "Ecógrafo veterinario", 1.6f);
+        Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(13.4f, 0f, 1.4f), -90f), "Laboratorio veterinario", 1.4f);
+        Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(15.4f, 0f, -2.6f), -90f), "Farmacia veterinaria", 2.2f);
+        Transform diet = KitchenProps.Root(v, "Cocina_de_dietas", new Vector3(12.4f, 0f, -6.6f));
+        KitchenProps.C(diet, new Vector3(0f, 0.45f, 0f), new Vector3(2.4f, 0.9f, 0.7f), KitchenProps.Steel, 0f, "Mesa_dietas");
+        KitchenProps.C(diet, new Vector3(2.2f, 0.95f, 0f), new Vector3(1f, 1.9f, 0.8f), new Color(0.85f, 0.9f, 0.95f), 0f, "Congelador_pescado");
+        KitchenProps.Fit(diet, solid: true);
+        Label(diet, "Cocina de dietas (pescado, carne, fruta) y congelador −18 °C", 2.2f);
+        Zone(v, "Sala_fria_pinguinos", new Vector3(7.2f, 0f, 1.6f), new Vector2(4.4f, 4.4f), new Color(0.8f, 0.9f, 1f));
+        for (int i = 0; i < 2; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 1.6f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
+        // ANILLO DE GRANDES ANIMALES: 6 boxes de osos de 4 × 3 m en batería (puertas de guillotina entre ellos) + jaula de
+        // contención, y 2 corrales de foca con piscina de agua salada; pasillo del cuidador de 4 m a cada lado.
+        Transform ringV = RingDeck(v, "Anillo_grandes_animales", us);
+        RingStairs(v, us, "veterinaria");
+        int stall = 0;
+        for (float s = 2f; stall < 6; s += 4f)
+        {
+            var (p, yaw, corner) = RingPoint(us, s);
+            if (corner || (Mathf.Abs(p.x) < 3f && Mathf.Abs(p.z) > uz - 2f)) continue;
+            Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", p, yaw), $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)", 1.8f);
+            stall++;
+        }
+        var (jp, jyaw, _) = RingPoint(us, 2f + 6 * 4f + 2f);
+        Transform squeeze = KitchenProps.Root(ringV, "Jaula_contencion", jp, jyaw);
+        for (int k = -1; k <= 1; k += 2) KitchenProps.C(squeeze, new Vector3(k * 0.9f, 1.1f, 0f), new Vector3(0.08f, 2.2f, 2.4f), KitchenProps.Steel, 0f, "Barrotes");
+        KitchenProps.C(squeeze, new Vector3(0f, 2.2f, 0f), new Vector3(1.9f, 0.08f, 2.4f), KitchenProps.Steel, 0f, "Techo_barrotes");
+        KitchenProps.Fit(squeeze, solid: false);
+        Label(squeeze, "Jaula de contención (inyectar sin anestesiar)", 2.4f);
+        float half = RingLength(us) * 0.5f;
+        for (int i = 0; i < 2; i++)
+        {
+            var (sp, syaw, _) = RingPoint(us, half + 4f + i * 7f);
+            Transform pen = KitchenProps.Root(ringV, $"Corral_foca {i + 1}", sp, syaw);
+            KitchenProps.C(pen, new Vector3(0f, 0.05f, -1.4f), new Vector3(4f, 0.1f, 2.2f), new Color(0.75f, 0.75f, 0.72f), 0f, "Zona_seca");
+            KitchenProps.C(pen, new Vector3(0f, 0.4f, 1.3f), new Vector3(4f, 0.8f, 3f), new Color(0.3f, 0.55f, 0.8f, 0.6f), 0f, "Piscina_salada");
+            KitchenProps.Fit(pen, solid: false);
+            Label(pen, $"Plaza {place++}: corral de foca con piscina salada (≥ 0,76 m)", 2f);
+        }
+        Label(ringV, "Anillo de grandes animales: osos y focas", 2.4f);
         Debug.Log($"[Hospital] 3 plantas: {humanBeds} camas para personas en dos anillos ({obs} de urgencias y {mat} de maternidad abajo; {rec} de recuperación y {gen} de hospitalización en la planta 1), 4 puestos por servicio, 4 aislamientos con esclusa y {place - 1} plazas para animales; {Object.FindObjectsByType<HospitalStation>(FindObjectsSortMode.None).Length} puestos interactivos.");
 
-        // Linduarda en su mesa; Lizmibet pasando visita en la planta 1; el paciente de prueba (lobo) arriba, en una cuadra.
+        // Linduarda en su mesa; Lizmibet pasando visita en el anillo de la planta 1; el paciente de prueba (lobo) arriba, en una perrera.
         GameObject l = GameObject.Find("Linduarda");
         if (l != null) l.transform.position = area.transform.TransformPoint(new Vector3(-9.8f, 1f, 4.4f));
         GameObject lz = GameObject.Find("Lizmibet");
         if (lz != null) lz.transform.position = ring1.TransformPoint(RingPoint(s1, 40f).p + new Vector3(0f, 1f, 2.5f));   // pasando visita en el anillo
         GameObject p = GameObject.Find("Lobo_paciente");
-        if (p != null) p.transform.position = v.TransformPoint(new Vector3(-10.5f, 0.15f, -uz + 1.8f));
+        if (p != null) p.transform.position = v.TransformPoint(new Vector3(-14.6f, 0.15f, -uz + 2.4f));   // en la perrera 1
         // Kushal (el jugador) EMPIEZA AQUÍ, junto a las camas de observación: es el recién llegado.
         GameObject kushal = GameObject.Find("Player");
         if (kushal != null) kushal.transform.position = area.transform.TransformPoint(new Vector3(-11.8f, 1.3f, 3.6f));
