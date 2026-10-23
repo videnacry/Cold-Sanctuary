@@ -124,15 +124,15 @@ public class SanctuaryArea : MonoBehaviour
     }
 
     /// <summary>¿Está <paramref name="p"/> en el EDIFICIO de esta área? Es toda la columna de plataformas apiladas sobre su
-    /// planta: el piso de abajo y el de arriba aunque sean otra área (gimnasio + dojo, yoga + ballet), sus entreplantas, la
-    /// pista de alfombras de arriba y la de abajo (colgada 6 m bajo la base, asomando 3 m). Berón 2026-10-23: quien
+    /// planta: el piso de abajo y el de arriba aunque sean otra área (gimnasio + dojo, yoga + ballet), sus entreplantas y la
+    /// pista de alfombras de arriba. Berón 2026-10-23: quien
     /// trabaja en un área puede moverse por todo su edificio; el suelo de debajo NO cuenta.</summary>
     public bool InBuilding(Vector3 p)
     {
         float lo = float.MaxValue, hi = float.MinValue;
         foreach (SanctuaryArea a in Building) { lo = Mathf.Min(lo, a.transform.position.y); hi = Mathf.Max(hi, a.transform.position.y + a.Top()); }
-        if (p.y < lo - 7f || p.y > hi + 15f) return false;   // de la pista de abajo (−6 m) a la de arriba (+11 m y su gente)
-        foreach (SanctuaryArea a in Building) if (a.InFootprint(p, 3.3f)) return true;
+        if (p.y < lo - 2f || p.y > hi + 15f) return false;   // del piso de abajo a la pista de arriba (+11 m y su gente)
+        foreach (SanctuaryArea a in Building) if (a.InFootprint(p, 1.5f)) return true;
         return false;
     }
 

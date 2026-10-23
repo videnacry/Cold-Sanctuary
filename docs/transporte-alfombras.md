@@ -6,10 +6,7 @@
   - Es como una sala de yoga con **esterillas grandes**, que son **alfombras voladoras**.
   - Solo si ninguna plataforma de un grupo tiene sitio para una pista de 14 × 14 m se hace una aparte, unida con un puente.
   - Entre plataformas del **mismo grupo** (unidas por puentes) los trabajadores van andando (`CarpetPad.group`). Las alfombras se usan para ir a otro grupo.
-  - Las plataformas de **varios pisos** (yoga+ballet, gimnasio+dojo, construcción+textil, hospital con su planta veterinaria…) tienen además una **pista de abajo**, la segunda vía de escape.
-    - Va colgada a **6 m** bajo la plataforma base, entre las columnas, y asoma 3 m por un lado sin puente.
-    - Una escalera de mano sube de la pista al borde del piso (con hueco en la barrera) y otra baja al suelo.
-    - Las alfombras salen primero **de lado**, hasta tener cielo libre, y luego suben (`CarpetPad.exitDir`). Al llegar a una pista así entran igual.
+  - Solo hay pistas **arriba** (Berón 2026-10-23: se probó también una pista colgada debajo de los edificios de varios pisos y se quitó, porque complicaba la construcción).
 - Las alfombras son **automáticas**:
   - Al **tocarla** se muestran los destinos (las otras pistas) en un diálogo: ↑/↓ + Intro o clic.
   - La cámara pasa a **3ª persona**; el pasajero va **sentado** mientras la alfombra sube, cruza y baja.
