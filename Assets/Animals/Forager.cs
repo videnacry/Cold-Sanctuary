@@ -212,7 +212,7 @@ public class Forager : MonoBehaviour
 
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(7, 12);
         float feed = self.Body.GetMealWeight(self.rig.mass) * 0.6f;
-        if (self.Group.fed.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
+        if (self.Group?.fed?.Length > 0) { interval *= 1.2f; feed *= 1.5f; }   // con crías, come más despacio y más
         self.Loco.Idle(interval);
         yield return new WaitForSeconds(interval);
         Swarm fs = ((eatsFish || eatsKrill) && foodSource != null) ? foodSource.GetComponent<Swarm>() : null;
@@ -235,7 +235,9 @@ public class Forager : MonoBehaviour
             }
             Affordance plant = null;
             if (foodSource != null) foreach (Affordance af in foodSource.GetComponents<Affordance>()) if (Ethogram.Eats(self.SpeciesName, af.kind)) { plant = af; break; }
-            if (plant != null && plant.Take(0.5f, self) <= 0f) { self.busy = false; yield break; }   // la planta se gasta y rebrota
+            float sap = plant != null ? plant.Take(0.5f, self) : 0f;
+            if (plant != null && sap <= 0f) { self.busy = false; yield break; }   // la planta se gasta y rebrota
+            if (plant != null && plant.kind == AffordanceKind.PlantSap) Habit.Honeydew(self)?.Add(sap);   // el pulgón que chupa savia hace melaza
             GardenCrop eaten = foodSource != null ? foodSource.GetComponent<GardenCrop>() : null;
             if (eaten != null && !eaten.Bite($"«{self.name}»")) { self.busy = false; yield break; }   // el CULTIVO pierde un mordisco
             self.hungry -= feed;   // PASTO: come aquí como siempre

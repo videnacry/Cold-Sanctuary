@@ -32,7 +32,7 @@ public class MarineLife : MonoBehaviour
 
     /// <summary>¿Está en un hábito natural (respirando por su respiradero, frotándose en la grava, patrullando los témpanos,
     /// descansando en un descansadero)? Lo cuenta el censo de <see cref="AnimalVitals"/>.</summary>
-    public bool InHabitat => _spot != null || _haul != null;
+    public bool InHabitat => (_spot != null && _spotUntil >= 0f) || (_haul != null && transform.position.y > -0.3f);   // ya en el sitio, no de camino
     float _nextSpot, _spotUntil;
     static int _count;
 

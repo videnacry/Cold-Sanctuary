@@ -32,11 +32,15 @@ public class Habit : MonoBehaviour
 
     void Awake() { _a = GetComponent<Animal>(); }
 
-    void Start()
+    /// <summary>La MELAZA de un pulgón (interactuable que las hormigas ordeñan); se crea la primera vez. null si no es pulgón.
+    /// La llenan tanto el hábito (chupar savia) como el <see cref="Forager"/> cuando come savia por hambre.</summary>
+    public static Affordance Honeydew(Animal a)
     {
-        // Un pulgón chupando savia produce MELAZA: la ofrece como interactuable (las hormigas lo ordeñan).
-        if (_a != null && _a.SpeciesName == "Aphid" && GetComponent<Affordance>() == null)
-            Affordance.Put(gameObject, AffordanceKind.Honeydew, 2, 0f, 0f).maxStock = 1f;
+        if (a == null || a.SpeciesName != "Aphid") return null;
+        foreach (Affordance f in a.GetComponents<Affordance>()) if (f.kind == AffordanceKind.Honeydew) return f;
+        Affordance h = Affordance.Put(a.gameObject, AffordanceKind.Honeydew, 2, 0f, 0f);
+        h.maxStock = 1f;
+        return h;
     }
 
     bool Marine => GetComponent<MarineLife>() != null;
@@ -198,7 +202,7 @@ public class Habit : MonoBehaviour
             {
                 float got = _target != null ? _target.Take(dt / Mathf.Max(1f, _act.seconds), _a) : 0f;
                 _a.hungry -= MealWeight * 0.6f * got;
-                if (_a.SpeciesName == "Aphid") GetComponent<Affordance>()?.Add(got * 0.5f);   // savia → melaza
+                if (_target != null && _target.kind == AffordanceKind.PlantSap) Honeydew(_a)?.Add(got);   // savia → melaza
                 if (_target != null && _target.kind == AffordanceKind.Honeydew && _target.Stock <= 0.01f) _until = Time.time;   // ordeñado
                 break;
             }
