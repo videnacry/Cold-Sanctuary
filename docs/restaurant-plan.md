@@ -67,3 +67,8 @@ Pasillos reales: 0,9–1,07 m para un cocinero, 1,22 m de doble sentido y 1,83 m
 Preguntas abiertas:
 - Regla de 2 m dentro de una línea de cocina: ¿entre bloques, como en la realidad, o entre todos los equipos?
 - ¿Anillo de camas en lugar de la planta 1 del hospital, o además de ella?
+
+## 4. Medidas del anillo (Berón, 2026-10-23)
+- **Ancho:** unos 10 m. Fila central de mesas de 4 con sus sillas (unos 2,2 m) y **4 m libres a cada lado**.
+- **Posición:** solo el **20 % sobre la planta** (unos 2 m) y el **80 % volando por fuera** (unos 8 m), para no quitar sitio a la cocina.
+- **Anillo de camas del hospital:** lo mismo, con 4 m de paso a cada lado de la cama.
