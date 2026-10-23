@@ -23,6 +23,7 @@ public static class InsectMorphology
         public float mandibleOpen = 10f;         // apertura en reposo (°)
         public bool raptorial, jumper, elytra, beeWings, wings, siphons, stylet, backward;
         public float bodyHeight = 0.12f;         // altura del vientre sobre el suelo (en L)
+        public int armPairs = 1;                 // pares delanteros que son BRAZOS al erguirse (mantis: 2 → anda a dos patas, con 4 brazos)
         public Spec MemberwiseCloneSpec() => (Spec)MemberwiseClone();
     }
 
@@ -30,7 +31,7 @@ public static class InsectMorphology
     {
         ["Ant"] = new Spec { name = "Ant", body = new[] { new Seg("Cabeza", 0.22f, 0.18f, 0.16f), new Seg("Torax", 0.30f, 0.12f), new Seg("Peciolo", 0.06f, 0.06f), new Seg("Gaster", 0.36f, 0.22f, 0.2f) },
             legs = new[] { new[] { 0.22f, 0.20f, 0.18f }, new[] { 0.24f, 0.22f, 0.18f }, new[] { 0.30f, 0.28f, 0.22f } }, antenna = 0.44f, elbowedAntenna = true, mandible = 0.08f },
-        ["Aphid"] = new Spec { name = "Aphid", body = new[] { new Seg("Cabeza", 0.14f, 0.16f), new Seg("Cuerpo", 0.86f, 0.55f, 0.42f) },
+        ["Aphid"] = new Spec { name = "Aphid", body = new[] { new Seg("Cabeza", 0.14f, 0.16f), new Seg("Torax", 0.24f, 0.3f, 0.28f), new Seg("Abdomen", 0.62f, 0.55f, 0.42f) },
             legs = new[] { new[] { 0.22f, 0.30f, 0.06f }, new[] { 0.22f, 0.30f, 0.06f }, new[] { 0.22f, 0.30f, 0.06f } }, legWidth = 0.02f, antenna = 0.7f, siphons = true, stylet = true, bodyHeight = 0.14f },
         ["Ladybug"] = new Spec { name = "Ladybug", body = new[] { new Seg("Cabeza", 0.15f, 0.30f, 0.2f), new Seg("Pronoto", 0.18f, 0.55f, 0.3f), new Seg("Elitros", 0.70f, 0.90f, 0.45f) },
             legs = new[] { new[] { 0.18f, 0.16f, 0.10f }, new[] { 0.18f, 0.16f, 0.10f }, new[] { 0.18f, 0.16f, 0.10f } }, antenna = 0.15f, elytra = true, bodyHeight = 0.06f },
@@ -41,7 +42,7 @@ public static class InsectMorphology
         ["Cricket"] = new Spec { name = "Cricket", body = new[] { new Seg("Cabeza", 0.16f, 0.16f), new Seg("Torax", 0.24f, 0.18f), new Seg("Abdomen", 0.60f, 0.18f) },
             legs = new[] { new[] { 0.15f, 0.14f, 0.08f }, new[] { 0.15f, 0.14f, 0.08f }, new[] { 0.65f, 0.70f, 0.15f } }, antenna = 1.2f, jumper = true, wings = true, bodyHeight = 0.12f },
         ["Mantis"] = new Spec { name = "Mantis", body = new[] { new Seg("Cabeza", 0.08f, 0.14f, 0.1f), new Seg("Protorax", 0.30f, 0.06f), new Seg("Abdomen", 0.62f, 0.12f) },
-            legs = new[] { new[] { 0.22f, 0.12f, 0.04f }, new[] { 0.22f, 0.22f, 0.10f }, new[] { 0.22f, 0.22f, 0.10f } }, legWidth = 0.02f, antenna = 0.3f, raptorial = true, wings = true, bodyHeight = 0.16f },
+            legs = new[] { new[] { 0.22f, 0.12f, 0.04f }, new[] { 0.22f, 0.22f, 0.10f }, new[] { 0.22f, 0.22f, 0.10f } }, legWidth = 0.02f, antenna = 0.3f, raptorial = true, wings = true, bodyHeight = 0.16f, armPairs = 2 },
         ["Antlion"] = new Spec { name = "Antlion", body = new[] { new Seg("Cabeza", 0.14f, 0.18f, 0.08f), new Seg("Protorax", 0.08f, 0.08f), new Seg("Abdomen", 0.62f, 0.48f, 0.3f) },
             legs = new[] { new[] { 0.12f, 0.10f, 0.04f }, new[] { 0.12f, 0.10f, 0.04f }, new[] { 0.12f, 0.10f, 0.04f } }, legWidth = 0.025f, antenna = 0f, mandible = 0.30f, mandibleOpen = 60f, backward = true, bodyHeight = 0.04f },
         ["Termite"] = new Spec { name = "Termite", body = new[] { new Seg("Cabeza", 0.20f, 0.18f), new Seg("Torax", 0.22f, 0.14f), new Seg("Abdomen", 0.58f, 0.22f) },

@@ -152,7 +152,7 @@ public static partial class SampleSceneBuilder
         try { MobWorldSceneBuilder.BuildMesopotamia(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena mob: {e.Message}"); }
         try { MicrocosmosAreaSceneBuilder.BuildAll(); }
-        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e.Message}"); }
+        catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las escenas de microcosmos por área: {e}"); }
         try { CompassionSceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar las simulaciones de compasión: {e.Message}"); }
         try { MythSceneBuilder.BuildAll(); }
