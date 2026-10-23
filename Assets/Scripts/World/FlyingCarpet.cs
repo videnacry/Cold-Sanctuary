@@ -59,10 +59,10 @@ public class FlyingCarpet : MonoBehaviour
         var agent = who.GetComponent<UnityEngine.AI.NavMeshAgent>();
         var cc = who.GetComponent<CharacterController>();
         var pc = who.GetComponent<PlayerController>();
-        bool agentWas = agent != null && agent.enabled, ccWas = cc != null && cc.enabled, pcWas = pc != null && pc.enabled;
+        bool agentWas = agent != null && agent.enabled, ccWas = cc != null && cc.enabled;
         if (agent != null) agent.enabled = false;
         if (cc != null) cc.enabled = false;
-        if (pc != null) pc.enabled = false;
+        if (pc != null) pc.HoldBody(true);   // sentado en la alfombra: no anda, pero puede mirar el paisaje
         if (player && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(CameraMode.ThirdPerson, forced: true);
         Debug.Log($"[Alfombra] «{who.name}» se sienta en la alfombra y vuela de {pad?.displayName} a {to.displayName}.");
 
@@ -90,7 +90,7 @@ public class FlyingCarpet : MonoBehaviour
         who.transform.position = dest + transform.right * 1.6f + Vector3.up * 0.1f;
         if (cc != null) cc.enabled = ccWas;
         if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(who.transform.position); }
-        if (pc != null) pc.enabled = pcWas;
+        if (pc != null) pc.HoldBody(false);
         if (player && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true);
         _riders.Remove(who);
         Flying = false;

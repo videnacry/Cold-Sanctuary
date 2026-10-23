@@ -80,9 +80,8 @@ public class Ladder : MonoBehaviour, IInteractable
     {
         _climbing.Add(who);
         CharacterController cc = who.GetComponent<CharacterController>();
-        var controllers = new List<Behaviour>();
-        foreach (MonoBehaviour mb in who.GetComponents<MonoBehaviour>())
-            if (mb != null && mb.enabled && (mb is PlayerController)) { controllers.Add(mb); mb.enabled = false; }
+        PlayerController pc = who.GetComponent<PlayerController>();
+        if (pc != null) pc.HoldBody(true);   // no anda, pero la cámara sigue libre mientras trepa
         if (cc != null) cc.enabled = false;
         CreatureRig rig = who.GetComponent<CreatureRig>();
 
@@ -106,10 +105,10 @@ public class Ladder : MonoBehaviour, IInteractable
         }
         _climbing.Remove(who);
         if (who == null) yield break;
+        if (pc != null) pc.HoldBody(false);
         // Al llegar arriba, un paso hacia la plataforma; abajo, un paso atrás.
         who.position = up ? ladder.position + ladder.forward * 1.4f + Vector3.up * (deckY + 1.2f) : ladder.position - ladder.forward * FootOffset + Vector3.up * 1.1f;
         if (cc != null) cc.enabled = true;
-        foreach (Behaviour b in controllers) if (b != null) b.enabled = true;
         Debug.Log($"[Escalera] «{who.name}» llega {(up ? "arriba" : "al suelo")}.");
     }
 

@@ -92,17 +92,26 @@ public class MagnateWarden : MonoBehaviour
         if (who != null) { _busy.Remove(who); _graceUntil[who] = Time.time + grace; }
     }
 
-    // Mientras dura, ni ella ni él se mueven por su cuenta (su conducta y el control del jugador quedan en pausa).
+    // Mientras dura, ni ella ni él se mueven por su cuenta (su conducta queda en pausa; el jugador no anda, pero su
+    // cámara sigue libre: PlayerController.HoldBody).
     static Behaviour[] Pause(GameObject g)
     {
         var list = new List<Behaviour>();
         if (g == null) return list.ToArray();
         foreach (Behaviour b in new Behaviour[] { g.GetComponent<PlayerController>(), g.GetComponent<IdleBehavior>(), g.GetComponent<Magnate>() })
-            if (b != null && b.enabled) { b.enabled = false; list.Add(b); }
+        {
+            if (b == null || !b.enabled) continue;
+            if (b is PlayerController pc) pc.HoldBody(true); else b.enabled = false;
+            list.Add(b);
+        }
         return list.ToArray();
     }
 
-    static void Resume(Behaviour[] list) { foreach (Behaviour b in list) if (b != null) b.enabled = true; }
+    static void Resume(Behaviour[] list)
+    {
+        foreach (Behaviour b in list)
+            if (b is PlayerController pc) pc.HoldBody(false); else if (b != null) b.enabled = true;
+    }
 
     void Say(string text) { _msg = "La Magnate: «" + text + "»"; _msgUntil = Time.time + talk + stay + 1f; }
 

@@ -586,7 +586,7 @@ public class SpellConsole : MonoBehaviour
             $"Player(tag): {(tagged != null ? tagged.name + " en " + tagged.transform.position.ToString("F1") + " anima=" + (tagged.GetComponent<Anima>() != null) : "ninguno")}");
         PlayerController dpc = self.GetComponent<PlayerController>(); CharacterController dcc = self.GetComponent<CharacterController>();
         WalkSpell dws = self.GetComponent<WalkSpell>(); CharacterLevel dcl = self.GetComponent<CharacterLevel>();
-        Log($"  control: PlayerController={(dpc != null ? dpc.enabled.ToString() : "-")} CC={(dcc != null ? dcc.enabled.ToString() : "-")} WalkSpell={(dws != null ? dws.enabled + (dws.IsCharging ? " (cargando)" : "") + $" v={dws.LastSpeed:0.00} dir={dws.LastDir}" : "-")} nadando={(dpc != null && dpc.IsSwimming)} energía={(dcl != null ? dcl.currentEnergy.ToString("0") : "-")} timeScale={Time.timeScale}");
+        Log($"  control: PlayerController={(dpc != null ? dpc.enabled + (dpc.BodyHeld ? " (cuerpo sujeto)" : "") : "-")} CC={(dcc != null ? dcc.enabled.ToString() : "-")} WalkSpell={(dws != null ? dws.enabled + (dws.IsCharging ? " (cargando)" : "") + $" v={dws.LastSpeed:0.00} dir={dws.LastDir}" : "-")} nadando={(dpc != null && dpc.IsSwimming)} energía={(dcl != null ? dcl.currentEnergy.ToString("0") : "-")} timeScale={Time.timeScale}");
         var touching = new System.Text.StringBuilder();
         foreach (Collider c in Physics.OverlapSphere(self.transform.position, 0.8f, ~0, QueryTriggerInteraction.Ignore))
             if (!c.transform.IsChildOf(self.transform)) touching.Append(c.name).Append(' ');

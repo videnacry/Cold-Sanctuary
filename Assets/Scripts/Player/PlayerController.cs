@@ -94,7 +94,17 @@ public class PlayerController : MonoBehaviour
     WalkSpell _walk;                 // locomoción universal: provee la velocidad (carga/postura/punta/decae) — PR #91
     float _verticalVelocity;
     float _currentPitch;
+    float _pivotYaw;                 // giro SOLO de la cámara mientras el cuerpo está sujeto (escalera, alfombra, diálogo…)
+    int   _bodyHolds;
     bool  _isSwimming;
+
+    /// <summary>¿Algo sujeta el cuerpo (trepar una escalera, volar en alfombra, estar sentado en un examen…)? Entonces no
+    /// anda, pero la CÁMARA sigue libre: mirar alrededor no cambia la mecánica (Berón 2026-10-23).</summary>
+    public bool BodyHeld => _bodyHolds > 0;
+
+    /// <summary>Sujeta (true) o suelta (false) el cuerpo; cada sujeción se suelta con su propia llamada. Sustituye a
+    /// desactivar el componente, que bloqueaba también la cámara.</summary>
+    public void HoldBody(bool on) => _bodyHolds = Mathf.Max(0, _bodyHolds + (on ? 1 : -1));
 
     /// <summary>Called by WaterZone on trigger enter/exit.</summary>
     public bool IsSwimming => _isSwimming;
@@ -149,6 +159,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleCursorToggle();
         HandleLook();
+        if (BodyHeld) return;
         HandleMovement();
         HandlePerspectiveToggle();
     }
@@ -157,8 +168,15 @@ public class PlayerController : MonoBehaviour
 
     void HandleLook()
     {
-        // Block look during dialogue
-        if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) return;
+        // En un diálogo o con el cuerpo sujeto (escalera, alfombra…) la cámara sigue libre, pero gira SOLO la cámara: el
+        // cuerpo mantiene la orientación que le da la mecánica (de cara a la escalera, al que habla…).
+        bool cameraOnly = BodyHeld || (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying);
+        if (!cameraOnly && !Mathf.Approximately(_pivotYaw, 0f))
+        {
+            // Al soltarse, el cuerpo pasa a mirar hacia donde miraba la cámara (sin salto visible).
+            transform.Rotate(Vector3.up, _pivotYaw, Space.World);
+            _pivotYaw = 0f; ApplyPivot();
+        }
         // Block look while typing a virtualization action (las letras no deben mover la cámara).
         if (TypingChallenge.Active) return;
         // Ceder el look libre cuando la cabeza restringida (modo 1ª persona de estación) está activa.
@@ -187,16 +205,24 @@ public class PlayerController : MonoBehaviour
             if (GameKeys.GetKey(lookUpKey))    pitch -= keyboardPitchSpeed  * Time.deltaTime;
         }
 
-        // Apply yaw to the player body
+        // Apply yaw to the player body (or only to the camera while the body is held)
         if (!Mathf.Approximately(yaw, 0f))
-            transform.Rotate(Vector3.up, yaw, Space.World);
+        {
+            if (cameraOnly && cameraPivot != null) { _pivotYaw = Mathf.Repeat(_pivotYaw + yaw + 180f, 360f) - 180f; ApplyPivot(); }
+            else transform.Rotate(Vector3.up, yaw, Space.World);
+        }
 
         // Apply pitch to the camera pivot only
         if (cameraPivot != null && !Mathf.Approximately(pitch, 0f))
         {
             _currentPitch = Mathf.Clamp(_currentPitch + pitch, -maxPitchUp, maxPitchDown);
-            cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+            ApplyPivot();
         }
+    }
+
+    void ApplyPivot()
+    {
+        if (cameraPivot != null) cameraPivot.localRotation = Quaternion.Euler(_currentPitch, _pivotYaw, 0f);
     }
 
     /// <summary>Gira cuerpo (yaw) y cámara (pitch) por código: lo usan los hechizos `look`/`lookAt` (apuntar sin ratón).</summary>
@@ -206,7 +232,7 @@ public class PlayerController : MonoBehaviour
         if (cameraPivot != null)
         {
             _currentPitch = Mathf.Clamp(_currentPitch + pitchDelta, -maxPitchUp, maxPitchDown);
-            cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+            ApplyPivot();
         }
     }
 
@@ -220,7 +246,7 @@ public class PlayerController : MonoBehaviour
             Vector3 fromCam = p - cameraPivot.position;
             float pitch = -Mathf.Atan2(fromCam.y, new Vector2(fromCam.x, fromCam.z).magnitude) * Mathf.Rad2Deg;
             _currentPitch = Mathf.Clamp(pitch, -maxPitchUp, maxPitchDown);
-            cameraPivot.localRotation = Quaternion.Euler(_currentPitch, 0f, 0f);
+            _pivotYaw = 0f; ApplyPivot();
         }
     }
 
@@ -338,8 +364,6 @@ public class PlayerController : MonoBehaviour
 
     void HandleCursorToggle()
     {
-        if (DialogueManager.Instance != null && DialogueManager.Instance.IsPlaying) return;
-
         if (GameKeys.GetKeyDown(cameraLookButton))
             SetCursorLocked(true);
         else if (GameKeys.GetKeyUp(cameraLookButton))

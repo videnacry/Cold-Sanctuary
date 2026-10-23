@@ -138,7 +138,7 @@ public class NewcomerInitiator : MonoBehaviour
     {
         if (p.GetComponent<PlayerController>() != null)
         {
-            var pc = p.GetComponent<PlayerController>(); if (pc != null && pc.enabled) { pc.enabled = false; _frozePlayer = true; }
+            var pc = p.GetComponent<PlayerController>(); if (pc != null && !_frozePlayer) { pc.HoldBody(true); _frozePlayer = true; }   // sentado: la cámara sigue libre
         }
         WorkdayDirector.Teleport(p, chair.position + Vector3.up * 0.05f);
         p.rotation = chair.rotation;
@@ -148,7 +148,7 @@ public class NewcomerInitiator : MonoBehaviour
 
     void Release(Transform p)
     {
-        if (_frozePlayer) { var pc = p.GetComponent<PlayerController>(); if (pc != null) pc.enabled = true; _frozePlayer = false; }
+        if (_frozePlayer) { var pc = p.GetComponent<PlayerController>(); if (pc != null) pc.HoldBody(false); _frozePlayer = false; }
     }
 
     static void Pose(Anima examiner, AsanaPoseSpell ex, Anima patient, AsanaPoseSpell pt)
