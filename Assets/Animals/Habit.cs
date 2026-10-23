@@ -27,7 +27,7 @@ public class Habit : MonoBehaviour
     Vector3 _dest;
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
-    bool _hasOptions, _canRest;
+    bool _hasOptions, _canRest, _canFeed;
     static int _logged;
 
     void Awake() { _a = GetComponent<Animal>(); }
@@ -58,12 +58,13 @@ public class Habit : MonoBehaviour
         if (Time.time >= _nextScan)
         {
             _nextScan = Time.time + 3f;
-            _hasOptions = _canRest = false;
+            _hasOptions = _canRest = _canFeed = false;
             foreach (EthoAct e in Ethogram.Of(_a.SpeciesName))
                 if (Find(e) != null || (e.effect == HabitEffect.Huddle && Night))
                 {
                     _hasOptions = true;
                     if (IsRest(e.effect)) _canRest = true;
+                    if (IsFood(e.effect)) _canFeed = true;
                 }
         }
         return _hasOptions;
@@ -72,6 +73,12 @@ public class Habit : MonoBehaviour
     /// <summary>¿Tiene cerca un sitio natural donde DESCANSAR (guarida, descansadero, refugio, la piña de la colonia)?
     /// Entonces el cansancio lo lleva allí en vez de pararse donde esté (lo lee el deseo «habit»).</summary>
     public bool CanRestHere => HasOptions() && _canRest;
+
+    /// <summary>¿Tiene cerca una forma NATURAL de comer (chupar savia, ramonear, acechar en un respiradero)? Entonces el
+    /// hambre también puede llevarlo a su hábito (el oso polar come sobre todo así: Stirling 1974).</summary>
+    public bool CanFeedHere => HasOptions() && _canFeed;
+
+    static bool IsFood(HabitEffect e) => e == HabitEffect.Feed || e == HabitEffect.StillHunt;
 
     static bool IsRest(HabitEffect e) => e == HabitEffect.Rest || e == HabitEffect.Huddle || e == HabitEffect.Shelter || e == HabitEffect.Bask;
 
@@ -126,8 +133,8 @@ public class Habit : MonoBehaviour
         }
     }
 
-    // Peso de un acto: cansado → prefiere los de descanso (ir a la guarida / al descansadero / apiñarse).
-    float W(EthoAct e) => e.weight * (IsRest(e.effect) ? 1f + 4f * Tired : 1f);
+    // Peso de un acto: cansado → prefiere los de descanso (guarida / descansadero / apiñarse); con hambre, los de comer.
+    float W(EthoAct e) => e.weight * (IsRest(e.effect) ? 1f + 4f * Tired : 1f) * (IsFood(e.effect) ? 1f + 4f * Mathf.Clamp01(_a.hungry) : 1f);
 
     // Centro de los de su especie cercanos (para apiñarse).
     bool Colony(out Vector3 c)

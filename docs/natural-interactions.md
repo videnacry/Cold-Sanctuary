@@ -86,3 +86,10 @@ La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el sant
 - **Marinos en el censo.** Focas/ballenas/orcas hacen su etograma dentro de `MarineLife` (`InHabitat`), y ahora cuentan.
   El censo añade «con sitio cerca» para distinguir «no encuentra Affordances» de «no gana el deseo».
 - **Ordeño.** `MicroForager` va a un pulgón con melaza (≥ 0,3) dentro de `milkRadius` aunque haya semillas más cerca.
+- **Animales congelados por comida inalcanzable** (2ª prueba): `Forager.Graze` andaba hacia el banco de peces de la
+  laguna sin límite; el pingüino/oso, a pie, se quedaba en la orilla y el bucle no acababa → `busy` para siempre → ni
+  volición ni hábito. Ahora se rinde si no avanza en ~4 s y, si quedó en la orilla (< `shoreFishingReach`), **pesca
+  desde el borde** un bocado. `Hunt` deja una carcasa inalcanzable tras ~60 intentos.
+- **Comer por hábito**: con hambre y comida natural cerca (savia, bayas, liquen, respiradero para el oso), «habit»
+  compite con «eat» de igual a igual y prefiere los actos de comer.
+- **Censo** (diagnóstico): «ocupados» (`busy`) y el último deseo ganador por especie.

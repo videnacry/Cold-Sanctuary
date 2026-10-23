@@ -133,13 +133,16 @@ public static class DesireCatalog
         // Affordance real, según su Ethogram. Gana al merodeo al azar (explore) cuando el ser está en calma y tiene algo
         // que hacer cerca; el hambre/amenaza/cría lo superan. Lo ejecuta el componente Habit (se añade solo).
         new Desire("habit",
-            // Cansado y con guarida/descansadero cerca, el hábito ABSORBE al «rest» (descansa en su sitio natural, no donde caiga).
+            // Cansado y con guarida/descansadero cerca, el hábito ABSORBE al «rest» (descansa en su sitio natural, no donde caiga);
+            // con hambre y comida natural cerca, compite con «eat».
             self =>
             {
                 Habit h = self.GetComponent<Habit>(); if (h == null) h = self.gameObject.AddComponent<Habit>();
                 if (!h.HasOptions()) return 0f;
                 float tired = h.CanRestHere ? Mathf.Clamp01((self.sleepiness + self.mentalFatigue) * 0.5f) + 0.05f : 0f;
-                return Mathf.Max(W_HABIT * Lucidity.ClarityOf(self), tired);
+                // Con hambre y una forma natural de comer cerca (savia, bayas, respiradero), compite con «eat» de igual a igual.
+                float hunger = h.CanFeedHere && self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) * 1.05f : 0f;
+                return Mathf.Max(W_HABIT * Lucidity.ClarityOf(self), Mathf.Max(tired, hunger));
             },
             self => self.GetComponent<Habit>()?.Step(),
             "habit"),

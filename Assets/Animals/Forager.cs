@@ -19,6 +19,8 @@ public class Forager : MonoBehaviour
     public bool eatsGrass;
     [Tooltip("Come PECES/banco (Swarm de clase Fish).")]
     public bool eatsFish;
+    [Tooltip("Hasta qué distancia de un banco de peces puede pescar desde la orilla quien no llega nadando.")]
+    public float shoreFishingReach = 25f;
     [Tooltip("Come KRILL (Swarm de clase Krill) — dieta propia distinta del pez.")]
     public bool eatsKrill;
     [Tooltip("Come EXCREMENTO (coprófago: escarabajo pelotero). Lo prefiere a cualquier otra fuente que perciba.")]
@@ -203,8 +205,15 @@ public class Forager : MonoBehaviour
         if (foodSource != null && self.nav != null && self.nav.isOnNavMesh)
         {
             float walkInterval = TimeController.timeController.TimeSpeedMinuteSecs / 30;
+            // ATASCO: si la comida está donde el NavMesh no llega (el banco de peces en la laguna, para el pingüino o el oso
+            // que van a pie), el agente se queda en la orilla y el bucle no acababa nunca → `busy` para siempre: el animal
+            // quedaba congelado (sin volición ni hábitos). Si no avanza en ~4 s, se rinde aquí.
+            float best = float.MaxValue, stallSince = Time.time;
             while (foodSource != null && Vector3.Distance(self.transform.position, foodSource.position) > 3f)   // la boñiga puede desaparecer (comida o deshecha)
             {
+                float d = Vector3.Distance(self.transform.position, foodSource.position);
+                if (d < best - 0.3f) { best = d; stallSince = Time.time; }
+                else if (Time.time - stallSince > 4f) break;
                 self.Loco.Walk(foodSource.position, walkInterval);
                 yield return new WaitForSeconds(walkInterval);
             }
@@ -220,6 +229,10 @@ public class Forager : MonoBehaviour
         {
             // BANCO (pez/krill): la ingesta la hace el MORDISCO-POR-COLISIÓN (Swarm.OnTriggerStay) mientras el depredador
             // reposa DENTRO del banco (su trigger) → aquí solo se navega/reposa, sin alimentar (evita doble ingesta).
+            // Si se quedó en la ORILLA (va a pie y el banco está en el agua), se zambulle desde el borde y pesca un bocado
+            // (el pingüino y el oso pescan así desde el hielo); si está lejos, no hay pesca.
+            float gap = Vector3.Distance(self.transform.position, foodSource.position);
+            if (gap > 3f && gap < shoreFishingReach) Eat(self, fs, fs.gameObject, feed);
             yield return new WaitForSeconds(interval);
         }
         else
@@ -268,8 +281,10 @@ public class Forager : MonoBehaviour
         Vector3 location = prey.transform.position;
         float distance = Vector3.Distance(self.transform.position, location);
         float cansancio = 0;
+        int unreachable = 0;   // la carcasa donde no llega (en el agua): no esperarla para siempre
         do
         {
+            if (prey == null) break;   // la presa/carcasa desapareció (comida por otro, destruida)
             float interval = TimeController.timeController.TimeSpeedMinuteSecs / 60;
             location = prey.transform.position;
             self.Loco.GoTo(location);
@@ -287,6 +302,7 @@ public class Forager : MonoBehaviour
                 else
                 {
                     self.Loco.SetGait(true, TimeController.timeController.TimeSpeedMinuteSecs / 30);
+                    if (++unreachable > 60) break;   // ~2 min de juego sin alcanzarla
                 }
                 yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 30);
             }
@@ -312,11 +328,11 @@ public class Forager : MonoBehaviour
 
         // Confianza-por-uso (D2): una CAZA de presa viva refuerza el combate si la abatí; si me rendí (agotado), lo merma.
         // Así el depredador exitoso se vuelve más osado y el que nunca caza (herbívoro) no. Ver capabilities-and-embodiment.md §4.
-        if (wasAliveAtStart) self.RecordUse(Capability.Combat, victim.Dead);
+        if (wasAliveAtStart) self.RecordUse(Capability.Combat, prey == null || victim.Dead);
 
         // Si la presa quedó como FoodItem sin consumir, llevarla a las crías.
         FoodItem remains = prey != null ? prey.GetComponent<FoodItem>() : null;
-        if (victim.Dead && remains != null && !remains.Consumed && self.Group?.fed?.Length > 0)
+        if (remains != null && victim.Dead && !remains.Consumed && self.Group?.fed?.Length > 0)
             (self as ICarrier)?.PickUp(remains);
 
         self.busy = false;

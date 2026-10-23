@@ -40,6 +40,9 @@ public class Volition : MonoBehaviour
     Desire _last;
     float _lastScore;
 
+    /// <summary>El último deseo que ganó (diagnóstico del censo).</summary>
+    public string LastDesire => _last != null ? _last.key : "";
+
     void SelectAndDispatch(Animal self)
     {
         // ARENA de arbitraje (docs/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
