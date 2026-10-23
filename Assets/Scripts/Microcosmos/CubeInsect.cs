@@ -15,7 +15,7 @@ using UnityEngine;
 /// </summary>
 public class CubeInsect : MonoBehaviour
 {
-    class Leg { public Transform coxa, troch, tibia; public Quaternion coxaRest, trochRest, tibiaRest, armCoxa, armTroch, armTibia; public int side, pair; }
+    class Leg { public Transform coxa, troch, tibia; public Quaternion coxaRest, trochRest, tibiaRest, armCoxa, armTroch, armTibia; public int side, pair; public bool arm; }
     Transform _torso, _neck; Quaternion _torsoRest, _neckRest;
     /// <summary>0 = tranquilo (erguido, centauro, con brazos) · 1 = el cuerpo manda (a todas las patas). Lo puede fijar la conducta (miedo, hambre…); si no, se deduce de la velocidad.</summary>
     public float agitation = -1f;   // −1 = automático (por la velocidad)
@@ -165,7 +165,7 @@ public class CubeInsect : MonoBehaviour
         // RASGOS.
         if (sp.siphons)   // pulgón: sifones, cauda y estilete
         {
-            var c = segZ["Cuerpo"];
+            var c = segZ["Abdomen"];
             for (int s = -1; s <= 1; s += 2) Part(pivot, "Sifon", new Vector3(s * c.wid * 0.25f, y0 + c.hei * 0.85f, c.z - c.len * 0.3f), new Vector3(0.03f, 0.03f, 0.15f), dark, -30f, 0f);
             Part(pivot, "Cauda", new Vector3(0f, y0 + c.hei * 0.4f, c.z - c.len * 0.5f - 0.03f), new Vector3(0.05f, 0.04f, 0.06f), dark);
         }
@@ -234,13 +234,16 @@ public class CubeInsect : MonoBehaviour
         // un animal a 6 (u 8) patas. La cabeza lleva CARA (ojos, cejas y boca) y un cuello que la mantiene mirando al frente.
         float pivotZ = sp.body.Length >= 3 ? segZ[sp.body[1].name].z - segZ[sp.body[1].name].len * 0.5f : segZ[sp.body[sp.body.Length > 1 ? 1 : 0].name].z;
         if (sp.spider) pivotZ = segZ["Cefalotorax"].z;
+        // MANTIS (2 pares de brazos): la cintura va entre el 2.º y el 3.er par; se yergue sobre las dos patas de atrás.
+        if (sp.armPairs >= 2 && pairs >= 3) pivotZ = tx.z - tx.len * 0.2f;
         float chestH = sp.body.Length >= 3 ? segZ[sp.body[1].name].hei : head.hei;
         var torso = new GameObject("Torso").transform; torso.SetParent(pivot, false); torso.localPosition = new Vector3(0f, y0 + chestH * 0.5f, pivotZ);
         var neck = new GameObject("Cuello").transform; neck.SetParent(torso, false);
         neck.localPosition = torso.InverseTransformPoint(pivot.TransformPoint(new Vector3(0f, headY, headZ - head.len * 0.5f)));
         var move = new List<Transform>();
-        foreach (Transform c in pivot) if (c != torso && c.localPosition.z > pivotZ + 1e-3f && !(c.name.StartsWith("Pata_") && !c.name.StartsWith("Pata_0_"))) move.Add(c);
-        foreach (Transform c in pivot) if (c.name.StartsWith("Pata_0_") && !move.Contains(c)) move.Add(c);
+        bool ArmLeg(Transform c) => c.name.StartsWith("Pata_") && c.name.Length > 5 && c.name[5] - '0' < sp.armPairs;
+        foreach (Transform c in pivot) if (c != torso && c.localPosition.z > pivotZ + 1e-3f && !(c.name.StartsWith("Pata_") && !ArmLeg(c))) move.Add(c);
+        foreach (Transform c in pivot) if (ArmLeg(c) && !move.Contains(c)) move.Add(c);
         foreach (Transform c in move)
         {
             bool headPart = c.name == head.name || c.name == "Antena" || c.name == "Mandibula" || c.name == "Queliceros";
@@ -270,14 +273,16 @@ public class CubeInsect : MonoBehaviour
         Part(waist, "Columna", new Vector3(0f, 0f, spine * 0.5f), new Vector3(Mathf.Max(0.06f, head.wid * 0.45f), Mathf.Max(0.06f, chestH * 0.6f), spine), body);
         // Manos en las patas delanteras (al final del tarso).
         foreach (Leg l in ci._legs)
-            if (l.pair == 0)
+            if (l.pair < sp.armPairs)
             {
                 Transform tip = null; foreach (Transform t in l.coxa.GetComponentsInChildren<Transform>()) if (t.name == "Punta") tip = t;
                 if (tip != null) Part(tip, "Mano", Vector3.zero, new Vector3(sp.legWidth * 2.2f, sp.legWidth * 1.4f, sp.legWidth * 2.2f), dark);
                 // Pose de BRAZO (en el marco del torso erguido): colgando junto al cuerpo, con el codo doblado hacia delante.
-                l.armCoxa = Quaternion.Euler(0f, l.side * 168f, 0f);
-                l.armTroch = Quaternion.Euler(-10f, 0f, 0f);
-                l.tibia = FindDeep(l.coxa, "Tibia_art"); if (l.tibia != null) { l.tibiaRest = l.tibia.localRotation; l.armTibia = Quaternion.Euler(-70f, 0f, 0f); }
+                // El 2.º par de brazos (mantis) cuelga más abierto y con el codo menos doblado, para no chocar con el primero.
+                l.arm = true;
+                l.armCoxa = Quaternion.Euler(0f, l.side * (l.pair == 0 ? 168f : 145f), 0f);
+                l.armTroch = Quaternion.Euler(l.pair == 0 ? -10f : -25f, 0f, 0f);
+                l.tibia = FindDeep(l.coxa, "Tibia_art"); if (l.tibia != null) { l.tibiaRest = l.tibia.localRotation; l.armTibia = Quaternion.Euler(l.pair == 0 ? -70f : -40f, 0f, 0f); }
             }
         ci._torso = waist; ci._neck = neck; ci._torsoRest = waist.localRotation; ci._neckRest = neck.localRotation;
         return ci;
@@ -465,7 +470,9 @@ public class CubeInsect : MonoBehaviour
             {
                 Transform tr = t.Find("Trocanter_art");
                 var lg = new Leg { coxa = t, troch = tr, coxaRest = t.localRotation, trochRest = tr != null ? tr.localRotation : Quaternion.identity, side = t.name.EndsWith("I") ? -1 : 1, pair = t.name[5] - '0' };
-                if (lg.pair == 0) { lg.armCoxa = Quaternion.Euler(0f, lg.side * 168f, 0f); lg.armTroch = Quaternion.Euler(-10f, 0f, 0f); lg.tibia = FindDeep(t, "Tibia_art"); if (lg.tibia != null) { lg.tibiaRest = lg.tibia.localRotation; lg.armTibia = Quaternion.Euler(-70f, 0f, 0f); } }
+                // Es BRAZO si cuelga del torso (las patas de andar cuelgan del pivote): el 1.er par, y el 2.º en la mantis.
+                lg.arm = t.parent != null && t.parent.name != "Pivote";
+                if (lg.arm) { lg.armCoxa = Quaternion.Euler(0f, lg.side * (lg.pair == 0 ? 168f : 145f), 0f); lg.armTroch = Quaternion.Euler(lg.pair == 0 ? -10f : -25f, 0f, 0f); lg.tibia = FindDeep(t, "Tibia_art"); if (lg.tibia != null) { lg.tibiaRest = lg.tibia.localRotation; lg.armTibia = Quaternion.Euler(lg.pair == 0 ? -70f : -40f, 0f, 0f); } }
                 _legs.Add(lg);
             }
             else if (t.name.StartsWith("Pierna_")) _limbs.Add((t, t.name.EndsWith("I") ? -1 : 1, false));
@@ -515,7 +522,7 @@ public class CubeInsect : MonoBehaviour
             float la = _limp && l.side > 0 && l.pair == _legs[_legs.Count - 1].pair ? 0.3f : 1f;   // cojera: la trasera derecha apenas da el paso
             Quaternion cx = l.coxaRest * Quaternion.Euler(0f, ph * amp * la * l.side, 0f);
             Quaternion tr = l.trochRest * Quaternion.Euler(-Mathf.Max(0f, ph) * amp * 0.6f, 0f, 0f);   // se alza en la fase de vuelo
-            if (l.pair == 0 && _torso != null)   // brazos cuando está erguido (balanceo suave al andar)
+            if (l.arm && _torso != null)   // brazos cuando está erguido (balanceo suave al andar)
             {
                 Quaternion armSwing = Quaternion.Euler(Mathf.Sin(_phase + (l.side < 0 ? 0f : Mathf.PI)) * amp * 0.4f, 0f, 0f);
                 cx = Quaternion.Slerp(cx, l.armCoxa * armSwing, _calm);

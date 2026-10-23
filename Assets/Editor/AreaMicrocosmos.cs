@@ -77,6 +77,9 @@ public static class AreaMicrocosmos
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
         int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
+        // La historia de la enfermería (el sandbox de Ambrosio) borra piezas al montarse: sin quitar sus suelos de la lista,
+        // el microcosmos del Hospital fallaba (MissingReference en EdgeDist) y se quedaba la escena vieja, sin el hospital.
+        floors.RemoveAll(f => f == null);
         if (giant == null)
             Box(root.transform, "Suelo_claro", new Vector3(0f, -0.05f, 0f), new Vector3(120f, 0.1f, 120f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
 
@@ -218,20 +221,27 @@ public static class AreaMicrocosmos
     /// <summary>Aparta SOLO los muebles que pisa la historia (su guarida, su gente, el portal); el resto del área queda.</summary>
     static int ClearUnder(Transform story, Transform giant, Bounds foot)
     {
-        Bounds core = default; bool any = false;
+        // Solo se aparta el mueble que CHOCA con una pieza sólida de la historia (no todo lo que cae dentro de la caja que la
+        // envuelve): las historias grandes (el bosque y la cueva de Ambrosio) se MEZCLAN con el área, que sigue reconociéndose
+        // (Berón, 2026-10-23: el microcosmos reutiliza el área y la puebla por encima). Los suelos de la historia no cuentan.
+        var solids = new List<Bounds>();
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
         {
             if (r.GetComponentInParent<MicroFood>() != null) continue;   // los restos se recolocan luego
-            if (!any) { core = r.bounds; any = true; } else core.Encapsulate(r.bounds);
+            Bounds rb = r.bounds;
+            if (rb.size.y < 0.5f && Mathf.Max(rb.size.x, rb.size.z) > 6f) continue;   // suelo / agua de la historia
+            rb.Expand(new Vector3(1f, 0f, 1f)); solids.Add(rb);
         }
-        if (!any) return 0;
-        core.Expand(new Vector3(2f, 0f, 2f));
+        foreach (MobSpawnPoint sp in story.GetComponentsInChildren<MobSpawnPoint>(true)) solids.Add(new Bounds(sp.transform.position, new Vector3(6f, 4f, 6f)));   // se llega a un sitio libre
+        if (solids.Count == 0) return 0;
         var kill = new HashSet<GameObject>();
         foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
         {
             Bounds b = r.bounds;
-            if (IsFloor(b) || b.max.x < core.min.x || b.min.x > core.max.x || b.max.z < core.min.z || b.min.z > core.max.z) continue;
-            kill.Add(Piece(r.transform, giant, foot).gameObject);
+            if (IsFloor(b)) continue;
+            bool hit = false;
+            foreach (Bounds s in solids) if (b.max.x >= s.min.x && b.min.x <= s.max.x && b.max.z >= s.min.z && b.min.z <= s.max.z && b.min.y <= s.max.y) { hit = true; break; }
+            if (hit) kill.Add(Piece(r.transform, giant, foot).gameObject);
         }
         foreach (GameObject g in kill) if (g != null) Object.DestroyImmediate(g);
         _blocked.Clear();
@@ -282,6 +292,16 @@ public static class AreaMicrocosmos
         foreach (string dup in new[] { "Ambrosio_Aphid", "HoneydewDrop_Sample", "Kushal_Ant" })
             foreach (Transform t in story.GetComponentsInChildren<Transform>(true)) if (t != null && t.name == dup) { Object.DestroyImmediate(t.gameObject); break; }
         story.localScale = Vector3.one * StoryScale;
+        // Los dos sandboxes se montan con su propio desplazamiento en el mundo (a cientos de metros): se traen junto al hueco de
+        // la historia, la cueva a un lado y el bosque al otro, para que se mezclen con el hospital en vez de taparlo entero.
+        float[] at = { -22f, 40f }; int k = 0;
+        foreach (Transform top in story)
+        {
+            Renderer[] rs = top.GetComponentsInChildren<Renderer>(true); if (rs.Length == 0) continue;
+            Bounds bb = rs[0].bounds; foreach (Renderer r in rs) bb.Encapsulate(r.bounds);
+            Vector3 want = story.position + new Vector3(at[Mathf.Min(k++, at.Length - 1)], 0f, 0f);
+            top.position += new Vector3(want.x - bb.center.x, 0f, want.z - bb.center.z);
+        }
         int n = 0;
         foreach (MeshFilter mfa in story.GetComponentsInChildren<MeshFilter>(true))   // todas las cápsulas: el elenco y los depredadores
         {

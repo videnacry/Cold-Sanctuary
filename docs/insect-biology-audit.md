@@ -110,10 +110,13 @@ segundo PR (ver «Qué se cambió»); falta calibrarlo en una prueba en vivo.
 
 Berón: **todos** los insectos tienen cara e inteligencia humana, y viven entre dos mundos.
 
-- **Lúcidos** (en calma, saciados, sin alerta, sin correr): se enderezan como centauros, con la cabeza alta, y el primer
-  par de patas libre como brazos. La hormiga anda a 4 patas con 2 brazos; la araña, a 6 con 2 brazos. Piensan más a menudo.
-- **Animales** (estrés, hambre, amenaza, huida, carrera, o `AcuteStressResponse.InTakeover`): el cuerpo toma el control.
-  La hormiga baja a 6 patas y la araña a 8, y piensan menos.
+- **Lúcidos** (lo normal, Berón 2026-10-23: «por lo general deberían ir refinados, erguidos»): se enderezan como
+  centauros, con la cabeza alta, y el primer par de patas libre como brazos. La hormiga anda a 4 patas con 2 brazos; la
+  araña, a 6 con 2 brazos; la **mantis**, a 2 patas con 4 brazos (`InsectMorphology.Spec.armPairs = 2`: las raptoras y
+  el 2.º par). Piensan más a menudo. Estar alerta o darse cuenta de algo (`aware`) no los baja.
+- **Animales** (solo lo que nubla la mente: estrés, hambre pasado el 70 %, niebla cognitiva pasado el 60 %, carrera, o
+  `AcuteStressResponse.InTakeover`): el cuerpo toma el control. La hormiga baja a 6 patas y la araña a 8, y piensan menos.
+- El **pulgón** tiene cabeza, tórax y abdomen (antes cabeza + un cuerpo único: al erguirse, la cabeza quedaba flotando).
 
 Código: `Lucidity` (`Assets/Scripts/Soul/`), añadido en `Animal.Init` a los 12 artrópodos. Expone `Clarity` (0..1),
 `Lucid`, `Limbs` y `LegsOnGround`, con histéresis 0,6/0,4. Larvas, pupas y dormidos nunca están lúcidos.

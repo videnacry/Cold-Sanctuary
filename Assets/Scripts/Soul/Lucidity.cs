@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// LUCIDEZ de los insectos con mente humana (los entomántropos: mirmidones, arañas, abejas…). Viven entre dos mundos:
-/// - **Lúcido** (en calma: sin estrés, saciado, sin alerta, sin correr): la mente manda. El cuerpo se ENDEREZA como un
+/// - **Lúcido** (lo normal: sin estrés que nuble la mente, sin hambre fuerte, sin correr): la mente manda. El cuerpo se ENDEREZA como un
 ///   centauro: camina sobre las patas de atrás, con la cabeza alta y el primer par libre como **brazos** (hormiga: 4
 ///   patas + 2 brazos; araña: 6 + 2). Piensa más a menudo.
 /// - **Animal** (estrés, hambre, amenaza, huida o carrera; o `AcuteStressResponse.InTakeover`): el cuerpo toma el
@@ -29,7 +29,7 @@ public class Lucidity : MonoBehaviour
     /// <summary>Erguido, pensativo, con brazos (true) o a cuatro patas… o a seis, como un animal (false).</summary>
     public bool Lucid { get; private set; }
     /// <summary>Patas que tocan el suelo ahora: todas en modo animal; dos menos (los brazos) en modo lúcido.</summary>
-    public int LegsOnGround => Lucid ? Mathf.Max(2, Limbs - 2) : Limbs;
+    public int LegsOnGround => Lucid ? Mathf.Max(2, Limbs - 2 * (InsectMorphology.For(_a != null ? _a.SpeciesName : null).armPairs)) : Limbs;
     /// <summary>Patas de la especie (artrópodos: 6; arañas: 8).</summary>
     public int Limbs { get; private set; } = 6;
 
@@ -53,7 +53,8 @@ public class Lucidity : MonoBehaviour
         if (_a == null || _a.death) return;
         Clarity = ClarityOf(_a);
         bool canStand = !_a.asleep && Metamorphosis.PhaseOf(_a) != Metamorphosis.Phase.Larva && !Metamorphosis.IsPupa(_a);
-        bool bodyRules = !canStand || _a.aware || Running() || (_acute != null && _acute.InTakeover);
+        // Darse cuenta de algo (aware) o estar atento no nubla la mente: solo correr, el pánico (AcuteStress) o el apremio.
+        bool bodyRules = !canStand || Running() || (_acute != null && _acute.InTakeover);
         if (bodyRules || Clarity < leaveAt) Set(false);
         else if (Clarity >= enterAt) Set(true);
     }
@@ -71,11 +72,14 @@ public class Lucidity : MonoBehaviour
         return _a.nav.velocity.magnitude > _a.ActsPrep.walk.navSpeed * runFactor;
     }
 
-    /// <summary>Calma de la mente: 1 − el apremio más fuerte (estrés, hambre, alerta, niebla cognitiva).</summary>
+    /// <summary>Calma de la mente: 1 − el apremio más fuerte. Solo cuenta lo que NUBLA la mente (Berón, 2026-10-23: por lo
+    /// general van erguidos y refinados): el estrés, el hambre de verdad (pasado el 70 %) y la niebla cognitiva fuerte
+    /// (pasado el 60 %). La alerta normal de un animal (≈0,5–0,8 en el microcosmos) ya no lo baja a cuatro patas.</summary>
     public static float ClarityOf(Animal a)
     {
         if (a == null) return 0f;
-        float urge = Mathf.Max(a.stress, Mathf.Clamp01(a.hungry), a.alertness, a.mindStatusCalculationFog);
+        float hunger = Mathf.InverseLerp(0.7f, 1f, Mathf.Clamp01(a.hungry)), fog = Mathf.InverseLerp(0.6f, 1f, a.mindStatusCalculationFog);
+        float urge = Mathf.Max(a.stress, hunger, fog);
         return 1f - Mathf.Clamp01(urge);
     }
 
