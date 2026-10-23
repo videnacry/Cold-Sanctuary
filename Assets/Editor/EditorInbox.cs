@@ -47,6 +47,7 @@ static class EditorInbox
             case "refresh": AssetDatabase.Refresh(); break;
             case "menu":    if (!EditorApplication.ExecuteMenuItem(arg)) Debug.LogWarning($"[EditorInbox] menú no encontrado: {arg}"); break;
             case "open":    UnityEditor.SceneManagement.EditorSceneManager.OpenScene(arg); break;
+            case "save":    UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes(); Debug.Log("[EditorInbox] escenas abiertas guardadas."); break;
             default:        Debug.LogWarning($"[EditorInbox] comando desconocido: {cmd}"); break;
         }
     }
