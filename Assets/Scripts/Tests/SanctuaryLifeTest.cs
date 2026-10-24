@@ -128,7 +128,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int tables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_")) tables++;
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
-        TestProbe.Check("el comedor tiene dos galerías con mesas y escalera inclinada", upTables >= 6 && GameObject.Find("Escalera_comedor_oeste") != null && GameObject.Find("Escalera_comedor_este") != null, $"{upTables} mesas arriba");
+        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y escalera desde el puente", upTables >= 12 && GameObject.Find("Escalera_comedor_puente") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
         var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
@@ -348,7 +348,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         GameObject gym = GameObject.Find("Gym_Area");
         int tight = gym != null ? FurnitureSpacing.Violations(gym.transform).Count : -1;
         TestProbe.Check("las máquinas del gimnasio tienen su pasillo (no se apilan)", tight == 0, $"{tight} pares demasiado juntos");
-        TestProbe.Check("la cocina es céntrica: seis puestos completos y neveras en el centro", FindByPrefix("Puesto_6") && FindByPrefix("Nevera 6"));
+        int fullSt = 0;
+        for (int i = 1; i <= 8; i++)
+        {
+            GameObject st = GameObject.Find($"Puesto_{i}"); if (st == null) continue;
+            var eqs = new System.Collections.Generic.HashSet<string>(st.GetComponentsInChildren<Transform>().Select(x => x.name));
+            if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
+        }
+        TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
         TestProbe.Check("la sala de yoga tiene la plataforma en el centro y 30 esterillas", FindByPrefix("Esterilla_30") && FindByPrefix("Tarima del maestro"));
         TestProbe.End();
     }
