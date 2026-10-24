@@ -114,6 +114,15 @@ Wikimedia Commons (libres) e iNaturalist (observaciones con foto, por lugar):
 
 ## 5. Qué mirar en la prueba en vivo
 
+**Verificación automática (sin esperar a la noche ni a un depredador):** `EraSpeciesTest` (grupo 29 del `TestRunner`
+de SampleScene, `[TEST]` en consola) monta cada escenario en una losa aparte: pone la hora, mete una araña junto a la
+cochinilla, fuerza el celo de luciérnagas/cigarra/grillo y hace parir a un escorpión. Comprueba la bola (`Hold` +
+armadura + `Predation.Defense`), destello y respuesta de la hembra, canto, que solo la larva de luciérnaga caza, la cría
+al lomo con vínculo, y que la luciérnaga duerme a mediodía. Lo de abajo es para MIRARLO en los microcosmos.
+
+Los prefabs de las especies nuevas ya no hacen falta generarlos a mano: los builders (`AreaMicrocosmos`,
+`MicrocosmosSceneBuilder`, `SampleSceneBuilder`) llaman a `AnimalPrefabGenerator.LoadOrCreate`, que crea el que falte.
+
 1. De día: cigarras cantando en troncos (se oye), pulgas de las nieves y ácaros al sol; el resto duerme.
 2. Al anochecer: luciérnagas destellando en tallos; si hay hembra en celo cerca, contesta y el macho va hacia ella.
 3. Acercar una araña o un escorpión a una cochinilla: se hace bola (si el cuerpo ya lee `PassiveDefence.Holding`) y el

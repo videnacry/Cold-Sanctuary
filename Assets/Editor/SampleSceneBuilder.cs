@@ -23,7 +23,6 @@ using UnityEngine.AI;
 public static partial class SampleSceneBuilder
 {
     const string RootName = "LevelDressing_AUTO";
-    const string AnimalsRoot = "Assets/Animals";
     const string EnvRoot = "Assets/Environment";
     const string CharactersRoot = "Assets/Characters";
     const string AutoRunPrefKey = "ColdSanctuary_SampleSceneBuilder_AutoRan";
@@ -115,6 +114,8 @@ public static partial class SampleSceneBuilder
         tests.AddComponent<BodyShapeTest>();         // grupo 26: las stats físicas moldean el cuerpo (estatura, músculo, grasa)
         tests.AddComponent<GardenVisitorTest>().harePrefab = LoadAnimalPrefab("Bunny");   // grupo 27: visitantes del huerto = animas reales (hambre + dieta de cultivos)
         tests.AddComponent<SanctuaryLifeTest>();     // grupo 28: elevado + musgo, dormitorios, solar, insectos de hielo, energía del cuerpo
+        tests.AddComponent<EraSpeciesTest>().prefabs = new[] { "Woodlouse", "Spider", "Firefly", "Cicada", "Cricket", "Scorpion" }
+            .Select(LoadAnimalPrefab).Where(p => p != null).ToArray();   // grupo 29: especies de las eras (bola, destellos, canto, cría a lomos, noche) en escenario forzado
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
@@ -2390,8 +2391,7 @@ public static partial class SampleSceneBuilder
 
     // ── Animals ──────────────────────────────────────────────────────────────
 
-    static GameObject LoadAnimalPrefab(string species)
-        => AssetDatabase.LoadAssetAtPath<GameObject>($"{AnimalsRoot}/{species}/{species}.prefab");
+    static GameObject LoadAnimalPrefab(string species) => AnimalPrefabGenerator.LoadOrCreate(species);   // lo genera si falta
 
     static void BuildAnimals(Transform parent)
     {
