@@ -74,3 +74,35 @@ agente acorde a su largo y lo posa en el NavMesh (`Warp`). A falta de NavMesh, e
 - Celo/cortejo y crianza ligados a estos lugares (la foca pare en una guarida de nieve sobre su respiradero; el pingüino
   incuba en su nido de guijarros).
 - Liebre y reno no están en el bioma: su sauce y liquen ya son comida si se añaden.
+
+## Arreglo 2026-10-23: hábitos en el mundo principal
+
+La prueba en Unity mostró `[Hábito]` en el microcosmos pero ninguno en el santuario («en un hábito natural» = 0):
+- **Permiso caducado por LOD.** `Habit` vive de un permiso que renueva cada tick de volición; los animales lejos del
+  jugador deciden hasta `Lod.maxSlow`× más despacio, así que el permiso caducaba antes del siguiente tick y el hábito se
+  soltaba antes de llegar a su sitio. Ahora el permiso se estira con `Lod.SlowFactor`.
+- **Descanso en su sitio.** Cansado y con guarida/descansadero/refugio cerca, el deseo «habit» absorbe al «rest»: el oso
+  va a su guarida de nieve, el pingüino al descansadero o a la piña, en vez de pararse donde esté.
+- **Marinos en el censo.** Focas/ballenas/orcas hacen su etograma dentro de `MarineLife` (`InHabitat`), y ahora cuentan.
+  El censo añade «con sitio cerca» para distinguir «no encuentra Affordances» de «no gana el deseo».
+- **Ordeño.** `MicroForager` va a un pulgón con melaza (≥ 0,3) dentro de `milkRadius` aunque haya semillas más cerca.
+- **Animales congelados por comida inalcanzable** (2ª prueba): `Forager.Graze` andaba hacia el banco de peces de la
+  laguna sin límite; el pingüino/oso, a pie, se quedaba en la orilla y el bucle no acababa → `busy` para siempre → ni
+  volición ni hábito. Ahora se rinde si no avanza en ~4 s y, si quedó en la orilla (< `shoreFishingReach`), **pesca
+  desde el borde** un bocado. `Hunt` deja una carcasa inalcanzable tras ~60 intentos.
+- **Comer por hábito**: con hambre y comida natural cerca (savia, bayas, liquen, respiradero para el oso), «habit»
+  compite con «eat» de igual a igual y prefiere los actos de comer.
+- **Censo** (diagnóstico): «ocupados» (`busy`) y el último deseo ganador por especie.
+- **Cuerpo al mando bloqueaba la volición** (3ª prueba): con hambre/alerta ≥ `takeoverArousal`, `AcuteStressResponse`
+  mete su reflejo en el carril `own` de la `ActionQueue`, y la volición seguía encolando en el carril opcional, que no
+  corre mientras `own` tenga algo → el deseo ganador (comer, hábito) no se ejecutaba nunca. Ahora, con `own` ocupado, la
+  volición despacha directo (ese reflejo es justo «la IA conduce»).
+- **Recolectoras en los microcosmos de historia** (Patanjali, Planta Atómica, Hospital…): si el elenco no trae ninguna
+  `MicroForager`, `AreaMicrocosmos.ForagingBand` añade una guarida y 6 recolectoras junto al claro.
+- **4ª prueba**: la pesca desde la orilla saciaba con la masa de las crías del banco (gramos) → el pingüino seguía con
+  hambre y «eat» ganaba siempre; ahora cada zambullida sacia como una comida (`feed`). Las recolectoras (`MicroForager`)
+  abandonan un objetivo al que no se acercan en `stallSeconds` (tras una pared / en otro piso del NavMesh) y lo evitan
+  90 s: antes se quedaban plantadas (0 entregas en Hospital/Patanjali). Log `[Hábito] … empieza a hacer melaza`.
+- **5ª prueba**: el ordeño busca pulgones con gota en todo el microcosmos (`milkRadius` 250; los pulgones viven en la
+  flora, lejos de la guarida). Si una recolectora falla 3 objetivos seguidos por el NavMesh (su trozo de suelo aislado),
+  desactiva su agente y va a campo través (log `[Micro] … va a campo través`). Log `[Micro] … ordeña la melaza`.

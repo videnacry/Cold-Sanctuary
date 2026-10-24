@@ -44,7 +44,8 @@ public class AnimalVitals : MonoBehaviour
         var lines = new List<string>();
         foreach (var kv in by)
         {
-            int child = 0, teen = 0, adult = 0, hungry = 0, sleeping = 0, ate = 0, pooped = 0, wander = 0, stuck = 0, inWater = 0, female = 0, habit = 0;
+            int child = 0, teen = 0, adult = 0, hungry = 0, sleeping = 0, ate = 0, pooped = 0, wander = 0, stuck = 0, inWater = 0, female = 0, habit = 0, habitNear = 0, busy = 0;
+            var won = new SortedDictionary<string, int>();
             foreach (Animal a in kv.Value)
             {
                 if (a.lifeStage == LifeStage.child) child++; else if (a.lifeStage == LifeStage.teen) teen++; else adult++;
@@ -52,8 +53,12 @@ public class AnimalVitals : MonoBehaviour
                 if (a.asleep) sleeping++;
                 if (a.sex == Sex.female) female++;
                 if (a.transform.position.y < -0.3f) inWater++;
-                bool natural = a.TryGetComponent(out Habit h) && h.Active;   // acechando, posado, en su respiradero: quieto a propósito
+                bool hasHabit = a.TryGetComponent(out Habit h);
+                bool natural = (hasHabit && h.Active) || (a.TryGetComponent(out MarineLife m) && m.InHabitat);   // acechando, posado, en su respiradero: quieto a propósito
                 if (natural) habit++;
+                if (natural || (hasHabit && h.HasOptions())) habitNear++;   // diagnóstico: ¿encuentra dónde hacer sus cosas?
+                if (a.busy) busy++;   // ocupado en una corrutina (comer/cazar): ni volición ni hábito
+                if (a.TryGetComponent(out Volition vo) && vo.LastDesire != "") won[vo.LastDesire] = won.TryGetValue(vo.LastDesire, out int c) ? c + 1 : 1;
                 if (a.TryGetComponent(out AnimalVitals v))
                 {
                     if (v.meals > 0) ate++;
@@ -62,7 +67,7 @@ public class AnimalVitals : MonoBehaviour
                     if (!a.asleep && !natural && Time.time - v.stillSince > 60f) stuck++;
                 }
             }
-            lines.Add($"{kv.Key}: {kv.Value.Count} (crías {child}, jóvenes {teen}, adultos {adult}; hembras {female}) · con hambre {hungry} · durmiendo {sleeping} · han comido {ate} · han ido al baño {pooped} · han merodeado {wander} · en un hábito natural {habit} · quietos >1 min {stuck} · en el agua {inWater}");
+            lines.Add($"{kv.Key}: {kv.Value.Count} (crías {child}, jóvenes {teen}, adultos {adult}; hembras {female}) · con hambre {hungry} · durmiendo {sleeping} · han comido {ate} · han ido al baño {pooped} · han merodeado {wander} · en un hábito natural {habit} (con sitio cerca {habitNear}; ocupados {busy}; último deseo: {string.Join(", ", System.Linq.Enumerable.Select(won, w => w.Key + " " + w.Value))}) · quietos >1 min {stuck} · en el agua {inWater}");
         }
         return lines;
     }

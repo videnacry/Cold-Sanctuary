@@ -27,21 +27,28 @@ public class Habit : MonoBehaviour
     Vector3 _dest;
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
-    bool _hasOptions;
-    static int _logged;
+    bool _hasOptions, _canRest, _canFeed;
+    static int _logged, _honeyLogged;
 
     void Awake() { _a = GetComponent<Animal>(); }
 
-    void Start()
+    /// <summary>La MELAZA de un pulgón (interactuable que las hormigas ordeñan); se crea la primera vez. null si no es pulgón.
+    /// La llenan tanto el hábito (chupar savia) como el <see cref="Forager"/> cuando come savia por hambre.</summary>
+    public static Affordance Honeydew(Animal a)
     {
-        // Un pulgón chupando savia produce MELAZA: la ofrece como interactuable (las hormigas lo ordeñan).
-        if (_a != null && _a.SpeciesName == "Aphid" && GetComponent<Affordance>() == null)
-            Affordance.Put(gameObject, AffordanceKind.Honeydew, 2, 0f, 0f).maxStock = 1f;
+        if (a == null || a.SpeciesName != "Aphid") return null;
+        foreach (Affordance f in a.GetComponents<Affordance>()) if (f.kind == AffordanceKind.Honeydew) return f;
+        Affordance h = Affordance.Put(a.gameObject, AffordanceKind.Honeydew, 2, 0f, 0f);
+        h.maxStock = 1f;
+        if (_honeyLogged++ < 5) Debug.Log($"[Hábito] «{a.name}» (pulgón) empieza a hacer melaza (savia → gotas que las hormigas ordeñan; ordeño desde {(Eras.Allows(Eras.Capability.Dairying) ? "ya" : "el Neolítico")}).");
+        return h;
     }
 
     bool Marine => GetComponent<MarineLife>() != null;
     float Radius => (searchRadius + 40f * _a.perception) * (GetComponentInParent<MicroSize>() != null ? 2f : 1f);
-    float Lease => (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 2f) * 3f + 2f;
+    // El permiso dura ~3 ticks de volición. Los lejanos al jugador deciden hasta Lod.maxSlow× más despacio: el permiso se
+    // estira igual, si no caducaba antes del siguiente tick y el hábito nunca llegaba a su sitio (mundo principal, 2026-10-23).
+    float Lease => ((TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 2f) / 0.8f * Lod.SlowFactor(transform.position)) * 3f + 2f;
 
     /// <summary>¿Tiene algo natural que hacer cerca? (cacheado; lo consulta la volición cada tick).</summary>
     public bool HasOptions()
@@ -52,12 +59,32 @@ public class Habit : MonoBehaviour
         if (Time.time >= _nextScan)
         {
             _nextScan = Time.time + 3f;
-            _hasOptions = false;
+            _hasOptions = _canRest = _canFeed = false;
             foreach (EthoAct e in Ethogram.Of(_a.SpeciesName))
-                if (Find(e) != null || (e.effect == HabitEffect.Huddle && Night)) { _hasOptions = true; break; }
+                if (Find(e) != null || (e.effect == HabitEffect.Huddle && Night))
+                {
+                    _hasOptions = true;
+                    if (IsRest(e.effect)) _canRest = true;
+                    if (IsFood(e.effect)) _canFeed = true;
+                }
         }
         return _hasOptions;
     }
+
+    /// <summary>¿Tiene cerca un sitio natural donde DESCANSAR (guarida, descansadero, refugio, la piña de la colonia)?
+    /// Entonces el cansancio lo lleva allí en vez de pararse donde esté (lo lee el deseo «habit»).</summary>
+    public bool CanRestHere => HasOptions() && _canRest;
+
+    /// <summary>¿Tiene cerca una forma NATURAL de comer (chupar savia, ramonear, acechar en un respiradero)? Entonces el
+    /// hambre también puede llevarlo a su hábito (el oso polar come sobre todo así: Stirling 1974).</summary>
+    public bool CanFeedHere => HasOptions() && _canFeed;
+
+    static bool IsFood(HabitEffect e) => e == HabitEffect.Feed || e == HabitEffect.StillHunt;
+
+    static bool IsRest(HabitEffect e) => e == HabitEffect.Rest || e == HabitEffect.Huddle || e == HabitEffect.Shelter || e == HabitEffect.Bask;
+
+    // Cansancio como el deseo «rest» (0..1).
+    float Tired => Mathf.Clamp01((_a.sleepiness + _a.mentalFatigue) * 0.5f);
 
     /// <summary>Lo llama el deseo «habit»: renueva el permiso y, si no hace nada, empieza una actividad.</summary>
     public void Step()
@@ -89,7 +116,7 @@ public class Habit : MonoBehaviour
         for (int i = 0; i < acts.Length; i++)
         {
             found[i] = Find(acts[i]);
-            if (found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night)) total += acts[i].weight;
+            if (found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night)) total += W(acts[i]);
         }
         if (total <= 0f) { _cool = Time.time + 5f; return; }
         float r = Random.value * total;
@@ -97,7 +124,7 @@ public class Habit : MonoBehaviour
         {
             bool ok = found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night);
             if (!ok) continue;
-            r -= acts[i].weight;
+            r -= W(acts[i]);
             if (r > 0f && i < acts.Length - 1) continue;
             _act = acts[i]; _target = found[i];
             if (_act.effect == HabitEffect.Huddle) { if (!Colony(out _dest)) { _cool = Time.time + 5f; return; } }
@@ -106,6 +133,9 @@ public class Habit : MonoBehaviour
             return;
         }
     }
+
+    // Peso de un acto: cansado → prefiere los de descanso (guarida / descansadero / apiñarse); con hambre, los de comer.
+    float W(EthoAct e) => e.weight * (IsRest(e.effect) ? 1f + 4f * Tired : 1f) * (IsFood(e.effect) ? 1f + 4f * Mathf.Clamp01(_a.hungry) : 1f);
 
     // Centro de los de su especie cercanos (para apiñarse).
     bool Colony(out Vector3 c)
@@ -180,7 +210,7 @@ public class Habit : MonoBehaviour
             {
                 float got = _target != null ? _target.Take(dt / Mathf.Max(1f, _act.seconds), _a) : 0f;
                 _a.hungry -= MealWeight * 0.6f * got;
-                if (_a.SpeciesName == "Aphid") GetComponent<Affordance>()?.Add(got * 0.5f);   // savia → melaza
+                if (_target != null && _target.kind == AffordanceKind.PlantSap) Honeydew(_a)?.Add(got);   // savia → melaza
                 if (_target != null && _target.kind == AffordanceKind.Honeydew && _target.Stock <= 0.01f) _until = Time.time;   // ordeñado
                 break;
             }

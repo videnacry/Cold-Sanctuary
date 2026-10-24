@@ -40,6 +40,9 @@ public class Volition : MonoBehaviour
     Desire _last;
     float _lastScore;
 
+    /// <summary>El último deseo que ganó (diagnóstico del censo).</summary>
+    public string LastDesire => _last != null ? _last.key : "";
+
     void SelectAndDispatch(Animal self)
     {
         // ARENA de arbitraje (docs/consciousness-mechanics.md §4): los deseos COMPITEN; la resolución depende de los
@@ -67,8 +70,12 @@ public class Volition : MonoBehaviour
             // hechizo en su ActionQueue (carril opcional) → usa la misma cola que el jugador. El carril `own` (reflejo
             // del cuerpo, AcuteStressResponse) tiene prioridad, así que un apremio corporal pausa esto solo. Si no hay
             // ActionQueue (o useQueue=false), cae al despacho directo de siempre (paridad).
+            // Con el CUERPO AL MANDO (AcuteStressResponse: el carril `own` lleva su reflejo), el carril opcional queda
+            // bloqueado; pero ese reflejo es justo «la IA conduce»: el deseo se despacha DIRECTO. Antes se quedaba en
+            // cola sin ejecutarse nunca → un animal con hambre/alerta ni comía ni hacía nada (fauna congelada, 2026-10-23).
             ActionQueue q = useQueue ? self.GetComponent<ActionQueue>() : null;
-            if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
+            if (q != null && q.Own.Count > 0) best.Dispatch(self);
+            else if (q != null) { if (q.Player.Count == 0) q.EnqueuePlayer(best.Conjure(self)); }   // deseo → SUPRAHECHIZO en la cola
             else best.Dispatch(self);
             self.RecordUse(best.capability, true, 1f);   // el USO construye el hábito (confianza-por-uso, más rápido de joven)
             _last = best; _lastScore = bestScore;
