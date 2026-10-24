@@ -688,7 +688,11 @@ public static class AreaMicrocosmos
                 // FORMA REAL (docs/insect-morphology.md): el cuerpo de cubos articulado de su especie sustituye al modelo;
                 // la conducta, el ciclo de vida y la biología siguen siendo los del prefab.
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>(true)) x.enabled = false;
-                CubeInsect.Dress(a, sp, tint, 1f);
+                // POBLACIÓN MEZCLADA: la mayoría ADULTOS (erguidos cuando están lúcidos) y algunas crías (larva, ninfa o
+                // joven según su desarrollo). Antes el prefab nacía sin etapa → todos jóvenes, nadie erguido.
+                Animal an = a.GetComponent<Animal>();
+                if (an != null) an.lifeStage = i < Mathf.Max(1, Mathf.CeilToInt(n * 0.7f)) ? LifeStage.adult : LifeStage.child;
+                CubeInsect.Dress(a, sp, tint, 1f, an != null ? Metamorphosis.PhaseOf(an) : Metamorphosis.Phase.Adult, an == null || an.sex != Sex.male);
                 if (dormant != null) a.AddComponent<Dormant>().why = dormant;   // aletargado en esta estación: está, pero quieto
                 Bounds bb = default; bool any = false;
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>()) { if (!x.enabled) continue; if (!any) { bb = x.bounds; any = true; } else bb.Encapsulate(x.bounds); }

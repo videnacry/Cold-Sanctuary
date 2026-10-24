@@ -133,7 +133,7 @@ public static partial class InsectMorphology
         ["GhostCrab"] = new Spec { name = "GhostCrab", larvaScale = 0.03f, nymphScale = 0.1f,  spider = true, armPairs = 0, antenna = 0.05f, bodyHeight = 0.22f, legWidth = 0.05f,
             body = new[] { S("Caparazon", 0.8f, 0.9f, 0.32f) },
             legs = new[] { Sp(0.9f), Sp(1.0f), Sp(1.05f), Sp(0.9f) },
-            fx = new FaunaTraits { crustacean = true, chelae = 0.55f, chelaWidth = 0.12f, chelaAsym = 1.35f, eyeStalks = 0.3f, apron = 0.45f, waist = 0.5f,
+            fx = new FaunaTraits { crustacean = true, chelae = 0.6f, chelaWidth = 0.15f, chelaAsym = 1.35f, eyeStalks = 0.32f, apron = 0.45f, waist = 0.5f,
                 zoea = true, nymph = "Megalopa" } },
         // MEGALOPA: la última larva, ya con pinzas y patas pero con el abdomen extendido detrás (nadadora); llega a la playa.
         ["Megalopa"] = new Spec { name = "Megalopa", spider = true, armPairs = 0, antenna = 0.1f, bodyHeight = 0.12f, legWidth = 0.035f,

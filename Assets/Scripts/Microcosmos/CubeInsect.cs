@@ -293,13 +293,20 @@ public partial class CubeInsect : MonoBehaviour
         Vector3 hf = hc.localPosition + new Vector3(0f, 0f, hc.localScale.z * 0.5f + 0.002f);
         float hw = hc.localScale.x, hh = hc.localScale.y;
         float ew = hw * 0.28f, eh = hh * 0.3f;
-        for (int s = -1; s <= 1; s += 2)
+        // Con OJOS EN PEDÚNCULO (cangrejo) esos son sus ojos: suben a lo alto de la cabeza, y la cara lleva cejas y boca.
+        bool stalks = sp.fx != null && sp.fx.eyeStalks > 0f;
+        if (stalks)
+            foreach (Transform t in neck)
+                if (t.name == "Antena" && t.Find("Pedunculo") != null)
+                    t.localPosition = hc.localPosition + new Vector3(Mathf.Sign(t.localPosition.x) * hw * 0.3f, hh * 0.45f, hc.localScale.z * 0.15f);
+        for (int s = -1; s <= 1 && !stalks; s += 2)
         {
             Part(neck, "Ojo", hf + new Vector3(s * hw * 0.24f, hh * 0.12f, 0f), new Vector3(ew, eh, 0.006f), Color.white);
             Part(neck, "Pupila", hf + new Vector3(s * hw * 0.24f, hh * 0.1f, 0.004f), new Vector3(ew * 0.5f, eh * 0.55f, 0.005f), new Color(0.08f, 0.06f, 0.05f));
             Part(neck, "Brillo", hf + new Vector3(s * hw * 0.21f, hh * 0.16f, 0.007f), new Vector3(ew * 0.18f, eh * 0.18f, 0.004f), Color.white);
             Part(neck, "Ceja", hf + new Vector3(s * hw * 0.24f, hh * 0.32f, 0.003f), new Vector3(ew * 1.1f, hh * 0.05f, 0.005f), dark);
         }
+        if (stalks) for (int s = -1; s <= 1; s += 2) Part(neck, "Ceja", hf + new Vector3(s * hw * 0.24f, hh * 0.2f, 0.003f), new Vector3(ew * 1.1f, hh * 0.05f, 0.005f), dark);
         Part(neck, "Boca", hf + new Vector3(0f, -hh * 0.22f, 0.003f), new Vector3(hw * 0.3f, hh * 0.05f, 0.005f), new Color(0.25f, 0.1f, 0.1f));
         // COLUMNA HUMANA: un cubo más entre la cintura y el tórax, para que al enderezarse quede erguido de verdad (y no
         // agachado): la cintura es la articulación que se levanta; el tórax, la cabeza y los brazos van encima.

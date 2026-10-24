@@ -151,9 +151,11 @@ public partial class CubeInsect
                     Part(el, "Patela_pinza", new Vector3(0f, 0f, c * 0.14f), new Vector3(w * 0.7f, w * 0.7f, c * 0.28f), body);
                     Transform hand = Joint(el, "Mano", c * 0.28f, 0f);
                     hand.localRotation = Quaternion.Euler(0f, s * 35f, 0f);
-                    Part(hand, "Mano_pinza", new Vector3(0f, 0f, c * 0.1f), new Vector3(w * 1.7f, w * 1.3f, c * 0.22f), body);
-                    Part(hand, "Dedo_fijo", new Vector3(s * w * 0.5f, 0f, c * 0.3f), new Vector3(w * 0.45f, w * 0.5f, c * 0.2f), dark);
-                    Part(hand, "Dedo_movil", new Vector3(-s * w * 0.5f, 0f, c * 0.3f), new Vector3(w * 0.45f, w * 0.5f, c * 0.2f), dark, 0f, s * 12f);
+                    // La mano (palma) es lo que se ve de lejos: grande y, en el cangrejo fantasma, clara (crema) con los dedos.
+                    Color palm = fx.crustacean ? Color.Lerp(body, new Color(0.96f, 0.93f, 0.86f), 0.55f) : body;
+                    Part(hand, "Mano_pinza", new Vector3(0f, 0f, c * 0.14f), new Vector3(w * 2.4f, w * 1.9f, c * 0.32f), palm);
+                    Part(hand, "Dedo_fijo", new Vector3(s * w * 0.6f, 0f, c * 0.42f), new Vector3(w * 0.6f, w * 0.7f, c * 0.3f), palm * 0.8f + dark * 0.2f);
+                    Part(hand, "Dedo_movil", new Vector3(-s * w * 0.6f, w * 0.1f, c * 0.42f), new Vector3(w * 0.6f, w * 0.7f, c * 0.3f), dark, 0f, s * 14f);
                 }
                 else
                 {
@@ -187,8 +189,10 @@ public partial class CubeInsect
             {
                 var r = new GameObject("Antena").transform; r.SetParent(pivot, false);   // («Antena»: va con la cabeza al erguirse)
                 r.localPosition = new Vector3(s * head.wid * 0.32f, y0 + head.hei, front - 0.06f);
-                Part(r, "Pedunculo", new Vector3(0f, fx.eyeStalks * 0.5f, 0f), new Vector3(0.045f, fx.eyeStalks, 0.045f), body);
-                Part(r, "Cornea", new Vector3(0f, fx.eyeStalks * 0.85f, 0.01f), new Vector3(0.075f, fx.eyeStalks * 0.35f, 0.075f), new Color(0.1f, 0.1f, 0.12f));
+                // Ocypode: el ojo es una MAZA negra que ocupa media pedúnculo (y en el macho sigue un «estilo» por encima).
+                Part(r, "Pedunculo", new Vector3(0f, fx.eyeStalks * 0.5f, 0f), new Vector3(0.06f, fx.eyeStalks, 0.06f), body);
+                Part(r, "Cornea", new Vector3(0f, fx.eyeStalks * 0.78f, 0.01f), new Vector3(0.12f, fx.eyeStalks * 0.5f, 0.12f), new Color(0.06f, 0.06f, 0.08f));
+                Part(r, "Brillo_cornea", new Vector3(0f, fx.eyeStalks * 0.88f, 0.072f), new Vector3(0.035f, 0.035f, 0.005f), Color.white);
             }
         if (fx.apron > 0f) Part(pivot, "Abdomen_plegado", new Vector3(0f, y0 - 0.006f, head.z - head.len * 0.1f), new Vector3(head.wid * fx.apron, 0.012f, head.len * 0.55f), pale);
 
@@ -204,16 +208,24 @@ public partial class CubeInsect
             var shell = new GameObject("Concha").transform; shell.SetParent(pivot, false);
             shell.localPosition = new Vector3(0f, y0 + pie.hei + sh * 0.42f, pie.z - pie.len * 0.12f);
             Color band = body * 0.45f; band.a = 1f;
-            for (int k = 0; k < fx.whorls; k++)
+            // ESPIRAL LOGARÍTMICA vista de lado (enrollada sobre el eje lateral): cada vuelta mide ~0,55 de la anterior.
+            // La vuelta del cuerpo (la mayor, con la abertura) queda abajo y delante, sobre el pie; las demás suben por
+            // detrás y por encima hasta el ápice, como una cúpula. Antes eran rodajas apiladas en columna.
+            int steps = Mathf.Max(4, fx.whorls * 5);
+            float turn = 2f * Mathf.PI, endA = fx.whorls * turn * 0.8f;
+            Part(shell, "Vuelta", new Vector3(0f, sh * 0.02f, -sh * 0.04f), new Vector3(sh * 0.5f, sh * 0.62f, sh * 0.66f), body);   // el núcleo (rellena el centro)
+            for (int k = 0; k <= steps; k++)
             {
-                float f = Mathf.Pow(0.62f, k), a = k * 1.1f;
-                Vector3 at = new Vector3(0f, Mathf.Sin(a) * sh * 0.16f * (1f - f), -Mathf.Cos(a) * sh * 0.16f * (1f - f));
-                Part(shell, "Vuelta", at, new Vector3(sh * 0.55f * Mathf.Lerp(0.6f, 1f, f), sh * 0.85f * f, sh * 0.85f * f), body, k * 35f, 0f);
-                if (fx.shellBands && k < 2)
-                    for (int b = -1; b <= 1; b += 2) Part(shell, "Banda", at + new Vector3(0f, b * sh * 0.18f * f, 0f), new Vector3(sh * 0.56f * Mathf.Lerp(0.6f, 1f, f), sh * 0.05f * f, sh * 0.86f * f), band, k * 35f, 0f);
+                float a = endA * k / steps, f = Mathf.Pow(0.55f, a / turn), r = sh * 0.34f * f;
+                Vector3 at = new Vector3(0f, -Mathf.Cos(a) * r, Mathf.Sin(a) * r * -1f);
+                float size = sh * 0.46f * f;
+                Part(shell, "Vuelta", at, new Vector3(sh * 0.56f * Mathf.Lerp(0.55f, 1f, f), size, size * 1.15f), body, -a * Mathf.Rad2Deg, 0f);
+                if (fx.shellBands && f > 0.45f)
+                    for (int b = -1; b <= 1; b += 2) Part(shell, "Banda", at + new Vector3(b * sh * 0.2f * Mathf.Lerp(0.55f, 1f, f), 0f, 0f), new Vector3(sh * 0.04f, size * 1.02f, size * 1.17f), band, -a * Mathf.Rad2Deg, 0f);
             }
-            Part(shell, "Apice", new Vector3(0f, sh * 0.05f, -sh * 0.02f), new Vector3(sh * 0.12f, sh * 0.12f, sh * 0.12f), band);
-            if (fx.shellLip) Part(shell, "Labio", new Vector3(0f, -sh * 0.3f, sh * 0.36f), new Vector3(sh * 0.5f, sh * 0.08f, sh * 0.12f), band, -25f, 0f);   // el peristoma engrosado del adulto
+            float fa = Mathf.Pow(0.55f, endA / turn);
+            Part(shell, "Apice", new Vector3(0f, -Mathf.Cos(endA) * sh * 0.34f * fa, -Mathf.Sin(endA) * sh * 0.34f * fa), Vector3.one * sh * 0.1f, band);
+            if (fx.shellLip) Part(shell, "Labio", new Vector3(0f, -sh * 0.34f, sh * 0.2f), new Vector3(sh * 0.58f, sh * 0.1f, sh * 0.08f), band, -60f, 0f);   // el peristoma engrosado del adulto
         }
         // TENTÁCULOS: los dos de arriba, largos, con el ojo en la punta; los dos de abajo, cortos (olfato).
         if (fx.tentacles > 0f)
