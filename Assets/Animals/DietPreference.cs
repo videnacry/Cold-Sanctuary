@@ -37,11 +37,23 @@ public static class DietPreference
             // Insectos del Microcosmos (cadena real): preferencias entre sus presas.
             // Mariquita: especialista en pulgón (también cochinillas y ácaros); un grillo le queda grande → casi nunca.
             { "Ladybug", new Dictionary<string, float> { { "Aphid", 3.0f }, { "Cricket", 0.05f } } },
-            { "Spider",  new Dictionary<string, float> { { "Aphid", 2.0f }, { "Cricket", 2.0f }, { "Ant", 1.0f }, { "Ladybug", 0.6f }, { "SnowBee", 2.5f } } }, // élitros duros = menos; la araña de las nieves caza abejas de las nieves
+            { "Spider",  new Dictionary<string, float> { { "Aphid", 2.0f }, { "Cricket", 2.0f }, { "Ant", 1.0f }, { "Ladybug", 0.6f }, { "SnowBee", 2.5f },
+                                                         { "Cockroach", 1.5f }, { "Woodlouse", 0.5f }, { "Firefly", 0.1f }, { "VelvetMite", 0.1f } } }, // élitros duros = menos; la araña de las nieves caza abejas de las nieves; las arañas rechazan luciérnagas
             // Mirmecofilia: la hormiga CUIDA y ordeña al pulgón (melaza, HoneydewProducer), no lo caza. Un peso alto aquí la
             // hacía preferirlo como PRESA en Forager.SelectPrey; casi nulo = solo si no queda nada más.
             { "Ant",     new Dictionary<string, float> { { "Aphid", 0.05f } } },
             { "Cricket", new Dictionary<string, float>() },                                            // omnívoro: neutro
+
+            // Especies de las eras (docs/era-species-behavior.md). La luciérnaga (lucibufaginas) y el ácaro de terciopelo
+            // (aposemático) saben mal: casi nadie los quiere; la cochinilla y el caracol acorazados, poco.
+            { "Scorpion",    new Dictionary<string, float> { { "Cricket", 2f }, { "Cockroach", 2f }, { "Termite", 2f }, { "Grasshopper", 1.5f },
+                                                             { "Earwig", 1.2f }, { "Woodlouse", 0.6f }, { "Scorpion", 0.4f }, { "Firefly", 0.1f }, { "VelvetMite", 0.1f } } },   // insectívoro; canibalismo ocasional (ADW)
+            { "CamelSpider", new Dictionary<string, float> { { "Termite", 2.5f }, { "Cricket", 2f }, { "Grasshopper", 2f }, { "Cockroach", 1.5f },
+                                                             { "Scorpion", 1f }, { "Firefly", 0.1f }, { "VelvetMite", 0.1f } } },   // termitas y lo que pille (Punzo 1998)
+            { "GhostCrab",   new Dictionary<string, float> { { "Cricket", 1f }, { "Cockroach", 1f }, { "Earwig", 1f }, { "Woodlouse", 0.8f }, { "Ant", 0.5f } } },
+            { "Firefly",     new Dictionary<string, float> { { "Snail", 3f }, { "Slug", 3f }, { "Earthworm", 1.5f } } },   // larva malacófaga
+            { "VelvetMite",  new Dictionary<string, float> { { "Aphid", 2.5f }, { "Ant", 0.3f } } },
+            { "Earwig",      new Dictionary<string, float> { { "Aphid", 3f }, { "Ladybug", 0.2f } } },   // gran depredadora de pulgones
 
             // Depredadores de HORMIGAS (p.ej. el escarabajo del anillo / el depredador débil del nivel de Sakshi):
             // prefieren HORMIGA a GUSANO → van a por Sakshi (hormiga) antes que a por Kushal (gusano).
