@@ -50,6 +50,7 @@ public class Hive : MonoBehaviour
             if (t.name == "Celdilla") { cells.Add(t); state.Add(Cell.Empty); _since.Add(0f); }
             else if (t.name == "Piquera") entrance = t;
         }
+        CombineCells();   // en juego, todas las celdillas en una malla (rendimiento)
         // Disposición inicial natural: arco de miel arriba, polen debajo, el resto vacío para que la reina ponga.
         float top = float.MinValue, bottom = float.MaxValue;
         foreach (Transform c in cells) { top = Mathf.Max(top, c.position.y); bottom = Mathf.Min(bottom, c.position.y); }
@@ -127,8 +128,54 @@ public class Hive : MonoBehaviour
     public void Set(int i, Cell s)
     {
         state[i] = s; _since[i] = 0f;
+        if (_comb != null) { _dirty = true; return; }
         Renderer r = cells[i].GetComponent<Renderer>();
         if (r != null) r.sharedMaterial = KitchenProps.Mat(Colors[s]);
+    }
+
+    // RENDIMIENTO: cada panal tiene ~1 200 celdillas y el bosque llegaba a 32 000 renderers solo de celdillas. En juego se
+    // dibujan como UNA malla con una submalla (y un color) por estado, que se rehace cuando cambia alguna (como mucho dos
+    // veces por segundo). Las celdillas siguen ahí (posición, nombre) para las abejas.
+    MeshFilter _comb;
+    bool _dirty;
+    float _nextBuild;
+
+    void CombineCells()
+    {
+        if (cells.Count == 0) return;
+        var go = new GameObject("Panal_combinado");
+        go.transform.SetParent(transform, false);
+        _comb = go.AddComponent<MeshFilter>();
+        go.AddComponent<MeshRenderer>();
+        _comb.sharedMesh = new Mesh { name = "Panal", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        foreach (Transform c in cells) { Renderer r = c.GetComponent<Renderer>(); if (r != null) r.enabled = false; }
+        _dirty = true;
+    }
+
+    void LateUpdate()
+    {
+        if (_comb == null || !_dirty || Time.time < _nextBuild) return;
+        _dirty = false; _nextBuild = Time.time + 0.5f;
+        var groups = new Dictionary<Cell, List<CombineInstance>>();
+        Matrix4x4 toLocal = _comb.transform.worldToLocalMatrix;
+        for (int i = 0; i < cells.Count; i++)
+        {
+            MeshFilter mf = cells[i] != null ? cells[i].GetComponent<MeshFilter>() : null;
+            if (mf == null || mf.sharedMesh == null) continue;
+            if (!groups.TryGetValue(state[i], out var l)) groups[state[i]] = l = new List<CombineInstance>();
+            l.Add(new CombineInstance { mesh = mf.sharedMesh, transform = toLocal * cells[i].localToWorldMatrix });
+        }
+        var parts = new List<CombineInstance>(); var mats = new List<Material>(); var temp = new List<Mesh>();
+        foreach (var kv in groups)
+        {
+            var m = new Mesh { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+            m.CombineMeshes(kv.Value.ToArray(), true, true);
+            temp.Add(m); parts.Add(new CombineInstance { mesh = m, transform = Matrix4x4.identity }); mats.Add(KitchenProps.Mat(Colors[kv.Key]));
+        }
+        _comb.sharedMesh.Clear();
+        _comb.sharedMesh.CombineMeshes(parts.ToArray(), false, false);
+        _comb.GetComponent<MeshRenderer>().sharedMaterials = mats.ToArray();
+        foreach (Mesh m in temp) Destroy(m);
     }
 
     public float Since(int i) => _since[i];
