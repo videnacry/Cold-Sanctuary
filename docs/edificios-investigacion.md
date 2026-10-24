@@ -12,7 +12,7 @@ Están en el casquete Sur, junto a la planta atómica, unidos por puentes. Son t
 |---|---|---|---|
 | Física (planta atómica) | (15, −101) | 24 × 18 | reactor TRIGA · ciclotrón · **sala de experimentos con anillo** |
 | Química | (52, −110) | 24 × 20 | síntesis · análisis |
-| Biología | (92, −112) | 30 × 18 | cultivo · molecular |
+| Biología | (92, −112) | 32 × 20 | cultivo · molecular |
 | Central nuclear (producción) | (60, −162) | 46 × 30 | una, vallada |
 
 ## Reglas de la distribución

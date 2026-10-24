@@ -18,7 +18,7 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    public static readonly Vector2 ChemistrySize = new Vector2(24f, 20f), BiologySize = new Vector2(30f, 18f), NuclearSize = new Vector2(46f, 30f);
+    public static readonly Vector2 ChemistrySize = new Vector2(24f, 20f), BiologySize = new Vector2(32f, 20f), NuclearSize = new Vector2(46f, 30f);
     static readonly Vector3 ChemistryCenter = new Vector3(52f, 0f, -110f), BiologyCenter = new Vector3(92f, 0f, -112f), NuclearCenter = new Vector3(60f, 0f, -162f);
 
     static readonly Color LabWhite = new Color(0.9f, 0.92f, 0.93f), LabSteel = new Color(0.68f, 0.71f, 0.74f), LabDark = new Color(0.22f, 0.24f, 0.27f),
