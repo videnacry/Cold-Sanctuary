@@ -110,17 +110,18 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Punto y orientación a la distancia <paramref name="s"/> por la línea central del anillo (empieza en el centro
     /// del lado +Z y gira en sentido horario). yaw = la cama atravesada al anillo (su largo a lo ancho).</summary>
-    static (Vector3 p, float yaw, bool corner) RingPoint(Vector2 floor, float s, float width = 10f, float inside = 0.2f)
+    static (Vector3 p, float yaw, bool corner) RingPoint(Vector2 floor, float s, float width = 10f, float inside = 0.2f, float cornerClear = -1f)
     {
         float inn = width * inside, cx = floor.x * 0.5f - inn + width * 0.5f, cz = floor.y * 0.5f - inn + width * 0.5f;
         float per = 4f * (cx + cz); s = Mathf.Repeat(s, per);
         float a = cx, b = 2f * cz, c = 2f * cx, d = 2f * cz;   // tramos: +Z (mitad derecha), +X, −Z, −X, +Z (mitad izquierda)
-        bool Corner(float along, float len) => along < width * 0.5f || along > len - width * 0.5f;
-        if (s < a) return (new Vector3(s, 0f, cz), 0f, s > a - width * 0.5f);
+        float cc = cornerClear >= 0f ? cornerClear : width * 0.5f;   // cuánto se aparta de la esquina (las camas caben a 2,6 m: dos por esquina)
+        bool Corner(float along, float len) => along < cc || along > len - cc;
+        if (s < a) return (new Vector3(s, 0f, cz), 0f, s > a - cc);
         s -= a; if (s < b) return (new Vector3(cx, 0f, cz - s), 90f, Corner(s, b));
         s -= b; if (s < c) return (new Vector3(cx - s, 0f, -cz), 0f, Corner(s, c));
         s -= c; if (s < d) return (new Vector3(-cx, 0f, -cz + s), 90f, Corner(s, d));
-        s -= d; return (new Vector3(-cx + s, 0f, cz), 0f, s < width * 0.5f);
+        s -= d; return (new Vector3(-cx + s, 0f, cz), 0f, s < cc);
     }
 
     static float RingLength(Vector2 floor, float width = 10f, float inside = 0.2f) => 4f * (floor.x * 0.5f + floor.y * 0.5f - 2f * width * inside + width);

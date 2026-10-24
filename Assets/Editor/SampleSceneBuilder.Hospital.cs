@@ -62,7 +62,7 @@ public static partial class SampleSceneBuilder
             float s = ringNext.TryGetValue(ring, out float sv) ? sv : 1.55f;
             for (; s < RingLength(floor) && placed < count; s += 3.1f)
             {
-                var (p, yaw, corner) = RingPoint(floor, s);
+                var (p, yaw, corner) = RingPoint(floor, s, cornerClear: 2.6f);
                 if (corner || (Mathf.Abs(p.x) < 3f && Mathf.Abs(p.z) > floor.y * 0.5f - 2f)) continue;
                 Label(InfirmaryProps.HospitalBed(ring, $"Cama {bed}", p, yaw, bl[bed % 4]), $"Cama {bed} ({category})", 1.4f);
                 bed++; placed++;
@@ -230,21 +230,23 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(diet, new Vector3(2.2f, 0.95f, 0f), new Vector3(1f, 1.9f, 0.8f), new Color(0.85f, 0.9f, 0.95f), 0f, "Congelador_pescado");
         KitchenProps.Fit(diet, solid: true);
         Label(diet, "Cocina de dietas (pescado, carne, fruta) y congelador −18 °C", 2.2f);
-        Zone(v, "Sala_fria_pinguinos", new Vector3(7.2f, 0f, 1.6f), new Vector2(4.4f, 4.4f), new Color(0.8f, 0.9f, 1f));
-        for (int i = 0; i < 2; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 1.6f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
+        Zone(v, "Sala_fria_pinguinos", new Vector3(8.3f, 0f, 1.6f), new Vector2(6.6f, 4.4f), new Color(0.8f, 0.9f, 1f));
+        for (int i = 0; i < 3; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 1.6f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
         // ANILLO DE GRANDES ANIMALES: 6 boxes de osos de 4 × 3 m en batería (puertas de guillotina entre ellos) + jaula de
         // contención, y 2 corrales de foca con piscina de agua salada; pasillo del cuidador de 4 m a cada lado.
         Transform ringV = RingDeck(v, "Anillo_grandes_animales", us);
         RingStairs(v, us, "veterinaria");
         int stall = 0;
-        for (float s = 2f; stall < 6; s += 4f)
+        float lastS = 0f;   // 6 boxes de oso y 4 de ungulados (reno, ciervo) o lobos: 48 plazas, como camas de personas
+        for (float s = 2f; stall < 10; s += 4f)
         {
             var (sp0, yaw, corner) = RingPoint(us, s);
             if (corner || (Mathf.Abs(sp0.x) < 3f && Mathf.Abs(sp0.z) > uz - 2f)) continue;
-            Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", sp0, yaw), $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)", 1.8f);
+            Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", sp0, yaw), stall < 6 ? $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)" : $"Plaza {place++}: box de reno, ciervo o lobo", 1.8f);
+            lastS = s;
             stall++;
         }
-        var (jp, jyaw, _) = RingPoint(us, 2f + 6 * 4f + 2f);
+        var (jp, jyaw, _) = RingPoint(us, lastS + 4f);
         Transform squeeze = KitchenProps.Root(ringV, "Jaula_contencion", jp, jyaw);
         for (int k = -1; k <= 1; k += 2) KitchenProps.C(squeeze, new Vector3(k * 0.9f, 1.1f, 0f), new Vector3(0.08f, 2.2f, 2.4f), KitchenProps.Steel, 0f, "Barrotes");
         KitchenProps.C(squeeze, new Vector3(0f, 2.2f, 0f), new Vector3(1.9f, 0.08f, 2.4f), KitchenProps.Steel, 0f, "Techo_barrotes");
