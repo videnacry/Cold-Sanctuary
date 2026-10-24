@@ -208,12 +208,13 @@ public static partial class SampleSceneBuilder
         var wet = new List<LabBlock>();
         wet.AddRange(Times(4, "Campana de gases", 3.0f, 0.9f, FumeHood));
         wet.AddRange(Times(4, "Rotavapor", 1.5f, 0.8f, t => { Bench(t, 1.5f, 0.8f, LabBench); KitchenProps.C(t, new Vector3(-0.2f, 1.15f, 0f), new Vector3(0.3f, 0.3f, 0.3f), LabGlass, 45f, "Matraz"); KitchenProps.C(t, new Vector3(0.25f, 1.4f, 0f), new Vector3(0.08f, 0.6f, 0.08f), LabGlass, -30f, "Refrigerante"); KitchenProps.C(t, new Vector3(0.55f, 1.05f, 0f), new Vector3(0.3f, 0.2f, 0.35f), LabDark, 0f, "Bomba_vacio"); }));
-        wet.Add(new LabBlock("Caja de guantes", 2.5f, 1.0f, t => { KitchenProps.C(t, new Vector3(0f, 0.4f, 0f), new Vector3(2.5f, 0.8f, 1f), LabSteel, 0f, "Soporte"); KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(2.5f, 1f, 1f), LabSteel, 0f, "Camara_inerte"); KitchenProps.C(t, new Vector3(0f, 1.3f, -0.51f), new Vector3(2f, 0.7f, 0.02f), LabGlass, 0f, "Ventana"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.45f + i * 0.9f, 1.15f, -0.53f), new Vector3(0.22f, 0.22f, 0.04f), LabDark, 45f, "Guante"); }));
+        wet.Add(new LabBlock("Caja de guantes", 2.5f, 1.15f, t => { KitchenProps.C(t, new Vector3(0f, 0.4f, 0f), new Vector3(2.5f, 0.8f, 1f), LabSteel, 0f, "Soporte"); KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(2.5f, 1f, 1f), LabSteel, 0f, "Camara_inerte"); KitchenProps.C(t, new Vector3(0f, 1.3f, -0.51f), new Vector3(2f, 0.7f, 0.02f), LabGlass, 0f, "Ventana"); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.45f + i * 0.9f, 1.15f, -0.53f), new Vector3(0.22f, 0.22f, 0.04f), LabDark, 45f, "Guante"); }));
         wet.Add(new LabBlock("Armarios de inflamables", 2.2f, 0.5f, t => { Cabinet(KitchenProps.Root(t, "A", new Vector3(-0.55f, 0f, 0f)), 1.1f, LabYellow, "Inflamables"); Cabinet(KitchenProps.Root(t, "B", new Vector3(0.55f, 0f, 0f)), 1.1f, LabYellow, "Inflamables"); }));
         wet.Add(new LabBlock("Armario de ácidos", 1.1f, 0.5f, t => Cabinet(t, 1.1f, new Color(0.95f, 0.95f, 0.95f), "Acidos")));
         wet.Add(new LabBlock("Armario de bases", 1.1f, 0.5f, t => Cabinet(t, 1.1f, LabBlue, "Bases")));
-        wet.AddRange(Times(2, "Ducha de seguridad", 1.0f, 1.0f, SafetyShower));
+        wet.AddRange(Times(2, "Ducha de seguridad", 1.0f, 1.3f, SafetyShower));
         wet.Add(new LabBlock("Residuos químicos", 1.2f, 0.6f, t => { for (int i = 0; i < 3; i++) KitchenProps.C(t, new Vector3(-0.4f + i * 0.4f, 0.35f, 0f), new Vector3(0.32f, 0.7f, 0.4f), i == 0 ? LabRed : i == 1 ? LabYellow : LabBlue, 0f, "Bidon"); }));
+        wet.AddRange(Times(2, "Puesto de cuaderno", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
         Transform g = new GameObject("Planta_sintesis").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
         LogLeft("Química (síntesis)", PackFloor(g, ChemistrySize, wet, StairKeepOut(ChemistrySize, true)));
         // Piso de arriba: ANÁLISIS (los instrumentos, lejos de los disolventes).
@@ -222,7 +223,7 @@ public static partial class SampleSceneBuilder
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.8f, 0.84f, 0.86f), "Suelo_analisis");
         var dry = new List<LabBlock>
         {
-            new LabBlock("Sala de RMN 400 MHz", 4.0f, 3.0f, t => { Room(t, 4f, 3f, new Color(0.85f, 0.88f, 0.92f), "Sala_RMN"); Vessel(KitchenProps.Root(t, "Iman", new Vector3(0f, 0f, 0.3f)), 0.45f, 1.6f, LabSteel, "Iman_superconductor"); KitchenProps.C(t, new Vector3(0f, 0.02f, -1.7f), new Vector3(4.2f, 0.02f, 0.08f), LabYellow, 0f, "Linea_5_gauss"); }),
+            new LabBlock("Sala de RMN 400 MHz", 4.0f, 3.0f, t => { Room(t, 4f, 3f, new Color(0.85f, 0.88f, 0.92f), "Sala_RMN"); Vessel(KitchenProps.Root(t, "Iman", new Vector3(0f, 0f, 0.3f)), 0.45f, 1.6f, LabSteel, "Iman_superconductor"); KitchenProps.C(t, new Vector3(0f, 0.02f, -1.2f), new Vector3(3.6f, 0.02f, 0.08f), LabYellow, 0f, "Linea_5_gauss"); }),
             new LabBlock("RMN de sobremesa", 1.2f, 0.75f, t => Instrument(t, 1.2f, 0.75f, 0.4f, LabWhite, "RMN_sobremesa")),
             new LabBlock("GC-MS", 1.5f, 0.75f, t => Instrument(t, 1.5f, 0.75f, 0.55f, LabWhite, "Cromatografo_gases")),
         };
@@ -231,7 +232,7 @@ public static partial class SampleSceneBuilder
         dry.Add(new LabBlock("Difractómetro de rayos X", 1.5f, 1.3f, t => Tall(t, 1.5f, 1.3f, 1.9f, new Color(0.88f, 0.88f, 0.86f), "DRX", LabYellow)));
         dry.Add(new LabBlock("Hornos y muflas", 2.0f, 0.75f, t => { Bench(t, 2f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.5f + i * 1f, 1.2f, 0f), new Vector3(0.6f, 0.5f, 0.55f), LabDark, 0f, "Mufla"); }));
         dry.Add(new LabBlock("Cuarto de balanzas", 2.5f, 2.0f, t => { Room(t, 2.5f, 2f, new Color(0.9f, 0.9f, 0.88f), "Cuarto_balanzas"); Bench(KitchenProps.Root(t, "Mesa_antivibracion", new Vector3(0f, 0f, 0.55f)), 2.2f, 0.6f, LabDark); for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.8f + i * 0.53f, 1.05f, 0.55f), new Vector3(0.3f, 0.22f, 0.3f), LabGlass, 0f, "Balanza"); }));
-        dry.AddRange(Times(4, "Puesto de análisis", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
+        dry.AddRange(Times(2, "Puesto de análisis", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
         LogLeft("Química (análisis)", PackFloor(up, us, dry, StairKeepOut(us, false, -us.x * 0.3f)));
         return a;
     }
@@ -254,8 +255,7 @@ public static partial class SampleSceneBuilder
         cult.AddRange(Times(2, "Congelador de −80 °C", 1.0f, 1.0f, t => Tall(t, 1.0f, 1.0f, 2.0f, LabWhite, "Ultracongelador", LabBlue)));
         cult.Add(new LabBlock("Cámara fría (4 °C)", 2.5f, 2.5f, t => Room(t, 2.5f, 2.5f, new Color(0.8f, 0.88f, 0.95f), "Camara_fria")));
         cult.Add(new LabBlock("Autoclave y fregadero", 2.5f, 0.9f, t => { Bench(t, 2.5f, 0.9f, LabSteel); KitchenProps.C(t, new Vector3(-0.6f, 1.4f, 0f), new Vector3(0.9f, 0.9f, 0.8f), LabSteel, 0f, "Autoclave"); KitchenProps.C(t, new Vector3(0.7f, 0.88f, 0f), new Vector3(0.6f, 0.1f, 0.5f), LabDark, 0f, "Pila"); }));
-        cult.Add(new LabBlock("Dewar de nitrógeno líquido", 0.6f, 0.6f, t => Vessel(t, 0.3f, 1.2f, LabSteel, "Dewar")));
-        cult.AddRange(Times(2, "Lavamanos y lavaojos", 1.0f, 1.0f, SafetyShower));
+        cult.Add(new LabBlock("Lavamanos y lavaojos", 1.0f, 1.3f, SafetyShower));
         Transform g = new GameObject("Planta_cultivo").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
         LogLeft("Biología (cultivo)", PackFloor(g, BiologySize, cult, StairKeepOut(BiologySize, true)));
         // Piso de arriba: MOLECULAR, en sentido único (pre-PCR limpio → extracción → post-PCR y secuenciación).
@@ -267,6 +267,8 @@ public static partial class SampleSceneBuilder
         mol.AddRange(Times(4, "Mesa de extracción de ADN", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.5f + i * 1f, 1.05f, 0f), new Vector3(0.35f, 0.2f, 0.35f), LabWhite, 0f, "Microcentrifuga"); }));
         mol.AddRange(Times(2, "Termocicladores", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.45f + i * 0.9f, 1.08f, 0f), new Vector3(0.45f, 0.25f, 0.5f), LabWhite, 0f, "Termociclador"); }));
         mol.Add(new LabBlock("Secuenciadores (MiSeq y MinION)", 1.8f, 0.75f, t => Instrument(t, 1.8f, 0.75f, 0.6f, LabWhite, "Secuenciador")));
+        mol.Add(new LabBlock("Dewar de nitrógeno líquido", 0.6f, 0.6f, t => Vessel(t, 0.3f, 1.2f, LabSteel, "Dewar")));
+        mol.Add(new LabBlock("Lavamanos y lavaojos (arriba)", 1.0f, 1.3f, SafetyShower));
         mol.AddRange(Times(2, "Nevera y congelador de −20 °C", 0.7f, 0.75f, t => Tall(t, 0.7f, 0.75f, 1.8f, LabWhite, "Nevera_reactivos", LabBlue)));
         mol.AddRange(Times(4, "Puesto de análisis de datos", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
         LogLeft("Biología (molecular)", PackFloor(up, us, mol, StairKeepOut(us, false, -us.x * 0.3f)));
