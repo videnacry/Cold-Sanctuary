@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 575 tipos._
+_Total: 583 tipos._
 
 
 ## Animals
@@ -62,8 +62,11 @@ _Total: 575 tipos._
 - **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md):
 - **DialogueAssetCreator** (class) — `Assets/Editor/DialogueAssetCreator.cs` — Editor utility that creates pre-populated DialogueSequence assets.
 - **EditorInbox** (class) — `Assets/Editor/EditorInbox.cs` — ENTRADA DIRECTA DEL EDITOR (pruebas en vivo sin ratón ni teclado):
+- **EraHubSceneBuilder** (class) — `Assets/Editor/EraHubSceneBuilder.cs` — SALA DE ERAS (Berón, 2026-10-23:
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
+- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23/24:
+- **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
@@ -199,6 +202,7 @@ _Total: 575 tipos._
 - **ConstructionProject** (class) — `Assets/Scripts/World/ConstructionProject.cs` — OBRA EN CURSO (docs/jornada-y-rotacion.md):
 - **ContaminationMonitor** (class) — `Assets/Scripts/AtomicPlant/ContaminationMonitor.cs` — PÓRTICO DE CONTAMINACIÓN de manos y pies (salida de la zona controlada):
 - **ConversionMode** (enum) — `Assets/Scripts/Soul/SoulMath.cs` — Modo de CONVERSIÓN de stats (docs/soul-relations-reincarnation.md §1):
+- **Convictions** (class) — `Assets/Scripts/Mind/Convictions.cs` — CONVICCIONES (Berón, 2026-10-23:
 - **CookingRecipe** (class) — `Assets/Scripts/Kitchen/CookingRecipe.cs` — RECETA de un platillo del restaurante (docs/kitchen-simulation.md, spell-genesis §...
 - **CookingStation** (class) — `Assets/Scripts/Kitchen/CookingStation.cs` — ESTACIÓN DE COCINA de UNA anima (docs/kitchen-simulation.md):
 - **CreatureRig** (class) — `Assets/Scripts/Avatar/CreatureRig.cs` — Mapa CENTRAL de un ser (docs/stats-as-truth.md §Composición):
@@ -216,6 +220,7 @@ _Total: 575 tipos._
 - **CubeWalkCycle** (class) — `Assets/Scripts/Avatar/CubeWalkCycle.cs` — ANDAR del cuerpo de cubos:
 - **CulturedMeatLab** (class) — `Assets/Scripts/World/CulturedMeatLab.cs` — LABORATORIO DE CARNE CULTIVADA (área `CulturedMeatLab`, docs/carne-cultivada.md):
 - **CurieElectrometerLesson** (class) — `Assets/Scripts/AtomicPlant/CurieElectrometerLesson.cs` — EL MÉTODO DE MARIE CURIE (1898, «Rayos emitidos por los compuestos del uranio y del torio», Comptes Rendus 126):
+- **Cyclotron** (class) — `Assets/Scripts/AtomicPlant/Cyclotron.cs` — EL CICLOTRÓN MÉDICO (docs/atomic-plant.md §7), en la planta de arriba de la planta atómica:
 - **DailyPoses** (class) — `Assets/Scripts/Body/DailyLife.cs` — VIDA DIARIA del cuerpo humano (docs/vida-diaria.md):
 - **DecompositionLevel** (enum) — `Assets/Scripts/Economy/DecompositionJob.cs` — Nivel de desintegración:
 - **DecompSample** (class) — `Assets/Scripts/Economy/DecompositionMinigame.cs` — Una muestra de la jornada (compuesto / átomo / núcleo / nucleón según el santuario).
@@ -243,6 +248,8 @@ _Total: 575 tipos._
 - **EmotionExpression** (class) — `Assets/Scripts/Emotion/EmotionExpression.cs` — **Conductor** de la orquesta emocional de un `Anima` (docs/emotion-model.md).
 - **EmotionReader** (class) — `Assets/Scripts/Emotion/EmotionReader.cs` — LEGIBILIDAD (docs/emotion-model.md §6):
 - **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
+- **EraPortal** (class) — `Assets/Scripts/Microcosmos/EraPortal.cs` — Portal de la SALA DE ERAS (escena de validación):
+- **Eras** (class) — `Assets/Scripts/Progression/Era.cs` — ERAS (Berón, 2026-10-23:
 - **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
 - **FallImpact** (class) — `Assets/Scripts/Player/FallImpact.cs` — IMPACTO DE LAS CAÍDAS:
@@ -265,6 +272,7 @@ _Total: 575 tipos._
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
 - **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO MÍNIMO ENTRE MUEBLES (Berón 2026-10-22:
+- **GalleryExplorer** (class) — `Assets/Scripts/Control/GalleryExplorer.cs` — EXPLORADOR de las escenas de validación (galería de insectos-humanos, sala de microcosmos):
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
 - **GardenPlot** (class) — `Assets/Scripts/Farming/GardenPlot.cs` — HUERTO POR GREMIO (policultivo):
