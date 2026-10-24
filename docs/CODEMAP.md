@@ -82,7 +82,7 @@ _Total: 600 tipos._
 - **EraHubSceneBuilder** (class) — `Assets/Editor/EraHubSceneBuilder.cs` — SALA DE ERAS (Berón, 2026-10-23:
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
-- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23:
+- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23/24:
 - **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
