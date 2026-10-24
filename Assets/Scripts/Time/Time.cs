@@ -61,6 +61,9 @@ public class TimeController
     public float Hour => Mod(startHour + _gameMinutes / 60f, 24f);
 
     /// <summary>Fija la hora del día directamente (tests, o mecánicas como "dormir hasta el amanecer").</summary>
+    /// <summary>Pone el reloj en un día Y una hora exactos (puede retroceder). Para tests que fuerzan la hora y luego la
+    /// restauran sin adelantar el calendario (la jornada, las edades y los calendarios leen `Day`).</summary>
+    public void SetClock(int day, float hour) { startHour = Mod(hour, 24f); _gameMinutes = 0f; _dayOffset = day; }
     public void SetHour(float hour) { int d = Day; float h = Mod(hour, 24f); if (h < Hour) d++; startHour = h; _gameMinutes = 0f; _dayOffset = d; }   // adelantar la hora nunca hace retroceder el día
 
     /// <summary>¿Es de día? (fotosíntesis del fitoplancton; a futuro, ciclos de sueño). Aprox. 6:00–18:00.</summary>

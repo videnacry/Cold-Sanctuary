@@ -1,73 +1,60 @@
-# Hospital: programa de espacios real y redistribución propuesta
+# Hospital: programa de espacios real y redistribución (v2: anillos de camas y capacidad ×4)
 
-> Berón, 2026-10-23: «2 m entre objetos para poder caminar», «no se puede pasar entre la camilla de ecografía y el
-> paritorio», «no se puede entrar al aislamiento», «investiga la distribución real y verifica cuánto espacio tenemos».
-> Estado: **propuesta para aprobar** (no aplicada todavía).
+> Berón, 2026-10-23.
+> - v1: «2 m entre objetos para poder caminar», «el aislamiento con subplataforma», «investiga la distribución real y verifica cuánto espacio tenemos».
+> - v2: «reemplaza la planta de camas por el anillo… al menos 2 médicos (mejor 4) deben poder hacer todas las tareas a la vez… quizás dos pisos y un anillo de camas en cada piso, porque hay categorías de camas y cada paciente se recupera en el piso de su servicio… en el hospital de animales también anillo si hace falta (osos), y 4 veterinarios trabajando a la vez en lo mismo».
+>
+> Estado: v2 construido (PR #290); lo que falta, en `docs/hospital.md` §4.
 
-## 1. Lo que hay hoy (`SampleSceneBuilder.Hospital.cs`)
-
-| Planta | Superficie | Contenido |
-|---|---|---|
-| Baja (32 × 26 m) | 832 m² | triaje, aseos, aislamiento, 3 camas de observación, carro de parada, silla de exámenes, 2 consultas con camilla, telemedicina, UCI (3 camas + control), sala de espera (10 sillas), farmacia, rayos X, ecógrafo + camilla, paritorio, laboratorio, analizador, banco de sangre, quirófano (mesa, lámpara, anestesia, instrumental, lavado, autoclave, oxígeno); pasillo central de 3 m |
-| Galerías en U (a 4 m) | ≈ 260 m² (franjas de 4,4 m) | 15 camas encima y 15 debajo |
-| Alta (32 × 23 m) | ≈ 736 m² | hospital veterinario: 6 cuadras, 16 boxes… (30 plazas) |
-
-Problemas medidos o señalados:
-- La camilla de eco y el paritorio están a ~1,6 m de eje a eje, con unos 0,4 m de paso entre ellas.
-- El aislamiento no tiene esclusa de entrada (antesala) y no se puede entrar.
-- El paritorio, el quirófano y la UCI son muebles sueltos en una nave abierta. En la realidad son salas cerradas con una superficie mínima.
-
-## 2. Superficies de referencia (normas de diseño hospitalario)
+## 1. Superficies de referencia (normas de diseño hospitalario)
 
 | Espacio | Mínimo real | Fuente |
 |---|---|---|
-| Paritorio (LDR/LDRP), individual | 31,6 m² libres, lado mínimo 3,96 m, más 3,7 m² para reanimar al recién nacido | FGI vía PHC Pros; DHA (Dubái) |
-| UCI, por cama (habitación individual) | 18,6 m² libres (200 sq ft) | resumen de FGI 2022 |
-| Recuperación (URPA), por cama | 7,4 m²; 1,5 m entre camas y 1,2 m a la pared | FGI 2014 (fuente secundaria) |
-| Aislamiento de infecciosos (AII) | habitación individual con antesala-esclusa de puertas enclavadas, presión negativa ≥ 2,5 Pa (0,01 in c.a.) y ≥ 12 renovaciones por hora | ASHRAE 170; IHFG; Minnesota DOH |
-| Quirófano | ~37–56 m² según el tipo [? confirmar con la norma local] | — |
-| Rayos X / ecografía | sala blindada ~20–25 m² / ~12 m² [? orientativo] | — |
+| Paritorio (LDR/LDRP), individual | 31,6 m² libres, lado ≥ 3,96 m, más 3,7 m² para reanimar al recién nacido | FGI vía PHC Pros; DHA (Dubái) |
+| UCI, por cama | 18,6 m² libres | resumen de FGI 2022 |
+| Recuperación (URPA), por cama | 7,4 m²; 1,5 m entre camas | FGI 2014 (fuente secundaria) |
+| Aislamiento (AII) | habitación individual con antesala-esclusa, presión negativa ≥ 2,5 Pa y ≥ 12 renovaciones por hora | ASHRAE 170; IHFG; Minnesota DOH |
+| Quirófano | ~37 m² [? norma local] | — |
+| Rayos X / eco | ~20–25 m² blindada / ~12 m² [? orientativo] | — |
 
-## 3. Programa con la regla de Berón (2 m libres entre objetos)
+## 2. Capacidad: 4 médicos en la misma tarea a la vez
 
-- **Cama de sala:** mide 1,1 × 2,3 m. Con 2 m a cada lado salen 3,1 m de eje a eje, y con 2 m de paso a los pies son unos 13 m² por cama. Las 30 camas necesitan unos 400 m².
-- **UCI:** 3 camas × 18,6 m², unos 56 m².
-- **Aislamiento:** habitación de unos 15 m², antesala de 4 m² y aseo, en total unos 22 m².
-- **Paritorio:** 32 m². **Quirófano** con lavado y esterilización: unos 47 m².
-- **Imagen** (rayos X y eco): unos 37 m². **Laboratorio y banco de sangre:** unos 20 m².
-- **Resto:**
-  - farmacia: 12 m²;
-  - 2 consultas: 24 m²;
-  - triaje y recepción: 10 m²;
-  - espera: 20 m²;
-  - aseos: 6 m²;
-  - telemedicina: 10 m²;
-  - iniciación: 10 m².
-- **Total:** unos 706 m², más un 30 % de circulación, ≈ **920 m²** para el hospital humano.
+Ante una avalancha de pacientes con el mismo problema, cada servicio tiene **4 puestos** iguales. El hospital humano tiene 4 médicos; los turnos y la Magnate ya los reparten.
 
-Hoy el hospital humano tiene 832 m² en planta baja, más unos 260 m² en galerías estrechas de 4,4 m. Ahí no caben camas con 2 m a ambos lados y paso a los pies. **No cabe bien en una sola planta.**
+| Servicio | Puestos | m² aprox. |
+|---|---|---|
+| Triaje / urgencias | 4 boxes + 2 carros de parada | 40 |
+| Consultas (una con la silla de iniciación) | 4 | 50 |
+| Imagen | 2 salas de rayos X + 2 de eco | 75 |
+| Laboratorio (con analizador y banco de sangre) | 4 puestos | 35 |
+| Paritorio | 4 salas de 32 m² | 128 |
+| Quirófano | 4 de 6 × 6 m + lavado y esterilización | 185 |
+| UCI | 6 camas de 18,6 m² + control | 120 |
+| Aislamiento | 4 habitaciones con esclusa | 90 |
+| Farmacia, espera, aseos, telemedicina | — | 75 |
+| **Total** | | **≈ 800 m² + 25 % de circulación ≈ 1000 m²** |
 
-## 4. Propuesta
+## 3. Distribución v2 (dos plantas con su anillo; el veterinario arriba)
 
-1. **Planta baja: ambulatorio y servicios centrales.**
-   - En la entrada: triaje, espera, aseos y farmacia.
-   - Consultas e iniciación, con la silla de exámenes.
-   - Imagen: rayos X y eco en salas separadas.
-   - Laboratorio y banco de sangre.
-   - Bloque quirúrgico: quirófano, lavado y esterilización.
-   - Paritorio como sala propia de 32 m².
-   - Todo con 2 m libres y el pasillo central de 3 m.
-2. **Planta 1, nueva: hospitalización.**
-   - Las 30 camas en salas a 3,1 m de eje y la UCI de 3 camas con su control.
-   - El **aislamiento en una subplataforma propia**, con antesala-esclusa y una sola entrada.
-   - Desaparecen las galerías en U: la idea de Berón de tener camas en dos niveles se cumple con esta planta completa.
-3. **Planta 2:** el hospital veterinario, como hoy.
-4. **Regla de 2 m en todo el santuario:** `FurnitureSpacing` pasa de 0,9 m a 2 m y cubre todos los muebles de cada área, no solo camas, mesas y máquinas. Las áreas que no quepan se verifican una a una con el mismo método.
+Cada **anillo** es una plataforma hija a 4 m sobre su planta, cuadrada y completa. Mide unos 10 m de ancho: la fila de camas en el centro y 4 m libres a cada lado. Está el 20 % dentro del borde y el 80 % volando fuera. Su perímetro da para unas 45 camas a 3,1 m de eje.
+
+1. **Planta baja (832 m²): urgencias y ambulatorio.**
+   - 4 boxes de triaje, 4 consultas, 2 rayos X y 2 ecos, laboratorio, farmacia y espera.
+   - 4 paritorios.
+   - **Anillo bajo:** observación de urgencias y **maternidad**, para que la madre se recupere en el piso de su paritorio.
+2. **Planta 1 (736 m²): bloque quirúrgico y críticos.**
+   - 4 quirófanos con lavado y esterilización.
+   - UCI de 6 camas.
+   - 4 aislamientos, cada uno en su subplataforma con esclusa.
+   - **Anillo alto:** **recuperación postquirúrgica** y **hospitalización general**, en el piso de los quirófanos.
+3. **Planta 2: hospital veterinario** (ver `docs/vet-hospital-plan.md`), con su **anillo** para grandes animales: los osos de 4 × 3 m.
+
+Las escaleras de cada anillo bajan a su planta. El anillo bajo enlaza además, por un puente, con la **base de alfombras voladoras**, que es nueva.
 
 Fuentes:
-- PHC Pros, «LDRP basics» (phcppros.com/articles/8265-ldrp-basics)
+- PHC Pros, «LDRP basics»
 - DHA, Obstetric and Neonatal checklist
-- FGI Guidelines, glosarios 2014/2022 y resumen de UCI 2022 (mcdmag.com)
+- FGI, glosarios 2014/2022 y resumen de UCI 2022
 - ASHRAE 170, adenda de 2008
 - Minnesota DOH, «negative pressure isolation rooms»
-- International Health Facility Guidelines, Part D Isolation Rooms (DHA)
+- International Health Facility Guidelines, Isolation Rooms

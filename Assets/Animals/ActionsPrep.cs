@@ -35,7 +35,21 @@ public class ActionsPrep
         // Fauna de hielo — pingüino torpe en tierra (lento); orca nadadora veloz
         { "Penguin", new ActionsPrep(new ActionPrep("IdlePenguin", 0f, 1f, -2f), new ActionPrep("WalkPenguin", 2f, 2f, 0.5f), new ActionPrep("RunPenguin", 6f, 4f, 2f)) },
         { "Orca", new ActionsPrep(new ActionPrep("IdleOrca", 0f, 1f, -2f), new ActionPrep("WalkOrca", 4f, 2f, 0.5f), new ActionPrep("RunOrca", 14f, 3f, 2f)) },
+        // Especies de las eras del microcosmos (docs/era-species-behavior.md): velocidades RELATIVAS a la hormiga (andar 3,
+        // correr 10). El caracol, la babosa y la lombriz no "corren" (reptan por ondas del pie/peristaltismo); el solífugo,
+        // la cucaracha y el cangrejo fantasma están entre los artrópodos más rápidos (Burrows & Hoyle 1973; Full & Tu 1991).
+        { "Snail",       Slow(0.6f, 0.8f) }, { "Slug",       Slow(0.7f, 0.9f) }, { "Earthworm", Slow(0.8f, 1.3f) },
+        { "Woodlouse",   Gaits(2f, 4f) },    { "VelvetMite", Gaits(2f, 3f) },    { "Scorpionfly", Gaits(1.5f, 6f) },
+        { "Scorpion",    Gaits(2.5f, 9f) },  { "Earwig",     Gaits(3f, 8f) },    { "Firefly",   Gaits(2f, 8f) },
+        { "Cicada",      Gaits(2f, 10f) },   { "CamelSpider", Gaits(4f, 16f) },  { "Cockroach", Gaits(3f, 14f) },
+        { "GhostCrab",   Gaits(3f, 16f) },
     };
+
+    static ActionsPrep Gaits(float walk, float run) =>
+        new ActionsPrep(new ActionPrep("Idle", 0f, 1f, -2f), new ActionPrep("Walk", walk, 2f, 0.5f), new ActionPrep("Run", run, 4f, 2f));
+    // Reptantes (pie de molusco, peristaltismo): "correr" cuesta mucho y apenas acelera.
+    static ActionsPrep Slow(float walk, float run) =>
+        new ActionsPrep(new ActionPrep("Idle", 0f, 1f, -2f), new ActionPrep("Walk", walk, 1f, 0.8f), new ActionPrep("Run", run, 1.2f, 3f));
 
     /// <summary>Los gaits (idle/walk/run) de una especie. Desconocida → genérico.</summary>
     public static ActionsPrep Of(string species)

@@ -7,7 +7,10 @@ using UnityEngine;
 ///   adulto = imago. La pupa **no se mueve, no come y no huye**: este componente la deja quieta (toma el sueño con
 ///   <see cref="SleepCycle.Suspended"/> y para el NavMesh) hasta que emerge el adulto.
 /// - **Incompleta** (grillo, saltamontes, mantis, termita, pulgón): cría y juvenil = NINFAS (sin alas).
-/// - **Directa** (mamíferos, arañas): sin cambio de forma.
+/// - **Larvaria** (cangrejo: zoea → megalopa; ácaro de terciopelo: larva de 6 patas → ninfa de 8): cría = LARVA (que
+///   se mueve y come, como en el mar o sobre su huésped), juvenil = NINFA (la forma intermedia); sin pupa inmóvil.
+/// - **Directa** (mamíferos, arañas, escorpiones, cochinillas, caracoles, lombrices): sin cambio de forma (la cría de
+///   cochinilla, la manca, nace con un par de patas menos; el caracol joven, sin labio; la lombriz, sin clitelo).
 /// El cuerpo de cubos puede leer <see cref="Current"/> para dibujar larva / pupa / adulto (o ninfa sin alas).
 /// Auto-añadido en `Animal.Init` a las especies con metamorfosis.
 /// </summary>
@@ -32,6 +35,7 @@ public class Metamorphosis : MonoBehaviour
         {
             case StageProfile.Development.Complete:   return a.lifeStage == LifeStage.child ? Phase.Larva : Phase.Pupa;
             case StageProfile.Development.Incomplete: return Phase.Nymph;
+            case StageProfile.Development.Larval:     return a.lifeStage == LifeStage.child ? Phase.Larva : Phase.Nymph;
             default:                                  return Phase.Juvenile;
         }
     }

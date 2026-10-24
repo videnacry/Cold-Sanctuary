@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 583 tipos._
+_Total: 604 tipos._
 
 
 ## Animals
@@ -15,16 +15,24 @@ _Total: 583 tipos._
 - **AntlionBehavior** (class) — `Assets/Animals/Antlion/AntlionBehavior.cs`
 - **AphidBehavior** (class) — `Assets/Animals/Aphid/AphidBehavior.cs`
 - **BearBehaviour** (class) — `Assets/Animals/Bear/BearBehaviour.cs`
+- **BroodRide** (class) — `Assets/Animals/BroodRide.cs` — CUIDADO DE LA CRÍA de los artrópodos que lo tienen (docs/era-species-behavior.md §4).
 - **BunnyBehavior** (class) — `Assets/Animals/Bunny/BunnyBehavior.cs`
+- **CamelSpiderBehavior** (class) — `Assets/Animals/CamelSpider/CamelSpiderBehavior.cs`
 - **Capability** (class) — `Assets/Animals/Capability.cs` — Claves de CAPACIDAD/hechizo para la confianza-por-uso ( / `RecordUse`).
+- **CicadaBehavior** (class) — `Assets/Animals/Cicada/CicadaBehavior.cs`
+- **CockroachBehavior** (class) — `Assets/Animals/Cockroach/CockroachBehavior.cs`
 - **CricketBehavior** (class) — `Assets/Animals/Cricket/CricketBehavior.cs`
 - **DeerBehavior** (class) — `Assets/Animals/Deer/DeerBehavior.cs`
 - **Desire** (class) — `Assets/Animals/DesireCatalog.cs` — Un DESEO seleccionable (docs/volition-selection-engine.md §3):
 - **DietPreference** (class) — `Assets/Animals/DietPreference.cs` — PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, apremios §8) — el "sabor":
 - **DungBeetleBehavior** (class) — `Assets/Animals/DungBeetle/DungBeetleBehavior.cs`
+- **EarthwormBehavior** (class) — `Assets/Animals/Earthworm/EarthwormBehavior.cs`
+- **EarwigBehavior** (class) — `Assets/Animals/Earwig/EarwigBehavior.cs`
 - **EstrusState** (class) — `Assets/Animals/EstrusState.cs` — CELO (estro) como **hechizo-estado** (docs/environmental-navigation.md §4.2; reproducción paso 1).
+- **FireflyBehavior** (class) — `Assets/Animals/Firefly/FireflyBehavior.cs`
 - **Forager** (class) — `Assets/Animals/Forager.cs` — Componente de FORRAJEO (docs/anima-dissolving-animal.md).
 - **FoxBehavior** (class) — `Assets/Animals/Fox/FoxBehavior.cs`
+- **GhostCrabBehavior** (class) — `Assets/Animals/GhostCrab/GhostCrabBehavior.cs`
 - **GrasshopperBehavior** (class) — `Assets/Animals/Grasshopper/GrasshopperBehavior.cs`
 - **Habit** (class) — `Assets/Animals/Habit.cs` — HÁBITO NATURAL (docs/natural-interactions.md):
 - **HabitEffect** (enum) — `Assets/Animals/Ethogram.cs` — Qué le hace al ser una actividad de su etograma.
@@ -32,17 +40,24 @@ _Total: 583 tipos._
 - **Locomotion** (class) — `Assets/Animals/Locomotion.cs` — Componente de LOCOMOCIÓN (docs/anima-dissolving-animal.md, etapa 2).
 - **MalamuteBehavior** (class) — `Assets/Animals/Malamute/MalamuteBehavior.cs`
 - **MantisBehavior** (class) — `Assets/Animals/Mantis/MantisBehavior.cs`
+- **MatingSignal** (class) — `Assets/Animals/MatingSignal.cs` — SEÑAL DE CORTEJO a distancia (docs/era-species-behavior.md §3):
 - **MeerkatBehavior** (class) — `Assets/Animals/Meerkat/MeerkatBehavior.cs`
 - **Metamorphosis** (class) — `Assets/Animals/Metamorphosis.cs` — METAMORFOSIS de los insectos (docs/insect-biology-audit.md).
 - **OrcaBehavior** (class) — `Assets/Animals/Orca/OrcaBehavior.cs`
+- **PassiveDefence** (class) — `Assets/Animals/PassiveDefence.cs` — DEFENSA PASIVA (docs/era-species-behavior.md §2):
 - **PenguinBehavior** (class) — `Assets/Animals/Penguin/PenguinBehavior.cs`
 - **Physiognomy** (class) — `Assets/Animals/Physiognomy.cs`
 - **PostNatalProfile** (class) — `Assets/Animals/PostNatalProfile.cs` — Config POST-NATAL por especie (docs/anima-dissolving-animal.md, etapa 5):
 - **Reaction** (enum) — `Assets/Animals/ThreatResponder.cs` — Reacción ante una amenaza (docs/behavior-system.md):
 - **Reproduction** (class) — `Assets/Animals/Reproduction.cs` — REPRODUCCIÓN (ciclo de vida, pasos 2-3:
+- **ScorpionBehavior** (class) — `Assets/Animals/Scorpion/ScorpionBehavior.cs`
+- **ScorpionflyBehavior** (class) — `Assets/Animals/Scorpionfly/ScorpionflyBehavior.cs`
 - **SealBehavior** (class) — `Assets/Animals/Seal/SealBehavior.cs`
 - **SicknessState** (class) — `Assets/Animals/SicknessState.cs` — ENFERMEDAD como **hechizo-estado** (docs/environmental-navigation.md §4.2).
+- **SidewaysGait** (class) — `Assets/Animals/SidewaysGait.cs` — MARCHA DE LADO del cangrejo (docs/era-species-behavior.md §5):
 - **SleepCycle** (class) — `Assets/Animals/SleepCycle.cs` — SUEÑO DÍA/NOCHE (docs/ice-sanctuary-ecology.md §4):
+- **SlugBehavior** (class) — `Assets/Animals/Slug/SlugBehavior.cs`
+- **SnailBehavior** (class) — `Assets/Animals/Snail/SnailBehavior.cs`
 - **SnowBeeBehavior** (class) — `Assets/Animals/SnowBee/SnowBeeBehavior.cs`
 - **SnowSpiderBehavior** (class) — `Assets/Animals/SnowSpider/SnowSpiderBehavior.cs` — ARAÑA DE LAS NIEVES (docs/ice-sanctuary-ecology.md §2):
 - **SpeciesBody** (class) — `Assets/Animals/SpeciesBody.cs` — Identidad de ESPECIE como componente (docs/anima-dissolving-animal.md, etapa 5).
@@ -50,9 +65,11 @@ _Total: 583 tipos._
 - **SpiderBehavior** (class) — `Assets/Animals/Spider/SpiderBehavior.cs`
 - **StageProfile** (class) — `Assets/Animals/StageProfile.cs` — Perfil de CICLO DE VIDA por especie (docs/anima-dissolving-animal.md, etapa 5):
 - **TermiteBehavior** (class) — `Assets/Animals/Termite/TermiteBehavior.cs`
+- **VelvetMiteBehavior** (class) — `Assets/Animals/VelvetMite/VelvetMiteBehavior.cs`
 - **Volition** (class) — `Assets/Animals/Volition.cs` — Motor de VOLICIÓN (docs/volition-selection-engine.md):
 - **WhaleBehavior** (class) — `Assets/Animals/Whale/WhaleBehavior.cs`
 - **WolfBehavior** (class) — `Assets/Animals/Wolf/WolfBehavior.cs`
+- **WoodlouseBehavior** (class) — `Assets/Animals/Woodlouse/WoodlouseBehavior.cs`
 
 ## Editor
 
@@ -65,7 +82,7 @@ _Total: 583 tipos._
 - **EraHubSceneBuilder** (class) — `Assets/Editor/EraHubSceneBuilder.cs` — SALA DE ERAS (Berón, 2026-10-23:
 - **HeadlessLive** (class) — `Assets/Editor/HeadlessLive.cs` — Prueba EN VIVO automatizada:
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
-- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23:
+- **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23/24:
 - **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
@@ -214,6 +231,7 @@ _Total: 583 tipos._
 - **CubeGait** (class) — `Assets/Scripts/Avatar/CubeGait.cs` — MARCHA de la fauna de cubos ():
 - **CubeHair** (class) — `Assets/Scripts/Avatar/CubeHair.cs` — ASPECTO de cada persona (cabello, piel, ojos, barba) para el cuerpo de cubos:
 - **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Fauna.cs` — PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos-fauna-eras.md), sobre el mismo cuerpo de cubos articulado y centauro de siempre:
 - **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.cs` — ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/insect-morphology.md (InsectMorphology):
 - **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
 - **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
@@ -233,6 +251,7 @@ _Total: 583 tipos._
 - **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
 - **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A).
 - **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5):
+- **Dormant** (class) — `Assets/Scripts/Microcosmos/Dormant.cs` — ALETARGADO por la estación de la historia (MicroBiome.Bug.dormant):
 - **DosimeterRack** (class) — `Assets/Scripts/AtomicPlant/DosimeterRack.cs` — TAQUILLA DE DOSÍMETROS (entrada de la planta):
 - **DrivePreparation** (class) — `Assets/Scripts/DrivePreparation.cs`
 - **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/kitchen-simulation.md §6).
@@ -250,6 +269,7 @@ _Total: 583 tipos._
 - **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
 - **EraPortal** (class) — `Assets/Scripts/Microcosmos/EraPortal.cs` — Portal de la SALA DE ERAS (escena de validación):
 - **Eras** (class) — `Assets/Scripts/Progression/Era.cs` — ERAS (Berón, 2026-10-23:
+- **EraSpeciesTest** (class) — `Assets/Scripts/Tests/EraSpeciesTest.cs` — CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/era-species-behavior.md §5) sin esperar a la noche ni a un depredador:
 - **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
 - **FallImpact** (class) — `Assets/Scripts/Player/FallImpact.cs` — IMPACTO DE LAS CAÍDAS:
@@ -333,6 +353,7 @@ _Total: 583 tipos._
 - **InfirmaryGate** (class) — `Assets/Scripts/World/InfirmaryGate.cs` — LA INICIACIÓN ES BLOQUEANTE (docs/jornada-y-rotacion.md).
 - **InfirmaryProps** (class) — `Assets/Scripts/World/InfirmaryProps.cs` — MOBILIARIO Y MAQUINARIA DE LA ENFERMERÍA (docs/sanctuary1-level-and-live-tests §4:
 - **IngredientMob** (class) — `Assets/Scripts/Combat/IngredientMob.cs` — An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
+- **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.Fauna.cs` — FAUNA DE CADA ERA (Berón, 2026-10-24:
 - **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.cs` — MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/insect-morphology.md:
 - **InteractionController** (class) — `Assets/Scripts/Interaction/InteractionController.cs` — Attached to the Player.
 - **Inventory** (class) — `Assets/Scripts/Economy/Inventory.cs` — The player's inventory.

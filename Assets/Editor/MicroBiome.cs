@@ -7,6 +7,9 @@ using UnityEngine;
 /// (en invierno casi todos están aletargados: solo salen los activos). Cada especie real se dibuja con el cuerpo de cubos
 /// de su grupo (InsectMorphology: una hormiga tejedora es una «Ant» naranja; un abejorro, una «SnowBee» a rayas).
 /// Datos y fuentes: docs/microcosmos-biomas.md. Sin bioma propio (las áreas del santuario de hoy), el genérico de siempre.
+/// Las especies sin cuerpo propio hasta 2026-10-24 (escorpión, solífugo, ácaro, cochinilla, cangrejo, caracol, babosa,
+/// lombriz, cigarra, luciérnaga, tijereta, cucaracha) ya tienen su ficha (InsectMorphology.Fauna.cs): aquí van con su
+/// nombre real; ver docs/microcosmos-fauna-eras.md.
 /// Escala: 1 cm real de planta ≈ 0,25 m en el microcosmos (la brizna de hierba de 5 cm ≈ 12 m); los bichos, ≈ 0,3 m por mm.
 /// </summary>
 public static class MicroBiome
@@ -22,7 +25,8 @@ public static class MicroBiome
     public struct Bug
     {
         public string species; public int count; public float mm; public Color tint; public string name;
-        public Bug(string sp, int n, float mm, Color tint, string name) { species = sp; count = n; this.mm = mm; this.tint = tint; this.name = name; }
+        public string dormant;   // aletargado en la estación de la historia (por qué): está, pero quieto (Dormant)
+        public Bug(string sp, int n, float mm, Color tint, string name, string dormant = null) { species = sp; count = n; this.mm = mm; this.tint = tint; this.name = name; this.dormant = dormant; }
         public float Length => Mathf.Clamp(mm * 0.3f, 0.8f, 12f);
     }
 
@@ -60,7 +64,9 @@ public static class MicroBiome
                 new Bug("DungBeetle", 4, 48, C(0.12f, 0.1f, 0.08f), "Pelotero gigante (Heliocopris bucephalus)"),
                 new Bug("Mantis", 3, 70, C(0.4f, 0.7f, 0.3f), "Mantis asiática (Hierodula)"),
                 new Bug("Antlion", 4, 12, C(0.6f, 0.52f, 0.4f), "Hormiga león (Myrmeleon)"),
-                new Bug("Aphid", 6, 2, C(0.55f, 0.75f, 0.35f), "Pulgón del arroz") } };
+                new Bug("Aphid", 6, 2, C(0.55f, 0.75f, 0.35f), "Pulgón del arroz"),
+                new Bug("Firefly", 6, 10, C(0.3f, 0.22f, 0.15f), "Luciérnaga (Luciola), destellos al anochecer sobre los arrozales"),
+                new Bug("VelvetMite", 3, 5, C(0.85f, 0.08f, 0.06f), "Ácaro de terciopelo rojo, «bir bahuti» (Trombidium), tras las lluvias") } };
 
             // ── Llanura del Ganges, s. II a. C., invierno seco – primavera (feb–mar) ──
             case "Patanjali": return new Biome { title = "Llanura del Ganges, s. II a. C. (invierno seco)", ground = C(0.7f, 0.6f, 0.45f), plants = new[] {
@@ -77,7 +83,8 @@ public static class MicroBiome
                 new Bug("SnowBee", 4, 8, C(0.85f, 0.45f, 0.2f), "Abeja enana (Apis florea)"),
                 new Bug("Ladybug", 5, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)"),
                 new Bug("Aphid", 8, 2, C(0.6f, 0.68f, 0.55f), "Pulgón de la mostaza (Lipaphis erysimi)"),
-                new Bug("DungBeetle", 3, 25, C(0.12f, 0.1f, 0.08f), "Escarabajo pelotero") } };
+                new Bug("DungBeetle", 3, 25, C(0.12f, 0.1f, 0.08f), "Escarabajo pelotero"),
+                new Bug("Scorpion", 2, 90, C(0.08f, 0.08f, 0.1f), "Escorpión gigante de bosque (Heterometrus), de noche") } };
 
             // ── Varsovia, otoño–invierno de 1942: escombros, grietas y hierbas ruderales ──
             case "Irena Sendler": return new Biome { title = "Varsovia, 1942 (otoño–invierno)", winter = true, ground = C(0.48f, 0.45f, 0.42f), plants = new[] {
@@ -91,7 +98,9 @@ public static class MicroBiome
               bugs = new[] {
                 new Bug("Spider", 4, 14, C(0.45f, 0.32f, 0.22f), "Araña doméstica (Eratigena atrica)"),
                 new Bug("Ladybug", 6, 7, C(0.85f, 0.12f, 0.1f), "Mariquitas de 7 puntos invernando en grupo"),
-                new Bug("Ant", 3, 4, C(0.15f, 0.12f, 0.1f), "Hormiga negra (Lasius niger), al sol") } };
+                new Bug("Ant", 3, 4, C(0.15f, 0.12f, 0.1f), "Hormiga negra (Lasius niger), al sol"),
+                new Bug("Woodlouse", 4, 14, C(0.42f, 0.43f, 0.45f), "Cochinilla de humedad (Porcellio scaber), bajo el escombro"),
+                new Bug("Cockroach", 3, 24, C(0.22f, 0.12f, 0.07f), "Cucaracha oriental (Blatta orientalis), de los sótanos") } };
 
             // ── Le Chambon-sur-Lignon (meseta del Vivarais-Lignon, ~1000 m), otoño de 1942 ──
             case "Le Chambon-sur-Lignon": return new Biome { title = "Meseta del Vivarais-Lignon, 1942 (otoño)", ground = C(0.36f, 0.3f, 0.22f), plants = new[] {
@@ -110,7 +119,8 @@ public static class MicroBiome
                 new Bug("Grasshopper", 4, 18, C(0.5f, 0.55f, 0.3f), "Saltamontes de prado (Pseudochorthippus parallelus)"),
                 new Bug("Spider", 4, 12, C(0.65f, 0.42f, 0.2f), "Araña de jardín (Araneus diadematus)"),
                 new Bug("SnowBee", 3, 18, C(0.2f, 0.18f, 0.12f), "Abejorro (Bombus terrestris)"),
-                new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)") } };
+                new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)"),
+                new Bug("Earthworm", 4, 150, C(0.75f, 0.42f, 0.42f), "Lombriz de tierra (Lumbricus terrestris)") } };
 
             // ── Escútari (Üsküdar), invierno de 1854–55: el cementerio de Karacaahmet junto al cuartel ──
             case "Escútari": return new Biome { title = "Escútari, Estambul, invierno de 1854–55", winter = true, ground = C(0.42f, 0.36f, 0.28f), plants = new[] {
@@ -125,7 +135,10 @@ public static class MicroBiome
               bugs = new[] {
                 new Bug("Spider", 4, 8, C(0.8f, 0.72f, 0.6f), "Araña de sótano (Pholcus phalangioides)"),
                 new Bug("Ladybug", 5, 7, C(0.85f, 0.12f, 0.1f), "Mariquitas de 7 puntos invernando"),
-                new Bug("Ant", 3, 7, C(0.18f, 0.12f, 0.1f), "Hormiga segadora (Messor), en un día templado") } };
+                new Bug("Ant", 3, 7, C(0.18f, 0.12f, 0.1f), "Hormiga segadora (Messor), en un día templado"),
+                new Bug("Cockroach", 4, 24, C(0.22f, 0.12f, 0.07f), "Cucaracha oriental (Blatta orientalis), en el cuartel"),
+                new Bug("Woodlouse", 3, 14, C(0.5f, 0.5f, 0.52f), "Cochinilla de bola (Armadillidium vulgare)"),
+                new Bug("Snail", 2, 45, C(0.85f, 0.78f, 0.62f), "Caracol turco (Helix lucorum)", "inverna sellado con su epifragma") } };
 
             // ── Flandes (saliente de Ypres), Nochebuena de 1914: helada dura sobre el barro ──
             case "Tregua 1914": return new Biome { title = "Flandes, diciembre de 1914 (helada)", winter = true, ground = C(0.33f, 0.28f, 0.22f), plants = new[] {
@@ -140,7 +153,10 @@ public static class MicroBiome
                 new Plant(Kind.Snow, 14, "Escarcha", 0, Snow, Snow), new Plant(Kind.Stone, 8, "Terrón", 0, C(0.42f, 0.35f, 0.28f), Stone) },
               bugs = new[] {
                 new Bug("Spider", 6, 3, C(0.08f, 0.08f, 0.08f), "Araña de sábana (Erigone atra), activa en invierno"),
-                new Bug("DungBeetle", 4, 12, C(0.08f, 0.08f, 0.1f), "Carábido de invierno (Nebria brevicollis)") } };
+                new Bug("DungBeetle", 4, 12, C(0.08f, 0.08f, 0.1f), "Carábido de invierno (Nebria brevicollis)"),
+                new Bug("Earthworm", 4, 150, C(0.72f, 0.42f, 0.42f), "Lombriz de tierra (Lumbricus terrestris), en el barro"),
+                new Bug("Woodlouse", 3, 14, C(0.42f, 0.43f, 0.45f), "Cochinilla (Porcellio scaber)"),
+                new Bug("Slug", 2, 120, C(0.08f, 0.07f, 0.07f), "Babosa negra (Arion ater)") } };
 
             // ── Kill Devil Hills, 17 de diciembre de 1903: la duna de los Wright ──
             case "Dayton": return new Biome { title = "Kill Devil Hills, diciembre de 1903 (duna)", winter = true, ground = C(0.86f, 0.78f, 0.6f), plants = new[] {
@@ -154,7 +170,8 @@ public static class MicroBiome
               bugs = new[] {
                 new Bug("Antlion", 5, 12, C(0.8f, 0.74f, 0.6f), "Hormiga león (Myrmeleon immaculatus), aletargada en su embudo"),
                 new Bug("Spider", 3, 13, C(0.85f, 0.82f, 0.72f), "Araña lobo de playa (Arctosa littoralis)"),
-                new Bug("Ladybug", 3, 6, C(0.95f, 0.45f, 0.15f), "Mariquita de 9 puntos (Coccinella novemnotata), invernando") } };
+                new Bug("Ladybug", 3, 6, C(0.95f, 0.45f, 0.15f), "Mariquita de 9 puntos (Coccinella novemnotata), invernando"),
+                new Bug("GhostCrab", 3, 45, C(0.82f, 0.76f, 0.6f), "Cangrejo fantasma (Ocypode quadrata)", "hiberna en su madriguera de octubre a abril") } };
 
             // ── Egina, Grecia arcaica (mito de los mirmidones), final de primavera ──
             case "Egina": return new Biome { title = "Egina, Grecia arcaica (final de primavera)", ground = C(0.66f, 0.45f, 0.32f), plants = new[] {
@@ -173,7 +190,9 @@ public static class MicroBiome
                 new Bug("Grasshopper", 4, 50, C(0.55f, 0.48f, 0.38f), "Langosta egipcia (Anacridium aegyptium)"),
                 new Bug("DungBeetle", 3, 25, C(0.08f, 0.08f, 0.08f), "Escarabajo pelotero (Scarabaeus)"),
                 new Bug("Antlion", 4, 12, C(0.62f, 0.55f, 0.45f), "Hormiga león (Myrmeleon)"),
-                new Bug("SnowBee", 4, 13, C(0.75f, 0.55f, 0.2f), "Abeja melífera griega (Apis mellifera cecropia)") } };
+                new Bug("SnowBee", 4, 13, C(0.75f, 0.55f, 0.2f), "Abeja melífera griega (Apis mellifera cecropia)"),
+                new Bug("Cicada", 4, 25, C(0.5f, 0.45f, 0.38f), "Cigarra del fresno (Cicada orni), cantando en los pinos"),
+                new Bug("Scorpion", 2, 60, C(0.72f, 0.6f, 0.35f), "Escorpión griego (Mesobuthus gibbosus), de noche") } };
 
             // ── Alejandría y Siene (Asuán), solsticio de verano de ~240 a. C. ──
             case "Alejandría": return new Biome { title = "Egipto, ~240 a. C. (solsticio de verano)", ground = C(0.88f, 0.76f, 0.52f), plants = new[] {
@@ -193,7 +212,9 @@ public static class MicroBiome
                 new Bug("Mantis", 2, 75, C(0.45f, 0.68f, 0.3f), "Mantis africana (Sphodromantis viridis)"),
                 new Bug("Termite", 8, 5, C(0.95f, 0.9f, 0.78f), "Termita de arena (Psammotermes hybostoma)"),
                 new Bug("Antlion", 5, 12, C(0.85f, 0.75f, 0.55f), "Hormiga león (Myrmeleon)"),
-                new Bug("SnowBee", 3, 12, C(0.9f, 0.7f, 0.25f), "Abeja egipcia (Apis mellifera lamarckii)") } };
+                new Bug("SnowBee", 3, 12, C(0.9f, 0.7f, 0.25f), "Abeja egipcia (Apis mellifera lamarckii)"),
+                new Bug("Scorpion", 3, 58, C(0.85f, 0.75f, 0.4f), "Escorpión amarillo, el acechador de la muerte (Leiurus quinquestriatus)"),
+                new Bug("CamelSpider", 2, 50, C(0.78f, 0.64f, 0.42f), "Solífugo (Galeodes arabs)") } };
 
             // ── Newton, Curie, Einstein: un jardín templado de Europa occidental, final del verano ──
             case "Planta Atómica": return new Biome { title = "Jardín de Europa occidental (Woolsthorpe, París, Berna; final del verano)", ground = C(0.36f, 0.48f, 0.25f), plants = new[] {
@@ -210,7 +231,10 @@ public static class MicroBiome
                 new Bug("Ladybug", 5, 5, C(0.85f, 0.12f, 0.1f), "Mariquita de 2 puntos (Adalia bipunctata)"),
                 new Bug("Grasshopper", 4, 20, C(0.5f, 0.42f, 0.3f), "Saltamontes campestre (Chorthippus brunneus)"),
                 new Bug("Spider", 3, 12, C(0.65f, 0.42f, 0.2f), "Araña de jardín (Araneus diadematus)"),
-                new Bug("SnowBee", 4, 18, C(0.2f, 0.18f, 0.12f), "Abejorro (Bombus terrestris)") } };
+                new Bug("SnowBee", 4, 18, C(0.2f, 0.18f, 0.12f), "Abejorro (Bombus terrestris)"),
+                new Bug("Earwig", 4, 14, C(0.45f, 0.22f, 0.12f), "Tijereta (Forficula auricularia)"),
+                new Bug("Snail", 3, 22, C(0.92f, 0.82f, 0.35f), "Caracol de labio pardo (Cepaea nemoralis)"),
+                new Bug("Earthworm", 3, 150, C(0.75f, 0.42f, 0.42f), "Lombriz de tierra (Lumbricus terrestris)") } };
 
             // ── Ambrosio y la era del fuego: taiga prehistórica (verano corto) ──
             case "Hospital": case "Cocina": return new Biome { title = "Taiga prehistórica, antes del fuego (verano corto)", ground = C(0.3f, 0.26f, 0.18f), plants = new[] {

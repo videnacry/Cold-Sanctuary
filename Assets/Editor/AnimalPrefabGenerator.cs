@@ -47,6 +47,20 @@ public static class AnimalPrefabGenerator
         ("Meerkat",     "MeerkatBehavior"),
         ("SnowBee",     "SnowBeeBehavior"),
         ("SnowSpider",  "SnowSpiderBehavior"),   // araña de las nieves: caza abejas en los árboles carnívoros
+        // Especies de las eras del microcosmos (docs/era-species-behavior.md): sin prefab, AreaMicrocosmos no las planta.
+        ("Scorpion",    "ScorpionBehavior"),
+        ("CamelSpider", "CamelSpiderBehavior"),
+        ("Woodlouse",   "WoodlouseBehavior"),
+        ("Snail",       "SnailBehavior"),
+        ("Slug",        "SlugBehavior"),
+        ("Cicada",      "CicadaBehavior"),
+        ("Firefly",     "FireflyBehavior"),
+        ("Earwig",      "EarwigBehavior"),
+        ("Cockroach",   "CockroachBehavior"),
+        ("GhostCrab",   "GhostCrabBehavior"),
+        ("Scorpionfly", "ScorpionflyBehavior"),
+        ("VelvetMite",  "VelvetMiteBehavior"),
+        ("Earthworm",   "EarthwormBehavior"),
     };
     // NOTA: esta lista es el REGISTRO — para producir una especie nueva basta añadir su (carpeta, clase) aquí. Es
     // explícita (no auto-descubierta) a propósito, porque la carpeta y la clase no siempre coinciden (p.ej. la carpeta
@@ -91,6 +105,24 @@ public static class AnimalPrefabGenerator
         Debug.Log($"[AnimalPrefabGenerator] Listo — {created} prefab(s) creados, {skipped} especie(s) saltadas (ver log arriba).");
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
+    }
+
+    /// <summary>El prefab de la especie; si aún no existe y está en <see cref="Species"/>, lo GENERA en el acto (cuerpo de
+    /// cubos, no necesita .fbx). Así los builders de escenas no dejan fuera a las especies nuevas por no haber corrido
+    /// «Generate Animal Prefabs» antes. Null solo si la especie no está registrada.</summary>
+    public static GameObject LoadOrCreate(string species)
+    {
+        string prefabPath = $"{AnimalsRoot}/{species}/{species}.prefab";
+        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        if (prefab != null) return prefab;
+        foreach ((string sp, string behaviourType) in Species)
+        {
+            if (sp != species) continue;
+            if (GenerateOne(species, behaviourType) == null) return null;
+            Debug.Log($"[AnimalPrefabGenerator] {species}: faltaba el prefab y se generó al montar la escena.");
+            return AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        }
+        return null;
     }
 
     static string GenerateOne(string species, string behaviourTypeName)

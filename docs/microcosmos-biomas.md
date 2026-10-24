@@ -2,8 +2,9 @@
 
 > Berón, 2026-10-23. Código: `Assets/Editor/MicroBiome.cs` (datos) y `AreaMicrocosmos.Nature` (los planta). Cada especie real
 > se dibuja con el cuerpo de cubos de su grupo (InsectMorphology). Lo marcado [?] está por confirmar con GBIF en la
-> localidad exacta; los enlaces son representativos y no se han vuelto a abrir uno a uno. Pendiente: criaturas nuevas
-> (lombriz, escorpión, cochinilla, caracol, piojo/pulga, luciérnaga, cigarra, cangrejo fantasma, pulga de nieve).
+> localidad exacta; los enlaces son representativos y no se han vuelto a abrir uno a uno. Las criaturas «NEW» ya tienen
+> cuerpo, ciclo de vida y dimorfismo propios (2026-10-24): ver [`microcosmos-fauna-eras.md`](microcosmos-fauna-eras.md).
+> El piojo y la pulga quedan solo como referencia histórica.
 
 Conventions: heights are typical adult/mature size; body lengths exclude legs/antennae. "Season" = whether active in the story's season. [?] = uncertain, verify before relying on it. Mapping hints in *italics* point to the game's existing insect prefabs (Antlion, DungBeetle, Termite, Mantis, Cricket, Grasshopper, Aphid, Ladybug, Ant, Spider, SnowBee).
 

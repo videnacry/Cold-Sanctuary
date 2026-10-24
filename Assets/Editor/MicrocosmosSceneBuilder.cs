@@ -255,7 +255,7 @@ public static class MicrocosmosSceneBuilder
         (string species, int count)[] fauna = { ("Cricket", 4), ("Aphid", 5), ("Ladybug", 3), ("Grasshopper", 4) };
         foreach (var (species, count) in fauna)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Animals/{species}/{species}.prefab");
+            GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(species);   // lo genera si falta (especies nuevas)
             if (prefab == null) { Debug.Log($"[Micro] ambiente: sin prefab {species} (pon el .fbx y genera) — se omite."); continue; }
             for (int i = 0; i < count; i++)
             {
