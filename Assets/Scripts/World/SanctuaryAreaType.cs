@@ -38,4 +38,7 @@ public enum SanctuaryAreaType
     MartialArts,          // Dojo de artes marciales — en obras al empezar
     Calisthenics,         // Parque de calistenia — en obras al empezar
     AtomicPlant,          // Planta atómica — reactor de investigación (isótopos para el hospital, física), docs/atomic-plant.md
+    Chemistry,            // Química — investigación: síntesis abajo, análisis arriba (docs/laboratorios-investigacion.md)
+    Biology,              // Biología — investigación BSL-2: cultivo abajo, molecular arriba
+    NuclearPower,         // Central nuclear — producción: microrreactor de 5 MWe y calefacción de distrito
 }

@@ -121,6 +121,9 @@ public static class VirtualMissionSceneBuilder
             case "Construcción": return "Construction_Area";
             case "Cría": return "CubCare_Area";
             case "Planta Atómica": return "AtomicPlant_Area";
+            case "Química": return "Chemistry_Area";
+            case "Biología": return "Biology_Area";
+            case "Central Nuclear": return "NuclearPower_Area";
             default: return null;
         }
     }

@@ -22,6 +22,7 @@ public static class FurnitureSpacing
         ("Puesto_", 0.9f),      // puestos de cocina
         ("Telar", 0.8f),
         ("Aseos", 0.9f),
+        ("Bloque_", 2.0f),      // laboratorios y central (Berón 2026-10-24: 2 m para pasar corriendo entre equipos)
     };
 
     static float GapFor(string name)
