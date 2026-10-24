@@ -290,7 +290,9 @@ public static partial class SampleSceneBuilder
         inside.AddRange(Times(2, "Gota de aceite de Millikan", 1.5f, 0.75f, t => { Bench(t, 1.5f, 0.75f, LabBench); KitchenProps.C(t, new Vector3(-0.2f, 1.1f, 0f), new Vector3(0.3f, 0.3f, 0.3f), LabSteel, 0f, "Condensador"); KitchenProps.C(t, new Vector3(0.35f, 1.2f, 0f), new Vector3(0.08f, 0.08f, 0.35f), LabDark, 90f, "Microscopio_medida"); }));
         inside.AddRange(Times(2, "Espectroscopio de red", 1.5f, 0.75f, t => { Bench(t, 1.5f, 0.75f, LabBench); KitchenProps.C(t, new Vector3(0f, 1.0f, 0f), new Vector3(0.4f, 0.06f, 0.4f), LabSteel, 0f, "Plataforma_goniometro"); KitchenProps.C(t, new Vector3(-0.35f, 1.1f, 0f), new Vector3(0.4f, 0.08f, 0.08f), LabDark, 0f, "Colimador"); KitchenProps.C(t, new Vector3(0.3f, 1.1f, 0.15f), new Vector3(0.4f, 0.08f, 0.08f), LabDark, 30f, "Anteojo"); KitchenProps.C(t, new Vector3(-0.65f, 1.05f, 0f), new Vector3(0.15f, 0.2f, 0.15f), new Color(1f, 0.6f, 0.9f), 0f, "Lampara_espectral"); }));
         inside.Add(new LabBlock("Electrónica y escritorios", 3.0f, 1.5f, t => { Bench(t, 3f, 1.5f, new Color(0.55f, 0.45f, 0.35f)); Tall(KitchenProps.Root(t, "Rack", new Vector3(1.0f, 0.94f, 0f)), 0.6f, 0.6f, 1f, LabDark, "Rack", LabGreen); }));
-        LogLeft("Física (sala)", PackFloor(hall, hs, inside, StairKeepOut(hs, false, -hs.x * 0.3f)));
+        var hallKeep = StairKeepOut(hs, false, -hs.x * 0.3f);
+        hallKeep.Add(new Rect(-1.6f, -hs.y * 0.5f, 3.2f, hs.y));   // las dos escaleras que suben al anillo (centro de ±Z)
+        LogLeft("Física (sala)", PackFloor(hall, hs, inside, hallKeep));
         // El ANILLO (10 m, 20 % dentro): la doble rendija de fotón único, Chladni, helio superfluido, Cavendish y, en una
         // esquina, el péndulo de Foucault con su torre (15 m de hilo, foso de 3 m).
         Transform ring = RingDeck(hall, "Anillo_experimentos", hs);
