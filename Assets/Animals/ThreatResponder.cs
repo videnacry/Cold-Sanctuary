@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>Reacción ante una amenaza (docs/behavior-system.md): huir, plantar cara, o pegar-y-correr.</summary>
-public enum Reaction { Flee, Fight, HitAndRun }
+public enum Reaction { Flee, Fight, HitAndRun, Hold }   // Hold = defensa pasiva (bola/concha): ver PassiveDefence
 
 /// <summary>
 /// Componente de RESPUESTA A AMENAZAS (docs/anima-dissolving-animal.md, etapa 1). Extrae de `Animal` la
@@ -100,6 +100,10 @@ public class ThreatResponder : MonoBehaviour
                 // repetido) — la coneja que muerde la cola de la serpiente y se retira. Ver capabilities-and-embodiment.md §4.
                 return myPower > enemyPower * fightPowerMargin ? Reaction.Fight : Reaction.HitAndRun;
         }
+        // DEFENSA PASIVA (cochinilla, caracol, babosa, lombriz): si no puedo escapar de quien me ataca (es más ágil que yo),
+        // me acorazo y me quedo quieto en vez de huir. Emerge de la agilidad de ambos, no de un flag fijo.
+        PassiveDefence pd = self.GetComponent<PassiveDefence>();
+        if (pd != null && pd.Prefers(self, threatAnima)) return Reaction.Hold;
         return Reaction.Flee;
     }
 }

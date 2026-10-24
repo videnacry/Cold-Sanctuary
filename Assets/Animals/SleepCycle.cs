@@ -25,8 +25,23 @@ public class SleepCycle : MonoBehaviour
     /// <summary>Especies NOCTURNAS (data; `Animal.Init` lo copia a `nocturnal`). Grillo: los machos cantan al anochecer y
     /// de noche; hormiga león: el adulto vuela de noche (la larva acecha a cualquier hora); araña (arquetipo araña lobo):
     /// caza sobre todo de noche. Abejas, mariquitas, saltamontes, mantis y peloteros diurnos (el pelotero rodador se
-    /// orienta por el sol; los nocturnos usan la Vía Láctea, doi 10.1016/j.cub.2012.12.034). [A] salvo cita.</summary>
-    public static bool IsNocturnal(string species) => species == "Cricket" || species == "Antlion" || species == "Spider";
+    /// orienta por el sol; los nocturnos usan la Vía Láctea, doi 10.1016/j.cub.2012.12.034). [A] salvo cita.
+    /// Especies de las eras (docs/era-species-behavior.md): nocturnos el escorpión, el solífugo (lucífugo), la cochinilla,
+    /// el caracol y la babosa (de día solo con lluvia: Rowson et al. 2014), la luciérnaga (corteja al anochecer), la
+    /// tijereta, la cucaracha, el cangrejo fantasma («fantasma» por eso) y la lombriz (sale a la superficie de noche: Darwin
+    /// 1881). Diurnos la cigarra (canta con calor), la pulga de las nieves (activa en invierno, de día) y el ácaro de
+    /// terciopelo (sale al sol tras la lluvia).</summary>
+    public static bool IsNocturnal(string species)
+    {
+        switch (species)
+        {
+            case "Cricket": case "Antlion": case "Spider":
+            case "Scorpion": case "CamelSpider": case "Woodlouse": case "Snail": case "Slug": case "Firefly":
+            case "Earwig": case "Cockroach": case "GhostCrab": case "Earthworm":
+                return true;
+            default: return false;
+        }
+    }
     [Tooltip("Solo maduros (adulto/juvenil) duermen el ciclo; las crías siguen despiertas aquí (su ritmo lo llevan otros).")]
     public bool onlyMature = false;
 

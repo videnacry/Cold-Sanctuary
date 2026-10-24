@@ -53,6 +53,20 @@ public class Family
         { "Mantis",      new Family(1, 0.1f, maternal)   },  // solitaria (canibalismo sexual)
         { "Meerkat",     new Family(6, 0.5f, biparental) },  // cría cooperativa (helpers al nido)
         { "SnowBee",     new Family(6, 0.8f, maternal)   },  // colonia eusocial (reina = parents)
+        // Especies de las eras (docs/era-species-behavior.md)
+        { "Scorpion",    new Family(3, 0.3f, maternal) },   // madre con crías a lomos (BroodRide)
+        { "CamelSpider", new Family(1, 0.1f, maternal) },   // solitario (la madre guarda la puesta)
+        { "Woodlouse",   new Family(5, 0.3f, maternal) },   // agregación bajo la piedra
+        { "Snail",       new Family(3, 0.3f, maternal) },   // hermafrodita; la puesta queda sola
+        { "Slug",        new Family(2, 0.3f, maternal) },
+        { "Cicada",      new Family(3, 0.3f, maternal) },   // coro de machos
+        { "Firefly",     new Family(3, 0.3f, maternal) },
+        { "Earwig",      new Family(4, 0.25f, maternal) },  // madre + ninfas (cuidado materno)
+        { "Cockroach",   new Family(5, 0.3f, maternal) },   // agregación
+        { "GhostCrab",   new Family(1, 0.1f, maternal) },   // solitario, territorial en su madriguera
+        { "Scorpionfly", new Family(2, 0.3f, maternal) },
+        { "VelvetMite",  new Family(2, 0.3f, maternal) },
+        { "Earthworm",   new Family(3, 0.3f, maternal) },
     };
 
     public static Family Of(string species)
