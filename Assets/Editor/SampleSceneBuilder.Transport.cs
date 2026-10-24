@@ -294,12 +294,13 @@ public static partial class SampleSceneBuilder
         return Mathf.Abs(p.x) < l.half.x - 0.8f && Mathf.Abs(p.z) < l.half.y - 0.8f;
     }
 
+    // Lo que queda FUERA de la plataforma (la escalera del comedor que sube desde el propio puente) no estorba la llegada.
     static bool InLanding((Transform area, Vector2 half, int side, float center) l, Transform t, out float depth)
     {
         Vector3 p = l.area.InverseTransformPoint(t.position);
         depth = l.side == 0 ? l.half.x - p.x : l.side == 1 ? p.x + l.half.x : l.side == 2 ? l.half.y - p.z : p.z + l.half.y;
         float along = l.side < 2 ? p.z : p.x;
-        return depth < 4f && Mathf.Abs(along - l.center) < BridgeWidth * 0.5f + 0.6f;
+        return depth > -0.5f && depth < 4f && Mathf.Abs(along - l.center) < BridgeWidth * 0.5f + 0.6f;
     }
 
 

@@ -2,11 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// COCINA PROFESIONAL (docs/cocina-profesional.md): el equipo que piden la carta y sus elaboraciones (Gastronomy), como en
-/// una cocina de restaurante con obrador propio. Dentro de la sala: hornos mixto y de pizza, la «isla de fuego» de
-/// inducción (wok, paellero, trompo, fogón, comal), amasadora, laminadora, batidora, arrocera y vaporera, y frente al
-/// público la barra de sushi y la cafetera. Fuera, a ambos lados de la sala sobre la misma plataforma, el OBRADOR:
-/// molino de piedra, trapiche, almazara, extrusora, nixtamalizadora, barricas y cava de maduración (lado oeste) y la
-/// cámara de fermentación, incubadoras de yogur y tempeh, cuba de quesería, prensa de tofu, abatidor y marmitas (este).
+/// una cocina de restaurante con obrador propio. Dónde va cada máquina lo decide la planta de la cocina
+/// (SampleSceneBuilder.KitchenPlan, docs/restaurant-plan.md); aquí está cómo es cada una.
 /// Cada máquina se llama «Equipo_<nombre del recetario>» y lleva su cartel.
 /// </summary>
 public static partial class SampleSceneBuilder
@@ -16,45 +13,9 @@ public static partial class SampleSceneBuilder
 
     static void ProKitchen(Transform room)
     {
-        // ── En cada PUESTO del borde, dos máquinas a sus lados (el cocinero elabora y cocina en su sitio) ──
-        string[][] perStation =
-        {
-            new[] { "horno mixto", "batidora planetaria" }, new[] { "horno de pizza (eléctrico)", "amasadora espiral" },
-            new[] { "wok de inducción", "arrocera" }, new[] { "laminadora de pasta", "vaporera" },
-            new[] { "paellero de inducción", "trompo vertical (inducción)" }, new[] { "fogón de inducción", "comal" },
-        };
-        for (int i = 0; i < perStation.Length; i++)
-        {
-            Transform st = room.Find($"Puesto_{i + 1}");
-            if (st == null) continue;
-            for (int k = 0; k < 2; k++)
-            {
-                Vector3 local = room.InverseTransformPoint(st.TransformPoint(new Vector3(k == 0 ? -2.1f : 2.15f, 0f, 0f)));
-                Eq(room, perStation[i][k], new Vector3(local.x, 0f, local.z), st.localEulerAngles.y);
-            }
-        }
-        // ── De cara al público (cocina abierta) ──
-        Eq(room, "barra de sushi", new Vector3(-5.6f, 0f, -6.4f), 180f);
-        Eq(room, "cafetera espresso", new Vector3(-3.0f, 0f, -6.4f), 180f);
-        // ── Obrador oeste (fuera de la sala) ──
-        Eq(room, "molino de piedra", new Vector3(-10.9f, 0f, 6.0f), -90f);
-        Eq(room, "trapiche y paila", new Vector3(-10.9f, 0f, 4.2f), -90f);
-        Eq(room, "almazara", new Vector3(-10.9f, 0f, 2.4f), -90f);
-        Eq(room, "barricas de fermentación", new Vector3(-10.9f, 0f, 0.5f), -90f);
-        Eq(room, "cava de maduración", new Vector3(-10.9f, 0f, -1.8f), -90f);
-        Eq(room, "extrusora y secadero", new Vector3(-10.9f, 0f, -4.0f), -90f);
-        Eq(room, "nixtamalizadora y molino", new Vector3(-10.9f, 0f, -5.9f), -90f);
-        // ── Obrador este (fuera de la sala): fermentación, lácteos sin animales, soja, frío ──
-        Eq(room, "cámara de fermentación", new Vector3(10.9f, 0f, 6.0f), 90f);
-        Eq(room, "incubadora de tempeh", new Vector3(10.9f, 0f, 4.5f), 90f);
-        Eq(room, "yogurtera (incubadora)", new Vector3(10.9f, 0f, 3.1f), 90f);
-        Eq(room, "cuba de quesería", new Vector3(10.9f, 0f, 1.5f), 90f);
-        Eq(room, "prensa de tofu", new Vector3(10.9f, 0f, -0.1f), 90f);
-        Eq(room, "abatidor", new Vector3(10.9f, 0f, -1.5f), 90f);
-        Eq(room, "marmita a presión", new Vector3(10.9f, 0f, -3.1f), 90f);
-        Eq(room, "marmita", new Vector3(10.9f, 0f, -4.6f), 90f);
-
-        // La despensa/obrador que planifica las elaboraciones (yogur, quesos, masas…).
+        // El equipo ya está repartido por la planta (SampleSceneBuilder.KitchenPlan: cada puesto completo y los obradores;
+        // la barra de sushi y la cafetera de cara al público, en el anillo del comedor). Aquí, la despensa/obrador que
+        // planifica las elaboraciones (yogur, quesos, masas…).
         room.gameObject.AddComponent<KitchenLarder>();
     }
 

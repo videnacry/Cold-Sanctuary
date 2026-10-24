@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
-///  · La cocina pasa a ser una COCINA ABIERTA de restaurante gourmet: suelo de pizarra oscura, pared de azulejo verde
-///    botella con remates de latón, pase de emplatado con lámparas de calor y comandas, botellero de cobre con cazos
-///    colgados sobre la isla, plantas aromáticas. Al lado, en su propia plataforma elevada, el COMEDOR: mesas con mantel
-///    blanco, bajoplato, copas, cubiertos, vela y flor; sillas tapizadas; lámparas colgantes; pared de vinos y plantas.
+///  · La cocina ocupa TODA la planta (SampleSceneBuilder.KitchenPlan): suelo de pizarra oscura y el pase con su riel de
+///    comandas y hierbas frescas. El COMEDOR va arriba, en un ANILLO de 10 m a caballo del borde (docs/restaurant-plan.md):
+///    mesas con mantel blanco, bajoplato, copas, cubiertos, vela y flor; sillas tapizadas; caja, barra de sushi, cafetera,
+///    aseos, pared de vinos y plantas; su escalera sube desde el puente.
 ///  · ESTUDIO TEXTIL (el área de Irosene): telar de pie con su urdimbre, telar de cintura andino, rueca, ovillos de lana
 ///    por colores, tinas de tinte natural, mesa de corte, máquina de coser, maniquíes y un tendedero con telas.
 /// </summary>
@@ -15,14 +16,10 @@ public static partial class SampleSceneBuilder
 
     static void GourmetKitchen(Transform room)
     {
-        Color slate = new Color(0.2f, 0.21f, 0.23f), tile = new Color(0.12f, 0.3f, 0.24f), brass = new Color(0.78f, 0.62f, 0.3f), copper = new Color(0.72f, 0.42f, 0.25f);
+        Color slate = new Color(0.2f, 0.21f, 0.23f);
         Transform floor = room.Find("Suelo_Cocina");
         if (floor != null) floor.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(slate);
         foreach (Transform t in room) if (t.name == "Junta") t.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.14f, 0.15f, 0.17f));
-        // Pared del fondo de azulejo verde botella con un friso de latón.
-        KitchenProps.C(room, new Vector3(0f, 0.75f, 7.65f), new Vector3(19.2f, 1.5f, 0.05f), tile, 0f, "Pared_Azulejo");   // zócalo bajo: la cocina es abierta por los cuatro lados
-        KitchenProps.C(room, new Vector3(0f, 1.05f, 7.6f), new Vector3(19.2f, 0.04f, 0.04f), brass, 0f, "Friso_Laton");
-        for (int i = 0; i < 24; i++) KitchenProps.C(room, new Vector3(-9.4f + i * 0.82f, 0.75f, 7.62f), new Vector3(0.01f, 1.5f, 0.01f), new Color(0.08f, 0.2f, 0.16f), 0f, "Junta_Azulejo");
         // Sin nada colgado (no hay techo): ni botellero de cobre, ni lámparas, ni campanas extractoras. Pase: el riel de comandas.
         Transform pass = room.Find("Barra de servicio");
         if (pass != null)
@@ -30,34 +27,31 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(pass, new Vector3(0f, 1.45f, 0.45f), new Vector3(4.6f, 0.03f, 0.03f), KitchenProps.Steel, 0f, "Riel_comandas");
             for (int i = 0; i < 5; i++) KitchenProps.C(pass, new Vector3(-1.8f + i * 0.9f, 1.36f, 0.45f), new Vector3(0.1f, 0.15f, 0.005f), Color.white, 0f, "Comanda");
         }
-        // Hierbas aromáticas frescas en la encimera (macetas de cubos).
+        // Hierbas aromáticas frescas en la mesa de emplatado (macetas de cubos).
         for (int i = 0; i < 5; i++)
         {
-            Transform pot = KitchenProps.C(room, new Vector3(1.6f + i * 0.3f, KitchenProps.CounterTop + 0.08f, 0.7f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
-            KitchenProps.C(room, new Vector3(1.6f + i * 0.3f, KitchenProps.CounterTop + 0.24f, 0.7f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
+            Transform pot = KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.08f, 2.0f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
+            KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.24f, 2.0f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
         }
     }
 
-    // ── Comedor gourmet, en su propia plataforma elevada junto a la cocina ─────────────────────────
+    // ── Comedor en ANILLO sobre la cocina (docs/restaurant-plan.md §3–5) ─────────────────────────
 
     static void BuildGourmetDining(Transform parent)
     {
-        // COCINA EN EL CENTRO y el COMEDOR ALREDEDOR, en la misma plataforma: la cocina es abierta (sin paredes, con su
-        // barra de pase, la barra de sushi y la cafetera hacia el público), y las mesas la rodean por los cuatro lados,
-        // así cualquier comensal ve cocinar. 10 mesas de 4 = 40 cubiertos (base de 30 turistas + personal).
+        // Toda la planta es cocina y el COMEDOR va en un ANILLO cuadrado completo a 4 m, de 10 m de ancho: solo el 20 % sobre
+        // la planta y el 80 % volando por fuera (Berón 2026-10-23). Una fila de mesas de 4 por el centro y 4 m libres a cada
+        // lado. La escalera nace del PUENTE (no cruza la cocina) y junto a su llegada está la CAJA, que atiende el cocinero que
+        // esté libre. La barra de sushi y la cafetera, de cara a los comensales; aseos, pared de vinos y plantas en el anillo.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
         if (kitchen == null) return;
-        Vector2 size = new Vector2(40f, 38f);   // toda la plataforma (el suelo de la cocina queda encima, en el centro)
+        Transform km = kitchen.transform.Find("Mat");
+        Vector2 size = km != null ? new Vector2(km.localScale.x, km.localScale.z) : new Vector2(40f, 38f);
         GameObject go = new GameObject("Comedor_Gourmet");
         go.transform.SetParent(kitchen.transform, false);
         go.transform.localPosition = new Vector3(0f, 0.1f, 0f);
         Transform r = go.transform;
         Color wood = new Color(0.42f, 0.28f, 0.2f), linen = new Color(0.97f, 0.97f, 0.95f), gold = new Color(0.82f, 0.68f, 0.35f), velvet = new Color(0.32f, 0.12f, 0.18f);
-        KitchenProps.C(r, new Vector3(0f, 0.02f, 0f), new Vector3(size.x, 0.04f, size.y), new Color(0.48f, 0.33f, 0.22f), 0f, "Parquet");
-        for (int i = 0; i < 20; i++) KitchenProps.C(r, new Vector3(-size.x * 0.5f + (i + 0.5f) * size.x / 20f, 0.045f, 0f), new Vector3(0.01f, 0.005f, size.y), new Color(0.36f, 0.24f, 0.16f), 0f, "Tablilla");
-        // Mesas: 4 delante (junto a la entrada) y 2 al fondo, en el suelo; las de los LADOS suben a dos GALERÍAS de 3 m (sin barandilla; por debajo se pasa de pie)
-        // (docs/construcciones-elevadas.md §Pisos): 3 mesas en cada una, con vista a la cocina abierta, y abajo queda un
-        // paso ancho alrededor de la cocina. 12 mesas de 4 = 48 cubiertos (base de 30 turistas + personal).
         int mesa = 0;
         void Table(Transform parent, Vector3 pos)
         {
@@ -85,33 +79,74 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(t, new Vector3(0.18f, 0.84f, 0.12f), new Vector3(0.06f, 0.12f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.4f), 0f, "Florero");
             KitchenProps.C(t, new Vector3(0.18f, 0.93f, 0.12f), new Vector3(0.09f, 0.07f, 0.09f), new Color(0.95f, 0.85f, 0.9f), 0f, "Flor");
         }
-        foreach (Vector3 p in new[] { new Vector3(-13.5f, 0f, 12.5f), new Vector3(-4.5f, 0f, 13.5f), new Vector3(4.5f, 0f, 13.5f), new Vector3(13.5f, 0f, 12.5f),
-                                      new Vector3(5f, 0f, -12.5f), new Vector3(13f, 0f, -12.5f) })
-            Table(r, p);
-        const float gx = 17.4f, gz = 9f;   // centro de cada galería en X; llegan de z = -9 a z = +9
-        float g = MezzanineHeight, run = StairRun();
-        for (int k = -1; k <= 1; k += 2)
+
+        const float W = 10f, In = 0.2f;
+        float hx = size.x * 0.5f - W * In, hz = size.y * 0.5f - W * In;
+        int side = KitchenBridge(kitchen.transform, out float along);
+        Transform ring = RingDeck(r, "Anillo_comedor", size, MezzanineHeight, W, In, innerGaps: side < 0, openSide: side, openAt: along);
+
+        // ESCALERA DESDE EL PUENTE: sube por fuera del anillo hasta su borde exterior (el hueco de la barrera).
+        Vector3 outDir = side >= 0 ? SideOut(side) : Vector3.forward;
+        Vector3 top = side == 0 ? new Vector3(hx + W, 0f, along) : side == 1 ? new Vector3(-hx - W, 0f, along)
+                    : side == 2 ? new Vector3(along, 0f, hz + W) : side == 3 ? new Vector3(along, 0f, -hz - W) : new Vector3(0f, 0f, hz);
+        float run = StairRun();
+        if (side >= 0) InclinedStair(r, "Escalera_comedor_puente", top + outDir * run, Mathf.Atan2(-outDir.x, -outDir.z) * Mathf.Rad2Deg);
+        else
         {
-            Transform top = Deck(r, k < 0 ? "Galeria_comedor_oeste" : "Galeria_comedor_este", new Vector3(k * gx, 0f, 0f), new Vector2(4.6f, 2f * gz));
-            for (int j = -1; j <= 1; j++) Table(top, new Vector3(0f, 0f, j * 6f));
-            InclinedStair(r, k < 0 ? "Escalera_comedor_oeste" : "Escalera_comedor_este", new Vector3(k * gx, 0f, gz + run), 180f);   // al borde de +Z
+            Debug.LogWarning("[Restaurante] sin puente: el comedor sube por dentro (escaleras en los lados ±Z).");
+            InclinedStair(r, "Escalera_comedor_puente", new Vector3(0f, 0f, hz - run), 0f);
+            InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
         }
-        int up = 0; foreach (Transform t in r.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Mesa_") && t.position.y > r.position.y + 1.5f) up++;
-        Debug.Log($"[Restaurante] comedor: {mesa - up} mesas en la planta y {up} en las dos galerías de {g:0.#} m, con sus escaleras inclinadas.");
-        // Pared de vinos al fondo y plantas en las esquinas.
-        Transform wine = KitchenProps.Root(r, "Pared_de_vinos", new Vector3(-size.x * 0.5f + 0.4f, 0f, -13f), 90f);   // en el lateral del fondo (delante queda la entrada)
+        Vector3 arrive = top - outDir * (W * 0.5f);   // donde se llega, en la línea central
+
+        // CAJA junto a la llegada (sobre la línea central, a un lado del paso).
+        Vector3 tangent = Mathf.Abs(outDir.x) > 0.5f ? Vector3.forward : Vector3.right;
+        Vector3 cajaAt = arrive + tangent * (along > 0f ? -3.4f : 3.4f);
+        Transform caja = KitchenProps.CounterRun(ring, "Caja_registradora", cajaAt, 1.6f, Mathf.Atan2(outDir.x, outDir.z) * Mathf.Rad2Deg);
+        KitchenProps.C(caja, new Vector3(-0.3f, KitchenProps.CounterTop + 0.12f, 0f), new Vector3(0.4f, 0.24f, 0.35f), new Color(0.2f, 0.22f, 0.25f), 0f, "Registradora");
+        KitchenProps.C(caja, new Vector3(0.4f, KitchenProps.CounterTop + 0.02f, 0f), new Vector3(0.3f, 0.02f, 0.2f), new Color(0.95f, 0.95f, 0.9f), 0f, "Tickets");
+        WorldLabel cl = caja.gameObject.AddComponent<WorldLabel>(); cl.text = "Caja (la atiende el cocinero libre)"; cl.height = 1.8f;
+
+        // Huecos de la fila central cada 7,5 m (fuera de las esquinas y lejos de la llegada y la caja).
+        var slots = new List<(Vector3 p, float yaw)>();
+        float len = RingLength(size, W, In);
+        for (float s = 3.75f; s < len; s += 7.5f)
+        {
+            var (p, yaw, corner) = RingPoint(size, s, W, In);
+            if (corner || Vector3.Distance(p, arrive) < 6.5f || Vector3.Distance(p, cajaAt) < 3.5f) continue;
+            slots.Add((p, yaw));
+        }
+        slots.Sort((a, b) => Vector3.Distance(b.p, arrive).CompareTo(Vector3.Distance(a.p, arrive)));
+        // Enfrente de la llegada, la barra de sushi y la cafetera; a media vuelta, los aseos; en el resto, las mesas.
+        if (slots.Count > 2)
+        {
+            var (sp, sy) = slots[0];
+            Vector3 tg = sy == 0f ? Vector3.right : Vector3.forward;
+            Eq(ring, "barra de sushi", sp - tg * 1.0f, sy);
+            Eq(ring, "cafetera espresso", sp + tg * 1.9f, sy);
+            var (ap, ay) = slots[slots.Count / 2];
+            Aseos(ring, ap, ay);
+            slots.RemoveAt(slots.Count / 2); slots.RemoveAt(0);
+        }
+        foreach (var (p, _) in slots) Table(ring, p);
+        // Pared de vinos en la esquina más lejana de la llegada; plantas en las otras tres.
+        float cx = hx + W * 0.5f, cz = hz + W * 0.5f;
+        var corners = new List<Vector3> { new Vector3(cx, 0f, cz), new Vector3(-cx, 0f, cz), new Vector3(cx, 0f, -cz), new Vector3(-cx, 0f, -cz) };
+        corners.Sort((a, b) => Vector3.Distance(b, arrive).CompareTo(Vector3.Distance(a, arrive)));
+        Transform wine = KitchenProps.Root(ring, "Pared_de_vinos", corners[0], 45f);
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");
         for (int y = 0; y < 6; y++)
             for (int x = 0; x < 14; x++)
                 KitchenProps.C(wine, new Vector3(-2.75f + x * 0.42f, 0.3f + y * 0.38f, -0.2f), new Vector3(0.09f, 0.09f, 0.04f), (x + y) % 3 == 0 ? new Color(0.35f, 0.08f, 0.12f) : new Color(0.18f, 0.28f, 0.15f), 0f, "Botella");
-        for (int k = -1; k <= 1; k += 2)
+        for (int k = 1; k < 4; k++)
         {
-            Transform pl = KitchenProps.Root(r, "Planta", new Vector3(k * 2.6f, 0f, size.y * 0.5f - 0.8f));   // a los lados de la entrada
+            Transform pl = KitchenProps.Root(ring, "Planta", corners[k]);
             KitchenProps.C(pl, new Vector3(0f, 0.25f, 0f), new Vector3(0.5f, 0.5f, 0.5f), new Color(0.3f, 0.3f, 0.32f), 0f, "Macetero");
             KitchenProps.C(pl, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), new Color(0.3f, 0.55f, 0.3f), 30f, "Follaje");
         }
-        WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor para 30)"; wl.height = 3f;
-        Aseos(r, new Vector3(-8f, 0f, -size.y * 0.5f + 0.9f), 0f);   // al fondo, entre la pared de vinos y las mesas
+        WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor en el anillo)"; wl.height = MezzanineHeight + 3f;
+        Debug.Log($"[Restaurante] comedor en anillo de {W:0} m a {MezzanineHeight:0.#} m: {mesa} mesas de 4 ({mesa * 4} cubiertos), caja junto a la escalera " +
+                  (side >= 0 ? $"que sube desde el puente (lado {side})" : "de dentro") + ", barra de sushi, cafetera, aseos y pared de vinos.");
     }
 
 

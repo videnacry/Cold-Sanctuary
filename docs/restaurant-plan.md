@@ -3,7 +3,7 @@
 > Berón, 2026-10-23: «el restaurante me parece muy alejado de la realidad… investigar cómo son las áreas donde se prepara
 > el queso, el kéfir, la pasta, el pan… que la cocina ocupe la planta entera y las mesas vayan sobre una plataforma hija
 > que cubra todo el borde, un cuadrado completo, a caballo del borde; la escalera empieza desde un puente».
-> Datos y fuentes: `docs/cocina-investigacion.md`. Estado: **propuesta para aprobar**.
+> Datos y fuentes: `docs/cocina-investigacion.md`. Estado: **construido** (§7; `SampleSceneBuilder.KitchenPlan.cs` y `SampleSceneBuilder.Restaurant.cs`).
 
 ## 1. Lo que hay hoy
 - **Plataforma:** 40 × 38 m (`SampleSceneBuilder.Restaurant.cs`).
@@ -105,3 +105,22 @@ Preguntas abiertas:
   - fregadero de puesto.
 - **Forma de cada puesto:** una U de unos 11 m de encimera (la línea caliente pegada, como en la realidad) con un pasillo interior de 1,2 m. Huella de unos 5 × 4 m (≈ 25 m²).
 - **Distribución:** los 8 puestos en **anillo** alrededor del **pase central**, con 2 m libres entre puestos (≈ 200 m² más el paso). Los obradores, almacenes y lavado van por fuera del anillo, y el comedor está en el anillo de arriba.
+
+## 7. Construido (2026-10-24)
+- **Planta (toda cocina):** en el centro, el **pase** (barra de servicio, mesa de emplatado y encimera de ingredientes), con la despensa y la estantería compartidas.
+- **8 puestos completos en anillo** alrededor del pase: 3 por lado largo y 1 en cada lado corto, con 2 m entre puestos. Cada uno es una U de unos 7 × 6,5 m con todo el equipo de la carta:
+  - al fondo, encimera, inducción, fregadero, horno mixto y horno de pizza;
+  - a un lado, wok, paellero, fogón y su nevera;
+  - al otro, marmita, marmita a presión, vaporera, trompo y abatidor;
+  - delante, la barra fría (sushi y montaje). La entrada al puesto (2 m) queda a su lado.
+- **Franjas de los bordes**, con 2 m entre bloques. Los equipos que van juntos van pegados: las cámaras, y la mesa con su máquina.
+  - **Junto al puente:** recepción (báscula y mesa de control), almacén seco y las tres cámaras frías pegadas (refrigeración a 2 °C, lácteos a 4 °C y congelador a −18 °C). El paso del puente (10 m) queda libre.
+  - **Enfrente:** preparación de verdura y de carne o pescado, cada una con su fregadero; lavado en línea (sucio → lavavajillas de capota → limpio); molienda (molino, nixtamal, arrocera y comal); y aceite y panela.
+  - **Un lado, obrador de masas:** 2 puestos de panadería (amasadora, mesa y batidora), el horno de pisos con la fermentadora, 2 puestos de pasta (mesa y laminadora) y la extrusora.
+  - **El otro lado, lácteos y fermentos:** 2 queserías (cuba y mesa de moldeo), la cava con la tina de salmuera, 2 puestos de fermentos (yogurtera e incubadora de tempeh), barricas y prensa de tofu.
+- **Comedor en el anillo** (10 m de ancho, a 4 m, 20 % dentro y 80 % fuera):
+  - una fila de mesas de 4 por el centro, cada 7,5 m;
+  - la **escalera sube desde el puente** hasta un hueco de la barrera exterior;
+  - la **caja** está junto a la llegada;
+  - enfrente de la llegada, la barra de sushi y la cafetera; a media vuelta, los aseos; en las esquinas, la pared de vinos y plantas.
+- **Pendiente:** el reparto de tareas de los 8 en el juego (4 en cocina, 2 en preparación y 2 en limpieza, y que el cocinero libre atienda la caja).
