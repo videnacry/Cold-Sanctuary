@@ -483,7 +483,7 @@ public class WorkdayDirector : MonoBehaviour
             Transform body = src.transform.Find(CubeHumanoid.BodyName);
             if (body != null)
             {
-                Transform b = Instantiate(body.gameObject, g.transform, false).transform; b.localPosition = body.localPosition; b.localScale = body.localScale;
+                Transform b = Instantiate(body.gameObject, g.transform, false).transform; b.name = body.name; b.localPosition = body.localPosition; b.localScale = body.localScale;
                 // La copia sale DE PIE: si el original estaba en una asana (yoga, enseñando), la copia no se queda congelada en ella.
                 ClonePose.Rest(b);
             }

@@ -55,6 +55,26 @@ public static class VirtualMissionSceneBuilder
             copy.transform.SetPositionAndRotation(o, Quaternion.identity);
             areaRoot = copy.transform;
             Transform mat = areaRoot.Find("Mat"); if (mat != null) hz = mat.localScale.z * 0.5f;
+            // La COCINA del restaurante no cuelga del área (es del RestaurantKitchen): se copia también, en su sitio.
+            RestaurantKitchen rk = AreaGo(area) == "Kitchen_Area" ? Object.FindAnyObjectByType<RestaurantKitchen>() : null;
+            Transform sala = rk != null ? rk.transform.Find("Sala") : null;
+            if (sala != null)
+            {
+                GameObject sc = Object.Instantiate(sala.gameObject);
+                sc.name = "Sala";
+                foreach (MonoBehaviour mb in sc.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
+                sc.transform.SetParent(copy.transform, false);
+                sc.transform.localPosition = src.transform.InverseTransformPoint(sala.position);
+                sc.transform.localRotation = Quaternion.Inverse(src.transform.rotation) * sala.rotation;
+            }
+            // Suelo navegable de la escena (los turistas y el camarero suben por la escalera al anillo del comedor).
+            var navGo = new GameObject("NavMesh_Virtual"); navGo.transform.position = o;
+            var nav = navGo.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
+            nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume;
+            nav.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
+            nav.center = Vector3.up * 8f; nav.size = new Vector3(140f, 30f, 140f);
+            Physics.SyncTransforms();
+            nav.BuildNavMesh();
         }
         else
         {

@@ -5,7 +5,9 @@ using UnityEngine;
 /// VIRTUALIZACIÓN «SERVICIO DEL RESTAURANTE» (escena Virtual_coc_servicio): el jugador es el COCINERO. Llegan turistas,
 /// cada uno con su NÚMERO de pedido y un plato de la carta. En el FOGÓN se cocina el pedido más antiguo (F) y el plato
 /// sale al PASE; con la CAMPANA se llama por su número (F): ese turista se acerca, recoge su plato, se sienta a una
-/// mesa a comer, termina y se va. Con <see cref="target"/> turistas servidos, la misión cuenta como hecha.
+/// mesa a comer, termina y se va. Con <see cref="target"/> turistas servidos, la misión cuenta como hecha. En el
+/// restaurante real (comedor en anillo) llegan por el puente y su escalera, piden y recogen en la CAJA, y un CAMARERO
+/// sube los platos del pase; todos andan por el NavMesh.
 /// </summary>
 public class RestaurantServiceGame : MonoBehaviour
 {
@@ -19,11 +21,18 @@ public class RestaurantServiceGame : MonoBehaviour
     public bool copies;
     public float seatHeight = 0.45f, plateAhead = 0.95f, plateUp = 0.45f;
 
+    [Tooltip("Dónde recoge el turista su plato (la caja del comedor en anillo). Vacío: en el pase.")]
+    public Transform pickup;
+    [Tooltip("El camarero que sube los platos del pase a la caja (solo con recogida en la caja).")]
+    public Transform waiter;
+    const string WaiterSource = "Gohageneis";   // de quién es la copia del camarero (no sale también de turista)
+
     enum State { Arriving, Waiting, Cooking, Ready, Called, ToTable, Eating, Leaving, Gone }
     class Order
     {
         public int number; public string dish; public State state; public Transform body, plate; public int seat = -1;
         public float timer;
+        public bool atPickup;   // el camarero ya dejó el plato en la caja
     }
 
     readonly List<Order> _orders = new List<Order>();
@@ -36,7 +45,27 @@ public class RestaurantServiceGame : MonoBehaviour
     public int Served => _served;
     public Transform returnPoint;
 
-    void OnDestroy() { foreach (Order o in _orders) { if (o.plate != null) Destroy(o.plate.gameObject); if (o.body != null) Destroy(o.body.gameObject); } }
+    void OnDestroy()
+    {
+        foreach (Order o in _orders) { if (o.plate != null) Destroy(o.plate.gameObject); if (o.body != null) Destroy(o.body.gameObject); }
+        if (waiter != null) Destroy(waiter.gameObject);
+    }
+
+    // La sala de la cocina: dentro del área (copia de la virtualización) o la del restaurante del santuario más cercano.
+    static Transform KitchenRoom(Transform area)
+    {
+        Transform pass = VirtualInPlace.FindDeep(area, "Barra de servicio");
+        if (pass != null) return pass.parent;
+        Transform best = null; float bd = float.MaxValue;
+        foreach (RestaurantKitchen rk in FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+        {
+            Transform sala = rk.transform.Find("Sala");
+            if (sala == null) continue;
+            float d = (sala.position - area.position).sqrMagnitude;
+            if (d < bd) { bd = d; best = sala; }
+        }
+        return best;
+    }
 
     /// <summary>
     /// El SERVICIO en el restaurante REAL (la cocina y el comedor del santuario): fogón de un puesto, la barra de servicio
@@ -44,10 +73,9 @@ public class RestaurantServiceGame : MonoBehaviour
     /// </summary>
     public static RestaurantServiceGame StartInRestaurant(Transform area, Transform returnPoint, WorkRoster.Mission m)
     {
-        Transform pass = VirtualInPlace.FindDeep(area, "Barra de servicio");
-        Transform stove = null;
-        foreach (Transform t in area.GetComponentsInChildren<Transform>(true))
-            if (t.name.Contains("fogón") || t.name.Contains("Fogon") || t.name.StartsWith("Puesto_1")) { stove = t; break; }
+        Transform room = KitchenRoom(area);
+        Transform pass = room != null ? VirtualInPlace.FindDeep(room, "Barra de servicio") : null;
+        Transform stove = room != null ? VirtualInPlace.FindDeep(room, "Puesto_1") : null;
         var seats = new List<Transform>();
         Transform dining = VirtualInPlace.FindDeep(area, "Comedor_Gourmet");
         if (dining != null) foreach (Transform t in dining.GetComponentsInChildren<Transform>()) if (t.name == "Asiento" && seats.Count < 12) seats.Add(t);
@@ -56,18 +84,40 @@ public class RestaurantServiceGame : MonoBehaviour
         var go = new GameObject("Servicio_virtual");
         var g = go.AddComponent<RestaurantServiceGame>();
         g.copies = true; g.returnPoint = returnPoint;
-        Transform mat = area.Find("Mat"); float hz = mat != null ? mat.localScale.z * 0.5f : 10f;
-        g.entrance = Mark(go.transform, "Entrada", area.TransformPoint(new Vector3(1.5f, 0.15f, hz - 1.5f)));
-        g.exit = Mark(go.transform, "Salida", area.TransformPoint(new Vector3(-1.5f, 0.15f, hz - 1.5f)));
         Vector3 pf = pass.position; pf.y = area.position.y + 0.15f;
         Transform passMark = Mark(go.transform, "Pase", pf); passMark.rotation = pass.rotation;
         g.pass = passMark;
-        g.waiting = Mark(go.transform, "Cola", pf + pass.forward * 2.2f); g.waiting.rotation = pass.rotation;
+        Transform caja = VirtualInPlace.FindDeep(area, "Caja_registradora"), stair = VirtualInPlace.FindDeep(area, "Escalera_comedor_puente");
+        if (caja != null && stair != null)
+        {
+            // COMEDOR EN ANILLO (docs/restaurant-plan.md): los turistas llegan por el PUENTE, suben su escalera, piden en la
+            // CAJA y esperan allí; el CAMARERO sube cada plato del pase a la caja (los turistas no pisan la cocina).
+            Vector3 top = stair.position; foreach (Transform t in stair) if (t.name == "Peldano" && t.position.y > top.y) top = t.position;
+            top += stair.forward * 1.2f;
+            Vector3 foot = stair.position - stair.forward * 2.5f;   // sobre el puente, al pie (en la virtualización no hay puente: arriba)
+            bool bridge = Physics.Raycast(foot + Vector3.up * 1.5f, Vector3.down, out RaycastHit h, 3f, ~0, QueryTriggerInteraction.Ignore);
+            Vector3 arrive = bridge ? h.point : top;
+            g.entrance = Mark(go.transform, "Entrada", arrive + stair.right * 0.8f);
+            g.exit = Mark(go.transform, "Salida", arrive - stair.right * 0.8f);
+            Vector3 toTop = top - caja.position; toTop.y = 0f; toTop = toTop.sqrMagnitude > 0.01f ? toTop.normalized : caja.forward;
+            g.pickup = Mark(go.transform, "Recogida", caja.position + toTop * 1.0f); g.pickup.rotation = Quaternion.LookRotation(-toTop);
+            g.waiting = Mark(go.transform, "Cola", caja.position + toTop * 2.6f); g.waiting.rotation = Quaternion.LookRotation(-toTop);
+            GameObject w = WorkdayDirector.SpawnBodyCopy(WaiterSource, "Camarero");
+            if (w != null) { w.transform.SetParent(go.transform, true); w.transform.position = pf + pass.forward * 1.2f; g.waiter = w.transform; if (!w.TryGetComponent(out WorldLabel wl)) wl = w.AddComponent<WorldLabel>(); wl.text = "Camarero"; wl.height = 2.2f; }
+        }
+        else
+        {
+            Transform mat = area.Find("Mat"); float hz = mat != null ? mat.localScale.z * 0.5f : 10f;
+            g.entrance = Mark(go.transform, "Entrada", area.TransformPoint(new Vector3(1.5f, 0.15f, hz - 1.5f)));
+            g.exit = Mark(go.transform, "Salida", area.TransformPoint(new Vector3(-1.5f, 0.15f, hz - 1.5f)));
+            g.waiting = Mark(go.transform, "Cola", pf + pass.forward * 2.2f); g.waiting.rotation = pass.rotation;
+        }
         g.seats = seats.ToArray(); g.seatHeight = 0.45f; g.plateAhead = 0.55f; g.plateUp = 0.32f;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         g.plateMat = new Material(sh) { color = Color.white }; g.foodMat = new Material(sh) { color = new Color(0.8f, 0.45f, 0.25f) };
         // El fogón y la campana del pase, en los sitios reales.
-        Station(go.transform, g, stove.position, false, "Fogón del puesto (F: cocinar el pedido)");
+        Transform plancha = VirtualInPlace.FindDeep(stove, "Plancha");
+        Station(go.transform, g, (plancha != null ? plancha : stove).position, false, "Fogón del puesto (F: cocinar el pedido)");
         Station(go.transform, g, pass.position + Vector3.up * 0.2f, true, "Campana del pase (F: llamar por número)");
         VirtualMissionRunner.Pending = m;
         Debug.Log("[Restaurante] Virtualización del servicio en la cocina y el comedor REALES del santuario.");
@@ -91,6 +141,7 @@ public class RestaurantServiceGame : MonoBehaviour
     {
         if (!_done && Time.time >= _spawnAt && _spawned < target + 2 && Active() < 5) { Spawn(); _spawnAt = Time.time + spawnEvery; }
         for (int i = _orders.Count - 1; i >= 0; i--) Tick(_orders[i]);
+        WaiterTick();
         if (_exitAt > 0f && Time.time >= _exitAt)
         {
             _exitAt = -1f;
@@ -121,7 +172,7 @@ public class RestaurantServiceGame : MonoBehaviour
     {
         if (copies)
         {
-            string[] who = { "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };
+            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };   // el camarero (WaiterSource) no se sienta a comer
             GameObject c = WorkdayDirector.SpawnBodyCopy(who[n % who.Length], $"Turista_{n}");
             c.transform.SetParent(transform, true);
             return c.transform;
@@ -146,13 +197,64 @@ public class RestaurantServiceGame : MonoBehaviour
         return g.transform;
     }
 
-    bool Walk(Order o, Vector3 to)
+    bool Walk(Order o, Vector3 to) => Walk(o.body, to);
+
+    // RUTA POR EL SUELO NAVEGABLE: del puente por la escalera al anillo, o del pase a la caja, sin atravesar losas ni
+    // aparecer de golpe en otro piso. Sin camino completo (escena sin NavMesh), en línea recta por su altura.
+    class Route { public Vector3 target; public Vector3[] pts; public int i; }
+    readonly Dictionary<Transform, Route> _routes = new Dictionary<Transform, Route>();
+
+    bool Walk(Transform body, Vector3 to)
     {
-        Vector3 p = o.body.position; to.y = p.y;
-        Vector3 d = to - p;
-        if (d.sqrMagnitude > 0.01f) o.body.rotation = Quaternion.LookRotation(d);
-        o.body.position = Vector3.MoveTowards(p, to, walkSpeed * Time.deltaTime);
-        return (o.body.position - to).sqrMagnitude < 0.04f;
+        if (!_routes.TryGetValue(body, out Route r) || (r.target - to).sqrMagnitude > 0.25f)
+        {
+            r = new Route { target = to };
+            var path = new UnityEngine.AI.NavMeshPath();
+            if (UnityEngine.AI.NavMesh.SamplePosition(body.position, out UnityEngine.AI.NavMeshHit a, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
+                && UnityEngine.AI.NavMesh.SamplePosition(to, out UnityEngine.AI.NavMeshHit b, 2.5f, UnityEngine.AI.NavMesh.AllAreas)
+                && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, UnityEngine.AI.NavMesh.AllAreas, path)
+                && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+            {
+                r.pts = new Vector3[path.corners.Length + 1];
+                path.corners.CopyTo(r.pts, 0); r.pts[r.pts.Length - 1] = to;
+            }
+            else r.pts = new[] { new Vector3(to.x, body.position.y, to.z) };
+            _routes[body] = r;
+        }
+        while (r.i < r.pts.Length)
+        {
+            Vector3 p = body.position, q = r.pts[r.i];
+            Vector3 d = q - p; d.y = 0f;
+            if (d.sqrMagnitude > 0.01f) body.rotation = Quaternion.LookRotation(d);
+            body.position = Vector3.MoveTowards(p, q, walkSpeed * Time.deltaTime);
+            if ((body.position - q).sqrMagnitude > 0.0025f) return false;
+            r.i++;
+        }
+        return true;
+    }
+
+    // El CAMARERO: lleva cada plato llamado del pase a la caja, de uno en uno y por el orden en que se llamaron.
+    Order _carrying;
+    void WaiterTick()
+    {
+        if (waiter == null || pickup == null) return;
+        if (_carrying == null || _carrying.state != State.Called)
+        {
+            _carrying = null;
+            foreach (Order o in _orders) if (o.state == State.Called && !o.atPickup && o.plate != null) { _carrying = o; break; }
+            if (_carrying == null) { Walk(waiter, pass.position + pass.forward * 1.2f); return; }
+        }
+        Order c = _carrying;
+        if (c.plate.parent != waiter)
+        {
+            if (!Walk(waiter, pass.position + pass.forward * 0.9f)) return;
+            c.plate.SetParent(waiter, false); c.plate.localPosition = new Vector3(0f, 1.05f, 0.35f);
+            return;
+        }
+        if (!Walk(waiter, pickup.position + pickup.forward * -0.4f)) return;
+        c.plate.SetParent(null, true); c.plate.position = pickup.position + pickup.forward * 1.0f + Vector3.up * 1.03f;   // sobre la caja
+        c.atPickup = true; _carrying = null;
+        Debug.Log($"[Restaurante] El camarero sube el pedido #{c.number} ({c.dish}) a la caja.");
     }
 
     void Tick(Order o)
@@ -168,7 +270,8 @@ public class RestaurantServiceGame : MonoBehaviour
                 if (o.state == State.Cooking && Time.time >= o.timer) { o.state = State.Ready; o.plate = Plate(o); Debug.Log($"[Restaurante] Pedido #{o.number} ({o.dish}) listo en el pase."); }
                 break;
             case State.Called:
-                if (Walk(o, pass.position + pass.forward * 0.9f))
+                if (pickup != null && !o.atPickup) { Walk(o, WaitingSpot(o)); break; }   // espera en la cola a que el camarero suba su plato
+                if (Walk(o, pickup != null ? pickup.position : pass.position + pass.forward * 0.9f))
                 {
                     o.plate.SetParent(o.body, false); o.plate.localPosition = new Vector3(0f, 1.05f, 0.35f);
                     o.seat = FreeSeat();
@@ -206,7 +309,7 @@ public class RestaurantServiceGame : MonoBehaviour
 
     Vector3 WaitingSpot(Order o)
     {
-        int i = 0; foreach (Order x in _orders) { if (x == o) break; if (x.state <= State.Ready) i++; }
+        int i = 0; foreach (Order x in _orders) { if (x == o) break; if (x.state <= State.Ready || (x.state == State.Called && pickup != null && !x.atPickup)) i++; }
         return waiting.position + waiting.right * (i * 1.1f - 2.2f);
     }
 
@@ -278,7 +381,7 @@ public class RestaurantServiceGame : MonoBehaviour
         foreach (Order o in _orders)
         {
             if (o.state == State.Gone || o.state == State.Leaving) continue;
-            string st = o.state switch { State.Arriving => "llegando", State.Waiting => "esperando · cocínalo en el fogón", State.Cooking => "en el fogón…", State.Ready => "<color=#FFD27A>listo en el pase · llámalo con la campana</color>", State.Called => "viene a por su plato", State.ToTable => "va a su mesa", _ => "comiendo" };
+            string st = o.state switch { State.Arriving => "llegando", State.Waiting => "esperando · cocínalo en el fogón", State.Cooking => "en el fogón…", State.Ready => "<color=#FFD27A>listo en el pase · llámalo con la campana</color>", State.Called => o.atPickup || pickup == null ? "viene a por su plato" : "el camarero le sube el plato a la caja", State.ToTable => "va a su mesa", _ => "comiendo" };
             lines.Add($"#{o.number} {o.dish} — {st}");
         }
         if (_done) lines.Add("<color=#8FE08F>¡Servicio completado! Volviendo…</color>");
