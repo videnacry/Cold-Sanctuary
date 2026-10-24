@@ -189,7 +189,7 @@ Las cifras de 4 investigadores trabajando en la misma tarea a la vez marcan qué
 | Zona de contenedores para el núcleo gastado (losa de carga) | 15 × 6 × 4 **[?]** | el núcleo entero vuelve a fábrica; no hay piscina |
 | Almacén de repuestos | 6 × 4 × 3 **[?]** | |
 | Puesto de acceso | 6 × 3 × 3 **[?]** | en la puerta de la valla |
-| Valla de seguridad (doble, con zona despejada) | perímetro de la plataforma | sitio de 0,8–2 acres según Westinghouse |
+| Valla de seguridad (doble, con zona despejada) | perímetro de la plataforma | sitio de 0,8–2 acres según Westinghouse. **En el juego va pintada en el suelo** (regla del santuario: sin barandillas en plataformas) |
 
 ---
 

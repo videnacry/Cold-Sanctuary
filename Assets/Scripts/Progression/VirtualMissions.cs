@@ -81,7 +81,7 @@ public static class VirtualMissions
             case "fis_experimentos": return new[] { "Contar fotones tras la doble rendija", "Alinear el interferómetro de Michelson", "Medir la carga de una gota de aceite", "Ver girar el plano del péndulo de Foucault" };
             case "qui_sintesis": return new[] { "Ponerse gafas y bata junto a la ducha", "Montar la reacción en la campana", "Evaporar el disolvente en el rotavapor", "Analizar el producto en el HPLC" };
             case "qui_residuos": return new[] { "Recoger los bidones de residuos", "Guardar los ácidos en su armario", "Guardar las bases en su armario", "Guardar los inflamables" };
-            case "bio_cultivo": return new[] { "Sembrar células en la cabina de seguridad", "Llevarlas al incubador de CO2", "Mirar el cultivo al microscopio", "Alimentar el biorreactor de carne cultivada" };
+            case "bio_cultivo": return new[] { "Sembrar células en la cabina de seguridad", "Llevarlas al incubador de CO2", "Mirar el cultivo al microscopio", "Probar un medio sin suero en el biorreactor piloto" };
             case "bio_pcr": return new[] { "Extraer el ADN de la muestra", "Preparar la mezcla en la estación pre-PCR", "Amplificar en el termociclador", "Secuenciar" };
             case "nuc_turno": return new[] { "Pasar el control de acceso", "Relevo en la sala de control", "Revisar la conversión de potencia", "Revisar el intercambiador de la calefacción" };
             case "pla_ciclotron": return new[] { "Coger el dosímetro", "Arrancar el haz del ciclotrón", "Parar el haz y mandar el F-18", "Sintetizar la FDG en la celda" };
@@ -120,7 +120,7 @@ public static class VirtualMissions
             case "fis_experimentos": return new[] { "Bloque_Doble rendija de fotón único", "Bloque_Interferómetro de Michelson 1", "Bloque_Gota de aceite de Millikan 1", "Bloque_Péndulo de Foucault" };
             case "qui_sintesis": return new[] { "Bloque_Ducha de seguridad 1", "Bloque_Campana de gases 1", "Bloque_Rotavapor 1", "Bloque_HPLC 1" };
             case "qui_residuos": return new[] { "Bloque_Residuos químicos", "Bloque_Armario de ácidos", "Bloque_Armario de bases", "Bloque_Armarios de inflamables" };
-            case "bio_cultivo": return new[] { "Bloque_Cabina de seguridad biológica 1", "Bloque_Incubador de CO2 1", "Bloque_Microscopio invertido 1", "Bloque_Biorreactor de carne cultivada (50 L)" };
+            case "bio_cultivo": return new[] { "Bloque_Cabina de seguridad biológica 1", "Bloque_Incubador de CO2 1", "Bloque_Microscopio invertido 1", "Bloque_Biorreactor piloto (50 L)" };
             case "bio_pcr": return new[] { "Bloque_Mesa de extracción de ADN 1", "Bloque_Estación pre-PCR 1", "Bloque_Termocicladores 1", "Bloque_Secuenciadores (MiSeq y MinION)" };
             case "nuc_turno": return new[] { "Bloque_Puesto de acceso", "Bloque_Sala de control", "Bloque_Conversión de potencia", "Bloque_Intercambiador de la calefacción de distrito" };
             case "pla_ciclotron": return new[] { "Taquilla_dosimetros", "Consola_ciclotron", "Consola_ciclotron", "Celda_sintesis_FDG" };

@@ -10,7 +10,7 @@ using UnityEngine;
 ///  · BIOLOGÍA (BSL-2): abajo, el cultivo (4 cabinas de seguridad, incubadores, microscopios, biorreactores, −80 °C,
 ///    cámara fría, autoclave a la salida); arriba, la molecular en sentido único (pre-PCR → extracción → post-PCR).
 ///  · CENTRAL NUCLEAR de producción: un microrreactor tipo eVinci (5 MWe y calor para la calefacción de distrito), con su
-///    valla, sala de control para 4 operadores, conversión de potencia, subestación, diésel de respaldo y losa de
+///    límite del sitio pintado (sin valla: no hay barandillas), sala de control para 4 operadores, conversión de potencia, subestación, diésel de respaldo y losa de
 ///    contenedores (el núcleo gastado vuelve a fábrica).
 /// Cada equipo es un BLOQUE («Bloque_…») con 2 m libres a su alrededor (FurnitureSpacing lo comprueba); lo que va junto
 /// en la realidad (la campana con su mesa, las cámaras frías) es un solo bloque. Lo que hace una persona está ×4, para
@@ -243,14 +243,16 @@ public static partial class SampleSceneBuilder
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, "Biology_Area", "Biología", SanctuaryAreaType.Biology, 3, BiologyCenter, BiologySize, new Color(0.78f, 0.9f, 0.78f));
         Elevate(a.transform, BiologySize, ElevatedHeight);
-        // Planta baja: CULTIVO (de lo limpio a lo sucio: cabinas e incubadores al fondo; autoclave y lavado junto a la salida).
+        // Planta baja: CULTIVO. El biorreactor piloto es I+D (líneas celulares y medios sin suero) para el laboratorio de
+        // PRODUCCIÓN de carne cultivada (CulturedMeatLab), que es quien da de comer a los carnívoros; aquí no se produce.
+        // De lo limpio a lo sucio: cabinas e incubadores al fondo; autoclave y lavado junto a la salida).
         var cult = new List<LabBlock>();
         cult.AddRange(Times(4, "Cabina de seguridad biológica", 2.0f, 0.85f, BioSafetyCabinet));
         cult.AddRange(Times(4, "Incubador de CO2", 0.8f, 0.85f, t => { Tall(KitchenProps.Root(t, "Abajo", Vector3.zero), 0.8f, 0.85f, 0.9f, LabWhite, "Incubador", LabGreen); Tall(KitchenProps.Root(t, "Arriba", new Vector3(0f, 0.92f, 0f)), 0.8f, 0.85f, 0.9f, LabWhite, "Incubador", LabGreen); }));
         cult.AddRange(Times(2, "Microscopio invertido", 1.5f, 0.8f, t => Microscope(t, false)));
         cult.AddRange(Times(2, "Microscopio de fluorescencia", 1.5f, 0.9f, t => Microscope(t, true)));
         cult.AddRange(Times(4, "Centrífuga", 0.9f, 0.8f, t => { KitchenProps.C(t, new Vector3(0f, 0.45f, 0f), new Vector3(0.9f, 0.9f, 0.8f), LabWhite, 0f, "Centrifuga"); KitchenProps.C(t, new Vector3(0f, 0.91f, 0f), new Vector3(0.6f, 0.03f, 0.6f), LabDark, 0f, "Tapa"); }));
-        cult.Add(new LabBlock("Biorreactor de carne cultivada (50 L)", 1.8f, 1.2f, t => { Vessel(KitchenProps.Root(t, "Vaso", new Vector3(-0.4f, 0f, 0f)), 0.45f, 1.5f, LabSteel, "Biorreactor"); Tall(KitchenProps.Root(t, "Control", new Vector3(0.55f, 0f, 0f)), 0.6f, 0.6f, 1.5f, LabWhite, "Controlador", LabGreen); }));
+        cult.Add(new LabBlock("Biorreactor piloto (50 L)", 1.8f, 1.2f, t => { Vessel(KitchenProps.Root(t, "Vaso", new Vector3(-0.4f, 0f, 0f)), 0.45f, 1.5f, LabSteel, "Biorreactor"); Tall(KitchenProps.Root(t, "Control", new Vector3(0.55f, 0f, 0f)), 0.6f, 0.6f, 1.5f, LabWhite, "Controlador", LabGreen); }));
         cult.AddRange(Times(2, "Biorreactores de sobremesa", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabBench); for (int i = 0; i < 3; i++) Vessel(KitchenProps.Root(t, "Vaso", new Vector3(-0.55f + i * 0.55f, 0.94f, 0f)), 0.12f, 0.35f, LabGlass, "Vaso_sobremesa"); }));
         cult.AddRange(Times(2, "Congelador de −80 °C", 1.0f, 1.0f, t => Tall(t, 1.0f, 1.0f, 2.0f, LabWhite, "Ultracongelador", LabBlue)));
         cult.Add(new LabBlock("Cámara fría (4 °C)", 2.5f, 2.5f, t => Room(t, 2.5f, 2.5f, new Color(0.8f, 0.88f, 0.95f), "Camara_fria")));
@@ -340,14 +342,14 @@ public static partial class SampleSceneBuilder
             new LabBlock("Almacén", 6f, 4f, t => Room(t, 6f, 4f, concrete, "Almacen")),
         };
         LogLeft("Central nuclear", PackFloor(g, NuclearSize, blocks, StairKeepOut(NuclearSize, false)));
-        // La VALLA de seguridad en todo el borde (la zona de exclusión del juego), menos el paso del puente y la escalera.
-        Transform fence = new GameObject("Valla_seguridad").transform; fence.SetParent(g, false);
+        // El límite del sitio (la zona de exclusión del juego) va PINTADO en el suelo, no con valla: en el santuario no hay
+        // barandillas en las plataformas (Berón 2026-10-22). El control de acceso es el puesto de la entrada.
+        Transform line = new GameObject("Limite_del_sitio").transform; line.SetParent(g, false);
         for (int s = -1; s <= 1; s += 2)
-            for (float u = -NuclearSize.x * 0.5f + 0.5f; u < NuclearSize.x * 0.5f; u += 2.5f)
-            {
-                if (s > 0 && Mathf.Abs(u) < 4f) continue;   // la escalera vertical (+Z)
-                KitchenProps.C(fence, new Vector3(u, 1.25f, s * (NuclearSize.y * 0.5f - 0.3f)), new Vector3(0.08f, 2.5f, 0.08f), LabSteel, 0f, "Poste_valla");
-            }
+        {
+            KitchenProps.C(line, new Vector3(0f, 0.01f, s * (NuclearSize.y * 0.5f - 0.6f)), new Vector3(NuclearSize.x - 1.2f, 0.02f, 0.15f), LabYellow, 0f, "Linea_limite");
+            KitchenProps.C(line, new Vector3(s * (NuclearSize.x * 0.5f - 0.6f), 0.01f, 0f), new Vector3(0.15f, 0.02f, NuclearSize.y - 1.2f), LabYellow, 0f, "Linea_limite");
+        }
         WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Central nuclear (microrreactor de 5 MWe + calefacción de distrito)"; wl.height = 8f;
         return a;
     }

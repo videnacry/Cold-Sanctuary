@@ -13,7 +13,7 @@ Están en el casquete Sur, junto a la planta atómica, unidos por puentes. Son t
 | Física (planta atómica) | (15, −101) | 24 × 18 | reactor TRIGA · ciclotrón · **sala de experimentos con anillo** |
 | Química | (52, −110) | 24 × 20 | síntesis · análisis |
 | Biología | (92, −112) | 32 × 20 | cultivo · molecular |
-| Central nuclear (producción) | (60, −162) | 46 × 30 | una, vallada |
+| Central nuclear (producción) | (60, −162) | 46 × 30 | una, con el límite del sitio pintado |
 
 ## Reglas de la distribución
 - Cada equipo es un bloque (`Bloque_…`). Entre bloques hay 2 m libres, y 2 m al borde. `FurnitureSpacing` lo comprueba con la regla `Bloque_`.
@@ -29,7 +29,7 @@ Están en el casquete Sur, junto a la planta atómica, unidos por puentes. Son t
   - Abajo, la síntesis, lo húmedo junto a las duchas: 4 campanas con línea Schlenk, 4 rotavapores, la caja de guantes, los armarios separados por riesgo (inflamables, ácidos y bases), 2 duchas con lavaojos y los residuos.
   - Arriba, el análisis: la sala de RMN con su línea de 5 gauss, la RMN de sobremesa, GC-MS, 4 HPLC, IR/UV-Vis, DRX, hornos, el cuarto de balanzas y 4 puestos.
 - **Biología (BSL-2).**
-  - Abajo, el cultivo: 4 cabinas de clase II, 4 incubadores de CO₂, 2 microscopios invertidos y 2 de fluorescencia, 4 centrífugas, el biorreactor de carne cultivada de 50 L, 2 bancos de biorreactores, 2 congeladores de −80 °C, la cámara fría, el autoclave con su fregadero y el dewar.
+  - Abajo, el cultivo: 4 cabinas de clase II, 4 incubadores de CO₂, 2 microscopios invertidos y 2 de fluorescencia, 4 centrífugas, el biorreactor piloto de 50 L (I+D de líneas celulares y medios para el laboratorio de producción de carne cultivada, que es quien alimenta a los carnívoros), 2 bancos de biorreactores, 2 congeladores de −80 °C, la cámara fría, el autoclave con su fregadero y el dewar.
   - Arriba, la parte molecular, en sentido único: 4 pre-PCR, 4 extracciones, termocicladores, secuenciadores (MiSeq y MinION), neveras de −20 °C y 4 puestos de datos.
 - **Física.**
   - En la sala, en zona oscura: 2 interferómetros de Michelson, 2 Millikan, 2 espectroscopios de red y la electrónica.
@@ -41,7 +41,7 @@ Están en el casquete Sur, junto a la planta atómica, unidos por puentes. Son t
   - la conversión de potencia y el intercambiador de la calefacción;
   - la subestación y el diésel de respaldo;
   - la losa de contenedores, porque el núcleo gastado vuelve a fábrica;
-  - el almacén y la valla de seguridad.
+  - el almacén y el límite del sitio pintado en el suelo (sin valla: en el santuario no hay barandillas en las plataformas; el control lo hace el puesto de acceso).
 
 ## Misiones
 | Edificio | Misión | Qué se hace |
@@ -49,10 +49,11 @@ Están en el casquete Sur, junto a la planta atómica, unidos por puentes. Son t
 | Física | `fis_experimentos` | doble rendija, Michelson, Millikan y Foucault |
 | Química | `qui_sintesis` | ducha y EPI → campana → rotavapor → HPLC |
 | Química | `qui_residuos` | bidones → ácidos → bases → inflamables |
-| Biología | `bio_cultivo` | cabina → incubador → microscopio → biorreactor |
+| Biología | `bio_cultivo` | cabina → incubador → microscopio → biorreactor piloto |
 | Biología | `bio_pcr` | extracción → pre-PCR → termociclador → secuenciador |
 | Central nuclear | `nuc_turno` | acceso → sala de control → conversión → intercambiador |
 
 ## Pendiente
+- Física tiene ×2 (no ×4) los montajes de la sala (Michelson, Millikan, espectroscopio): en los laboratorios docentes se trabaja en pareja, así que caben 4 personas por experimento; subir a ×4 si se quiere uno por persona y hay sitio.
 - Las misiones aún no tienen interacción propia en los equipos (sus pasos se anclan a los bloques).
 - Microcosmos e historia de Química, Biología y la central.
