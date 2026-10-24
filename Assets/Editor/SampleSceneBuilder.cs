@@ -3423,7 +3423,7 @@ public static partial class SampleSceneBuilder
                 new Vector3(5f, 0f, 95f), new Vector2(40f, 38f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta en el CENTRO y el comedor (para 30+) alrededor
 
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", AreaWork.Hospital, SanctuaryAreaType.Infirmary, 1,
-                new Vector3(55f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md)
+                new Vector3(63f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md). A 22 m del restaurante (Berón 2026-10-24): sus anillos vuelan 8 m cada uno y entre ellos sube la escalera del comedor desde el puente
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
                 new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
