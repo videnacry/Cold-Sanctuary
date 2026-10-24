@@ -239,9 +239,9 @@ public static partial class SampleSceneBuilder
         int stall = 0;
         for (float s = 2f; stall < 6; s += 4f)
         {
-            var (p, yaw, corner) = RingPoint(us, s);
-            if (corner || (Mathf.Abs(p.x) < 3f && Mathf.Abs(p.z) > uz - 2f)) continue;
-            Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", p, yaw), $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)", 1.8f);
+            var (sp0, yaw, corner) = RingPoint(us, s);
+            if (corner || (Mathf.Abs(sp0.x) < 3f && Mathf.Abs(sp0.z) > uz - 2f)) continue;
+            Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", sp0, yaw), $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)", 1.8f);
             stall++;
         }
         var (jp, jyaw, _) = RingPoint(us, 2f + 6 * 4f + 2f);
