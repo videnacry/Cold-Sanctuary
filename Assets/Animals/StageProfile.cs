@@ -11,10 +11,14 @@ using System.Collections.Generic;
 ///   (inmóvil, no come; la lleva <see cref="Metamorphosis"/>), adulto = imago. La pupa ya tiene casi el tamaño final.
 /// - `Incomplete` (hemimetábolo: grillo, saltamontes, mantis, termita, pulgón): cría y juvenil = **ninfas** sin alas.
 /// - `Direct` (mamíferos, arañas): crecen sin cambiar de forma.
+/// - `Larval` (cangrejo: zoea → megalopa; ácaro de terciopelo: larva de 6 patas → ninfa): cría = **larva** activa,
+///   juvenil = **ninfa** (forma intermedia), sin pupa.
+/// FAUNA DE CADA ERA (docs/microcosmos-fauna-eras.md): escorpión, solífugo, ácaro, cochinilla, cangrejo fantasma,
+/// caracol, babosa, lombriz, cigarra, luciérnaga, tijereta, cucaracha y Boreus, con sus duraciones reales.
 /// </summary>
 public class StageProfile
 {
-    public enum Development : byte { Direct, Incomplete, Complete }
+    public enum Development : byte { Direct, Incomplete, Complete, Larval }
     public Development development = Development.Direct;
     /// <summary>Solo `Complete`: la LARVA busca comida por su cuenta (mariquita, hormiga león). false = la alimentan
     /// (hormiga, abeja) o come la provisión que le dejaron (la bola del pelotero).</summary>
@@ -95,6 +99,54 @@ public class StageProfile
             // obrera. En frío viven como «abejas de invierno»: varios meses (verano ≈1 mes). doi 10.1242/jeb.247314
             { "SnowBee", new StageProfile { development=Development.Complete, childDays=9, childMin=98, childMax=99, teenDays=12, teenMin=5, teenMax=15, adultDays=150, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // ── Fauna de cada era (docs/microcosmos-fauna-eras.md) ──
+            // Escorpión (buthido): vivíparo; las crías viajan sobre la madre hasta la 1.ª muda (~8–15 d, sin comer) → 5–6 mudas;
+            // madura en ~8–10 meses y vive ~3 años (Centruroides gracilis en laboratorio: Francke & Jones 1982, J. Arachnol. 10:223)
+            { "Scorpion", new StageProfile { childDays=12, childMin=98, childMax=99, teenDays=290, teenMin=70, teenMax=80, adultDays=1100, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Solífugo: huevos en la madriguera; la postembrión no come; ~8–10 mudas; vive ≈1 año, muy estacional [A]
+            { "CamelSpider", new StageProfile { childDays=20, childMin=98, childMax=99, teenDays=180, teenMin=70, teenMax=80, adultDays=150, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Ácaro de terciopelo: la LARVA (6 patas) se agarra a un saltamontes o langosta ~1–2 sem; las ninfas (con dos
+            // fases inmóviles, calyptostasis) son depredadoras como el adulto, que vive ~1 año y sale tras las lluvias [A]
+            { "VelvetMite", new StageProfile { development=Development.Larval, larvaForages=true, childDays=10, childMin=98, childMax=99, teenDays=120, teenMin=70, teenMax=80, adultDays=365, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Cochinilla (Porcellio scaber): la manca sale del marsupio (~3–5 sem de incubación) y gana el 7.º par tras la
+            // 1.ª muda (~2–3 sem); madura a los ~15 meses (Armadillidium ~25) y vive hasta 30–41 meses (scaber.org)
+            { "Woodlouse", new StageProfile { childDays=20, childMin=98, childMax=99, teenDays=430, teenMin=70, teenMax=80, adultDays=450, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Cangrejo fantasma (Ocypode quadrata): 5 zoeas en el plancton + megalopa (≥35 d), madura al año y vive ~3 años;
+            // hiberna en la madriguera de octubre a abril (Animal Diversity Web)
+            { "GhostCrab", new StageProfile { development=Development.Larval, larvaForages=true, childDays=30, childMin=98, childMax=99, teenDays=330, teenMin=70, teenMax=80, adultDays=730, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Caracol (Helix lucorum / Cepaea nemoralis): eclosiona a los 15–20 d; joven sin labio 1–3 años; vive ~2–6 años (ADW)
+            { "Snail", new StageProfile { childDays=30, childMin=98, childMax=99, teenDays=700, teenMin=70, teenMax=80, adultDays=1100, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Babosa negra (Arion ater): eclosiona a las ~6 sem, naranja → pajiza → negra; anual: pone y muere (ADW) [A]
+            { "Slug", new StageProfile { childDays=40, childMin=98, childMax=99, teenDays=200, teenMin=70, teenMax=80, adultDays=130, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Lombriz (Lumbricus terrestris): sale del capullo (1 huevo, 5–10 al año) tras semanas–meses; sin clitelo hasta
+            // madurar (~1 año); vive 4–8 años (Vigie-Nature École)
+            { "Earthworm", new StageProfile { childDays=60, childMin=98, childMax=99, teenDays=300, teenMin=70, teenMax=80, adultDays=2200, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Cigarra (Cicada orni): huevos en ramitas (6–10 sem), la ninfa (4 estadios) varios años bajo tierra con la savia
+            // de las raíces (sin Wander: en su galería); el adulto vive ~6 semanas (Wikipedia; Clemson HGIC)
+            { "Cicada", new StageProfile { development=Development.Incomplete, childDays=365, childMin=98, childMax=99, teenDays=730, teenMin=70, teenMax=80, adultDays=42, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Luciérnaga (Luciola): la larva, cazadora de caracoles y luminosa, ~1 año; pupa ~1–2 sem; el adulto, 1–3 sem [A]
+            { "Firefly", new StageProfile { development=Development.Complete, larvaForages=true, childDays=300, childMin=98, childMax=99, teenDays=10, teenMin=70, teenMax=80, adultDays=18, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
+            // Tijereta (Forficula auricularia): la madre cuida los huevos y la 1.ª ninfa en el nido; 4 estadios (~1–2 meses);
+            // el adulto (la hembra inverna) vive casi un año (Wikipedia)
+            { "Earwig", new StageProfile { development=Development.Incomplete, childDays=15, childMin=98, childMax=99, teenDays=45, teenMin=70, teenMax=80, adultDays=300, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Cucaracha oriental: ooteca de ~16 huevos (42–81 d); ninfa 164–542 d; el adulto vive 160–180 d (UF/IFAS)
+            { "Cockroach", new StageProfile { development=Development.Incomplete, childDays=60, childMin=98, childMax=99, teenDays=400, teenMin=70, teenMax=80, adultDays=170, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
+            // Boreus hyemalis: la larva come musgo ~1–2 años; pupa en el suelo en septiembre; el adulto sale sobre la nieve
+            // de octubre a marzo (Wikipedia) [A]
+            { "Scorpionfly", new StageProfile { development=Development.Complete, larvaForages=true, childDays=540, childMin=98, childMax=99, teenDays=30, teenMin=70, teenMax=80, adultDays=150, adultMin=0, adultMax=20,
+                childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.Feed } } },
             { "Meerkat", new StageProfile { childDays=20, childMin=98, childMax=99, teenDays=40, teenMin=70, teenMax=80, adultDays=180, adultMin=0, adultMax=20,
                 childEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound }, teenEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest }, adultEvents = new byte[] { LifeStage.Events.LoopGrow, LifeStage.Events.Fatten, LifeStage.Events.Wander, LifeStage.Events.Rest, LifeStage.Events.HomeBound, LifeStage.Events.Feed } } },
         };

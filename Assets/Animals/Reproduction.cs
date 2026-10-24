@@ -117,7 +117,7 @@ public class Reproduction : MonoBehaviour
     public static bool HiveBreeds(string sp) => sp == "SnowBee";
     /// <summary>Hermafroditas simultáneos que se fecundan MUTUAMENTE: los dos ponen tras aparearse (caracol con dardo de
     /// amor, babosa con espermatóforo: Dreijers et al. 2013; lombriz cabeza con cola: Butt &amp; Nuutinen 1998).</summary>
-    public static bool Hermaphrodite(string sp) => sp == "Snail" || sp == "Slug" || sp == "Earthworm";
+    public static bool Hermaphrodite(string sp) => InsectMorphology.Hermaphrodite(sp);   // una sola fuente: la ficha del cuerpo
 
     // La REINA de una colonia = la hembra adulta más antigua del nido (el menor id de instancia entre las hembras adultas
     // vivas de su especie que comparten hogar). Determinista y sin campo nuevo en escena.

@@ -13,7 +13,7 @@ using UnityEngine;
 /// La forma es visual: el cuerpo físico (collider, Anima, NavMeshAgent) sigue siendo el del anfitrión.
 /// Los MIRMIDONES (las hormigas humanas del microcosmos, DressMyrmidon) son bípedos y con cara, pero con antena acodada y patas de hormiga.
 /// </summary>
-public class CubeInsect : MonoBehaviour
+public partial class CubeInsect : MonoBehaviour
 {
     class Leg { public Transform coxa, troch, tibia; public Quaternion coxaRest, trochRest, tibiaRest, armCoxa, armTroch, armTibia; public int side, pair; public bool arm; }
     Transform _torso, _neck; Quaternion _torsoRest, _neckRest;
@@ -34,8 +34,10 @@ public class CubeInsect : MonoBehaviour
     public string species;
     public Color tint;
     public float lengthL = 1f;
+    /// <summary>Fase que está dibujada ahora (larva, pupa, ninfa, joven o adulto).</summary>
+    public Metamorphosis.Phase Shown => _shown;
     public bool female = true;   // el sexo dibujado (InsectMorphology.ForSex); si el Animal es del otro, se redibuja
-    Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;
+    [SerializeField, HideInInspector] Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;   // se guarda con la escena (la galería, las fases)
     float _nextPhaseCheck;
 
     public static CubeInsect Dress(GameObject host, string species, Color body, float length) => Dress(host, species, body, length, Metamorphosis.Phase.Adult);
@@ -45,17 +47,25 @@ public class CubeInsect : MonoBehaviour
     /// caza de larva, como la mariquita), PUPA (inmóvil, con las patas plegadas), NINFA (el adulto sin alas) o ADULTO. La
     /// hormiga león es al revés de lo que parece: la larva es el cazador de embudo y el ADULTO es alado.
     /// </summary>
+    /// <paramref name="length"/> es el largo del ADULTO: cada fase se dibuja a su tamaño real relativo a él
+    /// (<see cref="InsectMorphology.PhaseScale"/>: la ninfa de cucaracha ×0,85, la zoea del cangrejo ×0,03, la larva
+    /// madura de luciérnaga ×1,4), en el mundo vivo igual que en la galería.
     public static CubeInsect Dress(GameObject host, string species, Color body, float length, Metamorphosis.Phase phase, bool female = true)
     {
+        float adult = length;
+        length *= InsectMorphology.PhaseScale(species, phase);
         InsectMorphology.Spec sp = InsectMorphology.ForSex(InsectMorphology.For(species), female);   // macho o hembra (dimorfismo)
-        CubeInsect ci;
-        if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Adult) ci = Build(host, InsectMorphology.Named("AntlionAdult"), body, length);
+        // Las fases con forma PROPIA (la zoea y la megalopa del cangrejo, la ninfa excavadora de la cigarra, la manca de la
+        // cochinilla, la larva de 6 patas del ácaro, el caracol sin labio, la lombriz sin clitelo…): CubeInsect.Fauna.cs.
+        CubeInsect ci = FaunaStage(host, sp, body, length, phase, female);
+        if (ci != null) { }
+        else if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Adult) ci = Build(host, InsectMorphology.Named("AntlionAdult"), body, length);
         else if (sp.name == "Antlion" && phase == Metamorphosis.Phase.Larva) ci = Build(host, sp, body, length);
         else if (phase == Metamorphosis.Phase.Larva) ci = Grub(host, sp, body, length, sp.name == "Ladybug" || sp.name == "Antlion");
         else if (phase == Metamorphosis.Phase.Pupa) ci = Pupa(host, body, length);
         else if (phase == Metamorphosis.Phase.Nymph) ci = Build(host, InsectMorphology.Wingless(sp), body, length);
         else ci = Build(host, sp, body, length);
-        ci.species = species; ci.tint = body; ci.lengthL = length; ci._shown = phase; ci.female = female;
+        ci.species = species; ci.tint = body; ci.lengthL = adult; ci._shown = phase; ci.female = female;
         return ci;
     }
 
@@ -125,7 +135,7 @@ public class CubeInsect : MonoBehaviour
         foreach (var s in sp.body)
         {
             float cz = z - s.len * 0.5f;
-            Part(pivot, s.name, new Vector3(0f, y0 + s.hei * 0.5f, cz), new Vector3(s.wid, s.hei, s.len), s.name == "Peciolo" ? dark : body);
+            Part(pivot, s.name, new Vector3(0f, y0 + s.hei * 0.5f, cz), new Vector3(s.wid, s.hei, s.len), SegColor(sp, s.name, body, dark));
             segZ[s.name] = (cz, s.len, s.wid, s.hei);
             maxH = Mathf.Max(maxH, s.hei);
             z -= s.len;
@@ -179,10 +189,12 @@ public class CubeInsect : MonoBehaviour
                 for (int i = 0; i < 6; i++)
                     Part(pivot, "Punto", new Vector3((i % 2 == 0 ? -1 : 1) * e.wid * (0.15f + 0.1f * (i / 2 % 2)), y0 + e.hei + 0.006f, e.z + e.len * (0.25f - (i / 2) * 0.22f)), new Vector3(0.1f, 0.01f, 0.1f), new Color(0.05f, 0.05f, 0.05f));
         }
-        if (sp.wings)   // tegminas / alas plegadas sobre el abdomen
+        if (sp.wings)   // tegminas / alas plegadas sobre el abdomen (desde su base: cortas en la tijereta, largas en tejado en la cigarra)
         {
             var ab = segZ["Abdomen"];
-            for (int s = -1; s <= 1; s += 2) Part(pivot, "Ala", new Vector3(s * 0.02f, y0 + ab.hei + 0.01f, ab.z + 0.05f), new Vector3(ab.wid * 0.6f, 0.01f, ab.len * 1.05f), Color.Lerp(body, new Color(0.6f, 0.65f, 0.4f), 0.4f));
+            float wl = sp.fx != null ? sp.fx.wingLen : 1.05f;
+            Color wc = sp.fx != null && sp.fx.clearWings ? new Color(0.88f, 0.92f, 0.95f, 0.35f) : Color.Lerp(body, new Color(0.6f, 0.65f, 0.4f), 0.4f);
+            for (int s = -1; s <= 1; s += 2) Part(pivot, "Ala", new Vector3(s * 0.02f * (sp.fx != null && sp.fx.clearWings ? 4f : 1f), y0 + ab.hei + 0.01f, ab.z + 0.05f + ab.len * (1.05f - wl) * 0.5f), new Vector3(ab.wid * 0.6f, 0.01f, ab.len * wl), wc, 0f, sp.fx != null && sp.fx.clearWings ? s * 6f : 0f);
         }
         if (sp.beeWings)   // dos pares de alas (anterior 0,65 L, posterior 0,45 L), plegadas; aletean al volar
         {
@@ -198,13 +210,14 @@ public class CubeInsect : MonoBehaviour
                     ci._wings.Add(w);
                 }
         }
-        if (sp.spider)   // quelíceros con colmillo y pedipalpos
+        if (sp.spider && (sp.fx == null || !sp.fx.crustacean))   // quelíceros con colmillo y pedipalpos (no en los cangrejos)
         {
-            var ct = segZ["Cefalotorax"];
+            var ct = segZ[sp.body[0].name];
+            bool palps = sp.fx == null || (sp.fx.chelae <= 0f && sp.fx.palpLegs <= 0f);   // el escorpión y el solífugo los tienen propios
             for (int s = -1; s <= 1; s += 2)
             {
-                Part(pivot, "Queliceros", new Vector3(s * 0.04f, y0 + 0.02f, ct.z + ct.len * 0.5f + 0.02f), new Vector3(0.06f, 0.12f, 0.06f), dark, 20f, 0f);
-                Part(pivot, "Pedipalpo", new Vector3(s * 0.09f, y0 + 0.03f, ct.z + ct.len * 0.5f + 0.1f), new Vector3(0.02f, 0.02f, 0.25f), dark, 15f, s * 15f);
+                if (sp.fx == null || sp.fx.bigChelicerae <= 0f) Part(pivot, "Queliceros", new Vector3(s * 0.04f, y0 + 0.02f, ct.z + ct.len * 0.5f + 0.02f), new Vector3(0.06f, 0.12f, 0.06f), dark, 20f, 0f);
+                if (palps) Part(pivot, "Pedipalpo", new Vector3(s * 0.09f, y0 + 0.03f, ct.z + ct.len * 0.5f + 0.1f), new Vector3(0.02f, 0.02f, 0.25f), dark, 15f, s * 15f);
                 // MACHO: los bulbos copuladores en la punta de los pedipalpos, como guantes de boxeo.
                 if (sp.palpBulbs) Part(pivot, "Bulbo_pedipalpo", new Vector3(s * 0.12f, y0 + 0.06f, ct.z + ct.len * 0.5f + 0.22f), new Vector3(0.07f, 0.07f, 0.08f), dark);
             }
@@ -218,10 +231,16 @@ public class CubeInsect : MonoBehaviour
         }
 
         // PATAS: de la coxa al tarso, con la pose de reposo de la ficha; luego se apoya el cuerpo para que los tarsos toquen el suelo.
-        string thoraxName = sp.spider ? "Cefalotorax" : (segZ.ContainsKey("Torax") ? "Torax" : segZ.ContainsKey("Protorax") ? "Protorax" : segZ.ContainsKey("Pronoto") ? "Pronoto" : sp.body[1].name);
+        string thoraxName = sp.spider ? sp.body[0].name : (segZ.ContainsKey("Torax") ? "Torax" : segZ.ContainsKey("Protorax") ? "Protorax" : segZ.ContainsKey("Pronoto") ? "Pronoto" : sp.body[1].name);
         var tx = segZ[thoraxName];
         if (sp.name == "Mantis" || sp.name == "Antlion") tx = (segZ["Abdomen"].z + segZ["Abdomen"].len * 0.35f, segZ["Abdomen"].len * 0.3f, segZ["Abdomen"].wid, segZ["Abdomen"].hei);
-        if (sp.name == "Ladybug" || sp.name == "DungBeetle") tx = (segZ["Elitros"].z + segZ["Elitros"].len * 0.25f, segZ["Elitros"].len * 0.5f, segZ["Elitros"].wid * 0.6f, segZ["Elitros"].hei);
+        if (sp.elytra && !segZ.ContainsKey("Torax")) tx = (segZ["Elitros"].z + segZ["Elitros"].len * 0.25f, segZ["Elitros"].len * 0.5f, segZ["Elitros"].wid * 0.6f, segZ["Elitros"].hei);
+        if (sp.fx != null && sp.fx.legTo > sp.fx.legFrom)   // patas a lo largo de un tramo (cochinilla: 7 pares; cucaracha; ácaro)
+        {
+            float front = total * 0.5f, a = front - sp.fx.legFrom * total, b = front - sp.fx.legTo * total, w = 0f;
+            foreach (var s in sp.body) w = Mathf.Max(w, s.wid);
+            tx = ((a + b) * 0.5f, (a - b) / 0.8f, w * 0.9f, maxH);
+        }
         int pairs = sp.legs.Length;
         var tips = new List<Transform>();
         for (int p = 0; p < pairs; p++)
@@ -236,6 +255,8 @@ public class CubeInsect : MonoBehaviour
         float minTip = float.MaxValue; foreach (Transform t in tips) minTip = Mathf.Min(minTip, root.InverseTransformPoint(t.position).y - pivot.localPosition.y);
         float lift = minTip == float.MaxValue ? 0f : -minTip;
         pivot.localPosition = ground + Vector3.up * Mathf.Max(lift, -y0 * 0.9f);
+        // Piezas de la fauna de cada era (cola con aguijón, pinzas, ojos en pedúnculo, concha, tentáculos, fórceps, linterna…).
+        if (sp.fx != null) FaunaParts(ci, pivot, sp, segZ, y0, total, body, dark);
 
         // ── CENTAURO (el microcosmos: insectos con cara e inteligencia humana) ──────────────────────────────────────
         // La parte delantera (cabeza y tórax, con las patas delanteras) cuelga de un TORSO que se ENDEREZA cuando el insecto
@@ -245,9 +266,10 @@ public class CubeInsect : MonoBehaviour
         float pivotZ = sp.body.Length >= 3 ? segZ[sp.body[1].name].z - segZ[sp.body[1].name].len * 0.5f : segZ[sp.body[sp.body.Length > 1 ? 1 : 0].name].z;
         // ARAÑA: la cintura va detrás del cefalotórax, que se endereza entero (con los quelíceros y el 1.er par como brazos);
         // antes giraba desde su centro y apenas se levantaba.
-        if (sp.spider) pivotZ = segZ["Cefalotorax"].z - segZ["Cefalotorax"].len * 0.5f;
+        if (sp.spider) pivotZ = segZ[sp.body[0].name].z - segZ[sp.body[0].name].len * 0.5f;
         // MANTIS (2 pares de brazos): la cintura va entre el 2.º y el 3.er par; se yergue sobre las dos patas de atrás.
         if (sp.armPairs >= 2 && pairs >= 3) pivotZ = tx.z - tx.len * 0.2f;
+        if (sp.fx != null && sp.fx.waist > 0f) pivotZ = total * 0.5f - sp.fx.waist * total;   // la cintura de la ficha (cangrejo, ácaro, lombriz)
         float chestH = sp.body.Length >= 3 ? segZ[sp.body[1].name].hei : head.hei;
         var torso = new GameObject("Torso").transform; torso.SetParent(pivot, false); torso.localPosition = new Vector3(0f, y0 + chestH * 0.5f, pivotZ);
         var neck = new GameObject("Cuello").transform; neck.SetParent(torso, false);
@@ -271,13 +293,20 @@ public class CubeInsect : MonoBehaviour
         Vector3 hf = hc.localPosition + new Vector3(0f, 0f, hc.localScale.z * 0.5f + 0.002f);
         float hw = hc.localScale.x, hh = hc.localScale.y;
         float ew = hw * 0.28f, eh = hh * 0.3f;
-        for (int s = -1; s <= 1; s += 2)
+        // Con OJOS EN PEDÚNCULO (cangrejo) esos son sus ojos: suben a lo alto de la cabeza, y la cara lleva cejas y boca.
+        bool stalks = sp.fx != null && sp.fx.eyeStalks > 0f;
+        if (stalks)
+            foreach (Transform t in neck)
+                if (t.name == "Antena" && t.Find("Pedunculo") != null)
+                    t.localPosition = hc.localPosition + new Vector3(Mathf.Sign(t.localPosition.x) * hw * 0.3f, hh * 0.45f, hc.localScale.z * 0.15f);
+        for (int s = -1; s <= 1 && !stalks; s += 2)
         {
             Part(neck, "Ojo", hf + new Vector3(s * hw * 0.24f, hh * 0.12f, 0f), new Vector3(ew, eh, 0.006f), Color.white);
             Part(neck, "Pupila", hf + new Vector3(s * hw * 0.24f, hh * 0.1f, 0.004f), new Vector3(ew * 0.5f, eh * 0.55f, 0.005f), new Color(0.08f, 0.06f, 0.05f));
             Part(neck, "Brillo", hf + new Vector3(s * hw * 0.21f, hh * 0.16f, 0.007f), new Vector3(ew * 0.18f, eh * 0.18f, 0.004f), Color.white);
             Part(neck, "Ceja", hf + new Vector3(s * hw * 0.24f, hh * 0.32f, 0.003f), new Vector3(ew * 1.1f, hh * 0.05f, 0.005f), dark);
         }
+        if (stalks) for (int s = -1; s <= 1; s += 2) Part(neck, "Ceja", hf + new Vector3(s * hw * 0.24f, hh * 0.2f, 0.003f), new Vector3(ew * 1.1f, hh * 0.05f, 0.005f), dark);
         Part(neck, "Boca", hf + new Vector3(0f, -hh * 0.22f, 0.003f), new Vector3(hw * 0.3f, hh * 0.05f, 0.005f), new Color(0.25f, 0.1f, 0.1f));
         // COLUMNA HUMANA: un cubo más entre la cintura y el tórax, para que al enderezarse quede erguido de verdad (y no
         // agachado): la cintura es la articulación que se levanta; el tórax, la cabeza y los brazos van encima.
@@ -301,6 +330,7 @@ public class CubeInsect : MonoBehaviour
                 l.tibia = FindDeep(l.coxa, "Tibia_art"); if (l.tibia != null) { l.tibiaRest = l.tibia.localRotation; l.armTibia = Quaternion.Euler(l.pair == 0 ? -70f : -40f, 0f, 0f); }
             }
         ci._torso = waist; ci._neck = neck; ci._torsoRest = waist.localRotation; ci._neckRest = neck.localRotation;
+        ci._pivot = pivot; ci._curlMode = sp.fx != null ? sp.fx.curl : 0;
         return ci;
     }
 
@@ -310,7 +340,9 @@ public class CubeInsect : MonoBehaviour
         float[] L = sp.legs[p];
         bool raptor = sp.raptorial && p == 0, jump = sp.jumper && p == sp.legs.Length - 1;
         // Reposo de la coxa (pro/retracción): P1 +30°, P2 0°, P3 −30° (arañas: +45, +15, −15, −45).
-        float restYaw = sp.spider ? new[] { 45f, 15f, -15f, -45f }[p] : new[] { 30f, 0f, -30f }[Mathf.Min(p, 2)];
+        // (con otro número de pares, repartidos igual: los 7 de la cochinilla, los 3 de la larva del ácaro)
+        int np = sp.legs.Length; float edge = sp.spider ? 45f : 30f;
+        float restYaw = np <= 1 ? 0f : Mathf.Lerp(edge, -edge, p / (float)(np - 1));
         if (raptor) restYaw = 75f; if (jump) restYaw = -70f;
         var coxa = new GameObject($"Pata_{p}_{(s < 0 ? "I" : "D")}").transform; coxa.SetParent(pivot, false);
         coxa.localPosition = hip; coxa.localRotation = Quaternion.Euler(0f, s * (90f - restYaw), 0f);
@@ -495,7 +527,9 @@ public class CubeInsect : MonoBehaviour
             else if (t.name.StartsWith("Brazo_")) _limbs.Add((t, t.name.EndsWith("I") ? -1 : 1, true));
             else if (t.name == "Mandibula" && t.childCount > 0) _jaws.Add((t, Mathf.Abs(Mathf.DeltaAngle(0f, t.localEulerAngles.y)), t.localPosition.x < 0f ? -1 : 1));
             else if (t.name.StartsWith("Ala_")) _wings.Add(t);
+            else if (t.name.StartsWith("Pinza_")) _legs.Insert(0, PincerLeg(t));   // las pinzas (escorpión, cangrejo) y los pedipalpos del solífugo: brazos
         }
+        _pivot = root.Find("Pivote"); _curlMode = CurlModeOf(root);
         _spider = root.GetComponentsInChildren<Transform>(true).Length > 0 && root.Find("Pivote/Queliceros") != null;
         _torso = FindDeep(root, "Cintura") ?? FindDeep(root, "Torso"); _neck = FindDeep(root, "Cuello"); _torsoRest = Quaternion.identity; _neckRest = Quaternion.identity;
         _last = transform.position;
@@ -551,6 +585,10 @@ public class CubeInsect : MonoBehaviour
         if (_torso != null) _calm = Mathf.MoveTowards(_calm, 1f - target, Time.deltaTime * 2.5f);
         if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-88f * _calm, 0f, 0f);
         if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(88f * _calm, 0f, 0f);
+        // DEFENSA PASIVA (curl, lo fija la conducta): la cochinilla se hace bola, el caracol se mete en la concha…
+        // la conducta decide cuándo: acorazado ante un peligro (PassiveDefence) o aletargado (el caracol sellado en invierno)
+        if (_curlMode != 0) curl = PassiveDefence.IsHolding(this) || Dormant.IsResting(this) ? 1f : 0f;
+        CurlTick();
         // Marcha: TRÍPODE alterno (P1 izq + P2 der + P3 izq, y luego las otras) o TETRÁPODO en arañas; erguido, sin las delanteras.
         foreach (Leg l in _legs)
         {
