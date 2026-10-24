@@ -692,7 +692,10 @@ public static class AreaMicrocosmos
                 if (dormant != null) a.AddComponent<Dormant>().why = dormant;   // aletargado en esta estación: está, pero quieto
                 Bounds bb = default; bool any = false;
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>()) { if (!x.enabled) continue; if (!any) { bb = x.bounds; any = true; } else bb.Encapsulate(x.bounds); }
-                if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
+                // A su largo de cuerpo (el de la raíz «Insecto», sin la caja de patas y alas), como lo mantiene MicroSize.
+                Transform ins = a.transform.Find("Insecto");
+                if (ins != null && ins.lossyScale.z > 1e-6f) holder.localScale = Vector3.one * (len / ins.lossyScale.z);
+                else if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
                 placed++;
             }
         }

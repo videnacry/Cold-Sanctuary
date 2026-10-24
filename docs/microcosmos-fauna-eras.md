@@ -112,6 +112,11 @@ Reales aunque salgan diminutas (`InsectMorphology.PhaseScale`): zoea ×0,03 (~1 
 ninfa de último estadio de cigarra ×0,9, de cucaracha ×0,85, de tijereta ×0,75; los juveniles de desarrollo directo a
 media vida (escorpión ×0,45, caracol ×0,4, lombriz ×0,4) [A].
 
+Se aplican en **todas** partes, para **todas** las especies: `CubeInsect.Dress` recibe el largo del ADULTO y dibuja la
+fase a su `PhaseScale` (también al redibujarse cuando cambia de fase en el Play), y `MicroSize` (los bichos del
+microcosmos) escala al padre para que el CUERPO (la raíz «Insecto», sin contar la caja de patas y alas) mida
+`largo × PhaseScale(fase)`. La galería usa el mismo camino, así que galería y mundo vivo coinciden.
+
 ## Fotos de referencia
 
 Para comparar las formas con las fichas (iNaturalist, fotos con licencia libre por especie):

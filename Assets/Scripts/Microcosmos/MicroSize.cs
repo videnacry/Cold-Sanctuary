@@ -35,6 +35,16 @@ public class MicroSize : MonoBehaviour
     {
         if (Time.time < _next) return;
         _next = Time.time + 0.5f;
+        // Un insecto de cubos mide su largo de ADULTO por la fase en que está (InsectMorphology.PhaseScale): la ninfa, la
+        // larva o la cría salen a su tamaño real relativo al adulto. Se mide su propio cuerpo (la raíz «Insecto», en
+        // unidades de su largo), no la caja de las patas, para que adulto y cría se comparen igual que en la galería.
+        CubeInsect ci = GetComponentInChildren<CubeInsect>();
+        if (ci != null && !string.IsNullOrEmpty(ci.species) && ci.transform.Find("Insecto") is Transform body)
+        {
+            float kk = length * InsectMorphology.PhaseScale(ci.species, ci.Shown) / Mathf.Max(1e-6f, body.lossyScale.z);
+            if (Mathf.Abs(kk - 1f) > 0.05f) { transform.localScale *= Mathf.Clamp(kk, 0.01f, 1000f); FitAgent(); }
+            return;
+        }
         Renderer[] rs = GetComponentsInChildren<Renderer>();
         if (rs.Length == 0) return;
         bool any = false; Bounds b = default;

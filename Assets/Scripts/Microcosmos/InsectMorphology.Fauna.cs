@@ -267,7 +267,7 @@ public static partial class InsectMorphology
             case "Earthworm": return phase == Metamorphosis.Phase.Juvenile ? "joven (sin clitelo)" : null;
             case "Scorpion": return phase == Metamorphosis.Phase.Juvenile ? "cría (va sobre la madre)" : null;
             case "Cicada": return phase == Metamorphosis.Phase.Nymph ? "ninfa (años bajo tierra)" : null;
-            case "Firefly": return phase == Metamorphosis.Phase.Larva ? "larva luminosa" : null;
+            case "Firefly": return phase == Metamorphosis.Phase.Larva ? "larva luminosa, madura (mayor que el adulto)" : null;
             default: return phase == Metamorphosis.Phase.Juvenile ? "joven" : null;
         }
     }

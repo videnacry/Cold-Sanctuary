@@ -34,8 +34,10 @@ public partial class CubeInsect : MonoBehaviour
     public string species;
     public Color tint;
     public float lengthL = 1f;
+    /// <summary>Fase que está dibujada ahora (larva, pupa, ninfa, joven o adulto).</summary>
+    public Metamorphosis.Phase Shown => _shown;
     public bool female = true;   // el sexo dibujado (InsectMorphology.ForSex); si el Animal es del otro, se redibuja
-    Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;
+    [SerializeField, HideInInspector] Metamorphosis.Phase _shown = Metamorphosis.Phase.Adult;   // se guarda con la escena (la galería, las fases)
     float _nextPhaseCheck;
 
     public static CubeInsect Dress(GameObject host, string species, Color body, float length) => Dress(host, species, body, length, Metamorphosis.Phase.Adult);
@@ -45,8 +47,13 @@ public partial class CubeInsect : MonoBehaviour
     /// caza de larva, como la mariquita), PUPA (inmóvil, con las patas plegadas), NINFA (el adulto sin alas) o ADULTO. La
     /// hormiga león es al revés de lo que parece: la larva es el cazador de embudo y el ADULTO es alado.
     /// </summary>
+    /// <paramref name="length"/> es el largo del ADULTO: cada fase se dibuja a su tamaño real relativo a él
+    /// (<see cref="InsectMorphology.PhaseScale"/>: la ninfa de cucaracha ×0,85, la zoea del cangrejo ×0,03, la larva
+    /// madura de luciérnaga ×1,4), en el mundo vivo igual que en la galería.
     public static CubeInsect Dress(GameObject host, string species, Color body, float length, Metamorphosis.Phase phase, bool female = true)
     {
+        float adult = length;
+        length *= InsectMorphology.PhaseScale(species, phase);
         InsectMorphology.Spec sp = InsectMorphology.ForSex(InsectMorphology.For(species), female);   // macho o hembra (dimorfismo)
         // Las fases con forma PROPIA (la zoea y la megalopa del cangrejo, la ninfa excavadora de la cigarra, la manca de la
         // cochinilla, la larva de 6 patas del ácaro, el caracol sin labio, la lombriz sin clitelo…): CubeInsect.Fauna.cs.
@@ -58,7 +65,7 @@ public partial class CubeInsect : MonoBehaviour
         else if (phase == Metamorphosis.Phase.Pupa) ci = Pupa(host, body, length);
         else if (phase == Metamorphosis.Phase.Nymph) ci = Build(host, InsectMorphology.Wingless(sp), body, length);
         else ci = Build(host, sp, body, length);
-        ci.species = species; ci.tint = body; ci.lengthL = length; ci._shown = phase; ci.female = female;
+        ci.species = species; ci.tint = body; ci.lengthL = adult; ci._shown = phase; ci.female = female;
         return ci;
     }
 
@@ -572,6 +579,8 @@ public partial class CubeInsect : MonoBehaviour
         if (_torso != null) _torso.localRotation = _torsoRest * Quaternion.Euler(-88f * _calm, 0f, 0f);
         if (_neck != null) _neck.localRotation = _neckRest * Quaternion.Euler(88f * _calm, 0f, 0f);
         // DEFENSA PASIVA (curl, lo fija la conducta): la cochinilla se hace bola, el caracol se mete en la concha…
+        // la conducta decide cuándo: acorazado ante un peligro (PassiveDefence) o aletargado (el caracol sellado en invierno)
+        if (_curlMode != 0) curl = PassiveDefence.IsHolding(this) || Dormant.IsResting(this) ? 1f : 0f;
         CurlTick();
         // Marcha: TRÍPODE alterno (P1 izq + P2 der + P3 izq, y luego las otras) o TETRÁPODO en arañas; erguido, sin las delanteras.
         foreach (Leg l in _legs)

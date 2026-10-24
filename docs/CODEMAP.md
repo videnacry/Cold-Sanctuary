@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 600 tipos._
+_Total: 603 tipos._
 
 
 ## Animals
@@ -231,6 +231,7 @@ _Total: 600 tipos._
 - **CubeGait** (class) — `Assets/Scripts/Avatar/CubeGait.cs` — MARCHA de la fauna de cubos ():
 - **CubeHair** (class) — `Assets/Scripts/Avatar/CubeHair.cs` — ASPECTO de cada persona (cabello, piel, ojos, barba) para el cuerpo de cubos:
 - **CubeHumanoid** (class) — `Assets/Scripts/Avatar/CubeHumanoid.cs` — CUERPO HUMANO DE CUBOS ARTICULADO (estilo Minecraft, sin .fbx ni esqueleto del modelo 3D):
+- **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.Fauna.cs` — PIEZAS DE LA FAUNA DE CADA ERA (InsectMorphology.Fauna.cs; fuentes en docs/microcosmos-fauna-eras.md), sobre el mismo cuerpo de cubos articulado y centauro de siempre:
 - **CubeInsect** (class) — `Assets/Scripts/Microcosmos/CubeInsect.cs` — ARTRÓPODO ARTICULADO DE CUBOS, hecho con los datos de docs/insect-morphology.md (InsectMorphology):
 - **CubeJoint** (class) — `Assets/Scripts/Avatar/CubeJoint.cs` — ARTICULACIÓN de un cuerpo de cubos:
 - **CubeTree** (class) — `Assets/Scripts/World/CubeTree.cs` — ÁRBOL CARNÍVORO DE HIELO hecho de BLOQUES (estilo Minecraft, sin modelo 3D) — docs/ice-sanctuary-ecology.md §2:
@@ -250,6 +251,7 @@ _Total: 600 tipos._
 - **DietPreferenceTest** (class) — `Assets/Scripts/DietPreferenceTest.cs` — Test de la PREFERENCIA DE DIETA (docs/microcosmos-sakshi-origin.md §5, testing-checklist §43), por `TestProbe`:
 - **DirtArea** (class) — `Assets/Scripts/Kitchen/DirtArea.cs` — Genera y contabiliza suciedad en una zona (docs/kitchen-simulation.md §5, paso A).
 - **DirtSpot** (class) — `Assets/Scripts/Kitchen/DirtSpot.cs` — Una mancha de suciedad como OBJETO real (docs/kitchen-simulation.md §5):
+- **Dormant** (class) — `Assets/Scripts/Microcosmos/Dormant.cs` — ALETARGADO por la estación de la historia (MicroBiome.Bug.dormant):
 - **DosimeterRack** (class) — `Assets/Scripts/AtomicPlant/DosimeterRack.cs` — TAQUILLA DE DOSÍMETROS (entrada de la planta):
 - **DrivePreparation** (class) — `Assets/Scripts/DrivePreparation.cs`
 - **Eater** (class) — `Assets/Scripts/Kitchen/Eater.cs` — Un personaje que se acerca a un a **comer** (docs/kitchen-simulation.md §6).
@@ -350,6 +352,7 @@ _Total: 600 tipos._
 - **InfirmaryGate** (class) — `Assets/Scripts/World/InfirmaryGate.cs` — LA INICIACIÓN ES BLOQUEANTE (docs/jornada-y-rotacion.md).
 - **InfirmaryProps** (class) — `Assets/Scripts/World/InfirmaryProps.cs` — MOBILIARIO Y MAQUINARIA DE LA ENFERMERÍA (docs/sanctuary1-level-and-live-tests §4:
 - **IngredientMob** (class) — `Assets/Scripts/Combat/IngredientMob.cs` — An ingredient that becomes a mob when the player enters the kitchen at miniaturized scale.
+- **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.Fauna.cs` — FAUNA DE CADA ERA (Berón, 2026-10-24:
 - **InsectMorphology** (class) — `Assets/Scripts/Microcosmos/InsectMorphology.cs` — MORFOLOGÍA de los artrópodos del microcosmos, tal cual docs/insect-morphology.md:
 - **InteractionController** (class) — `Assets/Scripts/Interaction/InteractionController.cs` — Attached to the Player.
 - **Inventory** (class) — `Assets/Scripts/Economy/Inventory.cs` — The player's inventory.

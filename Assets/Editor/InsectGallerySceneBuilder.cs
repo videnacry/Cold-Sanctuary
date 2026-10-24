@@ -146,7 +146,7 @@ public static class InsectGallerySceneBuilder
     {
         var host = new GameObject($"{sp} · {what}"); host.transform.SetParent(root, false);
         host.transform.localPosition = at; host.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // de cara a la cámara (−Z)
-        float len = Length * InsectMorphology.PhaseScale(sp, phase);
+        float len = Length;   // el largo del ADULTO: Dress dibuja cada fase a su PhaseScale (como en el mundo vivo)
         CubeInsect ci = myrmidon ? CubeInsect.DressMyrmidon(host, tint, Length / 1.35f, aphid ? 1.6f : 1f, aphid)
                                  : CubeInsect.Dress(host, sp, tint, len, phase, female);
         if (phase == Metamorphosis.Phase.Adult || phase == Metamorphosis.Phase.Nymph || phase == Metamorphosis.Phase.Juvenile) ci.PoseNow(upright);
