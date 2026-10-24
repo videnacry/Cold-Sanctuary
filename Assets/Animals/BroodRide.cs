@@ -36,6 +36,7 @@ public class BroodRide : MonoBehaviour
     float _until;
     Vector3 _offset;
     bool _riding, _mounted, _wasKinematic;
+    float _backHeight, _nextBack;
 
     void Start()
     {
@@ -63,16 +64,18 @@ public class BroodRide : MonoBehaviour
         _a.busy = true;                                    // no va a ningún lado: vive en el lomo
         _a.hungry = Mathf.Min(_a.hungry, -0.2f);           // no come hasta la muda: vive del vitelo
         Transform m = mother.transform;
-        transform.position = m.position + m.rotation * Vector3.Scale(_offset, m.lossyScale) + Vector3.up * BackHeight();
+        transform.position = m.position + m.rotation * Vector3.Scale(_offset, m.lossyScale) + Vector3.up * BackHeight();   // cacheado: se re-mide ~1 vez/s (la madre crece despacio)
         transform.rotation = m.rotation * Quaternion.Euler(0f, _offset.x * 200f, 0f);
     }
 
-    // Altura del dorso de la madre: lo alto de sus renderers sobre su pivote.
+    // Altura del dorso de la madre: lo alto de sus renderers sobre su pivote (re-medida como mucho una vez por segundo).
     float BackHeight()
     {
+        if (Time.time < _nextBack) return _backHeight;
+        _nextBack = Time.time + 1f;
         float top = mother.transform.position.y;
         foreach (Renderer r in mother.GetComponentsInChildren<Renderer>()) if (r.enabled && !r.transform.IsChildOf(transform)) top = Mathf.Max(top, r.bounds.max.y);
-        return top - mother.transform.position.y;
+        return _backHeight = top - mother.transform.position.y;
     }
 
     void Dismount()

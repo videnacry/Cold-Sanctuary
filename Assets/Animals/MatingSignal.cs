@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// SEÑAL DE CORTEJO a distancia (docs/era-species-behavior.md §3): la LUCIÉRNAGA destella y la CIGARRA canta. La da el
+/// SEÑAL DE CORTEJO a distancia (docs/era-species-behavior.md §3): la LUCIÉRNAGA destella, y la CIGARRA y el GRILLO cantan. La da el
 /// hábito «Signal» del <see cref="Ethogram"/> (posado en un tallo/tronco) y SOLO si el ser está en celo
 /// (<see cref="EstrusState"/>): un macho saciado y en celo llama; uno hambriento come; uno joven no llama. Así el coro sale
 /// de los stats de cada individuo, no de un temporizador global.
@@ -28,6 +28,7 @@ public class MatingSignal : MonoBehaviour
     {
         "Firefly" => Kind.Flash,
         "Cicada"  => Kind.Song,
+        "Cricket" => Kind.Song,   // Gryllus: estridulación con los élitros (Huber & Thorson 1985, Sci Am 253:60)
         _         => Kind.None,
     };
 
@@ -42,7 +43,7 @@ public class MatingSignal : MonoBehaviour
     float _until, _phase, _answerAt = -1f;
     Light _light;
     AudioSource _audio;
-    static AudioClip _song;
+    static readonly Dictionary<string, AudioClip> _songs = new Dictionary<string, AudioClip>();
 
     const float FLASH_PERIOD = 1.0f, FLASH_ON = 0.2f, ANSWER_DELAY = 0.5f;   // Luciola: ~1 destello/s; la hembra contesta con retardo [A]
 
@@ -151,7 +152,7 @@ public class MatingSignal : MonoBehaviour
         if (_audio == null)
         {
             _audio = gameObject.AddComponent<AudioSource>();
-            _audio.clip = SongClip();
+            _audio.clip = SongClip(_a.SpeciesName);
             _audio.loop = true;
             _audio.spatialBlend = 1f;
             _audio.rolloffMode = AudioRolloffMode.Logarithmic;
@@ -161,25 +162,32 @@ public class MatingSignal : MonoBehaviour
         if (!_audio.isPlaying) { _audio.pitch = Random.Range(0.95f, 1.05f); _audio.Play(); }
     }
 
-    // Canto de timbal sintetizado: ráfagas de pulsos (cada pulso = un clic del timbal) con portadora aguda y ruido, en
-    // «equemas» separados por pausas cortas. Frecuencias y ritmos orientativos [A]: el canto real de C. orni se calibra con
-    // grabaciones (Sueur & Aubin 2003; Fonseca & Revez 2002, J Exp Biol 205:1285, doi 10.1242/jeb.205.9.1285).
-    static AudioClip SongClip()
+    // Cantos sintetizados (sin assets de audio): pulsos con portadora aguda y algo de ruido, agrupados en frases separadas
+    // por pausas. Frecuencias y ritmos orientativos [A], a calibrar con grabaciones:
+    // - CIGARRA (C. orni): timbales, ~220 clics/s en «equemas» de ~0,17 s (Sueur & Aubin 2003; Fonseca & Revez 2002,
+    //   J Exp Biol 205:1285, doi 10.1242/jeb.205.9.1285).
+    // - GRILLO (G. campestris): élitros, ~4,5 kHz, «chirps» de 3–4 sílabas (~30 sílabas/s) unas 3 veces por segundo
+    //   (Huber & Thorson 1985; Hedwig 2006, J Neurophysiol 95:2109).
+    static AudioClip SongClip(string species)
     {
-        if (_song != null) return _song;
+        if (_songs.TryGetValue(species ?? "", out AudioClip c)) return c;
+        bool cricket = species == "Cricket";
+        float carrierHz = cricket ? 4500f : 3800f, pulseHz = cricket ? 30f : 220f, phrase = cricket ? 0.33f : 0.25f;
+        float phraseOn = cricket ? 0.12f : 0.17f, sharp = cricket ? 3f : 6f, noise = cricket ? 0.1f : 0.4f;
         const int rate = 22050; int n = rate * 2;
         var data = new float[n];
         var rng = new System.Random(7);
         for (int i = 0; i < n; i++)
         {
             float t = i / (float)rate;
-            float echeme = (t % 0.25f) < 0.17f ? 1f : 0f;               // equema ~0,17 s, pausa ~0,08 s
-            float pulse = Mathf.Exp(-((t * 220f) % 1f) * 6f);           // ~220 clics de timbal por segundo
-            float carrier = Mathf.Sin(2f * Mathf.PI * 3800f * t) * 0.6f + ((float)rng.NextDouble() * 2f - 1f) * 0.4f;
-            data[i] = echeme * pulse * carrier * 0.5f;
+            float on = (t % phrase) < phraseOn ? 1f : 0f;                // equema / chirp, y su pausa
+            float pulse = Mathf.Exp(-((t * pulseHz) % 1f) * sharp);      // cada clic del timbal / sílaba del élitro
+            float carrier = Mathf.Sin(2f * Mathf.PI * carrierHz * t) * (1f - noise) + ((float)rng.NextDouble() * 2f - 1f) * noise;
+            data[i] = on * pulse * carrier * 0.5f;
         }
-        _song = AudioClip.Create("CantoCigarra", n, 1, rate, false);
-        _song.SetData(data, 0);
-        return _song;
+        c = AudioClip.Create(cricket ? "CantoGrillo" : "CantoCigarra", n, 1, rate, false);
+        c.SetData(data, 0);
+        _songs[species ?? ""] = c;
+        return c;
     }
 }

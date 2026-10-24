@@ -50,6 +50,7 @@ hacia él (deseo `mate`).
   ([Sueur & Aubin 2003](https://doi.org/10.1007/s00114-003-0432-5)); la hembra oye bien la frecuencia del macho
   ([Sueur et al. 2008](https://doi.org/10.1242/jeb.018804)). Frecuencia y ritmo del sintetizador: **[A] calibrar**
   con grabaciones ([Fonseca & Revez 2002](https://doi.org/10.1242/jeb.205.9.1285) para *C. barbara*).
+- Grillo (*Gryllus campestris*, ya existente): ahora también canta (`Kind.Song`, ~4,5 kHz en chirps de 3–4 sílabas) a la entrada de su madriguera cuando está en celo; la hembra va al canto.
 
 **Cuidado de la cría (`BroodRide`, deseos `brood`/`nurse`).** Al parir, la madre de las especies con cuidado se vincula
 con la cría.
@@ -78,7 +79,7 @@ lado de vez en cuando). Erguido y lúcido camina de frente como una persona.
 | Caracol (`Snail`) *Helix lucorum*, *Cepaea nemoralis* | Anatolia/Grecia, Europa | nocturno, con lluvia | hojas, hongos, flores | **concha** | hermafrodita | estiva sellado en un tallo (Jones et al. 1977) |
 | Babosa (`Slug`) *Arion ater* | Europa | nocturna | hongos, hojas, heces | **contracción + balanceo**, moco | hermafrodita; casi anual | se esconde de la luz bajo troncos |
 | Cigarra (`Cicada`) *Cicada orni* | Mediterráneo | diurna (calor) | xilema | huye volando | ninfa años bajo tierra | **canta** desde los troncos |
-| Luciérnaga (`Firefly`) *Luciola* | templado | nocturna | larva: caracoles y babosas | sangre tóxica (lucibufaginas) | — | **destellos** de cortejo |
+| Luciérnaga (`Firefly`) *Luciola* | templado | nocturna | larva: caracoles y babosas (solo la larva caza: `Forager.preyOnlyAsLarva`); adulto: apenas néctar/rocío | sangre tóxica (lucibufaginas) | — | **destellos** de cortejo |
 | Tijereta (`Earwig`) *Forficula auricularia* | Europa | nocturna | pulgones, polen, hojas | cercos-pinza | **madre que cuida** huevos y ninfas | se mete en grietas; guarda el nido; alimenta |
 | Cucaracha (`Cockroach`) *Blatta orientalis* | ciudades antiguas | nocturna | carbohidratos, carroña ([Sieksmeyer et al. 2022](https://doi.org/10.1186/s12862-022-02007-8)) | huida veloz (cercos) | ooteca | se agrega en grietas (Bell et al. 2007) |
 | Cangrejo fantasma (`GhostCrab`) *Ocypode quadrata* | playas atlánticas | nocturno | almejas, pulgas de mar, huevos y pollos de aves ([Tewfik et al. 2016](https://doi.org/10.1371/journal.pone.0147759); [Call et al. 2024](https://doi.org/10.1371/journal.pone.0307821)) | caparazón + pinzas | larvas planctónicas | **corre de lado**; vuelve a su madriguera ([Gül & Griffen 2019](https://doi.org/10.1002/ece3.5853)) |

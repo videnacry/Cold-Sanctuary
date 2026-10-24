@@ -66,7 +66,8 @@ public static class Ethogram
         { "Cricket", new[] {
             new EthoAct(AffordanceKind.Shelter, 0.5f, 30f, HabitEffect.Shelter, "se mete en su madriguera bajo una piedra y canta en la entrada", "Gryllus campestris (Hissmann 1990, Ethology 85:145)"),
             new EthoAct(AffordanceKind.Seed, 0.3f, 8f, HabitEffect.Feed, "roe una semilla", "omnívoro oportunista"),
-            new EthoAct(AffordanceKind.Grass, 0.2f, 8f, HabitEffect.Feed, "mordisquea hierba", "") } },
+            new EthoAct(AffordanceKind.Grass, 0.2f, 8f, HabitEffect.Feed, "mordisquea hierba", ""),
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Signal, "canta frotando los élitros a la entrada de su madriguera", "el macho llama desde la entrada y la hembra va al canto (fonotaxis; Hissmann 1990; Huber & Thorson 1985)") } },
         { "Grasshopper", new[] {
             new EthoAct(AffordanceKind.Grass, 0.5f, 12f, HabitEffect.Feed, "come hojas de pasto", "Joern 1979; acridios graminívoros"),
             new EthoAct(AffordanceKind.Perch, 0.5f, 20f, HabitEffect.Bask, "se asolea en lo alto de un tallo", "termorregulación conductual (Lactin & Johnson 1998; PMC2999429)") } },
@@ -102,7 +103,8 @@ public static class Ethogram
             new EthoAct(AffordanceKind.Perch, 0.5f, 60f, HabitEffect.Signal, "canta con los timbales posado en el tronco", "C. orni canta desde posiciones bajas, en troncos (Sueur & Aubin 2003, doi 10.1007/s00114-003-0432-5)") } },
         { "Firefly", new[] {
             new EthoAct(AffordanceKind.Perch, 0.7f, 60f, HabitEffect.Signal, "destella desde lo alto de un tallo", "cortejo por destellos (Lewis & Cratsley 2008, Annu Rev Entomol 53:293)"),
-            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Rest, "descansa en la hierba", "") } },
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Rest, "descansa en la hierba", ""),
+            new EthoAct(AffordanceKind.Flower, 0.1f, 8f, HabitEffect.Feed, "sorbe néctar o rocío", "el adulto apenas come: vive de las reservas de la larva [A]") } },
         { "Earwig", new[] {
             new EthoAct(AffordanceKind.Shelter, 0.5f, 40f, HabitEffect.Shelter, "se mete en una grieta estrecha", "tigmotaxis; nocturna"),
             new EthoAct(AffordanceKind.Flower, 0.3f, 15f, HabitEffect.Feed, "come polen y pétalos", "omnívora"),

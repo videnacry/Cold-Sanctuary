@@ -15,6 +15,8 @@ public class Forager : MonoBehaviour
 {
     [Tooltip("Come PRESA (carnívoro): busca Animas cazables cerca por stats (Predation), ya no por una tabla Diet.")]
     public bool eatsPrey;
+    /// <summary>Solo caza en fase de LARVA (luciérnaga: la larva come caracoles; el adulto vive de lo que acumuló).</summary>
+    public bool preyOnlyAsLarva;
     [Tooltip("Come PASTO (herbívoro terrestre).")]
     public bool eatsGrass;
     [Tooltip("Come PECES/banco (Swarm de clase Fish).")]
@@ -65,7 +67,7 @@ public class Forager : MonoBehaviour
             // (Feed sobre Leaf/Fungus/Flower/PlantSap/Dung); aquí solo lo que no es un interactuable (presa, pasto, carroña).
             case "Scorpion": case "CamelSpider":     eatsPrey = true; break;                    // depredadores nocturnos de artrópodos (y el solífugo, de lagartijas)
             case "GhostCrab":                        eatsPrey = true; break;                    // depredador y carroñero de playa (Tewfik et al. 2016, doi 10.1371/journal.pone.0147759)
-            case "Firefly":                          eatsPrey = true; break;                    // la larva caza caracoles y babosas (el adulto apenas come)
+            case "Firefly":                          eatsPrey = true; preyOnlyAsLarva = true; break;   // SOLO la larva caza caracoles y babosas; el adulto apenas come (néctar/rocío, Ethogram)
             case "VelvetMite":                       eatsPrey = true; break;                    // huevos de insectos y artrópodos diminutos; la larva parasita insectos
             case "Earwig":                           eatsPrey = true; eatsPlants = true; break;  // omnívora: pulgones + polen/hojas (Ethogram)
             case "Cockroach": case "Woodlouse":      eatsPrey = true; carrionOnly = true; eatsPlants = true; break; // carroñeros: animales muertos + hojarasca/hongos (Ethogram)
@@ -80,7 +82,8 @@ public class Forager : MonoBehaviour
     {
         if (self == null) return null;
         Vector3 pos = self.transform.position;
-        GameObject prey  = eatsPrey  ? SelectPrey(self) : null;                          // presa por proximidad + stats
+        bool hunts = HuntsNow(self);
+        GameObject prey  = hunts ? SelectPrey(self) : null;                              // presa por proximidad + stats
         GameObject grass = eatsGrass ? GrassPatch.Nearest(pos)?.gameObject : null;
         // CULTIVOS del huerto: un herbívoro hambriento va a por la planta que más le APETECE (DietPreference por cultivo) si
         // la percibe; si le apetece más que la hierba (apetencia ÷ distancia), la prefiere. De ahí sale «la plaga» sola.
@@ -95,7 +98,7 @@ public class Forager : MonoBehaviour
         // PLANTAS DEL ENTORNO (Affordance + Ethogram, docs/natural-interactions.md): savia, semillas, hierba, hongos,
         // estiércol… lo que la especie come de verdad. Solo para quien PASTA (el cazador las usa vía su hábito: un oso
         // que come bayas no deja de cazar por tenerlas más cerca).
-        if (!eatsPrey || eatsPlants)
+        if (!hunts || eatsPlants)
         {
             GameObject plant = NearestPlant(self, pos);
             if (plant != null && (grass == null || (plant.transform.position - pos).sqrMagnitude < (grass.transform.position - pos).sqrMagnitude)) grass = plant;
@@ -104,7 +107,7 @@ public class Forager : MonoBehaviour
         GameObject krill = eatsKrill ? Swarm.Nearest(pos, SwarmKind.Krill)?.gameObject : null;
         // COMEDERO: raciones de carne (p. ej. la carne cultivada del laboratorio) que un carnívoro hambriento percibe cerca.
         GameObject meat = null;
-        if (eatsPrey)
+        if (hunts)
         {
             float md = Mathf.Max(minHuntRadius, self.perception * huntRangePerPerception);   // la que percibe (la que le acercan los guardias)
             foreach (GameObject g in FoodItem.GetPopulation(OrganicMaterial.Meat))
@@ -203,6 +206,9 @@ public class Forager : MonoBehaviour
             self.firstSolidEaten = true;
         return nutrition;
     }
+
+    /// <summary>¿Caza AHORA? `eatsPrey`, salvo las especies que solo cazan de larva (`preyOnlyAsLarva`).</summary>
+    public bool HuntsNow(Animal self) => eatsPrey && (!preyOnlyAsLarva || Metamorphosis.PhaseOf(self) == Metamorphosis.Phase.Larva);
 
     /// <summary>¿Lo próximo que comería es una planta/hojarasca/comida del suelo (no un ser)? Lo usa `Animal.Feed` para que
     /// el OMNÍVORO (`eatsPlants`) paste cuando lo más cercano es vegetal y cace cuando es una presa.</summary>

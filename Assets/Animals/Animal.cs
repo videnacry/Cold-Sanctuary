@@ -460,7 +460,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         {
             if (go == null || go == gameObject) continue;
             Animal predator = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
-            if (predator == null || predator.death || predator.Forage == null || !predator.Forage.eatsPrey) continue;
+            if (predator == null || predator.death || predator.Forage == null || !predator.Forage.HuntsNow(predator)) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
@@ -480,7 +480,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
-    public IEnumerator Feed() => Forage.eatsPrey && !Forage.NextIsPlant(this) ? Forage.Hunt(this) : Forage.Graze(this);   // el omnívoro pasta si lo vegetal está más cerca
+    public IEnumerator Feed() => Forage.HuntsNow(this) && !Forage.NextIsPlant(this) ? Forage.Hunt(this) : Forage.Graze(this);   // el omnívoro pasta si lo vegetal está más cerca
 
 
 
