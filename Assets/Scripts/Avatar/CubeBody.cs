@@ -22,6 +22,7 @@ public static class CubeBody
         // Bípedos PRIMERO: "panterilia" contiene "ant" y caía en Insect.
         if (s.Contains("human") || s.Contains("meerkat") || s.Contains("mono") || s.Contains("panterilia") ||
             s.Contains("goluis") || s.Contains("irosene")) return Plan.Biped;
+        if (InsectMorphology.Named(species) != null) return Plan.Insect;   // la fauna de cada era (escorpión, cochinilla, caracol…) por su ficha
         if (s.Contains("ant") || s.Contains("aphid") || s.Contains("ladybug") || s.Contains("spider") || s.Contains("cricket") ||
             s.Contains("termite") || s.Contains("beetle") || s.Contains("antlion") || s.Contains("mantis") || s.Contains("grasshopper") ||
             s.Contains("bee")) return Plan.Insect;

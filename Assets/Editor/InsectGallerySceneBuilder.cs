@@ -25,15 +25,15 @@ public static class InsectGallerySceneBuilder
     const float Length = 2.4f, Step = 3.6f, Column = 3f * Step + 2f, RowGap = 7f, GroupGap = 3f * RowGap + 10f;
     static readonly Vector3 Origin = new Vector3(5000f, 0f, -5000f);
 
-    enum Dev { Complete, Incomplete, None }
-
-    static Dev DevOf(string species)
+    // Las fases de su ciclo de vida, del desarrollo de la especie (StageProfile, el mismo que lee Metamorphosis).
+    static Metamorphosis.Phase[] StagesOf(string species)
     {
-        switch (InsectMorphology.For(species).name)
+        switch (StageProfile.Of(InsectMorphology.For(species).name).development)
         {
-            case "Ant": case "Ladybug": case "DungBeetle": case "Antlion": case "SnowBee": return Dev.Complete;
-            case "Spider": return Dev.None;
-            default: return Dev.Incomplete;
+            case StageProfile.Development.Complete:   return new[] { Metamorphosis.Phase.Larva, Metamorphosis.Phase.Pupa, Metamorphosis.Phase.Adult };
+            case StageProfile.Development.Incomplete: return new[] { Metamorphosis.Phase.Nymph, Metamorphosis.Phase.Adult };
+            case StageProfile.Development.Larval:     return new[] { Metamorphosis.Phase.Larva, Metamorphosis.Phase.Nymph, Metamorphosis.Phase.Adult };   // zoea → megalopa → cangrejo
+            default:                                  return new[] { Metamorphosis.Phase.Juvenile, Metamorphosis.Phase.Adult };   // directo: la cría ya con su forma
         }
     }
 
@@ -46,6 +46,7 @@ public static class InsectGallerySceneBuilder
         ("Mantis", "Mantis (4 brazos)", new Color(0.4f, 0.68f, 0.3f)), ("Antlion", "Hormiga león", new Color(0.55f, 0.48f, 0.38f)),
         ("Termite", "Termita (obreros ♀ y ♂ iguales)", new Color(0.9f, 0.85f, 0.72f)), ("SnowBee", "Abeja de hielo (obrera / zángano)", new Color(0.8f, 0.88f, 0.95f)),
         ("Spider", "Araña lobo (♂ con bulbos)", new Color(0.35f, 0.3f, 0.28f)),
+        ("Scorpionfly", "Pulga de nieve, Boreus (♂ alas en cerdas / ♀ oviscapto): activa sobre la nieve", new Color(0.22f, 0.2f, 0.16f)),
     };
 
     [MenuItem("Tools/Cold Sanctuary/Build Galería de insectos-humanos")]
@@ -120,6 +121,7 @@ public static class InsectGallerySceneBuilder
 
     static void Column3(Transform root, string sp, string label, Color tint, float x, float z0, bool myrmidon, bool aphid)
     {
+        if (!myrmidon && InsectMorphology.Hermaphrodite(sp)) label += " · hermafrodita (los dos iguales)";
         Label(root, label, new Vector3(x + Step * 0.5f, 3.6f, z0 - 1.5f), 0.11f);
         // Fila 1: la pareja, erguida.
         Make(root, sp, tint, "♀ erguida", new Vector3(x, 0f, z0), true, true, Metamorphosis.Phase.Adult, myrmidon, aphid);
@@ -127,9 +129,7 @@ public static class InsectGallerySceneBuilder
         // Fila 2: postura animal.
         Make(root, sp, tint, "animal", new Vector3(x + Step * 0.5f, 0f, z0 + RowGap), false, true, Metamorphosis.Phase.Adult, myrmidon, aphid);
         // Fila 3: el ciclo de vida, a escala.
-        Dev dev = myrmidon ? Dev.None : DevOf(sp);
-        Metamorphosis.Phase[] stages = dev == Dev.Complete ? new[] { Metamorphosis.Phase.Larva, Metamorphosis.Phase.Pupa, Metamorphosis.Phase.Adult }
-                                     : dev == Dev.Incomplete ? new[] { Metamorphosis.Phase.Nymph, Metamorphosis.Phase.Adult } : new Metamorphosis.Phase[0];
+        Metamorphosis.Phase[] stages = myrmidon ? new Metamorphosis.Phase[0] : StagesOf(sp);
         for (int k = 0; k < stages.Length; k++)
         {
             Vector3 at = new Vector3(x + k * Step * 0.75f, 0f, z0 + 2f * RowGap);
@@ -138,18 +138,18 @@ public static class InsectGallerySceneBuilder
         }
     }
 
-    static string StageName(Metamorphosis.Phase p, string sp) =>
-        p == Metamorphosis.Phase.Larva ? (InsectMorphology.For(sp).name == "Antlion" ? "larva (cazadora)" : "larva") : p == Metamorphosis.Phase.Pupa ? "pupa" :
-        p == Metamorphosis.Phase.Nymph ? "ninfa" : (InsectMorphology.For(sp).name == "Antlion" ? "adulto alado" : "adulto");
+    static string StageName(Metamorphosis.Phase p, string sp) => InsectMorphology.StageLabel(sp, p) ??
+        (p == Metamorphosis.Phase.Larva ? (InsectMorphology.For(sp).name == "Antlion" ? "larva (cazadora)" : "larva") : p == Metamorphosis.Phase.Pupa ? "pupa" :
+        p == Metamorphosis.Phase.Nymph ? "ninfa" : (InsectMorphology.For(sp).name == "Antlion" ? "adulto alado" : "adulto"));
 
     static void Make(Transform root, string sp, Color tint, string what, Vector3 at, bool upright, bool female, Metamorphosis.Phase phase, bool myrmidon, bool aphid)
     {
         var host = new GameObject($"{sp} · {what}"); host.transform.SetParent(root, false);
         host.transform.localPosition = at; host.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // de cara a la cámara (−Z)
-        float len = Length * InsectMorphology.PhaseScale(sp, phase);
+        float len = Length;   // el largo del ADULTO: Dress dibuja cada fase a su PhaseScale (como en el mundo vivo)
         CubeInsect ci = myrmidon ? CubeInsect.DressMyrmidon(host, tint, Length / 1.35f, aphid ? 1.6f : 1f, aphid)
                                  : CubeInsect.Dress(host, sp, tint, len, phase, female);
-        if (phase == Metamorphosis.Phase.Adult || phase == Metamorphosis.Phase.Nymph) ci.PoseNow(upright);
+        if (phase == Metamorphosis.Phase.Adult || phase == Metamorphosis.Phase.Nymph || phase == Metamorphosis.Phase.Juvenile) ci.PoseNow(upright);
     }
 
     static void Label(Transform root, string text, Vector3 at, float size, TextAnchor anchor = TextAnchor.MiddleCenter)

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 /// como fracción del largo del cuerpo L, las patas (5 segmentos en insectos, 7 en arañas) y sus rasgos (antena acodada,
 /// mandíbulas, alas, patas raptoras o saltadoras…). CubeInsect construye el cuerpo de cubos a partir de estos datos.
 /// </summary>
-public static class InsectMorphology
+public static partial class InsectMorphology
 {
     /// <summary>Un segmento del eje del cuerpo, de delante (cabeza) hacia atrás.</summary>
     public struct Seg { public string name; public float len, wid, hei; public Seg(string n, float l, float w, float h = -1f) { name = n; len = l; wid = w; hei = h < 0f ? w : h; } }
@@ -25,10 +25,11 @@ public static class InsectMorphology
         public float bodyHeight = 0.12f;         // altura del vientre sobre el suelo (en L)
         public int armPairs = 1;                 // pares delanteros que son BRAZOS al erguirse (mantis: 2 → anda a dos patas, con 4 brazos)
         // TAMAÑO DE CADA FASE respecto al adulto (largo del cuerpo; la larva madura, la pupa y la ninfa de último estadio).
-        public float larvaScale = 0.8f, pupaScale = 0.9f, nymphScale = 0.6f;
+        public float larvaScale = 0.8f, pupaScale = 0.9f, nymphScale = 0.6f, juvenileScale = 0.5f;   // (juvenil: los de desarrollo directo)
         // DIMORFISMO SEXUAL (ForSex): cuerno del macho, oviscapto de la hembra, bulbos de los pedipalpos del macho de araña.
         public bool horn, palpBulbs;
         public float ovipositor;                 // largo del oviscapto (en L; 0 = sin)
+        public FaunaTraits fx;                   // piezas de la fauna de cada era (escorpión, cangrejo, caracol…; InsectMorphology.Fauna.cs)
         public Spec MemberwiseCloneSpec() => (Spec)MemberwiseClone();
     }
 
@@ -61,6 +62,7 @@ public static class InsectMorphology
             case "Mantis": if (female) Scale("Abdomen", 1.1f, 1.4f); else { Scale("Abdomen", 0.9f, 0.75f); c.antenna *= 1.4f; } break;
             case "SnowBee": if (!female) { Scale("Cabeza", 1.15f, 1.15f); Scale("Abdomen", 0.95f, 1.1f); } break;
             case "Spider": if (female) Scale("Abdomen", 1.2f, 1.2f); else { Scale("Abdomen", 0.8f, 0.8f); c.palpBulbs = true; } break;
+            default: FaunaForSex(c, female, Scale); break;   // las especies de cada era (InsectMorphology.Fauna.cs)
         }
         return c;
     }
@@ -111,14 +113,14 @@ public static class InsectMorphology
     public static float PhaseScale(string species, Metamorphosis.Phase phase)
     {
         Spec s = For(species);
-        return phase == Metamorphosis.Phase.Larva ? s.larvaScale : phase == Metamorphosis.Phase.Pupa ? s.pupaScale : phase == Metamorphosis.Phase.Nymph ? s.nymphScale : 1f;
+        return phase == Metamorphosis.Phase.Larva ? s.larvaScale : phase == Metamorphosis.Phase.Pupa ? s.pupaScale : phase == Metamorphosis.Phase.Nymph ? s.nymphScale : phase == Metamorphosis.Phase.Juvenile ? s.juvenileScale : 1f;
     }
 
     // Pata de araña: fémur / patela / tibia / metatarso / tarso = 0,28 / 0,10 / 0,24 / 0,24 / 0,10 de su largo total.
     static float[] Sp(float total) => new[] { 0.28f * total, 0.10f * total, 0.24f * total, 0.24f * total, 0.10f * total };
 
     /// <summary>La ficha de una especie (por nombre de prefab/especie; tolera «SnowSpider», «Mariquita», etc.).</summary>
-    public static Spec Named(string n) => _all.TryGetValue(n, out Spec s) ? s : null;
+    public static Spec Named(string n) => n == null ? null : _all.TryGetValue(n, out Spec s) ? s : _fauna.TryGetValue(n, out s) ? s : null;
 
     /// <summary>Copia de la ficha SIN alas ni élitros (las NINFAS de los hemimetábolos).</summary>
     public static Spec Wingless(Spec s) { var c = (Spec)s.MemberwiseCloneSpec(); c.wings = false; c.beeWings = false; return c; }
@@ -126,6 +128,7 @@ public static class InsectMorphology
     public static Spec For(string species)
     {
         if (string.IsNullOrEmpty(species)) return _all["Ant"];
+        if (_fauna.TryGetValue(species, out Spec era)) return era;   // nombre exacto primero: «CamelSpider» no es una araña, «Scorpionfly» no es un escorpión
         string s = species.ToLowerInvariant();
         if (s.Contains("spider") || s.Contains("ara")) return _all["Spider"];
         if (s.Contains("antlion") || s.Contains("león") || s.Contains("leon")) return _all["Antlion"];

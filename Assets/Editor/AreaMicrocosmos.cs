@@ -667,13 +667,13 @@ public static class AreaMicrocosmos
         var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false); fauna.localPosition = center;
         (string sp, int n, float len)[] generic = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         // Con bioma, su FAUNA NATIVA (activa en la estación de la historia): cada especie real con el cuerpo de su grupo.
-        var list = new List<(string sp, int n, float len, Color tint, string name)>();
-        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name));
-        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs));
+        var list = new List<(string sp, int n, float len, Color tint, string name, string dormant)>();
+        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant));
+        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null));
         int placed = 0;
-        foreach (var (sp, n, len, tint, label) in list)
+        foreach (var (sp, n, len, tint, label, dormant) in list)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Animals/{sp}/{sp}.prefab");
+            GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
             for (int i = 0; i < n; i++)
             {
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga.
@@ -688,10 +688,18 @@ public static class AreaMicrocosmos
                 // FORMA REAL (docs/insect-morphology.md): el cuerpo de cubos articulado de su especie sustituye al modelo;
                 // la conducta, el ciclo de vida y la biología siguen siendo los del prefab.
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>(true)) x.enabled = false;
-                CubeInsect.Dress(a, sp, tint, 1f);
+                // POBLACIÓN MEZCLADA: la mayoría ADULTOS (erguidos cuando están lúcidos) y algunas crías (larva, ninfa o
+                // joven según su desarrollo). Antes el prefab nacía sin etapa → todos jóvenes, nadie erguido.
+                Animal an = a.GetComponent<Animal>();
+                if (an != null) an.lifeStage = i < Mathf.Max(1, Mathf.CeilToInt(n * 0.7f)) ? LifeStage.adult : LifeStage.child;
+                CubeInsect.Dress(a, sp, tint, 1f, an != null ? Metamorphosis.PhaseOf(an) : Metamorphosis.Phase.Adult, an == null || an.sex != Sex.male);
+                if (dormant != null) a.AddComponent<Dormant>().why = dormant;   // aletargado en esta estación: está, pero quieto
                 Bounds bb = default; bool any = false;
                 foreach (Renderer x in a.GetComponentsInChildren<Renderer>()) { if (!x.enabled) continue; if (!any) { bb = x.bounds; any = true; } else bb.Encapsulate(x.bounds); }
-                if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
+                // A su largo de cuerpo (el de la raíz «Insecto», sin la caja de patas y alas), como lo mantiene MicroSize.
+                Transform ins = a.transform.Find("Insecto");
+                if (ins != null && ins.lossyScale.z > 1e-6f) holder.localScale = Vector3.one * (len / ins.lossyScale.z);
+                else if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
                 placed++;
             }
         }

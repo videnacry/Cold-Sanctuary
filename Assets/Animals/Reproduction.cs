@@ -49,7 +49,7 @@ public class Reproduction : MonoBehaviour
     bool CanConceive()
     {
         if (_animal.lifeStage != LifeStage.adult) return false;   // solo adultos
-        if (_animal.sex != Sex.female) return false;              // gesta la hembra → una cría por pareja (no doble)
+        if (_animal.sex != Sex.female && !Hermaphrodite(_animal.SpeciesName)) return false;   // gesta la hembra → una cría por pareja; en los hermafroditas, los dos
         if (Time.time < _cooldownUntil) return false;
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
@@ -71,7 +71,7 @@ public class Reproduction : MonoBehaviour
             Animal other = col.GetComponentInParent<Animal>();
             if (other == null || other == _animal || other.death) continue;
             if (other.lifeStage != LifeStage.adult) continue;
-            if (other.sex == _animal.sex) continue;                            // sexo opuesto
+            if (other.sex == _animal.sex && !Hermaphrodite(_animal.SpeciesName)) continue;   // sexo opuesto (el hermafrodita se aparea con cualquiera)
             if (other.SpeciesName != _animal.SpeciesName) continue;            // misma especie
 
             float score = 0f;
@@ -115,6 +115,9 @@ public class Reproduction : MonoBehaviour
     public static bool Eusocial(string sp) => sp == "Ant" || sp == "Termite";
     /// <summary>La cría de la especie la lleva otro sistema (abeja de las nieves → `Hive`: huevo, larva, pupa en celdillas).</summary>
     public static bool HiveBreeds(string sp) => sp == "SnowBee";
+    /// <summary>Hermafroditas simultáneos que se fecundan MUTUAMENTE: los dos ponen tras aparearse (caracol con dardo de
+    /// amor, babosa con espermatóforo: Dreijers et al. 2013; lombriz cabeza con cola: Butt &amp; Nuutinen 1998).</summary>
+    public static bool Hermaphrodite(string sp) => InsectMorphology.Hermaphrodite(sp);   // una sola fuente: la ficha del cuerpo
 
     // La REINA de una colonia = la hembra adulta más antigua del nido (el menor id de instancia entre las hembras adultas
     // vivas de su especie que comparten hogar). Determinista y sin campo nuevo en escena.
@@ -162,6 +165,20 @@ public class Reproduction : MonoBehaviour
         "DungBeetle" => (0.3f, 1f),     // un huevo por bola-nido; pocas bolas: estratega K entre los insectos [A]
         "Antlion" => (1f, 0.3f),        // huevo en la arena ≈1 mes; el adulto vive pocas semanas [A]
         "Spider" => (0.8f, 1f),         // saco de huevos ≈2–4 sem; pocos sacos [A]
+        // Especies de las eras (docs/era-species-behavior.md):
+        "Scorpion" => (6f, 12f),        // vivíparo: gestación 122–277 d, media 185 (Leiurus; Ross 2009, J Venom Anim Toxins 15:347); una camada al año
+        "CamelSpider" => (1.2f, 12f),   // puesta en la madriguera ≈3–4 sem tras la cópula + incubación; anual (Punzo 1998) [A]
+        "Woodlouse" => (1f, 2f),        // ≈3–4 sem en el marsupio; 1–3 camadas por temporada (Armadillidium) [A]
+        "Snail" => (1.5f, 12f),         // puesta en un hoyo del suelo; eclosión ≈3–4 sem; una o dos puestas al año (Helix) [A]
+        "Slug" => (1.5f, 12f),          // huevos de ≈5 mm que eclosionan de otoño a primavera; ciclo casi anual (Hutchinson et al. 2017)
+        "Cicada" => (1.5f, 12f),        // huevos en ranuras de la corteza; la ninfa cae y se entierra años [A]
+        "Firefly" => (0.8f, 12f),       // huevo ≈3–4 sem en el suelo; el adulto vive pocas semanas [A]
+        "Earwig" => (2.5f, 12f),        // puesta en invierno bajo tierra, la madre la cuida hasta la eclosión en primavera (Kölliker 2007) [A]
+        "Cockroach" => (2f, 0.4f),      // ooteca ≈6–11 sem de incubación; ≈1 ooteca cada ~10–15 días [A]
+        "GhostCrab" => (1f, 3f),        // la hembra lleva los huevos ≈1 mes; larvas planctónicas en el mar [A]
+        "Scorpionfly" => (1.5f, 12f),   // huevos en el musgo en invierno; ciclo ≈2 años [A]
+        "VelvetMite" => (1f, 12f),      // puesta en primavera; la larva busca un insecto huésped [A]
+        "Earthworm" => (3f, 0.5f),      // capullo ≈3 meses, una cría por capullo; un capullo cada ~2 sem (Butt & Nuutinen 1998) [A]
         _ => (2f, 12f),
     };
     public Animal SpawnOffspring()
@@ -176,6 +193,17 @@ public class Reproduction : MonoBehaviour
             ba.lifeStage = LifeStage.child;
             ba.inheritedHome = _animal.HomeOrigin;   // su hogar es el de la madre, no el punto exacto donde nació
             ba.sex = Random.value < 0.5f ? Sex.female : Sex.male;
+            // CUIDADO DE LA CRÍA (BroodRide): la madre que cuida se encariña con lo que pare (base de «nurse»/«brood»);
+            // la del escorpión y la araña lobo se la sube al lomo hasta la primera muda.
+            string sp = _animal.SpeciesName;
+            if (BroodRide.ParentalCare(sp)) _animal.GrowBond(ba, BondType.Imprint, 60f);
+            BroodRide ride = baby.GetComponent<BroodRide>();
+            if (BroodRide.Carries(sp))
+            {
+                if (ride == null) ride = baby.AddComponent<BroodRide>();
+                ride.mother = _animal; ride.enabled = true;
+            }
+            else if (ride != null) Destroy(ride);
         }
         return ba;
     }

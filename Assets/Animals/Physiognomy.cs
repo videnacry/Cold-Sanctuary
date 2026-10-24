@@ -63,6 +63,22 @@ public class Physiognomy
             // Araña de las nieves (docs/ice-sanctuary-ecology.md): ~30 cm. Su cuerpo de cubos ya mide eso a escala 1
             // (IceInsectLife la mantiene ahí); masa como la de la mayor araña real, la tarántula Goliat (~175 g). [A]
             { "SnowSpider",  new Physiognomy(new Vector3(1f, 1f, 1f), 0.175f, 0.10f, 0.25f, 0.06f) },
+            // Especies de las eras (docs/era-species-behavior.md). Misma convención que los insectos de arriba (orden de masas
+            // y proporciones reales; en el microcosmos el tamaño lo fija MicroSize con los mm de MicroBiome). Masas reales:
+            // Leiurus 1–2,5 g (ADW); Helix lucorum ~25 g; Arion ater hasta 15 cm; L. terrestris 5–10 g; Ocypode ~30 g. [A]
+            { "Scorpion",    new Physiognomy(new Vector3(0.008f, 0.004f, 0.016f), 0.008f, 0.10f, 0.30f, 0.04f) },
+            { "CamelSpider", new Physiognomy(new Vector3(0.010f, 0.005f, 0.014f), 0.009f, 0.15f, 0.40f, 0.06f) },   // voraz
+            { "Woodlouse",   new Physiognomy(new Vector3(0.004f, 0.002f, 0.006f), 0.002f, 0.08f, 0.15f, 0.04f) },
+            { "Snail",       new Physiognomy(new Vector3(0.010f, 0.010f, 0.014f), 0.015f, 0.08f, 0.20f, 0.04f) },
+            { "Slug",        new Physiognomy(new Vector3(0.006f, 0.005f, 0.020f), 0.012f, 0.10f, 0.25f, 0.05f) },
+            { "Cicada",      new Physiognomy(new Vector3(0.008f, 0.006f, 0.012f), 0.005f, 0.06f, 0.12f, 0.03f) },
+            { "Firefly",     new Physiognomy(new Vector3(0.003f, 0.002f, 0.006f), 0.002f, 0.08f, 0.15f, 0.04f) },
+            { "Earwig",      new Physiognomy(new Vector3(0.003f, 0.002f, 0.008f), 0.003f, 0.10f, 0.20f, 0.05f) },
+            { "Cockroach",   new Physiognomy(new Vector3(0.006f, 0.003f, 0.012f), 0.005f, 0.10f, 0.25f, 0.05f) },
+            { "GhostCrab",   new Physiognomy(new Vector3(0.016f, 0.008f, 0.012f), 0.014f, 0.10f, 0.25f, 0.05f) },
+            { "Scorpionfly", new Physiognomy(new Vector3(0.002f, 0.002f, 0.002f), 0.0008f, 0.06f, 0.12f, 0.03f) },
+            { "VelvetMite",  new Physiognomy(new Vector3(0.002f, 0.002f, 0.002f), 0.0008f, 0.08f, 0.15f, 0.04f) },
+            { "Earthworm",   new Physiognomy(new Vector3(0.003f, 0.003f, 0.030f), 0.012f, 0.10f, 0.30f, 0.05f) },
         };
     }
 
