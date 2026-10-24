@@ -251,6 +251,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
         SleepCycle sleep = GetComponent<SleepCycle>();
         if (sleep == null) { sleep = gameObject.AddComponent<SleepCycle>(); sleep.nocturnal = SleepCycle.IsNocturnal(spm); }   // sueño día/noche por el reloj (Clock); los nocturnos duermen de día; despierta ante amenazas.
+        // Conductas propias de especie que son COMPONENTES (docs/era-species-behavior.md): acorazarse (bola/concha),
+        // llamar a pareja (destellos/canto) y correr de lado. Cada uno decide por los stats del individuo.
+        if (PassiveDefence.Has(spm) && GetComponent<PassiveDefence>() == null) gameObject.AddComponent<PassiveDefence>();
+        if (MatingSignal.KindOf(spm) != MatingSignal.Kind.None && GetComponent<MatingSignal>() == null) gameObject.AddComponent<MatingSignal>();
+        if (SidewaysGait.Has(spm) && GetComponent<SidewaysGait>() == null) gameObject.AddComponent<SidewaysGait>();
         if (GetComponent<AcuteStressResponse>() == null) gameObject.AddComponent<AcuteStressResponse>();  // CONTROL POR NECESIDAD (todas las animas): apremio→adrenalina/niebla→el cuerpo toma el mando. docs/microcosmos-dungbeetle-level.md §3.
         if (GetComponent<StatPhysique>() == null) gameObject.AddComponent<StatPhysique>();  // APARIENCIA POR STATS: fuerza/masa/grasa → grosor (sin pisar la altura de LifeStage). docs/anyma-factory-and-control.md §1.
         ActsPrep = ActionsPrep.Of(SpeciesArchetype);   // gaits de la especie (data); ANTES de la config de WalkSpell, que los lee
@@ -276,7 +281,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (_speciesBody == null) _speciesBody = gameObject.AddComponent<SpeciesBody>();
         if (string.IsNullOrEmpty(_speciesBody.species)) _speciesBody.species = SpeciesArchetype;   // por defecto, el de la clase
         _speciesBody.Apply(this);                      // aptitudes + medio + fija agility/perception/sensibility base
-        if (Lucidity.IsArthropod(spm))                 // ENTOMÁNTROPOS: insectos con mente humana; erguidos (centauro) en calma
+        if (Lucidity.HasHumanMind(spm))                // ENTOMÁNTROPOS: insectos (y caracoles, babosas, lombrices) con mente humana; erguidos en calma
         {
             Lucidity.GiveHumanIntellect(this);
             if (GetComponent<Lucidity>() == null) gameObject.AddComponent<Lucidity>();
@@ -475,7 +480,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
-    public IEnumerator Feed() => Forage.eatsPrey ? Forage.Hunt(this) : Forage.Graze(this);
+    public IEnumerator Feed() => Forage.eatsPrey && !Forage.NextIsPlant(this) ? Forage.Hunt(this) : Forage.Graze(this);   // el omnívoro pasta si lo vegetal está más cerca
 
 
 
@@ -508,6 +513,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 case Reaction.Fight:     yield return StartCoroutine(Fight(threat));     break;
                 case Reaction.HitAndRun: yield return StartCoroutine(HitAndRun(threat)); break;
+                case Reaction.Hold:      yield return StartCoroutine(Hold(threat));      break;
                 default:                 yield return StartCoroutine(Flee(threat));      break;
             }
         }
@@ -539,6 +545,35 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         foreach (Animal cub in Group.fed)
             if (cub != null && !cub.death) { Bond b = GetBond(cub); sum += b != null ? b.value : 40f; n++; }
         return n > 0 ? Mathf.Clamp01(sum / n / 100f) : 0f;
+    }
+
+    // DEFENSA PASIVA (PassiveDefence): quieto y acorazado (bola, concha, contraído) mientras la amenaza siga cerca, el
+    // tiempo que dicten SUS stats (estrés, temple, sexo); luego se desenrolla y sigue con lo suyo. busy = no come ni pasea.
+    protected virtual IEnumerator Hold(GameObject threat)
+    {
+        PassiveDefence pd = GetComponent<PassiveDefence>();
+        if (pd == null) { yield return StartCoroutine(Flee(threat)); yield break; }
+        bool wasBusy = busy;
+        busy = true;
+        try
+        {
+            if (nav != null && nav.isOnNavMesh) nav.ResetPath();
+            Loco?.Idle(1f);
+            pd.Begin();
+            float until = Time.time + pd.HoldSeconds(this);
+            // Se desenrolla antes si la amenaza ya se fue lejos; nunca antes de un mínimo (no sabe que se fue).
+            float minUntil = Time.time + 3f;
+            while (Time.time < until && !death)
+            {
+                if (Time.time > minUntil && (threat == null || Vector3.Distance(threat.transform.position, transform.position) > HomeRadius)) break;
+                yield return new WaitForSeconds(0.5f);
+            }
+        }
+        finally
+        {
+            pd.End();
+            busy = wasBusy;
+        }
     }
 
     [Tooltip("Cuánto proyecta la huida hacia adelante (lejos de la amenaza) por re-cálculo. Tunable.")]

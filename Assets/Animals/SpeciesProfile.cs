@@ -65,6 +65,20 @@ public class SpeciesProfile
             { "Grasshopper", new SpeciesProfile(0.4f, 0.3f, 1.0f, 1.0f, 0.3f, 0.5f, 4.0f, 0.3f,  2.0f, 0.6f, 0.5f, OrganicMaterial.Meat) },  // gregario; presa base
             { "Meerkat",     new SpeciesProfile(0.9f, 0.4f, 1.6f, 0.8f, 0.4f, 0.3f, 3.0f, 0.8f,  2.0f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // cooperativa; bond rápido; madriguera segura
             { "SnowBee",     new SpeciesProfile(0.9f, 0.3f, 1.5f, 0.6f, 0.3f, 0.3f, 3.0f, 0.9f,  1.5f, 0.5f, 0.4f, OrganicMaterial.Meat) },  // colonia; nido seguro; aguijón
+            // Especies de las eras (docs/era-species-behavior.md)
+            { "Scorpion",    new SpeciesProfile(0.0f, 0.8f, 0.3f, 3.0f, 1.0f, 0.2f, 6.0f, 0.7f,  4.0f, 0.4f, 0.35f, OrganicMaterial.Meat) }, // solitario; aguanta meses sin comer
+            { "CamelSpider", new SpeciesProfile(0.0f, 0.9f, 0.2f, 3.5f, 0.5f, 0.3f, 6.0f, 0.5f,  2.5f, 0.9f, 0.3f,  OrganicMaterial.Meat) }, // voraz: se atiborra
+            { "Woodlouse",   new SpeciesProfile(0.6f, 0.2f, 1.2f, 0.6f, 1.0f, 0.5f, 8.0f, 0.5f,  1.0f, 0.4f, 0.6f,  OrganicMaterial.Meat) }, // se agrega; coraza calcificada
+            { "Snail",       new SpeciesProfile(0.2f, 0.1f, 1.0f, 0.8f, 1.5f, 0.3f, 9.0f, 0.6f,  3.0f, 0.5f, 0.6f,  OrganicMaterial.Meat) }, // concha; reservas para estivar
+            { "Slug",        new SpeciesProfile(0.1f, 0.1f, 1.0f, 0.8f, 0.2f, 0.4f, 9.0f, 0.4f,  2.0f, 0.6f, 0.6f,  OrganicMaterial.Meat) },
+            { "Cicada",      new SpeciesProfile(0.5f, 0.1f, 1.0f, 0.5f, 0.5f, 0.4f, 4.0f, 0.3f,  1.5f, 0.5f, 0.55f, OrganicMaterial.Meat) }, // coro; chillido de alarma
+            { "Firefly",     new SpeciesProfile(0.4f, 0.4f, 1.0f, 1.0f, 0.3f, 0.35f, 5.0f, 0.4f, 1.5f, 0.5f, 0.5f,  OrganicMaterial.Meat) },
+            { "Earwig",      new SpeciesProfile(0.4f, 0.5f, 1.4f, 1.0f, 0.5f, 0.35f, 5.0f, 0.6f, 1.5f, 0.5f, 0.45f, OrganicMaterial.Meat) }, // madre que se vincula con su puesta
+            { "Cockroach",   new SpeciesProfile(0.7f, 0.2f, 1.0f, 0.8f, 0.6f, 0.5f, 7.0f, 0.6f,  3.0f, 0.6f, 0.6f,  OrganicMaterial.Meat) }, // se agrega; semanas sin comer
+            { "GhostCrab",   new SpeciesProfile(0.0f, 0.6f, 0.4f, 2.0f, 1.4f, 0.3f, 4.0f, 0.7f,  2.5f, 0.6f, 0.4f,  OrganicMaterial.Meat) }, // madriguera = nido seguro
+            { "Scorpionfly", new SpeciesProfile(0.2f, 0.1f, 1.0f, 0.4f, 0.3f, 0.4f, 7.0f, 0.4f,  1.0f, 0.4f, 0.6f,  OrganicMaterial.Meat) },
+            { "VelvetMite",  new SpeciesProfile(0.3f, 0.4f, 0.8f, 0.6f, 0.7f, 0.3f, 7.0f, 0.4f,  1.5f, 0.5f, 0.45f, OrganicMaterial.Meat) },
+            { "Earthworm",   new SpeciesProfile(0.1f, 0.1f, 1.0f, 0.5f, 0.05f, 0.5f, 9.0f, 0.7f, 1.5f, 0.5f, 0.6f,  OrganicMaterial.Meat) }, // galería = nido seguro
         };
     }
 }

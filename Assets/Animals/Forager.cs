@@ -23,6 +23,11 @@ public class Forager : MonoBehaviour
     public bool eatsKrill;
     [Tooltip("Come EXCREMENTO (coprófago: escarabajo pelotero). Lo prefiere a cualquier otra fuente que perciba.")]
     public bool eatsDung;
+    [Tooltip("CARROÑERO puro: de las presas solo come las MUERTAS (cucaracha, cochinilla). No caza: la presa viva no cuenta.")]
+    public bool carrionOnly;
+    [Tooltip("OMNÍVORO de verdad: aunque coma presa, cuando tiene hambre también cuentan las plantas/hojarasca de su Ethogram " +
+             "(tijereta: pulgones Y polen; cucaracha: carroña Y hojarasca). Sin esto, un cazador solo las usa como hábito.")]
+    public bool eatsPlants;
     [Tooltip("Alcance de detección de presa POR PERCEPCIÓN: radio = perception × esto (deriva de stats; crece con la " +
              "evolución de la percepción). Reemplaza los rangos por-presa de la vieja Diet. Tunable.")]
     public float huntRangePerPerception = 80f;
@@ -56,6 +61,16 @@ public class Forager : MonoBehaviour
             case "Mantis":                           eatsPrey = true; break;                    // depredadora de emboscada
             case "Meerkat":                          eatsPrey = true; break;                    // insectívora (skin de la tribu)
             case "SnowBee":                          eatsGrass = true; break;                   // néctar (pollinizadora/carroñera suave)
+            // Especies de las eras (docs/era-species-behavior.md). Lo que comen de plantas/hojarasca/hongos lo pone su Ethogram
+            // (Feed sobre Leaf/Fungus/Flower/PlantSap/Dung); aquí solo lo que no es un interactuable (presa, pasto, carroña).
+            case "Scorpion": case "CamelSpider":     eatsPrey = true; break;                    // depredadores nocturnos de artrópodos (y el solífugo, de lagartijas)
+            case "GhostCrab":                        eatsPrey = true; break;                    // depredador y carroñero de playa (Tewfik et al. 2016, doi 10.1371/journal.pone.0147759)
+            case "Firefly":                          eatsPrey = true; break;                    // la larva caza caracoles y babosas (el adulto apenas come)
+            case "VelvetMite":                       eatsPrey = true; break;                    // huevos de insectos y artrópodos diminutos; la larva parasita insectos
+            case "Earwig":                           eatsPrey = true; eatsPlants = true; break;  // omnívora: pulgones + polen/hojas (Ethogram)
+            case "Cockroach": case "Woodlouse":      eatsPrey = true; carrionOnly = true; eatsPlants = true; break; // carroñeros: animales muertos + hojarasca/hongos (Ethogram)
+            case "Scorpionfly":                      eatsGrass = true; break;                   // musgo (en el microcosmos el musgo es la «hierba»; Pyszko et al. 2024)
+            case "Snail": case "Slug": case "Earthworm": case "Cicada": break;                  // solo lo de su Ethogram: hojas/hongos/flores, hojarasca, savia
         }
     }
 
@@ -80,7 +95,7 @@ public class Forager : MonoBehaviour
         // PLANTAS DEL ENTORNO (Affordance + Ethogram, docs/natural-interactions.md): savia, semillas, hierba, hongos,
         // estiércol… lo que la especie come de verdad. Solo para quien PASTA (el cazador las usa vía su hábito: un oso
         // que come bayas no deja de cazar por tenerlas más cerca).
-        if (!eatsPrey)
+        if (!eatsPrey || eatsPlants)
         {
             GameObject plant = NearestPlant(self, pos);
             if (plant != null && (grass == null || (plant.transform.position - pos).sqrMagnitude < (grass.transform.position - pos).sqrMagnitude)) grass = plant;
@@ -131,6 +146,7 @@ public class Forager : MonoBehaviour
             float defense = Predation.Defense(a);
             if (!carcass)   // presa VIVA
             {
+                if (carrionOnly) continue;                                                 // el carroñero no caza
                 if (a.SpeciesName != null && a.SpeciesName == self.SpeciesName) continue;   // no CAZAR la propia especie
                 if (myPower < defense) continue;          // solo si puedo con ella (con manada)
                 if (!self.CanHarm(t)) continue;           // un vínculo la protege
@@ -186,6 +202,15 @@ public class Forager : MonoBehaviour
         if (self.lifeStage == LifeStage.child && dropped != null)
             self.firstSolidEaten = true;
         return nutrition;
+    }
+
+    /// <summary>¿Lo próximo que comería es una planta/hojarasca/comida del suelo (no un ser)? Lo usa `Animal.Feed` para que
+    /// el OMNÍVORO (`eatsPlants`) paste cuando lo más cercano es vegetal y cace cuando es una presa.</summary>
+    public bool NextIsPlant(Animal self)
+    {
+        if (!eatsPlants) return false;
+        GameObject t = SelectTarget(self);
+        return t != null && t.GetComponent<ITarget>() == null;
     }
 
     /// <summary>PASTAR/pescar (herbívoro/consumidor de banco): va a la fuente más cercana (por `Locomotion`) y come,

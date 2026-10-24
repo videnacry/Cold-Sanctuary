@@ -82,6 +82,16 @@ public static class Archetypes
             { "Bear",     new Dictionary<string, float>() },                                          // solitario, neutro
             { "Fox",      new Dictionary<string, float>() },
             { "Panterilia", new Dictionary<string, float> { { "Malamute", 45f } } },                  // humana
+            // Especies de las eras: quién se come a quién (y los gregarios que se agregan).
+            { "Snail",     new Dictionary<string, float> { { "Firefly", -45f } } },                     // la larva de luciérnaga lo devora
+            { "Slug",      new Dictionary<string, float> { { "Firefly", -40f } } },
+            { "Earthworm", new Dictionary<string, float> { { "Firefly", -20f } } },
+            { "Termite",   new Dictionary<string, float> { { "CamelSpider", -45f }, { "Scorpion", -30f } } },
+            { "Cricket",   new Dictionary<string, float> { { "Scorpion", -35f }, { "CamelSpider", -35f } } },
+            { "Cockroach", new Dictionary<string, float> { { "Scorpion", -30f }, { "Cockroach", 15f } } },   // agregación
+            { "Woodlouse", new Dictionary<string, float> { { "Woodlouse", 10f } } },
+            { "Aphid",     new Dictionary<string, float> { { "Earwig", -40f }, { "VelvetMite", -30f } } },
+            { "Scorpion",  new Dictionary<string, float> { { "Scorpion", -15f } } },                    // caníbal ocasional
         };
         _bodies = new Dictionary<string, ArchetypeProfile>
         {                          // altura, agi, per, str, mass, end
@@ -105,6 +115,20 @@ public static class Archetypes
             { "Grasshopper", MakeBody(0.40f, 1.5f, 1.0f, 0.9f, 0.6f, 1.1f) },   // saltamontes: salto/vuelo ágil, herbívoro
             { "Meerkat",     MakeBody(0.30f, 1.4f, 1.7f, 0.8f, 0.5f, 1.3f) },   // suricata (skin insecto): percepción máx = centinela/observación
             { "SnowBee",     MakeBody(0.22f, 1.2f, 0.9f, 0.4f, 0.3f, 1.0f) },   // abeja de las nieves: pequeña, voladora ágil, adaptada al frío
+            // Especies de las eras (docs/era-species-behavior.md)
+            { "Scorpion",    MakeBody(0.45f, 0.9f, 1.3f, 1.4f, 0.8f, 1.8f, 1.3f) },   // siente vibraciones (pectinas); meses sin comer
+            { "CamelSpider", MakeBody(0.45f, 2.0f, 1.2f, 1.3f, 0.7f, 1.0f) },         // corredor velocísimo, quelíceros enormes
+            { "Woodlouse",   MakeBody(0.20f, 0.5f, 0.8f, 0.4f, 0.4f, 1.1f) },         // lenta; se salva haciéndose bola
+            { "Snail",       MakeBody(0.30f, 0.1f, 0.6f, 0.6f, 0.9f, 1.6f) },         // lentísimo; estiva meses
+            { "Slug",        MakeBody(0.30f, 0.15f, 0.6f, 0.5f, 0.8f, 1.0f) },
+            { "Cicada",      MakeBody(0.40f, 1.2f, 1.0f, 0.6f, 0.7f, 0.8f) },         // vuela; adulto efímero
+            { "Firefly",     MakeBody(0.30f, 1.0f, 1.3f, 0.4f, 0.3f, 0.7f) },         // ojos grandes del macho (ve destellos)
+            { "Earwig",      MakeBody(0.30f, 1.1f, 0.9f, 0.8f, 0.4f, 1.1f) },
+            { "Cockroach",   MakeBody(0.40f, 1.8f, 1.3f, 0.7f, 0.6f, 1.8f, 1.8f) },   // cercos que notan el aire; dura y adaptable
+            { "GhostCrab",   MakeBody(0.40f, 2.0f, 1.6f, 1.2f, 0.9f, 1.2f) },         // de los más rápidos; ojos de 360°
+            { "Scorpionfly", MakeBody(0.15f, 0.9f, 0.8f, 0.3f, 0.2f, 1.3f, 1.4f) },   // activo bajo cero; salta
+            { "VelvetMite",  MakeBody(0.12f, 0.6f, 0.9f, 0.4f, 0.3f, 1.0f) },
+            { "Earthworm",   MakeBody(0.35f, 0.2f, 0.5f, 0.9f, 0.7f, 1.1f) },         // arrastra hojas mayores que ella
             { "Panterilia",  MakeBody(1.00f, 0.95f, 1.7f,  0.7f, 0.8f, 0.9f, 1.4f) },   // companions (fase 5): sus Base* reales
             { "Goluis",      MakeBody(1.05f, 0.9f,  1.1f,  1.5f, 1.3f, 1.4f, 0.6f) },
             { "Gohageneis",  MakeBody(1.00f, 1.2f,  1.05f, 1.1f, 1.1f, 1.3f, 1.7f) },
@@ -151,6 +175,20 @@ public static class Archetypes
             { "Grasshopper", MakeMind(ElementalTone.Viento, 0.6f, 0.6f, 0.6f, 0.8f, 1.2f, 0.5f) },   // gregario en fase enjambre (masas)
             { "Meerkat",     MakeMind(ElementalTone.Tierra, 1.0f, 1.1f, 1.0f, 0.7f, 1.8f, 1.3f) },   // cooperativa, muy social, vigilante
             { "SnowBee",     MakeMind(ElementalTone.Agua, 1.0f, 0.5f, 1.0f, 0.5f, 1.6f, 1.5f) },   // eusocial: disciplina/sociabilidad altas, memoria de nido
+            // Especies de las eras (docs/era-species-behavior.md)
+            { "Scorpion",    MakeMind(ElementalTone.Tierra, 1.9f, 0.8f, 0.9f, 0.4f, 0.2f, 1.2f) },   // acecho paciente; solitario
+            { "CamelSpider", MakeMind(ElementalTone.Fuego,  0.5f, 0.9f, 0.7f, 0.8f, 0.1f, 0.5f) },   // voraz e impulsivo
+            { "Woodlouse",   MakeMind(ElementalTone.Agua,   1.0f, 0.5f, 0.8f, 0.4f, 1.3f, 0.8f) },   // busca a las suyas (agregación)
+            { "Snail",       MakeMind(ElementalTone.Agua,   1.9f, 0.5f, 1.0f, 0.4f, 0.5f, 1.0f) },   // calma máxima; vuelve a su sitio
+            { "Slug",        MakeMind(ElementalTone.Agua,   1.3f, 0.5f, 0.9f, 0.5f, 0.6f, 0.7f) },   // sigue rastros de moco
+            { "Cicada",      MakeMind(ElementalTone.Viento, 0.8f, 0.5f, 0.6f, 1.2f, 1.3f, 0.8f) },   // canta en coro
+            { "Firefly",     MakeMind(ElementalTone.Fuego,  1.0f, 0.7f, 0.7f, 1.4f, 1.2f, 0.9f) },   // lenguaje de luz
+            { "Earwig",      MakeMind(ElementalTone.Tierra, 1.1f, 0.8f, 1.0f, 0.6f, 1.0f, 1.3f) },   // madre abnegada
+            { "Cockroach",   MakeMind(ElementalTone.Tierra, 0.6f, 1.0f, 1.2f, 0.9f, 1.3f, 0.6f) },   // asustadiza; aprende rápido
+            { "GhostCrab",   MakeMind(ElementalTone.Agua,   0.9f, 0.9f, 1.3f, 0.6f, 0.3f, 1.0f) },   // recuerda su madriguera
+            { "Scorpionfly", MakeMind(ElementalTone.Agua,   1.2f, 0.5f, 0.6f, 0.5f, 0.4f, 1.0f) },
+            { "VelvetMite",  MakeMind(ElementalTone.Fuego,  1.0f, 0.4f, 0.5f, 0.3f, 0.6f, 0.8f) },
+            { "Earthworm",   MakeMind(ElementalTone.Tierra, 1.6f, 0.4f, 0.8f, 0.4f, 0.7f, 1.4f) },   // trabajo lento y constante
         };
         _packs = new Dictionary<string, Aptitudes>
         {   // aditivo (todas las aptitudes). Valores por nivel (placeholder; salen del balance del boss del santuario).

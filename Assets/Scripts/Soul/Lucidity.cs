@@ -29,7 +29,7 @@ public class Lucidity : MonoBehaviour
     /// <summary>Erguido, pensativo, con brazos (true) o a cuatro patas… o a seis, como un animal (false).</summary>
     public bool Lucid { get; private set; }
     /// <summary>Patas que tocan el suelo ahora: todas en modo animal; dos menos (los brazos) en modo lúcido.</summary>
-    public int LegsOnGround => Lucid ? Mathf.Max(2, Limbs - 2 * (InsectMorphology.For(_a != null ? _a.SpeciesName : null).armPairs)) : Limbs;
+    public int LegsOnGround => Limbs == 0 ? 0 : Lucid ? Mathf.Max(2, Limbs - 2 * (InsectMorphology.For(_a != null ? _a.SpeciesName : null).armPairs)) : Limbs;
     /// <summary>Patas de la especie (artrópodos: 6; arañas: 8).</summary>
     public int Limbs { get; private set; } = 6;
 
@@ -54,7 +54,7 @@ public class Lucidity : MonoBehaviour
         Clarity = ClarityOf(_a);
         bool canStand = !_a.asleep && Metamorphosis.PhaseOf(_a) != Metamorphosis.Phase.Larva && !Metamorphosis.IsPupa(_a);
         // Darse cuenta de algo (aware) o estar atento no nubla la mente: solo correr, el pánico (AcuteStress) o el apremio.
-        bool bodyRules = !canStand || Running() || (_acute != null && _acute.InTakeover);
+        bool bodyRules = !canStand || Running() || (_acute != null && _acute.InTakeover) || PassiveDefence.IsHolding(this);   // hecho bola / en la concha
         if (bodyRules || Clarity < leaveAt) Set(false);
         else if (Clarity >= enterAt) Set(true);
     }
@@ -90,12 +90,32 @@ public class Lucidity : MonoBehaviour
         {
             case "Ant": case "Aphid": case "Ladybug": case "Spider": case "SnowSpider": case "Cricket": case "Termite":
             case "DungBeetle": case "Grasshopper": case "Antlion": case "Mantis": case "SnowBee":
+            // Especies de las eras (docs/era-species-behavior.md)
+            case "Scorpion": case "CamelSpider": case "VelvetMite": case "Woodlouse": case "GhostCrab":
+            case "Cicada": case "Firefly": case "Earwig": case "Cockroach": case "Scorpionfly":
                 return true;
             default: return false;
         }
     }
 
-    public static int LimbsOf(string species) => species == "Spider" || species == "SnowSpider" ? 8 : 6;
+    /// <summary>Gente del microcosmos con mente humana: los artrópodos y además los moluscos y la lombriz (caracol,
+    /// babosa, lombriz: también son entomántropos, aunque sin patas).</summary>
+    public static bool HasHumanMind(string species) => IsArthropod(species) || IsLimbless(species);
+    public static bool IsLimbless(string species) => species == "Snail" || species == "Slug" || species == "Earthworm";
+
+    /// <summary>Patas de la especie: insectos 6; arácnidos (araña, escorpión, solífugo, ácaro adulto) 8; cangrejo 8 (las pinzas
+    /// van aparte: son sus brazos, como los pedipalpos del escorpión); cochinilla 14 (7 pares de pereiópodos); caracol,
+    /// babosa y lombriz, ninguna.</summary>
+    public static int LimbsOf(string species)
+    {
+        switch (species)
+        {
+            case "Spider": case "SnowSpider": case "Scorpion": case "CamelSpider": case "VelvetMite": case "GhostCrab": return 8;
+            case "Woodlouse": return 14;
+            case "Snail": case "Slug": case "Earthworm": return 0;
+            default: return 6;
+        }
+    }
 
     /// <summary>INTELIGENCIA HUMANA: razonamiento, memoria y creatividad suben al menos al nivel del arquetipo humano.
     /// El temperamento (calma, sociabilidad, disciplina) y el tono siguen siendo los de su especie: una araña lista

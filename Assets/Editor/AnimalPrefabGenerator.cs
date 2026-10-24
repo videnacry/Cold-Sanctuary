@@ -47,6 +47,20 @@ public static class AnimalPrefabGenerator
         ("Meerkat",     "MeerkatBehavior"),
         ("SnowBee",     "SnowBeeBehavior"),
         ("SnowSpider",  "SnowSpiderBehavior"),   // araña de las nieves: caza abejas en los árboles carnívoros
+        // Especies de las eras del microcosmos (docs/era-species-behavior.md): sin prefab, AreaMicrocosmos no las planta.
+        ("Scorpion",    "ScorpionBehavior"),
+        ("CamelSpider", "CamelSpiderBehavior"),
+        ("Woodlouse",   "WoodlouseBehavior"),
+        ("Snail",       "SnailBehavior"),
+        ("Slug",        "SlugBehavior"),
+        ("Cicada",      "CicadaBehavior"),
+        ("Firefly",     "FireflyBehavior"),
+        ("Earwig",      "EarwigBehavior"),
+        ("Cockroach",   "CockroachBehavior"),
+        ("GhostCrab",   "GhostCrabBehavior"),
+        ("Scorpionfly", "ScorpionflyBehavior"),
+        ("VelvetMite",  "VelvetMiteBehavior"),
+        ("Earthworm",   "EarthwormBehavior"),
     };
     // NOTA: esta lista es el REGISTRO — para producir una especie nueva basta añadir su (carpeta, clase) aquí. Es
     // explícita (no auto-descubierta) a propósito, porque la carpeta y la clase no siempre coinciden (p.ej. la carpeta

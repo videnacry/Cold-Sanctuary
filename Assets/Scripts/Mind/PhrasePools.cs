@@ -322,5 +322,46 @@ public static class PhrasePools
         Especie("SnowBee", ElementalTone.Agua,   // danza, colmena, racimo contra el frío
             new[] { "Bailo para decir dónde está la comida.", "En el racimo, juntas, no hay frío.", "La miel guarda el verano." },
             new[] { "La reina huele débil.", "El frío entra en el panal.", "Algo acecha en el tronco." }),
+
+        // ── Especies de las eras (docs/era-species-behavior.md) ──
+        Especie("Scorpion", ElementalTone.Tierra,   // acecho en la madriguera, vibraciones, crías a lomos
+            new[] { "Noto sus pasos por el suelo.", "Espero en la boca de mi refugio.", "Mis hijos viajan sobre mi espalda." },
+            new[] { "La luna me delata.", "Otro escorpión ronda mi piedra.", "Hace semanas que no como, y aguanto." }),
+        Especie("CamelSpider", ElementalTone.Fuego,   // carrera, sombra, voracidad
+            new[] { "Corro de sombra en sombra.", "Todo lo que se mueve se come.", "Mis tijeras cortan cualquier coraza." },
+            new[] { "El sol me quema: busco sombra.", "Hambre, siempre hambre.", "Algo más grande me sigue." }),
+        Especie("Woodlouse", ElementalTone.Agua,   // humedad, agregación, bola
+            new[] { "Juntas bajo la piedra no nos secamos.", "La hojarasca húmeda es un banquete.", "Me hago bola y nada me toca." },
+            new[] { "El aire está seco.", "Algo me olfatea: no me desenrollo.", "Me he quedado sola al sol." }),
+        Especie("Snail", ElementalTone.Agua,   // lluvia, concha, estivación
+            new[] { "Llueve: es mi hora.", "Mi casa va conmigo.", "Sello la puerta y espero a la lluvia." },
+            new[] { "El sol me seca.", "Algo golpea mi concha.", "Huele a luciérnaga." }),
+        Especie("Slug", ElementalTone.Agua,   // moco, rastros, noche
+            new[] { "Sigo el rastro brillante de otra.", "La noche húmeda es mía.", "Me encojo y me balanceo: que se vaya." },
+            new[] { "Sin concha, todo me alcanza.", "El suelo está seco.", "Me he quedado al sol." }),
+        Especie("Cicada", ElementalTone.Viento,   // años bajo tierra, canto, verano breve
+            new[] { "Años en la oscuridad para este verano.", "Canto con todo el cuerpo.", "Bebo la savia del árbol." },
+            new[] { "El verano se acaba.", "Un pájaro sigue mi canto.", "Me callo y nadie me encuentra." }),
+        Especie("Firefly", ElementalTone.Fuego,   // destellos, respuesta, larva cazadora
+            new[] { "Destello y espero respuesta.", "Ahí abajo me contesta una luz.", "De larva cazaba caracoles." },
+            new[] { "Una luz más fuerte apaga la mía.", "Nadie me contesta.", "Mi sangre es amarga: que lo sepan." }),
+        Especie("Earwig", ElementalTone.Tierra,   // grietas, cuidado materno
+            new[] { "Limpio mis huevos uno a uno.", "Les traigo comida en la boca.", "En la grieta estoy a salvo." },
+            new[] { "Algo se acerca al nido: pinzas arriba.", "Mis hijos se van.", "La luz me expone." }),
+        Especie("Cockroach", ElementalTone.Tierra,   // grietas, agregación, huida
+            new[] { "Juntas en la grieta.", "Noto el aire antes que el golpe.", "Como lo que nadie quiere." },
+            new[] { "¡Luz! Corro.", "Algo grande se mueve.", "Esta grieta ya no es segura." }),
+        Especie("GhostCrab", ElementalTone.Agua,   // madriguera, carrera lateral, ojos en pedúnculos
+            new[] { "Mi madriguera es mía.", "Corro de lado más rápido que nadie.", "Lo veo todo desde mis ojos altos." },
+            new[] { "Alguien pisa mi playa.", "La marea borró mi camino.", "Pinzas arriba." }),
+        Especie("Scorpionfly", ElementalTone.Agua,   // invierno, nieve, musgo
+            new[] { "En la nieve nadie me caza.", "El musgo me alimenta.", "Un salto y me pongo a salvo." },
+            new[] { "Llega el deshielo.", "El sol aprieta demasiado.", "Algo cruza la nieve." }),
+        Especie("VelvetMite", ElementalTone.Fuego,   // rojo, lluvia, huevos
+            new[] { "Tras la lluvia, salgo al sol.", "Mi rojo avisa: no me comas.", "Busco huevos entre la hojarasca." },
+            new[] { "La tierra se seca.", "Mi huésped se ha ido.", "Algo grande me pisa." }),
+        Especie("Earthworm", ElementalTone.Tierra,   // galería, hojas, noche
+            new[] { "Arrastro una hoja a mi galería.", "La tierra pasa por mí y queda mejor.", "De noche salgo; con la cola sigo en casa." },
+            new[] { "Vibra el suelo: me retraigo.", "La lluvia inunda mi galería.", "La luz me quema." }),
     };
 }

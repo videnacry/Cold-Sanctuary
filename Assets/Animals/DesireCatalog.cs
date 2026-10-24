@@ -82,6 +82,9 @@ public static class DesireCatalog
             self =>
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
+                // Si alguien de su especie LLAMA (destellos de luciérnaga, canto de cigarra) y lo percibe, va hacia él.
+                MatingSignal caller = MatingSignal.NearestCaller(self, 40f * Mathf.Max(0.3f, self.perception));
+                if (caller != null && self.sex == Sex.female) { self.nav.SetDestination(caller.transform.position); return; }
                 Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
                 if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
             },
@@ -104,6 +107,19 @@ public static class DesireCatalog
         new Desire("nurse",
             self => { CubNeed(self, out float n); return n * Mathf.Max(0.3f, self.afabilidad) * W_NURSE; },
             self => NurseCub(self),
+            "tend"),
+
+        // GUARDAR EL NIDO (tijereta, solífugo, escorpión; BroodRide.Guards): la madre con crías pequeñas VINCULADAS se queda
+        // en casa vigilándolas (las tijeretas: juntan, limpian y defienden la puesta, Kölliker 2007). Necesidad = vínculo
+        // con sus crías × afabilidad → una madre poco afable o hambrienta (eat gana) las deja más; el resto, no lo siente.
+        new Desire("brood",
+            self => BroodRide.Guards(self.SpeciesName) && self.sex == Sex.female ? BroodTie(self) * Mathf.Max(0.3f, self.afabilidad) * W_BROOD : 0f,
+            self =>
+            {
+                if (self.nav == null || !self.nav.isOnNavMesh) return;
+                if (Vector3.Distance(self.transform.position, self.HomeOrigin) > 1.5f) self.nav.SetDestination(self.HomeOrigin);
+                else { self.nav.ResetPath(); self.Loco?.Idle(1f); self.alertness = Mathf.Max(self.alertness, 0.3f); }   // en el nido, atenta
+            },
             "tend"),
 
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
@@ -156,7 +172,22 @@ public static class DesireCatalog
     const float W_EXPLORE = 0.08f;   // curiosidad de base: muy bajo → solo gana cuando el ser está saciado y en calma
     const float W_NURSE   = 1.0f;    // nutrir a la cría: fuerte (× afabilidad) → un padre atiende a su cría hambrienta
     const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
+    const float W_BROOD   = 0.5f;    // guardar el nido: por debajo de nutrir y del hambre fuerte, por encima de los hábitos
     const float W_HABIT   = 0.2f;    // hábitos naturales: por encima del merodeo y del volver a casa; el hambre/social/cría lo superan
+
+    // Vínculo con las crías propias aún pequeñas (0..1): el más fuerte. 0 si no tiene.
+    static float BroodTie(Animal self)
+    {
+        float best = 0f;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
+            best = Mathf.Max(best, Mathf.Clamp01(b.value / 100f));
+        }
+        return best;
+    }
 
     // Cría más necesitada: recorre los bonds, busca Animal en etapa CRÍA ('c') y hambrienta; devuelve urgencia = vínculo×hambre.
     static Animal CubNeed(Animal self, out float need)

@@ -13,6 +13,7 @@ public enum HabitEffect
     StillHunt,  // acecho junto a un respiradero (oso polar): si sale una foca, la caza
     Rub,        // se frota (muda de piel de la ballena)
     Huddle,     // se apiña con los suyos (pingüinos con frío)
+    Signal,     // llama a pareja desde un posadero: destellos (luciérnaga), canto (cigarra). Ver MatingSignal; sin celo = descansa
 }
 
 /// <summary>Una actividad natural de una especie: con QUÉ interactúa, cuánto la prefiere y cuánto dura.</summary>
@@ -74,6 +75,57 @@ public static class Ethogram
         { "Meerkat", new[] {
             new EthoAct(AffordanceKind.Perch, 0.5f, 25f, HabitEffect.Watch, "hace de centinela en un punto alto", "Clutton-Brock et al. 1999, Science 284:1640"),
             new EthoAct(AffordanceKind.Shelter, 0.3f, 30f, HabitEffect.Rest, "descansa en la madriguera", "") } },
+
+        // ── ESPECIES DE LAS ERAS (docs/era-species-behavior.md): cada actividad con su fuente ──
+        { "Scorpion", new[] {
+            new EthoAct(AffordanceKind.Shelter, 0.6f, 60f, HabitEffect.Ambush, "acecha de noche a la entrada de su madriguera bajo una piedra", "sit-and-wait (Polis 1979, J Zool 188:333; Polis & Sissom 1990)"),
+            new EthoAct(AffordanceKind.Shelter, 0.4f, 40f, HabitEffect.Shelter, "se refugia bajo la piedra", "excava hasta ~20 cm bajo piedras (Leiurus; Animal Diversity Web, Ceceli & Horsfield 2012)") } },
+        { "CamelSpider", new[] {
+            new EthoAct(AffordanceKind.Shelter, 0.6f, 15f, HabitEffect.Watch, "corre de sombra en sombra buscando presas", "forrajeo activo nocturno y lucífugo (Punzo 1998, The Biology of Camel-Spiders)"),
+            new EthoAct(AffordanceKind.Shelter, 0.4f, 40f, HabitEffect.Rest, "descansa en su madriguera", "") } },
+        { "Woodlouse", new[] {
+            new EthoAct(AffordanceKind.Leaf, 0.5f, 15f, HabitEffect.Feed, "come hojarasca húmeda", "detritívoros (Zimmer 2002, Biol Rev 77:455)"),
+            new EthoAct(AffordanceKind.Fungus, 0.2f, 12f, HabitEffect.Feed, "ramonea hongos", "micófagos facultativos (Zimmer 2002)"),
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Shelter, "se agrega con otras bajo una piedra húmeda", "agregación contra la desecación (Broly, Deneubourg & Devigne 2013, Insect Soc 60:419)") } },
+        { "Snail", new[] {
+            new EthoAct(AffordanceKind.Leaf, 0.4f, 25f, HabitEffect.Feed, "raspa hojas con la rádula", "herbívoro generalista"),
+            new EthoAct(AffordanceKind.Fungus, 0.2f, 20f, HabitEffect.Feed, "come hongos", ""),
+            new EthoAct(AffordanceKind.Flower, 0.15f, 20f, HabitEffect.Feed, "se come una flor", ""),
+            new EthoAct(AffordanceKind.Perch, 0.25f, 90f, HabitEffect.Rest, "trepa a un tallo y sella la concha (estivación)", "estivación sobre la vegetación (Cepaea: Jones, Leith & Rawlings 1977, Annu Rev Ecol Syst 8:109)") } },
+        { "Slug", new[] {
+            new EthoAct(AffordanceKind.Fungus, 0.35f, 20f, HabitEffect.Feed, "come hongos", "omnívora (Rowson et al. 2014, Slugs of Britain and Ireland)"),
+            new EthoAct(AffordanceKind.Leaf, 0.35f, 20f, HabitEffect.Feed, "come hojas tiernas", ""),
+            new EthoAct(AffordanceKind.Dung, 0.1f, 15f, HabitEffect.Feed, "come excremento", "detritos animales (Rowson et al. 2014)"),
+            new EthoAct(AffordanceKind.Shelter, 0.2f, 60f, HabitEffect.Shelter, "se esconde de la luz bajo un tronco húmedo", "nocturna; sale de día con lluvia") } },
+        { "Cicada", new[] {
+            new EthoAct(AffordanceKind.PlantSap, 0.5f, 40f, HabitEffect.Feed, "clava el estilete y bebe savia del xilema", "cicádidos: xilemófagos"),
+            new EthoAct(AffordanceKind.Perch, 0.5f, 60f, HabitEffect.Signal, "canta con los timbales posado en el tronco", "C. orni canta desde posiciones bajas, en troncos (Sueur & Aubin 2003, doi 10.1007/s00114-003-0432-5)") } },
+        { "Firefly", new[] {
+            new EthoAct(AffordanceKind.Perch, 0.7f, 60f, HabitEffect.Signal, "destella desde lo alto de un tallo", "cortejo por destellos (Lewis & Cratsley 2008, Annu Rev Entomol 53:293)"),
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Rest, "descansa en la hierba", "") } },
+        { "Earwig", new[] {
+            new EthoAct(AffordanceKind.Shelter, 0.5f, 40f, HabitEffect.Shelter, "se mete en una grieta estrecha", "tigmotaxis; nocturna"),
+            new EthoAct(AffordanceKind.Flower, 0.3f, 15f, HabitEffect.Feed, "come polen y pétalos", "omnívora"),
+            new EthoAct(AffordanceKind.Leaf, 0.2f, 15f, HabitEffect.Feed, "mordisquea hojas", "") } },
+        { "Cockroach", new[] {
+            new EthoAct(AffordanceKind.Shelter, 0.5f, 40f, HabitEffect.Shelter, "se agrega con otras en una grieta oscura", "agregación por feromona y tigmotaxis (Bell, Roth & Nalepa 2007, Cockroaches: Ecology, Behavior, and Natural History)"),
+            new EthoAct(AffordanceKind.Leaf, 0.35f, 15f, HabitEffect.Feed, "roe restos vegetales", "prefiere carbohidratos (Sieksmeyer et al. 2022, doi 10.1186/s12862-022-02007-8)"),
+            new EthoAct(AffordanceKind.Dung, 0.15f, 12f, HabitEffect.Feed, "rebusca en excrementos", "carroñera omnívora") } },
+        { "GhostCrab", new[] {
+            new EthoAct(AffordanceKind.Shelter, 0.5f, 40f, HabitEffect.Shelter, "vuelve a su madriguera de la arena", "alta fidelidad a la madriguera (Gül & Griffen 2019, doi 10.1002/ece3.5853)"),
+            new EthoAct(AffordanceKind.Shelter, 0.5f, 25f, HabitEffect.Watch, "otea la playa desde la boca de la madriguera", "ojos en pedúnculos, visión de 360°") } },
+        { "Scorpionfly", new[] {
+            new EthoAct(AffordanceKind.Grass, 0.6f, 20f, HabitEffect.Feed, "come musgo", "briófago (Pyszko et al. 2024, doi 10.3390/insects15110878)"),
+            new EthoAct(AffordanceKind.Perch, 0.2f, 25f, HabitEffect.Bask, "se calienta al sol sobre la nieve", "activo en invierno (Zangl et al. 2021, doi 10.7717/peerj.11424)"),
+            new EthoAct(AffordanceKind.Shelter, 0.2f, 30f, HabitEffect.Shelter, "se mete en el musgo", "") } },
+        { "VelvetMite", new[] {
+            new EthoAct(AffordanceKind.Grass, 0.4f, 20f, HabitEffect.Watch, "recorre el suelo buscando huevos de insecto", "adulto depredador de huevos y artrópodos diminutos"),
+            new EthoAct(AffordanceKind.Perch, 0.3f, 25f, HabitEffect.Bask, "toma el sol tras la lluvia", "sale en masa tras las lluvias de primavera"),
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Shelter, "se entierra en la hojarasca", "") } },
+        { "Earthworm", new[] {
+            new EthoAct(AffordanceKind.Leaf, 0.5f, 15f, HabitEffect.Carry, "arrastra una hoja hasta su galería", "Darwin 1881, The Formation of Vegetable Mould through the Action of Worms"),
+            new EthoAct(AffordanceKind.Dung, 0.2f, 15f, HabitEffect.Feed, "come estiércol", "L. terrestris incorpora estiércol al suelo"),
+            new EthoAct(AffordanceKind.Shelter, 0.3f, 40f, HabitEffect.Shelter, "se retrae a su galería", "") } },
 
         // ── SANTUARIO DE HIELO ──
         { "Penguin", new[] {

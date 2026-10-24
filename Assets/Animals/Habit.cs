@@ -202,6 +202,12 @@ public class Habit : MonoBehaviour
             case HabitEffect.StillHunt:
                 StillHunt();
                 break;
+            case HabitEffect.Signal:
+                // Llama a pareja (destellos/canto) solo si el ser está en celo; si no, es un rato de descanso en el posadero.
+                MatingSignal sig = GetComponent<MatingSignal>();
+                if (sig == null || !sig.Display()) { _a.exhaustion = Mathf.Max(0f, _a.exhaustion - dt * 0.5f); break; }
+                _a.exhaustion += dt * 0.02f;   // cantar/destellar gasta
+                break;
         }
     }
 
