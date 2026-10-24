@@ -100,6 +100,7 @@ _Total: 606 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Hospital.cs` — EL HOSPITAL (antes Enfermería; docs/hospital.md).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.KitchenPlan.cs` — COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/restaurant-plan.md §3–6, Berón 2026-10-23):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Levels.cs` — ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.MeshMerge.cs` — RENDIMIENTO (Berón 2026-10-24:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/cocina-profesional.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Research.cs` — EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/laboratorios-investigacion.md y docs/edificios-investigacion.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).

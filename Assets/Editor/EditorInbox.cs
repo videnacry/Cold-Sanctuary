@@ -43,6 +43,7 @@ static class EditorInbox
         switch (cmd)
         {
             case "play":    EditorApplication.isPlaying = true; break;
+            case "test":    PlayWithTests(); break;   // Play con las pruebas (sin esto, un Play es solo para jugar)
             case "stop":    EditorApplication.isPlaying = false; break;
             case "refresh": AssetDatabase.Refresh(); break;
             case "menu":    if (!EditorApplication.ExecuteMenuItem(arg)) Debug.LogWarning($"[EditorInbox] menú no encontrado: {arg}"); break;
@@ -50,5 +51,13 @@ static class EditorInbox
             case "save":    UnityEditor.SceneManagement.EditorSceneManager.SaveOpenScenes(); Debug.Log("[EditorInbox] escenas abiertas guardadas."); break;
             default:        Debug.LogWarning($"[EditorInbox] comando desconocido: {cmd}"); break;
         }
+    }
+
+    /// <summary>Play CON las pruebas automáticas (TestRunner solo corre si existe su archivo de petición).</summary>
+    [MenuItem("Tools/Cold Sanctuary/Jugar con las pruebas")]
+    public static void PlayWithTests()
+    {
+        System.IO.File.WriteAllText(ColdSanctuary.TestRunner.RequestFile, "");
+        EditorApplication.isPlaying = true;
     }
 }

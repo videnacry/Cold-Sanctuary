@@ -10,6 +10,11 @@ receta + tickets). Los ítems `[x]` son historial verificado.
 > **Controles nuevos:** `V` = jugar con criatura · `F`/clic = interactuar (dar de comer, máquinas) ·
 > `Espacio` = trepar. (Combate/movimiento previos sin cambios.)
 
+> **Las pruebas `[TEST]` ya NO corren en cada Play (2026-10-24).** Un Play normal es para jugar: `TestRunner_AUTO`
+> se apaga solo salvo que exista `Temp/run-tests`. Para correrlas: **`Tools/Cold Sanctuary/Jugar con las pruebas`**,
+> el comando `test` del buzón del editor (`EditorInbox`) o `HeadlessLive` (lo crea antes de entrar en Play). El archivo
+> se consume en ese Play.
+
 ## ⚠️ DIAGNÓSTICO PERMANENTE — leer ANTES de dar un ciclo por bloqueado
 
 Tres causas reales hicieron perder **5 ciclos seguidos** (2026-08-29 → 2026-09-01) creyendo que "el bridge
