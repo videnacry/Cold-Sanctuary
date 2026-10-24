@@ -108,6 +108,7 @@ public static class HeadlessLive
         }
         catch (Exception e) { Report($"[LIVE] FALLO preparando: {e}"); return; }
 
+        File.WriteAllText(ColdSanctuary.TestRunner.RequestFile, "");   // las pruebas solo corren si se piden
         Report("[LIVE] LISTO. Pulsa Play: los [TEST] del TestRunner_AUTO y los [ECO] se escribirán aquí solos.");
     }
 
@@ -164,6 +165,7 @@ public static class HeadlessLive
 
         SetDeadline(EnterPlaySeconds);
         EditorPrefs.SetString(PhaseKey, "entering");
+        File.WriteAllText(ColdSanctuary.TestRunner.RequestFile, "");   // las pruebas solo corren si se piden (TestRunner.Requested)
         Report("[LIVE] entrando en Play...");
         EditorApplication.EnterPlaymode();
     }
