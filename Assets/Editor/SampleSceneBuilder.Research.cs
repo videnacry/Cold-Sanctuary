@@ -43,7 +43,7 @@ public static partial class SampleSceneBuilder
     /// fuera de las <paramref name="keepOut"/> (escaleras, llegadas de puente). Devuelve los que no cupieron.</summary>
     static List<LabBlock> PackFloor(Transform floor, Vector2 size, List<LabBlock> blocks, List<Rect> keepOut)
     {
-        const float gap = 2f, margin = 2f;
+        const float gap = 2.1f, margin = 2f;   // 2 m libres y un poco más: la caja real de cada bloque sobresale unos cm de su huella
         var left = new List<LabBlock>();
         float x0 = -size.x * 0.5f + margin, x1 = size.x * 0.5f - margin, z = -size.y * 0.5f + margin, zMax = size.y * 0.5f - margin;
         float x = x0, rowD = 0f;
@@ -60,7 +60,7 @@ public static partial class SampleSceneBuilder
                 if (blocked) { x = Mathf.Max(x + 0.5f, hit.xMax + gap * 0.5f); continue; }
                 Transform t = KitchenProps.Root(floor, "Bloque_" + b.name, new Vector3(x + b.w * 0.5f, 0f, z + b.d * 0.5f), 0f);
                 b.build(t);
-                KitchenProps.Fit(t);
+                KitchenProps.Fit(t, t.Find("Pared_sala") == null);   // en las salas se entra: su caja es solo de alcance
                 WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = b.name; wl.height = 2.4f;
                 x += b.w + gap; rowD = Mathf.Max(rowD, b.d); placed = true;
             }
@@ -86,9 +86,9 @@ public static partial class SampleSceneBuilder
                 if (corner || ca || cb || stair || Vector3.Distance(pa, pb) < b.w * 0.9f) { s += 1f; continue; }
                 Transform t = KitchenProps.Root(ring, "Bloque_" + b.name, p0, yaw);
                 b.build(t);
-                KitchenProps.Fit(t);
+                KitchenProps.Fit(t, t.Find("Pared_sala") == null);   // en las salas se entra: su caja es solo de alcance
                 WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = b.name; wl.height = 2.4f;
-                s += b.w + 2f; placed = true;
+                s += b.w + 2.1f; placed = true;
             }
             if (!placed) left.Add(b);
         }
@@ -150,10 +150,15 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(t, new Vector3(0f, 0.01f, -0.3f), new Vector3(0.9f, 0.02f, 0.9f), LabYellow, 0f, "Zona_marcada");
     }
 
-    static void Room(Transform t, float w, float d, Color wall, string label)   // sala o cámara (paredes bajas y puerta)
+    static void Room(Transform t, float w, float d, Color wall, string label)   // sala o cámara: paredes con su puerta abierta (se entra)
     {
-        KitchenProps.C(t, new Vector3(0f, 1.2f, 0f), new Vector3(w, 2.4f, d), wall, 0f, label);
-        KitchenProps.C(t, new Vector3(0f, 1.05f, -d * 0.5f - 0.02f), new Vector3(0.95f, 2.0f, 0.04f), LabSteel, 0f, "Puerta");
+        const float h = 2.4f, th = 0.15f, door = 1.2f;
+        Solid(t, new Vector3(0f, h * 0.5f, d * 0.5f), new Vector3(w, h, th), wall, "Pared_sala");
+        Solid(t, new Vector3(-w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Pared_sala");
+        Solid(t, new Vector3(w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, "Pared_sala");
+        float side = (w - door) * 0.5f;
+        Solid(t, new Vector3(-(door + side) * 0.5f, h * 0.5f, -d * 0.5f), new Vector3(side, h, th), wall, "Pared_sala");
+        Solid(t, new Vector3((door + side) * 0.5f, h * 0.5f, -d * 0.5f), new Vector3(side, h, th), wall, "Pared_sala");
     }
 
     static void Tall(Transform t, float w, float d, float h, Color c, string label, Color display)   // armario alto con pantalla
@@ -217,7 +222,7 @@ public static partial class SampleSceneBuilder
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.8f, 0.84f, 0.86f), "Suelo_analisis");
         var dry = new List<LabBlock>
         {
-            new LabBlock("Sala de RMN 400 MHz", 4.0f, 3.0f, t => { Room(t, 4f, 3f, new Color(0.85f, 0.88f, 0.92f), "Sala_RMN"); Vessel(KitchenProps.Root(t, "Iman", new Vector3(0f, 2.4f, 0f)), 0.45f, 1.6f, LabSteel, "Iman_superconductor"); KitchenProps.C(t, new Vector3(0f, 0.02f, -1.7f), new Vector3(4.2f, 0.02f, 0.08f), LabYellow, 0f, "Linea_5_gauss"); }),
+            new LabBlock("Sala de RMN 400 MHz", 4.0f, 3.0f, t => { Room(t, 4f, 3f, new Color(0.85f, 0.88f, 0.92f), "Sala_RMN"); Vessel(KitchenProps.Root(t, "Iman", new Vector3(0f, 0f, 0.3f)), 0.45f, 1.6f, LabSteel, "Iman_superconductor"); KitchenProps.C(t, new Vector3(0f, 0.02f, -1.7f), new Vector3(4.2f, 0.02f, 0.08f), LabYellow, 0f, "Linea_5_gauss"); }),
             new LabBlock("RMN de sobremesa", 1.2f, 0.75f, t => Instrument(t, 1.2f, 0.75f, 0.4f, LabWhite, "RMN_sobremesa")),
             new LabBlock("GC-MS", 1.5f, 0.75f, t => Instrument(t, 1.5f, 0.75f, 0.55f, LabWhite, "Cromatografo_gases")),
         };
@@ -225,7 +230,7 @@ public static partial class SampleSceneBuilder
         dry.Add(new LabBlock("IR y UV-Vis", 2.0f, 0.75f, t => Instrument(t, 2.0f, 0.75f, 0.35f, LabWhite, "Espectrometros")));
         dry.Add(new LabBlock("Difractómetro de rayos X", 1.5f, 1.3f, t => Tall(t, 1.5f, 1.3f, 1.9f, new Color(0.88f, 0.88f, 0.86f), "DRX", LabYellow)));
         dry.Add(new LabBlock("Hornos y muflas", 2.0f, 0.75f, t => { Bench(t, 2f, 0.75f, LabBench); for (int i = 0; i < 2; i++) KitchenProps.C(t, new Vector3(-0.5f + i * 1f, 1.2f, 0f), new Vector3(0.6f, 0.5f, 0.55f), LabDark, 0f, "Mufla"); }));
-        dry.Add(new LabBlock("Cuarto de balanzas", 2.5f, 2.0f, t => { Room(t, 2.5f, 2f, new Color(0.9f, 0.9f, 0.88f), "Cuarto_balanzas"); for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.9f + i * 0.6f, 2.45f, 0f), new Vector3(0.35f, 0.1f, 0.35f), LabGlass, 0f, "Balanza"); }));
+        dry.Add(new LabBlock("Cuarto de balanzas", 2.5f, 2.0f, t => { Room(t, 2.5f, 2f, new Color(0.9f, 0.9f, 0.88f), "Cuarto_balanzas"); Bench(KitchenProps.Root(t, "Mesa_antivibracion", new Vector3(0f, 0f, 0.55f)), 2.2f, 0.6f, LabDark); for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.8f + i * 0.53f, 1.05f, 0.55f), new Vector3(0.3f, 0.22f, 0.3f), LabGlass, 0f, "Balanza"); }));
         dry.AddRange(Times(4, "Puesto de análisis", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
         LogLeft("Química (análisis)", PackFloor(up, us, dry, StairKeepOut(us, false, -us.x * 0.3f)));
         return a;
@@ -320,8 +325,8 @@ public static partial class SampleSceneBuilder
         Color concrete = new Color(0.7f, 0.7f, 0.68f);
         var blocks = new List<LabBlock>
         {
-            new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 6f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(3.6f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
-            new LabBlock("Sala de control", 10f, 8f, t => { Room(t, 10f, 8f, concrete, "Sala_control"); for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 2.6f, -2f), new Vector3(1.6f, 0.4f, 0.8f), LabDark, 0f, "Consola_operador"); KitchenProps.C(t, new Vector3(0f, 3.2f, 2.5f), new Vector3(8f, 0.8f, 0.1f), LabBlue, 0f, "Panel_mimico"); }),
+            new LabBlock("Puesto de acceso", 6f, 3f, t => { Room(t, 4f, 3f, concrete, "Garita"); KitchenProps.C(t, new Vector3(1.75f, 1f, -1.6f), new Vector3(2.5f, 0.1f, 0.1f), LabYellow, 0f, "Barrera"); }),
+            new LabBlock("Sala de control", 10f, 8f, t => { Room(t, 10f, 8f, concrete, "Sala_control"); for (int i = 0; i < 4; i++) { KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 0.45f, 0.5f), new Vector3(1.6f, 0.9f, 0.8f), LabDark, 0f, "Consola_operador"); KitchenProps.C(t, new Vector3(-3.6f + i * 2.4f, 1.15f, 0.75f), new Vector3(1.2f, 0.5f, 0.05f), LabBlue, 0f, "Pantallas"); } KitchenProps.C(t, new Vector3(0f, 1.5f, 3.75f), new Vector3(8f, 1.2f, 0.1f), LabBlue, 0f, "Panel_mimico"); }),
             new LabBlock("Microrreactor (5 MWe)", 12f, 4.5f, t => { KitchenProps.C(t, new Vector3(0f, 0.3f, 0f), new Vector3(12f, 0.6f, 4.5f), concrete, 0f, "Losa_blindada"); KitchenProps.C(t, new Vector3(0f, 2.1f, 0f), new Vector3(10f, 3f, 3.2f), new Color(0.55f, 0.6f, 0.65f), 0f, "Modulo_reactor"); KitchenProps.C(t, new Vector3(-5.2f, 2.1f, 0f), new Vector3(0.6f, 3.4f, 3.4f), LabYellow, 0f, "Tapa_trebol"); KitchenProps.C(t, new Vector3(0f, 3.8f, 0f), new Vector3(10f, 0.4f, 0.6f), LabSteel, 0f, "Tubos_calor"); }),
             new LabBlock("Conversión de potencia", 12f, 3.5f, t => { KitchenProps.C(t, new Vector3(0f, 1.6f, 0f), new Vector3(12f, 3.2f, 3.5f), LabSteel, 0f, "Contenedor_turbina"); KitchenProps.C(t, new Vector3(4f, 3.6f, 0f), new Vector3(2.5f, 0.8f, 2.5f), LabDark, 0f, "Aerorrefrigerador"); }),
             new LabBlock("Intercambiador de la calefacción de distrito", 8f, 6f, t => { for (int i = 0; i < 2; i++) Vessel(KitchenProps.Root(t, "Deposito", new Vector3(-2f + i * 4f, 0f, 0f)), 1.2f, 3.5f, new Color(0.8f, 0.5f, 0.3f), "Intercambiador"); KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(7f, 0.3f, 0.3f), new Color(0.8f, 0.3f, 0.25f), 0f, "Tuberia_agua_caliente"); }),
