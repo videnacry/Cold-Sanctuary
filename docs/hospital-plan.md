@@ -4,7 +4,7 @@
 > - v1: «2 m entre objetos para poder caminar», «el aislamiento con subplataforma», «investiga la distribución real y verifica cuánto espacio tenemos».
 > - v2: «reemplaza la planta de camas por el anillo… al menos 2 médicos (mejor 4) deben poder hacer todas las tareas a la vez… quizás dos pisos y un anillo de camas en cada piso, porque hay categorías de camas y cada paciente se recupera en el piso de su servicio… en el hospital de animales también anillo si hace falta (osos), y 4 veterinarios trabajando a la vez en lo mismo».
 >
-> Estado: v2 en construcción.
+> Estado: v2 construido (PR #290); lo que falta, en `docs/hospital.md` §4.
 
 ## 1. Superficies de referencia (normas de diseño hospitalario)
 

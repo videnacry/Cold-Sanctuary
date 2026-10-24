@@ -4,21 +4,17 @@ using UnityEngine;
 /// EL HOSPITAL (antes Enfermería; docs/hospital.md). No hay otro hospital a miles de km, así que tiene lo mínimo de un
 /// hospital de primer nivel de la OMS para tratar todos los casos sin derivar: urgencias con reanimación, quirófano
 /// (cirujano + anestesista, esterilización, lavado quirúrgico), UCI, paritorio, aislamiento, imagen, laboratorio y banco
-/// de sangre, farmacia, oxígeno propio y telemedicina. Tres plantas sobre la misma base (docs/hospital-plan.md):
-/// - PLANTA BAJA (personas): ambulatorio y servicios centrales con 2 m libres entre objetos y salas de norma; PLANTA 1:
-///   las 30 CAMAS (2 m entre camas) y el aislamiento con esclusa en su subplataforma. Abajo sigue la iniciación (silla de exámenes,
-///   analizador clínico, mesa del médico y el tanque de virtualización).
-/// - PLANTA 2 (animales): hospital veterinario con 30 PLAZAS (6 cuadras, 16 boxes, 8 jaulas), consulta y
-///   quirófano veterinarios. Mismo número de plazas para animales que camas para personas.
-/// 8 PUESTOS MÉDICOS (HospitalStation.doctorPost): urgencias, 2 consultas, UCI, cirujano, anestesista, veterinaria y
-/// cirugía veterinaria; la jornada coloca a cada médico en uno libre.
+/// de sangre, farmacia, oxígeno propio y telemedicina. Tres plantas sobre la misma base (docs/hospital-plan.md v2), con
+/// 4 PUESTOS por servicio (cuatro médicos a la vez en la misma tarea) y 2 m libres entre objetos:
+/// - PLANTA BAJA: urgencias y ambulatorio (la iniciación sigue aquí: silla de exámenes, analizador clínico, mesa del
+///   médico y el tanque) + ANILLO de observación y maternidad.
+/// - PLANTA 1: 4 quirófanos, UCI de 6 y 4 aislamientos con esclusa + ANILLO de recuperación y hospitalización.
+/// - PLANTA 2: hospital veterinario (docs/vet-hospital-plan.md) + ANILLO de grandes animales (osos, focas).
+/// Mismo número de plazas para animales que camas para personas (48).
 /// </summary>
 public static partial class SampleSceneBuilder
 {
     public static readonly Vector2 HospitalSize = new Vector2(32f, 26f);
-    public const float HospitalBedDeck = MezzanineHeight;
-    // Cama de ~1,12 m de ancho medida (barandas y ruedas; gotero y monitor van detrás del cabecero) + 0,9 m de pasillo
-    // entre camas (FurnitureSpacing: acceso por los dos lados) + margen → 2,1 m de eje a eje.
 
     static Transform Station(Transform t, HospitalService service, string label, float height, bool doctorPost = false, Vector3? stand = null)
     {

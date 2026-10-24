@@ -133,15 +133,12 @@ public class SanctuaryArea : MonoBehaviour
         _ringReach = 0f;
         Transform mat = transform.Find("Mat");
         Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
-        foreach (Transform t in GetComponentsInChildren<Transform>(true))
+        foreach (Renderer r in GetComponentsInChildren<Renderer>(true))
         {
-            if (!t.name.StartsWith("Anillo_")) continue;
-            foreach (Renderer r in t.GetComponentsInChildren<Renderer>(true))
-            {
-                Vector3 c = transform.InverseTransformPoint(r.bounds.center), e = r.bounds.extents;
-                _ringMinY = Mathf.Min(_ringMinY, transform.InverseTransformPoint(r.bounds.min).y);
-                _ringReach = Mathf.Max(_ringReach, Mathf.Abs(c.x) + e.x - half.x, Mathf.Abs(c.z) + e.z - half.z);
-            }
+            if (r.name != "Losa_anillo") continue;   // solo las losas de RingDeck (los segmentos de la lombriz también se llaman «Anillo_N»)
+            Vector3 c = transform.InverseTransformPoint(r.bounds.center), e = r.bounds.extents;
+            _ringMinY = Mathf.Min(_ringMinY, transform.InverseTransformPoint(r.bounds.min).y);
+            _ringReach = Mathf.Max(_ringReach, Mathf.Abs(c.x) + e.x - half.x, Mathf.Abs(c.z) + e.z - half.z);
         }
         return _ringReach;
     }
@@ -180,8 +177,9 @@ public class SanctuaryArea : MonoBehaviour
         Transform mat = transform.Find("Mat");
         Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
         Vector3 l = transform.InverseTransformPoint(p);
-        float ring = withRing ? RingReach() : 0f;
-        return Mathf.Abs(l.x) <= half.x + margin + ring && Mathf.Abs(l.z) <= half.z + margin + ring;
+        if (Mathf.Abs(l.x) <= half.x + margin && Mathf.Abs(l.z) <= half.z + margin) return true;
+        float ring = withRing ? RingReach() : 0f;   // fuera de la planta: solo a la altura del anillo (no el edificio vecino de al lado)
+        return ring > 0f && l.y >= _ringMinY - 0.5f && Mathf.Abs(l.x) <= half.x + margin + ring && Mathf.Abs(l.z) <= half.z + margin + ring;
     }
 
     // Altura local de lo más alto del área (sin seres ni otras áreas apiladas); se calcula una vez.

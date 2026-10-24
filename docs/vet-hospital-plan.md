@@ -2,7 +2,8 @@
 
 > Berón, 2026-10-23: «la investigación también se debe hacer sobre el hospital para animales… debe tener más maquinaria;
 > 8 trabajadores médicos por hospital: 4 para humanos y 4 para animales». Datos y fuentes: `docs/veterinaria-investigacion.md`.
-> Estado: **propuesta para aprobar**.
+> Estado: **construido en la planta 2** (PR #290) salvo la UCI veterinaria, los pediluvios por ala, la cuarentena y
+> necropsia aparte y la piscina médica de cetáceos (ver `docs/hospital.md` §4). §1 describe lo que había antes.
 
 ## 1. Lo que hay hoy (planta veterinaria, 32 × 20 m = 640 m²)
 - **Plazas:** 6 cuadras, 16 boxes de 1,4 × 1,8 m y 8 jaulas, en total 30.
