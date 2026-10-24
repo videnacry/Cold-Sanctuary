@@ -23,7 +23,7 @@ public class EraSpeciesTest : MonoBehaviour, ITestUnit
     public GameObject[] prefabs;
 
     readonly List<GameObject> _spawned = new List<GameObject>();
-    static readonly Vector3 Origin = new Vector3(60f, 0.3f, -60f);
+    static readonly Vector3 Origin = new Vector3(5000f, 0.3f, -5000f);   // lejos de todo (ni agua, ni áreas, ni NavMesh ajeno)
 
     GameObject PrefabOf(string species)
     {
@@ -63,6 +63,7 @@ public class EraSpeciesTest : MonoBehaviour, ITestUnit
 
         TimeController tc = TimeController.timeController;
         float savedHour = tc != null ? tc.Hour : 12f;
+        int savedDay = tc != null ? tc.Day : 0;   // SetHour adelanta el día al «volver atrás»: se restauran los dos con SetClock
 
         // ── 1. DEFENSA PASIVA: cochinilla ante una araña ──
         Animal louse = Spawn("Woodlouse", Vector3.zero, LifeStage.adult, Sex.female);
@@ -169,11 +170,11 @@ public class EraSpeciesTest : MonoBehaviour, ITestUnit
         if (sc != null && tc != null)
         {
             female.aware = false;
-            tc.SetHour(12f); sc.Evaluate();
+            tc.SetClock(savedDay, 12f); sc.Evaluate();
             TestProbe.Check("a mediodía la luciérnaga DUERME", female.asleep);
-            tc.SetHour(23f); sc.Evaluate();
+            tc.SetClock(savedDay, 23f); sc.Evaluate();
             TestProbe.Check("a las 23:00 está despierta", !female.asleep);
-            tc.SetHour(savedHour);
+            tc.SetClock(savedDay, savedHour);
         }
 
         foreach (GameObject g in _spawned) if (g != null) Destroy(g);
