@@ -165,6 +165,8 @@ public static partial class SampleSceneBuilder
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
+        GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
+        Debug.Log($"[Rendimiento] árboles de hielo combinados: {MergeTreeMeshes(flora != null ? flora.transform : null)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
     }
 

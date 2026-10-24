@@ -363,7 +363,7 @@ public class SpellConsole : MonoBehaviour
         }
         GUI.SetNextControlName("spellInput");
         _input = GUI.TextField(new Rect(x, y + 30f, w, h), _input);
-        if (_input != _typed) { _typed = _input; _sel = -1; }   // al escribir, la selección vuelve a la primera sugerencia
+        if (_input != _typed) { _typed = _input; _sel = -1; }   // al escribir, se quita la selección (Enter envía lo escrito)
         GUI.FocusControl("spellInput");
         if (_moveCaret) { _moveCaret = false; var te = (TextEditor)GUIUtility.GetStateObject(typeof(TextEditor), GUIUtility.keyboardControl); if (te != null) { te.text = _input; te.MoveTextEnd(); } }
 
@@ -399,7 +399,7 @@ public class SpellConsole : MonoBehaviour
         for (int k = 0; k < 9 && first + k < rows.Count; k++)
         {
             int i = first + k;
-            bool on = i < _choices.Count && (i == _sel || (_sel < 0 && i == 0));
+            bool on = i < _choices.Count && i == _sel;   // nada marcado hasta usar las flechas: Enter envía lo escrito, no la primera sugerencia
             GUI.Label(new Rect(x, y + 58f + k * 16f, w, 16f), (on ? "➤ " : "   ") + rows[i], rich);
         }
         if (first > 0) GUI.Label(new Rect(x + w - 30f, y + 58f, 30f, 16f), "▲", rich);
