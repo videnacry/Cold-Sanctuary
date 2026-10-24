@@ -169,7 +169,7 @@ public class SanctuaryArea : MonoBehaviour
             if (_building != null) return _building;
             _building = new List<SanctuaryArea> { this };
             foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
-                if (a != this && Mathf.Abs(a.transform.position.y - transform.position.y) > 3f && (InFootprint(a.transform.position, 0f, false) || a.InFootprint(transform.position, 0f, false))   // sin el anillo: no une edificios vecinos)
+                if (a != this && Mathf.Abs(a.transform.position.y - transform.position.y) > 3f && (InFootprint(a.transform.position, 0f, false) || a.InFootprint(transform.position, 0f, false)))   // sin el anillo: no une edificios vecinos
                     _building.Add(a);
             return _building;
         }
