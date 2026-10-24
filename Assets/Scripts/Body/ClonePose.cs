@@ -8,6 +8,7 @@ public static class ClonePose
 {
     public static void Rest(Transform body)
     {
+        if (body == null) return;
         foreach (CubeJoint j in body.GetComponentsInChildren<CubeJoint>(true)) { j.transform.localRotation = j.RestRotation; j.transform.localPosition = j.RestPosition; }
     }
 
