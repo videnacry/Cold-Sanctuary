@@ -25,6 +25,7 @@ public class RestaurantServiceGame : MonoBehaviour
     public Transform pickup;
     [Tooltip("El camarero que sube los platos del pase a la caja (solo con recogida en la caja).")]
     public Transform waiter;
+    const string WaiterSource = "Gohageneis";   // de quién es la copia del camarero (no sale también de turista)
 
     enum State { Arriving, Waiting, Cooking, Ready, Called, ToTable, Eating, Leaving, Gone }
     class Order
@@ -101,7 +102,7 @@ public class RestaurantServiceGame : MonoBehaviour
             Vector3 toTop = top - caja.position; toTop.y = 0f; toTop = toTop.sqrMagnitude > 0.01f ? toTop.normalized : caja.forward;
             g.pickup = Mark(go.transform, "Recogida", caja.position + toTop * 1.0f); g.pickup.rotation = Quaternion.LookRotation(-toTop);
             g.waiting = Mark(go.transform, "Cola", caja.position + toTop * 2.6f); g.waiting.rotation = Quaternion.LookRotation(-toTop);
-            GameObject w = WorkdayDirector.SpawnBodyCopy("Gohageneis", "Camarero");
+            GameObject w = WorkdayDirector.SpawnBodyCopy(WaiterSource, "Camarero");
             if (w != null) { w.transform.SetParent(go.transform, true); w.transform.position = pf + pass.forward * 1.2f; g.waiter = w.transform; if (!w.TryGetComponent(out WorldLabel wl)) wl = w.AddComponent<WorldLabel>(); wl.text = "Camarero"; wl.height = 2.2f; }
         }
         else
@@ -171,7 +172,7 @@ public class RestaurantServiceGame : MonoBehaviour
     {
         if (copies)
         {
-            string[] who = { "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };
+            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };   // el camarero (WaiterSource) no se sienta a comer
             GameObject c = WorkdayDirector.SpawnBodyCopy(who[n % who.Length], $"Turista_{n}");
             c.transform.SetParent(transform, true);
             return c.transform;
