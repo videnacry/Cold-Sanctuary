@@ -37,25 +37,14 @@ public class MicroForager : MonoBehaviour
         else if (Time.time - _stallSince > stallSeconds || Time.time - _goalSince > stallSeconds * 8f)
         {
             _skip[goal] = Time.time + 90f; _goal = null;
-            if (++_fails >= 3) CrossCountry();
             return null;
         }
         return false;
     }
 
-    int _fails;
+    // (Ya no hay «campo través»: atravesaba paredes. El suelo de los microcosmos se hornea solo con lo sólido y la guarida
+    // tiene su puerta delante del montículo, así que lo que está en el suelo tiene camino por el NavMesh.)
     static int _milked;
-
-    // Tres objetivos seguidos sin camino por el NavMesh (su trozo de suelo está aislado: Patanjali, Hospital): deja el
-    // NavMesh y va a CAMPO TRAVÉS, en línea recta, como un insecto que trepa por encima de lo que encuentra.
-    void CrossCountry()
-    {
-        var ag = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (ag == null || !ag.enabled) return;
-        ag.enabled = false;
-        _skip.Clear();
-        Debug.Log($"[Micro] «{name}» no encuentra camino por el suelo: va a campo través.");
-    }
 
     bool Skipped(Object o) => o != null && _skip.TryGetValue(o, out float until) && Time.time < until;
 
@@ -75,8 +64,8 @@ public class MicroForager : MonoBehaviour
         }
         MicroLair lair = MicroLair.Nearest(transform.position);
         if (lair == null) return;
-        if (Go(lair, lair.transform.position, 3f) != true) return;
-        lair.stock++; delivered++; _fails = 0;
+        if (Go(lair, lair.Door, 2f) != true) return;
+        lair.stock++; delivered++;
         _target.Respawn(); _target = null;
     }
 
@@ -102,8 +91,8 @@ public class MicroForager : MonoBehaviour
     {
         MicroLair lair = MicroLair.Nearest(transform.position);
         if (lair == null) return;
-        if (Go(lair, lair.transform.position, 3f) != true) return;
-        lair.stock++; delivered++; _fails = 0;
+        if (Go(lair, lair.Door, 2f) != true) return;
+        lair.stock++; delivered++;
         Destroy(_load); _load = null;
     }
 

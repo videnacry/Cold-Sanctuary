@@ -4,6 +4,10 @@ using UnityEngine;
 public class MicroLair : MonoBehaviour
 {
     public int stock;
+    [Tooltip("Dónde se entrega, en local: delante de la boca. El centro de la guarida queda dentro del montículo (no se llega).")]
+    public Vector3 doorOffset;
+
+    public Vector3 Door => transform.TransformPoint(doorOffset);
 
     public static MicroLair Nearest(Vector3 p)
     {
