@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 603 tipos._
+_Total: 604 tipos._
 
 
 ## Animals
@@ -269,6 +269,7 @@ _Total: 603 tipos._
 - **EphemeralThoughtMob** (class) — `Assets/Scripts/Meditation/EphemeralThoughtMob.cs` — The "distraction / ephemeral thought" archetype (docs §8, confirmed jugable by the user).
 - **EraPortal** (class) — `Assets/Scripts/Microcosmos/EraPortal.cs` — Portal de la SALA DE ERAS (escena de validación):
 - **Eras** (class) — `Assets/Scripts/Progression/Era.cs` — ERAS (Berón, 2026-10-23:
+- **EraSpeciesTest** (class) — `Assets/Scripts/Tests/EraSpeciesTest.cs` — CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/era-species-behavior.md §5) sin esperar a la noche ni a un depredador:
 - **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
 - **FallImpact** (class) — `Assets/Scripts/Player/FallImpact.cs` — IMPACTO DE LAS CAÍDAS:
