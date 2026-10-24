@@ -65,9 +65,10 @@ arriba (`SampleSceneBuilder.Levels.cs`):
     **anillo de camas** (`RingDeck`): plataforma hija cuadrada a 4 m, 10 m de ancho, 20 % sobre la planta y 80 % volando
     fuera, con dos escaleras inclinadas. Planta baja (urgencias + maternidad), planta 1 a 11 m (recuperación +
     hospitalización) y planta 2 veterinaria con el anillo de grandes animales (osos, focas).
-  - **Restaurante:** las mesas de los lados suben a dos **galerías de comedor** (oeste y este, 4,6 × 18 m), 3 mesas en
-    cada una con vista a la cocina abierta y escalera inclinada al borde de +Z. Abajo queda un paso de ~5 m alrededor de
-    la cocina. 12 mesas de 4 = 48 cubiertos.
+  - **Restaurante** ([`restaurant-plan.md`](restaurant-plan.md) §7): la cocina ocupa toda la planta (pase central, 8
+    puestos completos en anillo, obradores duplicados en los bordes) y el **comedor va en un anillo** (`RingDeck`, 10 m,
+    20 % dentro y 80 % fuera) al que sube una escalera inclinada **desde el puente**, sin hueco en el suelo; junto a su
+    llegada, la caja. El hospital está a 22 m para que los dos anillos no se pisen.
 - **Piso superior a 11 m** (antes 10) (no tapa la vista del de abajo): columnas solo en el perímetro y escalera vertical desde el
   piso de abajo, a un lado del eje (`StackOn`). Es **3 m más corto** por el lado de la entrada: ahí apoya su escalera.
   Sin puente propio.

@@ -2694,9 +2694,12 @@ public static partial class SampleSceneBuilder
             KitchenProps.Dish(fc.transform, fc.dishName, new Vector3(0f, 0.04f, 0f));
         }
 
+        // Las neveras van dentro de cada puesto (KitchenPlan): cada cocinero toma de la más cercana.
+        var stationFridges = new Transform[KitchenStations.Length];
+        for (int i = 0; i < stationFridges.Length; i++) stationFridges[i] = room.Find(i == 0 ? "Puesto_1/Nevera" : $"Puesto_{i + 1}/Nevera {i + 1}");
         foreach (KitchenCook kc in cooks)
         {
-            kc.fridges = new[] { room.Find("Nevera"), room.Find("Nevera 2") };
+            kc.fridges = stationFridges;
             kc.pantries = new[] { desp, est2 };
             kc.island = island; kc.pass = pass;
         }

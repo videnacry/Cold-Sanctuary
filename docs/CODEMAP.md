@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 604 tipos._
+_Total: 605 tipos._
 
 
 ## Animals
@@ -98,6 +98,7 @@ _Total: 604 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Hospital.cs` — EL HOSPITAL (antes Enfermería; docs/hospital.md).
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.KitchenPlan.cs` — COCINA DEL RESTAURANTE EN TODA LA PLANTA (docs/restaurant-plan.md §3–6, Berón 2026-10-23):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Levels.cs` — ÁREAS POR PISOS (docs/construcciones-elevadas.md §Pisos):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.ProKitchen.cs` — COCINA PROFESIONAL (docs/cocina-profesional.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
