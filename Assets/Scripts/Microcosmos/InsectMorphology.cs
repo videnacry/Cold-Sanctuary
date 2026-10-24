@@ -24,6 +24,8 @@ public static class InsectMorphology
         public bool raptorial, jumper, elytra, beeWings, wings, siphons, stylet, backward;
         public float bodyHeight = 0.12f;         // altura del vientre sobre el suelo (en L)
         public int armPairs = 1;                 // pares delanteros que son BRAZOS al erguirse (mantis: 2 → anda a dos patas, con 4 brazos)
+        // TAMAÑO DE CADA FASE respecto al adulto (largo del cuerpo; la larva madura, la pupa y la ninfa de último estadio).
+        public float larvaScale = 0.8f, pupaScale = 0.9f, nymphScale = 0.6f;
         // DIMORFISMO SEXUAL (ForSex): cuerno del macho, oviscapto de la hembra, bulbos de los pedipalpos del macho de araña.
         public bool horn, palpBulbs;
         public float ovipositor;                 // largo del oviscapto (en L; 0 = sin)
@@ -91,6 +93,26 @@ public static class InsectMorphology
         ["Spider"] = new Spec { name = "Spider", spider = true, body = new[] { new Seg("Cefalotorax", 0.45f, 0.38f, 0.3f), new Seg("Abdomen", 0.55f, 0.45f, 0.4f) },
             legs = new[] { Sp(1.4f), Sp(1.2f), Sp(1.0f), Sp(1.3f) }, antenna = 0f, bodyHeight = 0.18f },
     };
+
+    // TAMAÑO DE LAS FASES respecto al adulto (Berón 2026-10-24: «las ninfas, pupas y larvas deben tener tamaños relativos a
+    // los adultos»). Larva madura, pupa y ninfa de último estadio; [A] = aproximación de manual:
+    // - mariquita: la larva de 4.º estadio mide 10–11 mm y el adulto 6–8 (la larva ES mayor); pelotero: la larva en C ~1,2×;
+    // - hormiga: la larva madura ≈ la obrera; abeja: la larva sellada ≈ 0,8×; hormiga león: la larva 12–15 mm frente a
+    //   ~35 mm del adulto alado, y el capullo ~10 mm; ninfas de último estadio ~0,6–0,8× del adulto. [A]
+    static InsectMorphology()
+    {
+        void S(string n, float larva, float pupa, float nymph) { if (_all.TryGetValue(n, out Spec s)) { s.larvaScale = larva; s.pupaScale = pupa; s.nymphScale = nymph; } }
+        S("Ant", 0.9f, 1f, 0.6f); S("Ladybug", 1.4f, 1f, 0.6f); S("DungBeetle", 1.2f, 1f, 0.6f); S("SnowBee", 0.8f, 1f, 0.6f);
+        S("Antlion", 0.4f, 0.3f, 0.6f);
+        S("Grasshopper", 0.8f, 0.9f, 0.65f); S("Cricket", 0.8f, 0.9f, 0.65f); S("Mantis", 0.8f, 0.9f, 0.6f); S("Aphid", 0.8f, 0.9f, 0.7f); S("Termite", 0.8f, 0.9f, 0.8f);
+    }
+
+    /// <summary>Largo de la fase <paramref name="phase"/> respecto al adulto (1 = adulto).</summary>
+    public static float PhaseScale(string species, Metamorphosis.Phase phase)
+    {
+        Spec s = For(species);
+        return phase == Metamorphosis.Phase.Larva ? s.larvaScale : phase == Metamorphosis.Phase.Pupa ? s.pupaScale : phase == Metamorphosis.Phase.Nymph ? s.nymphScale : 1f;
+    }
 
     // Pata de araña: fémur / patela / tibia / metatarso / tarso = 0,28 / 0,10 / 0,24 / 0,24 / 0,10 de su largo total.
     static float[] Sp(float total) => new[] { 0.28f * total, 0.10f * total, 0.24f * total, 0.24f * total, 0.10f * total };

@@ -284,7 +284,9 @@ public class CubeInsect : MonoBehaviour
         float spine = 0.22f;
         var waist = new GameObject("Cintura").transform; waist.SetParent(pivot, false); waist.localPosition = torso.localPosition;
         torso.SetParent(waist, true); torso.localPosition = new Vector3(0f, 0f, spine);
-        Part(waist, "Columna", new Vector3(0f, 0f, spine * 0.5f), new Vector3(Mathf.Max(0.06f, head.wid * 0.45f), Mathf.Max(0.06f, chestH * 0.6f), spine), body);
+        // En la mantis la cintura va DETRÁS del tórax (entre el 2.º y el 3.er par): la columna llega hasta él, sin hueco.
+        float lead = sp.armPairs >= 2 && sp.body.Length >= 3 ? Mathf.Max(0f, segZ[sp.body[1].name].z - segZ[sp.body[1].name].len * 0.5f - pivotZ) : 0f;
+        Part(waist, "Columna", new Vector3(0f, 0f, (spine + lead) * 0.5f), new Vector3(Mathf.Max(0.06f, head.wid * 0.45f), Mathf.Max(0.06f, chestH * 0.6f), spine + lead), body);
         // Manos en las patas delanteras (al final del tarso).
         foreach (Leg l in ci._legs)
             if (l.pair < sp.armPairs)

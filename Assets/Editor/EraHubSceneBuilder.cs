@@ -16,7 +16,7 @@ public static class EraHubSceneBuilder
     static readonly Vector3 Origin = new Vector3(-9000f, 0f, -9000f);   // lejos de todos los microcosmos (se cargan encima, en aditivo)
 
     // (escena, nombre del microcosmos en Eras/MicroBiome, historia)
-    static readonly (string scene, string display, string story)[] All =
+    internal static readonly (string scene, string display, string story)[] All =
     {
         ("Microcosmos_Scene0_SakshiRio", "Sakshi (el río)", "el origen de Sakshi: el primer viaje de Kushal"),
         ("Microcosmos_Scene1_Ambrosio", "Ambrosio (nivel 1)", "Ambrosio: el nivel 1 del microcosmos"),
