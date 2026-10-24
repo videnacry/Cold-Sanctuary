@@ -130,6 +130,10 @@ public static class AreaMicrocosmos
         navGo.transform.localPosition = new Vector3(foot.center.x, 0f, foot.center.z);
         var nav = navGo.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
         nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume;
+        // Solo lo SÓLIDO (colliders): los decorados sin colisión (alfombras, ríos pintados, losas ocultas…) entraban como
+        // escalones y partían el suelo en islas (Patanjali: la guarida y el claro de la historia, aislados del resto).
+        nav.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
+        Physics.SyncTransforms();   // con colliders, el horneado consulta la física: sin sincronizar, no ve lo recién creado y movido
         float span = r1 * 2f + 20f;
         nav.center = Vector3.up * 15f; nav.size = new Vector3(span, 60f, span);
         nav.BuildNavMesh();
@@ -453,9 +457,13 @@ public static class AreaMicrocosmos
     {
         Transform l = new GameObject("Guarida").transform; l.SetParent(root, false); l.localPosition = pos;
         Material earth = Mat("Micro_Guarida", new Color(0.4f, 0.3f, 0.2f)), dark = Mat("Micro_Boca_guarida", new Color(0.08f, 0.06f, 0.05f));
-        for (int k = 0; k < 4; k++) Box(l, "Monticulo", new Vector3(0f, 0.6f + k * 1.1f, -3f), new Vector3(12f - k * 2.6f, 1.2f, 9f - k * 2f), earth, true);
+        for (int k = 0; k < 4; k++)
+        {
+            Transform m = Box(l, "Monticulo", new Vector3(0f, 0.6f + k * 1.1f, -3f), new Vector3(12f - k * 2.6f, 1.2f, 9f - k * 2f), earth, true);
+            var mod = m.gameObject.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); mod.overrideArea = true; mod.area = 1;   // no se anda por encima: su cima era una isla del NavMesh
+        }
         Box(l, "Entrada", new Vector3(0f, 1.2f, 1.55f), new Vector3(2.4f, 2.4f, 0.1f), dark, false);
-        l.gameObject.AddComponent<MicroLair>();
+        l.gameObject.AddComponent<MicroLair>().doorOffset = new Vector3(0f, 0f, 3.2f);   // delante de la boca: el centro queda dentro del montículo
         WorldLabel wl = l.gameObject.AddComponent<WorldLabel>(); wl.text = label; wl.height = 6f;
         return l;
     }
