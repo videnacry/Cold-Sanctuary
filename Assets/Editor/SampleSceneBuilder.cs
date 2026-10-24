@@ -279,6 +279,9 @@ public static partial class SampleSceneBuilder
         AddAreaProducer("TextileStudio_Area",    SanctuaryResource.Materials, 10f, 14f);
         AddAreaProducer("Infirmary_Area",        SanctuaryResource.Research,   8f, 12f);
         AddAreaProducer("AtomicPlant_Area",      SanctuaryResource.Research,   6f, 10f);   // isótopos, análisis y física
+        AddAreaProducer("Chemistry_Area",        SanctuaryResource.Research,   6f, 10f);   // síntesis y análisis
+        AddAreaProducer("Biology_Area",          SanctuaryResource.Research,   6f, 10f);   // cultivo celular, ADN, carne cultivada
+        AddAreaProducer("NuclearPower_Area",     SanctuaryResource.Energy,    20f, 10f);   // microrreactor: electricidad y calor
 
         Debug.Log("[SampleSceneBuilder] Economía de santuario cableada: SanctuaryResources + HUD + AreaProducers por área.");
     }
@@ -3513,6 +3516,12 @@ public static partial class SampleSceneBuilder
         // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física). Va aparte de la
         // lista de arriba para no mover los índices (el Huerto es el último).
         SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant); groundSizes.Add(AtomicPlantSize);
+        // INVESTIGACIÓN Y PRODUCCIÓN (docs/edificios-investigacion.md): la sala de experimentos de física sobre la planta atómica,
+        // y en el casquete Sur, junto a ella, Química, Biología y la central nuclear de producción.
+        BuildPhysicsHall(plant.transform);
+        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem); ground.Add(chem); groundSizes.Add(ChemistrySize);
+        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio); ground.Add(bio); groundSizes.Add(BiologySize);
+        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc); ground.Add(nuc); groundSizes.Add(NuclearSize);
         for (int i = 0; i < sizes.Length; i++)
         {
             if (upper.ContainsKey(i)) continue;

@@ -56,6 +56,11 @@ public static class PolarLandscapeBuilder
         ("BosqueNorte:Bosque_4",   40f,  175f, 32f),
         ("BosqueNorte:Bosque_5",   75f,  170f, 24f),
         ("BosqueNorte:Bosque_6",  110f,  160f, 30f),
+        // 3 · SUR (añadidos al final para no mover los índices): INVESTIGACIÓN Y PRODUCCIÓN (Berón 2026-10-24), junto a la
+        //     planta atómica: Química, Biología y la central nuclear.
+        ("Sur:Quimica",            52f, -110f, 24f),
+        ("Sur:Biologia",           92f, -112f, 26f),
+        ("Sur:Central",            60f, -162f, 34f),
     };
 
     /// <summary>Nombre del casquete al que pertenece el lóbulo <paramref name="i"/> (hay 6).</summary>

@@ -61,6 +61,12 @@ public static class AreaWork
         Also(M("Planta Atómica", "pla_isotopos", "Irradiar molibdeno para el generador de Tc-99m del hospital", 1f), Hospital),
         M("Planta Atómica", "pla_ronda", "Ronda de la planta: resinas, bomba, torre y protección radiológica", 1f),
         Also(M("Planta Atómica", "pla_ciclotron", "Producir F-18 en el ciclotrón y sintetizar FDG para el PET del hospital", 1f), Hospital),
+        M("Planta Atómica", "fis_experimentos", "Experimentos de física: doble rendija, Michelson, Millikan y el péndulo de Foucault", 1f),
+        M("Química", "qui_sintesis", "Síntesis en la campana: pesar, reaccionar, evaporar y analizar el producto", 1f),
+        M("Química", "qui_residuos", "Recoger y separar los residuos químicos (ácidos, bases e inflamables)", 0.5f),
+        M("Biología", "bio_cultivo", "Cultivo celular: cabina, incubador, microscopio y biorreactor piloto (medios para la carne cultivada)", 1f),
+        M("Biología", "bio_pcr", "Del ADN a la secuencia: extracción, pre-PCR, termociclador y secuenciador", 1f),
+        M("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f),
         M(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true),
     };
 
