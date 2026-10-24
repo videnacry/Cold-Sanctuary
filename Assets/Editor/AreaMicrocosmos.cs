@@ -673,7 +673,7 @@ public static class AreaMicrocosmos
         int placed = 0;
         foreach (var (sp, n, len, tint, label) in list)
         {
-            GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Animals/{sp}/{sp}.prefab");
+            GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
             for (int i = 0; i < n; i++)
             {
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga.
