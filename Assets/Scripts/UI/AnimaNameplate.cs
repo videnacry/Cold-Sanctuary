@@ -13,11 +13,14 @@ public class AnimaNameplate : MonoBehaviour
     [Min(1f)] public float maxDistance = 35f;
     [Tooltip("Altura sobre el pivote del anima donde se ancla la etiqueta (m).")]
     public float headHeight = 1.2f;
+    [Tooltip("Carteles de muebles como mucho a la vez (los más cercanos).")]
+    [Min(1)] public int maxLabels = 40;
 
     GUIStyle _style;
     Anima[] _animas = System.Array.Empty<Anima>();
     WorldLabel[] _labels = System.Array.Empty<WorldLabel>();
     float _nextScan;
+    readonly System.Collections.Generic.List<(float d, WorldLabel wl)> _near = new System.Collections.Generic.List<(float d, WorldLabel wl)>();
 
     void OnGUI()
     {
@@ -39,9 +42,17 @@ public class AnimaNameplate : MonoBehaviour
         foreach (WorldLabel wl in _labels)   // muebles/ingredientes/estaciones (cocina por teclado)
         {
             if (wl == null || string.IsNullOrEmpty(wl.text)) continue;
-            if ((wl.transform.position - cam.transform.position).sqrMagnitude > maxDistance * maxDistance) continue;
-            Draw(cam, wl.transform.position + Vector3.up * wl.height, wl.text, "C7E8FF");
+            Vector3 w = wl.transform.position + Vector3.up * wl.height;
+            float d = (w - cam.transform.position).sqrMagnitude;
+            if (d > maxDistance * maxDistance) continue;
+            if (Vector3.Dot(w - cam.transform.position, cam.transform.forward) <= 0f) continue;   // detrás de la cámara
+            _near.Add((d, wl));
         }
+        // Solo los MÁS CERCANOS: en la cocina o el hospital hay cientos de carteles a la vista y cada GUI.Label con texto
+        // enriquecido cuesta (era de lo más caro de cada fotograma).
+        if (_near.Count > maxLabels) _near.Sort((a, b) => a.d.CompareTo(b.d));
+        for (int i = 0; i < _near.Count && i < maxLabels; i++) Draw(cam, _near[i].wl.transform.position + Vector3.up * _near[i].wl.height, _near[i].wl.text, "C7E8FF");
+        _near.Clear();
     }
 
     void Draw(Camera cam, Vector3 world, string label, string hex)

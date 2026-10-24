@@ -23,9 +23,21 @@ public class TestRunner : MonoBehaviour
     /// <summary>¿Están corriendo las pruebas? (la puerta de la enfermería y la jornada no interfieren con ellas)</summary>
     public static bool Running { get; private set; }
 
+    /// <summary>Las pruebas solo corren si se piden (Temp/run-tests, lo crea «Tools/Cold Sanctuary/Jugar con las pruebas» o el
+    /// comando «test» del buzón del editor). Antes corrían en CADA Play: varios minutos moviendo fauna, personajes y la consola
+    /// de hechizos mientras se intentaba jugar (Berón 2026-10-24: «no he podido mover al personaje en un buen tiempo»).</summary>
+    public const string RequestFile = "Temp/run-tests";
+    public static bool Requested => Application.isEditor && System.IO.File.Exists(RequestFile);
+
+    void Awake()
+    {
+        if (!Requested) gameObject.SetActive(false);   // sin pruebas: ni el orquestador ni sus unidades hacen nada
+    }
+
     IEnumerator Start()
     {
         Running = true;
+        try { System.IO.File.Delete(RequestFile); } catch (System.Exception) { }   // una vez: el siguiente Play es para jugar
         yield return new WaitForSeconds(startDelay);
         TestProbe.ResetTotals();
 
