@@ -61,10 +61,10 @@ arriba (`SampleSceneBuilder.Levels.cs`):
 - **Plataforma hija (entreplanta)** de **4 m** dentro de la plataforma (2,2 → 3 → 4 m: Berón 2026-10-23 pidió 1 m más para
   pasar holgado), sobre postes solo en su perímetro, con **escalera inclinada** (38°, rampa para andar y para el NavMesh),
   sin barandilla (`Deck`, `InclinedStair`).
-  - **Hospital** (antes Enfermería; [`hospital.md`](hospital.md)): las 30 camas de planta en una **galería en U a 4 m**: **15 encima y 15 debajo** (5 por lado en cada nivel)
-    (sin barandillas ni postes en el borde exterior, por donde llegan los puentes), con pasillo interior de ~1,5 m y dos
-    escaleras inclinadas. Debajo se pasa de pie; abajo quedan urgencias, consultas, UCI, quirófano, imagen, laboratorio.
-    Encima, a 11 m, el **hospital veterinario** (planta alta, hija del área).
+  - **Hospital** (antes Enfermería; [`hospital.md`](hospital.md), v2): ya no tiene galería en U. Cada planta lleva un
+    **anillo de camas** (`RingDeck`): plataforma hija cuadrada a 4 m, 10 m de ancho, 20 % sobre la planta y 80 % volando
+    fuera, con dos escaleras inclinadas. Planta baja (urgencias + maternidad), planta 1 a 11 m (recuperación +
+    hospitalización) y planta 2 veterinaria con el anillo de grandes animales (osos, focas).
   - **Restaurante:** las mesas de los lados suben a dos **galerías de comedor** (oeste y este, 4,6 × 18 m), 3 mesas en
     cada una con vista a la cocina abierta y escalera inclinada al borde de +Z. Abajo queda un paso de ~5 m alrededor de
     la cocina. 12 mesas de 4 = 48 cubiertos.
