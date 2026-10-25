@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 607 tipos._
+_Total: 609 tipos._
 
 
 ## Animals
@@ -487,6 +487,8 @@ _Total: 607 tipos._
 - **PostureVisualizationMission** (class) — `Assets/Scripts/Meditation/PostureVisualizationMission.cs` — Visualization mission (docs §7):
 - **Predation** (class) — `Assets/Scripts/Transformation/Predation.cs` — Depredación por STATS (docs/stats-as-truth.md §2):
 - **ProductionOrder** (class) — `Assets/Scripts/Virtualization/ProductionOrder.cs` — La MISIÓN de producción de un área (docs/kitchen-simulation.md §3b):
+- **Progress** (class) — `Assets/Scripts/Progression/Progress.cs` — PROGRESO DEL JUGADOR en la historia y las misiones (Berón 2026-10-24:
+- **ProgressPanel** (class) — `Assets/Scripts/UI/ProgressPanel.cs` — CHECKLIST DE PROGRESO (hechizo «progreso»):
 - **PrologueSequence** (class) — `Assets/Scripts/Prologue/PrologueSequence.cs` — El guion del PRÓLOGO (docs/area-progression.md "Apertura"):
 - **ProtectionMission** (class) — `Assets/Scripts/Meditation/ProtectionMission.cs` — "A proteger" mission (docs §7/§8) — bespoke escort/defense, not a MeditationMissionBase subclass because it has two mob types, counts only repels, and can FAIL:
 - **ProtectMob** (class) — `Assets/Scripts/Meditation/ProtectMob.cs` — The fragile ward of the "a proteger" archetype (docs §8):
