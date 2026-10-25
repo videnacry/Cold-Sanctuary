@@ -152,6 +152,8 @@ public class Hive : MonoBehaviour
         _dirty = true;
     }
 
+    void OnDestroy() { if (_comb != null && _comb.sharedMesh != null) Destroy(_comb.sharedMesh); }   // la malla del panal se crea en juego: no dejarla huérfana
+
     void LateUpdate()
     {
         if (_comb == null || !_dirty || Time.time < _nextBuild) return;

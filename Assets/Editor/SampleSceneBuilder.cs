@@ -139,6 +139,7 @@ public static partial class SampleSceneBuilder
         PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
+        ClearBridgeLandings();           // ya amueblado: despeja el paso de cada puente. ANTES del NavMesh (si no, quedaba horneado con los muebles en su sitio viejo)
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         BakeNavMesh();
 
@@ -164,7 +165,6 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
-        ClearBridgeLandings();   // al final, ya amueblado: despeja el paso de cada puente (lo que estorbe en su llegada)
         GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
         Debug.Log($"[Rendimiento] árboles de hielo combinados: {MergeTreeMeshes(flora != null ? flora.transform : null)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");

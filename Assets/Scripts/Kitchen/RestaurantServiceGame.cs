@@ -301,7 +301,7 @@ public class RestaurantServiceGame : MonoBehaviour
                 }
                 break;
             case State.Leaving:
-                if (Walk(o, exit.position)) { Destroy(o.body.gameObject); o.state = State.Gone; }
+                if (Walk(o, exit.position)) { _routes.Remove(o.body); Destroy(o.body.gameObject); o.state = State.Gone; }   // su ruta guardada se va con él
                 break;
         }
         if (wl != null) wl.text = o.state == State.Eating ? $"#{o.number} comiendo" : $"#{o.number} · {o.dish}";
