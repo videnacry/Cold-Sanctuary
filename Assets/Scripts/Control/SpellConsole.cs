@@ -214,7 +214,8 @@ public class SpellConsole : MonoBehaviour
             // CONVICCIONES: para quitar, las que tiene el objetivo; para poner, las del catálogo que aún no tiene.
             string who = _given.TryGetValue("destiny", out string gd) ? Clean(gd) : "Magnate";
             GameObject tg = me != null ? FindNearestNamed(who, me.transform.position) : GameObject.Find(who);
-            Convictions cv = Convictions.Of(tg);
+            // Solo lee: no añade convicciones a lo que se esté escribiendo (una nevera…); la Magnate trae las suyas por defecto.
+            Convictions cv = tg != null && (tg.GetComponent<Convictions>() != null || tg.GetComponent<Magnate>() != null) ? Convictions.Of(tg) : null;
             if (cv != null)
             {
                 if (key == "quitar") foreach (string id in cv.held) Add(id);

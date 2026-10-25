@@ -31,14 +31,24 @@ public class SpeciesScaleFix : MonoBehaviour
         if (_a.death || !Real.TryGetValue(_a.SpeciesName, out float adult)) return;
         if (GetComponentInParent<MicroSize>() != null) return;   // en un microcosmos manda su escala
         float stage = _a.lifeStage == LifeStage.child ? 0.4f : _a.lifeStage == LifeStage.teen ? 0.7f : 1f;
+        // Medido en el espacio del PROPIO animal (no la caja del mundo, que cambia con el rumbo: una ballena en diagonal
+        // medía un 18 % menos y crecía y encogía al girar). Solo su cuerpo: ni carteles ni lo que lleve encima.
         bool any = false; Bounds b = default;
+        Matrix4x4 toRoot = transform.worldToLocalMatrix;
         foreach (Renderer r in GetComponentsInChildren<Renderer>())
         {
-            if (!r.enabled || r.GetComponent<WorldLabel>() != null) continue;
-            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+            if (!r.enabled || r.GetComponent<WorldLabel>() != null || r.GetComponentInParent<Animal>() != _a) continue;
+            Bounds lb = r is SkinnedMeshRenderer sk ? sk.localBounds : r.TryGetComponent(out MeshFilter mf) && mf.sharedMesh != null ? mf.sharedMesh.bounds : default;
+            if (lb.size == Vector3.zero) continue;
+            Matrix4x4 m = toRoot * r.localToWorldMatrix;
+            for (int c = 0; c < 8; c++)
+            {
+                Vector3 p = m.MultiplyPoint3x4(lb.center + Vector3.Scale(lb.extents, new Vector3((c & 1) == 0 ? -1 : 1, (c & 2) == 0 ? -1 : 1, (c & 4) == 0 ? -1 : 1)));
+                if (!any) { b = new Bounds(p, Vector3.zero); any = true; } else b.Encapsulate(p);
+            }
         }
         if (!any) return;
-        float now = Mathf.Max(b.size.x, b.size.y, b.size.z);
+        float now = Mathf.Max(b.size.x, b.size.y, b.size.z) * transform.lossyScale.x;   // a la escala actual
         if (now < 1e-3f) return;
         float k = adult * stage / now;
         if (Mathf.Abs(k - 1f) > 0.08f) transform.localScale *= Mathf.Clamp(k, 0.05f, 20f);

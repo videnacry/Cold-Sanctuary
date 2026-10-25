@@ -97,7 +97,7 @@ public static partial class SampleSceneBuilder
             InclinedStair(r, "Escalera_comedor_puente", new Vector3(0f, 0f, hz - run), 0f);
             InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
         }
-        Vector3 arrive = top - outDir * (W * 0.5f);   // donde se llega, en la línea central
+        Vector3 arrive = side >= 0 ? top - outDir * (W * 0.5f) : top + Vector3.forward * (W * 0.5f);   // donde se llega, en la línea central (sin puente: la escalera de dentro llega al borde interior)
 
         // CAJA junto a la llegada (sobre la línea central, a un lado del paso).
         Vector3 tangent = Mathf.Abs(outDir.x) > 0.5f ? Vector3.forward : Vector3.right;

@@ -242,7 +242,10 @@ public static partial class SampleSceneBuilder
             lastS = s;
             stall++;
         }
-        var (jp, jyaw, _) = RingPoint(us, lastS + 4f);
+        // La jaula, en el siguiente hueco libre (fuera de las esquinas y del rellano de la escalera, como los boxes).
+        float js = lastS + 4f;
+        for (int g = 0; g < 40; g++, js += 1f) { var (q, _, qc) = RingPoint(us, js); if (!qc && !(Mathf.Abs(q.x) < 3f && Mathf.Abs(q.z) > uz - 2f)) break; }
+        var (jp, jyaw, _) = RingPoint(us, js);
         Transform squeeze = KitchenProps.Root(ringV, "Jaula_contencion", jp, jyaw);
         for (int k = -1; k <= 1; k += 2) KitchenProps.C(squeeze, new Vector3(k * 0.9f, 1.1f, 0f), new Vector3(0.08f, 2.2f, 2.4f), KitchenProps.Steel, 0f, "Barrotes");
         KitchenProps.C(squeeze, new Vector3(0f, 2.2f, 0f), new Vector3(1.9f, 0.08f, 2.4f), KitchenProps.Steel, 0f, "Techo_barrotes");
