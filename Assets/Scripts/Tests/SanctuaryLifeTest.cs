@@ -357,6 +357,15 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
         TestProbe.Check("la sala de yoga tiene la plataforma en el centro y 30 esterillas", FindByPrefix("Esterilla_30") && FindByPrefix("Tarima del maestro"));
+        // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
+        SpellConsole scp = FindAnyObjectByType<SpellConsole>();
+        if (scp != null)
+        {
+            scp.Enter("progreso()");
+            bool open = ProgressPanel.Open; string said = scp.LastLog;
+            scp.Enter("progreso()");
+            TestProbe.Check("el hechizo «progreso» abre el checklist de historias y misiones", open && said.StartsWith("Progreso:") && !ProgressPanel.Open, said);
+        }
         TestProbe.End();
     }
 
