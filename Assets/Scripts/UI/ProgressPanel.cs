@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// CHECKLIST DE PROGRESO (hechizo «progreso»): una ventana con lo hecho (✓) y lo pendiente (☐):
 ///  · la historia en curso, paso a paso (si estás dentro de un microcosmos);
-///  · las historias de los microcosmos;
+///  · los microcosmos: su historia terminada (HistoryCard) o, en los de área, una misión cumplida;
 ///  · tus misiones de hoy (de la jornada);
 ///  · las misiones de trabajo de cada área (las que ya has hecho alguna vez);
 ///  · las prácticas y lecciones completadas.
@@ -55,7 +55,7 @@ public class ProgressPanel : MonoBehaviour
         // 2) Las historias de los microcosmos.
         List<string> stories = Progress.StoryScenes();
         int sd = 0; foreach (string s in stories) if (Progress.StoryDone(s)) sd++;
-        _lines.Add($"<b>Historias de los microcosmos</b>  ({sd}/{stories.Count})");
+        _lines.Add($"<b>Microcosmos</b>  ({sd}/{stories.Count})  <size=11>(historia terminada o, en los de área, una misión cumplida)</size>");
         foreach (string s in stories) _lines.Add($"   {Box(Progress.StoryDone(s))} {s.Replace("Microcosmos_", "").Replace('_', ' ')}");
         _lines.Add("");
         // 3) Hoy (la jornada).
@@ -96,7 +96,7 @@ public class ProgressPanel : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) { enabled = false; return; }
+        if (GameKeys.GetKeyDown(KeyCode.Escape)) { enabled = false; return; }
         if (Time.unscaledTime >= _nextRefresh) Refresh();
     }
 

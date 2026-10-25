@@ -170,6 +170,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
         Debug.Log(CompleteMessage);
         reward.Apply(player);
         Progress.MarkPractice(mission != null ? mission.missionName : name);   // el checklist de progreso (hechizo «progreso»)
+        if (gameObject.scene.name.StartsWith("Microcosmos_")) Progress.MarkStory(gameObject.scene.name);   // microcosmos de área: hecho al cumplir una misión allí
         onCompleted?.Invoke();
 
         if (endMode == MissionEndMode.Session)

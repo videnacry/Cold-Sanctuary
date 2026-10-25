@@ -5,13 +5,14 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// PROGRESO DEL JUGADOR en la historia y las misiones (Berón 2026-10-24: «un hechizo con el que conocer el progreso, como
 /// un checklist»). Guarda, entre partidas (PlayerPrefs), qué historias de los microcosmos ha terminado, qué misiones de
-/// trabajo ha hecho y qué prácticas y lecciones ha completado. Lo lee el hechizo «progreso» (<see cref="ProgressPanel"/>).
+/// trabajo ha hecho y qué prácticas y lecciones ha completado. Mientras corren las pruebas no se guarda nada. Lo lee el hechizo «progreso» (<see cref="ProgressPanel"/>).
 /// </summary>
 public static class Progress
 {
     const string Key = "cs_progreso";
     static readonly HashSet<string> _stories = new HashSet<string>(), _missions = new HashSet<string>(), _practices = new HashSet<string>();
     static bool _loaded;
+    static bool Off => ColdSanctuary.TestRunner.Running;   // las pruebas completan misiones: no cuentan en la partida del jugador
 
     static void Load()
     {
@@ -36,9 +37,9 @@ public static class Progress
     }
 
     /// <summary>La historia del microcosmos <paramref name="scene"/> (p. ej. «Microcosmos_Patanjali») está terminada.</summary>
-    public static void MarkStory(string scene) { Load(); if (_stories.Add(scene)) { Save(); Debug.Log($"[Progreso] Historia terminada: {scene}."); } }
-    public static void MarkMission(string id) { Load(); if (_missions.Add(id)) { Save(); Debug.Log($"[Progreso] Misión hecha por primera vez: {id}."); } }
-    public static void MarkPractice(string name) { Load(); if (!string.IsNullOrEmpty(name) && _practices.Add(name)) { Save(); Debug.Log($"[Progreso] Práctica completada: {name}."); } }
+    public static void MarkStory(string scene) { if (Off) return; Load(); if (_stories.Add(scene)) { Save(); Debug.Log($"[Progreso] Historia terminada: {scene}."); } }
+    public static void MarkMission(string id) { if (Off) return; Load(); if (_missions.Add(id)) { Save(); Debug.Log($"[Progreso] Misión hecha por primera vez: {id}."); } }
+    public static void MarkPractice(string name) { if (Off) return; Load(); if (!string.IsNullOrEmpty(name) && _practices.Add(name)) { Save(); Debug.Log($"[Progreso] Práctica completada: {name}."); } }
 
     public static bool StoryDone(string scene) { Load(); return _stories.Contains(scene); }
     public static bool MissionDone(string id) { Load(); return _missions.Contains(id); }

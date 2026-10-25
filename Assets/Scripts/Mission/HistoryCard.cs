@@ -20,7 +20,8 @@ public class HistoryCard : MonoBehaviour
 
     void Start() { if (string.IsNullOrEmpty(intro)) _intro = false; }
 
-    public void ShowFinal() { _final = true; }
+    // Toda historia del microcosmos (StoryMission, compasión, mirmidones, física…) termina aquí: el checklist de progreso.
+    public void ShowFinal() { _final = true; Progress.MarkStory(gameObject.scene.name); }
 
     void Update()
     {

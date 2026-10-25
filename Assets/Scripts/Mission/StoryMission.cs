@@ -173,7 +173,6 @@ public class StoryMission : MonoBehaviour
         }
         Say(finalSpeaker, finalLine);
         _card.ShowFinal();
-        Progress.MarkStory(gameObject.scene.name);   // el checklist de progreso (hechizo «progreso»)
     }
 
     void OnGUI()

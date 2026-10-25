@@ -106,6 +106,7 @@ IdealStateTest, SensesTest, YogaTest, BodyMetabolismTest, ChecklistAuto, ReachGo
 | CU-HEC-33 | Como jugador quiero `teach`, `analysis` y `vaccinate` para enseñar y cuidar a otros | sin test |
 | CU-HEC-34 | Como jugador quiero hacer la jornada de descomposición (identificar → romper → clasificar) | ChecklistMagicTest «[1142] tras clasificar todas → jornada terminada» |
 | CU-HEC-35 | Como jugador quiero cambiar los stats de un ser con `TransformationSpell` | sin test |
+| CU-HEC-36 | Como jugador quiero lanzar `progreso` para ver el checklist de historias, misiones y prácticas | SanctuaryLifeTest «el hechizo «progreso» abre el checklist de historias y misiones» |
 
 ## Personajes y mente
 
