@@ -501,6 +501,7 @@ public class WorkdayDirector : MonoBehaviour
         w.count[m.id] = w.Count(m.id) + 1; w.lastDay[m.id] = TC != null ? TC.Day : 0;
         if (first) { initiations++; Debug.Log($"[Iniciación] La Magnate inicia a Kushal en «{m.title}» dentro de la virtualización."); }
         Debug.Log($"[Virtualización] Kushal practica «{m.title}» ({m.area}).");
+        Progress.MarkMission(m.id);
         Apply(m, "Kushal");
     }
 

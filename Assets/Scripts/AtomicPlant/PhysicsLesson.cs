@@ -30,7 +30,7 @@ public abstract class PhysicsLesson : MonoBehaviour
 
     protected void Complete(string line)
     {
-        if (!Done) PlaneMessenger.Send(teacher, line, 10f);
+        if (!Done) { PlaneMessenger.Send(teacher, line, 10f); Progress.MarkPractice($"{teacher} · {topic}"); }   // el checklist de progreso
         Done = true;
     }
 

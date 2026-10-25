@@ -266,6 +266,7 @@ public class SpellConsole : MonoBehaviour
     {
         ("reemplazar", "reemplazar({destiny:\"Magnate\", quitar:\"\", poner:\"\"})"),   // cambiar una CONVICCIÓN (Convictions)
         ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
+        ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
         ("take",      "take({item:\"Huevos\"})"),
@@ -522,6 +523,9 @@ public class SpellConsole : MonoBehaviour
             case "admin":   // LANZADOR ADMIN: todos los hechizos del juego, sin aprenderlos
                 Admin = !args.TryGetValue("on", out string ao) || Clean(ao) != "false";
                 Log(Admin ? "Lanzador admin: conoces todos los hechizos del juego." : "Lanzador normal: solo los hechizos aprendidos.");
+                break;
+            case "progreso": case "progress":   // CHECKLIST de la historia y las misiones (ProgressPanel): abre o cierra la ventana
+                Log(ProgressPanel.Toggle());
                 break;
             case "jornada": case "workday":   // plan del día, quién hace qué y el equilibrio (¿faltan personas o misiones?)
                 if (WorkdayDirector.Instance == null) { Log("No hay jornada en esta escena."); break; }

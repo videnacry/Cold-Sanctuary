@@ -169,6 +169,7 @@ public abstract class MeditationMissionBase : MonoBehaviour
 
         Debug.Log(CompleteMessage);
         reward.Apply(player);
+        Progress.MarkPractice(mission != null ? mission.missionName : name);   // el checklist de progreso (hechizo «progreso»)
         onCompleted?.Invoke();
 
         if (endMode == MissionEndMode.Session)
