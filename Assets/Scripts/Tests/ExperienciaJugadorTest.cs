@@ -47,7 +47,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         float startGap = Dist(ni.transform, _player.transform);
         float closest = float.MaxValue; float limitA = Time.time + 120f;
         while (ni.Now == NewcomerInitiator.Phase.Approach && Time.time < limitA) { closest = Mathf.Min(closest, Vector3.Distance(ni.transform.position, _player.transform.position)); yield return null; }
-        TestProbe.Check("el trabajador va hacia el recién llegado (no lo espera en la silla)", closest < 2f && ni.Now == NewcomerInitiator.Phase.Escort, $"de {startGap:0.0} m a {closest:0.0} m");
+        TestProbe.Check("el trabajador va hacia el recién llegado (no lo espera en la silla)", ni.GreetedAtDistance >= 0f && ni.GreetedAtDistance < 2f, $"de {startGap:0.0} m a {ni.GreetedAtDistance:0.0} m");
 
         // ── El examen de llegada, paso a paso ──
         string seen = ""; int tools = 0; bool firstPerson = false, seated = false;

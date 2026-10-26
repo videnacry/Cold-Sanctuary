@@ -42,6 +42,8 @@ public class NewcomerInitiator : MonoBehaviour
     public enum Phase { None, Approach, Escort, Perform, ToTank }
     public Phase Now { get; private set; }
     public int BeatsDone { get; private set; }
+    /// <summary>A qué distancia del recién llegado estaba al saludarlo (−1: aún no).</summary>
+    public float GreetedAtDistance { get; private set; } = -1f;
 
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
@@ -109,7 +111,7 @@ public class NewcomerInitiator : MonoBehaviour
     // ── 1. IR HACIA ÉL Y LLEVARLO ───────────────────────────────────────────────────────────────────────────────
     void StartExam(SanctuaryOnboarding o)
     {
-        _exam = o; _beat = 0; BeatsDone = 0; Now = Phase.Approach;
+        _exam = o; _beat = 0; BeatsDone = 0; Now = Phase.Approach; GreetedAtDistance = -1f;
         Debug.Log($"[Iniciación] {Who} lanza «iniciar» (hechizo compuesto) sobre «{o.name}»: va hacia el recién llegado.");
     }
 
@@ -134,6 +136,7 @@ public class NewcomerInitiator : MonoBehaviour
             float gap = d.magnitude; d.y = 0f;   // en 3D: en otro piso no está «cerca» aunque esté encima
             if (gap > 1.6f) { PathMover.Of(this).StepToward(p.position, moveSpeed); return; }
             transform.rotation = Quaternion.LookRotation(Flat(d));
+            GreetedAtDistance = gap;
             Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
             Now = Phase.Escort;
             return;
