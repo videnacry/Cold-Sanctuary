@@ -132,7 +132,7 @@ public class AmbrosioStory : MonoBehaviour
         Transform p = PlayerT(); if (p == null) return "sin jugador";
         if (Now == Beat.Predator && _predator != null)
         {
-            if (Near(p, _predator, 3.2f) && !PlayerPushingPredator) { _predatorPushUntil = Time.time + PredatorPushSeconds; StopPushing(); return "empujas al depredador"; }
+            if (Near(p, _predator, _predatorReach + 1.8f) && !PlayerPushingPredator) { _predatorPushUntil = Time.time + PredatorPushSeconds; StopPushing(); return "empujas al depredador"; }
             return "acércate al depredador";
         }
         if (_collapsed)
@@ -382,30 +382,37 @@ public class AmbrosioStory : MonoBehaviour
         go.transform.rotation = Quaternion.LookRotation(Vector3.left);
         _predator = go.transform;
         PredatorPushes = 0;
+        // Hasta dónde llegan sus patas en el suelo (medio ancho de su caja, en horizontal).
+        Bounds bb = new Bounds(go.transform.position, Vector3.zero);
+        foreach (Renderer rd in go.GetComponentsInChildren<Renderer>()) bb.Encapsulate(rd.bounds);
+        _predatorReach = Mathf.Max(2f, Mathf.Max(bb.extents.x, bb.extents.z));
     }
 
     void PredatorFight(Transform p, float dt)
     {
         if (_predator == null) return;
         Vector3 mid = (_oldA.position + _oldB.position) * 0.5f;
-        Vector3 front = mid + Vector3.right * (4.5f + PredatorPushes * 1.2f);   // cada empujón lo aleja
+        float r = _predatorReach;   // la araña, con las patas abiertas: nadie se mete entre ellas
+        Vector3 front = mid + Vector3.right * (r + 2.5f + PredatorPushes * 1.2f);   // cada empujón lo aleja
         Walk(_predator, front, 0.2f, dt);
         _predator.rotation = Quaternion.LookRotation(Vector3.left);
-        // Los demás (no los viejos) empujan al depredador.
+        // Los demás (no los viejos) empujan al depredador, contra la punta de sus patas.
         int i = 0;
         foreach (Transform who in new[] { _ambrosio, _atlas, _medea, _momo })
         {
             if (who == null) continue;
             float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f + i) * 0.15f;
-            Walk(who, _predator.position + Vector3.left * (2.2f + bob) + Vector3.forward * (-1.5f + i), 0.05f, dt);
+            Walk(who, _predator.position + Vector3.left * (r + 0.3f + bob) + Vector3.forward * (-1.8f + i * 1.2f), 0.05f, dt);
             who.rotation = Quaternion.LookRotation(Vector3.right) * Quaternion.Euler(15f, 0f, 0f);
             i++;
         }
         if (PlayerPushingPredator)
         {
-            Vector3 spot = _predator.position + Vector3.left * 3.3f + Vector3.forward * 3.2f; spot.y = p.position.y;   // al lado (la cámara no se mete en la araña)
+            // Al lado de la fila de la familia, fuera de las patas: se ve la araña y a los que empujan con él.
+            Vector3 spot = _predator.position + Vector3.left * (r + 0.8f) + Vector3.forward * (r * 0.6f + 2.2f); spot.y = p.position.y;
             WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
-            p.rotation = Quaternion.LookRotation(Vector3.right);
+            Vector3 look = _predator.position - p.position; look.y = 0f;
+            p.rotation = Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.right);
             float ph = Mathf.Sin(Time.time * Mathf.PI * 2f / 2.5f);   // empujón lento, de fuerza
             if (Time.time >= _nextBob) { _nextBob = Time.time + 1.25f; Pose(p, true, ph > 0f); }
         }
@@ -426,6 +433,7 @@ public class AmbrosioStory : MonoBehaviour
         }
     }
     Transform _predatorLeaving;
+    float _predatorReach = 2.5f;
 
     void LateUpdate()
     {

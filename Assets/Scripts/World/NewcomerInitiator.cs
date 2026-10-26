@@ -91,7 +91,7 @@ public class NewcomerInitiator : MonoBehaviour
     /// <summary>Olvida cualquier iniciación a medias (para empezar de cero, p. ej. en el test de experiencia).</summary>
     public void ResetState()
     {
-        if (_exam != null) Hold(_exam.transform, false); else if (_leading != null) Hold(_leading.transform, false);
+        if (_exam != null) { Hold(_exam.transform, false); EyesAtHead(_exam.GetComponent<PlayerController>(), false); } else if (_leading != null) Hold(_leading.transform, false);
         if (_camForced && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(_camBefore, forced: true);
         _camForced = false;
         ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
@@ -171,11 +171,14 @@ public class NewcomerInitiator : MonoBehaviour
         {
             _nextFrame = Time.time + b.period;
             if (me != null) (_frameB ? b.exB : b.exA)?.Invoke().ApplyFinal(me);
-            PlayerController pc = p.GetComponent<PlayerController>();
-            if (pc != null) pc.LookAtPoint(transform.position + Vector3.up * (b.patient == ArrivalExam.Spot.Stand ? 0.8f : 1.1f));   // en 1.ª persona se ve el gesto
             if (pa != null) (_frameB ? b.ptB : b.ptA)?.Invoke().ApplyFinal(pa);
             _frameB = !_frameB;
         }
+        // En 1.ª persona se ve el gesto: la mirada, a cada fotograma (justo al sentarlo la cámara aún no está en su sitio y
+        // una sola llamada le dejaba mirando al techo hasta el siguiente gesto).
+        PlayerController pc = p.GetComponent<PlayerController>();
+        EyesAtHead(pc, b.patient != ArrivalExam.Spot.Stand);
+        if (pc != null) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
         if (Time.time < _beatEnd) return;
         HealthRecord hr = _exam.GetComponent<HealthRecord>();
         if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
@@ -206,8 +209,33 @@ public class NewcomerInitiator : MonoBehaviour
         }
     }
 
+    // Sentado o tumbado, la 1.ª persona va en la cabeza de verdad: el pivote de la cámara está a la altura de alguien de pie
+    // y dejaba la vista medio metro por encima de la propia cabeza. De pie (o al acabar), vuelve a su sitio.
+    void EyesAtHead(PlayerController pc, bool low)
+    {
+        if (pc == null || pc.cameraPivot == null) return;
+        if (low && HeadAt(pc.transform, out Vector3 eyes))
+        {
+            if (!_pivotMoved) { _pivotHome = pc.cameraPivot.localPosition; _pivotMoved = true; }
+            pc.cameraPivot.position = eyes + Vector3.up * 0.05f + pc.transform.forward * 0.15f;   // los ojos, delante del cubo
+        }
+        else if (_pivotMoved) { pc.cameraPivot.localPosition = _pivotHome; _pivotMoved = false; }
+    }
+    Vector3 _pivotHome; bool _pivotMoved;
+
+    // Dónde está de verdad la cabeza de un cuerpo de cubos (el centro del cubo de la cabeza; el hueso es la articulación del
+    // cuello). El origen de los cuerpos no está en los pies, así que «origen + 1,1 m» quedaba por encima de la cabeza.
+    static bool HeadAt(Transform body, out Vector3 at)
+    {
+        Transform head = ArrivalExam.Bone(body, BodyPart.Head);
+        Renderer r = head != null ? head.GetComponentInChildren<Renderer>() : null;
+        at = r != null ? r.bounds.center : head != null ? head.position : body.position;
+        return head != null;
+    }
+
     void FinishExam(Transform p, Anima me, Anima pa)
     {
+        EyesAtHead(p.GetComponent<PlayerController>(), false);
         Stand(me); Stand(pa);
         if (_camForced && CameraManager.Instance != null) { CameraManager.Instance.SwitchTo(_camBefore, forced: true); _camForced = false; }
         PlayerController ppc = p.GetComponent<PlayerController>(); if (ppc != null) ppc.LookAtPoint(p.position + p.forward * 10f + Vector3.up * 1.5f);   // la mirada, otra vez al frente
