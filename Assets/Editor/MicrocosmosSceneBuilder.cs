@@ -74,6 +74,12 @@ public static class MicrocosmosSceneBuilder
         portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>();
 
+        // El SENDERO de la historia, de la entrada de la cueva hasta donde aparece el jugador: suelo firme (si no, la familia
+        // y el jugador quedaban en el agua que rodea la escena).
+        GameObject trail = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        trail.name = "Sendero_a_la_cueva"; trail.transform.SetParent(root.transform, false);
+        trail.transform.localPosition = new Vector3(-30f, -0.05f, 28f); trail.transform.localScale = new Vector3(18f, 0.1f, 40f);
+        trail.GetComponent<Renderer>().sharedMaterial = MakeMat("Micro_Sendero", new Color(0.42f, 0.36f, 0.28f));
         root.AddComponent<AmbrosioStory>();   // la historia del recién llegado: empujar a los viejos, melaza, depredador, muerte de Ambrosio
         BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
 

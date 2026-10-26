@@ -27,6 +27,8 @@ public class AmbrosioStory : MonoBehaviour
 
     /// <summary>Segundos que el jugador lleva empujando en el tramo actual; empujones al depredador; ¿lleva melaza?</summary>
     public float PushedThisPhase { get; private set; }
+    /// <summary>A qué distancia del jugador estaba Ambrosio cuando le pidió ayuda (−1: aún no).</summary>
+    public float AskedAtDistance { get; private set; } = -1f;
     public int PredatorPushes { get; private set; }
     public bool CarryingHoneydew => _drop != null;
     public bool PlayerPushing => _pushTarget != null;
@@ -178,11 +180,14 @@ public class AmbrosioStory : MonoBehaviour
         float dt = Time.deltaTime;
         switch (Now)
         {
-            case Beat.Intro:   // la familia empuja; Ambrosio deja a su viejo y va hacia el jugador
+            case Beat.Intro:   // la familia empuja; el jugador la ve unos segundos y Ambrosio deja a su viejo y va hacia él
+                if (!Arrived(p)) { _beatAt = Time.time; Animate(dt, moveOld: false); break; }
+                if (Time.time - _beatAt < 4f) { Animate(dt, moveOld: false); break; }
                 Animate(dt, moveOld: false);
                 _ambrosioFree = true;
                 if (Walk(_ambrosio, p.position, 2.6f, dt))
                 {
+                    AskedAtDistance = Vector3.Distance(_ambrosio.position, p.position);   // (en 3D)
                     Say(_ambrosio, "¡Eh, tú! ¡Ayúdanos, por favor! Salva a mi familia: los viejos ya no pueden andar y la cueva está lejos.", 8f);
                     Go(Beat.AskHelp);
                 }
@@ -249,6 +254,14 @@ public class AmbrosioStory : MonoBehaviour
     bool _sakshiSaid;
 
     Vector3 Behind(Transform old) => old.position - _dir * 1.3f;   // detrás de su viejo
+
+    // ¿Ya está el jugador aquí, de pie junto a la familia? (al cargar la escena aún llega por el tanque, o cae).
+    bool Arrived(Transform p)
+    {
+        if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsBusy) return false;
+        Vector3 d = p.position - _oldB.position;
+        return Mathf.Abs(d.y) < 3f && new Vector2(d.x, d.z).magnitude < 25f;
+    }
 
     // Mueve a un personaje hacia un punto; true al llegar.
     bool Walk(Transform t, Vector3 to, float stop, float dt)

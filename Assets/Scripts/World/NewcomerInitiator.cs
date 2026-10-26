@@ -46,7 +46,7 @@ public class NewcomerInitiator : MonoBehaviour
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
     int _beat = -1; float _beatEnd, _nextFrame; bool _frameB;
-    float _nextReminder;
+    float _nextReminder, _sentAt = -999f;
     bool _frozePlayer, _camForced;
     CameraMode _camBefore;
 
@@ -82,9 +82,20 @@ public class NewcomerInitiator : MonoBehaviour
         return null;
     }
 
+    /// <summary>Con las pruebas corriendo, la iniciación espera (si no, se llevaba al jugador en mitad de otras pruebas); el test
+    /// de experiencia la deja actuar.</summary>
+    public static bool AllowDuringTests;
+
+    /// <summary>Olvida cualquier iniciación a medias (para empezar de cero, p. ej. en el test de experiencia).</summary>
+    public void ResetState()
+    {
+        if (_exam != null) Hold(_exam.transform, false); else if (_leading != null) Hold(_leading.transform, false);
+        _exam = null; _leading = null; _beat = -1; BeatsDone = 0; Now = Phase.None;
+    }
+
     void Update()
     {
-        if (!IsActive) return;
+        if (!IsActive || (ColdSanctuary.TestRunner.Running && !AllowDuringTests)) return;
         if (_exam != null) { Exam(); return; }
         if (_leading != null) { Lead(); return; }
         SanctuaryOnboarding o = Waiting();
@@ -119,8 +130,9 @@ public class NewcomerInitiator : MonoBehaviour
         Anima me = GetComponent<Anima>(), pa = _exam.GetComponentInParent<Anima>();
         if (Now == Phase.Approach)
         {
-            Vector3 d = p.position - transform.position; d.y = 0f;
-            if (d.magnitude > 1.4f) { PathMover.Of(this).StepToward(p.position, moveSpeed); return; }
+            Vector3 d = p.position - transform.position;
+            float gap = d.magnitude; d.y = 0f;   // en 3D: en otro piso no está «cerca» aunque esté encima
+            if (gap > 1.6f) { PathMover.Of(this).StepToward(p.position, moveSpeed); return; }
             transform.rotation = Quaternion.LookRotation(Flat(d));
             Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
             Now = Phase.Escort;
@@ -152,6 +164,8 @@ public class NewcomerInitiator : MonoBehaviour
         {
             _nextFrame = Time.time + b.period;
             if (me != null) (_frameB ? b.exB : b.exA)?.Invoke().ApplyFinal(me);
+            PlayerController pc = p.GetComponent<PlayerController>();
+            if (pc != null) pc.LookAtPoint(transform.position + Vector3.up * (b.patient == ArrivalExam.Spot.Stand ? 0.8f : 1.1f));   // en 1.ª persona se ve el gesto
             if (pa != null) (_frameB ? b.ptB : b.ptA)?.Invoke().ApplyFinal(pa);
             _frameB = !_frameB;
         }
@@ -241,6 +255,7 @@ public class NewcomerInitiator : MonoBehaviour
             LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);
             Debug.Log($"[Iniciación] {Who} mete a «{p.name}» en el tanque y lo envía a «{FirstMicrocosmos}».");
             vm.EnterWithTank(p, Application.CanStreamedLevelBeLoaded(FirstMicrocosmos) ? FirstMicrocosmos : null);
+            _sentAt = Time.time;
         }
     }
 
@@ -249,7 +264,7 @@ public class NewcomerInitiator : MonoBehaviour
     {
         Vector3 to = o.transform.position - transform.position; to.y = 0f;
         if (to.magnitude > reach + 0.8f) PathMover.Of(this).StepToward(o.transform.position, moveSpeed);
-        if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld) return;   // está en el microcosmos: ya lo hace
+        if (Time.time - _sentAt < 120f || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;   // ya va (o está) en el microcosmos
         if (Time.time < _nextReminder || o.GetComponent<PlayerController>() == null) return;
         _nextReminder = Time.time + 25f;
         VirtualizationMachine vm = Machine();

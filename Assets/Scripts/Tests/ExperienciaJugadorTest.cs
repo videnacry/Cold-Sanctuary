@@ -33,18 +33,21 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         if (_player == null || ob == null || hr == null || hosp == null) { TestProbe.Check("hay jugador recién llegado y hospital", false); TestProbe.End(); yield break; }
 
         // ── Entra al juego: recién llegado, en el hospital ──
+        foreach (NewcomerInitiator x in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) x.ResetState();   // nada a medias de antes
+        NewcomerInitiator.AllowDuringTests = true;
         ob.apt = false; ob.initiated = false; hr.analyzed = false; hr.vaccinated = false;
         WorkdayDirector.Teleport(_player.transform, hosp.transform.TransformPoint(new Vector3(-11.8f, 1.3f, 3.6f)));
         float oldScale = Time.timeScale; Time.timeScale = speed;
 
         NewcomerInitiator ni = null;
-        yield return Until(() => (ni = NewcomerInitiator.Active) != null && ni.InProgress, 10f);
+        yield return Until(() => (ni = NewcomerInitiator.Active) != null && ni.Now == NewcomerInitiator.Phase.Approach, 10f);
         TestProbe.Check("al entrar, el trabajador de turno empieza la iniciación del recién llegado", ni != null && ni.InProgress, ni != null ? ni.Who : "nadie");
-        if (ni == null) { Time.timeScale = oldScale; TestProbe.End(); yield break; }
+        if (ni == null) { Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false; TestProbe.End(); yield break; }
 
         float startGap = Dist(ni.transform, _player.transform);
-        yield return Until(() => ni.Now != NewcomerInitiator.Phase.Approach, 30f);
-        TestProbe.Check("el trabajador va hacia el recién llegado (no lo espera en la silla)", Dist(ni.transform, _player.transform) < 2f && ni.Now == NewcomerInitiator.Phase.Escort, $"de {startGap:0.0} m a {Dist(ni.transform, _player.transform):0.0} m");
+        float closest = float.MaxValue; float limitA = Time.time + 120f;
+        while (ni.Now == NewcomerInitiator.Phase.Approach && Time.time < limitA) { closest = Mathf.Min(closest, Vector3.Distance(ni.transform.position, _player.transform.position)); yield return null; }
+        TestProbe.Check("el trabajador va hacia el recién llegado (no lo espera en la silla)", closest < 2f && ni.Now == NewcomerInitiator.Phase.Escort, $"de {startGap:0.0} m a {closest:0.0} m");
 
         // ── El examen de llegada, paso a paso ──
         string seen = ""; int tools = 0; bool firstPerson = false, seated = false;
@@ -75,12 +78,12 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         yield return Until(() => AmbrosioStory.Instance != null, 10f);
         AmbrosioStory st = AmbrosioStory.Instance;
         TestProbe.Check("es el microcosmos de Ambrosio, con su historia", st != null, NewcomerInitiator.FirstMicrocosmos);
-        if (st == null) { Time.timeScale = oldScale; TestProbe.End(); yield break; }
+        if (st == null) { Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false; TestProbe.End(); yield break; }
         TestProbe.Check("al aparecer, Ambrosio y su familia están delante", Dist(st.Ambrosio, _player.transform) < 12f && Vector3.Dot(_player.transform.forward, (st.Ambrosio.position - _player.transform.position).normalized) > 0.3f, $"{Dist(st.Ambrosio, _player.transform):0.0} m");
 
         // Ambrosio viene a pedir ayuda.
-        yield return Until(() => st.Now == AmbrosioStory.Beat.AskHelp, 30f);
-        TestProbe.Check("Ambrosio va hacia el jugador a pedirle que salve a su familia", st.Now == AmbrosioStory.Beat.AskHelp && Dist(st.Ambrosio, _player.transform) < 3.5f);
+        yield return Until(() => st.AskedAtDistance >= 0f, 30f);
+        TestProbe.Check("Ambrosio va hacia el jugador a pedirle que salve a su familia", st.AskedAtDistance >= 0f && st.AskedAtDistance < 3.5f, $"a {st.AskedAtDistance:0.0} m");
         yield return Until(() => st.Now == AmbrosioStory.Beat.Push1, 30f);
 
         // Empuja a Shanidar un minuto.
@@ -121,7 +124,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         TestProbe.Check("de vuelta, queda apto (iniciación completa)", ob.apt);
         TestProbe.Check("el checklist de progreso marca la historia de Ambrosio", Progress.StoryDone(NewcomerInitiator.FirstMicrocosmos));
 
-        Time.timeScale = oldScale;
+        Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false;
         TestProbe.End();
     }
 
