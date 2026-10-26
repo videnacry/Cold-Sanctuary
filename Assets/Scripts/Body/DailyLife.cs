@@ -16,7 +16,7 @@ public static class DailyPoses
         BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
     };
 
-    static AsanaPoseSpell Make(string name, float root, params (BodyPart, Vector3)[] set)
+    internal static AsanaPoseSpell Make(string name, float root, params (BodyPart, Vector3)[] set)
     {
         var parts = new (BodyPart, Vector3)[All.Length];
         for (int i = 0; i < All.Length; i++)

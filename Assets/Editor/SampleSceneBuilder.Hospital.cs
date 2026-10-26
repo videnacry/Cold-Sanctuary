@@ -98,6 +98,15 @@ public static partial class SampleSceneBuilder
         Station(InfirmaryProps.Telemedicine(r, "Telemedicina", new Vector3(-5.6f, 0f, -2.6f), 180f), HospitalService.Telemedicina, "Telemedicina (especialistas a distancia)", 2.4f);
         Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-15.4f, 0f, -6.4f), -90f), "Botiquín", 2.2f);
         KitchenProps.Sink(r, "Lavamanos", new Vector3(-15.4f, 0f, 3.4f), -90f);
+        // BIOCONTROL (docs/iniciacion-medica-investigacion.md): el lavabotas de la entrada. Bandeja con desinfectante (Virkon S),
+        // cepillos y aspirador para las semillas del velcro y los bolsillos: lo que protege a la flora y la fauna nativas.
+        Transform boots = KitchenProps.Root(r, "Lavabotas", new Vector3(-15.2f, 0f, 7.4f), -90f);
+        KitchenProps.C(boots, new Vector3(0f, 0.05f, 0f), new Vector3(0.9f, 0.1f, 0.6f), new Color(0.3f, 0.45f, 0.6f), 0f, "Bandeja_desinfectante");
+        KitchenProps.C(boots, new Vector3(0f, 0.09f, 0f), new Vector3(0.8f, 0.02f, 0.5f), new Color(0.75f, 0.55f, 0.85f), 0f, "Virkon");
+        KitchenProps.C(boots, new Vector3(-0.55f, 0.45f, 0.15f), new Vector3(0.3f, 0.9f, 0.3f), KitchenProps.Steel, 0f, "Aspirador");
+        KitchenProps.C(boots, new Vector3(0.5f, 0.6f, 0.25f), new Vector3(0.05f, 1.2f, 0.05f), KitchenProps.Steel, 0f, "Barra_apoyo");
+        KitchenProps.Fit(boots, solid: false);
+        Label(boots, "Lavabotas y biocontrol (semillas, tierra)", 1.5f);
         Station(InfirmaryProps.CrashCart(r, "Carro_de_parada", new Vector3(-12f, 0f, -6.6f), -90f), HospitalService.Urgencias, "Urgencias: carro de parada y desfibrilador", 1.6f, true, new Vector3(0f, 0f, -0.9f));
         Station(InfirmaryProps.CrashCart(r, "Carro_de_parada 2", new Vector3(-6.4f, 0f, -6.6f), -90f), HospitalService.Urgencias, "Carro de parada 2", 1.6f, true, new Vector3(0f, 0f, -0.9f));
         Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(-13.4f, 0f, -10.6f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);

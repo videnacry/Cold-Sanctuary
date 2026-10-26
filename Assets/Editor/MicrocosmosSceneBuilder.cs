@@ -60,8 +60,9 @@ public static class MicrocosmosSceneBuilder
         // entrar; el WorldExitPortal devuelve al mundo normal. Ambos parentados al root → caen ya en O.
         GameObject spawn = new GameObject("MobSpawnPoint");
         spawn.transform.SetParent(root.transform);
-        spawn.transform.localPosition = new Vector3(0f, 1f, -6f);
-        spawn.transform.localRotation = Quaternion.LookRotation(Vector3.forward);
+        // Aparece DELANTE de la familia de Ambrosio, que empuja a los viejos hacia la cueva (AmbrosioStory, Berón 2026-10-26).
+        spawn.transform.localPosition = new Vector3(-30f, 1f, 42f);
+        spawn.transform.localRotation = Quaternion.LookRotation(Vector3.back);
         spawn.AddComponent<MobSpawnPoint>();
 
         GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -73,6 +74,7 @@ public static class MicrocosmosSceneBuilder
         portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>();
 
+        root.AddComponent<AmbrosioStory>();   // la historia del recién llegado: empujar a los viejos, melaza, depredador, muerte de Ambrosio
         BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
 
         MicroWater.SurroundScene(scene);
