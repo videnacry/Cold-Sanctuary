@@ -86,16 +86,27 @@ public class AmbrosioStory : MonoBehaviour
                 || n == "ActionQueue" || n == "WeakOne" || n == "HoneydewProducer" || n == "AcuteStressResponse" || n == "Mind" || n == "HomeImpulse") b.enabled = false;
         }
         Rigidbody rb = t.GetComponent<Rigidbody>(); if (rb != null) rb.isKinematic = true;
-        t.localScale *= castScale;
+        // Cuerpo de cubos de hormiga humanizada (Ambrosio, de pulgón), con los pies en el suelo: el tableau era de cápsulas.
+        MeshRenderer cap = t.GetComponent<MeshRenderer>();
+        Color c = cap != null && cap.sharedMaterial != null ? cap.sharedMaterial.color : new Color(0.4f, 0.3f, 0.25f);
+        if (cap != null) cap.enabled = false;
+        t.localScale = Vector3.one;
+        float h = t == _atlas ? 2.0f : (t == _oldA || t == _oldB) ? 1.6f : 1.75f;
+        CubeInsect.DressMyrmidon(t.gameObject, c, h, t == _atlas ? 1.25f : 1f, aphid: t == _ambrosio);
+        CapsuleCollider cc = t.GetComponent<CapsuleCollider>(); if (cc != null) { cc.center = Vector3.up * h * 0.5f; cc.height = h; cc.radius = 0.35f; }
     }
 
     Vector3 Ground(Vector3 p)
     {
-        if (Physics.Raycast(p + Vector3.up * 20f, Vector3.down, out RaycastHit h, 60f, ~0, QueryTriggerInteraction.Ignore)) return h.point;
+        // El suelo, no las cabezas: antes el rayo daba en el propio personaje y cada paso lo subía un poco más (139 m).
+        RaycastHit[] hits = Physics.RaycastAll(p + Vector3.up * 20f, Vector3.down, 60f, ~0, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
+        foreach (RaycastHit h in hits)
+            if (h.collider.GetComponentInParent<Anima>() == null && h.collider.GetComponentInParent<CharacterController>() == null && (_predator == null || !h.collider.transform.IsChildOf(_predator))) return h.point;
         return p;
     }
 
-    void Place(Transform t, Vector3 p) { if (t == null) return; t.position = Ground(p) + Vector3.up * 0.5f * t.localScale.y; t.rotation = Quaternion.LookRotation(_dir); }
+    void Place(Transform t, Vector3 p) { if (t == null) return; t.position = Ground(p) /* (pies en el suelo) */; t.rotation = Quaternion.LookRotation(_dir); }
 
     Transform PlayerT()
     {
@@ -187,7 +198,7 @@ public class AmbrosioStory : MonoBehaviour
                 _ambrosioFree = true;
                 if (Walk(_ambrosio, p.position, 2.6f, dt))
                 {
-                    AskedAtDistance = Vector3.Distance(_ambrosio.position, p.position);   // (en 3D)
+                    Vector3 gap = _ambrosio.position - p.position; gap.y = 0f; AskedAtDistance = gap.magnitude;
                     Say(_ambrosio, "¡Eh, tú! ¡Ayúdanos, por favor! Salva a mi familia: los viejos ya no pueden andar y la cueva está lejos.", 8f);
                     Go(Beat.AskHelp);
                 }
@@ -270,7 +281,7 @@ public class AmbrosioStory : MonoBehaviour
         Vector3 d = to - t.position; d.y = 0f;
         if (d.magnitude <= stop) return true;
         Vector3 step = Vector3.ClampMagnitude(d, 2.8f * dt);
-        t.position = Ground(t.position + step) + Vector3.up * 0.5f * t.localScale.y;
+        t.position = Ground(t.position + step) /* (pies en el suelo) */;
         t.rotation = Quaternion.Slerp(t.rotation, Quaternion.LookRotation(d), dt * 8f);
         return false;
     }
@@ -286,7 +297,7 @@ public class AmbrosioStory : MonoBehaviour
             {
                 float m = Mathf.Min(speed * dt, path - _travel[old]);
                 _travel[old] += m;
-                old.position = Ground(old.position + _dir * m) + Vector3.up * 0.5f * old.localScale.y;
+                old.position = Ground(old.position + _dir * m) /* (pies en el suelo) */;
             }
         }
         float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f) * 0.15f;   // un empujón cada 1,2 s
@@ -296,7 +307,7 @@ public class AmbrosioStory : MonoBehaviour
             if (who == null || (who == _ambrosio && _ambrosioFree)) continue;
             if (old == _oldB && _collapsed) { Walk(who, old.position - _dir * 2.2f + Vector3.right * 1.5f, 0.3f, dt); continue; }
             Vector3 side = who == _atlas || who == _momo ? Vector3.right * 0.8f : Vector3.left * 0.3f;
-            Vector3 spot = old.position - _dir * (1.3f + 0.4f * old.localScale.z) + side - _dir * bob;
+            Vector3 spot = old.position - _dir * (1.3f + 0.5f) + side - _dir * bob;
             Walk(who, spot, 0.05f, dt);
             who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 10f * Mathf.Abs(bob) / 0.15f, 0f, 0f);   // inclinado hacia delante
         }
@@ -306,7 +317,7 @@ public class AmbrosioStory : MonoBehaviour
     void KeepBehind(Transform p, Transform old, float dt)
     {
         float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f);
-        Vector3 spot = old.position - _dir * (1.4f + 0.4f * old.localScale.z) + Vector3.left * 0.6f - _dir * bob * 0.12f;
+        Vector3 spot = old.position - _dir * (1.4f + 0.5f) + Vector3.left * 0.6f - _dir * bob * 0.12f;
         spot.y = p.position.y;
         WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
         p.rotation = Quaternion.LookRotation(_dir);
@@ -330,7 +341,7 @@ public class AmbrosioStory : MonoBehaviour
     {
         if (t == null) return;
         t.rotation = Quaternion.LookRotation(_dir) * (down ? Quaternion.Euler(0f, 0f, 85f) : Quaternion.identity);
-        t.position = Ground(t.position) + Vector3.up * (down ? 0.25f : 0.5f * t.localScale.y);
+        t.position = Ground(t.position) + Vector3.up * (down ? 0.25f : 0f);
     }
 
     // ── EL DEPREDADOR ───────────────────────────────────────────────────────────────────────────────────────────

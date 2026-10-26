@@ -79,7 +79,8 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         AmbrosioStory st = AmbrosioStory.Instance;
         TestProbe.Check("es el microcosmos de Ambrosio, con su historia", st != null, NewcomerInitiator.FirstMicrocosmos);
         if (st == null) { Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false; TestProbe.End(); yield break; }
-        TestProbe.Check("al aparecer, Ambrosio y su familia están delante", Dist(st.Ambrosio, _player.transform) < 12f && Vector3.Dot(_player.transform.forward, (st.Ambrosio.position - _player.transform.position).normalized) > 0.3f, $"{Dist(st.Ambrosio, _player.transform):0.0} m");
+        Vector3 toFam = st.Shanidar.position - _player.transform.position; toFam.y = 0f;
+        TestProbe.Check("al aparecer, Ambrosio y su familia están delante", toFam.magnitude < 12f && Vector3.Dot(_player.transform.forward, toFam.normalized) > 0.3f, $"{toFam.magnitude:0.0} m");
 
         // Ambrosio viene a pedir ayuda.
         yield return Until(() => st.AskedAtDistance >= 0f, 30f);

@@ -199,6 +199,7 @@ public class NewcomerInitiator : MonoBehaviour
     {
         Stand(me); Stand(pa);
         if (_camForced && CameraManager.Instance != null) { CameraManager.Instance.SwitchTo(_camBefore, forced: true); _camForced = false; }
+        PlayerController ppc = p.GetComponent<PlayerController>(); if (ppc != null) ppc.LookAtPoint(p.position + p.forward * 10f + Vector3.up * 1.5f);   // la mirada, otra vez al frente
         Debug.Log($"[Iniciación] {Who} termina el examen de llegada de «{_exam.name}» ({BeatsDone} pasos): ahora, al tanque.");
         SanctuaryOnboarding o = _exam; _exam = null; _beat = -1;
         Begin(o);
