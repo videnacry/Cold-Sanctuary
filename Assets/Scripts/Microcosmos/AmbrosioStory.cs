@@ -59,7 +59,8 @@ public class AmbrosioStory : MonoBehaviour
         if (_ambrosio == null || _oldA == null || _oldB == null || _cave == null) { Debug.LogWarning("[Ambrosio] Falta el elenco de la historia."); enabled = false; return; }
         // El tableau tenía su propio director e impulsos: aquí manda la historia.
         foreach (string n in new[] { "Level1Director", "TribeCohesion" }) foreach (MonoBehaviour mb in GetComponentsInChildren<MonoBehaviour>(true)) if (mb.GetType().Name == n) mb.enabled = false;
-        foreach (MonoBehaviour mb in _cave.GetComponents<MonoBehaviour>()) mb.enabled = false;
+        // La cueva sigue siendo el REFUGIO (CarryToRefuge): los viejos (WeakOne) cuentan como a salvo al llegar.
+        foreach (MonoBehaviour mb in _cave.GetComponents<MonoBehaviour>()) if (!(mb is CarryToRefuge)) mb.enabled = false;
         _dir = Vector3.back;   // de la salida a la cueva (−Z)
         _caveAt = Ground(_cave.position - _dir * 2.2f);
         Vector3 start = _caveAt - _dir * path;
@@ -83,7 +84,7 @@ public class AmbrosioStory : MonoBehaviour
         {
             string n = b.GetType().Name;
             if (n == "NavMeshAgent" || n == "SocialImpulse" || n == "ImpulseController" || n == "AiBrain" || n == "IdleBehavior" || n == "AnimaController"
-                || n == "ActionQueue" || n == "WeakOne" || n == "HoneydewProducer" || n == "AcuteStressResponse" || n == "Mind" || n == "HomeImpulse") b.enabled = false;
+                || n == "ActionQueue" || n == "HoneydewProducer" || n == "AcuteStressResponse" || n == "Mind" || n == "HomeImpulse") b.enabled = false;
         }
         Rigidbody rb = t.GetComponent<Rigidbody>(); if (rb != null) rb.isKinematic = true;
         // Cuerpo de cubos de hormiga humanizada (Ambrosio, de pulgón), con los pies en el suelo: el tableau era de cápsulas.
@@ -170,16 +171,27 @@ public class AmbrosioStory : MonoBehaviour
         g.transform.localPosition = new Vector3(0.25f, 1.1f, 0.45f); g.transform.localScale = Vector3.one * 0.25f;
         g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.98f, 0.82f, 0.3f));
         _drop = g.transform;
+        Honeydew().AddCharge();   // la melaza es una carga del hechizo de la maleza (HoneydewSpell), como la de las gotas del suelo
         Say(_ambrosio, "Toma, es mi melaza. ¡Corre, dásela!", 5f); Goal("Lleva la melaza a Shanidar (E junto a él)");
     }
 
     void Feed()
     {
         Destroy(_drop.gameObject); _drop = null; _collapsed = false;
+        HoneydewSpell h = Honeydew(); Anima me = PlayerT().GetComponent<Anima>();
+        if (h.charges > 0 && me != null) { h.charges--; h.Cast(me, _oldB.GetComponent<ITarget>() ?? _oldB.GetOrAdd<AnimaTarget>()); }   // le repone la energía
         Lay(_oldB, false);
         Say(_oldB, "…Gracias. Ya puedo seguir.", 5f);
         Say(_ambrosio, "¡Se levanta! Vuelve a empujarlo.", 5f); Goal("Empuja a Shanidar hacia la cueva (E junto a él)");
         Go(Beat.Push2); PushedThisPhase = 0f;
+    }
+
+    // El hechizo de la maleza del jugador; si se lo añade la historia, sin tecla propia (aquí la E la reparte Act).
+    HoneydewSpell Honeydew()
+    {
+        HoneydewSpell h = PlayerT().GetComponent<HoneydewSpell>();
+        if (h == null) { h = PlayerT().gameObject.AddComponent<HoneydewSpell>(); h.castKey = KeyCode.None; }
+        return h;
     }
 
     // ── EL GUION ─────────────────────────────────────────────────────────────────────────────────────────────────
@@ -241,7 +253,11 @@ public class AmbrosioStory : MonoBehaviour
                 float k = Mathf.Clamp01((Time.time - _beatAt) / 3f);
                 _ambrosio.rotation = Quaternion.Slerp(Quaternion.LookRotation(_dir), Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), k);
                 if (Time.time - _beatAt > 1.5f && Time.time - _beatAt < 1.5f + dt * 1.5f) Say(_ambrosio, "…Lo hemos… conseguido.", 5f);
-                if (Time.time - _beatAt > 5f) { Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi); }
+                if (Time.time - _beatAt > 5f)
+                {
+                    Anima am = _ambrosio.GetComponent<Anima>(); if (am != null) am.death = true;   // muere de verdad (su alma, SoulRecord, sigue: renace en la cocina)
+                    Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi);
+                }
                 break;
             case Beat.Sakshi:
                 Face(p, _sakshi);
@@ -357,24 +373,15 @@ public class AmbrosioStory : MonoBehaviour
     void SpawnPredator()
     {
         Vector3 mid = (_oldA.position + _oldB.position) * 0.5f;
-        var go = new GameObject("Depredador_escarabajo");
+        // Una ARAÑA LOBO (Lycosidae): caza hormigas al acecho en el suelo, sin tela. Cuerpo de cubos de su ficha (CubeInsect),
+        // a la escala del microcosmos (la hormiga, del tamaño de una persona; la araña, unas dos veces su largo).
+        var go = new GameObject("Depredador_arana_lobo");
         go.transform.SetParent(transform, true);
-        Color shell = new Color(0.18f, 0.12f, 0.1f);
-        Part(go.transform, new Vector3(0f, 0.9f, 0f), new Vector3(2.2f, 1.2f, 3f), shell, "Caparazon");
-        Part(go.transform, new Vector3(0f, 0.9f, 1.8f), new Vector3(1.2f, 0.8f, 0.8f), shell, "Cabeza");
-        for (int s = -1; s <= 1; s += 2) Part(go.transform, new Vector3(s * 0.4f, 0.9f, 2.4f), new Vector3(0.15f, 0.15f, 0.9f), new Color(0.35f, 0.2f, 0.12f), "Mandibula");
-        for (int i = 0; i < 6; i++) Part(go.transform, new Vector3((i % 2 == 0 ? -1 : 1) * 1.4f, 0.4f, -1f + (i / 2) * 1f), new Vector3(0.9f, 0.12f, 0.12f), shell, "Pata");
+        CubeInsect.Dress(go, "Spider", new Color(0.32f, 0.25f, 0.18f), 3.2f);
         go.transform.position = Ground(mid + Vector3.right * 14f);
         go.transform.rotation = Quaternion.LookRotation(Vector3.left);
         _predator = go.transform;
         PredatorPushes = 0;
-    }
-
-    static void Part(Transform r, Vector3 pos, Vector3 size, Color c, string n)
-    {
-        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube); g.name = n;
-        g.transform.SetParent(r, false); g.transform.localPosition = pos; g.transform.localScale = size;
-        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
     }
 
     void PredatorFight(Transform p, float dt)
@@ -396,7 +403,7 @@ public class AmbrosioStory : MonoBehaviour
         }
         if (PlayerPushingPredator)
         {
-            Vector3 spot = _predator.position + Vector3.left * 3.3f + Vector3.forward * 3.2f; spot.y = p.position.y;   // al lado (la cámara no se mete en el escarabajo)
+            Vector3 spot = _predator.position + Vector3.left * 3.3f + Vector3.forward * 3.2f; spot.y = p.position.y;   // al lado (la cámara no se mete en la araña)
             WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
             p.rotation = Quaternion.LookRotation(Vector3.right);
             float ph = Mathf.Sin(Time.time * Mathf.PI * 2f / 2.5f);   // empujón lento, de fuerza

@@ -92,6 +92,10 @@ public class NewcomerInitiator : MonoBehaviour
     public void ResetState()
     {
         if (_exam != null) Hold(_exam.transform, false); else if (_leading != null) Hold(_leading.transform, false);
+        if (_camForced && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(_camBefore, forced: true);
+        _camForced = false;
+        ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
+        if (_exam != null) ArrivalExam.Hold(_exam.gameObject, null, BodyPart.HandRight, "Herramienta_paciente");
         _exam = null; _leading = null; _beat = -1; BeatsDone = 0; Now = Phase.None;
     }
 
@@ -148,7 +152,7 @@ public class NewcomerInitiator : MonoBehaviour
         {
             Stand(pa); Stand(me);
             if (place == null) { Now = Phase.Perform; _beatEnd = Time.time + b.seconds; return; }
-            Vector3 fr = Front(place), side = Vector3.Cross(Vector3.up, fr);
+            Vector3 fr = ArrivalExam.Front(place), side = Vector3.Cross(Vector3.up, fr);
             Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
             Vector3 d = stand - transform.position; d.y = 0f;
             Escort(p, Time.deltaTime);
@@ -174,7 +178,12 @@ public class NewcomerInitiator : MonoBehaviour
         }
         if (Time.time < _beatEnd) return;
         HealthRecord hr = _exam.GetComponent<HealthRecord>();
-        if (b.id == "hisopo" && hr != null) hr.analyzed = true;
+        if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
+        {
+            ITarget it = _exam.GetComponentInParent<ITarget>();
+            if (me != null && it != null) this.GetOrAdd<ClinicalAnalysisSpell>().Cast(me, it);
+            if (hr != null) hr.analyzed = true;
+        }
         if (b.id == "vacuna" && hr != null) { hr.vaccinated = true; ITarget it = _exam.GetComponentInParent<ITarget>(); if (me != null && it != null) this.GetOrAdd<VaccinateSpell>().Cast(me, it); }
         ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
         ArrivalExam.Hold(p.gameObject, null, b.patientBone, "Herramienta_paciente");
@@ -185,10 +194,9 @@ public class NewcomerInitiator : MonoBehaviour
     void Put(Transform p, Anima pa, Transform place, ArrivalExam.Spot spot)
     {
         Hold(p, true);
-        Vector3 fr = Front(place);
-        Vector3 at = spot == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f : place.position + Vector3.up * (spot == ArrivalExam.Spot.Lie ? 0.75f : 0.05f);
+        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot);
         WorkdayDirector.Teleport(p, at);
-        p.rotation = spot == ArrivalExam.Spot.Stand ? Quaternion.LookRotation(-fr) : spot == ArrivalExam.Spot.Sit ? Quaternion.LookRotation(fr) : place.rotation;
+        p.rotation = rot;
         if (pa != null) (spot == ArrivalExam.Spot.Sit ? DailyPoses.Sit() : spot == ArrivalExam.Spot.Lie ? DailyPoses.Lie() : DailyPoses.Stand()).ApplyFinal(pa);
         // Sentado o tumbado, el jugador lo vive en 1.ª persona (Berón 2026-10-26).
         if (spot != ArrivalExam.Spot.Stand && !_camForced && p.GetComponent<PlayerController>() != null && CameraManager.Instance != null)
@@ -225,17 +233,6 @@ public class NewcomerInitiator : MonoBehaviour
     }
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
-
-    /// <summary>El lado «de uso» de un mueble: de sus cuatro lados, el que da al interior del área (hacia su centro), que es
-    /// por donde se le acerca uno. No depende de cómo se construyó cada mueble.</summary>
-    static Vector3 Front(Transform place)
-    {
-        SanctuaryArea a = place.GetComponentInParent<SanctuaryArea>();
-        Vector3 toC = Flat(a != null ? a.transform.position - place.position : -place.forward).normalized;
-        Vector3 best = place.forward; float bd = -2f;
-        foreach (Vector3 c in new[] { place.forward, -place.forward, place.right, -place.right }) { Vector3 f = Flat(c).normalized; float d = Vector3.Dot(f, toC); if (d > bd) { bd = d; best = f; } }
-        return best;
-    }
 
     // ── 3. AL TANQUE: lo mete dentro y lo envía a su primer microcosmos ──────────────────────────────────────────
     void Begin(SanctuaryOnboarding o)

@@ -106,3 +106,10 @@ Un solo trabajador médico guía al recién llegado. La analítica, el IGRA, la 
 | 10 | Veredicto: «apto» y charla breve con 3 reglas (5 m de los animales; si enfermas, no te acerques; botas limpias siempre) | Recepción | De pie | Le da la mano o la acreditación | Credencial | 20 s | **Fauna y flora** |
 
 Opcional y realista solo para quien vaya a invernar: espirometría y audiometría en una sala técnica aparte. La radiografía se omite porque se hizo antes del viaje.
+
+**En el código:** los pasos viven en `ArrivalExam.Beats` (posturas A/B, herramienta, sitio, frase, duración) y los usan
+los dos lados de la iniciación: `NewcomerInitiator` (el trabajador de turno examina al jugador) y la misión de
+virtualización `enf_iniciacion` (`VirtualMissions.Steps/Anchors` → `ArrivalExam.MissionSteps/MissionAnchors`: el jugador
+examina a un turista, con el paso extra de llevar el frotis al analizador). El frotis es la muestra del análisis
+clínico: al tomarlo se lanza `ClinicalAnalysisSpell` y queda `HealthRecord.analyzed`; la vacuna lanza `VaccinateSpell`.
+El lavabotas está en la fila de triaje de la planta baja (`Lavabotas`, `SampleSceneBuilder.Hospital.cs`).

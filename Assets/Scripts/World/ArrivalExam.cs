@@ -98,6 +98,47 @@ public static class ArrivalExam
             line = "Apto. Tres normas: a cinco metros de los animales; si enfermas, no te acerques a ellos; y botas limpias siempre. Ahora, tu primera virtualización." },
     };
 
+    // ── LA MISIÓN DE VIRTUALIZACIÓN «enf_iniciacion» (el jugador examina a un turista): el MISMO examen ──────────
+    // Pasos = recibirlo, los pasos del examen (con el frotis llevado al analizador justo tras tomarlo) y el tanque.
+    public const int StepEntrance = -1, StepAnalyzer = -2, StepTank = -3;
+
+    /// <summary>Qué hace cada paso de la misión: el índice del paso del examen, o StepEntrance/StepAnalyzer/StepTank.</summary>
+    public static int[] MissionPlan()
+    {
+        var l = new List<int> { StepEntrance };
+        for (int i = 0; i < Beats.Length; i++) { l.Add(i); if (Beats[i].id == "hisopo") l.Add(StepAnalyzer); }
+        l.Add(StepTank);
+        return l.ToArray();
+    }
+
+    public static string[] MissionSteps() => Map(MissionPlan(), i => i >= 0 ? Beats[i].title : i == StepEntrance ? "Recibir al turista en la entrada"
+        : i == StepAnalyzer ? "Llevar el frotis al analizador" : "Acompañarle al tanque: su primera virtualización");
+
+    public static string[] MissionAnchors() => Map(MissionPlan(), i => i >= 0 ? Beats[i].place : i == StepEntrance ? "@entrada" : i == StepAnalyzer ? "Analizador clinico" : "@maquina");
+
+    static string[] Map(int[] plan, Func<int, string> f) { var r = new string[plan.Length]; for (int i = 0; i < plan.Length; i++) r[i] = f(plan[i]); return r; }
+
+    /// <summary>El lado «de uso» de un mueble: de sus cuatro lados, el que da al interior del área (hacia su centro), que es
+    /// por donde se le acerca uno. No depende de cómo se construyó cada mueble.</summary>
+    public static Vector3 Front(Transform place)
+    {
+        SanctuaryArea a = place.GetComponentInParent<SanctuaryArea>();
+        Vector3 toC = Flat(a != null ? a.transform.position - place.position : -place.forward).normalized;
+        Vector3 best = place.forward; float bd = -2f;
+        foreach (Vector3 c in new[] { place.forward, -place.forward, place.right, -place.right }) { Vector3 f = Flat(c).normalized; float d = Vector3.Dot(f, toC); if (d > bd) { bd = d; best = f; } }
+        return best;
+    }
+
+    /// <summary>Dónde y cómo queda el examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.</summary>
+    public static void PatientSpot(Transform place, Spot spot, out Vector3 at, out Quaternion rot)
+    {
+        Vector3 fr = Front(place);
+        at = spot == Spot.Stand ? place.position + fr * 0.7f : place.position + Vector3.up * (spot == Spot.Lie ? 0.75f : 0.05f);
+        rot = spot == Spot.Stand ? Quaternion.LookRotation(-fr) : spot == Spot.Sit ? Quaternion.LookRotation(fr) : place.rotation;
+    }
+
+    static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
+
     // ── HERRAMIENTAS (de cubos, a su tamaño real) ──────────────────────────────────────────────────────────────
 
     /// <summary>Pone la herramienta <paramref name="tool"/> en el hueso <paramref name="bone"/> de <paramref name="body"/> (o la

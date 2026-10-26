@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 609 tipos._
+_Total: 612 tipos._
 
 
 ## Animals
@@ -126,6 +126,7 @@ _Total: 609 tipos._
 - **AffordanceKind** (enum) — `Assets/Scripts/World/Affordance.cs` — Qué ofrece un elemento del entorno a un ser vivo (docs/natural-interactions.md).
 - **AiBrain** (class) — `Assets/Scripts/Control/AiBrain.cs` — El cerebro por defecto de un ser:
 - **AllostaticState** (class) — `Assets/Scripts/Soul/AllostaticState.cs` — HUB ALOSTÁTICO (docs/apremios-guardian-observacion.md §3) — el punto donde los hechizos-estado EXTERNOS modulan al Guardián (`MoodDynamics`), sin que este tenga que conocerlos:
+- **AmbrosioStory** (class) — `Assets/Scripts/Microcosmos/AmbrosioStory.cs` — LA HISTORIA DE AMBROSIO (primer microcosmos del recién llegado; Berón 2026-10-26).
 - **Anima** (class) — `Assets/Scripts/Anima.cs`
 - **AnimaController** (class) — `Assets/Scripts/Control/AnimaController.cs` — Capa de CONTROL intercambiable de un `Anima` (docs/anima-architecture.md §11.5):
 - **AnimalRadar** (class) — `Assets/Scripts/UI/FollowingArrays/FollowingElementBehavior/AnimalRadar.cs`
@@ -147,6 +148,7 @@ _Total: 609 tipos._
 - **AreaVendor** (class) — `Assets/Scripts/Economy/AreaVendor.cs` — Handles buying and selling at a specific sanctuary area or at the market.
 - **AreaWork** (class) — `Assets/Scripts/Progression/AreaWork.cs` — CATÁLOGO DE MISIONES DE TRABAJO por área (docs/jornada-y-rotacion.md; base:
 - **ArrangementPattern** (class) — `Assets/Scripts/UI/Palette/ArrangementPattern.cs`
+- **ArrivalExam** (class) — `Assets/Scripts/World/ArrivalExam.cs` — EL EXAMEN DE LLEGADA (docs/iniciacion-medica-investigacion.md, «Propuesta para el juego»):
 - **Asana** (class) — `Assets/Scripts/Asana/Asana.cs` — Data asset for an Asana (yoga pose) or basic exercise.
 - **AsanaDetector** (class) — `Assets/Scripts/Asana/AsanaDetector.cs` — Attach to the Player.
 - **AsanaEvaluator** (class) — `Assets/Scripts/Asana/AsanaEvaluator.cs` — IPaletteEvaluator for the asana system.
@@ -275,6 +277,7 @@ _Total: 609 tipos._
 - **EraSpeciesTest** (class) — `Assets/Scripts/Tests/EraSpeciesTest.cs` — CONDUCTA DE LAS ESPECIES DE LAS ERAS (docs/era-species-behavior.md §5) sin esperar a la noche ni a un depredador:
 - **EstrusTest** (class) — `Assets/Scripts/EstrusTest.cs` — Unidad de test del CELO (docs/testing-checklist.md §35), por `TestProbe`:
 - **ExertionCost** (class) — `Assets/Scripts/Soul/Exertion.cs` — COSTE FÍSICO de una acción de trabajo (vía A — docs/soul-relations-reincarnation §2b).
+- **ExperienciaJugadorTest** (class) — `Assets/Scripts/Tests/ExperienciaJugadorTest.cs` — TEST DE EXPERIENCIA DEL JUGADOR (Berón 2026-10-26:
 - **FallImpact** (class) — `Assets/Scripts/Player/FallImpact.cs` — IMPACTO DE LAS CAÍDAS:
 - **Family** (class) — `Assets/Scripts/Family.cs`
 - **FamilyGenerator** (class) — `Assets/Scripts/FamilyGenerator.cs` — Puebla la escena con familias de animales al arrancar Play.
@@ -429,7 +432,7 @@ _Total: 609 tipos._
 - **NarrativeMode** (enum) — `Assets/Scripts/Mind/PhraseDistribution.cs` — Cómo se reparten las vivencias entre los seres al iniciar una partida (docs anima §11).
 - **NeedsDriver** (class) — `Assets/Scripts/Body/NeedsDriver.cs` — EL CUERPO PIDE (etapa 2 del cuerpo unificado):
 - **NestType** (enum) — `Assets/Scripts/PostNatal/PostNatalEnums.cs`
-- **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md):
+- **NewcomerInitiator** (class) — `Assets/Scripts/World/NewcomerInitiator.cs` — INICIACIÓN DE RECIÉN LLEGADOS (docs/jornada-y-rotacion.md, docs/iniciacion-medica-investigacion.md):
 - **NewtonCannonLesson** (class) — `Assets/Scripts/AtomicPlant/NewtonCannonLesson.cs` — EL CAÑÓN DE NEWTON (su «Tratado del sistema del mundo»; gravitación de los Principia, 1687):
 - **NPCCombatBehavior** (class) — `Assets/Scripts/Combat/NPCCombatBehavior.cs` — Adds autonomous combat capability to any WorldCharacter that is in a combat zone.
 - **NPCEconomy** (class) — `Assets/Scripts/Economy/NPCEconomy.cs` — Gives an NPC their own wallet and mini-inventory so they can participate in the sanctuary's economy independently of the player.

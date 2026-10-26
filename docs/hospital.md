@@ -46,7 +46,8 @@ invisible en los bordes. `SanctuaryArea` cuenta el anillo como parte del área s
 para decidir qué áreas forman un edificio.
 
 - **Planta baja: urgencias y ambulatorio.** 4 triajes, 4 consultas (la 1 = mesa del médico, junto a la silla de exámenes y
-  el analizador de la **iniciación**, intactos), 2 carros de parada, 2 rayos X + 2 ecógrafos, laboratorio, banco de sangre,
+  el analizador de la **iniciación**, intactos), el **lavabotas** de biocontrol de la iniciación (entre los triajes 1 y 2;
+  `docs/iniciacion-medica-investigacion.md`), 2 carros de parada, 2 rayos X + 2 ecógrafos, laboratorio, banco de sangre,
   farmacia, espera (10), aseos, telemedicina y 4 paritorios de 32 m². **Anillo bajo:** 6 camas de observación de urgencias
   (Cama 1-6) y 12 de maternidad.
 - **Planta 1 (11 m): bloque quirúrgico y críticos.** 4 quirófanos de 6 × 6 m con su anestesia, 2 lavados quirúrgicos,
