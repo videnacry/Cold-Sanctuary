@@ -79,36 +79,50 @@ public static class VirtualInPlace
         tourist.transform.position = entrance.position + Vector3.right * 1.2f;
         var follow = tourist.AddComponent<VirtualFollower>();
         follow.enabled = false;   // espera en la entrada hasta que lo recibes
-        Transform chair = r.stations.Length > 1 ? r.stations[1].transform : entrance;
         Transform body = tourist.transform.Find(CubeHumanoid.BodyName);
+        // La copia trae el cuerpo colocado para un origen a media altura (el de su dueño); el turista se pone por los pies
+        // (en el suelo, la silla o la camilla), así que se le sube hasta que sus pies toquen su origen (si no, medio hundido).
+        if (body != null)
+        {
+            Bounds bb = new Bounds(body.position, Vector3.zero); bool any = false;
+            foreach (Renderer rd in body.GetComponentsInChildren<Renderer>()) { if (!any) { bb = rd.bounds; any = true; } else bb.Encapsulate(rd.bounds); }
+            if (any) body.position += Vector3.up * (tourist.transform.position.y - bb.min.y);
+        }
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         Anima me = player != null ? player.GetComponent<Anima>() : null;
+        int[] plan = ArrivalExam.MissionPlan();   // los mismos pasos que el examen de llegada (NewcomerInitiator)
 
-        void Seat(AsanaPoseSpell pose)
+        // Cada prueba: el turista en su sitio (sentado, de pie o tumbado) con su postura, y tú con la tuya y la herramienta.
+        void Perform(ArrivalExam.Beat b, Transform place)
         {
             follow.enabled = false;
-            tourist.transform.position = chair.position;
-            tourist.transform.rotation = chair.rotation;
-            ClonePose.Apply(body, pose);
+            ArrivalExam.PatientSpot(place, b.patient, out Vector3 at, out Quaternion rot);
+            tourist.transform.SetPositionAndRotation(at, rot);
+            ClonePose.Apply(body, b.ptA());
+            ArrivalExam.Hold(tourist, b.patientTool, b.patientBone, "Herramienta_paciente");
+            if (me != null) { b.exA().ApplyFinal(me); r.StartCoroutine(StandLater(me, 2.5f)); }
+            if (player != null) ArrivalExam.Hold(player, b.tool, BodyPart.HandRight, "Herramienta");
+            Say($"{b.title}: {b.line}");
         }
-        void Examiner(AsanaPoseSpell pose) { if (me != null) { pose.ApplyFinal(me); r.StartCoroutine(StandLater(me, 2.5f)); } }
 
         r.onStep = i =>
         {
-            switch (i)
+            if (i < 0 || i >= plan.Length) return;
+            int k = plan[i];
+            Transform place = i < r.stations.Length ? r.stations[i].transform : entrance;
+            if (k >= 0) { Perform(ArrivalExam.Beats[k], place); return; }
+            ClonePose.Rest(body);
+            ArrivalExam.Hold(tourist, null, BodyPart.HandRight, "Herramienta_paciente");
+            if (player != null) ArrivalExam.Hold(player, null, BodyPart.HandRight, "Herramienta");
+            if (k == ArrivalExam.StepEntrance) { follow.enabled = true; Say("El turista te sigue: empieza el examen de llegada."); }
+            else if (k == ArrivalExam.StepAnalyzer)
             {
-                case 0: follow.enabled = true; Say("El turista te sigue. Llévale a la silla de exámenes."); break;
-                case 1: Seat(DailyPoses.Sit()); Say("Sentado en la silla de exámenes. Empieza por las constantes."); break;
-                case 2: Seat(DailyPoses.PatientArmOut()); Examiner(DailyPoses.ExaminerHands()); Say("Tensión 120/80, pulso 68, 36,6 °C: normal."); break;
-                case 3: Seat(DailyPoses.PatientHeadUp()); Examiner(DailyPoses.ExaminerPenlight()); Say("Las pupilas se cierran con la luz, iguales y redondas: bien."); break;
-                case 4: Seat(DailyPoses.PatientArmOut()); Examiner(DailyPoses.ExaminerHands()); Say("Tubo de sangre extraído del pliegue del codo. Llévalo al analizador."); break;
-                case 5: Say("El analizador procesa la muestra: hemograma y serología sin problemas. Vuelve para la vacuna."); break;
-                case 6: Seat(DailyPoses.PatientShoulder()); Examiner(DailyPoses.ExaminerSyringe()); Say("Vacuna puesta en el hombro."); break;
-                case 7: ClonePose.Rest(body); follow.enabled = true; Say("Normas: nada de salir sin iniciación, respetar a los animales y seguir la jornada. Ahora, al tanque."); break;
-                case 8: follow.enabled = false; Say("El turista entra en el tanque para su primera virtualización: ¡iniciación completada!"); break;
+                follow.enabled = true;
+                Say("El analizador procesa el frotis (PCR respiratoria: gripe, COVID, VRS): negativo. Sigue con el electrocardiograma.");
             }
+            else { follow.enabled = false; Say("El turista entra en el tanque para su primera virtualización: ¡iniciación completada!"); }
         };
-        r.onEnd = () => { if (tourist != null) Object.Destroy(tourist); };
+        r.onEnd = () => { if (tourist != null) Object.Destroy(tourist); if (player != null) ArrivalExam.Hold(player, null, BodyPart.HandRight, "Herramienta"); };
         Debug.Log($"[Iniciación] Virtualización en la enfermería real: el turista (cuerpo copiado de «{src}») espera en la entrada.");
     }
 

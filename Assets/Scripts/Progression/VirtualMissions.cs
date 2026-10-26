@@ -43,7 +43,7 @@ public static class VirtualMissions
     {
         switch (Key(id))
         {
-            case "enf_iniciacion": return new[] { "Recibir al turista en la entrada", "Sentarle en la silla de exámenes", "Tomarle la tensión, el pulso y la temperatura", "Mirarle las pupilas con la linterna", "Extraerle sangre del brazo", "Llevar la muestra al analizador", "Vacunarle en el hombro", "Explicarle las normas del santuario", "Acompañarle al tanque: su primera virtualización" };
+            case "enf_iniciacion": return ArrivalExam.MissionSteps();   // el mismo examen de llegada que hace el de turno (NewcomerInitiator)
             case "enf_visita": return new[] { "Revisar la historia de cada paciente", "Tomar constantes", "Curar las heridas", "Dar la medicación" };
             case "enf_animales": return new[] { "Sujetar al animal con calma", "Tomar la muestra", "Analizarla", "Vacunar" };
             case "enf_inventario": return new[] { "Desinfectar camillas y superficies", "Esterilizar el instrumental en el autoclave", "Contar el material", "Reponer el botiquín" };
@@ -106,7 +106,7 @@ public static class VirtualMissions
     {
         switch (Key(id))
         {
-            case "enf_iniciacion": return new[] { "@entrada", "Silla_examen", "Silla_examen", "Silla_examen", "Silla_examen", "Analizador clinico", "Silla_examen", "Mesa del medico", "@maquina" };
+            case "enf_iniciacion": return ArrivalExam.MissionAnchors();
             case "enf_visita": return new[] { "Cama 1", "Cama 2", "Cama 3", "Botiquin" };
             case "enf_animales": return new[] { "Cuadra 1", "Mesa veterinaria", "Laboratorio", "Mesa veterinaria" };
             case "enf_inventario": return new[] { "Camilla", "Autoclave", "Botiquin", "Botiquin" };

@@ -56,6 +56,8 @@ public class CameraManager : MonoBehaviour
 
     // ── Runtime state ────────────────────────────────────────────────────────
     CameraMode   _currentMode;
+    /// <summary>La cámara que se ve ahora (1.ª o 3.ª persona).</summary>
+    public CameraMode CurrentMode => _currentMode;
     bool         _inRobbery;
     Transform    _cam;
     Coroutine    _transitionRoutine;

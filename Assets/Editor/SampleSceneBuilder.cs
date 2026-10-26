@@ -117,6 +117,7 @@ public static partial class SampleSceneBuilder
         tests.AddComponent<EraSpeciesTest>().prefabs = new[] { "Woodlouse", "Spider", "Firefly", "Cicada", "Cricket", "Scorpion" }
             .Select(LoadAnimalPrefab).Where(p => p != null).ToArray();   // grupo 29: especies de las eras (bola, destellos, canto, cría a lomos, noche) en escenario forzado
         tests.AddComponent<ChecklistAuto>();         // grupo 20: bloques del checklist que pedían inspector (apremio, velocidad de tiempo)
+        tests.AddComponent<ExperienciaJugadorTest>();   // grupo 40 (el último): la experiencia del jugador de punta a punta — iniciación → Ambrosio → vuelta
         tests.AddComponent<ColdSanctuary.TestRunner>();   // orquesta lo anterior + TOTAL (namespace por CS0434 vs UnityEditor.TestRunner; global:: no lo resuelve)
         new GameObject("WasdMission_AUTO").AddComponent<ReachGoalMission>().transform.SetParent(root.transform);  // 1ª misión WASD-test (reporta por TestProbe al jugarla)
         new GameObject("EcoObservation_AUTO").AddComponent<EcosystemObservation>().transform.SetParent(root.transform);  // misión-observación: HUD de status del ecosistema + log/alertas de balance

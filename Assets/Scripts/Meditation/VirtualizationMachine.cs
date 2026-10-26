@@ -118,7 +118,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         var opts = new System.Collections.Generic.List<string>();
         var acts = new System.Collections.Generic.List<System.Action>();
         if (areaName == "Cocina") { opts.Add("Virtualización: servicio a los turistas (eres el cocinero)"); acts.Add(() => ChooseId("coc_servicio")); }
-        if (areaName == AreaWork.Hospital) { opts.Add("Virtualización: iniciar a un turista (análisis, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
+        if (areaName == AreaWork.Hospital) { opts.Add("Virtualización: iniciar a un turista (examen de llegada, vacuna y normas)"); acts.Add(() => ChooseId("enf_iniciacion")); }
         opts.Add("Virtualización: misiones de trabajo de esta área"); acts.Add(() => ShowArea(areaName));
         if (SceneMode || shift != null) { opts.Add("Simulación: el microcosmos del área"); acts.Add(EnterSimulation); }
         // Simulaciones de COMPASIÓN (docs/compassion-simulations.md): momentos históricos reales, sobre esta misma área agrandada.
