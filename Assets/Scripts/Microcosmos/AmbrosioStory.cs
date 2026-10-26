@@ -236,13 +236,15 @@ public class AmbrosioStory : MonoBehaviour
             case Beat.Predator:
                 PredatorFight(p, dt);
                 break;
-            case Beat.Death:   // Ambrosio se derrumba en la entrada
+            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira)
+                Face(p, _ambrosio);
                 float k = Mathf.Clamp01((Time.time - _beatAt) / 3f);
                 _ambrosio.rotation = Quaternion.Slerp(Quaternion.LookRotation(_dir), Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), k);
                 if (Time.time - _beatAt > 1.5f && Time.time - _beatAt < 1.5f + dt * 1.5f) Say(_ambrosio, "…Lo hemos… conseguido.", 5f);
                 if (Time.time - _beatAt > 5f) { Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi); }
                 break;
             case Beat.Sakshi:
+                Face(p, _sakshi);
                 if (_sakshi == null || Walk(_sakshi, p.position, 2.2f, dt))
                 {
                     if (Time.time - _beatAt < 30f && _sakshiSaid == false)
@@ -265,6 +267,13 @@ public class AmbrosioStory : MonoBehaviour
     bool _sakshiSaid;
 
     Vector3 Behind(Transform old) => old.position - _dir * 1.3f;   // detrás de su viejo
+
+    // La cámara del jugador, hacia lo que importa ahora (la muerte de Ambrosio, Sakshi que se acerca).
+    static void Face(Transform p, Transform t)
+    {
+        if (t == null) return;
+        PlayerController pc = p.GetComponent<PlayerController>(); if (pc != null) pc.LookAtPoint(t.position + Vector3.up * 1.0f);
+    }
 
     // ¿Ya está el jugador aquí, de pie junto a la familia? (al cargar la escena aún llega por el tanque, o cae).
     bool Arrived(Transform p)
@@ -387,7 +396,7 @@ public class AmbrosioStory : MonoBehaviour
         }
         if (PlayerPushingPredator)
         {
-            Vector3 spot = _predator.position + Vector3.left * 2.6f + Vector3.forward * 2.6f; spot.y = p.position.y;
+            Vector3 spot = _predator.position + Vector3.left * 3.3f + Vector3.forward * 3.2f; spot.y = p.position.y;   // al lado (la cámara no se mete en el escarabajo)
             WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
             p.rotation = Quaternion.LookRotation(Vector3.right);
             float ph = Mathf.Sin(Time.time * Mathf.PI * 2f / 2.5f);   // empujón lento, de fuerza
