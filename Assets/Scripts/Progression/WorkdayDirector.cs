@@ -476,7 +476,12 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Una copia del cuerpo de cubos de <paramref name="source"/> (sin su conducta), de pie: clones, turistas virtuales…</summary>
     public static GameObject SpawnBodyCopy(string source, string label)
     {
-        GameObject src = GameObject.Find(source);
+        // Dentro de una virtualización el santuario está apagado (GameObject.Find no ve lo inactivo) y la persona puede
+        // llamarse «<nombre>_Post»: sin esto, el turista virtual salía como una etiqueta sin cuerpo.
+        GameObject src = Body(source);
+        if (src == null)
+            foreach (Anima a in Object.FindObjectsByType<Anima>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+                if (a.name == source || a.name == source + "_Post") { src = a.gameObject; break; }
         GameObject g = new GameObject(label);
         if (src != null)
         {

@@ -80,6 +80,14 @@ public static class VirtualInPlace
         var follow = tourist.AddComponent<VirtualFollower>();
         follow.enabled = false;   // espera en la entrada hasta que lo recibes
         Transform body = tourist.transform.Find(CubeHumanoid.BodyName);
+        // La copia trae el cuerpo colocado para un origen a media altura (el de su dueño); el turista se pone por los pies
+        // (en el suelo, la silla o la camilla), así que se le sube hasta que sus pies toquen su origen (si no, medio hundido).
+        if (body != null)
+        {
+            Bounds bb = new Bounds(body.position, Vector3.zero); bool any = false;
+            foreach (Renderer rd in body.GetComponentsInChildren<Renderer>()) { if (!any) { bb = rd.bounds; any = true; } else bb.Encapsulate(rd.bounds); }
+            if (any) body.position += Vector3.up * (tourist.transform.position.y - bb.min.y);
+        }
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         Anima me = player != null ? player.GetComponent<Anima>() : null;
         int[] plan = ArrivalExam.MissionPlan();   // los mismos pasos que el examen de llegada (NewcomerInitiator)
