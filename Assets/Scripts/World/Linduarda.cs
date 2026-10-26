@@ -51,6 +51,8 @@ public class Linduarda : MonoBehaviour
     void Update()
     {
         if (_a == null || _a.death) return;
+        NewcomerInitiator ni = GetComponent<NewcomerInitiator>();
+        if (ni != null && ni.InProgress) return;   // está iniciando a un recién llegado: primero eso (si no, se iba a atender a otro)
         if (_sample != null) { CarrySample(); return; }   // llevando la muestra al analizador
         if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
