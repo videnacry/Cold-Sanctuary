@@ -4,8 +4,8 @@ using UnityEngine;
 
 /// <summary>
 /// CASA DEL ÁRBOL DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b): el puesto de los vigías es una cabaña en lo
-/// alto de uno de los árboles de hielo del santuario, pero ×2,5 de grande (40 m) y que NO caza. Se sube por una ESCALERA
-/// VERTICAL de peldaños (F al pie: subir; F arriba: bajar). Arriba, una plataforma con barandilla rodea el tronco y la
+/// alto de uno de los árboles de hielo del santuario, pero ×2,5 de grande (40 m) y que NO caza. Se sube en ALFOMBRA
+/// VOLADORA (una al pie del árbol y otra arriba; sin escalera ni barandilla). Arriba, una plataforma rodea el tronco y la
 /// cabaña guarda el <see cref="GuardBoard"/> con las misiones de vigía. Todo de cubos.
 /// </summary>
 public static class GuardTower
@@ -29,20 +29,7 @@ public static class GuardTower
             Transform beam = Block(t, new Vector3(0f, y - 1.6f, 0f) + q * Vector3.forward * half * 0.55f, new Vector3(0.35f, 0.35f, half * 1.3f), wood, false, "Viga");
             beam.localRotation = q * Quaternion.Euler(-35f, 0f, 0f);
         }
-        // Barandilla con hueco donde llega la escalera (lado sur, -Z).
-        float rh = y + 0.75f;
-        Block(t, new Vector3(0f, rh, half), new Vector3(half * 2f, 0.1f, 0.12f), wood, true, "Barandilla");
-        Block(t, new Vector3(-half, rh, 0f), new Vector3(0.12f, 0.1f, half * 2f), wood, true, "Barandilla");
-        Block(t, new Vector3(half, rh, 0f), new Vector3(0.12f, 0.1f, half * 2f), wood, true, "Barandilla");
-        Block(t, new Vector3(-half * 0.6f, rh, -half), new Vector3(half * 0.8f, 0.1f, 0.12f), wood, true, "Barandilla");
-        Block(t, new Vector3(half * 0.6f, rh, -half), new Vector3(half * 0.8f, 0.1f, 0.12f), wood, true, "Barandilla");
-        for (float p = -half; p <= half + 0.01f; p += 1.15f)
-        {
-            Block(t, new Vector3(p, y + 0.45f, half), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
-            Block(t, new Vector3(-half, y + 0.45f, p), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
-            Block(t, new Vector3(half, y + 0.45f, p), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
-            if (Mathf.Abs(p) > 0.9f) Block(t, new Vector3(p, y + 0.45f, -half), new Vector3(0.09f, 0.6f, 0.09f), wood, false, "Balaustre");
-        }
+        // Sin barandilla ni escalera (Berón 2026-10-27, docs/alfombras-plan.md): se sube y se baja en alfombra voladora.
 
         // Cabaña al norte del tronco: paredes de tablones, puerta, ventanas y tejado escalonado.
         Vector3 c = new Vector3(0f, y, 2.6f);
@@ -66,8 +53,10 @@ public static class GuardTower
         board.gameObject.AddComponent<GuardBoard>();
         WorldLabel wl = board.gameObject.AddComponent<WorldLabel>(); wl.text = "Tablero de guardia"; wl.height = 0.9f;
 
-        // ESCALERA VERTICAL del suelo a la plataforma (lado sur, por el hueco de la barandilla).
-        Ladder.Build(t, new Vector3(0f, 0f, -half - Ladder.Gap), 0f, y, wood, woodDark);
+        // ALFOMBRAS: una en el hielo, al pie del árbol (lado sur), y otra en la plataforma, junto al tronco.
+        const string casa = "Casa del guarda";
+        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(0f, 0.08f, -half - 2.5f)), t.rotation, CarpetPad.Kind.Edificio, casa, 0, casa + "#0", "Suelo (hielo)", 1, 3.2f, 3.6f);
+        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(-2.9f, y + 0.2f, -2.6f)), t.rotation, CarpetPad.Kind.Edificio, casa, 1, casa + "#1", "Plataforma de guardia", 1, 3.2f, 3.6f);
 
         SoftGround.Plant(t, groundPos + Vector3.down * 0.1f, new Vector2(14f, 14f), 11);   // colchón de musgo bajo la casa del árbol
         WorldLabel tl = t.gameObject.AddComponent<WorldLabel>(); tl.text = "Casa del árbol de la guardia"; tl.height = y + 5f;

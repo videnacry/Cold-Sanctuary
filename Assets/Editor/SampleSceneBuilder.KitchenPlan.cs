@@ -8,7 +8,7 @@ using UnityEngine;
 ///    limpieza también cocinan). Cada puesto es una U con todo lo que pide la carta (Gastronomy.Equipment), así los ocho
 ///    pueden hacer el mismo plato a la vez: encimera, inducción y fregadero al fondo; wok, paellero y fogón a un lado;
 ///    marmitas, vaporera, trompo y abatidor al otro; delante, la barra fría (sushi y montaje) mirando al pase.
-///  · Por fuera, junto a los bordes y por el flujo real: recepción, almacén seco y cámaras junto al puente; preparación y
+///  · Por fuera, junto a los bordes y por el flujo real: recepción, almacén seco y cámaras en el lado −Z; preparación y
 ///    lavado (sucio → lavavajillas → limpio) en el lado opuesto; y los OBRADORES DUPLICADOS (dos puestos por tarea) en
 ///    los otros dos lados: panadería y pasta, y quesería (con su cava y salmuera) y fermentos.
 /// Entre bloques quedan 2 m (los equipos que van juntos, como las cámaras frías o la mesa y su máquina, van pegados).
@@ -23,31 +23,6 @@ public static partial class SampleSceneBuilder
         (new Vector3(9f, 0f, -9.6f), 180f), (new Vector3(0f, 0f, -9.6f), 180f), (new Vector3(-9f, 0f, -9.6f), 180f),
         (new Vector3(-12f, 0f, 0f), -90f),
     };
-
-    /// <summary>Lado de la plataforma de la cocina por el que llega su puente (0 +X, 1 −X, 2 +Z, 3 −Z, en el área) y
-    /// dónde (a lo largo del lado). −1 si no hay puente.</summary>
-    static int KitchenBridge(Transform area, out float along)
-    {
-        along = 0f;
-        foreach (var l in _landings) if (l.area == area) { along = l.center; return l.side; }
-        // Ya despejadas (o construidas en otro orden): se busca el puente que toca la plataforma.
-        Transform mat = area.Find("Mat"); Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(20f, 0f, 19f);
-        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
-        {
-            if (!t.name.StartsWith("Puente_") || t.name.Contains("pista")) continue;
-            Renderer r = t.GetComponentInChildren<Renderer>(); if (r == null) continue;
-            Bounds b = r.bounds; foreach (Renderer rr in t.GetComponentsInChildren<Renderer>()) b.Encapsulate(rr.bounds);
-            for (int s = 0; s < 4; s++)
-            {
-                Vector3 edge = s == 0 ? new Vector3(half.x, 0f, 0f) : s == 1 ? new Vector3(-half.x, 0f, 0f) : s == 2 ? new Vector3(0f, 0f, half.z) : new Vector3(0f, 0f, -half.z);
-                Vector3 c = area.InverseTransformPoint(b.center);
-                bool facing = s < 2 ? Mathf.Sign(c.x) == Mathf.Sign(edge.x) && Mathf.Abs(c.z) < half.z : Mathf.Sign(c.z) == Mathf.Sign(edge.z) && Mathf.Abs(c.x) < half.x;
-                Vector3 near = area.InverseTransformPoint(b.ClosestPoint(area.TransformPoint(edge + (s < 2 ? new Vector3(0f, 0f, c.z) : new Vector3(c.x, 0f, 0f)))));
-                if (facing && (s < 2 ? Mathf.Abs(Mathf.Abs(near.x) - half.x) : Mathf.Abs(Mathf.Abs(near.z) - half.z)) < 1.5f) { along = s < 2 ? c.z : c.x; return s; }
-            }
-        }
-        return -1;
-    }
 
     static Vector3 SideOut(int s) => s == 0 ? Vector3.right : s == 1 ? Vector3.left : s == 2 ? Vector3.forward : Vector3.back;
 
@@ -89,20 +64,20 @@ public static partial class SampleSceneBuilder
         // ── OCHO PUESTOS COMPLETOS EN ANILLO ──
         for (int i = 0; i < KitchenStations.Length; i++) CompleteStation(room, i + 1, KitchenStations[i].pos, KitchenStations[i].yaw);
 
-        // ── LAS CUATRO FRANJAS DE LOS BORDES ── (en el marco del ÁREA: el puente y la escalera vertical se miden ahí)
-        float along = 0f;
-        int bridge = area != null ? KitchenBridge(area.transform, out along) : -1;
-        if (bridge < 0) { bridge = 3; along = 0f; Debug.LogWarning("[Cocina] no encuentro el puente de la plataforma: la recepción va al lado −Z."); }
-        KitchenBridgeSide = bridge;
-        int opposite = bridge ^ 1;
-        int[] others = bridge < 2 ? new[] { 2, 3 } : new[] { 0, 1 };
+        // ── LAS CUATRO FRANJAS DE LOS BORDES ── (en el marco del ÁREA)
+        // La recepción y las cámaras, al lado −Z (con su paso al centro, al pie de la escalera sur del comedor); ya no llega
+        // ningún puente (docs/alfombras-plan.md).
+        const float along = 0f;
+        const int front = 3;
+        int opposite = front ^ 1;
+        int[] others = front < 2 ? new[] { 2, 3 } : new[] { 0, 1 };
         var placed = new Dictionary<int, int>();
-        placed[bridge] = Strip(room, area, half, bridge, along, StoresBlocks());
+        placed[front] = Strip(room, area, half, front, along, StoresBlocks());
         placed[opposite] = Strip(room, area, half, opposite, along, PrepBlocks());
         placed[others[0]] = Strip(room, area, half, others[0], along, DoughBlocks());
         placed[others[1]] = Strip(room, area, half, others[1], along, DairyBlocks());
-        Debug.Log($"[Cocina] planta entera: pase central, {KitchenStations.Length} puestos completos en anillo; recepción y cámaras junto al puente (lado {bridge}), " +
-                  $"preparación y lavado enfrente, obradores de masas y de lácteos y fermentos a los lados ({placed[bridge] + placed[opposite] + placed[others[0]] + placed[others[1]]} bloques).");
+        Debug.Log($"[Cocina] planta entera: pase central, {KitchenStations.Length} puestos completos en anillo; recepción y cámaras en el lado {front}, " +
+                  $"preparación y lavado enfrente, obradores de masas y de lácteos y fermentos a los lados ({placed[front] + placed[opposite] + placed[others[0]] + placed[others[1]]} bloques).");
     }
 
     static void Joint(Transform room, Vector3 pos, Vector3 size)
@@ -157,9 +132,9 @@ public static partial class SampleSceneBuilder
     delegate void BlockBuilder(Transform strip, float x, float z);
 
 
-    /// <summary>Coloca los bloques de un lado, en fila junto al borde, con 2 m entre ellos; salta la llegada del puente y la
-    /// escalera vertical (centro del lado +Z). En los lados ±Z, si no caben, abre una segunda fila. Devuelve cuántos puso.</summary>
-    static int Strip(Transform room, Transform area, Vector2 half, int side, float bridgeAlong, List<(string name, float w, float d, BlockBuilder build)> blocks)
+    /// <summary>Coloca los bloques de un lado, en fila junto al borde, con 2 m entre ellos; deja libre el pie de las dos
+    /// escaleras del comedor (centro de los lados ±Z). En los lados ±Z, si no caben, abre una segunda fila. Devuelve cuántos puso.</summary>
+    static int Strip(Transform room, Transform area, Vector2 half, int side, float passAlong, List<(string name, float w, float d, BlockBuilder build)> blocks)
     {
         bool zSide = side >= 2;
         float depth = zSide ? 6f : 5f, edge = zSide ? half.y : half.x;
@@ -173,8 +148,8 @@ public static partial class SampleSceneBuilder
         // A lo largo de la franja (su X local) en coordenadas del área: +X local = derecha de mirar hacia fuera.
         Vector3 right = Vector3.Cross(Vector3.up, outDir);
         var skip = new List<(float a, float b)>();
-        if (KitchenBridgeSide == side) { float c = Vector3.Dot(side < 2 ? new Vector3(0f, 0f, bridgeAlong) : new Vector3(bridgeAlong, 0f, 0f), right); skip.Add((c - 5f, c + 5f)); }
-        if (side == 2) { float c = 0f; skip.Add((c - 2.5f, c + 2.5f)); }   // la escalera vertical sube al centro del lado +Z
+        if (side == 3) { float c = Vector3.Dot(side < 2 ? new Vector3(0f, 0f, passAlong) : new Vector3(passAlong, 0f, 0f), right); skip.Add((c - 5f, c + 5f)); }
+        if (side == 2) { float c = 0f; skip.Add((c - 2.5f, c + 2.5f)); }   // el pie de la escalera norte del comedor
         float back = depth * 0.5f - 0.35f, rowZ = back;
         float x = -L * 0.5f; int n = 0, row = 0;
         foreach (var bl in blocks)
@@ -195,7 +170,6 @@ public static partial class SampleSceneBuilder
         return n;
     }
 
-    static int KitchenBridgeSide = -1;
 
     // Una mesa de trabajo de acero.
     static Transform Bench(Transform p, string name, float x, float len, float d = 0.7f) => KitchenProps.CounterRun(p, name, new Vector3(x, 0f, 0f), len, 0f, d);
@@ -212,7 +186,7 @@ public static partial class SampleSceneBuilder
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = $"{name.Replace('_', ' ')} ({temp})"; wl.height = 2.7f;
     }
 
-    // Recepción, almacén seco y cámaras: junto al puente (la mercancía entra por él).
+    // Recepción, almacén seco y cámaras: en el lado −Z, junto al paso de la escalera sur.
     static List<(string, float, float, BlockBuilder)> StoresBlocks() => new List<(string, float, float, BlockBuilder)>
     {
         ("Recepcion_de_mercancias", 2.8f, 0.8f, (t, x, z) =>

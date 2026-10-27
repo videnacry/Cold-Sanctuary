@@ -73,7 +73,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         TestProbe.Check("tras el examen está analizado (frotis) y vacunado", hr.analyzed && hr.vaccinated);
 
         // ── Al tanque y al microcosmos de Ambrosio ──
-        yield return Until(() => MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy, 60f);
+        yield return Until(() => MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy, 150f);   // ir al tanque (sin escaleras ni barreras, a veces rodea) + la secuencia del tanque
         TestProbe.Check("el trabajador lo mete en el tanque y aparece en el microcosmos", MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld);
         yield return Until(() => AmbrosioStory.Instance != null, 10f);
         AmbrosioStory st = AmbrosioStory.Instance;
@@ -105,7 +105,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         TestProbe.Check("tras otro minuto llega un depredador y los demás van a por él", st.Now == AmbrosioStory.Beat.Predator && st.Predator != null);
 
         // Cinco empujones de 10 s.
-        for (int i = 0; i < AmbrosioStory.PredatorPushesNeeded && st.Now == AmbrosioStory.Beat.Predator; i++)
+        for (int i = 0; i < AmbrosioStory.PredatorPushesNeeded + 3 && st.Now == AmbrosioStory.Beat.Predator; i++)   // (si una E cae lejos, otra)
         {
             yield return Press(st, st.Predator);
             yield return Until(() => !st.PlayerPushingPredator, AmbrosioStory.PredatorPushSeconds + 10f);
@@ -117,7 +117,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         yield return Push(st, st.Shanidar);
         yield return Until(() => st.Now == AmbrosioStory.Beat.Death, AmbrosioStory.PushPhaseSeconds + 30f);
         TestProbe.Check("empujando un minuto más llegan a la entrada de la cueva", st.Now == AmbrosioStory.Beat.Death && Dist(st.Shanidar, st.Cave) < 6f, $"{Dist(st.Shanidar, st.Cave):0.0} m de la cueva");
-        yield return Until(() => st.Now == AmbrosioStory.Beat.Sakshi, 20f);
+        yield return Until(() => st.Now == AmbrosioStory.Beat.Sakshi, 40f);   // (la despedida dura ~21 s: Medea, Atlas, Momo, Héspero)
         TestProbe.Check("Ambrosio se derrumba y muere en la entrada", st.Now == AmbrosioStory.Beat.Sakshi && Vector3.Angle(st.Ambrosio.up, Vector3.up) > 90f);
         yield return Until(() => MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy, 60f);
         TestProbe.Check("Sakshi se acerca y lo manda de vuelta: vuelve al mesocosmos", MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld);

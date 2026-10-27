@@ -27,6 +27,17 @@ public static class MicrocosmosAreaSceneBuilder
         Debug.Log($"[Microcosmos] {i} escenas de microcosmos por área generadas.");
     }
 
+    // La fecha y la hora del microcosmos de cada área (su época está en Eras.OfMicrocosmos).
+    static readonly Dictionary<string, (string date, float hour)> AreaDates = new Dictionary<string, (string, float)>
+    {
+        ["Cocina"] = ("otoño, la era del fuego (las reencarnaciones)", 19f),         // la brasa de la tribu, al anochecer
+        ["Sala de Yoga"] = ("verano, Paleolítico", 7f),
+        ["Huerto"] = ("primavera, los primeros cultivos", 9f),
+        [AreaWork.Hospital] = ("verano corto de la taiga, antes del fuego", 5.5f),   // el alba de Ambrosio
+        ["Estudio Textil"] = ("otoño, Paleolítico", 15f),
+        ["Mecánica"] = ("verano, Paleolítico", 11f),
+    };
+
     static void Build(string sceneName, string display, Color tint, SampleSceneBuilder.MissionKind kind, Vector3 o, string areaGo)
     {
         string path = $"Assets/Scenes/{sceneName}.unity";
@@ -35,14 +46,18 @@ public static class MicrocosmosAreaSceneBuilder
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
 
+        // La PLANTILLA: la fecha y la hora de cada área (su época, AreaDates) y la plataforma (el área) a la que pertenece.
+        var (date, hour) = AreaDates.TryGetValue(display, out var dh) ? dh : ("la época de la tribu", 10f);
+        var spec = new MicrocosmSpec(sceneName, display, date, hour, areaGo) { tint = tint, kind = kind };
         var sun = new GameObject("Sun");
-        sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
-        sun.AddComponent<Light>().type = LightType.Directional;
+        sun.transform.position = o + Vector3.up * 10f;
+        Light l = sun.AddComponent<Light>(); l.type = LightType.Directional;
+        MicrocosmTemplate.Sun(l, hour);
 
         // ENFERMERÍA: su microcosmos es la historia de AMBROSIO (su muerte camino de la cueva), en un mundo extenso de antes
         // del fuego, dentro de la enfermería vista a escala de insecto (×10: el jugador es una hormiga).
         // TODAS las áreas: el área gigante, poblada por insectos a escala humana y MIRMIDONES (hormigas humanas), con su historia.
-        AreaMicrocosmos.Build(areaGo, display, kind, tint, o); MicroWater.SurroundScene(scene); Finish(scene, path, prev); return;
+        AreaMicrocosmos.Build(areaGo, display, kind, tint, o, null, spec); MicroWater.SurroundScene(scene); Finish(scene, path, prev); return;
         // Suelo del microcosmos (40×40) con el color del área, y "decorado gigante" (lo que en el mundo real es pequeño).
         var ground = GameObject.CreatePrimitive(PrimitiveType.Plane);
         ground.name = "Ground"; ground.transform.position = o; ground.transform.localScale = new Vector3(4f, 1f, 4f);
@@ -113,11 +128,12 @@ public static class MicrocosmosAreaSceneBuilder
     }
 
 
-    /// <summary>Una escena de microcosmos con HISTORIA PROPIA (compasión, mitos…) sobre un área del santuario ×10.</summary>
-    internal static void BuildStoryScene(string areaGo, string display, string sceneName, Color tint, Vector3 o, System.Func<Transform, int> story)
+    /// <summary>Una escena de microcosmos con HISTORIA PROPIA (compasión, mitos…) sobre un área del santuario ×10, según la
+    /// PLANTILLA (<see cref="MicrocosmTemplate"/>): su fecha, su hora (el sol) y la plataforma a la que pertenece.</summary>
+    internal static void BuildStoryScene(MicrocosmSpec s, Vector3 o)
     {
         if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
-        string path = $"Assets/Scenes/{sceneName}.unity";
+        string path = $"Assets/Scenes/{s.scene}.unity";
         DropUntitled();
         Scene prev = EditorSceneManager.GetActiveScene();
         Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
@@ -125,9 +141,10 @@ public static class MicrocosmosAreaSceneBuilder
         try
         {
             var sun = new GameObject("Sun");
-            sun.transform.SetPositionAndRotation(o + Vector3.up * 10f, Quaternion.Euler(50f, -30f, 0f));
-            sun.AddComponent<Light>().type = LightType.Directional;
-            AreaMicrocosmos.Build(areaGo, display, SampleSceneBuilder.MissionKind.Channel, tint, o, story);
+            sun.transform.position = o + Vector3.up * 10f;
+            Light l = sun.AddComponent<Light>(); l.type = LightType.Directional;
+            MicrocosmTemplate.Sun(l, s.hour);
+            AreaMicrocosmos.Build(s.platform, s.display, s.kind, s.tint, o, s.story, s);
         }
         catch
         {

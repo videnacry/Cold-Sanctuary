@@ -86,6 +86,7 @@ _Total: 612 tipos._
 - **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
+- **MicrocosmSpec** (class) — `Assets/Editor/MicrocosmTemplate.cs` — LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27):
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
@@ -93,7 +94,7 @@ _Total: 612 tipos._
 - **PhysicsSceneBuilder** (class) — `Assets/Editor/PhysicsSceneBuilder.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
 - **PolarLandscapeBuilder** (class) — `Assets/Editor/PolarLandscapeBuilder.cs` — PAISAJE POLAR del santuario de hielo (docs/ice-sanctuary-ecology.md):
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
-- **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/construcciones-elevadas.md):
+- **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/alfombras-plan.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` — PLANTA ATÓMICA (docs/atomic-plant.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
@@ -105,7 +106,7 @@ _Total: 612 tipos._
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Research.cs` — EDIFICIOS DE INVESTIGACIÓN Y DE PRODUCCIÓN (Berón 2026-10-23/24; docs/laboratorios-investigacion.md y docs/edificios-investigacion.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Restaurant.cs` — RESTAURANTE GOURMET y ESTUDIO TEXTIL (partes del constructor de la escena).
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Training.cs` — ÁREAS DE ENTRENAMIENTO (docs/jornada-y-rotacion.md):
-- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE ENTRE PLATAFORMAS (docs/transporte-alfombras.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Transport.cs` — TRANSPORTE EN ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.cs` — One-shot rough blockout for SampleScene:
 - **ScaleAudit** (class) — `Assets/Editor/ScaleAudit.cs` — AUDITORÍA DE ESCALA (menú):
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
@@ -187,7 +188,7 @@ _Total: 612 tipos._
 - **CameraManager** (class) — `Assets/Scripts/Camera/CameraManager.cs` — Central camera controller for Cold Sanctuary.
 - **CameraZoneTrigger** (class) — `Assets/Scripts/Camera/CameraZoneTrigger.cs` — Attach to a trigger collider surrounding a zone (e.g.
 - **CarnivoreKeeper** (class) — `Assets/Scripts/World/CarnivoreKeeper.cs` — GUARDIA DEL SANTUARIO:
-- **CarpetPad** (class) — `Assets/Scripts/World/CarpetPad.cs` — PISTA DE ATERRIZAJE DE ALFOMBRAS VOLADORAS (docs/transporte-alfombras.md).
+- **CarpetPad** (class) — `Assets/Scripts/World/CarpetPad.cs` — ÁREA DE ALFOMBRAS VOLADORAS (docs/alfombras-plan.md, Berón 2026-10-27).
 - **CarryToRefuge** (class) — `Assets/Scripts/Prologue/CarryToRefuge.cs` — Misión de CUIDADO:
 - **CastMode** (enum) — `Assets/Scripts/Transformation/SpellBase.cs` — Cómo responde un hechizo a MANTENER pulsada su tecla (docs/stats-as-truth.md §hechizos).
 - **CaveTrigger** (class) — `Assets/Scripts/Microcosmos/CaveTrigger.cs` — Zona "cueva" — detecta cuando un ítem de comida entra en su trigger y notifica a para registrarlo como recogido.
@@ -374,7 +375,6 @@ _Total: 612 tipos._
 - **KitchenLarder** (class) — `Assets/Scripts/Kitchen/KitchenLarder.cs` — DESPENSA Y OBRADOR del restaurante (docs/cocina-profesional.md).
 - **KitchenProps** (class) — `Assets/Scripts/Kitchen/KitchenProps.cs` — MOBILIARIO, UTENSILIOS E INGREDIENTES DE COCINA hechos con UNIONES DE CUBOS (docs/kitchen-simulation.md):
 - **KitchenStepSpell** (class) — `Assets/Scripts/Kitchen/KitchenStepSpells.cs` — HECHIZOS DE COCINA POR PASO (docs/typed-spells-and-queues.md §6.1, kitchen-simulation.md):
-- **Ladder** (class) — `Assets/Scripts/World/Ladder.cs` — ESCALERA VERTICAL (la única escalera de las casas del árbol y plataformas elevadas):
 - **LessonPrompt** (class) — `Assets/Scripts/UI/LessonPrompt.cs` — AVISO DE LECCIÓN (OnGUI):
 - **Level1Director** (class) — `Assets/Scripts/Microcosmos/Level1Director.cs` — DIRECTOR de circunstancias del Nivel 1 (docs/microcosmos-level1.md §Beats, rebanada 3) — al estilo de MobWorldDirector:
 - **LifeCycleAuto** (class) — `Assets/Scripts/LifeCycleAuto.cs` — Unidad de test del CICLO DE VIDA (docs/testing-checklist.md §36), por `TestProbe`.

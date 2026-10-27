@@ -3,13 +3,14 @@ using UnityEngine;
 
 /// <summary>
 /// LA HISTORIA DE AMBROSIO (primer microcosmos del recién llegado; Berón 2026-10-26). El jugador aparece y ve, delante,
-/// a Ambrosio, sus hermanas (Medea y Momo) y Atlas EMPUJANDO a los dos viejos (Anciano_Pintor y Shanidar) hacia la cueva:
+/// a Ambrosio, sus hermanas (Medea y Momo) y Atlas EMPUJANDO a los dos viejos (Sakshi, que crió a Ambrosio, y Shanidar)
+/// hacia la cueva; Ruth y Héspero van delante. La escena la hace la plantilla de microcosmos (MicrocosmTemplate):
 ///  1. Ambrosio va hacia él: «salva a mi familia»; lo lleva junto a Shanidar y le pide que empuje; vuelve a su viejo.
 ///  2. Empujar 1 min → Shanidar se DERRUMBA: tomar la MELAZA de Ambrosio y dársela; se levanta; seguir empujando.
-///  3. Otro minuto → llega un DEPREDADOR: los viejos se quedan quietos y los demás van a empujarlo; el jugador también:
+///  3. Otro minuto → llega una MARIQUITA (come pulgones: va a por Ambrosio): los viejos se quedan quietos y los demás van a empujarla; el jugador también:
 ///     cada empujón es una animación de <see cref="PredatorPushSeconds"/> s; con <see cref="PredatorPushesNeeded"/> se va.
 ///  4. Todos vuelven a los viejos y empujan 1 min más hasta la entrada de la cueva → Ambrosio se derrumba y MUERE.
-///  5. Sakshi se acerca y le dice que vuelva al mesocosmos → sale.
+///  5. Medea llora a Ambrosio; Sakshi, ya a salvo, se acerca y le dice que vuelva al mesocosmos → sale.
 /// Una sola tecla (E) hace lo que toca según dónde está (<see cref="Act"/>); el test de experiencia la llama igual.
 /// </summary>
 public class AmbrosioStory : MonoBehaviour
@@ -19,7 +20,7 @@ public class AmbrosioStory : MonoBehaviour
     [Tooltip("Cuánto crece el elenco (las hormigas a la escala del jugador).")]
     public float castScale = 2.5f;
     [Tooltip("Distancia de la salida a la cueva (m).")]
-    public float path = 24f;
+    public float path = 90f;   // largo (Berón 2026-10-27): tres minutos empujando, y se nota que avanzan
 
     public enum Beat { Intro, AskHelp, Push1, Collapse, Push2, Predator, Push3, Death, Sakshi, Done }
     public Beat Now { get; private set; } = Beat.Intro;
@@ -39,13 +40,14 @@ public class AmbrosioStory : MonoBehaviour
     public Transform Sakshi => _sakshi;
     public Transform Cave => _cave;
 
-    Transform _ambrosio, _medea, _momo, _atlas, _sakshi, _oldA, _oldB, _cave, _predator, _player;
-    Vector3 _dir, _caveAt;
+    Transform _ambrosio, _medea, _momo, _atlas, _sakshi, _oldA, _oldB, _cave, _predator, _player, _ruth, _hespero;
+    Vector3 _dir, _side, _caveAt;
     float _t0, _beatAt, _predatorPushUntil, _nextBob;
     Transform _pushTarget, _drop;
     bool _collapsed, _ambrosioFree;
     readonly Dictionary<Transform, Transform> _pushes = new Dictionary<Transform, Transform>();   // quién empuja a quién
     readonly Dictionary<Transform, float> _travel = new Dictionary<Transform, float>();           // metros recorridos
+    readonly Dictionary<Transform, float> _pushTime = new Dictionary<Transform, float>();         // segundos empujado
 
     void Awake() { Instance = this; }
     void OnDestroy() { if (Instance == this) Instance = null; }
@@ -55,20 +57,30 @@ public class AmbrosioStory : MonoBehaviour
     void Start()
     {
         _ambrosio = Find("Ambrosio"); _medea = Find("Medea"); _momo = Find("Momo"); _atlas = Find("Atlas"); _sakshi = Find("Sakshi");
-        _oldA = Find("Anciano_Pintor"); _oldB = Find("Shanidar"); _cave = Find("Cueva");
+        _ruth = Find("Ruth"); _hespero = Find("Hespero");
+        // Los DOS VIEJOS que la familia empuja: Shanidar y SAKSHI, la anciana que crió a Ambrosio (Berón 2026-10-27; en las
+        // escenas viejas, el Anciano Pintor). Ambrosio empuja a Sakshi; el jugador, a Shanidar.
+        _oldA = _sakshi != null ? _sakshi : Find("Anciano_Pintor"); _oldB = Find("Shanidar"); _cave = Find("Cueva");
         if (_ambrosio == null || _oldA == null || _oldB == null || _cave == null) { Debug.LogWarning("[Ambrosio] Falta el elenco de la historia."); enabled = false; return; }
         // El tableau tenía su propio director e impulsos: aquí manda la historia.
-        foreach (string n in new[] { "Level1Director", "TribeCohesion" }) foreach (MonoBehaviour mb in GetComponentsInChildren<MonoBehaviour>(true)) if (mb.GetType().Name == n) mb.enabled = false;
+        foreach (string n in new[] { "Level1Director", "TribeCohesion" }) foreach (MonoBehaviour mb in GetComponentsInChildren<MonoBehaviour>(true)) if (mb != null && mb.GetType().Name == n) mb.enabled = false;   // (la copia gigante del área deja scripts vacíos)
         // La cueva sigue siendo el REFUGIO (CarryToRefuge): los viejos (WeakOne) cuentan como a salvo al llegar.
-        foreach (MonoBehaviour mb in _cave.GetComponents<MonoBehaviour>()) if (!(mb is CarryToRefuge)) mb.enabled = false;
-        _dir = Vector3.back;   // de la salida a la cueva (−Z)
+        foreach (MonoBehaviour mb in _cave.GetComponents<MonoBehaviour>()) if (mb != null && !(mb is CarryToRefuge) && !(mb is WorldLabel)) mb.enabled = false;
+        // El camino: de donde empieza la familia («Inicio_familia», si la escena lo marca) hasta la cueva.
+        Transform from = Find("Inicio_familia");
+        _dir = Vector3.back;   // las escenas viejas: de la salida a la cueva (−Z)
+        if (from != null) { Vector3 d = _cave.position - from.position; d.y = 0f; if (d.sqrMagnitude > 1f) { _dir = d.normalized; path = d.magnitude - 2.2f; } }
+        _side = Vector3.Cross(_dir, Vector3.up).normalized;
         _caveAt = Ground(_cave.position - _dir * 2.2f);
         Vector3 start = _caveAt - _dir * path;
-        foreach (Transform t in new[] { _ambrosio, _medea, _momo, _atlas, _sakshi, _oldA, _oldB }) Take(t);
-        Place(_oldA, start + new Vector3(-1.6f, 0f, 0f)); Place(_oldB, start + new Vector3(1.6f, 0f, 0f));
-        Place(_ambrosio, start + new Vector3(-1.6f, 0f, 1.6f)); Place(_atlas, start + new Vector3(-2.4f, 0f, 1.4f));
-        Place(_medea, start + new Vector3(1.0f, 0f, 1.5f)); Place(_momo, start + new Vector3(2.2f, 0f, 1.5f));
-        if (_sakshi != null) Place(_sakshi, _caveAt + new Vector3(3f, 0f, 1f));
+        foreach (Transform t in new[] { _ambrosio, _medea, _momo, _atlas, _oldA, _oldB, _ruth, _hespero }) Take(t);
+        Vector3 L(float side, float back) => start + _side * side - _dir * back;
+        Place(_oldA, L(-1.6f, 0f)); Place(_oldB, L(1.6f, 0f));
+        Place(_ambrosio, L(-1.6f, 1.6f)); Place(_atlas, L(-2.4f, 1.4f));
+        Place(_medea, L(1.0f, 1.5f)); Place(_momo, L(2.2f, 1.5f));
+        // Ruth y Héspero van delante, abriendo camino hasta la cueva, y allí esperan.
+        if (_ruth != null) Place(_ruth, _caveAt + _side * 3f - _dir * 1f);
+        if (_hespero != null) Place(_hespero, _caveAt - _side * 3f - _dir * 1f);
         _pushes[_ambrosio] = _oldA; if (_atlas != null) _pushes[_atlas] = _oldA;
         if (_medea != null) _pushes[_medea] = _oldB; if (_momo != null) _pushes[_momo] = _oldB;
         _travel[_oldA] = 0f; _travel[_oldB] = 0f;
@@ -87,6 +99,7 @@ public class AmbrosioStory : MonoBehaviour
                 || n == "ActionQueue" || n == "HoneydewProducer" || n == "AcuteStressResponse" || n == "Mind" || n == "HomeImpulse") b.enabled = false;
         }
         Rigidbody rb = t.GetComponent<Rigidbody>(); if (rb != null) rb.isKinematic = true;
+        if (t.GetComponentInChildren<CubeInsect>(true) != null) return;   // la plantilla ya lo trae vestido (mirmidón)
         // Cuerpo de cubos de hormiga humanizada (Ambrosio, de pulgón), con los pies en el suelo: el tableau era de cápsulas.
         MeshRenderer cap = t.GetComponent<MeshRenderer>();
         Color c = cap != null && cap.sharedMaterial != null ? cap.sharedMaterial.color : new Color(0.4f, 0.3f, 0.25f);
@@ -132,6 +145,7 @@ public class AmbrosioStory : MonoBehaviour
         Transform p = PlayerT(); if (p == null) return "sin jugador";
         if (Now == Beat.Predator && _predator != null)
         {
+            if (_predatorPushUntil > 0f && !PlayerPushingPredator) { EndPredatorPush(p); if (_predator == null) return "el depredador se va"; }   // el anterior acabó en este mismo fotograma: cuenta
             if (Near(p, _predator, _predatorReach + 1.8f) && !PlayerPushingPredator) { _predatorPushUntil = Time.time + PredatorPushSeconds; StopPushing(); return "empujas al depredador"; }
             return "acércate al depredador";
         }
@@ -217,7 +231,7 @@ public class AmbrosioStory : MonoBehaviour
                 break;
             case Beat.AskHelp:   // lo lleva junto a Shanidar y le pide que empuje; él vuelve a su viejo
                 Animate(dt, moveOld: false);
-                Vector3 nextTo = _oldB.position - _dir * 1.6f + Vector3.right * 1.6f;
+                Vector3 nextTo = _oldB.position - _dir * 1.6f + _side * 1.6f;
                 if (Walk(_ambrosio, nextTo, 0.4f, dt) && Time.time - _beatAt > 2f)
                 {
                     Say(_ambrosio, "Empuja a Shanidar por detrás, así (E). Yo vuelvo con el mío.", 7f);
@@ -231,13 +245,14 @@ public class AmbrosioStory : MonoBehaviour
                 bool pushing = _pushTarget != null;
                 if (pushing) { PushedThisPhase += dt; KeepBehind(p, _pushTarget, dt); }
                 Animate(dt, moveOld: pushing);
+                Lines(Now, Time.time - _beatAt);
                 if (PushedThisPhase >= PushPhaseSeconds)
                 {
                     if (Now == Beat.Push1) { StopPushing(); _collapsed = true; Lay(_oldB, true); Go(Beat.Collapse);
                         Say(_ambrosio, "¡Shanidar se ha derrumbado: no le queda energía! Deja de empujar, toma mi melaza y dásela.", 8f);
                         Goal("Toma la melaza de Ambrosio (E junto a él) y dásela a Shanidar"); }
                     else if (Now == Beat.Push2) { StopPushing(); SpawnPredator(); Go(Beat.Predator);
-                        Say(_ambrosio, "¡Un depredador! Los viejos, quietos. ¡Empújalo con nosotros! Cinco empujones y se irá.", 8f);
+                        Say(_ambrosio, "¡Una mariquita! Viene a por mí: los pulgones somos su comida. Los viejos, quietos. ¡Empujadla! Cinco empujones y se irá.", 8f);
                         Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}"); }
                     else { StopPushing(); Go(Beat.Death); Say(_medea, "¡La cueva! ¡Hemos llegado!", 5f); }
                 }
@@ -248,17 +263,52 @@ public class AmbrosioStory : MonoBehaviour
             case Beat.Predator:
                 PredatorFight(p, dt);
                 break;
-            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira)
+            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira); la escena, como en la novela (docs/novela.md, «La entrada de la cueva»)
+            {
                 Face(p, _ambrosio);
-                float k = Mathf.Clamp01((Time.time - _beatAt) / 3f);
-                _ambrosio.rotation = Quaternion.Slerp(Quaternion.LookRotation(_dir), Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), k);
-                if (Time.time - _beatAt > 1.5f && Time.time - _beatAt < 1.5f + dt * 1.5f) Say(_ambrosio, "…Lo hemos… conseguido.", 5f);
-                if (Time.time - _beatAt > 5f)
+                float t = Time.time - _beatAt;
+                Quaternion down = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), held = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 115f);
+                // Cae de lado (3 s); cuando Momo lo levanta, queda medio alzado en sus brazos (sigue tumbado: no se pone en pie).
+                _ambrosio.rotation = t < 11f ? Quaternion.Slerp(Quaternion.LookRotation(_dir), down, Mathf.Clamp01(t / 3f)) : Quaternion.Slerp(down, held, Mathf.Clamp01((t - 11f) / 2f));
+                Once("ambrosio_conseguido", t > 1.5f, () => Say(_ambrosio, "…Lo hemos… conseguido.", 5f));
+                // Medea, diminuta, intenta levantarlo sola y no puede: se inclina, tira, vuelve a caer.
+                if (_medea != null)
+                {
+                    Walk(_medea, _ambrosio.position - _side * 1.2f, 0.4f, dt);
+                    if (t > 3f && t < 11f) _medea.rotation = Quaternion.LookRotation(_side) * Quaternion.Euler(25f + 15f * Mathf.Abs(Mathf.Sin(t * 2.5f)), 0f, 0f);
+                    Once("medea_alzar", t > 3f, () => Say(_medea, "¡Ambrosio, levántate! ¡Ayudadme a alzarlo! ¡Sakshi, Shanidar!", 6f));
+                }
+                Once("viejos_no_pueden", t > 5f, () => Say(_oldB, "…No podemos, pequeña. Ya no nos quedan fuerzas.", 5f));
+                // Atlas, el único adulto, quiere consolarla; ella lo aparta.
+                if (_atlas != null)
+                {
+                    if (t > 6f && t < 9f) Walk(_atlas, _medea != null ? _medea.position - _side * 1.1f : _ambrosio.position, 0.4f, dt);
+                    else if (t >= 9f) Walk(_atlas, _ambrosio.position - _side * 3.4f - _dir * 1.5f, 0.3f, dt);   // apartado
+                    Once("atlas_consuela", t > 7f, () => Say(_atlas, "Medea… ven, déjalo descansar.", 4f));
+                    Once("medea_aparta", t > 8.5f, () => Say(_medea, "¡Déjame! ¡No lo toques!", 4f));
+                }
+                // Momo se desborda en llanto, lo levanta sin esfuerzo (la más fuerte, en secreto) y le ofrece sus tesoros.
+                if (_momo != null)
+                {
+                    if (t > 9.5f) Walk(_momo, _ambrosio.position + _side * 1.1f, 0.4f, dt);
+                    Once("momo_llora", t > 10f, () => Say(_momo, "…¡Ambrosio! ¡No, no, no!", 4f));
+                    Once("momo_tesoros", t > 13f, () => Say(_momo, "Toma, mi hongo… mis hojitas, todas. ¡Come, Ambrosio, come!", 6f));
+                    if (t > 11f) _ambrosio.position = Vector3.Lerp(_ambrosio.position, Ground(_ambrosio.position) + Vector3.up * 0.6f, dt * 2f);
+                }
+                Once("medea_llanto", t > 16f, () => Say(_medea, "¡No me dejes! ¡Llévame contigo!", 6f));
+                // Héspero, delante, con la cara rígida: lo ve caer… y se vuelve, rápido, hacia otro lado.
+                if (_hespero != null)
+                {
+                    Vector3 look = _ambrosio.position - _hespero.position; look.y = 0f;
+                    if (look.sqrMagnitude > 0.01f) _hespero.rotation = Quaternion.Slerp(_hespero.rotation, Quaternion.LookRotation(t < 18f ? look : -look), dt * (t < 18f ? 2f : 9f));
+                }
+                if (t > 21f)
                 {
                     Anima am = _ambrosio.GetComponent<Anima>(); if (am != null) am.death = true;   // muere de verdad (su alma, SoulRecord, sigue: renace en la cocina)
                     Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi);
                 }
                 break;
+            }
             case Beat.Sakshi:
                 Face(p, _sakshi);
                 if (_sakshi == null || Walk(_sakshi, p.position, 2.2f, dt))
@@ -266,7 +316,7 @@ public class AmbrosioStory : MonoBehaviour
                     if (Time.time - _beatAt < 30f && _sakshiSaid == false)
                     {
                         _sakshiSaid = true; _beatAt = Time.time;
-                        Say(_sakshi, "Ambrosio lo dio todo por su familia. Su alma sigue su camino. Tú vuelve al mesocosmos: allí te esperan.", 8f);
+                        Say(_sakshi, "Me trajo hasta aquí, como yo lo llevé a él cuando nació distinto. Lo dio todo por su familia; su alma sigue su camino. Tú vuelve al mesocosmos: allí te esperan.", 9f);
                         Goal("Vuelves al mesocosmos…");
                     }
                     if (_sakshiSaid && Time.time - _beatAt > 6f)
@@ -281,6 +331,33 @@ public class AmbrosioStory : MonoBehaviour
         }
     }
     bool _sakshiSaid;
+
+    // Lo que se dicen por el camino (docs/microcosmos-level1.md: Héspero quiere dejar atrás a los débiles, Momo bromea,
+    // Ambrosio se agota): cada frase, una vez, a su segundo del tramo.
+    readonly HashSet<string> _said = new HashSet<string>();
+    void Once(string key, bool when, System.Action say) { if (when && _said.Add(key)) say(); }
+
+    void Lines(Beat b, float t)
+    {
+        if (b == Beat.Push1)
+        {
+            Once("shanidar_gracias", t > 3f, () => Say(_oldB, "Gracias, joven. Mis patas ya no me sostienen…", 6f));
+            Once("hespero_dejadlos", t > 18f, () => Say(_hespero, "¡Dejadlos atrás! ¡Así no llegaremos nunca a la cueva!", 6f));
+            Once("ambrosio_nadie", t > 24f, () => Say(_ambrosio, "¡Nadie se queda atrás, Héspero! Ellos nos criaron.", 6f));
+            Once("sakshi_ambrosio", t > 36f, () => Say(_oldA, "Ambrosio, hijo, guarda fuerzas… tu melaza es para todos.", 6f));
+        }
+        else if (b == Beat.Push2)
+        {
+            Once("momo_broma", t > 10f, () => Say(_momo, "¡Si empujo un poco más fuerte, llego a la cueva antes que Shanidar!", 6f));
+            Once("ruth_camino", t > 30f, () => Say(_ruth, "¡Por aquí! El camino está despejado hasta la cueva.", 6f));
+        }
+        else if (b == Beat.Push3)
+        {
+            Once("ambrosio_cansado", t > 6f, () => Say(_ambrosio, "Me cuesta… pero ya se ve la cueva. Un poco más.", 6f));
+            Once("atlas_animo", t > 30f, () => Say(_atlas, "¡Vamos, familia! ¡Ya casi!", 5f));
+            Once("medea_cae", t > 40f, () => Say(_medea, "¡Estoy bien! ¡Sigo! ¡Sigo empujando!", 5f));
+        }
+    }
 
     Vector3 Behind(Transform old) => old.position - _dir * 1.3f;   // detrás de su viejo
 
@@ -320,21 +397,28 @@ public class AmbrosioStory : MonoBehaviour
             if (old == null || (old == _oldB && _collapsed)) continue;
             if (moveOld && _travel[old] < path)
             {
-                float m = Mathf.Min(speed * dt, path - _travel[old]);
+                // A EMPUJONES (Berón 2026-10-27: «que los empujes muevan más a las viejas»): cada empujón (1,2 s) es un tirón
+                // hacia delante y una pausa; de media, lo justo para llegar en tres tramos (exacto, a cualquier velocidad del juego).
+                _pushTime[old] = (_pushTime.TryGetValue(old, out float pt) ? pt : 0f) + dt;
+                float strokes = _pushTime[old] / 1.2f, k = Mathf.Floor(strokes);
+                float target = Mathf.Min(path, speed * 1.2f * (k + Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((strokes - k) * 1.6f))));
+                float m = Mathf.Max(0f, target - _travel[old]);
                 _travel[old] += m;
                 old.position = Ground(old.position + _dir * m) /* (pies en el suelo) */;
             }
         }
-        float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f) * 0.15f;   // un empujón cada 1,2 s
+        float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f) * 0.3f;   // un empujón cada 1,2 s (se ve el impulso)
         foreach (var kv in _pushes)
         {
             Transform who = kv.Key, old = kv.Value;
             if (who == null || (who == _ambrosio && _ambrosioFree)) continue;
-            if (old == _oldB && _collapsed) { Walk(who, old.position - _dir * 2.2f + Vector3.right * 1.5f, 0.3f, dt); continue; }
-            Vector3 side = who == _atlas || who == _momo ? Vector3.right * 0.8f : Vector3.left * 0.3f;
+            if (old == _oldB && _collapsed) { Walk(who, old.position - _dir * 2.2f + _side * 1.5f, 0.3f, dt); continue; }
+            Vector3 side = who == _atlas || who == _momo ? _side * 0.8f : (-_side) * 0.3f;
             Vector3 spot = old.position - _dir * (1.3f + 0.5f) + side - _dir * bob;
             Walk(who, spot, 0.05f, dt);
-            who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 10f * Mathf.Abs(bob) / 0.15f, 0f, 0f);   // inclinado hacia delante
+            who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 18f * Mathf.Abs(bob) / 0.3f, 0f, 0f);   // inclinado hacia delante, más al empujar
+            // Medea, diminuta, empuja con todo: de vez en cuando se cae de bruces y se vuelve a levantar (docs/novela.md).
+            if (who == _medea && Mathf.Repeat(Time.time, 9f) < 1.1f) who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(70f * Mathf.Sin(Mathf.Repeat(Time.time, 9f) / 1.1f * Mathf.PI), 0f, 0f);
         }
     }
 
@@ -342,7 +426,7 @@ public class AmbrosioStory : MonoBehaviour
     void KeepBehind(Transform p, Transform old, float dt)
     {
         float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f);
-        Vector3 spot = old.position - _dir * (1.4f + 0.5f) + Vector3.left * 0.6f - _dir * bob * 0.12f;
+        Vector3 spot = old.position - _dir * (1.4f + 0.5f) + (-_side) * 0.6f - _dir * bob * 0.12f;
         spot.y = p.position.y;
         WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
         p.rotation = Quaternion.LookRotation(_dir);
@@ -373,13 +457,13 @@ public class AmbrosioStory : MonoBehaviour
     void SpawnPredator()
     {
         Vector3 mid = (_oldA.position + _oldB.position) * 0.5f;
-        // Una ARAÑA LOBO (Lycosidae): caza hormigas al acecho en el suelo, sin tela. Cuerpo de cubos de su ficha (CubeInsect),
-        // a la escala del microcosmos (la hormiga, del tamaño de una persona; la araña, unas dos veces su largo).
-        var go = new GameObject("Depredador_arana_lobo");
+        // Una MARIQUITA (Coccinellidae): la depredadora de los PULGONES (viene a por Ambrosio) y más débil que las hormigas,
+        // que en la naturaleza la echan a empujones de sus pulgones (Berón 2026-10-27: la araña lobo era imposible de ahuyentar).
+        var go = new GameObject("Depredador_mariquita");
         go.transform.SetParent(transform, true);
-        CubeInsect.Dress(go, "Spider", new Color(0.32f, 0.25f, 0.18f), 3.2f);
-        go.transform.position = Ground(mid + Vector3.right * 14f);
-        go.transform.rotation = Quaternion.LookRotation(Vector3.left);
+        CubeInsect.Dress(go, "Ladybug", new Color(0.8f, 0.12f, 0.1f), 2.4f);   // a la escala de la hormiga (docs/microcosmos-areas.md)
+        go.transform.position = Ground(mid + _side * 14f);
+        go.transform.rotation = Quaternion.LookRotation((-_side));
         _predator = go.transform;
         PredatorPushes = 0;
         // Hasta dónde llegan sus patas en el suelo (medio ancho de su caja, en horizontal).
@@ -392,44 +476,46 @@ public class AmbrosioStory : MonoBehaviour
     {
         if (_predator == null) return;
         Vector3 mid = (_oldA.position + _oldB.position) * 0.5f;
-        float r = _predatorReach;   // la araña, con las patas abiertas: nadie se mete entre ellas
-        Vector3 front = mid + Vector3.right * (r + 2.5f + PredatorPushes * 1.2f);   // cada empujón lo aleja
+        float r = _predatorReach;   // su caparazón: nadie se mete debajo
+        Vector3 front = mid + _side * (r + 2.5f + PredatorPushes * 1.2f);   // cada empujón lo aleja
         Walk(_predator, front, 0.2f, dt);
-        _predator.rotation = Quaternion.LookRotation(Vector3.left);
+        _predator.rotation = Quaternion.LookRotation((-_side));
         // Los demás (no los viejos) empujan al depredador, contra la punta de sus patas.
         int i = 0;
         foreach (Transform who in new[] { _ambrosio, _atlas, _medea, _momo })
         {
             if (who == null) continue;
             float bob = Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f + i) * 0.15f;
-            Walk(who, _predator.position + Vector3.left * (r + 0.3f + bob) + Vector3.forward * (-1.8f + i * 1.2f), 0.05f, dt);
-            who.rotation = Quaternion.LookRotation(Vector3.right) * Quaternion.Euler(15f, 0f, 0f);
+            Walk(who, _predator.position + (-_side) * (r + 0.3f + bob) + (-_dir) * (-1.8f + i * 1.2f), 0.05f, dt);
+            who.rotation = Quaternion.LookRotation(_side) * Quaternion.Euler(15f, 0f, 0f);
             i++;
         }
         if (PlayerPushingPredator)
         {
-            // Al lado de la fila de la familia, fuera de las patas: se ve la araña y a los que empujan con él.
-            Vector3 spot = _predator.position + Vector3.left * (r + 0.8f) + Vector3.forward * (r * 0.6f + 2.2f); spot.y = p.position.y;
+            // Al lado de la fila de la familia: se ve la mariquita y a los que empujan con él.
+            Vector3 spot = _predator.position + (-_side) * (r + 0.8f) + (-_dir) * (r * 0.6f + 2.2f); spot.y = p.position.y;
             WorkdayDirector.Teleport(p, Vector3.Lerp(p.position, spot, dt * 6f));
             Vector3 look = _predator.position - p.position; look.y = 0f;
-            p.rotation = Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : Vector3.right);
+            p.rotation = Quaternion.LookRotation(look.sqrMagnitude > 0.01f ? look : _side);
             float ph = Mathf.Sin(Time.time * Mathf.PI * 2f / 2.5f);   // empujón lento, de fuerza
             if (Time.time >= _nextBob) { _nextBob = Time.time + 1.25f; Pose(p, true, ph > 0f); }
         }
-        else if (_predatorPushUntil > 0f)   // acaba de terminar un empujón de 10 s
+        else if (_predatorPushUntil > 0f) EndPredatorPush(p);   // acaba de terminar un empujón de 10 s
+    }
+
+    void EndPredatorPush(Transform p)
+    {
+        _predatorPushUntil = 0f; PredatorPushes++;
+        Pose(p, false, false);
+        Debug.Log($"[Ambrosio] Empujón {PredatorPushes}/{PredatorPushesNeeded} al depredador.");
+        Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}");
+        if (PredatorPushes >= PredatorPushesNeeded)
         {
-            _predatorPushUntil = 0f; PredatorPushes++;
-            Pose(p, false, false);
-            Debug.Log($"[Ambrosio] Empujón {PredatorPushes}/{PredatorPushesNeeded} al depredador.");
-            Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}");
-            if (PredatorPushes >= PredatorPushesNeeded)
-            {
-                Say(_ambrosio, "¡Se va! ¡Volvamos con los viejos!", 6f);
-                Destroy(_predator.gameObject, 4f);
-                _predatorLeaving = _predator; _predator = null;
-                Goal("Empuja a Shanidar hasta la cueva (E junto a él)");
-                Go(Beat.Push3); PushedThisPhase = 0f; _ambrosioFree = true;
-            }
+            Say(_ambrosio, "¡Se va volando! Gracias… ¡Volvamos con los viejos!", 6f);
+            Destroy(_predator.gameObject, 4f);
+            _predatorLeaving = _predator; _predator = null;
+            Goal("Empuja a Shanidar hasta la cueva (E junto a él)");
+            Go(Beat.Push3); PushedThisPhase = 0f; _ambrosioFree = true;
         }
     }
     Transform _predatorLeaving;
@@ -437,6 +523,6 @@ public class AmbrosioStory : MonoBehaviour
 
     void LateUpdate()
     {
-        if (_predatorLeaving != null) _predatorLeaving.position += Vector3.right * 6f * Time.deltaTime;   // huye
+        if (_predatorLeaving != null) _predatorLeaving.position += (_side * 6f + Vector3.up * 3f) * Time.deltaTime;   // se va volando
     }
 }

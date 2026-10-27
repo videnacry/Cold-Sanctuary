@@ -24,12 +24,13 @@ public static class InfirmaryProps
             C(t, p + Vector3.up * 0.25f, new Vector3(0.05f, 0.45f, 0.05f), Steel, 0f, "Pata");
             C(t, p + Vector3.up * 0.04f, new Vector3(0.06f, 0.08f, 0.1f), Black, 0f, "Rueda");
         }
-        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(1f, 0.08f, 2.05f), Steel, 0f, "Somier");
-        C(t, new Vector3(0f, 0.62f, 0f), new Vector3(0.95f, 0.16f, 2f), White, 0f, "Colchon");
+        // Colchón de 2,10 m, el de los pacientes altos (docs/medidas-muebles.md): con 2,00 el de 1,85 m cabía justo.
+        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(1f, 0.08f, 2.15f), Steel, 0f, "Somier");
+        C(t, new Vector3(0f, 0.62f, 0f), new Vector3(0.95f, 0.16f, 2.1f), White, 0f, "Colchon");
         C(t, new Vector3(0f, 0.74f, 0.25f), new Vector3(0.96f, 0.06f, 1.4f), blanket, 0f, "Manta");
-        C(t, new Vector3(0f, 0.75f, -0.78f), new Vector3(0.6f, 0.1f, 0.32f), White, 0f, "Almohada");
-        C(t, new Vector3(0f, 0.85f, -1.02f), new Vector3(1f, 0.75f, 0.06f), Mint, 0f, "Cabecero");
-        C(t, new Vector3(0f, 0.7f, 1.02f), new Vector3(1f, 0.45f, 0.06f), Mint, 0f, "Piecero");
+        C(t, new Vector3(0f, 0.75f, -0.83f), new Vector3(0.6f, 0.1f, 0.32f), White, 0f, "Almohada");
+        C(t, new Vector3(0f, 0.85f, -1.07f), new Vector3(1f, 0.75f, 0.06f), Mint, 0f, "Cabecero");
+        C(t, new Vector3(0f, 0.7f, 1.07f), new Vector3(1f, 0.45f, 0.06f), Mint, 0f, "Piecero");
         for (int s = -1; s <= 1; s += 2) C(t, new Vector3(0.52f * s, 0.82f, -0.3f), new Vector3(0.03f, 0.18f, 0.8f), Steel, 0f, "Baranda");
         // Gotero (suero) y monitor de constantes DETRÁS del cabecero: la cama no ocupa más ancho que sus barandas y entre
         // camas queda el pasillo (FurnitureSpacing).
@@ -50,10 +51,11 @@ public static class InfirmaryProps
     public static Transform ExamTable(Transform parent, string name, Vector3 pos, float yaw)
     {
         Transform t = KitchenProps.Root(parent, name, pos, yaw);
-        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.6f, 0.7f, 1.6f), Wood, 0f, "Base");
-        C(t, new Vector3(0f, 0.76f, 0.1f), new Vector3(0.65f, 0.12f, 1.5f), Blue, 0f, "Acolchado");
-        C(t, new Vector3(0f, 0.92f, -0.72f), new Vector3(0.65f, 0.12f, 0.45f), Blue, 0f, "Respaldo").localRotation = Quaternion.Euler(-30f, 0f, 0f);
-        C(t, new Vector3(0f, 0.83f, 0.1f), new Vector3(0.5f, 0.005f, 1.5f), White, 0f, "Papel");
+        // Plano de 2,00 × 0,70 m con la superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md): el más alto
+        // (1,85 m) cabe tumbado del todo, con ~8 cm en cada punta. ArrivalExam.PatientSpot lee la altura del «Acolchado».
+        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.6f, 0.7f, 1.8f), Wood, 0f, "Base");
+        C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.7f, 0.1f, 2f), Blue, 0f, "Acolchado");
+        C(t, new Vector3(0f, 0.8025f, 0f), new Vector3(0.55f, 0.005f, 1.95f), White, 0f, "Papel");
         C(t, new Vector3(0.6f, 0.25f, 0.6f), new Vector3(0.35f, 0.5f, 0.35f), Dark, 0f, "Taburete");
         KitchenProps.Fit(t);
         return t;
@@ -69,9 +71,9 @@ public static class InfirmaryProps
         C(t, new Vector3(0.1f, 0.8f, 0.17f), new Vector3(0.05f, 0.1f, 0.05f), Dark, 0f, "Pie");
         C(t, new Vector3(0.1f, 0.775f, -0.1f), new Vector3(0.45f, 0.02f, 0.15f), Black, 0f, "Teclado");
         C(t, new Vector3(-0.45f, 0.78f, -0.05f), new Vector3(0.22f, 0.03f, 0.3f), White, 10f, "Historias");
-        C(t, new Vector3(0f, 0.45f, -0.6f), new Vector3(0.45f, 0.08f, 0.45f), Black, 0f, "Silla");
-        C(t, new Vector3(0f, 0.75f, -0.82f), new Vector3(0.45f, 0.55f, 0.06f), Black, 0f, "Respaldo");
-        C(t, new Vector3(0f, 0.22f, -0.6f), new Vector3(0.05f, 0.4f, 0.05f), Steel, 0f, "Pie_Silla");
+        C(t, new Vector3(0f, 0.41f, -0.6f), new Vector3(0.45f, 0.08f, 0.45f), Black, 0f, "Silla");   // asiento a 0,45 m
+        C(t, new Vector3(0f, 0.71f, -0.82f), new Vector3(0.45f, 0.55f, 0.06f), Black, 0f, "Respaldo");
+        C(t, new Vector3(0f, 0.185f, -0.6f), new Vector3(0.05f, 0.37f, 0.05f), Steel, 0f, "Pie_Silla");
         KitchenProps.Fit(t);
         return t;
     }

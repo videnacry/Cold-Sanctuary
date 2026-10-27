@@ -50,28 +50,12 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         GameObject tree = GameObject.Find("CasaArbolGuardia");
         TestProbe.NotNull("la casa del árbol de guardia existe", tree);
         TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
-        TestProbe.Check("la escalera vertical tiene su pie interactuable", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length >= 2);
-        TestProbe.Check("las escaleras verticales tienen su enlace del NavMesh (la IA trepa)", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length > 0
-            && System.Array.TrueForAll(FindObjectsByType<Ladder>(FindObjectsSortMode.None), l => l.ladder != null && l.ladder.GetComponent<Unity.AI.Navigation.NavMeshLink>() != null));
+        // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md): la casa del árbol se sube en alfombra.
+        int ladders = 0;
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Escalera" && t.Find("Peldano") != null) ladders++;
+        TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", ladders == 0, $"{ladders} escaleras");
+        TestProbe.Check("la casa del árbol de guardia tiene alfombra en el suelo y arriba", CarpetPad.All.FindAll(p => p.building == "Casa del guarda").Count >= 2);
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
-
-        // SUBIR y BAJAR por la escalera vertical (un cuerpo de prueba con CharacterController, como el jugador).
-        Ladder foot = null;
-        foreach (Ladder ld in FindObjectsByType<Ladder>(FindObjectsSortMode.None)) if (!ld.top) foot = ld;
-        if (foot != null)
-        {
-            GameObject body = new GameObject("Trepador_TEST");
-            body.AddComponent<CharacterController>();
-            body.transform.position = foot.transform.position;
-            float speed = foot.speed; foot.speed = 20f;   // rápido para el test
-            yield return StartCoroutine(foot.Climb(body.transform, true));
-            float top = body.transform.position.y - foot.ladder.position.y;
-            TestProbe.Near("subir la escalera deja al cuerpo en la plataforma de la casa del árbol", top, foot.deckY + 1.2f, 0.3f);
-            yield return StartCoroutine(foot.Climb(body.transform, false));
-            TestProbe.Check("bajar la escalera lo devuelve al suelo", body.transform.position.y - foot.ladder.position.y < 2f, $"y={body.transform.position.y:0.0}");
-            foot.speed = speed;
-            Destroy(body);
-        }
         TestProbe.End();
     }
 }

@@ -30,68 +30,63 @@ public static class MicrocosmosSceneBuilder
     // otra escena hermana), el contenido —autorado en coords base— no solapa a nadie. Todo el root se desplaza aquí.
     static readonly Vector3 O = new Vector3(-5000f, 0f, 5000f);
 
+    /// <summary>
+    /// EL MICROCOSMOS DE AMBROSIO (el primero del recién llegado), hecho con la PLANTILLA (Berón 2026-10-27): la planta del
+    /// HOSPITAL —de donde sale el tanque— agrandada ×10, con la flora y los insectos de la taiga de antes del fuego, al
+    /// ALBA. La historia va por su pasillo central: la familia de Ambrosio empuja a Sakshi y a Shanidar hasta la cueva
+    /// (<see cref="AmbrosioStory"/>), todos con cuerpo de mirmidón.
+    /// </summary>
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos Scene1 (Ambrosio)")]
     public static void BuildScene1()
     {
-        if (!AssetDatabase.IsValidFolder("Assets/Scenes"))
-            AssetDatabase.CreateFolder("Assets", "Scenes");
-
-        Scene prev  = EditorSceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        SceneManager.SetActiveScene(scene);   // los GameObjects nuevos caen en esta escena
-
-        // Luz direccional (el alba). Para una luz direccional la posición es irrelevante (solo cuenta la rotación).
-        GameObject lightGO = new GameObject("Sun");
-        lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        Light light = lightGO.AddComponent<Light>();
-        light.type = LightType.Directional;
-        light.color = new Color(1f, 0.95f, 0.85f);   // luz cálida de amanecer
-
-        // Contenido del microcosmos Nivel 1 (reutiliza los builders existentes; ahora viven en SU escena). Se construye
-        // con el root en el ORIGEN (los builders fijan posiciones en coords base) y luego se DESPLAZA el root entero a O
-        // → todo el contenido se mueve coherentemente sin tocar los builders. Las posiciones autoradas quedan como
-        // offsets locales respecto de O.
-        GameObject root = new GameObject("Microcosmos_Scene1_AUTO");
-        SampleSceneBuilder.BuildMicrocosmosSandbox(root.transform);   // cueva/pulgón-guía/familia caída (el tableau del alba)
-        SampleSceneBuilder.BuildNivel1Sandbox(root.transform);        // mapa abierto: hormigas + depredadores + hechizos de Kushal
-        root.transform.position = O;                                 // desplaza TODO a un origen lejano (no solapa el mundo base)
-
-        // Entrada/salida del jugador (genérico vía MobWorldLoader, como Mesopotamia): teletransporta al MobSpawnPoint al
-        // entrar; el WorldExitPortal devuelve al mundo normal. Ambos parentados al root → caen ya en O.
-        GameObject spawn = new GameObject("MobSpawnPoint");
-        spawn.transform.SetParent(root.transform);
-        // Aparece DELANTE de la familia de Ambrosio, que empuja a los viejos hacia la cueva (AmbrosioStory, Berón 2026-10-26).
-        spawn.transform.localPosition = new Vector3(-30f, 1f, 42f);
-        spawn.transform.localRotation = Quaternion.LookRotation(Vector3.back);
-        spawn.AddComponent<MobSpawnPoint>();
-
-        GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "WorldExitPortal";
-        portal.transform.SetParent(root.transform);
-        portal.transform.localPosition = new Vector3(0f, 1f, -5f);
-        portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
-        portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<WorldExitPortal>();
-
-        // El SENDERO de la historia, de la entrada de la cueva hasta donde aparece el jugador: suelo firme (si no, la familia
-        // y el jugador quedaban en el agua que rodea la escena).
-        GameObject trail = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        trail.name = "Sendero_a_la_cueva"; trail.transform.SetParent(root.transform, false);
-        trail.transform.localPosition = new Vector3(-30f, -0.05f, 28f); trail.transform.localScale = new Vector3(18f, 0.1f, 40f);
-        trail.GetComponent<Renderer>().sharedMaterial = MakeMat("Micro_Sendero", new Color(0.42f, 0.36f, 0.28f));
-        root.AddComponent<AmbrosioStory>();   // la historia del recién llegado: empujar a los viejos, melaza, depredador, muerte de Ambrosio
-        BakeMicroNavMesh();   // tras el offset → el NavMesh se hornea en O (donde están de verdad las hormigas)
-
-        MicroWater.SurroundScene(scene);
-        EditorSceneManager.SaveScene(scene, ScenePath);
-        AddToBuildSettings(ScenePath);
-        EditorSceneManager.CloseScene(scene, removeScene: true);
-        if (prev.IsValid()) SceneManager.SetActiveScene(prev);
-
-        Debug.Log($"[MicrocosmosSceneBuilder] Escena guardada en {ScenePath} y añadida a Build Settings " +
-                  $"(hermana de {MobWorldSceneBuilder.SceneName}).");
+        var spec = new MicrocosmSpec(SceneName, "Ambrosio (nivel 1)", "verano corto de la taiga, antes del fuego", 5.5f, "Infirmary_Area")
+            { tint = new Color(0.85f, 0.95f, 0.9f), kind = SampleSceneBuilder.MissionKind.Heal, story = AmbrosioCast };
+        MicrocosmTemplate.Build(spec, O);
+        Debug.Log($"[MicrocosmosSceneBuilder] {ScenePath}: el microcosmos de Ambrosio, con la plantilla (hospital ×10, taiga, alba).");
     }
+
+    // El elenco y el camino de la historia, en el hueco de la historia (la entrada queda detrás, a −z).
+    static int AmbrosioCast(Transform cast)
+    {
+        const float caveZ = 88f;
+        Transform start = new GameObject("Inicio_familia").transform; start.SetParent(cast, false); start.localPosition = new Vector3(0f, 0f, -4f);
+        Material soil = AreaMicrocosmos.Mat("Ambrosio_Sendero", new Color(0.36f, 0.3f, 0.22f)), rock = AreaMicrocosmos.Mat("Ambrosio_Roca", new Color(0.45f, 0.42f, 0.38f)),
+                 dark = AreaMicrocosmos.Mat("Ambrosio_Boca_cueva", new Color(0.06f, 0.05f, 0.04f));
+        AreaMicrocosmos.Box(cast, "Sendero_a_la_cueva", new Vector3(0f, 0.03f, caveZ * 0.5f - 4f), new Vector3(9f, 0.04f, caveZ + 12f), soil, false);
+
+        // LA CUEVA: un cerro de roca con la boca oscura; es el REFUGIO de los dos viejos (CarryToRefuge).
+        Transform cave = new GameObject("Cueva").transform; cave.SetParent(cast, false); cave.localPosition = new Vector3(0f, 0f, caveZ);
+        for (int k = 0; k < 4; k++) AreaMicrocosmos.Box(cave, "Roca", new Vector3(0f, 1.6f + k * 2.4f, 6f + k * 0.8f), new Vector3(22f - k * 5f, 3.2f, 10f - k * 1.8f), rock, true);
+        AreaMicrocosmos.Box(cave, "Boca", new Vector3(0f, 1.8f, 0.95f), new Vector3(4.5f, 3.6f, 0.1f), dark, false);
+        var refuge = cave.gameObject.AddComponent<CarryToRefuge>(); refuge.radius = 3.5f; refuge.needed = 2;
+        WorldLabel cl = cave.gameObject.AddComponent<WorldLabel>(); cl.text = "La cueva"; cl.height = 9f;
+
+        int n = 0;
+        GameObject Member(string name, Vector3 at, Color c, float h, float bulk, bool aphid = false, bool weak = false)
+        {
+            var g = new GameObject(name); g.transform.SetParent(cast, false); g.transform.localPosition = at;
+            var col = g.AddComponent<CapsuleCollider>(); col.height = h; col.radius = 0.35f * bulk; col.center = Vector3.up * h * 0.5f;
+            CubeInsect.DressMyrmidon(g, c, h, bulk, aphid);
+            g.AddComponent<Anima>();
+            if (weak) g.AddComponent<WeakOne>();
+            n++;
+            return g;
+        }
+        // La familia (docs/microcosmos-level1.md): Ambrosio es un PULGÓN grande y manso; Sakshi, la anciana que lo crió.
+        Member("Ambrosio", new Vector3(-1.6f, 0f, -5.6f), new Color(0.74f, 0.84f, 0.5f), 2.0f, 1.6f, aphid: true);
+        Member("Sakshi", new Vector3(-1.6f, 0f, -4f), new Color(0.38f, 0.42f, 0.48f), 1.6f, 0.9f, weak: true);
+        Member("Shanidar", new Vector3(1.6f, 0f, -4f), new Color(0.5f, 0.45f, 0.4f), 1.6f, 0.95f, weak: true);
+        Member("Atlas", new Vector3(-2.4f, 0f, -5.4f), new Color(0.3f, 0.2f, 0.15f), 2.0f, 1.25f);
+        Member("Medea", new Vector3(1.0f, 0f, -5.5f), new Color(0.45f, 0.15f, 0.15f), 1.55f, 0.85f);
+        Member("Momo", new Vector3(2.2f, 0f, -5.5f), new Color(0.75f, 0.5f, 0.2f), 1.75f, 1f);
+        Member("Ruth", new Vector3(3f, 0f, caveZ - 3f), new Color(0.35f, 0.45f, 0.25f), 1.75f, 1f);
+        Member("Hespero", new Vector3(-3f, 0f, caveZ - 3f), new Color(0.28f, 0.2f, 0.18f), 1.9f, 1.1f);
+        // La tribu que vive allí (recolectoras con su guarida), a un lado del camino.
+        n += AreaMicrocosmos.ForagingBand(cast, new Vector3(-26f, 0f, 30f), 5);
+        cast.root.gameObject.AddComponent<AmbrosioStory>();
+        return n;
+    }
+
 
     // ═══════════════════════════════════════════════════════════════════════════════════════════════════════════════
     //  SCENE0 — Origen de Sakshi (el PRIMER viaje de Kushal). ANTERIOR a Scene1 (Ambrosio). docs/microcosmos-sakshi-origin.md

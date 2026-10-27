@@ -6,7 +6,7 @@ using UnityEngine;
 ///  · La cocina ocupa TODA la planta (SampleSceneBuilder.KitchenPlan): suelo de pizarra oscura y el pase con su riel de
 ///    comandas y hierbas frescas. El COMEDOR va arriba, en un ANILLO de 10 m a caballo del borde (docs/restaurant-plan.md):
 ///    mesas con mantel blanco, bajoplato, copas, cubiertos, vela y flor; sillas tapizadas; caja, barra de sushi, cafetera,
-///    aseos, pared de vinos y plantas; su escalera sube desde el puente.
+///    aseos, pared de vinos y plantas; sube por dos escaleras de dentro (se llega en alfombra).
 ///  · ESTUDIO TEXTIL (el área de Irosene): telar de pie con su urdimbre, telar de cintura andino, rueca, ovillos de lana
 ///    por colores, tinas de tinte natural, mesa de corte, máquina de coser, maniquíes y un tendedero con telas.
 /// </summary>
@@ -70,9 +70,9 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(t, seat + q * new Vector3(0.18f, 0.84f, -0.18f), new Vector3(0.06f, 0.1f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.35f), 0f, "Copa");
                 // Silla tapizada
                 Vector3 cp = q * new Vector3(0f, 0f, 0.95f);
-                KitchenProps.C(t, cp + new Vector3(0f, 0.45f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");
-                KitchenProps.C(t, cp + q * new Vector3(0f, 0.8f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
-                for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.2f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.4f, 0.04f), wood, 0f, "Pata_silla");
+                KitchenProps.C(t, cp + new Vector3(0f, 0.41f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");   // asiento a 0,45 m
+                KitchenProps.C(t, cp + q * new Vector3(0f, 0.76f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
+                for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.185f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.37f, 0.04f), wood, 0f, "Pata_silla");
             }
             KitchenProps.C(t, new Vector3(0f, 0.85f, 0f), new Vector3(0.05f, 0.14f, 0.05f), new Color(1f, 0.95f, 0.85f), 0f, "Vela");
             KitchenProps.C(t, new Vector3(0f, 0.94f, 0f), new Vector3(0.02f, 0.04f, 0.02f), new Color(1f, 0.75f, 0.3f), 0f, "Llama_vela");
@@ -82,22 +82,15 @@ public static partial class SampleSceneBuilder
 
         const float W = 10f, In = 0.2f;
         float hx = size.x * 0.5f - W * In, hz = size.y * 0.5f - W * In;
-        int side = KitchenBridge(kitchen.transform, out float along);
-        Transform ring = RingDeck(r, "Anillo_comedor", size, MezzanineHeight, W, In, innerGaps: side < 0, openSide: side, openAt: along);
+        const float along = 0f;
+        Transform ring = RingDeck(r, "Anillo_comedor", size, MezzanineHeight, W, In);
 
-        // ESCALERA DESDE EL PUENTE: sube por fuera del anillo hasta su borde exterior (el hueco de la barrera).
-        Vector3 outDir = side >= 0 ? SideOut(side) : Vector3.forward;
-        Vector3 top = side == 0 ? new Vector3(hx + W, 0f, along) : side == 1 ? new Vector3(-hx - W, 0f, along)
-                    : side == 2 ? new Vector3(along, 0f, hz + W) : side == 3 ? new Vector3(along, 0f, -hz - W) : new Vector3(0f, 0f, hz);
+        // Se llega en alfombra (docs/alfombras-plan.md): el comedor (plataforma hija) sube por dentro, escaleras en los lados ±Z.
+        Vector3 outDir = Vector3.forward, top = new Vector3(0f, 0f, hz);
         float run = StairRun();
-        if (side >= 0) InclinedStair(r, "Escalera_comedor_puente", top + outDir * run, Mathf.Atan2(-outDir.x, -outDir.z) * Mathf.Rad2Deg);
-        else
-        {
-            Debug.LogWarning("[Restaurante] sin puente: el comedor sube por dentro (escaleras en los lados ±Z).");
-            InclinedStair(r, "Escalera_comedor_puente", new Vector3(0f, 0f, hz - run), 0f);
-            InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
-        }
-        Vector3 arrive = side >= 0 ? top - outDir * (W * 0.5f) : top + Vector3.forward * (W * 0.5f);   // donde se llega, en la línea central (sin puente: la escalera de dentro llega al borde interior)
+        InclinedStair(r, "Escalera_comedor_norte", new Vector3(0f, 0f, hz - run), 0f);
+        InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
+        Vector3 arrive = top + Vector3.forward * (W * 0.5f);   // donde se llega (la escalera norte, en el borde interior), en la línea central
 
         // CAJA junto a la llegada (sobre la línea central, a un lado del paso).
         Vector3 tangent = Mathf.Abs(outDir.x) > 0.5f ? Vector3.forward : Vector3.right;
@@ -145,8 +138,8 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(pl, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), new Color(0.3f, 0.55f, 0.3f), 30f, "Follaje");
         }
         WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor en el anillo)"; wl.height = MezzanineHeight + 3f;
-        Debug.Log($"[Restaurante] comedor en anillo de {W:0} m a {MezzanineHeight:0.#} m: {mesa} mesas de 4 ({mesa * 4} cubiertos), caja junto a la escalera " +
-                  (side >= 0 ? $"que sube desde el puente (lado {side})" : "de dentro") + ", barra de sushi, cafetera, aseos y pared de vinos.");
+        Debug.Log($"[Restaurante] comedor en anillo de {W:0} m a {MezzanineHeight:0.#} m: {mesa} mesas de 4 ({mesa * 4} cubiertos), caja junto a la escalera norte, " +
+                  "barra de sushi, cafetera, aseos y pared de vinos.");
     }
 
 

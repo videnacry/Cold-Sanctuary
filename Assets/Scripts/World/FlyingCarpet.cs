@@ -33,15 +33,34 @@ public class FlyingCarpet : MonoBehaviour
     /// <summary>Diálogo de destinos para el jugador.</summary>
     public void Offer(GameObject who, bool arrived)
     {
-        var dests = new List<CarpetPad>();
-        foreach (CarpetPad p in CarpetPad.All) if (p != pad) dests.Add(p);
+        // Solo los destinos de SU red (pisos de este edificio, edificios del santuario, o habitaciones): pocas opciones.
+        var dests = pad != null ? pad.Destinations() : new List<CarpetPad>();
         var opts = new List<string>();
         if (arrived) opts.Add("Bajarse aquí");
+        bool yoga = pad != null && pad.kind == CarpetPad.Kind.Habitacion && !arrived;   // la alfombra de casa es también esterilla
+        if (yoga) opts.Add("Hacer yoga aquí (Saludo al Sol)");
         foreach (CarpetPad p in dests) opts.Add($"Volar a: {p.displayName}");
-        int off = arrived ? 1 : 0;
-        ChoiceDialog.Show(arrived ? $"Has llegado a {pad?.displayName}" : "Alfombra voladora · ¿a dónde vamos?", opts.ToArray(),
-            i => { if (i >= off) Fly(who, dests[i - off]); else _ignoreUntil = Time.time + 2f; },
+        int off = (arrived ? 1 : 0) + (yoga ? 1 : 0);
+        string title = pad == null ? "Alfombra voladora" : pad.kind == CarpetPad.Kind.Edificio ? $"Alfombra de {pad.building} · ¿a qué piso?"
+            : pad.kind == CarpetPad.Kind.Santuario ? "Alfombra del santuario · ¿a qué edificio?" : pad.kind == CarpetPad.Kind.Residencia ? "Alfombra · ¿a qué habitación?" : "Tu alfombra";
+        ChoiceDialog.Show(arrived ? $"Has llegado a {pad?.displayName}" : title, opts.ToArray(),
+            i =>
+            {
+                if (i >= off) Fly(who, dests[i - off]);
+                else if (yoga && i == 0) { Yoga(who); _ignoreUntil = Time.time + 60f; }
+                else _ignoreUntil = Time.time + 2f;
+            },
             () => _ignoreUntil = Time.time + 2f, transform, 3.5f);   // alejarse lo cierra
+    }
+
+    // Yoga en casa: sobre la alfombra, el Saludo al Sol (como el hechizo `yoga`).
+    void Yoga(GameObject who)
+    {
+        Anima a = who.GetComponent<Anima>(); if (a == null) return;
+        if (!who.TryGetComponent(out ActionQueue q)) q = who.AddComponent<ActionQueue>();
+        WorkdayDirector.Teleport(who.transform, transform.position + Vector3.up * 0.1f);
+        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
+        Debug.Log($"[Alfombra] «{who.name}» hace el Saludo al Sol en su alfombra-esterilla.");
     }
 
     /// <summary>Lleva a <paramref name="who"/> sentado hasta la pista <paramref name="to"/>.</summary>

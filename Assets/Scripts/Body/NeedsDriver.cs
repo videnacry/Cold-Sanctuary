@@ -28,6 +28,7 @@ public class NeedsDriver : MonoBehaviour
     void Update()
     {
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
+        if (TryGetComponent(out NewcomerInitiator ini) && ini.InProgress) return;   // iniciando a un recién llegado: sus necesidades esperan
         _next = Time.time + checkEvery;
         foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell) return;   // ya atendiendo una necesidad
 
@@ -36,7 +37,7 @@ public class NeedsDriver : MonoBehaviour
             // A dormir a SU cama (arboleda residencial), si tiene dormitorio; si no, donde esté.
             Bedroom room = Bedroom.Of(_a);
             if (room != null && room.bed != null && Vector3.Distance(room.bed.position, transform.position) > 2f)
-                _q.EnqueueOwn(new WalkToSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f, giveUpAfter = 8f });
+                _q.EnqueueOwn(new CarpetWalkSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f });   // a su casa del árbol, en alfombra
             _q.EnqueueOwn(new SleepSpell());
             return;
         }
@@ -107,8 +108,10 @@ public class SleepSpell : QueuedSpell
             if (room != null && room.bed != null && Vector3.Distance(room.bed.position, self.transform.position) < 3f)
             {
                 CharacterController cc = self.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
-                self.transform.position = room.bed.position + Vector3.up * 0.45f;
-                self.transform.rotation = room.bed.rotation;
+                // Sobre el colchón (su cara de arriba está a +0,50 de la raíz de la cama) y con la cabeza en la almohada: la
+                // pose Lie pone la cabeza hacia −z del cuerpo y la almohada está en +z de la cama, así que se gira 180°.
+                self.transform.position = room.bed.position + Vector3.up * 0.5f;
+                self.transform.rotation = room.bed.rotation * Quaternion.Euler(0f, 180f, 0f);
                 if (cc != null) cc.enabled = true;
                 DailyPoses.Lie().ApplyFinal(self);
                 Debug.Log($"[Cuerpo] «{self.name}» se acuesta en su cama ({room.name}).");

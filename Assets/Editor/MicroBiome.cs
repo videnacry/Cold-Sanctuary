@@ -237,7 +237,7 @@ public static class MicroBiome
                 new Bug("Earthworm", 3, 150, C(0.75f, 0.42f, 0.42f), "Lombriz de tierra (Lumbricus terrestris)") } };
 
             // ── Ambrosio y la era del fuego: taiga prehistórica (verano corto) ──
-            case "Hospital": case "Cocina": return new Biome { title = "Taiga prehistórica, antes del fuego (verano corto)", ground = C(0.3f, 0.26f, 0.18f), plants = new[] {
+            case "Hospital": case "Cocina": case "Ambrosio (nivel 1)": return new Biome { title = "Taiga prehistórica, antes del fuego (verano corto)", ground = C(0.3f, 0.26f, 0.18f), plants = new[] {
                 new Plant(Kind.Moss, 20, "Musgo de Schreber (Pleurozium schreberi)", 10, C(0.55f, 0.62f, 0.25f), C(0.7f, 0.72f, 0.3f)),
                 new Plant(Kind.Moss, 10, "Liquen de reno (Cladonia rangiferina)", 7, C(0.78f, 0.8f, 0.78f), C(0.85f, 0.86f, 0.84f)),
                 new Plant(Kind.Shrub, 10, "Arándano rojo (Vaccinium vitis-idaea)", 20, C(0.15f, 0.35f, 0.18f), C(0.8f, 0.1f, 0.12f)),

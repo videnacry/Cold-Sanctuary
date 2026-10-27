@@ -47,7 +47,7 @@ public class NewcomerInitiator : MonoBehaviour
 
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
-    int _beat = -1; float _beatEnd, _nextFrame; bool _frameB;
+    int _beat = -1; float _beatEnd, _nextFrame, _aimUntil; bool _frameB; Vector3 _pinAt;
     float _nextReminder, _sentAt = -999f;
     bool _frozePlayer, _camForced;
     CameraMode _camBefore;
@@ -112,6 +112,16 @@ public class NewcomerInitiator : MonoBehaviour
         Accompany(o);
     }
 
+    // Mientras hace una prueba se queda en su sitio, de cara al examinado: su jornada, su navegación o los impulsos la iban
+    // paseando por la sala a mitad del análisis.
+    void LateUpdate()
+    {
+        if (_exam == null || Now != Phase.Perform) return;
+        Vector3 d = _pinAt - transform.position; d.y = 0f;
+        if (d.sqrMagnitude > 0.0025f) WorkdayDirector.Teleport(transform, new Vector3(_pinAt.x, transform.position.y, _pinAt.z));
+        transform.rotation = Quaternion.LookRotation(Flat(_exam.transform.position - transform.position));
+    }
+
     // ── 1. IR HACIA ÉL Y LLEVARLO ───────────────────────────────────────────────────────────────────────────────
     void StartExam(SanctuaryOnboarding o)
     {
@@ -138,7 +148,7 @@ public class NewcomerInitiator : MonoBehaviour
         {
             Vector3 d = p.position - transform.position;
             float gap = d.magnitude; d.y = 0f;   // en 3D: en otro piso no está «cerca» aunque esté encima
-            if (gap > 1.6f) { PathMover.Of(this).StepToward(p.position, moveSpeed); return; }
+            if (gap > 1.6f) { Step(p.position); return; }
             transform.rotation = Quaternion.LookRotation(Flat(d));
             GreetedAtDistance = gap;
             Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
@@ -156,14 +166,14 @@ public class NewcomerInitiator : MonoBehaviour
             Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
             Vector3 d = stand - transform.position; d.y = 0f;
             Escort(p, Time.deltaTime);
-            if (d.magnitude > 0.6f) { PathMover.Of(this).StepToward(stand, moveSpeed); return; }
+            if (d.magnitude > 0.6f) { Step(stand); return; }
             Put(p, pa, place, b.patient);
             transform.rotation = Quaternion.LookRotation(Flat(p.position - transform.position));
             ArrivalExam.Hold(gameObject, b.tool, BodyPart.HandRight, "Herramienta");
             ArrivalExam.Hold(p.gameObject, b.patientTool, b.patientBone, "Herramienta_paciente");
             Say(_exam, b.line, b.seconds);
             Debug.Log($"[Iniciación] {Who} · {b.title} ({b.seconds:0} s, en «{b.place}»; protege a: {b.protects}).");
-            Now = Phase.Perform; _beatEnd = Time.time + b.seconds; _nextFrame = 0f; _frameB = false;
+            Now = Phase.Perform; _beatEnd = Time.time + b.seconds; _nextFrame = 0f; _frameB = false; _aimUntil = Time.time + 0.6f; _pinAt = transform.position;
             return;
         }
         // Phase.Perform: el gesto, alternando las dos posturas.
@@ -174,11 +184,11 @@ public class NewcomerInitiator : MonoBehaviour
             if (pa != null) (_frameB ? b.ptB : b.ptA)?.Invoke().ApplyFinal(pa);
             _frameB = !_frameB;
         }
-        // En 1.ª persona se ve el gesto: la mirada, a cada fotograma (justo al sentarlo la cámara aún no está en su sitio y
-        // una sola llamada le dejaba mirando al techo hasta el siguiente gesto).
+        // En 1.ª persona se ve el gesto: al empezar cada prueba, la mirada va a su cara (unos fotogramas, mientras la cámara se
+        // asienta tras sentarlo); después los ojos-cámara son del jugador, que mira donde quiera (PlayerController: ojos y cabeza).
         PlayerController pc = p.GetComponent<PlayerController>();
         EyesAtHead(pc, b.patient != ArrivalExam.Spot.Stand);
-        if (pc != null) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
+        if (pc != null && Time.time < _aimUntil) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
         if (Time.time < _beatEnd) return;
         HealthRecord hr = _exam.GetComponent<HealthRecord>();
         if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
@@ -197,7 +207,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Put(Transform p, Anima pa, Transform place, ArrivalExam.Spot spot)
     {
         Hold(p, true);
-        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot);
+        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot, p);
         WorkdayDirector.Teleport(p, at);
         p.rotation = rot;
         if (pa != null) (spot == ArrivalExam.Spot.Sit ? DailyPoses.Sit() : spot == ArrivalExam.Spot.Lie ? DailyPoses.Lie() : DailyPoses.Stand()).ApplyFinal(pa);
@@ -260,6 +270,14 @@ public class NewcomerInitiator : MonoBehaviour
         if (o != null && o.GetComponent<PlayerController>() != null) LessonPrompt.Show($"{Who}: {text}", null, secs + 2f);
     }
 
+    // Andar hacia un sitio; si está en otro piso o edificio, por la cadena de alfombras voladoras (ya no hay escaleras).
+    void Step(Vector3 target)
+    {
+        Vector3 to = target;
+        if (CarpetPad.Route(gameObject, ref to)) return;
+        PathMover.Of(this).StepToward(to, moveSpeed);
+    }
+
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
 
     // ── 3. AL TANQUE: lo mete dentro y lo envía a su primer microcosmos ──────────────────────────────────────────
@@ -275,10 +293,10 @@ public class NewcomerInitiator : MonoBehaviour
         VirtualizationMachine vm = Machine();
         if (vm == null) { _leading.initiated = true; _leading = null; Hold(p, false); Now = Phase.None; return; }
         Vector3 to = vm.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { Escort(p, Time.deltaTime); PathMover.Of(this).StepToward(vm.transform.position, moveSpeed); return; }
+        if (to.magnitude > reach + 1.5f) { Escort(p, Time.deltaTime); Step(vm.transform.position); return; }   // la máquina está junto al borde (ya sin barrera): no hace falta pegarse
         Hold(p, false);
         _leading.initiated = true; _leading = null; Now = Phase.None;
-        if (p.GetComponent<PlayerController>() != null && MobWorldLoader.HasInstance)
+        if (p.GetComponent<PlayerController>() != null && MobWorldLoader.Instance != null)   // (Instance lo crea si aún no existe: HasInstance era false si nadie lo había pedido antes)
         {
             Say(o: null, $"Ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", 4f);
             LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);
@@ -292,7 +310,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Accompany(SanctuaryOnboarding o)
     {
         Vector3 to = o.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach + 0.8f) PathMover.Of(this).StepToward(o.transform.position, moveSpeed);
+        if (to.magnitude > reach + 0.8f) Step(o.transform.position);
         if (Time.time - _sentAt < 120f || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;   // ya va (o está) en el microcosmos
         if (Time.time < _nextReminder || o.GetComponent<PlayerController>() == null) return;
         _nextReminder = Time.time + 25f;

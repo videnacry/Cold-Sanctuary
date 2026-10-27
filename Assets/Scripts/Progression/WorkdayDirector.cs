@@ -267,13 +267,13 @@ public class WorkdayDirector : MonoBehaviour
         return false;
     }
 
-    // En un puente o una pista de alfombras, volando o trepando una escalera.
+    // En un área de alfombras (esperando una) o volando.
     static bool InTransit(GameObject p)
     {
-        if (FlyingCarpet.Riding(p) || Ladder.IsClimbing(p.transform)) return true;
+        if (FlyingCarpet.Riding(p)) return true;
         if (!Physics.Raycast(p.transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)) return false;
         for (Transform t = hit.transform; t != null; t = t.parent)
-            if (t.name.StartsWith("Puente_") || t.name.StartsWith("Pista_Alfombras")) return true;
+            if (t.name.StartsWith("Alfombras_")) return true;
         return false;
     }
 
@@ -316,6 +316,8 @@ public class WorkdayDirector : MonoBehaviour
     // El que tenga la misión «Patrulla y raciones a los carnívoros» recibe la conducta de guardia, sea quien sea.
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
+        NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
+        if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();

@@ -21,7 +21,10 @@ public class PathMover : MonoBehaviour
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
-        if (Ladder.IsClimbing(transform)) return Flat(target - transform.position);
+        // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
+        // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
+        Vector3 final = target;
+        if (CarpetPad.Route(gameObject, ref target)) return Flat(final - transform.position);
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
         // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
@@ -35,13 +38,12 @@ public class PathMover : MonoBehaviour
             while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
             next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
         }
-        if (Ladder.AutoClimb(transform, next)) return Flat(target - pos);   // al pie (o arriba) de una escalera: trepa
         Vector3 d = next - pos; d.y = 0f;
         float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
         // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
         // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
         bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
-        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) return Flat(target - pos);
+        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) return Flat(final - pos);
         if (d.sqrMagnitude > 1e-6f)
         {
             pos += d.normalized * step;
@@ -53,10 +55,10 @@ public class PathMover : MonoBehaviour
         if (pos.y < transform.position.y - 1.2f)
         {
             if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
-            return Flat(target - transform.position);
+            return Flat(final - transform.position);
         }
         transform.position = pos;
-        return Flat(target - pos);
+        return Flat(final - pos);
     }
 
     // ¿Ese punto sigue sobre el NavMesh, a la misma altura (no el suelo 6 m más abajo ni un borde a medio metro)?

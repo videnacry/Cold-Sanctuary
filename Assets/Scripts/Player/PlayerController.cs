@@ -208,7 +208,12 @@ public class PlayerController : MonoBehaviour
         // Apply yaw to the player body (or only to the camera while the body is held)
         if (!Mathf.Approximately(yaw, 0f))
         {
-            if (cameraOnly && cameraPivot != null) { _pivotYaw = Mathf.Repeat(_pivotYaw + yaw + 180f, 360f) - 180f; ApplyPivot(); }
+            if (cameraOnly && cameraPivot != null)
+            {
+                _pivotYaw = Mathf.Repeat(_pivotYaw + yaw + 180f, 360f) - 180f;
+                if (BodyHeld) _pivotYaw = Mathf.Clamp(_pivotYaw, -(EyeYaw + HeadYaw), EyeYaw + HeadYaw);   // ojos + cuello, no más
+                ApplyPivot();
+            }
             else transform.Rotate(Vector3.up, yaw, Space.World);
         }
 
@@ -219,6 +224,32 @@ public class PlayerController : MonoBehaviour
             ApplyPivot();
         }
     }
+
+    // ── Ojos y cabeza con el cuerpo sujeto ────────────────────────────────────
+    // Sujeto (sentado en el examen, tumbado en la camilla, en una alfombra…), la cámara son primero los OJOS (±35° a los
+    // lados, ±25° arriba y abajo) y, más allá, gira la CABEZA del cuerpo de cubos (hasta ±70° y ±40° más), como una persona.
+    const float EyeYaw = 35f, EyePitch = 25f, HeadYaw = 70f, HeadPitch = 40f;
+    Transform _head; Quaternion _headBase, _headSet; bool _headTurned;
+
+    void LateUpdate()
+    {
+        if (_head == null)
+            foreach (CubeJoint j in GetComponentsInChildren<CubeJoint>(true)) if (j.part == BodyPart.Head) { _head = j.transform; break; }
+        if (_head == null) return;
+        if (!_headTurned || _head.localRotation != _headSet) _headBase = _head.localRotation;   // una postura nueva manda
+        float y = BodyHeld ? Beyond(_pivotYaw, EyeYaw, HeadYaw) : 0f;
+        float x = BodyHeld ? Beyond(_currentPitch, EyePitch, HeadPitch) : 0f;
+        if (Mathf.Approximately(x, 0f) && Mathf.Approximately(y, 0f))
+        {
+            if (_headTurned) { _head.localRotation = _headBase; _headTurned = false; }
+            return;
+        }
+        _head.localRotation = _headBase * Quaternion.Euler(x, y, 0f);
+        _headSet = _head.localRotation; _headTurned = true;
+    }
+
+    // Lo que pasa de lo que alcanzan los ojos, hasta lo que da el cuello.
+    static float Beyond(float a, float eyes, float head) => Mathf.Sign(a) * Mathf.Min(Mathf.Max(0f, Mathf.Abs(a) - eyes), head);
 
     void ApplyPivot()
     {

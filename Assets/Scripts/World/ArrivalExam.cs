@@ -129,12 +129,47 @@ public static class ArrivalExam
         return best;
     }
 
-    /// <summary>Dónde y cómo queda el examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.</summary>
-    public static void PatientSpot(Transform place, Spot spot, out Vector3 at, out Quaternion rot)
+    /// <summary>Dónde y cómo queda el examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.
+    /// <paramref name="who"/> (opcional) es el examinado: su escala ajusta la altura de la cadera al sentarse.</summary>
+    public static void PatientSpot(Transform place, Spot spot, out Vector3 at, out Quaternion rot, Transform who = null)
     {
         Vector3 fr = Front(place);
-        at = spot == Spot.Stand ? place.position + fr * 0.7f : place.position + Vector3.up * (spot == Spot.Lie ? 0.75f : 0.05f);
-        rot = spot == Spot.Stand ? Quaternion.LookRotation(-fr) : spot == Spot.Sit ? Quaternion.LookRotation(fr) : place.rotation;
+        if (spot == Spot.Stand) { at = place.position + fr * 0.7f; rot = Quaternion.LookRotation(-fr); return; }
+        // Escala del cuerpo de cubos (1,9 u nativas) y desfase de su raíz: 0,974 es el de 1,85 m (docs/medidas-muebles.md).
+        Transform body = who != null ? who.Find(CubeHumanoid.BodyName) : null;
+        float s = body != null ? body.lossyScale.y : 0.974f, dy = body != null ? body.position.y - who.position.y : 0f;
+        if (spot == Spot.Lie)
+        {
+            // Tumbado (Lie: cadera a 0,12 u y girada −90°): la espalda apoya en la superficie del acolchado, sin hundirse.
+            at = new Vector3(place.position.x, TopOf(place, "Acolchado", place.position.y + 0.8f) - dy, place.position.z);
+            rot = place.rotation;
+            return;
+        }
+        // Sentado (Sit: cadera a 0,5 u): la cadera queda 0,12·s sobre el asiento, 0,10 m hacia el respaldo, y de cara al
+        // frente de la silla (su +z local: el respaldo de «Silla_examen» está en −z), no hacia el centro del área.
+        Vector3 seatFr = Flat(place.forward).normalized;
+        Transform seat = FindPart(place, "Asiento");
+        Vector3 c = seat != null ? seat.position : place.position;
+        float hip = TopOf(place, "Asiento", place.position.y + 0.45f) + SitButt * s;
+        at = new Vector3(c.x, hip - SitHip * s - dy, c.z) - seatFr * 0.10f;
+        rot = Quaternion.LookRotation(seatFr);
+    }
+
+    const float SitHip = 0.5f, SitButt = 0.12f;   // Sit: cadera a 0,5 u de la raíz; de la cadera a la nalga, 0,12 u
+
+    static Transform FindPart(Transform place, string prefix)
+    {
+        foreach (Transform t in place.GetComponentsInChildren<Transform>(true)) if (t != place && t.name.StartsWith(prefix)) return t;
+        return null;
+    }
+
+    /// <summary>Altura (mundo) de la cara de arriba de la pieza <paramref name="prefix"/> del mueble, por su renderer (o su
+    /// escala si no lo tiene); <paramref name="fallback"/> si el mueble no la tiene.</summary>
+    static float TopOf(Transform place, string prefix, float fallback)
+    {
+        Transform p = FindPart(place, prefix);
+        if (p == null) return fallback;
+        return p.TryGetComponent(out Renderer r) && r.enabled ? r.bounds.max.y : p.position.y + p.lossyScale.y * 0.5f;
     }
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
