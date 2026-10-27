@@ -20,6 +20,7 @@ public static class MicrocosmosAreaSceneBuilder
         int i = 0;
         foreach (var a in SampleSceneBuilder.MicroAreas)
         {
+            if (SampleSceneBuilder.MicroSceneName(a.key) == MicrocosmosSceneBuilder.SceneName0) continue;   // el de la Sala de Yoga (el río) lo hace BuildScene0
             Vector3 o = new Vector3(6000f + i * 400f, 0f, 6000f);   // no solapa el mundo base ni a Mesopotamia (5000)
             Build(SampleSceneBuilder.MicroSceneName(a.key), a.display, a.tint, a.kind, o, a.areaGo);
             i++;
@@ -31,7 +32,6 @@ public static class MicrocosmosAreaSceneBuilder
     static readonly Dictionary<string, (string date, float hour)> AreaDates = new Dictionary<string, (string, float)>
     {
         ["Cocina"] = ("otoño, la era del fuego (las reencarnaciones)", 19f),         // la brasa de la tribu, al anochecer
-        ["Sala de Yoga"] = ("verano, Paleolítico", 7f),
         ["Huerto"] = ("primavera, los primeros cultivos", 9f),
         [AreaWork.Hospital] = ("verano corto de la taiga, antes del fuego", 5.5f),   // el alba de Ambrosio
         ["Estudio Textil"] = ("otoño, Paleolítico", 15f),

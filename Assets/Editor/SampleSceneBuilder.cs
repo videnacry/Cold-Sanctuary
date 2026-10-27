@@ -3715,15 +3715,19 @@ public static partial class SampleSceneBuilder
     {
         // SALA CÉNTRICA (Berón 2026-10-27): la PLATAFORMA del maestro en el centro y, alrededor, ALFOMBRAS VOLADORAS que son
         // también las ESTERILLAS (2 × 3 m: ofrecen volar o las prácticas de yoga que sabe quien la pisa). Ocupan más que las
-        // esterillas viejas: ocho caben en la sala y el resto va en un ANILLO (plataforma hija a 4 m, como el de los
+        // esterillas viejas: seis caben en la sala y el resto va en un ANILLO (plataforma hija a 4 m, como el de los
         // hospitales), con las cuatro estatuas en sus puntos cardinales. Al anillo se sube en alfombra (es otro «piso»).
         Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         const string yoga = "Sala de Yoga";
         int k = 0;
-        foreach (Vector3 p in new[] { new Vector3(-5.6f, 0f, 4.3f), new Vector3(5.6f, 0f, 4.3f), new Vector3(-5.6f, 0f, -4.3f), new Vector3(5.6f, 0f, -4.3f),
-                                      new Vector3(-5.8f, 0f, 0f), new Vector3(5.8f, 0f, 0f), new Vector3(-2.2f, 0f, 5.2f), new Vector3(2.2f, 0f, 5.2f) })
+        // En la sala, SEIS (3 × 3,6 m cada una), alineadas con las paredes y a 2 m entre sí, de la tarima y del tanque de
+        // virtualización (la esquina +X+Z): dos por cada lado largo y una delante y otra detrás de la tarima. (Antes eran ocho
+        // giradas hacia el centro: se tocaban entre ellas y la de la esquina pisaba el tanque.)
+        float sx = Mathf.Min(5.8f, size.x * 0.5f - 3.0f), fz = Mathf.Min(5.3f, size.y * 0.5f - 2.2f);
+        foreach (Vector3 p in new[] { new Vector3(-sx, 0f, -4.8f), new Vector3(-sx, 0f, 0.2f), new Vector3(sx, 0f, -4.8f), new Vector3(sx, 0f, 0.2f),
+                                      new Vector3(0f, 0f, fz), new Vector3(0f, 0f, -fz) })
         {
-            Quaternion face = Quaternion.LookRotation(new Vector3(-p.x, 0f, -p.z));   // de cara a la plataforma
+            Quaternion face = Quaternion.LookRotation(Mathf.Abs(p.x) > 0.1f ? new Vector3(-p.x, 0f, 0f) : new Vector3(0f, 0f, -p.z));   // de cara a la plataforma
             CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, 1, $"{yoga}#1", $"{yoga} · planta baja", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
         }
         // EL ANILLO: 8 m de ancho, 20 % sobre la sala; alfombras cada ~5 m por su línea central (menos en esquinas y puntos cardinales).
@@ -3740,7 +3744,7 @@ public static partial class SampleSceneBuilder
         }
         Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
         YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo
-        Debug.Log($"[Yoga] {k} alfombras-esterilla (8 en la sala y {k - 8} en el anillo) y las estatuas en los cuatro puntos cardinales.");
+        Debug.Log($"[Yoga] {k} alfombras-esterilla (6 en la sala y {k - 6} en el anillo) y las estatuas en los cuatro puntos cardinales.");
         KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
         KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");
         KitchenProps.C(r, new Vector3(1f, 0.5f, 0.9f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
@@ -4100,7 +4104,8 @@ public static partial class SampleSceneBuilder
         ("TextileStudio_Area",    "Estudio Textil", "Textil",      new Color(0.85f, 0.60f, 0.65f), MissionKind.Channel),
         ("VehicleWorkshop_Area",  "Mecánica",       "Mecanica",    new Color(0.55f, 0.55f, 0.60f), MissionKind.Channel),
     };
-    internal static string MicroSceneName(string key) => "Microcosmos_" + key;
+    // La Sala de Yoga NO tiene un microcosmos genérico: el suyo es el RÍO DE SAKSHI (Berón 2026-10-27), hecho por su builder.
+    internal static string MicroSceneName(string key) => key == "SalaYoga" ? MicrocosmosSceneBuilder.SceneName0 : "Microcosmos_" + key;
 
     static void BuildMeditationContent(Transform parent)
     {
