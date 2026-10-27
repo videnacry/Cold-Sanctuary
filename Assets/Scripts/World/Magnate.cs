@@ -16,6 +16,8 @@ public class Magnate : MonoBehaviour
 {
     [Tooltip("Cada cuántos segundos de juego revisa el avance del grupo y va a ayudar al rezagado.")]
     [Min(1f)] public float teachInterval = 30f;
+    [Tooltip("Una clase por alumno cada tanto (s reales; un día del santuario = 1 h). Antes repetía clase al rezagado cada 30 s y parecía hacer yoga todo el tiempo.")]
+    [Min(0f)] public float classCooldown = 1200f;
     [Tooltip("Radio en el que pacifica (los depredadores dejan de estar 'aware').")]
     [Min(0f)] public float pacifyRadius = 12f;
     [Tooltip("Distancia a la que considera que ya está junto al alumno para enseñar.")]
@@ -32,6 +34,7 @@ public class Magnate : MonoBehaviour
     PacifySpell _pacify;
     float _nextTeach, _nextPacify;
     Anima _student;
+    readonly Dictionary<Anima, float> _taught = new Dictionary<Anima, float>();   // a quién dio clase y cuándo
     SanctuaryOnboarding _newcomer;
     static readonly Collider[] _hits = new Collider[32];
 
@@ -67,6 +70,8 @@ public class Magnate : MonoBehaviour
         if (_newcomer == null) _newcomer = FindNewcomer();
         if (_newcomer != null) { GoPresent(); return; }
 
+        // Dando una clase: se queda en ella (antes salía tras otro alumno a mitad y hacía las posturas andando o volando).
+        if (GetComponent<TeachingSession>() != null) { _student = null; return; }
         if (Time.time >= _nextTeach) { _nextTeach = Time.time + teachInterval; _student = FindLaggard(); }
         if (_student != null) GoTeach();
     }
@@ -194,6 +199,8 @@ public class Magnate : MonoBehaviour
         {
             Anima a = cl.GetComponent<Anima>();
             if (a == null || a == _a || a.death || a.GetComponent<Magnate>() != null) continue;
+            if (FlyingCarpet.Riding(a.gameObject)) continue;   // volando en alfombra no se da clase
+            if (_taught.TryGetValue(a, out float at) && Time.time - at < classCooldown) continue;   // ya tuvo su clase hace poco
             if (!IsMember(a)) continue;   // un recién llegado sin la iniciación de Linduarda aún NO es del santuario
             if (cl.SoulLevels < worstLv) { worstLv = cl.SoulLevels; worst = a; }
         }
@@ -216,6 +223,7 @@ public class Magnate : MonoBehaviour
             PathMover.Of(this).StepToward(_student.transform.position, moveSpeed);   // la guardiana se acerca (por el camino, nadando entre islas)
             return;
         }
+        if (FlyingCarpet.Riding(gameObject)) return;   // ella en una alfombra: primero aterriza
         Teach(_student);
         _student = null;
     }
@@ -241,6 +249,7 @@ public class Magnate : MonoBehaviour
         else                                { builder = () => SunSalutation.Sequence(); learn = "yoga";          label = "el Saludo al Sol"; }
 
         // ENSEÑANZA INTERACTIVA: la Magnate demuestra cada paso, se lo PIDE al alumno y ESPERA a que lo realice.
+        _taught[t] = Time.time;
         TeachingSession.Begin(_a, t, learn, builder);
         CharacterLevel cl = t.GetComponent<CharacterLevel>();
         if (cl != null) cl.GainYogaXp(10f);                          // potencia el avance (marga de Yoga)

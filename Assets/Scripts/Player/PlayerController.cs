@@ -180,6 +180,7 @@ public class PlayerController : MonoBehaviour
                    || _inLesson;
         if (now == _inYoga || CameraManager.Instance == null) return;
         _inYoga = now;
+        if (!now && _anima != null) DailyPoses.Stand().ApplyFinal(_anima);   // acabó: se levanta (el upa-yoga de cuello termina sentado y Kushal seguía así al empujar en el río)
         CameraManager.Instance.SwitchTo(now ? CameraMode.ThirdPerson : CameraManager.Instance.preferredMode, forced: true);
     }
 

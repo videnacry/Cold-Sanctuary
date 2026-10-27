@@ -47,6 +47,7 @@ public class NewcomerInitiator : MonoBehaviour
 
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
+    int _stoodFor = -1;   // paso en el que ya se levantó al acompañado
     int _beat = -1; float _beatEnd, _nextFrame, _aimUntil, _walkUntil, _stepDeadline; bool _frameB; Vector3 _pinAt;
     float _nextReminder, _sentAt = -999f;
     bool _frozePlayer, _camForced;
@@ -143,6 +144,8 @@ public class NewcomerInitiator : MonoBehaviour
     void Escort(Transform p, float dt)
     {
         Hold(p, true);
+        // Se levanta antes de andar (venía sentado del examen o de la clase y lo llevaban así, Berón 2026-10-27).
+        if (_stoodFor != _beat && p.TryGetComponent(out Anima pa)) { _stoodFor = _beat; DailyPoses.Stand().ApplyFinal(pa); }
         Vector3 behind = transform.position - transform.forward * 1.0f + transform.right * 0.4f; behind.y = p.position.y;
         Vector3 d = behind - p.position; d.y = 0f;
         // ANDA detrás (Berón 2026-10-27: antes se le arrastraba como a un muñeco): con su paso, rodeando lo que haya.
