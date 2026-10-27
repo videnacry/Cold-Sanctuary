@@ -66,7 +66,7 @@ internal static class MicrocosmTemplate
     public static void Stamp(GameObject root, MicrocosmSpec s)
     {
         MicroEra me = root.GetComponent<MicroEra>() ?? root.AddComponent<MicroEra>();
-        me.year = s.year; me.place = s.place; me.date = s.date; me.hour = s.hour; me.platform = s.platform;
+        me.year = s.year; me.place = s.place; me.date = s.date; me.hour = s.hour; SanctuaryArea area = GameObject.Find(s.platform)?.GetComponent<SanctuaryArea>(); me.platform = area != null ? area.displayName : s.platform;   // su nombre («Sala de Yoga»), no el del objeto
     }
 
     // ── EL PEDIDO DESDE EL EDITOR: pide los tres datos y crea el microcosmos ─────────────────────────────────────────
