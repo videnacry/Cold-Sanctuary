@@ -151,6 +151,7 @@ public class CarpetPad : MonoBehaviour
         if ((g.transform.position - a.transform.position).sqrMagnitude > 9f) { to = a.transform.position; return false; }   // andar al área
         FlyingCarpet c = a.Summon(g.transform.position);
         if (c == null) return false;
+        Debug.Log($"[Ruta] «{g.name}»: de {a.building} · {a.displayName} hacia {b.building} · {b.displayName} (destino {to}); vuela a {next.displayName}.");
         c.Fly(g, next);
         return true;
     }

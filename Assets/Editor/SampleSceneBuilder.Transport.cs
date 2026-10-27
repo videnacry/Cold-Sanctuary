@@ -154,6 +154,7 @@ public static partial class SampleSceneBuilder
     /// suelo se sube en alfombra. Busca el lado (+Z, −Z, +X, −X) con hielo firme debajo.</summary>
     static void PlaceGroundCarpetAreas()
     {
+        Physics.SyncTransforms();   // el hielo recién construido (y movido) aún no estaba en la física del editor
         int placed = 0;
         foreach (var (bt, bname) in _carpetBuildings)
         {
@@ -171,7 +172,13 @@ public static partial class SampleSceneBuilder
                     if (hit.point.y < -0.3f || Water(hit.collider.transform)) continue;   // agua o fondo del mar
                     spot = hit.point;
                 }
-            if (spot == null) { Debug.LogWarning($"[Transporte] Sin hielo firme cerca de «{bname}» para sus alfombras del suelo."); continue; }
+            if (spot == null)
+            {
+                Vector3 q = bt.position; q.y -= 1.5f;
+                string seen = Physics.Raycast(q, Vector3.down, out RaycastHit h0, 40f, ~0, QueryTriggerInteraction.Ignore) ? $"{h0.collider.name} a {h0.point.y:0.0} m" : "nada";
+                Debug.LogWarning($"[Transporte] Sin hielo firme cerca de «{bname}» para sus alfombras del suelo (debajo: {seen}).");
+                continue;
+            }
             CarpetPad.BuildZone(bt, spot.Value + Vector3.up * 0.05f, bt.rotation, CarpetPad.Kind.Edificio, bname, 0, $"{bname}#0", "Suelo (hielo)", 2);
             placed++;
         }

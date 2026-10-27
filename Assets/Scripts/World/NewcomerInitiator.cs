@@ -293,10 +293,10 @@ public class NewcomerInitiator : MonoBehaviour
         VirtualizationMachine vm = Machine();
         if (vm == null) { _leading.initiated = true; _leading = null; Hold(p, false); Now = Phase.None; return; }
         Vector3 to = vm.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { Escort(p, Time.deltaTime); Step(vm.transform.position); return; }
+        if (to.magnitude > reach + 1.5f) { Escort(p, Time.deltaTime); Step(vm.transform.position); return; }   // la máquina está junto al borde (ya sin barrera): no hace falta pegarse
         Hold(p, false);
         _leading.initiated = true; _leading = null; Now = Phase.None;
-        if (p.GetComponent<PlayerController>() != null && MobWorldLoader.HasInstance)
+        if (p.GetComponent<PlayerController>() != null && MobWorldLoader.Instance != null)   // (Instance lo crea si aún no existe: HasInstance era false si nadie lo había pedido antes)
         {
             Say(o: null, $"Ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", 4f);
             LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);

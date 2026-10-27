@@ -28,6 +28,7 @@ public class NeedsDriver : MonoBehaviour
     void Update()
     {
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
+        if (TryGetComponent(out NewcomerInitiator ini) && ini.InProgress) return;   // iniciando a un recién llegado: sus necesidades esperan
         _next = Time.time + checkEvery;
         foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell) return;   // ya atendiendo una necesidad
 

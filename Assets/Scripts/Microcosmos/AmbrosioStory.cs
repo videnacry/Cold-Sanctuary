@@ -47,6 +47,7 @@ public class AmbrosioStory : MonoBehaviour
     bool _collapsed, _ambrosioFree;
     readonly Dictionary<Transform, Transform> _pushes = new Dictionary<Transform, Transform>();   // quién empuja a quién
     readonly Dictionary<Transform, float> _travel = new Dictionary<Transform, float>();           // metros recorridos
+    readonly Dictionary<Transform, float> _pushTime = new Dictionary<Transform, float>();         // segundos empujado
 
     void Awake() { Instance = this; }
     void OnDestroy() { if (Instance == this) Instance = null; }
@@ -144,6 +145,7 @@ public class AmbrosioStory : MonoBehaviour
         Transform p = PlayerT(); if (p == null) return "sin jugador";
         if (Now == Beat.Predator && _predator != null)
         {
+            if (_predatorPushUntil > 0f && !PlayerPushingPredator) { EndPredatorPush(p); if (_predator == null) return "el depredador se va"; }   // el anterior acabó en este mismo fotograma: cuenta
             if (Near(p, _predator, _predatorReach + 1.8f) && !PlayerPushingPredator) { _predatorPushUntil = Time.time + PredatorPushSeconds; StopPushing(); return "empujas al depredador"; }
             return "acércate al depredador";
         }
@@ -360,10 +362,12 @@ public class AmbrosioStory : MonoBehaviour
             if (old == null || (old == _oldB && _collapsed)) continue;
             if (moveOld && _travel[old] < path)
             {
-                // A EMPUJONES (Berón 2026-10-27: «que los empujes muevan más a las viejas»): en cada empujón, un tirón hacia
-                // delante y casi nada entre uno y otro; de media, lo justo para llegar en tres tramos.
-                float surge = Mathf.Pow(Mathf.Max(0f, Mathf.Sin(Time.time * Mathf.PI * 2f / 1.2f)), 2f) * 4f;
-                float m = Mathf.Min(speed * surge * dt, path - _travel[old]);
+                // A EMPUJONES (Berón 2026-10-27: «que los empujes muevan más a las viejas»): cada empujón (1,2 s) es un tirón
+                // hacia delante y una pausa; de media, lo justo para llegar en tres tramos (exacto, a cualquier velocidad del juego).
+                _pushTime[old] = (_pushTime.TryGetValue(old, out float pt) ? pt : 0f) + dt;
+                float strokes = _pushTime[old] / 1.2f, k = Mathf.Floor(strokes);
+                float target = Mathf.Min(path, speed * 1.2f * (k + Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((strokes - k) * 1.6f))));
+                float m = Mathf.Max(0f, target - _travel[old]);
                 _travel[old] += m;
                 old.position = Ground(old.position + _dir * m) /* (pies en el suelo) */;
             }
@@ -459,20 +463,22 @@ public class AmbrosioStory : MonoBehaviour
             float ph = Mathf.Sin(Time.time * Mathf.PI * 2f / 2.5f);   // empujón lento, de fuerza
             if (Time.time >= _nextBob) { _nextBob = Time.time + 1.25f; Pose(p, true, ph > 0f); }
         }
-        else if (_predatorPushUntil > 0f)   // acaba de terminar un empujón de 10 s
+        else if (_predatorPushUntil > 0f) EndPredatorPush(p);   // acaba de terminar un empujón de 10 s
+    }
+
+    void EndPredatorPush(Transform p)
+    {
+        _predatorPushUntil = 0f; PredatorPushes++;
+        Pose(p, false, false);
+        Debug.Log($"[Ambrosio] Empujón {PredatorPushes}/{PredatorPushesNeeded} al depredador.");
+        Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}");
+        if (PredatorPushes >= PredatorPushesNeeded)
         {
-            _predatorPushUntil = 0f; PredatorPushes++;
-            Pose(p, false, false);
-            Debug.Log($"[Ambrosio] Empujón {PredatorPushes}/{PredatorPushesNeeded} al depredador.");
-            Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}");
-            if (PredatorPushes >= PredatorPushesNeeded)
-            {
-                Say(_ambrosio, "¡Se va volando! Gracias… ¡Volvamos con los viejos!", 6f);
-                Destroy(_predator.gameObject, 4f);
-                _predatorLeaving = _predator; _predator = null;
-                Goal("Empuja a Shanidar hasta la cueva (E junto a él)");
-                Go(Beat.Push3); PushedThisPhase = 0f; _ambrosioFree = true;
-            }
+            Say(_ambrosio, "¡Se va volando! Gracias… ¡Volvamos con los viejos!", 6f);
+            Destroy(_predator.gameObject, 4f);
+            _predatorLeaving = _predator; _predator = null;
+            Goal("Empuja a Shanidar hasta la cueva (E junto a él)");
+            Go(Beat.Push3); PushedThisPhase = 0f; _ambrosioFree = true;
         }
     }
     Transform _predatorLeaving;

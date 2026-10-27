@@ -316,6 +316,8 @@ public class WorkdayDirector : MonoBehaviour
     // El que tenga la misión «Patrulla y raciones a los carnívoros» recibe la conducta de guardia, sea quien sea.
     void Drive(GameObject g, string area, string doing, string missionId, bool alwaysMove = false)
     {
+        NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
+        if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
