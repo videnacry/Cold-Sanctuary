@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 612 tipos._
+_Total: 616 tipos._
 
 
 ## Animals
@@ -299,6 +299,7 @@ _Total: 612 tipos._
 - **FoodItem** (class) — `Assets/Scripts/FoodItem.cs` — Comida que el jugador (u otro sistema) deposita en el suelo.
 - **FormicAcidSpray** (class) — `Assets/Scripts/Transformation/FormicAcidSpray.cs` — Hechizo de ÁCIDO FÓRMICO — defensa AoE de Kushal hormiga (Nivel 1, Microcosmos).
 - **FurnitureSpacing** (class) — `Assets/Scripts/World/FurnitureSpacing.cs` — ESPACIO MÍNIMO ENTRE MUEBLES (Berón 2026-10-22:
+- **GalaxyPortal** (class) — `Assets/Scripts/Microcosmos/GalaxyPortal.cs` — EL PORTAL DE VUELTA AL MESOCOSMOS, como un AGUJERO NEGRO en el centro de una pequeña GALAXIA (Berón 2026-10-27):
 - **GalleryExplorer** (class) — `Assets/Scripts/Control/GalleryExplorer.cs` — EXPLORADOR de las escenas de validación (galería de insectos-humanos, sala de microcosmos):
 - **GameKeys** (class) — `Assets/Scripts/Control/GameKeys.cs` — TECLADO DEL JUEGO:
 - **GardenCrop** (class) — `Assets/Scripts/Farming/GardenCrop.cs` — CULTIVO de bloques:
@@ -317,6 +318,7 @@ _Total: 612 tipos._
 - **GuardBoard** (class) — `Assets/Scripts/World/GuardBoard.cs` — TABLERO DE GUARDIA (F en lo alto de la torre):
 - **GuardTower** (class) — `Assets/Scripts/World/GuardTower.cs` — CASA DEL ÁRBOL DE GUARDIA (docs/spells-suprahechizo-and-thoughts.md §5b):
 - **GuidedTour** (class) — `Assets/Scripts/Kitchen/GuidedTour.cs` — El PASEO guiado de onboarding (docs/kitchen-simulation.md §1).
+- **GymMachineType** (enum) — `Assets/Scripts/World/GymStation.cs` — Los 10 tipos de máquina del gimnasio (docs/gimnasio-maquinas.md):
 - **HashSetHolder** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolder.cs`
 - **HashSetHolderAnimalPopulation** (class) — `Assets/Scripts/UI/FollowingArrays/HashSetHolder/HashSetHolderAnimalPopulation.cs`
 - **HeadLook** (class) — `Assets/Scripts/Virtualization/HeadLook.cs` — Cámara-CABEZA del **modo primera persona** (docs/kitchen-simulation.md §3b).
@@ -514,6 +516,7 @@ _Total: 612 tipos._
 - **RiverCurrentTest** (class) — `Assets/Scripts/RiverCurrentTest.cs` — Test del RÍO (docs/microcosmos-sakshi-origin.md §4, testing-checklist §42), por `TestProbe`:
 - **RootInquiryMission** (class) — `Assets/Scripts/Meditation/RootInquiryMission.cs` — "Buscar la raíz" mission (docs §7/§8):
 - **SafeHaven** (class) — `Assets/Scripts/Compassion/SafeHaven.cs` — DESTINO SEGURO:
+- **SakshiRiverStory** (class) — `Assets/Scripts/Microcosmos/SakshiRiverStory.cs` — EL RÍO DE SAKSHI (docs/microcosmos-sakshi-origin.md):
 - **SanctuaryArea** (class) — `Assets/Scripts/World/SanctuaryArea.cs` — A zone inside Cold Sanctuary.
 - **SanctuaryAreaType** (enum) — `Assets/Scripts/World/SanctuaryAreaType.cs` — All zones in Cold Sanctuary, ordered roughly by progression tier.
 - **SanctuaryDirector** (class) — `Assets/Scripts/World/SanctuaryDirector.cs` — The Magnate's world management component — the brain of the sanctuary's autonomous simulation.
@@ -567,6 +570,7 @@ _Total: 612 tipos._
 - **StockShelf** (class) — `Assets/Scripts/Kitchen/StockShelf.cs` — ESTANTE a abastecer (misiones de INVENTARIO, docs/sanctuary1 §4):
 - **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
 - **StoryMission** (class) — `Assets/Scripts/Mission/StoryMission.cs` — MISIÓN DE HISTORIA POR PASOS (docs/microcosmos-historias.md):
+- **StorySubtitle** (class) — `Assets/Scripts/UI/StorySubtitle.cs` — SUBTÍTULOS DE LAS HISTORIAS (OnGUI):
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
