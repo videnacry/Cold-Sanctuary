@@ -47,7 +47,7 @@ public class NewcomerInitiator : MonoBehaviour
 
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
-    int _beat = -1; float _beatEnd, _nextFrame; bool _frameB;
+    int _beat = -1; float _beatEnd, _nextFrame, _aimUntil; bool _frameB; Vector3 _pinAt;
     float _nextReminder, _sentAt = -999f;
     bool _frozePlayer, _camForced;
     CameraMode _camBefore;
@@ -112,6 +112,16 @@ public class NewcomerInitiator : MonoBehaviour
         Accompany(o);
     }
 
+    // Mientras hace una prueba se queda en su sitio, de cara al examinado: su jornada, su navegación o los impulsos la iban
+    // paseando por la sala a mitad del análisis.
+    void LateUpdate()
+    {
+        if (_exam == null || Now != Phase.Perform) return;
+        Vector3 d = _pinAt - transform.position; d.y = 0f;
+        if (d.sqrMagnitude > 0.0025f) WorkdayDirector.Teleport(transform, new Vector3(_pinAt.x, transform.position.y, _pinAt.z));
+        transform.rotation = Quaternion.LookRotation(Flat(_exam.transform.position - transform.position));
+    }
+
     // ── 1. IR HACIA ÉL Y LLEVARLO ───────────────────────────────────────────────────────────────────────────────
     void StartExam(SanctuaryOnboarding o)
     {
@@ -163,7 +173,7 @@ public class NewcomerInitiator : MonoBehaviour
             ArrivalExam.Hold(p.gameObject, b.patientTool, b.patientBone, "Herramienta_paciente");
             Say(_exam, b.line, b.seconds);
             Debug.Log($"[Iniciación] {Who} · {b.title} ({b.seconds:0} s, en «{b.place}»; protege a: {b.protects}).");
-            Now = Phase.Perform; _beatEnd = Time.time + b.seconds; _nextFrame = 0f; _frameB = false;
+            Now = Phase.Perform; _beatEnd = Time.time + b.seconds; _nextFrame = 0f; _frameB = false; _aimUntil = Time.time + 0.6f; _pinAt = transform.position;
             return;
         }
         // Phase.Perform: el gesto, alternando las dos posturas.
@@ -174,11 +184,11 @@ public class NewcomerInitiator : MonoBehaviour
             if (pa != null) (_frameB ? b.ptB : b.ptA)?.Invoke().ApplyFinal(pa);
             _frameB = !_frameB;
         }
-        // En 1.ª persona se ve el gesto: la mirada, a cada fotograma (justo al sentarlo la cámara aún no está en su sitio y
-        // una sola llamada le dejaba mirando al techo hasta el siguiente gesto).
+        // En 1.ª persona se ve el gesto: al empezar cada prueba, la mirada va a su cara (unos fotogramas, mientras la cámara se
+        // asienta tras sentarlo); después los ojos-cámara son del jugador, que mira donde quiera (PlayerController: ojos y cabeza).
         PlayerController pc = p.GetComponent<PlayerController>();
         EyesAtHead(pc, b.patient != ArrivalExam.Spot.Stand);
-        if (pc != null) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
+        if (pc != null && Time.time < _aimUntil) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
         if (Time.time < _beatEnd) return;
         HealthRecord hr = _exam.GetComponent<HealthRecord>();
         if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
