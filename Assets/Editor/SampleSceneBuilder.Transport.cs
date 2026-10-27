@@ -147,6 +147,10 @@ public static partial class SampleSceneBuilder
                     float edge = Mathf.Min(hz - Mathf.Abs(z), hx - Mathf.Abs(x));   // cuanto más pegado a un borde, menos estorba el paso
                     if (n < bestHits || (n == bestHits && edge < bestEdge)) { bestHits = n; bestEdge = edge; best = w; }
                 }
+        // A ras del SUELO de verdad del piso (el suelo del área va algo por encima de su origen: si no, quedaba hundida).
+        Physics.SyncTransforms();
+        foreach (RaycastHit h in Physics.RaycastAll(best + Vector3.up * 3f, Vector3.down, 4.5f, ~0, QueryTriggerInteraction.Ignore))
+            if (h.point.y > best.y - 0.5f && h.point.y < best.y + 2.5f && h.collider.GetComponentInParent<CarpetPad>() == null) { best.y = Mathf.Max(best.y, h.point.y + 0.04f); }
         return best;
     }
 

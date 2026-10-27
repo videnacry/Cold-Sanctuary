@@ -141,7 +141,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
                 bool any = false; Bounds bb = default;
                 foreach (Renderer rr in sa.GetComponentsInChildren<Renderer>())
                 {
-                    if (rr.GetComponentInParent<Anima>() != null) continue;
+                    if (rr.GetComponentInParent<Anima>() != null || rr.GetComponentInParent<FlyingCarpet>() != null) continue;   // (las alfombras vuelan a otros edificios)
                     if (!any) { bb = rr.bounds; any = true; } else bb.Encapsulate(rr.bounds);
                 }
                 if (any) plats.Add(bb);
