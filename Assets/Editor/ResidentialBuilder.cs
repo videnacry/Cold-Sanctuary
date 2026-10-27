@@ -104,10 +104,10 @@ public static class ResidentialBuilder
         Solid(t, new Vector3(0f, 0.2f, 0f), new Vector3(W - 0.4f, 0.1f, D - 0.4f), marbleDark, "Estilobato");
         // Cama, mesilla y armario (sin baño: se usan los aseos comunes; sin lámpara ni estante: no hay techo ni paredes).
         Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-1.8f, 0.25f, 1.2f));
-        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(1.4f, 0.3f, 2.1f), WoodDark, 0f, "Armazon");
-        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(1.3f, 0.16f, 2f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
-        KitchenProps.C(bed, new Vector3(0f, 0.52f, 0.2f), new Vector3(1.34f, 0.06f, 1.3f), Blanket(ownerIdx), 0f, "Manta");
-        KitchenProps.C(bed, new Vector3(0f, 0.55f, 0.8f), new Vector3(0.9f, 0.1f, 0.3f), Color.white, 0f, "Almohada");
+        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(1.5f, 0.3f, 2.2f), WoodDark, 0f, "Armazon");   // colchón de 2,10 × 1,40 (docs/medidas-muebles.md)
+        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(1.4f, 0.16f, 2.1f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
+        KitchenProps.C(bed, new Vector3(0f, 0.52f, 0.2f), new Vector3(1.44f, 0.06f, 1.3f), Blanket(ownerIdx), 0f, "Manta");
+        KitchenProps.C(bed, new Vector3(0f, 0.55f, 0.85f), new Vector3(0.9f, 0.1f, 0.3f), Color.white, 0f, "Almohada");
         KitchenProps.C(t, new Vector3(-0.6f, 0.55f, 2.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");
         KitchenProps.C(t, new Vector3(0.9f, 1.25f, 2.45f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");
         Bedroom room = t.gameObject.AddComponent<Bedroom>();

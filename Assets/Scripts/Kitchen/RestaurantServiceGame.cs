@@ -112,7 +112,10 @@ public class RestaurantServiceGame : MonoBehaviour
             g.exit = Mark(go.transform, "Salida", area.TransformPoint(new Vector3(-1.5f, 0.15f, hz - 1.5f)));
             g.waiting = Mark(go.transform, "Cola", pf + pass.forward * 2.2f); g.waiting.rotation = pass.rotation;
         }
-        g.seats = seats.ToArray(); g.seatHeight = 0.45f; g.plateAhead = 0.55f; g.plateUp = 0.32f;
+        // seatHeight = del centro del «Asiento» (a 0,41; cara de arriba a 0,45) a la raíz del comensal sentado: Sit pone la
+        // cadera a 0,5 u y la nalga queda 0,12 u por debajo, así que con s ≈ 0,92 la raíz va a 0,45 − 0,38·s ≈ 0,10 del suelo.
+        // El plato sigue a 0,77 (0,41 + 0,36), sobre el mantel.
+        g.seats = seats.ToArray(); g.seatHeight = 0.31f; g.plateAhead = 0.55f; g.plateUp = 0.36f;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard");
         g.plateMat = new Material(sh) { color = Color.white }; g.foodMat = new Material(sh) { color = new Color(0.8f, 0.45f, 0.25f) };
         // El fogón y la campana del pase, en los sitios reales.

@@ -70,9 +70,9 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(t, seat + q * new Vector3(0.18f, 0.84f, -0.18f), new Vector3(0.06f, 0.1f, 0.06f), new Color(0.85f, 0.95f, 1f, 0.35f), 0f, "Copa");
                 // Silla tapizada
                 Vector3 cp = q * new Vector3(0f, 0f, 0.95f);
-                KitchenProps.C(t, cp + new Vector3(0f, 0.45f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");
-                KitchenProps.C(t, cp + q * new Vector3(0f, 0.8f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
-                for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.2f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.4f, 0.04f), wood, 0f, "Pata_silla");
+                KitchenProps.C(t, cp + new Vector3(0f, 0.41f, 0f), new Vector3(0.45f, 0.08f, 0.45f), velvet, s * 90f, "Asiento");   // asiento a 0,45 m
+                KitchenProps.C(t, cp + q * new Vector3(0f, 0.76f, 0.2f), new Vector3(0.45f, 0.65f, 0.06f), velvet, s * 90f, "Respaldo");
+                for (int l = 0; l < 4; l++) KitchenProps.C(t, cp + q * new Vector3((l % 2 - 0.5f) * 0.38f, 0.185f, (l / 2 - 0.5f) * 0.38f), new Vector3(0.04f, 0.37f, 0.04f), wood, 0f, "Pata_silla");
             }
             KitchenProps.C(t, new Vector3(0f, 0.85f, 0f), new Vector3(0.05f, 0.14f, 0.05f), new Color(1f, 0.95f, 0.85f), 0f, "Vela");
             KitchenProps.C(t, new Vector3(0f, 0.94f, 0f), new Vector3(0.02f, 0.04f, 0.02f), new Color(1f, 0.75f, 0.3f), 0f, "Llama_vela");

@@ -96,7 +96,7 @@ public static class VirtualInPlace
         void Perform(ArrivalExam.Beat b, Transform place)
         {
             follow.enabled = false;
-            ArrivalExam.PatientSpot(place, b.patient, out Vector3 at, out Quaternion rot);
+            ArrivalExam.PatientSpot(place, b.patient, out Vector3 at, out Quaternion rot, tourist.transform);
             tourist.transform.SetPositionAndRotation(at, rot);
             ClonePose.Apply(body, b.ptA());
             ArrivalExam.Hold(tourist, b.patientTool, b.patientBone, "Herramienta_paciente");

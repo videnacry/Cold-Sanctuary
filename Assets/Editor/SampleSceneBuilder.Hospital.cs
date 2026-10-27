@@ -82,10 +82,12 @@ public static partial class SampleSceneBuilder
         Aseos(r, new Vector3(-14f, 0f, 12.3f), 180f);
         Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-13.6f, 0f, 5.6f), 90f);
         Color seatC = new Color(0.35f, 0.55f, 0.65f);
-        KitchenProps.C(exam, new Vector3(0f, 0.45f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
-        KitchenProps.C(exam, new Vector3(0f, 0.85f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
-        KitchenProps.C(exam, new Vector3(0.36f, 0.68f, 0.05f), new Vector3(0.1f, 0.06f, 0.6f), seatC, 0f, "Reposabrazos");
-        KitchenProps.C(exam, new Vector3(0f, 0.2f, 0f), new Vector3(0.08f, 0.4f, 0.08f), KitchenProps.Steel, 0f, "Pie");
+        // Asiento a 0,45 m (docs/medidas-muebles.md). Su frente es +z local (el respaldo está en −z): hacia ahí mira el
+        // paciente sentado (ArrivalExam.PatientSpot lee la altura del «Asiento_examen»).
+        KitchenProps.C(exam, new Vector3(0f, 0.4f, 0f), new Vector3(0.6f, 0.1f, 0.6f), seatC, 0f, "Asiento_examen");
+        KitchenProps.C(exam, new Vector3(0f, 0.8f, -0.27f), new Vector3(0.6f, 0.75f, 0.08f), seatC, 0f, "Respaldo");
+        KitchenProps.C(exam, new Vector3(0.36f, 0.63f, 0.05f), new Vector3(0.1f, 0.06f, 0.6f), seatC, 0f, "Reposabrazos");
+        KitchenProps.C(exam, new Vector3(0f, 0.175f, 0f), new Vector3(0.08f, 0.35f, 0.08f), KitchenProps.Steel, 0f, "Pie");
         KitchenProps.C(exam, new Vector3(0.75f, 0.45f, 0.3f), new Vector3(0.4f, 0.9f, 0.4f), KitchenProps.Steel, 0f, "Carrito_examen");   // tensiómetro, linterna, tubos y vacunas
         Label(exam, "Silla de exámenes (iniciación)", 1.4f);
         Station(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-9.8f, 0f, 5.6f), 180f), HospitalService.Consulta, "Consulta 1 (mesa del médico)", 1.5f, true);
@@ -119,9 +121,9 @@ public static partial class SampleSceneBuilder
         Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(5.6f, 0f, 11.2f));
         for (int i = 0; i < 10; i++)
         {
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.45f, -(i / 5) * 1.2f), new Vector3(0.5f, 0.08f, 0.5f), new Color(0.45f, 0.62f, 0.72f), 0f, "Silla");
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.75f, -(i / 5) * 1.2f + 0.24f), new Vector3(0.5f, 0.55f, 0.06f), new Color(0.45f, 0.62f, 0.72f), 0f, "Respaldo");
-            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.22f, -(i / 5) * 1.2f), new Vector3(0.06f, 0.44f, 0.06f), KitchenProps.Steel, 0f, "Pata");
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.41f, -(i / 5) * 1.2f), new Vector3(0.5f, 0.08f, 0.5f), new Color(0.45f, 0.62f, 0.72f), 0f, "Silla");   // asiento a 0,45 m
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.71f, -(i / 5) * 1.2f + 0.24f), new Vector3(0.5f, 0.55f, 0.06f), new Color(0.45f, 0.62f, 0.72f), 0f, "Respaldo");
+            KitchenProps.C(wait, new Vector3(-1.8f + (i % 5) * 0.9f, 0.185f, -(i / 5) * 1.2f), new Vector3(0.06f, 0.37f, 0.06f), KitchenProps.Steel, 0f, "Pata");
         }
         Label(wait, "Sala de espera", 1.5f);
         Station(InfirmaryProps.PharmacyShelf(r, "Farmacia", new Vector3(10f, 0f, 12.2f), 0f), HospitalService.Farmacia, "Farmacia", 2.3f, false, new Vector3(0f, 0f, -1.1f));

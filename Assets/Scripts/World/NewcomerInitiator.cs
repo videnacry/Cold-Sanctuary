@@ -207,7 +207,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Put(Transform p, Anima pa, Transform place, ArrivalExam.Spot spot)
     {
         Hold(p, true);
-        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot);
+        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot, p);
         WorkdayDirector.Teleport(p, at);
         p.rotation = rot;
         if (pa != null) (spot == ArrivalExam.Spot.Sit ? DailyPoses.Sit() : spot == ArrivalExam.Spot.Lie ? DailyPoses.Lie() : DailyPoses.Stand()).ApplyFinal(pa);

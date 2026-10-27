@@ -3729,15 +3729,17 @@ public static partial class SampleSceneBuilder
         Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         Color[] mats = { new Color(0.72f, 0.62f, 0.86f), new Color(0.62f, 0.78f, 0.86f), new Color(0.86f, 0.7f, 0.72f), new Color(0.7f, 0.84f, 0.7f) };
         int k = 0;
-        (int n, float rad)[] rings = { (12, 3.4f), (18, 5.4f) };
+        // Esterillas de 2,00 × 0,66 m (docs/medidas-muebles.md: estatura + 15 cm). El anillo de fuera pasa de 5,4 a 6,2 m: en
+        // el eje corto (×0,82) las de 2 m se solapaban con las de dentro; ahora quedan ~0,3 m entre las puntas.
+        (int n, float rad)[] rings = { (12, 3.4f), (18, 6.2f) };
         foreach (var ring in rings)
             for (int i = 0; i < ring.n; i++, k++)
             {
                 float a = (i + (ring.n == 18 ? 0.5f : 0f)) / ring.n * Mathf.PI * 2f;
                 Vector3 p = new Vector3(Mathf.Cos(a) * ring.rad, 0.012f, Mathf.Sin(a) * ring.rad * 0.82f);   // algo achatado: la sala es más ancha que honda
                 float yaw = Mathf.Atan2(-p.x, -p.z) * Mathf.Rad2Deg;   // de cara al centro
-                Transform mat = KitchenProps.C(r, p, new Vector3(0.7f, 0.02f, 1.8f), mats[k % mats.Length], yaw, $"Esterilla_{k + 1}");
-                KitchenProps.C(r, p + Quaternion.Euler(0f, yaw, 0f) * new Vector3(0.45f, 0.06f, -0.75f), new Vector3(0.3f, 0.12f, 0.3f), new Color(0.9f, 0.85f, 0.75f), yaw + 45f, "Cojin");
+                Transform mat = KitchenProps.C(r, p, new Vector3(0.66f, 0.02f, 2f), mats[k % mats.Length], yaw, $"Esterilla_{k + 1}");
+                KitchenProps.C(r, p + Quaternion.Euler(0f, yaw, 0f) * new Vector3(0.45f, 0.06f, -0.85f), new Vector3(0.3f, 0.12f, 0.3f), new Color(0.9f, 0.85f, 0.75f), yaw + 45f, "Cojin");
             }
         KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
         KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");
