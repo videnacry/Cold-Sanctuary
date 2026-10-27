@@ -90,7 +90,13 @@ public class Magnate : MonoBehaviour
     // recién llegado NO es del santuario y ella no lo tiene en cuenta para enseñar al rezagado.
     Anima _initiating;
     float _logAt;
-    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = a la cocina
+    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = al tanque · 4 = en el río · 5 = a la cocina
+    public const string RiverMicrocosmos = "Microcosmos_Scene0_SakshiRio";
+    VirtualizationMachine YogaMachine()
+    {
+        foreach (VirtualizationMachine vm in FindObjectsByType<VirtualizationMachine>(FindObjectsSortMode.None)) if (vm.areaName == "Sala de Yoga") return vm;
+        return null;
+    }
 
     void GoPresent()
     {
@@ -131,9 +137,29 @@ public class Magnate : MonoBehaviour
                 return;
             case 2:   // clase interactiva en curso
                 if (TeachingSession.For(t) != null) return;
-                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
-                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: ahora va a la cocina a aprender un oficio.");
+                // Tras la clase, su PRIMER microcosmos de la sala de yoga: el río de Sakshi (Berón 2026-10-27). Ella lo lleva al tanque.
+                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: lo lleva al tanque de la sala de yoga (el río de Sakshi).");
                 _initPhase = 3;
+                return;
+            case 3:   // al tanque de la sala de yoga
+                {
+                    VirtualizationMachine vm = YogaMachine();
+                    if (vm == null || !Application.CanStreamedLevelBeLoaded(RiverMicrocosmos)) { _initPhase = 5; return; }
+                    Vector3 to = vm.transform.position - t.transform.position; to.y = 0f;
+                    if (to.magnitude > 4f) { PathMover.Of(this).StepToward(vm.transform.position, moveSpeed * 0.6f); PathMover.Of(t).StepToward(vm.transform.position, moveSpeed * 0.6f); return; }
+                    PlaneMessenger.Send("La Magnate", "Ahora, tu primer viaje desde esta sala: al río. Allí hay alguien que te necesita.", 6f);
+                    vm.EnterWithTank(t.transform, RiverMicrocosmos);
+                    _initPhase = 4; _logAt = Time.time + 8f;
+                    return;
+                }
+            case 4:   // en el río: espera a que vuelva
+                if (Time.time < _logAt || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;
+                _initPhase = 5;
+                return;
+            case 5:   // y luego a la cocina, a aprender un oficio
+                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
+                Debug.Log($"[Magnate] «{t.name}» vuelve del río: ahora va a la cocina a aprender un oficio.");
+                _initPhase = 6;
                 _newcomer = null; _initiating = null;
                 return;
         }
