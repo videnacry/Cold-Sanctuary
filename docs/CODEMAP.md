@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 616 tipos._
+_Total: 617 tipos._
 
 
 ## Animals
@@ -571,6 +571,7 @@ _Total: 616 tipos._
 - **StockSpell** (class) — `Assets/Scripts/Kitchen/StockSpell.cs` — HECHIZO DE ABASTECER (inventario, docs/sanctuary1 §4):
 - **StoryMission** (class) — `Assets/Scripts/Mission/StoryMission.cs` — MISIÓN DE HISTORIA POR PASOS (docs/microcosmos-historias.md):
 - **StorySubtitle** (class) — `Assets/Scripts/UI/StorySubtitle.cs` — SUBTÍTULOS DE LAS HISTORIAS (OnGUI):
+- **SunPhase** (enum) — `Assets/Scripts/Time/SolarPosition.cs`
 - **SupplySpell** (class) — `Assets/Scripts/Transformation/SupplySpell.cs` — Hechizo de ABASTECIMIENTO / "trasplante" (docs/magic-metabolism §16).
 - **SurfaceWalker** (class) — `Assets/Scripts/Avatar/SurfaceWalker.cs` — Locomotion for the avatar-robot inside the Microcosmos (docs §4, Eje A).
 - **SwarmKind** (enum) — `Assets/Scripts/World/Swarm.cs` — Qué CRIATURA es el enjambre — define qué come y quién lo come (su dieta propia):
