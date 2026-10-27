@@ -123,8 +123,10 @@ public class Magnate : MonoBehaviour
                 if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f)
                 {
                     _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí
-                    Teach(t);
-                    _initPhase = 2;
+                    // Su PRIMERA clase, OBLIGADA (documentado: docs/novela.md, tras el microcosmos, «5. Sala de yoga»): upa-yoga de
+                    // cuello, paso a paso, aunque esté cansado o haya otra clase; no se va a la cocina sin hacerla.
+                    Teach(t, onboarding: true);
+                    if (TeachingSession.For(t) != null) _initPhase = 2;
                 }
                 return;
             case 2:   // clase interactiva en curso
@@ -193,13 +195,16 @@ public class Magnate : MonoBehaviour
     }
 
     // Enseñar: primero mira si le falta algo vital; si no, le da el RECUERDO del yoga + el Saludo al Sol + XP/ánimo.
-    void Teach(Anima t)
+    void Teach(Anima t, bool onboarding = false)
     {
-        if (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f))
+        if (!onboarding && (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f)))
         { Debug.Log($"[Magnate] «{t.name}» necesita comer/descansar antes de aprender."); return; }
 
         // Ya hay una clase en curso: no se reinicia ni se apila (la TeachingSession se destruye al terminar).
-        if (GetComponent<TeachingSession>() != null) return;
+        // La PRIMERA clase del recién llegado (iniciación) va antes que cualquier otra: la que hubiera, se deja para luego.
+        TeachingSession busy = GetComponent<TeachingSession>();
+        if (busy != null && onboarding && TeachingSession.For(t) == null) { Destroy(busy); busy = null; }
+        if (busy != null) return;
 
         // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; luego Yoga Namaskar; luego el Saludo al Sol.
         // (El Grimoire se aprende al COMPLETAR la lección, en TeachingSession.Finish, no al empezarla.)

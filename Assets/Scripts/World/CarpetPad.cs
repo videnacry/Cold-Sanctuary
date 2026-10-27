@@ -40,7 +40,7 @@ public class CarpetPad : MonoBehaviour
         if (other == null || other == this) return false;
         switch (kind)
         {
-            case Kind.Edificio: return other.kind == Kind.Edificio && other.building == building;
+            case Kind.Edificio: return other.kind == Kind.Edificio && other.building == building && other.surface != surface;   // (no a otra esterilla del mismo piso)
             case Kind.Santuario: return other.kind == Kind.Santuario;
             case Kind.Residencia: return other.kind == Kind.Habitacion;
             default: return other.kind == Kind.Residencia;
@@ -55,7 +55,9 @@ public class CarpetPad : MonoBehaviour
     public List<CarpetPad> Destinations()
     {
         var l = new List<CarpetPad>();
-        foreach (CarpetPad p in All) if (FliesTo(p)) l.Add(p);
+        // Un destino por PISO (en la sala de yoga cada esterilla es una alfombra: no se lista cada una).
+        var seen = new HashSet<string>();
+        foreach (CarpetPad p in All) if (FliesTo(p) && seen.Add(p.surface)) l.Add(p);
         l.Sort((a, b) => a.floor != b.floor && kind == Kind.Edificio ? a.floor.CompareTo(b.floor) : string.CompareOrdinal(a.displayName, b.displayName));
         return l;
     }

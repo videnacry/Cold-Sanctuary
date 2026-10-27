@@ -123,6 +123,7 @@ public static partial class SampleSceneBuilder
                     zones += 2;
                     continue;
                 }
+                if (System.Array.Exists(Object.FindObjectsByType<CarpetPad>(FindObjectsSortMode.None), c => c.surface == surf)) { zones++; continue; }   // ya tiene sus alfombras (las esterillas de la sala de yoga)
                 Vector3 at = FreeSpot(f, fs, all, out int hits);
                 CarpetPad pad = CarpetPad.BuildZone(f, at, f.rotation, CarpetPad.Kind.Edificio, bname, i + 1, surf, fname, 2);
                 all.Add(new Bounds(at + Vector3.up * 1.2f, new Vector3(ZoneW, 2.2f, ZoneD)));

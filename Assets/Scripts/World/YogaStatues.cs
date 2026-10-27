@@ -33,6 +33,17 @@ public static class YogaStatues
         foreach (Transform s in root) { Vector3 d = -s.localPosition; d.y = 0f; if (d.sqrMagnitude > 0.01f) s.localRotation = Quaternion.LookRotation(d); }
     }
 
+    /// <summary>Las cuatro estatuas en los PUNTOS CARDINALES (a <paramref name="ex"/> por ±X y <paramref name="ez"/> por ±Z, en el
+    /// anillo de la sala de yoga), mirando a la plataforma central.</summary>
+    public static void BuildCardinal(Transform root, float ex, float ez)
+    {
+        Patanjali(root, new Vector3(0f, 0f, ez));
+        Buddha(root, new Vector3(ex, 0f, 0f));
+        Aum(root, new Vector3(0f, 0f, -ez));
+        Shiva(root, new Vector3(-ex, 0f, 0f));
+        foreach (Transform s in root) { Vector3 d = -s.localPosition; d.y = 0f; if (d.sqrMagnitude > 0.01f) s.localRotation = Quaternion.LookRotation(d); }
+    }
+
     static Transform Root(Transform parent, string name, Vector3 pos, string label, float labelH)
     {
         Transform t = new GameObject(name).transform; t.SetParent(parent, false); t.localPosition = pos;

@@ -37,30 +37,51 @@ public class FlyingCarpet : MonoBehaviour
         var dests = pad != null ? pad.Destinations() : new List<CarpetPad>();
         var opts = new List<string>();
         if (arrived) opts.Add("Bajarse aquí");
-        bool yoga = pad != null && pad.kind == CarpetPad.Kind.Habitacion && !arrived;   // la alfombra de casa es también esterilla
-        if (yoga) opts.Add("Hacer yoga aquí (Saludo al Sol)");
+        // Cada alfombra es también una ESTERILLA (Berón 2026-10-27): ofrece las prácticas de yoga que sabe quien la pisa (su
+        // grimorio: upa-yoga, yoga namaskar, saludo al sol, ashtanga…). Si no sabe ninguna, solo volar.
+        var yogas = arrived ? new List<YogaSession>() : KnownYoga(who);
+        foreach (YogaSession y in yogas) opts.Add($"Hacer yoga aquí: {y.name}");
         foreach (CarpetPad p in dests) opts.Add($"Volar a: {p.displayName}");
-        int off = (arrived ? 1 : 0) + (yoga ? 1 : 0);
+        int off = (arrived ? 1 : 0) + yogas.Count;
         string title = pad == null ? "Alfombra voladora" : pad.kind == CarpetPad.Kind.Edificio ? $"Alfombra de {pad.building} · ¿a qué piso?"
             : pad.kind == CarpetPad.Kind.Santuario ? "Alfombra del santuario · ¿a qué edificio?" : pad.kind == CarpetPad.Kind.Residencia ? "Alfombra · ¿a qué habitación?" : "Tu alfombra";
         ChoiceDialog.Show(arrived ? $"Has llegado a {pad?.displayName}" : title, opts.ToArray(),
             i =>
             {
+                int y = i - (arrived ? 1 : 0);
                 if (i >= off) Fly(who, dests[i - off]);
-                else if (yoga && i == 0) { Yoga(who); _ignoreUntil = Time.time + 60f; }
+                else if (y >= 0 && y < yogas.Count) { Yoga(who, yogas[y]); _ignoreUntil = Time.time + 60f; }
                 else _ignoreUntil = Time.time + 2f;
             },
             () => _ignoreUntil = Time.time + 2f, transform, 3.5f);   // alejarse lo cierra
     }
 
-    // Yoga en casa: sobre la alfombra, el Saludo al Sol (como el hechizo `yoga`).
-    void Yoga(GameObject who)
+    // Hechizo de cada práctica (SpellCatalog): saberlo = poder hacerla en la alfombra.
+    static readonly (string session, string spell)[] YogaSpells =
     {
-        Anima a = who.GetComponent<Anima>(); if (a == null) return;
+        ("Upa-yoga de cuello", "upa-yoga"), ("Yoga Namaskar", "yoga-namaskar"), ("Saludo al Sol", "yoga"), ("Ashtanga Primaria", "ashtanga-primaria"),
+    };
+
+    /// <summary>Las prácticas de yoga que sabe <paramref name="who"/> (según su grimorio), en orden de aprendizaje.</summary>
+    public static List<YogaSession> KnownYoga(GameObject who)
+    {
+        var l = new List<YogaSession>();
+        Grimoire g = who != null ? who.GetComponent<Grimoire>() : null;
+        if (g == null) return l;
+        foreach (var (session, spell) in YogaSpells)
+            if (g.Knows(spell)) { YogaSession s = YogaLibrary.Find(session); if (s != null) l.Add(s); }
+        return l;
+    }
+
+    // Yoga sobre la alfombra-esterilla: la práctica elegida, paso a paso (como el hechizo `yoga`).
+    void Yoga(GameObject who, YogaSession session)
+    {
+        Anima a = who.GetComponent<Anima>(); if (a == null || session == null) return;
         if (!who.TryGetComponent(out ActionQueue q)) q = who.AddComponent<ActionQueue>();
-        WorkdayDirector.Teleport(who.transform, transform.position + Vector3.up * 0.1f);
-        foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueuePlayer(s);
-        Debug.Log($"[Alfombra] «{who.name}» hace el Saludo al Sol en su alfombra-esterilla.");
+        WorkdayDirector.Teleport(who.transform, transform.position + Vector3.up * 0.05f);
+        who.transform.rotation = transform.rotation;
+        foreach (QueuedSpell s in session.Build()) q.EnqueuePlayer(s);
+        Debug.Log($"[Alfombra] «{who.name}» hace «{session.name}» en la alfombra-esterilla.");
     }
 
     /// <summary>Lleva a <paramref name="who"/> sentado hasta la pista <paramref name="to"/>.</summary>
