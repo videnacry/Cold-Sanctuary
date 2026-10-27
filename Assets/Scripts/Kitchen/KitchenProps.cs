@@ -50,6 +50,14 @@ public static class KitchenProps
     }
 
     public static Transform C(Transform parent, Vector3 pos, Vector3 size, Color c, float yaw = 0f, string name = "cubo")
+        => C(parent, pos, size, c, Quaternion.Euler(0f, yaw, 0f), name);
+
+    /// <summary>Igual, con giro COMPLETO (Euler X, Y, Z locales): para inclinar piezas (respaldos reclinados, raíles a 45°…).</summary>
+    public static Transform C(Transform parent, Vector3 pos, Vector3 size, Color c, Vector3 euler, string name = "cubo")
+        => C(parent, pos, size, c, Quaternion.Euler(euler), name);
+
+    /// <summary>Igual, con el giro local dado como cuaternión.</summary>
+    public static Transform C(Transform parent, Vector3 pos, Vector3 size, Color c, Quaternion rotation, string name = "cubo")
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name;
@@ -57,7 +65,7 @@ public static class KitchenProps
         if (Application.isPlaying) Object.Destroy(col); else Object.DestroyImmediate(col);
         g.transform.SetParent(parent, false);
         g.transform.localPosition = pos;
-        g.transform.localRotation = Quaternion.Euler(0f, yaw, 0f);
+        g.transform.localRotation = rotation;
         g.transform.localScale = size;
         g.GetComponent<Renderer>().sharedMaterial = Mat(c);
         return g.transform;
