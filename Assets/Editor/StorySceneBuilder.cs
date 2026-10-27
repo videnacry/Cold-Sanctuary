@@ -25,13 +25,24 @@ public static class StorySceneBuilder
         ("AtomicPlant_Area",     "Alejandría",  "Microcosmos_Eratostenes", new Color(0.8f, 0.75f, 0.55f), new System.Func<Transform, int>(Eratosthenes)),
     };
 
+    // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
+    static readonly Dictionary<string, (string date, float hour)> Dates = new Dictionary<string, (string, float)>
+    {
+        ["Patanjali"] = ("invierno seco, s. II a. C.", 6.5f),                 // la práctica, al amanecer
+        ["Tregua 1914"] = ("25 de diciembre de 1914", 10f),                     // la mañana de Navidad en tierra de nadie
+        ["Escútari"] = ("noviembre de 1854", 18.5f),                           // las rondas al caer la tarde (la dama de la lámpara)
+        ["Kapilavastu"] = ("otoño, tras el monzón, s. V a. C.", 9f),
+        ["Dayton"] = ("17 de diciembre de 1903", 10.58f),                      // el primer vuelo: 10:35
+        ["Alejandría"] = ("solsticio de verano, ~240 a. C.", 12f),            // el mediodía del pozo de Siene
+    };
+
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias")]
     public static void BuildAll()
     {
         int i = 0;
         foreach (var s in Stories)
         {
-            try { MicrocosmosAreaSceneBuilder.BuildStoryScene(s.areaGo, s.display, s.scene, s.tint, new Vector3(6000f + i * 900f, 0f, 12500f), s.story); }
+            try { MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i * 900f, 0f, 12500f)); }
             catch (System.Exception e) { Debug.LogWarning($"[Historias] No se pudo generar {s.scene}: {e.Message}"); }
             i++;
         }

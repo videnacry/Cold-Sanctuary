@@ -15,7 +15,7 @@ public static class PhysicsSceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build Planta Atómica (Newton, Curie, Einstein)")]
     public static void BuildAll()
     {
-        MicrocosmosAreaSceneBuilder.BuildStoryScene("AtomicPlant_Area", "Planta Atómica", SceneName, new Color(0.8f, 0.82f, 0.78f), new Vector3(6000f, 0f, 11000f), Story);
+        MicrocosmTemplate.Build(new MicrocosmSpec(SceneName, "Planta Atómica", "final del verano (1666, 1898, 1905)", 15f, "AtomicPlant_Area") { tint = new Color(0.8f, 0.82f, 0.78f), story = Story }, new Vector3(6000f, 0f, 11000f));
         Debug.Log("[Planta] microcosmos de la física generado.");
     }
 

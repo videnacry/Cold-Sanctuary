@@ -23,12 +23,13 @@ public static class AreaMicrocosmos
 
     /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
     /// el Transform dado, sobre el suelo del área, y devuelve cuántos personajes vistió.</param>
-    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null)
+    internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null, MicrocosmSpec spec = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
         if (era.HasValue) { MicroEra me = root.AddComponent<MicroEra>(); me.year = era.Value.year; me.place = era.Value.place; }
+        if (spec != null) MicrocosmTemplate.Stamp(root, spec);   // la plantilla: fecha, hora y plataforma
         int dressed = 0;
 
         // 1) El ÁREA del santuario, ×10, ENTERA (sin conducta): el microcosmos ES el área vista desde el suelo, con sus
@@ -410,7 +411,7 @@ public static class AreaMicrocosmos
     }
 
     // CUADRILLA DE RECOLECTORAS para los microcosmos de historia: su guarida y unas mirmidonas que recogen lo que da el entorno.
-    static int ForagingBand(Transform root, Vector3 at, int count)
+    internal static int ForagingBand(Transform root, Vector3 at, int count)
     {
         Lair(root, at, "Guarida de las recolectoras");
         // Restos junto a la guarida (como TribeStory): donde el área gigante tapa el suelo (el Hospital ×10 ocupa casi todo

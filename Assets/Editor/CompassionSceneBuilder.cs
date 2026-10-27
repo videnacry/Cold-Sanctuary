@@ -20,11 +20,18 @@ public static class CompassionSceneBuilder
         ("Infirmary_Area", "Irena Sendler",         "Microcosmos_IrenaSendler",  new Color(0.85f, 0.95f, 0.90f), new System.Func<Transform, int>(IrenaSendler)),
     };
 
+    static readonly System.Collections.Generic.Dictionary<string, (string date, float hour)> Dates = new System.Collections.Generic.Dictionary<string, (string, float)>
+    {
+        ["Le Chambon-sur-Lignon"] = ("otoño de 1942", 16f),   // la meseta acoge a los refugiados que llegan en el tren de la tarde
+        ["Irena Sendler"] = ("otoño de 1942, gueto de Varsovia", 8f),
+    };
+
     [MenuItem("Tools/Cold Sanctuary/Build simulaciones de compasión")]
     public static void BuildAll()
     {
         int i = 0;
-        foreach (var s in Sims) MicrocosmosAreaSceneBuilder.BuildStoryScene(s.areaGo, s.display, s.scene, s.tint, new Vector3(6000f + i++ * 900f, 0f, 8000f), s.story);
+        foreach (var s in Sims)   // la plantilla: fecha, hora y plataforma
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i++ * 900f, 0f, 8000f));
         Debug.Log($"[Compasión] {i} simulaciones de compasión generadas.");
     }
 
