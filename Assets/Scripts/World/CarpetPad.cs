@@ -120,14 +120,18 @@ public class CarpetPad : MonoBehaviour
     /// altura cuatro veces (un piso de arriba, aunque esté justo encima, no es «aquí»).</summary>
     public static CarpetPad For(Vector3 p)
     {
+        // Uno está sobre el piso de DEBAJO de sus pies (o en él): el de arriba, aunque quede más cerca en planta, no es «aquí»
+        // (en el anillo de 4 m sobre la planta 1, la planta 2 quedaba más cerca y se iba y volvía de un piso a otro).
         CarpetPad best = null; float bd = float.MaxValue;
-        foreach (CarpetPad pad in All)
-        {
-            Vector3 d = pad.transform.position - p;
-            float dy = d.y * 4f; d.y = 0f;
-            float s = d.sqrMagnitude + dy * dy;
-            if (s < bd) { bd = s; best = pad; }
-        }
+        for (int pass = 0; pass < 2 && best == null; pass++)
+            foreach (CarpetPad pad in All)
+            {
+                Vector3 d = pad.transform.position - p;
+                if (pass == 0 && d.y > 1.5f) continue;
+                float dy = d.y * 4f; d.y = 0f;
+                float s = d.sqrMagnitude + dy * dy;
+                if (s < bd) { bd = s; best = pad; }
+            }
         return best;
     }
 

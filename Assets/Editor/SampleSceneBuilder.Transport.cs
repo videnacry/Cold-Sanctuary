@@ -168,7 +168,7 @@ public static partial class SampleSceneBuilder
                     float out_ = Mathf.Abs(dir.z) * s.y * 0.5f + Mathf.Abs(dir.x) * s.x * 0.5f + ZoneD * 0.5f + extra;
                     Vector3 p = bt.TransformPoint(dir * out_); p.y = bt.position.y - 1.5f;
                     if (!Physics.Raycast(p, Vector3.down, out RaycastHit hit, 40f, ~0, QueryTriggerInteraction.Ignore)) continue;
-                    if (Water(hit.transform) || hit.point.y < -0.5f) continue;   // agua o fondo del mar
+                    if (hit.point.y < -0.3f || Water(hit.collider.transform)) continue;   // agua o fondo del mar
                     spot = hit.point;
                 }
             if (spot == null) { Debug.LogWarning($"[Transporte] Sin hielo firme cerca de «{bname}» para sus alfombras del suelo."); continue; }
@@ -180,7 +180,7 @@ public static partial class SampleSceneBuilder
 
     static bool Water(Transform t)
     {
-        for (; t != null; t = t.parent)
+        if (t != null)   // solo el propio objeto: sus padres («SeaAndFog», la banquisa…) daban falsos positivos
         {
             string n = t.name.ToLowerInvariant();
             if (n.Contains("agua") || n.Contains("water") || n.Contains("sea") || n.Contains("mar_") || n.Contains("ocean")) return true;
