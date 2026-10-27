@@ -106,7 +106,7 @@ public class FlyingCarpet : MonoBehaviour
         pad = to;
         // DESEMBARCAR: se levanta al lado de la alfombra.
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        who.transform.position = dest + transform.right * 1.6f + Vector3.up * 0.1f;
+        who.transform.position = dest + Vector3.up * 0.05f;   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
         if (cc != null) cc.enabled = ccWas;
         if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(who.transform.position); }
         if (pc != null) pc.HoldBody(false);

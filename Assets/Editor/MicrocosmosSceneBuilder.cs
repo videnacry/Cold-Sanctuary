@@ -40,7 +40,7 @@ public static class MicrocosmosSceneBuilder
     public static void BuildScene1()
     {
         var spec = new MicrocosmSpec(SceneName, "Ambrosio (nivel 1)", "verano corto de la taiga, antes del fuego", 5.5f, "Infirmary_Area")
-            { tint = new Color(0.85f, 0.95f, 0.9f), kind = SampleSceneBuilder.MissionKind.Heal, story = AmbrosioCast };
+            { tint = new Color(0.85f, 0.95f, 0.9f), kind = SampleSceneBuilder.MissionKind.Heal, story = AmbrosioCast, foragers = false };   // historia cerrada de la novela: sin recolectoras de otras escenas
         MicrocosmTemplate.Build(spec, O);
         Debug.Log($"[MicrocosmosSceneBuilder] {ScenePath}: el microcosmos de Ambrosio, con la plantilla (hospital ×10, taiga, alba).");
     }
@@ -52,13 +52,13 @@ public static class MicrocosmosSceneBuilder
         Transform start = new GameObject("Inicio_familia").transform; start.SetParent(cast, false); start.localPosition = new Vector3(0f, 0f, -4f);
         Material soil = AreaMicrocosmos.Mat("Ambrosio_Sendero", new Color(0.36f, 0.3f, 0.22f)), rock = AreaMicrocosmos.Mat("Ambrosio_Roca", new Color(0.45f, 0.42f, 0.38f)),
                  dark = AreaMicrocosmos.Mat("Ambrosio_Boca_cueva", new Color(0.06f, 0.05f, 0.04f));
-        AreaMicrocosmos.Box(cast, "Sendero_a_la_cueva", new Vector3(0f, 0.03f, caveZ * 0.5f - 4f), new Vector3(9f, 0.04f, caveZ + 12f), soil, false);
+        AreaMicrocosmos.Box(cast, "Sendero_a_la_cueva", new Vector3(0f, 0.02f, caveZ * 0.5f - 4f), new Vector3(9f, 0.04f, caveZ + 12f), soil, true);   // sólido: se pisa ENCIMA (antes las patas quedaban hundidas)
 
         // LA CUEVA: un cerro de roca con la boca oscura; es el REFUGIO de los dos viejos (CarryToRefuge).
         Transform cave = new GameObject("Cueva").transform; cave.SetParent(cast, false); cave.localPosition = new Vector3(0f, 0f, caveZ);
         for (int k = 0; k < 4; k++) AreaMicrocosmos.Box(cave, "Roca", new Vector3(0f, 1.6f + k * 2.4f, 6f + k * 0.8f), new Vector3(22f - k * 5f, 3.2f, 10f - k * 1.8f), rock, true);
         AreaMicrocosmos.Box(cave, "Boca", new Vector3(0f, 1.8f, 0.95f), new Vector3(4.5f, 3.6f, 0.1f), dark, false);
-        var refuge = cave.gameObject.AddComponent<CarryToRefuge>(); refuge.radius = 3.5f; refuge.needed = 2;
+        var refuge = cave.gameObject.AddComponent<CarryToRefuge>(); refuge.radius = 5f; refuge.needed = 4;   // los cuatro viejos de la novela
         WorldLabel cl = cave.gameObject.AddComponent<WorldLabel>(); cl.text = "La cueva"; cl.height = 9f;
 
         int n = 0;
@@ -76,13 +76,14 @@ public static class MicrocosmosSceneBuilder
         Member("Ambrosio", new Vector3(-1.6f, 0f, -5.6f), new Color(0.74f, 0.84f, 0.5f), 2.0f, 1.6f, aphid: true);
         Member("Sakshi", new Vector3(-1.6f, 0f, -4f), new Color(0.38f, 0.42f, 0.48f), 1.6f, 0.9f, weak: true);
         Member("Shanidar", new Vector3(1.6f, 0f, -4f), new Color(0.5f, 0.45f, 0.4f), 1.6f, 0.95f, weak: true);
+        // Los otros dos viejos de los cuatro que «desertaron para quedarse con ellos» (docs/novela.md).
+        Member("Anciano_Pintor", new Vector3(-4f, 0f, -3.7f), new Color(0.55f, 0.5f, 0.42f), 1.55f, 0.9f, weak: true);
+        Member("Anciana", new Vector3(4f, 0f, -3.7f), new Color(0.48f, 0.4f, 0.45f), 1.5f, 0.85f, weak: true);
         Member("Atlas", new Vector3(-2.4f, 0f, -5.4f), new Color(0.3f, 0.2f, 0.15f), 2.0f, 1.25f);
         Member("Medea", new Vector3(1.0f, 0f, -5.5f), new Color(0.45f, 0.15f, 0.15f), 1.55f, 0.85f);
         Member("Momo", new Vector3(2.2f, 0f, -5.5f), new Color(0.75f, 0.5f, 0.2f), 1.75f, 1f);
         Member("Ruth", new Vector3(3f, 0f, caveZ - 3f), new Color(0.35f, 0.45f, 0.25f), 1.75f, 1f);
         Member("Hespero", new Vector3(-3f, 0f, caveZ - 3f), new Color(0.28f, 0.2f, 0.18f), 1.9f, 1.1f);
-        // La tribu que vive allí (recolectoras con su guarida), a un lado del camino.
-        n += AreaMicrocosmos.ForagingBand(cast, new Vector3(-26f, 0f, 30f), 5);
         cast.root.gameObject.AddComponent<AmbrosioStory>();
         return n;
     }
@@ -201,6 +202,7 @@ public static class MicrocosmosSceneBuilder
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal0", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>();
+        GalaxyPortal.Dress(portal.transform);   // el portal de vuelta: un agujero negro en una pequeña galaxia
 
         BakeMicroNavMesh();
 

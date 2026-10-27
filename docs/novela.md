@@ -125,6 +125,29 @@ los ancianos y exprimir sus últimas gotas para alentarlos. Vio a una de las gem
 alegrar al equipo, y a la otra, **Medea**, diminuta y débil, **empujando con todo, cayéndose y volviéndose a
 levantar**. Le **brillaban como las estrellas que tanto admiraba**. Y no supo qué hacer ni qué decir.
 
+### La mariquita
+No muy lejos de la cueva, cuando el anciano que se había derrumbado acababa de ponerse en pie con la última gota
+de Ambrosio, bajó del aire algo **rojo y redondo**, con el caparazón brillante y moteado. Una **mariquita**. No
+venía por las hormigas, duras y amargas: venía por **lo blando**. Por Ambrosio. Los pulgones son **su comida**,
+y él lo supo antes que nadie, porque el miedo de los suyos lo llevaba en el cuerpo desde que nació. Aun así no
+retrocedió: pidió a los viejos que se **quedaran quietos**, pegados al suelo, y a los demás que fueran a por
+ella.
+
+No había mandíbulas que bastaran contra aquel caparazón; solo podían hacer lo que habían hecho todo el
+camino: **empujar**. **Atlas** fue el primero, con el hombro por delante. **Medea**, diminuta, se metió por
+debajo **aunque la mariquita le doblaba el tamaño**, y caía, y volvía. Y el **gusano**, que solo sabía empujar,
+se puso a su lado. Un empujón **lento**, y la mariquita resbaló un palmo. Otro, y se ladeó. Otro más.
+
+**Momo**, entretanto, se había quedado atrás, junto a los viejos, «**cuidándolos**», decía. «Yo vigilo que no
+se nos escapen, que corren mucho», bromeaba, y alguno de los ancianos, acabado como estaba, **se rio**. Cuando
+Medea le gritó que viniera, Momo llegó con su ligereza de siempre, apoyó **una sola pata** en el caparazón
+como quien toca a una puerta, y anunció que ese había sido **el empujón decisivo**. No lo era. Pero la risa,
+en aquel momento, también empujaba.
+
+Al **quinto empujón** la mariquita abrió los élitros, desplegó las alas que llevaba escondidas y **se fue
+volando**, pesada, hacia los tallos. Ambrosio la siguió con la mirada hasta perderla, y no dijo nada. Solo
+volvió a ponerse detrás de los ancianos. Le temblaban las patas. Ya **no le quedaban gotas**.
+
 ### La entrada de la cueva
 A unos pasos de la entrada, **Ambrosio dejó de moverse**. Se tumbó, agonizante, **aliviado de haber puesto a
 su familia a salvo**. Era grande y pesado; **Medea, más pequeña y débil de lo normal, no lograba

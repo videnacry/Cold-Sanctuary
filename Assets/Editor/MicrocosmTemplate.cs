@@ -22,6 +22,8 @@ internal sealed class MicrocosmSpec
     public Color tint = new Color(0.7f, 0.7f, 0.7f);
     public SampleSceneBuilder.MissionKind kind = SampleSceneBuilder.MissionKind.Channel;
     public System.Func<Transform, int> story;
+    [Tooltip("Una cuadrilla de recolectoras con su guarida, si la historia no trae las suyas (no en las historias cerradas de la novela, como Ambrosio).")]
+    public bool foragers = true;
 
     /// <param name="scene">Nombre de la escena (Microcosmos_…).</param>
     /// <param name="display">Su nombre: elige el bioma (MicroBiome) y la época (Eras) si no se dan.</param>

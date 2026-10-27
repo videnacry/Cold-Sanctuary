@@ -79,6 +79,7 @@ public static class AreaMicrocosmos
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = Mat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>().label = "Salir del microcosmos";
+        GalaxyPortal.Dress(portal.transform);   // un agujero negro en una pequeña galaxia (Berón 2026-10-27)
 
         Transform cast = new GameObject("Elenco").transform; cast.SetParent(story, false);
         if (storyOverride != null) dressed = storyOverride(cast);
@@ -89,7 +90,7 @@ public static class AreaMicrocosmos
         // Las historias propias (Patanjali, Planta Atómica, Hospital…) traen su elenco pero ninguna recolectora: sin ellas los
         // mirmidones de ese microcosmos no viven del entorno (semillas; melaza desde el Neolítico, Eras.Dairying). Se añade
         // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
-        if (cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
+        if ((spec == null || spec.foragers) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
         int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;

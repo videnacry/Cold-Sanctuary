@@ -39,13 +39,24 @@ public static partial class SampleSceneBuilder
         return l;
     }
 
+    // El nombre de un piso en el selector de las alfombras: el ÁREA que hay en él y su planta («Sala de Ballet · planta 1»,
+    // «Hospital · planta baja»), no solo «Planta baja».
     static string FloorName(Transform f, int i, string building)
     {
         SanctuaryArea a = f.GetComponent<SanctuaryArea>();
-        if (i == 1) return "Planta baja";
-        if (a != null && a.displayName != building) return $"Planta {i - 1} · {a.displayName}";
-        string n = f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
-        return $"Planta {i - 1} · {n}";
+        string area = a != null ? a.displayName
+            : i == 1 ? building
+            : f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
+        if (area.Length > 0) area = char.ToUpper(area[0]) + area.Substring(1);
+        return i == 1 ? $"{area} · planta baja" : $"{area} · planta {i - 1}";
+    }
+
+    // Lo que hay en un edificio (sus áreas, por comas): lo que muestran las alfombras del santuario.
+    static string AreasOf(List<Transform> floors, string building)
+    {
+        var names = new List<string>();
+        for (int i = 0; i < floors.Count; i++) { string n = FloorName(floors[i], i + 1, building); n = n.Substring(0, n.LastIndexOf(" · ")); if (!names.Contains(n)) names.Add(n); }
+        return names.Count == 1 && names[0] == building ? building : $"{building}: {string.Join(", ", names)}";
     }
 
     /// <summary>Por cada edificio: el PISO DE ALFOMBRAS encima del más alto (del mismo tamaño) con sus dos áreas, y un área
@@ -96,6 +107,7 @@ public static partial class SampleSceneBuilder
                 if (ri >= 0) _roofs[ri] = (roof, rs, _roofs[ri].name); else _roofs.Add((roof, rs, bname));   // sus paneles, en el techo
             }
             Solid(roof, new Vector3(0f, -0.05f, 0f), new Vector3(rs.x, 0.14f, rs.y), new Color(0.86f, 0.82f, 0.74f), "Suelo_techo");
+            string areasText = AreasOf(FloorsOf(bt).FindAll(x => x != roof), bname);   // (sin el techo)
             floors = FloorsOf(bt);   // ya con el techo (o el andén)
             for (int i = 0; i < floors.Count; i++)
             {
@@ -106,8 +118,8 @@ public static partial class SampleSceneBuilder
                 if (isRoof)
                 {
                     float dz = Mathf.Min(ZoneD * 0.5f + 0.6f, fs.y * 0.5f - ZoneD * 0.5f - 0.1f);
-                    CarpetPad.BuildZone(f, f.TransformPoint(new Vector3(0f, 0.08f, dz)), f.rotation, CarpetPad.Kind.Edificio, bname, i + 1, surf, fname, 2);
-                    CarpetPad.BuildZone(f, f.TransformPoint(new Vector3(0f, 0.08f, -dz)), f.rotation, CarpetPad.Kind.Santuario, bname, i + 1, surf, bname, 2);
+                    CarpetPad.BuildZone(f, f.TransformPoint(new Vector3(0f, 0.03f, dz)), f.rotation, CarpetPad.Kind.Edificio, bname, i + 1, surf, fname, 2);
+                    CarpetPad.BuildZone(f, f.TransformPoint(new Vector3(0f, 0.03f, -dz)), f.rotation, CarpetPad.Kind.Santuario, bname, i + 1, surf, areasText, 2);   // «Sala de Yoga: Sala de Yoga, Sala de Ballet»
                     zones += 2;
                     continue;
                 }
@@ -163,7 +175,7 @@ public static partial class SampleSceneBuilder
         // A ras del SUELO de verdad del piso (el suelo del área va algo por encima de su origen: si no, quedaba hundida).
         Physics.SyncTransforms();
         foreach (RaycastHit h in Physics.RaycastAll(best + Vector3.up * 3f, Vector3.down, 4.5f, ~0, QueryTriggerInteraction.Ignore))
-            if (h.point.y > best.y - 0.5f && h.point.y < best.y + 2.5f && h.collider.GetComponentInParent<CarpetPad>() == null) { best.y = Mathf.Max(best.y, h.point.y + 0.04f); }
+            if (h.point.y > best.y - 0.5f && h.point.y < best.y + 2.5f && h.collider.GetComponentInParent<CarpetPad>() == null) { best.y = Mathf.Max(best.y, h.point.y + 0.01f); }
         return best;
     }
 
@@ -196,7 +208,7 @@ public static partial class SampleSceneBuilder
                 Debug.LogWarning($"[Transporte] Sin hielo firme cerca de «{bname}» para sus alfombras del suelo (debajo: {seen}).");
                 continue;
             }
-            CarpetPad.BuildZone(bt, spot.Value + Vector3.up * 0.05f, bt.rotation, CarpetPad.Kind.Edificio, bname, 0, $"{bname}#0", "Suelo (hielo)", 2);
+            CarpetPad.BuildZone(bt, spot.Value + Vector3.up * 0.01f, bt.rotation, CarpetPad.Kind.Edificio, bname, 0, $"{bname}#0", "Suelo (hielo)", 2);
             placed++;
         }
         Debug.Log($"[Transporte] {placed} áreas de alfombras en el hielo, al pie de cada edificio.");
