@@ -36,7 +36,7 @@ public class NeedsDriver : MonoBehaviour
             // A dormir a SU cama (arboleda residencial), si tiene dormitorio; si no, donde esté.
             Bedroom room = Bedroom.Of(_a);
             if (room != null && room.bed != null && Vector3.Distance(room.bed.position, transform.position) > 2f)
-                _q.EnqueueOwn(new WalkToSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f, giveUpAfter = 8f });
+                _q.EnqueueOwn(new CarpetWalkSpell { target = room.bed, targetName = $"su cama ({room.name})", stopDistance = 1f });   // a su casa del árbol, en alfombra
             _q.EnqueueOwn(new SleepSpell());
             return;
         }
