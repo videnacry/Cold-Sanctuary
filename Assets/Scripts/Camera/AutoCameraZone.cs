@@ -82,6 +82,7 @@ public class AutoCameraZone : MonoBehaviour
         if (CameraManager.Instance == null) return;
 
         // Restore the player's preferred mode
+        if (lockForDuration) CameraManager.Instance.ClearRobbery();
         CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true);
 
         Debug.Log($"[AutoCameraZone] {other.name} salió. Cámara → preferredMode.");
