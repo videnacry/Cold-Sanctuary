@@ -263,18 +263,52 @@ public class AmbrosioStory : MonoBehaviour
             case Beat.Predator:
                 PredatorFight(p, dt);
                 break;
-            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira)
+            case Beat.Death:   // Ambrosio se derrumba en la entrada (el jugador lo mira); la escena, como en la novela (docs/novela.md, «La entrada de la cueva»)
+            {
                 Face(p, _ambrosio);
-                float k = Mathf.Clamp01((Time.time - _beatAt) / 3f);
-                _ambrosio.rotation = Quaternion.Slerp(Quaternion.LookRotation(_dir), Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), k);
-                if (_medea != null) { Walk(_medea, _ambrosio.position - _side * 1.2f, 0.4f, dt); Once("medea_llanto", Time.time - _beatAt > 3f, () => Say(_medea, "¡Ambrosio! ¡No me dejes! ¡Llévame contigo!", 6f)); }
-                if (Time.time - _beatAt > 1.5f && Time.time - _beatAt < 1.5f + dt * 1.5f) Say(_ambrosio, "…Lo hemos… conseguido.", 5f);
-                if (Time.time - _beatAt > 5f)
+                float t = Time.time - _beatAt;
+                Quaternion down = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), held = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 115f);
+                // Cae de lado (3 s); cuando Momo lo levanta, queda medio alzado en sus brazos (sigue tumbado: no se pone en pie).
+                _ambrosio.rotation = t < 11f ? Quaternion.Slerp(Quaternion.LookRotation(_dir), down, Mathf.Clamp01(t / 3f)) : Quaternion.Slerp(down, held, Mathf.Clamp01((t - 11f) / 2f));
+                Once("ambrosio_conseguido", t > 1.5f, () => Say(_ambrosio, "…Lo hemos… conseguido.", 5f));
+                // Medea, diminuta, intenta levantarlo sola y no puede: se inclina, tira, vuelve a caer.
+                if (_medea != null)
+                {
+                    Walk(_medea, _ambrosio.position - _side * 1.2f, 0.4f, dt);
+                    if (t > 3f && t < 11f) _medea.rotation = Quaternion.LookRotation(_side) * Quaternion.Euler(25f + 15f * Mathf.Abs(Mathf.Sin(t * 2.5f)), 0f, 0f);
+                    Once("medea_alzar", t > 3f, () => Say(_medea, "¡Ambrosio, levántate! ¡Ayudadme a alzarlo! ¡Sakshi, Shanidar!", 6f));
+                }
+                Once("viejos_no_pueden", t > 5f, () => Say(_oldB, "…No podemos, pequeña. Ya no nos quedan fuerzas.", 5f));
+                // Atlas, el único adulto, quiere consolarla; ella lo aparta.
+                if (_atlas != null)
+                {
+                    if (t > 6f && t < 9f) Walk(_atlas, _medea != null ? _medea.position - _side * 1.1f : _ambrosio.position, 0.4f, dt);
+                    else if (t >= 9f) Walk(_atlas, _ambrosio.position - _side * 3.4f - _dir * 1.5f, 0.3f, dt);   // apartado
+                    Once("atlas_consuela", t > 7f, () => Say(_atlas, "Medea… ven, déjalo descansar.", 4f));
+                    Once("medea_aparta", t > 8.5f, () => Say(_medea, "¡Déjame! ¡No lo toques!", 4f));
+                }
+                // Momo se desborda en llanto, lo levanta sin esfuerzo (la más fuerte, en secreto) y le ofrece sus tesoros.
+                if (_momo != null)
+                {
+                    if (t > 9.5f) Walk(_momo, _ambrosio.position + _side * 1.1f, 0.4f, dt);
+                    Once("momo_llora", t > 10f, () => Say(_momo, "…¡Ambrosio! ¡No, no, no!", 4f));
+                    Once("momo_tesoros", t > 13f, () => Say(_momo, "Toma, mi hongo… mis hojitas, todas. ¡Come, Ambrosio, come!", 6f));
+                    if (t > 11f) _ambrosio.position = Vector3.Lerp(_ambrosio.position, Ground(_ambrosio.position) + Vector3.up * 0.6f, dt * 2f);
+                }
+                Once("medea_llanto", t > 16f, () => Say(_medea, "¡No me dejes! ¡Llévame contigo!", 6f));
+                // Héspero, delante, con la cara rígida: lo ve caer… y se vuelve, rápido, hacia otro lado.
+                if (_hespero != null)
+                {
+                    Vector3 look = _ambrosio.position - _hespero.position; look.y = 0f;
+                    if (look.sqrMagnitude > 0.01f) _hespero.rotation = Quaternion.Slerp(_hespero.rotation, Quaternion.LookRotation(t < 18f ? look : -look), dt * (t < 18f ? 2f : 9f));
+                }
+                if (t > 21f)
                 {
                     Anima am = _ambrosio.GetComponent<Anima>(); if (am != null) am.death = true;   // muere de verdad (su alma, SoulRecord, sigue: renace en la cocina)
                     Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi);
                 }
                 break;
+            }
             case Beat.Sakshi:
                 Face(p, _sakshi);
                 if (_sakshi == null || Walk(_sakshi, p.position, 2.2f, dt))
@@ -321,6 +355,7 @@ public class AmbrosioStory : MonoBehaviour
         {
             Once("ambrosio_cansado", t > 6f, () => Say(_ambrosio, "Me cuesta… pero ya se ve la cueva. Un poco más.", 6f));
             Once("atlas_animo", t > 30f, () => Say(_atlas, "¡Vamos, familia! ¡Ya casi!", 5f));
+            Once("medea_cae", t > 40f, () => Say(_medea, "¡Estoy bien! ¡Sigo! ¡Sigo empujando!", 5f));
         }
     }
 
@@ -382,6 +417,8 @@ public class AmbrosioStory : MonoBehaviour
             Vector3 spot = old.position - _dir * (1.3f + 0.5f) + side - _dir * bob;
             Walk(who, spot, 0.05f, dt);
             who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 18f * Mathf.Abs(bob) / 0.3f, 0f, 0f);   // inclinado hacia delante, más al empujar
+            // Medea, diminuta, empuja con todo: de vez en cuando se cae de bruces y se vuelve a levantar (docs/novela.md).
+            if (who == _medea && Mathf.Repeat(Time.time, 9f) < 1.1f) who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(70f * Mathf.Sin(Mathf.Repeat(Time.time, 9f) / 1.1f * Mathf.PI), 0f, 0f);
         }
     }
 

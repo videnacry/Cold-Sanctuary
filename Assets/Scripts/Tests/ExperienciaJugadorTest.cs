@@ -117,7 +117,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         yield return Push(st, st.Shanidar);
         yield return Until(() => st.Now == AmbrosioStory.Beat.Death, AmbrosioStory.PushPhaseSeconds + 30f);
         TestProbe.Check("empujando un minuto más llegan a la entrada de la cueva", st.Now == AmbrosioStory.Beat.Death && Dist(st.Shanidar, st.Cave) < 6f, $"{Dist(st.Shanidar, st.Cave):0.0} m de la cueva");
-        yield return Until(() => st.Now == AmbrosioStory.Beat.Sakshi, 20f);
+        yield return Until(() => st.Now == AmbrosioStory.Beat.Sakshi, 40f);   // (la despedida dura ~21 s: Medea, Atlas, Momo, Héspero)
         TestProbe.Check("Ambrosio se derrumba y muere en la entrada", st.Now == AmbrosioStory.Beat.Sakshi && Vector3.Angle(st.Ambrosio.up, Vector3.up) > 90f);
         yield return Until(() => MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy, 60f);
         TestProbe.Check("Sakshi se acerca y lo manda de vuelta: vuelve al mesocosmos", MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld);

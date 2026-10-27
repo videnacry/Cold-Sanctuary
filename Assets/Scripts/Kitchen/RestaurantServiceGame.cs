@@ -87,7 +87,7 @@ public class RestaurantServiceGame : MonoBehaviour
         Vector3 pf = pass.position; pf.y = area.position.y + 0.15f;
         Transform passMark = Mark(go.transform, "Pase", pf); passMark.rotation = pass.rotation;
         g.pass = passMark;
-        Transform caja = VirtualInPlace.FindDeep(area, "Caja_registradora"), stair = VirtualInPlace.FindDeep(area, "Escalera_comedor_puente");
+        Transform caja = VirtualInPlace.FindDeep(area, "Caja_registradora"), stair = VirtualInPlace.FindDeep(area, "Escalera_comedor_norte");
         if (caja != null && stair != null)
         {
             // COMEDOR EN ANILLO (docs/restaurant-plan.md): los turistas llegan por el PUENTE, suben su escalera, piden en la

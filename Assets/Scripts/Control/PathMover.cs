@@ -21,7 +21,6 @@ public class PathMover : MonoBehaviour
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
-        if (Ladder.IsClimbing(transform)) return Flat(target - transform.position);
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
@@ -39,7 +38,6 @@ public class PathMover : MonoBehaviour
             while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
             next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
         }
-        if (Ladder.AutoClimb(transform, next)) return Flat(final - pos);   // al pie (o arriba) de una escalera: trepa
         Vector3 d = next - pos; d.y = 0f;
         float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
         // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un

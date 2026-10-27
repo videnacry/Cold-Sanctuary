@@ -30,8 +30,6 @@ public class CarpetPad : MonoBehaviour
     public string surface = "";
     [Tooltip("Huecos de aterrizaje (dónde se posa cada alfombra), en coordenadas locales.")]
     public Vector3[] slots = new Vector3[0];
-    [Tooltip("Centros de las áreas que sirve (compatibilidad con lo de antes; no se usa para rutas).")]
-    public Vector3[] members = new Vector3[0];
 
     void OnEnable() { if (!All.Contains(this)) All.Add(this); }
     void OnDisable() { All.Remove(this); }

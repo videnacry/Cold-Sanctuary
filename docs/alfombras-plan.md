@@ -10,7 +10,7 @@ Pedido de Berón (2026-10-27). Este documento recoge cómo queda el santuario y 
   - los anillos de camas del hospital y la subplataforma de aislamiento;
   - el anillo de experimentos de Física;
   - la entreplanta del gimnasio.
-- Se quitan todas las escaleras verticales (`Ladder`):
+- Se quitan todas las escaleras verticales (la clase `Ladder` y el hechizo `climb` se borraron):
   - las de las áreas elevadas, los pisos superiores, los huertos de gremio y las pistas;
   - las de la residencia y la casa de árbol del guarda.
 - Se quitan las barreras invisibles de los bordes, para que se pueda saltar de una plataforma a otra. El cojín de musgo de abajo se queda, para que la caída no haga daño.
@@ -50,7 +50,7 @@ Pedido de Berón (2026-10-27). Este documento recoge cómo queda el santuario y 
 |---|---|
 | `Levels.StackOn` | `SetBack` = 0: pisos iguales. Se revisan `Research.cs:286`, el hospital y `UpperGarden`. |
 | `SampleSceneBuilder.Elevate` | Sin `Ladder.Build` ni `Barandilla_Barrera`. Se queda el cojín de musgo. |
-| `Transport.BuildBridgesAndPads` | Sin puentes. Por edificio: un área de alfombras de edificio en cada piso y en el suelo, y un piso-techo con las dos áreas. Desaparecen `_landings` y `ClearBridgeLandings`. |
+| `Transport.RegisterBuildings` (antes `BuildBridgesAndPads`) | Sin puentes. Por edificio: un área de alfombras de edificio en cada piso y en el suelo, y un piso-techo con las dos áreas. Desaparecen `_landings`, `_openings`, `ClearBridgeLandings`, `KitchenBridge` y los huecos de barrera de `RingDeck`. |
 | `CarpetPad` | Gana `building` (el edificio), `kind` (Edificio / Santuario / Residencia / Habitación) y `floor`. `Route` sigue la cadena piso → techo → techo destino → piso, caminando dentro de cada piso. |
 | `FlyingCarpet.Offer` | Solo ofrece los destinos de su tipo: pisos del edificio, edificios, o habitaciones. |
 | `ResidentialBuilder` | Casas de árbol a distintas alturas, sin pasarelas ni escaleras. Cada una con su alfombra-esterilla y la plataforma central con sus dos áreas. |

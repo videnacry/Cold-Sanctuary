@@ -21,7 +21,6 @@ public class GroundGuard : MonoBehaviour
         if (Time.time < _next) return;
         _next = Time.time + checkEvery;
         if (_cc != null && !_cc.enabled) return;   // trepando / en transición de escena: no tocar
-        if (Ladder.IsClimbing(transform)) return;  // en una escalera vertical (compañeros sin CharacterController)
         if (FlyingCarpet.Riding(gameObject)) return;   // volando en alfombra
         if (TryGetComponent(out PlayerController pc) && pc.BodyHeld) return;   // lo sujeta alguien (lo llevan de la mano, sentado en el examen…): lo coloca quien lo sujeta
 

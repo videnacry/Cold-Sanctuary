@@ -133,6 +133,7 @@ public static partial class SampleSceneBuilder
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
+        SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
@@ -141,7 +142,6 @@ public static partial class SampleSceneBuilder
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
-        ClearBridgeLandings();
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         BakeNavMesh();
 
@@ -2714,8 +2714,8 @@ public static partial class SampleSceneBuilder
         GourmetKitchen(room);   // aspecto de cocina abierta de restaurante gourmet
         ProKitchen(room);       // equipo profesional y obrador para la carta (docs/cocina-profesional.md)
 
-        GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la ENTRADA de la cocina
-        if (spot != null && area != null) spot.transform.position = area.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset));   // al pie de la escalera vertical
+        GameObject spot = GameObject.Find("CocinaSpot");   // la Magnate lleva a los nuevos a la cocina (luego, junto a sus alfombras: SpotAtCarpets)
+        if (spot != null && area != null) spot.transform.position = area.transform.position;
     }
 
     // TORRE DE GUARDIA + puestos de vigía para la patrulla (docs/spells-suprahechizo-and-thoughts.md §5b).
@@ -2797,8 +2797,8 @@ public static partial class SampleSceneBuilder
 
         // Destinos de la GUÍA del nuevo integrante (la Magnate lo lleva aquí a hacer upa-yoga y luego a aprender un área).
         mag.yogaSpot = MakeSpot(parent, "SalaYoga", GameObject.Find("YogaRoom_Area") != null ? GameObject.Find("YogaRoom_Area").transform.position : new Vector3(2f, 0f, 14f), new Color(0.75f, 0.85f, 0.95f));
-        GameObject kArea = GameObject.Find("Kitchen_Area");   // al pie de la escalera de la cocina (elevada)
-        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.TransformPoint(new Vector3(0f, -ElevatedHeight, 19f + Ladder.Gap + Ladder.FootOffset)) : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
+        GameObject kArea = GameObject.Find("Kitchen_Area");   // en la cocina (elevada); junto a sus alfombras al final (SpotAtCarpets)
+        mag.kitchenSpot = MakeSpot(parent, "CocinaSpot", kArea != null ? kArea.transform.position : new Vector3(16f, 0f, 14f), new Color(0.95f, 0.8f, 0.55f));
     }
 
     // Marcador de destino (cubo plano etiquetado) al que la Magnate guía al nuevo integrante.
@@ -3508,31 +3508,30 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
         CulturedMeatLab.Build(areas[5].transform, sizes[5], feeder.transform);
-        // PUENTES de 8 m entre plataformas cercanas y una PISTA de alfombras voladoras por grupo (docs/transporte-alfombras.md).
-        // (Los pisos de arriba no llevan puente propio: se llega por la escalera desde el de abajo.)
-        var ground = new List<SanctuaryArea>(); var groundSizes = new List<Vector2>();
+        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
+        var ground = new List<SanctuaryArea>();
         for (int i = 0; i < areas.Count; i++)
         {
             if (upper.ContainsKey(i)) continue;
-            ground.Add(areas[i]); groundSizes.Add(i < sizes.Length ? sizes[i] : new Vector2(24f, 20f));
+            ground.Add(areas[i]);
         }
-        _roofs.Clear();   // piso más alto de cada edificio: ahí van su pista de alfombras (si le toca) y sus paneles solares
+        _roofs.Clear();   // piso más alto de cada edificio: encima va su techo de alfombras, con sus paneles solares
         // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física). Va aparte de la
         // lista de arriba para no mover los índices (el Huerto es el último).
-        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant); groundSizes.Add(AtomicPlantSize);
+        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant);
         // INVESTIGACIÓN Y PRODUCCIÓN (docs/edificios-investigacion.md): la sala de experimentos de física sobre la planta atómica,
         // y en el casquete Sur, junto a ella, Química, Biología y la central nuclear de producción.
         BuildPhysicsHall(plant.transform);
-        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem); ground.Add(chem); groundSizes.Add(ChemistrySize);
-        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio); ground.Add(bio); groundSizes.Add(BiologySize);
-        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc); ground.Add(nuc); groundSizes.Add(NuclearSize);
+        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem); ground.Add(chem);
+        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio); ground.Add(bio);
+        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc); ground.Add(nuc);
         for (int i = 0; i < sizes.Length; i++)
         {
             if (upper.ContainsKey(i)) continue;
             int top = i; foreach (var kv in upper) if (kv.Value == i) top = kv.Key;
             _roofs.Add((areas[top].transform, sizes[top], areas[i].displayName));
         }
-        BuildBridgesAndPads(areasGroup.transform, ground.ToArray(), groundSizes.ToArray());
+        RegisterBuildings(ground.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
         // reciben y sin ocupar suelo): se colocan al final del Build (`PlaceRooftopSolar`), cuando ya están los muebles,
         // para buscar un borde libre. Y un campo en el hub.
@@ -3593,16 +3592,15 @@ public static partial class SampleSceneBuilder
 
     // CONSTRUCCIONES ELEVADAS (docs/construcciones-elevadas.md): el santuario no ocupa el suelo que pertenece a la
     // naturaleza. Cada área se sube a una PLATAFORMA a `height` m sobre columnas finas (bajo ella pasan animales y crece
-    // la flora) y se sube por una ESCALERA VERTICAL (con su enlace del NavMesh) desde el lado abierto (+Z).
-    // Borde con barrera invisible (sin barandilla visible).
+    // la flora) y se sube y se baja en ALFOMBRA VOLADORA (docs/alfombras-plan.md); el borde queda libre para saltar.
     public const float ElevatedHeight = 12f;   // a 12 m las áreas humanas no tienen al bosque en sombra ni lo molestan con su ruido
 
     static void ElevateArea(SanctuaryArea a, Vector2 size, float h) => Elevate(a.transform, size, h);
 
-    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, con barrera invisible y escalera vertical.
+    /// <summary>Sube cualquier cosa (un área, un huerto) a una plataforma sobre columnas, sin bordes ni escalera.
     /// <paramref name="groundBelow"/> = false para un PISO SUPERIOR (debajo hay otra plataforma, no el suelo: sin colchón de
-    /// musgo); <paramref name="ladderX"/> desplaza la escalera (y el hueco de la barandilla) a lo largo del lado +Z.</summary>
-    static void Elevate(Transform t, Vector2 size, float h, bool groundBelow = true, float ladderX = 0f)
+    /// musgo).</summary>
+    static void Elevate(Transform t, Vector2 size, float h, bool groundBelow = true)
     {
         t.position += Vector3.up * h;
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f);
@@ -3634,7 +3632,7 @@ public static partial class SampleSceneBuilder
 
     /// <summary>PANELES SOLARES EN LO MÁS ALTO (Berón 2026-10-22: que tomen el máximo de luz): una fila sobre postes de
     /// 3 m en un BORDE del piso más alto de cada edificio, mirando al sol. Busca un tramo de borde libre (fondo, luego los
-    /// laterales; nunca el frente, por donde llega la escalera) para que los postes no caigan sobre muebles ni pasos.</summary>
+    /// laterales) para que los postes no caigan sobre muebles ni pasos.</summary>
     /// <summary>Si un área tiene DENTRO un piso más alto (hijo montado con <c>StackOn</c>/<c>Elevate</c>, p. ej. la planta
     /// veterinaria del hospital), ese es su piso más alto: se reconoce por su "Estructura_Elevada" y su tamaño por la losa.</summary>
     static void ResolveInnerUpperFloors()
@@ -3684,12 +3682,8 @@ public static partial class SampleSceneBuilder
             Edge(180f, hx, a => new Vector3(a, 0f, hz - 0.7f));
             if (cands.Count == 0) cands.Add((new Vector3(0f, 0f, -hz + 0.7f), 0f));
             (Vector3 p, float yaw) pick = cands[0]; bool free = false;
-            _openings.TryGetValue(top, out var gaps);   // donde llega un puente (lado, tramo): ahí no
             foreach (var c in cands)
             {
-                int side = c.yaw == 0f ? 3 : c.yaw == 180f ? 2 : c.yaw > 0f ? 1 : 0;
-                float along = side >= 2 ? c.p.x : c.p.z;
-                if (gaps != null && gaps.Exists(o => o.side == side && o.b > along - len * 0.5f - 1f && o.a < along + len * 0.5f + 1.5f)) continue;
                 // Los paneles van a 3 m: por debajo se pasa. Solo estorban sus POSTES (cada 2,2 m, delante y detrás) y la caja
                 // del inversor y las baterías, a un extremo.
                 Quaternion q = top.rotation * Quaternion.Euler(0f, c.yaw, 0f);

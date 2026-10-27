@@ -51,7 +51,9 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         TestProbe.NotNull("la casa del árbol de guardia existe", tree);
         TestProbe.Check("la casa del árbol no es carnívora", tree != null && tree.GetComponent<IceCarnivorousTree>() == null);
         // Sin escaleras verticales (Berón 2026-10-27, docs/alfombras-plan.md): la casa del árbol se sube en alfombra.
-        TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length == 0, $"{FindObjectsByType<Ladder>(FindObjectsSortMode.None).Length} escaleras");
+        int ladders = 0;
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name == "Escalera" && t.Find("Peldano") != null) ladders++;
+        TestProbe.Check("ya no hay escaleras verticales (se sube en alfombra)", ladders == 0, $"{ladders} escaleras");
         TestProbe.Check("la casa del árbol de guardia tiene alfombra en el suelo y arriba", CarpetPad.All.FindAll(p => p.building == "Casa del guarda").Count >= 2);
         TestProbe.NotNull("la enfermería tiene analizador clínico", FindFirstObjectByType<ClinicalStation>());
         TestProbe.End();

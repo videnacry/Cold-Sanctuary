@@ -16,16 +16,13 @@ public static partial class SampleSceneBuilder
     static readonly List<(Transform t, string name)> _buildings = new List<(Transform, string)>();
     // Piso de arriba → el de abajo (StackOn, el huerto de rotación, el techo de alfombras).
     static readonly Dictionary<Transform, Transform> _upperOf = new Dictionary<Transform, Transform>();
-    // Huecos del borde (ya no hay: sin puentes) y llegadas de los puentes; se conservan para quien los consulta.
-    static readonly Dictionary<Transform, List<(int side, float a, float b)>> _openings = new Dictionary<Transform, List<(int, float, float)>>();
-    static readonly List<(Transform area, Vector2 half, int side, float center)> _landings = new List<(Transform, Vector2, int, float)>();
 
     const float ZoneW = 7.6f, ZoneD = 4.4f;
 
-    /// <summary>Apunta los edificios (sus plantas bajas). Ya no se tienden puentes.</summary>
-    static void BuildBridgesAndPads(Transform parent, SanctuaryArea[] areas, Vector2[] sizes)
+    /// <summary>Apunta los edificios (sus plantas bajas): sus alfombras se ponen al final (<see cref="PlaceCarpetAreas"/>).</summary>
+    static void RegisterBuildings(SanctuaryArea[] areas)
     {
-        _openings.Clear(); _landings.Clear(); _buildings.Clear();
+        _buildings.Clear();
         foreach (SanctuaryArea a in areas) _buildings.Add((a.transform, a.displayName));
         Debug.Log($"[Transporte] {areas.Length} edificios, sin puentes ni escaleras: se va en alfombra voladora.");
     }
@@ -125,6 +122,22 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }
 
+    /// <summary>Pone el punto <paramref name="spotName"/> junto al área de alfombras de la planta baja del edificio
+    /// <paramref name="areaName"/>: es por donde se llega a él (ya no hay escaleras ni puentes).</summary>
+    static void SpotAtCarpets(string spotName, string areaName)
+    {
+        GameObject spot = GameObject.Find(spotName), area = GameObject.Find(areaName);
+        SanctuaryArea sa = area != null ? area.GetComponent<SanctuaryArea>() : null;
+        if (spot == null || sa == null) return;
+        foreach (CarpetPad p in Object.FindObjectsByType<CarpetPad>(FindObjectsSortMode.None))
+            if (p.kind == CarpetPad.Kind.Edificio && p.building == sa.displayName && p.floor == 1)
+            {
+                Vector3 toCenter = area.transform.position - p.transform.position; toCenter.y = 0f;
+                spot.transform.position = p.transform.position + (toCenter.sqrMagnitude > 0.01f ? toCenter.normalized : p.transform.forward) * (ZoneD * 0.5f + 1.5f);
+                return;
+            }
+    }
+
     static readonly List<(Transform t, string name)> _carpetBuildings = new List<(Transform, string)>();
 
     // El sitio del piso <paramref name="f"/> donde cabe un área de alfombras con menos muebles encima (mejor cerca de un borde).
@@ -198,7 +211,4 @@ public static partial class SampleSceneBuilder
         }
         return false;
     }
-
-    // Ya no se tienden puentes: no hay llegadas que despejar.
-    static void ClearBridgeLandings() => _landings.Clear();
 }

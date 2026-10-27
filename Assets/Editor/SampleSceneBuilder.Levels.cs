@@ -81,13 +81,11 @@ public static partial class SampleSceneBuilder
     /// <summary>
     /// ANILLO (Berón, 2026-10-23): plataforma hija CUADRADA Y COMPLETA alrededor de una planta de <paramref name="floor"/>, a
     /// <paramref name="h"/> m sobre ella, de <paramref name="width"/> m de ancho, con solo el <paramref name="inside"/> (20 %)
-    /// sobre la planta y el resto VOLANDO fuera del borde, para no quitarle sitio. Sin postes (voladizo) y con barrera
-    /// invisible por fuera y por dentro (menos en el hueco de sus dos escaleras de dentro, en el centro de los lados ±Z, si
-    /// <paramref name="innerGaps"/>; y por fuera en <paramref name="openSide"/>, donde sube la escalera desde un puente).
+    /// sobre la planta y el resto VOLANDO fuera del borde, para no quitarle sitio. Sin postes (voladizo) y sin barreras en los
+    /// bordes (Berón 2026-10-27: se puede saltar); sus escaleras de dentro las pone quien lo construye.
     /// Devuelve la raíz (a la altura de la cara de arriba). <see cref="RingPoint"/> recorre su línea central.
     /// </summary>
-    static Transform RingDeck(Transform parent, string name, Vector2 floor, float h = MezzanineHeight, float width = 10f, float inside = 0.2f,
-                              bool innerGaps = true, int openSide = -1, float openAt = 0f)
+    static Transform RingDeck(Transform parent, string name, Vector2 floor, float h = MezzanineHeight, float width = 10f, float inside = 0.2f)
     {
         Color woodDark = new Color(0.48f, 0.4f, 0.33f), wood = new Color(0.62f, 0.52f, 0.42f);
         float inn = width * inside, hx = floor.x * 0.5f - inn, hz = floor.y * 0.5f - inn, ox = hx + width, oz = hz + width;
@@ -99,24 +97,6 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(ring, new Vector3(0f, -0.3f, s * (oz - 0.15f)), new Vector3(2f * ox, 0.3f, 0.3f), wood, 0f, "Viga_borde");
             KitchenProps.C(ring, new Vector3(s * (ox - 0.15f), -0.3f, 0f), new Vector3(0.3f, 0.3f, 2f * oz), wood, 0f, "Viga_borde");
         }
-        void Barrier(Vector3 c, Vector3 size) { }   // sin barreras en los bordes (Berón 2026-10-27): se puede saltar; se conserva el trazado de los huecos por si vuelven
-        // Un tramo de barrera a lo largo de X (alongX) o de Z, de −half a +half, con un hueco de 2,4 m en `gapAt` si se pide.
-        void Run(bool alongX, float fixedAt, float half, float? gapAt)
-        {
-            float a = -half, g0 = gapAt.HasValue ? gapAt.Value - 1.2f : float.MaxValue, g1 = gapAt.HasValue ? gapAt.Value + 1.2f : float.MaxValue;
-            foreach (var (lo, hi) in new[] { (a, Mathf.Min(half, g0)), (Mathf.Max(a, g1), half) })
-            {
-                if (hi - lo < 0.05f) continue;
-                float c = (lo + hi) * 0.5f, len = hi - lo;
-                Barrier(alongX ? new Vector3(c, 0f, fixedAt) : new Vector3(fixedAt, 0f, c), alongX ? new Vector3(len, 4f, 0.06f) : new Vector3(0.06f, 4f, len));
-            }
-        }
-        // Lados como en los puentes: 0 +X, 1 −X, 2 +Z, 3 −Z. Por fuera, el hueco de la escalera que sube desde el puente.
-        float? Open(int side) => openSide == side ? openAt : (float?)null;
-        Run(true, oz, ox, Open(2)); Run(true, -oz, ox, Open(3));
-        Run(false, ox, oz, Open(0)); Run(false, -ox, oz, Open(1));
-        Run(false, hx, hz, null); Run(false, -hx, hz, null);
-        Run(true, hz, hx, innerGaps ? 0f : (float?)null); Run(true, -hz, hx, innerGaps ? 0f : (float?)null);   // hueco en el centro de ±Z: las escaleras de dentro
         return ring;
     }
 

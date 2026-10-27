@@ -128,7 +128,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int tables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_")) tables++;
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
-        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y su escalera (plataforma hija)", upTables >= 12 && GameObject.Find("Escalera_comedor_puente") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
+        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y su escalera (plataforma hija)", upTables >= 12 && GameObject.Find("Escalera_comedor_norte") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
         var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
