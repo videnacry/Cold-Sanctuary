@@ -56,7 +56,9 @@ internal static class MicrocosmTemplate
         bool night = hour < 6f || hour >= 18f;
         float elev = night ? 25f : Mathf.Max(4f, Mathf.Sin(day * Mathf.PI) * 60f);
         float az = night ? 200f : Mathf.Lerp(90f, 270f, day);   // este → sur → oeste
-        sun.transform.rotation = Quaternion.Euler(elev, az, 0f);
+        // La luz VIAJA desde el sol: apunta al lado contrario de su acimut (+Z = norte). Antes Euler(elev, az) dejaba el sol
+        // al otro lado del cielo (docs/luz-microcosmos.md).
+        sun.transform.rotation = Quaternion.Euler(elev, az + 180f, 0f);
         float warm = night ? 0f : 1f - Mathf.Clamp01(Mathf.Sin(day * Mathf.PI) * 1.6f);   // alba y ocaso, dorados
         sun.color = night ? new Color(0.62f, 0.7f, 0.9f) : Color.Lerp(new Color(1f, 0.97f, 0.92f), new Color(1f, 0.72f, 0.45f), warm);
         sun.intensity = night ? 0.35f : Mathf.Lerp(0.7f, 1.2f, Mathf.Sin(day * Mathf.PI));
