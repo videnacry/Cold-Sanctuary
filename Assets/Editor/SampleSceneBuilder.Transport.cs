@@ -159,18 +159,20 @@ public static partial class SampleSceneBuilder
         {
             if (bt == null) continue;
             Vector2 s = _platforms.TryGetValue(bt, out Vector2 sz) ? sz : new Vector2(12f, 12f);
-            Vector3? spot = null; Vector3 fallback = Vector3.zero; bool any = false;
-            foreach (Vector3 dir in new[] { Vector3.forward, Vector3.back, Vector3.right, Vector3.left })
-            {
-                float out_ = (dir.z != 0f ? s.y : s.x) * 0.5f + ZoneD * 0.5f + 2.5f;
-                Vector3 p = bt.TransformPoint(dir * out_); p.y = bt.position.y - 1.5f;
-                if (!Physics.Raycast(p, Vector3.down, out RaycastHit hit, 40f, ~0, QueryTriggerInteraction.Ignore)) continue;
-                if (!any) { fallback = hit.point; any = true; }
-                if (Water(hit.transform) || hit.point.y < -0.5f) continue;
-                spot = hit.point; break;
-            }
-            if (!any) { Debug.LogWarning($"[Transporte] Sin suelo al pie de «{bname}» para sus alfombras."); continue; }
-            CarpetPad.BuildZone(bt, (spot ?? fallback) + Vector3.up * 0.05f, bt.rotation, CarpetPad.Kind.Edificio, bname, 0, $"{bname}#0", "Suelo (hielo)", 2);
+            // El hielo firme más cercano al pie (8 direcciones, cada vez más lejos): si el edificio da al agua, en la orilla.
+            Vector3? spot = null;
+            for (float extra = 2.5f; extra <= 40f && spot == null; extra += 3f)
+                for (int a = 0; a < 8 && spot == null; a++)
+                {
+                    Vector3 dir = Quaternion.Euler(0f, a * 45f, 0f) * Vector3.forward;
+                    float out_ = Mathf.Abs(dir.z) * s.y * 0.5f + Mathf.Abs(dir.x) * s.x * 0.5f + ZoneD * 0.5f + extra;
+                    Vector3 p = bt.TransformPoint(dir * out_); p.y = bt.position.y - 1.5f;
+                    if (!Physics.Raycast(p, Vector3.down, out RaycastHit hit, 40f, ~0, QueryTriggerInteraction.Ignore)) continue;
+                    if (Water(hit.transform) || hit.point.y < -0.5f) continue;   // agua o fondo del mar
+                    spot = hit.point;
+                }
+            if (spot == null) { Debug.LogWarning($"[Transporte] Sin hielo firme cerca de «{bname}» para sus alfombras del suelo."); continue; }
+            CarpetPad.BuildZone(bt, spot.Value + Vector3.up * 0.05f, bt.rotation, CarpetPad.Kind.Edificio, bname, 0, $"{bname}#0", "Suelo (hielo)", 2);
             placed++;
         }
         Debug.Log($"[Transporte] {placed} áreas de alfombras en el hielo, al pie de cada edificio.");
