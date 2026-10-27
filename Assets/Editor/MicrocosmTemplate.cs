@@ -48,20 +48,14 @@ internal static class MicrocosmTemplate
     /// <summary>Construye la escena del microcosmos según la plantilla (en <paramref name="origin"/>, lejos del santuario).</summary>
     public static void Build(MicrocosmSpec s, Vector3 origin) => MicrocosmosAreaSceneBuilder.BuildStoryScene(s, origin);
 
-    /// <summary>El sol a la hora <paramref name="hour"/>: sale por el este a las 6, culmina a las 12 (60°) y se pone a las 18;
-    /// de noche, una luz de luna tenue y fría.</summary>
-    public static void Sun(Light sun, float hour)
+    /// <summary>El sol a la hora <paramref name="hour"/> en el lugar y la fecha de <paramref name="display"/> (SolarPosition.GeoOf);
+    /// bajo el horizonte, una luz de luna tenue y fría.</summary>
+    public static void Sun(Light sun, float hour, string display = null)
     {
-        float day = Mathf.InverseLerp(6f, 18f, hour);
-        bool night = hour < 6f || hour >= 18f;
-        float elev = night ? 25f : Mathf.Max(4f, Mathf.Sin(day * Mathf.PI) * 60f);
-        float az = night ? 200f : Mathf.Lerp(90f, 270f, day);   // este → sur → oeste
-        // La luz VIAJA desde el sol: apunta al lado contrario de su acimut (+Z = norte). Antes Euler(elev, az) dejaba el sol
-        // al otro lado del cielo (docs/luz-microcosmos.md).
-        sun.transform.rotation = Quaternion.Euler(elev, az + 180f, 0f);
-        float warm = night ? 0f : 1f - Mathf.Clamp01(Mathf.Sin(day * Mathf.PI) * 1.6f);   // alba y ocaso, dorados
-        sun.color = night ? new Color(0.62f, 0.7f, 0.9f) : Color.Lerp(new Color(1f, 0.97f, 0.92f), new Color(1f, 0.72f, 0.45f), warm);
-        sun.intensity = night ? 0.35f : Mathf.Lerp(0.7f, 1.2f, Mathf.Sin(day * Mathf.PI));
+        // El sol REAL de su lugar y fecha (SolarPosition, docs/luz-microcosmos.md); sin lugar conocido, latitud media en
+        // verano. Bajo el horizonte, la luna.
+        if (!SolarPosition.GeoOf(display, out float lat, out _, out float doy)) { lat = 45f; doy = 172f; }
+        SolarPosition.Apply(sun, SolarPosition.SunFor(lat, doy, hour));
     }
 
     /// <summary>La fecha en la raíz del microcosmos (MicroEra): año, lugar, fecha, hora y plataforma.</summary>

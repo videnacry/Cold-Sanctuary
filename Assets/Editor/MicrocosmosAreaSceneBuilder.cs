@@ -52,7 +52,7 @@ public static class MicrocosmosAreaSceneBuilder
         var sun = new GameObject("Sun");
         sun.transform.position = o + Vector3.up * 10f;
         Light l = sun.AddComponent<Light>(); l.type = LightType.Directional;
-        MicrocosmTemplate.Sun(l, hour);
+        MicrocosmTemplate.Sun(l, hour, display);
 
         // ENFERMERÍA: su microcosmos es la historia de AMBROSIO (su muerte camino de la cueva), en un mundo extenso de antes
         // del fuego, dentro de la enfermería vista a escala de insecto (×10: el jugador es una hormiga).
@@ -143,7 +143,7 @@ public static class MicrocosmosAreaSceneBuilder
             var sun = new GameObject("Sun");
             sun.transform.position = o + Vector3.up * 10f;
             Light l = sun.AddComponent<Light>(); l.type = LightType.Directional;
-            MicrocosmTemplate.Sun(l, s.hour);
+            MicrocosmTemplate.Sun(l, s.hour, s.display);
             AreaMicrocosmos.Build(s.platform, s.display, s.kind, s.tint, o, s.story, s);
         }
         catch
