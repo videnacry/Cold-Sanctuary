@@ -93,7 +93,7 @@ public static partial class SampleSceneBuilder
         if (side >= 0) InclinedStair(r, "Escalera_comedor_puente", top + outDir * run, Mathf.Atan2(-outDir.x, -outDir.z) * Mathf.Rad2Deg);
         else
         {
-            Debug.LogWarning("[Restaurante] sin puente: el comedor sube por dentro (escaleras en los lados ±Z).");
+            Debug.Log("[Restaurante] Sin puentes (se llega en alfombra): el comedor sube por dentro (escaleras en los lados ±Z).");
             InclinedStair(r, "Escalera_comedor_puente", new Vector3(0f, 0f, hz - run), 0f);
             InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
         }

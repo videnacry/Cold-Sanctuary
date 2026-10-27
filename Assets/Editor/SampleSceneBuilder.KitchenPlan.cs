@@ -92,7 +92,7 @@ public static partial class SampleSceneBuilder
         // ── LAS CUATRO FRANJAS DE LOS BORDES ── (en el marco del ÁREA: el puente y la escalera vertical se miden ahí)
         float along = 0f;
         int bridge = area != null ? KitchenBridge(area.transform, out along) : -1;
-        if (bridge < 0) { bridge = 3; along = 0f; Debug.LogWarning("[Cocina] no encuentro el puente de la plataforma: la recepción va al lado −Z."); }
+        if (bridge < 0) { bridge = 3; along = 0f; }   // sin puentes (alfombras, docs/alfombras-plan.md): la recepción va al lado −Z
         KitchenBridgeSide = bridge;
         int opposite = bridge ^ 1;
         int[] others = bridge < 2 ? new[] { 2, 3 } : new[] { 0, 1 };

@@ -267,13 +267,13 @@ public class WorkdayDirector : MonoBehaviour
         return false;
     }
 
-    // En un puente o una pista de alfombras, volando o trepando una escalera.
+    // En un área de alfombras (esperando una), volando o trepando una escalera.
     static bool InTransit(GameObject p)
     {
         if (FlyingCarpet.Riding(p) || Ladder.IsClimbing(p.transform)) return true;
         if (!Physics.Raycast(p.transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)) return false;
         for (Transform t = hit.transform; t != null; t = t.parent)
-            if (t.name.StartsWith("Puente_") || t.name.StartsWith("Pista_Alfombras")) return true;
+            if (t.name.StartsWith("Puente_") || t.name.StartsWith("Pista_Alfombras") || t.name.StartsWith("Alfombras_")) return true;
         return false;
     }
 

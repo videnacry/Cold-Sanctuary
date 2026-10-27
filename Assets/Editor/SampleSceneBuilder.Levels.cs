@@ -13,16 +13,16 @@ public static partial class SampleSceneBuilder
 {
     public const float UpperFloorGap = 11f, MezzanineHeight = 4f;   // +1 m (Berón 2026-10-23): debajo se pasa holgado, sin chocar con la losa
     const float StairAngle = 38f;   // pendiente de las escaleras inclinadas (una escalera de casa ronda los 35–40°)
-    const float SetBack = 3f;   // el piso de arriba es 3 m más corto por +Z: ahí queda el pie de su escalera
+    const float SetBack = 0f;   // todos los pisos de un edificio, del mismo tamaño (Berón 2026-10-27: sin escalera, se sube en alfombra)
 
     /// <summary>Pone <paramref name="upper"/> como PISO SUPERIOR de <paramref name="lower"/> (ya elevada), 11 m más arriba.
-    /// Devuelve el tamaño del piso (el de abajo, 3 m más corto por +Z, donde baja su escalera).</summary>
+    /// Devuelve el tamaño del piso (el mismo que el de abajo).</summary>
     static Vector2 StackOn(Transform upper, Transform lower, Vector2 lowerSize)
     {
         Vector2 size = new Vector2(lowerSize.x, lowerSize.y - SetBack);
         upper.SetPositionAndRotation(lower.TransformPoint(new Vector3(0f, 0f, -SetBack * 0.5f)), lower.rotation);
-        // Su escalera, a un lado del eje (en el eje llega la del piso de abajo; a +X está la máquina de virtualización).
-        Elevate(upper, size, UpperFloorGap, groundBelow: false, ladderX: -size.x * 0.3f);
+        _upperOf[upper] = lower;   // de qué edificio es este piso (sus alfombras de edificio lo unen con los demás)
+        Elevate(upper, size, UpperFloorGap, groundBelow: false);
         return size;
     }
 
@@ -99,7 +99,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(ring, new Vector3(0f, -0.3f, s * (oz - 0.15f)), new Vector3(2f * ox, 0.3f, 0.3f), wood, 0f, "Viga_borde");
             KitchenProps.C(ring, new Vector3(s * (ox - 0.15f), -0.3f, 0f), new Vector3(0.3f, 0.3f, 2f * oz), wood, 0f, "Viga_borde");
         }
-        void Barrier(Vector3 c, Vector3 size) { Transform b = Solid(ring, c + Vector3.up * 2f, size, wood, "Barrera_anillo"); b.GetComponent<Renderer>().enabled = false; }
+        void Barrier(Vector3 c, Vector3 size) { }   // sin barreras en los bordes (Berón 2026-10-27): se puede saltar; se conserva el trazado de los huecos por si vuelven
         // Un tramo de barrera a lo largo de X (alongX) o de Z, de −half a +half, con un hueco de 2,4 m en `gapAt` si se pide.
         void Run(bool alongX, float fixedAt, float half, float? gapAt)
         {

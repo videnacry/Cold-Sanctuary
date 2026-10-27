@@ -128,7 +128,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int tables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_")) tables++;
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
-        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y escalera desde el puente", upTables >= 12 && GameObject.Find("Escalera_comedor_puente") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
+        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y su escalera (plataforma hija)", upTables >= 12 && GameObject.Find("Escalera_comedor_puente") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
         var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
@@ -337,8 +337,39 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la iniciación de turistas del hospital es una misión de virtualización con su escena", Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName("enf_iniciacion")) && VirtualMissions.Steps("enf_iniciacion").Length >= 4);
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
-        TestProbe.Greater("hay pistas de alfombras voladoras (una encima de cada plataforma)", CarpetPad.All.Count, 1f, string.Join(" · ", CarpetPad.All.Select(p => p.displayName)));
-        TestProbe.Check("el restaurante y el hospital están unidos por un puente de 8 m", FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") && t.name.Contains(AreaWork.Hospital) && !t.name.Contains("pista")));
+        // ALFOMBRAS (docs/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
+        TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") || t.name == "Pasarela"));
+        var pads = CarpetPad.All;
+        int hospFloors = pads.Where(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
+        TestProbe.Greater("el hospital tiene alfombras en cada piso, en el hielo y en el techo (5)", hospFloors, 4f, $"{hospFloors} pisos con alfombras");
+        int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
+        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario", roofs, 15f, $"{roofs} techos");
+        TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia").All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
+        TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
+        CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1);
+        TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
+        // De un piso del hospital a la cama de Kushal: piso → techo → residencia → su habitación, sin escaleras.
+        CarpetPad start = pads.FirstOrDefault(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio && p.floor == 2);
+        Bedroom home = player != null ? Bedroom.Of(player.GetComponent<Anima>()) : null;
+        if (start != null && home != null && home.bed != null)
+        {
+            GameObject traveler = new GameObject("Viajero_TEST");
+            traveler.transform.position = start.transform.position + start.transform.right * 4.5f;
+            foreach (FlyingCarpet fc in FlyingCarpet.All) fc.speed = 200f;
+            int flights = FlyingCarpet.Trips; float t1 = Time.time;
+            while (Time.time - t1 < 40f)
+            {
+                Vector3 to = home.bed.position;
+                Vector3 d = to - traveler.transform.position; float dy = Mathf.Abs(d.y); d.y = 0f;
+                if (d.magnitude < 3f && dy < 2f) break;
+                if (!CarpetPad.Route(traveler, ref to)) traveler.transform.position = Vector3.MoveTowards(traveler.transform.position, to, 30f * Time.deltaTime);   // «anda» rápido
+                yield return null;
+            }
+            foreach (FlyingCarpet fc in FlyingCarpet.All) fc.speed = 18f;
+            Vector3 left = home.bed.position - traveler.transform.position;
+            TestProbe.Check("un trabajador va de un piso del hospital a su casa del árbol en alfombras (3 vuelos)", left.magnitude < 4f && FlyingCarpet.Trips - flights >= 3, $"{FlyingCarpet.Trips - flights} vuelos, a {left.magnitude:0.0} m de la cama");
+            Destroy(traveler);
+        }
         var census = new System.Collections.Generic.Dictionary<string, int>();
         foreach (Animal a in FindObjectsByType<Animal>(FindObjectsSortMode.None)) if (a != null && !a.death && Mathf.Abs(a.transform.position.x) < 250f && Mathf.Abs(a.transform.position.z) < 250f) census[a.SpeciesName] = (census.TryGetValue(a.SpeciesName, out int cn) ? cn : 0) + 1;
         int bears = census.TryGetValue("Bear", out int bc) ? bc : 0, penguins = census.TryGetValue("Penguin", out int pc) ? pc : 0;

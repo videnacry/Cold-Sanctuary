@@ -113,12 +113,16 @@ public class WalkToSpell : QueuedSpell
             return true;
         }
 
+        // Otro piso u otro edificio: por la cadena de alfombras voladoras (ya no hay escaleras ni puentes).
+        Vector3 goal = target.position;
+        if (CarpetPad.Route(self.gameObject, ref goal)) { _lastProgress = Time.time; return false; }
+
         WalkSpell walk = self.GetComponent<WalkSpell>();
         // maxSpeed = subir a la punta (channeling). Antes pasaba `charging`, que es la postura de SALIDA (quieto):
         // walkTo({maxSpeed:true}) dejaba al jugador clavado y la cola bloqueada.
         if (walk != null)
         {
-            Vector3 dir = Steer(self.transform.position, target.position).normalized;
+            Vector3 dir = Steer(self.transform.position, goal).normalized;
             // La ruta sube (o baja) por una escalera vertical: al llegar a su pie, trepa (no cuenta como atasco).
             if (Ladder.AutoClimb(self.transform, _nextCorner)) { _lastProgress = Time.time; return false; }
             // Clavado contra una raíz, una esquina o un mueble que la ruta roza: rodearlo de lado (alternando cada 1,2 s).
@@ -133,7 +137,7 @@ public class WalkToSpell : QueuedSpell
         else
         {
             var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>();
-            if (nav != null && nav.isOnNavMesh) nav.SetDestination(target.position);
+            if (nav != null && nav.isOnNavMesh) nav.SetDestination(goal);
         }
         return false;
     }
@@ -158,6 +162,7 @@ public class WanderSpell : QueuedSpell
         if (Time.time >= _until) return true;
         Vector3 to = _dest - self.transform.position; to.y = 0f;
         if (to.magnitude <= 0.6f) return true;
+
         WalkSpell walk = self.GetComponent<WalkSpell>();
         if (walk != null) walk.Drive(to.normalized);
         else { var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>(); if (nav != null && nav.isOnNavMesh) nav.SetDestination(_dest); }
@@ -174,4 +179,31 @@ public class BodyReflexSpell : QueuedSpell
     public BodyReflexSpell(AcuteStressResponse asr) { _asr = asr; }
     public override string Label => "instinto (el cuerpo manda)";
     public override bool Tick(Anima self) => _asr == null || !_asr.InTakeover;   // se mantiene mientras haya toma de mando
+}
+
+/// <summary>IR A UN SITIO DE OTRO PISO O EDIFICIO (docs/alfombras-plan.md): sin escaleras ni puentes, sigue la cadena de
+/// alfombras voladoras (<see cref="CarpetPad.Route"/>) y anda dentro de cada piso. Lo usa, p. ej., quien se va a dormir a
+/// su casa del árbol.</summary>
+public class CarpetWalkSpell : QueuedSpell
+{
+    public Transform target;
+    public string targetName = "destino";
+    public float stopDistance = 1f, speed = 1.6f, giveUpAfter = 300f;
+    float _start = -1f;
+
+    public override string Label => $"ir a {targetName} (en alfombra)";
+
+    public override bool Tick(Anima self)
+    {
+        if (self == null || target == null) return true;
+        if (_start < 0f) _start = Time.time;
+        if (Time.time - _start > giveUpAfter) return true;
+        Vector3 d = target.position - self.transform.position;
+        float dy = Mathf.Abs(d.y); d.y = 0f;
+        if (d.magnitude <= stopDistance && dy < 2f) return true;
+        Vector3 to = target.position;
+        if (CarpetPad.Route(self.gameObject, ref to)) return false;   // volando (o subiéndose)
+        PathMover.Of(self.transform).StepToward(to, speed);
+        return false;
+    }
 }

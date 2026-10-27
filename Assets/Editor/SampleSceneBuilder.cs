@@ -132,7 +132,7 @@ public static partial class SampleSceneBuilder
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
-        PlaceStackedPads();    // pistas de alfombras como piso de arriba de su área mayor (ya con los muebles puestos)
+        PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
@@ -140,7 +140,8 @@ public static partial class SampleSceneBuilder
         PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
-        ClearBridgeLandings();           // ya amueblado: despeja el paso de cada puente. ANTES del NavMesh (si no, quedaba horneado con los muebles en su sitio viejo)
+        PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
+        ClearBridgeLandings();
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         BakeNavMesh();
 
@@ -229,7 +230,7 @@ public static partial class SampleSceneBuilder
                 catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
             }
             DressHumanoids();
-            PlaceStackedPads();
+            PlaceCarpetAreas();
             PlaceRooftopSolar();
             BakeNavMesh();
             EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
@@ -3423,6 +3424,7 @@ public static partial class SampleSceneBuilder
     // volver a colocar a mano más adelante — esto no los borra, solo deja de instanciarlos.
     static SanctuaryArea[] BuildAreaStructures(Transform parent)
     {
+        _platforms.Clear(); _upperOf.Clear();   // de una construcción a otra (estáticos)
         GameObject areasGroup = new GameObject("Areas_Placed");
         areasGroup.transform.SetParent(parent);
 
@@ -3582,7 +3584,7 @@ public static partial class SampleSceneBuilder
         CreateAreaLabel(go.transform, GardenPlot.Title(guild), new Vector3(0f, 2.2f, -size.y * 0.5f - 1f));
         // Los CULTIVOS también van ELEVADOS (docs/construcciones-elevadas.md): el huerto no deja el suelo del bosque en
         // sombra ni lo pisa; abajo crece el musgo y pasan los animales.
-        if (upperOf != null) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), UpperFloorGap, groundBelow: false, ladderX: -(size.x + 2f) * 0.3f);
+        if (upperOf != null) { _upperOf[go.transform] = upperOf; Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), UpperFloorGap, groundBelow: false); }
         else if (withSoil) Elevate(go.transform, new Vector2(size.x + 2f, size.y + 2f), ElevatedHeight);
         return go;
     }
@@ -3614,27 +3616,17 @@ public static partial class SampleSceneBuilder
         Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
         Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
 
-        // SIN BARANDILLA VISIBLE (Berón, 2026-10-22: se quitan las barandillas de las áreas humanas): en el borde exterior
-        // solo queda una BARRERA INVISIBLE de 4 m, en los tres lados cerrados y a ambos lados de la escalera, para que
-        // nadie caiga de 12 m; no tapa la vista ni ocupa sitio dentro del área.
-        void Rail(Vector3 from, Vector3 to)
-        {
-            Vector3 mid = (from + to) * 0.5f, d = to - from;
-            Transform low = Solid(s, mid + Vector3.up * 2f, new Vector3(Mathf.Abs(d.x) + 0.06f, 4f, Mathf.Abs(d.z) + 0.06f), wood, "Barandilla_Barrera");   // 4 m (ni saltando): no se salta
-            low.GetComponent<Renderer>().enabled = false;
-        }
-        Rail(new Vector3(-hx, 0f, -hz), new Vector3(hx, 0f, -hz));
-        Rail(new Vector3(-hx, 0f, -hz), new Vector3(-hx, 0f, hz));
-        Rail(new Vector3(hx, 0f, -hz), new Vector3(hx, 0f, hz));
-        Rail(new Vector3(-hx, 0f, hz), new Vector3(ladderX - 0.6f, 0f, hz));   // hueco = donde llega la escalera vertical
-        Rail(new Vector3(ladderX + 0.6f, 0f, hz), new Vector3(hx, 0f, hz));
+        // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
+        // plataforma a otra, y se sube y se baja en ALFOMBRA VOLADORA (cada piso tiene su área de alfombras; se ponen al
+        // final, con los muebles ya puestos: PlaceCarpetAreas). Solo las plataformas hijas conservan sus escaleras.
 
         // COLCHÓN DE MUSGO bajo la plataforma y alrededor (+6 m): si alguien cae, amortigua el golpe; y es una planta más.
         if (groundBelow) SoftGround.Plant(s, t.TransformPoint(new Vector3(0f, -h - 0.1f, 0f)), new Vector2(size.x + 12f, size.y + 12f), size.GetHashCode());
-
-        // ESCALERA VERTICAL por el lado abierto (+Z): se sube con F / Espacio / `climb`; la IA, por su enlace del NavMesh.
-        Ladder.Build(s, new Vector3(ladderX, -h, hz + Ladder.Gap), 180f, h, wood, woodDark);
+        _platforms[t] = size;
     }
+
+    // Todo lo elevado (áreas, pisos, huertos) y su tamaño: de aquí salen los pisos de cada edificio para sus alfombras.
+    static readonly Dictionary<Transform, Vector2> _platforms = new Dictionary<Transform, Vector2>();
 
     // Piso más alto de cada edificio (y su tamaño), para sus paneles solares.
     static readonly List<(Transform top, Vector2 size, string name)> _roofs = new List<(Transform, Vector2, string)>();
@@ -3674,6 +3666,8 @@ public static partial class SampleSceneBuilder
             var blockers = new List<Bounds>();
             foreach (Renderer rr in top.GetComponentsInChildren<Renderer>())
                 if (rr.enabled && rr.bounds.min.y > floorY + 0.3f && rr.bounds.min.y < floorY + height + 0.6f) blockers.Add(rr.bounds);
+            foreach (CarpetPad cp in top.GetComponentsInChildren<CarpetPad>())   // las áreas de alfombras del techo: los postes no van encima
+                if (Mathf.Abs(cp.transform.position.y - floorY) < 1f) blockers.Add(new Bounds(cp.transform.position + Vector3.up * 1.5f, new Vector3(ZoneW + 1f, 3f, ZoneD + 1f)));
             // Candidatos (local: centro de la fila y giro), por orden de preferencia: fondo, laterales y, si no, el frente;
             // en cada borde, del centro hacia los extremos (cada cuarto del tramo libre).
             var cands = new List<(Vector3 p, float yaw)>();
