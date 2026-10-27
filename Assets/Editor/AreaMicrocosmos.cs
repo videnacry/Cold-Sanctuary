@@ -230,6 +230,19 @@ public static class AreaMicrocosmos
     }
 
     /// <summary>Altura del suelo del área en ese punto (la cara de arriba del plano más alto que lo cubre).</summary>
+    // El suelo bajo p cuya cara de arriba queda más cerca de <paramref name="near"/> (no el más alto: hay plantas encima).
+    static float FloorNear(Vector3 p, List<Renderer> floors, float near)
+    {
+        float y = near, best = float.MaxValue;
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && Mathf.Abs(b.max.y - near) < best) { best = Mathf.Abs(b.max.y - near); y = b.max.y; }
+        }
+        return y;
+    }
+
     static float FloorAt(Vector3 p, List<Renderer> floors, float fallback)
     {
         float y = float.MinValue;
@@ -525,7 +538,11 @@ public static class AreaMicrocosmos
                     // Dentro del área: solo sobre su suelo libre (entre muebles), a la altura de ese suelo.
                     if (floors.Count > 0 && EdgeDist(w, floors) < 2f) continue;
                     if (NearBlocked(w, 3f)) continue;
-                    p.y = FloorAt(w, floors, center.y) - center.y;
+                    // En SU planta (la más cercana a la altura del área): antes tomaba el suelo más alto y en el hospital (3 plantas)
+                    // las plantas salían en el piso de arriba o el tejado, fuera del área (Berón 2026-10-27).
+                    float fy = FloorNear(w, floors, center.y);
+                    if (Mathf.Abs(fy - center.y) > 1.5f) continue;
+                    p.y = fy - center.y;
                 }
                 if (biome != null)   // FLORA NATIVA de su era y región (MicroBiome); un 12 % de suelo desnudo para pasar
                 {
