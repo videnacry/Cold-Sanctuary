@@ -125,6 +125,16 @@ public class AmbrosioStory : MonoBehaviour
         return p;
     }
 
+    // Apoya en el suelo el punto más bajo del cuerpo (más <paramref name="lift"/>): tumbado, el origen (los pies) ya no es lo más bajo.
+    float _deathLift;
+    void RestOnGround(Transform t, float lift)
+    {
+        if (t == null) return;
+        Renderer[] rs = t.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) return;
+        Bounds b = rs[0].bounds; foreach (Renderer r in rs) b.Encapsulate(r.bounds);
+        t.position += Vector3.up * (Ground(t.position).y + lift - b.min.y);
+    }
+
     void Place(Transform t, Vector3 p) { if (t == null) return; t.position = Ground(p) /* (pies en el suelo) */; t.rotation = Quaternion.LookRotation(_dir); }
 
     Transform PlayerT()
@@ -273,9 +283,10 @@ public class AmbrosioStory : MonoBehaviour
             {
                 Face(p, _ambrosio);
                 float t = Time.time - _beatAt;
-                Quaternion down = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 175f), held = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 115f);
+                Quaternion down = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 90f), held = Quaternion.LookRotation(_dir) * Quaternion.Euler(0f, 0f, 60f);   // de lado (antes 175°: boca arriba girando sobre los pies, se hundía en el suelo)
                 // Cae de lado (3 s); cuando Momo lo levanta, queda medio alzado en sus brazos (sigue tumbado: no se pone en pie).
                 _ambrosio.rotation = t < 11f ? Quaternion.Slerp(Quaternion.LookRotation(_dir), down, Mathf.Clamp01(t / 3f)) : Quaternion.Slerp(down, held, Mathf.Clamp01((t - 11f) / 2f));
+                RestOnGround(_ambrosio, _deathLift);   // el cuerpo, tumbado, apoya en el suelo: nunca lo atraviesa
                 Once("ambrosio_alivio", t > 1.5f, () => StorySubtitle.Show("", "A unos pasos de la entrada, Ambrosio se tumba, aliviado de haber puesto a su familia a salvo.", 7f));   // (la novela no le da últimas palabras)
                 // Medea, diminuta, intenta levantarlo sola y no puede: se inclina, tira, vuelve a caer.
                 if (_medea != null)
@@ -299,7 +310,7 @@ public class AmbrosioStory : MonoBehaviour
                     if (t > 9.5f) Walk(_momo, _ambrosio.position + _side * 1.1f, 0.4f, dt);
                     Once("momo_llora", t > 10f, () => Say(_momo, "…¡Ambrosio! ¡No, no, no!", 4f));
                     Once("momo_tesoros", t > 13f, () => Say(_momo, "Toma, mi hongo… mis hojitas, todas. ¡Come, Ambrosio, come!", 6f));
-                    if (t > 11f) _ambrosio.position = Vector3.Lerp(_ambrosio.position, Ground(_ambrosio.position) + Vector3.up * 0.6f, dt * 2f);
+                    if (t > 11f) _deathLift = Mathf.MoveTowards(_deathLift, 0.6f, dt * 0.4f);   // en brazos de Momo, medio alzado
                 }
                 Once("medea_llanto", t > 16f, () => Say(_medea, "¡No me dejes! ¡Llévame contigo!", 6f));
                 // Héspero, delante, con la cara rígida: lo ve caer… y se vuelve, rápido, hacia otro lado.
