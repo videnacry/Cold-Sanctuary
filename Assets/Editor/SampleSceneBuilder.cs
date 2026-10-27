@@ -2985,7 +2985,8 @@ public static partial class SampleSceneBuilder
         // 10 m) son su propio SanctuaryArea, así que su piso también cuenta.
         var volumes = new List<Bounds>();
         var built = new List<Component>(Object.FindObjectsOfType<SanctuaryArea>());
-        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las pistas de alfombras, encima de las áreas
+        built.AddRange(Object.FindObjectsOfType<CarpetPad>());   // las áreas de alfombras
+        foreach (Transform t in _platforms.Keys) if (t != null) built.Add(t);   // todos los pisos y los techos de alfombras (con su losa)
         foreach (Component sa in built)
         {
             bool any = false; Bounds bb = default;

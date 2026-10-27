@@ -24,9 +24,6 @@ public class GroundGuard : MonoBehaviour
         if (Ladder.IsClimbing(transform)) return;  // en una escalera vertical (compañeros sin CharacterController)
         if (FlyingCarpet.Riding(gameObject)) return;   // volando en alfombra
         if (TryGetComponent(out PlayerController pc) && pc.BodyHeld) return;   // lo sujeta alguien (lo llevan de la mano, sentado en el examen…): lo coloca quien lo sujeta
-        // Con su agente en el NavMesh, el agente ya lo tiene en el suelo: sin esto, al bajarse de una alfombra en un techo
-        // a veces no veía el techo (pies estimados por debajo) y lo «bajaba» al piso de abajo, y volvía a subir.
-        if (TryGetComponent(out UnityEngine.AI.NavMeshAgent ag) && ag.enabled && ag.isOnNavMesh) return;
 
         Vector3 p = transform.position;
         // PIES: con CharacterController, su base; sin él (compañeros), la base de su cuerpo de cubos o de su cápsula. Antes
@@ -41,7 +38,7 @@ public class GroundGuard : MonoBehaviour
         if (float.IsNegativeInfinity(best)) return;
 
         // FLOTANDO (sin CharacterController no hay gravedad): baja al suelo que tiene debajo.
-        if (_cc == null && feet > best + 0.4f && best > PolarWaterY - 0.3f && !GroundUnderRoot(p))   // sobre el agua no: ahí nada (no baja al fondo del mar)
+        if (_cc == null && feet > best + 0.4f && best > PolarWaterY - 0.3f && !GroundUnderRoot(p) && !OnAgentMesh())   // sobre el agua no: ahí nada (no baja al fondo del mar)
         {
             transform.position = p + Vector3.down * (feet - best);
             Debug.Log($"[Suelo] «{name}» flotaba {(feet - best):0.0} m sobre el suelo en ({p.x:0},{p.z:0}) → baja al suelo.");
@@ -58,6 +55,9 @@ public class GroundGuard : MonoBehaviour
 
     // ¿Hay suelo justo bajo su origen? (los pies estimados del cuerpo a veces quedan por debajo y el techo de alfombras, a
     // ras de los pies, no contaba: lo «bajaba» al piso de abajo nada más aterrizar.)
+    // Con su agente sobre el NavMesh, el agente lo tiene en su piso: no se le «baja» (pero si está enterrado, sí se le sube).
+    bool OnAgentMesh() => TryGetComponent(out UnityEngine.AI.NavMeshAgent ag) && ag.enabled && ag.isOnNavMesh;
+
     bool GroundUnderRoot(Vector3 p)
     {
         foreach (RaycastHit h in Physics.RaycastAll(p + Vector3.up * 0.5f, Vector3.down, 1.2f, ~0, QueryTriggerInteraction.Ignore))
