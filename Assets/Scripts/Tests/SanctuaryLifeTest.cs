@@ -338,7 +338,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int noScene = 0; foreach (var vm in VirtualMissions.All()) if (!Application.CanStreamedLevelBeLoaded(VirtualMissions.SceneName(vm.key))) noScene++;
         TestProbe.Check("todas las misiones de trabajo tienen su escena de virtualización", noScene == 0, $"{noScene} sin escena");
         // ALFOMBRAS (docs/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
-        TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => t.name.StartsWith("Puente_") || t.name == "Pasarela"));
+        TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => (t.name.StartsWith("Puente_") && t.name != "Puente_piscina") || (t.name == "Pasarela" && t.parent != null && t.parent.name != "Puente_piscina")));   // (el puente de la piscina del reactor es equipo)
         var pads = CarpetPad.All;
         int hospFloors = pads.Where(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
         TestProbe.Greater("el hospital tiene alfombras en cada piso, en el hielo y en el techo (5)", hospFloors, 4f, $"{hospFloors} pisos con alfombras");

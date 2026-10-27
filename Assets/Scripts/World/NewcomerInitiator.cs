@@ -138,7 +138,7 @@ public class NewcomerInitiator : MonoBehaviour
         {
             Vector3 d = p.position - transform.position;
             float gap = d.magnitude; d.y = 0f;   // en 3D: en otro piso no está «cerca» aunque esté encima
-            if (gap > 1.6f) { PathMover.Of(this).StepToward(p.position, moveSpeed); return; }
+            if (gap > 1.6f) { Step(p.position); return; }
             transform.rotation = Quaternion.LookRotation(Flat(d));
             GreetedAtDistance = gap;
             Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
@@ -156,7 +156,7 @@ public class NewcomerInitiator : MonoBehaviour
             Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
             Vector3 d = stand - transform.position; d.y = 0f;
             Escort(p, Time.deltaTime);
-            if (d.magnitude > 0.6f) { PathMover.Of(this).StepToward(stand, moveSpeed); return; }
+            if (d.magnitude > 0.6f) { Step(stand); return; }
             Put(p, pa, place, b.patient);
             transform.rotation = Quaternion.LookRotation(Flat(p.position - transform.position));
             ArrivalExam.Hold(gameObject, b.tool, BodyPart.HandRight, "Herramienta");
@@ -260,6 +260,14 @@ public class NewcomerInitiator : MonoBehaviour
         if (o != null && o.GetComponent<PlayerController>() != null) LessonPrompt.Show($"{Who}: {text}", null, secs + 2f);
     }
 
+    // Andar hacia un sitio; si está en otro piso o edificio, por la cadena de alfombras voladoras (ya no hay escaleras).
+    void Step(Vector3 target)
+    {
+        Vector3 to = target;
+        if (CarpetPad.Route(gameObject, ref to)) return;
+        PathMover.Of(this).StepToward(to, moveSpeed);
+    }
+
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
 
     // ── 3. AL TANQUE: lo mete dentro y lo envía a su primer microcosmos ──────────────────────────────────────────
@@ -275,7 +283,7 @@ public class NewcomerInitiator : MonoBehaviour
         VirtualizationMachine vm = Machine();
         if (vm == null) { _leading.initiated = true; _leading = null; Hold(p, false); Now = Phase.None; return; }
         Vector3 to = vm.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { Escort(p, Time.deltaTime); PathMover.Of(this).StepToward(vm.transform.position, moveSpeed); return; }
+        if (to.magnitude > reach) { Escort(p, Time.deltaTime); Step(vm.transform.position); return; }
         Hold(p, false);
         _leading.initiated = true; _leading = null; Now = Phase.None;
         if (p.GetComponent<PlayerController>() != null && MobWorldLoader.HasInstance)
@@ -292,7 +300,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Accompany(SanctuaryOnboarding o)
     {
         Vector3 to = o.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach + 0.8f) PathMover.Of(this).StepToward(o.transform.position, moveSpeed);
+        if (to.magnitude > reach + 0.8f) Step(o.transform.position);
         if (Time.time - _sentAt < 120f || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;   // ya va (o está) en el microcosmos
         if (Time.time < _nextReminder || o.GetComponent<PlayerController>() == null) return;
         _nextReminder = Time.time + 25f;
