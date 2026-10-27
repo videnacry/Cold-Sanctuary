@@ -65,6 +65,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
             }
             yield return null;
         }
+        Debug.Log($"[Experiencia] fin del examen: InProgress={ni.InProgress} Now={ni.Now} tiempo={(limit - Time.time):0} s de margen");
         int steps = seen.Split('|').Length - 1;
         TestProbe.Check("el examen de llegada recorre sus 10 pasos en orden", steps == ArrivalExam.Beats.Length && seen.StartsWith("|expediente|botas|manos|temperatura|tension|auscultacion|hisopo|ecg|vacuna|apto"), seen);
         TestProbe.Check("en cada paso el trabajador tiene su herramienta en la mano", tools == steps, $"{tools}/{steps}");

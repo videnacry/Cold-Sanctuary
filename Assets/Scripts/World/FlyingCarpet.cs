@@ -94,6 +94,12 @@ public class FlyingCarpet : MonoBehaviour
     IEnumerator Trip(GameObject who, CarpetPad to)
     {
         Flying = true; _riders.Add(who); Trips++;
+        // A qué altura va su origen sobre sus pies (el jugador, por los pies; muchos personajes, por la pelvis, ~1 m): para
+        // sentarlo encima de la alfombra y dejarlo de pie encima, no medio hundido.
+        float rootAbove = float.MaxValue;
+        foreach (RaycastHit h in Physics.RaycastAll(who.transform.position + Vector3.up * 0.3f, Vector3.down, 2.5f, ~0, QueryTriggerInteraction.Ignore))
+            if (!h.transform.IsChildOf(who.transform) && h.point.y <= who.transform.position.y + 0.05f) rootAbove = Mathf.Min(rootAbove, who.transform.position.y - h.point.y);   // el suelo más cercano bajo él
+        rootAbove = rootAbove == float.MaxValue ? 0f : Mathf.Clamp(rootAbove, 0f, 1.6f);
         bool player = who.CompareTag("Player");
         Anima a = who.GetComponent<Anima>();
         var agent = who.GetComponent<UnityEngine.AI.NavMeshAgent>();
@@ -119,7 +125,7 @@ public class FlyingCarpet : MonoBehaviour
             Vector3 p = Vector3.Lerp(from, dest, s);
             p.y = Mathf.Lerp(from.y, dest.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(from.y, dest.y)) + Mathf.Sin(t * 3f) * 0.05f;   // sube, cruza y baja (con un leve vaivén)
             transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 2f));
-            who.transform.SetPositionAndRotation(p + Vector3.up * 0.12f, transform.rotation);
+            who.transform.SetPositionAndRotation(p + Vector3.up * (0.12f + rootAbove), transform.rotation);
             if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
             yield return null;
         }
@@ -127,7 +133,7 @@ public class FlyingCarpet : MonoBehaviour
         pad = to;
         // DESEMBARCAR: se levanta al lado de la alfombra.
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        who.transform.position = dest + Vector3.up * 0.05f;   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
+        who.transform.position = dest + Vector3.up * (0.05f + rootAbove);   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
         if (cc != null) cc.enabled = ccWas;
         if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(who.transform.position); }
         if (pc != null) pc.HoldBody(false);

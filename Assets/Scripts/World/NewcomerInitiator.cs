@@ -47,7 +47,7 @@ public class NewcomerInitiator : MonoBehaviour
 
     VirtualizationMachine _machine;
     SanctuaryOnboarding _leading, _exam;
-    int _beat = -1; float _beatEnd, _nextFrame, _aimUntil, _walkUntil; bool _frameB; Vector3 _pinAt;
+    int _beat = -1; float _beatEnd, _nextFrame, _aimUntil, _walkUntil, _stepDeadline; bool _frameB; Vector3 _pinAt;
     float _nextReminder, _sentAt = -999f;
     bool _frozePlayer, _camForced;
     CameraMode _camBefore;
@@ -76,11 +76,18 @@ public class NewcomerInitiator : MonoBehaviour
         GameObject g = GameObject.Find(name); return g != null ? g.transform : null;
     }
 
+    // ¿Ya lo está iniciando otro? (uno a la vez)
+    static bool Handled(SanctuaryOnboarding o)
+    {
+        foreach (NewcomerInitiator n in SceneCache.All<NewcomerInitiator>(0.5f)) if (n != null && (n._exam == o || n._leading == o)) return true;
+        return false;
+    }
+
     // El recién llegado que espera su iniciación (sin certificar).
     static SanctuaryOnboarding Waiting()
     {
         foreach (SanctuaryOnboarding o in SceneCache.All<SanctuaryOnboarding>(0.5f))
-            if (o != null && !o.apt) return o;
+            if (o != null && !o.apt && !Handled(o)) return o;
         return null;
     }
 
@@ -101,7 +108,10 @@ public class NewcomerInitiator : MonoBehaviour
 
     void Update()
     {
-        if (!IsActive || (ColdSanctuary.TestRunner.Running && !AllowDuringTests)) return;
+        if (ColdSanctuary.TestRunner.Running && !AllowDuringTests) return;
+        // Quien ya ha empezado una iniciación la TERMINA aunque acabe su turno (antes se quedaba congelada a medias y el de
+        // turno siguiente empezaba otra con el mismo recién llegado: dos a la vez).
+        if (!IsActive && !InProgress) return;
         if (_exam != null) { Exam(); return; }
         if (_leading != null) { Lead(); return; }
         SanctuaryOnboarding o = Waiting();
@@ -136,8 +146,8 @@ public class NewcomerInitiator : MonoBehaviour
         Vector3 behind = transform.position - transform.forward * 1.0f + transform.right * 0.4f; behind.y = p.position.y;
         Vector3 d = behind - p.position; d.y = 0f;
         // ANDA detrás (Berón 2026-10-27: antes se le arrastraba como a un muñeco): con su paso, rodeando lo que haya.
-        if (d.magnitude > 0.6f) PathMover.Of(p).StepToward(behind, moveSpeed * 1.15f);
-        Vector3 look = transform.position - p.position; look.y = 0f;
+        if (d.magnitude > 0.6f) WorkdayDirector.Teleport(p, Vector3.MoveTowards(p.position, behind, moveSpeed * 1.15f * dt));   // a su paso (el ciclo de andar del cuerpo lo anima)
+        Vector3 look = d.magnitude > 0.6f ? d : transform.position - p.position; look.y = 0f;   // mira hacia donde anda
         if (look.sqrMagnitude > 0.01f) p.rotation = Quaternion.Slerp(p.rotation, Quaternion.LookRotation(look), dt * 6f);
     }
 
@@ -153,7 +163,7 @@ public class NewcomerInitiator : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(Flat(d));
             GreetedAtDistance = gap;
             Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
-            Now = Phase.Escort; _walkUntil = Time.time + 8f;
+            Now = Phase.Escort; _walkUntil = Time.time + 8f; _stepDeadline = Time.time + 25f;
             return;
         }
         if (_beat >= ArrivalExam.Beats.Length) { FinishExam(p, me, pa); return; }
@@ -166,11 +176,12 @@ public class NewcomerInitiator : MonoBehaviour
             Vector3 fr = ArrivalExam.Front(place), side = Vector3.Cross(Vector3.up, fr);
             Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
             Vector3 d = stand - transform.position; d.y = 0f;
-            if (d.magnitude > 0.6f) { Escort(p, Time.deltaTime); Step(stand); _walkUntil = Time.time + 8f; return; }   // (8 s como mucho para llegar a su sitio)
+            if (d.magnitude > 0.6f && Time.time < _stepDeadline) { Escort(p, Time.deltaTime); Step(stand); _walkUntil = Time.time + 8f; return; }   // (8 s como mucho para llegar a su sitio)
+            if (d.magnitude > 0.6f) { WorkdayDirector.Teleport(transform, new Vector3(stand.x, transform.position.y, stand.z)); Debug.Log($"[Iniciación] {Who} no llegaba a «{b.place}» andando (un mueble o el borde en medio): se coloca."); }
             // Y el recién llegado va ANDANDO hasta su sitio (delante de la silla, de la camilla o del lavabotas) antes de sentarse.
             Vector3 go = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f : place.position + fr * 0.75f; go.y = p.position.y;
             Vector3 gp = go - p.position; gp.y = 0f;
-            if (gp.magnitude > 0.45f && Time.time < _walkUntil) { Hold(p, true); PathMover.Of(p).StepToward(go, moveSpeed); p.rotation = Quaternion.Slerp(p.rotation, Quaternion.LookRotation(Flat(gp)), Time.deltaTime * 6f); return; }
+            if (gp.magnitude > 0.45f && Time.time < _walkUntil) { Hold(p, true); WorkdayDirector.Teleport(p, Vector3.MoveTowards(p.position, go, moveSpeed * 0.8f * Time.deltaTime)); p.rotation = Quaternion.Slerp(p.rotation, Quaternion.LookRotation(Flat(gp)), Time.deltaTime * 6f); return; }
             Put(p, pa, place, b.patient);
             transform.rotation = Quaternion.LookRotation(Flat(p.position - transform.position));
             ArrivalExam.Hold(gameObject, b.tool, BodyPart.HandRight, "Herramienta");
@@ -204,7 +215,7 @@ public class NewcomerInitiator : MonoBehaviour
         if (b.id == "vacuna" && hr != null) { hr.vaccinated = true; ITarget it = _exam.GetComponentInParent<ITarget>(); if (me != null && it != null) this.GetOrAdd<VaccinateSpell>().Cast(me, it); }
         ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
         ArrivalExam.Hold(p.gameObject, null, b.patientBone, "Herramienta_paciente");
-        BeatsDone++; _beat++; Now = Phase.Escort; _walkUntil = Time.time + 8f;
+        BeatsDone++; _beat++; Now = Phase.Escort; _walkUntil = Time.time + 8f; _stepDeadline = Time.time + 25f;
     }
 
     // Coloca al examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.
