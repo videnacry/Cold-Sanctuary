@@ -3633,19 +3633,39 @@ public static partial class SampleSceneBuilder
         for (int sx = -1; sx <= 1; sx += 2)
             for (int sz = -1; sz <= 1; sz += 2)
                 Solid(s, new Vector3(sx * (X - c), -0.19f, sz * (Z - c)), new Vector3(c * 1.4142f, 0.3f, c * 1.4142f), woodDark, "Losa_chaflan").localRotation = Quaternion.Euler(0f, 45f, 0f);
-        float col = Mathf.Clamp(Mathf.Max(size.x, size.y) * 0.03f, 0.7f, 1.2f), ci = col * 0.5f + 0.05f;
-        var tips = new List<Vector3>();
-        for (int sx = -1; sx <= 1; sx += 2)
-            for (int sz = -1; sz <= 1; sz += 2)
-            {
-                tips.Add(new Vector3(sx * (X - ci), 0f, sz * (Z - c - ci * 0.4f)));   // las dos puntas de cada chaflán
-                tips.Add(new Vector3(sx * (X - c - ci * 0.4f), 0f, sz * (Z - ci)));
-            }
+        // MEGACOLUMNAS SÍSMICAS (docs/columnas-sismicas.md): en cada punta, un TUBO DE ACERO RELLENO DE HORMIGÓN (CFST, la
+        // familia de Taipei 101 o Tianjin 117), Ø 0,9 m (Ø 1,2 en las plantas grandes), con collar en la losa y collar de
+        // empalme a media altura; abajo, AISLADOR DE CAUCHO CON NÚCLEO DE PLOMO sobre pedestal y encepado; bajo cada losa, un
+        // ANILLO-CINTURÓN de acero que ata las 8 columnas como un tubo, y riostras de pandeo restringido (BRB) en X en 4 caras
+        // alternas (las otras 4 quedan libres).
+        Color tube = new Color(0.36f, 0.39f, 0.44f), collar = new Color(0.23f, 0.25f, 0.27f), rust = new Color(0.55f, 0.23f, 0.18f), brb = new Color(0.85f, 0.64f, 0.11f), rubber = new Color(0.08f, 0.08f, 0.09f);
+        float D = Mathf.Max(size.x, size.y) >= 30f ? 1.2f : 0.9f, ci = D * 0.5f + 0.05f;
+        var tips = new List<Vector3>();   // las 8 puntas, en orden alrededor del octógono
+        tips.Add(new Vector3(X - ci, 0f, -(Z - c))); tips.Add(new Vector3(X - ci, 0f, Z - c)); tips.Add(new Vector3(X - c, 0f, Z - ci)); tips.Add(new Vector3(-(X - c), 0f, Z - ci));
+        tips.Add(new Vector3(-(X - ci), 0f, Z - c)); tips.Add(new Vector3(-(X - ci), 0f, -(Z - c))); tips.Add(new Vector3(-(X - c), 0f, -(Z - ci))); tips.Add(new Vector3(X - c, 0f, -(Z - ci)));
+        float baseH = groundBelow ? 1.42f : 0f, shaft = h - 0.3f - (groundBelow ? 1.27f : 0f);   // del collar de la losa al aislador (en el suelo) o a la losa de abajo
         foreach (Vector3 tp in tips)
         {
-            Solid(s, tp + new Vector3(0f, -h * 0.5f - 0.15f, 0f), new Vector3(col, h, col), concrete, "Columna");   // hormigón, con el acero dentro
-            for (float y = 1.5f; y < h - 0.5f; y += 3f)
-                KitchenProps.C(s, tp + new Vector3(0f, -0.15f - y, 0f), new Vector3(col + 0.06f, 0.12f, col + 0.06f), steel, 0f, "Zuncho_acero");
+            Transform cyl = Cyl(s, tp + new Vector3(0f, -0.3f - shaft * 0.5f, 0f), new Vector3(D, shaft * 0.5f, D), tube, "Columna", true);
+            Cyl(s, tp + new Vector3(0f, -0.6f, 0f), new Vector3(D + 0.3f, 0.3f, D + 0.3f), collar, "Collar_losa", false);
+            Cyl(s, tp + new Vector3(0f, -0.3f - shaft * 0.5f, 0f), new Vector3(D + 0.12f, 0.125f, D + 0.12f), collar, "Collar_empalme", false);
+            if (!groundBelow) continue;
+            float g = -h - 0.15f;   // el suelo
+            Solid(s, tp + new Vector3(0f, g + 0.2f, 0f), new Vector3(D + 1.7f, 1.2f, D + 1.7f), concrete, "Encepado");   // asoma 0,4 m
+            Cyl(s, tp + new Vector3(0f, g + 0.65f, 0f), new Vector3(D + 0.6f, 0.25f, D + 0.6f), concrete, "Pedestal", false);
+            KitchenProps.C(s, tp + new Vector3(0f, g + 0.93f, 0f), new Vector3(D + 0.5f, 0.06f, D + 0.5f), steel, 0f, "Placa_aislador");
+            Cyl(s, tp + new Vector3(0f, g + 1.16f, 0f), new Vector3(D + 0.2f, 0.2f, D + 0.2f), rubber, "Aislador_caucho_plomo", false);
+            KitchenProps.C(s, tp + new Vector3(0f, g + 1.39f, 0f), new Vector3(D + 0.5f, 0.06f, D + 0.5f), steel, 0f, "Placa_aislador");
+        }
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 a = tips[i], b = tips[(i + 1) % 8], mid = (a + b) * 0.5f, dir = b - a; float len = dir.magnitude;
+            float yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            KitchenProps.C(s, mid + new Vector3(0f, -0.95f, 0f), new Vector3(0.5f, 1.2f, Mathf.Max(0.1f, len - D)), rust, yaw, "Anillo_cinturon");
+            if (i % 2 == 1 || len < 3f) continue;   // BRB en X solo en 4 caras alternas
+            float top = -1.6f, bot = -h + baseH + 0.2f, dy = top - bot, dl = Mathf.Sqrt(len * len + dy * dy), ang = Mathf.Atan2(dy, len) * Mathf.Rad2Deg;
+            for (int k = -1; k <= 1; k += 2)
+                KitchenProps.C(s, mid + new Vector3(0f, (top + bot) * 0.5f, 0f), new Vector3(0.35f, 0.35f, dl), brb, new Vector3(k * ang, yaw, 0f), "Riostra_BRB");
         }
 
         // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
@@ -3732,6 +3752,17 @@ public static partial class SampleSceneBuilder
             if (!free) Debug.LogWarning($"[Solar] «{name}»: ningún borde libre del todo; los paneles van al fondo.");
         }
         Debug.Log($"[Solar] {placed} filas de paneles en el piso más alto de cada edificio.");
+    }
+
+    // Cilindro (la primitiva mide 2 de alto: escala y = media altura), con o sin collider.
+    static Transform Cyl(Transform parent, Vector3 local, Vector3 scale, Color c, string name, bool collider)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        g.name = name; g.transform.SetParent(parent, false);
+        g.transform.localPosition = local; g.transform.localScale = scale;
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
+        if (!collider) Object.DestroyImmediate(g.GetComponent<Collider>());
+        return g.transform;
     }
 
     static Transform Solid(Transform parent, Vector3 local, Vector3 size, Color c, string name)
