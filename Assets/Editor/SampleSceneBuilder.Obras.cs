@@ -148,7 +148,7 @@ public static partial class SampleSceneBuilder
             Vector2 sz = mat != null ? new Vector2(mat.localScale.x, mat.localScale.z) : new Vector2(10f, 10f);
             Renderer[] rs = t.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
             Bounds b = rs[0].bounds; foreach (Renderer r in rs) b.Encapsulate(r.bounds);
-            float radius = Mathf.Max(b.extents.x, b.extents.z) + 0.05f;
+            float radius = Mathf.Sqrt(b.extents.x * b.extents.x + b.extents.z * b.extents.z) + 0.05f;   // la media diagonal: la prueba mide cajas, no círculos
             t.localPosition = TankSpot(area, sz, t, radius);
             Vector3 toC = -t.localPosition; toC.y = 0f;
             t.localRotation = Quaternion.LookRotation(toC.sqrMagnitude > 0.01f ? -toC.normalized : Vector3.back);
