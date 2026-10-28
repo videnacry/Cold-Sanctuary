@@ -105,6 +105,8 @@ public class PlayerController : MonoBehaviour
     /// <summary>Sujeta (true) o suelta (false) el cuerpo; cada sujeción se suelta con su propia llamada. Sustituye a
     /// desactivar el componente, que bloqueaba también la cámara.</summary>
     public void HoldBody(bool on) => _bodyHolds = Mathf.Max(0, _bodyHolds + (on ? 1 : -1));
+    /// <summary>Suelta TODAS las sujeciones (p. ej. al saltarse la iniciación con el hechizo «miembro»).</summary>
+    public void ReleaseBody() => _bodyHolds = 0;
 
     /// <summary>Called by WaterZone on trigger enter/exit.</summary>
     public bool IsSwimming => _isSwimming;
