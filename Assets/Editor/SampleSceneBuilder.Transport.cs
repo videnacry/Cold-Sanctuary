@@ -19,11 +19,15 @@ public static partial class SampleSceneBuilder
 
     const float ZoneW = 7.6f, ZoneD = 4.4f;
 
+    /// <summary>Nombre propio de los edificios que juntan varias áreas (Granja, Talleres, Entrenamiento): sin él se llamarían
+    /// como su planta baja. Se rellena en BuildAreaStructures.</summary>
+    static readonly Dictionary<Transform, string> BuildingNames = new Dictionary<Transform, string>();
+
     /// <summary>Apunta los edificios (sus plantas bajas): sus alfombras se ponen al final (<see cref="PlaceCarpetAreas"/>).</summary>
     static void RegisterBuildings(SanctuaryArea[] areas)
     {
         _buildings.Clear();
-        foreach (SanctuaryArea a in areas) _buildings.Add((a.transform, a.displayName));
+        foreach (SanctuaryArea a in areas) _buildings.Add((a.transform, BuildingNames.TryGetValue(a.transform, out string n) ? n : a.displayName));
         Debug.Log($"[Transporte] {areas.Length} edificios, sin puentes ni escaleras: se va en alfombra voladora.");
     }
 

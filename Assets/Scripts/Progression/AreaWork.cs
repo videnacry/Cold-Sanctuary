@@ -93,8 +93,13 @@ public static class AreaWork
             if (p == null || p.Finished) continue;
             open++;
             var carry = M("Construcción", "obra_material_" + p.title, $"Llevar el material del día a la obra «{p.title}»", 1f, true); carry.site = p.title;   // del almacén a la obra
-            var work = M("Construcción", "obra_trabajo_" + p.title, $"Trabajar la obra «{p.title}» (estructura de guadua, bahareque y paneles)", 2f, true); work.site = p.title;
-            l.Add(carry); l.Add(work);
+            l.Add(carry);
+            // El EQUIPO del día: una misión por persona, hechas a la vez (mismo grupo); el día de obra cuenta cuando trabajan todas.
+            for (int k = 0; k < UnityEngine.Mathf.Max(1, p.crewNeeded); k++)
+            {
+                var work = M("Construcción", "obra_trabajo_" + p.title + (k == 0 ? "" : $"#{k + 1}"), $"Trabajar la obra «{p.title}» (estructura de guadua, bahareque y paneles)", 2f, true);
+                work.site = p.title; work.group = "obra_" + p.title; l.Add(work);
+            }
         }
         // MATERIAL: lo que el almacén necesita reponer (todo sale del bambusal, los huertos y el laboratorio).
         MaterialStore store = MaterialStore.Instance;

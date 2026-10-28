@@ -13,6 +13,8 @@ public class ConstructionProject : MonoBehaviour
 
     public string title = "Obra";
     [Min(1)] public int daysRequired = 5;
+    [Tooltip("Cuántas personas del equipo de Construcción trabajan a la vez cada día de obra: el día cuenta cuando han trabajado todas.")]
+    [Min(1)] public int crewNeeded = 1;
     public int daysDone;
     public bool materialOnSite = true;   // el primer día ya hay material en la obra
     public float wallHeight = 3f;
@@ -23,7 +25,10 @@ public class ConstructionProject : MonoBehaviour
 
     readonly List<Transform> _walls = new List<Transform>();
     readonly List<float> _wallBaseY = new List<float>();
-    Transform _material, _scaffold;
+    Transform _material, _scaffold, _done;   // _done: el área ACABADA (oculta hasta terminar la obra)
+    readonly HashSet<string> _crewToday = new HashSet<string>(); int _crewDay = int.MinValue;
+    /// <summary>Quién ha trabajado ya hoy en la obra (el día avanza cuando son <see cref="crewNeeded"/>).</summary>
+    public int CrewToday => _crewToday.Count;
     WorldLabel _label;
 
     void OnEnable() { All.Add(this); }
@@ -39,6 +44,7 @@ public class ConstructionProject : MonoBehaviour
             if (t.name.StartsWith("Wall_")) { _walls.Add(t); _wallBaseY.Add(t.localScale.y); }
             else if (t.name == "Material_del_dia") _material = t;
             else if (t.name == "Andamio_obra") _scaffold = t;
+            else if (t.name == "Acabado") _done = t;
         }
         _label = GetComponent<WorldLabel>();
         if (_label == null) { _label = gameObject.AddComponent<WorldLabel>(); _label.height = 4.5f; }
@@ -55,14 +61,21 @@ public class ConstructionProject : MonoBehaviour
         Refresh();
     }
 
-    /// <summary>Misión «Trabajar la obra»: se gasta el material del día y la obra avanza un día. Devuelve true al terminarla.</summary>
+    /// <summary>Misión «Trabajar la obra»: <paramref name="who"/> trabaja su turno. Cuando ha trabajado todo el equipo del día
+    /// (<see cref="crewNeeded"/> personas distintas) se gasta el material del día y la obra avanza un día. Devuelve true al
+    /// terminarla.</summary>
     public bool WorkDay(string who)
     {
         if (Finished) return false;
         if (!materialOnSite) { Debug.Log($"[Obra] {who} no puede avanzar «{title}»: falta el material del día."); return false; }
+        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        if (day != _crewDay) { _crewDay = day; _crewToday.Clear(); }
+        _crewToday.Add(who ?? "?");
+        if (_crewToday.Count < crewNeeded) { Debug.Log($"[Obra] {who} trabaja en «{title}»: {_crewToday.Count}/{crewNeeded} del equipo de hoy."); Refresh(); return false; }
+        _crewToday.Clear(); _crewDay = int.MinValue;   // (un día de obra por equipo completo, aunque caiga en el mismo día de juego)
         materialOnSite = false;
         daysDone++;
-        Debug.Log($"[Obra] {who} trabaja en «{title}»: {daysDone}/{daysRequired} días.");
+        Debug.Log($"[Obra] El equipo ({crewNeeded}) trabaja en «{title}»: {daysDone}/{daysRequired} días.");
         Refresh();
         if (Finished) Debug.Log($"[Obra] ¡«{title}» terminada! Se abren sus misiones de entrenamiento.");
         return Finished;
@@ -81,6 +94,7 @@ public class ConstructionProject : MonoBehaviour
         }
         if (_material != null) _material.gameObject.SetActive(materialOnSite && !Finished);
         if (_scaffold != null) _scaffold.gameObject.SetActive(!Finished);
-        if (_label != null) _label.text = Finished ? $"{title} (abierta)" : $"{title} — EN OBRAS ({daysDone}/{daysRequired} días)";
+        if (_done != null) _done.gameObject.SetActive(Finished);   // terminada: aparece el área acabada (ya diseñada, docs/obras-dojo-ballet.md)
+        if (_label != null) _label.text = Finished ? $"{title} (abierta)" : $"{title} — EN OBRAS ({daysDone}/{daysRequired} días · equipo de {crewNeeded})";
     }
 }

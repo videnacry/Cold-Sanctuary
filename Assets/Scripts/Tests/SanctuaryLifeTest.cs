@@ -165,14 +165,14 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("la Magnate cuenta la entreplanta de las camas como parte del hospital (y fuera, no)",
                 ha.Contains(bed.transform.position + Vector3.up * 1.1f) && !ha.Contains(outside), $"cama en {bed.transform.position}");
         }
-        // El EDIFICIO entero cuenta (Berón 2026-10-23): quien trabaja en el gimnasio puede subir al dojo de encima; el suelo
+        // El EDIFICIO entero cuenta (Berón 2026-10-23): quien trabaja en el gimnasio puede subir a la calistenia (2 pisos más arriba); el suelo
         // de debajo del hospital, no.
         SanctuaryArea gymA = GameObject.Find("Gym_Area")?.GetComponent<SanctuaryArea>();
-        SanctuaryArea dojoA = GameObject.Find("MartialArts_Area")?.GetComponent<SanctuaryArea>();
+        SanctuaryArea dojoA = GameObject.Find("Calisthenics_Area")?.GetComponent<SanctuaryArea>();
         if (gymA != null && dojoA != null && ha != null)
-            TestProbe.Check("el puesto es el edificio entero (gimnasio → dojo de arriba sí; bajo el hospital, no)",
+            TestProbe.Check("el puesto es el edificio entero (gimnasio → calistenia de arriba sí; bajo el hospital, no)",
                 gymA.InBuilding(dojoA.transform.position + Vector3.up * 1.1f) && !ha.InBuilding(new Vector3(hosp.transform.position.x, 1f, hosp.transform.position.z)),
-                $"dojo en {dojoA.transform.position}");
+                $"calistenia en {dojoA.transform.position}");
         // El espacio de la tarea: quien repara en la Cocina con una misión de Construcción sigue en su puesto; con el
         // inventario del almacén (solo Construcción), en la Cocina no.
         GameObject kitchenGo = GameObject.Find("Kitchen_Area");
@@ -273,18 +273,28 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             TestProbe.Check("todas las obligatorias quedan cubiertas", plan.backlog.All(m => !m.mandatory));
             TestProbe.Check("cada persona tiene entrenamiento (yoga o gimnasio)", wd.roster.workers.All(w => plan.training.ContainsKey(w)), string.Join(", ", wd.OpenTraining()));
             TestProbe.Check("hay misiones de obra para las áreas en construcción", plan.work.Any(a => a.mission.id.StartsWith("obra_trabajo_")));
+            // CADA OBRA TIENE SU EQUIPO (Berón 2026-10-28): la jornada pone a trabajar a tantas personas distintas como pide.
+            foreach (ConstructionProject p in ConstructionProject.All.Where(p => !p.Finished))
+            {
+                int crew = plan.work.Where(a => a.mission.id.StartsWith("obra_trabajo_" + p.title)).Select(a => a.worker.name).Distinct().Count();
+                TestProbe.Check($"la obra «{p.title}» tiene su equipo cada día ({p.crewNeeded} personas)", crew >= p.crewNeeded, $"{crew}/{p.crewNeeded}");
+            }
             ConstructionProject site = ConstructionProject.All.FirstOrDefault(p => !p.Finished);
             if (site != null)
             {
                 int before = site.daysDone;
                 WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_material_" + site.title, "", 1f), "test");
+                for (int k = 0; k < site.crewNeeded - 1; k++) WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", $"obra_trabajo_{site.title}#{k + 2}", "", 2f), $"test{k}");
+                bool notYet = site.crewNeeded == 1 || site.daysDone == before;   // falta una persona: aún no cuenta el día
                 WorkdayDirector.Apply(new WorkRoster.Mission("Construcción", "obra_trabajo_" + site.title, "", 2f), "test");
-                TestProbe.Check("llevar el material y trabajar la obra la avanza un día", site.daysDone == before + 1, $"{site.title}: {site.daysDone}/{site.daysRequired}");
+                TestProbe.Check("llevar el material y trabajar la obra con todo el equipo la avanza un día (con uno menos, no)", notYet && site.daysDone == before + 1, $"{site.title}: {site.daysDone}/{site.daysRequired}, equipo de {site.crewNeeded}");
             }
             TestProbe.Check("la máquina ofrece misiones de virtualización del área", AreaWork.OfArea("Cocina", ConstructionProject.All, 0).Count > 0);
         }
         TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
-        TestProbe.Check("ballet, dojo y calistenia están en obras; el gimnasio abierto", ConstructionProject.All.Count >= 3 && FindByPrefix("Gym_Area"));
+        TestProbe.Check("ballet y dojo están en obras; el gimnasio y la calistenia, abiertos", ConstructionProject.All.Count >= 2 && FindByPrefix("Gym_Area") && FindByPrefix("Calistenia"));
+        // MENOS EDIFICIOS (docs/plano-edificios.md): Granja, Talleres y Entrenamiento juntan sus áreas en pisos.
+        TestProbe.Check("Granja, Talleres y Entrenamiento: varias áreas por edificio", new[] { "Granja", "Talleres", "Entrenamiento" }.All(b => CarpetPad.All.Any(c => c.building == b)) && Mathf.Abs(GameObject.Find("CubCare_Area").transform.position.x - GameObject.Find("Garden_Area").transform.position.x) < 0.5f, string.Join(", ", CarpetPad.All.Select(c => c.building).Distinct()));
 
         // OBRA SOSTENIBLE: el material sale del bambusal, el barro con paja, el micelio y el cáñamo.
         MaterialStore ms = MaterialStore.Instance;

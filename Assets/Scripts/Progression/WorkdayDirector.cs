@@ -471,8 +471,9 @@ public class WorkdayDirector : MonoBehaviour
             u.seated = true; u.b = false; u.phaseAt = Time.time; u.spell = want.PoseA();
             Debug.Log($"[Gimnasio] «{g.name}» se pone en {want.name}.");
         }
-        if (Time.time - u.phaseAt >= GymRepHalf) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
-        float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (GymRepHalf * 0.6f)));
+        float half = GymPoses.RepHalf(want.type);   // el ritmo real de cada equipo (cinta 0,35 s, bici 0,4 s, press…)
+        if (Time.time - u.phaseAt >= half) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
+        float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (half * 0.6f)));
         GymPlace(g, want.SeatPoint(u.b ? k : 1f - k), want.Facing);   // (solo el hip thrust desplaza la pelvis entre A y B)
         u.spell.Tick(a);
         return true;
@@ -563,6 +564,7 @@ public class WorkdayDirector : MonoBehaviour
         if (m.id.StartsWith("obra_material_") || m.id.StartsWith("obra_trabajo_"))
         {
             string title = m.id.Substring(m.id.StartsWith("obra_material_") ? 14 : 13);
+            int hash = title.LastIndexOf('#'); if (hash > 0) title = title.Substring(0, hash);   // «…#2»: otra persona del equipo
             foreach (ConstructionProject p in ConstructionProject.All)
                 if (p.title == title) { if (m.id.StartsWith("obra_material_")) p.DeliverMaterial(who); else p.WorkDay(who); }
             return;
