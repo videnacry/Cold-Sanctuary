@@ -46,7 +46,7 @@ public static partial class SampleSceneBuilder
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(mx, new Vector3(s * 0.4f, 0.15f, 0f), new Vector3(0.08f, 0.3f, 0.3f), CDark, 0f, "Rueda");
         CLabel(mx, "Hormigonera", 1.6f);
 
-        Transform crane = CPiece(r, "Grua_pluma", new Vector3(hx - 2.9f, 0f, -hz + 1.5f), 0f);
+        Transform crane = CPiece(r, "Grua_pluma", new Vector3(hx - 2.4f, 0f, -hz + 1.5f), 0f);
         KitchenProps.C(crane, new Vector3(0f, 0.2f, 0f), new Vector3(1.2f, 0.4f, 1.2f), CConcrete, 0f, "Base");
         for (int i = 0; i < 4; i++) KitchenProps.C(crane, new Vector3(i % 2 == 0 ? -0.2f : 0.2f, 3f, i < 2 ? -0.2f : 0.2f), new Vector3(0.06f, 5.2f, 0.06f), CYellow, 0f, "Mastil");
         for (int k = 0; k < 9; k++) KitchenProps.C(crane, new Vector3(0f, 0.8f + k * 0.55f, 0f), new Vector3(0.44f, 0.04f, 0.44f), CYellow, 0f, "Celosia");

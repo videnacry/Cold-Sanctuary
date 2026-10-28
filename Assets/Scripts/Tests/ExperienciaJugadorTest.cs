@@ -82,6 +82,10 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         // LA FLORA NO SE PIERDE del suelo del área gigante (se repetía: Berón 2026-10-28).
         int flora = FloraOnAreaFloor(out string floraWhy);
         TestProbe.Check("en el microcosmos crece flora sobre el suelo del área gigante", flora >= 20, floraWhy);
+        // …y crece en sus POSICIONES RESERVADAS (regla 8, PlatformSlots): la plantilla pone la flora del área en las plazas que
+        // dejó su piso. Si el microcosmos deja de usarlas (o el piso cambia y ya no caben), baja de la mitad.
+        float onSlots = FloraOnSlots(out string slotsWhy);
+        TestProbe.Check("en el microcosmos la flora del área ocupa sus posiciones reservadas (≥ 50 %)", onSlots >= 0.5f, slotsWhy);
         if (st == null) { Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false; TestProbe.End(); yield break; }
         Vector3 toFam = st.Shanidar.position - _player.transform.position; toFam.y = 0f;
         TestProbe.Check("al aparecer, Ambrosio y su familia están delante", toFam.magnitude < 12f && Vector3.Dot(_player.transform.forward, toFam.normalized) > 0.3f, $"{toFam.magnitude:0.0} m");
@@ -168,6 +172,34 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
             if (p.position.x > b.min.x && p.position.x < b.max.x && p.position.z > b.min.z && p.position.z < b.max.z && Mathf.Abs(p.position.y - b.max.y) < 2f) n++;
         why = $"{n} plantas sobre el suelo de «{giant.name}» ({flora.childCount} en total)";
         return n;
+    }
+
+    /// <summary>Fracción de las plazas de flora del área (la copia de <see cref="PlatformSlots"/> en el área gigante, ya ×10) que
+    /// tienen una planta de «Flora_a_escala» a menos de 1 m (× la escala); no cuentan las que tapa la historia (su claro).</summary>
+    public static float FloraOnSlots(out string why)
+    {
+        PlatformSlots ps = null; Transform flora = null;
+        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
+        {
+            if (ps == null && t.name.EndsWith("_gigante")) ps = t.GetComponent<PlatformSlots>();
+            if (flora == null && t.name == "Flora_a_escala") flora = t;
+        }
+        if (ps == null || flora == null) { why = $"plazas en el área gigante {(ps != null)}, flora {(flora != null)} (¿microcosmos sin reconstruir?)"; return 0f; }
+        float reach = 1f * ps.transform.lossyScale.x;
+        int eligible = 0, planted = 0;
+        for (int i = 0; i < ps.flora.Count; i++)
+        {
+            if (ps.floraUnderStory.Contains(i)) continue;
+            eligible++;
+            Vector3 w = ps.World(PlatformSlots.Kind.Flora, i);
+            foreach (Transform p in flora)
+            {
+                Vector3 d = p.position - w; d.y = 0f;
+                if (d.magnitude < reach) { planted++; break; }
+            }
+        }
+        why = $"{planted}/{eligible} plazas de flora con planta en «{ps.name}» ({ps.floraUnderStory.Count} bajo la historia, {ps.flora.Count} en total)";
+        return eligible > 0 ? planted / (float)eligible : 0f;
     }
 
     static IEnumerator Until(System.Func<bool> ok, float maxGameSeconds)

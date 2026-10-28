@@ -8,7 +8,8 @@ using UnityEngine;
 /// - encima de su piso más alto, un PISO DE ALFOMBRAS (techo) con dos áreas: las de edificio y las del SANTUARIO, que
 ///   llevan al techo de los demás edificios y a la plataforma central de la residencia.
 /// Las áreas se ponen al final (<see cref="PlaceCarpetAreas"/>), con los muebles ya puestos, donde no estorban; las del
-/// suelo, cuando ya está el hielo (<see cref="PlaceGroundCarpetAreas"/>).
+/// suelo, cuando ya está el hielo (<see cref="PlaceGroundCarpetAreas"/>). Tras ellas, las posiciones reservadas de cada piso
+/// para su microcosmos (<see cref="PlaceReservedSlots"/>).
 /// </summary>
 public static partial class SampleSceneBuilder
 {
@@ -145,6 +146,8 @@ public static partial class SampleSceneBuilder
             }
         }
         _carpetBuildings.Clear(); _carpetBuildings.AddRange(buildings);
+        // Con muebles (y acabados de obra) y alfombras ya puestos: las POSICIONES RESERVADAS del microcosmos (regla 8).
+        PlaceReservedSlots(all);
         foreach (GameObject g in unfinished) g.SetActive(false);   // siguen en obras
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }

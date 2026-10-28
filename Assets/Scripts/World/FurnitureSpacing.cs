@@ -155,6 +155,23 @@ public static class FurnitureSpacing
 
     static Vector3 Abs(Vector3 v) => new Vector3(Mathf.Abs(v.x), Mathf.Abs(v.y), Mathf.Abs(v.z));
 
+    /// <summary>Los muebles que se miden en <paramref name="root"/> (los mismos de <see cref="Violations"/>) y su caja: lo que
+    /// las posiciones reservadas del microcosmos (<see cref="PlatformSlots"/>) deben dejar a ≥ 1 m.</summary>
+    public static List<(Transform t, Bounds b)> Items(Transform root)
+    {
+        var l = new List<(Transform, Bounds)>();
+        foreach (Transform t in root.GetComponentsInChildren<Transform>())
+            if (Measured(t, root) && Box(t, out Bounds b)) l.Add((t, b));
+        return l;
+    }
+
+    /// <summary>Distancia en planta (XZ) de <paramref name="p"/> a la caja <paramref name="b"/> (0 si cae dentro).</summary>
+    public static float DistXZ(Bounds b, Vector3 p)
+    {
+        float dx = Mathf.Max(b.min.x - p.x, 0f, p.x - b.max.x), dz = Mathf.Max(b.min.z - p.z, 0f, p.z - b.max.z);
+        return Mathf.Sqrt(dx * dx + dz * dz);
+    }
+
     /// <summary>Pares de <paramref name="root"/> sin su paso: muebles a menos de <see cref="Standard"/> m (salvo los que van
     /// unidos) y muebles a menos de <see cref="CarpetClear"/> m de un área de alfombras, en el mismo piso.</summary>
     public static List<(Transform a, Transform b, float gap, float need)> Violations(Transform root)

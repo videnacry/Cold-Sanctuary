@@ -415,6 +415,29 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("cada anillo tiene su área de alfombras unida a los pisos de su edificio", rings > 0 && ringsOk == rings, $"{ringsOk}/{rings} anillos; sin alfombras: {string.Join(", ", noPad)}");
         TestProbe.Check("ninguna área tiene escaleras (se sube en alfombra)", stairs == 0, $"{stairs} escaleras");
+        // POSICIONES RESERVADAS del microcosmos (regla 8, PlatformSlots; Berón 2026-10-28): cada área deja sitio en su piso para la
+        // historia, los personajes, la fauna y la flora de su microcosmos, y ninguna plaza cae junto a un mueble (a < 1 m). Si se
+        // cambia una plataforma (más muebles, menos suelo) y ya no caben, esto falla: ampliar el piso o recolocar.
+        foreach (SanctuaryArea sa in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None).OrderBy(a => a.displayName, System.StringComparer.Ordinal))
+        {
+            PlatformSlots ps = sa.GetComponent<PlatformSlots>();
+            bool room = ps != null && ps.story.Count >= PlatformSlots.MinStory && ps.characters.Count >= PlatformSlots.MinCharacters
+                     && ps.fauna.Count >= PlatformSlots.MinFauna && ps.flora.Count >= PlatformSlots.MinFlora;
+            TestProbe.Check($"{sa.displayName}: posiciones reservadas para su microcosmos (≥ {PlatformSlots.MinStory} historia, {PlatformSlots.MinCharacters} personajes, {PlatformSlots.MinFauna} fauna, {PlatformSlots.MinFlora} flora)",
+                            room, ps != null ? ps.Summary() : "sin PlatformSlots (reconstruye la escena principal)");
+            if (ps == null) continue;
+            int close = 0; string who = "";
+            var items = FurnitureSpacing.Items(sa.transform);   // los mismos muebles que miden los 2 m de paso
+            foreach (PlatformSlots.Kind k in System.Enum.GetValues(typeof(PlatformSlots.Kind)))
+                for (int i = 0; i < ps.Count(k); i++)
+                {
+                    Vector3 w = ps.World(k, i);
+                    foreach (var (t, b) in items)
+                        if (Mathf.Abs(b.min.y - w.y) < 1.5f && FurnitureSpacing.DistXZ(b, w) < 0.99f)   // (mismo piso)
+                        { close++; if (who.Length < 160) who += $"{k} {i} junto a «{t.name}»; "; break; }
+                }
+            TestProbe.Check($"{sa.displayName}: ninguna posición reservada a menos de 1 m de un mueble", close == 0, $"{close} plazas: {who}");
+        }
         int fullSt = 0;
         for (int i = 1; i <= 8; i++)
         {

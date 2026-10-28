@@ -36,6 +36,11 @@ public static class AreaMicrocosmos
         //    muebles convertidos en montañas. Antes se vaciaba un claro de 50 m en el centro para la historia, y en la
         //    cocina (cocina abierta en el centro, comedor alrededor) eso borraba justo la cocina: ya no se reconocía.
         GameObject src = GameObject.Find(areaGo), giant = null;
+        // Sus POSICIONES RESERVADAS (regla 8, PlatformSlots): la historia, los personajes, la fauna y la flora del microcosmos
+        // van a las plazas que el piso dejó libres al construirse. Están en locales del área: en el área ×10 (clonada en el
+        // origen de la raíz, sin girar), plaza × AreaScale.
+        PlatformSlots slots = src != null ? src.GetComponent<PlatformSlots>() : null;
+        if (src != null && slots == null) Debug.LogWarning($"[Microcosmos] {display}: «{areaGo}» no tiene posiciones reservadas (PlatformSlots; reconstruye la escena principal): historia, flora y fauna van como antes.");
         if (src != null)
         {
             giant = Object.Instantiate(src);
@@ -49,6 +54,13 @@ public static class AreaMicrocosmos
             giant.transform.localScale = Vector3.one * AreaScale;
             foreach (Transform c in giant.transform)
                 if (c.name == "Mat" || c.name.StartsWith("Suelo")) c.localPosition = new Vector3(c.localPosition.x, -0.02f, c.localPosition.z);   // su suelo, bajo el resto
+            // Una copia de las plazas en el área gigante (con su escala ×10): las pruebas miran si se usaron.
+            if (slots != null)
+            {
+                PlatformSlots copy = giant.AddComponent<PlatformSlots>();
+                copy.story.AddRange(slots.story); copy.characters.AddRange(slots.characters); copy.fauna.AddRange(slots.fauna); copy.flora.AddRange(slots.flora);
+                copy.floorSize = slots.floorSize; copy.storyClearance = slots.storyClearance; copy.freeCells = slots.freeCells;
+            }
         }
         else Debug.LogWarning($"[Microcosmos] No encuentro {areaGo} (abre la escena principal): sin área gigante.");
 
@@ -57,14 +69,26 @@ public static class AreaMicrocosmos
         var floors = new List<Renderer>(); _blocked.Clear();
         if (giant != null) foot = Classify(giant, floors, _blocked);
         Vector3 anchor = Vector3.zero; float free = 50f;
-        if (giant != null) anchor = FreeSpot(foot, floors, _blocked, out free);
+        // Con posiciones reservadas, la HISTORIA va a su plaza principal (el punto del piso más alejado de los muebles, calculado
+        // al construir el piso, ya con sus alfombras); sin ellas, se busca aquí.
+        if (giant != null && slots != null && slots.story.Count > 0) { anchor = slots.story[0] * AreaScale; anchor.y = 0f; free = slots.storyClearance * AreaScale; }
+        else if (giant != null) anchor = FreeSpot(foot, floors, _blocked, out free);
         // HOSPITAL: la historia va DENTRO, por su pasillo central (30 m de ancho a ×10), empezando junto a la entrada; el hueco
-        // «más libre» caía en el borde y la historia quedaba fuera del hospital (Berón, 2026-10-23).
+        // «más libre» caía en el borde y la historia quedaba fuera del hospital (Berón, 2026-10-23). Si una plaza de historia cae
+        // en el pasillo, cerca de la entrada, va a esa plaza.
         Transform aisle = giant != null && kind == SampleSceneBuilder.MissionKind.Heal ? FindDeep(giant.transform, "Pasillo_central") : null;
         if (aisle != null && aisle.GetComponent<Renderer>() != null)
         {
             Bounds ab = aisle.GetComponent<Renderer>().bounds;
             anchor = new Vector3(ab.center.x, 0f, ab.min.z + 30f); free = ab.size.x;
+            float bestD = 15f;
+            if (slots != null)
+                foreach (Vector3 s in slots.story)
+                {
+                    Vector3 p = s * AreaScale; p.y = 0f;
+                    float d = Vector2.Distance(new Vector2(p.x, p.z), new Vector2(anchor.x, anchor.z));
+                    if (InsideXZ(ab, p, -2f) && d < bestD) { bestD = d; anchor = p; }
+                }
         }
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
@@ -118,7 +142,26 @@ public static class AreaMicrocosmos
             if (r.GetComponentInParent<MicroFood>() != null || (rb.size.y < 0.5f && Mathf.Max(rb.size.x, rb.size.z) > 40f)) continue;   // restos y suelos/agua de la historia no cuentan
             storyCore.Encapsulate(rb);
         }
-        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r1, display.GetHashCode(), storyCore, giant != null ? foot : (Bounds?)null, floors, MicroBiome.For(display));
+        // Con posiciones reservadas, la flora y la fauna DEL ÁREA van a sus plazas (×10); el bosque de fuera, como siempre.
+        bool useSlots = giant != null && slots != null;
+        List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(s => s * AreaScale) : null;
+        PlatformSlots giantSlots = giant != null ? giant.GetComponent<PlatformSlots>() : null;
+        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r1, display.GetHashCode(), storyCore, giant != null ? foot : (Bounds?)null, floors, MicroBiome.For(display),
+                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null);
+
+        // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
+        // alrededor de la historia; los de papel fijo (la líder, Nasatya, la Sembradora…) siguen junto a su estructura.
+        int cast0 = 0;
+        if (useSlots)
+            foreach (MicroForager mf in cast.GetComponentsInChildren<MicroForager>(true))
+            {
+                if (cast0 >= slots.characters.Count) break;
+                if (!mf.enabled) continue;   // papeles guionizados (los porteadores del mito empiezan quietos, en su sitio)
+                Vector3 p = slots.characters[cast0++] * AreaScale;
+                p.y = FloorNear(p, floors, p.y);
+                mf.transform.position = root.transform.TransformPoint(p);
+            }
+        if (useSlots) Debug.Log($"[Plazas] Microcosmos {display}: historia en su plaza ({anchor.x:0}, {anchor.z:0}), {cast0}/{slots.characters.Count} personajes, flora en {slots.flora.Count - (giantSlots != null ? giantSlots.floraUnderStory.Count : 0)}/{slots.flora.Count} plazas (el resto bajo la historia), fauna en {_faunaOnSlots}/{slots.fauna.Count} plazas.");
 
         root.transform.position = o;
 
@@ -522,7 +565,11 @@ public static class AreaMicrocosmos
     //   · Flor: polen/néctar (mariquita) y el sitio donde la mantis acecha a los que vienen a la flor.
     //   · Musgo y piedra: refugio húmedo (grillo en su madriguera, mariquitas agregadas).
     //   · Arena fina: donde la hormiga león cava su embudo. · Boñiga: lo que rueda el pelotero.
-    static int Nature(Transform root, Vector3 center, float r1, int seed, Bounds story, Bounds? area, List<Renderer> floors, MicroBiome.Biome biome = null)
+    /// <param name="floraSlots">Las plazas de flora del área (PlatformSlots, ya ×10, en el espacio de la raíz): dentro del área la
+    /// flora crece solo ahí. <paramref name="floraUnderStory"/> recibe las que tapa la historia.</param>
+    /// <param name="faunaSlots">Las plazas de fauna del área (ídem): el bicho que caería dentro del área va a la siguiente.</param>
+    static int Nature(Transform root, Vector3 center, float r1, int seed, Bounds story, Bounds? area, List<Renderer> floors, MicroBiome.Biome biome = null,
+                      List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null)
     {
         var rnd = new System.Random(seed);
         float biomeWeight = 0f; if (biome != null) foreach (MicroBiome.Plant pl in biome.plants) biomeWeight += pl.weight;
@@ -548,6 +595,8 @@ public static class AreaMicrocosmos
                 if (p.magnitude > r1) continue;
                 Vector3 w = center + p;   // posición en el espacio del microcosmos (el área gigante está en el mismo)
                 if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) continue;   // el claro de la historia
+                // Con posiciones reservadas, dentro del área solo crece en sus plazas de flora (abajo).
+                if (floraSlots != null && area.HasValue && InsideXZ(area.Value, w, 4f)) continue;
                 if (area.HasValue && InsideXZ(area.Value, w, 4f))
                 {
                     // Dentro del área: solo sobre su suelo libre (entre muebles), a la altura de ese suelo.
@@ -559,26 +608,44 @@ public static class AreaMicrocosmos
                     if (Mathf.Abs(fy - center.y) > 1.5f) continue;
                     p.y = fy - center.y;
                 }
-                if (biome != null)   // FLORA NATIVA de su era y región (MicroBiome); un 12 % de suelo desnudo para pasar
-                {
-                    if (R(0f, 1f) < 0.12f) continue;
-                    float pick = R(0f, biomeWeight);
-                    foreach (MicroBiome.Plant pl in biome.plants) { pick -= pl.weight; if (pick <= 0f) { NativePlant(pl, p); break; } }
-                    placed0++;
-                    continue;
-                }
-                float roll = R(0f, 100f);
-                if (roll < 27f) Grass(p);
-                else if (roll < 40f) Moss(p);
-                else if (roll < 50f) Fungus(p);
-                else if (roll < 59f) Fern(p);
-                else if (roll < 67f) Flower(p);
-                else if (roll < 81f) Stone(p);
-                else if (roll < 86f) { Transform a = Plant("Arena_fina", p); Box(a, "Arena", Vector3.up * 0.03f, new Vector3(9f, 0.06f, 9f), Quaternion.identity, sand, false); Affordance.Put(a.gameObject, AffordanceKind.SandPit, 1); sandPits.Add(p); }
-                else if (roll < 89f) { Transform d = Plant("Boñiga", p); Box(d, "Estiercol", Vector3.up * 0.9f, new Vector3(4f, 1.8f, 3.5f), Quaternion.identity, dung, true); Affordance.Put(d.gameObject, AffordanceKind.Dung, 2, 3f, 0.001f); dungs.Add(p); }
-                else continue;   // suelo desnudo: también hace falta sitio para pasar
-                placed0++;
+                if (Sow(p, false)) placed0++;
             }
+
+        // La flora DEL ÁREA, en sus POSICIONES RESERVADAS (PlatformSlots.flora, ya ×10): una planta en cada una, a ras del suelo
+        // del área (el más cercano a la altura de la plaza), menos las que tapa la historia (su claro).
+        int onSlots = 0;
+        if (floraSlots != null)
+            for (int i = 0; i < floraSlots.Count; i++)
+            {
+                Vector3 w = floraSlots[i];
+                if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) { floraUnderStory?.Add(i); continue; }
+                float fy = FloorNear(w, floors, w.y);
+                if (Sow(new Vector3(w.x - center.x, fy - center.y, w.z - center.z), true)) { placed0++; onSlots++; }
+            }
+
+        // Una planta (o piedra, arena, boñiga) en p; false = suelo desnudo. <paramref name="always"/>: una plaza de flora siempre
+        // lleva algo.
+        bool Sow(Vector3 p, bool always)
+        {
+            if (biome != null)   // FLORA NATIVA de su era y región (MicroBiome); un 12 % de suelo desnudo para pasar
+            {
+                if (R(0f, 1f) < 0.12f && !always) return false;
+                float pick = R(0f, biomeWeight);
+                foreach (MicroBiome.Plant pl in biome.plants) { pick -= pl.weight; if (pick <= 0f) { NativePlant(pl, p); break; } }
+                return true;
+            }
+            float roll = R(0f, always ? 89f : 100f);
+            if (roll < 27f) Grass(p);
+            else if (roll < 40f) Moss(p);
+            else if (roll < 50f) Fungus(p);
+            else if (roll < 59f) Fern(p);
+            else if (roll < 67f) Flower(p);
+            else if (roll < 81f) Stone(p);
+            else if (roll < 86f) { Transform a = Plant("Arena_fina", p); Box(a, "Arena", Vector3.up * 0.03f, new Vector3(9f, 0.06f, 9f), Quaternion.identity, sand, false); Affordance.Put(a.gameObject, AffordanceKind.SandPit, 1); sandPits.Add(p); }
+            else if (roll < 89f) { Transform d = Plant("Boñiga", p); Box(d, "Estiercol", Vector3.up * 0.9f, new Vector3(4f, 1.8f, 3.5f), Quaternion.identity, dung, true); Affordance.Put(d.gameObject, AffordanceKind.Dung, 2, 3f, 0.001f); dungs.Add(p); }
+            else return false;   // suelo desnudo: también hace falta sitio para pasar
+            return true;
+        }
 
         // Una planta NATIVA: su forma según el tipo (gramínea, musgo, seta, helecho, flor, mata, piedra, arena, boñiga,
         // escarcha), su porte real (1 cm ≈ 0,25 m) y sus colores; el nodo lleva su nombre común y científico.
@@ -732,7 +799,7 @@ public static class AreaMicrocosmos
         var list = new List<(string sp, int n, float len, Color tint, string name, string dormant)>();
         if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant));
         else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null));
-        int placed = 0;
+        int placed = 0, faunaNext = 0;
         foreach (var (sp, n, len, tint, label, dormant) in list)
         {
             GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
@@ -742,6 +809,14 @@ public static class AreaMicrocosmos
                 Vector3 p = sp == "Antlion" && sandPits.Count > 0 ? sandPits[rnd.Next(sandPits.Count)]
                           : sp == "DungBeetle" && dungs.Count > 0 ? dungs[rnd.Next(dungs.Count)] + new Vector3(5f, 0f, 0f)
                           : Ring(storyClear, r1 - 10f);
+                // Con posiciones reservadas: el que caería DENTRO del área (sobre el suelo gigante o encima de un mueble) va a la
+                // siguiente plaza de fauna; si ya están todas tomadas, fuera del área.
+                bool ringed = !(sp == "Antlion" && sandPits.Count > 0) && !(sp == "DungBeetle" && dungs.Count > 0);
+                if (ringed && faunaSlots != null && area.HasValue && InsideXZ(area.Value, center + p, 4f))
+                {
+                    if (faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNear(w, floors, w.y) - center.y, w.z - center.z); }
+                    else for (int k = 0; k < 12 && InsideXZ(area.Value, center + p, 4f); k++) p = Ring(storyClear, r1 - 10f);
+                }
                 if (prefab == null) continue;
                 var holder = new GameObject($"{label}_a_escala").transform; holder.SetParent(fauna, false); holder.localPosition = p;
                 holder.gameObject.AddComponent<MicroSize>().length = len;
@@ -765,9 +840,12 @@ public static class AreaMicrocosmos
                 placed++;
             }
         }
-        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas por toda la superficie (radio {r1:0} m)" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : "."));
+        _faunaOnSlots = faunaNext;
+        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas por toda la superficie (radio {r1:0} m{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")})" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : "."));
         return placed;
     }
+
+    static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)
 
     static bool InsideXZ(Bounds b, Vector3 p, float margin) => p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin;
 

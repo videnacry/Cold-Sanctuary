@@ -3438,13 +3438,13 @@ public static partial class SampleSceneBuilder
                 new Vector3(63f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md). A 22 m del restaurante (Berón 2026-10-24): sus anillos vuelan 8 m cada uno y entre ellos sube la escalera del comedor desde el puente
 
             BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.75f, 0.65f, 0.85f)),
+                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.75f, 0.65f, 0.85f)),
 
             BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
-                new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.55f, 0.55f, 0.60f)),   // piso 1 de los Talleres
+                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.55f, 0.55f, 0.60f)),   // piso 1 de los Talleres
 
             BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.60f, 0.65f)),   // piso 2 de los Talleres: telares, rueca, tintes…
+                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.85f, 0.60f, 0.65f)),   // piso 2 de los Talleres: telares, rueca, tintes…
 
             // LABORATORIO DE CARNE CULTIVADA (área propia, nivel 3; docs/carne-cultivada.md): carne para los depredadores
             // sin matar animales. En el casquete Este, cerca del territorio de los osos (su comedero).
@@ -3454,14 +3454,14 @@ public static partial class SampleSceneBuilder
             // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
             // maquinaria y el material. La dirige el esposo de Lizmibet. En el hub, al oeste del huerto.
             BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
-                new Vector3(-20f, 0f, 10f), new Vector2(18f, 14f), new Color(0.85f, 0.72f, 0.4f)),
+                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.85f, 0.72f, 0.4f)),
             // ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md): gimnasio abierto; ballet, dojo y calistenia EN OBRAS.
             BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
                 new Vector3(28f, 0f, 9f), GymSize, new Color(0.55f, 0.6f, 0.7f)),   // ENTRENAMIENTO de 3 pisos (docs/entrenamiento-areas.md); a 16 m de la Granja
             BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.9f, 0.75f, 0.8f)),   // piso 1 del edificio de Yoga
+                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.9f, 0.75f, 0.8f)),   // piso 1 del edificio de Yoga
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(18f, 15f), new Color(0.8f, 0.7f, 0.55f)),   // piso 2 del edificio de Yoga
+                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.8f, 0.7f, 0.55f)),   // piso 2 del edificio de Yoga
             BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
                 new Vector3(28f, 0f, 9f), GymSize, new Color(0.65f, 0.75f, 0.6f)),   // piso 2 del Entrenamiento: calistenia, parkour y crossfit
 
@@ -3492,8 +3492,8 @@ public static partial class SampleSceneBuilder
         var size = new Dictionary<Transform, Vector2>();
         void Base(SanctuaryArea x, Vector2 s) { ElevateArea(x, s, ElevatedHeight); size[x.transform] = s; }
         void Stack(Transform up, Transform low) => size[up] = StackOn(up, low, size[low]);
-        Base(kitchen, new Vector2(40f, 38f)); Base(hospital, HospitalSize); Base(yoga, new Vector2(18f, 15f));
-        Base(works, new Vector2(18f, 14f)); Base(gym, GymSize); Base(garden, new Vector2(26f, 20f));
+        Base(kitchen, new Vector2(40f, 38f)); Base(hospital, HospitalSize); Base(yoga, new Vector2(22f, 18f));   // 22 × 18 (antes 18 × 15): en el dojo no cabían las plazas del microcosmos
+        Base(works, new Vector2(24f, 18f)); Base(gym, GymSize); Base(garden, new Vector2(26f, 20f));   // Talleres 24 × 18 (antes 18 × 14): en Construcción no cabían las plazas
         Stack(ballet.transform, yoga.transform); Stack(dojo.transform, ballet.transform);
         Stack(mech.transform, works.transform); Stack(textile.transform, mech.transform);
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
