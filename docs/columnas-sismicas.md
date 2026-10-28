@@ -190,3 +190,22 @@ y el resto compartido por la plataforma.
 Cuenta orientativa para una plataforma de 5 pisos: 8 columnas × (1 fuste + 2 collares) × 5 pisos = 120, más la base
 8 × (encepado + pedestal + 3 del aislador) = 40, más 5 pisos × (8 cinturones + 8 BRB) = 80. **Total ≈ 240 primitivas.** Con la
 caja actual y zunchos cada 3 m salen unas 8 × 4 × 5 = 160, así que el aumento es moderado y gana mucho en lectura.
+
+## Límite de diseño: 30 pisos (Berón 2026-10-28)
+
+Las columnas se dimensionan para edificios de hasta **30 pisos** (contando el techo de alfombras), no solo para los
+3–5 de hoy. Carga estimada: unos 10 kN/m² por piso; en la planta más grande (≈ 40 × 30 m con el octógono), 30 pisos son
+≈ 360 MN repartidos entre 8 columnas, ≈ 45 MN cada una. Por eso:
+
+| Planta (lado mayor) | Columna CFST | Chapa | Relleno | Capacidad aprox. | Margen |
+|---|---|---|---|---|---|
+| ≥ 30 m | Ø 1,6 m | 40 mm | C80 (UHPC en los 2 m de abajo de cada tramo) | ≈ 175 MN | ≈ ×3,9 |
+| < 30 m | Ø 1,3 m | 40 mm | C80 | ≈ 115 MN | > ×5 |
+
+(Estimación de juego, no un cálculo estructural: la capacidad escala con el área de la sección desde los ≈ 55 MN de la
+CFST de Ø 0,9 m.)
+
+**En el código:** `StructuralLimits.MaxFloors = 30` y `StructuralLimits.ColumnDiameter(lado)`
+(`Assets/Scripts/World/StructuralLimits.cs`). `BuildAreaStructures` escribe un error `[Estructura]` si un edificio pasa de
+30 pisos, y `SanctuaryLifeTest` falla («ningún edificio pasa de 30 pisos»). Si hace falta subir más: aumentar el
+diámetro (Ø 2,0 m ≈ 270 MN) o la chapa, o añadir columnas intermedias en las caras, y cambiar `MaxFloors`.
