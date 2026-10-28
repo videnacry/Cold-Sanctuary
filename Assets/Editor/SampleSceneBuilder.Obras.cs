@@ -112,9 +112,9 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Dónde poner el TANQUE de virtualización de un área (local): junto al borde, empezando por la esquina +X +Z,
     /// el primer punto que deja 2 m libres hasta cualquier mueble (FurnitureSpacing); si no hay, el más holgado.</summary>
-    static Vector3 TankSpot(Transform area, Vector2 sz)
+    static Vector3 TankSpot(Transform area, Vector2 sz, Transform self = null, float radius = 1.6f)
     {
-        const float radius = 1.6f, inset = 1.9f;   // medio tanque (con su puerta) y lo que se aparta del borde
+        float inset = radius + 0.3f;   // medio tanque (con su puerta) y lo que se aparta del borde
         var items = FurnitureSpacing.Items(area);
         float hx = sz.x * 0.5f - inset, hz = sz.y * 0.5f - inset;
         Vector3 best = new Vector3(hx, 1f, hz); float bestFree = float.MinValue;
@@ -127,12 +127,31 @@ public static partial class SampleSceneBuilder
         {
             Vector3 w = area.TransformPoint(l);
             float free = float.MaxValue;
-            foreach (var (_, b) in items) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, w) - radius);
-            foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) free = Mathf.Min(free, Vector3.Distance(new Vector3(cp.transform.position.x, w.y, cp.transform.position.z), w) - radius - 4f);
+            foreach (var (it, b) in items) if (self == null || (it != self && !it.IsChildOf(self))) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, w) - radius);
+            foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) free = Mathf.Min(free, Vector3.Distance(new Vector3(cp.transform.position.x, w.y, cp.transform.position.z), w) - radius - 2.5f);   // (una esterilla-alfombra mide ~2,5 m)
             if (free >= FurnitureSpacing.Standard) return l;
             if (free > bestFree) { bestFree = free; best = l; }
         }
         Debug.LogWarning($"[Tanque] {area.name}: no hay sitio con 2 m libres; va donde más holgura hay ({bestFree:0.0} m).");
         return best;
+    }
+
+    /// <summary>Al final, con TODOS los muebles puestos (el hospital y otros se amueblan después de crear su tanque), cada
+    /// tanque de virtualización vuelve a buscar su sitio con 2 m libres, medido con su tamaño real.</summary>
+    static void RelocateTanks()
+    {
+        foreach (VirtualizationMachine vm in Object.FindObjectsByType<VirtualizationMachine>(FindObjectsSortMode.None))
+        {
+            Transform t = vm.transform, area = t.parent;
+            if (area == null || area.GetComponent<SanctuaryArea>() == null || area.name == "Kitchen_Area") continue;   // la del restaurante tiene su esquina
+            Transform mat = area.Find("Mat");
+            Vector2 sz = mat != null ? new Vector2(mat.localScale.x, mat.localScale.z) : new Vector2(10f, 10f);
+            Renderer[] rs = t.GetComponentsInChildren<Renderer>(); if (rs.Length == 0) continue;
+            Bounds b = rs[0].bounds; foreach (Renderer r in rs) b.Encapsulate(r.bounds);
+            float radius = Mathf.Max(b.extents.x, b.extents.z) + 0.05f;
+            t.localPosition = TankSpot(area, sz, t, radius);
+            Vector3 toC = -t.localPosition; toC.y = 0f;
+            t.localRotation = Quaternion.LookRotation(toC.sqrMagnitude > 0.01f ? -toC.normalized : Vector3.back);
+        }
     }
 }

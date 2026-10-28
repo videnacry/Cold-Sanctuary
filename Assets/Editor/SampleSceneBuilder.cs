@@ -132,6 +132,7 @@ public static partial class SampleSceneBuilder
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
+        RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
