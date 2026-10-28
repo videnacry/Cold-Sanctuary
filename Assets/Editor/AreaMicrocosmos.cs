@@ -104,7 +104,9 @@ public static class AreaMicrocosmos
         //    el agua: también por el suelo libre del área (entre sus muebles gigantes), menos en el claro de la historia. Cada
         //    planta es un interactuable (Affordance) que algún insecto usa; y su fauna.
         float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
-        float groundY = giant != null ? FloorAt(foot.center, floors, 0f) - 0.02f : 0f;
+        // El SUELO DEL ÁREA es el más bajo bajo su centro (no el más alto: anillos, entreplantas y pisos de arriba también son
+        // «suelos»; con el más alto, la flora del suelo real se descartaba y el microcosmos se quedaba pelado, Berón 2026-10-28).
+        float groundY = giant != null ? FloorLowest(foot.center, floors, 0f) - 0.02f : 0f;
         // El suelo de alrededor, del color de su tierra (arena de Egipto, barro helado de Flandes, mantillo de la taiga…).
         MicroBiome.Biome bio = MicroBiome.For(display);
         Color soil = bio != null ? bio.ground : new Color(0.45f, 0.36f, 0.25f);
@@ -241,6 +243,19 @@ public static class AreaMicrocosmos
             if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && Mathf.Abs(b.max.y - near) < best) { best = Mathf.Abs(b.max.y - near); y = b.max.y; }
         }
         return y;
+    }
+
+    // El suelo más BAJO bajo p (el del área; por encima hay anillos y entreplantas).
+    static float FloorLowest(Vector3 p, List<Renderer> floors, float fallback)
+    {
+        float y = float.MaxValue;
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z) y = Mathf.Min(y, b.max.y);
+        }
+        return y == float.MaxValue ? fallback : y;
     }
 
     static float FloorAt(Vector3 p, List<Renderer> floors, float fallback)
