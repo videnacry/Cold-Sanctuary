@@ -4218,13 +4218,15 @@ public static partial class SampleSceneBuilder
             return;
         }
 
-        // Máquina de virtualización en una ESQUINA del área (junto a la entrada, +X +Z), mirando al centro: no corta el paso.
+        // Máquina de virtualización junto al borde del área, mirando al centro, donde le queden 2 m libres a su alrededor
+        // (antes, siempre en la esquina +X +Z, encima de lo que hubiera allí).
         GameObject machineGO = new GameObject($"{areaName}_VirtualizationMachine");
         machineGO.transform.SetParent(area.transform, worldPositionStays: false);
         Transform mat = area.transform.Find("Mat");
         Vector2 sz = mat != null ? new Vector2(mat.localScale.x, mat.localScale.z) : new Vector2(10f, 10f);
-        machineGO.transform.localPosition = new Vector3(sz.x * 0.5f - 1.7f, 1f, sz.y * 0.5f - 1.9f);
-        machineGO.transform.localRotation = Quaternion.Euler(0f, 45f, 0f);   // la puerta (−Z del tanque) mira al centro del área
+        machineGO.transform.localPosition = TankSpot(area.transform, sz);   // el sitio con 2 m libres a su alrededor (regla de los 2 m)
+        Vector3 toC = -machineGO.transform.localPosition; toC.y = 0f;
+        machineGO.transform.localRotation = Quaternion.LookRotation(toC.sqrMagnitude > 0.01f ? -toC.normalized : Vector3.back);   // la puerta (−Z del tanque) mira al centro del área
         BoxCollider bc = machineGO.AddComponent<BoxCollider>();
         bc.isTrigger = true;
         bc.size = new Vector3(3f, 3f, 1.5f);

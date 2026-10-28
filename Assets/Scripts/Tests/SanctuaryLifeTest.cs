@@ -406,7 +406,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int rings = 0, ringsOk = 0, stairs = 0; var noPad = new System.Collections.Generic.List<string>();
         foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
         {
-            if (t.name.StartsWith("Escalera") && t.Find("Peldano") != null && t.GetComponentInParent<SanctuaryArea>() != null) stairs++;
+            if (t.name.StartsWith("Escalera") && !t.name.StartsWith("Escalera_horizontal") && t.Find("Peldano") != null && t.GetComponentInParent<SanctuaryArea>() != null) stairs++;
             if (!t.name.StartsWith("Anillo_") || t.Find("Losa_anillo") == null) continue;
             rings++;
             CarpetPad pad = t.GetComponentInChildren<CarpetPad>();

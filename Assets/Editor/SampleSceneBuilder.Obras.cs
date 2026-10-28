@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -107,5 +108,31 @@ public static partial class SampleSceneBuilder
         Transform room = KitchenProps.C(r, new Vector3(7.2f, 1f, -5.9f), new Vector3(3.6f, 2f, 3.2f), OMycel, 0f, "Vestuario_botiquin");
         room.gameObject.AddComponent<WorldLabel>().text = "Vestuario y botiquín";
         KitchenProps.C(r, new Vector3(-1f, 0.22f, -7f), new Vector3(3.6f, 0.44f, 0.5f), OGuadua, 0f, "Banco_calzado");
+    }
+
+    /// <summary>Dónde poner el TANQUE de virtualización de un área (local): junto al borde, empezando por la esquina +X +Z,
+    /// el primer punto que deja 2 m libres hasta cualquier mueble (FurnitureSpacing); si no hay, el más holgado.</summary>
+    static Vector3 TankSpot(Transform area, Vector2 sz)
+    {
+        const float radius = 1.6f, inset = 1.9f;   // medio tanque (con su puerta) y lo que se aparta del borde
+        var items = FurnitureSpacing.Items(area);
+        float hx = sz.x * 0.5f - inset, hz = sz.y * 0.5f - inset;
+        Vector3 best = new Vector3(hx, 1f, hz); float bestFree = float.MinValue;
+        var ring = new List<Vector3>();
+        for (float x = hx; x >= -hx; x -= 1f) ring.Add(new Vector3(x, 1f, hz));    // fondo (+Z), de +X a −X
+        for (float z = hz; z >= -hz; z -= 1f) ring.Add(new Vector3(hx, 1f, z));    // lado +X
+        for (float z = hz; z >= -hz; z -= 1f) ring.Add(new Vector3(-hx, 1f, z));   // lado −X
+        for (float x = hx; x >= -hx; x -= 1f) ring.Add(new Vector3(x, 1f, -hz));   // frente (−Z)
+        foreach (Vector3 l in ring)
+        {
+            Vector3 w = area.TransformPoint(l);
+            float free = float.MaxValue;
+            foreach (var (_, b) in items) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, w) - radius);
+            foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) free = Mathf.Min(free, Vector3.Distance(new Vector3(cp.transform.position.x, w.y, cp.transform.position.z), w) - radius - 4f);
+            if (free >= FurnitureSpacing.Standard) return l;
+            if (free > bestFree) { bestFree = free; best = l; }
+        }
+        Debug.LogWarning($"[Tanque] {area.name}: no hay sitio con 2 m libres; va donde más holgura hay ({bestFree:0.0} m).");
+        return best;
     }
 }
