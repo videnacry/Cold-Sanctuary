@@ -44,6 +44,8 @@ public class AsanaPoseSpell : QueuedSpell
     [Range(0.03f, 1f)] public float reachFraction = 0.3f;   // fracción del tiempo en LLEGAR a la postura; el resto, SOSTENIÉNDOLA (asanas 0.3; upa-yoga ≈1 = el rezo tarda toda la respiración)
     public float rootHeight = -1f;        // -1 = la de pie (reposo)
     public float stanceWidth = -1f;       // anchura de piernas (distancia entre pies); 0 = talones juntos; -1 = no tocar
+    [Tooltip("Apoyar el punto más bajo del cuerpo en el suelo (y = 0 del cuerpo). false = la pelvis queda en rootHeight tal cual: colgado de una barra, sobre un banco o un cajón (gimnasio).")]
+    public bool ground = true;
     public (BodyPart end, Vector3 localTarget)[] reaches = System.Array.Empty<(BodyPart, Vector3)>();   // IK: lleva mano/pie a un punto (palmas juntas, dedos al suelo)
     float _start = -1f;
     Quaternion[] _from;
@@ -128,9 +130,9 @@ public class AsanaPoseSpell : QueuedSpell
 
             // APOYO EN EL SUELO: el punto más bajo del cuerpo toca el suelo (y = 0 del cuerpo). Sin esto las posturas
             // sentadas flotaban (piernas dobladas con la pelvis a la altura de pie) y la silla se hundía en el suelo.
-            if (hj != null) Ground(rig, hips);
+            if (hj != null && ground) Ground(rig, hips);
             // Las manos/pies que van AL SUELO se vuelven a colocar tras apoyar el cuerpo (el apoyo mueve la pelvis).
-            if (hj != null && reaches != null && reaches.Length > 0)
+            if (hj != null && ground && reaches != null && reaches.Length > 0)
             {
                 Transform root = hips.parent != null ? hips.parent : self.transform;
                 bool any = false;
