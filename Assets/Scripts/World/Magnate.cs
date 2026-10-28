@@ -131,7 +131,10 @@ public class Magnate : MonoBehaviour
                 if (yoga == null) { _initPhase = 2; return; }
                 float mLeft = PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
                 if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {mLeft:0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
-                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f)
+                // En la SALA, no en otro piso del mismo edificio: antes bastaba la distancia en planta y la clase empezaba en el
+                // techo de alfombras, justo encima (Berón 2026-10-28).
+                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f
+                    && Mathf.Abs(t.transform.position.y - yoga.position.y) < 2.5f && Mathf.Abs(transform.position.y - yoga.position.y) < 2.5f)
                 {
                     _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí
                     // Su PRIMERA clase, OBLIGADA (documentado: docs/novela.md, tras el microcosmos, «5. Sala de yoga»): upa-yoga de
@@ -237,7 +240,14 @@ public class Magnate : MonoBehaviour
         // Ya hay una clase en curso: no se reinicia ni se apila (la TeachingSession se destruye al terminar).
         // La PRIMERA clase del recién llegado (iniciación) va antes que cualquier otra: la que hubiera, se deja para luego.
         TeachingSession busy = GetComponent<TeachingSession>();
-        if (busy != null && onboarding && TeachingSession.For(t) == null) { Destroy(busy); busy = null; }
+        if (busy != null && onboarding && TeachingSession.For(t) == null)
+        {
+            // Deja la otra clase DE VERDAD: sin esto seguía con sus pasos en cola (quedaba en la postura del saludo al sol,
+            // sanchalanasana) y no demostraba el upa-yoga al recién llegado.
+            Destroy(busy); busy = null;
+            if (TryGetComponent(out ActionQueue mq)) mq.ClearOwn();
+            DailyPoses.Stand().ApplyFinal(_a);
+        }
         if (busy != null) return;
 
         // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; luego Yoga Namaskar; luego el Saludo al Sol.
