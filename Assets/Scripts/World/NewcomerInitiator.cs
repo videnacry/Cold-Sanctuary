@@ -174,7 +174,7 @@ public class NewcomerInitiator : MonoBehaviour
         Transform place = Place(b.place);
         if (Now == Phase.Escort)
         {
-            Stand(pa); Stand(me);
+            if (_stoodFor != _beat) { Stand(pa); Stand(me); }   // UNA vez por paso: ponerse de pie bloquea las piernas 0,3 s y, cada fotograma, no andaban (Berón 2026-10-28)
             if (place == null) { Now = Phase.Perform; _beatEnd = Time.time + b.seconds; return; }
             Vector3 fr = ArrivalExam.Front(place), side = Vector3.Cross(Vector3.up, fr);
             Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
