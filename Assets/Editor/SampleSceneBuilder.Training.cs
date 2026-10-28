@@ -185,7 +185,7 @@ public static partial class SampleSceneBuilder
         {
             float x = -1.2f + i * 1.2f;
             GBar(pu, new Vector3(x - 0.6f, ph[i], 0f), new Vector3(x + 0.6f, ph[i], 0f), 0.04f, TChrome, "Barra");
-            GSpot(pu, GymMachineType.Dominadas, i, new Vector3(x, 0f, 0f), 0f, 1.23f + (ph[i] - 2.4f) / 0.974f);   // la pelvis sube o baja con la barra
+            GSpot(pu, GymMachineType.Dominadas, i, new Vector3(x, 0f, 0f), 0f, 1.33f + (ph[i] - 2.4f) / 0.974f);   // colgado, manos en la barra: la pelvis sube o baja con ella
         }
         KitchenProps.Fit(pu, false); pu.gameObject.AddComponent<WorldLabel>().text = "Dominadas (2,0 · 2,3 · 2,5 m)";
         // Escalera horizontal (monkey bars): peldaños a 2,4 m cada 0,4 m; se cruza en X.
@@ -198,7 +198,7 @@ public static partial class SampleSceneBuilder
         }
         for (int i = 0; i < 9; i++) GBar(mb, new Vector3(-1.6f + i * 0.4f, 2.4f, -0.4f), new Vector3(-1.6f + i * 0.4f, 2.4f, 0.4f), 0.035f, TChrome, "Peldano");
         for (int p = 1; p <= 3; p++) KitchenProps.C(mb, new Vector3(-1.8f, p * 0.5f, 0f), new Vector3(0.06f, 0.04f, 0.8f), TAcc, 0f, "Escalon");
-        GSpot(mb, GymMachineType.MonkeyBars, 0, new Vector3(-1.4f, 0f, 0f), -90f, 1.23f);   // avanza hacia +X
+        GSpot(mb, GymMachineType.MonkeyBars, 0, new Vector3(-1.4f, 0f, 0f), -90f, 1.39f);   // avanza hacia +X
         KitchenProps.Fit(mb, false); mb.gameObject.AddComponent<WorldLabel>().text = "Escalera horizontal";
         // Pórtico de anillas: viga a 3,0 m y 2 pares de anillas a 1,25 m (fondos).
         Tile(new Vector3(-4.1f, 0f, 10f), 3.4f, 4f);
@@ -227,8 +227,8 @@ public static partial class SampleSceneBuilder
                 for (int e = -1; e <= 1; e += 2) GBar(pl, c + new Vector3(s * 0.2f, 0f, e * 0.2f), c + new Vector3(s * 0.2f, 0.33f, e * 0.2f), 0.03f, TIron, "Pata");
             }
         }
-        GSpot(pl, GymMachineType.LSit, 0, new Vector3(-0.4f, 0f, 0.5f), 0f, 0.45f);
-        GSpot(pl, GymMachineType.LSit, 1, new Vector3(0.4f, 0f, 0.5f), 0f, 0.45f);
+        GSpot(pl, GymMachineType.LSit, 0, new Vector3(-0.4f, 0f, 0.5f), 0f, 0.42f);
+        GSpot(pl, GymMachineType.LSit, 1, new Vector3(0.4f, 0f, 0.5f), 0f, 0.42f);
         KitchenProps.Fit(pl, false); pl.gameObject.AddComponent<WorldLabel>().text = "Paralelas bajas";
         // Paralelas largas a 1,2 m (fondos y desplazamientos): las barras van en X, la persona mira a lo largo de ellas.
         Transform pa = KitchenProps.Root(r, "Paralelas", new Vector3(-16f, 0f, 4.9f));
@@ -237,7 +237,7 @@ public static partial class SampleSceneBuilder
             GBar(pa, new Vector3(-1f, 1.2f, s * 0.25f), new Vector3(1f, 1.2f, s * 0.25f), 0.045f, TChrome, "Barra");
             for (int e = -1; e <= 1; e += 2) GBar(pa, new Vector3(e * 0.9f, 0f, s * 0.25f), new Vector3(e * 0.9f, 1.2f, s * 0.25f), 0.07f, TIron, "Poste");
         }
-        GSpot(pa, GymMachineType.Fondos, 0, Vector3.zero, -90f, 1.33f);
+        GSpot(pa, GymMachineType.Fondos, 0, Vector3.zero, -90f, 1.39f);
         KitchenProps.Fit(pa, false); pa.gameObject.AddComponent<WorldLabel>().text = "Paralelas";
         // Barras de fondos en V a 1,3 m, abiertas de 0,45 a 0,6 m.
         Transform vd = KitchenProps.Root(r, "Fondos_en_V", new Vector3(-12.6f, 0f, 4.9f));
@@ -246,7 +246,7 @@ public static partial class SampleSceneBuilder
             GBar(vd, new Vector3(s * 0.3f, 1.3f, -0.3f), new Vector3(s * 0.225f, 1.3f, 0.3f), 0.045f, TChrome, "Barra");
             GBar(vd, new Vector3(s * 0.26f, 0f, 0.25f), new Vector3(s * 0.26f, 1.3f, 0.25f), 0.07f, TIron, "Poste");
         }
-        GSpot(vd, GymMachineType.Fondos, 1, Vector3.zero, 0f, 1.33f + 0.1f / 0.974f);
+        GSpot(vd, GymMachineType.Fondos, 1, Vector3.zero, 0f, 1.39f + 0.1f / 0.974f);
         KitchenProps.Fit(vd, false); vd.gameObject.AddComponent<WorldLabel>().text = "Fondos";
         // Barras bajas: a 1,1 m (remo australiano) y a 1,8 m (front lever agrupado); el cuerpo queda en Z.
         Transform lb = KitchenProps.Root(r, "Barras_bajas", new Vector3(-9f, 0f, 4.9f));
@@ -256,14 +256,14 @@ public static partial class SampleSceneBuilder
         GBar(lb, new Vector3(-1.2f, 1.1f, 0f), new Vector3(0f, 1.1f, 0f), 0.04f, TChrome, "Barra_1,1");
         GBar(lb, new Vector3(0f, 1.8f, 0f), new Vector3(1.2f, 1.8f, 0f), 0.04f, TChrome, "Barra_1,8");
         GSpot(lb, GymMachineType.RemoAustraliano, 0, new Vector3(-0.6f, 0f, -0.5f), 0f, 0.30f);   // el pecho bajo la barra; los pies hacia −Z
-        GSpot(lb, GymMachineType.FrontLever, 0, new Vector3(0.6f, 0f, 0f), 0f, 0.62f);
+        GSpot(lb, GymMachineType.FrontLever, 0, new Vector3(0.6f, 0f, 0f), 0f, 0.72f, new Vector3(0f, 0f, 0.52f));   // en B (horizontal) la raíz avanza: los hombros siguen bajo la barra
         KitchenProps.Fit(lb, false); lb.gameObject.AddComponent<WorldLabel>().text = "Barras bajas (1,1 · 1,8 m)";
         // Poste de bandera humana: agarres a 0,9 · 1,3 · 1,7 · 2,1 m; círculo libre de 2 m.
         Transform fp = KitchenProps.Root(r, "Poste_bandera", new Vector3(-3.8f, 0f, 5f));
         KitchenProps.C(fp, new Vector3(0f, 0.01f, 0f), new Vector3(0.4f, 0.02f, 0.4f), TIron, 0f, "Base");
         GBar(fp, Vector3.zero, new Vector3(0f, 2.6f, 0f), 0.06f, TIron, "Poste");
         foreach (float h in new[] { 0.9f, 1.3f, 1.7f, 2.1f }) GBar(fp, new Vector3(0f, h, 0f), new Vector3(-0.14f, h, 0f), 0.035f, TChrome, "Agarre");
-        GSpot(fp, GymMachineType.BanderaHumana, 0, new Vector3(-0.35f, 0f, 0f), 0f, 1.10f);   // mirando hacia −Z, el poste queda a su izquierda (+X)
+        GSpot(fp, GymMachineType.BanderaHumana, 0, new Vector3(-0.75f, 0f, 0f), 0f, 1.50f);   // mirando hacia −Z, el poste queda a su izquierda (+X), a la distancia de los brazos
         KitchenProps.Fit(fp, false); fp.gameObject.AddComponent<WorldLabel>().text = "Bandera humana";
         GWallBars(r, "Espalderas", new Vector3(0.9f, 0f, 4.95f), 90f, 3, 2);   // 3 cuerpos, miran hacia −X
         WorldLabel kl = KitchenProps.Root(r, "Zona_calistenia", new Vector3(-8f, 0f, 7.5f)).gameObject.AddComponent<WorldLabel>(); kl.text = "Calistenia"; kl.height = 3.4f;
@@ -273,7 +273,7 @@ public static partial class SampleSceneBuilder
         Transform hw = KitchenProps.Root(r, "Muro_alto", new Vector3(-15.5f, 0f, -11.6f));
         KitchenProps.C(hw, new Vector3(0f, 1.2f, 0f), new Vector3(3f, 2.4f, 0.3f), new Color(0.55f, 0.55f, 0.52f), 0f, "Muro_2,4");
         KitchenProps.Fit(hw);
-        GSpot(hw, GymMachineType.MuroSubida, 0, new Vector3(0f, 0f, 0.45f), 0f, 1.23f, new Vector3(0f, 0f, 0.2f));   // cara +Z; en B sube sobre el borde
+        GSpot(hw, GymMachineType.MuroSubida, 0, new Vector3(0f, 0f, 0.30f), 0f, 1.59f);   // cara +Z, pegado al muro: colgado del borde y en B sube sobre él
         hw.gameObject.AddComponent<WorldLabel>().text = "Muro alto (2,4 m)";
         Transform mw = KitchenProps.Root(r, "Muro_medio", new Vector3(-11f, 0f, -11.6f));
         KitchenProps.C(mw, new Vector3(0f, 0.75f, 0f), new Vector3(2.4f, 1.5f, 0.3f), new Color(0.6f, 0.6f, 0.56f), 0f, "Muro_1,5");
@@ -282,7 +282,7 @@ public static partial class SampleSceneBuilder
         Transform la = KitchenProps.Root(r, "Portico_lache", new Vector3(-7.6f, 0f, -10.8f));
         for (int s = -1; s <= 1; s += 2) GBar(la, new Vector3(0f, 0f, s * 1.2f), new Vector3(0f, 2.05f, s * 1.2f), 0.1f, TIron, "Poste");
         GBar(la, new Vector3(0f, 2f, -1.2f), new Vector3(0f, 2f, 1.2f), 0.042f, TChrome, "Barra_lache");
-        GSpot(la, GymMachineType.Lache, 0, Vector3.zero, -90f, 0.82f);   // se balancea en X
+        GSpot(la, GymMachineType.Lache, 0, new Vector3(-0.24f, 0f, 0f), -90f, 0.95f, new Vector3(0f, 0f, 0.65f));   // se balancea en X con las manos en la barra
         KitchenProps.Fit(la, false); la.gameObject.AddComponent<WorldLabel>().text = "Barra de lâché";
         float[] vx = { -11f, -7.8f };
         for (int i = 0; i < 2; i++)
@@ -291,7 +291,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(vb, new Vector3(0f, 0.5f, 0f), new Vector3(0.8f, 1f, 1.5f), TWood, 0f, "Cajon");
             KitchenProps.C(vb, new Vector3(0f, 1.01f, 0f), new Vector3(0.8f, 0.02f, 1.5f), TRubber, 0f, "Tapa_caucho");
             KitchenProps.Fit(vb);
-            GSpot(vb, GymMachineType.KongVault, i, new Vector3(0f, 0f, 1.35f), 0f, 0.93f, new Vector3(0f, 0f, 1.35f));   // batida desde +Z; en B, sobre el cajón
+            GSpot(vb, GymMachineType.KongVault, i, new Vector3(0f, 0f, 1.35f), 0f, 0.80f, new Vector3(0f, 0f, 1.35f));   // batida desde +Z; en B, sobre el cajón
             vb.gameObject.AddComponent<WorldLabel>().text = "Cajón de salto (1,0 m)";
         }
         float[] rx = { -16.4f, -14.9f }, rh = { 0.5f, 1.0f };
@@ -325,7 +325,7 @@ public static partial class SampleSceneBuilder
             for (int k2 = 0; k2 < 2; k2++) KitchenProps.C(sl, new Vector3(0f, 0.2f + k2 * 0.05f, 0.15f), new Vector3(0.05f, 0.45f, 0.45f), TBumper, 90f, "Disco");
             for (int s = -1; s <= 1; s += 2) GBar(sl, new Vector3(s * 0.25f, 0.1f, -0.45f), new Vector3(s * 0.25f, 1f, -0.5f), 0.05f, TChrome, "Poste_empuje");
             KitchenProps.Fit(sl);
-            GSpot(sl, GymMachineType.Trineo, i, new Vector3(0f, 0f, -1.1f), 180f, 0.80f);   // empuja hacia +Z
+            GSpot(sl, GymMachineType.Trineo, i, new Vector3(0f, 0f, -1.4f), 180f, 0.80f);   // empuja hacia +Z, manos en los postes
         }
         float[] pz = { -9.8f, -5.4f, -1f };
         for (int i = 0; i < 3; i++) GymPlatform(r, $"Plataforma crossfit {i + 1}", GymMachineType.Cargada, i, new Vector3(8.2f, 0f, pz[i]), TBumper);
@@ -341,8 +341,8 @@ public static partial class SampleSceneBuilder
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(kb, new Vector3(0f, 0.4f, s * 0.98f), new Vector3(0.5f, 0.8f, 0.04f), TIron, 0f, "Lateral");
         for (int i = 0; i < 8; i++) { float sz = 0.16f + i * 0.015f; KitchenProps.C(kb, new Vector3(0f, (i < 4 ? 0.27f : 0.67f) + sz * 0.5f, -0.75f + (i % 4) * 0.5f), new Vector3(sz, sz * 1.1f, sz), Color.black, 0f, "Kettlebell"); }
         KitchenProps.Fit(kb); kb.gameObject.AddComponent<WorldLabel>().text = "Kettlebells (8–32 kg)";
-        GSpot(r, GymMachineType.Swing, 0, new Vector3(15.7f, 0f, -7.6f), 90f, 0.78f);   // los swings, en x 15–16, mirando hacia −X
-        GSpot(r, GymMachineType.Swing, 1, new Vector3(15.7f, 0f, -6.2f), 90f, 0.78f);
+        GSpot(r, GymMachineType.Swing, 0, new Vector3(15.7f, 0f, -7.6f), 90f, 0.88f);   // los swings, en x 15–16, mirando hacia −X
+        GSpot(r, GymMachineType.Swing, 1, new Vector3(15.7f, 0f, -6.2f), 90f, 0.88f);
         GymRig(r, new Vector3(12.5f, 0f, 6f));
         GymGHD(r, "GHD 1", 0, new Vector3(8.2f, 0f, 3.5f));
         GymGHD(r, "GHD 2", 1, new Vector3(8.2f, 0f, 7.5f));
@@ -364,7 +364,7 @@ public static partial class SampleSceneBuilder
         // Cajones pliométricos de uso (61 cm) en el suelo abierto (x de 6 a 10,6, z de 9,6 a 12).
         for (int i = 0; i < 2; i++)
         {
-            Transform bx2 = KitchenProps.Root(r, $"Cajon_pliometrico_{i + 1}", new Vector3(7f + i * 2.6f, 0f, 11.1f));
+            Transform bx2 = KitchenProps.Root(r, $"Cajon_pliometrico_{i + 1}", new Vector3(6.5f + i * 2.5f, 0f, 11.1f));
             KitchenProps.C(bx2, new Vector3(0f, 0.305f, 0f), new Vector3(0.76f, 0.61f, 0.51f), TWood, 0f, "Cajon_61");
             KitchenProps.Fit(bx2);
             GSpot(bx2, GymMachineType.SaltoCajon, i, new Vector3(0f, 0f, -0.65f), 180f, 0.60f, new Vector3(0f, 0f, 0.5f));   // mira hacia +Z y cae encima (la B ya cuenta el cajón)
@@ -428,7 +428,7 @@ public static partial class SampleSceneBuilder
         GBar(m, new Vector3(-0.6f, 0.04f, 0.65f), new Vector3(0.6f, 0.04f, 0.65f), 0.08f, TIron, "Travesano");
         GBarbell(m, new Vector3(0f, 1.45f, -0.71f));
         KitchenProps.Fit(m);
-        GStation(m, GymMachineType.SentadillaJaula, copy, Vector3.zero, 0.95f, new Vector3(0f, 0f, -0.19f));   // en B la pelvis retrocede
+        GStation(m, GymMachineType.SentadillaJaula, copy, new Vector3(0f, 0f, -0.74f), 0.95f, new Vector3(0f, 0f, -0.19f));   // bajo la barra de los J-hooks; en B la pelvis retrocede
         GLabel(m, name);
     }
 
@@ -480,7 +480,7 @@ public static partial class SampleSceneBuilder
         for (int sz = -1; sz <= 1; sz += 2) GBar(m, new Vector3(-0.95f, 2.16f, sz * 0.7f), new Vector3(0.95f, 2.16f, sz * 0.7f), 0.08f, TIron, "Travesano");
         GBarbell(m, new Vector3(0f, 1.45f, 0f), 1.9f);
         KitchenProps.Fit(m);
-        GStation(m, GymMachineType.SentadillaSmith, copy, Vector3.zero, 0.95f, new Vector3(0f, 0f, -0.10f));
+        GStation(m, GymMachineType.SentadillaSmith, copy, new Vector3(0f, 0f, -0.06f), 0.95f, new Vector3(0f, 0f, -0.10f));   // la barra, a la espalda
         GLabel(m, name);
     }
 
@@ -493,7 +493,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(m, new Vector3(0f, 0.026f, 0f), new Vector3(1.2f, 0.051f, 2.4f), TPlatWood, 0f, "Plataforma_madera");
         GBarbell(m, new Vector3(0f, 0.05f + 0.225f, -0.15f), 2.2f, 0.45f, 1, disc);
         KitchenProps.Fit(m, false);   // se pisa: no bloquea
-        GStation(m, type, copy, new Vector3(0f, 0.05f, 0.05f), 0.64f, type == GymMachineType.PesoMuerto ? new Vector3(0f, 0f, 0.10f) : default);   // en el bloqueo la cadera avanza
+        GStation(m, type, copy, new Vector3(0f, 0.05f, 0.24f), 0.64f, type == GymMachineType.PesoMuerto ? new Vector3(0f, 0f, 0.10f) : default);   // en el bloqueo la cadera avanza
         GLabel(m, name);
     }
 
@@ -506,9 +506,9 @@ public static partial class SampleSceneBuilder
         for (int e = -1; e <= 1; e += 2) GBar(m, new Vector3(0f, 0.04f, e * 0.45f), new Vector3(0f, 0.36f, e * 0.45f), 0.07f, TIron, "Pata");
         KitchenProps.C(m, new Vector3(0f, 0.40f, -0.45f), new Vector3(0.28f, 0.07f, 0.40f), TPad, 0f, "Asiento");
         KitchenProps.C(m, new Vector3(0f, 0.40f, 0.22f), new Vector3(0.28f, 0.07f, 0.90f), TPad, 0f, "Respaldo");
-        KitchenProps.C(m, new Vector3(0.5f, 0.1f, -0.1f), new Vector3(0.1f, 0.1f, 0.32f), Color.black, 0f, "Mancuerna");
+        KitchenProps.C(m, new Vector3(0.45f, 0.06f, 0.55f), new Vector3(0.32f, 0.1f, 0.1f), Color.black, 0f, "Mancuerna");
         KitchenProps.Fit(m);
-        GStation(m, GymMachineType.RemoMancuerna, copy, new Vector3(0.35f, 0f, 0.05f), 0.95f, default, 1f);
+        GStation(m, GymMachineType.RemoMancuerna, copy, new Vector3(0.22f, 0f, 0.05f), 0.95f, default, 1f, 0f);   // mirando hacia +Z: el banco le queda a la izquierda
         GLabel(m, name, 1.6f);
     }
 
@@ -611,7 +611,7 @@ public static partial class SampleSceneBuilder
                 GBar(m, new Vector3(0f, 0.08f, 0.3f), new Vector3(0f, sy - 0.04f, 0.25f), 0.08f, TIron, "Tija");
                 KitchenProps.C(m, new Vector3(0f, sy, 0.25f), new Vector3(0.22f, 0.06f, 0.28f), TPad, 0f, "Sillin");
                 for (int s = -1; s <= 1; s += 2) KitchenProps.C(m, new Vector3(s * 0.13f, 0.35f, -0.02f), new Vector3(0.1f, 0.03f, 0.12f), TRubber, 0f, "Pedal");
-                if (air) for (int s = -1; s <= 1; s += 2) GBar(m, new Vector3(s * 0.2f, 0.5f, -0.2f), new Vector3(s * 0.25f, 1.3f, 0.02f), 0.05f, TChrome, "Brazo");
+                if (air) for (int s = -1; s <= 1; s += 2) GBar(m, new Vector3(s * 0.2f, 0.5f, -0.2f), new Vector3(s * 0.25f, 1.25f, -0.25f), 0.05f, TChrome, "Brazo");
                 else
                 {
                     GBar(m, new Vector3(0f, 0.08f, -0.3f), new Vector3(0f, 1.15f, -0.4f), 0.08f, TIron, "Columna");
@@ -642,7 +642,7 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(m, new Vector3(0f, 0.55f, -0.8f), new Vector3(0.5f, 0.04f, 0.04f), TChrome, 0f, "Mango");
                 GBar(m, new Vector3(0f, 0.6f, -1.05f), new Vector3(0f, 1f, -0.95f), 0.04f, TIron, "Brazo_monitor");
                 KitchenProps.C(m, new Vector3(0f, 1.05f, -0.95f), new Vector3(0.2f, 0.15f, 0.04f), TIron, 0f, "Monitor");
-                seat = new Vector3(0f, 0f, -0.15f); root = 0.48f; shiftB = new Vector3(0f, 0f, -0.6f); break;   // el carro va hacia atrás
+                seat = new Vector3(0f, 0f, -0.36f); root = 0.53f; shiftB = new Vector3(0f, 0f, -0.52f); break;   // el carro va hacia atrás; los pies, en los reposapiés
             default:   // SkiErg con soporte: 0,6 × 1,3 × 2,16, torre delante y dos tiradores arriba
                 KitchenProps.C(m, new Vector3(0f, 0.03f, 0f), new Vector3(0.6f, 0.06f, 1.3f), TRubber, 0f, "Plataforma");
                 GBar(m, new Vector3(0f, 0.06f, -0.5f), new Vector3(0f, 2.16f, -0.5f), 0.12f, TIron, "Torre");
@@ -699,7 +699,7 @@ public static partial class SampleSceneBuilder
         GBar(m, new Vector3(0f, 0.85f, 0.3f), new Vector3(0f, 0.85f, 0.65f), 0.06f, TIron, "Brazo_rodillos");
         for (int k = 0; k < 2; k++) KitchenProps.C(m, new Vector3(0f, 0.95f - k * 0.18f, 0.62f), new Vector3(0.4f, 0.1f, 0.1f), TPad, 0f, "Rodillo_pies");
         KitchenProps.Fit(m);
-        GStation(m, GymMachineType.AbdominalDeclinado, copy, new Vector3(0f, 0f, 0f), 0.67f, default, -1f, 0f);
+        GStation(m, GymMachineType.AbdominalDeclinado, copy, new Vector3(0f, 0.09f, 0.15f), 0.88f, default, -1f, 0f);   // tumbado sobre el banco, rodillas en el extremo alto
         GLabel(m, name);
     }
 
@@ -730,7 +730,7 @@ public static partial class SampleSceneBuilder
         {
             float x = -w * 0.5f + 0.45f + i * 0.9f;
             for (int k = 1; k <= 15; k++) KitchenProps.C(m, new Vector3(x, k * 0.16f, 0f), new Vector3(0.84f, 0.035f, 0.035f), TWood, 0f, "Peldano");
-            GSpot(m, GymMachineType.ElevacionPiernas, firstCopy + i, new Vector3(x, 0f, -0.25f), 0f, 1.13f);
+            GSpot(m, GymMachineType.ElevacionPiernas, firstCopy + i, new Vector3(x, 0f, -0.15f), 0f, 1.30f);   // espalda contra las barras, colgado del peldaño de 2,24 m
         }
         KitchenProps.Fit(m); GLabel(m, "Espalderas", 2.8f);
     }
@@ -757,7 +757,7 @@ public static partial class SampleSceneBuilder
             for (int s = -1; s <= 1; s += 2)
             {
                 GBar(m, new Vector3(s * 0.9f, h, z0), new Vector3(s * 0.9f, h, z0 + 2f), 0.04f, TChrome, "Barra_dominadas");
-                if (s < 0) for (int k = 0; k < 2; k++) GSpot(m, GymMachineType.Kipping, kc++, new Vector3(-0.9f, 0f, z0 + 0.5f + k), -90f, 1.23f + (h - 2.4f) / 0.974f);   // de cara al rig
+                if (s < 0) for (int k = 0; k < 2; k++) GSpot(m, GymMachineType.Kipping, kc++, new Vector3(-0.9f, 0f, z0 + 0.5f + k), -90f, 1.35f + (h - 2.4f) / 0.974f);   // de cara al rig
             }
         }
         for (int s = -1; s <= 1; s += 2)
@@ -771,7 +771,7 @@ public static partial class SampleSceneBuilder
             float z = 3.5f + c;
             GBar(m, new Vector3(0f, 5.5f, z), new Vector3(0f, 0.93f, z), 0.04f, new Color(0.75f, 0.65f, 0.45f), "Cuerda_4,57");
             KitchenProps.C(m, new Vector3(0f, 4.5f, z), new Vector3(0.05f, 0.05f, 0.05f), TRed, 0f, "Marca");
-            GSpot(m, GymMachineType.Cuerda, c, new Vector3(0f, 0f, z), 90f, 1.3f, new Vector3(0f, 0.6f, 0f));   // sube 0,6 m por ciclo
+            GSpot(m, GymMachineType.Cuerda, c, new Vector3(0.15f, 0f, z), 90f, 1.3f, new Vector3(0f, 0.6f, 0f));   // la cuerda, delante del pecho; sube 0,6 m por ciclo
         }
         float[] wz = { -3.5f, -1f, 1.5f };   // z 2,5 · 5,0 · 7,5 del piso
         for (int i = 0; i < 3; i++)
@@ -794,7 +794,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(m, new Vector3(0f, 0.5f, -0.72f), new Vector3(0.4f, 0.04f, 0.25f), TIron, new Vector3(-60f, 0f, 0f), "Plataforma_pies");
         for (int k = 0; k < 2; k++) KitchenProps.C(m, new Vector3(0f, 0.62f + k * 0.15f, -0.62f - k * 0.08f), new Vector3(0.4f, 0.1f, 0.1f), TPad, 0f, "Rodillo_tobillos");
         KitchenProps.Fit(m);
-        GStation(m, GymMachineType.GHD, copy, new Vector3(0f, 0f, 0.15f), 1.14f);
+        GStation(m, GymMachineType.GHD, copy, new Vector3(0f, 0f, 0.15f), 1.21f);
         GLabel(m, name);
     }
 

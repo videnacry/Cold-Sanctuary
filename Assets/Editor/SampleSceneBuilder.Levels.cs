@@ -82,7 +82,7 @@ public static partial class SampleSceneBuilder
     /// ANILLO (Berón, 2026-10-23): plataforma hija CUADRADA Y COMPLETA alrededor de una planta de <paramref name="floor"/>, a
     /// <paramref name="h"/> m sobre ella, de <paramref name="width"/> m de ancho, con solo el <paramref name="inside"/> (20 %)
     /// sobre la planta y el resto VOLANDO fuera del borde, para no quitarle sitio. Sin postes (voladizo) y sin barreras en los
-    /// bordes (Berón 2026-10-27: se puede saltar); sus escaleras de dentro las pone quien lo construye.
+    /// bordes (Berón 2026-10-27: se puede saltar); sin escaleras (Berón 2026-10-28): se sube en alfombra, con <see cref="RingCarpets"/>.
     /// Devuelve la raíz (a la altura de la cara de arriba). <see cref="RingPoint"/> recorre su línea central.
     /// </summary>
     static Transform RingDeck(Transform parent, string name, Vector2 floor, float h = MezzanineHeight, float width = 10f, float inside = 0.2f)
@@ -117,4 +117,18 @@ public static partial class SampleSceneBuilder
     }
 
     static float RingLength(Vector2 floor, float width = 10f, float inside = 0.2f) => 4f * (floor.x * 0.5f + floor.y * 0.5f - 2f * width * inside + width);
+
+    /// <summary>ÁREA DE ALFOMBRAS DEL ANILLO (Berón 2026-10-28: sin escaleras, a los anillos se sube en alfombra): en el centro del
+    /// lado +Z de su línea central, atravesada (7,6 m a lo ancho del anillo), de la red del EDIFICIO: sus alfombras llevan a los
+    /// pisos del edificio y las de cada piso, a este anillo. Superficie «edificio#anillo» (en el piso N &gt; 1, «edificio#anilloN»),
+    /// como las esterillas del anillo de yoga. Quien amuebla el anillo deja libre ese hueco (|x| &lt; 4,6 m en el lado +Z).</summary>
+    static CarpetPad RingCarpets(Transform ring, Transform floor, Vector2 floorSize, string building, string label, float width = 10f, float inside = 0.2f)
+    {
+        var (p, _, _) = RingPoint(floorSize, 0f, width, inside);   // s = 0: el centro del lado +Z
+        System.Collections.Generic.List<Transform> fl = FloorsOf(BaseOf(floor));
+        int i = Mathf.Max(1, fl.IndexOf(floor) + 1);
+        string surf = i == 1 ? $"{building}#anillo" : $"{building}#anillo{i}";
+        return CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), ring.rotation * Quaternion.Euler(0f, 90f, 0f), CarpetPad.Kind.Edificio,
+            building, i, surf, label, 2);
+    }
 }

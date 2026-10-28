@@ -128,7 +128,8 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int tables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_")) tables++;
         TestProbe.Greater("el restaurante tiene comedor con mesas vestidas", tables, 7f, $"{tables} mesas");
         int upTables = 0; if (dining != null) foreach (Transform tt in dining.GetComponentsInChildren<Transform>()) if (tt.name.StartsWith("Mesa_") && tt.position.y > dining.transform.position.y + 1.5f) upTables++;
-        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y su escalera (plataforma hija)", upTables >= 12 && GameObject.Find("Escalera_comedor_norte") != null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba");
+        bool diningCarpets = dining != null && System.Array.Exists(dining.GetComponentsInChildren<CarpetPad>(), cp => cp.surface.Contains("#anillo"));
+        TestProbe.Check("el comedor va en un anillo de 10 m sobre la cocina, con caja y sus alfombras (sin escalera)", upTables >= 12 && diningCarpets && GameObject.Find("Escalera_comedor_norte") == null && GameObject.Find("Caja_registradora") != null, $"{upTables} mesas arriba, alfombras del anillo {diningCarpets}");
         int pierced = 0; GameObject flora = GameObject.Find("FloraHielo_AUTO");
         var piercedWho = new System.Collections.Generic.List<string>();
         if (flora != null)
@@ -293,6 +294,9 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("la salida de la enfermería está vigilada (iniciación bloqueante)", FindAnyObjectByType<InfirmaryGate>() != null);
         TestProbe.Check("ballet y dojo están en obras; el gimnasio y la calistenia, abiertos", ConstructionProject.All.Count >= 2 && FindByPrefix("Gym_Area") && FindByPrefix("Calistenia"));
+        // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
+        int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(c => c.floor) : 0;
+        TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos");
         // MENOS EDIFICIOS (docs/plano-edificios.md): Granja, Talleres y Entrenamiento juntan sus áreas en pisos.
         TestProbe.Check("Granja, Talleres y Entrenamiento: varias áreas por edificio", new[] { "Granja", "Talleres", "Entrenamiento" }.All(b => CarpetPad.All.Any(c => c.building == b)) && Mathf.Abs(GameObject.Find("CubCare_Area").transform.position.x - GameObject.Find("Garden_Area").transform.position.x) < 0.5f, string.Join(", ", CarpetPad.All.Select(c => c.building).Distinct()));
 
@@ -386,9 +390,31 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la fauna va en proporción a los humanos (más pingüinos que osos)", penguins > bears && bears <= PopulationPlan.Cap("Bear"), string.Join(", ", census.Select(kv => $"{kv.Key} {kv.Value}")));
         int machines = 0; foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None)) if (t.name.StartsWith("Maquina_")) machines++;
         TestProbe.Greater("el gimnasio tiene 10 tipos de máquina × 3", machines, 29f, $"{machines} máquinas");
-        GameObject gym = GameObject.Find("Gym_Area");
-        int tight = gym != null ? FurnitureSpacing.Violations(gym.transform).Count : -1;
-        TestProbe.Check("las máquinas del gimnasio tienen su pasillo (no se apilan)", tight == 0, $"{tight} pares demasiado juntos");
+        // 2 m LIBRES entre muebles en TODAS las plataformas (Berón 2026-10-28; FurnitureSpacing): cada área, y la planta de la
+        // cocina del restaurante (que cuelga de Restaurante_AUTO, no del área). Lo que va unido (baterías, líneas, parejas) no cuenta.
+        var spaced = new System.Collections.Generic.List<(string name, Transform t)>();
+        foreach (SanctuaryArea sa in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None)) spaced.Add((sa.displayName, sa.transform));
+        Transform kitchenFloor = GameObject.Find("Restaurante_AUTO")?.transform.Find("Sala");
+        if (kitchenFloor != null) spaced.Add(("Cocina (planta)", kitchenFloor));
+        spaced.Sort((x, y) => string.CompareOrdinal(x.name, y.name));
+        foreach (var (spName, spRoot) in spaced)
+        {
+            var bad = FurnitureSpacing.Violations(spRoot);
+            TestProbe.Check($"{spName}: 2 m libres entre muebles (y ninguno sobre un área de alfombras)", bad.Count == 0, $"{bad.Count} pares: {FurnitureSpacing.Worst(bad)}");
+        }
+        // SIN ESCALERAS (Berón 2026-10-28): a cada ANILLO se sube en alfombra, desde los pisos de su edificio, y de él se vuela a ellos.
+        int rings = 0, ringsOk = 0, stairs = 0; var noPad = new System.Collections.Generic.List<string>();
+        foreach (Transform t in FindObjectsByType<Transform>(FindObjectsSortMode.None))
+        {
+            if (t.name.StartsWith("Escalera") && t.Find("Peldano") != null && t.GetComponentInParent<SanctuaryArea>() != null) stairs++;
+            if (!t.name.StartsWith("Anillo_") || t.Find("Losa_anillo") == null) continue;
+            rings++;
+            CarpetPad pad = t.GetComponentInChildren<CarpetPad>();
+            bool there = pad != null && pad.Destinations().Count > 0 && CarpetPad.All.Exists(o => o != pad && o.FliesTo(pad) && o.surface.Contains("#") && !o.surface.Contains("#anillo"));
+            if (there) ringsOk++; else if (noPad.Count < 4) noPad.Add(t.name);
+        }
+        TestProbe.Check("cada anillo tiene su área de alfombras unida a los pisos de su edificio", rings > 0 && ringsOk == rings, $"{ringsOk}/{rings} anillos; sin alfombras: {string.Join(", ", noPad)}");
+        TestProbe.Check("ninguna área tiene escaleras (se sube en alfombra)", stairs == 0, $"{stairs} escaleras");
         int fullSt = 0;
         for (int i = 1; i <= 8; i++)
         {

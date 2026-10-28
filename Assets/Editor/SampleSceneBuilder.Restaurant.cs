@@ -6,7 +6,7 @@ using UnityEngine;
 ///  · La cocina ocupa TODA la planta (SampleSceneBuilder.KitchenPlan): suelo de pizarra oscura y el pase con su riel de
 ///    comandas y hierbas frescas. El COMEDOR va arriba, en un ANILLO de 10 m a caballo del borde (docs/restaurant-plan.md):
 ///    mesas con mantel blanco, bajoplato, copas, cubiertos, vela y flor; sillas tapizadas; caja, barra de sushi, cafetera,
-///    aseos, pared de vinos y plantas; sube por dos escaleras de dentro (se llega en alfombra).
+///    aseos, pared de vinos y plantas; se sube en alfombra, sin escaleras (su área de alfombras, en el lado +Z del anillo).
 ///  · ESTUDIO TEXTIL (el área de Irosene): telar de pie con su urdimbre, telar de cintura andino, rueca, ovillos de lana
 ///    por colores, tinas de tinte natural, mesa de corte, máquina de coser, maniquíes y un tendedero con telas.
 /// </summary>
@@ -30,8 +30,8 @@ public static partial class SampleSceneBuilder
         // Hierbas aromáticas frescas en la mesa de emplatado (macetas de cubos).
         for (int i = 0; i < 5; i++)
         {
-            Transform pot = KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.08f, 2.0f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
-            KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.24f, 2.0f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
+            Transform pot = KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.08f, 2.7f), new Vector3(0.2f, 0.16f, 0.2f), new Color(0.75f, 0.45f, 0.3f), 0f, "Maceta_hierbas");
+            KitchenProps.C(room, new Vector3(-0.6f + i * 0.3f, KitchenProps.CounterTop + 0.24f, 2.7f), new Vector3(0.22f, 0.18f, 0.22f), new Color(0.3f + i * 0.04f, 0.6f, 0.3f), 0f, "Hierbas");
         }
     }
 
@@ -41,7 +41,7 @@ public static partial class SampleSceneBuilder
     {
         // Toda la planta es cocina y el COMEDOR va en un ANILLO cuadrado completo a 4 m, de 10 m de ancho: solo el 20 % sobre
         // la planta y el 80 % volando por fuera (Berón 2026-10-23). Una fila de mesas de 4 por el centro y 4 m libres a cada
-        // lado. La escalera nace del PUENTE (no cruza la cocina) y junto a su llegada está la CAJA, que atiende el cocinero que
+        // lado. Se sube en ALFOMBRA (sin escaleras) y junto a su área de alfombras está la CAJA, que atiende el cocinero que
         // esté libre. La barra de sushi y la cafetera, de cara a los comensales; aseos, pared de vinos y plantas en el anillo.
         GameObject kitchen = GameObject.Find("Kitchen_Area");
         if (kitchen == null) return;
@@ -85,16 +85,16 @@ public static partial class SampleSceneBuilder
         const float along = 0f;
         Transform ring = RingDeck(r, "Anillo_comedor", size, MezzanineHeight, W, In);
 
-        // Se llega en alfombra (docs/alfombras-plan.md): el comedor (plataforma hija) sube por dentro, escaleras en los lados ±Z.
+        // SIN ESCALERAS (Berón 2026-10-28): al comedor se sube en ALFOMBRA. Su área de alfombras va en el centro del lado +Z del
+        // anillo (red del edificio: desde la cocina, el techo y el suelo se vuela aquí y de aquí a ellos).
         Vector3 outDir = Vector3.forward, top = new Vector3(0f, 0f, hz);
-        float run = StairRun();
-        InclinedStair(r, "Escalera_comedor_norte", new Vector3(0f, 0f, hz - run), 0f);
-        InclinedStair(r, "Escalera_comedor_sur", new Vector3(0f, 0f, -hz + run), 180f);
-        Vector3 arrive = top + Vector3.forward * (W * 0.5f);   // donde se llega (la escalera norte, en el borde interior), en la línea central
+        Vector3 arrive = top + Vector3.forward * (W * 0.5f);   // donde se llega (el área de alfombras del anillo), en la línea central
+        SanctuaryArea ksa = kitchen.GetComponent<SanctuaryArea>();
+        RingCarpets(ring, kitchen.transform, size, ksa != null ? ksa.displayName : "Cocina", "Comedor (anillo)", W, In);
 
-        // CAJA junto a la llegada (sobre la línea central, a un lado del paso).
+        // CAJA junto a la llegada (sobre la línea central, a un lado del área de alfombras).
         Vector3 tangent = Mathf.Abs(outDir.x) > 0.5f ? Vector3.forward : Vector3.right;
-        Vector3 cajaAt = arrive + tangent * (along > 0f ? -3.4f : 3.4f);
+        Vector3 cajaAt = arrive + tangent * (along > 0f ? -4f : 4f);
         Transform caja = KitchenProps.CounterRun(ring, "Caja_registradora", cajaAt, 1.6f, Mathf.Atan2(outDir.x, outDir.z) * Mathf.Rad2Deg);
         KitchenProps.C(caja, new Vector3(-0.3f, KitchenProps.CounterTop + 0.12f, 0f), new Vector3(0.4f, 0.24f, 0.35f), new Color(0.2f, 0.22f, 0.25f), 0f, "Registradora");
         KitchenProps.C(caja, new Vector3(0.4f, KitchenProps.CounterTop + 0.02f, 0f), new Vector3(0.3f, 0.02f, 0.2f), new Color(0.95f, 0.95f, 0.9f), 0f, "Tickets");
@@ -138,7 +138,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(pl, new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 0.9f, 0.8f), new Color(0.3f, 0.55f, 0.3f), 30f, "Follaje");
         }
         WorldLabel wl = go.AddComponent<WorldLabel>(); wl.text = "Restaurante (comedor en el anillo)"; wl.height = MezzanineHeight + 3f;
-        Debug.Log($"[Restaurante] comedor en anillo de {W:0} m a {MezzanineHeight:0.#} m: {mesa} mesas de 4 ({mesa * 4} cubiertos), caja junto a la escalera norte, " +
+        Debug.Log($"[Restaurante] comedor en anillo de {W:0} m a {MezzanineHeight:0.#} m: {mesa} mesas de 4 ({mesa * 4} cubiertos), caja junto a sus alfombras, " +
                   "barra de sushi, cafetera, aseos y pared de vinos.");
     }
 
@@ -203,20 +203,20 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(loom, new Vector3(0f, 0.5f, -0.45f), new Vector3(1.2f, 0.06f, 0.35f), wood, 0f, "Banco");
         L(loom, "Telar de pie", 1.9f);
         // Telar de cintura andino (Irosene es ecuatoriana): urdimbre tensa entre un poste y la tejedora.
-        Transform back = KitchenProps.Root(r, "Telar_de_cintura", new Vector3(hx - 1.4f, 0f, -hz + 1.2f));
+        Transform back = KitchenProps.Root(r, "Telar_de_cintura", new Vector3(hx - 1.0f, 0f, -hz + 1.2f));
         KitchenProps.C(back, new Vector3(0f, 0.6f, 0.9f), new Vector3(0.1f, 1.2f, 0.1f), dark, 0f, "Poste");
         for (int i = 0; i < 10; i++) KitchenProps.C(back, new Vector3(-0.25f + i * 0.055f, 0.45f, 0.35f), new Vector3(0.012f, 0.012f, 1.1f), wool[(i + 3) % wool.Length], -8f, "Hilo");
         KitchenProps.C(back, new Vector3(0f, 0.42f, -0.15f), new Vector3(0.6f, 0.03f, 0.25f), new Color(0.9f, 0.4f, 0.2f), 0f, "Faja_tejida");
         L(back, "Telar de cintura andino", 1.4f);
         // Rueca (hilar la lana).
-        Transform wheel = KitchenProps.Root(r, "Rueca", new Vector3(-hx + 1.2f, 0f, 0.6f));
+        Transform wheel = KitchenProps.Root(r, "Rueca", new Vector3(-hx + 1.2f, 0f, 2.4f));
         KitchenProps.C(wheel, new Vector3(0f, 0.3f, 0f), new Vector3(0.6f, 0.08f, 0.3f), wood);
         for (int a = 0; a < 8; a++) { Transform sp = KitchenProps.C(wheel, new Vector3(0f, 0.75f, 0f), new Vector3(0.02f, 0.7f, 0.02f), dark); sp.localRotation = Quaternion.Euler(a * 22.5f, 0f, 0f); }
         KitchenProps.C(wheel, new Vector3(0f, 0.75f, 0f), new Vector3(0.05f, 0.75f, 0.75f), new Color(0.6f, 0.45f, 0.32f, 0.35f), 0f, "Rueda");
         KitchenProps.C(wheel, new Vector3(0.25f, 0.95f, 0f), new Vector3(0.05f, 0.05f, 0.25f), new Color(0.95f, 0.95f, 0.9f), 0f, "Huso");
         L(wheel, "Rueca", 1.4f);
         // Estantería de ovillos por colores.
-        Transform shelf = KitchenProps.Root(r, "Ovillos", new Vector3(0f, 0f, -hz + 0.35f));
+        Transform shelf = KitchenProps.Root(r, "Ovillos", new Vector3(-2f, 0f, -hz + 0.35f));
         KitchenProps.C(shelf, new Vector3(0f, 1f, 0f), new Vector3(3f, 2f, 0.4f), dark, 0f, "Estanteria");
         for (int y = 0; y < 4; y++) for (int x = 0; x < 9; x++)
             KitchenProps.C(shelf, new Vector3(-1.3f + x * 0.32f, 0.3f + y * 0.45f, 0.12f), new Vector3(0.22f, 0.2f, 0.22f), wool[(x + y * 3) % wool.Length], 0f, "Ovillo");
@@ -226,20 +226,20 @@ public static partial class SampleSceneBuilder
         string[] dn = { "Cochinilla", "Añil", "Nogal", "Cúrcuma" };
         for (int i = 0; i < 4; i++)
         {
-            Transform v = KitchenProps.Root(r, $"Tina_{dn[i]}", new Vector3(hx - 0.7f, 0f, -0.8f + i * 0.8f));
+            Transform v = KitchenProps.Root(r, $"Tina_{dn[i]}", new Vector3(hx - 0.7f, 0f, 0.4f + i * 0.8f));
             KitchenProps.C(v, new Vector3(0f, 0.3f, 0f), new Vector3(0.6f, 0.6f, 0.6f), KitchenProps.Steel, 0f, "Tina");
             KitchenProps.C(v, new Vector3(0f, 0.58f, 0f), new Vector3(0.52f, 0.02f, 0.52f), dye[i], 0f, "Tinte");
             L(v, $"Tinte de {dn[i].ToLower()}", 1f);
         }
         // Mesa de corte con tela, tijeras y cinta; máquina de coser (eléctrica: energía solar).
-        Transform cut = KitchenProps.Root(r, "Mesa_de_corte", new Vector3(0f, 0f, 0.4f));
+        Transform cut = KitchenProps.Root(r, "Mesa_de_corte", new Vector3(0f, 0f, 2.4f));
         KitchenProps.C(cut, new Vector3(0f, 0.85f, 0f), new Vector3(2.2f, 0.06f, 1.1f), wood, 0f, "Tablero");
         for (int s = -1; s <= 1; s += 2) for (int f = -1; f <= 1; f += 2) KitchenProps.C(cut, new Vector3(s * 1f, 0.42f, f * 0.48f), new Vector3(0.07f, 0.84f, 0.07f), dark);
         KitchenProps.C(cut, new Vector3(-0.3f, 0.885f, 0f), new Vector3(1.2f, 0.01f, 0.8f), new Color(0.2f, 0.45f, 0.75f), 0f, "Tela");
         KitchenProps.C(cut, new Vector3(0.6f, 0.9f, 0.2f), new Vector3(0.18f, 0.02f, 0.06f), KitchenProps.Steel, 30f, "Tijeras");
         KitchenProps.C(cut, new Vector3(0.6f, 0.89f, -0.25f), new Vector3(0.6f, 0.005f, 0.03f), new Color(0.95f, 0.85f, 0.3f), 0f, "Cinta_metrica");
         L(cut, "Mesa de corte", 1.3f);
-        Transform sew = KitchenProps.Root(r, "Maquina_de_coser", new Vector3(-1.5f, 0f, hz - 1.2f));
+        Transform sew = KitchenProps.Root(r, "Maquina_de_coser", new Vector3(-6f, 0f, hz - 1.2f));
         KitchenProps.C(sew, new Vector3(0f, 0.38f, 0f), new Vector3(1f, 0.76f, 0.55f), wood, 0f, "Mesa");
         KitchenProps.C(sew, new Vector3(0f, 0.86f, 0f), new Vector3(0.45f, 0.18f, 0.18f), Color.white, 0f, "Cuerpo");
         KitchenProps.C(sew, new Vector3(0.15f, 0.98f, 0f), new Vector3(0.15f, 0.25f, 0.15f), Color.white, 0f, "Brazo");
@@ -248,12 +248,12 @@ public static partial class SampleSceneBuilder
         // Maniquíes con prendas y un tendedero con telas teñidas.
         for (int m = 0; m < 2; m++)
         {
-            Transform mq = KitchenProps.Root(r, $"Maniqui_{m + 1}", new Vector3(1.8f + m * 1.1f, 0f, hz - 1.0f));
+            Transform mq = KitchenProps.Root(r, $"Maniqui_{m + 1}", new Vector3(2.8f + m * 1.1f, 0f, hz - 1.0f));
             KitchenProps.C(mq, new Vector3(0f, 0.6f, 0f), new Vector3(0.05f, 1.2f, 0.05f), dark);
             KitchenProps.C(mq, new Vector3(0f, 1.35f, 0f), new Vector3(0.38f, 0.5f, 0.22f), wool[m * 3 + 1], 0f, "Prenda");
             KitchenProps.C(mq, new Vector3(0f, 1.05f, 0f), new Vector3(0.42f, 0.25f, 0.25f), wool[m * 3 + 2], 0f, "Falda");
         }
-        Transform line = KitchenProps.Root(r, "Tendedero", new Vector3(0f, 0f, hz - 0.3f));
+        Transform line = KitchenProps.Root(r, "Tendedero", new Vector3(-1f, 0f, hz - 0.3f));
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(line, new Vector3(s * 1.4f, 0.9f, 0f), new Vector3(0.05f, 1.8f, 0.05f), dark);
         KitchenProps.C(line, new Vector3(0f, 1.75f, 0f), new Vector3(2.8f, 0.01f, 0.01f), Color.white, 0f, "Cuerda");
         for (int i = 0; i < 5; i++) KitchenProps.C(line, new Vector3(-1.1f + i * 0.55f, 1.4f, 0f), new Vector3(0.45f, 0.7f, 0.01f), dye[i % dye.Length], 0f, "Tela_tendida");

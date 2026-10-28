@@ -50,6 +50,7 @@ public static partial class SampleSceneBuilder
 
         // ── COCINA DE LECHE (lado este): mesa con biberones, báscula de crías, nevera de leche y fregadero ──
         Transform milk = KitchenProps.Root(r, "Cocina_de_leche", new Vector3(hx - 3.2f, 0f, 3.5f), -90f);
+        milk.gameObject.AddComponent<FurnitureLine>();   // nevera, mesa de biberones y fregadero: un tramo corrido (van pegados)
         Transform bench = KitchenProps.CounterRun(milk, "Mesa_biberones", new Vector3(0f, 0f, 0f), 3.2f);
         for (int i = 0; i < 6; i++)
         {

@@ -74,13 +74,22 @@ public static partial class SampleSceneBuilder
         foreach (Transform t in _platforms.Keys)   // huertos de gremio elevados: cada uno, un edificio de un piso
             if (t != null && t.name.StartsWith("Huerto_") && !_upperOf.ContainsKey(t) && !buildings.Exists(b => b.t == t))
                 buildings.Add((t, GardenPlot.Title(t.GetComponent<GardenPlot>().guild)));
+        // Los ACABADOS de las obras (dojo, ballet…), aún ocultos, también cuentan: al terminar la obra aparecen y sus muebles no
+        // pueden caer sobre el área de alfombras (FurnitureSpacing). Se encienden un momento para medirlos.
+        var unfinished = new List<GameObject>();
+        foreach (ConstructionProject cp in Object.FindObjectsByType<ConstructionProject>(FindObjectsSortMode.None))
+        {
+            Transform done = cp.transform.Find("Acabado");
+            if (done != null && !done.gameObject.activeSelf) { done.gameObject.SetActive(true); unfinished.Add(done.gameObject); }
+        }
         var all = new List<Bounds>();
         foreach (Renderer r in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
         {
             if (!r.enabled || r.GetComponent<TMPro.TMP_Text>() != null) continue;
             Bounds b = r.bounds;
             if (b.size.x > 60f || b.size.z > 60f) continue;
-            if (b.size.y < 0.3f && (b.size.x > 3f || b.size.z > 3f)) continue;   // suelos, alfombras de suelo, losas
+            bool furniture = r.transform.parent != null && FurnitureSpacing.IsFurniture(r.transform.parent);   // un mueble plano también estorba
+            if (b.size.y < 0.3f && (b.size.x > 3f || b.size.z > 3f) && !furniture) continue;   // suelos, alfombras de suelo, losas
             all.Add(b);
         }
         int zones = 0;
@@ -136,6 +145,7 @@ public static partial class SampleSceneBuilder
             }
         }
         _carpetBuildings.Clear(); _carpetBuildings.AddRange(buildings);
+        foreach (GameObject g in unfinished) g.SetActive(false);   // siguen en obras
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }
 

@@ -158,6 +158,7 @@ public class CulturedMeatLab : MonoBehaviour
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         void L(Transform t, string text, float h) { WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = text; wl.height = h; }
 
+        // Entre equipo y equipo, 2 m libres (FurnitureSpacing.Standard, Berón 2026-10-28); la mesa del microscopio va pegada a la campana.
         // 1 · Campana de flujo laminar (cabina de bioseguridad) para la biopsia, con microscopio al lado.
         Transform hood = KitchenProps.Root(r, "Campana_flujo_laminar", new Vector3(-hx + 1.2f, 0f, -hz + 1f));
         KitchenProps.C(hood, new Vector3(0f, 0.45f, 0f), new Vector3(1.6f, 0.9f, 0.8f), white, 0f, "Mueble");
@@ -177,7 +178,7 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(cryo, new Vector3(0f, 1.15f, 0f), new Vector3(0.35f, 0.1f, 0.35f), dark, 0f, "Tapa");
         KitchenProps.C(cryo, new Vector3(0f, 1.25f, 0f), new Vector3(0.6f, 0.08f, 0.6f), new Color(0.9f, 0.97f, 1f, 0.35f), 0f, "Vapor_N2");
         L(cryo, "Banco de células (N₂ líquido, −196 °C)", 1.6f);
-        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", new Vector3(-hx + 0.8f, 0f, 1.6f));
+        Transform inc = KitchenProps.Root(r, "Incubadora_CO2", new Vector3(-hx + 0.8f, 0f, 3.2f));
         KitchenProps.C(inc, new Vector3(0f, 0.6f, 0f), new Vector3(0.75f, 1.2f, 0.75f), white, 0f, "Incubadora");
         KitchenProps.C(inc, new Vector3(0.38f, 0.6f, 0f), new Vector3(0.02f, 1f, 0.6f), glass, 0f, "Puerta");
         L(inc, "Incubadora (37 °C, 5 % CO₂)", 1.5f);
@@ -189,13 +190,13 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(med, new Vector3(0.7f, 0.9f, 0f), new Vector3(0.25f, 0.5f, 0.25f), white, 0f, "Filtro_0_2um");
         KitchenProps.C(med, new Vector3(0.35f, 0.9f, 0f), new Vector3(0.5f, 0.05f, 0.05f), steel, 0f, "Tubo");
         L(med, "Medio de cultivo (sin suero) + filtro estéril 0,2 µm", 1.7f);
-        Transform auto = KitchenProps.Root(r, "Autoclave", new Vector3(-hx + 2.8f, 0f, hz - 1.0f));
+        Transform auto = KitchenProps.Root(r, "Autoclave", new Vector3(-hx + 5.2f, 0f, hz - 1.0f));
         KitchenProps.C(auto, new Vector3(0f, 0.5f, 0f), new Vector3(0.8f, 1f, 0.7f), steel, 0f, "Autoclave");
         KitchenProps.C(auto, new Vector3(0f, 0.55f, 0.36f), new Vector3(0.45f, 0.45f, 0.03f), dark, 0f, "Puerta_redonda");
         L(auto, "Autoclave (esteriliza)", 1.3f);
 
         // 4 · Biorreactores de tanque agitado: semilla (pequeño) y producción (grande), con camisa, sensores y agitador.
-        Bioreactor(r, "Biorreactor_semilla", new Vector3(-0.8f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
+        Bioreactor(r, "Biorreactor_semilla", new Vector3(-3.2f, 0f, -hz + 1.4f), 0.45f, 1.2f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_semilla"), "Biorreactor semilla (50 L, microportadores)", 1.9f);
         Bioreactor(r, "Biorreactor_produccion", new Vector3(1.4f, 0f, -hz + 1.6f), 0.8f, 2.1f, glass, broth, steel, dark);
         L(r.Find("Biorreactor_produccion"), "Biorreactor de producción (500 L · 37 °C · pH 7,3 · O₂)", 2.9f);
@@ -214,11 +215,11 @@ public class CulturedMeatLab : MonoBehaviour
         KitchenProps.C(cen, new Vector3(0f, 0.45f, 0f), new Vector3(0.8f, 0.9f, 0.8f), white, 0f, "Centrifuga");
         KitchenProps.C(cen, new Vector3(0f, 0.92f, 0f), new Vector3(0.6f, 0.04f, 0.6f), dark, 45f, "Tapa");
         L(cen, "Centrífuga (cosecha y lavado)", 1.3f);
-        Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 2.4f, 0f, hz - 1.3f));
+        Transform form = KitchenProps.Root(r, "Formadora", new Vector3(hx - 4.0f, 0f, hz - 1.3f));
         KitchenProps.C(form, new Vector3(0f, 0.45f, 0f), new Vector3(1f, 0.9f, 0.7f), steel, 0f, "Mesa");
         KitchenProps.C(form, new Vector3(0f, 1.1f, 0f), new Vector3(0.5f, 0.4f, 0.5f), dark, 0f, "Prensa");
         L(form, "Formadora de piezas", 1.6f);
-        Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 1.6f));
+        Transform cold = KitchenProps.Root(r, "Camara_fria", new Vector3(hx - 0.6f, 0f, 3.5f));
         KitchenProps.C(cold, new Vector3(0f, 1f, 0f), new Vector3(0.9f, 2f, 1.4f), white, 0f, "Camara");
         KitchenProps.C(cold, new Vector3(-0.46f, 1f, 0f), new Vector3(0.02f, 1.8f, 1.2f), steel, 0f, "Puerta");
         L(cold, "Cámara fría (4 °C)", 2.3f);

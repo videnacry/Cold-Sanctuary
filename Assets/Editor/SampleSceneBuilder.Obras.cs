@@ -31,9 +31,9 @@ public static partial class SampleSceneBuilder
     {
         KitchenProps.C(r, new Vector3(4.3f, 0.025f, 0f), new Vector3(9.4f, 0.05f, 14.8f), OCork, 0f, "Base_corcho");   // suelo de impacto bajo jaula y ring
         // JAULA DE MMA: octógono de 5,5 m entre caras, a ras de suelo, con red de cáñamo sobre postes de guadua doble.
-        Transform cage = KitchenProps.Root(r, "Jaula_MMA", new Vector3(5.8f, 0.05f, -4.4f));
+        Transform cage = KitchenProps.Root(r, "Jaula_MMA", new Vector3(5.8f, 0.05f, -4.6f));
         float apo = 2.75f, side = 2f * apo * Mathf.Tan(Mathf.PI / 8f);
-        KitchenProps.C(cage, new Vector3(0f, 0.04f, 0f), new Vector3(5.4f, 0.08f, 5.4f), OHemp, 22.5f, "Lona");
+        for (int k = 0; k < 2; k++) KitchenProps.C(cage, new Vector3(0f, 0.04f, 0f), new Vector3(4.2f, 0.08f, 4.2f), OHemp, 22.5f + k * 45f, "Lona");   // dos cuadrados inscritos (sus puntas, en los postes): la lona no sobresale de la red
         for (int i = 0; i < 8; i++)
         {
             float a = i * 45f, ar = a * Mathf.Deg2Rad, pr = (a + 22.5f) * Mathf.Deg2Rad, pd = apo / Mathf.Cos(Mathf.PI / 8f);
@@ -61,7 +61,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(tat, new Vector3(0f, 0.035f, 0f), new Vector3(6f, 0.06f, 6f), OBlue, 0f, "Area_combate");
         tat.gameObject.AddComponent<WorldLabel>().text = "Tatami de karate (8 × 8)";
         // SACOS PESADOS colgados de un pórtico de guadua a 3 m.
-        Transform bags = KitchenProps.Root(r, "Sacos_pesados", new Vector3(1.6f, 0.05f, -4.4f));
+        Transform bags = KitchenProps.Root(r, "Sacos_pesados", new Vector3(-6.5f, 0.05f, -5.2f));
         KitchenProps.C(bags, new Vector3(0f, 3f, 0f), new Vector3(0.12f, 0.12f, 4.2f), OGuadua, 0f, "Portico");
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(bags, new Vector3(0f, 1.5f, s * 2.1f), new Vector3(0.12f, 3f, 0.12f), OGuadua, 0f, "Pata");
         for (int i = -1; i <= 1; i++)
@@ -69,13 +69,14 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(bags, new Vector3(0f, 1.55f, i * 1.6f), new Vector3(0.35f, 1.2f, 0.35f), new Color(0.42f, 0.32f, 0.22f), 0f, "Saco");
             KitchenProps.C(bags, new Vector3(0f, 2.55f, i * 1.6f), new Vector3(0.02f, 0.9f, 0.02f), OHemp, 0f, "Cadena");
         }
-        // MAKIWARAS de pared, estantería de equipo, botiquín y vestuario (junto al pasillo central).
+        // MAKIWARAS y estantería de equipo junto al pasillo central; el botiquín pegado al vestuario, en la esquina suroeste (con los
+        // sacos: 2 m libres entre los muebles, docs/obras-dojo-ballet.md).
         for (int i = 0; i < 2; i++) KitchenProps.C(r, new Vector3(0.3f + i * 1.2f, 0.6f, 4.3f), new Vector3(0.2f, 1.2f, 0.1f), OGuadua, 0f, "Makiwara");
         Transform shelf = KitchenProps.C(r, new Vector3(-0.3f, 0.9f, 2f), new Vector3(0.4f, 1.8f, 4f), OGuadua, 0f, "Estanteria_equipo");
         shelf.gameObject.AddComponent<WorldLabel>().text = "Guantes, espinilleras, paos, cascos y protectores";
-        Transform aid = KitchenProps.C(r, new Vector3(0.9f, 0.4f, 4.9f), new Vector3(2.6f, 0.8f, 1.2f), new Color(0.9f, 0.92f, 0.9f), 0f, "Primeros_auxilios");
+        Transform aid = KitchenProps.C(r, new Vector3(-2.2f, 0.4f, -4.9f), new Vector3(2.6f, 0.8f, 1.2f), new Color(0.9f, 0.92f, 0.9f), 0f, "Primeros_auxilios");
         aid.gameObject.AddComponent<WorldLabel>().text = "Primeros auxilios";
-        Transform lock1 = KitchenProps.C(r, new Vector3(0.9f, 1f, 6.5f), new Vector3(2.6f, 2f, 2f), OMycel, 0f, "Vestuario");
+        Transform lock1 = KitchenProps.C(r, new Vector3(-2.2f, 1f, -6.5f), new Vector3(2.6f, 2f, 2f), OMycel, 0f, "Vestuario");
         lock1.gameObject.AddComponent<WorldLabel>().text = "Vestuario";
         // PAREDES ACOLCHADAS (micelio forrado de lona de cáñamo) donde tatami y ring quedan a menos de 1 m de la pared.
         KitchenProps.C(r, new Vector3(-8.9f, 1f, 3.1f), new Vector3(0.12f, 2f, 8f), OHemp, 0f, "Acolchado");
@@ -97,14 +98,14 @@ public static partial class SampleSceneBuilder
         }
         for (float x = -7.8f; x <= 7.81f; x += 1.3f) KitchenProps.C(r, new Vector3(x, 0.55f, 7.4f), new Vector3(0.04f, 1.1f, 0.2f), OGuadua, 0f, "Soporte_barra");
         for (int i = 0; i < 4; i++) KitchenProps.C(r, new Vector3(3f, 0.5f + i * 0.08f, -5.5f), new Vector3(2.4f, 0.06f, 0.4f), OGuadua, 0f, "Barra_portatil");
-        Transform piano = KitchenProps.C(r, new Vector3(3f, 0.65f, -2.3f), new Vector3(1.5f, 1.3f, 0.6f), new Color(0.15f, 0.12f, 0.1f), 0f, "Piano_vertical");
+        Transform piano = KitchenProps.C(r, new Vector3(-6f, 0.65f, -2.3f), new Vector3(1.5f, 1.3f, 0.6f), new Color(0.15f, 0.12f, 0.1f), 0f, "Piano_vertical");
         piano.gameObject.AddComponent<WorldLabel>().text = "Piano";
-        KitchenProps.C(r, new Vector3(4.6f, 0.4f, -2.3f), new Vector3(0.8f, 0.8f, 0.4f), new Color(0.2f, 0.2f, 0.22f), 0f, "Equipo_sonido");
+        KitchenProps.C(r, new Vector3(-2.8f, 0.4f, -2.3f), new Vector3(0.8f, 0.8f, 0.4f), new Color(0.2f, 0.2f, 0.22f), 0f, "Equipo_sonido");
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(r, new Vector3(s * 8.5f, 2.5f, 7f), new Vector3(0.3f, 0.5f, 0.3f), new Color(0.2f, 0.2f, 0.22f), 0f, "Altavoz");
-        KitchenProps.C(r, new Vector3(1.5f, 0.15f, -1.6f), new Vector3(0.6f, 0.3f, 0.6f), OGuadua, 0f, "Caja_resina");
-        KitchenProps.C(r, new Vector3(5f, 0.5f, -1.6f), new Vector3(0.6f, 1f, 0.6f), OMycel, 0f, "Fuente");
+        KitchenProps.C(r, new Vector3(0.5f, 0.15f, -2.3f), new Vector3(0.6f, 0.3f, 0.6f), OGuadua, 0f, "Caja_resina");
+        KitchenProps.C(r, new Vector3(3.5f, 0.5f, -2.3f), new Vector3(0.6f, 1f, 0.6f), OMycel, 0f, "Fuente");
         Transform room = KitchenProps.C(r, new Vector3(7.2f, 1f, -5.9f), new Vector3(3.6f, 2f, 3.2f), OMycel, 0f, "Vestuario_botiquin");
         room.gameObject.AddComponent<WorldLabel>().text = "Vestuario y botiquín";
-        KitchenProps.C(r, new Vector3(3.2f, 0.22f, -7f), new Vector3(3.6f, 0.44f, 0.5f), OGuadua, 0f, "Banco_calzado");
+        KitchenProps.C(r, new Vector3(-1f, 0.22f, -7f), new Vector3(3.6f, 0.44f, 0.5f), OGuadua, 0f, "Banco_calzado");
     }
 }

@@ -185,7 +185,7 @@ public static partial class SampleSceneBuilder
             KitchenProps.C(t, new Vector3(0f, 2.5f, 0f), new Vector3(1.2f, 0.2f, 1.2f), ApSteel, 0f, "Ventilador");
         }, "Torre de refrigeración (secundario)").gameObject.AddComponent<PlantEquipment>().kind = PlantEquipment.Kind.CoolingTower;
 
-        Aseos(r, new Vector3(0f, 0f, -8.2f), 0f, 1);   // al fondo, entre el conejo y la consola
+        Aseos(r, new Vector3(10.1f, 0f, -8.2f), 0f, 1);   // al fondo, en la esquina +X (entre el conejo y la consola no quedaban 2 m)
     }
 
     /// <summary>Un equipo de la planta: raíz + piezas + collider sólido que lo envuelve (sin apilarse: cada uno en su

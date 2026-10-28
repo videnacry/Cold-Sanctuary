@@ -40,7 +40,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>Coloca los bloques en filas sobre una planta de <paramref name="size"/>: 2 m entre bloques y 2 m al borde,
-    /// fuera de las <paramref name="keepOut"/> (escaleras, llegadas de puente). Devuelve los que no cupieron.</summary>
+    /// fuera de las <paramref name="keepOut"/> (el área de alfombras, la máquina de virtualización). Devuelve los que no cupieron.</summary>
     static List<LabBlock> PackFloor(Transform floor, Vector2 size, List<LabBlock> blocks, List<Rect> keepOut)
     {
         const float gap = 2.1f, margin = 2f;   // 2 m libres y un poco más: la caja real de cada bloque sobresale unos cm de su huella
@@ -70,7 +70,7 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>Bloques a lo largo de la línea central de un anillo, con 2 m entre ellos (fuera de las esquinas y del hueco
-    /// de sus escaleras). Devuelve los que no cupieron.</summary>
+    /// de su área de alfombras, en el centro de +Z, y su simétrico en −Z). Devuelve los que no cupieron.</summary>
     static List<LabBlock> PackRing(Transform ring, Vector2 floor, List<LabBlock> blocks)
     {
         var left = new List<LabBlock>();
@@ -82,7 +82,7 @@ public static partial class SampleSceneBuilder
             {
                 var (p0, yaw, corner) = RingPoint(floor, s + b.w * 0.5f);
                 var (pa, _, ca) = RingPoint(floor, s); var (pb, _, cb) = RingPoint(floor, s + b.w);
-                bool stair = Mathf.Abs(p0.x) < b.w * 0.5f + 2.5f && Mathf.Abs(p0.z) > floor.y * 0.5f - 3f;   // el hueco de la escalera (centro de ±Z)
+                bool stair = Mathf.Abs(p0.x) < b.w * 0.5f + 3f && Mathf.Abs(p0.z) > floor.y * 0.5f - 3f;   // el hueco del área de alfombras del anillo (RingCarpets, centro de +Z; y −Z)
                 if (corner || ca || cb || stair || Vector3.Distance(pa, pb) < b.w * 0.9f) { s += 1f; continue; }
                 Transform t = KitchenProps.Root(ring, "Bloque_" + b.name, p0, yaw);
                 b.build(t);
@@ -289,14 +289,12 @@ public static partial class SampleSceneBuilder
         inside.AddRange(Times(2, "Espectroscopio de red", 1.5f, 0.75f, t => { Bench(t, 1.5f, 0.75f, LabBench); KitchenProps.C(t, new Vector3(0f, 1.0f, 0f), new Vector3(0.4f, 0.06f, 0.4f), LabSteel, 0f, "Plataforma_goniometro"); KitchenProps.C(t, new Vector3(-0.35f, 1.1f, 0f), new Vector3(0.4f, 0.08f, 0.08f), LabDark, 0f, "Colimador"); KitchenProps.C(t, new Vector3(0.3f, 1.1f, 0.15f), new Vector3(0.4f, 0.08f, 0.08f), LabDark, 30f, "Anteojo"); KitchenProps.C(t, new Vector3(-0.65f, 1.05f, 0f), new Vector3(0.15f, 0.2f, 0.15f), new Color(1f, 0.6f, 0.9f), 0f, "Lampara_espectral"); }));
         inside.Add(new LabBlock("Electrónica y escritorios", 3.0f, 1.5f, t => { Bench(t, 3f, 1.5f, new Color(0.55f, 0.45f, 0.35f)); Tall(KitchenProps.Root(t, "Rack", new Vector3(1.0f, 0.94f, 0f)), 0.6f, 0.6f, 1f, LabDark, "Rack", LabGreen); }));
         var hallKeep = CarpetKeepOut(hs, -hs.x * 0.3f);
-        hallKeep.Add(new Rect(-1.6f, -hs.y * 0.5f, 3.2f, hs.y));   // las dos escaleras que suben al anillo (centro de ±Z)
         LogLeft("Física (sala)", PackFloor(hall, hs, inside, hallKeep));
         // El ANILLO (10 m, 20 % dentro): la doble rendija de fotón único, Chladni, helio superfluido, Cavendish y, en una
         // esquina, el péndulo de Foucault con su torre (15 m de hilo, foso de 3 m).
         Transform ring = RingDeck(hall, "Anillo_experimentos", hs);
-        float run = StairRun(MezzanineHeight), zi = hs.y * 0.5f - 2f;
-        InclinedStair(hall, "Escalera_anillo_fisica_norte", new Vector3(0f, 0f, zi - run), 0f);
-        InclinedStair(hall, "Escalera_anillo_fisica_sur", new Vector3(0f, 0f, -zi + run), 180f);
+        // Sin escaleras (Berón 2026-10-28): al anillo se sube en alfombra.
+        RingCarpets(ring, hall, hs, plant.GetComponent<SanctuaryArea>() is SanctuaryArea psa ? psa.displayName : "Planta Atómica", "Anillo de experimentos");
         var onRing = new List<LabBlock>
         {
             new LabBlock("Doble rendija de fotón único", 4.5f, 0.8f, t => { Bench(t, 4.5f, 0.8f, LabDark); KitchenProps.C(t, new Vector3(-2f, 1.05f, 0f), new Vector3(0.3f, 0.15f, 0.15f), LabRed, 0f, "Laser_atenuado"); KitchenProps.C(t, new Vector3(0f, 1.1f, 0f), new Vector3(0.03f, 0.25f, 0.2f), LabSteel, 0f, "Rendijas"); KitchenProps.C(t, new Vector3(2f, 1.1f, 0f), new Vector3(0.25f, 0.25f, 0.25f), LabDark, 0f, "Contador_fotones"); KitchenProps.C(t, new Vector3(0f, 1.25f, 0f), new Vector3(4.4f, 0.5f, 0.7f), new Color(0.1f, 0.1f, 0.12f, 0.5f), 0f, "Tubo_oscuro"); }),
@@ -306,7 +304,7 @@ public static partial class SampleSceneBuilder
             new LabBlock("Electrónica del anillo", 1.0f, 1.0f, t => Tall(t, 1f, 1f, 1.8f, LabDark, "Rack", LabGreen)),
         };
         LogLeft("Física (anillo)", PackRing(ring, hs, onRing));
-        // Péndulo de Foucault en la esquina del anillo más alejada de la escalera vertical: torre de 17 m, hilo de 15 m.
+        // Péndulo de Foucault en la esquina del anillo más alejada de su área de alfombras: torre de 17 m, hilo de 15 m.
         float cx = hs.x * 0.5f - 2f + 5f, cz = hs.y * 0.5f - 2f + 5f;
         Transform fp = KitchenProps.Root(ring, "Bloque_Péndulo de Foucault", new Vector3(cx, 0f, -cz));
         KitchenProps.C(fp, new Vector3(0f, 0.02f, 0f), new Vector3(3f, 0.04f, 3f), new Color(0.75f, 0.7f, 0.55f), 0f, "Foso_rosa_de_los_vientos");

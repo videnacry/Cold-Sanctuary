@@ -3513,9 +3513,9 @@ public static partial class SampleSceneBuilder
         PrepareSite(dojo.transform, size[dojo.transform], "Dojo (MMA, kickboxing y karate)", 6, 3, FinishedDojo);
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Vector2 s2 = size[yoga.transform];
-        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 0.9f, 0.1f, 0f), 90f);   // sala de yoga (en el lateral: las esquinas son de las estatuas)
+        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // sala de yoga: contra el borde +Z, esquina −X (en el lateral pisaba una esterilla; las estatuas ya van en el anillo)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
-        s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(4.4f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
+        s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
         s2 = size[meat.transform]; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada (viajan en alfombra).
@@ -3542,6 +3542,12 @@ public static partial class SampleSceneBuilder
         }
         // Los edificios que juntan varias áreas llevan su propio nombre (el de su planta baja diría solo una).
         BuildingNames[works.transform] = "Talleres"; BuildingNames[gym.transform] = "Entrenamiento"; BuildingNames[garden.transform] = "Granja";
+        // Las columnas aguantan StructuralLimits.MaxFloors pisos: si un edificio pasa de ahí, hay que reforzarlas antes.
+        foreach (SanctuaryArea g in ground)
+        {
+            int nf = FloorsOf(g.transform).Count + 1;   // + el techo de alfombras
+            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{g.displayName}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/columnas-sismicas.md).");
+        }
         RegisterBuildings(ground.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
         // reciben y sin ocupar suelo): se colocan al final del Build (`PlaceRooftopSolar`), cuando ya están los muebles,
@@ -3639,7 +3645,7 @@ public static partial class SampleSceneBuilder
         // ANILLO-CINTURÓN de acero que ata las 8 columnas como un tubo, y riostras de pandeo restringido (BRB) en X en 4 caras
         // alternas (las otras 4 quedan libres).
         Color tube = new Color(0.36f, 0.39f, 0.44f), collar = new Color(0.23f, 0.25f, 0.27f), rust = new Color(0.55f, 0.23f, 0.18f), brb = new Color(0.85f, 0.64f, 0.11f), rubber = new Color(0.08f, 0.08f, 0.09f);
-        float D = Mathf.Max(size.x, size.y) >= 30f ? 1.2f : 0.9f, ci = D * 0.5f + 0.05f;
+        float D = StructuralLimits.ColumnDiameter(Mathf.Max(size.x, size.y)), ci = D * 0.5f + 0.05f;   // para 30 pisos (StructuralLimits)
         var tips = new List<Vector3>();   // las 8 puntas, en orden alrededor del octógono
         tips.Add(new Vector3(X - ci, 0f, -(Z - c))); tips.Add(new Vector3(X - ci, 0f, Z - c)); tips.Add(new Vector3(X - c, 0f, Z - ci)); tips.Add(new Vector3(-(X - c), 0f, Z - ci));
         tips.Add(new Vector3(-(X - ci), 0f, Z - c)); tips.Add(new Vector3(-(X - ci), 0f, -(Z - c))); tips.Add(new Vector3(-(X - c), 0f, -(Z - ci))); tips.Add(new Vector3(X - c, 0f, -(Z - ci)));

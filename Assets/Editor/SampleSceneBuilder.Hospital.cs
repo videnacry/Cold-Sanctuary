@@ -50,35 +50,32 @@ public static partial class SampleSceneBuilder
         Color zoneC = new Color(0.8f, 0.9f, 0.88f), zoneW = new Color(0.9f, 0.86f, 0.8f), zoneP = new Color(0.95f, 0.88f, 0.9f), zoneQ = new Color(0.78f, 0.9f, 0.86f);
         int bed = 1;
         // Camas por el ANILLO, atravesadas (2 m libres entre camas = 3,1 m de eje; 4 m de paso a cada lado), sin las esquinas
-        // ni el hueco de las escaleras (centro de los lados ±Z).
+        // ni el hueco de su área de alfombras (centro del lado +Z; antes, el de las escaleras).
         var ringNext = new System.Collections.Generic.Dictionary<Transform, float>();   // por dónde va cada anillo (las categorías siguen una tras otra)
         int RingBeds(Transform ring, Vector2 floor, int count, string category)
         {
             int placed = 0;
             float s = ringNext.TryGetValue(ring, out float sv) ? sv : 1.55f;
-            for (; s < RingLength(floor) && placed < count; s += 3.1f)
+            for (; s < RingLength(floor) && placed < count; s += 3.2f)
             {
                 var (p, yaw, corner) = RingPoint(floor, s, cornerClear: 2.6f);
-                if (corner || (Mathf.Abs(p.x) < 3f && Mathf.Abs(p.z) > floor.y * 0.5f - 2f)) continue;
+                if (corner || (Mathf.Abs(p.x) < 4.6f && Mathf.Abs(p.z) > floor.y * 0.5f - 2f)) continue;   // (el centro del lado +Z es su área de alfombras)
                 Label(InfirmaryProps.HospitalBed(ring, $"Cama {bed}", p, yaw, bl[bed % 4]), $"Cama {bed} ({category})", 1.4f);
                 bed++; placed++;
             }
             ringNext[ring] = s;
             return placed;
         }
-        void RingStairs(Transform parent, Vector2 floor, string tag)
-        {
-            float run = StairRun(MezzanineHeight), zi = floor.y * 0.5f - 2f;
-            InclinedStair(parent, $"Escalera_anillo_{tag}_norte", new Vector3(0f, 0f, zi - run), 0f);
-            InclinedStair(parent, $"Escalera_anillo_{tag}_sur", new Vector3(0f, 0f, -zi + run), 180f);
-        }
+        // SIN ESCALERAS (Berón 2026-10-28): a cada anillo se sube en ALFOMBRA desde el área de alfombras de su planta; la del
+        // anillo va en el centro de su lado +Z (las camas y los boxes dejan ese hueco). Lo que ocupaban las escaleras queda libre.
+        string hospitalName = area.GetComponent<SanctuaryArea>() is SanctuaryArea hsa ? hsa.displayName : AreaWork.Hospital;
 
         // ══ PLANTA BAJA (32 × 26): URGENCIAS Y AMBULATORIO ═════════════════════════════════════════════════════════════
         // Oeste: 4 triajes (entrada), 4 consultas (una con la silla de iniciación), 2 carros de parada, laboratorio.
-        Station(InfirmaryProps.DoctorDesk(r, "Triaje", new Vector3(-14f, 0f, 9f), 180f), HospitalService.Urgencias, "Recepción y triaje 1", 1.5f, true);
+        Station(InfirmaryProps.DoctorDesk(r, "Triaje", new Vector3(-14f, 0f, 8.6f), 180f), HospitalService.Urgencias, "Recepción y triaje 1", 1.5f, true);
         Station(InfirmaryProps.DoctorDesk(r, "Triaje 2", new Vector3(-6.4f, 0f, 9f), 180f), HospitalService.Urgencias, "Triaje 2", 1.5f, true);
-        Station(InfirmaryProps.DoctorDesk(r, "Triaje 3", new Vector3(-3.4f, 0f, 5.6f), 90f), HospitalService.Urgencias, "Triaje 3", 1.5f, true);
-        Station(InfirmaryProps.DoctorDesk(r, "Triaje 4", new Vector3(12.6f, 0f, 8.4f), 180f), HospitalService.Urgencias, "Triaje 4", 1.5f, true);
+        Station(InfirmaryProps.DoctorDesk(r, "Triaje 3", new Vector3(-2.3f, 0f, 5.6f), 90f), HospitalService.Urgencias, "Triaje 3", 1.5f, true);
+        Station(InfirmaryProps.DoctorDesk(r, "Triaje 4", new Vector3(14.6f, 0f, 8.4f), 180f), HospitalService.Urgencias, "Triaje 4", 1.5f, true);
         Aseos(r, new Vector3(-14f, 0f, 12.3f), 180f);
         Transform exam = KitchenProps.Root(r, "Silla_examen", new Vector3(-13.6f, 0f, 5.6f), 90f);
         Color seatC = new Color(0.35f, 0.55f, 0.65f);
@@ -90,8 +87,8 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(exam, new Vector3(0f, 0.175f, 0f), new Vector3(0.08f, 0.35f, 0.08f), KitchenProps.Steel, 0f, "Pie");
         KitchenProps.C(exam, new Vector3(0.75f, 0.45f, 0.3f), new Vector3(0.4f, 0.9f, 0.4f), KitchenProps.Steel, 0f, "Carrito_examen");   // tensiómetro, linterna, tubos y vacunas
         Label(exam, "Silla de exámenes (iniciación)", 1.4f);
-        Station(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-9.8f, 0f, 5.6f), 180f), HospitalService.Consulta, "Consulta 1 (mesa del médico)", 1.5f, true);
-        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-6.4f, 0f, 5.6f), 90f), "Camilla de exploración", 1.3f);
+        Station(InfirmaryProps.DoctorDesk(r, "Mesa del medico", new Vector3(-10.1f, 0f, 5.6f), 180f), HospitalService.Consulta, "Consulta 1 (mesa del médico)", 1.5f, true);
+        Label(InfirmaryProps.ExamTable(r, "Camilla", new Vector3(-6.3f, 0f, 5.6f), 90f), "Camilla de exploración", 1.3f);
         Station(InfirmaryProps.DoctorDesk(r, "Consulta 2", new Vector3(-13.6f, 0f, 1.4f), 180f), HospitalService.Consulta, "Consulta 2", 1.5f, true);
         Label(InfirmaryProps.ExamTable(r, "Camilla 2", new Vector3(-9.8f, 0f, 1.4f), 90f), "Camilla", 1.3f);
         Station(InfirmaryProps.DoctorDesk(r, "Consulta 3", new Vector3(-5.6f, 0f, 1.4f), 180f), HospitalService.Consulta, "Consulta 3", 1.5f, true);
@@ -99,11 +96,11 @@ public static partial class SampleSceneBuilder
         Label(InfirmaryProps.ExamTable(r, "Camilla 3", new Vector3(-9.8f, 0f, -2.6f), 90f), "Camilla", 1.3f);
         Station(InfirmaryProps.Telemedicine(r, "Telemedicina", new Vector3(-5.6f, 0f, -2.6f), 180f), HospitalService.Telemedicina, "Telemedicina (especialistas a distancia)", 2.4f);
         Label(InfirmaryProps.MedicineCabinet(r, "Botiquin", new Vector3(-15.4f, 0f, -6.4f), -90f), "Botiquín", 2.2f);
-        KitchenProps.Sink(r, "Lavamanos", new Vector3(-15.4f, 0f, 3.4f), -90f);
+        KitchenProps.Sink(r, "Lavamanos", new Vector3(-6.4f, 0f, 12.3f), 180f);   // contra la pared norte (junto a la consulta no quedaban 2 m)
         // BIOCONTROL (docs/iniciacion-medica-investigacion.md): el lavabotas, en la fila de la entrada (entre los triajes 1 y 2,
         // con 2 m libres a cada mueble). Bandeja con desinfectante (Virkon S), cepillos y aspirador para las semillas del
         // velcro y los bolsillos: lo que protege a la flora y la fauna nativas.
-        Transform boots = KitchenProps.Root(r, "Lavabotas", new Vector3(-10.2f, 0f, 9.4f), 180f);
+        Transform boots = KitchenProps.Root(r, "Lavabotas", new Vector3(-10.2f, 0f, 9.0f), 180f);
         KitchenProps.C(boots, new Vector3(0f, 0.05f, 0f), new Vector3(0.9f, 0.1f, 0.6f), new Color(0.3f, 0.45f, 0.6f), 0f, "Bandeja_desinfectante");
         KitchenProps.C(boots, new Vector3(0f, 0.09f, 0f), new Vector3(0.8f, 0.02f, 0.5f), new Color(0.75f, 0.55f, 0.85f), 0f, "Virkon");
         KitchenProps.C(boots, new Vector3(-0.55f, 0.45f, 0.15f), new Vector3(0.3f, 0.9f, 0.3f), KitchenProps.Steel, 0f, "Aspirador");
@@ -113,7 +110,7 @@ public static partial class SampleSceneBuilder
         Station(InfirmaryProps.CrashCart(r, "Carro_de_parada", new Vector3(-12f, 0f, -6.6f), -90f), HospitalService.Urgencias, "Urgencias: carro de parada y desfibrilador", 1.6f, true, new Vector3(0f, 0f, -0.9f));
         Station(InfirmaryProps.CrashCart(r, "Carro_de_parada 2", new Vector3(-6.4f, 0f, -6.6f), -90f), HospitalService.Urgencias, "Carro de parada 2", 1.6f, true, new Vector3(0f, 0f, -0.9f));
         Label(InfirmaryProps.LabBench(r, "Laboratorio", new Vector3(-13.4f, 0f, -10.6f), 180f), "Laboratorio (microscopio, centrífuga)", 1.4f);
-        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(-9.6f, 0f, -10.6f), 180f);
+        Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(-9.25f, 0f, -10.6f), 180f);
         an.gameObject.AddComponent<ClinicalStation>();
         Label(an, "Analizador clínico (F)", 1.8f);
         Station(InfirmaryProps.BloodBankFridge(r, "Banco_de_sangre", new Vector3(-6f, 0f, -10.6f), 180f), HospitalService.BancoDeSangre, "Banco de sangre", 2.2f, false, new Vector3(0f, 0f, -0.9f));
@@ -143,7 +140,7 @@ public static partial class SampleSceneBuilder
         }
         // ANILLO BAJO: observación de urgencias y maternidad (la madre se recupera en el piso de su paritorio).
         Transform ring0 = RingDeck(r, "Anillo_camas_baja", HospitalSize);
-        RingStairs(r, HospitalSize, "baja");
+        RingCarpets(ring0, area.transform, HospitalSize, hospitalName, "Anillo de urgencias y maternidad");
         int obs = RingBeds(ring0, HospitalSize, 6, "observación de urgencias");
         int mat = RingBeds(ring0, HospitalSize, 12, "maternidad");
         Label(ring0, "Anillo de camas: urgencias y maternidad", 2.2f);
@@ -173,24 +170,24 @@ public static partial class SampleSceneBuilder
         // UCI de 6 boxes de 4,3 × 4,3 m (18,6 m² por cama) al sureste, con su control.
         for (int i = 0; i < 6; i++)
         {
-            Vector3 c = new Vector3(5.6f + (i % 3) * 4.4f, 0f, -8.4f + (i / 3) * 4.4f);
+            Vector3 c = new Vector3(5.6f + (i % 3) * 4.4f, 0f, -8.8f + (i / 3) * 4.8f);   // 2 m libres entre camas (4,8 m de eje: la cama con su gotero mide 2,7)
             Zone(w1, "Box_UCI", c, new Vector2(4.2f, 4.2f), zoneC);
             Transform icu = InfirmaryProps.HospitalBed(w1, $"UCI {i + 1}", c, 0f, bl[(i + 2) % 4]);
             InfirmaryProps.Ventilator(icu, "Ventilador", new Vector3(-0.85f, 0f, 0.3f), 90f);
             Label(icu, $"UCI {i + 1}", 1.6f);
         }
-        Station(InfirmaryProps.DoctorDesk(w1, "Control_UCI", new Vector3(14f, 0f, -1f), 180f), HospitalService.UCI, "Control de la UCI", 1.5f, true);
-        // AISLAMIENTO: 4 habitaciones con esclusa sobre una SUBPLATAFORMA de 1 m (noreste), con una sola entrada.
-        const float isoH = 1f;
-        Transform iso = Deck(w1, "Subplataforma_aislamiento", new Vector3(9.4f, 0f, 6.8f), new Vector2(12f, 7f), isoH);
+        Station(InfirmaryProps.DoctorDesk(w1, "Control_UCI", new Vector3(14f, 0f, -0.4f), 180f), HospitalService.UCI, "Control de la UCI", 1.5f, true);
+        // AISLAMIENTO: 4 habitaciones con esclusa en su ZONA (noreste), a ras de la planta (sin escalón ni escalera: Berón
+        // 2026-10-28), con una sola entrada por la franja de la esclusa.
+        Transform iso = new GameObject("Zona_aislamiento").transform; iso.SetParent(w1, false); iso.localPosition = new Vector3(9.4f, 0f, 6.8f);
+        KitchenProps.C(iso, new Vector3(0f, 0.01f, 0f), new Vector3(12f, 0.02f, 7f), new Color(0.88f, 0.93f, 0.95f), 0f, "Suelo_aislamiento");
         KitchenProps.C(iso, new Vector3(0f, 0.02f, -2.6f), new Vector3(12f, 0.02f, 1.8f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");   // franja de la esclusa (EPI)
         for (int i = 0; i < 4; i++)
             Station(InfirmaryProps.IsolationRoom(iso, i == 0 ? "Aislamiento" : $"Aislamiento {i + 1}", new Vector3(-4.5f + i * 3f, 0f, 1f), 180f, bl[i % 4]), HospitalService.Aislamiento, $"Aislamiento {i + 1}: presión negativa y esclusa", 2.6f, false, new Vector3(0f, 0f, 2.2f));
-        InclinedStair(w1, "Escalera_aislamiento", new Vector3(9.4f, 0f, 6.8f - 3.5f - StairRun(isoH)), 0f, isoH);
         Label(iso, "Aislamiento (entrada solo por la esclusa)", 2.4f);
         // ANILLO ALTO: recuperación postquirúrgica (junto a los quirófanos) y hospitalización general.
         Transform ring1 = RingDeck(w1, "Anillo_camas_planta1", s1);
-        RingStairs(w1, s1, "planta1");
+        RingCarpets(ring1, p1, s1, hospitalName, "Anillo de recuperación y hospitalización");
         int rec = RingBeds(ring1, s1, 10, "recuperación postquirúrgica");
         int gen = RingBeds(ring1, s1, 20, "hospitalización");
         Label(ring1, "Anillo de camas: recuperación y hospitalización", 2.2f);
@@ -216,10 +213,10 @@ public static partial class SampleSceneBuilder
         // ALA CLÍNICA (centro): 4 mesas de tratamiento en fila (una con la báscula), y 4 quirófanos de 5 × 5 m.
         for (int i = 0; i < 4; i++)
             Station(InfirmaryProps.VetTable(v, i == 0 ? "Mesa veterinaria" : $"Mesa veterinaria {i + 1}", new Vector3(-13.4f + i * 3.6f, 0f, 6.6f), 90f), HospitalService.Veterinaria, $"Tratamiento veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
-        Label(InfirmaryProps.FloorScale(v, "Bascula", new Vector3(-13.4f, 0f, 9.2f), 0f), "Báscula (dosis por kilo)", 1.5f);
+        Label(InfirmaryProps.FloorScale(v, "Bascula", new Vector3(-13.4f, 0f, 9.6f), 0f), "Báscula (dosis por kilo)", 1.5f);
         for (int i = 0; i < 4; i++)
         {
-            Vector3 c = new Vector3(0.6f + (i % 2) * 5.4f, 0f, -6.6f + (i / 2) * 5.4f);
+            Vector3 c = new Vector3(0.6f + (i % 2) * 6f, 0f, -6.6f + (i / 2) * 5.4f);   // 6 m de eje en X: 2 m entre la anestesia de un quirófano y la lámpara del siguiente
             string sfx = i == 0 ? "" : $" {i + 1}";
             Zone(v, "Sala_quirofano_vet", c, new Vector2(5f, 5f), zoneQ);
             Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
@@ -231,32 +228,32 @@ public static partial class SampleSceneBuilder
         Zone(v, "Sala_rayos_X_vet", new Vector3(12.6f, 0f, 6.4f), new Vector2(4.4f, 4.4f), zoneW);
         Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 6.4f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
         Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(7.6f, 0f, 7f), 0f), HospitalService.Imagen, "Ecógrafo veterinario", 1.6f);
-        Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(13.4f, 0f, 1.4f), -90f), "Laboratorio veterinario", 1.4f);
+        Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(13.9f, 0f, 1.4f), -90f), "Laboratorio veterinario", 1.4f);
         Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(15.4f, 0f, -2.6f), -90f), "Farmacia veterinaria", 2.2f);
         Transform diet = KitchenProps.Root(v, "Cocina_de_dietas", new Vector3(12.4f, 0f, -6.6f));
         KitchenProps.C(diet, new Vector3(0f, 0.45f, 0f), new Vector3(2.4f, 0.9f, 0.7f), KitchenProps.Steel, 0f, "Mesa_dietas");
         KitchenProps.C(diet, new Vector3(2.2f, 0.95f, 0f), new Vector3(1f, 1.9f, 0.8f), new Color(0.85f, 0.9f, 0.95f), 0f, "Congelador_pescado");
         KitchenProps.Fit(diet, solid: true);
         Label(diet, "Cocina de dietas (pescado, carne, fruta) y congelador −18 °C", 2.2f);
-        Zone(v, "Sala_fria_pinguinos", new Vector3(8.3f, 0f, 1.6f), new Vector2(6.6f, 4.4f), new Color(0.8f, 0.9f, 1f));
-        for (int i = 0; i < 3; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 1.6f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
+        Zone(v, "Sala_fria_pinguinos", new Vector3(8.3f, 0f, 2.4f), new Vector2(6.6f, 4.4f), new Color(0.8f, 0.9f, 1f));
+        for (int i = 0; i < 3; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 2.4f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
         // ANILLO DE GRANDES ANIMALES: 6 boxes de osos de 4 × 3 m en batería (puertas de guillotina entre ellos) + jaula de
         // contención, y 2 corrales de foca con piscina de agua salada; pasillo del cuidador de 4 m a cada lado.
         Transform ringV = RingDeck(v, "Anillo_grandes_animales", us);
-        RingStairs(v, us, "veterinaria");
+        RingCarpets(ringV, up, us, hospitalName, "Anillo de grandes animales");
         int stall = 0;
         float lastS = 0f;   // 6 boxes de oso y 4 de ungulados (reno, ciervo) o lobos: 48 plazas, como camas de personas
         for (float s = 2f; stall < 10; s += 4f)
         {
             var (sp0, yaw, corner) = RingPoint(us, s);
-            if (corner || (Mathf.Abs(sp0.x) < 3f && Mathf.Abs(sp0.z) > uz - 2f)) continue;
+            if (corner || (Mathf.Abs(sp0.x) < 4.6f && Mathf.Abs(sp0.z) > uz - 2f)) continue;
             Label(InfirmaryProps.LargeAnimalStall(ringV, $"Cuadra {stall + 1}", sp0, yaw), stall < 6 ? $"Plaza {place++}: box de oso 4 × 3 m (guillotinas)" : $"Plaza {place++}: box de reno, ciervo o lobo", 1.8f);
             lastS = s;
             stall++;
         }
-        // La jaula, en el siguiente hueco libre (fuera de las esquinas y del rellano de la escalera, como los boxes).
-        float js = lastS + 4f;
-        for (int g = 0; g < 40; g++, js += 1f) { var (q, _, qc) = RingPoint(us, js); if (!qc && !(Mathf.Abs(q.x) < 3f && Mathf.Abs(q.z) > uz - 2f)) break; }
+        // La jaula, en el siguiente hueco libre (fuera de las esquinas y del área de alfombras, como los boxes).
+        float js = lastS + 6f;   // con 2 m libres al último box
+        for (int g = 0; g < 40; g++, js += 1f) { var (q, _, qc) = RingPoint(us, js); if (!qc && !(Mathf.Abs(q.x) < 4.6f && Mathf.Abs(q.z) > uz - 2f)) break; }
         var (jp, jyaw, _) = RingPoint(us, js);
         Transform squeeze = KitchenProps.Root(ringV, "Jaula_contencion", jp, jyaw);
         for (int k = -1; k <= 1; k += 2) KitchenProps.C(squeeze, new Vector3(k * 0.9f, 1.1f, 0f), new Vector3(0.08f, 2.2f, 2.4f), KitchenProps.Steel, 0f, "Barrotes");
