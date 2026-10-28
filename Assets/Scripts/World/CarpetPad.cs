@@ -63,18 +63,53 @@ public class CarpetPad : MonoBehaviour
     }
 
     /// <summary>Un hueco libre para que aterrice una alfombra (mundo).</summary>
-    public Vector3 FreeSlot(FlyingCarpet except = null)
+    public Vector3 FreeSlot(FlyingCarpet except = null) => except != null ? Claim(except) : SlotPoint(0);
+
+    // QUÉ ALFOMBRA OCUPA CADA HUECO de esta pista (Berón 2026-10-28: se solapaban). Cada alfombra que aparca o viene de
+    // camino se queda con el hueco libre más bajo; si hay más alfombras que huecos, se APILA encima de la del mismo hueco
+    // (una capa de StackStep). Es una cuenta, sin física: barato aunque haya muchas pistas.
+    public const float StackStep = 0.03f;
+    readonly Dictionary<FlyingCarpet, int> _claim = new Dictionary<FlyingCarpet, int>();
+    bool _synced;
+
+    Vector3 SlotPoint(int i)
     {
-        foreach (Vector3 s in slots)
-        {
-            Vector3 w = transform.TransformPoint(s);
-            bool taken = false;
-            foreach (FlyingCarpet c in FlyingCarpet.All)
-                if (c != except && !c.Flying && (c.transform.position - w).sqrMagnitude < 1.5f) { taken = true; break; }
-            if (!taken) return w;
-        }
-        return transform.position + Vector3.up * 0.1f;
+        int n = Mathf.Max(1, slots.Length);
+        Vector3 s = slots.Length > 0 ? slots[i % n] : Vector3.up * 0.012f;
+        s.y += (i / n) * StackStep;
+        return transform.TransformPoint(s);
     }
+
+    /// <summary>Reserva para <paramref name="c"/> el hueco libre más bajo de esta pista (y lo suelta de la anterior).
+    /// Devuelve dónde se posa.</summary>
+    public Vector3 Claim(FlyingCarpet c)
+    {
+        if (!_synced)   // las que ya estaban aparcadas aquí al empezar: su hueco, el más cercano
+        {
+            _synced = true;
+            foreach (FlyingCarpet f in FlyingCarpet.All)
+                if (f != null && f.pad == this && !f.Flying && !_claim.ContainsKey(f)) _claim[f] = Nearest(f.transform.position);
+        }
+        foreach (CarpetPad p in All) if (p != this) p._claim.Remove(c);
+        if (_claim.TryGetValue(c, out int have)) return SlotPoint(have);
+        int i = 0; while (_claim.ContainsValue(i)) i++;
+        _claim[c] = i;
+        return SlotPoint(i);
+    }
+
+    int Nearest(Vector3 w)
+    {
+        int best = 0; float bd = float.MaxValue;
+        for (int i = 0; i < Mathf.Max(1, slots.Length); i++)
+        {
+            float d = (SlotPoint(i) - w).sqrMagnitude;
+            if (d < bd && !_claim.ContainsValue(i)) { bd = d; best = i; }
+        }
+        return best;
+    }
+
+    /// <summary>¿Cuántas alfombras tiene (aparcadas o llegando)?</summary>
+    public int Carpets => _claim.Count;
 
     /// <summary>Una alfombra posada aquí y libre (la más cercana a <paramref name="near"/>).</summary>
     public FlyingCarpet IdleCarpet(Vector3 near)
