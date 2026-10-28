@@ -29,11 +29,24 @@ public class CookingStation : MonoBehaviour
     /// <summary>Texto del paso que toca ahora (null si no hay receta). Lo leen los hechizos por paso (take/putIn/beat).</summary>
     public string CurrentDish => _recipe != null ? _recipe.dishName : null;
     public string CurrentStep => _recipe != null && _step < _recipe.steps.Length ? _recipe.steps[_step] : null;
+    /// <summary>La receta en curso (con sus raciones) y el paso que toca (índice).</summary>
+    public CookingRecipe Recipe => _recipe;
+    public int StepIndex => _step;
+
+    /// <summary>Le ASIGNA una receta concreta (p. ej. la tanda por mayor de la iniciación de la cocina), en lugar de la que
+    /// repartiría el restaurante. La que tuviera a medias queda libre para otro.</summary>
+    public void Assign(CookingRecipe r)
+    {
+        if (kitchen == null) kitchen = FindAnyObjectByType<RestaurantKitchen>();
+        if (_recipe != null && kitchen != null) kitchen.Release(_recipe.dishName);
+        _recipe = r; _step = 0; _next = Time.time + npcStepSeconds;
+        if (r != null && kitchen != null) kitchen.Claim(r.dishName);
+    }
 
     void Start()
     {
         if (kitchen == null) kitchen = FindObjectOfType<RestaurantKitchen>();
-        TakeAssignment();
+        if (_recipe == null) TakeAssignment();   // (una iniciación pudo asignarle ya su tanda: Assign, antes de Start)
     }
 
     void TakeAssignment()
@@ -70,7 +83,7 @@ public class CookingStation : MonoBehaviour
 
         if (_step >= _recipe.steps.Length)        // emplatado → al stock → siguiente platillo que haga falta
         {
-            kitchen.Deliver(_recipe.dishName, this);
+            if (kitchen != null) kitchen.Deliver(_recipe.dishName, this, _recipe.servings);   // por mayor: todas las raciones de la tanda
             TakeAssignment();
         }
     }

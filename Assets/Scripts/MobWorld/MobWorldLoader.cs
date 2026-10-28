@@ -22,6 +22,8 @@ public class MobWorldLoader : MonoBehaviour
 
     public bool IsInMobWorld { get; private set; }
     public bool IsBusy { get; private set; }
+    /// <summary>La escena del microcosmos en la que está el jugador (null fuera).</summary>
+    public string ActiveScene => IsInMobWorld ? _activeScene : null;
 
     string     _activeScene;
     Transform  _player;

@@ -60,7 +60,7 @@ public class TeachingSession : MonoBehaviour
         string spell = $"asana({{name:\"{_teacherSteps[_i].asanaName}\"}})";
         // El rótulo en pantalla es solo para el JUGADOR: antes cualquier clase entre otros (la Magnate con un rezagado) lo mostraba.
         if (!_studentIsAI) LessonPrompt.Show(_teacherSteps[_i].asanaName, spell);
-        if (!_studentIsAI) SpellConsole.Propose(spell, $"La Magnate te pide: {_teacherSteps[_i].asanaName}");
+        if (!_studentIsAI) SpellConsole.Propose(spell, $"{TeacherName} te pide: {_teacherSteps[_i].asanaName}");
     }
 
     /// <summary>El alumno lanza el paso que se le pide (hechizo `asana`): se le encola su copia del paso actual.</summary>
@@ -72,6 +72,9 @@ public class TeachingSession : MonoBehaviour
         q.EnqueuePlayer(_studentSteps[_i]);
         return true;
     }
+
+    // Quién enseña (su nombre en la jornada: la Magnate, el de turno de la sala de yoga…).
+    string TeacherName { get { Mind m = teacher != null ? teacher.GetComponent<Mind>() : null; return m != null && !string.IsNullOrEmpty(m.identity) ? m.identity : (teacher != null ? teacher.name : "El maestro"); } }
 
     public static TeachingSession For(Anima student)
     {

@@ -17,6 +17,67 @@ public class CookingRecipe
     public CookingRecipe(string name, params string[] steps) { dishName = name; this.steps = steps; }
     CookingRecipe Id(string id) { this.id = id; return this; }
 
+    // ── RACIONES: por mayor (el personal) o individual (turistas) ──────────────────────────────────────────────
+    // Berón 2026-10-28: el restaurante prepara de DOS maneras: POR MAYOR para el personal del santuario (para que coman
+    // todos: las cantidades de cada ingrediente se multiplican y salen varias raciones de una tanda) e INDIVIDUAL para los
+    // turistas que llegan (una ración). Por defecto, individual (1): nada de lo que ya cocinaba cambia.
+    [Tooltip("Raciones que salen de UNA tanda: 1 = individual (turistas); N = por mayor (el personal).")]
+    [Min(1)] public int servings = 1;
+    public bool IsBulk => servings > 1;
+
+    /// <summary>Una COPIA de la receta para <paramref name="n"/> raciones (por mayor si n &gt; 1). El preset no cambia.</summary>
+    public CookingRecipe ForServings(int n) =>
+        new CookingRecipe(dishName, (string[])steps.Clone()) { id = id, servings = Mathf.Max(1, n) };
+
+    /// <summary>Cantidad de cada ingrediente para UNA ración (las recetas base; las demás cuentan «1 ración» por ingrediente).</summary>
+    static readonly System.Collections.Generic.Dictionary<string, (float qty, string unit)> PerServing =
+        new System.Collections.Generic.Dictionary<string, (float, string)>
+    {
+        // Huevos revueltos: 2 huevos por ración, una pizca de sal y de pimienta.
+        ["huevos"] = (2f, "u"), ["sal"] = (1f, "g"), ["pimienta"] = (0.5f, "g"),
+        // Ensalada (ración de guarnición ~250 g).
+        ["tomates"] = (150f, "g"), ["cebollas"] = (40f, "g"), ["limón"] = (0.25f, "u"), ["aceite"] = (10f, "ml"), ["cilantro"] = (5f, "g"),
+        // Avena (porridge: 40 g de copos en 240 ml de líquido, mitad leche y mitad bebida de soja).
+        ["avena"] = (40f, "g"), ["leche"] = (120f, "ml"), ["soy-milk"] = (120f, "ml"), ["canela"] = (1f, "g"),
+        ["chocolate en polvo"] = (5f, "g"), ["banana"] = (0.5f, "u"), ["guanábana"] = (50f, "g"),
+    };
+
+    /// <summary>Los ingredientes de la receta: lo que se «toma» en sus pasos («toma tomates, cebollas y limón»).</summary>
+    public System.Collections.Generic.List<string> Ingredients()
+    {
+        var l = new System.Collections.Generic.List<string>();
+        foreach (string s in steps)
+        {
+            string t = s.Trim().ToLowerInvariant();
+            if (!t.StartsWith("toma ")) continue;
+            foreach (string part in t.Substring(5).Replace(" y ", ",").Split(','))
+            {
+                string p = part.Trim();
+                if (p.StartsWith("los ")) p = p.Substring(4); else if (p.StartsWith("las ")) p = p.Substring(4);
+                else if (p.StartsWith("el ")) p = p.Substring(3); else if (p.StartsWith("la ")) p = p.Substring(3);
+                if (p.Length > 0 && !l.Contains(p)) l.Add(p);
+            }
+        }
+        return l;
+    }
+
+    /// <summary>Cuánto hace falta de <paramref name="ingredient"/> para TODAS las raciones de esta tanda.</summary>
+    public float Amount(string ingredient, out string unit)
+    {
+        string k = (ingredient ?? "").Trim().ToLowerInvariant();
+        if (PerServing.TryGetValue(k, out var q)) { unit = q.unit; return q.qty * servings; }
+        unit = "ración"; return servings;
+    }
+    public float Amount(string ingredient) => Amount(ingredient, out _);
+
+    /// <summary>La lista de la compra de esta tanda («huevos 20 u · sal 10 g…»).</summary>
+    public string Quantities()
+    {
+        var parts = new System.Collections.Generic.List<string>();
+        foreach (string i in Ingredients()) { float a = Amount(i, out string u); parts.Add($"{i} {a:0.##} {u}"); }
+        return string.Join(" · ", parts);
+    }
+
     /// <summary>Ingredientes/utensilios que necesita (del catálogo). Vacío si la receta no está catalogada aún.</summary>
     public System.Collections.Generic.IEnumerable<string> RequiredItems => SpellCatalog.Items(id ?? "");
 

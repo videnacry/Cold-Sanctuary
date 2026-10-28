@@ -89,29 +89,31 @@ public class Magnate : MonoBehaviour
         return best;
     }
 
-    // HECHIZO DE INICIACIÓN DE LA MAGNATE (cuando Linduarda la llama: el aspirante ya es apto): va a buscarlo a la
-    // enfermería, se lo LLEVA (camina con él) a la SALA DE YOGA, allí le da su primera clase interactiva de upa-yoga
-    // (TeachingSession: ella hace cada paso y le pide el suyo) y al terminar lo encamina a la cocina. Hasta entonces el
-    // recién llegado NO es del santuario y ella no lo tiene en cuenta para enseñar al rezagado.
+    // HECHIZO DE INICIACIÓN DE LA MAGNATE (cuando Linduarda la llama: el aspirante ya es apto). Berón 2026-10-28: ella YA NO
+    // da las iniciaciones; solo ACOMPAÑA al recién llegado de un área a otra y lo entrega al TRABAJADOR DE TURNO de cada una
+    // (AreaInitiator), que lo inicia: en la SALA DE YOGA, su primera clase (upa-yoga de cuello) y el tanque al río de Sakshi;
+    // a la vuelta, ella lo lleva a la COCINA, donde cocinan juntos por mayor el platillo con menos stock y el tanque lo lleva
+    // al primer microcosmos de la cocina. Hasta entonces el recién llegado NO es del santuario y ella no lo tiene en cuenta
+    // para enseñar al rezagado. Todas las esperas tienen tope.
     Anima _initiating;
-    float _logAt;
-    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = al tanque · 4 = en el río · 5 = a la cocina
+    float _logAt, _phaseDeadline;
+    // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = la inicia el de turno de la sala (clase + tanque)
+    // 3 = en el río · 4 = caminar juntos a la cocina · 5 = la inicia el de turno de la cocina · 6 = hecho
+    int _initPhase;
     public const string RiverMicrocosmos = "Microcosmos_Scene0_SakshiRio";
-    VirtualizationMachine YogaMachine()
-    {
-        foreach (VirtualizationMachine vm in FindObjectsByType<VirtualizationMachine>(FindObjectsSortMode.None)) if (vm.areaName == "Sala de Yoga") return vm;
-        return null;
-    }
+    static readonly HashSet<SanctuaryOnboarding> _guiding = new HashSet<SanctuaryOnboarding>();
+    /// <summary>¿La Magnate está acompañando a <paramref name="o"/> por sus iniciaciones de área? (el jefe de cocina espera)</summary>
+    public static bool Guiding(SanctuaryOnboarding o) { _guiding.RemoveWhere(x => x == null); return o != null && _guiding.Contains(o); }
 
     void GoPresent()
     {
         if (_newcomer == null) return;
         Anima t = _newcomer.GetComponentInParent<Anima>();
-        if (t == null) { _newcomer.presented = true; _newcomer = null; return; }
+        if (t == null) { _newcomer.presented = true; _guiding.Remove(_newcomer); _newcomer = null; return; }
         Transform yoga = yogaSpot != null ? yogaSpot : FindSpot("SalaYoga");
         Transform kitchen = kitchenSpot != null ? kitchenSpot : FindSpot("CocinaSpot");
 
-        if (_initiating != t) { _initiating = t; _initPhase = 0; Debug.Log($"[Magnate] Linduarda la llama: va a iniciar a «{t.name}»."); }
+        if (_initiating != t) { _initiating = t; _initPhase = 0; _guiding.Add(_newcomer); Debug.Log($"[Magnate] Linduarda la llama: va a buscar a «{t.name}» para llevarlo por sus iniciaciones."); }
         switch (_initPhase)
         {
             case 0:   // ir a buscarlo
@@ -121,55 +123,59 @@ public class Magnate : MonoBehaviour
                     if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] va a buscar a «{t.name}» ({left:0} m).");}
                     return;
                 }
-                Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y se lo lleva a la sala de yoga (hechizo de iniciación).");
+                Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y lo acompaña a la sala de yoga.");
                 Mind m = t.GetComponent<Mind>();
                 if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
                 if (yoga != null) Queue(t).EnqueueOwn(ActionSpells.Walk(yoga));
-                _initPhase = 1;
+                _initPhase = 1; _phaseDeadline = Time.time + 120f;
                 return;
-            case 1:   // caminar juntos (ella delante, a su paso)
-                if (yoga == null) { _initPhase = 2; return; }
+            case 1:   // caminar juntos (ella delante, a su paso); con tope: si no llegan, se colocan
+                if (yoga == null) { _newcomer.presented = true; _initPhase = 3; return; }
                 float mLeft = PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
                 if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {mLeft:0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
                 // En la SALA, no en otro piso del mismo edificio: antes bastaba la distancia en planta y la clase empezaba en el
                 // techo de alfombras, justo encima (Berón 2026-10-28).
-                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f
-                    && Mathf.Abs(t.transform.position.y - yoga.position.y) < 2.5f && Mathf.Abs(transform.position.y - yoga.position.y) < 2.5f)
-                {
-                    _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí
-                    // Su PRIMERA clase, OBLIGADA (documentado: docs/novela.md, tras el microcosmos, «5. Sala de yoga»): upa-yoga de
-                    // cuello, paso a paso, aunque esté cansado o haya otra clase; no se va a la cocina sin hacerla.
-                    Teach(t, onboarding: true);
-                    if (TeachingSession.For(t) != null) _initPhase = 2;
-                }
+                bool there = Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f
+                    && Mathf.Abs(t.transform.position.y - yoga.position.y) < 2.5f && Mathf.Abs(transform.position.y - yoga.position.y) < 2.5f;
+                if (!there && Time.time < _phaseDeadline) return;
+                if (!there) { WorkdayDirector.Teleport(t.transform, yoga.position + Vector3.right * 1.2f); WorkdayDirector.Teleport(transform, yoga.position - Vector3.right * 1.2f); Debug.Log($"[Magnate] no llegaban andando a la sala de yoga: se colocan."); }
+                _newcomer.presented = true;   // ya es del santuario: su iniciación de la sala empieza aquí
+                // Lo ENTREGA al de turno de la sala: su primera clase OBLIGADA (docs/novela.md, «5. Sala de yoga»: upa-yoga de
+                // cuello, paso a paso) y después el tanque al río de Sakshi (Berón 2026-10-27).
+                AreaInitiator ya = AreaInitiator.Begin(AreaInitiator.Kind.Yoga, _newcomer, _a);
+                Debug.Log($"[Magnate] entrega a «{t.name}» a {(ya != null ? ya.Who : "nadie")} (de turno en la sala de yoga) para su iniciación.");
+                _initPhase = ya != null ? 2 : 4; _phaseDeadline = Time.time + 1200f; _logAt = Time.time + 8f;
                 return;
-            case 2:   // clase interactiva en curso
-                if (TeachingSession.For(t) != null) return;
-                // Tras la clase, su PRIMER microcosmos de la sala de yoga: el río de Sakshi (Berón 2026-10-27). Ella lo lleva al tanque.
-                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: lo lleva al tanque de la sala de yoga (el río de Sakshi).");
-                _initPhase = 3;
+            case 2:   // lo inicia el de turno de la sala (clase + tanque); ella espera cerca (con tope)
+                if (AreaInitiator.Owns(_newcomer) && Time.time < _phaseDeadline) return;
+                _initPhase = 3; _logAt = Time.time + 8f; _phaseDeadline = Time.time + 3600f;
                 return;
-            case 3:   // al tanque de la sala de yoga
+            case 3:   // en el río: espera a que vuelva (lo juega el jugador; tope de una hora real = un día del santuario)
+                if (Time.time < _phaseDeadline && (Time.time < _logAt || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)))) return;
+                Debug.Log($"[Magnate] «{t.name}» vuelve del río: lo acompaña a la cocina.");
+                _initPhase = 4; _phaseDeadline = Time.time + 120f;
+                return;
+            case 4:   // caminar juntos a la cocina (con tope)
                 {
-                    VirtualizationMachine vm = YogaMachine();
-                    if (vm == null || !Application.CanStreamedLevelBeLoaded(RiverMicrocosmos)) { _initPhase = 5; return; }
-                    Vector3 to = vm.transform.position - t.transform.position; to.y = 0f;
-                    if (to.magnitude > 4f) { PathMover.Of(this).StepToward(vm.transform.position, moveSpeed * 0.6f); PathMover.Of(t).StepToward(vm.transform.position, moveSpeed * 0.6f); return; }
-                    PlaneMessenger.Send("La Magnate", "Ahora, tu primer viaje desde esta sala: al río. Allí hay alguien que te necesita.", 6f);
-                    vm.EnterWithTank(t.transform, RiverMicrocosmos);
-                    _initPhase = 4; _logAt = Time.time + 8f;
+                    if (kitchen == null) { _initPhase = 5; return; }
+                    PathMover.Of(this).StepToward(kitchen.position, moveSpeed * 0.6f);
+                    bool near = Flat(t.transform.position - kitchen.position) < 4f && Flat(transform.position - kitchen.position) < 5f;
+                    if (!near && Flat(t.transform.position - transform.position) > 2.5f) PathMover.Of(t).StepToward(transform.position, moveSpeed * 0.6f);   // él la sigue
+                    if (!near && Time.time < _phaseDeadline) return;
+                    if (!near) { WorkdayDirector.Teleport(t.transform, kitchen.position + Vector3.right * 1.2f); WorkdayDirector.Teleport(transform, kitchen.position - Vector3.right * 1.2f); }
+                    _initPhase = 5;
                     return;
                 }
-            case 4:   // en el río: espera a que vuelva
-                if (Time.time < _logAt || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;
-                _initPhase = 5;
-                return;
-            case 5:   // y luego a la cocina, a aprender un oficio
-                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
-                Debug.Log($"[Magnate] «{t.name}» vuelve del río: ahora va a la cocina a aprender un oficio.");
-                _initPhase = 6;
-                _newcomer = null; _initiating = null;
-                return;
+            case 5:   // lo ENTREGA al de turno de la cocina: la tanda por mayor y el tanque a su primer microcosmos
+                {
+                    AreaInitiator ki = AreaInitiator.Begin(AreaInitiator.Kind.Kitchen, _newcomer, _a);
+                    if (ki == null && kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));   // sin nadie: el jefe de cocina lo recibe (KitchenBoss)
+                    Debug.Log($"[Magnate] deja a «{t.name}» en la cocina con {(ki != null ? ki.Who : "el jefe de cocina")} para su iniciación.");
+                    _initPhase = 6;
+                    _guiding.Remove(_newcomer);
+                    _newcomer = null; _initiating = null;
+                    return;
+                }
         }
     }
 

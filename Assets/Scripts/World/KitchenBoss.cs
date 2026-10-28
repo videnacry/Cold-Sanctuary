@@ -49,6 +49,9 @@ public class KitchenBoss : MonoBehaviour
         foreach (SanctuaryOnboarding o in FindObjectsOfType<SanctuaryOnboarding>())
         {
             if (o == null || !o.presented || o.kitchenTrained) continue;
+            // La iniciación de la cocina la da ahora el trabajador de turno (AreaInitiator), cuando la Magnate lo trae tras el río:
+            // el jefe solo lo recibe si no hubo quien (antes lo llamaba en mitad de la clase de yoga).
+            if (Magnate.Guiding(o) || AreaInitiator.Owns(o)) continue;
             float sq = (o.transform.position - transform.position).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = o; }
         }

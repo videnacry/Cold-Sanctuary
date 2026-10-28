@@ -183,6 +183,25 @@ public class WorkdayDirector : MonoBehaviour
         return l;
     }
 
+    /// <summary>Quién trabaja en <paramref name="area"/>: primero los que están de turno allí AHORA, luego los que tienen
+    /// misión allí hoy (los iniciadores de área: el de la sala de yoga, el de la cocina).</summary>
+    public List<GameObject> InArea(string area)
+    {
+        var l = new List<GameObject>();
+        if (today == null) return l;
+        float h = TC != null ? TC.Hour : _hour;
+        for (int pass = 0; pass < 2; pass++)
+            foreach (WorkRoster.Assignment a in today.work)
+            {
+                if (a.mission.area != area) continue;
+                bool now = h >= a.start && h < a.start + a.mission.hours;
+                if (now != (pass == 0)) continue;
+                GameObject g = a.worker.clone ? (_clones.TryGetValue(a.worker, out GameObject c) ? c : null) : Body(a.worker.name);
+                if (g != null && !g.CompareTag("Player") && !l.Contains(g)) l.Add(g);
+            }
+        return l;
+    }
+
     // INICIADOR: quien tenga ahora la misión de iniciación lanza «iniciar» sobre los recién llegados.
     void UpdateInitiator(float h)
     {
@@ -202,6 +221,7 @@ public class WorkdayDirector : MonoBehaviour
     {
         NewcomerInitiator ni = g.GetComponent<NewcomerInitiator>();
         if (ni != null && ni.Busy) return true;
+        if (AreaInitiator.Leading(g)) return true;   // inicia a un recién llegado en su área (yoga, cocina): lo lleva él
         return MagnateWarden.Instance.Handling(g);
     }
 
