@@ -270,7 +270,7 @@ public class AmbrosioStory : MonoBehaviour
                     else if (Now == Beat.Push2) { StopPushing(); SpawnPredator(); Go(Beat.Predator);
                         Say(_ambrosio, "¡Una mariquita! Viene a por mí: los pulgones somos su comida. Los viejos, quietos. ¡Empujadla! Cinco empujones y se irá.", 8f);
                         Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}"); }
-                    else { StopPushing(); Go(Beat.Death); Say(_medea, "¡La cueva! ¡Hemos llegado!", 5f); }
+                    else { StopPushing(); Go(Beat.Death); LessonPrompt.Hide(); Say(_medea, "¡La cueva! ¡Hemos llegado!", 5f); }   // (ya no hay que empujar: fuera el objetivo)
                 }
                 break;
             case Beat.Collapse:
