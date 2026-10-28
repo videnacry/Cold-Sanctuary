@@ -3621,13 +3621,32 @@ public static partial class SampleSceneBuilder
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(t, false);
 
-        // Losa bajo el suelo del área + columnas (esquinas y cada ~5 m).
+        // LOSA OCTOGONAL y ESQUELETO DE RASCACIELOS (Berón 2026-10-28): el suelo del área (rectangular, «Losa») queda dentro
+        // de un octógono que lo rodea: e m más por lado y las esquinas achaflanadas 2e, así los vértices del rectángulo tocan
+        // los chaflanes. En vez de una columna cada 5 m, UNA en cada punta del octógono: columnas MIXTAS (núcleo de acero
+        // revestido de hormigón, como las megacolumnas de los rascacielos), más gruesas y con zunchos de acero vistos.
         KitchenProps.C(s, new Vector3(0f, -0.18f, 0f), new Vector3(size.x + 0.4f, 0.3f, size.y + 0.4f), woodDark, 0f, "Losa");
-        for (float x = -hx + 0.4f; x <= hx - 0.39f; x += Mathf.Max(3f, (size.x - 0.8f) / Mathf.Ceil((size.x - 0.8f) / 5f)))
+        float e = Mathf.Clamp(Mathf.Min(size.x, size.y) * 0.08f, 1f, 2.5f), c = 2f * e, X = hx + e, Z = hz + e;
+        Color concrete = new Color(0.72f, 0.71f, 0.68f), steel = new Color(0.42f, 0.45f, 0.5f);
+        Solid(s, new Vector3(0f, -0.19f, 0f), new Vector3(2f * X, 0.3f, 2f * (Z - c)), woodDark, "Losa_octogono");
+        Solid(s, new Vector3(0f, -0.19f, 0f), new Vector3(2f * (X - c), 0.3f, 2f * Z), woodDark, "Losa_octogono");
+        for (int sx = -1; sx <= 1; sx += 2)
             for (int sz = -1; sz <= 1; sz += 2)
-                Solid(s, new Vector3(x, -h * 0.5f - 0.15f, sz * (hz - 0.4f)), new Vector3(0.4f, h, 0.4f), wood, "Columna");
-        Solid(s, new Vector3(-hx + 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
-        Solid(s, new Vector3(hx - 0.4f, -h * 0.5f - 0.15f, 0f), new Vector3(0.4f, h, 0.4f), wood, "Columna");
+                Solid(s, new Vector3(sx * (X - c), -0.19f, sz * (Z - c)), new Vector3(c * 1.4142f, 0.3f, c * 1.4142f), woodDark, "Losa_chaflan").localRotation = Quaternion.Euler(0f, 45f, 0f);
+        float col = Mathf.Clamp(Mathf.Max(size.x, size.y) * 0.03f, 0.7f, 1.2f), ci = col * 0.5f + 0.05f;
+        var tips = new List<Vector3>();
+        for (int sx = -1; sx <= 1; sx += 2)
+            for (int sz = -1; sz <= 1; sz += 2)
+            {
+                tips.Add(new Vector3(sx * (X - ci), 0f, sz * (Z - c - ci * 0.4f)));   // las dos puntas de cada chaflán
+                tips.Add(new Vector3(sx * (X - c - ci * 0.4f), 0f, sz * (Z - ci)));
+            }
+        foreach (Vector3 tp in tips)
+        {
+            Solid(s, tp + new Vector3(0f, -h * 0.5f - 0.15f, 0f), new Vector3(col, h, col), concrete, "Columna");   // hormigón, con el acero dentro
+            for (float y = 1.5f; y < h - 0.5f; y += 3f)
+                KitchenProps.C(s, tp + new Vector3(0f, -0.15f - y, 0f), new Vector3(col + 0.06f, 0.12f, col + 0.06f), steel, 0f, "Zuncho_acero");
+        }
 
         // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
         // plataforma a otra, y se sube y se baja en ALFOMBRA VOLADORA (cada piso tiene su área de alfombras; se ponen al
