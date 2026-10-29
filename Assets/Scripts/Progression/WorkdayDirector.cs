@@ -162,6 +162,16 @@ public class WorkdayDirector : MonoBehaviour
         Debug.Log($"[Jornada] Arranque: itinerarios asignados y {n} personajes colocados en el área de su primer turno.");
     }
 
+    /// <summary>¿Está <paramref name="g"/> (Kushal o alguien del personal) en su jornada AHORA (8–16 h del día repartido)? Nadie
+    /// la interrumpe: la Magnate ya no le da clases de upa-yoga a mitad de turno (JornadaTest 2026-10-29).</summary>
+    public bool OnShift(GameObject g)
+    {
+        if (g == null || today == null || TC == null || plannedDay != TC.Day) return false;
+        float h = TC.Hour;
+        if (h < WorkRoster.StartHour || h >= WorkRoster.StartHour + 8f) return false;
+        return roster.Find(g.CompareTag("Player") ? "Player" : g.name.Replace("_Post", "")) != null;
+    }
+
     /// <summary>Diagnóstico de las pruebas: registra quién teletransporta a quién (con la pila).</summary>
     public static bool LogTeleports;
     public static void Teleport(Transform t, Vector3 p)
@@ -352,6 +362,7 @@ public class WorkdayDirector : MonoBehaviour
         if (!gymTime) LeaveGym(g);   // deja libre su máquina del gimnasio (si tenía)
         bool yogaTime = !alwaysMove && area == YogaArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
         if (!yogaTime && missionId != "yog_guia") LeaveYogaClass(g);   // deja la clase de yoga (si estaba en ella)
+        if (missionId != "yog_guia" && missionId != "yog_demo") DropClassSequence(g);   // la secuencia de la clase, solo mientras la clase es su misión
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
@@ -365,6 +376,18 @@ public class WorkdayDirector : MonoBehaviour
         if (area == null)
         {
             if (g.name == "Sadhguru") { if (idle != null) idle.enabled = false; SadhguruMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
+            // HUECO DENTRO DEL TURNO (p. ej. la obra acaba a las 10 y lo siguiente es a las 12): no es tiempo libre. Antes esta
+            // rama le encendía el merodeo ANTES de llegar a OwnNeeds (que es donde se quita el merodeo en turno), y JefeConstruccion
+            // y Gohageneis merodeaban por la obra atravesando la «Columna», la «Grua_pluma» y la «Miniexcavadora» (JornadaTest
+            // 2026-10-29). En el hueco se queda donde está (sus necesidades siguen yendo por su carril propio).
+            if (_hour >= WorkRoster.StartHour && _hour < WorkRoster.StartHour + 8f && g.GetComponent<Anima>() != null)
+            {
+                if (idle != null) idle.enabled = false;
+                ActionQueue gq = g.GetComponent<ActionQueue>();
+                if (gq != null && gq.Player.Count > 0 && gq.Player[0] is WanderSpell) gq.RemovePlayerAt(0);
+                SetStatus(g, null);
+                return;
+            }
             if (idle != null && !idle.enabled) idle.enabled = true;   // libre
             SetStatus(g, null);
             return;
@@ -464,6 +487,19 @@ public class WorkdayDirector : MonoBehaviour
         return _yogaRoom != null ? _yogaRoom.TransformPoint(local) : Vector3.zero;
     }
 
+    // La secuencia que la CLASE pone en la cola propia del guía o del demostrador: al acabar esa misión se le QUITA. Antes se
+    // quedaba y Linduarda (de 8 a 9 demostradora) seguía en asanas a las 10 en vez de ir a Biología, y Panterilia, en el
+    // quirófano (JornadaTest 2026-10-29). Solo está en la clase quien tiene la clase por misión (o entrena yoga a las 14).
+    static readonly Dictionary<GameObject, HashSet<QueuedSpell>> _classSeq = new Dictionary<GameObject, HashSet<QueuedSpell>>();
+    static void DropClassSequence(GameObject g)
+    {
+        if (g == null || !_classSeq.TryGetValue(g, out HashSet<QueuedSpell> seq)) return;
+        _classSeq.Remove(g);
+        if (!g.TryGetComponent(out ActionQueue q) || q.RemoveOwnWhere(s => seq.Contains(s)) == 0) return;
+        Anima a = g.GetComponent<Anima>(); if (a != null) DailyPoses.Stand().ApplyFinal(a);
+        Debug.Log($"[Jornada] «{g.name}» deja la secuencia de la clase de yoga: su misión ahora es otra.");
+    }
+
     /// <summary>Si la misión es de la clase de yoga, coloca al personaje en su papel; true = ya lo maneja.</summary>
     bool YogaClassRole(GameObject g, string missionId)
     {
@@ -483,7 +519,7 @@ public class WorkdayDirector : MonoBehaviour
             Vector3 face = YogaPoint(Vector3.zero) - g.transform.position; face.y = 0f;
             if (missionId == "yog_demo" && face.sqrMagnitude > 0.01f) g.transform.rotation = Quaternion.LookRotation(face);
             ActionQueue q = g.GetComponent<ActionQueue>();
-            if (q != null && q.Own.Count == 0) foreach (QueuedSpell s in SunSalutation.Sequence()) q.EnqueueOwn(s);   // la secuencia, a la perfección
+            if (q != null && q.Own.Count == 0) foreach (QueuedSpell s in SunSalutation.Sequence()) { if (!_classSeq.TryGetValue(g, out var seq)) _classSeq[g] = seq = new HashSet<QueuedSpell>(); seq.Add(s); q.EnqueueOwn(s); }   // la secuencia, a la perfección
         }
         return true;
     }
@@ -662,7 +698,12 @@ public class WorkdayDirector : MonoBehaviour
     static Vector3 WorkPoint(string area, string who)
     {
         if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(who); if (post != null) return post.StandPoint; }
-        return AreaPoint(area, who);
+        Vector3 p = AreaPoint(area, who);
+        // Al NavMesh (como RestaurantService): la rejilla de puestos alrededor del centro del área caía a veces DENTRO de un
+        // mueble (el «Bloque_Intercambiador» de la central) y se le iba a buscar atravesándolo (JornadaTest 2026-10-29).
+        if (p != Vector3.zero && UnityEngine.AI.NavMesh.SamplePosition(p + Vector3.down, out UnityEngine.AI.NavMeshHit h, 2.5f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - (p.y - 1f)) < 1f)
+            p = h.position + Vector3.up;
+        return p;
     }
 
     public static Vector3 AreaPoint(string area, string who)

@@ -33,8 +33,9 @@ public class WorkRoster
         public string[] also = new string[0];
         public string site;      // título de la obra (ConstructionProject) donde se trabaja
         public bool roams;
+        public bool lead;        // DIRIGE (guiar la clase, demostrar, operar, iniciar a otros): no se le da a un recién llegado
         public Mission(string area, string id, string title, float hours, bool mandatory = false) { this.area = area; this.id = id; this.title = title; this.hours = hours; this.mandatory = mandatory; }
-        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams };
+        public Mission Copy() => new Mission(area, id, title, hours, mandatory) { group = group, also = also, site = site, roams = roams, lead = lead };
         public override string ToString() => $"{area}: {title} ({hours:0.#} h)";
     }
 
@@ -44,6 +45,7 @@ public class WorkRoster
         public bool clone;
         public readonly Dictionary<string, int> count = new Dictionary<string, int>();      // veces que ha hecho cada misión
         public readonly Dictionary<string, int> lastDay = new Dictionary<string, int>();    // último día que la hizo
+        public int joined = int.MinValue;   // primer día que entró en la rotación
         public Worker(string name, bool clone = false) { this.name = name; this.clone = clone; }
         public int Count(string id) => count.TryGetValue(id, out int c) ? c : 0;
         public int Last(string id) => lastDay.TryGetValue(id, out int d) ? d : int.MinValue;
@@ -78,6 +80,13 @@ public class WorkRoster
     public Worker Add(string name) { var w = new Worker(name); workers.Add(w); return w; }
     public Worker Find(string name) => workers.FirstOrDefault(w => w.name == name);
 
+    // RECIÉN LLEGADO (Berón 2026-10-29): sus primeras jornadas no dirige nada (ni guiar la clase de yoga desde la plataforma,
+    // ni demostrar, ni operar, ni iniciar a otros); le tocan papeles de participante o de apoyo. Es quien entró en la rotación
+    // después del primer reparto, durante sus NewcomerDays primeros días.
+    public const int NewcomerDays = 3;
+    int _firstDay = int.MinValue;
+    public bool IsNewcomer(Worker w, int day) => w != null && !w.clone && _firstDay != int.MinValue && w.joined > _firstDay && day - w.joined < NewcomerDays;
+
     /// <summary>Orden de áreas del día: rota una posición por día (la última pasa a ser la primera).</summary>
     public List<string> AreaOrder(int day)
     {
@@ -92,6 +101,8 @@ public class WorkRoster
     public DayPlan Plan(int day, IEnumerable<Mission> todays)
     {
         var plan = new DayPlan { day = day, areaOrder = AreaOrder(day) };
+        if (_firstDay == int.MinValue) _firstDay = day;
+        foreach (Worker w in workers) if (w.joined == int.MinValue) w.joined = day;
         // Pools por área: pendientes de ayer → obligatorias → resto.
         var pools = new Dictionary<string, List<Mission>>();
         foreach (string a in areas) pools[a] = new List<Mission>();
@@ -145,18 +156,24 @@ public class WorkRoster
             var roles = kv.Value;
             if (workers.Count < roles.Count) continue;   // sin gente suficiente: quedan para los clones
             var crew = new List<Worker>();
+            int support = roles.Count(m => !m.lead), newcomers = 0;
             for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
             {
                 Worker w = workers[(offset + i) % workers.Count];
-                if (used[w] <= 0f && !crew.Contains(w)) crew.Add(w);
+                if (used[w] > 0f || crew.Contains(w)) continue;
+                if (IsNewcomer(w, plan.day)) { if (newcomers >= support) continue; newcomers++; }   // al recién llegado, solo un papel de apoyo
+                crew.Add(w);
             }
             if (crew.Count < roles.Count) continue;
             offset += roles.Count;
             var pending = new List<Mission>(roles);
-            foreach (Worker w in crew)
+            // Primero los recién llegados (eligen entre los papeles de apoyo); luego el resto, entre lo que queda.
+            foreach (Worker w in crew.OrderBy(x => IsNewcomer(x, plan.day) ? 0 : 1).ToList())
             {
+                bool fresh = IsNewcomer(w, plan.day);
                 Mission best = null;
-                foreach (Mission m in pending) if (best == null || w.Count(m.id) < w.Count(best.id)) best = m;
+                foreach (Mission m in pending) if ((!fresh || !m.lead) && (best == null || w.Count(m.id) < w.Count(best.id))) best = m;
+                if (best == null) continue;
                 pending.Remove(best);
                 pools[best.area].Remove(best);
                 Assign(plan, w, best, used);
@@ -175,7 +192,7 @@ public class WorkRoster
                 if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
                 foreach (Worker w in staff)
                 {
-                    Mission pick = Choose(w, pool, used[w]);
+                    Mission pick = Choose(w, IsNewcomer(w, plan.day) ? pool.Where(m => !m.lead).ToList() : pool, used[w]);
                     if (pick == null) continue;
                     pool.Remove(pick);
                     Assign(plan, w, pick, used);

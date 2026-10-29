@@ -125,6 +125,17 @@ public class TeachingSession : MonoBehaviour
         Next();   // el maestro ESPERA hasta que el alumno realiza el paso
     }
 
+    /// <summary>Corta la clase SIN aprenderla (p. ej. empieza la jornada del alumno): los dos de pie, sin rótulo.</summary>
+    public void Cancel()
+    {
+        if (student != null) DailyPoses.Stand().ApplyFinal(student);
+        if (teacher != null) DailyPoses.Stand().ApplyFinal(teacher);
+        if (!_studentIsAI) LessonPrompt.Hide();
+        _i = _teacherSteps != null ? _teacherSteps.Count : 0;
+        Debug.Log($"[Clase] se corta la clase de «{(student != null ? student.name : "?")}» ({skillId}): empieza su jornada.");
+        Destroy(this);
+    }
+
     void Finish()
     {
         if (student != null)

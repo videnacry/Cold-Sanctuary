@@ -72,6 +72,12 @@ public class Magnate : MonoBehaviour
         if (_newcomer == null) _newcomer = FindNewcomer();
         if (_newcomer != null) { GoPresent(); return; }
 
+        // NO INTERRUMPE UNA JORNADA: si a quien enseña le empieza el turno, corta la clase; y no busca alumno entre quienes
+        // están trabajando (le pedía pasos de upa-yoga a Kushal en plena misión: JornadaTest 2026-10-29).
+        WorkdayDirector wd = WorkdayDirector.Instance;
+        TeachingSession mine = GetComponent<TeachingSession>();
+        if (mine != null && wd != null && mine.student != null && wd.OnShift(mine.student.gameObject)) mine.Cancel();
+        if (_student != null && wd != null && wd.OnShift(_student.gameObject)) _student = null;
         // Dando una clase: se queda en ella (antes salía tras otro alumno a mitad y hacía las posturas andando o volando).
         if (GetComponent<TeachingSession>() != null) { _student = null; return; }
         if (Time.time >= _nextTeach) { _nextTeach = Time.time + teachInterval; _student = FindLaggard(); }
@@ -268,6 +274,7 @@ public class Magnate : MonoBehaviour
             if (FlyingCarpet.Riding(a.gameObject)) continue;   // volando en alfombra no se da clase
             if (_taught.TryGetValue(a, out float at) && Time.time - at < classCooldown) continue;   // ya tuvo su clase hace poco
             if (!IsMember(a)) continue;   // un recién llegado sin la iniciación de Linduarda aún NO es del santuario
+            if (WorkdayDirector.Instance != null && WorkdayDirector.Instance.OnShift(a.gameObject)) continue;   // en su jornada: no se le interrumpe
             if (cl.SoulLevels < worstLv) { worstLv = cl.SoulLevels; worst = a; }
         }
         return worst;

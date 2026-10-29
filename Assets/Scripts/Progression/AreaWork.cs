@@ -14,16 +14,17 @@ public static class AreaWork
     static WorkRoster.Mission M(string area, string id, string title, float h, bool mandatory = false) => new WorkRoster.Mission(area, id, title, h, mandatory);
     static WorkRoster.Mission Also(WorkRoster.Mission m, params string[] areas) { m.also = areas; return m; }   // la tarea hace ir también a esas áreas
     static WorkRoster.Mission G(string area, string id, string title, string group) => new WorkRoster.Mission(area, id, title, 1f, true) { group = group };   // misión de grupo (a la vez)
+    static WorkRoster.Mission Lead(WorkRoster.Mission m) { m.lead = true; return m; }   // dirige: no a un recién llegado (WorkRoster.IsNewcomer)
 
     /// <summary>Misiones fijas de cada área (sin las de obras, que dependen de qué obras haya abiertas).</summary>
     public static readonly WorkRoster.Mission[] Catalog =
     {
-        M(Hospital, "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true),
+        Lead(M(Hospital, "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true)),
         M(Hospital, "enf_visita", "Pasar visita y curas en las salas de camas", 2f, true),
         Also(M(Hospital, "enf_animales", "Análisis y vacunas de animales", 1f), "Cría"),
         M(Hospital, "enf_inventario", "Limpieza, esterilización e inventario del hospital", 1f),
         M(Hospital, "hos_urgencias", "Guardia de urgencias (triaje y reanimación)", 2f, true),
-        M(Hospital, "hos_quirofano", "Quirófano: cirugía programada (cirujano + anestesista)", 2f),
+        Lead(M(Hospital, "hos_quirofano", "Quirófano: cirugía programada (cirujano + anestesista)", 2f)),
         M(Hospital, "hos_uci", "Cuidados intensivos (UCI)", 2f),
         M(Hospital, "hos_veterinaria", "Hospital veterinario (planta alta): consulta y hospitalización de animales", 2f),
         M("Cocina", "coc_servicio", "Servicio del restaurante (cocinar la carta)", 2f, true),
@@ -33,8 +34,8 @@ public static class AreaWork
         M("Huerto", "hue_riego", "Riego y deshierbe de los huertos", 2f, true),
         Also(M("Huerto", "hue_cosecha", "Cosecha para la cocina", 1f), "Cocina"),
         M("Huerto", "hue_visitantes", "Alimentar a los visitantes del huerto", 1f),
-        G("Sala de Yoga", "yog_guia", "Clase de yoga: guiar desde la plataforma central (objetivo 1)", "clase_yoga"),
-        G("Sala de Yoga", "yog_demo", "Clase de yoga: demostrar entre los alumnos (objetivo 2)", "clase_yoga"),
+        Lead(G("Sala de Yoga", "yog_guia", "Clase de yoga: guiar desde la plataforma central (objetivo 1)", "clase_yoga")),
+        Lead(G("Sala de Yoga", "yog_demo", "Clase de yoga: demostrar entre los alumnos (objetivo 2)", "clase_yoga")),
         G("Sala de Yoga", "yog_corrige_1", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
         G("Sala de Yoga", "yog_corrige_2", "Clase de yoga: corregir posturas a los alumnos", "clase_yoga"),
         M("Cocina", "coc_atender", "Atender a los comensales en la barra (servir los pedidos)", 2f, true),
