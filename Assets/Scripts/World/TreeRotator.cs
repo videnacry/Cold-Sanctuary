@@ -128,6 +128,13 @@ public class TreeRotator : MonoBehaviour
             b.rotation = dq * b.rotation;
             Carried++;
         }
+        // Las alfombras POSADAS en la copa (las que llegaron volando no cuelgan de su pista): giran con ella.
+        foreach (FlyingCarpet c in FlyingCarpet.All)
+        {
+            if (c == null || c.Flying || c.pad == null || !c.pad.transform.IsChildOf(transform) || c.transform.IsChildOf(transform)) continue;
+            c.transform.SetPositionAndRotation(pivot + dq * (c.transform.position - pivot), dq * c.transform.rotation);
+            moved = true;
+        }
         if (moved) Physics.SyncTransforms();
     }
 
