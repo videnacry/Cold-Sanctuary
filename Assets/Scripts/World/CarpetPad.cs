@@ -40,7 +40,7 @@ public class CarpetPad : MonoBehaviour
         if (other == null || other == this) return false;
         switch (kind)
         {
-            case Kind.Edificio: return other.kind == Kind.Edificio && other.building == building;
+            case Kind.Edificio: return other.kind == Kind.Edificio && other.building == building && other.surface != surface;   // (no a otra esterilla del mismo piso)
             case Kind.Santuario: return other.kind == Kind.Santuario;
             case Kind.Residencia: return other.kind == Kind.Habitacion;
             default: return other.kind == Kind.Residencia;
@@ -55,7 +55,9 @@ public class CarpetPad : MonoBehaviour
     public List<CarpetPad> Destinations()
     {
         var l = new List<CarpetPad>();
-        foreach (CarpetPad p in All) if (FliesTo(p)) l.Add(p);
+        // Un destino por PISO (en la sala de yoga cada esterilla es una alfombra: no se lista cada una).
+        var seen = new HashSet<string>();
+        foreach (CarpetPad p in All) if (FliesTo(p) && seen.Add(p.surface)) l.Add(p);
         l.Sort((a, b) => a.floor != b.floor && kind == Kind.Edificio ? a.floor.CompareTo(b.floor) : string.CompareOrdinal(a.displayName, b.displayName));
         return l;
     }
@@ -188,18 +190,18 @@ public class CarpetPad : MonoBehaviour
         Transform t = new GameObject($"Alfombras_{kind}_{displayName}").transform; t.SetParent(parent, true);
         t.SetPositionAndRotation(worldPos, rot);
         Color mark = kind == Kind.Santuario ? new Color(0.35f, 0.5f, 0.75f) : kind == Kind.Edificio ? new Color(0.8f, 0.62f, 0.3f) : new Color(0.55f, 0.72f, 0.5f);
-        KitchenProps.C(t, new Vector3(0f, 0.02f, 0f), new Vector3(w, 0.03f, d), new Color(0.9f, 0.87f, 0.8f), 0f, "Zona");
+        KitchenProps.C(t, new Vector3(0f, 0.006f, 0f), new Vector3(w, 0.012f, d), new Color(0.9f, 0.87f, 0.8f), 0f, "Zona");
         for (int s = -1; s <= 1; s += 2)
         {
-            KitchenProps.C(t, new Vector3(0f, 0.035f, s * (d * 0.5f - 0.08f)), new Vector3(w, 0.03f, 0.16f), mark, 0f, "Borde");
-            KitchenProps.C(t, new Vector3(s * (w * 0.5f - 0.08f), 0.035f, 0f), new Vector3(0.16f, 0.03f, d), mark, 0f, "Borde");
+            KitchenProps.C(t, new Vector3(0f, 0.008f, s * (d * 0.5f - 0.08f)), new Vector3(w, 0.014f, 0.16f), mark, 0f, "Borde");
+            KitchenProps.C(t, new Vector3(s * (w * 0.5f - 0.08f), 0.008f, 0f), new Vector3(0.16f, 0.014f, d), mark, 0f, "Borde");
         }
         BoxCollider trig = t.gameObject.AddComponent<BoxCollider>(); trig.isTrigger = true; trig.center = new Vector3(0f, 1f, 0f); trig.size = new Vector3(w, 2f, d);
         CarpetPad pad = t.gameObject.AddComponent<CarpetPad>();
         pad.displayName = displayName; pad.kind = kind; pad.building = building; pad.floor = floor; pad.surface = surface;
         int n = Mathf.Max(1, Mathf.FloorToInt((w - 0.4f) / 2.5f));
         var slots = new List<Vector3>();
-        for (int i = 0; i < n; i++) slots.Add(new Vector3(-(n - 1) * 1.25f + i * 2.5f, 0.06f, 0f));
+        for (int i = 0; i < n; i++) slots.Add(new Vector3(-(n - 1) * 1.25f + i * 2.5f, 0.012f, 0f));   // a ras del suelo: finas, no se hunde nadie en ellas
         pad.slots = slots.ToArray();
         for (int i = 0; i < Mathf.Min(carpets, slots.Count); i++) BuildCarpet(t, pad, slots[i], i);
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>();
@@ -217,9 +219,9 @@ public class CarpetPad : MonoBehaviour
         Transform c = new GameObject($"Alfombra_{i + 1}").transform; c.SetParent(zone, false);
         c.localPosition = local;
         BoxCollider bc = c.gameObject.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.center = new Vector3(0f, 0.6f, 0f); bc.size = new Vector3(2.1f, 1.2f, 3.1f);
-        KitchenProps.C(c, Vector3.zero, new Vector3(2f, 0.05f, 3f), Colors[i % Colors.Length], 0f, "Tejido");
-        KitchenProps.C(c, new Vector3(0f, 0.01f, 0f), new Vector3(1.5f, 0.05f, 2.4f), new Color(0.95f, 0.85f, 0.45f), 0f, "Dibujo");
-        for (int e = -1; e <= 1; e += 2) KitchenProps.C(c, new Vector3(0f, 0.005f, e * 1.58f), new Vector3(1.9f, 0.02f, 0.16f), Color.white, 0f, "Flecos");
+        KitchenProps.C(c, new Vector3(0f, 0.008f, 0f), new Vector3(2f, 0.016f, 3f), Colors[i % Colors.Length], 0f, "Tejido");
+        KitchenProps.C(c, new Vector3(0f, 0.01f, 0f), new Vector3(1.5f, 0.016f, 2.4f), new Color(0.95f, 0.85f, 0.45f), 0f, "Dibujo");
+        for (int e = -1; e <= 1; e += 2) KitchenProps.C(c, new Vector3(0f, 0.006f, e * 1.58f), new Vector3(1.9f, 0.012f, 0.16f), Color.white, 0f, "Flecos");
         FlyingCarpet fc = c.gameObject.AddComponent<FlyingCarpet>(); fc.pad = pad;
         return fc;
     }

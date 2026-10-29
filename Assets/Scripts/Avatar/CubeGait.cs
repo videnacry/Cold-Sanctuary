@@ -29,6 +29,9 @@ public class CubeGait : MonoBehaviour
         _a = GetComponent<Anima>();
         _agent = GetComponent<UnityEngine.AI.NavMeshAgent>();
         _last = transform.position;
+        // De pie siempre: el prefab lleva un Rigidbody con la rotación libre y, donde no hay NavMesh (el recinto de la Cría),
+        // la física volcaba a los pingüinos y oseznos de lado (Berón 2026-10-27). Dormir o tumbarse lo hacen las posturas.
+        if (TryGetComponent(out Rigidbody rb)) rb.freezeRotation = true;
         foreach (CubeJoint j in GetComponentsInChildren<CubeJoint>())
             if (!_j.ContainsKey(j.part) && j.name == j.part.ToString()) _j[j.part] = j;
         // A escala real: un oso da pasos más largos que un zorro (la velocidad de ciclo se ajusta al tamaño).

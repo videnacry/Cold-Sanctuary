@@ -40,7 +40,7 @@ public static class MicrocosmosSceneBuilder
     public static void BuildScene1()
     {
         var spec = new MicrocosmSpec(SceneName, "Ambrosio (nivel 1)", "verano corto de la taiga, antes del fuego", 5.5f, "Infirmary_Area")
-            { tint = new Color(0.85f, 0.95f, 0.9f), kind = SampleSceneBuilder.MissionKind.Heal, story = AmbrosioCast };
+            { tint = new Color(0.85f, 0.95f, 0.9f), kind = SampleSceneBuilder.MissionKind.Heal, story = AmbrosioCast, foragers = false };   // historia cerrada de la novela: sin recolectoras de otras escenas
         MicrocosmTemplate.Build(spec, O);
         Debug.Log($"[MicrocosmosSceneBuilder] {ScenePath}: el microcosmos de Ambrosio, con la plantilla (hospital ×10, taiga, alba).");
     }
@@ -52,13 +52,13 @@ public static class MicrocosmosSceneBuilder
         Transform start = new GameObject("Inicio_familia").transform; start.SetParent(cast, false); start.localPosition = new Vector3(0f, 0f, -4f);
         Material soil = AreaMicrocosmos.Mat("Ambrosio_Sendero", new Color(0.36f, 0.3f, 0.22f)), rock = AreaMicrocosmos.Mat("Ambrosio_Roca", new Color(0.45f, 0.42f, 0.38f)),
                  dark = AreaMicrocosmos.Mat("Ambrosio_Boca_cueva", new Color(0.06f, 0.05f, 0.04f));
-        AreaMicrocosmos.Box(cast, "Sendero_a_la_cueva", new Vector3(0f, 0.03f, caveZ * 0.5f - 4f), new Vector3(9f, 0.04f, caveZ + 12f), soil, false);
+        AreaMicrocosmos.Box(cast, "Sendero_a_la_cueva", new Vector3(0f, 0.02f, caveZ * 0.5f - 4f), new Vector3(9f, 0.04f, caveZ + 12f), soil, true);   // sólido: se pisa ENCIMA (antes las patas quedaban hundidas)
 
         // LA CUEVA: un cerro de roca con la boca oscura; es el REFUGIO de los dos viejos (CarryToRefuge).
         Transform cave = new GameObject("Cueva").transform; cave.SetParent(cast, false); cave.localPosition = new Vector3(0f, 0f, caveZ);
         for (int k = 0; k < 4; k++) AreaMicrocosmos.Box(cave, "Roca", new Vector3(0f, 1.6f + k * 2.4f, 6f + k * 0.8f), new Vector3(22f - k * 5f, 3.2f, 10f - k * 1.8f), rock, true);
         AreaMicrocosmos.Box(cave, "Boca", new Vector3(0f, 1.8f, 0.95f), new Vector3(4.5f, 3.6f, 0.1f), dark, false);
-        var refuge = cave.gameObject.AddComponent<CarryToRefuge>(); refuge.radius = 3.5f; refuge.needed = 2;
+        var refuge = cave.gameObject.AddComponent<CarryToRefuge>(); refuge.radius = 5f; refuge.needed = 4;   // los cuatro viejos de la novela
         WorldLabel cl = cave.gameObject.AddComponent<WorldLabel>(); cl.text = "La cueva"; cl.height = 9f;
 
         int n = 0;
@@ -76,13 +76,14 @@ public static class MicrocosmosSceneBuilder
         Member("Ambrosio", new Vector3(-1.6f, 0f, -5.6f), new Color(0.74f, 0.84f, 0.5f), 2.0f, 1.6f, aphid: true);
         Member("Sakshi", new Vector3(-1.6f, 0f, -4f), new Color(0.38f, 0.42f, 0.48f), 1.6f, 0.9f, weak: true);
         Member("Shanidar", new Vector3(1.6f, 0f, -4f), new Color(0.5f, 0.45f, 0.4f), 1.6f, 0.95f, weak: true);
+        // Los otros dos viejos de los cuatro que «desertaron para quedarse con ellos» (docs/novela.md).
+        Member("Anciano_Pintor", new Vector3(-4f, 0f, -3.7f), new Color(0.55f, 0.5f, 0.42f), 1.55f, 0.9f, weak: true);
+        Member("Anciana", new Vector3(4f, 0f, -3.7f), new Color(0.48f, 0.4f, 0.45f), 1.5f, 0.85f, weak: true);
         Member("Atlas", new Vector3(-2.4f, 0f, -5.4f), new Color(0.3f, 0.2f, 0.15f), 2.0f, 1.25f);
         Member("Medea", new Vector3(1.0f, 0f, -5.5f), new Color(0.45f, 0.15f, 0.15f), 1.55f, 0.85f);
         Member("Momo", new Vector3(2.2f, 0f, -5.5f), new Color(0.75f, 0.5f, 0.2f), 1.75f, 1f);
         Member("Ruth", new Vector3(3f, 0f, caveZ - 3f), new Color(0.35f, 0.45f, 0.25f), 1.75f, 1f);
         Member("Hespero", new Vector3(-3f, 0f, caveZ - 3f), new Color(0.28f, 0.2f, 0.18f), 1.9f, 1.1f);
-        // La tribu que vive allí (recolectoras con su guarida), a un lado del camino.
-        n += AreaMicrocosmos.ForagingBand(cast, new Vector3(-26f, 0f, 30f), 5);
         cast.root.gameObject.AddComponent<AmbrosioStory>();
         return n;
     }
@@ -96,124 +97,49 @@ public static class MicrocosmosSceneBuilder
     static readonly Vector3 O0 = new Vector3(5000f, 0f, -5000f);   // origen lejano, distinto de Scene1 y Mesopotamia
 
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos Scene0 (Sakshi / el rio)")]
+    /// <summary>
+    /// EL RÍO DE SAKSHI, hecho con la PLANTILLA (Berón 2026-10-27): el microcosmos de la SALA DE YOGA (su plataforma ×10),
+    /// antes de Ambrosio, al amanecer, con la flora y los insectos de la taiga. La Magnate envía aquí al recién llegado tras
+    /// su primera clase de yoga. Historia: <see cref="SakshiRiverStory"/> (docs/microcosmos-sakshi-origin.md).
+    /// </summary>
     public static void BuildScene0()
     {
-        if (!AssetDatabase.IsValidFolder("Assets/Scenes")) AssetDatabase.CreateFolder("Assets", "Scenes");
+        var spec = new MicrocosmSpec(SceneName0, "Sakshi (el río)", "primavera, antes de Ambrosio (el río del origen de Sakshi)", 6f, "YogaRoom_Area")
+            { tint = new Color(0.75f, 0.65f, 0.85f), story = SakshiRiverCast, foragers = false };
+        MicrocosmTemplate.Build(spec, O0);
+        Debug.Log($"[MicrocosmosSceneBuilder] {ScenePath0}: el río de Sakshi, con la plantilla (sala de yoga ×10, amanecer).");
+    }
 
-        Scene prev  = EditorSceneManager.GetActiveScene();
-        Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        SceneManager.SetActiveScene(scene);
-
-        GameObject lightGO = new GameObject("Sun");
-        lightGO.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
-        Light light = lightGO.AddComponent<Light>();
-        light.type = LightType.Directional; light.color = new Color(1f, 0.95f, 0.85f);
-
-        GameObject root = new GameObject("Microcosmos_Scene0_AUTO");
-
-        // ── Suelo (orilla fangosa) ~60x60 ──────────────────────────────────────
-        GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        floor.name = "ForestFloor"; floor.transform.SetParent(root.transform);
-        floor.transform.position = Vector3.zero; floor.transform.localScale = new Vector3(6f, 1f, 6f);   // 60x60
-        floor.GetComponent<Renderer>().sharedMaterial = MakeMat("Shore_MAT", new Color(0.30f, 0.24f, 0.16f));
-
-        // La orilla de Sakshi = borde SUR (z negativo). Es el PUNTO SEGURO (más lejos del anillo) y la ENTRADA.
-        Vector3 shore = new Vector3(0f, 0.4f, -25f);
-
-        BuildAmbientInsects(root.transform);   // insectos NEUTROS de ambiente (no afectan el nivel; dan vida real)
-
-        // ── RÍO: franja N→S que desemboca en la orilla; arrastra aguas abajo (-Z) y debilita ──
-        GameObject river = new GameObject("Rio");
-        river.transform.SetParent(root.transform);
-        river.transform.position = new Vector3(0f, 0.2f, 3f);
-        BoxCollider rbox = river.AddComponent<BoxCollider>();
-        rbox.size = new Vector3(7f, 3f, 52f);   // corre casi todo el mapa en Z
-        RiverCurrent rc = river.AddComponent<RiverCurrent>();
-        rc.flowDirection = new Vector3(0f, 0f, -1f);   // aguas abajo = hacia la orilla sur
-        rc.pushPower = 3f; rc.massResist = 1f; rc.dragEnergyPerSecond = 2f;
-        // visual del cauce (fino, decorativo)
-        GameObject riverVis = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        riverVis.name = "Cauce_vis"; riverVis.transform.SetParent(river.transform);
-        riverVis.transform.localPosition = Vector3.zero; riverVis.transform.localScale = new Vector3(7f, 0.1f, 52f);
-        Object.DestroyImmediate(riverVis.GetComponent<Collider>());
-        riverVis.GetComponent<Renderer>().sharedMaterial = MakeMat("Rio_MAT", new Color(0.30f, 0.55f, 0.85f, 0.6f));
-
-        // ── SAKSHI (cría) en la orilla, DEBILITADA por el arrastre → solo observa (ventana de bond) ──
-        // Alma-mezcla del alba: cuerpo Ant+Human; mente Human(alba)+Agua(contemplativa)+Ant.
-        GameObject sakshi = SampleSceneBuilder.Cast(root.transform, "Sakshi", shore + new Vector3(-2f, 0f, 0f),
-            new Vector3(0.30f, 0.30f, 0.42f), new Color(0.35f, 0.40f, 0.45f),
-            "F", "cria que el rio arrastro lejos de los suyos; llega sin fuerzas, solo observa",
-            "El Chaman (propuesta)", "de aqui le nace detenerse a observar/indagar/asombrarse",
-            new[] { ("Ant", 85f), ("Human", 15f) }, new[] { ("Human", 55f), ("Agua", 25f), ("Ant", 20f) });
-        sakshi.AddComponent<CharacterLevel>();
-        WeaknessEffect sweak = sakshi.AddComponent<WeaknessEffect>();
-        sweak.drainPerSecond = 6f; sweak.controlAgent = false;   // debilitada: sin ATP no puede huir
-        sakshi.AddComponent<MoodDynamics>();      // el Guardián (estrés del estado, amortiguado por la observación)
-        sakshi.AddComponent<ObserveSpell>();      // los ojos: débil, solo puede OBSERVAR → gana ecuanimidad (no huye, se deja acompañar)
-
-        // ── El DEPREDADOR DÉBIL, de poca hambre, junto a la orilla (prefiere hormiga a gusano — mecánica pendiente) ──
-        GameObject weakPred = MakePredator(root.transform, "Depredador_debil", shore + new Vector3(9f, 0.1f, 4f),
-            new Vector3(0.7f, 0.7f, 1.0f), new Color(0.5f, 0.35f, 0.3f), threatPower: 0.6f, threatRadius: 10f);
-
-        // ── TRIÁNGULO DE DEPREDADORES (fuertes) en el NORTE/flancos → la base SUR (orilla de Sakshi) queda DESPEJADA ──
-        // Corrección: antes había 2 depredadores cerca de la orilla; la tribu se quedaba en el centro. Ahora TODOS en
-        // z ≥ 4 (mitad norte) → el gradiente "alejarse del peligro" apunta limpio al SUR, hacia Sakshi.
-        Vector3[] ring = { new Vector3(0f, 0.1f, 28f),   // vértice norte
-                           new Vector3(22f, 0.1f, 18f), new Vector3(-22f, 0.1f, 18f),   // flancos altos
-                           new Vector3(30f, 0.1f, 4f),  new Vector3(-30f, 0.1f, 4f) };  // flancos medios (nada al sur)
-        for (int i = 0; i < ring.Length; i++)
-            MakePredator(root.transform, $"Depredador_anillo_{i}", ring[i], new Vector3(1.1f, 1.1f, 1.5f),
-                new Color(0.4f, 0.2f, 0.2f), threatPower: 2.5f, threatRadius: 22f);
-
-        // ── LA TRIBU (elenco de la era; almas de Momo/Medea en ancianas) — arranca al norte y CONVERGE ──
-        // Huyen del anillo (ThreatScanner) + querencia a la orilla (HomeImpulse) → van solas hacia Sakshi. Emergente.
-        (string name, string desc, string soul)[] tribe = {
-            ("Hespero_joven",  "vigia joven de la banda",            "A"),
-            ("Ruth_joven",     "recolectora joven",                  "C"),
-            ("Anciana_Aurea",  "anciana; porta el alma que sera Momo (muere cerca de su nacimiento)",  "G"),
-            ("Anciana_Vela",   "anciana; porta el alma que sera Medea (muere cerca de su nacimiento)",  "B"),
-        };
-        Vector3 tribeStart = new Vector3(0f, 0.4f, 18f);
-        for (int i = 0; i < tribe.Length; i++)
+    // El río, la orilla con Sakshi y la tribu que llega por la orilla (la entrada queda detrás, a −z).
+    static int SakshiRiverCast(Transform cast)
+    {
+        Material water = AreaMicrocosmos.Mat("Rio_Sakshi", new Color(0.3f, 0.55f, 0.85f)), shore = AreaMicrocosmos.Mat("Orilla_Sakshi", new Color(0.36f, 0.3f, 0.2f));
+        // EL RÍO, de lado a lado delante de la orilla: su corriente arrastra (RiverCurrent) a quien entra.
+        Transform river = new GameObject("Rio").transform; river.SetParent(cast, false); river.localPosition = new Vector3(0f, 0.3f, 4f);
+        BoxCollider rb = river.gameObject.AddComponent<BoxCollider>(); rb.isTrigger = true; rb.size = new Vector3(80f, 3f, 8f);
+        RiverCurrent rc = river.gameObject.AddComponent<RiverCurrent>(); rc.flowDirection = Vector3.right; rc.pushPower = 3f; rc.massResist = 1f; rc.dragEnergyPerSecond = 2f;
+        AreaMicrocosmos.Box(river, "Agua", new Vector3(0f, -0.26f, 0f), new Vector3(80f, 0.06f, 8f), water, false);
+        AreaMicrocosmos.Box(cast, "Orilla", new Vector3(0f, 0.02f, -6f), new Vector3(60f, 0.04f, 12f), shore, true);
+        int n = 0;
+        GameObject Member(string name, Vector3 at, Color c, float h, float bulk)
         {
-            Vector3 p = tribeStart + new Vector3((i - 1.5f) * 2.2f, 0f, 0f);
-            GameObject ant = SampleSceneBuilder.Cast(root.transform, tribe[i].name, p, new Vector3(0.4f, 0.4f, 0.55f),
-                new Color(0.5f, 0.46f, 0.38f), tribe[i].soul, tribe[i].desc, "", "era pre-Ambrosio (alma en cuerpo distinto)",
-                new[] { ("Ant", 85f), ("Human", 15f) }, new[] { ("Human", 45f), ("Ant", 55f) });
-            SampleSceneBuilder.Mobilize(ant, shore);              // querencia a la orilla segura (home)
-            ThreatScanner ts = ant.AddComponent<ThreatScanner>();
-            ts.scanRadius = 30f; ts.fearThreshold = 0.2f; ts.maxFleeMagnitude = 4f; ts.decayRate = 1.5f;
+            var g = new GameObject(name); g.transform.SetParent(cast, false); g.transform.localPosition = at;
+            var col = g.AddComponent<CapsuleCollider>(); col.height = h; col.radius = 0.35f * bulk; col.center = Vector3.up * h * 0.5f;
+            CubeInsect.DressMyrmidon(g, c, h, bulk);
+            g.AddComponent<Anima>();
+            n++;
+            return g;
         }
-
-        // ── Entrada del jugador (Kushal-gusano) en la orilla + salida ──
-        root.transform.position = O0;   // desplaza TODO a un origen lejano (no solapa el mundo base)
-
-        GameObject spawn = new GameObject("MobSpawnPoint");
-        spawn.transform.SetParent(root.transform);
-        spawn.transform.localPosition = shore + new Vector3(2f, 0.6f, -1f);
-        spawn.transform.localRotation = Quaternion.LookRotation(Vector3.forward);
-        spawn.AddComponent<MobSpawnPoint>();
-
-        GameObject portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        portal.name = "WorldExitPortal"; portal.transform.SetParent(root.transform);
-        portal.transform.localPosition = shore + new Vector3(4f, 0.6f, -2f);
-        portal.transform.localScale = new Vector3(1.5f, 2f, 0.3f);
-        portal.GetComponent<Collider>().isTrigger = true;
-        portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MicroWorldExitPortal0", new Color(0.75f, 0.65f, 0.85f));
-        portal.AddComponent<WorldExitPortal>();
-
-        BakeMicroNavMesh();
-
-        MicroWater.SurroundScene(scene);
-        EditorSceneManager.SaveScene(scene, ScenePath0);
-        AddToBuildSettings(ScenePath0);
-        EditorSceneManager.CloseScene(scene, removeScene: true);
-        if (prev.IsValid()) SceneManager.SetActiveScene(prev);
-
-        Debug.Log($"[MicrocosmosSceneBuilder] Scene0 (origen de Sakshi) guardada en {ScenePath0}. BLOCKOUT: rio (RiverCurrent) " +
-                  "+ orilla/entrada + Sakshi cria debilitada + depredador debil + anillo de depredadores (vertice seguro = " +
-                  "orilla) + tribu que converge por ThreatScanner. Pendiente (mecanicas): preferencia de dieta (prefiere " +
-                  "hormiga a gusano), empujar del gusano, escalada de hambre, y el subsistema de observacion.");
+        // SAKSHI, una cría (más pequeña), en la orilla, de cara al río.
+        Member("Sakshi", new Vector3(1.5f, 0f, -3f), new Color(0.38f, 0.42f, 0.48f), 1.1f, 0.7f);
+        // La TRIBU, que huye de los depredadores del norte hacia el único sitio seguro: la orilla (llega por el oeste).
+        Transform arrive = new GameObject("Llegada_tribu").transform; arrive.SetParent(cast, false); arrive.localPosition = new Vector3(-30f, 0f, -6f);
+        Member("Hespero_joven", new Vector3(-32f, 0f, -5f), new Color(0.28f, 0.2f, 0.18f), 1.8f, 1f);
+        Member("Ruth_joven", new Vector3(-33f, 0f, -7f), new Color(0.35f, 0.45f, 0.25f), 1.7f, 0.95f);
+        Member("Anciana_Aurea", new Vector3(-35f, 0f, -5.5f), new Color(0.75f, 0.55f, 0.25f), 1.55f, 0.9f);   // el alma que será Momo
+        Member("Anciana_Vela", new Vector3(-35.5f, 0f, -7.5f), new Color(0.45f, 0.18f, 0.18f), 1.5f, 0.85f);   // el alma que será Medea
+        cast.root.gameObject.AddComponent<SakshiRiverStory>();
+        return n;
     }
 
     /// <summary>Depredador de blockout: cápsula + Anima + AiBrain + ThreatEmitter (para que la tribu lo perciba y huya).</summary>

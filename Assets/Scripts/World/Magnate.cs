@@ -16,6 +16,8 @@ public class Magnate : MonoBehaviour
 {
     [Tooltip("Cada cuántos segundos de juego revisa el avance del grupo y va a ayudar al rezagado.")]
     [Min(1f)] public float teachInterval = 30f;
+    [Tooltip("Una clase por alumno cada tanto (s reales; un día del santuario = 1 h). Antes repetía clase al rezagado cada 30 s y parecía hacer yoga todo el tiempo.")]
+    [Min(0f)] public float classCooldown = 1200f;
     [Tooltip("Radio en el que pacifica (los depredadores dejan de estar 'aware').")]
     [Min(0f)] public float pacifyRadius = 12f;
     [Tooltip("Distancia a la que considera que ya está junto al alumno para enseñar.")]
@@ -32,6 +34,7 @@ public class Magnate : MonoBehaviour
     PacifySpell _pacify;
     float _nextTeach, _nextPacify;
     Anima _student;
+    readonly Dictionary<Anima, float> _taught = new Dictionary<Anima, float>();   // a quién dio clase y cuándo
     SanctuaryOnboarding _newcomer;
     static readonly Collider[] _hits = new Collider[32];
 
@@ -67,6 +70,8 @@ public class Magnate : MonoBehaviour
         if (_newcomer == null) _newcomer = FindNewcomer();
         if (_newcomer != null) { GoPresent(); return; }
 
+        // Dando una clase: se queda en ella (antes salía tras otro alumno a mitad y hacía las posturas andando o volando).
+        if (GetComponent<TeachingSession>() != null) { _student = null; return; }
         if (Time.time >= _nextTeach) { _nextTeach = Time.time + teachInterval; _student = FindLaggard(); }
         if (_student != null) GoTeach();
     }
@@ -90,7 +95,13 @@ public class Magnate : MonoBehaviour
     // recién llegado NO es del santuario y ella no lo tiene en cuenta para enseñar al rezagado.
     Anima _initiating;
     float _logAt;
-    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = a la cocina
+    int _initPhase;   // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = clase · 3 = al tanque · 4 = en el río · 5 = a la cocina
+    public const string RiverMicrocosmos = "Microcosmos_Scene0_SakshiRio";
+    VirtualizationMachine YogaMachine()
+    {
+        foreach (VirtualizationMachine vm in FindObjectsByType<VirtualizationMachine>(FindObjectsSortMode.None)) if (vm.areaName == "Sala de Yoga") return vm;
+        return null;
+    }
 
     void GoPresent()
     {
@@ -120,18 +131,43 @@ public class Magnate : MonoBehaviour
                 if (yoga == null) { _initPhase = 2; return; }
                 float mLeft = PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
                 if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {mLeft:0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
-                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f)
+                // En la SALA, no en otro piso del mismo edificio: antes bastaba la distancia en planta y la clase empezaba en el
+                // techo de alfombras, justo encima (Berón 2026-10-28).
+                if (Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f
+                    && Mathf.Abs(t.transform.position.y - yoga.position.y) < 2.5f && Mathf.Abs(transform.position.y - yoga.position.y) < 2.5f)
                 {
                     _newcomer.presented = true;   // ya es del santuario: su primera clase empieza aquí
-                    Teach(t);
-                    _initPhase = 2;
+                    // Su PRIMERA clase, OBLIGADA (documentado: docs/novela.md, tras el microcosmos, «5. Sala de yoga»): upa-yoga de
+                    // cuello, paso a paso, aunque esté cansado o haya otra clase; no se va a la cocina sin hacerla.
+                    Teach(t, onboarding: true);
+                    if (TeachingSession.For(t) != null) _initPhase = 2;
                 }
                 return;
             case 2:   // clase interactiva en curso
                 if (TeachingSession.For(t) != null) return;
-                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
-                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: ahora va a la cocina a aprender un oficio.");
+                // Tras la clase, su PRIMER microcosmos de la sala de yoga: el río de Sakshi (Berón 2026-10-27). Ella lo lleva al tanque.
+                Debug.Log($"[Magnate] «{t.name}» terminó su primera clase: lo lleva al tanque de la sala de yoga (el río de Sakshi).");
                 _initPhase = 3;
+                return;
+            case 3:   // al tanque de la sala de yoga
+                {
+                    VirtualizationMachine vm = YogaMachine();
+                    if (vm == null || !Application.CanStreamedLevelBeLoaded(RiverMicrocosmos)) { _initPhase = 5; return; }
+                    Vector3 to = vm.transform.position - t.transform.position; to.y = 0f;
+                    if (to.magnitude > 4f) { PathMover.Of(this).StepToward(vm.transform.position, moveSpeed * 0.6f); PathMover.Of(t).StepToward(vm.transform.position, moveSpeed * 0.6f); return; }
+                    PlaneMessenger.Send("La Magnate", "Ahora, tu primer viaje desde esta sala: al río. Allí hay alguien que te necesita.", 6f);
+                    vm.EnterWithTank(t.transform, RiverMicrocosmos);
+                    _initPhase = 4; _logAt = Time.time + 8f;
+                    return;
+                }
+            case 4:   // en el río: espera a que vuelva
+                if (Time.time < _logAt || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy))) return;
+                _initPhase = 5;
+                return;
+            case 5:   // y luego a la cocina, a aprender un oficio
+                if (kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));
+                Debug.Log($"[Magnate] «{t.name}» vuelve del río: ahora va a la cocina a aprender un oficio.");
+                _initPhase = 6;
                 _newcomer = null; _initiating = null;
                 return;
         }
@@ -166,6 +202,8 @@ public class Magnate : MonoBehaviour
         {
             Anima a = cl.GetComponent<Anima>();
             if (a == null || a == _a || a.death || a.GetComponent<Magnate>() != null) continue;
+            if (FlyingCarpet.Riding(a.gameObject)) continue;   // volando en alfombra no se da clase
+            if (_taught.TryGetValue(a, out float at) && Time.time - at < classCooldown) continue;   // ya tuvo su clase hace poco
             if (!IsMember(a)) continue;   // un recién llegado sin la iniciación de Linduarda aún NO es del santuario
             if (cl.SoulLevels < worstLv) { worstLv = cl.SoulLevels; worst = a; }
         }
@@ -188,18 +226,29 @@ public class Magnate : MonoBehaviour
             PathMover.Of(this).StepToward(_student.transform.position, moveSpeed);   // la guardiana se acerca (por el camino, nadando entre islas)
             return;
         }
+        if (FlyingCarpet.Riding(gameObject)) return;   // ella en una alfombra: primero aterriza
         Teach(_student);
         _student = null;
     }
 
     // Enseñar: primero mira si le falta algo vital; si no, le da el RECUERDO del yoga + el Saludo al Sol + XP/ánimo.
-    void Teach(Anima t)
+    void Teach(Anima t, bool onboarding = false)
     {
-        if (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f))
+        if (!onboarding && (t.sleepiness > 0.7f || t.stress > 0.7f || (t is Animal an && an.hungry > 0.7f)))
         { Debug.Log($"[Magnate] «{t.name}» necesita comer/descansar antes de aprender."); return; }
 
         // Ya hay una clase en curso: no se reinicia ni se apila (la TeachingSession se destruye al terminar).
-        if (GetComponent<TeachingSession>() != null) return;
+        // La PRIMERA clase del recién llegado (iniciación) va antes que cualquier otra: la que hubiera, se deja para luego.
+        TeachingSession busy = GetComponent<TeachingSession>();
+        if (busy != null && onboarding && TeachingSession.For(t) == null)
+        {
+            // Deja la otra clase DE VERDAD: sin esto seguía con sus pasos en cola (quedaba en la postura del saludo al sol,
+            // sanchalanasana) y no demostraba el upa-yoga al recién llegado.
+            Destroy(busy); busy = null;
+            if (TryGetComponent(out ActionQueue mq)) mq.ClearOwn();
+            DailyPoses.Stand().ApplyFinal(_a);
+        }
+        if (busy != null) return;
 
         // POR NIVEL: lo PRIMERO que se enseña es upa-yoga de cuello; luego Yoga Namaskar; luego el Saludo al Sol.
         // (El Grimoire se aprende al COMPLETAR la lección, en TeachingSession.Finish, no al empezarla.)
@@ -210,6 +259,7 @@ public class Magnate : MonoBehaviour
         else                                { builder = () => SunSalutation.Sequence(); learn = "yoga";          label = "el Saludo al Sol"; }
 
         // ENSEÑANZA INTERACTIVA: la Magnate demuestra cada paso, se lo PIDE al alumno y ESPERA a que lo realice.
+        _taught[t] = Time.time;
         TeachingSession.Begin(_a, t, learn, builder);
         CharacterLevel cl = t.GetComponent<CharacterLevel>();
         if (cl != null) cl.GainYogaXp(10f);                          // potencia el avance (marga de Yoga)

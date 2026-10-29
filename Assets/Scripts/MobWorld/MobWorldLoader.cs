@@ -128,6 +128,10 @@ public class MobWorldLoader : MonoBehaviour
         if (cc != null) cc.enabled = false;
         _player.SetPositionAndRotation(pos, rot);
         if (cc != null) cc.enabled = true;
+        // Otro mundo: ninguna zona de cámara de la escena anterior sigue sujetándola (su OnTriggerExit no siempre llega).
+        // Llega de pie: ninguna postura (sentado en una clase, en la alfombra…) le sigue al otro mundo.
+        if (_player.TryGetComponent(out Anima pa)) DailyPoses.Stand().ApplyFinal(pa);
+        if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
     }
 
     Transform FindSpawn(string sceneName)

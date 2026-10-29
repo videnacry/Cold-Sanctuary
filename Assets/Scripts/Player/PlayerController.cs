@@ -105,6 +105,8 @@ public class PlayerController : MonoBehaviour
     /// <summary>Sujeta (true) o suelta (false) el cuerpo; cada sujeción se suelta con su propia llamada. Sustituye a
     /// desactivar el componente, que bloqueaba también la cámara.</summary>
     public void HoldBody(bool on) => _bodyHolds = Mathf.Max(0, _bodyHolds + (on ? 1 : -1));
+    /// <summary>Suelta TODAS las sujeciones (p. ej. al saltarse la iniciación con el hechizo «miembro»).</summary>
+    public void ReleaseBody() => _bodyHolds = 0;
 
     /// <summary>Called by WaterZone on trigger enter/exit.</summary>
     public bool IsSwimming => _isSwimming;
@@ -159,9 +161,29 @@ public class PlayerController : MonoBehaviour
     {
         HandleCursorToggle();
         HandleLook();
+        YogaCamera();
+        HandlePerspectiveToggle();   // la V también con el cuerpo sujeto (alfombra, yoga, empujes…): antes se quedaba muerta
         if (BodyHeld) return;
         HandleMovement();
-        HandlePerspectiveToggle();
+    }
+
+    // ── Yoga en 3ª persona ────────────────────────────────────────────────────
+
+    // Al hacer yoga (una clase o una práctica de la alfombra) la cámara pasa a 3ª persona para ver el cuerpo; al acabar
+    // vuelve a la preferida (Berón 2026-10-27). La V sigue cambiándola durante la práctica.
+    bool _inYoga, _inLesson; float _lessonCheckAt;
+    ActionQueue _queue; Anima _anima;
+    void YogaCamera()
+    {
+        if (_queue == null) TryGetComponent(out _queue);
+        if (_anima == null) TryGetComponent(out _anima);
+        if (Time.time >= _lessonCheckAt) { _lessonCheckAt = Time.time + 0.5f; _inLesson = _anima != null && TeachingSession.For(_anima) != null; }   // busca en la escena: cada medio segundo
+        bool now = (_queue != null && ((_queue.Player.Count > 0 && _queue.Player[0] is AsanaPoseSpell) || (_queue.Own.Count > 0 && _queue.Own[0] is AsanaPoseSpell)))
+                   || _inLesson;
+        if (now == _inYoga || CameraManager.Instance == null) return;
+        _inYoga = now;
+        if (!now && _anima != null) DailyPoses.Stand().ApplyFinal(_anima);   // acabó: se levanta (el upa-yoga de cuello termina sentado y Kushal seguía así al empujar en el río)
+        CameraManager.Instance.SwitchTo(now ? CameraMode.ThirdPerson : CameraManager.Instance.preferredMode, forced: true);
     }
 
     // ── Look ──────────────────────────────────────────────────────────────────

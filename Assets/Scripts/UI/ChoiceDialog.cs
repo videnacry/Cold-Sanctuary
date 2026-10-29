@@ -55,6 +55,8 @@ public class ChoiceDialog : MonoBehaviour
     }
 
     public static string[] Options => IsOpen ? _i._options : new string[0];
+    /// <summary>A qué objeto va atado el diálogo abierto (null si no hay o no va atado).</summary>
+    public static Transform Anchor => IsOpen ? _i._anchor : null;
 
     void Update()
     {
