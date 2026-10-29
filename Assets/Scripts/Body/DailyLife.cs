@@ -62,7 +62,7 @@ public class DineSpell : QueuedSpell
     int _phase;              // 0 ir a la barra · 1 ir a la mesa · 2 comer · 3 levantarse
     FoodContainer _food;
     Transform _seat;
-    WalkToSpell _walk;
+    CarpetWalkSpell _walk;   // con PathMover: camino del NavMesh sin salirse del borde (WalkToSpell lo tiraba de la plataforma del restaurante, JornadaTest) y alfombras
     float _until;
     string _dish;
 
@@ -78,19 +78,24 @@ public class DineSpell : QueuedSpell
                 {
                     _food = Nearest(self.transform.position);
                     if (_food == null) { Debug.Log($"[Cuerpo] «{self.name}» tiene hambre pero no hay comida en ningún sitio."); return true; }
-                    _walk = new WalkToSpell { target = _food.transform, targetName = $"la barra ({_food.name})", stopDistance = 1.3f, giveUpAfter = 10f };
+                    _walk = new CarpetWalkSpell { target = _food.transform, targetName = $"la barra ({_food.name})", stopDistance = 1.3f, giveUpAfter = 90f };
                 }
                 if (!_walk.Tick(self)) return false;
                 if (!_food.Take()) { _food = null; return false; }
                 _dish = _food.dishName;
                 Debug.Log($"[Restaurante] «{self.name}» pide en la barra y le sirven {_dish}.");
                 _seat = FreeSeat(self.transform.position);
-                if (_seat != null) { _taken.Add(_seat); _walk = new WalkToSpell { target = _seat, targetName = $"una mesa ({_seat.parent?.name})", stopDistance = 0.5f, giveUpAfter = 12f }; }
+                if (_seat != null) { _taken.Add(_seat); _walk = new CarpetWalkSpell { target = _seat, targetName = $"una mesa ({_seat.parent?.name})", stopDistance = 0.5f, giveUpAfter = 60f }; }
                 _phase = _seat != null ? 1 : 2;
                 if (_phase == 2) _until = Time.time + EatSeconds();
                 return false;
             case 1:
                 if (!_walk.Tick(self)) return false;
+                {
+                    Vector3 gap = _seat.position - self.transform.position;
+                    if (new Vector2(gap.x, gap.z).magnitude > 1.2f || Mathf.Abs(gap.y) > 2.5f)   // no llegó a la silla: come de pie donde está (antes se le colocaba en ella desde lejos)
+                    { _taken.Remove(_seat); _seat = null; _until = Time.time + EatSeconds(); _phase = 2; return false; }
+                }
                 Vector3 table = _seat.parent != null ? _seat.parent.position : _seat.position;
                 Vector3 look = table - _seat.position; look.y = 0f;
                 self.transform.position = new Vector3(_seat.position.x, self.transform.position.y, _seat.position.z);
@@ -152,7 +157,7 @@ public class ToiletSpell : QueuedSpell
     public float minutes = 5f;
     int _phase;
     Transform _toilet;
-    WalkToSpell _walk;
+    CarpetWalkSpell _walk;
     float _until;
     Vector3 _outside;
 
@@ -167,10 +172,13 @@ public class ToiletSpell : QueuedSpell
             {
                 _toilet = Nearest(self.transform.position);
                 if (_toilet == null) { Debug.Log($"[Cuerpo] «{self.name}» necesita ir al baño y no encuentra aseos."); return true; }
-                _walk = new WalkToSpell { target = _toilet, targetName = "los aseos", stopDistance = 1.4f, giveUpAfter = 12f };
+                _walk = new CarpetWalkSpell { target = _toilet, targetName = "los aseos", stopDistance = 1.4f, giveUpAfter = 120f };   // los aseos pueden estar en otro piso o torre: en alfombra
                 if (self.GetComponent<PlayerController>() != null) Panoramic(_toilet);
             }
             if (!_walk.Tick(self)) return false;
+            Vector3 gap = _toilet.position - self.transform.position;
+            if (new Vector2(gap.x, gap.z).magnitude > 2.5f || Mathf.Abs(gap.y) > 2.5f)   // no llegó: antes se le metía igual en la cabina (saltos de 80 m)
+            { Debug.Log($"[Cuerpo] «{self.name}» no llega a los aseos (a {gap.magnitude:0} m): lo deja para luego."); return true; }
             _outside = self.transform.position;
             Move(self.transform, _toilet.position + Vector3.up * 0.05f);   // dentro de la cabina
             Debug.Log($"[Cuerpo] «{self.name}» entra en los aseos (inodoro seco: tapa con serrín).");

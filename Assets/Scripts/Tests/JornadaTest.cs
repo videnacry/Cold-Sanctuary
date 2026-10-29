@@ -310,7 +310,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
 
     static void Shot(string tag)
     {
-        string path = $"Temp/jornada_{tag}.png";
+        string path = $"Temp/jornada_{Safe(tag)}.png";
         ScreenCapture.CaptureScreenshot(path);
         Log($"captura: {path}");
     }
@@ -345,6 +345,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         public Vector3 lastFrame; public bool lastRiding; public int ignoreFrames;
         public readonly List<(float t, Vector3 p, bool riding)> hist = new List<(float, Vector3, bool)>();
         public int inside, water, tilted; public string insideOf;
+        public float offSince = -1f, rodeAt = -99f, movedAt = -99f;   // fuera de su puesto desde; última vez en alfombra; último teletransporte de la prueba
         public string activity = "";
     }
 
@@ -380,7 +381,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             {
                 if (a == null || a.death) continue;
                 if (++animals > 200) break;
-                _tracks.Add(New(a.gameObject, false, $"{a.SpeciesName} «{a.name}»"));
+                _tracks.Add(New(a.gameObject, false, $"{a.SpeciesName} «{a.name}» #{animals}"));   // (muchos se llaman igual: «Penguin(Clone)»)
             }
             Log($"vigía: {_tracks.Count(x => x.human)} personas y {_tracks.Count(x => !x.human)} animales.");
         }
@@ -393,7 +394,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         }
 
         public void Rebase() { foreach (Track tr in _tracks) if (tr.g != null) { tr.lastFrame = tr.g.transform.position; tr.hist.Clear(); tr.ignoreFrames = 3; } }
-        public void IgnorePlayerJump() { foreach (Track tr in _tracks) if (tr.player) tr.ignoreFrames = 4; }
+        public void IgnorePlayerJump() { foreach (Track tr in _tracks) if (tr.player) { tr.ignoreFrames = 4; tr.movedAt = Time.time; } }
 
         public void Add(string who, string kind, string detail, bool human)
         {
@@ -415,9 +416,10 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 if (tr.g.GetComponent<Magnate>() != null) continue;   // la Magnate SÍ se teletransporta (aparece delante de quien deja su puesto)
                 Vector3 p = tr.g.transform.position;
                 bool riding = FlyingCarpet.Riding(tr.g);
+                if (riding) tr.rodeAt = Time.time;
                 float d = Vector3.Distance(p, tr.lastFrame), allowed = Mathf.Max(2.5f, 8f * Time.deltaTime);
                 if (tr.ignoreFrames > 0) tr.ignoreFrames--;
-                else if (d > allowed && !riding && !tr.lastRiding && !MagnateWarden.Instance.Handling(tr.g))
+                else if (d > allowed && Time.time - tr.rodeAt > 1f && !MagnateWarden.Instance.Handling(tr.g))   // (subir y bajar de la alfombra la coloca: 1 s de margen)
                     Add(tr.name, "salto/teletransporte sin motivo", $"{d:0.0} m en un fotograma: de {Where(tr.lastFrame)} a {Where(p)}", true);
                 tr.lastFrame = p; tr.lastRiding = riding;
             }
@@ -432,7 +434,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             {
                 if (tr.g == null || (tr.anima != null && tr.anima.death)) continue;
                 Vector3 p = tr.g.transform.position;
-                bool riding = FlyingCarpet.Riding(tr.g);
+                bool riding = FlyingCarpet.Riding(tr.g) || MagnateWarden.Instance.Handling(tr.g);   // (la Magnate lo trae: no es andar)
                 tr.hist.Add((now, p, riding));
                 while (tr.hist.Count > 0 && now - tr.hist[0].t > 25f) tr.hist.RemoveAt(0);
                 if (tr.human) SampleHuman(tr, p, riding, h, shift); else SampleAnimal(tr, p, riding);
@@ -483,6 +485,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit
 
         void SampleHuman(Track tr, Vector3 p, bool riding, float h, bool shift)
         {
+            float now = Time.time;
+            bool magnate = tr.g.GetComponent<Magnate>() != null;   // ella SÍ se teletransporta: no cuenta como vueltas ni caídas
             WorkdayDirector wd = _t._wd;
             WorkRoster.Worker w = wd.roster.Find(tr.player ? "Player" : tr.g.name.Replace("_Post", ""));
             string doing = null, area = shift && w != null ? wd.Where(w, h, out doing) : null;
@@ -504,18 +508,21 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 if (plausible) _shiftPlausible++;
                 if (cur != null && !tr.player) { _shift.TryGetValue(cur, out Vector2 v); v.y++; if (atPost) v.x++; _shift[cur] = v; }
                 if (doing != null && doing.StartsWith("Entrenamiento")) { _training.TryGetValue(tr.name, out Vector2 v); v.y++; if (atPost) v.x++; _training[tr.name] = v; }
-                if (full && !plausible && path < 0.5f)
+                if (plausible) tr.offSince = -1f; else if (tr.offSince < 0f) tr.offSince = now;
+                if (full && !plausible && path < 0.5f && now - tr.offSince >= 20f)   // 20 s FUERA y quieto (no al cambiar de puesto)
                     Add(tr.name, "parado fuera de su puesto en turno", $"le toca «{doing}» en {area}; está en {Where(p)} sin moverse 20 s ({tr.activity})", true);
             }
+            else tr.offSince = -1f;
             if (head != null && head.StartsWith("comer") && h >= 10.9f && h < 12.3f) _ate.Add(tr.name);
 
-            if (full && !riding && !handled && !asleep)
+            if (full && !riding && !handled && !asleep && !magnate)
             {
                 if (Walking(head) && path < 0.5f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
                 bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
-                if (!rounds && path > 12f && net < 2.5f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
+                if (!rounds && head != "merodear" && path > 12f && net < 2.5f)   // (merodear es ir y venir al azar a propósito)
+                    Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
             }
-            CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")), true);
+            if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")), true);
         }
 
         void SampleAnimal(Track tr, Vector3 p, bool riding)
@@ -530,7 +537,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;
             if (full && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
-            if (full && !flier && !marine && path > 15f && net < 2f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            if (full && !flier && !marine && !a.busy && path > 15f && net < 2f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
             CheckBody(tr, p, riding, a.asleep || a.busy, false);
         }
 
@@ -548,11 +555,13 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             if (!aquatic && !riding && b.min.y < -0.35f) tr.water++; else tr.water = 0;
             if (tr.water == 3) Add(tr.name, "en el agua sin ser acuático", $"pies a y = {b.min.y:0.00} en {Where(p)}", human);
 
-            if (tr.hist.Count >= 2 && !riding)
+            if (tr.hist.Count >= 2 && !riding && Time.time - tr.movedAt > 3f && !MagnateWarden.Instance.Handling(tr.g))
             {
-                float drop = tr.hist[tr.hist.Count - 2].p.y - p.y;
-                bool flier = tr.animal != null && tr.animal.AirAffinity >= 0.5f;
-                if (drop > 4f && !flier && !tr.hist[tr.hist.Count - 2].riding) Add(tr.name, "cae", $"{drop:0.0} m en 1 s, ahora en {Where(p)}", human);
+                Vector3 prev = tr.hist[tr.hist.Count - 2].p;
+                float drop = prev.y - p.y;
+                bool flier = tr.animal != null && (tr.animal.AirAffinity >= 0.5f || size < 0.3f);   // (insectos: vuelan o trepan)
+                bool teleport = Flat(p - prev) > 10f;   // eso es un salto (ya contado), no una caída
+                if (drop > 4f && !flier && !teleport && !tr.hist[tr.hist.Count - 2].riding) Add(tr.name, "cae", $"{drop:0.0} m en 1 s, ahora en {Where(p)}", human);
             }
             if (p.y < -15f) Add(tr.name, "bajo el mundo", $"y = {p.y:0}", human);
 

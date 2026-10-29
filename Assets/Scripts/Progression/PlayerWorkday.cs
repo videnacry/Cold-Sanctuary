@@ -51,6 +51,7 @@ public class PlayerWorkday : MonoBehaviour
     bool _held, _dineQueued, _dayClosed, _lunchSeen;
     float _lunchHunger = -1f, _trainPresent, _trainObserved;
     DineSpell _eating;
+    QueuedSpell _need; float _needSince;
 
     public IReadOnlyList<Record> Records => _records;
     public int Day => _plan != null ? _plan.day : int.MinValue;
@@ -294,7 +295,12 @@ public class PlayerWorkday : MonoBehaviour
             Hold(false);   // come: lo lleva su cola (pedir, sentarse, comer)
             return;
         }
-        if (q != null && q.Own.Count > 0) { Hold(false); return; }   // comiendo, al baño…: eso va antes
+        if (q != null && q.Own.Count > 0)   // comiendo, al baño…: eso va antes (con tope: si no acaba, vuelve a su puesto)
+        {
+            if (_need != q.Own[0]) { _need = q.Own[0]; _needSince = Time.time; }
+            if (Time.time - _needSince > 240f && !(_need is SleepSpell)) { Debug.Log($"[Jornada] Kushal deja «{_need.Label}» sin acabar: vuelve a su puesto."); q.ClearOwn(); _need = null; }
+            Hold(false); return;
+        }
         Vector3 target = WorkdayDirector.AreaPoint(area, "Player");
         if (target == Vector3.zero) { Hold(false); return; }
         Vector3 d = target - pos; d.y = 0f;

@@ -93,6 +93,7 @@ public class WorkdayDirector : MonoBehaviour
         roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
+        _lunched.Clear(); _lunchStocked = false;   // [Jornada] la comida de hoy
         today = roster.Plan(day, AreaWork.Today(day, ConstructionProject.All));
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);
@@ -126,6 +127,7 @@ public class WorkdayDirector : MonoBehaviour
             if (kv.Value != null && today.work.Where(x => x.worker == kv.Key).All(x => _done.Contains(x))) { Destroy(kv.Value); _clones.Remove(kv.Key); Debug.Log($"[Jornada] {kv.Key.name} termina y se disuelve."); }
         for (int i = _initiators.Count - 1; i >= 0; i--) if (_initiators[i].go == null || h >= _initiators[i].until) { if (_initiators[i].go != null) Destroy(_initiators[i].go); _initiators.RemoveAt(i); }
 
+        if (!_lunchStocked && h >= WorkRoster.StartHour + WorkRoster.FirstBlock) { _lunchStocked = true; StockLunch(); }   // [Jornada] la comida de las 11:00
         if (!_placed) PlaceAtStart(h);
         UpdateInitiator(h);
         foreach (WorkRoster.Worker w in roster.workers)
@@ -373,6 +375,7 @@ public class WorkdayDirector : MonoBehaviour
         if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }
         if (yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
+        if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
         Vector3 to = WorkPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
         {
@@ -380,6 +383,51 @@ public class WorkdayDirector : MonoBehaviour
             if (alwaysMove && g.GetComponent<Anima>() == null) g.transform.position = Vector3.MoveTowards(g.transform.position, to, walkSpeed * 3f * Time.deltaTime);
             else PathMover.Of(g.transform).StepToward(to, walkSpeed);
         }
+    }
+
+    // [Jornada] Las NECESIDADES van antes que el puesto: con «ir al baño», «a comer» o «a la cama» en su carril propio la jornada
+    // no tira de él a la vez (lo hacía dar vueltas en círculo y no llegar nunca: JornadaTest 2026-10-29). A mediodía, ya en la
+    // cocina, se sienta a comer (DineSpell) una vez al día. En turno no se merodea.
+    readonly HashSet<GameObject> _lunched = new HashSet<GameObject>();
+    readonly Dictionary<GameObject, (QueuedSpell s, float t)> _needSince = new Dictionary<GameObject, (QueuedSpell, float)>();
+    const float MaxNeed = 240f;   // s de juego: una necesidad que no acaba (no llega a la barra, a los aseos) no lo saca de su puesto para siempre
+    bool _lunchStocked;
+    bool OwnNeeds(GameObject g, string area, string doing)
+    {
+        ActionQueue q = g.GetComponent<ActionQueue>(); if (q == null) return false;
+        if (q.Player.Count > 0 && q.Player[0] is WanderSpell) q.RemovePlayerAt(0);
+        if (q.Own.Count > 0)
+        {
+            QueuedSpell s = q.Own[0];
+            if (s is ToiletSpell || s is DineSpell || s is SleepSpell || s is EatSpell || s is CarpetWalkSpell)
+            {
+                if (!_needSince.TryGetValue(g, out var ns) || ns.s != s) _needSince[g] = ns = (s, Time.time);
+                if (!(s is SleepSpell) && Time.time - ns.t > MaxNeed) { q.ClearOwn(); Debug.Log($"[Jornada] «{g.name}» deja «{s.Label}» tras {MaxNeed:0} s sin acabar: vuelve a su puesto."); return false; }
+                SetStatus(g, s.Label); return true;
+            }
+        }
+        if (doing == "Comida" && !_lunched.Contains(g) && g.GetComponent<Anima>() != null && InWorkspace(null, area, g.transform.position))
+        {
+            _lunched.Add(g); q.EnqueueOwn(new DineSpell()); return true;
+        }
+        return false;
+    }
+
+    // [Jornada] LA COMIDA DE LAS 11:00: el servicio del restaurante (misión obligatoria de cada día) deja la carta en la barra con
+    // raciones para todo el personal. Sin esto la barra estaba vacía a mediodía y nadie comía («no hay comida en ningún sitio»).
+    void StockLunch()
+    {
+        RestaurantKitchen rk = FindAnyObjectByType<RestaurantKitchen>();
+        if (rk == null || rk.dishes == null || rk.dishes.Length == 0 || today == null || !today.work.Any(a => a.mission.id == "coc_servicio")) return;
+        int per = Mathf.CeilToInt((roster.workers.Count + today.clones.Count + 2) / (float)rk.dishes.Length);
+        int added = 0;
+        foreach (RestaurantKitchen.DishStock d in rk.dishes)
+        {
+            if (d.recipe == null) continue;
+            int need = per - d.Have;
+            if (need > 0) { rk.Deliver(d.recipe.dishName, null, need); added += need; }
+        }
+        Debug.Log($"[Jornada] 11:00 · el servicio deja la comida en la barra: +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos).");
     }
 
     // ── SALA DE YOGA ─────────────────────────────────────────────────────────────────────────────
