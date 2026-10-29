@@ -37,6 +37,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         public Anima a; public Vector3 pos; public Quaternion rot; public Vector3 last;
         public IdleBehavior idle; public bool idleWas; public ActionQueue q; public bool qWas;
         public UnityEngine.AI.NavMeshAgent agent; public bool agentWas;
+        public CarnivoreKeeper keeper; public bool keeperWas;
         public float maxJump; public bool rode;
     }
 
@@ -48,6 +49,10 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         List<CarpetPad> mats = YogaClass.Mats();
         TestProbe.Check($"la sala tiene esterillas para {practitioners} practicantes", mats.Count >= practitioners, $"{mats.Count} esterillas");
 
+        float mEnd = Time.realtimeSinceStartup + 120f;   // que el personal ya sea del santuario (al hacerse miembro lo colocan de golpe en su área)
+        while (Time.realtimeSinceStartup < mEnd && (FindObjectsByType<Anima>(FindObjectsSortMode.None).Count(a0 => a0 != null && !a0.CompareTag("Player") && Magnate.IsMember(a0) && a0.GetComponent<CreatureRig>() != null) < practitioners + 2 || GymUsabilityTest.Arriving()))
+            yield return new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(1f);
         WorkdayDirector wd = WorkdayDirector.Instance;
         string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea" };
         var people = new List<Anima>();
@@ -57,7 +62,8 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             if (g == null || g.CompareTag("Player") || g.GetComponent<Magnate>() != null || g.GetComponent<CreatureRig>() == null) continue;
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
-            Anima a = g.GetComponent<Anima>(); if (a != null) people.Add(a);
+            if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;   // los lleva el servicio del restaurante o una orquesta
+            Anima a = g.GetComponent<Anima>(); if (a != null && Magnate.IsMember(a)) people.Add(a);   // (quien aún no es miembro: al serlo, SanctuaryDirector lo coloca de golpe en su área)
         }
         TestProbe.Check($"hay maestro y {practitioners} practicantes en el personal", people.Count >= practitioners + 1, string.Join(", ", people.Select(p => p.name)));
         if (people.Count < 2) { TestProbe.End(); yield break; }
@@ -65,6 +71,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         Anima teacher = people.FirstOrDefault(p => p.name == "Sadhguru") ?? people[0];
         List<Anima> studs = people.Where(p => p != teacher).Take(practitioners).ToList();
 
+        WorkdayDirector.LogTeleports = true;
         bool wdWas = wd != null && wd.enabled; if (wd != null) wd.enabled = false;
         float oldScale = Time.timeScale; Time.timeScale = speed;
         if (YogaClass.Current != null) YogaClass.Current.End();
@@ -90,6 +97,8 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         if (!started) { Finish(who, oldScale, wd, wdWas); TestProbe.End(); yield break; }
 
         // ── Los pasos ──
+        string errTxt = "";
+        AsanaPoseSpell prev = null;
         int steps = c.StepCount, copied = 0, lastStep = -1; float stepAt = 0f; bool stepCopied = false;
         float worstMat = 0f, worstFace = 0f; string matWho = "", faceWho = "", slow = ""; int offTarima = 0, frames = 0;
         float worstCopy = 0f;
@@ -99,13 +108,17 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             Track(who); frames++;
             if (c.StepIndex != lastStep)
             {
-                if (lastStep >= 0 && !stepCopied) slow += $"{lastStep + 1}·";
+                // La clase solo pasa de paso antes de su tope cuando TODOS lo hacen: si cambió entre fotogramas, también vale.
+                if (lastStep >= 0 && !stepCopied && prev != null && Time.time - stepAt < Mathf.Min(c.stepTimeout, copyLimit + prev.duration * prev.reachFraction)) { stepCopied = true; copied++; worstCopy = Mathf.Max(worstCopy, Time.time - stepAt); }
+                if (lastStep >= 0 && !stepCopied) slow += $"{lastStep + 1}({errTxt}, {Time.time - stepAt:0} s)·";
+                prev = c.CurrentStep;
                 lastStep = c.StepIndex; stepAt = Time.time; stepCopied = false;
             }
             AsanaPoseSpell step = c.CurrentStep;
+            if (!stepCopied && step != null) errTxt = WorstError(c, teacher, step);
             if (!stepCopied && step != null && Time.time - stepAt > c.reaction)
             {
-                bool all2 = c.Practitioners.All(p => TeachingSession.PoseMatch(p.a, step, tolerance) && MatchesTeacher(p.a, teacher, step, tolerance));
+                bool all2 = c.Practitioners.Any(p => p.onMat) && c.Practitioners.Where(p => p.onMat).All(p => YogaClass.Matches(p.a, step, tolerance) && MatchesTeacher(p.a, teacher, step, tolerance));
                 if (all2) { stepCopied = Time.time - stepAt <= copyLimit + step.duration * step.reachFraction; if (stepCopied) { copied++; worstCopy = Mathf.Max(worstCopy, Time.time - stepAt); } }
             }
             if (!YogaClass.OnTarima(teacher.gameObject)) offTarima++;
@@ -133,6 +146,29 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         TestProbe.End();
     }
 
+    /// <summary>El hueso que más se aparta (de la postura del paso o del cuerpo del maestro) entre los que están en su esterilla.</summary>
+    static string WorstError(YogaClass c, Anima t, AsanaPoseSpell step)
+    {
+        float worst = 0f; string w = "";
+        CreatureRig rt = t.GetComponent<CreatureRig>();
+        foreach (YogaClass.Practitioner p in c.Practitioners)
+        {
+            if (!p.onMat) continue;
+            CreatureRig rs = p.a.GetComponent<CreatureRig>(); if (rs == null) continue;
+            foreach (var part in step.parts)
+            {
+                if (YogaClass.ByIK(step, part.Item1)) continue;
+                Transform a = rs.Get(part.Item1); if (a == null) continue;
+                float e1 = Quaternion.Angle(a.localRotation, Quaternion.Euler(part.Item2));
+                Transform b = rt != null ? rt.Get(part.Item1) : null;
+                float e2 = b != null ? Quaternion.Angle(a.localRotation, b.localRotation) : 0f;
+                if (e1 > worst) { worst = e1; w = $"{p.a.name} {part.Item1} {e1:0}° de la postura"; }
+                if (e2 > worst) { worst = e2; w = $"{p.a.name} {part.Item1} {e2:0}° del maestro"; }
+            }
+        }
+        return w;
+    }
+
     /// <summary>¿Los huesos de la pose del practicante coinciden con los del cuerpo del maestro (no solo con la pose)?</summary>
     static bool MatchesTeacher(Anima s, Anima t, AsanaPoseSpell step, float tol)
     {
@@ -140,6 +176,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         if (rs == null || rt == null) return false;
         foreach (var p in step.parts)
         {
+            if (YogaClass.ByIK(step, p.Item1)) continue;
             Transform a = rs.Get(p.Item1), b = rt.Get(p.Item1);
             if (a == null || b == null) continue;
             if (Quaternion.Angle(a.localRotation, b.localRotation) > tol) return false;
@@ -154,6 +191,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         w.idle = g.GetComponent<IdleBehavior>(); w.idleWas = w.idle != null && w.idle.enabled; if (w.idle != null) w.idle.enabled = false;
         w.q = g.GetComponent<ActionQueue>(); w.qWas = w.q != null && w.q.enabled; if (w.q != null) { w.q.ClearOwn(); w.q.enabled = false; }
         w.agent = g.GetComponent<UnityEngine.AI.NavMeshAgent>(); w.agentWas = w.agent != null && w.agent.enabled; if (w.agent != null) w.agent.enabled = false;
+        w.keeper = g.GetComponent<CarnivoreKeeper>(); w.keeperWas = w.keeper != null && w.keeper.enabled; if (w.keeper != null) w.keeper.enabled = false;
         a.asleep = false;
         PathMover.Of(g.transform).Restart();
         return w;
@@ -184,7 +222,9 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             if (w.agent != null) { w.agent.enabled = w.agentWas; if (w.agent.enabled && w.agent.isOnNavMesh) w.agent.Warp(w.pos); }
             if (w.q != null) w.q.enabled = w.qWas;
             if (w.idle != null) w.idle.enabled = w.idleWas;
+            if (w.keeper != null) w.keeper.enabled = w.keeperWas;
         }
+        WorkdayDirector.LogTeleports = false;
         Time.timeScale = scale;
         if (wd != null) wd.enabled = wdWas;
     }

@@ -237,9 +237,41 @@ public class YogaClass : MonoBehaviour
         {
             if (!p.onMat) { allMatch = false; continue; }
             if (t >= reaction && _i < p.steps.Count) p.steps[_i].Tick(p.a);
-            if (!TeachingSession.PoseMatch(p.a, step, matchTolerance)) allMatch = false;
+            if (!Matches(p.a, step, matchTolerance)) allMatch = false;
         }
         if ((t >= minStep && allMatch) || t > stepTimeout + step.duration * step.reachFraction) Next();
+    }
+
+    /// <summary>Huesos que la postura lleva por IK (alcance: manos juntas al pecho, al suelo…): su ángulo depende de las
+    /// proporciones de cada cuerpo, así que no se comparan con el de la postura.</summary>
+    public static bool ByIK(AsanaPoseSpell step, BodyPart part)
+    {
+        if (step.reaches == null) return false;
+        foreach (var rc in step.reaches)
+        {
+            bool hand = rc.end == BodyPart.HandLeft || rc.end == BodyPart.HandRight, left = rc.end == BodyPart.HandLeft || rc.end == BodyPart.FootLeft;
+            if (part == rc.end) return true;
+            if (hand && part == (left ? BodyPart.ShoulderLeft : BodyPart.ShoulderRight)) return true;
+            if (hand && part == (left ? BodyPart.ForearmLeft : BodyPart.ForearmRight)) return true;
+            if (!hand && part == (left ? BodyPart.ThighLeft : BodyPart.ThighRight)) return true;
+            if (!hand && part == (left ? BodyPart.ShinLeft : BodyPart.ShinRight)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>¿El cuerpo de <paramref name="a"/> hace la postura del paso? Como <see cref="TeachingSession.PoseMatch"/>, sin los
+    /// huesos que van por IK.</summary>
+    public static bool Matches(Anima a, AsanaPoseSpell step, float tol)
+    {
+        if (a == null || step == null) return true;
+        CreatureRig rig = a.GetComponent<CreatureRig>(); if (rig == null) return true;
+        foreach (var p in step.parts)
+        {
+            if (ByIK(step, p.Item1)) continue;
+            Transform b = rig.Get(p.Item1); if (b == null) continue;
+            if (Quaternion.Angle(b.localRotation, Quaternion.Euler(p.Item2)) > tol) return false;
+        }
+        return true;
     }
 
     void Next()

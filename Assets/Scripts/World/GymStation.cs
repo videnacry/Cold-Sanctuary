@@ -63,7 +63,20 @@ public class GymStation : MonoBehaviour
     public Vector3 SeatPoint(float b = 0f) => P.position + P.rotation * (shiftB * b);
     public Quaternion Facing => P.rotation;
     /// <summary>Punto del pasillo junto a la máquina (a su izquierda, a la altura del puesto): ahí llega andando y se sienta.</summary>
-    public Vector3 ApproachPoint => transform.TransformPoint(new Vector3(approachSide * 1.05f, 0f, P.localPosition.z));
+    public Vector3 ApproachPoint
+    {
+        get
+        {
+            Vector3 p = transform.TransformPoint(new Vector3(approachSide * 1.05f, 0f, P.localPosition.z));
+            if (_approachFrom == p) return _approach;
+            // Sobre el NavMesh (a donde se puede llegar andando): si el punto del pasillo cae junto a un poste o fuera de la
+            // malla, el camino acababa a 0,8 m y no se sentaba nunca.
+            _approachFrom = p; _approach = p;
+            if (UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit h, 1.2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - p.y) < 0.5f) _approach = h.position;
+            return _approach;
+        }
+    }
+    Vector3 _approach, _approachFrom = new Vector3(float.NaN, 0f, 0f);
     [Tooltip("Lado del pasillo por el que se llega: −1 a la izquierda (X−), +1 a la derecha (la primera columna, junto al borde).")]
     public float approachSide = -1f;
 
@@ -101,8 +114,10 @@ public class GymStation : MonoBehaviour
     {
         GymStation s = g != null ? Of(g.name) : null;
         if (s == null) return false;
-        Vector3 d = g.transform.position - s.SeatPoint(); d.y = 0f;
-        return d.sqrMagnitude < 0.3f * 0.3f;
+        // En cualquier punto entre el puesto de A y el de B (el salto al cajón, el kong, el trineo… desplazan el puesto en B).
+        Vector3 a = s.SeatPoint(0f), b = s.SeatPoint(1f), p = g.transform.position; a.y = b.y = p.y = 0f;
+        Vector3 ab = b - a; float t = ab.sqrMagnitude > 1e-6f ? Mathf.Clamp01(Vector3.Dot(p - a, ab) / ab.sqrMagnitude) : 0f;
+        return (p - (a + ab * t)).sqrMagnitude < 0.3f * 0.3f;
     }
 
     public AsanaPoseSpell PoseA() => GymPoses.Pose(type, false, rootHeight);
@@ -217,7 +232,7 @@ public static class GymPoses
         void Legs(float tx, float tz, float sh) { s.AddRange(Sym(BodyPart.ThighLeft, BodyPart.ThighRight, tx, tz)); s.AddRange(Sym(BodyPart.ShinLeft, BodyPart.ShinRight, sh)); }
         void Add(BodyPart p, float x, float y = 0f, float z = 0f) => s.Add(P(p, x, y, z));
         // Barra a la espalda (sentadillas): brazos abiertos y codos abajo, antebrazos hacia arriba, manos a la anchura de la barra.
-        void BarOnBack() { Add(BodyPart.ShoulderLeft, 0, 0, -50); Add(BodyPart.ShoulderRight, 0, 0, 50); Add(BodyPart.ForearmLeft, 0, 0, -100); Add(BodyPart.ForearmRight, 0, 0, 100); }
+        void BarOnBack() { float w = t == GymMachineType.SentadillaSmith ? 40f : 50f; Add(BodyPart.ShoulderLeft, 0, 0, -w); Add(BodyPart.ShoulderRight, 0, 0, w); Add(BodyPart.ForearmLeft, 0, 0, -2f * w); Add(BodyPart.ForearmRight, 0, 0, 2f * w); }   // (en la Smith, más cerrado: la barra es más corta y los discos quedan más cerca)
         // Lado contra lado (zancadas, pedales, brazos cruzados): en A la izquierda va a xa y la derecha a xb; en B, al revés.
         void Swap(BodyPart l, BodyPart r, float xa, float xb, float z = 0f) { s.Add(P(l, b ? xb : xa, 0f, z)); s.Add(P(r, b ? xa : xb, 0f, -z)); }
         void SwapLegs(float ta, float tb, float sa, float sb) { Swap(BodyPart.ThighLeft, BodyPart.ThighRight, ta, tb); Swap(BodyPart.ShinLeft, BodyPart.ShinRight, sa, sb); }
@@ -349,7 +364,7 @@ public static class GymPoses
             // ── Piso 2 · calistenia (§4.4) ──
             case GymMachineType.Dominadas:   // barra a 2,4 m: A 1,33 (manos en la barra) → B 1,89 (barbilla sobre la barra)
                 Add(BodyPart.Hips, b ? -5 : 0); Add(BodyPart.Neck, b ? -15 : -10);
-                if (b) Arms(-30, 35, -140); else Arms(-175, 15, 0);
+                if (b) Arms(-30, 25, -140); else Arms(-175, 10, 0);   // (agarre algo más cerrado: con alguien en la barra de al lado no se tocan los antebrazos)
                 Legs(b ? -15 : -10, 0, b ? 70 : 60); rb = 0.56f; break;
             case GymMachineType.MonkeyBars:
                 Add(BodyPart.Hips, b ? -5 : 5); Swap(BodyPart.ShoulderLeft, BodyPart.ShoulderRight, -175, -150, 10); Arms0(0);
@@ -391,8 +406,8 @@ public static class GymPoses
                 else { Arms(-155, 20, -10); Legs(-15, 0, 45); }   // manos sobre el borde, piernas contra el muro
                 rb = 1.15f; break;
             case GymMachineType.Barandilla:   // andar con los brazos abiertos → cuclillas de precisión; A 1,46 → B 1,00
-                if (b) { Add(BodyPart.Hips, 40); Arms(-70, 10, -10); Legs(-130, 10, 125); }
-                else { Arms(0, 80, -10); Add(BodyPart.ThighLeft, -20); Add(BodyPart.ShinLeft, 10); Add(BodyPart.ThighRight, 10); Add(BodyPart.ShinRight, 15); }
+                if (b) { Add(BodyPart.Hips, 40); Arms(-70, 10, -10); Legs(-130, -9, 125); }   // (muslos hacia dentro: los dos pies sobre el tubo de 5 cm)
+                else { Arms(0, 80, -10); Add(BodyPart.ThighLeft, -20, 0, -9); Add(BodyPart.ShinLeft, 10); Add(BodyPart.ThighRight, 10, 0, 9); Add(BodyPart.ShinRight, 15); }
                 rb = -0.46f; break;
             case GymMachineType.SaltoPrecision:   // batida → aterrizaje; A 1,11 → B 1,16
                 Add(BodyPart.Hips, b ? 35 : 45); Arms(b ? -80 : 60, 10, -10); Legs(b ? -115 : -110, 8, b ? 110 : 100);
@@ -408,7 +423,7 @@ public static class GymPoses
             case GymMachineType.AssaultBike:
                 Add(BodyPart.Hips, 15);
                 Swap(BodyPart.ShoulderLeft, BodyPart.ShoulderRight, -30, -70, 10); Swap(BodyPart.ForearmLeft, BodyPart.ForearmRight, -90, -20);
-                SwapLegs(-95, -45, 105, 30); break;
+                SwapLegs(-95, -65, 105, 70); break;   // (la pierna de delante no tan estirada: el pie, en el pedal y no en el ventilador)
             case GymMachineType.SkiErg:   // A 0,95 → B 0,89
                 Add(BodyPart.Hips, b ? 45 : 0);
                 if (b) { Arms(-35, 10, -5); Legs(-65, 5, 35); } else { Arms(-160, 15, -10); Legs(0, 5, 0); }

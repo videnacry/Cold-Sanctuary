@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static GymFit;
 
 /// <summary>
 /// TODAS LAS MÁQUINAS DEL GIMNASIO SE PUEDEN USAR (Berón 2026-10-29: «hay que probar en vivo que los humanos usan bien todas
@@ -35,7 +36,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     [Tooltip("Tope (s de juego) para llegar andando a una máquina del mismo piso; entre pisos (alfombra) se dobla.")]
     public float walkLimit = 60f;
     [Tooltip("Tope total (s reales) de la prueba.")]
-    public float realLimit = 1800f;
+    public float realLimit = 3000f;
     [Tooltip("Si no vacío: solo los tipos de esta lista (nombres de GymMachineType separados por comas).")]
     public string onlyTypes = "";
 
@@ -56,6 +57,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         public Vector3 pos; public Quaternion rot;
         public IdleBehavior idle; public bool idleWas; public ActionQueue q; public bool qWas;
         public UnityEngine.AI.NavMeshAgent agent; public bool agentWas;
+        public CarnivoreKeeper keeper; public bool keeperWas;
         public float maxJump; public string jumpAt;
         public bool done;
         public string Name => g.name;
@@ -64,11 +66,12 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     /// <summary>Lo que falla en una máquina (con la persona y los números).</summary>
     readonly Dictionary<GymStation, List<string>> _fail = new Dictionary<GymStation, List<string>>();
     readonly Dictionary<GymStation, int> _used = new Dictionary<GymStation, int>();
-    readonly Dictionary<GymStation, Equipment> _eq = new Dictionary<GymStation, Equipment>();
     float _walkSpeed = 2.6f;
 
+    List<string> _sink;   // (mientras se mide una mitad: sus fallos esperan a que acabe)
     void Fail(GymStation st, string what)
     {
+        if (_sink != null) { _sink.Add(what); return; }
         if (!_fail.TryGetValue(st, out List<string> l)) _fail[st] = l = new List<string>();
         l.Add(what);
     }
@@ -83,6 +86,16 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         foreach (GymMachineType t in System.Enum.GetValues(typeof(GymMachineType)))
             if ((only.Count == 0 || only.Contains(t.ToString())) && !sts.Any(s => s.type == t)) missing.Add(t.ToString());
         TestProbe.Check("hay al menos una estación de cada tipo de máquina", missing.Count == 0, missing.Count == 0 ? $"{sts.Count} estaciones" : "faltan: " + string.Join(", ", missing));
+        // Que el personal ya sea del santuario (al hacerse miembro, SanctuaryDirector lo coloca de golpe en su área): tope 60 s.
+        float mEnd = Time.realtimeSinceStartup + 120f; int members = 0;
+        while (Time.realtimeSinceStartup < mEnd)
+        {
+            members = 0;
+            foreach (Anima a0 in FindObjectsByType<Anima>(FindObjectsSortMode.None)) if (a0 != null && !a0.CompareTag("Player") && Magnate.IsMember(a0) && a0.GetComponent<CreatureRig>() != null) members++;
+            if (members >= people + 2 && !Arriving()) break;
+            yield return new WaitForSecondsRealtime(1f);
+        }
+        yield return new WaitForSecondsRealtime(1f);
         List<Person> ps = PickPeople();
         TestProbe.Check($"hay personas del personal con cuerpo de cubos para probar ({people} de estaturas distintas)", ps.Count >= Mathf.Min(2, people),
             string.Join(", ", ps.Select(p => $"{p.Name} {p.height:0.00} m")));
@@ -90,8 +103,10 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
 
         WorkdayDirector wd = WorkdayDirector.Instance;
         _walkSpeed = wd != null ? wd.walkSpeed : 2.6f;
+        WorkdayDirector.LogTeleports = true;
         bool wdWas = wd != null && wd.enabled; if (wd != null) wd.enabled = false;   // (sola, fuera del orquestador, la jornada también los movería)
-        float oldScale = Time.timeScale; Time.timeScale = speed;
+        float oldScale = Time.timeScale, oldMax = Time.maximumDeltaTime; Time.timeScale = speed;
+        Time.maximumDeltaTime = 0.04f;   // cada fotograma avanza poco: la cinta (0,35 s por mitad) se ve en varios fotogramas aunque vayan lentos
         foreach (Person p in ps) Hold(p);
 
         // ── 1. Cada persona, TODAS las máquinas (en paralelo, empezando por sitios distintos del recorrido) ──
@@ -124,9 +139,18 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         TestProbe.Check($"todas las máquinas usables: {okN}/{tour.Count}", okN == tour.Count);
 
         foreach (Person p in ps) Restore(p);
-        Time.timeScale = oldScale;
+        Time.timeScale = oldScale; Time.maximumDeltaTime = oldMax;
+        WorkdayDirector.LogTeleports = false;
         if (wd != null) wd.enabled = wdWas;
         TestProbe.End();
+    }
+
+    /// <summary>¿Queda alguien del personal por colocar en su área de llegada? (SanctuaryDirector lo teletransporta allí.)</summary>
+    public static bool Arriving()
+    {
+        foreach (WorldCharacter w in FindObjectsByType<WorldCharacter>(FindObjectsSortMode.None))
+            if (w != null && w.isNewArrival && !w.CompareTag("Player")) return true;
+        return false;
     }
 
     List<Person> PickPeople()
@@ -140,9 +164,11 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             if (g == null || g.CompareTag("Player") || g.GetComponent<Magnate>() != null) continue;
             if (g.TryGetComponent(out Linduarda lin) && lin.enabled) continue;   // su conducta propia la mueve (la enfermería)
             if (g.TryGetComponent(out NewcomerInitiator ni) && ni.InProgress) continue;
+            if (RestaurantService.Drives(g) || Orchestra.Busy(g)) continue;   // los lleva el servicio del restaurante o una orquesta
             Anima a = g.GetComponent<Anima>(); CreatureRig rig = g.GetComponent<CreatureRig>();
             Transform body = g.transform.Find(CubeHumanoid.BodyName);
             if (a == null || rig == null || body == null || rig.Get(BodyPart.Hips) == null) continue;
+            if (!Magnate.IsMember(a)) continue;   // quien aún no es del santuario: al serlo, SanctuaryDirector lo coloca de golpe en su área
             all.Add(new Person { g = g, a = a, rig = rig, body = body, height = body.lossyScale.y * 1.9f });
         }
         all.Sort((x, y) => y.height.CompareTo(x.height));
@@ -160,6 +186,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         p.idle = p.g.GetComponent<IdleBehavior>(); p.idleWas = p.idle != null && p.idle.enabled; if (p.idle != null) p.idle.enabled = false;
         p.q = p.g.GetComponent<ActionQueue>(); p.qWas = p.q != null && p.q.enabled; if (p.q != null) { p.q.ClearOwn(); p.q.enabled = false; }
         p.agent = p.g.GetComponent<UnityEngine.AI.NavMeshAgent>(); p.agentWas = p.agent != null && p.agent.enabled; if (p.agent != null) p.agent.enabled = false;
+        p.keeper = p.g.GetComponent<CarnivoreKeeper>(); p.keeperWas = p.keeper != null && p.keeper.enabled; if (p.keeper != null) p.keeper.enabled = false;   // (el guardia lleva raciones al comedero de los carnívoros)
         p.a.asleep = false;
         PathMover.Of(p.g.transform).Restart();
     }
@@ -173,6 +200,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         if (p.agent != null) { p.agent.enabled = p.agentWas; if (p.agent.enabled && p.agent.isOnNavMesh) p.agent.Warp(p.pos); }
         if (p.q != null) p.q.enabled = p.qWas;
         if (p.idle != null) p.idle.enabled = p.idleWas;
+        if (p.keeper != null) p.keeper.enabled = p.keeperWas;
     }
 
     /// <summary>Recorrido: piso a piso (de abajo arriba) y, dentro de cada piso, siempre a la máquina más cercana.</summary>
@@ -211,9 +239,14 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
                 continue;
             }
             var u = new WorkdayDirector.GymUse { st = st, since = Time.time };
+            float w0 = Time.time, r0 = Time.realtimeSinceStartup;
+            int before = _fail.TryGetValue(st, out List<string> fl) ? fl.Count : 0;
             yield return Walk(p, st, u);
+            float walked = Time.time - w0;
             yield return Use(p, st, u, true);
             _used[st] = (_used.TryGetValue(st, out int c) ? c : 0) + 1;
+            int after = _fail.TryGetValue(st, out fl) ? fl.Count : 0;
+            Debug.Log($"[GymTest] {p.Name} · {st.name} [{st.type}] ({list.Count - queue.Count}/{list.Count}) andando {walked:0.0} s · {Time.realtimeSinceStartup - r0:0.0} s reales · {(after > before ? string.Join(" | ", fl.Skip(before)) : "OK")}");
         }
         p.done = true;
     }
@@ -232,7 +265,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             yield return null;
             bool riding = FlyingCarpet.Riding(p.g);
             float jump = Vector3.Distance(tr.position, last), lim = Mathf.Max(0.6f, _walkSpeed * 3f * Time.deltaTime);
-            if (!riding && !rode && jump > lim && jump > p.maxJump) { p.maxJump = jump; p.jumpAt = $"yendo a {st.name}"; }
+            if (!riding && !rode && jump > lim && jump > p.maxJump) { p.maxJump = jump; p.jumpAt = $"yendo a {st.name}: de ({last.x:0.0},{last.y:0.0},{last.z:0.0}) a ({tr.position.x:0.0},{tr.position.y:0.0},{tr.position.z:0.0})"; }
             rode = riding; last = tr.position;
         }
         if (!WorkdayDirector.GymArrived(p.g, st))
@@ -250,21 +283,45 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         WorkdayDirector.GymSit(u);
         if (st.Occupant != p.Name) Fail(st, $"{p.Name}: la reserva no es suya ({st.Occupant ?? "libre"})");
         float half = GymPoses.RepHalf(st.type), end = Time.time + half * 2f + 2f;
-        var hands = new float[2][]; int flips = 0; bool seatedA = false;
-        while (flips < 2 && Time.time < end)
+        var hands = new float[2][]; int flips = 0, frames = 0; bool seatedA = false; float travel = 0f, seatOff = 0f;
+        // Se mide JUSTO TRAS colocar el cuerpo (como en la jornada), en el último fotograma de cada mitad con la postura ya
+        // llegada (≥ 75 % de la mitad); al cambiar de fase se da por buena la última medida de la mitad que acaba.
+        List<string> pendFails = null; float[] pendHands = null; bool pendB = false, pendSeated = false; float pendOff = 0f;
+        Vector3 placed = p.g.transform.position; float foreign = 0f;
+        while (flips < 2 && (Time.time < end || frames < 90))   // (fotogramas: con el tiempo acelerado un fotograma lento salta segundos)
         {
-            if (measure && Time.time - u.phaseAt >= half)   // a punto de cambiar de fase: la postura de esta mitad ya llegó
+            if (frames > 0) foreign = Mathf.Max(foreign, Vector3.Distance(p.g.transform.position, placed));   // ¿lo movió otro entre fotogramas?
+            if (measure && pendFails == null && Time.time - u.phaseAt >= half)   // va a cambiar de fase sin haberla medido (fotogramas lentos): la del fotograma anterior
             {
-                hands[u.b ? 1 : 0] = Measure(p, st, u.b, u.spell);
-                if (!u.b) seatedA = GymStation.Seated(p.g);
+                _sink = new List<string>(); pendHands = Measure(p, st, u.b, u.spell); pendB = u.b; pendFails = _sink; _sink = null;
+                pendSeated = GymStation.Seated(p.g); Vector3 sd0 = p.g.transform.position - st.SeatPoint(); sd0.y = 0f; pendOff = sd0.magnitude;
             }
-            if (WorkdayDirector.GymRep(p.g, p.a, u)) flips++;
+            bool flip = WorkdayDirector.GymRep(p.g, p.a, u);
+            placed = p.g.transform.position;
+            if (flip)
+            {
+                flips++;
+                if (pendFails != null) { foreach (string s2 in pendFails) Fail(st, s2); hands[pendB ? 1 : 0] = pendHands; if (!pendB) { seatedA = pendSeated; seatOff = pendOff; } }
+                pendFails = null;
+            }
+            else if (measure && pendFails == null && Time.time - u.phaseAt >= 0.62f * half)   // una vez por mitad, ya llegada la postura (60 %)
+            {
+                _sink = new List<string>();
+                pendHands = Measure(p, st, u.b, u.spell); pendB = u.b;
+                pendFails = _sink; _sink = null;
+                Photo(p, st, u.b);
+                pendSeated = GymStation.Seated(p.g); Vector3 sd = p.g.transform.position - st.SeatPoint(); sd.y = 0f; pendOff = sd.magnitude;
+            }
+            travel = Mathf.Max(travel, GymFit.LastTravel(st));
+            frames++;
             yield return null;
         }
+        if (measure && foreign > 0.05f) Fail(st, $"{p.Name}: otro sistema lo mueve mientras usa la máquina ({foreign:0.00} m entre fotogramas)");
+        if (measure && travel > 1.5f) Fail(st, $"{p.Name}: el agarre móvil tiene que desplazarse {travel:0.00} m para llegar a sus manos (recorrido > 1,5 m)");
         if (measure)
         {
             if (flips < 2) Fail(st, $"{p.Name}: no completa la repetición A → B ({flips}/2 cambios)");
-            if (!seatedA) Fail(st, $"{p.Name}: en A no cuenta como sentado en la máquina (GroundGuard lo movería)");
+            if (!seatedA) Fail(st, $"{p.Name}: en A no cuenta como sentado en la máquina (a {seatOff:0.00} m del puesto; GroundGuard lo movería; ocupa {GymStation.Of(p.Name)?.name ?? "nada"})");
             CheckHands(p, st, hands);
         }
         WorkdayDirector.GymStandUp(p.g, u);
@@ -273,30 +330,57 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         PathMover.Of(p.g.transform).Restart();
     }
 
+    // ── Fotos (opcional: Temp/gym_fotos.txt con tipos, uno por línea) ─────────────────────────────────
+
+    readonly HashSet<string> _shot = new HashSet<string>();
+    HashSet<string> _photoTypes;
+
+    void Photo(Person p, GymStation st, bool b)
+    {
+        if (_photoTypes == null)
+        {
+            _photoTypes = new HashSet<string>();
+            if (System.IO.File.Exists("Temp/gym_fotos.txt"))
+                foreach (string l in System.IO.File.ReadAllLines("Temp/gym_fotos.txt")) if (l.Trim().Length > 0) _photoTypes.Add(l.Trim());
+        }
+        string key = $"{st.type}_{st.copy}_{p.Name}_{(b ? "B" : "A")}";
+        if (!_photoTypes.Contains(st.type.ToString()) || st.copy != 0 || !_shot.Add(key)) return;
+        System.IO.Directory.CreateDirectory("Temp/PoseGallery");
+        Vector3 c = p.rig.Get(BodyPart.Hips).position, side = st.Facing * Vector3.right, fwd = st.Facing * Vector3.forward;
+        var go = new GameObject("CamGym"); var cam = go.AddComponent<Camera>(); cam.fieldOfView = 55f;
+        go.transform.position = c + side * 2.4f + fwd * 0.8f + Vector3.up * 0.5f; go.transform.LookAt(c);
+        var rt = new RenderTexture(960, 720, 24); cam.targetTexture = rt; cam.Render();
+        RenderTexture.active = rt; var tex = new Texture2D(960, 720, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, 960, 720), 0, 0); tex.Apply(); RenderTexture.active = null;
+        System.IO.File.WriteAllBytes($"Temp/PoseGallery/Gym_{key}.png", tex.EncodeToPNG());
+        Destroy(tex); Destroy(go); rt.Release();
+    }
+
     // ── Mediciones ───────────────────────────────────────────────────────────────────────────────
 
     /// <summary>Mide pelvis, pies y penetración en la fase <paramref name="b"/>; devuelve la distancia de cada mano al agarre más cercano.</summary>
     float[] Measure(Person p, GymStation st, bool b, AsanaPoseSpell sp)
     {
         string ph = b ? "B" : "A";
-        Equipment eq = EquipmentOf(st);
+        Equipment eq = GymFit.Of(st);
         float s = p.body.lossyScale.y;
         // PELVIS
         Transform hips = p.rig.Get(BodyPart.Hips);
-        float want = st.SeatPoint(b ? 1f : 0f).y + (sp.rootHeight >= 0f ? sp.rootHeight : 0.95f) * s;
+        float want = st.SeatPoint(b ? 1f : 0f).y + (sp.rootHeight >= 0f ? sp.rootHeight : 0.95f) * s + GymFit.LastDy(st);   // (más lo que el cuerpo se ajustó a la máquina: GymFit)
         float err = hips.position.y - want;
-        if (Mathf.Abs(err) > PelvisTol) Fail(st, $"{p.Name} {ph}: pelvis a {hips.position.y - st.SeatPoint(b ? 1f : 0f).y:0.00} m del puesto (esperada {want - st.SeatPoint(b ? 1f : 0f).y:0.00}, Δ {err:+0.00;-0.00})");
+        Vector3 off = p.g.transform.position - st.SeatPoint(b ? 1f : 0f); off.y = 0f;
+        // (las posturas apoyadas en el suelo del cuerpo —las 10 de placas— no usan rootHeight: la pelvis sale de apoyar el cuerpo)
+        if (!sp.ground && Mathf.Abs(err) > PelvisTol) Fail(st, $"{p.Name} {ph}: pelvis a {hips.position.y - st.SeatPoint(b ? 1f : 0f).y:0.00} m del puesto (esperada {want - st.SeatPoint(b ? 1f : 0f).y:0.00}, Δ {err:+0.00;-0.00}; pelvis local {hips.localPosition.y:0.00}, ajuste {GymFit.LastDy(st):+0.00;-0.00}, a {off.magnitude:0.00} m del puesto)");
         // PIES
         int need = Feet(st.type, b);
         var gaps = new List<(float gap, string side, string on)>();
         foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
         {
             Transform seg = Segment(p.rig, f); if (seg == null) continue;
-            float bottom = LowestY(seg);
-            float top = SurfaceBelow(new Vector3(seg.position.x, bottom + 0.3f, seg.position.z), eq, p.g.transform, out string on);
-            if (float.IsNegativeInfinity(top)) { gaps.Add((99f, Side(f), "nada")); continue; }
-            if (top - bottom > FootBelow) Fail(st, $"{p.Name} {ph}: pie {Side(f)} {(top - bottom) * 100f:0} cm bajo «{on}»");
-            gaps.Add((bottom - top, Side(f), on));
+            float gap = FootGap(seg, eq, p.g.transform, out string on);
+            if (float.IsInfinity(gap)) { gaps.Add((99f, Side(f), "nada")); continue; }
+            if (-gap > FootBelow) Fail(st, $"{p.Name} {ph}: pie {Side(f)} {-gap * 100f:0} cm bajo «{on}» (planta a {LowestY(seg) - st.SeatPoint(b ? 1f : 0f).y:0.000} m del puesto, ajuste {GymFit.LastDy(st):0.000}, f{Time.frameCount})");
+            gaps.Add((gap, Side(f), on));
         }
         gaps.Sort((x, y) => x.gap.CompareTo(y.gap));
         for (int i = 0; i < need && i < gaps.Count; i++)
@@ -309,7 +393,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             foreach (Vector3 pt in Samples(j.segment))
                 foreach (Transform piece in eq.solid)
                 {
-                    float d = Depth(pt, piece);
+                    float d = Depth(pt, piece) - (Soft(piece.name) ? 0.02f : 0f);   // (los acolchados ceden 2 cm)
                     if (d > worst) { worst = d; where = $"{j.part} dentro de «{piece.name}»"; }
                 }
         }
@@ -341,14 +425,11 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         if (hb > 0 && !Ok(hands[1], hb)) Fail(st, $"{p.Name} B: manos lejos del agarre ({Txt(hands[1])}, agarran {hb})");
     }
 
+    static readonly string[] SoftNames = { "Almohadilla", "Respaldo", "Asiento", "Banco", "Rodillo", "Sillin", "Apoy", "Esterilla", "Saco" };
+    static bool Soft(string n) => SoftNames.Any(s => n.StartsWith(s));
+
     static string Side(BodyPart f) => f == BodyPart.FootLeft || f == BodyPart.HandLeft ? "izq." : "der.";
 
-    static Transform Segment(CreatureRig rig, BodyPart part)
-    {
-        Transform b = rig.Get(part); if (b == null) return null;
-        CubeJoint j = b.GetComponent<CubeJoint>();
-        return j != null ? j.segment : null;
-    }
 
     static bool BodySegment(BodyPart p)
     {
@@ -362,12 +443,6 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         }
     }
 
-    static float LowestY(Transform cube)
-    {
-        float y = float.MaxValue;
-        for (int c = 0; c < 8; c++) y = Mathf.Min(y, cube.TransformPoint(new Vector3((c & 1) == 0 ? -0.5f : 0.5f, (c & 2) == 0 ? -0.5f : 0.5f, (c & 4) == 0 ? -0.5f : 0.5f)).y);
-        return y;
-    }
 
     /// <summary>Puntos a lo largo del eje largo de un segmento (cubo unidad escalado): centro y ±0,2/±0,4 de su largo.</summary>
     static IEnumerable<Vector3> Samples(Transform seg)
@@ -376,140 +451,6 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         if (Mathf.Abs(ls.y) > len) { ax = Vector3.up; len = Mathf.Abs(ls.y); }
         if (Mathf.Abs(ls.z) > len) { ax = Vector3.forward; }
         foreach (float f in new[] { -0.4f, -0.2f, 0f, 0.2f, 0.4f }) yield return seg.TransformPoint(ax * f);
-    }
-
-    /// <summary>Cuánto está <paramref name="p"/> DENTRO de la pieza (cubo unidad escalado), en metros; ≤ 0 = fuera.</summary>
-    static float Depth(Vector3 p, Transform box)
-    {
-        Vector3 l = box.InverseTransformPoint(p), s = box.lossyScale;
-        return Mathf.Min((0.5f - Mathf.Abs(l.x)) * Mathf.Abs(s.x), Mathf.Min((0.5f - Mathf.Abs(l.y)) * Mathf.Abs(s.y), (0.5f - Mathf.Abs(l.z)) * Mathf.Abs(s.z)));
-    }
-
-    /// <summary>Distancia de <paramref name="p"/> a la pieza (0 si está dentro).</summary>
-    static float Dist(Vector3 p, Transform box)
-    {
-        Vector3 l = box.InverseTransformPoint(p);
-        Vector3 c = new Vector3(Mathf.Clamp(l.x, -0.5f, 0.5f), Mathf.Clamp(l.y, -0.5f, 0.5f), Mathf.Clamp(l.z, -0.5f, 0.5f));
-        return Vector3.Distance(p, box.TransformPoint(c));
-    }
-
-    /// <summary>Lo alto de lo que hay justo debajo de <paramref name="from"/> (piezas de la máquina, el suelo del piso o,
-    /// si no, el collider que no sea de una máquina). −∞ si nada.</summary>
-    static float SurfaceBelow(Vector3 from, Equipment eq, Transform self, out string on)
-    {
-        float best = float.NegativeInfinity; on = "nada";
-        foreach (Transform piece in eq.surface)
-        {
-            Vector3 o = piece.InverseTransformPoint(from), d = piece.InverseTransformVector(Vector3.down);
-            float tmin = float.NegativeInfinity, tmax = float.PositiveInfinity;
-            bool miss = false;
-            for (int i = 0; i < 3 && !miss; i++)
-            {
-                if (Mathf.Abs(d[i]) < 1e-6f) { if (Mathf.Abs(o[i]) > 0.5f) miss = true; continue; }
-                float t1 = (-0.5f - o[i]) / d[i], t2 = (0.5f - o[i]) / d[i];
-                tmin = Mathf.Max(tmin, Mathf.Min(t1, t2)); tmax = Mathf.Min(tmax, Mathf.Max(t1, t2));
-            }
-            if (miss || tmax < Mathf.Max(0f, tmin)) continue;
-            float y = from.y - Mathf.Max(0f, tmin);   // (si ya está dentro, la superficie está al menos a la altura de partida)
-            if (y > best) { best = y; on = piece.name; }
-        }
-        if (float.IsNegativeInfinity(best))
-            foreach (RaycastHit h in Physics.RaycastAll(from, Vector3.down, 10f, ~0, QueryTriggerInteraction.Ignore))
-                if (!h.transform.IsChildOf(self) && h.collider.GetComponentInParent<GymStation>() == null && h.collider.GetComponentInParent<Anima>() == null && h.point.y > best)
-                { best = h.point.y; on = h.collider.name; }
-        return best;
-    }
-
-    // ── El equipo de cada estación ─────────────────────────────────────────────────────────────
-
-    class Equipment { public List<Transform> solid = new List<Transform>(), grip = new List<Transform>(), surface = new List<Transform>(); }
-
-    static readonly string[] GripNames = { "Agarre", "Asa", "Asidero", "Barra", "Mango", "Tirador", "Manillar", "Pasamanos", "Anilla", "Peldano",
-                                          "Poste_empuje", "Cuerda", "Maneta", "Tubo", "Barandilla" };
-    static readonly string[] Ignored = { "Cable", "Cinta_anilla", "Cadena", "Marca", "Diana", "Tejido", "Dibujo", "Flecos", "Zona", "Borde" };
-
-    static bool IsGrip(GymMachineType t, string n)
-    {
-        if (n == "Brazo" && t != GymMachineType.SillaRomana) return true;   // brazos de la elíptica y del assault bike (en la silla romana son soportes)
-        if (t == GymMachineType.MuroSubida && n.StartsWith("Muro")) return true;     // el borde del muro
-        if (t == GymMachineType.KongVault && (n.StartsWith("Cajon") || n.StartsWith("Tapa"))) return true;   // las manos sobre el cajón
-        foreach (string g in GripNames) if (n.StartsWith(g)) return true;
-        return false;
-    }
-
-    Equipment EquipmentOf(GymStation st)
-    {
-        if (_eq.TryGetValue(st, out Equipment e)) return e;
-        e = new Equipment();
-        Transform root = st.name.StartsWith("Sitio_") && st.transform.parent != null ? st.transform.parent : st.transform;
-        Vector3 c = (st.SeatPoint(0f) + st.SeatPoint(1f)) * 0.5f + Vector3.up * 0.9f;
-        float reach = 2.2f + st.shiftB.magnitude;
-        foreach (MeshFilter mf in root.GetComponentsInChildren<MeshFilter>())
-        {
-            if (mf.sharedMesh == null || !mf.sharedMesh.name.StartsWith("Cube")) continue;
-            Renderer r = mf.GetComponent<Renderer>(); if (r == null || !r.enabled) continue;
-            Transform t = mf.transform;
-            if (t.GetComponentInParent<Anima>() != null || t.GetComponentInParent<FlyingCarpet>() != null) continue;
-            if (Ignored.Any(n => t.name.StartsWith(n))) continue;
-            if (Dist(c, t) > reach) continue;
-            e.surface.Add(t);
-            if (IsGrip(st.type, t.name)) e.grip.Add(t); else e.solid.Add(t);
-        }
-        // El suelo del piso (caucho, losetas, césped): lo que pisan.
-        for (Transform a = root; a != null; a = a.parent)
-        {
-            bool floor = false;
-            foreach (Transform ch in a) if (ch.name.StartsWith("Suelo_caucho")) { floor = true; break; }
-            if (!floor) continue;
-            foreach (Transform ch in a)
-                if ((ch.name.StartsWith("Suelo") || ch.name.StartsWith("Loseta") || ch.name.StartsWith("Pista")) && !e.surface.Contains(ch)) e.surface.Add(ch);
-            break;
-        }
-        _eq[st] = e;
-        return e;
-    }
-
-    /// <summary>Manos que AGARRAN algo de la máquina en cada fase: 2, 1, 0; −2 = las dos, en A o en B (palancas que se
-    /// mueven: la pieza del agarre está fija en una de las dos posiciones).</summary>
-    static int Hands(GymMachineType t, bool b)
-    {
-        switch (t)
-        {
-            case GymMachineType.PressPecho: case GymMachineType.PressHombros: case GymMachineType.Remo: case GymMachineType.BicepsTriceps:
-            case GymMachineType.PressBancaPlano: case GymMachineType.PressBancaInclinado: case GymMachineType.Eliptica: case GymMachineType.AssaultBike:
-                return -2;
-            case GymMachineType.Jalon: case GymMachineType.SentadillaJaula: case GymMachineType.SentadillaSmith: case GymMachineType.PesoMuerto:
-            case GymMachineType.Cargada: case GymMachineType.RemoErgometro: case GymMachineType.SkiErg:
-                return b ? 0 : 2;
-            case GymMachineType.Prensa: case GymMachineType.ExtensionCuadriceps: case GymMachineType.CurlFemoral:
-            case GymMachineType.BiciVertical: case GymMachineType.BiciReclinada: case GymMachineType.Escaladora: case GymMachineType.SillaRomana:
-            case GymMachineType.Dominadas: case GymMachineType.Fondos: case GymMachineType.FondosAnillas: case GymMachineType.RemoAustraliano:
-            case GymMachineType.FrontLever: case GymMachineType.ElevacionPiernas: case GymMachineType.LSit: case GymMachineType.BanderaHumana:
-            case GymMachineType.MuroSubida: case GymMachineType.Lache: case GymMachineType.Kipping: case GymMachineType.Trineo: case GymMachineType.Cuerda:
-                return 2;
-            case GymMachineType.MonkeyBars: return 1;
-            case GymMachineType.KongVault: return b ? 2 : 0;
-            default: return 0;   // cinta, esterillas, banco declinado, hiperextensiones, saco, barandilla, saltos, wall ball, swing, GHD, hip thrust, gemelos, remo con mancuerna
-        }
-    }
-
-    /// <summary>Pies que APOYAN en algo en cada fase (los que deben estar a ≤ 5 cm de su superficie).</summary>
-    static int Feet(GymMachineType t, bool b)
-    {
-        switch (t)
-        {
-            case GymMachineType.PressPecho: case GymMachineType.PressHombros: case GymMachineType.Jalon: case GymMachineType.Remo:
-            case GymMachineType.HipThrust: case GymMachineType.Gemelos: case GymMachineType.BicepsTriceps:
-            case GymMachineType.SentadillaJaula: case GymMachineType.PressBancaPlano: case GymMachineType.PressBancaInclinado:
-            case GymMachineType.SentadillaSmith: case GymMachineType.PesoMuerto: case GymMachineType.Crunch: case GymMachineType.EstiramientoIsquios:
-            case GymMachineType.SacoBoxeo: case GymMachineType.RemoAustraliano: case GymMachineType.SaltoPrecision: case GymMachineType.Cargada:
-            case GymMachineType.SkiErg: case GymMachineType.WallBall: case GymMachineType.SaltoCajon: case GymMachineType.Swing:
-                return 2;
-            case GymMachineType.RemoMancuerna: case GymMachineType.Cinta: case GymMachineType.Escaladora: case GymMachineType.Trineo: return 1;
-            case GymMachineType.KongVault: return b ? 0 : 1;
-            case GymMachineType.Barandilla: return b ? 2 : 1;
-            default: return 0;   // colgados, sentados con las piernas libres, pedales (fijos), tumbados con los pies enganchados
-        }
     }
 
     // ── 2. Varias personas a la vez ──────────────────────────────────────────────────────────────
@@ -589,6 +530,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         if (!Application.isPlaying) { Debug.Log("[Solo] no está en Play"); return; }
         var go = new GameObject("SoloGimnasio"); DontDestroyOnLoad(go);
         GymUsabilityTest t = go.AddComponent<GymUsabilityTest>();
+        GymFit.Debug_ = System.IO.File.Exists("Temp/gym_debug.txt");
         if (System.IO.File.Exists("Temp/gym_tipos.txt")) t.onlyTypes = System.IO.File.ReadAllText("Temp/gym_tipos.txt").Replace('\n', ',').Replace('\r', ',');
         t.StartCoroutine(Wrap(t));
     }

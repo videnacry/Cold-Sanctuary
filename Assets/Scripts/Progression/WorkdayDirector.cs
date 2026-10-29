@@ -160,8 +160,11 @@ public class WorkdayDirector : MonoBehaviour
         Debug.Log($"[Jornada] Arranque: itinerarios asignados y {n} personajes colocados en el área de su primer turno.");
     }
 
+    /// <summary>Diagnóstico de las pruebas: registra quién teletransporta a quién (con la pila).</summary>
+    public static bool LogTeleports;
     public static void Teleport(Transform t, Vector3 p)
     {
+        if (LogTeleports && t != null && (t.position - p).sqrMagnitude > 4f) Debug.Log($"[Teleport] «{t.name}» {(t.position - p).magnitude:0.0} m: {System.Environment.StackTrace.Replace(System.Environment.NewLine, " / ")}");
         UnityEngine.AI.NavMeshAgent ag = t.GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (ag != null && ag.enabled && ag.isOnNavMesh) { ag.Warp(p); return; }
         CharacterController cc = t.GetComponent<CharacterController>();
@@ -556,12 +559,14 @@ public class WorkdayDirector : MonoBehaviour
         float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (half * 0.6f)));
         GymPlace(g, want.SeatPoint(u.b ? k : 1f - k), want.Facing);   // (el puesto se desplaza entre A y B en las que tienen shiftB)
         if (a != null) u.spell.Tick(a);
+        GymFit.Fit(want, g, u.b);   // a la medida de quien la usa: pies en lo que pisa, manos en el agarre
         return flip;
     }
 
     /// <summary>Se levanta de la máquina: de pie, en el pasillo (la reserva la suelta <see cref="GymStation.Release"/>).</summary>
     public static void GymStandUp(GameObject g, GymUse u)
     {
+        if (u != null) GymFit.Reset(u.st);   // el asiento, las palancas y la barra vuelven a su sitio
         if (g == null || u == null || !u.seated || u.st == null) return;
         Anima a = g.GetComponent<Anima>();
         if (a != null) DailyPoses.Stand().ApplyFinal(a);

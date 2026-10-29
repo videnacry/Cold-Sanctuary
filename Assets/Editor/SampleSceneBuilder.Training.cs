@@ -263,7 +263,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(fp, new Vector3(0f, 0.01f, 0f), new Vector3(0.4f, 0.02f, 0.4f), TIron, 0f, "Base");
         GBar(fp, Vector3.zero, new Vector3(0f, 2.6f, 0f), 0.06f, TIron, "Poste");
         foreach (float h in new[] { 0.9f, 1.3f, 1.7f, 2.1f }) GBar(fp, new Vector3(0f, h, 0f), new Vector3(-0.14f, h, 0f), 0.035f, TChrome, "Agarre");
-        GSpot(fp, GymMachineType.BanderaHumana, 0, new Vector3(-0.75f, 0f, 0f), 0f, 1.50f);   // mirando hacia −Z, el poste queda a su izquierda (+X), a la distancia de los brazos
+        GSpot(fp, GymMachineType.BanderaHumana, 0, new Vector3(-0.79f, 0f, 0f), 0f, 1.50f);   // mirando hacia −Z, el poste queda a su izquierda (+X), a la distancia de los brazos
         KitchenProps.Fit(fp, false); fp.gameObject.AddComponent<WorldLabel>().text = "Bandera humana";
         GWallBars(r, "Espalderas", new Vector3(0.9f, 0f, 4.95f), 90f, 3, 2);   // 3 cuerpos, miran hacia −X
         WorldLabel kl = KitchenProps.Root(r, "Zona_calistenia", new Vector3(-8f, 0f, 7.5f)).gameObject.AddComponent<WorldLabel>(); kl.text = "Calistenia"; kl.height = 3.4f;
@@ -934,8 +934,8 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(m, new Vector3(0f, 0.74f, 0.98f), new Vector3(0.40f, 0.12f, 0.12f), pad, 0f, "Rodillo_tobillo");
                 for (int s = -1; s <= 1; s += 2)
                 {
-                    GBar(m, new Vector3(s * 0.22f, 0.04f, -0.80f), new Vector3(s * 0.22f, 0.43f, -0.80f), 0.04f, F, "Poste_asidero");
-                    KitchenProps.C(m, new Vector3(s * 0.22f, 0.45f, -0.80f), new Vector3(0.04f, 0.04f, 0.16f), TChrome, 0f, "Asidero");
+                    GBar(m, new Vector3(s * 0.22f, 0.04f, -0.62f), new Vector3(s * 0.22f, 0.43f, -0.62f), 0.04f, F, "Poste_asidero");   // a 0,62 m: a 0,80 no llegaban las manos (GymUsabilityTest)
+                    KitchenProps.C(m, new Vector3(s * 0.22f, 0.45f, -0.62f), new Vector3(0.04f, 0.04f, 0.16f), TChrome, 0f, "Asidero");
                 }
                 GStack(m, new Vector3(-0.55f, 0f, 0f), 1.5f, 0.30f, 0.25f, 1f);
                 seat = new Vector3(0f, 0.62f, 0.10f); root = 0.81f; break;
