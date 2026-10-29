@@ -232,7 +232,14 @@ public static class GymPoses
         void Legs(float tx, float tz, float sh) { s.AddRange(Sym(BodyPart.ThighLeft, BodyPart.ThighRight, tx, tz)); s.AddRange(Sym(BodyPart.ShinLeft, BodyPart.ShinRight, sh)); }
         void Add(BodyPart p, float x, float y = 0f, float z = 0f) => s.Add(P(p, x, y, z));
         // Barra a la espalda (sentadillas): brazos abiertos y codos abajo, antebrazos hacia arriba, manos a la anchura de la barra.
-        void BarOnBack() { float w = t == GymMachineType.SentadillaSmith ? 30f : 50f; Add(BodyPart.ShoulderLeft, 0, 0, -w); Add(BodyPart.ShoulderRight, 0, 0, w); Add(BodyPart.ForearmLeft, 0, 0, -2f * w); Add(BodyPart.ForearmRight, 0, 0, 2f * w); }   // (en la Smith, más cerrado: la barra es más corta y los discos quedan más cerca)
+        void BarOnBack()
+        {
+            // En la Smith, más cerrado: la barra es más corta y los discos (cara interior a ±0,525 m) quedan más cerca. Con el
+            // brazo a 30° y el antebrazo a 60° más, el antebrazo iba HORIZONTAL hacia fuera y la mano llegaba a 0,68 × estatura
+            // de 1,9 (0,62 m a 1,72 m): el antebrazo entraba en el disco. Codo abajo y antebrazo VERTICAL: la mano a 0,41 ×.
+            float w = t == GymMachineType.SentadillaSmith ? 30f : 50f, f = t == GymMachineType.SentadillaSmith ? 150f : 2f * w;
+            Add(BodyPart.ShoulderLeft, 0, 0, -w); Add(BodyPart.ShoulderRight, 0, 0, w); Add(BodyPart.ForearmLeft, 0, 0, -f); Add(BodyPart.ForearmRight, 0, 0, f);
+        }
         // Lado contra lado (zancadas, pedales, brazos cruzados): en A la izquierda va a xa y la derecha a xb; en B, al revés.
         void Swap(BodyPart l, BodyPart r, float xa, float xb, float z = 0f) { s.Add(P(l, b ? xb : xa, 0f, z)); s.Add(P(r, b ? xa : xb, 0f, -z)); }
         void SwapLegs(float ta, float tb, float sa, float sb) { Swap(BodyPart.ThighLeft, BodyPart.ThighRight, ta, tb); Swap(BodyPart.ShinLeft, BodyPart.ShinRight, sa, sb); }

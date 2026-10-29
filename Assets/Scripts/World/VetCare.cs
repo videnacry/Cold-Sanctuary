@@ -28,6 +28,7 @@ public class VetCare : MonoBehaviour
 
     Animal _patient;
     float _since, _next, _feedUntil;
+    float _best = float.MaxValue, _bestAt;
     Transform _ration;
     public static int Fed { get; private set; }
 
@@ -66,11 +67,17 @@ public class VetCare : MonoBehaviour
         }
         Vector3 to = _patient.transform.position - transform.position;
         bool level = Mathf.Abs(to.y) < 1.6f; to.y = 0f;
-        if (!level || to.magnitude > 1.9f)
+        // En su perrera no se llega a 1,9 m de su centro: sin acercarse 5 s a menos de 3,5 m, le da la ración por los barrotes
+        // (antes rondaba la perrera dando vueltas hasta el tope).
+        if (!level) { _best = float.MaxValue; _bestAt = Time.time; }
+        else if (to.magnitude < _best - 0.4f) { _best = to.magnitude; _bestAt = Time.time; }
+        bool there = level && (to.magnitude <= 1.9f || (to.magnitude < 3.5f && Time.time - _bestAt > 5f));
+        if (!there)
         {
             float left = PathMover.Of(this).StepToward(_patient.transform.position, speed);
             if (!(level && left < 1.9f)) return;
         }
+        _best = float.MaxValue;
         Feed(_patient);
     }
 
@@ -95,6 +102,7 @@ public class VetCare : MonoBehaviour
 
     void Drop()
     {
+        _best = float.MaxValue;
         if (_patient != null && _claimed.TryGetValue(_patient, out VetCare c) && c == this) _claimed.Remove(_patient);
         _patient = null;
         if (_ration != null) { Destroy(_ration.gameObject); _ration = null; }

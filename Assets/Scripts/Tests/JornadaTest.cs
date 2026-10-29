@@ -521,13 +521,16 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             WorkRoster.Assignment cur = shift && w != null ? wd.Current(w, h) : null;
             bool handled = MagnateWarden.Instance.Handling(tr.g);
             string head = Head(tr.g);
-            if (head != tr.headLabel) { tr.headLabel = head; tr.headSince = now; }
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
             bool asleep = tr.anima != null && tr.anima.asleep;
             bool atPost = area != null && PlayerWorkday.AtPost(cur?.mission, area, p);
             bool full = Window(tr, out float path, out float net);
             bool moving = !full || path > 1f;
             string status = StatusOf(tr.g);
+            // LO QUE HACE (su cola; si no, su cartel; si no, la conducta propia de la doctora o del veterinario): «atascado» y
+            // «da vueltas» cuentan solo si hace LO MISMO toda la ventana (ir a algo, hacerlo y volver no es dar vueltas).
+            string doingNow = head ?? status ?? tr.g.GetComponent<Linduarda>()?.Doing ?? (tr.g.TryGetComponent(out VetCare vc) && vc.enabled ? vc.Doing : null);
+            if (doingNow != tr.headLabel) { tr.headLabel = doingNow; tr.headSince = now; }
             tr.activity = asleep ? "durmiendo" : riding ? "en alfombra" : handled ? "con la Magnate" : head ?? (status ?? (moving ? "andando" : "quieto"));
 
             if (shift && area != null && w != null)

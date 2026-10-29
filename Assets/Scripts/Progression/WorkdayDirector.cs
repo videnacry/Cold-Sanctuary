@@ -391,14 +391,14 @@ public class WorkdayDirector : MonoBehaviour
                 if (idle != null) idle.enabled = false;
                 ActionQueue gq = g.GetComponent<ActionQueue>();
                 if (gq != null && gq.Player.Count > 0 && gq.Player[0] is WanderSpell) gq.RemovePlayerAt(0);
-                SetStatus(g, null);
+                SetStatus(g, lin != null && lin.enabled ? lin.Doing : null);
                 return;
             }
             if (idle != null && !idle.enabled) idle.enabled = true;   // libre
-            SetStatus(g, null);
+            SetStatus(g, lin != null && lin.enabled ? lin.Doing : null);   // (la doctora: lo que esté haciendo)
             return;
         }
-        SetStatus(g, doing);
+        SetStatus(g, lin != null && lin.enabled && lin.Doing != null ? lin.Doing : doing);
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
         if (YogaClassRole(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }

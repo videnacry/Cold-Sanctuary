@@ -257,6 +257,32 @@ public static class GymFit
         int feet = Feet(st.type, b), hands = Hands(st.type, b);
         bool legacy = (int)st.type <= (int)GymMachineType.BicepsTriceps;
         float dy = 0f;
+        // Ningún pie metido en nada: si lo está, el cuerpo sube lo que haga falta (hasta 4 veces: al subir, el pie puede dar
+        // con otra pieza, el reposapiés justo encima del bastidor).
+        void Unsink()
+        {
+            for (int it = 0; it < 4; it++)
+            {
+                float sunk = 0f;
+                foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
+                {
+                    Transform seg = Segment(rig, f); if (seg == null) continue;
+                    float gap = FootGap(seg, eq, g.transform, out _);
+                    if (gap < -sunk) sunk = -gap;
+                }
+                if (sunk < 0.005f) break;
+                g.transform.position += Vector3.up * sunk; dy += sunk;
+            }
+        }
+        // ANTES DE MEDIR LOS PIES, lo que se adapta a la pierna de esta postura (si no, un pie metido en la pieza del
+        // fotograma anterior levantaba el cuerpo entero):
+        //  · bicis: quien es alto llega con el pie estirado al volante; la rodilla se dobla más hasta que el pie sale.
+        //  · banco declinado: los rodillos, a los tobillos.
+        //  · hiperextensiones: la almohadilla, en su sitio (luego se regula a la medida: HipPad).
+        Transform rail = st.type == GymMachineType.Barandilla ? eq.grip.FirstOrDefault(t => t != null && t.name.StartsWith("Tubo")) : null;
+        if (Pedals(st.type)) RetractFeet(rig, eq, g.transform);
+        if (st.type == GymMachineType.AbdominalDeclinado) FeetRollers(st, rig, eq);
+        if (st.type == GymMachineType.Hiperextension) { Transform pad = eq.solid.FirstOrDefault(t => t != null && t.name == "Almohadilla_cadera"); if (pad != null) Shift(st, pad, Vector3.zero); }
         {
             float minGap = float.MaxValue;
             foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
@@ -265,7 +291,6 @@ public static class GymFit
                 float gap = FootGap(seg, eq, g.transform, out _);
                 if (!float.IsInfinity(gap)) minGap = Mathf.Min(minGap, gap);
             }
-            Transform rail = st.type == GymMachineType.Barandilla ? eq.grip.FirstOrDefault(t => t != null && t.name.StartsWith("Tubo")) : null;
             if (legacy) { if (minGap < 0f) dy = -minGap; }   // placas (postura apoyada): solo sacar un pie hundido (en el reposapiés, el bastidor…)
             else if (rail != null)   // la barandilla: el pie más bajo, sobre el TUBO (5 cm: si el pie no cae justo encima, el suelo engañaba)
             {
@@ -280,25 +305,26 @@ public static class GymFit
                 if (n > 0) dy = sum / n;
                 if (minGap < float.MaxValue && minGap + dy < 0f) dy = -minGap;   // ningún pie dentro del suelo
             }
-            else if (feet > 0 && minGap < float.MaxValue) dy = -minGap;   // el pie más bajo, sobre lo que pisa
+            else if (feet > 0 && minGap < float.MaxValue)   // el pie más bajo, sobre lo que pisa
+            {
+                dy = -minGap;
+                if (st.type == GymMachineType.Escaladora) dy = StepChoice(rig, eq, g.transform, dy);   // (o el de arriba, en su peldaño)
+            }
             else if (minGap < float.MaxValue && minGap < 0f) dy = -minGap;   // ningún pie dentro de nada
             dy = Mathf.Clamp(dy, -0.8f, 0.8f);
             if (Debug_) Debug.Log($"[GymFitDbg] f{Time.frameCount} {st.name} {g.name} b={b} feet={feet} minGap={minGap:0.000} dy={dy:0.000} legacy={legacy} planta={LowestY(Segment(rig, BodyPart.FootLeft)) - st.SeatPoint(b ? 1f : 0f).y:0.000}");
             if (Mathf.Abs(dy) > 1e-4f) g.transform.position += Vector3.up * dy;
-            // Al subir o bajar, el pie puede dar con otra pieza (el reposapiés justo encima del bastidor): se repite hasta que
-            // ningún pie quede hundido.
-            for (int it = 0; it < 4; it++)
+            // CURL FEMORAL (tumbado boca abajo): la postura apoya en el puesto su punto más bajo, que son las MANOS colgando,
+            // y el cuerpo flotaba sobre el banco con las manos a la altura del tablero (a 0,2 m de los asideros, que están
+            // más abajo). El tronco y las piernas se apoyan en el banco; las manos bajan luego a los asideros por IK.
+            if (st.type == GymMachineType.CurlFemoral)
             {
-                float sunk = 0f;
-                foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
-                {
-                    Transform seg = Segment(rig, f); if (seg == null) continue;
-                    float gap = FootGap(seg, eq, g.transform, out _);
-                    if (gap < -sunk) sunk = -gap;
-                }
-                if (sunk < 0.005f) break;
-                g.transform.position += Vector3.up * sunk; dy += sunk;
+                float low = float.MaxValue;
+                foreach (BodyPart p in Trunk) { Transform seg = Segment(rig, p); if (seg != null) low = Mathf.Min(low, LowestY(seg)); }
+                float down = low - st.SeatPoint(b ? 1f : 0f).y;
+                if (low < float.MaxValue && down > 0.005f) { g.transform.position -= Vector3.up * down; dy -= down; }
             }
+            Unsink();
         }
         // SENTADO SOBRE el asiento o el banco, no dentro: la pelvis y los muslos salen por arriba de lo que atraviesan (en
         // las máquinas de placas, quien es más bajo que 1,85 m quedaba con la cadera metida en el asiento).
@@ -322,7 +348,8 @@ public static class GymFit
             if (up > 0f) { g.transform.position += Vector3.up * up; dy += up; }
         }
         // PIES AL SUELO: con los dos pies apoyados, el que no llega (piernas cortas en un banco alto) baja hasta lo que pisa.
-        if (feet >= 2)
+        // Solo si el IK lo deja mejor: con la pierna casi recta (remo australiano) un pie podía acabar dentro del suelo.
+        if (feet >= 2 && rail == null)
             foreach (bool left in new[] { true, false })
             {
                 Transform foot = rig.Get(left ? BodyPart.FootLeft : BodyPart.FootRight), seg = Segment(rig, left ? BodyPart.FootLeft : BodyPart.FootRight);
@@ -330,16 +357,53 @@ public static class GymFit
                 if (foot == null || seg == null || th == null || sh == null) continue;
                 float gap = FootGap(seg, eq, g.transform, out _);
                 if (gap <= 0.01f || gap > 0.3f) continue;
-                TwoBoneIK.Solve(th, sh, foot, foot.position - Vector3.up * gap, sh.position + g.transform.forward * 0.3f, 1f);
+                // Si justo debajo no hay dónde apoyar (los talones de quien es alto pasan del borde del caucho y debajo está
+                // la losa, 13 cm más abajo: bajarlos los metía en el canto del caucho), la rodilla se dobla: el pie se acerca
+                // a la cadera (de 3 en 3 cm, hasta 0,45 m) hasta que baja sobre algo sin hundirse.
+                Quaternion qt = th.localRotation, qs = sh.localRotation;
+                Vector3 f0 = foot.position, toHip = th.position - foot.position; toHip.y = 0f;
+                toHip = toHip.sqrMagnitude > 1e-6f ? toHip.normalized : Vector3.zero;
+                bool ok = false; float bestAfter = float.MaxValue; int bestK = -1;
+                for (int k = 0; k <= 15 && !ok; k++)
+                {
+                    th.localRotation = qt; sh.localRotation = qs;
+                    float down = gap;
+                    if (k > 0)
+                    {
+                        if (toHip == Vector3.zero) break;
+                        TwoBoneIK.Solve(th, sh, foot, f0 + toHip * (0.03f * k), sh.position + g.transform.forward * 0.3f, 1f);
+                        down = FootGap(seg, eq, g.transform, out _);
+                        if (float.IsInfinity(down) || down < -0.06f || down > 0.3f) continue;   // (sobre el canto del caucho: sube lo que se hunde)
+                    }
+                    if (Mathf.Abs(down) > 0.005f) TwoBoneIK.Solve(th, sh, foot, foot.position - Vector3.up * down, sh.position + g.transform.forward * 0.3f, 1f);
+                    float after = FootGap(seg, eq, g.transform, out _);
+                    ok = after >= -0.005f && after <= (k == 0 ? 0.045f : 0.03f);   // (sin doblar la rodilla vale lo que ya valía: ≤ 4,5 cm)
+                    if (!ok && after >= -0.005f && after < bestAfter) { bestAfter = after; bestK = k; }
+                }
+                if (!ok)
+                {
+                    th.localRotation = qt; sh.localRotation = qs;
+                    if (bestK < 0 || bestAfter >= gap) continue;
+                    // (lo mejor que se encontró, aunque no llegue del todo)
+                    if (bestK > 0) TwoBoneIK.Solve(th, sh, foot, f0 + toHip * (0.03f * bestK), sh.position + g.transform.forward * 0.3f, 1f);
+                    float d2 = FootGap(seg, eq, g.transform, out _);
+                    if (!float.IsInfinity(d2) && d2 > 0.005f) TwoBoneIK.Solve(th, sh, foot, foot.position - Vector3.up * d2, sh.position + g.transform.forward * 0.3f, 1f);
+                }
                 rig.LockPose(left ? BodyPart.ThighLeft : BodyPart.ThighRight); rig.LockPose(left ? BodyPart.ShinLeft : BodyPart.ShinRight);
             }
+        // LA BARANDILLA: los pies que apoyan, SOBRE el tubo de 5 cm (antes caían a su lado, a 0,5–1 m del suelo).
+        if (rail != null) FeetOnRail(rig, eq, rail, feet, g.transform);
+        // LA BANDERA HUMANA: la cabeza, que va hacia el poste, no se mete en él (el cuerpo se aparta; las manos siguen al agarre).
+        if (st.type == GymMachineType.BanderaHumana) PushOff(g, rig, eq, "Poste");
+        // Y al final, ningún pie dentro de nada (lo de arriba mueve piernas y cuerpo).
+        Unsink();
         _lastDy[st] = dy;
         // LA ALMOHADILLA DEL HIP THRUST va encima de la cadera (es la palanca que se empuja con ella).
         if (st.type == GymMachineType.HipThrust) RideOnHips(st, rig, eq);
         // LO REGULABLE a la medida de quien la usa: la almohadilla de las rodillas del gemelo, la de la cadera de las
         // hiperextensiones y los rodillos de los pies del banco declinado. Y los PEDALES, bajo los pies (giran con la biela).
         if (st.type == GymMachineType.Gemelos) RideOn(st, rig, eq, "Almohadilla_rodillas", true, BodyPart.ThighLeft, BodyPart.ThighRight);
-        if (st.type == GymMachineType.Hiperextension) RideOn(st, rig, eq, "Almohadilla_cadera", false, BodyPart.Hips);
+        if (st.type == GymMachineType.Hiperextension) HipPad(st, rig, eq);
         if (st.type == GymMachineType.AbdominalDeclinado) FeetRollers(st, rig, eq);
         if (Pedals(st.type)) PedalsUnderFeet(st, rig, eq);
         // AGARRES QUE SE MUEVEN (palancas, cables, barras): van con las manos.
@@ -476,7 +540,12 @@ public static class GymFit
         Shift(st, pad, Vector3.up * Mathf.Clamp(above ? y - lo : y - hi, -0.2f, 0.2f));
     }
 
-    /// <summary>Los rodillos de los pies del banco declinado (con su brazo), a la altura y la distancia de los tobillos de quien se tumba.</summary>
+    /// <summary>Los rodillos de los pies del banco declinado (con su brazo), a la altura y la distancia de los tobillos de quien
+    /// se tumba. Centrados en los pies, el pie (inclinado) se metía en uno de los dos rodillos: se prueba alrededor
+    /// (±0,3 m arriba/abajo, ±0,2 m a lo largo del banco) y se queda la posición más cercana en la que ningún pie entra en un
+    /// rodillo y las piernas no lo atraviesan más de lo que cede el acolchado. Los PIES mandan: si no hay posición limpia,
+    /// la que menos hunde el pie (lo que mide la prueba: la parte de arriba del rodillo menos la planta) y, a igualdad, la
+    /// que menos se mete en las piernas.</summary>
     static void FeetRollers(GymStation st, CreatureRig rig, Equipment eq)
     {
         Transform fl = Segment(rig, BodyPart.FootLeft), fr = Segment(rig, BodyPart.FootRight);
@@ -486,7 +555,255 @@ public static class GymFit
         Vector3 mid = Vector3.zero; foreach (Transform r in rollers) mid += Orig(r); mid /= rollers.Count;
         Vector3 off = (fl.position + fr.position) * 0.5f - mid; off.x = 0f;
         off = Vector3.ClampMagnitude(off, 0.3f);
-        foreach (Transform t in eq.solid) if (t != null && (t.name == "Rodillo_pies" || t.name == "Brazo_rodillos")) Shift(st, t, off);
+        var moved = eq.solid.Where(t => t != null && (t.name == "Rodillo_pies" || t.name == "Brazo_rodillos")).ToList();
+        Vector3 fwd = st.Facing * Vector3.forward; fwd.y = 0f; fwd = fwd.sqrMagnitude > 1e-6f ? fwd.normalized : Vector3.forward;
+        var cands = new List<Vector3>();
+        for (int i = -15; i <= 15; i++) for (int j = -5; j <= 5; j++) cands.Add(Vector3.up * (i * 0.02f) + fwd * (j * 0.04f));
+        cands.Sort((x, y) => x.sqrMagnitude.CompareTo(y.sqrMagnitude));
+        Vector3 best = off; float bestFeet = float.MaxValue, bestBody = float.MaxValue;
+        foreach (Vector3 c in cands)
+        {
+            foreach (Transform t in moved) Shift(st, t, off + c);
+            float feetSunk = FeetSunk(rig, moved);
+            if (feetSunk > bestFeet + 1e-4f) continue;
+            float body = BodyDepth(rig, moved);
+            if (feetSunk < bestFeet - 1e-4f || body < bestBody) { bestFeet = feetSunk; bestBody = body; best = off + c; }
+            if (feetSunk <= 0f && body <= 0.006f) break;
+        }
+        foreach (Transform t in moved) Shift(st, t, best);
+    }
+
+    // ── Medidas del cuerpo contra la máquina (las mismas reglas que GymUsabilityTest) ───────────────────────────────
+
+    /// <summary>Segmentos del cuerpo que no deben atravesar la máquina (las manos no: agarran).</summary>
+    static readonly BodyPart[] Measured =
+    {
+        BodyPart.Hips, BodyPart.Back, BodyPart.Chest, BodyPart.Neck, BodyPart.Head, BodyPart.ShoulderLeft, BodyPart.ShoulderRight,
+        BodyPart.ForearmLeft, BodyPart.ForearmRight, BodyPart.ThighLeft, BodyPart.ThighRight, BodyPart.ShinLeft, BodyPart.ShinRight,
+        BodyPart.FootLeft, BodyPart.FootRight,
+    };
+    /// <summary>El tronco y las piernas (sin los brazos): lo que se apoya en un banco.</summary>
+    static readonly BodyPart[] Trunk =
+    {
+        BodyPart.Hips, BodyPart.Back, BodyPart.Chest, BodyPart.Neck, BodyPart.Head, BodyPart.ThighLeft, BodyPart.ThighRight,
+        BodyPart.ShinLeft, BodyPart.ShinRight, BodyPart.FootLeft, BodyPart.FootRight,
+    };
+    static readonly string[] SoftNames = { "Almohadilla", "Respaldo", "Asiento", "Banco", "Rodillo", "Sillin", "Apoy", "Esterilla", "Saco" };
+    /// <summary>¿Es un acolchado? (cede 2 cm).</summary>
+    public static bool Soft(string n) { foreach (string s in SoftNames) if (n.StartsWith(s)) return true; return false; }
+
+    /// <summary>Lo que más se mete el cuerpo (puntos del eje de cada segmento, sin las manos) en esas piezas, en m; los
+    /// acolchados ceden 2 cm. ≤ 0 = nada.</summary>
+    static float BodyDepth(CreatureRig rig, IEnumerable<Transform> pieces, IEnumerable<BodyPart> parts = null)
+    {
+        float worst = 0f;
+        foreach (BodyPart p in parts ?? Measured)
+        {
+            Transform seg = Segment(rig, p); if (seg == null) continue;
+            foreach (Vector3 pt in AxisSamples(seg))
+                foreach (Transform piece in pieces)
+                {
+                    if (piece == null) continue;
+                    float d = Depth(pt, piece) - (Soft(piece.name) ? 0.02f : 0f);
+                    if (d > worst) worst = d;
+                }
+        }
+        return worst;
+    }
+
+    /// <summary>Lo que un pie queda «hundido» en esas piezas, como lo mide <see cref="FootGap"/>: si algún punto del pie
+    /// (talón, centro, punta o planta) está dentro de una, la parte de arriba de esa pieza menos la planta. 0 = ninguno.</summary>
+    static float FeetSunk(CreatureRig rig, List<Transform> pieces)
+    {
+        float s = 0f;
+        foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
+        {
+            Transform seg = Segment(rig, f); if (seg == null) continue;
+            float bottom = LowestY(seg);
+            foreach (Vector3 a in AxisSamples(seg))
+                foreach (Vector3 q in new[] { a, new Vector3(a.x, bottom + 0.01f, a.z) })
+                    foreach (Transform piece in pieces)
+                        if (piece != null && Depth(q, piece) > 0f) s = Mathf.Max(s, HighestY(piece) - bottom + 0.001f);
+        }
+        return s;
+    }
+
+    static float MinFootGap(CreatureRig rig, Equipment eq, Transform self)
+    {
+        float m = float.MaxValue;
+        foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
+        {
+            Transform seg = Segment(rig, f); if (seg == null) continue;
+            float gap = FootGap(seg, eq, self, out _);
+            if (!float.IsInfinity(gap)) m = Mathf.Min(m, gap);
+        }
+        return m;
+    }
+
+    // ── Ajustes por máquina ────────────────────────────────────────────────────────────────────
+
+    /// <summary>BICIS: con la pierna estirada, quien es alto metía la punta del pie en el volante (y el ajuste lo subía 0,3 m
+    /// del asiento: las manos ya no llegaban a las asas). La rodilla se dobla más —el pie se acerca a la cadera, de 3 en 3 cm,
+    /// hasta 0,3 m— hasta que ni el pie ni la pierna entran en nada (los pedales luego van bajo el pie).</summary>
+    static void RetractFeet(CreatureRig rig, Equipment eq, Transform self)
+    {
+        var solids = eq.solid.Where(t => t != null && !eq.withFeet.Contains(t)).ToList();
+        foreach (bool left in new[] { true, false })
+        {
+            BodyPart pt = left ? BodyPart.ThighLeft : BodyPart.ThighRight, ps = left ? BodyPart.ShinLeft : BodyPart.ShinRight, pf = left ? BodyPart.FootLeft : BodyPart.FootRight;
+            Transform th = rig.Get(pt), sh = rig.Get(ps), foot = rig.Get(pf), seg = Segment(rig, pf);
+            if (th == null || sh == null || foot == null || seg == null) continue;
+            BodyPart[] leg = { pt, ps, pf };
+            bool Bad() => FootGap(seg, eq, self, out _) < -0.01f || BodyDepth(rig, solids, leg) > 0.004f;
+            if (!Bad()) continue;
+            Quaternion qt = th.localRotation, qs = sh.localRotation;
+            Vector3 f0 = foot.position, toHip = (th.position - foot.position).normalized;
+            bool ok = false;
+            for (int k = 1; k <= 10 && !ok; k++)
+            {
+                th.localRotation = qt; sh.localRotation = qs;
+                TwoBoneIK.Solve(th, sh, foot, f0 + toHip * (0.03f * k), sh.position + self.forward * 0.3f, 1f);
+                ok = !Bad();
+            }
+            if (!ok) { th.localRotation = qt; sh.localRotation = qs; continue; }
+            rig.LockPose(pt); rig.LockPose(ps);
+        }
+    }
+
+    /// <summary>ESCALADORA: el pie más bajo en su peldaño (<paramref name="dyLow"/>) o, si así una pierna atraviesa el peldaño de
+    /// encima (quien es bajo deja el pie de delante entre dos peldaños y la espinilla dentro del siguiente), el pie de ARRIBA
+    /// sobre el peldaño que tiene debajo (subiendo: el de atrás se despega). Se queda la que no atraviesa nada.</summary>
+    static float StepChoice(CreatureRig rig, Equipment eq, Transform self, float dyLow)
+    {
+        float Score(float d)
+        {
+            self.position += Vector3.up * d;
+            float gap = MinFootGap(rig, eq, self);
+            float s = Mathf.Max(BodyDepth(rig, eq.solid) - 0.004f, gap < float.MaxValue ? -gap - 0.01f : 0f);
+            self.position -= Vector3.up * d;
+            return s;
+        }
+        float s0 = Score(dyLow);
+        if (s0 <= 0f) return dyLow;
+        Transform hi = null; float hiY = float.MinValue;
+        foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight })
+        {
+            Transform seg = Segment(rig, f); if (seg == null) continue;
+            float y = LowestY(seg); if (y > hiY) { hiY = y; hi = seg; }
+        }
+        if (hi == null) return dyLow;
+        const float rise = 0.45f;
+        float top = float.NegativeInfinity;
+        foreach (Vector3 a in AxisSamples(hi))
+        {
+            float t = SurfaceBelow(new Vector3(a.x, hiY + rise, a.z), eq, self, out _);
+            if (t < hiY + rise - 1e-3f) top = Mathf.Max(top, t);
+        }
+        if (float.IsNegativeInfinity(top)) return dyLow;
+        float dyHigh = top + 0.003f - hiY;
+        return Score(dyHigh) < s0 ? dyHigh : dyLow;
+    }
+
+    /// <summary>BARANDILLA: los pies que apoyan (el más bajo en A, los dos en B) van por IK SOBRE el tubo: el centro de la
+    /// planta en la vertical del eje del tubo y la planta en su parte de arriba (+4 mm).</summary>
+    static void FeetOnRail(CreatureRig rig, Equipment eq, Transform rail, int n, Transform self)
+    {
+        float top = rail.position.y + Mathf.Abs(rail.lossyScale.y) * 0.5f;
+        Vector3 axis = rail.TransformDirection(Vector3.forward); axis.y = 0f;
+        axis = axis.sqrMagnitude > 1e-6f ? axis.normalized : Vector3.forward;
+        var feetList = new List<(BodyPart th, BodyPart sh, BodyPart f, float y)>();
+        foreach (bool left in new[] { true, false })
+        {
+            Transform seg = Segment(rig, left ? BodyPart.FootLeft : BodyPart.FootRight); if (seg == null) continue;
+            feetList.Add((left ? BodyPart.ThighLeft : BodyPart.ThighRight, left ? BodyPart.ShinLeft : BodyPart.ShinRight, left ? BodyPart.FootLeft : BodyPart.FootRight, LowestY(seg)));
+        }
+        foreach (var (pt, ps, pf, _) in feetList.OrderBy(x => x.y).Take(Mathf.Max(1, n)))
+        {
+            Transform th = rig.Get(pt), sh = rig.Get(ps), foot = rig.Get(pf), seg = Segment(rig, pf);
+            if (th == null || sh == null || foot == null || seg == null) continue;
+            for (int it = 0; it < 3; it++)
+            {
+                Vector3 c = seg.position;
+                Vector3 on = rail.position + axis * Vector3.Dot(c - rail.position, axis);
+                Vector3 d = new Vector3(on.x - c.x, top + 0.004f - LowestY(seg), on.z - c.z);
+                if (d.magnitude < 0.004f) break;
+                TwoBoneIK.Solve(th, sh, foot, foot.position + d, sh.position + self.forward * 0.3f, 1f);
+            }
+            rig.LockPose(pt); rig.LockPose(ps);
+        }
+    }
+
+    /// <summary>Aparta el cuerpo (en horizontal) de las piezas macizas cuyo nombre empieza por <paramref name="prefix"/> en
+    /// las que se mete (la cabeza en el poste de la bandera). Empujar desde el eje del poste no bastaba: la cabeza va de
+    /// frente al poste y, al retirarla, el siguiente punto de su eje entraba. Se prueban desplazamientos de 1 en 1 cm (hasta
+    /// 0,2 m) hacia delante, hacia atrás, alejándose del poste y en diagonal, y se queda el más corto que deja todo el cuerpo
+    /// fuera (+5 mm de margen).</summary>
+    static void PushOff(GameObject g, CreatureRig rig, Equipment eq, string prefix)
+    {
+        var posts = eq.solid.Where(t => t != null && t.name.StartsWith(prefix)).ToList();
+        if (posts.Count == 0 || BodyDepth(rig, posts) <= 0f) return;
+        Vector3 fwd = g.transform.forward; fwd.y = 0f; fwd = fwd.sqrMagnitude > 1e-6f ? fwd.normalized : Vector3.forward;
+        Transform hips = rig.Get(BodyPart.Hips);
+        Vector3 away = (hips != null ? hips.position : g.transform.position) - posts[0].position; away.y = 0f;
+        away = away.sqrMagnitude > 1e-6f ? away.normalized : -fwd;
+        Vector3[] dirs = { fwd, -fwd, away, (fwd + away).normalized, (-fwd + away).normalized };
+        Vector3 start = g.transform.position, best = start; float bestD = BodyDepth(rig, posts);
+        for (int k = 1; k <= 20; k++)
+        {
+            foreach (Vector3 d in dirs)
+            {
+                g.transform.position = start + d * (0.01f * k);
+                float depth = BodyDepth(rig, posts);
+                if (depth < bestD) { bestD = depth; best = g.transform.position; }
+                if (depth <= -0.005f || (depth <= 0f && AllClear(rig, posts, 0.005f))) { g.transform.position = start + d * (0.01f * k); return; }
+            }
+        }
+        g.transform.position = best;
+    }
+
+    /// <summary>¿Ningún punto del eje de los segmentos (sin las manos) a menos de <paramref name="margin"/> m de esas piezas?</summary>
+    static bool AllClear(CreatureRig rig, List<Transform> pieces, float margin)
+    {
+        foreach (BodyPart p in Measured)
+        {
+            Transform seg = Segment(rig, p); if (seg == null) continue;
+            foreach (Vector3 pt in AxisSamples(seg))
+                foreach (Transform piece in pieces)
+                    if (piece != null && Dist(pt, piece) < margin) return false;
+        }
+        return true;
+    }
+
+    /// <summary>HIPEREXTENSIONES: la almohadilla de la cadera es regulable. Su borde de arriba queda ~0,3 m por delante de la
+    /// cadera, así que subirla hasta la pelvis la metía en el hombro o el brazo del tronco que cuelga. Se prueban alturas
+    /// (±0,2 m) y avances (±0,1 m) y se queda la más cercana a su sitio en la que el cuerpo no la atraviesa (cede 2 cm) y
+    /// la cadera o los muslos la tocan.</summary>
+    static void HipPad(GymStation st, CreatureRig rig, Equipment eq)
+    {
+        Transform pad = eq.solid.FirstOrDefault(t => t != null && t.name == "Almohadilla_cadera");
+        if (pad == null) return;
+        var one = new List<Transform> { pad };
+        Vector3 fwd = st.Facing * Vector3.forward; fwd.y = 0f; fwd = fwd.sqrMagnitude > 1e-6f ? fwd.normalized : Vector3.forward;
+        var cands = new List<Vector3>();
+        for (int i = -10; i <= 10; i++) for (int j = -2; j <= 2; j++) cands.Add(Vector3.up * (i * 0.02f) + fwd * (j * 0.05f));
+        cands.Sort((x, y) => x.sqrMagnitude.CompareTo(y.sqrMagnitude));
+        Vector3 best = Vector3.zero; float bestPen = float.MaxValue, bestGap = float.MaxValue;
+        foreach (Vector3 c in cands)
+        {
+            Shift(st, pad, c);
+            float pen = BodyDepth(rig, one);
+            bool clean = pen <= 0.004f;
+            float gap = float.MaxValue;
+            if (clean)
+                foreach (BodyPart p in new[] { BodyPart.Hips, BodyPart.ThighLeft, BodyPart.ThighRight })
+                {
+                    Transform seg = Segment(rig, p); if (seg == null) continue;
+                    foreach (Vector3 pt in AxisSamples(seg)) gap = Mathf.Min(gap, Mathf.Max(0f, Dist(pt, pad) - HalfThickness(seg)));
+                }
+            bool bestClean = bestPen <= 0.004f;
+            if (clean ? (!bestClean || gap < bestGap - 0.005f) : (!bestClean && pen < bestPen)) { best = c; bestPen = pen; bestGap = gap; }
+        }
+        Shift(st, pad, best);
     }
 
     /// <summary>Los pedales, bajo la planta de cada pie (giran con la biela).</summary>

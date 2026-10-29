@@ -18,6 +18,9 @@ public class Linduarda : MonoBehaviour
     [Tooltip("Máquina de virtualización a la que lleva al recién llegado (iniciación al Micro). Vacío = la busca en escena.")]
     public VirtualizationMachine virtualizationMachine;
 
+    /// <summary>Lo que hace ahora por su cuenta (llevar una muestra, atender a alguien), o null. La jornada lo muestra en su cartel.</summary>
+    public string Doing => _sample != null ? $"lleva la muestra de «{_sampleOf}» al analizador" : _patient != null ? $"atiende a «{_patient.name}»" : null;
+
     Anima _a;
     VaccinateSpell _vax;
     ClinicalAnalysisSpell _analysis;
