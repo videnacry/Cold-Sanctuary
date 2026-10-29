@@ -267,6 +267,7 @@ public class SpellConsole : MonoBehaviour
     {
         ("reemplazar", "reemplazar({destiny:\"Magnate\", quitar:\"\", poner:\"\"})"),   // cambiar una CONVICCIÓN (Convictions)
         ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
+        ("tercera",   "tercera({on:true})"),   // la cámara en 3.ª persona siempre (para probar en vivo)
         ("miembro",   "miembro({destiny:\"Kushal\"})"),   // (admin) hace a alguien miembro del santuario: se salta la iniciación
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
@@ -538,6 +539,10 @@ public class SpellConsole : MonoBehaviour
                     if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
                     Log($"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.");
                 }
+                break;
+            case "tercera": case "third":   // 3.ª PERSONA SIEMPRE: ninguna zona, examen ni robo de cámara la pasa a 1.ª
+                CameraManager.ThirdAlways = !args.TryGetValue("on", out string to3) || Clean(to3) != "false";
+                Log(CameraManager.ThirdAlways ? "Cámara: 3.ª persona siempre." : "Cámara: normal (la V y las zonas vuelven a cambiarla).");
                 break;
             case "progreso": case "progress":   // CHECKLIST de la historia y las misiones (ProgressPanel): abre o cierra la ventana
                 Log(ProgressPanel.Toggle());
