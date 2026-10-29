@@ -158,6 +158,14 @@ public abstract class LifeStage
             // Deambular a un punto LOCAL (ya no hacia un ave al azar — ese placeholder no tenía sentido). El `Homebound`
             // lo devuelve si se aleja de su hogar. La navegación por LECTURA del entorno (impulsos: olor/hogar/colegueo/
             // confort/experiencia) llega por rebanadas — ver docs/environmental-navigation.md (N0 aquí; N1+ = impulsos).
+            // CRÍA DE UN RECINTO (Cría, con sus tomas): da pasitos por su recinto (≤ 1,5 m de su sitio). Con el paso normal
+            // (5–25 m) apuntaba más allá de los muros y recorría el borde del recinto sin parar (vueltas en círculo).
+            if (script.GetComponentInParent<CriaFeeder>() != null)
+            {
+                Vector2 r = Random.insideUnitCircle * 1.5f;
+                script.nav.SetDestination(script.HomeOrigin + new Vector3(r.x, 0f, r.y));
+                return;
+            }
             float step = Mathf.Clamp(script.HomeRadius, 5f, 25f);
             // N8: ALTERNACIÓN ESPONTÁNEA (etología, environmental-navigation.md §2.1) — el ser saciado explora con
             // propósito, sin volver por donde vino: sesga el destino hacia ADELANTE (sigue avanzando por el territorio).

@@ -60,8 +60,11 @@ public static class DesireCatalog
     {
         // COMER: necesidad = hambre (>0 cuando hungry>=0, como el guard actual). Despacha el Feed existente
         // (Forager.Hunt/Graze) — idéntico a lo que hacía RespondToHunger.
+        // No lo siente quien NO PUEDE forrajear (la cría lactante, la pupa: su hambre la atiende «nurse», abajo) ni quien
+        // acaba de comprobar que no tiene comida a su alcance (Forager.GaveUp: el lobo en su perrera, el pingüino lejos del
+        // banco): antes «eat» ganaba igual, Feed no hacía nada y el animal se quedaba plantado queriendo comer.
         new Desire("eat",
-            self => self.hungry >= 0f ? Mathf.Max(0.01f, self.hungry) : 0f,
+            self => self.hungry >= 0f && Metamorphosis.CanForage(self) && (self.Forage == null || !self.Forage.GaveUp) ? Mathf.Max(0.01f, self.hungry) : 0f,
             self => self.StartCoroutine(self.Feed()),
             "forage",
             // SUPRAHECHIZO de comer: LEVANTARSE (paso compartido) → ANALIZAR → COMER. El 'levantarse' es la MISMA factory
@@ -86,7 +89,20 @@ public static class DesireCatalog
                 MatingSignal caller = MatingSignal.NearestCaller(self, 40f * Mathf.Max(0.3f, self.perception));
                 if (caller != null && self.sex == Sex.female) { self.nav.SetDestination(caller.transform.position); return; }
                 Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
-                if (g.sqrMagnitude > 0.0001f) self.nav.SetDestination(self.transform.position + g.normalized * 6f);
+                if (g.sqrMagnitude > 0.0001f) { self.nav.SetDestination(self.transform.position + g.normalized * 6f); return; }
+                // Sin llamada ni rastro de celo que seguir: BUSCA (antes se quedaba plantado «queriendo pareja» todo el día):
+                // hacia el adulto del otro sexo de su especie más cercano o, si no ve ninguno, un paseo corto de búsqueda.
+                Animal mate = null; float md = 40f;
+                foreach (GameObject o in self.Population)
+                {
+                    if (o == null || o == self.gameObject || !o.TryGetComponent(out Animal oa) || oa.death || oa.lifeStage != LifeStage.adult || oa.sex == self.sex) continue;
+                    float dd = Vector3.Distance(o.transform.position, self.transform.position);
+                    if (dd < md) { md = dd; mate = oa; }
+                }
+                if (mate != null && md > 2f) { self.nav.SetDestination(mate.transform.position); return; }
+                if (self.nav.hasPath && self.nav.remainingDistance > 1f) return;
+                Vector2 rr = UnityEngine.Random.insideUnitCircle * 8f;
+                self.nav.SetDestination(self.transform.position + new Vector3(rr.x, 0f, rr.y));
             },
             "mate"),
 
@@ -108,6 +124,15 @@ public static class DesireCatalog
             self => { CubNeed(self, out float n); return n * Mathf.Max(0.3f, self.afabilidad) * W_NURSE; },
             self => NurseCub(self),
             "tend"),
+
+        // SER NUTRIDA (el otro lado de «nurse»): la CRÍA que aún no forrajea y tiene hambre no sale a cazar ni a pescar —
+        // llama y se arrima a su madre/padre (el adulto vinculado más cercano) para que la alimente, o, sin él (la cría
+        // huérfana de un recinto de la Cría), espera la toma en su sitio (su HomeOrigin). Antes «eat» ganaba, Feed no hacía
+        // nada (CanForage = false) y la cría se quedaba plantada «queriendo comer» o daba vueltas por el recinto.
+        new Desire("nurse",
+            self => self.lifeStage == LifeStage.child && self.hungry >= 0f && !Metamorphosis.CanForage(self) ? Mathf.Max(0.01f, self.hungry) : 0f,
+            self => AwaitFeeding(self),
+            "follow"),
 
         // GUARDAR EL NIDO (tijereta, solífugo, escorpión; BroodRide.Guards): la madre con crías pequeñas VINCULADAS se queda
         // en casa vigilándolas (las tijeretas: juntan, limpian y defienden la puesta, Kölliker 2007). Necesidad = vínculo
@@ -169,7 +194,8 @@ public static class DesireCatalog
         new Desire("explore",
             self => W_EXPLORE * Mathf.Clamp01((self.reasoning + self.creativity) * 0.5f),
             // UnityEngine.Random explícito: el `using System` de arriba trae System.Random y el nombre corto es ambiguo (CS0104).
-            self => { if (self.nav != null && self.nav.isOnNavMesh) { Vector2 r = UnityEngine.Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
+            // (la cría de un recinto de la Cría curiosea por su recinto, a ≤ 1,5 m de su sitio: no contra los muros)
+            self => { if (self.nav != null && self.nav.isOnNavMesh) { bool pen = self.GetComponentInParent<CriaFeeder>() != null; Vector2 r = UnityEngine.Random.insideUnitCircle * (pen ? 1.5f : 8f); self.nav.SetDestination((pen ? self.HomeOrigin : self.transform.position) + new Vector3(r.x, 0f, r.y)); } },
             "explore"),
     };
 
@@ -225,6 +251,25 @@ public static class DesireCatalog
             cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);   // amamantar/compartir comida
             self.exhaustion += 0.5f;                          // cuidar cansa un poco
         }
+    }
+
+    // La cría hambrienta se arrima al adulto vinculado más cercano (su madre/padre) o, si no lo tiene, se queda en su sitio
+    // esperando la toma. Pasos cortos y con destino fijo (sin vagar por el recinto).
+    static void AwaitFeeding(Animal self)
+    {
+        if (self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return;
+        Transform parent = null; float best = 30f;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.SpeciesName != self.SpeciesName) continue;
+            float d = Vector3.Distance(o.transform.position, self.transform.position);
+            if (d < best) { best = d; parent = o.transform; }
+        }
+        Vector3 to = parent != null ? parent.position : self.HomeOrigin;
+        if (Vector3.Distance(self.transform.position, to) > (parent != null ? 2f : 1.5f)) self.nav.SetDestination(to);
+        else { self.nav.ResetPath(); self.Loco?.Idle(1f); }
     }
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;

@@ -169,6 +169,7 @@ public class IceInsectLife : MonoBehaviour
         {
             case Role.Reina:
                 if (Work(Hive.Cell.Empty, false, 1.5f)) { hive.Set(_cell, Hive.Cell.Egg); _cell = -1; }
+                else if (_cell < 0) Hover(0.3f);   // sin celdilla libre recorre el panal (antes se quedaba clavada todo el día)
                 break;
             case Role.Limpiadora:
                 if (Work(Hive.Cell.Dirty, false, 2f)) { hive.Set(_cell, Hive.Cell.Empty); _cell = -1; }
@@ -299,10 +300,34 @@ public class IceInsectLife : MonoBehaviour
         if (dist > 0.01f)
         {
             transform.position += d / dist * Mathf.Min(dist, speed * Time.deltaTime);
+            if (kind == Kind.Bee) transform.position = OutOfBranches(transform.position);
             Vector3 flat = d; flat.y = 0f;
             if (kind == Kind.Bee && flat.sqrMagnitude > 0.001f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flat), 6f * Time.deltaTime);
         }
         return dist;
+    }
+
+    // La abeja NO se mete en las ramas: el panal cuelga de una rama y sus celdillas, el racimo y los rodeos quedaban a
+    // veces DENTRO del bloque «Rama»/«Rama_Plataforma» (o del tronco). Si su centro cae dentro de uno, sale por la cara
+    // más cercana (+4 cm). Solo bloques del árbol (no el panal ni las celdillas, donde trabaja).
+    static readonly Collider[] _near = new Collider[8];
+    static Vector3 OutOfBranches(Vector3 p)
+    {
+        int n = Physics.OverlapSphereNonAlloc(p, 0.06f, _near, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+        {
+            if (!(_near[i] is BoxCollider box) || !(box.name.StartsWith("Rama") || box.name.StartsWith("Tronco"))) continue;
+            Transform t = box.transform;
+            Vector3 local = t.InverseTransformPoint(p) - box.center, half = box.size * 0.5f, s = t.lossyScale;
+            // Penetración por eje, en metros del mundo; sale por la menor.
+            float px = (half.x - Mathf.Abs(local.x)) * Mathf.Abs(s.x), py = (half.y - Mathf.Abs(local.y)) * Mathf.Abs(s.y), pz = (half.z - Mathf.Abs(local.z)) * Mathf.Abs(s.z);
+            if (px < 0f || py < 0f || pz < 0f) continue;   // (el radio de la consulta la rozaba por fuera)
+            if (px <= py && px <= pz) local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * (half.x + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.x)));
+            else if (py <= pz) local.y = Mathf.Sign(local.y == 0f ? 1f : local.y) * (half.y + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.y)));
+            else local.z = Mathf.Sign(local.z == 0f ? 1f : local.z) * (half.z + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.z)));
+            p = t.TransformPoint(local + box.center);
+        }
+        return p;
     }
 
     // LISTAS COMPARTIDAS (refrescadas cada segundo): antes cada insecto buscaba en toda la escena varias veces por frame.

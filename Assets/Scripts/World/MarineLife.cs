@@ -32,14 +32,21 @@ public class MarineLife : MonoBehaviour
 
     /// <summary>¿Está en un hábito natural (respirando por su respiradero, frotándose en la grava, patrullando los témpanos,
     /// descansando en un descansadero)? Lo cuenta el censo de <see cref="AnimalVitals"/>.</summary>
-    public bool InHabitat => (_spot != null && _spotUntil >= 0f) || (_haul != null && transform.position.y > -0.3f);   // ya en el sitio, no de camino
+    // Tumbada en su trozo de orilla (con o sin descansadero marcado) también está en su hábitat: descansa a propósito.
+    public bool InHabitat => (_spot != null && _spotUntil >= 0f) || (_haul != null && transform.position.y > -0.3f) || (_onIce && transform.position.y > -0.3f);
     float _nextSpot, _spotUntil;
     static int _count;
+    // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
+    // la placa (respiraderos, orillas, ir a por la pareja): por debajo del hielo se bucea por debajo de su cara inferior.
+    const float IceBottom = -1.5f;
+    float _halfH = 0.4f;
+
 
     public bool OnIce => _onIce;
 
     void Start()
     {
+        if (GetComponentInParent<CriaFeeder>() != null) { Destroy(this); return; }   // cría de un recinto de la Cría: vive en su recinto (NavMesh), no en el mar
         _a = GetComponent<Animal>();
         _estrus = GetComponent<EstrusState>();
         string sp = _a != null ? _a.SpeciesName : "";
@@ -50,12 +57,34 @@ public class MarineLife : MonoBehaviour
         if (transform.position.y > -0.3f && !hauls) transform.position = new Vector3(transform.position.x, SwimY, transform.position.z);
         _restCooldown = Time.time + Random.Range(20f, 60f);
         _angleSeed = (_count++ * 67f) % 360f;   // cada foca, su trozo de orilla
+        Bounds b = new Bounds(transform.position, Vector3.zero); bool any = false;
+        foreach (Renderer r in GetComponentsInChildren<Renderer>()) { if (r is ParticleSystemRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        if (any) _halfH = Mathf.Clamp(b.extents.y, 0.2f, 1.6f);
     }
+
+    /// <summary>¿Hay hielo (o algo sólido: un edificio sobre el hielo) encima del mar en (x, z)?</summary>
+    public static bool IceAbove(Vector3 p)
+    {
+        int n = Physics.RaycastNonAlloc(new Vector3(p.x, 8f, p.z), Vector3.down, _hits, 14f, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++)
+            if (_hits[i].point.y > -0.3f && _hits[i].collider.GetComponentInParent<Anima>() == null) return true;   // (no un animal ni una persona encima)
+        return false;
+    }
+    static readonly RaycastHit[] _hits = new RaycastHit[8];
+
+    // Profundidad a la que nada por debajo de la placa (el lomo, 15 cm bajo su cara inferior).
+    float UnderIceY => IceBottom - _halfH - 0.15f;
 
     void LateUpdate()   // después de la IA genérica (que intentaba moverlos por el NavMesh)
     {
         if (_a == null || _a.death) return;
         if (TryGetComponent(out NavMeshAgent nav) && nav.enabled) nav.enabled = false;
+        // Siempre se endereza (el balanceo de frotarse lo vuelve a fijar Habitat en el mismo fotograma): ninguna física ni
+        // giro acumulado la deja de lado o panza arriba.
+
+        Vector3 fw = transform.forward; fw.y = 0f;
+        if (fw.sqrMagnitude > 1e-4f && Vector3.Angle(transform.up, Vector3.up) > 0.5f)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(fw.normalized), 3f * Time.deltaTime);
         bool night = TimeController.timeController != null && !TimeController.timeController.IsDay;
 
         // ── FOCAS: descanso en el hielo ──
@@ -139,15 +168,38 @@ public class MarineLife : MonoBehaviour
 
     float Move(Vector3 to, float v, bool onIce)
     {
+        Vector3 cur = transform.position;
+        // Bajo una placa de hielo y queriendo salir al hielo: primero sale a agua abierta (hacia la laguna); trepar desde
+        // debajo la metía dentro de la placa.
+        bool underIce = cur.y < -0.3f && IceAbove(cur);
+        if (onIce && underIce) { Vector3 open = Lagoon - cur; open.y = 0f; to = cur + (open.sqrMagnitude > 0.01f ? open.normalized : Vector3.forward) * 3f; to.y = SwimY; onIce = false; }
         Vector3 d = to - transform.position;
         float dist = d.magnitude;
         if (dist > 0.01f)
         {
             Vector3 step = d / dist * Mathf.Min(dist, v * Time.deltaTime);
-            Vector3 np = transform.position + step;
+            Vector3 np = cur + step;
             if (onIce && Physics.Raycast(np + Vector3.up * 2f, Vector3.down, out RaycastHit h, 6f, ~0, QueryTriggerInteraction.Ignore) && h.point.y > -0.3f && h.collider.GetComponentInParent<Animal>() == null)
-                np.y = Mathf.MoveTowards(transform.position.y, h.point.y + 0.25f, 2f * Time.deltaTime);   // sube al hielo por la orilla
-            else if (!onIce) np.y = Mathf.Min(np.y, -0.4f);   // nadando: siempre bajo la superficie
+            {
+                float top = h.point.y + 0.25f;
+                np.y = Mathf.MoveTowards(cur.y, top, 2f * Time.deltaTime);   // sube al hielo por la orilla
+                if (cur.y < top - 0.3f && !IceAbove(cur)) { np.x = cur.x; np.z = cur.z; }   // en el borde: sube ANTES de avanzar (no se mete en la placa)
+            }
+            else if (!onIce)
+            {
+                np.y = Mathf.Min(np.y, -0.4f);   // nadando: siempre bajo la superficie
+                // Hielo encima (o justo delante): bucea por debajo de la placa; si aún no está lo bastante hondo, baja en el
+                // sitio antes de meterse debajo (nunca atraviesa el hielo).
+                Vector3 flatDir = new Vector3(step.x, 0f, step.z);
+                Vector3 ahead = flatDir.sqrMagnitude > 1e-8f ? np + flatDir.normalized * (_halfH + 1f) : np;
+                if (IceAbove(np) || IceAbove(ahead))
+                {
+                    float under = UnderIceY;
+                    np.y = Mathf.MoveTowards(cur.y, Mathf.Min(np.y, under), 2.5f * Time.deltaTime);
+                    if (cur.y > under + 0.05f && IceAbove(np) && !IceAbove(cur)) { np.x = cur.x; np.z = cur.z; }
+                    dist = Vector3.Distance(new Vector3(to.x, 0f, to.z), new Vector3(np.x, 0f, np.z));   // bajo el hielo cuenta la distancia en planta
+                }
+            }
             transform.position = np;
             Vector3 flat = step; flat.y = 0f;
             if (flat.sqrMagnitude > 1e-6f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flat), 4f * Time.deltaTime);
@@ -181,8 +233,22 @@ public class MarineLife : MonoBehaviour
             _spotUntil = Time.time + (sp == "Seal" ? Random.Range(10f, 18f) : Random.Range(15f, 30f));
             Debug.Log($"[Marinos] «{name}» {(sp == "Seal" ? "sale a respirar por su respiradero" : sp == "Whale" ? "se frota contra la grava para mudar la piel" : "patrulla junto a los témpanos de las focas")}.");
         }
-        if (sp == "Seal") { transform.position = new Vector3(at.x, -0.25f, at.z); _spot.Touch(_a); }   // asoma la cabeza: el oso que acecha la ve
-        else if (sp == "Whale") transform.rotation *= Quaternion.Euler(0f, 0f, 40f * Time.deltaTime);   // rueda sobre la grava
+        if (sp == "Seal")
+        {
+            // Asoma por el respiradero: si el respiradero está EN la placa de hielo, respira desde debajo (el lomo bajo la
+            // cara inferior; antes se plantaba a −0,25 m, dentro del bloque «Casquete»). Si está en agua abierta, asoma.
+            float y = IceAbove(at) ? UnderIceY : -0.25f;
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(at.x, y, at.z), speed * Time.deltaTime);
+            _spot.Touch(_a);   // el oso que acecha la oye/ve respirar
+        }
+        else if (sp == "Whale")
+        {
+            // Se frota de costado contra la grava: un balanceo de ±35° (antes rodaba 40°/s sin parar y acababa panza arriba,
+            // volcada 137–178°).
+
+            Vector3 fwd = transform.forward; fwd.y = 0f; if (fwd.sqrMagnitude < 1e-4f) fwd = Vector3.forward;
+            transform.rotation = Quaternion.LookRotation(fwd.normalized) * Quaternion.Euler(0f, 0f, 35f * Mathf.Sin((Time.time - _spotUntil) * 1.2f));
+        }
         if (Time.time < _spotUntil) return true;
         _spot.Release(_a); _spot = null;
         return false;

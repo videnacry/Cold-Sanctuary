@@ -27,6 +27,7 @@ public class Habit : MonoBehaviour
     Vector3 _dest;
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
+    Vector3 _moveTo = new Vector3(1e6f, 0f, 0f); float _moveBest, _moveSince;
     bool _hasOptions, _canRest, _canFeed;
     static int _logged, _honeyLogged;
 
@@ -158,7 +159,7 @@ public class Habit : MonoBehaviour
                 if (_target != null) _dest = _target.transform.position;
                 if (!Move(_dest)) return;
                 if (_target != null && !_target.Occupy(_a)) { Stop(); return; }
-                _s = State.Doing; _until = Time.time + _act.seconds;
+                _s = State.Doing; _until = Time.time + _act.seconds; _moveTo = new Vector3(1e6f, 0f, 0f);
                 Halt();
                 if (_logged++ < 40 || _logged % 50 == 0) Debug.Log($"[Hábito] «{name}» ({_a.SpeciesName}) {_act.verb}.");
                 break;
@@ -189,6 +190,12 @@ public class Habit : MonoBehaviour
     {
         Vector3 d = to - transform.position; d.y = 0f;
         if (d.magnitude <= Arrive) return true;
+        // Sin avanzar 5 s (el sitio está ocupado por otros de la colonia, o el NavMesh no llega justo allí): se queda donde
+        // ha llegado. Antes los pingüinos con su guijarro y el oso del respiradero rodeaban el punto sin fin (vueltas en círculo).
+        if ((to - _moveTo).sqrMagnitude > 1f) { _moveTo = to; _moveBest = d.magnitude; _moveSince = Time.time; }
+        else if (d.magnitude < _moveBest - 0.4f) { _moveBest = d.magnitude; _moveSince = Time.time; }
+        else if (Time.time - _moveSince > 5f && d.magnitude < Arrive + 6f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); return true; }
+        else if (Time.time - _moveSince > 10f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); Stop(); return false; }   // lejos y sin camino: lo deja
         if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh)
         {
             if (Time.time >= _nextWalk) { _nextWalk = Time.time + 1f; _a.Loco?.Walk(to, 1f); }
@@ -307,7 +314,7 @@ public class Habit : MonoBehaviour
     {
         if (_target != null) _target.Release(_a);
         if (_load != null) Object.Destroy(_load);
-        _target = null; _load = null; _s = State.None; Doing = "";
+        _target = null; _load = null; _s = State.None; Doing = ""; _moveTo = new Vector3(1e6f, 0f, 0f);
         _cool = Time.time + Random.Range(2f, 6f);
     }
 

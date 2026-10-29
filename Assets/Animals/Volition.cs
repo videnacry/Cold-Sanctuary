@@ -58,11 +58,16 @@ public class Volition : MonoBehaviour
         }
 
         // DISCIPLINA (histéresis): un ser disciplinado se mantiene en su deseo salvo que otro lo supere por un margen.
-        if (_last != null && best != _last && bestScore < _lastScore + self.discipline * disciplineHysteresis)
+        // Solo si el deseo actual SIGUE vivo (necesidad > mínimo): antes un deseo ya satisfecho («eat» tras comer) se quedaba
+        // por histéresis para siempre y el animal saciado constaba como «quiere comer y no se mueve».
+        if (_last != null && best != _last && _last.NeedProbe(self) > minNeed && bestScore < _lastScore + self.discipline * disciplineHysteresis)
         {
             best = _last;
             bestScore = _last.NeedProbe(self) * (1f + self.Confidence(_last.capability) / 100f * habitWeight);
         }
+
+        // Nada lo mueve ahora (saciado, en calma): deja de «querer» lo último (LastDesire vacío = descansa).
+        if (best == null) { _last = null; _lastScore = 0f; return; }
 
         if (best != null)
         {

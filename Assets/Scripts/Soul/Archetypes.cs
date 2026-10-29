@@ -203,6 +203,9 @@ public static class Archetypes
         _bodies["Seal"].waterAffinity  = 1.0f; _bodies["Seal"].landAffinity  = 0.6f;   // anfibia
         _bodies["Orca"].waterAffinity  = 1.0f; _bodies["Orca"].landAffinity  = 0.05f;  // varada e indefensa en tierra
         _bodies["Penguin"].waterAffinity = 1.0f; _bodies["Penguin"].landAffinity = 0.7f;   // anfibio: cómodo en hielo
+        // VOLADORES: la abeja de las nieves vuela (IceInsectLife la mueve por el aire, sin NavMesh); con el default terrestre
+        // (aire 0) constaba como un animal de suelo que «da vueltas en círculo» al revolotear junto a su panal.
+        _bodies["SnowBee"].airAffinity = 1.0f; _bodies["SnowBee"].landAffinity = 0.6f;
 
         // Adjunta los pensamientos BASE de especie a su arquetipo de mente (por `source` = nombre de especie).
         foreach (MindPhrase p in PhrasePools.Especie())

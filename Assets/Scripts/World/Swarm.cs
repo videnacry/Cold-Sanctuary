@@ -139,8 +139,16 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
 
     Vector3 PickWanderTarget()
     {
-        Vector2 r = Random.insideUnitCircle * wanderRadius;
-        return _origin + new Vector3(r.x, 0f, r.y);
+        // En el agua: el banco no deriva por DEBAJO de las placas de hielo (las focas que lo seguían acababan dentro de la
+        // placa «Casquete»). Unos pocos intentos; si no, vuelve a su origen.
+        bool wet = !MarineLife.IceAbove(_origin);
+        for (int i = 0; i < 6; i++)
+        {
+            Vector2 r = Random.insideUnitCircle * wanderRadius;
+            Vector3 t = _origin + new Vector3(r.x, 0f, r.y);
+            if (!wet || !MarineLife.IceAbove(t)) return t;
+        }
+        return _origin;
     }
 
     // MORDISCO-POR-COLISIÓN (docs/ice-sanctuary-ecology.md §2.2): el depredador NO caza una cría concreta — se acerca y

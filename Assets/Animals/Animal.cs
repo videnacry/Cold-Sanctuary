@@ -248,7 +248,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
         if (SpeciesScaleFix.Has(SpeciesName) && GetComponent<SpeciesScaleFix>() == null) gameObject.AddComponent<SpeciesScaleFix>();   // tamaño real respecto al humano (el oso no mide 8 m)
         string spm = SpeciesArchetype;
-        if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null) gameObject.AddComponent<MarineLife>();   // nadan por la laguna (fuera del NavMesh)
+        // Nadan por la laguna (fuera del NavMesh)… salvo las crías de un RECINTO de la Cría (con sus tomas, CriaFeeder): viven
+        // en su recinto con piscina, no en el mar; con MarineLife salían nadando a por los peces a través de muros y hielo.
+        if ((spm == "Seal" || spm == "Whale" || spm == "Orca") && GetComponent<MarineLife>() == null && GetComponentInParent<CriaFeeder>() == null) gameObject.AddComponent<MarineLife>();
         SleepCycle sleep = GetComponent<SleepCycle>();
         if (sleep == null) { sleep = gameObject.AddComponent<SleepCycle>(); sleep.nocturnal = SleepCycle.IsNocturnal(spm); }   // sueño día/noche por el reloj (Clock); los nocturnos duermen de día; despierta ante amenazas.
         // Conductas propias de especie que son COMPONENTES (docs/era-species-behavior.md): acorazarse (bola/concha),
