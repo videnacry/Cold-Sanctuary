@@ -396,6 +396,18 @@ public class AmbrosioStory : MonoBehaviour
         return Mathf.Abs(d.y) < 3f && new Vector2(d.x, d.z).magnitude < 25f;
     }
 
+    // Brazos al empujar (Berón 2026-10-29: los insectos del microcosmos son humanoides y empujan con brazos y manos): los
+    // hombros adelante, a la altura del pecho, y los codos se estiran con el empujón (<paramref name="k"/> 0 → 1).
+    static void PushArms(Transform who, float k)
+    {
+        if (who != null && who.TryGetComponent(out CubeInsect ins)) { ins.Push(k); return; }   // hormigas humanoides: sus patas delanteras son los brazos
+        CreatureRig rig = who != null ? who.GetComponent<CreatureRig>() : null; if (rig == null) return;
+        void Set(BodyPart p, Vector3 e) { Transform b = rig.Get(p); if (b == null) return; rig.LockPose(p, 0.2f); b.localRotation = Quaternion.Euler(e); }
+        float sh = Mathf.Lerp(-65f, -88f, k), el = Mathf.Lerp(-55f, -8f, k);
+        Set(BodyPart.ShoulderLeft, new Vector3(sh, 0f, 10f)); Set(BodyPart.ShoulderRight, new Vector3(sh, 0f, -10f));
+        Set(BodyPart.ForearmLeft, new Vector3(el, 0f, 0f)); Set(BodyPart.ForearmRight, new Vector3(el, 0f, 0f));
+    }
+
     // Mueve a un personaje hacia un punto; true al llegar.
     bool Walk(Transform t, Vector3 to, float stop, float dt)
     {
@@ -437,6 +449,7 @@ public class AmbrosioStory : MonoBehaviour
             Vector3 spot = old.position - _dir * (1.3f + 0.5f) + side - _dir * bob;
             Walk(who, spot, 0.05f, dt);
             who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(12f + 18f * Mathf.Abs(bob) / 0.3f, 0f, 0f);   // inclinado hacia delante, más al empujar
+            PushArms(who, Mathf.Abs(bob) / 0.3f);   // los BRAZOS empujan (son humanoides): extendidos en el empujón, recogidos entre uno y otro
             // Medea, diminuta, empuja con todo: de vez en cuando se cae de bruces y se vuelve a levantar (docs/novela.md).
             if (who == _medea && Mathf.Repeat(Time.time, 9f) < 1.1f) who.rotation = Quaternion.LookRotation(_dir) * Quaternion.Euler(70f * Mathf.Sin(Mathf.Repeat(Time.time, 9f) / 1.1f * Mathf.PI), 0f, 0f);
         }
