@@ -22,6 +22,7 @@ public class GroundGuard : MonoBehaviour
         _next = Time.time + checkEvery;
         if (_cc != null && !_cc.enabled) return;   // trepando / en transición de escena: no tocar
         if (FlyingCarpet.Riding(gameObject)) return;   // volando en alfombra
+        if (SwimBody.Swimming(gameObject)) return;     // nadando (el mar, la columna de agua del árbol): ni se le baja al fondo ni se le sube
         if (TryGetComponent(out PlayerController pc) && pc.BodyHeld) return;   // lo sujeta alguien (lo llevan de la mano, sentado en el examen…): lo coloca quien lo sujeta
         if (GymStation.Seated(gameObject)) return;   // en una máquina del gimnasio (el asiento de la prensa y el banco del curl están altos): lo coloca la jornada
 

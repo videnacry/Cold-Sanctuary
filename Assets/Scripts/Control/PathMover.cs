@@ -47,6 +47,12 @@ public class PathMover : MonoBehaviour
         bool onMesh = NavMesh.SamplePosition(transform.position, out _, 1.5f, NavMesh.AllAreas);
         if (float.IsNaN(_goal.x) || (onMesh && ((target - _goal).sqrMagnitude > 9f || Time.time >= _repathAt))) Repath(target);
 
+        // NADAR (Berón 2026-10-29): en agua más honda que el pecho, el mismo cuerpo de nado que el jugador (horizontal, a
+        // braza, a flote), más despacio; en agua baja vadea andando. SwimBody decide por la profundidad donde está.
+        SwimBody swim = SwimBody.Of(this);
+        bool swimming = swim.UpdateWater();
+        if (swimming) speed = Mathf.Min(speed, swim.npcSwimSpeed);
+
         Vector3 pos = transform.position;
         Vector3 next = target;
         if (_path.status != NavMeshPathStatus.PathInvalid && _path.corners.Length > 1)
@@ -64,6 +70,13 @@ public class PathMover : MonoBehaviour
         {
             pos += d.normalized * step;
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
+        }
+        if (swimming)
+        {
+            pos.y = Mathf.MoveTowards(transform.position.y, swim.FloatPivotY, 1.5f * Time.deltaTime);   // a flote, sin «acantilados»
+            _cliffSince = 0f;
+            transform.position = pos;
+            return Flat(final - pos);
         }
         pos.y = GroundY(pos, transform.position.y);
         // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan

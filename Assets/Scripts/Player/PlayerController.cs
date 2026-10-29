@@ -108,14 +108,26 @@ public class PlayerController : MonoBehaviour
     /// <summary>Suelta TODAS las sujeciones (p. ej. al saltarse la iniciación con el hechizo «miembro»).</summary>
     public void ReleaseBody() => _bodyHolds = 0;
 
-    /// <summary>Called by WaterZone on trigger enter/exit.</summary>
+    /// <summary>¿Nadando? (agua más honda que el pecho; lo decide la profundidad en cada frame, ver HandleMovement)</summary>
     public bool IsSwimming => _isSwimming;
+    /// <summary>Vadeando: de pie en agua que cubre menos que el pecho (anda más despacio y sin saltar). 0 = fuera del agua.</summary>
+    public float WadeDepth { get; private set; }
+    /// <summary>Entrada simulada para las pruebas: x = lateral (A/D), y = arriba/abajo (Espacio/Ctrl), z = adelante (W/S).
+    /// Mientras no es null sustituye al teclado en el movimiento.</summary>
+    [System.NonSerialized] public Vector3? scriptedInput;
+    SwimBody _swim;
 
     public void SetSwimming(bool swimming)
     {
         _isSwimming = swimming;
         if (swimming) _verticalVelocity = 0f; // don't carry fall speed into the water
+        if (_swim == null) _swim = SwimBody.Of(this);
+        if (swimming) _swim.Begin(); else _swim.End();
     }
+
+    float InH => scriptedInput.HasValue ? scriptedInput.Value.x : GameKeys.GetAxisRaw("Horizontal");
+    float InV => scriptedInput.HasValue ? scriptedInput.Value.z : GameKeys.GetAxisRaw("Vertical");
+    float InUpDown => scriptedInput.HasValue ? scriptedInput.Value.y : (GameKeys.GetKey(jumpKey) ? 1f : 0f) - (GameKeys.GetKey(swimDownKey) ? 1f : 0f);
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -123,6 +135,7 @@ public class PlayerController : MonoBehaviour
     {
         _cc = GetComponent<CharacterController>();
         _walk = GetComponent<WalkSpell>();
+        _swim = SwimBody.Of(this);
     }
 
     void Start()
@@ -318,10 +331,14 @@ public class PlayerController : MonoBehaviour
     {
         // Durante el yoga, WASD las consume la sesión (control por partes): el cuerpo no camina.
         if (UpaYogaSession.Active) return;
-        // Nadando «fantasma»: si un teletransporte (tanque, microcosmos) lo sacó del agua sin pasar por el borde del
-        // trigger, el estado se quedaba en «nadando» y el cuerpo no salía del sitio. Fuera del agua y sobre suelo → anda.
-        if (_isSwimming && transform.position.y > 0.6f && Physics.Raycast(transform.position, Vector3.down, 2.2f, ~0, QueryTriggerInteraction.Ignore))
-            _isSwimming = false;
+        // NADAR O VADEAR SEGÚN LA PROFUNDIDAD (Berón 2026-10-29: en el mar Kushal «caminaba o daba saltitos»). Antes lo
+        // decidían el borde del trigger y «¿hay suelo a menos de 2,2 m?», y alternaba entre andar y flotar de pie. Ahora, en
+        // cada frame y por POSICIÓN (así un teletransporte tampoco lo deja «nadando fantasma»): agua más honda que el pecho →
+        // nada (cuerpo horizontal, brazadas); menos → vadea de pie, más despacio y sin saltar.
+        SwimBody.Water water = SwimBody.Probe(transform, transform.position, _swim.PivotToFeet, _swim.BodyHeight);
+        bool swim = _swim.ShouldSwim(water);
+        if (swim != _isSwimming) SetSwimming(swim);
+        WadeDepth = water.inWater && !swim ? Mathf.Min(water.feetDepth, water.depth) : 0f;
         if (_isSwimming)
         {
             HandleSwimMovement();
@@ -329,8 +346,8 @@ public class PlayerController : MonoBehaviour
         }
 
         // Horizontal (dirección cámara-relativa; la velocidad la da el WalkSpell si está — locomoción universal).
-        float h = GameKeys.GetAxisRaw("Horizontal");
-        float v = GameKeys.GetAxisRaw("Vertical");
+        float h = InH;
+        float v = InV;
         Vector3 move = Vector3.ClampMagnitude(transform.right * h + transform.forward * v, 1f);
         float speed;
         if (_walk != null)
@@ -341,12 +358,14 @@ public class PlayerController : MonoBehaviour
             if (_walk.IsCharging) move = Vector3.zero;            // cargando: quieto tomando postura (con gravedad)
         }
         else speed = GameKeys.GetKey(sprintKey) ? sprintSpeed : walkSpeed;
+        // Vadeando: el agua frena (hasta menos de la mitad con el agua al pecho) y no se salta.
+        if (WadeDepth > 0f) speed *= Mathf.Lerp(1f, 0.45f, Mathf.Clamp01(WadeDepth / Mathf.Max(0.1f, water.chest)));
 
         // Vertical / gravity
         if (_cc.isGrounded)
         {
             _verticalVelocity = -2f; // keep grounded
-            if (GameKeys.GetKeyDown(jumpKey))
+            if (WadeDepth < 0.3f && GameKeys.GetKeyDown(jumpKey))
                 _verticalVelocity = Mathf.Sqrt(jumpHeight * 2f * gravity);
         }
         else
@@ -372,35 +391,37 @@ public class PlayerController : MonoBehaviour
         Vector3 ahead = transform.position + dir * (_cc.radius + 0.45f);
         if (!Physics.Raycast(ahead + Vector3.up * 2f, Vector3.down, out RaycastHit hit, 4f, ~0, QueryTriggerInteraction.Ignore)) return;
         float feet = transform.position.y + _cc.center.y - _cc.height * 0.5f;
+        // Nadando horizontal, los pies quedan hondos: lo que cuenta es lo que asoma el borde sobre el agua (las manos en el
+        // borde y un empujón), no desde los pies.
+        if (!float.IsNaN(_swim.Surface)) feet = Mathf.Max(feet, _swim.Surface - 0.45f);
         float climb = hit.point.y - feet;
         if (climb < 0.1f || climb > 1.2f) return;   // nada que subir, o una pared demasiado alta
+        if (!_swim.HeadAboveWater) return;           // buceando bajo el borde: no se sale a través del hielo
         _cc.enabled = false;
         transform.position = new Vector3(ahead.x, hit.point.y + (_cc.height * 0.5f - _cc.center.y) + 0.05f, ahead.z);
         _cc.enabled = true;
-        _isSwimming = false;
+        SetSwimming(false);
         _verticalVelocity = -2f;
     }
 
-    const float SurfaceFloatY = 0.68f;   // pivote flotando: pies 7 cm bajo el agua (sigue en el trigger) y el borde del hielo a un escalón
-
+    // NADAR: WASD en el plano y ADELANTE SIGUE LA MIRADA (con la cámara inclinada más de 20°, W nada hacia arriba o de
+    // cabeza hacia abajo); Espacio sube y swimDownKey (Ctrl) BUCEA. Sin subir ni bajar, el cuerpo flota boca abajo en la
+    // superficie (o, bajo el agua, sube despacio). El cuerpo de nado (SwimBody) mueve, respira y da las brazadas.
     void HandleSwimMovement()
     {
-        float h = GameKeys.GetAxisRaw("Horizontal");
-        float v = GameKeys.GetAxisRaw("Vertical");
-        Vector3 move = Vector3.ClampMagnitude(transform.right * h + transform.forward * v, 1f);
-
-        float vertical = 0f;
-        if (GameKeys.GetKey(jumpKey))     vertical += 1f;
-        if (GameKeys.GetKey(swimDownKey)) vertical -= 1f;
-
-        Vector3 velocity = move * swimSpeed;
-        velocity.y = vertical * swimVerticalSpeed;
-        // Sin subir ni bajar a mano, FLOTA en la superficie (los pies a ras del borde del hielo): así, al llegar nadando a
-        // un casquete, el escalón para salir es pequeño y se sube andando.
-        if (Mathf.Approximately(vertical, 0f)) velocity.y = (SurfaceFloatY - transform.position.y) * 3f;
-        _cc.Move(velocity * Time.deltaTime);
+        float h = InH, v = InV;
+        float look = Mathf.Abs(_currentPitch) > 20f ? (_currentPitch - Mathf.Sign(_currentPitch) * 20f) * Mathf.Deg2Rad : 0f;
+        Vector3 fwd = transform.forward * Mathf.Cos(look) + Vector3.down * Mathf.Sin(look);
+        Vector3 move = Vector3.ClampMagnitude(transform.right * h + fwd * v, 1f);
+        float speed = swimSpeed * (!scriptedInput.HasValue && GameKeys.GetKey(sprintKey) ? 1.5f : 1f);
+        Vector3 velocity = move * speed;
+        velocity.y += InUpDown * swimVerticalSpeed;
+        if (Mathf.Abs(velocity.y) < 0.3f) velocity.y = 0f;   // una inclinación mínima no hunde: flota
+        _swim.Drive(velocity, Time.deltaTime);
         _verticalVelocity = 0f;
-        TryClimbOut(move.sqrMagnitude > 0.01f ? move : (_walk != null ? _walk.LastDir : Vector3.zero));
+        Vector3 flat = new Vector3(move.x, 0f, move.z);
+        TryClimbOut(flat.sqrMagnitude > 0.01f ? flat : (_walk != null ? _walk.LastDir : Vector3.zero));
+        if (!_isSwimming) _swim.End();
     }
 
     // ── Perspective toggle ────────────────────────────────────────────────────
