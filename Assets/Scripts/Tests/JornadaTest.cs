@@ -446,7 +446,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
                 if (!tr.human || tr.g == null) continue;
                 if (tr.g.GetComponent<Magnate>() != null) continue;   // la Magnate SÍ se teletransporta (aparece delante de quien deja su puesto)
                 Vector3 p = tr.g.transform.position;
-                bool riding = FlyingCarpet.Riding(tr.g);
+                bool riding = FlyingCarpet.Riding(tr.g) || TreeTrip.Busy(tr.g);   // (alfombra o nadando por la raíz del Árbol de los Campos: lo lleva el viaje)
                 if (riding) tr.rodeAt = Time.time;
                 float d = Vector3.Distance(p, tr.lastFrame), allowed = Mathf.Max(2.5f, 8f * Time.deltaTime);
                 if (tr.ignoreFrames > 0) tr.ignoreFrames--;
@@ -465,7 +465,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             {
                 if (tr.g == null || (tr.anima != null && tr.anima.death)) continue;
                 Vector3 p = tr.g.transform.position;
-                bool riding = FlyingCarpet.Riding(tr.g) || MagnateWarden.Instance.Handling(tr.g);   // (la Magnate lo trae: no es andar)
+                bool riding = FlyingCarpet.Riding(tr.g) || TreeTrip.Busy(tr.g) || MagnateWarden.Instance.Handling(tr.g);   // (la Magnate lo trae: no es andar)
                 tr.hist.Add((now, p, riding));
                 while (tr.hist.Count > 0 && now - tr.hist[0].t > 25f) tr.hist.RemoveAt(0);
                 if (tr.human) SampleHuman(tr, p, riding, h, shift); else SampleAnimal(tr, p, riding);

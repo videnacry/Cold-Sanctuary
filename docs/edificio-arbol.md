@@ -23,7 +23,7 @@ Idea de Berón: juntar los campos en un solo edificio con forma de árbol.
 ## Cómo está hecho
 
 Código: `Assets/Editor/SampleSceneBuilder.Tree.cs` (lo construye), `Assets/Scripts/World/TreeSpec.cs` (las medidas, una sola
-vez), `TreeOfFields.cs` (niveles, rutas a nado, el campo magnético), `TreeRotator.cs` (el giro), `StructuralLimits.RootCheck`
+vez), `ArbolCampos.cs` (niveles y rutas), `TreeTrip.cs` (el viaje a nado), `TreeWalk.cs` (el hechizo «piso»), `CampoMagnetico.cs`, `TreeFloor.cs`, `TreeRotator.cs` (el giro), `StructuralLimits.RootCheck`
 (la raíz aguanta) y `Assets/Scripts/Tests/TreeOfFieldsTest.cs` (la prueba, grupo 53).
 
 | Parte | Medidas | Notas |
@@ -33,7 +33,7 @@ vez), `TreeOfFields.cs` (niveles, rutas a nado, el campo magnético), `TreeRotat
 | **Puertas** | Una por nivel: suelo y 8 pisos (y una en la campana de cada rama); 1,8 × 2,6 m | Hueco en la pared con bobinas de cobre y el **campo magnético** (la lámina de luz del tanque) en la cara de dentro. Los cuerpos lo cruzan; el agua no. El hueco de cada puerta es aire: una **campana de aire** para respirar a mitad de subida. |
 | **Tronco** | 8 pisos: 6 · 13 · 24 · 31 · 38 · 45 · 52 · 62 m | Octógonos de ~51 m (rectángulo de 46 × 46 + 2,5 m y chaflanes de 5 m, como las losas de las torres) con el hueco de la raíz. En voladizo: ménsulas y tornapuntas de acero hasta la raíz. **Girados 45°** uno sobre otro e **inclinados 3°** alternando el sentido. Entre el 2 y el 3, 11 m (la guadua llega a 9 m); entre el 7 y el 8, 10 m (el dosel del bosque comestible); los demás, 7 m. |
 | **Riego en cascada** | Canaleta en el borde bajo de cada piso | Vierte (una lámina de agua, sin collider) al piso de abajo. El arrozal no: va en terraza plana y su agua vuelve a la raíz. |
-| **Ramas** | 6 tubos de agua Ø 3 m, a 35°, de 40 m, desde 66 m | A 0°, 67,5°, 112,5°, 180°, 247,5° y 292,5° (entre los nervios). Collar de acero en la boca. La punta llega a ~44 m del eje y ~89 m de alto: sobresale de los pisos. |
+| **Ramas** | 6 tubos de agua Ø 3 m, a 35°, de 40 m, desde 66 m | A 22,5°, 90°, 135°, 202,5°, 270° y 315° (entre los nervios y lejos de la puerta del piso 8). Collar de acero en la boca. La punta llega a ~44 m del eje y ~89 m de alto: sobresale de los pisos. |
 | **Anillos de nidos** | `RingDeck` de 13,4 m alrededor de una campana de agua (Ø 4 m) | Frutales enanos en las esquinas, flores para las abejas de las nieves y nidos de aves. A ~91 m. Se llega nadando: por la raíz, por la rama y por la puerta de la campana. Se llaman `Nido_anillo_N` (no son anillos de un piso: no llevan alfombras). |
 | **Copa** | Octógono plano de 22 m a 101,4 m | Tan ancho como la raíz. Alfombras de edificio y del santuario. Gira con el árbol. |
 | **Suelo** | Alfombras en el hielo, a 22 m del eje (al NE) | No giran. Desde ahí se anda a la puerta del suelo. |
@@ -41,8 +41,9 @@ vez), `TreeOfFields.cs` (niveles, rutas a nado, el campo magnético), `TreeRotat
 **Reparto, de abajo arriba:** P1 Arrozal (en terraza plana) · P2 Bambusal · P3 Milpa · P4 Chacra andina · P5 **Huerto**
 (`Garden_Area`, con las hortalizas, su tanque de virtualización y su iniciación) · P6 Rotación · P7 y P8 Bosque comestible.
 Cada cultivo conserva su gremio y su semilla (`GardenPlot`): hortalizas 11, milpa 12, chacra 13, arrozal 14, rotación 15,
-bosque 16 y 18, bambusal 17. Cada bancal es una franja de 38 × 7 m en el lado del piso opuesto a su puerta (el Huerto, un área
-de 44 × 9 m con su bancal de 30 × 6 m). Cada piso tiene sus plazas reservadas del microcosmos (`PlatformSlots`), calculadas
+bosque 16 y 18, bambusal 17. Cada bancal es una franja de 7 × 38 m (las filas a lo largo: caben todas las del gremio) en el lado del piso de su
+puerta: se sale de la raíz al bancal. El Huerto es un área de 44 × 9 m con su bancal de 6 × 28 m; el segundo bosque
+comestible planta las otras especies del dosel (`GardenPlot.speciesOffset`). Cada piso tiene sus plazas reservadas del microcosmos (`PlatformSlots`), calculadas
 con el árbol sin girar.
 
 ## Moverse
