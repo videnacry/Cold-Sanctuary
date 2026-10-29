@@ -61,7 +61,10 @@ public static partial class SampleSceneBuilder
 
         // Alfombras del SUELO, en el hielo (no giran): a la copa. (Las de la copa giran con el árbol.)
         Vector3 padAt = TreeSpec.Site + TreeSpec.Dir(45f) * 22f + Vector3.up * 0.01f;
-        CarpetPad.BuildZone(parent, padAt, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padAt.x, 0f, padAt.z)), CarpetPad.Kind.Edificio, TreeSpec.Building, 0, $"{TreeSpec.Building}#0", "Suelo (hielo)", 2);
+        // (Su propio padre, sin colliders: si colgara de «Areas_Placed», CarpetPad.OnDeck la tomaría por la pista de CUALQUIER piso
+        // sin pista propia y mandaría a la gente al pie del árbol.)
+        Transform padRoot = new GameObject("Arbol_alfombras_suelo").transform; padRoot.SetParent(parent, false);
+        CarpetPad.BuildZone(padRoot, padAt, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padAt.x, 0f, padAt.z)), CarpetPad.Kind.Edificio, TreeSpec.Building, 0, $"{TreeSpec.Building}#0", "Suelo (hielo)", 2);
 
         // LA RAÍZ AGUANTA (StructuralLimits.RootCheck): 8 pisos, 6 ramas, la copa, su pared y el agua.
         StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs);
@@ -213,14 +216,15 @@ public static partial class SampleSceneBuilder
             garden.transform.SetParent(f, false);
             garden.transform.localPosition = new Vector3(0f, 0f, 18f);
             garden.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // su lado abierto (+Z del área) mira a la raíz
-            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-5f, 0.1f, 0f)), new Vector2(30f, 6f), TreeSpec.Seeds[k - 1], false);
-            go.transform.localRotation = Quaternion.identity;
+            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-6f, 0.1f, 0f)), new Vector2(6f, 28f), TreeSpec.Seeds[k - 1], false);
+            go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (sus filas, a lo largo de la franja: caben todas las del gremio)
         }
         else
         {
-            GameObject go = MakePlot(f, guild, f.TransformPoint(new Vector3(0f, 0.06f, 18f)), new Vector2(38f, 7f), TreeSpec.Seeds[k - 1], false);
-            go.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
-            Transform soil = KitchenProps.C(go.transform, new Vector3(0f, -0.03f, 0f), new Vector3(40f, 0.06f, 9f),
+            GameObject go = MakePlot(f, guild, f.TransformPoint(new Vector3(0f, 0.06f, 18f)), new Vector2(7f, 38f), TreeSpec.Seeds[k - 1], false);
+            go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (las filas, a lo largo de la franja: caben todas las del gremio)
+            if (k == 8) go.GetComponent<GardenPlot>().speciesOffset = 5;   // el segundo bosque comestible: los otros árboles del dosel
+            Transform soil = KitchenProps.C(go.transform, new Vector3(0f, -0.03f, 0f), new Vector3(9f, 0.06f, 40f),
                 guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
             _ = soil;
         }
@@ -395,8 +399,8 @@ public static partial class SampleSceneBuilder
                 if (gp != null)
                 {
                     gp.transform.localPosition = new Vector3(0f, 0.32f, 18f);
-                    gp.transform.localRotation = Quaternion.Inverse(Quaternion.Euler(tf.tilt, 0f, 0f)) * Quaternion.Euler(0f, 180f, 0f);
-                    Solid(gp.transform, new Vector3(0f, -0.45f, 0f), new Vector3(40f, 0.9f, 9.4f), new Color(0.52f, 0.44f, 0.36f), "Terraza_arrozal");
+                    gp.transform.localRotation = Quaternion.Inverse(Quaternion.Euler(tf.tilt, 0f, 0f)) * Quaternion.Euler(0f, 90f, 0f);
+                    Solid(gp.transform, new Vector3(0f, -0.45f, 0f), new Vector3(9.4f, 0.9f, 40f), new Color(0.52f, 0.44f, 0.36f), "Terraza_arrozal");
                 }
                 continue;   // (el agua que sobra del arrozal vuelve a la raíz)
             }

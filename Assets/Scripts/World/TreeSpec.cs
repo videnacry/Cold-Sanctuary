@@ -62,14 +62,6 @@ public static class TreeSpec
     public static float RingDeckY(int b) => BranchEnd(b).y + 2.5f;
 }
 
-/// <summary>Un piso del árbol (marca): su número, su giro y su inclinación. Los muebles de un piso que gira se miden en
-/// su propio marco (<see cref="FurnitureSpacing"/>).</summary>
-public class TreeFloor : MonoBehaviour
-{
-    public int index;
-    public float tilt, yaw;
-}
-
 /// <summary>Un NIVEL del árbol al que se llega nadando por la raíz: el suelo, cada piso y cada anillo de nidos. Los puntos
 /// van en coordenadas LOCALES del árbol (gira) y a ras del suelo (los pies).</summary>
 [System.Serializable]

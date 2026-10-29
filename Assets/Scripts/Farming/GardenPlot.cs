@@ -15,6 +15,8 @@ public class GardenPlot : MonoBehaviour
     public Guild guild;
     public Vector2 size = new Vector2(20f, 16f);
     public int seed = 1;
+    [Tooltip("Bosque comestible: por qué especie del dosel y de los árboles bajos empieza (dos bancales del mismo gremio, p. ej. los dos pisos del Árbol de los Campos, plantan especies distintas).")]
+    public int speciesOffset;
 
     public static readonly List<GardenPlot> All = new List<GardenPlot>();
     void OnEnable() { All.Add(this); }
@@ -174,7 +176,7 @@ public class GardenPlot : MonoBehaviour
             default:   // BOSQUE COMESTIBLE por capas: dosel, árboles bajos, arbustos, herbáceas, trepadoras y hongos a la sombra
                 GardenCrop.Kind[] canopy = { GardenCrop.Kind.Mango, GardenCrop.Kind.Coco, GardenCrop.Kind.Guanabana, GardenCrop.Kind.Datil, GardenCrop.Kind.Almendro, GardenCrop.Kind.Olivo, GardenCrop.Kind.Aguacate, GardenCrop.Kind.Clavo };
                 GardenCrop.Kind[] small = { GardenCrop.Kind.Limon, GardenCrop.Kind.Naranja, GardenCrop.Kind.Cacao, GardenCrop.Kind.Lima, GardenCrop.Kind.Canela, GardenCrop.Kind.Laurel, GardenCrop.Kind.Cafe, GardenCrop.Kind.Babaco };
-                int c = 0, s = 0;
+                int c = speciesOffset, s = speciesOffset;
                 for (float x = -hx + 4f; x <= hx - 3f; x += 7.5f)
                     for (float z = -hz + 4f; z <= hz - 3f; z += 7.5f)
                     {
