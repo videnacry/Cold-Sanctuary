@@ -147,6 +147,7 @@ public class PlayerWorkday : MonoBehaviour
         else when = "es libre hoy; empieza MAÑANA a las 8:00";
         Debug.Log($"[Jornada] Kushal termina su iniciación (huerto y su microcosmos): entra en la rotación del santuario y {when}.");
         LessonPrompt.Show($"Ya eres del santuario. Tu jornada: 5 h de misiones en las áreas, comida a las 11:00 y 2 h de entrenamiento a las 14:00; a las 16:00, libre. Tu jornada {when.Replace("se incorpora", "te incorporas").Replace("es libre", "eres libre")}. (Consola: «jornada»)", null, 14f);
+        KushalVoice.Reply(KushalVoice.Ctx.Mission);   // Kushal acepta su jornada (arriba)
         WorkdayGiven?.Invoke(_player);
         return me;
     }
@@ -198,6 +199,7 @@ public class PlayerWorkday : MonoBehaviour
         Debug.Log($"[Jornada] Día {_plan.day} · itinerario de Kushal: {items} · 11:00 comida · 14:00 entrenamiento: {TrainingArea ?? "—"} · 16:00 libre.");
         if (_records.Count > 0)
             LessonPrompt.Show($"Tu jornada de hoy: {string.Join(" · ", _records.Select(r => $"{r.a.start:00}:00 {r.a.mission.title} ({r.a.mission.area})"))} · 11:00 comida · 14:00 {TrainingArea ?? "entrenamiento"} · 16:00 libre.", null, 12f);
+        if (_records.Count > 0) KushalVoice.Reply(KushalVoice.Ctx.Mission);
     }
 
     // Lo que HACE: tiempo en su puesto de cada misión, la comida y el entrenamiento; a las 16:00, el balance del día.
@@ -214,6 +216,7 @@ public class PlayerWorkday : MonoBehaviour
                 r.started = true;
                 Debug.Log($"[Jornada] {a.start:00.0} h · Kushal: empieza «{a.mission.title}» ({a.mission.area}).");
                 LessonPrompt.Show($"Ahora: «{a.mission.title}» en {a.mission.area} (hasta las {end:00}:{(end % 1f) * 60f:00}). Ve a tu puesto: entre torres, en alfombra.", null, 10f);
+                KushalVoice.Reply(KushalVoice.Ctx.Mission);
             }
             if (h >= a.start && h < end)
             {

@@ -74,8 +74,8 @@ public class MythMission : MonoBehaviour
         if (GameKeys.DialogOpen || !GameKeys.GetKeyDown(KeyCode.E)) return;
         MythRecruit r = Near();
         if (r == null) return;
-        if (r.CanJoin(JoinedFraction, Stage)) Recruit(r, "Kushal");
-        else Say(r.displayName, r.refusal);
+        if (r.CanJoin(JoinedFraction, Stage)) { Recruit(r, "Kushal"); KushalVoice.Reply(KushalVoice.Ctx.Thanks); }
+        else { Say(r.displayName, r.refusal); KushalVoice.Reply(KushalVoice.Ctx.Patience); }   // humilde ante el «aún no»
     }
 
     void Finish()

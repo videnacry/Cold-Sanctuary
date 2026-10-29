@@ -81,7 +81,7 @@ public class TeachingSession : MonoBehaviour
         // Se le pide al alumno el PASO concreto, con su hechizo listo para lanzar (la consola lo propone: Intro lo lanza).
         string spell = $"asana({{name:\"{_teacherSteps[_i].asanaName}\"}})";
         // El rótulo en pantalla es solo para el JUGADOR: antes cualquier clase entre otros (la Magnate con un rezagado) lo mostraba.
-        if (!_studentIsAI) LessonPrompt.Show(_teacherSteps[_i].asanaName, spell);
+        if (!_studentIsAI) { LessonPrompt.Show(_teacherSteps[_i].asanaName, spell); KushalVoice.Reply(KushalVoice.Ctx.Instruction); }   // Kushal le contesta (arriba)
         if (!_studentIsAI) SpellConsole.Propose(spell, $"{TeacherName} te pide: {_teacherSteps[_i].asanaName}");
     }
 

@@ -133,6 +133,11 @@ public class Magnate : MonoBehaviour
                     return;
                 }
                 Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y van (cada uno andando) a la sala de yoga.");
+                if (t.GetComponent<PlayerController>() != null)
+                {
+                    KushalVoice.Hear("La Magnate", "Bienvenido al santuario. Ven conmigo a la sala de yoga: allí empieza tu iniciación.", KushalVoice.Ctx.Instruction);
+                    KushalVoice.ThinkOnce(KushalVoice.Thought.Arrival, 4f);
+                }
                 Mind m = t.GetComponent<Mind>();
                 if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
                 if (yoga == null) { _newcomer.presented = true; _initPhase = 3; return; }

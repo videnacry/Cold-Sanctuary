@@ -158,6 +158,7 @@ public class StoryMission : MonoBehaviour
         foreach (GameObject g in s.reveal) if (g != null) g.SetActive(true);
         foreach (GameObject g in s.hide) if (g != null) g.SetActive(false);
         Say(s.speaker, s.line);
+        if (!string.IsNullOrEmpty(s.speaker) && !string.IsNullOrEmpty(s.line)) KushalVoice.Reply(KushalVoice.Ctx.Listen);   // le hablan: contesta
         _step++; _held = 0f;
         if (Finished) Finish();
     }
@@ -172,6 +173,7 @@ public class StoryMission : MonoBehaviour
             else lv.GainBondXp(xp);
         }
         Say(finalSpeaker, finalLine);
+        if (!string.IsNullOrEmpty(finalSpeaker) && !string.IsNullOrEmpty(finalLine)) KushalVoice.Reply(KushalVoice.Ctx.Farewell);
         _card.ShowFinal();
     }
 

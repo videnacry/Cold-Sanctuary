@@ -145,12 +145,14 @@ public class AmbrosioStory : MonoBehaviour
 
     void Go(Beat b) { Now = b; _beatAt = Time.time; Debug.Log($"[Ambrosio] → {b}"); }
 
-    void Say(Transform who, string text, float secs = 7f)
+    // reply: si la frase va dirigida a Kushal, él contesta (arriba, KushalVoice).
+    void Say(Transform who, string text, float secs = 7f, KushalVoice.Ctx? reply = null)
     {
         string n = who != null ? who.name : "";
         if (who == null) return;   // (quien no está en esta escena no habla)
         StorySubtitle.Show(n == "Hespero" ? "Héspero" : n.Replace('_', ' '), text, secs);   // en pantalla (PlaneMessenger no existe en el microcosmos: no se veía nada)
         Debug.Log($"[Ambrosio] {n}: «{text}»");
+        if (reply != null) KushalVoice.Reply(reply.Value);
     }
 
     void Goal(string text) { LessonPrompt.Show(text, null, 9999f); }
@@ -202,7 +204,7 @@ public class AmbrosioStory : MonoBehaviour
         g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(new Color(0.98f, 0.82f, 0.3f));
         _drop = g.transform;
         Honeydew().AddCharge();   // la melaza es una carga del hechizo de la maleza (HoneydewSpell), como la de las gotas del suelo
-        Say(_ambrosio, "Toma, es mi melaza. ¡Corre, dásela!", 5f); Goal("Lleva la melaza a Shanidar (E junto a él)");
+        Say(_ambrosio, "Toma, es mi melaza. ¡Corre, dásela!", 5f, KushalVoice.Ctx.Help); Goal("Lleva la melaza a Shanidar (E junto a él)");
     }
 
     void Feed()
@@ -212,7 +214,7 @@ public class AmbrosioStory : MonoBehaviour
         if (h.charges > 0 && me != null) { h.charges--; h.Cast(me, _oldB.GetComponent<ITarget>() ?? _oldB.GetOrAdd<AnimaTarget>()); }   // le repone la energía
         Lay(_oldB, false);
         Say(_oldB, "…Gracias. Ya puedo seguir.", 5f);
-        Say(_ambrosio, "¡Se levanta! Vuelve a empujarlo.", 5f); Goal("Empuja a Shanidar hacia la cueva (E junto a él)");
+        Say(_ambrosio, "¡Se levanta! Vuelve a empujarlo.", 5f, KushalVoice.Ctx.Instruction); Goal("Empuja a Shanidar hacia la cueva (E junto a él)");
         Go(Beat.Push2); PushedThisPhase = 0f;
     }
 
@@ -241,7 +243,7 @@ public class AmbrosioStory : MonoBehaviour
                 if (Walk(_ambrosio, p.position, 2.6f, dt))
                 {
                     Vector3 gap = _ambrosio.position - p.position; gap.y = 0f; AskedAtDistance = gap.magnitude;
-                    Say(_ambrosio, "¡Eh, tú! ¡Ayúdanos, por favor! Salva a mi familia: los viejos ya no pueden andar y la cueva está lejos.", 8f);
+                    Say(_ambrosio, "¡Eh, tú! ¡Ayúdanos, por favor! Salva a mi familia: los viejos ya no pueden andar y la cueva está lejos.", 8f, KushalVoice.Ctx.Help);
                     Go(Beat.AskHelp);
                 }
                 break;
@@ -250,7 +252,7 @@ public class AmbrosioStory : MonoBehaviour
                 Vector3 nextTo = _oldB.position - _dir * 1.6f + _side * 1.6f;
                 if (Walk(_ambrosio, nextTo, 0.4f, dt) && Time.time - _beatAt > 2f)
                 {
-                    Say(_ambrosio, "Empuja a Shanidar por detrás, así (E). Yo vuelvo con el mío.", 7f);
+                    Say(_ambrosio, "Empuja a Shanidar por detrás, así (E). Yo vuelvo con el mío.", 7f, KushalVoice.Ctx.Instruction);
                     Goal("Empuja a Shanidar hacia la cueva (E junto a él)");
                     _ambrosioFree = false;
                     Go(Beat.Push1); PushedThisPhase = 0f;
@@ -265,10 +267,10 @@ public class AmbrosioStory : MonoBehaviour
                 if (PushedThisPhase >= PushPhaseSeconds)
                 {
                     if (Now == Beat.Push1) { StopPushing(); _collapsed = true; Lay(_oldB, true); Go(Beat.Collapse);
-                        Say(_ambrosio, "¡Shanidar se ha derrumbado: no le queda energía! Deja de empujar, toma mi melaza y dásela.", 8f);
+                        Say(_ambrosio, "¡Shanidar se ha derrumbado: no le queda energía! Deja de empujar, toma mi melaza y dásela.", 8f, KushalVoice.Ctx.Help);
                         Goal("Toma la melaza de Ambrosio (E junto a él) y dásela a Shanidar"); }
                     else if (Now == Beat.Push2) { StopPushing(); SpawnPredator(); Go(Beat.Predator);
-                        Say(_ambrosio, "¡Una mariquita! Viene a por mí: los pulgones somos su comida. Los viejos, quietos. ¡Empujadla! Cinco empujones y se irá.", 8f);
+                        Say(_ambrosio, "¡Una mariquita! Viene a por mí: los pulgones somos su comida. Los viejos, quietos. ¡Empujadla! Cinco empujones y se irá.", 8f, KushalVoice.Ctx.Help);
                         Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}"); }
                     else { StopPushing(); Go(Beat.Death); LessonPrompt.Hide(); Say(_medea, "¡La cueva! ¡Hemos llegado!", 5f); }   // (ya no hay que empujar: fuera el objetivo)
                 }
@@ -322,7 +324,7 @@ public class AmbrosioStory : MonoBehaviour
                 if (t > 21f)
                 {
                     Anima am = _ambrosio.GetComponent<Anima>(); if (am != null) am.death = true;   // muere de verdad (su alma, SoulRecord, sigue: renace en la cocina)
-                    Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); Go(Beat.Sakshi);
+                    Debug.Log("[Ambrosio] Ambrosio muere en la entrada de la cueva."); KushalVoice.Think(KushalVoice.Thought.Grief, null, 3f); Go(Beat.Sakshi);
                 }
                 break;
             }
@@ -333,7 +335,7 @@ public class AmbrosioStory : MonoBehaviour
                     if (Time.time - _beatAt < 30f && _sakshiSaid == false)
                     {
                         _sakshiSaid = true; _beatAt = Time.time;
-                        Say(_sakshi, "Me trajo hasta aquí, como yo lo llevé a él cuando nació distinto. Lo dio todo por su familia; su alma sigue su camino. Tú vuelve al mesocosmos: allí te esperan.", 9f);
+                        Say(_sakshi, "Me trajo hasta aquí, como yo lo llevé a él cuando nació distinto. Lo dio todo por su familia; su alma sigue su camino. Tú vuelve al mesocosmos: allí te esperan.", 9f, KushalVoice.Ctx.Farewell);
                         Goal("Vuelves al mesocosmos…");
                     }
                     if (_sakshiSaid && Time.time - _beatAt > 6f)
@@ -358,7 +360,7 @@ public class AmbrosioStory : MonoBehaviour
     {
         if (b == Beat.Push1)
         {
-            Once("shanidar_gracias", t > 3f, () => Say(_oldB, "Gracias, joven. Mis patas ya no me sostienen…", 6f));
+            Once("shanidar_gracias", t > 3f, () => Say(_oldB, "Gracias, joven. Mis patas ya no me sostienen…", 6f, KushalVoice.Ctx.Comfort));
             Once("hespero_dejadlos", t > 18f, () => Say(_hespero, "¡Dejadlos atrás! ¡Así no llegaremos nunca a la cueva!", 6f));
             Once("ambrosio_nadie", t > 24f, () => Say(_ambrosio, "¡Nadie se queda atrás, Héspero! Ellos nos criaron.", 6f));
             Once("sakshi_ambrosio", t > 36f, () => Say(_oldA, "Ambrosio, hijo, guarda fuerzas… tu melaza es para todos.", 6f));
@@ -553,7 +555,7 @@ public class AmbrosioStory : MonoBehaviour
         Goal($"Empuja al depredador (E junto a él): {PredatorPushes}/{PredatorPushesNeeded}");
         if (PredatorPushes >= PredatorPushesNeeded)
         {
-            Say(_ambrosio, "¡Se va volando! Gracias… ¡Volvamos con los viejos!", 6f);
+            Say(_ambrosio, "¡Se va volando! Gracias… ¡Volvamos con los viejos!", 6f, KushalVoice.Ctx.Thanks);
             Destroy(_predator.gameObject, 4f);
             _predatorLeaving = _predator; _predator = null;
             Goal("Empuja a Shanidar hasta la cueva (E junto a él)");

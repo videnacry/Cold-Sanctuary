@@ -143,6 +143,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Launch(SanctuaryOnboarding o, bool exam)
     {
         _subject = o; _withExam = exam; _beat = 0; BeatsDone = 0; Now = Phase.Approach; GreetedAtDistance = -1f; PatientDown = false;
+        if (exam && o.GetComponent<PlayerController>() != null) KushalVoice.ThinkOnce(KushalVoice.Thought.Arrival);   // Kushal, para sí
         Debug.Log($"[Iniciación] {Who} lanza «iniciar» (hechizo compuesto) sobre «{o.name}»: va hacia el recién llegado{(exam ? "" : " (ya examinado: al tanque)")}.");
     }
 
@@ -158,6 +159,7 @@ public class NewcomerInitiator : MonoBehaviour
             GreetedAtDistance = gap;
             Say(_subject, _withExam ? "Bienvenido al santuario. Soy quien te hace la iniciación: ve tú a cada sitio que te diga y espérame allí; yo te sigo."
                                     : "Ya tienes el examen hecho: vamos al tanque, tu primera virtualización.", 6f);
+            if (_withExam && p.GetComponent<PlayerController>() != null) KushalVoice.ThinkOnce(KushalVoice.Thought.FirstInitiation, 5f);
             _orch = _withExam ? BuildExam() : new Orchestra("iniciación", walkSpeed);
             if (!_withExam) { _rNew = _orch.Join("recién llegado", p); _rWorker = _orch.Join(Who, transform); }
             AddTank(_orch);
@@ -252,6 +254,7 @@ public class NewcomerInitiator : MonoBehaviour
         if (vm == null || p.GetComponent<PlayerController>() == null || MobWorldLoader.Instance == null) return;   // (Instance lo crea si aún no existe)
         Say(o: null, $"Ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", 4f);
         LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);
+        KushalVoice.Reply(KushalVoice.Ctx.Mission);
         Debug.Log($"[Iniciación] {Who} mete a «{p.name}» en el tanque y lo envía a «{FirstMicrocosmos}».");
         vm.EnterWithTank(p, Application.CanStreamedLevelBeLoaded(FirstMicrocosmos) ? FirstMicrocosmos : null);
         _sentAt = Time.time;
@@ -388,7 +391,7 @@ public class NewcomerInitiator : MonoBehaviour
     void Say(SanctuaryOnboarding o, string text, float secs)
     {
         Debug.Log($"[Iniciación] {Who}: «{text}»");
-        if (o != null && o.GetComponent<PlayerController>() != null) LessonPrompt.Show($"{Who}: {text}", null, secs + 2f);
+        if (o != null && o.GetComponent<PlayerController>() != null) { LessonPrompt.Show($"{Who}: {text}", null, secs + 2f); KushalVoice.Reply(KushalVoice.Ctx.Instruction); }   // Kushal le contesta (arriba)
     }
 
     // Andar hacia un sitio (PathMover: si está en otro piso o edificio, por la cadena de alfombras voladoras).
@@ -407,6 +410,7 @@ public class NewcomerInitiator : MonoBehaviour
         VirtualizationMachine vm = Machine();
         string spell = vm != null ? $"virtualize({{destiny:\"{vm.areaName}\"}})" : "virtualize";
         LessonPrompt.Show($"{Who}: aún te falta tu primera virtualización. Ven al tanque, ponte la máscara y entra.", spell, 20f);
+        KushalVoice.Reply(KushalVoice.Ctx.Mission);
         SpellConsole.Propose(spell, $"{Who} te espera en el tanque", 25f);
         Debug.Log($"[Iniciación] {Who} recuerda al recién llegado que le falta su primera virtualización (lo acompaña por la enfermería).");
     }

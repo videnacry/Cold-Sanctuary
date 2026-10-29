@@ -140,6 +140,8 @@ public class KitchenOriginStory : MonoBehaviour
     void Go(Beat b) { Now = b; _beatAt = Time.time; History.Add(b); Debug.Log($"[Cocina-origen] → {b}"); }
     void Once(string k, bool when, System.Action a) { if (when && _said.Add(k)) a(); }
     static void Say(string who, string text, float s = 7f) { StorySubtitle.Show(who, text, s); Debug.Log($"[Cocina-origen] {who}: «{text}»"); }
+    // Frase dirigida a Kushal: él contesta (arriba, KushalVoice).
+    static void Say(string who, string text, float s, KushalVoice.Ctx reply) { Say(who, text, s); KushalVoice.Reply(reply); }
     static void Goal(string text) => LessonPrompt.Show(text, null, 9999f);
 
     /// <summary>Se salta la espera del beat actual (las pruebas: los beats guionizados avanzan sin esperar sus segundos).</summary>
@@ -260,7 +262,7 @@ public class KitchenOriginStory : MonoBehaviour
                 Once("fuego", t > 6f, () => Say("El Señor del Fuego", "Acercaos a la luz. Es para todos: nadie se queda fuera del círculo.", 6f));
                 if (t > 8f) NasatyaWork();
                 Once("nasatya", t > 11f, () => Say("", "Algo enorme y blando pasa a tu lado, ligero y veloz, con un resto sobre la cabeza.", 6f));
-                Once("pide", t > 15f, () => Say("Nasatya", "¿Me ayudas, pequeño? Lo llevo junto al fuego: allí el frío no se lo come.", 7f));
+                Once("pide", t > 15f, () => Say("Nasatya", "¿Me ayudas, pequeño? Lo llevo junto al fuego: allí el frío no se lo come.", 7f, KushalVoice.Ctx.Help));
                 if (t > 18f) { Go(Beat.Carry); Goal($"Ayuda a Nasatya: lleva restos al hogar (E junto a un resto, E junto al fuego) · 0/{ScrapsNeeded}"); }
                 break;
 
@@ -269,7 +271,7 @@ public class KitchenOriginStory : MonoBehaviour
                 TiranaWatches(t);
                 if (ScrapsDelivered >= ScrapsNeeded || t > CarryLimit)
                 {
-                    if (ScrapsDelivered < ScrapsNeeded) { TimedOut = true; Say("Nasatya", "Ya está: lo que faltaba lo he traído yo. ¡Gracias por venir!", 6f); }
+                    if (ScrapsDelivered < ScrapsNeeded) { TimedOut = true; Say("Nasatya", "Ya está: lo que faltaba lo he traído yo. ¡Gracias por venir!", 6f, KushalVoice.Ctx.Thanks); }
                     if (_held != null) { Drop(_held); _held = null; }
                     if (_nHeld != null) { Drop(_nHeld); _nHeld = null; }
                     Goal(""); LessonPrompt.Show("", null, 0.1f);
@@ -290,7 +292,7 @@ public class KitchenOriginStory : MonoBehaviour
                 Once("prueba", t > 11f, () => Say("El Señor del Fuego", "Está… blando. Y dulce. El fuego lo ha masticado por nosotros.", 6f));
                 Once("chaman", t > 16f, () => Say("El Chamán", "Lo que el frío endurece, el fuego lo abre.", 5f));
                 Once("tirana", t > 20f, () => Say("La Tirana de las Feromonas", "¡Que nadie toque nada! Esto lo reparto yo.", 5f));
-                Once("pide", t > 24f, () => Say("El Señor del Fuego", "Hay que tostarlo todo en la piedra. Pero la brasa es pequeña: si se apaga, se acabó. Ayúdame a mantenerla viva.", 8f));
+                Once("pide", t > 24f, () => Say("El Señor del Fuego", "Hay que tostarlo todo en la piedra. Pero la brasa es pequeña: si se apaga, se acabó. Ayúdame a mantenerla viva.", 8f, KushalVoice.Ctx.Help));
                 if (t > 28f) { Flame = 0.45f; Go(Beat.Vigil); Goal($"La vigilia: mantén viva la llama (E junto al fuego) · 0/{FeedsNeeded}"); }
                 break;
 
@@ -330,7 +332,7 @@ public class KitchenOriginStory : MonoBehaviour
                     PlayerController pc = p != null ? p.GetComponent<PlayerController>() : null;
                     if (pc != null && t < 1f && _nasatya != null) pc.LookAtPoint(_nasatya.position + Vector3.up * 1f);
                     Once("tell", t > 1f, () => Say("", "Nasatya se recuesta de lado, en su postura rara, y te mira como si te conociera de antes.", 7f));
-                    Once("adios", t > 6f, () => Say("Nasatya", "Gracias, pequeño. Vuelve a tu mundo: aquí el fuego queda en buenas manos.", 6f));
+                    Once("adios", t > 6f, () => Say("Nasatya", "Gracias, pequeño. Vuelve a tu mundo: aquí el fuego queda en buenas manos.", 6f, KushalVoice.Ctx.Farewell));
                     if (t > 12f) Finish();
                 }
                 break;

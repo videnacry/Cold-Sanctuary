@@ -54,6 +54,8 @@ public class SakshiRiverStory : MonoBehaviour
     void Go(Beat b) { Now = b; _beatAt = Time.time; Debug.Log($"[Río] → {b}"); }
     void Once(string k, bool when, System.Action a) { if (when && _said.Add(k)) a(); }
     static void Say(string who, string text, float s = 7f) { StorySubtitle.Show(who, text, s); Debug.Log($"[Río] {who}: «{text}»"); }
+    // Frase dirigida a Kushal: él contesta (arriba, KushalVoice).
+    static void Say(string who, string text, float s, KushalVoice.Ctx reply) { Say(who, text, s); KushalVoice.Reply(reply); }
     static void Goal(string text) => LessonPrompt.Show(text, null, 9999f);
 
     Transform PlayerT()
@@ -108,12 +110,12 @@ public class SakshiRiverStory : MonoBehaviour
             case Beat.Intro:   // llega a la orilla; la ve
                 if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsBusy) { _beatAt = Time.time; break; }
                 Once("narra", t > 1f, () => Say("", "La orilla del río, al amanecer. Una cría de hormiga yace de lado, empapada: el agua la ha traído desde muy lejos. Solo puede mirar.", 8f));
-                Once("sakshi1", t > 5f, () => Say("Sakshi", "…¿Quién eres? No puedo… moverme.", 6f));
+                Once("sakshi1", t > 5f, () => Say("Sakshi", "…¿Quién eres? No puedo… moverme.", 6f, KushalVoice.Ctx.Comfort));
                 if (t > 8f) { Go(Beat.Stalk); Goal("Protege a Sakshi: empuja a la araña (E junto a ella)"); Say("", "Entre la hierba, una araña pequeña se acerca despacio. Prefiere las hormigas a los gusanos.", 7f); }
                 break;
             case Beat.Stalk:   // se acerca con sigilo
                 Walk(_pred, _sakshi.position + (_pred.position - _sakshi.position).normalized * 1.6f, 0.1f, 0.6f);
-                Once("sakshi2", t > 6f, () => Say("Sakshi", "…Viene hacia mí.", 4f));
+                Once("sakshi2", t > 6f, () => Say("Sakshi", "…Viene hacia mí.", 4f, KushalVoice.Ctx.Comfort));
                 break;
             case Beat.Push:
                 if (PlayerPushing)
@@ -150,8 +152,8 @@ public class SakshiRiverStory : MonoBehaviour
             case Beat.Bond:   // Sakshi mira a Kushal; la tribu se la lleva
                 {
                     PlayerController pc = p.GetComponent<PlayerController>(); if (pc != null && t < 1f) pc.LookAtPoint(_sakshi.position + Vector3.up * 0.4f);
-                    Once("sakshi3", t > 1f, () => Say("Sakshi", "…Me has protegido. Te recordaré… y miraré, como tú me miras.", 7f));
-                    Once("aurea", t > 6f, () => Say("Anciana Áurea", "Gracias, gusano. Nos la llevamos a casa; tú vuelve a tu mundo.", 6f));
+                    Once("sakshi3", t > 1f, () => Say("Sakshi", "…Me has protegido. Te recordaré… y miraré, como tú me miras.", 7f, KushalVoice.Ctx.Thanks));
+                    Once("aurea", t > 6f, () => Say("Anciana Áurea", "Gracias, gusano. Nos la llevamos a casa; tú vuelve a tu mundo.", 6f, KushalVoice.Ctx.Farewell));
                     if (t > 12f)
                     {
                         Go(Beat.Done);

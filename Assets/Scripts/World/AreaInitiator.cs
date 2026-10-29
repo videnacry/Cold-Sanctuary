@@ -345,6 +345,7 @@ public class AreaInitiator : MonoBehaviour
             if (isPlayer)
             {
                 LessonPrompt.Show($"{Who} (por mayor ×{_recipe.servings}): {step}{qty}", "step", stepTimeout + 2f);
+                KushalVoice.Reply(KushalVoice.Ctx.Instruction);
                 SpellConsole.Propose("step", $"{Who} te pide: {step}", stepTimeout);
             }
             Debug.Log($"[Iniciación cocina] paso {idx + 1}/{_recipe.steps.Length}: «{step}» — {Who} lo hace y se lo pide a «{student.name}».");
@@ -476,6 +477,7 @@ public class AreaInitiator : MonoBehaviour
             if (isPlayer)
             {
                 LessonPrompt.Show($"{Who} (huerto, paso {_soilIdx + 1}/{SoilSteps.Length}): {s.say}", "step", stepTimeout + 2f);
+                KushalVoice.Reply(KushalVoice.Ctx.Instruction);
                 SpellConsole.Propose("step", $"{Who} te pide: {s.say}", stepTimeout);
             }
             Debug.Log($"[Iniciación huerto] paso {_soilIdx + 1}/{SoilSteps.Length}: «{s.say}» — {Who} lo demuestra y se lo pide a «{student.name}».");
@@ -535,6 +537,7 @@ public class AreaInitiator : MonoBehaviour
         string who = kind == Kind.Yoga ? "al río: allí hay alguien que te necesita" : kind == Kind.Kitchen ? "a la cocina de la era del fuego: la tribu lleva restos a su guarida; ayuda a Nasatya" : "al huerto de las hormigas: La Sembradora enseña a las recolectoras a cultivar el hongo";
         PlaneMessenger.Send(Who, $"Ponte la máscara y entra al agua: vas {who}.", 6f);
         LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua — vas {who}.", null, 6f);
+        if (student.GetComponent<PlayerController>() != null) KushalVoice.Reply(KushalVoice.Ctx.Mission);
         Debug.Log($"[Iniciación {Label}] {Who} mete a «{student.name}» en el tanque y lo envía a «{scene}».");
         vm.EnterWithTank(student.transform, scene);
         Complete(true, scene);
@@ -578,7 +581,7 @@ public class AreaInitiator : MonoBehaviour
     void Say(string text, float secs)
     {
         Debug.Log($"[Iniciación {Label}] {Who}: «{text}»");
-        if (student != null && student.GetComponent<PlayerController>() != null) LessonPrompt.Show($"{Who}: {text}", null, secs + 2f);
+        if (student != null && student.GetComponent<PlayerController>() != null) { LessonPrompt.Show($"{Who}: {text}", null, secs + 2f); KushalVoice.Reply(KushalVoice.Ctx.Instruction); }   // Kushal le contesta (arriba)
     }
 
     static void Stand(Anima a) { if (a != null) DailyPoses.Stand().ApplyFinal(a); }

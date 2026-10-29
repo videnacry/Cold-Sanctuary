@@ -33,7 +33,9 @@ public class HelpRequest : MonoBehaviour
         Debug.Log($"[Petición] «{name}» pide a «{responder.name}» ir juntos a «{goal.name}».");
 
         HelpResponder resp = responder.GetComponent<HelpResponder>();
-        bool accepts = resp == null || resp.WouldAccept(from);   // sin HelpResponder → acepta por defecto
+        bool kushal = responder.GetComponent<PlayerController>() != null;   // Kushal siempre acepta ayudar (y lo dice)
+        bool accepts = kushal || resp == null || resp.WouldAccept(from);   // sin HelpResponder → acepta por defecto
+        if (kushal) KushalVoice.Reply(KushalVoice.Ctx.Help);
         if (!accepts) return;
 
         // Alma compartida (MVP): el receptor asume el objetivo con un cerebro de alta relevancia.

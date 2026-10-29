@@ -35,6 +35,8 @@ public class MagnateWarden : MonoBehaviour
     readonly HashSet<GameObject> _busy = new HashSet<GameObject>();
     readonly Dictionary<GameObject, float> _graceUntil = new Dictionary<GameObject, float>();
     string _msg; float _msgUntil;
+    /// <summary>¿Está su aviso en pantalla? (lo usa <see cref="KushalVoice"/> para no taparlo).</summary>
+    public static bool Speaking => _inst != null && Time.time <= _inst._msgUntil && !string.IsNullOrEmpty(_inst._msg);
 
     /// <summary>¿La Magnate está ahora devolviendo a <paramref name="who"/> (o acaba de hacerlo), o es la propia Magnate
     /// en plena aparición? (La jornada no los mueve mientras tanto.)</summary>
@@ -91,6 +93,7 @@ public class MagnateWarden : MonoBehaviour
         m.transform.rotation = Quaternion.LookRotation(-fwd);
         Debug.Log($"[Magnate] Se teletransporta delante de «{who.name}»: {why}");
         Say(why);
+        if (who.GetComponent<PlayerController>() != null) KushalVoice.Reply(KushalVoice.Ctx.Correction);   // Kushal le contesta, humilde
         Behaviour[] frozen = Pause(who);   // se detiene a escucharla
         yield return new WaitForSeconds(talk);
 

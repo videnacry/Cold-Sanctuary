@@ -23,12 +23,17 @@ public class StorySubtitle : MonoBehaviour
 
     public static void Clear() => _lines.Clear();
 
+    /// <summary>La caja (toda la pila) de la última vez que se dibujó, y en qué frame: <see cref="KushalVoice"/> se queda encima.</summary>
+    public static Rect LastRect { get; private set; }
+    public static int LastDrawFrame { get; private set; } = -100;
+
     void OnGUI()
     {
         _lines.RemoveAll(l => Time.time > l.until);
         if (_lines.Count == 0) return;
         var style = new GUIStyle(GUI.skin.label) { fontSize = 17, wordWrap = true, richText = true, alignment = TextAnchor.MiddleLeft };
         float w = Mathf.Min(Mathf.Max(620f, Screen.width * 0.55f), Screen.width - 40f), y = Screen.height - 230f;
+        float bottom = y - 6f;
         for (int i = _lines.Count - 1; i >= 0; i--)
         {
             string t = string.IsNullOrEmpty(_lines[i].who) ? _lines[i].text : $"<b>{_lines[i].who}:</b> {_lines[i].text}";
@@ -38,5 +43,6 @@ public class StorySubtitle : MonoBehaviour
             GUI.Box(box, GUIContent.none); GUI.Box(box, GUIContent.none);   // dos veces: más opaca
             GUI.Label(new Rect(box.x + 12f, box.y + 7f, box.width - 24f, h - 14f), t, style);
         }
+        LastRect = new Rect((Screen.width - w) * 0.5f, y, w, bottom - y); LastDrawFrame = Time.frameCount;
     }
 }
