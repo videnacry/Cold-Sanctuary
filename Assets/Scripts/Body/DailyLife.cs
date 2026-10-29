@@ -51,22 +51,29 @@ public static class DailyPoses
         (BodyPart.ShoulderRight, new Vector3(-80, 0, 0)), (BodyPart.ForearmRight, new Vector3(-45, 0, 0)), (BodyPart.ShoulderLeft, new Vector3(-60, 0, 15)), (BodyPart.ForearmLeft, new Vector3(-30, 0, 0)));
 }
 
-/// <summary>COMER EN EL RESTAURANTE: va a la barra de servicio, pide (toma una ración del pase), busca una silla libre,
-/// se sienta, come con calma (~20 min de juego) y se levanta. Si no hay restaurante, come donde haya comida.</summary>
+/// <summary>COMER EN EL RESTAURANTE: va a la barra de servicio (el pase del centro de la cocina, por el lado de las alfombras
+/// de la planta), espera a que le sirvan, toma una ración de la carta, sube al comedor del anillo, se sienta a una mesa
+/// libre, come con calma (~20 min de juego) y se levanta. Si no hay restaurante, come donde haya comida.
+/// Cada tramo va a UN destino fijo sobre el NavMesh (como <see cref="RestaurantService.Mover"/>), con PathMover y alfombras,
+/// y todo tiene tope: si no avanza, lo deja (JornadaTest 2026-10-29: «pedir en la barra» atascado 100 s y «buscar mesa» en
+/// círculos: iba a cualquier FoodContainer —también los de las obras— y a la barra y de vuelta a la misma pista sin pausa).</summary>
 public class DineSpell : QueuedSpell
 {
     public float meal = 0.75f;
     public float eatMinutes = 20f;
-    static readonly HashSet<Transform> _taken = new HashSet<Transform>();
+    public float serveSeconds = 14f;        // le sirven en la barra (además, así la ida y la vuelta a la pista no parecen un círculo)
+    public float barTimeout = 150f, seatTimeout = 120f;   // de otra torre a la barra hay varios vuelos en alfombra
+    const float NoProgress = 10f;           // s sin acercarse (sin volar): recalcula; la segunda vez, lo deja
+    static readonly Dictionary<Transform, float> _taken = new Dictionary<Transform, float>();   // silla → hasta cuándo (si alguien la deja a medias, caduca)
 
-    int _phase;              // 0 ir a la barra · 1 ir a la mesa · 2 comer · 3 levantarse
-    FoodContainer _food;
+    int _phase;              // 0 ir a la barra · 1 le sirven · 2 ir a la mesa · 3 comer · 4 levantarse
     Transform _seat;
-    CarpetWalkSpell _walk;   // con PathMover: camino del NavMesh sin salirse del borde (WalkToSpell lo tiraba de la plataforma del restaurante, JornadaTest) y alfombras
     float _until;
     string _dish;
+    // El tramo en curso: un destino fijo, ya sobre el NavMesh.
+    Vector3 _snap; bool _hasGoal; float _legStart, _checkAt, _bestLeft; Vector3 _checkPos; int _restarts;
 
-    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "buscar mesa", 2 => $"comer {_dish}", _ => "levantarse" };
+    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "pedir en la barra del restaurante (le sirven)", 2 => "buscar mesa", 3 => $"comer {_dish}", _ => "levantarse" };
 
     public override bool Tick(Anima self)
     {
@@ -74,45 +81,62 @@ public class DineSpell : QueuedSpell
         switch (_phase)
         {
             case 0:
-                if (_food == null || !_food.HasFood)
+            {
+                if (!_hasGoal)
                 {
-                    _food = Nearest(self.transform.position);
-                    if (_food == null) { Debug.Log($"[Cuerpo] «{self.name}» tiene hambre pero no hay comida en ningún sitio."); return true; }
-                    _walk = new CarpetWalkSpell { target = _food.transform, targetName = $"la barra ({_food.name})", stopDistance = 1.3f, giveUpAfter = 90f };
+                    FoodContainer any = NearestFood(self.transform.position);
+                    if (any == null) { Debug.Log($"[Cuerpo] «{self.name}» tiene hambre pero no hay comida en ningún sitio."); return true; }
+                    BeginLeg(self, BarPoint(any, self));
                 }
-                if (!_walk.Tick(self)) return false;
-                if (!_food.Take()) { _food = null; return false; }
-                _dish = _food.dishName;
-                Debug.Log($"[Restaurante] «{self.name}» pide en la barra y le sirven {_dish}.");
-                _seat = FreeSeat(self.transform.position);
-                if (_seat != null) { _taken.Add(_seat); _walk = new CarpetWalkSpell { target = _seat, targetName = $"una mesa ({_seat.parent?.name})", stopDistance = 0.5f, giveUpAfter = 60f }; }
-                _phase = _seat != null ? 1 : 2;
-                if (_phase == 2) _until = Time.time + EatSeconds();
+                int r = Walk(self, barTimeout, "la barra");
+                if (r == 0) return false;
+                if (r < 0) return true;   // no llega: lo deja (la necesidad volverá a pedirlo); nunca toma la comida desde lejos
+                _phase = 1; _until = Time.time + serveSeconds; _hasGoal = false;
+                FoodContainer near = NearestFood(self.transform.position);
+                if (near != null) Face(self.transform, near.transform.position);
                 return false;
+            }
             case 1:
-                if (!_walk.Tick(self)) return false;
-                {
-                    Vector3 gap = _seat.position - self.transform.position;
-                    if (new Vector2(gap.x, gap.z).magnitude > 1.2f || Mathf.Abs(gap.y) > 2.5f)   // no llegó a la silla: come de pie donde está (antes se le colocaba en ella desde lejos)
-                    { _taken.Remove(_seat); _seat = null; _until = Time.time + EatSeconds(); _phase = 2; return false; }
-                }
+            {
+                if (Time.time < _until) return false;
+                FoodContainer fc = NearestFood(self.transform.position);
+                if (fc == null || (fc.transform.position - self.transform.position).sqrMagnitude > 36f || !fc.Take())
+                { Debug.Log($"[Restaurante] «{self.name}» llega a la barra pero ya no queda comida."); return true; }
+                _dish = fc.dishName;
+                Debug.Log($"[Restaurante] «{self.name}» pide en la barra y le sirven {_dish}.");
+                _seat = FreeSeat();
+                if (_seat == null) { _phase = 3; _until = Time.time + EatSeconds(); return false; }
+                _taken[_seat] = Time.time + 600f;
+                BeginLeg(self, ChairFront(_seat));
+                _phase = 2;
+                return false;
+            }
+            case 2:
+            {
+                int r = Walk(self, seatTimeout, $"una mesa ({_seat?.parent?.name})");
+                if (r == 0) return false;
+                if (r < 0 || _seat == null)   // no llegó a la silla: come de pie donde está (antes se le colocaba en ella desde lejos)
+                { if (_seat != null) _taken.Remove(_seat); _seat = null; _until = Time.time + EatSeconds(); _phase = 3; return false; }
                 Vector3 table = _seat.parent != null ? _seat.parent.position : _seat.position;
                 Vector3 look = table - _seat.position; look.y = 0f;
-                self.transform.position = new Vector3(_seat.position.x, self.transform.position.y, _seat.position.z);
+                self.transform.position = new Vector3(_seat.position.x, self.transform.position.y, _seat.position.z);   // de delante de la silla a la silla (~0,5 m)
                 if (look.sqrMagnitude > 1e-4f) self.transform.rotation = Quaternion.LookRotation(look);
                 DailyPoses.Sit().ApplyFinal(self);
                 Debug.Log($"[Restaurante] «{self.name}» se sienta a comer en {_seat.parent?.name}.");
                 _until = Time.time + EatSeconds();
-                _phase = 2;
+                _phase = 3;
                 return false;
-            case 2:
+            }
+            case 3:
+            {
                 if (_seat != null) DailyPoses.Sit().ApplyFinal(self);   // sigue sentado (las asanas bloquean los huesos un instante)
                 if (Time.time < _until) return false;
                 BodyMetabolism body = self.GetComponent<BodyMetabolism>();
                 if (body != null) { body.Feed(meal); body.toilet = Mathf.Clamp01(body.toilet + 0.25f); }
                 Debug.Log($"[Cuerpo] «{self.name}» termina de comer {_dish}.");
-                _phase = 3;
+                _phase = 4;
                 return false;
+            }
             default:
                 DailyPoses.Stand().ApplyFinal(self);
                 if (_seat != null) _taken.Remove(_seat);
@@ -122,10 +146,72 @@ public class DineSpell : QueuedSpell
 
     float EatSeconds() => eatMinutes * (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f);
 
-    static FoodContainer Nearest(Vector3 from)
+    // ── El tramo: un destino fijo sobre el NavMesh, PathMover (y sus alfombras), con tope y sin dar vueltas ──
+
+    void BeginLeg(Anima self, Vector3 goal)
+    {
+        _hasGoal = true; _restarts = 0;
+        // EL DESTINO, SOBRE EL NAVMESH (como RestaurantService.Mover): junto a un mueble el punto pedido cae dentro del margen
+        // de su obstáculo y el camino acababa a medio metro: nunca «llegaba» y rondaba el mueble.
+        _snap = UnityEngine.AI.NavMesh.SamplePosition(goal, out UnityEngine.AI.NavMeshHit h, 1.2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - goal.y) < 0.8f ? h.position : goal;
+        _legStart = _checkAt = Time.time; _checkPos = self.transform.position; _bestLeft = float.MaxValue;
+        PathMover.Of(self.transform).Restart();
+    }
+
+    /// <summary>1 = llegó · 0 = sigue · −1 = no llega (tope, o sin acercarse).</summary>
+    int Walk(Anima self, float timeout, string what)
+    {
+        Transform t = self.transform;
+        PathMover pm = PathMover.Of(t);
+        bool riding = FlyingCarpet.Riding(self.gameObject);
+        Vector3 here = t.position - _snap; float hy = here.y - pm.PivotHeight; here.y = 0f;
+        if (!riding && here.magnitude < 0.45f && Mathf.Abs(hy) < 1.3f) return 1;
+        float left = pm.StepToward(_snap, 1.6f);
+        riding = FlyingCarpet.Riding(self.gameObject);
+        bool level = Mathf.Abs(t.position.y - pm.PivotHeight - _snap.y) < 1.3f;
+        if (!riding && level && left < 0.45f) return 1;
+        if (Time.time - _legStart > timeout)
+        { Debug.Log($"[Restaurante] «{self.name}» no llega a {what} en {timeout:0} s (a {left:0.0} m): lo deja."); return -1; }
+        if (riding) { _checkAt = Time.time; _checkPos = t.position; _bestLeft = float.MaxValue; return 0; }   // volando: lo lleva la alfombra
+        if (level ? left < _bestLeft - 0.5f : (t.position - _checkPos).magnitude > 1f)   // en su piso, acercarse; en otro, andar hacia sus alfombras
+        { _bestLeft = level ? left : float.MaxValue; _checkAt = Time.time; _checkPos = t.position; }
+        if (Time.time - _checkAt > NoProgress)
+        {
+            // SIN ACERCARSE en 10 s (algo lo sujeta, o el camino rodea sin llegar): a menos de 1,5 m del sitio basta; si no,
+            // recalcula una vez y, si sigue igual, lo deja (antes esperaba 90 s quieto o daba vueltas hasta rendirse).
+            if (level && left < 1.5f) return 1;
+            if (_restarts++ == 0) { pm.Restart(); _checkAt = Time.time; _checkPos = t.position; _bestLeft = left; return 0; }
+            Debug.Log($"[Restaurante] «{self.name}» no avanza hacia {what} (a {left:0.0} m; se movió {(t.position - _checkPos).magnitude:0.0} m en {NoProgress:0} s): lo deja.");
+            return -1;
+        }
+        return 0;
+    }
+
+    static void Face(Transform t, Vector3 p) { Vector3 d = p - t.position; d.y = 0f; if (d.sqrMagnitude > 1e-4f) t.rotation = Quaternion.LookRotation(d); }
+
+    // ── Sitios ──
+
+    // LA COMIDA de la carta del restaurante (los contenedores de RestaurantKitchen, en el pase). Antes valía CUALQUIER
+    // FoodContainer —también la pila de la obra o el de «mantenimiento»— y se iba a «pedir» a otra torre o a un mueble.
+    static FoodContainer NearestFood(Vector3 from)
     {
         FoodContainer best = null; float bestSq = float.MaxValue;
-        foreach (FoodContainer fc in Object.FindObjectsByType<FoodContainer>(FindObjectsSortMode.None))
+        bool restaurant = false;
+        foreach (RestaurantKitchen rk in Object.FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+        {
+            if (rk == null || rk.dishes == null) continue;
+            foreach (RestaurantKitchen.DishStock d in rk.dishes)
+            {
+                FoodContainer fc = d != null ? d.container : null;
+                if (fc == null) continue;
+                restaurant = true;
+                if (!fc.HasFood) continue;
+                float sq = (fc.transform.position - from).sqrMagnitude;
+                if (sq < bestSq) { bestSq = sq; best = fc; }
+            }
+        }
+        if (restaurant) return best;
+        foreach (FoodContainer fc in Object.FindObjectsByType<FoodContainer>(FindObjectsSortMode.None))   // sin restaurante: donde haya comida
         {
             if (fc == null || !fc.HasFood) continue;
             float sq = (fc.transform.position - from).sqrMagnitude;
@@ -134,15 +220,52 @@ public class DineSpell : QueuedSpell
         return best;
     }
 
-    // Las sillas de las mesas del comedor («Asiento»): la libre más cercana.
-    static Transform FreeSeat(Vector3 from)
+    // DONDE SE PIDE: a 1 m del pase, por el lado de las alfombras de la planta (por donde se llega del comedor o de otra torre;
+    // el mismo lado que usa el camarero), repartidos a lo largo de la barra para no pisarse.
+    static Vector3 BarPoint(FoodContainer fc, Anima self)
+    {
+        Transform pass = fc.transform.parent;
+        if (pass == null || !pass.name.StartsWith("Barra"))
+        {
+            Vector3 d = self.transform.position - fc.transform.position; d.y = 0f; d = d.sqrMagnitude > 1e-4f ? d.normalized : Vector3.forward;
+            Vector3 q = fc.transform.position + d * 1.2f; q.y = fc.transform.position.y - 1f;
+            return q;
+        }
+        CarpetPad pad = CarpetPad.For(pass.position + Vector3.up * 0.5f);
+        Vector3 from = pad != null ? pad.transform.position : self.transform.position;
+        float side = Vector3.Dot(from - pass.position, pass.forward) >= 0f ? 1f : -1f;
+        float along = ((Mathf.Abs(self.name.GetHashCode()) % 5) - 2) * 0.9f;
+        Vector3 p = pass.position + pass.forward * side * 1.0f + pass.right * along; p.y = pass.position.y;
+        return p;
+    }
+
+    // Por fuera de la silla (como RestaurantService.ChairFront): ahí se pone quien se va a sentar. El centro de la silla queda
+    // dentro del obstáculo de la mesa y el camino rondaba la mesa sin llegar.
+    static Vector3 ChairFront(Transform chair)
+    {
+        Transform mesa = chair.parent;
+        Vector3 o = chair.position - mesa.position; o.y = 0f; o = o.sqrMagnitude > 1e-4f ? o.normalized : mesa.forward;
+        Vector3 p = chair.position + o * 0.55f; p.y = mesa.position.y;
+        return p;
+    }
+
+    // Una silla libre del comedor («Asiento» de una «Mesa_»), la más cercana a las alfombras del anillo (por donde se llega):
+    // ni la de otro del personal ni la mesa de un turista.
+    static Transform FreeSeat()
     {
         GameObject dining = GameObject.Find("Comedor_Gourmet");
         if (dining == null) return null;
+        Vector3 from = dining.transform.position;
+        Transform area = dining.transform.parent;
+        if (area != null) foreach (CarpetPad p in CarpetPad.All) if (p != null && p.surface.Contains("#anillo") && p.transform.IsChildOf(area)) { from = p.transform.position; break; }
+        var busy = new HashSet<Transform>();
+        if (RestaurantService.Instance != null)
+            foreach (RestaurantService.Table t in RestaurantService.Instance.Tables) if (t.occupant != null || t.cleaner != null) busy.Add(t.mesa);
         Transform best = null; float bestSq = float.MaxValue;
         foreach (Transform t in dining.GetComponentsInChildren<Transform>())
         {
-            if (t.name != "Asiento" || t.parent == null || !t.parent.name.StartsWith("Mesa_") || _taken.Contains(t)) continue;   // las sillas de las MESAS (el «Asiento» del inodoro de los aseos también se llama así: iba a comer a una cabina cerrada y daba vueltas)
+            if (t.name != "Asiento" || t.parent == null || !t.parent.name.StartsWith("Mesa_") || busy.Contains(t.parent)) continue;   // las sillas de las MESAS (el «Asiento» del inodoro de los aseos también se llama así)
+            if (_taken.TryGetValue(t, out float until) && until > Time.time) continue;
             float sq = (t.position - from).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = t; }
         }
@@ -186,6 +309,11 @@ public class ToiletSpell : QueuedSpell
             _phase = 1;
             return false;
         }
+        // Si otro conductor se lo llevó de la cabina (alfombra, guardia…), NO se le devuelve de golpe a la puerta (salto de 60 m:
+        // JornadaTest 2026-10-29, Gohageneis): solo sale de la cabina a la puerta (≤ 2,5 m) si sigue dentro.
+        Vector3 inCabin = _toilet != null ? _toilet.position - self.transform.position : Vector3.one * 99f;
+        if (new Vector2(inCabin.x, inCabin.z).magnitude > 1.5f || Mathf.Abs(inCabin.y) > 1.5f)
+        { BodyMetabolism b0 = self.GetComponent<BodyMetabolism>(); if (b0 != null) b0.toilet = 0f; return true; }
         if (Time.time < _until) return false;
         Move(self.transform, _outside);
         BodyMetabolism body = self.GetComponent<BodyMetabolism>();
