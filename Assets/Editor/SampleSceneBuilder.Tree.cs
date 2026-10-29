@@ -169,7 +169,7 @@ public static partial class SampleSceneBuilder
     {
         Transform d = new GameObject(name).transform; d.SetParent(tree, false);
         d.localPosition = TreeSpec.Dir(ang) * TreeSpec.WaterRadius + Vector3.up * y; d.localRotation = Quaternion.Euler(0f, ang, 0f);
-        float w = 2f * TreeSpec.WaterRadius * Mathf.Sin(5f * Mathf.Deg2Rad) * 2f, h = TreeSpec.DoorHeight;   // el hueco de la pared: 2 celdas de 5°
+        float w = 2f * TreeSpec.WaterRadius * Mathf.Sin(5f * Mathf.Deg2Rad), h = TreeSpec.DoorHeight;   // el hueco de la pared: 2 celdas de 5°
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(d, new Vector3(s * (w * 0.5f + 0.06f), h * 0.5f, 0.5f), new Vector3(0.12f, h, 1f), TreeCopper, 0f, "Bobina");
         KitchenProps.C(d, new Vector3(0f, h + 0.06f, 0.5f), new Vector3(w + 0.24f, 0.12f, 1f), TreeCopper, 0f, "Bobina");
         Transform field = KitchenProps.C(d, new Vector3(0f, h * 0.5f, 0.02f), new Vector3(w, h, 0.02f), TreeGlow, 0f, "Campo_magnetico");
@@ -258,7 +258,7 @@ public static partial class SampleSceneBuilder
             TreeSteel, Quaternion.LookRotation(dir, -under), "Nervio_rama");
         Transform collar = new GameObject($"Collar_rama_{b + 1}").transform; collar.SetParent(tree, false);
         collar.localPosition = h * (TreeSpec.WaterRadius + 0.5f) + Vector3.up * TreeSpec.BranchBaseY; collar.localRotation = Quaternion.LookRotation(h);
-        float gw = 2f * TreeSpec.OuterRadius * Mathf.Sin(12.5f * Mathf.Deg2Rad) + 0.4f, gh = 5.2f, tw = 2f * TreeSpec.BranchRadius, th = tw / Mathf.Cos(TreeSpec.BranchAngle * Mathf.Deg2Rad);
+        float gw = 2f * TreeSpec.OuterRadius * Mathf.Sin(15f * Mathf.Deg2Rad) + 0.4f, gh = 5.2f, tw = 2f * TreeSpec.BranchRadius, th = tw / Mathf.Cos(TreeSpec.BranchAngle * Mathf.Deg2Rad);
         for (int sx = -1; sx <= 1; sx += 2)
         {
             Solid(collar, new Vector3(sx * (tw * 0.5f + (gw - tw) * 0.25f), 0f, 0f), new Vector3((gw - tw) * 0.5f, gh, 1f), TreeSteel, "Collar");
