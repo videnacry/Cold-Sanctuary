@@ -222,6 +222,11 @@ public class CarpetPad : MonoBehaviour
     public static bool Route(GameObject g, ref Vector3 to)
     {
         if (FlyingCarpet.Riding(g)) return true;
+        // El ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): entre sus pisos no hay alfombras; a la puerta y nadando por la raíz.
+        // (Aquí y no en PathMover: la jornada, las iniciaciones y los hechizos llaman a Route directamente.)
+        ArbolCampos.Hop tree = ArbolCampos.Route(g, ref to);
+        if (tree == ArbolCampos.Hop.Swimming) return true;
+        if (tree == ArbolCampos.Hop.Walk) return false;
         CarpetPad a = For(g.transform.position), b = For(to);
         if (a == null || b == null || a.surface == b.surface) return false;   // mismo piso: andando
         CarpetPad next = NextHop(a, b);

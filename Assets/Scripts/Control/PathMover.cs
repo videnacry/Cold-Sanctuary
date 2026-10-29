@@ -40,10 +40,7 @@ public class PathMover : MonoBehaviour
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
-        // El ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): entre sus pisos no hay alfombras; se va a la puerta y se nada por la raíz.
-        ArbolCampos.Hop tree = ArbolCampos.Route(gameObject, ref target);
-        if (tree == ArbolCampos.Hop.Swimming) return Flat(final - transform.position);
-        if (tree == ArbolCampos.Hop.None && CarpetPad.Route(gameObject, ref target)) return Flat(final - transform.position);
+        if (CarpetPad.Route(gameObject, ref target)) return Flat(final - transform.position);   // (y el Árbol de los Campos: por su raíz, nadando)
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
         // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
