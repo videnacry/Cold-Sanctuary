@@ -6,11 +6,11 @@ using UnityEngine;
 /// LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27): todo microcosmos se crea a partir de TRES DATOS que hay que dar sí o sí
 /// —su FECHA, su HORA y la PLATAFORMA del santuario a la que pertenece— y con ellos la plantilla lo monta siempre igual
 /// (docs/microcosmos-areas.md):
-/// - la plataforma del santuario, AGRANDADA ×10 (sus muebles son montañas) y entera;
-/// - la flora y los insectos NATIVOS de esa fecha y ese lugar (MicroBiome), a escala de hormiga, hasta el agua;
+/// - SOLO el piso elegido del santuario, AGRANDADO ×10 (sus muebles son montañas), cerrado por MUROS en su borde (regla 11);
+/// - la flora y los insectos NATIVOS de esa fecha y ese lugar (MicroBiome), a escala de hormiga, TODOS DENTRO del piso;
 /// - el SOL a la hora pedida (el alba, el mediodía del solsticio…);
 /// - su fecha en la raíz (<see cref="MicroEra"/>: las conductas preguntan qué existía entonces) y el aviso al entrar;
-/// - la entrada, el portal de salida, el agua alrededor y su historia en el hueco más libre.
+/// - la entrada, el portal de salida y su historia (dentro del piso, en su plaza de historia); el agua, fuera de los muros.
 /// Sin fecha, hora o plataforma no se construye (<see cref="MicrocosmSpec"/> no lo deja crear).
 /// </summary>
 internal sealed class MicrocosmSpec

@@ -15,6 +15,9 @@ using UnityEngine;
 ///   Medea renacida, una hormiga poderosísima, que con Nasatya (Ambrosio renacido) es blanda.
 /// - Huerto: La Sembradora (Ruth renacida) enseña a la tribu a cultivar el hongo.
 /// - Resto de áreas: la tribu viviendo en su área gigante.
+/// EL MAPA ES SOLO EL PISO (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29): el piso elegido ×10, con MUROS en su
+/// borde para que nada salga; fuera no se puebla nada. La flora, la fauna, los personajes y las estructuras de la historia van
+/// DENTRO (a ×10 los 2 m de paso son 20 m: cabe todo). Registro: «[Microcosmos] escena: dentro N plantas, M fauna…; fuera 0».
 /// </summary>
 public static class AreaMicrocosmos
 {
@@ -26,21 +29,22 @@ public static class AreaMicrocosmos
     internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null, MicrocosmSpec spec = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
+        string sceneLabel = spec != null ? spec.scene : root.name;
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
         if (era.HasValue) { MicroEra me = root.AddComponent<MicroEra>(); me.year = era.Value.year; me.place = era.Value.place; }
         if (spec != null) MicrocosmTemplate.Stamp(root, spec);   // la plantilla: fecha, hora y plataforma
         int dressed = 0;
 
-        // 1) El ÁREA del santuario, ×10, ENTERA (sin conducta): el microcosmos ES el área vista desde el suelo, con sus
-        //    muebles convertidos en montañas. Antes se vaciaba un claro de 50 m en el centro para la historia, y en la
-        //    cocina (cocina abierta en el centro, comedor alrededor) eso borraba justo la cocina: ya no se reconocía.
+        // 1) El PISO del área, ×10 (sin conducta): el microcosmos ES ese piso visto desde el suelo, con sus muebles convertidos
+        //    en montañas, y NADA MÁS (regla 11, Berón 2026-10-29): ni sus anillos, ni lo que asoma fuera de su borde, ni bosque
+        //    alrededor. Los otros pisos del edificio son hermanos del área y no se copian.
         GameObject src = GameObject.Find(areaGo), giant = null;
         // Sus POSICIONES RESERVADAS (regla 8, PlatformSlots): la historia, los personajes, la fauna y la flora del microcosmos
         // van a las plazas que el piso dejó libres al construirse. Están en locales del área: en el área ×10 (clonada en el
         // origen de la raíz, sin girar), plaza × AreaScale.
         PlatformSlots slots = src != null ? src.GetComponent<PlatformSlots>() : null;
-        if (src != null && slots == null) Debug.LogWarning($"[Microcosmos] {display}: «{areaGo}» no tiene posiciones reservadas (PlatformSlots; reconstruye la escena principal): historia, flora y fauna van como antes.");
+        if (src != null && slots == null) Debug.LogWarning($"[Microcosmos] {display}: «{areaGo}» no tiene posiciones reservadas (PlatformSlots; reconstruye la escena principal): el piso sale de su suelo «Mat».");
         if (src != null)
         {
             giant = Object.Instantiate(src);
@@ -49,6 +53,8 @@ public static class AreaMicrocosmos
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
+            // Los ANILLOS son otras plataformas (el 80 % vuela fuera del piso): no son el mapa.
+            foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t != giant.transform && t.name.StartsWith("Anillo")) Object.DestroyImmediate(t.gameObject);
             giant.transform.SetParent(root.transform, false);
             giant.transform.localPosition = Vector3.zero; giant.transform.localRotation = Quaternion.identity;
             giant.transform.localScale = Vector3.one * AreaScale;
@@ -62,13 +68,17 @@ public static class AreaMicrocosmos
                 copy.floorSize = slots.floorSize; copy.storyClearance = slots.storyClearance; copy.freeCells = slots.freeCells;
             }
         }
-        else Debug.LogWarning($"[Microcosmos] No encuentro {areaGo} (abre la escena principal): sin área gigante.");
+        else Debug.LogWarning($"[Microcosmos] No encuentro {areaGo} (abre la escena principal): sin área gigante, piso liso de 120 × 120 m.");
+
+        // EL RECTÁNGULO DEL PISO (×10): el mapa entero. Lo que del área quede ENTERO fuera de él se quita.
+        Bounds rect = giant != null ? FloorRect(giant, slots) : new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
+        int pruned = giant != null ? Prune(giant.transform, rect) : 0;
 
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
-        Bounds foot = new Bounds(Vector3.zero, new Vector3(100f, 1f, 100f));
+        Bounds foot = new Bounds(rect.center, new Vector3(rect.size.x, 1f, rect.size.z));
         var floors = new List<Renderer>(); _blocked.Clear();
-        if (giant != null) foot = Classify(giant, floors, _blocked);
-        Vector3 anchor = Vector3.zero; float free = 50f;
+        if (giant != null) { Bounds all = Classify(giant, floors, _blocked); foot = new Bounds(new Vector3(rect.center.x, all.center.y, rect.center.z), new Vector3(rect.size.x, all.size.y, rect.size.z)); }
+        Vector3 anchor = new Vector3(rect.center.x, 0f, rect.center.z); float free = Mathf.Min(rect.size.x, rect.size.z) * 0.5f;
         // Con posiciones reservadas, la HISTORIA va a su plaza principal (el punto del piso más alejado de los muebles, calculado
         // al construir el piso, ya con sus alfombras); sin ellas, se busca aquí.
         if (giant != null && slots != null && slots.story.Count > 0) { anchor = slots.story[0] * AreaScale; anchor.y = 0f; free = slots.storyClearance * AreaScale; }
@@ -90,6 +100,7 @@ public static class AreaMicrocosmos
                     if (InsideXZ(ab, p, -2f) && d < bestD) { bestD = d; anchor = p; }
                 }
         }
+        anchor = ClampXZ(anchor, Inner(rect, WallInset));
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
@@ -116,38 +127,45 @@ public static class AreaMicrocosmos
         // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
         if ((spec == null || spec.foragers) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
+        // 2b) La historia, DENTRO DEL PISO (regla 11): sus estructuras (cueva, río, sendero, guarida…) no pueden quedar fuera de
+        //     los muros. Si se sale por un lado, se corre entera hacia dentro; si es más grande que el piso, pieza a pieza.
+        string fit = FitStory(story, cast, Inner(rect, WallInset));
+        if (fit.Length > 0) Debug.Log($"[Microcosmos] {sceneLabel}: la historia {fit}.");
+
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
         int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
         // La historia de la enfermería (el sandbox de Ambrosio) borra piezas al montarse: sin quitar sus suelos de la lista,
         // el microcosmos del Hospital fallaba (MissingReference en EdgeDist) y se quedaba la escena vieja, sin el hospital.
         floors.RemoveAll(f => f == null);
-        if (giant == null)
-            Box(root.transform, "Suelo_claro", new Vector3(0f, -0.05f, 0f), new Vector3(120f, 0.1f, 120f), Mat("Micro_Tierra", new Color(0.45f, 0.36f, 0.25f)), true);
 
-        // 4) La FLORA a escala de hormiga — musgo = hierba, briznas y helechos = árboles — crece por TODA la superficie, hasta
-        //    el agua: también por el suelo libre del área (entre sus muebles gigantes), menos en el claro de la historia. Cada
-        //    planta es un interactuable (Affordance) que algún insecto usa; y su fauna.
-        float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
-        // El SUELO DEL ÁREA es el más bajo bajo su centro (no el más alto: anillos, entreplantas y pisos de arriba también son
-        // «suelos»; con el más alto, la flora del suelo real se descartaba y el microcosmos se quedaba pelado, Berón 2026-10-28).
+        // 4) El SUELO DEL ÁREA es el más bajo bajo su centro (no el más alto: entreplantas y pisos de arriba también son «suelos»;
+        //    con el más alto, la flora del suelo real se descartaba y el microcosmos se quedaba pelado, Berón 2026-10-28).
         float groundY = giant != null ? FloorLowest(foot.center, floors, 0f) - 0.02f : 0f;
-        // El suelo de alrededor, del color de su tierra (arena de Egipto, barro helado de Flandes, mantillo de la taiga…).
         MicroBiome.Biome bio = MicroBiome.For(display);
         Color soil = bio != null ? bio.ground : new Color(0.45f, 0.36f, 0.25f);
-        Box(root.transform, "Suelo_bosque", new Vector3(foot.center.x, groundY - 0.05f, foot.center.z), new Vector3(r1 * 2f + 20f, 0.1f, r1 * 2f + 20f), Mat("Micro_Tierra_" + (bio != null ? display : "generica"), soil), true);
-        Bounds storyCore = new Bounds(anchor, Vector3.zero);   // lo que ocupa la historia (guarida, cueva, bancal…): ahí no crece nada
-        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
+        // Bajo el piso, una losa de su tierra (arena de Egipto, barro helado de Flandes, mantillo de la taiga…) del tamaño EXACTO
+        // del piso y sus muros: tapa los huecos del suelo del área, y nada más (antes era un disco de bosque de cientos de metros).
+        Box(root.transform, "Suelo_piso", new Vector3(rect.center.x, groundY - 0.05f, rect.center.z), new Vector3(rect.size.x + WallThick * 2f, 0.1f, rect.size.z + WallThick * 2f), Mat("Micro_Tierra_" + (bio != null ? display : "generica"), soil), true);
+        // Los MUROS en el borde del piso: nada sale (ni el jugador, ni la fauna, ni las recolectoras; tapa invisible arriba).
+        float wallH = Walls(root.transform, rect, groundY, giant, soil, tint, display);
+
+        // 5) La FLORA a escala de hormiga — musgo = hierba, briznas y helechos = árboles — SOLO dentro del piso: en sus plazas de
+        //    flora (×10, a 20 m) y, entre ellas, en una rejilla densa por todo el suelo libre (entre los muebles gigantes), menos
+        //    en el claro de la historia. Cada planta es un interactuable (Affordance) que algún insecto usa; y su fauna, también
+        //    dentro: primero en sus plazas de fauna y luego en suelo libre.
+        Bounds storyCore = new Bounds(story.position, Vector3.zero);   // lo que ocupa la historia (guarida, cueva, bancal, río…): ahí no crece nada
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
-            Bounds rb = r.bounds;
-            if (r.GetComponentInParent<MicroFood>() != null || (rb.size.y < 0.5f && Mathf.Max(rb.size.x, rb.size.z) > 40f)) continue;   // restos y suelos/agua de la historia no cuentan
-            storyCore.Encapsulate(rb);
+            if (!r.enabled || r.GetComponentInParent<MicroFood>() != null) continue;   // los restos no cuentan; los suelos ocultos tampoco
+            storyCore.Encapsulate(r.bounds);
         }
-        // Con posiciones reservadas, la flora y la fauna DEL ÁREA van a sus plazas (×10); el bosque de fuera, como siempre.
         bool useSlots = giant != null && slots != null;
         List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(s => s * AreaScale) : null;
         PlatformSlots giantSlots = giant != null ? giant.GetComponent<PlatformSlots>() : null;
-        int animals = Nature(root.transform, new Vector3(foot.center.x, groundY, foot.center.z), r1, display.GetHashCode(), storyCore, giant != null ? foot : (Bounds?)null, floors, MicroBiome.For(display),
-                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null);
+        // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan.
+        List<Bounds> tops = giant != null ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
+        int animals = Nature(root.transform, rect, groundY, display.GetHashCode(), storyCore, floors, bio,
+                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops);
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
         // alrededor de la historia; los de papel fijo (la líder, Nasatya, la Sembradora…) siguen junto a su estructura.
@@ -163,6 +181,17 @@ public static class AreaMicrocosmos
             }
         if (useSlots) Debug.Log($"[Plazas] Microcosmos {display}: historia en su plaza ({anchor.x:0}, {anchor.z:0}), {cast0}/{slots.characters.Count} personajes, flora en {slots.flora.Count - (giantSlots != null ? giantSlots.floraUnderStory.Count : 0)}/{slots.flora.Count} plazas (el resto bajo la historia), fauna en {_faunaOnSlots}/{slots.fauna.Count} plazas.");
 
+        // 6) NADA FUERA DE LOS MUROS: cada planta, bicho, resto de comida y personaje que asome por el borde se corre hacia dentro;
+        //    luego se cuenta lo de dentro y lo de fuera (debe ser 0) y queda apuntado en la raíz (MicroFloor) para las pruebas.
+        int nudged = 0;
+        foreach (Transform t in Population(root.transform, story)) if (Contain(t, Inner(rect, 1f))) nudged++;
+        MicroFloor mfl = root.AddComponent<MicroFloor>();
+        mfl.center = new Vector3(rect.center.x, groundY, rect.center.z); mfl.size = new Vector2(rect.size.x, rect.size.z); mfl.wallHeight = wallH;
+        mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops;
+        Census(root.transform, story, mfl);
+        Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
+        if (mfl.outside > 0) Debug.LogWarning($"[Microcosmos] {sceneLabel}: {mfl.outside} piezas de flora, fauna o historia FUERA de los muros (regla 11).");
+
         root.transform.position = o;
 
         // Las misiones del área (yoga, textil, mecánica) siguen en su tablero.
@@ -174,17 +203,252 @@ public static class AreaMicrocosmos
         }
 
         var navGo = new GameObject("NavMesh_Microcosmos"); navGo.transform.SetParent(root.transform, false);
-        navGo.transform.localPosition = new Vector3(foot.center.x, 0f, foot.center.z);
+        navGo.transform.localPosition = new Vector3(rect.center.x, 0f, rect.center.z);
         var nav = navGo.AddComponent<Unity.AI.Navigation.NavMeshSurface>();
         nav.collectObjects = Unity.AI.Navigation.CollectObjects.Volume;
         // Solo lo SÓLIDO (colliders): los decorados sin colisión (alfombras, ríos pintados, losas ocultas…) entraban como
         // escalones y partían el suelo en islas (Patanjali: la guarida y el claro de la historia, aislados del resto).
         nav.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
         Physics.SyncTransforms();   // con colliders, el horneado consulta la física: sin sincronizar, no ve lo recién creado y movido
-        float span = r1 * 2f + 20f;
-        nav.center = Vector3.up * 15f; nav.size = new Vector3(span, 60f, span);
+        // El volumen: el piso y sus muros (los muros no se andan: NavMeshModifier), nada de fuera.
+        nav.center = Vector3.up * 15f; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f, rect.size.z + WallThick * 2f);
         nav.BuildNavMesh();
-        Debug.Log($"[Microcosmos] {display}: área ×{AreaScale} entera (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
+        Debug.Log($"[Microcosmos] {display}: piso ×{AreaScale} con muros (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
+    }
+
+    // ── El PISO: su rectángulo, lo que sobra fuera, los muros y lo que queda dentro (regla 11) ───────────────────────────
+
+    const float WallThick = 4f;    // grosor de los muros (m, ya a escala de hormiga)
+    const float WallInset = 6f;    // las estructuras de la historia y la flora, a esta distancia del muro como mínimo
+    const float WallMinHeight = 80f;
+
+    /// <summary>El rectángulo del PISO del área gigante (en el espacio de la raíz, aún en el origen): el tamaño con que se
+    /// calcularon sus plazas (PlatformSlots.floorSize, centrado en el origen del área) ×10; sin plazas, su suelo «Mat»; y si no,
+    /// el plano más grande del área.</summary>
+    static Bounds FloorRect(GameObject giant, PlatformSlots slots)
+    {
+        Vector3 c0 = giant.transform.position;
+        if (slots != null && slots.floorSize.x > 1f && slots.floorSize.y > 1f)
+            return new Bounds(new Vector3(c0.x, 0f, c0.z), new Vector3(slots.floorSize.x * AreaScale, 0f, slots.floorSize.y * AreaScale));
+        Transform mat = giant.transform.Find("Mat");
+        Renderer mr = mat != null ? mat.GetComponent<Renderer>() : null;
+        if (mr != null) return new Bounds(new Vector3(mr.bounds.center.x, 0f, mr.bounds.center.z), new Vector3(mr.bounds.size.x, 0f, mr.bounds.size.z));
+        Bounds best = new Bounds(new Vector3(c0.x, 0f, c0.z), new Vector3(120f, 0f, 120f)); float area = 0f;
+        foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
+        {
+            Bounds b = r.bounds;
+            if (!IsFloor(b) || b.size.x * b.size.z <= area) continue;
+            area = b.size.x * b.size.z; best = new Bounds(new Vector3(b.center.x, 0f, b.center.z), new Vector3(b.size.x, 0f, b.size.z));
+        }
+        return best;
+    }
+
+    /// <summary>El rectángulo encogido <paramref name="inset"/> m por cada lado (nunca menos de 10 m de lado).</summary>
+    static Bounds Inner(Bounds rect, float inset)
+    {
+        float ix = Mathf.Min(inset, Mathf.Max(0f, rect.extents.x - 5f)), iz = Mathf.Min(inset, Mathf.Max(0f, rect.extents.z - 5f));
+        return new Bounds(rect.center, new Vector3(rect.size.x - ix * 2f, rect.size.y, rect.size.z - iz * 2f));
+    }
+
+    static Vector3 ClampXZ(Vector3 p, Bounds r) => new Vector3(Mathf.Clamp(p.x, r.min.x, r.max.x), p.y, Mathf.Clamp(p.z, r.min.z, r.max.z));
+
+    // Las cajas de los renderers (activos) de un subárbol. false si no tiene ninguno.
+    static bool SubtreeBounds(Transform t, out Bounds b, bool onlyEnabled = true)
+    {
+        b = default; bool any = false;
+        foreach (Renderer r in t.GetComponentsInChildren<Renderer>(!onlyEnabled))
+        {
+            if (onlyEnabled && !r.enabled) continue;
+            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+        }
+        return any;
+    }
+
+    // Cuánto hay que correr <paramref name="b"/> (en XZ) para que quede dentro de <paramref name="r"/> (si cabe).
+    static Vector3 Overflow(Bounds b, Bounds r)
+    {
+        float dx = b.min.x < r.min.x ? r.min.x - b.min.x : b.max.x > r.max.x ? r.max.x - b.max.x : 0f;
+        float dz = b.min.z < r.min.z ? r.min.z - b.min.z : b.max.z > r.max.z ? r.max.z - b.max.z : 0f;
+        return new Vector3(dx, 0f, dz);
+    }
+
+    /// <summary>Quita del área gigante lo que queda ENTERO fuera del piso (voladizos, rótulos, piezas de fuera); lo que cruza su
+    /// borde se mira por partes (sus hijos). Devuelve cuántas piezas quitó.</summary>
+    static int Prune(Transform t, Bounds rect)
+    {
+        int n = 0;
+        var kids = new List<Transform>(); foreach (Transform c in t) kids.Add(c);
+        foreach (Transform c in kids)
+        {
+            if (c == null || !SubtreeBounds(c, out Bounds b, false)) continue;   // sin renderers (vacíos, puntos): se quedan
+            const float tol = 0.5f;
+            bool outside = b.max.x <= rect.min.x + tol || b.min.x >= rect.max.x - tol || b.max.z <= rect.min.z + tol || b.min.z >= rect.max.z - tol;
+            if (outside) { Object.DestroyImmediate(c.gameObject); n++; continue; }
+            bool crosses = b.min.x < rect.min.x - tol || b.max.x > rect.max.x + tol || b.min.z < rect.min.z - tol || b.max.z > rect.max.z + tol;
+            if (crosses) n += Prune(c, rect);
+        }
+        return n;
+    }
+
+    /// <summary>Mete la historia en el piso: si se sale, la corre entera hacia dentro; si es más grande que el piso por algún
+    /// lado, la centra en ese lado y recoloca pieza a pieza lo que siga fuera. Devuelve qué hizo («» si ya cabía).</summary>
+    static string FitStory(Transform story, Transform cast, Bounds inner)
+    {
+        Bounds b = default; bool any = false;
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
+        {
+            if (!r.enabled || r.GetComponentInParent<MicroFood>() != null) continue;   // los restos se contienen uno a uno
+            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+        }
+        foreach (MobSpawnPoint sp in story.GetComponentsInChildren<MobSpawnPoint>(true)) { if (!any) { b = new Bounds(sp.transform.position, Vector3.one); any = true; } else b.Encapsulate(sp.transform.position); }
+        if (!any) return "";
+        bool fitsX = b.size.x <= inner.size.x, fitsZ = b.size.z <= inner.size.z;
+        Vector3 d = Overflow(b, inner);
+        if (!fitsX) d.x = inner.center.x - b.center.x;
+        if (!fitsZ) d.z = inner.center.z - b.center.z;
+        story.position += d;
+        string what = d.sqrMagnitude > 0.01f ? $"se corre {d.magnitude:0} m hacia dentro del piso" : "";
+        if (fitsX && fitsZ) return what;
+        int moved = Relayout(cast, inner);
+        return $"NO CABE entera ({b.size.x:0} × {b.size.z:0} m en un piso útil de {inner.size.x:0} × {inner.size.z:0} m): se centra y se recolocan {moved} piezas dentro";
+    }
+
+    // Recoloca dentro de <paramref name="inner"/> cada pieza de la historia que se salga (y entra en las que no caben enteras).
+    static int Relayout(Transform t, Bounds inner)
+    {
+        int n = 0;
+        var kids = new List<Transform>(); foreach (Transform c in t) kids.Add(c);
+        foreach (Transform c in kids)
+        {
+            if (!SubtreeBounds(c, out Bounds b)) { Vector3 p = ClampXZ(c.position, inner); if (p != c.position) { c.position = p; n++; } continue; }
+            if (b.size.x <= inner.size.x && b.size.z <= inner.size.z) { Vector3 d = Overflow(b, inner); if (d.sqrMagnitude > 1e-4f) { c.position += d; n++; } }
+            else n += Relayout(c, inner);
+        }
+        return n;
+    }
+
+
+    /// <summary>Las CARAS DE ARRIBA de los muebles gigantes (camas, encimeras, mesas, máquinas, estantes): cajas a nivel, de
+    /// ≥ <paramref name="minArea"/> m² (ya ×10) y entre 1 y 60 m sobre el suelo, dentro de <paramref name="inside"/>; no los
+    /// techos ni las losas grandes (más del 30 % del piso). Cada una, como una caja plana a la altura de su cara de arriba.</summary>
+    static List<Bounds> FurnitureTops(GameObject giant, float groundY, Bounds inside, float minArea = 6f)
+    {
+        var l = new List<Bounds>();
+        float big = inside.size.x * inside.size.z * 0.3f;
+        foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled) continue;
+            Bounds b = r.bounds;
+            float h = b.max.y - groundY, a = b.size.x * b.size.z;
+            if (IsFloor(b) || h < 1f || h > 60f || b.size.x < 2f || b.size.z < 2f || a < minArea || a > big) continue;
+            if (Vector3.Dot(r.transform.up, Vector3.up) < 0.98f) continue;   // solo lo que está a nivel
+            MeshFilter mf = r.GetComponent<MeshFilter>();
+            bool box = r.GetComponent<BoxCollider>() != null || (mf != null && mf.sharedMesh != null && mf.sharedMesh.name.StartsWith("Cube"));
+            if (!box || !InsideXZ(inside, b.center, 0f)) continue;   // una caja: su cara de arriba es plana y cubre su huella
+            l.Add(new Bounds(new Vector3(b.center.x, b.max.y, b.center.z), new Vector3(b.size.x, 0f, b.size.z)));
+        }
+        return l;
+    }
+    /// <summary>Lo que vive en el microcosmos y no puede salir del piso: cada planta y cada bicho (sus nodos), y en la historia
+    /// los restos de comida y los personajes (mirmidones, ánimas, agentes).</summary>
+    static List<Transform> Population(Transform root, Transform story)
+    {
+        var l = new List<Transform>();
+        foreach (string n in new[] { "Flora_a_escala", "Fauna_a_escala" }) { Transform g = root.Find(n); if (g != null) foreach (Transform c in g) l.Add(c); }
+        foreach (Transform t in Characters(story)) l.Add(t);
+        foreach (MicroFood f in story.GetComponentsInChildren<MicroFood>(true)) if (!l.Contains(f.transform)) l.Add(f.transform);
+        return l;
+    }
+
+    // Los personajes de la historia: todo lo que anda (MicroForager, Anima, NavMeshAgent), sin repetir los anidados.
+    static List<Transform> Characters(Transform story)
+    {
+        var l = new List<Transform>();
+        foreach (Transform t in story.GetComponentsInChildren<Transform>(true))
+            if (t.GetComponent<MicroForager>() != null || t.GetComponent<Anima>() != null || t.GetComponent<UnityEngine.AI.NavMeshAgent>() != null)
+            {
+                bool nested = false;
+                foreach (Transform o in l) if (t.IsChildOf(o)) { nested = true; break; }
+                if (!nested) l.Add(t);
+            }
+        return l;
+    }
+
+    // Corre <paramref name="t"/> hacia dentro si alguna de sus piezas asoma fuera de <paramref name="inner"/>. true si lo movió.
+    static bool Contain(Transform t, Bounds inner)
+    {
+        if (t == null) return false;
+        if (!SubtreeBounds(t, out Bounds b)) { Vector3 p = ClampXZ(t.position, inner); if (p == t.position) return false; t.position = p; return true; }
+        if (b.size.x > inner.size.x || b.size.z > inner.size.z) return false;
+        Vector3 d = Overflow(b, inner);
+        if (d.sqrMagnitude < 1e-4f) return false;
+        t.position += d;
+        return true;
+    }
+
+    /// <summary>Cuenta en <paramref name="f"/> las plantas, bichos y personajes dentro del piso, y las piezas (renderers de
+    /// flora, fauna e historia) que quedan fuera de los muros.</summary>
+    static void Census(Transform root, Transform story, MicroFloor f)
+    {
+        Bounds rect = new Bounds(f.center, new Vector3(f.size.x, 0f, f.size.y));
+        bool In(Bounds b) => b.min.x >= rect.min.x - 0.5f && b.max.x <= rect.max.x + 0.5f && b.min.z >= rect.min.z - 0.5f && b.max.z <= rect.max.z + 0.5f;
+        int Count(Transform g) { int n = 0; if (g != null) foreach (Transform c in g) if (!SubtreeBounds(c, out Bounds b) ? In(new Bounds(c.position, Vector3.zero)) : In(b)) n++; return n; }
+        Transform flora = root.Find("Flora_a_escala"), fauna = root.Find("Fauna_a_escala");
+        f.floraInside = Count(flora); f.faunaInside = Count(fauna);
+        f.charactersInside = 0;
+        foreach (Transform t in Characters(story)) if (SubtreeBounds(t, out Bounds b) ? In(b) : In(new Bounds(t.position, Vector3.zero))) f.charactersInside++;
+        f.outside = 0;
+        foreach (Transform g in new[] { flora, fauna, story })
+            if (g != null) foreach (Renderer r in g.GetComponentsInChildren<Renderer>()) if (r.enabled && !In(r.bounds)) f.outside++;
+    }
+
+    /// <summary>Los MUROS en el borde del piso (por fuera de él: su cara de dentro es el borde), sin sombra (si no, al alba
+    /// dejarían el piso a oscuras), con colliders y fuera del NavMesh, y una TAPA invisible arriba (nada vuela fuera). Son de
+    /// la tierra de su era (adobe, barro, mantillo…) con un remate del color del área y contrafuertes por fuera. Altura: la del
+    /// mueble más alto del área + 10 m, y al menos <see cref="WallMinHeight"/>. Devuelve la altura.</summary>
+    static float Walls(Transform root, Bounds rect, float groundY, GameObject giant, Color soil, Color tint, string display)
+    {
+        float top = groundY + WallMinHeight;
+        if (giant != null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y + 10f);
+        float h = Mathf.Min(top - groundY, 400f), t = WallThick, hx = rect.extents.x, hz = rect.extents.z;
+        Transform walls = new GameObject("Muros_del_piso").transform; walls.SetParent(root, false);
+        walls.localPosition = new Vector3(rect.center.x, groundY, rect.center.z);
+        Color body = Color.Lerp(soil, tint, 0.3f) * 0.85f; body.a = 1f;
+        Color cap = Color.Lerp(tint, Color.white, 0.25f); cap.a = 1f;
+        Color pier = body * 0.8f; pier.a = 1f;
+        Material wm = Mat("Micro_Muro_" + display, body), cm = Mat("Micro_Muro_remate_" + display, cap), pm = Mat("Micro_Muro_contrafuerte_" + display, pier);
+        void Piece(string name, Vector3 at, Vector3 size, Material m, bool solid)
+        {
+            Transform w = Box(walls, name, at, size, m, solid);
+            w.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            if (solid) { var mod = w.gameObject.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); mod.overrideArea = true; mod.area = 1; }   // no se anda por encima
+        }
+        // N (+z) y S (−z) de punta a punta (tapan las esquinas); E (+x) y O (−x) entre ellos.
+        var sides = new (string name, Vector3 at, Vector3 size, Vector3 outward)[]
+        {
+            ("Muro_N", new Vector3(0f, h * 0.5f, hz + t * 0.5f), new Vector3(hx * 2f + t * 2f, h, t), Vector3.forward),
+            ("Muro_S", new Vector3(0f, h * 0.5f, -hz - t * 0.5f), new Vector3(hx * 2f + t * 2f, h, t), Vector3.back),
+            ("Muro_E", new Vector3(hx + t * 0.5f, h * 0.5f, 0f), new Vector3(t, h, hz * 2f), Vector3.right),
+            ("Muro_O", new Vector3(-hx - t * 0.5f, h * 0.5f, 0f), new Vector3(t, h, hz * 2f), Vector3.left),
+        };
+        foreach (var (name, at, size, outward) in sides)
+        {
+            Piece(name, at, size, wm, true);
+            Piece(name + "_remate", new Vector3(at.x, h + 1f, at.z) + outward * 0.5f, new Vector3(size.x + 1f, 2f, size.z + 1f), cm, false);
+            // Contrafuertes cada ~40 m, por FUERA (no le quitan suelo al piso).
+            bool alongX = size.x > size.z; float len = alongX ? size.x : size.z;
+            int k = Mathf.Max(2, Mathf.RoundToInt(len / 40f));
+            for (int i = 0; i <= k; i++)
+            {
+                float s = -len * 0.5f + len * i / k;
+                Vector3 p = at + outward * (t * 0.5f + 1.5f) + (alongX ? new Vector3(s, 0f, 0f) : new Vector3(0f, 0f, s));
+                Piece(name + "_contrafuerte", new Vector3(p.x, h * 0.45f, p.z), new Vector3(alongX ? 3f : 3f, h * 0.9f, 3f), pm, false);
+            }
+        }
+        // La TAPA: solo collider (no se ve, no da sombra): nada que vuele o salte sale por arriba.
+        var lid = new GameObject("Tapa_invisible"); lid.transform.SetParent(walls, false); lid.transform.localPosition = new Vector3(0f, h + 1f, 0f);
+        BoxCollider bc = lid.AddComponent<BoxCollider>(); bc.size = new Vector3(hx * 2f + t * 2f, 2f, hz * 2f + t * 2f);
+        return h;
     }
 
     // ── Dónde cabe la historia dentro del área ───────────────────────────────────────────────────────────────────
@@ -565,16 +829,18 @@ public static class AreaMicrocosmos
     //   · Flor: polen/néctar (mariquita) y el sitio donde la mantis acecha a los que vienen a la flor.
     //   · Musgo y piedra: refugio húmedo (grillo en su madriguera, mariquitas agregadas).
     //   · Arena fina: donde la hormiga león cava su embudo. · Boñiga: lo que rueda el pelotero.
-    /// <param name="floraSlots">Las plazas de flora del área (PlatformSlots, ya ×10, en el espacio de la raíz): dentro del área la
-    /// flora crece solo ahí. <paramref name="floraUnderStory"/> recibe las que tapa la historia.</param>
-    /// <param name="faunaSlots">Las plazas de fauna del área (ídem): el bicho que caería dentro del área va a la siguiente.</param>
-    static int Nature(Transform root, Vector3 center, float r1, int seed, Bounds story, Bounds? area, List<Renderer> floors, MicroBiome.Biome biome = null,
-                      List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null)
+    /// <param name="rect">El PISO ×10 (el interior de los muros): todo crece y nace DENTRO (regla 11); fuera, nada.</param>
+    /// <param name="floraSlots">Las plazas de flora del área (PlatformSlots, ya ×10, en el espacio de la raíz): una planta en cada
+    /// una. <paramref name="floraUnderStory"/> recibe las que tapa la historia. Entre ellas, la rejilla densa del suelo libre.</param>
+    /// <param name="faunaSlots">Las plazas de fauna del área (ídem): los bichos van primero a ellas y luego a suelo libre.</param>
+    static int Nature(Transform root, Bounds rect, float groundY, int seed, Bounds story, List<Renderer> floors, MicroBiome.Biome biome = null,
+                      List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null, List<Bounds> tops = null)
     {
         var rnd = new System.Random(seed);
         float biomeWeight = 0f; if (biome != null) foreach (MicroBiome.Plant pl in biome.plants) biomeWeight += pl.weight;
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
-        Vector3 Ring(float a0, float a1) { float a = R(0f, Mathf.PI * 2f), r = R(a0, a1); return new Vector3(Mathf.Cos(a) * r, 0f, Mathf.Sin(a) * r); }
+        Vector3 center = new Vector3(rect.center.x, groundY, rect.center.z);
+        Bounds inner = Inner(rect, WallInset);
         var flora = new GameObject("Flora_a_escala").transform; flora.SetParent(root, false); flora.localPosition = center;
         Material grass = Mat("Micro_Hierba", new Color(0.62f, 0.68f, 0.3f)), grassDry = Mat("Micro_Hierba_seca", new Color(0.78f, 0.72f, 0.42f));
         Material fern = Mat("Micro_Helecho", new Color(0.25f, 0.5f, 0.25f)), fernStem = Mat("Micro_Helecho_tallo", new Color(0.3f, 0.4f, 0.2f));
@@ -584,44 +850,80 @@ public static class AreaMicrocosmos
         Material petal = Mat("Micro_Petalo", new Color(0.97f, 0.95f, 0.9f)), petal2 = Mat("Micro_Petalo_lila", new Color(0.8f, 0.6f, 0.9f)), pollen = Mat("Micro_Polen", new Color(0.98f, 0.8f, 0.2f));
         Material sand = Mat("Micro_Arena", new Color(0.82f, 0.72f, 0.5f)), dung = Mat("Micro_Estiercol", new Color(0.35f, 0.25f, 0.15f));
 
-        // Rejilla con jitter (una planta por celda, sin amontonarse) sobre todo el disco hasta el agua.
-        const float cell = 12f, storyClear = 20f;
+        // Lo que se alza SOBRE el suelo del piso (muebles, paredes, máquinas): no los techos ni lo que cuelga arriba, que tapaban
+        // todo el piso y no dejaban crecer nada.
+        var standing = new List<Bounds>();
+        foreach (Bounds b in _blocked) if (b.min.y < groundY + 5f && b.max.y > groundY + 0.05f) standing.Add(b);
+        const float storyClear = 20f;
+        // SUELO LIBRE en w: dentro de los muros (con margen), fuera del claro de la historia, a ≥ 3 m de todo mueble y sobre el
+        // suelo del área a su altura (no en una entreplanta). fy: la altura de ese suelo.
+        bool FreeFloor(Vector3 w, out float fy)
+        {
+            fy = groundY;
+            if (!InsideXZ(inner, w, 0f)) return false;
+            if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) return false;   // el claro de la historia
+            foreach (Bounds b in standing) if (w.x > b.min.x - 3f && w.x < b.max.x + 3f && w.z > b.min.z - 3f && w.z < b.max.z + 3f) return false;
+            fy = floors.Count > 0 ? FloorNear(w, floors, groundY) : groundY;
+            return Mathf.Abs(fy - groundY) <= 1.5f;
+        }
+
         var sandPits = new List<Vector3>(); var dungs = new List<Vector3>();
         int placed0 = 0;
-        for (float x = -r1; x <= r1; x += cell)
-            for (float z = -r1; z <= r1; z += cell)
-            {
-                Vector3 p = new Vector3(x + R(-cell * 0.4f, cell * 0.4f), 0f, z + R(-cell * 0.4f, cell * 0.4f));
-                if (p.magnitude > r1) continue;
-                Vector3 w = center + p;   // posición en el espacio del microcosmos (el área gigante está en el mismo)
-                if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) continue;   // el claro de la historia
-                // Con posiciones reservadas, dentro del área solo crece en sus plazas de flora (abajo).
-                if (floraSlots != null && area.HasValue && InsideXZ(area.Value, w, 4f)) continue;
-                if (area.HasValue && InsideXZ(area.Value, w, 4f))
-                {
-                    // Dentro del área: solo sobre su suelo libre (entre muebles), a la altura de ese suelo.
-                    if (floors.Count > 0 && EdgeDist(w, floors) < 2f) continue;
-                    if (NearBlocked(w, 3f)) continue;
-                    // En SU planta (la más cercana a la altura del área): antes tomaba el suelo más alto y en el hospital (3 plantas)
-                    // las plantas salían en el piso de arriba o el tejado, fuera del área (Berón 2026-10-27).
-                    float fy = FloorNear(w, floors, center.y);
-                    if (Mathf.Abs(fy - center.y) > 1.5f) continue;
-                    p.y = fy - center.y;
-                }
-                if (Sow(p, false)) placed0++;
-            }
 
         // La flora DEL ÁREA, en sus POSICIONES RESERVADAS (PlatformSlots.flora, ya ×10): una planta en cada una, a ras del suelo
         // del área (el más cercano a la altura de la plaza), menos las que tapa la historia (su claro).
         int onSlots = 0;
+        var slotPts = new List<Vector3>();
         if (floraSlots != null)
             for (int i = 0; i < floraSlots.Count; i++)
             {
                 Vector3 w = floraSlots[i];
-                if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f)) { floraUnderStory?.Add(i); continue; }
+                if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f) || !InsideXZ(rect, w, -1f)) { floraUnderStory?.Add(i); continue; }
                 float fy = FloorNear(w, floors, w.y);
+                slotPts.Add(w);
                 if (Sow(new Vector3(w.x - center.x, fy - center.y, w.z - center.z), true)) { placed0++; onSlots++; }
             }
+
+        // Y ENTRE LAS PLAZAS, DENSO: a ×10 los 2 m de paso del piso son 20 m, así que cada hueco libre se rellena con una rejilla
+        // de 6 m con jitter (una planta por celda, sin amontonarse), por todo el suelo libre dentro de los muros.
+        const float cell = 6f;
+        for (float x = inner.min.x + cell * 0.5f; x <= inner.max.x; x += cell)
+            for (float z = inner.min.z + cell * 0.5f; z <= inner.max.z; z += cell)
+            {
+                Vector3 w = new Vector3(x + R(-cell * 0.4f, cell * 0.4f), groundY, z + R(-cell * 0.4f, cell * 0.4f));
+                if (!FreeFloor(w, out float fy)) continue;
+                bool nearSlot = false;
+                foreach (Vector3 s in slotPts) if (new Vector2(w.x - s.x, w.z - s.z).sqrMagnitude < 9f) { nearSlot = true; break; }
+                if (nearSlot) continue;
+                if (Sow(new Vector3(w.x - center.x, fy - center.y, w.z - center.z), false)) placed0++;
+            }
+
+        // Y ENCIMA DE LOS MUEBLES GIGANTES (Berón 2026-10-29): a ×10 la cama, la encimera, la mesa o la máquina son mesetas de
+        // decenas de metros; su cara de arriba (FurnitureTops) también se puebla, con la misma rejilla, donde nada la tapa.
+        var topPts = new List<Vector3>();
+        int onTops = 0;
+        if (tops != null)
+            foreach (Bounds top in tops)
+            {
+                int here = 0;
+                float ex = Mathf.Max(0f, top.extents.x - 1.5f), ez = Mathf.Max(0f, top.extents.z - 1.5f);
+                for (float x = top.center.x - ex; x <= top.center.x + ex + 0.01f; x += cell)
+                    for (float z = top.center.z - ez; z <= top.center.z + ez + 0.01f; z += cell)
+                    {
+                        Vector3 w = new Vector3(x, top.max.y, z);
+                        if (!InsideXZ(inner, w, 0f) || InsideXZ(story, w, 2f) || Covered(w)) continue;
+                        topPts.Add(w);
+                        if (Sow(w - center, here == 0)) { placed0++; onTops++; here++; }
+                    }
+            }
+        _floraOnTops = onTops;
+        // ¿Algo se alza justo encima de w (una lámpara sobre la mesa, el estante de arriba)? Ahí no cabe una planta.
+        bool Covered(Vector3 w)
+        {
+            foreach (Bounds b in _blocked)
+                if (b.min.y >= w.y - 0.1f && b.min.y < w.y + 4f && b.max.y > w.y + 0.1f && w.x > b.min.x - 1f && w.x < b.max.x + 1f && w.z > b.min.z - 1f && w.z < b.max.z + 1f) return true;
+            return false;
+        }
 
         // Una planta (o piedra, arena, boñiga) en p; false = suelo desnudo. <paramref name="always"/>: una plaza de flora siempre
         // lleva algo.
@@ -799,24 +1101,26 @@ public static class AreaMicrocosmos
         var list = new List<(string sp, int n, float len, Color tint, string name, string dormant)>();
         if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant));
         else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null));
-        int placed = 0, faunaNext = 0;
+        int placed = 0, faunaNext = 0, faunaTop = 0;
         foreach (var (sp, n, len, tint, label, dormant) in list)
         {
             GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
             for (int i = 0; i < n; i++)
             {
-                // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga.
-                Vector3 p = sp == "Antlion" && sandPits.Count > 0 ? sandPits[rnd.Next(sandPits.Count)]
-                          : sp == "DungBeetle" && dungs.Count > 0 ? dungs[rnd.Next(dungs.Count)] + new Vector3(5f, 0f, 0f)
-                          : Ring(storyClear, r1 - 10f);
-                // Con posiciones reservadas: el que caería DENTRO del área (sobre el suelo gigante o encima de un mueble) va a la
-                // siguiente plaza de fauna; si ya están todas tomadas, fuera del área.
-                bool ringed = !(sp == "Antlion" && sandPits.Count > 0) && !(sp == "DungBeetle" && dungs.Count > 0);
-                if (ringed && faunaSlots != null && area.HasValue && InsideXZ(area.Value, center + p, 4f))
+                // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga; el resto, en la
+                // siguiente plaza de fauna del piso y, tomadas todas, en suelo libre DENTRO de los muros (nunca fuera: regla 11).
+                Vector3 p;
+                if (sp == "Antlion" && sandPits.Count > 0) p = sandPits[rnd.Next(sandPits.Count)];
+                else if (topPts.Count > 0 && sp != "DungBeetle" && i % 3 == 2) { p = topPts[rnd.Next(topPts.Count)] - center; faunaTop++; }   // uno de cada tres, encima de un mueble
+                else if (sp == "DungBeetle" && dungs.Count > 0) p = dungs[rnd.Next(dungs.Count)] + new Vector3(5f, 0f, 0f);
+                else if (faunaSlots != null && faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNear(w, floors, w.y) - center.y, w.z - center.z); }
+                else
                 {
-                    if (faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNear(w, floors, w.y) - center.y, w.z - center.z); }
-                    else for (int k = 0; k < 12 && InsideXZ(area.Value, center + p, 4f); k++) p = Ring(storyClear, r1 - 10f);
+                    Vector3 w = new Vector3(R(inner.min.x, inner.max.x), groundY, R(inner.min.z, inner.max.z)); float fy = groundY;
+                    for (int k = 0; k < 30 && !FreeFloor(w, out fy); k++) w = new Vector3(R(inner.min.x, inner.max.x), groundY, R(inner.min.z, inner.max.z));
+                    p = new Vector3(w.x - center.x, fy - center.y, w.z - center.z);
                 }
+                Vector3 pw = ClampXZ(center + p, inner); p = pw - center;   // dentro de los muros, siempre
                 if (prefab == null) continue;
                 var holder = new GameObject($"{label}_a_escala").transform; holder.SetParent(fauna, false); holder.localPosition = p;
                 holder.gameObject.AddComponent<MicroSize>().length = len;
@@ -840,20 +1144,15 @@ public static class AreaMicrocosmos
                 placed++;
             }
         }
-        _faunaOnSlots = faunaNext;
-        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas por toda la superficie (radio {r1:0} m{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")})" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : "."));
+        _faunaOnSlots = faunaNext; _faunaOnTops = faunaTop;
+        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas dentro del piso ({inner.size.x:0} × {inner.size.z:0} m útiles{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")}; {onTops} plantas y {faunaTop} bichos encima de {(tops != null ? tops.Count : 0)} muebles)" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : "."));
         return placed;
     }
 
     static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)
+    static int _floraOnTops, _faunaOnTops;   // plantas y bichos encima de los muebles gigantes (el último Nature)
 
     static bool InsideXZ(Bounds b, Vector3 p, float margin) => p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin;
-
-    static bool NearBlocked(Vector3 p, float margin)
-    {
-        foreach (Bounds b in _blocked) if (p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin) return true;
-        return false;
-    }
 
     static Color SpeciesColor(string sp)
     {

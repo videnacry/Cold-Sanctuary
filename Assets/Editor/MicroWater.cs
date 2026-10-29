@@ -3,7 +3,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones): un mar que rodea el suelo, justo por
-/// debajo de él, con su propio collider, para que nadie caiga al vacío por el borde.
+/// debajo de él, con su propio collider, para que nadie caiga al vacío por el borde. En los MICROCOSMOS queda FUERA de los muros
+/// del piso (regla 11): se ve desde dentro, pero no se llega a ella ni se puebla.
 /// </summary>
 public static class MicroWater
 {
