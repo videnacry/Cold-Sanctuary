@@ -22,6 +22,8 @@ public class PathMover : MonoBehaviour
     /// «merodear» de un anima libre lo empujaba a la vez hacia otro lado y daban vueltas en círculo (Berón 2026-10-29).</summary>
     public float LastStep { get; private set; } = -999f;
     public static bool DrivenRecently(GameObject g, float within = 1f) => g != null && g.TryGetComponent(out PathMover pm) && Time.time - pm.LastStep < within;
+    /// <summary>Cuántos pasos lleva dados (para que quien conduce sepa si otro le ha dado un paso entre medias).</summary>
+    public int Steps { get; private set; }
 
     /// <summary>Olvida el camino calculado: el próximo paso recalcula hacia el destino nuevo (la orquesta lo llama al empezar
     /// cada «ir a»; si no, con un destino a menos de 3 m del anterior seguía hasta el viejo y esperaba 4 s para corregir).</summary>
@@ -34,7 +36,7 @@ public class PathMover : MonoBehaviour
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
-        LastStep = Time.time;
+        LastStep = Time.time; Steps++;
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;

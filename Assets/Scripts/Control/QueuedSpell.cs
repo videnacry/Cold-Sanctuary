@@ -145,26 +145,43 @@ public class WalkToSpell : QueuedSpell
 /// carril opcional, docs/typed-spells-and-queues.md §4). Camina como `WalkToSpell` hacia un destino efímero.</summary>
 public class WanderSpell : QueuedSpell
 {
-    Vector3 _dest; bool _picked; float _until;
-    public float radius = 6f, timeout = 8f;
+    Vector3 _dest; bool _picked, _arrived; float _until, _restUntil; int _mySteps = -1;
+    public float radius = 4f, timeout = 8f, speed = 0.9f;
     public override string Label => "merodear";
+
+    /// <summary>¿El último paso de su PathMover lo dio este merodeo? (si otro le dio un paso entre medias, otro lo conduce).</summary>
+    public bool Drives(GameObject g) => _mySteps >= 0 && g.TryGetComponent(out PathMover pm) && pm.Steps == _mySteps;
+
+    // Antes andaba en línea recta (WalkSpell) hacia un punto al azar y atravesaba columnas, grúas y máquinas del gimnasio
+    // (JornadaTest 2026-10-29). Ahora el punto sale del NavMesh de su mismo piso y anda por él con PathMover, despacio, y al
+    // llegar se queda un rato mirando (no va y viene sin parar: eso parecía dar vueltas en círculo). Todo con tope de tiempo.
     public override bool Tick(Anima self)
     {
         if (self == null) return true;
-        if (PathMover.DrivenRecently(self.gameObject)) return true;   // otro lo conduce ya (su jornada, una orquesta): no tira de él
+        if (PathMover.DrivenRecently(self.gameObject) && !Drives(self.gameObject)) return true;   // otro lo conduce ya (su jornada, una orquesta): no tira de él
         if (!_picked)
         {
-            Vector2 r = Random.insideUnitCircle * radius;
-            _dest = self.transform.position + new Vector3(r.x, 0f, r.y);
-            _until = Time.time + timeout; _picked = true;
+            _picked = true; _until = Time.time + timeout;
+            Vector3 here = self.transform.position;
+            bool found = false;
+            for (int i = 0; i < 6 && !found; i++)
+            {
+                Vector2 r = Random.insideUnitCircle * radius;
+                Vector3 probe = here + new Vector3(r.x, 0f, r.y);
+                if (!UnityEngine.AI.NavMesh.SamplePosition(probe, out UnityEngine.AI.NavMeshHit h, 1.0f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+                if (Mathf.Abs(h.position.y - (here.y - PathMover.Of(self).PivotHeight)) > 0.6f) continue;   // en su mismo piso
+                UnityEngine.AI.NavMeshPath path = new UnityEngine.AI.NavMeshPath();
+                if (!UnityEngine.AI.NavMesh.SamplePosition(here, out UnityEngine.AI.NavMeshHit from, 1.5f, UnityEngine.AI.NavMesh.AllAreas)) break;
+                if (!UnityEngine.AI.NavMesh.CalculatePath(from.position, h.position, UnityEngine.AI.NavMesh.AllAreas, path) || path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
+                _dest = h.position; found = true;
+            }
+            if (!found) { _arrived = true; _restUntil = Time.time + Random.Range(4f, 8f); }   // sin sitio al que ir: se queda mirando
         }
-        if (Time.time >= _until) return true;
-        Vector3 to = _dest - self.transform.position; to.y = 0f;
-        if (to.magnitude <= 0.6f) return true;
-
-        WalkSpell walk = self.GetComponent<WalkSpell>();
-        if (walk != null) walk.Drive(to.normalized);
-        else { var nav = self.GetComponent<UnityEngine.AI.NavMeshAgent>(); if (nav != null && nav.isOnNavMesh) nav.SetDestination(_dest); }
+        if (_arrived) return Time.time >= _restUntil;
+        PathMover pmv = PathMover.Of(self);
+        float left = pmv.StepToward(pmv.OnGround(_dest), speed);
+        _mySteps = pmv.Steps;
+        if (left <= 0.6f || Time.time >= _until) { _arrived = true; _restUntil = Time.time + Random.Range(5f, 10f); }
         return false;
     }
 }

@@ -27,6 +27,7 @@ public class ActionQueue : MonoBehaviour
     public void ClearPlayer()                => _player.Clear();
     public void ClearOwnForTest()            => _own.Clear();   // solo tests
     public void ClearOwn()                   => _own.Clear();   // deja lo que hacía por iniciativa propia (otra tarea manda)
+    public int RemoveOwnWhere(System.Predicate<QueuedSpell> match) => _own.RemoveAll(match);   // quita solo lo que ya no toca (p. ej. la secuencia de una misión que acabó)
     public void RemovePlayerAt(int i)        { if (i >= 0 && i < _player.Count) _player.RemoveAt(i); }
     public void MovePlayer(int from, int to)
     {
@@ -41,7 +42,7 @@ public class ActionQueue : MonoBehaviour
         if (lane.Count == 0) return;
         // En una ORQUESTA (iniciación) o guiado por PathMover, su «merodear» se descarta: lo arrastraba a la
         // vez hacia otro sitio (saltos de 10 m a ×8, vueltas en círculo; Berón 2026-10-29).
-        if (lane == _player && lane[0] is WanderSpell && (Orchestra.Busy(gameObject) || PathMover.DrivenRecently(gameObject))) { lane.RemoveAt(0); return; }
+        if (lane == _player && lane[0] is WanderSpell ws && (Orchestra.Busy(gameObject) || (PathMover.DrivenRecently(gameObject) && !ws.Drives(gameObject)))) { lane.RemoveAt(0); return; }   // (sus propios pasos por el NavMesh no cuentan)
         if (lane[0].Tick(_self)) lane.RemoveAt(0);                  // terminó → siguiente
     }
 }
