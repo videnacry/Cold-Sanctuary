@@ -40,6 +40,9 @@ public class VetCare : MonoBehaviour
 
     void Update()
     {
+        // Solo EN SU TURNO del hospital: fuera de él (o si otra cosa lo usa, como una prueba) no se lo lleva a la perrera.
+        WorkdayDirector wd = WorkdayDirector.Instance;
+        if (wd == null || !wd.OnShift(gameObject)) { Drop(); enabled = false; return; }
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) { Drop(); return; }
         if (TryGetComponent(out Anima me) && (me.asleep || me.death)) { Drop(); return; }
 

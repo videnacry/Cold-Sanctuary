@@ -88,7 +88,7 @@ public class DineSpell : QueuedSpell
                     if (any == null) { Debug.Log($"[Cuerpo] «{self.name}» tiene hambre pero no hay comida en ningún sitio."); return true; }
                     BeginLeg(self, BarPoint(any, self));
                 }
-                int r = Walk(self, barTimeout, "la barra");
+                int r = Walk(self, barTimeout, "la barra", 3f);   // (en la barra, entre la gente que pide: a 3 m ya le atienden; Kushal se quedaba a 2 m tras otro y lo dejaba)
                 if (r == 0) return false;
                 if (r < 0) { ReleaseBarSlot(self); return true; }   // no llega: lo deja (la necesidad volverá a pedirlo); nunca toma la comida desde lejos
                 _phase = 1; _until = Time.time + serveSeconds; _hasGoal = false;
@@ -160,7 +160,7 @@ public class DineSpell : QueuedSpell
     }
 
     /// <summary>1 = llegó · 0 = sigue · −1 = no llega (tope, o sin acercarse).</summary>
-    int Walk(Anima self, float timeout, string what)
+    int Walk(Anima self, float timeout, string what, float nearEnough = 1.5f)
     {
         Transform t = self.transform;
         PathMover pm = PathMover.Of(t);
@@ -180,7 +180,7 @@ public class DineSpell : QueuedSpell
         {
             // SIN ACERCARSE en 10 s (algo lo sujeta, o el camino rodea sin llegar): a menos de 1,5 m del sitio basta; si no,
             // recalcula una vez y, si sigue igual, lo deja (antes esperaba 90 s quieto o daba vueltas hasta rendirse).
-            if (level && left < 1.5f) return 1;
+            if (level && left < nearEnough) return 1;
             if (_restarts++ == 0) { pm.Restart(); _checkAt = Time.time; _checkPos = t.position; _bestLeft = left; return 0; }
             Debug.Log($"[Restaurante] «{self.name}» no avanza hacia {what} (a {left:0.0} m; se movió {(t.position - _checkPos).magnitude:0.0} m en {NoProgress:0} s): lo deja.");
             return -1;
