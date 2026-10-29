@@ -100,7 +100,7 @@ public class TreeRotator : MonoBehaviour
     {
         if (Time.time >= _scanAt)
         {
-            _scanAt = Time.time + 0.5f;
+            _scanAt = Time.time + 0.2f;
             _bodies.Clear();
             int n = Physics.OverlapCapsuleNonAlloc(pivot + Vector3.down * 2f, pivot + Vector3.up * (TreeSpec.RootHeight + 6f), 56f, _overlap, ~0, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < n; i++)
@@ -116,16 +116,19 @@ public class TreeRotator : MonoBehaviour
             GameObject pl = GameObject.FindGameObjectWithTag("Player");   // el jugador, siempre
             if (pl != null && !_bodies.Contains(pl.transform)) _bodies.Add(pl.transform);
         }
+        bool moved = false;
         foreach (Transform b in _bodies)
         {
             if (b == null || TreeTrip.Busy(b.gameObject) || FlyingCarpet.Riding(b.gameObject) || SwimBody.Swimming(b.gameObject)) continue;
             if (!OnTree(b)) continue;
             Vector3 np = pivot + dq * (b.position - pivot), delta = np - b.position;
-            CharacterController cc = b.GetComponent<CharacterController>();
-            if (cc != null && cc.enabled) cc.Move(delta); else b.position = np;
+            b.position = np;   // (también con CharacterController: su Move resbalaba en la losa inclinada; se sincroniza abajo)
+            _ = delta;
+            moved = true;
             b.rotation = dq * b.rotation;
             Carried++;
         }
+        if (moved) Physics.SyncTransforms();
     }
 
     bool OnTree(Transform b)

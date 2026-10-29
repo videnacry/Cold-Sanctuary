@@ -2369,7 +2369,7 @@ public static partial class SampleSceneBuilder
         {
             string n = t.name;
             if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
-                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz")
                 t.GetOrAdd<NavMeshModifier>().ignoreFromBuild = true;
         }
         NavMeshSurface s = tree.GetOrAdd<NavMeshSurface>();

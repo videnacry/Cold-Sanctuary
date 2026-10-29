@@ -210,7 +210,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(s, new Vector3(0f, 0.06f, zLow), new Vector3(2f * (X - c), 0.25f, 0.4f), TreeSteel, 0f, "Canaleta");
         _platforms[f] = new Vector2(2f * half, 2f * half);   // sus plazas reservadas (regla 8) sobre el rectángulo de 46 × 46
 
-        // EL CULTIVO del piso: una franja de 9 m en el lado +Z (lejos de la puerta, que está en −Z).
+        // EL CULTIVO del piso: una franja de 9 m en el lado +Z, el de su puerta (se sale de la raíz al bancal: sin rodear la raíz).
         if (guild == GardenPlot.Guild.Hortalizas && garden != null)
         {
             garden.transform.SetParent(f, false);

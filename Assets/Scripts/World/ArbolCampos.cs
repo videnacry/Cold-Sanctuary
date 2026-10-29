@@ -90,6 +90,7 @@ public class ArbolCampos : MonoBehaviour
         ArbolCampos t = Instance;
         if (t == null || g == null) return Hop.None;
         if (TreeTrip.Busy(g)) return Hop.Swimming;
+        if (FlyingCarpet.Riding(g)) return Hop.None;   // volando (la alfombra de la copa pasa junto a la raíz): las alfombras mandan
         TreeLevel a = t.LevelAt(g.transform.position), b = t.LevelAt(to);
         bool wet = a == null && t.InRootWater(g.transform.position);
         if (a == null && b == null && !wet) return Hop.None;   // nada que ver con el árbol

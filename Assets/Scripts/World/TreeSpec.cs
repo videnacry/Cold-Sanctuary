@@ -30,7 +30,7 @@ public static class TreeSpec
     /// <summary>La pose de un piso respecto al árbol: primero la inclinación (sobre su eje X local), luego el giro.</summary>
     public static Quaternion PoseOf(int floor) => Quaternion.Euler(0f, YawOf(floor), 0f) * Quaternion.Euler(TiltOf(floor), 0f, 0f);
     public const float BranchBaseY = 66f, BranchLength = 40f, BranchAngle = 35f, BranchRadius = 1.5f, BranchWater = 1.3f;
-    public static readonly float[] BranchYaw = { 0f, 67.5f, 112.5f, 180f, 247.5f, 292.5f };   // entre los nervios (cada 22,5°)
+    public static readonly float[] BranchYaw = { 22.5f, 90f, 135f, 202.5f, 270f, 315f };   // entre los nervios (cada 22,5°) y lejos de la puerta del piso 8 (0°, a 62–65 m)
     public const float RingHub = 7f, RingWidth = 4f;     // RingDeck alrededor de 7 × 7 → 13,4 m de lado
     public const float BulbRadius = 2f, BulbInner = 1.8f;
     public const float DoorWidth = 1.8f, DoorHeight = 2.6f;
@@ -47,13 +47,13 @@ public static class TreeSpec
     /// <summary>Dirección horizontal (local del árbol) de un ángulo de brújula (0 = +Z, 90 = +X).</summary>
     public static Vector3 Dir(float deg) => new Vector3(Mathf.Sin(deg * Mathf.Deg2Rad), 0f, Mathf.Cos(deg * Mathf.Deg2Rad));
     public static float Angle(Vector3 v) => Mathf.Repeat(Mathf.Atan2(v.x, v.z) * Mathf.Rad2Deg, 360f);
-    /// <summary>Ángulo de la PUERTA del piso k (0 = suelo): el lado −Z local del piso, girado con él.</summary>
-    public static float DoorAngle(int floor) => Mathf.Repeat(YawOf(floor) + 180f, 360f);
+    /// <summary>Ángulo de la PUERTA del piso k (0 = suelo): el lado +Z local del piso (el de su cultivo: se sale de la raíz al bancal), girado con él.</summary>
+    public static float DoorAngle(int floor) => Mathf.Repeat(YawOf(floor), 360f);
     /// <summary>Cota del umbral de la puerta del piso k: su cara a 11 m del eje (inclinada).</summary>
-    public static float DoorBottom(int floor) => floor == 0 ? 0f : FloorY[floor - 1] + (PoseOf(floor) * new Vector3(0f, 0f, -OuterRadius)).y;
+    public static float DoorBottom(int floor) => floor == 0 ? 0f : FloorY[floor - 1] + (PoseOf(floor) * new Vector3(0f, 0f, OuterRadius)).y;
     /// <summary>Punto (local del árbol) del piso k a <paramref name="r"/> m del eje por el lado de su puerta, en su suelo.</summary>
     public static Vector3 OnFloorAtDoor(int floor, float r) => floor == 0 ? Dir(DoorAngle(0)) * r
-        : new Vector3(0f, FloorY[floor - 1], 0f) + PoseOf(floor) * new Vector3(0f, 0f, -r);
+        : new Vector3(0f, FloorY[floor - 1], 0f) + PoseOf(floor) * new Vector3(0f, 0f, r);
     /// <summary>Punta de la rama b (el final del tubo) y su dirección.</summary>
     public static Vector3 BranchDir(int b) => Dir(BranchYaw[b]) * Mathf.Cos(BranchAngle * Mathf.Deg2Rad) + Vector3.up * Mathf.Sin(BranchAngle * Mathf.Deg2Rad);
     public static Vector3 BranchStart(int b) => Dir(BranchYaw[b]) * OuterRadius + Vector3.up * BranchBaseY;

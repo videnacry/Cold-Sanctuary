@@ -12,6 +12,9 @@ public class TreeTrip : MonoBehaviour
     public static bool Busy(GameObject g) => g != null && _busy.Contains(g);
     public static int Trips { get; private set; }
     public static int Stuck { get; private set; }
+    /// <summary>Registro de cada tramo (las pruebas).</summary>
+    public static bool Verbose;
+    float _t0;
 
     ArbolCampos _tree;
     List<Vector3> _path;
@@ -28,6 +31,7 @@ public class TreeTrip : MonoBehaviour
         t._ph = PathMover.Of(g.transform).PivotHeight;
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
+        t._t0 = Time.time;
         t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 20f;
         // El jugador: se le sujeta el cuerpo (su control no lo mueve a la vez) y, como a todos, se le lleva sin chocar con los
         // cantos de las puertas: el CharacterController se apaga durante el viaje (GroundGuard tampoco lo toca).
@@ -51,16 +55,18 @@ public class TreeTrip : MonoBehaviour
             Vector3 target = _tree.World(_path[_i]) + Vector3.up * _ph;
             Vector3 d = target - transform.position;
             float dist = d.magnitude;
-            if (Wet(_i))
+            // (Nadando solo hacia un punto DENTRO del agua: hacia el hueco de una puerta, que es aire, SwimTo lo bajaría a la
+            // superficie del mar, que es el agua que queda «debajo» de ese punto; ahí se avanza en línea recta, como al andar.)
+            if (Wet(_i) && WaterZone.Underwater(target))
             {
-                float before = dist;
+                Vector3 was = transform.position;
                 float left = _swim.SwimTo(target, budget / Mathf.Max(1e-4f, Time.deltaTime));
-                budget -= Mathf.Max(0f, before - left);
+                budget -= Mathf.Max(0.02f * budget, Vector3.Distance(was, transform.position));   // (lo de verdad recorrido: nunca más que la velocidad)
                 if (left > 0.05f) break;
             }
             else
             {
-                _swim.End();
+                if (Wet(_i)) _swim.Begin(); else _swim.End();
                 float step = Mathf.Min(budget, dist);
                 if (dist > 1e-4f) transform.position += d / dist * step;
                 Vector3 flat = new Vector3(d.x, 0f, d.z);
@@ -68,6 +74,7 @@ public class TreeTrip : MonoBehaviour
                 budget -= step;
                 if (dist - step > 0.05f) break;
             }
+            if (Verbose) Debug.Log($"[Árbol] «{name}» tramo {_i}/{_path.Count - 1} hecho a los {Time.time - _t0:0.0} s en {transform.position} ({(Wet(_i) ? "nadando" : "andando")}).");
             _i++;
         }
         if (_i >= _path.Count) Finish(true);

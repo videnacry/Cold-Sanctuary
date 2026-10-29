@@ -118,23 +118,26 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             ("del suelo al piso 5 (el Huerto)", () => gArea != null ? gArea.TransformPoint(new Vector3(12f, 1f, 3.5f)) : t.World(f5.outside) + Vector3.up, f5),
             ("del piso 5 al anillo de nidos 3", () => t.World(ring.outside + TreeSpec.Dir(ring.doorAngle) * 1.2f) + Vector3.up, ring),
         };
-        int trips0 = TreeTrip.Trips;
+        int trips0 = TreeTrip.Trips; TreeTrip.Verbose = true;
         foreach (var leg in legs)
         {
             PathMover pm = PathMover.Of(body.transform); pm.Restart();
             Vector3 from = body.transform.position, last = from, lastDir = Vector3.zero;
             float walked = 0f, minBreath = 1f; int reversals = 0, jumps = 0; bool swam = false; string jumpWhy = "";
-            float end = Time.time + 240f, lastT = Time.time;
+            float end = Time.time + 240f, lastT = Time.time, prevDt = 0f;
             while (Time.time < end)
             {
                 Vector3 to = leg.target();
                 Vector3 d = to - body.transform.position;
                 if (new Vector2(d.x, d.z).magnitude < 1.2f && Mathf.Abs(d.y) < 1.6f) break;
+                int st0 = pm.Steps; Vector3 pre = body.transform.position;
                 pm.StepToward(to, 3f);
+                float mine = Vector3.Distance(pre, body.transform.position);
                 yield return null;
                 Vector3 p = body.transform.position, step = p - last;
                 float dt = Time.time - lastT; lastT = Time.time;
-                if (step.magnitude > Mathf.Max(1.5f, 4f * dt)) { jumps++; if (jumpWhy.Length < 120) jumpWhy += $"{step.magnitude:0.0} m; "; }
+                float span = Mathf.Max(dt, prevDt); prevDt = dt;   // (el paso propio se dio con el delta del fotograma anterior)
+                if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumps++; if (jumpWhy.Length < 240) jumpWhy += $"{step.magnitude:0.0} m en {dt:0.00} s ({last.x:0},{last.y:0},{last.z:0})→({p.x:0},{p.y:0},{p.z:0}){(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
                 walked += step.magnitude;
                 if (step.magnitude > 0.03f)
                 {
@@ -156,7 +159,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"{leg.name}: no se queda sin aire", minBreath > 0f, $"aliento mínimo {minBreath:0.00}");
         }
         TestProbe.Check("los viajes por la raíz se hicieron nadando (TreeTrip), sin atascos", TreeTrip.Trips - trips0 >= 2 && TreeTrip.Stuck == 0, $"{TreeTrip.Trips - trips0} viajes, {TreeTrip.Stuck} atascos");
-        Destroy(body);
+        Destroy(body); TreeTrip.Verbose = false;
         Time.timeScale = oldScale;
 
         // ── 5. GIRO ──
@@ -168,6 +171,8 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         CharacterController cc = stand.AddComponent<CharacterController>(); cc.height = 1.8f; cc.radius = 0.3f; cc.center = Vector3.zero;
         Vector3 standL = new Vector3(0f, 0.95f, -17f);
         if (f3 != null) { cc.enabled = false; stand.transform.position = f3.transform.TransformPoint(standL); cc.enabled = true; }
+        { float w0 = Time.time; while (Time.time - w0 < 0.5f) yield return null; }   // (el giro busca los cuerpos nuevos cada 0,2 s)
+        if (f3 != null) standL = f3.transform.InverseTransformPoint(stand.transform.position);
         int nav0 = rot.NavRefreshes; float deg0 = rot.TotalDegrees, t0 = Time.time;
         while (Time.time - t0 < 30f) yield return null;
         float turned = Mathf.Abs(rot.TotalDegrees - deg0), expected = 360f * (Time.time - t0) / (60f * TimeController.timeController.TimeSpeedMinuteSecs);
