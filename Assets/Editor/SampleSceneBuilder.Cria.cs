@@ -81,6 +81,11 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Un recinto de crías: suelo (paja o nieve), muro de 1,2 m con su puerta hacia el pasillo (+Z, o +X si
     /// <paramref name="doorEast"/>) y su cartel. Los muros tienen collider: las crías no salen ni se ven unas a otras como presa.</summary>
+    // LA PUERTA DEL RECINTO, CERRADA (más baja que el muro: se ve que es la puerta). Antes el hueco quedaba abierto y las crías
+    // salían a pasear entre los puestos de cuidado (JornadaTest 2026-10-29: «Cachorro dentro de Cria_Malamute_Arrullar»). El
+    // cuidado se hace desde fuera, en los puestos, y las tomas las da CriaFeeder: nadie necesita entrar.
+    const float Gate = 0.9f;
+
     static Transform CriaPen(Transform parent, string name, Vector3 center, Vector2 size, Color floor, string title, string fact, bool doorEast = false)
     {
         Transform p = KitchenProps.Root(parent, name, center);
@@ -94,6 +99,7 @@ public static partial class SampleSceneBuilder
             float seg = (size.y - door) * 0.5f;
             Solid(p, new Vector3(hx, h * 0.5f, -hz + seg * 0.5f), new Vector3(t, h, seg), CrWall, "Muro");
             Solid(p, new Vector3(hx, h * 0.5f, hz - seg * 0.5f), new Vector3(t, h, seg), CrWall, "Muro");
+            Solid(p, new Vector3(hx, Gate * 0.5f, 0f), new Vector3(t, Gate, door), CrWall, "Puerta_recinto");   // la puerta, cerrada
         }
         else
         {
@@ -102,6 +108,7 @@ public static partial class SampleSceneBuilder
             float seg = (size.x - door) * 0.5f;
             Solid(p, new Vector3(-hx + seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
             Solid(p, new Vector3(hx - seg * 0.5f, h * 0.5f, hz), new Vector3(seg, h, t), CrWall, "Muro");
+            Solid(p, new Vector3(0f, Gate * 0.5f, hz), new Vector3(door, Gate, t), CrWall, "Puerta_recinto");   // la puerta, cerrada
         }
         WorldLabel wl = p.gameObject.AddComponent<WorldLabel>(); wl.text = $"{title}\n{fact}"; wl.height = 2.2f;
         return p;

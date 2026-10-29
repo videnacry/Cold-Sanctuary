@@ -220,6 +220,17 @@ public class Magnate : MonoBehaviour
     }
 
     /// <summary>¿Va andando con el recién llegado de un área a otra (o hacia él)? Entonces nadie más la conduce.</summary>
+    /// <summary>Deja de acompañar al recién llegado por sus iniciaciones (ya las tiene hechas: p. ej. la prueba de la jornada,
+    /// que empieza con la iniciación completa). Sin esto, el acompañamiento que dejó a medias otra prueba seguía donde iba
+    /// (esperando «la vuelta del río») y a media jornada llevaba a Kushal a la cocina para iniciarlo con quien estuviera de
+    /// turno (JornadaTest 2026-10-29: Sadhguru, quieto en la cocina todo el día).</summary>
+    public void StopGuiding()
+    {
+        if (_newcomer != null) _guiding.Remove(_newcomer);
+        _orch?.Stop(); _orch = null;
+        _newcomer = null; _initiating = null; _initPhase = 0;
+    }
+
     public bool IsEscorting => _newcomer != null && (_initPhase == 0 || _initPhase == 1 || _initPhase == 4 || _initPhase == 7);
 
     // ORQUESTA de la Magnate (Berón 2026-10-29): ya no lo lleva a tirones ni le encola «andar»; cada uno anda SOLO a su sitio

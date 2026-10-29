@@ -63,6 +63,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         ob.introMissionsDone = ob.introMissionsRequired;
         ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = true;
         ob.gardenTrained = false;   // aún en el huerto
+        foreach (Magnate mg in FindObjectsByType<Magnate>(FindObjectsSortMode.None)) mg.StopGuiding();   // (otra prueba la dejó acompañándolo a medias)
         if (_player.TryGetComponent(out PlayerController pc0)) pc0.ReleaseBody();
         WorkRoster.Worker old = _wd.roster.Find("Player");
         if (old != null) _wd.roster.workers.Remove(old);   // (otra prueba pudo meterlo): que se le DÉ la jornada aquí
