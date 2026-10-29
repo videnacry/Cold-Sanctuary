@@ -19,6 +19,8 @@ public static class GymFit
     public class Equipment
     {
         public readonly List<Transform> solid = new List<Transform>(), grip = new List<Transform>(), surface = new List<Transform>();
+        /// <summary>Piezas que van con los pies (los pedales giran con la biela): un pie en ellas no está «hundido».</summary>
+        public readonly HashSet<Transform> withFeet = new HashSet<Transform>();
         public Equipment() { }
         public Equipment(Transform only) { surface.Add(only); }
     }
@@ -48,6 +50,7 @@ public static class GymFit
         if (n == "Brazo" && t != GymMachineType.SillaRomana) return true;   // brazos de la elíptica y del assault bike (en la silla romana son soportes)
         if (t == GymMachineType.MuroSubida && n.StartsWith("Muro")) return true;     // el borde del muro
         if (t == GymMachineType.KongVault && (n.StartsWith("Cajon") || n.StartsWith("Tapa"))) return true;   // las manos sobre el cajón
+        if (n.StartsWith("Peldano") && t != GymMachineType.MonkeyBars && t != GymMachineType.ElevacionPiernas) return false;   // los peldaños de los postes y de la escaladora se pisan, no se agarran
         foreach (string g in GripNames) if (n.StartsWith(g)) return true;
         return false;
     }
@@ -71,6 +74,7 @@ public static class GymFit
             if (Dist(c, t) > reach) continue;
             e.surface.Add(t);
             if (IsGrip(st.type, t.name)) e.grip.Add(t); else e.solid.Add(t);
+            if (Pedals(st.type) && t.name == "Pedal") e.withFeet.Add(t);
         }
         // El suelo del piso (caucho, losetas, césped): lo que pisan.
         for (Transform a = root; a != null; a = a.parent)
@@ -148,7 +152,7 @@ public static class GymFit
             foreach (Vector3 q in new[] { a, s })
                 foreach (Transform piece in eq.surface)
                 {
-                    if (piece == null || Depth(q, piece) <= 0f) continue;
+                    if (piece == null || eq.withFeet.Contains(piece) || Depth(q, piece) <= 0f) continue;
                     float top = SurfaceBelow(new Vector3(q.x, q.y + 3f, q.z), new Equipment(piece), null, out _);
                     if (top - bottom > sunk) { sunk = top - bottom; on = piece.name; }
                 }
@@ -229,6 +233,7 @@ public static class GymFit
             case GymMachineType.Dominadas: case GymMachineType.MonkeyBars: case GymMachineType.Fondos: case GymMachineType.FondosAnillas:
             case GymMachineType.FrontLever: case GymMachineType.ElevacionPiernas: case GymMachineType.LSit: case GymMachineType.BanderaHumana:
             case GymMachineType.Lache: case GymMachineType.Kipping: case GymMachineType.Cuerda: case GymMachineType.SillaRomana:
+            case GymMachineType.RemoAustraliano:   // (con los talones en el suelo: los pies bajan por IK)
                 return true;
             case GymMachineType.MuroSubida: return !b;
             default: return false;
@@ -260,18 +265,23 @@ public static class GymFit
                 float gap = FootGap(seg, eq, g.transform, out _);
                 if (!float.IsInfinity(gap)) minGap = Mathf.Min(minGap, gap);
             }
+            Transform rail = st.type == GymMachineType.Barandilla ? eq.grip.FirstOrDefault(t => t != null && t.name.StartsWith("Tubo")) : null;
             if (legacy) { if (minGap < 0f) dy = -minGap; }   // placas (postura apoyada): solo sacar un pie hundido (en el reposapiés, el bastidor…)
-            else if (feet > 0 && minGap < float.MaxValue) dy = -minGap;   // el pie más bajo, sobre lo que pisa
-            else
+            else if (rail != null)   // la barandilla: el pie más bajo, sobre el TUBO (5 cm: si el pie no cae justo encima, el suelo engañaba)
             {
-                if (Hangs(st.type, b) && hands > 0)
-                {
-                    float sum = 0f; int n = 0;
-                    foreach (var (hand, target) in HandTargets(rig, eq, hands, 0.9f)) { sum += target.y - hand.position.y; n++; }
-                    if (n > 0) dy = sum / n;
-                }
+                float low = float.MaxValue;
+                foreach (BodyPart f in new[] { BodyPart.FootLeft, BodyPart.FootRight }) { Transform seg = Segment(rig, f); if (seg != null) low = Mathf.Min(low, LowestY(seg)); }
+                if (low < float.MaxValue) dy = rail.position.y + Mathf.Abs(rail.lossyScale.y) * 0.5f - low;
+            }
+            else if (Hangs(st.type, b) && hands > 0)   // cuelga (o se sostiene) de las manos: a la altura del agarre; los pies, por IK
+            {
+                float sum = 0f; int n = 0;
+                foreach (var (hand, target) in HandTargets(rig, eq, hands, 0.9f)) { sum += target.y - hand.position.y; n++; }
+                if (n > 0) dy = sum / n;
                 if (minGap < float.MaxValue && minGap + dy < 0f) dy = -minGap;   // ningún pie dentro del suelo
             }
+            else if (feet > 0 && minGap < float.MaxValue) dy = -minGap;   // el pie más bajo, sobre lo que pisa
+            else if (minGap < float.MaxValue && minGap < 0f) dy = -minGap;   // ningún pie dentro de nada
             dy = Mathf.Clamp(dy, -0.8f, 0.8f);
             if (Debug_) Debug.Log($"[GymFitDbg] f{Time.frameCount} {st.name} {g.name} b={b} feet={feet} minGap={minGap:0.000} dy={dy:0.000} legacy={legacy} planta={LowestY(Segment(rig, BodyPart.FootLeft)) - st.SeatPoint(b ? 1f : 0f).y:0.000}");
             if (Mathf.Abs(dy) > 1e-4f) g.transform.position += Vector3.up * dy;
@@ -326,6 +336,12 @@ public static class GymFit
         _lastDy[st] = dy;
         // LA ALMOHADILLA DEL HIP THRUST va encima de la cadera (es la palanca que se empuja con ella).
         if (st.type == GymMachineType.HipThrust) RideOnHips(st, rig, eq);
+        // LO REGULABLE a la medida de quien la usa: la almohadilla de las rodillas del gemelo, la de la cadera de las
+        // hiperextensiones y los rodillos de los pies del banco declinado. Y los PEDALES, bajo los pies (giran con la biela).
+        if (st.type == GymMachineType.Gemelos) RideOn(st, rig, eq, "Almohadilla_rodillas", true, BodyPart.ThighLeft, BodyPart.ThighRight);
+        if (st.type == GymMachineType.Hiperextension) RideOn(st, rig, eq, "Almohadilla_cadera", false, BodyPart.Hips);
+        if (st.type == GymMachineType.AbdominalDeclinado) FeetRollers(st, rig, eq);
+        if (Pedals(st.type)) PedalsUnderFeet(st, rig, eq);
         // AGARRES QUE SE MUEVEN (palancas, cables, barras): van con las manos.
         if (MoveGrips(st, rig, eq)) return;
         // MANOS al agarre fijo (las que agarran en esta fase; en las de palancas, solo si el agarre está a mano en esta fase).
@@ -361,6 +377,7 @@ public static class GymFit
         {
             case GymMachineType.PressPecho: case GymMachineType.PressHombros: case GymMachineType.Remo: perSide = true; return new[] { "Agarre" };
             case GymMachineType.SkiErg: perSide = true; return new[] { "Tirador" };
+            case GymMachineType.AssaultBike: perSide = true; return new[] { "Brazo" };   // los brazos del assault bike empujan y tiran
             case GymMachineType.Jalon: return new[] { "Barra_jalon" };
             case GymMachineType.BicepsTriceps: return new[] { "Barra_agarre" };
             case GymMachineType.RemoErgometro: return new[] { "Mango" };
@@ -429,6 +446,64 @@ public static class GymFit
         }
         _travel[st] = travel;
         return true;
+    }
+
+    /// <summary>¿Tiene pedales que giran con los pies? (bicis y assault bike)</summary>
+    public static bool Pedals(GymMachineType t) => t == GymMachineType.BiciVertical || t == GymMachineType.BiciReclinada || t == GymMachineType.AssaultBike;
+
+    static float HighestY(Transform cube)
+    {
+        float y = float.MinValue;
+        for (int c = 0; c < 8; c++) y = Mathf.Max(y, cube.TransformPoint(new Vector3((c & 1) == 0 ? -0.5f : 0.5f, (c & 2) == 0 ? -0.5f : 0.5f, (c & 4) == 0 ? -0.5f : 0.5f)).y);
+        return y;
+    }
+
+    /// <summary>Pieza REGULABLE en altura: <paramref name="above"/> = encima de esas partes del cuerpo (su base, sobre lo más
+    /// alto de ellas: la almohadilla de las rodillas); si no, debajo (su parte de arriba, bajo lo más bajo: la de la cadera).</summary>
+    static void RideOn(GymStation st, CreatureRig rig, Equipment eq, string piece, bool above, params BodyPart[] parts)
+    {
+        Transform pad = eq.solid.FirstOrDefault(t => t != null && t.name == piece);
+        if (pad == null) return;
+        float y = above ? float.MinValue : float.MaxValue;
+        foreach (BodyPart p in parts)
+        {
+            Transform seg = Segment(rig, p); if (seg == null) continue;
+            y = above ? Mathf.Max(y, HighestY(seg)) : Mathf.Min(y, LowestY(seg));
+        }
+        if (y == float.MinValue || y == float.MaxValue) return;
+        Vector3 back = Orig(pad) - pad.position;   // dónde estaría en su sitio
+        float lo = LowestY(pad) + back.y, hi = HighestY(pad) + back.y;
+        Shift(st, pad, Vector3.up * Mathf.Clamp(above ? y - lo : y - hi, -0.2f, 0.2f));
+    }
+
+    /// <summary>Los rodillos de los pies del banco declinado (con su brazo), a la altura y la distancia de los tobillos de quien se tumba.</summary>
+    static void FeetRollers(GymStation st, CreatureRig rig, Equipment eq)
+    {
+        Transform fl = Segment(rig, BodyPart.FootLeft), fr = Segment(rig, BodyPart.FootRight);
+        if (fl == null || fr == null) return;
+        var rollers = eq.solid.Where(t => t != null && t.name == "Rodillo_pies").ToList();
+        if (rollers.Count == 0) return;
+        Vector3 mid = Vector3.zero; foreach (Transform r in rollers) mid += Orig(r); mid /= rollers.Count;
+        Vector3 off = (fl.position + fr.position) * 0.5f - mid; off.x = 0f;
+        off = Vector3.ClampMagnitude(off, 0.3f);
+        foreach (Transform t in eq.solid) if (t != null && (t.name == "Rodillo_pies" || t.name == "Brazo_rodillos")) Shift(st, t, off);
+    }
+
+    /// <summary>Los pedales, bajo la planta de cada pie (giran con la biela).</summary>
+    static void PedalsUnderFeet(GymStation st, CreatureRig rig, Equipment eq)
+    {
+        foreach (Transform p in eq.withFeet)
+        {
+            if (p == null) continue;
+            Transform fl = Segment(rig, BodyPart.FootLeft), fr = Segment(rig, BodyPart.FootRight);
+            if (fl == null || fr == null) continue;
+            Vector3 o = Orig(p);
+            Transform foot = Vector3.Distance(fl.position, o) <= Vector3.Distance(fr.position, o) ? fl : fr;
+            Vector3 sole = new Vector3(foot.position.x, LowestY(foot), foot.position.z);
+            Vector3 want = sole - Vector3.up * (Mathf.Abs(p.lossyScale.y) * 0.5f);
+            Vector3 off = want - o;
+            if (off.magnitude <= 0.6f) Shift(st, p, off);
+        }
     }
 
     /// <summary>La almohadilla de la palanca del hip thrust, apoyada sobre la pelvis (sube y baja con ella).</summary>

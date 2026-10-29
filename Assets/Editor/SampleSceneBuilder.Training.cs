@@ -301,7 +301,8 @@ public static partial class SampleSceneBuilder
             GBar(ra, new Vector3(0f, rh[i], -1.5f), new Vector3(0f, rh[i], 1.5f), 0.05f, TChrome, "Tubo");
             for (int p = 0; p < 3; p++) GBar(ra, new Vector3(0f, 0f, -1.4f + p * 1.4f), new Vector3(0f, rh[i] - 0.03f, -1.4f + p * 1.4f), 0.06f, TIron, "Soporte");
             KitchenProps.Fit(ra, false);
-            GSpot(ra, GymMachineType.Barandilla, i, new Vector3(0f, 0f, 0f), 0f, 1.46f + (rh[i] - 0.5f) / 0.974f);
+            GSpot(ra, GymMachineType.Barandilla, i, new Vector3(0f, 0f, 0.7f), 0f,   // entre dos soportes (en z 0 la cadera bajaba hasta el del medio)
+                 1.46f + (rh[i] - 0.5f) / 0.974f);
             ra.gameObject.AddComponent<WorldLabel>().text = $"Barandilla ({rh[i]:0.0} m)";
         }
         float[] bx = { -12.6f, -11f, -9.6f, -8.4f, -7f, -6f }, bh = { 0.40f, 0.50f, 0.65f, 0.50f, 0.40f, 0.65f };
@@ -594,8 +595,8 @@ public static partial class SampleSceneBuilder
                 for (int i = 0; i < 4; i++) KitchenProps.C(m, new Vector3(0f, 0.12f + i * 0.2f, 0.45f - i * 0.22f), new Vector3(0.6f, 0.04f, 0.26f), TRubber, 0f, "Peldano");
                 for (int s = -1; s <= 1; s += 2)
                 {
-                    GBar(m, new Vector3(s * 0.38f, 0.04f, 0.75f), new Vector3(s * 0.38f, 1.2f, 0.45f), 0.06f, TIron, "Poste");
-                    GBar(m, new Vector3(s * 0.38f, 1.2f, 0.45f), new Vector3(s * 0.38f, 1.25f, -0.6f), 0.045f, TChrome, "Barandilla");
+                    GBar(m, new Vector3(s * 0.34f, 0.04f, 0.75f), new Vector3(s * 0.34f, 1.3f, 0.45f), 0.06f, TIron, "Poste");
+                    GBar(m, new Vector3(s * 0.34f, 1.3f, 0.45f), new Vector3(s * 0.34f, 1.33f, -0.6f), 0.045f, TChrome, "Barandilla");   // más cerca y más alta: a 1,2 m y ±0,38 no llegaba quien mide 1,8 (GymUsabilityTest)
                 }
                 GBar(m, new Vector3(0f, 1.2f, -0.6f), new Vector3(0f, 2.0f, -0.7f), 0.08f, TIron, "Columna");
                 KitchenProps.C(m, new Vector3(0f, 2.05f, -0.7f), new Vector3(0.45f, 0.25f, 0.08f), TIron, new Vector3(-20f, 0f, 0f), "Consola");
@@ -627,7 +628,7 @@ public static partial class SampleSceneBuilder
                 for (int s = -1; s <= 1; s += 2)
                 {
                     KitchenProps.C(m, new Vector3(s * 0.13f, 0.38f, -0.42f), new Vector3(0.1f, 0.12f, 0.03f), TRubber, 0f, "Pedal");
-                    KitchenProps.C(m, new Vector3(s * 0.3f, 0.45f, 0.25f), new Vector3(0.04f, 0.04f, 0.2f), TChrome, 0f, "Asa");
+                    KitchenProps.C(m, new Vector3(s * 0.28f, 0.6f, 0.3f), new Vector3(0.04f, 0.04f, 0.2f), TChrome, 0f, "Asa");   // junto a la cadera, sobre el asiento: a 0,45 m no llegaban las manos
                 }
                 GBar(m, new Vector3(0f, 0.6f, -0.6f), new Vector3(0f, 1.1f, -0.45f), 0.06f, TIron, "Columna");
                 KitchenProps.C(m, new Vector3(0f, 1.15f, -0.45f), new Vector3(0.35f, 0.2f, 0.06f), TIron, new Vector3(-30f, 0f, 0f), "Consola");

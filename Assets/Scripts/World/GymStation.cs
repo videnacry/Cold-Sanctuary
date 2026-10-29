@@ -232,7 +232,7 @@ public static class GymPoses
         void Legs(float tx, float tz, float sh) { s.AddRange(Sym(BodyPart.ThighLeft, BodyPart.ThighRight, tx, tz)); s.AddRange(Sym(BodyPart.ShinLeft, BodyPart.ShinRight, sh)); }
         void Add(BodyPart p, float x, float y = 0f, float z = 0f) => s.Add(P(p, x, y, z));
         // Barra a la espalda (sentadillas): brazos abiertos y codos abajo, antebrazos hacia arriba, manos a la anchura de la barra.
-        void BarOnBack() { float w = t == GymMachineType.SentadillaSmith ? 40f : 50f; Add(BodyPart.ShoulderLeft, 0, 0, -w); Add(BodyPart.ShoulderRight, 0, 0, w); Add(BodyPart.ForearmLeft, 0, 0, -2f * w); Add(BodyPart.ForearmRight, 0, 0, 2f * w); }   // (en la Smith, más cerrado: la barra es más corta y los discos quedan más cerca)
+        void BarOnBack() { float w = t == GymMachineType.SentadillaSmith ? 30f : 50f; Add(BodyPart.ShoulderLeft, 0, 0, -w); Add(BodyPart.ShoulderRight, 0, 0, w); Add(BodyPart.ForearmLeft, 0, 0, -2f * w); Add(BodyPart.ForearmRight, 0, 0, 2f * w); }   // (en la Smith, más cerrado: la barra es más corta y los discos quedan más cerca)
         // Lado contra lado (zancadas, pedales, brazos cruzados): en A la izquierda va a xa y la derecha a xb; en B, al revés.
         void Swap(BodyPart l, BodyPart r, float xa, float xb, float z = 0f) { s.Add(P(l, b ? xb : xa, 0f, z)); s.Add(P(r, b ? xa : xb, 0f, -z)); }
         void SwapLegs(float ta, float tb, float sa, float sb) { Swap(BodyPart.ThighLeft, BodyPart.ThighRight, ta, tb); Swap(BodyPart.ShinLeft, BodyPart.ShinRight, sa, sb); }
@@ -364,7 +364,7 @@ public static class GymPoses
             // ── Piso 2 · calistenia (§4.4) ──
             case GymMachineType.Dominadas:   // barra a 2,4 m: A 1,33 (manos en la barra) → B 1,89 (barbilla sobre la barra)
                 Add(BodyPart.Hips, b ? -5 : 0); Add(BodyPart.Neck, b ? -15 : -10);
-                if (b) Arms(-30, 25, -140); else Arms(-175, 10, 0);   // (agarre algo más cerrado: con alguien en la barra de al lado no se tocan los antebrazos)
+                if (b) Arms(-30, 12, -140); else Arms(-175, 5, 0);   // (agarre algo más cerrado: con alguien en la barra de al lado no se tocan los antebrazos)
                 Legs(b ? -15 : -10, 0, b ? 70 : 60); rb = 0.56f; break;
             case GymMachineType.MonkeyBars:
                 Add(BodyPart.Hips, b ? -5 : 5); Swap(BodyPart.ShoulderLeft, BodyPart.ShoulderRight, -175, -150, 10); Arms0(0);
