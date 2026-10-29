@@ -125,8 +125,8 @@ public static partial class SampleSceneBuilder
     static CarpetPad RingCarpets(Transform ring, Transform floor, Vector2 floorSize, string building, string label, float width = 10f, float inside = 0.2f)
     {
         var (p, _, _) = RingPoint(floorSize, 0f, width, inside);   // s = 0: el centro del lado +Z
-        System.Collections.Generic.List<Transform> fl = FloorsOf(BaseOf(floor));
-        int i = Mathf.Max(1, fl.IndexOf(floor) + 1);
+        building = BuildingOf(floor, building);   // en una torre, la red es la de la torre (Servicios, Ciencias…), no la del área
+        int i = FloorIndex(floor);
         string surf = i == 1 ? $"{building}#anillo" : $"{building}#anillo{i}";
         return CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), ring.rotation * Quaternion.Euler(0f, 90f, 0f), CarpetPad.Kind.Edificio,
             building, i, surf, label, 2);

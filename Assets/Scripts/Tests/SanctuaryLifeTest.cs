@@ -297,8 +297,34 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // LÍMITE DE LA ESTRUCTURA: ningún edificio pasa de los pisos que aguantan sus columnas (StructuralLimits).
         int maxFloor = CarpetPad.All.Count > 0 ? CarpetPad.All.Max(c => c.floor) : 0;
         TestProbe.Check($"ningún edificio pasa de {StructuralLimits.MaxFloors} pisos (lo que aguantan las columnas)", maxFloor > 0 && maxFloor <= StructuralLimits.MaxFloors, $"el más alto: {maxFloor} pisos");
-        // MENOS EDIFICIOS (docs/plano-edificios.md): Granja, Talleres y Entrenamiento juntan sus áreas en pisos.
-        TestProbe.Check("Granja, Talleres y Entrenamiento: varias áreas por edificio", new[] { "Granja", "Talleres", "Entrenamiento" }.All(b => CarpetPad.All.Any(c => c.building == b)) && Mathf.Abs(GameObject.Find("CubCare_Area").transform.position.x - GameObject.Find("Garden_Area").transform.position.x) < 0.5f, string.Join(", ", CarpetPad.All.Select(c => c.building).Distinct()));
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos. Solo hay 4 edificios de
+        // más de un piso (más el techo): Servicios, Entrenamiento, Ciencias y Producción; la Central Nuclear va aparte (1 piso) y
+        // los huertos del agua son parcelas. Pisos con alfombras de edificio = los de la torre + el techo.
+        var towerFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 6 } };
+        var tall = CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio).GroupBy(c => c.building).Where(g => g.Max(c => c.floor) >= 3).ToDictionary(g => g.Key, g => g.Max(c => c.floor));
+        TestProbe.Check("4 torres temáticas (Servicios, Entrenamiento, Ciencias, Producción) con sus pisos, y ningún otro edificio de varios pisos",
+            tall.Count == towerFloors.Count && towerFloors.All(kv => tall.TryGetValue(kv.Key, out int n) && n == kv.Value),
+            string.Join(", ", tall.Select(kv => $"{kv.Key} {kv.Value}")));
+        TestProbe.Check("la Central Nuclear sigue aparte (su sitio de exclusión), de un piso", CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio && c.building == "Central Nuclear").Select(c => c.floor).DefaultIfEmpty(0).Max() == 2);
+        // Cada torre, una sola planta: sus áreas, una encima de otra (mismo x, z) y cada una más alta que la anterior.
+        bool Stacked(params string[] names)
+        {
+            var gs = names.Select(n => GameObject.Find(n)).ToArray();
+            if (gs.Any(g => g == null)) return false;
+            for (int k = 1; k < gs.Length; k++)
+            {
+                Vector3 a = gs[k - 1].transform.position, b = gs[k].transform.position;
+                if (Mathf.Abs(a.x - b.x) > 0.5f || Mathf.Abs(a.z - b.z) > 0.5f || b.y < a.y + 10f) return false;
+            }
+            return true;
+        }
+        TestProbe.Check("las áreas de cada torre van apiladas, de abajo arriba",
+            Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
+            && Stacked("AtomicPlant_Area", "Chemistry_Area", "Biology_Area") && Stacked("Garden_Area", "Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+        // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria), no 11 m sobre su planta baja.
+        GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
+        if (vetFloor != null && criaGo != null)
+            TestProbe.Check("la Cría va 11 m sobre la planta veterinaria (la más alta del hospital)", Mathf.Abs(criaGo.transform.position.y - vetFloor.transform.position.y - 11f) < 0.5f, $"{criaGo.transform.position.y - vetFloor.transform.position.y:0.0} m");
 
         // OBRA SOSTENIBLE: el material sale del bambusal, el barro con paja, el micelio y el cáñamo.
         MaterialStore ms = MaterialStore.Instance;
@@ -354,16 +380,17 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // ALFOMBRAS (docs/alfombras-plan.md): sin puentes; cada piso con su área, y en cada techo las de edificio y santuario.
         TestProbe.Check("ya no hay puentes entre plataformas", !FindObjectsByType<Transform>(FindObjectsSortMode.None).Any(t => (t.name.StartsWith("Puente_") && t.name != "Puente_piscina") || (t.name == "Pasarela" && t.parent != null && t.parent.name != "Puente_piscina")));   // (el puente de la piscina del reactor es equipo)
         var pads = CarpetPad.All;
-        int hospFloors = pads.Where(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
-        TestProbe.Greater("el hospital tiene alfombras en cada piso, en el hielo y en el techo (5)", hospFloors, 4f, $"{hospFloors} pisos con alfombras");
+        // El hospital está en la torre de SERVICIOS (docs/plano-edificios.md): su red de alfombras es la de la torre.
+        int hospFloors = pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
+        TestProbe.Greater("la torre de Servicios (con el hospital) tiene alfombras en cada piso, en el hielo y en el techo (8)", hospFloors, 7f, $"{hospFloors} pisos con alfombras");
         int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
-        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario", roofs, 15f, $"{roofs} techos");
+        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, 5 parcelas, la residencia)", roofs, 9f, $"{roofs} techos");
         TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia").All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
         CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1);
         TestProbe.Check("el selector de una alfombra de edificio solo ofrece sus pisos", anyB != null && anyB.Destinations().Count > 0 && anyB.Destinations().All(d => d.building == anyB.building));
         // De un piso del hospital a la cama de Kushal: piso → techo → residencia → su habitación, sin escaleras.
-        CarpetPad start = pads.FirstOrDefault(p => p.building == AreaWork.Hospital && p.kind == CarpetPad.Kind.Edificio && p.floor == 2);
+        CarpetPad start = pads.FirstOrDefault(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio && p.floor == 2);   // la planta baja del hospital (piso 2 de Servicios)
         Bedroom home = player != null ? Bedroom.Of(player.GetComponent<Anima>()) : null;
         if (start != null && home != null && home.bed != null)
         {
@@ -446,7 +473,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
-        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && CarpetPad.All.Count(c => c.building == "Sala de Yoga" && c.surface.EndsWith("#anillo")) >= 8 && FindByPrefix("Estatuas_anillo"));
+        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && (GameObject.Find("Anillo_yoga")?.GetComponentsInChildren<CarpetPad>().Count(c => c.building == "Entrenamiento" && c.surface.Contains("#anillo")) ?? 0) >= 8 && FindByPrefix("Estatuas_anillo"));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)

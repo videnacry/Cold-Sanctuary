@@ -328,7 +328,7 @@ public static partial class SampleSceneBuilder
             GSpot(sl, GymMachineType.Trineo, i, new Vector3(0f, 0f, -1.4f), 180f, 0.80f);   // empuja hacia +Z, manos en los postes
         }
         float[] pz = { -9.9f, -5.4f, -0.9f };   // 2,1 m entre plataformas (con 2,0 justos la prueba lo daba por pegado)
-        for (int i = 0; i < 3; i++) GymPlatform(r, $"Plataforma crossfit {i + 1}", GymMachineType.Cargada, i, new Vector3(8.2f, 0f, pz[i]), TBumper);
+        for (int i = 0; i < 3; i++) GymPlatform(r, $"Plataforma crossfit {i + 1}", GymMachineType.Cargada, i, new Vector3(8.15f, 0f, pz[i]), TBumper);   // 2,05 m hasta los SkiErg (con 2,0 justos, la coma flotante lo daba por pegado según dónde esté la torre)
         for (int i = 0; i < 2; i++)
         {
             float x = i == 0 ? 11.7f : 14.3f;

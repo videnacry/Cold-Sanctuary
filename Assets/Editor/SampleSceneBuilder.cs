@@ -3430,85 +3430,86 @@ public static partial class SampleSceneBuilder
         GameObject areasGroup = new GameObject("Areas_Placed");
         areasGroup.transform.SetParent(parent);
 
+        // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md, SampleSceneBuilder.Towers.cs): cada área nace en el sitio
+        // de su torre con la planta de la torre (el «Mat»: el piso entero es suyo) y luego sube a su piso con TowerFloor.
         var areas = new List<SanctuaryArea>
         {
+            // ── SERVICIOS (personas y animales) ──
             BuildAreaBox(areasGroup.transform, "Kitchen_Area", "Cocina", SanctuaryAreaType.Kitchen, 1,
-                new Vector3(5f, 0f, 95f), new Vector2(40f, 38f), new Color(0.75f, 0.45f, 0.30f)),   // restaurante: cocina abierta en el CENTRO y el comedor (para 30+) alrededor
-
+                ServiciosCenter, ServiciosSize, new Color(0.75f, 0.45f, 0.30f)),   // P0 · restaurante: cocina abierta en el CENTRO y el comedor (para 30+) en su anillo
             BuildAreaBox(areasGroup.transform, "Infirmary_Area", AreaWork.Hospital, SanctuaryAreaType.Infirmary, 1,
-                new Vector3(63f, 0f, 97f), HospitalSize, new Color(0.85f, 0.95f, 0.90f)),   // HOSPITAL de 2 plantas: personas abajo, animales arriba (docs/hospital.md). A 22 m del restaurante (Berón 2026-10-24): sus anillos vuelan 8 m cada uno y entre ellos sube la escalera del comedor desde el puente
-
-            BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.75f, 0.65f, 0.85f)),
-
-            BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
-                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.55f, 0.55f, 0.60f)),   // piso 1 de los Talleres
-
-            BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.85f, 0.60f, 0.65f)),   // piso 2 de los Talleres: telares, rueca, tintes…
-
-            // LABORATORIO DE CARNE CULTIVADA (área propia, nivel 3; docs/carne-cultivada.md): carne para los depredadores
-            // sin matar animales. En el casquete Este, cerca del territorio de los osos (su comedero).
-            BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
-                new Vector3(5f, 0f, -30f), new Vector2(26f, 20f), new Color(0.85f, 0.7f, 0.68f)),   // piso 3 de la Granja
-
-            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
-            // maquinaria y el material. La dirige el esposo de Lizmibet. En el hub, al oeste del huerto.
-            BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
-                new Vector3(-16f, 0f, 10f), new Vector2(24f, 18f), new Color(0.85f, 0.72f, 0.4f)),
-            // ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md): gimnasio abierto; ballet, dojo y calistenia EN OBRAS.
-            BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
-                new Vector3(28f, 0f, 9f), GymSize, new Color(0.55f, 0.6f, 0.7f)),   // ENTRENAMIENTO de 3 pisos (docs/entrenamiento-areas.md); a 16 m de la Granja
-            BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.9f, 0.75f, 0.8f)),   // piso 1 del edificio de Yoga
-            BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
-                new Vector3(105f, 0f, 35f), new Vector2(22f, 18f), new Color(0.8f, 0.7f, 0.55f)),   // piso 2 del edificio de Yoga
-            BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
-                new Vector3(28f, 0f, 9f), GymSize, new Color(0.65f, 0.75f, 0.6f)),   // piso 2 del Entrenamiento: calistenia, parkour y crossfit
-
+                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.95f, 0.90f)),   // P1–P3 · HOSPITAL de 3 plantas: urgencias, quirófanos/UCI y veterinario (docs/hospital.md)
             // CRÍA (docs/cria-simulation.md): el corazón del santuario, una sala de crías del hielo (recintos con crías de
-            // verdad, cocina de leche, almacén). En el sitio que dejó el Estudio Textil al subir sobre la Construcción.
+            // verdad, cocina de leche, almacén), encima del hospital veterinario.
             BuildAreaBox(areasGroup.transform, "CubCare_Area", "Cría", SanctuaryAreaType.CubCare, 1,
-                new Vector3(5f, 0f, -30f), new Vector2(26f, 20f), new Color(0.8f, 0.72f, 0.55f)),   // piso 2 de la Granja
+                ServiciosCenter, ServiciosSize, new Color(0.8f, 0.72f, 0.55f)),   // P4
+            // LABORATORIO DE CARNE CULTIVADA (nivel 3; docs/carne-cultivada.md): carne para los depredadores sin matar animales.
+            BuildAreaBox(areasGroup.transform, "CulturedMeatLab_Area", "Carne Cultivada", SanctuaryAreaType.CulturedMeatLab, 3,
+                ServiciosCenter, ServiciosSize, new Color(0.85f, 0.7f, 0.68f)),   // P5
 
+            // ── ENTRENAMIENTO (2 h diarias, docs/jornada-y-rotacion.md y docs/entrenamiento-areas.md) ──
+            BuildAreaBox(areasGroup.transform, "Gym_Area", "Gimnasio", SanctuaryAreaType.Gym, 1,
+                EntrenamientoCenter, GymSize, new Color(0.55f, 0.6f, 0.7f)),   // P0 (P1: cardio y zona libre)
+            BuildAreaBox(areasGroup.transform, "Calisthenics_Area", "Calistenia", SanctuaryAreaType.Calisthenics, 1,
+                EntrenamientoCenter, GymSize, new Color(0.65f, 0.75f, 0.6f)),   // P2 · calistenia, parkour y crossfit
+            BuildAreaBox(areasGroup.transform, "YogaRoom_Area", "Sala de Yoga", SanctuaryAreaType.YogaRoom, 1,
+                EntrenamientoCenter, GymSize, new Color(0.75f, 0.65f, 0.85f)),   // P3 · con su anillo de estatuas
+            BuildAreaBox(areasGroup.transform, "Ballet_Area", "Sala de Ballet", SanctuaryAreaType.Ballet, 1,
+                EntrenamientoCenter, GymSize, new Color(0.9f, 0.75f, 0.8f)),   // P4 (en obras)
+            BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
+                EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
+
+            // ── PRODUCCIÓN (huertos, jardines y construcción) ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                new Vector3(5f, 0f, -30f), new Vector2(26f, 20f), new Color(0.50f, 0.70f, 0.40f)),   // GRANJA: 26 × 20, la planta de la Cría que va encima
+                ProduccionCenter, ProduccionSize, new Color(0.50f, 0.70f, 0.40f)),   // P0 (P1: el huerto de rotación)
+            // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
+            // maquinaria y el material. La dirige el esposo de Lizmibet.
+            BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P2
+            BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.55f, 0.55f, 0.60f)),   // P3
+            BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.60f, 0.65f)),   // P4: telares, rueca, tintes…
         };
-        // ÁREAS ESPACIADAS (~50 m entre vecinas, antes 25): entre ellas caben árboles y animales sin cortar el paso.
-        // El HUERTO es más grande y tiene cultivos de verdad (flora modificada para el restaurante).
         SanctuaryArea A(string go) => areas.Find(x => x.name == go);
         SanctuaryArea kitchen = A("Kitchen_Area"), hospital = A("Infirmary_Area"), yoga = A("YogaRoom_Area"), mech = A("VehicleWorkshop_Area"),
             textile = A("TextileStudio_Area"), meat = A("CulturedMeatLab_Area"), works = A("Construction_Area"), gym = A("Gym_Area"),
             ballet = A("Ballet_Area"), dojo = A("MartialArts_Area"), calis = A("Calisthenics_Area"), cria = A("CubCare_Area"), garden = A("Garden_Area");
         PlantGarden(garden.transform);
-        // MENOS EDIFICIOS, por PRODUCCIÓN e INVESTIGACIÓN (Berón 2026-10-23 y 2026-10-28; docs/plano-edificios.md): todo lo
-        // construido va ELEVADO (12 m, sobre columnas: el suelo queda para la naturaleza) y los pisos se apilan 11 m uno sobre
-        // otro (StackOn), de abajo arriba; se sube y se baja en alfombra voladora.
-        //  · Restaurante y Hospital: igual (de ellos cuelgan muchos sistemas).
-        //  · GRANJA (lo que da de comer): Huerto · Rotación · Cría · Carne Cultivada.
-        //  · TALLERES (los oficios del santuario): Construcción · Mecánica · Estudio Textil.
-        //  · ENTRENAMIENTO (docs/entrenamiento-areas.md): Gimnasio (máquinas y peso libre) · cardio y zona libre · Calistenia,
-        //    parkour y crossfit.
-        //  · YOGA: Sala de Yoga · Sala de Ballet · Dojo (el dojo deja el gimnasio: con 3 pisos ya es alto).
+        // POCOS EDIFICIOS CON MUCHOS PISOS (Berón 2026-10-29): todo lo construido va ELEVADO (12 m, sobre columnas: el suelo
+        // queda para la naturaleza) y los pisos de cada torre se apilan 11 m uno sobre otro, de abajo arriba (TowerFloor →
+        // StackOn); se sube y se baja en alfombra voladora. Las áreas con plantas propias (hospital, física, química, biología)
+        // las montan como hijas y la siguiente área va encima de la MÁS ALTA de ellas.
         var size = new Dictionary<Transform, Vector2>();
-        void Base(SanctuaryArea x, Vector2 s) { ElevateArea(x, s, ElevatedHeight); size[x.transform] = s; }
-        void Stack(Transform up, Transform low) => size[up] = StackOn(up, low, size[low]);
-        Base(kitchen, new Vector2(40f, 38f)); Base(hospital, HospitalSize); Base(yoga, new Vector2(22f, 18f));   // 22 × 18 (antes 18 × 15): en el dojo no cabían las plazas del microcosmos
-        Base(works, new Vector2(24f, 18f)); Base(gym, GymSize); Base(garden, new Vector2(26f, 20f));   // Talleres 24 × 18 (antes 18 × 14): en Construcción no cabían las plazas
-        Stack(ballet.transform, yoga.transform); Stack(dojo.transform, ballet.transform);
-        Stack(mech.transform, works.transform); Stack(textile.transform, mech.transform);
+        void Floor(Transform t) => size[t] = TowerFloor(t);
+        Transform Child(Transform area, string name) { Transform c = new GameObject(name).transform; c.SetParent(area, false); return c; }
+        //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada.
+        BeginTower(ServiciosCenter, ServiciosSize);
+        Floor(kitchen.transform);
+        Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
+        Floor(cria.transform); Floor(meat.transform);
+        //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga · Ballet · Dojo. Lo pesado y
+        //    ruidoso (las máquinas) abajo; lo silencioso (yoga, con su anillo de estatuas, y las salas en obras) arriba.
+        BeginTower(EntrenamientoCenter, GymSize);
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
-        Stack(cardio, gym.transform); Stack(calis.transform, cardio);
-        Transform rotation = UpperGarden(garden.transform, size[garden.transform]);   // el huerto de ROTACIÓN, piso 1 de la Granja
-        size[rotation] = _platforms[rotation];
-        Stack(cria.transform, rotation); Stack(meat.transform, cria.transform);
+        Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ballet.transform); Floor(dojo.transform);
+        //  · PRODUCCIÓN: Huerto · Rotación · Construcción · Mecánica · Estudio Textil. La tierra (lo que más pesa) y la
+        //    maquinaria pesada, abajo.
+        BeginTower(ProduccionCenter, ProduccionSize);
+        Floor(garden.transform);
+        Transform rotation = UpperGarden(garden.transform, size[garden.transform]);   // el huerto de ROTACIÓN (un GardenPlot), piso 1
+        size[rotation] = _platforms[rotation]; _towerTop = rotation;
+        Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
+        // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
+        BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[garden.transform] = TorreProduccion;
         FurnishYoga(yoga.transform, size[yoga.transform]);
         FurnishTextile(textile.transform, size[textile.transform]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
         FurnishGym(gym.transform, size[gym.transform]);                  // máquinas de placas y peso libre
         FurnishGymCardio(cardio, size[cardio]);                          // cardio, abdominales, estiramientos y sacos
         FurnishCalisthenics(calis.transform, size[calis.transform]);     // calistenia, parkour y crossfit (ya construidos)
-        FurnishCria(cria.transform, size[cria.transform]);               // la sala de crías
+        Vector2 criaLayout = new Vector2(26f, 20f);                      // la sala de crías y el laboratorio, con su distribución de 26 × 20, centrada en su piso
+        FurnishCria(cria.transform, criaLayout);
         // EN OBRAS, con su equipo de 3 y su acabado ya diseñado (docs/obras-dojo-ballet.md): aparece al terminar.
         PrepareSite(ballet.transform, size[ballet.transform], "Sala de Ballet", 6, 3, FinishedBallet);
         PrepareSite(dojo.transform, size[dojo.transform], "Dojo (MMA, kickboxing y karate)", 6, 3, FinishedDojo);
@@ -3517,37 +3518,44 @@ public static partial class SampleSceneBuilder
         Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // sala de yoga: contra el borde +Z, esquina −X (en el lateral pisaba una esterilla; las estatuas ya van en el anillo)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
-        s2 = size[meat.transform]; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
+        s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada (viajan en alfombra).
         GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
-        CulturedMeatLab.Build(meat.transform, size[meat.transform], feeder.transform);
-        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { kitchen, hospital, yoga, works, gym, garden };
-        _roofs.Clear();   // piso más alto de cada edificio: encima va su techo de alfombras, con sus paneles solares
-        // PLANTA ATÓMICA (docs/atomic-plant.md): reactor de investigación (isótopos para el hospital, física).
-        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant); ground.Add(plant);
-        // INVESTIGACIÓN Y PRODUCCIÓN (docs/edificios-investigacion.md): la sala de experimentos de física sobre la planta atómica,
-        // y en el casquete Sur, junto a ella, Química, Biología y la central nuclear de producción.
+        CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
+        //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
+        //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
+        //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
+        BeginTower(CienciasCenter, CienciasSize);
+        SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
+        BuildingNames[plant.transform] = TorreCiencias;   // (antes de la sala de experimentos: las alfombras de su anillo son de la torre)
         BuildPhysicsHall(plant.transform);
-        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem); ground.Add(chem);
-        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio); ground.Add(bio);
-        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc); ground.Add(nuc);
-        // Techo de cada edificio: sobre su piso MÁS ALTO, siguiendo la cadena entera (antes solo miraba un piso arriba).
-        foreach (SanctuaryArea g in new[] { kitchen, hospital, yoga, works, gym, garden })
+        SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
+        SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
+        // CENTRAL NUCLEAR de producción, APARTE: un reactor de producción necesita su propio sitio de exclusión (el límite
+        // pintado alrededor) y no comparte columnas con nadie.
+        SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
+        // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
+        var ground = new List<SanctuaryArea> { kitchen, gym, garden, plant, nuc };
+        // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
+        _roofs.Clear();
+        foreach (SanctuaryArea g in ground)
         {
             List<Transform> fl = FloorsOf(g.transform); Transform top = fl[fl.Count - 1];
-            _roofs.Add((top, _platforms.TryGetValue(top, out Vector2 ts) ? ts : size[g.transform], g.displayName));
+            _roofs.Add((top, _platforms.TryGetValue(top, out Vector2 ts) ? ts : size[g.transform], BuildingOf(g.transform, g.displayName)));
         }
-        // Los edificios que juntan varias áreas llevan su propio nombre (el de su planta baja diría solo una).
-        BuildingNames[works.transform] = "Talleres"; BuildingNames[gym.transform] = "Entrenamiento"; BuildingNames[garden.transform] = "Granja";
         // Las columnas aguantan StructuralLimits.MaxFloors pisos: si un edificio pasa de ahí, hay que reforzarlas antes.
         foreach (SanctuaryArea g in ground)
         {
             int nf = FloorsOf(g.transform).Count + 1;   // + el techo de alfombras
-            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{g.displayName}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/columnas-sismicas.md).");
+            if (nf > StructuralLimits.MaxFloors) Debug.LogError($"[Estructura] «{BuildingOf(g.transform, g.displayName)}» tendría {nf} pisos y las columnas aguantan {StructuralLimits.MaxFloors}: refuérzalas (docs/columnas-sismicas.md).");
+        }
+        foreach (SanctuaryArea g in ground)
+        {
+            var names = new List<string>(); foreach (Transform f in FloorsOf(g.transform)) names.Add(f.GetComponent<SanctuaryArea>() is SanctuaryArea fa ? fa.displayName : f.name);
+            Debug.Log($"[Torres] «{BuildingOf(g.transform, g.displayName)}»: {names.Count} pisos ({string.Join(" · ", names)}), planta {FloorSize(g.transform, Vector2.zero).x:0} × {FloorSize(g.transform, Vector2.zero).y:0} m.");
         }
         RegisterBuildings(ground.ToArray());
         // ENERGÍA SOLAR: aquí no hay gas. Cada edificio lleva su fila de paneles en su piso MÁS ALTO (donde más sol
@@ -3669,10 +3677,7 @@ public static partial class SampleSceneBuilder
             Vector3 a = tips[i], b = tips[(i + 1) % 8], mid = (a + b) * 0.5f, dir = b - a; float len = dir.magnitude;
             float yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
             KitchenProps.C(s, mid + new Vector3(0f, -0.95f, 0f), new Vector3(0.5f, 1.2f, Mathf.Max(0.1f, len - D)), rust, yaw, "Anillo_cinturon");
-            if (i % 2 == 1 || len < 3f) continue;   // BRB en X solo en 4 caras alternas
-            float top = -1.6f, bot = -h + baseH + 0.2f, dy = top - bot, dl = Mathf.Sqrt(len * len + dy * dy), ang = Mathf.Atan2(dy, len) * Mathf.Rad2Deg;
-            for (int k = -1; k <= 1; k += 2)
-                KitchenProps.C(s, mid + new Vector3(0f, (top + bot) * 0.5f, 0f), new Vector3(0.35f, 0.35f, dl), brb, new Vector3(k * ang, yaw, 0f), "Riostra_BRB");
+            // (Sin riostras en X entre columnas: tapaban el paisaje, Berón 2026-10-29. El anillo-cinturón ata las 8 columnas.)
         }
 
         // SIN BORDES NI ESCALERA (Berón 2026-10-27, docs/alfombras-plan.md): el borde queda libre para saltar de una
@@ -3789,7 +3794,9 @@ public static partial class SampleSceneBuilder
         // esterillas viejas: seis caben en la sala y el resto va en un ANILLO (plataforma hija a 4 m, como el de los
         // hospitales), con las cuatro estatuas en sus puntos cardinales. Al anillo se sube en alfombra (es otro «piso»).
         Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        const string yoga = "Sala de Yoga";
+        // Las esterillas son alfombras de la red de su EDIFICIO (la torre del Entrenamiento) y de su piso (docs/plano-edificios.md).
+        string yoga = BuildingOf(area, "Sala de Yoga"); int fi = FloorIndex(area);
+        string floorSurf = $"{yoga}#{fi}", ringSurf = fi == 1 ? $"{yoga}#anillo" : $"{yoga}#anillo{fi}", floorLabel = FloorName(area, fi, yoga);
         int k = 0;
         // En la sala, SEIS (3 × 3,6 m cada una), alineadas con las paredes y a 2 m entre sí, de la tarima y del tanque de
         // virtualización (la esquina +X+Z): dos por cada lado largo y una delante y otra detrás de la tarima. (Antes eran ocho
@@ -3799,7 +3806,7 @@ public static partial class SampleSceneBuilder
                                       new Vector3(0f, 0f, fz), new Vector3(0f, 0f, -fz) })
         {
             Quaternion face = Quaternion.LookRotation(Mathf.Abs(p.x) > 0.1f ? new Vector3(-p.x, 0f, 0f) : new Vector3(0f, 0f, -p.z));   // de cara a la plataforma
-            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, 1, $"{yoga}#1", $"{yoga} · planta baja", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
+            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, fi, floorSurf, floorLabel, 1, 3f, 3.6f).name = $"Esterilla_{++k}";
         }
         // EL ANILLO: 8 m de ancho, 20 % sobre la sala; alfombras cada ~5 m por su línea central (menos en esquinas y puntos cardinales).
         const float W = 8f;
@@ -3811,7 +3818,7 @@ public static partial class SampleSceneBuilder
             if (corner) continue;
             if (Mathf.Abs(p.x) < 3f || Mathf.Abs(p.z) < 3f) continue;   // el punto cardinal: ahí va su estatua
             Quaternion face = Quaternion.LookRotation(new Vector3(-p.x, 0f, -p.z));
-            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, 1, $"{yoga}#anillo", $"{yoga} · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
+            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, fi, ringSurf, "Sala de Yoga · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
         }
         Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
         YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo

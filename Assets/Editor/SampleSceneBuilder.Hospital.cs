@@ -29,12 +29,15 @@ public static partial class SampleSceneBuilder
     {
         GameObject area = GameObject.Find("Infirmary_Area");
         if (area == null) return;
-        float hx = HospitalSize.x * 0.5f, hz = HospitalSize.y * 0.5f;
+        // TORRE DE SERVICIOS (docs/plano-edificios.md): cada planta del hospital mide lo que la torre (la del restaurante,
+        // F); la distribución sigue siendo la de 32 × 26 (HospitalSize), centrada, y los ANILLOS van al borde de la planta.
+        Vector2 F = FloorSize(area.transform, HospitalSize);
+        float layZ = HospitalSize.y * 0.5f;   // (las filas de perreras, desde el borde −Z de la distribución)
         Transform r = new GameObject("Equipamiento").transform;
         r.SetParent(area.transform, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
         floor.name = "Suelo_Hospital"; floor.transform.SetParent(r, false);
-        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(HospitalSize.x - 0.4f, 0.04f, HospitalSize.y - 0.4f);
+        floor.transform.localPosition = new Vector3(0f, 0.005f, 0f); floor.transform.localScale = new Vector3(F.x - 0.4f, 0.04f, F.y - 0.4f);
         floor.GetComponent<Renderer>().sharedMaterial = MakeMaterial("Hospital_Suelo_MAT", new Color(0.86f, 0.94f, 0.92f));
         // Pasillo central (entrada → fondo), libre de muebles: 3 m de ancho.
         KitchenProps.C(r, new Vector3(0f, 0.03f, 1.9f), new Vector3(3f, 0.01f, HospitalSize.y - 7.6f), new Color(0.72f, 0.86f, 0.84f), 0f, "Pasillo_central");
@@ -68,7 +71,7 @@ public static partial class SampleSceneBuilder
         }
         // SIN ESCALERAS (Berón 2026-10-28): a cada anillo se sube en ALFOMBRA desde el área de alfombras de su planta; la del
         // anillo va en el centro de su lado +Z (las camas y los boxes dejan ese hueco). Lo que ocupaban las escaleras queda libre.
-        string hospitalName = area.GetComponent<SanctuaryArea>() is SanctuaryArea hsa ? hsa.displayName : AreaWork.Hospital;
+        string hospitalName = BuildingOf(area.transform, area.GetComponent<SanctuaryArea>() is SanctuaryArea hsa ? hsa.displayName : AreaWork.Hospital);   // la red de alfombras: la de su torre
 
         // ══ PLANTA BAJA (32 × 26): URGENCIAS Y AMBULATORIO ═════════════════════════════════════════════════════════════
         // Oeste: 4 triajes (entrada), 4 consultas (una con la silla de iniciación), 2 carros de parada, laboratorio.
@@ -139,16 +142,16 @@ public static partial class SampleSceneBuilder
             Station(InfirmaryProps.DeliveryBed(r, i == 0 ? "Paritorio" : $"Paritorio {i + 1}", c, 180f), HospitalService.Paritorio, $"Paritorio {i + 1} (32 m², cuna térmica)", 1.9f, false, new Vector3(0f, 0f, 1.2f));
         }
         // ANILLO BAJO: observación de urgencias y maternidad (la madre se recupera en el piso de su paritorio).
-        Transform ring0 = RingDeck(r, "Anillo_camas_baja", HospitalSize);
-        RingCarpets(ring0, area.transform, HospitalSize, hospitalName, "Anillo de urgencias y maternidad");
-        int obs = RingBeds(ring0, HospitalSize, 6, "observación de urgencias");
-        int mat = RingBeds(ring0, HospitalSize, 12, "maternidad");
+        Transform ring0 = RingDeck(r, "Anillo_camas_baja", F);
+        RingCarpets(ring0, area.transform, F, hospitalName, "Anillo de urgencias y maternidad");
+        int obs = RingBeds(ring0, F, 6, "observación de urgencias");
+        int mat = RingBeds(ring0, F, 12, "maternidad");
         Label(ring0, "Anillo de camas: urgencias y maternidad", 2.2f);
 
         // ══ PLANTA 1 (32 × 23): BLOQUE QUIRÚRGICO, UCI Y AISLAMIENTO ══════════════════════════════════════════════════
-        Transform p1 = new GameObject("Planta_hospitalizacion").transform; p1.SetParent(area.transform, false);
-        Vector2 s1 = StackOn(p1, area.transform, HospitalSize);
-        float x1 = s1.x * 0.5f, z1 = s1.y * 0.5f;
+        // (Las plantas 1 y 2 son pisos de la torre: ya las dejó puestas BuildAreaStructures, encima de urgencias.)
+        Transform p1 = InnerFloor(area.transform, "Planta_hospitalizacion", area.transform);
+        Vector2 s1 = FloorSize(p1, F);
         Transform f1 = Solid(p1, new Vector3(0f, 0.05f, 0f), new Vector3(s1.x, 0.1f, s1.y), new Color(0.84f, 0.92f, 0.9f), "Suelo_hospitalizacion");
         Label(f1, "Bloque quirúrgico, UCI y aislamiento (planta 1)", 2.2f);
         Transform w1 = new GameObject("Planta1_equipamiento").transform; w1.SetParent(p1, false); w1.localPosition = new Vector3(0f, 0.1f, 0f);
@@ -197,19 +200,19 @@ public static partial class SampleSceneBuilder
         // tratamiento, 4 quirófanos, rayos X + eco, laboratorio, farmacia, báscula), perros/lobos/zorros (perreras en
         // batería y jaulas), servicio (cocina de dietas con congelador, sala fría de pingüinos) y, en su ANILLO, los grandes
         // animales: boxes de osos de 4 × 3 m en batería con su jaula de contención y corrales de foca con piscina salada.
-        Transform up = new GameObject("Planta_veterinaria").transform; up.SetParent(area.transform, false);
-        Vector2 us = StackOn(up, p1, s1);
-        float ux = us.x * 0.5f, uz = us.y * 0.5f;
+        Transform up = InnerFloor(area.transform, "Planta_veterinaria", p1);
+        Vector2 us = FloorSize(up, s1);
+        float uz = us.y * 0.5f;   // (el anillo, al borde de la planta)
         Transform uf = Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.82f, 0.9f, 0.86f), "Suelo_veterinaria");
         Label(uf, "Hospital veterinario (planta 2)", 2.2f);
         Transform v = new GameObject("Equipamiento_veterinario").transform; v.SetParent(up, false); v.localPosition = new Vector3(0f, 0.1f, 0f);
         Color vz = new Color(0.86f, 0.9f, 0.8f);
         int place = 1;
         // ALA PERROS / LOBOS / ZORROS (oeste): 16 perreras en dos filas enfrentadas (batería, pasillo de 2 m) y 8 jaulas.
-        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 1}", new Vector3(-14.6f + i * 1.45f, 0f, -uz + 2.4f), 0f), $"Plaza {place}: perrera", 1.6f);
-        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 9}", new Vector3(-14.6f + i * 1.45f, 0f, -uz + 6.2f), 180f), $"Plaza {place}: perrera", 1.6f);
+        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 1}", new Vector3(-14.6f + i * 1.45f, 0f, -layZ + 2.4f), 0f), $"Plaza {place}: perrera", 1.6f);
+        for (int i = 0; i < 8; i++, place++) Label(InfirmaryProps.Kennel(v, $"Box {i + 9}", new Vector3(-14.6f + i * 1.45f, 0f, -layZ + 6.2f), 180f), $"Plaza {place}: perrera", 1.6f);
         for (int i = 0; i < 2; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas {i + 1}", new Vector3(-13.6f + i * 3.4f, 0f, 1.8f), 0f), $"Plazas {place}-{place + 3}: jaulas (zorro, aves)", 1.6f);
-        Zone(v, "Pediluvio", new Vector3(-4.2f, 0f, -uz + 4.3f), new Vector2(1.2f, 1.6f), new Color(0.55f, 0.75f, 0.85f));
+        Zone(v, "Pediluvio", new Vector3(-4.2f, 0f, -layZ + 4.3f), new Vector2(1.2f, 1.6f), new Color(0.55f, 0.75f, 0.85f));
         // ALA CLÍNICA (centro): 4 mesas de tratamiento en fila (una con la báscula), y 4 quirófanos de 5 × 5 m.
         for (int i = 0; i < 4; i++)
             Station(InfirmaryProps.VetTable(v, i == 0 ? "Mesa veterinaria" : $"Mesa veterinaria {i + 1}", new Vector3(-13.4f + i * 3.6f, 0f, 6.6f), 90f), HospitalService.Veterinaria, $"Tratamiento veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
@@ -279,7 +282,7 @@ public static partial class SampleSceneBuilder
         GameObject lz = GameObject.Find("Lizmibet");
         if (lz != null) lz.transform.position = ring1.TransformPoint(RingPoint(s1, 40f).p + new Vector3(0f, 1f, 2.5f));   // pasando visita en el anillo
         GameObject p = GameObject.Find("Lobo_paciente");
-        if (p != null) p.transform.position = v.TransformPoint(new Vector3(-14.6f, 0.15f, -uz + 2.4f));   // en la perrera 1
+        if (p != null) p.transform.position = v.TransformPoint(new Vector3(-14.6f, 0.15f, -layZ + 2.4f));   // en la perrera 1
         // Kushal (el jugador) EMPIEZA AQUÍ, junto a las camas de observación: es el recién llegado.
         GameObject kushal = GameObject.Find("Player");
         if (kushal != null) kushal.transform.position = area.transform.TransformPoint(new Vector3(-11.8f, 1.3f, 3.6f));

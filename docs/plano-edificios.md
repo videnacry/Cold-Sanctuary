@@ -1,111 +1,79 @@
-# Plano de edificios: menos edificios, por producción e investigación
+# Plano de edificios: cuatro torres temáticas
 
-> Propuesta del 2026-10-27, que aplica la decisión de Berón del 2026-10-23 (`producción + investigación`). **Todavía no se
-> ha construido.** Hay que enseñárselo a Berón antes de mover ninguna área.
-> Código: `Assets/Editor/SampleSceneBuilder.cs` (`BuildAreaStructures`, ~l. 3426), `.Hospital.cs`, `.Research.cs`,
-> `.AtomicPlant.cs`, `.Restaurant.cs`, `.Training.cs`, `.Levels.cs` (`StackOn`) y `.Transport.cs` (`RegisterBuildings`, `FloorsOf`).
+> Decisión de Berón del 2026-10-29: «lo ideal son POCOS edificios con MUCHOS pisos — para eso se prepararon las columnas
+> para 30 pisos». Sustituye al plano del 2026-10-27 (9 edificios por producción e investigación).
+> Código: `Assets/Editor/SampleSceneBuilder.Towers.cs` (sitios, plantas, `BeginTower`/`TowerFloor`/`InnerFloor`,
+> `BuildingOf`, `FloorIndex`), `SampleSceneBuilder.cs` (`BuildAreaStructures`), `.Hospital.cs`, `.AtomicPlant.cs`,
+> `.Research.cs`, `.Levels.cs` (`StackOn`, `RingCarpets`) y `.Transport.cs` (`RegisterBuildings`, `FloorsOf`, `FloorName`).
 
-## Reglas que se mantienen
-- La planta baja de cada edificio está a 12 m (`ElevatedHeight`). Cada piso de encima sube 11 m más (`UpperFloorGap`).
-- Todos los pisos de un edificio miden lo mismo (`SetBack = 0`). Por eso la planta del edificio es la del área más grande que contiene.
-- No hay escaleras ni puentes: se pasa de un piso a otro, y de un edificio a otro, en alfombra voladora. Encima del último piso va el techo de alfombras, con sus paneles solares.
-- El restaurante (cocina) y el hospital no se mueven, porque de ellos dependen muchos sistemas.
-- Calistenia pasa al edificio del gimnasio.
+## Reglas
+- La planta baja de cada torre está a 12 m (`ElevatedHeight`); cada piso sube 11 m más (`UpperFloorGap`).
+- **Todos los pisos de una torre miden lo mismo**: la planta del área más grande de la torre. Así las 8 megacolumnas de las
+  puntas del octógono son continuas de abajo arriba. Cada área amuebla su piso centrada en él (la Cría, la Carne Cultivada,
+  el hospital y la planta atómica conservan su distribución de antes, centrada; las demás se reparten por el piso).
+- **Áreas con plantas propias** (hospital 3, física 3, química 2, biología 2): sus plantas son hijas del área (el
+  microcosmos del área las copia con ella), pero cuentan como pisos de la torre: la siguiente área va **11 m encima de la
+  más alta** de ellas, no 11 m sobre su planta baja (`TowerFloor`/`InnerFloor`). El hospital deja montadas sus plantas 1 y 2
+  en `BuildAreaStructures` y las amuebla después `BuildHospital`.
+- Los pisos de áreas distintas son **hermanos**, no hijos: el microcosmos que clona un área (`AreaMicrocosmos`, por nombre de
+  GameObject) copia solo sus plantas, no la torre entera.
+- Sin escaleras ni puentes: cada piso, cada anillo y el suelo tienen su zona de alfombras de la red de la torre
+  (`CarpetPad.building` = nombre de la torre). Encima del último piso, el techo de alfombras (las de edificio y las del
+  santuario) con los paneles solares. Columnas: `StructuralLimits.MaxFloors` = 30 (contando el techo).
+- Los anillos de pisos distintos quedan uno encima de otro, a 11 m (el anillo vuela a 4 m sobre su piso; lo que llevan
+  encima mide ≤ 3 m). Entre la punta del anillo de una torre y la torre vecina, ≥ 16 m.
+- Sitios: en lóbulos de hielo (`PolarLandscapeBuilder.Islands`) con los encepados de las 8 columnas sobre hielo firme
+  (comprobado con la fórmula de las islas).
 
-## Antes: 14 edificios (y 5 parcelas elevadas)
-Las cotas son las de la cara de cada piso: P0 = 12 m, P1 = 23 m, P2 = 34 m, P3 = 45 m y P4 = 56 m.
+## Las torres
 
-| # | Edificio (planta baja) | Centro (x, z) | Planta (m) | Pisos, de abajo arriba |
+Cotas de la cara de cada piso: P0 = 12 m, P1 = 23, P2 = 34, P3 = 45, P4 = 56, P5 = 67, P6 = 78.
+
+| Torre | Sitio (x, z) · lóbulo | Planta (m) | Pisos, de abajo arriba | Techo de alfombras |
 |---|---|---|---|---|
-| 1 | Restaurante · `Kitchen_Area` | (5, 95) | 40 × 38 | P0 cocina, con el anillo del comedor |
-| 2 | Hospital · `Infirmary_Area` | (63, 97) | 32 × 26 | P0 urgencias y ambulatorio, con anillo · P1 quirófanos, UCI y aislamiento, con anillo · P2 hospital veterinario, con anillo de grandes animales |
-| 3 | Sala de Yoga · `YogaRoom_Area` | (105, 35) | 18 × 15 | P0 yoga, con anillo de estatuas · P1 `Ballet_Area` (en obras) |
-| 4 | Mecánica · `VehicleWorkshop_Area` | (105, −25) | 10 × 9 | P0 |
-| 5 | Carne Cultivada · `CulturedMeatLab_Area` | (118, 6) | 16 × 12 | P0. El comedero de los depredadores está en el suelo, en (126, −6) |
-| 6 | Construcción · `Construction_Area` | (−20, 10) | 18 × 14 | P0 construcción · P1 `TextileStudio_Area` |
-| 7 | Gimnasio · `Gym_Area` | (26, 6) | 22 × 16 | P0 gimnasio, con entreplanta de 4 m · P1 `MartialArts_Area` (dojo, en obras) |
-| 8 | Calistenia · `Calisthenics_Area` | (−28, −12) | 10 × 9 | P0 (en obras) |
-| 9 | Cría · `CubCare_Area` | (55, −55) | 26 × 20 | P0 |
-| 10 | Huerto · `Garden_Area` | (5, −30) | 24 × 20 | P0 huerto de hortalizas, con su máquina de virtualización · P1 parcela de rotación (`UpperGarden`) |
-| 11 | Física · `AtomicPlant_Area` | (15, −101) | 24 × 18 | P0 reactor TRIGA · P1 ciclotrón · P2 sala de experimentos, con anillo y la torre de Foucault |
-| 12 | Química · `Chemistry_Area` | (52, −110) | 24 × 20 | P0 síntesis · P1 análisis |
-| 13 | Biología · `Biology_Area` | (92, −112) | 32 × 20 | P0 cultivo · P1 molecular |
-| 14 | Central Nuclear · `NuclearPower_Area` | (60, −162) | 46 × 30 | P0 |
+| **Servicios** (personas y animales) | (5, 94) · Norte:Cocina | 40 × 38 (el restaurante) | P0 Restaurante (`Kitchen_Area`, con el anillo del comedor) · P1 Hospital: urgencias y ambulatorio (`Infirmary_Area`, anillo de observación y maternidad) · P2 Hospital: quirófanos, UCI y aislamiento (`Planta_hospitalizacion`, anillo de recuperación) · P3 Hospital veterinario (`Planta_veterinaria`, anillo de grandes animales) · P4 Cría (`CubCare_Area`) · P5 Carne Cultivada (`CulturedMeatLab_Area`) | 78 m |
+| **Entrenamiento** | (10, 0) · Centro:Hub | 36 × 26 (`GymSize`) | P0 Gimnasio (`Gym_Area`) · P1 Cardio y zona libre · P2 Calistenia, parkour y crossfit (`Calisthenics_Area`) · P3 Sala de Yoga (`YogaRoom_Area`, anillo de esterillas y estatuas) · P4 Sala de Ballet (en obras) · P5 Dojo (en obras) | 78 m |
+| **Ciencias** | (92, −108) · Sur:Biologia | 32 × 20 (biología) | P0 Física: reactor TRIGA (`AtomicPlant_Area`; la piscina baja como pilar hasta el suelo) · P1 ciclotrón · P2 sala de experimentos (anillo y torre de Foucault) · P3 Química: síntesis (`Chemistry_Area`) · P4 Química: análisis · P5 Biología: cultivo (`Biology_Area`) · P6 Biología: molecular | 89 m |
+| **Producción** (huertos, jardines y construcción) | (18, −95) · Sur:Rotacion | 26 × 20 (el huerto) | P0 Huerto (`Garden_Area`, hortalizas y máquina) · P1 Rotación (`Huerto_Rotacion`) · P2 Construcción (`Construction_Area`) · P3 Mecánica (`VehicleWorkshop_Area`) · P4 Estudio Textil (`TextileStudio_Area`) | 67 m |
+| Central Nuclear (aparte) | (60, −162) · Sur:Central | 46 × 30 | P0 microrreactor de producción | 23 m |
 
-Las parcelas elevadas (`MakePlot` con `withSoil`) están sobre su propia plataforma de tamaño + 2 m, cada una con su andén de alfombras:
-- Milpa en (−45, −75), 20 × 20;
-- Chacra andina en (−10, −118), 18 × 14;
-- Arrozal en (−60, −15), 22 × 16;
-- Bosque comestible en (−78, 45), 30 × 26;
-- Bambusal en (−42, 0), 16 × 12.
+**Por qué así**
+- *Servicios*: lo que atiende a personas y animales a diario en una sola columna: comer abajo (lo más concurrido, con el
+  comedor en anillo), el hospital encima, con lo veterinario arriba de sus tres plantas, y justo encima los cachorros (la
+  Cría) y el laboratorio que da de comer a los depredadores. No se inventan pisos de servicio vacíos.
+- *Entrenamiento*: las 2 h diarias en un edificio. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (yoga con su
+  anillo) arriba; las dos salas en obras, arriba del todo (su material sube en alfombra).
+- *Ciencias*: el reactor TRIGA tiene que ir en la planta baja (su piscina es un pilar hasta el suelo); encima, química y
+  biología. La torre de Foucault (17 m sobre el anillo de P2) queda fuera del octógono, junto a P3–P4, sin tocar su losa.
+- *Producción*: la tierra (lo que más pesa) y la maquinaria pesada abajo; el taller textil arriba. Va en el casquete Sur,
+  junto a la milpa y la chacra andina (el casquete de los huertos), porque en el hub no caben el Entrenamiento y otra torre
+  a 16 m del anillo de yoga.
+- **Central Nuclear, aparte**: un reactor de producción necesita su propio sitio de exclusión (el límite pintado alrededor)
+  y no debe compartir columnas ni pisos con nadie. Es la única excepción.
 
-El campo solar (3 filas, en (26, −26…−34)) está en el suelo.
+**Distancias** (punta de anillo → torre o parcela vecina): Entrenamiento (anillo de yoga hasta x −16) ↔ Bambusal 17 m;
+Ciencias (anillo de física hasta z −126) ↔ Central Nuclear 18,6 m; Ciencias ↔ Producción 35 m; Servicios ↔ Entrenamiento
+46 m.
 
-## Después: 9 edificios
+**Parcelas** (siguen siendo campos junto al agua, cada una en su plataforma con su andén de alfombras): Milpa (−45, −75),
+Chacra andina (−10, −118), Arrozal (−60, −15), Bosque comestible (−78, 45) y Bambusal (−42, 0). El campo solar sigue en el
+suelo del hub, en (26, −26…−34).
 
-| Grupo | Edificio | Centro (x, z) | Planta (m) | Pisos, de abajo arriba | Por qué van juntos |
-|---|---|---|---|---|---|
-| **Producción · alimentación** | **Restaurante** (sin cambios) | (5, 95) | 40 × 38 | P0 cocina, con el anillo del comedor | Muchos sistemas dependen de él: la jornada, la Magnate, el comedor, el microcosmos de la Cocina y Le Chambon. No se le añaden pisos para no tocar su anillo ni el hueco con el hospital. |
-| **Producción · alimentación** | **Granja** (en el centro del Huerto) | (5, −30) | **26 × 20**, la de la Cría | P0 Huerto (hortalizas y máquina) · P1 Rotación · P2 Cría · P3 Carne Cultivada | Aquí se produce todo lo que da de comer, salvo la cocina, como dice la nota del 23-10: huertos, cría y carne cultivada. La tierra, que es lo que más pesa, va abajo, y el laboratorio limpio arriba. La carne cultivada se produce aquí y se investiga en Biología. |
-| **Producción · salud** | **Hospital** (sin cambios) | (63, 97) | 32 × 26 | P0 urgencias · P1 quirófanos y UCI · P2 veterinario | Ya cumple el criterio: es un edificio entero dedicado a la salud. |
-| **Producción · oficios** | **Talleres** (en el centro de la Construcción) | (−20, 10) | 18 × 14 | P0 Construcción · P1 Mecánica · P2 Estudio Textil | Son los oficios que mantienen el santuario. La maquinaria pesada (miniexcavadora, hormigonera) va abajo. La Mecánica pasa de 10 × 9 a 18 × 14 y gana sitio. |
-| **Producción · energía** | **Central Nuclear** (sin cambios) | (60, −162) | 46 × 30 | P0 | Es el microrreactor de producción y lleva su límite del sitio pintado. Debe quedarse aparte. El campo solar sigue en el suelo. |
-| **Investigación · Física** | **Física** (sin cambios) | (15, −101) | 24 × 18 | P0 TRIGA · P1 ciclotrón · P2 sala de experimentos | Una materia por edificio. |
-| **Investigación · Química** | **Química** (sin cambios) | (52, −110) | 24 × 20 | P0 síntesis · P1 análisis | Una materia por edificio. |
-| **Investigación · Biología** | **Biología** (sin cambios) | (92, −112) | 32 × 20 | P0 cultivo · P1 molecular | Una materia por edificio. |
-| **Entrenamiento** (ni producción ni investigación) | **Entrenamiento** (en el centro del Gimnasio) | (26, 6) | 22 × 16 | P0 Gimnasio · P1 Calistenia · P2 Dojo · P3 Ballet · P4 Yoga | Las 2 h diarias de entrenamiento se hacen en un solo edificio. Calistenia entra en el gimnasio, como pidió Berón. Lo ruidoso y pesado (las máquinas) va abajo; lo silencioso (yoga, con su anillo de estatuas) va arriba, con vista. |
+Quedan libres los lóbulos de la antigua enfermería (55, 97), la sala de yoga (105, 35) y química (52, −110): vuelven a la
+naturaleza.
 
-Resultado: de 14 a 9 edificios. Se liberan las plataformas de (105, 35), (105, −25), (118, 6), (−28, −12) y (55, −55); ese suelo vuelve a la naturaleza.
-
-**Variante B (10 edificios):** si 5 pisos (el último a 56 m, el techo de alfombras a 67 m) le parecen demasiados a Berón, Yoga + Ballet se quedan en su edificio de (105, 35). El Entrenamiento quedaría entonces con Gimnasio, Calistenia y Dojo.
-
-**Parcelas (fase 2, opcional):** están junto al agua y son campos, no edificios, así que esta propuesta no las toca. Si hiciera falta reducir más, Arrozal y Bambusal (a 23 m de distancia, las dos al oeste) podrían ir en una sola base: el Arrozal abajo, porque necesita la lámina de agua, y el Bambusal arriba.
-
-## Cómo se construye (resumen para cuando Berón lo apruebe)
-1. Las áreas conservan sus nombres de GameObject (`Calisthenics_Area`, `CubCare_Area`…). Solo cambian de base, con `StackOn`. Así siguen funcionando todos los `GameObject.Find`.
-2. El diccionario `upper` pasa a describir **cadenas**: Calistenia → Gimnasio, Dojo → Calistenia, Ballet → Dojo, Yoga → Ballet; Mecánica → Construcción, Textil → Mecánica; Cría → Rotación, Carne → Cría. Hay que apilar en orden, de abajo arriba, porque el orden de iteración de un `Dictionary` no está garantizado.
-3. La planta baja del Huerto se eleva a 26 × 20 en vez de 24 × 20. `UpperGarden` ya hace la Rotación de esa medida (tamaño − 2 + 2 m de suelo).
-4. La Cría se apila sobre la plataforma de la Rotación, que es un `GardenPlot` registrado en `_upperOf`, no sobre un `SanctuaryArea`.
-5. Ballet, Dojo y Calistenia siguen en obras (`MakeConstructionSite`), ahora en P1–P3.
-6. El comedero de los depredadores se queda en (126, −6), junto a los osos. `CulturedMeatLab.Build` recibe el comedero igual que ahora: las raciones viajan en alfombra.
-7. Después hay que guardar la escena: el Blockout no la guarda, así que hay que mandar «save» al buzón.
-
-## Riesgos
-**Código por índice o por posición**
-- `BuildAreaStructures` usa índices fijos:
-  - `areas[2]` (Yoga), `[4]` (Textil), `[5]` (Carne), `[6]` (Construcción), `[7]` (Gimnasio), `[8..10]` (obras) y `[11]` (Cría);
-  - `areas[areas.Count - 1]` es el Huerto;
-  - las constantes `Ballet = 8`, `Dojo = 9` y `Textile = 4`;
-  - y `sizes[]`, que tiene 12 entradas mientras que las áreas son 13, porque el Huerto va aparte.
-
-  Conviene pasar a un mapa por nombre antes de mover nada.
-- El bucle de techos (`int top = i; foreach (var kv in upper) if (kv.Value == i) top = kv.Key;`) solo sube **un** piso. Con cadenas de 3–5 pisos encontraría mal el piso más alto, y el techo de alfombras y los paneles quedarían a media altura. Hay que buscar el piso más alto de forma recursiva, igual que ya hace `BaseOf`/`FloorsOf` en `.Transport.cs`.
-- Se seguirán creando `Aseos` y muebles con medidas relativas a `sizes[i]`. Los que tengan coordenadas fijas pensadas para la medida antigua hay que revisarlos: Mecánica pasa de 10 × 9 a 18 × 14, Carne de 16 × 12 a 26 × 20, Calistenia de 10 × 9 a 22 × 16 y Yoga de 18 × 15 a 22 × 16.
-- Los lóbulos de hielo del paisaje (`PolarLandscapeBuilder`) se hicieron para los centros actuales. Los centros nuevos son centros que ya existían, así que no hace falta ningún lóbulo nuevo; los cinco que se liberan quedan vacíos.
-
-**Nombres de edificio y pruebas**
-- `RegisterBuildings` llama a cada edificio por el `displayName` de su planta baja. La Sala de Yoga pasa a estar en el edificio «Gimnasio», y la Cría y la Carne en el edificio «Huerto».
-  - `SanctuaryLifeTest` comprueba `CarpetPad.building == "Sala de Yoga"` para las alfombras del anillo. **Esa prueba falla** en la variante A; en la B, no. Hay que cambiar la prueba o dar al edificio un nombre propio.
-- Otras pruebas que tocan las áreas movidas:
-  - `SanctuaryLifeTest`: `Gym_Area` → `MartialArts_Area` con `InBuilding` (sigue valiendo, porque el dojo sigue en el edificio del gimnasio), `FurnitureSpacing` del gimnasio, «ballet, dojo y calistenia en obras», `Construction_Area` con la maquinaria, y `Garden_Area`/`Kitchen_Area`.
-  - `ExperienciaJugadorTest` solo usa el hospital, que no cambia.
-  - Las pruebas solo corren con `ed.sh test`; hay que parar el Play antes de las pasadas completas.
-
-**Jornada, Magnate y misiones**
-- «El puesto es el edificio entero» (`SanctuaryArea.InBuilding`). Quien tiene turno en el Gimnasio contará como en su puesto también en Yoga, y quien lo tiene en la Cría, también en el Huerto. Hay que revisar `WorkdayDirector`, la Magnate y `VisualAttention.AreaTransform`.
-- Las misiones se anclan por `displayName` y `VirtualMissionSceneBuilder.AreaGo` traduce el nombre al objeto. Mientras no cambien los nombres, siguen funcionando. Las obras (`ConstructionProject`) dejan su material «a pie de obra» en pisos altos: el equipo de Construcción tendrá que subirlo en alfombra.
-
-**Microcosmos**
-- `AreaMicrocosmos.Build` clona `GameObject.Find(areaGo)` a ×10 y le quita `Estructura_Elevada`. Los pisos de `StackOn` son **hermanos**, no hijos, así que el clon de un área copia solo su piso. Si al rehacer el código algún piso se cuelga como hijo de la base, el microcosmos copiaría el edificio entero.
-- El microcosmos crece con la planta del área:
-  - el río de Sakshi (Yoga) pasa de 180 × 150 m a 220 × 160 m;
-  - el de Mecánica, que es la historia de Dayton, pasa de 100 × 90 m a 180 × 140 m.
-
-  Las historias están colocadas en coordenadas del área antigua, así que hay que revisar el hueco libre del suelo.
-- `MicrocosmTemplate.Stamp` busca `GameObject.Find(s.platform)` para el nombre; con los nombres conservados, sigue funcionando.
-
-**NavMesh y alturas**
-- Hay que volver a hornear el NavMesh. Cada piso es una isla, y el paso entre pisos lo hacen las alfombras. Hay que comprobar que el horneado cubre 56–67 m (antes el máximo eran 34 m, en el hospital y en Física).
-- Los anillos vuelan 8 m (`RingDeck`: 10 m de ancho, el 20 % por dentro). El anillo de Yoga, en P4 del Entrenamiento, llega hasta z = −10, y la Granja empieza en z = −20: quedan 10 m, menos de los 16 m de la regla entre anillos vecinos. Como están a distinta altura (60 m contra 45–56 m) no chocan, pero hay que comprobarlo con la vista.
-- La Granja (x de −8 a 18) queda a 3,6 m del campo solar (x de 21,6 a 30,4), que está en el suelo. No se tocan, pero hay que vigilar la sombra.
-- El techo de alfombras del Entrenamiento queda a 67 m. Con la niebla actual (`fogDensity = 0.008`), desde el suelo se verá difuminado. Además, los viajes en alfombra serán más largos.
+## Riesgos (comprobar en Unity)
+- **Jornada** (`SanctuaryArea.InBuilding`, «el puesto es el edificio entero»): ahora el edificio es la torre. Quien tiene
+  turno en la Cocina cuenta como en su puesto también en el hospital, la Cría o la Carne; en el Gimnasio, en todo el
+  Entrenamiento. La salida del hospital (`InfirmaryGate`) ya no usa el edificio sino el área del hospital con sus plantas
+  (`Contains`): el recién llegado no puede irse al restaurante ni a la Cría antes de iniciarse.
+- **Microcosmos**: los pisos son más grandes (Cría y Carne: 40 × 38; Yoga, Ballet y Dojo: 36 × 26; Mecánica y Textil:
+  26 × 20; física: 32 × 20) y el área gigante ×10 crece con ellos. Las historias colocadas en coordenadas del piso antiguo
+  hay que revisarlas a ojo (sus plazas reservadas sí se recalculan: todos los pisos tienen 4 historias, 8 personajes,
+  12 fauna y 60 flora).
+- **NavMesh**: hay que volver a hornear; el techo más alto queda a 89 m (Ciencias). Cada piso es una isla y se pasa de uno a
+  otro en alfombra.
+- **Niebla** (`fogDensity = 0.008`): desde el suelo, los pisos altos (60–90 m) se verán difuminados; los viajes en alfombra
+  son más largos.
+- Las columnas del piso de arriba atraviesan los anillos del de abajo (ya pasaba en el hospital): mirar que no pisen camas.
+- Después de construir hay que guardar la escena (el Blockout no la guarda: «save» al buzón).

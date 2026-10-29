@@ -18,8 +18,9 @@ using UnityEngine;
 /// </summary>
 public static partial class SampleSceneBuilder
 {
-    public static readonly Vector2 ChemistrySize = new Vector2(24f, 20f), BiologySize = new Vector2(32f, 20f), NuclearSize = new Vector2(46f, 30f);
-    static readonly Vector3 ChemistryCenter = new Vector3(52f, 0f, -110f), BiologyCenter = new Vector3(92f, 0f, -112f), NuclearCenter = new Vector3(60f, 0f, -162f);
+    // Química y Biología son pisos de la torre de CIENCIAS (CienciasSize, docs/plano-edificios.md); la central, aparte.
+    public static readonly Vector2 NuclearSize = new Vector2(46f, 30f);
+    static readonly Vector3 NuclearCenter = new Vector3(60f, 0f, -162f);
 
     static readonly Color LabWhite = new Color(0.9f, 0.92f, 0.93f), LabSteel = new Color(0.68f, 0.71f, 0.74f), LabDark = new Color(0.22f, 0.24f, 0.27f),
         LabGlass = new Color(0.65f, 0.82f, 0.9f, 0.4f), LabBench = new Color(0.25f, 0.28f, 0.3f), LabYellow = new Color(0.95f, 0.8f, 0.15f),
@@ -114,15 +115,15 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(t, new Vector3(0f, 0.92f, 0f), new Vector3(w + 0.02f, 0.04f, d + 0.02f), top, 0f, "Encimera");
     }
 
-    static void FumeHood(Transform t)   // campana de gases sobre su mueble, con guillotina, conducto y línea Schlenk
+    static void FumeHood(Transform t)   // campana de gases sobre su mueble, con guillotina, conducto y línea Schlenk (y su mesa auxiliar): centrada en su huella de 3 m (antes asomaba 0,6 m por +X)
     {
-        Bench(t, 1.8f, 0.9f, LabBench);
-        KitchenProps.C(t, new Vector3(0f, 1.6f, 0.1f), new Vector3(1.8f, 1.3f, 0.7f), LabWhite, 0f, "Campana");
-        KitchenProps.C(t, new Vector3(0f, 1.4f, -0.26f), new Vector3(1.6f, 0.75f, 0.02f), LabGlass, 0f, "Guillotina");
-        KitchenProps.C(t, new Vector3(0f, 2.6f, 0.2f), new Vector3(0.35f, 0.7f, 0.35f), LabSteel, 0f, "Conducto");
-        KitchenProps.C(t, new Vector3(0f, 1.95f, -0.1f), new Vector3(1.5f, 0.06f, 0.06f), LabGlass, 0f, "Linea_Schlenk");
-        for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-0.6f + i * 0.4f, 1.85f, -0.1f), new Vector3(0.04f, 0.14f, 0.04f), LabSteel, 0f, "Llave");
-        Bench(KitchenProps.Root(t, "Mesa", new Vector3(1.55f, 0f, 0f)), 1.2f, 0.9f, LabBench);
+        Bench(KitchenProps.Root(t, "Mueble", new Vector3(-0.6f, 0f, 0f)), 1.8f, 0.9f, LabBench);
+        KitchenProps.C(t, new Vector3(-0.6f, 1.6f, 0.1f), new Vector3(1.8f, 1.3f, 0.7f), LabWhite, 0f, "Campana");
+        KitchenProps.C(t, new Vector3(-0.6f, 1.4f, -0.26f), new Vector3(1.6f, 0.75f, 0.02f), LabGlass, 0f, "Guillotina");
+        KitchenProps.C(t, new Vector3(-0.6f, 2.6f, 0.2f), new Vector3(0.35f, 0.7f, 0.35f), LabSteel, 0f, "Conducto");
+        KitchenProps.C(t, new Vector3(-0.6f, 1.95f, -0.1f), new Vector3(1.5f, 0.06f, 0.06f), LabGlass, 0f, "Linea_Schlenk");
+        for (int i = 0; i < 4; i++) KitchenProps.C(t, new Vector3(-1.2f + i * 0.4f, 1.85f, -0.1f), new Vector3(0.04f, 0.14f, 0.04f), LabSteel, 0f, "Llave");
+        Bench(KitchenProps.Root(t, "Mesa", new Vector3(0.95f, 0f, 0f)), 1.2f, 0.9f, LabBench);
     }
 
     static void Instrument(Transform t, float w, float d, float h, Color body, string label)   // instrumento sobre su mesa, con pantalla
@@ -198,8 +199,8 @@ public static partial class SampleSceneBuilder
 
     static SanctuaryArea BuildChemistry(Transform areasGroup)
     {
-        SanctuaryArea a = BuildAreaBox(areasGroup, "Chemistry_Area", "Química", SanctuaryAreaType.Chemistry, 3, ChemistryCenter, ChemistrySize, new Color(0.78f, 0.85f, 0.9f));
-        Elevate(a.transform, ChemistrySize, ElevatedHeight);
+        SanctuaryArea a = BuildAreaBox(areasGroup, "Chemistry_Area", "Química", SanctuaryAreaType.Chemistry, 3, CienciasCenter, CienciasSize, new Color(0.78f, 0.85f, 0.9f));
+        Vector2 cs = TowerFloor(a.transform);   // el siguiente piso de la torre de Ciencias (sobre la sala de experimentos)
         // Planta baja: SÍNTESIS (lo húmedo y peligroso, junto a las duchas y los armarios).
         var wet = new List<LabBlock>();
         wet.AddRange(Times(4, "Campana de gases", 3.0f, 0.9f, FumeHood));
@@ -212,10 +213,10 @@ public static partial class SampleSceneBuilder
         wet.Add(new LabBlock("Residuos químicos", 1.2f, 0.6f, t => { for (int i = 0; i < 3; i++) KitchenProps.C(t, new Vector3(-0.4f + i * 0.4f, 0.35f, 0f), new Vector3(0.32f, 0.7f, 0.4f), i == 0 ? LabRed : i == 1 ? LabYellow : LabBlue, 0f, "Bidon"); }));
         wet.AddRange(Times(2, "Puesto de cuaderno", 1.6f, 1.0f, t => { Bench(t, 1.6f, 1f, new Color(0.55f, 0.45f, 0.35f)); KitchenProps.C(t, new Vector3(0f, 1.15f, 0.25f), new Vector3(0.6f, 0.4f, 0.04f), LabDark, 0f, "Monitor"); }));
         Transform g = new GameObject("Planta_sintesis").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
-        LogLeft("Química (síntesis)", PackFloor(g, ChemistrySize, wet, CarpetKeepOut(ChemistrySize)));
+        LogLeft("Química (síntesis)", PackFloor(g, cs, wet, CarpetKeepOut(cs)));
         // Piso de arriba: ANÁLISIS (los instrumentos, lejos de los disolventes).
-        Transform up = new GameObject("Planta_analisis").transform; up.SetParent(a.transform, false);
-        Vector2 us = StackOn(up, a.transform, ChemistrySize);
+        Transform up = InnerFloor(a.transform, "Planta_analisis", a.transform);
+        Vector2 us = FloorSize(up, cs);
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.8f, 0.84f, 0.86f), "Suelo_analisis");
         var dry = new List<LabBlock>
         {
@@ -237,8 +238,8 @@ public static partial class SampleSceneBuilder
 
     static SanctuaryArea BuildBiology(Transform areasGroup)
     {
-        SanctuaryArea a = BuildAreaBox(areasGroup, "Biology_Area", "Biología", SanctuaryAreaType.Biology, 3, BiologyCenter, BiologySize, new Color(0.78f, 0.9f, 0.78f));
-        Elevate(a.transform, BiologySize, ElevatedHeight);
+        SanctuaryArea a = BuildAreaBox(areasGroup, "Biology_Area", "Biología", SanctuaryAreaType.Biology, 3, CienciasCenter, CienciasSize, new Color(0.78f, 0.9f, 0.78f));
+        Vector2 bs = TowerFloor(a.transform);   // el siguiente piso de la torre de Ciencias (sobre el análisis de Química)
         // Planta baja: CULTIVO. El biorreactor piloto es I+D (líneas celulares y medios sin suero) para el laboratorio de
         // PRODUCCIÓN de carne cultivada (CulturedMeatLab), que es quien da de comer a los carnívoros; aquí no se produce.
         // De lo limpio a lo sucio: cabinas e incubadores al fondo; autoclave y lavado junto a la salida).
@@ -255,10 +256,10 @@ public static partial class SampleSceneBuilder
         cult.Add(new LabBlock("Autoclave y fregadero", 2.5f, 0.9f, t => { Bench(t, 2.5f, 0.9f, LabSteel); KitchenProps.C(t, new Vector3(-0.6f, 1.4f, 0f), new Vector3(0.9f, 0.9f, 0.8f), LabSteel, 0f, "Autoclave"); KitchenProps.C(t, new Vector3(0.7f, 0.88f, 0f), new Vector3(0.6f, 0.1f, 0.5f), LabDark, 0f, "Pila"); }));
         cult.Add(new LabBlock("Lavamanos y lavaojos", 1.0f, 1.3f, SafetyShower));
         Transform g = new GameObject("Planta_cultivo").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
-        LogLeft("Biología (cultivo)", PackFloor(g, BiologySize, cult, CarpetKeepOut(BiologySize)));
+        LogLeft("Biología (cultivo)", PackFloor(g, bs, cult, CarpetKeepOut(bs)));
         // Piso de arriba: MOLECULAR, en sentido único (pre-PCR limpio → extracción → post-PCR y secuenciación).
-        Transform up = new GameObject("Planta_molecular").transform; up.SetParent(a.transform, false);
-        Vector2 us = StackOn(up, a.transform, BiologySize);
+        Transform up = InnerFloor(a.transform, "Planta_molecular", a.transform);
+        Vector2 us = FloorSize(up, bs);
         Solid(up, new Vector3(0f, 0.05f, 0f), new Vector3(us.x, 0.1f, us.y), new Color(0.82f, 0.88f, 0.82f), "Suelo_molecular");
         var mol = new List<LabBlock>();
         mol.AddRange(Times(4, "Estación pre-PCR", 1.8f, 0.75f, t => { Bench(t, 1.8f, 0.75f, LabWhite); KitchenProps.C(t, new Vector3(0f, 1.3f, 0f), new Vector3(1.6f, 0.7f, 0.6f), LabGlass, 0f, "Campana_PCR"); }));
@@ -273,15 +274,15 @@ public static partial class SampleSceneBuilder
         return a;
     }
 
-    // ── FÍSICA: la sala de experimentos, tercer piso de la planta atómica, con su anillo ─────────────────────────────
+    // ── FÍSICA: la sala de experimentos, tercer piso de la planta atómica (y de la torre de Ciencias), con su anillo ─────────────────────────────
 
     static void BuildPhysicsHall(Transform plant)
     {
         Transform cyc = plant.Find("Planta_ciclotron");
         if (cyc == null) return;
-        Vector2 cs = new Vector2(AtomicPlantSize.x, AtomicPlantSize.y - SetBack);
-        Transform hall = new GameObject("Sala_experimentos_fisica").transform; hall.SetParent(plant, false);
-        Vector2 hs = StackOn(hall, cyc, cs);
+        // El tercer piso de la torre de Ciencias, encima del ciclotrón.
+        Transform hall = InnerFloor(plant, "Sala_experimentos_fisica", cyc);
+        Vector2 hs = FloorSize(hall, CienciasSize);
         Solid(hall, new Vector3(0f, 0.05f, 0f), new Vector3(hs.x, 0.1f, hs.y), new Color(0.3f, 0.32f, 0.36f), "Suelo_oscuro");   // zona oscura para la óptica
         var inside = new List<LabBlock>();
         inside.AddRange(Times(2, "Interferómetro de Michelson", 2.44f, 1.22f, t => OpticalTable(t, 2.44f, 1.22f)));

@@ -20,8 +20,8 @@ public static partial class SampleSceneBuilder
 
     const float ZoneW = 7.6f, ZoneD = 4.4f;
 
-    /// <summary>Nombre propio de los edificios que juntan varias áreas (Granja, Talleres, Entrenamiento): sin él se llamarían
-    /// como su planta baja. Se rellena en BuildAreaStructures.</summary>
+    /// <summary>Nombre propio de los edificios que juntan varias áreas (las torres: Servicios, Entrenamiento, Ciencias,
+    /// Producción): sin él se llamarían como su planta baja. Se rellena en BuildAreaStructures.</summary>
     static readonly Dictionary<Transform, string> BuildingNames = new Dictionary<Transform, string>();
 
     /// <summary>Apunta los edificios (sus plantas bajas): sus alfombras se ponen al final (<see cref="PlaceCarpetAreas"/>).</summary>
@@ -48,10 +48,12 @@ public static partial class SampleSceneBuilder
     // «Hospital · planta baja»), no solo «Planta baja».
     static string FloorName(Transform f, int i, string building)
     {
-        SanctuaryArea a = f.GetComponent<SanctuaryArea>();
+        SanctuaryArea a = f.GetComponent<SanctuaryArea>(), owner = f.parent != null ? f.parent.GetComponent<SanctuaryArea>() : null;
+        string nice = f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
         string area = a != null ? a.displayName
             : i == 1 ? building
-            : f.name.Replace("_Area", "").Replace("Planta_", "").Replace("Huerto_", "Huerto ").Replace('_', ' ');
+            : owner != null ? $"{owner.displayName} ({nice})"   // una planta propia de un área (la veterinaria del hospital, el ciclotrón)
+            : nice;
         if (area.Length > 0) area = char.ToUpper(area[0]) + area.Substring(1);
         return i == 1 ? $"{area} · planta baja" : $"{area} · planta {i - 1}";
     }
@@ -152,15 +154,16 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }
 
-    /// <summary>Pone el punto <paramref name="spotName"/> junto al área de alfombras de la planta baja del edificio
-    /// <paramref name="areaName"/>: es por donde se llega a él (ya no hay escaleras ni puentes).</summary>
+    /// <summary>Pone el punto <paramref name="spotName"/> junto al área de alfombras del piso del área
+    /// <paramref name="areaName"/>: es por donde se llega a ella (ya no hay escaleras ni puentes). En una torre, el área es un
+    /// piso más: se busca el área de alfombras que cuelga de ese piso (no la de su anillo ni la del hielo).</summary>
     static void SpotAtCarpets(string spotName, string areaName)
     {
         GameObject spot = GameObject.Find(spotName), area = GameObject.Find(areaName);
         SanctuaryArea sa = area != null ? area.GetComponent<SanctuaryArea>() : null;
         if (spot == null || sa == null) return;
         foreach (CarpetPad p in Object.FindObjectsByType<CarpetPad>(FindObjectsSortMode.None))
-            if (p.kind == CarpetPad.Kind.Edificio && p.building == sa.displayName && p.floor == 1)
+            if (p.kind == CarpetPad.Kind.Edificio && p.transform.parent == area.transform && p.floor >= 1 && !p.surface.Contains("#anillo"))
             {
                 Vector3 toCenter = area.transform.position - p.transform.position; toCenter.y = 0f;
                 spot.transform.position = p.transform.position + (toCenter.sqrMagnitude > 0.01f ? toCenter.normalized : p.transform.forward) * (ZoneD * 0.5f + 1.5f);
