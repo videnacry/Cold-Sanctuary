@@ -137,7 +137,10 @@ public static partial class SampleSceneBuilder
         Transform posts = new GameObject("Puestos_cuidado").transform; posts.SetParent(pen, false);
         for (int i = 0; i < steps.Length; i++)
         {
-            Vector3 local = doorEast ? new Vector3(3.6f, 0.45f, -1.6f + i * 0.8f) : new Vector3(-1.6f + i * 0.8f, 0.45f, 3.6f);
+            // A UN LADO de la puerta, pegados al muro (no delante del hueco: las crías que salían por él se metían en ellos,
+            // JornadaTest 2026-10-29 «Cria_foca_2 dentro de Cria_Seal_LeerEstado»).
+            float along = 1.15f + i * 0.45f;
+            Vector3 local = doorEast ? new Vector3(3.6f, 0.45f, along) : new Vector3(along, 0.45f, 3.6f);
             StationPart sp = MakeStationPart(posts, station, steps[i].action, steps[i].label, pen.TransformPoint(local), steps[i].c);
             sp.transform.localScale = Vector3.one * 0.4f;
         }

@@ -207,6 +207,10 @@ public class CarpetWalkSpell : QueuedSpell
     public float stopDistance = 1f, speed = 1.6f, giveUpAfter = 300f;
     float _start = -1f;
     Vector3 _snap;
+    float _checkAt; Vector3 _checkPos; int _restarts;
+    /// <summary>true si lo dejó por no avanzar (o por tope), no porque llegara.</summary>
+    public bool GaveUp { get; private set; }
+    const float NoProgress = 8f;
 
     public override string Label => $"ir a {targetName} (en alfombra)";
 
@@ -220,14 +224,22 @@ public class CarpetWalkSpell : QueuedSpell
             // más de 1 m: nunca «llegaba» y rondaba la cama hasta rendirse (Lizmibet yendo a dormir, Berón 2026-10-29).
             _snap = UnityEngine.AI.NavMesh.SamplePosition(target.position, out UnityEngine.AI.NavMeshHit h, 2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - target.position.y) < 1.5f ? h.position : target.position;
         }
-        if (Time.time - _start > giveUpAfter) return true;
+        if (Time.time - _start > giveUpAfter) { GaveUp = true; return true; }
         Vector3 d = target.position - self.transform.position, ds = _snap - self.transform.position;
         float dy = Mathf.Abs(d.y); d.y = 0f; ds.y = 0f;
         if ((d.magnitude <= stopDistance || ds.magnitude <= 0.4f) && dy < 2f) return true;
         Vector3 to = target.position;
-        if (CarpetPad.Route(self.gameObject, ref to)) return false;   // volando (o subiéndose)
+        if (CarpetPad.Route(self.gameObject, ref to)) { _checkAt = Time.time; _checkPos = self.transform.position; return false; }   // volando (o subiéndose)
         if (to == target.position) to = _snap;                         // en su piso: al punto andable junto al destino
         PathMover.Of(self.transform).StepToward(to, speed);
+        // SIN AVANZAR (JornadaTest 2026-10-29: «ir al baño» quieto más de 20 s): en 8 s sin moverse medio metro recalcula el
+        // camino una vez; si sigue igual, lo deja (antes esperaba quieto hasta el tope de 2–5 min).
+        if (_checkAt <= 0f || (self.transform.position - _checkPos).magnitude > 0.5f) { _checkAt = Time.time; _checkPos = self.transform.position; }
+        else if (Time.time - _checkAt > NoProgress)
+        {
+            if (_restarts++ == 0) { PathMover.Of(self.transform).Restart(); _checkAt = Time.time; }
+            else { GaveUp = true; Debug.Log($"[Andar] «{self.name}» no avanza hacia {targetName} en {NoProgress * 2f:0} s: lo deja."); return true; }
+        }
         return false;
     }
 }

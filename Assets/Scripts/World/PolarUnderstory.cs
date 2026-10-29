@@ -90,6 +90,15 @@ public class PolarUnderstory : MonoBehaviour
         return Mathf.Max(3f, top - t.position.y);
     }
 
+    static readonly Collider[] _near = new Collider[16];
+    /// <summary>¿No hay raíces ni tronco a menos de <paramref name="r"/> m? (donde come un animal grande cabe su cuerpo)</summary>
+    static bool ClearOfTree(Vector3 p, float r)
+    {
+        int n = Physics.OverlapSphereNonAlloc(p + Vector3.up * 0.5f, r, _near, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++) if (_near[i] != null && (_near[i].name.StartsWith("Raiz") || _near[i].name.StartsWith("Tronco"))) return false;
+        return true;
+    }
+
     void AroundTree(Vector3 c, float height)
     {
         int n = Mathf.RoundToInt(height * plantsPerTreeMeter);
@@ -109,7 +118,9 @@ public class PolarUnderstory : MonoBehaviour
             // Las que algo COME son interactuables (docs/natural-interactions.md): sauce ártico (liebre), camarina (bayas:
             // oso en verano) y liquen de reno (reno). Un punto por mancha; se gastan y rebrotan.
             AffordanceKind food = species == 5 ? AffordanceKind.Willow : species == 6 ? AffordanceKind.Berry : AffordanceKind.Lichen;
-            if (species >= 5)
+            // (solo las manchas con sitio alrededor: un oso que come camarina junto a una raíz del árbol se metía en la
+            // «Raiz» — JornadaTest 2026-10-29; las raíces no tallan el NavMesh. La planta sigue ahí, de adorno.)
+            if (species >= 5 && ClearOfTree(p, 2.5f))
             {
                 var spot = new GameObject($"Planta_{food}");
                 spot.transform.SetParent(transform, false); spot.transform.position = p;

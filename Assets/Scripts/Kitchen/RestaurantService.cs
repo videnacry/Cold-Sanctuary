@@ -68,6 +68,7 @@ public class RestaurantService : MonoBehaviour
         public string family;                                   // obrador: «masas» o «lácteos y fermentos»
         public Order order; public readonly List<Order> carry = new List<Order>();
         public Table table; public Transform cleaning, held, station;
+        public Vector3 stationAt;                               // obrador: el lado del equipo desde el que se trabaja (WorkSide)
         public Gastronomy.Prep prep;
         public int step; public float until = -1f, restUntil;
     }
@@ -441,11 +442,12 @@ public class RestaurantService : MonoBehaviour
             if (Time.time >= a.restUntil) { a.prep = ChoosePrep(a); a.restUntil = Time.time + 3f; }
             if (a.prep == null) { Doing(a, "revisa el obrador"); Idle(a, ObradorHome(a)); return; }
             a.station = PrepStation(a.prep, a.go.transform.position);
+            a.stationAt = a.station != null ? WorkSide(a.station, a.go.transform.position) : Vector3.zero;
             a.until = -1f;
             Debug.Log($"[Restaurante] «{a.go.name}» ({a.family}) se pone con «{a.prep.name}» en {(a.station != null ? $"{a.station.parent.name}/{a.station.name}" : "?")}.");
         }
         Doing(a, $"elabora {a.prep.name} por mayor ({a.prep.portions} raciones)");
-        if (!Reach(a, a.station != null ? Front(a.station, 0.85f) : ObradorHome(a), a.station)) return;
+        if (!Reach(a, a.station != null ? a.stationAt : ObradorHome(a), a.station)) return;
         if (!Act(a, prepSeconds)) return;
         Gastronomy.Prep p = a.prep;
         a.prep = null; a.restUntil = Time.time + 2f;
@@ -731,6 +733,38 @@ public class RestaurantService : MonoBehaviour
 
     /// <summary>Delante de un equipo o mueble (su −Z local es el frente: puertas, mandos, la encimera), a ras de suelo.</summary>
     public static Vector3 Front(Transform t, float dist) { Vector3 p = t.position - t.forward * dist; p.y = t.position.y; return p; }
+
+    /// <summary>
+    /// DESDE DÓNDE SE TRABAJA un equipo del obrador (JornadaTest 2026-10-29: Lizmibet daba vueltas 25 m en 20 s junto a la
+    /// extrusora). <see cref="Front"/> a 0,85 m del centro cae, en los equipos largos (extrusora y secadero, horno de pisos),
+    /// DENTRO de su hueco del NavMesh o contra el de al lado, y el camino rondaba el equipo sin llegar. Aquí: el frente si
+    /// queda suelo libre (a 0,6 m del borde de su caja), y si no, el lado libre con el camino más corto desde donde está.
+    /// </summary>
+    public static Vector3 WorkSide(Transform t, Vector3 from)
+    {
+        Bounds b = new Bounds(t.position, Vector3.zero); bool any = false;
+        foreach (Renderer r in t.GetComponentsInChildren<Renderer>()) { if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        Vector3 f = t.forward; f.y = 0f; f = f.sqrMagnitude > 1e-4f ? f.normalized : Vector3.forward;
+        Vector3 rgt = Vector3.Cross(Vector3.up, f);
+        float halfF = Mathf.Abs(Vector3.Dot(b.extents, new Vector3(Mathf.Abs(f.x), 0f, Mathf.Abs(f.z))));
+        float halfR = Mathf.Abs(Vector3.Dot(b.extents, new Vector3(Mathf.Abs(rgt.x), 0f, Mathf.Abs(rgt.z))));
+        Vector3 c = any ? new Vector3(b.center.x, t.position.y, b.center.z) : t.position;
+        Vector3[] sides = { -f * (halfF + 0.6f), -rgt * (halfR + 0.6f), rgt * (halfR + 0.6f), f * (halfF + 0.6f) };   // el frente primero
+        Vector3 best = Front(t, 0.85f); float bestLen = float.MaxValue;
+        var path = new UnityEngine.AI.NavMeshPath();
+        bool haveFrom = UnityEngine.AI.NavMesh.SamplePosition(from, out UnityEngine.AI.NavMeshHit fh, 1.5f, UnityEngine.AI.NavMesh.AllAreas);
+        for (int i = 0; i < sides.Length; i++)
+        {
+            Vector3 p = c + sides[i]; p.y = t.position.y;
+            if (!UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit h, 0.35f, UnityEngine.AI.NavMesh.AllAreas) || Mathf.Abs(h.position.y - p.y) > 0.8f) continue;   // ahí no hay suelo libre
+            if (i == 0) return h.position;   // el frente, libre: se trabaja de cara a los mandos
+            float len = float.MaxValue;
+            if (haveFrom && UnityEngine.AI.NavMesh.CalculatePath(fh.position, h.position, UnityEngine.AI.NavMesh.AllAreas, path) && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+            { len = 0f; for (int k = 1; k < path.corners.Length; k++) len += Vector3.Distance(path.corners[k], path.corners[k - 1]); }
+            if (len < bestLen) { bestLen = len; best = h.position; }
+        }
+        return best;
+    }
 
     /// <summary>Por fuera de la silla <paramref name="chair"/>: donde se pone quien se sienta, sirve o limpia ese cubierto.</summary>
     public static Vector3 ChairFront(Table t, int chair)

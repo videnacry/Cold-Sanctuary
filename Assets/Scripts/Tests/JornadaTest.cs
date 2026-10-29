@@ -69,6 +69,12 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         GameObject garden = GameObject.Find("Garden_Area");
         if (garden != null) Place(_player, WorkdayDirector.AreaPoint("Huerto", "Player"));
 
+        // ── LA MAÑANA EMPIEZA DESCANSADA: en la batería completa las pruebas anteriores (iniciaciones, microcosmos, el
+        // servicio del restaurante) dejan correr el reloj y saltar horas sin que nadie coma, duerma ni vaya al baño; el
+        // personal llegaba al día 1 con hambre, sueño y ganas de ir al baño desde las 8:00 (todos «pidiendo en la barra»
+        // vacía y dormidos a las 11:00). La jornada empieza como empieza un día: con el desayuno hecho y la noche dormida.
+        RestDay();
+
         float oldScale = Time.timeScale;
         int d1 = _tc.Day + 1;
         _tc.SetClock(d1, 7.5f);
@@ -110,6 +116,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         // ── DÍA 2 ──
         int d2 = d1 + 1;
         _pw.autopilot = true;
+        RestDay();   // el reloj salta la NOCHE (de las 17 h a las 8 h): lo que hace la noche —dormir, y el desayuno— lo hace esto
         _watch.Rebase();
         _tc.SetClock(d2, 7.95f);
         yield return Until(() => { DriveDirector(); _watch.Frame(); return _wd.plannedDay == d2; }, 30f);
@@ -294,6 +301,26 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         if (_wd.today != null && _wd.plannedDay == d) _wd.Tick(h);
     }
 
+    /// <summary>Cada persona del personal (y Kushal) despierta, de pie, sin hambre, sin sueño y sin ganas de ir al baño: el
+    /// estado de una mañana, sea cual sea la prueba que corrió antes (o la noche que se salta el reloj).</summary>
+    void RestDay()
+    {
+        int n = 0;
+        foreach (string who in _wd.staff)
+        {
+            GameObject g = WorkdayDirector.Body(who);
+            if (g == null || !g.TryGetComponent(out Anima a) || a.death) continue;
+            if (g.TryGetComponent(out BodyMetabolism b)) { b.hunger = 0.1f; b.toilet = 0.05f; }
+            a.sleepiness = 0.05f; a.aware = false;
+            // (lo que tenga a medias en su cola lo termina solo: dormido en su cama se despierta al ver el sueño a 0 y se
+            // levanta; en la cabina del aseo, sale; quitárselo de golpe lo dejaba tumbado en la cama o dentro de la cabina)
+            bool sleeping = g.TryGetComponent(out ActionQueue q) && q.Own.Any(s => s is SleepSpell);
+            if (a.asleep && !sleeping) { a.asleep = false; DailyPoses.Stand().ApplyFinal(a); g.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Neutral, 0.1f); }
+            n++;
+        }
+        Log($"mañana: {n} personas descansadas y desayunadas (las pruebas anteriores dejan el reloj correr sin comer ni dormir).");
+    }
+
     void Restore(float scale)
     {
         Time.timeScale = scale;
@@ -347,6 +374,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         public int inside, water, tilted; public string insideOf;
         public float offSince = -1f, rodeAt = -99f, movedAt = -99f;   // fuera de su puesto desde; última vez en alfombra; último teletransporte de la prueba
         public string activity = "";
+        public string headLabel; public float headSince;   // lo que hace (cabeza de su cola) y desde cuándo
     }
 
     class Anomaly { public string key, who, kind, detail, firstAt; public int count; public bool human; }
@@ -493,7 +521,8 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             WorkRoster.Assignment cur = shift && w != null ? wd.Current(w, h) : null;
             bool handled = MagnateWarden.Instance.Handling(tr.g);
             string head = Head(tr.g);
-            bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
+            if (head != tr.headLabel) { tr.headLabel = head; tr.headSince = now; }
+            bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
             bool asleep = tr.anima != null && tr.anima.asleep;
             bool atPost = area != null && PlayerWorkday.AtPost(cur?.mission, area, p);
             bool full = Window(tr, out float path, out float net);
@@ -517,12 +546,12 @@ public class JornadaTest : MonoBehaviour, ITestUnit
 
             if (full && !riding && !handled && !asleep && !magnate)
             {
-                if (Walking(head) && path < 0.5f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
+                if (Walking(head) && path < 0.5f && now - tr.headSince >= 19f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
                 bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
-                if (!rounds && head != "merodear" && path > 12f && net < 2.5f)   // (merodear es ir y venir al azar a propósito)
+                if (!rounds && head != "merodear" && path > 12f && net < 2.5f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
                     Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
             }
-            if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")), true);
+            if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")) || wd.OnGymMachine(tr.g), true);
         }
 
         void SampleAnimal(Track tr, Vector3 p, bool riding)

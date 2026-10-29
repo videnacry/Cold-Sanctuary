@@ -61,9 +61,9 @@ public class DineSpell : QueuedSpell
 {
     public float meal = 0.75f;
     public float eatMinutes = 20f;
-    public float serveSeconds = 14f;        // le sirven en la barra (además, así la ida y la vuelta a la pista no parecen un círculo)
+    public float serveSeconds = 22f;        // le sirven en la barra (~9 min de juego). Más que la ventana de 20 s del vigía: la ida a la barra y la vuelta a la MISMA pista de alfombras (el comedor está en el anillo) no se leen como una vuelta en círculo
     public float barTimeout = 150f, seatTimeout = 120f;   // de otra torre a la barra hay varios vuelos en alfombra
-    const float NoProgress = 10f;           // s sin acercarse (sin volar): recalcula; la segunda vez, lo deja
+    const float NoProgress = 7f;            // s sin acercarse (sin volar): recalcula; la segunda vez, lo deja
     static readonly Dictionary<Transform, float> _taken = new Dictionary<Transform, float>();   // silla → hasta cuándo (si alguien la deja a medias, caduca)
 
     int _phase;              // 0 ir a la barra · 1 le sirven · 2 ir a la mesa · 3 comer · 4 levantarse
@@ -73,7 +73,7 @@ public class DineSpell : QueuedSpell
     // El tramo en curso: un destino fijo, ya sobre el NavMesh.
     Vector3 _snap; bool _hasGoal; float _legStart, _checkAt, _bestLeft; Vector3 _checkPos; int _restarts;
 
-    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "pedir en la barra del restaurante (le sirven)", 2 => "buscar mesa", 3 => $"comer {_dish}", _ => "levantarse" };
+    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "esperar su plato en la barra", 2 => "buscar mesa", 3 => $"comer {_dish}", _ => "levantarse" };
 
     public override bool Tick(Anima self)
     {
@@ -90,7 +90,7 @@ public class DineSpell : QueuedSpell
                 }
                 int r = Walk(self, barTimeout, "la barra");
                 if (r == 0) return false;
-                if (r < 0) return true;   // no llega: lo deja (la necesidad volverá a pedirlo); nunca toma la comida desde lejos
+                if (r < 0) { ReleaseBarSlot(self); return true; }   // no llega: lo deja (la necesidad volverá a pedirlo); nunca toma la comida desde lejos
                 _phase = 1; _until = Time.time + serveSeconds; _hasGoal = false;
                 FoodContainer near = NearestFood(self.transform.position);
                 if (near != null) Face(self.transform, near.transform.position);
@@ -99,6 +99,7 @@ public class DineSpell : QueuedSpell
             case 1:
             {
                 if (Time.time < _until) return false;
+                ReleaseBarSlot(self);
                 FoodContainer fc = NearestFood(self.transform.position);
                 if (fc == null || (fc.transform.position - self.transform.position).sqrMagnitude > 36f || !fc.Take())
                 { Debug.Log($"[Restaurante] «{self.name}» llega a la barra pero ya no queda comida."); return true; }
@@ -234,9 +235,32 @@ public class DineSpell : QueuedSpell
         CarpetPad pad = CarpetPad.For(pass.position + Vector3.up * 0.5f);
         Vector3 from = pad != null ? pad.transform.position : self.transform.position;
         float side = Vector3.Dot(from - pass.position, pass.forward) >= 0f ? 1f : -1f;
-        float along = ((Mathf.Abs(self.name.GetHashCode()) % 5) - 2) * 0.9f;
-        Vector3 p = pass.position + pass.forward * side * 1.0f + pass.right * along; p.y = pass.position.y;
+        // UN SITIO POR PERSONA (JornadaTest 2026-10-29: a las 11:00 llegan diez a la vez y con cinco sitios por el nombre
+        // caían dos en el mismo; el segundo no llegaba nunca a su punto y se quedaba quieto hasta rendirse). Cinco a lo largo
+        // de la barra y, si están todos, una segunda fila detrás; el sitio caduca solo si alguien lo deja a medias.
+        int slot = ClaimBarSlot(self);
+        float along = (BarOrder[slot % 5] - 2) * 0.9f, depth = 1.0f + (slot / 5) * 0.9f;
+        Vector3 p = pass.position + pass.forward * side * depth + pass.right * along; p.y = pass.position.y;
         return p;
+    }
+
+    static readonly int[] BarOrder = { 2, 1, 3, 0, 4 };   // del centro a los extremos
+    static readonly Dictionary<int, (Anima who, float until)> _bar = new Dictionary<int, (Anima, float)>();
+
+    static int ClaimBarSlot(Anima self)
+    {
+        ReleaseBarSlot(self);
+        int free = -1;
+        for (int i = 0; i < 10 && free < 0; i++)
+            if (!_bar.TryGetValue(i, out var c) || c.who == null || c.until < Time.time) free = i;
+        if (free < 0) free = Mathf.Abs(self.name.GetHashCode()) % 10;   // más de diez a la vez: comparte
+        _bar[free] = (self, Time.time + 200f);
+        return free;
+    }
+
+    static void ReleaseBarSlot(Anima self)
+    {
+        foreach (var kv in new List<KeyValuePair<int, (Anima who, float until)>>(_bar)) if (kv.Value.who == self) _bar.Remove(kv.Key);
     }
 
     // Por fuera de la silla (como RestaurantService.ChairFront): ahí se pone quien se va a sentar. El centro de la silla queda
@@ -277,6 +301,9 @@ public class DineSpell : QueuedSpell
 /// serrín), se lava las manos y sale. Si es el jugador, la cámara pasa a panorámica mientras entra y sale.</summary>
 public class ToiletSpell : QueuedSpell
 {
+    /// <summary>Quien no llegó a los aseos lo vuelve a intentar pasado un rato (no en bucle cada 2 s desde el mismo sitio).</summary>
+    public static readonly Dictionary<Anima, float> RetryAt = new Dictionary<Anima, float>();
+    public static bool CanTry(Anima a) => a == null || !RetryAt.TryGetValue(a, out float t) || Time.time >= t;
     public float minutes = 5f;
     int _phase;
     Transform _toilet;
@@ -301,7 +328,7 @@ public class ToiletSpell : QueuedSpell
             if (!_walk.Tick(self)) return false;
             Vector3 gap = _toilet.position - self.transform.position;
             if (new Vector2(gap.x, gap.z).magnitude > 2.5f || Mathf.Abs(gap.y) > 2.5f)   // no llegó: antes se le metía igual en la cabina (saltos de 80 m)
-            { Debug.Log($"[Cuerpo] «{self.name}» no llega a los aseos (a {gap.magnitude:0} m): lo deja para luego."); return true; }
+            { Debug.Log($"[Cuerpo] «{self.name}» no llega a los aseos (a {gap.magnitude:0} m): lo deja para luego."); RetryAt[self] = Time.time + 45f; return true; }
             _outside = self.transform.position;
             Move(self.transform, _toilet.position + Vector3.up * 0.05f);   // dentro de la cabina
             Debug.Log($"[Cuerpo] «{self.name}» entra en los aseos (inodoro seco: tapa con serrín).");

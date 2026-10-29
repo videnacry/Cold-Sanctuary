@@ -370,6 +370,12 @@ public class WorkdayDirector : MonoBehaviour
         if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
         if (area != AreaWork.Hospital) HospitalStation.Release(g.name);   // su puesto médico queda libre para otro
+        // LOS ANIMALES INGRESADOS: quien está de turno en el hospital les lleva la comida (el lobo de la perrera no comía nunca).
+        VetCare vet = g.GetComponent<VetCare>();
+        bool vetDuty = area == AreaWork.Hospital && missionId != null && g.GetComponent<Anima>() != null && g.GetComponent<Linduarda>() == null;
+        if (vetDuty && vet == null) vet = g.AddComponent<VetCare>();
+        if (vet != null) vet.enabled = vetDuty;
+        if (vet != null && vet.Busy) { if (idle != null) idle.enabled = false; SetStatus(g, vet.Doing ?? doing); return; }
         if (lin != null) lin.enabled = area == null || area == AreaWork.Hospital || NewcomerWaiting();
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
         if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
@@ -551,6 +557,8 @@ public class WorkdayDirector : MonoBehaviour
     public class GymUse { public GymStation st; public bool seated, b; public float since, phaseAt; public AsanaPoseSpell spell; }
     readonly Dictionary<GameObject, GymUse> _gym = new Dictionary<GameObject, GymUse>();
     readonly Dictionary<GameObject, float> _gymGiveUp = new Dictionary<GameObject, float>();
+    /// <summary>¿Está <paramref name="g"/> ahora en una máquina del gimnasio (sentado en su puesto, haciendo la repetición)?</summary>
+    public bool OnGymMachine(GameObject g) => g != null && _gym.TryGetValue(g, out GymUse u) && u.seated;
     float _hour;
 
     /// <summary>Puesto de <paramref name="g"/> en el grupo del gimnasio de hoy (−1 si hoy no le toca el gimnasio).</summary>

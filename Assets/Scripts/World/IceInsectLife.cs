@@ -87,7 +87,23 @@ public class IceInsectLife : MonoBehaviour
         if (_self != null && _self.death) return;
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
-        if (kind == Kind.Bee) BeeLife(); else SpiderLife();
+        if (kind == Kind.Bee) { BeeLife(); KeepBodyOutOfBranches(); } else SpiderLife();
+    }
+
+    // EL CUERPO ENTERO fuera de las ramas (JornadaTest 2026-10-29: abejas «dentro de Rama / Rama_Plataforma»). FlyTo solo
+    // sacaba el PIVOTE, y no en todos los caminos (el racimo, la danza, el arranque en el panal y la locomoción del animal la
+    // mueven sin FlyTo); el cuerpo de cubos mide 20–30 cm y su centro queda por encima del pivote. Al final de cada fotograma
+    // se mira el CENTRO del cuerpo con un margen de medio cuerpo y, si está dentro de un bloque del árbol, sale por la cara
+    // más cercana.
+    Renderer[] _rends;
+    void KeepBodyOutOfBranches()
+    {
+        if (_rends == null) _rends = GetComponentsInChildren<Renderer>();
+        Bounds b = new Bounds(transform.position, Vector3.zero); bool any = false;
+        foreach (Renderer r in _rends) { if (r == null || !r.enabled || r is ParticleSystemRenderer || r is LineRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        float clear = Mathf.Clamp(Mathf.Min(b.extents.x, b.extents.y, b.extents.z) * 0.5f, 0.02f, 0.12f) + 0.03f;
+        Vector3 c = b.center, moved = OutOfBranches(c, clear, clear + 0.01f);
+        if ((moved - c).sqrMagnitude > 1e-8f) transform.position += moved - c;
     }
 
 
@@ -311,20 +327,20 @@ public class IceInsectLife : MonoBehaviour
     // veces DENTRO del bloque «Rama»/«Rama_Plataforma» (o del tronco). Si su centro cae dentro de uno, sale por la cara
     // más cercana (+4 cm). Solo bloques del árbol (no el panal ni las celdillas, donde trabaja).
     static readonly Collider[] _near = new Collider[8];
-    static Vector3 OutOfBranches(Vector3 p)
+    static Vector3 OutOfBranches(Vector3 p, float margin = 0f, float push = 0.04f)
     {
-        int n = Physics.OverlapSphereNonAlloc(p, 0.06f, _near, ~0, QueryTriggerInteraction.Ignore);
+        int n = Physics.OverlapSphereNonAlloc(p, Mathf.Max(0.06f, margin * 1.8f), _near, ~0, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < n; i++)
         {
             if (!(_near[i] is BoxCollider box) || !(box.name.StartsWith("Rama") || box.name.StartsWith("Tronco"))) continue;
             Transform t = box.transform;
             Vector3 local = t.InverseTransformPoint(p) - box.center, half = box.size * 0.5f, s = t.lossyScale;
             // Penetración por eje, en metros del mundo; sale por la menor.
-            float px = (half.x - Mathf.Abs(local.x)) * Mathf.Abs(s.x), py = (half.y - Mathf.Abs(local.y)) * Mathf.Abs(s.y), pz = (half.z - Mathf.Abs(local.z)) * Mathf.Abs(s.z);
+            float px = (half.x - Mathf.Abs(local.x)) * Mathf.Abs(s.x) + margin, py = (half.y - Mathf.Abs(local.y)) * Mathf.Abs(s.y) + margin, pz = (half.z - Mathf.Abs(local.z)) * Mathf.Abs(s.z) + margin;
             if (px < 0f || py < 0f || pz < 0f) continue;   // (el radio de la consulta la rozaba por fuera)
-            if (px <= py && px <= pz) local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * (half.x + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.x)));
-            else if (py <= pz) local.y = Mathf.Sign(local.y == 0f ? 1f : local.y) * (half.y + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.y)));
-            else local.z = Mathf.Sign(local.z == 0f ? 1f : local.z) * (half.z + 0.04f / Mathf.Max(1e-4f, Mathf.Abs(s.z)));
+            if (px <= py && px <= pz) local.x = Mathf.Sign(local.x == 0f ? 1f : local.x) * (half.x + push / Mathf.Max(1e-4f, Mathf.Abs(s.x)));
+            else if (py <= pz) local.y = Mathf.Sign(local.y == 0f ? 1f : local.y) * (half.y + push / Mathf.Max(1e-4f, Mathf.Abs(s.y)));
+            else local.z = Mathf.Sign(local.z == 0f ? 1f : local.z) * (half.z + push / Mathf.Max(1e-4f, Mathf.Abs(s.z)));
             p = t.TransformPoint(local + box.center);
         }
         return p;

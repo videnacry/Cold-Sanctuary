@@ -8,13 +8,14 @@ using UnityEngine.AI;
 /// DENTRO de ellos y la gente los atravesaba (JornadaTest 2026-10-29: Linduarda y Goluis por el «Bloque_Intercambiador»,
 /// Panterilia por la prensa de piernas). Al empezar, a cada caja sólida con NavMesh dentro de su planta se le pone un
 /// <see cref="NavMeshObstacle"/> que TALLA el NavMesh (solo una vez: están quietas). Son pocas (≈ 70 de 3500 cajas).
-/// No toca los corrales y cuadras de los animales (sus agentes están dentro), ni raíces ni trineos.
+/// No toca los corrales y cuadras de los animales (sus agentes están dentro) ni los trineos. Las RAÍCES de los árboles sí
+/// tallan (JornadaTest 2026-10-29: un oso y un pingüino se metían en la «Raiz» camino de su comida).
 /// </summary>
 public class StaleNavCarver : MonoBehaviour
 {
     public static int Carved { get; private set; }
 
-    static readonly string[] Skip = { "Cria_", "Cuadra", "Raiz", "Trineo", "Barrera_agua", "Inodoro", "Cabina", "Puerta", "Cama", "Silla", "Asiento" };
+    static readonly string[] Skip = { "Cria_", "Cuadra", "Trineo", "Barrera_agua", "Inodoro", "Cabina", "Puerta", "Cama", "Silla", "Asiento" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Boot()

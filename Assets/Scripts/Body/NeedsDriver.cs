@@ -41,7 +41,7 @@ public class NeedsDriver : MonoBehaviour
             _q.EnqueueOwn(new SleepSpell());
             return;
         }
-        if (!_a.asleep && _body.toilet >= 0.85f) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
+        if (!_a.asleep && _body.toilet >= 0.85f && ToiletSpell.CanTry(_a)) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
         if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
     }
 }

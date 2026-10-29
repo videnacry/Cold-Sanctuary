@@ -367,8 +367,20 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
         tr.seg = false;
         float straight = Flat(tr.segEnd - tr.segStart);
         if (tr.walked < 0.5f) return;
-        float ratio = tr.walked / (circling * straight + circlingSlack);
-        string info = $"tramo {tr.segLeg}: {tr.walked:0.0} m andados para {straight:0.0} m en recta";
+        // LO MÍNIMO QUE HAY QUE ANDAR: la recta, o el camino más corto del NavMesh si los muebles obligan a rodear (cada puesto
+        // de la cocina es una U de 7 × 6,5 m con la entrada delante: de un fregadero al del puesto de al lado hay 9 m en recta
+        // pero ~19 m saliendo por una entrada y entrando por la otra). Dar vueltas = andar mucho más que ESO.
+        float least = straight; string via = "";
+        var path = new UnityEngine.AI.NavMeshPath();
+        if (UnityEngine.AI.NavMesh.SamplePosition(tr.segStart, out UnityEngine.AI.NavMeshHit a, 1.5f, UnityEngine.AI.NavMesh.AllAreas)
+            && UnityEngine.AI.NavMesh.SamplePosition(tr.segEnd, out UnityEngine.AI.NavMeshHit b, 1.5f, UnityEngine.AI.NavMesh.AllAreas)
+            && UnityEngine.AI.NavMesh.CalculatePath(a.position, b.position, UnityEngine.AI.NavMesh.AllAreas, path) && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+        {
+            float len = 0f; for (int i = 1; i < path.corners.Length; i++) len += Flat(path.corners[i] - path.corners[i - 1]);
+            if (len > least) { least = len; via = $" ({len:0.0} m por el camino más corto del NavMesh)"; }
+        }
+        float ratio = tr.walked / (circling * least + circlingSlack);
+        string info = $"tramo {tr.segLeg}: {tr.walked:0.0} m andados para {straight:0.0} m en recta{via}";
         if (ratio > tr.worst) { tr.worst = ratio; tr.worstInfo = info; }
         if (ratio > 1f) tr.circles.Add($"{tr.name} {info}");
     }

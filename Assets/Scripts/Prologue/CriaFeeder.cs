@@ -21,16 +21,23 @@ public class CriaFeeder : MonoBehaviour
     void Start()
     {
         if (crias.Count == 0) crias.AddRange(GetComponentsInChildren<Animal>());
-        _next = Time.time + interval;
+        _next = Time.time + 5f;
     }
+
+    // A DEMANDA (JornadaTest 2026-10-29: con tomas cada 120 s las crías pasaban buena parte del rato con hambre, buscando
+    // comida por el recinto sin encontrarla —atascadas o dando vueltas—). Como con las crías huérfanas de verdad, en cuanto
+    // una tiene hambre le dan su toma; `interval` queda como el mínimo entre dos tomas de la MISMA cría.
+    readonly Dictionary<Animal, float> _last = new Dictionary<Animal, float>();
 
     void Update()
     {
         if (Time.time < _next) return;
-        _next = Time.time + interval;
+        _next = Time.time + 5f;
         foreach (Animal a in crias)
         {
             if (a == null || a.Dead || a.Body == null || a.hungry < 0f) continue;
+            if (_last.TryGetValue(a, out float t) && Time.time - t < Mathf.Min(interval, 30f)) continue;
+            _last[a] = Time.time;
             a.hungry = -a.Body.GetMealWeight(a.Mass);   // una toma: saciada una comida
             Debug.Log($"[Cría] toma de «{a.name}» ({what}).");
         }

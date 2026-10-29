@@ -53,6 +53,10 @@ public class Linduarda : MonoBehaviour
         if (_a == null || _a.death) return;
         NewcomerInitiator ni = GetComponent<NewcomerInitiator>();
         if (ni != null && ni.InProgress) return;   // está iniciando a un recién llegado: primero eso (si no, se iba a atender a otro)
+        // Sus NECESIDADES van antes (comer, baño, dormir): JornadaTest 2026-10-29, Linduarda iba y venía en alfombra entre la
+        // barra del restaurante y la perrera del lobo, una vez cada conductor, y nunca llegaba a sentarse a comer.
+        if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell || q.Own[0] is CarpetWalkSpell)) return;
+        if (_a.asleep) return;
         if (_sample != null) { CarrySample(); return; }   // llevando la muestra al analizador
         if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
@@ -72,12 +76,20 @@ public class Linduarda : MonoBehaviour
         Debug.Log($"[Linduarda] toma una muestra de sangre a «{patient}» para analizarla.");
     }
 
+    float _sampleBest = float.MaxValue, _sampleSince;
     void CarrySample()
     {
         ClinicalStation st = FindObjectOfType<ClinicalStation>();
         if (st == null) { Destroy(_sample.gameObject); _sample = null; return; }
         Vector3 to = st.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { PathMover.Of(this).StepToward(st.transform.position, moveSpeed); return; }
+        bool level = Mathf.Abs(st.transform.position.y - transform.position.y) < 2f;
+        if (!level) { _sampleBest = float.MaxValue; _sampleSince = Time.time; }
+        else if (to.magnitude < _sampleBest - 0.5f) { _sampleBest = to.magnitude; _sampleSince = Time.time; }
+        // (sin acercarse 6 s a menos de 4 m: el analizador está contra la pared y su centro no se alcanza; rondaba el mueble
+        // 42 m en 20 s — JornadaTest 2026-10-29. Desde ahí ya llega con la mano.)
+        bool there = level && (to.magnitude <= reach || (to.magnitude < 4f && Time.time - _sampleSince > 6f));
+        if (!there) { PathMover.Of(this).StepToward(st.transform.position, moveSpeed); return; }
+        _sampleBest = float.MaxValue;
         Destroy(_sample.gameObject); _sample = null;
         Debug.Log($"[Clínico] Linduarda analiza la muestra de «{_sampleOf}» en el analizador: apto para seguir (falta la vacuna).");
     }
@@ -104,11 +116,32 @@ public class Linduarda : MonoBehaviour
         return best;
     }
 
+    // SIN ACERCARSE (el lobo está en su perrera: no se llega a 2,5 m de su centro y rondaba la perrera dando vueltas): a
+    // menos de 4 m, si en 6 s no se acerca medio metro, le atiende desde ahí (por los barrotes); más lejos, a los 10 s lo deja
+    // para la próxima ronda.
+    float _bestGap = float.MaxValue, _gapSince;
+    bool CloseEnough(float gap)
+    {
+        if (gap < _bestGap - 0.5f) { _bestGap = gap; _gapSince = Time.time; return false; }
+        if (Time.time - _gapSince < (gap < 4f ? 6f : 10f)) return false;
+        if (gap < 4f) return true;
+        Debug.Log($"[Linduarda] no llega hasta «{_patient.name}» (a {gap:0.0} m): lo deja para la próxima ronda.");
+        _patient = null; _bestGap = float.MaxValue; _next = Time.time + 30f;
+        return false;
+    }
+
     void GoAttend()
     {
         if (_patient == null || _patient.gameObject == null) { _patient = null; return; }
         Vector3 to = _patient.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach) { PathMover.Of(this).StepToward(_patient.transform.position, moveSpeed); return; }
+        bool level = Mathf.Abs(_patient.transform.position.y - transform.position.y) < 2f;
+        if (!level || (to.magnitude > reach && !CloseEnough(to.magnitude)))
+        {
+            if (_patient == null) return;   // (no llega: lo dejó para la próxima ronda)
+            if (!level) { _bestGap = float.MaxValue; _gapSince = Time.time; }   // (de camino en alfombra: aún no cuenta)
+            PathMover.Of(this).StepToward(_patient.transform.position, moveSpeed); return;
+        }
+        _bestGap = float.MaxValue;
 
         ITarget it = _patient.GetComponentInParent<ITarget>();
         if (!_patient.analyzed)
