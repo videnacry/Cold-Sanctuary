@@ -715,6 +715,25 @@ public static class AreaMicrocosmos
             Ant(root, $"Recolectora_{i + 1}", new Vector3(Mathf.Cos(a) * 12f, 0f, Mathf.Sin(a) * 12f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
             n++;
         }
+        // CÓMO NACIÓ LA COCINA (docs/novela.md): la historia jugable. Sus piezas van en el claro de la historia (la plaza de
+        // historia del piso, ×10; FitStory la mete entera dentro de los muros): el HOGAR (piedras alrededor de la brasa y la
+        // piedra caliente donde se tuesta lo primero) y los RESTOS DEL HOGAR que Kushal y Nasatya llevan al fuego (no son
+        // MicroFood: las recolectoras no se los llevan a la guarida).
+        Material stoneMat = Mat("Micro_Piedra_hogar", new Color(0.5f, 0.48f, 0.45f));
+        for (int k = 0; k < 8; k++)
+        {
+            float a = k * 45f * Mathf.Deg2Rad;
+            Box(root, "Piedra_del_circulo", ember.localPosition + new Vector3(Mathf.Cos(a) * 1.5f, -0.2f, Mathf.Sin(a) * 1.5f), new Vector3(0.6f, 0.4f, 0.6f), stoneMat, false);
+        }
+        Box(root, "Piedra_del_hogar", ember.localPosition + new Vector3(1.8f, -0.2f, -1f), new Vector3(2f, 0.4f, 1.6f), stoneMat, false);
+        Transform scraps = new GameObject("Restos_del_hogar").transform; scraps.SetParent(root, false);
+        Material crumb = Mat("Micro_Miga", new Color(0.9f, 0.75f, 0.45f)), fruit = Mat("Micro_Fruta", new Color(0.85f, 0.3f, 0.25f));
+        for (int i = 0; i < KitchenOriginStory.ScrapCount; i++)
+        {
+            float a = (i * 36f + 18f) * Mathf.Deg2Rad, r = 15f + (i % 3) * 3.5f;   // entre las recolectoras (12 m) y los restos de la tribu
+            Box(scraps, $"Resto_del_hogar_{i + 1}", new Vector3(Mathf.Cos(a) * r, 0.4f, Mathf.Sin(a) * r), Vector3.one * 0.8f, Quaternion.Euler(0f, i * 23f, 0f), i % 3 == 0 ? fruit : crumb, false);
+        }
+        root.gameObject.AddComponent<KitchenOriginStory>();
         return n;
     }
 

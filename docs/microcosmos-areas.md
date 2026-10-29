@@ -36,6 +36,7 @@ Es como si de pronto el mundo fuera de insectos.
   - La tribu recoge restos de comida y los lleva a la guarida.
   - **La Tirana de las Feromonas** (Medea renacida) es la líder: muy poderosa. Cada poco va a ver a **Nasatya** (Ambrosio renacido: enorme, manso, recostado en una postura rara) y con él es blanda.
   - Están también **El Señor del Fuego** (Héspero), junto a la brasa, **El Chamán** (Sakshi) y **El Bufón** (Momo).
+  - **Historia jugable: «Cómo nació la cocina»** ([novela.md](novela.md)), `KitchenOriginStory` (en el `Elenco`, junto al hogar: piedras alrededor de la brasa, `Piedra_del_hogar` y 10 `Restos_del_hogar`, todo en el claro de la plaza de historia). Beats: Intro → **Carry** (E junto a un resto lo coge, E junto al fuego lo deja; 4 restos; Nasatya lleva los suyos y la Tirana le deja hacer) → **Accident** (el grano del Bufón cae junto a la brasa: lo primero cocinado) → **Vigil** (la vigilia del fuego: E junto al fuego, 3 veces, mientras la llama mengua) → **Circle** (nadie fuera del círculo) → **Farewell** (Nasatya, de lado) → `Progress.MarkStory` y `MobWorldLoader.ExitMobWorld`. Cada espera con tope (si el jugador no llega, Nasatya o el Señor del Fuego terminan la tarea). Prueba: `KitchenOriginStoryTest` (grupo 44).
 - **Huerto:** **La Sembradora** (Ruth renacida) cuida el bancal de hongos.
   - Cada poco enseña a una recolectora a cultivar: deja de recoger y lleva hojas al bancal, y los hongos crecen.
   - Así la tribu pasa de recolectar a cultivar.
