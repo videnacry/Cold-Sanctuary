@@ -300,9 +300,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         // TORRES TEMÁTICAS (Berón 2026-10-29; docs/plano-edificios.md): pocos edificios con muchos pisos. Solo hay 4 edificios de
         // más de un piso (más el techo): Servicios, Entrenamiento, Ciencias y Producción; la Central Nuclear va aparte (1 piso) y
         // los huertos del agua son parcelas. Pisos con alfombras de edificio = los de la torre + el techo.
-        var towerFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 6 } };
+        // El ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md) solo tiene alfombras en el suelo (0) y en su copa (9): entre pisos se nada.
+        var towerFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 4 }, { TreeSpec.Building, 9 } };
         var tall = CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio).GroupBy(c => c.building).Where(g => g.Max(c => c.floor) >= 3).ToDictionary(g => g.Key, g => g.Max(c => c.floor));
-        TestProbe.Check("4 torres temáticas (Servicios, Entrenamiento, Ciencias, Producción) con sus pisos, y ningún otro edificio de varios pisos",
+        TestProbe.Check("4 torres temáticas (Servicios, Entrenamiento, Ciencias, Producción) y el Árbol de los Campos con sus pisos, y ningún otro edificio de varios pisos",
             tall.Count == towerFloors.Count && towerFloors.All(kv => tall.TryGetValue(kv.Key, out int n) && n == kv.Value),
             string.Join(", ", tall.Select(kv => $"{kv.Key} {kv.Value}")));
         TestProbe.Check("la Central Nuclear sigue aparte (su sitio de exclusión), de un piso", CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio && c.building == "Central Nuclear").Select(c => c.floor).DefaultIfEmpty(0).Max() == 2);
@@ -320,7 +321,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check("las áreas de cada torre van apiladas, de abajo arriba",
             Stacked("Kitchen_Area", "Infirmary_Area", "CubCare_Area", "CulturedMeatLab_Area") && Stacked("Gym_Area", "Calisthenics_Area", "YogaRoom_Area", "Ballet_Area", "MartialArts_Area")
-            && Stacked("AtomicPlant_Area", "Chemistry_Area", "Biology_Area") && Stacked("Garden_Area", "Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
+            && Stacked("AtomicPlant_Area", "Chemistry_Area", "Biology_Area") && Stacked("Construction_Area", "VehicleWorkshop_Area", "TextileStudio_Area"));
         // La Cría va ENCIMA de la planta más alta del hospital (la veterinaria), no 11 m sobre su planta baja.
         GameObject vetFloor = GameObject.Find("Planta_veterinaria"), criaGo = GameObject.Find("CubCare_Area");
         if (vetFloor != null && criaGo != null)
@@ -384,7 +385,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         int hospFloors = pads.Where(p => p.building == "Servicios" && p.kind == CarpetPad.Kind.Edificio).Select(p => p.floor).Distinct().Count();
         TestProbe.Greater("la torre de Servicios (con el hospital) tiene alfombras en cada piso, en el hielo y en el techo (8)", hospFloors, 7f, $"{hospFloors} pisos con alfombras");
         int roofs = pads.Count(p => p.kind == CarpetPad.Kind.Santuario);
-        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, 5 parcelas, la residencia)", roofs, 9f, $"{roofs} techos");
+        TestProbe.Greater("cada edificio tiene en su techo las alfombras del santuario (4 torres, la central, el Árbol de los Campos, la residencia)", roofs, 6f, $"{roofs} techos");
         TestProbe.Check("en el techo, las de edificio y las del santuario están en el mismo piso", pads.Where(p => p.kind == CarpetPad.Kind.Santuario && p.building != "Residencia").All(s => pads.Any(e => e.kind == CarpetPad.Kind.Edificio && e.surface == s.surface)));
         TestProbe.Check("cada casa del árbol tiene su alfombra (y la residencia, la de cada habitación)", pads.Count(p => p.kind == CarpetPad.Kind.Habitacion) >= 12 && pads.Any(p => p.kind == CarpetPad.Kind.Residencia));
         CarpetPad anyB = pads.FirstOrDefault(p => p.kind == CarpetPad.Kind.Edificio && p.floor == 1);
@@ -458,7 +459,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             foreach (PlatformSlots.Kind k in System.Enum.GetValues(typeof(PlatformSlots.Kind)))
                 for (int i = 0; i < ps.Count(k); i++)
                 {
-                    Vector3 w = ps.World(k, i);
+                    Vector3 w = FurnitureSpacing.Local(sa.transform, ps.World(k, i));   // (en un piso que gira, en su marco)
                     foreach (var (t, b) in items)
                         if (Mathf.Abs(b.min.y - w.y) < 1.5f && FurnitureSpacing.DistXZ(b, w) < 0.99f)   // (mismo piso)
                         { close++; if (who.Length < 160) who += $"{k} {i} junto a «{t.name}»; "; break; }

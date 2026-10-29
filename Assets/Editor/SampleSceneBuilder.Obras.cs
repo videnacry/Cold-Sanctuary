@@ -127,7 +127,7 @@ public static partial class SampleSceneBuilder
         {
             Vector3 w = area.TransformPoint(l);
             float free = float.MaxValue;
-            foreach (var (it, b) in items) if (self == null || (it != self && !it.IsChildOf(self))) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, w) - radius);
+            foreach (var (it, b) in items) if (self == null || (it != self && !it.IsChildOf(self))) free = Mathf.Min(free, FurnitureSpacing.DistXZ(b, FurnitureSpacing.Local(area, w)) - radius);
             foreach (CarpetPad cp in area.GetComponentsInChildren<CarpetPad>()) free = Mathf.Min(free, Vector3.Distance(new Vector3(cp.transform.position.x, w.y, cp.transform.position.z), w) - radius - 2.5f);   // (una esterilla-alfombra mide ~2,5 m)
             if (free >= FurnitureSpacing.Standard) return l;
             if (free > bestFree) { bestFree = free; best = l; }

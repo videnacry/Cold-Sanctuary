@@ -135,13 +135,39 @@ public static class FurnitureSpacing
         return true;
     }
 
-    static bool Box(Transform t, out Bounds b)
+    // PISOS QUE GIRAN (el Árbol de los Campos, docs/edificio-arbol.md): sus muebles se miden en el MARCO DEL PISO, no en el
+    // mundo (girado 45° o inclinado, la caja alineada con el mundo de una mesa crece y dos muebles a 2 m «se tocarían»).
+    // Las cajas de Items y Violations van entonces en coordenadas locales del piso (ver Frame, Local, ToWorld).
+
+    /// <summary>El piso móvil (<see cref="TreeFloor"/>) en que está <paramref name="root"/>, o null (se mide en el mundo).</summary>
+    public static Transform Frame(Transform root)
+    {
+        for (Transform t = root; t != null; t = t.parent) if (t.GetComponent<TreeFloor>() != null) return t;
+        return null;
+    }
+
+    /// <summary>Un punto del mundo en el marco en que <see cref="Items"/> da las cajas de <paramref name="root"/>.</summary>
+    public static Vector3 Local(Transform root, Vector3 world) { Transform f = Frame(root); return f != null ? f.InverseTransformPoint(world) : world; }
+
+    /// <summary>Una caja de <see cref="Items"/> de <paramref name="root"/> en el mundo (la caja que la envuelve).</summary>
+    public static Bounds ToWorld(Transform root, Bounds b) { Transform f = Frame(root); return f != null ? Wrap(f.localToWorldMatrix, b) : b; }
+
+    static Bounds Wrap(Matrix4x4 m, Bounds b)
+    {
+        Bounds o = new Bounds(m.MultiplyPoint3x4(b.center), Vector3.zero);
+        for (int i = 0; i < 8; i++)
+            o.Encapsulate(m.MultiplyPoint3x4(b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1f : 1f, (i & 2) == 0 ? -1f : 1f, (i & 4) == 0 ? -1f : 1f))));
+        return o;
+    }
+
+    static bool Box(Transform t, out Bounds b, Transform frame = null)
     {
         b = default; bool any = false;
         foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
         {
             if (!r.enabled) continue;
-            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+            Bounds rb = frame == null ? r.bounds : Wrap(frame.worldToLocalMatrix * r.transform.localToWorldMatrix, r.localBounds);
+            if (!any) { b = rb; any = true; } else b.Encapsulate(rb);
         }
         return any;
     }
@@ -160,8 +186,9 @@ public static class FurnitureSpacing
     public static List<(Transform t, Bounds b)> Items(Transform root)
     {
         var l = new List<(Transform, Bounds)>();
+        Transform frame = Frame(root);
         foreach (Transform t in root.GetComponentsInChildren<Transform>())
-            if (Measured(t, root) && Box(t, out Bounds b)) l.Add((t, b));
+            if (Measured(t, root) && Box(t, out Bounds b, frame)) l.Add((t, b));
         return l;
     }
 
@@ -177,16 +204,17 @@ public static class FurnitureSpacing
     public static List<(Transform a, Transform b, float gap, float need)> Violations(Transform root)
     {
         var items = new List<(Transform t, Bounds b, bool pad)>();
+        Transform frame = Frame(root);
         foreach (Transform t in root.GetComponentsInChildren<Transform>())
         {
             CarpetPad cp = t.GetComponent<CarpetPad>();
             if (cp != null)
             {
                 BoxCollider bc = t.GetComponent<BoxCollider>();   // la zona marcada (BuildZone: su caja es la zona, 2 m de alto)
-                if (bc != null) items.Add((t, new Bounds(t.TransformPoint(bc.center), Abs(t.rotation * bc.size)), true));
+                if (bc != null) items.Add((t, frame == null ? new Bounds(t.TransformPoint(bc.center), Abs(t.rotation * bc.size)) : Wrap(frame.worldToLocalMatrix * t.localToWorldMatrix, new Bounds(bc.center, bc.size)), true));
                 continue;
             }
-            if (Measured(t, root) && Box(t, out Bounds b)) items.Add((t, b, false));
+            if (Measured(t, root) && Box(t, out Bounds b, frame)) items.Add((t, b, false));
         }
         // Lo que va ENCIMA de otro mueble (apoyado en su tablero) es parte de él: no se mide.
         items.RemoveAll(it => !it.pad && items.Exists(o => !o.pad && o.t != it.t && it.b.min.y >= o.b.max.y - 0.1f && it.b.min.y <= o.b.max.y + 0.1f

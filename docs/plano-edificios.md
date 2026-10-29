@@ -34,7 +34,8 @@ Cotas de la cara de cada piso: P0 = 12 m, P1 = 23, P2 = 34, P3 = 45, P4 = 56, P5
 | **Servicios** (personas y animales) | (5, 94) · Norte:Cocina | 40 × 38 (el restaurante) | P0 Restaurante (`Kitchen_Area`, con el anillo del comedor) · P1 Hospital: urgencias y ambulatorio (`Infirmary_Area`, anillo de observación y maternidad) · P2 Hospital: quirófanos, UCI y aislamiento (`Planta_hospitalizacion`, anillo de recuperación) · P3 Hospital veterinario (`Planta_veterinaria`, anillo de grandes animales) · P4 Cría (`CubCare_Area`) · P5 Carne Cultivada (`CulturedMeatLab_Area`) | 78 m |
 | **Entrenamiento** | (10, 0) · Centro:Hub | 36 × 26 (`GymSize`) | P0 Gimnasio (`Gym_Area`) · P1 Cardio y zona libre · P2 Calistenia, parkour y crossfit (`Calisthenics_Area`) · P3 Sala de Yoga (`YogaRoom_Area`, anillo de esterillas y estatuas) · P4 Sala de Ballet (en obras) · P5 Dojo (en obras) | 78 m |
 | **Ciencias** | (92, −108) · Sur:Biologia | 32 × 20 (biología) | P0 Física: reactor TRIGA (`AtomicPlant_Area`; la piscina baja como pilar hasta el suelo) · P1 ciclotrón · P2 sala de experimentos (anillo y torre de Foucault) · P3 Química: síntesis (`Chemistry_Area`) · P4 Química: análisis · P5 Biología: cultivo (`Biology_Area`) · P6 Biología: molecular | 89 m |
-| **Producción** (huertos, jardines y construcción) | (18, −95) · Sur:Rotacion | 26 × 20 (el huerto) | P0 Huerto (`Garden_Area`, hortalizas y máquina) · P1 Rotación (`Huerto_Rotacion`) · P2 Construcción (`Construction_Area`) · P3 Mecánica (`VehicleWorkshop_Area`) · P4 Estudio Textil (`TextileStudio_Area`) | 67 m |
+| **Producción** (construcción y talleres) | (18, −95) · Sur:Rotacion | 26 × 20 | P0 Construcción (`Construction_Area`) · P1 Mecánica (`VehicleWorkshop_Area`) · P2 Estudio Textil (`TextileStudio_Area`) | 45 m |
+| **Árbol de los Campos** (los cultivos; docs/edificio-arbol.md) | (−50, −84) · Sur:Milpa | octógonos de ~51 m sobre una raíz de agua de Ø 22 m | P1 Arrozal · P2 Bambusal · P3 Milpa · P4 Chacra andina · P5 Huerto (`Garden_Area`) · P6 Rotación · P7–P8 Bosque comestible (6 a 62 m); 6 ramas con anillos de nidos (~91 m) | copa a 101 m (y alfombras en el suelo) |
 | Central Nuclear (aparte) | (60, −162) · Sur:Central | 46 × 30 | P0 microrreactor de producción | 23 m |
 
 **Por qué así**
@@ -45,18 +46,17 @@ Cotas de la cara de cada piso: P0 = 12 m, P1 = 23, P2 = 34, P3 = 45, P4 = 56, P5
   anillo) arriba; las dos salas en obras, arriba del todo (su material sube en alfombra).
 - *Ciencias*: el reactor TRIGA tiene que ir en la planta baja (su piscina es un pilar hasta el suelo); encima, química y
   biología. La torre de Foucault (17 m sobre el anillo de P2) queda fuera del octógono, junto a P3–P4, sin tocar su losa.
-- *Producción*: la tierra (lo que más pesa) y la maquinaria pesada abajo; el taller textil arriba. Va en el casquete Sur,
-  junto a la milpa y la chacra andina (el casquete de los huertos), porque en el hub no caben el Entrenamiento y otra torre
-  a 16 m del anillo de yoga.
+- *Producción*: la maquinaria pesada abajo y el taller textil arriba, en el casquete Sur. Los cultivos se mudaron al
+  Árbol de los Campos, en el lóbulo vecino (Sur:Milpa): la torre queda más baja (3 pisos y el techo, 45 m).
 - **Central Nuclear, aparte**: un reactor de producción necesita su propio sitio de exclusión (el límite pintado alrededor)
   y no debe compartir columnas ni pisos con nadie. Es la única excepción.
 
-**Distancias** (punta de anillo → torre o parcela vecina): Entrenamiento (anillo de yoga hasta x −16) ↔ Bambusal 17 m;
+**Distancias** (punta de anillo → torre o parcela vecina): Árbol de los Campos ↔ Producción: pisos 22 m, anillos de nidos 4 m en planta pero más de 30 m por encima de su techo; Árbol ↔ Entrenamiento: anillos 23 m;
 Ciencias (anillo de física hasta z −126) ↔ Central Nuclear 18,6 m; Ciencias ↔ Producción 35 m; Servicios ↔ Entrenamiento
 46 m.
 
-**Parcelas** (siguen siendo campos junto al agua, cada una en su plataforma con su andén de alfombras): Milpa (−45, −75),
-Chacra andina (−10, −118), Arrozal (−60, −15), Bosque comestible (−78, 45) y Bambusal (−42, 0). El campo solar sigue en el
+**Parcelas**: ya no hay. Desde el 2026-10-29 los campos (milpa, chacra andina, arrozal, bosque comestible, bambusal, el
+huerto y la rotación) están en los pisos del **Árbol de los Campos** (docs/edificio-arbol.md); sus lóbulos vuelven a la naturaleza. El campo solar sigue en el
 suelo del hub, en (26, −26…−34).
 
 Quedan libres los lóbulos de la antigua enfermería (55, 97), la sala de yoga (105, 35) y química (52, −110): vuelven a la

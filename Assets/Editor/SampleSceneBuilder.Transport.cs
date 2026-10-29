@@ -151,6 +151,7 @@ public static partial class SampleSceneBuilder
         // Con muebles (y acabados de obra) y alfombras ya puestos: las POSICIONES RESERVADAS del microcosmos (regla 8).
         PlaceReservedSlots(all);
         foreach (GameObject g in unfinished) g.SetActive(false);   // siguen en obras
+        PoseTree();   // el Árbol de los Campos, medido sin girar, toma su forma (pisos girados 45° e inclinados ±3°)
         Debug.Log($"[Transporte] {zones} áreas de alfombras en {buildings.Count} edificios (cada piso, y en el techo las de edificio y santuario).");
     }
 

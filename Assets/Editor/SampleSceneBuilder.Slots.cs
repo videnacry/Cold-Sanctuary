@@ -92,7 +92,7 @@ public static partial class SampleSceneBuilder
             if (b.max.y > fy + 0.03f && b.min.y < fy + 2.2f && b.max.x > foot.min.x && b.min.x < foot.max.x && b.max.z > foot.min.z && b.min.z < foot.max.z) near.Add(b);
         // Y cada MUEBLE entero de este piso (la caja que mide FurnitureSpacing, la que mira la prueba): la pluma de una grúa
         // por encima de 2 m también lo aparta.
-        foreach (var (_, b) in FurnitureSpacing.Items(f)) if (Mathf.Abs(b.min.y - fy) < 1.5f) near.Add(b);
+        foreach (var (_, lb) in FurnitureSpacing.Items(f)) { Bounds b = FurnitureSpacing.ToWorld(f, lb); if (Mathf.Abs(b.min.y - fy) < 1.5f) near.Add(b); }   // (en un piso que gira, las cajas vienen en su marco)
         var nearPads = new List<Bounds>();
         foreach (Bounds b in pads)
             if (Mathf.Abs(b.min.y - fy) < 1.5f && b.max.x > foot.min.x && b.min.x < foot.max.x && b.max.z > foot.min.z && b.min.z < foot.max.z) nearPads.Add(b);

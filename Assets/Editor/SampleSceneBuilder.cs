@@ -2350,10 +2350,49 @@ public static partial class SampleSceneBuilder
     {
         GameObject ground = GameObject.Find("Ground_Placeholder");
         if (ground == null) return;
+        // EL ÁRBOL DE LOS CAMPOS gira: tiene su PROPIO NavMesh (en sus coordenadas; TreeRotator lo recoloca al girar). Fuera
+        // del horneado general, y el pie de la raíz (la columna de agua) no se anda.
+        GameObject tree = GameObject.Find(TreeSpec.RootName);
+        if (tree != null) { RootNoWalk(tree.transform); tree.SetActive(false); }
         NavMeshSurface surface = ground.GetComponent<NavMeshSurface>();
         if (surface == null) surface = ground.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
         surface.BuildNavMesh();
+        if (tree != null) { tree.SetActive(true); BakeTreeNavMesh(tree); }
+    }
+
+    // El NavMesh del árbol: solo sus hijos; sin el agua, los campos magnéticos, las cascadas, el exoesqueleto ni los tubos de
+    // las ramas y sus campanas (encima de un tubo a 35° el NavMesh dejaría «andar» de la raíz a un anillo).
+    static void BakeTreeNavMesh(GameObject tree)
+    {
+        foreach (Transform t in tree.GetComponentsInChildren<Transform>(true))
+        {
+            string n = t.name;
+            if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz")
+                t.GetOrAdd<NavMeshModifier>().ignoreFromBuild = true;
+        }
+        NavMeshSurface s = tree.GetOrAdd<NavMeshSurface>();
+        s.collectObjects = CollectObjects.Children;
+        s.BuildNavMesh();
+        Debug.Log($"[Árbol] NavMesh propio del árbol horneado (gira con él: {nameof(TreeRotator)} lo recoloca).");
+    }
+
+    // Al pie de la raíz, en el NavMesh general (quieto): el círculo de la columna no se anda (franjas de 2 m que lo cubren).
+    static void RootNoWalk(Transform tree)
+    {
+        Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable") : null;
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+        Transform g = new GameObject("Raiz_no_andable").transform; g.SetParent(tree.parent, false); g.position = tree.position;
+        float R = TreeSpec.OuterRadius + 0.2f;
+        for (float z0 = -R; z0 < R - 0.01f; z0 += 2f)
+        {
+            float z1 = Mathf.Min(R, z0 + 2f), zn = Mathf.Min(Mathf.Abs(z0), Mathf.Abs(z1));
+            if (z0 < 0f && z1 > 0f) zn = 0f;
+            float hx = Mathf.Sqrt(Mathf.Max(0f, R * R - zn * zn));
+            NavMeshModifierVolume v = g.gameObject.AddComponent<NavMeshModifierVolume>();
+            v.center = new Vector3(0f, 1f, (z0 + z1) * 0.5f); v.size = new Vector3(2f * hx, 4f, z1 - z0); v.area = 1;   // 1 = no andable
+        }
     }
 
     // ── Sea + fog ────────────────────────────────────────────────────────────
@@ -3459,23 +3498,26 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
                 EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
 
-            // ── PRODUCCIÓN (huertos, jardines y construcción) ──
+            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 44 × 9 m de su piso 5 ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                ProduccionCenter, ProduccionSize, new Color(0.50f, 0.70f, 0.40f)),   // P0 (P1: el huerto de rotación)
+                TreeSpec.Site, new Vector2(44f, 9f), new Color(0.50f, 0.70f, 0.40f)),
+            // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
             // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
             // maquinaria y el material. La dirige el esposo de Lizmibet.
             BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
-                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P2
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P0
             BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
-                ProduccionCenter, ProduccionSize, new Color(0.55f, 0.55f, 0.60f)),   // P3
+                ProduccionCenter, ProduccionSize, new Color(0.55f, 0.55f, 0.60f)),   // P1
             BuildAreaBox(areasGroup.transform, "TextileStudio_Area", "Estudio Textil", SanctuaryAreaType.TextileStudio, 2,
-                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.60f, 0.65f)),   // P4: telares, rueca, tintes…
+                ProduccionCenter, ProduccionSize, new Color(0.85f, 0.60f, 0.65f)),   // P2: telares, rueca, tintes…
         };
         SanctuaryArea A(string go) => areas.Find(x => x.name == go);
         SanctuaryArea kitchen = A("Kitchen_Area"), hospital = A("Infirmary_Area"), yoga = A("YogaRoom_Area"), mech = A("VehicleWorkshop_Area"),
             textile = A("TextileStudio_Area"), meat = A("CulturedMeatLab_Area"), works = A("Construction_Area"), gym = A("Gym_Area"),
             ballet = A("Ballet_Area"), dojo = A("MartialArts_Area"), calis = A("Calisthenics_Area"), cria = A("CubCare_Area"), garden = A("Garden_Area");
-        PlantGarden(garden.transform);
+        // EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; SampleSceneBuilder.Tree.cs): los 8 cultivos (antes parcelas sueltas junto al
+        // agua y el huerto con su rotación en la torre de Producción) en los pisos del árbol; el Huerto, en su piso 5.
+        BuildTree(areasGroup.transform, garden);
         // POCOS EDIFICIOS CON MUCHOS PISOS (Berón 2026-10-29): todo lo construido va ELEVADO (12 m, sobre columnas: el suelo
         // queda para la naturaleza) y los pisos de cada torre se apilan 11 m uno sobre otro, de abajo arriba (TowerFloor →
         // StackOn); se sube y se baja en alfombra voladora. Las áreas con plantas propias (hospital, física, química, biología)
@@ -3493,15 +3535,12 @@ public static partial class SampleSceneBuilder
         BeginTower(EntrenamientoCenter, GymSize);
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
         Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ballet.transform); Floor(dojo.transform);
-        //  · PRODUCCIÓN: Huerto · Rotación · Construcción · Mecánica · Estudio Textil. La tierra (lo que más pesa) y la
-        //    maquinaria pesada, abajo.
+        //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
+        //    pesada, abajo.
         BeginTower(ProduccionCenter, ProduccionSize);
-        Floor(garden.transform);
-        Transform rotation = UpperGarden(garden.transform, size[garden.transform]);   // el huerto de ROTACIÓN (un GardenPlot), piso 1
-        size[rotation] = _platforms[rotation]; _towerTop = rotation;
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
-        BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[garden.transform] = TorreProduccion;
+        BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
         FurnishYoga(yoga.transform, size[yoga.transform]);
         FurnishTextile(textile.transform, size[textile.transform]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
@@ -3538,7 +3577,7 @@ public static partial class SampleSceneBuilder
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { kitchen, gym, garden, plant, nuc };
+        var ground = new List<SanctuaryArea> { kitchen, gym, works, plant, nuc };   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)
@@ -3566,31 +3605,9 @@ public static partial class SampleSceneBuilder
         return areas.ToArray();
     }
 
-    // HUERTOS POR GREMIO repartidos por el mapa (docs/huertos-y-cultivos.md): en vez de un único terreno, varias
-    // parcelas de policultivo —cada una con plantas que se ayudan— cerca del agua o de las áreas que las usan. Las
-    // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (con collider, para el NavMesh) y el cartel.
-    static void PlantGarden(Transform garden)
-    {
-        // Hortalizas asociadas dentro del área del Huerto (delante de la máquina de virtualización).
-        MakePlot(garden, GardenPlot.Guild.Hortalizas, garden.TransformPoint(new Vector3(0f, 0.1f, -3.5f)), new Vector2(20f, 12f), 11, false);
-        Transform parent = garden.parent;
-        MakePlot(parent, GardenPlot.Guild.Milpa,            new Vector3(-45f, 0f, -75f), new Vector2(20f, 20f), 12, true);
-        MakePlot(parent, GardenPlot.Guild.ChacraAndina,     new Vector3(-10f, 0f, -118f), new Vector2(18f, 14f), 13, true);
-        MakePlot(parent, GardenPlot.Guild.Arrozal,          new Vector3(-60f, 0f, -15f),   new Vector2(22f, 16f), 14, true);
-        // (La ROTACIÓN ya no tiene base propia: es el piso de arriba del Huerto, ver UpperGarden.)
-        MakePlot(parent, GardenPlot.Guild.BosqueComestible, new Vector3(-78f, 0f, 45f),   new Vector2(30f, 26f), 16, true);
-        MakePlot(parent, GardenPlot.Guild.Bambusal,         new Vector3(-42f, 0f, 0f),    new Vector2(16f, 12f), 17, true);   // guadua y cáñamo: el material de Construcción
-    }
-
-    // SEGUNDO HUERTO en la misma base: el de ROTACIÓN, 10 m sobre el Huerto (dos huertos, una base, sin puente aparte).
-    static Transform UpperGarden(Transform garden, Vector2 gardenSize)
-    {
-        Vector2 size = new Vector2(gardenSize.x - 2f, gardenSize.y - SetBack - 2f);   // + 2 m de suelo alrededor = el piso
-        GameObject go = MakePlot(garden.parent, GardenPlot.Guild.Rotacion, garden.TransformPoint(new Vector3(0f, 0f, -SetBack * 0.5f)), size, 15, true, upperOf: garden);
-        go.transform.rotation = garden.rotation;
-        return go.transform;
-    }
-
+    // HUERTOS POR GREMIO (docs/huertos-y-cultivos.md): parcelas de policultivo, cada una con plantas que se ayudan. Desde el
+    // 2026-10-29 están en los pisos del ÁRBOL DE LOS CAMPOS (SampleSceneBuilder.Tree.cs): el árbol las monta con MakePlot. Las
+    // plantas las genera GardenPlot al arrancar; aquí se pone el suelo (si lo lleva) y el cartel.
     static GameObject MakePlot(Transform parent, GardenPlot.Guild guild, Vector3 center, Vector2 size, int seed, bool withSoil, Transform upperOf = null)
     {
         GameObject go = new GameObject($"Huerto_{guild}");

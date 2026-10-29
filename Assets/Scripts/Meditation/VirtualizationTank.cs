@@ -20,9 +20,12 @@ public class VirtualizationTank : MonoBehaviour
     [SerializeField] Transform _doorA, _doorB, _field;
     static bool _busy;
 
+    /// <summary>El cristal y el agua de la pecera (los reutiliza la raíz del Árbol de los Campos: igual de transparente).</summary>
+    public static readonly Color GlassColor = new Color(0.82f, 0.94f, 1f, 0.18f), WaterColor = new Color(0.25f, 0.62f, 0.88f, 0.55f);
+
     public static VirtualizationTank Build(Transform machine)
     {
-        Color glass = new Color(0.82f, 0.94f, 1f, 0.18f), water = new Color(0.25f, 0.62f, 0.88f, 0.55f),
+        Color glass = GlassColor, water = WaterColor,
               metal = KitchenProps.Steel, dark = KitchenProps.DarkSteel;
         Color coil = new Color(0.72f, 0.45f, 0.22f), glow = new Color(0.55f, 0.85f, 1f, 0.35f);
         Transform t = new GameObject("Tanque").transform;

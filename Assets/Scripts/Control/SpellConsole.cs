@@ -269,6 +269,8 @@ public class SpellConsole : MonoBehaviour
         ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
         ("tercera",   "tercera({on:true})"),   // la cámara en 3.ª persona siempre (para probar en vivo)
         ("miembro",   "miembro({destiny:\"Kushal\"})"),   // (admin) hace a alguien miembro del santuario: se salta la iniciación
+        ("arbol",     "arbol({vueltaHoras:6})"),   // el Árbol de los Campos: horas del juego por vuelta (0 = quieto)
+        ("piso",      "piso({n:5})"),   // subir o bajar a un piso del Árbol de los Campos (0–8, anillo1–6): andando a su puerta y nadando por la raíz
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
@@ -543,6 +545,19 @@ public class SpellConsole : MonoBehaviour
             case "tercera": case "third":   // 3.ª PERSONA SIEMPRE: ninguna zona, examen ni robo de cámara la pasa a 1.ª
                 CameraManager.ThirdAlways = !args.TryGetValue("on", out string to3) || Clean(to3) != "false";
                 Log(CameraManager.ThirdAlways ? "Cámara: 3.ª persona siempre." : "Cámara: normal (la V y las zonas vuelven a cambiarla).");
+                break;
+            case "arbol": case "árbol": case "tree":   // GIRO DEL ÁRBOL DE LOS CAMPOS: arbol({vueltaHoras:N}), N horas del juego por vuelta; 0 lo para
+                {
+                    string vh = args.TryGetValue("vueltahoras", out string v1) ? v1 : args.TryGetValue("destiny", out string v2) ? v2 : "6";
+                    if (float.TryParse(Clean(vh), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hrs)) Log(TreeRotator.Set(hrs));
+                    else Log($"«{vh}» no es un número de horas (0 = quieto).");
+                }
+                break;
+            case "piso": case "floor":   // SUBIR/BAJAR AL PISO N del Árbol de los Campos: anda a la puerta y nada por la raíz (sin teletransporte)
+                {
+                    string pn = args.TryGetValue("n", out string n1) ? n1 : args.TryGetValue("destiny", out string n2) ? n2 : "";
+                    Log(ArbolCampos.GoTo(self.gameObject, Clean(pn)));
+                }
                 break;
             case "progreso": case "progress":   // CHECKLIST de la historia y las misiones (ProgressPanel): abre o cierra la ventana
                 Log(ProgressPanel.Toggle());
