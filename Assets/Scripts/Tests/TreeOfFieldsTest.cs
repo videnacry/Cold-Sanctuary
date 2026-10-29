@@ -188,4 +188,23 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         Time.timeScale = oldScale;
         TestProbe.End();
     }
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("Tools/Cold Sanctuary/Pruebas/Árbol de los Campos (sola)")]
+    static void Solo()
+    {
+        if (!Application.isPlaying) { Debug.Log("[Solo] no está en Play"); return; }
+        var go = new GameObject("SoloArbol"); DontDestroyOnLoad(go);
+        TreeOfFieldsTest t = go.AddComponent<TreeOfFieldsTest>();
+        t.StartCoroutine(Wrap(t));
+    }
+
+    static IEnumerator Wrap(TreeOfFieldsTest t)
+    {
+        TestProbe.ResetTotals();
+        yield return t.StartCoroutine(t.Run());
+        TestProbe.Total();
+        Debug.Log("[Solo] listo");
+    }
+#endif
 }
