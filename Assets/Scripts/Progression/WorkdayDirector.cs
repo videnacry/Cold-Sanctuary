@@ -559,6 +559,9 @@ public class WorkdayDirector : MonoBehaviour
     readonly Dictionary<GameObject, float> _gymGiveUp = new Dictionary<GameObject, float>();
     /// <summary>¿Está <paramref name="g"/> ahora en una máquina del gimnasio (sentado en su puesto, haciendo la repetición)?</summary>
     public bool OnGymMachine(GameObject g) => g != null && _gym.TryGetValue(g, out GymUse u) && u.seated;
+    /// <summary>Todos se levantan de las máquinas del gimnasio (y las dejan en su sitio): al terminar una prueba de la jornada a
+    /// las 16:00 alguien podía quedarse sentado con el agarre desplazado a su medida, y la prueba del gimnasio lo encontraba así.</summary>
+    public void ReleaseGym() { foreach (GameObject g in new List<GameObject>(_gym.Keys)) LeaveGym(g); }
     float _hour;
 
     /// <summary>Puesto de <paramref name="g"/> en el grupo del gimnasio de hoy (−1 si hoy no le toca el gimnasio).</summary>

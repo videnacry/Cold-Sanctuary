@@ -324,6 +324,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
 
     void Restore(float scale)
     {
+        _wd?.ReleaseGym();   // nadie se queda sentado en una máquina con el agarre a su medida
         foreach (VetCare v in FindObjectsByType<VetCare>(FindObjectsSortMode.None)) v.enabled = false;   // el turno del hospital acabó: nadie sigue yendo a la perrera en las pruebas siguientes
         Time.timeScale = scale;
         if (_pw != null) _pw.autopilot = false;

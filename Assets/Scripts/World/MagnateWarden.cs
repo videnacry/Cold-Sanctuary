@@ -51,6 +51,8 @@ public class MagnateWarden : MonoBehaviour
     /// <summary>Bloquea (o desbloquea) su alcance para TODOS mientras <paramref name="by"/> lo pida (una escena, una
     /// misión…). Cada quien quita solo su propio bloqueo.</summary>
     public static void Lock(object by, bool on) { if (by == null) return; if (on) _locks.Add(by); else _locks.Remove(by); }
+    /// <summary>¿Hay algún bloqueo activo (una prueba o una escena que usa a los personajes)?</summary>
+    public static bool Locked { get { _locks.RemoveWhere(k => k == null || (k is Object o && o == null)); return _locks.Count > 0; } }
 
     /// <summary>¿Está <paramref name="who"/> fuera del alcance de la Magnate ahora? Volando en alfombra, dentro del
     /// microcosmos (o entrando/saliendo de él) o con un bloqueo activo: no se le trae de vuelta.</summary>

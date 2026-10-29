@@ -82,6 +82,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         float realEnd = Time.realtimeSinceStartup + realLimit;
         HashSet<string> only = new HashSet<string>(onlyTypes.Split(',').Select(s => s.Trim()).Where(s => s.Length > 0));
         List<GymStation> sts = GymStation.All.Where(s => s != null && s.isActiveAndEnabled && (only.Count == 0 || only.Contains(s.type.ToString()))).ToList();
+        foreach (GymStation s0 in GymStation.All) if (s0 != null) GymFit.Reset(s0);   // cada máquina como sale de fábrica (otra prueba pudo dejar un agarre o un asiento movidos)
         var missing = new List<string>();
         foreach (GymMachineType t in System.Enum.GetValues(typeof(GymMachineType)))
             if ((only.Count == 0 || only.Contains(t.ToString())) && !sts.Any(s => s.type == t)) missing.Add(t.ToString());
@@ -101,6 +102,10 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
             string.Join(", ", ps.Select(p => $"{p.Name} {p.height:0.00} m")));
         if (sts.Count == 0 || ps.Count == 0) { TestProbe.End(); yield break; }
 
+        // La Magnate no da clases a quien usa la prueba (le cambiaba la postura en las máquinas: Goluis con el Saludo al Sol, los
+        // agarres a 1,6 m de sus manos en la batería completa).
+        MagnateWarden.Lock(this, true);
+        foreach (Person p0 in ps) { TeachingSession ts = p0.a != null ? TeachingSession.For(p0.a) : null; if (ts != null) ts.Cancel(); }
         WorkdayDirector wd = WorkdayDirector.Instance;
         _walkSpeed = wd != null ? wd.walkSpeed : 2.6f;
         WorkdayDirector.LogTeleports = true;
@@ -141,6 +146,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         foreach (Person p in ps) Restore(p);
         Time.timeScale = oldScale; Time.maximumDeltaTime = oldMax;
         WorkdayDirector.LogTeleports = false;
+        MagnateWarden.Lock(this, false);
         if (wd != null) wd.enabled = wdWas;
         TestProbe.End();
     }

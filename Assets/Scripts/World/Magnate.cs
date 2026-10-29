@@ -77,6 +77,7 @@ public class Magnate : MonoBehaviour
         WorkdayDirector wd = WorkdayDirector.Instance;
         TeachingSession mine = GetComponent<TeachingSession>();
         if (mine != null && wd != null && mine.student != null && wd.OnShift(mine.student.gameObject)) mine.Cancel();
+        if (mine != null && mine.student != null && MagnateWarden.Locked) mine.Cancel();   // (p. ej. la prueba del gimnasio lo está usando: le cambiaba la postura en las máquinas)
         if (_student != null && wd != null && wd.OnShift(_student.gameObject)) _student = null;
         // Dando una clase: se queda en ella (antes salía tras otro alumno a mitad y hacía las posturas andando o volando).
         if (GetComponent<TeachingSession>() != null) { _student = null; return; }
@@ -291,6 +292,7 @@ public class Magnate : MonoBehaviour
             if (_taught.TryGetValue(a, out float at) && Time.time - at < classCooldown) continue;   // ya tuvo su clase hace poco
             if (!IsMember(a)) continue;   // un recién llegado sin la iniciación de Linduarda aún NO es del santuario
             if (WorkdayDirector.Instance != null && WorkdayDirector.Instance.OnShift(a.gameObject)) continue;   // en su jornada: no se le interrumpe
+            if (MagnateWarden.Blocked(a.gameObject)) continue;   // fuera de su alcance (una coreografía, una prueba que lo usa, el microcosmos)
             if (cl.SoulLevels < worstLv) { worstLv = cl.SoulLevels; worst = a; }
         }
         return worst;
