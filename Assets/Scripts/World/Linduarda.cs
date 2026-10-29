@@ -60,6 +60,9 @@ public class Linduarda : MonoBehaviour
         // barra del restaurante y la perrera del lobo, una vez cada conductor, y nunca llegaba a sentarse a comer.
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell || q.Own[0] is CarpetWalkSpell)) return;
         if (_a.asleep) return;
+        // En una coreografía (inicia a alguien en otra área, toca en una orquesta): la conduce ella; antes la ronda de salud
+        // se la llevaba en alfombra a la perrera del lobo a mitad de la iniciación de la sala de yoga.
+        if (Orchestra.Busy(gameObject)) return;
         if (_sample != null) { CarrySample(); return; }   // llevando la muestra al analizador
         if (_patient == null && Time.time >= _next) { _next = Time.time + surveyInterval; _patient = Survey(); Certify(); }
         if (_patient != null) GoAttend();
@@ -120,14 +123,14 @@ public class Linduarda : MonoBehaviour
     }
 
     // SIN ACERCARSE (el lobo está en su perrera: no se llega a 2,5 m de su centro y rondaba la perrera dando vueltas): a
-    // menos de 4 m, si en 6 s no se acerca medio metro, le atiende desde ahí (por los barrotes); más lejos, a los 10 s lo deja
+    // menos de 5 m, si en 6 s no se acerca medio metro, le atiende desde ahí (por los barrotes); más lejos, a los 10 s lo deja
     // para la próxima ronda.
     float _bestGap = float.MaxValue, _gapSince;
     bool CloseEnough(float gap)
     {
         if (gap < _bestGap - 0.5f) { _bestGap = gap; _gapSince = Time.time; return false; }
-        if (Time.time - _gapSince < (gap < 4f ? 6f : 10f)) return false;
-        if (gap < 4f) return true;
+        if (Time.time - _gapSince < (gap < 5f ? 6f : 10f)) return false;
+        if (gap < 5f) return true;
         Debug.Log($"[Linduarda] no llega hasta «{_patient.name}» (a {gap:0.0} m): lo deja para la próxima ronda.");
         _patient = null; _bestGap = float.MaxValue; _next = Time.time + 30f;
         return false;
