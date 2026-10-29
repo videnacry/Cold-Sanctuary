@@ -49,6 +49,7 @@ public class PlayerWorkday : MonoBehaviour
     GameObject _player;
     float _nextCheck;
     bool _held, _dineQueued, _dayClosed, _lunchSeen;
+    int _dineTries;
     float _lunchHunger = -1f, _trainPresent, _trainObserved;
     DineSpell _eating;
     QueuedSpell _need; float _needSince;
@@ -190,7 +191,7 @@ public class PlayerWorkday : MonoBehaviour
         _plan = wd.today;
         _records.Clear();
         foreach (WorkRoster.Assignment a in _plan.Of(me)) _records.Add(new Record { a = a });
-        AteToday = TrainingDone = _dayClosed = _dineQueued = _lunchSeen = false;
+        AteToday = TrainingDone = _dayClosed = _dineQueued = _lunchSeen = false; _dineTries = 0;
         _lunchHunger = -1f; _trainPresent = _trainObserved = 0f; _eating = null;
         TrainingArea = _plan.training.TryGetValue(me, out string tr) ? tr : null;
         string items = string.Join(" · ", _records.Select(r => $"{r.a.start:00.0} h «{r.a.mission.title}» ({r.a.mission.area}{(r.a.firstTime ? ", nueva" : "")})"));
@@ -291,7 +292,9 @@ public class PlayerWorkday : MonoBehaviour
         bool lunch = doing == "Comida";
         if (lunch && AtPost(null, area, pos) && !AteToday)
         {
-            if (!_dineQueued && q != null) { _dineQueued = true; q.EnqueueOwn(new DineSpell()); Debug.Log("[Jornada] Kushal va a comer al restaurante."); }
+            // Si lo dejó a medias (no llegó a la barra, entre la gente), lo vuelve a intentar: hasta 3 veces en la hora de comer.
+            if (_dineQueued && q != null && _dineTries < 3 && !q.Own.Any(s => s is DineSpell)) _dineQueued = false;
+            if (!_dineQueued && q != null) { _dineQueued = true; _dineTries++; q.EnqueueOwn(new DineSpell()); Debug.Log($"[Jornada] Kushal va a comer al restaurante{(_dineTries > 1 ? $" (intento {_dineTries})" : "")}."); }
             Hold(false);   // come: lo lleva su cola (pedir, sentarse, comer)
             return;
         }
