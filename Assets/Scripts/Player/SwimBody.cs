@@ -322,7 +322,7 @@ public class SwimBody : MonoBehaviour
         {
             case SwimStyle.Tread: pitchTarget = 12f; break;
             case SwimStyle.Crawl: pitchTarget = 84f; break;
-            case SwimStyle.Breaststroke: pitchTarget = 78f; break;
+            case SwimStyle.Breaststroke: pitchTarget = 72f; break;   // el pecho algo más alto: la cabeza fuera también en el deslizamiento
             default: pitchTarget = Mathf.Clamp(90f + Mathf.Atan2(-vel.y, Mathf.Max(horiz, 0.05f)) * Mathf.Rad2Deg, 5f, 175f); break;
         }
         _pitch = Mathf.Lerp(_pitch, pitchTarget, 1f - Mathf.Exp(-4f * dt));
@@ -404,7 +404,7 @@ public class SwimBody : MonoBehaviour
         float feet = u >= 0.35f && u < 0.6f ? -20f : 50f;   // pies en flexión para empujar el agua, luego en punta
         T(BodyPart.FootLeft, feet); T(BodyPart.FootRight, feet);
         if (underwater) { T(BodyPart.Neck, -8f); T(BodyPart.Head, -8f); }
-        else { T(BodyPart.Back, -6f * lift); T(BodyPart.Chest, -8f * lift); T(BodyPart.Neck, -22f - 8f * lift); T(BodyPart.Head, -20f - 8f * lift); }
+        else { T(BodyPart.Back, -6f * lift); T(BodyPart.Chest, -8f * lift); T(BodyPart.Neck, -30f - 8f * lift); T(BodyPart.Head, -26f - 8f * lift); }
     }
 
     // A FLOTE (parado): el cuerpo casi vertical, los brazos abiertos remando en ochos y las piernas de «batidora»
