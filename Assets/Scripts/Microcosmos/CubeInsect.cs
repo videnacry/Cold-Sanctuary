@@ -17,6 +17,9 @@ public partial class CubeInsect : MonoBehaviour
 {
     class Leg { public Transform coxa, troch, tibia; public Quaternion coxaRest, trochRest, tibiaRest, armCoxa, armTroch, armTibia; public int side, pair; public bool arm; }
     Transform _torso, _neck; Quaternion _torsoRest, _neckRest;
+    float _push, _pushUntil;
+    /// <summary>Empuja con los brazos durante este fotograma (y 0,25 s): <paramref name="k"/> 0 = codos doblados, 1 = estirados.</summary>
+    public void Push(float k) { _push = Mathf.Clamp01(k); _pushUntil = Time.time + 0.25f; }
     /// <summary>0 = tranquilo (erguido, centauro, con brazos) · 1 = el cuerpo manda (a todas las patas). Lo puede fijar la conducta (miedo, hambre…); si no, se deduce de la velocidad.</summary>
     public float agitation = -1f;   // −1 = automático (por la velocidad)
     float _calm = 1f;
@@ -603,6 +606,9 @@ public partial class CubeInsect : MonoBehaviour
                 Quaternion armSwing = Quaternion.Euler(Mathf.Sin(_phase + (l.side < 0 ? 0f : Mathf.PI)) * amp * 0.4f, 0f, 0f);
                 cx = Quaternion.Slerp(cx, l.armCoxa * armSwing, _calm);
                 tr = Quaternion.Slerp(tr, l.armTroch, _calm);
+                // EMPUJAR (Berón 2026-10-29: son humanoides, empujan con brazos y manos): brazos adelante a la altura del pecho y el
+                // codo se estira con cada empujón.
+                if (Time.time < _pushUntil && l.pair == 0) { tr = l.armTroch * Quaternion.Euler(-70f - 15f * _push, 0f, 0f); if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.armTibia, l.tibiaRest, 0.35f + 0.6f * _push); l.coxa.localRotation = l.armCoxa; if (l.troch != null) l.troch.localRotation = tr; continue; }
                 if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.tibiaRest, l.armTibia, _calm);
             }
             l.coxa.localRotation = cx;
