@@ -30,9 +30,10 @@ public class TreeRotator : MonoBehaviour
 
     NavMeshSurface _surface;
     float _navAt, _scanAt, _dirAt;
+    bool _warned;
     Quaternion _navRot;
     readonly List<Transform> _bodies = new List<Transform>();
-    readonly Collider[] _overlap = new Collider[256];
+    readonly Collider[] _overlap = new Collider[2048];
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
@@ -111,6 +112,9 @@ public class TreeRotator : MonoBehaviour
                     : c.GetComponentInParent<TreeRider>() is TreeRider tr ? tr.transform : null;
                 if (body != null && !_bodies.Contains(body)) _bodies.Add(body);
             }
+            if (n >= _overlap.Length && !_warned) { _warned = true; Debug.LogWarning("[Árbol] Demasiados colliders cerca del árbol: puede que alguien no gire con él."); }
+            GameObject pl = GameObject.FindGameObjectWithTag("Player");   // el jugador, siempre
+            if (pl != null && !_bodies.Contains(pl.transform)) _bodies.Add(pl.transform);
         }
         foreach (Transform b in _bodies)
         {
