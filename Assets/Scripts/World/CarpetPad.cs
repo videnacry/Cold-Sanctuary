@@ -155,6 +155,8 @@ public class CarpetPad : MonoBehaviour
     /// altura cuatro veces (un piso de arriba, aunque esté justo encima, no es «aquí»).</summary>
     public static CarpetPad For(Vector3 p)
     {
+        CarpetPad deck = OnDeck(p);
+        if (deck != null) return deck;
         // Uno está sobre el piso de DEBAJO de sus pies (o en él): el de arriba, aunque quede más cerca en planta, no es «aquí»
         // (en el anillo de 4 m sobre la planta 1, la planta 2 quedaba más cerca y se iba y volvía de un piso a otro).
         CarpetPad best = null; float bd = float.MaxValue;
@@ -168,6 +170,48 @@ public class CarpetPad : MonoBehaviour
                 if (s < bd) { bd = s; best = pad; }
             }
         return best;
+    }
+
+    // EL PISO QUE PISA: si bajo p hay una plataforma (un piso, un anillo…) con área de alfombras PROPIA, es la suya, aunque la
+    // de otro piso quede más cerca contando la altura (en una mesa del anillo del comedor, lejos de sus alfombras, salía la
+    // planta de la cocina, 4 m más abajo: el turista se iba volando a la cocina). La plataforma más honda de la jerarquía
+    // manda (el anillo es hijo del área de su planta). Cacheado por collider.
+    static readonly Dictionary<Collider, CarpetPad> _deckOf = new Dictionary<Collider, CarpetPad>();
+    static int _deckPads = -1;
+
+    static CarpetPad OnDeck(Vector3 p)
+    {
+        if (_deckPads != All.Count) { _deckOf.Clear(); _deckPads = All.Count; }
+        RaycastHit[] hits = Physics.RaycastAll(p + Vector3.up * 0.5f, Vector3.down, 3f, ~0, QueryTriggerInteraction.Ignore);
+        System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+        foreach (RaycastHit h in hits)
+        {
+            Collider id = h.collider;
+            if (!_deckOf.TryGetValue(id, out CarpetPad deck))
+            {
+                int bestDepth = -1;
+                foreach (CarpetPad pad in All)
+                {
+                    Transform floor = pad != null ? pad.transform.parent : null;
+                    if (floor == null || !h.transform.IsChildOf(floor)) continue;
+                    int depth = 0; for (Transform x = floor; x != null; x = x.parent) depth++;
+                    if (depth > bestDepth) { bestDepth = depth; deck = pad; }
+                }
+                _deckOf[id] = deck;
+            }
+            if (deck == null) continue;
+            // Varias áreas en esa plataforma (o la del suelo de hielo, hija de la planta baja): la de ese piso más cercana.
+            CarpetPad best = null; float bd = float.MaxValue;
+            foreach (CarpetPad pad in All)
+            {
+                if (pad == null || pad.transform.parent != deck.transform.parent) continue;
+                Vector3 d = pad.transform.position - p; float dy = d.y * 4f; d.y = 0f;
+                float s = d.sqrMagnitude + dy * dy;
+                if (s < bd) { bd = s; best = pad; }
+            }
+            return best;
+        }
+        return null;
     }
 
     /// <summary>

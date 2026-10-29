@@ -79,6 +79,7 @@ public class WorkdayDirector : MonoBehaviour
             GameObject g = Body(n);
             if (g == null || roster.Find(n) != null) continue;
             if (!Magnate.IsMember(g.GetComponent<Anima>())) continue;   // aún sin iniciación: no trabaja (está con Linduarda)
+            if (g.CompareTag("Player") && !PlayerWorkday.Ready(g)) continue;   // [Jornada de Kushal] solo tras TODA la iniciación (huerto y su microcosmos)
             roster.Add(n);
         }
     }
@@ -239,8 +240,10 @@ public class WorkdayDirector : MonoBehaviour
         if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
         string area = Where(me, h, out string doing);
+        if (area != _postArea) { _postArea = area; _postSince = Time.time; }   // [Jornada de Kushal] puesto nuevo: el reloj del trayecto empieza
         if (area == null || area == AreaWork.Guard) return;
         if (AreaTransform(area) == null || MagnateWarden.Instance.Handling(p)) return;
+        if (Time.time - _postSince < PlayerWorkday.Commute) return;   // [Jornada de Kushal] tiene un rato para llegar (andando / en alfombra)
         Vector3 pos = p.transform.position;
         if (InWorkspace(Current(me, h)?.mission, area, pos)) { _transitSince = -1f; return; }
         // DE CAMINO (en un puente, en una pista, en alfombra, en una escalera): se le deja pasar un rato, que las tareas
@@ -257,6 +260,7 @@ public class WorkdayDirector : MonoBehaviour
 
     float _transitSince = -1f;
     const float MaxTransit = 90f;
+    string _postArea; float _postSince = -999f;   // [Jornada de Kushal] su puesto actual y desde cuándo (PlayerWorkday.Commute)
 
     /// <summary>¿Está <paramref name="pos"/> en el espacio que su tarea necesita? El EDIFICIO de su área (todas las que se
     /// llaman así, con entreplantas, pisos de arriba aunque sean otra área, y sus pistas de alfombras), las áreas por las que la tarea hace ir, la obra en la que se trabaja, los
@@ -341,6 +345,8 @@ public class WorkdayDirector : MonoBehaviour
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
         bool gymTime = !alwaysMove && area == GymArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
         if (!gymTime) LeaveGym(g);   // deja libre su máquina del gimnasio (si tenía)
+        bool yogaTime = !alwaysMove && area == YogaArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
+        if (!yogaTime && missionId != "yog_guia") LeaveYogaClass(g);   // deja la clase de yoga (si estaba en ella)
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
@@ -350,6 +356,7 @@ public class WorkdayDirector : MonoBehaviour
         if (area != AreaWork.Hospital) HospitalStation.Release(g.name);   // su puesto médico queda libre para otro
         if (lin != null) lin.enabled = area == null || area == AreaWork.Hospital || NewcomerWaiting();
         if (lin != null && lin.enabled && NewcomerWaiting() && idle != null) idle.enabled = false;   // con un recién llegado, Linduarda no merodea: lo atiende
+        if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
         if (area == null)
         {
             if (g.name == "Sadhguru") { if (idle != null) idle.enabled = false; SadhguruMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
@@ -359,8 +366,9 @@ public class WorkdayDirector : MonoBehaviour
         }
         SetStatus(g, doing);
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
-        if (YogaClass(g, missionId)) { if (idle != null) idle.enabled = false; return; }
+        if (YogaClassRole(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }
+        if (yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         Vector3 to = WorkPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
@@ -375,6 +383,29 @@ public class WorkdayDirector : MonoBehaviour
     // La CLASE (misión de grupo): el guía hace la secuencia en la plataforma central, el demostrador la hace entre los
     // alumnos y los correctores van de esterilla en esterilla. En su tiempo libre, SADHGURU medita en la plataforma,
     // inmóvil como una estatua más.
+    const string YogaArea = "Sala de Yoga";
+
+    /// <summary>Entrenamiento de yoga: a la CLASE de la sala (<see cref="global::YogaClass"/>). Si no hay ninguna, la da el
+    /// primero que llega; los demás van cada uno a su esterilla y repiten los pasos del maestro. false = sin esterilla libre.</summary>
+    static bool YogaTraining(GameObject g)
+    {
+        Anima a = g.GetComponent<Anima>(); ActionQueue q = g.GetComponent<ActionQueue>();
+        if (a == null || a.asleep) return false;
+        global::YogaClass cur = global::YogaClass.Current;
+        if (q != null && q.Own.Count > 0 && (cur == null || !cur.Has(a))) return false;   // comer, el baño y dormir van antes
+        global::YogaClass c = cur ?? global::YogaClass.Begin(a);
+        if (c == null) return false;
+        return c.teacher == a || c.Join(a);
+    }
+
+    static void LeaveYogaClass(GameObject g)
+    {
+        global::YogaClass c = global::YogaClass.Current;
+        if (c == null || g == null) return;
+        Anima a = g.GetComponent<Anima>();
+        if (a != null && c.Has(a)) c.Leave(a);
+    }
+
     static Transform _yogaRoom;
     static Vector3 YogaPoint(Vector3 local)
     {
@@ -383,9 +414,15 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>Si la misión es de la clase de yoga, coloca al personaje en su papel; true = ya lo maneja.</summary>
-    bool YogaClass(GameObject g, string missionId)
+    bool YogaClassRole(GameObject g, string missionId)
     {
         if (missionId == null || !missionId.StartsWith("yog_") || missionId == "yog_sala" || missionId == "yog_aseos") return false;
+        if (missionId == "yog_guia")   // el guía da la CLASE: sube a la tarima y los que entrenan yoga le siguen desde sus esterillas
+        {
+            Anima ga = g.GetComponent<Anima>();
+            YogaClass c = ga != null ? YogaClass.Begin(ga) : null;
+            if (c != null && c.teacher == ga) return true;
+        }
         Vector3 to = missionId == "yog_guia" ? YogaPoint(new Vector3(0f, 0.6f, 0f))
                    : missionId == "yog_demo" ? YogaPoint(new Vector3(0f, 0.2f, -3.4f * 0.82f))
                    : YogaPoint(new Vector3(Mathf.Cos(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 4.4f, 0.2f, Mathf.Sin(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 3.6f));   // los correctores rondan entre los anillos
@@ -422,7 +459,9 @@ public class WorkdayDirector : MonoBehaviour
     const float GymRepHalf = 1.5f;      // segundos reales de cada mitad de la repetición (A → B, B → A)
     const float GymWalkTimeout = 45f;   // si no llega a la máquina en este tiempo, se queda en la zona libre un rato
 
-    class GymUse { public GymStation st; public bool seated, b; public float since, phaseAt; public AsanaPoseSpell spell; }
+    /// <summary>Una persona en una máquina: la estación, si ya se sentó, la fase (A/B) y su postura. Público para que
+    /// <see cref="GymUsabilityTest"/> use EXACTAMENTE el mismo camino que la jornada.</summary>
+    public class GymUse { public GymStation st; public bool seated, b; public float since, phaseAt; public AsanaPoseSpell spell; }
     readonly Dictionary<GameObject, GymUse> _gym = new Dictionary<GameObject, GymUse>();
     readonly Dictionary<GameObject, float> _gymGiveUp = new Dictionary<GameObject, float>();
     float _hour;
@@ -479,28 +518,58 @@ public class WorkdayDirector : MonoBehaviour
         SetStatus(g, $"{doing} · {GymStation.Label(want.type)}");
         if (!u.seated)
         {
-            Vector3 to = want.ApproachPoint + Vector3.up;   // el pasillo junto a la máquina (a la altura del pivote, como AreaPoint)
-            Vector3 d = to - g.transform.position;
-            bool sameFloor = Mathf.Abs(d.y) < 1.5f; d.y = 0f;
-            if (!sameFloor || d.sqrMagnitude > 0.8f * 0.8f)
+            if (!GymArrived(g, want))
             {
                 if (Time.time - u.since > GymWalkTimeout) { LeaveGym(g); _gymGiveUp[g] = Time.time + 20f; return false; }
-                PathMover.Of(g.transform).StepToward(to, walkSpeed);
+                PathMover.Of(g.transform).StepToward(GymApproach(want), walkSpeed);
                 return true;
             }
-            u.seated = true; u.b = false; u.phaseAt = Time.time; u.spell = want.PoseA();
+            GymSit(u);
             Debug.Log($"[Gimnasio] «{g.name}» se pone en {want.name}.");
         }
-        float half = GymPoses.RepHalf(want.type);   // el ritmo real de cada equipo (cinta 0,35 s, bici 0,4 s, press…)
-        if (Time.time - u.phaseAt >= half) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
-        float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (half * 0.6f)));
-        GymPlace(g, want.SeatPoint(u.b ? k : 1f - k), want.Facing);   // (solo el hip thrust desplaza la pelvis entre A y B)
-        u.spell.Tick(a);
+        GymRep(g, a, u);
         return true;
     }
 
+    /// <summary>A dónde anda para usar <paramref name="st"/>: el pasillo junto a la máquina (a la altura del pivote, como AreaPoint).</summary>
+    public static Vector3 GymApproach(GymStation st) => st.ApproachPoint + Vector3.up;
+
+    /// <summary>¿Ya llegó andando junto a la máquina (mismo piso, a menos de 0,8 m del punto de llegada)?</summary>
+    public static bool GymArrived(GameObject g, GymStation st)
+    {
+        Vector3 d = GymApproach(st) - g.transform.position;
+        bool sameFloor = Mathf.Abs(d.y) < 1.5f; d.y = 0f;
+        return sameFloor && d.sqrMagnitude <= 0.8f * 0.8f;
+    }
+
+    /// <summary>Se sienta en la máquina: empieza por la postura A.</summary>
+    public static void GymSit(GymUse u) { u.seated = true; u.b = false; u.phaseAt = Time.time; u.spell = u.st.PoseA(); }
+
+    /// <summary>Un fotograma de la repetición: alterna A ↔ B al ritmo real del equipo, coloca el cuerpo en el puesto y
+    /// aplica la postura. true = en este fotograma cambió de fase.</summary>
+    public static bool GymRep(GameObject g, Anima a, GymUse u)
+    {
+        GymStation want = u.st;
+        float half = GymPoses.RepHalf(want.type);   // el ritmo real de cada equipo (cinta 0,35 s, bici 0,4 s, press…)
+        bool flip = Time.time - u.phaseAt >= half;
+        if (flip) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
+        float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (half * 0.6f)));
+        GymPlace(g, want.SeatPoint(u.b ? k : 1f - k), want.Facing);   // (el puesto se desplaza entre A y B en las que tienen shiftB)
+        if (a != null) u.spell.Tick(a);
+        return flip;
+    }
+
+    /// <summary>Se levanta de la máquina: de pie, en el pasillo (la reserva la suelta <see cref="GymStation.Release"/>).</summary>
+    public static void GymStandUp(GameObject g, GymUse u)
+    {
+        if (g == null || u == null || !u.seated || u.st == null) return;
+        Anima a = g.GetComponent<Anima>();
+        if (a != null) DailyPoses.Stand().ApplyFinal(a);
+        GymPlace(g, u.st.ApproachPoint, g.transform.rotation);
+    }
+
     /// <summary>Coloca los PIES (la base del cuerpo de cubos) de <paramref name="g"/> en <paramref name="feet"/>, mirando a <paramref name="facing"/>.</summary>
-    static void GymPlace(GameObject g, Vector3 feet, Quaternion facing)
+    public static void GymPlace(GameObject g, Vector3 feet, Quaternion facing)
     {
         Transform body = g.transform.Find(CubeHumanoid.BodyName);
         float off = body != null ? g.transform.position.y - body.position.y : 1f;
@@ -513,10 +582,7 @@ public class WorkdayDirector : MonoBehaviour
         if (g == null || !_gym.TryGetValue(g, out GymUse u)) return;
         _gym.Remove(g);
         GymStation.Release(g.name);
-        if (!u.seated || u.st == null) return;
-        Anima a = g.GetComponent<Anima>();
-        if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        GymPlace(g, u.st.ApproachPoint, g.transform.rotation);
+        GymStandUp(g, u);
     }
 
     static readonly Dictionary<GameObject, string> _baseLabel = new Dictionary<GameObject, string>();
@@ -636,7 +702,9 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>El jugador hace una misión del área desde la máquina (VIRTUALIZACIÓN): la registra (ya la conoce) y aplica su efecto.</summary>
     public void PlayerVirtualizes(WorkRoster.Mission m)
     {
-        WorkRoster.Worker w = roster.Find("Player") ?? roster.Add("Player");
+        // [Jornada de Kushal] a la rotación lo mete PlayerWorkday al terminar la iniciación (si no, entraba aquí a medias)
+        WorkRoster.Worker w = roster.Find("Player") ?? new WorkRoster.Worker("Player");
+        PlayerWorkday.Virtualized(m);   // [Jornada de Kushal] cuenta como hecha si es de su jornada
         bool first = !w.Knows(m.id);
         w.count[m.id] = w.Count(m.id) + 1; w.lastDay[m.id] = TC != null ? TC.Day : 0;
         if (first) { initiations++; Debug.Log($"[Iniciación] La Magnate inicia a Kushal en «{m.title}» dentro de la virtualización."); }

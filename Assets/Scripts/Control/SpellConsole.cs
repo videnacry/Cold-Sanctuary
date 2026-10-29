@@ -534,7 +534,7 @@ public class SpellConsole : MonoBehaviour
                     SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
                     if (ob == null) { Log(mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."); break; }
                     foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
-                    ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = true;
+                    ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true;
                     if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
                     if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
                     Log($"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.");
@@ -664,6 +664,7 @@ public class SpellConsole : MonoBehaviour
     // walkTo/take/putIn/beat (encolados), se adelantaban (un `step` avanzaba la receta antes que el `putIn` pendiente).
     void Step(Anima self)
     {
+        if (AreaInitiator.StudentStep(self)) { Log($"«{self.name}» hace el paso que le pide el trabajador del huerto."); return; }   // iniciación del huerto
         CookingStation cs = self.GetComponent<CookingStation>();
         if (cs == null) { Log($"«{self.name}» no está cocinando."); return; }
         Enqueue(self, new ActionNowSpell("siguiente paso de cocina", a => { cs.AdvanceStep(); Log($"«{a.name}»: siguiente paso de cocina."); }));

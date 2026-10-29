@@ -59,6 +59,9 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
 
         // ── 3. La iniciación: el de turno, la tanda y el stock ──
         foreach (AreaInitiator x in FindObjectsByType<AreaInitiator>(FindObjectsSortMode.None)) Destroy(x);
+        foreach (NewcomerInitiator x in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) x.ResetState();   // (jugadas sueltas: el examen de llegada del arranque no se cruza)
+        ob.apt = true;
+        if (player.TryGetComponent(out HealthRecord hrec)) { hrec.analyzed = true; hrec.vaccinated = true; }   // (ya pasó el examen de llegada: la puerta de la enfermería no lo retiene)
         yield return null;
         ob.apt = ob.presented = ob.initiated = true; ob.kitchenTrained = false;
         AreaInitiator.AllowDuringTests = true;
@@ -71,10 +74,15 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
         if (ai == null) { Restore(oldScale, mags, bosses); TestProbe.End(); yield break; }
 
         // El jugador emulado: cuando se le pide un paso, lo lanza (como escribir `step`). Uno se lo deja pasar (lo hace el de turno).
+        // Hasta 2 m andando; desde ahí, la ORQUESTA (cada uno a su sitio): se mira que no se pisen, no salten ni den vueltas.
+        yield return Until(() => ai == null || (ai.Now != AreaInitiator.Phase.None && ai.Now != AreaInitiator.Phase.Approach), 400f);   // (None: aún no arrancó)
+        Orchestra.ResetStats();
+        var watch = new ExperienciaJugadorTest.OrchestraWatch(player.transform, ai != null ? ai.transform : player.transform);
         int cast = 0; bool skipped = false;
         float limit = Time.time + 400f;
         while (AreaInitiator.Owns(ob) && ai != null && ai.Now != AreaInitiator.Phase.ToTank && Time.time < limit)
         {
+            watch.Sample(true);
             if (ai.WaitingForStudent)
             {
                 CookingStation cs = player.GetComponent<CookingStation>();
@@ -84,13 +92,14 @@ public class KitchenInitiationTest : MonoBehaviour, ITestUnit
             }
             yield return null;
         }
-        yield return Until(() => !AreaInitiator.Owns(ob), 120f);
+        { float end = Time.time + 120f; while (AreaInitiator.Owns(ob) && Time.time < end) { watch.Sample(true); yield return null; } }
         AreaInitiator.Report r = AreaInitiator.Last;
         TestProbe.Check("cocinan el platillo con menos stock", r != null && r.dish == want, r != null ? r.dish : "sin informe");
         TestProbe.Check("el jugador lanza los pasos que le piden y el de turno ayuda si no llega", r != null && r.stepsByStudent > 0 && r.stepsHelped >= 1 && r.cooked, r != null ? $"{r.stepsByStudent} del jugador, {r.stepsHelped} ayudados" : "");
         int after = rk.dishes[low].Have;
         TestProbe.Check("el stock sube con TODAS las raciones de la tanda por mayor", after >= before + n, $"{before} → {after} (×{n})");
         TestProbe.Check("queda formado en cocina", ob.kitchenTrained);
+        ExperienciaJugadorTest.CheckOrchestra("cocina", watch);
 
         // ── 4. Al tanque y al primer microcosmos de la cocina ──
         bool loadable = Application.CanStreamedLevelBeLoaded(AreaInitiator.KitchenMicrocosmos);

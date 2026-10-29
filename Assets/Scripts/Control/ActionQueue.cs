@@ -39,6 +39,9 @@ public class ActionQueue : MonoBehaviour
         if (_self == null || _self.death) return;
         List<QueuedSpell> lane = _own.Count > 0 ? _own : _player;   // la propia manda
         if (lane.Count == 0) return;
+        // En una ORQUESTA (iniciación) o guiado por PathMover, su «merodear» se descarta: lo arrastraba a la
+        // vez hacia otro sitio (saltos de 10 m a ×8, vueltas en círculo; Berón 2026-10-29).
+        if (lane == _player && lane[0] is WanderSpell && (Orchestra.Busy(gameObject) || PathMover.DrivenRecently(gameObject))) { lane.RemoveAt(0); return; }
         if (lane[0].Tick(_self)) lane.RemoveAt(0);                  // terminó → siguiente
     }
 }

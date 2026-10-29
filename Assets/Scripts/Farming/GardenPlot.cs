@@ -21,6 +21,42 @@ public class GardenPlot : MonoBehaviour
     void OnDisable() { All.Remove(this); }
 
     public int Plants { get; private set; }
+
+    // ── EL SUELO (docs/garden-simulation.md §8, receta base: abonar · arar): lo prepara la iniciación del huerto ──
+    /// <summary>¿El suelo está listo para sembrar (abonado, labrado, con surcos y rastrillado)?</summary>
+    public bool SoilPrepared { get; private set; }
+    /// <summary>Cuánto se ha preparado (0 = sin tocar, 1 = listo).</summary>
+    public float SoilProgress { get; private set; }
+
+    /// <summary>Marca el paso <paramref name="done"/> de <paramref name="total"/> de preparar el suelo y lo deja VER: la capa
+    /// de abono (más oscura) al esparcirlo y los surcos al labrar.</summary>
+    public void PrepareSoil(int done, int total)
+    {
+        SoilProgress = Mathf.Clamp01(done / (float)Mathf.Max(1, total));
+        if (done >= 2 && transform.Find("Abono") == null)   // abono esparcido: una capa oscura sobre el bancal
+            SoilPiece("Abono", new Vector3(0f, 0.07f, 0f), new Vector3(size.x, 0.02f, size.y), new Color(0.24f, 0.17f, 0.11f));
+        if (done >= 4 && transform.Find("Surcos") == null)   // surcos: caballones a un palmo y medio, a lo largo del bancal
+        {
+            Transform s = new GameObject("Surcos").transform; s.SetParent(transform, false);
+            for (float x = -size.x * 0.5f + 0.4f; x <= size.x * 0.5f - 0.4f; x += 0.6f)
+                SoilPiece("Caballón", new Vector3(x, 0.1f, 0f), new Vector3(0.22f, 0.06f, size.y - 0.4f), new Color(0.3f, 0.21f, 0.14f), s);
+        }
+        if (done >= total)
+        {
+            SoilPrepared = true;
+            Debug.Log($"[Huerto] el suelo de «{name}» está preparado: abonado, labrado y con surcos.");
+        }
+    }
+
+    void SoilPiece(string n, Vector3 local, Vector3 scale, Color c, Transform parent = null)
+    {
+        GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Destroy(g.GetComponent<Collider>());   // se ve, no se pisa (el NavMesh es el del suelo)
+        g.name = n; g.transform.SetParent(parent != null ? parent : transform, false);
+        g.transform.localPosition = local; g.transform.localScale = scale;
+        g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
+    }
+
     System.Random _rnd;
     Transform _root;
     float R(float a, float b) => a + (float)_rnd.NextDouble() * (b - a);

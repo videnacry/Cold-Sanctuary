@@ -66,7 +66,7 @@ public class ProgressPanel : MonoBehaviour
             _lines.Add($"<b>Hoy · día {wd.today.day}</b>");
             foreach (var a in wd.today.Of(me))
             {
-                bool done = me.lastDay.TryGetValue(a.mission.id, out int d) && d == wd.today.day;
+                bool done = PlayerWorkday.Done(a);   // hecha de verdad (en su puesto o virtualizada), no solo asignada
                 _lines.Add($"   {Box(done)} {a.start:00}:00  {a.mission.title} <size=11>({a.mission.area})</size>");
             }
             _lines.Add("");

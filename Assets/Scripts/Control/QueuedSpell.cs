@@ -151,6 +151,7 @@ public class WanderSpell : QueuedSpell
     public override bool Tick(Anima self)
     {
         if (self == null) return true;
+        if (PathMover.DrivenRecently(self.gameObject)) return true;   // otro lo conduce ya (su jornada, una orquesta): no tira de él
         if (!_picked)
         {
             Vector2 r = Random.insideUnitCircle * radius;

@@ -123,10 +123,26 @@ public static class ArrivalExam
     public static Vector3 Front(Transform place)
     {
         SanctuaryArea a = place.GetComponentInParent<SanctuaryArea>();
-        Vector3 toC = Flat(a != null ? a.transform.position - place.position : -place.forward).normalized;
+        Vector3 toC = Flat(a != null ? a.transform.position - Center(place) : -place.forward).normalized;
         Vector3 best = place.forward; float bd = -2f;
         foreach (Vector3 c in new[] { place.forward, -place.forward, place.right, -place.right }) { Vector3 f = Flat(c).normalized; float d = Vector3.Dot(f, toC); if (d > bd) { bd = d; best = f; } }
         return best;
+    }
+
+    /// <summary>El centro de verdad de un mueble a la altura de su pivote: el asiento si lo tiene (silla) o el centro de sus
+    /// piezas. El pivote de algunos muebles no está en el mueble (la silla de exámenes lo tiene a varios metros de su
+    /// asiento): andar «delante del pivote» dejaba al recién llegado lejos y luego saltaba al sentarse.</summary>
+    public static Vector3 Center(Transform place)
+    {
+        Transform seat = FindPart(place, "Asiento");
+        if (seat != null) return new Vector3(seat.position.x, place.position.y, seat.position.z);
+        bool any = false; Bounds b = default;
+        foreach (Renderer r in place.GetComponentsInChildren<Renderer>())
+        {
+            if (!r.enabled) continue;
+            if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+        }
+        return any ? new Vector3(b.center.x, place.position.y, b.center.z) : place.position;
     }
 
     /// <summary>Dónde y cómo queda el examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.
@@ -134,14 +150,15 @@ public static class ArrivalExam
     public static void PatientSpot(Transform place, Spot spot, out Vector3 at, out Quaternion rot, Transform who = null)
     {
         Vector3 fr = Front(place);
-        if (spot == Spot.Stand) { at = place.position + fr * 0.7f; rot = Quaternion.LookRotation(-fr); return; }
+        if (spot == Spot.Stand) { at = Center(place) + fr * 0.7f; rot = Quaternion.LookRotation(-fr); return; }
         // Escala del cuerpo de cubos (1,9 u nativas) y desfase de su raíz: 0,974 es el de 1,85 m (docs/medidas-muebles.md).
         Transform body = who != null ? who.Find(CubeHumanoid.BodyName) : null;
         float s = body != null ? body.lossyScale.y : 0.974f, dy = body != null ? body.position.y - who.position.y : 0f;
         if (spot == Spot.Lie)
         {
             // Tumbado (Lie: cadera a 0,12 u y girada −90°): la espalda apoya en la superficie del acolchado, sin hundirse.
-            at = new Vector3(place.position.x, TopOf(place, "Acolchado", place.position.y + 0.8f) - dy, place.position.z);
+            Vector3 mid = Center(place);
+            at = new Vector3(mid.x, TopOf(place, "Acolchado", place.position.y + 0.8f) - dy, mid.z);
             rot = place.rotation;
             return;
         }
@@ -214,6 +231,10 @@ public static class ArrivalExam
             case "Electrodos": for (int i = 0; i < 6; i++) Part(r, new Vector3(-0.1f + i * 0.04f, (i % 2) * 0.04f, 0f), new Vector3(0.025f, 0.025f, 0.004f), white); break;
             case "Jeringa": Part(r, Vector3.zero, new Vector3(0.012f, 0.012f, 0.08f), white); Part(r, new Vector3(0f, 0f, 0.06f), new Vector3(0.003f, 0.003f, 0.025f), steel); break;
             case "Credencial": Part(r, Vector3.zero, new Vector3(0.085f, 0.054f, 0.004f), new Color(0.95f, 0.85f, 0.4f)); break;
+            // Huerto (preparar el suelo): mango de madera y la pieza de metal.
+            case "Pala": Part(r, new Vector3(0f, -0.35f, 0f), new Vector3(0.035f, 0.9f, 0.035f), new Color(0.55f, 0.38f, 0.2f)); Part(r, new Vector3(0f, -0.85f, 0.02f), new Vector3(0.2f, 0.26f, 0.02f), steel); break;
+            case "Azada": Part(r, new Vector3(0f, -0.4f, 0f), new Vector3(0.035f, 1.0f, 0.035f), new Color(0.55f, 0.38f, 0.2f)); Part(r, new Vector3(0f, -0.9f, 0.1f), new Vector3(0.18f, 0.03f, 0.2f), steel); break;
+            case "Rastrillo": Part(r, new Vector3(0f, -0.4f, 0f), new Vector3(0.03f, 1.0f, 0.03f), new Color(0.55f, 0.38f, 0.2f)); Part(r, new Vector3(0f, -0.9f, 0.04f), new Vector3(0.4f, 0.03f, 0.03f), steel); for (int i = 0; i < 8; i++) Part(r, new Vector3(-0.18f + i * 0.05f, -0.9f, 0.08f), new Vector3(0.01f, 0.01f, 0.07f), steel); break;
         }
     }
 

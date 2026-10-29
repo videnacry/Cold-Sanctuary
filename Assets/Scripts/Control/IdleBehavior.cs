@@ -32,6 +32,9 @@ public class IdleBehavior : MonoBehaviour
         if (_ctrl != null && _ctrl.Active is PlayerBrain) return;         // poseída: manda el jugador
         if (_q.Own.Count > 0 || _q.Player.Count > 0) return;              // ya hay algo en cola
         if (_a.stress > 0.6f || _a.sleepiness > 0.7f) return;             // necesidades no cubiertas: que las resuelva su IA/cuerpo
+        // Ocupado (una orquesta, una iniciación o su jornada que lo lleva con PathMover): no está libre. Merodear a la vez
+        // lo hacía dar vueltas en círculo (dos conductores tirando de él; Berón 2026-10-29).
+        if (Orchestra.Busy(gameObject) || PathMover.DrivenRecently(gameObject, checkInterval + 1f)) return;
 
         _q.EnqueuePlayer(new WanderSpell());                              // libre → merodea (acción opcional, borrable al poseer)
     }

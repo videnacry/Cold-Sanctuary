@@ -608,7 +608,7 @@ public partial class CubeInsect : MonoBehaviour
                 tr = Quaternion.Slerp(tr, l.armTroch, _calm);
                 // EMPUJAR (Berón 2026-10-29: son humanoides, empujan con brazos y manos): brazos adelante a la altura del pecho y el
                 // codo se estira con cada empujón.
-                if (Time.time < _pushUntil && l.pair == 0) { tr = l.armTroch * Quaternion.Euler(-70f - 15f * _push, 0f, 0f); if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.armTibia, l.tibiaRest, 0.35f + 0.6f * _push); l.coxa.localRotation = l.armCoxa; if (l.troch != null) l.troch.localRotation = tr; continue; }
+                if (Time.time < _pushUntil && l.pair == 0) { tr = l.armTroch * Quaternion.Euler(70f + 15f * _push, 0f, 0f);   /* (+: hacia delante; con − los brazos iban hacia atrás) */ if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.armTibia, l.tibiaRest, 0.35f + 0.6f * _push); l.coxa.localRotation = l.armCoxa; if (l.troch != null) l.troch.localRotation = tr; continue; }
                 if (l.tibia != null) l.tibia.localRotation = Quaternion.Slerp(l.tibiaRest, l.armTibia, _calm);
             }
             l.coxa.localRotation = cx;

@@ -29,6 +29,8 @@ public class Magnate : MonoBehaviour
     public Transform yogaSpot;
     [Tooltip("Dónde lleva al nuevo a aprender un área. Si está vacío, busca un GameObject llamado 'CocinaSpot'.")]
     public Transform kitchenSpot;
+    [Tooltip("Dónde lleva al nuevo después de la cocina: el huerto. Si está vacío, el área «Garden_Area».")]
+    public Transform gardenSpot;
 
     Anima _a;
     PacifySpell _pacify;
@@ -98,7 +100,8 @@ public class Magnate : MonoBehaviour
     Anima _initiating;
     float _logAt, _phaseDeadline;
     // 0 = ir a buscarlo · 1 = caminar juntos a la sala de yoga · 2 = la inicia el de turno de la sala (clase + tanque)
-    // 3 = en el río · 4 = caminar juntos a la cocina · 5 = la inicia el de turno de la cocina · 6 = hecho
+    // 3 = en el río · 4 = caminar juntos a la cocina · 5 = la inicia el de turno de la cocina · 6 = en la cocina y su
+    // microcosmos · 7 = caminar juntos al huerto · 8 = la inicia el de turno del huerto (preparar el suelo) · 9 = hecho
     int _initPhase;
     public const string RiverMicrocosmos = "Microcosmos_Scene0_SakshiRio";
     static readonly HashSet<SanctuaryOnboarding> _guiding = new HashSet<SanctuaryOnboarding>();
@@ -116,29 +119,27 @@ public class Magnate : MonoBehaviour
         if (_initiating != t) { _initiating = t; _initPhase = 0; _guiding.Add(_newcomer); Debug.Log($"[Magnate] Linduarda la llama: va a buscar a «{t.name}» para llevarlo por sus iniciaciones."); }
         switch (_initPhase)
         {
-            case 0:   // ir a buscarlo
-                if (Flat(t.transform.position - transform.position) > teachRadius)
+            case 0:   // ir a buscarlo, hasta 2 m: ahí empieza la orquesta
+                if (Flat(t.transform.position - transform.position) > Mathf.Min(teachRadius, 2f))
                 {
                     float left = PathMover.Of(this).StepToward(t.transform.position, moveSpeed);
                     if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] va a buscar a «{t.name}» ({left:0} m).");}
                     return;
                 }
-                Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y lo acompaña a la sala de yoga.");
+                Debug.Log($"[Magnate] da la bienvenida a «{t.name}» y van (cada uno andando) a la sala de yoga.");
                 Mind m = t.GetComponent<Mind>();
                 if (m != null) m.humores.Produce(Humor.Serotonina, 0.3f);   // orgullo/bienvenida
-                if (yoga != null) Queue(t).EnqueueOwn(ActionSpells.Walk(yoga));
-                _initPhase = 1; _phaseDeadline = Time.time + 120f;
-                return;
-            case 1:   // caminar juntos (ella delante, a su paso); con tope: si no llegan, se colocan
                 if (yoga == null) { _newcomer.presented = true; _initPhase = 3; return; }
-                float mLeft = PathMover.Of(this).StepToward(yoga.position, moveSpeed * 0.6f);
-                if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {mLeft:0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
-                // En la SALA, no en otro piso del mismo edificio: antes bastaba la distancia en planta y la clase empezaba en el
-                // techo de alfombras, justo encima (Berón 2026-10-28).
-                bool there = Flat(t.transform.position - yoga.position) < 4f && Flat(transform.position - yoga.position) < 5f
-                    && Mathf.Abs(t.transform.position.y - yoga.position.y) < 2.5f && Mathf.Abs(transform.position.y - yoga.position.y) < 2.5f;
-                if (!there && Time.time < _phaseDeadline) return;
-                if (!there) { WorkdayDirector.Teleport(t.transform, yoga.position + Vector3.right * 1.2f); WorkdayDirector.Teleport(transform, yoga.position - Vector3.right * 1.2f); Debug.Log($"[Magnate] no llegaban andando a la sala de yoga: se colocan."); }
+                _orch = WalkTogether("a la sala de yoga", t.transform, yoga);
+                _initPhase = 1;
+                return;
+            case 1:   // la orquesta: cada uno anda SOLO a la sala (ella a un lado de la esterilla, él al otro) y se esperan
+                if (yoga == null) { _initPhase = 3; return; }
+                if (_orch == null) _orch = WalkTogether("a la sala de yoga", t.transform, yoga);   // (si la desactivaron a medias)
+                _orch.Tick();
+                if (Time.time >= _logAt) { _logAt = Time.time + 10f; Debug.Log($"[Magnate] camino a la sala de yoga con «{t.name}»: ella a {Flat(transform.position - yoga.position):0} m, él a {Flat(t.transform.position - yoga.position):0} m."); }
+                if (!_orch.Done) return;
+                _orch = null;
                 _newcomer.presented = true;   // ya es del santuario: su iniciación de la sala empieza aquí
                 // Lo ENTREGA al de turno de la sala: su primera clase OBLIGADA (docs/novela.md, «5. Sala de yoga»: upa-yoga de
                 // cuello, paso a paso) y después el tanque al río de Sakshi (Berón 2026-10-27).
@@ -153,16 +154,19 @@ public class Magnate : MonoBehaviour
             case 3:   // en el río: espera a que vuelva (lo juega el jugador; tope de una hora real = un día del santuario)
                 if (Time.time < _phaseDeadline && (Time.time < _logAt || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy)))) return;
                 Debug.Log($"[Magnate] «{t.name}» vuelve del río: lo acompaña a la cocina.");
-                _initPhase = 4; _phaseDeadline = Time.time + 120f;
+                _initPhase = 4; _orch = null;
                 return;
-            case 4:   // caminar juntos a la cocina (con tope)
+            case 4:   // a la cocina: primero va hasta él (2 m) y después cada uno anda solo (orquesta)
                 {
                     if (kitchen == null) { _initPhase = 5; return; }
-                    PathMover.Of(this).StepToward(kitchen.position, moveSpeed * 0.6f);
-                    bool near = Flat(t.transform.position - kitchen.position) < 4f && Flat(transform.position - kitchen.position) < 5f;
-                    if (!near && Flat(t.transform.position - transform.position) > 2.5f) PathMover.Of(t).StepToward(transform.position, moveSpeed * 0.6f);   // él la sigue
-                    if (!near && Time.time < _phaseDeadline) return;
-                    if (!near) { WorkdayDirector.Teleport(t.transform, kitchen.position + Vector3.right * 1.2f); WorkdayDirector.Teleport(transform, kitchen.position - Vector3.right * 1.2f); }
+                    if (_orch == null)
+                    {
+                        if (Flat(t.transform.position - transform.position) > 2f) { PathMover.Of(this).StepToward(t.transform.position, moveSpeed); return; }
+                        _orch = WalkTogether("a la cocina", t.transform, kitchen);
+                    }
+                    _orch.Tick();
+                    if (!_orch.Done) return;
+                    _orch = null;
                     _initPhase = 5;
                     return;
                 }
@@ -171,13 +175,66 @@ public class Magnate : MonoBehaviour
                     AreaInitiator ki = AreaInitiator.Begin(AreaInitiator.Kind.Kitchen, _newcomer, _a);
                     if (ki == null && kitchen != null) Queue(t).EnqueueOwn(ActionSpells.Walk(kitchen));   // sin nadie: el jefe de cocina lo recibe (KitchenBoss)
                     Debug.Log($"[Magnate] deja a «{t.name}» en la cocina con {(ki != null ? ki.Who : "el jefe de cocina")} para su iniciación.");
-                    _initPhase = 6;
+                    _initPhase = 6; _phaseDeadline = Time.time + 3600f; _logAt = Time.time + 8f;
+                    return;
+                }
+            case 6:   // la cocina (tanda + tanque + su microcosmos): espera a que vuelva (con tope: un día del santuario)
+                {
+                    bool away = AreaInitiator.Owns(_newcomer) || (MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy));
+                    if ((away || Time.time < _logAt) && Time.time < _phaseDeadline) return;
+                    Debug.Log($"[Magnate] «{t.name}» vuelve de la cocina: lo lleva al HUERTO (preparar el suelo).");
+                    _initPhase = 7; _orch = null;
+                    return;
+                }
+            case 7:   // al huerto: primero va hasta él (2 m) y después cada uno anda solo (orquesta)
+                {
+                    Transform garden = gardenSpot != null ? gardenSpot : FindSpot("Garden_Area");
+                    if (garden == null) { _initPhase = 8; return; }
+                    if (_orch == null)
+                    {
+                        if (Flat(t.transform.position - transform.position) > 2f) { PathMover.Of(this).StepToward(t.transform.position, moveSpeed); return; }
+                        _orch = WalkTogether("al huerto", t.transform, garden);
+                    }
+                    _orch.Tick();
+                    if (!_orch.Done) return;
+                    _orch = null;
+                    _initPhase = 8;
+                    return;
+                }
+            case 8:   // lo ENTREGA al de turno del huerto: preparar el suelo del bancal y el tanque al microcosmos del huerto
+                {
+                    AreaInitiator gi = _newcomer.gardenTrained ? null : AreaInitiator.Begin(AreaInitiator.Kind.Garden, _newcomer, _a);
+                    Debug.Log($"[Magnate] deja a «{t.name}» en el huerto con {(gi != null ? gi.Who : "nadie")} para su iniciación (preparar el suelo).");
+                    _initPhase = 9;
                     _guiding.Remove(_newcomer);
                     _newcomer = null; _initiating = null;
                     return;
                 }
         }
     }
+
+    /// <summary>¿Va andando con el recién llegado de un área a otra (o hacia él)? Entonces nadie más la conduce.</summary>
+    public bool IsEscorting => _newcomer != null && (_initPhase == 0 || _initPhase == 1 || _initPhase == 4 || _initPhase == 7);
+
+    // ORQUESTA de la Magnate (Berón 2026-10-29): ya no lo lleva a tirones ni le encola «andar»; cada uno anda SOLO a su sitio
+    // junto al destino (él a un lado, ella al otro, a 2,4 m); él avisa al llegar y ella, ya en el suyo, lo espera.
+    Orchestra _orch;
+    Orchestra WalkTogether(string label, Transform who, Transform to)
+    {
+        var o = new Orchestra($"la Magnate {label}", 2f);
+        Orchestra.Role nw = o.Join(who.name, who), me = o.Join("la Magnate", transform);
+        Vector3 side = Vector3.ProjectOnPlane(to.right, Vector3.up).normalized;
+        if (side.sqrMagnitude < 0.01f) side = Vector3.right;
+        o.Movement(label);
+        o.GoTo(nw, () => to.position + side * 1.2f, () => transform.position, $"va solo {label}");
+        o.Emit(nw, "llegó");
+        o.GoTo(me, () => to.position - side * 1.2f, () => who.position, $"va {label}");
+        o.WaitFor(me, "llegó");
+        return o;
+    }
+
+    void LateUpdate() { if (_orch != null) _orch.LateTick(); }
+    void OnDisable() { _orch?.Stop(); _orch = null; }
 
     static ActionQueue Queue(Anima t) => t.GetOrAdd<ActionQueue>();
     static float Flat(Vector3 v) { v.y = 0f; return v.magnitude; }

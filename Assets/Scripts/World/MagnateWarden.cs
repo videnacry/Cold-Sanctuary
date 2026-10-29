@@ -57,6 +57,7 @@ public class MagnateWarden : MonoBehaviour
         _locks.RemoveWhere(k => k == null || (k is Object o && o == null));
         if (_locks.Count > 0) return true;
         if (FlyingCarpet.Riding(who)) return true;
+        if (Orchestra.Busy(who)) return true;   // en una iniciación (orquesta): ya lo lleva su coreografía
         return MobWorldLoader.HasInstance && (MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy);
     }
 

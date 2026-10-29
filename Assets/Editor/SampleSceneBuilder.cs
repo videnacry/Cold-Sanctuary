@@ -3823,7 +3823,7 @@ public static partial class SampleSceneBuilder
         Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
         YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo
         Debug.Log($"[Yoga] {k} alfombras-esterilla (6 en la sala y {k - 6} en el anillo) y las estatuas en los cuatro puntos cardinales.");
-        KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro");
+        KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro").gameObject.AddComponent<BoxCollider>();   // se sube a ella (sin collider el maestro quedaba dentro)
         KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");
         KitchenProps.C(r, new Vector3(1f, 0.5f, 0.9f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
     }

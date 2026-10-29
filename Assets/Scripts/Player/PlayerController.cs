@@ -183,8 +183,12 @@ public class PlayerController : MonoBehaviour
         if (now == _inYoga || CameraManager.Instance == null) return;
         _inYoga = now;
         if (!now && _anima != null) DailyPoses.Stand().ApplyFinal(_anima);   // acabó: se levanta (el upa-yoga de cuello termina sentado y Kushal seguía así al empujar en el río)
-        CameraManager.Instance.SwitchTo(now ? CameraMode.ThirdPerson : CameraManager.Instance.preferredMode, forced: true);
+        // Al empezar se recuerda la cámara de antes (SwitchTo cambia la preferida) y al acabar se vuelve a ella, salvo que el
+        // jugador la haya cambiado con la V durante la práctica: entonces se queda la suya.
+        if (now) { _modeBeforeYoga = CameraManager.Instance.preferredMode; CameraManager.Instance.SwitchTo(CameraMode.ThirdPerson, forced: true); }
+        else CameraManager.Instance.SwitchTo(CameraManager.Instance.CurrentMode == CameraMode.ThirdPerson ? _modeBeforeYoga : CameraManager.Instance.CurrentMode, forced: true);
     }
+    CameraMode _modeBeforeYoga = CameraMode.ThirdPerson;
 
     // ── Look ──────────────────────────────────────────────────────────────────
 
@@ -251,7 +255,7 @@ public class PlayerController : MonoBehaviour
     // Sujeto (sentado en el examen, tumbado en la camilla, en una alfombra…), la cámara son primero los OJOS (±35° a los
     // lados, ±25° arriba y abajo) y, más allá, gira la CABEZA del cuerpo de cubos (hasta ±70° y ±40° más), como una persona.
     const float EyeYaw = 35f, EyePitch = 25f, HeadYaw = 70f, HeadPitch = 40f;
-    Transform _head; Quaternion _headBase, _headSet; bool _headTurned;
+    Transform _head; Quaternion _headBase, _headSet; bool _headTurned; CreatureRig _rig;
 
     void LateUpdate()
     {
@@ -259,6 +263,11 @@ public class PlayerController : MonoBehaviour
             foreach (CubeJoint j in GetComponentsInChildren<CubeJoint>(true)) if (j.part == BodyPart.Head) { _head = j.transform; break; }
         if (_head == null) return;
         if (!_headTurned || _head.localRotation != _headSet) _headBase = _head.localRotation;   // una postura nueva manda
+        // Si una postura mueve ahora la cabeza (upa-yoga de cuello: barbilla al pecho, oreja al hombro…), manda la postura: la
+        // mirada no le suma su giro (en la clase, sujeto, la cabeza no seguía las instrucciones; Berón 2026-10-29).
+        if (_rig == null) TryGetComponent(out _rig);
+        bool poseHead = _rig != null && (_rig.IsPoseLocked(BodyPart.Head) || _rig.IsPoseLocked(BodyPart.Neck));
+        if (poseHead) { _headTurned = false; return; }
         float y = BodyHeld ? Beyond(_pivotYaw, EyeYaw, HeadYaw) : 0f;
         float x = BodyHeld ? Beyond(_currentPitch, EyePitch, HeadPitch) : 0f;
         if (Mathf.Approximately(x, 0f) && Mathf.Approximately(y, 0f))

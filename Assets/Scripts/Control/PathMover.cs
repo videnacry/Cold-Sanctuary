@@ -18,9 +18,23 @@ public class PathMover : MonoBehaviour
 
     public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
 
+    /// <summary>Cuándo dio su último paso (Time.time). Mientras algo lo conduce con PathMover, nadie más debe moverlo: el
+    /// «merodear» de un anima libre lo empujaba a la vez hacia otro lado y daban vueltas en círculo (Berón 2026-10-29).</summary>
+    public float LastStep { get; private set; } = -999f;
+    public static bool DrivenRecently(GameObject g, float within = 1f) => g != null && g.TryGetComponent(out PathMover pm) && Time.time - pm.LastStep < within;
+
+    /// <summary>Olvida el camino calculado: el próximo paso recalcula hacia el destino nuevo (la orquesta lo llama al empezar
+    /// cada «ir a»; si no, con un destino a menos de 3 m del anterior seguía hasta el viejo y esperaba 4 s para corregir).</summary>
+    public void Restart() { _goal = new Vector3(float.NaN, 0f, 0f); _cliffSince = 0f; }
+
+    /// <summary>Dónde queda el pivote con los pies en el suelo que haya en <paramref name="p"/> (p = el punto de los pies,
+    /// p. ej. uno del NavMesh): sobre lo más alto a un escalón de ahí.</summary>
+    public Vector3 OnGround(Vector3 p) { p.y = GroundY(p, p.y + PivotHeight); return p; }
+
     /// <summary>Un paso hacia <paramref name="target"/> a <paramref name="speed"/> m/s. Devuelve la distancia que queda.</summary>
     public float StepToward(Vector3 target, float speed)
     {
+        LastStep = Time.time;
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
@@ -97,12 +111,16 @@ public class PathMover : MonoBehaviour
         return WaterY + PivotHeight * 0.6f;   // en el agua: medio cuerpo sumergido
     }
 
-    float PivotHeight
+    /// <summary>Del pivote a los pies: la cápsula de los compañeros o, en el jugador, su CharacterController (como GroundGuard).
+    /// Sin esto el jugador que anda solo en una orquesta quedaba con los pies a otra altura.</summary>
+    public float PivotHeight
     {
         get
         {
             CapsuleCollider c = GetComponent<CapsuleCollider>();
-            return c != null ? c.height * 0.5f * transform.lossyScale.y - c.center.y * transform.lossyScale.y : 1f;
+            if (c != null) return c.height * 0.5f * transform.lossyScale.y - c.center.y * transform.lossyScale.y;
+            CharacterController cc = GetComponent<CharacterController>();
+            return cc != null ? (cc.height * 0.5f - cc.center.y) * transform.lossyScale.y : 1f;
         }
     }
 

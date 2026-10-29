@@ -5,17 +5,23 @@ using UnityEngine;
 /// COMPUESTO («iniciar») que puede lanzar CUALQUIERA que lo conozca; lo hace quien tenga la misión «Iniciación de recién
 /// llegados y turistas» en la jornada (al empezar el juego, quien esté de turno; si nadie la tiene a esta hora, quien la
 /// tenga hoy; un clon de la Magnate si faltan manos). Linduarda solo la hace sin jornada (pruebas).
-/// Lo que se ve, como una animación (Berón 2026-10-26):
-/// 1. El trabajador VA HACIA el recién llegado (todos los demás ya están iniciados), lo saluda y lo LLEVA de la mano.
-/// 2. El EXAMEN DE LLEGADA (<see cref="ArrivalExam.Beats"/>): en cada sitio (la silla, el lavabotas, el lavamanos, la
-///    camilla, la mesa) lo coloca sentado, de pie o tumbado, y hace el gesto con su herramienta en la mano, alternando dos
-///    posturas; el recién llegado adopta la suya. Sentado, el jugador pasa a la cámara en 1.ª persona.
-/// 3. Lo lleva al TANQUE, lo mete dentro y lo envía a su primer microcosmos: Ambrosio (<see cref="FirstMicrocosmos"/>).
-/// Mientras no vuelva de él, lo acompaña y se lo recuerda.
+/// Lo que se ve, como una animación (Berón 2026-10-26) y, desde 2026-10-29, como una ORQUESTA (<see cref="Orchestra"/>):
+/// 1. El trabajador VA HACIA el recién llegado (todos los demás ya están iniciados) hasta 2 m y lo saluda: ahí empieza la
+///    orquesta y cada uno va SOLO a sus sitios (ya no lo lleva de la mano a tirones).
+/// 2. El EXAMEN DE LLEGADA (<see cref="ArrivalExam.Beats"/>): en cada paso el recién llegado anda solo a su sitio (la silla,
+///    el lavabotas, el lavamanos, la camilla, la mesa), se sienta, se queda de pie o se tumba y da la señal «en su sitio»;
+///    el trabajador, ya en el suyo, la espera, hace su gesto con la herramienta en la mano (dos posturas alternas, A/B) y al
+///    acabar da «hecho»: entonces los dos pasan al paso siguiente. Sentado, el jugador pasa a la cámara en 1.ª persona.
+/// 3. Al TANQUE: los dos andan hasta él; cuando el recién llegado está delante, el trabajador lo mete dentro y lo envía a su
+///    primer microcosmos: Ambrosio (<see cref="FirstMicrocosmos"/>). Mientras no vuelva de él, lo acompaña y se lo recuerda.
 /// </summary>
 public class NewcomerInitiator : MonoBehaviour
 {
     public float reach = 2.5f, moveSpeed = 3.2f;
+    [Tooltip("Paso de andar dentro de la orquesta (m/s): el ciclo de andar mueve las piernas.")]
+    public float walkSpeed = 1.8f;
+    /// <summary>A qué distancia (como mucho 2 m) tiene que llegar el trabajador para empezar la orquesta.</summary>
+    public const float StartDistance = 1.6f;
     /// <summary>Escena del primer microcosmos del recién llegado (la historia de Ambrosio).</summary>
     public const string FirstMicrocosmos = "Microcosmos_Scene1_Ambrosio";
 
@@ -32,26 +38,34 @@ public class NewcomerInitiator : MonoBehaviour
         }
     }
     /// <summary>¿Tiene una iniciación a medias (examen o camino al tanque)?</summary>
-    public bool InProgress => _exam != null || _leading != null;
+    public bool InProgress => _subject != null;
     public bool IsActive => Active == this;
     /// <summary>¿Está ocupado con un recién llegado? (la jornada no lo mueve entonces).</summary>
-    public bool Busy => IsActive && (_leading != null || _exam != null || Waiting() != null);
+    public bool Busy => InProgress || (IsActive && Waiting() != null);   // (quien la empezó, aunque ya no sea «el activo»)
 
     /// <summary>Para el test de experiencia: el paso del examen en curso (null si no hay), y en qué fase va.</summary>
-    public ArrivalExam.Beat CurrentBeat => _exam != null && _beat >= 0 && _beat < ArrivalExam.Beats.Length ? ArrivalExam.Beats[_beat] : null;
+    public ArrivalExam.Beat CurrentBeat => _subject != null && _beat >= 0 && _beat < ArrivalExam.Beats.Length ? ArrivalExam.Beats[_beat] : null;
+    /// <summary>Approach: va hacia él · Escort: la orquesta, cada uno andando a su sitio · Perform: el trabajador hace el gesto
+    /// del paso · ToTank: el último movimiento, al tanque.</summary>
     public enum Phase { None, Approach, Escort, Perform, ToTank }
     public Phase Now { get; private set; }
     public int BeatsDone { get; private set; }
     /// <summary>A qué distancia del recién llegado estaba al saludarlo (−1: aún no).</summary>
     public float GreetedAtDistance { get; private set; } = -1f;
+    /// <summary>¿El recién llegado está sentado o tumbado ahora (no de pie)?</summary>
+    public bool PatientDown { get; private set; }
+    /// <summary>La orquesta en curso (null si no hay).</summary>
+    public Orchestra Score => _orch;
 
     VirtualizationMachine _machine;
-    SanctuaryOnboarding _leading, _exam;
-    int _stoodFor = -1;   // paso en el que ya se levantó al acompañado
-    int _beat = -1; float _beatEnd, _nextFrame, _aimUntil, _walkUntil, _stepDeadline; bool _frameB; Vector3 _pinAt;
+    SanctuaryOnboarding _subject;
+    bool _withExam;
+    int _beat = -1; float _aimUntil;
     float _nextReminder, _sentAt = -999f;
-    bool _frozePlayer, _camForced;
+    bool _camForced;
     CameraMode _camBefore;
+    Orchestra _orch;
+    Orchestra.Role _rWorker, _rNew;
 
     public string Who
     {
@@ -80,7 +94,7 @@ public class NewcomerInitiator : MonoBehaviour
     // ¿Ya lo está iniciando otro? (uno a la vez)
     static bool Handled(SanctuaryOnboarding o)
     {
-        foreach (NewcomerInitiator n in SceneCache.All<NewcomerInitiator>(0.5f)) if (n != null && (n._exam == o || n._leading == o)) return true;
+        foreach (NewcomerInitiator n in SceneCache.All<NewcomerInitiator>(0.5f)) if (n != null && n._subject == o) return true;
         return false;
     }
 
@@ -99,12 +113,12 @@ public class NewcomerInitiator : MonoBehaviour
     /// <summary>Olvida cualquier iniciación a medias (para empezar de cero, p. ej. en el test de experiencia).</summary>
     public void ResetState()
     {
-        if (_exam != null) { Hold(_exam.transform, false); EyesAtHead(_exam.GetComponent<PlayerController>(), false); } else if (_leading != null) Hold(_leading.transform, false);
+        _orch?.Stop(); _orch = null;
+        if (_subject != null) { EyesAtHead(_subject.GetComponent<PlayerController>(), false); ArrivalExam.Hold(_subject.gameObject, null, BodyPart.HandRight, "Herramienta_paciente"); }
         if (_camForced && CameraManager.Instance != null) CameraManager.Instance.SwitchTo(_camBefore, forced: true);
         _camForced = false;
         ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
-        if (_exam != null) ArrivalExam.Hold(_exam.gameObject, null, BodyPart.HandRight, "Herramienta_paciente");
-        _exam = null; _leading = null; _beat = -1; BeatsDone = 0; Now = Phase.None;
+        _subject = null; _beat = -1; BeatsDone = 0; Now = Phase.None; PatientDown = false;
     }
 
     void Update()
@@ -113,128 +127,226 @@ public class NewcomerInitiator : MonoBehaviour
         // Quien ya ha empezado una iniciación la TERMINA aunque acabe su turno (antes se quedaba congelada a medias y el de
         // turno siguiente empezaba otra con el mismo recién llegado: dos a la vez).
         if (!IsActive && !InProgress) return;
-        if (_exam != null) { Exam(); return; }
-        if (_leading != null) { Lead(); return; }
+        if (_subject != null) { Run(); return; }
         SanctuaryOnboarding o = Waiting();
         if (o == null) return;
         HealthRecord hr = o.GetComponent<HealthRecord>();
-        if (hr != null && hr.NeedsCare) { StartExam(o); return; }
-        if (!o.initiated) { Begin(o); return; }
+        if (hr != null && hr.NeedsCare) { Launch(o, true); return; }
+        if (!o.initiated) { Launch(o, false); return; }
         Accompany(o);
     }
 
-    // Mientras hace una prueba se queda en su sitio, de cara al examinado: su jornada, su navegación o los impulsos la iban
-    // paseando por la sala a mitad del análisis.
-    void LateUpdate()
+    // Quien está quieto en su sitio no se mueve (su jornada o su navegación lo paseaban a mitad del gesto).
+    void LateUpdate() { if (_orch != null) _orch.LateTick(); }
+
+    // ── 1. IR HACIA ÉL (hasta 2 m): ahí empieza la orquesta ──────────────────────────────────────────────────────
+    void Launch(SanctuaryOnboarding o, bool exam)
     {
-        if (_exam == null || Now != Phase.Perform) return;
-        Vector3 d = _pinAt - transform.position; d.y = 0f;
-        if (d.sqrMagnitude > 0.0025f) WorkdayDirector.Teleport(transform, new Vector3(_pinAt.x, transform.position.y, _pinAt.z));
-        transform.rotation = Quaternion.LookRotation(Flat(_exam.transform.position - transform.position));
+        _subject = o; _withExam = exam; _beat = 0; BeatsDone = 0; Now = Phase.Approach; GreetedAtDistance = -1f; PatientDown = false;
+        Debug.Log($"[Iniciación] {Who} lanza «iniciar» (hechizo compuesto) sobre «{o.name}»: va hacia el recién llegado{(exam ? "" : " (ya examinado: al tanque)")}.");
     }
 
-    // ── 1. IR HACIA ÉL Y LLEVARLO ───────────────────────────────────────────────────────────────────────────────
-    void StartExam(SanctuaryOnboarding o)
+    void Run()
     {
-        _exam = o; _beat = 0; BeatsDone = 0; Now = Phase.Approach; GreetedAtDistance = -1f;
-        Debug.Log($"[Iniciación] {Who} lanza «iniciar» (hechizo compuesto) sobre «{o.name}»: va hacia el recién llegado.");
-    }
-
-    /// <summary>Mueve al acompañado detrás del que guía (lo lleva de la mano), sin que el jugador lo controle.</summary>
-    void Escort(Transform p, float dt)
-    {
-        Hold(p, true);
-        // Se levanta antes de andar (venía sentado del examen o de la clase y lo llevaban así, Berón 2026-10-27).
-        if (_stoodFor != _beat && p.TryGetComponent(out Anima pa)) { _stoodFor = _beat; DailyPoses.Stand().ApplyFinal(pa); }
-        Vector3 behind = transform.position - transform.forward * 1.0f + transform.right * 0.4f; behind.y = p.position.y;
-        Vector3 d = behind - p.position; d.y = 0f;
-        // ANDA detrás (Berón 2026-10-27: antes se le arrastraba como a un muñeco): con su paso, rodeando lo que haya.
-        if (d.magnitude > 0.6f) WorkdayDirector.Teleport(p, Vector3.MoveTowards(p.position, behind, moveSpeed * 1.15f * dt));   // a su paso (el ciclo de andar del cuerpo lo anima)
-        Vector3 look = d.magnitude > 0.6f ? d : transform.position - p.position; look.y = 0f;   // mira hacia donde anda
-        if (look.sqrMagnitude > 0.01f) p.rotation = Quaternion.Slerp(p.rotation, Quaternion.LookRotation(look), dt * 6f);
-    }
-
-    void Exam()
-    {
-        Transform p = _exam.transform;
-        Anima me = GetComponent<Anima>(), pa = _exam.GetComponentInParent<Anima>();
+        Transform p = _subject.transform;
         if (Now == Phase.Approach)
         {
             Vector3 d = p.position - transform.position;
-            float gap = d.magnitude; d.y = 0f;   // en 3D: en otro piso no está «cerca» aunque esté encima
-            if (gap > 1.6f) { Step(p.position); return; }
+            float gap = d.magnitude;   // en 3D: en otro piso no está «cerca» aunque esté encima
+            if (gap > StartDistance) { Step(p.position); return; }
             transform.rotation = Quaternion.LookRotation(Flat(d));
             GreetedAtDistance = gap;
-            Say(_exam, "Bienvenido al santuario. Soy quien te hace la iniciación: ven conmigo, te llevo yo.", 6f);
-            Now = Phase.Escort; _walkUntil = Time.time + 8f; _stepDeadline = Time.time + 25f;
+            Say(_subject, _withExam ? "Bienvenido al santuario. Soy quien te hace la iniciación: ve tú a cada sitio que te diga y espérame allí; yo te sigo."
+                                    : "Ya tienes el examen hecho: vamos al tanque, tu primera virtualización.", 6f);
+            _orch = _withExam ? BuildExam() : new Orchestra("iniciación", walkSpeed);
+            if (!_withExam) { _rNew = _orch.Join("recién llegado", p); _rWorker = _orch.Join(Who, transform); }
+            AddTank(_orch);
+            Now = Phase.Escort;
             return;
         }
-        if (_beat >= ArrivalExam.Beats.Length) { FinishExam(p, me, pa); return; }
-        ArrivalExam.Beat b = ArrivalExam.Beats[_beat];
-        Transform place = Place(b.place);
-        if (Now == Phase.Escort)
+        _orch.Tick();
+        if (_orch == null) return;   // (ResetState desde una señal)
+        if (Now == Phase.Perform)
         {
-            if (_stoodFor != _beat) { Stand(pa); Stand(me); }   // UNA vez por paso: ponerse de pie bloquea las piernas 0,3 s y, cada fotograma, no andaban (Berón 2026-10-28)
-            if (place == null) { Now = Phase.Perform; _beatEnd = Time.time + b.seconds; return; }
-            Vector3 fr = ArrivalExam.Front(place), side = Vector3.Cross(Vector3.up, fr);
-            Vector3 stand = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f + side * 0.9f : place.position + fr * 0.9f + side * 0.5f;
-            Vector3 d = stand - transform.position; d.y = 0f;
-            if (d.magnitude > 0.6f && Time.time < _stepDeadline) { Escort(p, Time.deltaTime); Step(stand); _walkUntil = Time.time + 8f; return; }   // (8 s como mucho para llegar a su sitio)
-            if (d.magnitude > 0.6f) { WorkdayDirector.Teleport(transform, new Vector3(stand.x, transform.position.y, stand.z)); Debug.Log($"[Iniciación] {Who} no llegaba a «{b.place}» andando (un mueble o el borde en medio): se coloca."); }
-            // Y el recién llegado va ANDANDO hasta su sitio (delante de la silla, de la camilla o del lavabotas) antes de sentarse.
-            Vector3 go = b.patient == ArrivalExam.Spot.Stand ? place.position + fr * 0.7f : place.position + fr * 0.75f; go.y = p.position.y;
-            Vector3 gp = go - p.position; gp.y = 0f;
-            if (gp.magnitude > 0.45f && Time.time < _walkUntil) { Hold(p, true); WorkdayDirector.Teleport(p, Vector3.MoveTowards(p.position, go, moveSpeed * 0.8f * Time.deltaTime)); p.rotation = Quaternion.Slerp(p.rotation, Quaternion.LookRotation(Flat(gp)), Time.deltaTime * 6f); return; }
-            Put(p, pa, place, b.patient);
-            transform.rotation = Quaternion.LookRotation(Flat(p.position - transform.position));
-            ArrivalExam.Hold(gameObject, b.tool, BodyPart.HandRight, "Herramienta");
-            ArrivalExam.Hold(p.gameObject, b.patientTool, b.patientBone, "Herramienta_paciente");
-            Say(_exam, b.line, b.seconds);
-            Debug.Log($"[Iniciación] {Who} · {b.title} ({b.seconds:0} s, en «{b.place}»; protege a: {b.protects}).");
-            Now = Phase.Perform; _beatEnd = Time.time + b.seconds; _nextFrame = 0f; _frameB = false; _aimUntil = Time.time + 0.6f; _pinAt = transform.position;
-            return;
+            ArrivalExam.Beat b = CurrentBeat;
+            // En 1.ª persona se ve el gesto: al empezar cada prueba, la mirada va a su cara (unos fotogramas); después los
+            // ojos-cámara son del jugador, que mira donde quiera (PlayerController: ojos y cabeza).
+            PlayerController pc = p.GetComponent<PlayerController>();
+            EyesAtHead(pc, PatientDown);
+            if (b != null && pc != null && Time.time < _aimUntil) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }
         }
-        // Phase.Perform: el gesto, alternando las dos posturas.
-        if (Time.time >= _nextFrame)
-        {
-            _nextFrame = Time.time + b.period;
-            if (me != null) (_frameB ? b.exB : b.exA)?.Invoke().ApplyFinal(me);
-            if (pa != null) (_frameB ? b.ptB : b.ptA)?.Invoke().ApplyFinal(pa);
-            _frameB = !_frameB;
-        }
-        // En 1.ª persona se ve el gesto: al empezar cada prueba, la mirada va a su cara (unos fotogramas, mientras la cámara se
-        // asienta tras sentarlo); después los ojos-cámara son del jugador, que mira donde quiera (PlayerController: ojos y cabeza).
-        PlayerController pc = p.GetComponent<PlayerController>();
-        EyesAtHead(pc, b.patient != ArrivalExam.Spot.Stand);
-        if (pc != null && Time.time < _aimUntil) { HeadAt(transform, out Vector3 face); pc.LookAtPoint(face - Vector3.up * 0.3f); }   // su cara y sus manos con la herramienta
-        if (Time.time < _beatEnd) return;
-        HealthRecord hr = _exam.GetComponent<HealthRecord>();
-        if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
-        {
-            ITarget it = _exam.GetComponentInParent<ITarget>();
-            if (me != null && it != null) this.GetOrAdd<ClinicalAnalysisSpell>().Cast(me, it);
-            if (hr != null) hr.analyzed = true;
-        }
-        if (b.id == "vacuna" && hr != null) { hr.vaccinated = true; ITarget it = _exam.GetComponentInParent<ITarget>(); if (me != null && it != null) this.GetOrAdd<VaccinateSpell>().Cast(me, it); }
-        ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
-        ArrivalExam.Hold(p.gameObject, null, b.patientBone, "Herramienta_paciente");
-        BeatsDone++; _beat++; Now = Phase.Escort; _walkUntil = Time.time + 8f; _stepDeadline = Time.time + 25f;
+        if (!_orch.Done) return;
+        Debug.Log($"[Iniciación] {Who}: la orquesta de «{_subject.name}» termina ({BeatsDone} pasos del examen).");
+        _orch = null; _subject = null; _beat = -1; Now = Phase.None;
     }
 
-    // Coloca al examinado en el sitio del paso: sentado en la silla, tumbado en la camilla o de pie delante.
-    void Put(Transform p, Anima pa, Transform place, ArrivalExam.Spot spot)
+    // ── 2. EL EXAMEN COMO ORQUESTA ────────────────────────────────────────────────────────────────────────────────
+    Orchestra BuildExam()
     {
-        Hold(p, true);
-        ArrivalExam.PatientSpot(place, spot, out Vector3 at, out Quaternion rot, p);
+        var o = new Orchestra("examen de llegada", walkSpeed);
+        Transform p = _subject.transform;
+        Orchestra.Role nw = _rNew = o.Join("recién llegado", p), wk = _rWorker = o.Join(Who, transform);
+        ArrivalExam.Beat prev = null;
+        for (int i = 0; i < ArrivalExam.Beats.Length; i++)
+        {
+            int idx = i;
+            ArrivalExam.Beat b = ArrivalExam.Beats[i];
+            o.Movement(b.id);
+            // EL RECIÉN LLEGADO: va solo a su sitio (si no sigue en el mismo), se coloca, avisa y hace su postura hasta «hecho».
+            bool stay = prev != null && prev.place == b.place && prev.patient == b.patient;
+            if (!stay)
+            {
+                if (prev != null && prev.patient != ArrivalExam.Spot.Stand) { string from = prev.place; o.Do(nw, () => Rise(from), "se levanta"); }
+                o.GoTo(nw, () => PatientApproach(b, p), () => PlacePos(b, p), $"va solo a «{b.place}»");
+                if (b.patient != ArrivalExam.Spot.Stand) o.Do(nw, () => Settle(b), b.patient == ArrivalExam.Spot.Sit ? "se sienta" : "se tumba");
+            }
+            o.Emit(nw, "en_su_sitio").WaitFor(nw, "empieza");
+            o.Pose(nw, b.ptA, b.ptB, b.period, -1f, "hecho", label: $"postura del paso «{b.id}»");
+            // EL TRABAJADOR: a su sitio, espera al recién llegado, hace el gesto (sus fotogramas) y da «hecho».
+            o.GoTo(wk, () => WorkerSpot(b, p), () => p.position, $"va a su sitio en «{b.place}»");
+            o.WaitFor(wk, "en_su_sitio");
+            o.Do(wk, () => BeginBeat(idx), $"empieza «{b.title}»").Emit(wk, "empieza");
+            o.Pose(wk, b.exA, b.exB, b.period, b.seconds, face: () => p.position, label: $"gesto «{b.id}» ({b.seconds:0} s)");
+            o.Do(wk, () => EndBeat(idx), "termina el paso").Emit(wk, "hecho");
+            prev = b;
+        }
+        // Al acabar el examen: de pie, la cámara como estaba.
+        o.Movement("fin del examen");
+        if (prev != null && prev.patient != ArrivalExam.Spot.Stand) { string from = prev.place; o.Do(nw, () => Rise(from), "se levanta"); }
+        o.Do(wk, FinishExam, "termina el examen");
+        return o;
+    }
+
+    // ── 3. AL TANQUE (último movimiento): los dos andan hasta él; delante, el trabajador lo mete dentro ─────────────
+    void AddTank(Orchestra o)
+    {
+        Transform p = _subject.transform;
+        VirtualizationMachine vm = Machine();
+        o.Movement("al tanque");
+        o.Do(_rWorker, () =>
+        {
+            Now = Phase.ToTank;
+            Debug.Log($"[Iniciación] {Who} y «{p.name}» van al tanque: su primera virtualización (cada uno andando).");
+        }, "al tanque");
+        if (vm != null)
+        {
+            o.GoTo(_rNew, () => TankSpot(vm, false), () => vm.transform.position, "va solo al tanque");
+            o.GoTo(_rWorker, () => TankSpot(vm, true), () => p.position, "va al tanque");
+        }
+        o.Emit(_rNew, "en_el_tanque").WaitFor(_rNew, "dentro");
+        o.WaitFor(_rWorker, "en_el_tanque").Do(_rWorker, () => Handover(vm), "lo mete en el tanque").Emit(_rWorker, "dentro");
+    }
+
+    // Delante del tanque (por el lado que da al área); el trabajador, a un lado.
+    static Vector3 TankSpot(VirtualizationMachine vm, bool worker)
+    {
+        Vector3 fr = ArrivalExam.Front(vm.transform), side = Vector3.Cross(Vector3.up, fr);
+        return vm.transform.position + fr * (worker ? 3.0f : 2.4f) + side * (worker ? 1.2f : 0f);
+    }
+
+    void Handover(VirtualizationMachine vm)
+    {
+        Transform p = _subject.transform;
+        _orch.Release(_rNew);
+        _subject.initiated = true;
+        if (vm == null || p.GetComponent<PlayerController>() == null || MobWorldLoader.Instance == null) return;   // (Instance lo crea si aún no existe)
+        Say(o: null, $"Ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", 4f);
+        LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);
+        Debug.Log($"[Iniciación] {Who} mete a «{p.name}» en el tanque y lo envía a «{FirstMicrocosmos}».");
+        vm.EnterWithTank(p, Application.CanStreamedLevelBeLoaded(FirstMicrocosmos) ? FirstMicrocosmos : null);
+        _sentAt = Time.time;
+    }
+
+    // ── Los sitios de cada paso ──
+    // Donde se pone el recién llegado ANDANDO: delante del asiento de la silla, delante de la camilla o, de pie, delante del
+    // lavabotas/lavamanos/mesa (el suelo lo pone PathMover: los pies en el suelo; antes se le colocaba a la altura del pivote
+    // del mueble y en el lavabotas quedaban las piernas bajo el suelo).
+    static Vector3 PatientApproach(ArrivalExam.Beat b, Transform p)
+    {
+        Transform place = Place(b.place);
+        if (place == null) return p.position;
+        Vector3 c = ArrivalExam.Center(place);
+        if (b.patient == ArrivalExam.Spot.Sit) return c + Flat(place.forward).normalized * 0.65f;
+        return c + ArrivalExam.Front(place) * (b.patient == ArrivalExam.Spot.Stand ? 0.7f : 0.75f);
+    }
+
+    static Vector3 PlacePos(ArrivalExam.Beat b, Transform p) { Transform place = Place(b.place); return place != null ? ArrivalExam.Center(place) : p.position + p.forward; }
+
+    // El sitio del trabajador: de pie, a su lado (0,9 m); sentado o tumbado, delante y a un lado (no se pisan).
+    static Vector3 WorkerSpot(ArrivalExam.Beat b, Transform p)
+    {
+        Transform place = Place(b.place);
+        if (place == null) return p.position + p.forward * 1.0f;
+        Vector3 fr = ArrivalExam.Front(place), side = Vector3.Cross(Vector3.up, fr);
+        Vector3 c = ArrivalExam.Center(place);
+        return b.patient == ArrivalExam.Spot.Stand ? c + fr * 0.7f + side * 0.9f : c + fr * 1.0f + side * 0.8f;
+    }
+
+    // Sentarse o tumbarse: del sitio de delante al mueble (menos de un metro), con su postura.
+    void Settle(ArrivalExam.Beat b)
+    {
+        Transform p = _subject.transform, place = Place(b.place);
+        if (place == null) return;
+        Anima pa = _subject.GetComponentInParent<Anima>();
+        ArrivalExam.PatientSpot(place, b.patient, out Vector3 at, out Quaternion rot, p);
         WorkdayDirector.Teleport(p, at);
         p.rotation = rot;
-        if (pa != null) (spot == ArrivalExam.Spot.Sit ? DailyPoses.Sit() : spot == ArrivalExam.Spot.Lie ? DailyPoses.Lie() : DailyPoses.Stand()).ApplyFinal(pa);
+        if (pa != null) (b.patient == ArrivalExam.Spot.Sit ? DailyPoses.Sit() : DailyPoses.Lie()).ApplyFinal(pa);
+        PatientDown = true;
         // Sentado o tumbado, el jugador lo vive en 1.ª persona (Berón 2026-10-26).
-        if (spot != ArrivalExam.Spot.Stand && !_camForced && p.GetComponent<PlayerController>() != null && CameraManager.Instance != null)
+        if (!_camForced && p.GetComponent<PlayerController>() != null && CameraManager.Instance != null)
         {
             _camBefore = CameraManager.Instance.preferredMode; _camForced = true;
             CameraManager.Instance.SwitchTo(CameraMode.FirstPerson, forced: true);
         }
+    }
+
+    // Levantarse: de pie, con los pies en el suelo delante del mueble (no anda por encima del asiento).
+    void Rise(string placeName)
+    {
+        if (!PatientDown) return;
+        Transform p = _subject.transform, place = Place(placeName);
+        Anima pa = _subject.GetComponentInParent<Anima>();
+        if (pa != null) DailyPoses.Stand().ApplyFinal(pa);
+        EyesAtHead(p.GetComponent<PlayerController>(), false);
+        if (place != null)
+        {
+            bool chair = placeName == "Silla_examen";
+            Vector3 front = ArrivalExam.Center(place) + (chair ? Flat(place.forward).normalized * 0.65f : ArrivalExam.Front(place) * 0.75f);
+            if (UnityEngine.AI.NavMesh.SamplePosition(front, out UnityEngine.AI.NavMeshHit h, 1.5f, UnityEngine.AI.NavMesh.AllAreas)) front = h.position;
+            WorkdayDirector.Teleport(p, PathMover.Of(p).OnGround(front));
+        }
+        PatientDown = false;
+    }
+
+    void BeginBeat(int i)
+    {
+        ArrivalExam.Beat b = ArrivalExam.Beats[i];
+        Transform p = _subject.transform;
+        _beat = i;
+        ArrivalExam.Hold(gameObject, b.tool, BodyPart.HandRight, "Herramienta");
+        ArrivalExam.Hold(p.gameObject, b.patientTool, b.patientBone, "Herramienta_paciente");
+        Say(_subject, b.line, b.seconds);
+        Debug.Log($"[Iniciación] {Who} · {b.title} ({b.seconds:0} s, en «{b.place}»; protege a: {b.protects}).");
+        Now = Phase.Perform; _aimUntil = Time.time + 0.6f;
+    }
+
+    void EndBeat(int i)
+    {
+        ArrivalExam.Beat b = ArrivalExam.Beats[i];
+        Anima me = GetComponent<Anima>();
+        HealthRecord hr = _subject.GetComponent<HealthRecord>();
+        if (b.id == "hisopo")   // la muestra del frotis: el ANÁLISIS CLÍNICO (el mismo hechizo que usan Linduarda y el analizador)
+        {
+            ITarget it = _subject.GetComponentInParent<ITarget>();
+            if (me != null && it != null) this.GetOrAdd<ClinicalAnalysisSpell>().Cast(me, it);
+            if (hr != null) hr.analyzed = true;
+        }
+        if (b.id == "vacuna" && hr != null) { hr.vaccinated = true; ITarget it = _subject.GetComponentInParent<ITarget>(); if (me != null && it != null) this.GetOrAdd<VaccinateSpell>().Cast(me, it); }
+        ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
+        ArrivalExam.Hold(_subject.gameObject, null, b.patientBone, "Herramienta_paciente");
+        Stand(me);
+        BeatsDone++; _beat = i + 1; Now = Phase.Escort;
     }
 
     // Sentado o tumbado, la 1.ª persona va en la cabeza de verdad: el pivote de la cámara está a la altura de alguien de pie
@@ -261,23 +373,14 @@ public class NewcomerInitiator : MonoBehaviour
         return head != null;
     }
 
-    void FinishExam(Transform p, Anima me, Anima pa)
+    void FinishExam()
     {
+        Transform p = _subject.transform;
         EyesAtHead(p.GetComponent<PlayerController>(), false);
-        Stand(me); Stand(pa);
+        Stand(GetComponent<Anima>());
         if (_camForced && CameraManager.Instance != null) { CameraManager.Instance.SwitchTo(_camBefore, forced: true); _camForced = false; }
         PlayerController ppc = p.GetComponent<PlayerController>(); if (ppc != null) ppc.LookAtPoint(p.position + p.forward * 10f + Vector3.up * 1.5f);   // la mirada, otra vez al frente
-        Debug.Log($"[Iniciación] {Who} termina el examen de llegada de «{_exam.name}» ({BeatsDone} pasos): ahora, al tanque.");
-        SanctuaryOnboarding o = _exam; _exam = null; _beat = -1;
-        Begin(o);
-    }
-
-    void Hold(Transform p, bool on)
-    {
-        var pc = p != null ? p.GetComponent<PlayerController>() : null;
-        if (pc == null) return;
-        if (on && !_frozePlayer) { pc.HoldBody(true); _frozePlayer = true; }
-        else if (!on && _frozePlayer) { pc.HoldBody(false); _frozePlayer = false; }
+        Debug.Log($"[Iniciación] {Who} termina el examen de llegada de «{_subject.name}» ({BeatsDone} pasos): ahora, al tanque.");
     }
 
     static void Stand(Anima a) { if (a != null) DailyPoses.Stand().ApplyFinal(a); }
@@ -288,41 +391,10 @@ public class NewcomerInitiator : MonoBehaviour
         if (o != null && o.GetComponent<PlayerController>() != null) LessonPrompt.Show($"{Who}: {text}", null, secs + 2f);
     }
 
-    // Andar hacia un sitio; si está en otro piso o edificio, por la cadena de alfombras voladoras (ya no hay escaleras).
-    void Step(Vector3 target)
-    {
-        Vector3 to = target;
-        if (CarpetPad.Route(gameObject, ref to)) return;
-        PathMover.Of(this).StepToward(to, moveSpeed);
-    }
+    // Andar hacia un sitio (PathMover: si está en otro piso o edificio, por la cadena de alfombras voladoras).
+    void Step(Vector3 target) => PathMover.Of(this).StepToward(target, moveSpeed);
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
-
-    // ── 3. AL TANQUE: lo mete dentro y lo envía a su primer microcosmos ──────────────────────────────────────────
-    void Begin(SanctuaryOnboarding o)
-    {
-        _leading = o; Now = Phase.ToTank;
-        Debug.Log($"[Iniciación] {Who} lleva a «{o.name}» al tanque: su primera virtualización.");
-    }
-
-    void Lead()
-    {
-        Transform p = _leading.transform;
-        VirtualizationMachine vm = Machine();
-        if (vm == null) { _leading.initiated = true; _leading = null; Hold(p, false); Now = Phase.None; return; }
-        Vector3 to = vm.transform.position - transform.position; to.y = 0f;
-        if (to.magnitude > reach + 1.5f) { Escort(p, Time.deltaTime); Step(vm.transform.position); return; }   // la máquina está junto al borde (ya sin barrera): no hace falta pegarse
-        Hold(p, false);
-        _leading.initiated = true; _leading = null; Now = Phase.None;
-        if (p.GetComponent<PlayerController>() != null && MobWorldLoader.Instance != null)   // (Instance lo crea si aún no existe: HasInstance era false si nadie lo había pedido antes)
-        {
-            Say(o: null, $"Ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", 4f);
-            LessonPrompt.Show($"{Who}: ponte la máscara y entra al agua: te espera Ambrosio, en el microcosmos.", null, 6f);
-            Debug.Log($"[Iniciación] {Who} mete a «{p.name}» en el tanque y lo envía a «{FirstMicrocosmos}».");
-            vm.EnterWithTank(p, Application.CanStreamedLevelBeLoaded(FirstMicrocosmos) ? FirstMicrocosmos : null);
-            _sentAt = Time.time;
-        }
-    }
 
     // ACOMPAÑAR al que aún no ha hecho su primera virtualización: lo sigue y se lo recuerda cada cierto tiempo.
     void Accompany(SanctuaryOnboarding o)
@@ -339,5 +411,5 @@ public class NewcomerInitiator : MonoBehaviour
         Debug.Log($"[Iniciación] {Who} recuerda al recién llegado que le falta su primera virtualización (lo acompaña por la enfermería).");
     }
 
-    void OnDestroy() { if (Current == this) Current = null; if (Fallback == this) Fallback = null; }
+    void OnDestroy() { _orch?.Stop(); if (Current == this) Current = null; if (Fallback == this) Fallback = null; }
 }
