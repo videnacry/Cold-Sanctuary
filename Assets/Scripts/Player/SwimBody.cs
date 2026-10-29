@@ -218,15 +218,16 @@ public class SwimBody : MonoBehaviour
     CreatureRig _rig;
     CharacterController _cc;
     Anima _anima;
-    bool _cached, _isPlayer, _applied;
+    bool _cached, _hadBody, _isPlayer, _applied;
     Vector3 _last;
     float _w, _pitch, _phase, _drivenAt = -999f, _nextAuto;
 
     void Cache()
     {
-        if (_cached) return;
+        if (_cached && !(_hadBody && _body == null)) return;   // volvieron a vestirlo (cuerpo nuevo): se recogen sus huesos otra vez
         _cached = true;
         _body = transform.Find(CubeHumanoid.BodyName);
+        _hadBody = _body != null;
         TryGetComponent(out _rig); TryGetComponent(out _cc); TryGetComponent(out _anima);
         _isPlayer = CompareTag("Player");
         _j.Clear();
