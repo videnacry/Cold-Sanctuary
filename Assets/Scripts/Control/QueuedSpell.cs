@@ -189,19 +189,27 @@ public class CarpetWalkSpell : QueuedSpell
     public string targetName = "destino";
     public float stopDistance = 1f, speed = 1.6f, giveUpAfter = 300f;
     float _start = -1f;
+    Vector3 _snap;
 
     public override string Label => $"ir a {targetName} (en alfombra)";
 
     public override bool Tick(Anima self)
     {
         if (self == null || target == null) return true;
-        if (_start < 0f) _start = Time.time;
+        if (_start < 0f)
+        {
+            _start = Time.time;
+            // EL DESTINO SOBRE EL NAVMESH: el centro de una cama (o de una silla) queda dentro de su obstáculo y el camino acaba a
+            // más de 1 m: nunca «llegaba» y rondaba la cama hasta rendirse (Lizmibet yendo a dormir, Berón 2026-10-29).
+            _snap = UnityEngine.AI.NavMesh.SamplePosition(target.position, out UnityEngine.AI.NavMeshHit h, 2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - target.position.y) < 1.5f ? h.position : target.position;
+        }
         if (Time.time - _start > giveUpAfter) return true;
-        Vector3 d = target.position - self.transform.position;
-        float dy = Mathf.Abs(d.y); d.y = 0f;
-        if (d.magnitude <= stopDistance && dy < 2f) return true;
+        Vector3 d = target.position - self.transform.position, ds = _snap - self.transform.position;
+        float dy = Mathf.Abs(d.y); d.y = 0f; ds.y = 0f;
+        if ((d.magnitude <= stopDistance || ds.magnitude <= 0.4f) && dy < 2f) return true;
         Vector3 to = target.position;
         if (CarpetPad.Route(self.gameObject, ref to)) return false;   // volando (o subiéndose)
+        if (to == target.position) to = _snap;                         // en su piso: al punto andable junto al destino
         PathMover.Of(self.transform).StepToward(to, speed);
         return false;
     }

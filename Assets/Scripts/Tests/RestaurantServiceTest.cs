@@ -19,7 +19,7 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
 {
     public int Group => 45;   // tras la historia del origen de la cocina (44)
     public bool ParallelSafe => false;
-    public float speed = 3f;
+    public float speed = 2f;   // a ×3, con el editor a pocos FPS (Δt tope 0,33 s) un paso normal ya pasaba de 1,5 m
     public int tourists = 5;
     [Tooltip("Tope (s de juego) desde que pide hasta que tiene el plato en su mesa.")]
     public float serveBound = 300f;
@@ -108,9 +108,36 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la jornada pone de turno la brigada acordada (3 cocineros en su puesto, 1 en el pase, 2 obradores, 2 de limpieza)",
             cooks == 3 && puestos.Count == 3 && waiters == 1 && obr == 2 && fams.Count == 2 && cleanK == 1 && cleanD == 1,
             string.Join(" · ", CrewText(svc)));
+        // Al arrancar la partida, la Magnate EVALÚA a cada uno y lo pone en su área inicial (SanctuaryDirector.AssessArrival,
+        // un teletransporte de hasta 200 m): se espera a que acabe con la brigada antes de empezar la jornada.
+        yield return Until(() => crewGos.TrueForAll(g => g == null || !g.TryGetComponent(out WorldCharacter wc) || !wc.isNewArrival), 30f);
+        SanctuaryDirector sd = SanctuaryDirector.Instance;
+        System.Action<WorldCharacter, SanctuaryArea> replaced = (wc, area) =>
+        {
+            foreach (RestaurantService.Actor a in svc.Crew)
+                if (a.go == wc.gameObject)
+                {
+                    WorkdayDirector.Teleport(a.go.transform, PathMover.Of(a.go.transform).OnGround(svc.PostOf(a)));
+                    if (_tracks.TryGetValue(a.go, out Track tr)) { tr.prev = a.go.transform.position; if (tr.seg) Close(tr); }
+                    Debug.Log($"[Restaurante] La evaluación de la Magnate movió a «{a.go.name}» a {area.displayName}: vuelve a su puesto (arranque, no cuenta como salto).");
+                }
+        };
+        if (sd != null) sd.OnCharacterPlaced += replaced;
         // Arranque de la jornada: cada uno aparece en su sitio (como WorkdayDirector.PlaceAtStart).
-        foreach (RestaurantService.Actor a in svc.Crew) WorkdayDirector.Teleport(a.go.transform, PathMover.Of(a.go.transform).OnGround(svc.PostOf(a)));
-        yield return null;
+        // Quien venga volando en alfombra (de su área de antes) baja primero: el vuelo lo lleva cada fotograma y pisaría el arranque.
+        yield return Until(() => crewGos.TrueForAll(g => g == null || !FlyingCarpet.Riding(g)), 40f);
+        var posts = new Dictionary<GameObject, Vector3>();
+        foreach (RestaurantService.Actor a in svc.Crew)
+        {
+            Vector3 post = svc.PostOf(a);   // en el punto andable de su puesto (el que buscará al andar)
+            if (UnityEngine.AI.NavMesh.SamplePosition(post, out UnityEngine.AI.NavMeshHit nh, 1.2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(nh.position.y - post.y) < 0.8f) post = nh.position;
+            Vector3 p = PathMover.Of(a.go.transform).OnGround(post); posts[a.go] = p; WorkdayDirector.Teleport(a.go.transform, p);
+        }
+        WorkdayDirector.LogTeleports = true;
+        for (int k = 0; k < 3; k++) yield return null;
+        foreach (var kv in posts)   // ¿se quedó cada uno en su sitio? (si algo lo devuelve a otra parte, que se vea quién)
+            if (kv.Key != null && (kv.Key.transform.position - kv.Value).magnitude > 1f)
+                Debug.Log($"[Restaurante] «{kv.Key.name}» no se queda en su puesto: está en {kv.Key.transform.position}, puesto {kv.Value}.");
 
         // ── 2. La despensa: la carta del día con su mise en place, y género para los obradores ──
         var carta = new List<Gastronomy.Dish>(); var eqs = new HashSet<string>();
@@ -122,7 +149,7 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
         int servedBefore = larder.dishesServed;
 
         // ── 3. El servicio: llegan los turistas y todo corre solo; se mide cada fotograma ──
-        Time.timeScale = speed;
+        Time.timeScale = speed; WorkdayDirector.LogTeleports = true;
         float t0 = Time.time, end = t0 + serviceBound, nextSpawn = t0 + 1f;
         int spawned = 0;
         foreach (GameObject g in crewGos) StartTrack(g);
@@ -134,11 +161,11 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
                 if (d != null) { spawned++; StartTrack(d.go); }
                 nextSpawn = Time.time + 4f;
             }
-            Sample();
+            Sample(); Frames(svc);
             if (spawned == tourists && Done(svc)) break;
             yield return null;
         }
-        Time.timeScale = oldScale;
+        Time.timeScale = oldScale; WorkdayDirector.LogTeleports = false;
         foreach (Track tr in _tracks.Values) if (tr.seg) Close(tr);
         float took = Time.time - t0;
 
@@ -237,6 +264,7 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
         TestProbe.Check("nadie se queda atascado (ningún tramo pasa de su tope ni se queda quieto andando > 20 s)", stuck == 0 && stTxt2.Count == 0, stTxt2.Count > 0 ? string.Join(" · ", stTxt2) : $"{_tracks.Count} personas seguidas");
 
         // ── 5. Dejarlo todo como estaba ──
+        if (sd != null) sd.OnCharacterPlaced -= replaced;
         wd.today = oldToday; wd.plannedDay = oldPlanned;
         svc.ResetService(); svc.carta.Clear(); RestaurantService.AllowDuringTests = false;
         tc.SetClock(oldDay, oldHour);
@@ -313,6 +341,7 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
             if (!riding && !tr.prevRiding)
             {
                 float j = (p - tr.prev).magnitude;
+                if (j > maxJump) Debug.Log($"[Restaurante] SALTO de «{g.name}»: {j:0.00} m de ({tr.prev.x:0.00},{tr.prev.y:0.00},{tr.prev.z:0.00}) a ({p.x:0.00},{p.y:0.00},{p.z:0.00}) haciendo «{tag?.doing}» (andando {moving}, tramo {leg}).");
                 if (j > tr.maxJump) { tr.maxJump = j; tr.jumpInfo = $"{j:0.00} m en ({p.x:0.0},{p.y:0.0},{p.z:0.0}) haciendo «{tag?.doing}»"; }
             }
             float step = Flat(p - tr.prev);
@@ -346,9 +375,73 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
 
     static float Flat(Vector3 v) { v.y = 0f; return v.magnitude; }
 
+    // ── FOTOGRAMAS (Temp/restaurante_*.png en el proyecto): una cámara propia, para no tocar la del jugador ──
+    readonly HashSet<string> _shot = new HashSet<string>();
+    public readonly List<string> frames = new List<string>();
+
+    void Frames(RestaurantService svc)
+    {
+        foreach (RestaurantService.Diner d in svc.Diners)
+            if (d.state == RestaurantService.DinerState.Seated && !d.settling && d.go != null) { Shot("1_turista_sentado_pide", d.go.transform, d.go.transform.position); break; }
+        foreach (RestaurantService.Order o in svc.Orders)
+        {
+            if (o.state == RestaurantService.OrderState.Cooking && o.stationDistance >= 0f && o.cook != null && o.cook.go != null) Shot("2_cocinero_en_el_equipo_del_plato", o.cook.go.transform, o.station.position);
+            if (o.state == RestaurantService.OrderState.Ready && o.plate != null) Shot("3_plato_en_el_pase", svc.Pass, o.plate.position);
+            if (o.state == RestaurantService.OrderState.Served && o.plate != null && o.diner?.go != null) Shot("4_plato_servido_en_su_mesa", o.diner.go.transform, o.plate.position);
+        }
+        foreach (RestaurantService.Actor a in svc.Crew)
+        {
+            if (a.go == null || a.tag == null || a.tag.moving || a.until < 0f) continue;
+            if (a.role == RestaurantService.Role.Obrador && a.prep != null) Shot($"5_obrador_{(a.family == RestaurantService.Masas ? "masas" : "lacteos")}", a.go.transform, a.station != null ? a.station.position : a.go.transform.position);
+            if (a.role == RestaurantService.Role.LimpiezaSala && a.table != null) Shot("6_limpia_la_mesa", a.go.transform, a.table.mesa.position);
+            if (a.role == RestaurantService.Role.LimpiezaCocina && a.cleaning != null) Shot("7_friega_el_puesto", a.go.transform, a.go.transform.position);
+        }
+    }
+
+    void Shot(string tag, Transform who, Vector3 focus)
+    {
+        if (!_shot.Add(tag)) return;
+        var go = new GameObject("CamaraPrueba");
+        Camera cam = go.AddComponent<Camera>();
+        Vector3 back = who != null ? -who.forward : Vector3.back; back.y = 0f; back = back.sqrMagnitude > 0.01f ? back.normalized : Vector3.back;
+        Vector3 side = Vector3.Cross(Vector3.up, back);
+        cam.transform.position = focus + back * 3.2f + side * 1.6f + Vector3.up * 2.4f;
+        cam.transform.LookAt(focus + Vector3.up * 0.6f);
+        cam.fieldOfView = 55f; cam.nearClipPlane = 0.1f;
+        var rt = new RenderTexture(1280, 720, 24);
+        cam.targetTexture = rt; cam.Render();
+        RenderTexture prev = RenderTexture.active; RenderTexture.active = rt;
+        var tex = new Texture2D(1280, 720, TextureFormat.RGB24, false);
+        tex.ReadPixels(new Rect(0, 0, 1280, 720), 0, 0); tex.Apply();
+        RenderTexture.active = prev; cam.targetTexture = null;
+        string path = $"Temp/restaurante_{tag}.png";
+        try { System.IO.File.WriteAllBytes(path, tex.EncodeToPNG()); frames.Add(path); Debug.Log($"[Restaurante] fotograma: {path}"); }
+        catch (System.Exception e) { Debug.Log($"[Restaurante] no se pudo guardar {path}: {e.Message}"); }
+        Destroy(tex); Destroy(rt); Destroy(go);
+    }
+
     static IEnumerator Until(System.Func<bool> cond, float seconds)
     {
         float end = Time.time + seconds;
         while (!cond() && Time.time < end) yield return null;
     }
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("Tools/Cold Sanctuary/Pruebas/Servicio del restaurante (sola)")]
+    static void Solo()
+    {
+        if (!Application.isPlaying) { Debug.Log("[Solo] no está en Play"); return; }
+        var go = new GameObject("SoloServicioRestaurante"); DontDestroyOnLoad(go);
+        RestaurantServiceTest t = go.AddComponent<RestaurantServiceTest>();
+        t.StartCoroutine(Wrap(t));
+    }
+
+    static IEnumerator Wrap(RestaurantServiceTest t)
+    {
+        TestProbe.ResetTotals();
+        yield return t.StartCoroutine(t.Run());
+        TestProbe.Total();
+        Debug.Log("[Solo] listo");
+    }
+#endif
 }

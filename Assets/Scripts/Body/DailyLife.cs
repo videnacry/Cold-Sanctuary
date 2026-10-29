@@ -137,7 +137,7 @@ public class DineSpell : QueuedSpell
         Transform best = null; float bestSq = float.MaxValue;
         foreach (Transform t in dining.GetComponentsInChildren<Transform>())
         {
-            if (t.name != "Asiento" || _taken.Contains(t)) continue;
+            if (t.name != "Asiento" || t.parent == null || !t.parent.name.StartsWith("Mesa_") || _taken.Contains(t)) continue;   // las sillas de las MESAS (el «Asiento» del inodoro de los aseos también se llama así: iba a comer a una cabina cerrada y daba vueltas)
             float sq = (t.position - from).sqrMagnitude;
             if (sq < bestSq) { bestSq = sq; best = t; }
         }

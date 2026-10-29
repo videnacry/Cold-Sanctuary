@@ -58,6 +58,7 @@ public class RestaurantService : MonoBehaviour
         public int number; public GameObject go; public ServiceActor tag; public Mover mv;
         public DinerState state; public Table table; public int chair; public Order order;
         public float spawnedAt, seatedAt = -1f, leftAt = -1f, goneAt = -1f, until;
+        public bool settling; public Vector3 settleTo;   // sentarse o levantarse: se desliza a la silla (o fuera) en pasos cortos, no de golpe
     }
 
     public class Actor
@@ -463,7 +464,9 @@ public class RestaurantService : MonoBehaviour
         {
             if (FamilyOf(p) != a.family || _larder.Have(p.name) >= 6f) continue;
             if (_larder.running.Exists(b => b.prep == p) || _crew.Exists(x => x != a && x.prep == p)) continue;
-            if (!InputsFree(p) || PrepStation(p, a.go.transform.position) == null) continue;
+            if (!InputsFree(p)) continue;
+            Transform st = PrepStation(p, a.go.transform.position);
+            if (st == null || !InFranja(st)) continue;   // solo lo de SU obrador (las marmitas de los puestos son de los cocineros)
             return p;
         }
         return null;
@@ -571,6 +574,12 @@ public class RestaurantService : MonoBehaviour
     {
         if (d.state == DinerState.Gone) return;
         if (d.go == null) { Gone(d); return; }
+        if (d.settling)   // se sienta o se levanta: como mucho 0,45 m por fotograma (el editor va a pocos FPS)
+        {
+            d.go.transform.position = Vector3.MoveTowards(d.go.transform.position, d.settleTo, 0.45f);
+            d.settling = (d.go.transform.position - d.settleTo).sqrMagnitude > 1e-4f;
+            if (d.settling) return;
+        }
         switch (d.state)
         {
             case DinerState.Arriving:
@@ -705,7 +714,8 @@ public class RestaurantService : MonoBehaviour
         if (body != null) ClonePose.Apply(body, DailyPoses.Sit());
         float seatTop = chair.position.y + chair.lossyScale.y * 0.5f;
         Vector3 feet = new Vector3(chair.position.x, seatTop - 0.38f * s, chair.position.z);
-        d.go.transform.SetPositionAndRotation(feet + Vector3.up * off, look.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(look) : d.go.transform.rotation);
+        if (look.sqrMagnitude > 1e-4f) d.go.transform.rotation = Quaternion.LookRotation(look);
+        d.settleTo = feet + Vector3.up * off; d.settling = true;
         DinerDoing(d, "se sienta");
     }
 
@@ -714,7 +724,7 @@ public class RestaurantService : MonoBehaviour
         if (d.go == null || d.table == null || d.seatedAt < 0f) return;
         Transform body = d.go.transform.Find(CubeHumanoid.BodyName);
         if (body != null) ClonePose.Rest(body);
-        d.go.transform.position = PathMover.Of(d.go.transform).OnGround(ChairFront(d.table, d.chair));
+        d.settleTo = PathMover.Of(d.go.transform).OnGround(ChairFront(d.table, d.chair)); d.settling = true;
     }
 
     // ── Sitios ──────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -867,28 +877,50 @@ public class RestaurantService : MonoBehaviour
     public class Mover
     {
         readonly Transform _t; readonly ServiceActor _tag;
-        Vector3 _goal = new Vector3(float.NaN, 0f, 0f);
-        float _since; bool _gaveUp;
+        Vector3 _goal = new Vector3(float.NaN, 0f, 0f), _snap, _start, _last;
+        float _since, _walked; bool _gaveUp, _closed;
         public Mover(Transform t, ServiceActor tag) { _t = t; _tag = tag; }
 
         public bool Go(Vector3 goal, float speed, float timeout, string what)
         {
             if (_t == null) return true;
             PathMover pm = PathMover.Of(_t);
-            if (float.IsNaN(_goal.x) || (goal - _goal).sqrMagnitude > 0.25f) { _goal = goal; _since = Time.time; _gaveUp = false; _tag.leg++; pm.Restart(); }
+            if (float.IsNaN(_goal.x) || (goal - _goal).sqrMagnitude > 0.25f)
+            {
+                _goal = goal; _since = Time.time; _gaveUp = false; _tag.leg++; pm.Restart();
+                // EL DESTINO, SOBRE EL NAVMESH: delante de un mueble el punto pedido puede quedar dentro del margen de su obstáculo;
+                // el camino acaba entonces a medio metro y nunca «llegaba» (se quedaba quieto o rondando el mueble).
+                _snap = UnityEngine.AI.NavMesh.SamplePosition(goal, out UnityEngine.AI.NavMeshHit h, 1.2f, UnityEngine.AI.NavMesh.AllAreas) && Mathf.Abs(h.position.y - goal.y) < 0.8f ? h.position : goal;
+                _start = _last = _t.position; _walked = 0f; _closed = false;
+            }
             if (_gaveUp) { _tag.moving = false; return true; }
-            float left = pm.StepToward(goal, speed);
+            // YA ESTÁ AHÍ (p. ej. al arrancar el turno en su puesto): no se pide camino. Si su sitio queda fuera del NavMesh (dentro
+            // de la U de un puesto, junto al mueble), el camino salía del punto andable más cercano, al otro lado, y daba la vuelta.
+            Vector3 here = _t.position - _snap; float hy = here.y - pm.PivotHeight; here.y = 0f;
+            if (!FlyingCarpet.Riding(_t.gameObject) && here.magnitude < 0.4f && Mathf.Abs(hy) < 1.3f) { _tag.moving = false; Report(what); return true; }
+            float left = pm.StepToward(_snap, speed);
             bool riding = FlyingCarpet.Riding(_t.gameObject);
-            bool level = Mathf.Abs(_t.position.y - pm.PivotHeight - goal.y) < 1.3f;
-            if (!riding && level && left < 0.4f) { _tag.moving = false; return true; }
+            Vector3 d = _t.position - _last; d.y = 0f; if (!riding && d.magnitude < 1.5f) _walked += d.magnitude; _last = _t.position;
+            bool level = Mathf.Abs(_t.position.y - pm.PivotHeight - _snap.y) < 1.3f;
+            if (!riding && level && left < 0.4f) { _tag.moving = false; Report(what); return true; }
             _tag.moving = true;
             if (Time.time - _since > timeout)
             {
                 _gaveUp = true; _tag.stuck++; _tag.moving = false;
-                Debug.Log($"[Restaurante] «{_t.name}» no llega a {what} en {timeout:0} s (se queda a {left:0.0} m, Δy {(_t.position.y - pm.PivotHeight - goal.y):0.0} m): sigue con lo suyo.");
+                Debug.Log($"[Restaurante] «{_t.name}» no llega a {what} en {timeout:0} s (se queda a {left:0.0} m, Δy {(_t.position.y - pm.PivotHeight - _snap.y):0.0} m, destino {_goal} → NavMesh {_snap}): sigue con lo suyo.");
                 return true;
             }
             return false;
+        }
+
+        // Diagnóstico: un tramo mucho más largo que su recta (vueltas) queda en el log con sus puntos.
+        void Report(string what)
+        {
+            if (_closed) return;
+            _closed = true;
+            Vector3 s = _t.position - _start; s.y = 0f;
+            if (_walked > 1.6f * s.magnitude + 3f)
+                Debug.Log($"[Restaurante] «{_t.name}» da un rodeo hacia {what}: {_walked:0.0} m andados para {s.magnitude:0.0} m (de {_start} a {_t.position}, destino {_goal} → NavMesh {_snap}).");
         }
     }
 }
