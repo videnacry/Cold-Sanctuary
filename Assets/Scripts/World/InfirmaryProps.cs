@@ -51,12 +51,13 @@ public static class InfirmaryProps
     public static Transform ExamTable(Transform parent, string name, Vector3 pos, float yaw)
     {
         Transform t = KitchenProps.Root(parent, name, pos, yaw);
-        // Plano de 2,00 × 0,70 m con la superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md): el más alto
-        // (1,85 m) cabe tumbado del todo, con ~8 cm en cada punta. ArrivalExam.PatientSpot lee la altura del «Acolchado».
-        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.6f, 0.7f, 1.8f), Wood, 0f, "Base");
-        C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.7f, 0.1f, 2f), Blue, 0f, "Acolchado");
-        C(t, new Vector3(0f, 0.8025f, 0f), new Vector3(0.55f, 0.005f, 1.95f), White, 0f, "Papel");
-        C(t, new Vector3(0.6f, 0.25f, 0.6f), new Vector3(0.35f, 0.5f, 0.35f), Dark, 0f, "Taburete");
+        // Plano de 2,20 × 0,85 m (Berón 2026-10-29: Kushal cabía muy justo; regla 1, la persona más grande ≈ 2 m: ~10 cm en
+        // cada punta y los brazos sobre el plano), superficie a 0,80 m y sin respaldo inclinado (docs/medidas-muebles.md). Antes
+        // 2,00 × 0,70 (para 1,85 m). ArrivalExam.PatientSpot lee la altura del «Acolchado».
+        C(t, new Vector3(0f, 0.35f, 0f), new Vector3(0.72f, 0.7f, 2.0f), Wood, 0f, "Base");
+        C(t, new Vector3(0f, 0.75f, 0f), new Vector3(0.85f, 0.1f, 2.2f), Blue, 0f, "Acolchado");
+        C(t, new Vector3(0f, 0.8025f, 0f), new Vector3(0.68f, 0.005f, 2.15f), White, 0f, "Papel");
+        C(t, new Vector3(0.7f, 0.25f, 0.6f), new Vector3(0.35f, 0.5f, 0.35f), Dark, 0f, "Taburete");
         KitchenProps.Fit(t);
         return t;
     }
