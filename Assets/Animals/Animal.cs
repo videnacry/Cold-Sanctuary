@@ -485,9 +485,18 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             // Un cazador marino NADANDO no alcanza a quien anda por el hielo (la orca de la laguna y el pingüino de la orilla):
             // no es amenaza para él. Antes la colonia huía de las orcas de la laguna sin parar.
             if (landBound && predator.TryGetComponent(out MarineLife pm) && !pm.OnIce) continue;
+            // Las crías de la misma especie no se cazan entre sí (ni Forager caza a la propia especie): el hermano de camada no es
+            // amenaza. Antes los cachorros del recinto se «huían» unos a otros todo el día.
+            if (predator.SpeciesName == SpeciesName && (lifeStage == LifeStage.child || predator.lifeStage == LifeStage.child)) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
+        // Un cazador que NO PUEDE LLEGAR hasta aquí (al otro lado del muro de su recinto en la Cría, en otra placa de hielo)
+        // tampoco es amenaza: antes las crías de recintos vecinos se pasaban el día «huyendo» y peleando contra el muro, y
+        // mientras reaccionaban no hacían nada más (atascadas > 20 s). Solo si los dos están en el NavMesh (si no, no se sabe).
+        if (threat != null && nav != null && nav.enabled && nav.isOnNavMesh && threat.TryGetComponent(out Animal ta) && ta.nav != null && ta.nav.enabled && ta.nav.isOnNavMesh
+            && (!ta.nav.CalculatePath(transform.position, _threatPath ??= new NavMeshPath()) || _threatPath.status != NavMeshPathStatus.PathComplete))
+            threat = null;
         // PERCEPCIÓN → ALERTNESS → AWARE: la amenaza percibida sube la alerta (más cerca dentro del alcance = más alerta);
         // el ser solo REACCIONA (aware) cuando su alerta CRUZA el umbral → reacciona a lo que percibe, no a todo. Sin
         // amenaza a la vista, la alerta decae. docs/consciousness-mechanics.md §3.3.
@@ -501,6 +510,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         }
         else alertness = Mathf.MoveTowards(alertness, 0f, 0.5f * TimeController.timeController.TimeSpeedMinuteSecs / 60f);
     }
+    static NavMeshPath _threatPath;
     const float ALERT_TO_REACT = 0.3f;   // alerta mínima para que la amenaza dispare la respuesta (reacciona a lo percibido)
 
     // Forrajear: cazar si come presa, si no pastar/pescar. Reemplaza los Feed de Carnivore/Herbivore (concreto, etapa 5).
@@ -668,8 +678,12 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
                         ally.StartCoroutine(ally.Fight(threat));
                 }
             }
-            while (!threatTarget.Dead &&
-                   Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+            // CON TOPE (como la huida): 30 s, o si en 6 s no logra acercarse (la amenaza está tras un muro, en el agua). Antes
+            // peleaba mientras la amenaza siguiera a menos de su radio de hogar (100–300 m): para siempre, y mientras tanto
+            // (aware) no hacía nada más.
+            float fightStart = Time.time, closest = float.MaxValue, closestAt = Time.time;
+            while (threat != null && !threatTarget.Dead && !death && Time.time - fightStart < 30f &&
+                   Vector3.Distance(transform.position, threat.transform.position) < HomeRadius && !Stalled(threat, ref closest, ref closestAt))
             {
                 Loco.GoTo(threat.transform.position);
                 if (Vector3.Distance(transform.position, threat.transform.position) < 4f)
@@ -686,14 +700,23 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         }
     }
 
+    // ¿Lleva 6 s sin acercarse a la amenaza (y sin estar ya encima, < 4 m)? Entonces no la alcanza: deja la pelea.
+    bool Stalled(GameObject threat, ref float closest, ref float closestAt)
+    {
+        float d = Vector3.Distance(transform.position, threat.transform.position);
+        if (d < 4f || d < closest - 0.5f) { closest = Mathf.Min(closest, d); closestAt = Time.time; return false; }
+        return Time.time - closestAt > 6f;
+    }
+
     // Ataca solo por la espalda; retrocede cuando la amenaza encara al animal.
     protected virtual IEnumerator HitAndRun(GameObject threat)
     {
         ITarget threatTarget = threat.GetComponent<ITarget>();
         if (threatTarget == null) yield break;
         float interval = TimeController.timeController.TimeSpeedMinuteSecs / 30f;
-        while (!threatTarget.Dead &&
-               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius)
+        float fightStart = Time.time, closest = float.MaxValue, closestAt = Time.time;   // con tope, como Fight
+        while (threat != null && !threatTarget.Dead && !death && Time.time - fightStart < 30f &&
+               Vector3.Distance(transform.position, threat.transform.position) < HomeRadius && !Stalled(threat, ref closest, ref closestAt))
         {
             Vector3 dirToMe = (transform.position - threat.transform.position).normalized;
             if (Vector3.Dot(threat.transform.forward, dirToMe) > 0)

@@ -574,8 +574,13 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool full = Window(tr, out float path, out float net);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;
-            if (full && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
-            if (full && !flier && !marine && !a.busy && path > 15f && net < 2f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            // Como con las personas: cuenta solo si lleva TODA la ventana queriendo lo mismo (el que descansó 20 s y acaba de
+            // decidir pasear no está «atascado queriendo pasear»; el que va a comer, come y vuelve no «da vueltas»).
+            float now = Time.time;
+            if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
+            bool same = now - tr.headSince >= 19f;
+            if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
+            if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
             CheckBody(tr, p, riding, a.asleep || a.busy, false);
         }
 

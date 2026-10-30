@@ -43,6 +43,7 @@ public class IceInsectLife : MonoBehaviour
     bool _working;                    // trabajando en su sitio (celdilla, danza, racimo, telaraña, flor): quieta a propósito
     float _cellSince; int _skipCell = -1; float _skipUntil;
     Vector3 _stallPos, _unstickTo, _origin; float _stallAt, _unstickUntil;
+    float _strikeAt = -1f;   // (araña) desde cuándo salta tras una abeja
 
     void Start()
     {
@@ -341,15 +342,20 @@ public class IceInsectLife : MonoBehaviour
                 if (o != null && o.kind == Kind.Bee && o.Stuck && web.Catches(o.transform.position) && o.TryGetComponent(out SnowBeeBehavior sb)) { bee = sb; break; }
         if (bee != null && !bee.death && _strikeCooldown <= 0f)
         {
+            if (_strikeAt < 0f) _strikeAt = Time.time;
             if (FlyTo(bee.transform.position, 6f) < 0.25f)   // salto + mordisco con veneno
             {
                 bee.death = true;
                 if (_self != null) _self.hungry = -0.8f;   // se la come: queda saciada un buen rato
-                _strikeCooldown = 20f;
+                _strikeCooldown = 20f; _strikeAt = -1f;
                 Debug.Log("[Hielo] La araña de las nieves caza a una abeja de las nieves junto a su árbol.");
             }
+            // FALLA: si en 1,5 s no la alcanza, vuelve a su tela y espera (antes saltaba sin parar tras las abejas del panal
+            // de al lado: ida y vuelta, «da vueltas en círculo», 15–22 m en 20 s para menos de 1 m neto).
+            else if (Time.time - _strikeAt > 1.5f) { _strikeCooldown = Random.Range(25f, 45f); _strikeAt = -1f; }
             return;
         }
+        _strikeAt = -1f;
         FlyTo(_perch, 1.2f);   // vuelve al centro de su tela
         if (web != null) transform.rotation = Quaternion.LookRotation(Vector3.down, web.transform.forward); else transform.rotation = Quaternion.LookRotation(Vector3.down + (transform.position - _home.transform.position).normalized * 0.3f);
     }

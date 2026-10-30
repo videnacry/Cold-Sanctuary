@@ -236,10 +236,14 @@ public static class DesireCatalog
     // ══ MOVIMIENTO DE LOS DESEOS: siempre a sitios ALCANZABLES, con tope y sin re-apuntar en cada decisión ══════════════
     // Un «viaje» por animal: hacia dónde va, por qué deseo, desde cuándo y cuánto ha avanzado. Si en 5 s no se acerca (un muro,
     // otro animal en medio) o tarda más de 40 s, lo deja; ese deseo no vuelve a intentar ese viaje en unos segundos.
-    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil; }
+    class Trip { public string key; public Vector3 goal; public bool going; public float since, best, bestAt, pauseUntil, failUntil, lastCall; public int calls, started; }
+    /// <summary>Diagnóstico: el viaje de un animal (deseo, si va, destino, pausas, llamadas).</summary>
+    public static string TripInfo(Animal a) => a != null && _trips.TryGetValue(a, out Trip t) ? $"viaje «{t.key}» va={t.going} meta={t.goal:F1} pausa={t.pauseUntil - Time.time:0.0} fallo={t.failUntil - Time.time:0.0} llamadas={t.calls} (hace {Time.time - t.lastCall:0.0} s) empezados={t.started}" : "sin viaje";
     static readonly Dictionary<Animal, Trip> _trips = new Dictionary<Animal, Trip>();
     static readonly Dictionary<Animal, float> _homeBlocked = new Dictionary<Animal, float>();
     static int _homeLogs;
+    /// <summary>Contadores para el diagnóstico (viajes empezados, atascados, paseos sin sitio alcanzable).</summary>
+    public static int TripsStarted, TripsStalled, StrollNoPick, Strolls;
 
     static Trip TripOf(Animal a, string key)
     {
@@ -257,13 +261,13 @@ public static class DesireCatalog
         if (!t.going) return false;
         NavMeshAgent nav = self.nav;
         if (nav == null || !nav.isOnNavMesh) { t.going = false; return false; }
-        if (nav.pathPending) return true;
+        if (nav.pathPending) { if (Time.time - t.since > 3f) { t.going = false; t.failUntil = Time.time + 4f; TripsStalled++; nav.ResetPath(); return false; } return true; }   // (camino que no llega a calcularse: tope)
         float rem = nav.hasPath ? nav.remainingDistance : 0f;
         if (rem <= nav.stoppingDistance + 0.35f) { t.going = false; return false; }   // llegó
         if (rem < t.best - 0.25f) { t.best = rem; t.bestAt = Time.time; }
         if (Time.time - t.bestAt > 5f || Time.time - t.since > 40f)                    // atascado o tope
         {
-            t.going = false; t.failUntil = Time.time + 8f;
+            t.going = false; t.failUntil = Time.time + 8f; TripsStalled++;
             nav.ResetPath();
             return false;
         }
@@ -273,7 +277,7 @@ public static class DesireCatalog
     static void Walk(Animal self, Trip t, Vector3 at)
     {
         Move(self, at);
-        t.goal = at; t.going = true; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
+        TripsStarted++; t.started++; t.goal = at; t.going = true; t.since = t.bestAt = Time.time; t.best = float.MaxValue;
     }
 
     // Ir andando: destino Y paso de andar (la pausa anterior lo dejó en «quieto», velocidad 0: con solo SetDestination el
@@ -281,6 +285,9 @@ public static class DesireCatalog
     static void Move(Animal self, Vector3 to)
     {
         if (self.nav == null || !self.nav.isOnNavMesh) return;
+        // Con el camino YA calculado (NavReach acaba de comprobar que se llega): SetPath, sin esperar a que el agente lo pida y
+        // lo calcule otra vez (con cientos de obstáculos tallando, SetDestination podía quedarse «pendiente» y el animal quieto).
+        if (NavReach.LastPathTo(self, to, out NavMeshPath p)) { self.Loco?.SetGait(false, 1f); if (self.nav.SetPath(p)) return; }
         if (self.Loco != null) self.Loco.Walk(to, 1f); else self.nav.SetDestination(to);
     }
 
@@ -302,7 +309,7 @@ public static class DesireCatalog
     static void Stroll(Animal self, string key, Func<Vector3> pick, float pauseMin, float pauseMax, float minHop)
     {
         Trip t = TripOf(self, key);
-        bool was = t.going;
+        bool was = t.going; Strolls++; t.calls++; t.lastCall = Time.time;
         if (Going(self, t)) return;
         if (was) { t.pauseUntil = Time.time + UnityEngine.Random.Range(pauseMin, pauseMax); self.Loco?.Idle(t.pauseUntil - Time.time); }
         if (Time.time < t.pauseUntil) return;
@@ -313,7 +320,7 @@ public static class DesireCatalog
             if (Flat(p - here) < minHop) continue;
             if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop) { Walk(self, t, at); return; }
         }
-        t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+        StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
     }
 
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
@@ -469,6 +476,14 @@ public static class DesireCatalog
 public static class NavReach
 {
     static readonly NavMeshPath _path = new NavMeshPath();
+    static Animal _lastOwner; static Vector3 _lastTo;
+
+    /// <summary>El último camino calculado (Reachable/PartialEnd), si era de este animal hacia ese punto.</summary>
+    public static bool LastPathTo(Animal self, Vector3 to, out NavMeshPath path)
+    {
+        path = _path;
+        return self != null && self == _lastOwner && (to - _lastTo).sqrMagnitude < 0.01f && _path.corners.Length > 0;
+    }
 
     public static bool Reachable(Animal self, Vector3 p, out Vector3 at, float sample = 2f)
     {
@@ -476,7 +491,7 @@ public static class NavReach
         if (self == null || self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return false;
         if (!NavMesh.SamplePosition(p, out NavMeshHit h, sample, self.nav.areaMask)) return false;
         if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathComplete) return false;
-        at = h.position;
+        at = h.position; _lastOwner = self; _lastTo = at;
         return true;
     }
 
@@ -487,7 +502,7 @@ public static class NavReach
         if (self == null || self.nav == null || !self.nav.enabled || !self.nav.isOnNavMesh) return false;
         if (!NavMesh.SamplePosition(p, out NavMeshHit h, 6f, self.nav.areaMask)) return false;
         if (!self.nav.CalculatePath(h.position, _path) || _path.status != NavMeshPathStatus.PathPartial || _path.corners.Length == 0) return false;
-        end = _path.corners[_path.corners.Length - 1];
+        end = _path.corners[_path.corners.Length - 1]; _lastOwner = self; _lastTo = end;
         return true;
     }
 }

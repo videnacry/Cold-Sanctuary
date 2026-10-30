@@ -39,7 +39,10 @@ public class StaleNavCarver : MonoBehaviour
             // que bajara de −0,5 m, y con eso las RAÍCES grandes —inclinadas, se hunden en el hielo— no tallaban nunca: el
             // pingüino de (−134, 0, 18) seguía metiéndose en la «Raiz».
             if (b.size.y < 0.4f || b.size.x > 10f || b.size.z > 10f || b.max.y < 0.35f) continue;
-            bool skip = false; foreach (string s in Skip) if (c.name.StartsWith(s)) { skip = true; break; }
+            // (la PUERTA de un recinto de la Cría sí talla: está cerrada; sin hueco en el NavMesh, el recinto quedaba unido al
+            // pasillo y a los demás recintos: las crías «alcanzaban» a las del recinto de al lado —huían, peleaban contra el
+            // muro— y sus paseos apuntaban fuera)
+            bool skip = false; foreach (string s in Skip) if (c.name.StartsWith(s) && !c.name.StartsWith("Puerta_recinto")) { skip = true; break; }
             if (skip) continue;
             // Lo que tiene su PROPIO NavMesh (el Árbol de los Campos, que gira con él) no talla el general.
             NavMeshSurface own = c.GetComponentInParent<NavMeshSurface>();
