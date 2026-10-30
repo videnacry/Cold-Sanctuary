@@ -48,7 +48,9 @@ con el árbol sin girar.
 
 ## Moverse
 
-- **Personajes (`PathMover`)**: `ArbolCampos.Route` va antes que las alfombras. En el mismo piso, andando (sin alfombras); a
+- **Personajes**: `ArbolCampos.Route` va dentro de `CarpetPad.Route` (la usan `PathMover`, la jornada, las iniciaciones y los
+  hechizos), antes que las alfombras; un piso del árbol nunca llega como destino a la red de alfombras: desde fuera, el
+  destino es el pie del árbol. En el mismo piso, andando (sin alfombras); a
   otro nivel, primero a la puerta de su piso y después un **viaje a nado** (`TreeTrip`): puerta → agua → por la columna a 6 m
   del eje → [la rama y su campana] → puerta → fuera, nadando con `SwimBody.SwimTo` a 2,5 m/s (100 m en 40 s: no se quedan sin
   aire; la prueba lo mira). Nada de teletransportes; si se atasca, se queda donde está y avisa. Desde fuera del árbol, las
@@ -92,3 +94,15 @@ techo de alfombras (45 m). Distancias medidas con el simulador (`-tree`, puntos 
 - Un jugador que se salga nadando por las juntas de una rama con su campana caería: las juntas están cerradas con collares,
   pero no es una pieza estanca. Probar en vivo.
 - El alga del arrozal se planta en el mar más cercano y es hija del bancal: gira con el árbol.
+
+## En vivo (2026-10-29/30)
+
+- `TreeOfFieldsTest` (grupo 53, también sola en «Tools/Cold Sanctuary/Pruebas/Árbol de los Campos (sola)»): 28/28. En la batería
+  completa (1010 PASS / 9 FAIL; antes del árbol en vivo, 973 / 36): 27/28 — el tramo del suelo al piso 5 anduvo 94 m para 51 en recta
+  (la métrica de las vueltas pide ≤ 84): ~36 m andando por el piso 5 tras salir de la puerta, sin aislar aún.
+- Lo que salió en vivo y se arregló: cada MonoBehaviour en su propio archivo (Unity perdía `TreeFloor` al guardar la
+  escena); la pista de alfombras del suelo colgada de «Areas_Placed» se hacía pasar por la pista de cualquier piso sin
+  pista propia (la gente se iba al pie del árbol desde la Sala de Yoga); desde la copa o desde fuera, el destino «un
+  piso del árbol» confundía la red de alfombras (vueltas entre la copa y Producción); `SwimTo` hacia el hueco de una
+  puerta (aire) bajaba al nivel del mar; las puertas pasan al lado del cultivo; la rama de 0° tapaba la puerta del piso 8;
+  las alfombras posadas en la copa giran con ella; los bancales, con las filas a lo largo (vuelven todos los cultivos).
