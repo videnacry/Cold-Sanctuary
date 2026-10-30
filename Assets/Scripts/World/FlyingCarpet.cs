@@ -67,26 +67,39 @@ public class FlyingCarpet : MonoBehaviour
             () => _ignoreUntil = Time.time + 2f, transform, 3.5f);
     }
 
-    // Solo los destinos de SU red (pisos de este edificio, edificios del santuario, o habitaciones): pocas opciones.
+    // Por ÁREAS (CarpetPad.PlayerMenu, Berón 2026-10-30): en una torre, sus áreas (una opción cada una; las plantas de la
+    // suya, una a una); en el santuario, las torres (las de varias áreas abren un segundo menú con ellas). Sin «Volar a:».
     void OfferFlights(GameObject who, bool arrived, bool back)
     {
-        var dests = pad != null ? pad.Destinations() : new List<CarpetPad>();
+        var menu = pad != null ? pad.PlayerMenu() : new List<CarpetPad.MenuEntry>();
         var opts = new List<string>();
         if (arrived) opts.Add("Bajarse aquí");
-        foreach (CarpetPad p in dests) opts.Add($"Volar a: {p.displayName}");
+        foreach (CarpetPad.MenuEntry m in menu) opts.Add(m.label);
         if (back) opts.Add("← Volver");
         int off = arrived ? 1 : 0;
-        string title = arrived ? $"Has llegado a {pad?.displayName}" : pad == null ? Title() : pad.kind == CarpetPad.Kind.Edificio ? $"{Title()} · ¿a qué piso?"
-            : pad.kind == CarpetPad.Kind.Santuario ? $"{Title()} · ¿a qué edificio?" : pad.kind == CarpetPad.Kind.Residencia ? $"{Title()} · ¿a qué habitación?" : Title();
+        string title = arrived ? $"Has llegado a {pad?.ShortName}" : pad == null ? Title() : pad.kind == CarpetPad.Kind.Edificio ? $"{Title()} · ¿a qué área?"
+            : pad.kind == CarpetPad.Kind.Santuario ? $"{Title()} · ¿a qué torre?" : pad.kind == CarpetPad.Kind.Residencia ? $"{Title()} · ¿a qué habitación?" : Title();
         ChoiceDialog.Show(title, opts.ToArray(),
             i =>
             {
                 int d = i - off;
-                if (d >= 0 && d < dests.Count) Fly(who, dests[d]);
-                else if (back && d == dests.Count) Offer(who, false);
+                if (d >= 0 && d < menu.Count) { if (menu[d].tower != null) OfferTower(who, menu[d].tower, arrived, back); else Fly(who, menu[d].target); }
+                else if (back && d == menu.Count) Offer(who, false);
                 else _ignoreUntil = Time.time + 2f;
             },
             () => _ignoreUntil = Time.time + 2f, transform, 3.5f);   // alejarse lo cierra
+    }
+
+    // Las áreas de una torre, desde el santuario: la alfombra va directa a la pista principal (la del piso más bajo) del área.
+    void OfferTower(GameObject who, string tower, bool arrived, bool back)
+    {
+        var areas = CarpetPad.AreasOfTower(tower);
+        var opts = new List<string>();
+        foreach (CarpetPad.MenuEntry m in areas) opts.Add(m.label);
+        opts.Add("← Volver");
+        ChoiceDialog.Show($"{tower} · ¿a qué área?", opts.ToArray(),
+            i => { if (i < areas.Count) Fly(who, areas[i].target); else OfferFlights(who, arrived, back); },
+            () => _ignoreUntil = Time.time + 2f, transform, 3.5f);
     }
 
     // Hechizo de cada práctica (SpellCatalog): saberlo = poder hacerla en la alfombra.

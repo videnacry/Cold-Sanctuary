@@ -62,6 +62,145 @@ public class CarpetPad : MonoBehaviour
         return l;
     }
 
+    // ── EL MENÚ DEL JUGADOR, POR ÁREAS (Berón 2026-10-30: «Hospital», no «Hospital (hospitalización)», «Hospital
+    // (veterinaria)»…). La red de vuelos (FliesTo/Destinations, la que usan los trabajadores) no cambia: esto solo agrupa lo
+    // que se le ofrece al jugador. Cada área sale UNA vez y la alfombra va directa a su pista PRINCIPAL: la de su piso más
+    // bajo (la entrada, la recepción; siempre la misma, no depende de dónde esté uno). Los pisos y anillos de un área solo
+    // se listan uno a uno cuando uno ya está en ella.
+
+    /// <summary>Una opción del menú de vuelo: a qué pista va, o (si <see cref="tower"/>) abre las áreas de esa torre.</summary>
+    public struct MenuEntry { public string label; public CarpetPad target; public string tower; }
+
+    bool IsRing => surface.Contains("#anillo");
+
+    // El piso del que cuelga un anillo (su área de alfombras de piso); el resto, la misma pista.
+    CarpetPad OwnerFloor()
+    {
+        if (!IsRing) return this;
+        for (Transform t = transform.parent; t != null; t = t.parent)
+            foreach (CarpetPad p in All)
+                if (p != this && p.kind == Kind.Edificio && p.building == building && !p.IsRing && p.transform.parent == t) return p;
+        return this;
+    }
+
+    // «Hospital (veterinaria) · planta 3» → «Hospital (veterinaria)».
+    string BaseName() { int i = displayName.IndexOf(" · "); return i > 0 ? displayName.Substring(0, i) : displayName; }
+
+    /// <summary>El ÁREA de esta pista: sin «· planta N»; un anillo es de su planta; «Hospital (veterinaria)» es «Hospital» si
+    /// el edificio tiene otra planta «Hospital» (si no, «Dojo (artes marciales)» se queda entero).</summary>
+    public string AreaName
+    {
+        get
+        {
+            string n = OwnerFloor().BaseName();
+            int par = n.IndexOf(" (");
+            if (par > 0)
+            {
+                string root = n.Substring(0, par);
+                foreach (CarpetPad p in All) if (p != null && p.kind == Kind.Edificio && p.building == building && p.BaseName() == root) return root;
+            }
+            return n;
+        }
+    }
+
+    // Una de las plantas de un área, en corto, para cuando uno ya está en ella: «Veterinaria · planta 3», «Anillo de urgencias».
+    string FloorLabel(string area)
+    {
+        string b = BaseName();
+        if (b.Length > area.Length + 3 && b.StartsWith(area + " (") && b.EndsWith(")"))
+        {
+            string inner = b.Substring(area.Length + 2, b.Length - area.Length - 3);
+            return char.ToUpper(inner[0]) + inner.Substring(1) + displayName.Substring(b.Length);
+        }
+        return displayName;
+    }
+
+    // ¿Es un piso de servicio de su torre (el suelo de hielo, el techo con la pista del santuario) y no un área?
+    bool ServicePad()
+    {
+        if (floor == 0) return true;
+        foreach (CarpetPad p in All) if (p != null && p.kind != Kind.Edificio && p.surface == surface) return true;
+        return false;
+    }
+
+    // La pista principal de un grupo: la del piso más bajo, mejor la del piso que la de su anillo.
+    static CarpetPad Main(List<CarpetPad> l)
+    {
+        CarpetPad best = null;
+        foreach (CarpetPad p in l)
+            if (best == null || p.floor < best.floor || (p.floor == best.floor && best.IsRing && !p.IsRing)) best = p;
+        return best;
+    }
+
+    // De abajo arriba; en el mismo piso, la planta antes que su anillo.
+    static int ByFloor(MenuEntry x, MenuEntry y) =>
+        x.target.floor != y.target.floor ? x.target.floor.CompareTo(y.target.floor)
+        : x.target.IsRing != y.target.IsRing ? x.target.IsRing.CompareTo(y.target.IsRing) : string.CompareOrdinal(x.label, y.label);
+
+    /// <summary>El nombre corto de la pista para «Has llegado a …»: la del santuario, el de su torre (no la lista de sus áreas).</summary>
+    public string ShortName => kind == Kind.Santuario ? building : displayName;
+
+    /// <summary>Las áreas de la torre <paramref name="tower"/> (sin el suelo de hielo ni el techo), cada una con su pista principal,
+    /// de abajo arriba.</summary>
+    public static List<MenuEntry> AreasOfTower(string tower)
+    {
+        var groups = new Dictionary<string, List<CarpetPad>>();
+        var order = new List<string>();
+        foreach (CarpetPad p in All)
+        {
+            if (p == null || p.kind != Kind.Edificio || p.building != tower || p.ServicePad()) continue;
+            string a = p.AreaName;
+            if (!groups.TryGetValue(a, out var l)) { groups[a] = l = new List<CarpetPad>(); order.Add(a); }
+            l.Add(p);
+        }
+        var r = new List<MenuEntry>();
+        foreach (string a in order) r.Add(new MenuEntry { label = a, target = Main(groups[a]) });
+        r.Sort(ByFloor);
+        return r;
+    }
+
+    /// <summary>Lo que el JUGADOR ve en el selector de esta alfombra. Edificio: una opción por área de la torre (las plantas y
+    /// anillos de la suya, uno a uno); santuario: una por torre (las de varias áreas abren un segundo menú, <see cref="MenuEntry.tower"/>);
+    /// residencia y habitaciones: sus destinos, como siempre.</summary>
+    public List<MenuEntry> PlayerMenu()
+    {
+        var r = new List<MenuEntry>();
+        if (kind == Kind.Edificio)
+        {
+            string mine = ServicePad() ? null : AreaName;
+            var groups = new Dictionary<string, List<CarpetPad>>();
+            var order = new List<string>();
+            var seen = new HashSet<string> { surface };
+            foreach (CarpetPad p in All)
+            {
+                if (p == null || p.kind != Kind.Edificio || p.building != building || !seen.Add(p.surface)) continue;
+                string a = p.AreaName;
+                if (a == mine) { r.Add(new MenuEntry { label = p.FloorLabel(a), target = p }); continue; }   // su propia área: planta a planta
+                if (!groups.TryGetValue(a, out var l)) { groups[a] = l = new List<CarpetPad>(); order.Add(a); }
+                l.Add(p);
+            }
+            foreach (string a in order) r.Add(new MenuEntry { label = a, target = Main(groups[a]) });
+            r.Sort(ByFloor);
+            return r;
+        }
+        if (kind == Kind.Santuario)
+        {
+            var towers = new Dictionary<string, List<CarpetPad>>();
+            foreach (CarpetPad p in All)
+                if (FliesTo(p)) { if (!towers.TryGetValue(p.building, out var l)) towers[p.building] = l = new List<CarpetPad>(); l.Add(p); }
+            foreach (var kv in towers)
+            {
+                List<MenuEntry> areas = AreasOfTower(kv.Key);
+                if (areas.Count >= 2) r.Add(new MenuEntry { label = kv.Key + " ›", tower = kv.Key });
+                else r.Add(new MenuEntry { label = kv.Key, target = areas.Count == 1 ? areas[0].target : Main(kv.Value) });
+            }
+            r.Sort((x, y) => string.CompareOrdinal(x.label, y.label));
+            return r;
+        }
+        foreach (CarpetPad p in Destinations()) r.Add(new MenuEntry { label = p.displayName, target = p });
+        return r;
+    }
+
     /// <summary>Un hueco libre para que aterrice una alfombra (mundo).</summary>
     public Vector3 FreeSlot(FlyingCarpet except = null) => except != null ? Claim(except) : SlotPoint(0);
 
@@ -136,6 +275,15 @@ public class CarpetPad : MonoBehaviour
                 count[f.pad] = count.TryGetValue(f.pad, out int n) ? n + 1 : 1;
         CarpetPad from = null; int most = 0;
         foreach (var kv in count) if (kv.Value > most) { most = kv.Value; from = kv.Key; }
+        if (from == null)
+        {
+            // Ninguna en su red: el jugador vuela directo del santuario a un área (PlayerMenu) y deja la alfombra en la red de esa
+            // torre; con el tiempo la del santuario podía vaciarse. Acude una de cualquier pista que tenga dos o más libres.
+            count.Clear();
+            foreach (FlyingCarpet f in FlyingCarpet.All)
+                if (!f.Flying && f.pad != null && f.pad != this) count[f.pad] = count.TryGetValue(f.pad, out int n) ? n + 1 : 1;
+            foreach (var kv in count) if (kv.Value > Mathf.Max(1, most)) { most = kv.Value; from = kv.Key; }
+        }
         if (from == null) return null;
         c = from.IdleCarpet(transform.position);
         if (c == null) return null;

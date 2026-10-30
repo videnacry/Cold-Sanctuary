@@ -26,6 +26,7 @@ Pedido de Berón (2026-10-27). Este documento recoge cómo queda el santuario y 
   1. **Alfombras de edificio**, para ir a los pisos de este edificio.
   2. **Alfombras de santuario**, para ir al techo de cualquier otro edificio o a la plataforma central de la residencia.
 - Así el selector de cada alfombra muestra pocas opciones: los pisos de un edificio, o los edificios.
+- **El selector del jugador va por ÁREAS** (Berón 2026-10-30, `CarpetPad.PlayerMenu`): una opción por área («Hospital», no «Hospital (hospitalización)», «Hospital (veterinaria)»…; un anillo cuenta como parte del área de su planta), sin el prefijo «Volar a:». La alfombra va directa a la pista principal del área: la de su piso más bajo (la entrada; siempre la misma). Las plantas y los anillos del área en la que ya estás salen uno a uno («Veterinaria · planta 3»). Desde una alfombra del santuario se elige la torre («Servicios ›») y, si tiene varias áreas, después el área, y se vuela directo a ella. Los trabajadores siguen usando la red de vuelos de siempre (`FliesTo`/`Destinations`).
 - Los edificios que hoy no tienen pista sobre el techo también la tienen: Huerto, Planta Atómica, Química, Biología y Central Nuclear.
 
 **Suelo.** Al pie de cada edificio hay un área de alfombras de edificio en el hielo (la «planta 0»). Desde ahí se sube a cualquier piso, porque ya no hay escalera.
