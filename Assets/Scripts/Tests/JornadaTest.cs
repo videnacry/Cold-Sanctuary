@@ -524,6 +524,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             WorkRoster.Worker w = wd.roster.Find(tr.player ? "Player" : tr.g.name.Replace("_Post", ""));
             string doing = null, area = shift && w != null ? wd.Where(w, h, out doing) : null;
             WorkRoster.Assignment cur = shift && w != null ? wd.Current(w, h) : null;
+            if (tr.player && shift && w != null && PlayerWorkday.HeadingEarly(h) is WorkRoster.Assignment early) { cur = early; area = early.mission.area; doing = early.mission.title; }   // ya hizo lo suyo y su puesto es el siguiente (como para la Magnate)
             bool handled = MagnateWarden.Instance.Handling(tr.g);
             string head = Head(tr.g);
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));

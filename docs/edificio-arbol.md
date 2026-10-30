@@ -111,3 +111,10 @@ techo de alfombras (45 m). Distancias medidas con el simulador (`-tree`, puntos 
   piso del árbol» confundía la red de alfombras (vueltas entre la copa y Producción); `SwimTo` hacia el hueco de una
   puerta (aire) bajaba al nivel del mar; las puertas pasan al lado del cultivo; la rama de 0° tapaba la puerta del piso 8;
   las alfombras posadas en la copa giran con ella; los bancales, con las filas a lo largo (vuelven todos los cultivos).
+
+### 2026-10-30
+- Raíz: zunchos de canto cada 6 m (ver Estructura): desde lejos ya no es una columna blanca a rayas. Lo blanco que queda a
+  ~200 m es la niebla de la escena (exponencial², 0,008: a 200 m es el 92 % de niebla), como el resto de edificios a esa distancia.
+- Batería completa: 1010 PASS / 7 FAIL (antes 1010 / 9). Arreglados: el paseo por el piso 5, Kushal en el huerto (38 % → 100 %),
+  la clase de yoga y Linduarda en el examen. Después (solo comprobado en la jornada sola): la comida de Kushal (en el techo de
+  Servicios las dos pistas están casi juntas y la ruta lo mandaba de una a otra), la escapada y el vigía con la salida anticipada.
