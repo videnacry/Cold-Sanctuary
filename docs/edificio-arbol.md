@@ -29,7 +29,7 @@ vez), `ArbolCampos.cs` (niveles y rutas), `TreeTrip.cs` (el viaje a nado), `Tree
 | Parte | Medidas | Notas |
 |---|---|---|
 | **Raíz** | 0–101 m; agua Ø 20 m (de 0,05 a 99,6 m); pared de acrílico de 1 m (Ø 22 m) | El mismo cristal que el tanque de virtualización (`VirtualizationTank.GlassColor`, alfa 0,18) y su agua, más clara (alfa 0,2: 20 m de agua). El agua es un `WaterZone` (la superficie es lo alto del volumen): se nada con `SwimBody` como en el mar. Entre el agua y la tapa quedan 1,4 m de aire. |
-| **Exoesqueleto** | 16 nervios CFST (Ø 0,8 m) y zunchos cada 2 m | Una sola malla; no cruza las puertas ni las bocas de las ramas. Es lo que carga: el acrílico no se cuenta como portante. |
+| **Exoesqueleto** | 16 nervios CFST (Ø 0,8 m) y zunchos de canto (0,25 m de alto × 0,36 m hacia fuera) cada 6 m | Una sola malla; no cruza las puertas ni las bocas de las ramas. Es lo que carga: el acrílico no se cuenta como portante. |
 | **Puertas** | Una por nivel: suelo y 8 pisos (y una en la campana de cada rama); 1,8 × 2,6 m | Hueco en la pared con bobinas de cobre y el **campo magnético** (la lámina de luz del tanque) en la cara de dentro. Los cuerpos lo cruzan; el agua no. El hueco de cada puerta es aire: una **campana de aire** para respirar a mitad de subida. |
 | **Tronco** | 8 pisos: 6 · 13 · 24 · 31 · 38 · 45 · 52 · 62 m | Octógonos de ~51 m (rectángulo de 46 × 46 + 2,5 m y chaflanes de 5 m, como las losas de las torres) con el hueco de la raíz. En voladizo: ménsulas y tornapuntas de acero hasta la raíz. **Girados 45°** uno sobre otro e **inclinados 3°** alternando el sentido. Entre el 2 y el 3, 11 m (la guadua llega a 9 m); entre el 7 y el 8, 10 m (el dosel del bosque comestible); los demás, 7 m. |
 | **Riego en cascada** | Canaleta en el borde bajo de cada piso | Vierte (una lámina de agua, sin collider) al piso de abajo. El arrozal no: va en terraza plana y su agua vuelve a la raíz. |
@@ -71,7 +71,7 @@ defecto **una vuelta cada 6 horas del juego** (15 min reales). Hechizo `arbol({v
 ## Estructura (`StructuralLimits.RootCheck`)
 
 Con 8 pisos, 6 ramas, la copa y su pared: ~286 MN sobre 16 nervios (~614 MN) → **47 %**. El agua (~308 MN) apoya en el fondo y
-va al cimiento. El empuje del agua en el fondo (p·r ≈ 9,8 MN/m) lo resisten el acrílico de 1 m y los zunchos → **38 %**. Avisa
+va al cimiento. El empuje del agua en el fondo (p·r ≈ 9,8 MN/m) lo resisten el acrílico de 1 m y los zunchos (cada 6 m) → **64 %**. Hasta el 2026-10-30 los zunchos iban cada 2 m y de 0,6 m de alto (38 %): desde lejos la raíz se leía como una columna blanca a rayas y de cerca casi no se veía al nadador; con la misma sección de acero puesta de canto y tres veces más espaciada tapa la vista ~8 veces menos y sigue por debajo del 80 %. Avisa
 por encima del 80 % (con 30 pisos, avisa) y da error por encima del 100 %.
 
 ## Dónde

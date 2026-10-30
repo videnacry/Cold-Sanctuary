@@ -80,8 +80,8 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la pared de la raíz es transparente como el cristal del tanque de virtualización (se ve nadar dentro)",
             wTransparent && wAlpha <= tAlpha + 0.05f && (tankGlass == null || (tankGlass.shader == wm.shader && tankGlass.renderQueue == wm.renderQueue)),
             wm != null ? $"cola {wm.renderQueue}, alfa {wAlpha:0.00} (tanque {tAlpha:0.00}{(tankGlass != null ? $", cola {tankGlass.renderQueue}" : ", sin tanque en escena")})" : "sin pared");
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs);
-        StructuralLimits.RootReport more = StructuralLimits.RootCheck(30, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs);
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs, 51f, TreeSpec.HoopSpacing, TreeSpec.HoopArea);
+        StructuralLimits.RootReport more = StructuralLimits.RootCheck(30, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs, 51f, TreeSpec.HoopSpacing, TreeSpec.HoopArea);
         TestProbe.Check("la raíz aguanta 8 pisos, 6 ramas, la copa y 100 m de agua (sin aviso)", !rep.Warn && !rep.Fail, rep.ToString());
         TestProbe.Check("con 30 pisos la comprobación de la raíz avisa (habría que reforzarla)", more.Warn, more.ToString());
 

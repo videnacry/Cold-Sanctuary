@@ -5,7 +5,7 @@ using UnityEngine;
 /// EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; docs/edificio-arbol.md, medidas en <see cref="TreeSpec"/>): los campos de cultivo
 /// en un solo edificio con forma de árbol, en el lóbulo Sur:Milpa.
 /// - RAÍZ: columna de agua de Ø 20 m (pared de acrílico de 1 m, transparente como el tanque de virtualización: se ve nadar a
-///   la gente de piso en piso), de 0 a 101 m, sostenida por 16 nervios de acero (CFST) con zunchos cada 2 m. Una PUERTA por
+///   la gente de piso en piso), de 0 a 101 m, sostenida por 16 nervios de acero (CFST) con zunchos de canto cada 6 m. Una PUERTA por
 ///   nivel con su campo magnético (el agua no sale); el hueco de cada puerta es una campana de aire.
 /// - TRONCO: 8 pisos de cultivo (octógonos de ~51 m) en voladizo desde la raíz, girados 45° y con 3° de inclinación
 ///   alterna; la canaleta del borde bajo de cada uno riega el de abajo (cascada).
@@ -67,7 +67,7 @@ public static partial class SampleSceneBuilder
         CarpetPad.BuildZone(padRoot, padAt, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padAt.x, 0f, padAt.z)), CarpetPad.Kind.Edificio, TreeSpec.Building, 0, $"{TreeSpec.Building}#0", "Suelo (hielo)", 2);
 
         // LA RAÍZ AGUANTA (StructuralLimits.RootCheck): 8 pisos, 6 ramas, la copa, su pared y el agua.
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs);
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs, 51f, TreeSpec.HoopSpacing, TreeSpec.HoopArea);
         if (rep.Fail) Debug.LogError($"[Estructura] La raíz del Árbol de los Campos no aguanta: {rep}. Refuérzala (más nervios o más pared).");
         else if (rep.Warn) Debug.LogWarning($"[Estructura] La raíz del Árbol de los Campos va justa: {rep}.");
         else Debug.Log($"[Estructura] Raíz del Árbol de los Campos (Ø {2f * TreeSpec.OuterRadius:0} m, {TreeSpec.Ribs} nervios): {rep}.");
@@ -118,7 +118,7 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(tree, Vector3.down * 0.4f, new Vector3(2f * rOut + 3f, 0.8f, 2f * rOut + 3f), new Color(0.72f, 0.71f, 0.68f), 0f, "Encepado_raiz");   // el cimiento (bajo el hielo)
         _ = cap;
 
-        // EXOESQUELETO: 16 nervios de acero (CFST Ø 0,8 m) y zunchos cada 2 m (los que sujetan el empuje del agua), una sola
+        // EXOESQUELETO: 16 nervios de acero (CFST Ø 0,8 m) y zunchos de canto cada 6 m (los que sujetan el empuje del agua con el acrílico; StructuralLimits.RootCheck), una sola
         // malla; no cruzan los huecos de las puertas ni las bocas de las ramas (ni la losa de los pisos).
         var boxes = new List<(Vector3 c, Vector3 s, Quaternion q)>();
         bool InGap(float ang, float y0, float y1, float pad)
@@ -128,7 +128,7 @@ public static partial class SampleSceneBuilder
         }
         bool AtFloor(float y) { foreach (float fy in TreeSpec.FloorY) if (y > fy - 1.4f && y < fy + 0.9f) return true; return false; }
         var hoopY = new List<float>();
-        for (float y = 1f; y < H - 0.5f; y += 2f) if (!AtFloor(y)) hoopY.Add(y);
+        for (float y = 3f; y < H - 0.5f; y += TreeSpec.HoopSpacing) hoopY.Add(AtFloor(y) ? y + 2.4f : y);   // cada 6 m (si cae en una losa, justo encima)
         hoopY.Add(H - 0.3f);
         for (int i = 0; i < TreeSpec.Ribs; i++)
         {
@@ -145,7 +145,8 @@ public static partial class SampleSceneBuilder
             {
                 float ang = s * 10f + 5f;
                 if (InGap(ang, y - 0.3f, y + 0.3f, 6f)) continue;
-                boxes.Add((TreeSpec.Dir(ang) * (rOut + 0.08f) + Vector3.up * y, new Vector3(2f * (rOut + 0.08f) * Mathf.Tan(5f * Mathf.Deg2Rad) + 0.05f, 0.6f, 0.15f), Quaternion.Euler(0f, ang, 0f)));
+                { float rh = rOut + TreeSpec.HoopDepth * 0.5f;   // de canto: delgado a la vista, hondo hacia fuera
+                  boxes.Add((TreeSpec.Dir(ang) * rh + Vector3.up * y, new Vector3(2f * rh * Mathf.Tan(5f * Mathf.Deg2Rad) + 0.05f, TreeSpec.HoopHeight, TreeSpec.HoopDepth), Quaternion.Euler(0f, ang, 0f))); }
             }
         GameObject exo = new GameObject("Exoesqueleto");
         exo.transform.SetParent(tree, false);

@@ -36,6 +36,12 @@ public static class TreeSpec
     public const float DoorWidth = 1.8f, DoorHeight = 2.6f;
     public const float TopWidth = 22f;
     public const int Ribs = 16;
+    /// <summary>ZUNCHOS del exoesqueleto (los que sujetan el empuje del agua junto con el acrílico): uno cada <see cref="HoopSpacing"/> m,
+    /// planos y hondos (<see cref="HoopHeight"/> de alto × <see cref="HoopDepth"/> hacia fuera: la misma sección de acero, 0,09 m², que
+    /// uno de 0,6 × 0,15, pero de canto: tapan cuatro veces menos la vista). Con 6 m, <see cref="StructuralLimits.RootCheck"/> da el
+    /// zuncho al 64 % (Berón 2026-10-30: la raíz se tiene que ver transparente, como el tanque: se ve nadar a la gente).</summary>
+    public const float HoopSpacing = 6f, HoopHeight = 0.25f, HoopDepth = 0.36f;
+    public static float HoopArea => HoopHeight * HoopDepth;
     /// <summary>Lo que se muda al árbol, de abajo arriba (P5 = el área del Huerto, con las hortalizas).</summary>
     public static readonly GardenPlot.Guild[] Guilds =
     {

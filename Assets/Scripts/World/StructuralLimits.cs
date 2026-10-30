@@ -48,10 +48,11 @@ public static class StructuralLimits
     /// - PARED de acrílico (1,19 t/m³) de <paramref name="wall"/> m: su peso. No cuenta como portante (fluye con el tiempo).
     /// - CAPACIDAD: <paramref name="ribs"/> nervios CFST Ø 0,8 m (chapa 30 mm S460 + C80), φ = 0,6 → ~38 MN cada uno.
     /// - ZUNCHO: el agua empuja p·r en el fondo (ρ g h · r); lo resisten el acrílico (10 MPa a largo plazo) y los zunchos de
-    ///   acero (0,6 × 0,15 m cada 2 m, 350 MPa).
+    ///   acero (<paramref name="hoopArea"/> m² cada <paramref name="hoopSpacing"/> m, 350 MPa; el árbol: 0,25 × 0,36 m cada 6 m).
     /// </summary>
     public static RootReport RootCheck(int floors, int branches, float waterRadius = 10f, float height = 100f, float wall = 1f,
-                                       int ribs = 16, float floorSide = 51f)
+                                       int ribs = 16, float floorSide = 51f,
+                                       float hoopSpacing = 2f, float hoopArea = 0.09f)
     {
         const float g = 9.81f;
         var r = new RootReport();
@@ -70,7 +71,7 @@ public static class StructuralLimits
         r.groundMN = r.axialMN + r.waterMN;
         float p = 1000f * g * height / 1e6f;                                      // MPa en el fondo
         r.hoopDemand = p * waterRadius;                                           // MN/m
-        r.hoopCapacity = wall * 10f + (0.6f * 0.15f / 2f) * 350f;
+        r.hoopCapacity = wall * 10f + (hoopArea / UnityEngine.Mathf.Max(0.1f, hoopSpacing)) * 350f;
         return r;
     }
 }
