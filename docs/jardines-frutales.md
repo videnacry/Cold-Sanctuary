@@ -164,6 +164,8 @@ Tamaños (variedades enanas en maceta):
 | Producción | 22 | 19/19 | 0 |
 | **Total** | **215** | — | — |
 
+**En Unity** (blockout del 2026-10-31, cajas reales): Servicios 59, Central Nuclear 62, Entrenamiento 38, Ciencias 24 y Producción 21 (copas podadas al 64 %): **204 macetas**, las 19 especies en cada techo y 0 pares sin sus 2 m (`FruitOrchardTest`).
+
 ### La sala de cuidados y los puntos de riego
 
 Cada punto es una línea de equipos (`FurnitureLine`, que van juntos) contra un borde libre, mirando hacia dentro, con su
@@ -238,11 +240,19 @@ Las tareas que no son diarias quedan fuera de la ronda: poda, polinización con 
 Con los 5 vuelos, la ronda entera es de **≈ 11,4 h de juego**. Cada persona tiene **5 h** de trabajo, y una misión no se
 parte en la comida: como mucho, el bloque de la mañana de **3 h**. **Una sola persona no llega.**
 
-La ronda se parte en tramos de ≤ 3 h, por techos seguidos del camino más corto desde la sala:
-- Servicios, Entrenamiento, Producción, Ciencias y Central Nuclear.
-- Servicios, que pasa de 3 h, se parte en dos.
+La ronda se recorre maceta a maceta por el camino más corto desde la sala (Servicios, Entrenamiento, Producción, Central Nuclear y Ciencias) y se corta en rondas EQUILIBRADAS de ≤ 2,75 h (cada corte suma un vuelo y una preparación). Partir por techos enteros daba 7 rondas de 1,3–2,1 h; el llenado seguido da, en Unity (204 macetas, 12,4 h con los cortes):
 
-Salen **5 rondas, de 2 a 3 h**: **cinco personas al día**, cada una con un tramo, y el resto de su jornada para otras
+| Ronda | Horas | Techos |
+|---|---|---|
+| jar_frutales_1 | 2,5 h | Servicios 45 |
+| jar_frutales_2 | 2,6 h | Servicios 14 + Entrenamiento 23 |
+| jar_frutales_3 | 2,4 h | Entrenamiento 15 + Producción 21 |
+| jar_frutales_4 | 2,5 h | Central Nuclear 50 |
+| jar_frutales_5 | 2,4 h | Central Nuclear 12 + Ciencias 24 |
+
+**Medido**: un cuerpo de prueba hizo `jar_frutales_3` (36 macetas, dos techos y el vuelo entre ellos) en **2,25 h de juego** (estimada 2,36 h).
+
+Salen **5 rondas de ~2,5 h**: **cinco personas al día**, cada una con un tramo, y el resto de su jornada para otras
 misiones.
 - Se reparte sola: si se añaden o quitan macetas o cambia la duración del día, el reparto se recalcula.
 - En el registro: `[Frutales] … ronda completa X h → N personas`.

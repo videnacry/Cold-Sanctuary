@@ -30,6 +30,8 @@ public class FruitGardener : MonoBehaviour
     public const string MissionPrefix = "jar_frutales";
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
     public const float MaxRoundHours = 3f;
+    /// <summary>Lo que se apunta a llenar cada ronda (h): deja margen bajo las 3 h de la misión.</summary>
+    public const float RoundTarget = 2.75f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
     /// <summary>Minutos de juego para preparar en el punto de cuidados: la solución de abono en la sala principal y llenar el carro en los demás.</summary>
@@ -62,7 +64,7 @@ public class FruitGardener : MonoBehaviour
     }
 
     /// <summary>Las rondas del día (recalculadas si cambian las plantas): techos en el orden del camino más corto desde la
-    /// sala principal, cada techo partido si él solo pasa de <see cref="MaxRoundHours"/>, y techos seguidos juntos mientras quepan.</summary>
+    /// sala principal, recorridos maceta a maceta y partidos en rondas equilibradas de ≤ <see cref="RoundTarget"/> h.</summary>
     public static List<Round> Rounds()
     {
         FruitPlant.All.RemoveAll(p => p == null);
@@ -82,26 +84,33 @@ public class FruitGardener : MonoBehaviour
             Vector3 here = Center(order[order.Count - 1]);
             order.Add(byRoof.Keys.Where(k => !order.Contains(k)).OrderBy(k => Vector3.Distance(here, Center(k))).First());
         }
-        float flightH = FlightSeconds / SecondsPerGameHour;
-        var legs = new List<Leg>();
-        foreach (string b in order)
+        // LLENADO SEGUIDO (medido en Unity, 2026-10-31: partir por techos enteros daba 7 rondas de 1,3–2,1 h): se recorre el
+        // camino maceta a maceta y se cierra la ronda cuando la siguiente ya no cabe en su parte del total (rondas
+        // equilibradas de ≤ RoundTarget h); al cambiar de techo, cuenta el vuelo y preparar en su punto de cuidados.
+        float flightH = FlightSeconds / SecondsPerGameHour, total = 0f;
+        foreach (string b in order) { FruitCareStation st = StationOf(b); total += LegHours(byRoof[b], st != null && st.mainRoom) + flightH; }
+        int nr = Mathf.Max(1, Mathf.CeilToInt(total / RoundTarget));
+        // Cada corte añade un vuelo y una preparación: se sube la meta de 0,1 en 0,1 h hasta que salen las rondas previstas.
+        for (float target = Mathf.Min(RoundTarget, total / nr + 0.15f); ; target += 0.1f)
         {
-            List<FruitPlant> ps = byRoof[b];
-            FruitCareStation st = StationOf(b);
-            float h = LegHours(ps, st != null && st.mainRoom);
-            int parts = Mathf.Max(1, Mathf.CeilToInt((h + flightH) / MaxRoundHours));
-            for (int k = 0; k < parts; k++)
+            _rounds.Clear();
+            Round cur = null; Leg leg = null;
+            foreach (string b in order)
             {
-                var sub = ps.Skip(ps.Count * k / parts).Take(ps.Count * (k + 1) / parts - ps.Count * k / parts).ToList();
-                legs.Add(new Leg { building = b, plants = sub, station = st, hours = LegHours(sub, st != null && st.mainRoom && k == 0) });
+                FruitCareStation st = StationOf(b);
+                leg = null;
+                Vector3 at = Vector3.zero;
+                foreach (FruitPlant p in byRoof[b])
+                {
+                    float walkH = leg != null ? Vector3.Distance(at, p.transform.position) / 2.6f / SecondsPerGameHour : 0f;
+                    float plantH = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + walkH;
+                    float open = leg == null ? flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f : 0f;
+                    if (cur == null || (cur.Plants.Any() && cur.hours + open + plantH > target)) { cur = new Round(); _rounds.Add(cur); leg = null; open = flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f; plantH -= walkH; }
+                    if (leg == null) { leg = new Leg { building = b, station = st }; cur.legs.Add(leg); cur.hours += open; }
+                    leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p.transform.position;
+                }
             }
-        }
-        Round cur = null;
-        foreach (Leg l in legs)
-        {
-            float add = l.hours + flightH;   // (cada tramo: llegar en alfombra a su techo)
-            if (cur == null || cur.hours + add > MaxRoundHours) { cur = new Round(); _rounds.Add(cur); }
-            cur.legs.Add(l); cur.hours += add;
+            if (_rounds.Count <= nr || target >= RoundTarget) break;
         }
         for (int i = 0; i < _rounds.Count; i++)
         {
@@ -264,7 +273,7 @@ public class FruitGardener : MonoBehaviour
         RoundSeconds = Time.time - _startedAt;
         float h = RoundSeconds / SecondsPerGameHour;
         Doing = $"Ronda terminada: {Cared} frutales revisadas en {h:0.0} h";
-        Debug.Log($"[Frutales] «{name}» termina «{_round.title}»: {Cared} cuidadas, {Skipped} saltadas, techos {string.Join(", ", roofsDone)}; {RoundSeconds:0} s reales = {h:0.00} h de juego (estimado {_round.hours:0.00} h).");
+        Debug.Log($"[Frutales] «{name}» termina «{_round.title}»: {Cared} cuidadas, {Skipped} saltadas, techos {string.Join(", ", roofsDone)}; {RoundSeconds:0} s de juego = {h:0.00} h de juego (estimado {_round.hours:0.00} h).");
     }
 
     // La regadera en la mano mientras revisa una maceta.

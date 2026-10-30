@@ -105,7 +105,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         while (!g.Finished && Time.realtimeSinceStartup - t0 < cap) yield return null;   // con tope
         Time.timeScale = oldScale;
         int roofsIn = round.legs.Select(l => l.building).Distinct().Count();
-        int caredHere = rp.Count(p => p.lastCaredBy == body.name);
+        int caredHere = g.Cared;   // (no lastCaredBy: si la jornada corre, el jardinero de verdad de esa ronda también las cuida)
         TestProbe.Check($"el jardinero termina «{round.id}» ({rp.Count} macetas, {roofsIn} techos)", g.Finished, g.Finished ? g.Doing : $"a los {cap:0} s reales va por «{g.Doing}» ({g.Cared}/{rp.Count})");
         TestProbe.Check("revisa todas las macetas de su ronda (salta ≤ 5 %)", caredHere >= Mathf.CeilToInt(rp.Count * 0.95f), $"{caredHere}/{rp.Count} cuidadas, {g.Skipped} saltadas");
         TestProbe.Check("al acabar un techo pasa al siguiente (en alfombra)", g.roofsDone.Count == roofsIn, $"techos: {string.Join(" → ", g.roofsDone)}");
