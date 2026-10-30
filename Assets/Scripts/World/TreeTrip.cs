@@ -44,12 +44,14 @@ public class TreeTrip : MonoBehaviour
     // ¿El tramo i (del punto i−1 al i) va por el agua? Entra por la puerta (punto 2) y sale por la otra (antepenúltimo).
     bool _wetStart, _held, _ccOff;
     bool Wet(int i) => (i >= 2 || (_wetStart && i >= 1)) && i <= _path.Count - 2;
+    // ¿El tramo i sube o baja por la columna (la corriente de la raíz lo lleva)? Casi vertical: más alto que ancho ×3.
+    bool AlongColumn(int i) { if (i < 1 || i >= _path.Count) return false; Vector3 d = _path[i] - _path[i - 1]; return Mathf.Abs(d.y) > 3f * new Vector2(d.x, d.z).magnitude; }
 
     void Update()
     {
         if (_tree == null || _path == null) { Finish(false); return; }
         if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
-        float budget = (Wet(_i) ? _tree.routeSwimSpeed : 1.8f) * Time.deltaTime;
+        float budget = (Wet(_i) ? _tree.routeSwimSpeed + (AlongColumn(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
         {
             Vector3 target = _tree.World(_path[_i]) + Vector3.up * _ph;

@@ -283,6 +283,39 @@ public class PlayerWorkday : MonoBehaviour
         return WorkdayDirector.InWorkspace(m, area, pos);
     }
 
+
+    // ── SALIR ANTES HACIA EL PUESTO SIGUIENTE (2026-10-30) ──────────────────────────────────────────────────────────
+    /// <summary>Horas antes del final de una misión en que el piloto puede salir ya hacia la siguiente.</summary>
+    public const float EarlyLead = 0.4f;
+    /// <summary>Parte de la misión (en tiempo de juego) que tiene que llevar hecha en su puesto para salir antes.</summary>
+    public const float EarlyDoneShare = 0.55f;
+
+    /// <summary>
+    /// SALE ANTES: si el piloto lleva Kushal (<see cref="autopilot"/>), en los últimos <see cref="EarlyLead"/> h de una misión
+    /// que ya tiene hecha (≥ <see cref="EarlyDoneShare"/> de su tiempo en el puesto) y la siguiente empieza justo al acabar
+    /// esta en OTRA área, va ya hacia la siguiente: así llega a su hora. Lo pidió el Árbol de los Campos (Berón 2026-10-29:
+    /// alfombras solo en la copa y en el suelo; a los pisos, nadando por la raíz): de una torre al huerto del piso 5 se
+    /// tarda ~1,5 min de juego (alfombra al pie, andar a la puerta y nadar), más de la mitad de una misión de 1 h a ×6. Es lo
+    /// que hace cualquiera que acaba lo suyo: se pone en camino. La Magnate no lo devuelve mientras va (WorkdayDirector).
+    /// Devuelve la misión siguiente, o null.
+    /// </summary>
+    bool _earlyLogged;
+    public static WorkRoster.Assignment HeadingEarly(float h)
+    {
+        PlayerWorkday pw = Instance;
+        if (pw == null || !pw.autopilot || pw._plan == null || TimeController.timeController == null) return null;
+        Record cur = null;
+        foreach (Record r in pw._records) if (h >= r.a.start && h < r.a.start + r.a.mission.hours) { cur = r; break; }
+        if (cur == null || cur.virtualized) return null;
+        float end = cur.a.start + cur.a.mission.hours;
+        if (end - h > EarlyLead) return null;
+        Record next = null;
+        foreach (Record r in pw._records) if (Mathf.Abs(r.a.start - end) < 0.01f) { next = r; break; }
+        if (next == null || next.a.mission.area == cur.a.mission.area || next.a.mission.area == AreaWork.Guard) return null;
+        float full = cur.a.mission.hours * TimeController.timeController.SecondsPerGameDay / 24f;
+        return cur.present >= EarlyDoneShare * full ? next.a : null;
+    }
+
     // ── PILOTO: lo lleva solo a cada sitio, como la jornada a los demás (PathMover + alfombras entre torres) ─────────────
 
     void Pilot(WorkdayDirector wd, WorkRoster.Worker me, float h)
@@ -292,6 +325,13 @@ public class PlayerWorkday : MonoBehaviour
         ActionQueue q = _player.GetComponent<ActionQueue>();
         Vector3 pos = _player.transform.position;
         WorkRoster.Mission m = wd.Current(me, h)?.mission;
+        WorkRoster.Assignment early = HeadingEarly(h);
+        if (early != null)   // ya hizo lo suyo aquí: sale hacia la siguiente misión (llega a su hora)
+        {
+            if (!_earlyLogged) { _earlyLogged = true; Debug.Log($"[Jornada] {h:00.00} h · Kushal ya hizo «{m?.title}»: sale hacia «{early.mission.title}» ({early.mission.area}) para llegar a su hora."); }
+            area = early.mission.area; m = early.mission; doing = early.mission.title;
+        }
+        else _earlyLogged = false;
         bool lunch = doing == "Comida";
         if (lunch && AtPost(null, area, pos) && !AteToday)
         {

@@ -36,7 +36,7 @@ vez), `ArbolCampos.cs` (niveles y rutas), `TreeTrip.cs` (el viaje a nado), `Tree
 | **Ramas** | 6 tubos de agua Ø 3 m, a 35°, de 40 m, desde 66 m | A 22,5°, 90°, 135°, 202,5°, 270° y 315° (entre los nervios y lejos de la puerta del piso 8). Collar de acero en la boca. La punta llega a ~44 m del eje y ~89 m de alto: sobresale de los pisos. |
 | **Anillos de nidos** | `RingDeck` de 13,4 m alrededor de una campana de agua (Ø 4 m) | Frutales enanos en las esquinas, flores para las abejas de las nieves y nidos de aves. A ~91 m. Se llega nadando: por la raíz, por la rama y por la puerta de la campana. Se llaman `Nido_anillo_N` (no son anillos de un piso: no llevan alfombras). |
 | **Copa** | Octógono plano de 22 m a 101,4 m | Tan ancho como la raíz. Alfombras de edificio y del santuario. Gira con el árbol. |
-| **Suelo** | Alfombras en el hielo, a 22 m del eje (al NE) | No giran. Desde ahí se anda a la puerta del suelo. |
+| **Suelo** | Alfombras en el hielo, a 22 m del eje (al NE): las del edificio (a la copa) y, al lado, las del santuario (a las otras torres) | No giran. Desde ahí se anda a la puerta del suelo. Desde otra torre se vuela directo al pie (antes, a la copa y otra vez al suelo: dos vuelos). |
 
 **Reparto, de abajo arriba:** P1 Arrozal (en terraza plana) · P2 Bambusal · P3 Milpa · P4 Chacra andina · P5 **Huerto**
 (`Garden_Area`, con las hortalizas, su tanque de virtualización y su iniciación) · P6 Rotación · P7 y P8 Bosque comestible.
@@ -52,9 +52,14 @@ con el árbol sin girar.
   hechizos), antes que las alfombras; un piso del árbol nunca llega como destino a la red de alfombras: desde fuera, el
   destino es el pie del árbol. En el mismo piso, andando (sin alfombras); a
   otro nivel, primero a la puerta de su piso y después un **viaje a nado** (`TreeTrip`): puerta → agua → por la columna a 6 m
-  del eje → [la rama y su campana] → puerta → fuera, nadando con `SwimBody.SwimTo` a 2,5 m/s (100 m en 40 s: no se quedan sin
-  aire; la prueba lo mira). Nada de teletransportes; si se atasca, se queda donde está y avisa. Desde fuera del árbol, las
+  del eje → [la rama y su campana] → puerta → fuera, nadando con `SwimBody.SwimTo` a 2,5 m/s y, a lo largo de la columna, llevados además por la **corriente de la raíz**
+  (`ArbolCampos.routeCurrent`, 1,4 m/s: el agua sube por un lado y baja por el otro; en total 3,9 m/s, por debajo de los 4 m/s que las pruebas toman por un salto): del suelo al piso 5 en ~9,5 s en vez de 15
+  (no se quedan sin aire; la prueba lo mira). Nada de teletransportes; si se atasca, se queda donde está y avisa. Desde fuera del árbol, las
   alfombras le traen al pie (o a la copa) y entra por el suelo.
+- **La jornada de Kushal** (`PlayerWorkday.HeadingEarly`): ir de una torre al huerto del piso 5 cuesta ~1,5 min de juego (alfombra
+  al pie, andar a la puerta, nadar), más de la mitad de una misión de 1 h con el reloj ×6. Si ya hizo ≥ 55 % de la misión que
+  acaba y la siguiente es en otra área, el piloto sale en los últimos 0,4 h hacia la siguiente (la Magnate no lo devuelve: su
+  puesto ya es el siguiente). Así llega a su hora sin alfombras entre pisos.
 - **El jugador**: nada libremente dentro (el cuerpo de nado del mar). En cada puerta puede respirar. El hechizo
   `piso({n:5})` (0–8, `anillo1`…`anillo6`) le lleva andando a su puerta y nadando por la raíz.
 

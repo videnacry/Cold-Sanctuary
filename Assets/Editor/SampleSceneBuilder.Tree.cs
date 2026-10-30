@@ -65,6 +65,11 @@ public static partial class SampleSceneBuilder
         // sin pista propia y mandaría a la gente al pie del árbol.)
         Transform padRoot = new GameObject("Arbol_alfombras_suelo").transform; padRoot.SetParent(parent, false);
         CarpetPad.BuildZone(padRoot, padAt, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padAt.x, 0f, padAt.z)), CarpetPad.Kind.Edificio, TreeSpec.Building, 0, $"{TreeSpec.Building}#0", "Suelo (hielo)", 2);
+        // …y las del SANTUARIO, al lado (el mismo suelo): desde las otras torres se llega volando AL PIE del árbol, que es por
+        // donde se entra a los pisos (antes había que bajar a la copa y volar otra vez al suelo: dos vuelos para llegar al pie).
+        Vector3 padS = TreeSpec.Site + TreeSpec.Dir(69f) * 22f + Vector3.up * 0.01f;
+        CarpetPad.BuildZone(padRoot, padS, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padS.x, 0f, padS.z)), CarpetPad.Kind.Santuario, TreeSpec.Building, 0, $"{TreeSpec.Building}#0",
+            $"{TreeSpec.Building} (al pie: a los pisos, nadando por la raíz)", 2);
 
         // LA RAÍZ AGUANTA (StructuralLimits.RootCheck): 8 pisos, 6 ramas, la copa, su pared y el agua.
         StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs, 51f, TreeSpec.HoopSpacing, TreeSpec.HoopArea);

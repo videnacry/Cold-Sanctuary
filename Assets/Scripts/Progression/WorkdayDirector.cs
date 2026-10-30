@@ -255,12 +255,15 @@ public class WorkdayDirector : MonoBehaviour
         if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
         string area = Where(me, h, out string doing);
+        WorkRoster.Mission postMission = Current(me, h)?.mission;
+        WorkRoster.Assignment early = PlayerWorkday.HeadingEarly(h);   // ya hizo lo suyo y va a la siguiente: ese es su puesto
+        if (early != null) { area = early.mission.area; doing = early.mission.title; postMission = early.mission; }
         if (area != _postArea) { _postArea = area; _postSince = Time.time; }   // [Jornada de Kushal] puesto nuevo: el reloj del trayecto empieza
         if (area == null || area == AreaWork.Guard) return;
         if (AreaTransform(area) == null || MagnateWarden.Instance.Handling(p)) return;
         if (Time.time - _postSince < PlayerWorkday.Commute) return;   // [Jornada de Kushal] tiene un rato para llegar (andando / en alfombra)
         Vector3 pos = p.transform.position;
-        if (InWorkspace(Current(me, h)?.mission, area, pos)) { _transitSince = -1f; return; }
+        if (InWorkspace(postMission, area, pos)) { _transitSince = -1f; return; }
         // DE CAMINO (en un puente, en una pista, en alfombra, en una escalera): se le deja pasar un rato, que las tareas
         // de varias áreas obligan a cruzar; quedarse ahí no es trabajar.
         if (InTransit(p))

@@ -16,6 +16,8 @@ public class ArbolCampos : MonoBehaviour
     public Transform top;            // la copa (plataforma de alfombras)
     [Tooltip("Velocidad de nado por la raíz (m/s): más que nadar en el mar, para no quedarse sin aire (100 m en 40 s).")]
     public float routeSwimSpeed = 2.5f;
+    [Tooltip("La CORRIENTE de la raíz (m/s): el agua sube por un lado de la columna y baja por el otro, y lleva a quien nada a lo largo de ella (el tramo vertical va a nado + corriente = 3,9 m/s, por debajo de los 4 m/s que las pruebas toman por un salto). Del suelo al piso 5 (~37 m) en ~9,5 s en vez de 15.")]
+    public float routeCurrent = 1.4f;
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
