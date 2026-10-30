@@ -336,9 +336,11 @@ public static partial class SampleSceneBuilder
         foreach (Vector3 corner in new[] { new Vector3(E - 0.4f, -0.35f, E - 0.4f), new Vector3(E - 0.4f, -0.35f, -E + 0.4f), new Vector3(-E + 0.4f, -0.35f, E - 0.4f) })
             KitchenProps.C(ts, (corner + colL) * 0.5f, new Vector3(0.3f, 0.3f, (corner - colL).magnitude), TreeSteel, Quaternion.LookRotation(corner - colL), "Tornapunta_campo");
         _platforms[tip] = new Vector2(T, T);
-        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(2.8f, 0.06f, 2.8f)), new Vector2(9f, 9f), TreeSpec.Seeds[k - 1], false);
-        plot.transform.localRotation = Quaternion.identity;
-        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(10f, 0.06f, 10f),
+        // Bancal de 10 × 15 m a lo ancho del campo (lejos de la columna y de su puerta), con las filas a lo largo de los 15 m:
+        // caben todas las del gremio (la chacra, 8; la rotación, con el garbanzo, el sésamo y el maní, 6).
+        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(0f, 0.06f, 2.5f)), new Vector2(10f, 15f), TreeSpec.Seeds[k - 1], false);
+        plot.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
+        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(10.6f, 0.06f, 15.6f),
             guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
         _treeFloors.Add(tf);
 

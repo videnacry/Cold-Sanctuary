@@ -67,7 +67,7 @@ P6 Bosque comestible (piso d, 75 m) · P7 Chacra andina (punta a, 80 m) · P8 Ro
 ~10 m de dosel; la guadua, 9 m) va en los pisos grandes, donde nada lo tapa; lo bajo, en las puntas. Cada cultivo conserva su
 gremio y su semilla (`GardenPlot`): hortalizas 11, milpa 12, chacra 13, arrozal 14, rotación 15, bosque 16 y 18, bambusal 17.
 Bancal de 22 × 18 m en cada piso (lejos de la puerta y de la rama que pasa 11 m por encima del borde pegado al tronco) y de
-9 × 9 m en cada punta. El arrozal planta su alga en el mar más cercano (ahora en un grupo quieto, `Algas_…`, que no gira con el
+10 × 15 m en cada punta (a lo ancho del campo, filas a lo largo: caben todas las del gremio; con 9 × 9 la chacra perdía el cedrón y la rotación el garbanzo, el sésamo y el maní). El arrozal planta su alga en el mar más cercano (ahora en un grupo quieto, `Algas_…`, que no gira con el
 árbol). Cada plataforma tiene sus plazas reservadas del microcosmos (`PlatformSlots`).
 
 ### Plano (desde arriba; cada carácter, ~2 × 4 m; T = tronco)
