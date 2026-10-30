@@ -30,6 +30,11 @@ public class MagnateWarden : MonoBehaviour
     [Tooltip("Tras devolver a alguien, segundos de gracia antes de poder volver a traerlo.")]
     public float grace = 4f;
 
+    /// <summary>¿Guarda los puestos? (casilla de Inicio y de la pausa, Berón 2026-10-30). Sin ella no devuelve a nadie a su
+    /// puesto de la jornada; a un recién llegado sin iniciar sí lo sigue llevando a la enfermería.</summary>
+    public static bool GuardPosts = true;
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)] static void ResetGuard() => GuardPosts = true;
+
     public static int Returned { get; private set; }
 
     readonly HashSet<GameObject> _busy = new HashSet<GameObject>();
@@ -75,6 +80,7 @@ public class MagnateWarden : MonoBehaviour
         Magnate mg = FindAnyObjectByType<Magnate>();
         string need = why != null && why.Contains("iniciación") ? "iniciar_a_los_recien_llegados" : "guardar_los_puestos";
         if (mg != null && !Convictions.Of(mg.gameObject).Has(need)) return;
+        if (need == "guardar_los_puestos" && !GuardPosts) return;
         Instance.StartCoroutine(Instance.Run(who, back, why));
     }
 

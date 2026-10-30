@@ -329,6 +329,7 @@ public class SpellConsole : MonoBehaviour
         if (ob == null) return null;
         foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
         ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true;
+        if (mg.TryGetComponent(out HealthRecord hr)) { hr.analyzed = true; hr.vaccinated = true; }   // sin esto InfirmaryGate lo devolvía a la enfermería
         if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
         if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
         return $"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.";

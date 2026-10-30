@@ -19,6 +19,8 @@ public static class LaunchOptions
     public static bool KushalMember;
     /// <summary>Microcosmos o virtual que se carga en aditivo sobre la escena elegida (MobWorldLoader); null si ninguno.</summary>
     public static string MicroScene;
+    /// <summary>La Magnate guarda los puestos (casilla de Inicio): sin ella, nadie es devuelto a su puesto y Kushal explora libre.</summary>
+    public static bool MagnateGuards = true;
 
     public static bool InicioInBuild => SceneUtility.GetBuildIndexByScenePath(InicioPath) >= 0;
 }
@@ -136,12 +138,14 @@ public class SceneLauncher : MonoBehaviour
         if (mode != LoadSceneMode.Single || !_reboot) return;
         _reboot = false;
         if (scene.path == LaunchOptions.InicioPath) return;   // Inicio no lleva juego: la pantalla limpia lo persistente
+        MagnateWarden.GuardPosts = LaunchOptions.MagnateGuards;
         RerunBoots();
         if (LaunchOptions.KushalMember)
         {
             // Antes del primer Update: ningún iniciador lo coge; un frame después, el resto de «miembro» (cuerpo y cámara).
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null && p.TryGetComponent(out SanctuaryOnboarding ob)) { ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true; }
+            if (p != null && p.TryGetComponent(out HealthRecord hr)) { hr.analyzed = true; hr.vaccinated = true; }
             StartCoroutine(MemberLater());
         }
         if (!string.IsNullOrEmpty(LaunchOptions.MicroScene)) StartCoroutine(EnterMicro(LaunchOptions.MicroScene));
@@ -232,11 +236,13 @@ public class SceneLauncher : MonoBehaviour
             return;
         }
         GUI.color = new Color(0f, 0f, 0f, 0.55f); GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture); GUI.color = Color.white;
-        var r = new Rect(Screen.width * 0.5f - 160f, Screen.height * 0.5f - 120f, 320f, 240f);
+        var r = new Rect(Screen.width * 0.5f - 160f, Screen.height * 0.5f - 130f, 320f, 262f);
         GUI.Box(r, "Pausa — " + StartScreen.Pretty(SceneManager.GetActiveScene().name));
         if (GUI.Button(new Rect(r.x + 20f, r.y + 40f, 280f, 40f), "Seguir (F10)")) SetPaused(false);
         if (GUI.Button(new Rect(r.x + 20f, r.y + 90f, 280f, 40f), "Reiniciar esta escena")) Restart();
         if (GUI.Button(new Rect(r.x + 20f, r.y + 140f, 280f, 40f), "Volver a Inicio")) BackToInicio();
-        GUI.Label(new Rect(r.x + 20f, r.y + 192f, 280f, 40f), "El tiempo está parado mientras tanto.");
+        bool gd = GUI.Toggle(new Rect(r.x + 20f, r.y + 186f, 280f, 22f), MagnateWarden.GuardPosts, " La Magnate guarda los puestos");
+        if (gd != MagnateWarden.GuardPosts) { MagnateWarden.GuardPosts = LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
+        GUI.Label(new Rect(r.x + 20f, r.y + 214f, 280f, 40f), "El tiempo está parado mientras tanto.");
     }
 }

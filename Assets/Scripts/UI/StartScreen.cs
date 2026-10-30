@@ -17,7 +17,7 @@ public class StartScreen : MonoBehaviour
 
     readonly List<Entry> _entries = new List<Entry>();
     readonly Dictionary<string, bool> _open = new Dictionary<string, bool>();
-    bool _kushal, _fromSanctuary;
+    bool _kushal, _fromSanctuary, _guard;
     Vector2 _scroll;
     GUIStyle _title, _sub, _head, _btn, _big, _note;
 
@@ -29,6 +29,8 @@ public class StartScreen : MonoBehaviour
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         _kushal = PlayerPrefs.GetInt("Inicio.Kushal", 1) == 1;
         _fromSanctuary = PlayerPrefs.GetInt("Inicio.DesdeSantuario", 0) == 1;
+        _guard = PlayerPrefs.GetInt("Inicio.MagnateGuarda", 1) == 1;
+        LaunchOptions.MagnateGuards = _guard;
         foreach (string g in Groups) _open[g] = PlayerPrefs.GetInt("Inicio.Abierto." + g, g == "Santuario" || g == "Pruebas" ? 1 : 0) == 1;
 
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
@@ -128,7 +130,7 @@ public class StartScreen : MonoBehaviour
     void OnGUI()
     {
         Styles();
-        float sc = Mathf.Max(1f, Screen.height / 900f);
+        float sc = Mathf.Clamp(Screen.height / 640f, 0.7f, 3f);   // todo cabe también en ventanas bajas (el botón de repetir se cortaba)
         GUI.matrix = Matrix4x4.Scale(new Vector3(sc, sc, 1f));
         float W = Screen.width / sc, H = Screen.height / sc;
 
@@ -147,13 +149,15 @@ public class StartScreen : MonoBehaviour
         bool fs = GUI.Toggle(new Rect(lx, 426f, lw, 24f), _fromSanctuary, " Microcosmos y virtuales desde el Santuario (más lento)");
         if (k != _kushal) { _kushal = k; PlayerPrefs.SetInt("Inicio.Kushal", k ? 1 : 0); }
         if (fs != _fromSanctuary) { _fromSanctuary = fs; PlayerPrefs.SetInt("Inicio.DesdeSantuario", fs ? 1 : 0); }
-        GUI.Label(new Rect(lx, 456f, lw, 60f), _fromSanctuary
+        bool gd = GUI.Toggle(new Rect(lx, 454f, lw, 24f), _guard, " La Magnate guarda los puestos (te devuelve al tuyo)");
+        if (gd != _guard) { _guard = gd; LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
+        GUI.Label(new Rect(lx, 484f, lw, 60f), _fromSanctuary
             ? "Los microcosmos se abren encima del Santuario, como desde el tanque; su portal de salida devuelve a Kushal al Santuario."
             : "Los microcosmos se abren encima de la Sala de Eras (ligera); su portal de salida devuelve a la sala.", _note);
 
         string last = PlayerPrefs.GetString("Inicio.Ultima", "");
         Entry le = last.Length > 0 ? _entries.Find(e => e.path == last) : null;
-        if (le != null && GUI.Button(new Rect(lx, 524f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
+        if (le != null && GUI.Button(new Rect(lx, 552f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
 
         GUI.Label(new Rect(lx, H - 54f, lw, 44f), $"En el juego: {SceneLauncher.PauseKey} (o el botón de abajo a la derecha) pausa y vuelve aquí.", _note);
 

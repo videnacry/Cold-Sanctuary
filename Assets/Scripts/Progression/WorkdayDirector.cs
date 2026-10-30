@@ -253,6 +253,7 @@ public class WorkdayDirector : MonoBehaviour
         if (_player == null) _player = GameObject.FindGameObjectWithTag("Player");
         GameObject p = _player; if (p == null) return;
         if (MagnateWarden.Blocked(p)) { _transitSince = -1f; return; }   // fuera de su alcance: en alfombra, en el microcosmos…
+        if (!MagnateWarden.GuardPosts) { _transitSince = -1f; return; }   // casilla de Inicio quitada: explora libre
         if (!InfirmaryGate.Cleared(p)) return;   // recién llegado: hasta terminar la iniciación su sitio es el hospital (InfirmaryGate)
         string area = Where(me, h, out string doing);
         WorkRoster.Mission postMission = Current(me, h)?.mission;
