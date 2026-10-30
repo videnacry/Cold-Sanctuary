@@ -232,7 +232,15 @@ public class CarpetPad : MonoBehaviour
         if (a == null || b == null || a.surface == b.surface) return false;   // mismo piso: andando
         CarpetPad next = NextHop(a, b);
         if (next == null) return false;
-        if (next.surface == a.surface) { to = next.transform.position; return false; }   // a otra área de este piso (techo)
+        // A OTRA ÁREA DE ESTE PISO (en el techo: de la del santuario a la del edificio). Si ya está junto a ella (a menos de 3 m),
+        // sale de ella: en el techo de Servicios las dos pistas están casi juntas y «la más cercana» cambiaba de una a otra a
+        // cada paso; Kushal se quedaba entre las dos mandado de una a la otra y nunca volaba a la barra (2026-10-30).
+        if (next.surface == a.surface)
+        {
+            if ((g.transform.position - next.transform.position).sqrMagnitude > 9f) { to = next.transform.position; return false; }
+            a = next; next = NextHop(a, b);
+            if (next == null || next.surface == a.surface) return false;
+        }
         if ((g.transform.position - a.transform.position).sqrMagnitude > 9f) { to = a.transform.position; return false; }   // andar al área
         FlyingCarpet c = a.Summon(g.transform.position);
         if (c == null) { if (Time.time > _noCarpetLog) { _noCarpetLog = Time.time + 10f; Debug.LogWarning($"[Ruta] «{g.name}»: no hay ninguna alfombra libre en la red de {a.building} ({a.displayName}) para ir a {next.displayName}."); } return false; }

@@ -189,7 +189,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         float h = _tc.Hour;
         WorkRoster.Assignment cur = _wd.Current(me, h);
         if (cur == null || cur.mission.area == AreaWork.Guard || FlyingCarpet.Riding(_player) || MagnateWarden.Instance.Handling(_player)) return false;
-        if ((h - cur.start) * SecPerHour < PlayerWorkday.Commute + 15f) return false;   // ya pasó el rato para llegar
+        // Ya pasó el rato para llegar: el que da la Magnate (WorkdayDirector), que cuenta desde que ESTE es su puesto (si salió antes
+        // hacia él —PlayerWorkday.HeadingEarly—, desde entonces; antes se contaba desde la hora de la misión).
+        if (Time.time - _wd.PlayerPostSince < PlayerWorkday.Commute + 15f) return false;
         if (!PlayerWorkday.AtPost(cur.mission, cur.mission.area, _player.transform.position)) return false;
         why = $"«{cur.mission.title}» ({cur.mission.area})";
         return true;

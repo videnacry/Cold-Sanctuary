@@ -279,6 +279,8 @@ public class WorkdayDirector : MonoBehaviour
     float _transitSince = -1f;
     const float MaxTransit = 90f;
     string _postArea; float _postSince = -999f;   // [Jornada de Kushal] su puesto actual y desde cuándo (PlayerWorkday.Commute)
+    /// <summary>Desde cuándo (Time.time) el puesto de Kushal es el actual: el rato para llegar (PlayerWorkday.Commute) cuenta desde aquí.</summary>
+    public float PlayerPostSince => _postSince;
 
     /// <summary>¿Está <paramref name="pos"/> en el espacio que su tarea necesita? El EDIFICIO de su área (todas las que se
     /// llaman así, con entreplantas, pisos de arriba aunque sean otra área, y sus pistas de alfombras), las áreas por las que la tarea hace ir, la obra en la que se trabaja, los
