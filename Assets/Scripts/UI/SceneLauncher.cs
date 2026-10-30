@@ -12,7 +12,7 @@ public static class LaunchOptions
 {
     public const string InicioPath = "Assets/Scenes/Inicio.unity";
     public const string SanctuaryPath = "Assets/Scenes/SampleScene.unity";
-    /// <summary>Anfitriona ligera de los microcosmos y virtuales (se cargan en aditivo encima, como desde la Sala de Eras).</summary>
+    /// <summary>La Sala de Eras: ya NO es anfitriona de la lista de Inicio (solo trae el explorador, sin Kushal); los microcosmos van sobre el Santuario.</summary>
     public const string HostPath = "Assets/Scenes/Sala_de_Eras.unity";
 
     /// <summary>Kushal entra ya miembro del santuario (el hechizo admin «miembro» al cargar).</summary>
@@ -76,6 +76,9 @@ public class SceneLauncher : MonoBehaviour
     }
 
     public static void BackToInicio() => Load(LaunchOptions.InicioPath, false);
+
+    /// <summary>¿Está cargando una escena (la pantalla negra de «Cargando…»)?</summary>
+    public static bool Loading => _inst != null && _inst._loading != null;
 
     /// <summary>Repite la última carga (la escena de ahora, desde cero).</summary>
     public static void Restart()

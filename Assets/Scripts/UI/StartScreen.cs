@@ -4,10 +4,10 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// PANTALLA DE INICIO (escena Inicio, la primera del build; Berón 2026-10-30): no carga nada pesado hasta elegir.
-/// Entrada normal (SampleScene como siempre), entrada con Kushal iniciado (miembro, sin examen ni iniciaciones) y la LISTA
-/// de todas las escenas de Build Settings por grupos (Santuario, Microcosmos, Pruebas, Virtual, Otros) para entrar directo.
-/// Los microcosmos y virtuales se cargan en aditivo sobre una anfitriona (la Sala de Eras, o el Santuario si se pide), como
-/// desde el tanque. En el juego, F10 o el botón de pausa vuelven aquí (<see cref="SceneLauncher"/>).
+/// Una casilla «Kushal iniciado» (miembro, sin examen ni iniciaciones) que vale para TODO: el botón «Entrar al Santuario» y
+/// la LISTA de todas las escenas de Build Settings por grupos (Santuario, Microcosmos, Pruebas, Virtual, Otros).
+/// Los microcosmos y virtuales se cargan en aditivo sobre el Santuario, como desde el tanque (<see cref="Launch"/>).
+/// En el juego, F10 o el botón de pausa vuelven aquí (<see cref="SceneLauncher"/>).
 /// </summary>
 public class StartScreen : MonoBehaviour
 {
@@ -17,9 +17,9 @@ public class StartScreen : MonoBehaviour
 
     readonly List<Entry> _entries = new List<Entry>();
     readonly Dictionary<string, bool> _open = new Dictionary<string, bool>();
-    bool _kushal, _fromSanctuary, _guard;
+    bool _kushal, _guard;
     Vector2 _scroll;
-    GUIStyle _title, _sub, _head, _btn, _big, _note;
+    GUIStyle _title, _sub, _head, _btn, _big, _note, _tog;
 
     void Start()
     {
@@ -28,7 +28,6 @@ public class StartScreen : MonoBehaviour
         Time.timeScale = 1f;
         Cursor.lockState = CursorLockMode.None; Cursor.visible = true;
         _kushal = PlayerPrefs.GetInt("Inicio.Kushal", 1) == 1;
-        _fromSanctuary = PlayerPrefs.GetInt("Inicio.DesdeSantuario", 0) == 1;
         _guard = PlayerPrefs.GetInt("Inicio.MagnateGuarda", 1) == 1;
         LaunchOptions.MagnateGuards = _guard;
         foreach (string g in Groups) _open[g] = PlayerPrefs.GetInt("Inicio.Abierto." + g, g == "Santuario" || g == "Pruebas" ? 1 : 0) == 1;
@@ -56,13 +55,40 @@ public class StartScreen : MonoBehaviour
     }
 
     /// <summary>¿Se carga en aditivo sobre una anfitriona (no tiene jugador ni cámara propios)?</summary>
-    static bool Additive(Entry e) => e.group == "Microcosmos" || e.group == "Virtual";
+    static bool Additive(string group) => group == "Microcosmos" || group == "Virtual";
+
+    /// <summary>
+    /// Entra en la escena <paramref name="path"/> de la lista como lo hace el botón. Los microcosmos y virtuales no traen
+    /// jugador ni cámara: se cargan en aditivo SIEMPRE sobre el Santuario (SampleScene), como desde el tanque, para que Kushal
+    /// —con su cuerpo, su cámara, su HUD y su ficha— esté en todas (Berón 2026-10-30: con la Sala de Eras de anfitriona
+    /// solo había el explorador de validación y en Construcción se veía todo celeste). Las de «Otros» (Sala de Eras,
+    /// galería) son de validación y traen su propio explorador.
+    /// </summary>
+    public static void Launch(string path, bool kushalMember)
+    {
+        string n = System.IO.Path.GetFileNameWithoutExtension(path);
+        string g = GroupOf(path, n);
+        if (Additive(g)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, kushalMember, n);
+        else SceneLauncher.Load(path, kushalMember && g != "Otros");
+    }
+
+    /// <summary>Las escenas de la lista (Build Settings sin Inicio), con su grupo.</summary>
+    public static List<(string path, string group)> ListScenes()
+    {
+        var l = new List<(string, string)>();
+        for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+        {
+            string path = SceneUtility.GetScenePathByBuildIndex(i);
+            string g = GroupOf(path, System.IO.Path.GetFileNameWithoutExtension(path));
+            if (g != null) l.Add((path, g));
+        }
+        return l;
+    }
 
     void Pick(Entry e)
     {
         PlayerPrefs.SetString("Inicio.Ultima", e.path); PlayerPrefs.Save();
-        if (Additive(e)) SceneLauncher.Load(_fromSanctuary ? LaunchOptions.SanctuaryPath : LaunchOptions.HostPath, _fromSanctuary && _kushal, e.name);
-        else SceneLauncher.Load(e.path, _kushal && e.group != "Otros");
+        Launch(e.path, _kushal);
     }
 
     // ── Nombres legibles ─────────────────────────────────────────────────────────
@@ -124,6 +150,7 @@ public class StartScreen : MonoBehaviour
         _btn = new GUIStyle(GUI.skin.button) { fontSize = 15, alignment = TextAnchor.MiddleLeft };
         _big = new GUIStyle(GUI.skin.button) { fontSize = 20, fontStyle = FontStyle.Bold };
         _note = new GUIStyle(GUI.skin.label) { fontSize = 13, wordWrap = true };
+        _tog = new GUIStyle(GUI.skin.toggle) { fontSize = 18, fontStyle = FontStyle.Bold };
         _title.normal.textColor = new Color(0.85f, 0.93f, 1f);
     }
 
@@ -134,30 +161,29 @@ public class StartScreen : MonoBehaviour
         GUI.matrix = Matrix4x4.Scale(new Vector3(sc, sc, 1f));
         float W = Screen.width / sc, H = Screen.height / sc;
 
-        // Columna izquierda: las dos entradas y las opciones.
+        // Columna izquierda: las casillas y la entrada al Santuario.
         float lx = 40f, lw = Mathf.Min(420f, W * 0.4f);
         GUI.Label(new Rect(lx, 30f, lw + 200f, 56f), "Cold Sanctuary", _title);
         GUI.Label(new Rect(lx, 86f, lw, 44f), "Inicio: elige cómo entrar. Nada se carga hasta elegir.", _sub);
 
-        if (GUI.Button(new Rect(lx, 150f, lw, 60f), "Entrada normal", _big)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, false);
-        GUI.Label(new Rect(lx, 212f, lw, 22f), "El Santuario como siempre: examen, iniciación y misiones.", _note);
-        if (GUI.Button(new Rect(lx, 250f, lw, 60f), "Entrada con Kushal iniciado", _big)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, true);
-        GUI.Label(new Rect(lx, 312f, lw, 40f), "Kushal ya es miembro: sin examen ni iniciaciones, libre para explorar.", _note);
-
-        GUI.Label(new Rect(lx, 370f, lw, 24f), "Opciones de la lista", _sub);
-        bool k = GUI.Toggle(new Rect(lx, 398f, lw, 24f), _kushal, " Kushal iniciado (Santuario, pruebas, microcosmos)");
-        bool fs = GUI.Toggle(new Rect(lx, 426f, lw, 24f), _fromSanctuary, " Microcosmos y virtuales desde el Santuario (más lento)");
+        // Una sola casilla de Kushal para el botón y para la lista (antes: dos botones y otra casilla solo para la lista).
+        bool k = GUI.Toggle(new Rect(lx, 146f, lw, 26f), _kushal, " Kushal iniciado", _tog);
         if (k != _kushal) { _kushal = k; PlayerPrefs.SetInt("Inicio.Kushal", k ? 1 : 0); }
-        if (fs != _fromSanctuary) { _fromSanctuary = fs; PlayerPrefs.SetInt("Inicio.DesdeSantuario", fs ? 1 : 0); }
-        bool gd = GUI.Toggle(new Rect(lx, 454f, lw, 24f), _guard, " La Magnate guarda los puestos (te devuelve al tuyo)");
+        GUI.Label(new Rect(lx + 20f, 172f, lw - 20f, 40f), _kushal
+            ? "Ya es miembro: sin examen ni iniciaciones, libre para explorar."
+            : "Llega como nuevo: examen, iniciación y misiones.", _note);
+        bool gd = GUI.Toggle(new Rect(lx, 214f, lw, 26f), _guard, " La Magnate guarda los puestos", _tog);
         if (gd != _guard) { _guard = gd; LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
-        GUI.Label(new Rect(lx, 484f, lw, 60f), _fromSanctuary
-            ? "Los microcosmos se abren encima del Santuario, como desde el tanque; su portal de salida devuelve a Kushal al Santuario."
-            : "Los microcosmos se abren encima de la Sala de Eras (ligera); su portal de salida devuelve a la sala.", _note);
+        GUI.Label(new Rect(lx + 20f, 240f, lw - 20f, 40f), "Si te alejas de tu puesto en horas de trabajo, te devuelve a él.", _note);
+
+        if (GUI.Button(new Rect(lx, 292f, lw, 64f), "Entrar al Santuario", _big)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, _kushal);
+        GUI.Label(new Rect(lx, 362f, lw, 72f),
+            "O elige a la derecha cualquier escena: las dos casillas valen también para ella. Los microcosmos y virtuales se abren " +
+            "encima del Santuario, como desde el tanque; su portal de salida devuelve a Kushal al Santuario.", _note);
 
         string last = PlayerPrefs.GetString("Inicio.Ultima", "");
         Entry le = last.Length > 0 ? _entries.Find(e => e.path == last) : null;
-        if (le != null && GUI.Button(new Rect(lx, 552f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
+        if (le != null && GUI.Button(new Rect(lx, 440f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
 
         GUI.Label(new Rect(lx, H - 54f, lw, 44f), $"En el juego: {SceneLauncher.PauseKey} (o el botón de abajo a la derecha) pausa y vuelve aquí.", _note);
 
@@ -178,7 +204,7 @@ public class StartScreen : MonoBehaviour
             foreach (Entry e in _entries)
             {
                 if (e.group != g) continue;
-                string extra = e.group == "Otros" ? "" : Additive(e) ? (_fromSanctuary ? "  · sobre el Santuario" : "  · sobre la Sala de Eras") : (_kushal ? "  · Kushal iniciado" : "");
+                string extra = e.group == "Otros" ? "  · explorador" : Additive(e.group) ? "  · sobre el Santuario" : "";
                 if (GUI.Button(new Rect(16f, y, inner - 16f, rowH - 3f), e.label + extra, _btn)) Pick(e);
                 y += rowH;
             }
