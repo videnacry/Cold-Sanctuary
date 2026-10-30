@@ -158,12 +158,22 @@ public class FlyingCarpet : MonoBehaviour
             Vector3 p = Vector3.Lerp(from, dest, s);
             p.y = Mathf.Lerp(from.y, dest.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(from.y, dest.y)) + Mathf.Sin(t * 3f) * 0.05f;   // sube, cruza y baja (con un leve vaivén)
             transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 2f));
+            if (who == null) { yield return null; continue; }   // (quien iba sentado ya no existe —un cuerpo de prueba destruido en pleno vuelo—: la alfombra termina sola)
             who.transform.SetPositionAndRotation(p + Vector3.up * (0.12f + rootAbove), transform.rotation);
             if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
             yield return null;
         }
         transform.position = dest;
         pad = to;
+        if (who == null)
+        {
+            // SIN PASAJERO: antes la corrutina moría aquí (MissingReference) y la alfombra se quedaba «volando» para siempre; en
+            // la batería completa las pruebas destruyen sus cuerpos en pleno vuelo y una torre se iba quedando sin alfombras.
+            _riders.Remove(who);
+            Flying = false; _ignoreUntil = Time.time + 1f;
+            Debug.Log($"[Alfombra] Una alfombra llega sin pasajero a {to.displayName}.");
+            yield break;
+        }
         // DESEMBARCAR: se levanta al lado de la alfombra.
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
         who.transform.position = dest + Vector3.up * (0.05f + rootAbove);   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
