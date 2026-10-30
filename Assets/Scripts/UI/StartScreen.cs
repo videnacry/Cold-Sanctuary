@@ -143,7 +143,7 @@ public class StartScreen : MonoBehaviour
         GUI.Label(new Rect(lx, 312f, lw, 40f), "Kushal ya es miembro: sin examen ni iniciaciones, libre para explorar.", _note);
 
         GUI.Label(new Rect(lx, 370f, lw, 24f), "Opciones de la lista", _sub);
-        bool k = GUI.Toggle(new Rect(lx, 398f, lw, 24f), _kushal, " Kushal iniciado (Santuario, pruebas y microcosmos desde el Santuario)");
+        bool k = GUI.Toggle(new Rect(lx, 398f, lw, 24f), _kushal, " Kushal iniciado (Santuario, pruebas, microcosmos)");
         bool fs = GUI.Toggle(new Rect(lx, 426f, lw, 24f), _fromSanctuary, " Microcosmos y virtuales desde el Santuario (más lento)");
         if (k != _kushal) { _kushal = k; PlayerPrefs.SetInt("Inicio.Kushal", k ? 1 : 0); }
         if (fs != _fromSanctuary) { _fromSanctuary = fs; PlayerPrefs.SetInt("Inicio.DesdeSantuario", fs ? 1 : 0); }
