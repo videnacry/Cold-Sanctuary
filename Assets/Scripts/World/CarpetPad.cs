@@ -219,6 +219,7 @@ public class CarpetPad : MonoBehaviour
     /// de alfombras (piso → techo → techo del destino → su piso), andando dentro de cada piso. Cambia <paramref name="to"/>
     /// por el área a la que tiene que andar; true = vuela ahora (no hay que moverlo).
     /// </summary>
+    static float _noCarpetLog;
     public static bool Route(GameObject g, ref Vector3 to)
     {
         if (FlyingCarpet.Riding(g)) return true;
@@ -234,7 +235,7 @@ public class CarpetPad : MonoBehaviour
         if (next.surface == a.surface) { to = next.transform.position; return false; }   // a otra área de este piso (techo)
         if ((g.transform.position - a.transform.position).sqrMagnitude > 9f) { to = a.transform.position; return false; }   // andar al área
         FlyingCarpet c = a.Summon(g.transform.position);
-        if (c == null) return false;
+        if (c == null) { if (Time.time > _noCarpetLog) { _noCarpetLog = Time.time + 10f; Debug.LogWarning($"[Ruta] «{g.name}»: no hay ninguna alfombra libre en la red de {a.building} ({a.displayName}) para ir a {next.displayName}."); } return false; }
         Debug.Log($"[Ruta] «{g.name}»: de {a.building} · {a.displayName} hacia {b.building} · {b.displayName} (destino {to}); vuela a {next.displayName}.");
         c.Fly(g, next);
         return true;

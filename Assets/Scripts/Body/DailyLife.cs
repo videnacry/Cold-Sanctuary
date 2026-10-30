@@ -182,10 +182,20 @@ public class DineSpell : QueuedSpell
             // recalcula una vez y, si sigue igual, lo deja (antes esperaba 90 s quieto o daba vueltas hasta rendirse).
             if (left < nearEnough && Mathf.Abs(t.position.y - pm.PivotHeight - _snap.y) < 2.2f) return 1;   // (en su piso: el pivote del jugador va más alto que el de los demás y «level» lo dejaba fuera)
             if (_restarts++ == 0) { pm.Restart(); _checkAt = Time.time; _checkPos = t.position; _bestLeft = left; return 0; }
-            Debug.Log($"[Restaurante] «{self.name}» no avanza hacia {what} (a {left:0.0} m; se movió {(t.position - _checkPos).magnitude:0.0} m en {NoProgress:0} s): lo deja.");
+            Debug.Log($"[Restaurante] «{self.name}» no avanza hacia {what} (a {left:0.0} m; se movió {(t.position - _checkPos).magnitude:0.0} m en {NoProgress:0} s): lo deja. [en ({t.position.x:0.0},{t.position.y:0.0},{t.position.z:0.0}), pista {CarpetPad.For(t.position)?.displayName ?? "—"}; destino ({_snap.x:0.0},{_snap.y:0.0},{_snap.z:0.0}), pista {CarpetPad.For(_snap)?.displayName ?? "—"}; alfombras libres de la torre {FreeCarpets(CarpetPad.For(t.position))}]");
             return -1;
         }
         return 0;
+    }
+
+    // (Registro) cuántas alfombras de la red de esa pista están posadas y libres: si es 0, nadie puede salir volando de ahí.
+    static string FreeCarpets(CarpetPad pad)
+    {
+        if (pad == null) return "—";
+        int idle = 0, flying = 0;
+        foreach (FlyingCarpet c in FlyingCarpet.All)
+            if (c != null && c.pad != null && c.pad.building == pad.building && c.pad.kind == CarpetPad.Kind.Edificio) { if (c.Flying) flying++; else idle++; }
+        return $"{idle} posadas, {flying} volando";
     }
 
     static void Face(Transform t, Vector3 p) { Vector3 d = p - t.position; d.y = 0f; if (d.sqrMagnitude > 1e-4f) t.rotation = Quaternion.LookRotation(d); }
