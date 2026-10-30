@@ -356,8 +356,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             trauma = Mathf.Max(0f, trauma - 0.2f);
             stress = Mathf.Max(0f, stress - 0.05f);
             EvolveAptitudes(interval);
+            KeepOnNavMesh();
             CorrectMedium(interval);
-            Suffocate();              // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
+            Suffocate();             // ahogo/asfixia si sigue en un medio de baja afinidad (CorrectMedium intenta sacarlo antes)
             Starve();                 // inanición si el hambre es prolongada (grasa→masa→enfermedad→muerte)
             FeedWalkSpeed(interval);
             DecayConfidence(0.02f);   // la maestría se enfría lentamente sin uso (D-cola); el uso activo la supera. Tunable.
@@ -432,6 +433,23 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (rig.mass <= Body.baseMass * lethalMassFrac) Hurt(rig.mass);
     }
 
+    // DE VUELTA AL NAVMESH: un agente activo que NO está sobre el NavMesh no puede ir a ningún sitio (todas las conductas
+    // comprueban isOnNavMesh y no hacen nada) y se queda quieto para siempre: la cría que cayó al nacer sobre la guarida o una
+    // roca de su recinto (JornadaTest: «Osezno … NavMeshAgent fuera del NavMesh»), el oso que acabó en el agua tras una
+    // foca —dentro del «Casquete», sin poder salir: CorrectMedium también necesita el NavMesh—. Se lo recoloca en el punto
+    // del NavMesh más cercano (a ≤ 6 m: sale del agua a la orilla, baja de la roca). Los que nadan (MarineLife), van en
+    // alfombra o en el viaje del Árbol no tienen agente activo o no se tocan.
+    static int _offNavLogs;
+    void KeepOnNavMesh()
+    {
+        if (death || nav == null || !nav.enabled || nav.isOnNavMesh) return;
+        if (GetComponent<MarineLife>() != null || FlyingCarpet.Riding(gameObject) || TreeTrip.Busy(gameObject)) return;
+        if (!NavMesh.SamplePosition(transform.position, out NavMeshHit h, 6f, nav.areaMask)) return;
+        Vector3 from = transform.position;
+        if (nav.Warp(h.position) && _offNavLogs++ < 20)
+            Debug.Log($"[Fauna] «{name}» estaba fuera del NavMesh en ({from.x:0.0},{from.y:0.0},{from.z:0.0}): vuelve a él en ({h.position.x:0.0},{h.position.y:0.0},{h.position.z:0.0}).");
+    }
+
     void CorrectMedium(float dt)
     {
         if (busy || asleep || nav == null || !nav.isOnNavMesh) return;
@@ -456,6 +474,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         if (busy || aware || asleep || rig == null) return;
         float range = HomeRadius * (0.5f + perception * 0.5f);   // la percepción amplía la alerta
+        bool landBound = currentMedium != Medium.Water && GetComponent<MarineLife>() == null;
         GameObject threat = null;
         float nearest = range;
         foreach (GameObject go in wholePopulation)
@@ -463,6 +482,9 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             if (go == null || go == gameObject) continue;
             Animal predator = go.GetComponent<Animal>();   // "depredador" = come presa (Forager.eatsPrey), ya no el tipo Carnivore
             if (predator == null || predator.death || predator.Forage == null || !predator.Forage.HuntsNow(predator)) continue;
+            // Un cazador marino NADANDO no alcanza a quien anda por el hielo (la orca de la laguna y el pingüino de la orilla):
+            // no es amenaza para él. Antes la colonia huía de las orcas de la laguna sin parar.
+            if (landBound && predator.TryGetComponent(out MarineLife pm) && !pm.OnIce) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
@@ -585,15 +607,40 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         // N1 (docs/environmental-navigation.md): huir LEJOS de la amenaza leyendo su posición, no hacia un ave al azar
         // (el placeholder anterior podía llevar la presa HACIA el peligro). Re-orienta cada tick mientras el peligro sigue cerca.
-        while (threat != null && Vector3.Distance(transform.position, threat.transform.position) < 620)
+        // CON FIN (JornadaTest: pingüinos que huían del oso hasta el borde del hielo, a 240 m de su colonia, y se quedaban allí
+        // plantados o yendo y viniendo): antes huía mientras la amenaza estuviera a < 620 m —más que el mapa entero (500 m)—,
+        // así que no paraba nunca y, contra el borde del NavMesh, quedaba clavado. Ahora para al quedar FUERA DE LO QUE PERCIBE
+        // (el mismo alcance con el que la detectó), si en 5 s no consigue alejarse (acorralado) o al minuto. Y huye hacia un
+        // sitio ALCANZABLE: si lo de detrás es agua o un muro, prueba en abanico hacia los lados.
+        float safe = Mathf.Max(25f, HomeRadius * (0.5f + perception * 0.5f) + 5f);
+        float start = Time.time, farthest = 0f, farthestAt = Time.time, nextPick = 0f;
+        while (threat != null && !death)
         {
+            float d = Vector3.Distance(transform.position, threat.transform.position);
+            if (d > safe || d > 620f) break;
+            if (d > farthest + 0.5f) { farthest = d; farthestAt = Time.time; }
+            else if (Time.time - farthestAt > 5f) break;   // acorralado: no se aleja más
+            if (Time.time - start > 60f) break;
             Loco.SetGait(true, (short)(this.ActsPrep.run.energyCost / 10));
             Vector3 away = transform.position - threat.transform.position; away.y = 0f;
             if (away.sqrMagnitude < 0.01f) { Vector2 r = Random.insideUnitCircle.normalized; away = new Vector3(r.x, 0f, r.y); }
-            if (nav != null && nav.isOnNavMesh) Loco.GoTo(transform.position + away.normalized * fleeStep);
+            if (nav != null && nav.isOnNavMesh && Time.time >= nextPick)   // (re-elige el rumbo cada segundo: calcular caminos cuesta)
+            {
+                nextPick = Time.time + 1f;
+                Vector3 best = transform.position + away.normalized * fleeStep; float bestD = -1f;
+                foreach (float turn in FleeFan)
+                {
+                    if (!NavReach.Reachable(this, transform.position + Quaternion.Euler(0f, turn, 0f) * away.normalized * fleeStep, out Vector3 at, 6f)) continue;
+                    float dd = Vector3.Distance(at, threat.transform.position);
+                    if (dd > bestD + 1f) { bestD = dd; best = at; }
+                    if (turn == 0f) break;   // recto hacia atrás se puede: por ahí
+                }
+                Loco.GoTo(best);
+            }
             yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
         }
     }
+    static readonly float[] FleeFan = { 0f, 40f, -40f, 80f, -80f, 120f, -120f };
 
     // Reclutaba aliados con "ally.StartCoroutine(ally.Fight(threat))" en cada entrada, sin
     // comprobar si ese aliado YA estaba peleando — cada aliado reclutado volvía a reclutar al

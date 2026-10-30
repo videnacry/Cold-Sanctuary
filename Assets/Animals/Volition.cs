@@ -26,7 +26,10 @@ public class Volition : MonoBehaviour
         _nextTick = Time.time + TimeController.timeController.TimeSpeedMinuteSecs / Random.Range(0.8f, 1.2f) * Lod.SlowFactor(self.transform.position);
 
         // Deseos volitivos: solo si está libre (mismo guard que hoy para comer). D3b2 mete la amenaza como deseo.
-        if (!self.asleep && !self.busy) SelectAndDispatch(self);
+        // Ni mientras REACCIONA a una amenaza (aware: huye, pelea): esa corrutina lleva el cuerpo. Antes el deseo de turno
+        // («volver a casa») re-apuntaba el agente cada decisión y la huida lo volvía a apartar: el pingüino iba y venía
+        // («da vueltas en círculo (homebound)»).
+        if (!self.asleep && !self.busy && !self.aware) SelectAndDispatch(self);
 
         // Reflejo de amenaza: siempre (paridad con ActiveBehaveTick, que llamaba SenseThreats cada tick).
         self.SenseThreats();

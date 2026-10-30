@@ -149,10 +149,22 @@ public abstract class LifeStage
         return pos + offset;
     }
 
+    /// <summary>¿Lleva el cuerpo la VOLICIÓN (sus deseos «explore»/«homebound»/«rest» ya pasean, vuelven y descansan) o el
+    /// jugador que lo posee? Entonces el ciclo de vida NO lo mueve ni le cambia el paso. Antes, cada ~1 s, Wander le ponía un
+    /// destino al azar a 5–25 m y Rest le ponía el paso «quieto» (velocidad 0) dos de cada tres veces, encima de lo que el
+    /// deseo de turno quería: el animal zigzagueaba sin avanzar o se quedaba clavado a medio camino (JornadaTest: «da
+    /// vueltas en círculo (homebound/explore)», «atascado > 20 s»). Sin controlador activo (pruebas que lo apagan), sí.</summary>
+    public static bool DrivenElsewhere(Animal a)
+    {
+        if (a == null || !a.TryGetComponent(out AnimaController ac) || !ac.enabled || ac.Active == null) return false;
+        return !(ac.Active is AiBrain b) || b.useVolition;
+    }
+
     public SubEvent Wander()
     {
         return (Animal script, float duration) =>
         {
+            if (DrivenElsewhere(script)) return;
             script.ActsPrep.walk.Prep(script, duration);
             if (script.nav == null || !script.nav.isOnNavMesh) return;
             // Deambular a un punto LOCAL (ya no hacia un ave al azar — ese placeholder no tenía sentido). El `Homebound`
@@ -181,7 +193,7 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) =>
         {
-            if (Random.Range(1, 4) > 1 || script.exhaustion > 30) script.ActsPrep.idle.Prep(script, duration);
+            if (!DrivenElsewhere(script) && (Random.Range(1, 4) > 1 || script.exhaustion > 30)) script.ActsPrep.idle.Prep(script, duration);
             if (script.exhaustion < 0) script.exhaustion = 0;
         };
     }
@@ -189,7 +201,7 @@ public abstract class LifeStage
     {
         return (Animal script, float duration) =>
         {
-            if (Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
+            if (!DrivenElsewhere(script) && Vector3.Distance(script.transform.position, script.HomeOrigin) > (script.HomeRadius * 2))
             {
                 script.ActsPrep.run.Prep(script, duration);
                 // Apuntar a un punto DENTRO del radio del nido, no al punto exacto, para que los

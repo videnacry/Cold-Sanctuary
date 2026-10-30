@@ -36,6 +36,13 @@ public class IceInsectLife : MonoBehaviour
     bool _carrying;
     float _strikeCooldown, _nextSearch;
     bool _queenLongevity;
+    // NADA SIN TOPE (JornadaTest: abejas «atascadas > 20 s» a 12–19 m, junto a su panal): una celdilla cuyo posadero queda
+    // pegado a la rama (OutOfBranches la saca cada fotograma y nunca llega a 8 cm), una fuente de néctar dentro de un tronco…
+    // la abeja se quedaba suspendida empujando contra la rama para siempre. Ahora: la celdilla se trabaja desde donde llegue
+    // (≤ 40 cm) o se deja; y si en 6 s no se ha movido sin estar trabajando, lo suelta todo y se aparta un poco.
+    bool _working;                    // trabajando en su sitio (celdilla, danza, racimo, telaraña, flor): quieta a propósito
+    float _cellSince; int _skipCell = -1; float _skipUntil;
+    Vector3 _stallPos, _unstickTo, _origin; float _stallAt, _unstickUntil;
 
     void Start()
     {
@@ -87,7 +94,31 @@ public class IceInsectLife : MonoBehaviour
         if (_self != null && _self.death) return;
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
-        if (kind == Kind.Bee) { BeeLife(); KeepBodyOutOfBranches(); } else SpiderLife();
+        if (kind == Kind.Bee)
+        {
+            _working = false;
+            if (Time.time < _unstickUntil) { Doing = "se aparta"; FlyTo(_unstickTo, flySpeed); }
+            else BeeLife();
+            KeepBodyOutOfBranches();
+            Unstick();
+            if (_self != null) _self.busy = _working;   // trabajando: ocupada (como el animal que come); la IA genérica no la mueve
+        }
+        else SpiderLife();
+    }
+
+    // Si en 6 s no se ha movido 10 cm y no está trabajando en su sitio, suelta lo que hacía y se aparta 1–2 m.
+    void Unstick()
+    {
+        if (_working || Time.time < _unstickUntil) { _stallPos = transform.position; _stallAt = Time.time; return; }
+        if ((transform.position - _stallPos).sqrMagnitude > 0.01f) { _stallPos = transform.position; _stallAt = Time.time; return; }
+        if (Time.time - _stallAt < 6f) return;
+        if (_cell >= 0) { _skipCell = _cell; _skipUntil = Time.time + 20f; }
+        _cell = -1; _source = Vector3.zero; _dancing = false; _carcass = null; _work = 0f;
+        Vector3 away = Random.onUnitSphere; away.y = Mathf.Abs(away.y) * 0.5f;
+        if (hive != null) { Vector3 o = transform.position - hive.combCenter; o.y = 0f; if (o.sqrMagnitude > 0.01f) away = (o.normalized + away * 0.5f).normalized; }
+        _unstickTo = transform.position + away * Random.Range(1f, 2f);
+        _unstickUntil = Time.time + 2.5f;
+        _stallPos = transform.position; _stallAt = Time.time;
     }
 
     // EL CUERPO ENTERO fuera de las ramas (JornadaTest 2026-10-29: abejas «dentro de Rama / Rama_Plataforma»). FlyTo solo
@@ -111,16 +142,22 @@ public class IceInsectLife : MonoBehaviour
 
     void BeeLife()
     {
-        if (Time.time < _stuckUntil) { Doing = "pegada en una telaraña"; transform.position += Random.insideUnitSphere * 0.004f; return; }   // se agita
+        if (Time.time < _stuckUntil) { _working = true; Doing = "pegada en una telaraña"; transform.position += Random.insideUnitSphere * 0.004f; return; }   // se agita
         if (Time.time > _freeUntil) foreach (SpiderWeb w in SpiderWeb.All)
             if (w.Catches(transform.position)) { _stuckUntil = Time.time + 5f; _freeUntil = _stuckUntil + 4f; Debug.Log("[Hielo] Una abeja de las nieves queda pegada en una telaraña."); return; }
         if (hive != null) { ColonyLife(); return; }
-        if (_home == null) return;
+        if (_home == null)   // sin árbol cerca (abeja suelta de otra escena): pecorea en corro donde está, no se queda suspendida
+        {
+            if (_origin == Vector3.zero) _origin = transform.position;
+            _angle += 20f * Time.deltaTime;
+            FlyTo(_origin + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 2.5f + Vector3.up * Mathf.Sin(Time.time * 0.6f) * 0.8f, flySpeed * 0.5f);
+            return;
+        }
         SnowSpiderBehavior spider = Nearest<SnowSpiderBehavior>(transform.position, 1.5f);
         if (spider != null) { FlyTo(transform.position + (transform.position - spider.transform.position).normalized * 3f + Vector3.up * 2f, flySpeed * 1.8f); return; }
 
         bool day = TimeController.timeController == null || TimeController.timeController.IsDay;
-        if (!day) { if (_nest != null) FlyTo(_nest.position + Vector3.up * 0.3f, flySpeed); return; }   // de noche, al nido
+        if (!day) { _working = true; if (_nest != null) FlyTo(_nest.position + Vector3.up * 0.3f, flySpeed); return; }   // de noche, al nido
 
         if (_carrying)
         {
@@ -176,7 +213,7 @@ public class IceInsectLife : MonoBehaviour
         if (!day)   // RACIMO de invierno/noche sobre el panal: tiritan y comen miel
         {
             Vector3 spot = hive.combCenter + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 0.25f;
-            FlyTo(spot, flySpeed);
+            FlyTo(spot, flySpeed); _working = true;
             hive.Eat(0.02f * Time.deltaTime);
             return;
         }
@@ -216,11 +253,22 @@ public class IceInsectLife : MonoBehaviour
     // Va a una celdilla en ese estado y trabaja ahí <paramref name="seconds"/> s; true al terminar.
     bool Work(Hive.Cell need, bool top, float seconds)
     {
-        if (_cell < 0 || _cell >= hive.state.Count || hive.state[_cell] != need) { _cell = hive.Find(need, transform.position, top); _work = 0f; }
+        if (_cell < 0 || _cell >= hive.state.Count || hive.state[_cell] != need)
+        {
+            _cell = hive.Find(need, transform.position, top); _work = 0f; _cellSince = Time.time;
+            if (_cell >= 0 && _cell == _skipCell && Time.time < _skipUntil) _cell = -1;   // esa celdilla no se alcanza: otra vez será
+        }
         if (_cell < 0) return false;
         Vector3 perch = hive.Perch(_cell);
         float dd = FlyTo(perch, Vector3.Distance(transform.position, perch) > 1.5f ? flySpeed * 1.5f : flySpeed * 0.6f); Doing = $"{role} → celdilla {_cell} a {dd:0.0} m";
-        if (dd > 0.08f) return false;
+        // El posadero pegado a una rama no se alcanza (la abeja no se mete en la rama): a 4 s, la trabaja desde donde está si
+        // está al lado (≤ 40 cm); si no, la deja para otra.
+        if (dd > 0.08f && Time.time - _cellSince > 4f)
+        {
+            if (dd > 0.4f) { _skipCell = _cell; _skipUntil = Time.time + 20f; _cell = -1; return false; }
+        }
+        else if (dd > 0.08f) return false;
+        _working = true;
         _work += Time.deltaTime;
         transform.rotation = Quaternion.LookRotation(hive.cells[_cell].position - transform.position);
         return _work >= seconds;
@@ -236,7 +284,7 @@ public class IceInsectLife : MonoBehaviour
     {
         if (_dancing)   // DANZA DEL CONTONEO sobre el panal: recto contoneándose (ángulo = dirección de la fuente) y vuelta
         {
-            _danceT += Time.deltaTime;
+            _danceT += Time.deltaTime; _working = true;
             Vector3 dir = _source - hive.transform.position; dir.y = 0f; dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.forward;
             float phase = _danceT % 2f;
             Vector3 c = hive.combCenter;
@@ -265,7 +313,7 @@ public class IceInsectLife : MonoBehaviour
         }
         if (FlyTo(_source + Vector3.up * 0.4f, flySpeed) < 0.5f)
         {
-            _work += Time.deltaTime;
+            _work += Time.deltaTime; _working = true;
             if (_work > 2.5f) { _work = 0f; _loadNectar = 1f; _dancing = true; _danceT = 0f; _cell = -1; }
         }
     }
