@@ -136,6 +136,7 @@ public static partial class SampleSceneBuilder
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
+        PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida

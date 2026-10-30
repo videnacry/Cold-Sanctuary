@@ -138,7 +138,7 @@ public class WorkdayDirector : MonoBehaviour
             Drive(g, where, doing, Current(w, h)?.mission.id);
         }
         foreach (var kv in _clones)
-            if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); Drive(kv.Value, where, doing, null, alwaysMove: true); }
+            if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); string cm = Current(kv.Key, h)?.mission.id; Drive(kv.Value, where, doing, FruitGardener.IsRound(cm) ? cm : null, alwaysMove: true); }
         HoldPlayer(h);
     }
 
@@ -155,7 +155,7 @@ public class WorkdayDirector : MonoBehaviour
             if (g == null || g.CompareTag("Player")) continue;
             string area = Where(w, h, out _);
             if (area == null) continue;
-            Vector3 p = WorkPoint(area, g.name); if (p == Vector3.zero) continue;
+            Vector3 p = FruitGardener.StartPoint(Current(w, h)?.mission.id) ?? WorkPoint(area, g.name); if (p == Vector3.zero) continue;   // la ronda de frutales empieza en su techo
             Teleport(g.transform, p); n++;
         }
         foreach (var kv in _clones) if (kv.Value != null) { string area = Where(kv.Key, h, out _); Vector3 p = area != null ? WorkPoint(area, kv.Key.name) : Vector3.zero; if (p != Vector3.zero) Teleport(kv.Value.transform, p); }
@@ -375,6 +375,11 @@ public class WorkdayDirector : MonoBehaviour
         bool guardDuty = missionId == "gua_carnivoros";
         if (guardDuty && keeper == null && g.GetComponent<Anima>() != null) keeper = g.AddComponent<CarnivoreKeeper>();
         if (keeper != null) keeper.enabled = guardDuty;
+        // LA RONDA DE FRUTALES (docs/jardines-frutales.md): quien la tiene recorre los techos con su conducta propia.
+        bool gardenDuty = FruitGardener.IsRound(missionId);
+        FruitGardener gardener = g.GetComponent<FruitGardener>();
+        if (gardenDuty && gardener == null) gardener = g.AddComponent<FruitGardener>();
+        if (gardener != null) { gardener.enabled = gardenDuty; if (gardenDuty) gardener.Assign(missionId); }
         if (area != AreaWork.Hospital) HospitalStation.Release(g.name);   // su puesto médico queda libre para otro
         // LOS ANIMALES INGRESADOS: quien está de turno en el hospital les lleva la comida (el lobo de la perrera no comía nunca).
         VetCare vet = g.GetComponent<VetCare>();
@@ -406,6 +411,7 @@ public class WorkdayDirector : MonoBehaviour
         }
         SetStatus(g, lin != null && lin.enabled && lin.Doing != null ? lin.Doing : doing);
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
+        if (gardenDuty && gardener != null) { if (idle != null) idle.enabled = false; SetStatus(g, gardener.Doing ?? doing); return; }   // la ronda la lleva FruitGardener (y sus necesidades van antes, dentro de ella)
         if (YogaClassRole(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }
         if (yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }

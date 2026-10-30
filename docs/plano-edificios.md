@@ -55,6 +55,8 @@ Cotas de la cara de cada piso: P0 = 12 m, P1 = 23, P2 = 34, P3 = 45, P4 = 56, P5
 Ciencias (anillo de física hasta z −126) ↔ Central Nuclear 18,6 m; Ciencias ↔ Producción 35 m; Servicios ↔ Entrenamiento
 46 m.
 
+**Frutales en los techos** (2026-10-30, docs/jardines-frutales.md): el resto de cada techo de alfombras se llena de frutales en maceta (una de cada una de las 19 especies por vuelta, a 2 m), con la sala de cuidados de la experta (Irosene) en el de Servicios y un punto de riego en los demás.
+
 **Parcelas**: ya no hay. Desde el 2026-10-29 los campos (milpa, chacra andina, arrozal, bosque comestible, bambusal, el
 huerto y la rotación) están en los pisos del **Árbol de los Campos** (docs/edificio-arbol.md); sus lóbulos vuelven a la naturaleza. El campo solar sigue en el
 suelo del hub, en (26, −26…−34).

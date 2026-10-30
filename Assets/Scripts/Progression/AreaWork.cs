@@ -82,6 +82,8 @@ public static class AreaWork
     {
         var l = new List<WorkRoster.Mission>();
         foreach (var m in Catalog) l.Add(m.Copy());
+        // FRUTALES DE LOS TECHOS (docs/jardines-frutales.md): la ronda diaria, partida en tantas personas como haga falta.
+        l.AddRange(FruitGardener.Missions());
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;
