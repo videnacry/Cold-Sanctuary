@@ -2379,13 +2379,15 @@ public static partial class SampleSceneBuilder
         Debug.Log($"[Árbol] NavMesh propio del árbol horneado (gira con él: {nameof(TreeRotator)} lo recoloca).");
     }
 
-    // Al pie de la raíz, en el NavMesh general (quieto): el círculo de la columna no se anda (franjas de 2 m que lo cubren).
+    // Al pie del tronco, en el NavMesh general (quieto): el círculo inscrito del tronco cuadrado (con sus nervios) no se anda
+    // (franjas de 2 m que lo cubren). Sus esquinas, al girar, barren hasta 15,6 m (a 0,1 m/s): ahí se choca con ellas, pero la
+    // puerta del suelo (a 14 m del eje, delante de su cara) sigue siendo andable.
     static void RootNoWalk(Transform tree)
     {
         Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable") : null;
         if (old != null) Object.DestroyImmediate(old.gameObject);
         Transform g = new GameObject("Raiz_no_andable").transform; g.SetParent(tree.parent, false); g.position = tree.position;
-        float R = TreeSpec.OuterRadius + 0.2f;
+        float R = TreeSpec.OuterHalf + 0.8f;
         for (float z0 = -R; z0 < R - 0.01f; z0 += 2f)
         {
             float z1 = Mathf.Min(R, z0 + 2f), zn = Mathf.Min(Mathf.Abs(z0), Mathf.Abs(z1));
@@ -3499,9 +3501,9 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
                 EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
 
-            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 44 × 9 m de su piso 5 ──
+            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 30 × 9 m de su piso 5 (32 × 32 m) ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                TreeSpec.Site, new Vector2(44f, 9f), new Color(0.50f, 0.70f, 0.40f)),
+                TreeSpec.Site, new Vector2(30f, 9f), new Color(0.50f, 0.70f, 0.40f)),
             // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
             // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
             // maquinaria y el material. La dirige el esposo de Lizmibet.

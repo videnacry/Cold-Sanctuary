@@ -234,18 +234,26 @@ public class GardenPlot : MonoBehaviour
         // Busca agua (el rayo no toca hielo: cae al fondo marino) en anillos alrededor de la parcela. Antes plantaba solo
         // alrededor del PRIMER punto de agua y se rendía: si era un canal estrecho (o algo nuevo tapaba el agua junto a la
         // orilla), no quedaba ni un alga y la carta perdía nori y kombu. Ahora sigue buscando hasta plantar las n.
+        // (En el Árbol de los Campos el bancal va a 60–80 m y gira: se busca el agua a ras del mar, y el alga no cuelga del
+        // bancal (giraría con el árbol por encima del mar) sino de un grupo quieto.)
+        Transform holder = _root;
+        if (GetComponentInParent<ArbolCampos>() != null)
+        {
+            holder = new GameObject("Algas_" + name).transform;
+            holder.SetParent(transform.root != transform ? transform.root : null, true);
+        }
         int placed = 0;
         for (float rad = size.x * 0.6f; rad < 120f && placed < n; rad += 3f)
             for (int a = 0; a < 24 && placed < n; a++)
             {
                 float ang = a * Mathf.PI / 12f;
-                Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
+                Vector3 p = transform.position + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad; p.y = 0f;
                 if (!IsWater(p)) continue;
                 for (int k = 0; k < n * 3 && placed < n; k++)
                 {
                     Vector3 q = p + new Vector3(R(-4f, 4f), 0f, R(-4f, 4f));
                     if (!IsWater(q)) continue;
-                    GardenCrop.Build(_root, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + placed);
+                    GardenCrop.Build(holder, GardenCrop.Kind.Alga, new Vector3(q.x, -0.35f, q.z), seed * 31 + placed);
                     placed++; Plants++;
                 }
             }

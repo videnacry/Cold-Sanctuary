@@ -270,7 +270,7 @@ public class SpellConsole : MonoBehaviour
         ("tercera",   "tercera({on:true})"),   // la cámara en 3.ª persona siempre (para probar en vivo)
         ("miembro",   "miembro({destiny:\"Kushal\"})"),   // (admin) hace a alguien miembro del santuario: se salta la iniciación
         ("arbol",     "arbol({vueltaHoras:6})"),   // el Árbol de los Campos: horas del juego por vuelta (0 = quieto)
-        ("piso",      "piso({n:5})"),   // subir o bajar a un piso del Árbol de los Campos (0–8, anillo1–6): andando a su puerta y nadando por la raíz
+        ("piso",      "piso({n:5})"),   // subir o bajar a un piso del Árbol de los Campos (0–8, anillo1–4, techo): andando a su puerta y nadando por el tronco
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),

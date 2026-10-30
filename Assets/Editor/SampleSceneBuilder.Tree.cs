@@ -2,19 +2,18 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; docs/edificio-arbol.md, medidas en <see cref="TreeSpec"/>): los campos de cultivo
-/// en un solo edificio con forma de árbol, en el lóbulo Sur:Milpa.
-/// - RAÍZ: columna de agua de Ø 20 m (pared de acrílico de 1 m, transparente como el tanque de virtualización: se ve nadar a
-///   la gente de piso en piso), de 0 a 101 m, sostenida por 16 nervios de acero (CFST) con zunchos de canto cada 6 m. Una PUERTA por
-///   nivel con su campo magnético (el agua no sale); el hueco de cada puerta es una campana de aire.
-/// - TRONCO: 8 pisos de cultivo (octógonos de ~51 m) en voladizo desde la raíz, girados 45° y con 3° de inclinación
-///   alterna; la canaleta del borde bajo de cada uno riega el de abajo (cascada).
-/// - RAMAS: 6 tubos de agua a 35° desde 66 m, de 40 m, con una campana y un anillo de nidos (RingDeck) en la punta: frutales
-///   enanos, flores para las abejas de las nieves y nidos.
-/// - COPA: plataforma octogonal plana de 22 m con las alfombras (de edificio y del santuario). Abajo, en el hielo, las del
-///   suelo. Entre pisos, sin alfombras: por la raíz, nadando.
-/// Se construye SIN POSAR (pisos sin girar ni inclinar: los muebles, las alfombras y las plazas reservadas se calculan
-/// alineados) y <see cref="PoseTree"/> lo deja en su forma al final de <see cref="PlaceCarpetAreas"/>.
+/// EL ÁRBOL DE LOS CAMPOS v2 (Berón 2026-10-30; docs/edificio-arbol.md, medidas en <see cref="TreeSpec"/> y el modelo genérico
+/// <see cref="HelixTower"/>): los campos de cultivo en un edificio en HÉLICE, en el lóbulo Sur:Milpa.
+/// - TRONCO CUADRADO de agua (22 m, pared de acrílico de 1 m, transparente como el tanque de virtualización: se ve nadar a la
+///   gente), de 0 a 92 m, con 24 nervios de acero (CFST) y zunchos de canto cada 6 m. Una PUERTA por nivel con su campo
+///   magnético (el agua no sale; el hueco es una campana de aire); abajo, la puerta del suelo; arriba, la TRAMPILLA del techo.
+/// - HÉLICE de 2 niveles desde 64 m (por encima del árbol más alto del santuario): en cada nivel, 2 PISOS cuadrados de 32 m
+///   pegados a dos caras opuestas (en molinete: no se tapan) y, en las otras dos caras, 2 RAMAS (tubos cuadrados de agua) a
+///   un CAMPO DE PUNTA cuadrado de 16 m en la esquina libre, con una COLUMNA de agua (puerta al campo y puerta al ANILLO de
+///   encima, con nidos, flores y frutales enanos). El nivel siguiente, girado un cuarto de vuelta.
+/// - TECHO: plataforma plana de 22 m con las alfombras (de edificio y del santuario) y la trampilla. Abajo, en el hielo, las
+///   del suelo. Entre pisos, sin alfombras: por el tronco, nadando. El suelo bajo el árbol queda libre (sin pavimento).
+/// Se construye ya en su forma (los pisos son planos y van girados de 90 en 90°: los muebles se miden en el marco del piso).
 /// </summary>
 public static partial class SampleSceneBuilder
 {
@@ -25,12 +24,13 @@ public static partial class SampleSceneBuilder
     static readonly Color TreeSteel = new Color(0.36f, 0.39f, 0.44f), TreeCopper = new Color(0.72f, 0.45f, 0.22f),
         TreeGlow = new Color(0.55f, 0.85f, 1f, 0.35f), TreeDeck = new Color(0.48f, 0.4f, 0.33f), TreeSlab = new Color(0.66f, 0.6f, 0.52f);
 
-    /// <summary>El agua de la raíz: el mismo tono que el del tanque, más clara (20 m de agua: si no, no se vería nadar a nadie).</summary>
+    /// <summary>El agua del tronco: el mismo tono que el del tanque, más clara (20 m de agua: si no, no se vería nadar a nadie).</summary>
     static Color RootWater => new Color(VirtualizationTank.WaterColor.r, VirtualizationTank.WaterColor.g, VirtualizationTank.WaterColor.b, 0.2f);
 
     /// <summary>Levanta el árbol con el área del Huerto (<paramref name="garden"/>) en su piso 5. Devuelve la raíz.</summary>
     static Transform BuildTree(Transform parent, SanctuaryArea garden)
     {
+        HelixTower h = TreeSpec.Helix;
         _treeFloors.Clear(); _treePosed = false;
         Transform tree = new GameObject(TreeSpec.RootName).transform;
         tree.SetParent(parent, false); tree.position = TreeSpec.Site;
@@ -39,68 +39,81 @@ public static partial class SampleSceneBuilder
         Rigidbody rb = tree.gameObject.AddComponent<Rigidbody>(); rb.isKinematic = true; rb.useGravity = false;   // gira: sus colliders, de un cuerpo cinemático
         _treeRoot = tree;
 
-        // ── HUECOS DE LA PARED: una puerta por nivel (suelo y 8 pisos) y la boca de cada rama ──
-        var gaps = new List<(float ang, float half, float y0, float y1)>();
-        float doorHalf = Mathf.Asin(TreeSpec.DoorWidth * 0.5f / TreeSpec.OuterRadius) * Mathf.Rad2Deg;
-        for (int k = 0; k <= 8; k++) gaps.Add((TreeSpec.DoorAngle(k), doorHalf, TreeSpec.DoorBottom(k), TreeSpec.DoorBottom(k) + TreeSpec.DoorHeight));
-        for (int b = 0; b < 6; b++) gaps.Add((TreeSpec.BranchYaw[b], 12.5f, TreeSpec.BranchBaseY - 2.5f, TreeSpec.BranchBaseY + 2.5f));
+        // ── HUECOS DE CADA CARA (marco del lado: x a lo largo de la cara, y altura): las puertas y las bocas de las ramas ──
+        var gaps = new List<Rect>[4];
+        for (int s = 0; s < 4; s++) gaps[s] = new List<Rect>();
+        gaps[TreeSpec.GroundSide].Add(DoorRect(h, 0f));
+        for (int lv = 1; lv <= h.levels; lv++)
+            for (int s = 0; s < 4; s++)
+                gaps[s].Add(HelixTower.HasFloor(lv, s) ? DoorRect(h, h.LevelY(lv)) : new Rect(h.mouthX - h.tubeHalf, h.LevelY(lv) - 0.3f - h.tubeWall, 2f * h.tubeHalf, 2.6f + 2f * h.tubeWall));
+        Trunk(tree, ac, h, gaps);
 
-        Root(tree, ac, gaps);
-        // ── NIVELES: el suelo y los 8 pisos ──
+        // ── NIVELES: el suelo, las 8 plataformas (pisos y campos de punta, con sus anillos) y el techo ──
         ac.levels.Clear();
-        ac.levels.Add(Level(TreeLevel.Kind.Ground, 0, "el suelo", null));
-        for (int k = 1; k <= 8; k++)
+        TreeLevel ground = WallLevel(h, TreeLevel.Kind.Ground, 0, TreeSpec.GroundSide, 0f, "el suelo", null, 0f);
+        ground.field = DoorFrame(tree, HelixTower.FromSide(TreeSpec.GroundSide, new Vector3(h.doorX, 0f, h.waterHalf)), HelixTower.SideRot(TreeSpec.GroundSide), h.wall, "Puerta_suelo", ground.outside);
+        ac.levels.Add(ground);
+        int ring = 0;
+        for (int k = 1; k <= TreeSpec.Platforms; k++)
         {
-            Transform f = TreeFloorAt(tree, k, garden);
-            ac.levels.Add(Level(TreeLevel.Kind.Floor, k, $"el piso {k} ({GardenPlot.Title(TreeSpec.Guilds[k - 1])})", f));
+            var (lv, side, tip) = TreeSpec.Platform(k);
+            if (tip) { var (fl, rl) = Branch(tree, h, k, ++ring); ac.levels.Add(fl); ac.levels.Add(rl); continue; }
+            Transform f = TrunkFloor(tree, h, k, garden);
+            TreeLevel L = WallLevel(h, TreeLevel.Kind.Floor, k, side, h.LevelY(lv), $"el piso {k} ({GardenPlot.Title(TreeSpec.Guilds[k - 1])})", f, h.floorSize * 0.5f);
+            L.level = lv;
+            L.field = DoorFrame(tree, HelixTower.FromSide(side, new Vector3(h.doorX, h.LevelY(lv), h.waterHalf)), HelixTower.SideRot(side), h.wall, $"Puerta_piso_{k}", L.outside);
+            ac.levels.Add(L);
         }
-        for (int k = 0; k <= 8; k++) ac.levels[k].field = DoorFrame(tree, TreeSpec.DoorAngle(k), TreeSpec.DoorBottom(k), k == 0 ? "Puerta_suelo" : $"Puerta_piso_{k}");
-        for (int b = 0; b < 6; b++) ac.levels.Add(Branch(tree, b));
-        ac.top = Top(tree);
-        ac.levels.Add(new TreeLevel { name = "la copa", kind = TreeLevel.Kind.Top, index = 9, deck = ac.top, outside = new Vector3(0f, TreeSpec.RootHeight + 0.3f, 0f) });
+        ac.top = Top(tree, out Transform hatchField);
+        Vector3 hatch = TreeSpec.HatchLocal;
+        ac.levels.Add(new TreeLevel
+        {
+            name = "el techo", kind = TreeLevel.Kind.Top, index = 9, deck = ac.top, half = TreeSpec.TopWidth * 0.5f, field = hatchField,
+            outside = hatch + new Vector3(0f, 0f, 3f), door = hatch + Vector3.down * 1.2f, inside = hatch + Vector3.down * 4f,
+        });
 
-        // Alfombras del SUELO, en el hielo (no giran): a la copa. (Las de la copa giran con el árbol.)
-        Vector3 padAt = TreeSpec.Site + TreeSpec.Dir(45f) * 22f + Vector3.up * 0.01f;
+        // Alfombras del SUELO, en el hielo (no giran): al techo. (Las del techo giran con el árbol.)
+        Vector3 padAt = TreeSpec.Site + TreeSpec.Dir(45f) * 24f + Vector3.up * 0.01f;
         // (Su propio padre, sin colliders: si colgara de «Areas_Placed», CarpetPad.OnDeck la tomaría por la pista de CUALQUIER piso
         // sin pista propia y mandaría a la gente al pie del árbol.)
         Transform padRoot = new GameObject("Arbol_alfombras_suelo").transform; padRoot.SetParent(parent, false);
         CarpetPad.BuildZone(padRoot, padAt, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padAt.x, 0f, padAt.z)), CarpetPad.Kind.Edificio, TreeSpec.Building, 0, $"{TreeSpec.Building}#0", "Suelo (hielo)", 2);
-        // …y las del SANTUARIO, al lado (el mismo suelo): desde las otras torres se llega volando AL PIE del árbol, que es por
-        // donde se entra a los pisos (antes había que bajar a la copa y volar otra vez al suelo: dos vuelos para llegar al pie).
-        Vector3 padS = TreeSpec.Site + TreeSpec.Dir(69f) * 22f + Vector3.up * 0.01f;
+        Vector3 padS = TreeSpec.Site + TreeSpec.Dir(69f) * 24f + Vector3.up * 0.01f;
         CarpetPad.BuildZone(padRoot, padS, Quaternion.LookRotation(TreeSpec.Site - new Vector3(padS.x, 0f, padS.z)), CarpetPad.Kind.Santuario, TreeSpec.Building, 0, $"{TreeSpec.Building}#0",
-            $"{TreeSpec.Building} (al pie: a los pisos, nadando por la raíz)", 2);
+            $"{TreeSpec.Building} (al pie: a los pisos, nadando por el tronco)", 2);
 
-        // LA RAÍZ AGUANTA (StructuralLimits.RootCheck): 8 pisos, 6 ramas, la copa, su pared y el agua.
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(8, 6, TreeSpec.WaterRadius, 100f, TreeSpec.WallThickness, TreeSpec.Ribs, 51f, TreeSpec.HoopSpacing, TreeSpec.HoopArea);
-        if (rep.Fail) Debug.LogError($"[Estructura] La raíz del Árbol de los Campos no aguanta: {rep}. Refuérzala (más nervios o más pared).");
-        else if (rep.Warn) Debug.LogWarning($"[Estructura] La raíz del Árbol de los Campos va justa: {rep}.");
-        else Debug.Log($"[Estructura] Raíz del Árbol de los Campos (Ø {2f * TreeSpec.OuterRadius:0} m, {TreeSpec.Ribs} nervios): {rep}.");
-        Debug.Log($"[Árbol] «{TreeSpec.Building}» en ({TreeSpec.Site.x:0}, {TreeSpec.Site.z:0}): raíz de {TreeSpec.RootHeight:0} m, 8 pisos ({string.Join(" · ", System.Array.ConvertAll(TreeSpec.Guilds, g => GardenPlot.Title(g)))}), 6 ramas con anillos, copa con alfombras.");
+        // EL TRONCO AGUANTA (StructuralLimits.RootCheck): 4 pisos, 4 puntas con sus ramas, el techo, su pared y el agua.
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, 4, 4, TreeSpec.RootHeight, TreeSpec.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
+        if (rep.Fail) Debug.LogError($"[Estructura] El tronco del Árbol de los Campos no aguanta: {rep}. Refuérzalo (más nervios, más pared o más tornapuntas).");
+        else if (rep.Warn) Debug.LogWarning($"[Estructura] El tronco del Árbol de los Campos va justo: {rep}.");
+        else Debug.Log($"[Estructura] Tronco del Árbol de los Campos ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {TreeSpec.Ribs} nervios): {rep}.");
+        Debug.Log($"[Árbol] «{TreeSpec.Building}» en ({TreeSpec.Site.x:0}, {TreeSpec.Site.z:0}): tronco cuadrado de {TreeSpec.RootHeight:0} m, hélice de {h.levels} niveles desde {h.firstY:0} m " +
+                  $"(el árbol más alto del santuario, {TreeSpec.TallestTree:0.#} m), {TreeSpec.Platforms} plataformas ({string.Join(" · ", System.Array.ConvertAll(TreeSpec.Guilds, g => GardenPlot.Title(g)))}), alcance {h.Reach:0.0} m.");
         return tree;
     }
 
-    static TreeLevel Level(TreeLevel.Kind kind, int k, string name, Transform deck)
-    {
-        float ang = TreeSpec.DoorAngle(k), y = TreeSpec.DoorBottom(k);
-        return new TreeLevel
-        {
-            name = name, kind = kind, index = k, deck = deck, doorAngle = ang,
-            outside = TreeSpec.OnFloorAtDoor(k, TreeSpec.OuterRadius + 2.5f),
-            door = TreeSpec.Dir(ang) * (TreeSpec.WaterRadius + 0.5f) + Vector3.up * y,
-            inside = TreeSpec.Dir(ang) * (TreeSpec.WaterRadius - 1.5f) + Vector3.up * (y + 0.2f),
-        };
-    }
+    static Rect DoorRect(HelixTower h, float y) => new Rect(h.doorX - h.doorWidth * 0.5f, y, h.doorWidth, h.doorHeight);
 
-    // ── LA RAÍZ ───────────────────────────────────────────────────────────────────────────────────────────────
-
-    static void Root(Transform tree, ArbolCampos ac, List<(float ang, float half, float y0, float y1)> gaps)
+    /// <summary>Un nivel con su puerta en una cara del tronco (el suelo y los pisos pegados).</summary>
+    static TreeLevel WallLevel(HelixTower h, TreeLevel.Kind kind, int k, int side, float y, string name, Transform deck, float half) => new TreeLevel
     {
-        float rIn = TreeSpec.WaterRadius, rOut = TreeSpec.OuterRadius, H = TreeSpec.RootHeight;
+        name = name, kind = kind, index = k, side = side, deck = deck, half = half, doorAngle = side * 90f,
+        outside = HelixTower.FromSide(side, new Vector3(h.doorX, y, h.OuterHalf + 2.5f)),
+        door = HelixTower.FromSide(side, new Vector3(h.doorX, y, h.waterHalf + h.wall * 0.5f)),
+        inside = HelixTower.FromSide(side, new Vector3(h.doorX, y + 0.2f, h.waterHalf - 1.5f)),
+    };
+
+    // ── EL TRONCO ─────────────────────────────────────────────────────────────────────────────────────────────
+
+    static void Trunk(Transform tree, ArbolCampos ac, HelixTower h, List<Rect>[] gaps)
+    {
+        float a = h.waterHalf, o = h.OuterHalf, H = TreeSpec.RootHeight;
         // PARED de acrílico transparente (el cristal del tanque de virtualización), con colliders: se entra solo por las puertas.
+        var v = new List<Vector3>(); var t = new List<int>();
+        for (int s = 0; s < 4; s++) Panel(v, t, HelixTower.SideRot(s), Vector3.zero, -a, o, 0f, H, a, o, gaps[s]);
+        Mesh wm = TreeMesh("Pared_raiz", v, t);
         GameObject wall = new GameObject("Pared_raiz");
         wall.transform.SetParent(tree, false);
-        Mesh wm = TubeMesh("Pared_raiz", rIn, rOut, 0f, H, 72, gaps);
         wall.AddComponent<MeshFilter>().sharedMesh = wm;
         wall.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(VirtualizationTank.GlassColor);
         wall.AddComponent<MeshCollider>().sharedMesh = wm;
@@ -108,235 +121,256 @@ public static partial class SampleSceneBuilder
 
         // AGUA (se ve) y su VOLUMEN nadable (WaterZone: la superficie es lo más alto del volumen).
         float wy0 = TreeSpec.WaterBottom, wy1 = TreeSpec.WaterTop;
-        GameObject water = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        water.name = "Agua_raiz"; water.transform.SetParent(tree, false);
-        water.transform.localPosition = Vector3.up * ((wy0 + wy1) * 0.5f);
-        water.transform.localScale = new Vector3(2f * rIn, (wy1 - wy0) * 0.5f, 2f * rIn);
-        Object.DestroyImmediate(water.GetComponent<Collider>());
-        water.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(RootWater);
-        ac.water = water.transform;
-        WaterVolume(tree, "Agua_raiz_volumen", water);
+        ac.water = WaterBox(tree, "Agua_raiz", new Vector3(0f, (wy0 + wy1) * 0.5f, 0f), new Vector3(2f * a, wy1 - wy0, 2f * a));
+        KitchenProps.C(tree, Vector3.up * 0.02f, new Vector3(2f * a, 0.04f, 2f * a), new Color(0.3f, 0.42f, 0.48f), 0f, "Fondo_raiz");
+        KitchenProps.C(tree, Vector3.down * 0.4f, new Vector3(2f * o + 3f, 0.8f, 2f * o + 3f), new Color(0.72f, 0.71f, 0.68f), 0f, "Encepado_raiz");   // el cimiento (bajo el hielo)
 
-        // TAPA de cristal arriba (101 m: entre el agua y la tapa queda una campana de aire de 1,4 m) y fondo.
-        Transform cap = KitchenProps.C(tree, Vector3.up * (H + 0.05f), new Vector3(2f * rOut, 0.1f, 2f * rOut), VirtualizationTank.GlassColor, 0f, "Tapa_raiz");
-        KitchenProps.C(tree, Vector3.up * 0.02f, new Vector3(2f * rIn, 0.04f, 2f * rIn), new Color(0.3f, 0.42f, 0.48f), 0f, "Fondo_raiz");
-        KitchenProps.C(tree, Vector3.down * 0.4f, new Vector3(2f * rOut + 3f, 0.8f, 2f * rOut + 3f), new Color(0.72f, 0.71f, 0.68f), 0f, "Encepado_raiz");   // el cimiento (bajo el hielo)
-        _ = cap;
-
-        // EXOESQUELETO: 16 nervios de acero (CFST Ø 0,8 m) y zunchos de canto cada 6 m (los que sujetan el empuje del agua con el acrílico; StructuralLimits.RootCheck), una sola
-        // malla; no cruzan los huecos de las puertas ni las bocas de las ramas (ni la losa de los pisos).
+        // EXOESQUELETO: 24 nervios de acero (CFST: 4 esquinas y 5 por cara, uno cada ~3,7 m) y zunchos de canto cada 6 m (los que
+        // sujetan el empuje del agua con el acrílico; StructuralLimits.RootCheck), una sola malla; no cruzan las puertas, las
+        // bocas de las ramas ni las losas de los pisos.
         var boxes = new List<(Vector3 c, Vector3 s, Quaternion q)>();
-        bool InGap(float ang, float y0, float y1, float pad)
+        for (int s = 0; s < 4; s++)
         {
-            foreach (var g in gaps) if (Mathf.Abs(Mathf.DeltaAngle(ang, g.ang)) < g.half + pad && y1 > g.y0 - 0.1f && y0 < g.y1 + 0.1f) return true;
-            return false;
-        }
-        bool AtFloor(float y) { foreach (float fy in TreeSpec.FloorY) if (y > fy - 1.4f && y < fy + 0.9f) return true; return false; }
-        var hoopY = new List<float>();
-        for (float y = 3f; y < H - 0.5f; y += TreeSpec.HoopSpacing) hoopY.Add(AtFloor(y) ? y + 2.4f : y);   // cada 6 m (si cae en una losa, justo encima)
-        hoopY.Add(H - 0.3f);
-        for (int i = 0; i < TreeSpec.Ribs; i++)
-        {
-            float ang = 11.25f + i * 22.5f; Vector3 d = TreeSpec.Dir(ang);
-            for (float y = 0f; y < H; y += 4f)
+            Quaternion q = HelixTower.SideRot(s);
+            bool Blocked(float x0, float x1, float y0, float y1, float pad)
+            {
+                foreach (Rect g in gaps[s]) if (x1 > g.xMin - pad && x0 < g.xMax + pad && y1 > g.yMin - 0.3f && y0 < g.yMax + 0.3f) return true;
+                for (int lv = 1; lv <= h.levels; lv++)   // la losa del piso pegado a esta cara (x de −h a −h+S)
+                    if (HelixTower.HasFloor(lv, s) && y1 > h.LevelY(lv) - 1.2f && y0 < h.LevelY(lv) + 0.4f) return true;
+                return false;
+            }
+            var ribX = new List<float>();
+            for (int i = 1; i <= 5; i++) ribX.Add(-o + i * (2f * o / 6f));
+            foreach (float x in ribX)
+                for (float y = 0f; y < H; y += 4f)
+                {
+                    float y1 = Mathf.Min(H, y + 4f);
+                    if (Blocked(x - 0.3f, x + 0.3f, y, y1, 0.3f)) continue;
+                    boxes.Add((q * new Vector3(x, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.55f, y1 - y, 0.6f), q));
+                }
+            for (float y = 0f; y < H; y += 4f)   // el nervio de la esquina (+x de esta cara)
             {
                 float y1 = Mathf.Min(H, y + 4f);
-                if (InGap(ang, y, y1, 2f)) continue;
-                boxes.Add((d * (rOut + 0.3f) + Vector3.up * ((y + y1) * 0.5f), new Vector3(0.55f, y1 - y, 0.6f), Quaternion.Euler(0f, ang, 0f)));
+                bool slab = false;
+                for (int lv = 1; lv <= h.levels; lv++) if (y1 > h.LevelY(lv) - 1.2f && y < h.LevelY(lv) + 0.4f) slab = true;
+                if (slab) continue;
+                boxes.Add((q * new Vector3(o + 0.3f, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.6f, y1 - y, 0.6f), q));
             }
+            var hoopY = new List<float>();
+            for (float y = 3f; y < H - 0.5f; y += TreeSpec.HoopSpacing) hoopY.Add(y);
+            hoopY.Add(H - 0.3f);
+            var xs = new List<float> { -o }; xs.AddRange(ribX); xs.Add(o);
+            foreach (float y in hoopY)
+                for (int i = 0; i + 1 < xs.Count; i++)
+                {
+                    float x0 = xs[i] + 0.28f, x1 = xs[i + 1] - 0.28f;
+                    if (Blocked(x0, x1, y - 0.2f, y + 0.2f, 0.2f)) continue;
+                    boxes.Add((q * new Vector3((x0 + x1) * 0.5f, y, o + TreeSpec.HoopDepth * 0.5f), new Vector3(x1 - x0, TreeSpec.HoopHeight, TreeSpec.HoopDepth), q));
+                }
         }
-        foreach (float y in hoopY)
-            for (int s = 0; s < 36; s++)
-            {
-                float ang = s * 10f + 5f;
-                if (InGap(ang, y - 0.3f, y + 0.3f, 6f)) continue;
-                { float rh = rOut + TreeSpec.HoopDepth * 0.5f;   // de canto: delgado a la vista, hondo hacia fuera
-                  boxes.Add((TreeSpec.Dir(ang) * rh + Vector3.up * y, new Vector3(2f * rh * Mathf.Tan(5f * Mathf.Deg2Rad) + 0.05f, TreeSpec.HoopHeight, TreeSpec.HoopDepth), Quaternion.Euler(0f, ang, 0f))); }
-            }
         GameObject exo = new GameObject("Exoesqueleto");
         exo.transform.SetParent(tree, false);
         exo.AddComponent<MeshFilter>().sharedMesh = BoxesMesh("Exoesqueleto", boxes);
         exo.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(TreeSteel);
-        Label(KitchenProps.C(tree, TreeSpec.Dir(0f) * (rOut + 0.8f) + Vector3.up * 3.4f, new Vector3(0.1f, 0.1f, 0.1f), TreeSteel, 0f, "Cartel_raiz"),
-              "Raíz del Árbol de los Campos: entra por la puerta y nada a tu piso", 0.4f);
+        Label(KitchenProps.C(tree, HelixTower.FromSide(TreeSpec.GroundSide, new Vector3(h.doorX - 2.4f, 3.4f, o + 0.8f)), new Vector3(0.1f, 0.1f, 0.1f), TreeSteel, 0f, "Cartel_raiz"),
+              "Tronco del Árbol de los Campos: entra por la puerta (o por la trampilla del techo) y nada a tu piso", 0.4f);
     }
 
-    /// <summary>Volumen nadable (WaterZone) con la forma de la malla de <paramref name="shape"/> (convexa, trigger).</summary>
-    static void WaterVolume(Transform parent, string name, GameObject shape)
+    /// <summary>Agua que se ve (caja sin collider) y su volumen nadable (BoxCollider trigger con <see cref="WaterZone"/>).</summary>
+    static Transform WaterBox(Transform parent, string name, Vector3 center, Vector3 size)
     {
-        GameObject v = new GameObject(name);
-        v.transform.SetParent(parent, false);
-        v.transform.localPosition = shape.transform.localPosition; v.transform.localRotation = shape.transform.localRotation; v.transform.localScale = shape.transform.localScale;
-        MeshCollider mc = v.AddComponent<MeshCollider>();
-        mc.sharedMesh = shape.GetComponent<MeshFilter>().sharedMesh; mc.convex = true; mc.isTrigger = true;
-        v.AddComponent<WaterZone>();
+        GameObject w = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        w.name = name; w.transform.SetParent(parent, false);
+        w.transform.localPosition = center; w.transform.localScale = size;
+        Object.DestroyImmediate(w.GetComponent<Collider>());
+        w.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(RootWater);
+        GameObject vol = new GameObject(name + "_volumen");
+        vol.transform.SetParent(parent, false);
+        vol.transform.localPosition = center;
+        BoxCollider bc = vol.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.size = size;
+        vol.AddComponent<WaterZone>();
+        return w.transform;
     }
 
-    /// <summary>Marco de una puerta de la raíz (bobinas de cobre a los lados y arriba, como el tanque) y su campo magnético en
-    /// la cara de dentro: lo cruzan los cuerpos, no el agua. Devuelve el campo.</summary>
-    static Transform DoorFrame(Transform tree, float ang, float y, string name)
+    /// <summary>Marco de una puerta con campo magnético (bobinas de cobre a los lados y arriba, como el tanque) y su campo en la
+    /// cara de dentro: lo cruzan los cuerpos, no el agua. <paramref name="local"/> = el umbral en la cara de DENTRO de la pared
+    /// (local de <paramref name="parent"/>), <paramref name="rot"/> mira HACIA FUERA. Lleva su <see cref="TreeDoorExit"/> (quien
+    /// nada hacia ella sale de pie en <paramref name="landing"/>, local de <paramref name="parent"/>). Devuelve el campo.</summary>
+    static Transform DoorFrame(Transform parent, Vector3 local, Quaternion rot, float wallThick, string name, Vector3 landing)
     {
-        Transform d = new GameObject(name).transform; d.SetParent(tree, false);
-        d.localPosition = TreeSpec.Dir(ang) * TreeSpec.WaterRadius + Vector3.up * y; d.localRotation = Quaternion.Euler(0f, ang, 0f);
-        float w = 2f * TreeSpec.WaterRadius * Mathf.Sin(5f * Mathf.Deg2Rad), h = TreeSpec.DoorHeight;   // el hueco de la pared: 2 celdas de 5°
-        for (int s = -1; s <= 1; s += 2) KitchenProps.C(d, new Vector3(s * (w * 0.5f + 0.06f), h * 0.5f, 0.5f), new Vector3(0.12f, h, 1f), TreeCopper, 0f, "Bobina");
-        KitchenProps.C(d, new Vector3(0f, h + 0.06f, 0.5f), new Vector3(w + 0.24f, 0.12f, 1f), TreeCopper, 0f, "Bobina");
+        Transform d = new GameObject(name).transform; d.SetParent(parent, false);
+        d.localPosition = local; d.localRotation = rot;
+        float w = TreeSpec.DoorWidth, h = TreeSpec.DoorHeight;
+        for (int s = -1; s <= 1; s += 2) KitchenProps.C(d, new Vector3(s * (w * 0.5f + 0.06f), h * 0.5f, wallThick * 0.5f), new Vector3(0.12f, h, wallThick), TreeCopper, 0f, "Bobina");
+        KitchenProps.C(d, new Vector3(0f, h + 0.06f, wallThick * 0.5f), new Vector3(w + 0.24f, 0.12f, wallThick), TreeCopper, 0f, "Bobina");
         Transform field = KitchenProps.C(d, new Vector3(0f, h * 0.5f, 0.02f), new Vector3(w, h, 0.02f), TreeGlow, 0f, "Campo_magnetico");
         field.gameObject.AddComponent<CampoMagnetico>();
+        Transform land = new GameObject("Salida").transform; land.SetParent(d, false);
+        land.position = parent.TransformPoint(landing);
+        TreeDoorExit ex = d.gameObject.AddComponent<TreeDoorExit>();
+        ex.landing = land; ex.zoneCenter = new Vector3(0f, 1.3f, -1f); ex.zoneSize = new Vector3(w + 0.8f, 4.6f, 3.4f);
         return field;
     }
 
-    // ── LOS PISOS ─────────────────────────────────────────────────────────────────────────────────────────────
+    // ── LOS PISOS PEGADOS AL TRONCO ───────────────────────────────────────────────────────────────────────────
 
-    static Transform TreeFloorAt(Transform tree, int k, SanctuaryArea garden)
+    static Transform TrunkFloor(Transform tree, HelixTower h, int k, SanctuaryArea garden)
     {
+        var (lv, side, _) = TreeSpec.Platform(k);
         GardenPlot.Guild guild = TreeSpec.Guilds[k - 1];
+        float S = h.floorSize, half = S * 0.5f, fx = h.FloorCenterS.x;
         Transform f = new GameObject($"Piso_arbol_{k}_{guild}").transform;
-        f.SetParent(tree, false); f.localPosition = Vector3.up * TreeSpec.FloorY[k - 1];   // SIN POSAR (PoseTree lo gira e inclina)
+        f.SetParent(tree, false);
+        f.localPosition = HelixTower.FromSide(side, h.FloorCenterS) + Vector3.up * h.LevelY(lv);
+        f.localRotation = HelixTower.SideRot(side);
         TreeFloor tf = f.gameObject.AddComponent<TreeFloor>();
-        tf.index = k; tf.tilt = TreeSpec.TiltOf(k); tf.yaw = TreeSpec.YawOf(k);
-        float half = TreeSpec.FloorHalf, X = half + TreeSpec.FloorEdge, c = 2f * TreeSpec.FloorEdge;
-        // LOSA: octógono (como las de las torres) con el hueco de la raíz; en voladizo desde ella: ménsulas y tornapuntas.
+        tf.index = k; tf.tilt = 0f; tf.yaw = side * 90f;
+        // LOSA cuadrada, en voladizo desde su cara del tronco: ménsulas y tornapuntas que bajan a la cara.
         Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(f, false);
-        GameObject slab = new GameObject("Losa_arbol"); slab.transform.SetParent(s, false);
-        Mesh sm = SlabMesh($"Losa_arbol_{k}", X, c, TreeSpec.OuterRadius, 0.28f);
-        slab.AddComponent<MeshFilter>().sharedMesh = sm;
-        slab.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(TreeSlab);
-        slab.AddComponent<MeshCollider>().sharedMesh = sm;
-        for (int i = 0; i < 8; i++)
+        Solid(s, new Vector3(0f, -0.15f, 0f), new Vector3(S, 0.3f, S), TreeSlab, "Losa_arbol");
+        foreach (float xs in new[] { -9f, -3f, 3f, 9f })
+            KitchenProps.C(s, new Vector3(xs - fx, -0.6f, -half + 5f), new Vector3(0.35f, 0.6f, 10f), TreeSteel, 0f, "Mensula");
+        foreach (var (x0, x1) in new[] { (-9f, -8f), (-3f, 2f), (3f, 10f), (9f, 18f) })
         {
-            float ang = 22.5f + i * 45f; Vector3 dir = TreeSpec.Dir(ang); Quaternion q = Quaternion.Euler(0f, ang, 0f);
-            float r0 = TreeSpec.OuterRadius, r1 = 23.5f;
-            KitchenProps.C(s, dir * ((r0 + r1) * 0.5f) + Vector3.down * 0.58f, new Vector3(0.35f, 0.6f, r1 - r0), TreeSteel, q, "Mensula");
-            Vector3 a = dir * (r0 + 0.2f) + Vector3.down * 4f, b = dir * 17f + Vector3.down * 0.9f;
-            KitchenProps.C(s, (a + b) * 0.5f, new Vector3(0.3f, 0.3f, (b - a).magnitude), TreeSteel, Quaternion.LookRotation(b - a), "Tornapunta");
+            Vector3 a = new Vector3(x0 - fx, -TreeSpec.StrutDrop, -half + 0.3f), b = new Vector3(x1 - fx, -0.35f, -half + 0.625f * S);
+            KitchenProps.C(s, (a + b) * 0.5f, new Vector3(0.45f, 0.45f, (b - a).magnitude), TreeSteel, Quaternion.LookRotation(b - a), "Tornapunta");
         }
-        // CANALETA en el borde que quedará BAJO (la inclinación +3° baja el lado +Z): recoge el agua y la vierte al de abajo.
-        float zLow = tf.tilt > 0f ? X - 0.3f : -(X - 0.3f);
-        KitchenProps.C(s, new Vector3(0f, 0.06f, zLow), new Vector3(2f * (X - c), 0.25f, 0.4f), TreeSteel, 0f, "Canaleta");
-        _platforms[f] = new Vector2(2f * half, 2f * half);   // sus plazas reservadas (regla 8) sobre el rectángulo de 46 × 46
+        _platforms[f] = new Vector2(S, S);   // sus plazas reservadas (regla 8)
 
-        // EL CULTIVO del piso: una franja de 9 m en el lado +Z, el de su puerta (se sale de la raíz al bancal: sin rodear la raíz).
+        // EL CULTIVO del piso: lejos de la puerta (el borde −Z, pegado al tronco) y de la rama que pasa por encima de esa franja.
         if (guild == GardenPlot.Guild.Hortalizas && garden != null)
         {
             garden.transform.SetParent(f, false);
-            garden.transform.localPosition = new Vector3(0f, 0f, 18f);
-            garden.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // su lado abierto (+Z del área) mira a la raíz
-            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-6f, 0.1f, 0f)), new Vector2(6f, 28f), TreeSpec.Seeds[k - 1], false);
-            go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (sus filas, a lo largo de la franja: caben todas las del gremio)
+            garden.transform.localPosition = new Vector3(0f, 0f, -6.5f);
+            garden.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // su lado abierto (+Z del área) mira a la puerta
+            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-4f, 0.1f, 0f)), new Vector2(6f, 22f), TreeSpec.Seeds[k - 1], false);
+            go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (sus filas, a lo largo del área: caben todas las del gremio)
         }
         else
         {
-            GameObject go = MakePlot(f, guild, f.TransformPoint(new Vector3(0f, 0.06f, 18f)), new Vector2(7f, 38f), TreeSpec.Seeds[k - 1], false);
-            go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (las filas, a lo largo de la franja: caben todas las del gremio)
-            if (k == 8) go.GetComponent<GardenPlot>().speciesOffset = 5;   // el segundo bosque comestible: los otros árboles del dosel
-            Transform soil = KitchenProps.C(go.transform, new Vector3(0f, -0.03f, 0f), new Vector3(9f, 0.06f, 40f),
-                guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
-            _ = soil;
+            GameObject go = MakePlot(f, guild, f.TransformPoint(new Vector3(1f, 0.06f, 4f)), new Vector2(22f, 18f), TreeSpec.Seeds[k - 1], false);
+            go.transform.localRotation = Quaternion.identity;
+            if (k == 6) go.GetComponent<GardenPlot>().speciesOffset = 5;   // el segundo bosque comestible: los otros árboles del dosel
+            KitchenProps.C(go.transform, new Vector3(0f, -0.03f, 0f), new Vector3(24f, 0.06f, 20f), new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
         }
         _treeFloors.Add(tf);
         return f;
     }
 
-    // ── LAS RAMAS ─────────────────────────────────────────────────────────────────────────────────────────────
+    // ── LAS RAMAS, LOS CAMPOS DE PUNTA Y SUS ANILLOS ─────────────────────────────────────────────────────────
 
-    static TreeLevel Branch(Transform tree, int b)
+    /// <summary>La rama del piso k (un campo de punta): tubo cuadrado de agua desde la cara (recto hacia fuera y luego a la
+    /// derecha), la COLUMNA de agua en la esquina del campo (puertas al campo y al anillo), el campo y su anillo.</summary>
+    static (TreeLevel field, TreeLevel ring) Branch(Transform tree, HelixTower h, int k, int ringN)
     {
-        Vector3 S = TreeSpec.BranchStart(b), E = TreeSpec.BranchEnd(b), dir = TreeSpec.BranchDir(b), h = TreeSpec.Dir(TreeSpec.BranchYaw[b]);
-        float L = TreeSpec.BranchLength + 1.2f;   // empieza 1,2 m dentro: la boca entra en el agua de la raíz
-        Vector3 S0 = S - dir * 1.2f;
-        Quaternion q = Quaternion.FromToRotation(Vector3.up, dir);
-        // TUBO de agua (acrílico, como la raíz) y su agua.
-        Transform tube = new GameObject($"Rama_{b + 1}").transform; tube.SetParent(tree, false);
-        tube.localPosition = S0; tube.localRotation = q;
-        Mesh tm = TubeMesh($"Rama_{b + 1}", TreeSpec.BranchWater, TreeSpec.BranchRadius, 0f, L, 24, null);
-        tube.gameObject.AddComponent<MeshFilter>().sharedMesh = tm;
-        tube.gameObject.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(VirtualizationTank.GlassColor);
-        tube.gameObject.AddComponent<MeshCollider>().sharedMesh = tm;
-        GameObject w = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        w.name = "Agua_rama"; w.transform.SetParent(tube, false);
-        w.transform.localPosition = Vector3.up * (L * 0.5f); w.transform.localScale = new Vector3(2f * TreeSpec.BranchWater, L * 0.5f, 2f * TreeSpec.BranchWater);
-        Object.DestroyImmediate(w.GetComponent<Collider>());
-        w.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(RootWater);
-        GameObject vol = new GameObject("Agua_rama_volumen"); vol.transform.SetParent(tube, false);
-        CapsuleCollider cc = vol.AddComponent<CapsuleCollider>(); cc.isTrigger = true; cc.direction = 1;
-        cc.radius = TreeSpec.BranchWater; cc.height = L + 2f * TreeSpec.BranchWater; cc.center = Vector3.up * (L * 0.5f);
-        vol.AddComponent<WaterZone>();
-        // Nervio de acero bajo el tubo (el que carga) y el COLLAR que cierra la boca en la pared de la raíz.
-        Vector3 under = Vector3.ProjectOnPlane(Vector3.down, dir).normalized;
-        KitchenProps.C(tree, S + dir * (TreeSpec.BranchLength * 0.5f) + under * (TreeSpec.BranchRadius + 0.25f), new Vector3(0.35f, 0.45f, TreeSpec.BranchLength),
-            TreeSteel, Quaternion.LookRotation(dir, -under), "Nervio_rama");
-        Transform collar = new GameObject($"Collar_rama_{b + 1}").transform; collar.SetParent(tree, false);
-        collar.localPosition = h * (TreeSpec.WaterRadius + 0.5f) + Vector3.up * TreeSpec.BranchBaseY; collar.localRotation = Quaternion.LookRotation(h);
-        float gw = 2f * TreeSpec.OuterRadius * Mathf.Sin(15f * Mathf.Deg2Rad) + 0.4f, gh = 5.2f, tw = 2f * TreeSpec.BranchRadius, th = tw / Mathf.Cos(TreeSpec.BranchAngle * Mathf.Deg2Rad);
-        for (int sx = -1; sx <= 1; sx += 2)
+        var (lv, side, _) = TreeSpec.Platform(k);
+        GardenPlot.Guild guild = TreeSpec.Guilds[k - 1];
+        float Y = h.LevelY(lv), tipY = h.TipY(lv), ringY = h.RingY(lv);
+        Quaternion q = HelixTower.SideRot(side);
+        float mx = h.mouthX, th = h.tubeHalf, tw = h.tubeWall, ti = th - tw, a = h.waterHalf, o = h.OuterHalf;
+        Vector3 col = h.ColumnS; float cx = col.x, cz = col.z, ci = h.colHalf, co = h.ColOuter;
+        float y0 = Y - 0.3f, y1 = Y + 2.3f, ym = (y0 + y1) * 0.5f, hh = y1 - y0;   // el hueco del tubo (2,6 m)
+
+        // ── RAMA (marco del lado) ──
+        Transform br = new GameObject($"Rama_{k}").transform; br.SetParent(tree, false); br.localRotation = q;
+        void Glass(Vector3 c, Vector3 sz, string n) => Solid(br, c, sz, VirtualizationTank.GlassColor, n);
+        float zA0 = o, zA1 = cz + th, zR1 = cz - ti, xB0 = mx + ti, xB1 = cx - co;
+        Glass(new Vector3(mx, y0 - tw * 0.5f, (zA0 + zA1) * 0.5f), new Vector3(2f * th, tw, zA1 - zA0), "Pared_rama");
+        Glass(new Vector3(mx, y1 + tw * 0.5f, (zA0 + zA1) * 0.5f), new Vector3(2f * th, tw, zA1 - zA0), "Pared_rama");
+        Glass(new Vector3(mx - th + tw * 0.5f, ym, (zA0 + zA1) * 0.5f), new Vector3(tw, hh + 2f * tw, zA1 - zA0), "Pared_rama");
+        Glass(new Vector3(mx + th - tw * 0.5f, ym, (zA0 + zR1) * 0.5f), new Vector3(tw, hh + 2f * tw, zR1 - zA0), "Pared_rama");
+        Glass(new Vector3(mx, ym, zA1 - tw * 0.5f), new Vector3(2f * th, hh + 2f * tw, tw), "Pared_rama");
+        Glass(new Vector3((xB0 + xB1) * 0.5f, y0 - tw * 0.5f, cz), new Vector3(xB1 - xB0, tw, 2f * th), "Pared_rama");
+        Glass(new Vector3((xB0 + xB1) * 0.5f, y1 + tw * 0.5f, cz), new Vector3(xB1 - xB0, tw, 2f * th), "Pared_rama");
+        Glass(new Vector3((xB0 + xB1) * 0.5f, ym, cz - th + tw * 0.5f), new Vector3(xB1 - xB0, hh + 2f * tw, tw), "Pared_rama");
+        Glass(new Vector3((mx + th + xB1) * 0.5f, ym, cz + th - tw * 0.5f), new Vector3(xB1 - mx - th, hh + 2f * tw, tw), "Pared_rama");
+        WaterBox(br, "Agua_rama", new Vector3(mx, ym, (a - 0.5f + zA1 - tw) * 0.5f), new Vector3(2f * ti, hh, zA1 - tw - (a - 0.5f)));
+        WaterBox(br, "Agua_rama", new Vector3((mx - ti + cx - ci + 0.3f) * 0.5f, ym, cz), new Vector3(cx - ci + 0.3f - (mx - ti), hh, 2f * ti));
+        // CELOSÍA de acero de la rama (lo que carga la punta): 2 cordones abajo, 2 arriba (5 m de canto) y diagonales.
+        float yb = y0 - tw - 0.45f, yt = Y + 4f;
+        void Chord(Vector3 p0, Vector3 p1, float size, string n) => KitchenProps.C(br, (p0 + p1) * 0.5f, new Vector3(size, size, (p1 - p0).magnitude), TreeSteel, Quaternion.LookRotation(p1 - p0), n);
+        for (int sgn = -1; sgn <= 1; sgn += 2)
         {
-            Solid(collar, new Vector3(sx * (tw * 0.5f + (gw - tw) * 0.25f), 0f, 0f), new Vector3((gw - tw) * 0.5f, gh, 1f), TreeSteel, "Collar");
-            Solid(collar, new Vector3(0f, sx * (th * 0.5f + (gh - th) * 0.25f), 0f), new Vector3(tw, (gh - th) * 0.5f, 1f), TreeSteel, "Collar");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yb, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yb, cz), 0.5f, "Nervio_rama");
+            Chord(new Vector3(mx, yb, cz + sgn * (th - 0.2f)), new Vector3(xB1, yb, cz + sgn * (th - 0.2f)), 0.5f, "Nervio_rama");
+            Chord(new Vector3(mx, yt, cz + sgn * (th - 0.2f)), new Vector3(xB1, yt, cz + sgn * (th - 0.2f)), 0.45f, "Nervio_rama");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yt, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yt, cz), 0.45f, "Nervio_rama");
+            for (float x = mx + 1f; x < xB1 - 1f; x += 4f)
+                Chord(new Vector3(x, yb, cz + sgn * th), new Vector3(Mathf.Min(xB1, x + 4f), yt, cz + sgn * th), 0.25f, "Tornapunta_rama");
         }
 
-        // CAMPANA de la punta (cilindro de agua vertical que asoma sobre el anillo) con su puerta hacia fuera.
-        float yD = TreeSpec.RingDeckY(b), yb0 = E.y - 1.8f, yb1 = yD + 3f;
-        Transform bulb = new GameObject($"Campana_rama_{b + 1}").transform; bulb.SetParent(tree, false);
-        bulb.localPosition = new Vector3(E.x, 0f, E.z);
-        float outAng = TreeSpec.BranchYaw[b];
-        var bg = new List<(float ang, float half, float y0, float y1)> { (outAng, 23f, yD, yD + 2.4f), (outAng + 180f, 45f, yb0, E.y + 2f) };
-        Mesh bm = TubeMesh($"Campana_rama_{b + 1}", TreeSpec.BulbInner, TreeSpec.BulbRadius, yb0, yb1, 24, bg);
-        bulb.gameObject.AddComponent<MeshFilter>().sharedMesh = bm;
-        bulb.gameObject.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(VirtualizationTank.GlassColor);
-        bulb.gameObject.AddComponent<MeshCollider>().sharedMesh = bm;
-        Solid(bulb, Vector3.up * (yb0 - 0.05f), new Vector3(2f * TreeSpec.BulbRadius, 0.1f, 2f * TreeSpec.BulbRadius), VirtualizationTank.GlassColor, "Fondo_campana");
-        Solid(bulb, Vector3.up * (yb1 + 0.05f), new Vector3(2f * TreeSpec.BulbRadius, 0.1f, 2f * TreeSpec.BulbRadius), VirtualizationTank.GlassColor, "Tapa_campana");
-        GameObject bw = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
-        bw.name = "Agua_campana"; bw.transform.SetParent(bulb, false);
-        float bwTop = yD + 2.6f;
-        bw.transform.localPosition = Vector3.up * ((yb0 + bwTop) * 0.5f); bw.transform.localScale = new Vector3(2f * TreeSpec.BulbInner, (bwTop - yb0) * 0.5f, 2f * TreeSpec.BulbInner);
-        Object.DestroyImmediate(bw.GetComponent<Collider>());
-        bw.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(RootWater);
-        WaterVolume(bulb, "Agua_campana_volumen", bw);
-        Transform bdoor = new GameObject("Puerta_anillo").transform; bdoor.SetParent(bulb, false);
-        bdoor.localPosition = h * TreeSpec.BulbInner + Vector3.up * yD; bdoor.localRotation = Quaternion.LookRotation(h);
-        float dw = 2f * TreeSpec.BulbInner * Mathf.Sin(23f * Mathf.Deg2Rad);
-        for (int sx = -1; sx <= 1; sx += 2) KitchenProps.C(bdoor, new Vector3(sx * (dw * 0.5f + 0.05f), 1.2f, 0.1f), new Vector3(0.1f, 2.4f, 0.25f), TreeCopper, 0f, "Bobina");
-        Transform field = KitchenProps.C(bdoor, new Vector3(0f, 1.2f, 0.01f), new Vector3(dw, 2.4f, 0.02f), TreeGlow, 0f, "Campo_magnetico");
-        field.gameObject.AddComponent<CampoMagnetico>();
-
-        // ANILLO DE NIDOS (RingDeck, como los del hospital y el restaurante) alrededor de la campana, con su centro relleno.
-        Transform ring = RingDeck(tree, $"Nido_anillo_{b + 1}", new Vector2(TreeSpec.RingHub, TreeSpec.RingHub), 0f, TreeSpec.RingWidth, 0.2f);
-        ring.localPosition = new Vector3(E.x, yD, E.z); ring.localRotation = Quaternion.Euler(0f, outAng, 0f);
-        float inner = TreeSpec.RingHub * 0.5f - TreeSpec.RingWidth * 0.2f, bR = TreeSpec.BulbRadius + 0.05f;   // 2,7 m: el hueco del anillo
-        for (int sx = -1; sx <= 1; sx += 2)
+        // ── COLUMNA DE LA PUNTA (marco del lado): del fondo de la rama al anillo; puertas al campo (+X) y al anillo (−X) ──
+        Transform cg = new GameObject($"Campana_rama_{k}").transform; cg.SetParent(tree, false); cg.localRotation = q;
+        float cb = y0 - tw, wt = ringY + h.doorHeight + 0.6f, ctop = wt + 0.4f;
+        var cv = new List<Vector3>(); var ct = new List<int>();
+        Vector3 cc = new Vector3(cx, 0f, cz);
+        for (int f = 0; f < 4; f++)
         {
-            Solid(ring, new Vector3(sx * (bR + inner) * 0.5f, -0.075f, 0f), new Vector3(inner - bR, 0.15f, 2f * inner), TreeDeck, "Losa_centro");
-            Solid(ring, new Vector3(0f, -0.075f, sx * (bR + inner) * 0.5f), new Vector3(2f * bR, 0.15f, inner - bR), TreeDeck, "Losa_centro");
+            var g = new List<Rect>();
+            if (f == 3) { g.Add(new Rect(-ti, y0, 2f * ti, hh)); g.Add(new Rect(-h.doorWidth * 0.5f, ringY, h.doorWidth, h.doorHeight)); }   // −X: la rama y el anillo
+            if (f == 1) g.Add(new Rect(-h.doorWidth * 0.5f, tipY, h.doorWidth, h.doorHeight));                                                  // +X: el campo
+            Panel(cv, ct, HelixTower.SideRot(f), cc, -ci, co, cb, ctop, ci, co, g);
         }
-        NestRing(ring, inner);
-        // Tornapuntas de la campana a las esquinas del anillo (lo que lo sostiene).
-        for (int i = 0; i < 4; i++)
-        {
-            Vector3 corner = ring.localPosition + ring.localRotation * new Vector3((i & 1) == 0 ? -5.5f : 5.5f, -0.3f, (i & 2) == 0 ? -5.5f : 5.5f);
-            Vector3 foot = new Vector3(E.x, yb0 + 0.3f, E.z);
-            KitchenProps.C(tree, (corner + foot) * 0.5f, new Vector3(0.22f, 0.22f, (corner - foot).magnitude), TreeSteel, Quaternion.LookRotation(corner - foot), "Tornapunta_anillo");
-        }
+        Mesh cm = TreeMesh($"Campana_rama_{k}", cv, ct);
+        cg.gameObject.AddComponent<MeshFilter>().sharedMesh = cm;
+        cg.gameObject.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(VirtualizationTank.GlassColor);
+        cg.gameObject.AddComponent<MeshCollider>().sharedMesh = cm;
+        Solid(cg, new Vector3(cx, cb + tw * 0.5f, cz), new Vector3(2f * co, tw, 2f * co), VirtualizationTank.GlassColor, "Fondo_campana");
+        Solid(cg, new Vector3(cx, ctop - tw * 0.5f, cz), new Vector3(2f * co, tw, 2f * co), VirtualizationTank.GlassColor, "Tapa_campana");
+        WaterBox(cg, "Agua_campana", new Vector3(cx, (y0 + wt) * 0.5f, cz), new Vector3(2f * ci, wt - y0, 2f * ci));
+        Vector3 fieldOut = new Vector3(cx + co + 2f, tipY, cz), ringOut = new Vector3(cx - co - 2.2f, ringY, cz);
+        Transform fField = DoorFrame(cg, new Vector3(cx + ci, tipY, cz), Quaternion.Euler(0f, 90f, 0f), tw, "Puerta_campo", fieldOut);
+        Transform rField = DoorFrame(cg, new Vector3(cx - ci, ringY, cz), Quaternion.Euler(0f, 270f, 0f), tw, "Puerta_anillo", ringOut);
 
-        Vector3 B = new Vector3(E.x, 0f, E.z);
-        float ax = TreeSpec.OuterRadius - 2f;   // la boca, dentro del agua de la raíz (a 9 m del eje)
-        Vector3 Sin = S + dir * ((ax - TreeSpec.OuterRadius) / Mathf.Cos(TreeSpec.BranchAngle * Mathf.Deg2Rad));
-        return new TreeLevel
+        // ── CAMPO DE PUNTA (cuadrado, con el hueco de la columna en su esquina de dentro) ──
+        float T = h.tipSize, E = T * 0.5f;
+        Vector3 tc = h.TipCenterS;
+        Transform tip = new GameObject($"Campo_punta_{k}_{guild}").transform;
+        tip.SetParent(tree, false); tip.localPosition = HelixTower.FromSide(side, tc) + Vector3.up * tipY; tip.localRotation = q;
+        TreeFloor tf = tip.gameObject.AddComponent<TreeFloor>(); tf.index = k; tf.tilt = 0f; tf.yaw = side * 90f;
+        float hx0 = cx - co - tc.x, hx1 = cx + co - tc.x, hz0 = cz - co - tc.z, hz1 = cz + co - tc.z;
+        Transform ts = new GameObject("Estructura_Elevada").transform; ts.SetParent(tip, false);
+        void Slab(float x0, float x1, float z0, float z1) => Solid(ts, new Vector3((x0 + x1) * 0.5f, -0.15f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 0.3f, z1 - z0), TreeSlab, "Losa_punta");
+        Slab(hx1, E, -E, E); Slab(-E, hx1, hz1, E); Slab(-E, hx0, -E, hz1); Slab(hx0, hx1, -E, hz0);
+        Vector3 colL = new Vector3(cx - tc.x, cb - tipY + 0.4f, cz - tc.z);
+        foreach (Vector3 corner in new[] { new Vector3(E - 0.4f, -0.35f, E - 0.4f), new Vector3(E - 0.4f, -0.35f, -E + 0.4f), new Vector3(-E + 0.4f, -0.35f, E - 0.4f) })
+            KitchenProps.C(ts, (corner + colL) * 0.5f, new Vector3(0.3f, 0.3f, (corner - colL).magnitude), TreeSteel, Quaternion.LookRotation(corner - colL), "Tornapunta_campo");
+        _platforms[tip] = new Vector2(T, T);
+        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(2.8f, 0.06f, 2.8f)), new Vector2(9f, 9f), TreeSpec.Seeds[k - 1], false);
+        plot.transform.localRotation = Quaternion.identity;
+        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(10f, 0.06f, 10f),
+            guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
+        _treeFloors.Add(tf);
+
+        // ── ANILLO encima del campo (RingDeck, a la medida: 20 % sobre el campo y el resto volando), con sus nidos ──
+        Transform rg = RingDeck(tip, $"Nido_anillo_{ringN}", new Vector2(T, T), h.ringH, h.ringWidth, h.ringInside);
+        NestRing(rg, h.RingInnerHalf, h.ringWidth);
+
+        // ── NIVELES (puntos locales del árbol, a ras de los pies) ──
+        Vector3 S(Vector3 p) => HelixTower.FromSide(side, p);
+        Vector3 mouthIn = new Vector3(mx, Y + 0.2f, a - 1.5f), elbow = new Vector3(mx, Y + 0.2f, cz), colFoot = new Vector3(cx - 0.3f, Y + 0.2f, cz);
+        string title = GardenPlot.Title(guild);
+        var fieldLv = new TreeLevel
         {
-            name = $"el anillo de nidos {b + 1}", kind = TreeLevel.Kind.Ring, index = b + 1, deck = ring, doorAngle = outAng, field = field,
-            outside = B + h * 3.9f + Vector3.up * yD,
-            door = B + h * (TreeSpec.BulbRadius + 0.1f) + Vector3.up * yD,
-            inside = B + h * 0.8f + Vector3.up * (yD + 0.2f),
-            via = new[] { Sin + Vector3.down * 0.6f, E + Vector3.down * 0.6f, B + Vector3.up * (yD - 0.2f) },   // (pies: el pivote va ~1 m más arriba, por el eje del tubo)
+            name = $"el piso {k} ({title}, en la punta de su rama)", kind = TreeLevel.Kind.Floor, index = k, tip = true, side = side, level = lv,
+            deck = tip, half = E, doorAngle = Mathf.Repeat(side * 90f + 90f, 360f), field = fField,
+            outside = S(fieldOut), door = S(new Vector3(cx + ci + tw * 0.5f, tipY, cz)), inside = S(new Vector3(cx + 0.6f, tipY + 0.2f, cz)),
+            via = new[] { S(mouthIn), S(elbow), S(colFoot) },
         };
+        var ringLv = new TreeLevel
+        {
+            name = $"el anillo {ringN} (encima del piso {k})", kind = TreeLevel.Kind.Ring, index = ringN, side = side, level = lv,
+            deck = rg, half = h.RingOuterHalf, doorAngle = Mathf.Repeat(side * 90f + 270f, 360f), field = rField,
+            outside = S(ringOut), door = S(new Vector3(cx - ci - tw * 0.5f, ringY, cz)), inside = S(new Vector3(cx - 0.6f, ringY + 0.2f, cz)),
+            via = new[] { S(mouthIn), S(elbow), S(colFoot), S(new Vector3(cx, tipY + 0.2f, cz)) },
+        };
+        return (fieldLv, ringLv);
     }
 
-    // Frutales enanos en las esquinas, flores para las abejas de las nieves y nidos de aves en el lado de dentro (el de la
-    // puerta, hacia fuera, queda libre).
-    static void NestRing(Transform ring, float inner)
+    // Frutales enanos en las esquinas, flores para las abejas de las nieves y nidos de aves (el anillo, a la medida del campo).
+    static void NestRing(Transform ring, float inner, float width)
     {
-        float m = inner + TreeSpec.RingWidth * 0.5f;   // la línea central del anillo
+        float m = inner + width * 0.5f;   // la línea central del anillo
         Color trunk = new Color(0.42f, 0.32f, 0.24f);
         Color[] crowns = { new Color(0.45f, 0.62f, 0.38f), new Color(0.52f, 0.66f, 0.34f) };
         Color[] fruit = { new Color(0.92f, 0.45f, 0.2f), new Color(0.85f, 0.2f, 0.25f), new Color(0.95f, 0.8f, 0.25f) };
@@ -354,147 +388,110 @@ public static partial class SampleSceneBuilder
         Color[] petals = { new Color(0.95f, 0.85f, 0.3f), new Color(0.75f, 0.55f, 0.9f), new Color(0.98f, 0.98f, 0.98f), new Color(0.95f, 0.5f, 0.6f) };
         for (int sx = -1; sx <= 1; sx += 2)
         {
-            Transform p = new GameObject("Flores_abejas").transform; p.SetParent(ring, false); p.localPosition = new Vector3(sx * m, 0f, 0f);
+            Transform p = new GameObject("Flores_abejas").transform; p.SetParent(ring, false); p.localPosition = new Vector3(sx * m, 0f, 2f);
             KitchenProps.C(p, new Vector3(0f, 0.2f, 0f), new Vector3(1f, 0.4f, 3.2f), new Color(0.55f, 0.42f, 0.32f), 0f, "Jardinera");
             for (int i = 0; i < 10; i++) KitchenProps.C(p, new Vector3((i % 2 - 0.5f) * 0.5f, 0.5f + (i % 3) * 0.05f, -1.4f + i * 0.31f), Vector3.one * 0.18f, petals[i % 4], 0f, "Flor");
         }
         for (int i = -1; i <= 1; i++)
         {
-            Transform nest = new GameObject("Nido_aves").transform; nest.SetParent(ring, false); nest.localPosition = new Vector3(i * 2.2f, 0f, -m);
+            Transform nest = new GameObject("Nido_aves").transform; nest.SetParent(ring, false); nest.localPosition = new Vector3(i * 2.2f, 0f, m);
             KitchenProps.C(nest, new Vector3(0f, 0.9f, 0f), new Vector3(0.12f, 1.8f, 0.12f), trunk, 0f, "Poste");
             KitchenProps.C(nest, new Vector3(0f, 1.9f, 0f), new Vector3(0.6f, 0.22f, 0.6f), new Color(0.5f, 0.38f, 0.22f), 45f, "Nido");
             KitchenProps.C(nest, new Vector3(0f, 2.02f, 0f), new Vector3(0.36f, 0.08f, 0.36f), new Color(0.3f, 0.22f, 0.14f), 0f, "Hueco");
         }
     }
 
-    // ── LA COPA ──────────────────────────────────────────────────────────────────────────────────────────────
+    // ── EL TECHO ─────────────────────────────────────────────────────────────────────────────────────────────
 
-    static Transform Top(Transform tree)
+    /// <summary>El techo: plataforma cuadrada de 22 m (tan ancha como el tronco) con sus alfombras y la TRAMPILLA sobre el agua
+    /// (0,5 m más abajo: se sale trepando, como de una piscina). Devuelve el techo; <paramref name="hatchField"/> = el campo
+    /// magnético de la trampilla.</summary>
+    static Transform Top(Transform tree, out Transform hatchField)
     {
-        float H = TreeSpec.RootHeight, X = TreeSpec.TopWidth * 0.5f, c = 4f;
-        Transform top = new GameObject("Copa_arbol").transform; top.SetParent(tree, false); top.localPosition = Vector3.up * (H + 0.4f);
-        Solid(top, new Vector3(0f, -0.15f, 0f), new Vector3(2f * X, 0.3f, 2f * (X - c)), TreeDeck, "Losa_copa");
-        Solid(top, new Vector3(0f, -0.15f, 0f), new Vector3(2f * (X - c), 0.3f, 2f * X), TreeDeck, "Losa_copa");
-        for (int sx = -1; sx <= 1; sx += 2)
-            for (int sz = -1; sz <= 1; sz += 2)
-                Solid(top, new Vector3(sx * (X - c), -0.15f, sz * (X - c)), new Vector3(c * 1.4142f, 0.3f, c * 1.4142f), TreeDeck, "Losa_copa").localRotation = Quaternion.Euler(0f, 45f, 0f);
+        float H = TreeSpec.RootHeight, X = TreeSpec.TopWidth * 0.5f, hh = TreeSpec.HatchHalf;
+        Vector3 hc = TreeSpec.HatchLocal; float hz = hc.z;
+        Transform top = new GameObject("Copa_arbol").transform; top.SetParent(tree, false); top.localPosition = Vector3.up * H;
+        void Deck(float x0, float x1, float z0, float z1) => Solid(top, new Vector3((x0 + x1) * 0.5f, -0.15f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 0.3f, z1 - z0), TreeDeck, "Losa_copa");
+        Deck(-X, X, hz + hh, X); Deck(-X, X, -X, hz - hh); Deck(-X, -hh, hz - hh, hz + hh); Deck(hh, X, hz - hh, hz + hh);
+        // La TRAMPILLA: marco de cobre y el campo magnético, horizontal, a ras del agua.
+        Transform hatch = new GameObject("Trampilla").transform; hatch.SetParent(top, false); hatch.localPosition = new Vector3(0f, 0f, hz);
+        for (int s = -1; s <= 1; s += 2)
+        {
+            KitchenProps.C(hatch, new Vector3(s * (hh + 0.08f), 0.06f, 0f), new Vector3(0.16f, 0.12f, 2f * hh + 0.32f), TreeCopper, 0f, "Bobina");
+            KitchenProps.C(hatch, new Vector3(0f, 0.06f, s * (hh + 0.08f)), new Vector3(2f * hh, 0.12f, 0.16f), TreeCopper, 0f, "Bobina");
+        }
+        hatchField = KitchenProps.C(hatch, new Vector3(0f, TreeSpec.WaterTop - H + 0.04f, 0f), new Vector3(2f * hh, 0.02f, 2f * hh), TreeGlow, 0f, "Campo_magnetico");
+        hatchField.gameObject.AddComponent<CampoMagnetico>();
+        Transform land = new GameObject("Salida").transform; land.SetParent(hatch, false); land.localPosition = new Vector3(0f, 0f, 3f);
+        TreeDoorExit ex = hatch.gameObject.AddComponent<TreeDoorExit>();
+        ex.hatch = true; ex.landing = land; ex.zoneCenter = new Vector3(0f, -1.5f, 0f); ex.zoneSize = new Vector3(2f * hh + 0.4f, 3f, 2f * hh + 0.4f);
+        Label(KitchenProps.C(top, new Vector3(0f, 0.1f, hz - hh - 0.6f), new Vector3(0.1f, 0.1f, 0.1f), TreeSteel, 0f, "Cartel_trampilla"),
+              "Trampilla del tronco: salta al agua y nada a tu piso", 1.2f);
         string surf = $"{TreeSpec.Building}#copa";
-        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 2.9f)), top.rotation, CarpetPad.Kind.Edificio, TreeSpec.Building, 9, surf, "Copa (alfombras)", 2);
-        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, -2.9f)), top.rotation, CarpetPad.Kind.Santuario, TreeSpec.Building, 9, surf,
-            $"{TreeSpec.Building}: arrozal, bambusal, milpa, chacra, huerto, rotación, bosque comestible y nidos", 2);
+        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 2.9f)), top.rotation, CarpetPad.Kind.Edificio, TreeSpec.Building, 9, surf, "Techo (alfombras)", 2);
+        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 7.8f)), top.rotation, CarpetPad.Kind.Santuario, TreeSpec.Building, 9, surf,
+            $"{TreeSpec.Building}: bosque comestible, bambusal, arrozal, milpa, huerto, chacra, rotación y nidos", 2);
         return top;
     }
 
-    /// <summary>POSA el árbol (al final de <see cref="PlaceCarpetAreas"/>, con todo ya medido sin girar): cada piso 45° más que el
-    /// de abajo e inclinado ±3°; la cascada de cada canaleta al piso de abajo y las terrazas planas del arrozal.</summary>
+    /// <summary>Al final de <see cref="PlaceCarpetAreas"/>: el árbol v2 ya se construye en su forma (pisos planos, girados de 90 en
+    /// 90°); solo queda anotarlo.</summary>
     static void PoseTree()
     {
         if (_treeRoot == null || _treePosed) return;
         _treePosed = true;
-        Transform tree = _treeRoot;
-        foreach (TreeFloor tf in _treeFloors) if (tf != null) tf.transform.localRotation = TreeSpec.PoseOf(tf.index);
-        foreach (TreeFloor tf in _treeFloors)
-        {
-            if (tf == null) continue;
-            int k = tf.index;
-            float X = TreeSpec.FloorHalf + TreeSpec.FloorEdge, zLow = tf.tilt > 0f ? X - 0.3f : -(X - 0.3f);
-            if (k == 1)
-            {
-                // ARROZAL EN TERRAZAS PLANAS: el bancal, nivelado sobre su terraza (el agua del arroz no corre).
-                GardenPlot gp = tf.GetComponentInChildren<GardenPlot>();
-                if (gp != null)
-                {
-                    gp.transform.localPosition = new Vector3(0f, 0.32f, 18f);
-                    gp.transform.localRotation = Quaternion.Inverse(Quaternion.Euler(tf.tilt, 0f, 0f)) * Quaternion.Euler(0f, 90f, 0f);
-                    Solid(gp.transform, new Vector3(0f, -0.45f, 0f), new Vector3(9.4f, 0.9f, 40f), new Color(0.52f, 0.44f, 0.36f), "Terraza_arrozal");
-                }
-                continue;   // (el agua que sobra del arrozal vuelve a la raíz)
-            }
-            // CASCADA: de la canaleta del borde bajo al piso de abajo (riego por gravedad), vertical.
-            Vector3 g = new Vector3(0f, TreeSpec.FloorY[k - 1], 0f) + TreeSpec.PoseOf(k) * new Vector3(0f, -0.1f, zLow);
-            Vector3 n = TreeSpec.PoseOf(k - 1) * Vector3.up;
-            float below = TreeSpec.FloorY[k - 2] - (n.x * g.x + n.z * g.z) / n.y;
-            float L = g.y - below;
-            if (L < 0.5f) continue;
-            Transform cas = KitchenProps.C(tf.transform, Vector3.zero, new Vector3(4f, L, 0.08f), new Color(0.55f, 0.75f, 0.88f, 0.35f), 0f, "Cascada");
-            cas.position = tree.TransformPoint(g + Vector3.down * (L * 0.5f));
-            cas.rotation = tree.rotation * Quaternion.Euler(0f, TreeSpec.YawOf(k), 0f);
-        }
-        Debug.Log($"[Árbol] Posado: {_treeFloors.Count} pisos girados 45° uno sobre otro e inclinados ±{TreeSpec.Tilt:0}° (acordeón), cascadas de riego y arrozal en terrazas.");
+        Debug.Log($"[Árbol] Hélice lista: {_treeFloors.Count} plataformas (pisos pegados al tronco y campos de punta), lados alternos de un nivel al siguiente.");
     }
 
     // ── MALLAS ───────────────────────────────────────────────────────────────────────────────────────────────
 
-    /// <summary>TUBO de pared gruesa (eje Y local, de <paramref name="y0"/> a <paramref name="y1"/>) en celdas de
-    /// 360/<paramref name="segs"/>° con HUECOS (puertas, bocas): una celda falta si su centro cae dentro de un hueco. Caras de
-    /// fuera, de dentro y los cantos de los huecos y los extremos: sirve para verse y para chocar (MeshCollider).</summary>
-    static Mesh TubeMesh(string name, float rIn, float rOut, float y0, float y1, int segs, List<(float ang, float half, float y0, float y1)> gaps)
+    /// <summary>Una PARED plana con HUECOS: en el marco (<paramref name="q"/>, <paramref name="o"/>), x de <paramref name="x0"/> a
+    /// <paramref name="x1"/>, y de <paramref name="y0"/> a <paramref name="y1"/>, grosor de z = <paramref name="zIn"/> a
+    /// <paramref name="zOut"/>. Celdas cortadas por los bordes de los huecos (y cada 8 m de alto); una celda falta si su centro
+    /// cae en un hueco. Caras de fuera, de dentro y los cantos de los huecos y los extremos: sirve para verse y para chocar.</summary>
+    static void Panel(List<Vector3> v, List<int> t, Quaternion q, Vector3 o, float x0, float x1, float y0, float y1, float zIn, float zOut, List<Rect> gaps)
     {
-        var ys = new List<float> { y0, y1 };
-        if (gaps != null) foreach (var g in gaps) { if (g.y0 > y0 && g.y0 < y1) ys.Add(g.y0); if (g.y1 > y0 && g.y1 < y1) ys.Add(g.y1); }
-        for (float y = y0 + 8f; y < y1; y += 8f) ys.Add(y);   // (celdas no muy altas)
-        ys.Sort(); for (int i = ys.Count - 1; i > 0; i--) if (ys[i] - ys[i - 1] < 0.01f) ys.RemoveAt(i);
-        int rows = ys.Count - 1;
-        float step = 360f / segs;
-        bool[,] solid = new bool[segs, rows];
-        for (int i = 0; i < segs; i++)
-            for (int j = 0; j < rows; j++)
+        var xs = new List<float> { x0, x1 }; var ys = new List<float> { y0, y1 };
+        foreach (Rect g in gaps)
+        {
+            if (g.xMin > x0 && g.xMin < x1) xs.Add(g.xMin); if (g.xMax > x0 && g.xMax < x1) xs.Add(g.xMax);
+            if (g.yMin > y0 && g.yMin < y1) ys.Add(g.yMin); if (g.yMax > y0 && g.yMax < y1) ys.Add(g.yMax);
+        }
+        for (float y = y0 + 8f; y < y1; y += 8f) ys.Add(y);
+        xs.Sort(); ys.Sort();
+        for (int i = xs.Count - 1; i > 0; i--) if (xs[i] - xs[i - 1] < 0.01f) xs.RemoveAt(i);
+        for (int i = ys.Count - 1; i > 0; i--) if (ys[i] - ys[i - 1] < 0.01f) ys.RemoveAt(i);
+        int nx = xs.Count - 1, ny = ys.Count - 1;
+        bool[,] solid = new bool[nx, ny];
+        for (int i = 0; i < nx; i++)
+            for (int j = 0; j < ny; j++)
             {
-                float a = (i + 0.5f) * step, ym = (ys[j] + ys[j + 1]) * 0.5f; bool s = true;
-                if (gaps != null) foreach (var g in gaps) if (Mathf.Abs(Mathf.DeltaAngle(a, g.ang)) <= g.half && ym > g.y0 && ym < g.y1) { s = false; break; }
+                Vector2 c = new Vector2((xs[i] + xs[i + 1]) * 0.5f, (ys[j] + ys[j + 1]) * 0.5f); bool s = true;
+                foreach (Rect g in gaps) if (g.Contains(c)) { s = false; break; }
                 solid[i, j] = s;
             }
-        var v = new List<Vector3>(); var t = new List<int>();
-        void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d) { int o = v.Count; v.Add(a); v.Add(b); v.Add(c); v.Add(d); t.Add(o); t.Add(o + 2); t.Add(o + 1); t.Add(o); t.Add(o + 3); t.Add(o + 2); }   // (al revés: las caras miran hacia fuera de la pared)
-        Vector3 P(float ang, float r, float y) => TreeSpec.Dir(ang) * r + Vector3.up * y;
-        for (int i = 0; i < segs; i++)
+        Vector3 P(float x, float y, float z) => o + q * new Vector3(x, y, z);
+        void Quad(Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 n)
         {
-            float a0 = i * step, a1 = (i + 1) * step;
-            for (int j = 0; j < rows; j++)
+            int k = v.Count;
+            if (Vector3.Dot(Vector3.Cross(b - a, c - a), q * n) < 0f) { Vector3 tmp = b; b = d; d = tmp; }
+            v.Add(a); v.Add(b); v.Add(c); v.Add(d); t.Add(k); t.Add(k + 1); t.Add(k + 2); t.Add(k); t.Add(k + 2); t.Add(k + 3);
+        }
+        for (int i = 0; i < nx; i++)
+            for (int j = 0; j < ny; j++)
             {
                 if (!solid[i, j]) continue;
-                float ya = ys[j], yb = ys[j + 1];
-                // (brújula: el ángulo crece en el sentido de las agujas visto desde arriba; Unity es de mano izquierda)
-                Quad(P(a0, rOut, ya), P(a0, rOut, yb), P(a1, rOut, yb), P(a1, rOut, ya));   // fuera
-                Quad(P(a1, rIn, ya), P(a1, rIn, yb), P(a0, rIn, yb), P(a0, rIn, ya));       // dentro
-                if (j == 0 || !solid[i, j - 1]) Quad(P(a0, rIn, ya), P(a0, rOut, ya), P(a1, rOut, ya), P(a1, rIn, ya));          // abajo
-                if (j == rows - 1 || !solid[i, j + 1]) Quad(P(a1, rIn, yb), P(a1, rOut, yb), P(a0, rOut, yb), P(a0, rIn, yb));   // arriba
-                if (!solid[(i + segs - 1) % segs, j]) Quad(P(a0, rIn, ya), P(a0, rIn, yb), P(a0, rOut, yb), P(a0, rOut, ya));    // canto del hueco
-                if (!solid[(i + 1) % segs, j]) Quad(P(a1, rOut, ya), P(a1, rOut, yb), P(a1, rIn, yb), P(a1, rIn, ya));
+                float xa = xs[i], xb = xs[i + 1], ya = ys[j], yb = ys[j + 1];
+                Quad(P(xa, ya, zOut), P(xa, yb, zOut), P(xb, yb, zOut), P(xb, ya, zOut), Vector3.forward);   // fuera
+                Quad(P(xa, ya, zIn), P(xa, yb, zIn), P(xb, yb, zIn), P(xb, ya, zIn), Vector3.back);         // dentro
+                if (j == 0 || !solid[i, j - 1]) Quad(P(xa, ya, zIn), P(xb, ya, zIn), P(xb, ya, zOut), P(xa, ya, zOut), Vector3.down);
+                if (j == ny - 1 || !solid[i, j + 1]) Quad(P(xa, yb, zIn), P(xb, yb, zIn), P(xb, yb, zOut), P(xa, yb, zOut), Vector3.up);
+                if (i == 0 || !solid[i - 1, j]) Quad(P(xa, ya, zIn), P(xa, yb, zIn), P(xa, yb, zOut), P(xa, ya, zOut), Vector3.left);
+                if (i == nx - 1 || !solid[i + 1, j]) Quad(P(xb, ya, zIn), P(xb, yb, zIn), P(xb, yb, zOut), P(xb, ya, zOut), Vector3.right);
             }
-        }
-        return Finish(name, v, t);
     }
 
-    /// <summary>LOSA de un piso: octógono (rectángulo + <c>X</c>, chaflanes <paramref name="c"/>) con un agujero redondo de
-    /// <paramref name="hole"/> m para la raíz; cara de arriba a y = 0, de <paramref name="thick"/> m.</summary>
-    static Mesh SlabMesh(string name, float X, float c, float hole, float thick)
-    {
-        var corners = new List<Vector3>   // en el sentido de la brújula, empezando en +Z
-        {
-            new Vector3(X - c, 0f, X), new Vector3(X, 0f, X - c), new Vector3(X, 0f, -(X - c)), new Vector3(X - c, 0f, -X),
-            new Vector3(-(X - c), 0f, -X), new Vector3(-X, 0f, -(X - c)), new Vector3(-X, 0f, X - c), new Vector3(-(X - c), 0f, X),
-        };
-        var outer = new List<Vector3>();
-        for (int e = 0; e < 8; e++) for (int s = 0; s < 8; s++) outer.Add(Vector3.Lerp(corners[e], corners[(e + 1) % 8], s / 8f));
-        // (empezar en el ángulo más bajo para que los pares exterior–interior vayan en orden)
-        int n = outer.Count;
-        var v = new List<Vector3>(); var t = new List<int>();
-        void Quad(Vector3 a, Vector3 b, Vector3 cc, Vector3 d) { int o = v.Count; v.Add(a); v.Add(b); v.Add(cc); v.Add(d); t.Add(o); t.Add(o + 1); t.Add(o + 2); t.Add(o); t.Add(o + 2); t.Add(o + 3); }
-        Vector3 In(Vector3 p) => new Vector3(p.x, 0f, p.z).normalized * hole;
-        Vector3 down = Vector3.down * thick;
-        for (int i = 0; i < n; i++)
-        {
-            Vector3 o0 = outer[i], o1 = outer[(i + 1) % n], i0 = In(o0), i1 = In(o1);
-            Quad(i0, o0, o1, i1);                              // arriba
-            Quad(i1 + down, o1 + down, o0 + down, i0 + down);  // abajo
-            Quad(o0, o0 + down, o1 + down, o1);                // canto de fuera
-            Quad(i1, i1 + down, i0 + down, i0);                // canto del hueco
-        }
-        return Finish(name, v, t);
-    }
-
-    /// <summary>Muchas cajas (centro, tamaño, giro) en una sola malla (los nervios y zunchos: miles de piezas, un solo dibujo).</summary>
+    /// <summary>Muchas cajas (centro, tamaño, giro) en una sola malla (los nervios y zunchos: cientos de piezas, un solo dibujo).</summary>
     static Mesh BoxesMesh(string name, List<(Vector3 c, Vector3 s, Quaternion q)> boxes)
     {
         var v = new List<Vector3>(); var t = new List<int>();
@@ -510,10 +507,10 @@ public static partial class SampleSceneBuilder
                 t.Add(o); t.Add(o + 1); t.Add(o + 2); t.Add(o); t.Add(o + 2); t.Add(o + 3);
             }
         }
-        return Finish(name, v, t);
+        return TreeMesh(name, v, t);
     }
 
-    static Mesh Finish(string name, List<Vector3> v, List<int> t)
+    static Mesh TreeMesh(string name, List<Vector3> v, List<int> t)
     {
         Mesh m = new Mesh { name = name };
         if (v.Count > 65000) m.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;

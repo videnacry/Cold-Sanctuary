@@ -128,6 +128,9 @@ public class PlayerController : MonoBehaviour
     float InH => scriptedInput.HasValue ? scriptedInput.Value.x : GameKeys.GetAxisRaw("Horizontal");
     float InV => scriptedInput.HasValue ? scriptedInput.Value.z : GameKeys.GetAxisRaw("Vertical");
     float InUpDown => scriptedInput.HasValue ? scriptedInput.Value.y : (GameKeys.GetKey(jumpKey) ? 1f : 0f) - (GameKeys.GetKey(swimDownKey) ? 1f : 0f);
+    /// <summary>Hacia dónde QUIERE moverse ahora (mundo; de su entrada, aunque una pared lo frene): lo miran las puertas del
+    /// Árbol de los Campos para sacarlo del agua (<see cref="TreeDoorExit"/>).</summary>
+    public Vector3 MoveIntent => transform.right * InH + transform.forward * InV + Vector3.up * InUpDown;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
