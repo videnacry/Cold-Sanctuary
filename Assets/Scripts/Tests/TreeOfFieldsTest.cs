@@ -123,7 +123,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         {
             PathMover pm = PathMover.Of(body.transform); pm.Restart();
             Vector3 from = body.transform.position, last = from, lastDir = Vector3.zero;
-            float walked = 0f, minBreath = 1f; int reversals = 0, jumps = 0; bool swam = false; string jumpWhy = "";
+            float walked = 0f, minBreath = 1f; int reversals = 0, jumps = 0; bool swam = false; string jumpWhy = ""; string crumbs = ""; float crumbAt = 0f;
             float end = Time.time + 240f, lastT = Time.time, prevDt = 0f;
             while (Time.time < end)
             {
@@ -139,6 +139,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
                 float span = Mathf.Max(dt, prevDt); prevDt = dt;   // (el paso propio se dio con el delta del fotograma anterior)
                 if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumps++; if (jumpWhy.Length < 240) jumpWhy += $"{step.magnitude:0.0} m en {dt:0.00} s ({last.x:0},{last.y:0},{last.z:0})→({p.x:0},{p.y:0},{p.z:0}){(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
                 walked += step.magnitude;
+                if (walked >= crumbAt && !TreeTrip.Busy(body) && crumbs.Length < 900) { crumbAt = walked + 3f; Vector3 lp = t.transform.InverseTransformPoint(p); crumbs += $"[{walked:0}m local ({lp.x:0.0},{lp.y:0.0},{lp.z:0.0})] "; }
                 if (step.magnitude > 0.03f)
                 {
                     Vector3 dir = step.normalized;
@@ -155,7 +156,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             var rec = new Orchestra.WalkRecord { who = body.name, label = leg.name, walked = walked, straight = straight, reversals = reversals };
             TestProbe.Check($"un personaje va {leg.name} nadando por la raíz", arrived && swam, $"llega {arrived} (a {left.magnitude:0.0} m, en {t.LevelAt(body.transform.position)?.name ?? "ningún nivel"}), nadó {swam}");
             TestProbe.Check($"{leg.name}: sin teletransportes ni saltos", jumps == 0, $"{jumps} saltos {jumpWhy}");
-            TestProbe.Check($"{leg.name}: sin dar vueltas (≤ 1,6× la recta + 3 m, ≤ 2 medias vueltas)", !Orchestra.Circled(rec), $"{walked:0.0} m para {straight:0.0} en recta, {reversals} medias vueltas");
+            TestProbe.Check($"{leg.name}: sin dar vueltas (≤ 1,6× la recta + 3 m, ≤ 2 medias vueltas)", !Orchestra.Circled(rec), $"{walked:0.0} m para {straight:0.0} en recta, {reversals} medias vueltas" + (Orchestra.Circled(rec) ? $"; andando: {crumbs}" : ""));
             TestProbe.Check($"{leg.name}: no se queda sin aire", minBreath > 0f, $"aliento mínimo {minBreath:0.00}");
         }
         TestProbe.Check("los viajes por la raíz se hicieron nadando (TreeTrip), sin atascos", TreeTrip.Trips - trips0 >= 2 && TreeTrip.Stuck == 0, $"{TreeTrip.Trips - trips0} viajes, {TreeTrip.Stuck} atascos");

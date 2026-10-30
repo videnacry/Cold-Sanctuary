@@ -133,7 +133,12 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             }
             yield return null;
         }
-        if (lastStep >= 0 && !stepCopied) slow += $"{lastStep + 1}·";
+        // EL ÚLTIMO PASO, con la misma regla que los demás: la clase solo termina antes de su tope cuando TODOS lo hacen; si
+        // terminó entre dos fotogramas (en el mismo en que lo copiaron), el bucle ya no lo ve: también vale (antes el paso 36
+        // salía «sin copiar» en la batería completa, que va a menos fotogramas por segundo).
+        if (lastStep >= 0 && !stepCopied && prev != null && c != null && c.Now == YogaClass.Phase.Done && Time.time - stepAt < Mathf.Min(c.stepTimeout, copyLimit + prev.duration * prev.reachFraction))
+        { stepCopied = true; copied++; worstCopy = Mathf.Max(worstCopy, Time.time - stepAt); }
+        if (lastStep >= 0 && !stepCopied) slow += $"{lastStep + 1}({errTxt}, {Time.time - stepAt:0.0} s)·";
         TestProbe.Check("la clase llega al final de la secuencia", c == null || c.Now == YogaClass.Phase.Done, $"{steps} pasos");
         TestProbe.Check($"en cada paso todos los practicantes copian la postura del maestro (al llegar la postura + {copyLimit:0} s) (±{tolerance:0}°)", copied == steps,
             $"{copied}/{steps} pasos (el más lento {worstCopy:0.0} s){(slow.Length > 0 ? " · sin copiar a tiempo: " + slow : "")}");

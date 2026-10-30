@@ -85,6 +85,7 @@ public static class DesireCatalog
             self =>
             {
                 if (self.nav == null || !self.nav.isOnNavMesh) return;
+                if (PenWander(self)) return;   // en un recinto de la Cría: no hay pareja que alcanzar; curiosea por su recinto
                 // Si alguien de su especie LLAMA (destellos de luciérnaga, canto de cigarra) y lo percibe, va hacia él.
                 MatingSignal caller = MatingSignal.NearestCaller(self, 40f * Mathf.Max(0.3f, self.perception));
                 if (caller != null && self.sex == Sex.female) { self.nav.SetDestination(caller.transform.position); return; }
@@ -194,10 +195,32 @@ public static class DesireCatalog
         new Desire("explore",
             self => W_EXPLORE * Mathf.Clamp01((self.reasoning + self.creativity) * 0.5f),
             // UnityEngine.Random explícito: el `using System` de arriba trae System.Random y el nombre corto es ambiguo (CS0104).
-            // (la cría de un recinto de la Cría curiosea por su recinto, a ≤ 1,5 m de su sitio: no contra los muros)
-            self => { if (self.nav != null && self.nav.isOnNavMesh) { bool pen = self.GetComponentInParent<CriaFeeder>() != null; Vector2 r = UnityEngine.Random.insideUnitCircle * (pen ? 1.5f : 8f); self.nav.SetDestination((pen ? self.HomeOrigin : self.transform.position) + new Vector3(r.x, 0f, r.y)); } },
+            // (la cría de un recinto de la Cría curiosea por su recinto: PenWander)
+            self => { if (self.nav != null && self.nav.isOnNavMesh && !PenWander(self)) { Vector2 r = UnityEngine.Random.insideUnitCircle * 8f; self.nav.SetDestination(self.transform.position + new Vector3(r.x, 0f, r.y)); } },
             "explore"),
     };
+
+    /// <summary>
+    /// UN ANIMAL DE UN RECINTO DE LA CRÍA (hijo de un <see cref="CriaFeeder"/>) curiosea por su recinto: un sitio nuevo a 1–2,2 m
+    /// del suyo y al menos a 0,8 m de donde está (con 1,5 m al azar caía a menudo dentro de la distancia de parada y no se
+    /// movía: la jornada lo contaba «atascado > 20 s queriendo explorar»; las crías crecen con el reloj acelerado y, ya adultas,
+    /// el celo las mandaba hacia una pareja de fuera del recinto que no alcanzaban). Devuelve false si no está en un recinto.
+    /// </summary>
+    static bool PenWander(Animal self)
+    {
+        if (self.GetComponentInParent<CriaFeeder>() == null) return false;
+        if (self.nav.hasPath && self.nav.remainingDistance > 0.5f) return true;   // aún va hacia el último sitio
+        Vector3 here = self.transform.position, best = self.HomeOrigin;
+        for (int i = 0; i < 6; i++)
+        {
+            Vector2 r = UnityEngine.Random.insideUnitCircle.normalized * UnityEngine.Random.Range(1f, 2.2f);
+            Vector3 p = self.HomeOrigin + new Vector3(r.x, 0f, r.y);
+            best = p;
+            if (new Vector2(p.x - here.x, p.z - here.z).magnitude >= 0.8f) break;
+        }
+        self.nav.SetDestination(best);
+        return true;
+    }
 
     // ── PESOS DE LA ARENA (docs/consciousness-mechanics.md §4) — afinables. Filosofía: la SUPERVIVENCIA gana cuando
     // aprieta (eat = hambre, que puede ser >1; la amenaza es reflejo aparte), pero lo SOCIAL gana cuando el ser está

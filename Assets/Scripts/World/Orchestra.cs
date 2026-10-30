@@ -50,6 +50,7 @@ public class Orchestra
         /// <summary>Lo que hace ahora (para el registro y las pruebas).</summary>
         public string Doing { get; internal set; } = "";
         internal float maxBlend, walked, best; internal int reversals, frames, sideSign; internal Vector3 lastSample, lastDir; internal bool fellBack;
+        internal Vector3 goalWas = new Vector3(float.NaN, 0f, 0f);   // el sitio al que iba (si se corre, se recalcula el camino)
         internal Role(string n, Transform t) { name = n; body = t; anima = t != null ? t.GetComponentInParent<Anima>() : null; }
     }
 
@@ -221,7 +222,7 @@ public class Orchestra
             case Kind.GoTo:
                 r.Walking = true; r.pinned = false; r.maxBlend = 0f;
                 if (r.body != null) { r.anchor = r.from = r.lastSample = r.body.position; PathMover.Of(r.body).Restart(); }
-                r.walked = 0f; r.reversals = 0; r.lastDir = Vector3.zero; r.fellBack = false;
+                r.walked = 0f; r.reversals = 0; r.lastDir = Vector3.zero; r.fellBack = false; r.goalWas = new Vector3(float.NaN, 0f, 0f);
                 r.lastMove = Time.time; r.best = float.MaxValue; r.frames = 0;
                 if (r.anima != null) DailyPoses.Stand().ApplyFinal(r.anima);   // de pie antes de andar (venía sentado o en un gesto)
                 break;
@@ -309,6 +310,10 @@ public class Orchestra
             Emergency(r.body, goal, $"[Orquesta {title}] {r.name} lleva {still:0} s sin poder andar hacia su sitio ({_movs[_mov].name})");
             return true;
         }
+        // SI SU SITIO SE CORRE (Free: el otro ya se sentó junto a él), camino nuevo YA: PathMover solo recalcula si el destino se
+        // mueve más de 3 m o cada 4 s, y seguía hasta el sitio viejo y volvía (Linduarda, 16 m para 8 y dos medias vueltas).
+        if (!float.IsNaN(r.goalWas.x) && Flat(goal - r.goalWas).magnitude > 0.4f) PathMover.Of(r.body).Restart();
+        r.goalWas = goal;
         PathMover.Of(r.body).StepToward(goal, walkSpeed);
         Separate(r, goal);
         Track(r);
