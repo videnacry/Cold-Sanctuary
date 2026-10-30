@@ -320,6 +320,20 @@ public class SpellConsole : MonoBehaviour
     /// <summary>LANZADOR ADMIN (hechizo <c>admin</c>): se conocen TODOS los hechizos del juego, sin aprenderlos.</summary>
     public static bool Admin;
 
+    /// <summary>MIEMBRO DEL SANTUARIO sin examen ni iniciaciones (hechizo admin <c>miembro</c> y la entrada «Kushal iniciado»
+    /// de Inicio): suelta al iniciador que lo llevara, marca todo el onboarding hecho y le devuelve el cuerpo y la cámara.
+    /// Devuelve el mensaje, o null si <paramref name="mg"/> no tiene onboarding (ya es del santuario o no existe).</summary>
+    public static string MakeMember(GameObject mg)
+    {
+        SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
+        if (ob == null) return null;
+        foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
+        ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true;
+        if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
+        if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
+        return $"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.";
+    }
+
     public static bool KnowsSpell(Anima self, string spell)
     {
         if (Admin) return true;
@@ -533,13 +547,8 @@ public class SpellConsole : MonoBehaviour
                     if (!Admin) { Log("«miembro» es de administrador: lanza antes admin()."); break; }
                     string mw = args.TryGetValue("destiny", out string md) ? Clean(md) : "";
                     GameObject mg = mw.Length == 0 || mw == "Kushal" ? GameObject.FindGameObjectWithTag("Player") : GameObject.Find(mw);
-                    SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
-                    if (ob == null) { Log(mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."); break; }
-                    foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
-                    ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = ob.gardenTrained = true;
-                    if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
-                    if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
-                    Log($"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.");
+                    string mr = MakeMember(mg);
+                    Log(mr ?? (mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."));
                 }
                 break;
             case "tercera": case "third":   // 3.ª PERSONA SIEMPRE: ninguna zona, examen ni robo de cámara la pasa a 1.ª
