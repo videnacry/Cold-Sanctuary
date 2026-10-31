@@ -116,6 +116,8 @@ public class SanctuaryArea : MonoBehaviour
     /// sobre el gimnasio) no cuenta: para el puesto de trabajo se usa <see cref="InBuilding"/>.</summary>
     public bool Contains(Vector3 p, float margin = 1f)
     {
+        ArbolCampos tr = TreeOf();
+        if (tr != null) return OwnTreeLevel(tr, p) || tr.InRootWater(p);   // sus plantas y sus anillos (o nadando entre ellas)
         Transform mat = transform.Find("Mat");
         Vector3 half = mat != null ? mat.localScale * 0.5f : new Vector3(12f, 0f, 12f);
         Vector3 l = transform.InverseTransformPoint(p);
@@ -123,6 +125,25 @@ public class SanctuaryArea : MonoBehaviour
         bool onMat = Mathf.Abs(l.x) <= half.x + margin && Mathf.Abs(l.z) <= half.z + margin;
         if (!onMat && (ring <= 0f || l.y < _ringMinY - 0.5f || Mathf.Abs(l.x) > half.x + margin + ring || Mathf.Abs(l.z) > half.z + margin + ring)) return false;   // fuera de la planta: solo sobre el anillo
         return l.y > -2f && l.y < Top() + 3f;
+    }
+
+    // EDIFICIO-ÁRBOL (docs/edificio-arbol.md §Migración): sus pisos no van apilados, salen del tronco en hélice. El árbol del
+    // área (null si el área no es un piso de uno: el Huerto es una franja de un piso del Árbol de los Campos y sigue con su
+    // planta).
+    ArbolCampos _tree; bool _treeChecked;
+    ArbolCampos TreeOf()
+    {
+        if (_treeChecked) return _tree;
+        ArbolCampos t = GetComponentInParent<ArbolCampos>();
+        if (t == null || t.levels.Count == 0) return null;
+        _treeChecked = true;
+        _tree = t.levels.Exists(l => l.deck == transform) ? t : null;
+        return _tree;
+    }
+    bool OwnTreeLevel(ArbolCampos t, Vector3 p)
+    {
+        TreeLevel lv = t.LevelAt(p);
+        return lv != null && lv.deck != null && lv.kind != TreeLevel.Kind.Ground && lv.deck.IsChildOf(transform);
     }
 
     // ANILLOS (RingDeck, Berón 2026-10-23): las plataformas hijas en anillo vuelan ~8 m fuera del borde y son del área.
@@ -149,6 +170,8 @@ public class SanctuaryArea : MonoBehaviour
     /// trabaja en un área puede moverse por todo su edificio; el suelo de debajo NO cuenta.</summary>
     public bool InBuilding(Vector3 p)
     {
+        ArbolCampos tr = TreeOf();
+        if (tr != null) { TreeLevel lv = tr.LevelAt(p); return (lv != null && lv.kind != TreeLevel.Kind.Ground) || tr.InRootWater(p); }
         float lo = float.MaxValue, hi = float.MinValue;
         foreach (SanctuaryArea a in Building) { lo = Mathf.Min(lo, a.transform.position.y); hi = Mathf.Max(hi, a.transform.position.y + a.Top()); }
         if (p.y < lo - 2f || p.y > hi + 15f) return false;   // del piso de abajo a la pista de arriba (+11 m y su gente)
@@ -165,6 +188,8 @@ public class SanctuaryArea : MonoBehaviour
         {
             if (_building != null) return _building;
             _building = new List<SanctuaryArea> { this };
+            ArbolCampos tr = TreeOf();
+            if (tr != null) { foreach (SanctuaryArea a in tr.GetComponentsInChildren<SanctuaryArea>()) if (a != this) _building.Add(a); return _building; }
             foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None))
                 if (a != this && Mathf.Abs(a.transform.position.y - transform.position.y) > 3f && (InFootprint(a.transform.position, 0f, false) || a.InFootprint(transform.position, 0f, false)))   // sin el anillo: no une edificios vecinos
                     _building.Add(a);

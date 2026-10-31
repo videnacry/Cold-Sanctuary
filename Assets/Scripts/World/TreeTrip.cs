@@ -57,7 +57,8 @@ public class TreeTrip : MonoBehaviour
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
         if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
-        float budget = (Wet(_i) ? _tree.routeSwimSpeed + (AlongColumn(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
+        // Como mucho 1,2 m por fotograma (como PathMover): con pocos FPS y el tiempo acelerado, un tramo de más parecía un salto.
+        float budget = Mathf.Min(1.2f, (Wet(_i) ? _tree.routeSwimSpeed + (AlongColumn(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime);
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
         {
             Vector3 target = _tree.World(_path[_i]) + Vector3.up * _ph;

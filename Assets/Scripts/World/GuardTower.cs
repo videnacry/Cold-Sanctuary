@@ -10,12 +10,16 @@ using UnityEngine;
 /// </summary>
 public static class GuardTower
 {
-    public const float TreeHeight = 83f;   // caso ÚNICO: el árbol de la guardia mide 83 m (los demás, 20–40 m)
+    public const float BaseHeight = 83f;   // caso ÚNICO: el árbol de la guardia medía 83 m (los demás, 20–40 m)
+    /// <summary>Su altura: la EXCEPCIÓN a «el primer piso de los edificios-árbol, por encima del árbol más alto» (Berón 2026-10-31: es
+    /// un árbol modificado): crece tan alto como el edificio más alto (lo fija el constructor; si no, 83 m). Crece en alto, no en
+    /// ancho (sus ramas, como las del de 83 m) y sus ramas esquivan los edificios (<see cref="Build"/>, blocked).</summary>
+    public static float TreeHeight = BaseHeight;
     public const float DeckHeight = 11f;   // bajo el primer piso de ramas (≈15 m): la cabaña no queda atravesada
 
-    public static Transform Build(Transform parent, Vector3 groundPos)
+    public static Transform Build(Transform parent, Vector3 groundPos, System.Func<Vector3, bool> blocked = null)
     {
-        GameObject treeGO = CubeTree.Build(parent, "CasaArbolGuardia", groundPos, 4242, TreeHeight, carnivorous: false);
+        GameObject treeGO = CubeTree.Build(parent, "CasaArbolGuardia", groundPos, 4242, TreeHeight, carnivorous: false, blocked: blocked, reachHeight: BaseHeight);
         Transform t = treeGO.transform;
         Color wood = new Color(0.62f, 0.52f, 0.42f), woodDark = new Color(0.48f, 0.4f, 0.33f), roof = new Color(0.55f, 0.66f, 0.75f),
               glass = new Color(0.75f, 0.88f, 0.95f), lamp = new Color(1f, 0.85f, 0.45f);

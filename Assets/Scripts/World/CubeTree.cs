@@ -21,7 +21,7 @@ public static class CubeTree
         return cache;
     }
 
-    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null)
+    public static GameObject Build(Transform parent, string name, Vector3 groundPos, int seed, float height = 16f, bool carnivorous = true, System.Func<Vector3, bool> blocked = null, float reachHeight = -1f)
     {
         // TAMAÑO BASE ×1,3: las áreas humanas están ahora a 12 m y los árboles deben seguir dominando el bosque (el árbol
         // guardián, de 83 m, ya tiene su altura fijada y no se escala).
@@ -69,7 +69,7 @@ public static class CubeTree
             float tf = tiers > 1 ? tier / (float)(tiers - 1) : 0.5f;
             float y = height * Mathf.Lerp(0.38f, 0.82f, tf);
             int count = height < 6f ? 3 : 5 - tier;
-            float reach = Mathf.Lerp(7f, 3.5f, tf) * (height / 16f);
+            float reach = Mathf.Lerp(7f, 3.5f, tf) * ((reachHeight > 0f ? reachHeight : height) / 16f);   // (el de la guardia crece en alto, no en ancho)
             float offset = R(0f, 360f);
             for (int b = 0; b < count; b++)
             {

@@ -51,10 +51,10 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             var pads = roof.GetComponentsInChildren<CarpetPad>().Select(c => { BoxCollider bc = c.GetComponent<BoxCollider>(); Vector3 e = c.transform.rotation * bc.size; return new Bounds(c.transform.TransformPoint(bc.center), new Vector3(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z))); }).ToList();
             float worst = float.MaxValue;
             foreach (FruitPlant p in kv.Value) { Bounds b = Box(p.transform); foreach (Bounds q in pads) worst = Mathf.Min(worst, Gap(b, q)); }
-            TestProbe.Check($"techo de {kv.Key}: las macetas a ≥ 2 m de las áreas de alfombras", pads.Count > 0 && worst >= 1.95f, $"la más cerca a {worst:0.00} m de {pads.Count} áreas");
+            bool tipRoof = roof.GetComponent<TreeFloor>() != null;   // las puntas de una torre-árbol no tienen alfombras (se llega nadando)
+            TestProbe.Check($"techo de {kv.Key}: las macetas a ≥ 2 m de las áreas de alfombras", (tipRoof || pads.Count > 0) && worst >= 1.95f, $"la más cerca a {worst:0.00} m de {pads.Count} áreas");
             // RIEGO POR GOTEO (Berón 2026-10-31): cabezal en su punto, tubería por el techo y un gotero en cada maceta.
-            Transform net = roof.Find("Riego_goteo_" + kv.Key);
-            int pipes = net != null ? net.GetComponentsInChildren<Renderer>().Count(r => r.name == "Tuberia_goteo") : 0;
+            int pipes = FindObjectsByType<Transform>(FindObjectsSortMode.None).Where(t => t.name == "Riego_goteo_" + kv.Key).Sum(net => net.GetComponentsInChildren<Renderer>().Count(r => r.name == "Tuberia_goteo"));   // (en una torre-árbol, uno por punta)
             int drips = kv.Value.Count(p => p.drip && p.transform.Find("Gotero") != null);
             bool headOk = FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None).Any(s => s.building == kv.Key && s.transform.Find("Cabezal_riego") != null);
             TestProbe.Check($"techo de {kv.Key}: riego por goteo (cabezal, tubería y un gotero por maceta)", headOk && pipes >= kv.Value.Count && drips == kv.Value.Count, $"cabezal {(headOk ? "sí" : "no")}, {pipes} tramos, {drips}/{kv.Value.Count} goteros");

@@ -26,7 +26,7 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
 
         TestProbe.Check("hay NavMesh en el hub", OnMesh(hub, out Vector3 a));
-        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("la torre de Servicios (cocina y hospital)", new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería", new Vector3(55f, 0f, 106f)) })
+        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería", new Vector3(55f, 0f, 106f)) })
         {
             bool onB = OnMesh(target, out Vector3 b);
             var path = new NavMeshPath();

@@ -2355,6 +2355,9 @@ public static partial class SampleSceneBuilder
         // del horneado general, y el pie de la raíz (la columna de agua) no se anda.
         GameObject tree = GameObject.Find(TreeSpec.RootName);
         if (tree != null) { RootNoWalk(tree.transform); tree.SetActive(false); }
+        // Las TORRES-ÁRBOL (quietas) van en el NavMesh general, sin su agua, sus campos, sus tubos ni su pared; su pie no se anda.
+        foreach (ArbolCampos t in Object.FindObjectsByType<ArbolCampos>(FindObjectsSortMode.None))
+            if (tree == null || t.gameObject != tree) { HelixNavIgnore(t.transform); RootNoWalk(t.transform); }
         NavMeshSurface surface = ground.GetComponent<NavMeshSurface>();
         if (surface == null) surface = ground.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
@@ -2384,9 +2387,9 @@ public static partial class SampleSceneBuilder
     // puerta del suelo (a 14 m del eje, delante de su cara) sigue siendo andable.
     static void RootNoWalk(Transform tree)
     {
-        Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable") : null;
+        Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable_" + tree.name) : null;
         if (old != null) Object.DestroyImmediate(old.gameObject);
-        Transform g = new GameObject("Raiz_no_andable").transform; g.SetParent(tree.parent, false); g.position = tree.position;
+        Transform g = new GameObject("Raiz_no_andable_" + tree.name).transform; g.SetParent(tree.parent, false); g.position = tree.position;
         float R = TreeSpec.OuterHalf + 0.8f;
         for (float z0 = -R; z0 < R - 0.01f; z0 += 2f)
         {
@@ -3129,7 +3132,7 @@ public static partial class SampleSceneBuilder
                 // del eje con la copa DENTRO del tronco transparente (un nido de abejas a 5 m del eje, a 38 m), tapando a los que
                 // nadan. Lejos: la esquina del tronco al girar (con su fachada de fotobiorreactores, 16,5 m) + 2 m + lo que abre la copa
                 // (medido en Unity: hasta 21 m desde su tronco).
-                if (Vector2.Distance(new Vector2(p.x, p.z), new Vector2(TreeSpec.Site.x, TreeSpec.Site.z)) < 16.5f + 2f + 21f) continue;
+                if (_helixes.Exists(hx => hx.root != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(hx.root.position.x, hx.root.position.z)) < 16.5f + 2f + 21f)) continue;   // (y junto a cualquier edificio-árbol)
                 GameObject dining = GameObject.Find("Comedor_Gourmet");
                 if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
                 CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false, blocked: Built);
@@ -3474,7 +3477,7 @@ public static partial class SampleSceneBuilder
     // volver a colocar a mano más adelante — esto no los borra, solo deja de instanciarlos.
     static SanctuaryArea[] BuildAreaStructures(Transform parent)
     {
-        _platforms.Clear(); _upperOf.Clear(); BuildingNames.Clear();   // de una construcción a otra (estáticos)
+        _platforms.Clear(); _upperOf.Clear(); BuildingNames.Clear(); _helixes.Clear(); _helixFloor.Clear(); _floorSeq.Clear(); _orchardTips.Clear(); _towerHelix = null;   // de una construcción a otra (estáticos)
         GameObject areasGroup = new GameObject("Areas_Placed");
         areasGroup.transform.SetParent(parent);
 
@@ -3536,7 +3539,9 @@ public static partial class SampleSceneBuilder
         void Floor(Transform t) => size[t] = TowerFloor(t);
         Transform Child(Transform area, string name) { Transform c = new GameObject(name).transform; c.SetParent(area, false); return c; }
         //  · SERVICIOS: Restaurante · Hospital (urgencias · quirófanos y UCI · veterinario) · Cría · Carne Cultivada.
-        BeginTower(ServiciosCenter, ServiciosSize);
+        //    Un ÁRBOL (docs/edificio-arbol.md §Migración): 3 niveles de hélice, sus 6 pisos en orden (nivel 1, lados a y c; nivel 2, b
+        //    y d; nivel 3, a y c) y 6 puntas con frutales.
+        BeginTreeTower(areasGroup.transform, TorreServicios, ServiciosCenter, ServiciosSize, ServiciosYaw, 3);
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform); Floor(meat.transform);
@@ -3587,7 +3592,7 @@ public static partial class SampleSceneBuilder
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { kitchen, gym, works, plant, nuc };   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
+        var ground = new List<SanctuaryArea> { gym, works, plant, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)
@@ -3823,6 +3828,10 @@ public static partial class SampleSceneBuilder
         Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
         // Las esterillas son alfombras de la red de su EDIFICIO (la torre del Entrenamiento) y de su piso (docs/plano-edificios.md).
         string yoga = BuildingOf(area, "Sala de Yoga"); int fi = FloorIndex(area);
+        // En un edificio-árbol no hay alfombras entre pisos (se nada): las esterillas son solo esterillas (cada grupo, su propia red de
+        // una sola superficie: no vuelan ni al techo ni de la sala al anillo).
+        bool treeFloor = HelixDeckOf(area, out _, out _, out _);
+        string yogaRoom = treeFloor ? $"{yoga} (esterillas de la sala)" : yoga, yogaRing = treeFloor ? $"{yoga} (esterillas del anillo)" : yoga;
         string floorSurf = $"{yoga}#{fi}", ringSurf = fi == 1 ? $"{yoga}#anillo" : $"{yoga}#anillo{fi}", floorLabel = FloorName(area, fi, yoga);
         int k = 0;
         // En la sala, SEIS (3 × 3,6 m cada una), alineadas con las paredes y a 2 m entre sí, de la tarima y del tanque de
@@ -3833,7 +3842,7 @@ public static partial class SampleSceneBuilder
                                       new Vector3(0f, 0f, fz), new Vector3(0f, 0f, -fz) })
         {
             Quaternion face = Quaternion.LookRotation(Mathf.Abs(p.x) > 0.1f ? new Vector3(-p.x, 0f, 0f) : new Vector3(0f, 0f, -p.z));   // de cara a la plataforma
-            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, fi, floorSurf, floorLabel, 1, 3f, 3.6f).name = $"Esterilla_{++k}";
+            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yogaRoom, fi, floorSurf, floorLabel, 1, 3f, 3.6f).name = $"Esterilla_{++k}";
         }
         // EL ANILLO: 8 m de ancho, 20 % sobre la sala; alfombras cada ~5 m por su línea central (menos en esquinas y puntos cardinales).
         const float W = 8f;
@@ -3845,10 +3854,13 @@ public static partial class SampleSceneBuilder
             if (corner) continue;
             if (Mathf.Abs(p.x) < 3f || Mathf.Abs(p.z) < 3f) continue;   // el punto cardinal: ahí va su estatua
             Quaternion face = Quaternion.LookRotation(new Vector3(-p.x, 0f, -p.z));
-            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yoga, fi, ringSurf, "Sala de Yoga · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
+            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yogaRing, fi, ringSurf, "Sala de Yoga · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
         }
         Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
         YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo
+        if (_ringOpenBack)   // anillo en U (edificio-árbol): la estatua del lado del tronco (Aum), al balcón, lejos del tronco y de su puerta
+            foreach (Transform st in statues)
+                if (st.localPosition.z < -1f) { st.localPosition = new Vector3(cx - 2f, 0f, _ringBackZ + 1.5f); Vector3 dd = -st.localPosition; dd.y = 0f; st.localRotation = Quaternion.LookRotation(dd); }
         Debug.Log($"[Yoga] {k} alfombras-esterilla (6 en la sala y {k - 6} en el anillo) y las estatuas en los cuatro puntos cardinales.");
         KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro").gameObject.AddComponent<BoxCollider>();   // se sube a ella (sin collider el maestro quedaba dentro)
         KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");

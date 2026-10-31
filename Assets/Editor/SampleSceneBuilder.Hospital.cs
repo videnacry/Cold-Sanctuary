@@ -264,9 +264,11 @@ public static partial class SampleSceneBuilder
         KitchenProps.Fit(squeeze, solid: false);
         Label(squeeze, "Jaula de contención (inyectar sin anestesiar)", 2.4f);
         float half = RingLength(us) * 0.5f;
-        for (int i = 0; i < 2; i++)
+        float penS = half + 4f;
+        for (int i = 0; i < 2; i++, penS += 7f)
         {
-            var (sp, syaw, _) = RingPoint(us, half + 4f + i * 7f);
+            for (int g = 0; g < 80 && RingPoint(us, penS).corner; g++) penS += 1f;   // (en un edificio-árbol el lado del tronco no tiene anillo)
+            var (sp, syaw, _) = RingPoint(us, penS);
             Transform pen = KitchenProps.Root(ringV, $"Corral_foca {i + 1}", sp, syaw);
             KitchenProps.C(pen, new Vector3(0f, 0.05f, -1.4f), new Vector3(4f, 0.1f, 2.2f), new Color(0.75f, 0.75f, 0.72f), 0f, "Zona_seca");
             KitchenProps.C(pen, new Vector3(0f, 0.4f, 1.3f), new Vector3(4f, 0.8f, 3f), new Color(0.3f, 0.55f, 0.8f, 0.6f), 0f, "Piscina_salada");

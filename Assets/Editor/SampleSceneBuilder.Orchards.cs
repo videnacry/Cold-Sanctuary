@@ -20,9 +20,15 @@ using UnityEngine;
 public static partial class SampleSceneBuilder
 {
     const float OrchardEdge = 0.4f, OrchardStep = 0.5f, OrchardPadClear = 2f;
+    // Lo que ya tiene cada torre-árbol en sus puntas (se reparten las especies entre ellas).
+    static readonly Dictionary<string, HashSet<GardenCrop.Kind>> _orchardHave = new Dictionary<string, HashSet<GardenCrop.Kind>>();
+    static readonly Dictionary<string, int> _orchardCount = new Dictionary<string, int>();
 
     static void PlaceRooftopOrchards()
     {
+        _orchardHave.Clear();
+        _orchardCount.Clear();
+        foreach (var (tip, b) in _orchardTips) if (!_orchardHave.ContainsKey(b)) _orchardHave[b] = new HashSet<GardenCrop.Kind>();
         Physics.SyncTransforms();
         Renderer[] scene = Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None);
         int total = 0, roofs = 0;
@@ -31,6 +37,22 @@ public static partial class SampleSceneBuilder
             if (roof == null || !roof.name.StartsWith("Techo_alfombras_")) continue;
             total += PlantRoof(roof, size, bname, scene);
             roofs++;
+        }
+        // LAS PUNTAS DE LAS TORRES-ÁRBOL (docs/edificio-arbol.md §Migración): sus techos son pequeños (las alfombras y la puerta); los
+        // frutales van en las puntas de sus ramas, al aire. La sala de la experta, en la primera punta de Servicios.
+        var mainDone = new HashSet<string>();
+        foreach (var (tip, b) in _orchardTips)
+        {
+            if (tip == null) continue;
+            bool main = b == TorreServicios && mainDone.Add(b);
+            total += PlantRoof(tip, _platforms.TryGetValue(tip, out Vector2 ts) ? ts : new Vector2(16f, 16f), b, scene, main, 3.5f);
+            roofs++;
+        }
+        foreach (var kv in _orchardHave)
+        {
+            var lack = System.Linq.Enumerable.ToList(System.Linq.Enumerable.Where(FruitCare.All, f => !kv.Value.Contains(f.kind)));
+            if (lack.Count > 0) Debug.LogWarning($"[Frutales] Puntas de «{kv.Key}»: entre todas faltan {string.Join(", ", lack.ConvertAll(f => f.nombre))}.");
+            else Debug.Log($"[Frutales] Puntas de «{kv.Key}»: entre todas, las {FruitCare.All.Length} especies.");
         }
         Debug.Log($"[Frutales] {total} frutales en maceta en {roofs} techos de alfombras (una de cada una de las {FruitCare.All.Length} especies por vuelta, hasta llenar).");
     }
@@ -75,7 +97,7 @@ public static partial class SampleSceneBuilder
         return s;
     }
 
-    static int PlantRoof(Transform roof, Vector2 size, string bname, Renderer[] scene)
+    static int PlantRoof(Transform roof, Vector2 size, string bname, Renderer[] scene, bool? mainRoom = null, float overhead = 6f)
     {
         float fy = roof.position.y;
         // Lo que ya hay en el techo (y lo que asome de otros sitios a esa altura): paneles, postes, lo que sea.
@@ -85,7 +107,7 @@ public static partial class SampleSceneBuilder
         {
             if (r == null || !r.enabled || r.name == "Suelo_techo") continue;
             Bounds b = r.bounds;
-            if (!b.Intersects(foot) || b.max.y < fy + 0.05f || b.min.y > fy + 6f) continue;
+            if (!b.Intersects(foot) || b.max.y < fy + 0.05f || b.min.y > fy + overhead) continue;   // (en una punta, su anillo a 4 m no estorba a las macetas)
             if (r.GetComponentInParent<CarpetPad>() != null) continue;   // las alfombras: por su zona, abajo
             if (b.size.y < 0.3f && Mathf.Max(b.size.x, b.size.z) > 3f && b.max.y < fy + 0.3f) continue;   // suelos y losas
             blockers.Add((b, FurnitureSpacing.Standard));
@@ -97,7 +119,7 @@ public static partial class SampleSceneBuilder
             blockers.Add((new Bounds(p.transform.TransformPoint(bc.center), new Vector3(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z))), OrchardPadClear));
         }
 
-        bool main = bname == TorreServicios;
+        bool main = mainRoom ?? bname == TorreServicios;
         Transform station = PlaceCareStation(roof, size, bname, main, blockers);
         if (station != null)
         {
@@ -122,6 +144,8 @@ public static partial class SampleSceneBuilder
         // EL ORDEN DE LA RONDA: en zigzag por franjas de 4 m, empezando por el lado del punto de cuidados (plantadas en el
         // orden del empaquetado, saltaban de punta a punta del techo: ~1,3 km andando en Servicios).
         var all = new List<FruitPlant>(group.GetComponentsInChildren<FruitPlant>());
+        int baseOrder = _orchardHave.TryGetValue(bname, out HashSet<GardenCrop.Kind> prev) ? _orchardCount.TryGetValue(bname, out int pc) ? pc : 0 : 0;
+        if (prev != null) _orchardCount[bname] = baseOrder + all.Count;
         float sz = station != null && roof.InverseTransformPoint(station.position).z > 0f ? -1f : 1f;   // desde el lado del punto
         int Band(FruitPlant p) => Mathf.FloorToInt((sz * roof.InverseTransformPoint(p.transform.position).z + size.y * 0.5f) / 4f);
         all.Sort((a, b) =>
@@ -134,15 +158,16 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < all.Count; i++)
         {
             FruitPlant fp = all[i];
-            fp.order = i;
+            fp.order = baseOrder + i;   // (en las puntas de una torre-árbol, una punta tras otra)
             int poda = FruitCare.PodaDias(fp.kind);
             if (poda > 0) fp.lastPrunedDay = -1 - i % poda;   // las podas repartidas: cada día le toca a una parte
             fp.lastPollinatedDay = -1 - i % 2;
         }
         BuildDrip(roof, station, all, bname);
+        if (_orchardHave.TryGetValue(bname, out HashSet<GardenCrop.Kind> got)) foreach (FruitPlant fp in all) got.Add(fp.kind);
         Debug.Log($"[Frutales] Techo de «{bname}» ({size.x:0}×{size.y:0} m): {n} macetas en {rounds - 1} vueltas" + (shrink < 1f ? $", copas podadas al {shrink * 100f:0} %" : "") +
                   (missing.Count > 0 ? $"; en la primera vuelta NO cupieron: {string.Join(", ", missing)}" : "; las " + FruitCare.All.Length + " especies") + ".");
-        if (missing.Count > 0) Debug.LogWarning($"[Frutales] Techo de «{bname}»: faltan especies ({string.Join(", ", missing)}): amplía el techo o aparta algo.");
+        if (missing.Count > 0 && !_orchardHave.ContainsKey(bname)) Debug.LogWarning($"[Frutales] Techo de «{bname}»: faltan especies ({string.Join(", ", missing)}): amplía el techo o aparta algo.");
         return n;
     }
 
@@ -151,6 +176,10 @@ public static partial class SampleSceneBuilder
         missing.Clear();
         var placed = new List<Bounds>();
         var fichas = new List<FruitCare.Ficha>(FruitCare.All);   // ya van de las grandes a las pequeñas
+        // En las PUNTAS de una torre-árbol (varias pequeñas por edificio): primero las especies que el edificio aún no tiene (así, entre
+        // todas sus puntas, una de cada).
+        _orchardHave.TryGetValue(bname, out HashSet<GardenCrop.Kind> have);
+        if (have != null) fichas = System.Linq.Enumerable.ToList(System.Linq.Enumerable.OrderBy(fichas, f => have.Contains(f.kind) ? 1 : 0));
         int n = 0, rounds = 0;
         float hx = size.x * 0.5f, hz = size.y * 0.5f;
         while (n < 400)
@@ -180,7 +209,7 @@ public static partial class SampleSceneBuilder
                 if (!ok)
                 {
                     Object.DestroyImmediate(plant.gameObject);
-                    if (rounds == 0) missing.Add(f.nombre);
+                    if (rounds == 0 && (have == null || !have.Contains(f.kind))) missing.Add(f.nombre);
                     continue;
                 }
                 plant.GetComponent<FruitPlant>().order = n;

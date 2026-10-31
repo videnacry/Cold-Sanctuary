@@ -307,7 +307,7 @@ public static partial class SampleSceneBuilder
         LogLeft("Física (anillo)", PackRing(ring, hs, onRing));
         // Péndulo de Foucault en la esquina del anillo más alejada de su área de alfombras: torre de 17 m, hilo de 15 m.
         float cx = hs.x * 0.5f - 2f + 5f, cz = hs.y * 0.5f - 2f + 5f;
-        Transform fp = KitchenProps.Root(ring, "Bloque_Péndulo de Foucault", new Vector3(cx, 0f, -cz));
+        Transform fp = KitchenProps.Root(ring, "Bloque_Péndulo de Foucault", new Vector3(cx, 0f, _ringOpenBack ? cz : -cz));   // (anillo en U de un edificio-árbol: la esquina de fuera)
         KitchenProps.C(fp, new Vector3(0f, 0.02f, 0f), new Vector3(3f, 0.04f, 3f), new Color(0.75f, 0.7f, 0.55f), 0f, "Foso_rosa_de_los_vientos");
         for (int i = 0; i < 4; i++) Solid(fp, new Vector3((i % 2 - 0.5f) * 3.2f, 8.5f, (i / 2 - 0.5f) * 3.2f), new Vector3(0.25f, 17f, 0.25f), LabSteel, "Pilar_torre");
         Solid(fp, new Vector3(0f, 17f, 0f), new Vector3(3.6f, 0.3f, 3.6f), LabSteel, "Coronacion");

@@ -24,7 +24,7 @@ public static partial class SampleSceneBuilder
         SanctuaryArea a = BuildAreaBox(areasGroup, "AtomicPlant_Area", "Planta Atómica", SanctuaryAreaType.AtomicPlant, 3,
             CienciasCenter, CienciasSize, new Color(0.8f, 0.82f, 0.78f));
         TowerFloor(a.transform);   // la planta baja de la torre (la piscina del reactor baja hasta el suelo)
-        FurnishAtomicPlant(a.transform, ElevatedHeight);
+        FurnishAtomicPlant(a.transform, HelixDeckOf(a.transform, out _, out _, out _) ? TreeSpec.StrutDrop - 0.1f : ElevatedHeight);   // (en su árbol, la piscina cuelga 4 m bajo la losa, como sus tornapuntas: no baja al suelo, que es de la naturaleza)
         // PLANTA DE ARRIBA: el CICLOTRÓN médico (Berón, 2026-10-23: un acelerador de partículas). Un piso apilado, como la
         // planta veterinaria del hospital: el F-18 del PET se hace aquí, junto a su celda de síntesis.
         Transform up = InnerFloor(a.transform, "Planta_ciclotron", a.transform);

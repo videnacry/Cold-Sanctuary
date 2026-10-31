@@ -103,7 +103,8 @@ public static partial class SampleSceneBuilder
         // Huecos de la fila central cada 7,5 m (fuera de las esquinas y lejos de la llegada y la caja).
         var slots = new List<(Vector3 p, float yaw)>();
         float len = RingLength(size, W, In);
-        for (float s = 3.75f; s < len; s += 7.5f)
+        float tableStep = _ringOpenBack ? 6.2f : 7.5f;   // (anillo en U de un edificio-árbol: sin el lado del tronco, las mesas algo más juntas: caben las de todos)
+        for (float s = 3.75f; s < len; s += tableStep)
         {
             var (p, yaw, corner) = RingPoint(size, s, W, In);
             if (corner || Vector3.Distance(p, arrive) < 6.5f || Vector3.Distance(p, cajaAt) < 3.5f) continue;
@@ -125,13 +126,14 @@ public static partial class SampleSceneBuilder
         // Pared de vinos en la esquina más lejana de la llegada; plantas en las otras tres.
         float cx = hx + W * 0.5f, cz = hz + W * 0.5f;
         var corners = new List<Vector3> { new Vector3(cx, 0f, cz), new Vector3(-cx, 0f, cz), new Vector3(cx, 0f, -cz), new Vector3(-cx, 0f, -cz) };
+        if (_ringOpenBack) corners.RemoveAll(c => c.z < _ringBackZ + 1.5f);   // (anillo en U de un edificio-árbol: sin esquinas del lado del tronco)
         corners.Sort((a, b) => Vector3.Distance(b, arrive).CompareTo(Vector3.Distance(a, arrive)));
         Transform wine = KitchenProps.Root(ring, "Pared_de_vinos", corners[0], 45f);
         KitchenProps.C(wine, new Vector3(0f, 1.2f, 0f), new Vector3(6f, 2.4f, 0.4f), wood, 0f, "Botellero");
         for (int y = 0; y < 6; y++)
             for (int x = 0; x < 14; x++)
                 KitchenProps.C(wine, new Vector3(-2.75f + x * 0.42f, 0.3f + y * 0.38f, -0.2f), new Vector3(0.09f, 0.09f, 0.04f), (x + y) % 3 == 0 ? new Color(0.35f, 0.08f, 0.12f) : new Color(0.18f, 0.28f, 0.15f), 0f, "Botella");
-        for (int k = 1; k < 4; k++)
+        for (int k = 1; k < corners.Count; k++)
         {
             Transform pl = KitchenProps.Root(ring, "Planta", corners[k]);
             KitchenProps.C(pl, new Vector3(0f, 0.25f, 0f), new Vector3(0.5f, 0.5f, 0.5f), new Color(0.3f, 0.3f, 0.32f), 0f, "Macetero");

@@ -40,7 +40,7 @@ public static partial class SampleSceneBuilder
         var l = new List<Transform>();
         foreach (Transform t in _platforms.Keys) if (t != null && BaseOf(t) == b) l.Add(t);
         if (!l.Contains(b)) l.Add(b);
-        l.Sort((x, y) => x.position.y.CompareTo(y.position.y));
+        l.Sort((x, y) => { int c = x.position.y.CompareTo(y.position.y); if (c != 0 && Mathf.Abs(x.position.y - y.position.y) > 0.05f) return c; return (_floorSeq.TryGetValue(x, out int a) ? a : 0).CompareTo(_floorSeq.TryGetValue(y, out int b) ? b : 0); });   // (en un árbol, dos pisos por nivel: por su número)
         return l;
     }
 
@@ -71,6 +71,7 @@ public static partial class SampleSceneBuilder
     /// lado (encima taparían el sol a los cultivos).</summary>
     static void PlaceCarpetAreas()
     {
+        FinishHelixes();   // los edificios-árbol, ya con sus muebles: el tronco con sus puertas donde el umbral queda libre, las ramas, las puntas y el techo
         ResolveInnerUpperFloors();
         Transform areasRoot = GameObject.Find("Areas_Placed")?.transform;
         var buildings = new List<(Transform t, string name)>(_buildings);
@@ -163,6 +164,15 @@ public static partial class SampleSceneBuilder
         GameObject spot = GameObject.Find(spotName), area = GameObject.Find(areaName);
         SanctuaryArea sa = area != null ? area.GetComponent<SanctuaryArea>() : null;
         if (spot == null || sa == null) return;
+        // En un edificio-árbol el área no tiene alfombras: se llega por la puerta de su piso (el umbral, 2,5 m fuera del tronco).
+        foreach (ArbolCampos tr in Object.FindObjectsByType<ArbolCampos>(FindObjectsSortMode.None))
+        {
+            TreeLevel lv = tr.levels.Find(l => l.deck == area.transform && l.kind == TreeLevel.Kind.Floor);
+            if (lv == null) continue;
+            Vector3 o = tr.World(lv.outside), inward = o - tr.World(lv.door); inward.y = 0f;
+            spot.transform.position = o + inward.normalized * 1.5f;
+            return;
+        }
         foreach (CarpetPad p in Object.FindObjectsByType<CarpetPad>(FindObjectsSortMode.None))
             if (p.kind == CarpetPad.Kind.Edificio && p.transform.parent == area.transform && p.floor >= 1 && !p.surface.Contains("#anillo"))
             {

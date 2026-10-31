@@ -143,7 +143,7 @@ girando: para cada altura, el círculo que barre):
 | Servicios | 100,2 m | 97,5 m | |
 | Central Nuclear | 78,3 m | 51,5 m | |
 
-## Modelo genérico (para migrar las otras torres)
+## Modelo genérico (ya lo usan todas las torres: ver §Migración)
 
 `HelixTower` (en `TreeSpec.cs`) es el edificio en hélice con sus medidas: medio lado del agua y pared del tronco, primer nivel y
 paso entre niveles, nº de niveles, lado de los pisos y de las puntas, hueco y subida de las puntas, anillo, tubo, columna y
@@ -152,6 +152,48 @@ puertas. Da los marcos de cada lado (`SideRot`, `FromSide`), qué lado tiene pis
 `StructuralLimits.RootCheck` recibe un `HelixTower`. El constructor del árbol aún lleva cosas propias (cultivos, Huerto,
 nidos): para migrar una torre, sacar de `BuildTree` lo que es del modelo (tronco, puertas, pisos, ramas, columnas, techo) a un
 constructor que tome un `HelixTower` y una lista de lo que va en cada plataforma.
+
+## Migración: todos los edificios son árboles (Berón 2026-10-31)
+
+«Migrar TODOS los otros edificios del santuario al modelo del árbol», antes de seguir arreglando fallos. Y: el árbol de la
+guardia (83 m, en su isla) es una EXCEPCIÓN a «el primer piso por encima del árbol más alto» (es un árbol modificado): que crezca
+tan alto como el edificio más alto.
+
+**Código.** El constructor del árbol pasó a ser GENÉRICO: `SampleSceneBuilder.Helix.cs` (`BeginHelix` → `HelixFloor` por piso →
+`FinishHelix`: tronco, puertas, ramas, puntas con su anillo, techo y alfombras del suelo). El Árbol de los Campos
+(`SampleSceneBuilder.Tree.cs`) solo pone sus cultivos; cada torre (`BeginTreeTower` en `SampleSceneBuilder.Towers.cs`) pone sus
+áreas con el mismo `TowerFloor` de antes, que ahora manda cada área al siguiente piso pegado al tronco. En juego, `ArbolCampos.All`
+(un componente por árbol) y `ArbolCampos.Route` van de un árbol a otro (se sale nadando al techo, alfombra al techo del otro,
+se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pisos en hélice.
+
+**Lo que elegí (por defecto, a falta de que Berón diga otra cosa):**
+- Cada torre es SU árbol, con sus áreas en sus pisos **en el mismo orden** (nivel 1: lados a y c; nivel 2: b y d; nivel 3: a y c…).
+  Los pisos son cuadrados del lado mayor de su área más grande; cada área se amuebla igual que antes, centrada en su piso, con
+  su lado −Z contra el tronco (ahí quitamos su contorno: es por donde se entra).
+- Las **puntas** de las torres (16 × 16 m, al aire) llevan los **frutales en maceta** (una de cada especie, y otra vuelta…, con su
+  punto de cuidados y su goteo; la sala de la experta, en la primera punta de Servicios) y, encima, su anillo con nidos. Los
+  techos de las torres son los del árbol (22 m: alfombras, puerta de frente y una fila de paneles solares).
+- Un área con **ANILLO** (el comedor del restaurante, las camas del hospital, el anillo de yoga, el de la sala de experimentos)
+  lo conserva, en **U** (abierto al tronco, sus alas hasta la cara del tronco) con un **BALCÓN** de 3 m contra el tronco: el anillo
+  tiene su propia puerta (3 × 3 m) y se llega nadando, como a los anillos de las puntas. Lo que iba en el lado del tronco del
+  anillo (algunas camas, la esquina de vinos, los corrales de foca) se corre a los otros tres lados.
+- Las **puertas** de los pisos (y de los balcones) van donde su umbral (3,4 × 4,4 m) queda libre de muebles.
+- Entre torres hay **≥ 16 m en 3D** (pisos con sus anillos, puntas, ramas y troncos; el Árbol de los Campos, girando). En sus sitios
+  de antes no cabían (cada árbol alcanza 51–71 m y estaban a 70–100 m): se buscó sitio en las islas (tronco en hielo firme) con un
+  simulador; Producción, además, sube un tramo.
+- Las torres **no giran** (giraría la cocina, el hospital…): solo el Árbol de los Campos.
+- La **Central Nuclear** NO se migra: es de un piso (no es una torre), a 12 m, y necesita su sitio de exclusión.
+
+| Edificio | Sitio (antes → ahora) | Giro | Niveles · primer piso · techo | Piso / puntas | Pisos (en orden) | Puntas |
+|---|---|---|---|---|---|---|
+| **Árbol de los Campos** | (−50, −84), igual | gira | 2 · 64 m · 92 m | 32 / 16 m (hueco 4) | P1 bosque · P2 bambusal · P5 Huerto · P6 bosque | P3 arrozal · P4 milpa · P7 chacra · P8 rotación |
+| **Servicios** | (5, 94) → **(50, 92)** (lóbulo de la antigua enfermería) | 90° | 3 · 64 m · 103 m | 40 / 16 m (hueco 10) | P1 Restaurante (anillo comedor) · P2 Hospital: urgencias (anillo) · P5 hospitalización (anillo) · P6 veterinario (anillo) · P9 Cría · P10 Carne cultivada | 6 de frutales (sala de la experta en P3) |
+| **Entrenamiento** | (10, 0) → **(−77, 52)** (Norte:Bosque_Comestible) | 0° | 3 · 64 m · 103 m | 36 / 16 m (hueco 10) | P1 Gimnasio · P2 Cardio · P5 Calistenia · P6 Yoga (anillo) · P9 Ballet · P10 Dojo | 6 de frutales |
+| **Ciencias** | (92, −108) → (92, −107) | 0° | 4 · 64 m · 114 m | 32 / 16 m (hueco 10) | P1 Planta atómica (TRIGA) · P2 ciclotrón · P5 sala de experimentos (anillo y Foucault) · P6 Química · P9 análisis · P10 Biología · P13 molecular · P14 libre | 8 de frutales |
+| **Producción** | (18, −95) → **(114, 0)** (Este:Paso) | 90° | 2 · **96 m** · 124 m | 26 / 16 m (hueco 4) | P1 Construcción · P2 Mecánica · P5 Textil · P6 libre | 4 de frutales |
+| Central Nuclear | (60, −162), igual | — | no se migra (1 piso a 12 m) | | | |
+
+(Pk = plataforma k en orden de altura: en cada nivel, sus 2 pisos y luego sus 2 puntas.)
 
 ## Riesgos y pendientes
 

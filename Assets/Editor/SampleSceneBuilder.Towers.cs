@@ -24,10 +24,17 @@ public static partial class SampleSceneBuilder
     public static readonly Vector2 ServiciosSize = new Vector2(40f, 38f);        // el restaurante (cocina abierta + comedor en anillo)
     public static readonly Vector2 CienciasSize = new Vector2(32f, 20f);         // biología
     public static readonly Vector2 ProduccionSize = new Vector2(26f, 20f);       // el huerto (y la rotación de encima: 24 × 18 + 2 m de suelo)
-    public static readonly Vector3 ServiciosCenter = new Vector3(5f, 0f, 94f);   // lóbulo Norte:Cocina (1 m al sur del restaurante de antes: las 8 columnas, en hielo)
-    public static readonly Vector3 EntrenamientoCenter = new Vector3(10f, 0f, 0f);   // en el centro del hub (Centro:Hub)
-    public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -108f);     // lóbulo Sur:Biologia
-    public static readonly Vector3 ProduccionCenter = new Vector3(18f, 0f, -95f);    // lóbulo Sur:Rotacion, con la milpa y la chacra andina
+    // LAS TORRES-ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): cada torre es un árbol en hélice (su tronco, en hielo
+    // firme), y entre las piezas de dos árboles (pisos con sus anillos, puntas, ramas, troncos) hay ≥ 16 m en 3D, con el Árbol de
+    // los Campos girando (se barre su círculo). En sus sitios de antes, a 70–100 m unas de otras, no cabían (cada árbol alcanza
+    // 51–71 m): se movieron (búsqueda en scratchpad/mig) y la Producción sube un tramo (primer piso a 96 m, por encima de los
+    // demás). Los giros (múltiplos de 90°) orientan el molinete para que no choque con el vecino.
+    public static readonly Vector3 ServiciosCenter = new Vector3(50f, 0f, 92f);      // lóbulo Norte:Enfermeria (donde estuvo el hospital)
+    public static readonly Vector3 EntrenamientoCenter = new Vector3(10f, 0f, 0f);   // (aún torre apilada; árbol: (-77, 52), lóbulo Norte:Bosque_Comestible)
+    public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -108f);     // (aún torre apilada; árbol: (92, -107), lóbulo Sur:Biologia)
+    public static readonly Vector3 ProduccionCenter = new Vector3(18f, 0f, -95f);    // (aún torre apilada; árbol: (114, 0), lóbulo Este:Paso)
+    public const float ServiciosYaw = 90f, EntrenamientoYaw = 0f, CienciasYaw = 0f, ProduccionYaw = 90f;
+    public const float ProduccionFirstY = 96f;   // por encima de Servicios y Ciencias (a 112 y 108 m de ella)
     // (El Entrenamiento usa GymSize, 36 × 26.)
 
     // La torre que se está levantando: su sitio, su planta y su piso más alto hasta ahora (null = aún sin planta baja).
@@ -36,13 +43,41 @@ public static partial class SampleSceneBuilder
     static Transform _towerTop;
 
     /// <summary>Empieza una torre: los siguientes <see cref="TowerFloor"/> van uno encima de otro en este sitio.</summary>
-    static void BeginTower(Vector3 center, Vector2 size) { _towerCenter = center; _towerSize = size; _towerTop = null; }
+    static void BeginTower(Vector3 center, Vector2 size) { _towerCenter = center; _towerSize = size; _towerTop = null; _towerHelix = null; }
+
+    // EL MODELO DEL ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): la torre que se está levantando es un edificio en
+    // hélice; sus pisos van, en orden, a los pisos pegados al tronco (nivel 1: lados a y c; nivel 2: b y d…).
+    static Helix _towerHelix;
+
+    /// <summary>Empieza una TORRE-ÁRBOL: tronco cuadrado de agua en <paramref name="center"/>, girada <paramref name="yaw"/>, con
+    /// <paramref name="levels"/> niveles de hélice (2 pisos y 2 puntas cada uno) desde el primer piso del Árbol de los Campos. Los
+    /// siguientes <see cref="TowerFloor"/> van a sus pisos, en orden; las puntas llevan frutales en maceta (<see cref="PlaceRooftopOrchards"/>).</summary>
+    static Helix BeginTreeTower(Transform parent, string building, Vector3 center, Vector2 size, float yaw, int levels, float firstY = 0f, float tipGap = 10f)
+    {
+        Helix hx = BeginHelix(parent, building, TowerRoot(building), center, yaw, TowerHelix(size, levels, firstY, tipGap), rotates: false);
+        hx.pickDoors = true;
+        hx.tipContent = (k, tip) => { tip.name = $"Terraza_punta_{k}"; _orchardTips.Add((tip, building)); return "frutales"; };
+        _towerHelix = hx; _towerCenter = center; _towerSize = size; _towerTop = null;
+        return hx;
+    }
+
+    /// <summary>El nombre de la raíz de la torre-árbol de un edificio («Torre_Servicios»…).</summary>
+    public static string TowerRoot(string building) => "Torre_" + building;
 
     /// <summary>Pone <paramref name="floor"/> como el SIGUIENTE PISO de la torre: la planta baja a <see cref="ElevatedHeight"/>
     /// sobre su sitio, y los demás 11 m sobre el piso más alto que ya tenga (StackOn: el mismo octógono, columnas
     /// continuas). Devuelve la planta del piso (la de la torre).</summary>
     static Vector2 TowerFloor(Transform floor)
     {
+        if (_towerHelix != null)
+        {
+            int k = 1;
+            while (k <= _towerHelix.Platforms && (TreeSpec.Platform(k).tip || _towerHelix.decks[k] != null)) k++;
+            if (k > _towerHelix.Platforms) { Debug.LogError($"[Torres] «{_towerHelix.building}» no tiene más pisos para «{floor.name}»: súbele un nivel a su hélice."); return _towerSize; }
+            HelixFloor(_towerHelix, k, floor, _towerSize);
+            _towerTop = floor;
+            return _towerSize;
+        }
         if (_towerTop == null)
         {
             floor.SetPositionAndRotation(_towerCenter, Quaternion.identity);

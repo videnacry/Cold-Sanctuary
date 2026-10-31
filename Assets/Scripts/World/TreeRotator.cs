@@ -102,7 +102,7 @@ public class TreeRotator : MonoBehaviour
         {
             _scanAt = Time.time + 0.2f;
             _bodies.Clear();
-            int n = Physics.OverlapCapsuleNonAlloc(pivot + Vector3.down * 2f, pivot + Vector3.up * (TreeSpec.RootHeight + 6f), TreeSpec.Helix.Reach + 6f, _overlap, ~0, QueryTriggerInteraction.Ignore);
+            int n = Physics.OverlapCapsuleNonAlloc(pivot + Vector3.down * 2f, pivot + Vector3.up * ((TryGetComponent(out ArbolCampos ac) ? ac.rootHeight : TreeSpec.RootHeight) + 6f), (ac != null ? ac.reach : TreeSpec.Helix.Reach) + 6f, _overlap, ~0, QueryTriggerInteraction.Ignore);
             for (int i = 0; i < n; i++)
             {
                 Collider c = _overlap[i];

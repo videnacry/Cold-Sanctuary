@@ -94,6 +94,11 @@ public class RestaurantService : MonoBehaviour
     public IReadOnlyList<CleanLog> Cleans => _cleans;
     public CarpetPad ArrivalPad => _arrivalPad;
     public CarpetPad RingPad => _ringPad;
+    /// <summary>¿Se llega al comedor del anillo? (en alfombra, o por su puerta del tronco en un edificio-árbol: docs/edificio-arbol.md §Migración)</summary>
+    public bool RingReachable => _ringPad != null || _ringDoor.HasValue;
+    public string RingAccessName => _ringPad != null ? _ringPad.displayName : _ringDoor.HasValue ? "puerta del anillo (tronco)" : null;
+    Vector3? _ringDoor;   // en un edificio-árbol: donde se sale al balcón del anillo por su puerta
+    Vector3 RingFrom(Vector3 fallback) => _ringPad != null ? _ringPad.transform.position : _ringDoor ?? fallback;
     public Transform Pass => _pass;
 
     KitchenLarder _larder;
@@ -179,9 +184,19 @@ public class RestaurantService : MonoBehaviour
         _ringPad = null; _arrivalPad = null;
         foreach (CarpetPad p in CarpetPad.All) if (p != null && p.surface.Contains("#anillo") && p.transform.IsChildOf(_area)) { _ringPad = p; break; }
         if (_ringPad != null) foreach (CarpetPad p in CarpetPad.All) if (p != null && p.building == _ringPad.building && p.surface == _ringPad.building + "#0") { _arrivalPad = p; break; }
+        // EDIFICIO-ÁRBOL: sin alfombras en los pisos; los turistas llegan al pie de su torre (las del suelo) y suben en alfombra al
+        // techo y nadando al anillo, que tiene su puerta en el tronco.
+        _ringDoor = null;
+        ArbolCampos tree = _area.GetComponentInParent<ArbolCampos>();
+        if (_ringPad == null && tree != null)
+        {
+            foreach (CarpetPad p in CarpetPad.All) if (p != null && p.building == tree.building && p.floor == 0 && p.kind == CarpetPad.Kind.Edificio) { _arrivalPad = p; break; }
+            TreeLevel rl = dining != null ? tree.levels.Find(l => l.kind == TreeLevel.Kind.Ring && l.deck != null && l.deck.IsChildOf(dining)) : null;
+            if (rl != null) _ringDoor = tree.World(rl.outside);
+        }
         _floorPad = CarpetPad.For(_pass.position + Vector3.up * 0.5f);
         if (_arrivalPad == null) _arrivalPad = _floorPad != null ? _floorPad : _ringPad;
-        Debug.Log($"[Restaurante] Servicio en vivo: {_tables.Count} mesas en el anillo, pase «{_pass.name}», llegada de turistas por «{(_arrivalPad != null ? _arrivalPad.displayName : "?")}» y comedor por «{(_ringPad != null ? _ringPad.displayName : "?")}».");
+        Debug.Log($"[Restaurante] Servicio en vivo: {_tables.Count} mesas en el anillo, pase «{_pass.name}», llegada de turistas por «{(_arrivalPad != null ? _arrivalPad.displayName : "?")}» y comedor por «{RingAccessName ?? "?"}».");
         return true;
     }
 
@@ -548,7 +563,7 @@ public class RestaurantService : MonoBehaviour
     Vector3 DiningIdle(Actor a)
     {
         if (_caja != null) return Front(_caja, 1.2f) + _caja.right * (1.2f + a.index * 1.2f);
-        return _ringPad != null ? _ringPad.transform.position + _ringPad.transform.forward * 3f : PassPoint(a);
+        return _ringPad != null ? _ringPad.transform.position + _ringPad.transform.forward * 3f : _ringDoor ?? PassPoint(a);
     }
 
     // ── Turistas ────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -644,7 +659,7 @@ public class RestaurantService : MonoBehaviour
     Table ClaimTable(Diner d)
     {
         Table best = null; float bd = float.MaxValue;
-        Vector3 from = _ringPad != null ? _ringPad.transform.position : d.go.transform.position;
+        Vector3 from = RingFrom(d.go.transform.position);
         foreach (Table t in _tables)
         {
             if (t.occupant != null || t.dirty || t.cleaner != null) continue;
@@ -657,7 +672,7 @@ public class RestaurantService : MonoBehaviour
 
     int ChairFor(Table t)
     {
-        Vector3 from = _ringPad != null ? _ringPad.transform.position : t.mesa.position;
+        Vector3 from = RingFrom(t.mesa.position);
         int best = 0; float bd = float.MaxValue;
         for (int i = 0; i < t.chairs.Length; i++) { float s = (ChairFront(t, i) - from).sqrMagnitude; if (s < bd) { bd = s; best = i; } }
         return best;

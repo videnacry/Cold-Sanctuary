@@ -67,8 +67,8 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
         yield return null;
         svc.RefreshCrewNow();
         TestProbe.Check("el restaurante tiene pase, comedor en el anillo con mesas para todos y alfombras de llegada",
-            svc.Pass != null && svc.Tables.Count >= tourists && svc.ArrivalPad != null && svc.RingPad != null,
-            $"{svc.Tables.Count} mesas · llegada «{svc.ArrivalPad?.displayName}» · comedor «{svc.RingPad?.displayName}»");
+            svc.Pass != null && svc.Tables.Count >= tourists && svc.ArrivalPad != null && svc.RingReachable,
+            $"{svc.Tables.Count} mesas · llegada «{svc.ArrivalPad?.displayName}» · comedor «{svc.RingAccessName}»");
         if (svc.Pass == null || svc.Tables.Count < tourists || svc.ArrivalPad == null) { RestaurantService.AllowDuringTests = false; TestProbe.End(); yield break; }
 
         // ── 1. El TURNO de la brigada acordada, por la jornada ──
@@ -334,7 +334,7 @@ public class RestaurantServiceTest : MonoBehaviour, ITestUnit
             GameObject g = kv.Key; Track tr = kv.Value;
             if (g == null) { if (tr.seg) Close(tr); continue; }
             Vector3 p = g.transform.position;
-            bool riding = FlyingCarpet.Riding(g);
+            bool riding = FlyingCarpet.Riding(g) || TreeTrip.Busy(g);   // (nadar por el tronco de un edificio-árbol, como el vuelo: no es un tramo a pie)
             ServiceActor tag = g.GetComponent<ServiceActor>();
             bool moving = tag != null && tag.moving;
             int leg = tag != null ? tag.leg : 0;
