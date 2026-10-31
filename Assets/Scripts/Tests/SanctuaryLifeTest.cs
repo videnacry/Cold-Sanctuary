@@ -307,7 +307,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         var stackedFloors = new System.Collections.Generic.Dictionary<string, int> { { "Servicios", 7 }, { "Entrenamiento", 7 }, { "Ciencias", 8 }, { "Producción", 4 } };
         var trees = ArbolCampos.All.Where(t => t != null).ToList();
         var treeNames = trees.Select(t => t.building).ToList();
-        var edif = CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio).GroupBy(c => c.building).ToDictionary(g => g.Key, g => g.Select(c => c.floor).Distinct().OrderBy(f => f).ToList());
+        var edif = CarpetPad.All.Where(c => c.kind == CarpetPad.Kind.Edificio && !c.building.Contains("(esterillas")).GroupBy(c => c.building).ToDictionary(g => g.Key, g => g.Select(c => c.floor).Distinct().OrderBy(f => f).ToList());
         var tall = edif.Where(kv => kv.Value.Max() >= 3).ToDictionary(kv => kv.Key, kv => kv.Value.Max());
         var expectTall = stackedFloors.Keys.Union(treeNames).Union(new[] { TreeSpec.Building }).ToList();
         TestProbe.Check("4 torres temáticas (Servicios, Entrenamiento, Ciencias, Producción) y el Árbol de los Campos con sus pisos, y ningún otro edificio de varios pisos",

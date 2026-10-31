@@ -269,7 +269,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
         {
             pm.StepToward(WorkdayDirector.GymApproach(st), _walkSpeed);
             yield return null;
-            bool riding = FlyingCarpet.Riding(p.g);
+            bool riding = FlyingCarpet.Riding(p.g) || TreeTrip.Busy(p.g);   // (o nadando por el tronco de la torre-árbol)
             float jump = Vector3.Distance(tr.position, last), lim = Mathf.Max(0.6f, _walkSpeed * 3f * Time.deltaTime);
             if (!riding && !rode && jump > lim && jump > p.maxJump) { p.maxJump = jump; p.jumpAt = $"yendo a {st.name}: de ({last.x:0.0},{last.y:0.0},{last.z:0.0}) a ({tr.position.x:0.0},{tr.position.y:0.0},{tr.position.z:0.0})"; }
             rode = riding; last = tr.position;

@@ -30,7 +30,7 @@ public static partial class SampleSceneBuilder
     // 51–71 m): se movieron (búsqueda en scratchpad/mig) y la Producción sube un tramo (primer piso a 96 m, por encima de los
     // demás). Los giros (múltiplos de 90°) orientan el molinete para que no choque con el vecino.
     public static readonly Vector3 ServiciosCenter = new Vector3(50f, 0f, 92f);      // lóbulo Norte:Enfermeria (donde estuvo el hospital)
-    public static readonly Vector3 EntrenamientoCenter = new Vector3(10f, 0f, 0f);   // (aún torre apilada; árbol: (-77, 52), lóbulo Norte:Bosque_Comestible)
+    public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 52f);  // lóbulo Norte:Bosque_Comestible (antes en el hub, (10, 0); sus cultivos ya están en el Árbol de los Campos)
     public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -108f);     // (aún torre apilada; árbol: (92, -107), lóbulo Sur:Biologia)
     public static readonly Vector3 ProduccionCenter = new Vector3(18f, 0f, -95f);    // (aún torre apilada; árbol: (114, 0), lóbulo Este:Paso)
     public const float ServiciosYaw = 90f, EntrenamientoYaw = 0f, CienciasYaw = 0f, ProduccionYaw = 90f;

@@ -217,6 +217,7 @@ public static partial class SampleSceneBuilder
             }
             rounds++;
             if (n == before) break;
+            if (_orchardHave.ContainsKey(bname)) break;   // en las puntas de una torre-árbol, una sola vuelta (entre todas, una de cada especie): sin llenar, la ronda del jardinero no cabía en sus 3 h
         }
         return (n, rounds);
     }

@@ -47,15 +47,26 @@ public class FruitGardener : MonoBehaviour
     static float SecondsPerGameHour => TimeController.timeController != null ? Mathf.Max(1f, TimeController.timeController.SecondsPerGameDay / 24f) : 150f;
     public static float RealSecondsForGameMinutes(float min) => min / 60f * SecondsPerGameHour;
 
+    /// <summary>Lo que se anda (y se nada) de una maceta a otra: en una torre-árbol (docs/edificio-arbol.md §Migración) las puntas
+    /// están a distinta altura y en ramas distintas: de una a otra se va a la puerta de su columna, se nada por la rama y el tronco
+    /// y se sale por la de la otra (≈ 1,6 × la recta + 30 m).</summary>
+    public static float Hop(FruitPlant a, FruitPlant b)
+    {
+        if (a == null || b == null) return 0f;
+        float d = Vector3.Distance(a.transform.position, b.transform.position);
+        TreeFloor fa = a.GetComponentInParent<TreeFloor>(), fb = b.GetComponentInParent<TreeFloor>();
+        return fa != fb ? d * 1.6f + 30f : d;
+    }
+
     /// <summary>Horas de juego de una revisión en orden de <paramref name="plants"/> (sin vuelo): su ficha + andar.</summary>
     public static float LegHours(List<FruitPlant> plants, bool mainRoom, float walk = 2.6f)
     {
         float min = mainRoom ? PrepMainMinutes : PrepMinutes, walkS = 0f;
-        Vector3 at = plants.Count > 0 ? plants[0].transform.position : Vector3.zero;
+        FruitPlant at = plants.Count > 0 ? plants[0] : null;
         foreach (FruitPlant p in plants)
         {
             min += p.Ficha != null ? p.Ficha.minutos : 2f;
-            walkS += Vector3.Distance(at, p.transform.position) / walk; at = p.transform.position;
+            walkS += Hop(at, p) / walk; at = p;
         }
         return min / 60f + walkS / SecondsPerGameHour;
     }
@@ -96,15 +107,15 @@ public class FruitGardener : MonoBehaviour
             {
                 FruitCareStation st = StationOf(b);
                 leg = null;
-                Vector3 at = Vector3.zero;
+                FruitPlant at = null;
                 foreach (FruitPlant p in byRoof[b])
                 {
-                    float walkH = leg != null ? Vector3.Distance(at, p.transform.position) / 2.6f / SecondsPerGameHour : 0f;
+                    float walkH = leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f;
                     float plantH = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + walkH;
                     float open = leg == null ? flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f : 0f;
                     if (cur == null || (cur.Plants.Any() && cur.hours + open + plantH > target)) { cur = new Round(); _rounds.Add(cur); leg = null; open = flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f; plantH -= walkH; }
                     if (leg == null) { leg = new Leg { building = b, station = st }; cur.legs.Add(leg); cur.hours += open; }
-                    leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p.transform.position;
+                    leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p;
                 }
             }
             if (_rounds.Count <= nr || target >= MaxRoundHours - 0.05f) break;

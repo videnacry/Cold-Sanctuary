@@ -105,7 +105,7 @@ public static partial class SampleSceneBuilder
         else if (deck.parent == null || deck.parent.GetComponentInParent<SanctuaryArea>() == null) deck.SetParent(hx.root, true);   // (una planta propia sigue colgando de su área)
         deck.SetPositionAndRotation(hx.root.TransformPoint(HelixTower.FromSide(side, h.FloorCenterS) + Vector3.up * h.LevelY(lv)), hx.root.rotation * HelixTower.SideRot(side));
         TreeFloor tf = deck.gameObject.GetOrAdd<TreeFloor>(); tf.index = k; tf.tilt = 0f; tf.yaw = side * 90f;
-        HelixSlab(deck, h);
+        HelixSlab(deck, h, hx.rotates ? 0f : 1f);
         _platforms[deck] = areaSize;   // (sus muebles y sus plazas reservadas, en la planta del área)
         hx.decks[k] = deck; hx.sizes[k] = areaSize; _helixFloor[deck] = (hx, k); _floorSeq[deck] = k;
         if (hx.lastFloor != null && hx.lastFloor != deck) _upperOf[deck] = hx.lastFloor;   // del mismo edificio (BaseOf: su primer piso)
@@ -114,11 +114,13 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>LOSA cuadrada de un piso, en voladizo desde su cara del tronco: ménsulas y tornapuntas que bajan a la cara.</summary>
-    static void HelixSlab(Transform f, HelixTower h)
+    /// <paramref name="margin"/>: en las torres, la losa sobresale 1 m del área por sus tres lados libres (sigue cuadrada y pegada al
+    /// tronco): sin ese margen el NavMesh, recortado en el borde, no llegaba a las máquinas pegadas a él (la primera cinta de correr).
+    static void HelixSlab(Transform f, HelixTower h, float margin = 0f)
     {
         float S = h.floorSize, half = S * 0.5f, fx = h.FloorCenterS.x;
         Transform s = new GameObject("Estructura_Elevada").transform; s.SetParent(f, false);
-        Solid(s, new Vector3(0f, -0.15f, 0f), new Vector3(S, 0.3f, S), TreeSlab, "Losa_arbol");
+        Solid(s, new Vector3(0f, -0.15f, margin), new Vector3(S + 2f * margin, 0.3f, S + 2f * margin), TreeSlab, "Losa_arbol");
         foreach (float xs in new[] { -9f, -3f, 3f, 9f })
             KitchenProps.C(s, new Vector3(xs - fx, -0.6f, -half + 5f), new Vector3(0.35f, 0.6f, 10f), TreeSteel, 0f, "Mensula");
         foreach (var (x0, x1) in new[] { (-9f, -8f), (-3f, 2f), (3f, 10f), (9f, 18f) })
@@ -197,7 +199,7 @@ public static partial class SampleSceneBuilder
             if (tip) { var (fl, rl) = Branch(hx, k, ++ring); ac.levels.Add(fl); ac.levels.Add(rl); tips++; continue; }
             Transform f = hx.decks[k]; floors++;
             string title = hx.floorTitle != null ? hx.floorTitle(k) : FloorTitle(f, k);
-            TreeLevel L = WallLevel(h, TreeLevel.Kind.Floor, k, side, h.LevelY(lv), $"el piso {k} ({title})", f, h.floorSize * 0.5f, hx.doorX[k]);
+            TreeLevel L = WallLevel(h, TreeLevel.Kind.Floor, k, side, h.LevelY(lv), $"el piso {k} ({title})", f, h.floorSize * 0.5f + (hx.rotates ? 0f : 1f), hx.doorX[k]);
             L.level = lv;
             L.field = DoorFrame(tree, HelixTower.FromSide(side, new Vector3(hx.doorX[k], h.LevelY(lv), h.waterHalf)), HelixTower.SideRot(side), h.wall, $"Puerta_piso_{k}", L.outside);
             ac.levels.Add(L);
@@ -295,6 +297,14 @@ public static partial class SampleSceneBuilder
             Vector3 e = hx.root.rotation * HelixTower.SideRot(side) * new Vector3(3.4f, 2.2f, 4.4f);
             Bounds zone = new Bounds(c, new Vector3(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z)));
             int hits = 0; foreach (Bounds b in boxes) if (b.Intersects(zone)) hits++;
+            // Y lo que tenga caja de colisión aunque no cuelgue del piso (la cocina del restaurante cuelga de Restaurante_AUTO).
+            foreach (Collider col in Physics.OverlapBox(zone.center, zone.extents, Quaternion.identity, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (col.transform.IsChildOf(deck) || col.GetComponentInParent<CarpetPad>() != null) continue;   // (lo del piso ya se ha contado)
+                string n = col.name;
+                if (n == "Mat" || n.StartsWith("Losa") || n.StartsWith("Viga") || n.StartsWith("Suelo") || n.StartsWith("Wall_") || n == "Mensula" || n.StartsWith("Tornapunta") || col.GetComponentInParent<Anima>() != null) continue;
+                hits++;
+            }
             float score = hits * 100f + Mathf.Abs(x - h.doorX);
             if (score < bestScore) { bestScore = score; best = x; }
         }

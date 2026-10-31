@@ -3547,7 +3547,8 @@ public static partial class SampleSceneBuilder
         Floor(cria.transform); Floor(meat.transform);
         //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga · Ballet · Dojo. Lo pesado y
         //    ruidoso (las máquinas) abajo; lo silencioso (yoga, con su anillo de estatuas, y las salas en obras) arriba.
-        BeginTower(EntrenamientoCenter, GymSize);
+        //    Un ÁRBOL: 3 niveles, sus 6 pisos en orden y 6 puntas con frutales; la sala de yoga, con su anillo en U y su puerta.
+        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, 3);
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
         Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ballet.transform); Floor(dojo.transform);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
@@ -3592,7 +3593,7 @@ public static partial class SampleSceneBuilder
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { gym, works, plant, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
+        var ground = new List<SanctuaryArea> { works, plant, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)

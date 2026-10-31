@@ -230,7 +230,7 @@ public static class FurnitureSpacing
                 if (!pa && !pb && GoTogether(ta.name, tb.name)) continue;
                 if (!pa && !pb && LineOf(ta, root) is Transform la && la == LineOf(tb, root)) continue;   // el mismo tramo corrido
                 float need = pa || pb ? CarpetClear : Standard, gap = Gap(ba, bb);
-                if (gap < need) bad.Add((ta, tb, gap, need));
+                if (gap < need - 0.005f) bad.Add((ta, tb, gap, need));   // (5 mm de redondeo: en los pisos girados de un edificio-árbol, 2,000 m salía 1,999)
             }
         return bad;
     }
