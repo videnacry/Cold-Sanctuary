@@ -368,33 +368,45 @@ public class CarpetPad : MonoBehaviour
     /// por el área a la que tiene que andar; true = vuela ahora (no hay que moverlo).
     /// </summary>
     static float _noCarpetLog;
+    // LA ÚLTIMA DECISIÓN de Route para cada uno (solo se formatea al pedirla: el registro de quien «no avanza»). Kushal se
+    // quedaba quieto en el techo de Servicios sin volar a la barra y el registro no decía qué rama de la ruta lo paraba.
+    struct Note { public string why; public CarpetPad a, b, next; public Vector3 to; }
+    static readonly Dictionary<GameObject, Note> _notes = new Dictionary<GameObject, Note>();
+    static bool Noted(GameObject g, bool r, string why, CarpetPad a = null, CarpetPad b = null, CarpetPad next = null, Vector3 to = default)
+    { _notes[g] = new Note { why = why, a = a, b = b, next = next, to = to }; return r; }
+    /// <summary>Qué decidió la última ruta de <paramref name="g"/> (para los registros de atascos).</summary>
+    public static string LastRoute(GameObject g)
+    {
+        if (g == null || !_notes.TryGetValue(g, out Note n)) return "sin ruta";
+        return $"ruta: {n.why} (de {n.a?.displayName ?? "—"} a {n.b?.displayName ?? "—"}, siguiente {n.next?.displayName ?? "—"}, andar a ({n.to.x:0.0},{n.to.y:0.0},{n.to.z:0.0}))";
+    }
     public static bool Route(GameObject g, ref Vector3 to)
     {
-        if (FlyingCarpet.Riding(g)) return true;
+        if (FlyingCarpet.Riding(g)) return Noted(g, true, "volando");
         // El ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): entre sus pisos no hay alfombras; a la puerta y nadando por la raíz.
         // (Aquí y no en PathMover: la jornada, las iniciaciones y los hechizos llaman a Route directamente.)
         ArbolCampos.Hop tree = ArbolCampos.Route(g, ref to);
-        if (tree == ArbolCampos.Hop.Swimming) return true;
-        if (tree == ArbolCampos.Hop.Walk) return false;
+        if (tree == ArbolCampos.Hop.Swimming) return Noted(g, true, "nadando por el árbol");
+        if (tree == ArbolCampos.Hop.Walk) return Noted(g, false, "andando por el árbol", to: to);
         CarpetPad a = For(g.transform.position), b = For(to);
-        if (a == null || b == null || a.surface == b.surface) return false;   // mismo piso: andando
+        if (a == null || b == null || a.surface == b.surface) return Noted(g, false, "mismo piso", a, b, to: to);   // mismo piso: andando
         CarpetPad next = NextHop(a, b);
-        if (next == null) return false;
+        if (next == null) return Noted(g, false, "sin camino de alfombras", a, b, to: to);
         // A OTRA ÁREA DE ESTE PISO (en el techo: de la del santuario a la del edificio). Si ya está junto a ella (a menos de 3 m),
         // sale de ella: en el techo de Servicios las dos pistas están casi juntas y «la más cercana» cambiaba de una a otra a
         // cada paso; Kushal se quedaba entre las dos mandado de una a la otra y nunca volaba a la barra (2026-10-30).
         if (next.surface == a.surface)
         {
-            if ((g.transform.position - next.transform.position).sqrMagnitude > 9f) { to = next.transform.position; return false; }
+            if ((g.transform.position - next.transform.position).sqrMagnitude > 9f) { to = next.transform.position; return Noted(g, false, "a la otra pista del piso", a, b, next, to); }
             a = next; next = NextHop(a, b);
-            if (next == null || next.surface == a.surface) return false;
+            if (next == null || next.surface == a.surface) return Noted(g, false, "sin vuelo desde la otra pista", a, b, next, to);
         }
-        if ((g.transform.position - a.transform.position).sqrMagnitude > 9f) { to = a.transform.position; return false; }   // andar al área
+        if ((g.transform.position - a.transform.position).sqrMagnitude > 9f) { to = a.transform.position; return Noted(g, false, "a su pista", a, b, next, to); }   // andar al área
         FlyingCarpet c = a.Summon(g.transform.position);
-        if (c == null) { if (Time.time > _noCarpetLog) { _noCarpetLog = Time.time + 10f; Debug.LogWarning($"[Ruta] «{g.name}»: no hay ninguna alfombra libre en la red de {a.building} ({a.displayName}) para ir a {next.displayName}."); } return false; }
+        if (c == null) { if (Time.time > _noCarpetLog) { _noCarpetLog = Time.time + 10f; Debug.LogWarning($"[Ruta] «{g.name}»: no hay ninguna alfombra libre en la red de {a.building} ({a.displayName}) para ir a {next.displayName}."); } return Noted(g, false, "sin alfombra libre", a, b, next, to); }
         Debug.Log($"[Ruta] «{g.name}»: de {a.building} · {a.displayName} hacia {b.building} · {b.displayName} (destino {to}); vuela a {next.displayName}.");
         c.Fly(g, next);
-        return true;
+        return Noted(g, true, "sale volando", a, b, next, to);
     }
 
     // Búsqueda en anchura por la red: andar dentro del piso no cuesta, cada vuelo cuenta uno. Devuelve el primer paso.
