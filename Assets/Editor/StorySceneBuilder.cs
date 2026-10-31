@@ -23,6 +23,7 @@ public static class StorySceneBuilder
         ("Infirmary_Area",       "Kapilavastu", "Microcosmos_Buda",        new Color(0.85f, 0.95f, 0.9f), new System.Func<Transform, int>(Buddha)),
         ("VehicleWorkshop_Area", "Dayton",      "Microcosmos_Wright",      new Color(0.55f, 0.55f, 0.6f), new System.Func<Transform, int>(Wright)),
         ("AtomicPlant_Area",     "Alejandría",  "Microcosmos_Eratostenes", new Color(0.8f, 0.75f, 0.55f), new System.Func<Transform, int>(Eratosthenes)),
+        ("MartialArts_Area",     "Bruce Lee",   "Microcosmos_BruceLee",    new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(BruceLee)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -34,6 +35,7 @@ public static class StorySceneBuilder
         ["Kapilavastu"] = ("otoño, tras el monzón, s. V a. C.", 9f),
         ["Dayton"] = ("17 de diciembre de 1903", 10.58f),                      // el primer vuelo: 10:35
         ["Alejandría"] = ("solsticio de verano, ~240 a. C.", 12f),            // el mediodía del pozo de Siene
+        ["Bruce Lee"] = ("de 1957 (Hong Kong) a 1971 (Los Ángeles)", 10f),   // empieza por la mañana en la escuela de Yip Man
     };
 
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias")]
@@ -47,6 +49,25 @@ public static class StorySceneBuilder
             i++;
         }
         Debug.Log($"[Historias] {i} microcosmos de historias generados.");
+    }
+
+    /// <summary>Genera SOLO el microcosmos de Bruce Lee (el Dojo), sin rehacer los demás. Necesita la escena principal abierta
+    /// (su piso «MartialArts_Area» es el que se agranda).</summary>
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: Bruce Lee (Dojo)")]
+    public static void BuildBruceLee() => BuildOne("Microcosmos_BruceLee");
+
+    /// <summary>Genera un solo microcosmos de historia por su escena (en su mismo origen que en <see cref="BuildAll"/>).</summary>
+    public static void BuildOne(string scene)
+    {
+        for (int i = 0; i < Stories.Length; i++)
+        {
+            var s = Stories[i];
+            if (s.scene != scene) continue;
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i * 900f, 0f, 12500f));
+            Debug.Log($"[Historias] {scene} generado.");
+            return;
+        }
+        Debug.LogWarning($"[Historias] no hay historia «{scene}».");
     }
 
     // ══ PATANJALI · Sala de Yoga ═══════════════════════════════════════════════════════════════════════════════════
@@ -508,6 +529,138 @@ public static class StorySceneBuilder
                 "Observatoire de Paris, An Etymological Dictionary of Astronomy and Astrophysics, «Eratosthenes' method».",
             },
             "Eratóstenes", "No hace falta dar la vuelta al mundo para medirlo: basta con mirar bien una sombra.");
+        return n;
+    }
+
+    // ══ BRUCE LEE · Dojo (artes marciales) ═════════════════════════════════════════════════════════════════════════
+    // docs/microcosmos-bruce-lee.md: cinco escenas en su propia voz, en estaciones del claro de la historia (Hong Kong →
+    // la bahía → Seattle y Long Beach → Los Ángeles → 1970), que enseñan el oficio del Dojo: la guardia, los golpes en
+    // cadena en el muñeco de madera, «sé agua», el golpe de una pulgada y el juego de pies. Bruce Lee es un cuerpo de CUBOS
+    // humano (1,72 m, delgado y atlético; sin parecido de cine) que enseña con el cuerpo (MartialForms → JeetKuneDo); su
+    // gente (el elenco renacido) son mirmidones, como en las demás historias. El Dojo sigue en obras en el santuario: su
+    // microcosmos lo enseña TERMINADO (el «Acabado» de la obra, docs/obras-dojo-ballet.md).
+
+    internal const string BruceLeeName = "Bruce Lee";
+
+    static int BruceLee(Transform t)
+    {
+        // El Dojo terminado: el acabado de la obra se ve y el andamio y el material del día se quitan.
+        Transform giant = t.root.Find("Bruce Lee_gigante");
+        if (giant != null)
+        {
+            foreach (Transform c in giant.GetComponentsInChildren<Transform>(true))
+                if (c != null && c.name == "Acabado") c.gameObject.SetActive(true);
+            foreach (string obra in new[] { "Andamio_obra", "Material_del_dia" })
+                foreach (Transform c in giant.GetComponentsInChildren<Transform>(true))
+                    if (c != null && c.name == obra) Object.DestroyImmediate(c.gameObject);
+        }
+
+        Material wood = AreaMicrocosmos.Mat("Hist_Madera", new Color(0.55f, 0.4f, 0.25f)), mat = AreaMicrocosmos.Mat("Hist_Tatami", new Color(0.78f, 0.72f, 0.5f));
+        Material water = AreaMicrocosmos.Mat("Hist_Agua", new Color(0.3f, 0.5f, 0.7f)), paper = AreaMicrocosmos.Mat("Hist_Papel", new Color(0.93f, 0.9f, 0.82f));
+        Material cloth = AreaMicrocosmos.Mat("Hist_Sabana", new Color(0.95f, 0.95f, 0.92f)), chalk = AreaMicrocosmos.Mat("Hist_Marca", new Color(0.95f, 0.85f, 0.3f));
+        Color skin = new Color(0.42f, 0.28f, 0.2f), dark = new Color(0.2f, 0.2f, 0.22f), shirt = new Color(0.85f, 0.85f, 0.8f), robe = new Color(0.35f, 0.33f, 0.3f);
+
+        // 1 · HONG KONG, ~1957: la escuela de Yip Man (Wing Chun) y su muñeco de madera.
+        Transform school = Spot(t, "Escuela de Yip Man", new Vector3(-14f, 0f, -6f), "Escuela de Wing Chun de Yip Man (Hong Kong, años 50)", 2.5f);
+        AreaMicrocosmos.Box(school, "Tatami", new Vector3(0f, 0.03f, 0f), new Vector3(6f, 0.06f, 6f), mat, false);
+        Transform dummy = Spot(t, "Muñeco de madera", new Vector3(-14f, 0f, 4f), "Muñeco de madera (muk yan jong)", 2.4f);
+        AreaMicrocosmos.Box(dummy, "Tronco", new Vector3(0f, 0.85f, 0f), new Vector3(0.3f, 1.7f, 0.3f), wood, true);
+        var dummyArms = new List<Transform>();
+        foreach (var (name, pos, size) in new[]
+        {
+            ("Brazo alto izquierdo", new Vector3(-0.12f, 1.25f, -0.35f), new Vector3(0.06f, 0.06f, 0.4f)),
+            ("Brazo alto derecho", new Vector3(0.12f, 1.25f, -0.35f), new Vector3(0.06f, 0.06f, 0.4f)),
+            ("Brazo medio", new Vector3(0f, 1.0f, -0.35f), new Vector3(0.06f, 0.06f, 0.4f)),
+            ("Pierna del muñeco", new Vector3(0f, 0.35f, -0.3f), new Vector3(0.07f, 0.55f, 0.07f)),
+        })
+        { Transform a = AreaMicrocosmos.Box(dummy, name, pos, size, wood, false); Label(a, name, 0.5f); dummyArms.Add(a); }
+
+        // 2 · LA BAHÍA DE HONG KONG: el agua (su propio relato: golpeó el agua desde un sampán y no pudo hacerle daño).
+        Transform bay = Spot(t, "Bahía de Hong Kong", new Vector3(-16f, 0f, 18f), "Bahía de Hong Kong (el sampán)", 2.4f);
+        AreaMicrocosmos.Box(bay, "Agua del puerto", new Vector3(0f, 0.02f, 2.5f), new Vector3(10f, 0.04f, 6f), water, false);
+        AreaMicrocosmos.Box(bay, "Sampán", new Vector3(0f, 0.25f, 1.2f), new Vector3(1f, 0.5f, 2.6f), wood, false);
+
+        // 3 · SEATTLE (1959–1964) y LONG BEACH (1964): la mesa de estudiante de filosofía, su primera escuela y el torneo.
+        Transform seattle = Spot(t, "Jun Fan Gung Fu Institute", new Vector3(14f, 0f, -6f), "Jun Fan Gung Fu Institute (Seattle, 1963)", 2.4f);
+        AreaMicrocosmos.Box(seattle, "Mesa de estudio", new Vector3(0f, 0.45f, 0f), new Vector3(1.6f, 0.9f, 0.9f), wood, true);
+        var books = new List<Transform>();
+        foreach (var (name, pos) in new[] { ("Apuntes de filosofía (Universidad de Washington)", new Vector3(4f, 0.15f, -11f)), ("Tao Te Ching (Laozi)", new Vector3(7f, 0.15f, 1f)), ("On Fencing (Aldo Nadi)", new Vector3(3f, 0.15f, -3f)) })
+        { Transform b = AreaMicrocosmos.Box(t, "Libro", pos, new Vector3(0.4f, 0.12f, 0.3f), paper, false); Label(b, name, 0.6f); books.Add(b); }
+        Transform beach = Spot(t, "Long Beach 1964", new Vector3(14f, 0f, 8f), "Campeonato Internacional de Kárate de Long Beach (1964)", 2.4f);
+        AreaMicrocosmos.Box(beach, "Tarima", new Vector3(0f, 0.05f, 0f), new Vector3(6f, 0.1f, 4f), mat, false);
+
+        // 4 · LOS ÁNGELES, 1967: el Jeet Kune Do. Marcas de tiza en el suelo para el juego de pies.
+        Transform la = Spot(t, "Chinatown de Los Ángeles", new Vector3(0f, 0f, 6f), "Jun Fan Gung Fu Institute (Chinatown de Los Ángeles, 1967)", 2.6f);
+        var marks = new List<Transform>();
+        foreach (var (name, pos) in new[] { ("Paso adelante", new Vector3(-3f, 0.02f, 9f)), ("Desliza el pie de atrás", new Vector3(-0.1f, 0.02f, 10.5f)), ("Paso atrás", new Vector3(2.8f, 0.02f, 9f)), ("Pivota", new Vector3(5.7f, 0.02f, 10.5f)) })
+        { Transform m = AreaMicrocosmos.Box(t, "Marca de tiza", pos, new Vector3(0.6f, 0.03f, 0.6f), chalk, false); Label(m, name, 0.4f); marks.Add(m); }
+
+        // 5 · 1970: la lesión de espalda. La cama del reposo y la mesa de las notas.
+        Transform rest = Spot(t, "Reposo de 1970", new Vector3(14f, 0f, 20f), "Los Ángeles, 1970: meses de reposo y cuadernos de notas", 2.4f);
+        AreaMicrocosmos.Box(rest, "Cama", new Vector3(-1.5f, 0.25f, 0f), new Vector3(1f, 0.5f, 2.1f), cloth, true);
+        AreaMicrocosmos.Box(rest, "Mesa de notas", new Vector3(1.4f, 0.38f, 0f), new Vector3(1.2f, 0.75f, 0.6f), wood, true);
+        AreaMicrocosmos.Box(rest, "Cuadernos", new Vector3(1.4f, 0.8f, 0f), new Vector3(0.5f, 0.1f, 0.35f), paper, false);
+
+        // ── La gente: Bruce Lee (cuerpo de cubos humano) y el elenco renacido (mirmidones) ──
+        GameObject bruce = new GameObject(BruceLeeName);
+        bruce.transform.SetParent(t, false); bruce.transform.localPosition = new Vector3(-12f, 0f, -6f);
+        var col = bruce.AddComponent<CapsuleCollider>(); col.height = 1.72f; col.radius = 0.3f; col.center = Vector3.up * 0.86f;
+        Anima a0 = bruce.AddComponent<Anima>();
+        // Delgado y atlético (BodyShape): armazón medio (estatura 1,72 m sin más), músculo fibroso, sin grasa, piernas ágiles.
+        a0.strength = 1.3f; a0.agility = 1.6f; a0.bodyMass = 1.0f; a0.endurance = 1.4f; a0.discipline = 1.6f; a0.reasoning = 1.3f; a0.creativity = 1.4f;
+        CubeHumanoid.Dress(bruce, dark, new Color(0.86f, 0.7f, 0.56f), 1.72f);
+        WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = 2.1f;
+        MartialForms forms = bruce.AddComponent<MartialForms>();
+
+        int n = 1;
+        GameObject P(string name, Vector3 pos, Color coat, float h = 1.8f) { GameObject g = Person(t, name, pos, skin, h); CubeInsect.Wear1940s(g, coat, CubeInsect.Hat.None); n++; return g; }
+        GameObject yip = P("Yip Man (Shanidar)", new Vector3(-10f, 0f, -10f), robe, 1.6f);
+        GameObject taky = P("Taky Kimura (Atlas)", new Vector3(17f, 0f, -9f), shirt);
+        GameObject linda = P("Linda Lee (Ruth)", new Vector3(10f, 0f, 20f), new Color(0.55f, 0.6f, 0.75f), 1.7f);
+        GameObject james = P("James Yimm Lee (Héspero)", new Vector3(10f, 0f, -10f), dark); Routine(james, seattle, beach);
+        GameObject parker = P("Ed Parker (Momo)", new Vector3(18f, 0f, 11f), new Color(0.6f, 0.2f, 0.2f)); Routine(parker, beach);
+        GameObject baker = P("Bob Baker (Ambrosio)", new Vector3(10f, 0f, 11f), shirt); Routine(baker, beach);
+        GameObject dan = P("Dan Inosanto (Sakshi)", new Vector3(-3f, 0f, 13f), dark); Routine(dan, la);
+        GameObject student = P("Alumna (Medea)", new Vector3(3f, 0f, 13f), shirt, 1.7f); Routine(student, la, school);
+
+        var steps = new[]
+        {
+            Talk("Hong Kong, años 50: habla con Bruce Lee en la escuela de Yip Man", bruce.transform, BruceLeeName, "Tengo dieciséis años y me peleo demasiado en la calle. Mi maestro, Yip Man, me enseña Wing Chun: todo pasa por la línea central."),
+            Talk("Saluda al maestro Yip Man", yip.transform, "Yip Man", "Relájate. Si te pones rígido contra la fuerza, te rompes; acompáñala y devuélvela."),
+            Hold("Ponte en la guardia del Wing Chun en el tatami (rodillas dentro, centro protegido)", school, 8f, BruceLeeName, "Yee ji kim yeung ma: rodillas hacia dentro, pelvis adelantada, el peso en los dos pies. Desde aquí sale todo."),
+            Visit("Golpes en cadena en el muñeco de madera: toca cada brazo y la pierna", dummyArms, BruceLeeName, "Puño vertical, codo abajo, por el centro: uno detrás de otro, sin pausa. El muñeco no perdona un codo fuera de sitio."),
+            Reach("Yip Man le manda descansar: ve con Bruce a la bahía", bay, BruceLeeName, "Me ha dicho que deje de entrenar una semana. Me he subido a un sampán, solo, enfadado conmigo mismo."),
+            Hold("Sé agua: quédate mirando el agua del puerto", bay, 10f, BruceLeeName, "Golpeé el agua y no le hice daño; quise agarrarla y se me escapó entre los dedos. Es lo más blando y nada la rompe. Ahí entendí lo que me pedía el maestro."),
+            Collect("Seattle, 1959–1964: lleva sus libros a la mesa de estudio", books, seattle, BruceLeeName, "Estudio filosofía en la Universidad de Washington. Quiero entender por qué pelear, no solo cómo."),
+            Talk("Habla con Taky Kimura, su primer ayudante en la escuela de Seattle", taky.transform, "Taky Kimura", "Empezamos entrenando en un aparcamiento. En 1963 abrió aquí su primera escuela, el Jun Fan Gung Fu Institute."),
+            Hold("Long Beach, 1964: mira el golpe de una pulgada", beach, 8f, BruceLeeName, "El puño ya toca el pecho. La fuerza no sale del brazo: sale del suelo, sube por las piernas, gira en la cadera y llega al puño de golpe."),
+            Visit("Los Ángeles, 1967: juego de pies del Jeet Kune Do, pisa cada marca", marks, BruceLeeName, "Paso y deslizamiento: el pie de delante sale primero y el de atrás lo sigue. Nunca cruces los pies. La distancia es tu mejor defensa."),
+            Talk("Habla con Bruce Lee: ¿qué es el Jeet Kune Do?", bruce.transform, BruceLeeName, "«El camino del puño que intercepta». No es otro estilo: absorbe lo útil, rechaza lo inútil, añade lo que es esencialmente tuyo."),
+            Hold("1970: se ha lesionado la espalda. Quédate con él mientras escribe", rest, 12f, BruceLeeName, "Los médicos me han dicho que quizá no vuelva a entrenar. Pues escribo: lo que he aprendido, para no perderlo."),
+            Talk("Habla con Linda Lee", linda.transform, "Linda Lee", "Estuvo meses en cama y no dejó de llenar cuadernos. Se recuperó, y volvió a entrenar."),
+        };
+        forms.formByStep = new[] { "wingchun", "wingchun", "wingchun", "muneco", "agua", "agua", "guardia", "guardia", "pulgada", "pasos", "guardia", "notas", "notas" };
+        forms.spotByStep = new[] { school, school, school, dummy, bay, bay, seattle, seattle, beach, la, la, rest, rest };
+
+        Mission(t, "Bruce Lee: del Wing Chun al Jeet Kune Do", StoryMission.Marga.Stats, 60f, steps,
+            "Hong Kong, Seattle, Long Beach y Los Ángeles (1957–1971), sobre el Dojo del santuario a escala de hormiga. Bruce Lee te enseña lo que aprendió y lo que inventó: la guardia y los golpes en cadena del Wing Chun, «sé agua», el golpe de una pulgada y el juego de pies del Jeet Kune Do. Mira cómo lo hace con el cuerpo. E para hablar, recoger y tocar; en los pasos de práctica, quédate quieto.",
+            new[]
+            {
+                "Bruce Lee (Lee Jun-fan) nació en San Francisco el 27 de noviembre de 1940 y se crió en Hong Kong. A mediados de los años 50 (las fuentes dan entre 1953 y 1956) empezó a aprender Wing Chun con Yip Man; entrenó también con William Cheung y Wong Shun-leung. El Wing Chun trabaja la línea central, los golpes en cadena, el chi sao (manos pegajosas) y el muñeco de madera.",
+                "En 1959, tras varias peleas callejeras, sus padres lo enviaron a Estados Unidos. En Seattle terminó el bachillerato en Edison Technical School y entró en la Universidad de Washington, donde estudió filosofía (según una publicación de antiguos alumnos de 1999, su carrera oficial era teatro) hasta 1964. Allí conoció a Linda Emery, con quien se casó en agosto de 1964, y en 1963 abrió su primera escuela, el Jun Fan Gung Fu Institute.",
+                "En 1964 abrió una segunda escuela en Oakland con James Yimm Lee y en el Campeonato Internacional de Kárate de Long Beach mostró el golpe de una pulgada. En 1967 abrió su escuela de Los Ángeles y dio nombre al Jeet Kune Do, «el camino del puño que intercepta»: un método sin forma fija que tomaba de muchos (Wing Chun, boxeo, esgrima) lo que servía. Entrenaba fuerza, carrera, flexibilidad y juego de pies.",
+                "El 13 de agosto de 1970 se lesionó la espalda entrenando con pesas y pasó meses de reposo. En ese tiempo llenó cuadernos que, tras su muerte (Hong Kong, 20 de julio de 1973, a los 32 años), se publicaron como «Tao of Jeet Kune Do» (1975). En la entrevista de Pierre Berton (9 de diciembre de 1971) repitió lo que había escrito para la serie «Longstreet»: vacía tu mente, sé sin forma como el agua. «Be water, my friend.»",
+            },
+            new[]
+            {
+                "HistoryLink.org, ensayo 3999: «Lee, Bruce (1940-1973)» (historylink.org).",
+                "Polly, M. (2018). Bruce Lee: A Life. Simon & Schuster.",
+                "Lee, B. (1975). Tao of Jeet Kune Do. Ohara Publications.",
+                "Little, J. (ed.) (1999). Bruce Lee: Artist of Life. Tuttle (su relato del agua en la bahía de Hong Kong).",
+                "The Pierre Berton Show, 9-12-1971 («Bruce Lee: The Lost Interview»).",
+                "Bruce Lee Foundation / brucelee.com, «Absorb what is useful, reject what is useless, add what is essentially your own».",
+            },
+            BruceLeeName, "Vacía tu mente. Sé sin forma, como el agua: en una taza es la taza; puede fluir o puede golpear. Be water, my friend.");
         return n;
     }
 

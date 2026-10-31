@@ -121,6 +121,7 @@ public static class SolarPosition
             ("Kapilavastu", 27.57f, 83.05f, 288f), ("Egina", 37.75f, 23.53f, 152f), ("Alejandría", 31.20f, 29.92f, 172f),
             ("Escútari", 41.00f, 29.02f, 319f), ("Dayton", 36.02f, -75.67f, 351f), ("Tregua", 50.74f, 2.88f, 359f),
             ("Chambon", 45.06f, 4.30f, 288f), ("Sendler", 52.25f, 21.00f, 288f), ("Atómica", 52.81f, -0.63f, 253f),
+            ("Bruce Lee", 22.28f, 114.17f, 258f),   // Hong Kong, mediados de septiembre (empieza en la escuela de Yip Man)
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }

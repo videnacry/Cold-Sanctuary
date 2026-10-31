@@ -107,6 +107,10 @@ public static class CubeHair
         // ondulado-rizado con volumen arriba, sonrisa amplia. Siempre ELEGANTE: camisa negra de cuello, pantalón de vestir gris
         // marengo y zapatos de piel; le gustan los anillos, las cadenas (plata, con cruz) y los pendientes; pulsera.
         if (n.Contains("andrea")) return new Look(Style.Curly, C(0.2f, 0.14f, 0.1f), C(0.9f, 0.72f, 0.6f), C(0.3f, 0.2f, 0.12f)).Face(0.82f, 0.45f).Earring().Rings().Wear(C(0.07f, 0.07f, 0.08f), 1.78f).Sleeves(C(0.07f, 0.07f, 0.08f)).Pants(C(0.22f, 0.23f, 0.26f)).Necklace(C(0.8f, 0.8f, 0.83f), true).Shoes(C(0.32f, 0.2f, 0.13f)).Extras(band: true);
+        // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
+        // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
+        // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
+        if (n.Contains("bruce lee")) return new Look(Style.Short, C(0.05f, 0.05f, 0.06f), C(0.86f, 0.7f, 0.56f), C(0.15f, 0.1f, 0.07f)).Face(0.8f, 0.6f).Wear(C(0.1f, 0.1f, 0.11f), 1.72f).Sleeves(C(0.1f, 0.1f, 0.11f)).Pants(C(0.08f, 0.08f, 0.09f)).Shoes(C(0.12f, 0.12f, 0.12f));
         if (n.Contains("maestra")) return new Look(Style.Bun, C(0.7f, 0.7f, 0.72f), SkinLight, C(0.3f, 0.25f, 0.2f));
         // Goluis: 25 años, el de la fuerza (corpulento), jefe de cocina → cabeza rapada, barba, chaqueta de cocinero.
         // (de su foto) degradado con la parte de arriba en punta, perilla, pendiente, tatuajes en los brazos, polo claro.

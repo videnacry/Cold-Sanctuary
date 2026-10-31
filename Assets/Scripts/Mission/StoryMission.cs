@@ -163,6 +163,17 @@ public class StoryMission : MonoBehaviour
         if (Finished) Finish();
     }
 
+    /// <summary>Para las pruebas: da por cumplido el paso actual (con lo que aparece, desaparece y se dice), como si el jugador
+    /// lo hubiera hecho. Devuelve false si la historia ya había terminado.</summary>
+    public bool CompleteCurrentForTest()
+    {
+        if (Finished) return false;
+        foreach (Transform c in _carried) if (c != null) c.gameObject.SetActive(false);
+        _carried.Clear();
+        Complete(Current);
+        return true;
+    }
+
     void Finish()
     {
         CharacterLevel lv = FindFirstObjectByType<CharacterLevel>();

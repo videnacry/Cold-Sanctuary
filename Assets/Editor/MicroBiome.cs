@@ -256,6 +256,24 @@ public static class MicroBiome
                 new Bug("DungBeetle", 4, 6, C(0.2f, 0.15f, 0.1f), "Afodio (Aphodius), en el excremento de alce"),
                 new Bug("Antlion", 2, 13, C(0.6f, 0.55f, 0.45f), "Hormiga león (Myrmeleon formicarius), en el arenal soleado") } };
 
+            // ── Hong Kong, ladera subtropical, mediados de septiembre (Bruce Lee empieza en la escuela de Yip Man) ──
+            // Flora y fauna nativas comunes del sur de China y Hong Kong (Hong Kong Herbarium, AFCD; Hong Kong Biodiversity Database).
+            case "Bruce Lee": return new Biome { title = "Hong Kong, ladera subtropical (septiembre)", ground = C(0.58f, 0.42f, 0.3f), plants = new[] {
+                new Plant(Kind.Grass, 16, "Grama (Cynodon dactylon)", 20, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Grass, 12, "Cogón (Imperata cylindrica)", 80, C(0.5f, 0.65f, 0.35f), C(0.95f, 0.95f, 0.92f)),
+                new Plant(Kind.Fern, 12, "Helecho dicotómico (Dicranopteris pedata)", 100, C(0.35f, 0.55f, 0.25f), C(0.4f, 0.5f, 0.3f)),
+                new Plant(Kind.Flower, 8, "Mirto de rosa (Rhodomyrtus tomentosa)", 150, C(0.4f, 0.5f, 0.35f), C(0.92f, 0.55f, 0.7f)),
+                new Plant(Kind.Flower, 7, "Melastoma (Melastoma malabathricum)", 150, C(0.35f, 0.48f, 0.3f), C(0.7f, 0.45f, 0.8f)),
+                new Plant(Kind.Fungus, 5, "Seta (Termitomyces)", 15, C(0.9f, 0.86f, 0.75f), C(0.8f, 0.7f, 0.55f)),
+                new Plant(Kind.Stone, 10, "Granito", 0, Stone, Stone), new Plant(Kind.Sand, 4, "Arena de la bahía", 0, Sand, Sand) },
+              bugs = new[] {
+                new Bug("Termite", 8, 6, C(0.92f, 0.86f, 0.72f), "Termita de Formosa (Coptotermes formosanus)"),
+                new Bug("Grasshopper", 5, 30, C(0.45f, 0.65f, 0.25f), "Saltamontes del arroz (Oxya chinensis)"),
+                new Bug("Ladybug", 5, 5, C(0.95f, 0.6f, 0.1f), "Mariquita zigzag (Cheilomenes sexmaculata)"),
+                new Bug("Mantis", 3, 80, C(0.4f, 0.7f, 0.3f), "Mantis (Hierodula patellifera)"),
+                new Bug("Spider", 3, 40, C(0.85f, 0.75f, 0.2f), "Araña de seda dorada (Nephila pilipes)"),
+                new Bug("Firefly", 4, 10, C(0.3f, 0.22f, 0.15f), "Luciérnaga (Luciola)") } };
+
             default: return null;
         }
     }

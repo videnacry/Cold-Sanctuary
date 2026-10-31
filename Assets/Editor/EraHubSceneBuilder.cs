@@ -34,6 +34,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_Wright", "Dayton", "los hermanos Wright"),
         ("Microcosmos_PlantaAtomica", "Planta Atómica", "Newton, Curie y Einstein"),
         ("Microcosmos_Tregua1914", "Tregua 1914", "la tregua de Navidad"),
+        ("Microcosmos_BruceLee", "Bruce Lee", "Bruce Lee: del Wing Chun al Jeet Kune Do (sé agua)"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
     };

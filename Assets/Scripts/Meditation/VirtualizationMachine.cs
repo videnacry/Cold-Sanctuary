@@ -142,6 +142,10 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         (AreaWork.Hospital, "Simulación: Florence Nightingale en Escútari, 1854", "Microcosmos_Nightingale"),
         (AreaWork.Hospital, "Simulación: Siddhārtha y los cuatro encuentros (Buda)", "Microcosmos_Buda"),
         ("Mecánica",     "Simulación: los hermanos Wright, de la bicicleta al avión (1903)", "Microcosmos_Wright"),
+        // BRUCE LEE (docs/microcosmos-bruce-lee.md): el microcosmos es el del DOJO, que sigue en obras y aún no tiene máquina; mientras,
+        // se entra desde la del Gimnasio (la misma torre de Entrenamiento).
+        ("Dojo (artes marciales)", "Simulación: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
+        ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
     };
 
     void ShowArea(string area)

@@ -75,6 +75,7 @@ public static class Eras
             case "Escútari":              return (1854, "Escútari, Estambul");
             case "Dayton":                return (1903, "Dayton y Kill Devil Hills, EE. UU.");
             case "Tregua 1914":           return (1914, "Flandes");
+            case "Bruce Lee":             return (1964, "Hong Kong, Seattle, Long Beach y Los Ángeles");
             case "Irena Sendler":         return (1942, "Varsovia");
             case "Le Chambon-sur-Lignon": return (1942, "Le Chambon-sur-Lignon, Francia");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
