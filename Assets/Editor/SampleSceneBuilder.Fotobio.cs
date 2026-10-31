@@ -6,7 +6,8 @@ using UnityEngine;
 /// <see cref="FotobioSpec"/>): espirulina (Arthrospira, la de MELiSSA) en tubos de vidrio y paneles planos, fuera del agua del
 /// tronco (dentro, el agua se pondría verde y taparía a los nadadores).
 /// - TRONCO: arpas de 28 tubos horizontales (Ø 7 cm) en módulos de 3 × 4 m con sus colectores, a 1,4 m de la pared de acrílico,
-///   en los vanos 0 y 2 de cada cara (lejos del carril de nado, las puertas y las bocas de las ramas), de 37,6 a 56 m.
+///   en el vano 0 de cada cara (el de la esquina: lejos del carril y de la columna de nado, las puertas y las bocas de las ramas),
+///   de 19,2 a 56 m.
 ///   Detrás de cada arpa, regletas LED (la noche polar); una bomba abajo y un desgasificador arriba de cada columna.
 /// - RAMAS: una quilla de 6 paneles planos colgada bajo el tramo largo de cada rama (no tapa los lados del tubo).
 /// - CUADRO de control al pie del tronco (cara a, lejos de la puerta del suelo) con la etiqueta del cultivo.
@@ -33,7 +34,7 @@ public static partial class SampleSceneBuilder
         float W = FotobioSpec.ModuleW, H = FotobioSpec.ModuleH, M = FotobioSpec.ManifoldH, z = FotobioSpec.PlaneZ(h), ribFace = h.OuterHalf + 0.6f;
         int modules = 0, panels = 0, branches = 0;
 
-        // ── TRONCO: 4 caras × 2 vanos × 4 módulos ──
+        // ── TRONCO: 4 caras × 1 vano × 8 módulos ──
         for (int s = 0; s < 4; s++)
         {
             Quaternion q = HelixTower.SideRot(s);

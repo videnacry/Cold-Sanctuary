@@ -7,7 +7,8 @@ using UnityEngine;
 /// PRUEBA DE LA FACHADA DE FOTOBIORREACTORES DEL ÁRBOL (Berón 2026-10-31; docs/fotobiorreactores.md):
 /// 1. EXISTE: la fachada cuelga del árbol con sus módulos de tubos (tronco), sus quillas (ramas), sus LED, bombas, cuadro y etiqueta.
 /// 2. LIBRE: ningún módulo cerca de una puerta, una boca de rama o el carril de nado; el tronco queda transparente abajo
-///    (0–37,6 m) y arriba (56–92 m) y cubierto poco en cada cara; las quillas, bajo su tubo y por encima del árbol más alto.
+///    (0–19,2 m), arriba (56–92 m) y en los vanos 1–5, cubierto poco en cada cara, y NO TAPA A LOS QUE NADAN (la columna de nado
+///    de <see cref="ArbolCampos.SwimPath"/> se ve desde el hielo y desde enfrente de cada cara); las quillas, bajo su tubo y por encima del árbol más alto.
 /// 3. NÚMEROS: productividad, O₂ por gramo, m² por persona, productividad por litro, luz de los LED y su potencia dentro de lo
 ///    investigado; el O₂ cubre a la gente del santuario; el tronco aguanta el peso.
 /// 4. CUIDADO: sin cuidar, el cultivo empeora; el cuidado diario (<see cref="FotobioFacade.Care"/>) sube la salud, cosecha y
@@ -67,16 +68,58 @@ public class FotobioFacadeTest : MonoBehaviour, ITestUnit
         TestProbe.Check("el carril de nado (frente a las puertas y bocas, de arriba abajo) queda libre en cada cara", laneGap >= 2f, $"carril x {laneX0:0.0}…{laneX1:0.0} m; el módulo más cerca a {laneGap:0.0} m");
         float faceArea = 2f * h.OuterHalf * TreeSpec.RootHeight, covered = mods.Sum(m => m.width * m.height);
         TestProbe.Check("cada cara del tronco queda casi toda transparente (≤ 15 % cubierta)", covered / faceArea <= 0.15f, $"{covered:0} de {faceArea:0} m² = {covered / faceArea * 100f:0.0} %");
-        // Medido en la malla: lo del tronco entre 37,6 y 56 m; lo de las ramas, por encima del árbol más alto.
+        // Medido en la malla: lo del tronco entre TrunkBottom y TrunkTop (en planta, dentro del cuadrado del tronco + 4 m: las
+        // arpas de la esquina quedan a más de 15 m del eje, y un radio las contaba como quilla); lo de las ramas, por encima del árbol más alto.
         Mesh cm = root.Find("Fotobio_cultivo") != null ? root.Find("Fotobio_cultivo").GetComponent<MeshFilter>().sharedMesh : null;
         float tMin = float.MaxValue, tMax = float.MinValue, kMin = float.MaxValue;
         if (cm != null)
             foreach (Vector3 v in cm.vertices)
             {
-                if (new Vector2(v.x, v.z).magnitude < h.OuterHalf + 4f) { tMin = Mathf.Min(tMin, v.y); tMax = Mathf.Max(tMax, v.y); }
+                if (Mathf.Max(Mathf.Abs(v.x), Mathf.Abs(v.z)) < h.OuterHalf + 4f) { tMin = Mathf.Min(tMin, v.y); tMax = Mathf.Max(tMax, v.y); }
                 else kMin = Mathf.Min(kMin, v.y);
             }
-        TestProbe.Check("el tronco se ve entero de 0 a 37 m y de 56 m arriba (se ve nadar desde el hielo y desde los pisos)", cm != null && tMin >= FotobioSpec.TrunkBottom - 0.01f && tMax <= FotobioSpec.TrunkTop + 0.01f, $"tubos del tronco de {tMin:0.0} a {tMax:0.0} m");
+        TestProbe.Check($"el tronco se ve entero de 0 a {FotobioSpec.TrunkBottom:0.0} m y de {FotobioSpec.TrunkTop:0} m arriba (se ve nadar desde el hielo y desde los pisos)", cm != null && tMin >= FotobioSpec.TrunkBottom - 0.01f && tMax <= FotobioSpec.TrunkTop + 0.01f, $"tubos del tronco de {tMin:0.0} a {tMax:0.0} m");
+        // SE VE NADAR (Berón: el tronco es transparente para ver a la gente nadar entre pisos). La columna de nado de
+        // ArbolCampos.SwimPath (a 6 m del eje, hacia la puerta o la boca de cada nivel) en la altura de las arpas, mirada desde 16
+        // rumbos a 30 m del eje, a la altura de los ojos en el hielo y a su misma altura (pisos, alfombras): de frente a cada cara,
+        // ningún rayo la cruza con un arpa; en total, como mucho uno de cada 10.
+        ArbolCampos arbol = ArbolCampos.Instance != null ? ArbolCampos.Instance : (tree != null ? tree.GetComponent<ArbolCampos>() : null);
+        var lanes = new List<Vector3>();
+        if (arbol != null)
+            foreach (TreeLevel lv in arbol.levels)
+            {
+                Vector3 f = lv.via.Length > 0 ? lv.via[0] : lv.inside; f.y = 0f;
+                if (Mathf.Max(Mathf.Abs(f.x), Mathf.Abs(f.z)) >= TreeSpec.WaterHalf || f.sqrMagnitude < 0.01f) continue;
+                Vector3 d = TreeSpec.Dir(TreeSpec.Angle(f)) * 6f;
+                if (lanes.All(o => (o - d).sqrMagnitude > 0.25f)) lanes.Add(d);
+            }
+        int rays = 0, blocked = 0, faceRays = 0, faceBlocked = 0; string firstBlock = "";
+        float pz = FotobioSpec.PlaneZ(h);
+        bool Blocked(Vector3 eye, Vector3 p)
+        {
+            for (int s = 0; s < 4; s++)
+            {
+                Quaternion inv = Quaternion.Inverse(HelixTower.SideRot(s));
+                Vector3 a = inv * eye, b = inv * p;
+                if (a.z <= pz || b.z >= pz) continue;
+                float t = (a.z - pz) / (a.z - b.z); Vector3 x = Vector3.Lerp(a, b, t);
+                foreach (Rect m in mods) if (x.x >= m.xMin && x.x <= m.xMax && x.y >= m.yMin && x.y <= m.yMax) return true;
+            }
+            return false;
+        }
+        foreach (Vector3 lane in lanes)
+            for (float y = FotobioSpec.TrunkBottom; y <= FotobioSpec.TrunkTop; y += 1.5f)
+                for (int k = 0; k < 16; k++)
+                    foreach (float ey in new[] { 1.7f, y })
+                    {
+                        Vector3 eye = TreeSpec.Dir(k * 22.5f) * 30f + Vector3.up * ey, p = lane + Vector3.up * y;
+                        bool face = k % 4 == 0, bl = Blocked(eye, p);
+                        rays++; if (bl) { blocked++; if (firstBlock == "") firstBlock = $"rumbo {k * 22.5f:0}°, ojos a {ey:0} m, nadador a {y:0} m"; }
+                        if (face) { faceRays++; if (bl) faceBlocked++; }
+                    }
+        TestProbe.Check("se ve nadar: las arpas no tapan la columna de nado (de frente a cada cara, nunca; en total ≤ 10 %)",
+            lanes.Count >= 4 && faceBlocked == 0 && blocked <= rays * 0.1f,
+            $"{lanes.Count} columnas; de frente {faceBlocked}/{faceRays} tapados; en total {blocked}/{rays} ({(rays > 0 ? blocked * 100f / rays : 0f):0.0} %)" + (firstBlock != "" ? $"; p. ej. {firstBlock}" : ""));
         float minTop = TreeSpec.TallestTree + TreeSpec.TreeClearance;
         TestProbe.Check("las quillas de las ramas quedan por encima del árbol más alto del santuario", kMin >= minTop - 0.01f, $"lo más bajo a {kMin:0.0} m (mínimo {minTop:0.0})");
         bool underTube = true; string keelInfo = "";

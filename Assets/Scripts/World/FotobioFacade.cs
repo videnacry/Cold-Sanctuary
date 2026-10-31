@@ -7,9 +7,12 @@ using UnityEngine;
 /// - ESPECIE: Arthrospira platensis (espirulina), la del compartimento IVa de MELiSSA (ESA): pH 9,5–10,5 (casi nada más
 ///   crece ahí), filamentos que se cosechan con malla, comestible.
 /// - TRONCO: arpas de TUBOS horizontales de vidrio (Ø 7 cm, cada 14 cm) en módulos de 3 × 4 m, separados 1,4 m de la pared de
-///   acrílico (por delante de los nervios), solo en 2 de los 6 vanos de cada cara (los más lejos del carril de nado, que va
-///   frente a la puerta y la boca de la rama) y solo entre 37,6 y 56 m: de 0 a 37,6 m y de 56 m arriba el tronco queda entero
-///   transparente (se ve nadar desde el hielo y desde los pisos).
+///   acrílico (por delante de los nervios), solo en el vano 0 de cada cara (el de la esquina, el más lejos del carril de nado,
+///   que va frente a la puerta y la boca de la rama), entre 19,2 y 56 m. Berón: el tronco es transparente para VER NADAR entre
+///   pisos; los nadadores suben por la columna a 6 m del eje frente a cada puerta (<see cref="ArbolCampos.SwimPath"/>), que
+///   desde fuera cae en los vanos 1–4 de cada cara: el vano 0 no la tapa ni de frente ni desde el hielo (antes había arpas
+///   también en el vano 2, que de frente tapaba la columna de la cara de enfrente; 2026-10-31, en Unity). De 0 a 19,2 m, de
+///   56 m arriba y en los vanos 1–5 el tronco queda entero transparente.
 /// - RAMAS: una QUILLA de paneles planos (5 cm de cultivo) colgada bajo el tramo largo de cada rama, entre los cordones de
 ///   abajo: no tapa los lados del tubo (se ve nadar por la rama) y queda por encima del árbol más alto (≥ 59,5 m).
 /// </summary>
@@ -48,16 +51,17 @@ public static class FotobioSpec
     public const float LedEfficacy = 2.5f;
 
     // ── GEOMETRÍA DEL TRONCO (marco de cada lado de HelixTower: x a lo largo de la cara, y altura, z hacia fuera) ──
-    /// <summary>Vanos (de 6 por cara, entre nervios) con arpa: el 0 (junto a la esquina) y el 2. El carril de nado y las puertas
-    /// van por el vano 4 (doorX = 5 m, boca de la rama en 6,5 m): quedan libres el 1, el 3, el 4 y el 5.</summary>
-    public static readonly int[] TrunkBays = { 0, 2 };
+    /// <summary>Vanos (de 6 por cara, entre nervios) con arpa: solo el 0 (junto a la esquina). El carril de nado y las puertas
+    /// van por el vano 4 (doorX = 5 m, boca de la rama en 6,5 m) y la columna de nado (a 6 m del eje frente a cada puerta) se ve
+    /// desde fuera por los vanos 1–4: quedan libres del 1 al 5. Con el mismo número de módulos (32), la columna es el doble de alta.</summary>
+    public static readonly int[] TrunkBays = { 0 };
     public const int BaysPerFace = 6;
     public const float ModuleW = 3f, ModuleH = 4f, ManifoldH = 0.3f;
     public static float ModulePitch => ModuleH + 2f * ManifoldH;   // 4,6 m
-    public const int ModulesPerColumn = 4;
+    public const int ModulesPerColumn = 8;
     /// <summary>Lo más alto del arpa del tronco: 4 m por debajo de las tornapuntas de los pisos (60 m).</summary>
     public const float TrunkTop = 56f;
-    public static float TrunkBottom => TrunkTop - ModulesPerColumn * ModulePitch;   // 37,6 m
+    public static float TrunkBottom => TrunkTop - ModulesPerColumn * ModulePitch;   // 19,2 m
     /// <summary>Separación del plano de tubos a la cara de fuera del acrílico (los nervios sobresalen 0,6 m).</summary>
     public const float Standoff = 1.4f;
     public const float TubeD = 0.07f, TubePitch = 0.14f;
@@ -78,7 +82,7 @@ public static class FotobioSpec
     public static float BayCenter(HelixTower h, int bay) { float w = 2f * h.OuterHalf / BaysPerFace; return -h.OuterHalf + (bay + 0.5f) * w; }
     public static float PlaneZ(HelixTower h) => h.OuterHalf + Standoff;
 
-    /// <summary>Rectángulos (marco del lado: x, y) de los módulos de una cara: 2 vanos × 4 módulos.</summary>
+    /// <summary>Rectángulos (marco del lado: x, y) de los módulos de una cara: 1 vano × 8 módulos.</summary>
     public static List<Rect> TrunkModules(HelixTower h)
     {
         var l = new List<Rect>();

@@ -3125,6 +3125,11 @@ public static partial class SampleSceneBuilder
                 bool ice = true;   // con hielo alrededor (las raíces no cuelgan sobre el agua)
                 for (int q = 0; q < 8 && ice; q++) ice = PolarLandscapeBuilder.NaturalIce(p.x + Mathf.Cos(q * 0.785f) * 5f, p.z + Mathf.Sin(q * 0.785f) * 5f);
                 if (!ice || !PolarLandscapeBuilder.NaturalIce(p.x, p.z) || InsideArea(p)) continue;
+                // Ni junto al ÁRBOL DE LOS CAMPOS (2026-10-31): el Huerto está en su piso 5, y sus árboles de hielo crecían a 16 m
+                // del eje con la copa DENTRO del tronco transparente (un nido de abejas a 5 m del eje, a 38 m), tapando a los que
+                // nadan. Lejos: la esquina del tronco al girar (con su fachada de fotobiorreactores, 16,5 m) + 2 m + lo que abre la copa
+                // (medido en Unity: hasta 21 m desde su tronco).
+                if (Vector2.Distance(new Vector2(p.x, p.z), new Vector2(TreeSpec.Site.x, TreeSpec.Site.z)) < 16.5f + 2f + 21f) continue;
                 GameObject dining = GameObject.Find("Comedor_Gourmet");
                 if (dining != null && Vector2.Distance(new Vector2(p.x, p.z), new Vector2(dining.transform.position.x, dining.transform.position.z)) < 15f) continue;
                 CubeTree.Build(root.transform, $"ArbolHielo_{a.displayName}_{k + 1}", p, 7000 + fused * 31, 24f + (float)rndF.NextDouble() * 12f, carnivorous: false, blocked: Built);

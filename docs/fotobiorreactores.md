@@ -109,7 +109,7 @@ el cultivo está templado. La prueba exige que quede entre 10 y 48 g/m²/día.
 
 | Parte | Qué | Dónde | Por qué ahí |
 |---|---|---|---|
-| **Tronco** | **Arpas de tubos** horizontales de vidrio (Ø 7 cm, cada 14 cm: 28 por módulo) en módulos de **3 × 4 m** con sus colectores. 4 módulos por columna (37,6–56 m) en 2 vanos de cada cara: **32 módulos, 384 m²** | Vanos **0 y 2** de los 6 de cada cara (entre nervios), a **1,4 m de la pared** (por delante de los nervios, que sobresalen 0,6 m) | El **carril de nado**, las **puertas** (x = 5 m) y las **bocas de las ramas** (x = 6,5 m) van por el vano 4: quedan libres los vanos 3, 4 y 5 en toda la altura (el módulo más cercano, a 2,8 m del carril). De **0 a 37,6 m** el tronco se ve entero desde el hielo, y de **56 a 92 m**, desde los pisos. Cada cara queda cubierta un **5,5 %**. El tubo es medio hueco: entre tubo y tubo se ve el agua |
+| **Tronco** | **Arpas de tubos** horizontales de vidrio (Ø 7 cm, cada 14 cm: 28 por módulo) en módulos de **3 × 4 m** con sus colectores. 8 módulos por columna (19,2–56 m) en 1 vano de cada cara: **32 módulos, 384 m²** | Vano **0** de los 6 de cada cara (el de la esquina, entre nervios), a **1,4 m de la pared** (por delante de los nervios, que sobresalen 0,6 m) | El **carril de nado**, las **puertas** (x = 5 m) y las **bocas de las ramas** (x = 6,5 m) van por el vano 4, y la **columna de nado** (a 6 m del eje frente a cada puerta, `ArbolCampos.SwimPath`) se ve desde fuera por los vanos 1–4: quedan libres los vanos 1 a 5 en toda la altura. De **0 a 19,2 m** el tronco se ve entero desde el hielo, y de **56 a 92 m**, desde los pisos. (Primero iba en los vanos 0 y 2, de 37,6 a 56 m; en Unity, el arpa del vano 2 tapaba de frente la columna de nado de la cara de enfrente: Berón quiere ver nadar entre pisos.) Cada cara queda cubierta un **5,5 %**. El tubo es medio hueco: entre tubo y tubo se ve el agua |
 | **Ramas** | Una **quilla** de 6 paneles planos (2,4 × 2 m, 5 cm de cultivo) por rama: **24 paneles, 115 m²** | Colgada bajo el **tramo largo** de cada rama, entre los cordones de abajo de su celosía, de x = 10 a 25 m (la boca está en 9 y la columna en 26) | Los **lados del tubo** quedan libres (se ve nadar por la rama). Lo más bajo queda a **60,3 m**, por encima del árbol más alto más su holgura (59,5 m). Quedan 5,3 m sobre los pisos de debajo y 8,4 m bajo los de encima |
 
 - **Total**: **499 m²** iluminados y **13,4 m³** de cultivo (20 L/m² en los tubos, 50 L/m² en los paneles).
@@ -256,7 +256,10 @@ También pone el `Cuadro_fotobio` con su etiqueta y el componente `FotobioFacade
    - ningún módulo a menos de 2 m de una puerta o de una boca de rama;
    - el carril de nado queda libre en cada cara (≥ 2 m);
    - cada cara del tronco, cubierta ≤ 15 %;
-   - en la malla, los tubos del tronco solo entre 37,6 y 56 m;
+   - en la malla, los tubos del tronco solo entre 19,2 y 56 m;
+   - **se ve nadar**: desde 16 rumbos a 30 m del eje (ojos en el hielo y a la altura del nadador), ningún rayo a la columna de
+     nado (9 columnas, cada 1,5 m entre 19,2 y 56 m) cruza un arpa de frente a una cara, y en total ≤ 10 % (medido: 0 de
+     1800 de frente, 8,0 % en total);
    - las quillas, por encima de 59,5 m y bajo su tubo, entre la boca y la columna;
    - nada del árbol (copas de los cultivos, losas…) a menos de 1 m de una quilla.
 3. **Números**:
@@ -273,7 +276,7 @@ También pone el `Cuadro_fotobio` con su etiqueta y el componente `FotobioFacade
 5. **Espacio**:
    - las quillas, a 2 m de las plataformas de encima y de debajo;
    - la fachada, a ≥ 2 m de las zonas de alfombras;
-   - nada fuera del árbol a menos de 2 m del círculo que barre la fachada al girar (~16,6 m de radio, entre 35,6 y 58 m).
+   - nada fuera del árbol a menos de 2 m del círculo que barre la fachada al girar (~16,5 m de radio, entre 17,2 y 58 m). Los árboles de hielo «junto al Huerto» crecían con la copa dentro del tronco (un nido a 5 m del eje): ya no crecen a menos de 39,5 m del eje del árbol.
 
 ## Riesgos y pendientes
 
