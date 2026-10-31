@@ -370,15 +370,15 @@ public class CarpetPad : MonoBehaviour
     static float _noCarpetLog;
     // LA ÚLTIMA DECISIÓN de Route para cada uno (solo se formatea al pedirla: el registro de quien «no avanza»). Kushal se
     // quedaba quieto en el techo de Servicios sin volar a la barra y el registro no decía qué rama de la ruta lo paraba.
-    struct Note { public string why; public CarpetPad a, b, next; public Vector3 to; }
+    struct Note { public string why; public CarpetPad a, b, next; public Vector3 to, at; public float time; public int frame; }
     static readonly Dictionary<GameObject, Note> _notes = new Dictionary<GameObject, Note>();
     static bool Noted(GameObject g, bool r, string why, CarpetPad a = null, CarpetPad b = null, CarpetPad next = null, Vector3 to = default)
-    { _notes[g] = new Note { why = why, a = a, b = b, next = next, to = to }; return r; }
+    { _notes[g] = new Note { why = why, a = a, b = b, next = next, to = to, at = g.transform.position, time = Time.time, frame = Time.frameCount }; return r; }
     /// <summary>Qué decidió la última ruta de <paramref name="g"/> (para los registros de atascos).</summary>
     public static string LastRoute(GameObject g)
     {
         if (g == null || !_notes.TryGetValue(g, out Note n)) return "sin ruta";
-        return $"ruta: {n.why} (de {n.a?.displayName ?? "—"} a {n.b?.displayName ?? "—"}, siguiente {n.next?.displayName ?? "—"}, andar a ({n.to.x:0.0},{n.to.y:0.0},{n.to.z:0.0}))";
+        return $"ruta hace {Time.frameCount - n.frame} fotogramas: {n.why} (desde ({n.at.x:0.0},{n.at.y:0.0},{n.at.z:0.0}), de {n.a?.displayName ?? "—"} a {n.b?.displayName ?? "—"}, siguiente {n.next?.displayName ?? "—"}, andar a ({n.to.x:0.0},{n.to.y:0.0},{n.to.z:0.0}))";
     }
     public static bool Route(GameObject g, ref Vector3 to)
     {
@@ -407,6 +407,38 @@ public class CarpetPad : MonoBehaviour
         Debug.Log($"[Ruta] «{g.name}»: de {a.building} · {a.displayName} hacia {b.building} · {b.displayName} (destino {to}); vuela a {next.displayName}.");
         c.Fly(g, next);
         return Noted(g, true, "sale volando", a, b, next, to);
+    }
+
+    /// <summary>
+    /// EMPUJÓN: quien lleva un rato QUIETO junto a una pista de alfombras (a menos de 6 m, en su piso) camino de otro piso sale
+    /// volando desde ella hacia <paramref name="to"/>, aunque la ruta normal le mande andar (en el techo de Servicios Kushal
+    /// se quedaba entre sus dos pistas sin moverse ni volar, y Goluis a 2 m de la de la sala de yoga: no comían, JornadaTest
+    /// 2026-10-31). Devuelve true si sale volando.
+    /// </summary>
+    public static bool ForceHop(GameObject g, Vector3 to)
+    {
+        if (g == null || FlyingCarpet.Riding(g)) return false;
+        CarpetPad b = For(to);
+        if (b == null) return false;
+        Vector3 p = g.transform.position;
+        CarpetPad from = null, hop = null; float bd = 36f;
+        foreach (CarpetPad pad in All)
+        {
+            if (pad == null || pad.surface == b.surface) continue;
+            Vector3 d = pad.transform.position - p;
+            if (Mathf.Abs(d.y) > 2.5f) continue;
+            d.y = 0f;
+            if (d.sqrMagnitude >= bd) continue;
+            CarpetPad next = NextHop(pad, b);
+            if (next == null || next.surface == pad.surface) continue;
+            bd = d.sqrMagnitude; from = pad; hop = next;
+        }
+        if (from == null) return false;
+        FlyingCarpet c = from.Summon(p);
+        if (c == null) return false;
+        Debug.Log($"[Ruta] «{g.name}» llevaba un rato quieto junto a {from.displayName}: sale volando desde ella hacia {hop.displayName} (destino {b.displayName}).");
+        c.Fly(g, hop);
+        return Noted(g, true, "empujón: sale volando desde la pista de al lado", from, b, hop, to);
     }
 
     // Búsqueda en anchura por la red: andar dentro del piso no cuesta, cada vuelo cuenta uno. Devuelve el primer paso.

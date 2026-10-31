@@ -24,6 +24,11 @@ public class PathMover : MonoBehaviour
     public static bool DrivenRecently(GameObject g, float within = 1f) => g != null && g.TryGetComponent(out PathMover pm) && Time.time - pm.LastStep < within;
     /// <summary>Cuántos pasos lleva dados (para que quien conduce sepa si otro le ha dado un paso entre medias).</summary>
     public int Steps { get; private set; }
+    /// <summary>(Registro de atascos) el camino que sigue: estado, esquina, a qué punto va y si el último paso se quedó quieto.</summary>
+    public string Trace => _path == null ? "sin camino" : $"camino {_path.status}, esquina {_corner}/{_path.corners.Length}{(_path.corners.Length > 0 ? $" ({_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].x:0.0},{_path.corners[Mathf.Min(_corner, _path.corners.Length - 1)].z:0.0})" : "")}, paso: {(_why < Whys.Length ? Whys[_why] : "?")} {_whyStep:0.00} m en ({_whyAt.x:0.0},{_whyAt.z:0.0}) hace {Time.frameCount - _whyFrame} fotogramas";
+    static readonly string[] Whys = { "—", "ruta de alfombras o árbol", "sin camino y saldría del NavMesh", "nadando", "al borde", "anda" };
+    byte _why; float _whyStep; Vector3 _whyAt; int _whyFrame;
+    void Why(byte w, float step) { _why = w; _whyStep = step; _whyAt = transform.position; _whyFrame = Time.frameCount; }
 
     /// <summary>Olvida el camino calculado: el próximo paso recalcula hacia el destino nuevo (la orquesta lo llama al empezar
     /// cada «ir a»; si no, con un destino a menos de 3 m del anterior seguía hasta el viejo y esperaba 4 s para corregir).</summary>
@@ -40,7 +45,7 @@ public class PathMover : MonoBehaviour
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
-        if (CarpetPad.Route(gameObject, ref target)) return Flat(final - transform.position);   // (y el Árbol de los Campos: por su raíz, nadando)
+        if (CarpetPad.Route(gameObject, ref target)) { Why(1, 0f); return Flat(final - transform.position); }   // (y el Árbol de los Campos: por su raíz, nadando)
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la
         // vuelta (se quedaba yendo y viniendo en la orilla). Recalcula al pisar tierra si el destino se movió o pasó el tiempo.
@@ -65,7 +70,7 @@ public class PathMover : MonoBehaviour
         // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
         // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
         bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
-        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) return Flat(final - pos);
+        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) { Why(2, 0f); return Flat(final - pos); }
         if (d.sqrMagnitude > 1e-6f)
         {
             pos += d.normalized * step;
@@ -75,7 +80,7 @@ public class PathMover : MonoBehaviour
         {
             pos.y = Mathf.MoveTowards(transform.position.y, swim.FloatPivotY, 1.5f * Time.deltaTime);   // a flote, sin «acantilados»
             _cliffSince = 0f;
-            transform.position = pos;
+            transform.position = pos; Why(3, step);
             return Flat(final - pos);
         }
         pos.y = GroundY(pos, transform.position.y);
@@ -89,9 +94,9 @@ public class PathMover : MonoBehaviour
         if (pos.y < transform.position.y - 1.2f && !jump)
         {
             if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
-            return Flat(final - transform.position);
+            Why(4, 0f); return Flat(final - transform.position);
         }
-        transform.position = pos;
+        transform.position = pos; Why(5, step);
         return Flat(final - pos);
     }
 
