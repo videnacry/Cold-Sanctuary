@@ -159,7 +159,7 @@ public class SanctuaryDirector : MonoBehaviour
         { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
         { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
         { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Sadhguru", SanctuaryAreaType.YogaRoom },   // la médica; el maestro de yoga
-        { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // el esposo de Lizmibet dirige las obras
+        { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
     };
 
     SanctuaryArea DetermineStartArea(WorldCharacter character)

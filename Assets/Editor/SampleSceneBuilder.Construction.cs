@@ -5,7 +5,7 @@ using UnityEngine;
 /// electricidad, puertas, paredes, ventanas y tejados en las áreas humanas. Aquí se GUARDAN la maquinaria y el material:
 /// miniexcavadora y minicargadora eléctricas, hormigonera, grúa pluma pequeña, andamio, carretillas; palés de ladrillo,
 /// sacos de cemento, madera, vigas de acero, tubos, bobinas de cable, tejas, puertas y ventanas de repuesto; panel de
-/// herramientas, banco de trabajo y la pizarra de avisos (tickets de reparación). La dirige el esposo de Lizmibet.
+/// herramientas, banco de trabajo y la pizarra de avisos (tickets de reparación). La dirige Tofelite («Tote»), el esposo de Lizmibet.
 /// Y la colocación del personal nuevo en sus áreas (<see cref="PlaceStaff"/>).
 /// </summary>
 public static partial class SampleSceneBuilder

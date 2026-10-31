@@ -3171,13 +3171,14 @@ public static partial class SampleSceneBuilder
         Anima lza = liz.AddComponent<Anima>();
         lza.strength = 0.95f; lza.agility = 1.05f; lza.endurance = 1.2f; lza.bodyMass = 1.05f;   // activa a sus 70 y tantos
         liz.AddComponent<Mind>().identity = "Lizmibet";
-        WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Lizmibet (médica)";
+        WorldLabel lzl = liz.AddComponent<WorldLabel>(); lzl.text = "Liz · Lizmibet (médica)";   // la suelen llamar Liz (Berón 2026-10-31)
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
         // humanas desde el área de Construcción (maquinaria y material). SADHGURU da las clases en el centro de yoga.
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
-        MakeCharacter(root.transform, "JefeConstruccion", "Jefe de construcción (esposo de Lizmibet)", new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
+        MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
+             new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
         MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
         MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
 
@@ -3506,7 +3507,7 @@ public static partial class SampleSceneBuilder
                 TreeSpec.Site, new Vector2(30f, 9f), new Color(0.50f, 0.70f, 0.40f)),
             // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
             // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
-            // maquinaria y el material. La dirige el esposo de Lizmibet.
+            // maquinaria y el material. La dirige Tofelite («Tote»), el esposo de Lizmibet.
             BuildAreaBox(areasGroup.transform, "Construction_Area", "Construcción", SanctuaryAreaType.Construction, 2,
                 ProduccionCenter, ProduccionSize, new Color(0.85f, 0.72f, 0.4f)),   // P0
             BuildAreaBox(areasGroup.transform, "VehicleWorkshop_Area", "Mecánica", SanctuaryAreaType.VehicleWorkshop, 2,
