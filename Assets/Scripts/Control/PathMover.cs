@@ -15,6 +15,8 @@ public class PathMover : MonoBehaviour
     Vector3 _goal = new Vector3(float.NaN, 0f, 0f);
     float _repathAt, _cliffLog, _cliffSince;
     const float WaterY = -0.25f;
+    /// <summary>El tramo más largo (m) que da de una vez: con fotogramas lentos, el avance del fotograma va en varios tramos.</summary>
+    public const float MaxStep = 1.2f;
 
     public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
 
@@ -58,46 +60,56 @@ public class PathMover : MonoBehaviour
         bool swimming = swim.UpdateWater();
         if (swimming) speed = Mathf.Min(speed, swim.npcSwimSpeed);
 
-        Vector3 pos = transform.position;
-        Vector3 next = target;
-        if (_path.status != NavMeshPathStatus.PathInvalid && _path.corners.Length > 1)
+        // UN PASO POR FOTOGRAMA ERA UN SALTO: con fotogramas lentos y el tiempo acelerado (la batería completa: 0,33 s × 6 = 2 s
+        // de juego por fotograma) un paso era de 3,2 m en línea recta hacia la esquina, y quien iba a la barra desde la pista de
+        // la cocina no llegaba nunca (Kushal y Goluis, JornadaTest 2026-10-31). Ahora el avance del fotograma se da en TRAMOS
+        // de MaxStep como mucho, cada uno con su esquina, su suelo y su borde (a la misma velocidad).
+        float budget = speed * Time.deltaTime;
+        for (int sub = 0; sub < 6; sub++)
         {
-            while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
-            next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
+            Vector3 pos = transform.position;
+            Vector3 next = target;
+            if (_path.status != NavMeshPathStatus.PathInvalid && _path.corners.Length > 1)
+            {
+                while (_corner < _path.corners.Length - 1 && Flat(_path.corners[_corner] - pos) < 0.35f) _corner++;
+                next = _path.corners[Mathf.Min(_corner, _path.corners.Length - 1)];
+            }
+            Vector3 d = next - pos; d.y = 0f;
+            float step = Mathf.Min(Mathf.Min(budget, MaxStep), d.magnitude);
+            // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
+            // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
+            bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
+            if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) { Why(2, 0f); return Flat(final - pos); }
+            if (d.sqrMagnitude > 1e-6f)
+            {
+                pos += d.normalized * step;
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
+            }
+            if (swimming)
+            {
+                pos.y = Mathf.MoveTowards(transform.position.y, swim.FloatPivotY, 1.5f * Time.deltaTime);   // a flote, sin «acantilados»
+                _cliffSince = 0f;
+                transform.position = pos; Why(3, step);
+                return Flat(final - pos);
+            }
+            pos.y = GroundY(pos, transform.position.y);
+            // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
+            // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
+            // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
+            // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
+            bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
+            if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
+            else if (_cliffSince <= 0f) _cliffSince = Time.time;
+            if (pos.y < transform.position.y - 1.2f && !jump)
+            {
+                if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
+                Why(4, 0f); return Flat(final - transform.position);
+            }
+            transform.position = pos; Why(5, step);
+            budget -= step;
+            if (budget <= 1e-3f || step <= 1e-4f || jump) break;
         }
-        Vector3 d = next - pos; d.y = 0f;
-        float step = Mathf.Min(speed * Time.deltaTime, d.magnitude);
-        // Sin camino (destino inalcanzable por el NavMesh): no seguir en línea recta si eso le saca del NavMesh por un
-        // borde (antes Linduarda salía de la enfermería elevada atravesando la barandilla y caía 6 m).
-        bool noPath = _path.status == NavMeshPathStatus.PathInvalid || _path.corners.Length <= 1;
-        if (noPath && onMesh && d.sqrMagnitude > 1e-6f && !StaysOnMesh(pos + d.normalized * 0.6f, pos.y - PivotHeight)) { Why(2, 0f); return Flat(final - pos); }
-        if (d.sqrMagnitude > 1e-6f)
-        {
-            pos += d.normalized * step;
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(d), 8f * Time.deltaTime);
-        }
-        if (swimming)
-        {
-            pos.y = Mathf.MoveTowards(transform.position.y, swim.FloatPivotY, 1.5f * Time.deltaTime);   // a flote, sin «acantilados»
-            _cliffSince = 0f;
-            transform.position = pos; Why(3, step);
-            return Flat(final - pos);
-        }
-        pos.y = GroundY(pos, transform.position.y);
-        // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
-        // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
-        // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
-        // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
-        bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
-        if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
-        else if (_cliffSince <= 0f) _cliffSince = Time.time;
-        if (pos.y < transform.position.y - 1.2f && !jump)
-        {
-            if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
-            Why(4, 0f); return Flat(final - transform.position);
-        }
-        transform.position = pos; Why(5, step);
-        return Flat(final - pos);
+        return Flat(final - transform.position);
     }
 
     // ¿Ese punto sigue sobre el NavMesh, a la misma altura (no el suelo 6 m más abajo ni un borde a medio metro)?
