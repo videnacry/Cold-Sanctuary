@@ -2768,7 +2768,12 @@ public static partial class SampleSceneBuilder
     static void BuildGuardTower(Transform parent)
     {
         GameObject root = new GameObject("Guardia_AUTO"); root.transform.SetParent(parent);
-        GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f));   // en su isla, al noroeste del hub
+        // EL ÁRBOL DE LA GUARDIA crece tan alto como el edificio más alto (Berón 2026-10-31: es la excepción a «los edificios-árbol, por
+        // encima del árbol más alto»: es un árbol modificado). Crece en alto, no en ancho, y sus ramas esquivan los edificios-árbol
+        // (con la holgura de los árboles, 4 m).
+        GuardTower.TreeHeight = Mathf.Max(GuardTower.BaseHeight, TallestBuilding());
+        GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f), w => HelixBlockedAt(w, TreeSpec.TreeClearance));   // en su isla, al noroeste del hub
+        Debug.Log($"[Guardia] El árbol de la guardia mide {GuardTower.TreeHeight:0.0} m (el edificio más alto, con la columna de la puerta de su techo).");
         (string name, Vector3 pos)[] posts =
         {
             ("PuestoVigia_1_Arrozal", new Vector3(-50f, 0f, -5f)),
