@@ -2,17 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-/// <summary>Punto de cuidados de un techo de frutales: la SALA de la experta (Servicios: banco de trasplante, depósito de
-/// fertirriego con dosificador, armario de abonos, medidor de pH y EC…) o el punto de riego de los demás techos (depósito y
-/// carro). El jardinero empieza ahí la ronda de cada techo.</summary>
-public class FruitCareStation : MonoBehaviour
-{
-    public string building;
-    public bool mainRoom;
-    /// <summary>Dónde se pone a trabajar (delante de la línea de equipos).</summary>
-    public Vector3 StandPoint => transform.TransformPoint(new Vector3(0f, 1f, 1.6f));
-}
-
 /// <summary>
 /// EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/jardines-frutales.md): la misión diaria «Ronda de frutales» de la
 /// jornada (<see cref="AreaWork"/>; la reparte la rotación como las demás). Quien la tiene va al punto de cuidados del
@@ -33,6 +22,10 @@ public class FruitGardener : MonoBehaviour
     public const string MissionPrefix = "jar_frutales";
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
     public const float MaxRoundHours = 3f;
+    /// <summary>Holgura (h de juego) que se guarda al repartir el tiempo de las tareas de la semana. Era 0,15 h; medido en Unity
+    /// (2026-10-31) la ronda real va siempre algo por DEBAJO de su estimación (2,25/2,36, 2,81/2,88 y 2,86/2,88 h), y con rondas
+    /// de 2,9 h esos 0,15 h se comían todo lo que sobra de las 3 h: ninguna polinización ni poda en todo el día.</summary>
+    public const float ExtraMargin = 0.05f;
     /// <summary>Lo que se apunta a llenar cada ronda (h): deja margen bajo las 3 h de la misión.</summary>
     public const float RoundTarget = 2.9f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
@@ -290,7 +283,7 @@ public class FruitGardener : MonoBehaviour
         foreach (FruitPlant p in leg.plants) if (p != null && (p.NeedsPollination(day) || p.NeedsPruning(day))) _extras.Add(p);
         float flightH = FlightSeconds / SecondsPerGameHour, elapsed = (Time.time - _startedAt) / SecondsPerGameHour, rest = 0f; int restPlants = 0;
         for (int i = _leg + 1; i < _round.legs.Count; i++) { rest += _round.legs[i].hours + (_round.legs[i].building != _round.legs[i - 1].building ? flightH : 0f); restPlants += _round.legs[i].plants.Count; }
-        float spare = Mathf.Max(0f, MaxRoundHours - 0.15f - elapsed - rest);
+        float spare = Mathf.Max(0f, MaxRoundHours - ExtraMargin - elapsed - rest);
         float share = spare * leg.plants.Count / Mathf.Max(1, leg.plants.Count + restPlants);
         _extraUntil = Time.time + share * SecondsPerGameHour;
         NextExtra();

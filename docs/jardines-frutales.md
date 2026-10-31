@@ -235,6 +235,11 @@ Quien la tiene:
    - **podar y anotar el crecimiento** en el cuaderno de investigación cada 14 días (la frutilla, quitar estolones cada 7;
      la piña no se poda; `FruitCare.PodaDias`; 3 min). Las podas están repartidas: cada día le toca a una parte.
    - El tiempo que sobra se reparte por macetas entre lo que queda de la ronda; lo que no cabe, se deja para otro día.
+     Se guarda una holgura de 0,05 h (`FruitGardener.ExtraMargin`; era 0,15 h, pero medida en Unity la ronda real va siempre
+     algo por debajo de su estimación, y con rondas de 2,9 h esa holgura se comía todo: ni una polinización en el día).
+     **Pendiente**: las tareas de la semana piden ~1,5 h al día (≈ 54 polinizaciones y ≈ 15 podas) y a las 3 rondas solo
+     les sobran ~0,1 h cada una: se hace una parte cada día. Para hacerlas todas haría falta una cuarta ronda (o techos más
+     juntos, que bajan lo que se anda).
 5. **Vuela en alfombra al techo siguiente.**
 
 Quedan fuera: la cosecha y los tratamientos de fondo.
