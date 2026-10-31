@@ -30,8 +30,8 @@ public class FruitGardener : MonoBehaviour
     public const float RoundTarget = 2.9f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
-    /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a sus puntas y de vuelta): medido en Unity, ~100 s de juego.</summary>
-    public const float TreeSwimSeconds = 100f;
+    /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a sus puntas y de vuelta): medido en Unity (batería completa, 2026-10-31: la ronda medida iba 0,46 h por encima de su estimación con 100 s), ~170 s de juego.</summary>
+    public const float TreeSwimSeconds = 170f;
     /// <summary>Minutos de juego para preparar en el punto de cuidados: el abono y medir pH y EC en la sala principal; en los
     /// demás, mirar el filtro, la válvula y el programador del goteo.</summary>
     public const float PrepMainMinutes = 5f, PrepMinutes = 2f;

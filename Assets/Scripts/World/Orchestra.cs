@@ -41,7 +41,7 @@ public class Orchestra
         public readonly Transform body;
         public readonly Anima anima;
         internal int cue = -1;
-        internal bool started, frameB, held;
+        internal bool started, frameB, held, swam;
         internal float cueStart, nextFrame, lastMove, warnAt;
         internal Vector3 pin, anchor, from;
         internal bool pinned;
@@ -85,10 +85,10 @@ public class Orchestra
     // ── Cada tramo andado (para las pruebas: «dar vueltas en círculo») ──
     /// <summary>Un «ir a» terminado: quién, cuánto anduvo de verdad, la distancia en línea recta y cuántas veces dio media
     /// vuelta (giros de más de 120° entre tramos de 0,25 m).</summary>
-    public struct WalkRecord { public string who, orchestra, label; public bool player; public float walked, straight; public int reversals; public bool fallback; }
+    public struct WalkRecord { public string who, orchestra, label; public bool player; public float walked, straight; public int reversals; public bool fallback, swam; }
     public static readonly List<WalkRecord> Walks = new List<WalkRecord>();
     /// <summary>¿Ese tramo dio vueltas? (anduvo más de 1,6× la recta + 3 m, o dio media vuelta más de 2 veces)</summary>
-    public static bool Circled(WalkRecord w) => w.walked > 1.6f * w.straight + 3f || w.reversals > 2;
+    public static bool Circled(WalkRecord w) => !w.swam && (w.walked > 1.6f * w.straight + 3f || w.reversals > 2);   // (a otro piso de un edificio-árbol se va por su puerta y nadando: la recta no vale; ese viaje lo mide TreeOfFieldsTest)
 
     public readonly string title;
     public float walkSpeed = 1.8f;
@@ -222,7 +222,7 @@ public class Orchestra
             case Kind.GoTo:
                 r.Walking = true; r.pinned = false; r.maxBlend = 0f;
                 if (r.body != null) { r.anchor = r.from = r.lastSample = r.body.position; PathMover.Of(r.body).Restart(); }
-                r.walked = 0f; r.reversals = 0; r.lastDir = Vector3.zero; r.fellBack = false; r.goalWas = new Vector3(float.NaN, 0f, 0f);
+                r.walked = 0f; r.reversals = 0; r.lastDir = Vector3.zero; r.fellBack = false; r.swam = false; r.goalWas = new Vector3(float.NaN, 0f, 0f);
                 r.lastMove = Time.time; r.best = float.MaxValue; r.frames = 0;
                 if (r.anima != null) DailyPoses.Stand().ApplyFinal(r.anima);   // de pie antes de andar (venía sentado o en un gesto)
                 break;
@@ -249,7 +249,7 @@ public class Orchestra
         Vector3 at = r.body.position, goal = c.at != null ? c.at() : at;
         if (!r.fellBack) r.walked += Flat(at - r.lastSample).magnitude;
         float straight = Flat(at - r.from).magnitude;
-        var w = new WalkRecord { who = r.name, orchestra = title, label = c.label, player = r.held || (r.body.GetComponent<PlayerController>() != null), walked = r.walked, straight = straight, reversals = r.reversals, fallback = r.fellBack };
+        var w = new WalkRecord { who = r.name, orchestra = title, label = c.label, player = r.held || (r.body.GetComponent<PlayerController>() != null), walked = r.walked, straight = straight, reversals = r.reversals, fallback = r.fellBack, swam = r.swam };
         Walks.Add(w);
         string msg = $"[Orquesta {title}] {r.name} llega en {Time.time - r.cueStart:0.0} s: anduvo {r.walked:0.0} m (en línea recta {straight:0.0} m, {r.reversals} medias vueltas), queda a {Flat(goal - at).magnitude:0.00} m de su sitio ({at.x:0.0},{at.y:0.0},{at.z:0.0}).";
         if (Circled(w)) Debug.LogWarning(msg + " ¡DIO VUELTAS!"); else Debug.Log(msg);
@@ -350,7 +350,8 @@ public class Orchestra
     // Lo andado de verdad y las medias vueltas (giros > 120° entre tramos de 0,25 m): así se ve si da vueltas en círculo.
     static void Track(Role r)
     {
-        if (FlyingCarpet.Riding(r.body.gameObject)) { r.lastSample = r.body.position; r.lastDir = Vector3.zero; return; }   // (en alfombra no anda)
+        if (TreeTrip.Busy(r.body.gameObject)) r.swam = true;
+        if (FlyingCarpet.Riding(r.body.gameObject) || TreeTrip.Busy(r.body.gameObject)) { r.lastSample = r.body.position; r.lastDir = Vector3.zero; return; }   // (en alfombra o nadando por un árbol no anda)
         Vector3 seg = Flat(r.body.position - r.lastSample);
         float m = seg.magnitude;
         if (m < 0.25f) return;

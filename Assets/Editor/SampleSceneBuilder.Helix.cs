@@ -432,6 +432,10 @@ public static partial class SampleSceneBuilder
         float w = TreeSpec.DoorWidth, h = TreeSpec.DoorHeight;
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(d, new Vector3(s * (w * 0.5f + 0.06f), h * 0.5f, wallThick * 0.5f), new Vector3(0.12f, h, wallThick), TreeCopper, 0f, "Bobina");
         KitchenProps.C(d, new Vector3(0f, h + 0.06f, wallThick * 0.5f), new Vector3(w + 0.24f, 0.12f, wallThick), TreeCopper, 0f, "Bobina");
+        // EL UMBRAL: una losa en el hueco de la pared (de dentro a fuera) para pisar: quien se queda en la puerta (un viaje a nado que
+        // no acabó) estaba sobre nada y el guardián del suelo lo bajaba de golpe al hielo (64 m: «teletransporte» en la jornada).
+        Transform sill = KitchenProps.C(d, new Vector3(0f, -0.05f, wallThick * 0.5f), new Vector3(w, 0.1f, wallThick + 0.1f), TreeCopper, 0f, "Umbral_puerta");
+        sill.gameObject.GetOrAdd<BoxCollider>();
         Transform field = KitchenProps.C(d, new Vector3(0f, h * 0.5f, 0.02f), new Vector3(w, h, 0.02f), TreeGlow, 0f, "Campo_magnetico");
         field.gameObject.AddComponent<CampoMagnetico>();
         Transform land = new GameObject("Salida").transform; land.SetParent(d, false);

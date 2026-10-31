@@ -137,10 +137,11 @@ girando: para cada altura, el círculo que barre):
 
 | Vecino | Hueco 3D | En planta | Notas |
 |---|---|---|---|
-| Producción (18, −95) | **19,4 m** | −0,9 m | La torre llega a 45 m (con paneles y frutales del techo, ~48–49 m: ~16–17 m). Lo más bajo del árbol a esa distancia, a 63 m. |
-| Entrenamiento | **26,9 m** | 17,9 m | Sube a 78 m. |
-| Ciencias | 70,9 m | 62,3 m | |
-| Servicios | 100,2 m | 97,5 m | |
+| (Antes de la migración) Producción (18, −95) | 19,4 m | −0,9 m | Ya no está ahí: ver §Migración. |
+| Entrenamiento-árbol (−77, 52) | **25,9 m** | | (simulador de la migración, piezas en caja) |
+| Ciencias-árbol (92, −107) | 43,1 m | | |
+| Servicios-árbol (50, 92) | 77,0 m | | |
+| Producción-árbol (114, 0) | ≈ 70 m | | |
 | Central Nuclear | 78,3 m | 51,5 m | |
 
 ## Modelo genérico (ya lo usan todas las torres: ver §Migración)
@@ -215,6 +216,24 @@ se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pis
 - Jornada sola 46/47 (lo que falla es la fauna atascada, no el árbol), clase de yoga 16/16, iniciación del huerto 10/10 (antes de arreglarlo, 7/10: el agua del tanque de virtualización del piso contaba como agua del árbol, y el tanque quedaba a 1 m del borde del piso).
 - Tronco: carga 210 MN / 921 = 23 %; zuncho 59 %; acrílico 73 % (lo que manda); voladizo de piso 41 %; rama 375/785 MN·m = 48 %.
 - Fotos en `COLD-SANCTUARY/Temp/Arbol2/`.
+
+## En vivo — la migración (2026-10-31)
+
+Fotos en `COLD-SANCTUARY/Temp/Migracion/<edificio>_*.png` (entero, de lado, en planta, el piso 1 y su puerta, la entrada del techo y
+alguien entrando por ella, y nadando del techo al piso 5 y del piso 5 al 1). Cada torre, con sus pruebas, antes de su commit:
+
+| Edificio | Nado (techo → piso 5 → piso 1) | Pruebas |
+|---|---|---|
+| Servicios | 14 s + 14 s de juego | restaurante 15/15 (los turistas llegan al pie, suben al techo y nadan al anillo), experiencia del jugador 29/29, iniciación de la cocina 15/15 |
+| Entrenamiento | 15 s + 15 s | vida del santuario 155/155, iniciación de yoga 12/12, clase de yoga 16/16, gimnasio 142/143 → 150/150 (con la losa 1 m más ancha) |
+| Ciencias | 18 s + 14 s | vida 156/156, microcosmos 144/144 |
+| Producción | 14 s + 12 s | vida 157/157, islas 11/11, Árbol de los Campos 46/46, edificios-árbol 31/31 |
+
+- `TreeBuildingsTest` (grupo 57): hélice, primer piso ≥ 64 m, áreas en sus pisos, 21–31 puertas de 3 × 3 m por árbol, umbrales libres,
+  alfombras solo en el suelo y en el techo, holgura mínima medida entre árboles **18,2 m** (Entrenamiento – Servicios), nado techo →
+  último piso → primer piso → suelo en cada torre, y el árbol de la guardia a **128,6 m**.
+- Estructura (24 nervios hasta 100 m de tronco, 28 por encima): Servicios acrílico 82 %, voladizo 80 %, rama 87 % (avisa);
+  Entrenamiento acrílico 82 %; Ciencias y Producción ~66–72 % con 28 nervios.
 
 ## Historia
 

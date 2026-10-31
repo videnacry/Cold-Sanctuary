@@ -2357,7 +2357,7 @@ public static partial class SampleSceneBuilder
         if (tree != null) { RootNoWalk(tree.transform); tree.SetActive(false); }
         // Las TORRES-ÁRBOL (quietas) van en el NavMesh general, sin su agua, sus campos, sus tubos ni su pared; su pie no se anda.
         foreach (ArbolCampos t in Object.FindObjectsByType<ArbolCampos>(FindObjectsSortMode.None))
-            if (tree == null || t.gameObject != tree) { HelixNavIgnore(t.transform); RootNoWalk(t.transform); }
+            if (tree == null || t.gameObject != tree) { HelixNavIgnore(t.transform); RootNoWalk(t.transform, square: true); }
         NavMeshSurface surface = ground.GetComponent<NavMeshSurface>();
         if (surface == null) surface = ground.AddComponent<NavMeshSurface>();
         surface.collectObjects = CollectObjects.All;
@@ -2385,12 +2385,19 @@ public static partial class SampleSceneBuilder
     // Al pie del tronco, en el NavMesh general (quieto): el círculo inscrito del tronco cuadrado (con sus nervios) no se anda
     // (franjas de 2 m que lo cubren). Sus esquinas, al girar, barren hasta 15,6 m (a 0,1 m/s): ahí se choca con ellas, pero la
     // puerta del suelo (a 14 m del eje, delante de su cara) sigue siendo andable.
-    static void RootNoWalk(Transform tree)
+    static void RootNoWalk(Transform tree, bool square = false)
     {
         Transform old = tree.parent != null ? tree.parent.Find("Raiz_no_andable_" + tree.name) : null;
         if (old != null) Object.DestroyImmediate(old.gameObject);
         Transform g = new GameObject("Raiz_no_andable_" + tree.name).transform; g.SetParent(tree.parent, false); g.position = tree.position;
         float R = TreeSpec.OuterHalf + 0.8f;
+        if (square)   // un tronco QUIETO (las torres): su cuadrado entero (las esquinas, a 15,6 m del eje, también), con su giro
+        {
+            g.rotation = tree.rotation;
+            NavMeshModifierVolume sq = g.gameObject.AddComponent<NavMeshModifierVolume>();
+            sq.center = new Vector3(0f, 1f, 0f); sq.size = new Vector3(2f * R, 4f, 2f * R); sq.area = 1;
+            return;
+        }
         for (float z0 = -R; z0 < R - 0.01f; z0 += 2f)
         {
             float z1 = Mathf.Min(R, z0 + 2f), zn = Mathf.Min(Mathf.Abs(z0), Mathf.Abs(z1));
