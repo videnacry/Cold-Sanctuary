@@ -49,13 +49,13 @@ public class FruitGardener : MonoBehaviour
 
     /// <summary>Lo que se anda (y se nada) de una maceta a otra: en una torre-árbol (docs/edificio-arbol.md §Migración) las puntas
     /// están a distinta altura y en ramas distintas: de una a otra se va a la puerta de su columna, se nada por la rama y el tronco
-    /// y se sale por la de la otra (≈ 1,6 × la recta + 30 m).</summary>
+    /// y se sale por la de la otra (≈ 2 × la recta + 60 m).</summary>
     public static float Hop(FruitPlant a, FruitPlant b)
     {
         if (a == null || b == null) return 0f;
         float d = Vector3.Distance(a.transform.position, b.transform.position);
         TreeFloor fa = a.GetComponentInParent<TreeFloor>(), fb = b.GetComponentInParent<TreeFloor>();
-        return fa != fb ? d * 1.6f + 30f : d;
+        return fa != fb ? d * 2f + 60f : d;   // (medido en Unity: de punta a punta de Servicios, ~1 min de juego entre andar a la puerta, nadar y salir)
     }
 
     /// <summary>Horas de juego de una revisión en orden de <paramref name="plants"/> (sin vuelo): su ficha + andar.</summary>

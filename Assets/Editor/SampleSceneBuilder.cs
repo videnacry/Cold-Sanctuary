@@ -3583,7 +3583,8 @@ public static partial class SampleSceneBuilder
         //  · CIENCIAS (docs/edificios-investigacion.md): Física (reactor TRIGA, ciclotrón y la sala de experimentos con su anillo
         //    y la torre de Foucault) · Química (síntesis y análisis) · Biología (cultivo y molecular). El reactor de
         //    investigación va abajo: su piscina baja como un pilar hasta el suelo.
-        BeginTower(CienciasCenter, CienciasSize);
+        //    Un ÁRBOL: 4 niveles; sus 7 pisos en orden (el reactor abajo: su piscina cuelga 4 m bajo la losa) y uno libre; 8 puntas con frutales.
+        BeginTreeTower(areasGroup.transform, TorreCiencias, CienciasCenter, CienciasSize, CienciasYaw, 4);
         SanctuaryArea plant = BuildAtomicPlant(areasGroup.transform); areas.Add(plant);
         BuildingNames[plant.transform] = TorreCiencias;   // (antes de la sala de experimentos: las alfombras de su anillo son de la torre)
         BuildPhysicsHall(plant.transform);
@@ -3593,7 +3594,7 @@ public static partial class SampleSceneBuilder
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { works, plant, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
+        var ground = new List<SanctuaryArea> { works, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)

@@ -44,6 +44,7 @@ public static partial class SampleSceneBuilder
         foreach (var (tip, b) in _orchardTips)
         {
             if (tip == null) continue;
+            if (_orchardHave.TryGetValue(b, out HashSet<GardenCrop.Kind> full) && full.Count >= FruitCare.All.Length) continue;   // ya tiene una de cada: esta punta queda de terraza (con los nidos de su anillo)
             bool main = b == TorreServicios && mainDone.Add(b);
             total += PlantRoof(tip, _platforms.TryGetValue(tip, out Vector2 ts) ? ts : new Vector2(16f, 16f), b, scene, main, 3.5f);
             roofs++;
@@ -187,6 +188,7 @@ public static partial class SampleSceneBuilder
             int before = n;
             foreach (FruitCare.Ficha f in fichas)
             {
+                if (have != null && have.Contains(f.kind)) continue;   // (puntas: cada especie, una vez por edificio)
                 Transform plant = BuildPotted(group, f, n, bname, fy, f.forma == FruitCare.Forma.Arbol || f.forma == FruitCare.Forma.Palmera || f.kind == GardenCrop.Kind.Banana || f.kind == GardenCrop.Kind.Sandia ? shrink : 1f);
                 if (!OrchardBox(plant, out Bounds b0)) { Object.DestroyImmediate(plant.gameObject); continue; }
                 Vector3 p0 = plant.position;

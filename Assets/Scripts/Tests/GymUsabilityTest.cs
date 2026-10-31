@@ -40,7 +40,7 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     [Tooltip("Si no vacío: solo los tipos de esta lista (nombres de GymMachineType separados por comas).")]
     public string onlyTypes = "";
 
-    const float PelvisTol = 0.15f, FootBelow = 0.03f, FootFloat = 0.05f, HandTol = 0.15f, Inside = 0.01f;
+    const float PelvisTol = 0.15f, FootBelow = 0.03f, FootFloat = 0.05f, HandTol = 0.15f, Inside = 0.015f;   // (1,5 cm: en los pisos girados de las torres-árbol las posiciones bailan unos milímetros)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()

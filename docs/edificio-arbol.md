@@ -197,8 +197,15 @@ se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pis
 
 ## Riesgos y pendientes
 
-- Producción queda a ~16–19 m en 3D (por encima de ella, en planta, pasa la esquina de un anillo). Si Berón quiere 16 m también
-  en planta, hay que acortar las puntas o mover Producción.
+- (Resuelto con la migración: Producción ya no está junto al Árbol de los Campos.)
+- Las torres grandes van justas de estructura (Servicios, 40 m de piso: acrílico 82 %, voladizo 80 %, rama 87 %; avisa, no falla). Si
+  Berón quiere más margen: más nervios en el tronco o pisos algo más pequeños.
+- Para que quepan con ≥ 16 m se movieron Servicios, Entrenamiento y Producción, y Producción sube a 96 m: si Berón prefiere otros
+  sitios, el simulador (scratchpad/mig, `clear.dll`) busca combinaciones; con todo a 64 m hay que fusionar Producción con el Árbol
+  de los Campos (niveles 3 y 4).
+- Los anillos de los pisos en U pierden su lado del tronco: algunas camas, mesas o boxes se corrieron a los otros lados; la piscina
+  del reactor TRIGA ya no baja al suelo: cuelga 4 m bajo su losa (como las tornapuntas), con ~4 m de agua sobre el núcleo.
+- Las esterillas de yoga siguen siendo alfombras dentro de su sala o de su anillo (no llevan a otros pisos).
 - La salida del agua por las puertas es una «ayuda» (como trepar a un canto): saca de pie al umbral sin animación de trepar.
 - El agua del tronco (20 × 20 × 91 m) es mucha: si Berón lo prefiere, el tronco podría ser hueco entre niveles (no se ha hecho).
 
