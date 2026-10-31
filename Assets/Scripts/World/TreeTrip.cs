@@ -20,6 +20,7 @@ public class TreeTrip : MonoBehaviour
     List<Vector3> _path;
     int _i;
     float _until, _ph;
+    Vector3 _left;   // donde lo dejó el viaje el último fotograma
     TreeLevel _to;
     SwimBody _swim;
     public TreeLevel Destination => _to;
@@ -31,7 +32,7 @@ public class TreeTrip : MonoBehaviour
         t._ph = PathMover.Of(g.transform).PivotHeight;
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
-        t._t0 = Time.time;
+        t._t0 = Time.time; t._left = g.transform.position;
         t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 20f;
         // El jugador: se le sujeta el cuerpo (su control no lo mueve a la vez) y, como a todos, se le lleva sin chocar con los
         // cantos de las puertas: el CharacterController se apaga durante el viaje (GroundGuard tampoco lo toca).
@@ -50,6 +51,11 @@ public class TreeTrip : MonoBehaviour
     void Update()
     {
         if (_tree == null || _path == null) { Finish(false); return; }
+        // Si OTRO lo ha movido lejos (un teletransporte: la jornada o una prueba lo ponen en su puesto, la vuelta de un
+        // microcosmos…), el viaje ya no vale: seguía desde allí en línea recta hacia la raíz (Goluis salía volando de la
+        // cocina hacia el árbol, 130 m, a 1,67 m por fotograma, en el servicio del restaurante).
+        if ((transform.position - _left).sqrMagnitude > 16f)
+        { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
         if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
         float budget = (Wet(_i) ? _tree.routeSwimSpeed + (AlongColumn(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
@@ -79,6 +85,7 @@ public class TreeTrip : MonoBehaviour
             if (Verbose) Debug.Log($"[Árbol] «{name}» tramo {_i}/{_path.Count - 1} hecho a los {Time.time - _t0:0.0} s en {transform.position} ({(Wet(_i) ? "nadando" : "andando")}).");
             _i++;
         }
+        _left = transform.position;
         if (_i >= _path.Count) Finish(true);
     }
 
