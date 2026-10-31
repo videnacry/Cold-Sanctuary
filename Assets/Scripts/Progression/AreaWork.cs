@@ -84,6 +84,8 @@ public static class AreaWork
         foreach (var m in Catalog) l.Add(m.Copy());
         // FRUTALES DE LOS TECHOS (docs/jardines-frutales.md): la ronda diaria, partida en tantas personas como haga falta.
         l.AddRange(FruitGardener.Missions());
+        // FOTOBIORREACTORES DEL ÁRBOL (docs/fotobiorreactores.md): el cuidado diario del cultivo de espirulina (1 h, en Biología).
+        l.AddRange(FotobioFacade.Missions());
         // COCINA: cada elaboración que hace falta (harina, queso, pasta, masa madre…) es una misión, con su tiempo activo;
         // el reposo (fermentar, madurar) corre solo después.
         KitchenLarder larder = KitchenLarder.Instance;

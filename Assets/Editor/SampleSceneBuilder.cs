@@ -3522,6 +3522,7 @@ public static partial class SampleSceneBuilder
         // EL ÁRBOL DE LOS CAMPOS (Berón 2026-10-29; SampleSceneBuilder.Tree.cs): los 8 cultivos (antes parcelas sueltas junto al
         // agua y el huerto con su rotación en la torre de Producción) en los pisos del árbol; el Huerto, en su piso 5.
         BuildTree(areasGroup.transform, garden);
+        BuildFotobio(areasGroup.transform.Find(TreeSpec.RootName));   // su fachada de fotobiorreactores (docs/fotobiorreactores.md)
         // POCOS EDIFICIOS CON MUCHOS PISOS (Berón 2026-10-29): todo lo construido va ELEVADO (12 m, sobre columnas: el suelo
         // queda para la naturaleza) y los pisos de cada torre se apilan 11 m uno sobre otro, de abajo arriba (TowerFloor →
         // StackOn); se sube y se baja en alfombra voladora. Las áreas con plantas propias (hospital, física, química, biología)
