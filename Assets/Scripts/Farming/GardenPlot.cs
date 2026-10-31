@@ -119,7 +119,10 @@ public class GardenPlot : MonoBehaviour
                 for (float x = -hx + 1f; x <= hx - 1f; x += 1.4f)
                     Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Amaranto : GardenCrop.Kind.Chile, new Vector3(x, 0f, hz - 1f));
                 for (float x = -hx + 1f; x <= hx - 1f; x += 2f) Plant(GardenCrop.Kind.Nopal, new Vector3(x, 0f, -hz - 0.8f));
-                for (float x = -hx + 1.6f; x <= hx - 1.6f; x += 2.4f) Plant(((int)x) % 2 == 0 ? GardenCrop.Kind.Achiote : GardenCrop.Kind.Azafran, new Vector3(x, 0f, hz + 0.1f));   // achiote y azafrán (color y aroma de la carta)
+                // Achiote y azafrán (color y aroma de la carta), alternos por su PUESTO en la fila: con ((int)x) % 2, en el bancal
+                // de 8,6 m de las puntas del árbol (x = −2,7, −0,3, 2,1) salían tres achiotes y ningún azafrán.
+                int spice = 0;
+                for (float x = -hx + 1.6f; x <= hx - 1.6f; x += 2.4f) Plant(spice++ % 2 == 0 ? GardenCrop.Kind.Achiote : GardenCrop.Kind.Azafran, new Vector3(x, 0f, hz + 0.1f));
                 break;
 
             case Guild.ChacraAndina:

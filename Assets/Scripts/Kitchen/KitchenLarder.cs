@@ -31,6 +31,7 @@ public class KitchenLarder : MonoBehaviour
 
     float _restock;
     HashSet<string> _cropsPlanted;
+    int _cropsSeen = -1;
 
     void OnEnable() { Instance = this; }
     void OnDisable() { if (Instance == this) Instance = null; }
@@ -129,8 +130,12 @@ public class KitchenLarder : MonoBehaviour
     /// laboratorio al cosechar.</summary>
     public void Restock()
     {
-        if (_cropsPlanted == null || _cropsPlanted.Count == 0)
+        // Lo plantado se vuelve a leer si cambió el número de matas: la despensa arranca (Start) antes que algunos huertos del
+        // Árbol de los Campos (cada GardenPlot planta en su Start) y se quedaba para siempre con los cultivos de los primeros
+        // (sin trigo ni tomate: el obrador hacía 9 elaboraciones y ningún plato de la carta).
+        if (_cropsPlanted == null || _cropsPlanted.Count == 0 || _cropsSeen != GardenCrop.All.Count)
         {
+            _cropsSeen = GardenCrop.All.Count;
             _cropsPlanted = new HashSet<string>();
             foreach (GardenCrop c in GardenCrop.All) if (c != null) _cropsPlanted.Add(c.kind.ToString());
         }
