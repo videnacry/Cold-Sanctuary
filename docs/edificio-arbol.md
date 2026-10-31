@@ -160,6 +160,13 @@ constructor que tome un `HelixTower` y una lista de lo que va en cada plataforma
 - La salida del agua por las puertas es una «ayuda» (como trepar a un canto): saca de pie al umbral sin animación de trepar.
 - El agua del tronco (20 × 20 × 91 m) es mucha: si Berón lo prefiere, el tronco podría ser hueco entre niveles (no se ha hecho).
 
+## En vivo (2026-10-31)
+
+- `TreeOfFieldsTest` sola: **46/46** (8 plataformas cuadradas, hélice alterna, nada tapa a nada, primer piso 64 m sobre el árbol más alto medido en la escena, 49,6 m; 14 puertas de 3 × 3 m; 13 viajes a nado sin saltos ni atascos; 4 a la vez por una rama; el jugador sale por las puertas del campo, del anillo, del techo y de un piso, entra desde el campo y no sale por 10 empujones contra paredes, techos y juntas; giro y NavMesh).
+- Jornada sola 46/47 (lo que falla es la fauna atascada, no el árbol), clase de yoga 16/16, iniciación del huerto 10/10 (antes de arreglarlo, 7/10: el agua del tanque de virtualización del piso contaba como agua del árbol, y el tanque quedaba a 1 m del borde del piso).
+- Tronco: carga 210 MN / 921 = 23 %; zuncho 59 %; acrílico 73 % (lo que manda); voladizo de piso 41 %; rama 375/785 MN·m = 48 %.
+- Fotos en `COLD-SANCTUARY/Temp/Arbol2/`.
+
 ## Historia
 
 - **v1 (2026-10-29/30)**: raíz redonda de Ø 22 m y 101 m, 8 pisos octogonales de ~51 m inclinados 3° y girados 45° (acordeón),
