@@ -50,8 +50,8 @@ public static class StructuralLimits
     /// <paramref name="tips"/> campos de punta, <paramref name="height"/> m de agua y <paramref name="ribs"/> nervios. Modelo
     /// sencillo y del lado de la seguridad:
     /// - PISO (S × S): losa de 0,28 m (2 t/m³), tierra de cultivo 0,4 m (1,6 t/m³) en el 45 % y uso 3 kN/m².
-    /// - PUNTA (T × T): lo mismo, más el anillo con sus frutales (~60 t), la rama (agua 2,6 × 2,6 m y acrílico, ~28 m) y la
-    ///   columna de agua (3,2 × 3,2 × 17 m).
+    /// - PUNTA (T × T): lo mismo, más el anillo con sus frutales (~60 t), la rama (agua 5 × 5 m y acrílico, ~30 m) y la
+    ///   columna de agua (5 × 5 m, de la rama al anillo).
     /// - TECHO: lado del tronco × 0,3 m (2 t/m³) y las alfombras. PARED de acrílico (1,19 t/m³): su peso; no cuenta como portante.
     /// - CAPACIDAD: nervios CFST Ø 0,8 m (chapa 30 mm S460 + C80), φ = 0,6 → ~38 MN cada uno.
     /// - ZUNCHO: el agua tira de cada cara p·a en el fondo (a = medio lado del agua); lo resisten el acrílico (10 MPa a largo
@@ -59,8 +59,7 @@ public static class StructuralLimits
     /// - ACRÍLICO entre nervios y zunchos: placa de luz s = mín(paso de nervios, paso de zunchos), M = p·s²/10, σ = 6M/t² ≤ 10 MPa.
     /// - VOLADIZO DE UN PISO: su peso a S/2 de la cara; lo sostienen 4 tornapuntas CFST Ø 0,7 m (~29 MN) que bajan
     ///   <paramref name="strutDrop"/> m hasta la cara del tronco y apoyan a 0,625·S.
-    /// - VOLADIZO DE UNA RAMA: la punta y su rama a la distancia de la punta; lo sostiene la celosía de la rama (2 cordones CFST
-    ///   Ø 0,8 m arriba y 2 abajo, de 5 m de canto).
+    /// - VOLADIZO DE UNA RAMA: la punta y su rama a la distancia de la punta; lo sostiene la X    ///   Ø 0,8 m arriba y 2 abajo, de 5 m de canto).
     /// </summary>
     public static RootReport RootCheck(HelixTower h, int floors, int tips, float height = 92f, int ribs = 24,
                                        float hoopSpacing = 6f, float hoopArea = 0.09f, float strutDrop = 4f)
@@ -69,9 +68,10 @@ public static class StructuralLimits
         var r = new RootReport();
         float S = h.floorSize, T = h.tipSize, a = h.waterHalf, side = 2f * h.OuterHalf;
         float floorT = S * S * 0.28f * 2f + 0.45f * S * S * 0.4f * 1.6f + S * S * 3f / g;
+        float tubeW = h.TubeInnerH, colW = 2f * h.colHalf, colH = h.tipRise + h.ringH + h.doorHeight + 1.5f;   // hueco del tubo y de la columna (agua)
         float tubeL = (h.TipCenterS - new UnityEngine.Vector3(h.mouthX, 0f, h.OuterHalf)).magnitude;   // ~30 m: de la cara a la punta
-        float tipDeckT = T * T * 0.28f * 2f + 0.45f * T * T * 0.4f * 1.6f + T * T * 3f / g + 60f + 3.2f * 3.2f * 17f + 4f * 3.6f * 0.2f * 17f * 1.19f;
-        float tubeT = 2.6f * 2.6f * tubeL + 4f * 3f * 0.2f * tubeL * 1.19f, tipT = tipDeckT + tubeT;
+        float tipDeckT = T * T * 0.28f * 2f + 0.45f * T * T * 0.4f * 1.6f + T * T * 3f / g + 60f + colW * colW * colH + 4f * (colW + 2f * h.colWall) * h.colWall * colH * 1.19f;
+        float tubeT = tubeW * tubeW * tubeL + 4f * 2f * h.tubeHalf * h.tubeWall * tubeL * 1.19f, tipT = tipDeckT + tubeT;
         r.floorsMN = floors * floorT * g / 1000f;
         r.tipsMN = tips * tipT * g / 1000f;
         r.topMN = (side * side * 0.3f * 2f + 20f) * g / 1000f;
@@ -93,7 +93,8 @@ public static class StructuralLimits
         float strut = (UnityEngine.Mathf.PI * 0.7f * 0.025f * 460f + UnityEngine.Mathf.PI * 0.25f * 0.65f * 0.65f * 80f * 0.85f) * 0.6f;
         r.floorMomentCapacity = 4f * strut * sin * x;
         r.tipMoment = (tipDeckT * tubeL + tubeT * tubeL * 0.5f) * g / 1000f;
-        r.tipMomentCapacity = 2f * rib * 5f;
+        float chord = (UnityEngine.Mathf.PI * 1.0f * 0.04f * 460f + UnityEngine.Mathf.PI * 0.25f * 0.92f * 0.92f * 80f * 0.85f) * 0.6f;   // CFST Ø 1 m, chapa 40 mm
+        r.tipMomentCapacity = 2f * chord * (h.TubeInnerH + 1.35f);   // 2 cordones comprimidos; canto = el tubo y sus cordones
         return r;
     }
 }

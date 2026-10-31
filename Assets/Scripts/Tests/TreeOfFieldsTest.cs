@@ -186,7 +186,6 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         int doors = 0, open = 0, dry = 0; string bad = "";
         foreach (TreeLevel lv in t.levels)
         {
-            if (lv.kind == TreeLevel.Kind.Top) continue;
             doors++;
             Vector3 o = t.World(lv.outside) + Vector3.up * 1.3f, i = t.World(lv.inside) + Vector3.up * 1.1f, dr = t.World(lv.door) + Vector3.up * 1.3f;
             bool field = lv.field != null && lv.field.gameObject.activeInHierarchy;
@@ -195,18 +194,17 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             bool water = WaterZone.Underwater(i) && !WaterZone.Underwater(dr) && !WaterZone.Underwater(o);
             if (water) dry++; else if (bad.Length < 240) bad += $"{lv.name}: agua dentro {WaterZone.Underwater(i)}, en la puerta {WaterZone.Underwater(dr)}, fuera {WaterZone.Underwater(o)}; ";
         }
-        TestProbe.Check("cada nivel (suelo, 4 pisos, 4 campos de punta y 4 anillos) tiene su puerta con el campo magnético, y por ella se pasa", doors == 13 && open == doors, $"{open}/{doors} puertas; {bad}");
+        TestProbe.Check("cada nivel (suelo, 4 pisos, 4 campos de punta, 4 anillos y el techo) tiene su puerta de 3 × 3 m con el campo magnético, y por ella se pasa", doors == 14 && open == doors, $"{open}/{doors} puertas; {bad}");
         TestProbe.Check("el agua se queda dentro: el hueco de cada puerta es aire (campana) y fuera no hay agua", dry == doors, $"{dry}/{doors}");
         TreeLevel g0 = t.Ground;
         Vector3 aside = t.World(g0.outside + HelixTower.FromSide(g0.side, Vector3.left) * 4f) + Vector3.up * 1.3f, asideIn = t.World(g0.inside + HelixTower.FromSide(g0.side, Vector3.left) * 4f) + Vector3.up * 1.1f;
         bool wallStops = Physics.Linecast(aside, asideIn, out RaycastHit wh, ~0, QueryTriggerInteraction.Ignore) && wh.transform.IsChildOf(tree);
         TestProbe.Check("fuera de las puertas, la pared del tronco no deja pasar", wallStops, wallStops ? wh.collider.name : "nada");
         TreeLevel topL = t.Top;
-        Vector3 hatchAbove = t.World(TreeSpec.HatchLocal) + Vector3.up * 2f;
-        RaycastHit hh2 = default; bool hatchOpen = topL != null && !Physics.Raycast(hatchAbove, Vector3.down, out hh2, 5f, ~0, QueryTriggerInteraction.Ignore);
-        float sink = WaterZone.SurfaceAt(t.World(TreeSpec.HatchLocal) + Vector3.down * 1f, out float surf) ? tree.position.y + TreeSpec.RootHeight - surf : -1f;
-        TestProbe.Check("ENTRADA DEL TECHO: la trampilla está abierta sobre el agua, con su campo, y el agua 0,3–0,75 m bajo la cubierta (se trepa)",
-            hatchOpen && topL.field != null && sink >= 0.3f && sink <= 0.75f, $"abierta {hatchOpen}{(hatchOpen ? "" : $" (choca con {(hh2.collider != null ? hh2.collider.name : "?")})")}, agua {sink:0.00} m bajo el techo");
+        Transform roofCol = tree.Find("Campana_techo");
+        bool roofWater = topL != null && WaterZone.Underwater(t.World(topL.inside) + Vector3.up * 2.5f);
+        TestProbe.Check("ENTRADA DEL TECHO: una columna de agua asoma sobre la cubierta con su puerta de frente (como la de los anillos), con agua por encima del dintel",
+            topL != null && roofCol != null && topL.field != null && roofWater && TreeSpec.DoorWidth >= 3f && TreeSpec.DoorHeight >= 3f, $"columna {roofCol != null}, agua sobre la puerta {roofWater}, puertas {TreeSpec.DoorWidth:0.#} × {TreeSpec.DoorHeight:0.#} m");
 
         // ── 4. NADAR ENTRE NIVELES ──
         GameObject body = new GameObject("Nadador_TEST");
@@ -239,7 +237,8 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             if (leg.lv == null) { TestProbe.Check($"un personaje va {leg.name}", false, "falta el nivel"); continue; }
             PathMover pm = PathMover.Of(body.transform); pm.Restart();
             Vector3 from = body.transform.position, last = from, lastDir = Vector3.zero;
-            float walked = 0f; int reversals = 0; bool swam = false;
+            TreeLevel a0 = t.LevelAt(from) ?? g0;
+            float walked = 0f, onFoot = 0f; int reversals = 0; bool swam = false;
             float end = Time.time + 240f, endReal = Time.realtimeSinceStartup + 150f, lastT = Time.time, prevDt = 0f;
             while (Time.time < end && Time.realtimeSinceStartup < endReal)
             {
@@ -255,7 +254,9 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
                 float span = Mathf.Max(dt, prevDt); prevDt = dt;
                 if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumpsAll++; if (jumpsWhy.Length < 240) jumpsWhy += $"{leg.name}: {step.magnitude:0.0} m en {dt:0.00} s{(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
                 walked += step.magnitude;
-                if (step.magnitude > 0.03f)
+                bool foot = !TreeTrip.Busy(body);
+                if (foot) onFoot += step.magnitude;
+                if (foot && step.magnitude > 0.03f)
                 {
                     Vector3 dir = step.normalized;
                     if (lastDir != Vector3.zero && Vector3.Angle(lastDir, dir) > 120f) reversals++;
@@ -268,17 +269,57 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             Vector3 left = leg.target() - body.transform.position;
             TreeLevel at = t.LevelAt(body.transform.position);
             bool arrived = new Vector2(left.x, left.z).magnitude < 1.6f && Mathf.Abs(left.y) < 1.8f && at == leg.lv;
-            float straight = Vector3.Distance(from, body.transform.position);
-            var rec = new Orchestra.WalkRecord { who = body.name, label = leg.name, walked = walked, straight = straight, reversals = reversals };
-            if (Orchestra.Circled(rec)) { circled++; if (circleWhy.Length < 300) circleWhy += $"{leg.name}: {walked:0} m para {straight:0} en recta, {reversals} medias vueltas; "; }
+            // (A nado se sigue el camino trazado por el tronco y la rama: lo que se mide es lo ANDADO: de donde está a su puerta y de la
+            // puerta de llegada a donde va.)
+            float straight = Vector3.Distance(from, t.World(a0.outside)) + Vector3.Distance(t.World(leg.lv.outside), body.transform.position);
+            var rec = new Orchestra.WalkRecord { who = body.name, label = leg.name, walked = onFoot, straight = straight, reversals = reversals };
+            if (Orchestra.Circled(rec)) { circled++; if (circleWhy.Length < 300) circleWhy += $"{leg.name}: andó {onFoot:0} m para {straight:0} en recta (a la puerta y desde la puerta), {reversals} medias vueltas; "; }
             if (arrived && swam) legsOk++;
             TestProbe.Check($"un personaje va {leg.name} nadando", arrived && swam, $"llega {arrived} (a {left.magnitude:0.0} m, en {at?.name ?? "ningún nivel"}), nadó {swam}, {walked:0} m");
         }
         TestProbe.Check("ningún viaje teletransporta ni da saltos", jumpsAll == 0, $"{jumpsAll} saltos {jumpsWhy}");
-        TestProbe.Check("ningún viaje da vueltas (≤ 1,6× la recta + 3 m, ≤ 2 medias vueltas)", circled == 0, circled == 0 ? $"{legs.Count} viajes" : circleWhy);
+        TestProbe.Check("andando a las puertas y desde ellas, nadie da vueltas (≤ 1,6× la recta + 3 m, ≤ 2 medias vueltas)", circled == 0, circled == 0 ? $"{legs.Count} viajes" : circleWhy);
         TestProbe.Check("nadie se queda sin aire en el tronco ni en las ramas", minBreathAll > 0f, $"aliento mínimo {minBreathAll:0.00}");
         TestProbe.Check("los viajes se hicieron nadando (TreeTrip), sin atascos", TreeTrip.Trips - trips0 >= legs.Count && TreeTrip.Stuck == stuck0, $"{TreeTrip.Trips - trips0} viajes, {TreeTrip.Stuck - stuck0} atascos");
         Destroy(body); TreeTrip.Verbose = false;
+
+        // ── 4b. VARIOS A LA VEZ POR UNA RAMA (Berón 2026-10-31: ramas de 5 m para que quepan varios) ──
+        {
+            TreeLevel from1 = t.Floor(1), dest = t.Floor(3);
+            var group = new List<GameObject>();
+            for (int i = 0; i < 4; i++)
+            {
+                GameObject b = new GameObject($"Grupo_TEST_{i}");
+                CapsuleCollider gc = b.AddComponent<CapsuleCollider>(); gc.height = 1.8f; gc.radius = 0.3f; gc.center = new Vector3(0f, -0.1f, 0f);
+                Vector3 side = tree.TransformDirection(HelixTower.FromSide(from1.side, Vector3.right));
+                b.transform.position = PathMover.Of(b.transform).OnGround(t.World(from1.outside) + tree.TransformDirection(TreeSpec.Dir(from1.doorAngle)) * 3f + side * (i - 1.5f) * 1.6f + Vector3.up);
+                group.Add(b);
+            }
+            var done = new bool[group.Count]; int maxInBranch = 0, stuck1 = TreeTrip.Stuck;
+            float endG = Time.time + 300f, endGR = Time.realtimeSinceStartup + 150f;
+            Time.timeScale = 3f;
+            while (Time.time < endG && Time.realtimeSinceStartup < endGR && done.Any(x => !x))
+            {
+                int inBranch = 0;
+                for (int i = 0; i < group.Count; i++)
+                {
+                    if (done[i]) continue;
+                    Vector3 to = t.World(dest.outside) + tree.TransformDirection(TreeSpec.Dir(dest.doorAngle)) * (1.5f + i * 0.8f) + Vector3.up;
+                    Vector3 d = to - group[i].transform.position;
+                    if (new Vector2(d.x, d.z).magnitude < 1.2f && Mathf.Abs(d.y) < 1.6f) { done[i] = true; continue; }
+                    PathMover.Of(group[i].transform).StepToward(to, 3f);
+                    Vector3 l = tree.InverseTransformPoint(group[i].transform.position);
+                    if (t.InRootWater(group[i].transform.position) && Mathf.Max(Mathf.Abs(l.x), Mathf.Abs(l.z)) >= TreeSpec.WaterHalf) inBranch++;
+                }
+                maxInBranch = Mathf.Max(maxInBranch, inBranch);
+                yield return null;
+            }
+            Time.timeScale = oldScale;
+            int arrivedG = done.Count(x => x);
+            TestProbe.Check("4 personas nadan a la vez por la misma rama (de 5 × 5 m) y llegan todas, sin atascarse", arrivedG == group.Count && TreeTrip.Stuck == stuck1 && maxInBranch >= 3,
+                $"{arrivedG}/{group.Count} llegan, hasta {maxInBranch} a la vez en la rama, {TreeTrip.Stuck - stuck1} atascos");
+            foreach (GameObject b in group) Destroy(b);
+        }
         Time.timeScale = oldScale;
 
         // ── 5. SALIR DEL AGUA (y entrar) COMO EL JUGADOR: por las puertas de la rama y por la trampilla ──
@@ -298,7 +339,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         TreeLevel f3 = t.Floor(3), r1 = t.Ring(1);
         int exits0 = TreeDoorExit.Exits;
         // a) Nadando en la columna de la rama, hacia la puerta del campo: sale de pie al campo.
-        Vector3 fOut = t.World(f3.outside - f3.inside); fOut.y = 0f;
+        Vector3 fOut = tree.TransformDirection(f3.outside - f3.inside); fOut.y = 0f;
         yield return Try("campo", t.World(f3.inside) + Vector3.up * 1.2f, fOut, new Vector3(0f, 0f, 1f), () => !spc.IsSwimming && t.LevelAt(swimmer.transform.position) == f3, 6f);
         TreeLevel atA = t.LevelAt(swimmer.transform.position);
         TestProbe.Check("el jugador, nadando por la rama, sale por la puerta al campo de punta (el fallo de Berón)", !spc.IsSwimming && atA == f3, $"en {atA?.name ?? "ningún nivel"}, nadando {spc.IsSwimming}");
@@ -307,21 +348,50 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         yield return Try("entrar", t.World(f3.outside) + Vector3.up * 1.0f, fIn, new Vector3(0f, 0f, 1f), () => spc.IsSwimming, 6f);
         TestProbe.Check("desde el campo, andando hacia la puerta, se entra al agua de la rama", spc.IsSwimming, $"nadando {spc.IsSwimming}, en {swimmer.transform.position}");
         // c) Más arriba en la columna, hacia la puerta del anillo: sale al anillo.
-        Vector3 rOut = t.World(r1.outside - r1.inside); rOut.y = 0f;
+        Vector3 rOut = tree.TransformDirection(r1.outside - r1.inside); rOut.y = 0f;
         yield return Try("anillo", t.World(r1.inside) + Vector3.up * 1.2f, rOut, new Vector3(0f, 0f, 1f), () => !spc.IsSwimming && t.LevelAt(swimmer.transform.position) == r1, 6f);
         TreeLevel atC = t.LevelAt(swimmer.transform.position);
         TestProbe.Check("el jugador sale de la columna de la rama al anillo de encima del campo", !spc.IsSwimming && atC == r1, $"en {atC?.name ?? "ningún nivel"}");
-        // d) En el tronco, bajo la trampilla: sube y sale al techo.
-        Vector3 under = t.World(TreeSpec.HatchLocal + Vector3.down * 1.4f);
-        yield return Try("techo", under, tree.TransformDirection(Vector3.forward), new Vector3(0f, 1f, 1f), () => !spc.IsSwimming && t.LevelAt(swimmer.transform.position) == topL, 8f);
+        // d) En la columna del techo, hacia su puerta: sale al techo.
+        Vector3 under = t.World(topL.inside) + Vector3.up * 1.2f;
+        yield return Try("techo", under, tree.TransformDirection(Vector3.forward), new Vector3(0f, 0f, 1f), () => !spc.IsSwimming && t.LevelAt(swimmer.transform.position) == topL, 8f);
         TreeLevel atD = t.LevelAt(swimmer.transform.position);
-        TestProbe.Check("ENTRADA DEL TECHO: el jugador sube nadando por el tronco y sale por la trampilla al techo", !spc.IsSwimming && atD == topL, $"en {atD?.name ?? "ningún nivel"}");
+        TestProbe.Check("ENTRADA DEL TECHO: el jugador sube nadando por el tronco y sale de frente por la puerta del techo", !spc.IsSwimming && atD == topL, $"en {atD?.name ?? "ningún nivel"}");
         // e) Por la puerta de un piso del tronco (la del piso 1).
         TreeLevel f1 = t.Floor(1);
-        Vector3 pOut = t.World(f1.outside - f1.inside); pOut.y = 0f;
+        Vector3 pOut = tree.TransformDirection(f1.outside - f1.inside); pOut.y = 0f;
         yield return Try("piso", t.World(f1.inside) + Vector3.up * 1.2f, pOut, new Vector3(0f, 0f, 1f), () => !spc.IsSwimming && t.LevelAt(swimmer.transform.position) == f1, 6f);
         TreeLevel atE = t.LevelAt(swimmer.transform.position);
         TestProbe.Check("el jugador sale del tronco por la puerta de un piso", !spc.IsSwimming && atE == f1, $"en {atE?.name ?? "ningún nivel"}; {TreeDoorExit.Exits - exits0} salidas por las puertas");
+        // f) NO SE SALE POR LAS PAREDES (Berón 2026-10-31): empujando contra las paredes, el techo y el codo de una rama, el techo
+        //    de la columna de una punta, una pared del tronco y la losa del techo, sigue dentro del agua.
+        {
+            var (lvB, sideB, _) = TreeSpec.Platform(3);
+            float YB = h.LevelY(lvB), mid = (h.mouthX + h.ColumnS.x) * 0.5f, cz = h.ColumnS.z;
+            Vector3 S(Vector3 p) => t.World(HelixTower.FromSide(sideB, p));
+            Vector3 SD(Vector3 d) => tree.TransformDirection(HelixTower.FromSide(sideB, d));
+            var pushes = new List<(string what, Vector3 at, Vector3 face, Vector3 input)>
+            {
+                ("la pared de la rama (a un lado)", S(new Vector3(mid, YB + 2f, cz)), SD(Vector3.forward), new Vector3(0f, 0f, 1f)),
+                ("la pared de la rama (al otro)", S(new Vector3(mid, YB + 2f, cz)), SD(Vector3.back), new Vector3(0f, 0f, 1f)),
+                ("el techo de la rama", S(new Vector3(mid, YB + 3.5f, cz)), SD(Vector3.forward), new Vector3(0f, 1f, 1f)),
+                ("el fondo de la rama", S(new Vector3(mid, YB + 1f, cz)), SD(Vector3.forward), new Vector3(0f, -1f, 0.3f)),
+                ("el codo de la rama", S(new Vector3(h.mouthX, YB + 2f, cz)), SD(new Vector3(-1f, 0f, 1f).normalized), new Vector3(0f, 0.5f, 1f)),
+                ("la junta de la rama con el tronco", S(new Vector3(h.mouthX, YB + 2f, h.OuterHalf + 0.5f)), SD(Vector3.left), new Vector3(0f, 0.5f, 1f)),
+                ("la junta de la rama con la columna", S(new Vector3(h.ColumnS.x - h.colHalf - 0.6f, YB + 2f, cz)), SD(Vector3.forward), new Vector3(0f, 1f, 1f)),
+                ("el techo de la columna de la punta", S(new Vector3(h.ColumnS.x, h.RingY(lvB) + 3f, cz)), SD(Vector3.back), new Vector3(0f, 1f, 1f)),
+                ("una pared del tronco", t.World(new Vector3(-6f, 30f, 8f)), tree.TransformDirection(Vector3.forward), new Vector3(0f, 0.3f, 1f)),
+                ("la losa del techo, lejos de su puerta", t.World(new Vector3(6f, TreeSpec.WaterTop - 0.6f, 6f)), tree.TransformDirection(Vector3.right), new Vector3(0f, 1f, 1f)),
+            };
+            int escaped = 0; string esc = "";
+            foreach (var pu in pushes)
+            {
+                yield return Try(pu.what, pu.at, pu.face, pu.input, () => !t.InRootWater(swimmer.transform.position), 2.5f);
+                bool inWater = t.InRootWater(swimmer.transform.position);
+                if (!inWater) { escaped++; if (esc.Length < 300) esc += $"{pu.what} → {tree.InverseTransformPoint(swimmer.transform.position)}; "; }
+            }
+            TestProbe.Check("el jugador no sale de la rama ni del tronco por sus paredes, techos ni juntas (solo por las puertas)", escaped == 0, escaped == 0 ? $"{pushes.Count} empujones, sigue en el agua" : esc);
+        }
         Destroy(swimmer);
 
         // ── 6. GIRO ──

@@ -400,11 +400,27 @@ public class PlayerController : MonoBehaviour
         float climb = hit.point.y - feet;
         if (climb < 0.1f || climb > 1.2f) return;   // nada que subir, o una pared demasiado alta
         if (!_swim.HeadAboveWater) return;           // buceando bajo el borde: no se sale a través del hielo
+        // Ni a través de un TECHO o una pared (Berón 2026-10-31: en las ramas del Árbol de los Campos, flotando contra el techo del
+        // tubo, el rayo desde 2 m más arriba daba en la cara de ARRIBA del tubo y lo subía encima: «salía por las paredes»). Tiene
+        // que poder subir en vertical hasta encima del borde y pasar de ahí, en horizontal, a donde se pone de pie.
+        float standY = hit.point.y + 1.2f;
+        Vector3 rise = new Vector3(transform.position.x, standY, transform.position.z), over = new Vector3(ahead.x, standY, ahead.z);
+        if (Blocked(transform.position, rise) || Blocked(rise, over)) return;
         _cc.enabled = false;
         transform.position = new Vector3(ahead.x, hit.point.y + (_cc.height * 0.5f - _cc.center.y) + 0.05f, ahead.z);
         _cc.enabled = true;
         SetSwimming(false);
         _verticalVelocity = -2f;
+    }
+
+    // ¿Hay algo sólido (no él mismo, no un trigger) entre a y b?
+    bool Blocked(Vector3 a, Vector3 b)
+    {
+        Vector3 d = b - a; float len = d.magnitude;
+        if (len < 1e-3f) return false;
+        foreach (RaycastHit h in Physics.RaycastAll(a, d / len, len, ~0, QueryTriggerInteraction.Ignore))
+            if (!h.transform.IsChildOf(transform)) return true;
+        return false;
     }
 
     // NADAR: WASD en el plano y ADELANTE SIGUE LA MIRADA (con la cámara inclinada más de 20°, W nada hacia arriba o de

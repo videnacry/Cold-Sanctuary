@@ -50,20 +50,20 @@ genérico, y `TreeSpec`, las medidas del árbol), `ArbolCampos.cs` (niveles y ru
 |---|---|---|
 | **Tronco** | Cuadrado, 0–92 m; agua de 20 × 20 m (de 0,05 a 91,5 m); pared de acrílico de 1 m (22 × 22 m) | El cristal del tanque de virtualización (`VirtualizationTank.GlassColor`) y su agua, más clara (alfa 0,2). El agua es un `WaterZone` (caja): se nada con `SwimBody`. |
 | **Exoesqueleto** | 24 nervios CFST (4 esquinas y 5 por cara, uno cada ~3,7 m) y zunchos de canto (0,25 × 0,36 m) cada 6 m | Una sola malla; no cruza las puertas, las bocas de las ramas ni las losas. Es lo que carga: el acrílico no se cuenta como portante. |
-| **Puertas** | Suelo, 4 pisos, 4 campos de punta y 4 anillos; 1,8 × 2,6 m | Hueco con bobinas de cobre y el **campo magnético** en la cara de dentro. Los cuerpos lo cruzan; el agua no: el hueco es una **campana de aire**. Cada una lleva su `TreeDoorExit`. |
+| **Puertas** | Suelo, 4 pisos, 4 campos de punta, 4 anillos y el techo; **3 × 3 m** (Berón 2026-10-31: más anchas) | Hueco con bobinas de cobre y el **campo magnético** en la cara de dentro. Los cuerpos lo cruzan; el agua no: el hueco es una **campana de aire**. Cada una lleva su `TreeDoorExit`. |
 | **Hélice** | 2 niveles: **64 m** (pisos a y c) y **75 m** (pisos b y d) | Lado a = +Z, b = +X, c = −Z, d = −X del árbol (gira). |
 | **Pisos pegados** | 4 cuadrados de **32 × 32 m**, planos | Nacen en su cara del tronco y se corren 10 m hacia la derecha (mirando hacia fuera): un **molinete**. Así ningún piso tapa a otro en planta, ni los de un nivel a los del otro. En voladizo: 4 ménsulas y 4 tornapuntas CFST que bajan 4 m a la cara. Puerta frente a su centro, a 5 m del eje de la cara. |
-| **Ramas** | 4 tubos **cuadrados** de agua (3 × 3 m, hueco 2,6 m), a la altura de su nivel | Salen rectas de la cara que no tiene piso (8 m) y giran a la derecha (20 m) hasta la columna de la punta. Celosía de acero de 5 m de canto (2 cordones abajo, 2 arriba y diagonales). |
-| **Columna de la punta** | Agua de 3,2 × 3,2 m, del fondo de la rama al anillo (agua 0,6 m por encima de la puerta del anillo) | En la esquina de dentro del campo. **Puerta al campo** (+X, al nivel del campo) y **puerta al anillo** (−X, al nivel del anillo). |
-| **Campos de punta** | 4 cuadrados de **16 × 16 m**, a **69 m** (nivel 1, lados b y d) y **80 m** (nivel 2, lados a y c) | En la esquina libre del molinete: 4 m más allá del borde del piso de ese lado y 4 m fuera del tronco. 3 tornapuntas a la columna. |
+| **Ramas** | 4 tubos **cuadrados** de agua con un hueco de **5 × 5 m** (Berón 2026-10-31: caben varios a la vez), paredes de 0,3 m, a la altura de su nivel | Salen rectas de la cara que no tiene piso (8 m) y giran a la derecha (20 m) hasta la columna de la punta. Celosía de acero de 5 m de canto (2 cordones abajo, 2 arriba y diagonales). |
+| **Columna de la punta** | Agua de **5 × 5 m** (paredes de 0,3 m), del fondo de la rama al anillo (agua 0,6 m por encima de la puerta del anillo) | En la esquina de dentro del campo. **Puerta al campo** (+X, al nivel del campo) y **puerta al anillo** (−X, al nivel del anillo). |
+| **Campos de punta** | 4 cuadrados de **16 × 16 m**, a **70 m** (nivel 1, lados b y d) y **81 m** (nivel 2, lados a y c) | En la esquina libre del molinete: 4 m más allá del borde del piso de ese lado y 4 m fuera del tronco. 3 tornapuntas a la columna. |
 | **Anillos** | 4 `RingDeck` de 4 m de ancho, 4 m encima de cada campo (22,4 m de lado; 0,8 m sobre el campo y el resto volando) | `Nido_anillo_N`: frutales enanos en las esquinas, flores para las abejas de las nieves y nidos de aves. Sin alfombras: se llega nadando por la columna. |
-| **Techo** | Cuadrado plano de 22 m a 92 m | Tan ancho como el tronco. Alfombras de edificio y del santuario, y la **TRAMPILLA** (3 × 3 m) sobre el agua, que queda 0,5 m más abajo: se salta al agua y se sale trepando. Gira con el árbol. |
+| **Techo** | Cuadrado plano de 22 m a 92 m | Tan ancho como el tronco. Alfombras de edificio y del santuario, y la **PUERTA DEL TECHO** (Berón 2026-10-31: como la de los anillos, se entra de frente): una columna de agua de 5 × 5 m que asoma 3,6 m sobre la cubierta, encima del agua del tronco, con su puerta de 3 × 3 m hacia las alfombras. (Antes, una trampilla sobre el agua: se caía dentro.) Gira con el árbol. |
 | **Suelo** | Alfombras en el hielo, a 24 m del eje (al NE) | No giran. La **puerta del suelo** está en la cara a (gira con el tronco). |
 
 **Alcance** (lo que barre al girar): 55,9 m (la esquina de un anillo). **Reparto, de abajo arriba:**
-P1 Bosque comestible (piso a, 64 m) · P2 Bambusal (piso c, 64 m) · P3 Arrozal (punta b, 69 m) · P4 Milpa (punta d, 69 m) ·
+P1 Bosque comestible (piso a, 64 m) · P2 Bambusal (piso c, 64 m) · P3 Arrozal (punta b, 70 m) · P4 Milpa (punta d, 70 m) ·
 P5 **Huerto** (`Garden_Area`, 30 × 9 m, con las hortalizas, su tanque de virtualización y su iniciación; piso b, 75 m) ·
-P6 Bosque comestible (piso d, 75 m) · P7 Chacra andina (punta a, 80 m) · P8 Rotación (punta c, 80 m). Lo alto (el bosque,
+P6 Bosque comestible (piso d, 75 m) · P7 Chacra andina (punta a, 81 m) · P8 Rotación (punta c, 81 m). Lo alto (el bosque,
 ~10 m de dosel; la guadua, 9 m) va en los pisos grandes, donde nada lo tapa; lo bajo, en las puntas. Cada cultivo conserva su
 gremio y su semilla (`GardenPlot`): hortalizas 11, milpa 12, chacra 13, arrozal 14, rotación 15, bosque 16 y 18, bambusal 17.
 Bancal de 22 × 18 m en cada piso (lejos de la puerta y de la rama que pasa 11 m por encima del borde pegado al tronco) y de
@@ -73,8 +73,8 @@ Bancal de 22 × 18 m en cada piso (lejos de la puerta y de la rama que pasa 11 m
 ### Plano (desde arriba; cada carácter, ~2 × 4 m; T = tronco)
 
 ```
-  nivel 1 (64 m): pisos 1 (a) y 2 (c); ramas de b y d a las puntas 3 y 4 (69 m)
-  nivel 2 (75 m): pisos 5 (b) y 6 (d); ramas de a y c a las puntas 7 y 8 (80 m)
+  nivel 1 (64 m): pisos 1 (a) y 2 (c); ramas de b y d a las puntas 3 y 4 (70 m)
+  nivel 2 (75 m): pisos 5 (b) y 6 (d); ramas de a y c a las puntas 7 y 8 (81 m)
 
                      +Z (lado a)
   ................1111111111111111...........
@@ -91,8 +91,8 @@ Bancal de 22 × 18 m en cada piso (lejos de la puerta y de la rama que pasa 11 m
   ...........2222222222222222..33333333......
 ```
 
-De lado (corte por la cara b): la rama de b sale a 64 m por debajo del piso 5 (75 m) y lleva a la punta 3 (69 m) en la esquina
-libre; su anillo, a 73 m. Encima de cada piso no hay nada (salvo, 11 m más arriba y solo sobre su franja pegada al tronco, la
+De lado (corte por la cara b): la rama de b sale a 64 m por debajo del piso 5 (75 m) y lleva a la punta 3 (70 m) en la esquina
+libre; su anillo, a 74 m. Encima de cada piso no hay nada (salvo, 11 m más arriba y solo sobre su franja pegada al tronco, la
 rama del otro nivel).
 
 ## Moverse
@@ -103,14 +103,14 @@ rama del otro nivel).
   del eje → [rama y columna] → puerta → fuera, nadando con `SwimBody.SwimTo` a 2,5 m/s y, en los tramos verticales (el tronco
   y las columnas), llevados además por la **corriente** (1,4 m/s). Del campo a su anillo (o al revés), por la misma columna,
   sin bajar a la rama. Nada de teletransportes; si se atasca, se queda donde está y avisa.
-- **Entradas**: desde fuera del árbol, las alfombras llevan **al techo** (los campos están a 64–84 m: es la entrada más
-  cercana) y se baja nadando por la trampilla; para ir al suelo del árbol, al pie. Para salir, se nada al techo (sus
+- **Entradas**: desde fuera del árbol, las alfombras llevan **al techo** (los campos están a 64–85 m: es la entrada más
+  cercana) y se entra de frente por la puerta del techo, nadando hacia abajo; para ir al suelo del árbol, al pie. Para salir, se nada al techo (sus
   alfombras), salvo si el destino está en el hielo junto al pie: por la puerta del suelo. Entre el suelo y el techo, en
   alfombra.
 - **El jugador**: nada libremente dentro (el cuerpo de nado del mar). En cada puerta puede respirar. **Salir del agua**
   (el fallo de Berón: en la campana de la v1 el agua llegaba casi al dintel y se quedaba flotando contra él):
   `TreeDoorExit` — nadando delante de cualquier puerta y empujando hacia ella, sale de pie al umbral de fuera (como al trepar a
-  un canto); en la trampilla, empujando hacia arriba o hacia un lado. Para entrar, se anda hacia la puerta y se cae al agua.
+  un canto). Y ya no se sale por donde no hay puerta: `PlayerController.TryClimbOut` (trepar a un canto) solo sube si no hay un techo ni una pared entre el nadador y el canto (antes, flotando contra el techo de un tubo, subía encima del tubo: era el «salir por las paredes» de Berón; igual bajo la losa del techo). Para entrar, se anda hacia la puerta y se cae al agua.
   El hechizo `piso({n:5})` (0–8, `anillo1`…`anillo4`, `techo`) le lleva andando a su puerta y nadando.
 
 ## Giro
@@ -127,7 +127,7 @@ inscrito del tronco (11,8 m) no se anda. Los muebles se miden en el marco del pi
 (361 MN) apoya en el fondo y va al cimiento. El agua tira de cada cara p·a en el fondo (9,0 MN/m) contra el acrílico y los
 zunchos (15,3) → **59 %**. El acrílico, como placa entre nervios (3,7 m) y zunchos: 7,3 MPa de 10 → **73 %** (lo que manda:
 por eso 24 nervios). **Voladizo** de un piso (su peso a 16 m de la cara): 185 MN·m contra 4 tornapuntas CFST Ø 0,7 m →
-**41 %**. **Rama** (punta, columna y tubo a ~30 m): 212 MN·m contra su celosía de 5 m de canto → **55 %**. Avisa por encima
+**41 %**. **Rama** (punta, columna y tubo a ~30 m): (con los tubos de 5 × 5 m) contra su celosía de ~6,4 m de canto con cordones CFST Ø 1 m (ver el registro de la construcción). Avisa por encima
 del 80 % (con 30 niveles de hélice, avisa) y da error por encima del 100 %.
 
 ## Dónde

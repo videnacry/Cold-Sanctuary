@@ -45,7 +45,7 @@ public static partial class SampleSceneBuilder
         gaps[TreeSpec.GroundSide].Add(DoorRect(h, 0f));
         for (int lv = 1; lv <= h.levels; lv++)
             for (int s = 0; s < 4; s++)
-                gaps[s].Add(HelixTower.HasFloor(lv, s) ? DoorRect(h, h.LevelY(lv)) : new Rect(h.mouthX - h.tubeHalf, h.LevelY(lv) - 0.3f - h.tubeWall, 2f * h.tubeHalf, 2.6f + 2f * h.tubeWall));
+                gaps[s].Add(HelixTower.HasFloor(lv, s) ? DoorRect(h, h.LevelY(lv)) : new Rect(h.mouthX - h.tubeHalf, h.LevelY(lv) - 0.3f - h.tubeWall, 2f * h.tubeHalf, h.TubeInnerH + 2f * h.tubeWall));
         Trunk(tree, ac, h, gaps);
 
         // ── NIVELES: el suelo, las 8 plataformas (pisos y campos de punta, con sus anillos) y el techo ──
@@ -64,12 +64,11 @@ public static partial class SampleSceneBuilder
             L.field = DoorFrame(tree, HelixTower.FromSide(side, new Vector3(h.doorX, h.LevelY(lv), h.waterHalf)), HelixTower.SideRot(side), h.wall, $"Puerta_piso_{k}", L.outside);
             ac.levels.Add(L);
         }
-        ac.top = Top(tree, out Transform hatchField);
-        Vector3 hatch = TreeSpec.HatchLocal;
+        ac.top = Top(tree, out Transform hatchField, out var roof);
         ac.levels.Add(new TreeLevel
         {
-            name = "el techo", kind = TreeLevel.Kind.Top, index = 9, deck = ac.top, half = TreeSpec.TopWidth * 0.5f, field = hatchField,
-            outside = hatch + new Vector3(0f, 0f, 3f), door = hatch + Vector3.down * 1.2f, inside = hatch + Vector3.down * 4f,
+            name = "el techo", kind = TreeLevel.Kind.Top, index = 9, deck = ac.top, half = TreeSpec.TopWidth * 0.5f, field = hatchField, doorAngle = 0f,
+            outside = roof.outside, door = roof.door, inside = roof.inside,
         });
 
         // Alfombras del SUELO, en el hielo (no giran): al techo. (Las del techo giran con el árbol.)
@@ -208,7 +207,7 @@ public static partial class SampleSceneBuilder
         Transform land = new GameObject("Salida").transform; land.SetParent(d, false);
         land.position = parent.TransformPoint(landing);
         TreeDoorExit ex = d.gameObject.AddComponent<TreeDoorExit>();
-        ex.landing = land; ex.zoneCenter = new Vector3(0f, 1.3f, -1f); ex.zoneSize = new Vector3(w + 0.8f, 4.6f, 3.4f);
+        ex.landing = land; ex.zoneCenter = new Vector3(0f, h * 0.5f, -1.1f); ex.zoneSize = new Vector3(w + 0.8f, h + 2.4f, 3.6f);
         return field;
     }
 
@@ -269,7 +268,7 @@ public static partial class SampleSceneBuilder
         Quaternion q = HelixTower.SideRot(side);
         float mx = h.mouthX, th = h.tubeHalf, tw = h.tubeWall, ti = th - tw, a = h.waterHalf, o = h.OuterHalf;
         Vector3 col = h.ColumnS; float cx = col.x, cz = col.z, ci = h.colHalf, co = h.ColOuter;
-        float y0 = Y - 0.3f, y1 = Y + 2.3f, ym = (y0 + y1) * 0.5f, hh = y1 - y0;   // el hueco del tubo (2,6 m)
+        float y0 = Y - 0.3f, y1 = y0 + h.TubeInnerH, ym = (y0 + y1) * 0.5f, hh = y1 - y0;   // el hueco del tubo (5 m)
 
         // ── RAMA (marco del lado) ──
         Transform br = new GameObject($"Rama_{k}").transform; br.SetParent(tree, false); br.localRotation = q;
@@ -286,15 +285,15 @@ public static partial class SampleSceneBuilder
         Glass(new Vector3((mx + th + xB1) * 0.5f, ym, cz + th - tw * 0.5f), new Vector3(xB1 - mx - th, hh + 2f * tw, tw), "Pared_rama");
         WaterBox(br, "Agua_rama", new Vector3(mx, ym, (a - 0.5f + zA1 - tw) * 0.5f), new Vector3(2f * ti, hh, zA1 - tw - (a - 0.5f)));
         WaterBox(br, "Agua_rama", new Vector3((mx - ti + cx - ci + 0.3f) * 0.5f, ym, cz), new Vector3(cx - ci + 0.3f - (mx - ti), hh, 2f * ti));
-        // CELOSÍA de acero de la rama (lo que carga la punta): 2 cordones abajo, 2 arriba (5 m de canto) y diagonales.
-        float yb = y0 - tw - 0.45f, yt = Y + 4f;
+        // CELOSÍA de acero de la rama (lo que carga la punta): 2 cordones abajo, 2 arriba (6,5 m de canto) y diagonales.
+        float yb = y0 - tw - 0.45f, yt = y1 + tw + 0.3f;
         void Chord(Vector3 p0, Vector3 p1, float size, string n) => KitchenProps.C(br, (p0 + p1) * 0.5f, new Vector3(size, size, (p1 - p0).magnitude), TreeSteel, Quaternion.LookRotation(p1 - p0), n);
         for (int sgn = -1; sgn <= 1; sgn += 2)
         {
-            Chord(new Vector3(mx + sgn * (th - 0.2f), yb, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yb, cz), 0.5f, "Nervio_rama");
-            Chord(new Vector3(mx, yb, cz + sgn * (th - 0.2f)), new Vector3(xB1, yb, cz + sgn * (th - 0.2f)), 0.5f, "Nervio_rama");
-            Chord(new Vector3(mx, yt, cz + sgn * (th - 0.2f)), new Vector3(xB1, yt, cz + sgn * (th - 0.2f)), 0.45f, "Nervio_rama");
-            Chord(new Vector3(mx + sgn * (th - 0.2f), yt, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yt, cz), 0.45f, "Nervio_rama");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yb, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yb, cz), 0.9f, "Nervio_rama");
+            Chord(new Vector3(mx, yb, cz + sgn * (th - 0.2f)), new Vector3(xB1, yb, cz + sgn * (th - 0.2f)), 0.9f, "Nervio_rama");
+            Chord(new Vector3(mx, yt, cz + sgn * (th - 0.2f)), new Vector3(xB1, yt, cz + sgn * (th - 0.2f)), 0.8f, "Nervio_rama");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yt, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yt, cz), 0.8f, "Nervio_rama");
             for (float x = mx + 1f; x < xB1 - 1f; x += 4f)
                 Chord(new Vector3(x, yb, cz + sgn * th), new Vector3(Mathf.Min(xB1, x + 4f), yt, cz + sgn * th), 0.25f, "Tornapunta_rama");
         }
@@ -336,11 +335,11 @@ public static partial class SampleSceneBuilder
         foreach (Vector3 corner in new[] { new Vector3(E - 0.4f, -0.35f, E - 0.4f), new Vector3(E - 0.4f, -0.35f, -E + 0.4f), new Vector3(-E + 0.4f, -0.35f, E - 0.4f) })
             KitchenProps.C(ts, (corner + colL) * 0.5f, new Vector3(0.3f, 0.3f, (corner - colL).magnitude), TreeSteel, Quaternion.LookRotation(corner - colL), "Tornapunta_campo");
         _platforms[tip] = new Vector2(T, T);
-        // Bancal de 10 × 15 m a lo ancho del campo (lejos de la columna y de su puerta), con las filas a lo largo de los 15 m:
+        // Bancal de 8,6 × 15 m a lo ancho del campo (lejos de la columna y de su puerta), con las filas a lo largo de los 15 m:
         // caben todas las del gremio (la chacra, 8; la rotación, con el garbanzo, el sésamo y el maní, 6).
-        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(0f, 0.06f, 2.5f)), new Vector2(10f, 15f), TreeSpec.Seeds[k - 1], false);
+        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(0f, 0.06f, 3.3f)), new Vector2(8.6f, 15f), TreeSpec.Seeds[k - 1], false);
         plot.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(10.6f, 0.06f, 15.6f),
+        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(9.2f, 0.06f, 15.6f),
             guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
         _treeFloors.Add(tf);
 
@@ -405,33 +404,43 @@ public static partial class SampleSceneBuilder
 
     // ── EL TECHO ─────────────────────────────────────────────────────────────────────────────────────────────
 
-    /// <summary>El techo: plataforma cuadrada de 22 m (tan ancha como el tronco) con sus alfombras y la TRAMPILLA sobre el agua
-    /// (0,5 m más abajo: se sale trepando, como de una piscina). Devuelve el techo; <paramref name="hatchField"/> = el campo
-    /// magnético de la trampilla.</summary>
-    static Transform Top(Transform tree, out Transform hatchField)
+    /// <summary>El techo: plataforma cuadrada de 22 m (tan ancha como el tronco) con sus alfombras y la PUERTA DEL TECHO (Berón
+    /// 2026-10-31: como la de los anillos, se entra de frente): una columna de agua de 5 × 5 m que asoma sobre la cubierta, sobre
+    /// el agua del tronco, con su puerta de 3 × 3 m en la cara +Z (hacia las alfombras). Devuelve el techo; <paramref name="hatchField"/>
+    /// = el campo magnético de esa puerta; <paramref name="doorLevel"/> = sus puntos (fuera, puerta, dentro; locales del árbol).</summary>
+    static Transform Top(Transform tree, out Transform hatchField, out (Vector3 outside, Vector3 door, Vector3 inside) doorLevel)
     {
-        float H = TreeSpec.RootHeight, X = TreeSpec.TopWidth * 0.5f, hh = TreeSpec.HatchHalf;
+        HelixTower h = TreeSpec.Helix;
+        float H = TreeSpec.RootHeight, X = TreeSpec.TopWidth * 0.5f, ci = TreeSpec.HatchHalf, cw = h.colWall, co = ci + cw;
         Vector3 hc = TreeSpec.HatchLocal; float hz = hc.z;
         Transform top = new GameObject("Copa_arbol").transform; top.SetParent(tree, false); top.localPosition = Vector3.up * H;
         void Deck(float x0, float x1, float z0, float z1) => Solid(top, new Vector3((x0 + x1) * 0.5f, -0.15f, (z0 + z1) * 0.5f), new Vector3(x1 - x0, 0.3f, z1 - z0), TreeDeck, "Losa_copa");
-        Deck(-X, X, hz + hh, X); Deck(-X, X, -X, hz - hh); Deck(-X, -hh, hz - hh, hz + hh); Deck(hh, X, hz - hh, hz + hh);
-        // La TRAMPILLA: marco de cobre y el campo magnético, horizontal, a ras del agua.
-        Transform hatch = new GameObject("Trampilla").transform; hatch.SetParent(top, false); hatch.localPosition = new Vector3(0f, 0f, hz);
-        for (int s = -1; s <= 1; s += 2)
+        Deck(-X, X, hz + co, X); Deck(-X, X, -X, hz - co); Deck(-X, -co, hz - co, hz + co); Deck(co, X, hz - co, hz + co);
+        // LA COLUMNA DE LA PUERTA (en el marco del árbol; su agua sigue la del tronco).
+        float cb = H - 0.3f, wt = H + h.doorHeight + 0.6f, ctop = wt + 0.4f;
+        Transform cg = new GameObject("Campana_techo").transform; cg.SetParent(tree, false);
+        var v = new List<Vector3>(); var t = new List<int>();
+        Vector3 cc = new Vector3(0f, 0f, hz);
+        for (int f = 0; f < 4; f++)
         {
-            KitchenProps.C(hatch, new Vector3(s * (hh + 0.08f), 0.06f, 0f), new Vector3(0.16f, 0.12f, 2f * hh + 0.32f), TreeCopper, 0f, "Bobina");
-            KitchenProps.C(hatch, new Vector3(0f, 0.06f, s * (hh + 0.08f)), new Vector3(2f * hh, 0.12f, 0.16f), TreeCopper, 0f, "Bobina");
+            var g = new List<Rect>();
+            if (f == 0) g.Add(new Rect(-h.doorWidth * 0.5f, H, h.doorWidth, h.doorHeight));   // +Z: la puerta
+            Panel(v, t, HelixTower.SideRot(f), cc, -ci, co, cb, ctop, ci, co, g);
         }
-        hatchField = KitchenProps.C(hatch, new Vector3(0f, TreeSpec.WaterTop - H + 0.04f, 0f), new Vector3(2f * hh, 0.02f, 2f * hh), TreeGlow, 0f, "Campo_magnetico");
-        hatchField.gameObject.AddComponent<CampoMagnetico>();
-        Transform land = new GameObject("Salida").transform; land.SetParent(hatch, false); land.localPosition = new Vector3(0f, 0f, 3f);
-        TreeDoorExit ex = hatch.gameObject.AddComponent<TreeDoorExit>();
-        ex.hatch = true; ex.landing = land; ex.zoneCenter = new Vector3(0f, -1.5f, 0f); ex.zoneSize = new Vector3(2f * hh + 0.4f, 3f, 2f * hh + 0.4f);
-        Label(KitchenProps.C(top, new Vector3(0f, 0.1f, hz - hh - 0.6f), new Vector3(0.1f, 0.1f, 0.1f), TreeSteel, 0f, "Cartel_trampilla"),
-              "Trampilla del tronco: salta al agua y nada a tu piso", 1.2f);
+        Mesh m = TreeMesh("Campana_techo", v, t);
+        cg.gameObject.AddComponent<MeshFilter>().sharedMesh = m;
+        cg.gameObject.AddComponent<MeshRenderer>().sharedMaterial = KitchenProps.Mat(VirtualizationTank.GlassColor);
+        cg.gameObject.AddComponent<MeshCollider>().sharedMesh = m;
+        Solid(cg, new Vector3(0f, ctop - cw * 0.5f, hz), new Vector3(2f * co, cw, 2f * co), VirtualizationTank.GlassColor, "Tapa_campana");
+        WaterBox(cg, "Agua_techo", new Vector3(0f, (TreeSpec.WaterTop - 1.5f + wt) * 0.5f, hz), new Vector3(2f * ci, wt - (TreeSpec.WaterTop - 1.5f), 2f * ci));
+        Vector3 outside = new Vector3(0f, H, hz + co + 2.5f);
+        hatchField = DoorFrame(tree, new Vector3(0f, H, hz + ci), Quaternion.identity, cw, "Puerta_techo", outside);
+        doorLevel = (outside, new Vector3(0f, H, hz + ci + cw * 0.5f), new Vector3(0f, H + 0.2f, hz + ci - 1.2f));
+        Label(KitchenProps.C(top, new Vector3(co + 0.8f, 0.1f, hz + co + 0.4f), new Vector3(0.1f, 0.1f, 0.1f), TreeSteel, 0f, "Cartel_trampilla"),
+              "Puerta del tronco: entra de frente y nada a tu piso", 1.2f);
         string surf = $"{TreeSpec.Building}#copa";
-        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 2.9f)), top.rotation, CarpetPad.Kind.Edificio, TreeSpec.Building, 9, surf, "Techo (alfombras)", 2);
-        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 7.8f)), top.rotation, CarpetPad.Kind.Santuario, TreeSpec.Building, 9, surf,
+        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 3.4f)), top.rotation, CarpetPad.Kind.Edificio, TreeSpec.Building, 9, surf, "Techo (alfombras)", 2);
+        CarpetPad.BuildZone(top, top.TransformPoint(new Vector3(0f, 0.03f, 8.1f)), top.rotation, CarpetPad.Kind.Santuario, TreeSpec.Building, 9, surf,
             $"{TreeSpec.Building}: bosque comestible, bambusal, arrozal, milpa, huerto, chacra, rotación y nidos", 2);
         return top;
     }

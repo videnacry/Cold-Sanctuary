@@ -21,11 +21,11 @@ public class HelixTower
     public float firstY = 64f, levelGap = 11f;         // cara del primer piso y de un nivel al siguiente
     public int levels = 2;
     public float floorSize = 32f;                      // piso pegado al tronco (cuadrado)
-    public float tipSize = 16f, tipGap = 4f, tipRise = 5f;   // campo de punta (cuadrado), su hueco al piso y cuánto sube sobre su nivel
+    public float tipSize = 16f, tipGap = 4f, tipRise = 6f;   // campo de punta (cuadrado), su hueco al piso y cuánto sube sobre su nivel
     public float ringH = 4f, ringWidth = 4f, ringInside = 0.2f;   // anillo encima del campo (RingDeck: 20 % sobre el campo)
-    public float tubeHalf = 1.5f, tubeWall = 0.2f, mouthX = 6f;   // rama: tubo cuadrado de 3 m y su boca en la cara
-    public float colHalf = 1.6f, colWall = 0.2f, colMargin = 1f;  // columna de la punta: agua de 3,2 m, a 1 m del borde del campo
-    public float doorWidth = 1.8f, doorHeight = 2.6f, doorX = 5f;
+    public float tubeHalf = 2.8f, tubeWall = 0.3f, mouthX = 6.5f;   // rama: tubo cuadrado (hueco de 5 × 5 m: caben varios a la vez; Berón 2026-10-31) y su boca en la cara
+    public float colHalf = 2.5f, colWall = 0.3f, colMargin = 1f;  // columna de la punta: agua de 5 × 5 m, a 1 m del borde del campo
+    public float doorWidth = 3f, doorHeight = 3f, doorX = 5f;     // puertas de 3 × 3 m (Berón 2026-10-31: más anchas)
 
     public float OuterHalf => waterHalf + wall;
     public static Quaternion SideRot(int side) => Quaternion.Euler(0f, side * 90f, 0f);
@@ -43,6 +43,8 @@ public class HelixTower
     /// <summary>Centro (marco del lado) del campo de punta: en la esquina libre, pasado el borde del piso de ese lado.</summary>
     public Vector3 TipCenterS => new Vector3(floorSize - OuterHalf + tipGap + tipSize * 0.5f, 0f, OuterHalf + tipGap + tipSize * 0.5f);
     public float ColOuter => colHalf + colWall;
+    /// <summary>Alto del hueco del tubo de una rama (cuadrado, como su ancho).</summary>
+    public float TubeInnerH => 2f * (tubeHalf - tubeWall);
     /// <summary>Centro (marco del lado) de la columna de agua de la punta: dentro del campo, en su esquina de dentro (fuera del
     /// anillo, que entra 0,8 m sobre el campo).</summary>
     public Vector3 ColumnS => TipCenterS + new Vector3(-tipSize * 0.5f + colMargin + ColOuter, 0f, -tipSize * 0.5f + colMargin + ColOuter);
@@ -79,8 +81,8 @@ public class HelixTower
 /// MEDIDAS DEL ÁRBOL DE LOS CAMPOS v2 (docs/edificio-arbol.md; Berón 2026-10-30). Las comparten el constructor
 /// (SampleSceneBuilder.Tree.cs), el árbol en juego (<see cref="ArbolCampos"/>, <see cref="TreeRotator"/>) y las pruebas.
 /// - TRONCO CUADRADO de agua TRANSPARENTE (el cristal y el agua del tanque de virtualización): 20 × 20 m de agua, pared de
-///   acrílico de 1 m (22 m), de 0 a 92 m; 24 nervios CFST y zunchos. Puerta abajo (suelo) y entrada por el TECHO (trampilla
-///   sobre el agua, con las alfombras). Cada piso tiene su puerta con campo magnético (el hueco es una campana de aire).
+///   acrílico de 1 m (22 m), de 0 a 92 m; 24 nervios CFST y zunchos. Puerta abajo (suelo) y entrada por el TECHO (una columna de agua que
+///   asoma, con su puerta de frente, junto a las alfombras). Cada piso tiene su puerta con campo magnético (el hueco es una campana de aire).
 /// - HÉLICE de 2 niveles (<see cref="Helix"/>): en cada nivel, 2 pisos pegados al tronco (lados alternos) y 2 ramas a campos de
 ///   punta con su anillo encima. 8 plataformas de cultivo.
 /// - EL PRIMER PISO, por encima del árbol más alto que crece en el santuario (<see cref="TallestTree"/>): el suelo bajo el árbol
@@ -104,20 +106,22 @@ public static class TreeSpec
     {
         waterHalf = 10f, wall = 1f,
         firstY = Mathf.Max(FirstFloorMin, Mathf.Ceil(TallestTree + TreeClearance + StrutDrop)),   // 64 m
-        levelGap = 11f, levels = 2, floorSize = 32f, tipSize = 16f, tipGap = 4f, tipRise = 5f,
+        levelGap = 11f, levels = 2, floorSize = 32f, tipSize = 16f, tipGap = 4f, tipRise = 6f,
     };
 
     public static float WaterHalf => Helix.waterHalf;
     public static float WallThickness => Helix.wall;
     public static float OuterHalf => Helix.OuterHalf;   // 11 m → 22 m de lado
-    public const float RootHeight = 92f, WaterTop = 91.5f, WaterBottom = 0.05f;   // el agua, 0,5 m bajo el techo: se sale trepando por la trampilla
+    public const float RootHeight = 92f, WaterTop = 91.5f, WaterBottom = 0.05f;   // el agua del tronco, bajo la losa del techo
     public const float TopWidth = 22f;           // el techo de alfombras: tan ancho como el tronco
-    public static readonly Vector3 HatchLocal = new Vector3(0f, RootHeight, -6f);   // la trampilla (sobre el agua)
-    public const float HatchHalf = 1.5f;
+    /// <summary>La PUERTA DEL TECHO (Berón 2026-10-31: como la de los anillos, se entra de frente): una columna de agua de 5 × 5 m
+    /// que asoma sobre el techo (centro, a ras de la cubierta), con su puerta en la cara +Z (hacia las alfombras).</summary>
+    public static readonly Vector3 HatchLocal = new Vector3(0f, RootHeight, -6f);
+    public const float HatchHalf = 2.5f;   // medio lado del agua de la columna del techo (pared de 0,3 m)
     public const int Ribs = 24;                  // 4 esquinas + 5 por cara: uno cada ~3,7 m
     public const float HoopSpacing = 6f, HoopHeight = 0.25f, HoopDepth = 0.36f;
     public static float HoopArea => HoopHeight * HoopDepth;
-    public const float DoorWidth = 1.8f, DoorHeight = 2.6f;
+    public const float DoorWidth = 3f, DoorHeight = 3f;
     /// <summary>El lado de la puerta del suelo (a = +Z: hacia las alfombras del pie, al NE).</summary>
     public const int GroundSide = 0;
 
