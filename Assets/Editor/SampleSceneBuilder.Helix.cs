@@ -40,6 +40,9 @@ public static partial class SampleSceneBuilder
         public float RootHeight => h.LevelY(h.levels) + 17f;
         public float WaterTop => RootHeight - 0.5f;
         public Vector3 HatchLocal => new Vector3(0f, RootHeight, -6f);
+        /// <summary>Nervios del tronco: 24 (4 esquinas y 5 por cara); por encima de 100 m, 28 (6 por cara): el acrílico entre nervios
+        /// es lo que manda y el agua aprieta más cuanto más alto es el tronco (Producción, 124 m: 98 % con 24, 72 % con 28).</summary>
+        public int Ribs => RootHeight > 100f ? 28 : TreeSpec.Ribs;
     }
 
     static readonly List<Helix> _helixes = new List<Helix>();
@@ -231,10 +234,10 @@ public static partial class SampleSceneBuilder
         if (!hx.rotates) _roofs.Add((ac.top, new Vector2(TreeSpec.TopWidth, TreeSpec.TopWidth), hx.building));   // sus paneles solares, en el techo (un borde libre)
 
         // EL TRONCO AGUANTA (StructuralLimits.RootCheck).
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, TreeSpec.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
         if (rep.Fail) Debug.LogError($"[Estructura] El tronco de «{hx.building}» no aguanta: {rep}. Refuérzalo (más nervios, más pared o más tornapuntas).");
         else if (rep.Warn) Debug.LogWarning($"[Estructura] El tronco de «{hx.building}» va justo: {rep}.");
-        else Debug.Log($"[Estructura] Tronco de «{hx.building}» ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {TreeSpec.Ribs} nervios): {rep}.");
+        else Debug.Log($"[Estructura] Tronco de «{hx.building}» ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {hx.Ribs} nervios): {rep}.");
         Debug.Log($"[Árbol] «{hx.building}» en ({site.x:0}, {site.z:0}), giro {hx.yaw:0}°: tronco cuadrado de {hx.RootHeight:0} m, hélice de {h.levels} niveles desde {h.firstY:0} m, " +
                   $"{floors} pisos de {h.floorSize:0} m, {tips} puntas de {h.tipSize:0} m, {ring} anillos, alcance {h.Reach:0.0} m, puerta del suelo en la cara {hx.groundSide}.");
     }
@@ -367,7 +370,8 @@ public static partial class SampleSceneBuilder
                 return false;
             }
             var ribX = new List<float>();
-            for (int i = 1; i <= 5; i++) ribX.Add(-o + i * (2f * o / 6f));
+            int per = hx.Ribs / 4;   // vanos por cara (6 con 24 nervios, 7 con 28)
+            for (int i = 1; i < per; i++) ribX.Add(-o + i * (2f * o / per));
             foreach (float x in ribX)
                 for (float y = 0f; y < H; y += 4f)
                 {

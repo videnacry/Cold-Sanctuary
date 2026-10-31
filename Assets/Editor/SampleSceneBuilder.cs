@@ -3553,7 +3553,8 @@ public static partial class SampleSceneBuilder
         Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ballet.transform); Floor(dojo.transform);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
-        BeginTower(ProduccionCenter, ProduccionSize);
+        //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
+        BeginTreeTower(areasGroup.transform, TorreProduccion, ProduccionCenter, ProduccionSize, ProduccionYaw, 2, ProduccionFirstY, 4f);
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
@@ -3594,7 +3595,7 @@ public static partial class SampleSceneBuilder
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
         // Los EDIFICIOS (sus plantas bajas): sin puentes ni escaleras, cada uno con sus alfombras (docs/alfombras-plan.md).
-        var ground = new List<SanctuaryArea> { works, nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
+        var ground = new List<SanctuaryArea> { nuc };   // (los edificios-árbol, Servicios… y el Árbol de los Campos, llevan sus alfombras en el techo y en el suelo)   // (el Árbol de los Campos lleva sus alfombras: en la copa y en el suelo)
         // Techo de cada edificio: sobre su piso MÁS ALTO (la cadena entera); encima va su techo de alfombras, con sus paneles.
         _roofs.Clear();
         foreach (SanctuaryArea g in ground)

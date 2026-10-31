@@ -40,6 +40,9 @@ public static partial class SampleSceneBuilder
         }
         // LAS PUNTAS DE LAS TORRES-ÁRBOL (docs/edificio-arbol.md §Migración): sus techos son pequeños (las alfombras y la puerta); los
         // frutales van en las puntas de sus ramas, al aire. La sala de la experta, en la primera punta de Servicios.
+        // Primero las puntas más altas de cada torre (las más cercanas a su techo, adonde llega el jardinero en alfombra): ahí caben
+        // las 19 especies y la ronda nada lo menos posible.
+        _orchardTips.Sort((x, y) => x.tip == null || y.tip == null ? 0 : x.building != y.building ? string.CompareOrdinal(x.building, y.building) : y.tip.position.y.CompareTo(x.tip.position.y));
         var mainDone = new HashSet<string>();
         foreach (var (tip, b) in _orchardTips)
         {

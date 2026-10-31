@@ -30,6 +30,8 @@ public class FruitGardener : MonoBehaviour
     public const float RoundTarget = 2.9f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
+    /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a sus puntas y de vuelta): medido en Unity, ~100 s de juego.</summary>
+    public const float TreeSwimSeconds = 100f;
     /// <summary>Minutos de juego para preparar en el punto de cuidados: el abono y medir pH y EC en la sala principal; en los
     /// demás, mirar el filtro, la válvula y el programador del goteo.</summary>
     public const float PrepMainMinutes = 5f, PrepMinutes = 2f;
@@ -96,7 +98,8 @@ public class FruitGardener : MonoBehaviour
         // camino maceta a maceta y se cierra la ronda cuando la siguiente ya no cabe en su parte del total (rondas
         // equilibradas de ≤ RoundTarget h); al cambiar de techo, cuenta el vuelo y preparar en su punto de cuidados.
         float flightH = FlightSeconds / SecondsPerGameHour, total = 0f;
-        foreach (string b in order) { FruitCareStation st = StationOf(b); total += LegHours(byRoof[b], st != null && st.mainRoom) + flightH; }
+        float Swim(string b) => byRoof[b].Any(p => p.GetComponentInParent<TreeFloor>() != null) ? TreeSwimSeconds / SecondsPerGameHour : 0f;   // (las puntas de una torre-árbol)
+        foreach (string b in order) { FruitCareStation st = StationOf(b); total += LegHours(byRoof[b], st != null && st.mainRoom) + flightH + Swim(b); }
         int nr = Mathf.Max(1, Mathf.CeilToInt(total / RoundTarget));
         // Cada corte añade un vuelo y una preparación: se sube la meta de 0,1 en 0,1 h hasta que salen las rondas previstas.
         for (float target = Mathf.Min(RoundTarget, total / nr + 0.15f); ; target += 0.1f)
@@ -112,8 +115,8 @@ public class FruitGardener : MonoBehaviour
                 {
                     float walkH = leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f;
                     float plantH = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + walkH;
-                    float open = leg == null ? flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f : 0f;
-                    if (cur == null || (cur.Plants.Any() && cur.hours + open + plantH > target)) { cur = new Round(); _rounds.Add(cur); leg = null; open = flightH + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f; plantH -= walkH; }
+                    float open = leg == null ? flightH + Swim(b) + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f : 0f;
+                    if (cur == null || (cur.Plants.Any() && cur.hours + open + plantH > target)) { cur = new Round(); _rounds.Add(cur); leg = null; open = flightH + Swim(b) + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f; plantH -= walkH; }
                     if (leg == null) { leg = new Leg { building = b, station = st }; cur.legs.Add(leg); cur.hours += open; }
                     leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p;
                 }
