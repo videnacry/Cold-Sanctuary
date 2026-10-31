@@ -234,6 +234,15 @@ alguien entrando por ella, y nadando del techo al piso 5 y del piso 5 al 1). Cad
   último piso → primer piso → suelo en cada torre, y el árbol de la guardia a **128,6 m**.
 - Estructura (24 nervios hasta 100 m de tronco, 28 por encima): Servicios acrílico 82 %, voladizo 80 %, rama 87 % (avisa);
   Entrenamiento acrílico 82 %; Ciencias y Producción ~66–72 % con 28 nervios.
+- **Batería completa** (con todo migrado y el árbol de la guardia a 128,6 m): **1162 PASS / 21 FAIL** (la primera, 1155/28; se
+  arreglaron el «teletransporte» de 64 m de quien se quedaba en una puerta, el nado frenado y la orquesta de la cocina). Quedan:
+  - **Jornada (13)**: la gente tarda más en ir de un edificio a otro (nadar al techo, volar 100–200 m, bajar nadando: 35–95 s de
+    juego, medidos) y no siempre llega a su puesto, a comer o a entrenar; varios se quedan quietos en la Cocina (el comedor del
+    anillo) o «no avanzan hacia los aseos»; + 2 de fauna (pingüinos en círculos y uno contra el tronco del Árbol de los Campos, que
+    gira: ya fallaba antes).
+  - **Clase de yoga (4)**: Lizmibet no llega a su esterilla en los 120 s de la clase (viene de Servicios a Entrenamiento).
+  - **Gimnasio (3)**: dos máquinas de otro piso de la torre no se alcanzan en 60 s (el nado entre pisos cuenta).
+  - **Frutales (1)**: con el nado estimado entre puntas y torres salen 7 jardineros al día (17,1 h) en vez de ~3.
 
 ## Historia
 
