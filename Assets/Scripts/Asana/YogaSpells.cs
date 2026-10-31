@@ -194,6 +194,15 @@ public class AsanaPoseSpell : QueuedSpell
         float side = Mathf.Sign(root.InverseTransformPoint(rootT.position).x);
         Vector3 pole = midT.position + (arm ? (root.right * side * 0.35f - root.up * 0.2f) : (root.forward * 0.3f));
         TwoBoneIK.Solve(rootT, midT, endT, world, pole, t);
+        // En la postura FINAL, unas pasadas más: una sola dobla el codo sobre el eje del «pole» y no sobre el plano real del brazo,
+        // y la mano se quedaba a 4–22 cm de su objetivo (medido en Unity con las guardias de Bruce Lee, 2026-10-31); con 2–4
+        // pasadas llega (0 cm). Durante la transición (t < 1) no: la mezcla parcial se aplicaría varias veces.
+        if (t >= 1f)
+            for (int k = 0; k < 4 && Vector3.Distance(endT.position, world) > 0.005f; k++)
+            {
+                pole = midT.position + (arm ? (root.right * side * 0.35f - root.up * 0.2f) : (root.forward * 0.3f));
+                TwoBoneIK.Solve(rootT, midT, endT, world, pole, 1f);
+            }
         rig.LockPose(rootP); rig.LockPose(midP); rig.LockPose(end);
     }
 }

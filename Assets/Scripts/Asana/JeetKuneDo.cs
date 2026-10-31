@@ -78,8 +78,9 @@ public static class JeetKuneDo
     public static AsanaPoseSpell DummyPak() => Make("Muñeco: pak sau y golpe", WingChunLegs, new Vector3(-0.02f, 1.38f, 0.49f), new Vector3(-0.02f, 1.40f, 0.38f));
     /// <summary>Bai jong: la guardia del Jeet Kune Do (mano adelantada a la altura del hombro, la de atrás junto a la barbilla).</summary>
     public static AsanaPoseSpell OnGuard() => Make("Bai jong (guardia de Jeet Kune Do)", BaiJongLegs(), new Vector3(-0.08f, 1.45f, 0.2f), new Vector3(0.1f, 1.38f, 0.42f), 0.28f);
-    /// <summary>Juego de pies, paso adelante: el pie de delante avanza; luego el de atrás se desliza y vuelve la guardia.</summary>
-    public static AsanaPoseSpell StepForward() => Make("Paso adelante", BaiJongLegs(-35f, 25f, 25f, 12f, 40f), new Vector3(-0.08f, 1.45f, 0.2f), new Vector3(0.1f, 1.38f, 0.42f), 0.28f);
+    /// <summary>Juego de pies, paso adelante: el pie de delante avanza RASANTE (en el «Tao», se desliza; con el muslo a −35° quedaba a
+    /// 11 cm del suelo, ahora a −28°); luego el de atrás se desliza y vuelve la guardia.</summary>
+    public static AsanaPoseSpell StepForward() => Make("Paso adelante", BaiJongLegs(-28f, 25f, 25f, 12f, 40f), new Vector3(-0.08f, 1.45f, 0.2f), new Vector3(0.1f, 1.38f, 0.42f), 0.28f);
     /// <summary>Paso atrás: el pie de atrás retrocede primero y la pierna de delante, recogida, lo sigue.</summary>
     public static AsanaPoseSpell StepBack() => Make("Paso atrás", BaiJongLegs(-12f, 30f, 30f, 20f, 45f), new Vector3(-0.08f, 1.45f, 0.2f), new Vector3(0.1f, 1.38f, 0.42f), 0.28f);
     /// <summary>Golpe de una pulgada, cargado: el puño ya toca el blanco (brazo casi estirado), la cadera girada hacia atrás y
