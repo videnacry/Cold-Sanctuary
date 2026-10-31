@@ -29,6 +29,22 @@ public class MobWorldLoader : MonoBehaviour
     Transform  _player;
     Vector3    _returnPos;
     Quaternion _returnRot;
+    // EL SUELO QUE SE MUEVE (el Árbol de los Campos gira: una vuelta cada 6 h del juego): si al entrar estaba de pie en él, la
+    // vuelta se guarda EN SUS COORDENADAS. Con el punto del mundo, tras unos minutos en el microcosmos el piso ya había girado
+    // y reaparecía en el aire, junto al borde, y caía 8–10 m (prueba de la Cocina: «reaparece donde estaba», 11,1 m).
+    Transform  _returnAnchor;
+    Vector3    _returnLocal;
+    Quaternion _returnLocalRot;
+
+    /// <summary>El suelo en movimiento (el árbol que gira) que pisa quien está en <paramref name="p"/>, o null.</summary>
+    public static Transform MovingFloorUnder(Vector3 p)
+    {
+        TreeRotator tr = TreeRotator.Instance;
+        if (tr == null) return null;
+        foreach (RaycastHit h in Physics.RaycastAll(p + Vector3.up * 0.5f, Vector3.down, 3f, ~0, QueryTriggerInteraction.Ignore))
+            if (h.transform.IsChildOf(tr.transform)) return tr.transform;
+        return null;
+    }
 
     void Awake()
     {
@@ -87,6 +103,8 @@ public class MobWorldLoader : MonoBehaviour
             _returnPos = _returnOverride ?? _player.position;
             _returnOverride = null;
             _returnRot = _player.rotation;
+            _returnAnchor = MovingFloorUnder(_returnPos);
+            if (_returnAnchor != null) { _returnLocal = _returnAnchor.InverseTransformPoint(_returnPos); _returnLocalRot = Quaternion.Inverse(_returnAnchor.rotation) * _returnRot; }
             if (spawn != null) TeleportPlayer(spawn.position, spawn.rotation);
             else Debug.LogWarning($"[MobWorldLoader] '{sceneName}' sin MobSpawnPoint — el jugador no se teletransportó.");
         }
@@ -101,6 +119,7 @@ public class MobWorldLoader : MonoBehaviour
         IsBusy = true;
         yield return FadeToBlack();
 
+        if (_returnAnchor != null) { _returnPos = _returnAnchor.TransformPoint(_returnLocal); _returnRot = _returnAnchor.rotation * _returnLocalRot; _returnAnchor = null; }
         if (_player != null) TeleportPlayer(_returnPos, _returnRot);
 
         AsyncOperation op = SceneManager.UnloadSceneAsync(_activeScene);

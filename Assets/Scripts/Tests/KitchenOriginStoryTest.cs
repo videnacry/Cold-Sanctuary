@@ -39,6 +39,9 @@ public class KitchenOriginStoryTest : MonoBehaviour, ITestUnit
         if (mwl.IsInMobWorld) { mwl.ExitMobWorld(); yield return Until(() => !mwl.IsInMobWorld && !mwl.IsBusy, 30f); }
         yield return Until(() => !mwl.IsBusy, 15f);
         Vector3 home = player.transform.position;
+        // (En un piso del Árbol de los Campos, que gira, «donde estaba» es el mismo sitio DEL PISO: se mide en sus coordenadas.)
+        Transform homeFloor = MobWorldLoader.MovingFloorUnder(home);
+        Vector3 homeLocal = homeFloor != null ? homeFloor.InverseTransformPoint(home) : home;
         float oldScale = Time.timeScale;
         string exitedScene = null;
         System.Action<string> onExit = s => exitedScene = s;
@@ -135,7 +138,9 @@ public class KitchenOriginStoryTest : MonoBehaviour, ITestUnit
         {
             yield return Until(() => !mwl.IsInMobWorld && !mwl.IsBusy, 30f);
             TestProbe.Check("el jugador vuelve al mesocosmos (sale del microcosmos de la Cocina)", !mwl.IsInMobWorld && exitedScene == AreaInitiator.KitchenMicrocosmos, exitedScene ?? "sigue dentro");
-            TestProbe.Check("reaparece donde estaba antes de entrar", Vector3.Distance(player.transform.position, home) < 5f, $"{Vector3.Distance(player.transform.position, home):0.0} m");
+            yield return Until(() => false, 1.5f);   // (y se queda: si reaparece en el aire, ya ha caído)
+            Vector3 homeNow = homeFloor != null ? homeFloor.TransformPoint(homeLocal) : home;
+            TestProbe.Check("reaparece donde estaba antes de entrar", Vector3.Distance(player.transform.position, homeNow) < 5f, $"{Vector3.Distance(player.transform.position, homeNow):0.0} m{(homeFloor != null ? " (en su piso del árbol, que gira)" : "")}");
         }
         yield return Leave(player, home, temp, viaScene, onExit, oldScale, mags);
         TestProbe.End();
