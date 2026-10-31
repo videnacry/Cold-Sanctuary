@@ -35,7 +35,11 @@ public class ArbolCampos : MonoBehaviour
     /// <summary>¿El punto está dentro del agua del árbol (el tronco, una rama o la columna de una punta)?</summary>
     public bool InRootWater(Vector3 world)
     {
-        if (_waters.Count == 0) GetComponentsInChildren(true, _waters);
+        if (_waters.Count == 0)
+        {
+            GetComponentsInChildren(true, _waters);
+            _waters.RemoveAll(z => z.GetComponentInParent<TreeFloor>(true) != null);   // (el agua de un tanque de virtualización de un piso no es la del árbol)
+        }
         foreach (WaterZone z in _waters) if (z != null && z.isActiveAndEnabled && z.Contains(world)) return true;
         return false;
     }

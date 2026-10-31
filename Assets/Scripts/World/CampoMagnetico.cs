@@ -14,6 +14,7 @@ public class CampoMagnetico : MonoBehaviour
     void Update()
     {
         if (_r == null) return;
+        if (_mpb == null) _mpb = new MaterialPropertyBlock();   // (tras recargar el código en Play no se conserva)
         float k = 0.75f + 0.25f * Mathf.Sin(Time.time * 2.3f + _phase) * Mathf.Sin(Time.time * 0.7f + _phase * 2f);
         Color c = _base; c.a = _base.a * k;
         _r.GetPropertyBlock(_mpb); _mpb.SetColor("_BaseColor", c); _mpb.SetColor("_Color", c); _r.SetPropertyBlock(_mpb);

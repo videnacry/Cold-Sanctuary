@@ -3502,9 +3502,9 @@ public static partial class SampleSceneBuilder
             BuildAreaBox(areasGroup.transform, "MartialArts_Area", "Dojo (artes marciales)", SanctuaryAreaType.MartialArts, 1,
                 EntrenamientoCenter, GymSize, new Color(0.8f, 0.7f, 0.55f)),   // P5 (en obras)
 
-            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 30 × 9 m de su piso 5 (32 × 32 m) ──
+            // ── EL HUERTO, en el ÁRBOL DE LOS CAMPOS (docs/edificio-arbol.md): una franja de 24 × 9 m de su piso 5 (32 × 32 m: el tanque, a 3 m del borde) ──
             BuildAreaBox(areasGroup.transform, "Garden_Area", "Huerto", SanctuaryAreaType.Garden, 2,
-                TreeSpec.Site, new Vector2(30f, 9f), new Color(0.50f, 0.70f, 0.40f)),
+                TreeSpec.Site, new Vector2(24f, 9f), new Color(0.50f, 0.70f, 0.40f)),
             // ── PRODUCCIÓN (construcción, mecánica y textil; los cultivos se mudaron al Árbol de los Campos) ──
             // CONSTRUCCIÓN (docs/construction-simulation.md): obras y reparaciones de las áreas humanas; aquí se guardan la
             // maquinaria y el material. La dirige Tofelite («Tote»), el esposo de Lizmibet.

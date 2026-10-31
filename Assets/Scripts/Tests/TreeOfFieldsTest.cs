@@ -215,7 +215,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         System.Func<Vector3> At(TreeLevel lv) => () => t.World(lv.outside + TreeSpec.Dir(lv.doorAngle) * 1.2f) + Vector3.up;
         var legs = new List<(string name, System.Func<Vector3> target, TreeLevel lv)>
         {
-            ("del suelo al piso 5 (el Huerto)", () => gArea != null ? gArea.TransformPoint(new Vector3(8f, 1f, 3.5f)) : t.World(t.Floor(5).outside) + Vector3.up, t.Floor(5)),
+            ("del suelo al piso 5 (el Huerto)", () => gArea != null ? gArea.TransformPoint(new Vector3(7f, 1f, -3.6f)) : t.World(t.Floor(5).outside) + Vector3.up, t.Floor(5)),
             ("del piso 5 al piso 1", At(t.Floor(1)), t.Floor(1)),
             ("del piso 1 al piso 2", At(t.Floor(2)), t.Floor(2)),
             ("del piso 2 al campo de punta 3 (por su rama)", At(t.Floor(3)), t.Floor(3)),

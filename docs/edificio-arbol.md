@@ -62,7 +62,7 @@ genérico, y `TreeSpec`, las medidas del árbol), `ArbolCampos.cs` (niveles y ru
 
 **Alcance** (lo que barre al girar): 55,9 m (la esquina de un anillo). **Reparto, de abajo arriba:**
 P1 Bosque comestible (piso a, 64 m) · P2 Bambusal (piso c, 64 m) · P3 Arrozal (punta b, 70 m) · P4 Milpa (punta d, 70 m) ·
-P5 **Huerto** (`Garden_Area`, 30 × 9 m, con las hortalizas, su tanque de virtualización y su iniciación; piso b, 75 m) ·
+P5 **Huerto** (`Garden_Area`, 24 × 9 m, con las hortalizas, su tanque de virtualización y su iniciación; piso b, 75 m) ·
 P6 Bosque comestible (piso d, 75 m) · P7 Chacra andina (punta a, 81 m) · P8 Rotación (punta c, 81 m). Lo alto (el bosque,
 ~10 m de dosel; la guadua, 9 m) va en los pisos grandes, donde nada lo tapa; lo bajo, en las puntas. Cada cultivo conserva su
 gremio y su semilla (`GardenPlot`): hortalizas 11, milpa 12, chacra 13, arrozal 14, rotación 15, bosque 16 y 18, bambusal 17.

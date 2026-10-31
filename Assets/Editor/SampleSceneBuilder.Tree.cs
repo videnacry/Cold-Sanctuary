@@ -242,7 +242,7 @@ public static partial class SampleSceneBuilder
             garden.transform.SetParent(f, false);
             garden.transform.localPosition = new Vector3(0f, 0f, -6.5f);
             garden.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // su lado abierto (+Z del área) mira a la puerta
-            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-4f, 0.1f, 0f)), new Vector2(6f, 22f), TreeSpec.Seeds[k - 1], false);
+            GameObject go = MakePlot(garden.transform, guild, garden.transform.TransformPoint(new Vector3(-3f, 0.1f, 0f)), new Vector2(6f, 18f), TreeSpec.Seeds[k - 1], false);
             go.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);   // (sus filas, a lo largo del área: caben todas las del gremio)
         }
         else
