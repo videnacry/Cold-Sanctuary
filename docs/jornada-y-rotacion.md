@@ -68,7 +68,7 @@ Las marcadas con * son obligatorias cada día.
   - Riego y deshierbe* (2 h)
   - Cosecha (1 h)
   - Alimentar a los visitantes (1 h)
-  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 2–3 h cada una; recorre varias torres): tantas como haga falta para revisar, regar y abonar las ~215 macetas (docs/jardines-frutales.md)
+  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md)
 - **Sala de Yoga**:
   - Clase para turistas* (1 h)
   - Preparar la sala (1 h)

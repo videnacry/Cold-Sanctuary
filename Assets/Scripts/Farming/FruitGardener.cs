@@ -16,9 +16,12 @@ public class FruitCareStation : MonoBehaviour
 /// <summary>
 /// EL JARDINERO DE LOS FRUTALES (Berón 2026-10-30, docs/jardines-frutales.md): la misión diaria «Ronda de frutales» de la
 /// jornada (<see cref="AreaWork"/>; la reparte la rotación como las demás). Quien la tiene va al punto de cuidados del
-/// primer techo de su ronda (prepara la solución de abono y llena el carro de fertirriego), recorre las macetas en orden,
-/// revisa cada una (<see cref="FruitPlant.Care"/>: riega, abona, trata la plaga) el tiempo real de su ficha
-/// (<see cref="FruitCare.Ficha.minutos"/>, en minutos de juego) y, al acabar un techo, vuela en alfombra al siguiente.
+/// primer techo de su ronda (prepara el abono y mira el cabezal del goteo: filtro, válvula y programador), recorre las macetas
+/// en orden, revisa cada una (<see cref="FruitPlant.Care"/>: el gotero, hojas y envés, abona y trata la plaga; el AGUA la pone
+/// el goteo, Berón 2026-10-31) el tiempo de su ficha (<see cref="FruitCare.Ficha.minutos"/>, en minutos de juego) y, al acabar
+/// un techo, vuela en alfombra al siguiente. Con el tiempo que le queda de su misión (3 h) hace las TAREAS DE LA SEMANA de sus
+/// plantas: polinizar a pincel las que lo necesitan y podar y anotar el crecimiento (<see cref="FruitCare.Polinizar"/>,
+/// <see cref="FruitCare.PodaDias"/>), mientras quepan.
 ///
 /// ¿UNA PERSONA O VARIAS? <see cref="Rounds"/> mide la ronda entera (revisión de cada planta + andar entre macetas + vuelos
 /// + preparar en cada punto) en horas de juego y la parte en rondas de ≤ <see cref="MaxRoundHours"/> h (el bloque de la
@@ -31,11 +34,12 @@ public class FruitGardener : MonoBehaviour
     /// <summary>Lo más larga que puede ser una ronda (h de juego): el bloque de la mañana (las misiones no se parten en la comida).</summary>
     public const float MaxRoundHours = 3f;
     /// <summary>Lo que se apunta a llenar cada ronda (h): deja margen bajo las 3 h de la misión.</summary>
-    public const float RoundTarget = 2.75f;
+    public const float RoundTarget = 2.9f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
-    /// <summary>Minutos de juego para preparar en el punto de cuidados: la solución de abono en la sala principal y llenar el carro en los demás.</summary>
-    public const float PrepMainMinutes = 15f, PrepMinutes = 5f;
+    /// <summary>Minutos de juego para preparar en el punto de cuidados: el abono y medir pH y EC en la sala principal; en los
+    /// demás, mirar el filtro, la válvula y el programador del goteo.</summary>
+    public const float PrepMainMinutes = 5f, PrepMinutes = 2f;
     public const float ReachTimeout = 150f;
 
     public float walkSpeed = 2.6f;
@@ -110,14 +114,14 @@ public class FruitGardener : MonoBehaviour
                     leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p.transform.position;
                 }
             }
-            if (_rounds.Count <= nr || target >= RoundTarget) break;
+            if (_rounds.Count <= nr || target >= MaxRoundHours - 0.05f) break;
         }
         for (int i = 0; i < _rounds.Count; i++)
         {
             Round r = _rounds[i];
             r.id = $"{MissionPrefix}_{i + 1}";
             string roofs = string.Join(", ", r.legs.Select(l => l.building).Distinct());
-            r.title = $"Ronda de frutales {i + 1}/{_rounds.Count}: revisar, regar y abonar las macetas del techo de {roofs} ({r.Plants.Count()} plantas)";
+            r.title = $"Ronda de frutales {i + 1}/{_rounds.Count}: revisar, abonar, polinizar y podar las macetas (con goteo) del techo de {roofs} ({r.Plants.Count()} plantas)";
         }
         Debug.Log($"[Frutales] {FruitPlant.All.Count} macetas en {byRoof.Count} techos · ronda completa {_rounds.Sum(r => r.hours):0.0} h de juego → {_rounds.Count} " +
                   $"{(_rounds.Count == 1 ? "persona" : "personas")} al día (≤ {MaxRoundHours:0} h cada una): " + string.Join(" · ", _rounds.Select(r => $"{r.id} {r.hours:0.0} h [{string.Join("+", r.legs.Select(l => $"{l.building} {l.plants.Count}"))}]")));
@@ -128,12 +132,12 @@ public class FruitGardener : MonoBehaviour
     public static bool IsRound(string missionId) => missionId != null && missionId.StartsWith(MissionPrefix);
 
     /// <summary>Las misiones de la jornada: una por ronda, obligatorias (las plantas en maceta no aguantan un día sin
-    /// revisar), que recorren varios edificios (<c>roams</c>). Horas redondeadas a la media hora de arriba.</summary>
+    /// revisar), que recorren varios edificios (<c>roams</c>), de 3 h: la revisión y, con lo que sobra, las tareas de la semana.</summary>
     public static List<WorkRoster.Mission> Missions()
     {
         var l = new List<WorkRoster.Mission>();
         foreach (Round r in Rounds())
-            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, Mathf.Clamp(Mathf.Ceil(r.hours * 2f) / 2f, 0.5f, MaxRoundHours), true) { roams = true });
+            l.Add(new WorkRoster.Mission("Huerto", r.id, r.title, MaxRoundHours, true) { roams = true });   // 3 h: lo que sobra de la revisión, para polinizar y podar
         return l;
     }
 
@@ -148,7 +152,7 @@ public class FruitGardener : MonoBehaviour
 
     // ── La ronda en el juego ─────────────────────────────────────────────────────────────────────
 
-    enum Phase { ToStation, Prep, ToPlant, Caring, Done }
+    enum Phase { ToStation, Prep, ToPlant, Caring, ToExtra, Extra, Done }
     Phase _phase = Phase.Done;
     Round _round;
     int _leg, _plant;
@@ -159,6 +163,8 @@ public class FruitGardener : MonoBehaviour
     public bool Finished => _phase == Phase.Done && _round != null;
     public int Cared { get; private set; }
     public int Skipped { get; private set; }
+    public int Pollinated { get; private set; }
+    public int Pruned { get; private set; }
     public float RoundSeconds { get; private set; }
     public readonly List<string> roofsDone = new List<string>();
     public string Doing { get; private set; }
@@ -168,7 +174,7 @@ public class FruitGardener : MonoBehaviour
     {
         if (MissionId == missionId && _round != null) return;
         MissionId = missionId; _round = RoundFor(missionId);
-        _leg = 0; _plant = 0; Cared = 0; Skipped = 0; roofsDone.Clear(); RoundSeconds = 0f;
+        _leg = 0; _plant = 0; Cared = 0; Skipped = 0; Pollinated = 0; Pruned = 0; _extras.Clear(); roofsDone.Clear(); RoundSeconds = 0f;
         _startedAt = Time.time;
         if (_round == null || _round.legs.Count == 0) { _phase = Phase.Done; Doing = "Sin frutales que revisar"; return; }
         Begin(Phase.ToStation);
@@ -197,7 +203,7 @@ public class FruitGardener : MonoBehaviour
                 if (Reach(leg.station.StandPoint)) { _until = Time.time + RealSecondsForGameMinutes(leg.station.mainRoom && _leg == 0 ? PrepMainMinutes : PrepMinutes); _phase = Phase.Prep; }
                 break;
             case Phase.Prep:
-                Doing = leg.station != null && leg.station.mainRoom ? "Prepara la solución de abono y mide pH y EC en la sala de cuidados" : $"Llena el carro de fertirriego en el techo de {leg.building}";
+                Doing = leg.station != null && leg.station.mainRoom ? "Prepara el abono, mide pH y EC y mira el cabezal del goteo en la sala de cuidados" : $"Mira el filtro, la válvula y el programador del goteo del techo de {leg.building}";
                 if (Time.time >= _until) Begin(Phase.ToPlant);
                 break;
             case Phase.ToPlant:
@@ -218,7 +224,7 @@ public class FruitGardener : MonoBehaviour
             {
                 FruitPlant p = _plant < leg.plants.Count ? leg.plants[_plant] : null;
                 if (p == null) { NextPlant(false); return; }
-                Doing = $"Revisa el {p.Name}: hojas y envés, humedad, riego y abono";
+                Doing = $"Revisa el {p.Name}: el gotero, hojas y envés, abono y plaga";
                 if (Time.time >= _until)
                 {
                     var (b, a) = p.Care(name);
@@ -228,7 +234,79 @@ public class FruitGardener : MonoBehaviour
                 }
                 break;
             }
+            case Phase.ToExtra:
+            {
+                if (_extras.Count == 0) { EndLeg(); return; }
+                FruitPlant p = _extras[0];
+                if (p == null) { _extras.RemoveAt(0); return; }
+                Doing = $"Va al {p.Name} a {ExtraWhat(p)} (techo de {leg.building})";
+                if (Reach(p.StandPoint(transform.position)))
+                {
+                    Vector3 look = p.transform.position - transform.position; look.y = 0f;
+                    if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.LookRotation(look);
+                    _until = Time.time + RealSecondsForGameMinutes(ExtraMinutes(p)); _phase = Phase.Extra; Hold(true);
+                }
+                break;
+            }
+            case Phase.Extra:
+            {
+                FruitPlant p = _extras.Count > 0 ? _extras[0] : null;
+                if (p == null) { Begin(Phase.ToExtra); return; }
+                Doing = $"{char.ToUpper(ExtraWhat(p)[0])}{ExtraWhat(p).Substring(1)} el {p.Name}";
+                if (Time.time >= _until)
+                {
+                    int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+                    if (p.NeedsPollination(day)) { p.Pollinate(name); Pollinated++; }
+                    if (p.NeedsPruning(day)) { p.Prune(name); Pruned++; }
+                    _extras.RemoveAt(0); Hold(false);
+                    NextExtra();
+                }
+                break;
+            }
         }
+    }
+
+    // ── LAS TAREAS DE LA SEMANA (el tiempo que libera el goteo) ──
+    // Al acabar la revisión de un techo, las plantas de ese tramo a las que hoy les toca polinizar o podar, mientras quepan en
+    // su parte del tiempo que sobra de la misión (3 h menos lo que falta de revisión y vuelos, repartido por macetas).
+    readonly List<FruitPlant> _extras = new List<FruitPlant>();
+    float _extraUntil;
+    static string ExtraWhat(FruitPlant p)
+    {
+        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        bool po = p.NeedsPollination(day), pr = p.NeedsPruning(day);
+        return po && pr ? "polinizar y podar" : po ? "polinizar a pincel" : "podar y anotar el crecimiento de";
+    }
+    static float ExtraMinutes(FruitPlant p)
+    {
+        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        return (p.NeedsPollination(day) ? FruitCare.MinPolinizar : 0f) + (p.NeedsPruning(day) ? FruitCare.MinPodar : 0f);
+    }
+
+    void StartExtras(Leg leg)
+    {
+        _extras.Clear();
+        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        foreach (FruitPlant p in leg.plants) if (p != null && (p.NeedsPollination(day) || p.NeedsPruning(day))) _extras.Add(p);
+        float flightH = FlightSeconds / SecondsPerGameHour, elapsed = (Time.time - _startedAt) / SecondsPerGameHour, rest = 0f; int restPlants = 0;
+        for (int i = _leg + 1; i < _round.legs.Count; i++) { rest += _round.legs[i].hours + (_round.legs[i].building != _round.legs[i - 1].building ? flightH : 0f); restPlants += _round.legs[i].plants.Count; }
+        float spare = Mathf.Max(0f, MaxRoundHours - 0.15f - elapsed - rest);
+        float share = spare * leg.plants.Count / Mathf.Max(1, leg.plants.Count + restPlants);
+        _extraUntil = Time.time + share * SecondsPerGameHour;
+        NextExtra();
+    }
+
+    // La siguiente tarea si cabe (andar hasta ella + su tiempo); si no, se deja para otro día y sigue la ronda.
+    void NextExtra()
+    {
+        if (_extras.Count > 0)
+        {
+            FruitPlant p = _extras[0];
+            float cost = p == null ? 0f : Vector3.Distance(transform.position, p.transform.position) / walkSpeed + RealSecondsForGameMinutes(ExtraMinutes(p));
+            if (p != null && Time.time + cost <= _extraUntil) { Begin(Phase.ToExtra); return; }
+        }
+        _extras.Clear();
+        EndLeg();
     }
 
     // Anda (o vuela) hacia el punto; true al llegar. Con tope: si no llega, lo dice y lo da por imposible.
@@ -245,6 +323,7 @@ public class FruitGardener : MonoBehaviour
             _timedOut = true;
             Debug.LogWarning($"[Frutales] «{name}» no llega a ({to.x:0},{to.y:0},{to.z:0}) en {ReachTimeout:0} s (queda {d:0.0} m): lo salta.");
             if (_phase == Phase.ToStation) { Begin(Phase.ToPlant); return false; }
+            if (_phase == Phase.ToExtra) { if (_extras.Count > 0) _extras.RemoveAt(0); NextExtra(); return false; }
             Skipped++; NextPlant(false);
         }
         return false;
@@ -255,15 +334,19 @@ public class FruitGardener : MonoBehaviour
         Hold(false);
         Leg leg = CurLeg;
         _plant++;
-        if (leg != null && _plant >= leg.plants.Count)
-        {
-            if (!roofsDone.Contains(leg.building)) roofsDone.Add(leg.building);
-            _leg++; _plant = 0;
-            if (CurLeg == null) { Finish(); return; }
-            Begin(CurLeg.building == leg.building ? Phase.ToPlant : Phase.ToStation);
-            return;
-        }
+        if (leg != null && _plant >= leg.plants.Count) { StartExtras(leg); return; }   // revisado el tramo: sus tareas de la semana
         Begin(Phase.ToPlant);
+    }
+
+    // Fin de un tramo (revisión y tareas): al siguiente, en su techo o volando al de al lado.
+    void EndLeg()
+    {
+        Hold(false);
+        Leg leg = CurLeg;
+        if (leg != null && !roofsDone.Contains(leg.building)) roofsDone.Add(leg.building);
+        _leg++; _plant = 0;
+        if (CurLeg == null) { Finish(); return; }
+        Begin(leg != null && CurLeg.building == leg.building ? Phase.ToPlant : Phase.ToStation);
     }
 
     void Finish()
@@ -272,8 +355,8 @@ public class FruitGardener : MonoBehaviour
         _phase = Phase.Done;
         RoundSeconds = Time.time - _startedAt;
         float h = RoundSeconds / SecondsPerGameHour;
-        Doing = $"Ronda terminada: {Cared} frutales revisadas en {h:0.0} h";
-        Debug.Log($"[Frutales] «{name}» termina «{_round.title}»: {Cared} cuidadas, {Skipped} saltadas, techos {string.Join(", ", roofsDone)}; {RoundSeconds:0} s de juego = {h:0.00} h de juego (estimado {_round.hours:0.00} h).");
+        Doing = $"Ronda terminada: {Cared} frutales revisadas, {Pollinated} polinizadas y {Pruned} podadas en {h:0.0} h";
+        Debug.Log($"[Frutales] «{name}» termina «{_round.title}»: {Cared} cuidadas, {Skipped} saltadas, {Pollinated} polinizadas, {Pruned} podadas; techos {string.Join(", ", roofsDone)}; {RoundSeconds:0} s de juego = {h:0.00} h de juego (estimado {_round.hours:0.00} h).");
     }
 
     // La regadera en la mano mientras revisa una maceta.

@@ -173,6 +173,7 @@ zona de trabajo delante.
 - **Servicios: «Sala de cuidados de los frutales · experta: Irosene».**
   - Banco de trasplante con macetas y sustrato.
   - Depósito de fertirriego de 1000 L con dosificador y manguera.
+  - Cabezal del riego por goteo (filtro, electroválvula, regulador de presión y programador).
   - Armario de abonos y correctores (NPK, quelatos).
   - Mesa de diagnóstico: medidor de pH y EC, lupa, trampas cromáticas y cuaderno.
   - Estante de herramientas de poda y regaderas.
@@ -182,7 +183,7 @@ zona de trabajo delante.
   - Carro de cosecha.
   - Escalera de tijera.
 - **Los demás techos: punto de cuidados** con depósito de 500 L con dosificador, carro de fertirriego y armario de
-  herramientas.
+  herramientas, y el cabezal de su goteo.
 
 ### La experta
 
@@ -193,92 +194,110 @@ tras la transformación encaja con el trabajo físico.
   que lo pidió.
 - Lizmibet (médica), su esposo (obras) y Sadhguru (yoga) ya tienen su papel.
 
+### Riego por goteo (decisión de Berón, 2026-10-31)
+
+Con riego a mano, la ronda era de 12,4 h de juego: **5 personas al día** (lo que se midió en Unity, apartado de abajo).
+Berón eligió el **goteo**: el agua llega sola y la ronda solo **revisa y nutre**.
+
+Cada techo tiene su instalación:
+- **Cabezal de riego** en su punto de cuidados (un equipo más de la línea): filtro de anillas, electroválvula, regulador
+  de presión, programador y colector, junto al depósito con dosificador.
+- **Tubería** de polietileno de 16 mm en el suelo (3 cm; se pisa sin problema) que sale del cabezal y va de maceta en
+  maceta en el orden de la ronda, en L, hasta una esquina de cada maceta (`Riego_goteo_<torre>`, `Tuberia_goteo`).
+- En cada maceta, un **gotero autocompensante** sobre el sustrato y su microtubo (dentro de la huella de la maceta: no
+  cambia su caja de mueble ni los 2 m).
+
+En la simulación, `FruitPlant.drip`:
+- el gotero mantiene la maceta al **85 %** de humedad (repone lo que gasta la planta, sin encharcar);
+- el **abono** sigue bajando cada día y la **plaga** sigue subiendo: eso es lo que hace la persona;
+- en la revisión no se riega, salvo que el gotero se haya atascado (si la humedad bajó del 60 %, lo desatasca).
+
 ### El jardinero del día: la ronda
 
 Es una misión de la jornada (`AreaWork.Today` → `FruitGardener.Missions`): **obligatoria** (una maceta no aguanta días
-sin revisar) y **`roams`** (recorre varias torres; la Magnate no la devuelve). La reparte la rotación como las demás:
-cualquiera del personal puede ser el jardinero del día, y la Magnate inicia al que la hace por primera vez.
+sin revisar), de **3 h** y **`roams`** (recorre varias torres; la Magnate no la devuelve). La reparte la rotación como las
+demás: cualquiera del personal puede ser el jardinero del día, y la Magnate inicia al que la hace por primera vez.
 
 Quien la tiene:
-1. Va al punto de cuidados de su primer techo. En la sala principal, prepara la solución de abono y mide pH y EC
-   (15 min). En los demás puntos, llena el carro (5 min).
+1. Va al punto de cuidados de su primer techo. En la sala principal prepara el abono y mide pH y EC (5 min); en los
+   demás, mira el filtro, la válvula y el programador del goteo (2 min).
 2. Recorre las macetas en **zigzag por franjas de 4 m** desde su punto.
-3. En cada maceta, el tiempo de su ficha: **2 min** un árbol o una palmera, **1,5** un arbusto, **1** una herbácea.
+3. En cada maceta, la **revisión** de su ficha: **1 min** un árbol o una palmera, **0,75** un arbusto, **0,5** una herbácea.
+   - Comprueba el gotero (que gotee y no esté atascado).
    - Mira hojas y envés.
-   - Sondea la humedad.
-   - Riega o fertirriega con la lanza.
-   - Trata la plaga.
-   - Lo anota.
-   - `FruitPlant.Care`: agua al 100 %, +50 % de abono si está por debajo del 60 %, plaga −80 %, salud +10 %.
-4. Al acabar un techo, **vuela en alfombra al siguiente**.
+   - Abona y trata la plaga.
+   - `FruitPlant.Care`: +50 % de abono si está por debajo del 60 %, plaga −80 %, salud +10 % (y desatasca el gotero si hace falta).
+4. Al acabar las macetas de un techo, hace allí las **tareas de la semana** (el tiempo que libera el goteo) mientras
+   quepan en su parte del tiempo que sobra de las 3 h:
+   - **polinizar a pincel** (o sacudir, o vibrar) cada 2 días las que lo necesitan: mango, aguacate, guanábana, cacao,
+     almendro, olivo, dátil, frutilla, sandía y mortiño (`FruitCare.Polinizar`; 1 min). Sube el **cuajado** de la planta,
+     que se ve en su etiqueta y baja si nadie poliniza;
+   - **podar y anotar el crecimiento** en el cuaderno de investigación cada 14 días (la frutilla, quitar estolones cada 7;
+     la piña no se poda; `FruitCare.PodaDias`; 3 min). Las podas están repartidas: cada día le toca a una parte.
+   - El tiempo que sobra se reparte por macetas entre lo que queda de la ronda; lo que no cabe, se deja para otro día.
+5. **Vuela en alfombra al techo siguiente.**
 
-Las tareas que no son diarias quedan fuera de la ronda: poda, polinización con pincel, tratamientos de fondo y cosecha.
+Quedan fuera: la cosecha y los tratamientos de fondo.
 
 **El estado se ve**:
 - Tres barras en una esquina de la maceta: azul el agua, ámbar el abono, verde la salud.
-- Una etiqueta: «mango · agua 62 % · abono 48 % · salud 71 % · ¡plaga!».
-- Agua y abono bajan cada día de juego según la ficha. El plátano y el coco gastan mucha agua; el olivo, el dátil y la
-  piña, poca.
+- Una etiqueta: «mango · agua 85 % · abono 48 % · salud 71 % · goteo · cuajado 60 % · ¡plaga!».
+- El abono baja cada día de juego según la ficha; con goteo, el agua se mantiene.
 - La plaga sube 0,12 al día.
-- La salud baja con sed, hambre o plaga y sube con cuidado.
+- La salud baja con hambre o plaga y sube con cuidado.
 
 ### ¿Una persona o varias?
 
 `FruitGardener.Rounds` lo calcula con la escena, en **horas de juego** (1 h de juego = 2,5 min reales). Suma tres cosas:
 - la revisión de cada maceta;
 - lo que se anda entre ellas a 2,6 m/s (un segundo real son 24 s de juego, así que andar cuenta mucho);
-- 45 s reales por vuelo de techo a techo (≈ 0,3 h).
+- 45 s reales por vuelo de techo a techo (≈ 0,3 h) y la preparación en cada punto.
+
+Recorre las macetas por el camino más corto desde la sala (Servicios, Entrenamiento, Producción, Central Nuclear y
+Ciencias) y corta en rondas **equilibradas**: tantas como pida el total entre 2,9 h, cada corte con su vuelo y su
+preparación (si salen más, sube la meta hasta 2,95 h).
+
+**Con riego a mano** (medido en Unity, 2026-10-31): 204 macetas, revisión de 2 / 1,5 / 1 min, **12,4 h → 5 rondas** de
+~2,5 h. Un cuerpo de prueba hizo `jar_frutales_3` (36 macetas, dos techos y el vuelo) en 2,25 h de juego (estimada 2,36 h).
+
+**Con goteo** (simulación de los techos):
 
 | Techo | Revisión | Andar (zigzag) | Total |
 |---|---|---|---|
-| Servicios | 125 min | 408 m ≈ 63 min | 3,1 h |
-| Entrenamiento | 68 min | 247 m ≈ 38 min | 1,8 h |
-| Ciencias | 52 min | 156 m ≈ 24 min | 1,3 h |
-| Producción | 44 min | 132 m ≈ 20 min | 1,1 h |
-| Central Nuclear | 104 min | 370 m ≈ 57 min | 2,7 h |
+| Servicios | 68 min | 416 m ≈ 64 min | 2,2 h |
+| Entrenamiento | 40 min | 254 m ≈ 39 min | 1,3 h |
+| Ciencias | 26 min | 157 m ≈ 24 min | 0,8 h |
+| Producción | 21 min | 124 m ≈ 19 min | 0,7 h |
+| Central Nuclear | 54 min | 364 m ≈ 56 min | 1,8 h |
 
-Con los 5 vuelos, la ronda entera es de **≈ 11,4 h de juego**. Cada persona tiene **5 h** de trabajo, y una misión no se
-parte en la comida: como mucho, el bloque de la mañana de **3 h**. **Una sola persona no llega.**
-
-La ronda se recorre maceta a maceta por el camino más corto desde la sala (Servicios, Entrenamiento, Producción, Central Nuclear y Ciencias) y se corta en rondas EQUILIBRADAS de ≤ 2,75 h (cada corte suma un vuelo y una preparación). Partir por techos enteros daba 7 rondas de 1,3–2,1 h; el llenado seguido da, en Unity (204 macetas, 12,4 h con los cortes):
-
-| Ronda | Horas | Techos |
-|---|---|---|
-| jar_frutales_1 | 2,5 h | Servicios 45 |
-| jar_frutales_2 | 2,6 h | Servicios 14 + Entrenamiento 23 |
-| jar_frutales_3 | 2,4 h | Entrenamiento 15 + Producción 21 |
-| jar_frutales_4 | 2,5 h | Central Nuclear 50 |
-| jar_frutales_5 | 2,4 h | Central Nuclear 12 + Ciencias 24 |
-
-**Medido**: un cuerpo de prueba hizo `jar_frutales_3` (36 macetas, dos techos y el vuelo entre ellos) en **2,25 h de juego** (estimada 2,36 h).
-
-Salen **5 rondas de ~2,5 h**: **cinco personas al día**, cada una con un tramo, y el resto de su jornada para otras
-misiones.
+Con los vuelos y las preparaciones, **≈ 8,4 h de juego → 3 rondas de ~2,8 h**: **tres personas al día**. Cada una tiene
+una misión de 3 h: la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada (2 h) va
+a otras misiones. Andar pesa ahora casi la mitad: con menos macetas por techo, o techos más juntos, bajaría.
 - Se reparte sola: si se añaden o quitan macetas o cambia la duración del día, el reparto se recalcula.
 - En el registro: `[Frutales] … ronda completa X h → N personas`.
-- **La prueba mide** una ronda real y la compara con la estimada.
-
-**Cómo bajarlo, si Berón prefiere menos personas**: con goteo automático por maceta, la revisión diaria baja a mirar y
-ajustar (~1 min). Serían ~3 rondas, y el riego a mano quedaría para las de mucha sed.
+- **La prueba mide** una ronda real.
 
 ## 3. Construcción y prueba
 
 **Construcción**: `SampleSceneBuilder.PlaceRooftopOrchards()` va justo después de los paneles, en `Build`. Planta cada
-techo y su punto de cuidados.
-- Registro de cada techo: `[Frutales] Techo de «X» (A×B m): N macetas…`.
+techo, su punto de cuidados con el cabezal y la red de goteo.
+- Registro de cada techo: `[Frutales] Techo de «X» (A×B m): N macetas…` y `… goteo desde el cabezal … a N macetas`.
 - Si falta alguna especie, avisa.
 
 **Prueba**: `FruitOrchardTest`, grupo 55. Se añade sola al pedir las pruebas.
 1. Cada techo tiene una de cada una de las 19.
 2. 0 pares sin sus 2 m (`FurnitureSpacing.Violations` del techo).
 3. Las macetas quedan a ≥ 2 m de las alfombras.
-4. La sala tiene sus 10 equipos, y cada techo su punto.
-5. Las barras y la etiqueta se ven en cada maceta.
-6. Sin cuidar, el agua y la salud bajan; con la revisión, el bienestar sube (y la salud sigue subiendo al día siguiente).
-7. Cada maceta está en una sola ronda, y cada ronda dura ≤ 3 h.
-8. La jornada las tiene como misiones obligatorias y `roams`.
-9. **Un cuerpo de prueba hace la ronda que cruza más techos (a ×4)**:
-   - revisa ≥ 95 % de sus macetas;
-   - pasa de un techo a otro;
-   - termina dentro de las horas de su misión;
-   - el bienestar medio sube.
+4. Cada techo tiene su goteo: cabezal, tubería y un gotero en cada maceta.
+5. La sala tiene sus 11 equipos (con el cabezal), y cada techo su punto.
+6. Las barras y la etiqueta se ven en cada maceta.
+7. Sin revisar un día, el goteo le da el agua, pero pierde abono y salud; con la revisión, el bienestar sube (y la salud
+   sigue subiendo al día siguiente).
+8. Cada maceta está en una sola ronda, cada ronda dura ≤ 3 h y son **≤ 3 rondas** (unas tres personas).
+9. La jornada las tiene como misiones obligatorias de 3 h y `roams`.
+10. **Un cuerpo de prueba hace la ronda que cruza más techos (a ×4)**:
+    - revisa ≥ 95 % de sus macetas;
+    - pasa de un techo a otro;
+    - termina dentro de las 3 h de su misión;
+    - con lo que sobra, poliniza o poda alguna;
+    - el bienestar medio sube.

@@ -52,12 +52,18 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             float worst = float.MaxValue;
             foreach (FruitPlant p in kv.Value) { Bounds b = Box(p.transform); foreach (Bounds q in pads) worst = Mathf.Min(worst, Gap(b, q)); }
             TestProbe.Check($"techo de {kv.Key}: las macetas a ≥ 2 m de las áreas de alfombras", pads.Count > 0 && worst >= 1.95f, $"la más cerca a {worst:0.00} m de {pads.Count} áreas");
+            // RIEGO POR GOTEO (Berón 2026-10-31): cabezal en su punto, tubería por el techo y un gotero en cada maceta.
+            Transform net = roof.Find("Riego_goteo_" + kv.Key);
+            int pipes = net != null ? net.GetComponentsInChildren<Renderer>().Count(r => r.name == "Tuberia_goteo") : 0;
+            int drips = kv.Value.Count(p => p.drip && p.transform.Find("Gotero") != null);
+            bool headOk = FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None).Any(s => s.building == kv.Key && s.transform.Find("Cabezal_riego") != null);
+            TestProbe.Check($"techo de {kv.Key}: riego por goteo (cabezal, tubería y un gotero por maceta)", headOk && pipes >= kv.Value.Count && drips == kv.Value.Count, $"cabezal {(headOk ? "sí" : "no")}, {pipes} tramos, {drips}/{kv.Value.Count} goteros");
         }
 
         // ── 2. SALA DE CUIDADOS ──
         var stations = FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None);
         FruitCareStation mainRoom = stations.FirstOrDefault(s => s.mainRoom);
-        string[] needed = { "Banco_trasplante", "Deposito_fertirriego", "Armario_abonos", "Mesa_diagnostico", "Estante_herramientas", "Compostador", "Caja_abejorros", "Pulverizador_mochila", "Carro_cosecha", "Escalera_tijera" };
+        string[] needed = { "Banco_trasplante", "Deposito_fertirriego", "Armario_abonos", "Mesa_diagnostico", "Estante_herramientas", "Compostador", "Caja_abejorros", "Pulverizador_mochila", "Carro_cosecha", "Escalera_tijera", "Cabezal_riego" };
         var missing = mainRoom == null ? needed.ToList() : needed.Where(n => mainRoom.transform.Find(n) == null).ToList();
         TestProbe.Check("la sala de cuidados de la experta (Servicios) tiene todo su equipo", mainRoom != null && missing.Count == 0, mainRoom == null ? "no hay sala" : missing.Count == 0 ? $"{needed.Length} equipos en {mainRoom.building}" : "faltan " + string.Join(", ", missing));
         var noStation = byRoof.Keys.Where(b => !stations.Any(s => s.building == b)).ToList();
@@ -72,10 +78,11 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         FruitPlant probe = plants[0];
         float w0 = probe.water, h0 = probe.health;
         probe.water = 0.3f; probe.nutrients = 0.25f; probe.pests = 0.5f; probe.health = 0.5f;
-        probe.Tick(1f);   // un día sin cuidar
-        TestProbe.Check($"sin cuidar un día, el {probe.Name} pierde agua y salud", probe.water < 0.3f && probe.health < 0.5f, $"agua {probe.water:0.00}, salud {probe.health:0.00}");
+        float n0 = probe.nutrients;
+        probe.Tick(1f);   // un día sin revisar
+        TestProbe.Check($"sin revisar un día, el goteo le da el agua al {probe.Name}, pero pierde abono y salud", probe.drip && probe.water >= 0.6f && probe.nutrients < n0 && probe.health < 0.5f, $"agua {probe.water:0.00}, abono {probe.nutrients:0.00}, salud {probe.health:0.00}");
         var (before, after) = probe.Care("prueba");
-        TestProbe.Check($"tras la revisión diaria, el bienestar del {probe.Name} sube", after > before + 0.2f && probe.water >= 0.99f, $"{before * 100f:0}% → {after * 100f:0}%");
+        TestProbe.Check($"tras la revisión diaria, el bienestar del {probe.Name} sube", after > before + 0.15f && probe.nutrients > 0.3f, $"{before * 100f:0}% → {after * 100f:0}%");
         float hc = probe.health; probe.Tick(1f);
         TestProbe.Check("cuidada, al día siguiente su salud sigue subiendo", probe.health > hc, $"salud {hc:0.00} → {probe.health:0.00}");
 
@@ -83,10 +90,11 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         var rounds = FruitGardener.Rounds();
         var inRounds = rounds.SelectMany(r => r.Plants).ToList();
         TestProbe.Check("cada maceta está en una sola ronda", inRounds.Count == plants.Count && inRounds.Distinct().Count() == plants.Count, $"{inRounds.Count} en rondas de {plants.Count}");
+        TestProbe.Check("con el goteo, la ronda la hacen unas 3 personas al día", rounds.Count <= 3, $"{rounds.Count} rondas, total {rounds.Sum(r => r.hours):0.0} h de juego");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
             $"{rounds.Count} rondas: " + string.Join(" · ", rounds.Select(r => $"{r.hours:0.0} h")) + $"; total {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s)");
         var today = AreaWork.Today(0, ConstructionProject.All).Where(m => FruitGardener.IsRound(m.id)).ToList();
-        TestProbe.Check("la jornada tiene cada ronda como misión obligatoria que recorre los edificios", today.Count == rounds.Count && today.All(m => m.mandatory && m.roams && m.hours <= FruitGardener.MaxRoundHours),
+        TestProbe.Check("la jornada tiene cada ronda como misión obligatoria que recorre los edificios", today.Count == rounds.Count && today.All(m => m.mandatory && m.roams && Mathf.Approximately(m.hours, FruitGardener.MaxRoundHours)),
             string.Join("; ", today.Select(m => $"{m.id} {m.hours:0.#} h")));
 
         // ── 6. EL JARDINERO ──
@@ -112,7 +120,8 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         float wellAfter = rp.Average(p => p.Wellbeing);
         TestProbe.Check("el bienestar medio de sus plantas sube tras la ronda", wellAfter > wellBefore + 0.15f, $"{wellBefore * 100f:0}% → {wellAfter * 100f:0}%");
         float gameH = g.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
-        TestProbe.Check("la ronda medida cabe en las horas de su misión", g.Finished && gameH <= Mathf.Ceil(round.hours * 2f) / 2f + 0.25f, $"medida {gameH:0.00} h de juego, estimada {round.hours:0.00} h");
+        TestProbe.Check("la ronda medida cabe en las horas de su misión", g.Finished && gameH <= FruitGardener.MaxRoundHours + 0.25f, $"medida {gameH:0.00} h de juego (revisión estimada {round.hours:0.00} h; el resto, tareas de la semana)");
+        TestProbe.Check("con lo que sobra de las 3 h, poliniza y poda (tareas de la semana)", g.Pollinated + g.Pruned > 0, $"{g.Pollinated} polinizadas, {g.Pruned} podadas");
         Debug.Log($"[Frutales] Medida: «{round.id}» {rp.Count} macetas en {roofsIn} techos: {g.RoundSeconds:0} s de juego = {gameH:0.00} h (estimada {round.hours:0.00} h); total del día {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s).");
         Destroy(body);
         probe.water = Mathf.Max(probe.water, w0); probe.health = Mathf.Max(probe.health, h0);

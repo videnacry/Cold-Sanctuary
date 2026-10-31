@@ -4,11 +4,12 @@ using UnityEngine;
 /// <summary>
 /// UNA FRUTAL EN SU MACETA del techo de una torre (docs/jardines-frutales.md). Lleva su ESTADO de cuidado, que se ve en
 /// tres barras sobre el borde de la maceta (azul: agua · ámbar: abono · verde: salud) y en su etiqueta:
-/// - el AGUA y el ABONO bajan cada día de juego según su ficha (<see cref="FruitCare.Ficha.aguaDia"/>, <c>abonoDia</c>);
+/// - el AGUA la repone el GOTERO (<see cref="drip"/>, al 85 %; Berón 2026-10-31) y el ABONO baja cada día de juego según su ficha (<see cref="FruitCare.Ficha.aguaDia"/>, <c>abonoDia</c>);
 /// - la PLAGA sube poco a poco (la revisión diaria la descubre y la trata);
 /// - la SALUD sube si tiene agua, abono y pocas plagas, y baja con sed, hambre o plaga.
 /// El jardinero de la ronda (<see cref="FruitGardener"/>) la revisa con <see cref="Care"/>: riega o fertirriega hasta
-/// llenar, repone el abono si hace falta y limpia la plaga. <see cref="Wellbeing"/> resume las cuatro cosas (0–1).
+/// llenar (con goteo, solo si el gotero se atascó), repone el abono si hace falta y limpia la plaga; con el tiempo que sobra,
+/// poliniza a pincel (<see cref="Pollinate"/>: sube el cuajado) y poda y anota su crecimiento (<see cref="Prune"/>). <see cref="Wellbeing"/> resume las cuatro cosas (0–1).
 /// La maceta (raíz con BoxCollider, sin renderer) es un MUEBLE para <see cref="FurnitureSpacing"/>: guarda sus 2 m.
 /// </summary>
 public class FruitPlant : MonoBehaviour
@@ -23,6 +24,12 @@ public class FruitPlant : MonoBehaviour
     public int lastCareDay = -1;
     public string lastCaredBy;
     public int timesCared;
+    [Tooltip("RIEGO POR GOTEO (Berón 2026-10-31): el agua le llega sola desde el cabezal de su techo; la ronda ya no riega, revisa y abona.")]
+    public bool drip;
+    [Tooltip("Cuajado de la flor (0–1): sube al polinizar a mano; baja si nadie poliniza las que lo necesitan.")]
+    [Range(0f, 1f)] public float fruitSet = 0.5f;
+    public int lastPollinatedDay = -99, lastPrunedDay = -99;
+    public int timesPollinated, timesPruned;
 
     public static readonly List<FruitPlant> All = new List<FruitPlant>();
     void OnEnable() { All.Add(this); }
@@ -73,6 +80,8 @@ public class FruitPlant : MonoBehaviour
         FruitCare.Ficha f = Ficha;
         float aw = f != null ? f.aguaDia : 0.35f, an = f != null ? f.abonoDia : 0.1f;
         water = Mathf.Clamp01(water - aw * days);
+        if (drip) water = Mathf.MoveTowards(water, DripLevel, (aw + 2f) * days);   // el gotero repone lo que gasta (y algo más)
+        if (FruitCare.Polinizar(kind)) fruitSet = Mathf.Clamp01(fruitSet - 0.08f * days);
         nutrients = Mathf.Clamp01(nutrients - an * days);
         pests = Mathf.Clamp01(pests + 0.12f * days);
         bool stressed = water < 0.25f || nutrients < 0.2f || pests > 0.6f;
@@ -85,7 +94,7 @@ public class FruitPlant : MonoBehaviour
     public (float before, float after) Care(string who)
     {
         float before = Wellbeing;
-        water = 1f;
+        if (!drip || water < 0.6f) water = drip ? DripLevel : 1f;   // con goteo, solo si el gotero se atascó (lo desatasca)
         if (nutrients < 0.6f) nutrients = Mathf.Min(1f, nutrients + 0.5f);
         pests = Mathf.Max(0f, pests - 0.8f);
         health = Mathf.Min(1f, health + 0.1f);
@@ -93,6 +102,19 @@ public class FruitPlant : MonoBehaviour
         Refresh();
         return (before, Wellbeing);
     }
+
+    /// <summary>Hasta dónde mantiene el gotero la humedad de la maceta (sin encharcar: 85 %).</summary>
+    public const float DripLevel = 0.85f;
+
+    /// <summary>¿Le toca hoy polinizar a pincel? (las que lo necesitan, cada 2 días)</summary>
+    public bool NeedsPollination(int day) => FruitCare.Polinizar(kind) && day - lastPollinatedDay >= 2;
+    /// <summary>¿Le toca hoy la poda (y anotar su crecimiento)?</summary>
+    public bool NeedsPruning(int day) { int d = FruitCare.PodaDias(kind); return d > 0 && day - lastPrunedDay >= d; }
+
+    /// <summary>Polinizar a pincel (o sacudir, o vibrar): el cuajado sube.</summary>
+    public void Pollinate(string who) { fruitSet = Mathf.Min(1f, fruitSet + 0.35f); lastPollinatedDay = Today; timesPollinated++; lastCaredBy = who; Refresh(); }
+    /// <summary>Podar (chupones, ramas cruzadas, estolones) y anotar el crecimiento en el cuaderno: la salud sube un poco.</summary>
+    public void Prune(string who) { health = Mathf.Min(1f, health + 0.05f); pests = Mathf.Max(0f, pests - 0.1f); lastPrunedDay = Today; timesPruned++; lastCaredBy = who; Refresh(); }
 
     // Tres barras sobre un poste en una esquina de la maceta (dentro de su huella: no cambian la caja del mueble).
     void BuildBars()
@@ -129,7 +151,7 @@ public class FruitPlant : MonoBehaviour
     void Refresh()
     {
         SetBar(_w, water); SetBar(_n, nutrients); SetBar(_h, health);
-        if (_label != null) _label.text = $"{Name} · agua {water * 100f:0}% · abono {nutrients * 100f:0}% · salud {health * 100f:0}%{(pests > 0.5f ? " · ¡plaga!" : "")}";
+        if (_label != null) _label.text = $"{Name} · agua {water * 100f:0}% · abono {nutrients * 100f:0}% · salud {health * 100f:0}%{(drip ? " · goteo" : "")}{(FruitCare.Polinizar(kind) ? $" · cuajado {fruitSet * 100f:0}%" : "")}{(pests > 0.5f ? " · ¡plaga!" : "")}";
     }
 
     /// <summary>Las frutales de un techo (por su torre), en el orden de plantación.</summary>

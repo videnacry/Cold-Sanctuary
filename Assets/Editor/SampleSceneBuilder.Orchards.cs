@@ -131,7 +131,15 @@ public static partial class SampleSceneBuilder
             float xa = roof.InverseTransformPoint(a.transform.position).x, xb = roof.InverseTransformPoint(b.transform.position).x;
             return (ba % 2 == 0 ? 1 : -1) * xa.CompareTo(xb);
         });
-        for (int i = 0; i < all.Count; i++) all[i].order = i;
+        for (int i = 0; i < all.Count; i++)
+        {
+            FruitPlant fp = all[i];
+            fp.order = i;
+            int poda = FruitCare.PodaDias(fp.kind);
+            if (poda > 0) fp.lastPrunedDay = -1 - i % poda;   // las podas repartidas: cada día le toca a una parte
+            fp.lastPollinatedDay = -1 - i % 2;
+        }
+        BuildDrip(roof, station, all, bname);
         Debug.Log($"[Frutales] Techo de «{bname}» ({size.x:0}×{size.y:0} m): {n} macetas en {rounds - 1} vueltas" + (shrink < 1f ? $", copas podadas al {shrink * 100f:0} %" : "") +
                   (missing.Count > 0 ? $"; en la primera vuelta NO cupieron: {string.Join(", ", missing)}" : "; las " + FruitCare.All.Length + " especies") + ".");
         if (missing.Count > 0) Debug.LogWarning($"[Frutales] Techo de «{bname}»: faltan especies ({string.Join(", ", missing)}): amplía el techo o aparta algo.");
@@ -322,6 +330,7 @@ public static partial class SampleSceneBuilder
                 KitchenProps.C(t, new Vector3(0.24f, 0.66f, 0f), new Vector3(0.45f, 0.26f, 0.5f), green, 0f, "Caja_cosecha");
                 KitchenProps.C(t, new Vector3(0f, 0.9f, -0.3f), new Vector3(0.8f, 0.04f, 0.04f), dark, 0f, "Asa");
             }));
+            items.Add(("Cabezal_riego", 1.0f, t => DripHead(t, true)));   // el goteo de este techo (Berón 2026-10-31)
             items.Add(("Escalera_tijera", 0.7f, t =>
             {
                 KitchenProps.C(t, new Vector3(0f, 0.9f, -0.15f), new Vector3(0.55f, 1.8f, 0.05f), steel, new Vector3(-10f, 0f, 0f), "Tramo");
@@ -341,6 +350,7 @@ public static partial class SampleSceneBuilder
                 foreach (float x in new[] { -0.4f, 0.4f }) KitchenProps.C(t, new Vector3(x, 0.12f, 0f), new Vector3(0.1f, 0.24f, 0.45f), dark, 0f, "Rueda");
                 KitchenProps.C(t, new Vector3(0f, 0.75f, 0.2f), new Vector3(0.5f, 0.1f, 0.1f), dark, 0f, "Enrollador_manguera");
             }));
+            items.Add(("Cabezal_riego", 1.0f, t => DripHead(t, false)));
             items.Add(("Armario_herramientas", 1.0f, t =>
             {
                 KitchenProps.C(t, new Vector3(0f, 0.9f, 0f), new Vector3(1.0f, 1.8f, 0.55f), new Color(0.82f, 0.84f, 0.78f));
@@ -358,5 +368,52 @@ public static partial class SampleSceneBuilder
             x0 += w + gap;
         }
         return len;
+    }
+
+    // ── RIEGO POR GOTEO (Berón 2026-10-31, docs/jardines-frutales.md) ──────────────────────────────
+    // CABEZAL de cada techo: filtro de anillas, electroválvula, regulador de presión y programador, sobre el depósito de su
+    // punto de cuidados. De él sale la TUBERÍA (polietileno de 16 mm, en el suelo: 3 cm, se pisa) que va de maceta en maceta en
+    // el orden de la ronda, y en cada maceta un GOTERO autocompensante con su anillo sobre el sustrato.
+    static void DripHead(Transform t, bool main)
+    {
+        Color dark = KitchenProps.DarkSteel, blue = new Color(0.3f, 0.5f, 0.85f), black = KitchenProps.Black, green = new Color(0.3f, 0.65f, 0.35f);
+        KitchenProps.C(t, new Vector3(0f, 0.5f, -0.1f), new Vector3(0.9f, 1.0f, 0.12f), new Color(0.82f, 0.84f, 0.78f), 0f, "Panel");
+        KitchenProps.C(t, new Vector3(-0.28f, 0.5f, 0.05f), new Vector3(0.14f, 0.32f, 0.14f), blue, 0f, "Filtro_anillas");
+        KitchenProps.C(t, new Vector3(0f, 0.42f, 0.05f), new Vector3(0.18f, 0.14f, 0.14f), dark, 0f, "Electrovalvula");
+        KitchenProps.C(t, new Vector3(0.22f, 0.42f, 0.05f), new Vector3(0.1f, 0.12f, 0.12f), dark, 0f, "Regulador_presion");
+        KitchenProps.C(t, new Vector3(0.2f, 0.82f, 0.0f), new Vector3(0.3f, 0.22f, 0.08f), main ? green : KitchenProps.White, 0f, "Programador_riego");
+        KitchenProps.C(t, new Vector3(0f, 0.2f, 0.05f), new Vector3(0.8f, 0.05f, 0.05f), black, 0f, "Colector");
+    }
+
+    static void BuildDrip(Transform roof, Transform station, List<FruitPlant> plants, string bname)
+    {
+        Transform net = new GameObject("Riego_goteo_" + bname).transform;
+        net.SetParent(roof, false);
+        Color tube = new Color(0.12f, 0.12f, 0.13f);
+        Transform head = station != null ? station.Find("Cabezal_riego") : null;
+        Vector3 from = head != null ? roof.InverseTransformPoint(head.position) + new Vector3(0f, 0f, 0f) : Vector3.zero;
+        if (head != null) from += roof.InverseTransformDirection(head.forward) * 0.6f;   // sale por delante del cabezal
+        int segs = 0;
+        void Pipe(Vector3 a, Vector3 b)   // tramo recto en el suelo (marco del techo)
+        {
+            Vector3 d = b - a; d.y = 0f; float len = d.magnitude; if (len < 0.05f) return;
+            Transform s = KitchenProps.C(net, (a + b) * 0.5f + new Vector3(0f, 0.035f - (a + b).y * 0.5f, 0f), new Vector3(0.035f, 0.03f, len + 0.035f), tube,
+                Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg, "Tuberia_goteo");
+            segs++;
+        }
+        foreach (FruitPlant p in plants)
+        {
+            p.drip = true;
+            Vector3 pot = p.PotSize, at = roof.InverseTransformPoint(p.transform.position);
+            // Llega a la esquina de la maceta por el lado del tramo anterior (en L: primero en X, luego en Z) y sube al gotero.
+            Vector3 corner = at + new Vector3(Mathf.Sign(from.x - at.x) * (pot.x * 0.5f + 0.05f), 0f, Mathf.Sign(from.z - at.z) * (pot.z * 0.5f + 0.05f));
+            Vector3 elbow = new Vector3(corner.x, 0f, from.z);
+            Pipe(from, elbow); Pipe(elbow, corner);
+            from = corner;
+            // El gotero (dentro de la huella de la maceta: no cambia su caja de mueble) y su microtubo.
+            KitchenProps.C(p.transform, new Vector3(-pot.x * 0.25f, pot.y + 0.04f, pot.z * 0.25f), new Vector3(0.06f, 0.05f, 0.06f), new Color(0.15f, 0.55f, 0.25f), 0f, "Gotero");
+            KitchenProps.C(p.transform, new Vector3(-pot.x * 0.25f, pot.y * 0.5f + 0.02f, pot.z * 0.5f + 0.0f), new Vector3(0.02f, pot.y, 0.02f), tube, 0f, "Microtubo");
+        }
+        Debug.Log($"[Frutales] Techo de «{bname}»: goteo desde el cabezal de su punto de cuidados a {plants.Count} macetas ({segs} tramos de tubería).");
     }
 }
