@@ -105,6 +105,16 @@ public class MicroEra : MonoBehaviour
         LessonPrompt.Show($"{place} · {date} · {h:00}:{m:00} · sobre la plataforma: {platform}", null, 8f);
     }
 
-    void OnEnable() { Current = this; }
+    void OnEnable() { Current = this; _guardAt = 0f; }
+
+    // EL BLOQUEO DE HUMANOS (InsectOnly): en un microcosmos solo hay insectos. Al cargar y cada 2 s, quien aparezca con cuerpo
+    // humano en esta escena (personajes, spawners, copias de la jornada) se convierte en su insecto.
+    float _guardAt;
+    void Update()
+    {
+        if (Time.time < _guardAt) return;
+        _guardAt = Time.time + 2f;
+        InsectOnly.EnforceScene(gameObject.scene);
+    }
     void OnDisable() { if (Current == this) Current = null; }
 }
