@@ -24,19 +24,12 @@ public static partial class StorySceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias: científicos e históricos (12)")]
     public static void BuildScientists() { foreach (string sc in ScientistScenes) { try { BuildOne(sc); } catch (System.Exception e) { Debug.LogWarning($"[Historias] {sc}: {e.Message}"); } } }
 
-    // Un personaje histórico: su insecto (InsectCast o <paramref name="species"/>), erguido a su estatura, con cara humana, pelo
-    // y su SEXO real (AreaMicrocosmos.Folk lo sortea por el nombre), su linaje y su rótulo.
+    // Un personaje histórico: un insecto-humano de AreaMicrocosmos.Folk (su insecto de InsectCast o <paramref name="species"/>,
+    // erguido a su estatura, con cara, pelo, linaje y rótulo) con su SEXO real, de cara a la entrada (−z).
     static GameObject Who(Transform t, string name, Vector3 pos, bool female, float h = 1.75f, string species = null)
     {
-        var g = new GameObject(name);
-        g.transform.SetParent(t, false); g.transform.localPosition = pos;
-        g.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // de cara a la entrada (−z)
-        var col = g.AddComponent<CapsuleCollider>(); col.height = h; col.radius = 0.35f; col.center = Vector3.up * h * 0.5f;
-        var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f; ag.height = h; ag.speed = 3f; ag.angularSpeed = 360f;
-        string sp = species ?? InsectCast.SpeciesFor(name);
-        CubeInsect.DressFolk(g, sp, h, name, female);
-        var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = female;
-        var wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = h + 0.4f;
+        GameObject g = AreaMicrocosmos.Folk(t, name, pos, h, 1f, species, null, female);
+        g.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);
         return g;
     }
     static GameObject Modern(Transform t, string name, Vector3 pos, bool female, Color coat, CubeInsect.Hat hat = CubeInsect.Hat.None, float h = 1.75f, string species = null)
