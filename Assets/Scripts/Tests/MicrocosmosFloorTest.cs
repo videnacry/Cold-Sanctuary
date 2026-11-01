@@ -143,5 +143,91 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"{scene}: hay fauna encima de los muebles gigantes", f.faunaOnTops > 0, $"{f.faunaOnTops} bichos puestos encima");
         }
         else TestProbe.Check($"{scene}: el piso tiene muebles con cara de arriba que poblar (o ninguno, y se dice)", true, "ningún mueble a nivel de ≥ 6 m²");
+
+        // (6) EL PUEBLO (eras avanzadas, regla 5 de docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01: «en Bruce Lee las flores
+        //     gigantes tapan el pueblo; en Berna el musgo son cubos verdes enormes»): la flora es la de un pueblo humano — nada más
+        //     alto que un árbol de calle (25 m), nada flotando, nada plantado en una calle ni en un solar — y hay animales.
+        if (f.town && flora != null) TownChecks(f, scene, rect, flora, story);
+
+        // (7) LAS MISIONES DE COMPASIÓN: desde donde empieza cada refugiado se llega a cada refugio y escondite andando por el NavMesh
+        //     y cruzando los pasos que admiten acompañantes (la puerta del gueto no: el pase era solo de Irena).
+        if (f.GetComponentInChildren<CompassionMission>(true) != null) CompassionPaths(f, scene);
+    }
+
+    void TownChecks(MicroFloor f, string scene, Bounds rect, Transform flora, Transform story)
+    {
+        int tall = 0, floating = 0, onTown = 0, plants = 0; string firstTall = "", firstFloat = "", firstOn = "";
+        var lots = new List<Bounds>(); var streets = new List<Bounds>();
+        if (story != null)
+        {
+            foreach (AreaFunctionSite s in story.GetComponentsInChildren<AreaFunctionSite>(true))
+            {
+                bool any = false; Bounds b = default;
+                foreach (Renderer r in s.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (r.GetComponentInParent<CubeInsect>(true) != null) continue;
+                    if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+                }
+                if (any) lots.Add(b);
+            }
+            foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
+                for (Transform p = r.transform; p != null && p != story; p = p.parent) if (p.name.StartsWith("Calle")) { streets.Add(r.bounds); break; }
+        }
+        foreach (Transform p in flora)
+        {
+            bool any = false; Bounds b = default;
+            foreach (Renderer r in p.GetComponentsInChildren<Renderer>()) { if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+            if (!any) continue;
+            plants++;
+            if (b.max.y - rect.center.y > 25f) { tall++; if (firstTall.Length == 0) firstTall = $" (p. ej. «{p.name}», {b.max.y - rect.center.y:0} m)"; }
+            if (b.min.y - rect.center.y > 1f) { floating++; if (firstFloat.Length == 0) firstFloat = $" (p. ej. «{p.name}» a {b.min.y - rect.center.y:0.0} m del suelo)"; }
+            Vector3 at = p.position; bool on = false;
+            foreach (Bounds l in lots) if (at.x > l.min.x && at.x < l.max.x && at.z > l.min.z && at.z < l.max.z) { on = true; break; }
+            if (!on) foreach (Bounds s in streets) if (at.x > s.min.x && at.x < s.max.x && at.z > s.min.z && at.z < s.max.z) { on = true; break; }
+            if (on) { onTown++; if (firstOn.Length == 0) firstOn = $" (p. ej. «{p.name}» en {at.x - rect.center.x:0}, {at.z - rect.center.z:0})"; }
+        }
+        TestProbe.Check($"{scene}: pueblo — la flora a escala de pueblo (≤ 25 m)", tall == 0, $"{tall}/{plants} plantas más altas{firstTall}");
+        TestProbe.Check($"{scene}: pueblo — ninguna planta flota", floating == 0, $"{floating}/{plants} flotando{firstFloat}");
+        TestProbe.Check($"{scene}: pueblo — ninguna planta en una calle ni en un solar", onTown == 0, $"{onTown}/{plants} en {streets.Count} tramos de calle y {lots.Count} solares{firstOn}");
+        TestProbe.Check($"{scene}: pueblo — tiene sus animales (los del pueblo o los del lugar)", f.faunaInside > 0, $"{f.faunaInside} animales");
+    }
+
+    void CompassionPaths(MicroFloor f, string scene)
+    {
+        Refugee[] refugees = f.GetComponentsInChildren<Refugee>(true);
+        Passage[] passages = f.GetComponentsInChildren<Passage>(true);
+        var goals = new List<(string name, Vector3 at)>();
+        foreach (SafeHaven h in f.GetComponentsInChildren<SafeHaven>(true)) goals.Add(($"refugio «{h.label}»", h.transform.position));
+        foreach (HidingPlace h in f.GetComponentsInChildren<HidingPlace>(true)) goals.Add(($"escondite «{h.label}»", h.transform.position));
+        // Los nodos: los refugiados, la entrada y la salida de cada paso, y cada destino. Las aristas: un camino COMPLETO del NavMesh
+        // entre dos nodos, o el propio paso (entrada → salida) si deja cruzar acompañantes.
+        var pts = new List<Vector3>();
+        foreach (Refugee r in refugees) pts.Add(r.transform.position);
+        int pass0 = pts.Count;
+        foreach (Passage p in passages) { pts.Add(p.transform.position); pts.Add(p.exit != null ? p.exit.position : p.transform.position); }
+        int goal0 = pts.Count;
+        foreach (var g in goals) pts.Add(g.at);
+        int n = pts.Count;
+        var on = new bool[n]; var snapped = new Vector3[n];
+        for (int i = 0; i < n; i++) { on[i] = UnityEngine.AI.NavMesh.SamplePosition(pts[i], out UnityEngine.AI.NavMeshHit h, 4f, UnityEngine.AI.NavMesh.AllAreas); snapped[i] = on[i] ? h.position : pts[i]; }
+        var path = new UnityEngine.AI.NavMeshPath();
+        var link = new bool[n, n];
+        for (int i = 0; i < n; i++)
+            for (int j = i + 1; j < n; j++)
+                if (on[i] && on[j] && UnityEngine.AI.NavMesh.CalculatePath(snapped[i], snapped[j], UnityEngine.AI.NavMesh.AllAreas, path) && path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete)
+                    link[i, j] = link[j, i] = true;
+        for (int k = 0; k < passages.Length; k++) if (!passages[k].alone && passages[k].exit != null) link[pass0 + 2 * k, pass0 + 2 * k + 1] = true;
+        int bad = 0; string first = "";
+        for (int r = 0; r < refugees.Length; r++)
+        {
+            var seen = new bool[n]; var q = new Queue<int>(); q.Enqueue(r); seen[r] = true;
+            while (q.Count > 0) { int a = q.Dequeue(); for (int b = 0; b < n; b++) if (link[a, b] && !seen[b]) { seen[b] = true; q.Enqueue(b); } }
+            for (int g = 0; g < goals.Count; g++)
+                if (!seen[goal0 + g]) { bad++; if (first.Length == 0) first = $" (p. ej. {refugees[r].displayName} → {goals[g].name})"; }
+        }
+        int offMesh = 0; for (int i = 0; i < n; i++) if (!on[i]) offMesh++;
+        TestProbe.Check($"{scene}: compasión — cada refugiado llega a cada refugio y escondite (andando y por los pasos)", bad == 0 && refugees.Length > 0 && goals.Count > 0,
+                        $"{refugees.Length} refugiados, {passages.Length} pasos, {goals.Count} destinos; {bad} sin camino{first}; {offMesh} puntos fuera del NavMesh");
+        TestProbe.Check($"{scene}: compasión — tiene al menos un paso (Passage) con salida", System.Array.Exists(passages, p => p.exit != null), $"{passages.Length} pasos");
     }
 }

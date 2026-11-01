@@ -18,6 +18,8 @@ public class MicroFloor : MonoBehaviour
     public int floraInside, faunaInside, charactersInside, outside;
     [Tooltip("Al construirlo: caras de arriba de muebles gigantes pobladas (camas, encimeras, mesas, máquinas…), y las plantas y bichos que se pusieron encima.")]
     public int furnitureTops, floraOnTops, faunaOnTops;
+    [Tooltip("Era avanzada con su pueblo en el piso (regla 5 de docs/microcosmos-reglas-edificacion.md): la flora es a escala de pueblo y no pisa calles ni solares.")]
+    public bool town;
 
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };

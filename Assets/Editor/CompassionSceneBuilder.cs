@@ -59,6 +59,12 @@ public static class CompassionSceneBuilder
         var pf = print.gameObject.AddComponent<PaperForge>(); pf.label = "el taller de Oscar"; pf.blanks = 6;
         Transform swiss = Sign(t, "Camino a Suiza (con la Cimade)", new Vector3(24f, 0f, -24f));
         swiss.gameObject.AddComponent<SafeHaven>().label = "el camino a Suiza";
+        // EL PASO de Le Chambon (2026-11-01: la simulación no tenía ninguno): el TREN DE LA CIMADE. Las monitoras de la Cimade
+        // (Madeleine Barot, Mireille Philip) llevaban a pequeños grupos desde la estación del plateau, en tren y luego a pie, hasta la
+        // frontera suiza cerca de Ginebra (USHMM, «Le Chambon-sur-Lignon»; Yad Vashem, «Mireille Philip»). Su entrada, al otro lado
+        // de la estación (lejos de donde esperan los recién llegados: si no, E cruzaba en vez de decirles «sígueme»); su salida,
+        // junto al camino a Suiza. Caben 3 por viaje y el tren tarda 20 s en volver.
+        PassagePair(t, "el tren de la Cimade (a la frontera suiza)", new Vector3(-31f, 0f, 22f), new Vector3(20f, 0f, -27f), 3, 20f, false);
 
         int n = 0;
         n += Person(t, "André Trocmé", new Vector3(-2f, 0f, 16f), new Color(0.15f, 0.15f, 0.18f), Hat.Brimmed);
@@ -209,7 +215,10 @@ public static class CompassionSceneBuilder
     {
         Transform b = new GameObject(label).transform; b.SetParent(parent, false); b.localPosition = pos;
         Vector3 flat = new Vector3(-pos.x, 0f, -pos.z);
-        if (flat.sqrMagnitude > 0.01f) b.localRotation = Quaternion.LookRotation(flat.normalized);   // la puerta mira a la plaza
+        // La puerta mira a la plaza, A ESCUADRA (0/90/180/270°, como las calles): girado en ángulo, sus muebles (CivicBuilder.Porch,
+        // 2 m de paso entre ellos en sus locales) ocupan cajas en el mundo más anchas, y MicroBuildRules.Validate, que mide el paso
+        // en el mundo, daba 0,67–1,93 m entre la cocina, el banco, la mesa, el retrete y el lavabo (Le Chambon, Varsovia; 2026-11-01).
+        if (flat.sqrMagnitude > 0.01f) b.localRotation = Quaternion.Euler(0f, Mathf.Round(Quaternion.LookRotation(flat.normalized).eulerAngles.y / 90f) * 90f, 0f);
         Material wm = AreaMicrocosmos.Mat($"Compasion_Pared_{ColorUtility.ToHtmlStringRGB(walls)}", walls);
         Material rm = AreaMicrocosmos.Mat($"Compasion_Tejado_{ColorUtility.ToHtmlStringRGB(roofColor)}", roofColor);
         Material dark = AreaMicrocosmos.Mat("Compasion_Puerta", new Color(0.25f, 0.17f, 0.12f)), glass = AreaMicrocosmos.Mat("Compasion_Ventana", new Color(0.55f, 0.65f, 0.72f));

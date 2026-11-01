@@ -171,9 +171,43 @@ internal static partial class CivicBuilder
         Vector2 foot = body != null ? new Vector2(body.localScale.x, body.localScale.z) : new Vector2(5f, 5f);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title;
         var pieces = Furnish(b, template, stations);
-        // Los muebles, centrados en la planta y, si no caben, hacia delante (+z, la plaza).
-        Vector2 need = Layout(b, pieces, foot, 0f);
-        if (need.y > foot.y + 0.01f) Layout(b, pieces, foot, (need.y - foot.y) * 0.5f);
+        // Los muebles en las filas MÁS COMPACTAS que dejan el paso de 2 m (la anchura de fila que da la planta más pequeña), centrados
+        // en la planta; si no caben, la planta (su losa, sus bordes y sus postes) crece hasta cubrirlos. (2026-11-01) Antes las filas
+        // eran del ancho de la planta (5–8 m: un mueble por fila) y lo que no cabía salía hacia delante hasta 10 m, encima del
+        // edificio de enfrente: «Mesa de los documentos» a 0,88 m de la «Cama» de la familia de acogida (Varsovia).
+        Vector2 need = CompactLayout(b, pieces, foot);
+        if (need.x > foot.x + 0.01f || need.y > foot.y + 0.01f) Grow(b, Vector2.Max(foot, need));
+        HidingPlace hp = b.GetComponent<HidingPlace>();
+        if (hp != null) hp.radius = Mathf.Max(hp.radius, Mathf.Max(need.x, need.y) * 0.5f + 0.5f);
         return site;
+    }
+
+    /// <summary>Prueba anchuras de fila desde la del mueble más ancho hasta la de todos en fila y se queda con la que da la planta de
+    /// menor área (con la de <paramref name="foot"/> como mínimo). Deja los muebles colocados así y devuelve lo que ocupan (con el
+    /// paso de 2 m al borde).</summary>
+    static Vector2 CompactLayout(Transform b, List<Transform> pieces, Vector2 foot)
+    {
+        float P = MicroBuildRules.Passage, widest = 0f, all = 0f;
+        foreach (Transform p in pieces) { float w = MicroFurniture.LocalBounds(p).size.x; widest = Mathf.Max(widest, w); all += w + P; }
+        float bestW = widest + 2f * P, bestArea = float.MaxValue;
+        for (float w = widest + 2f * P; w <= all + 2f * P + 0.01f; w += 0.25f)
+        {
+            Vector2 plot = Vector2.Max(foot, Layout(b, pieces, new Vector2(w, 0f), 0f));
+            if (plot.x * plot.y < bestArea - 1e-3f) { bestArea = plot.x * plot.y; bestW = w; }
+        }
+        return Layout(b, pieces, new Vector2(bestW, 0f), 0f);
+    }
+
+    /// <summary>La planta abierta de un edificio de la historia (CompassionSceneBuilder.Building: «Cuerpo», «Borde_del_suelo» y
+    /// «Poste») crece hasta <paramref name="to"/>, centrada.</summary>
+    static void Grow(Transform b, Vector2 to)
+    {
+        foreach (Transform c in b)
+        {
+            Vector3 s = c.localScale, p = c.localPosition;
+            if (c.name == "Cuerpo") c.localScale = new Vector3(to.x, s.y, to.y);
+            else if (c.name == "Borde_del_suelo") { c.localPosition = new Vector3(Mathf.Sign(p.x) * (to.x * 0.5f - 0.15f), p.y, p.z); c.localScale = new Vector3(s.x, s.y, to.y); }
+            else if (c.name == "Poste") c.localPosition = new Vector3(Mathf.Sign(p.x) * (to.x * 0.5f - 0.15f), p.y, Mathf.Sign(p.z) * (to.y * 0.5f - 0.15f));
+        }
     }
 }

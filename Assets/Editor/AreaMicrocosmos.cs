@@ -179,10 +179,15 @@ public static class AreaMicrocosmos
         bool useSlots = giant != null && slots != null;
         List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(s => s * AreaScale) : null;
         PlatformSlots giantSlots = giant != null ? giant.GetComponent<PlatformSlots>() : null;
-        // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan.
-        List<Bounds> tops = giant != null ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
+        // EL PUEBLO (era avanzada, regla 5; Berón 2026-11-01: «en el pueblo de Bruce Lee las flores gigantes tapan el pueblo; en
+        // Berna el musgo son cubos verdes enormes»): los insectos-humanos viven en un pueblo humano, así que su flora es la de un
+        // pueblo — árboles de calle, setos, céspedes, parterres — a escala humana, escasa y fuera de calles y solares (Nature, modo
+        // pueblo). La misma condición que quita los muebles gigantes (ClearForTown).
+        bool townMode = storyOverride != null && MicroBuildRules.IsTownEra(year0);
+        // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan (en un pueblo ya no hay muebles gigantes).
+        List<Bounds> tops = giant != null && !townMode ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
         int animals = Nature(root.transform, rect, groundY, display.GetHashCode(), storyCore, floors, bio,
-                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops);
+                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
         // alrededor de la historia; los de papel fijo (la líder, Nasatya, la Sembradora…) siguen junto a su estructura.
@@ -204,7 +209,7 @@ public static class AreaMicrocosmos
         foreach (Transform t in Population(root.transform, story)) if (Contain(t, Inner(rect, 1f))) nudged++;
         MicroFloor mfl = root.AddComponent<MicroFloor>();
         mfl.center = new Vector3(rect.center.x, groundY, rect.center.z); mfl.size = new Vector2(rect.size.x, rect.size.z); mfl.wallHeight = wallH;
-        mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops;
+        mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         Census(root.transform, story, mfl);
         Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
         if (mfl.outside > 0) Debug.LogWarning($"[Microcosmos] {sceneLabel}: {mfl.outside} piezas de flora, fauna o historia FUERA de los muros (regla 11).");
@@ -288,6 +293,7 @@ public static class AreaMicrocosmos
     {
         int n = 0;
         var seen = new HashSet<Transform>();
+        _townFeet.Clear(); _streets.Clear();
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<CubeInsect>(true) != null || !InTown(r.transform, story)) continue;   // la gente anda: no es huella
@@ -298,15 +304,29 @@ public static class AreaMicrocosmos
                 bool any = false; Bounds b = default;
                 foreach (Renderer rr in site.GetComponentsInChildren<Renderer>(false)) { if (rr.GetComponentInParent<CubeInsect>(true) != null) continue; if (!any) { b = rr.bounds; any = true; } else b.Encapsulate(rr.bounds); }
                 if (!any) continue;
-                _blocked.Add(new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x + 2f, 1f, b.size.z + 2f))); n++;
+                var foot = new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x + 2f, 1f, b.size.z + 2f));
+                _blocked.Add(foot); _townFeet.Add(foot); n++;
             }
             else
             {
                 Bounds b = r.bounds;
-                _blocked.Add(new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x, 1f, b.size.z))); n++;
+                var foot = new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x, 1f, b.size.z));
+                _blocked.Add(foot); _townFeet.Add(foot); n++;
+                if (IsStreet(r.transform, story)) _streets.Add(foot);
             }
         }
         return n;
+    }
+
+    // Las huellas del pueblo y, de ellas, las calles (el último TownFootprints): la flora del pueblo crece junto a ellas, sin pisarlas,
+    // y los animales del pueblo andan por las calles.
+    static readonly List<Bounds> _townFeet = new List<Bounds>(), _streets = new List<Bounds>();
+
+    // ¿Es una calle (un tramo de «Calles de …», o el asfalto de un barrio: CivicBuilder.Street, Towns.Town)? Se pisa: es plana.
+    static bool IsStreet(Transform t, Transform story)
+    {
+        for (Transform p = t; p != null && p != story; p = p.parent) if (p.name.StartsWith("Calle")) return true;
+        return false;
     }
 
     // El piso del microcosmos que se está construyendo (para FloorBounds mientras corre su historia).
@@ -693,6 +713,19 @@ public static class AreaMicrocosmos
         return y;
     }
 
+    // Como FloorNear, pero sin ningún suelo bajo p devuelve <paramref name="none"/> (el del piso), no <paramref name="near"/>: una
+    // plaza a 5 m (y × 10) sin mueble debajo no deja la planta flotando.
+    static float FloorNearOr(Vector3 p, List<Renderer> floors, float near, float none)
+    {
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z) return FloorNear(p, floors, near);
+        }
+        return none;
+    }
+
     // El suelo más BAJO bajo p (el del área; por encima hay anillos y entreplantas).
     static float FloorLowest(Vector3 p, List<Renderer> floors, float fallback)
     {
@@ -1049,7 +1082,8 @@ public static class AreaMicrocosmos
     /// una. <paramref name="floraUnderStory"/> recibe las que tapa la historia. Entre ellas, la rejilla densa del suelo libre.</param>
     /// <param name="faunaSlots">Las plazas de fauna del área (ídem): los bichos van primero a ellas y luego a suelo libre.</param>
     static int Nature(Transform root, Bounds rect, float groundY, int seed, Bounds story, List<Renderer> floors, MicroBiome.Biome biome = null,
-                      List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null, List<Bounds> tops = null)
+                      List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null, List<Bounds> tops = null,
+                      bool town = false)
     {
         var rnd = new System.Random(seed);
         float biomeWeight = 0f; if (biome != null) foreach (MicroBiome.Plant pl in biome.plants) biomeWeight += pl.weight;
@@ -1085,6 +1119,139 @@ public static class AreaMicrocosmos
         var sandPits = new List<Vector3>(); var dungs = new List<Vector3>();
         int placed0 = 0;
 
+        // ── MODO PUEBLO (eras avanzadas: el pueblo humano de los insectos-humanos, regla 5) ─────────────────────────────────
+        // A ESCALA DE PUEBLO (1 cm real = 1 cm: un tilo de 15 m, un seto de 0,8 m, un césped de 5 cm), ESCASA (una de cada ~3
+        // celdas de 3 m) y FUERA de las calles y los solares: el tronco o la mata a ≥ 1 m de la huella de cada edificio (que ya
+        // lleva 1 m de margen: 2 m de paso, MicroBuildRules.Passage) y del borde de cada calle; las copas bajas, igual; entre
+        // plantas, sus radios + 0,8 m. Junto al pueblo (a < 15 m de una huella) crece lo PLANTADO (Biome.town: árboles de calle,
+        // setos, céspedes, parterres; ni piedras ni arena: el adoquín es la calle); en las afueras, lo del lugar (Biome.plants),
+        // donde el lugar lo tenía. Antes la flora de hormiga (×25: flores de 37 m, matas de 40 m) tapaba el pueblo entero.
+        var townPts = new List<(Vector3 p, float r)>();
+        const float TownCell = 3f, TownKeep = 0.38f, NearTownDist = 15f;
+        MicroBiome.Plant[] fallbackTown = {
+            new MicroBiome.Plant(MicroBiome.Kind.Grass, 10, "Césped", 6, new Color(0.4f, 0.6f, 0.28f), new Color(0.45f, 0.6f, 0.3f)),
+            new MicroBiome.Plant(MicroBiome.Kind.Shrub, 4, "Árbol de sombra", 1000, new Color(0.25f, 0.45f, 0.22f), new Color(0.3f, 0.45f, 0.25f)),
+            new MicroBiome.Plant(MicroBiome.Kind.Shrub, 4, "Seto", 90, new Color(0.22f, 0.4f, 0.2f), new Color(0.25f, 0.42f, 0.22f)) };
+        int townTrees = 0, townSmall = 0;
+        bool NearTown(Vector3 w, float d)
+        {
+            foreach (Bounds b in _townFeet) if (GapXZ(b, w) < d) return true;
+            return false;
+        }
+        bool FreeTown(Vector3 w, float r, out float fy)
+        {
+            fy = groundY;
+            if (!InsideXZ(inner, w, -r)) return false;
+            if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear + r || InsideXZ(story, w, 4f + r)) return false;
+            foreach (Bounds b in standing) if (GapXZ(b, w) < r + 1f) return false;
+            fy = floors.Count > 0 ? FloorNearOr(w, floors, groundY, groundY) : groundY;
+            return Mathf.Abs(fy - groundY) <= 1.5f;
+        }
+        bool TownSow(Vector3 p, bool always)
+        {
+            Vector3 w = center + p;
+            bool near = NearTown(w, NearTownDist);
+            MicroBiome.Plant[] pool = biome == null ? fallbackTown : near && biome.town != null ? biome.town : biome.plants;
+            if (!always && R(0f, 1f) > TownKeep) return false;
+            float sum = 0f; foreach (MicroBiome.Plant q in pool) sum += q.weight;
+            float pick = R(0f, sum); MicroBiome.Plant pl = pool[pool.Length - 1];
+            foreach (MicroBiome.Plant q in pool) { pick -= q.weight; if (pick <= 0f) { pl = q; break; } }
+            bool loose = pl.kind == MicroBiome.Kind.Stone || pl.kind == MicroBiome.Kind.Sand || pl.kind == MicroBiome.Kind.Dung;
+            if (near && loose) return false;   // en el pueblo, el adoquín y el ladrillo son la calle: no hay piedras sueltas
+            float h = Mathf.Max(0.03f, pl.cm / 100f) * R(0.85f, 1.15f);
+            TownForm form = FormOf(pl, h);
+            TownRadii(form, h, out float blockR, out float spaceR);
+            if (!FreeTown(w, blockR, out float fy)) return false;
+            foreach (var q in townPts) if (new Vector2(q.p.x - w.x, q.p.z - w.z).magnitude < q.r + spaceR + 0.8f) return false;
+            townPts.Add((w, spaceR));
+            TownPlant(pl, new Vector3(p.x, fy - center.y, p.z), h, form, spaceR);
+            if (form == TownForm.Tree || form == TownForm.Palm) townTrees++; else townSmall++;
+            return true;
+        }
+
+        // Una planta del PUEBLO: su forma a escala humana (árbol con tronco y copa por encima de las cabezas, palmera, mata o seto,
+        // macolla, césped, parterre, musgo o hiedra a ras de suelo, seta, piedra…), con su nombre y sus usos (Affordance).
+        void TownPlant(MicroBiome.Plant pl, Vector3 p, float h, TownForm form, float r)
+        {
+            Material a = Mat("Bio_" + pl.name + "_1", pl.main), b = Mat("Bio_" + pl.name + "_2", pl.accent);
+            Material bark = Mat("Bio_corteza", new Color(0.36f, 0.28f, 0.21f));
+            Transform t = Plant(pl.name, p);
+            switch (form)
+            {
+                case TownForm.Tree:
+                {
+                    float tw = Mathf.Clamp(h * 0.035f, 0.2f, 0.6f), ch = h * 0.55f;
+                    Box(t, "Tronco", Vector3.up * (h - ch * 0.5f) * 0.5f, new Vector3(tw, h - ch * 0.5f, tw), Quaternion.identity, bark, true);
+                    Box(t, "Copa", Vector3.up * (h - ch * 0.5f), new Vector3(r * 2f, ch, r * 2f), Quaternion.identity, a, false);
+                    Box(t, "Copa", Vector3.up * (h - ch * 0.4f), new Vector3(r * 1.5f, ch * 0.85f, r * 1.5f), Quaternion.Euler(0f, 45f, 0f), a, false);
+                    for (int k = 0; k < 6; k++) Box(t, "Flor_o_fruto", new Vector3(R(-0.8f, 0.8f) * r, h - ch * R(0.1f, 0.8f), R(-0.8f, 0.8f) * r), Vector3.one * Mathf.Clamp(h * 0.03f, 0.15f, 0.4f), Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Leaf, 3, 3f, 0.002f);
+                    Affordance.Put(t.gameObject, AffordanceKind.Perch, 1);
+                    Affordance.Put(t.gameObject, AffordanceKind.Shelter, 2);
+                    break;
+                }
+                case TownForm.Palm:
+                    Box(t, "Estipe", Vector3.up * h * 0.47f, new Vector3(0.4f, h * 0.94f, 0.4f), Quaternion.identity, bark, true);
+                    for (int k = 0; k < 8; k++) Box(t, "Hoja", Vector3.up * h + Quaternion.Euler(0f, k * 45f, 0f) * new Vector3(0f, -0.4f, r * 0.5f), new Vector3(0.6f, 0.08f, r), Quaternion.Euler(25f, k * 45f, 0f), a, false);
+                    for (int k = 0; k < 3; k++) Box(t, "Racimo", Vector3.up * (h - 0.8f) + Quaternion.Euler(0f, k * 120f, 0f) * new Vector3(0f, 0f, 0.4f), Vector3.one * 0.35f, Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Leaf, 3, 3f, 0.002f);
+                    Affordance.Put(t.gameObject, AffordanceKind.Perch, 1);
+                    break;
+                case TownForm.Bush:   // mata, seto o rosal: un cojín de hojas con sus flores o bayas
+                {
+                    bool hedge = pl.name.StartsWith("Seto");
+                    Vector3 size = hedge ? new Vector3(r * 2f * 1.8f, h, r * 2f * 0.6f) : new Vector3(r * 2f, h, r * 2f);
+                    Box(t, hedge ? "Seto" : "Mata", Vector3.up * h * 0.5f, size, Quaternion.identity, a, h > 0.5f);
+                    for (int k = 0; k < 5; k++) Box(t, "Flor_o_baya", new Vector3(R(-0.4f, 0.4f) * size.x, h * R(0.55f, 1f), R(-0.4f, 0.4f) * size.z), Vector3.one * Mathf.Clamp(h * 0.12f, 0.06f, 0.2f), Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Leaf, 3, 3f, 0.002f);
+                    Affordance.Put(t.gameObject, AffordanceKind.Shelter, 2);
+                    if (pl.kind == MicroBiome.Kind.Flower) Affordance.Put(t.gameObject, AffordanceKind.Flower, 2, 1f, 0.004f);
+                    break;
+                }
+                case TownForm.Clump:   // gramínea alta o helecho bajo: unas hojas en macolla
+                    for (int k = 0; k < 5; k++) Box(t, "Hoja", new Vector3(0f, h * 0.5f, 0f) + Quaternion.Euler(0f, k * 72f, 0f) * new Vector3(0f, 0f, 0.08f), new Vector3(0.05f, h, 0.18f), Quaternion.Euler(R(-15f, 15f), k * 72f, 0f), a, false);
+                    Box(t, "Espiga", Vector3.up * h, new Vector3(0.06f, Mathf.Max(0.05f, h * 0.15f), 0.12f), Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Grass, 2, 1f, 0.004f);
+                    Affordance.Put(t.gameObject, AffordanceKind.PlantSap, 3, 1f, 0.01f);
+                    break;
+                case TownForm.Lawn:
+                    Box(t, "Cesped", Vector3.up * Mathf.Max(0.02f, h * 0.5f) * 0.5f, new Vector3(r * 2f, Mathf.Max(0.02f, h * 0.5f), r * 2f * R(0.7f, 1f)), Quaternion.identity, a, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Grass, 2, 1f, 0.004f);
+                    break;
+                case TownForm.Bed:   // parterre o jardinera: tierra con sus flores
+                    Box(t, "Jardinera", Vector3.up * 0.12f, new Vector3(1.4f, 0.24f, 0.9f), Quaternion.identity, Mat("Bio_jardinera", new Color(0.45f, 0.33f, 0.24f)), false);
+                    Box(t, "Hojas", Vector3.up * (0.24f + h * 0.4f), new Vector3(1.2f, h * 0.8f, 0.7f), Quaternion.identity, a, false);
+                    for (int k = 0; k < 7; k++) Box(t, "Flor", new Vector3(R(-0.55f, 0.55f), 0.24f + h * 0.85f, R(-0.3f, 0.3f)), Vector3.one * 0.09f, Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Flower, 2, 1f, 0.004f);
+                    break;
+                case TownForm.Patch:   // musgo, hiedra o liquen a ras de suelo
+                    Box(t, "Manto", Vector3.up * 0.025f, new Vector3(r * 2f, 0.05f, r * 2f * 0.8f), Quaternion.identity, a, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Shelter, 2);
+                    break;
+                case TownForm.Mushroom:
+                    Box(t, "Pie", Vector3.up * h * 0.5f, new Vector3(0.04f, h, 0.04f), Quaternion.identity, a, false);
+                    Box(t, "Sombrero", Vector3.up * h, new Vector3(h * 0.8f, h * 0.2f, h * 0.8f), Quaternion.identity, b, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Fungus, 3, 2f, 0.003f);
+                    break;
+                case TownForm.Rock:
+                    Box(t, "Roca", Vector3.up * r * 0.4f, new Vector3(r * 1.6f, r * 0.8f, r * 1.4f), Quaternion.identity, a, true);
+                    Affordance.Put(t.gameObject, AffordanceKind.Shelter, 2);
+                    break;
+                case TownForm.Sand:
+                    Box(t, "Arena", Vector3.up * 0.015f, new Vector3(r * 2f, 0.03f, r * 2f), Quaternion.identity, a, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.SandPit, 1); sandPits.Add(p);
+                    break;
+                case TownForm.Dung:
+                    Box(t, "Bulto", Vector3.up * 0.08f, new Vector3(0.4f, 0.16f, 0.35f), Quaternion.identity, a, false);
+                    Affordance.Put(t.gameObject, AffordanceKind.Dung, 2, 3f, 0.001f); dungs.Add(p);
+                    break;
+                case TownForm.Frost:
+                    Box(t, "Escarcha", Vector3.up * 0.01f, new Vector3(r * 2f, 0.02f, r * 2f), Quaternion.identity, a, false);
+                    break;
+            }
+        }
+
+
         // La flora DEL ÁREA, en sus POSICIONES RESERVADAS (PlatformSlots.flora, ya ×10): una planta en cada una, a ras del suelo
         // del área (el más cercano a la altura de la plaza), menos las que tapa la historia (su claro).
         int onSlots = 0;
@@ -1094,14 +1261,26 @@ public static class AreaMicrocosmos
             {
                 Vector3 w = floraSlots[i];
                 if (new Vector2(w.x - story.center.x, w.z - story.center.z).magnitude < storyClear || InsideXZ(story, w, 4f) || !InsideXZ(rect, w, -1f)) { floraUnderStory?.Add(i); continue; }
-                float fy = FloorNear(w, floors, w.y);
+                // En el pueblo, la plaza que cae en una calle o un solar es del pueblo (como la que tapa la historia).
+                if (town && !FreeTown(w, 0.6f, out _)) { floraUnderStory?.Add(i); continue; }
+                // A ras del suelo bajo la plaza; si no hay suelo del área debajo (el pueblo quitó los muebles gigantes), el del piso.
+                // (2026-11-01) Antes quedaba a la altura de la plaza (y × 10 = 5 m): las piedras «Adoquín de arenisca» flotaban a
+                // 3,5–5 m sobre las calles de Berna (los cubos beis de Einstein_Berna_calle.png) y la hierba de Bruce Lee, a 5 m.
+                float fy = FloorNearOr(w, floors, w.y, groundY);
                 slotPts.Add(w);
                 if (Sow(new Vector3(w.x - center.x, fy - center.y, w.z - center.z), true)) { placed0++; onSlots++; }
             }
 
+        // EL PUEBLO: una rejilla fina (3 m) por todo el suelo libre, escasa (TownSow decide si toca planta y cuál).
+        if (town)
+            for (float x = inner.min.x + TownCell * 0.5f; x <= inner.max.x; x += TownCell)
+                for (float z = inner.min.z + TownCell * 0.5f; z <= inner.max.z; z += TownCell)
+                    if (TownSow(new Vector3(x + R(-1f, 1f) - center.x, 0f, z + R(-1f, 1f) - center.z), false)) placed0++;
+
         // Y ENTRE LAS PLAZAS, DENSO: a ×10 los 2 m de paso del piso son 20 m, así que cada hueco libre se rellena con una rejilla
         // de 6 m con jitter (una planta por celda, sin amontonarse), por todo el suelo libre dentro de los muros.
         const float cell = 6f;
+        if (!town)
         for (float x = inner.min.x + cell * 0.5f; x <= inner.max.x; x += cell)
             for (float z = inner.min.z + cell * 0.5f; z <= inner.max.z; z += cell)
             {
@@ -1144,6 +1323,7 @@ public static class AreaMicrocosmos
         // lleva algo.
         bool Sow(Vector3 p, bool always)
         {
+            if (town) return TownSow(p, always);   // el pueblo: a escala humana, escasa, fuera de calles y solares
             if (biome != null)   // FLORA NATIVA de su era y región (MicroBiome); un 12 % de suelo desnudo para pasar
             {
                 if (R(0f, 1f) < 0.12f && !always) return false;
@@ -1313,11 +1493,15 @@ public static class AreaMicrocosmos
         var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false); fauna.localPosition = center;
         (string sp, int n, float len)[] generic = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         // Con bioma, su FAUNA NATIVA (activa en la estación de la historia): cada especie real con el cuerpo de su grupo.
-        var list = new List<(string sp, int n, float len, Color tint, string name, string dormant)>();
-        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant));
-        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null));
-        int placed = 0, faunaNext = 0, faunaTop = 0;
-        foreach (var (sp, n, len, tint, label, dormant) in list)
+        var list = new List<(string sp, int n, float len, Color tint, string name, string dormant, bool street)>();
+        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant, false));
+        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null, false));
+        // LOS ANIMALES DEL PUEBLO (Biome.townFauna: los caballos de los carros, los asnos, los gatos…), a su talla real y por las
+        // CALLES (Berón 2026-11-01: «al-Juarismi, Curie, Einstein y Patterson no tienen fauna»).
+        if (town && biome != null && biome.townFauna != null)
+            foreach (MicroBiome.Pet pt in biome.townFauna) list.Add((pt.species, pt.count, pt.length, pt.tint, pt.name, null, true));
+        int placed = 0, faunaNext = 0, faunaTop = 0, onStreets = 0;
+        foreach (var (sp, n, len, tint, label, dormant, street) in list)
         {
             GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
             for (int i = 0; i < n; i++)
@@ -1325,10 +1509,18 @@ public static class AreaMicrocosmos
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga; el resto, en la
                 // siguiente plaza de fauna del piso y, tomadas todas, en suelo libre DENTRO de los muros (nunca fuera: regla 11).
                 Vector3 p;
-                if (sp == "Antlion" && sandPits.Count > 0) p = sandPits[rnd.Next(sandPits.Count)];
+                if (street && _streets.Count > 0)
+                {
+                    // Por una calle (a lo largo de un tramo al azar, por su centro: a ≥ 2 m de los solares).
+                    Bounds sb = _streets[rnd.Next(_streets.Count)];
+                    Vector3 w = new Vector3(R(sb.min.x + 0.8f, sb.max.x - 0.8f), groundY, R(sb.min.z + 0.8f, sb.max.z - 0.8f));
+                    if (!InsideXZ(inner, w, 0f)) w = ClampXZ(w, inner);
+                    p = new Vector3(w.x - center.x, FloorNearOr(w, floors, groundY, groundY) - center.y, w.z - center.z); onStreets++;
+                }
+                else if (sp == "Antlion" && sandPits.Count > 0) p = sandPits[rnd.Next(sandPits.Count)];
                 else if (topPts.Count > 0 && sp != "DungBeetle" && i % 3 == 2) { p = topPts[rnd.Next(topPts.Count)] - center; faunaTop++; }   // uno de cada tres, encima de un mueble
-                else if (sp == "DungBeetle" && dungs.Count > 0) p = dungs[rnd.Next(dungs.Count)] + new Vector3(5f, 0f, 0f);
-                else if (faunaSlots != null && faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNear(w, floors, w.y) - center.y, w.z - center.z); }
+                else if (sp == "DungBeetle" && dungs.Count > 0) p = dungs[rnd.Next(dungs.Count)] + new Vector3(town ? 0.6f : 5f, 0f, 0f);
+                else if (faunaSlots != null && faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNearOr(w, floors, w.y, groundY) - center.y, w.z - center.z); }
                 else
                 {
                     Vector3 w = new Vector3(R(inner.min.x, inner.max.x), groundY, R(inner.min.z, inner.max.z)); float fy = groundY;
@@ -1360,8 +1552,59 @@ public static class AreaMicrocosmos
             }
         }
         _faunaOnSlots = faunaNext; _faunaOnTops = faunaTop;
-        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas dentro del piso ({inner.size.x:0} × {inner.size.z:0} m útiles{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")}; {onTops} plantas y {faunaTop} bichos encima de {(tops != null ? tops.Count : 0)} muebles)" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : "."));
+        Debug.Log($"[Microcosmos] Flora interactuable: {placed0} plantas, piedras, arenas y boñigas dentro del piso ({inner.size.x:0} × {inner.size.z:0} m útiles{(floraSlots != null ? $"; {onSlots} en las plazas de flora del área" : "")}; {onTops} plantas y {faunaTop} bichos encima de {(tops != null ? tops.Count : 0)} muebles)" + (biome != null ? $" · bioma: {biome.title}, {biome.plants.Length} plantas y {biome.bugs.Length} bichos nativos." : ".")
+                  + (town ? $" · PUEBLO: flora a escala de pueblo, {townTrees} árboles y {townSmall} matas, céspedes y parterres fuera de calles y solares; {onStreets} animales del pueblo por {_streets.Count} calles." : ""));
         return placed;
+    }
+
+    // Las formas de la flora del pueblo (escala humana): ver Nature, modo pueblo.
+    enum TownForm { Tree, Palm, Bush, Clump, Lawn, Bed, Patch, Mushroom, Rock, Sand, Dung, Frost }
+
+    static TownForm FormOf(MicroBiome.Plant pl, float h)
+    {
+        switch (pl.kind)
+        {
+            case MicroBiome.Kind.Shrub:
+            case MicroBiome.Kind.Fern:
+                if (h > 3f) return pl.name.StartsWith("Palmera") || pl.name.StartsWith("Moriche") ? TownForm.Palm : TownForm.Tree;
+                return h > 0.6f || pl.kind == MicroBiome.Kind.Shrub ? TownForm.Bush : TownForm.Clump;
+            case MicroBiome.Kind.Flower: return h > 3f ? TownForm.Tree : h > 0.6f ? TownForm.Bush : TownForm.Bed;
+            case MicroBiome.Kind.Grass: return h <= 0.35f ? TownForm.Lawn : TownForm.Clump;
+            case MicroBiome.Kind.Moss: return TownForm.Patch;
+            case MicroBiome.Kind.Fungus: return TownForm.Mushroom;
+            case MicroBiome.Kind.Stone: return TownForm.Rock;
+            case MicroBiome.Kind.Sand: return TownForm.Sand;
+            case MicroBiome.Kind.Dung: return TownForm.Dung;
+            default: return TownForm.Frost;
+        }
+    }
+
+    /// <summary>El radio de su huella en el suelo (lo que no puede pisar calle ni solar: el tronco, o la copa si cuelga por debajo
+    /// de 2,5 m) y el de su copa o mata (la distancia a la planta vecina).</summary>
+    static void TownRadii(TownForm f, float h, out float block, out float space)
+    {
+        switch (f)
+        {
+            case TownForm.Tree: space = Mathf.Clamp(h * 0.28f, 1.2f, 4.5f); block = h - h * 0.55f >= 2.5f ? 0.6f : space; break;
+            case TownForm.Palm: space = Mathf.Clamp(h * 0.18f, 1.2f, 3.5f); block = 0.5f; break;
+            case TownForm.Bush: space = Mathf.Clamp(h * 0.45f, 0.25f, 1.4f); block = space; break;
+            case TownForm.Clump: space = block = 0.35f; break;
+            case TownForm.Lawn: space = block = 1.6f; break;
+            case TownForm.Bed: space = block = 0.75f; break;
+            case TownForm.Patch: space = block = 0.8f; break;
+            case TownForm.Mushroom: space = block = 0.15f; break;
+            case TownForm.Rock: space = block = 0.4f; break;
+            case TownForm.Sand: space = block = 1.2f; break;
+            case TownForm.Dung: space = block = 0.25f; break;
+            default: space = block = 1.5f; break;
+        }
+    }
+
+    /// <summary>Distancia en XZ de un punto a una caja (0 si cae dentro).</summary>
+    static float GapXZ(Bounds b, Vector3 p)
+    {
+        float dx = Mathf.Max(0f, Mathf.Max(b.min.x - p.x, p.x - b.max.x)), dz = Mathf.Max(0f, Mathf.Max(b.min.z - p.z, p.z - b.max.z));
+        return Mathf.Sqrt(dx * dx + dz * dz);
     }
 
     static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)

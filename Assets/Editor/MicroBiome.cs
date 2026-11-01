@@ -30,6 +30,15 @@ public static class MicroBiome
         public float Length => Mathf.Clamp(mm * 0.3f, 0.8f, 12f);
     }
 
+    /// <summary>Un ANIMAL DEL PUEBLO (los caballos de los carros, los gatos de las casas…) en un mundo de insectos: va con el cuerpo
+    /// de su ANÁLOGO entre los artrópodos (el canon: las vacas son pulgones, Berkeley) y a la talla del animal real
+    /// (<see cref="length"/>, en m, sin la escala de hormiga: el pueblo es a escala humana). Ver docs/microcosmos-fauna-eras.md.</summary>
+    public struct Pet
+    {
+        public string species; public int count; public float length; public Color tint; public string name;
+        public Pet(string sp, int n, float length, Color tint, string name) { species = sp; count = n; this.length = length; this.tint = tint; this.name = name; }
+    }
+
     public class Biome
     {
         public string title;     // región y era, para el cartel y el log
@@ -37,6 +46,12 @@ public static class MicroBiome
         public Color ground = new Color(0.45f, 0.36f, 0.25f);   // la tierra de alrededor
         public Plant[] plants;
         public Bug[] bugs;
+        /// <summary>Lo PLANTADO en el pueblo (árboles de calle, setos, céspedes, parterres) en las eras avanzadas (regla 5): crece
+        /// junto a las calles y entre los solares, a escala de pueblo (AreaMicrocosmos.Nature, modo pueblo). Sin lista, la del
+        /// lugar (<see cref="plants"/>). <see cref="plants"/> sigue siendo lo del lugar: en las afueras, lejos del pueblo.</summary>
+        public Plant[] town;
+        /// <summary>Los ANIMALES DEL PUEBLO (por las calles): ver <see cref="Pet"/>.</summary>
+        public Pet[] townFauna;
     }
 
     static Color C(float r, float g, float b) => new Color(r, g, b);
@@ -266,6 +281,15 @@ public static class MicroBiome
                 new Plant(Kind.Flower, 7, "Melastoma (Melastoma malabathricum)", 150, C(0.35f, 0.48f, 0.3f), C(0.7f, 0.45f, 0.8f)),
                 new Plant(Kind.Fungus, 5, "Seta (Termitomyces)", 15, C(0.9f, 0.86f, 0.75f), C(0.8f, 0.7f, 0.55f)),
                 new Plant(Kind.Stone, 10, "Granito", 0, Stone, Stone), new Plant(Kind.Sand, 4, "Arena de la bahía", 0, Sand, Sand) },
+              // Kowloon (Yau Ma Tei, 1957) y los barrios de Seattle: lo plantado en la ciudad. El baniano de calle, la bauhinia (el
+              // árbol de orquídeas de Hong Kong, plantado por toda la colonia desde 1914), setos de ixora, céspedes de grama y
+              // buganvillas (Hong Kong Herbarium; LCSD, «Bauhinia blakeana»). La ladera silvestre (arriba) queda para las afueras.
+              town = new[] {
+                new Plant(Kind.Shrub, 6, "Baniano de calle (Ficus microcarpa), plantado", 1400, C(0.22f, 0.42f, 0.2f), C(0.45f, 0.4f, 0.34f)),
+                new Plant(Kind.Flower, 5, "Árbol de orquídeas de Hong Kong (Bauhinia × blakeana), plantado", 800, C(0.3f, 0.48f, 0.25f), C(0.75f, 0.3f, 0.6f)),
+                new Plant(Kind.Shrub, 8, "Seto de ixora (Ixora chinensis)", 100, C(0.2f, 0.4f, 0.2f), C(0.9f, 0.35f, 0.2f)),
+                new Plant(Kind.Grass, 14, "Césped de grama (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Flower, 4, "Buganvilla (Bougainvillea glabra)", 150, C(0.3f, 0.45f, 0.25f), C(0.85f, 0.2f, 0.55f)) },
               bugs = new[] {
                 new Bug("Termite", 8, 6, C(0.92f, 0.86f, 0.72f), "Termita de Formosa (Coptotermes formosanus)"),
                 new Bug("Grasshopper", 5, 30, C(0.45f, 0.65f, 0.25f), "Saltamontes del arroz (Oxya chinensis)"),
@@ -276,7 +300,8 @@ public static class MicroBiome
 
             // ══ CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md) ══════════════════════════════════════════════
             // En las CIUDADES (París 1898, Berna 1905, Pasadena 1953, Bagdad ~820) no hay flora ni fauna salvaje: solo lo plantado
-            // por la gente (árboles de calle, jardines, palmeras) y ningún bicho suelto. En el campo (Woolsthorpe, Berkeley, Sils
+            // por la gente (árboles de calle, jardines, palmeras) y los animales del pueblo (townFauna: caballos, asnos, gatos…,
+            // con el cuerpo de su análogo), ningún bicho suelto. En el campo (Woolsthorpe, Berkeley, Sils
             // Maria, Crotona, el Nilo, la pradera de Colorado, el Orinoco, el pinar de Polesia) sí: la de ese lugar y estación.
 
             // ── Woolsthorpe (Lincolnshire), verano de 1666: prados de ovejas y el huerto de manzanos ──
@@ -412,25 +437,87 @@ public static class MicroBiome
                 new Bug("Antlion", 2, 12, C(0.6f, 0.55f, 0.45f), "Hormiga león (Myrmeleon formicarius), en la arena del pinar"),
                 new Bug("SnowBee", 3, 16, C(0.15f, 0.12f, 0.08f), "Abejorro (Bombus terrestris)") } };
 
-            // ── Las CIUDADES: sin flora ni fauna salvaje; solo lo plantado ──
+            // ── Las CIUDADES: sin flora ni bichos salvajes; solo lo plantado (a escala de pueblo: AreaMicrocosmos.Nature, modo
+            //    pueblo) y los ANIMALES DEL PUEBLO (townFauna) con el cuerpo de su análogo (docs/microcosmos-fauna-eras.md):
+            //    · bestias de tiro y de carga (caballo, mula, asno, camello) → PULGÓN, como las vacas de Berkeley (las hormigas «crían
+            //      ganado» de pulgones), a la talla del animal (caballo 2,4 m, asno 1,6 m, camello 3 m);
+            //    · gatos y perros de las casas → COCHINILLA hormiguera (Platyarthrus hoffmannseggii, el huésped blanco que vive en los
+            //      hormigueros con permiso de las hormigas: el animal de casa), a 0,5–0,7 m;
+            //    · ratas de los sótanos y las alcantarillas → CUCARACHA (la misma plaga urbana), a 0,3 m.
+            //    Ninguno usa un cuerpo de la gente (InsectCast.Folk), para no confundirse con ella. Las aves (palomas, gorriones) no
+            //    tienen análogo con alas fuera de la gente: no se ponen.
             case "París 1898": return new Biome { title = "París, rue Lhomond (diciembre de 1898): ciudad, sin naturaleza salvaje", winter = true, ground = C(0.5f, 0.48f, 0.45f), plants = new[] {
                 new Plant(Kind.Shrub, 6, "Plátano de sombra del bulevar (Platanus × hispanica), plantado", 1500, C(0.5f, 0.45f, 0.35f), C(0.6f, 0.55f, 0.45f)),
                 new Plant(Kind.Stone, 20, "Adoquín", 0, C(0.45f, 0.45f, 0.48f), Stone) },
+              // Diciembre: los árboles del bulevar sin hoja (ramas pardas), el césped de los squares de Haussmann, setos de boj y
+              // hiedra en las verjas (Alphand, «Les Promenades de Paris», 1867–73).
+              town = new[] {
+                new Plant(Kind.Shrub, 8, "Plátano de sombra del bulevar (Platanus × hispanica), sin hoja en diciembre", 1500, C(0.5f, 0.45f, 0.38f), C(0.62f, 0.57f, 0.48f)),
+                new Plant(Kind.Shrub, 4, "Castaño de Indias del square (Aesculus hippocastanum), sin hoja", 1500, C(0.42f, 0.36f, 0.3f), C(0.5f, 0.42f, 0.34f)),
+                new Plant(Kind.Grass, 10, "Césped del square, de invierno", 5, C(0.38f, 0.5f, 0.3f), C(0.45f, 0.52f, 0.35f)),
+                new Plant(Kind.Shrub, 6, "Seto de boj (Buxus sempervirens)", 80, C(0.2f, 0.35f, 0.18f), C(0.25f, 0.4f, 0.2f)),
+                new Plant(Kind.Moss, 4, "Hiedra de la verja (Hedera helix)", 10, C(0.15f, 0.32f, 0.15f), C(0.2f, 0.4f, 0.2f)) },
+              // Los ómnibus y los fiacres de caballos (la Compagnie générale des omnibus tenía unos 17 000 caballos hacia 1900), los
+              // gatos de los patios y las ratas del alcantarillado de Belgrand.
+              townFauna = new[] {
+                new Pet("Aphid", 4, 2.4f, C(0.45f, 0.3f, 0.2f), "Caballo de fiacre (en el microcosmos, un pulgón de tiro)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato del patio (en el microcosmos, una cochinilla hormiguera)"),
+                new Pet("Cockroach", 3, 0.3f, C(0.25f, 0.15f, 0.08f), "Rata del alcantarillado (en el microcosmos, una cucaracha)") },
               bugs = new Bug[0] };
             case "Berna": return new Biome { title = "Berna (mayo de 1905): ciudad, sin naturaleza salvaje", ground = C(0.55f, 0.52f, 0.48f), plants = new[] {
                 new Plant(Kind.Shrub, 6, "Tilo de la plaza (Tilia platyphyllos), plantado", 1500, C(0.35f, 0.55f, 0.28f), C(0.75f, 0.75f, 0.4f)),
                 new Plant(Kind.Flower, 3, "Geranios de los balcones (Pelargonium), plantados", 30, C(0.3f, 0.5f, 0.25f), C(0.85f, 0.15f, 0.15f)),
                 new Plant(Kind.Stone, 20, "Adoquín de arenisca", 0, C(0.7f, 0.65f, 0.5f), Stone) },
+              // Mayo: los tilos de las plazas, los castaños de Indias en flor de la Münsterplattform y la Kleine Schanze, sus céspedes
+              // y setos, y los geranios rojos de las jardineras de la Kramgasse (Stadtgrün Bern, «Münsterplattform»).
+              town = new[] {
+                new Plant(Kind.Shrub, 6, "Tilo de la plaza (Tilia platyphyllos), plantado", 1500, C(0.35f, 0.55f, 0.28f), C(0.75f, 0.75f, 0.4f)),
+                new Plant(Kind.Shrub, 5, "Castaño de Indias en flor de la Münsterplattform (Aesculus hippocastanum)", 1800, C(0.25f, 0.45f, 0.22f), C(0.97f, 0.95f, 0.9f)),
+                new Plant(Kind.Grass, 10, "Césped de la Kleine Schanze", 6, C(0.38f, 0.6f, 0.28f), C(0.45f, 0.62f, 0.3f)),
+                new Plant(Kind.Shrub, 5, "Seto de boj (Buxus sempervirens)", 80, C(0.2f, 0.35f, 0.18f), C(0.25f, 0.4f, 0.2f)),
+                new Plant(Kind.Flower, 6, "Geranios de las jardineras (Pelargonium), plantados", 30, C(0.3f, 0.5f, 0.25f), C(0.85f, 0.15f, 0.15f)) },
+              // Los caballos de los carros de reparto (la cerveza, la leche: el tranvía era eléctrico desde 1901, los carros no) y los
+              // gatos de las casas de soportales. Los osos del Bärengraben (desde 1857) viven en su foso, fuera del piso.
+              townFauna = new[] {
+                new Pet("Aphid", 3, 2.4f, C(0.5f, 0.32f, 0.2f), "Caballo del carro de reparto (en el microcosmos, un pulgón de tiro)"),
+                new Pet("Woodlouse", 3, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la Kramgasse (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
             case "Pasadena": return new Biome { title = "Pasadena (1953): ciudad, sin naturaleza salvaje", ground = C(0.6f, 0.58f, 0.52f), plants = new[] {
                 new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada en la avenida", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
                 new Plant(Kind.Grass, 8, "Césped del campus (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
                 new Plant(Kind.Stone, 12, "Bordillo de hormigón", 0, C(0.75f, 0.74f, 0.7f), Stone) },
+              // Las avenidas de palmeras, los cedros del Himalaya de la «Christmas Tree Lane» (1885), las encinas de la costa, los
+              // céspedes de las casas y los rosales (la ciudad del Torneo de las Rosas) (City of Pasadena, «Street Trees»).
+              town = new[] {
+                new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada en la avenida", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Shrub, 3, "Cedro del Himalaya (Cedrus deodara), plantado", 1800, C(0.25f, 0.38f, 0.3f), C(0.3f, 0.35f, 0.3f)),
+                new Plant(Kind.Shrub, 3, "Encina de la costa (Quercus agrifolia)", 1200, C(0.22f, 0.38f, 0.2f), C(0.4f, 0.35f, 0.25f)),
+                new Plant(Kind.Grass, 14, "Césped de la casa (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Flower, 5, "Rosal del jardín (Rosa)", 120, C(0.25f, 0.42f, 0.22f), C(0.85f, 0.15f, 0.25f)),
+                new Plant(Kind.Shrub, 4, "Seto de pitósporo (Pittosporum tobira)", 150, C(0.22f, 0.4f, 0.22f), C(0.95f, 0.95f, 0.85f)) },
+              // Una ciudad de coches (sin caballos): los perros y los gatos de las casas.
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
             case "Bagdad": return new Biome { title = "Bagdad, la Ciudad Redonda (~820): ciudad, sin naturaleza salvaje", ground = C(0.78f, 0.68f, 0.5f), plants = new[] {
                 new Plant(Kind.Shrub, 8, "Palmera datilera de los jardines (Phoenix dactylifera), plantada", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
                 new Plant(Kind.Shrub, 4, "Granado del patio (Punica granatum), plantado", 300, C(0.3f, 0.45f, 0.22f), C(0.8f, 0.15f, 0.12f)),
                 new Plant(Kind.Stone, 16, "Ladrillo cocido", 0, C(0.75f, 0.55f, 0.38f), Stone) },
+              // Los jardines de los patios abasíes: palmeras, granados, naranjos amargos, rosales de Damasco y setos de arrayán
+              // (Lassner 1970; Ruggles 2008, «Islamic Gardens and Landscapes»).
+              town = new[] {
+                new Plant(Kind.Shrub, 8, "Palmera datilera de los jardines (Phoenix dactylifera), plantada", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Shrub, 4, "Granado del patio (Punica granatum), plantado", 300, C(0.3f, 0.45f, 0.22f), C(0.8f, 0.15f, 0.12f)),
+                new Plant(Kind.Shrub, 3, "Naranjo amargo (Citrus × aurantium)", 500, C(0.2f, 0.4f, 0.2f), C(0.95f, 0.55f, 0.1f)),
+                new Plant(Kind.Flower, 4, "Rosal de Damasco (Rosa × damascena)", 150, C(0.28f, 0.42f, 0.25f), C(0.92f, 0.55f, 0.65f)),
+                new Plant(Kind.Shrub, 4, "Seto de arrayán (Myrtus communis)", 120, C(0.2f, 0.35f, 0.2f), C(0.95f, 0.95f, 0.9f)) },
+              // Los asnos de los aguadores, los camellos de las caravanas del zoco de al-Karj y los gatos (queridos en el islam: el
+              // compañero Abu Hurayra, «el del gatito»).
+              townFauna = new[] {
+                new Pet("Aphid", 3, 1.6f, C(0.55f, 0.5f, 0.45f), "Asno del aguador (en el microcosmos, un pulgón de carga)"),
+                new Pet("Aphid", 2, 3f, C(0.75f, 0.6f, 0.4f), "Camello de la caravana del zoco (en el microcosmos, un pulgón de carga)"),
+                new Pet("Woodlouse", 3, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato del patio (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
 
             default: return null;
