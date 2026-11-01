@@ -198,7 +198,7 @@ public static partial class SampleSceneBuilder
                     || t.GetComponent<UnityEngine.EventSystems.EventSystem>() != null) { keep.Add(t); continue; }
                 if (t.GetComponent<Anima>() != null)
                 {
-                    if (spec.people.Contains(t.name)) { keep.Add(t); people.Add(t.gameObject); }
+                    if (spec.people.Contains(t.name) || (t.name.EndsWith("_Post") && spec.people.Contains(t.name.Substring(0, t.name.Length - 5)))) { keep.Add(t); people.Add(t.gameObject); }   // (los compañeros se llaman «Goluis_Post»…: WorkdayDirector.Body)
                     continue;   // el resto de animas (fauna, personal que la prueba no usa), fuera aunque esté en el piso
                 }
                 if (t.GetComponentInParent<Anima>() != null) continue;   // las partes de un cuerpo van con su dueño
