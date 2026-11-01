@@ -238,7 +238,7 @@ public class CarpetWalkSpell : QueuedSpell
         else if (Time.time - _checkAt > NoProgress)
         {
             if (_restarts++ == 0) { PathMover.Of(self.transform).Restart(); _checkAt = Time.time; }
-            else { GaveUp = true; Debug.Log($"[Andar] «{self.name}» no avanza hacia {targetName} en {NoProgress * 2f:0} s: lo deja."); return true; }
+            else { GaveUp = true; Debug.Log($"[Andar] «{self.name}» no avanza hacia {targetName} en {NoProgress * 2f:0} s: lo deja. [{PathMover.Of(self.transform).Trace}; {CarpetPad.LastRoute(self.gameObject)}]"); return true; }   // (con el porqué: camino del NavMesh y última ruta)
         }
         return false;
     }

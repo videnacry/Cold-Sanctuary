@@ -125,11 +125,16 @@ public class IceInsectLife : MonoBehaviour
         else SpiderLife();
     }
 
-    // Si en 6 s no se ha movido 10 cm y no está trabajando en su sitio, suelta lo que hacía y se aparta 1–2 m.
+    // Si en 6 s no se ha alejado 30 cm de donde estaba y no está trabajando en su sitio, suelta lo que hacía y se aparta 1–2 m.
+    // (2026-11-01) La medida es desde un ANCLA fija, no desde el último fotograma: empujando contra una rama, FlyTo la mete y
+    // OutOfBranches la saca cada fotograma (a ×6, pasos de 10–40 cm), y con «10 cm desde la posición anterior» ese vaivén
+    // reiniciaba el reloj sin parar: la abeja quedaba suspendida junto al panal sin soltarse nunca (JornadaTest, grupo 50:
+    // SnowBee #15/#20/#31/#39/#43/#47 «atascado > 20 s» a 11–14 m en (−112…−127, −42…−50) y (88, 10, 155)). Un rodeo de verdad
+    // (Hover a 0,3 m del centro del panal, la guardiana en la piquera) se aleja más de 30 cm y no cuenta.
     void Unstick()
     {
         if (_working || Time.time < _unstickUntil) { _stallPos = transform.position; _stallAt = Time.time; return; }
-        if ((transform.position - _stallPos).sqrMagnitude > 0.01f) { _stallPos = transform.position; _stallAt = Time.time; return; }
+        if ((transform.position - _stallPos).sqrMagnitude > 0.09f) { _stallPos = transform.position; _stallAt = Time.time; return; }
         if (Time.time - _stallAt < 6f) return;
         if (_cell >= 0) { _skipCell = _cell; _skipUntil = Time.time + 20f; }
         _cell = -1; _source = Vector3.zero; _dancing = false; _carcass = null; _work = 0f;

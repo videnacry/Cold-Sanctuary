@@ -24,6 +24,11 @@ public class Habit : MonoBehaviour
     State _s;
     EthoAct _act;
     Affordance _target, _nest;
+    // EL SITIO QUE NO SE ALCANZA (2026-11-01): tras rendirse (no llega en 10 s, o lo ocupa otro al llegar) ese sitio se deja 30 s.
+    // Antes el siguiente Begin elegía el MISMO (el más cercano) y volvía a rondarlo: los pingüinos del guijarro y del borde del
+    // hielo «daban vueltas en círculo» 16–40 m en 20 s para 0,3–2 m netos (JornadaTest, grupo 50).
+    Affordance _avoid; float _avoidUntil;
+    int _slot = -1; static int _slots;   // su sitio de nido alrededor de la colonia (NestSpot)
     Vector3 _dest;
     GameObject _load;
     float _until, _lease, _nextScan, _nextWalk, _cool;
@@ -103,6 +108,7 @@ public class Habit : MonoBehaviour
         foreach (Affordance a in Affordance.Of(e.kind))
         {
             if (a == null || a == _nest || !a.isActiveAndEnabled || !a.Available(_a) || a.gameObject == gameObject) continue;
+            if (a == _avoid && Time.time < _avoidUntil) continue;
             float d = (a.transform.position - transform.position).sqrMagnitude;
             if (d < bd) { bd = d; best = a; }
         }
@@ -158,7 +164,7 @@ public class Habit : MonoBehaviour
                 if (_target != null && !_target.Available(_a)) { Stop(); return; }
                 if (_target != null) _dest = _target.transform.position;
                 if (!Move(_dest)) return;
-                if (_target != null && !_target.Occupy(_a)) { Stop(); return; }
+                if (_target != null && !_target.Occupy(_a)) { Avoid(); Stop(); return; }
                 _s = State.Doing; _until = Time.time + _act.seconds; _moveTo = new Vector3(1e6f, 0f, 0f);
                 Halt();
                 if (_logged++ < 40 || _logged % 50 == 0) Debug.Log($"[Hábito] «{name}» ({_a.SpeciesName}) {_act.verb}.");
@@ -168,7 +174,7 @@ public class Habit : MonoBehaviour
                 if (Time.time >= _until) Finish();
                 break;
             case State.Carrying:
-                if (!Move(_a.HomeOrigin)) return;
+                if (!Move(NestSpot)) return;
                 Deliver();
                 Stop();
                 break;
@@ -195,7 +201,7 @@ public class Habit : MonoBehaviour
         if ((to - _moveTo).sqrMagnitude > 1f) { _moveTo = to; _moveBest = d.magnitude; _moveSince = Time.time; }
         else if (d.magnitude < _moveBest - 0.4f) { _moveBest = d.magnitude; _moveSince = Time.time; }
         else if (Time.time - _moveSince > 5f && d.magnitude < Arrive + 6f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); return true; }
-        else if (Time.time - _moveSince > 10f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); Stop(); return false; }   // lejos y sin camino: lo deja
+        else if (Time.time - _moveSince > 10f) { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); Avoid(); Stop(); return false; }   // lejos y sin camino: lo deja (y ese sitio, un rato)
         if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh)
         {
             if (Time.time >= _nextWalk) { _nextWalk = Time.time + 1f; _a.Loco?.Walk(to, 1f); }
@@ -203,6 +209,25 @@ public class Habit : MonoBehaviour
         }
         float v = _a.ActsPrep != null && _a.ActsPrep.walk != null ? _a.ActsPrep.walk.navSpeed : 2f;
         return MicroMove.Step(transform, to, v, Arrive);
+    }
+
+    void Avoid() { if (_target != null) { _avoid = _target; _avoidUntil = Time.time + 30f; } }
+
+    // SU NIDO, no el centro de la colonia: todos los de una colonia comparten HomeOrigin (el punto de su familia), y llevar el
+    // guijarro «a casa» era llevarlo al MISMO punto que los otros quince; ahí se apiñaban, la evitación de los agentes los hacía
+    // rodear el montón y nadie llegaba a 1,5 m (vueltas en círculo, JornadaTest 2026-11-01). Cada uno, su sitio en un anillo de
+    // 2–4 m alrededor de la colonia (por su identidad, siempre el mismo: los nidos de Adélie están a ~1 m unos de otros).
+    Vector3 NestSpot
+    {
+        get
+        {
+            if (_nest != null) return _nest.transform.position;
+            if (_slot < 0) _slot = _slots++;   // (muchos se llaman igual, «Penguin(Clone)»: un número propio por individuo)
+            float ang = _slot * 137.5f * Mathf.Deg2Rad, r = 2f + (_slot % 9) * 0.25f;   // ángulo áureo: repartidos sin coincidir
+            Vector3 p = _a.HomeOrigin + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * r;
+            if (UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit hit, 2f, UnityEngine.AI.NavMesh.AllAreas)) p = hit.position;
+            return p;
+        }
     }
 
     void Halt() { if (_a.nav != null && _a.nav.enabled && _a.nav.isOnNavMesh) _a.nav.ResetPath(); _a.Loco?.Idle(1f); }
@@ -293,7 +318,7 @@ public class Habit : MonoBehaviour
             if (_nest == null)
             {
                 var g = new GameObject($"Nido_guijarros_{name}");
-                g.transform.position = _a.HomeOrigin + new Vector3(Random.Range(-1.5f, 1.5f), 0f, Random.Range(-1.5f, 1.5f));
+                g.transform.position = NestSpot;
                 _nest = Affordance.Put(g, AffordanceKind.Pebble, 1, 0f, 0f);
                 _nest.maxStock = 30f;
             }

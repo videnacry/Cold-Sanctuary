@@ -147,7 +147,7 @@ public class MarineLife : MonoBehaviour
         }
         if (_a.hungry >= 0f)
         {
-            Swarm fish = Swarm.Nearest(transform.position, SwarmKind.Fish) ?? Swarm.Nearest(transform.position);
+            Swarm fish = OpenWaterSwarm(transform.position);
             if (fish != null) { Vector3 f = fish.transform.position; f.y = Mathf.Min(f.y, SwimY); Move(f, speed * 1.2f, false); return; }
         }
         if (_estrus != null && _estrus.InEstrus && _a.sex == Sex.female && _a.lifeStage == LifeStage.adult)
@@ -156,13 +156,31 @@ public class MarineLife : MonoBehaviour
             if (male != null) { Move(male.transform.position, speed, false); return; }
         }
         if (Habitat()) return;
-        if (Time.time > _nextPick || (transform.position - _target).sqrMagnitude < 1f)
+        // (llegada EN PLANTA: bajo una placa nada a UnderIceY —la orca, a −3,25 m— y un destino a −1…−3,5 m justo encima no
+        //  se alcanzaba nunca en 3D: se quedaba debajo, subiendo y bajando, hasta el siguiente sorteo)
+        if (Time.time > _nextPick || new Vector2(transform.position.x - _target.x, transform.position.z - _target.z).sqrMagnitude < 1f)
         {
             Vector2 r = Random.insideUnitCircle * LagoonRadius;
             _target = new Vector3(Lagoon.x + r.x, SwimY - Random.Range(0f, 2.5f), Lagoon.z + r.y);
             _nextPick = Time.time + Random.Range(8f, 18f);
         }
         Move(_target, speed * 0.6f, false);
+    }
+
+    // EL BANCO EN AGUA ABIERTA más cercano (los de peces primero; si no hay, cualquiera). Uno que huyendo se metió bajo una
+    // placa queda a −1 m, DENTRO del hielo (la placa va de 0 a −1,5 m): bajo ella el depredador bucea a UnderIceY y nunca lo
+    // toca, y con hambre se quedaba debajo para siempre (la orca, JornadaTest 2026-11-01). null si todos están bajo el hielo.
+    static Swarm OpenWaterSwarm(Vector3 from)
+    {
+        Swarm best = null, bestAny = null; float bd = float.MaxValue, bdAny = float.MaxValue;
+        foreach (Swarm s in Swarm.All)
+        {
+            if (s == null || s.Consumed || IceAbove(s.transform.position)) continue;
+            float d = (s.transform.position - from).sqrMagnitude;
+            if (s.kind == SwarmKind.Fish && d < bd) { bd = d; best = s; }
+            if (d < bdAny) { bdAny = d; bestAny = s; }
+        }
+        return best ?? bestAny;
     }
 
     // Tumbada en el hielo (a ras de suelo), sin moverse: descansa y, de noche, duerme (SleepCycle).
@@ -202,6 +220,12 @@ public class MarineLife : MonoBehaviour
                 if (IceAbove(np) || IceAbove(ahead))
                 {
                     float under = UnderIceY;
+                    // EN PLANTA bajo el hielo: aquí la altura la manda la placa (UnderIceY), así que el paso horizontal no puede
+                    // salir del vector 3D: con el destino casi encima (un banco de peces a −1 m, la orca a −3,25 m) el paso era
+                    // casi vertical, la placa lo devolvía abajo y no avanzaba (orca «atascada > 20 s» en (40,−3,15), (46,−3,13) y
+                    // (86,−3,24), JornadaTest 2026-11-01).
+                    Vector3 flatTo = new Vector3(d.x, 0f, d.z); float fd = flatTo.magnitude;
+                    if (fd > 1e-4f) { float s = Mathf.Min(fd, v * Time.deltaTime); np.x = cur.x + flatTo.x / fd * s; np.z = cur.z + flatTo.z / fd * s; }
                     np.y = Mathf.MoveTowards(cur.y, Mathf.Min(np.y, under), 2.5f * Time.deltaTime);
                     if (cur.y > under + 0.05f && IceAbove(np) && !IceAbove(cur)) { np.x = cur.x; np.z = cur.z; }
                     dist = Vector3.Distance(new Vector3(to.x, 0f, to.z), new Vector3(np.x, 0f, np.z));   // bajo el hielo cuenta la distancia en planta

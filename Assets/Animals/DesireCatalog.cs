@@ -348,6 +348,16 @@ public static class DesireCatalog
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
     static void Explore(Animal self, string key)
     {
+        // LA CRÍA no se aleja: curiosea a 1–2,5 m de donde está, con pausas largas para mirar y olfatear (los polluelos de
+        // pingüino en su guardería, los cachorros junto a la guarida). Con los saltos de 4–10 m de un adulto y su colonia o su
+        // recinto alrededor, casi todo «hacia delante» quedaba fuera y solo se alcanzaba volver: iba y venía 15–17 m en 20 s
+        // para 0,5–2 m netos («da vueltas en círculo», Polluelo_1/2/3 y Cachorro_2/3, JornadaTest 2026-11-01).
+        if (self.lifeStage == LifeStage.child)
+        {
+            Transform ct = self.transform;
+            Stroll(self, key, () => ct.position + Ring(1f, 2.5f), 4f, 8f, 0.8f);
+            return;
+        }
         float step = Mathf.Clamp(self.HomeRadius * 0.08f, 4f, 10f);
         Transform tr = self.transform;
         Stroll(self, key, () => LifeStage.WanderTarget(tr.position, tr.forward, step, UnityEngine.Random.insideUnitCircle), 1f, 3f, 2f);

@@ -337,7 +337,7 @@ public class ToiletSpell : QueuedSpell
         {
             if (_toilet == null)
             {
-                _toilet = Nearest(self.transform.position);
+                _toilet = Nearest(self.transform.position, PathMover.Of(self).PivotHeight);
                 if (_toilet == null) { Debug.Log($"[Cuerpo] «{self.name}» necesita ir al baño y no encuentra aseos."); return true; }
                 _walk = new CarpetWalkSpell { target = _toilet, targetName = "los aseos", stopDistance = 1.4f, giveUpAfter = 120f };   // los aseos pueden estar en otro piso o torre: en alfombra
                 if (self.GetComponent<PlayerController>() != null) Panoramic(_toilet);
@@ -381,15 +381,35 @@ public class ToiletSpell : QueuedSpell
         if (cc != null) cc.enabled = true;
     }
 
-    static Transform Nearest(Vector3 from)
+    // LOS ASEOS A LOS QUE SE LLEGA (JornadaTest 2026-11-01, grupo 50: Goluis en el anillo de la Cocina, Lizmibet en el
+    // Hospital y Linduarda en la Sala de Yoga «ir al baño sin avanzar» > 20 s; «[Andar] no avanza hacia los aseos en 16 s» y
+    // «no llega a los aseos (a 27/28/16 m)»). Se elegía el inodoro más cercano EN LÍNEA RECTA: en el mismo piso podía caer en
+    // otra isla del NavMesh (al otro lado de un hueco, de una barandilla, en una plataforma hija), y PathMover se quedaba al
+    // final del camino parcial —o quieto al borde, sin camino— a 16–28 m, hasta rendirse. Ahora, de los del MISMO piso (≤ 2,5 m
+    // de desnivel), solo valen aquellos a los que el camino del NavMesh termina junto al inodoro (a ≤ 1,4 m, la parada de
+    // CarpetWalkSpell: la puerta de la cabina); los de otro piso los lleva la red de alfombras y el árbol. Si ninguno vale, el
+    // más cercano, como antes. Tope: 10 caminos por búsqueda (una vez por viaje al baño).
+    static Transform Nearest(Vector3 from, float pivotHeight)
     {
-        Transform best = null; float bestSq = float.MaxValue;
+        var all = new List<(Transform t, float sq)>();
         foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
+            if (t.name == "Inodoro_seco") all.Add((t, (t.position - from).sqrMagnitude));
+        if (all.Count == 0) return null;
+        all.Sort((a, b) => a.sq.CompareTo(b.sq));
+        Vector3 feet = from - Vector3.up * pivotHeight;
+        bool onMesh = UnityEngine.AI.NavMesh.SamplePosition(feet, out UnityEngine.AI.NavMeshHit start, 1.5f, UnityEngine.AI.NavMesh.AllAreas);
+        var path = new UnityEngine.AI.NavMeshPath();
+        int tries = 0;
+        foreach (var (t, _) in all)
         {
-            if (t.name != "Inodoro_seco") continue;
-            float sq = (t.position - from).sqrMagnitude;
-            if (sq < bestSq) { bestSq = sq; best = t; }
+            if (Mathf.Abs(t.position.y - feet.y) > 2.5f) return t;   // otro piso: alfombras y árbol (el más cercano de ellos)
+            if (!onMesh) return t;                                     // sin NavMesh bajo los pies no se puede juzgar
+            if (tries++ >= 10) break;
+            if (!UnityEngine.AI.NavMesh.SamplePosition(t.position, out UnityEngine.AI.NavMeshHit end, 2f, UnityEngine.AI.NavMesh.AllAreas)) continue;
+            if (!UnityEngine.AI.NavMesh.CalculatePath(start.position, end.position, UnityEngine.AI.NavMesh.AllAreas, path) || path.corners.Length == 0) continue;
+            Vector3 last = path.corners[path.corners.Length - 1] - t.position; last.y = 0f;
+            if (last.magnitude <= 1.4f) return t;
         }
-        return best;
+        return all[0].t;
     }
 }
