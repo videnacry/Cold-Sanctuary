@@ -41,7 +41,9 @@ public class CarnivoreKeeper : MonoBehaviour
         // Sus NECESIDADES van antes (baño, comer, dormir): mientras tanto no patrulla. Antes lo llevaba en alfombra al techo
         // estando en la cabina del aseo y, al salir, el aseo lo devolvía de golpe 60 m (JornadaTest 2026-10-29, Gohageneis).
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) return;
-        if (Time.time >= _nextCheck && _duty == Duty.Patrol) { _nextCheck = Time.time + checkEvery; _target = HungryCarnivore(); if (_target != null) _duty = Duty.ToFeeder; }
+        // (2026-11-01) Solo va al comedero si hay raciones: con el comedero vacío iba, volvía a la patrulla y a los 20 s otra vez al
+        // comedero, ida y vuelta al pie del tronco de Producción («da vueltas», JornadaTest). Sin raciones, sigue patrullando.
+        if (Time.time >= _nextCheck && _duty == Duty.Patrol) { _nextCheck = Time.time + checkEvery; _target = _feeder != null && _feeder.GetComponentInChildren<FoodItem>() != null ? HungryCarnivore() : null; if (_target != null) _duty = Duty.ToFeeder; }
         switch (_duty)
         {
             case Duty.Patrol:

@@ -48,7 +48,7 @@ genérico, y `TreeSpec`, las medidas del árbol), `ArbolCampos.cs` (niveles y ru
 
 | Parte | Medidas | Notas |
 |---|---|---|
-| **Tronco** | Cuadrado, 0–92 m; agua de 20 × 20 m (de 0,05 a 91,5 m); pared de acrílico de 1 m (22 × 22 m) | El cristal del tanque de virtualización (`VirtualizationTank.GlassColor`) y su agua, más clara (alfa 0,2). El agua es un `WaterZone` (caja): se nada con `SwimBody`. |
+| **Tronco** | Cuadrado, 0–92 m; agua de 20 × 20 m (de 0,05 a 91,5 m); pared de acrílico de 1 m (22 × 22 m) | Cristal casi invisible y agua azul (`TreeGlassColor`, alfa 0,06, liso 0,6; `TreeWaterColor`, alfa 0,45), sin sombra (2026-11-01: con el cristal del tanque y el agua a 0,2 los troncos se veían de lejos como rejillas blancas opacas; ver §En vivo). El agua es un `WaterZone` (caja): se nada con `SwimBody`. |
 | **Exoesqueleto** | 24 nervios CFST (4 esquinas y 5 por cara, uno cada ~3,7 m) y zunchos de canto (0,25 × 0,36 m) cada 6 m | Una sola malla; no cruza las puertas, las bocas de las ramas ni las losas. Es lo que carga: el acrílico no se cuenta como portante. |
 | **Puertas** | Suelo, 4 pisos, 4 campos de punta, 4 anillos y el techo; **3 × 3 m** (Berón 2026-10-31: más anchas) | Hueco con bobinas de cobre y el **campo magnético** en la cara de dentro. Los cuerpos lo cruzan; el agua no: el hueco es una **campana de aire**. Cada una lleva su `TreeDoorExit`. |
 | **Hélice** | 2 niveles: **64 m** (pisos a y c) y **75 m** (pisos b y d) | Lado a = +Z, b = +X, c = −Z, d = −X del árbol (gira). |
@@ -243,6 +243,39 @@ alguien entrando por ella, y nadando del techo al piso 5 y del piso 5 al 1). Cad
   - **Clase de yoga (4)**: Lizmibet no llega a su esterilla en los 120 s de la clase (viene de Servicios a Entrenamiento).
   - **Gimnasio (3)**: dos máquinas de otro piso de la torre no se alcanzan en 60 s (el nado entre pisos cuenta).
   - **Frutales (1)**: con el nado estimado entre puntas y torres salen 7 jardineros al día (17,1 h) en vez de ~3.
+
+## Después de la migración: arreglos (2026-11-01)
+
+**¿Quedan edificios con el aspecto viejo?** No. Las fotos `Temp/Migracion/Servicios_entero*.png` (las primeras, de las 18:05) se
+hicieron cuando solo Servicios era un árbol: los edificios de marco abierto con columnas y pisos apilados que salen en ellas son
+las torres de entonces —Entrenamiento en (10, 0), 6 pisos con su techo de frutales (a la derecha), y Producción en (18, −95), 3
+pisos, al fondo a la izquierda— que se migraron después (19:51 y 21:00). Con un buscador de `Estructura_Elevada` fuera de los
+árboles y rayos desde las mismas cámaras, en la escena de ahora solo queda la **Central Nuclear** (1 piso a 12 m, su sitio de
+exclusión: no se migra). Fotos nuevas desde las mismas cámaras: `Temp/PostMig/Servicios_entero.png` y `Servicios_lado.png`.
+
+**El tronco, agua transparente.** De lejos los troncos salían como rejillas blancas opacas: el cristal del tanque (alfa 0,18, liso
+0,92 y con el brillo sin multiplicar por el alfa) en caras de 20 m reflejaba el cielo y, con el sol, se quemaba a blanco; el agua
+(alfa 0,2) era casi incolora; y los dos echaban una sombra maciza. Probado quitando por turnos cristal, agua y exoesqueleto
+(cualquiera de los dos solo ya salía blanco). Ahora (`TrunkLook`): cristal casi invisible (alfa 0,06, liso 0,6, el brillo se
+desvanece con el alfa), agua de un azul más hondo (alfa 0,45) y sin sombra; los nervios y zunchos no cambian (son la estructura,
+`RootCheck`). De lejos se ve a través del tronco (a 170 m la niebla, ExponentialSquared 0,008, se come el azul); de cerca, azul, y
+se ve nadar a la gente. Fotos con el posprocesado del juego en `Temp/PostMig/`: `antes_todo_lejos/cerca.png`,
+`antes_sin_{cristal,agua,exo}_*.png`, `despues_tronco_lejos/cerca.png` y `despues_Produccion_nado_techo_a_piso5_01.png` (un nadador).
+
+**Los fallos de la batería con los viajes más largos** (de 21):
+- **La mesa del comedor** (la causa de casi toda la jornada): PathMover calculaba el camino desde el punto del NavMesh más cercano
+  al pivote (1 m sobre los pies); junto a una mesa del anillo del comedor era la isla de NavMesh sobre el tablero (los muebles sin
+  collider también cuentan al hornear). Al levantarse, el camino salía de la mesa y era parcial: 4 personas 30 min quietas en la
+  Mesa_6 («pedir en la barra», «ir al baño»), sin llegar a sus puestos ni a entrenar; Lizmibet no llegaba a la clase de yoga, y dos
+  máquinas del gimnasio no se alcanzaban. Ahora sale del NavMesh a la altura de los pies (`FeetOnMesh`).
+- **Kushal y la misión de las 12 en otro árbol**: sale antes contando el viaje (`ArbolCampos.TripSeconds`) y la comida es un
+  puesto más (`PlayerWorkday.HeadingEarly`; ver el commit).
+- **Viajes que ya no van adonde iban** (`TreeTrip.StillFor`), **alfombras a ninguna parte** desde un árbol (`CarpetPad.ForceHop`),
+  **el jugador en la puerta del techo** (su cápsula), **la clase de yoga espera a quien viene de lejos** (`YogaClass`).
+- **El comedero de los depredadores** estaba a 1 m de la cara Este del tronco de Producción: ahora a 9 m. **Rodeos que se
+  alternan** al pie de un tronco (PathMover solo cambia de camino si el nuevo es claramente más corto) y **el guardia** deja la
+  ración cerca si el animal se mueve.
+- **Frutales**: un jardinero por edificio (docs/jardines-frutales.md): 5 rondas, 9,0 h.
 
 ## Historia
 
