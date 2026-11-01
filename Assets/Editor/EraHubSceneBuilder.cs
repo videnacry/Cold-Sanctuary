@@ -37,6 +37,18 @@ public static class EraHubSceneBuilder
         ("Microcosmos_BruceLee", "Bruce Lee", "Bruce Lee: del Wing Chun al Jeet Kune Do (sé agua)"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
+        ("Microcosmos_Pitagoras", "Crotona", "Pitágoras y la escuela de Crotona"),
+        ("Microcosmos_Herodoto", "Menfis", "Heródoto en Egipto"),
+        ("Microcosmos_AlJuarismi", "Bagdad", "al-Juarismi y la Casa de la Sabiduría"),
+        ("Microcosmos_Newton", "Woolsthorpe", "Newton en Woolsthorpe"),
+        ("Microcosmos_Jenner", "Berkeley", "Edward Jenner y la vacuna"),
+        ("Microcosmos_Bolivar", "Angostura", "Simón Bolívar en Angostura"),
+        ("Microcosmos_Nietzsche", "Sils Maria", "Nietzsche en Sils Maria"),
+        ("Microcosmos_Curie", "París 1898", "Marie y Pierre Curie"),
+        ("Microcosmos_Tesla", "Colorado Springs", "Nikola Tesla en Colorado Springs"),
+        ("Microcosmos_Einstein", "Berna", "Albert Einstein en Berna"),
+        ("Microcosmos_Patterson", "Pasadena", "Clair C. Patterson y el plomo"),
+        ("Microcosmos_Chernobil", "Chernóbil", "Ananenko y su escuadrón en Chernóbil"),
     };
 
     [MenuItem("Tools/Cold Sanctuary/Build Sala de Eras (portales a cada microcosmos)")]

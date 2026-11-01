@@ -55,6 +55,18 @@ internal static partial class CivicBuilder
             case "Le Chambon-sur-Lignon": return LeChambon(t);
             case "Mesopotamia": return Uruk(t);
             case "Huerto": return FirstVillage(t);
+            case "Crotona": return PythagorasTown(t);
+            case "Menfis": return HerodotusTown(t);
+            case "Bagdad": return AlKhwarizmiTown(t);
+            case "Woolsthorpe": return NewtonTown(t);
+            case "Berkeley": return JennerTown(t);
+            case "Angostura": return BolivarTown(t);
+            case "Sils Maria": return NietzscheTown(t);
+            case "París 1898": return CurieTown(t);
+            case "Colorado Springs": return TeslaTown(t);
+            case "Berna": return EinsteinTown(t);
+            case "Pasadena": return PattersonTown(t);
+            case "Chernóbil": return ChernobylTown(t);
             default: return 0;
         }
     }

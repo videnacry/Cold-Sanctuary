@@ -83,6 +83,19 @@ public static class Eras
             case "Bruce Lee":             return (1964, "Hong Kong, Seattle, Long Beach y Los Ángeles");
             case "Irena Sendler":         return (1942, "Varsovia");
             case "Le Chambon-sur-Lignon": return (1942, "Le Chambon-sur-Lignon, Francia");
+            // Los microcosmos de científicos e históricos (docs/microcosmos-cientificos.md): cada uno, el pueblo donde ocurrió.
+            case "Crotona":               return (-530, "Crotona, Magna Grecia (Pitágoras)");
+            case "Menfis":                return (-450, "Menfis y el Nilo, Egipto (Heródoto)");
+            case "Bagdad":                return (820, "Bagdad, la Ciudad Redonda (al-Juarismi)");
+            case "Woolsthorpe":           return (1666, "Woolsthorpe, Lincolnshire (Newton, el año de la peste)");
+            case "Berkeley":              return (1796, "Berkeley, Gloucestershire (Edward Jenner)");
+            case "Angostura":             return (1819, "Angostura del Orinoco (Simón Bolívar)");
+            case "Sils Maria":            return (1881, "Sils Maria, Alta Engadina (Nietzsche)");
+            case "París 1898":            return (1898, "París, rue Lhomond (Marie y Pierre Curie)");
+            case "Colorado Springs":      return (1899, "Colorado Springs (Nikola Tesla)");
+            case "Berna":                 return (1905, "Berna (Albert Einstein, el año milagroso)");
+            case "Pasadena":              return (1953, "Pasadena y Argonne (Clair C. Patterson)");
+            case "Chernóbil":             return (1986, "Prípiat y la central de Chernóbil (Alekséi Ananenko y su escuadrón)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }
