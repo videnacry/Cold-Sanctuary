@@ -213,6 +213,11 @@ public static partial class SampleSceneBuilder
         int removed = before - CountTransforms();
         int fixedRefs = CompactMissingRefs();
 
+        // Sin la JORNADA del santuario: al arrancar coloca a cada uno en el área de su primer turno y luego los lleva de un área a
+        // otra (en una escena de un piso, a pisos que no están: Goluis y Liz se quedaban en el aire donde estaba la cocina y la
+        // enfermería, y la clase de yoga no reunía a sus practicantes). Aquí se quedan en el piso.
+        foreach (WorkdayDirector wd in Object.FindObjectsByType<WorkdayDirector>(FindObjectsInactive.Include, FindObjectsSortMode.None)) Object.DestroyImmediate(wd.gameObject);
+
         // Las pruebas: solo las de su piso (o ninguna).
         ColdSanctuary.TestRunner tr = Object.FindAnyObjectByType<ColdSanctuary.TestRunner>(FindObjectsInactive.Include);
         if (tr != null)

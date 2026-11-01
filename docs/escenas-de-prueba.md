@@ -23,7 +23,9 @@ Una sola tabla (`TestScenes`) y un solo constructor parametrizado. Dos clases de
   losa, sala, anillo, muebles) y **todo lo que está físicamente en ese piso** aunque cuelgue de otro objeto (la cocina real
   `Restaurante_AUTO/Sala`, el comedor del anillo, los puntos `SalaYoga`/`CocinaSpot`…), los personajes que pide la prueba (los
   que estaban en otro sitio se traen al piso, a puntos andables), Kushal, el suelo, la luz, la cámara y los sistemas sin cuerpo
-  (reloj, UI, jornada, economía, el orquestador de pruebas). Todo lo demás (otras torres, otros pisos, fauna, flora, mar) fuera.
+  (reloj, UI, economía, el orquestador de pruebas) y los casquetes de hielo del suelo, debajo. Todo lo demás (otras torres, otros
+  pisos, fauna y lo que la puebla al arrancar —familias, enjambres, colmenas—, flora, mar) fuera, y también la **jornada**
+  (`WorkdayDirector`): al arrancar coloca a cada uno en el área de su primer turno, que en una escena de un piso no existe.
   Las listas que apuntaban a lo podado se compactan. Se hornea el NavMesh del piso.
   **Se regeneran solas al final de «Build Sample Scene Blockout»** (`AlsoAreaTestScenes`): son el santuario actual, no pueden
   desfasarse. Menú suelto: «Build Test Scenes de área (yoga, enfermería, cocina)».
