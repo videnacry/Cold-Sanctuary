@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 709 tipos._
+_Total: 712 tipos._
 
 
 ## Animals
@@ -82,6 +82,7 @@ _Total: 709 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Towns.cs` — LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01:
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.cs` — LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
@@ -97,6 +98,7 @@ _Total: 709 tipos._
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicrocosmSpec** (class) — `Assets/Editor/MicrocosmTemplate.cs` — LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27):
+- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.cs` — LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/microcosmos-reglas-edificacion.md, regla 3; Berón 2026-11-01:
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
@@ -464,6 +466,7 @@ _Total: 709 tipos._
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
 - **MicroBuildRules** (class) — `Assets/Scripts/Microcosmos/MicroBuildRules.cs` — LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01:
+- **MicroBuildRulesTest** (class) — `Assets/Scripts/Tests/MicroBuildRulesTest.cs` — TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md, ), sin cargar escenas:
 - **MicrocosmosFloorTest** (class) — `Assets/Scripts/Tests/MicrocosmosFloorTest.cs` — TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29):
 - **MicroEra** (class) — `Assets/Scripts/Progression/MicroEra.cs` — La FECHA de un microcosmos:
 - **MicroFloor** (class) — `Assets/Scripts/Microcosmos/MicroFloor.cs` — EL PISO DEL MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29):
