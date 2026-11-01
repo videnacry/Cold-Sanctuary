@@ -601,14 +601,14 @@ public static class StorySceneBuilder
         AreaMicrocosmos.Box(rest, "Mesa de notas", new Vector3(1.4f, 0.38f, 0f), new Vector3(1.2f, 0.75f, 0.6f), wood, true);
         AreaMicrocosmos.Box(rest, "Cuadernos", new Vector3(1.4f, 0.8f, 0f), new Vector3(0.5f, 0.1f, 0.35f), paper, false);
 
-        // ── La gente: Bruce Lee (cuerpo de cubos humano) y el elenco renacido (mirmidones) ──
+        // ── La gente: Bruce Lee, MANTIS (docs/microcosmos-civilizaciones.md §4: en el microcosmos solo hay insectos; la mantis es
+        //    el kung fu de la mantis, espera y golpea primero —intercepta—, y es de Hong Kong: Hierodula patellifera), y el elenco
+        //    renacido, cada uno su insecto. Erguida, a su estatura (1,72 m), con su pelo negro corto y cara humana; ropa negra.
         GameObject bruce = new GameObject(BruceLeeName);
         bruce.transform.SetParent(t, false); bruce.transform.localPosition = new Vector3(-12f, 0f, -6f);
         var col = bruce.AddComponent<CapsuleCollider>(); col.height = 1.72f; col.radius = 0.3f; col.center = Vector3.up * 0.86f;
-        Anima a0 = bruce.AddComponent<Anima>();
-        // Delgado y atlético (BodyShape): armazón medio (estatura 1,72 m sin más), músculo fibroso, sin grasa, piernas ágiles.
-        a0.strength = 1.3f; a0.agility = 1.6f; a0.bodyMass = 1.0f; a0.endurance = 1.4f; a0.discipline = 1.6f; a0.reasoning = 1.3f; a0.creativity = 1.4f;
-        CubeHumanoid.Dress(bruce, dark, new Color(0.86f, 0.7f, 0.56f), 1.72f);
+        CubeInsect.DressFolk(bruce, "Mantis", 1.72f, BruceLeeName, female: false);
+        CubeInsect.WearShirt(bruce, dark);
         WorldLabel bl = bruce.AddComponent<WorldLabel>(); bl.text = BruceLeeName; bl.height = 2.1f;
         MartialForms forms = bruce.AddComponent<MartialForms>();
 

@@ -119,3 +119,20 @@ tendrá un `Kind.Dojo` (primera clase: la guardia y el juego de pies con el trab
 - Prueba: `BruceLeeStoryTest` (grupo **60**): las posturas caben en el cuerpo de 1,72 m (manos donde dice el IK, pies en el
   suelo, nada bajo el suelo, sin NaN), la historia avanza y Bruce va a cada estación con su forma, las estaciones a ≥ 2 m y
   dentro de los muros, y las plazas reservadas del Dojo con la historia en su plaza principal.
+
+---
+
+## 4. Bruce Lee, mantis (2026-11-01)
+
+Berón: «en el microcosmos todos los personajes son insectos… bruce lee debe convertirse en su versión insecto, ¿qué insecto le
+quedaría mejor? ¿una mantis? ¿un camarón pistola?». Elegida la **mantis** (*Hierodula patellifera*, nativa de Hong Kong): el
+kung fu de la mantis es real, la mantis espera y golpea primero (intercepta: Jeet Kune Do) y su golpe dura de 60 a 290 ms
+(Rossoni y Niven 2020). El camarón pistola y la galera son crustáceos (no insectos). Comparación completa y fuentes en
+[`microcosmos-civilizaciones.md`](microcosmos-civilizaciones.md) §4.
+
+- En el microcosmos Bruce Lee es una mantis erguida de 1,72 m con cara humana, pelo negro corto y ropa negra
+  (`CubeInsect.DressFolk` + `WearShirt`); Yip Man, una mantis vieja.
+- Sus formas, con las mismas claves, mueven los brazos raptoriales (`MantisFist`, `CubeInsect.Martial`): guardia de «rezo»
+  en la línea central, golpes en cadena alternos de 0,15 s, el muñeco con los dos pares de brazos, el balanceo de hoja como
+  juego de pies, el golpe de una pulgada (1,6 s cargando, 0,1 s el golpe), las notas y «el agua».
+- Las posturas humanas de `JeetKuneDo` se quedan para el Dojo del santuario (cuerpo humano).

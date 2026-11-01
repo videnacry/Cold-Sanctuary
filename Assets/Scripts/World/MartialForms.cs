@@ -5,7 +5,9 @@ using UnityEngine;
 /// (la guardia, los golpes en cadena, el muñeco, el juego de pies, el golpe de una pulgada…). Si está en una historia por
 /// pasos (<see cref="StoryMission"/>), cada paso elige su forma (<see cref="formByStep"/>) y su sitio (<see cref="spotByStep"/>):
 /// el maestro va a la estación de ese paso (Hong Kong, la bahía, Seattle, Long Beach, Los Ángeles…) y mira al jugador.
-/// Necesita un cuerpo de cubos humano (<see cref="CubeHumanoid"/>, con <see cref="CreatureRig"/>) y un <see cref="Anima"/>.
+/// Con cuerpo de cubos humano (<see cref="CubeHumanoid"/>, con <see cref="CreatureRig"/> y <see cref="Anima"/>) hace las posturas
+/// de <see cref="JeetKuneDo"/>; con cuerpo de INSECTO (<see cref="CubeInsect"/>: en el microcosmos solo hay insectos, Bruce Lee es una
+/// mantis) hace las mismas formas con los brazos raptoriales (<see cref="MantisFist"/>).
 /// </summary>
 public class MartialForms : MonoBehaviour
 {
@@ -19,6 +21,8 @@ public class MartialForms : MonoBehaviour
     public float standOff = 1.6f;
 
     Anima _anima;
+    CubeInsect _insect;
+    float _formStart;
     StoryMission _mission;
     string _current;
     (System.Func<AsanaPoseSpell> pose, float seconds)[] _frames;
@@ -32,16 +36,24 @@ public class MartialForms : MonoBehaviour
     void Start()
     {
         _anima = GetComponent<Anima>();
+        _insect = GetComponent<CubeInsect>();
+        if (_insect != null && GetComponent<CreatureRig>() == null) _anima = null;   // cuerpo de insecto: sin posturas humanas
         _mission = GetComponentInParent<StoryMission>();
         if (_mission == null) _mission = StoryMission.Instance;
     }
 
     void Update()
     {
-        if (_anima == null) return;
+        if (_anima == null && _insect == null) return;
         int step = _mission != null ? _mission.Step : -1;
         if (step != _step) { _step = step; OnStep(step); }
         Play(_step >= 0 && _step < formByStep.Length && !string.IsNullOrEmpty(formByStep[_step]) ? formByStep[_step] : form);
+        if (_anima == null)   // MANTIS: la forma en los brazos raptoriales
+        {
+            MantisFist.Frame f = MantisFist.At(_current, Time.time - _formStart);
+            _insect.Martial(f.reachL, f.reachR, f.lift, f.sway, f.mid);
+            return;
+        }
         if (_frames == null || _frames.Length == 0) return;
         if (_spell == null) { _spell = _frames[_frame].pose(); _spell.duration = _frames[_frame].seconds; _spell.reachFraction = Mathf.Min(0.6f, 0.25f / Mathf.Max(0.05f, _spell.duration) + 0.2f); }
         if (_spell.Tick(_anima)) { _frame = (_frame + 1) % _frames.Length; _spell = null; }
@@ -51,7 +63,7 @@ public class MartialForms : MonoBehaviour
     public void Play(string key)
     {
         if (key == _current) return;
-        _current = key; _frames = JeetKuneDo.Form(key); _frame = 0; _spell = null;
+        _current = key; _frames = JeetKuneDo.Form(key); _frame = 0; _spell = null; _formStart = Time.time;
     }
 
     // Al cambiar de paso: a la estación de ese paso, mirando al jugador (o al centro de la estación).

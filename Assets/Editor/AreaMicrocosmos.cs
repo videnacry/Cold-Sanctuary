@@ -192,6 +192,10 @@ public static class AreaMicrocosmos
         Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
         if (mfl.outside > 0) Debug.LogWarning($"[Microcosmos] {sceneLabel}: {mfl.outside} piezas de flora, fauna o historia FUERA de los muros (regla 11).");
 
+        // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos-civilizaciones.md §3): ninguna escena de microcosmos se guarda con un
+        // cuerpo humano (un personaje de historia vestido de humano se convierte en su insecto).
+        InsectOnly.EnforceRoot(root.transform);
+
         root.transform.position = o;
 
         // Las misiones del área (yoga, textil, mecánica) siguen en su tablero.
