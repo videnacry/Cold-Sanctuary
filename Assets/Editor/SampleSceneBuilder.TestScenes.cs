@@ -206,11 +206,21 @@ public static partial class SampleSceneBuilder
                 if (r != null ? InBox(r.bounds.center) : (t.GetComponent<Collider>() != null || t.GetComponent<Light>() != null) && InBox(t.position)) keep.Add(t);
             }
 
+        // Los personajes que se quedan, a un grupo propio: colgaban de su área (SanctuaryDirector los mete en ella) y la habrían
+        // dejado viva, vacía y en el aire —y al arrancar los devolvía allí: Goluis a la cocina en la escena de la sala de yoga—.
+        Transform cast = new GameObject("Personajes_de_la_prueba").transform; cast.SetParent(root, false);
+        foreach (GameObject g in people)
+            if (g != null && !floors.Any(f => g.transform.IsChildOf(f)) && g.transform.parent != null && g.transform.parent != root)
+                g.transform.SetParent(cast, true);
+
         int before = CountTransforms();
         var anc = new HashSet<Transform>();
         foreach (Transform k in keep) for (Transform x = k != null ? k.parent : null; x != null && anc.Add(x); x = x.parent) { }
         foreach (GameObject g in SceneManager.GetActiveScene().GetRootGameObjects()) Prune(g.transform, keep, anc);
         int removed = before - CountTransforms();
+        // Un área que haya quedado (vacía) solo por colgar de ella algo del piso deja de ser área: nadie va ni es enviado allí.
+        foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            if (!floors.Any(f => a.transform.IsChildOf(f))) { try { Object.DestroyImmediate(a); } catch (System.Exception) { a.enabled = false; } }
         int fixedRefs = CompactMissingRefs();
 
         // Sin la JORNADA del santuario: al arrancar coloca a cada uno en el área de su primer turno y luego los lleva de un área a
