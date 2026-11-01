@@ -153,12 +153,11 @@ Ley ya escrita en `microcosmos-eras-and-observation.md` §1: **el animal se elig
   (raro: ~0,5 %; la probabilidad es la suma de los pesos de los ciempiés del árbol).
 - En el microcosmos: `FolkCouple` (una pareja de una era civilizada) tiene un hijo cada pocos días de juego, con tope de
   hijos por pareja y de población por escena (sin bucles sin fin); el hijo nace de ~1 m, sigue a su madre y crece hasta 1,7 m en 6 días de juego (`FolkGrowth`).
-- (El ciempiés aún no tiene ficha morfológica: hasta entonces se dibuja como la especie más cercana. Pendiente con la
-  habilidad `species-sheet`.)
+- El ciempiés ya tiene ficha morfológica (escolopendra, 21 pares de patas; docs/microcosmos-fauna-eras.md §Ciempiés).
 
 ## 8. Eras: con estructuras o sin ellas
 
-`CivicEras.HasStructures(año)` = desde el Neolítico con aldeas (~−9500, primeras casas redondas del Natufiense / PPNA). En
+`Eras.HasStructures(año)` = desde el Neolítico con aldeas (~−9500, primeras casas redondas del Natufiense / PPNA). En
 las eras **sin estructuras** (antes del fuego, el fuego, el Paleolítico) se mantiene la **tribu con guarida** (refugio
 natural). En las **civilizadas** se quita la cuadrilla de recolectoras con guarida genérica (era el error que Berón vio:
 `AreaMicrocosmos.ForagingBand` se añadía a TODAS las historias) y se construyen sus **edificios reales**.
@@ -192,11 +191,11 @@ natural). En las **civilizadas** se quita la cuadrilla de recolectoras con guari
 | **Kapilavastu** (s. V a. C.) | **Tilaurakot**: ciudad en **cuadrícula** con calles, casas y tiendas de ladrillo, **puertas orientadas a los puntos cardinales**, muralla de ladrillo cocido sobre una empalizada de madera (s. VI a. C.), un complejo administrativo central y estanques revestidos de ladrillo (el tanque, s. III a. C.). | Palacio (Casa), Mercado, Jardín, Enfermería (los cuatro encuentros), Sala de meditación. | Universidad de Durham, proyecto Tilaurakot-Kapilavastu (desde 2014); Wikipedia «Tilaurakot»; Mukherji (1901). La identificación con Kapilavastu no es unánime (Piprahwa). |
 | **Alejandría** (~240 a. C.) | El **Museion** y la **Biblioteca** (salas con columnas y estanterías de rollos, sin planos conservados: se recrea según Estrabón, *Geografía* XVII.1.8), una **casa griega con patio** y el **pozo de Siene** con el gnomon. | Escuela (estudiar, enseñar), Biblioteca, Casa (cocinar). | Estrabón XVII.1.8; Canfora (1990) *The Vanished Library*; Wikipedia «Library of Alexandria» [verificar planta]. |
 | **Patanjali** (s. II a. C.) | **Āśrama** junto al río: cabañas de adobe y paja, un **patio de práctica** bajo el árbol, la cocina de leña y un huerto; cuevas de meditación excavadas en roca (como las de Barabar, s. III a. C., las más antiguas de la India). | Sala de Yoga (`yog_*`), Cocina, Huerto. | Wikipedia «Barabar Caves»; Olivelle (1993) *The Āśrama System*. |
-| **Mesopotamia** (Uruk, ~3500 a. C.) | Casas de **adobe** con patio, el recinto de **Eanna** y el **Templo Blanco** sobre la terraza de Anu, talleres, graneros. | Casa, Granero, Templo, Taller (cerámica, Pottery), Mercado. | Wikipedia «Uruk»; Liverani (2006) *Uruk: The First City*. (La escena es de `MobWorldSceneBuilder`; pendiente.) |
+| **Mesopotamia** (Uruk, ~3500 a. C.) | Casas de **adobe** con patio, el recinto de **Eanna** y el **Templo Blanco** sobre la terraza de Anu, talleres, graneros. | Casa, Granero, Templo, Taller (cerámica, Pottery), Mercado. | Wikipedia «Uruk»; Liverani (2006) *Uruk: The First City*. Wikipedia «White Temple and ziggurat of Uruk», «Bevelled rim bowl». Construido: casas con patio, Templo Blanco, alfarería, granero (`CivicBuilder.Uruk`). |
 | **Egina** (mito, ~1250 a. C.) | Megaron micénico, almacenes, el altar de Zeus Helanio en el monte Oros. | Casa, Templo, Granero. | Ovidio, *Met.* VII; Wikipedia «Aegina» (Kolonna). (Escena de `MythSceneBuilder`; pendiente.) |
 | **Tregua 1914** | Trincheras en zigzag con parapeto, **refugios** (*dugouts*) con tablas y sacos, alambradas. | Cocina de campaña, Puesto de socorro, Vigilar. | Imperial War Museums, «The Christmas Truce». |
-| **Planta Atómica** (1905) | Woolsthorpe Manor (Newton), el **cobertizo-laboratorio** de los Curie en la rue Lhomond, la **Oficina de Patentes de Berna** (Einstein). | Laboratorio (Operar, Estudiar), Casa. | (Escena de `PhysicsSceneBuilder`; pendiente.) |
-| **Irena Sendler / Le Chambon** (1942) | Varsovia: muro del gueto, el juzgado de la calle Leszno (la salida), casas; Le Chambon: la iglesia protestante, la escuela Cévenole, granjas de piedra con tejado de lauzas. | Casa, Escuela, Templo, Hospital. | (Escenas de `CompassionSceneBuilder`; pendiente.) |
+| **Planta Atómica** (1905) | Woolsthorpe Manor (Newton), el **cobertizo-laboratorio** de los Curie en la rue Lhomond, la **Oficina de Patentes de Berna** (Einstein). | Laboratorio (experimentos, medir), Oficina de patentes, Casa. | National Trust «Woolsthorpe Manor»; Curie (1904), tesis; Isaacson (2007) *Einstein*. Construido (`CivicBuilder.AtomicPlant`). |
+| **Irena Sendler / Le Chambon** (1942) | Varsovia: muro del gueto, el juzgado de la calle Leszno (la salida), casas; Le Chambon: la iglesia protestante, la escuela Cévenole, granjas de piedra con tejado de lauzas. | Taller de papeles, Orfanato, Casa; Templo, Escuela, Restaurante (pensión), Huerto (granja), Cocina (panadería). | Mieszkowska (2011) *Irena Sendler*; Hallie (1979) *Lest Innocent Blood Be Shed*; Yad Vashem. Los edificios de la historia se hacen sitios (`CivicBuilder.Porch`). |
 
 ## 9. Lista de comprobación por era
 
@@ -211,10 +210,12 @@ Hecho en código (builders y componentes; compila). **Sin generar ni probar aún
 | Alejandría (Eratóstenes) | ✓ | ✓ | ✓ | ✓ Museion (sala de columnas con rollos), casa con patio | ✓ | ✓ |
 | Patanjali | ✓ | ✓ | ✓ | ✓ āśrama: cabañas, patio de práctica, cocina, huerto | ✓ | ✓ |
 | Tregua 1914 | ✓ | ✓ (dos colonias de hormigas) | ✓ | ✓ refugios (dugouts) y cocina de campaña | ✓ | — (frente de guerra) |
-| Huerto (−9500) | ✓ | — (mirmidones) | se mantiene (transición) | pendiente: casas redondas | — | — |
-| Planta Atómica, Irena Sendler, Le Chambon | ✓ | ✓ (Newton araña, los Curie luciérnagas, Einstein grillo; Irena tijereta; Le Chambon abejas) | ✓ | los de su historia (pueblo, gueto, laboratorios); pendiente: hacerlos sitios del registro | pendiente | pendiente |
+| Huerto (−9500, la primera aldea) | ✓ | la tribu sigue de mirmidones (transición); las familias de la aldea, de especies mezcladas | la guarida se cambia por el **granero redondo** (los primeros silos) | ✓ tres casas redondas natufienses/PPNA (~5 m, muro de piedra y barro, cubierta cónica, hogar dentro) | ✓ | ✓ |
+| Planta Atómica | ✓ | ✓ (Newton araña, los Curie luciérnagas, Einstein grillo) | ✓ | ✓ Woolsthorpe Manor, laboratorio de la ESPCI (rue Lhomond), Oficina de Patentes de Berna | ✓ | ✓ |
+| Irena Sendler (Varsovia 1942) | ✓ | ✓ (Irena tijereta) | ✓ | ✓ los de la historia hechos sitios: oficina de Żegota (documentos), convento y orfanato (cuidar a los niños), familia de acogida | ✓ | ✓ |
+| Le Chambon (1942) | ✓ | ✓ (abejas) | ✓ | ✓ los de la historia hechos sitios: templo, presbiterio, Escuela Nueva Cevenol, pensión, granja, panadería | ✓ | ✓ |
 | Egina | ✓ | mirmidones (canon del mito: hormigas hechas personas) | ✓ | los de su historia; pendiente: megaron y almacenes | pendiente | pendiente |
-| Mesopotamia | ✓ | pendiente (escena de MobWorldSceneBuilder) | — | pendiente: casas de adobe con patio, Eanna, Templo Blanco | pendiente | pendiente |
+| Mesopotamia (Uruk, `MobWorld_Mesopotamia`) | ✓ (ahora con `MicroEra`, −3500) | ✓ (los tres vecinos de siempre y la gente nueva, insectos-humanos) | ✓ (ya no hay chozas-cubo) | ✓ casas de adobe con patio, Templo Blanco al pie de la terraza de Anu, alfarería de cuencos de borde biselado, granero (sin escuela de escribas: la escritura es de −3200) | ✓ | ✓ |
 | Eras sin estructuras (Sakshi, Ambrosio, Cocina, Paleolítico) | ✓ | mirmidones (canon) | se mantiene: es correcto | no aplica | — | — |
 
 ## 10. Qué probar en Unity (pendiente: no se ha ejecutado en el Editor)
@@ -224,4 +225,6 @@ Hecho en código (builders y componentes; compila). **Sin generar ni probar aún
 - Pruebas: grupo **61** (`InsectOnlyTest`, `AreaFunctionRegistryTest`), grupo **62** (`CivilizedErasTest`: las 7 escenas de
   historia, edificios, jornadas, especies, estaturas y familias) y grupo **60** (`BruceLeeStoryTest`, ahora con Bruce
   mantis). Las del santuario (jornada, grupos 50–58) deben seguir igual: el catálogo es el mismo.
+- Menús de las eras añadidas: «Build Planta Atómica (Newton, Curie, Einstein)», «Build simulaciones de compasión», «Build MobWorld
+  Mesopotamia» y «Build Microcosmos por área» (el Huerto, la primera aldea). El grupo **62** carga también estas cinco escenas.
 - A ojo: entrar por la máquina del Gimnasio en «Simulación del Dojo»: Kushal debe llegar como hormiga y volver humano.

@@ -13,7 +13,7 @@ using UnityEngine;
 /// Los edificios van alrededor del claro de la historia (sus estaciones están a menos de ~24 m del centro): a ±31 m en x y a
 /// +36 / −26 m en z, sin tapar la entrada ni el portal (0, −14…−20).
 /// </summary>
-internal static class CivicBuilder
+internal static partial class CivicBuilder
 {
     internal enum Roof { None, Flat, Gable }
 
@@ -50,6 +50,11 @@ internal static class CivicBuilder
             case "Alejandría": return Alexandria(t);
             case "Patanjali": return Ashram(t);
             case "Tregua 1914": return Trenches1914(t);
+            case "Planta Atómica": return AtomicPlant(t);
+            case "Irena Sendler": return Warsaw1942(t);
+            case "Le Chambon-sur-Lignon": return LeChambon(t);
+            case "Mesopotamia": return Uruk(t);
+            case "Huerto": return FirstVillage(t);
             default: return 0;
         }
     }
@@ -273,6 +278,7 @@ internal static class CivicBuilder
             case "muneco": return 1.7f;
             case "estante": case "armario": return 2.2f;
             case "pizarra": case "tunel": return 1.8f;
+            case "granero": return 1.6f;
             case "parapeto": return 1.3f;
             default: return 0.9f;   // fogón, barra, mesa, banco, puesto, lavadero, altar…
         }
@@ -325,7 +331,10 @@ internal static class CivicBuilder
     // Un insecto-humano de la era con su jornada (trabajo, comida, práctica, casa).
     static int Worker(Transform t, string name, AreaFunctionSite work, string role, AreaFunctionSite dine, AreaFunctionSite practice, AreaFunctionSite home, string species = null, Color? body = null)
     {
-        Vector3 at = t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
+        // Junto a su primer puesto (dentro de su edificio, o delante si el edificio es macizo).
+        AreaFunctionStation[] sts = work.Stations;
+        Vector3 at = sts.Length > 0 ? t.InverseTransformPoint(sts[0].transform.position) + new Vector3(1.3f, 0f, 0f) : t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
+        at.y = 0f;
         GameObject g = AreaMicrocosmos.Folk(t, name, at, Random.Range(1.6f, 1.85f), 1f, species, body);
         CubeInsect.WearShirt(g, Color.HSVToRGB(Mathf.Abs(name.GetHashCode() % 100) / 100f, 0.35f, 0.75f));
         var j = g.AddComponent<MicroJornada>(); j.work = work; j.role = role; j.dine = dine; j.practice = practice; j.home = home;

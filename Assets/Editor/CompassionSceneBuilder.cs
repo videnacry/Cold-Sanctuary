@@ -31,7 +31,7 @@ public static class CompassionSceneBuilder
     {
         int i = 0;
         foreach (var s in Sims)   // la plantilla: fecha, hora y plataforma
-            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i++ * 900f, 0f, 8000f));
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = tr => s.story(tr) + CivicBuilder.Civilize(tr, s.display) }, new Vector3(6000f + i++ * 900f, 0f, 8000f));
         Debug.Log($"[Compasión] {i} simulaciones de compasión generadas.");
     }
 

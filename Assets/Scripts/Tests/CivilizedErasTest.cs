@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 /// <summary>
 /// TEST DE LOS MICROCOSMOS DE ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8–9). Para cada escena de historia que
-/// esté en Build Settings (Bruce Lee, Escútari, Dayton, Kapilavastu, Alejandría, Patanjali, Tregua 1914), cargada en aditivo
+/// esté en Build Settings (Bruce Lee, Escútari, Dayton, Kapilavastu, Alejandría, Patanjali, Tregua 1914, Planta Atómica, Irena
+/// Sendler, Le Chambon, Mesopotamia —MobWorld_Mesopotamia— y el Huerto, la primera aldea), cargada en aditivo
 /// con espera acotada:
 /// - ningún cuerpo humano visible (bloqueo de humanos) y Kushal no hace falta: lo prueba InsectOnlyTest;
 /// - sin la cuadrilla genérica de recolectoras con guarida (era el error);
@@ -21,7 +22,8 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
     public bool ParallelSafe => false;
     public float loadTimeout = 60f;
 
-    static readonly string[] Scenes = { "Microcosmos_BruceLee", "Microcosmos_Nightingale", "Microcosmos_Wright", "Microcosmos_Buda", "Microcosmos_Eratostenes", "Microcosmos_Patanjali", "Microcosmos_Tregua1914" };
+    static readonly string[] Scenes = { "Microcosmos_BruceLee", "Microcosmos_Nightingale", "Microcosmos_Wright", "Microcosmos_Buda", "Microcosmos_Eratostenes", "Microcosmos_Patanjali", "Microcosmos_Tregua1914",
+        "Microcosmos_PlantaAtomica", "Microcosmos_IrenaSendler", "Microcosmos_LeChambon", "MobWorld_Mesopotamia", "Microcosmos_Huerto" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()
@@ -70,6 +72,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
             foreach (CubeInsect ci in root.GetComponentsInChildren<CubeInsect>(true))
             {
                 if (!ci.folk || ci.GetComponent<FolkGrowth>() != null) continue;
+                CapsuleCollider cc = ci.GetComponent<CapsuleCollider>(); if (cc != null && cc.height < 1.5f) { species.Add(ci.species); continue; }   // los niños (refugiados del 42) son pequeños a propósito
                 species.Add(ci.species);
                 Transform ins = ci.transform.Find("Insecto"); if (ins == null) continue;
                 bool any = false; Bounds b = default;

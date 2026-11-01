@@ -748,7 +748,9 @@ public static class AreaMicrocosmos
     // HUERTO: La Sembradora (Ruth renacida) cuida el bancal de hongos y enseña a la tribu a cultivar.
     static int GardenStory(Transform root)
     {
-        Lair(root, new Vector3(-14f, 0f, 0f), "Guarida de la tribu");
+        // ~9500 a. C.: ya hay ALDEA (Eras.HasStructures): la tribu lleva lo recogido al GRANERO REDONDO, no a una guarida, y vive en
+        // casas redondas (CivicBuilder.FirstVillage, docs/microcosmos-civilizaciones.md §8).
+        CivicBuilder.RoundGranary(root, new Vector3(-14f, 0f, 0f));
         Transform bed = new GameObject("Bancal_de_hongos").transform; bed.SetParent(root, false); bed.localPosition = new Vector3(10f, 0f, 2f);
         Box(bed, "Lecho", new Vector3(0f, 0.15f, 0f), new Vector3(10f, 0.3f, 7f), Mat("Micro_Lecho", new Color(0.35f, 0.28f, 0.2f)), true);
         Material st = Mat("Micro_Pie_Seta", new Color(0.9f, 0.86f, 0.75f)), cp = Mat("Micro_Hongo_cultivo", new Color(0.92f, 0.9f, 0.8f));
@@ -770,6 +772,7 @@ public static class AreaMicrocosmos
             Ant(root, $"Mirmidón_{i + 1}", new Vector3(-14f + Mathf.Cos(a) * 8f, 0f, Mathf.Sin(a) * 8f), new Color(0.4f, 0.25f, 0.18f), 1.8f, 1f).AddComponent<MicroForager>();
             n++;
         }
+        n += CivicBuilder.Civilize(root, "Huerto");   // las casas redondas de la primera aldea y sus familias
         return n;
     }
 

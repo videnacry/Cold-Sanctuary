@@ -175,6 +175,13 @@ public static class AreaFunctions
         Roles(Def("Casa", "cas_cuidar", "Cuidar de los hijos", 1f, false, Kind.Care, "cama"), "todos");
         Roles(Def("Lavandería", "lav_lavar", "Lavar la ropa", 1f, false, Kind.Clean, "lavadero"), "todos");
         Roles(Def("Trinchera", "tri_vigilar", "Guardia en el parapeto", 2f, false, Kind.Guard, "parapeto"), "soldado");
+        Roles(Def("Laboratorio", "lab_medir", "Medir y anotar los resultados del experimento", 1f, false, Kind.Study, "mesa_laboratorio"), "sabio");
+        Roles(Def("Oficina de patentes", "ofi_patentes", "Examinar solicitudes de patente", 2f, false, Kind.Study, "mesa"), "sabio");
+        Roles(Def("Taller de papeles", "ofi_documentos", "Hacer documentos falsos que salvan vidas (cédulas, cartillas de racionamiento)", 2f, false, Kind.Make, "mesa"), "sabio");
+        Roles(Needs(Def("Alfarería", "alf_cuencos", "Moldear cuencos de borde biselado (las raciones)", 2f, false, Kind.Make, "torno_alfarero"), Eras.Capability.Pottery), "alfarero");
+        Roles(Needs(Def("Granero", "gra_raciones", "Repartir las raciones de cebada", 1f, false, Kind.Serve, "granero"), Eras.Capability.Agriculture), "comerciante", "todos");
+        Roles(Needs(Def("Granero", "gra_moler", "Moler el grano en el molino de mano", 1f, false, Kind.Cook, "granero"), Eras.Capability.Agriculture), "todos");
+        Roles(Def("Orfanato", "orf_cuidar", "Cuidar a los niños escondidos", 2f, false, Kind.Care, "cama"), "todos");
         Roles(Def("Trinchera", "tri_refugio", "Descansar en el refugio", 1f, false, Kind.Rest, "cama"), "soldado");
     }
 
@@ -239,6 +246,12 @@ public static class AreaFunctions
         ["Casa"] = new[] { "coc_fogon", "cas_descansar", "cas_cuidar" },
         ["Lavandería"] = new[] { "lav_lavar", "hos_lavanderia" },
         ["Trinchera"] = new[] { "tri_vigilar", "tri_refugio", "coc_fogon" },
+        ["Laboratorio"] = new[] { "fis_experimentos", "lab_medir", "esc_estudiar" },
+        ["Oficina de patentes"] = new[] { "ofi_patentes", "esc_escribir" },
+        ["Taller de papeles"] = new[] { "ofi_documentos" },
+        ["Alfarería"] = new[] { "alf_cuencos" },
+        ["Granero"] = new[] { "gra_raciones", "gra_moler" },
+        ["Orfanato"] = new[] { "orf_cuidar", "coc_fogon", "cas_descansar" },
     };
 
     /// <summary>Las funciones que se pueden hacer en un edificio <paramref name="building"/> en el año <paramref name="year"/>
