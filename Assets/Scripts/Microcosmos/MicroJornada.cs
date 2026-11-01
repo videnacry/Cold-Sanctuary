@@ -47,6 +47,22 @@ public class MicroJornada : MonoBehaviour
         return "casa";
     }
 
+    /// <summary>Cuántas veces alguien no llegó andando a su puesto en 60 s y se le puso allí (pruebas, registro).</summary>
+    public static int Fallbacks;
+
+    /// <summary>EL SITIO DE TRABAJO de un puesto: delante de su cara frontal (−z del collider), a <see cref="MicroBuildRules.WorkSpot"/>
+    /// m, como lo coloca CivicBuilder.Worker. (2026-11-01) Antes era 1,2 m del CENTRO hacia donde estaba: en una encimera de cocina
+    /// de 2,4 m ese punto caía dentro del mueble o pegado a su costado y no se llegaba (a los 60 s, teletransporte).</summary>
+    public static Vector3 WorkSpotOf(AreaFunctionStation st, Vector3 from)
+    {
+        BoxCollider bc = st.GetComponent<BoxCollider>();
+        if (bc == null) return st.transform.position + (from - st.transform.position).normalized * 1.2f;
+        float front = bc.center.z - bc.size.z * 0.5f;
+        Vector3 p = st.transform.TransformPoint(new Vector3(bc.center.x, 0f, front - MicroBuildRules.WorkSpot / Mathf.Max(1e-3f, Mathf.Abs(st.transform.lossyScale.z))));
+        p.y = st.transform.position.y;
+        return p;
+    }
+
     void Update()
     {
         if (hold) return;
@@ -54,9 +70,13 @@ public class MicroJornada : MonoBehaviour
         string block = BlockAt(Hour);
         if (block != _block || _st == null) Choose(block);
         if (_st == null) return;
-        Vector3 to = _st.transform.position + (transform.position - _st.transform.position).normalized * 1.2f;
+        Vector3 to = WorkSpotOf(_st, transform.position);
         bool there = MicroMove.Step(transform, to, speed, 1.6f);
-        if (!there && Time.time - _since > 60f) { transform.position = to; there = true; }   // sin quedarse dando vueltas para siempre
+        if (!there && Time.time - _since > 60f)   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
+        {
+            transform.position = to; there = true; Fallbacks++;
+            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en 60 s a «{_st.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
+        }
         if (!there) { Say(_block == "casa" ? "A casa" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
         Vector3 look = _st.transform.position - transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
