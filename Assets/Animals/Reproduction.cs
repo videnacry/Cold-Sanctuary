@@ -58,7 +58,7 @@ public class Reproduction : MonoBehaviour
         if (!Enabled || _animal == null || _animal.death) return;
 
         float months = Time.deltaTime / SecondsPerMonth();
-        if (_pregnant) { _gestDone += months; if (_gestDone >= _gestMonths) GiveBirth(); return; }
+        if (_pregnant) { _gestDone += months; if (_gestDone >= _gestMonths && !WaitForDen()) GiveBirth(); return; }
         if (_restMonths > 0f) _restMonths -= months;
         if (!CanConceive()) return;
         string sp = _animal.SpeciesName;
@@ -117,9 +117,22 @@ public class Reproduction : MonoBehaviour
         _gestMonths = Calendar(_animal.LifeSpecies).gestationMonths; _gestDone = 0f;
     }
 
+    // EL PARTO ESPERA A LA GUARIDA (oso, malamute): si la gestación acaba con la madre aún de camino a su guarida (con el año
+    // comprimido, «12–24 h antes» son medio segundo de juego), el parto se retrasa mientras va hacia ella, hasta 60 s de juego
+    // (la primera fase del parto dura horas: la perra hace el nido y luego pare). Antes la malamute de su isla paría fuera.
+    float _labourSince = -1f;
+    bool WaitForDen()
+    {
+        MaternityDen md = GetComponent<MaternityDen>();
+        if (md == null || md.Life == null || !md.Life.den || !md.Wants || md.InDen) return false;
+        if (_labourSince < 0f) _labourSince = Time.time;
+        return Time.time - _labourSince < 60f;
+    }
+
     void GiveBirth()
     {
         _pregnant = false;
+        _labourSince = -1f;
         _cooldownUntil = Time.time + cooldownSeconds;
         // Una cría por temporada (calendario real de la especie); sin reloj, el tope de antes (600 s).
         _restMonths = TimeController.timeController != null ? Calendar(_animal.LifeSpecies).intervalMonths : 0f;
