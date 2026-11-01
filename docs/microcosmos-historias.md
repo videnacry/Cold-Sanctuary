@@ -50,3 +50,7 @@ La entrada de Eratóstenes en el menú y el área `AtomicPlant_Area` las pone el
 - Las cifras de las tarjetas están contrastadas con las fuentes citadas; las que son aproximadas lo dicen («alrededor
   de», «se calcula»).
 - Siguientes: Semmelweis (hospital), Arquímedes/Galileo (planta), Bolívar (Construcción), Aristóteles (Cría).
+
+## Científicos e históricos (2026-11-01)
+
+Doce historias más, cada una en el pueblo real donde ocurrió y llenando el piso entero: ver [microcosmos-cientificos.md](microcosmos-cientificos.md).

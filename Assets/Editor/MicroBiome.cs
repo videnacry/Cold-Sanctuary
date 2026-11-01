@@ -274,6 +274,165 @@ public static class MicroBiome
                 new Bug("Spider", 3, 40, C(0.85f, 0.75f, 0.2f), "Araña de seda dorada (Nephila pilipes)"),
                 new Bug("Firefly", 4, 10, C(0.3f, 0.22f, 0.15f), "Luciérnaga (Luciola)") } };
 
+            // ══ CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md) ══════════════════════════════════════════════
+            // En las CIUDADES (París 1898, Berna 1905, Pasadena 1953, Bagdad ~820) no hay flora ni fauna salvaje: solo lo plantado
+            // por la gente (árboles de calle, jardines, palmeras) y ningún bicho suelto. En el campo (Woolsthorpe, Berkeley, Sils
+            // Maria, Crotona, el Nilo, la pradera de Colorado, el Orinoco, el pinar de Polesia) sí: la de ese lugar y estación.
+
+            // ── Woolsthorpe (Lincolnshire), verano de 1666: prados de ovejas y el huerto de manzanos ──
+            case "Woolsthorpe": return new Biome { title = "Woolsthorpe, Lincolnshire, verano de 1666", ground = C(0.38f, 0.48f, 0.26f), plants = new[] {
+                new Plant(Kind.Grass, 20, "Ballico (Lolium perenne)", 30, C(0.4f, 0.6f, 0.28f), C(0.55f, 0.6f, 0.35f)),
+                new Plant(Kind.Flower, 10, "Trébol blanco (Trifolium repens)", 15, C(0.3f, 0.55f, 0.25f), C(0.97f, 0.97f, 0.95f)),
+                new Plant(Kind.Flower, 6, "Botón de oro (Ranunculus acris)", 50, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.85f, 0.1f)),
+                new Plant(Kind.Shrub, 8, "Majuelo del seto (Crataegus monogyna)", 300, C(0.25f, 0.42f, 0.2f), C(0.7f, 0.12f, 0.1f)),
+                new Plant(Kind.Shrub, 6, "Manzano (Malus domestica), con manzanas caídas", 400, C(0.3f, 0.48f, 0.22f), C(0.75f, 0.2f, 0.12f)),
+                new Plant(Kind.Moss, 6, "Musgo de pared (Tortula muralis)", 2, C(0.45f, 0.55f, 0.25f), C(0.55f, 0.6f, 0.3f)),
+                new Plant(Kind.Stone, 8, "Piedra caliza", 0, C(0.82f, 0.78f, 0.65f), Stone), new Plant(Kind.Dung, 4, "Excremento de oveja", 0, DungC, DungC) },
+              bugs = new[] {
+                new Bug("Ant", 6, 4, C(0.15f, 0.12f, 0.1f), "Hormiga negra (Lasius niger)"),
+                new Bug("Aphid", 6, 2, C(0.35f, 0.45f, 0.25f), "Pulgón verde del manzano (Aphis pomi)"),
+                new Bug("Earwig", 4, 14, C(0.35f, 0.18f, 0.1f), "Tijereta (Forficula auricularia), dentro de las manzanas caídas"),
+                new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)"),
+                new Bug("SnowBee", 3, 18, C(0.15f, 0.12f, 0.08f), "Abejorro común (Bombus terrestris)"),
+                new Bug("Grasshopper", 4, 20, C(0.5f, 0.45f, 0.3f), "Saltamontes de campo (Chorthippus brunneus)"),
+                new Bug("Spider", 3, 12, C(0.55f, 0.4f, 0.25f), "Araña de jardín (Araneus diadematus)"),
+                new Bug("DungBeetle", 3, 7, C(0.15f, 0.12f, 0.1f), "Afodio (Aphodius), en el excremento de oveja") } };
+
+            // ── Berkeley (Gloucestershire), 14 de mayo de 1796: el valle del Severn, prados de vacas lecheras en primavera ──
+            //    En el microcosmos, las VACAS son PULGONES (las hormigas ordeñan pulgones: docs/natural-interactions.md).
+            case "Berkeley": return new Biome { title = "Berkeley, valle del Severn, primavera de 1796", ground = C(0.36f, 0.46f, 0.24f), plants = new[] {
+                new Plant(Kind.Grass, 20, "Cola de zorra (Alopecurus pratensis)", 50, C(0.4f, 0.6f, 0.3f), C(0.6f, 0.6f, 0.45f)),
+                new Plant(Kind.Flower, 8, "Prímula (Primula veris)", 20, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.82f, 0.2f)),
+                new Plant(Kind.Flower, 8, "Botón de oro (Ranunculus acris)", 50, C(0.35f, 0.55f, 0.25f), C(0.98f, 0.85f, 0.1f)),
+                new Plant(Kind.Shrub, 8, "Majuelo en flor (Crataegus monogyna)", 300, C(0.28f, 0.45f, 0.22f), C(0.97f, 0.95f, 0.92f)),
+                new Plant(Kind.Fern, 4, "Helecho macho (Dryopteris filix-mas)", 80, C(0.3f, 0.5f, 0.25f), C(0.35f, 0.45f, 0.25f)),
+                new Plant(Kind.Moss, 6, "Musgo (Kindbergia praelonga)", 3, C(0.4f, 0.55f, 0.25f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Stone, 6, "Piedra arenisca", 0, C(0.7f, 0.55f, 0.45f), Stone), new Plant(Kind.Dung, 5, "Boñiga de vaca", 0, DungC, DungC) },
+              bugs = new[] {
+                new Bug("Ant", 6, 4, C(0.6f, 0.4f, 0.15f), "Hormiga amarilla (Lasius flavus), la que ordeña pulgones de raíz"),
+                new Bug("SnowBee", 4, 14, C(0.6f, 0.45f, 0.25f), "Abejorro cardador (Bombus pascuorum)"),
+                new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)"),
+                new Bug("DungBeetle", 4, 9, C(0.15f, 0.12f, 0.1f), "Afodio (Aphodius rufipes), en la boñiga"),
+                new Bug("Spider", 3, 8, C(0.3f, 0.25f, 0.2f), "Araña lobo (Pardosa amentata)"),
+                new Bug("Woodlouse", 3, 12, C(0.42f, 0.43f, 0.45f), "Cochinilla (Oniscus asellus)") } };
+
+            // ── Sils Maria (Alta Engadina, 1800 m), principios de agosto de 1881: prados alpinos, alerces y el lago de Silvaplana ──
+            case "Sils Maria": return new Biome { title = "Sils Maria, Alta Engadina (agosto de 1881)", ground = C(0.4f, 0.42f, 0.3f), plants = new[] {
+                new Plant(Kind.Grass, 16, "Cervuno (Nardus stricta)", 25, C(0.45f, 0.58f, 0.32f), C(0.55f, 0.55f, 0.4f)),
+                new Plant(Kind.Shrub, 12, "Rododendro alpino (Rhododendron ferrugineum)", 80, C(0.2f, 0.35f, 0.2f), C(0.85f, 0.3f, 0.45f)),
+                new Plant(Kind.Flower, 8, "Genciana de Koch (Gentiana acaulis)", 8, C(0.3f, 0.45f, 0.25f), C(0.15f, 0.25f, 0.8f)),
+                new Plant(Kind.Flower, 6, "Edelweiss (Leontopodium nivale)", 10, C(0.75f, 0.78f, 0.72f), C(0.95f, 0.95f, 0.9f)),
+                new Plant(Kind.Fern, 6, "Pino cembro joven (Pinus cembra)", 150, C(0.2f, 0.38f, 0.22f), C(0.3f, 0.3f, 0.25f)),
+                new Plant(Kind.Moss, 8, "Liquen de mapa (Rhizocarpon geographicum)", 1, C(0.75f, 0.8f, 0.2f), C(0.15f, 0.15f, 0.15f)),
+                new Plant(Kind.Stone, 14, "Gneis y granito", 0, Stone, Stone) },
+              bugs = new[] {
+                new Bug("Grasshopper", 5, 20, C(0.45f, 0.5f, 0.3f), "Saltamontes alpino sin alas (Podisma pedestris)"),
+                new Bug("SnowBee", 4, 16, C(0.15f, 0.12f, 0.08f), "Abejorro alpino (Bombus alpinus)"),
+                new Bug("Ant", 6, 7, C(0.55f, 0.2f, 0.12f), "Hormiga de los montes (Formica lugubris)"),
+                new Bug("Spider", 3, 7, C(0.3f, 0.25f, 0.2f), "Araña lobo (Pardosa)"),
+                new Bug("Ladybug", 3, 6, C(0.85f, 0.2f, 0.12f), "Mariquita (Coccinella)"),
+                new Bug("Scorpionfly", 2, 5, C(0.2f, 0.18f, 0.12f), "Mosca escorpión de la nieve (Boreus), quieta en el musgo hasta el invierno", dormant: "en verano la larva espera en el musgo; el adulto sale con la nieve") } };
+
+            // ── Crotona (Calabria), verano, ~530 a. C.: maquis mediterráneo, olivos y el cabo Lacinio ──
+            case "Crotona": return new Biome { title = "Crotona, Magna Grecia (verano, ~530 a. C.)", ground = C(0.7f, 0.55f, 0.38f), plants = new[] {
+                new Plant(Kind.Shrub, 14, "Olivo (Olea europaea)", 400, C(0.45f, 0.52f, 0.38f), C(0.3f, 0.32f, 0.2f)),
+                new Plant(Kind.Shrub, 10, "Lentisco (Pistacia lentiscus)", 150, C(0.25f, 0.4f, 0.22f), C(0.7f, 0.15f, 0.12f)),
+                new Plant(Kind.Flower, 8, "Tomillo (Thymus capitatus)", 25, C(0.4f, 0.48f, 0.3f), C(0.75f, 0.5f, 0.75f)),
+                new Plant(Kind.Grass, 12, "Esparto seco (Lygeum spartum)", 50, C(0.75f, 0.68f, 0.42f), C(0.8f, 0.72f, 0.5f)),
+                new Plant(Kind.Flower, 4, "Haba (Vicia faba): los pitagóricos no la comían", 60, C(0.3f, 0.5f, 0.25f), C(0.95f, 0.95f, 0.95f)),
+                new Plant(Kind.Stone, 10, "Arenisca", 0, C(0.8f, 0.7f, 0.5f), Stone), new Plant(Kind.Sand, 6, "Arena del Jónico", 0, Sand, Sand) },
+              bugs = new[] {
+                new Bug("Cicada", 5, 25, C(0.45f, 0.4f, 0.3f), "Cigarra del fresno (Cicada orni), cantando en los olivos"),
+                new Bug("Ant", 6, 8, C(0.2f, 0.12f, 0.1f), "Hormiga segadora (Messor barbarus)"),
+                new Bug("SnowBee", 4, 13, C(0.65f, 0.45f, 0.15f), "Abeja de la miel (Apis mellifera ligustica)"),
+                new Bug("Mantis", 2, 60, C(0.45f, 0.65f, 0.3f), "Mantis religiosa (Mantis religiosa)"),
+                new Bug("Grasshopper", 4, 30, C(0.6f, 0.55f, 0.35f), "Langosta egipcia (Anacridium aegyptium)"),
+                new Bug("Scorpion", 2, 40, C(0.2f, 0.15f, 0.1f), "Escorpión (Euscorpius italicus), bajo las piedras") } };
+
+            // ── Menfis y el Nilo, verano (inicio de la crecida), ~450 a. C. (Heródoto, Historias II) ──
+            case "Menfis": return new Biome { title = "Menfis, orilla del Nilo (verano, ~450 a. C.)", ground = C(0.42f, 0.34f, 0.25f), plants = new[] {
+                new Plant(Kind.Fern, 14, "Papiro (Cyperus papyrus)", 300, C(0.35f, 0.58f, 0.28f), C(0.55f, 0.6f, 0.3f)),
+                new Plant(Kind.Shrub, 10, "Palmera datilera (Phoenix dactylifera)", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Flower, 8, "Loto azul (Nymphaea caerulea), en las acequias", 10, C(0.25f, 0.45f, 0.3f), C(0.5f, 0.65f, 0.95f)),
+                new Plant(Kind.Grass, 12, "Trigo emmer (Triticum dicoccum)", 90, C(0.75f, 0.68f, 0.35f), C(0.82f, 0.72f, 0.4f)),
+                new Plant(Kind.Grass, 6, "Caña (Phragmites australis)", 250, C(0.45f, 0.55f, 0.3f), C(0.6f, 0.5f, 0.4f)),
+                new Plant(Kind.Sand, 10, "Limo negro del Nilo", 0, C(0.25f, 0.2f, 0.15f), C(0.25f, 0.2f, 0.15f)), new Plant(Kind.Sand, 6, "Arena del desierto", 0, Sand, Sand), new Plant(Kind.Dung, 4, "Excremento de asno", 0, DungC, DungC) },
+              bugs = new[] {
+                new Bug("DungBeetle", 5, 28, C(0.1f, 0.1f, 0.1f), "Escarabajo sagrado (Scarabaeus sacer)"),
+                new Bug("Grasshopper", 5, 55, C(0.75f, 0.65f, 0.3f), "Langosta del desierto (Schistocerca gregaria)"),
+                new Bug("Ant", 6, 6, C(0.3f, 0.15f, 0.1f), "Hormiga (Cataglyphis bicolor), la que corre al sol del mediodía"),
+                new Bug("Mantis", 2, 50, C(0.75f, 0.65f, 0.45f), "Mantis del desierto (Eremiaphila)"),
+                new Bug("Scorpion", 2, 90, C(0.8f, 0.7f, 0.35f), "Escorpión amarillo (Leiurus quinquestriatus), de noche"),
+                new Bug("Cricket", 3, 20, C(0.3f, 0.22f, 0.15f), "Grillo (Gryllus bimaculatus)") } };
+
+            // ── Colorado Springs, 3 de julio de 1899: pradera de hierba corta al pie de Pikes Peak, tormenta de la tarde ──
+            case "Colorado Springs": return new Biome { title = "Colorado Springs, pradera de hierba corta (julio de 1899)", ground = C(0.6f, 0.48f, 0.35f), plants = new[] {
+                new Plant(Kind.Grass, 20, "Grama azul (Bouteloua gracilis)", 25, C(0.5f, 0.6f, 0.4f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Grass, 10, "Hierba del búfalo (Bouteloua dactyloides)", 12, C(0.5f, 0.6f, 0.38f), C(0.6f, 0.6f, 0.45f)),
+                new Plant(Kind.Shrub, 8, "Yuca (Yucca glauca)", 80, C(0.4f, 0.52f, 0.4f), C(0.95f, 0.95f, 0.85f)),
+                new Plant(Kind.Shrub, 6, "Nopal de la pradera (Opuntia polyacantha)", 25, C(0.4f, 0.55f, 0.3f), C(0.95f, 0.85f, 0.3f)),
+                new Plant(Kind.Flower, 6, "Margarita de la pradera (Ratibida columnifera)", 50, C(0.35f, 0.5f, 0.28f), C(0.8f, 0.25f, 0.1f)),
+                new Plant(Kind.Stone, 10, "Arenisca roja", 0, C(0.7f, 0.4f, 0.3f), Stone) },
+              bugs = new[] {
+                new Bug("Grasshopper", 6, 25, C(0.55f, 0.5f, 0.35f), "Saltamontes migratorio (Melanoplus sanguinipes)"),
+                new Bug("Ant", 6, 7, C(0.6f, 0.25f, 0.12f), "Hormiga segadora (Pogonomyrmex occidentalis), con su montículo de grava"),
+                new Bug("Ladybug", 4, 6, C(0.9f, 0.35f, 0.1f), "Mariquita convergente (Hippodamia convergens)"),
+                new Bug("SnowBee", 3, 18, C(0.85f, 0.65f, 0.2f), "Abejorro (Bombus huntii)"),
+                new Bug("Spider", 3, 15, C(0.4f, 0.32f, 0.25f), "Araña lobo (Hogna)"),
+                new Bug("DungBeetle", 3, 15, C(0.15f, 0.25f, 0.15f), "Escarabajo pelotero (Phanaeus)") } };
+
+            // ── Angostura del Orinoco, 15 de febrero de 1819: sabana en estación seca, lajas de granito, palmar de moriche ──
+            case "Angostura": return new Biome { title = "Angostura del Orinoco (febrero de 1819, estación seca)", ground = C(0.65f, 0.45f, 0.3f), plants = new[] {
+                new Plant(Kind.Grass, 16, "Paja de sabana (Trachypogon spicatus)", 80, C(0.75f, 0.68f, 0.4f), C(0.7f, 0.55f, 0.35f)),
+                new Plant(Kind.Fern, 8, "Moriche (Mauritia flexuosa), en el morichal", 2000, C(0.3f, 0.5f, 0.25f), C(0.6f, 0.3f, 0.15f)),
+                new Plant(Kind.Shrub, 8, "Chaparro (Curatella americana)", 400, C(0.35f, 0.45f, 0.25f), C(0.45f, 0.35f, 0.25f)),
+                new Plant(Kind.Flower, 6, "Araguaney en flor (Handroanthus chrysanthus)", 800, C(0.4f, 0.35f, 0.25f), C(0.98f, 0.85f, 0.1f)),
+                new Plant(Kind.Flower, 4, "Bromelia (Bromelia chrysantha)", 60, C(0.35f, 0.5f, 0.3f), C(0.9f, 0.3f, 0.2f)),
+                new Plant(Kind.Stone, 14, "Laja de granito del escudo guayanés", 0, C(0.5f, 0.45f, 0.42f), Stone), new Plant(Kind.Sand, 6, "Arena del Orinoco", 0, Sand, Sand) },
+              bugs = new[] {
+                new Bug("Ant", 8, 12, C(0.55f, 0.25f, 0.12f), "Bachaco (Atta sexdens), hormiga cortadora de hojas"),
+                new Bug("Termite", 6, 5, C(0.4f, 0.3f, 0.2f), "Comején (Nasutitermes), con su nido en los chaparros"),
+                new Bug("Grasshopper", 4, 45, C(0.45f, 0.55f, 0.25f), "Saltamontes (Tropidacris collaris)"),
+                new Bug("Mantis", 2, 60, C(0.4f, 0.6f, 0.3f), "Mantis (Stagmatoptera)"),
+                new Bug("Firefly", 4, 12, C(0.3f, 0.25f, 0.15f), "Cocuyo (Pyrophorus), de noche"),
+                new Bug("Spider", 2, 30, C(0.75f, 0.6f, 0.2f), "Araña de seda dorada (Trichonephila clavipes)") } };
+
+            // ── Prípiat y la central de Chernóbil, principios de mayo de 1986: pinar de Polesia en primavera (el «bosque rojo») ──
+            case "Chernóbil": return new Biome { title = "Prípiat, pinar de Polesia (mayo de 1986)", ground = C(0.62f, 0.55f, 0.4f), plants = new[] {
+                new Plant(Kind.Fern, 14, "Pino silvestre (Pinus sylvestris)", 1500, C(0.25f, 0.4f, 0.22f), C(0.55f, 0.35f, 0.2f)),
+                new Plant(Kind.Shrub, 8, "Abedul (Betula pendula), con hoja nueva", 800, C(0.45f, 0.65f, 0.3f), C(0.92f, 0.92f, 0.9f)),
+                new Plant(Kind.Moss, 14, "Musgo de pinar (Pleurozium schreberi)", 10, C(0.55f, 0.62f, 0.25f), C(0.7f, 0.72f, 0.3f)),
+                new Plant(Kind.Grass, 10, "Hierba de arenal (Corynephorus canescens)", 25, C(0.6f, 0.65f, 0.55f), C(0.65f, 0.55f, 0.5f)),
+                new Plant(Kind.Flower, 4, "Diente de león (Taraxacum officinale)", 15, C(0.35f, 0.5f, 0.25f), C(0.98f, 0.85f, 0.15f)),
+                new Plant(Kind.Sand, 12, "Arena fluvioglacial", 0, Sand, Sand) },
+              bugs = new[] {
+                new Bug("Ant", 8, 8, C(0.6f, 0.25f, 0.12f), "Hormiga roja de bosque (Formica rufa)"),
+                new Bug("Ladybug", 4, 7, C(0.85f, 0.12f, 0.1f), "Mariquita de 7 puntos (Coccinella septempunctata)"),
+                new Bug("Spider", 3, 8, C(0.3f, 0.25f, 0.2f), "Araña lobo (Pardosa)"),
+                new Bug("Antlion", 2, 12, C(0.6f, 0.55f, 0.45f), "Hormiga león (Myrmeleon formicarius), en la arena del pinar"),
+                new Bug("SnowBee", 3, 16, C(0.15f, 0.12f, 0.08f), "Abejorro (Bombus terrestris)") } };
+
+            // ── Las CIUDADES: sin flora ni fauna salvaje; solo lo plantado ──
+            case "París 1898": return new Biome { title = "París, rue Lhomond (diciembre de 1898): ciudad, sin naturaleza salvaje", winter = true, ground = C(0.5f, 0.48f, 0.45f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Plátano de sombra del bulevar (Platanus × hispanica), plantado", 1500, C(0.5f, 0.45f, 0.35f), C(0.6f, 0.55f, 0.45f)),
+                new Plant(Kind.Stone, 20, "Adoquín", 0, C(0.45f, 0.45f, 0.48f), Stone) },
+              bugs = new Bug[0] };
+            case "Berna": return new Biome { title = "Berna (mayo de 1905): ciudad, sin naturaleza salvaje", ground = C(0.55f, 0.52f, 0.48f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Tilo de la plaza (Tilia platyphyllos), plantado", 1500, C(0.35f, 0.55f, 0.28f), C(0.75f, 0.75f, 0.4f)),
+                new Plant(Kind.Flower, 3, "Geranios de los balcones (Pelargonium), plantados", 30, C(0.3f, 0.5f, 0.25f), C(0.85f, 0.15f, 0.15f)),
+                new Plant(Kind.Stone, 20, "Adoquín de arenisca", 0, C(0.7f, 0.65f, 0.5f), Stone) },
+              bugs = new Bug[0] };
+            case "Pasadena": return new Biome { title = "Pasadena (1953): ciudad, sin naturaleza salvaje", ground = C(0.6f, 0.58f, 0.52f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada en la avenida", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Grass, 8, "Césped del campus (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Stone, 12, "Bordillo de hormigón", 0, C(0.75f, 0.74f, 0.7f), Stone) },
+              bugs = new Bug[0] };
+            case "Bagdad": return new Biome { title = "Bagdad, la Ciudad Redonda (~820): ciudad, sin naturaleza salvaje", ground = C(0.78f, 0.68f, 0.5f), plants = new[] {
+                new Plant(Kind.Shrub, 8, "Palmera datilera de los jardines (Phoenix dactylifera), plantada", 1500, C(0.35f, 0.5f, 0.25f), C(0.75f, 0.45f, 0.15f)),
+                new Plant(Kind.Shrub, 4, "Granado del patio (Punica granatum), plantado", 300, C(0.3f, 0.45f, 0.22f), C(0.8f, 0.15f, 0.12f)),
+                new Plant(Kind.Stone, 16, "Ladrillo cocido", 0, C(0.75f, 0.55f, 0.38f), Stone) },
+              bugs = new Bug[0] };
+
             default: return null;
         }
     }

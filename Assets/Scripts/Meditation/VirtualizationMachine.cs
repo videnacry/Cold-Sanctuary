@@ -146,6 +146,19 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // se entra desde la del Gimnasio (la misma torre de Entrenamiento).
         ("Dojo (artes marciales)", "Simulación: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
         ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
+        // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
+        ("Gimnasio", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
+        ("Huerto", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),
+        ("Construcción", "Simulación: al-Juarismi en Bagdad: el álgebra y los números indios (~820)", "Microcosmos_AlJuarismi"),
+        ("Planta Atómica", "Simulación: Newton en Woolsthorpe: el año de la peste (1665–1666)", "Microcosmos_Newton"),
+        ("Biología", "Simulación: Edward Jenner en Berkeley: la primera vacuna (1796)", "Microcosmos_Jenner"),
+        ("Cocina", "Simulación: Bolívar en Angostura: el Congreso y el Orinoco (1819)", "Microcosmos_Bolivar"),
+        ("Sala de Yoga", "Simulación: Nietzsche en Sils Maria: caminar y el eterno retorno (1881)", "Microcosmos_Nietzsche"),
+        ("Química", "Simulación: Marie y Pierre Curie: el polonio y el radio (París, 1898)", "Microcosmos_Curie"),
+        ("Construcción", "Simulación: Tesla en Colorado Springs: el rayo artificial (1899)", "Microcosmos_Tesla"),
+        ("Planta Atómica", "Simulación: Einstein en Berna: el año milagroso (1905)", "Microcosmos_Einstein"),
+        ("Química", "Simulación: Clair Patterson: la edad de la Tierra y el plomo (1953)", "Microcosmos_Patterson"),
+        ("Central Nuclear", "Simulación: Chernóbil 1986: Ananenko, Bespalov y Baranov bajan al agua", "Microcosmos_Chernobil"),
     };
 
     void ShowArea(string area)

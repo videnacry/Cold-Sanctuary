@@ -23,7 +23,8 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
     public float loadTimeout = 60f;
 
     static readonly string[] Scenes = { "Microcosmos_BruceLee", "Microcosmos_Nightingale", "Microcosmos_Wright", "Microcosmos_Buda", "Microcosmos_Eratostenes", "Microcosmos_Patanjali", "Microcosmos_Tregua1914",
-        "Microcosmos_PlantaAtomica", "Microcosmos_IrenaSendler", "Microcosmos_LeChambon", "MobWorld_Mesopotamia", "Microcosmos_Huerto" };
+        "Microcosmos_PlantaAtomica", "Microcosmos_IrenaSendler", "Microcosmos_LeChambon", "MobWorld_Mesopotamia", "Microcosmos_Huerto",
+        "Microcosmos_Pitagoras", "Microcosmos_Herodoto", "Microcosmos_AlJuarismi", "Microcosmos_Newton", "Microcosmos_Jenner", "Microcosmos_Bolivar", "Microcosmos_Nietzsche", "Microcosmos_Curie", "Microcosmos_Tesla", "Microcosmos_Einstein", "Microcosmos_Patterson", "Microcosmos_Chernobil" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()

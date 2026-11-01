@@ -13,7 +13,7 @@ using UnityEngine;
 /// - Mecánica: los hermanos Wright, de la bicicleta al avión (1892–1903).
 /// - Planta Atómica: Eratóstenes mide la Tierra (~240 a. C.), primer tramo de la escalera de la física.
 /// </summary>
-public static class StorySceneBuilder
+public static partial class StorySceneBuilder
 {
     internal static readonly (string areaGo, string display, string scene, Color tint, System.Func<Transform, int> story)[] Stories =
     {
@@ -24,6 +24,19 @@ public static class StorySceneBuilder
         ("VehicleWorkshop_Area", "Dayton",      "Microcosmos_Wright",      new Color(0.55f, 0.55f, 0.6f), new System.Func<Transform, int>(Wright)),
         ("AtomicPlant_Area",     "Alejandría",  "Microcosmos_Eratostenes", new Color(0.8f, 0.75f, 0.55f), new System.Func<Transform, int>(Eratosthenes)),
         ("MartialArts_Area",     "Bruce Lee",   "Microcosmos_BruceLee",    new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(BruceLee)),
+        // Científicos e históricos (StorySceneBuilder.Scientists.cs, docs/microcosmos-cientificos.md): cada uno en el PUEBLO donde ocurrió.
+        ("Gym_Area", "Crotona", "Microcosmos_Pitagoras", new Color(0.8f, 0.7f, 0.5f), new System.Func<Transform, int>(Pythagoras)),
+        ("Garden_Area", "Menfis", "Microcosmos_Herodoto", new Color(0.75f, 0.65f, 0.45f), new System.Func<Transform, int>(Herodotus)),
+        ("Construction_Area", "Bagdad", "Microcosmos_AlJuarismi", new Color(0.85f, 0.75f, 0.55f), new System.Func<Transform, int>(AlKhwarizmi)),
+        ("AtomicPlant_Area", "Woolsthorpe", "Microcosmos_Newton", new Color(0.55f, 0.65f, 0.4f), new System.Func<Transform, int>(Newton)),
+        ("Biology_Area", "Berkeley", "Microcosmos_Jenner", new Color(0.6f, 0.7f, 0.5f), new System.Func<Transform, int>(Jenner)),
+        ("Kitchen_Area", "Angostura", "Microcosmos_Bolivar", new Color(0.8f, 0.6f, 0.4f), new System.Func<Transform, int>(Bolivar)),
+        ("YogaRoom_Area", "Sils Maria", "Microcosmos_Nietzsche", new Color(0.6f, 0.7f, 0.8f), new System.Func<Transform, int>(Nietzsche)),
+        ("Chemistry_Area", "París 1898", "Microcosmos_Curie", new Color(0.6f, 0.65f, 0.75f), new System.Func<Transform, int>(Curie)),
+        ("Construction_Area", "Colorado Springs", "Microcosmos_Tesla", new Color(0.65f, 0.6f, 0.7f), new System.Func<Transform, int>(Tesla)),
+        ("AtomicPlant_Area", "Berna", "Microcosmos_Einstein", new Color(0.7f, 0.65f, 0.55f), new System.Func<Transform, int>(Einstein)),
+        ("Chemistry_Area", "Pasadena", "Microcosmos_Patterson", new Color(0.75f, 0.75f, 0.75f), new System.Func<Transform, int>(Patterson)),
+        ("NuclearPower_Area", "Chernóbil", "Microcosmos_Chernobil", new Color(0.5f, 0.55f, 0.5f), new System.Func<Transform, int>(Chernobyl)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -36,6 +49,18 @@ public static class StorySceneBuilder
         ["Dayton"] = ("17 de diciembre de 1903", 10.58f),                      // el primer vuelo: 10:35
         ["Alejandría"] = ("solsticio de verano, ~240 a. C.", 12f),            // el mediodía del pozo de Siene
         ["Bruce Lee"] = ("de 1957 (Hong Kong) a 1971 (Los Ángeles)", 10f),   // empieza por la mañana en la escuela de Yip Man
+        ["Crotona"] = ("verano, ~530 a. C.", 7.0f),   // la escuela se levanta antes que el sol
+        ["Menfis"] = ("verano, al empezar la crecida del Nilo, ~450 a. C.", 8.0f),   // la mañana en el puerto de Menfis
+        ["Bagdad"] = ("hacia el año 820 (califato de al-Mamún)", 9.0f),   // la mañana en la Casa de la Sabiduría
+        ["Woolsthorpe"] = ("verano de 1666 (la peste cierra Cambridge)", 16.0f),   // la tarde en el huerto de manzanos
+        ["Berkeley"] = ("14 de mayo de 1796", 10.0f),   // la mañana de la primera vacuna
+        ["Angostura"] = ("15 de febrero de 1819", 10.0f),   // se instala el Congreso
+        ["Sils Maria"] = ("principios de agosto de 1881", 11.0f),   // el paseo junto al lago
+        ["París 1898"] = ("diciembre de 1898", 16.5f),   // anochece pronto: el radio brilla en el cobertizo
+        ["Colorado Springs"] = ("3 de julio de 1899", 18.0f),   // la tormenta de la tarde
+        ["Berna"] = ("mayo de 1905", 8.0f),   // camino de la Oficina de Patentes, bajo la Torre del Reloj
+        ["Pasadena"] = ("1953", 10.0f),   // la mañana en el laboratorio limpio
+        ["Chernóbil"] = ("principios de mayo de 1986", 22.0f),   // de noche, en el sótano del bloque 4
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era
