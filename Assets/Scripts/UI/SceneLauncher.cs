@@ -142,6 +142,9 @@ public class SceneLauncher : MonoBehaviour
         _reboot = false;
         if (scene.path == LaunchOptions.InicioPath) return;   // Inicio no lleva juego: la pantalla limpia lo persistente
         MagnateWarden.GuardPosts = LaunchOptions.MagnateGuards;
+        // La VELOCIDAD elegida en Inicio (×1 ×2 ×4 ×8): cada escena cargada desde Inicio arranca con ella. Con las pruebas
+        // pedidas no: cada prueba fija su propio ritmo y lo restaura.
+        if (!ColdSanctuary.TestRunner.Requested) GameSpeed.Apply();
         RerunBoots();
         if (LaunchOptions.KushalMember)
         {
@@ -235,11 +238,15 @@ public class SceneLauncher : MonoBehaviour
         if (InInicio || ColdSanctuary.TestRunner.Running) return;
         if (!_paused)
         {
-            if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio")) SetPaused(true);
+            string tag = Time.timeScale > 1.01f ? $"  ({GameSpeed.Label(Time.timeScale)})" : "";
+            if (GUI.Button(new Rect(Screen.width - 190f, Screen.height - 72f, 185f, 24f), "F10: pausa · Inicio" + tag)) SetPaused(true);
             return;
         }
         GUI.color = new Color(0f, 0f, 0f, 0.55f); GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), Texture2D.whiteTexture); GUI.color = Color.white;
-        var r = new Rect(Screen.width * 0.5f - 160f, Screen.height * 0.5f - 130f, 320f, 262f);
+        var r = new Rect(Screen.width * 0.5f - 160f, Screen.height * 0.5f - 160f, 320f, 322f);
+        // VELOCIDAD del tiempo al seguir (GameSpeed): se guarda como la de Inicio.
+        GUI.Label(new Rect(r.x + 20f, r.y + 262f, 280f, 20f), "Velocidad del tiempo al seguir:");
+        if (GameSpeed.Buttons(new Rect(r.x + 18f, r.y + 284f, 284f, 26f), _oldScale, out float sp)) { _oldScale = sp; GameSpeed.Chosen = sp; }
         GUI.Box(r, "Pausa — " + StartScreen.Pretty(SceneManager.GetActiveScene().name));
         if (GUI.Button(new Rect(r.x + 20f, r.y + 40f, 280f, 40f), "Seguir (F10)")) SetPaused(false);
         if (GUI.Button(new Rect(r.x + 20f, r.y + 90f, 280f, 40f), "Reiniciar esta escena")) Restart();

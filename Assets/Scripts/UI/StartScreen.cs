@@ -5,19 +5,21 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// PANTALLA DE INICIO (escena Inicio, la primera del build; Berón 2026-10-30): no carga nada pesado hasta elegir.
 /// Una casilla «Kushal iniciado» (miembro, sin examen ni iniciaciones) que vale para TODO: el botón «Entrar al Santuario» y
-/// la LISTA de todas las escenas de Build Settings por grupos (Santuario, Microcosmos, Pruebas, Virtual, Otros).
+/// la LISTA de todas las escenas de Build Settings por grupos (Santuario, Ciclo de vida, Microcosmos, Pruebas, Virtual, Otros),
+/// y la VELOCIDAD del tiempo (×1 ×2 ×4 ×8, <see cref="GameSpeed"/>) con la que se juega la escena elegida.
 /// Los microcosmos y virtuales se cargan en aditivo sobre el Santuario, como desde el tanque (<see cref="Launch"/>).
 /// En el juego, F10 o el botón de pausa vuelven aquí (<see cref="SceneLauncher"/>).
 /// </summary>
 public class StartScreen : MonoBehaviour
 {
-    static readonly string[] Groups = { "Santuario", "Microcosmos", "Pruebas", "Virtual", "Otros" };
+    static readonly string[] Groups = { "Santuario", "Ciclo de vida", "Microcosmos", "Pruebas", "Virtual", "Otros" };
 
     class Entry { public string path, name, label, group; }
 
     readonly List<Entry> _entries = new List<Entry>();
     readonly Dictionary<string, bool> _open = new Dictionary<string, bool>();
     bool _kushal, _guard;
+    float _speed = 1f;
     Vector2 _scroll;
     GUIStyle _title, _sub, _head, _btn, _big, _note, _tog;
 
@@ -30,7 +32,8 @@ public class StartScreen : MonoBehaviour
         _kushal = PlayerPrefs.GetInt("Inicio.Kushal", 1) == 1;
         _guard = PlayerPrefs.GetInt("Inicio.MagnateGuarda", 1) == 1;
         LaunchOptions.MagnateGuards = _guard;
-        foreach (string g in Groups) _open[g] = PlayerPrefs.GetInt("Inicio.Abierto." + g, g == "Santuario" || g == "Pruebas" ? 1 : 0) == 1;
+        _speed = GameSpeed.Chosen;   // la pantalla de Inicio corre a ×1; lo elegido se aplica al cargar la escena
+        foreach (string g in Groups) _open[g] = PlayerPrefs.GetInt("Inicio.Abierto." + g, g == "Santuario" || g == "Pruebas" || g == "Ciclo de vida" ? 1 : 0) == 1;
 
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
@@ -49,6 +52,7 @@ public class StartScreen : MonoBehaviour
         if (path == LaunchOptions.InicioPath) return null;
         if (path == LaunchOptions.SanctuaryPath) return "Santuario";
         if (path.Contains("/Pruebas/")) return "Pruebas";
+        if (path.Contains("/CicloVida/")) return "Ciclo de vida";   // una isla por especie del santuario (SampleSceneBuilder.CicloVida)
         if (n.StartsWith("Microcosmos_") || n.StartsWith("MobWorld_")) return "Microcosmos";
         if (n.StartsWith("Virtual_")) return "Virtual";
         return "Otros";
@@ -69,7 +73,7 @@ public class StartScreen : MonoBehaviour
         string n = System.IO.Path.GetFileNameWithoutExtension(path);
         string g = GroupOf(path, n);
         if (Additive(g)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, kushalMember, n);
-        else SceneLauncher.Load(path, kushalMember && g != "Otros");
+        else SceneLauncher.Load(path, kushalMember && g != "Otros" && g != "Ciclo de vida");   // las islas de ciclo de vida traen su explorador
     }
 
     /// <summary>Las escenas de la lista (Build Settings sin Inicio), con su grupo.</summary>
@@ -98,6 +102,9 @@ public class StartScreen : MonoBehaviour
         { "SampleScene", "Santuario" }, { "Inicio", "Inicio" },
         { "Microcosmos_Scene0_SakshiRio", "Sakshi (el río)" }, { "Microcosmos_Scene1_Ambrosio", "Ambrosio (nivel 1)" },
         { "Sala_de_Eras", "Sala de Eras" }, { "Galeria_InsectosHumanos", "Galería de insectos humanos" },
+        { "CicloVida_OsoPolar", "Oso polar" }, { "CicloVida_Foca", "Foca" }, { "CicloVida_Ballena", "Ballena" },
+        { "CicloVida_Pinguino", "Pingüino" }, { "CicloVida_Orca", "Orca" }, { "CicloVida_Malamute", "Malamute (perro de trineo)" },
+        { "CicloVida_AbejaNieves", "Abeja de las nieves" }, { "CicloVida_AranaNieves", "Araña de las nieves" },
     };
     static readonly Dictionary<string, string> Accents = new Dictionary<string, string>
     {
@@ -174,18 +181,22 @@ public class StartScreen : MonoBehaviour
             : "Llega como nuevo: examen, iniciación y misiones.", _note);
         bool gd = GUI.Toggle(new Rect(lx, 214f, lw, 26f), _guard, " La Magnate guarda los puestos", _tog);
         if (gd != _guard) { _guard = gd; LaunchOptions.MagnateGuards = gd; PlayerPrefs.SetInt("Inicio.MagnateGuarda", gd ? 1 : 0); }
-        GUI.Label(new Rect(lx + 20f, 240f, lw - 20f, 40f), "Si te alejas de tu puesto en horas de trabajo, te devuelve a él.", _note);
+        GUI.Label(new Rect(lx + 20f, 240f, lw - 20f, 30f), "Si te alejas de tu puesto en horas de trabajo, te devuelve a él.", _note);
 
-        if (GUI.Button(new Rect(lx, 292f, lw, 64f), "Entrar al Santuario", _big)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, _kushal);
-        GUI.Label(new Rect(lx, 362f, lw, 72f),
+        // VELOCIDAD DEL TIEMPO (GameSpeed): se guarda y se aplica a la escena que se cargue; en el juego, también en la pausa.
+        GUI.Label(new Rect(lx, 272f, 118f, 30f), "Velocidad", _tog);
+        if (GameSpeed.Buttons(new Rect(lx + 118f, 272f, lw - 118f, 30f), _speed, out float sp, _btn)) { _speed = sp; GameSpeed.Chosen = sp; }
+
+        if (GUI.Button(new Rect(lx, 314f, lw, 56f), "Entrar al Santuario", _big)) SceneLauncher.Load(LaunchOptions.SanctuaryPath, _kushal);
+        GUI.Label(new Rect(lx, 374f, lw, 72f),
             "O elige a la derecha cualquier escena: las dos casillas valen también para ella. Los microcosmos y virtuales se abren " +
             "encima del Santuario, como desde el tanque; su portal de salida devuelve a Kushal al Santuario.", _note);
 
         string last = PlayerPrefs.GetString("Inicio.Ultima", "");
         Entry le = last.Length > 0 ? _entries.Find(e => e.path == last) : null;
-        if (le != null && GUI.Button(new Rect(lx, 440f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
+        if (le != null && GUI.Button(new Rect(lx, 448f, lw, 34f), $"Repetir la última: {le.label}", _btn)) Pick(le);
 
-        GUI.Label(new Rect(lx, H - 54f, lw, 44f), $"En el juego: {SceneLauncher.PauseKey} (o el botón de abajo a la derecha) pausa y vuelve aquí.", _note);
+        GUI.Label(new Rect(lx, H - 54f, lw, 44f), $"En el juego: {SceneLauncher.PauseKey} (o el botón de abajo a la derecha) pausa, cambia la velocidad y vuelve aquí.", _note);
 
         // Columna derecha: todas las escenas por grupos.
         float rx = lx + lw + 40f, rw = W - rx - 40f, top = 40f, vh = H - top - 30f;
@@ -204,7 +215,7 @@ public class StartScreen : MonoBehaviour
             foreach (Entry e in _entries)
             {
                 if (e.group != g) continue;
-                string extra = e.group == "Otros" ? "  · explorador" : Additive(e.group) ? "  · sobre el Santuario" : "";
+                string extra = e.group == "Otros" || e.group == "Ciclo de vida" ? "  · explorador" : Additive(e.group) ? "  · sobre el Santuario" : "";
                 if (GUI.Button(new Rect(16f, y, inner - 16f, rowH - 3f), e.label + extra, _btn)) Pick(e);
                 y += rowH;
             }

@@ -32,6 +32,14 @@ public class Reproduction : MonoBehaviour
     bool _pregnant;
     float _birthTime;
 
+    /// <summary>¿Está gestando (o incubando: el pingüino lo lleva igual, dentro de la madre)? Lo leen el panel y la prueba
+    /// de las escenas de ciclo de vida.</summary>
+    public bool Pregnant => _pregnant;
+    /// <summary>`Time.time` en que parirá (solo vale con <see cref="Pregnant"/>).</summary>
+    public float BirthAt => _birthTime;
+    /// <summary>Cada parto: (madre, cría). Para observar el ciclo de vida sin buscar crías nuevas por la escena.</summary>
+    public static event System.Action<Animal, Animal> Born;
+
     void Awake() { _animal = GetComponent<Animal>(); _estrus = GetComponent<EstrusState>(); }
 
     void Update()
@@ -96,7 +104,8 @@ public class Reproduction : MonoBehaviour
         _pregnant = false;
         TimeController tcb = TimeController.timeController;
         _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, tcb != null ? tcb.SecondsForMonths(Calendar(_animal.SpeciesName).intervalMonths) : 600f);   // una cría por temporada (calendario real de la especie)
-        SpawnOffspring();
+        Animal baby = SpawnOffspring();
+        if (baby != null) Born?.Invoke(_animal, baby);
     }
 
     /// <summary>Pare una cría: copia del progenitor puesta en etapa `child` (crece por `Animal.Init`→`LifeStage`).
