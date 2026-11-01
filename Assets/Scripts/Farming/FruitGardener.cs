@@ -30,8 +30,11 @@ public class FruitGardener : MonoBehaviour
     public const float RoundTarget = 2.9f;
     /// <summary>Segundos reales estimados de un vuelo de techo a techo (llamar la alfombra, subir, volar a ~26 m/s, posarse).</summary>
     public const float FlightSeconds = 45f;
-    /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a sus puntas y de vuelta): medido en Unity (batería completa, 2026-10-31: la ronda medida iba 0,46 h por encima de su estimación con 100 s), ~170 s de juego.</summary>
-    public const float TreeSwimSeconds = 170f;
+    /// <summary>Entrar en una torre-árbol desde su techo y salir (nadando por el tronco a su primera punta y, al final, de vuelta al
+    /// techo). Medido en Unity el 2026-11-01 con un jardinero por edificio y las macetas punta a punta (<see cref="TipOrder"/>): nado
+    /// total de 73 s (Producción, 4 puntas) a 103 s (Ciencias, 8): ~60 s de entrar y salir y el resto, de punta a punta (<see cref="Hop"/>).
+    /// (Antes 170 s, medido con las especies saltando de punta en punta: el salto entre puntas iba contado dos veces.)</summary>
+    public const float TreeSwimSeconds = 60f;
     /// <summary>Minutos de juego para preparar en el punto de cuidados: el abono y medir pH y EC en la sala principal; en los
     /// demás, mirar el filtro, la válvula y el programador del goteo.</summary>
     public const float PrepMainMinutes = 5f, PrepMinutes = 2f;
@@ -51,13 +54,13 @@ public class FruitGardener : MonoBehaviour
 
     /// <summary>Lo que se anda (y se nada) de una maceta a otra: en una torre-árbol (docs/edificio-arbol.md §Migración) las puntas
     /// están a distinta altura y en ramas distintas: de una a otra se va a la puerta de su columna, se nada por la rama y el tronco
-    /// y se sale por la de la otra (≈ 2 × la recta + 60 m).</summary>
+    /// y se sale por la de la otra (≈ 1,3 × la recta + 10 m).</summary>
     public static float Hop(FruitPlant a, FruitPlant b)
     {
         if (a == null || b == null) return 0f;
         float d = Vector3.Distance(a.transform.position, b.transform.position);
         TreeFloor fa = a.GetComponentInParent<TreeFloor>(), fb = b.GetComponentInParent<TreeFloor>();
-        return fa != fb ? d * 2f + 60f : d;   // (medido en Unity: de punta a punta de Servicios, ~1 min de juego entre andar a la puerta, nadar y salir)
+        return fa != fb ? d * 1.3f + 10f : d;   // (medido en Unity 2026-11-01: de punta a punta de Servicios, ~38 s de juego entre andar a la puerta, nadar y salir; antes 2 × la recta + 60 m)
     }
 
     /// <summary>Horas de juego de una revisión en orden de <paramref name="plants"/> (sin vuelo): su ficha + andar.</summary>
@@ -81,7 +84,7 @@ public class FruitGardener : MonoBehaviour
         if (_rounds != null && _roundsFor == FruitPlant.All.Count) return _rounds;
         _roundsFor = FruitPlant.All.Count;
         _rounds = new List<Round>();
-        var byRoof = FruitPlant.All.GroupBy(p => p.building).ToDictionary(g => g.Key, g => g.OrderBy(p => p.order).ToList());
+        var byRoof = FruitPlant.All.GroupBy(p => p.building).ToDictionary(g => g.Key, g => TipOrder(g.OrderBy(p => p.order).ToList()));
         if (byRoof.Count == 0) return _rounds;
         var stations = Object.FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None);
         FruitCareStation StationOf(string b) => stations.FirstOrDefault(s => s.building == b);
@@ -94,34 +97,31 @@ public class FruitGardener : MonoBehaviour
             Vector3 here = Center(order[order.Count - 1]);
             order.Add(byRoof.Keys.Where(k => !order.Contains(k)).OrderBy(k => Vector3.Distance(here, Center(k))).First());
         }
-        // LLENADO SEGUIDO (medido en Unity, 2026-10-31: partir por techos enteros daba 7 rondas de 1,3–2,1 h): se recorre el
-        // camino maceta a maceta y se cierra la ronda cuando la siguiente ya no cabe en su parte del total (rondas
-        // equilibradas de ≤ RoundTarget h); al cambiar de techo, cuenta el vuelo y preparar en su punto de cuidados.
-        float flightH = FlightSeconds / SecondsPerGameHour, total = 0f;
+        // UN JARDINERO POR EDIFICIO (2026-11-01, con todos los edificios hechos árboles): entrar en una torre-árbol y salir cuesta
+        // ~1,15 h (TreeSwimSeconds) y saltar de punta a punta, otro tanto por maceta; el llenado seguido de antes partía los
+        // edificios entre rondas (Servicios 16 + 3, Entrenamiento 18 + 1…) y cada trozo pagaba otra vez el vuelo y el nado: 7
+        // rondas, 17,1 h. Ahora cada edificio es UNA unidad (vuelo, nado, preparar en su punto y sus macetas en orden) y solo se
+        // parte si él solo no cabe en una ronda; las unidades seguidas del camino se juntan en una ronda mientras quepan.
+        float flightH = FlightSeconds / SecondsPerGameHour;
         float Swim(string b) => byRoof[b].Any(p => p.GetComponentInParent<TreeFloor>() != null) ? TreeSwimSeconds / SecondsPerGameHour : 0f;   // (las puntas de una torre-árbol)
-        foreach (string b in order) { FruitCareStation st = StationOf(b); total += LegHours(byRoof[b], st != null && st.mainRoom) + flightH + Swim(b); }
-        int nr = Mathf.Max(1, Mathf.CeilToInt(total / RoundTarget));
-        // Cada corte añade un vuelo y una preparación: se sube la meta de 0,1 en 0,1 h hasta que salen las rondas previstas.
-        for (float target = Mathf.Min(RoundTarget, total / nr + 0.15f); ; target += 0.1f)
+        float Open(string b, bool first) { FruitCareStation st = StationOf(b); return flightH + Swim(b) + (st != null && st.mainRoom && first ? PrepMainMinutes : PrepMinutes) / 60f; }
+        var units = new List<Leg>();
+        foreach (string b in order)
         {
-            _rounds.Clear();
-            Round cur = null; Leg leg = null;
-            foreach (string b in order)
+            Leg leg = null; FruitPlant at = null; int pieces = 0;
+            foreach (FruitPlant p in byRoof[b])
             {
-                FruitCareStation st = StationOf(b);
-                leg = null;
-                FruitPlant at = null;
-                foreach (FruitPlant p in byRoof[b])
-                {
-                    float walkH = leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f;
-                    float plantH = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + walkH;
-                    float open = leg == null ? flightH + Swim(b) + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f : 0f;
-                    if (cur == null || (cur.Plants.Any() && cur.hours + open + plantH > target)) { cur = new Round(); _rounds.Add(cur); leg = null; open = flightH + Swim(b) + (st != null && st.mainRoom ? PrepMainMinutes : PrepMinutes) / 60f; plantH -= walkH; }
-                    if (leg == null) { leg = new Leg { building = b, station = st }; cur.legs.Add(leg); cur.hours += open; }
-                    leg.plants.Add(p); leg.hours += plantH; cur.hours += plantH; at = p;
-                }
+                float work = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f, plantH = work + (leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f);
+                if (leg == null || (leg.plants.Count > 0 && leg.hours + plantH > RoundTarget))   // (solo si el edificio no cabe entero en una ronda)
+                { leg = new Leg { building = b, station = StationOf(b), hours = Open(b, pieces++ == 0) }; units.Add(leg); plantH = work; }
+                leg.plants.Add(p); leg.hours += plantH; at = p;
             }
-            if (_rounds.Count <= nr || target >= MaxRoundHours - 0.05f) break;
+        }
+        Round cur = null;
+        foreach (Leg u in units)
+        {
+            if (cur == null || cur.hours + u.hours > RoundTarget) { cur = new Round(); _rounds.Add(cur); }
+            cur.legs.Add(u); cur.hours += u.hours;
         }
         for (int i = 0; i < _rounds.Count; i++)
         {
@@ -136,6 +136,27 @@ public class FruitGardener : MonoBehaviour
     }
 
     public static Round RoundFor(string missionId) => missionId == null ? null : Rounds().FirstOrDefault(r => r.id == missionId);
+
+    /// <summary>Las macetas de un edificio PUNTA A PUNTA (2026-11-01): en una torre-árbol cada cambio de punta es ir a la puerta de
+    /// su columna, nadar por la rama y el tronco y salir por la otra (~1 min, <see cref="Hop"/>); en el orden de reparto las
+    /// especies saltaban de una punta a otra. Ahora todas las de una punta seguidas, empezando por la más alta (se entra por el
+    /// techo) y siguiendo por la más cercana. En un techo plano no cambia nada.</summary>
+    static List<FruitPlant> TipOrder(List<FruitPlant> plants)
+    {
+        var tips = plants.GroupBy(p => p.GetComponentInParent<TreeFloor>()).Select(g => g.ToList()).ToList();
+        if (tips.Count <= 1) return plants;
+        Vector3 C(List<FruitPlant> t) { Vector3 c = Vector3.zero; foreach (FruitPlant p in t) c += p.transform.position; return c / t.Count; }
+        var left = new List<List<FruitPlant>>(tips);
+        var outList = new List<FruitPlant>();
+        List<FruitPlant> cur = left.OrderByDescending(t => C(t).y).First();
+        while (cur != null)
+        {
+            outList.AddRange(cur); left.Remove(cur);
+            Vector3 here = C(cur);
+            cur = left.Count > 0 ? left.OrderBy(t => Vector3.Distance(here, C(t))).First() : null;
+        }
+        return outList;
+    }
     public static bool IsRound(string missionId) => missionId != null && missionId.StartsWith(MissionPrefix);
 
     /// <summary>Las misiones de la jornada: una por ronda, obligatorias (las plantas en maceta no aguantan un día sin

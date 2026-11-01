@@ -90,7 +90,14 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         var rounds = FruitGardener.Rounds();
         var inRounds = rounds.SelectMany(r => r.Plants).ToList();
         TestProbe.Check("cada maceta está en una sola ronda", inRounds.Count == plants.Count && inRounds.Distinct().Count() == plants.Count, $"{inRounds.Count} en rondas de {plants.Count}");
-        TestProbe.Check("con el goteo, la ronda la hacen unas 3 personas al día", rounds.Count <= 3, $"{rounds.Count} rondas, total {rounds.Sum(r => r.hours):0.0} h de juego");
+        // UNA PERSONA POR EDIFICIO CON FRUTALES, como mucho (2026-11-01): antes «unas 3 personas al día», con los frutales en
+        // techos planos a un vuelo uno de otro. Con todos los edificios hechos árboles, entrar en uno y salir (nadando a sus
+        // puntas) ya son ~1,15 h y saltar de punta a punta cuesta minutos por maceta: 4 árboles y el techo de la Central no caben
+        // en 3 rondas de 3 h (≥ 12 h de trabajo). Cada edificio va entero en una ronda (no se parte si cabe en una).
+        int roofs = rounds.SelectMany(r => r.legs).Select(l => l.building).Distinct().Count();
+        var split = rounds.SelectMany(r => r.legs).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+        TestProbe.Check("con el goteo, la ronda la hace una persona por edificio con frutales (como mucho) y ningún edificio se parte", rounds.Count <= roofs && split.Count == 0,
+            $"{rounds.Count} rondas para {roofs} edificios, total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
             $"{rounds.Count} rondas: " + string.Join(" · ", rounds.Select(r => $"{r.hours:0.0} h")) + $"; total {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s)");
         var today = AreaWork.Today(0, ConstructionProject.All).Where(m => FruitGardener.IsRound(m.id)).ToList();

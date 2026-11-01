@@ -278,6 +278,27 @@ preparación (si salen más, sube la meta hasta 2,95 h).
 Con los vuelos y las preparaciones, **≈ 8,4 h de juego → 3 rondas de ~2,8 h**: **tres personas al día**. Cada una tiene
 una misión de 3 h: la revisión de su tramo y, con lo que sobra, las tareas de la semana. El resto de su jornada (2 h) va
 a otras misiones. Andar pesa ahora casi la mitad: con menos macetas por techo, o techos más juntos, bajaría.
+
+**Con los edificios-árbol (2026-11-01): UN JARDINERO POR EDIFICIO.** Desde la migración (docs/edificio-arbol.md) los frutales
+van en las PUNTAS de cada torre-árbol (una de cada especie por edificio: 19 en Servicios, Entrenamiento, Ciencias y Producción)
+y el resto (61) en el techo de la Central Nuclear. Entrar en un árbol por su techo y salir, nadando, y pasar de una punta a
+otra (a la puerta de su columna, por la rama y el tronco, y salir por la otra) cuesta lo suyo: con el llenado seguido de
+antes salían **7 rondas (17,1 h)**, porque los edificios se partían (Servicios 16 + 3, Entrenamiento 18 + 1…) y cada trozo
+pagaba otra vez el vuelo y el nado; y las especies saltaban de punta en punta. Ahora:
+- las macetas de cada edificio van **punta a punta** (`FruitGardener.TipOrder`: todas las de una punta seguidas, empezando
+  por la más alta —se entra por el techo— y siguiendo por la más cercana);
+- cada edificio es **una unidad** de la ronda (vuelo, nado, preparar en su punto y sus macetas) y solo se parte si él solo
+  no cabe en 2,9 h; unidades seguidas del camino se juntan en una ronda mientras quepan;
+- el nado se estima con lo medido en Unity (2026-11-01, un jardinero de prueba por ronda): **60 s** de entrar y salir del árbol
+  (`TreeSwimSeconds`, antes 170 s) y, de punta a punta, **1,3 × la recta + 10 m** (`Hop`, antes 2 × la recta + 60 m; medido
+  ~38 s de punta a punta en Servicios).
+
+Resultado: **9,0 h → 5 rondas**, una por edificio: Servicios 1,9 h · Entrenamiento 1,9 h · Producción 1,5 h · Ciencias 1,6 h
+· Central Nuclear 2,1 h (medidas: Producción 1,81 h con sus tareas de la semana, Ciencias 1,41 h). **Cinco personas al
+día**, una por edificio con frutales: cada una conoce sus puntas y le sobra ~1 h para polinizar y podar (lo que con 3
+rondas no cabía, ver «Pendiente» arriba). La prueba (grupo 55) ya no pide «unas 3 personas»: con 4 árboles (≥ 1 h de nado
+cada uno) y el techo de la Central eso no cabe en 3 rondas de 3 h; pide **como mucho una ronda por edificio con frutales y
+ningún edificio partido**.
 - Se reparte sola: si se añaden o quitan macetas o cambia la duración del día, el reparto se recalcula.
 - En el registro: `[Frutales] … ronda completa X h → N personas`.
 - **La prueba mide** una ronda real.
@@ -298,7 +319,7 @@ techo, su punto de cuidados con el cabezal y la red de goteo.
 6. Las barras y la etiqueta se ven en cada maceta.
 7. Sin revisar un día, el goteo le da el agua, pero pierde abono y salud; con la revisión, el bienestar sube (y la salud
    sigue subiendo al día siguiente).
-8. Cada maceta está en una sola ronda, cada ronda dura ≤ 3 h y son **≤ 3 rondas** (unas tres personas).
+8. Cada maceta está en una sola ronda, cada ronda dura ≤ 3 h y hay **como mucho una ronda por edificio con frutales**, sin partir ninguno (2026-11-01: antes, ≤ 3 rondas).
 9. La jornada las tiene como misiones obligatorias de 3 h y `roams`.
 10. **Un cuerpo de prueba hace la ronda que cruza más techos (a ×4)**:
     - revisa ≥ 95 % de sus macetas;
