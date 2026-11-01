@@ -662,6 +662,9 @@ public static partial class StorySceneBuilder
         Transform ruin = Spot(t, "El bloque 4", new Vector3(0f, 0f, 22f), "El bloque 4 (26 de abril de 1986, 01:23)", 10f);
         Prop(ruin, "Muro roto", new Vector3(-3f, 3f, 2f), new Vector3(4f, 6f, 1f), black);
         Prop(ruin, "Muro roto", new Vector3(3f, 2f, 2f), new Vector3(4f, 4f, 1f), black);
+        // (2026-11-01) La ruina del bloque 4 ES la historia (como el muro del gueto de Varsovia): sus muros rotos son la excepción
+        // histórica de la regla 2 (sin muros), no un edificio cerrado. Sin esto, «Chernóbil: cumple las reglas» fallaba (grupo 62).
+        { var rp = ruin.gameObject.AddComponent<MicroPiece>(); rp.kind = MicroBuildRules.Historic; rp.walkable = true; }
         Transform meet = Spot(t, "Punto de reunión", new Vector3(-12f, 0f, 10f), "Punto de reunión del escuadrón", 2.5f);
         var gear = Items(t, rubber, new Vector3(0.5f, 0.15f, 0.4f), ("Traje de buzo", new Vector3(-16f, 0.08f, 4f)), ("Linterna", new Vector3(-14f, 0.08f, 2f)), ("Dosímetro", new Vector3(-10f, 0.08f, 4f)));
         Transform corridor = Spot(t, "Pasillo inundado", new Vector3(10f, 0f, 10f), "Bajo el reactor: los pasillos inundados", 2.5f);

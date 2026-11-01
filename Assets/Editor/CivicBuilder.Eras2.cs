@@ -138,7 +138,7 @@ internal static partial class CivicBuilder
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = "Casa redonda (~9500 a. C.)";
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = site.title; wl.height = 4f;
         int y0 = Year; Year = -9500;
-        foreach (var (key, x, label) in new[] { ("fogon", 1.6f, "Hogar"), ("cama", -1.6f, "Estera") })
+        foreach (var (key, x, label) in new[] { ("fogon", 2.3f, "Hogar"), ("cama", -2.3f, "Estera") })   // (a ±2,3 m: a ±1,6 quedaba 1,3 m de paso, < 2 m de las reglas)
         {
             Transform p = MicroFurniture.Build(b, key, new Vector3(x, 0.08f, 0f), 90f, label, -9500);
             p.gameObject.AddComponent<AreaFunctionStation>().station = key;

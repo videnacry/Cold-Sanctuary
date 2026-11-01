@@ -422,23 +422,36 @@ public static class AreaMicrocosmos
     /// lado, la centra en ese lado y recoloca pieza a pieza lo que siga fuera. Devuelve qué hizo («» si ya cabía).</summary>
     static string FitStory(Transform story, Transform cast, Bounds inner)
     {
-        Bounds b = default; bool any = false;
+        // Dos medidas: el CLARO de la historia (sin el pueblo) decide cuánto se corre; el CONJUNTO (con el pueblo) decide si hay
+        // que recolocar pieza a pieza lo que se salga. (2026-11-01) Con el pueblo de la regla 5 en la medida del corrimiento, el
+        // conjunto medía el piso entero y la historia de Bruce Lee se corría 4 m fuera de su plaza reservada (prueba 60).
+        Bounds b = default, core = default; bool any = false, anyCore = false;
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<MicroFood>() != null) continue;   // los restos se contienen uno a uno
             if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+            if (InTown(r.transform, story)) continue;
+            if (!anyCore) { core = r.bounds; anyCore = true; } else core.Encapsulate(r.bounds);
         }
-        foreach (MobSpawnPoint sp in story.GetComponentsInChildren<MobSpawnPoint>(true)) { if (!any) { b = new Bounds(sp.transform.position, Vector3.one); any = true; } else b.Encapsulate(sp.transform.position); }
+        foreach (MobSpawnPoint sp in story.GetComponentsInChildren<MobSpawnPoint>(true))
+        {
+            if (!any) { b = new Bounds(sp.transform.position, Vector3.one); any = true; } else b.Encapsulate(sp.transform.position);
+            if (!anyCore) { core = new Bounds(sp.transform.position, Vector3.one); anyCore = true; } else core.Encapsulate(sp.transform.position);
+        }
         if (!any) return "";
+        if (!anyCore) core = b;
         bool fitsX = b.size.x <= inner.size.x, fitsZ = b.size.z <= inner.size.z;
-        Vector3 d = Overflow(b, inner);
-        if (!fitsX) d.x = inner.center.x - b.center.x;
-        if (!fitsZ) d.z = inner.center.z - b.center.z;
+        bool coreX = core.size.x <= inner.size.x, coreZ = core.size.z <= inner.size.z;
+        Vector3 d = Overflow(core, inner);
+        if (!coreX) d.x = inner.center.x - core.center.x;
+        if (!coreZ) d.z = inner.center.z - core.center.z;
         story.position += d;
+        b.center += d;
         string what = d.sqrMagnitude > 0.01f ? $"se corre {d.magnitude:0} m hacia dentro del piso" : "";
-        if (fitsX && fitsZ) return what;
+        if (fitsX && fitsZ && Overflow(b, inner).sqrMagnitude < 0.01f) return what;
         int moved = Relayout(cast, inner);
-        return $"NO CABE entera ({b.size.x:0} × {b.size.z:0} m en un piso útil de {inner.size.x:0} × {inner.size.z:0} m): se centra y se recolocan {moved} piezas dentro";
+        if (fitsX && fitsZ) return (what.Length > 0 ? what + "; " : "") + $"se recolocan dentro {moved} piezas del pueblo que se salían";
+        return $"NO CABE entera ({b.size.x:0} × {b.size.z:0} m en un piso útil de {inner.size.x:0} × {inner.size.z:0} m): se centra el claro y se recolocan {moved} piezas dentro";
     }
 
     // Recoloca dentro de <paramref name="inner"/> cada pieza de la historia que se salga (y entra en las que no caben enteras).

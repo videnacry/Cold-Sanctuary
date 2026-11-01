@@ -101,7 +101,11 @@ internal static partial class CivicBuilder
             Lot l = fill[f % fill.Length];
             Vector2 c = cells[used++];
             string n = fill.Length > 1 || f > 0 ? $"{l.name} {f / fill.Length + 1}" : l.name;
-            AreaFunctionSite site = Building(t, n, l.template, l.title, new Vector3(c.x, 0f, c.y), 0f, l.size, l.style, l.stations);
+            // (2026-11-01) Un solar de relleno sin puestos propios (las casas del pueblo: «Casa de Berna», «Casa de Pasadena»…) recibe
+            // el de su necesidad básica, la cama, como las casas de FillTown: sin ninguno, CivilizedErasTest daba «sin puestos» y sus
+            // vecinos no encontraban puesto en su edificio (grupo 62: Einstein, Patterson, Newton, Jenner, Bolívar, Tesla…).
+            var st = l.stations != null && l.stations.Length > 0 ? l.stations : new[] { S("cama", 0f, 0f, 1f, 2f, NeedLabel("cama", Year)) };
+            AreaFunctionSite site = Building(t, n, l.template, l.title, new Vector3(c.x, 0f, c.y), 0f, l.size, l.style, st);
             if (_home == null && l.template == "Casa") _home = site;
             sites.Add(site);
             f++;
