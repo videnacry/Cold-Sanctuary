@@ -58,8 +58,8 @@ public static partial class SampleSceneBuilder
             purpose = "Enfermería (planta de urgencias del hospital): Linduarda y Liz analizan y vacunan al recién llegado y al lobo paciente",
             people = new[] { "Linduarda", "Lizmibet", "Lobo_paciente", "Magnate" } },
         new TestSceneSpec { scene = "Prueba_Cocina", keep = new[] { "Kitchen_Area" },
-            purpose = "Cocina y restaurante (piso del restaurante: cocina abierta y comedor en su anillo): cocinar platillos para el stock, la iniciación de la cocina y el servicio con turistas",
-            people = Staff.Concat(new[] { "Magnate" }).ToArray(), groups = new[] { 41, 45 } },
+            purpose = "Cocina y restaurante (piso del restaurante: cocina abierta y comedor en su anillo): cocinar platillos para el stock y la iniciación de la cocina",
+            people = Staff.Concat(new[] { "Magnate" }).ToArray(), groups = new[] { 41 } },   // (el servicio con turistas, 45, necesita la torre: llegan a su pie, suben en alfombra y nadan al anillo; corre en SampleScene)
 
         // ── DE SANDBOX: suelo + sistemas + el sandbox (ningún área) ──
         new TestSceneSpec { scene = "Prueba_CocinaPrototipos", purpose = "Prototipos de la cocina en el suelo: manchas y limpieza (paso A), paseo guiado y desayuno (paso B), motor de virtualización y descomposición",
