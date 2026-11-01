@@ -200,7 +200,7 @@ public static partial class SampleSceneBuilder
         var panelGo = new GameObject("CicloVida_Panel");
         CicloVidaPanel panel = panelGo.AddComponent<CicloVidaPanel>();
         panel.species = sp; panel.displayName = display;
-        new GameObject("TestRunner_AUTO").AddComponent<ColdSanctuary.TestRunner>();
+        new GameObject("TestRunner_AUTO").AddComponent<ColdSanctuary.TestRunner>().onlyGroups = new[] { 58 };   // solo su prueba: las demás que se registran solas (gimnasio, jornada, árboles…) son del santuario
         var label = new GameObject("Rotulo_isla"); label.transform.position = I + new Vector3(0f, 0f, R - 2f);
         WorldLabel il = label.AddComponent<WorldLabel>(); il.height = 5f;
         il.text = $"Ciclo de vida: {display}\nhembra y macho adultos · comida: {food}";
