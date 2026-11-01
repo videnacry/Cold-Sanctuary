@@ -16,7 +16,7 @@ public class Volition : MonoBehaviour
     public float minNeed = 0.0001f;
 
     float _nextTick, _nextChoice, _nextStep;
-    static bool Continues(string key) => key == "explore" || key == "homebound" || key == "mate";
+    static bool Continues(string key) => key == "explore" || key == "homebound" || key == "mate" || key == "heel";   // (heel: la cría sigue a su madre que anda)
     /// <summary>Diagnóstico: decisiones tomadas y saltadas (dormido / ocupado / reaccionando a una amenaza).</summary>
     [System.NonSerialized] public int Choices, SkippedAsleep, SkippedBusy, SkippedAware;
 

@@ -156,6 +156,28 @@ public static class DesireCatalog
             },
             "tend"),
 
+        // ── PROCESOS NATURALES (LifeHistory; docs/ciclo-de-vida.md) ──
+        // BEBER: con sed, al bebedero o comer nieve (los que sacan el agua de la comida no lo sienten: Hydration).
+        new Desire("drink",
+            self => { Hydration h = self.GetComponent<Hydration>(); return h != null && !Confined(self) ? h.Need * W_DRINK : 0f; },
+            self => Drink(self),
+            "forage"),
+        // GUARIDA DE MATERNIDAD (oso polar, malamute): la preñada entra antes del parto, pare y cría dentro, y sale con las crías.
+        new Desire("den",
+            self => DenNeed(self),
+            self => StayInDen(self),
+            "tend"),
+        // INCUBAR (pingüino emperador): con el huevo sobre las patas, quieto y en ayunas; el macho va a por el huevo.
+        new Desire("incubate",
+            self => Egg.ToIncubate(self) != null ? W_INCUBATE : 0f,
+            self => Incubate(self),
+            "tend"),
+        // LA CRÍA SIGUE A SU MADRE en tierra (osezno, cachorro, polluelo junto a sus padres; LifeHistory.youngFollow).
+        new Desire("heel",
+            self => HeelNeed(self),
+            self => Heel(self),
+            "follow"),
+
         // SEGUIR/COHESIÓN: acercarse al ser querido más cercano (mantener la manada unida). Necesidad = vínculo × lejanía,
         // amplificada por la sociabilidad. Débil por diseño (fondo) → el hambre/amenaza lo superan; los muy sociales lo sienten más.
         new Desire("follow",
@@ -367,6 +389,11 @@ public static class DesireCatalog
     const float W_HOME    = 0.12f;   // volver al nido: de fondo → solo gana cuando el ser está saciado y lejos de casa
     const float W_BROOD   = 0.5f;    // guardar el nido: por debajo de nutrir y del hambre fuerte, por encima de los hábitos
     const float W_HABIT   = 0.2f;    // hábitos naturales: por encima del merodeo y del volver a casa; el hambre/social/cría lo superan
+    const float W_DRINK   = 0.8f;    // beber (× sed 1–1,5): como un hambre media; el hambre fuerte y la amenaza la superan
+    const float W_DEN     = 1.2f;    // guarida de la perra: por encima del hambre media (sale si tiene MUCHA hambre y vuelve)
+    const float W_DEN_FAST = 2.5f;   // guarida de la osa: no sale (ayuna) hasta que las crías tengan ~3 meses
+    const float W_INCUBATE = 2.5f;   // incubar: el emperador no deja el huevo en 2 meses (ayuna)
+    const float W_HEEL    = 0.7f;    // la cría sigue a su madre: por encima de explorar/volver a casa/hábitos
 
     // Vínculo con las crías propias aún pequeñas (0..1): el más fuerte. 0 si no tiene.
     static float BroodTie(Animal self)
@@ -403,11 +430,123 @@ public static class DesireCatalog
         Animal cub = CubNeed(self, out _);
         if (cub == null) return;
         if (self.nav != null && self.nav.isOnNavMesh) Move(self, cub.transform.position);
-        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f)
+        if (Vector3.Distance(self.transform.position, cub.transform.position) <= 2.5f) FeedCub(self, cub);
+    }
+
+    /// <summary>Cada toma: (madre o padre, cría). Para las escenas de ciclo de vida (la crianza vista, no supuesta).</summary>
+    public static event Action<Animal, Animal> CubFed;
+
+    /// <summary>Una toma: AMAMANTA (mamíferos) o REGURGITA (pingüino) — baja el hambre de la cría; cuidar cansa un poco.</summary>
+    public static void FeedCub(Animal self, Animal cub)
+    {
+        cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);
+        self.exhaustion += 0.5f;
+        CubFed?.Invoke(self, cub);
+    }
+
+    // En la guarida: amamanta a las crías vinculadas que tenga al lado y tengan hambre.
+    static void FeedCubsNear(Animal self, float within)
+    {
+        foreach (Bond b in self.bonds)
         {
-            cub.hungry = Mathf.Max(0f, cub.hungry - 0.3f);   // amamantar/compartir comida
-            self.exhaustion += 0.5f;                          // cuidar cansa un poco
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child || cub.hungry < 0f) continue;
+            if (Vector3.Distance(self.transform.position, cub.transform.position) <= within) FeedCub(self, cub);
         }
+    }
+
+    // ── PROCESOS NATURALES de las especies del santuario (LifeHistory; docs/ciclo-de-vida.md) ──────────────────────────
+
+    // BEBER: al bebedero si lo hay a mano; si no, come nieve allí mismo (el pingüino en tierra, el malamute sin bebedero).
+    static void Drink(Animal self)
+    {
+        Hydration h = self.GetComponent<Hydration>();
+        if (h == null) return;
+        if (h.Life != null && h.Life.water == LifeHistory.Water.Drinks)
+        {
+            WaterSource w = WaterSource.Nearest(self.transform.position, 60f);
+            if (w != null)
+            {
+                if (Flat(w.transform.position - self.transform.position) <= 1.8f) { Stop(self, 3f); h.Drink("bebe del bebedero"); return; }
+                if (GoTo(self, "drink", w.transform.position)) return;
+            }
+        }
+        Stop(self, 2f);
+        h.Drink("come nieve");
+    }
+
+    static void Stop(Animal self, float seconds)
+    {
+        if (self.nav != null && self.nav.enabled && self.nav.isOnNavMesh) self.nav.ResetPath();
+        self.Loco?.Idle(seconds);
+    }
+
+    // GUARIDA: va a su guarida y se queda dentro (ayunando si es la osa) amamantando a las crías que tenga al lado.
+    static float DenNeed(Animal self)
+    {
+        MaternityDen md = self.GetComponent<MaternityDen>();
+        if (md == null || !md.Wants || md.Life == null) return 0f;
+        return md.Life.denFasts ? W_DEN_FAST : W_DEN;
+    }
+
+    static void StayInDen(Animal self)
+    {
+        MaternityDen md = self.GetComponent<MaternityDen>();
+        if (md == null || !md.hasSite) return;
+        if (md.Life != null && md.Life.denFasts) self.hungry = Mathf.Min(self.hungry, -0.05f);   // ayuna: vive de su grasa
+        if (Flat(md.site - self.transform.position) > 1.2f)
+        {
+            if (GoTo(self, "den", md.site)) return;
+            md.site = self.transform.position;   // la guarida no se alcanza desde aquí: se hace la suya donde está
+        }
+        Stop(self, 1f);
+        FeedCubsNear(self, 3f);
+    }
+
+    // INCUBAR: el que tiene el huevo sobre las patas se queda quieto (y ayuna); el macho del emperador va a por él.
+    static void Incubate(Animal self)
+    {
+        Egg e = Egg.ToIncubate(self);
+        if (e == null) return;
+        self.hungry = Mathf.Min(self.hungry, -0.05f);   // incubando no come: el emperador ayuna ~115 días
+        if (e.incubator != self && Flat(e.transform.position - self.transform.position) > 0.8f && GoTo(self, "incubate", e.transform.position)) return;
+        Stop(self, 1f);
+    }
+
+    // LA CRÍA SIGUE A SU MADRE (o a su padre: el adulto vinculado más cercano) en tierra.
+    static Animal ParentOf(Animal self)
+    {
+        Animal best = null; float bd = float.MaxValue;
+        foreach (Bond b in self.bonds)
+        {
+            if (b == null || b.value <= 0f || b.target == null) continue;
+            Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
+            if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.LifeSpecies != self.LifeSpecies) continue;
+            float d = Vector3.Distance(o.transform.position, self.transform.position);
+            if (d < bd) { bd = d; best = o; }
+        }
+        return best;
+    }
+
+    static float HeelNeed(Animal self)
+    {
+        if (self.lifeStage != LifeStage.child || self.nav == null || !self.nav.enabled) return 0f;
+        LifeHistory life = LifeHistory.Of(self.LifeSpecies);
+        if (!life.youngFollow) return 0f;
+        Animal p = ParentOf(self);
+        if (p == null) return 0f;
+        float d = Flat(p.transform.position - self.transform.position);
+        if (d <= life.followDistance) return 0f;
+        return W_HEEL * (0.3f + 0.7f * Mathf.Clamp01(d / (life.followDistance * 4f)));
+    }
+
+    static void Heel(Animal self)
+    {
+        Animal p = ParentOf(self);
+        if (p == null) return;
+        float r = LifeHistory.Of(self.LifeSpecies).followDistance;
+        if (!GoTo(self, "heel", p.transform.position + Ring(0.4f, Mathf.Max(0.5f, r * 0.6f)))) GoTo(self, "heel", p.transform.position);
     }
 
     // La cría hambrienta se arrima al adulto vinculado más cercano (su madre/padre) o, si no lo tiene, se queda en su sitio

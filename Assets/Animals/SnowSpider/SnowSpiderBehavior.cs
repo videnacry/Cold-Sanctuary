@@ -10,6 +10,9 @@ public class SnowSpiderBehavior : Animal
 {
     protected override string SpeciesArchetype => "Spider";
     protected override string BodyArchetype => "SnowSpider";   // todo de araña salvo el físico: ~30 cm, no 7 mm
+    // …y su HISTORIA DE VIDA: araña orbicular de clima frío (lenta, longeva, guarda su saco de huevos), no la araña lobo del
+    // microcosmos (StageProfile, Reproduction.Calendar, LifeHistory y Forager «SnowSpider»; docs/ciclo-de-vida.md).
+    protected override string LifeArchetype => "SnowSpider";
 
     void Start() => base.Init();
 

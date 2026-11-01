@@ -147,6 +147,13 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     /// <summary>Clave del FÍSICO (tamaño/masa, `Physiognomy`) cuando una variante comparte todo lo demás con su especie
     /// base (la araña de las nieves es una araña de ~30 cm). Por defecto, el arquetipo.</summary>
     protected virtual string BodyArchetype => SpeciesArchetype;
+    /// <summary>Clave de la HISTORIA DE VIDA (etapas, calendario reproductor, crianza, agua, comida: `StageProfile`,
+    /// `Reproduction.Calendar`, `LifeHistory`, `Forager`) cuando una variante vive distinto que su especie base (la araña de
+    /// las nieves: araña orbicular de ~30 cm de clima frío, no una araña lobo). Por defecto, el arquetipo.</summary>
+    protected virtual string LifeArchetype => SpeciesArchetype;
+    /// <summary>La especie de su ciclo de vida (ver <see cref="LifeArchetype"/>): la que leen las tablas de vida y las escenas
+    /// de ciclo de vida.</summary>
+    public string LifeSpecies => LifeArchetype ?? SpeciesName;
     // La especie para relaciones/karma sale del componente SpeciesBody (etapa 5); si aún no está, del arquetipo de la clase.
     public override string SpeciesName => _speciesBody != null && !string.IsNullOrEmpty(_speciesBody.species)
         ? _speciesBody.species : SpeciesArchetype;
@@ -240,12 +247,17 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
         if (Loco == null) Loco = gameObject.AddComponent<Locomotion>();
         Forage = GetComponent<Forager>();                                // etapa 3: política "qué/dónde comer"
         if (Forage == null) Forage = gameObject.AddComponent<Forager>();
-        Forage.ConfigureForSpecies(SpeciesArchetype);                    // flags de comida por especie (data)
+        Forage.ConfigureForSpecies(LifeArchetype);                   // flags de comida por especie (data)
         if (GetComponent<EstrusState>() == null) gameObject.AddComponent<EstrusState>();   // celo (hechizo-estado): ciclo → deposita Estrus. Reproducción paso 1.
         if (GetComponent<Reproduction>() == null) gameObject.AddComponent<Reproduction>();  // cortejo→concepción→parto (gateado OFF por defecto). Reproducción pasos 2-3.
         if (GetComponent<SicknessState>() == null) gameObject.AddComponent<SicknessState>();  // enfermedad (hechizo-estado): presa fácil + rastro Sickness; cura = enfermería.
         if (GetComponent<DefecationNeed>() == null) gameObject.AddComponent<DefecationNeed>();   // ir al baño: antes ningún animal lo tenía
         if (GetComponent<AnimalVitals>() == null) gameObject.AddComponent<AnimalVitals>();       // registro de su día (comió, durmió, baño, recorrido) para el censo
+        // AGUA y GUARIDA (LifeHistory; docs/ciclo-de-vida.md): beber / comer nieve / el agua de la comida, y la guarida de
+        // maternidad de la osa y la perra.
+        LifeHistory life = LifeHistory.Of(LifeArchetype);
+        if (life.water != LifeHistory.Water.None && GetComponent<Hydration>() == null) gameObject.AddComponent<Hydration>();
+        if (life.den && GetComponent<MaternityDen>() == null) gameObject.AddComponent<MaternityDen>();
         if (SpeciesScaleFix.Has(SpeciesName) && GetComponent<SpeciesScaleFix>() == null) gameObject.AddComponent<SpeciesScaleFix>();   // tamaño real respecto al humano (el oso no mide 8 m)
         string spm = SpeciesArchetype;
         // Nadan por la laguna (fuera del NavMesh)… salvo las crías de un RECINTO de la Cría (con sus tomas, CriaFeeder): viven
@@ -270,7 +282,7 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
                 Walk.maxPowerWithChanneling = Mathf.Max(0f, ActsPrep.run.navSpeed - ActsPrep.walk.navSpeed);
         }
         Body = Physiognomy.Of(BodyArchetype);   // físico de la especie desde el catálogo (data); ANTES de Fatten, que lo usa
-        _stages = StageProfile.Of(SpeciesArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
+        _stages = StageProfile.Of(LifeArchetype);   // ciclo de vida de la especie (data); las etapas se crean ANTES de Fatten (usa ChildStage)
         if (_stages.development == StageProfile.Development.Complete && GetComponent<Metamorphosis>() == null)
             gameObject.AddComponent<Metamorphosis>();   // larva → pupa (quieta, no come) → adulto. docs/insect-biology-audit.md
         ChildStage = new Childhood(_stages.childDays, _stages.childMin, _stages.childMax);

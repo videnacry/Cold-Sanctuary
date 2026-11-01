@@ -15,7 +15,9 @@ public class Childhood : LifeStage
     {
         return (Animal script, float duration) =>
         {
-            Vector3 growFraction = (script.TeenStage.sizePotential - sizePotential) / stageDays;
+            // En proporción a los días de vida pasados (tickDays): al acabar la etapa llega justo al tamaño de la siguiente.
+            // (Antes crecía 1/stageDays en cada tercio de «día»: el triple de lo debido.)
+            Vector3 growFraction = (script.TeenStage.sizePotential - sizePotential) / Mathf.Max(1, (int)stageDays) * tickDays;
             script.transform.localScale += growFraction;
         };
     }

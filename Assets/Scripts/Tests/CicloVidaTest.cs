@@ -6,10 +6,13 @@ using UnityEngine;
 /// que realiza todos sus procesos naturales»). Corre DENTRO de una escena Assets/Scenes/CicloVida/CicloVida_*.unity (con
 /// «test» del buzón del editor con esa escena abierta, o el menú «Pruebas/Ciclo de vida (sola)» en Play): mira el mismo
 /// panel que ve Berón (<see cref="CicloVidaPanel"/>) y espera cada proceso, en orden, con la vida ACELERADA:
-///   el tiempo a ×8, el año a 0,05 días (una gestación de meses dura segundos), el día de la colmena a 2 s y, cuando nace la
-///   cría, sus etapas de cría y joven acortadas a 3 días; al final, el macho (o la reina) llega al último día de su vida.
-/// Cada proceso que el juego NO modela para la especie (beber; la crianza de quien no se vincula con su cría…) sale como
-/// SKIP con la razón, no como FAIL: el FAIL es «debería pasar y no pasa». Cada espera, acotada en tiempo REAL.
+///   el tiempo a ×8 y el año a 0,05 días de juego. TODO sigue ese año (docs/ciclo-de-vida.md §Calendario): la gestación, el
+///   huevo, la guarida, la colmena y también crecer y envejecer — así que a los padres se les alarga la vida adulta durante
+///   la prueba (a 0,05 días el año, una foca vieja moriría en minutos) y, cuando nace la cría, su infancia se fija en
+///   ~90 s de juego (le da tiempo a mamar, a seguir a su madre y a salir de la guarida) y su juventud en ~30 s.
+///   Al final, el macho (o la reina) llega al último día de su vida.
+/// Cada proceso de la especie (beber o sacar el agua de la comida, guarida, huevo, crianza, vuelo nupcial…) se COMPRUEBA:
+/// ya no hay SKIP de lo «no modelado». Cada espera, acotada en tiempo REAL.
 /// </summary>
 public class CicloVidaTest : MonoBehaviour, ITestUnit
 {
@@ -25,6 +28,7 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
     }
 
     CicloVidaPanel _p;
+    const short LongLife = 30000;   // días de vida: los padres no envejecen durante la prueba
 
     public IEnumerator Run()
     {
@@ -35,14 +39,26 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
         float oldScale = Time.timeScale, oldYear = tc.DaysPerYear;
         Time.timeScale = 8f;
         tc.DaysPerYear = 0.05f;
-        foreach (Hive h in Hive.All) if (h != null) h.secondsPerDay = 2f;
+        foreach (Hive h in Hive.All) if (h != null) h.secondsPerDay = 0f;   // la colmena, con el mismo calendario
         bool bee = _p.species == "SnowBee";
+        LifeHistory life = _p.Life;
 
         TestProbe.Check("la pareja está en la isla (hembra y macho adultos)", Pair(), Census());
+        // Los padres viven toda la prueba (su vejez se prueba al final, a propósito); y empiezan con sed (beber, sin esperar horas).
+        foreach (Animal a in _p.Living())
+        {
+            float r0 = Time.realtimeSinceStartup;
+            while (a != null && a.AdultStage == null && Time.realtimeSinceStartup - r0 < 5f) yield return null;
+            if (a != null && a.AdultStage != null) a.AdultStage.stageDays = LongLife;
+            if (a != null && a.TryGetComponent(out Hydration hy)) hy.thirst = 1.2f;
+        }
+        TestProbe.Check($"{_p.displayName}: un día de vida dura lo que marca el año del santuario (año de {tc.DaysPerYear:0.##} días de juego)",
+            Mathf.Abs(LifeStage.SecondsPerLifeDay(tc) - tc.SecondsForMonths(12f) / 365f) < 1e-3f, $"{LifeStage.SecondsPerLifeDay(tc):0.000} s");
 
         yield return Wait("comer", 150f);
-        Expect("comer", "come de su cuenco");
-        Skip("beber");
+        Expect("comer", "come");
+        yield return Wait("beber", 90f);
+        Expect("beber", life.waterLabel);
         // La noche: el reloj a las 22:30 (los nocturnos duermen de día: a las 12:00).
         bool night = SleepCycle.IsNocturnal(_p.species);
         tc.SetClock(tc.Day, night ? 12f : 22.5f);
@@ -54,8 +70,13 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
 
         if (bee)
         {
-            Skip("celo");
+            // VUELO NUPCIAL en las horas cálidas: la reina virgen sale y el zángano la alcanza en la zona de congregación.
+            tc.SetClock(tc.Day, 12f);
+            yield return Wait("nupcial", 120f);
+            Expect("nupcial", "vuelo nupcial: la reina se aparea con el zángano (que muere)");
             foreach (string k in new[] { "puesta", "larva", "pupa", "nace" }) { yield return Wait(k, 120f); Expect(k, _p.Get(k).label); }
+            yield return Wait("zangano", 150f);
+            Expect("zangano", "nace un zángano de un huevo sin fecundar");
             yield return Wait("crece", 60f);
             Expect("crece", "las obreras cambian de oficio con la edad");
         }
@@ -66,7 +87,15 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
             yield return Wait("gestacion", 240f);
             Expect("cortejo", "la pareja se junta (cortejo/cópula)");
             Expect("gestacion", _p.Get("gestacion").label);
-            yield return Wait("parto", 120f);
+            if (life.eggs)
+            {
+                yield return Wait("puesta", 120f);
+                Expect("puesta", life.layLabel);
+                yield return Wait("incuba", 120f);
+                Expect("incuba", life.incubateLabel);
+            }
+            yield return Wait("parto", 180f);
+            if (life.den) Expect("guarida", life.denLabel);
             Expect("parto", _p.Get("parto").label);
             Animal cub = _p.born.Count > 0 ? _p.born[0] : null;
             if (cub != null)
@@ -75,14 +104,15 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
                 while (cub != null && cub.ChildStage == null && Time.realtimeSinceStartup - r0 < 5f) yield return null;   // su Init
                 if (cub != null && cub.ChildStage != null)
                 {
-                    cub.ChildStage.stageDays = (short)(cub.ChildStage.livedDays + 3);
-                    cub.TeenStage.stageDays = 3;
+                    float day = LifeStage.SecondsPerLifeDay(tc);
+                    cub.ChildStage.stageDays = (short)Mathf.Clamp(cub.ChildStage.livedDays + Mathf.CeilToInt(90f / day), 1, short.MaxValue);
+                    cub.TeenStage.stageDays = (short)Mathf.Clamp(Mathf.CeilToInt(30f / day), 1, short.MaxValue);
                 }
             }
-            yield return Wait("crianza", 60f);
-            Expect("crianza", "la madre alimenta a la cría");
-            yield return Wait("junto", 30f);
+            if (_p.Get("crianza") != null) { yield return Wait("crianza", 60f); Expect("crianza", life.careLabel); }
+            yield return Wait("junto", 60f);
             Expect("junto", _p.Get("junto").label);
+            if (life.den) { yield return Wait("sale", 90f); Expect("sale", life.denExitLabel); }
             yield return Wait("joven", 120f);
             Expect("joven", "la cría crece a joven");
             yield return Wait("adulto", 120f);
@@ -91,7 +121,8 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
 
         // VEJEZ: el macho (o la reina) llega al último día de su etapa adulta.
         Animal old = null;
-        foreach (Animal a in _p.Living()) if (a.lifeStage == LifeStage.adult && (a.sex == Sex.male || bee)) { old = a; break; }
+        foreach (Animal a in _p.Living()) if (a.lifeStage == LifeStage.adult && (bee ? a.TryGetComponent(out IceInsectLife il) && il.isQueen : a.sex == Sex.male)) { old = a; break; }
+        if (old == null) foreach (Animal a in _p.Living()) if (a.lifeStage == LifeStage.adult) { old = a; break; }
         if (old != null && old.AdultStage != null) old.AdultStage.stageDays = (short)(old.AdultStage.livedDays + 2);
         yield return Wait("vejez", 60f);
         Expect("vejez", "envejece y muere de viejo");
@@ -113,7 +144,13 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
     string Census()
     {
         var sb = new System.Text.StringBuilder();
-        foreach (Animal a in _p.Living()) sb.Append($"{a.name}({a.sex},{a.lifeStage}) ");
+        foreach (Animal a in _p.Living())
+        {
+            sb.Append($"{a.name}({a.sex},{a.lifeStage}");
+            if (a.TryGetComponent(out Volition vo) && vo.LastDesire.Length > 0) sb.Append($",«{vo.LastDesire}»");
+            if (a.TryGetComponent(out IceInsectLife il)) sb.Append($",{il.Doing}");
+            sb.Append(") ");
+        }
         return sb.ToString();
     }
 
@@ -121,7 +158,7 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
     IEnumerator Wait(string key, float realSeconds)
     {
         CicloVidaPanel.Row r = _p.Get(key);
-        if (r == null || !r.modelled) yield break;
+        if (r == null) yield break;
         float t0 = Time.realtimeSinceStartup;
         while (!r.seen && Time.realtimeSinceStartup - t0 < realSeconds) yield return null;
     }
@@ -130,15 +167,7 @@ public class CicloVidaTest : MonoBehaviour, ITestUnit
     {
         CicloVidaPanel.Row r = _p.Get(key);
         if (r == null) return;
-        if (!r.modelled && !r.seen) { Skip(key); return; }
         TestProbe.Check($"{_p.displayName}: {what}", r.seen, r.seen ? $"a los {r.at / 60f:0.0} min de juego" : $"no se vio · {Census()}");
-    }
-
-    void Skip(string key)
-    {
-        CicloVidaPanel.Row r = _p.Get(key);
-        if (r == null) return;
-        Debug.Log($"[TEST] SKIP · {_p.displayName}: {r.label} — {r.note}");
     }
 
 #if UNITY_EDITOR

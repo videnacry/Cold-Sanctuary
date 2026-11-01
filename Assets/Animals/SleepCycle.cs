@@ -35,7 +35,7 @@ public class SleepCycle : MonoBehaviour
     {
         switch (species)
         {
-            case "Cricket": case "Antlion": case "Spider":
+            case "Cricket": case "Antlion": case "Spider": case "SnowSpider":   // (araña de las nieves: orbicular, teje y caza de noche como la mayoría)
             case "Scorpion": case "CamelSpider": case "Woodlouse": case "Snail": case "Slug": case "Firefly":
             case "Earwig": case "Cockroach": case "GhostCrab": case "Earthworm":
                 return true;

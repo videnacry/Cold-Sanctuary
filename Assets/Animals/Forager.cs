@@ -70,6 +70,7 @@ public class Forager : MonoBehaviour
             case "Aphid":                            eatsGrass = true; break;                   // savia de plantas
             case "Ladybug":                          eatsPrey = true; break;                    // depredadora de pulgones
             case "Spider":                           eatsPrey = true; break;                    // depredadora; emboscada
+            case "SnowSpider":                       eatsPrey = true; break;                    // araña de las nieves: caza en su tela orbicular lo que vuela junto al panal (abejas de las nieves; DietPreference «Spider»: SnowBee 2,5)
             case "Cricket":                          eatsGrass = true; eatsPrey = true; break;  // omnívora oportunista
             case "Termite":                          eatsGrass = true; break;                   // cosechadora: corta hierba/celulosa
             case "DungBeetle":                       eatsDung = true; eatsGrass = true; break;  // coprófago: excremento de herbívoros (doi 10.1371/journal.pone.0304908); detrito vegetal si no hay

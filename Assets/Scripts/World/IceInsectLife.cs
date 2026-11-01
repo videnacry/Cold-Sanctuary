@@ -16,9 +16,25 @@ public class IceInsectLife : MonoBehaviour
     public float flySpeed = 3f;
 
     // COLONIA (plantilla de la abeja como anima compuesta: su oficio cambia con la EDAD, como en Apis mellifera).
-    public enum Role { Reina, Limpiadora, Nodriza, Procesadora, Guardiana, Pecoreadora }
+    public enum Role { Reina, Limpiadora, Nodriza, Procesadora, Guardiana, Pecoreadora, Zangano }
     public Hive hive;
     public bool isQueen;
+    // REPRODUCCIÓN DE LA COLONIA (docs/ciclo-de-vida.md §Abeja): como en Apis mellifera, la reina joven sale en VUELO NUPCIAL a
+    // la zona de congregación de zánganos y se aparea en el aire (en la naturaleza con 10–20; aquí con los que haya); guarda
+    // el esperma de por vida y ya no vuelve a salir. Huevo fecundado → obrera; sin fecundar → ZÁNGANO (24 días). El zángano no
+    // trabaja: come miel, vuela a la zona de congregación por la tarde y muere al aparearse (cae).
+    [Tooltip("(reina) ¿Ya se apareó? Las reinas de una colonia establecida, sí; la reina virgen sale en vuelo nupcial.")]
+    public bool mated = true;
+    [Tooltip("ZÁNGANO (macho): no trabaja; vuela a la zona de congregación y muere al aparearse.")]
+    public bool drone;
+    /// <summary>(zángano) murió al aparearse con la reina (muerte natural, no un accidente).</summary>
+    public bool diedMating { get; private set; }
+    /// <summary>(reina) cópulas en vuelo nupcial; y si, sin aparearse en 3 semanas, pone solo huevos de zángano.</summary>
+    public int matings { get; private set; }
+    public bool droneLayer { get; private set; }
+    /// <summary>Cada cópula en vuelo nupcial: (reina, zángano).</summary>
+    public static event System.Action<IceInsectLife, IceInsectLife> Mated;
+    int _eggsLaid, _missedFlights; float _flightSince = -1f, _courtUntil; bool _inWindow;
     public float ageDays = -1f;   // -1 = se reparte al empezar (la colonia tiene abejas de todas las edades)
     public Role role { get; private set; }
     int _cell = -1; float _work; Vector3 _source; bool _dancing; float _danceT; float _loadNectar;
@@ -91,7 +107,9 @@ public class IceInsectLife : MonoBehaviour
     // su transform y la alejaba del panal: el insecto vuela por su cuenta.
     void LateUpdate()
     {
-        if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
+        // (la ARAÑITA recién salida del saco sí es pequeña —~5 % de su madre— y crece con sus mudas: LifeStage)
+        if (kind == Kind.Spider && _self != null && _self.lifeStage != LifeStage.adult) { if (transform.localScale.x < 0.05f) transform.localScale = Vector3.one * 0.05f; }
+        else if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
         if (_self != null && _self.death) return;
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
@@ -201,7 +219,7 @@ public class IceInsectLife : MonoBehaviour
     {
         float daysPerSec = 1f / Mathf.Max(0.1f, hive.DaySeconds);
         ageDays += Time.deltaTime * daysPerSec;
-        role = isQueen ? Role.Reina : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
+        role = isQueen ? Role.Reina : drone ? Role.Zangano : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
         if (isQueen && transform.localScale.x < 1.3f) transform.localScale = Vector3.one * 1.35f;   // la reina, más larga
         // COMEN MIEL de su colmena (las nodrizas alimentan a la reina con jalea): sin esto siempre tenían hambre.
         if (_self != null && _self.hungry >= 0f && hive.honeyStock > 0.5f && Vector3.Distance(transform.position, hive.combCenter) < 1.5f) { hive.Eat(0.5f); _self.hungry = -0.6f; }
@@ -211,6 +229,7 @@ public class IceInsectLife : MonoBehaviour
 
         bool day = TimeController.timeController == null || TimeController.timeController.IsDay;
         Doing = role.ToString();
+        if (day && ageDays >= 6f && NuptialFlight()) return;   // la reina virgen (≥ 6 días) sale a aparearse en las horas cálidas
         if (!day)   // RACIMO de invierno/noche sobre el panal: tiritan y comen miel
         {
             Vector3 spot = hive.combCenter + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 0.25f;
@@ -222,7 +241,13 @@ public class IceInsectLife : MonoBehaviour
         switch (role)
         {
             case Role.Reina:
-                if (Work(Hive.Cell.Empty, false, 1.5f)) { hive.Set(_cell, Hive.Cell.Egg); _cell = -1; }
+                if (!mated)
+                {
+                    // REINA VIRGEN: no pone (salvo que, sin aparearse en 3 semanas, se vuelva «zanganera»).
+                    if (!droneLayer) { if (_cell < 0) Hover(0.3f); break; }
+                }
+                // Huevo fecundado (obrera) salvo uno de cada 8 sin fecundar (zángano: la colonia cría algunos), o todos si es zanganera.
+                if (Work(Hive.Cell.Empty, false, 1.5f)) { hive.LayEgg(_cell, droneLayer || ++_eggsLaid % 8 == 0); _cell = -1; }
                 else if (_cell < 0) Hover(0.3f);   // sin celdilla libre recorre el panal (antes se quedaba clavada todo el día)
                 break;
             case Role.Limpiadora:
@@ -247,8 +272,85 @@ public class IceInsectLife : MonoBehaviour
                 if (spider != null) FlyTo(spider.transform.position, flySpeed * 1.5f);   // planta cara a la araña
                 else FlyTo(gate + new Vector3(Mathf.Sin(Time.time * 2f + _angle) * 0.25f, 0f, Mathf.Cos(Time.time * 2f + _angle) * 0.25f), flySpeed * 0.5f);
                 break;
+            case Role.Zangano: DroneLife(); break;
             default: Forage(); break;
         }
+    }
+
+    // ── Reproducción de la colonia: vuelo nupcial ───────────────────────────────────────────────
+
+    /// <summary>ZONA DE CONGREGACIÓN de zánganos de esta colmena: en el aire, lejos del panal (en la naturaleza a cientos de
+    /// metros y 10–40 m de altura; aquí, sobre el mar de su isla).</summary>
+    Vector3 CongregationArea()
+    {
+        float a = (Mathf.Abs(hive.GetHashCode()) % 360) * Mathf.Deg2Rad;
+        Vector3 c = _home != null ? _home.transform.position : hive.transform.position;
+        return new Vector3(c.x + Mathf.Cos(a) * 14f, c.y + 12f, c.z + Mathf.Sin(a) * 14f);
+    }
+
+    /// <summary>Hora de vuelos nupciales: las horas cálidas de la tarde (los zánganos vuelan sobre todo de 13 a 16 h [A]).</summary>
+    static bool FlightHours() { TimeController tc = TimeController.timeController; return tc == null || (tc.Hour >= 11f && tc.Hour < 17f); }
+
+    /// <summary>(reina virgen) ¿Está ahora en su vuelo nupcial?</summary>
+    public bool OnNuptialFlight => isQueen && !mated && !droneLayer && FlightHours() && _flightSince >= 0f;
+
+    // La reina virgen sale a la zona de congregación; un zángano que la alcanza se aparea con ella en el aire y muere.
+    // Con al menos una cópula y un rato de vuelo vuelve al panal fecundada (en la naturaleza: 1–3 vuelos y 10–20 zánganos).
+    bool NuptialFlight()
+    {
+        if (!isQueen || mated || droneLayer) return false;
+        if (!FlightHours())
+        {
+            // Acaba la tarde: si se apareó, vuelve fecundada; si no, un día de vuelos perdido. Sin aparearse en ~3 semanas (dos
+            // días de juego: 26 días de vida con el año de 28) se vuelve ZANGANERA: pone solo huevos sin fecundar.
+            if (_inWindow)
+            {
+                _inWindow = false; _flightSince = -1f;
+                if (matings > 0) mated = true;
+                else if (++_missedFlights >= 2) { droneLayer = true; Debug.Log($"[Colmena] La reina de «{hive.name}» no se ha apareado en 3 semanas: solo pondrá zánganos."); }
+            }
+            return false;
+        }
+        _inWindow = true;
+        if (_flightSince < 0f) { _flightSince = Time.time; Debug.Log($"[Colmena] La reina virgen de «{hive.name}» sale en VUELO NUPCIAL."); }
+        Doing = "vuelo nupcial";
+        Vector3 dca = CongregationArea();
+        _angle += 50f * Time.deltaTime;
+        FlyTo(dca + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 2f, flySpeed);
+        if (matings > 0 && Time.time - _flightSince > 15f)
+        {
+            mated = true; _flightSince = -1f;
+            Debug.Log($"[Colmena] La reina de «{hive.name}» vuelve fecundada ({matings} zángano{(matings > 1 ? "s" : "")}): empieza a poner.");
+        }
+        return true;
+    }
+
+    // El ZÁNGANO: de día, en las horas de vuelo, a la zona de congregación (persigue a la reina virgen si la hay); si no, en
+    // el panal (las obreras lo alimentan: come miel, arriba).
+    void DroneLife()
+    {
+        if (!FlightHours()) { Doing = "zángano en el panal"; Hover(0.3f); return; }
+        IceInsectLife queen = null;
+        foreach (IceInsectLife q in Cached<IceInsectLife>()) if (q != null && q.OnNuptialFlight && q.hive == hive) { queen = q; break; }
+        if (queen != null && Vector3.Distance(queen.transform.position, transform.position) < 12f)
+        {
+            Doing = "persigue a la reina";
+            if (FlyTo(queen.transform.position, flySpeed * 1.4f) < 0.5f) MateWith(queen);
+            return;
+        }
+        Doing = "zona de congregación";
+        _angle -= 45f * Time.deltaTime;
+        FlyTo(CongregationArea() + Quaternion.Euler(0f, _angle, 0f) * Vector3.forward * 3f + Vector3.up * Mathf.Sin(Time.time) * 0.5f, flySpeed);
+    }
+
+    void MateWith(IceInsectLife queen)
+    {
+        queen.matings++;
+        diedMating = true;
+        Debug.Log($"[Colmena] Un zángano se aparea con la reina de «{queen.hive.name}» en pleno vuelo y muere (cae).");
+        Mated?.Invoke(queen, this);
+        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit h, 80f, ~0, QueryTriggerInteraction.Ignore)) transform.position = h.point + Vector3.up * 0.05f;
+        if (_self != null) _self.death = true;
     }
 
     // Va a una celdilla en ese estado y trabaja ahí <paramref name="seconds"/> s; true al terminar.
@@ -356,6 +458,23 @@ public class IceInsectLife : MonoBehaviour
             return;
         }
         _strikeAt = -1f;
+        // CORTEJO (macho adulto saciado): cuando la hembra adulta está en celo va a SU tela y la pulsa con las patas (las
+        // arañas orbiculares cortejan haciendo vibrar los hilos de la tela de la hembra) y se queda cerca un rato.
+        if (_self != null && _self.sex == Sex.male && _self.lifeStage == LifeStage.adult && _self.hungry < 0f)
+        {
+            IceInsectLife her = null;
+            foreach (IceInsectLife o in Cached<IceInsectLife>())
+                if (o != null && o != this && o.kind == Kind.Spider && o._self != null && !o._self.death && o._self.sex == Sex.female && o._self.lifeStage == LifeStage.adult
+                    && Vector3.Distance(o.transform.position, transform.position) < 25f) { her = o; break; }
+            if (her != null && her.TryGetComponent(out EstrusState e) && e.InEstrus) _courtUntil = Time.time + 30f;
+            if (her != null && Time.time < _courtUntil && !(her._self.TryGetComponent(out Reproduction rp) && rp.Pregnant))
+            {
+                Doing = "corteja: pulsa la tela de la hembra";
+                Vector3 edge = her.transform.position + (transform.position - her.transform.position).normalized * 0.7f;
+                FlyTo(edge + Vector3.up * Mathf.Sin(Time.time * 14f) * 0.02f, 1.2f);
+                return;
+            }
+        }
         FlyTo(_perch, 1.2f);   // vuelve al centro de su tela
         if (web != null) transform.rotation = Quaternion.LookRotation(Vector3.down, web.transform.forward); else transform.rotation = Quaternion.LookRotation(Vector3.down + (transform.position - _home.transform.position).normalized * 0.3f);
     }

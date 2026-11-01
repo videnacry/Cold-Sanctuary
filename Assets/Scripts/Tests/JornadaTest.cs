@@ -570,7 +570,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool marine = a.TryGetComponent(out MarineLife ml);
             bool inHabitat = marine && ml.InHabitat;
             string desire = a.TryGetComponent(out Volition vo) ? vo.LastDesire : "";
-            bool resting = a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
+            bool resting = a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
             bool full = Window(tr, out float path, out float net);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;

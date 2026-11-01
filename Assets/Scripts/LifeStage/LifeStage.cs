@@ -64,20 +64,37 @@ public abstract class LifeStage
 
 
 
+    /// <summary>Segundos (de juego, escalados por Time.timeScale) que dura UN DÍA REAL de vida en el calendario del santuario:
+    /// un año de vida = <see cref="TimeController.DaysPerYear"/> días de juego (28; un día de juego = 1 h a ×1), así que un día
+    /// de vida = 28/365 de día de juego ≈ 4,6 min. Es el MISMO calendario que la gestación (<see cref="Reproduction.Calendar"/>)
+    /// y la colmena (<see cref="Hive"/>). Antes LifeStage contaba sus «días» en MINUTOS de juego (~2,5 s): el oso vivía 5 días
+    /// de juego de adulto pero gestaba 19 (docs/ciclo-de-vida.md §Calendario).</summary>
+    public static float SecondsPerLifeDay(TimeController tc) => tc != null ? Mathf.Max(1e-4f, tc.SecondsForMonths(12f) / 365f) : 60f;
+
+    /// <summary>Días de vida transcurridos desde el último evento (lo usa <see cref="GrowScale"/> para crecer en proporción).</summary>
+    [System.NonSerialized] public float tickDays;
+    float _dayAcc;
+
     public virtual IEnumerator Live(Animal script, TimeController timeController, byte[] stagePreps, byte[] stageEvents)
     {
         foreach (byte preparation in stagePreps) GetPrep(preparation)(script);
+        float pendingGrow = 0f;
         while ((stageDays - livedDays) > 0)
         {
-            byte dayThirds = 0;
-            while (dayThirds < 3)
+            // Los EVENTOS (merodeo, descanso, engorde, volver a casa, cebar) siguen a su ritmo de siempre (~3 por minuto de
+            // juego); los DÍAS DE VIDA corren con el calendario (SecondsPerLifeDay), que se lee en cada vuelta: cambiar el año
+            // (escenas de ciclo de vida: comprimido) los recalibra al momento.
+            float tick = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
+            float days = tick / SecondsPerLifeDay(timeController);
+            pendingGrow += days;
+            if (!script.busy)
             {
-                float thirdDuration = timeController.TimeSpeedMinuteSecs / Random.Range(2.5f, 3.2f);
-                if (!script.busy) foreach (byte myEvent in stageEvents) GetEvent(myEvent)(script, thirdDuration);
-                dayThirds++;
-                yield return new WaitForSeconds(thirdDuration);
+                tickDays = pendingGrow; pendingGrow = 0f;
+                foreach (byte myEvent in stageEvents) GetEvent(myEvent)(script, tick);
             }
-            livedDays++;
+            yield return new WaitForSeconds(tick);
+            _dayAcc += days;
+            if (_dayAcc >= 1f) { int whole = Mathf.FloorToInt(_dayAcc); livedDays += whole; _dayAcc -= whole; }
         }
         script.lifeStage = GetNextStage(script.lifeStage);
         LifeStage.InitStage(script, timeController);

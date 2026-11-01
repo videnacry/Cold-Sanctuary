@@ -13,7 +13,8 @@ public class Adolescence : LifeStage
     {
         return (Animal script, float duration) =>
         {
-            Vector3 growFraction = (script.AdultStage.sizePotential - sizePotential) / stageDays;
+            // En proporción a los días de vida pasados (tickDays), como la cría.
+            Vector3 growFraction = (script.AdultStage.sizePotential - sizePotential) / Mathf.Max(1, (int)stageDays) * tickDays;
             script.transform.localScale += growFraction;
         };
     }

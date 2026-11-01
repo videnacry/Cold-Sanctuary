@@ -127,8 +127,12 @@ public static partial class SampleSceneBuilder
             Vector3 bowl = I + new Vector3(4f, 0f, 2f);
             Bowl(island.transform, bowl, "carne");
             food = "carne (cuenco)";
-            if (sp == "Bear") Den(island.transform, I + new Vector3(-6f, 0f, 5f), ice, "Guarida de nieve\n(la osa pare en ella; decorado: el juego aún no la usa)", 3.2f);
-            else Den(island.transform, I + new Vector3(-6f, 0f, 5f), MakeMaterial("CicloVida_Madera_MAT", new Color(0.45f, 0.32f, 0.2f)), "Caseta\n(decorado: el juego aún no la usa)", 1.4f);
+            if (sp == "Bear") Den(island.transform, I + new Vector3(-6f, 0f, 5f), ice, "Guarida de nieve\n(la osa preñada entra, pare dentro y sale con los oseznos)", 3.2f, sp);
+            else
+            {
+                Den(island.transform, I + new Vector3(-6f, 0f, 5f), MakeMaterial("CicloVida_Madera_MAT", new Color(0.45f, 0.32f, 0.2f)), "Caseta\n(la perra hace el nido y pare dentro)", 1.4f, sp);
+                WaterBowl(island.transform, I + new Vector3(5f, 0f, -3f));   // el malamute BEBE (Hydration)
+            }
         }
         if (habitat == CicloVidaPanel.Habitat.Costa || habitat == CicloVidaPanel.Habitat.Mar)
         {
@@ -172,7 +176,10 @@ public static partial class SampleSceneBuilder
         Animal male = Adult(prefab, fauna.transform, mPos, Sex.male, display + "_macho");
         if (sp == "SnowBee")
         {
-            Queen(female, true); Queen(male, false);   // la hembra es la REINA; el macho, un zángano (el juego no tiene oficio de zángano)
+            Queen(female, true); Queen(male, false);   // la hembra es la REINA; el macho, un ZÁNGANO
+            // La reina, VIRGEN: sale en vuelo nupcial y se aparea con el zángano (que muere); luego pone (docs/ciclo-de-vida.md).
+            if (female != null && female.TryGetComponent(out IceInsectLife q)) { q.mated = false; PrefabUtility.RecordPrefabInstancePropertyModifications(q); }
+            if (male != null && male.TryGetComponent(out IceInsectLife d)) { d.drone = true; PrefabUtility.RecordPrefabInstancePropertyModifications(d); }
         }
         if (sp == "SnowSpider")
         {
@@ -252,6 +259,22 @@ public static partial class SampleSceneBuilder
         WorldLabel wl = bowl.AddComponent<WorldLabel>(); wl.text = $"Cuenco inagotable: {what}"; wl.height = 1.6f;
     }
 
+    // El BEBEDERO del malamute: un cuenco de agua (WaterSource) al que va cuando tiene sed (Hydration); sin él, come nieve.
+    static void WaterBowl(Transform parent, Vector3 at)
+    {
+        var bowl = new GameObject("Bebedero"); bowl.transform.SetParent(parent, true); bowl.transform.position = at;
+        var rim = GameObject.CreatePrimitive(PrimitiveType.Cylinder); rim.name = "Cuenco_agua"; rim.transform.SetParent(bowl.transform, false);
+        rim.transform.localScale = new Vector3(0.9f, 0.12f, 0.9f); rim.transform.localPosition = Vector3.up * 0.12f;
+        rim.GetComponent<Renderer>().sharedMaterial = MakeMaterial("CicloVida_Cuenco_MAT", new Color(0.55f, 0.6f, 0.68f));
+        Object.DestroyImmediate(rim.GetComponent<Collider>());
+        var water = GameObject.CreatePrimitive(PrimitiveType.Cylinder); water.name = "Agua"; water.transform.SetParent(bowl.transform, false);
+        water.transform.localScale = new Vector3(0.75f, 0.02f, 0.75f); water.transform.localPosition = Vector3.up * 0.23f;
+        water.GetComponent<Renderer>().sharedMaterial = MakeWaterMaterial("CicloVida_Agua_MAT", new Color(0.35f, 0.6f, 0.8f, 0.7f));
+        Object.DestroyImmediate(water.GetComponent<Collider>());
+        bowl.AddComponent<WaterSource>();
+        WorldLabel wl = bowl.AddComponent<WorldLabel>(); wl.text = "Bebedero"; wl.height = 1.2f;
+    }
+
     // Un banco inagotable en el agua (Swarm + BottomlessFood que lo rellena y no lo deja alejarse).
     static void School(Vector3 at, SwarmKind kind, string unit, Color c)
     {
@@ -270,7 +293,7 @@ public static partial class SampleSceneBuilder
     }
 
     // Guarida/caseta: tres bloques en arco (techo y dos paredes), abierta por delante.
-    static void Den(Transform parent, Vector3 at, Material m, string text, float size)
+    static void Den(Transform parent, Vector3 at, Material m, string text, float size, string species)
     {
         var den = new GameObject("Guarida"); den.transform.SetParent(parent, true); den.transform.position = at;
         void Part(Vector3 p, Vector3 s) { var b = GameObject.CreatePrimitive(PrimitiveType.Cube); b.name = "Guarida_pieza"; b.transform.SetParent(den.transform, false); b.transform.localPosition = p; b.transform.localScale = s; b.GetComponent<Renderer>().sharedMaterial = m; }
@@ -279,6 +302,7 @@ public static partial class SampleSceneBuilder
         Part(new Vector3(0f, size * 0.9f, 0f), new Vector3(size * 1.5f, size * 0.25f, size * 1.4f));
         Part(new Vector3(0f, size * 0.4f, size * 0.6f), new Vector3(size * 1.2f, size * 0.8f, size * 0.2f));
         WorldLabel wl = den.AddComponent<WorldLabel>(); wl.text = text; wl.height = size + 1f;
+        den.AddComponent<Den>().species = species;   // la usa MaternityDen: la preñada entra a parir
     }
 
     static void CicloShot(Vector3 from, Vector3 to, string file)
