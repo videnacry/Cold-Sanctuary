@@ -209,7 +209,7 @@ public static partial class SampleSceneBuilder
         int before = CountTransforms();
         var anc = new HashSet<Transform>();
         foreach (Transform k in keep) for (Transform x = k != null ? k.parent : null; x != null && anc.Add(x); x = x.parent) { }
-        foreach (GameObject g in SceneManager.GetActiveScene().GetRootGameObjects()) Prune(g.transform, keep, anc, root: true);
+        foreach (GameObject g in SceneManager.GetActiveScene().GetRootGameObjects()) Prune(g.transform, keep, anc);
         int removed = before - CountTransforms();
         int fixedRefs = CompactMissingRefs();
 
@@ -268,28 +268,25 @@ public static partial class SampleSceneBuilder
         return b;
     }
 
-    static bool Spatial(Transform t) =>
-        t.GetComponentInChildren<Renderer>(true) != null || t.GetComponentInChildren<Collider>(true) != null || t.GetComponentInChildren<Anima>(true) != null
-        || t.GetComponentInChildren<UnityEngine.AI.NavMeshAgent>(true) != null || t.GetComponentInChildren<Light>(true) != null || t.GetComponentInChildren<ParticleSystem>(true) != null;
+    /// <summary>¿Tiene CUERPO en el mundo (malla, collider, anima, luz, partículas) o lo PUEBLA al arrancar (familias de fauna,
+    /// enjambres, colmenas, generadores)? Eso se quita si no se queda; un objeto sin cuerpo es un sistema y se queda.</summary>
+    static bool Body(Transform t) =>
+        t.GetComponent<Renderer>() != null || t.GetComponent<Collider>() != null || t.GetComponent<Anima>() != null
+        || t.GetComponent<UnityEngine.AI.NavMeshAgent>() != null || t.GetComponent<Light>() != null || t.GetComponent<ParticleSystem>() != null
+        || t.GetComponent<FamilyGenerator>() != null || t.GetComponent<Generator>() != null || t.GetComponent<Respawn>() != null
+        || t.GetComponent<Swarm>() != null || t.GetComponent<Hive>() != null;
 
-    /// <summary>Quita lo que tiene cuerpo (malla, collider, anima, luz) y no se queda; los sistemas sin cuerpo se quedan.
-    /// <paramref name="anc"/>: los antepasados de lo que se queda (se entra en ellos en vez de quitarlos).</summary>
-    static void Prune(Transform t, HashSet<Transform> keep, HashSet<Transform> anc, bool root = false)
+    /// <summary>Quita lo que tiene cuerpo y no se queda (con todo lo que cuelga de ello); en los grupos sin cuerpo entra y quita
+    /// lo que tenga cuerpo dentro, y si el grupo se queda vacío, también el grupo. Los sistemas sin cuerpo se quedan.
+    /// <paramref name="anc"/>: los antepasados de lo que se queda (se entra en ellos, nunca se quitan).</summary>
+    static void Prune(Transform t, HashSet<Transform> keep, HashSet<Transform> anc)
     {
-        if (root)
-        {
-            if (keep.Contains(t)) return;
-            if (!anc.Contains(t)) { if (Spatial(t)) Kill(t); return; }
-        }
+        if (t == null || keep.Contains(t)) return;
+        if (!anc.Contains(t) && Body(t)) { Kill(t); return; }
         var children = new List<Transform>(); foreach (Transform c in t) children.Add(c);
-        foreach (Transform c in children)
-        {
-            if (c == null || keep.Contains(c)) continue;
-            if (anc.Contains(c)) { Prune(c, keep, anc); continue; }
-            if (Spatial(c)) Kill(c);
-        }
+        foreach (Transform c in children) Prune(c, keep, anc);
+        if (t != null && children.Count > 0 && !anc.Contains(t) && t.childCount == 0 && t.GetComponents<Component>().Length == 1) Kill(t);   // un grupo que se ha quedado vacío
     }
-
     static void Kill(Transform t)
     {
         GameObject g = t.gameObject;
