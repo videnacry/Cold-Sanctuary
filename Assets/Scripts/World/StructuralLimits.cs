@@ -50,8 +50,8 @@ public static class StructuralLimits
     /// <paramref name="tips"/> campos de punta, <paramref name="height"/> m de agua y <paramref name="ribs"/> nervios. Modelo
     /// sencillo y del lado de la seguridad:
     /// - PISO (S × S): losa de 0,28 m (2 t/m³), tierra de cultivo 0,4 m (1,6 t/m³) en el 45 % y uso 3 kN/m².
-    /// - PUNTA (T × T): lo mismo, más el anillo con sus frutales (~60 t), la rama (agua 5 × 5 m y acrílico, ~30 m) y la
-    ///   columna de agua (5 × 5 m, de la rama al anillo).
+    /// - PUNTA (T × T): lo mismo, más el anillo con sus frutales (~60 t), la rama (agua 10 × 10 m y acrílico, ~30 m) y la
+    ///   columna de agua (10,6 × 10,6 m, de la rama al anillo).
     /// - TECHO: lado del tronco × 0,3 m (2 t/m³) y las alfombras. PARED de acrílico (1,19 t/m³): su peso; no cuenta como portante.
     /// - CAPACIDAD: nervios CFST Ø 0,8 m (chapa 30 mm S460 + C80), φ = 0,6 → ~38 MN cada uno.
     /// - ZUNCHO: el agua tira de cada cara p·a en el fondo (a = medio lado del agua); lo resisten el acrílico (10 MPa a largo
@@ -61,6 +61,21 @@ public static class StructuralLimits
     ///   <paramref name="strutDrop"/> m hasta la cara del tronco y apoyan a 0,625·S.
     /// - VOLADIZO DE UNA RAMA: la punta y su rama a la distancia de la punta; lo sostiene la X    ///   Ø 0,8 m arriba y 2 abajo, de 5 m de canto).
     /// </summary>
+    /// <summary>Los NERVIOS y el PASO DE ZUNCHOS que pide un tronco de <paramref name="height"/> m (2026-11-01: con los niveles
+    /// cada 22 m los troncos miden 109–153 m y el agua aprieta más): de 24 nervios y zunchos cada 6 m, se añaden nervios (de 4
+    /// en 4, hasta 40) y, si no basta, se acercan los zunchos (4, 3, 2 m) hasta que la carga, el zuncho y el acrílico quedan bajo el 80 %.</summary>
+    public static (int ribs, float hoopSpacing) Reinforce(HelixTower h, int floors, int tips, float height)
+    {
+        float[] hoops = { 6f, 4f, 3f, 2f };
+        foreach (float hs in hoops)   // (primero más nervios, con los zunchos cada 6 m: menos rejilla a la vista)
+            for (int ribs = 24; ribs <= 40; ribs += 4)
+            {
+                RootReport r = RootCheck(h, floors, tips, height, ribs, hs, 0.09f, 4f);
+                if (r.AxialUse <= RootWarnUse && r.HoopUse <= RootWarnUse && r.PanelUse <= RootWarnUse) return (ribs, hs);
+            }
+        return (48, 2f);
+    }
+
     public static RootReport RootCheck(HelixTower h, int floors, int tips, float height = 92f, int ribs = 24,
                                        float hoopSpacing = 6f, float hoopArea = 0.09f, float strutDrop = 4f)
     {
@@ -93,7 +108,8 @@ public static class StructuralLimits
         float strut = (UnityEngine.Mathf.PI * 0.7f * 0.025f * 460f + UnityEngine.Mathf.PI * 0.25f * 0.65f * 0.65f * 80f * 0.85f) * 0.6f;
         r.floorMomentCapacity = 4f * strut * sin * x;
         r.tipMoment = (tipDeckT * tubeL + tubeT * tubeL * 0.5f) * g / 1000f;
-        float chord = (UnityEngine.Mathf.PI * 1.0f * 0.04f * 460f + UnityEngine.Mathf.PI * 0.25f * 0.92f * 0.92f * 80f * 0.85f) * 0.6f;   // CFST Ø 1 m, chapa 40 mm
+        float cD = h.chordD, ct = 0.04f * cD;   // CFST de Ø h.chordD (1,6 m con el tubo de 10 m; antes 1 m), chapa del 4 % del Ø
+        float chord = (UnityEngine.Mathf.PI * cD * ct * 460f + UnityEngine.Mathf.PI * 0.25f * (cD - 2f * ct) * (cD - 2f * ct) * 80f * 0.85f) * 0.6f;
         r.tipMomentCapacity = 2f * chord * (h.TubeInnerH + 1.35f);   // 2 cordones comprimidos; canto = el tubo y sus cordones
         return r;
     }

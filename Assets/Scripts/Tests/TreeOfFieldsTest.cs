@@ -67,7 +67,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             if (!ok) squares = false;
             sq += $"P{f.index} {lb.size.x:0.#}×{lb.size.z:0.#} ";
         }
-        TestProbe.Check("las 8 plataformas son cuadradas (32 m pegadas al tronco, 16 m en las puntas)", squares, sq);
+        TestProbe.Check("las 8 plataformas son cuadradas (32 m pegadas al tronco, 20 m en las puntas)", squares, sq);
         // Lados alternos: por nivel, pisos en 2 lados opuestos y ramas (campos de punta) en los otros 2; al subir, al revés.
         var floorsLv = t.levels.Where(l => l.kind == TreeLevel.Kind.Floor).ToList();
         string sides = ""; bool alt = floorsLv.Count == 8;
@@ -178,7 +178,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             wm != null ? $"cola {wm.renderQueue}, alfa {wAlpha:0.00} (tanque {tAlpha:0.00})" : "sin pared");
         StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, 4, 4, TreeSpec.RootHeight, TreeSpec.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
         StructuralLimits.RootReport more = StructuralLimits.RootCheck(h, 60, 60, TreeSpec.RootHeight, TreeSpec.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
-        TestProbe.Check("el tronco aguanta los 4 pisos en voladizo, las 4 ramas con sus puntas, el techo y 92 m de agua (bajo el 80 %)", !rep.Warn && !rep.Fail, rep.ToString());
+        TestProbe.Check("el tronco aguanta los 4 pisos en voladizo, las 4 ramas con sus puntas, el techo y {TreeSpec.RootHeight:0} m de agua (bajo el 80 %)", !rep.Warn && !rep.Fail, rep.ToString());
         TestProbe.Check("con 30 niveles de hélice la comprobación del tronco avisa (habría que reforzarlo)", more.Warn, more.ToString());
 
         // ── 3. PUERTAS: se pasa por el hueco, el agua no sale ──
@@ -316,7 +316,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             }
             Time.timeScale = oldScale;
             int arrivedG = done.Count(x => x);
-            TestProbe.Check("4 personas nadan a la vez por la misma rama (de 5 × 5 m) y llegan todas, sin atascarse", arrivedG == group.Count && TreeTrip.Stuck == stuck1 && maxInBranch >= 3,
+            TestProbe.Check("4 personas nadan a la vez por la misma rama (de 10 × 10 m) y llegan todas, sin atascarse", arrivedG == group.Count && TreeTrip.Stuck == stuck1 && maxInBranch >= 3,
                 $"{arrivedG}/{group.Count} llegan, hasta {maxInBranch} a la vez en la rama, {TreeTrip.Stuck - stuck1} atascos");
             foreach (GameObject b in group) Destroy(b);
         }

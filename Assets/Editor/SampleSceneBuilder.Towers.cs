@@ -27,14 +27,17 @@ public static partial class SampleSceneBuilder
     // LAS TORRES-ÁRBOL (Berón 2026-10-31; docs/edificio-arbol.md §Migración): cada torre es un árbol en hélice (su tronco, en hielo
     // firme), y entre las piezas de dos árboles (pisos con sus anillos, puntas, ramas, troncos) hay ≥ 16 m en 3D, con el Árbol de
     // los Campos girando (se barre su círculo). En sus sitios de antes, a 70–100 m unas de otras, no cabían (cada árbol alcanza
-    // 51–71 m): se movieron (búsqueda en scratchpad/mig) y la Producción sube un tramo (primer piso a 96 m, por encima de los
-    // demás). Los giros (múltiplos de 90°) orientan el molinete para que no choque con el vecino.
-    public static readonly Vector3 ServiciosCenter = new Vector3(50f, 0f, 92f);      // lóbulo Norte:Enfermeria (donde estuvo el hospital)
+    // 51–71 m): se movieron (búsqueda en scratchpad/mig). Los giros (múltiplos de 90°) orientan el molinete para que no choque con el
+    // vecino. 2026-11-01 (Berón: ramas de 10 × 10 m y niveles cada 22 m; los árboles alcanzan 57–76 m): nueva búsqueda con las medidas
+    // nuevas: Servicios a (55, 102) sin giro, Entrenamiento girado 90°, Ciencias a (92, −117) girada 90° y Producción a (113, −15),
+    // ya sin subir (primer piso a 64 m, como todos). Holguras del simulador: Árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5,
+    // Ciencias–Producción 17,2, Servicios–Producción 18,0.
+    public static readonly Vector3 ServiciosCenter = new Vector3(55f, 0f, 102f);     // lóbulo Norte:Enfermeria (donde estuvo el hospital; antes (50, 92))
     public static readonly Vector3 EntrenamientoCenter = new Vector3(-77f, 0f, 52f);  // lóbulo Norte:Bosque_Comestible (antes en el hub, (10, 0); sus cultivos ya están en el Árbol de los Campos)
-    public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -107f);     // lóbulo Sur:Biologia (1 m al norte: el tronco, en hielo firme)
-    public static readonly Vector3 ProduccionCenter = new Vector3(114f, 0f, 0f);      // lóbulo Este:Paso, junto a Este:Mecanica_Osos (antes en Sur:Rotacion, a 69 m del Árbol de los Campos)
-    public const float ServiciosYaw = 90f, EntrenamientoYaw = 0f, CienciasYaw = 0f, ProduccionYaw = 90f;
-    public const float ProduccionFirstY = 96f;   // por encima de Servicios y Ciencias (a 112 y 108 m de ella)
+    public static readonly Vector3 CienciasCenter = new Vector3(92f, 0f, -117f);     // lóbulo Sur:Biologia (antes (92, −107))
+    public static readonly Vector3 ProduccionCenter = new Vector3(113f, 0f, -15f);     // lóbulo Este:Mecanica_Osos (antes (114, 0), en Este:Paso; y antes aún en Sur:Rotacion)
+    public const float ServiciosYaw = 0f, EntrenamientoYaw = 90f, CienciasYaw = 90f, ProduccionYaw = 90f;
+    public const float ProduccionFirstY = 64f;   // (antes 96 m, por encima de Servicios y Ciencias; en su sitio nuevo ya no hace falta)
     // (El Entrenamiento usa GymSize, 36 × 26.)
 
     // La torre que se está levantando: su sitio, su planta y su piso más alto hasta ahora (null = aún sin planta baja).

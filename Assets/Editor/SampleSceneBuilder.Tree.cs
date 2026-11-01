@@ -68,15 +68,16 @@ public static partial class SampleSceneBuilder
         return f;
     }
 
-    /// <summary>Lo que crece en el campo de punta k: un bancal de 8,6 × 15 m a lo ancho del campo (lejos de la columna y de su
-    /// puerta), con las filas a lo largo de los 15 m (caben todas las del gremio: la chacra, 8; la rotación, 6).</summary>
+    /// <summary>Lo que crece en el campo de punta k: un bancal de 7,2 × 15 m a lo ancho del campo (lejos de la columna y de su
+    /// puerta), con las filas a lo largo de los 15 m (caben todas las del gremio: la chacra, 8; la rotación, 6). (2026-11-01: el campo
+    /// mide 20 m y la columna, que recibe el tubo de 10 m, 11,2 m: el bancal va en la franja de 7,4 m que queda junto a ella; antes 8,6 m.)</summary>
     static string TreeTip(int k, Transform tip)
     {
         GardenPlot.Guild guild = TreeSpec.Guilds[k - 1];
         tip.name = $"Campo_punta_{k}_{guild}";
-        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(0f, 0.06f, 3.3f)), new Vector2(8.6f, 15f), TreeSpec.Seeds[k - 1], false);
+        GameObject plot = MakePlot(tip, guild, tip.TransformPoint(new Vector3(0f, 0.06f, 6.2f)), new Vector2(7.2f, 15f), TreeSpec.Seeds[k - 1], false);
         plot.transform.localRotation = Quaternion.Euler(0f, 90f, 0f);
-        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(9.2f, 0.06f, 15.6f),
+        KitchenProps.C(plot.transform, new Vector3(0f, -0.03f, 0f), new Vector3(7.8f, 0.06f, 15.6f),
             guild == GardenPlot.Guild.Arrozal ? new Color(0.62f, 0.78f, 0.84f) : new Color(0.70f, 0.64f, 0.58f), 0f, "Suelo_Huerto");
         _treeFloors.Add(tip.GetComponent<TreeFloor>());
         return GardenPlot.Title(guild);

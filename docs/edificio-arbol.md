@@ -25,6 +25,7 @@ que sujeta el agua; el tronco mide **unos 20 m de ancho** y es al menos tan anch
 - Fallo: «Entré en una rama de anillo: **pude nadar por la rama pero no pude salir de ella**.»
 - «El siguiente paso será **migrar los otros edificios a este modelo de árbol**.» (Aún no: el modelo ya es genérico, ver
   §Modelo genérico.)
+**2026-11-01:** «Duplica el grosor de las ramas y el espacio vertical entre pisos»: ramas de 10 × 10 m, niveles cada 22 m (ver §Ramas y niveles al doble, que manda sobre las medidas de abajo).
 
 ## El árbol más alto (medido el 2026-10-30)
 
@@ -243,6 +244,38 @@ alguien entrando por ella, y nadando del techo al piso 5 y del piso 5 al 1). Cad
   - **Clase de yoga (4)**: Lizmibet no llega a su esterilla en los 120 s de la clase (viene de Servicios a Entrenamiento).
   - **Gimnasio (3)**: dos máquinas de otro piso de la torre no se alcanzan en 60 s (el nado entre pisos cuenta).
   - **Frutales (1)**: con el nado estimado entre puntas y torres salen 7 jardineros al día (17,1 h) en vez de ~3.
+
+## Ramas y niveles al doble (Berón 2026-11-01)
+
+«Duplica el grosor de las ramas y el espacio vertical entre pisos.» Vale para TODOS los árboles (el Árbol de los Campos,
+`TreeSpec.Helix`, y las torres, `TowerHelix`: los dos toman las medidas por defecto de `HelixTower`). **Estas medidas mandan sobre
+las de las tablas de arriba** (que quedan como historia de la v2):
+
+| Pieza | Antes | Ahora |
+|---|---|---|
+| Rama (tubo) | hueco 5 × 5 m (`tubeHalf` 2,8), boca a 6,5 m del eje de la cara | hueco **10 × 10 m** (`tubeHalf` 5,3, pared 0,3), boca a **4,7 m** (`mouthX`: la boca, de −0,6 a 10 m, cabe en la cara de 20 m de agua) |
+| Celosía de la rama | cordones CFST Ø 1 m | Ø **1,6 m** (`chordD`, chapa del 4 %): con el canto del tubo de 10 m |
+| Columna de la punta | agua 5 × 5 m | agua **10,6 × 10,6 m** (`colHalf` 5,3): recibe el tubo entero |
+| Campo de punta | 16 × 16 m, 6 m sobre su nivel | **20 × 20 m**, **12 m** sobre su nivel (por encima del tubo). Libre de columna: 275 m² (antes 225) |
+| Niveles de la hélice | cada 11 m | cada **22 m** (`levelGap`) |
+| Alto del tronco | último nivel + 17 m | último nivel + punta (12) + anillo (4) + 7 m (`HelixTower.RootHeight`) |
+| Bancal de las puntas del Árbol | 8,6 × 15 m | 7,2 × 15 m (la franja junto a la columna; las mismas filas, algo más cortas) |
+| Quillas de fotobiorreactores | 1,7 m bajo el nivel | 2,4 m (bajo los cordones de 1,6 m); lo más bajo, a 59,6 m (sobre el árbol más alto + 4 m) |
+
+**Alturas**: Árbol de los Campos 64 / 86 m, techo a **109 m** (antes 92) · Servicios y Entrenamiento 64 / 86 / 108, techo **131 m** ·
+Ciencias 64 / 86 / 108 / 130, techo **153 m** · Producción 64 / 86, techo **109 m** (ya no sube: ver abajo). El árbol de la guardia
+crece hasta el techo más alto con la columna de su puerta (~158 m).
+
+**Estructura** (`StructuralLimits.Reinforce`: nervios de 4 en 4 desde 24 y, si no basta, zunchos más juntos, hasta quedar bajo el
+80 %; estimado con las fórmulas de `RootCheck`): Árbol 109 m, 28 nervios y zunchos cada 6 m (rama 46 %) · Servicios 131 m, zunchos
+cada 4 m (voladizo de sus pisos de 40 m, 80 %, como antes; rama 79 %) · Entrenamiento 131 m (rama 71 %) · Ciencias 153 m, zunchos
+cada 3 m (rama 63 %) · Producción 109 m (rama 37 %). Los tubos de 10 m llevan 4 veces más agua: por eso los cordones de 1,6 m.
+
+**Sitios** (con las piezas más grandes los árboles alcanzan 57–76 m; nueva búsqueda con el simulador, scratchpad/mig, ≥ 16 m en 3D
+y el tronco en hielo firme): **Servicios** (50, 92) girado 90° → **(55, 102) sin giro** · **Entrenamiento** (−77, 52), girado **90°**
+(antes 0°) · **Ciencias** (92, −107) → **(92, −117) girada 90°** · **Producción** (114, 0) con el primer piso a 96 m → **(113, −15)
+con el primer piso a 64 m** (ya no hace falta subirla). El comedero de los depredadores va con Producción (a 20 m al Este de su eje).
+Holguras del simulador: Árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5, Ciencias–Producción 17,2, Servicios–Producción 18,0.
 
 ## Después de la migración: arreglos (2026-11-01)
 

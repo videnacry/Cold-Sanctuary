@@ -36,13 +36,14 @@ public static partial class SampleSceneBuilder
         public bool finished;
         public Transform lastFloor;
         public int Platforms => 4 * h.levels;
-        /// <summary>Alto del tronco: 17 m sobre el último nivel (su punta, su anillo y la puerta del techo).</summary>
-        public float RootHeight => h.LevelY(h.levels) + 17f;
-        public float WaterTop => RootHeight - 0.5f;
+        /// <summary>Alto del tronco: sobre el último nivel, su punta, su anillo y la columna (HelixTower.RootHeight).</summary>
+        public float RootHeight => h.RootHeight;
+        public float WaterTop => h.WaterTop;
         public Vector3 HatchLocal => new Vector3(0f, RootHeight, -6f);
-        /// <summary>Nervios del tronco: 24 (4 esquinas y 5 por cara); por encima de 100 m, 28 (6 por cara): el acrílico entre nervios
-        /// es lo que manda y el agua aprieta más cuanto más alto es el tronco (Producción, 124 m: 98 % con 24, 72 % con 28).</summary>
-        public int Ribs => RootHeight > 100f ? 28 : TreeSpec.Ribs;
+        /// <summary>Nervios del tronco y paso de sus zunchos: los que pide su altura (StructuralLimits.Reinforce: de 24 nervios y
+        /// zunchos cada 6 m, más nervios y zunchos más juntos hasta quedar bajo el 80 %; el agua aprieta más cuanto más alto).</summary>
+        public int Ribs => StructuralLimits.Reinforce(h, 2 * h.levels, 2 * h.levels, RootHeight).ribs;
+        public float HoopSpacing => StructuralLimits.Reinforce(h, 2 * h.levels, 2 * h.levels, RootHeight).hoopSpacing;
     }
 
     static readonly List<Helix> _helixes = new List<Helix>();
@@ -93,13 +94,13 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    /// <summary>Medidas de una TORRE migrada: su piso cuadrado (el lado mayor de su área más grande), puntas de 16 m con 10 m de
+    /// <summary>Medidas de una TORRE migrada: su piso cuadrado (el lado mayor de su área más grande), puntas de 20 m con 10 m de
     /// hueco (las alas de los anillos de los pisos vuelan 8 m) y el primer nivel del Árbol de los Campos (sobre el árbol más
     /// alto que crece en el santuario).</summary>
     public static HelixTower TowerHelix(Vector2 size, int levels, float firstY = 0f, float tipGap = 10f) => new HelixTower
     {
-        waterHalf = 10f, wall = 1f, firstY = Mathf.Max(firstY, TreeSpec.Helix.firstY), levelGap = 11f, levels = levels,
-        floorSize = Mathf.Max(size.x, size.y), tipSize = 16f, tipGap = tipGap, tipRise = 6f,
+        waterHalf = 10f, wall = 1f, firstY = Mathf.Max(firstY, TreeSpec.Helix.firstY), levels = levels,
+        floorSize = Mathf.Max(size.x, size.y), tipGap = tipGap,   // (niveles cada 22 m, puntas de 20 m, ramas de 10 × 10 m: los de HelixTower)
     };
 
     static Helix BeginHelix(Transform parent, string building, string rootName, Vector3 site, float yaw, HelixTower h, bool rotates)
@@ -273,7 +274,7 @@ public static partial class SampleSceneBuilder
         TrunkLook(tree);   // que se lea como agua (cristal casi invisible, agua azul, sin sombra)
 
         // EL TRONCO AGUANTA (StructuralLimits.RootCheck).
-        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
+        StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, hx.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
         if (rep.Fail) Debug.LogError($"[Estructura] El tronco de «{hx.building}» no aguanta: {rep}. Refuérzalo (más nervios, más pared o más tornapuntas).");
         else if (rep.Warn) Debug.LogWarning($"[Estructura] El tronco de «{hx.building}» va justo: {rep}.");
         else Debug.Log($"[Estructura] Tronco de «{hx.building}» ({2f * h.OuterHalf:0} × {2f * h.OuterHalf:0} m, {hx.Ribs} nervios): {rep}.");
@@ -425,7 +426,7 @@ public static partial class SampleSceneBuilder
                 boxes.Add((q * new Vector3(o + 0.3f, (y + y1) * 0.5f, o + 0.3f), new Vector3(0.6f, y1 - y, 0.6f), q));
             }
             var hoopY = new List<float>();
-            for (float y = 3f; y < H - 0.5f; y += TreeSpec.HoopSpacing) hoopY.Add(y);
+            for (float y = 3f; y < H - 0.5f; y += hx.HoopSpacing) hoopY.Add(y);
             hoopY.Add(H - 0.3f);
             var xs = new List<float> { -o }; xs.AddRange(ribX); xs.Add(o);
             foreach (float y in hoopY)
@@ -515,14 +516,14 @@ public static partial class SampleSceneBuilder
         WaterBox(br, "Agua_rama", new Vector3(mx, ym, (a - 0.5f + zA1 - tw) * 0.5f), new Vector3(2f * ti, hh, zA1 - tw - (a - 0.5f)));
         WaterBox(br, "Agua_rama", new Vector3((mx - ti + cx - ci + 0.3f) * 0.5f, ym, cz), new Vector3(cx - ci + 0.3f - (mx - ti), hh, 2f * ti));
         // CELOSÍA de acero de la rama (lo que carga la punta): 2 cordones abajo, 2 arriba y diagonales.
-        float yb = y0 - tw - 0.45f, yt = y1 + tw + 0.3f;
+        float yb = y0 - tw - 0.45f * h.chordD, yt = y1 + tw + 0.4f * h.chordD;   // (cordones de Ø 0,9·chordD abajo y 0,8·chordD arriba, pegados al tubo)
         void Chord(Vector3 p0, Vector3 p1, float size, string n) => KitchenProps.C(br, (p0 + p1) * 0.5f, new Vector3(size, size, (p1 - p0).magnitude), TreeSteel, Quaternion.LookRotation(p1 - p0), n);
         for (int sgn = -1; sgn <= 1; sgn += 2)
         {
-            Chord(new Vector3(mx + sgn * (th - 0.2f), yb, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yb, cz), 0.9f, "Nervio_rama");
-            Chord(new Vector3(mx, yb, cz + sgn * (th - 0.2f)), new Vector3(xB1, yb, cz + sgn * (th - 0.2f)), 0.9f, "Nervio_rama");
-            Chord(new Vector3(mx, yt, cz + sgn * (th - 0.2f)), new Vector3(xB1, yt, cz + sgn * (th - 0.2f)), 0.8f, "Nervio_rama");
-            Chord(new Vector3(mx + sgn * (th - 0.2f), yt, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yt, cz), 0.8f, "Nervio_rama");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yb, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yb, cz), 0.9f * h.chordD, "Nervio_rama");
+            Chord(new Vector3(mx, yb, cz + sgn * (th - 0.2f)), new Vector3(xB1, yb, cz + sgn * (th - 0.2f)), 0.9f * h.chordD, "Nervio_rama");
+            Chord(new Vector3(mx, yt, cz + sgn * (th - 0.2f)), new Vector3(xB1, yt, cz + sgn * (th - 0.2f)), 0.8f * h.chordD, "Nervio_rama");
+            Chord(new Vector3(mx + sgn * (th - 0.2f), yt, o + 0.2f), new Vector3(mx + sgn * (th - 0.2f), yt, cz), 0.8f * h.chordD, "Nervio_rama");
             for (float x = mx + 1f; x < xB1 - 1f; x += 4f)
                 Chord(new Vector3(x, yb, cz + sgn * th), new Vector3(Mathf.Min(xB1, x + 4f), yt, cz + sgn * th), 0.25f, "Tornapunta_rama");
         }
@@ -801,7 +802,7 @@ public static partial class SampleSceneBuilder
                 if (!tip) { if (In(-h.OuterHalf - 8f, h.floorSize - h.OuterHalf + 8f, h.OuterHalf, h.OuterHalf + h.floorSize + 8f, Y - TreeSpec.StrutDrop, Y + 8f)) return true; continue; }
                 Vector3 t = h.TipCenterS; float e = h.tipSize * 0.5f + 3.2f;
                 if (In(t.x - e, t.x + e, t.z - e, t.z + e, h.TipY(lv) - TreeSpec.StrutDrop, h.RingY(lv) + 4f)) return true;
-                if (In(h.mouthX - h.tubeHalf, h.ColumnS.x + h.ColOuter, h.OuterHalf, h.ColumnS.z + h.ColOuter, Y - 1f, Y + 6f)) return true;
+                if (In(h.mouthX - h.tubeHalf, h.ColumnS.x + h.ColOuter, h.OuterHalf, h.ColumnS.z + h.ColOuter, Y - 1.5f, Y + h.TubeInnerH + 1.5f)) return true;
             }
         }
         return false;

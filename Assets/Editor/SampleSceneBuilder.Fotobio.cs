@@ -77,7 +77,7 @@ public static partial class SampleSceneBuilder
             Quaternion q = HelixTower.SideRot(side);
             Vector3 P(float x, float y, float zz) => q * new Vector3(x, y, zz);
             var kl = FotobioSpec.Keel(h, lv);
-            float ym = (kl.y0 + kl.y1) * 0.5f, chordBottom = h.LevelY(lv) - 0.3f - h.tubeWall - 0.45f - 0.45f;
+            float ym = (kl.y0 + kl.y1) * 0.5f, chordBottom = h.LevelY(lv) - 0.3f - h.tubeWall - 0.9f * h.chordD;   // (bajo los cordones de Ø 0,9·chordD)
             for (int p = 0; p < FotobioSpec.KeelPanels; p++)
             {
                 float x0 = kl.x0 + p * (FotobioSpec.KeelPanelW + FotobioSpec.KeelGap), xc = x0 + FotobioSpec.KeelPanelW * 0.5f;

@@ -18,16 +18,20 @@ using UnityEngine;
 public class HelixTower
 {
     public float waterHalf = 10f, wall = 1f;          // tronco: agua de 2·waterHalf, pared de acrílico de «wall»
-    public float firstY = 64f, levelGap = 11f;         // cara del primer piso y de un nivel al siguiente
+    public float firstY = 64f, levelGap = 22f;         // cara del primer piso y de un nivel al siguiente (Berón 2026-11-01: el doble, 11 → 22 m)
     public int levels = 2;
     public float floorSize = 32f;                      // piso pegado al tronco (cuadrado)
-    public float tipSize = 16f, tipGap = 4f, tipRise = 6f;   // campo de punta (cuadrado), su hueco al piso y cuánto sube sobre su nivel
+    public float tipSize = 20f, tipGap = 4f, tipRise = 12f;   // campo de punta (cuadrado; 20 m: con la columna de 11 m le queda más que antes), su hueco al piso y cuánto sube sobre su nivel (sobre el tubo de 10 m)
     public float ringH = 4f, ringWidth = 4f, ringInside = 0.2f;   // anillo encima del campo (RingDeck: 20 % sobre el campo)
-    public float tubeHalf = 2.8f, tubeWall = 0.3f, mouthX = 6.5f;   // rama: tubo cuadrado (hueco de 5 × 5 m: caben varios a la vez; Berón 2026-10-31) y su boca en la cara
-    public float colHalf = 2.5f, colWall = 0.3f, colMargin = 1f;  // columna de la punta: agua de 5 × 5 m, a 1 m del borde del campo
+    public float tubeHalf = 5.3f, tubeWall = 0.3f, mouthX = 4.7f;   // rama: tubo cuadrado (hueco de 10 × 10 m: Berón 2026-11-01, el doble de grueso) y su boca en la cara (dentro de la cara: mouthX + tubeHalf ≤ waterHalf)
+    public float chordD = 1.6f;                        // cordones CFST de la celosía de la rama (Ø; chapa 4 % del Ø): con el tubo de 10 m, 1,6 m (antes 1 m)
+    public float colHalf = 5.3f, colWall = 0.3f, colMargin = 1f;  // columna de la punta: agua de 10,6 × 10,6 m (recibe el tubo de 10 m), a 1 m del borde del campo
     public float doorWidth = 3f, doorHeight = 3f, doorX = 5f;     // puertas de 3 × 3 m (Berón 2026-10-31: más anchas)
 
     public float OuterHalf => waterHalf + wall;
+    /// <summary>Alto del tronco: el último nivel, su punta, su anillo, la puerta del anillo y la columna (7 m).</summary>
+    public float RootHeight => LevelY(levels) + tipRise + ringH + 7f;
+    public float WaterTop => RootHeight - 0.5f;
     public static Quaternion SideRot(int side) => Quaternion.Euler(0f, side * 90f, 0f);
     /// <summary>Un punto del marco del lado <paramref name="side"/> en el marco del edificio.</summary>
     public static Vector3 FromSide(int side, Vector3 p) => SideRot(side) * p;
@@ -106,20 +110,25 @@ public static class TreeSpec
     {
         waterHalf = 10f, wall = 1f,
         firstY = Mathf.Max(FirstFloorMin, Mathf.Ceil(TallestTree + TreeClearance + StrutDrop)),   // 64 m
-        levelGap = 11f, levels = 2, floorSize = 32f, tipSize = 16f, tipGap = 4f, tipRise = 6f,
+        levels = 2, floorSize = 32f, tipGap = 4f,   // (nivel cada 22 m, puntas de 20 m que suben 12 m: los de HelixTower)
     };
 
     public static float WaterHalf => Helix.waterHalf;
     public static float WallThickness => Helix.wall;
     public static float OuterHalf => Helix.OuterHalf;   // 11 m → 22 m de lado
-    public const float RootHeight = 92f, WaterTop = 91.5f, WaterBottom = 0.05f;   // el agua del tronco, bajo la losa del techo
+    public static float RootHeight => Helix.RootHeight;   // 109 m (antes 92: los niveles van cada 22 m)
+    public static float WaterTop => Helix.WaterTop;
+    public const float WaterBottom = 0.05f;   // el agua del tronco, bajo la losa del techo
     public const float TopWidth = 22f;           // el techo de alfombras: tan ancho como el tronco
     /// <summary>La PUERTA DEL TECHO (Berón 2026-10-31: como la de los anillos, se entra de frente): una columna de agua de 5 × 5 m
     /// que asoma sobre el techo (centro, a ras de la cubierta), con su puerta en la cara +Z (hacia las alfombras).</summary>
-    public static readonly Vector3 HatchLocal = new Vector3(0f, RootHeight, -6f);
+    public static Vector3 HatchLocal => new Vector3(0f, RootHeight, -6f);
     public const float HatchHalf = 2.5f;   // medio lado del agua de la columna del techo (pared de 0,3 m)
-    public const int Ribs = 24;                  // 4 esquinas + 5 por cara: uno cada ~3,7 m
-    public const float HoopSpacing = 6f, HoopHeight = 0.25f, HoopDepth = 0.36f;
+    public const int MinRibs = 24;               // 4 esquinas + 5 por cara: uno cada ~3,7 m (lo mínimo; más alto, más: StructuralLimits.Reinforce)
+    public const float HoopHeight = 0.25f, HoopDepth = 0.36f;
+    /// <summary>Nervios y paso de zunchos del tronco del Árbol de los Campos (4 pisos, 4 puntas): los que pide su altura.</summary>
+    public static int Ribs => StructuralLimits.Reinforce(Helix, 4, 4, RootHeight).ribs;
+    public static float HoopSpacing => StructuralLimits.Reinforce(Helix, 4, 4, RootHeight).hoopSpacing;
     public static float HoopArea => HoopHeight * HoopDepth;
     public const float DoorWidth = 3f, DoorHeight = 3f;
     /// <summary>El lado de la puerta del suelo (a = +Z: hacia las alfombras del pie, al NE).</summary>

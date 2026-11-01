@@ -49,7 +49,7 @@ public static partial class SampleSceneBuilder
             if (tip == null) continue;
             if (_orchardHave.TryGetValue(b, out HashSet<GardenCrop.Kind> full) && full.Count >= FruitCare.All.Length) continue;   // ya tiene una de cada: esta punta queda de terraza (con los nidos de su anillo)
             bool main = b == TorreServicios && mainDone.Add(b);
-            total += PlantRoof(tip, _platforms.TryGetValue(tip, out Vector2 ts) ? ts : new Vector2(16f, 16f), b, scene, main, 3.5f);
+            total += PlantRoof(tip, _platforms.TryGetValue(tip, out Vector2 ts) ? ts : new Vector2(20f, 20f), b, scene, main, 3.5f);
             roofs++;
         }
         foreach (var kv in _orchardHave)

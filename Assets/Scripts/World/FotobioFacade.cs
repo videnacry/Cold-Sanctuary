@@ -52,7 +52,7 @@ public static class FotobioSpec
 
     // ── GEOMETRÍA DEL TRONCO (marco de cada lado de HelixTower: x a lo largo de la cara, y altura, z hacia fuera) ──
     /// <summary>Vanos (de 6 por cara, entre nervios) con arpa: solo el 0 (junto a la esquina). El carril de nado y las puertas
-    /// van por el vano 4 (doorX = 5 m, boca de la rama en 6,5 m) y la columna de nado (a 6 m del eje frente a cada puerta) se ve
+    /// van por el vano 4 (doorX = 5 m, boca de la rama de 10 m centrada en 4,7 m) y la columna de nado (a 6 m del eje frente a cada puerta) se ve
     /// desde fuera por los vanos 1–4: quedan libres del 1 al 5. Con el mismo número de módulos (32), la columna es el doble de alta.</summary>
     public static readonly int[] TrunkBays = { 0 };
     public const int BaysPerFace = 6;
@@ -74,9 +74,9 @@ public static class FotobioSpec
     public const int KeelPanels = 6;
     public const float KeelPanelW = 2.4f, KeelPanelH = 2f, KeelGap = 0.12f, KeelThick = 0.05f;
     public static float KeelPanelArea => KeelPanelW * KeelPanelH;
-    /// <summary>Cuánto baja la cara de arriba de la quilla bajo la cara del nivel: hueco del tubo (0,3), pared (0,3), cordón (0,45 + 0,45)
-    /// y colgador (0,2).</summary>
-    public const float KeelDrop = 1.7f;
+    /// <summary>Cuánto baja la cara de arriba de la quilla bajo la cara del nivel: hueco del tubo (0,3), pared (0,3), cordón (Ø 0,9 × 1,6 m
+    /// con el tubo de 10 m, 2026-11-01) y colgador (0,36). Lo más bajo de la quilla del primer nivel queda a 59,6 m, sobre el árbol más alto.</summary>
+    public const float KeelDrop = 2.4f;
 
     /// <summary>Centro (x) del vano <paramref name="bay"/> de una cara.</summary>
     public static float BayCenter(HelixTower h, int bay) { float w = 2f * h.OuterHalf / BaysPerFace; return -h.OuterHalf + (bay + 0.5f) * w; }
