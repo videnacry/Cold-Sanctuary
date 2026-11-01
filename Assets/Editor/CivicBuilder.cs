@@ -38,8 +38,136 @@ internal static partial class CivicBuilder
     static readonly Style Pavilion = new Style(C(0.5f, 0.38f, 0.25f), C(0.7f, 0.6f, 0.45f), C(0.75f, 0.65f, 0.38f), Roof.Gable, 3f) { open = true };
     static readonly Style Sandbag = new Style(C(0.62f, 0.55f, 0.4f), C(0.33f, 0.27f, 0.2f), C(0.4f, 0.33f, 0.25f), Roof.Flat, 2.2f);       // refugio de trinchera
 
-    /// <summary>Añade a la historia los edificios de su era (por su nombre de microcosmos). Devuelve cuántos insectos-humanos puso.</summary>
+    /// <summary>Añade a la historia los edificios de su era (por su nombre de microcosmos) y aplica las REGLAS DE EDIFICACIÓN
+    /// (docs/microcosmos-reglas-edificacion.md): lo que falte de las necesidades básicas va a unos aseos de la era en un solar libre,
+    /// y la escena se valida (<see cref="MicroBuildRules.Validate"/>). Devuelve cuántos insectos-humanos puso.</summary>
     internal static int Civilize(Transform t, string display)
+    {
+        MicroEra me = t.root.GetComponentInChildren<MicroEra>(true);
+        var era = Eras.OfMicrocosmos(display);
+        Year = me != null ? me.year : era.HasValue ? era.Value.year : Eras.Present;
+        int n = CivilizeEra(t, display);
+        if (t.GetComponentInChildren<AreaFunctionSite>(true) == null) return n;   // una historia sin pueblo
+        int moved = Settle(t);
+        var lots = new Lots(t);
+        // Regla 5: en las eras avanzadas el pueblo sigue por el piso (casas de la era, vacías de gente).
+        int fill = MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs) ? FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10) : 0;
+        Vector3? at = lots.Take(new Vector2(18f, 14f));
+        EnsureNeeds(t, at ?? new Vector3(0f, 0f, 30f), NeedsStyle);
+        if (moved > 0 || fill > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {fill} casas de relleno.");
+        MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
+        return n;
+    }
+
+    /// <summary>Las casas con que se llena el resto del piso en cada era avanzada (regla 5): su material y su nombre.</summary>
+    static readonly Dictionary<string, (Style st, string title)> FillStyles = new Dictionary<string, (Style, string)>
+    {
+        ["Escútari"] = (Selimiye, "Casa de Üsküdar"),
+        ["Dayton"] = (Clapboard, "Casa de West Dayton"),
+        ["Kapilavastu"] = (BurntBrick, "Casa de ladrillo de Kapilavastu"),
+        ["Alejandría"] = (Limestone, "Casa del barrio Brucheion"),
+        ["Patanjali"] = (MudThatch, "Cabaña de la aldea"),
+        ["Planta Atómica"] = (StoneManor, "Casa de Woolsthorpe-by-Colsterworth"),
+        ["Irena Sendler"] = (Sandstone, "Casa de vecinos de Varsovia"),
+        ["Le Chambon-sur-Lignon"] = (StoneManor, "Casa de piedra del plateau"),
+        ["Mesopotamia"] = (MudBrick, "Casa de adobe de Uruk"),
+    };
+
+    /// <summary>Cada EDIFICIO ABIERTO (los de <see cref="Building"/>, con su «Suelo») que choca con otro o con la historia (a menos
+    /// de una calle) o se sale del piso se corre al solar libre más cercano, con su gente (las jornadas que trabajan allí).
+    /// Devuelve cuántos movió.</summary>
+    static int Settle(Transform t)
+    {
+        var sites = new List<AreaFunctionSite>();
+        foreach (Transform c in t) { var s = c.GetComponent<AreaFunctionSite>(); if (s != null && c.Find("Suelo") != null) sites.Add(s); }
+        var skip = new HashSet<Transform>(); foreach (var s in sites) skip.Add(s.transform);
+        var lots = new Lots(t, skip);
+        int moved = 0;
+        foreach (AreaFunctionSite s in sites)
+        {
+            Transform f = s.transform.Find("Suelo");
+            Vector2 size = new Vector2(f.localScale.x, f.localScale.z) + new Vector2(2f, 2f);
+            float yaw = s.transform.localEulerAngles.y; if (Mathf.Abs(Mathf.DeltaAngle(yaw, 90f)) < 45f || Mathf.Abs(Mathf.DeltaAngle(yaw, 270f)) < 45f) size = new Vector2(size.y, size.x);
+            Vector2 c0 = new Vector2(s.transform.localPosition.x, s.transform.localPosition.z);
+            if (lots.Free(c0, size)) { lots.Mark(new Rect(c0 - size * 0.5f, size)); continue; }
+            Vector3? at = lots.Take(size, c0);
+            if (!at.HasValue) { lots.Mark(new Rect(c0 - size * 0.5f, size)); Debug.LogWarning($"[Eras] «{s.title}»: sin solar libre para correrlo."); continue; }
+            Vector3 d = at.Value - s.transform.localPosition; d.y = 0f;
+            s.transform.localPosition += d; moved++;
+            foreach (MicroJornada j in t.GetComponentsInChildren<MicroJornada>(true)) if (j.work == s) j.transform.localPosition += d;
+        }
+        return moved;
+    }
+
+    static Style NeedsStyle => new Style(C(0.7f, 0.64f, 0.52f), C(0.62f, 0.57f, 0.48f), C(0.5f, 0.45f, 0.4f), Roof.None);
+
+    /// <summary>
+    /// LOS SOLARES LIBRES del piso de una historia (en los locales de <c>t</c>): el rectángulo útil
+    /// (<see cref="AreaMicrocosmos.FloorRectLocal"/>) menos el claro de la historia (un círculo de <see cref="Clearing"/> m en
+    /// (0, 0), con la entrada y el portal) y lo que ya hay construido (con una calle de <see cref="MicroBuildRules.Street"/>
+    /// alrededor). <see cref="Take"/> da el centro del solar libre más cercano a un punto y lo marca ocupado.
+    /// </summary>
+    internal sealed class Lots
+    {
+        public const float Clearing = 24f;
+        public readonly Rect floor;
+        readonly List<Rect> _taken = new List<Rect>();
+        readonly Transform _t;
+
+        public Lots(Transform t, HashSet<Transform> skip = null)
+        {
+            _t = t; floor = AreaMicrocosmos.FloorRectLocal(t);
+            // Lo construido: una caja por hijo de t (un edificio, una estación de la historia), sin la gente.
+            foreach (Transform c in t)
+            {
+                if (skip != null && skip.Contains(c)) continue;
+                bool any = false; Bounds b = default;
+                foreach (Renderer r in c.GetComponentsInChildren<Renderer>(true))
+                {
+                    if (r.GetComponentInParent<CubeInsect>(true) != null) continue;
+                    Bounds rb0 = r.bounds; if (rb0.size.y < 0.1f && rb0.size.x > 30f && rb0.size.z > 30f) continue;   // el asfalto de un barrio (se construye encima)
+                    if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
+                }
+                if (!any) continue;
+                Vector3 mn = t.InverseTransformPoint(b.min), mx = t.InverseTransformPoint(b.max);
+                _taken.Add(Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z)));
+            }
+        }
+
+        public void Mark(Rect r) => _taken.Add(r);
+
+        /// <summary>¿Cabe un solar de <paramref name="size"/> centrado en <paramref name="c"/> (dentro del piso, fuera del claro, a
+        /// una calle de todo lo construido)?</summary>
+        public bool Free(Vector2 c, Vector2 size)
+        {
+            Rect r = new Rect(c - size * 0.5f, size);
+            if (r.xMin < floor.xMin || r.xMax > floor.xMax || r.yMin < floor.yMin || r.yMax > floor.yMax) return false;
+            float dx = Mathf.Max(0f, Mathf.Max(r.xMin, -r.xMax)), dz = Mathf.Max(0f, Mathf.Max(r.yMin, -r.yMax));
+            if (dx * dx + dz * dz < Clearing * Clearing) return false;
+            float s = MicroBuildRules.Street;
+            Rect g = new Rect(r.x - s, r.y - s, r.width + 2f * s, r.height + 2f * s);
+            foreach (Rect o in _taken) if (g.Overlaps(o)) return false;
+            return true;
+        }
+
+        /// <summary>El solar libre de <paramref name="size"/> más cercano a <paramref name="near"/> (por defecto, el claro), en
+        /// una rejilla de 2 m; lo marca ocupado. null si no cabe.</summary>
+        public Vector3? Take(Vector2 size, Vector2? near = null)
+        {
+            Vector2 n = near ?? Vector2.zero; Vector2? best = null; float bd = float.MaxValue;
+            for (float x = floor.xMin + size.x * 0.5f; x <= floor.xMax - size.x * 0.5f; x += 2f)
+                for (float z = floor.yMin + size.y * 0.5f; z <= floor.yMax - size.y * 0.5f; z += 2f)
+                {
+                    Vector2 c = new Vector2(x, z); float d = (c - n).sqrMagnitude;
+                    if (d < bd && Free(c, size)) { bd = d; best = c; }
+                }
+            if (!best.HasValue) return null;
+            Mark(new Rect(best.Value - size * 0.5f, size));
+            return new Vector3(best.Value.x, 0f, best.Value.y);
+        }
+    }
+
+    static int CivilizeEra(Transform t, string display)
     {
         switch (display)
         {
@@ -69,34 +197,6 @@ internal static partial class CivicBuilder
             case "Chernóbil": return ChernobylTown(t);
             default: return 0;
         }
-    }
-
-    // ══ BRUCE LEE: Hong Kong (años 50) y Seattle (1959–64) ════════════════════════════════════════════════════════
-    // · La escuela de Yip Man: las clases eran en pisos y azoteas de edificios tong lau de Kowloon, en salas pequeñas con el
-    //   muñeco de madera (HistoryLink 3999; Polly 2018). · Un cha chaan teng (casa de té de Hong Kong: barra, cocina vista,
-    //   mesas con bancos). · El restaurante de Ruby Chow en Seattle, donde trabajó de camarero y vivió encima (HistoryLink 3999).
-    static int BruceLeeEra(Transform t)
-    {
-        var school = Building(t, "Escuela de Yip Man (tong lau, Kowloon)", "Dojo", "Escuela de Wing Chun de Yip Man", new Vector3(-31f, 0f, 4f), 0f, new Vector2(12f, 10f), TongLau,
-            S("tatami", 0f, 1f, 6f, 5f, "Tatami"), S("muneco", -4f, 3.5f, 0.5f, 0.5f, "Muñeco de madera"), S("muneco", 4f, 3.5f, 0.5f, 0.5f, "Muñeco de madera"));
-        var cafe = Building(t, "Cha chaan teng (casa de té de Hong Kong)", "Restaurante", "Cha chaan teng", new Vector3(31f, 0f, 4f), 0f, new Vector2(14f, 10f), ChaChaanTeng,
-            S("fogon", -4f, 3.5f, 3f, 1f, "Cocina vista (fogones)"), S("barra", 2f, 3f, 4f, 0.8f, "Barra"),
-            S("mesa", -4f, -1.5f, 1.4f, 1.4f, "Mesa con bancos"), S("mesa", 0f, -1.5f, 1.4f, 1.4f, "Mesa con bancos"), S("mesa", 4f, -1.5f, 1.4f, 1.4f, "Mesa con bancos"));
-        var ruby = Building(t, "Restaurante de Ruby Chow (Seattle)", "Restaurante", "Restaurante de Ruby Chow (Seattle, 1959)", new Vector3(0f, 0f, 38f), 0f, new Vector2(16f, 10f), SeattleBrick,
-            S("fogon", -5f, 3.5f, 3f, 1f, "Cocina"), S("barra", 3f, 3.2f, 4f, 0.8f, "Barra"),
-            S("mesa", -4f, -1.5f, 1.4f, 1.4f, "Mesa"), S("mesa", 0f, -1.5f, 1.4f, 1.4f, "Mesa"), S("mesa", 4f, -1.5f, 1.4f, 1.4f, "Mesa"));
-        var home = Building(t, "Pisos de un tong lau", "Casa", "Casa (tong lau)", new Vector3(-31f, 0f, -26f), 0f, new Vector2(12f, 9f), TongLau,
-            S("cama", -3.5f, 2.5f, 1.2f, 2f, "Cama"), S("cama", 3.5f, 2.5f, 1.2f, 2f, "Cama"), S("fogon", 0f, 3f, 1.4f, 0.8f, "Fogón"));
-        int n = 0;
-        n += Worker(t, "Alumno de Wing Chun 1", school, "alumno", cafe, school, home);
-        n += Worker(t, "Alumno de Wing Chun 2", school, "alumno", cafe, school, home);
-        n += Worker(t, "Wong Shun-leung", school, "maestro", cafe, school, home);
-        n += Worker(t, "Cocinero del cha chaan teng", cafe, "cocinero", cafe, school, home);
-        n += Worker(t, "Camarera del cha chaan teng", cafe, "camarero", cafe, school, home);
-        n += Worker(t, "Ruby Chow", ruby, "camarero", ruby, null, home);
-        n += Worker(t, "Cocinero de Ruby Chow", ruby, "cocinero", ruby, null, home);
-        n += Couple(t, "Vecina del tong lau", "Vecino del tong lau", home, cafe, school);
-        return n;
     }
 
     // ══ ESCÚTARI (1854–55): el cuartel de Selimiye (finales de la década de 1820): cuadrilátero con patio y torres en las
@@ -231,83 +331,126 @@ internal static partial class CivicBuilder
 
     // ── Piezas ──────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    /// <summary>Un puesto: clave del registro, posición local (x, z) dentro del edificio, tamaño (ancho, fondo) y rótulo.</summary>
+    /// <summary>Un puesto: clave del registro, posición local (x, z) dentro del edificio, tamaño (ancho, fondo) y rótulo. Desde las
+    /// reglas de edificación (docs/microcosmos-reglas-edificacion.md) la posición solo da el ORDEN (los muebles se colocan con el
+    /// paso de 2 m) y el tamaño solo cuenta en lo que se pisa (tatami, esterilla, bancal).</summary>
     static (string key, Vector2 at, Vector2 size, string label) S(string key, float x, float z, float w, float d, string label) => (key, new Vector2(x, z), new Vector2(w, d), label);
 
-    /// <summary>Un EDIFICIO: suelo, cuatro muros con la puerta en el frente (−z local, 2,4 m), cubierta (sin colisión: no tapa la
-    /// navegación) y sus puestos interactuables. Es un <see cref="AreaFunctionSite"/> de la plantilla <paramref name="template"/>.</summary>
+    /// <summary>El año de la escena que se está civilizando (elige la versión de cada mueble: hogar o cocina de gas, letrina o retrete).</summary>
+    internal static int Year = 1950;
+
+    /// <summary>
+    /// Un EDIFICIO ABIERTO (reglas de edificación 1–4): el suelo con el material real de la era (y un borde más oscuro), su
+    /// rótulo y sus MUEBLES DETALLADOS (<see cref="MicroFurniture"/>), sin muros ni techo. Los puestos (<paramref name="stations"/>)
+    /// son interactuables (<see cref="AreaFunctionStation"/> en la raíz de cada mueble) y se colocan en filas con
+    /// <see cref="MicroBuildRules.Passage"/> entre ellos y al borde del suelo; el suelo crece si no caben en <paramref name="size"/>.
+    /// Una Casa (o un orfanato) trae además sus necesidades básicas: cama, retrete, lavabo, mesa con sillas y cocina.
+    /// Es un <see cref="AreaFunctionSite"/> de la plantilla <paramref name="template"/>.
+    /// </summary>
     internal static AreaFunctionSite Building(Transform parent, string name, string template, string title, Vector3 pos, float yaw, Vector2 size, Style st,
                                               params (string key, Vector2 at, Vector2 size, string label)[] stations)
     {
-        Transform b = new GameObject(name).transform; b.SetParent(parent, false); b.localPosition = pos; b.localRotation = Quaternion.Euler(0f, yaw, 0f);
-        Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), floor = AreaMicrocosmos.Mat("Civ_Suelo_" + Hex(st.floor), st.floor), roof = AreaMicrocosmos.Mat("Civ_Cubierta_" + Hex(st.roof), st.roof);
-        float w = size.x, d = size.y, h = st.wallH, th = 0.3f, door = 2.4f;
-        AreaMicrocosmos.Box(b, "Suelo", new Vector3(0f, 0.04f, 0f), new Vector3(w, 0.08f, d), floor, false);
-        if (st.open)
-        {
-            foreach (var (x, z) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) AreaMicrocosmos.Box(b, "Poste", new Vector3(x * (w * 0.5f - 0.2f), h * 0.5f, z * (d * 0.5f - 0.2f)), new Vector3(0.3f, h, 0.3f), wall, true);
-        }
-        else
-        {
-            AreaMicrocosmos.Box(b, "Muro_fondo", new Vector3(0f, h * 0.5f, d * 0.5f), new Vector3(w, h, th), wall, true);
-            AreaMicrocosmos.Box(b, "Muro_izquierdo", new Vector3(-w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, true);
-            AreaMicrocosmos.Box(b, "Muro_derecho", new Vector3(w * 0.5f, h * 0.5f, 0f), new Vector3(th, h, d), wall, true);
-            float side = (w - door) * 0.5f;
-            AreaMicrocosmos.Box(b, "Muro_frente", new Vector3(-(door + side) * 0.5f, h * 0.5f, -d * 0.5f), new Vector3(side, h, th), wall, true);
-            AreaMicrocosmos.Box(b, "Muro_frente", new Vector3((door + side) * 0.5f, h * 0.5f, -d * 0.5f), new Vector3(side, h, th), wall, true);
-            if (h > 2.7f) AreaMicrocosmos.Box(b, "Dintel", new Vector3(0f, (h + 2.6f) * 0.5f, -d * 0.5f), new Vector3(door, h - 2.6f, th), wall, false);
-            // Ventanas pintadas a los lados (un poco más oscuras que el muro).
-            Material win = AreaMicrocosmos.Mat("Civ_Ventana", new Color(0.25f, 0.3f, 0.35f));
-            for (int k = -1; k <= 1; k += 2) AreaMicrocosmos.Box(b, "Ventana", new Vector3(k * (w * 0.5f + 0.17f), h * 0.6f, 0f), new Vector3(0.04f, 1.1f, Mathf.Min(1.6f, d * 0.3f)), win, false);
-        }
-        if (st.columns) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(b, "Columna", new Vector3(-w * 0.5f + 0.4f + k * (w - 0.8f) / 5f, h * 0.5f, -d * 0.5f - 1.2f), new Vector3(0.5f, h, 0.5f), wall, true);
-        if (st.roofKind == Roof.Flat) AreaMicrocosmos.Box(b, "Cubierta", new Vector3(0f, h + 0.1f, 0f), new Vector3(w + 0.4f, 0.2f, d + 0.4f), roof, false);
-        else if (st.roofKind == Roof.Gable)
-        {
-            float rise = Mathf.Min(2.4f, d * 0.3f), half = d * 0.5f + 0.3f, ang = Mathf.Atan2(rise, half) * Mathf.Rad2Deg, len = Mathf.Sqrt(rise * rise + half * half);
-            AreaMicrocosmos.Box(b, "Faldon", new Vector3(0f, h + rise * 0.5f, -half * 0.5f), new Vector3(w + 0.6f, 0.18f, len), Quaternion.Euler(-ang, 0f, 0f), roof, false);
-            AreaMicrocosmos.Box(b, "Faldon", new Vector3(0f, h + rise * 0.5f, half * 0.5f), new Vector3(w + 0.6f, 0.18f, len), Quaternion.Euler(ang, 0f, 0f), roof, false);
-        }
+        Transform b = new GameObject(name).transform; b.SetParent(parent, false); b.localPosition = pos;
+        var pieces = Furnish(b, template, stations);
+        Vector2 used = Layout(b, pieces, size, 0f);
+        Floor(b, used, st);
+        if (st.columns) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(b, "Columna", new Vector3(-used.x * 0.5f + 0.4f + k * (used.x - 0.8f) / 5f, st.wallH * 0.5f, -used.y * 0.5f - 0.6f), new Vector3(0.4f, st.wallH, 0.4f), AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), true);
+        b.localRotation = Quaternion.Euler(0f, yaw, 0f);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title;
-        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = title; wl.height = h + 2.5f;
-        Material furn = AreaMicrocosmos.Mat("Civ_Mueble", new Color(0.5f, 0.38f, 0.26f));
-        foreach (var s in stations)
-        {
-            float sh = StationHeight(s.key);
-            Transform p = AreaMicrocosmos.Box(b, "Puesto_" + s.key, new Vector3(s.at.x, sh * 0.5f + 0.08f, s.at.y), new Vector3(s.size.x, sh, s.size.y), StationMat(s.key, furn), true);
-            var fs = p.gameObject.AddComponent<AreaFunctionStation>(); fs.station = s.key;
-            var l = p.gameObject.AddComponent<WorldLabel>(); l.text = s.label; l.height = 1.2f;
-        }
+        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = title; wl.height = 3.2f;
         return site;
     }
 
-    static float StationHeight(string key)
+    /// <summary>Los muebles de un edificio (puestos + necesidades de una Casa), aún sin colocar.</summary>
+    static List<Transform> Furnish(Transform b, string template, (string key, Vector2 at, Vector2 size, string label)[] stations)
+    {
+        var l = new List<Transform>();
+        var have = new HashSet<string>();
+        foreach (var s in stations)
+        {
+            Transform p = MicroFurniture.Build(b, s.key, Vector3.zero, 0f, s.label, Year, s.size);
+            if (!NotStation(s.key)) p.gameObject.AddComponent<AreaFunctionStation>().station = s.key;   // retrete, lavabo, banco y silla: muebles, no puestos
+            var lab = p.gameObject.AddComponent<WorldLabel>(); lab.text = s.label; lab.height = 1.6f;
+            l.Add(p); have.Add(s.key);
+        }
+        if (template == "Casa" || template == "Orfanato")
+            foreach (string need in new[] { "cama", "mesa", "fogon", "inodoro", "lavabo" })
+            {
+                if (have.Contains(need)) continue;
+                l.Add(MicroFurniture.Build(b, need, Vector3.zero, 0f, NeedLabel(need, Year), Year));
+            }
+        return l;
+    }
+
+    /// <summary>El nombre de la época de cada mueble de necesidad básica.</summary>
+    internal static string NeedLabel(string key, int year)
     {
         switch (key)
         {
-            case "tatami": case "esterilla": case "bancal": return 0.1f;
-            case "cama": case "camilla": return 0.55f;
-            case "muneco": return 1.7f;
-            case "estante": case "armario": return 2.2f;
-            case "pizarra": case "tunel": return 1.8f;
-            case "granero": return 1.6f;
-            case "parapeto": return 1.3f;
-            default: return 0.9f;   // fogón, barra, mesa, banco, puesto, lavadero, altar…
+            case "inodoro": return year < 1880 ? "Letrina" : "Retrete";
+            case "lavabo": return year < 1900 ? "Palangana y jarra" : "Lavabo";
+            case "cama": return year < -500 ? "Estera de dormir" : "Cama";
+            case "mesa": return year < 1700 ? "Mesa con bancos" : "Mesa con sillas";
+            case "fogon": return year < 1850 ? "Hogar (cocina)" : "Cocina";
+            default: return key;
         }
     }
 
-    static Material StationMat(string key, Material furn)
+    /// <summary>
+    /// Coloca <paramref name="pieces"/> (hijos de <paramref name="b"/>) en filas: <see cref="MicroBuildRules.Passage"/> entre
+    /// ellos y al borde. Las filas son de ancho <paramref name="minSize"/>.x (o el del mueble más ancho) y se centran; el conjunto
+    /// se centra en z y se corre <paramref name="zOffset"/>. Devuelve el tamaño del suelo (≥ <paramref name="minSize"/>).
+    /// </summary>
+    internal static Vector2 Layout(Transform b, List<Transform> pieces, Vector2 minSize, float zOffset)
     {
-        switch (key)
+        float P = MicroBuildRules.Passage;
+        var boxes = new List<Bounds>();
+        float widest = 0f;
+        foreach (Transform p in pieces) { Bounds lb = MicroFurniture.LocalBounds(p); boxes.Add(lb); widest = Mathf.Max(widest, lb.size.x); }
+        float rowMax = Mathf.Max(minSize.x - 2f * P, widest);
+        var rows = new List<List<int>>(); var row = new List<int>(); float x = 0f;
+        for (int i = 0; i < pieces.Count; i++)
         {
-            case "tatami": return AreaMicrocosmos.Mat("Civ_Tatami", new Color(0.78f, 0.72f, 0.5f));
-            case "esterilla": return AreaMicrocosmos.Mat("Civ_Esterilla", new Color(0.6f, 0.45f, 0.25f));
-            case "bancal": return AreaMicrocosmos.Mat("Civ_Bancal", new Color(0.3f, 0.45f, 0.2f));
-            case "cama": case "camilla": return AreaMicrocosmos.Mat("Civ_Sabana", new Color(0.93f, 0.92f, 0.88f));
-            case "fogon": case "horno": return AreaMicrocosmos.Mat("Civ_Fogon", new Color(0.3f, 0.28f, 0.26f));
-            case "lavadero": return AreaMicrocosmos.Mat("Civ_Agua", new Color(0.35f, 0.55f, 0.7f));
-            case "parapeto": return AreaMicrocosmos.Mat("Civ_Sacos", new Color(0.62f, 0.55f, 0.4f));
-            default: return furn;
+            float w = boxes[i].size.x;
+            if (row.Count > 0 && x + w > rowMax + 0.01f) { rows.Add(row); row = new List<int>(); x = 0f; }
+            row.Add(i); x += w + P;
+        }
+        if (row.Count > 0) rows.Add(row);
+        float usedD = 0f, usedW = 0f;
+        var depth = new List<float>();
+        foreach (var r in rows)
+        {
+            float d = 0f, w = -P; foreach (int i in r) { d = Mathf.Max(d, boxes[i].size.z); w += boxes[i].size.x + P; }
+            depth.Add(d); usedD += d; usedW = Mathf.Max(usedW, w);
+        }
+        usedD += P * Mathf.Max(0, rows.Count - 1);
+        float z = usedD * 0.5f;   // de atrás (+z) hacia delante (−z)
+        for (int k = 0; k < rows.Count; k++)
+        {
+            float w = -P; foreach (int i in rows[k]) w += boxes[i].size.x + P;
+            float cx = -w * 0.5f;
+            foreach (int i in rows[k])
+            {
+                Bounds lb = boxes[i];
+                pieces[i].localPosition = new Vector3(cx + lb.size.x * 0.5f - lb.center.x, 0f, z - depth[k] * 0.5f - lb.center.z + zOffset);
+                cx += lb.size.x + P;
+            }
+            z -= depth[k] + P;
+        }
+        return new Vector2(Mathf.Max(minSize.x, usedW + 2f * P), Mathf.Max(minSize.y, usedD + 2f * P));
+    }
+
+    // El SUELO de un edificio abierto (la losa con el material de la era y un borde un poco más oscuro, plano: se pisa).
+    static void Floor(Transform b, Vector2 size, Style st)
+    {
+        Material floor = AreaMicrocosmos.Mat("Civ_Suelo_" + Hex(st.floor), st.floor);
+        Color edge = Color.Lerp(st.wall, Color.black, 0.25f); edge.a = 1f;
+        Material trim = AreaMicrocosmos.Mat("Civ_Borde_" + Hex(edge), edge);
+        AreaMicrocosmos.Box(b, "Suelo", new Vector3(0f, 0.04f, 0f), new Vector3(size.x, 0.08f, size.y), floor, false);
+        for (int k = -1; k <= 1; k += 2)
+        {
+            AreaMicrocosmos.Box(b, "Borde_del_suelo", new Vector3(0f, 0.09f, k * (size.y * 0.5f - 0.15f)), new Vector3(size.x, 0.02f, 0.3f), trim, false);
+            AreaMicrocosmos.Box(b, "Borde_del_suelo", new Vector3(k * (size.x * 0.5f - 0.15f), 0.09f, 0f), new Vector3(0.3f, 0.02f, size.y), trim, false);
         }
     }
 
@@ -318,36 +461,81 @@ internal static partial class CivicBuilder
         var wl = u.gameObject.AddComponent<WorldLabel>(); wl.text = label; wl.height = 1f;
     }
 
-    // Una torre de esquina (Selimiye): cuatro muros altos y una cubierta en pirámide (dos losas cruzadas).
+    // Una torre de esquina (Selimiye), ABIERTA (regla 2): su planta y cuatro pilares en las esquinas, sin muros ni chapitel.
     static void Tower(Transform t, string name, Vector3 pos, float side, float h, Style st)
     {
         Transform b = new GameObject(name).transform; b.SetParent(t, false); b.localPosition = pos;
-        Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), roof = AreaMicrocosmos.Mat("Civ_Cubierta_" + Hex(st.roof), st.roof);
-        AreaMicrocosmos.Box(b, "Fuste", new Vector3(0f, h * 0.5f, 0f), new Vector3(side, h, side), wall, true);
-        for (int k = 0; k < 3; k++) AreaMicrocosmos.Box(b, "Chapitel", new Vector3(0f, h + 0.6f + k * 0.8f, 0f), new Vector3(side * (1f - k * 0.3f), 0.8f, side * (1f - k * 0.3f)), roof, false);
-        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = name; wl.height = h + 4f;
+        Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall);
+        Floor(b, new Vector2(side, side), st);
+        foreach (var (x, z) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) AreaMicrocosmos.Box(b, "Pilar", new Vector3(x * (side * 0.5f - 0.3f), h * 0.5f, z * (side * 0.5f - 0.3f)), new Vector3(0.5f, h, 0.5f), wall, true);
+        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = name; wl.height = h + 2f;
     }
 
-    // Un tramo de muralla con su puerta (Tilaurakot).
+    // Un tramo de muralla con su puerta (Tilaurakot), como hoy: el cimiento bajo de ladrillo (0,5 m, no tapa la vista) y los
+    // postes de la puerta.
     static void Wall(Transform t, string name, Vector3 pos, float len, float h, Style st, float gate)
     {
         Transform b = new GameObject(name).transform; b.SetParent(t, false); b.localPosition = pos;
         Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall);
         float side = (len - gate) * 0.5f;
-        AreaMicrocosmos.Box(b, "Muralla", new Vector3(-(gate + side) * 0.5f, h * 0.5f, 0f), new Vector3(side, h, 1.6f), wall, true);
-        AreaMicrocosmos.Box(b, "Muralla", new Vector3((gate + side) * 0.5f, h * 0.5f, 0f), new Vector3(side, h, 1.6f), wall, true);
-        foreach (float x in new[] { -gate * 0.5f - 1f, gate * 0.5f + 1f }) AreaMicrocosmos.Box(b, "Torre_de_la_puerta", new Vector3(x, h * 0.65f, 0f), new Vector3(2f, h * 1.3f, 2.4f), wall, true);
+        AreaMicrocosmos.Box(b, "Cimiento_de_la_muralla", new Vector3(-(gate + side) * 0.5f, 0.25f, 0f), new Vector3(side, 0.5f, 1.6f), wall, true);
+        AreaMicrocosmos.Box(b, "Cimiento_de_la_muralla", new Vector3((gate + side) * 0.5f, 0.25f, 0f), new Vector3(side, 0.5f, 1.6f), wall, true);
+        foreach (float x in new[] { -gate * 0.5f - 0.3f, gate * 0.5f + 0.3f }) AreaMicrocosmos.Box(b, "Poste_de_la_puerta", new Vector3(x, h * 0.5f, 0f), new Vector3(0.5f, h, 0.5f), wall, true);
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = name; wl.height = h + 2f;
     }
 
-    // Un insecto-humano de la era con su jornada (trabajo, comida, práctica, casa).
-    static int Worker(Transform t, string name, AreaFunctionSite work, string role, AreaFunctionSite dine, AreaFunctionSite practice, AreaFunctionSite home, string species = null, Color? body = null)
+    /// <summary>
+    /// Regla 4 a escala del pueblo: si en <paramref name="t"/> falta alguna necesidad básica (dormir, aseo, lavarse, comer,
+    /// sentarse, cocinar), unos ASEOS Y COMEDOR DE LA ERA abiertos (letrina o retrete, palangana o lavabo, mesa con sillas,
+    /// cama, cocina: lo que falte) en <paramref name="at"/>. Devuelve el sitio o null si no faltaba nada.
+    /// </summary>
+    internal static AreaFunctionSite EnsureNeeds(Transform t, Vector3 at, Style st)
     {
-        // Junto a su primer puesto (dentro de su edificio, o delante si el edificio es macizo).
+        var missing = new List<(string key, Vector2 at, Vector2 size, string label)>();
+        foreach (var (need, key) in new[] { ("aseo", "inodoro"), ("lavarse", "lavabo"), ("dormir", "cama"), ("comer", "mesa"), ("sentarse", "mesa"), ("cocinar", "fogon") })
+            if (!MicroBuildRules.Covers(t, need) && !missing.Exists(m => m.key == key)) missing.Add(S(key, 0f, 0f, 1f, 1f, NeedLabel(key, Year)));
+        if (missing.Count == 0) return null;
+        // Un sitio «Casa» del registro (descansar y cocinar se hacen aquí); su primer puesto es la mesa o la cama si las hay.
+        missing.Sort((a, b2) => Rank(a.key).CompareTo(Rank(b2.key)));
+        Transform b = new GameObject(Year < 1880 ? "Letrinas y pozo del barrio" : "Aseos y comedor del barrio").transform; b.SetParent(t, false); b.localPosition = at;
+        var pieces = new List<Transform>();
+        foreach (var m in missing)
+        {
+            Transform p = MicroFurniture.Build(b, m.key, Vector3.zero, 0f, m.label, Year);
+            if (m.key == "cama" || m.key == "fogon") p.gameObject.AddComponent<AreaFunctionStation>().station = m.key;   // las funciones de la Casa
+            pieces.Add(p);
+        }
+        // Un sitio necesita un puesto con funciones: si solo faltaban retrete y lavabo, una cama de descanso.
+        bool anyStation = false; foreach (Transform p in pieces) if (p.GetComponent<AreaFunctionStation>() != null) anyStation = true;
+        if (!anyStation) { Transform p = MicroFurniture.Build(b, "cama", Vector3.zero, 0f, NeedLabel("cama", Year), Year); p.gameObject.AddComponent<AreaFunctionStation>().station = "cama"; pieces.Insert(0, p); }
+        Vector2 used = Layout(b, pieces, new Vector2(14f, 8f), 0f);
+        Floor(b, used, st);
+        var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = b.name;
+        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = b.name; wl.height = 3f;
+        return site;
+    }
+
+    /// <summary>Muebles de las necesidades básicas que no son puestos del registro (no tienen función propia).</summary>
+    internal static bool NotStation(string key) => key == "inodoro" || key == "lavabo" || key == "banco" || key == "silla";
+
+    static int Rank(string key) => key == "cama" ? 0 : key == "fogon" ? 1 : key == "mesa" ? 2 : 3;
+
+
+    // Un insecto-humano de la era con su jornada (trabajo, comida, práctica, casa).
+    static int Worker(Transform t, string name, AreaFunctionSite work, string role, AreaFunctionSite dine, AreaFunctionSite practice, AreaFunctionSite home, string species = null, Color? body = null, bool? female = null)
+    {
+        // Delante de su primer puesto, en el sitio de trabajo (MicroBuildRules.WorkSpot, dentro del paso de 2 m: no pisa otro mueble).
         AreaFunctionStation[] sts = work.Stations;
-        Vector3 at = sts.Length > 0 ? t.InverseTransformPoint(sts[0].transform.position) + new Vector3(1.3f, 0f, 0f) : t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
+        Vector3 at;
+        if (sts.Length > 0)
+        {
+            BoxCollider bc = sts[0].GetComponent<BoxCollider>();
+            float front = bc != null ? bc.center.z - bc.size.z * 0.5f : -0.6f;
+            at = t.InverseTransformPoint(sts[0].transform.TransformPoint(new Vector3(bc != null ? bc.center.x : 0f, 0f, front - MicroBuildRules.WorkSpot)));
+        }
+        else at = t.InverseTransformPoint(work.transform.TransformPoint(new Vector3(0f, 0f, -2f)));
         at.y = 0f;
-        GameObject g = AreaMicrocosmos.Folk(t, name, at, Random.Range(1.6f, 1.85f), 1f, species, body);
+        GameObject g = AreaMicrocosmos.Folk(t, name, at, Random.Range(1.6f, 1.85f), 1f, species, body, female);
         CubeInsect.WearShirt(g, Color.HSVToRGB(Mathf.Abs(name.GetHashCode() % 100) / 100f, 0.35f, 0.75f));
         var j = g.AddComponent<MicroJornada>(); j.work = work; j.role = role; j.dine = dine; j.practice = practice; j.home = home;
         return 1;
@@ -356,7 +544,7 @@ internal static partial class CivicBuilder
     // Una PAREJA de especies distintas (con abuelos de otras especies), que tendrá hijos: el árbol que se mezcla.
     static int Couple(Transform t, string she, string he, AreaFunctionSite home, AreaFunctionSite dine, AreaFunctionSite practice)
     {
-        Worker(t, she, home, "", dine, practice, home); Worker(t, he, home, "", dine, practice, home);
+        Worker(t, she, home, "", dine, practice, home, female: true); Worker(t, he, home, "", dine, practice, home, female: false);
         FolkLineage a = null, b = null;
         foreach (FolkLineage l in t.GetComponentsInChildren<FolkLineage>(true)) { if (l.name == she) a = l; if (l.name == he) b = l; }
         if (a == null || b == null) return 2;

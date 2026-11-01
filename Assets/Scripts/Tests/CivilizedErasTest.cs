@@ -118,6 +118,12 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         }
         else if (sceneName != "Microcosmos_Tregua1914") TestProbe.Check($"{sceneName}: al menos una pareja (FolkCouple)", false);
 
+        // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso de 2 m, sin muros ni techos, muebles
+        // detallados y las necesidades básicas, en cada escena.
+        var rules = new List<string>();
+        foreach (GameObject root in s.GetRootGameObjects()) if (root.GetComponentInChildren<AreaFunctionSite>(true) != null) rules.AddRange(MicroBuildRules.Validate(root.transform, sceneName, true, false));
+        TestProbe.Check($"{sceneName}: cumple las reglas de edificación", rules.Count == 0, string.Join(" · ", rules.GetRange(0, Mathf.Min(8, rules.Count))));
+
         if (loadedHere)
         {
             AsyncOperation un = SceneManager.UnloadSceneAsync(s);

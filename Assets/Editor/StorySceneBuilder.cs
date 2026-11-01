@@ -264,8 +264,8 @@ public static partial class StorySceneBuilder
         Color skin = new Color(0.42f, 0.28f, 0.2f), red = new Color(0.65f, 0.15f, 0.15f), dress = new Color(0.25f, 0.22f, 0.24f);
 
         Transform ward = Spot(t, "Sala de los heridos", new Vector3(0f, 0f, 10f), "Sala de los heridos (cuartel de Selimiye)", 3.5f);
-        AreaMicrocosmos.Box(ward, "Muro", new Vector3(-12f, 1.6f, 0f), new Vector3(0.4f, 3.2f, 22f), wall, true);
-        AreaMicrocosmos.Box(ward, "Muro", new Vector3(12f, 1.6f, 0f), new Vector3(0.4f, 3.2f, 22f), wall, true);
+        // Sin muros (docs/microcosmos-reglas-edificacion.md, regla 2): las ventanas de la sala, en sus marcos sueltos (un poste bajo cada una).
+        for (int k = 0; k < 4; k++) AreaMicrocosmos.Box(ward, "Marco de la ventana", new Vector3(k < 2 ? -11.7f : 11.7f, 0.55f, -6f + (k % 2) * 12f), new Vector3(0.2f, 1.1f, 0.2f), wall, true);
         var windows = new List<Transform>();
         for (int k = 0; k < 4; k++) { Transform w = AreaMicrocosmos.Box(ward, "Ventana cerrada", new Vector3(k < 2 ? -11.7f : 11.7f, 1.8f, -6f + (k % 2) * 12f), new Vector3(0.2f, 1.4f, 1.6f), shut, false); Label(w, "Ventana cerrada", 1f); windows.Add(w); }
         var patients = new List<Transform>();

@@ -41,6 +41,10 @@ public static class MicroBuildRules
     /// <summary>Nombres de piezas que son muros o techos de edificio (los del borde del piso, «Muros_del_piso», no cuentan).</summary>
     public static readonly string[] WallRoofNames = { "Muro_", "Muro ", "Cubierta", "Faldon", "Dintel", "Techo", "Tejado", "Chapitel" };
 
+    /// <summary>MicroPiece.kind de una BARRERA HISTÓRICA que es la propia historia (el muro del gueto de Varsovia, cuyas salidas
+    /// son los pasos de la misión): la única excepción a la regla 2; no cuenta como muro ni para el paso.</summary>
+    public const string Historic = "historico";
+
     /// <summary>Lo que se mide: los muebles (<see cref="MicroPiece"/> de más fuera, no pisables) y los puestos
     /// (<see cref="AreaFunctionStation"/>) que no son parte de un mueble.</summary>
     public static List<(Transform t, Bounds b)> Pieces(Transform scope)
@@ -76,6 +80,8 @@ public static class MicroBuildRules
         foreach (Transform t in scope.GetComponentsInChildren<Transform>(true))
         {
             if (Excluded(t, scope)) continue;
+            MicroPiece hp = t.GetComponentInParent<MicroPiece>(true);
+            if (hp != null && hp.kind == Historic) continue;   // la barrera que ES la historia (el muro del gueto de Varsovia)
             foreach (string n in WallRoofNames) if (t.name.StartsWith(n)) { bad.Add($"muro/techo «{t.name}» en {Path(t, scope)}"); break; }
         }
         foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))

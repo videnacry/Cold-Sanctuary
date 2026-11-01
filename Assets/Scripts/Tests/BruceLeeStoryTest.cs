@@ -217,8 +217,18 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
                     TestProbe.Check("la historia está en su plaza reservada principal", d <= 1.5f, $"a {d:0.0} m de la plaza");
                 }
             }
-            Transform acab = giant != null ? Find(giant, "Acabado") : null;
-            TestProbe.Check("el Dojo del microcosmos está terminado (su acabado a la vista, sin andamio)", acab != null && acab.gameObject.activeInHierarchy && Find(giant, "Andamio_obra") == null);
+            // Era avanzada (docs/microcosmos-reglas-edificacion.md, regla 5): el Dojo gigante se queda en su suelo (sin muebles: ni
+            // jaula, ni ring, ni andamio) y la ciudad de la historia (Kowloon y Seattle) ocupa el piso entero.
+            string tall = "";
+            if (giant != null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) if (r.bounds.size.y >= 0.6f || r.bounds.max.y >= 1f) { tall += r.name + "; "; if (tall.Length > 200) break; }
+            TestProbe.Check("el Dojo gigante sin sus muebles (solo su suelo): el pueblo ocupa el piso", giant != null && tall.Length == 0, tall);
+            var sites = new List<AreaFunctionSite>(root.GetComponentsInChildren<AreaFunctionSite>());
+            Bounds town = default; bool anyTown = false;
+            foreach (AreaFunctionSite site in sites) { Bounds b = new Bounds(site.transform.position, Vector3.one); if (!anyTown) { town = b; anyTown = true; } else town.Encapsulate(b); }
+            Bounds fr = floor.WorldRect();
+            TestProbe.Check("Kowloon y Seattle: ≥ 12 edificios repartidos por el piso (≥ 60 % de su ancho)", sites.Count >= 12 && anyTown && town.size.x >= 0.6f * fr.size.x, $"{sites.Count} edificios en {town.size.x:0} de {fr.size.x:0} m");
+            var bad = MicroBuildRules.Validate(root, "Microcosmos_BruceLee", true, false);
+            TestProbe.Check("cumple las reglas de edificación (paso de 2 m, sin muros ni techos, muebles detallados, necesidades básicas)", bad.Count == 0, string.Join(" · ", bad.GetRange(0, Mathf.Min(8, bad.Count))));
         }
 
         if (loadedHere)

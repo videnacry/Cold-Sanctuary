@@ -893,7 +893,7 @@ public static class AreaMicrocosmos
 
     // Un INSECTO-HUMANO de era civilizada (docs/microcosmos-civilizaciones.md §5–6): su insecto (InsectCast, o <paramref name="species"/>),
     // erguido a su estatura, con cara humana y pelo; todas las especies de tamaño parecido. Lleva su linaje (FolkLineage).
-    internal static GameObject Folk(Transform root, string name, Vector3 pos, float height, float bulk = 1f, string species = null, Color? body = null)
+    internal static GameObject Folk(Transform root, string name, Vector3 pos, float height, float bulk = 1f, string species = null, Color? body = null, bool? female = null)
     {
         var g = new GameObject(name);
         g.transform.SetParent(root, false); g.transform.localPosition = pos;
@@ -901,14 +901,46 @@ public static class AreaMicrocosmos
         var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
         var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
         string sp = species ?? InsectCast.SpeciesFor(name);
-        bool female = (Mathf.Abs(name.GetHashCode()) % 2) == 0;
-        CubeInsect.DressFolk(g, sp, height, name, female);
+        // El sexo: el pedido; si no, el del nombre (FemaleByName: Hannah, Teano, «Vecina»…); si el nombre no lo dice, al azar estable.
+        bool isFemale = female ?? FemaleByName(name) ?? (Mathf.Abs(name.GetHashCode()) % 2) == 0;
+        CubeInsect.DressFolk(g, sp, height, name, isFemale);
         if (body.HasValue) foreach (Renderer r in g.transform.Find("Insecto").GetComponentsInChildren<Renderer>(true)) if (r.sharedMaterial != null && r.sharedMaterial.color == InsectCast.ColorOf(sp)) r.sharedMaterial = KitchenProps.Mat(body.Value);
         Transform ins = g.transform.Find("Insecto");
         if (ins != null && bulk != 1f) ins.localScale = new Vector3(ins.localScale.x * bulk, ins.localScale.y, ins.localScale.z * Mathf.Sqrt(bulk));
-        var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = female;
+        var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = isFemale;
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
         return g;
+    }
+
+    // Nombres propios y palabras de oficio o parentesco que dicen el sexo (el resto, al azar estable por el hash del nombre).
+    static readonly HashSet<string> FemaleNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+    {
+        "Hannah", "Teano", "Theano", "Marie", "Irène", "Irene", "Irena", "Florence", "Ruby", "Linda", "Katharine", "Mary", "Hipatia", "Hypatia", "Ada",
+        "Rosalind", "Lise", "Emmy", "Sophie", "Jane", "Rachel", "Wangari", "Hildegard", "Medea", "Ruth", "Sakshi", "Lizmibet", "Andrea", "Kitty",
+        "Elena", "Ana", "María", "Maria", "Magda", "Madame", "Lady", "Doña", "Mrs.", "Miss", "Sor", "Santa", "Reina", "Princesa", "Yasodharā", "Yasodhara", "Māyā", "Maya",
+        "Madre", "Hermana", "Hija", "Abuela", "Esposa", "Vecina", "Cocinera", "Lavandera", "Alumna", "Camarera", "Enfermera", "Maestra", "Campesina", "Panadera",
+        "Sacerdotisa", "Alfarera", "Discípula", "Tejedora", "Profesora", "Vendedora", "Cuidadora", "Sabia", "Monja", "Niña", "Muchacha", "Mujer",
+    };
+    static readonly HashSet<string> MaleNames = new HashSet<string>(System.StringComparer.OrdinalIgnoreCase)
+    {
+        "Isaac", "Albert", "Pierre", "Michele", "André", "Andre", "Bruce", "Yip", "Wong", "Taky", "James", "Ed", "Bob", "Dan", "Wilbur", "Orville", "Siddhārtha", "Siddhartha",
+        "Patanjali", "Eratóstenes", "Pitágoras", "Ambrosio", "Héspero", "Atlas", "Momo", "Shanidar", "Kushal", "Oscar", "André", "Padre", "Hermano", "Hijo", "Abuelo",
+        "Esposo", "Vecino", "Cocinero", "Alumno", "Camarero", "Maestro", "Campesino", "Panadero", "Sacerdote", "Alfarero", "Discípulo", "Yerno", "Sargento", "Cirujano",
+        "Centinela", "Guardián", "Examinador", "Falsificador", "Bibliotecario", "Copista", "Mecánico", "Aprendiz", "Salvavidas", "Monje", "Niño", "Muchacho", "Hombre", "Rey", "Príncipe", "Fray", "Don", "Mr.", "Sir",
+    };
+
+    /// <summary>¿Es mujer <paramref name="name"/>? Por su nombre propio o su oficio («Hannah Ayscough», «Teano», «Vecina del
+    /// tong lau», «Cocinero de Ruby Chow»); null si el nombre no lo dice. Manda la primera palabra que lo diga.</summary>
+    internal static bool? FemaleByName(string name)
+    {
+        if (string.IsNullOrEmpty(name)) return null;
+        foreach (string w in name.Split(' ', '(', ')', ',', '«', '»', '-'))
+        {
+            if (w.Length == 0) continue;
+            if (FemaleNames.Contains(w)) return true;
+            if (MaleNames.Contains(w)) return false;
+        }
+        return null;
     }
 
     static Transform Lair(Transform root, Vector3 pos, string label)

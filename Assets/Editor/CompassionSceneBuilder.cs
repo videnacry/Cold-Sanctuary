@@ -115,10 +115,14 @@ public static class CompassionSceneBuilder
         // El GUETO: un recinto amurallado al oeste, sin más salidas que los pasos.
         Vector3 g = new Vector3(-14f, 0f, 0f); float gx = 8f, gz = 10f;
         Material wm = AreaMicrocosmos.Mat("Compasion_Muro", wall);
-        AreaMicrocosmos.Box(t, "Muro_N", g + new Vector3(0f, 1.75f, gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_S", g + new Vector3(0f, 1.75f, -gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_O", g + new Vector3(-gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
-        AreaMicrocosmos.Box(t, "Muro_E", g + new Vector3(gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
+        // El muro del gueto NO es un muro de edificio: es la historia (las salidas son los pasos). Se marca «historico»
+        // (docs/microcosmos-reglas-edificacion.md, regla 2: la excepción) y no lleva los nombres de los muros del piso.
+        Transform ghetto = new GameObject("Muro del gueto").transform; ghetto.SetParent(t, false);
+        var gmp = ghetto.gameObject.AddComponent<MicroPiece>(); gmp.kind = "historico"; gmp.walkable = true;
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_N", g + new Vector3(0f, 1.75f, gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_S", g + new Vector3(0f, 1.75f, -gz), new Vector3(gx * 2f, 3.5f, 0.5f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_O", g + new Vector3(-gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
+        AreaMicrocosmos.Box(ghetto, "Muro_del_gueto_E", g + new Vector3(gx, 1.75f, 0f), new Vector3(0.5f, 3.5f, gz * 2f), wm, true);
         Label(t, "El gueto", g + Vector3.up * 5f);
         Building(t, "Casa del gueto", g + new Vector3(-4f, 0f, 6f), new Vector3(5f, 4f, 4f), brick, roof);
         Building(t, "Casa del gueto", g + new Vector3(-4f, 0f, -6f), new Vector3(5f, 4f, 4f), brick, roof);
@@ -209,17 +213,14 @@ public static class CompassionSceneBuilder
         Material wm = AreaMicrocosmos.Mat($"Compasion_Pared_{ColorUtility.ToHtmlStringRGB(walls)}", walls);
         Material rm = AreaMicrocosmos.Mat($"Compasion_Tejado_{ColorUtility.ToHtmlStringRGB(roofColor)}", roofColor);
         Material dark = AreaMicrocosmos.Mat("Compasion_Puerta", new Color(0.25f, 0.17f, 0.12f)), glass = AreaMicrocosmos.Mat("Compasion_Ventana", new Color(0.55f, 0.65f, 0.72f));
-        AreaMicrocosmos.Box(b, "Cuerpo", new Vector3(0f, size.y * 0.5f, 0f), size, wm, true);
-        float half = size.x * 0.5f + 0.3f, rise = Mathf.Min(size.x * 0.35f, 2.5f), slope = Mathf.Atan2(rise, half) * Mathf.Rad2Deg, len = Mathf.Sqrt(half * half + rise * rise);
-        AreaMicrocosmos.Box(b, "Tejado", new Vector3(-half * 0.5f, size.y + rise * 0.5f, 0f), new Vector3(len, 0.2f, size.z + 0.6f), Quaternion.Euler(0f, 0f, slope), rm, false);
-        AreaMicrocosmos.Box(b, "Tejado", new Vector3(half * 0.5f, size.y + rise * 0.5f, 0f), new Vector3(len, 0.2f, size.z + 0.6f), Quaternion.Euler(0f, 0f, -slope), rm, false);
-        AreaMicrocosmos.Box(b, "Puerta", new Vector3(0f, 1.1f, size.z * 0.5f + 0.03f), new Vector3(1.2f, 2.2f, 0.06f), dark, false);
-        for (int k = -1; k <= 1; k += 2)
-        {
-            AreaMicrocosmos.Box(b, "Ventana", new Vector3(k * size.x * 0.3f, size.y * 0.6f, size.z * 0.5f + 0.03f), new Vector3(1f, 1f, 0.06f), glass, false);
-            AreaMicrocosmos.Box(b, "Ventana", new Vector3(k * (size.x * 0.5f + 0.03f), size.y * 0.6f, 0f), new Vector3(0.06f, 1f, 1f), glass, false);
-        }
-        Label(b, label, Vector3.up * (size.y + rise + 0.8f));
+        // ABIERTO (docs/microcosmos-reglas-edificacion.md, regla 2: sin muros ni techo, como en el santuario): el «Cuerpo» es la
+        // losa de su planta (con el color de sus muros), una franja del color del tejado en el borde y los postes de las esquinas.
+        // Los muebles los pone CivicBuilder.Porch encima.
+        AreaMicrocosmos.Box(b, "Cuerpo", new Vector3(0f, 0.05f, 0f), new Vector3(size.x, 0.1f, size.z), wm, false);
+        for (int k = -1; k <= 1; k += 2) AreaMicrocosmos.Box(b, "Borde_del_suelo", new Vector3(k * (size.x * 0.5f - 0.15f), 0.11f, 0f), new Vector3(0.3f, 0.02f, size.z), rm, false);
+        foreach (var (x, z) in new[] { (-1, -1), (1, -1), (-1, 1), (1, 1) }) AreaMicrocosmos.Box(b, "Poste", new Vector3(x * (size.x * 0.5f - 0.15f), 1.2f, z * (size.z * 0.5f - 0.15f)), new Vector3(0.2f, 2.4f, 0.2f), dark, true);
+        _ = glass;
+        Label(b, label, Vector3.up * 3.2f);
         return b;
     }
 

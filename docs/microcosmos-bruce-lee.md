@@ -136,3 +136,49 @@ kung fu de la mantis es real, la mantis espera y golpea primero (intercepta: Jee
   en la línea central, golpes en cadena alternos de 0,15 s, el muñeco con los dos pares de brazos, el balanceo de hoja como
   juego de pies, el golpe de una pulgada (1,6 s cargando, 0,1 s el golpe), las notas y «el agua».
 - Las posturas humanas de `JeetKuneDo` se quedan para el Dojo del santuario (cuerpo humano).
+
+---
+
+## 5. El pueblo entero (2026-11-01, reglas de edificación)
+
+Berón: «en el microcosmos de Bruce Lee la cocina y los muebles parecían cubos». Con las reglas nuevas
+([`microcosmos-reglas-edificacion.md`](microcosmos-reglas-edificacion.md)) el microcosmos es de **era avanzada** (1957–1971):
+el Dojo gigante se queda en su suelo (se quitan la jaula, el ring, los sacos… a ×10) y la **ciudad de la historia ocupa el
+piso entero** (360 × 260 m; útil 348 × 248 m). Todo abierto (sin muros ni techos), muebles detallados a 2 m y las
+necesidades básicas. Código: `CivicBuilder.BruceLeeEra` (`Assets/Editor/CivicBuilder.BruceLee.cs`).
+
+### Investigación del lugar
+
+| Lugar | Qué fue | Fuente |
+|---|---|---|
+| **Escuela de Yip Man** (Kowloon) | Yip Man enseñó desde 1950 en el local del sindicato de trabajadores de restaurantes (Sham Shui Po) y luego en pisos de Yau Ma Tei y Mong Kok; la escuela a la que fue Bruce, en un piso de **Lee Tat Street** (Yau Ma Tei) **[verificar la calle]**. Salas pequeñas, suelo de terrazo, el muñeco de madera | Polly 2018; Hong Kong Heritage Museum, «Bruce Lee: Kung Fu · Art · Life» (2013) |
+| **Piso de la familia Lee** | **218 Nathan Road**, Kowloon: un piso de un *tong lau* donde vivía la familia con parientes | Polly 2018 |
+| **St. Francis Xavier's College** | su colegio desde 1956; en 1958 ganó el campeonato de boxeo entre colegios | Polly 2018; Wikipedia «St. Francis Xavier's College» |
+| **Cha chaan teng** | la casa de té de Hong Kong: barra, cocina vista con wok, mesas con taburetes, té con leche | Wikipedia «Cha chaan teng» |
+| **Temple Street** y el **templo de Tin Hau** (Yau Ma Tei) | el mercado de la calle y el templo de la diosa del mar que le da nombre | Wikipedia «Temple Street», «Tin Hau Temple, Yau Ma Tei» |
+| **Restaurante de Ruby Chow** (Seattle) | en **Broadway y Jefferson** (First Hill); Bruce fue camarero y vivió en un cuarto encima (1959) | HistoryLink 3999; Wikipedia «Ruby Chow» |
+| **Jun Fan Gung Fu Institute** | **4750 University Way**, Seattle (1963) | HistoryLink 3999 |
+| **Universidad de Washington** | 1961–64, filosofía (oficialmente teatro, §1) | HistoryLink 3999 |
+| **Oakland** (1964) y **Chinatown de Los Ángeles** (628 College St., 1967) | sus otras dos escuelas | HistoryLink 3999 |
+
+Flora y fauna: la historia es de ciudad. Solo se añaden los **banianos** de las calles de Kowloon (*Ficus microcarpa*, el
+árbol de sombra de sus calles y parques) y queda la bahía de la historia; nada de fauna salvaje propia (la biota a escala de
+hormiga de `MicroBiome` es la del santuario y sigue).
+
+### El plano
+
+- **Oeste — Kowloon, años 50**: escuela de Yip Man (suelo de entrenar, dos muñecos, banco, lavabo y retrete del piso), piso
+  de los Lee (tres camas, cocina de gas con wok, mesa, estante), cha chaan teng (cocina vista, barra con taburetes y tetera,
+  tres mesas, aseo), colegio de St. Francis Xavier (pizarra, pupitres, biblioteca), mercado de Temple Street (cuatro puestos con
+  toldo y mercancía), templo de Tin Hau (altar con incienso y columnata), tong lau de Mong Kok; asfalto de sus calles, seis
+  banianos y ocho bloques de *tong lau* de relleno.
+- **Este — Seattle, Oakland y Los Ángeles**: restaurante de Ruby Chow (dos cocinas con woks, barra, tres mesas, aseo), el
+  cuarto de Bruce, el Jun Fan de University Way, el aula de la Universidad de Washington, las escuelas de Oakland y de
+  Chinatown, una casa de madera; asfalto y seis casas de madera de relleno.
+- En medio, el **claro de la historia** (las cinco escenas de §2), sin tocar.
+- Gente (insectos-humanos con jornada): alumnos y Wong Shun-leung en la escuela de Yip Man, cocinero y camarera del cha chaan
+  teng, un maestro del colegio, una vendedora de Temple Street, Ruby Chow y su cocinero, una profesora de filosofía, alumnos
+  de Seattle, Oakland y Los Ángeles, y una pareja del tong lau.
+
+Prueba **60** (`BruceLeeStoryTest`): el Dojo gigante solo con su suelo, ≥ 12 edificios repartidos por ≥ 60 % del ancho del
+piso y `MicroBuildRules.Validate` sin violaciones.

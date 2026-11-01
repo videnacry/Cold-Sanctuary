@@ -126,3 +126,38 @@ public static bool  MicroBuildRules.Covers(Transform scope, string need);
 public static Bounds AreaMicrocosmos.FloorBounds(Transform anyInMicrocosm);   // mundo; size.y = 0
 public static Rect   AreaMicrocosmos.FloorRectLocal(Transform t);             // XZ en locales de t
 ```
+
+```csharp
+// Assets/Editor/MicroFurniture.cs (editor)
+internal static Transform MicroFurniture.Build(Transform parent, string key, Vector3 pos, float yaw = 0f, string label = null, int year = 1950, Vector2? size = null);
+internal static readonly string[] MicroFurniture.Keys;   // fogon cocina horno barra mesa mesa_laboratorio cama camilla inodoro lavabo
+                                                          // lavadero silla banco estante armario pizarra banco_taller torno tunel muneco
+                                                          // altar puesto granero torno_alfarero parapeto pozo telar tatami esterilla bancal
+internal static Bounds MicroFurniture.LocalBounds(Transform piece);
+
+// Assets/Editor/CivicBuilder*.cs (editor)
+internal static int CivicBuilder.Year;                    // el año de la escena (lo pone Civilize; elige la versión de cada mueble)
+internal static AreaFunctionSite CivicBuilder.Building(...);   // misma firma; ahora abierto, con Layout y necesidades
+internal static Vector2 CivicBuilder.Layout(Transform b, List<Transform> pieces, Vector2 minSize, float zOffset);
+internal sealed class CivicBuilder.Lots { Lots(Transform t, HashSet<Transform> skip = null); bool Free(Vector2 c, Vector2 size); Vector3? Take(Vector2 size, Vector2? near = null); void Mark(Rect r); }
+internal static AreaFunctionSite CivicBuilder.Place(Transform t, Lots lots, AreaFunctionSite site, Vector2 near, List<Transform> placed = null);
+internal static int CivicBuilder.FillTown(Transform t, Lots lots, Vector2 near, Style st, string title, int count);
+internal static AreaFunctionSite CivicBuilder.EnsureNeeds(Transform t, Vector3 at, Style st);
+
+// Assets/Editor/AreaMicrocosmos.cs: el sexo de un insecto-humano
+internal static GameObject AreaMicrocosmos.Folk(..., Color? body = null, bool? female = null);   // null → FemaleByName → hash
+internal static bool? AreaMicrocosmos.FemaleByName(string name);   // «Hannah», «Teano», «Vecina…» → true; «Cocinero…» → false
+```
+
+### Lo que hace `CivicBuilder.Civilize` al final de cada era
+
+1. `Settle`: todo edificio abierto que choque (a menos de una calle) con otro o con la historia, o que se salga del piso, se
+   corre al solar libre más cercano con su gente.
+2. Eras avanzadas con relleno (`FillStyles`: Escútari, Dayton, Kapilavastu, Alejandría, Patanjali, Planta Atómica, Varsovia,
+   Le Chambon, Uruk): 10 casas más de la era por el piso.
+3. `EnsureNeeds`: los aseos de la era si falta alguna necesidad básica.
+4. `MicroBuildRules.Validate` en el registro.
+
+**Excepción a la regla 2**: una barrera que ES la historia (el muro del gueto de Varsovia, cuyas salidas son los pasos de la
+misión) va bajo un `MicroPiece` con `kind = MicroBuildRules.Historic` («historico»): no cuenta como muro. Pendiente de que
+Berón lo confirme.

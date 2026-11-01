@@ -82,7 +82,7 @@ internal static partial class CivicBuilder
     static int Uruk(Transform t)
     {
         Material terr = AreaMicrocosmos.Mat("Civ_Terraza_Anu", C(0.72f, 0.6f, 0.42f));
-        AreaMicrocosmos.Box(t, "Terraza de Anu", new Vector3(0f, 2f, 46f), new Vector3(22f, 4f, 10f), terr, true);
+        AreaMicrocosmos.Box(t, "Terraza de Anu", new Vector3(0f, 0.15f, 46f), new Vector3(22f, 0.3f, 10f), terr, false);   // su planta (regla 2: un bloque de 4 m tapaba la vista)
         var temple = Building(t, "Templo Blanco (al pie de la terraza de Anu)", "Templo", "Templo Blanco de Uruk", new Vector3(0f, 0f, 36f), 0f, new Vector2(14f, 8f), Whitewash,
             S("altar", 0f, 2f, 1.6f, 1f, "Altar (mesa de ofrendas)"));
         var house1 = Building(t, "Casa de adobe con patio", "Casa", "Casa de Uruk", new Vector3(-31f, 0f, 4f), 0f, new Vector2(12f, 10f), MudBrick,
@@ -116,37 +116,35 @@ internal static partial class CivicBuilder
         n += Worker(t, "Abuela de la aldea", h3, "", h3, null, h3);
         return n;
     }
-
-    /// <summary>Una casa redonda natufiense/PPNA: muro circular bajo de piedra y barro (con la puerta a −z), cubierta cónica sin
-    /// colisión, el hogar y una estera dentro. Sitio «Casa» del registro.</summary>
+    /// <summary>Una casa redonda natufiense/PPNA, ABIERTA (reglas de edificación: sin muro ni cubierta): su suelo de barro
+    /// semienterrado, el anillo de piedras del cimiento a ras de suelo (como se excava hoy), los postes que sostenían la cubierta
+    /// y dentro el hogar y la estera. Sitio «Casa» del registro.</summary>
     internal static AreaFunctionSite RoundHouse(Transform t, string name, Vector3 pos, float radius = 2.6f)
     {
         Transform b = new GameObject(name).transform; b.SetParent(t, false); b.localPosition = pos;
-        Material wall = AreaMicrocosmos.Mat("Civ_Piedra_barro", C(0.55f, 0.47f, 0.37f)), roof = AreaMicrocosmos.Mat("Civ_Ramas_barro", C(0.5f, 0.42f, 0.3f));
+        Material wall = AreaMicrocosmos.Mat("Civ_Piedra_barro", C(0.55f, 0.47f, 0.37f)), post = AreaMicrocosmos.Mat("Civ_Ramas_barro", C(0.5f, 0.42f, 0.3f));
         Material floor = AreaMicrocosmos.Mat("Civ_Suelo_barro", C(0.45f, 0.38f, 0.3f));
+        // El radio crece lo que pidan el hogar y la estera con 2 m de paso entre ellos y al anillo.
+        radius = Mathf.Max(radius, 3.6f);
         AreaMicrocosmos.Box(b, "Suelo", new Vector3(0f, 0.04f, 0f), new Vector3(radius * 2f, 0.08f, radius * 2f), floor, false);
-        int segs = 12; float h = 1.6f;
+        int segs = 14;
         for (int k = 0; k < segs; k++)
         {
             float a = (k + 0.5f) / segs * Mathf.PI * 2f;
             Vector3 p = new Vector3(Mathf.Sin(a), 0f, Mathf.Cos(a)) * radius;
-            if (p.z < -radius * 0.85f) continue;   // la puerta (al sur, −z)
-            AreaMicrocosmos.Box(b, "Muro_redondo", p + Vector3.up * h * 0.5f, new Vector3(2f * Mathf.PI * radius / segs + 0.1f, h, 0.45f), Quaternion.Euler(0f, a * Mathf.Rad2Deg, 0f), wall, true);
-        }
-        for (int k = 0; k < 4; k++)   // la cubierta cónica de ramas y barro (sin colisión)
-        {
-            float s = (radius * 2.3f) * (1f - k * 0.24f);
-            AreaMicrocosmos.Box(b, "Cubierta", new Vector3(0f, h + 0.25f + k * 0.45f, 0f), new Vector3(s, 0.45f, s), Quaternion.Euler(0f, k * 22f, 0f), roof, false);
+            AreaMicrocosmos.Box(b, "Piedra_del_cimiento", p + Vector3.up * 0.09f, new Vector3(2f * Mathf.PI * radius / segs * 0.8f, 0.18f, 0.4f), Quaternion.Euler(0f, a * Mathf.Rad2Deg, 0f), wall, false);
+            if (k % 3 == 0) AreaMicrocosmos.Box(b, "Poste", p * 0.92f + Vector3.up * 1.2f, new Vector3(0.18f, 2.4f, 0.18f), post, true);
         }
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = "Casa redonda (~9500 a. C.)";
-        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = site.title; wl.height = h + 3f;
-        foreach (var (key, x, z, w, d, label) in new[] { ("fogon", 0.6f, 0.6f, 0.9f, 0.9f, "Hogar"), ("cama", -1.1f, 0.2f, 1f, 1.8f, "Estera") })
+        var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = site.title; wl.height = 4f;
+        int y0 = Year; Year = -9500;
+        foreach (var (key, x, label) in new[] { ("fogon", 1.6f, "Hogar"), ("cama", -1.6f, "Estera") })
         {
-            float sh = key == "cama" ? 0.15f : 0.35f;
-            Transform p = AreaMicrocosmos.Box(b, "Puesto_" + key, new Vector3(x, sh * 0.5f + 0.08f, z), new Vector3(w, sh, d), StationMat(key, wall), true);
+            Transform p = MicroFurniture.Build(b, key, new Vector3(x, 0.08f, 0f), 90f, label, -9500);
             p.gameObject.AddComponent<AreaFunctionStation>().station = key;
             var l = p.gameObject.AddComponent<WorldLabel>(); l.text = label; l.height = 1f;
         }
+        Year = y0;
         return site;
     }
 
@@ -161,24 +159,21 @@ internal static partial class CivicBuilder
         var lair = site.gameObject.AddComponent<MicroLair>(); lair.doorOffset = new Vector3(0f, 0f, -3.4f);   // delante de la puerta
         return site.transform;
     }
-
-    /// <summary>El edificio macizo <paramref name="name"/> que puso la historia (con su «Cuerpo»; la puerta en +z local) se hace
-    /// SITIO del registro: sus puestos van delante de la puerta, en fila. null si la historia no lo tiene.</summary>
+    /// <summary>El edificio <paramref name="name"/> que puso la historia (con su «Cuerpo», hoy la losa de su planta abierta: la
+    /// puerta en +z local) se hace SITIO del registro: sus muebles detallados (<see cref="MicroFurniture"/>) van sobre su planta
+    /// y delante, en filas con el paso de 2 m (<see cref="Layout"/>). Una Casa o un orfanato traen sus necesidades básicas.
+    /// null si la historia no lo tiene.</summary>
     static AreaFunctionSite Porch(Transform t, string name, string template, string title, params (string key, Vector2 at, Vector2 size, string label)[] stations)
     {
         Transform b = t.Find(name);
         if (b == null) return null;
         Transform body = b.Find("Cuerpo");
-        float depth = body != null ? body.localScale.z : 5f;
+        Vector2 foot = body != null ? new Vector2(body.localScale.x, body.localScale.z) : new Vector2(5f, 5f);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title;
-        Material furn = AreaMicrocosmos.Mat("Civ_Mueble", new Color(0.5f, 0.38f, 0.26f));
-        foreach (var s in stations)
-        {
-            float sh = StationHeight(s.key);
-            Transform p = AreaMicrocosmos.Box(b, "Puesto_" + s.key, new Vector3(s.at.x, sh * 0.5f + 0.02f, depth * 0.5f + 2.2f + s.size.y * 0.5f + s.at.y), new Vector3(s.size.x, sh, s.size.y), StationMat(s.key, furn), true);
-            p.gameObject.AddComponent<AreaFunctionStation>().station = s.key;
-            var l = p.gameObject.AddComponent<WorldLabel>(); l.text = s.label; l.height = 1.2f;
-        }
+        var pieces = Furnish(b, template, stations);
+        // Los muebles, centrados en la planta y, si no caben, hacia delante (+z, la plaza).
+        Vector2 need = Layout(b, pieces, foot, 0f);
+        if (need.y > foot.y + 0.01f) Layout(b, pieces, foot, (need.y - foot.y) * 0.5f);
         return site;
     }
 }

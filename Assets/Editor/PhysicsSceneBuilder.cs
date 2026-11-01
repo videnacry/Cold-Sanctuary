@@ -46,7 +46,6 @@ public static class PhysicsSceneBuilder
         Transform cu = Spot(t, "Curie · la radiactividad", new Vector3(16f, 0f, 8f));
         Material wood = AreaMicrocosmos.Mat("Fis_Madera", Wood), brass = AreaMicrocosmos.Mat("Fis_Laton", Brass), iron = AreaMicrocosmos.Mat("Fis_Hierro", Iron);
         AreaMicrocosmos.Box(cu, "Suelo_cobertizo", new Vector3(0f, 0.05f, 2f), new Vector3(7f, 0.1f, 5f), wood, true);
-        AreaMicrocosmos.Box(cu, "Tejado_cobertizo", new Vector3(0f, 3.6f, 2f), new Vector3(7.4f, 0.15f, 5.4f), Quaternion.Euler(-6f, 0f, 0f), AreaMicrocosmos.Mat("Fis_Cristal", new Color(0.75f, 0.85f, 0.9f)), false);
         for (int s = -1; s <= 1; s += 2) AreaMicrocosmos.Box(cu, "Poste", new Vector3(s * 3.4f, 1.8f, 4.3f), new Vector3(0.2f, 3.6f, 0.2f), wood, true);
         AreaMicrocosmos.Box(cu, "Mesa", new Vector3(0f, 0.45f, 2.5f), new Vector3(3f, 0.9f, 1.2f), wood, true);
         AreaMicrocosmos.Box(cu, "Condensador", new Vector3(-0.9f, 1.05f, 2.5f), new Vector3(0.5f, 0.3f, 0.5f), brass, false);
