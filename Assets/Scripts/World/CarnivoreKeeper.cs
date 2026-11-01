@@ -18,7 +18,7 @@ public class CarnivoreKeeper : MonoBehaviour
     Transform _feeder;
     Transform[] _posts;
     int _post;
-    float _nextCheck;
+    float _nextCheck, _toAnimalSince;
     public int fed { get; private set; }
     readonly System.Collections.Generic.Dictionary<Animal, float> _lastFed = new System.Collections.Generic.Dictionary<Animal, float>();
     [Tooltip("Segundos antes de volver a llevarle ración al mismo animal (así reparte entre todos los carnívoros).")]
@@ -56,14 +56,18 @@ public class CarnivoreKeeper : MonoBehaviour
                     if (_ration == null) { Debug.Log("[Guardia] El comedero está vacío: sigue la patrulla (el laboratorio prepara otra tanda)."); _duty = Duty.Patrol; _nextCheck = Time.time + 20f; return; }
                     _ration.transform.SetParent(transform, false);
                     _ration.transform.localPosition = new Vector3(0.35f, 1f, 0.3f);
+                    _toAnimalSince = Time.time;
                     _duty = Duty.ToAnimal;
                 }
                 break;
             case Duty.ToAnimal:
                 if (_target == null || _target.death || _ration == null) { DropRation(transform.position + transform.forward); _duty = Duty.Patrol; return; }
-                if (PathMover.Of(this).StepToward(_target.transform.position, speed) < 3f)
+                // (2026-11-01) El animal se mueve (o da vueltas junto al tronco de Producción): tras 8 s de perseguirlo, a menos
+                // de 7 m le basta con dejarle la ración delante, y a los 15 s se la deja donde llegue. Antes lo seguía en círculos («da vueltas»).
+                float left = PathMover.Of(this).StepToward(_target.transform.position, speed);
+                if (left < 3f || (left < 7f && Time.time - _toAnimalSince > 8f) || Time.time - _toAnimalSince > 15f)   // (a los 15 s, donde haya llegado: lo más cerca que se puede)
                 {
-                    Vector3 front = _target.transform.position + (transform.position - _target.transform.position).normalized * 1.2f;
+                    Vector3 front = left < 7f ? _target.transform.position + (transform.position - _target.transform.position).normalized * 1.2f : transform.position + transform.forward * 0.8f;
                     DropRation(front);
                     fed++; _lastFed[_target] = Time.time;
                     Debug.Log($"[Guardia] «{name}» da una ración de carne cultivada a «{_target.name}» para que no cace.");

@@ -118,16 +118,41 @@ public class PathMover : MonoBehaviour
 
     void Repath(Vector3 target)
     {
-        _goal = target; _repathAt = Time.time + 4f; _corner = 1;
+        // EL MISMO DESTINO (el recálculo de cada 4 s): si el camino que lleva sigue completo, solo se cambia por uno claramente
+        // más corto. Al pie de un tronco de 22 m los dos rodeos (por un lado y por el otro) miden casi lo mismo y el recálculo
+        // los alternaba: el guardia iba y venía en la esquina del tronco de Producción («da vueltas», JornadaTest 2026-11-01).
+        bool same = !float.IsNaN(_goal.x) && (target - _goal).sqrMagnitude <= 9f && _path.status == NavMeshPathStatus.PathComplete && _path.corners.Length > 1;
+        float keepLeft = same ? Left() : 0f;
+        int keepCorner = _corner;
+        _goal = target; _repathAt = Time.time + 4f;
         Vector3 from = transform.position, to = target;
         if (FeetOnMesh(out Vector3 a)) from = a;
         if (NavMesh.SamplePosition(to, out NavMeshHit b, 4f, NavMesh.AllAreas)) to = b.position;
-        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _path)) { _path.ClearCorners(); return; }
+        if (_spare == null) _spare = new NavMeshPath();
+        if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _spare)) { if (!same) { _path.ClearCorners(); _corner = 1; } return; }
+        if (same && _spare.status == NavMeshPathStatus.PathComplete && Length(_spare, from) > keepLeft * 0.85f - 1f) { _corner = keepCorner; return; }
+        (_path, _spare) = (_spare, _path);
+        _corner = 1;
         // Si ya pasó la primera esquina (p. ej. recalculó en la orilla tras cruzar un tramo de agua), no da media vuelta:
         // empieza por la esquina que de verdad tiene delante.
         Vector3[] c = _path.corners;
         Vector3 here = transform.position;
         while (_corner < c.Length - 1 && Flat(c[_corner + 1] - here) < Flat(c[_corner + 1] - c[_corner])) _corner++;
+    }
+
+    NavMeshPath _spare;
+    // Lo que le queda del camino que lleva (desde donde está, por sus esquinas que faltan).
+    float Left()
+    {
+        Vector3[] c = _path.corners; float s = 0f; Vector3 at = transform.position;
+        for (int i = Mathf.Min(_corner, c.Length - 1); i < c.Length; i++) { s += Flat(c[i] - at); at = c[i]; }
+        return s;
+    }
+    static float Length(NavMeshPath p, Vector3 from)
+    {
+        float s = 0f; Vector3 at = from;
+        foreach (Vector3 v in p.corners) { s += Flat(v - at); at = v; }
+        return s;
     }
 
     /// <summary>El punto del NavMesh DESDE el que sale: el de SU SUELO, a la altura de los pies. Antes era el más cercano al
