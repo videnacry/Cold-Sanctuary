@@ -56,6 +56,43 @@ public static partial class SampleSceneBuilder
     /// <summary>El agua del tronco: el mismo tono que el del tanque, más clara (20 m de agua: si no, no se vería nadar a nadie).</summary>
     static Color RootWater => new Color(VirtualizationTank.WaterColor.r, VirtualizationTank.WaterColor.g, VirtualizationTank.WaterColor.b, 0.2f);
 
+    /// <summary>EL TRONCO SE LEE COMO AGUA (Berón 2026-10-31: «depósitos de agua transparentes donde se ve a los nadadores»; en las
+    /// fotos de conjunto salían como rejillas blancas opacas). El cristal del tanque (alfa 0,18, liso 0,92 y su brillo sin
+    /// multiplicar por el alfa) en una cara de 20 m refleja el cielo y, con el sol y la niebla, se ve blanco; el agua era casi
+    /// incolora. En los árboles: cristal casi invisible (alfa 0,06, liso 0,6, el brillo también se desvanece con el alfa), agua de
+    /// un azul más hondo y más tupida (alfa 0,45, una sola cara entre el que mira y el nadador) y ni el cristal ni el agua echan
+    /// sombra (la sombra maciza del tronco en el hielo lo hacía parecer de hormigón). Los nervios y zunchos, igual.</summary>
+    public static readonly Color TreeGlassColor = new Color(0.85f, 0.95f, 1f, 0.06f), TreeWaterColor = new Color(0.05f, 0.38f, 0.62f, 0.45f);
+    static Material _treeGlass, _treeWater;
+    static Material TreeGlassMat => _treeGlass != null ? _treeGlass : (_treeGlass = TreeTransparent("Arbol_cristal", TreeGlassColor, 0.6f));
+    static Material TreeWaterMat => _treeWater != null ? _treeWater : (_treeWater = TreeTransparent("Arbol_agua", TreeWaterColor, 0.5f));
+
+    static Material TreeTransparent(string name, Color c, float smooth)
+    {
+        Material m = new Material(KitchenProps.Mat(VirtualizationTank.GlassColor)) { name = name, color = c };   // el mismo sombreador y cola que el cristal del tanque
+        m.SetColor("_BaseColor", c); m.SetFloat("_Smoothness", smooth);
+        if (m.HasProperty("_BlendModePreserveSpecular")) m.SetFloat("_BlendModePreserveSpecular", 0f);
+        m.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        return m;
+    }
+
+    /// <summary>El cristal y el agua del árbol (tronco, ramas, columnas y campanas) con los materiales de <see cref="TreeGlassColor"/>,
+    /// sin sombra. Solo lo del árbol: el tanque de virtualización de un piso conserva el suyo.</summary>
+    static void TrunkLook(Transform tree)
+    {
+        Material glass = KitchenProps.Mat(VirtualizationTank.GlassColor), water = KitchenProps.Mat(RootWater);
+        foreach (Renderer r in tree.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r.GetComponentInParent<VirtualizationTank>() != null) continue;
+            string n = r.name;
+            bool isGlass = r.sharedMaterial == glass && (n == "Pared_raiz" || n == "Pared_rama" || n.StartsWith("Campana") || n == "Fondo_campana" || n == "Tapa_campana");
+            bool isWater = r.sharedMaterial == water && n.StartsWith("Agua_");
+            if (!isGlass && !isWater) continue;
+            r.sharedMaterial = isGlass ? TreeGlassMat : TreeWaterMat;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        }
+    }
+
     /// <summary>Medidas de una TORRE migrada: su piso cuadrado (el lado mayor de su área más grande), puntas de 16 m con 10 m de
     /// hueco (las alas de los anillos de los pisos vuelan 8 m) y el primer nivel del Árbol de los Campos (sobre el árbol más
     /// alto que crece en el santuario).</summary>
@@ -232,6 +269,8 @@ public static partial class SampleSceneBuilder
             $"{hx.building} (al pie: a los pisos, nadando por el tronco)", 2);
 
         if (!hx.rotates) _roofs.Add((ac.top, new Vector2(TreeSpec.TopWidth, TreeSpec.TopWidth), hx.building));   // sus paneles solares, en el techo (un borde libre)
+
+        TrunkLook(tree);   // que se lea como agua (cristal casi invisible, agua azul, sin sombra)
 
         // EL TRONCO AGUANTA (StructuralLimits.RootCheck).
         StructuralLimits.RootReport rep = StructuralLimits.RootCheck(h, floors, tips, hx.RootHeight, hx.Ribs, TreeSpec.HoopSpacing, TreeSpec.HoopArea, TreeSpec.StrutDrop);
