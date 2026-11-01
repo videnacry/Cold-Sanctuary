@@ -101,6 +101,17 @@ reservadas) y la historia **recrea el pueblo o la ciudad real** sobre todo el pi
 milanos; un laboratorio de París de 1898 no tiene ninguna). En ese caso, la flora y fauna van fieles a la historia y al lugar
 (`MicroBiome` del microcosmos).
 
+**La flora del pueblo es la de un pueblo humano** (Berón 2026-11-01: «en Bruce Lee las flores gigantes tapan el pueblo; en Berna
+el musgo son cubos verdes enormes»). Los insectos-humanos viven en un pueblo a escala humana, así que su flora no es la de
+hormiga (×25: una flor de 1,5 m medía 37 m): `AreaMicrocosmos.Nature` en **modo pueblo** (la misma condición que quita los
+muebles gigantes) la siembra **a escala real** (1 cm = 1 cm: un tilo de 15 m con la copa por encima de las cabezas, un seto de
+0,8 m, un césped de 5 cm), **escasa** (una planta cada ~25 m²) y **fuera de calles y solares** (el tronco o la mata a ≥ 1 m de
+la huella de cada edificio, que ya lleva 1 m de margen, y del borde de cada calle). Junto al pueblo (a < 15 m) crece **lo
+plantado** (`Biome.town`: árboles de calle, setos, céspedes, parterres; sin piedras sueltas: el adoquín es la calle); en las
+afueras, **lo del lugar** (`Biome.plants`). Las ciudades tienen además sus **animales del pueblo** (`Biome.townFauna`: ver
+[microcosmos-fauna-eras.md](microcosmos-fauna-eras.md#los-animales-del-pueblo-2026-11-01)). `MicrocosmosFloorTest` comprueba
+en cada pueblo que ninguna planta pase de 25 m, flote o esté en una calle o un solar, y que haya animales.
+
 ---
 
 ## Cómo aplicarlas (receta para un microcosmos nuevo)

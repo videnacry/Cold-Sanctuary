@@ -1494,7 +1494,9 @@ public static class AreaMicrocosmos
         (string sp, int n, float len)[] generic = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         // Con bioma, su FAUNA NATIVA (activa en la estación de la historia): cada especie real con el cuerpo de su grupo.
         var list = new List<(string sp, int n, float len, Color tint, string name, string dormant, bool street)>();
-        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, bg.Length, bg.tint, bg.name, bg.dormant, false));
+        // En el PUEBLO, los bichos del lugar no pasan de la talla de un animal grande del pueblo (2,4 m, un caballo): a escala de
+        // hormiga una mantis medía 12 m y paseaba entre las casas de Kowloon como un monstruo, al lado de Bruce Lee (1,7 m).
+        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, town ? Mathf.Min(bg.Length, 2.4f) : bg.Length, bg.tint, bg.name, bg.dormant, false));
         else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null, false));
         // LOS ANIMALES DEL PUEBLO (Biome.townFauna: los caballos de los carros, los asnos, los gatos…), a su talla real y por las
         // CALLES (Berón 2026-11-01: «al-Juarismi, Curie, Einstein y Patterson no tienen fauna»).
