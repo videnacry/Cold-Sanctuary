@@ -334,6 +334,12 @@ public class PlayerController : MonoBehaviour
     {
         // Durante el yoga, WASD las consume la sesión (control por partes): el cuerpo no camina.
         if (UpaYogaSession.Active) return;
+        // LO LLEVA UN PASO POR CÓDIGO (PathMover: comer en el restaurante, ir al baño… con el cuerpo suelto) y no se toca el
+        // teclado: no se mueve aquí. Con Physics.autoSyncTransforms apagado, el _cc.Move de este fotograma salía de la posición
+        // vieja de la cápsula y deshacía el paso que PathMover acababa de dar por transform: Kushal, en el techo de Servicios
+        // camino de la barra, «andaba» 0,8 m por fotograma sin moverse (JornadaTest: «pedir en la barra» sin avanzar ×27, sin
+        // comer los dos días). Con teclado manda el jugador.
+        if (PathMover.DrivenRecently(gameObject, 0.25f) && Mathf.Abs(InH) + Mathf.Abs(InV) + Mathf.Abs(InUpDown) < 0.01f) { _verticalVelocity = 0f; return; }
         // NADAR O VADEAR SEGÚN LA PROFUNDIDAD (Berón 2026-10-29: en el mar Kushal «caminaba o daba saltitos»). Antes lo
         // decidían el borde del trigger y «¿hay suelo a menos de 2,2 m?», y alternaba entre andar y flotar de pie. Ahora, en
         // cada frame y por POSICIÓN (así un teletransporte tampoco lo deja «nadando fantasma»): agua más honda que el pecho →
