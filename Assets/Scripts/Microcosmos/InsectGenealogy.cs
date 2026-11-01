@@ -59,14 +59,3 @@ public static class InsectGenealogy
         return last ?? "Ant";
     }
 }
-
-/// <summary>El LINAJE de un insecto-humano: su especie y sus antepasados (<see cref="InsectGenealogy"/>).</summary>
-public class FolkLineage : MonoBehaviour
-{
-    public string species = "Ant";
-    public bool female = true;
-    public List<InsectGenealogy.Ancestor> ancestors = new List<InsectGenealogy.Ancestor>();
-    [Tooltip("Su pareja (si tiene): con ella tiene hijos (FolkCouple).")]
-    public FolkLineage partner;
-    public int children;
-}
