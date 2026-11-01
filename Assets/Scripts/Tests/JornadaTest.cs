@@ -475,13 +475,17 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         }
 
         // Ventana de los últimos 20 s: recorrido y desplazamiento neto (null si aún no hay 20 s o voló en alfombra).
-        static bool Window(Track tr, out float path, out float net)
+        // reach: lo más lejos que llegó del punto de partida de la ventana. Dar vueltas es recorrer mucho SIN alejarse; ir a
+        // algo a 30 m y volver (la guardia: de la pista de alfombras al comedero y de vuelta, 60 m en 20 s y 1,2 m netos) se
+        // aleja la mitad de lo recorrido: eso es un recado, no una vuelta (2026-11-01).
+        static bool Window(Track tr, out float path, out float net) => Window(tr, out path, out net, out _);
+        static bool Window(Track tr, out float path, out float net, out float reach)
         {
-            path = net = 0f;
+            path = net = reach = 0f;
             if (tr.hist.Count < 2 || tr.hist[tr.hist.Count - 1].t - tr.hist[0].t < 19f) return false;
             int i0 = tr.hist.FindIndex(x => tr.hist[tr.hist.Count - 1].t - x.t <= 20.5f);
             if (i0 < 0) return false;
-            for (int i = i0; i < tr.hist.Count; i++) { if (tr.hist[i].riding) return false; if (i > i0) path += Vector3.Distance(tr.hist[i].p, tr.hist[i - 1].p); }
+            for (int i = i0; i < tr.hist.Count; i++) { if (tr.hist[i].riding) return false; if (i > i0) { path += Vector3.Distance(tr.hist[i].p, tr.hist[i - 1].p); reach = Mathf.Max(reach, Flat(tr.hist[i].p - tr.hist[i0].p)); } }
             net = Flat(tr.hist[tr.hist.Count - 1].p - tr.hist[i0].p);
             return true;
         }
@@ -530,7 +534,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool needs = head != null && (head.StartsWith("comer") || head.StartsWith("pedir") || head.StartsWith("buscar mesa") || head.StartsWith("levantarse") || head.Contains("en la barra") || head.Contains("baño") || head.Contains("aseo") || head.Contains("dormir") || head.Contains("cama"));
             bool asleep = tr.anima != null && tr.anima.asleep;
             bool atPost = area != null && PlayerWorkday.AtPost(cur?.mission, area, p);
-            bool full = Window(tr, out float path, out float net);
+            bool full = Window(tr, out float path, out float net, out float reach);
             bool moving = !full || path > 1f;
             string status = StatusOf(tr.g);
             // LO QUE HACE (su cola; si no, su cartel; si no, la conducta propia de la doctora o del veterinario): «atascado» y
@@ -557,7 +561,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             {
                 if (Walking(head) && path < 0.5f && now - tr.headSince >= 19f) Add(tr.name, "atascado > 20 s", $"«{head}» sin avanzar en {Where(p)}", true);
                 bool rounds = (cur != null && cur.mission.id.StartsWith("yog_corrige")) || (status != null && (status.Contains("Gimnasio") || status.Contains("Entrenamiento")));
-                if (!rounds && head != "merodear" && path > 12f && net < 2.5f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
+                if (!rounds && head != "merodear" && path > 12f && net < 2.5f && reach < path * 0.35f && now - tr.headSince >= 19f)   // (merodear es ir y venir al azar a propósito; ir a algo, hacerlo y volver —la barra, el aseo— cambia lo que hace: eso no es dar vueltas)
                     Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos en {Where(p)} ({tr.activity})", true);
             }
             if (!magnate) CheckBody(tr, p, riding, asleep || needs || (status != null && status.Contains("Gimnasio")) || wd.OnGymMachine(tr.g), true);
@@ -571,7 +575,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool inHabitat = marine && ml.InHabitat;
             string desire = a.TryGetComponent(out Volition vo) ? vo.LastDesire : "";
             bool resting = a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
-            bool full = Window(tr, out float path, out float net);
+            bool full = Window(tr, out float path, out float net, out float reach);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;
             // Como con las personas: cuenta solo si lleva TODA la ventana queriendo lo mismo (el que descansó 20 s y acaba de
@@ -580,7 +584,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             if (desire != tr.headLabel) { tr.headLabel = desire; tr.headSince = now; }
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
-            if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
+            if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f && reach < path * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
             CheckBody(tr, p, riding, a.asleep || a.busy, false);
         }
 
@@ -595,7 +599,12 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             if (tr.inside == 3) Add(tr.name, "dentro de un objeto", $"«{tr.insideOf}» en {Where(p)} ({tr.activity})", human);
 
             bool aquatic = !human && (tr.animal != null && (tr.animal.WaterAffinity >= 0.5f || tr.animal.GetComponent<MarineLife>() != null));
-            if (!aquatic && !riding && b.min.y < -0.35f) tr.water++; else tr.water = 0;
+            // (2026-11-01) Una PERSONA que cruza a nado entre casquetes (los enlaces de nado del NavMesh, IslandsTest: «cruzando a
+            // nado») no está «en el agua» por error: la guardia de los puestos de vigía y la que lleva raciones a los osos nadan de
+            // un casquete a otro (Gohageneis en (−15, 42), Linduarda en (84, −21), Lizmibet en (−71, 27): todos en un enlace).
+            // Cuenta si nada (SwimBody activo) o si la lleva su camino y está en el agua (vadeando al entrar o salir).
+            bool crossing = human && tr.g.TryGetComponent(out SwimBody sw) && (sw.Active || (PathMover.DrivenRecently(tr.g) && sw.ProbeHere().inWater));
+            if (!aquatic && !riding && !crossing && b.min.y < -0.35f) tr.water++; else tr.water = 0;
             if (tr.water == 3) Add(tr.name, "en el agua sin ser acuático", $"pies a y = {b.min.y:0.00} en {Where(p)}", human);
 
             if (tr.hist.Count >= 2 && !riding && Time.time - tr.movedAt > 3f && !MagnateWarden.Instance.Handling(tr.g))
