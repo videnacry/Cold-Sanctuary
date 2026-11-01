@@ -26,7 +26,7 @@ public class MarineLife : MonoBehaviour
     float _nextPick, _restUntil, _restCooldown;
     bool _onIce;
     Vector3 _beach;
-    float _angleSeed, _nextKill;
+    float _angleSeed, _nextKill, _nextSuckle;
     // Etograma marino (Ethogram, docs/natural-interactions.md): descansadero en el hielo, respiradero, grava para mudar.
     Affordance _haul, _spot;
 
@@ -116,6 +116,11 @@ public class MarineLife : MonoBehaviour
             Animal mom = NearestAdultFemale();
             if (mom != null)
             {
+                // MAMA A SU LADO (en el agua o tumbadas en el hielo): con hambre y pegada a ella, una toma cada 2 s de juego.
+                // Antes solo la seguía: el «nurse» de la madre (DesireCatalog) anda por el NavMesh hacia la cría y en el mar no
+                // tiene agente, así que la foca nunca amamantaba (grupo 58: «Crianza: la foca amamanta» no se veía).
+                if (_a.hungry >= 0f && Time.time >= _nextSuckle && Vector3.Distance(mom.transform.position, transform.position) <= 2.5f)
+                { _nextSuckle = Time.time + 2f; DesireCatalog.FeedCub(mom, _a); }
                 Vector3 side = mom.transform.right * 1.4f;
                 MarineLife ml = mom.GetComponent<MarineLife>();
                 if (ml != null && ml.OnIce) { _onIce = true; Move(mom.transform.position + side, speed, onIce: true); return; }
