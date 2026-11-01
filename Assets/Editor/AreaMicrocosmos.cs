@@ -74,6 +74,14 @@ public static class AreaMicrocosmos
         Bounds rect = giant != null ? FloorRect(giant, slots) : new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
         int pruned = giant != null ? Prune(giant.transform, rect) : 0;
 
+        // 1b) ERA AVANZADA (regla 5 de docs/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
+        //     real de la historia ocupa TODO el piso. Se quitan los muebles gigantes del área (queda su suelo) y la historia recibe
+        //     el rectángulo entero (FloorBounds).
+        int year0 = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
+        int cleared = giant != null && storyOverride != null && MicroBuildRules.IsTownEra(year0) ? ClearForTown(giant.transform) : 0;
+        if (cleared > 0) Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): {cleared} piezas gigantes del área quitadas; el pueblo ocupa el piso entero.");
+        _floorRoot = root.transform; _floorRect = rect;
+
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
         Bounds foot = new Bounds(rect.center, new Vector3(rect.size.x, 1f, rect.size.z));
         var floors = new List<Renderer>(); _blocked.Clear();
@@ -252,6 +260,69 @@ public static class AreaMicrocosmos
     }
 
     /// <summary>El rectángulo encogido <paramref name="inset"/> m por cada lado (nunca menos de 10 m de lado).</summary>
+    // El piso del microcosmos que se está construyendo (para FloorBounds mientras corre su historia).
+    static Transform _floorRoot; static Bounds _floorRect;
+
+    /// <summary>
+    /// EL RECTÁNGULO ÚTIL DEL PISO del microcosmos al que pertenece <paramref name="anyInMicrocosm"/> (cualquier transform bajo
+    /// su raíz: el «Elenco» que recibe la historia, por ejemplo), EN EL MUNDO: el piso ×10 dentro de sus muros menos la franja de
+    /// <see cref="WallInset"/> m (lo que la historia puede ocupar sin que FitStory la corra). size.y = 0; center.y = la de la raíz
+    /// (el suelo). Sin área gigante (MobWorld_Mesopotamia, pruebas): 120 × 120 m centrados en la raíz, menos la franja.
+    /// Vale mientras se construye la historia (la raíz aún en el origen) y después (lee MicroFloor).
+    /// </summary>
+    public static Bounds FloorBounds(Transform anyInMicrocosm)
+    {
+        Transform root = anyInMicrocosm != null ? anyInMicrocosm.root : null;
+        Bounds rect;   // en locales de la raíz (no gira ni escala)
+        if (root != null && root == _floorRoot) rect = _floorRect;
+        else
+        {
+            MicroFloor mf = root != null ? root.GetComponent<MicroFloor>() : null;
+            Transform giant = null;
+            if (root != null) foreach (Transform c in root) if (c.name.EndsWith("_gigante")) { giant = c; break; }
+            if (mf != null) rect = new Bounds(new Vector3(mf.center.x, 0f, mf.center.z), new Vector3(mf.size.x, 0f, mf.size.y));
+            else if (giant != null) { rect = FloorRect(giant.gameObject, giant.GetComponent<PlatformSlots>()); rect.center -= root.position; }
+            else rect = new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
+        }
+        Bounds inner = Inner(rect, WallInset);
+        Vector3 c0 = new Vector3(inner.center.x, 0f, inner.center.z);
+        if (root != null) c0 += root.position;
+        return new Bounds(c0, new Vector3(inner.size.x, 0f, inner.size.z));
+    }
+
+    /// <summary><see cref="FloorBounds"/> en los LOCALES XZ de <paramref name="t"/> (sin giro ni escala: el «Elenco» de una
+    /// historia): el rectángulo que la historia puede llenar, con (0, 0) en el propio origen de <paramref name="t"/>.</summary>
+    public static Rect FloorRectLocal(Transform t)
+    {
+        Bounds b = FloorBounds(t);
+        Vector3 mn = t.InverseTransformPoint(b.min), mx = t.InverseTransformPoint(b.max);
+        return Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z));
+    }
+
+    /// <summary>Quita del área gigante todo lo que no es SUELO (losas de menos de 0,6 m de alto a ras de suelo): sus muebles,
+    /// máquinas, columnas y techos. Las plazas reservadas (PlatformSlots en la raíz gigante) se quedan. Devuelve cuántas piezas quitó.</summary>
+    static int ClearForTown(Transform giant)
+    {
+        var all = new List<Transform>(giant.GetComponentsInChildren<Transform>(true));
+        var keep = new HashSet<Transform> { giant };
+        foreach (Transform t in all)
+        {
+            Renderer r = t.GetComponent<Renderer>();
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (b.size.y < 0.6f && b.max.y < 1f && b.size.x * b.size.z > 1f) for (Transform p = t; p != null && p != giant.parent; p = p.parent) keep.Add(p);
+        }
+        int n = 0;
+        for (int i = all.Count - 1; i >= 0; i--)
+        {
+            Transform t = all[i];
+            if (t == null || keep.Contains(t)) continue;
+            Object.DestroyImmediate(t.gameObject); n++;
+        }
+        foreach (Collider c in giant.GetComponentsInChildren<Collider>(true)) if (c != null && c.GetComponent<Renderer>() == null && c.transform != giant) Object.DestroyImmediate(c);   // cajas de mueble sin malla
+        return n;
+    }
+
     static Bounds Inner(Bounds rect, float inset)
     {
         float ix = Mathf.Min(inset, Mathf.Max(0f, rect.extents.x - 5f)), iz = Mathf.Min(inset, Mathf.Max(0f, rect.extents.z - 5f));
