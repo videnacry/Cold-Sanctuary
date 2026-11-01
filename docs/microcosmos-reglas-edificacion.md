@@ -75,7 +75,14 @@ que las funciones del registro (`AreaFunctions`: `coc_fogon`, `res_comer`, `dojo
 | `banco_taller` / `torno` | banco con tornillo y herramientas / torno con bancada y volante |
 | `tatami` / `esterilla` / `bancal` | se pisan (walkable): tatami con borde, esterilla, bancal con matas |
 | `muneco` | muñeco de madera (muk yan jong) con sus tres brazos y su pierna |
-| `altar`, `puesto`, `granero`, `torno_alfarero`, `parapeto`, `tunel` | sus formas reales (mesa de ofrendas con vasijas, puesto con toldo bajo y mercancía, silo con molino de mano, torno con vasija, sacos apilados, túnel de tablas) |
+| `altar` | mesa de ofrendas de piedra con losa, vasijas y lamparilla |
+| `puesto` | puesto de mercado: mesa, dos postes con toldo bajo (2 m), cestos con mercancía y banco del vendedor |
+| `granero` | silo de barro escalonado con tapa, molino de mano con su mano y saco de grano |
+| `torno_alfarero` | torno con su plato y la vasija, banco del alfarero y pila de cuencos |
+| `pozo` | brocal de piedra con agua, dos postes con torno, manivela, soga y cubo, y la pila al lado (cubre «lavarse») |
+| `telar` | telar de bajo lizo: bastidor, enjulios, hilos de urdimbre, tela tejida, lizos, peine, pedales, lanzadera y banco |
+| `parapeto`, `tunel` | sacos terreros en cuatro hileras (1,1 m) / túnel de viento de tablas con ventilador y balanza |
+| `inodoro`, `lavabo`, `silla`, `banco` | necesidades básicas (no son puestos): pozo negro, letrina o inodoro con cisterna; pila de piedra, palangana o lavabo con grifo y espejo; silla; banco |
 
 ### 4. Necesidades básicas
 Todo pueblo tiene donde **dormir** (camas), **hacer sus necesidades** (retrete, letrina o bacinilla de la era),

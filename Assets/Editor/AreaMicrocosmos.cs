@@ -169,8 +169,13 @@ public static class AreaMicrocosmos
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<MicroFood>() != null) continue;   // los restos no cuentan; los suelos ocultos tampoco
+            // EL PUEBLO (regla 5: ocupa todo el piso) no es el claro: sus edificios, sus calles y lo que está lejos del claro no lo
+            // agrandan (si no, el claro era el piso entero y no crecía nada); su huella se aparta pieza a pieza (TownFootprints).
+            if (InTown(r.transform, story)) continue;
             storyCore.Encapsulate(r.bounds);
         }
+        int townFeet = TownFootprints(story, groundY);
+        if (townFeet > 0) Debug.Log($"[Microcosmos] {sceneLabel}: el pueblo ocupa {townFeet} huellas (edificios, calles, árboles); la flora y la fauna crecen entre ellas.");
         bool useSlots = giant != null && slots != null;
         List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(s => s * AreaScale) : null;
         PlatformSlots giantSlots = giant != null ? giant.GetComponent<PlatformSlots>() : null;
@@ -260,6 +265,50 @@ public static class AreaMicrocosmos
     }
 
     /// <summary>El rectángulo encogido <paramref name="inset"/> m por cada lado (nunca menos de 10 m de lado).</summary>
+    /// <summary>¿Es <paramref name="t"/> parte del PUEBLO de la historia y no de su claro? Lo es si está bajo un edificio
+    /// (AreaFunctionSite), bajo unas «Calles de …», o si la pieza de la historia a la que pertenece (el hijo del «Elenco») queda a
+    /// más de 30 m del centro del claro.</summary>
+    static bool InTown(Transform t, Transform story)
+    {
+        if (t.GetComponentInParent<AreaFunctionSite>(true) != null) return true;
+        Transform top = null;
+        for (Transform p = t; p != null && p != story; p = p.parent)
+        {
+            if (p.name.StartsWith("Calles de") || p.name.StartsWith("Calles ")) return true;
+            if (p.parent != null && p.parent.name == "Elenco") top = p;
+        }
+        if (top == null) return false;
+        Vector3 d = top.position - story.position; d.y = 0f;
+        return d.magnitude > 30f;
+    }
+
+    /// <summary>Las huellas del PUEBLO (cada edificio, cada tramo de calle, cada pieza lejos del claro) se añaden a lo que
+    /// tapa el suelo (<see cref="_blocked"/>, 1 m de alto): ni la flora ni la fauna nacen encima. Devuelve cuántas.</summary>
+    static int TownFootprints(Transform story, float groundY)
+    {
+        int n = 0;
+        var seen = new HashSet<Transform>();
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
+        {
+            if (!r.enabled || r.GetComponentInParent<CubeInsect>(true) != null || !InTown(r.transform, story)) continue;   // la gente anda: no es huella
+            AreaFunctionSite site = r.GetComponentInParent<AreaFunctionSite>(true);
+            if (site != null)
+            {
+                if (!seen.Add(site.transform)) continue;
+                bool any = false; Bounds b = default;
+                foreach (Renderer rr in site.GetComponentsInChildren<Renderer>(false)) { if (rr.GetComponentInParent<CubeInsect>(true) != null) continue; if (!any) { b = rr.bounds; any = true; } else b.Encapsulate(rr.bounds); }
+                if (!any) continue;
+                _blocked.Add(new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x + 2f, 1f, b.size.z + 2f))); n++;
+            }
+            else
+            {
+                Bounds b = r.bounds;
+                _blocked.Add(new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x, 1f, b.size.z))); n++;
+            }
+        }
+        return n;
+    }
+
     // El piso del microcosmos que se está construyendo (para FloorBounds mientras corre su historia).
     static Transform _floorRoot; static Bounds _floorRect;
 
