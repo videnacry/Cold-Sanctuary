@@ -120,7 +120,7 @@ public class PathMover : MonoBehaviour
     {
         _goal = target; _repathAt = Time.time + 4f; _corner = 1;
         Vector3 from = transform.position, to = target;
-        if (NavMesh.SamplePosition(from, out NavMeshHit a, 4f, NavMesh.AllAreas)) from = a.position;
+        if (FeetOnMesh(out Vector3 a)) from = a;
         if (NavMesh.SamplePosition(to, out NavMeshHit b, 4f, NavMesh.AllAreas)) to = b.position;
         if (!NavMesh.CalculatePath(from, to, NavMesh.AllAreas, _path)) { _path.ClearCorners(); return; }
         // Si ya pasó la primera esquina (p. ej. recalculó en la orilla tras cruzar un tramo de agua), no da media vuelta:
@@ -128,6 +128,32 @@ public class PathMover : MonoBehaviour
         Vector3[] c = _path.corners;
         Vector3 here = transform.position;
         while (_corner < c.Length - 1 && Flat(c[_corner + 1] - here) < Flat(c[_corner + 1] - c[_corner])) _corner++;
+    }
+
+    /// <summary>El punto del NavMesh DESDE el que sale: el de SU SUELO, a la altura de los pies. Antes era el más cercano al
+    /// PIVOTE (1 m sobre los pies), y junto a una mesa del comedor ese era la isla de NavMesh que queda sobre el tablero (a 0,77 m
+    /// del suelo, los muebles sin collider también cuentan al hornear): al levantarse de la silla el camino salía de la mesa, era
+    /// «parcial» hacia cualquier sitio y se quedaban de pie dentro de la mesa para siempre (la jornada del 2026-10-31: 4 personas
+    /// 30 min quietas en la Mesa_6 del anillo del comedor, «pedir en la barra» e «ir al baño» sin avanzar). Si el más cercano no está
+    /// a la altura de los pies, busca alrededor (hasta 3 m) el más cercano que sí; si no hay, el de antes.</summary>
+    bool FeetOnMesh(out Vector3 at)
+    {
+        Vector3 feet = transform.position - Vector3.up * PivotHeight;
+        at = feet;
+        const float Level = 0.35f;
+        if (NavMesh.SamplePosition(feet, out NavMeshHit h, 4f, NavMesh.AllAreas) && Mathf.Abs(h.position.y - feet.y) < Level) { at = h.position; return true; }
+        float best = float.MaxValue; bool found = false;
+        for (float r = 0.5f; r <= 3.01f && !found; r += 0.5f)
+            for (int i = 0; i < 12; i++)
+            {
+                Vector3 q = feet + Quaternion.Euler(0f, i * 30f, 0f) * Vector3.forward * r;
+                if (!NavMesh.SamplePosition(q, out NavMeshHit g, 0.4f, NavMesh.AllAreas) || Mathf.Abs(g.position.y - feet.y) >= Level) continue;
+                float d = Flat(g.position - feet);
+                if (d < best) { best = d; at = g.position; found = true; }
+            }
+        if (found) return true;
+        if (NavMesh.SamplePosition(transform.position, out h, 4f, NavMesh.AllAreas)) { at = h.position; return true; }
+        return false;
     }
 
     // Suelo bajo los pies (pivote del personaje a 1 m sobre el suelo, como la cápsula); sobre el agua, nadando.

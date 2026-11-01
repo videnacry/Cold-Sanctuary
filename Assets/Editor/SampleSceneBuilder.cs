@@ -3589,7 +3589,9 @@ public static partial class SampleSceneBuilder
         s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
         s2 = size[works.transform]; Aseos(works.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);   // construcción
         // Comedero de los depredadores junto a los osos: ahí deja el laboratorio las raciones de carne cultivada (viajan en alfombra).
-        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = new Vector3(126f, 0f, -6f);
+        // A 9 m de la cara Este del tronco de Producción (2026-11-01): estaba en (126, −6), a 1 m de la pared (de cuando Producción
+        // estaba en otro sitio), dentro del margen del NavMesh al pie del tronco: el guardia daba vueltas al tronco sin llegar.
+        GameObject feeder = new GameObject("Comedero_depredadores"); feeder.transform.SetParent(areasGroup.transform, false); feeder.transform.position = ProduccionCenter + new Vector3(20f, 0f, -6f);
         KitchenProps.C(feeder.transform, new Vector3(0f, 0.08f, 0f), new Vector3(1.6f, 0.16f, 1.6f), KitchenProps.DarkSteel, 0f, "Bandeja");
         WorldLabel fwl = feeder.AddComponent<WorldLabel>(); fwl.text = "Comedero (carne cultivada)"; fwl.height = 1f;
         CulturedMeatLab.Build(meat.transform, criaLayout, feeder.transform);
