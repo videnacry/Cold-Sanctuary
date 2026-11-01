@@ -180,6 +180,15 @@ public static partial class SampleSceneBuilder
             // La reina, VIRGEN: sale en vuelo nupcial y se aparea con el zángano (que muere); luego pone (docs/ciclo-de-vida.md).
             if (female != null && female.TryGetComponent(out IceInsectLife q)) { q.mated = false; PrefabUtility.RecordPrefabInstancePropertyModifications(q); }
             if (male != null && male.TryGetComponent(out IceInsectLife d)) { d.drone = true; PrefabUtility.RecordPrefabInstancePropertyModifications(d); }
+            // Y sus OBRERAS: una reina no funda colonia sola (la virgen hereda las obreras de la colmena madre). Sin nodrizas
+            // nadie alimenta ni opercula las larvas: no había pupa, ni abeja nueva, ni zángano, ni cambio de oficio (11/4).
+            // Edades repartidas: limpiadora a punto de ser nodriza, nodrizas, procesadora, guardiana y pecoreadora.
+            float[] ages = { 2.5f, 4f, 6f, 8f, 12f, 19f, 23f };
+            for (int i = 0; i < ages.Length; i++)
+            {
+                Animal w = Adult(prefab, fauna.transform, I + new Vector3(-1.5f + i * 0.5f, 6.5f, 3.5f), Sex.female, $"{display}_obrera_{i + 1}");
+                if (w != null && w.TryGetComponent(out IceInsectLife wl)) { wl.isQueen = false; wl.drone = false; wl.ageDays = ages[i]; PrefabUtility.RecordPrefabInstancePropertyModifications(wl); }
+            }
         }
         if (sp == "SnowSpider")
         {

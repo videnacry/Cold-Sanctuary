@@ -30,13 +30,24 @@ public class Reproduction : MonoBehaviour
     EstrusState _estrus;
     float _cooldownUntil;
     bool _pregnant;
-    float _birthTime;
+    // La gestación y el descanso entre crías se cuentan en MESES del calendario (como el huevo, Egg.progress): si el año
+    // cambia a media gestación (el panel de ciclo de vida lo comprime, la prueba lo baja a 0,05 días), lo que falta se
+    // recalibra al momento. Antes se fijaba un `Time.time` de parto al concebir: la foca concebía al arrancar con el año de
+    // 2 días y paría a los ~100 min de juego aunque la prueba hubiera bajado el año a 0,05 (grupo 58: 11/5).
+    float _gestMonths, _gestDone;
+    float _restMonths;
 
     /// <summary>¿Está gestando (o incubando: el pingüino lo lleva igual, dentro de la madre)? Lo leen el panel y la prueba
     /// de las escenas de ciclo de vida.</summary>
     public bool Pregnant => _pregnant;
-    /// <summary>`Time.time` en que parirá (solo vale con <see cref="Pregnant"/>).</summary>
-    public float BirthAt => _birthTime;
+    /// <summary>`Time.time` en que parirá con el calendario de ahora (solo vale con <see cref="Pregnant"/>).</summary>
+    public float BirthAt => Time.time + Mathf.Max(0f, _gestMonths - _gestDone) * SecondsPerMonth();
+
+    float SecondsPerMonth()
+    {
+        TimeController tc = TimeController.timeController;
+        return tc != null ? Mathf.Max(1e-4f, tc.SecondsForMonths(1f)) : gestationSeconds / Mathf.Max(0.01f, _gestMonths);
+    }
     /// <summary>Cada parto: (madre, cría). Para observar el ciclo de vida sin buscar crías nuevas por la escena.</summary>
     public static event System.Action<Animal, Animal> Born;
 
@@ -46,7 +57,9 @@ public class Reproduction : MonoBehaviour
     {
         if (!Enabled || _animal == null || _animal.death) return;
 
-        if (_pregnant) { if (Time.time >= _birthTime) GiveBirth(); return; }
+        float months = Time.deltaTime / SecondsPerMonth();
+        if (_pregnant) { _gestDone += months; if (_gestDone >= _gestMonths) GiveBirth(); return; }
+        if (_restMonths > 0f) _restMonths -= months;
         if (!CanConceive()) return;
         string sp = _animal.SpeciesName;
         // Pulgón: partenogénesis (hembras que paren hijas sin macho). Reina de hormiga/termita: guarda el esperma del
@@ -64,7 +77,7 @@ public class Reproduction : MonoBehaviour
     {
         if (_animal.lifeStage != LifeStage.adult) return false;   // solo adultos
         if (_animal.sex != Sex.female && !Hermaphrodite(_animal.SpeciesName)) return false;   // gesta la hembra → una cría por pareja; en los hermafroditas, los dos
-        if (Time.time < _cooldownUntil) return false;
+        if (Time.time < _cooldownUntil || _restMonths > 0f) return false;
         if (_estrus == null || !_estrus.InEstrus) return false;   // en celo
         if (_animal.hungry >= 0f) return false;                   // saciada (hungry>=0 = tiene hambre)
         if (HiveBreeds(_animal.SpeciesName)) return false;          // la abeja nace del panal (Hive), no de aquí
@@ -100,16 +113,17 @@ public class Reproduction : MonoBehaviour
     void Conceive()
     {
         _pregnant = true;
-        // GESTACIÓN real de la especie (meses) escalada al calendario del santuario (Clock: día y año configurables).
-        TimeController tc = TimeController.timeController;
-        _birthTime = Time.time + (tc != null ? tc.SecondsForMonths(Calendar(_animal.LifeSpecies).gestationMonths) : gestationSeconds);
+        // GESTACIÓN real de la especie (meses), contada con el calendario del santuario (Clock: día y año configurables).
+        _gestMonths = Calendar(_animal.LifeSpecies).gestationMonths; _gestDone = 0f;
     }
 
     void GiveBirth()
     {
         _pregnant = false;
-        TimeController tcb = TimeController.timeController;
-        _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, tcb != null ? tcb.SecondsForMonths(Calendar(_animal.LifeSpecies).intervalMonths) : 600f);   // una cría por temporada (calendario real de la especie)
+        _cooldownUntil = Time.time + cooldownSeconds;
+        // Una cría por temporada (calendario real de la especie); sin reloj, el tope de antes (600 s).
+        _restMonths = TimeController.timeController != null ? Calendar(_animal.LifeSpecies).intervalMonths : 0f;
+        if (TimeController.timeController == null) _cooldownUntil = Time.time + Mathf.Max(cooldownSeconds, 600f);
         // OVÍPAROS (LifeHistory.eggs: pingüino, araña de las nieves): pone un HUEVO (o un saco) que se incuba; la cría nace al
         // eclosionar (Egg.Hatch → Hatch).
         LifeHistory life = LifeHistory.Of(_animal.LifeSpecies);

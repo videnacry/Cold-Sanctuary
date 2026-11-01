@@ -19,6 +19,9 @@ existe y se comprueba (ya no hay SKIP).
   `LifeHistory`), las etapas de vida en días (`StageProfile`). Las dos se pasan al año del santuario con la misma cuenta:
   `SecondsForMonths(m) = m/12 · DaysPerYear · SecondsPerGameDay`, y un **día de vida** =
   `LifeStage.SecondsPerLifeDay = SecondsForMonths(12)/365` ≈ **4,6 min reales** a ×1.
+- La gestación y el descanso entre crías (`Reproduction`) se cuentan en **meses transcurridos** (como el huevo,
+  `Egg.progress`): si el año cambia a media gestación, lo que falta se recalibra. Antes se fijaba la hora del parto al
+  concebir: la foca de su escena concebía al arrancar (año de 2 días) y no paría en la prueba (año de 0,05).
 - **Antes** `LifeStage` contaba sus «días» en **minutos de juego** (~2,5 s): el oso adulto vivía 7 300 min (5 días de juego)
   pero gestaba 8 meses (19 días de juego): moría de viejo antes de parir. Y la colmena contaba un «día de abeja» como un
   día de juego entero (1 h): la cría de abejas iba 13 veces más despacio que todo lo demás.
@@ -120,7 +123,9 @@ Abeja melífera modificada (docs/abejas-y-panal.md).
   de congregación).
 - La muerte del zángano tras aparearse cuenta como natural en el panel (no como «otra causa»).
 - Escena: la hembra es la reina **virgen** (`mated = false`) y el macho, un zángano (`drone = true`). En SampleScene las
-  reinas ya están fecundadas (`mated = true` por defecto).
+  reinas ya están fecundadas (`mated = true` por defecto). Con ellos, **7 obreras** de edades repartidas (limpiadora,
+  nodrizas, procesadora, guardiana, pecoreadora): una reina no funda colonia sola, y sin nodrizas nadie opercula las larvas
+  (no había pupa, ni abeja nueva, ni zángano, ni cambio de oficio).
 
 ### Araña de las nieves (`SnowSpider`) — especie FICTICIA
 `docs/ice-sanctuary-ecology.md` la define como una araña **modificada** para el hielo, de ~30 cm, que teje su **tela
