@@ -53,6 +53,11 @@ public static class Eras
     /// <summary>¿Existe ya esta capacidad en el año <paramref name="year"/> (por defecto, el de ahora)?</summary>
     public static bool Allows(Capability c, int? year = null) => (year ?? Now) >= StartOf(c);
 
+    /// <summary>Desde cuándo hay ESTRUCTURAS HUMANAS (aldeas de casas redondas del Natufiense / PPNA, ~9500 a. C.): antes, la tribu vive en
+    /// una guarida o refugio natural; después, cada era tiene sus edificios (docs/microcosmos-civilizaciones.md §8).</summary>
+    public const int StructuresFrom = -9500;
+    public static bool HasStructures(int year) => year >= StructuresFrom;
+
     /// <summary>«7000 a. C.» / «1942».</summary>
     public static string Format(int year) => year < 0 ? $"{-year:#,0} a. C." : year.ToString();
 

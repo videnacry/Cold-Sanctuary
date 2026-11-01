@@ -125,7 +125,11 @@ public static class AreaMicrocosmos
         // Las historias propias (Patanjali, Planta Atómica, Hospital…) traen su elenco pero ninguna recolectora: sin ellas los
         // mirmidones de ese microcosmos no viven del entorno (semillas; melaza desde el Neolítico, Eras.Dairying). Se añade
         // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
-        if ((spec == null || spec.foragers) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
+        // ERA CON ESTRUCTURAS (Berón 2026-11-01: «en todos los mapas se ha creado hormigas-humanas recolectoras con una guarida y eso
+        // es erróneo, cada era tiene sus estructuras humanas»): la cuadrilla con guarida solo en las eras SIN estructuras (antes de
+        // las aldeas, Eras.HasStructures); en las civilizadas la gente vive de sus edificios (CivicBuilder, docs/microcosmos-civilizaciones.md).
+        int year = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
+        if ((spec == null || spec.foragers) && !Eras.HasStructures(year) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
         // 2b) La historia, DENTRO DEL PISO (regla 11): sus estructuras (cueva, río, sendero, guarida…) no pueden quedar fuera de
         //     los muros. Si se sale por un lado, se corre entera hacia dentro; si es más grande que el piso, pieza a pieza.
@@ -809,6 +813,26 @@ public static class AreaMicrocosmos
         var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
         var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
         CubeInsect.DressMyrmidon(g, c, height, bulk);
+        WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
+        return g;
+    }
+
+    // Un INSECTO-HUMANO de era civilizada (docs/microcosmos-civilizaciones.md §5–6): su insecto (InsectCast, o <paramref name="species"/>),
+    // erguido a su estatura, con cara humana y pelo; todas las especies de tamaño parecido. Lleva su linaje (FolkLineage).
+    internal static GameObject Folk(Transform root, string name, Vector3 pos, float height, float bulk = 1f, string species = null, Color? body = null)
+    {
+        var g = new GameObject(name);
+        g.transform.SetParent(root, false); g.transform.localPosition = pos;
+        g.transform.localRotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+        var col = g.AddComponent<CapsuleCollider>(); col.height = height; col.radius = 0.35f * bulk; col.center = Vector3.up * height * 0.5f;
+        var ag = g.AddComponent<UnityEngine.AI.NavMeshAgent>(); ag.radius = 0.4f * bulk; ag.height = height; ag.speed = 3f; ag.angularSpeed = 360f;
+        string sp = species ?? InsectCast.SpeciesFor(name);
+        bool female = (Mathf.Abs(name.GetHashCode()) % 2) == 0;
+        CubeInsect.DressFolk(g, sp, height, name, female);
+        if (body.HasValue) foreach (Renderer r in g.transform.Find("Insecto").GetComponentsInChildren<Renderer>(true)) if (r.sharedMaterial != null && r.sharedMaterial.color == InsectCast.ColorOf(sp)) r.sharedMaterial = KitchenProps.Mat(body.Value);
+        Transform ins = g.transform.Find("Insecto");
+        if (ins != null && bulk != 1f) ins.localScale = new Vector3(ins.localScale.x * bulk, ins.localScale.y, ins.localScale.z * Mathf.Sqrt(bulk));
+        var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = female;
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
         return g;
     }

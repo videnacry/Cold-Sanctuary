@@ -143,11 +143,12 @@ Ley ya escrita en `microcosmos-eras-and-observation.md` §1: **el animal se elig
 - Cada insecto-humano lleva su **linaje**: su especie y la de sus antepasados con su generación (padres 1, abuelos 2,
   bisabuelos 3, tatarabuelos 4; hasta 5).
 - Un hijo hereda los dos linajes (sus padres a 1, los antepasados de cada padre a +1). **Su especie se sortea** entre todas
-  las del árbol, con peso ½ᵍ por antepasado (cada padre ½, cada abuelo ¼, cada tatarabuelo 1/16): lo más probable es salir
-  como uno de los padres, pero **una mariquita y una araña pueden tener un hijo ciempiés** si había un ciempiés tatarabuelo
-  (probabilidad = suma de los pesos de los ciempiés del árbol).
+  las del árbol; **cada generación pesa la mitad que la anterior** (los dos padres juntos 1, los cuatro abuelos ½, los ocho
+  bisabuelos ¼, los dieciséis tatarabuelos ⅛): lo más probable es salir como uno de los padres (~50 % cada uno si los abuelos
+  son de su misma especie), pero **una mariquita y una araña pueden tener un hijo ciempiés** si había un ciempiés tatarabuelo
+  (raro: ~0,5 %; la probabilidad es la suma de los pesos de los ciempiés del árbol).
 - En el microcosmos: `FolkCouple` (una pareja de una era civilizada) tiene un hijo cada pocos días de juego, con tope de
-  hijos por pareja y de población por escena (sin bucles sin fin); el hijo nace de 0,6× de estatura, crece y sigue a su madre.
+  hijos por pareja y de población por escena (sin bucles sin fin); el hijo nace de ~1 m, sigue a su madre y crece hasta 1,7 m en 6 días de juego (`FolkGrowth`).
 - (El ciempiés aún no tiene ficha morfológica: hasta entonces se dibuja como la especie más cercana. Pendiente con la
   habilidad `species-sheet`.)
 
@@ -195,6 +196,8 @@ natural). En las **civilizadas** se quita la cuadrilla de recolectoras con guari
 
 ## 9. Lista de comprobación por era
 
+Hecho en código (builders y componentes; compila). **Sin generar ni probar aún en Unity**: ver §10.
+
 | Era | Humanos bloqueados | Elenco como su insecto (tamaño parecido, cara humana, pelo) | Sin recolectoras genéricas | Edificios reales e interactivos | Jornadas | Familias (genealogía) |
 |---|---|---|---|---|---|---|
 | Bruce Lee | ✓ | ✓ (Bruce mantis) | ✓ | ✓ escuela de Yip Man, cha chaan teng, restaurante de Ruby Chow | ✓ | ✓ |
@@ -212,6 +215,7 @@ natural). En las **civilizadas** se quita la cuadrilla de recolectoras con guari
 
 - Generar: «Tools/Cold Sanctuary/Build Microcosmos de historias» (todas) o «…: Bruce Lee (Dojo)» (con la escena principal
   abierta) y «Build Sala de Eras».
-- Pruebas: grupo **61** (`InsectOnlyTest`, `AreaFunctionRegistryTest`) y grupo **60** (`BruceLeeStoryTest`, ahora con Bruce
+- Pruebas: grupo **61** (`InsectOnlyTest`, `AreaFunctionRegistryTest`), grupo **62** (`CivilizedErasTest`: las 7 escenas de
+  historia, edificios, jornadas, especies, estaturas y familias) y grupo **60** (`BruceLeeStoryTest`, ahora con Bruce
   mantis). Las del santuario (jornada, grupos 50–58) deben seguir igual: el catálogo es el mismo.
 - A ojo: entrar por la máquina del Gimnasio en «Simulación del Dojo»: Kushal debe llegar como hormiga y volver humano.

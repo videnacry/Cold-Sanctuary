@@ -38,13 +38,17 @@ public static class StorySceneBuilder
         ["Bruce Lee"] = ("de 1957 (Hong Kong) a 1971 (Los Ángeles)", 10f),   // empieza por la mañana en la escuela de Yip Man
     };
 
+    // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era
+    // (CivicBuilder: interactuables, con las funciones del registro) y su gente con jornada y familias. Sin cuadrilla de recolectoras.
+    static System.Func<Transform, int> Civilized(System.Func<Transform, int> story, string display) => t => story(t) + CivicBuilder.Civilize(t, display);
+
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de historias")]
     public static void BuildAll()
     {
         int i = 0;
         foreach (var s in Stories)
         {
-            try { MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i * 900f, 0f, 12500f)); }
+            try { MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = Civilized(s.story, s.display) }, new Vector3(6000f + i * 900f, 0f, 12500f)); }
             catch (System.Exception e) { Debug.LogWarning($"[Historias] No se pudo generar {s.scene}: {e.Message}"); }
             i++;
         }
@@ -63,7 +67,7 @@ public static class StorySceneBuilder
         {
             var s = Stories[i];
             if (s.scene != scene) continue;
-            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = s.story }, new Vector3(6000f + i * 900f, 0f, 12500f));
+            MicrocosmTemplate.Build(new MicrocosmSpec(s.scene, s.display, Dates[s.display].date, Dates[s.display].hour, s.areaGo) { tint = s.tint, story = Civilized(s.story, s.display) }, new Vector3(6000f + i * 900f, 0f, 12500f));
             Debug.Log($"[Historias] {scene} generado.");
             return;
         }
@@ -171,7 +175,7 @@ public static class StorySceneBuilder
         int n = 0;
         GameObject Soldier(string name, Vector3 pos, bool brit, float h = 1.8f)
         {
-            GameObject g = Person(t, name, pos, skin, h);
+            GameObject g = AreaMicrocosmos.Folk(t, name, pos, h, 1f, "Ant", brit ? new Color(0.55f, 0.22f, 0.12f) : new Color(0.12f, 0.11f, 0.1f));   // dos colonias de hormigas: rojizas (británicas) y negras (alemanas)
             CubeInsect.Wear1940s(g, brit ? khaki : grey, brit ? CubeInsect.Hat.Cap : CubeInsect.Hat.Spike);
             n++; return g;
         }
@@ -245,7 +249,7 @@ public static class StorySceneBuilder
         {
             float x = k < 3 ? -8f : 8f, z = -6f + (k % 3) * 6f;
             AreaMicrocosmos.Box(ward, "Catre", new Vector3(x, 0.3f, z), new Vector3(1.2f, 0.6f, 2.2f), bed, true);
-            GameObject p = AreaMicrocosmos.Ant(ward, $"Herido {k + 1}", new Vector3(x, 0.6f, z), new Color(0.4f, 0.26f, 0.18f), 1.7f, 1f);
+            GameObject p = AreaMicrocosmos.Folk(ward, $"Herido {k + 1}", new Vector3(x, 0.6f, z), 1.7f);
             Object.DestroyImmediate(p.GetComponent<UnityEngine.AI.NavMeshAgent>());
             p.transform.localRotation = Quaternion.Euler(0f, 0f, 80f); CubeInsect.Wear1940s(p, red, CubeInsect.Hat.None);
             patients.Add(p.transform);
@@ -685,7 +689,9 @@ public static class StorySceneBuilder
     static StoryMission.StoryStep Collect(string goal, List<Transform> items, Transform to, string speaker, string line)
     { var s = Make(goal, StoryMission.Kind.Collect, items.ToArray(), speaker, line); s.deliverTo = to; return s; }
 
-    static GameObject Person(Transform t, string name, Vector3 pos, Color c, float height, float bulk = 1f) => AreaMicrocosmos.Ant(t, name, pos, c, height, bulk);
+    // Un insecto-humano de su era (docs/microcosmos-civilizaciones.md §5–6): todas las historias son de eras civilizadas; cada uno, el insecto
+    // que mejor le representa (InsectCast), erguido, a su estatura, con cara humana y pelo. (El color ya no es el de la piel: es el de su especie.)
+    static GameObject Person(Transform t, string name, Vector3 pos, Color c, float height, float bulk = 1f) => AreaMicrocosmos.Folk(t, name, pos, height, bulk);
 
     // La jornada del mirmidón: va de un puesto a otro de la historia (así el pueblo no está quieto).
     static void Routine(GameObject g, params Transform[] stops) { var r = g.AddComponent<MicroRoutine>(); r.stops = stops; }
