@@ -236,7 +236,7 @@ public class PlayerWorkday : MonoBehaviour
         float s = WorkRoster.StartHour, l0 = s + WorkRoster.FirstBlock, l1 = l0 + WorkRoster.LunchHours;
         BodyMetabolism body = _player.GetComponent<BodyMetabolism>();
         ActionQueue q = _player.GetComponent<ActionQueue>();
-        if (h >= l0 - 0.25f && h < l1 + 0.5f && !AteToday)
+        if (h >= l0 - 1f && h < l1 + 0.5f && !AteToday)   // (desde una hora antes: con el viaje a otro árbol sale antes hacia la comida — HeadingEarly)
         {
             if (body != null && h >= l0 && _lunchHunger < 0f) _lunchHunger = body.hunger;
             if (q != null)
@@ -298,22 +298,75 @@ public class PlayerWorkday : MonoBehaviour
     /// tarda ~1,5 min de juego (alfombra al pie, andar a la puerta y nadar), más de la mitad de una misión de 1 h a ×6. Es lo
     /// que hace cualquiera que acaba lo suyo: se pone en camino. La Magnate no lo devuelve mientras va (WorkdayDirector).
     /// Devuelve la misión siguiente, o null.
+    /// CON EL VIAJE ENTRE ÁRBOLES (2026-11-01): todos los edificios son árboles y de uno a otro se tarda 35–95 s de juego (nadar al
+    /// techo, volar, bajar nadando y andar a la puerta) de una hora de 148 s: el margen fijo de 0,4 h no bastaba y la misión de
+    /// las 12 en otra torre se perdía (Kushal comía hasta las 12 en Servicios y llegaba a Biología con el 35 %). Ahora el margen
+    /// es el viaje estimado (<see cref="TravelSeconds"/>), y la COMIDA cuenta como un puesto más: sale de la misión de antes de
+    /// las 11 hacia el restaurante (si ya hizo su parte) y, ya comido, sale del restaurante hacia la misión de las 12.
     /// </summary>
     bool _earlyLogged;
     public static WorkRoster.Assignment HeadingEarly(float h)
     {
         PlayerWorkday pw = Instance;
         if (pw == null || !pw.autopilot || pw._plan == null || TimeController.timeController == null) return null;
+        float perHour = TimeController.timeController.SecondsPerGameDay / 24f;
+        float l0 = WorkRoster.StartHour + WorkRoster.FirstBlock, l1 = l0 + WorkRoster.LunchHours;
         Record cur = null;
         foreach (Record r in pw._records) if (h >= r.a.start && h < r.a.start + r.a.mission.hours) { cur = r; break; }
-        if (cur == null || cur.virtualized) return null;
-        float end = cur.a.start + cur.a.mission.hours;
-        if (end - h > EarlyLead) return null;
-        Record next = null;
-        foreach (Record r in pw._records) if (Mathf.Abs(r.a.start - end) < 0.01f) { next = r; break; }
-        if (next == null || next.a.mission.area == cur.a.mission.area || next.a.mission.area == AreaWork.Guard) return null;
-        float full = cur.a.mission.hours * TimeController.timeController.SecondsPerGameDay / 24f;
-        return cur.present >= EarlyDoneShare * full ? next.a : null;
+        string from; float end; bool ready; WorkRoster.Worker me;
+        if (cur != null)
+        {
+            if (cur.virtualized) return null;
+            from = cur.a.mission.area; end = cur.a.start + cur.a.mission.hours; me = cur.a.worker;
+            ready = cur.present >= EarlyDoneShare * cur.a.mission.hours * perHour;
+        }
+        else if (h >= l0 && h < l1 && pw._records.Count > 0)
+        {
+            ActionQueue q = pw._player != null ? pw._player.GetComponent<ActionQueue>() : null;
+            from = LunchArea; end = l1; me = pw._records[0].a.worker;
+            ready = pw.AteToday && (q == null || !q.Own.Any(s => s is DineSpell));   // ya comió: a la misión de las 12
+        }
+        else if (pw._records.Count > 0 && h >= WorkRoster.StartHour && h < l1 + WorkRoster.SecondBlock)
+        {
+            // UN HUECO sin misión (p. ej. de 10:30 a 11:00): nada que hacer donde está; lo siguiente (la comida o la próxima
+            // misión) empieza al acabar el hueco. Sale desde el área de la última misión.
+            me = pw._records[0].a.worker; end = float.MaxValue; from = null;
+            foreach (Record r in pw._records) if (r.a.start > h && r.a.start < end) end = r.a.start;
+            if (h < l0 && !pw.AteToday && l0 < end) end = l0;
+            float last = -1f;
+            foreach (Record r in pw._records) { float e = r.a.start + r.a.mission.hours; if (e <= h + 0.01f && e > last) { last = e; from = r.a.mission.area; } }
+            if (from == null || end == float.MaxValue) return null;
+            ready = true;
+        }
+        else return null;
+        WorkRoster.Assignment next = null;
+        foreach (Record r in pw._records) if (Mathf.Abs(r.a.start - end) < 0.01f) { next = r.a; break; }
+        if (next == null && Mathf.Abs(end - l0) < 0.01f && !pw.AteToday) next = Lunch(me);
+        if (next == null || next.mission.area == from || next.mission.area == AreaWork.Guard) return null;
+        float lead = Mathf.Max(EarlyLead, TravelSeconds(from, next.mission.area) / perHour);
+        if (end - h > lead) return null;
+        return ready ? next : null;
+    }
+
+    /// <summary>El área de la comida (WorkdayDirector.Where: de 11 a 12, «Comida» en la Cocina).</summary>
+    public const string LunchArea = "Cocina";
+    static WorkRoster.Assignment _lunch;
+    /// <summary>La comida como «misión» a la que se va (para HeadingEarly y quien mira su puesto: la Magnate, JornadaTest).</summary>
+    static WorkRoster.Assignment Lunch(WorkRoster.Worker me)
+    {
+        if (_lunch == null || _lunch.worker != me)
+            _lunch = new WorkRoster.Assignment { worker = me, mission = new WorkRoster.Mission(LunchArea, "comida", "Comida", WorkRoster.LunchHours), start = WorkRoster.StartHour + WorkRoster.FirstBlock };
+        return _lunch;
+    }
+
+    /// <summary>Segundos de juego que lleva ir del área <paramref name="from"/> a <paramref name="to"/>: en el mismo árbol, ir a
+    /// la puerta, nadar y salir (~40 s); a otro árbol, nadar a su techo, volar y bajar nadando al piso (~85 s, medidos 35–95 s)
+    /// más el vuelo (18 m/s). Con un 15 % de holgura.</summary>
+    public static float TravelSeconds(string from, string to)
+    {
+        Vector3 a = WorkdayDirector.AreaPoint(from, "Player"), b = WorkdayDirector.AreaPoint(to, "Player");
+        if (a == Vector3.zero || b == Vector3.zero) return 60f;
+        return ArbolCampos.TripSeconds(a, b) * 1.15f;
     }
 
     // ── PILOTO: lo lleva solo a cada sitio, como la jornada a los demás (PathMover + alfombras entre torres) ─────────────
@@ -321,11 +374,11 @@ public class PlayerWorkday : MonoBehaviour
     void Pilot(WorkdayDirector wd, WorkRoster.Worker me, float h)
     {
         string area = wd.Where(me, h, out string doing);
-        if (area == null || MagnateWarden.Instance.Handling(_player) || FlyingCarpet.Riding(_player)) { Hold(false); return; }
+        WorkRoster.Assignment early = HeadingEarly(h);   // (también en un hueco sin misión: Where da null, pero ya va hacia lo siguiente)
+        if ((area == null && early == null) || MagnateWarden.Instance.Handling(_player) || FlyingCarpet.Riding(_player)) { Hold(false); return; }
         ActionQueue q = _player.GetComponent<ActionQueue>();
         Vector3 pos = _player.transform.position;
         WorkRoster.Mission m = wd.Current(me, h)?.mission;
-        WorkRoster.Assignment early = HeadingEarly(h);
         if (early != null)   // ya hizo lo suyo aquí: sale hacia la siguiente misión (llega a su hora)
         {
             if (!_earlyLogged) { _earlyLogged = true; Debug.Log($"[Jornada] {h:00.00} h · Kushal ya hizo «{m?.title}»: sale hacia «{early.mission.title}» ({early.mission.area}) para llegar a su hora."); }
@@ -337,6 +390,8 @@ public class PlayerWorkday : MonoBehaviour
         {
             // Si lo dejó a medias (no llegó a la barra, entre la gente), lo vuelve a intentar: hasta 3 veces en la hora de comer.
             if (_dineQueued && q != null && _dineTries < 3 && !q.Own.Any(s => s is DineSpell)) _dineQueued = false;
+            // (Llegó antes de las 11 —HeadingEarly—: si la cocina aún no ha sacado los platos, espera en el comedor sin gastar intentos.)
+            if (!_dineQueued && h < WorkRoster.StartHour + WorkRoster.FirstBlock && !DineSpell.FoodReady(pos)) { Hold(false); return; }
             if (!_dineQueued && q != null) { _dineQueued = true; _dineTries++; q.EnqueueOwn(new DineSpell()); Debug.Log($"[Jornada] Kushal va a comer al restaurante{(_dineTries > 1 ? $" (intento {_dineTries})" : "")}."); }
             Hold(false);   // come: lo lleva su cola (pedir, sentarse, comer)
             return;
