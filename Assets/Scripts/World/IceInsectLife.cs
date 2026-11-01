@@ -220,6 +220,7 @@ public class IceInsectLife : MonoBehaviour
         float daysPerSec = 1f / Mathf.Max(0.1f, hive.DaySeconds);
         ageDays += Time.deltaTime * daysPerSec;
         role = isQueen ? Role.Reina : drone ? Role.Zangano : ageDays < 3f ? Role.Limpiadora : ageDays < 10f ? Role.Nodriza : ageDays < 18f ? Role.Procesadora : ageDays < 21f ? Role.Guardiana : Role.Pecoreadora;
+        if (role == Role.Procesadora || role == Role.Guardiana || role == Role.Pecoreadora) { if (Reverts()) role = Role.Nodriza; }
         if (isQueen && transform.localScale.x < 1.3f) transform.localScale = Vector3.one * 1.35f;   // la reina, más larga
         // COMEN MIEL de su colmena (las nodrizas alimentan a la reina con jalea): sin esto siempre tenían hambre.
         if (_self != null && _self.hungry >= 0f && hive.honeyStock > 0.5f && Vector3.Distance(transform.position, hive.combCenter) < 1.5f) { hive.Eat(0.5f); _self.hungry = -0.6f; }
@@ -521,6 +522,35 @@ public class IceInsectLife : MonoBehaviour
 
     // LISTAS COMPARTIDAS (refrescadas cada segundo): antes cada insecto buscaba en toda la escena varias veces por frame.
     static readonly System.Collections.Generic.Dictionary<System.Type, (Object[] items, float at)> _cache = new System.Collections.Generic.Dictionary<System.Type, (Object[], float)>();
+    // REVERSIÓN A NODRIZA: si en la colmena hay larvas y ninguna obrera tiene edad de nodriza (3–10 días), las obreras mayores
+    // vuelven a criar (hasta 3 por colmena). Es real: en colonias sin nodrizas, pecoreadoras reactivan sus glándulas
+    // hipofaríngeas y vuelven a alimentar larvas (Robinson, Page, Strambi & Robinson 1992, Ethology 90:336; Huang & Robinson
+    // 1996, Behav Ecol Sociobiol 39:147). Sin esto, con el año comprimido de la escena de ciclo de vida todas las obreras eran
+    // pecoreadoras antes de la primera larva y nadie la operculaba (ni pupa, ni abeja nueva, ni zángano).
+    const int MaxReverted = 3;
+    static readonly System.Collections.Generic.Dictionary<Hive, (float at, bool ageNurses, System.Collections.Generic.List<IceInsectLife> reverted)> _nurses = new System.Collections.Generic.Dictionary<Hive, (float, bool, System.Collections.Generic.List<IceInsectLife>)>();
+    bool Reverts()
+    {
+        if (hive == null) return false;
+        if (!_nurses.TryGetValue(hive, out var n) || Time.time - n.at >= 1f)
+        {
+            bool age = false;
+            foreach (IceInsectLife o in Cached<IceInsectLife>())
+                if (o != null && o.hive == hive && o.kind == Kind.Bee && !o.isQueen && !o.drone && o.ageDays >= 3f && o.ageDays < 10f && (o._self == null || !o._self.death)) { age = true; break; }
+            var rev = n.reverted ?? new System.Collections.Generic.List<IceInsectLife>();
+            rev.RemoveAll(b => b == null || (b._self != null && b._self.death));
+            if (age || hive.Count(Hive.Cell.Larva) == 0) rev.Clear();
+            n = (Time.time, age, rev);
+            _nurses[hive] = n;
+        }
+        if (n.ageNurses || hive.Count(Hive.Cell.Larva) == 0) return false;
+        if (n.reverted.Contains(this)) return true;
+        if (n.reverted.Count >= MaxReverted) return false;
+        n.reverted.Add(this);
+        Debug.Log($"[Colmena] «{hive.name}» tiene larvas y ninguna nodriza: una obrera de {ageDays:0} días vuelve a criar.");
+        return true;
+    }
+
     static T[] Cached<T>() where T : Object
     {
         if (_cache.TryGetValue(typeof(T), out var c) && Time.time - c.at < 1f) return (T[])c.items;

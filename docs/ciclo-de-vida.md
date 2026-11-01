@@ -126,6 +126,9 @@ Abeja melífera modificada (docs/abejas-y-panal.md).
   reinas ya están fecundadas (`mated = true` por defecto). Con ellos, **7 obreras** de edades repartidas (limpiadora,
   nodrizas, procesadora, guardiana, pecoreadora): una reina no funda colonia sola, y sin nodrizas nadie opercula las larvas
   (no había pupa, ni abeja nueva, ni zángano, ni cambio de oficio).
+- **Reversión a nodriza** (`IceInsectLife.Reverts`): si hay larvas y ninguna obrera tiene edad de nodriza (3–10 días),
+  hasta 3 obreras mayores vuelven a criar (Robinson et al. 1992, *Ethology* 90:336; Huang & Robinson 1996, *Behav Ecol
+  Sociobiol* 39:147). Con el año de la prueba (0,05 días) las 7 obreras eran pecoreadoras antes de la primera larva.
 
 ### Araña de las nieves (`SnowSpider`) — especie FICTICIA
 `docs/ice-sanctuary-ecology.md` la define como una araña **modificada** para el hielo, de ~30 cm, que teje su **tela
