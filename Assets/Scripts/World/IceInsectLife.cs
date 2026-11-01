@@ -500,8 +500,21 @@ public class IceInsectLife : MonoBehaviour
     // La abeja NO se mete en las ramas: el panal cuelga de una rama y sus celdillas, el racimo y los rodeos quedaban a
     // veces DENTRO del bloque «Rama»/«Rama_Plataforma» (o del tronco). Si su centro cae dentro de uno, sale por la cara
     // más cercana (+4 cm). Solo bloques del árbol (no el panal ni las celdillas, donde trabaja).
-    static readonly Collider[] _near = new Collider[8];
+    // (2026-11-01) Hueco para 48 colliders y hasta 3 pasadas: junto al panal hay decenas de celdillas, abejas y escarcha, y con
+    // 8 la rama a veces no entraba en la lista (la abeja seguía «dentro de Rama», JornadaTest); y al salir de un segmento por
+    // su cara más cercana podía quedar dentro del segmento contiguo (se solapan un 5 %), que ya se había mirado.
+    static readonly Collider[] _near = new Collider[48];
     static Vector3 OutOfBranches(Vector3 p, float margin = 0f, float push = 0.04f)
+    {
+        for (int pass = 0; pass < 3; pass++)
+        {
+            Vector3 before = p;
+            p = OutOfBranchesOnce(p, margin, push);
+            if ((p - before).sqrMagnitude < 1e-10f) break;
+        }
+        return p;
+    }
+    static Vector3 OutOfBranchesOnce(Vector3 p, float margin, float push)
     {
         int n = Physics.OverlapSphereNonAlloc(p, Mathf.Max(0.06f, margin * 1.8f), _near, ~0, QueryTriggerInteraction.Ignore);
         for (int i = 0; i < n; i++)

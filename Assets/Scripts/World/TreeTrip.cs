@@ -65,6 +65,10 @@ public class TreeTrip : MonoBehaviour
     bool Wet(int i) => (i >= 2 || (_wetStart && i >= 1)) && i <= _path.Count - 2;
     // ¿El tramo i sube o baja por la columna (la corriente de la raíz lo lleva)? Casi vertical: más alto que ancho ×3.
     bool AlongColumn(int i) { if (i < 1 || i >= _path.Count) return false; Vector3 d = _path[i] - _path[i - 1]; return Mathf.Abs(d.y) > 3f * new Vector2(d.x, d.z).magnitude; }
+    // (2026-11-01) La corriente lleva también por el interior de las RAMAS, no solo por la columna: de rama a rama (137 m, 14
+    // tramos) se tardaban 52 s bajo el agua, más que los 50 s de aliento de quien tiene resistencia 1 («aliento mínimo 0,00»,
+    // prueba 53). Solo los tramos de las puertas (meterse en el agua y salir) van sin corriente. Nado + corriente = 3,9 m/s.
+    bool Carried(int i) => AlongColumn(i) || (Wet(i) && i > 2 && i < _path.Count - 2);
 
     void Update()
     {
@@ -75,7 +79,7 @@ public class TreeTrip : MonoBehaviour
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
         if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
-        float budget = (Wet(_i) ? _tree.routeSwimSpeed + (AlongColumn(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
+        float budget = (Wet(_i) ? _tree.routeSwimSpeed + (Carried(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
         {
             Vector3 target = _tree.World(_path[_i]) + Vector3.up * _ph;

@@ -438,7 +438,8 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
 
         // Sin grasa: el cuerpo se consume (baja masa → menos poder/defensa = debilitado) y el hambre prolongada
         // LANZA la enfermedad (el "punto físico" que necesita tratamiento).
-        rig.mass = Mathf.Max(0.1f, rig.mass * (1f - starvationMassRate));
+        // (2026-11-01) Suelo de 0,1 g, no de 0,1 kg: con 0,1 kg un insecto de 20 g «engordaba» al pasar hambre (0,02 → 0,1).
+        rig.mass = Mathf.Max(1e-4f, rig.mass * (1f - starvationMassRate));
         GetComponent<SicknessState>()?.MakeSick(starvationSickness);
 
         // Por debajo de un mínimo vital → muerte por inanición (por el mismo camino que cualquier daño letal).
