@@ -39,7 +39,7 @@ public class MarineLife : MonoBehaviour
     // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
     // la placa (respiraderos, orillas, ir a por la pareja): por debajo del hielo se bucea por debajo de su cara inferior.
     const float IceBottom = -1.5f;
-    float _halfH = 0.4f, _halfLen, _halfWide;   // medio alto, medio largo y medio ancho del cuerpo (en el mundo)
+    float _halfH = 0.4f, _halfLen;   // medio alto y medio largo del cuerpo (en el mundo)
 
 
     public bool OnIce => _onIce;
@@ -59,7 +59,7 @@ public class MarineLife : MonoBehaviour
         _angleSeed = (_count++ * 67f) % 360f;   // cada foca, su trozo de orilla
         Bounds b = new Bounds(transform.position, Vector3.zero); bool any = false;
         foreach (Renderer r in GetComponentsInChildren<Renderer>()) { if (r is ParticleSystemRenderer) continue; if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
-        if (any) { _halfH = Mathf.Clamp(b.extents.y, 0.2f, 1.6f); _halfLen = Mathf.Max(b.extents.x, b.extents.z); _halfWide = Mathf.Min(b.extents.x, b.extents.z); }
+        if (any) { _halfH = Mathf.Clamp(b.extents.y, 0.2f, 1.6f); _halfLen = Mathf.Max(b.extents.x, b.extents.z); }
     }
 
     /// <summary>¿Hay hielo (o algo sólido: un edificio sobre el hielo) encima del mar en (x, z)?</summary>
@@ -124,7 +124,7 @@ public class MarineLife : MonoBehaviour
                 float reach = 2.5f + (ml != null ? ml._halfLen : 0f) + _halfLen;
                 if (_a.hungry >= 0f && Time.time >= _nextSuckle && Vector3.Distance(mom.transform.position, transform.position) <= reach)
                 { _nextSuckle = Time.time + 2f; DesireCatalog.FeedCub(mom, _a); }
-                Vector3 side = mom.transform.right * (1.4f + (ml != null ? ml._halfWide : 0f));
+                Vector3 side = mom.transform.right * 1.4f;
                 if (ml != null && ml.OnIce) { _onIce = true; Move(mom.transform.position + side, speed, onIce: true); return; }
                 _onIce = false;
                 Vector3 t = mom.transform.position + side; t.y = Mathf.Min(t.y, SwimY);
