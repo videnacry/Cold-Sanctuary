@@ -25,6 +25,24 @@ public class TreeTrip : MonoBehaviour
     SwimBody _swim;
     public TreeLevel Destination => _to;
 
+    /// <summary>¿El viaje en curso de <paramref name="g"/> sigue llevando adonde va ahora (<paramref name="to"/>)? (2026-11-01) Un viaje
+    /// empezado hacia otro sitio seguía hasta el final aunque le mandaran a otro: JefeConstruccion bajaba nadando 55 m al pie de
+    /// Producción (iba al comedero) cuando ya le tocaba la clase de yoga en el techo de otro árbol, y no llegaba a su esterilla.
+    /// Mira una vez por segundo: el nivel que querría ahora (el del destino en este árbol o, si está fuera, su salida) es el del viaje.</summary>
+    public static bool StillFor(GameObject g, Vector3 to)
+    {
+        if (g == null || !g.TryGetComponent(out TreeTrip t) || t._tree == null || t._to == null) return true;
+        if (Time.time < t._recheck) return true;
+        t._recheck = Time.time + 1f;
+        ArbolCampos tb = ArbolCampos.At(to, out TreeLevel b, out _, false);
+        TreeLevel want = tb == t._tree && b != null ? b : t._tree.ExitFor(to);
+        if (want == null || want == t._to) return true;
+        Debug.Log($"[Árbol] «{g.name}» ya no va a {t._to.name} sino a {want.name}: deja ese viaje y nada hacia allí.");
+        t.Finish(false);
+        return false;
+    }
+    float _recheck;
+
     public static void Start(GameObject g, ArbolCampos tree, List<Vector3> path, TreeLevel to, bool wetStart = false)
     {
         TreeTrip t = g.GetOrAdd<TreeTrip>(); t._wetStart = wetStart;
@@ -32,7 +50,7 @@ public class TreeTrip : MonoBehaviour
         t._ph = PathMover.Of(g.transform).PivotHeight;
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
-        t._t0 = Time.time; t._left = g.transform.position;
+        t._t0 = Time.time; t._left = g.transform.position; t._recheck = Time.time + 1f;
         t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 20f;
         // El jugador: se le sujeta el cuerpo (su control no lo mueve a la vez) y, como a todos, se le lleva sin chocar con los
         // cantos de las puertas: el CharacterController se apaga durante el viaje (GroundGuard tampoco lo toca).

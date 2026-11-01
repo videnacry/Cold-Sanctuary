@@ -418,6 +418,15 @@ public class CarpetPad : MonoBehaviour
     public static bool ForceHop(GameObject g, Vector3 to)
     {
         if (g == null || FlyingCarpet.Riding(g)) return false;
+        // A UN EDIFICIO-ÁRBOL (2026-11-01): sus pisos no tienen alfombras y For(to) daba la pista más cercana «por debajo», que
+        // podía ser cualquiera (desde el techo de Servicios, camino de la barra, Kushal salía volando a la Residencia una y otra
+        // vez). Si ya está en ese árbol, el árbol lo lleva (a la puerta y nadando): nada de alfombras; si no, a su entrada.
+        ArbolCampos tt = ArbolCampos.At(to, out TreeLevel tl, out _, false);
+        if (tt != null)
+        {
+            if (ArbolCampos.At(g.transform.position, out _, out _) == tt) return false;
+            to = tt.World(tl != null && tl.kind == TreeLevel.Kind.Ground ? tt.Ground.outside : tt.Top.outside);
+        }
         CarpetPad b = For(to);
         if (b == null) return false;
         Vector3 p = g.transform.position;

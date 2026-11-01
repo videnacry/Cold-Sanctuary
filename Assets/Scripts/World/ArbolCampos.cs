@@ -151,6 +151,18 @@ public class ArbolCampos : MonoBehaviour
 
     /// <summary>Por dónde se sale del árbol hacia <paramref name="to"/> (fuera de él): por el suelo si el destino está en el
     /// hielo cerca del pie; si no, por el techo (sus alfombras).</summary>
+    /// <summary>Segundos de juego estimados para ir de <paramref name="from"/> a <paramref name="to"/> entre edificios-árbol
+    /// (2026-11-01; medido 35–95 s de un árbol a otro): en el mismo árbol, a la puerta, nadar y salir (~40 s); a otro árbol,
+    /// nadar a su techo, volar (18 m/s) y bajar nadando a su piso (~85 s más el vuelo). Fuera de los árboles, andando (1,6 m/s).</summary>
+    public static float TripSeconds(Vector3 from, Vector3 to)
+    {
+        ArbolCampos ta = At(from, out _, out _), tb = At(to, out _, out _, false);
+        Vector3 d = to - from; d.y = 0f;
+        if (ta == null && tb == null) return d.magnitude / 1.6f;
+        if (ta == tb) return 40f;
+        return 85f + d.magnitude / 18f;
+    }
+
     public TreeLevel ExitFor(Vector3 to)
     {
         Vector3 l = transform.InverseTransformPoint(to);
@@ -184,7 +196,7 @@ public class ArbolCampos : MonoBehaviour
     public static Hop Route(GameObject g, ref Vector3 to)
     {
         if (g == null || All.Count == 0) return Hop.None;
-        if (TreeTrip.Busy(g)) return Hop.Swimming;
+        if (TreeTrip.Busy(g) && TreeTrip.StillFor(g, to)) return Hop.Swimming;   // (si ya no va adonde iba, lo deja y replanifica desde donde está)
         if (FlyingCarpet.Riding(g)) return Hop.None;   // volando: las alfombras mandan
         ArbolCampos ta = At(g.transform.position, out TreeLevel a, out bool wet), tb = At(to, out TreeLevel b, out _, false);
         if (ta == null && tb == null) return Hop.None;   // nada que ver con ningún árbol
@@ -222,7 +234,11 @@ public class ArbolCampos : MonoBehaviour
         if (wet) { TreeTrip.Start(g, t, t.SwimPath(null, b, t.transform.InverseTransformPoint(g.transform.position) - Vector3.up * ph), b, true); return Hop.Swimming; }
         Vector3 door = t.World(a.outside) + Vector3.up * ph;
         Vector3 d = door - g.transform.position;
-        if (new Vector2(d.x, d.z).magnitude > 0.9f || Mathf.Abs(d.y) > 1.5f) { to = door; return Hop.Walk; }   // primero, a su puerta
+        // (El jugador lleva CharacterController: a ×6 su cápsula choca con el marco de la puerta del techo y lo devuelve 1,1 m;
+        //  con 0,9 m no entraba nunca —Kushal, 2026-11-01, quieto en el techo de Servicios camino de la barra—. A 1,6 m ya vale:
+        //  el viaje empieza andando hasta la puerta, con la cápsula apagada.)
+        float near = g.TryGetComponent(out CharacterController _) ? 1.6f : 0.9f;
+        if (new Vector2(d.x, d.z).magnitude > near || Mathf.Abs(d.y) > 1.5f) { to = door; return Hop.Walk; }   // primero, a su puerta
         TreeTrip.Start(g, t, t.SwimPath(a, b), b);
         return Hop.Swimming;
     }

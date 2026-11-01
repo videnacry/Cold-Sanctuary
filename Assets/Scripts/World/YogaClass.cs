@@ -43,6 +43,11 @@ public class YogaClass : MonoBehaviour
     YogaSession _session;
     int _i = -1;
     float _stepStart, _since;
+    /// <summary>Hasta cuándo espera a los que vienen (2026-11-01): <see cref="gatherTimeout"/> o, si alguien viene de otro árbol,
+    /// su viaje estimado (<see cref="ArbolCampos.TripSeconds"/>, ×1,3 + 20 s). Con todos los edificios hechos árboles, de
+    /// Servicios a la sala de yoga hay 35–95 s de nado y vuelo: la clase empezaba sin ellos y se quedaban fuera de su esterilla.</summary>
+    float _gatherUntil;
+    float GatherEnd => Mathf.Max(_since + gatherTimeout, _gatherUntil);
     bool _teacherIdleWas;
 
     public int StepIndex => _i;
@@ -148,6 +153,7 @@ public class YogaClass : MonoBehaviour
         if (free == null) return false;
         IdleBehavior idle = a.GetComponent<IdleBehavior>();
         var pr = new Practitioner { a = a, mat = free, steps = OnlyPoses(_session.Build()), idleWas = idle != null && idle.enabled };
+        _gatherUntil = Mathf.Max(_gatherUntil, Time.time + ArbolCampos.TripSeconds(a.transform.position, free.transform.position) * 1.3f + 20f);
         if (idle != null) idle.enabled = false;
         if (a.TryGetComponent(out ActionQueue q)) q.ClearOwn();
         _ps.Add(pr);
@@ -222,8 +228,8 @@ public class YogaClass : MonoBehaviour
         if (Now == Phase.Gathering)
         {
             bool all = _ps.Count > 0 && onMats == _ps.Count;
-            if (TeacherOnTarima && (all || (onMats > 0 && Time.time - _since > gatherTimeout))) { Now = Phase.Teaching; Next(); }
-            else if (Time.time - _since > gatherTimeout * 2f) End();   // nadie llega: no se queda esperando para siempre
+            if (TeacherOnTarima && (all || (onMats > 0 && Time.time > GatherEnd))) { Now = Phase.Teaching; Next(); }
+            else if (Time.time - _since > (GatherEnd - _since) * 2f) End();   // nadie llega: no se queda esperando para siempre
             return;
         }
 
