@@ -194,7 +194,7 @@ public static partial class SampleSceneBuilder
             {
                 if (t == null || keep.Contains(t)) continue;
                 if (player != null && t.IsChildOf(player.transform)) { keep.Add(player.transform); continue; }
-                if (t.GetComponent<Camera>() != null || t.name == "Ground_Placeholder" || (t.GetComponent<Light>() is Light l && l.type == LightType.Directional)
+                if (t.GetComponent<Camera>() != null || t.name == "Ground_Placeholder" || (t.TryGetComponent(out Light l) && l.type == LightType.Directional)
                     || t.GetComponent<UnityEngine.EventSystems.EventSystem>() != null) { keep.Add(t); continue; }
                 if (t.GetComponent<Anima>() != null)
                 {
