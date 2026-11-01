@@ -42,7 +42,14 @@ public class NeedsDriver : MonoBehaviour
             return;
         }
         if (!_a.asleep && _body.toilet >= 0.85f && ToiletSpell.CanTry(_a)) { _q.EnqueueOwn(new ToiletSpell()); return; }   // el cuerpo pide ir al baño: busca los aseos
-        if (!_a.asleep && _body.hunger >= eatAbove) _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
+        if (!_a.asleep && _body.hunger >= eatAbove)
+        {
+            // (2026-11-01) SIN COMIDA en ningún sitio (antes de las 11:00 la barra está vacía: el servicio la llena a esa hora) no
+            // pide «comer» cada segundo: lo intenta de nuevo en 20 s. Antes cada DineSpell acababa al momento y el siguiente
+            // volvía a ser «pedir en la barra» sin moverse (Goluis 47 muestras «atascado» en la Central Nuclear, JornadaTest).
+            if (!DineSpell.AnyFood(transform.position)) { _next = Time.time + 20f; return; }
+            _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
+        }
     }
 }
 

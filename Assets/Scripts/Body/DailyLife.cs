@@ -209,6 +209,8 @@ public class DineSpell : QueuedSpell
     /// <summary>¿Hay ya platos en la barra? (Antes de las 11 la cocina aún no ha servido: quien llega antes espera.)</summary>
     public static bool FoodReady(Vector3 from) => NearestFood(from) != null;
 
+    /// <summary>¿Hay alguna comida con raciones (la barra, un comedero…)? NeedsDriver no pide «comer» si no hay ninguna.</summary>
+    public static bool AnyFood(Vector3 from) => NearestFood(from) != null;
     static FoodContainer NearestFood(Vector3 from)
     {
         FoodContainer best = null; float bestSq = float.MaxValue;
