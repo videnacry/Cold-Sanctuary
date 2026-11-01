@@ -121,7 +121,7 @@ public class PathMover : MonoBehaviour
         // EL MISMO DESTINO (el recálculo de cada 4 s): si el camino que lleva sigue completo, solo se cambia por uno claramente
         // más corto. Al pie de un tronco de 22 m los dos rodeos (por un lado y por el otro) miden casi lo mismo y el recálculo
         // los alternaba: el guardia iba y venía en la esquina del tronco de Producción («da vueltas», JornadaTest 2026-11-01).
-        bool same = !float.IsNaN(_goal.x) && (target - _goal).sqrMagnitude <= 9f && _path.status == NavMeshPathStatus.PathComplete && _path.corners.Length > 1;
+        bool same = !float.IsNaN(_goal.x) && (target - _goal).sqrMagnitude < 0.04f && _path.status == NavMeshPathStatus.PathComplete && _path.corners.Length > 1;
         float keepLeft = same ? Left() : 0f;
         int keepCorner = _corner;
         _goal = target; _repathAt = Time.time + 4f;
