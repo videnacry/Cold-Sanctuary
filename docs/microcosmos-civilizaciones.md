@@ -111,6 +111,10 @@ Ley ya escrita en `microcosmos-eras-and-observation.md` §1: **el animal se elig
 | Wilbur y Orville Wright | Saltamontes | Saltan y planean con alas: los que unieron salto, ala y control. |
 | Irena Sendler | Tijereta | Una de las pocas madres insecto que guardan y cuidan a sus crías: escondió a niños. |
 | Le Chambon | Abejas | La colmena entera protege: el pueblo escondió a miles. |
+| Newton | Araña | Solitario y obsesivo, teje solo su obra (§1 de microcosmos-eras-and-observation: aislado → araña). |
+| Marie y Pierre Curie | Luciérnagas | La luz del radio en la oscuridad del cobertizo. |
+| Einstein | Grillo | El grillo marca la temperatura con su canto (ley de Dolbear): física en un insecto. |
+| Jadwiga Piotrowska | Tijereta | Escondió niños en su casa. |
 | Soldados de 1914 | Hormigas (dos colonias, dos colores) | Las hormigas hacen la guerra entre colonias; la tregua es lo humano. |
 | Atlas | Escarabajo pelotero | El insecto más fuerte por su peso (*Onthophagus taurus*, Knell y Allen 2004). |
 | Momo | Grillo | El bromista que canta. |
@@ -208,7 +212,9 @@ Hecho en código (builders y componentes; compila). **Sin generar ni probar aún
 | Patanjali | ✓ | ✓ | ✓ | ✓ āśrama: cabañas, patio de práctica, cocina, huerto | ✓ | ✓ |
 | Tregua 1914 | ✓ | ✓ (dos colonias de hormigas) | ✓ | ✓ refugios (dugouts) y cocina de campaña | ✓ | — (frente de guerra) |
 | Huerto (−9500) | ✓ | — (mirmidones) | se mantiene (transición) | pendiente: casas redondas | — | — |
-| Mesopotamia, Egina, Planta Atómica, Irena Sendler, Le Chambon | ✓ (el guardián es global) | pendiente | ✓ (ya no se añaden) | pendiente | pendiente | pendiente |
+| Planta Atómica, Irena Sendler, Le Chambon | ✓ | ✓ (Newton araña, los Curie luciérnagas, Einstein grillo; Irena tijereta; Le Chambon abejas) | ✓ | los de su historia (pueblo, gueto, laboratorios); pendiente: hacerlos sitios del registro | pendiente | pendiente |
+| Egina | ✓ | mirmidones (canon del mito: hormigas hechas personas) | ✓ | los de su historia; pendiente: megaron y almacenes | pendiente | pendiente |
+| Mesopotamia | ✓ | pendiente (escena de MobWorldSceneBuilder) | — | pendiente: casas de adobe con patio, Eanna, Templo Blanco | pendiente | pendiente |
 | Eras sin estructuras (Sakshi, Ambrosio, Cocina, Paleolítico) | ✓ | mirmidones (canon) | se mantiene: es correcto | no aplica | — | — |
 
 ## 10. Qué probar en Unity (pendiente: no se ha ejecutado en el Editor)

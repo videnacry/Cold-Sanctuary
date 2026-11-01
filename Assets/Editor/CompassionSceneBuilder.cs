@@ -262,7 +262,7 @@ public static class CompassionSceneBuilder
     // Un MIRMIDÓN con ropa de los años 40: abrigo del color dado y sombrero (el cuerpo de cubos dibuja la ropa en detalle).
     static int Person(Transform parent, string name, Vector3 pos, Color coat, Hat hat)
     {
-        GameObject p = AreaMicrocosmos.Ant(parent, name, pos, coat, 1.8f, 1f);
+        GameObject p = AreaMicrocosmos.Folk(parent, name, pos, 1.8f, 1f);
         Dress1940s(p.transform, 1.8f, hat);
         return 1;
     }
@@ -276,7 +276,7 @@ public static class CompassionSceneBuilder
     static int RefugeeAt(Transform parent, string name, Vector3 pos, float height, float homeRadius)
     {
         Color[] coats = { new Color(0.35f, 0.3f, 0.25f), new Color(0.25f, 0.3f, 0.4f), new Color(0.45f, 0.38f, 0.3f), new Color(0.3f, 0.35f, 0.3f) };
-        GameObject g = AreaMicrocosmos.Ant(parent, name, pos, coats[Mathf.Abs(name.GetHashCode()) % coats.Length], height, height < 1.5f ? 0.8f : 1f);
+        GameObject g = AreaMicrocosmos.Folk(parent, name, pos, height, height < 1.5f ? 0.8f : 1f);
         Dress1940s(g.transform, height, height < 1.5f ? Hat.Cap : Hat.None);
         var r = g.AddComponent<Refugee>(); r.displayName = name; r.homeRadius = homeRadius;
         return 1;
@@ -284,7 +284,7 @@ public static class CompassionSceneBuilder
 
     static void PatrolAt(Transform parent, string name, Vector3[] route)
     {
-        GameObject g = AreaMicrocosmos.Ant(parent, name, route[0], new Color(0.32f, 0.33f, 0.3f), 1.9f, 1.05f);
+        GameObject g = AreaMicrocosmos.Folk(parent, name, route[0], 1.9f, 1.05f);
         Dress1940s(g.transform, 1.9f, Hat.Cap);
         var p = g.AddComponent<Patrol>();
         p.route = new Vector3[route.Length];
