@@ -92,16 +92,22 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
 
         // ── 3. HOLGURA ENTRE ÁRBOLES (≥ 16 m en 3D) ──
         var pieces = new Dictionary<ArbolCampos, List<Bounds>>();
+        // Radio de barrido de cada pieza del árbol que gira, con sus 8 esquinas DE VERDAD (localBounds): con las de su caja alineada a
+        // los ejes (r.bounds) el radio crecía hasta √2 según el ángulo del giro y la holgura salía de 12,9 m en unas vueltas y de
+        // ≥ 16 en otras (Entrenamiento – Árbol de los Campos, 2026-11-01).
+        var sweep = new Dictionary<ArbolCampos, List<float>>();
         foreach (ArbolCampos t in all)
         {
             var l = new List<Bounds>();
+            var sw = new List<float>();
             foreach (Renderer r in t.GetComponentsInChildren<Renderer>())
             {
                 string n = r.name;
                 if (n.StartsWith("Losa_arbol") || n.StartsWith("Losa_punta") || n.StartsWith("Losa_anillo") || n.StartsWith("Losa_copa") || n == "Pared_rama" || n == "Pared_raiz" || n.StartsWith("Campana_rama"))
-                    l.Add(r.bounds);
+                { l.Add(r.bounds); sw.Add(SweepRadius(r, t.transform.position)); }
             }
             pieces[t] = l;
+            sweep[t] = sw;
         }
         float worst = float.MaxValue; string worstWho = "";
         TreeRotator rot = TreeRotator.Instance;
@@ -112,13 +118,14 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
                 bool aRot = A.GetComponent<TreeRotator>() != null, bRot = B.GetComponent<TreeRotator>() != null;
                 if (aRot && !bRot) { var x = A; A = B; B = x; aRot = false; bRot = true; }
                 foreach (Bounds pa in pieces[A])
-                    foreach (Bounds pb in pieces[B])
+                    for (int k = 0; k < pieces[B].Count; k++)
                     {
+                        Bounds pb = pieces[B][k];
                         float dy = Mathf.Max(0f, Mathf.Max(pa.min.y - pb.max.y, pb.min.y - pa.max.y)), dp;
                         if (bRot)
                         {
                             Vector3 c = B.transform.position;
-                            float R = 0f; foreach (float x in new[] { pb.min.x, pb.max.x }) foreach (float z in new[] { pb.min.z, pb.max.z }) R = Mathf.Max(R, new Vector2(x - c.x, z - c.z).magnitude);
+                            float R = sweep[B][k];
                             Vector2 nearest = new Vector2(Mathf.Clamp(c.x, pa.min.x, pa.max.x), Mathf.Clamp(c.z, pa.min.z, pa.max.z));
                             dp = Mathf.Max(0f, (nearest - new Vector2(c.x, c.z)).magnitude - R);
                         }
@@ -182,5 +189,19 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
         if (guard != null) foreach (Renderer r in guard.GetComponentsInChildren<Renderer>()) if (r.name == "Tronco") gh = Mathf.Max(gh, r.bounds.max.y - guard.transform.position.y);
         TestProbe.Check("el árbol de la guardia (la excepción: un árbol modificado) crece tan alto como el edificio más alto", guard != null && gh >= tallest - 0.5f, $"tronco {gh:0.0} m, edificio más alto {tallest:0.0} m");
         TestProbe.End();
+    }
+
+    /// <summary>Distancia horizontal máxima de la pieza al eje <paramref name="axis"/>, con sus 8 esquinas reales (no la caja
+    /// alineada a los ejes, que depende del ángulo de giro).</summary>
+    static float SweepRadius(Renderer r, Vector3 axis)
+    {
+        Bounds lb = r.localBounds; Matrix4x4 m = r.transform.localToWorldMatrix;
+        float R = 0f;
+        for (int i = 0; i < 8; i++)
+        {
+            Vector3 p = m.MultiplyPoint3x4(lb.center + Vector3.Scale(lb.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)));
+            R = Mathf.Max(R, new Vector2(p.x - axis.x, p.z - axis.z).magnitude);
+        }
+        return R;
     }
 }

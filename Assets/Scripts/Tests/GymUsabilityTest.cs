@@ -261,15 +261,21 @@ public class GymUsabilityTest : MonoBehaviour, ITestUnit
     IEnumerator Walk(Person p, GymStation st, WorkdayDirector.GymUse u)
     {
         Transform tr = p.g.transform;
-        bool otherFloor = Mathf.Abs(WorkdayDirector.GymApproach(st).y - tr.position.y) > 1.5f;
+        Vector3 gap = WorkdayDirector.GymApproach(st) - tr.position;
+        bool otherFloor = Mathf.Abs(gap.y) > 1.5f || new Vector2(gap.x, gap.z).magnitude > 40f;
         float limit = walkLimit * (otherFloor ? 3f : 1f), t0 = Time.time;
+        // Solo cuenta lo ANDADO: el vuelo en alfombra y el nado por el tronco no (la primera máquina puede estar en otra torre:
+        // Goluis y Lizmibet salían de Servicios, nadaban 83 m al techo, volaban a Entrenamiento y bajaban 81 m a nado; a los
+        // 60 s iban por el tronco y se daba por «no llega»). Tope total, por si un viaje no acaba: 6 veces el límite.
+        float walked = 0f;
         Vector3 last = tr.position; bool rode = false;
         PathMover pm = PathMover.Of(tr);
-        while (!WorkdayDirector.GymArrived(p.g, st) && Time.time - t0 < limit)
+        while (!WorkdayDirector.GymArrived(p.g, st) && walked < limit && Time.time - t0 < limit * 6f)
         {
             pm.StepToward(WorkdayDirector.GymApproach(st), _walkSpeed);
             yield return null;
             bool riding = FlyingCarpet.Riding(p.g) || TreeTrip.Busy(p.g);   // (o nadando por el tronco de la torre-árbol)
+            if (!riding) walked += Time.deltaTime;
             float jump = Vector3.Distance(tr.position, last), lim = Mathf.Max(0.6f, _walkSpeed * 3f * Time.deltaTime);
             if (!riding && !rode && jump > lim && jump > p.maxJump) { p.maxJump = jump; p.jumpAt = $"yendo a {st.name}: de ({last.x:0.0},{last.y:0.0},{last.z:0.0}) a ({tr.position.x:0.0},{tr.position.y:0.0},{tr.position.z:0.0})"; }
             rode = riding; last = tr.position;

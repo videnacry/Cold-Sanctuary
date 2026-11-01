@@ -26,7 +26,15 @@ public class IslandsTest : MonoBehaviour, ITestUnit
         }
 
         TestProbe.Check("hay NavMesh en el hub", OnMesh(hub, out Vector3 a));
-        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería", new Vector3(55f, 0f, 106f)) })
+        // El lóbulo Norte:Enfermeria (centro (55, 97), radio 28) lleva ahora el tronco de Servicios (55, 102): su antiguo punto
+        // (55, 106) cae DENTRO del tronco (sin NavMesh). Se prueba el hielo libre del lóbulo, alrededor del tronco.
+        Vector3 lobe = new Vector3(55f, 0f, 97f), lobeTarget = new Vector3(55f, 0f, 106f);
+        for (int k = 0; k < 24 && !OnMesh(lobeTarget, out _); k++)
+        {
+            float ang = k * 30f * Mathf.Deg2Rad, rad = k < 12 ? 16f : 22f;
+            lobeTarget = lobe + new Vector3(Mathf.Cos(ang), 0f, Mathf.Sin(ang)) * rad;
+        }
+        foreach (var (name, target) in new[] { ("la casa del árbol (Guardia)", new Vector3(-20f, 0f, 47f)), ("el pie de la torre de Servicios (cocina y hospital)", CarpetPad.All.Find(p => p.building == "Servicios" && p.floor == 0) is CarpetPad sp ? sp.transform.position : new Vector3(5f, 0f, 84f)), ("el lóbulo de la antigua enfermería (al pie de Servicios)", lobeTarget) })
         {
             bool onB = OnMesh(target, out Vector3 b);
             var path = new NavMeshPath();

@@ -252,7 +252,11 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
                 Vector3 p = body.transform.position, step = p - last;
                 float dt = Time.time - lastT; lastT = Time.time;
                 float span = Mathf.Max(dt, prevDt); prevDt = dt;
-                if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumpsAll++; if (jumpsWhy.Length < 240) jumpsWhy += $"{leg.name}: {step.magnitude:0.0} m en {dt:0.00} s{(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
+                // Lo ANDADO se mide en horizontal: bajar de golpe un escalón (≤ 1,2 m) o saltar de un anillo al piso de abajo (≤ 6 m,
+                // PathMover) en un fotograma lento no es un teletransporte (salía «1,6–2,7 m en 0,3–0,6 s, 1 paso» en el viaje del piso 5
+                // al 1). Subir o caer de golpe más que eso (o que lo nadado, 4 m/s) sí lo es.
+                float stepH = new Vector2(step.x, step.z).magnitude;
+                if (stepH > Mathf.Max(1.5f, 4f * span) || step.y > Mathf.Max(1f, 4f * span) || step.y < -Mathf.Max(6f, 4f * span)) { jumpsAll++; if (jumpsWhy.Length < 240) jumpsWhy += $"{leg.name}: {step.magnitude:0.0} m (Δy {step.y:0.0}) en {dt:0.00} s{(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
                 walked += step.magnitude;
                 bool foot = !TreeTrip.Busy(body);
                 if (foot) onFoot += step.magnitude;
