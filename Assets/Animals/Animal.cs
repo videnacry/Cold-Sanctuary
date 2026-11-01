@@ -497,9 +497,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             // Un cazador marino NADANDO no alcanza a quien anda por el hielo (la orca de la laguna y el pingüino de la orilla):
             // no es amenaza para él. Antes la colonia huía de las orcas de la laguna sin parar.
             if (landBound && predator.TryGetComponent(out MarineLife pm) && !pm.OnIce) continue;
-            // Las crías de la misma especie no se cazan entre sí (ni Forager caza a la propia especie): el hermano de camada no es
-            // amenaza. Antes los cachorros del recinto se «huían» unos a otros todo el día.
-            if (predator.SpeciesName == SpeciesName && (lifeStage == LifeStage.child || predator.lifeStage == LifeStage.child)) continue;
+            // La MISMA ESPECIE no es amenaza: Forager nunca caza a la propia especie (ni al hermano de camada ni a la pareja). Antes
+            // solo se excluían las crías (los cachorros del recinto se «huían» unos a otros) y dos orcas adultas se tenían en alerta
+            // máxima todo el día (HuntsNow es «come presas», no «tiene hambre»): alerta 1 y nunca iban al baño (DefecationNeed solo
+            // alivia en calma; grupo 58, isla de la orca).
+            if (predator.SpeciesName == SpeciesName) continue;
             float d = Vector3.Distance(transform.position, go.transform.position);
             if (d <= nearest && EvaluateThreat(go) > ThreatThreshold) { nearest = d; threat = go; }
         }
