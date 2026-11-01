@@ -236,7 +236,9 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
             float d = Vector3.Distance(t.position, before);
             // (Acelerado ×8 y con pocos fotogramas, un fotograma son hasta 2,7 s de juego: andando a paso ligero se avanzan
             // varios metros. Un salto es más de lo que da de sí andar: 1,5 m o 3,5 m/s × el fotograma, lo que sea mayor.)
-            if (d <= Mathf.Max(1.5f, 3.5f * (Time.time - _lastT))) return;   // (desde la muestra anterior: el test a veces se salta fotogramas)
+            // (2026-11-01) 4 m/s como el resto de pruebas (TreeTrip: nado + corriente del tronco y de las ramas = 3,9 m/s): con 3,5 el
+            // nado por una rama del Árbol de los Campos salía como «salto de 7,8 m» en 2 s (Panterilia, orquesta del huerto).
+            if (d <= Mathf.Max(1.5f, 4f * (Time.time - _lastT))) return;   // (desde la muestra anterior: el test a veces se salta fotogramas)
             jumps++;
             if (jumpWhy.Length < 200) jumpWhy += $"{t.name} {d:0.0} m; ";
             Debug.LogWarning($"[Experiencia] salto de «{t.name}»: {d:0.0} m en un fotograma, de {before} a {t.position}.");
