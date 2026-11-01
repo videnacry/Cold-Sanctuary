@@ -20,6 +20,10 @@ public class TestRunner : MonoBehaviour
     [Tooltip("Espera inicial para que FamilyGenerator + Init de la fauna asienten antes de correr las unidades.")]
     public float startDelay = 1.6f;
 
+    [Tooltip("Solo estos grupos (vacío = todos). Las escenas de prueba de un área (Assets/Scenes/Pruebas, docs/escenas-de-prueba.md) " +
+             "corren solo las pruebas de su piso: las demás unidades, aunque se registren solas al pedir las pruebas, no corren.")]
+    public int[] onlyGroups = new int[0];
+
     /// <summary>¿Están corriendo las pruebas? (la puerta de la enfermería y la jornada no interfieren con ellas)</summary>
     public static bool Running { get; private set; }
 
@@ -44,7 +48,7 @@ public class TestRunner : MonoBehaviour
         // Reunir unidades (en este GO y sus hijos) y ordenarlas por grupo.
         List<ITestUnit> units = new List<ITestUnit>();
         foreach (MonoBehaviour mb in GetComponentsInChildren<MonoBehaviour>())
-            if (mb is ITestUnit u) units.Add(u);
+            if (mb is ITestUnit u && (onlyGroups == null || onlyGroups.Length == 0 || System.Array.IndexOf(onlyGroups, u.Group) >= 0)) units.Add(u);
         units.Sort((a, b) => a.Group.CompareTo(b.Group));
 
         Debug.Log($"[TEST] ══════ TestRunner: {units.Count} unidad(es) ══════");

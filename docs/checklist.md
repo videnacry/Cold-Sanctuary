@@ -58,7 +58,7 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > IK** (`TwoBoneIK` + `reaches`: palmas juntas/dedos al suelo, opt-in).
 >
 > **HECHO 2026-10-16 (PRs #249–#255, pendiente verify-compile del compi) — YOGA + NIVEL 1:** **escena por sesión**
-> (`YogaLibrary` + `YogaSessionRunner` + `Yoga_UpaCuello/Namaskar/SaludoSol`); **Ashtanga Serie Primaria** (núcleo +
+> (`YogaLibrary` + `YogaSessionRunner` + `Yoga_UpaCuello/Namaskar/SaludoSol`, hoy `Prueba_YogaSesiones`: una por esterilla en la sala de yoga, docs/escenas-de-prueba.md); **Ashtanga Serie Primaria** (núcleo +
 > [`ashtanga-primary-series.md`](ashtanga-primary-series.md) + `Yoga_Ashtanga1`). **CABLEADO Nivel 1 (plan completo):**
 > **(1)** enseñanza interactiva `TeachingSession` (el maestro pide y ESPERA al alumno; `LessonPrompt`) → la Magnate la usa;
 > **(2)** hechizos **enseñables/aprendibles con requisitos** (`SpellCatalog` prerequisitos+items, `Grimoire.CanLearn`/`knowsAll`,

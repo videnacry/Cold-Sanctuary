@@ -172,94 +172,13 @@ public static partial class SampleSceneBuilder
         GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
         Debug.Log($"[Rendimiento] árboles de hielo combinados: {MergeTreeMeshes(flora != null ? flora.transform : null)} cubos ya no se dibujan uno a uno.");
         Debug.Log("[SampleSceneBuilder] Blockout listo bajo 'LevelDressing_AUTO'. Revisar y ajustar posiciones a mano.");
-    }
-
-    // ── ESCENAS DE PRUEBA (una por grupo) ─────────────────────────────────────
-    //
-    // Antes ~30 sandboxes vivían a la vez en la escena principal: tardaba en cargar, sus paneles se pisaban y se
-    // interferían (p. ej. la posesión le quitaba el mando al jugador al arrancar). Ahora la escena principal es solo el
-    // santuario jugable y cada grupo de pruebas se genera en su propia escena (copia de la principal → base mínima +
-    // el grupo). Se abren desde Assets/Scenes/Pruebas o desde Build Settings.
-    const string TestScenesFolder = "Assets/Scenes/Pruebas";
-
-    static readonly (string scene, System.Action<Transform>[] build)[] TestScenes =
-    {
-        ("Prueba_Farming",        new System.Action<Transform>[] { BuildFarmingSandbox }),
-        ("Prueba_Mente",          new System.Action<Transform>[] { BuildMindSandbox }),
-        ("Prueba_Posesion",       new System.Action<Transform>[] { BuildPossessionSandbox }),
-        ("Prueba_Hospital",      new System.Action<Transform>[] { BuildLinduarda, PlacePlayerAtInfirmary }),   // hospital equipado + Linduarda + análisis clínico
-        ("Prueba_TorreGuardia",  new System.Action<Transform>[] { BuildGuardTower, PlacePlayerAtTower }),
-        ("Prueba_Restaurante",   new System.Action<Transform>[] { BuildRestaurantSandbox, PlacePlayerAtKitchen }),   // cocina real: 4 cocineros + misión «Preparar platillos»
-        ("Prueba_Cocina",         new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox }),
-        ("Prueba_Oficios",        new System.Action<Transform>[] { BuildGardenVirtualization, BuildForgeVirtualization, BuildExertionSandbox,
-                                                                   BuildMechanicsBeginner, BuildTruckMaintenance, BuildConstructionBeginner,
-                                                                   BuildDispatchDemo, BuildCriaBeginner }),
-        ("Prueba_Prologo",        new System.Action<Transform>[] { BuildPrologueSandbox }),
-        ("Prueba_Yoga",           new System.Action<Transform>[] { BuildUpaYogaSandbox }),   // minijuego de virtualización (cuello por teclas)
-        // UNA ESCENA POR SESIÓN de yoga (demostrador que ejecuta la secuencia en bucle; se revisan por separado).
-        ("Yoga_UpaCuello",        new System.Action<Transform>[] { BuildYogaUpaNeck }),
-        ("Yoga_Namaskar",         new System.Action<Transform>[] { BuildYogaNamaskar }),
-        ("Yoga_SaludoSol",        new System.Action<Transform>[] { BuildYogaSaludoSol }),
-        ("Yoga_Ashtanga1",        new System.Action<Transform>[] { BuildYogaAshtanga1 }),
-        ("Prueba_CamaraEmocion",  new System.Action<Transform>[] { BuildScreenEffectsSandbox, BuildEmotionOrchestraSandbox }),
-        ("Prueba_Magia",          new System.Action<Transform>[] { BuildMagicSandbox, BuildSpellDemoSandbox, BuildWalkUniversalSandbox }),
-        ("Prueba_Alma",           new System.Action<Transform>[] { BuildSoulBlendSandbox, BuildSharedSoulSandbox }),
-        ("Prueba_Fauna",          new System.Action<Transform>[] { BuildFamilyLifeTest, BuildInteractionTests, BuildSpeciesScenarios }),
-    };
-
-    [MenuItem("Tools/Cold Sanctuary/Build Test Scenes (una escena por prueba)")]
-    public static void BuildTestScenes()
-    {
-        string main = "Assets/Scenes/SampleScene.unity";
-        EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-        if (!AssetDatabase.IsValidFolder(TestScenesFolder)) AssetDatabase.CreateFolder("Assets/Scenes", "Pruebas");
-
-        var buildScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
-        foreach (var (sceneName, build) in TestScenes)
+        // Las ESCENAS DE PRUEBA DE UN ÁREA (sala de yoga, enfermería, cocina) salen de ESTE santuario recién construido: se guarda
+        // y cada una se queda solo con su piso (SampleSceneBuilder.TestScenes.cs). Así nunca quedan desfasadas.
+        if (AlsoAreaTestScenes)
         {
-            string path = $"{TestScenesFolder}/{sceneName}.unity";
-            AssetDatabase.DeleteAsset(path);
-            AssetDatabase.CopyAsset(main, path);          // misma cámara, luz y Player que la principal
-            EditorSceneManager.OpenScene(path, OpenSceneMode.Single);
-
-            GameObject old = GameObject.Find(RootName);
-            if (old != null) Object.DestroyImmediate(old);
-            GameObject root = new GameObject(RootName);
-            BuildTestBase(root.transform);
-            foreach (var b in build)
-            {
-                try { b(root.transform); }
-                catch (System.Exception e) { Debug.LogError($"[TestScenes] {sceneName}: {b.Method.Name} falló: {e}"); }
-            }
-            DressHumanoids();
-            PlaceCarpetAreas();
-            PlaceRooftopSolar();
-            BakeNavMesh();
-            EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());
-            if (!buildScenes.Exists(s => s.path == path)) buildScenes.Add(new EditorBuildSettingsScene(path, true));
-            Debug.Log($"[TestScenes] {path}: {build.Length} sandbox(es).");
+            try { BuildAreaTestScenes(); }
+            catch (System.Exception e) { Debug.LogError($"[TestScenes] No se pudieron generar las escenas de prueba de área: {e}"); }
         }
-        EditorBuildSettings.scenes = buildScenes.ToArray();
-        EditorSceneManager.OpenScene(main, OpenSceneMode.Single);
-        Debug.Log($"[TestScenes] {TestScenes.Length} escenas de prueba en {TestScenesFolder}.");
-    }
-
-    // Lo mínimo para que una prueba funcione: suelo, sistemas del mundo, áreas (algunas pruebas las usan), HUD/UI,
-    // sistemas del jugador, economía (recompensas), rastros, reloj y los HUD de estado/pensamiento/nombres.
-    static void BuildTestBase(Transform root)
-    {
-        BuildGround(root);
-        BuildWorldSystems(root);
-        SanctuaryArea[] areas = BuildAreaStructures(root);
-        WireSanctuaryDirector(areas);
-        BuildUI(root);
-        EnsurePlayerSystems();
-        BuildSanctuaryEconomy(root);
-        new GameObject("TraceField_AUTO").AddComponent<TraceField>().transform.SetParent(root);
-        new GameObject("Clock_AUTO").AddComponent<Clock>().transform.SetParent(root);
-        new GameObject("AnimaStatusHUD_AUTO").AddComponent<AnimaStatusHUD>().transform.SetParent(root);
-        new GameObject("AnimaThoughtHUD_AUTO").AddComponent<AnimaThoughtHUD>().transform.SetParent(root);
-        new GameObject("AnimaNameplate_AUTO").AddComponent<AnimaNameplate>().transform.SetParent(root);
     }
 
     // ── Economía de santuario (recursos + HUD) ─────────────────────────────────
