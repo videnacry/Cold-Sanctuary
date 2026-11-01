@@ -565,8 +565,19 @@ public static class DesireCatalog
         }
         Vector3 to = parent != null ? parent.position : self.HomeOrigin;
         if (Vector3.Distance(self.transform.position, to) > (parent != null ? 2f : 1.5f)) Move(self, to);
-        else { self.nav.ResetPath(); self.Loco?.Idle(1f); }
+        else
+        {
+            self.nav.ResetPath(); self.Loco?.Idle(1f);
+            // PIDE Y LE DAN: la cría pegada a su madre (o padre) mama, o pide con el pico y le regurgitan: una toma cada 2 s de
+            // juego. La toma no esperaba solo a que el «nurse» del adulto ganara a sus otros deseos: en la isla del pingüino el
+            // macho (hambriento tras 2 meses incubando) y la hembra (que vuelve del mar) casi nunca lo elegían y el polluelo
+            // crecía sin una toma (grupo 58: «Crianza» no se vio). En la naturaleza la súplica de la cría desencadena la toma.
+            Animal p = parent != null ? parent.GetComponent<Animal>() : null;
+            if (p != null && self.lifeStage == LifeStage.child && !p.asleep && BroodRide.ParentalCare(self.LifeSpecies) && Time.time >= (_begAt.TryGetValue(self, out float at) ? at : 0f))
+            { _begAt[self] = Time.time + 2f; FeedCub(p, self); }
+        }
     }
+    static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
 
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
