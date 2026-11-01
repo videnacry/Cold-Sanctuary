@@ -761,31 +761,11 @@ public class WorkdayDirector : MonoBehaviour
         Apply(a.mission, a.worker.name);
     }
 
-    /// <summary>Efecto de completar una misión en el mundo (las obras avanzan; el resto, de momento, se registra).</summary>
+    /// <summary>Efecto de completar una misión en el mundo: lo trae su función en el REGISTRO (<see cref="AreaFunctions.Run"/>: las obras,
+    /// el material, el laboratorio, el servicio de la carta y las elaboraciones); el resto, de momento, se registra.</summary>
     public static void Apply(WorkRoster.Mission m, string who)
     {
-        if (m.id.StartsWith("obra_material_") || m.id.StartsWith("obra_trabajo_"))
-        {
-            string title = m.id.Substring(m.id.StartsWith("obra_material_") ? 14 : 13);
-            int hash = title.LastIndexOf('#'); if (hash > 0) title = title.Substring(0, hash);   // «…#2»: otra persona del equipo
-            foreach (ConstructionProject p in ConstructionProject.All)
-                if (p.title == title) { if (m.id.StartsWith("obra_material_")) p.DeliverMaterial(who); else p.WorkDay(who); }
-            return;
-        }
-        MaterialStore store = MaterialStore.Instance;
-        KitchenLarder larder = KitchenLarder.Instance;
-        CulturedMeatLab lab = CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
-        switch (m.id)
-        {
-            case "mat_guadua": store?.HarvestGuadua(who); return;
-            case "mat_bahareque": store?.MakeBahareque(who); return;
-            case "mat_micelio": store?.GrowMycelium(who); return;
-            case "mat_cuerda": store?.TwistRope(who); return;
-            case "lab_iniciar": lab?.OrderStart(who); return;
-            case "lab_cosechar": lab?.OrderHarvest(who); return;
-            case "coc_servicio": larder?.ServeService(12, who); return;
-        }
-        if (m.id.StartsWith("prep_") && larder != null) larder.StartPrep(m.id.Substring(5), who);
+        AreaFunctions.Run(m.id, who);
     }
 
     // Un cuerpo de la Magnate (copia de su cuerpo de cubos) sin su conducta: para clones de trabajo e iniciaciones.
