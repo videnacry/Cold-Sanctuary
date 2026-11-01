@@ -193,9 +193,13 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         {
             GameObject who = GameObject.FindGameObjectWithTag("Player");
             object key = new object();
-            MagnateWarden.Lock(key, true); bool locked = MagnateWarden.Blocked(who);
-            MagnateWarden.Lock(key, false); bool free = !MagnateWarden.Blocked(who);
-            TestProbe.Check("el alcance de la Magnate se puede bloquear (y se libera al quitar el bloqueo)", locked && free);
+            // (2026-11-01) «Libre» es volver a como estaba ANTES del bloqueo: si en ese momento Kushal va en alfombra, está en una
+            // orquesta o en el microcosmos, o lo bloquea otra prueba, ya estaba fuera del alcance y la prueba fallaba al azar.
+            bool before = MagnateWarden.Blocked(who), lockedBefore = MagnateWarden.Locked;
+            MagnateWarden.Lock(key, true); bool locked = MagnateWarden.Blocked(who) && MagnateWarden.Locked;
+            MagnateWarden.Lock(key, false); bool free = MagnateWarden.Blocked(who) == before && MagnateWarden.Locked == lockedBefore;
+            TestProbe.Check("el alcance de la Magnate se puede bloquear (y se libera al quitar el bloqueo)", locked && free,
+                $"antes {(before ? "ya fuera de su alcance" : "a su alcance")}, con el bloqueo {locked}, al quitarlo como antes {free}");
         }
         TestProbe.Check("el estudio textil tiene telar, rueca y tintes", GameObject.Find("Telar_de_pie") != null && GameObject.Find("Rueca") != null && GameObject.Find("Tina_Añil") != null);
         TestProbe.Greater("las arañas de las nieves tejen su tela junto a los panales", SpiderWeb.All.Count, 0f, $"{SpiderWeb.All.Count} telas");

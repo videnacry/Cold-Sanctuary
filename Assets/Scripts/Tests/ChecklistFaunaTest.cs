@@ -130,8 +130,14 @@ public class ChecklistFaunaTest : MonoBehaviour, ITestUnit
         {
             GameObject sel = herb.Forage.SelectTarget(herb);
             GrassPatch nearest = GrassPatch.Nearest(herb.transform.position);
-            TestProbe.Check("[1227] un herbívoro elige el GrassPatch más cercano", sel != null && nearest != null && sel == nearest.gameObject,
-                            $"{herb.SpeciesName} → {(sel != null ? sel.name : "nada")}");
+            // (2026-11-01) Forager.SelectTarget prefiere a la hierba una PLANTA del entorno más cercana (Affordance) o un cultivo
+            // del huerto que le apetezca más: «Hierba kusha» delante del saltamontes no es un error. Falla si elige algo más lejos
+            // que el GrassPatch más cercano sin ser un cultivo que prefiera.
+            float dSel = sel != null ? Vector3.Distance(herb.transform.position, sel.transform.position) : float.MaxValue;
+            float dGrass = nearest != null ? Vector3.Distance(herb.transform.position, nearest.transform.position) : float.MaxValue;
+            bool okPick = sel != null && nearest != null && (sel == nearest.gameObject || dSel <= dGrass + 0.01f || sel.GetComponent<GardenCrop>() != null);
+            TestProbe.Check("[1227] un herbívoro elige el GrassPatch más cercano (o algo comestible aún más cerca)", okPick,
+                            $"{herb.SpeciesName} → {(sel != null ? sel.name : "nada")} a {dSel:0.0} m (GrassPatch más cercano a {dGrass:0.0} m)");
         }
         else Debug.Log("[TEST] SKIP · [1227] herbívoro→GrassPatch — la escena no tiene herbívoro puro o pasto");
 

@@ -246,13 +246,17 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
                 Vector3 d = to - body.transform.position;
                 if (new Vector2(d.x, d.z).magnitude < 1.2f && Mathf.Abs(d.y) < 1.6f) break;
                 int st0 = pm.Steps; Vector3 pre = body.transform.position;
+                // El paso propio usa el deltaTime de ESTE fotograma. Antes solo se comparaba con el siguiente y con el anterior
+                // medido, que al empezar cada viaje era 0: el primer paso de un viaje, dado en el fotograma lento en que acaba el
+                // anterior (0,83 s de juego a ×3 → 2,5 m a 3 m/s), salía como «salto de 2,5 m en 0,54 s» (prueba 53, piso 5 → 1).
+                float stepDt = Time.deltaTime;
                 pm.StepToward(to, 3f);
                 float mine = Vector3.Distance(pre, body.transform.position);
                 yield return null;
                 Vector3 p = body.transform.position, step = p - last;
                 float dt = Time.time - lastT; lastT = Time.time;
-                float span = Mathf.Max(dt, prevDt); prevDt = dt;
-                if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumpsAll++; if (jumpsWhy.Length < 240) jumpsWhy += $"{leg.name}: {step.magnitude:0.0} m (Δy {step.y:0.0}) en {dt:0.00} s{(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m, {pm.Steps - st0} pasos]; "; }
+                float span = Mathf.Max(dt, Mathf.Max(prevDt, stepDt)); prevDt = dt;
+                if (step.magnitude > Mathf.Max(1.5f, 4f * span)) { jumpsAll++; if (jumpsWhy.Length < 240) jumpsWhy += $"{leg.name}: {step.magnitude:0.0} m (Δy {step.y:0.0}) en {dt:0.00} s{(TreeTrip.Busy(body) ? " nadando" : "")} [paso propio {mine:0.0} m en {stepDt:0.00} s, {pm.Steps - st0} pasos]; "; }
                 walked += step.magnitude;
                 bool foot = !TreeTrip.Busy(body);
                 if (foot) onFoot += step.magnitude;
