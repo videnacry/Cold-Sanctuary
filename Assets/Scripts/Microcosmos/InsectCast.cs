@@ -54,7 +54,7 @@ public static class InsectCast
     };
 
     /// <summary>Las especies que conviven en las eras civilizadas (para los que no tienen una propia: variado por su nombre).</summary>
-    public static readonly string[] Folk = { "Ant", "Ladybug", "Grasshopper", "Cricket", "Termite", "SnowBee", "Firefly", "Cicada", "Earwig", "Spider", "DungBeetle", "Mantis" };
+    public static readonly string[] Folk = { "Ant", "Ladybug", "Grasshopper", "Cricket", "Termite", "SnowBee", "Firefly", "Cicada", "Earwig", "Spider", "DungBeetle", "Mantis", "Centipede" };
 
     /// <summary>La especie de <paramref name="name"/> (o una de <see cref="Folk"/> por su nombre).</summary>
     public static string SpeciesFor(string name)
@@ -94,6 +94,7 @@ public static class InsectCast
             case "Snail": return new Color(0.6f, 0.5f, 0.38f);
             case "Woodlouse": return new Color(0.45f, 0.45f, 0.48f);
             case "Cockroach": return new Color(0.45f, 0.25f, 0.12f);
+            case "Centipede": return new Color(0.55f, 0.22f, 0.1f);
             default: return new Color(0.45f, 0.35f, 0.25f);
         }
     }

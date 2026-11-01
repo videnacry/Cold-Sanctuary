@@ -520,7 +520,7 @@ public partial class CubeInsect : MonoBehaviour
             if (t.name.StartsWith("Pata_") && t.name.Length >= 8)
             {
                 Transform tr = t.Find("Trocanter_art");
-                var lg = new Leg { coxa = t, troch = tr, coxaRest = t.localRotation, trochRest = tr != null ? tr.localRotation : Quaternion.identity, side = t.name.EndsWith("I") ? -1 : 1, pair = t.name[5] - '0' };
+                var lg = new Leg { coxa = t, troch = tr, coxaRest = t.localRotation, trochRest = tr != null ? tr.localRotation : Quaternion.identity, side = t.name.EndsWith("I") ? -1 : 1, pair = PairOf(t.name) };
                 // Es BRAZO si cuelga del torso (las patas de andar cuelgan del pivote): el 1.er par, y el 2.º en la mantis.
                 lg.arm = t.parent != null && t.parent.name != "Pivote";
                 if (lg.arm) { lg.armCoxa = Quaternion.Euler(0f, lg.side * (lg.pair == 0 ? 168f : 145f), 0f); lg.armTroch = Quaternion.Euler(lg.pair == 0 ? -10f : -25f, 0f, 0f); lg.tibia = FindDeep(t, "Tibia_art"); if (lg.tibia != null) { lg.tibiaRest = lg.tibia.localRotation; lg.armTibia = Quaternion.Euler(lg.pair == 0 ? -70f : -40f, 0f, 0f); } }

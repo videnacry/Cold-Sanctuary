@@ -129,5 +129,13 @@ public class InsectOnlyTest : MonoBehaviour, ITestUnit
         for (int i = 0; i < 4000; i++) if (InsectGenealogy.ChildSpecies(kid, (float)rnd.NextDouble()) == "Centipede") centipedes++;
         TestProbe.Check("en 4000 hijos sale algún ciempiés", centipedes > 0, $"{centipedes}");
         TestProbe.Check("el tatarabuelo es la 4.ª generación del hijo", kid.Exists(a => a.species == "Centipede" && a.depth == 4));
+        // Y el ciempiés tiene cuerpo de verdad (InsectMorphology: escolopendra, 21 pares de patas, forcípulas).
+        InsectMorphology.Spec cs = InsectMorphology.Named("Centipede");
+        TestProbe.Check("el ciempiés tiene ficha: 21 pares de patas y el último el más largo", cs != null && cs.legs.Length == 21 && cs.legs[20][0] > cs.legs[0][0] * 2f && cs.mandible > 0f);
+        var g = new GameObject("Ciempiés (prueba)"); g.transform.position = new Vector3(9440f, 500f, 9400f);
+        CubeInsect ci = CubeInsect.DressFolk(g, "Centipede", 1.7f, "Ciempiés", true);
+        int legs = 0; foreach (Transform t in g.GetComponentsInChildren<Transform>()) if (t.name.StartsWith("Pata_")) legs++;
+        TestProbe.Check("un hijo ciempiés se viste erguido con sus 42 patas", ci != null && ci.species == "Centipede" && legs == 42, $"{legs} patas");
+        Destroy(g);
     }
 }

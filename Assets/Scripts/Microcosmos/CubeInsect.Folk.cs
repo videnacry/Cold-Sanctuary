@@ -83,6 +83,13 @@ public partial class CubeInsect
         Part(torso, "Camisa", new Vector3(0f, 0f, 0.06f), new Vector3(head.size.x * 1.25f, head.size.y * 1.4f, 0.26f), shirt);
     }
 
+    /// <summary>El par de una pata por su nombre («Pata_12_I» → 12): el ciempiés tiene 21 pares (antes se leía un solo dígito).</summary>
+    static int PairOf(string n)
+    {
+        int end = n.IndexOf('_', 5);
+        return end > 5 && int.TryParse(n.Substring(5, end - 5), out int p) ? p : n[5] - '0';
+    }
+
     // ══ LAS FORMAS DE LA MANTIS (Bruce Lee) ═══════════════════════════════════════════════════════════════════════
     float _mUntil = -1f, _mL, _mR, _mLift, _mSway, _mMid;
 

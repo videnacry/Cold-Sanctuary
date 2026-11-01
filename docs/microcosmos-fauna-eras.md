@@ -150,3 +150,19 @@ Para comparar las formas con las fichas (iNaturalist, fotos con licencia libre p
 - Clemson HGIC, «Cicadas». https://hgic.clemson.edu/factsheet/cicadas
 - UF/IFAS, «Oriental cockroach». https://entnemdept.ufl.edu/projex/gallery/dl/cockroaches/text/oriental_cockroach.htm
 - Banglapedia, «Firefly». https://en.banglapedia.org/index.php/Firefly
+
+## Ciempiés (2026-11-01)
+
+Para la genealogía de las eras civilizadas (Berón: «una mariquita se podría casar con una araña y tener un hijo ciempiés
+como el tatarabuelo», docs/microcosmos-civilizaciones.md §7). Ficha `Centipede` (`InsectMorphology.Fauna.cs`):
+
+- **Escolopendra** (*Scolopendra subspinipes*, nativa de Hong Kong y el sur de Asia, hasta ~20 cm; *S. cingulata* en el
+  Mediterráneo, 7–12 cm). Cabeza plana con antenas de 17–20 artejos y las **forcípulas** (el 1.er par de patas del tronco
+  convertido en uñas de veneno: se dibujan como mandíbulas abiertas 35°); **21 segmentos del tronco con un par de patas cada
+  uno** (42 patas), que se alargan un poco hacia atrás; el **último par, terminal, el doble de largo** (defensa y tacto).
+- Ciclo: desarrollo **epimórfico** (la cría sale con todos sus segmentos, como un adulto pequeño: fase «joven», ×0,2) y la
+  madre se enrosca sobre los huevos y las crías hasta su primera muda. Sin dimorfismo visible.
+- Erguido (insecto-humano): se levanta el 30 % delantero del cuerpo (cabeza y 6 segmentos), el 1.er par son los brazos.
+- Fuentes: Lewis, J. G. E. (1981), *The Biology of Centipedes*, Cambridge UP; Edgecombe, G. D. y Giribet, G. (2007),
+  «Evolutionary biology of centipedes», *Annu. Rev. Entomol.* 52:151–170.
+- Pendiente: su `StageProfile` (vida, muda) y su entrada en algún bioma (`MicroBiome`), y verlo en la galería.
