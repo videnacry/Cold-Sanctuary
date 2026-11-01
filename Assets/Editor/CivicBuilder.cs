@@ -52,8 +52,7 @@ internal static partial class CivicBuilder
         var lots = new Lots(t);
         // Regla 5: en las eras avanzadas el pueblo sigue por el piso (casas de la era, vacías de gente).
         int fill = MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs) ? FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10) : 0;
-        Vector3? at = lots.Take(new Vector2(18f, 14f));
-        EnsureNeeds(t, at ?? new Vector3(0f, 0f, 30f), NeedsStyle);
+        EnsureNeeds(t, lots, NeedsStyle);
         if (moved > 0 || fill > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {fill} casas de relleno.");
         MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
         return n;
@@ -125,7 +124,7 @@ internal static partial class CivicBuilder
                 foreach (Renderer r in c.GetComponentsInChildren<Renderer>(true))
                 {
                     if (r.GetComponentInParent<CubeInsect>(true) != null) continue;
-                    Bounds rb0 = r.bounds; if (rb0.size.y < 0.1f && rb0.size.x > 30f && rb0.size.z > 30f) continue;   // el asfalto de un barrio (se construye encima)
+                    if (r.bounds.size.y < 0.1f) continue;   // lo que se pisa (calles, asfalto, agua pintada): se construye al lado o encima
                     if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
                 }
                 if (!any) continue;
@@ -489,12 +488,15 @@ internal static partial class CivicBuilder
     /// sentarse, cocinar), unos ASEOS Y COMEDOR DE LA ERA abiertos (letrina o retrete, palangana o lavabo, mesa con sillas,
     /// cama, cocina: lo que falte) en <paramref name="at"/>. Devuelve el sitio o null si no faltaba nada.
     /// </summary>
-    internal static AreaFunctionSite EnsureNeeds(Transform t, Vector3 at, Style st)
+    internal static AreaFunctionSite EnsureNeeds(Transform t, Lots lots, Style st)
     {
         var missing = new List<(string key, Vector2 at, Vector2 size, string label)>();
         foreach (var (need, key) in new[] { ("aseo", "inodoro"), ("lavarse", "lavabo"), ("dormir", "cama"), ("comer", "mesa"), ("sentarse", "mesa"), ("cocinar", "fogon") })
             if (!MicroBuildRules.Covers(t, need) && !missing.Exists(m => m.key == key)) missing.Add(S(key, 0f, 0f, 1f, 1f, NeedLabel(key, Year)));
         if (missing.Count == 0) return null;
+        Vector3? lot = lots.Take(new Vector2(18f, 14f));
+        if (!lot.HasValue) { Debug.LogWarning($"[Eras] Faltan necesidades básicas ({missing.Count}) y no queda un solar libre de 18 × 14 m para sus aseos."); return null; }
+        Vector3 at = lot.Value;
         // Un sitio «Casa» del registro (descansar y cocinar se hacen aquí); su primer puesto es la mesa o la cama si las hay.
         missing.Sort((a, b2) => Rank(a.key).CompareTo(Rank(b2.key)));
         Transform b = new GameObject(Year < 1880 ? "Letrinas y pozo del barrio" : "Aseos y comedor del barrio").transform; b.SetParent(t, false); b.localPosition = at;

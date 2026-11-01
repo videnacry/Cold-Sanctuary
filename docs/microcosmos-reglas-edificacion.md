@@ -142,7 +142,7 @@ internal static Vector2 CivicBuilder.Layout(Transform b, List<Transform> pieces,
 internal sealed class CivicBuilder.Lots { Lots(Transform t, HashSet<Transform> skip = null); bool Free(Vector2 c, Vector2 size); Vector3? Take(Vector2 size, Vector2? near = null); void Mark(Rect r); }
 internal static AreaFunctionSite CivicBuilder.Place(Transform t, Lots lots, AreaFunctionSite site, Vector2 near, List<Transform> placed = null);
 internal static int CivicBuilder.FillTown(Transform t, Lots lots, Vector2 near, Style st, string title, int count);
-internal static AreaFunctionSite CivicBuilder.EnsureNeeds(Transform t, Vector3 at, Style st);
+internal static AreaFunctionSite CivicBuilder.EnsureNeeds(Transform t, Lots lots, Style st);   // en el solar libre más cercano al claro
 
 // Assets/Editor/AreaMicrocosmos.cs: el sexo de un insecto-humano
 internal static GameObject AreaMicrocosmos.Folk(..., Color? body = null, bool? female = null);   // null → FemaleByName → hash
