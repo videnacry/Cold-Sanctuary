@@ -37,7 +37,12 @@ internal static partial class CivicBuilder
     }
 
     const float ClearingRadius = 26f;   // el claro de la historia (docs/microcosmos-reglas-edificacion.md, receta 2)
-    const int MaxLots = 40;             // tope de edificios por pueblo (rendimiento): con pisos enormes, los solares crecen
+    // Tope de edificios por pueblo (rendimiento). Las manzanas NO se agrandan para repartir el piso entre pocos edificios (con
+    // 40, en el piso de 388 × 368 m de la Cocina salían manzanas de 59 m con casas de 10 m: un llano vacío con casitas sueltas);
+    // tienen el tamaño de su edificio más grande + paso + calle, así que el pueblo es DENSO. Con 120 caben enteras las
+    // ciudades (París, Berna, Pasadena, Bagdad) y los pueblos medianos; solo en los pisos enormes (Angostura sobre la Cocina,
+    // Prípiat sobre la Central) quedan libres las manzanas más lejanas del claro: las afueras, campo de la era (MicroBiome).
+    const int MaxLots = 120;
 
     /// <summary>
     /// EL PUEBLO EN EL PISO ENTERO: reparte el piso (fuera del claro de la historia) en una cuadrícula de manzanas separadas por
@@ -48,12 +53,10 @@ internal static partial class CivicBuilder
     static List<AreaFunctionSite> Town(Transform t, string town, Lot[] named, Lot[] fill, Color street)
     {
         Rect r = AreaMicrocosmos.FloorRectLocal(t);
-        // Tamaño de la manzana: la del edificio más grande + calle, y más grande si el piso no cabe en MaxLots manzanas.
+        // Tamaño de la manzana: la del edificio más grande + 2 m de paso a cada lado + calle (ver MaxLots).
         float biggest = 14f;
         foreach (Lot l in named) biggest = Mathf.Max(biggest, Mathf.Max(l.size.x, l.size.y) + 2f * MicroBuildRules.Passage);
         float cell = biggest + MicroBuildRules.Street;
-        float area = Mathf.Max(1f, r.width * r.height - Mathf.PI * ClearingRadius * ClearingRadius);
-        cell = Mathf.Max(cell, Mathf.Sqrt(area / MaxLots));
 
         // Las manzanas que caben enteras en el piso y fuera del claro (su esquina más cercana, a más de ClearingRadius).
         var cells = new List<Vector2>();
@@ -103,7 +106,9 @@ internal static partial class CivicBuilder
             sites.Add(site);
             f++;
         }
-        Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia y {f} solares del pueblo en un piso de {r.width:0} × {r.height:0} m (manzanas de {cell:0} m, calles de {MicroBuildRules.Street:0} m).");
+        int outskirts = cells.Count - used;
+        Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia y {f} solares del pueblo en un piso de {r.width:0} × {r.height:0} m (manzanas de {cell:0} m, calles de {MicroBuildRules.Street:0} m)"
+                  + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan de campo." : "."));
         return sites;
     }
 
