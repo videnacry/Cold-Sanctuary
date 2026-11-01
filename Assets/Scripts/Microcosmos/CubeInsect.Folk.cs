@@ -84,7 +84,7 @@ public partial class CubeInsect
     }
 
     // ══ LAS FORMAS DE LA MANTIS (Bruce Lee) ═══════════════════════════════════════════════════════════════════════
-    float _mUntil, _mL, _mR, _mLift, _mSway, _mMid;
+    float _mUntil = -1f, _mL, _mR, _mLift, _mSway, _mMid;
 
     /// <summary>
     /// Fija este fotograma (y 0,3 s) la postura de los BRAZOS RAPTORIALES: <paramref name="reachL"/>/<paramref name="reachR"/>
@@ -104,8 +104,11 @@ public partial class CubeInsect
 
     void LateUpdate()
     {
-        Transform root = transform.Find("Insecto");
-        if (Time.time > _mUntil) { if (root != null && _swaying) { root.localRotation = Quaternion.identity; _swaying = false; } return; }
+        if (Time.time > _mUntil)   // (sin forma marcial: nada que hacer; la fauna no paga ni un Find por fotograma)
+        {
+            if (_swaying) { Transform root = transform.Find("Insecto"); if (root != null) root.localRotation = Quaternion.identity; _swaying = false; }
+            return;
+        }
         ApplyMartial();
     }
     bool _swaying;
