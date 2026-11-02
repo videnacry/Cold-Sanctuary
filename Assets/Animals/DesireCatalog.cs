@@ -358,6 +358,7 @@ public static class DesireCatalog
     // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
     static bool Detour(Animal self, Vector3 at, Vector3 here)
     {
+        if (Flat(at - here) >= 4f) return false;   // (solo los paseos cortos: el recinto, la cría; el adulto explora a 4–10 m)
         if (!NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
         float len = 0f;
         for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);

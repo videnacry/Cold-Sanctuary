@@ -152,6 +152,9 @@ public class WorkdayDirector : MonoBehaviour
         _hour = h;
         if (h < WorkRoster.StartHour)   // (7:50–8:00) desayunados: cada uno sale hacia su primera misión si está en otro árbol
         {
+            // (sin colocarlos de golpe a las 8: ya van andando. PlaceAtStart es para cuando el juego EMPIEZA en plena jornada; con
+            // el reparto a las 7:50 los teletransportaba 140–170 m a las 8:01 delante de todos — JornadaTest, batería completa)
+            _placed = true;
             foreach (WorkRoster.Worker w in roster.workers)
             {
                 GameObject g = Body(w.name);
