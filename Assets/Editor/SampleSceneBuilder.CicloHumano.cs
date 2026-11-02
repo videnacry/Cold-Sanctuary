@@ -120,7 +120,7 @@ public static partial class SampleSceneBuilder
 
         // Foto de conjunto (Temp/CicloHumano/<escena>.png).
         Vector3 look = house.transform.position;
-        HumanShot(look + new Vector3(-9f, 9f, -16f), look + Vector3.up * 0.8f, sceneName);
+        HumanShot(look + new Vector3(-9f, 9f, -16f), look + Vector3.up * 0.8f, sceneName, scene);
 
         EditorSceneManager.SaveScene(scene, path);
         if (!list.Exists(s => s.path == path)) list.Add(new EditorBuildSettingsScene(path, true));
@@ -144,10 +144,11 @@ public static partial class SampleSceneBuilder
     }
 
     /// <summary>Una foto 1600 × 900 de la escena abierta en Temp/CicloHumano/<paramref name="file"/>.png.</summary>
-    internal static void HumanShot(Vector3 from, Vector3 to, string file)
+    internal static void HumanShot(Vector3 from, Vector3 to, string file, Scene? only = null)
     {
         var camGo = new GameObject("Camara_foto");
         Camera cam = camGo.AddComponent<Camera>(); cam.fieldOfView = 50f; cam.farClipPlane = 1500f;
+        if (only.HasValue) { SceneManager.MoveGameObjectToScene(camGo, only.Value); cam.scene = only.Value; }   // solo esa escena (no la del santuario abierta debajo)
         cam.clearFlags = CameraClearFlags.SolidColor; cam.backgroundColor = new Color(0.62f, 0.75f, 0.88f);
         camGo.transform.position = from; camGo.transform.LookAt(to);
         var rt = new RenderTexture(1600, 900, 24); cam.targetTexture = rt; cam.Render(); RenderTexture.active = rt;

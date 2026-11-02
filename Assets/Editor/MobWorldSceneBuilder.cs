@@ -63,6 +63,7 @@ public static class MobWorldSceneBuilder
         AddResident(people, "Guardián del Fuego", "El Hogar",   "Casa de adobe con patio");
         AddResident(people, "El Tallador",        "La Fragua",  "Alfarería (cuencos de borde biselado)");
         AddResident(people, "La Recolectora",     "El Granero", "Granero del templo");
+        CivicBuilder.Homes(people, new CivicBuilder.Lots(people), "Mesopotamia");   // regla 6: los tres vecinos llegan tras Civilize: también con hogar
 
         // Yoga-portal de salida.
         var portal = GameObject.CreatePrimitive(PrimitiveType.Cube);
