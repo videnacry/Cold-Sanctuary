@@ -72,15 +72,20 @@ public static partial class InsectMorphology
     /// La ficha de un INSECTO-HUMANO (CubeInsect.DressFolk: erguido a la estatura de una persona). En la mariquita, los élitros
     /// de la ficha (0,70 L de largo, 0,90 L de ancho) hacían, a la escala de una persona de 1,7 m, una losa roja de 2 × 2,5 m
     /// tumbada detrás del torso («una gran caja roja tumbada», Berón 2026-11-02): el insecto-humano lleva los élitros más
-    /// recogidos (0,6×), como el pelotero los suyos (0,8×). El resto de especies, tal cual.
+    /// recogidos (0,5×, con el pronoto más alto), como el pelotero los suyos (0,8×). El resto de especies, tal cual.
     /// </summary>
     public static Spec ForFolk(Spec s)
     {
         if (s == null || (s.name != "Ladybug" && s.name != "DungBeetle")) return s;
         var c = s.MemberwiseCloneSpec();
         c.body = (Seg[])s.body.Clone();
-        float k = s.name == "Ladybug" ? 0.6f : 0.8f;
-        for (int i = 0; i < c.body.Length; i++) if (c.body[i].name == "Elitros") { c.body[i].len *= k; c.body[i].wid *= k; c.body[i].hei *= k; }
+        float k = s.name == "Ladybug" ? 0.5f : 0.8f;
+        for (int i = 0; i < c.body.Length; i++)
+        {
+            if (c.body[i].name == "Elitros") { c.body[i].len *= k; c.body[i].wid *= k; c.body[i].hei *= k; }
+            // El pronoto (el pecho al erguirse) más alto: con él la estatura sale de un cuerpo más corto (L menor).
+            if (c.body[i].name == "Pronoto" && s.name == "Ladybug") { c.body[i].len *= 2f; c.body[i].wid *= 0.8f; }
+        }
         return c;
     }
     static readonly Dictionary<string, Spec> _all = new Dictionary<string, Spec>

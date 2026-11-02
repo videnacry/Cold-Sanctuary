@@ -194,7 +194,7 @@ Cada mueble apunta en su `MicroPiece` su estilo (`style`), para quién está hec
 (`rest`: espalda, vientre o percha), que es lo que usa `HomeMove.Lie`: de vientre baja el torso y recoge las patas sobre el
 colchón; en la percha se queda agarrado, de pie; de espaldas, como una persona.
 
-La **mariquita** insecto-humano lleva los élitros recogidos (`InsectMorphology.ForFolk`: 0,6×; el pelotero, 0,8×): con los de la
+La **mariquita** insecto-humano lleva los élitros recogidos (`InsectMorphology.ForFolk`: 0,5× y el pronoto el doble de alto; el pelotero, 0,8×): con los de la
 ficha, a la escala de una persona de 1,7 m, era una losa roja de 2 × 2,5 m tumbada detrás del torso.
 
 ## El catálogo de estilos de época y lugar
