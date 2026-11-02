@@ -200,10 +200,18 @@ internal static partial class CivicBuilder
     static void Relayout(AreaFunctionSite site)
     {
         Transform b = site.transform, floor = b.Find("Suelo");
-        if (floor == null) return;
         var pieces = new List<Transform>();
         foreach (Transform c in b) if (c.GetComponent<MicroPiece>() != null) pieces.Add(c);
         if (pieces.Count == 0) return;
+        if (floor == null)
+        {   // Los porches de las historias (Varsovia, Le Chambon: CivicBuilder.Porch, con su «Cuerpo»): su colocación compacta.
+            Transform body = b.Find("Cuerpo");
+            if (body == null) return;
+            Vector2 foot = new Vector2(body.localScale.x, body.localScale.z);
+            Vector2 need = CompactLayout(b, pieces, foot);
+            if (need.x > foot.x + 0.01f || need.y > foot.y + 0.01f) Grow(b, Vector2.Max(foot, need));
+            return;
+        }
         Vector2 used = Layout(b, pieces, new Vector2(floor.localScale.x, floor.localScale.z), 0f);
         floor.localScale = new Vector3(used.x, floor.localScale.y, used.y);
         foreach (Transform c in b)
