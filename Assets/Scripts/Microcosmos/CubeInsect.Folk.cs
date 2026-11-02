@@ -15,11 +15,17 @@ public partial class CubeInsect
     /// <summary>Insecto-humano de era civilizada (siempre erguido).</summary>
     public bool folk;
 
+    // Mientras DressFolk viste: Dress usa la ficha de insecto-humano (InsectMorphology.ForFolk).
+    static bool _dressingFolk;
+
     /// <summary>Viste a <paramref name="host"/> como <paramref name="species"/> erguida de <paramref name="height"/> m, con la
     /// cara y el pelo de <paramref name="name"/> (<see cref="CubeHair.For"/>).</summary>
     public static CubeInsect DressFolk(GameObject host, string species, float height, string name, bool female = true)
     {
-        CubeInsect ci = Dress(host, species, InsectCast.ColorOf(species), Mathf.Max(0.5f, height), Metamorphosis.Phase.Adult, female);
+        CubeInsect ci;
+        _dressingFolk = true;
+        try { ci = Dress(host, species, InsectCast.ColorOf(species), Mathf.Max(0.5f, height), Metamorphosis.Phase.Adult, female); }
+        finally { _dressingFolk = false; }
         ci.PoseNow(true);
         ci.folk = true;
         FitHeight(host, height);

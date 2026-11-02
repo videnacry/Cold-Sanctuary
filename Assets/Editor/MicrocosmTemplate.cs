@@ -19,6 +19,8 @@ internal sealed class MicrocosmSpec
     public readonly float hour;
     public readonly int year;
     public readonly string place;
+    /// <summary>La región o cultura del lugar (MicroStyles.Region): con el año, la plantilla escoge sola el estilo de los muebles.</summary>
+    public readonly string region;
     public Color tint = new Color(0.7f, 0.7f, 0.7f);
     public SampleSceneBuilder.MissionKind kind = SampleSceneBuilder.MissionKind.Channel;
     public System.Func<Transform, int> story;
@@ -30,7 +32,7 @@ internal sealed class MicrocosmSpec
     /// <param name="date">La fecha que se cuenta: «25 de diciembre de 1914», «solsticio de verano, ~240 a. C.».</param>
     /// <param name="hour">La hora (0–24): 5,5 = el alba; 12 = mediodía.</param>
     /// <param name="platform">El área del santuario que se agranda (p. ej. «Infirmary_Area»).</param>
-    public MicrocosmSpec(string scene, string display, string date, float hour, string platform, int? year = null, string place = null)
+    public MicrocosmSpec(string scene, string display, string date, float hour, string platform, int? year = null, string place = null, string region = null)
     {
         if (string.IsNullOrWhiteSpace(scene) || string.IsNullOrWhiteSpace(display)) throw new System.ArgumentException("El microcosmos necesita escena y nombre.");
         if (string.IsNullOrWhiteSpace(date)) throw new System.ArgumentException($"«{display}»: falta su FECHA.");
@@ -40,6 +42,7 @@ internal sealed class MicrocosmSpec
         var era = Eras.OfMicrocosmos(display);
         this.year = year ?? (era.HasValue ? era.Value.year : Eras.Present);
         this.place = place ?? (era.HasValue ? era.Value.place : display);
+        this.region = region ?? MicroStyles.RegionOf(display).ToString();
     }
 }
 
@@ -62,7 +65,7 @@ internal static class MicrocosmTemplate
     public static void Stamp(GameObject root, MicrocosmSpec s)
     {
         MicroEra me = root.GetComponent<MicroEra>() ?? root.AddComponent<MicroEra>();
-        me.year = s.year; me.place = s.place; me.date = s.date; me.hour = s.hour; SanctuaryArea area = GameObject.Find(s.platform)?.GetComponent<SanctuaryArea>(); me.platform = area != null ? area.displayName : s.platform;   // su nombre («Sala de Yoga»), no el del objeto
+        me.year = s.year; me.place = s.place; me.region = s.region; me.date = s.date; me.hour = s.hour; SanctuaryArea area = GameObject.Find(s.platform)?.GetComponent<SanctuaryArea>(); me.platform = area != null ? area.displayName : s.platform;   // su nombre («Sala de Yoga»), no el del objeto
     }
 
     // ── EL PEDIDO DESDE EL EDITOR: pide los tres datos y crea el microcosmos ─────────────────────────────────────────
@@ -74,7 +77,7 @@ public class MicrocosmTemplateWindow : EditorWindow
 {
     string _name = "Mi microcosmos", _date = "", _place = "";
     float _hour = 10f;
-    int _platform;
+    int _platform, _region;
     string[] _areas;
 
     void OnEnable()
@@ -93,11 +96,14 @@ public class MicrocosmTemplateWindow : EditorWindow
         _hour = EditorGUILayout.Slider("Hora", _hour, 0f, 23.99f);
         _platform = EditorGUILayout.Popup("Plataforma del santuario", _platform, _areas);
         _place = EditorGUILayout.TextField("Lugar (opcional)", _place);
+        // La región del lugar: elige el estilo de los muebles (MicroStyles); «Automática» la deduce del nombre.
+        var regions = new List<string> { "Automática" }; regions.AddRange(System.Enum.GetNames(typeof(MicroStyles.Region)));
+        _region = EditorGUILayout.Popup("Región (estilo de muebles)", _region, regions.ToArray());
         GUI.enabled = !string.IsNullOrWhiteSpace(_date) && !string.IsNullOrWhiteSpace(_name);
         if (GUILayout.Button("Crear el microcosmos"))
         {
             string scene = "Microcosmos_" + _name.Replace(' ', '_');
-            var spec = new MicrocosmSpec(scene, _name, _date, _hour, _areas[_platform], place: string.IsNullOrWhiteSpace(_place) ? null : _place);
+            var spec = new MicrocosmSpec(scene, _name, _date, _hour, _areas[_platform], place: string.IsNullOrWhiteSpace(_place) ? null : _place, region: _region > 0 ? ((MicroStyles.Region)(_region - 1)).ToString() : null);
             MicrocosmTemplate.Build(spec, new Vector3(6000f, 0f, 14000f + Mathf.Abs(scene.GetHashCode() % 20) * 600f));
             Debug.Log($"[Plantilla] «{_name}» creado: Assets/Scenes/{scene}.unity ({_date}, {_hour:0.0} h, sobre {_areas[_platform]}).");
             Close();

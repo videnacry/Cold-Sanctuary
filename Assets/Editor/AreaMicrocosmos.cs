@@ -32,7 +32,7 @@ public static class AreaMicrocosmos
         string sceneLabel = spec != null ? spec.scene : root.name;
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
-        if (era.HasValue) { MicroEra me = root.AddComponent<MicroEra>(); me.year = era.Value.year; me.place = era.Value.place; }
+        if (era.HasValue) { MicroEra me = root.AddComponent<MicroEra>(); me.year = era.Value.year; me.place = era.Value.place; me.region = MicroStyles.RegionOf(display).ToString(); }
         if (spec != null) MicrocosmTemplate.Stamp(root, spec);   // la plantilla: fecha, hora y plataforma
         int dressed = 0;
 

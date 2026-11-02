@@ -58,6 +58,7 @@ public partial class CubeInsect : MonoBehaviour
         float adult = length;
         length *= InsectMorphology.PhaseScale(species, phase);
         InsectMorphology.Spec sp = InsectMorphology.ForSex(InsectMorphology.For(species), female);   // macho o hembra (dimorfismo)
+        if (_dressingFolk) sp = InsectMorphology.ForFolk(sp);   // el insecto-humano: élitros recogidos (la mariquita no es una losa roja)
         // Las fases con forma PROPIA (la zoea y la megalopa del cangrejo, la ninfa excavadora de la cigarra, la manca de la
         // cochinilla, la larva de 6 patas del ácaro, el caracol sin labio, la lombriz sin clitelo…): CubeInsect.Fauna.cs.
         CubeInsect ci = FaunaStage(host, sp, body, length, phase, female);

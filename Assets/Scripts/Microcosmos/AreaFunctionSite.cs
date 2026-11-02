@@ -14,6 +14,8 @@ public class AreaFunctionSite : MonoBehaviour
     public string building = "Casa";
     [Tooltip("Su nombre de verdad («Restaurante de Ruby Chow, Seattle»).")]
     public string title = "";
+    [Tooltip("La región o cultura de este edificio (MicroStyles.Region): con el año, el estilo de sus muebles.")]
+    public string region = "";
 
     public static readonly List<AreaFunctionSite> All = new List<AreaFunctionSite>();
     void OnEnable() { if (!All.Contains(this)) All.Add(this); }

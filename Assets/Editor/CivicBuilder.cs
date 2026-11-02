@@ -46,6 +46,10 @@ internal static partial class CivicBuilder
         MicroEra me = t.root.GetComponentInChildren<MicroEra>(true);
         var era = Eras.OfMicrocosmos(display);
         Year = me != null ? me.year : era.HasValue ? era.Value.year : Eras.Present;
+        // La REGIÓN (MicroStyles): con el año, el estilo de época y lugar de cada mueble; el cuerpo por defecto, el de un
+        // insecto-humano (en un microcosmos solo hay insectos: InsectOnly). Los hogares ajustan luego cada mueble a su dueño.
+        Region = me != null && !string.IsNullOrEmpty(me.region) ? me.region : MicroStyles.RegionOf(display).ToString();
+        MicroFurniture.DefaultBody = MicroBody.OfSpecies("Ant", 1.75f);
         int n = CivilizeEra(t, display);
         if (t.GetComponentInChildren<AreaFunctionSite>(true) == null) return n;   // una historia sin pueblo
         int moved = Settle(t);
@@ -339,6 +343,10 @@ internal static partial class CivicBuilder
     /// <summary>El año de la escena que se está civilizando (elige la versión de cada mueble: hogar o cocina de gas, letrina o retrete).</summary>
     internal static int Year = 1950;
 
+    /// <summary>La región o cultura (MicroStyles.Region) de lo que se está construyendo: la del microcosmos (MicroEra.region o
+    /// MicroStyles.RegionOf); un barrio de otro lugar (Seattle en el pueblo de Bruce Lee) la cambia mientras se levanta.</summary>
+    internal static string Region = "";
+
     /// <summary>
     /// Un EDIFICIO ABIERTO (reglas de edificación 1–4): el suelo con el material real de la era (y un borde más oscuro), su
     /// rótulo y sus MUEBLES DETALLADOS (<see cref="MicroFurniture"/>), sin muros ni techo. Los puestos (<paramref name="stations"/>)
@@ -356,7 +364,7 @@ internal static partial class CivicBuilder
         Floor(b, used, st);
         if (st.columns) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(b, "Columna", new Vector3(-used.x * 0.5f + 0.4f + k * (used.x - 0.8f) / 5f, st.wallH * 0.5f, -used.y * 0.5f - 0.6f), new Vector3(0.4f, st.wallH, 0.4f), AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), true);
         b.localRotation = Quaternion.Euler(0f, yaw, 0f);
-        var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title;
+        var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title; site.region = Region;
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = title; wl.height = 3.2f;
         return site;
     }
@@ -368,7 +376,7 @@ internal static partial class CivicBuilder
         var have = new HashSet<string>();
         foreach (var s in stations)
         {
-            Transform p = MicroFurniture.Build(b, s.key, Vector3.zero, 0f, s.label, Year, s.size);
+            Transform p = MicroFurniture.Build(b, s.key, Vector3.zero, 0f, s.label, Year, s.size, Region);
             if (!NotStation(s.key)) p.gameObject.AddComponent<AreaFunctionStation>().station = s.key;   // retrete, lavabo, banco y silla: muebles, no puestos
             var lab = p.gameObject.AddComponent<WorldLabel>(); lab.text = s.label; lab.height = 1.6f;
             l.Add(p); have.Add(s.key);
@@ -377,25 +385,14 @@ internal static partial class CivicBuilder
             foreach (string need in new[] { "cama", "mesa", "fogon", "inodoro", "lavabo" })
             {
                 if (have.Contains(need)) continue;
-                l.Add(MicroFurniture.Build(b, need, Vector3.zero, 0f, NeedLabel(need, Year), Year));
+                l.Add(MicroFurniture.Build(b, need, Vector3.zero, 0f, NeedLabel(need, Year), Year, null, Region));
             }
         return l;
     }
 
-    /// <summary>El nombre de la época de cada mueble de necesidad básica.</summary>
-    internal static string NeedLabel(string key, int year)
-    {
-        switch (key)
-        {
-            case "inodoro": return year < 1880 ? "Letrina" : "Retrete";
-            case "lavabo": return year < 1900 ? "Palangana y jarra" : "Lavabo";
-            case "cama": return year < -500 ? "Estera de dormir" : "Cama";
-            case "mesa": return year < 1700 ? "Mesa con bancos" : "Mesa con sillas";
-            case "fogon": return year < 1850 ? "Hogar (cocina)" : "Cocina";
-            default: return key;
-        }
-    }
-
+    /// <summary>El nombre de cada mueble de necesidad básica en el ESTILO de su época y lugar (<see cref="Region"/>, MicroStyles) y
+    /// para el cuerpo por defecto: «Charpai (de vientre)», «Kliné», «Letrina a la turca (de abdomen)», «Aguamanil»…</summary>
+    internal static string NeedLabel(string key, int year) => MicroFurniture.NameOf(key, MicroStyles.For(year, Region));
     /// <summary>
     /// Coloca <paramref name="pieces"/> (hijos de <paramref name="b"/>) en filas: <see cref="MicroBuildRules.Passage"/> entre
     /// ellos y al borde. Las filas son de ancho <paramref name="minSize"/>.x (o el del mueble más ancho) y se centran; el conjunto
@@ -504,16 +501,16 @@ internal static partial class CivicBuilder
         var pieces = new List<Transform>();
         foreach (var m in missing)
         {
-            Transform p = MicroFurniture.Build(b, m.key, Vector3.zero, 0f, m.label, Year);
+            Transform p = MicroFurniture.Build(b, m.key, Vector3.zero, 0f, m.label, Year, null, Region);
             if (m.key == "cama" || m.key == "fogon") p.gameObject.AddComponent<AreaFunctionStation>().station = m.key;   // las funciones de la Casa
             pieces.Add(p);
         }
         // Un sitio necesita un puesto con funciones: si solo faltaban retrete y lavabo, una cama de descanso.
         bool anyStation = false; foreach (Transform p in pieces) if (p.GetComponent<AreaFunctionStation>() != null) anyStation = true;
-        if (!anyStation) { Transform p = MicroFurniture.Build(b, "cama", Vector3.zero, 0f, NeedLabel("cama", Year), Year); p.gameObject.AddComponent<AreaFunctionStation>().station = "cama"; pieces.Insert(0, p); }
+        if (!anyStation) { Transform p = MicroFurniture.Build(b, "cama", Vector3.zero, 0f, NeedLabel("cama", Year), Year, null, Region); p.gameObject.AddComponent<AreaFunctionStation>().station = "cama"; pieces.Insert(0, p); }
         Vector2 used = Layout(b, pieces, new Vector2(14f, 8f), 0f);
         Floor(b, used, st);
-        var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = b.name;
+        var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = b.name; site.region = Region;
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = b.name; wl.height = 3f;
         return site;
     }

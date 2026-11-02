@@ -14,4 +14,10 @@ public class MicroPiece : MonoBehaviour
     public string need = "";
     [Tooltip("Se pisa (alfombra, tatami, bancal, esterilla): no cuenta para el paso entre muebles.")]
     public bool walkable;
+    [Tooltip("El estilo de época y lugar con que se hizo (MicroStyles.Entry.id).")]
+    public string style = "";
+    [Tooltip("Para quién está hecho (MicroBody.Plan y especie); vacío si es el genérico de una persona.")]
+    public string fitFor = "";
+    [Tooltip("Cama: cómo se tumba quien duerme en ella (MicroBody: espalda, vientre o percha).")]
+    public string rest = "";
 }

@@ -64,7 +64,11 @@ internal static partial class CivicBuilder
             // 2 · Una casa nueva en un solar libre, cerca de su trabajo.
             if (site == null)
             {
+                // En la región de su trabajo (el barrio de Seattle en el pueblo de Bruce Lee) o, si no, la del pueblo.
+                string region0 = Region; AreaFunctionSite work0 = Jornada(fam[0])?.work;
+                if (work0 != null && !string.IsNullOrEmpty(work0.region)) Region = work0.region;
                 site = NewHouse(t, lots, fam, st, title, couple ? fam.Count + ChildBeds : fam.Count);
+                Region = region0;
                 if (site == null) { Debug.LogWarning($"[Hogares] {display}: sin solar libre para la casa de «{fam[0].name}»."); continue; }
                 dwellings.Add(site); built++;
             }
@@ -127,14 +131,45 @@ internal static partial class CivicBuilder
     }
 
     /// <summary>El HOGAR de una familia en el edificio <paramref name="site"/>: sus camas, el retrete, el lavabo, la mesa con sus
-    /// sillas y la despensa; la jornada de cada uno va a esa casa.</summary>
+    /// asientos y la despensa; la jornada de cada uno va a esa casa. Los muebles se REHACEN A LA MEDIDA de cada uno
+    /// (docs/microcosmos-reglas-edificacion.md, regla 7; <see cref="MicroBody"/>): su cama para su cuerpo (de vientre, nido,
+    /// percha, hamaca de seda…), un asiento a la mesa para cada uno, y el retrete y el lavamanos para todos (los de la primera
+    /// familia de la casa), en el estilo de su época y lugar; luego se recolocan con el paso de 2 m.</summary>
     internal static Household MakeHousehold(AreaFunctionSite site, List<GameObject> fam, HashSet<Transform> used = null)
     {
+        bool firstHome = site.GetComponentsInChildren<Household>(true).Length == 0;
         var go = new GameObject($"Hogar ({(fam.Count > 1 ? $"{First(fam[0].name)} y {First(fam[1].name)}" : First(fam[0].name))})");
         go.transform.SetParent(site.transform, false);
         var h = go.AddComponent<Household>();
         h.family = fam.Count > 1 ? $"Familia de {fam[0].name} y {fam[1].name}" : fam[0].name;
         var free = FreeBeds(site, used ?? new HashSet<Transform>());
+        // Una cama por persona y las libres que queden de las que se pidieron para los hijos (en una casa nueva, todas).
+        int want = Mathf.Min(free.Count, Mathf.Max(fam.Count, fam.Count > 1 ? fam.Count + ChildBeds : fam.Count));
+        for (int i = 0; i < want; i++) { h.beds.Add(free[i]); used?.Add(free[i]); }
+
+        // A LA MEDIDA: el cuerpo de cada uno (los hijos, en las camas de más, el de sus padres a la vez: MicroBody.Union).
+        var bodies = fam.ConvertAll(MicroBody.Of);
+        MicroBody.Fit all = MicroBody.Union(bodies);
+        string region = string.IsNullOrEmpty(site.region) ? Region : site.region;
+        MicroStyles.Entry style = MicroStyles.For(Year, region);
+        for (int i = 0; i < h.beds.Count; i++)
+        {
+            MicroBody.Fit b = i < bodies.Count ? bodies[i] : all;
+            MicroFurniture.Refit(h.beds[i], "cama", Year, region, b);
+            string label = $"{MicroFurniture.NameOf("cama", style, b)} de {(i < fam.Count ? First(fam[i].name) : "los hijos")}";
+            h.beds[i].name = label;
+            if (h.beds[i].TryGetComponent(out WorldLabel wl)) wl.text = label;
+        }
+        if (firstHome)
+            foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true))
+            {
+                if (p.transform.parent != site.transform) continue;   // los muebles de la casa (no las sillas de su mesa)
+                if (p.kind == "inodoro") MicroFurniture.Refit(p.transform, "inodoro", Year, region, all);
+                else if (p.kind == "lavabo") MicroFurniture.Refit(p.transform, "lavabo", Year, region, all);
+                else if (p.kind == "mesa") MicroFurniture.Refit(p.transform, "mesa", Year, region, bodies[0], bodies);
+            }
+        Relayout(site);
+
         foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true))
         {
             if (p.kind == "inodoro" && h.toilet == null) h.toilet = p.transform;
@@ -145,9 +180,6 @@ internal static partial class CivicBuilder
                 foreach (MicroPiece c in p.GetComponentsInChildren<MicroPiece>(true)) if (c != p && (c.kind == "silla" || c.kind == "banco")) h.seats.Add(c.transform);
             }
         }
-        // Una cama por persona y las libres que queden de las que se pidieron para los hijos (en una casa nueva, todas).
-        int want = Mathf.Min(free.Count, Mathf.Max(fam.Count, fam.Count > 1 ? fam.Count + ChildBeds : fam.Count));
-        for (int i = 0; i < want; i++) { h.beds.Add(free[i]); used?.Add(free[i]); }
         // La despensa, junto a la mesa (sin malla: no es un mueble más para el paso de 2 m).
         var pantry = new GameObject("Despensa").transform; pantry.SetParent(go.transform, false);
         pantry.position = h.table != null ? h.table.position : site.transform.position;
@@ -162,6 +194,27 @@ internal static partial class CivicBuilder
         return h;
     }
 
+    /// <summary>Tras rehacer muebles a la medida: los muebles del edificio (sus MicroPiece de primer nivel, en su orden) se
+    /// vuelven a colocar en filas con el paso de 2 m (<see cref="Layout"/>) y el suelo crece si hace falta (nunca encoge). Los
+    /// edificios sin «Suelo» (la casa redonda de la aldea, colocada a mano) se quedan como están.</summary>
+    static void Relayout(AreaFunctionSite site)
+    {
+        Transform b = site.transform, floor = b.Find("Suelo");
+        if (floor == null) return;
+        var pieces = new List<Transform>();
+        foreach (Transform c in b) if (c.GetComponent<MicroPiece>() != null) pieces.Add(c);
+        if (pieces.Count == 0) return;
+        Vector2 used = Layout(b, pieces, new Vector2(floor.localScale.x, floor.localScale.z), 0f);
+        floor.localScale = new Vector3(used.x, floor.localScale.y, used.y);
+        foreach (Transform c in b)
+        {
+            if (c.name != "Borde_del_suelo") continue;
+            Vector3 p = c.localPosition, s = c.localScale;
+            if (s.x >= s.z) { c.localScale = new Vector3(used.x, s.y, s.z); c.localPosition = new Vector3(p.x, p.y, Mathf.Sign(p.z) * (used.y * 0.5f - 0.15f)); }
+            else { c.localScale = new Vector3(s.x, s.y, used.y); c.localPosition = new Vector3(Mathf.Sign(p.x) * (used.x * 0.5f - 0.15f), p.y, p.z); }
+        }
+    }
+
     /// <summary>
     /// LA CASA DE LAS ESCENAS DE CICLO DE VIDA DE UNA PERSONA (SampleSceneBuilder.CicloHumano): la misma casa que reciben las
     /// familias de los pueblos (<see cref="NewHouse"/> + <see cref="MakeHousehold"/>), en el origen de <paramref name="t"/>, con camas
@@ -171,6 +224,8 @@ internal static partial class CivicBuilder
     internal static AreaFunctionSite LifeCycleHouse(Transform t, List<GameObject> fam, bool insects)
     {
         Year = insects ? -500 : 1950;
+        Region = (insects ? MicroStyles.Region.SurAsia : MicroStyles.Region.Norteamerica).ToString();   // charpai y chulha / la casa de 1950
+        MicroFurniture.DefaultBody = insects ? MicroBody.OfSpecies("Ant", 1.75f) : MicroBody.Human(1.75f);
         Style st = insects ? BurntBrick : Clapboard;
         string title = insects ? "Casa de ladrillo de Kapilavastu" : "Casita";
         AreaFunctionSite h = NewHouse(t, null, fam, st, title, fam.Count + ChildBeds);

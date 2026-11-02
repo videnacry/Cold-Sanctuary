@@ -31,7 +31,8 @@ internal static partial class CivicBuilder
         Vector2 hk = new Vector2(Mathf.Lerp(0f, fl.xMin, 0.45f), 0f), us = new Vector2(Mathf.Lerp(0f, fl.xMax, 0.45f), 0f);
         var placedHK = new List<Transform>(); var placedUS = new List<Transform>();
 
-        // ── KOWLOON, años 50 ──
+        // ── KOWLOON, años 50 ── (sus muebles: los de los tong lau de Hong Kong, MicroStyles)
+        Region = MicroStyles.Region.HongKong.ToString();
         var school = Place(t, lots, Building(t, "Escuela de Yip Man (Lee Tat Street, Yau Ma Tei)", "Dojo", "Escuela de Wing Chun de Yip Man (Kowloon, años 50)", Vector3.zero, 0f, new Vector2(16f, 12f), Terrazo,
             S("tatami", 0f, 0f, 6f, 5f, "Suelo de entrenar (chi sao)"), S("muneco", 0f, 0f, 1f, 1f, "Muñeco de madera"), S("muneco", 0f, 0f, 1f, 1f, "Muñeco de madera"),
             S("banco", 0f, 0f, 1f, 1f, "Banco de los alumnos"), S("lavabo", 0f, 0f, 1f, 1f, "Lavabo"), S("inodoro", 0f, 0f, 1f, 1f, "Retrete del piso")), hk + new Vector2(0f, 30f), placedHK);
@@ -51,7 +52,8 @@ internal static partial class CivicBuilder
         var tong1 = Place(t, lots, Building(t, "Tong lau de Mong Kok", "Casa", "Casa (tong lau)", Vector3.zero, 0f, new Vector2(12f, 10f), TongLau,
             S("cama", 0f, 0f, 1f, 2f, "Litera"), S("cama", 0f, 0f, 1f, 2f, "Cama")), hk + new Vector2(-80f, 40f), placedHK);
 
-        // ── SEATTLE (1959–64), OAKLAND (1964) y LOS ÁNGELES (1967) ──
+        // ── SEATTLE (1959–64), OAKLAND (1964) y LOS ÁNGELES (1967) ── (sus muebles: los de Norteamérica)
+        Region = MicroStyles.Region.Norteamerica.ToString();
         var ruby = Place(t, lots, Building(t, "Restaurante de Ruby Chow (Broadway y Jefferson, Seattle)", "Restaurante", "Restaurante de Ruby Chow (Seattle, 1959)", Vector3.zero, 0f, new Vector2(18f, 12f), SeattleBrick,
             S("fogon", 0f, 0f, 3f, 1f, "Cocina (woks)"), S("fogon", 0f, 0f, 3f, 1f, "Cocina (vapor y frituras)"), S("barra", 0f, 0f, 4f, 0.8f, "Barra"),
             S("mesa", 0f, 0f, 1.4f, 1.4f, "Mesa"), S("mesa", 0f, 0f, 1.4f, 1.4f, "Mesa"), S("mesa", 0f, 0f, 1.4f, 1.4f, "Mesa"), S("inodoro", 0f, 0f, 1f, 1f, "Aseo"), S("lavabo", 0f, 0f, 1f, 1f, "Lavabo")), us + new Vector2(0f, 30f), placedUS);
@@ -77,7 +79,11 @@ internal static partial class CivicBuilder
             if (at.HasValue) Banyan(t, at.Value);
         }
         // El resto del piso: más bloques de tong lau y casas de madera, vacíos de gente (la ciudad sigue).
-        int fill = FillTown(t, lots, hk, TongLau, "Tong lau", 8) + FillTown(t, lots, us, Clapboard, "Casa de madera", 6);
+        Region = MicroStyles.Region.HongKong.ToString();
+        int fill = FillTown(t, lots, hk, TongLau, "Tong lau", 8);
+        Region = MicroStyles.Region.Norteamerica.ToString();
+        fill += FillTown(t, lots, us, Clapboard, "Casa de madera", 6);
+        Region = MicroStyles.Region.HongKong.ToString();   // (las casas nuevas de Homes: la región del trabajo de cada familia)
 
         int n = 0;
         n += Worker(t, "Alumno de Wing Chun 1", school, "alumno", cafe, school, flat);

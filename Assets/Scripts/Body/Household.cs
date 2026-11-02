@@ -226,7 +226,7 @@ public class HomeNeedSpell : QueuedSpell
                 {
                     bool rested = self.sleepiness < 0.1f, woken = self.aware;
                     bool tooLong = (PersonLife.NowDays - _sleepStart) * 24f > maxSleepHours;
-                    if (!rested && !woken && !tooLong) { HomeMove.KeepLying(self); return false; }
+                    if (!rested && !woken && !tooLong) { HomeMove.KeepLying(self, _spot); return false; }
                     self.asleep = false;
                     Debug.Log($"[Hogar] «{self.name}» se despierta {(woken ? "(amenaza)" : rested ? "descansado" : "(tope de horas)")}.");
                 }
@@ -373,24 +373,60 @@ public static class HomeMove
         }
         else
         {
-            // El insecto, entero de espaldas: el cuerpo (que va de los pies, en el pivote, hacia arriba) se tumba hacia +z.
+            string rest = RestOf(bed);
             t.rotation = bed.rotation;
-            t.position = new Vector3(bed.position.x, top, bed.position.z) - bed.forward * (h * 0.5f);
-            Transform ins = Insect(a); if (ins != null) ins.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            Transform ins = Insect(a);
+            CubeInsect ci = a.GetComponent<CubeInsect>();
+            if (rest == MicroBody.Vientre)
+            {   // DE VIENTRE (el insecto-humano: centauro, cúpula, araña, ciempiés; regla 7): el torso baja, las patas se recogen y
+                // el cuerpo entero descansa a lo largo de su lecho, la cabeza hacia la cabecera (+z) y el pecho en su apoyo.
+                if (ins != null) ins.localRotation = Quaternion.identity;
+                if (ci != null) ci.PoseNow(false);
+                t.position = new Vector3(bed.position.x, LieHeight(bed, top), bed.position.z);
+            }
+            else if (rest == MicroBody.Percha)
+            {   // AGARRADO A LA PERCHA (abeja, luciérnaga, cigarra) o COLGADO DE SU BARRA (mantis): de pie bajo la barra, quieto.
+                if (ins != null) ins.localRotation = Quaternion.identity;
+                t.position = new Vector3(bed.position.x, bed.position.y + 0.08f, bed.position.z);
+            }
+            else
+            {   // De espaldas (una cama humana): el cuerpo (que va de los pies, en el pivote, hacia arriba) se tumba hacia +z.
+                t.position = new Vector3(bed.position.x, top, bed.position.z) - bed.forward * (h * 0.5f);
+                if (ins != null) ins.localRotation = Quaternion.Euler(90f, 0f, 0f);
+            }
         }
     }
 
-    public static void KeepLying(Anima a)
+    public static void KeepLying(Anima a, Transform bed = null)
     {
-        if (a.GetComponent<CreatureRig>() != null) DailyPoses.Lie().ApplyFinal(a);
-        else { Transform ins = Insect(a); if (ins != null) ins.localRotation = Quaternion.Euler(90f, 0f, 0f); }
+        if (a.GetComponent<CreatureRig>() != null) { DailyPoses.Lie().ApplyFinal(a); return; }
+        string rest = RestOf(bed);
+        Transform ins = Insect(a); if (ins == null) return;
+        if (rest == MicroBody.Vientre || rest == MicroBody.Percha) ins.localRotation = Quaternion.identity;
+        else ins.localRotation = Quaternion.Euler(90f, 0f, 0f);
     }
+
+    // La altura donde se apoya el cuerpo tumbado de vientre: la del colchón (bajo el apoyo del pecho) o la red de la hamaca;
+    // no la de lo más alto de la cama (los postes del dosel, la cabecera).
+    static float LieHeight(Transform bed, float top)
+    {
+        foreach (string n in new[] { "Apoyo_del_pecho", "Red_de_seda" })
+        {
+            Transform p = bed.Find(n); Renderer r = p != null ? p.GetComponent<Renderer>() : null;
+            if (r != null) return n == "Red_de_seda" ? r.bounds.max.y : r.bounds.min.y;
+        }
+        return top - 0.1f;
+    }
+
+    /// <summary>Cómo se tumba quien duerme en <paramref name="bed"/> (MicroPiece.rest): de espaldas si no lo dice.</summary>
+    public static string RestOf(Transform bed) => bed != null && bed.TryGetComponent(out MicroPiece mp) && !string.IsNullOrEmpty(mp.rest) ? mp.rest : MicroBody.Espalda;
 
     /// <summary>De pie junto al mueble, y a andar otra vez.</summary>
     public static void StandUp(Anima a, Vector3 at)
     {
         Transform t = a.transform;
         Transform ins = Insect(a); if (ins != null) ins.localRotation = Quaternion.identity;
+        CubeInsect ci = a.GetComponent<CubeInsect>(); if (ci != null && ci.folk) ci.PoseNow(true);   // erguido otra vez (tras dormir de vientre)
         if (a.GetComponent<CreatureRig>() != null) DailyPoses.Stand().ApplyFinal(a);
         t.position = at;
         Vector3 e = t.eulerAngles; t.rotation = Quaternion.Euler(0f, e.y, 0f);

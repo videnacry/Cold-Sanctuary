@@ -14,6 +14,8 @@ public class MicroEra : MonoBehaviour
     public float hour = 10f;
     [Tooltip("La plataforma del santuario que este microcosmos agranda (su área).")]
     public string platform = "";
+    [Tooltip("La región o cultura del lugar (MicroStyles.Region): con el año, elige el estilo de los muebles.")]
+    public string region = "";
 
     // Al entrar: dónde y cuándo estás (fecha, hora y la plataforma del santuario de la que es este microcosmos).
     void Start()
