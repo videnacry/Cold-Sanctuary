@@ -412,9 +412,16 @@ public class WorkdayDirector : MonoBehaviour
         SetStatus(g, lin != null && lin.enabled && lin.Doing != null ? lin.Doing : doing);
         if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
         if (gardenDuty && gardener != null) { if (idle != null) idle.enabled = false; SetStatus(g, gardener.Doing ?? doing); return; }   // la ronda la lleva FruitGardener (y sus necesidades van antes, dentro de ella)
-        if (YogaClassRole(g, missionId)) { if (idle != null) idle.enabled = false; return; }
+        // LAS NECESIDADES VAN ANTES QUE LA CLASE DE YOGA (2026-11-02): con «ir al baño» o «pedir en la barra» en marcha en su carril
+        // propio, la clase (su papel de guía, demostrador o corrector, o la esterilla del entrenamiento de las 14 h) lo seguía
+        // llevando a la sala A LA VEZ, cada fotograma: un paso hacia los aseos y otro igual hacia la sala, y no se movía. Lizmibet
+        // y Goluis en el piso de Construcción (camino de la clase de las 8, con los aseos al otro lado), y Goluis ×46 «pedir en
+        // la barra» junto a su esterilla de la Sala de Yoga (JornadaTest). Deja la clase; al acabar, vuelve a ella.
+        bool needing = NeedsDriver.Attending(g.GetComponent<ActionQueue>());
+        if (needing) LeaveYogaClass(g);
+        if (!needing && YogaClassRole(g, missionId)) { if (idle != null) idle.enabled = false; return; }
         if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }
-        if (yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
+        if (!needing && yogaTime && YogaTraining(g)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         if (OwnNeeds(g, area, doing)) return;   // [Jornada] comer, el baño y dormir van antes; a mediodía, a comer
         Vector3 to = WorkPoint(area, g.name);

@@ -18,6 +18,11 @@ public class NeedsDriver : MonoBehaviour
     BodyMetabolism _body;
     ActionQueue _q;
 
+    /// <summary>¿Está atendiendo ahora una necesidad del cuerpo (lo primero de su carril propio es comer, dormir o el baño)? Mientras,
+    /// nadie más debe llevarlo a otro sitio (la clase de yoga, su puesto…).</summary>
+    public static bool Attending(ActionQueue q)
+        => q != null && q.Own.Count > 0 && q.Own[0] is QueuedSpell s && (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell);
+
     void Awake()
     {
         _a = GetComponent<Anima>();
