@@ -119,7 +119,7 @@ internal static partial class CivicBuilder
         string who = fam.Count > 1 ? $"familia de {First(fam[0].name)} y {First(fam[1].name)}" : First(fam[0].name);
         var stations = new (string, Vector2, Vector2, string)[Mathf.Max(1, beds)];
         for (int i = 0; i < stations.Length; i++) stations[i] = S("cama", 0f, 0f, 1f, 2f, NeedLabel("cama", Year));
-        AreaFunctionSite h = Building(t, $"{title} ({who})", "Casa", $"{title} de {who}", Vector3.zero, 0f, new Vector2(14f, 10f), st, stations);   // (14 m: dos muebles por fila, una casa compacta)
+        AreaFunctionSite h = Building(t, $"{title} ({who})", "Casa", $"{title} de {who}", Vector3.zero, 0f, new Vector2(10f, 8f), st, stations);   // (10 × 8 m: cabe en los solares de los pueblos llenos)
         if (lots == null) return h;
         Transform f = h.transform.Find("Suelo");
         AreaFunctionSite work = Jornada(fam[0])?.work;
