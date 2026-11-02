@@ -411,7 +411,7 @@ public static class DesireCatalog
         float best = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
             if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
             best = Mathf.Max(best, Mathf.Clamp01(b.value / 100f));
@@ -425,7 +425,7 @@ public static class DesireCatalog
         need = 0f; Animal best = null;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
             if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child) continue;
             float urg = Mathf.Clamp01(b.value / 100f) * Mathf.Clamp01(cub.hungry);
@@ -459,7 +459,7 @@ public static class DesireCatalog
     {
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal cub = (b.target as Component)?.GetComponentInParent<Animal>();
             if (cub == null || cub == self || cub.death || cub.lifeStage != LifeStage.child || cub.hungry < 0f) continue;
             if (Vector3.Distance(self.transform.position, cub.transform.position) <= within) FeedCub(self, cub);
@@ -530,7 +530,7 @@ public static class DesireCatalog
         Animal best = null; float bd = float.MaxValue;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
             if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.LifeSpecies != self.LifeSpecies) continue;
             float d = Vector3.Distance(o.transform.position, self.transform.position);
@@ -567,7 +567,7 @@ public static class DesireCatalog
         Transform parent = null; float best = 30f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Animal o = (b.target as Component)?.GetComponentInParent<Animal>();
             if (o == null || o == self || o.death || o.lifeStage != LifeStage.adult || o.SpeciesName != self.SpeciesName) continue;
             float d = Vector3.Distance(o.transform.position, self.transform.position);
@@ -589,6 +589,10 @@ public static class DesireCatalog
     }
     static readonly System.Collections.Generic.Dictionary<Animal, float> _begAt = new System.Collections.Generic.Dictionary<Animal, float>();
 
+    // ¿El ser del vínculo ya no está? b.target es una interfaz (Animal.ITarget): «== null» no ve el objeto DESTRUIDO de Unity y su
+    // .transform lanzaba MissingReferenceException (812 veces en la batería del 2026-11-02: PenguinBehavior destruido, SocialNeed).
+    static bool Gone(object target) => target == null || (target is UnityEngine.Object o && o == null);
+
     // Necesidad social: recorre los bonds POSITIVOS y devuelve la mayor "urgencia" — cuidar = vínculo×apuro del otro;
     // seguir = vínculo×lejanía. 0..1+. No mueve; solo puntúa (lo usa NeedProbe).
     static float SocialNeed(Animal self, bool care)
@@ -596,7 +600,7 @@ public static class DesireCatalog
         float best = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Transform t = b.target.transform; if (t == null) continue;
             Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
             float tie = Mathf.Clamp01(b.value / 100f);
@@ -614,7 +618,7 @@ public static class DesireCatalog
         Transform best = null; float bestScore = 0f;
         foreach (Bond b in self.bonds)
         {
-            if (b == null || b.value <= 0f || b.target == null) continue;
+            if (b == null || b.value <= 0f || Gone(b.target)) continue;
             Transform t = b.target.transform; if (t == null) continue;
             Anima o = t.GetComponentInParent<Anima>(); if (o == null || o == self) continue;
             float tie = Mathf.Clamp01(b.value / 100f);
