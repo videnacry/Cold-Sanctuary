@@ -118,6 +118,10 @@ public class IceInsectLife : MonoBehaviour
             _working = false;
             if (Time.time < _unstickUntil) { Doing = "se aparta"; FlyTo(_unstickTo, flySpeed); }
             else BeeLife();
+            // DENTRO DE SU PANAL trabaja (2026-11-02): la cavidad mide ~1 × 1 m y las celdillas están a palmos; la reina que
+            // va de celdilla en celdilla o la procesadora que ronda el panal recorren menos de 50 cm en 20 s a propósito, y la
+            // batería las contaba como «atascadas > 20 s» (SnowBee a 0,3–0,5 m del centro del panal, comprobado en vivo).
+            if (!_working && hive != null && hive.Inside(transform.position)) _working = true;
             KeepBodyOutOfBranches();
             Unstick();
             if (_self != null) _self.busy = _working;   // trabajando: ocupada (como el animal que come); la IA genérica no la mueve

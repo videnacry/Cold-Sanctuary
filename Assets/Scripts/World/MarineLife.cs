@@ -92,7 +92,13 @@ public class MarineLife : MonoBehaviour
         {
             if (_onIce)
             {
-                bool wake = (_a.hungry >= 0.2f) || (!night && Time.time > _restUntil);
+                // (2026-11-02) TUMBADA SIN HIELO DEBAJO: un descansadero en el borde de la placa (o fuera de ella) dejaba a la foca «en el
+                // hielo» tumbada en el FONDO del mar (Settle la bajaba a lo primero que hubiera: y = −2), quieta 60–140 s y de vuelta al
+                // mismo sitio en cuanto descansaba (Seal «atascada > 20 s» ×34 en (87, −2, 30) y (60, −2, −6), JornadaTest). Se levanta y
+                // busca otra orilla.
+                bool noIce = !SolidAt(transform.position);
+                if (noIce) _beach = Vector3.zero;
+                bool wake = noIce || (_a.hungry >= 0.2f) || (!night && Time.time > _restUntil);
                 if (!wake) { Settle(); return; }
                 _onIce = false; _restCooldown = Time.time + Random.Range(40f, 90f);
                 if (_haul != null) { _haul.Release(_a); _haul = null; _beach = Vector3.zero; }
@@ -138,7 +144,7 @@ public class MarineLife : MonoBehaviour
         {
             Animal prey = null; float pd = 25f;
             foreach (GameObject g in AnimalPopulations.Of("Seal"))
-                if (g != null && g.TryGetComponent(out Animal s) && !s.death && s.transform.position.y < -0.3f) { float dd = Vector3.Distance(s.transform.position, transform.position); if (dd < pd) { pd = dd; prey = s; } }
+                if (g != null && g.TryGetComponent(out Animal s) && !s.death && s.transform.position.y < -0.3f && !(s.TryGetComponent(out MarineLife sm) && sm.OnIce)) { float dd = Vector3.Distance(s.transform.position, transform.position); if (dd < pd) { pd = dd; prey = s; } }
             if (prey != null)
             {
                 if (Move(prey.transform.position, speed * 1.3f, false) < 1.5f) { prey.Hurt(9999f); _a.hungry = -0.9f; _nextKill = Time.time + 300f; Debug.Log("[Marinos] Una orca caza una foca en la laguna."); }
@@ -181,6 +187,19 @@ public class MarineLife : MonoBehaviour
             if (d < bdAny) { bdAny = d; bestAny = s; }
         }
         return best ?? bestAny;
+    }
+
+    /// <summary>¿Hay hielo o tierra (no el fondo del mar) bajo (x, z)? Lo primero que hay debajo, a ras del agua o más alto.</summary>
+    static bool SolidAt(Vector3 p)
+    {
+        int n = Physics.RaycastNonAlloc(new Vector3(p.x, p.y + 2f, p.z), Vector3.down, _hits, 8f, ~0, QueryTriggerInteraction.Ignore);
+        float best = float.MaxValue; bool solid = false;
+        for (int i = 0; i < n; i++)
+        {
+            if (_hits[i].collider.GetComponentInParent<Animal>() != null || _hits[i].distance >= best) continue;
+            best = _hits[i].distance; solid = _hits[i].point.y > -0.3f;
+        }
+        return solid;
     }
 
     // Tumbada en el hielo (a ras de suelo), sin moverse: descansa y, de noche, duerme (SleepCycle).
@@ -290,6 +309,7 @@ public class MarineLife : MonoBehaviour
     Vector3 FindBeach()
     {
         _haul = Affordance.Nearest(AffordanceKind.HaulOut, transform.position, 120f, _a);
+        if (_haul != null && !SolidAt(_haul.transform.position)) _haul = null;   // (sin hielo debajo no es descansadero: la foca acababa tumbada en el fondo)
         if (_haul != null && _haul.Occupy(_a)) { _haul.Touch(_a); return _haul.transform.position + Vector3.up * 0.25f; }
         _haul = null;
         float baseAngle = _angleSeed + Random.Range(-15f, 15f);
