@@ -6,7 +6,7 @@ using UnityEngine;
 /// LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27): todo microcosmos se crea a partir de TRES DATOS que hay que dar sí o sí
 /// —su FECHA, su HORA y la PLATAFORMA del santuario a la que pertenece— y con ellos la plantilla lo monta siempre igual
 /// (docs/microcosmos-areas.md):
-/// - SOLO el piso elegido del santuario, AGRANDADO ×10 (sus muebles son montañas), cerrado por MUROS en su borde (regla 11);
+/// - SOLO el piso elegido del santuario, AGRANDADO ×100 (AreaMicrocosmos.AreaScale: sus muebles son montañas; la historia y su pueblo, en su barrio), cerrado por MUROS en su borde (regla 11);
 /// - la flora y los insectos NATIVOS de esa fecha y ese lugar (MicroBiome), a escala de hormiga, TODOS DENTRO del piso;
 /// - el SOL a la hora pedida (el alba, el mediodía del solsticio…);
 /// - su fecha en la raíz (<see cref="MicroEra"/>: las conductas preguntan qué existía entonces) y el aviso al entrar;
@@ -90,7 +90,7 @@ public class MicrocosmTemplateWindow : EditorWindow
 
     void OnGUI()
     {
-        EditorGUILayout.HelpBox("Un microcosmos es una plataforma del santuario agrandada ×10, con la flora y los insectos de su fecha y lugar. Abre la escena principal para elegir la plataforma.", MessageType.Info);
+        EditorGUILayout.HelpBox("Un microcosmos es una plataforma del santuario agrandada ×100 (su región elige el estilo de los muebles), con la flora y los insectos de su fecha y lugar. Abre la escena principal para elegir la plataforma.", MessageType.Info);
         _name = EditorGUILayout.TextField("Nombre", _name);
         _date = EditorGUILayout.TextField("Fecha (obligatoria)", _date);
         _hour = EditorGUILayout.Slider("Hora", _hour, 0f, 23.99f);

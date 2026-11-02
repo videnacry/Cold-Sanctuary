@@ -217,11 +217,22 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
                     TestProbe.Check("la historia está en su plaza reservada principal", d <= 1.5f, $"a {d:0.0} m de la plaza");
                 }
             }
-            // Era avanzada (docs/microcosmos-reglas-edificacion.md, regla 5): el Dojo gigante se queda en su suelo (sin muebles: ni
-            // jaula, ni ring, ni andamio) y la ciudad de la historia (Kowloon y Seattle) ocupa el piso entero.
+            // Era avanzada (docs/microcosmos-reglas-edificacion.md, regla 5): en el BARRIO de la historia (×100: el piso × 10 alrededor
+            // de su plaza, MicroFloor.districtSize) el Dojo gigante se queda en su suelo (sin muebles: ni jaula, ni ring, ni andamio) y
+            // la ciudad de la historia (Kowloon y Seattle) lo ocupa entero; fuera del barrio sigue el Dojo gigante. Las medidas del
+            // suelo, a la escala del área (0,6 m y 1 m a ×10).
             string tall = "";
-            if (giant != null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) if (r.bounds.size.y >= 0.6f || r.bounds.max.y >= 1f) { tall += r.name + "; "; if (tall.Length > 200) break; }
-            TestProbe.Check("el Dojo gigante sin sus muebles (solo su suelo): el pueblo ocupa el piso", giant != null && tall.Length == 0, tall);
+            MicroFloor mfl = root != null ? root.GetComponent<MicroFloor>() : null;
+            float k = giant != null ? giant.lossyScale.x / 10f : 1f;
+            Bounds dist = mfl != null && mfl.districtSize.x > 1f ? new Bounds(root.TransformPoint(mfl.districtCenter), new Vector3(mfl.districtSize.x, 1e4f, mfl.districtSize.y)) : new Bounds(Vector3.zero, Vector3.one * 1e6f);
+            if (giant != null)
+                foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
+                {
+                    Bounds rb = r.bounds;
+                    bool inDistrict = rb.max.x > dist.min.x && rb.min.x < dist.max.x && rb.max.z > dist.min.z && rb.min.z < dist.max.z;
+                    if (inDistrict && (rb.size.y >= 0.6f * k || rb.max.y - root.position.y >= 1f * k)) { tall += r.name + "; "; if (tall.Length > 200) break; }
+                }
+            TestProbe.Check("el Dojo gigante sin sus muebles (solo su suelo) en el barrio de la historia: el pueblo lo ocupa", giant != null && tall.Length == 0, tall);
             var sites = new List<AreaFunctionSite>(root.GetComponentsInChildren<AreaFunctionSite>());
             Bounds town = default; bool anyTown = false;
             foreach (AreaFunctionSite site in sites) { Bounds b = new Bounds(site.transform.position, Vector3.one); if (!anyTown) { town = b; anyTown = true; } else town.Encapsulate(b); }

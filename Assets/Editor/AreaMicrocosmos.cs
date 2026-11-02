@@ -6,7 +6,7 @@ using UnityEngine;
 /// EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md): es como si de pronto el mundo fuera de insectos. El JUGADOR
 /// (≈ 1,8 m) es una HORMIGA, y las hormigas son los HUMANOS del microcosmos: bípedas, con cara e intelecto humano. Todo lo
 /// demás está a su escala:
-/// - el ÁREA del santuario, ×10 (sus muebles son montañas);
+/// - el ÁREA del santuario, ×100 (AreaScale; sus muebles son montañas; la historia y su pueblo, en su BARRIO: el piso × 10);
 /// - la flora: el musgo y los hongos hacen de hierba y arbustos; las briznas y los helechos, de árboles;
 /// - la fauna de antes del fuego, a tamaño relativo a la hormiga (de pulgón 1 m a mantis 10 m).
 /// Cada área tiene su HISTORIA:
@@ -21,7 +21,11 @@ using UnityEngine;
 /// </summary>
 public static class AreaMicrocosmos
 {
-    public const float AreaScale = 10f;
+    public const float AreaScale = 100f;
+    /// <summary>La escala con que se hicieron los pueblos y las historias (×10, hasta 2026-11-02): el BARRIO de la historia (lo que
+    /// la historia y su pueblo llenan, <see cref="FloorBounds"/>) mide el piso real × Legacy, centrado en la plaza de la historia, y
+    /// el resto del piso ×100 es el santuario gigante alrededor. K = AreaScale / Legacy escala las medidas del área gigante.</summary>
+    public const float Legacy = 10f, K = AreaScale / Legacy;
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
     /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
@@ -75,11 +79,11 @@ public static class AreaMicrocosmos
         int pruned = giant != null ? Prune(giant.transform, rect) : 0;
 
         // 1b) ERA AVANZADA (regla 5 de docs/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
-        //     real de la historia ocupa TODO el piso. Se quitan los muebles gigantes del área (queda su suelo) y la historia recibe
-        //     el rectángulo entero (FloorBounds).
+        //     real de la historia ocupa TODO SU BARRIO (×100, 2026-11-02: el barrio es el piso × Legacy alrededor de la plaza de la
+        //     historia; el resto del piso es el santuario gigante). Se quitan los muebles gigantes que pisan el barrio (queda su
+        //     suelo) y la historia recibe el barrio entero (FloorBounds); se hace en cuanto se sabe dónde va la historia.
         int year0 = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
-        int cleared = giant != null && storyOverride != null && MicroBuildRules.IsTownEra(year0) ? ClearForTown(giant.transform) : 0;
-        if (cleared > 0) Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): {cleared} piezas gigantes del área quitadas; el pueblo ocupa el piso entero.");
+        bool townEra = giant != null && storyOverride != null && MicroBuildRules.IsTownEra(year0);
         _floorRoot = root.transform; _floorRect = rect;
 
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
@@ -109,6 +113,17 @@ public static class AreaMicrocosmos
                 }
         }
         anchor = ClampXZ(anchor, Inner(rect, WallInset));
+        // EL BARRIO DE LA HISTORIA (×100): el piso real × Legacy (lo que medía el piso entero a ×10), centrado en la plaza de la
+        // historia y dentro de los muros. Ahí van la historia, su pueblo (FloorBounds) y la flora densa; el resto del piso ×100
+        // es el santuario gigante (sus muebles, montañas de 75 m), con flora y fauna más espaciadas.
+        Bounds district = District(rect, anchor, slots);
+        _floorRect = district;
+        int cleared = townEra ? ClearForTown(giant.transform, district) : 0;
+        if (cleared > 0)
+        {
+            floors.Clear(); _blocked.Clear(); Classify(giant, floors, _blocked);
+            Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): {cleared} piezas gigantes del área quitadas de su barrio ({district.size.x:0} × {district.size.z:0} m); el pueblo ocupa el barrio entero.");
+        }
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
@@ -177,7 +192,10 @@ public static class AreaMicrocosmos
         int townFeet = TownFootprints(story, groundY);
         if (townFeet > 0) Debug.Log($"[Microcosmos] {sceneLabel}: el pueblo ocupa {townFeet} huellas (edificios, calles, árboles); la flora y la fauna crecen entre ellas.");
         bool useSlots = giant != null && slots != null;
-        List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(s => s * AreaScale) : null;
+        // (×100) Las plazas de FLORA marcan el suelo libre del área: siguen siendo las suyas (×100, por todo el piso; las pruebas
+        // las miran: ExperienciaJugadorTest). Las de FAUNA, alrededor de la historia como a ×10 (en su barrio), no esparcidas por kilómetros.
+        Vector3 Near(Vector3 s) => slots.story.Count > 0 ? story.localPosition + (s - slots.story[0]) * Legacy : s * AreaScale;
+        List<Vector3> floraAt = useSlots ? slots.flora.ConvertAll(s => s * AreaScale) : null, faunaAt = useSlots ? slots.fauna.ConvertAll(Near) : null;
         PlatformSlots giantSlots = giant != null ? giant.GetComponent<PlatformSlots>() : null;
         // EL PUEBLO (era avanzada, regla 5; Berón 2026-11-01: «en el pueblo de Bruce Lee las flores gigantes tapan el pueblo; en
         // Berna el musgo son cubos verdes enormes»): los insectos-humanos viven en un pueblo humano, así que su flora es la de un
@@ -186,7 +204,7 @@ public static class AreaMicrocosmos
         bool townMode = storyOverride != null && MicroBuildRules.IsTownEra(year0);
         // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan (en un pueblo ya no hay muebles gigantes).
         List<Bounds> tops = giant != null && !townMode ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
-        int animals = Nature(root.transform, rect, groundY, display.GetHashCode(), storyCore, floors, bio,
+        int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
                              floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
@@ -197,7 +215,8 @@ public static class AreaMicrocosmos
             {
                 if (cast0 >= slots.characters.Count) break;
                 if (!mf.enabled) continue;   // papeles guionizados (los porteadores del mito empiezan quietos, en su sitio)
-                Vector3 p = slots.characters[cast0++] * AreaScale;
+                // Alrededor de la historia a la distancia de antes (×Legacy: 30–80 m), no a ×100 (300–800 m, fuera de su barrio).
+                Vector3 p = slots.story.Count > 0 ? story.localPosition + (slots.characters[cast0++] - slots.story[0]) * Legacy : slots.characters[cast0++] * AreaScale;
                 p.y = FloorNear(p, floors, p.y);
                 mf.transform.position = root.transform.TransformPoint(p);
             }
@@ -209,6 +228,7 @@ public static class AreaMicrocosmos
         foreach (Transform t in Population(root.transform, story)) if (Contain(t, Inner(rect, 1f))) nudged++;
         MicroFloor mfl = root.AddComponent<MicroFloor>();
         mfl.center = new Vector3(rect.center.x, groundY, rect.center.z); mfl.size = new Vector2(rect.size.x, rect.size.z); mfl.wallHeight = wallH;
+        mfl.districtCenter = new Vector3(district.center.x, groundY, district.center.z); mfl.districtSize = new Vector2(district.size.x, district.size.z);
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         Census(root.transform, story, mfl);
         Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
@@ -237,7 +257,7 @@ public static class AreaMicrocosmos
         nav.useGeometry = UnityEngine.AI.NavMeshCollectGeometry.PhysicsColliders;
         Physics.SyncTransforms();   // con colliders, el horneado consulta la física: sin sincronizar, no ve lo recién creado y movido
         // El volumen: el piso y sus muros (los muros no se andan: NavMeshModifier), nada de fuera.
-        nav.center = Vector3.up * 15f; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f, rect.size.z + WallThick * 2f);
+        nav.center = Vector3.up * 15f * K; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f * K, rect.size.z + WallThick * 2f);
         nav.BuildNavMesh();
         Debug.Log($"[Microcosmos] {display}: piso ×{AreaScale} con muros (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
     }
@@ -349,7 +369,8 @@ public static class AreaMicrocosmos
             MicroFloor mf = root != null ? root.GetComponent<MicroFloor>() : null;
             Transform giant = null;
             if (root != null) foreach (Transform c in root) if (c.name.EndsWith("_gigante")) { giant = c; break; }
-            if (mf != null) rect = new Bounds(new Vector3(mf.center.x, 0f, mf.center.z), new Vector3(mf.size.x, 0f, mf.size.y));
+            if (mf != null && mf.districtSize.x > 1f) rect = new Bounds(new Vector3(mf.districtCenter.x, 0f, mf.districtCenter.z), new Vector3(mf.districtSize.x, 0f, mf.districtSize.y));
+            else if (mf != null) rect = new Bounds(new Vector3(mf.center.x, 0f, mf.center.z), new Vector3(mf.size.x, 0f, mf.size.y));
             else if (giant != null) { rect = FloorRect(giant.gameObject, giant.GetComponent<PlatformSlots>()); rect.center -= root.position; }
             else rect = new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
         }
@@ -370,16 +391,20 @@ public static class AreaMicrocosmos
 
     /// <summary>Quita del área gigante todo lo que no es SUELO (losas de menos de 0,6 m de alto a ras de suelo): sus muebles,
     /// máquinas, columnas y techos. Las plazas reservadas (PlatformSlots en la raíz gigante) se quedan. Devuelve cuántas piezas quitó.</summary>
-    static int ClearForTown(Transform giant)
+    static int ClearForTown(Transform giant, Bounds district)
     {
         var all = new List<Transform>(giant.GetComponentsInChildren<Transform>(true));
         var keep = new HashSet<Transform> { giant };
+        Bounds near = district; near.Expand(new Vector3(20f, 0f, 20f));
         foreach (Transform t in all)
         {
             Renderer r = t.GetComponent<Renderer>();
             if (r == null) continue;
             Bounds b = r.bounds;
-            if (b.size.y < 0.6f && b.max.y < 1f && b.size.x * b.size.z > 1f) for (Transform p = t; p != null && p != giant.parent; p = p.parent) keep.Add(p);
+            // Se queda el suelo (losas bajas) y lo que no pisa el barrio (el santuario gigante alrededor del pueblo).
+            bool ground = b.size.y < 0.06f * AreaScale && b.max.y < 0.1f * AreaScale && b.size.x * b.size.z > 0.01f * AreaScale * AreaScale;
+            bool away = b.max.x < near.min.x || b.min.x > near.max.x || b.max.z < near.min.z || b.min.z > near.max.z;
+            if (ground || away) for (Transform p = t; p != null && p != giant.parent; p = p.parent) keep.Add(p);
         }
         int n = 0;
         for (int i = all.Count - 1; i >= 0; i--)
@@ -390,6 +415,20 @@ public static class AreaMicrocosmos
         }
         foreach (Collider c in giant.GetComponentsInChildren<Collider>(true)) if (c != null && c.GetComponent<Renderer>() == null && c.transform != giant) Object.DestroyImmediate(c);   // cajas de mueble sin malla
         return n;
+    }
+
+    /// <summary>EL BARRIO DE LA HISTORIA (×100): un rectángulo del tamaño del piso real × <see cref="Legacy"/> (lo que medía el
+    /// piso entero a ×10: el pueblo, la historia y sus plazas caben como antes), centrado en <paramref name="anchor"/> y metido
+    /// dentro de los muros (menos la franja de <see cref="WallInset"/>). Sin plazas (sin área gigante), el piso entero.</summary>
+    static Bounds District(Bounds rect, Vector3 anchor, PlatformSlots slots)
+    {
+        Bounds inner = Inner(rect, WallInset);
+        Vector2 size = slots != null && slots.floorSize.x > 1f ? slots.floorSize * Legacy : new Vector2(rect.size.x, rect.size.z) / K;
+        size = new Vector2(Mathf.Min(size.x, inner.size.x), Mathf.Min(size.y, inner.size.z));
+        float cx = Mathf.Clamp(anchor.x, inner.min.x + size.x * 0.5f, inner.max.x - size.x * 0.5f);
+        float cz = Mathf.Clamp(anchor.z, inner.min.z + size.y * 0.5f, inner.max.z - size.y * 0.5f);
+        // Inner (FloorBounds) le quita la franja del muro: se le devuelve para que el barrio útil mida lo pedido.
+        return new Bounds(new Vector3(cx, 0f, cz), new Vector3(size.x + 2f * WallInset, 0f, size.y + 2f * WallInset));
     }
 
     static Bounds Inner(Bounds rect, float inset)
@@ -492,7 +531,7 @@ public static class AreaMicrocosmos
     /// <summary>Las CARAS DE ARRIBA de los muebles gigantes (camas, encimeras, mesas, máquinas, estantes): cajas a nivel, de
     /// ≥ <paramref name="minArea"/> m² (ya ×10) y entre 1 y 60 m sobre el suelo, dentro de <paramref name="inside"/>; no los
     /// techos ni las losas grandes (más del 30 % del piso). Cada una, como una caja plana a la altura de su cara de arriba.</summary>
-    static List<Bounds> FurnitureTops(GameObject giant, float groundY, Bounds inside, float minArea = 6f)
+    static List<Bounds> FurnitureTops(GameObject giant, float groundY, Bounds inside, float minArea = 6f * K * K)
     {
         var l = new List<Bounds>();
         float big = inside.size.x * inside.size.z * 0.3f;
@@ -501,7 +540,7 @@ public static class AreaMicrocosmos
             if (!r.enabled) continue;
             Bounds b = r.bounds;
             float h = b.max.y - groundY, a = b.size.x * b.size.z;
-            if (IsFloor(b) || h < 1f || h > 60f || b.size.x < 2f || b.size.z < 2f || a < minArea || a > big) continue;
+            if (IsFloor(b) || h < 1f * K || h > 60f * K || b.size.x < 2f * K || b.size.z < 2f * K || a < minArea || a > big) continue;
             if (Vector3.Dot(r.transform.up, Vector3.up) < 0.98f) continue;   // solo lo que está a nivel
             MeshFilter mf = r.GetComponent<MeshFilter>();
             bool box = r.GetComponent<BoxCollider>() != null || (mf != null && mf.sharedMesh != null && mf.sharedMesh.name.StartsWith("Cube"));
@@ -598,7 +637,7 @@ public static class AreaMicrocosmos
             Piece(name + "_remate", new Vector3(at.x, h + 1f, at.z) + outward * 0.5f, new Vector3(size.x + 1f, 2f, size.z + 1f), cm, false);
             // Contrafuertes cada ~40 m, por FUERA (no le quitan suelo al piso).
             bool alongX = size.x > size.z; float len = alongX ? size.x : size.z;
-            int k = Mathf.Max(2, Mathf.RoundToInt(len / 40f));
+            int k = Mathf.Max(2, Mathf.RoundToInt(len / (40f * K)));
             for (int i = 0; i <= k; i++)
             {
                 float s = -len * 0.5f + len * i / k;
@@ -645,7 +684,7 @@ public static class AreaMicrocosmos
     // Bloques sólidos del área gigante (lo que no es suelo); restos de comida y briznas los evitan.
     static readonly List<Bounds> _blocked = new List<Bounds>();
 
-    static bool IsFloor(Bounds b) => b.size.y < 1.5f && b.max.y < 3f;
+    static bool IsFloor(Bounds b) => b.size.y < 1.5f * K && b.max.y < 3f * K;
 
     /// <summary>Separa el SUELO (planos bajos) de los MUEBLES (bloques) y devuelve la huella del área.</summary>
     static Bounds Classify(GameObject giant, List<Renderer> floors, List<Bounds> blocked)
@@ -655,7 +694,7 @@ public static class AreaMicrocosmos
         {
             Bounds b = r.bounds;
             if (!any) { foot = b; any = true; } else foot.Encapsulate(b);
-            if (IsFloor(b)) { if (b.size.x > 4f && b.size.z > 4f) floors.Add(r); }   // suelo (no un tapete suelto)
+            if (IsFloor(b)) { if (b.size.x > 4f * K && b.size.z > 4f * K) floors.Add(r); }   // suelo (no un tapete suelto)
             else blocked.Add(b);
         }
         return any ? foot : new Bounds(Vector3.zero, new Vector3(100f, 1f, 100f));
@@ -673,9 +712,9 @@ public static class AreaMicrocosmos
     static Vector3 FreeSpot(Bounds foot, List<Renderer> floors, List<Bounds> blocked, out float free)
     {
         Vector3 best = new Vector3(foot.center.x, 0f, foot.center.z); free = 0f;
-        float inset = Mathf.Min(10f, Mathf.Min(foot.extents.x, foot.extents.z) * 0.5f);
-        for (float x = foot.min.x + inset; x <= foot.max.x - inset; x += 6f)
-            for (float z = foot.min.z + inset; z <= foot.max.z - inset; z += 6f)
+        float inset = Mathf.Min(10f * K, Mathf.Min(foot.extents.x, foot.extents.z) * 0.5f), step = 6f * K;
+        for (float x = foot.min.x + inset; x <= foot.max.x - inset; x += step)
+            for (float z = foot.min.z + inset; z <= foot.max.z - inset; z += step)
             {
                 var p = new Vector3(x, 0f, z);
                 float d = floors.Count == 0 ? float.MaxValue : EdgeDist(p, floors);
@@ -1082,7 +1121,7 @@ public static class AreaMicrocosmos
     /// <param name="floraSlots">Las plazas de flora del área (PlatformSlots, ya ×10, en el espacio de la raíz): una planta en cada
     /// una. <paramref name="floraUnderStory"/> recibe las que tapa la historia. Entre ellas, la rejilla densa del suelo libre.</param>
     /// <param name="faunaSlots">Las plazas de fauna del área (ídem): los bichos van primero a ellas y luego a suelo libre.</param>
-    static int Nature(Transform root, Bounds rect, float groundY, int seed, Bounds story, List<Renderer> floors, MicroBiome.Biome biome = null,
+    static int Nature(Transform root, Bounds rect, Bounds district, float groundY, int seed, Bounds story, List<Renderer> floors, MicroBiome.Biome biome = null,
                       List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null, List<Bounds> tops = null,
                       bool town = false)
     {
@@ -1092,6 +1131,11 @@ public static class AreaMicrocosmos
         Vector3 center = new Vector3(rect.center.x, groundY, rect.center.z);
         Bounds inner = Inner(rect, WallInset);
         var flora = new GameObject("Flora_a_escala").transform; flora.SetParent(root, false); flora.localPosition = center;
+        // EL BARRIO DE LA HISTORIA (×100) se puebla denso (como antes todo el piso); el resto del piso gigante, con la rejilla
+        // ×K: la misma flora, sin multiplicar por cien el número de plantas (ni de objetos de la escena).
+        Bounds dense = Inner(district, WallInset); dense.Expand(new Vector3(40f, 0f, 40f));
+        { Vector3 mn = Vector3.Max(dense.min, inner.min), mx = Vector3.Min(dense.max, inner.max); dense.SetMinMax(new Vector3(mn.x, 0f, mn.z), new Vector3(Mathf.Max(mn.x, mx.x), 0f, Mathf.Max(mn.z, mx.z))); }
+        IEnumerable<(Bounds box, float step)> Grids(float c) { yield return (dense, c); if (K > 1f) yield return (inner, c * K); }
         Material grass = Mat("Micro_Hierba", new Color(0.62f, 0.68f, 0.3f)), grassDry = Mat("Micro_Hierba_seca", new Color(0.78f, 0.72f, 0.42f));
         Material fern = Mat("Micro_Helecho", new Color(0.25f, 0.5f, 0.25f)), fernStem = Mat("Micro_Helecho_tallo", new Color(0.3f, 0.4f, 0.2f));
         Material stem = Mat("Micro_Pie_Seta", new Color(0.9f, 0.86f, 0.75f)), cap = Mat("Micro_Sombrero", new Color(0.7f, 0.35f, 0.2f));
@@ -1103,7 +1147,7 @@ public static class AreaMicrocosmos
         // Lo que se alza SOBRE el suelo del piso (muebles, paredes, máquinas): no los techos ni lo que cuelga arriba, que tapaban
         // todo el piso y no dejaban crecer nada.
         var standing = new List<Bounds>();
-        foreach (Bounds b in _blocked) if (b.min.y < groundY + 5f && b.max.y > groundY + 0.05f) standing.Add(b);
+        foreach (Bounds b in _blocked) if (b.min.y < groundY + 5f * K && b.max.y > groundY + 0.05f) standing.Add(b);
         const float storyClear = 20f;
         // SUELO LIBRE en w: dentro de los muros (con margen), fuera del claro de la historia, a ≥ 3 m de todo mueble y sobre el
         // suelo del área a su altura (no en una entreplanta). fy: la altura de ese suelo.
@@ -1273,19 +1317,28 @@ public static class AreaMicrocosmos
             }
 
         // EL PUEBLO: una rejilla fina (3 m) por todo el suelo libre, escasa (TownSow decide si toca planta y cuál).
+        //     (×100) Fina en el BARRIO de la historia; por el resto del piso gigante, cada TownCell × K.
         if (town)
-            for (float x = inner.min.x + TownCell * 0.5f; x <= inner.max.x; x += TownCell)
-                for (float z = inner.min.z + TownCell * 0.5f; z <= inner.max.z; z += TownCell)
-                    if (TownSow(new Vector3(x + R(-1f, 1f) - center.x, 0f, z + R(-1f, 1f) - center.z), false)) placed0++;
+            foreach (var (box, step) in Grids(TownCell))
+                for (float x = box.min.x + step * 0.5f; x <= box.max.x; x += step)
+                    for (float z = box.min.z + step * 0.5f; z <= box.max.z; z += step)
+                    {
+                        if (step > TownCell && InsideXZ(dense, new Vector3(x, 0f, z), 0f)) continue;
+                        if (TownSow(new Vector3(x + R(-1f, 1f) - center.x, 0f, z + R(-1f, 1f) - center.z), false)) placed0++;
+                    }
 
         // Y ENTRE LAS PLAZAS, DENSO: a ×10 los 2 m de paso del piso son 20 m, así que cada hueco libre se rellena con una rejilla
         // de 6 m con jitter (una planta por celda, sin amontonarse), por todo el suelo libre dentro de los muros.
+        //     (×100) La rejilla de 6 m, en el BARRIO de la historia; por el resto del piso gigante (kilómetros), cada 6 m × K: el
+        //     santuario gigante también tiene su musgo y sus briznas, sin multiplicar por cien las plantas.
         const float cell = 6f;
         if (!town)
-        for (float x = inner.min.x + cell * 0.5f; x <= inner.max.x; x += cell)
-            for (float z = inner.min.z + cell * 0.5f; z <= inner.max.z; z += cell)
+        foreach (var (box, step) in Grids(cell))
+        for (float x = box.min.x + step * 0.5f; x <= box.max.x; x += step)
+            for (float z = box.min.z + step * 0.5f; z <= box.max.z; z += step)
             {
-                Vector3 w = new Vector3(x + R(-cell * 0.4f, cell * 0.4f), groundY, z + R(-cell * 0.4f, cell * 0.4f));
+                if (step > cell && InsideXZ(dense, new Vector3(x, 0f, z), 0f)) continue;
+                Vector3 w = new Vector3(x + R(-step * 0.4f, step * 0.4f), groundY, z + R(-step * 0.4f, step * 0.4f));
                 if (!FreeFloor(w, out float fy)) continue;
                 bool nearSlot = false;
                 foreach (Vector3 s in slotPts) if (new Vector2(w.x - s.x, w.z - s.z).sqrMagnitude < 9f) { nearSlot = true; break; }
@@ -1302,8 +1355,9 @@ public static class AreaMicrocosmos
             {
                 int here = 0;
                 float ex = Mathf.Max(0f, top.extents.x - 1.5f), ez = Mathf.Max(0f, top.extents.z - 1.5f);
-                for (float x = top.center.x - ex; x <= top.center.x + ex + 0.01f; x += cell)
-                    for (float z = top.center.z - ez; z <= top.center.z + ez + 0.01f; z += cell)
+                float tc = InsideXZ(dense, top.center, 0f) ? cell : cell * K;   // (×100: denso solo en el barrio)
+                for (float x = top.center.x - ex; x <= top.center.x + ex + 0.01f; x += tc)
+                    for (float z = top.center.z - ez; z <= top.center.z + ez + 0.01f; z += tc)
                     {
                         Vector3 w = new Vector3(x, top.max.y, z);
                         if (!InsideXZ(inner, w, 0f) || InsideXZ(story, w, 2f) || Covered(w)) continue;

@@ -12,10 +12,22 @@ Es como si de pronto el mundo fuera de insectos.
   - con brazos y bracitos;
   - con cara (ojos con pupila y brillo, cejas, boca, mandíbulas) y antenas;
   - con intelecto humano: recogen, cultivan y lideran.
-- **El área del santuario se amplía ×10:** sus muebles son montañas. El área queda **entera** (la cocina se reconoce:
-  barra, fogones, mesas del comedor): la historia se coloca en el **hueco más libre de su suelo** y solo se aparta el
-  mueble que pisa. El bosque a escala de hormiga (musgo, briznas, helechos) y su fauna crecen **fuera** del área, hasta
-  el agua.
+- **El área del santuario se amplía ×100** (`AreaMicrocosmos.AreaScale`; Berón 2026-11-02, «sigue con la escala sugerida
+  (×100)»; antes ×10). Es la escala real: una hormiga de 1,8 cm junto a una cama de 2 m es un insecto-humano de 1,8 m junto a
+  una cama de 200 m. Sus muebles son montañas (la mesa, 75 m; la encimera, 90 m) y el piso mide kilómetros: los pisos de
+  24–46 m del santuario dan microcosmos de **2,4–4,6 km** de lado (antes 240–460 m).
+  - **El barrio de la historia** (`AreaMicrocosmos.District`, `MicroFloor.districtCenter/districtSize`): el piso real × 10
+    (lo que medía el piso entero a ×10), centrado en la plaza de la historia. Ahí va lo que antes llenaba el piso: la historia,
+    su pueblo o ciudad en las eras avanzadas (`FloorBounds` / `FloorRectLocal` devuelven el barrio), los personajes, y las plazas
+    de flora y fauna (a su distancia de la historia de antes, ×10). La flora crece **densa** en el barrio (rejilla de 6 m; la del
+    pueblo, de 3 m) y **espaciada** en el resto del piso (×10: cada 60 m), para no multiplicar por cien el número de plantas.
+  - En las eras avanzadas solo se quitan los muebles gigantes que pisan el barrio: el pueblo vive en el claro que deja el
+    santuario gigante, con sus montañas-mueble alrededor.
+  - Las medidas del área gigante que deciden qué es suelo, qué es mueble y qué cara de arriba se puebla escalan con
+    `AreaMicrocosmos.K` (= AreaScale / 10); el NavMesh cubre el piso entero (hasta 4,6 km) y 600 m de alto.
+  - Lo que no cambia: el tamaño de la flora y de la fauna (relativo a la hormiga) y el de la historia y los pueblos.
+- El área queda **entera** (la cocina se reconoce: barra, fogones, mesas del comedor): la historia se coloca en su plaza (el
+  hueco más libre de su suelo) y solo se aparta el mueble que pisa.
 - **Flora a escala:**
   - el musgo y los hongos hacen de hierba y arbustos;
   - las briznas de hierba y los helechos, de árboles.

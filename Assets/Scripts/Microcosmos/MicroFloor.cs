@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// EL PISO DEL MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29): el mapa de un microcosmos es SOLO el piso
-/// elegido, ×10, cerrado por MUROS en su borde para que nada salga. Fuera del piso no se puebla nada (ni flora ni fauna); todo
+/// elegido, ×100 (AreaMicrocosmos.AreaScale), cerrado por MUROS en su borde para que nada salga. Fuera del piso no se puebla nada (ni flora ni fauna); todo
 /// —flora, fauna, personajes y estructuras de la historia— va dentro. Lo pone <c>AreaMicrocosmos</c> en la raíz del
 /// microcosmos y lo leen las pruebas (<c>MicrocosmosFloorTest</c>): el rectángulo de los muros y lo que se contó al poblarlo.
 /// </summary>
@@ -10,7 +10,7 @@ public class MicroFloor : MonoBehaviour
 {
     [Tooltip("Centro del piso (cara de arriba del suelo), en locales de la raíz del microcosmos.")]
     public Vector3 center;
-    [Tooltip("Tamaño del piso ×10 (x, z), en metros: el rectángulo interior de los muros.")]
+    [Tooltip("Tamaño del piso ×100 (x, z), en metros: el rectángulo interior de los muros.")]
     public Vector2 size;
     [Tooltip("Altura de los muros sobre el suelo (con tapa invisible arriba: nada vuela fuera).")]
     public float wallHeight;
@@ -20,6 +20,10 @@ public class MicroFloor : MonoBehaviour
     public int furnitureTops, floraOnTops, faunaOnTops;
     [Tooltip("Era avanzada con su pueblo en el piso (regla 5 de docs/microcosmos-reglas-edificacion.md): la flora es a escala de pueblo y no pisa calles ni solares.")]
     public bool town;
+
+    [Tooltip("El BARRIO de la historia (×100, 2026-11-02): el piso real × 10 alrededor de la plaza de la historia, en locales de la raíz; ahí van la historia, su pueblo y la flora densa.")]
+    public Vector3 districtCenter;
+    public Vector2 districtSize;
 
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };
