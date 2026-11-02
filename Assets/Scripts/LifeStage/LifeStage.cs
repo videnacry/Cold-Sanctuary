@@ -223,7 +223,9 @@ public abstract class LifeStage
                 script.ActsPrep.run.Prep(script, duration);
                 // Apuntar a un punto DENTRO del radio del nido, no al punto exacto, para que los
                 // adultos se repartan por la zona en vez de amontonarse sobre HomeOrigin.
-                Vector3 offset = Random.insideUnitSphere * script.HomeRadius;
+                // CRÍA DE UN RECINTO (Cría, con sus tomas): vuelve a su sitio del recinto (≤ 1,5 m, como Wander). Con el radio de su
+                // hogar el punto caía más allá de los muros del recinto y el polluelo o el cachorro recorría el borde sin llegar.
+                Vector3 offset = script.GetComponentInParent<CriaFeeder>() != null ? Random.insideUnitSphere * 1.5f : Random.insideUnitSphere * script.HomeRadius;
                 Vector3 dest = script.HomeOrigin + new Vector3(offset.x, 0f, offset.z);
                 if (script.nav != null && script.nav.isOnNavMesh) script.nav.SetDestination(dest);
             }
