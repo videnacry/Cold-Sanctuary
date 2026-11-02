@@ -137,15 +137,30 @@ public class WorkdayDirector : MonoBehaviour
         if (TC == null || ColdSanctuary.TestRunner.Running) return;   // las pruebas usan a los personajes
         float h = TC.Hour; int day = TC.Day;
         if (_breakfastDay != day && h >= BreakfastHour && h < BreakfastEnd) Breakfast(day);
-        if (plannedDay != day && h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) PlanDay(day);
+        if (plannedDay != day && h >= PlanFrom && h < WorkRoster.StartHour + 8f) PlanDay(day);
         if (today == null || plannedDay != day) return;
         Tick(h);
     }
+
+    /// <summary>Hora a la que se reparte el día: al acabar el desayuno (7:50), para que cada uno salga de casa hacia su primera
+    /// misión y llegue a las 8 (de un árbol a otro se tarda casi una hora de juego).</summary>
+    public const float PlanFrom = BreakfastEnd;
 
     /// <summary>Avanza la jornada a la hora <paramref name="h"/>: empieza y termina misiones, mueve a cada uno a su sitio.</summary>
     public void Tick(float h)
     {
         _hour = h;
+        if (h < WorkRoster.StartHour)   // (7:50–8:00) desayunados: cada uno sale hacia su primera misión si está en otro árbol
+        {
+            foreach (WorkRoster.Worker w in roster.workers)
+            {
+                GameObject g = Body(w.name);
+                if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
+                WorkRoster.Assignment first = HeadingEarly(w, g, h);
+                if (first != null) Drive(g, first.mission.area, first.mission.title, null);
+            }
+            return;
+        }
         foreach (WorkRoster.Assignment a in today.work)
         {
             float end = a.start + a.mission.hours;
@@ -389,10 +404,10 @@ public class WorkdayDirector : MonoBehaviour
     {
         if (today == null || TC == null || g == null || w == null) return null;
         float s = WorkRoster.StartHour, l0 = s + WorkRoster.FirstBlock, l1 = l0 + WorkRoster.LunchHours;
-        if (h < s || h >= s + 6f) return null;
+        if (h < BreakfastEnd || h >= s + 6f) return null;   // (desde que acaba el desayuno: sale de casa hacia la primera misión)
         if (_heading.TryGetValue(w, out WorkRoster.Assignment latched))
         {
-            if (latched != null && h < latched.start && today.work.Contains(latched)) return latched;
+            if (latched != null && h < latched.start && (today.work.Contains(latched) || latched == LunchOf(w))) return latched;
             _heading.Remove(w);
         }
         WorkRoster.Assignment cur = Current(w, h);
@@ -409,11 +424,15 @@ public class WorkdayDirector : MonoBehaviour
         {
             end = float.MaxValue;
             foreach (WorkRoster.Assignment a in today.work) if (a.worker == w && a.start > h && a.start < end) end = a.start;
-            if (h < l0 && l0 <= end) return null;   // lo siguiente es la comida: a su hora
+            if (h < l0 && l0 <= end) end = l0;   // lo siguiente es la comida
             share = 1f;
         }
         WorkRoster.Assignment next = null;
         foreach (WorkRoster.Assignment a in today.work) if (a.worker == w && Mathf.Abs(a.start - end) < 0.01f) { next = a; break; }
+        // LA COMIDA también es un sitio al que se va: de otra torre se llegaba a las 11:45 y se comía hasta pasadas las 12 (la
+        // misión de las 12 se perdía: Lizmibet «Del ADN a la secuencia» 0 %, grupo 50). Sale hacia el restaurante como hacia una
+        // misión (a mitad del viaje desde la de las 10); allí pide al dar las 11 (Where → «Comida»; la barra se llena entonces).
+        if (next == null && Mathf.Abs(end - l0) < 0.01f && !_lunched.Contains(g)) next = LunchOf(w);
         if (next == null || next.mission.area == AreaWork.Guard || (cur != null && next.mission.area == cur.mission.area)) return null;
         Vector3 to = WorkPoint(next.mission.area, g.name);
         if (to == Vector3.zero) return null;
@@ -423,6 +442,16 @@ public class WorkdayDirector : MonoBehaviour
         _heading[w] = next;
         Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
         return next;
+    }
+
+    // La comida de cada uno como destino (HeadingEarly). El título NO es «Comida»: de camino y antes de las 11 no pide en la barra
+    // (OwnNeeds pide al llegar solo con «Comida», que es lo que da Where de 11 a 12, con la barra ya llena).
+    readonly Dictionary<WorkRoster.Worker, WorkRoster.Assignment> _lunchOf = new Dictionary<WorkRoster.Worker, WorkRoster.Assignment>();
+    WorkRoster.Assignment LunchOf(WorkRoster.Worker w)
+    {
+        if (!_lunchOf.TryGetValue(w, out WorkRoster.Assignment a))
+            _lunchOf[w] = a = new WorkRoster.Assignment { worker = w, mission = new WorkRoster.Mission(PlayerWorkday.LunchArea, "comida", "De camino a la comida", WorkRoster.LunchHours), start = WorkRoster.StartHour + WorkRoster.FirstBlock };
+        return a;
     }
 
     /// <summary>¿Hay algún recién llegado sin iniciar? (Linduarda lo atiende antes que nada: es la médica que lo recibe)</summary>

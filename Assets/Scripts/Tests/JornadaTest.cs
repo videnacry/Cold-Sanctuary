@@ -119,7 +119,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         _pw.autopilot = true;
         RestDay();   // el reloj salta la NOCHE (de las 17 h a las 8 h): lo que hace la noche —dormir, y el desayuno— lo hace esto
         _watch.Rebase();
-        _tc.SetClock(d2, 7.95f);
+        _tc.SetClock(d2, WorkdayDirector.PlanFrom - 0.01f);   // (como un día de verdad: al acabar el desayuno se reparte y cada uno sale hacia su primera misión)
         yield return Until(() => { DriveDirector(); _watch.Frame(); return _wd.plannedDay == d2; }, 30f);
         WorkRoster.DayPlan p2 = _wd.today;
         TestProbe.Check("a las 8:00 del día 2 hay un reparto NUEVO", p2 != null && p2 != p1 && _wd.plannedDay == d2, p2 != null ? $"{p2.work.Count} misiones" : "sin plan");
@@ -300,7 +300,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
     {
         if (!ColdSanctuary.TestRunner.Running) return;   // (fuera del orquestador lo hace su Update)
         float h = _tc.Hour; int d = _tc.Day;
-        if (_wd.plannedDay != d && h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) _wd.PlanDay(d);
+        if (_wd.plannedDay != d && h >= WorkdayDirector.PlanFrom && h < WorkRoster.StartHour + 8f) _wd.PlanDay(d);
         if (_wd.today != null && _wd.plannedDay == d) _wd.Tick(h);
     }
 
