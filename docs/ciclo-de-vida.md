@@ -161,6 +161,42 @@ Por especie y en orden: come → bebe (o el agua de su comida) → duerme → va
 Hay que **reconstruir las escenas** (menú «Build escenas de ciclo de vida») para que tengan la guarida con `Den`, el bebedero
 del malamute y la reina virgen con su zángano.
 
+## Humanos e insectos-humanos: el mismo ciclo (2026-11-02)
+
+Berón: «¿el ciclo de vida está probado para los humanos? El ciclo de vida de los humanos y de los insectos-humanos es el
+mismo». Una persona —un humano del santuario o un insecto-humano de una era civilizada— lleva **las mismas piezas**
+(`PersonLife.Equip`): `Anima`, `BodyMetabolism`, `BodyAging`, `ActionQueue`, `NeedsDriver` y `PersonLife`. Lo único propio del
+microcosmos es la **especie del hijo**, que sale de su árbol genealógico (`FolkCouple.Birth`, `InsectGenealogy`).
+
+| Paso | Pieza | Cómo |
+|---|---|---|
+| Necesidades | `BodyMetabolism` + `NeedsDriver` | Hambre, sueño, baño y **suciedad** (`dirt`, nueva: de 0 a 1 en ~18 h despierto). Con hogar (`Household`) se atienden **en casa** con `HomeNeedSpell`: comer sentado a su mesa (una ración de la despensa, ~20 min), dormir en su cama hasta descansar, el retrete (~5 min, se lava las manos) y el lavabo (~10 min). De noche, en el bloque de casa, se acuesta con algo de sueño. Sin hogar, los humanos del santuario siguen con el restaurante, los aseos de las áreas y su dormitorio. |
+| Horario | `MicroJornada` (microcosmos) / `WorkdayDirector` (santuario) | Es la capa de **horario** encima: trabajo, comida, práctica y casa. Mientras el cuerpo atiende una necesidad no lo mueve; en turno, el hambre que no aprieta espera a la comida (que en el microcosmos se hace en el comedor de la era). Un personaje retenido por la historia (`MicroJornada.hold`) o sin horario (los de la historia) no atiende necesidades hasta que lo sueltan. |
+| Edad | `BodyAging` | Crecer comiendo y durmiendo, desgaste; niño → joven → adulto → anciano (desgaste 0,7) → muere de viejo (desgaste 1). `PersonLife` le pone el calendario: crecer **18 años**, vivir **80** (`growYears`, `lifeYears`, en años de `TimeController.DaysPerYear`). |
+| Cortejo y pareja | `PersonLife` | Una mujer y un hombre adultos (no ancianos), sin pareja, que comparten casa y están **juntos** (a menos de 6 estaturas) se cortejan; tras `courtHours` (1,5 h de juego) forman pareja. En los pueblos, las parejas de `CivicBuilder.Couple` ya lo son. |
+| Embarazo | `PersonLife` | De noche (21–6 h) o dormidos los dos, juntos en casa, ella se queda embarazada (como mucho `maxChildren` = 2, y 12 meses entre uno y otro). |
+| Parto | `PersonLife` → `FolkCouple.Birth` (insectos) / `PersonLife.HumanBirth` (humanos) | A los **9 meses** del calendario nace un hijo (sexo al azar) con la estatura de adulto de sus padres que `BodyAging` encoge a la del recién nacido (0,45); entra en la familia y en la casa (`Household.Join`). |
+| Niñez | `PersonLife` / `MicroJornada.follow` | Va con su madre; come y duerme en casa (comparte la cama de su madre si no hay otra); de joven deja de seguirla y hace la jornada de su madre. |
+| Muerte | `PersonLife.Die` | Se tumba, sale de la casa y se anuncia «vejez» (desgaste 1) u otra causa (no debería haber ninguna). |
+
+Cada paso se anuncia en `PersonLife.OnEvent` (claves `comer`, `bano`, `lavarse`, `dormir`, `cortejo`, `pareja`, `embarazo`,
+`parto`, `junto`, `joven`, `adulto`, `anciano`, `vejez`, `muerte`).
+
+### Las escenas y la prueba (grupo 59, `CicloHumanoTest`)
+
+Menú «Tools/Cold Sanctuary/Build escenas de ciclo de vida de una persona (humana e insecto-humana)»
+(`SampleSceneBuilder.CicloHumano.cs`) → `Assets/Scenes/CicloVida/CicloVida_Humano.unity` (una mujer y un hombre en una casita
+de 1950 con despensa inagotable) y `CicloVida_InsectoHumano.unity` (una mariquita y una araña con su árbol genealógico, en una
+casa de ladrillo de Kapilavastu en un solar del pueblo, con su jornada). La casa es **la misma** que reciben las familias de los
+pueblos (`CivicBuilder.LifeCycleHouse` → `NewHouse` + `MakeHousehold`). Inicio las lista en «Ciclo de vida» y se juegan a
+×1/×2/×4/×8 (`GameSpeed`, también desde su panel, `CicloHumanoPanel`). Fotos en `Temp/CicloHumano/`.
+
+La prueba es **la misma en las dos escenas**, con la vida acelerada como el grupo 58 (×8, el año a 0,05 días de juego): la
+pareja adulta, sin pareja aún, en una casa completa → come → va al baño → se lava → duerme en su cama → cortejo → pareja →
+embarazo (de noche) → parto → el niño va con su madre → el niño come → joven → adulto (a su crecimiento se le dan ~20 s
+reales) → al padre se le acorta la vida: anciano → muere de viejo; nadie muere de otra cosa. Cada espera, acotada en tiempo
+real.
+
 ## Pendiente / simplificaciones
 
 - La sed no mata (en el hielo siempre hay nieve); solo incomoda si dura.
@@ -170,3 +206,6 @@ del malamute y la reina virgen con su zángano.
 - `PostNatalManager` (sistema antiguo con las etapas posnatales) sigue sin tocar; la crianza de las crías NACIDAS la llevan
   los deseos (`nurse`, `heel`, `den`, `incubate`).
 - [A] = valor de referencia general sin cita primaria verificada.
+- Humanos e insectos-humanos: el embarazo no tiene etapas visibles (barriga) ni parto con comadrona; el niño no va a la
+  escuela del pueblo (sigue a su madre y luego hace su jornada); la suciedad solo se quita en el lavabo de casa (en el
+  santuario, lavarse las manos en los aseos la baja un poco).

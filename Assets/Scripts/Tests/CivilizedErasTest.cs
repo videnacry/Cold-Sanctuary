@@ -72,7 +72,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
             }
             foreach (CubeInsect ci in root.GetComponentsInChildren<CubeInsect>(true))
             {
-                if (!ci.folk || ci.GetComponent<FolkGrowth>() != null) continue;
+                if (!ci.folk || (ci.TryGetComponent(out BodyAging grow) && grow.growth < BodyAging.Adult)) continue;   // los niños nacidos aquí (crecen con BodyAging)
                 CapsuleCollider cc = ci.GetComponent<CapsuleCollider>(); if (cc != null && cc.height < 1.5f) { species.Add(ci.species); continue; }   // los niños (refugiados del 42) son pequeños a propósito
                 species.Add(ci.species);
                 Transform ins = ci.transform.Find("Insecto"); if (ins == null) continue;
@@ -117,6 +117,30 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
             }
         }
         else if (sceneName != "Microcosmos_Tregua1914") TestProbe.Check($"{sceneName}: al menos una pareja (FolkCouple)", false);
+
+        // REGLA 6 · HOGARES (Berón 2026-11-02): cada insecto-humano tiene hogar —cama (una por persona), retrete, lavabo, mesa con
+        // sillas y despensa—, las parejas comparten el suyo, y todos llevan el ciclo de vida de una persona (PersonLife: necesidades,
+        // edad, familia). Y el pueblo tiene LUGARES DE TRABAJO (edificios que no son casas, donde trabaja cada jornada) y SERVICIOS
+        // BÁSICOS (las seis necesidades de la regla 4, que mira el validador de abajo).
+        var homeBad = new List<string>(); int folk = 0, alive = 0, paired = 0;
+        foreach (GameObject root in s.GetRootGameObjects())
+        {
+            homeBad.AddRange(Household.Check(root.transform));
+            foreach (FolkLineage f in root.GetComponentsInChildren<FolkLineage>(true))
+            {
+                folk++;
+                if (f.TryGetComponent(out PersonLife pl) && f.GetComponent<NeedsDriver>() != null && f.GetComponent<BodyAging>() != null && f.GetComponent<BodyMetabolism>() != null) alive++;
+                if (pl != null && pl.partner != null && pl.home != null && pl.home == pl.partner.home) paired++;
+            }
+        }
+        TestProbe.Check($"{sceneName}: cada insecto-humano tiene hogar con cama, retrete, lavabo, mesa con sillas y despensa", homeBad.Count == 0,
+            homeBad.Count == 0 ? $"{folk} personas" : string.Join(" · ", homeBad.GetRange(0, Mathf.Min(8, homeBad.Count))));
+        TestProbe.Check($"{sceneName}: todos con el ciclo de vida de una persona (PersonLife, NeedsDriver, BodyMetabolism, BodyAging)", alive == folk, $"{alive}/{folk}");
+        if (couples.Count > 0) TestProbe.Check($"{sceneName}: cada pareja comparte su hogar", paired >= 2 * couples.Count, $"{paired} personas en pareja con casa común, {couples.Count} parejas");
+        int workplaces = 0; string jobless = "";
+        foreach (AreaFunctionSite site in sites) if (site.building != "Casa" && site.building != "Orfanato" && site.Stations.Length > 0) workplaces++;
+        foreach (MicroJornada j in jornadas) if (j.follow == null && j.work != null && j.work.Stations.Length == 0) jobless += j.name + "; ";
+        TestProbe.Check($"{sceneName}: hay lugares de trabajo (edificios que no son casas) y cada jornada tiene el suyo", workplaces >= 1 && jobless.Length == 0, jobless.Length > 0 ? jobless : $"{workplaces} lugares de trabajo");
 
         // Las REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md): paso de 2 m, sin muros ni techos, muebles
         // detallados y las necesidades básicas, en cada escena.

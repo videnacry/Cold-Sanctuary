@@ -23,7 +23,7 @@ public class NeedsDriver : MonoBehaviour
     /// <summary>¿Está atendiendo ahora una necesidad del cuerpo (lo primero de su carril propio es comer, dormir o el baño)? Mientras,
     /// nadie más debe llevarlo a otro sitio (la clase de yoga, su puesto…).</summary>
     public static bool Attending(ActionQueue q)
-        => q != null && q.Own.Count > 0 && q.Own[0] is QueuedSpell s && (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell);
+        => q != null && q.Own.Count > 0 && q.Own[0] is QueuedSpell s && (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell);
 
     void Awake()
     {
@@ -37,7 +37,13 @@ public class NeedsDriver : MonoBehaviour
         if (_a == null || _body == null || _a.death || Time.time < _next) return;
         if (Orchestra.Busy(gameObject)) return;   // en una iniciación (examen, clase, cocina, huerto o acompañándolo): sus necesidades esperan (se acaba con tope)
         _next = Time.time + checkEvery;
-        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell) return;   // ya atendiendo una necesidad
+        foreach (QueuedSpell s in _q.Own) if (s is EatSpell || s is SleepSpell || s is DineSpell || s is ToiletSpell || s is HomeNeedSpell) return;   // ya atendiendo una necesidad
+
+        // CON HOGAR (Household: los insectos-humanos de las eras civilizadas y las escenas de ciclo de vida humano), las
+        // necesidades se atienden EN CASA: comer en su mesa, dormir en su cama, el retrete y el lavabo. Un insecto-humano sin
+        // hogar no usa los sitios del santuario (el restaurante, los aseos de las áreas): espera.
+        Household home = Household.Of(gameObject);
+        if (home != null || GetComponent<FolkLineage>() != null) { HomeNeeds(home); return; }
 
         if (!_a.asleep && _a.sleepiness >= sleepAbove)
         {
@@ -66,6 +72,31 @@ public class NeedsDriver : MonoBehaviour
             if (!DineSpell.AnyFood(transform.position)) _dineRetryAt = Time.time + 20f;
             _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
         }
+    }
+
+    /// <summary>
+    /// LAS NECESIDADES EN CASA (<see cref="Household"/>, docs/ciclo-de-vida.md §Humanos): dormir (con sueño, o de noche en el bloque
+    /// de casa con algo de sueño), el baño, comer (en turno solo si aprieta: la comida del mediodía es la de su jornada) y lavarse.
+    /// Igual para un humano y un insecto-humano. Si su horario lo tiene retenido (<see cref="MicroJornada.hold"/>: la historia lo
+    /// necesita quieto) o no tiene horario ni vida libre (un personaje de la historia), el cuerpo espera.
+    /// </summary>
+    void HomeNeeds(Household home)
+    {
+        if (home == null) return;
+        MicroJornada mj = GetComponent<MicroJornada>();
+        PersonLife pl = GetComponent<PersonLife>();
+        if (mj != null ? mj.hold : (pl == null || !pl.freeLife)) return;
+        if (_a.asleep) return;
+        float hour = TimeController.timeController != null ? TimeController.timeController.Hour : 12f;
+        bool night = hour >= 22f || hour < 6f;
+        bool homeBlock = mj == null || mj.AtHomeBlock;
+        if (_a.sleepiness >= sleepAbove || (night && homeBlock && _a.sleepiness >= 0.5f))
+        { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Dormir, home = home }); return; }
+        if (_body.toilet >= 0.85f) { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Bano, home = home }); return; }
+        if (_body.hunger >= eatAbove && (!HomeNeedSpell.RetryEat.TryGetValue(_a, out float at) || Time.time >= at)
+            && !(_body.hunger < starvingAbove && mj != null && mj.OnShift))
+        { _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Comer, home = home }); return; }
+        if (_body.dirt >= 0.85f) _q.EnqueueOwn(new HomeNeedSpell { need = HomeNeedSpell.Need.Lavarse, home = home });
     }
 }
 

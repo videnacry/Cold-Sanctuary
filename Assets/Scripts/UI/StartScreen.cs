@@ -105,6 +105,7 @@ public class StartScreen : MonoBehaviour
         { "CicloVida_OsoPolar", "Oso polar" }, { "CicloVida_Foca", "Foca" }, { "CicloVida_Ballena", "Ballena" },
         { "CicloVida_Pinguino", "Pingüino" }, { "CicloVida_Orca", "Orca" }, { "CicloVida_Malamute", "Malamute (perro de trineo)" },
         { "CicloVida_AbejaNieves", "Abeja de las nieves" }, { "CicloVida_AranaNieves", "Araña de las nieves" },
+        { "CicloVida_Humano", "Humanos (pareja en su casita)" }, { "CicloVida_InsectoHumano", "Insectos-humanos (pareja en Kapilavastu)" },
     };
     static readonly Dictionary<string, string> Accents = new Dictionary<string, string>
     {

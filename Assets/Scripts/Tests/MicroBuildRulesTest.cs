@@ -80,6 +80,27 @@ public class MicroBuildRulesTest : MonoBehaviour, ITestUnit
             int k = 0;
             foreach (string need in MicroBuildRules.Needs) Piece(empty, need, new Vector3(k++ * 4f, 0f, 0f), new Vector3(1f, 0.8f, 1f), need, need);
             TestProbe.Check("con sus seis muebles, ninguna falta", Count(MicroBuildRules.Validate(empty, null, true, false), "necesidad") == 0);
+
+            // 6 · Hogares (Household.Check): cada persona con hogar; el hogar con una cama por persona (un niño duerme con su
+            //     madre), retrete, lavabo, mesa con sillas y despensa.
+            var town = new GameObject("Pueblo").transform; town.SetParent(root, false); town.localPosition = new Vector3(0f, 0f, 100f);
+            GameObject she = Person(town, "Vecina", true), he = Person(town, "Vecino", false), loner = Person(town, "Solitario", false);
+            TestProbe.Check("sin hogar: «… sin hogar» por cada uno", Count(Household.Check(town), "sin hogar") == 3);
+            Transform house = new GameObject("Casa").transform; house.SetParent(town, false);
+            Transform bed1 = Piece(house, "Cama", new Vector3(0f, 0f, 0f), new Vector3(1f, 0.5f, 2f), "cama", "dormir");
+            Transform table = Piece(house, "Mesa", new Vector3(4f, 0f, 0f), new Vector3(1.4f, 0.75f, 0.8f), "mesa", "comer");
+            Transform chair = Piece(table, "Silla", new Vector3(0f, 0f, -0.7f), new Vector3(0.42f, 0.9f, 0.42f), "silla", "sentarse");
+            Household h = new GameObject("Hogar").AddComponent<Household>(); h.transform.SetParent(house, false);
+            h.family = "Vecina y Vecino"; h.beds.Add(bed1); h.table = table; h.seats.Add(chair);
+            h.Join(she); h.Join(he);
+            List<string> homeProblems = Household.Check(town);
+            TestProbe.Check("la pareja con una sola cama, sin retrete, lavabo ni despensa: lo ve", Has(homeProblems, "1 cama(s) para 2") && Has(homeProblems, "sin retrete") && Has(homeProblems, "sin lavabo") && Has(homeProblems, "sin despensa"), string.Join(" · ", homeProblems));
+            h.beds.Add(Piece(house, "Cama 2", new Vector3(-4f, 0f, 0f), new Vector3(1f, 0.5f, 2f), "cama", "dormir"));
+            h.toilet = Piece(house, "Retrete", new Vector3(8f, 0f, 0f), new Vector3(0.5f, 0.45f, 0.6f), "inodoro", "aseo");
+            h.washbasin = Piece(house, "Lavabo", new Vector3(12f, 0f, 0f), new Vector3(0.6f, 0.85f, 0.45f), "lavabo", "lavarse");
+            h.pantry = new GameObject("Despensa").AddComponent<FoodContainer>(); h.pantry.transform.SetParent(h.transform, false);
+            homeProblems = Household.Check(town);
+            TestProbe.Check("completo, la pareja comparte el hogar; solo falta el del solitario", homeProblems.Count == 1 && Has(homeProblems, "Solitario") && Household.Of(she) == h && Household.Of(he) == h, string.Join(" · ", homeProblems));
         }
         finally { Destroy(root.gameObject); }
         yield return null;
@@ -101,6 +122,17 @@ public class MicroBuildRulesTest : MonoBehaviour, ITestUnit
         Cube(t, "Detalle", new Vector3(0f, size.y + 0.02f, 0f), new Vector3(size.x * 0.5f, 0.04f, size.z * 0.5f));
         var mp = t.gameObject.AddComponent<MicroPiece>(); mp.kind = kind; mp.need = need; mp.walkable = walkable;
         return t;
+    }
+
+    // Una persona (el cuerpo y el ciclo de vida, sin cuerpo visible) con su linaje de insecto-humano.
+    static GameObject Person(Transform parent, string name, bool female)
+    {
+        var g = new GameObject(name); g.transform.SetParent(parent, false);
+        g.AddComponent<FolkLineage>().female = female;
+        PersonLife pl = PersonLife.Equip(g, female);
+        foreach (Behaviour b in g.GetComponents<Behaviour>()) if (!(b is FolkLineage)) b.enabled = false;   // quietos: solo se mira el hogar
+        pl.enabled = false;
+        return g;
     }
 
     static bool Has(List<string> l, string what) => Count(l, what) > 0;

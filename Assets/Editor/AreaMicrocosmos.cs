@@ -1003,6 +1003,7 @@ public static class AreaMicrocosmos
         Transform ins = g.transform.Find("Insecto");
         if (ins != null && bulk != 1f) ins.localScale = new Vector3(ins.localScale.x * bulk, ins.localScale.y, ins.localScale.z * Mathf.Sqrt(bulk));
         var lin = g.AddComponent<FolkLineage>(); lin.species = sp; lin.female = isFemale;
+        PersonLife.Equip(g, isFemale);   // el MISMO ciclo de vida que un humano: necesidades, edad, pareja, hijos y vejez (docs/ciclo-de-vida.md §Humanos)
         WorldLabel wl = g.AddComponent<WorldLabel>(); wl.text = name; wl.height = height + 0.4f;
         return g;
     }

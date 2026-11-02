@@ -8,6 +8,9 @@ using UnityEngine;
 /// registro que le tocan por su papel (el cocinero cocina, el médico pasa visita), come en el comedor de la era, practica
 /// en el dojo o la sala de yoga (si la hay) y descansa en casa. Va andando a su puesto (MicroMove); si en 60 s no llega,
 /// aparece junto a él (ninguna espera sin tope). Se para mientras la historia le necesita quieto (<see cref="hold"/>).
+/// (2026-11-02) Es la CAPA DE HORARIO sobre el ciclo de vida de una persona (<see cref="PersonLife"/>), como WorkdayDirector para
+/// el personal del santuario: el cuerpo (<see cref="NeedsDriver"/>) pide dormir, el baño, comer o lavarse y lo atiende en su
+/// casa (<see cref="Household"/>); mientras, la jornada no lo mueve. En el bloque de la comida come en el comedor de la era.
 /// </summary>
 public class MicroJornada : MonoBehaviour
 {
@@ -22,6 +25,8 @@ public class MicroJornada : MonoBehaviour
     AreaFunctionSite _site; AreaFunctions.AreaFunction _fn; AreaFunctionStation _st;
     string _block; float _since; int _salt;
     WorldLabel _label; string _name;
+    Anima _a; ActionQueue _q; BodyMetabolism _body;
+    bool _resume; float _arrivedAt = -1f; int _ateDay = int.MinValue;
 
     /// <summary>Qué está haciendo ahora («Cocinando: …»), para el rótulo y las pruebas.</summary>
     public string Doing { get; private set; } = "";
@@ -31,7 +36,13 @@ public class MicroJornada : MonoBehaviour
     {
         _label = GetComponent<WorldLabel>(); _name = _label != null ? _label.text : name;
         _salt = Mathf.Abs(name.GetHashCode());
+        _a = GetComponent<Anima>(); _q = GetComponent<ActionQueue>(); _body = GetComponent<BodyMetabolism>();
     }
+
+    /// <summary>¿En su turno (trabajo o práctica, no siguiendo a su madre)? Entonces el hambre que no aprieta espera a la comida.</summary>
+    public bool OnShift { get { string b = BlockAt(Hour); return follow == null && work != null && (b == "trabajo" || b == "practica"); } }
+    /// <summary>¿Es la hora de estar en casa (después de la práctica, la noche)?</summary>
+    public bool AtHomeBlock => BlockAt(Hour) == "casa";
 
     /// <summary>La hora del día (el reloj del juego; sin él, un día cada 6 min reales).</summary>
     public static float Hour => TimeController.timeController != null ? TimeController.timeController.Hour : (Time.time / 15f) % 24f;
@@ -66,9 +77,12 @@ public class MicroJornada : MonoBehaviour
     void Update()
     {
         if (hold) return;
+        if (_q == null) { _a = GetComponent<Anima>(); _q = GetComponent<ActionQueue>(); }
+        if (_a != null && (_a.death || _a.asleep)) return;
+        if (NeedsDriver.Attending(_q)) { _resume = true; return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
         if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f, speed * 1.2f, 1.5f); return; }
         string block = BlockAt(Hour);
-        if (block != _block || _st == null) Choose(block);
+        if (block != _block || _st == null || _resume) { _resume = false; Choose(block); }
         if (_st == null) return;
         Vector3 to = WorkSpotOf(_st, transform.position);
         bool there = MicroMove.Step(transform, to, speed, 1.6f);
@@ -78,6 +92,8 @@ public class MicroJornada : MonoBehaviour
             if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en 60 s a «{_st.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
         }
         if (!there) { Say(_block == "casa" ? "A casa" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
+        if (_arrivedAt < 0f) _arrivedAt = Time.time;
+        if (_block == "comida") Lunch();
         Vector3 look = _st.transform.position - transform.position; look.y = 0f;
         if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
         if (_fn != null)
@@ -91,7 +107,7 @@ public class MicroJornada : MonoBehaviour
     void Choose(string block)
     {
         if (_st != null && _st.occupant == this) _st.occupant = null;
-        _block = block; _since = Time.time; _fn = null; _st = null;
+        _block = block; _since = Time.time; _fn = null; _st = null; _arrivedAt = -1f;
         _site = block == "trabajo" ? work : block == "comida" ? (dine ?? work) : block == "practica" ? (practice ?? work) : (home ?? work);
         if (_site == null) return;
         string r = block == "trabajo" ? role : "todos";
@@ -100,6 +116,21 @@ public class MicroJornada : MonoBehaviour
         if (_st == null) { AreaFunctionStation[] all = _site.Stations; if (all.Length > 0) _st = all[_salt % all.Length]; }
         if (_st != null) { if (_st.occupant == null) _st.occupant = this; if (_fn != null) _st.uses++; }
         Doing = _fn != null ? $"{AreaFunctions.Verb(_fn.kind)}: {_fn.title}" : "";
+    }
+
+    // LA COMIDA DEL MEDIODÍA en el comedor de la era (una vez al día, tras ~20 min de juego sentado a su puesto): el mismo
+    // efecto que comer en casa (HomeNeedSpell) o en el restaurante del santuario (DineSpell).
+    void Lunch()
+    {
+        if (_body == null) _body = GetComponent<BodyMetabolism>();
+        if (_body == null) return;
+        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+        float minute = TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f;
+        if (day == _ateDay || Time.time - _arrivedAt < 20f * minute) return;
+        _ateDay = day;
+        _body.Feed(0.75f); _body.toilet = Mathf.Clamp01(_body.toilet + 0.25f);
+        PersonLife.Report(gameObject, "comer");
+        Debug.Log($"[Jornada micro] «{name}» come en {(_site != null ? _site.title : "el comedor")}.");
     }
 
     void Say(string what) { if (_label != null) _label.text = $"{_name} · {what}"; }

@@ -52,8 +52,9 @@ internal static partial class CivicBuilder
         var lots = new Lots(t);
         // Regla 5: en las eras avanzadas el pueblo sigue por el piso (casas de la era, vacías de gente).
         int fill = MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs) ? FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10) : 0;
+        int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
-        if (moved > 0 || fill > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {fill} casas de relleno.");
+        if (moved > 0 || fill > 0 || homes > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {fill} casas de relleno, {homes} casas nuevas para familias.");
         MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
         return n;
     }
@@ -558,6 +559,7 @@ internal static partial class CivicBuilder
                 new InsectGenealogy.Ancestor("abuela", R(), 2), new InsectGenealogy.Ancestor("abuelo", R(), 2), new InsectGenealogy.Ancestor("bisabuelo", R(), 3) };
         }
         a.female = true; b.female = false; a.partner = b; b.partner = a;
+        if (a.TryGetComponent(out PersonLife pa) && b.TryGetComponent(out PersonLife pb)) { pa.partner = pb; pb.partner = pa; pa.courtship = pb.courtship = 1f; pa.female = true; pb.female = false; }
         a.gameObject.AddComponent<FolkCouple>();
         return 2;
     }

@@ -2,7 +2,7 @@
 
 Berón: «en el microcosmos de Bruce Lee la cocina y los muebles parecían cubos». Desde ahora todo edificio de un microcosmos o
 mesocosmos (los de `CivicBuilder`, los pueblos nuevos de las figuras históricas y las historias que traen sus propias
-estructuras) cumple estas **cinco reglas**. El código que las aplica y las comprueba:
+estructuras) cumple estas **seis reglas** (la sexta, el hogar de cada personaje, desde 2026-11-02). El código que las aplica y las comprueba:
 
 | Pieza | Dónde | Qué hace |
 |---|---|---|
@@ -11,6 +11,7 @@ estructuras) cumple estas **cinco reglas**. El código que las aplica y las comp
 | `MicroFurniture` | `Assets/Editor/MicroFurniture.cs` | Los muebles detallados (cocina con sus utensilios, mesa con sillas, cama, retrete, lavabo…), reutilizando `KitchenProps`. |
 | `CivicBuilder.Building` | `Assets/Editor/CivicBuilder.cs` | Edificio ABIERTO (suelo, sin muros ni techo) que coloca sus muebles con el paso de 2 m y añade las necesidades básicas. |
 | `AreaMicrocosmos.FloorBounds` / `FloorRectLocal` | `Assets/Editor/AreaMicrocosmos.cs` | El rectángulo útil del piso, para que el pueblo lo llene entero. |
+| `CivicBuilder.Homes` / `Household` | `Assets/Editor/CivicBuilder.Homes.cs`, `Assets/Scripts/Body/Household.cs` | Regla 6: un hogar (camas, retrete, lavabo, mesa con sillas, despensa) para cada personaje; `Household.Check` lo comprueba. |
 
 ---
 
@@ -31,7 +32,7 @@ NavMeshAgent de **0,4 m** de radio. De ahí salen todos los números:
 
 ---
 
-## Las cinco reglas
+## Las seis reglas
 
 ### 1. Paso de 2 m entre objetos
 Entre dos muebles cualesquiera quedan **≥ 2,0 m libres** (en planta), dentro de un edificio y entre edificios. Lo que va
@@ -91,6 +92,29 @@ Todo pueblo tiene donde **dormir** (camas), **hacer sus necesidades** (retrete, 
 `CivicBuilder.Building` las añade solo a cada **Casa** (cama, retrete, lavabo, mesa con sillas, cocina) y
 `CivicBuilder.Civilize` comprueba al final la escena entera y añade unos **aseos de la era** (letrina / retrete y
 palangana / lavabo) si aún falta alguna.
+
+
+### 6. Un hogar para cada personaje (2026-11-02)
+Berón: «los pueblos de historia de los microcosmos deben ser reconstruidos para que haya hogares para los demás personajes,
+además de los lugares de trabajo y los servicios básicos, para que cada personaje realice su ciclo de vida correctamente».
+
+Todo insecto-humano de un pueblo civilizado (cualquier `FolkLineage` del pueblo, también los de la historia) vive en un
+**hogar** (`Household`, runtime): una casa con **una cama por persona**, **retrete**, **lavabo**, **mesa con sillas** y una
+**despensa** (`FoodContainer`, se repone cada día). Las **parejas y sus hijos comparten** el suyo; un niño puede dormir con su
+madre. Ahí atiende su cuerpo (`NeedsDriver` → `HomeNeedSpell`): come en su mesa, duerme en su cama, va al baño y se lava; la
+comida del mediodía es la de su jornada, en el comedor de la era (docs/ciclo-de-vida.md §Humanos).
+
+`CivicBuilder.Homes` lo hace **después** de cada constructor de era o pueblo y de sus casas de relleno (`Civilize`, paso 3):
+reparte a la gente en familias (las parejas juntas) y a cada familia le da (1) una casa que ya hay —la de su jornada, o la más
+cercana— si le quedan camas libres para todos (para una pareja, una más para un hijo), o si no (2) **una casa nueva de la
+era** (`CivicBuilder.NewHouse`: plantilla «Casa», abierta, con sus muebles detallados y el paso de 2 m) en el solar libre más
+cercano a su trabajo, con una cama por persona y, si es una pareja, dos más para los hijos. La jornada (`MicroJornada.home`) va
+a esa casa. El pueblo conserva además sus **lugares de trabajo** (edificios que no son casas) y sus **servicios básicos**
+(regla 4).
+
+Comprobación: `Household.Check(raíz)` devuelve quién no tiene hogar y qué le falta a cada hogar. La prueba **62**
+(`CivilizedErasTest`) lo exige en cada escena (y que cada persona lleve el ciclo de vida de una persona, que las parejas
+compartan casa y que haya lugares de trabajo); la **63** (`MicroBuildRulesTest`) prueba el validador con casos pequeños.
 
 ### 5. Eras avanzadas: el pueblo o la ciudad real ocupa el piso entero
 Desde las primeras ciudades (`MicroBuildRules.IsTownEra(year)`: año ≥ −3500), el microcosmos **no** es el área del santuario
@@ -161,6 +185,13 @@ internal sealed class CivicBuilder.Lots { Lots(Transform t, HashSet<Transform> s
 internal static AreaFunctionSite CivicBuilder.Place(Transform t, Lots lots, AreaFunctionSite site, Vector2 near, List<Transform> placed = null);
 internal static int CivicBuilder.FillTown(Transform t, Lots lots, Vector2 near, Style st, string title, int count);
 internal static AreaFunctionSite CivicBuilder.EnsureNeeds(Transform t, Lots lots, Style st);   // en el solar libre más cercano al claro
+internal static int CivicBuilder.Homes(Transform t, Lots lots, string display);   // regla 6: hogar para cada FolkLineage; devuelve las casas nuevas
+internal static AreaFunctionSite CivicBuilder.NewHouse(Transform t, Lots lots, List<GameObject> fam, Style st, string title, int beds);
+internal static Household CivicBuilder.MakeHousehold(AreaFunctionSite site, List<GameObject> fam, HashSet<Transform> used = null);
+
+// Assets/Scripts/Body/Household.cs (runtime)
+public static Household Household.Of(GameObject g);
+public static List<string> Household.Check(Transform scope);   // «… sin hogar», «sin retrete», «1 cama(s) para 2 personas»…
 
 // Assets/Editor/AreaMicrocosmos.cs: el sexo de un insecto-humano
 internal static GameObject AreaMicrocosmos.Folk(..., Color? body = null, bool? female = null);   // null → FemaleByName → hash
@@ -173,8 +204,10 @@ internal static bool? AreaMicrocosmos.FemaleByName(string name);   // «Hannah»
    corre al solar libre más cercano con su gente.
 2. Eras avanzadas con relleno (`FillStyles`: Escútari, Dayton, Kapilavastu, Alejandría, Patanjali, Planta Atómica, Varsovia,
    Le Chambon, Uruk): 10 casas más de la era por el piso.
-3. `EnsureNeeds`: los aseos de la era si falta alguna necesidad básica.
-4. `MicroBuildRules.Validate` en el registro.
+3. `Homes` (regla 6): un hogar para cada personaje —una casa del pueblo con camas libres o una casa nueva de la era en un
+   solar libre—, las parejas juntas.
+4. `EnsureNeeds`: los aseos de la era si falta alguna necesidad básica.
+5. `MicroBuildRules.Validate` en el registro.
 
 **Excepción a la regla 2**: una barrera que ES la historia (el muro del gueto de Varsovia, cuyas salidas son los pasos de la
 misión) va bajo un `MicroPiece` con `kind = MicroBuildRules.Historic` («historico»): no cuenta como muro. Pendiente de que
