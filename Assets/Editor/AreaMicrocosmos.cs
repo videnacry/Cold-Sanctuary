@@ -64,6 +64,14 @@ public static class AreaMicrocosmos
             giant.transform.localScale = Vector3.one * AreaScale;
             foreach (Transform c in giant.transform)
                 if (c.name == "Mat" || c.name.StartsWith("Suelo")) c.localPosition = new Vector3(c.localPosition.x, -0.02f, c.localPosition.z);   // su suelo, bajo el resto
+            // (×100) La cara de arriba del suelo del área, a ras de 0: a ×100 su losa (de centímetros) mide metros y su cara de arriba
+            // quedaba a 13 m; el pueblo y la historia (en y = 0) se quedaban enterrados bajo ella. Se baja el área gigante entera.
+            {
+                float slabTop = float.MinValue;
+                foreach (Transform c in giant.transform)
+                    if ((c.name == "Mat" || c.name.StartsWith("Suelo")) && SubtreeBounds(c, out Bounds sb, false)) slabTop = Mathf.Max(slabTop, sb.max.y);
+                if (slabTop > 0.05f) giant.transform.localPosition -= Vector3.up * slabTop;
+            }
             // Una copia de las plazas en el área gigante (con su escala ×10): las pruebas miran si se usaron.
             if (slots != null)
             {
