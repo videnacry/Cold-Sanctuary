@@ -33,7 +33,8 @@ public class MarineLife : MonoBehaviour
     /// <summary>¿Está en un hábito natural (respirando por su respiradero, frotándose en la grava, patrullando los témpanos,
     /// descansando en un descansadero)? Lo cuenta el censo de <see cref="AnimalVitals"/>.</summary>
     // Tumbada en su trozo de orilla (con o sin descansadero marcado) también está en su hábitat: descansa a propósito.
-    public bool InHabitat => (_spot != null && _spotUntil >= 0f) || (_haul != null && transform.position.y > -0.3f) || (_onIce && transform.position.y > -0.3f);
+    public bool InHabitat => _withMom || (_spot != null && _spotUntil >= 0f) || (_haul != null && transform.position.y > -0.3f) || (_onIce && transform.position.y > -0.3f);
+    bool _withMom;
     float _nextSpot, _spotUntil;
     static int _count;
     // BAJO EL HIELO: las placas de la banquisa («Casquete») van de IceTop (0) a −1,5 m. Nadando a −1 m se metían DENTRO de
@@ -116,6 +117,7 @@ public class MarineLife : MonoBehaviour
             }
         }
 
+        _withMom = false;
         // ── CRÍA: sigue a su madre ──
         if (_a.lifeStage == LifeStage.child)
         {
@@ -133,6 +135,10 @@ public class MarineLife : MonoBehaviour
                 Vector3 side = mom.transform.right * 1.4f;
                 if (ml != null && ml.OnIce) { _onIce = true; Move(mom.transform.position + side, speed, onIce: true); return; }
                 _onIce = false;
+                // (2026-11-02) PEGADA A SU MADRE mientras ella está en su hábitat (patrullando los témpanos, respirando): la cría está
+                // quieta a su lado a propósito, también en su hábitat. La orca cría «atascada > 20 s» en (45, −3, 12) y (83, −3, 30)
+                // estaba a 1,4 m de su madre, que patrullaba los témpanos (en vivo).
+                _withMom = ml != null && ml.InHabitat && Vector3.Distance(mom.transform.position, transform.position) <= reach + 1f;
                 Vector3 t = mom.transform.position + side; t.y = Mathf.Min(t.y, SwimY);
                 Move(t, speed * 1.2f, false);
                 return;

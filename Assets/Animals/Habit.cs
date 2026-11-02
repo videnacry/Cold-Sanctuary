@@ -122,7 +122,9 @@ public class Habit : MonoBehaviour
         var found = new Affordance[acts.Length];
         for (int i = 0; i < acts.Length; i++)
         {
-            found[i] = Find(acts[i]);
+            // (2026-11-02) La CRÍA no construye el nido: llevar guijarros es cosa de adultos (Adélie). El polluelo de la colonia iba
+            // y venía con un guijarro entre otros dos sitios de nido 39 m en 20 s para 1,2 m netos («da vueltas en círculo», en vivo).
+            found[i] = _a.lifeStage == LifeStage.child && acts[i].effect == HabitEffect.Carry ? null : Find(acts[i]);
             if (found[i] != null || (acts[i].effect == HabitEffect.Huddle && Night)) total += W(acts[i]);
         }
         if (total <= 0f) { _cool = Time.time + 5f; return; }
