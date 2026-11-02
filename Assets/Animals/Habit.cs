@@ -159,7 +159,7 @@ public class Habit : MonoBehaviour
     void Update()
     {
         if (_s == State.None) return;
-        if (_a == null || _a.death || _a.asleep || _a.busy || Time.time > _lease) { Stop(); return; }
+        if (_a == null || _a.death || _a.asleep || _a.busy || _a.aware || Time.time > _lease) { Stop(); return; }
         switch (_s)
         {
             case State.Going:

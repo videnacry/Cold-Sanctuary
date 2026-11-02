@@ -467,7 +467,11 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
     {
         if (busy || asleep || nav == null || !nav.isOnNavMesh) return;
         bool prefersWater = WaterAffinity > LandAffinity;
-        if (prefersWater && currentMedium != Medium.Water)
+        // (2026-11-02) El tirón hacia el agua, solo a quien está LIBRE: sin camino propio (un deseo, un hábito, la huida), sin hábito
+        // en marcha, adulto y no encerrado. Cada pocos segundos mandaba al pingüino al marcador de agua más cercano encima de lo
+        // que estuviera haciendo: el del guijarro o el que se acicalaba en el borde iban y venían 16–38 m en 20 s, y los polluelos
+        // del recinto de la Cría salían hacia el mar del suelo (camino parcial a la esquina del recinto) y volvían (en vivo).
+        if (prefersWater && currentMedium != Medium.Water && !nav.hasPath && !nav.pathPending && lifeStage != LifeStage.child && !DesireCatalog.Confined(this) && !(TryGetComponent(out Habit hb) && hb.Active))
         {
             Swarm water = Swarm.Nearest(transform.position);   // marcadores de agua
             if (water != null) Loco.Walk(water.transform.position, dt);
