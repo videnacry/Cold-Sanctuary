@@ -236,8 +236,8 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
             var sites = new List<AreaFunctionSite>(root.GetComponentsInChildren<AreaFunctionSite>());
             Bounds town = default; bool anyTown = false;
             foreach (AreaFunctionSite site in sites) { Bounds b = new Bounds(site.transform.position, Vector3.one); if (!anyTown) { town = b; anyTown = true; } else town.Encapsulate(b); }
-            Bounds fr = floor.WorldRect();
-            TestProbe.Check("Kowloon y Seattle: ≥ 12 edificios repartidos por el piso (≥ 60 % de su ancho)", sites.Count >= 12 && anyTown && town.size.x >= 0.6f * fr.size.x, $"{sites.Count} edificios en {town.size.x:0} de {fr.size.x:0} m");
+            Bounds fr = mfl != null && mfl.districtSize.x > 1f ? new Bounds(root.TransformPoint(mfl.districtCenter), new Vector3(mfl.districtSize.x, 0f, mfl.districtSize.y)) : floor.WorldRect();   // (×100: el barrio de la historia)
+            TestProbe.Check("Kowloon y Seattle: ≥ 12 edificios repartidos por su barrio (≥ 60 % de su ancho)", sites.Count >= 12 && anyTown && town.size.x >= 0.6f * fr.size.x, $"{sites.Count} edificios en {town.size.x:0} de {fr.size.x:0} m");
             var bad = MicroBuildRules.Validate(root, "Microcosmos_BruceLee", true, false);
             TestProbe.Check("cumple las reglas de edificación (paso de 2 m, sin muros ni techos, muebles detallados, necesidades básicas)", bad.Count == 0, string.Join(" · ", bad.GetRange(0, Mathf.Min(8, bad.Count))));
         }
