@@ -13,7 +13,7 @@ public class NeedsDriver : MonoBehaviour
     [Range(0f, 1f)] public float sleepAbove = 0.85f;
     public float checkEvery = 2f;
 
-    float _next;
+    float _next, _dineRetryAt;
     Anima _a;
     BodyMetabolism _body;
     ActionQueue _q;
@@ -47,7 +47,10 @@ public class NeedsDriver : MonoBehaviour
             // (2026-11-01) SIN COMIDA en ningún sitio (antes de las 11:00 la barra está vacía: el servicio la llena a esa hora) no
             // pide «comer» cada segundo: lo intenta de nuevo en 20 s. Antes cada DineSpell acababa al momento y el siguiente
             // volvía a ser «pedir en la barra» sin moverse (Goluis 47 muestras «atascado» en la Central Nuclear, JornadaTest).
-            if (!DineSpell.AnyFood(transform.position)) { _next = Time.time + 20f; return; }
+            // (2026-11-02) La PRIMERA vez se encola al momento (el hambre se nota ya; la prueba «Cuerpo» lo mira a los 2
+            // fotogramas) y la espera es solo de la comida: antes movía `_next` y retrasaba también 20 s el sueño y el baño.
+            if (Time.time < _dineRetryAt) return;
+            if (!DineSpell.AnyFood(transform.position)) _dineRetryAt = Time.time + 20f;
             _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
         }
     }
