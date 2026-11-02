@@ -52,7 +52,9 @@ public static partial class SampleSceneBuilder
         RenderSettings.ambientLight = insects ? new Color(0.72f, 0.66f, 0.58f) : new Color(0.62f, 0.68f, 0.72f);
 
         // ── El terreno: un prado (humanos) o el solar de tierra de un pueblo de la era (insectos-humanos), con su calle ──
-        var land = new GameObject(insects ? "Solar_de_Kapilavastu" : "Prado");
+        // Lejos del santuario (el constructor abre la escena en aditivo sobre SampleScene: la foto y el NavMesh no deben mezclarse con él).
+        Vector3 O = new Vector3(-3000f, 0f, insects ? -3200f : -3000f);
+        var land = new GameObject(insects ? "Solar_de_Kapilavastu" : "Prado"); land.transform.position = O;
         var ground = GameObject.CreatePrimitive(PrimitiveType.Cube); ground.name = "Suelo_del_terreno";
         ground.transform.SetParent(land.transform, false);
         ground.transform.localPosition = new Vector3(0f, -0.1f, 0f); ground.transform.localScale = new Vector3(48f, 0.2f, 48f);
@@ -65,7 +67,7 @@ public static partial class SampleSceneBuilder
             insects ? new Color(0.5f, 0.42f, 0.32f) : new Color(0.66f, 0.6f, 0.5f));
 
         // ── La pareja (todavía sin pareja: el cortejo se ve aquí) ──
-        var people = new GameObject("Personas");
+        var people = new GameObject("Personas"); people.transform.position = O;
         GameObject she, he;
         if (insects)
         {
@@ -82,8 +84,8 @@ public static partial class SampleSceneBuilder
         }
         else
         {
-            she = Person(people.transform, "Elena", new Vector3(-2f, 0f, -9f), 1.68f, true, new Color(0.55f, 0.35f, 0.5f));
-            he = Person(people.transform, "Tomás", new Vector3(2f, 0f, -9f), 1.8f, false, new Color(0.3f, 0.4f, 0.55f));
+            she = Person(people.transform, "Elena", O + new Vector3(-2f, 0f, -9f), 1.68f, true, new Color(0.55f, 0.35f, 0.5f));
+            he = Person(people.transform, "Tomás", O + new Vector3(2f, 0f, -9f), 1.8f, false, new Color(0.3f, 0.4f, 0.55f));
         }
 
         // ── Su casa: la misma que reciben las familias de los pueblos (CivicBuilder.Homes), con despensa inagotable ──
@@ -112,11 +114,11 @@ public static partial class SampleSceneBuilder
         var panel = new GameObject("CicloHumano_Panel").AddComponent<CicloHumanoPanel>();
         panel.displayName = display; panel.insects = insects;
         new GameObject("TestRunner_AUTO").AddComponent<ColdSanctuary.TestRunner>().onlyGroups = new[] { 59 };   // solo su prueba
-        var label = new GameObject("Rotulo"); label.transform.position = new Vector3(0f, 0f, 14f);
+        var label = new GameObject("Rotulo"); label.transform.position = O + new Vector3(0f, 0f, 14f);
         WorldLabel wl = label.AddComponent<WorldLabel>(); wl.height = 5f;
         wl.text = insects ? "Ciclo de vida: insectos-humanos\nuna mariquita y una araña (y su árbol genealógico) en su casa de Kapilavastu"
                           : "Ciclo de vida: humanos\nuna mujer y un hombre en su casita (despensa inagotable)";
-        GalleryExplorer.Spawn(new Vector3(0f, 0.1f, -20f), 0f);
+        GalleryExplorer.Spawn(O + new Vector3(0f, 0.1f, -20f), 0f);
 
         // Foto de conjunto (Temp/CicloHumano/<escena>.png).
         Vector3 look = house.transform.position;
