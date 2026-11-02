@@ -163,7 +163,7 @@ internal static partial class CivicBuilder
         if (firstHome)
             foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true))
             {
-                if (p.transform.parent != site.transform) continue;   // los muebles de la casa (no las sillas de su mesa)
+                if (p == null || p.transform.parent != site.transform) continue;   // los muebles de la casa (las sillas de una mesa rehecha ya no están)
                 if (p.kind == "inodoro") MicroFurniture.Refit(p.transform, "inodoro", Year, region, all);
                 else if (p.kind == "lavabo") MicroFurniture.Refit(p.transform, "lavabo", Year, region, all);
                 else if (p.kind == "mesa") MicroFurniture.Refit(p.transform, "mesa", Year, region, bodies[0], bodies);
