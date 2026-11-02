@@ -207,6 +207,11 @@ public class Habit : MonoBehaviour
             if (Time.time >= _nextWalk) { _nextWalk = Time.time + 1f; _a.Loco?.Walk(to, 1f); }
             return false;
         }
+        // (2026-11-02) CON agente pero fuera del NavMesh (nadando, recién caído): NO en línea recta. El paso recto no mira lo que
+        // hay delante y metía al oso DENTRO del hielo del «Casquete» (iba a su respiradero desde el agua). Espera a volver al
+        // NavMesh (Animal.KeepOnNavMesh) y, si no vuelve, la regla de los 10 s lo deja. La línea recta queda para quien no
+        // tiene agente o lo apaga a propósito (los del microcosmos, los insectos que vuelan o trepan: IceInsectLife).
+        if (_a.nav != null && _a.nav.enabled) return false;
         float v = _a.ActsPrep != null && _a.ActsPrep.walk != null ? _a.ActsPrep.walk.navSpeed : 2f;
         return MicroMove.Step(transform, to, v, Arrive);
     }

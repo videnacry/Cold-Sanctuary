@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +12,25 @@ public class MediumZone : MonoBehaviour
 {
     [Tooltip("Medio que representa este volumen.")]
     public Medium medium = Medium.Water;
+
+    static readonly List<MediumZone> _all = new List<MediumZone>();
+    Collider _col;
+
+    void OnEnable() { _col = GetComponent<Collider>(); _all.Add(this); }
+    void OnDisable() { _all.Remove(this); }
+
+    /// <summary>¿Están estos pies DENTRO del agua (más de 10 cm bajo la superficie de una zona de agua)? El trigger de todo el
+    /// mar llega a ras del hielo y un cuerpo que anda por el borde de la placa lo roza: eso no es estar en el agua.</summary>
+    public static bool Submerged(Vector3 feet)
+    {
+        foreach (MediumZone z in _all)
+        {
+            if (z == null || z.medium != Medium.Water || z._col == null) continue;
+            Bounds b = z._col.bounds;
+            if (feet.x >= b.min.x && feet.x <= b.max.x && feet.z >= b.min.z && feet.z <= b.max.z && feet.y >= b.min.y && feet.y < b.max.y - 0.1f) return true;
+        }
+        return false;
+    }
 
     void Reset()
     {

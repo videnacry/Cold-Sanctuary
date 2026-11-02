@@ -472,7 +472,10 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             Swarm water = Swarm.Nearest(transform.position);   // marcadores de agua
             if (water != null) Loco.Walk(water.transform.position, dt);
         }
-        else if (!prefersWater && currentMedium == Medium.Water)
+        // (2026-11-02) Solo si de verdad está EN el agua: el trigger del mar llega a ras del hielo y el oso que iba al borde de la
+        // placa (a un respiradero) lo rozaba: «en el agua» → corría a casa, al salir del trigger el hábito lo devolvía al
+        // respiradero, y así sin fin (Bear «da vueltas en círculo» 68–80 m en 20 s, «acecha junto a un respiradero», en vivo).
+        else if (!prefersWater && currentMedium == Medium.Water && MediumZone.Submerged(transform.position))
         {
             Loco.Run(HomeOrigin, dt);   // salir del agua hacia tierra
         }
@@ -653,14 +656,21 @@ public class Animal : Anima, ITarget, IEdible, ICarrier, IFactory   // CONCRETA 
             {
                 nextPick = Time.time + 1f;
                 Vector3 best = transform.position + away.normalized * fleeStep; float bestD = -1f;
-                foreach (float turn in FleeFan)
-                {
-                    if (!NavReach.Reachable(this, transform.position + Quaternion.Euler(0f, turn, 0f) * away.normalized * fleeStep, out Vector3 at, 6f)) continue;
-                    float dd = Vector3.Distance(at, threat.transform.position);
-                    if (dd > bestD + 1f) { bestD = dd; best = at; }
-                    if (turn == 0f) break;   // recto hacia atrás se puede: por ahí
-                }
-                Loco.GoTo(best);
+                // (2026-11-02) Si a fleeStep no hay nada alcanzable (contra el agua, en la colonia), prueba más cerca: antes iba
+                // hacia el punto recto de 40 m FUERA del NavMesh y el agente se quedaba con el camino «pendiente», quieto, huyendo
+                // (pingüinos «atascados > 20 s» en su colonia con aware y pathPending, comprobado en vivo).
+                for (float step = fleeStep; step >= fleeStep * 0.25f - 0.01f && bestD < 0f; step *= 0.5f)
+                    foreach (float turn in FleeFan)
+                    {
+                        if (!NavReach.Reachable(this, transform.position + Quaternion.Euler(0f, turn, 0f) * away.normalized * step, out Vector3 at, 6f)) continue;
+                        float dd = Vector3.Distance(at, threat.transform.position);
+                        if (dd > bestD + 1f) { bestD = dd; best = at; }
+                        if (turn == 0f) break;   // recto hacia atrás se puede: por ahí
+                    }
+                if (bestD < 0f) break;   // ningún sitio alcanzable lejos de la amenaza: acorralado
+                // Con el camino YA calculado (como los deseos, DesireCatalog.Move): SetDestination podía quedarse «pendiente»
+                // con cientos de obstáculos tallando, y el animal no se movía.
+                if (!(NavReach.Reachable(this, best, out Vector3 bestAt, 0.5f) && NavReach.LastPathTo(this, bestAt, out NavMeshPath fp) && nav.SetPath(fp))) Loco.GoTo(best);
             }
             yield return new WaitForSeconds(TimeController.timeController.TimeSpeedMinuteSecs / 20);
         }

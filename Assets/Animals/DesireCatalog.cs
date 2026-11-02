@@ -95,10 +95,11 @@ public static class DesireCatalog
                 // Si alguien de su especie LLAMA (destellos de luciérnaga, canto de cigarra) y lo percibe, va hacia él.
                 MatingSignal caller = MatingSignal.NearestCaller(self, 40f * Mathf.Max(0.3f, self.perception));
                 if (caller != null && self.sex == Sex.female && Flat(caller.transform.position - self.transform.position) > 2.5f && GoTo(self, "mate", caller.transform.position)) return;
-                Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
-                if (g.sqrMagnitude > 0.0001f && GoTo(self, "mate", self.transform.position + g.normalized * 6f)) return;
-                // Sin llamada ni rastro de celo que seguir: BUSCA (antes se quedaba plantado «queriendo pareja» todo el día):
-                // hacia el adulto del otro sexo de su especie más cercano o, si no ve ninguno, un paseo de búsqueda.
+                // Sin llamada: hacia el adulto del otro sexo de su especie más cercano que VE; si no ve ninguno, sigue el rastro del
+                // celo y, sin rastro, un paseo de búsqueda (antes se quedaba plantado «queriendo pareja» todo el día).
+                // (2026-11-02) El rastro, solo si no ve pareja, y cada tramo de 6 m hasta el final: en la colonia el rastro es el de
+                // todos (también el SUYO: cada adulto en celo deja Estrus) y su pendiente cambiaba a cada decisión; re-apuntando
+                // cada 2,5 s el pingüino iba y venía 30 m en 20 s para 1,5 m netos («da vueltas en círculo (mate)», en vivo).
                 Animal mate = null; float md = 40f;
                 foreach (GameObject o in self.Population)
                 {
@@ -110,6 +111,13 @@ public static class DesireCatalog
                 // lo alejaba y el «ir hacia ella» lo traía: daba vueltas en círculo, 16 m en 20 s para 0,3 m netos).
                 if (mate != null && md <= 2.5f) { Transform mt = mate.transform; Stroll(self, "cortejo", () => mt.position + Ring(1f, 2.5f), 1.5f, 3.5f, 0.6f); return; }
                 if (mate != null && GoTo(self, "mate", mate.transform.position)) return;
+                if (mate == null)
+                {
+                    Trip tr = TripOf(self, "rastro");
+                    if (Going(self, tr)) return;
+                    Vector3 g = TraceField.Trail(self.transform.position, TraceChannel.Estrus);
+                    if (g.sqrMagnitude > 0.0001f && Time.time >= tr.failUntil && NavReach.Reachable(self, self.transform.position + g.normalized * 6f, out Vector3 at) && Flat(at - self.transform.position) >= 2f) { Walk(self, tr, at); return; }
+                }
                 Explore(self, "buscar pareja");
             },
             "mate"),
@@ -251,7 +259,7 @@ public static class DesireCatalog
     {
         if (!Confined(self)) return false;
         Vector3 home = self.HomeOrigin;
-        Stroll(self, "recinto", () => home + Ring(0.8f, 2.2f), 1.5f, 4f, 0.6f);
+        Stroll(self, "recinto", () => home + Ring(0.8f, 2.2f), 4f, 9f, 0.6f);   // (pausas largas: curiosea, no corretea por el recinto)
         return true;
     }
 
@@ -340,9 +348,20 @@ public static class DesireCatalog
         {
             Vector3 p = pick();
             if (Flat(p - here) < minHop) continue;
-            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop) { Walk(self, t, at); return; }
+            if (NavReach.Reachable(self, p, out Vector3 at) && Flat(at - here) >= minHop && !Detour(self, at, here)) { Walk(self, t, at); return; }
         }
         StrollNoPick++; t.pauseUntil = Time.time + 1f;   // nada alcanzable ahora: lo reintenta en un momento
+    }
+
+    // ¿El camino hasta ese sitio da un RODEO (más del doble de la distancia recta + 1,5 m)? En el recinto de la Cría (la guarida,
+    // el comedero, el muro) un sitio a 2 m se alcanzaba por un camino de 5–6 m alrededor de la guarida: el polluelo y el
+    // cachorro iban y venían 15–17 m en 20 s para 1 m netos («da vueltas en círculo», en vivo). Un paseo es a un sitio que se ve.
+    static bool Detour(Animal self, Vector3 at, Vector3 here)
+    {
+        if (!NavReach.LastPathTo(self, at, out NavMeshPath p) || p.corners.Length < 3) return false;
+        float len = 0f;
+        for (int i = 1; i < p.corners.Length; i++) len += Vector3.Distance(p.corners[i - 1], p.corners[i]);
+        return len > 2f * Flat(at - here) + 1.5f;
     }
 
     // Explorar: saltos de 4–10 m (según su territorio) sesgados hacia delante, con pausas cortas.
