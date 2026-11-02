@@ -110,7 +110,7 @@ public class IceInsectLife : MonoBehaviour
         // (la ARAÑITA recién salida del saco sí es pequeña —~5 % de su madre— y crece con sus mudas: LifeStage)
         if (kind == Kind.Spider && _self != null && _self.lifeStage != LifeStage.adult) { if (transform.localScale.x < 0.05f) transform.localScale = Vector3.one * 0.05f; }
         else if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
-        if (_self != null && _self.death) return;
+        if (_self != null && _self.death) { FallDead(); return; }
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
         if (kind == Kind.Bee)
@@ -123,6 +123,20 @@ public class IceInsectLife : MonoBehaviour
             if (_self != null) _self.busy = _working;   // trabajando: ocupada (como el animal que come); la IA genérica no la mueve
         }
         else SpiderLife();
+    }
+
+    // MUERTA CAE (2026-11-02): la abeja que caza la araña junto al panal se quedaba suspendida en el aire para siempre, a 16–25 m
+    // (la batería la contaba como «atascada > 20 s»: las 6 SnowBee del grupo 50 eran cadáveres). Una vez, cae a lo que tenga
+    // debajo (una rama, el hielo); el zángano que muere al aparearse ya caía así.
+    bool _fell;
+    void FallDead()
+    {
+        if (_fell) return;
+        _fell = true;
+        float best = float.MaxValue; Vector3 at = transform.position;
+        foreach (RaycastHit h in Physics.RaycastAll(transform.position + Vector3.up * 0.05f, Vector3.down, 120f, ~0, QueryTriggerInteraction.Ignore))
+            if (!h.transform.IsChildOf(transform) && h.collider.GetComponentInParent<IceInsectLife>() == null && h.distance < best) { best = h.distance; at = h.point; }
+        if (best < float.MaxValue) transform.position = at + Vector3.up * 0.05f;
     }
 
     // Si en 6 s no se ha alejado 30 cm de donde estaba y no está trabajando en su sitio, suelta lo que hacía y se aparta 1–2 m.

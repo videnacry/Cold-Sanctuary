@@ -574,7 +574,9 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool marine = a.TryGetComponent(out MarineLife ml);
             bool inHabitat = marine && ml.InHabitat;
             string desire = a.TryGetComponent(out Volition vo) ? vo.LastDesire : "";
-            bool resting = a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
+            // (2026-11-02) UN CADÁVER no está «atascado»: las abejas que caza la araña, la foca que caza la orca… quedaban con su último
+            // deseo («explore») y contaban como atascadas > 20 s (las 6 SnowBee del grupo 50 estaban muertas, comprobado en vivo).
+            bool resting = a.death || a.asleep || a.busy || habit || inHabitat || desire == "rest" || desire == "brood" || desire == "den" || desire == "incubate" || desire == "drink" || desire == "nurse" || desire == "tend" || desire == "habit" || desire == "";
             bool full = Window(tr, out float path, out float net, out float reach);
             tr.activity = a.asleep ? "durmiendo" : a.busy ? "comiendo/cazando" : habit ? $"hábito: {hb.Doing}" : inHabitat ? "en su hábitat" : full && path > 1f ? $"moviéndose ({desire})" : $"quieto ({desire})";
             bool flier = a.AirAffinity >= 0.5f;
@@ -585,7 +587,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
             bool same = now - tr.headSince >= 19f;
             if (full && same && !resting && path < 0.5f) Add(tr.name, "atascado > 20 s", $"quiere «{desire}» y no se mueve en {Where(p)}", false);
             if (full && same && !flier && !marine && !a.busy && path > 15f && net < 2f && reach < path * 0.35f) Add(tr.name, "da vueltas en círculo", $"{path:0} m en 20 s para {net:0.0} m netos ({tr.activity})", false);
-            CheckBody(tr, p, riding, a.asleep || a.busy, false);
+            CheckBody(tr, p, riding, a.death || a.asleep || a.busy, false);
         }
 
         // Dentro de un mueble, en el agua sin ser acuático, cayendo y volcado (con 3 muestras seguidas, para no contar un roce).
