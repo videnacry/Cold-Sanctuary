@@ -145,6 +145,17 @@ public class DineSpell : QueuedSpell
         }
     }
 
+    /// <summary>Ya tiene el plato y está comiendo (o levantándose): no se le corta por tardar (WorkdayDirector.OwnNeeds).</summary>
+    public bool Eating => _phase >= 3;
+
+    /// <summary>Lo deja a medias (el desayuno lo sustituye): suelta su sitio en la barra y su silla.</summary>
+    public void Abandon(Anima self)
+    {
+        if (self != null) ReleaseBarSlot(self);
+        if (_seat != null) _taken.Remove(_seat);
+        _seat = null;
+    }
+
     float EatSeconds() => eatMinutes * (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f);
 
     // ── El tramo: un destino fijo sobre el NavMesh, PathMover (y sus alfombras), con tope y sin dar vueltas ──

@@ -93,20 +93,50 @@ public class WorkdayDirector : MonoBehaviour
         roster.trainingAreas.Clear(); roster.trainingAreas.AddRange(OpenTraining());
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
-        _lunched.Clear(); _lunchStocked = false;   // [Jornada] la comida de hoy
+        _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
         today = roster.Plan(day, AreaWork.Today(day, ConstructionProject.All));
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);
         Debug.Log($"[Jornada] Día {day}: {today.work.Count} misiones para {roster.workers.Count} personas · orden de áreas: {string.Join(" → ", today.areaOrder)}" +
                   (today.clones.Count > 0 ? $" · la Magnate se divide en {today.clones.Count}" : "") + (today.backlog.Count > 0 ? $" · {today.backlog.Count} pendientes para mañana" : ""));
         foreach (string s in WorkRoster.Balance(today, roster.workers.Count)) Debug.Log("[Jornada] " + s);
+        // (el reloj saltó la franja del desayuno —las pruebas lo ponen a las 7:57—: desayunan ahora, antes de la primera misión)
+        if (_breakfastDay != day && TC != null && TC.Day == day && TC.Hour >= BreakfastHour && TC.Hour < WorkRoster.StartHour + 0.5f) Breakfast(day);
         return today;
+    }
+
+    // ── EL DESAYUNO (2026-11-02): de 7:15 a 7:50, en casa, antes de la jornada. Sin él, el hambre de la noche llegaba a las 8 y
+    // el «pedir en la barra» (o el que quedó a medias de la tarde) se comía la primera misión: Lizmibet y Andrea, la hora de la
+    // clase de yoga entera en el restaurante y la clase con 0 alumnos (JornadaTest día 2). Desayunados, el hambre vuelve hacia
+    // las 11, la hora de comer; en turno solo interrumpe el hambre de verdad (NeedsDriver.starvingAbove), el baño y el sueño.
+    public const float BreakfastHour = 7.25f, BreakfastEnd = 7.84f;
+    int _breakfastDay = int.MinValue;
+
+    /// <summary>El personal desayuna: sacia el hambre y deja la comida que tuviera a medias (ya ha comido).</summary>
+    public void Breakfast(int day)
+    {
+        _breakfastDay = day;
+        int n = 0;
+        foreach (string who in staff)
+        {
+            GameObject g = Body(who);
+            if (g == null || !g.TryGetComponent(out Anima a) || a.death) continue;
+            if (g.TryGetComponent(out ActionQueue q))
+            {
+                foreach (QueuedSpell s in q.Own) if (s is DineSpell d) d.Abandon(a);
+                if (q.RemoveOwnWhere(s => s is DineSpell || s is EatSpell) > 0 && !a.asleep) DailyPoses.Stand().ApplyFinal(a);
+            }
+            if (g.TryGetComponent(out BodyMetabolism b)) b.hunger = Mathf.Min(b.hunger, 0.05f);
+            n++;
+        }
+        Debug.Log($"[Jornada] Día {day} · desayuno: {n} personas desayunan antes de la jornada.");
     }
 
     void Update()
     {
         if (TC == null || ColdSanctuary.TestRunner.Running) return;   // las pruebas usan a los personajes
         float h = TC.Hour; int day = TC.Day;
+        if (_breakfastDay != day && h >= BreakfastHour && h < BreakfastEnd) Breakfast(day);
         if (plannedDay != day && h >= WorkRoster.StartHour && h < WorkRoster.StartHour + 8f) PlanDay(day);
         if (today == null || plannedDay != day) return;
         Tick(h);
@@ -135,7 +165,10 @@ public class WorkdayDirector : MonoBehaviour
             GameObject g = Body(w.name);
             if (g == null || g.CompareTag("Player") || OnOwnDuty(g)) continue;
             string where = Where(w, h, out string doing);
-            Drive(g, where, doing, Current(w, h)?.mission.id);
+            string mid = Current(w, h)?.mission.id;
+            WorkRoster.Assignment early = HeadingEarly(w, g, h);
+            if (early != null) { where = early.mission.area; doing = early.mission.title; mid = null; }   // ya va hacia lo siguiente (otra torre)
+            Drive(g, where, doing, mid);
         }
         foreach (var kv in _clones)
             if (kv.Value != null && !OnOwnDuty(kv.Value)) { string where = Where(kv.Key, h, out string doing); string cm = Current(kv.Key, h)?.mission.id; Drive(kv.Value, where, doing, FruitGardener.IsRound(cm) ? cm : null, alwaysMove: true); }
@@ -346,6 +379,52 @@ public class WorkdayDirector : MonoBehaviour
         return null;
     }
 
+    // SALIR ANTES HACIA LA SIGUIENTE MISIÓN (2026-11-02), como Kushal (PlayerWorkday.HeadingEarly): de un árbol a otro se tarda
+    // 35–95 s de una hora de 148 s, y quien salía a la hora en punto llegaba con la misión siguiente a medias (JornadaTest día 2).
+    // Desde una misión sale a MITAD del viaje (las dos pierden lo mismo); ya comido, o en un hueco sin misión, con el viaje
+    // entero (eso no es trabajo de nadie). Lo siguiente es una misión de hoy en otra área (no la comida ni el entrenamiento, que
+    // empiezan a su hora). Una vez en camino no se da la vuelta (el viaje que queda se acorta al andar).
+    readonly Dictionary<WorkRoster.Worker, WorkRoster.Assignment> _heading = new Dictionary<WorkRoster.Worker, WorkRoster.Assignment>();
+    public WorkRoster.Assignment HeadingEarly(WorkRoster.Worker w, GameObject g, float h)
+    {
+        if (today == null || TC == null || g == null || w == null) return null;
+        float s = WorkRoster.StartHour, l0 = s + WorkRoster.FirstBlock, l1 = l0 + WorkRoster.LunchHours;
+        if (h < s || h >= s + 6f) return null;
+        if (_heading.TryGetValue(w, out WorkRoster.Assignment latched))
+        {
+            if (latched != null && h < latched.start && today.work.Contains(latched)) return latched;
+            _heading.Remove(w);
+        }
+        WorkRoster.Assignment cur = Current(w, h);
+        float end, share;
+        if (cur != null) { end = cur.start + cur.mission.hours; share = 0.5f; }
+        else if (h >= l0 && h < l1)
+        {
+            if (!_lunched.Contains(g)) return null;   // aún no ha comido
+            ActionQueue q = g.GetComponent<ActionQueue>();
+            if (q != null && q.Own.Any(x => x is DineSpell)) return null;
+            end = l1; share = 1f;
+        }
+        else
+        {
+            end = float.MaxValue;
+            foreach (WorkRoster.Assignment a in today.work) if (a.worker == w && a.start > h && a.start < end) end = a.start;
+            if (h < l0 && l0 <= end) return null;   // lo siguiente es la comida: a su hora
+            share = 1f;
+        }
+        WorkRoster.Assignment next = null;
+        foreach (WorkRoster.Assignment a in today.work) if (a.worker == w && Mathf.Abs(a.start - end) < 0.01f) { next = a; break; }
+        if (next == null || next.mission.area == AreaWork.Guard || (cur != null && next.mission.area == cur.mission.area)) return null;
+        Vector3 to = WorkPoint(next.mission.area, g.name);
+        if (to == Vector3.zero) return null;
+        float perHour = TC.SecondsPerGameDay / 24f;
+        float lead = ArbolCampos.TripSeconds(g.transform.position, to) * 1.15f / Mathf.Max(1f, perHour) * share;
+        if (end - h > lead) return null;
+        _heading[w] = next;
+        Debug.Log($"[Jornada] {h:00.0} h · {w.name} sale ya hacia «{next.mission.title}» ({next.mission.area}, a las {next.start:00.0} h): el viaje es de {lead / share * perHour:0} s.");
+        return next;
+    }
+
     /// <summary>¿Hay algún recién llegado sin iniciar? (Linduarda lo atiende antes que nada: es la médica que lo recibe)</summary>
     static float _newcomerCheck = -1f; static bool _newcomerCached;
     static bool NewcomerWaiting()
@@ -450,13 +529,17 @@ public class WorkdayDirector : MonoBehaviour
             if (s is ToiletSpell || s is DineSpell || s is SleepSpell || s is EatSpell || s is CarpetWalkSpell)
             {
                 if (!_needSince.TryGetValue(g, out var ns) || ns.s != s) _needSince[g] = ns = (s, Time.time);
-                if (!(s is SleepSpell) && Time.time - ns.t > MaxNeed) { q.ClearOwn(); Debug.Log($"[Jornada] «{g.name}» deja «{s.Label}» tras {MaxNeed:0} s sin acabar: vuelve a su puesto."); return false; }
+                if (s is DineSpell ds && ds.Eating) _needSince[g] = (s, Time.time);   // ya con el plato: come hasta acabar (antes se le cortaba sentado —Irosene «deja comer Yogur tras 240 s»— y volvía a pedir)
+                else if (!(s is SleepSpell) && Time.time - ns.t > MaxNeed) { q.ClearOwn(); Debug.Log($"[Jornada] «{g.name}» deja «{s.Label}» tras {MaxNeed:0} s sin acabar: vuelve a su puesto."); return false; }
                 SetStatus(g, s.Label); return true;
             }
         }
         if (doing == "Comida" && !_lunched.Contains(g) && g.GetComponent<Anima>() != null && InWorkspace(null, area, g.transform.position))
         {
-            _lunched.Add(g); q.EnqueueOwn(new DineSpell()); return true;
+            _lunched.Add(g);
+            BodyMetabolism body = g.GetComponent<BodyMetabolism>();
+            if (body != null && body.hunger < 0.25f) return false;   // ya comió (el hambre de verdad, NeedsDriver): no come dos veces y llega a la misión de las 12
+            q.EnqueueOwn(new DineSpell()); return true;
         }
         return false;
     }

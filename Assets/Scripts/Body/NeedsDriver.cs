@@ -11,6 +11,8 @@ public class NeedsDriver : MonoBehaviour
 {
     [Range(0f, 1f)] public float eatAbove = 0.6f;
     [Range(0f, 1f)] public float sleepAbove = 0.85f;
+    [Tooltip("Hambre que interrumpe la jornada (por debajo, en turno espera a la comida de las 11).")]
+    [Range(0f, 1f)] public float starvingAbove = 0.85f;
     public float checkEvery = 2f;
 
     float _next, _dineRetryAt;
@@ -55,6 +57,12 @@ public class NeedsDriver : MonoBehaviour
             // (2026-11-02) La PRIMERA vez se encola al momento (el hambre se nota ya; la prueba «Cuerpo» lo mira a los 2
             // fotogramas) y la espera es solo de la comida: antes movía `_next` y retrasaba también 20 s el sueño y el baño.
             if (Time.time < _dineRetryAt) return;
+            // (2026-11-02) EN SU JORNADA, el hambre que no aprieta espera a la comida de las 11 (WorkdayDirector.OwnNeeds la
+            // pide al llegar al restaurante): desayunó antes de las 8 (WorkdayDirector.Breakfast). Antes un «pedir en la barra»
+            // a las 8 se llevaba la hora de la clase de yoga (Lizmibet y Andrea comiendo; la clase, con 0 alumnos) y uno a las
+            // 11 se sumaba al de la comida (Goluis, Irosene y JefeConstruccion comían DOS veces y perdían la misión de las 12).
+            // Solo el hambre de verdad (≥ starvingAbove) interrumpe el turno, como el baño y el sueño.
+            if (_body.hunger < starvingAbove && WorkdayDirector.Instance != null && WorkdayDirector.Instance.OnShift(gameObject)) return;
             if (!DineSpell.AnyFood(transform.position)) _dineRetryAt = Time.time + 20f;
             _q.EnqueueOwn(new DineSpell());   // a comer al restaurante (pedir, sentarse, comer)
         }
