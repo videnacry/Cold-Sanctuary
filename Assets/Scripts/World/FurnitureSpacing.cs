@@ -53,6 +53,8 @@ public static class FurnitureSpacing
         // suelo flotante del ballet).
         "Jaula_MMA", "Ring_kickboxing", "Sacos_pesados", "Primeros_auxilios", "Vestuario", "Piano_vertical",
         "Equipo_sonido", "Caja_resina", "Fuente", "Banco_calzado",
+        // PAREDES DE CRISTAL (Berón 2026-11-03; GlassWall): la única pared permitida; guarda los 2 m como un mueble.
+        GlassWall.Prefix,
     };
 
     /// <summary>Muebles que van EN BATERÍA: dos con el mismo prefijo pueden ir pegados (un solo mueble corrido).</summary>
@@ -60,6 +62,7 @@ public static class FurnitureSpacing
     {
         "Box ", "Jaulas", "Cuadra ", "Corral_foca", "Tina_", "Maniqui_",
         "Aislamiento",   // las habitaciones de aislamiento, una junto a otra (comparten mampara), como en planta
+        GlassWall.Prefix,   // dos paños de cristal (dos salas vecinas comparten mampara; las esquinas de una sala)
         "Trineo_", "Cajon_pliometrico_", "Barandilla_", "Muro_",   // calistenia: trineos aparcados juntos, cajones y muros de parkour en serie
     };
 

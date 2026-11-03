@@ -6,7 +6,8 @@ using UnityEngine;
 /// microcosmos de Bruce Lee la cocina y los muebles parecían cubos»). Cinco reglas, con números a la escala de los
 /// insectos-humanos (el agente de navegación de <c>AreaMicrocosmos.Folk</c>: radio 0,4 m, cápsula de 0,35 m):
 /// 1. PASO: entre dos muebles cualesquiera, <see cref="Passage"/> (2 m) libres: dos personajes se cruzan sin chocar.
-/// 2. SIN MUROS NI TECHOS en los edificios (tapan la vista y el paso), como en el santuario.
+/// 2. SIN MUROS NI TECHOS en los edificios (tapan la vista y el paso), como en el santuario. ÚNICA EXCEPCIÓN (2026-11-03): las
+///    PAREDES DE CRISTAL (<see cref="GlassWall"/>) de las salas que deben aislarse (no tapan la vista), que guardan el paso de la regla 1.
 /// 3. MUEBLES DETALLADOS (<see cref="MicroPiece"/>, varias piezas) con sus utensilios (sartén, olla, cuchillo…): nada de cubos lisos.
 /// 4. NECESIDADES BÁSICAS: camas, retretes, lavabos, mesas, sillas y cocina (<see cref="Needs"/>).
 /// 5. ERAS AVANZADAS (<see cref="IsTownEra"/>): el pueblo o la ciudad real ocupa TODO el piso (sin los muebles gigantes del área).
@@ -60,6 +61,9 @@ public static class MicroBuildRules
             if (s.GetComponentInParent<MicroPiece>(true) != null) continue;
             if (Box(s.transform, out Bounds b) && b.size.y > 0.2f) l.Add((s.transform, b));
         }
+        // PAREDES DE CRISTAL (2026-11-03): cada paño guarda el paso con los muebles de dentro y de fuera de su sala.
+        foreach (GlassWall g in GlassWall.Panes(scope))
+            if (Box(g.transform, out Bounds b)) l.Add((g.transform, b));
         return l;
     }
 
@@ -82,6 +86,7 @@ public static class MicroBuildRules
             if (Excluded(t, scope)) continue;
             MicroPiece hp = t.GetComponentInParent<MicroPiece>(true);
             if (hp != null && hp.kind == Historic) continue;   // la barrera que ES la historia (el muro del gueto de Varsovia)
+            if (t.GetComponentInParent<GlassWall>(true) != null) continue;   // PARED DE CRISTAL (2026-11-03): la excepción permitida (no tapa la vista); se mide en la regla 1
             foreach (string n in WallRoofNames) if (t.name.StartsWith(n)) { bad.Add($"muro/techo «{t.name}» en {Path(t, scope)}"); break; }
         }
         foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))
@@ -89,6 +94,7 @@ public static class MicroBuildRules
             {
                 if (r.GetComponentInParent<MicroPiece>(true) != null || r.GetComponentInParent<AreaFunctionStation>(true) != null || Excluded(r.transform, scope)) continue;
                 if (r.GetComponentInParent<FolkLineage>(true) != null || r.GetComponentInParent<CubeInsect>(true) != null) continue;   // la gente
+                if (r.GetComponentInParent<GlassWall>(true) != null) continue;   // el cristal no tapa la vista: permitido (guarda el paso, regla 1)
                 Bounds b = r.bounds; float thin = Mathf.Min(b.size.x, b.size.z), len = Mathf.Max(b.size.x, b.size.z);
                 if (b.size.y >= WallHeight && len >= 2.5f && thin <= 0.6f) bad.Add($"muro «{r.name}» ({b.size.y:0.0} m de alto) en {site.title}");
                 else if (b.min.y - site.transform.position.y >= RoofHeight && b.size.x * b.size.z >= 4f && b.size.y < 1f) bad.Add($"techo «{r.name}» en {site.title}");
@@ -106,6 +112,7 @@ public static class MicroBuildRules
             for (int j = i + 1; j < pieces.Count; j++)
             {
                 if (pieces[i].t.IsChildOf(pieces[j].t) || pieces[j].t.IsChildOf(pieces[i].t)) continue;
+                if (pieces[i].t.GetComponent<GlassWall>() != null && pieces[j].t.GetComponent<GlassWall>() != null) continue;   // dos paños de cristal pueden ir pegados
                 float g = GapXZ(pieces[i].b, pieces[j].b);
                 if (g < Passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {Passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
             }
