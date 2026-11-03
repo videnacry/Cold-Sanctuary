@@ -459,7 +459,7 @@ public class WorkdayDirector : MonoBehaviour
 
     /// <summary>¿Hay algún recién llegado sin iniciar? (Linduarda lo atiende antes que nada: es la médica que lo recibe)</summary>
     static float _newcomerCheck = -1f; static bool _newcomerCached;
-    static bool NewcomerWaiting()
+    public static bool NewcomerWaiting()
     {
         if (Time.time < _newcomerCheck) return _newcomerCached;   // (una vez por segundo: antes era una búsqueda por personaje y frame)
         _newcomerCheck = Time.time + 1f; _newcomerCached = false;
@@ -503,6 +503,8 @@ public class WorkdayDirector : MonoBehaviour
         if (RestaurantService.Drives(g)) { if (idle != null) idle.enabled = false; return; }   // la brigada del restaurante: la mueve el servicio (puesto, pase, obrador, limpieza)
         if (area == null)
         {
+            // EL HORARIO LIBRE (docs/horario-libre.md): en sus horas libres lo lleva a su actividad de ocio o cuidado de la semana.
+            if (LeisureDirector.Drives(g)) { if (idle != null) idle.enabled = false; if (lin != null && !NewcomerWaiting()) lin.enabled = false; return; }
             if (g.name == "Sadhguru") { if (idle != null) idle.enabled = false; SadhguruMeditates(g); SetStatus(g, "Meditando en la sala de yoga"); return; }   // su tiempo libre: meditar
             // HUECO DENTRO DEL TURNO (p. ej. la obra acaba a las 10 y lo siguiente es a las 12): no es tiempo libre. Antes esta
             // rama le encendía el merodeo ANTES de llegar a OwnNeeds (que es donde se quita el merodeo en turno), y JefeConstruccion
@@ -820,7 +822,7 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     static readonly Dictionary<GameObject, string> _baseLabel = new Dictionary<GameObject, string>();
-    static void SetStatus(GameObject g, string doing)
+    public static void SetStatus(GameObject g, string doing)
     {
         WorldLabel wl = g.GetComponent<WorldLabel>(); if (wl == null) return;
         if (!_baseLabel.TryGetValue(g, out string b)) _baseLabel[g] = b = wl.text;
