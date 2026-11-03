@@ -82,3 +82,22 @@ arriba (`SampleSceneBuilder.Levels.cs`):
   sale ahora de la cabaña de 0°.
 
 Las misiones del microcosmos pueden usar las galerías como "montañas" con camino (el área ×10 conserva sus escaleras).
+
+## Las dos formas de cada piso (2026-11-03)
+
+Berón: «todos los pisos deben tener preparada su forma en construcción y su forma finalizada, y los microcosmos se crean siempre
+sobre la forma finalizada». Cada piso (`SanctuaryArea`) lleva un `FloorForms` (`Assets/Scripts/World/FloorForms.cs`):
+
+| Piso | Forma finalizada | Forma en construcción |
+|---|---|---|
+| En obras (Dojo, Sala de Ballet: `ConstructionProject`) | su **«Acabado»** (oculto hasta que la obra termina; `PrepareSite`) | lo que se ve hoy: «Andamio_obra», «Material_del_dia», los conos y las paredes que suben con la obra |
+| Terminado (todos los demás) | el área tal cual | **«Forma_en_obra»**, preparada y oculta: andamio de reforma, palés de material (guadua, barro con paja, micelio), conos y muretes de 0,6 m a medio levantar en el borde (con un hueco de paso en el frente) |
+
+- `SampleSceneBuilder.EnsureFloorForms()` (al final del blockout, antes del NavMesh; y el menú «Tools/Cold Sanctuary/Pisos:
+  preparar sus dos formas») se la prepara a cada piso y lo registra: `[Pisos] Formas de N pisos: …`.
+- `FloorForms.ShowFinished(área)` deja un piso en su forma finalizada (enciende el «Acabado», quita las piezas de obra);
+  `FloorForms.ObraLeft(área)` dice qué pieza de obra queda a la vista. `FloorForms.ShowConstruction(true)` enseña la forma en
+  construcción de un piso terminado (una reforma).
+- **Los microcosmos**: `AreaMicrocosmos.Build` llama a `ShowFinished` sobre su copia gigante del piso ANTES de despejar el barrio
+  del pueblo y de poblarlo, y lo apunta en `MicroFloor.finishedForm` / `obraRemoved` (ver
+  [microcosmos-areas.md](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03), regla 3).

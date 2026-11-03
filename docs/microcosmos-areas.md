@@ -21,6 +21,8 @@ Es como si de pronto el mundo fuera de insectos.
     su pueblo o ciudad en las eras avanzadas (`FloorBounds` / `FloorRectLocal` devuelven el barrio), los personajes, y las plazas
     de flora y fauna (a su distancia de la historia de antes, ×10). La flora crece **densa** en el barrio (rejilla de 6 m; la del
     pueblo, de 3 m) y **espaciada** en el resto del piso (×10: cada 60 m), para no multiplicar por cien el número de plantas.
+  - **(2026-11-03) En un pueblo** (era avanzada) el barrio es el piso real **× 60** (`AreaMicrocosmos.TownScale`: el 60 % del
+    lado, 1,4–2,8 km) y el pueblo va sobre su plano real a escala 1:1 ([microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)).
   - En las eras avanzadas solo se quitan los muebles gigantes que pisan el barrio: el pueblo vive en el claro que deja el
     santuario gigante, con sus montañas-mueble alrededor.
   - Las medidas del área gigante que deciden qué es suelo, qué es mueble y qué cara de arriba se puebla escalan con
@@ -39,6 +41,65 @@ Es como si de pronto el mundo fuera de insectos.
   - Cada animal cuelga de un `MicroSize` que lo mantiene a ese tamaño, porque los prefabs fijan su propia escala al nacer y por eso antes se veían diminutos.
 - **Hay agua alrededor** para no caer al vacío.
 - **El portal de salida** muestra su diálogo al acercarse.
+
+## Reglas de los microcosmos (2026-11-03)
+
+Berón: «recuerda que los microcosmos también tienen reglas y documéntalas si no lo están, todos deben pertenecer a un piso del
+santuario y deben montarse encima de dicho piso, todas las estructuras de dicho piso se vuelven superficie utilizable para
+poblar con insectos-humanos, flora, edificaciones y fauna, y se deben reconstruir pueblos/ciudades enteras donde se desarrolle la
+historia, debe existir una época/lugar … si no existe un piso que encaje con el microcosmos que se quiere crear se puede marcar
+como pendiente de obtener piso representativo … todos los pisos deben tener preparada su forma en construcción y su forma
+finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
+
+| # | Regla | Dónde se aplica | Dónde se comprueba |
+|---|---|---|---|
+| 1 | **Pertenece a un piso del santuario.** Tres datos obligatorios: fecha, hora y piso (`MicrocosmSpec`). | `MicrocosmSpec` (sin piso no se crea); `MicroFloor.platform` | `MicroFloors.Validate` |
+| 2 | **Se monta ENCIMA de ese piso**: el piso del santuario ×100 es el suelo del microcosmos (`…_gigante`), y la historia y su pueblo van a ras de su suelo. | `AreaMicrocosmos.Build` | `MicroFloors.Validate` (piso gigante presente; la historia a ±2,5 m del suelo) |
+| 3 | **Sobre su FORMA FINALIZADA**: todo piso tiene dos formas (ver [construcciones-elevadas.md](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03)); el microcosmos se monta siempre sobre la finalizada: el «Acabado» encendido y ni andamio, ni material del día, ni conos. | `FloorForms.ShowFinished`, lo PRIMERO de `AreaMicrocosmos.Build` | `MicroFloor.finishedForm`, `FloorForms.ObraLeft`, `MicroFloors.Validate`; `BruceLeeStoryTest` |
+| 4 | **Las estructuras del piso son superficie utilizable**: la cara de arriba de cada mueble gigante (mesas, camas, encimeras, máquinas: mesetas de 75 m) se puebla de flora y fauna; en un pueblo, las de fuera de su barrio también, y en las dos más grandes se levanta un **mirador** de la era (sitio «Mirador», con su monumento, su frutal y bancos para personas e insectos-humanos). | `AreaMicrocosmos.FurnitureTops`, `Nature` (en un pueblo, `TownTopSow`: flora del lugar a escala de pueblo), `CivicBuilder.Outposts` | `MicroFloor.floraOnTops / faunaOnTops / buildingsOnTops`; `MicrocosmosFloorTest` (5) y `MicroFloors.Validate` |
+| 5 | **El pueblo o la ciudad ENTERA de la historia**, sobre su plano real a escala 1:1 en un barrio del piso × 60 (1,4–2,8 km), con sus calles, ríos, lagos, colinas y montes, sus edificios de la historia en su sitio y los del pueblo (plaza, mercado, escuela, estación, comisaría…) | `AreaMicrocosmos.TownScale`, `CivicBuilder.Plans` ([microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)) | `MicroFloors.Validate` (barrio ≥ 40 % del piso y ≥ 12 edificios) |
+| 6 | **Una época y un lugar**: su fecha (`Eras.OfMicrocosmos`), su región (`MicroStyles.RegionOf`) y con ellas el estilo de cada edificio y mueble, su flora y su fauna (`MicroBiome`). | `MicroEra`, `MicroStyles`, `MicroBiome` | reglas 7 y 10 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) |
+| 7 | **Si ningún piso encaja, «pendiente de piso representativo»**: se monta sobre el piso existente que más se le parece y se apunta el piso que faltaría crear (`MicroFloors.Table`); el menú «Pisos que faltan» da la lista. | `MicroFloors`, `MicroFloor.representative / pendingFloor` | `MicroFloors.Validate` (si no lo representa, tiene que decir qué piso falta) |
+
+### La tabla de pisos (`MicroFloors.Table`)
+
+| Microcosmos | Piso del santuario | ¿Lo representa? | Por qué / piso que falta |
+|---|---|---|---|
+| Sakshi (el río), Patanjali, Sala de Yoga | Sala de Yoga | sí | la práctica |
+| Ambrosio, Hospital, Escútari, Kapilavastu, Irena Sendler | Hospital | sí | cuidar, curar, la muerte y la enfermedad |
+| Cocina, Mesopotamia, Le Chambon | Cocina | sí | el fuego, el pan del templo, dar de comer |
+| Huerto | Huerto | sí | los primeros cultivos |
+| Estudio Textil, Mecánica, Dayton | Estudio Textil / Mecánica | sí | el oficio |
+| Bruce Lee | Dojo | sí | las artes marciales |
+| Planta Atómica, Woolsthorpe, Berna | Planta Atómica | sí | la física |
+| Berkeley | Biología | sí | la primera vacuna |
+| París 1898, Pasadena | Química | sí | el laboratorio |
+| Chernóbil | Central Nuclear | sí | el reactor |
+| Egina | Construcción | sí | los mirmidones levantan su ciudad |
+| Tregua 1914 | Gimnasio | **pendiente** | Campo de deportes de equipo (fútbol) |
+| Alejandría | Planta Atómica | **pendiente** | Observatorio y biblioteca (astronomía y geografía) |
+| Crotona | Gimnasio | **pendiente** | Aula de matemáticas y música (el monocordio) |
+| Menfis | Huerto | **pendiente** | Archivo de historia y geografía (biblioteca) |
+| Bagdad | Construcción | **pendiente** | Casa de la Sabiduría (biblioteca y sala de cálculo) |
+| Angostura | Cocina | **pendiente** | Sala de asambleas (parlamento) |
+| Sils Maria | Sala de Yoga | **pendiente** | Sendero de montaña y biblioteca de filosofía |
+| Colorado Springs | Construcción | **pendiente** | Taller de electricidad (alta tensión) |
+| Palenque (Pakal) | Huerto | **pendiente** | Templo de los antepasados (memoria, rito y duelo) |
+
+### Los pisos que faltan por crear (`MicroFloors.Pending`)
+
+1. **Campo de deportes de equipo (fútbol)** — Tregua 1914.
+2. **Observatorio y biblioteca** — Alejandría (Eratóstenes).
+3. **Aula de matemáticas y música** — Crotona (Pitágoras).
+4. **Archivo de historia y geografía** — Menfis (Heródoto).
+5. **Casa de la Sabiduría (biblioteca y sala de cálculo)** — Bagdad (al-Juarismi).
+6. **Sala de asambleas (parlamento)** — Angostura (Bolívar).
+7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche).
+8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
+9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
+
+(Una biblioteca común cubriría 2, 4, 5 y en parte 7.) Menú: «Tools/Cold Sanctuary/Pisos que faltan (microcosmos pendientes de
+piso representativo)» los escribe en la consola.
 
 ## Historias por área
 
