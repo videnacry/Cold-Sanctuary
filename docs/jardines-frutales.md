@@ -343,3 +343,96 @@ edificios… y también ahora debe revisar/cuidar los fitoplancton para que est�
 - La prueba (grupo 55) ya no pide «una ronda por edificio»: pide que las **macetas** de cada edificio no se partan, como mucho una
   ronda más por árbol con tareas, ninguna ronda de más de 3 h y, con un cuerpo de prueba, que las tareas de un árbol dejen todos sus
   puestos de máscaras y sus cortinas al 100 % en ≤ 1,5 × lo estimado, saliendo sin la máscara.
+
+## Jardines en la cima de los edificios-árbol (Berón 2026-11-03)
+
+«Agrega los jardines frutales a las plataformas de alfombras voladoras en la cima de los edificio-arbol y analiza/actualiza la
+jornada, investiga si hay plantas, animales, insecto, flores o árboles que puedan facilitar el bienestar de los jardines frutales,
+y si sería más conveniente un área de tierra en lugar de macetas.»
+
+Código: `Assets/Scripts/Farming/GardenBed.cs` (el bancal y sus gremios), `FruitPlant.bed` (lo que cambia en tierra),
+`Assets/Editor/SampleSceneBuilder.RoofGardens.cs` (los planta, desde `PlaceRooftopOrchards`) y la prueba `RoofGardenTest` (grupo 80).
+
+### 1. Investigación: lo que ayuda a un jardín frutal
+
+| Qué | Para qué | Fuente |
+|---|---|---|
+| **Abejorros** (*Bombus terrestris*, colonias comerciales) | Polinizan en invernadero (frutilla, sandía, aguacate; el mortiño, por vibración). Sin polinizadores, EDEN ISS perdió las fresas | Velthuis y van Doorn 2006, *Apidologie* 37:421–451 |
+| **Abeja albañil** (*Osmia cornuta*, *O. lignaria*), con bloques nido de caña | Poliniza el almendro y los frutales de flor temprana; anida en tubos | Bosch y Kemp 2001, *How to Manage the Blue Orchard Bee* (SARE) |
+| **Mosquitas *Forcipomyia*** | Son casi las únicas que polinizan el cacao; crían en pseudotallo de banana y en cáscaras podridas | Young 1994, *The Chocolate Tree* (Smithsonian) |
+| **Enemigos naturales comerciales** | *Cryptolaemus montrouzieri* (cochinilla algodonosa de cítricos y café), *Aphytis melinus* (piojo rojo de los cítricos), *Phytoseiulus persimilis* (araña roja de la frutilla), *Amblyseius swirskii* (trips y mosca blanca), *Aphidius colemani* (pulgón), *Orius* (trips) | van Lenteren 2012, *BioControl* 57:1–20 |
+| **Flores de néctar** (alyssum, facelia, milenrama, caléndula, borraja; umbelíferas en flor como el cilantro y el perejil) | Alimentan a los sírfidos, crisopas y avispillas parasitoides adultos: así se quedan y crían junto a la plaga | Landis, Wratten y Gurr 2000, *Annu. Rev. Entomol.* 45:175–201 |
+| **Tagetes** (aquí, el huacatay, *Tagetes minuta*) | Frena a los nematodos de las agallas (*Meloidogyne*), el enemigo de la naranjilla | Hooks et al. 2010, *Applied Soil Ecology* 46:307–320 |
+| **Capuchina** | Planta trampa del pulgón | Landis et al. 2000 |
+| **Leguminosas** (haba, arveja, frijol, trébol) | Fijan nitrógeno y cubren el suelo (abono verde y acolchado vivo) | conocimiento agronómico general |
+| **Consuelda** | Su hoja cortada es un acolchado rico en potasio | gen. |
+| **Árboles de sombra** (la banana en las fincas de cacao y café; *Inga*, *Gliricidia*) | El cacao, el café y la naranjilla piden semisombra; la sombra baja el estrés y da hojarasca | Tscharntke et al. 2011, *J. Appl. Ecol.* 48:619–629 |
+| **Lombrices** (vermicompost, *Eisenia fetida*) | Convierten los restos de poda y cosecha en abono y airean el suelo | Edwards, Arancon y Sherman 2011, *Vermiculture Technology* (CRC) |
+| **Hongos micorrícicos** (inóculo) | Raíces con más alcance de agua y fósforo; los cítricos dependen mucho de ellos | Smith y Read 2008, *Mycorrhizal Symbiosis*, 3.ª ed. |
+| **Carboneros** (caja nido con agujero de 28 mm) | Una pareja con pollos se come miles de orugas: menos daño en los frutales | Mols y Visser 2002, *J. Appl. Ecol.* 39:888–899 |
+
+### 2. ¿Tierra o macetas? Tierra, en bancales por gremios
+
+| | Maceta | Bancal de tierra (cubierta ajardinada intensiva) |
+|---|---|---|
+| Raíces | Volumen pequeño; sufren los extremos de temperatura del recipiente | Volumen continuo; temperatura y humedad amortiguadas (Mathers et al. 2007, *HortTechnology* 17:151–162) |
+| Agua | Se seca antes; más riego | La tierra guarda más agua: menos riego |
+| Vida del suelo | Casi ninguna | Lombrices, micorrizas y los microbios del compost |
+| Compañeras e insectos | No caben | Franja de flores y aromáticas, hotel de insectos, abejorros: el hábitat de los enemigos naturales |
+| pH | Uno por planta (lo mejor de la maceta) | Uno por bancal: **las frutales se agrupan por pH** (gremios) |
+| Enfermedades del suelo (*Phytophthora*) | Aislada en su maceta | Se reparte: hace falta drenaje de verdad (capa de drenaje y filtro) |
+| Peso | Concentrado | Repartido; el sustrato ligero saturado pesa 1,0–1,4 t/m³ (FLL 2018, *Green Roof Guidelines*; Dunnett y Kingsbury 2008, *Planting Green Roofs and Living Walls*) |
+
+**Decisión**: en la **cima** de cada árbol, **bancales de tierra**: cubierta intensiva con lámina antirraíces, capa de drenaje, filtro
+geotextil y **0,8 m** de sustrato ligero (lo que pide un frutal enano). Miden **1,4 m de ancho** (se llega al centro desde los dos
+lados) y de 3,2 a 6 m de largo. Cada bancal es un **GREMIO**: frutales que comparten pH y riego, con sus compañeras, flores, insectos y
+animales.
+
+Las **puntas** siguen con sus macetas: una de cada especie por edificio, y ahí la maceta da a cada una su pH y su sustrato. Los
+techos de la Central tampoco cambian.
+
+El peso es despreciable para el tronco: unas 6–10 t por techo, menos de 0,1 MN frente a los ~174 MN que ya carga.
+
+| Gremio | pH | Frutales | Compañeras (del juego) | Flores | Insectos útiles | Animales |
+|---|---|---|---|---|---|---|
+| Cítricos con su cortejo | 6–7 | limón, lima, naranja | romero, cilantro, haba | alyssum, caléndula, consuelda | *Cryptolaemus*, *Aphytis*, sírfidos y crisopas, abejorros | lombrices, caja nido |
+| Andino de semisombra | 5,5–6,5 | banana (la sombra), café, naranjilla | huacatay (tagetes), haba, cedrón | tagetes, capuchina | *Aphidius*, *Orius*, mariquitas, abejorros | lombrices, micorrizas |
+| Bayas de suelo ácido | 4,5–5,5 | mortiño, frutilla, piña | cebollín, albahaca | borraja, alyssum | *Phytoseiulus*, *A. swirskii*, abejorros (vibración) | lombrices |
+| Mediterráneo seco | 6,5–8 | olivo, almendro | romero, arveja, perejil | facelia, milenrama, tomillo | *Osmia*, abejorros, crisopas, mariquitas | bloque nido de *Osmia*, caja nido |
+| Trópico húmedo | 6–7 | cacao, babaco, guanábana | jengibre, cúrcuma, frijol | montón de pseudotallo de banana (cría de *Forcipomyia*) | *Forcipomyia*, *Cryptolaemus*, abejorros | lombrices, micorrizas |
+
+### 3. Construcción
+
+`PlaceTreeTopGardens` va al final de `PlaceRooftopOrchards`. Recorre el techo de cada árbol (`ArbolCampos.top`, 22 × 22 m), también
+el del Árbol de los Campos, que gira: todo se mide en el marco del techo.
+1. Aparta lo que ya hay: la columna y la puerta del techo, **su umbral** (de la puerta a 2 m más allá de su punto de fuera), los
+   paneles, el cartel y los percheros de máscaras. Las áreas de alfombras, a ≥ 2 m.
+2. Coloca bancales del más largo al más corto, cada uno en el hueco más ajustado y con su caja ENTERA (marco, plantas y copas) a ≥ 2 m
+   de todo, hasta que no cabe ninguno.
+3. Cada techo empieza por un gremio distinto: entre todos los techos salen todos los gremios.
+
+Cada bancal lleva:
+- marco de tablones, tierra y el acolchado de su gremio, y **el corte de sus capas** en una punta;
+- sus frutales, uno cada ~2 m (`FruitPlant` con `bed`), con un sobre de su insecto útil colgado;
+- las compañeras de `GardenCrop` en los bordes y la franja de flores de néctar;
+- el **hotel de insectos**, la **caja de abejorros**, la **caja nido** de carbonero y el **vermicompostador**;
+- su **goteo**: cabezal en la punta, lateral sobre la tierra y un gotero por frutal.
+
+Es un mueble (guarda los 2 m de paso).
+
+**En la simulación** (`FruitPlant.Tick` con `bed`; [A] aproximación de juego, en el sentido de las fuentes), una planta en tierra:
+- gasta el agua al **60 %** (`waterFactor`);
+- gasta el abono al **70 %** (`nutrientFactor`: compost, acolchado y leguminosa);
+- coge la plaga a la **mitad** de ritmo (`pestFactor`: los enemigos naturales);
+- pierde el cuajado a la **mitad** de ritmo sin pincel (`pollinationFactor`: abejorros y flores).
+
+Su etiqueta dice «· bancal».
+
+### 4. La jornada
+
+Los frutales de la cima son `FruitPlant` de su edificio: entran solos en `FruitGardener.Rounds`. El techo es lo más alto del árbol, así
+que `TipOrder` los pone **primero**: se llega en alfombra al techo, se cuida la cima y luego se nada a las puntas. Quien los revisa se
+pone en el lado largo del bancal (`FruitPlant.StandPoint`), no encima.
+
+Cada edificio suma la revisión de sus frutales de la cima (1 min un árbol, 0,75 un arbusto, 0,5 una herbácea) y unos metros por el
+techo. El Árbol de los Campos pasa a tener frutales (los de su cima), además de sus tareas del árbol (máscaras y fitoplancton).

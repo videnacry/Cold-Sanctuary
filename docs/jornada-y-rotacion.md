@@ -58,7 +58,7 @@ Las marcadas con * son obligatorias cada día.
   - Iniciación de recién llegados y turistas* (1 h)
   - Pasar visita y curas* (2 h)
   - Análisis y vacunas de animales (1 h)
-  - Limpieza e inventario (1 h)
+  - Limpieza e inventario (1 h): incluye la **ronda del banco de sangre** (retirar lo caducado, reponer de O− el submarino-ambulancia, llamar a un donante O− si faltan; docs/hospital.md §4)
 - **Cocina**:
   - Servicio del restaurante* (2 h)
   - Limpieza e inventario* (1 h)
@@ -68,7 +68,7 @@ Las marcadas con * son obligatorias cada día.
   - Riego y deshierbe* (2 h)
   - Cosecha (1 h)
   - Alimentar a los visitantes (1 h)
-  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md)
+  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md). Desde el 2026-11-03 también los **bancales de tierra de la cima** de cada edificio-árbol: van primero en la ronda de su edificio (se llega al techo en alfombra)
 - **Sala de Yoga**:
   - Clase para turistas* (1 h)
   - Preparar la sala (1 h)
