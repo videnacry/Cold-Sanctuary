@@ -59,6 +59,7 @@ public static partial class SampleSceneBuilder
             else Debug.Log($"[Frutales] Puntas de «{kv.Key}»: entre todas, las {FruitCare.All.Length} especies.");
         }
         Debug.Log($"[Frutales] {total} frutales en maceta en {roofs} techos de alfombras (una de cada una de las {FruitCare.All.Length} especies por vuelta, hasta llenar).");
+        PlaceTreeTopGardens();   // y los JARDINES EN LA CIMA de cada edificio-árbol: bancales de tierra por gremios (Berón 2026-11-03)
     }
 
     // Caja en planta (XZ) del mundo: la misma medida que FurnitureSpacing.

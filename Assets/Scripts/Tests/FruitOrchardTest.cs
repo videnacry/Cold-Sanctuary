@@ -41,7 +41,11 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         int kinds = FruitCare.All.Length;
         foreach (var kv in byRoof)
         {
-            Transform roof = kv.Value[0].transform.parent != null ? kv.Value[0].transform.parent.parent : null;
+            // (2026-11-03) Los BANCALES DE TIERRA de la cima de los edificios-árbol tienen su prueba (RoofGardenTest, grupo 80): aquí se
+            // miden las macetas. Un edificio con solo bancales (el Árbol de los Campos) no lleva las 19 especies ni punto de cuidados.
+            if (kv.Value.All(p => p.bed != null)) continue;
+            FruitPlant first = kv.Value.First(p => p.bed == null);
+            Transform roof = first.transform.parent != null ? first.transform.parent.parent : null;
             var have = new HashSet<GardenCrop.Kind>(kv.Value.Select(p => p.kind));
             var lack = FruitCare.All.Where(f => !have.Contains(f.kind)).Select(f => f.nombre).ToList();
             TestProbe.Check($"techo de {kv.Key}: una de cada una de las {kinds} frutales", lack.Count == 0, lack.Count == 0 ? $"{kv.Value.Count} macetas ({kv.Value.Count / (float)kinds:0.0} por especie)" : "faltan " + string.Join(", ", lack));
@@ -66,7 +70,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         string[] needed = { "Banco_trasplante", "Deposito_fertirriego", "Armario_abonos", "Mesa_diagnostico", "Estante_herramientas", "Compostador", "Caja_abejorros", "Pulverizador_mochila", "Carro_cosecha", "Escalera_tijera", "Cabezal_riego" };
         var missing = mainRoom == null ? needed.ToList() : needed.Where(n => mainRoom.transform.Find(n) == null).ToList();
         TestProbe.Check("la sala de cuidados de la experta (Servicios) tiene todo su equipo", mainRoom != null && missing.Count == 0, mainRoom == null ? "no hay sala" : missing.Count == 0 ? $"{needed.Length} equipos en {mainRoom.building}" : "faltan " + string.Join(", ", missing));
-        var noStation = byRoof.Keys.Where(b => !stations.Any(s => s.building == b)).ToList();
+        var noStation = byRoof.Where(kv => kv.Value.Any(p => p.bed == null)).Select(kv => kv.Key).Where(b => !stations.Any(s => s.building == b)).ToList();   // (los bancales llevan su cabezal)
         TestProbe.Check("cada techo con frutales tiene su punto de cuidados", noStation.Count == 0, noStation.Count == 0 ? $"{stations.Length} puntos" : "sin punto: " + string.Join(", ", noStation));
 
         // ── 3. ESTADO VISIBLE ──
