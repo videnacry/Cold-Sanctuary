@@ -369,7 +369,7 @@ public class HospitalSubmarine : MonoBehaviour
         Say($"«{p.name}» entregado en {deliveredTo} a los {deliveredAfter:0} s de juego");
         // El equipo lo atiende: estabilizar (o consulta veterinaria) y, si sangra, el banco de sangre.
         Anima doc = crew.Count > 0 ? crew[0].GetComponent<Anima>() : null;
-        if (destSt != null) destSt.Treat(doc);
+        if (destSt != null) destSt.TreatPatient(p, doc);
         if (p.GetComponent<BloodLoss>() is BloodLoss bl && bl.lost >= 0.15f && BloodBank.Instance != null) BloodBank.Instance.Transfuse(p, doc != null ? doc.name : "el equipo");
         foreach (GameObject g in crew) _engaged.Remove(g);
 

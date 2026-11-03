@@ -59,7 +59,7 @@ public class BloodBankTest : MonoBehaviour, ITestUnit
         yield return null;
         int before = bank.stock.Count;
         string grp = BloodBank.GroupOf(body.name);
-        Anima treated = st.Treat(null);
+        Anima treated = st.TreatPatient(pa, null);   // (el puesto, con ESTE paciente: junto a la nevera puede haber personal)
         TestProbe.Check($"el puesto cruza y transfunde (grupo {grp}): sale de la clase III", treated == pa && bl.lost < 0.3f && bank.stock.Count < before, $"pérdida 36 % → {bl.lost * 100f:0} % ({bl.unitsReceived} u.: {bl.lastProduct})");
         Destroy(body);
         Animal wolf = FindObjectsByType<Animal>(FindObjectsSortMode.None).FirstOrDefault(a => a != null && !a.death && a.SpeciesName == "Wolf");

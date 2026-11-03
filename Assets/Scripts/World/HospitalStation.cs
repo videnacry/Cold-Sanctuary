@@ -57,9 +57,11 @@ public class HospitalStation : MonoBehaviour, IInteractable
     static bool ForAnimals(HospitalService s) => s == HospitalService.Veterinaria || s == HospitalService.CirugiaVeterinaria;
 
     /// <summary>Atiende al paciente más cercano (animal en veterinaria, persona en el resto). Devuelve a quién.</summary>
-    public Anima Treat(Anima by)
+    public Anima Treat(Anima by) => TreatPatient(Nearest(by), by);
+
+    /// <summary>Atiende a ESTE paciente (el que trae el submarino, el de una prueba) con lo que hace este puesto.</summary>
+    public Anima TreatPatient(Anima patient, Anima by)
     {
-        Anima patient = Nearest(by);
         string what = Science(service);
         if (patient == null) { Debug.Log($"[Hospital] {Label(service)}: no hay ningún paciente aquí. ({what})"); return null; }
         SicknessState ss = patient.GetComponent<SicknessState>();
