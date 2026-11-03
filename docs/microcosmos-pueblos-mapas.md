@@ -71,6 +71,7 @@ relleno | n | x z   (n casas y talleres de la era a lo largo de las calles, empe
 | **Varsovia 1942** | el Vístula, Leszno, Marszałkowska, Aleje Jerozolimskie, el Jardín Sajón (lejos del gueto de la historia) | Plan Warszawy 1939 |
 | **Le Chambon** (1942) | el Lignon, la calle mayor, la estación del tren del Vivarais, la carretera de Le Mazet, el monte Lizieux | Carte de l'État-major; Hallie 1979 |
 | **Kowloon y Seattle** (Bruce Lee) | Nathan Road, Temple Street, Shanghai Street, Jordan y Waterloo Road, el puerto Victoria, la Roca del León; Broadway, Jefferson Street, University Way, el lago Union, el monte Rainier | Hong Kong Map 1957 (Crown Lands and Survey Office); Kroll's Map of Seattle (1960) |
+| **Egina** (~1250 a. C., el mito de los mirmidones) | el golfo Sarónico y el puerto de Kolona; la colina de Kolona; el monte Oros con el santuario de Zeus Helenio; el palacio de Éaco; olivares | Walter y Felten 1981, *Alt-Ägina*; Pausanias II.29–30 |
 | **Palenque** (683) | el Palacio y el Templo de las Inscripciones sobre la Gran Plaza; el Otolum y su acueducto; la colina del Grupo de las Cruces; el Juego de Pelota y el Grupo Norte; el Baño de la Reina; la sierra; las milpas | Barnhart 2001 (Palenque Mapping Project); Stuart y Stuart 2008 |
 
 Las coordenadas son aproximaciones de esos planos (distancias y orientaciones redondeadas a decenas de metros), no un

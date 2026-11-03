@@ -68,6 +68,24 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > en la enfermería como paciente de Linduarda; migrar limpieza/recetas de Goluis a `TeachingSession` interactiva; afinar
 > ángulos/IK en Unity; sesiones de yoga futuras (Ashtanga 2–4, Shambhavi, brazos).
 
+## Pueblos desde su mapa, reglas de los microcosmos y Pakal de Palenque (2026-11-03, rama `claude/edif-pueblos`)
+Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcosmos-reglas-edificacion.md`](microcosmos-reglas-edificacion.md) (reglas 8–12),
+[`microcosmos-areas.md`](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03) (reglas de los microcosmos y tabla de pisos),
+[`microcosmos-actividades.md`](microcosmos-actividades.md), [`microcosmos-maya-pakal.md`](microcosmos-maya-pakal.md),
+[`construcciones-elevadas.md`](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03), [`microcosmos-bruce-lee.md`](microcosmos-bruce-lee.md) §6.
+- [x] **Pueblos sobre su plano real** (24 planos: calles, río, lago, colinas, montes, campos, murallas, hitos), barrio ×60 (1,4–2,8 km), ≤ 150 edificios.
+- [x] **Edificios del pueblo** (plaza, mercado, escuela, estación, comisaría, bomberos, museo, guardería, baños, hotel, carpintería, obra, cuartel, centro de tecnología, parque, monumento, pileta, edificios de varias plantas en terraza) con su nombre de época y lugar (`MicroStyles.CivicName`).
+- [x] **Etiquetas de actividad** (trabajo / descanso / recuperación / ocio, capacidad, interacción, cuerpos) en cada `AreaFunctionSite` — gancho para el horario semanal.
+- [x] **Reglas 8–12** en `MicroBuildRules.ValidateSites` (actividad, adaptado a personas e insectos-humanos, estilo del catálogo, frutal en cada residencia, terrazas sin techo).
+- [x] **Reglas de los microcosmos** (`MicroFloors`: piso, montado encima, forma finalizada, estructuras pobladas con miradores, pueblo entero, pendiente de piso representativo) + **9 pisos que faltan** (menú «Pisos que faltan»).
+- [x] **Dos formas de cada piso** (`FloorForms`, `EnsureFloorForms`): 17 pisos (2 en obras, 15 con su forma en obra oculta). Bruce Lee, verificado: antes 3 conos de obra en el Dojo gigante; ahora forma finalizada.
+- [x] **Frutales** de época y lugar en todas las residencias (19 estilos).
+- [x] **Pakal de Palenque** (`Microcosmos_Pakal`, `PakalStoryTest` grupo 66; región `Maya`, estilo `maya_clasico`, bioma, plano de Lakamha').
+- [ ] Rehacer `Microcosmos_Egina` con su ciudad (código listo: `CivicBuilder.EginaTown`; falta construirla y pasar el grupo 43).
+- [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
+- [ ] Que el **horario semanal** (otro hilo) use `AreaFunctionSite.activity` para mandar a cada uno a sus edificios de ocio, descanso y recuperación.
+- [ ] Palenque sobre el Huerto (24 × 9 m) queda a escala 1:2,5: con su piso propio (más ancho) iría a 1:1.
+
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
       clases/config de **hormiga cosechadora, termita cosechadora, escarabajo pelotero, hormiga león,
