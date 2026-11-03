@@ -48,6 +48,19 @@ public static partial class SampleSceneBuilder
         Build();
     }
 
+    /// <summary>Si es true, <see cref="Build"/> hace solo el santuario (SampleScene) y NO las escenas hermanas (microcosmos,
+    /// historias, compasión, Egina, planta atómica). Existe porque construirlo todo en una sola pasada del editor llena la
+    /// memoria (los pueblos ×100 tienen decenas de miles de renderers cada uno; el 2026-11-03 el PC de 16 GB se colgó a media
+    /// pasada). Con esto, las hermanas se rehacen después una a una, guardando y liberando memoria entre cada una.</summary>
+    public static bool SkipSiblingScenes;
+
+    [MenuItem("Tools/Cold Sanctuary/Build Sample Scene Blockout (solo el santuario, sin microcosmos)")]
+    public static void BuildSanctuaryOnly()
+    {
+        SkipSiblingScenes = true;
+        try { Build(); } finally { SkipSiblingScenes = false; }
+    }
+
     [MenuItem("Tools/Cold Sanctuary/Build Sample Scene Blockout")]
     public static void Build()
     {
@@ -153,6 +166,10 @@ public static partial class SampleSceneBuilder
         //  · Scene1 (Ambrosio/alba) — el nivel introductorio de la cueva/pulgón (anterior en la historia).
         //  · Mesopotamia (mundo mob) — la ciudad-insecto; la cocina ya apunta a ella (mobWorldSceneName).
         // Todo listo de un click. Guardado en try por si la API de escenas falla.
+        // Con SkipSiblingScenes (menú «solo el santuario») se saltan: se rehacen luego una a una (memoria; ver SkipSiblingScenes).
+        if (SkipSiblingScenes) Debug.Log("[SampleSceneBuilder] Solo el santuario: las escenas hermanas (microcosmos) no se rehacen en esta pasada.");
+        else
+        {
         try { MicrocosmosSceneBuilder.BuildScene0(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar la escena Microcosmos Scene0 (Sakshi): {e.Message}"); }
         try { MicrocosmosSceneBuilder.BuildScene1(); }
@@ -169,6 +186,7 @@ public static partial class SampleSceneBuilder
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudo generar el microcosmos de la planta atómica: {e.Message}"); }
         try { StorySceneBuilder.BuildAll(); }
         catch (System.Exception e) { Debug.LogWarning($"[SampleSceneBuilder] No se pudieron generar los microcosmos de historias: {e.Message}"); }
+        }
 
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
         GameObject flora = GameObject.Find("FloraHielo_AUTO");   // rendimiento: cada árbol de hielo, una malla por material
