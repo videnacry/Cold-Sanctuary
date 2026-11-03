@@ -81,7 +81,8 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [x] **Dos formas de cada piso** (`FloorForms`, `EnsureFloorForms`): 17 pisos (2 en obras, 15 con su forma en obra oculta). Bruce Lee, verificado: antes 3 conos de obra en el Dojo gigante; ahora forma finalizada.
 - [x] **Frutales** de época y lugar en todas las residencias (19 estilos).
 - [x] **Pakal de Palenque** (`Microcosmos_Pakal`, `PakalStoryTest` grupo 66; región `Maya`, estilo `maya_clasico`, bioma, plano de Lakamha').
-- [ ] Rehacer `Microcosmos_Egina` con su ciudad (código listo: `CivicBuilder.EginaTown`; falta construirla y pasar el grupo 43).
+- [x] **Verificado en vivo** (2026-11-03): grupos 43 (365/0), 60 (48/0), 62 (373/0), 63 (16/0), 66 (23/0); 0 violaciones de las reglas 1–12 y de las de los microcosmos en los 23 pueblos; fotos en `Temp/Pueblos/`.
+- [x] `Microcosmos_Egina` con su ciudad (`CivicBuilder.EginaTown`; el templo del mito y la stoa, marcados como historia).
 - [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
 - [ ] Que el **horario semanal** (otro hilo) use `AreaFunctionSite.activity` para mandar a cada uno a sus edificios de ocio, descanso y recuperación.
 - [ ] Palenque sobre el Huerto (24 × 9 m) queda a escala 1:2,5: con su piso propio (más ancho) iría a 1:1.
