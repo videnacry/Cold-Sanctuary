@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public static class CubeHair
 {
-    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy, Medium, Bob, Turban }
+    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy, Medium, Bob, Turban, Spiky }
     public enum Beard { None, Full, Goatee, Stubble, Long }
 
     public struct Look
@@ -26,6 +26,7 @@ public static class CubeHair
         public Beard beardStyle;
         public bool tattoos, earring;
         public Color beanie; public bool hasBeanie;          // gorro de lana
+        public bool beret;                                   // boina (con el color de beanie): plana y ladeada
         public Color lips; public bool hasLips;              // labios pintados
         // Capas de ropa del torso: CHALECO (pecho) sobre camiseta (mangas cortas de otro color), CORSÉ en la cintura, BOTAS altas.
         public Color upperSleeves, waist, boots; public bool hasUpperSleeves, hasWaist, hasBoots;
@@ -43,7 +44,7 @@ public static class CubeHair
             beardStyle = b ? Beard.Full : Beard.None; tattoos = earring = false;
             beanie = lips = upperSleeves = waist = boots = default; hasBeanie = hasLips = hasUpperSleeves = hasWaist = hasBoots = false;
             upperTattoo = wristband = chain = rifle = false; feminine = false; jaw = cheeks = 0f;
-            sleeveless = hasStole = hasNecklace = necklaceCross = rings = false; stole = necklace = default;
+            sleeveless = hasStole = hasNecklace = necklaceCross = rings = false; beret = false; stole = necklace = default;
         }
         public Look Wear(Color c, float m = 0f) { clothes = c; hasClothes = true; height = m; return this; }
         public Look Pants(Color c, bool shortPants = false) { pants = c; hasPants = true; shorts = shortPants; return this; }
@@ -56,6 +57,7 @@ public static class CubeHair
         public Look Tattoos() { tattoos = true; return this; }
         public Look Earring() { earring = true; return this; }
         public Look Beanie(Color c) { beanie = c; hasBeanie = true; return this; }
+        public Look Beret(Color c) { beanie = c; beret = true; return this; }
         public Look Fem() { feminine = true; return this; }
         public Look Face(float jawWidth, float cheekbones = 0f) { jaw = jawWidth; cheeks = cheekbones; return this; }
         public Look Lips(Color c) { lips = c; hasLips = true; return this; }
@@ -107,6 +109,25 @@ public static class CubeHair
         // ondulado-rizado con volumen arriba, sonrisa amplia. Siempre ELEGANTE: camisa negra de cuello, pantalón de vestir gris
         // marengo y zapatos de piel; le gustan los anillos, las cadenas (plata, con cruz) y los pendientes; pulsera.
         if (n.Contains("andrea")) return new Look(Style.Curly, C(0.2f, 0.14f, 0.1f), C(0.9f, 0.72f, 0.6f), C(0.3f, 0.2f, 0.12f)).Face(0.82f, 0.45f).Earring().Rings().Wear(C(0.07f, 0.07f, 0.08f), 1.78f).Sleeves(C(0.07f, 0.07f, 0.08f)).Pants(C(0.22f, 0.23f, 0.26f)).Necklace(C(0.8f, 0.8f, 0.83f), true).Shoes(C(0.32f, 0.2f, 0.13f)).Extras(band: true);
+        // LOS SEIS DEL MESOCOSMOS (docs/personajes-mesocosmos.md, Berón 2026-11-03). Rasgos públicos y reconocibles, sin caricatura.
+        // Elon Musk (cohetes y coches eléctricos; en la Mecánica): 1,88 m, pelo castaño oscuro corto peinado hacia atrás, piel clara,
+        // camiseta negra, vaqueros oscuros y zapatillas negras.
+        if (n.Contains("elonmusk") || n.Contains("elon musk")) return new Look(Style.Short, C(0.24f, 0.17f, 0.12f), C(0.93f, 0.79f, 0.69f), C(0.35f, 0.45f, 0.42f)).Face(0.86f, 0.4f).Wear(C(0.08f, 0.08f, 0.09f), 1.88f).Pants(C(0.14f, 0.16f, 0.22f)).Shoes(C(0.07f, 0.07f, 0.07f));
+        // Goku (personaje de ficción de Dragon Ball; entrenador de artes marciales): pelo negro en grandes puntas, gi naranja con
+        // camiseta azul debajo, cinturón y muñequeras azules y botas azules con ribete rojo. Fornido (sus stats).
+        if (n.Contains("goku")) return new Look(Style.Spiky, C(0.05f, 0.05f, 0.06f), C(0.95f, 0.8f, 0.68f), C(0.08f, 0.08f, 0.1f)).Face(0.84f, 0.5f).Wear(C(0.95f, 0.47f, 0.12f), 1.75f).Vest(C(0.12f, 0.25f, 0.62f)).Corset(C(0.12f, 0.25f, 0.62f)).Pants(C(0.95f, 0.47f, 0.12f)).Boots(C(0.12f, 0.25f, 0.62f)).Extras(band: true);
+        // Bill Gates (el software y la filantropía de la salud pública; en el Hospital, registros y vacunación): pelo castaño claro
+        // con canas peinado de lado, gafas finas, jersey azul de cuello en pico sobre camisa clara, pantalón caqui.
+        if (n.Contains("billgates") || n.Contains("bill gates")) return new Look(Style.Short, C(0.6f, 0.5f, 0.4f), C(0.95f, 0.8f, 0.72f), C(0.3f, 0.38f, 0.48f)).Face(0.8f, 0.3f).Glasses(C(0.55f, 0.55f, 0.58f)).Wear(C(0.22f, 0.32f, 0.55f), 1.77f).Sleeves(C(0.22f, 0.32f, 0.55f)).Pants(C(0.72f, 0.65f, 0.5f)).Shoes(C(0.3f, 0.2f, 0.14f));
+        // Warren Buffett (inversor; las cuentas del santuario, desde el restaurante): canoso, gafas de montura gruesa oscura, traje
+        // gris con camisa blanca, zapatos negros. Mayor (sus stats).
+        if (n.Contains("warrenbuffett") || n.Contains("warren buffett")) return new Look(Style.Short, C(0.88f, 0.88f, 0.86f), C(0.94f, 0.79f, 0.72f), C(0.35f, 0.3f, 0.25f)).Face(0.88f, 0.35f).Glasses(C(0.12f, 0.1f, 0.1f)).Wear(C(0.42f, 0.43f, 0.46f), 1.78f).Vest(C(0.96f, 0.96f, 0.95f)).Sleeves(C(0.42f, 0.43f, 0.46f)).Pants(C(0.38f, 0.39f, 0.42f)).Shoes(C(0.06f, 0.06f, 0.06f));
+        // MacKenzie Scott (novelista y filántropa; en el Huerto, alimentar a los visitantes): media melena castaña, blusa azul
+        // claro, pantalón oscuro.
+        if (n.Contains("mackenziescott") || n.Contains("mackenzie scott")) return new Look(Style.Medium, C(0.4f, 0.27f, 0.17f), C(0.95f, 0.8f, 0.7f), C(0.3f, 0.22f, 0.14f)).Fem().Face(0.74f, 0.55f).Lips(C(0.78f, 0.5f, 0.5f)).Wear(C(0.62f, 0.75f, 0.88f), 1.7f).Sleeves(C(0.62f, 0.75f, 0.88f)).Pants(C(0.15f, 0.17f, 0.22f)).Shoes(C(0.2f, 0.15f, 0.12f));
+        // Ibrahim Traoré (capitán, presidente de transición de Burkina Faso; coordina la Guardia): piel oscura, pelo negro muy corto
+        // y barba corta, boina roja, uniforme de campaña verde oliva y botas.
+        if (n.Contains("ibrahimtraore") || n.Contains("ibrahim traoré") || n.Contains("ibrahim traore")) return new Look(Style.Shaved, C(0.05f, 0.04f, 0.04f), C(0.36f, 0.24f, 0.17f), C(0.12f, 0.08f, 0.06f)).Face(0.86f, 0.55f).Stubble().Beret(C(0.72f, 0.1f, 0.12f)).Wear(C(0.33f, 0.36f, 0.24f), 1.8f).Sleeves(C(0.33f, 0.36f, 0.24f)).Pants(C(0.3f, 0.33f, 0.22f)).Boots(C(0.12f, 0.1f, 0.08f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
@@ -251,6 +272,25 @@ public static class CubeHair
                 knot.localRotation = Quaternion.Euler(0f, 0f, 35f);
                 for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * (size.x * 0.5f + 0.01f), center.y + size.y * 0.12f, center.z - size.z * 0.12f), new Vector3(0.03f, size.y * 0.3f, size.z * 0.45f), c);   // canas sobre las orejas
                 break;
+            case Style.Spiky:
+                // PUNTAS GRANDES (Goku): casquete y nuca, y mechones gruesos en punta que salen hacia arriba, a los lados y hacia
+                // atrás en abanico; delante, tres mechones que caen sobre la frente.
+                P(h, new Vector3(0f, top + 0.025f, center.z - 0.005f), new Vector3(w, 0.05f, d), c);
+                P(h, new Vector3(0f, center.y + size.y * 0.2f, back - 0.012f), new Vector3(w, size.y * 0.6f, 0.03f), c);
+                for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * (size.x * 0.5f + 0.012f), center.y + size.y * 0.3f, center.z - size.z * 0.15f), new Vector3(0.03f, size.y * 0.4f, size.z * 0.6f), c);
+                for (int i = 0; i < 9; i++)
+                {
+                    float ang = -80f + i * 20f;   // abanico de −80° a +80° (de un lado al otro, por encima)
+                    float len = 0.16f + (i % 2) * 0.05f + (i == 4 ? 0.04f : 0f);
+                    Transform spike = P(h, new Vector3(Mathf.Sin(ang * Mathf.Deg2Rad) * size.x * 0.32f, top + 0.06f + Mathf.Cos(ang * Mathf.Deg2Rad) * len * 0.45f, center.z - size.z * 0.12f - (i % 3) * 0.03f), new Vector3(0.06f, len, 0.06f), c);
+                    spike.localRotation = Quaternion.Euler(-18f - (i % 3) * 8f, 0f, -ang * 0.9f);
+                }
+                for (int k = -1; k <= 1; k++)   // mechones de la frente
+                {
+                    Transform f = P(h, new Vector3(k * size.x * 0.22f, top - 0.04f, center.z + size.z * 0.5f + 0.01f), new Vector3(0.05f, 0.1f, 0.03f), c);
+                    f.localRotation = Quaternion.Euler(0f, 0f, k * 18f);
+                }
+                break;
         }
         if (look.style != Style.ChefHat && look.style != Style.Shaved && look.style != Style.Turban) Strands(h, center, size, c, look.style);
         float front = center.z + size.z * 0.5f;
@@ -313,6 +353,14 @@ public static class CubeHair
             P(h, new Vector3(0f, top + 0.06f, center.z - 0.005f), new Vector3(w + 0.015f, 0.12f, d + 0.015f), look.beanie);
             P(h, new Vector3(0f, top + 0.005f, center.z - 0.005f), new Vector3(w + 0.03f, 0.045f, d + 0.03f), look.beanie * 0.85f + new Color(0, 0, 0, 1));
             for (int k = -2; k <= 2; k++) P(h, new Vector3(k * w * 0.18f, top + 0.06f, center.z + d * 0.5f + 0.01f), new Vector3(0.008f, 0.1f, 0.005f), look.beanie * 0.7f + new Color(0, 0, 0, 1));   // canalé
+        }
+
+        if (look.beret)   // BOINA: un disco plano de fieltro, ladeado hacia la derecha, con su cinta de cuero
+        {
+            Transform disc = P(h, new Vector3(-size.x * 0.12f, top + 0.045f, center.z - 0.01f), new Vector3(w * 1.12f, 0.05f, d * 1.05f), look.beanie);
+            disc.localRotation = Quaternion.Euler(0f, 0f, 9f);
+            P(h, new Vector3(0f, top + 0.004f, center.z - 0.005f), new Vector3(w + 0.02f, 0.025f, d + 0.02f), new Color(0.12f, 0.08f, 0.06f));
+            P(h, new Vector3(size.x * 0.22f, top + 0.03f, front + 0.008f), new Vector3(0.035f, 0.04f, 0.006f), new Color(0.85f, 0.72f, 0.3f));   // insignia
         }
 
         if (look.earring)   // PENDIENTE

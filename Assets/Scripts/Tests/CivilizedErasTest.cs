@@ -20,7 +20,7 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
 {
     public int Group => 62;   // tras Bruce Lee (60) y el bloqueo (61): carga y descarga escenas
     public bool ParallelSafe => false;
-    public float loadTimeout = 60f;
+    public float loadTimeout = 180f;   // (2026-11-03) los pueblos ×60 (hasta 150 edificios y 13 000 plantas) tardan más de 60 s en cargar en aditivo
 
     static readonly string[] Scenes = { "Microcosmos_BruceLee", "Microcosmos_Nightingale", "Microcosmos_Wright", "Microcosmos_Buda", "Microcosmos_Eratostenes", "Microcosmos_Patanjali", "Microcosmos_Tregua1914",
         "Microcosmos_PlantaAtomica", "Microcosmos_IrenaSendler", "Microcosmos_LeChambon", "MobWorld_Mesopotamia", "Microcosmos_Huerto",

@@ -160,6 +160,9 @@ public class SanctuaryDirector : MonoBehaviour
         { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
         { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Sadhguru", SanctuaryAreaType.YogaRoom },   // la médica; el maestro de yoga
         { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
+        // Los seis del mesocosmos (docs/personajes-mesocosmos.md). Ibrahim Traoré coordina la Guardia: como Gohageneis, sin área fija.
+        { "ElonMusk", SanctuaryAreaType.VehicleWorkshop }, { "Goku", SanctuaryAreaType.Gym }, { "BillGates", SanctuaryAreaType.Infirmary },
+        { "WarrenBuffett", SanctuaryAreaType.Kitchen }, { "MacKenzieScott", SanctuaryAreaType.Garden },
     };
 
     SanctuaryArea DetermineStartArea(WorldCharacter character)

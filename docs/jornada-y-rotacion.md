@@ -128,3 +128,7 @@ La misión de la **Enfermería** es **iniciar a un turista**: recibirlo, anális
 - Iniciación con TeachingSession real (pasos de la misión) en vez del aviso de la Magnate.
 - Turistas que llegan cada día y pasan por la iniciación de la enfermería.
 - Misiones de reparación con sus pasos (tuberías, puertas, ventanas, tejados).
+
+## Horario libre (2026-11-03)
+
+Las horas libres (16–19 y 20–22 h) tienen ahora un **horario semanal** de ocio y cuidado con la misma lógica de rotación: docs/horario-libre.md (incluye un resumen de cómo reparte la jornada).

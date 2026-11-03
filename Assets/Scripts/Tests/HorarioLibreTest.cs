@@ -1,0 +1,282 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+/// <summary>
+/// PRUEBA EN VIVO DEL HORARIO LIBRE (docs/horario-libre.md; Berón 2026-11-03). En cuatro partes:
+///  1. LÓGICA (sin escena): con el catálogo del santuario y 16 personas, una semana entera: todas las franjas llenas, la capacidad
+///     respetada y cada actividad repartida por igual (Δ ≤ 1); con poca capacidad (40 personas) sigue llena y Δ ≤ 3.
+///  2. LOS SEIS DEL MESOCOSMOS (Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré): en la escena con
+///     cuerpo de cubos, rótulo con su papel, en la jornada (WorkdayDirector.staff, reciben misiones) y con su casa del árbol.
+///  3. EL SANTUARIO EN VIVO: el horario de la semana para todo el personal (cada hora libre llena, capacidad, uniformidad medida) y
+///     dos franjas de verdad (16–18 h, reloj ×<see cref="speed"/>): cada uno anda a su sitio y hace su actividad.
+///  4. UN MICROCOSMOS (cargado en aditivo): lo mismo con sus insectos-humanos y sus edificios.
+/// Todas las esperas, acotadas. Se añade solo al orquestador cuando se piden las pruebas.
+/// </summary>
+public class HorarioLibreTest : MonoBehaviour, ITestUnit
+{
+    public int Group => 65;   // tras las reglas de edificación (63): cambia el reloj y mueve al personal (como la jornada, 50)
+    public bool ParallelSafe => false;
+    public float speed = 6f;
+    public bool shots = true;
+    static readonly string[] MicroScenes = { "Microcosmos_Buda", "Microcosmos_Patanjali", "Microcosmos_Eratostenes", "Microcosmos_BruceLee" };
+    public static readonly string[] Six = { "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    static void Register()
+    {
+        ColdSanctuary.TestRunner tr = FindAnyObjectByType<ColdSanctuary.TestRunner>();
+        if (tr != null && tr.GetComponentInChildren<HorarioLibreTest>() == null) tr.gameObject.AddComponent<HorarioLibreTest>();
+    }
+
+    static void Log(string s) => Debug.Log("[Horario] " + s);
+
+    public IEnumerator Run()
+    {
+        TestProbe.Begin("Horario libre: la semana de ocio y cuidado, repartida por igual, andando a cada sitio (santuario y microcosmos)");
+        Logic();
+        float oldScale = Time.timeScale;
+        try { Six_(); } catch (System.Exception ex) { TestProbe.Check("los seis del mesocosmos", false, ex.Message); }
+        yield return Sanctuary();
+        yield return Micro();
+        LeisureDirector.ForceRun = false;
+        if (LeisureDirector.Instance != null) LeisureDirector.Instance.ReleaseAll();
+        HorarioPanel.Show = false;
+        Time.timeScale = oldScale;
+        TestProbe.End();
+    }
+
+    // ── 1. Lógica ────────────────────────────────────────────────────────────────────────────────
+    void Logic()
+    {
+        var r = new LeisureRoster();
+        foreach (var d in LeisureDirector.SanctuaryActivities) r.activities.Add(new LeisureRoster.Activity(d.id, d.title, d.kind, d.where[0], d.cap, d.pose));
+        for (int i = 0; i < 16; i++) r.Add("P" + i);
+        LeisureRoster.WeekPlan w0 = r.Plan(0), w1 = r.Plan(1);
+        int s0 = LeisureRoster.Spread(w0, out int pp0, out string worst0), s1 = LeisureRoster.Spread(w1, out _, out _);
+        int slots = LeisureRoster.DaysPerWeek * LeisureRoster.SlotHours.Length;
+        TestProbe.Check("lógica: cada persona tiene una actividad en cada hora libre de la semana (35 franjas)", w0.unfilled.Count == 0 && w0.entries.Count == 16 * slots, $"{w0.entries.Count}/{16 * slots}, sin llenar {w0.unfilled.Count}");
+        TestProbe.Check("lógica: ninguna actividad pasa de sus plazas", LeisureRoster.OverCapacity(w0).Count == 0 && LeisureRoster.OverCapacity(w1).Count == 0, string.Join("; ", LeisureRoster.OverCapacity(w0)));
+        TestProbe.Check("lógica: cada actividad repartida por igual entre las 16 (Δ ≤ 1 por semana)", s0 <= 1 && s1 <= 1, $"semana 0: Δ={s0} ({worst0}), por persona Δ={pp0}; semana 1: Δ={s1}");
+        TestProbe.Check("lógica: el orden del catálogo rota una posición por franja", r.Order(1)[0] == r.activities[r.activities.Count - 1] && r.Order(0)[0] == r.activities[0]);
+        var tight = new LeisureRoster();
+        foreach (var d in LeisureDirector.SanctuaryActivities) tight.activities.Add(new LeisureRoster.Activity(d.id, d.title, d.kind, d.where[0], d.cap, d.pose));
+        for (int i = 0; i < 40; i++) tight.Add("Q" + i);
+        LeisureRoster.WeekPlan t = tight.Plan(0);
+        int st = LeisureRoster.Spread(t, out int ppt, out string wt);
+        TestProbe.Check("lógica: con 40 personas (plazas justas) sigue todo lleno y repartido (Δ ≤ 3)", t.unfilled.Count == 0 && LeisureRoster.OverCapacity(t).Count == 0 && st <= 3, $"Δ={st} ({wt}), por persona Δ={ppt}");
+        Log($"lógica: 16 personas Δ={s0}/{s1}; 40 personas Δ={st}");
+    }
+
+    // ── 2. Los seis ──────────────────────────────────────────────────────────────────────────────
+    void Six_()
+    {
+        WorkdayDirector wd = WorkdayDirector.Instance != null ? WorkdayDirector.Instance : FindAnyObjectByType<WorkdayDirector>();
+        string missing = "", bodyless = "", unlabeled = "", homeless = "";
+        foreach (string id in Six)
+        {
+            GameObject g = WorkdayDirector.Body(id);
+            if (g == null) { missing += id + " "; continue; }
+            if (g.transform.Find(CubeHumanoid.BodyName) == null) bodyless += id + " ";
+            WorldLabel wl = g.GetComponent<WorldLabel>();
+            if (wl == null || !wl.text.Contains("(")) unlabeled += id + " ";
+            if (!g.TryGetComponent(out Anima a) || Bedroom.Of(a) == null) homeless += id + " ";
+        }
+        TestProbe.Check("los seis del mesocosmos están en el santuario", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", Six));
+        TestProbe.Check("los seis tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
+        TestProbe.Check("los seis llevan su papel en el rótulo", unlabeled.Length == 0, unlabeled);
+        TestProbe.Check("los seis tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
+        TestProbe.Check("los seis están en la jornada (personal del santuario)", wd != null && Six.All(s => wd.staff.Contains(s)));
+        if (wd != null)
+        {
+            TimeController tc = TimeController.timeController;
+            WorkRoster.DayPlan p = wd.today ?? wd.PlanDay(tc.Day);
+            var got = Six.Where(s => wd.roster.Find(s) != null && p.work.Any(a => a.worker.name == s)).ToList();
+            TestProbe.Check("los seis reciben misiones en el reparto de la jornada", got.Count == Six.Length, string.Join(" · ", Six.Select(s => $"{s}: {string.Join(", ", p.work.Where(a => a.worker.name == s).Select(a => a.mission.title))}")));
+        }
+        if (shots) foreach (string id in Six) { GameObject g = WorkdayDirector.Body(id); if (g != null) Portrait(g.transform, id); }
+    }
+
+    // ── 3. El santuario en vivo ──────────────────────────────────────────────────────────────────
+    IEnumerator Sanctuary()
+    {
+        LeisureDirector ld = LeisureDirector.Instance;
+        TimeController tc = TimeController.timeController;
+        if (!TestProbe.Check("hay director del horario libre", ld != null)) yield break;
+        WorkdayDirector wd = WorkdayDirector.Instance;
+        // La tarde empieza descansada (como la jornada, grupo 50): sin hambre, sueño ni baño que se adelanten a todo.
+        Rest(wd != null ? wd.staff : new string[0]);
+        int day = tc.Day + 1;
+        tc.SetClock(day, 15.9f);
+        if (wd != null) wd.PlanDay(day);   // el día de hoy (el horario mira quién hay en el personal)
+        ld.Scan(true);
+        GameObject any = WorkdayDirector.Body("Linduarda") ?? WorkdayDirector.Body("Goluis");
+        LeisureDirector.Group gr = any != null ? ld.GroupOf(any) : ld.groups.FirstOrDefault(g => !g.micro);
+        if (!TestProbe.Check("el santuario tiene su horario libre de la semana", gr != null && gr.plan != null)) yield break;
+        CheckPlan(gr, "santuario", 15);
+        TestProbe.Check("santuario: incluye a los seis del mesocosmos", Six.All(s => gr.plan.people.Any(p => p.name == s)));
+        TestProbe.Check("santuario: catálogo de ≥ 6 actividades de ocio y cuidado con sitio", gr.catalog.Count >= 6, string.Join(", ", gr.catalog.Select(a => $"{a.title} → {a.venue}")));
+        foreach (string l in ld.Report(gr)) Log(l);
+
+        // Dos franjas de verdad: 16–17 y 17–18 h.
+        int rec0 = LeisureDirector.Records.Count;
+        LeisureDirector.ForceRun = true;
+        Time.timeScale = speed;
+        HorarioPanel.Show = true;
+        float perHour = tc.SecondsPerGameDay / 24f;
+        float end = Time.realtimeSinceStartup + perHour * 2.3f / speed + 60f;
+        bool shot1 = false, labels = false;
+        while (tc.Hour < 18.02f && tc.Day == day && Time.realtimeSinceStartup < end)
+        {
+            if (!labels && tc.Hour > 16.5f) labels = gr.bodies.Any(b => b != null && b.TryGetComponent(out WorldLabel wl) && wl.text.Contains("Libre:"));
+            if (shots && !shot1 && tc.Hour > 16.75f) { shot1 = true; Capture("panel_santuario_1645"); }
+            yield return null;
+        }
+        if (shots) Capture("panel_santuario_1800");
+        ld.Tick();   // cierra la franja de las 17 h
+        var recs = LeisureDirector.Records.Skip(rec0).Where(x => !x.micro && x.day == day && x.slot <= 1).ToList();
+        Summarize(recs, "santuario", 0.7f);
+        TestProbe.Check("santuario: el rótulo dice la actividad («Libre: …»)", labels);
+        LeisureDirector.ForceRun = false; ld.ReleaseAll(gr);
+        Time.timeScale = 1f;
+    }
+
+    // ── 4. Un microcosmos ───────────────────────────────────────────────────────────────────────
+    IEnumerator Micro()
+    {
+        LeisureDirector ld = LeisureDirector.Instance;
+        TimeController tc = TimeController.timeController;
+        if (ld == null) yield break;
+        string sceneName = MicroScenes.FirstOrDefault(Application.CanStreamedLevelBeLoaded);
+        if (!TestProbe.Check("hay un microcosmos de eras civilizadas en Build Settings", sceneName != null)) yield break;
+        Scene s = SceneManager.GetSceneByName(sceneName);
+        bool loadedHere = false;
+        if (!s.isLoaded)
+        {
+            AsyncOperation op = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
+            float until = Time.realtimeSinceStartup + 60f;
+            while (op != null && !op.isDone && Time.realtimeSinceStartup < until) yield return null;
+            s = SceneManager.GetSceneByName(sceneName);
+            if (!TestProbe.Check($"{sceneName} se carga", s.isLoaded)) yield break;
+            loadedHere = true;
+        }
+        yield return null; yield return null;
+        int day = tc.Day + 1;
+        tc.SetClock(day, 15.95f);
+        ld.Scan(true);
+        LeisureDirector.Group gr = ld.GroupOf(s);
+        if (TestProbe.Check($"{sceneName}: su horario libre de la semana (insectos-humanos)", gr != null && gr.plan != null && gr.plan.people.Count >= 3, gr != null ? $"{gr.plan?.people.Count} personas" : "sin grupo"))
+        {
+            CheckPlan(gr, sceneName, 3);
+            foreach (string l in ld.Report(gr).Take(12)) Log(l);
+            // Que nada de lo anterior los tenga cansados o hambrientos.
+            foreach (GameObject b in gr.bodies) { if (b == null) continue; if (b.TryGetComponent(out BodyMetabolism m)) { m.hunger = 0.1f; m.toilet = 0.05f; m.dirt = 0.1f; } if (b.TryGetComponent(out Anima a)) { a.sleepiness = 0.05f; } }
+            int rec0 = LeisureDirector.Records.Count;
+            LeisureDirector.ForceRun = true;
+            Time.timeScale = speed;
+            float perHour = tc.SecondsPerGameDay / 24f;
+            float end = Time.realtimeSinceStartup + perHour * 1.2f / speed + 60f;
+            bool shot = false;
+            while (tc.Hour < 17.02f && tc.Day == day && Time.realtimeSinceStartup < end)
+            {
+                if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; Capture("panel_" + sceneName); }
+                yield return null;
+            }
+            ld.Tick();
+            var recs = LeisureDirector.Records.Skip(rec0).Where(x => x.micro && x.group == gr.name && x.day == day && x.slot == 0).ToList();
+            Summarize(recs, sceneName, 0.7f);
+            LeisureDirector.ForceRun = false; ld.ReleaseAll(gr);
+            Time.timeScale = 1f;
+        }
+        if (loadedHere)
+        {
+            AsyncOperation un = SceneManager.UnloadSceneAsync(s);
+            float until = Time.realtimeSinceStartup + 30f;
+            while (un != null && !un.isDone && Time.realtimeSinceStartup < until) yield return null;
+        }
+    }
+
+    // ── Comprobaciones comunes ───────────────────────────────────────────────────────────────────
+    void CheckPlan(LeisureDirector.Group gr, string tag, int minPeople)
+    {
+        LeisureRoster.WeekPlan p = gr.plan;
+        int slots = LeisureRoster.DaysPerWeek * LeisureRoster.SlotHours.Length;
+        int missing = 0; string miss = "";
+        foreach (LeisureRoster.Person q in p.people)
+            for (int d = p.firstDay; d < p.firstDay + LeisureRoster.DaysPerWeek; d++)
+                for (int sl = 0; sl < LeisureRoster.SlotHours.Length; sl++)
+                    if (p.At(q, d, sl) == null) { missing++; if (miss.Length < 200) miss += $"{q.name} d{d} {LeisureRoster.SlotHours[sl]:00}h; "; }
+        TestProbe.Check($"{tag}: todas las horas libres de la semana llenas ({p.people.Count} personas × {slots} franjas)", p.people.Count >= minPeople && missing == 0, missing > 0 ? $"{missing} vacías: {miss}" : $"{p.entries.Count} franjas");
+        var over = LeisureRoster.OverCapacity(p);
+        TestProbe.Check($"{tag}: ninguna actividad pasa de sus plazas", over.Count == 0, string.Join("; ", over.Take(5)));
+        int sp = LeisureRoster.Spread(p, out int pp, out string worst);
+        TestProbe.Check($"{tag}: reparto uniforme de cada actividad entre los personajes (Δ ≤ 2)", sp <= 2, $"Δ={sp} ({worst}) · por persona Δ={pp} · {p.people.Count} personas, {p.activities.Count} actividades");
+        Log($"{tag}: uniformidad medida Δ={sp} ({worst}), por persona Δ={pp}");
+    }
+
+    void Summarize(List<LeisureDirector.Record> recs, string tag, float need)
+    {
+        int n = recs.Count;
+        var free = recs.Where(r => r.blocked < r.since * 0.5f).ToList();   // los que no pasaron la franja con una necesidad (comer, el baño…)
+        int arrived = free.Count(r => r.arrived), walked = free.Count(r => r.arrived && !r.fallback), performed = free.Count(r => r.arrived && r.performed > 3f);
+        int jumps = recs.Sum(r => r.jumps);
+        string late = string.Join("; ", free.Where(r => !r.arrived).Take(8).Select(r => $"{r.who} → {r.activity} ({r.venue}) {r.walked:0} m andados"));
+        string blocked = string.Join("; ", recs.Where(r => r.blocked >= r.since * 0.5f).Take(6).Select(r => $"{r.who}: {r.blockedBy ?? "necesidad"}"));
+        TestProbe.Check($"{tag}: hay franjas libres en marcha", n > 0, $"{n} franjas");
+        if (n == 0) return;
+        TestProbe.Check($"{tag}: cada uno llega a su actividad (≥ {need:P0} de los que no atendían una necesidad)", free.Count > 0 && arrived >= need * free.Count, $"{arrived}/{free.Count} llegan" + (late.Length > 0 ? $"; sin llegar: {late}" : "") + (blocked.Length > 0 ? $"; con necesidades: {blocked}" : ""));
+        TestProbe.Check($"{tag}: llegan ANDANDO (o en alfombra), no puestos allí", arrived == 0 || walked >= 0.8f * arrived, $"{walked}/{arrived} andando · {free.Where(r => r.arrived).Sum(r => r.walked):0} m andados, {free.Sum(r => r.flown):0} m en alfombra");
+        TestProbe.Check($"{tag}: y la hacen (postura o gesto en el sitio)", arrived == 0 || performed >= 0.9f * arrived, $"{performed}/{arrived} · media {free.Where(r => r.arrived).Select(r => r.performed).DefaultIfEmpty(0f).Average():0} s haciéndola");
+        TestProbe.Check($"{tag}: sin saltos ni teletransportes", jumps == 0, $"{jumps}: {string.Join(", ", recs.Where(r => r.jumps > 0).Select(r => r.who))}");
+        foreach (var g in recs.GroupBy(r => r.activity)) Log($"{tag} · {g.Key}: {string.Join(", ", g.Select(r => $"{r.who}{(r.arrived ? "✓" : "…")}"))}");
+    }
+
+    void Rest(IEnumerable<string> staff)
+    {
+        foreach (string who in staff)
+        {
+            GameObject g = WorkdayDirector.Body(who);
+            if (g == null || !g.TryGetComponent(out Anima a) || a.death) continue;
+            if (g.TryGetComponent(out BodyMetabolism b)) { b.hunger = 0.1f; b.toilet = 0.05f; b.dirt = 0.1f; }
+            a.sleepiness = 0.05f; a.aware = false;
+            bool sleeping = g.TryGetComponent(out ActionQueue q) && q.Own.Any(s => s is SleepSpell);
+            if (a.asleep && !sleeping) { a.asleep = false; DailyPoses.Stand().ApplyFinal(a); }
+        }
+    }
+
+    // ── Fotos ────────────────────────────────────────────────────────────────────────────────────
+    const string Dir = "Temp/Horario";
+
+    static void Capture(string tag)
+    {
+        System.IO.Directory.CreateDirectory(Dir);
+        string path = $"{Dir}/{tag}.png";
+        ScreenCapture.CaptureScreenshot(path);
+        Log($"captura: {path}");
+    }
+
+    /// <summary>Un retrato de frente (cámara propia, a la altura del pecho) en Temp/Horario/&lt;id&gt;.png.</summary>
+    public static void Portrait(Transform t, string id)
+    {
+        System.IO.Directory.CreateDirectory(Dir);
+        var go = new GameObject("FotoHorario_TEMP");
+        try
+        {
+            Camera cam = go.AddComponent<Camera>();
+            cam.fieldOfView = 32f; cam.nearClipPlane = 0.1f;
+            Vector3 chest = t.position + Vector3.up * 0.4f;
+            cam.transform.position = chest + t.forward * 3.4f + Vector3.up * 0.25f + t.right * 0.6f;
+            cam.transform.LookAt(chest);
+            var rt = new RenderTexture(640, 760, 24); cam.targetTexture = rt; cam.Render();
+            RenderTexture.active = rt;
+            var tex = new Texture2D(640, 760, TextureFormat.RGB24, false); tex.ReadPixels(new Rect(0, 0, 640, 760), 0, 0); tex.Apply();
+            RenderTexture.active = null;
+            System.IO.File.WriteAllBytes($"{Dir}/{id}.png", tex.EncodeToPNG());
+            Object.Destroy(tex); cam.targetTexture = null; rt.Release();
+            Log($"retrato: {Dir}/{id}.png");
+        }
+        finally { Object.Destroy(go); }
+    }
+}

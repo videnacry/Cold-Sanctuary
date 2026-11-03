@@ -31,6 +31,8 @@ public class MicroJornada : MonoBehaviour
     /// <summary>Qué está haciendo ahora («Cocinando: …»), para el rótulo y las pruebas.</summary>
     public string Doing { get; private set; } = "";
     public AreaFunctionStation Station => _st;
+    /// <summary>Su nombre en el rótulo (sin lo que está haciendo).</summary>
+    public string DisplayName => _name ?? (TryGetComponent(out WorldLabel wl) ? wl.text : name);
 
     void Start()
     {
@@ -80,6 +82,7 @@ public class MicroJornada : MonoBehaviour
         if (_q == null) { _a = GetComponent<Anima>(); _q = GetComponent<ActionQueue>(); }
         if (_a != null && (_a.death || _a.asleep)) return;
         if (NeedsDriver.Attending(_q)) { _resume = true; return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
+        if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/horario-libre.md)
         if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f, speed * 1.2f, 1.5f); return; }
         string block = BlockAt(Hour);
         if (block != _block || _st == null || _resume) { _resume = false; Choose(block); }
