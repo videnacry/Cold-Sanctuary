@@ -23,7 +23,7 @@ using St = MicroStyles;
 /// La raíz de cada mueble lleva <see cref="MicroPiece"/> (qué es, qué necesidad cubre, su estilo, para quién está hecho y cómo se
 /// tumba) y un BoxCollider que envuelve sus piezas (<see cref="KitchenProps.Fit"/>): sobre ella va el puesto (AreaFunctionStation).
 /// </summary>
-internal static class MicroFurniture
+internal static partial class MicroFurniture
 {
     static Color H(string hex) { ColorUtility.TryParseHtmlString("#" + hex, out Color c); return c; }
     static readonly Color Wood = KitchenProps.Wood, WoodDark = KitchenProps.WoodDark, Iron = H("3B3B3E"), Stone = H("8C857A"), Clay = H("B0714A"),
@@ -37,6 +37,8 @@ internal static class MicroFurniture
         "fogon", "cocina", "horno", "barra", "mesa", "mesa_laboratorio", "cama", "camilla", "inodoro", "lavabo", "lavadero", "silla", "banco",
         "estante", "armario", "pizarra", "banco_taller", "torno", "tunel", "muneco", "altar", "puesto", "granero", "torno_alfarero", "parapeto",
         "pozo", "telar", "tatami", "esterilla", "bancal",
+        // (2026-11-03) los edificios del pueblo y los frutales (MicroFurniture.Civic.cs)
+        "frutal", "estatua", "fuente", "vitrina", "piscina", "pista", "consola", "cuna", "armero", "anden", "carro", "caballete", "material", "temazcal",
     };
 
     /// <summary>El cuerpo para el que se hace un mueble cuando no se dice (lo pone CivicBuilder: en un microcosmos, un
@@ -106,11 +108,14 @@ internal static class MicroFurniture
             case "pozo": Well(t); need = "lavarse"; break;
             case "telar": Loom(t); break;
             case "tatami": case "esterilla": case "bancal": Mat(t, key, size ?? new Vector2(key == "tatami" ? 6f : key == "bancal" ? 2.5f : 1f, key == "tatami" ? 5f : 2f)); walk = true; break;
-            default: TableWithSeats(t, e, f, users, 2); need = "comer"; kind = "mesa"; fitted = true; break;
+            default:
+                if (FillCivic(t, key, e, year, seed, ref need, ref walk)) break;
+                TableWithSeats(t, e, f, users, 2); need = "comer"; kind = "mesa"; fitted = true; break;
         }
         if (!t.TryGetComponent(out MicroPiece mp)) mp = t.gameObject.AddComponent<MicroPiece>();
         mp.kind = kind; mp.need = need; mp.walkable = walk; mp.style = e.id; mp.rest = rest;
         mp.fitFor = fitted ? (f.plan == Plan.Humano ? "" : $"{f.plan} ({f.species})") : "";
+        mp.fitted = fitted;
         KitchenProps.Fit(t, !walk);
     }
 

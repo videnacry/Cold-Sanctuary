@@ -182,3 +182,17 @@ hormiga de `MicroBiome` es la del santuario y sigue).
 
 Prueba **60** (`BruceLeeStoryTest`): el Dojo gigante solo con su suelo, ≥ 12 edificios repartidos por ≥ 60 % del ancho del
 piso y `MicroBuildRules.Validate` sin violaciones.
+
+## 6. Sobre el Dojo TERMINADO (2026-11-03)
+
+Berón: «en el microcosmos de Bruce Lee me ha dado la impresión de que se creó sobre el piso en construcción». Era así en parte: el
+Dojo del santuario sigue en obras (`ConstructionProject`), y el microcosmos clonaba ese piso tal cual —con el andamio, el material
+del día y los **conos** (de 40 cm: a ×100, conos naranjas de 40 m)— y solo DESPUÉS, ya despejado el barrio del pueblo, la historia
+encendía el «Acabado» y quitaba el andamio y el material; los conos se quedaban, y el Dojo terminado (jaula, ring, tatami, sacos)
+aparecía fuera del barrio sin haber pasado por el despeje. Ahora `AreaMicrocosmos.Build` monta SIEMPRE la forma finalizada lo
+primero (`FloorForms.ShowFinished`, ver [construcciones-elevadas.md](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03)):
+Acabado encendido, ni andamio, ni material, ni conos; lo comprueban `BruceLeeStoryTest` (grupo 60) y `MicrocosmosFloorTest` (43).
+
+Kowloon y Seattle, además, sobre su plano real (Nathan Road, Temple Street, Jordan Road, el puerto Victoria, la Roca del León;
+Broadway, Jefferson Street, University Way, el lago Union, el monte Rainier) con los edificios del pueblo de cada lado en su estilo
+(ver [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)).

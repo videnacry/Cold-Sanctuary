@@ -26,6 +26,11 @@ public static class AreaMicrocosmos
     /// la historia y su pueblo llenan, <see cref="FloorBounds"/>) mide el piso real × Legacy, centrado en la plaza de la historia, y
     /// el resto del piso ×100 es el santuario gigante alrededor. K = AreaScale / Legacy escala las medidas del área gigante.</summary>
     public const float Legacy = 10f, K = AreaScale / Legacy;
+    /// <summary>El BARRIO de un pueblo (era avanzada; Berón 2026-11-03: «acceder a mapas de esos pueblos, de modo que se amplía su
+    /// estructura»): el piso real × 60 (el 60 % del lado del piso ×100: de 1,4 a 2,8 km), centrado en la plaza de la historia. Ahí
+    /// va el pueblo o la ciudad real a escala 1:1 (su plano: calles, plazas, río, lago, colinas; CivicBuilder.TownPlans).</summary>
+    public const float TownScale = 60f;
+    static int _obraRemoved;
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
     /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
@@ -54,6 +59,11 @@ public static class AreaMicrocosmos
             giant = Object.Instantiate(src);
             giant.name = $"{display}_gigante";
             CopyAttached(areaGo, src.transform, giant.transform);
+            // LA FORMA FINALIZADA DEL PISO (Berón 2026-11-03: «los microcosmos se crean siempre sobre la forma finalizada»;
+            // FloorForms): se enciende su «Acabado» (Dojo, Ballet) y se quitan las piezas de obra (andamio, material del día, conos,
+            // la forma en obra preparada) ANTES de nada más: lo que se agranda, se despeja para el pueblo y se puebla es el piso
+            // terminado. (Antes solo lo hacía la historia de Bruce Lee, DESPUÉS de despejar el barrio, y los conos se quedaban.)
+            _obraRemoved = FloorForms.ShowFinished(giant.transform);
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
@@ -124,7 +134,7 @@ public static class AreaMicrocosmos
         // EL BARRIO DE LA HISTORIA (×100): el piso real × Legacy (lo que medía el piso entero a ×10), centrado en la plaza de la
         // historia y dentro de los muros. Ahí van la historia, su pueblo (FloorBounds) y la flora densa; el resto del piso ×100
         // es el santuario gigante (sus muebles, montañas de 75 m), con flora y fauna más espaciadas.
-        Bounds district = District(rect, anchor, slots);
+        Bounds district = District(rect, anchor, slots, townEra);
         _floorRect = district;
         int cleared = townEra ? ClearForTown(giant.transform, district) : 0;
         if (cleared > 0)
@@ -211,7 +221,15 @@ public static class AreaMicrocosmos
         // pueblo). La misma condición que quita los muebles gigantes (ClearForTown).
         bool townMode = storyOverride != null && MicroBuildRules.IsTownEra(year0);
         // Las caras de arriba de los muebles gigantes: a ×10 son mesetas, y también se pueblan (en un pueblo ya no hay muebles gigantes).
-        List<Bounds> tops = giant != null && !townMode ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
+        // (2026-11-03, reglas de los microcosmos: «todas las estructuras de dicho piso se vuelven superficie utilizable para poblar
+        // con insectos-humanos, flora, edificaciones y fauna») también en un pueblo: las de FUERA de su barrio (dentro, el pueblo
+        // ya quitó los muebles), con flora y fauna del lugar a escala de pueblo y un mirador de la era en las más grandes.
+        List<Bounds> tops = giant != null ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
+        if (tops != null && townMode) tops.RemoveAll(b => InsideXZ(district, b.center, 10f));
+        int outposts = townMode && tops != null ? CivicBuilder.Outposts(cast, tops) : 0;
+        if (outposts > 0)   // sus miradores tapan su meseta: ahí no crece nada (Covered)
+            foreach (AreaFunctionSite s in cast.GetComponentsInChildren<AreaFunctionSite>(true))
+                if (s.name.StartsWith(CivicBuilder.OutpostPrefix) && SubtreeBounds(s.transform, out Bounds ob, false)) { ob.Expand(new Vector3(4f, 0f, 4f)); _blocked.Add(ob); }
         int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
                              floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
 
@@ -238,6 +256,13 @@ public static class AreaMicrocosmos
         mfl.center = new Vector3(rect.center.x, groundY, rect.center.z); mfl.size = new Vector2(rect.size.x, rect.size.z); mfl.wallHeight = wallH;
         mfl.districtCenter = new Vector3(district.center.x, groundY, district.center.z); mfl.districtSize = new Vector2(district.size.x, district.size.z);
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
+        mfl.buildingsOnTops = outposts;
+        // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
+        // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
+        mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
+        MicroFloors.Match match = MicroFloors.Of(display);
+        if (match != null) { mfl.representative = match.representative; mfl.pendingFloor = match.pending; }
+        if (giant != null && FloorForms.ObraLeft(giant.transform).Count > 0) { mfl.finishedForm = false; Debug.LogWarning($"[Microcosmos] {sceneLabel}: quedan piezas de obra en el piso: {string.Join(", ", FloorForms.ObraLeft(giant.transform))}."); }
         Census(root.transform, story, mfl);
         Debug.Log($"[Microcosmos] {sceneLabel}: dentro {mfl.floraInside} plantas, {mfl.faunaInside} fauna, {mfl.charactersInside} personajes; encima de {mfl.furnitureTops} muebles {mfl.floraOnTops} plantas y {mfl.faunaOnTops} bichos; fuera {mfl.outside} (piso {rect.size.x:0} × {rect.size.z:0} m, muros de {wallH:0} m{(nudged > 0 ? $", {nudged} piezas corridas hacia dentro" : "")}{(pruned > 0 ? $", {pruned} piezas del área fuera del piso quitadas" : "")}).");
         if (mfl.outside > 0) Debug.LogWarning($"[Microcosmos] {sceneLabel}: {mfl.outside} piezas de flora, fauna o historia FUERA de los muros (regla 11).");
@@ -307,7 +332,7 @@ public static class AreaMicrocosmos
         Transform top = null;
         for (Transform p = t; p != null && p != story; p = p.parent)
         {
-            if (p.name.StartsWith("Calles de") || p.name.StartsWith("Calles ")) return true;
+            if (p.name.StartsWith("Calles de") || p.name.StartsWith("Calles ") || p.name.StartsWith("Paisaje de")) return true;
             if (p.parent != null && p.parent.name == "Elenco") top = p;
         }
         if (top == null) return false;
@@ -321,7 +346,7 @@ public static class AreaMicrocosmos
     {
         int n = 0;
         var seen = new HashSet<Transform>();
-        _townFeet.Clear(); _streets.Clear();
+        _townFeet.Clear(); _streets.Clear(); _townCore = default; _hasCore = false;
         foreach (Renderer r in story.GetComponentsInChildren<Renderer>(false))
         {
             if (!r.enabled || r.GetComponentInParent<CubeInsect>(true) != null || !InTown(r.transform, story)) continue;   // la gente anda: no es huella
@@ -333,7 +358,7 @@ public static class AreaMicrocosmos
                 foreach (Renderer rr in site.GetComponentsInChildren<Renderer>(false)) { if (rr.GetComponentInParent<CubeInsect>(true) != null) continue; if (!any) { b = rr.bounds; any = true; } else b.Encapsulate(rr.bounds); }
                 if (!any) continue;
                 var foot = new Bounds(new Vector3(b.center.x, groundY + 0.5f, b.center.z), new Vector3(b.size.x + 2f, 1f, b.size.z + 2f));
-                _blocked.Add(foot); _townFeet.Add(foot); n++;
+                _blocked.Add(foot); _townFeet.Add(foot); n++; if (!_hasCore) { _townCore = foot; _hasCore = true; } else _townCore.Encapsulate(foot);
             }
             else
             {
@@ -349,6 +374,7 @@ public static class AreaMicrocosmos
     // Las huellas del pueblo y, de ellas, las calles (el último TownFootprints): la flora del pueblo crece junto a ellas, sin pisarlas,
     // y los animales del pueblo andan por las calles.
     static readonly List<Bounds> _townFeet = new List<Bounds>(), _streets = new List<Bounds>();
+    static Bounds _townCore; static bool _hasCore;   // lo que ocupan los EDIFICIOS del pueblo (la rejilla fina de su flora)
 
     // ¿Es una calle (un tramo de «Calles de …», o el asfalto de un barrio: CivicBuilder.Street, Towns.Town)? Se pisa: es plana.
     static bool IsStreet(Transform t, Transform story)
@@ -428,10 +454,14 @@ public static class AreaMicrocosmos
     /// <summary>EL BARRIO DE LA HISTORIA (×100): un rectángulo del tamaño del piso real × <see cref="Legacy"/> (lo que medía el
     /// piso entero a ×10: el pueblo, la historia y sus plazas caben como antes), centrado en <paramref name="anchor"/> y metido
     /// dentro de los muros (menos la franja de <see cref="WallInset"/>). Sin plazas (sin área gigante), el piso entero.</summary>
-    static Bounds District(Bounds rect, Vector3 anchor, PlatformSlots slots)
+    static Bounds District(Bounds rect, Vector3 anchor, PlatformSlots slots, bool town = false)
     {
         Bounds inner = Inner(rect, WallInset);
-        Vector2 size = slots != null && slots.floorSize.x > 1f ? slots.floorSize * Legacy : new Vector2(rect.size.x, rect.size.z) / K;
+        // (2026-11-03) EN UN PUEBLO (era avanzada) el barrio es el piso real × TownScale (el 60 % del lado del piso ×100: 1,4–2,8
+        // km), donde cabe el pueblo o la ciudad real de la historia a su tamaño de verdad (1 m = 1 m: los insectos-humanos miden
+        // como una persona), con su río, su lago y sus colinas (CivicBuilder.TownPlans); alrededor, el santuario gigante.
+        float scale = town ? TownScale : Legacy;
+        Vector2 size = slots != null && slots.floorSize.x > 1f ? slots.floorSize * scale : new Vector2(rect.size.x, rect.size.z) * (scale / AreaScale);
         size = new Vector2(Mathf.Min(size.x, inner.size.x), Mathf.Min(size.y, inner.size.z));
         float cx = Mathf.Clamp(anchor.x, inner.min.x + size.x * 0.5f, inner.max.x - size.x * 0.5f);
         float cz = Mathf.Clamp(anchor.z, inner.min.z + size.y * 0.5f, inner.max.z - size.y * 0.5f);
@@ -1142,6 +1172,9 @@ public static class AreaMicrocosmos
         // EL BARRIO DE LA HISTORIA (×100) se puebla denso (como antes todo el piso); el resto del piso gigante, con la rejilla
         // ×K: la misma flora, sin multiplicar por cien el número de plantas (ni de objetos de la escena).
         Bounds dense = Inner(district, WallInset); dense.Expand(new Vector3(40f, 0f, 40f));
+        // (2026-11-03) En un pueblo de barrio grande (×60), la rejilla fina solo donde están sus edificios (más 40 m): el resto del
+        // barrio (huertas, prados, el río, las colinas) con la rejilla gruesa. Si no, 1–8 millones de celdas de 3 m.
+        if (town && _hasCore) { dense = _townCore; dense.Expand(new Vector3(80f, 0f, 80f)); }
         { Vector3 mn = Vector3.Max(dense.min, inner.min), mx = Vector3.Min(dense.max, inner.max); dense.SetMinMax(new Vector3(mn.x, 0f, mn.z), new Vector3(Mathf.Max(mn.x, mx.x), 0f, Mathf.Max(mn.z, mx.z))); }
         IEnumerable<(Bounds box, float step)> Grids(float c) { yield return (dense, c); if (K > 1f) yield return (inner, c * K); }
         Material grass = Mat("Micro_Hierba", new Color(0.62f, 0.68f, 0.3f)), grassDry = Mat("Micro_Hierba_seca", new Color(0.78f, 0.72f, 0.42f));
@@ -1179,7 +1212,16 @@ public static class AreaMicrocosmos
         // plantas, sus radios + 0,8 m. Junto al pueblo (a < 15 m de una huella) crece lo PLANTADO (Biome.town: árboles de calle,
         // setos, céspedes, parterres; ni piedras ni arena: el adoquín es la calle); en las afueras, lo del lugar (Biome.plants),
         // donde el lugar lo tenía. Antes la flora de hormiga (×25: flores de 37 m, matas de 40 m) tapaba el pueblo entero.
-        var townPts = new List<(Vector3 p, float r)>();
+        var townPts = new Dictionary<(int, int), List<(Vector3 p, float r)>>();   // (2026-11-03) por celdas de 12 m: con el barrio ×60 eran miles de plantas a comparar una a una
+        (int, int) Cell(Vector3 w) => (Mathf.FloorToInt(w.x / 12f), Mathf.FloorToInt(w.z / 12f));
+        bool Crowded(Vector3 w, float r)
+        {
+            var (cx, cz) = Cell(w);
+            for (int i = cx - 1; i <= cx + 1; i++) for (int k = cz - 1; k <= cz + 1; k++)
+                if (townPts.TryGetValue((i, k), out var l)) foreach (var q in l) if (new Vector2(q.p.x - w.x, q.p.z - w.z).magnitude < q.r + r + 0.8f) return true;
+            return false;
+        }
+        void AddPt(Vector3 w, float r) { var c = Cell(w); if (!townPts.TryGetValue(c, out var l)) townPts[c] = l = new List<(Vector3, float)>(); l.Add((w, r)); }
         const float TownCell = 3f, TownKeep = 0.38f, NearTownDist = 15f;
         MicroBiome.Plant[] fallbackTown = {
             new MicroBiome.Plant(MicroBiome.Kind.Grass, 10, "Césped", 6, new Color(0.4f, 0.6f, 0.28f), new Color(0.45f, 0.6f, 0.3f)),
@@ -1203,9 +1245,9 @@ public static class AreaMicrocosmos
         bool TownSow(Vector3 p, bool always)
         {
             Vector3 w = center + p;
+            if (!always && R(0f, 1f) > TownKeep) return false;   // (antes de mirar el pueblo: es lo barato)
             bool near = NearTown(w, NearTownDist);
             MicroBiome.Plant[] pool = biome == null ? fallbackTown : near && biome.town != null ? biome.town : biome.plants;
-            if (!always && R(0f, 1f) > TownKeep) return false;
             float sum = 0f; foreach (MicroBiome.Plant q in pool) sum += q.weight;
             float pick = R(0f, sum); MicroBiome.Plant pl = pool[pool.Length - 1];
             foreach (MicroBiome.Plant q in pool) { pick -= q.weight; if (pick <= 0f) { pl = q; break; } }
@@ -1215,8 +1257,8 @@ public static class AreaMicrocosmos
             TownForm form = FormOf(pl, h);
             TownRadii(form, h, out float blockR, out float spaceR);
             if (!FreeTown(w, blockR, out float fy)) return false;
-            foreach (var q in townPts) if (new Vector2(q.p.x - w.x, q.p.z - w.z).magnitude < q.r + spaceR + 0.8f) return false;
-            townPts.Add((w, spaceR));
+            if (Crowded(w, spaceR)) return false;
+            AddPt(w, spaceR);
             TownPlant(pl, new Vector3(p.x, fy - center.y, p.z), h, form, spaceR);
             if (form == TownForm.Tree || form == TownForm.Palm) townTrees++; else townSmall++;
             return true;
@@ -1326,12 +1368,14 @@ public static class AreaMicrocosmos
 
         // EL PUEBLO: una rejilla fina (3 m) por todo el suelo libre, escasa (TownSow decide si toca planta y cuál).
         //     (×100) Fina en el BARRIO de la historia; por el resto del piso gigante, cada TownCell × K.
+        //     (2026-11-03) Si el pueblo pasa de 500 m de lado (barrio ×60), la rejilla fina se abre en proporción: ~28 000 celdas como mucho.
+        float fine = TownCell * Mathf.Max(1f, Mathf.Sqrt(dense.size.x * dense.size.z) / 500f);
         if (town)
-            foreach (var (box, step) in Grids(TownCell))
+            foreach (var (box, step) in Grids(fine))
                 for (float x = box.min.x + step * 0.5f; x <= box.max.x; x += step)
                     for (float z = box.min.z + step * 0.5f; z <= box.max.z; z += step)
                     {
-                        if (step > TownCell && InsideXZ(dense, new Vector3(x, 0f, z), 0f)) continue;
+                        if (step > fine && InsideXZ(dense, new Vector3(x, 0f, z), 0f)) continue;
                         if (TownSow(new Vector3(x + R(-1f, 1f) - center.x, 0f, z + R(-1f, 1f) - center.z), false)) placed0++;
                     }
 
@@ -1370,10 +1414,30 @@ public static class AreaMicrocosmos
                         Vector3 w = new Vector3(x, top.max.y, z);
                         if (!InsideXZ(inner, w, 0f) || InsideXZ(story, w, 2f) || Covered(w)) continue;
                         topPts.Add(w);
-                        if (Sow(w - center, here == 0)) { placed0++; onTops++; here++; }
+                        if (town ? TownTopSow(w - center) : Sow(w - center, here == 0)) { placed0++; onTops++; here++; }
                     }
             }
         _floraOnTops = onTops;
+        // Una planta DEL LUGAR, a escala de pueblo (sus copas, a escala humana: lo mismo que en las afueras), sobre la cara de arriba
+        // de un mueble gigante fuera del pueblo (2026-11-03). Lleva «(sobre mueble)» en el nombre: las pruebas del pueblo no la
+        // cuentan como flotante (está apoyada en su meseta).
+        bool TownTopSow(Vector3 p)
+        {
+            MicroBiome.Plant[] pool = biome != null ? biome.plants : fallbackTown;
+            float sum = 0f; foreach (MicroBiome.Plant q in pool) if (q.kind != MicroBiome.Kind.Stone && q.kind != MicroBiome.Kind.Sand && q.kind != MicroBiome.Kind.Dung) sum += q.weight;
+            if (sum <= 0f) return false;
+            float pick = R(0f, sum); MicroBiome.Plant pl = pool[0];
+            foreach (MicroBiome.Plant q in pool) { if (q.kind == MicroBiome.Kind.Stone || q.kind == MicroBiome.Kind.Sand || q.kind == MicroBiome.Kind.Dung) continue; pl = q; pick -= q.weight; if (pick <= 0f) break; }
+            float h = Mathf.Min(Mathf.Max(0.03f, pl.cm / 100f) * R(0.85f, 1.15f), 15f);
+            TownForm form = FormOf(pl, h);
+            TownRadii(form, h, out float _, out float spaceR);
+            Vector3 w = center + p;
+            if (Crowded(w, spaceR)) return false;
+            AddPt(w, spaceR);
+            pl.name += " (sobre mueble)";
+            TownPlant(pl, p, h, form, spaceR);
+            return true;
+        }
         // ¿Algo se alza justo encima de w (una lámpara sobre la mesa, el estante de arriba)? Ahí no cabe una planta.
         bool Covered(Vector3 w)
         {

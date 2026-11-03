@@ -12,13 +12,14 @@ using UnityEngine;
 /// edificio (<see cref="AreaFunctionSite.region"/>). Épocas y lugares parecidos REUTILIZAN la misma entrada: un pueblo nuevo
 /// solo necesita su región (o una nueva entrada si su cultura no está).
 /// </summary>
-public static class MicroStyles
+public static partial class MicroStyles
 {
     /// <summary>Regiones o culturas materiales (lo que decide cómo se duerme, se come, se cocina y se hace de vientre).</summary>
     public enum Region
     {
         Prehistoria, Mesopotamia, Egipto, Egeo, Roma, SurAsia, China, HongKong, Japon, Islam, Otomano,
         EuropaMedieval, EuropaNorte, Alpes, EuropaUrbana, FranciaRural, Norteamerica, Hispanoamerica, Sovietico, Frente,
+        Maya,   // (2026-11-03) Mesoamérica maya clásica (Palenque)
     }
 
     public enum Bed { Estera, LechoJuncos, Reposacabezas, Kline, Lectus, Charpai, Kang, Futon, Minder, Jergon, Dosel, Madera, Hierro, Litera, Hamaca, Moderna, SofaCama }
@@ -120,6 +121,9 @@ public static class MicroStyles
         E("hispanoamerica", "Hispanoamérica colonial y republicana (1500–1899)", 1500, 1899, R(Region.Hispanoamerica),
           Bed.Hamaca, Seat.Butaca, Table.Refectorio, Hearth.Topias, Toilet.Caseta, Basin.Tinajero, Storage.Arcon, Light.Vela,
           "6E4B2E", "D9A441", "8C857A", "Chinchorro (hamaca) del Orinoco, butaca de cuero, fogón de topias (tres piedras), tinajero de piedra para filtrar el agua, letrina del patio"),
+        E("maya_clasico", "Maya clásico (Palenque, 250–900)", 250, 900, R(Region.Maya),
+          Bed.Estera, Seat.Banco, Table.Baja, Hearth.Topias, Toilet.Pozo, Basin.Cantaro, Storage.Tinaja, Light.Fuego,
+          "8A5A3A", "C8B48A", "6E8A7A", "Banca de mampostería enlucida con petate (estera de palma) para dormir y sentarse; el k'oben (fogón de tres piedras) con su comal; ollas y cántaros de barro; tinajas; tea de ocote. Letrinas y baños de vapor en el Palacio de Palenque (Barnhart 2001; Stuart y Stuart 2008)"),
         E("norteamerica_victoriana", "Norteamérica (1840–1919)", 1840, 1919, R(Region.Norteamerica),
           Bed.Hierro, Seat.Windsor, Table.Redonda, Hearth.Hierro, Toilet.Caseta, Basin.Aguamanil, Storage.Comoda, Light.Quinque,
           "6E4B2E", "D9D2C2", "2F2F33", "Cama de hierro o de latón, sillas de respaldo prensado, cocina de hierro de leña o carbón; la caseta (outhouse) y el lavamanos de jarra y palangana; lámpara de queroseno (casa de los Wright, Dayton)"),
@@ -209,6 +213,7 @@ public static class MicroStyles
             case "Tregua 1914": return Region.Frente;
             case "Bruce Lee": return Region.HongKong;   // (Seattle, Oakland y Los Ángeles: CivicBuilder los pone en Norteamérica)
             case "Chernóbil": return Region.Sovietico;
+            case "Palenque": return Region.Maya;
             default: return Region.Prehistoria;   // las áreas del santuario: Sakshi, Ambrosio, Cocina, Huerto, Yoga, Textil, Mecánica
         }
     }

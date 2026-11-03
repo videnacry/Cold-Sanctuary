@@ -233,6 +233,10 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
                     if (inDistrict && (rb.size.y >= 0.6f * k || rb.max.y - root.position.y >= 1f * k)) { tall += r.name + "; "; if (tall.Length > 200) break; }
                 }
             TestProbe.Check("el Dojo gigante sin sus muebles (solo su suelo) en el barrio de la historia: el pueblo lo ocupa", giant != null && tall.Length == 0, tall);
+            // (2026-11-03) Sobre la FORMA FINALIZADA del Dojo (FloorForms; Berón: «me ha dado la impresión de que se creó sobre el piso en
+            // construcción»): su «Acabado» encendido y ni andamio, ni material del día, ni conos en el piso gigante.
+            var obra = giant != null ? FloorForms.ObraLeft(giant) : new List<string> { "sin piso gigante" };
+            TestProbe.Check("el Dojo gigante en su forma finalizada (Acabado encendido; sin andamio, material ni conos)", obra.Count == 0 && mfl != null && mfl.finishedForm, obra.Count > 0 ? string.Join(", ", obra) : $"{(mfl != null ? mfl.obraRemoved : 0)} piezas de obra quitadas al montarlo");
             var sites = new List<AreaFunctionSite>(root.GetComponentsInChildren<AreaFunctionSite>());
             Bounds town = default; bool anyTown = false;
             foreach (AreaFunctionSite site in sites) { Bounds b = new Bounds(site.transform.position, Vector3.one); if (!anyTown) { town = b; anyTown = true; } else town.Encapsulate(b); }

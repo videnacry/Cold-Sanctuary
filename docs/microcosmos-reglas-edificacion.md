@@ -128,6 +128,8 @@ Comprobación: `Household.Check(raíz)` devuelve quién no tiene hogar y qué le
 compartan casa y que haya lugares de trabajo); la **63** (`MicroBuildRulesTest`) prueba el validador con casos pequeños.
 
 ### 5. Eras avanzadas: el pueblo o la ciudad real ocupa el piso entero (su barrio, a ×100)
+**(2026-11-03) En un pueblo el barrio es el piso real × 60** (`AreaMicrocosmos.TownScale`: el 60 % del lado del piso ×100, de 1,4 a 2,8 km) y el pueblo se levanta sobre su **plano real** a escala 1:1 (calles, río, lago, colinas, campos, muralla y el sitio de cada edificio: [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)). Lo de abajo sigue valiendo para las eras sin pueblo.
+
 Desde la escala ×100 (2026-11-02, `AreaMicrocosmos.AreaScale`) «el piso entero» es el **barrio de la historia**: el piso real
 × 10 (lo que medía todo el piso a ×10) alrededor de la plaza de la historia (`AreaMicrocosmos.District`, `MicroFloor.districtSize`).
 `FloorBounds` / `FloorRectLocal` dan ese barrio, así que los pueblos se levantan igual que antes; alrededor, el resto del piso
@@ -197,6 +199,113 @@ colchón; en la percha se queda agarrado, de pie; de espaldas, como una persona.
 La **mariquita** insecto-humano lleva los élitros recogidos (`InsectMorphology.ForFolk`: 0,5× y el pronoto el doble de alto; el pelotero, 0,8×): con los de la
 ficha, a la escala de una persona de 1,7 m, era una losa roja de 2 × 2,5 m tumbada detrás del torso.
 
+---
+## Las reglas 8–12: los edificios del pueblo (2026-11-03)
+
+Berón: «entran actividades del santuario como centros de estudio, centros de entrenamiento, de baile, plazas, estaciones de
+transporte, parques, museos, centros de investigación, guarderías, estatuas, calles, edificios de varios pisos, centros de
+policía, bomberos, mercados, mecánicas, talleres, milicia, piscinas, hoteles, carpintería, piletas, construcción, centros de
+tecnología y estructuras naturales como ríos, lagos, montañas, etc., con su estilo de la época-lugar y adaptación para
+humanos-insectos y humanos … que deben crearse junto a su interacción … para poder pertenecer a sus áreas de trabajo,
+descanso, recuperación u ocio, de modo que formen parte de sus actividades semanales». Desde ahora todo edificio cumple,
+además de las siete reglas de arriba, estas cinco. `MicroBuildRules.ValidateSites` (dentro de `Validate`) las comprueba.
+
+### 8. Cada edificio nace con su interacción y su categoría de actividad
+Todo `AreaFunctionSite` lleva (lo pone `CivicBuilder.Tag` al construirlo y otra vez al final de `Civilize`, ya con los muebles
+rehechos para cada hogar):
+- `activity`: **trabajo**, **descanso**, **recuperacion** u **ocio** (`AreaFunctionSite.ActivityOf(plantilla)`);
+- `hasWork`: si además tiene puestos de trabajo (quien lo atiende trabaja allí);
+- `capacity`: cuántos lo usan a la vez (camas, asientos de sus mesas, puestos, sitio en lo que se pisa);
+- `interaction`: lo que se hace allí, en una frase (`AreaFunctionSite.InteractionOf`);
+- `bodies`: los cuerpos para los que tiene muebles («Humano, Centauro (Ant)…»);
+- y sus **funciones del registro** (`AreaFunctions.Buildings`), con sus puestos interactuables (`AreaFunctionStation`).
+El horario semanal las lee (ver [microcosmos-actividades.md](microcosmos-actividades.md)). Violación: «sin etiqueta de actividad»,
+«sin su interacción o su capacidad».
+
+### 9. Adaptado a personas y a insectos-humanos
+Cada edificio tiene al menos un mueble hecho a la medida de una persona y otro a la de un insecto-humano (`MicroPiece.fitted`;
+`fitFor` vacío = persona). Los muebles se hacen para el cuerpo por defecto del microcosmos (el insecto-humano centauro); si a un
+edificio no le queda ninguno para personas, `CivicBuilder.Adapt` le añade un **banco para personas** (y al revés, un **asiento de
+abdomen**). Violación: «no adaptado a personas / a insectos-humanos».
+
+### 10. El estilo de época y lugar sale del catálogo
+`AreaFunctionSite.region` es una región de `MicroStyles.Region` y cada mueble lleva su `MicroPiece.style`, un `id` del catálogo
+(abajo). El NOMBRE del edificio también es de su época y lugar (`MicroStyles.CivicName`, tabla de abajo): si en esa época no
+existía, no se construye (ni comisaría en la Crotona de −530, ni estación de tren en Woolsthorpe en 1666). Violación: «sin región
+del catálogo», «estilo … fuera del catálogo».
+
+### 11. Toda residencia tiene su frutal
+Berón: «las residencias del microcosmos deben tener plantas frutales». Cada Casa (y orfanato) planta un **frutal** de su época y
+lugar (`MicroStyles.Fruits`, mueble «frutal»: alcorque, tronco, copa y fruta; palmera o mata según la especie), rotulado con su
+nombre; y toda casa que recibe un hogar (`MakeHousehold`) sin frutal recibe uno. Violación: «residencia … sin frutal».
+
+| Estilo | Frutales (uno por casa) |
+|---|---|
+| `prehistoria` | higuera silvestre, almendro (Gilgal I, ~9400 a. C.: los primeros higos cultivados) |
+| `mesopotamia` | palmera datilera, granado |
+| `egipto` | palmera datilera, sicómoro, granado |
+| `egeo`, `roma` | olivo, higuera, granado |
+| `sur_asia` | mango, banano, yambolán |
+| `islam_abasi`, `otomano` | granado, palmera datilera, higuera, membrillo |
+| `china_tradicional` | lichi, níspero, longán |
+| `hongkong_tonglau` | papayo en maceta, níspero, banano |
+| `japon_edo_meiji` | caqui, ume |
+| `europa_medieval`, `estuardo`, `georgiano` | manzano (el de Woolsthorpe), peral, ciruelo |
+| `alpino` | grosellero, serbal (a 1800 m no maduran las manzanas) |
+| `europa_romantica`, `belle_epoque`, `entreguerras` | peral en espaldera, cerezo, manzano |
+| `francia_rural` | manzano, ciruelo, castaño |
+| `frente_1914` | el manzano de la granja en ruinas |
+| `hispanoamerica` | mango, guayabo, lechosa |
+| `maya_clasico` | cacao, aguacate, ramón, zapote, papaya |
+| `norteamerica_victoriana` | manzano, melocotonero |
+| `norteamerica_moderna` | naranjo, limonero, aguacate (los naranjales del valle de San Gabriel) |
+| `sovietico` | manzano, cerezo ácido (los patios de Prípiat) |
+
+### 12. Edificios de varias plantas: en terraza, sin techos
+Un edificio de varios pisos (`CivicBuilder.Storeys`: hoteles, inmuebles de París y Berna, tong lau, bloques de Prípiat, el Palacio
+y el Templo de las Inscripciones de Palenque) pone sus plantas **en terraza**: la planta k es un bloque de k × 3,2 m DETRÁS de la
+anterior (MicroPiece «planta», se pisa), con un pretil bajo (0,8 m) al fondo y una **rampa** lateral de 20° (MicroPiece «rampa»).
+Ninguna planta tapa a otra (no hay techos, regla 2) y cada una lleva sus muebles con el paso de 2 m. Violación: «la planta en
+terraza de … tapa …».
+
+### Solo los muros importantes
+Siguen valiendo las reglas 1–2: paso de 2 m, sin muros ni techos. Lo único alto que se permite es lo que la historia necesita
+(`MicroPiece.kind = "historico"`) y lo que el plano real tiene **a ras de suelo**: las murallas del plano son su cimiento (0,5 m:
+Kapilavastu, la Ciudad Redonda de Bagdad, el cuartel de Selimiye), las colinas y los montes son terreno.
+
+## Los edificios del pueblo (`MicroStyles.Civic`, `CivicBuilder.Civic`)
+
+| Tipo | Plantilla del registro | Actividad | Puestos (muebles) | Nombres de época y lugar (ejemplos) |
+|---|---|---|---|---|
+| Estudio | Escuela | trabajo | pizarra, pupitres, estante | didaskaleion, Casa de la Vida, kuttāb, mektep, casa de los escribas (maya), escuela |
+| Entrenamiento | Centro de entrenamiento | ocio | tatami (pista en el juego de pelota maya) | palestra, akhāṛā, tekke de luchadores, juego de pelota, Turnhalle, club deportivo |
+| Baile | Sala de baile | ocio | pista de baile, mesa de músicos | orchestra, sala de joropo, plataforma de danza, salón de baile, Palacio de Cultura |
+| Plaza | Plaza | ocio | fuente, estatua | ágora, foro, maydān, meydan, Plaza Mayor, Gran Plaza, plaza central |
+| Monumento | Plaza | ocio | estatua, pila | kouros, coloso, estela, león guardián, monumento (no en el islam ni el otomano) |
+| Pileta | Fuente pública | ocio | fuente, lavadero | krene, sabil, çeşme, pila del acueducto, grifo público |
+| Parque | Parque | ocio | frutales, fuente | alsos, bustān, bahçe, ārāma, arboleda de cacao, alameda, parque |
+| Estación | Estación | trabajo | andén, taquilla | puerto, caravasar, embarcadero, posta de diligencias, estación de ferrocarril |
+| Museo | Museo | ocio | vitrinas, estatua | tesoro del templo, colección de Santa Irene, museo (desde 1683) |
+| Investigación | Laboratorio | trabajo | mesa de laboratorio, estante, instrumentos | observatorio (Shammasiyya, la torre del Palacio), gabinete científico, laboratorio |
+| Guardería | Guardería | trabajo | cunas, estera de juegos, cocina y aseo | casa de cuidado de los niños; crèche (desde 1840); detski sad |
+| Policía | Comisaría | trabajo | mostrador, armero, registros | vigiles, medjay, shurta, karakol, alguaciles, comisaría (desde 1829), militsiya |
+| Bomberos | Bomberos | trabajo | bomba sobre ruedas o autobomba, pila, armario | vigiles, tulumbacılar, bomba de la parroquia, parque de bomberos, firehouse |
+| Mercado | Mercado | trabajo | puestos | mercado del ágora, zoco, mercado de la plaza |
+| Mecánica | Taller | trabajo | banco, torno, carro | taller del carretero, taller mecánico, garaje (no maya: sin rueda de carga) |
+| Taller | Taller | trabajo | bancos | taller de artesanos, de jade y obsidiana |
+| Milicia | Cuartel | trabajo | armero, patio de instrucción, catre | hoplitas, castra, jund, casa de los guerreros, armería de la Guardia Nacional |
+| Piscina | Baños | recuperación | pila de baño o temazcal | balaneion, termas, hammam, lago sagrado, puṣkariṇī, temazcal, piscina |
+| Hotel | Hotel | descanso | recepción, comedor, habitaciones (3 plantas en terraza) | katagogion, mansio, funduq, han, dharmaśālā, posada, hotel |
+| Carpintería | Carpintería | trabajo | caballetes, banco | carpintería |
+| Obra | Obra | trabajo | material, caballete | obra: casa, bloque nuevo o templo en construcción |
+| Tecnología | Centro de tecnología | trabajo | consolas (instrumentos, centralita o calculadora según el año) | taller de mecanismos, de astrolabios, central telefónica (1880), centro de cálculo (1950) |
+| Edificio | Casa | descanso | camas y mesa en 3 plantas en terraza | tong lau, inmueble, khrushchyovka, konak, insula, palacio en terrazas |
+| Mirador | Mirador | ocio | monumento, frutal | sobre las caras de arriba de los muebles gigantes (reglas de los microcosmos) |
+
+Muebles nuevos (`MicroFurniture.Civic.cs`, todos de pocos cubos): `frutal`, `estatua` (estela, león guardián), `fuente`,
+`vitrina`, `piscina` (se pisa), `temazcal`, `pista` (se pisa), `consola`, `cuna`, `armero`, `anden` (se pisa), `carro`,
+`caballete`, `material`.
+
 ## El catálogo de estilos de época y lugar
 
 `Assets/Scripts/Microcosmos/MicroStyles.cs`. Cada entrada cubre un intervalo de años y una o varias regiones o culturas;
@@ -232,6 +341,7 @@ La región de cada microcosmos sale de su nombre (`MicroStyles.RegionOf`) y va e
 | `francia_rural` | 1850 … 1960 | Francia rural (Le Chambon) | cama de madera alta con edredón | banco | mesa larga | cuisinière de leña | la caseta del huerto | broc et cuvette | alacena | lampe à pétrole | granjas del plateau Vivarais-Lignon |
 | `frente_1914` | 1914 … 1918 | El frente (Tregua 1914) | litera de tela metálica | caja de munición | mesa de caballetes | brasero de cubo | cubo de letrina | palangana de lata | estantería | vela | Imperial War Museums |
 | `hispanoamerica` | 1500 … 1899 | Hispanoamérica (Angostura) | chinchorro (hamaca) | butaca de cuero | mesa larga | fogón de topias | letrina del patio | tinajero | arcón | vela | — |
+| `maya_clasico` | 250 … 900 | Maya (Palenque) | banca de mampostería con petate | banca | mesa baja | k'oben (tres piedras) con comal | pozo | cántaro | tinajas | tea de ocote | Barnhart 2001; Stuart y Stuart 2008 |
 | `norteamerica_victoriana` | 1840 … 1919 | Norteamérica (Dayton, Colorado Springs) | cama de hierro o latón | Windsor (respaldo prensado) | mesa redonda | cocina de hierro | la caseta (outhouse) | aguamanil | cómoda | queroseno | casa de los Wright (7 Hawthorn St.) |
 | `norteamerica_moderna` | 1920 … 1979 | Norteamérica (Pasadena, Seattle) | cama tapizada con mesilla | cromada | fórmica | cocina de gas | tanque bajo | lavabo de pie | alacena | lámpara eléctrica | — |
 | `sovietico` | 1960 … 1991 | Soviético (Chernóbil) | sofá-cama (divan-krovat) | taburete de cocina | fórmica | eléctrica (los pisos de Prípiat) | inodoro compacto | lavabo de pie | mueble de pared (stenka) | lámpara | — |
@@ -317,6 +427,7 @@ internal static bool? AreaMicrocosmos.FemaleByName(string name);   // «Hannah»
 
 ### Lo que hace `CivicBuilder.Civilize` al final de cada era
 
+0. (2026-11-03) Con plano (`CivicBuilder.Plans`): `BuildPlan` levanta el paisaje y las calles del mapa ANTES que nada.
 1. `Settle`: todo edificio abierto que choque (a menos de una calle) con otro o con la historia, o que se salga del piso, se
    corre al solar libre más cercano con su gente.
 2. Eras avanzadas con relleno (`FillStyles`: Escútari, Dayton, Kapilavastu, Alejandría, Patanjali, Planta Atómica, Varsovia,
@@ -324,5 +435,6 @@ internal static bool? AreaMicrocosmos.FemaleByName(string name);   // «Hannah»
 3. `Homes` (regla 6): un hogar para cada personaje —una casa del pueblo con camas libres o una casa nueva de la era en un
    solar libre—, las parejas juntas.
 4. `EnsureNeeds`: los aseos de la era si falta alguna necesidad básica.
+4b. (2026-11-03) `PlanCivic` (los edificios del pueblo, en su sitio del plano) va tras `Settle`; con plano, el relleno va a lo largo de las calles (`PlanFill`); al final, `Tag` en todos los edificios (reglas 8–9).
 5. `MicroBuildRules.Validate` en el registro.
 

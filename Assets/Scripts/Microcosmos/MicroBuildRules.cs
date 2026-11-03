@@ -110,6 +110,10 @@ public static class MicroBuildRules
                 if (g < Passage - 0.01f) bad.Add($"paso de {g:0.00} m (< {Passage:0.0}) entre «{pieces[i].t.name}» y «{pieces[j].t.name}»");
             }
 
+        // 8–12 · Los edificios (2026-11-03): su actividad e interacción, adaptados a humanos e insectos-humanos, su estilo del
+        //        catálogo, el frutal de cada residencia y las plantas en terraza sin nada debajo.
+        bad.AddRange(ValidateSites(scope));
+
         // 4 · Necesidades básicas.
         var have = new HashSet<string>();
         foreach (MicroPiece p in scope.GetComponentsInChildren<MicroPiece>(true)) if (!string.IsNullOrEmpty(p.need)) have.Add(p.need);
@@ -119,6 +123,50 @@ public static class MicroBuildRules
         {
             if (bad.Count == 0) Debug.Log($"[Reglas] {label}: OK ({pieces.Count} muebles a ≥ {Passage:0.0} m, sin muros ni techos, necesidades: {string.Join(", ", have)}).");
             else Debug.LogWarning($"[Reglas] {label}: {bad.Count} violaciones de docs/microcosmos-reglas-edificacion.md — " + string.Join(" · ", bad.GetRange(0, Mathf.Min(12, bad.Count))) + (bad.Count > 12 ? " …" : ""));
+        }
+        return bad;
+    }
+
+    /// <summary>
+    /// LAS REGLAS DE LOS EDIFICIOS (8–12, 2026-11-03; docs/microcosmos-reglas-edificacion.md):
+    /// 8. cada edificio (AreaFunctionSite) lleva su ACTIVIDAD (trabajo, descanso, recuperacion u ocio), su INTERACCIÓN y su capacidad;
+    /// 9. está ADAPTADO A PERSONAS Y A INSECTOS-HUMANOS: al menos un mueble a la medida de cada uno (MicroPiece.fitted);
+    /// 10. su ESTILO sale del CATÁLOGO: su región es una de MicroStyles.Region y cada mueble lleva un estilo (MicroPiece.style) del catálogo;
+    /// 11. toda RESIDENCIA (con un hogar, Household) tiene su FRUTAL;
+    /// 12. una planta en terraza (MicroPiece «planta») no tiene ningún mueble debajo (no es un techo).
+    /// </summary>
+    public static List<string> ValidateSites(Transform scope)
+    {
+        var bad = new List<string>();
+        var ids = new HashSet<string>(); foreach (MicroStyles.Entry e in MicroStyles.All) ids.Add(e.id);
+        foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))
+        {
+            if (System.Array.IndexOf(AreaFunctionSite.Activities, site.activity) < 0) bad.Add($"«{site.title}» sin etiqueta de actividad (trabajo, descanso, recuperacion u ocio)");
+            if (string.IsNullOrEmpty(site.interaction) || site.capacity <= 0) bad.Add($"«{site.title}» sin su interacción o su capacidad");
+            bool human = false, insect = false, fruit = false;
+            foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
+            {
+                if (mp.fitted) { if (string.IsNullOrEmpty(mp.fitFor)) human = true; else insect = true; }
+                if (mp.kind == "frutal") fruit = true;
+                if (!string.IsNullOrEmpty(mp.style) && !ids.Contains(mp.style)) bad.Add($"«{mp.name}» en «{site.title}»: estilo «{mp.style}» fuera del catálogo");
+            }
+            if (!human) bad.Add($"«{site.title}» no adaptado a personas (ningún mueble a la medida de un humano)");
+            if (!insect) bad.Add($"«{site.title}» no adaptado a insectos-humanos (ningún mueble a la medida de su cuerpo)");
+            if (string.IsNullOrEmpty(site.region) || !System.Enum.TryParse(site.region, out MicroStyles.Region _)) bad.Add($"«{site.title}» sin región del catálogo de estilos («{site.region}»)");
+            if (site.GetComponentInChildren<Household>(true) != null && !fruit) bad.Add($"residencia «{site.title}» sin frutal");
+        }
+        // 12 · Las plantas en terraza no cubren nada.
+        foreach (MicroPiece tier in scope.GetComponentsInChildren<MicroPiece>(true))
+        {
+            if (tier.kind != "planta" || !Box(tier.transform, out Bounds tb)) continue;
+            AreaFunctionSite site = tier.GetComponentInParent<AreaFunctionSite>(true);
+            if (site == null) continue;
+            foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
+            {
+                if (mp == tier || mp.walkable || mp.transform.IsChildOf(tier.transform) || !Box(mp.transform, out Bounds b)) continue;
+                if (b.max.y < tb.max.y - 0.3f && b.max.x > tb.min.x + 0.05f && b.min.x < tb.max.x - 0.05f && b.max.z > tb.min.z + 0.05f && b.min.z < tb.max.z - 0.05f)
+                { bad.Add($"la planta en terraza de «{site.title}» tapa «{mp.name}»"); break; }
+            }
         }
         return bad;
     }

@@ -20,4 +20,6 @@ public class MicroPiece : MonoBehaviour
     public string fitFor = "";
     [Tooltip("Cama: cómo se tumba quien duerme en ella (MicroBody: espalda, vientre o percha).")]
     public string rest = "";
+    [Tooltip("¿Se hizo a la medida de un cuerpo (MicroBody)? Con fitFor vacío: a la de una persona; con fitFor, a la de ese insecto-humano.")]
+    public bool fitted;
 }
