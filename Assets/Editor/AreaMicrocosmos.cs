@@ -95,6 +95,10 @@ public static class AreaMicrocosmos
         // EL RECTÁNGULO DEL PISO (×10): el mapa entero. Lo que del área quede ENTERO fuera de él se quita.
         Bounds rect = giant != null ? FloorRect(giant, slots) : new Bounds(Vector3.zero, new Vector3(120f, 0f, 120f));
         int pruned = giant != null ? Prune(giant.transform, rect) : 0;
+        // (2026-11-03) EL PISO NO SE ROMPE (Berón: «en los requisitos de microcosmos debe estar que el piso no debe romperse, las ciudades
+        // insecto deben adecuarse al piso y no al revés»): desde aquí ninguna pieza del piso (su forma finalizada, dentro de sus muros)
+        // se quita ni se mueve. Se cuentan, y MicroFloors.Validate comprueba que siguen todas.
+        int floorPieces0 = giant != null ? giant.GetComponentsInChildren<Renderer>(true).Length : 0;
 
         // 1b) ERA AVANZADA (regla 5 de docs/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
         //     real de la historia ocupa TODO SU BARRIO (×100, 2026-11-02: el barrio es el piso × Legacy alrededor de la plaza de la
@@ -136,12 +140,7 @@ public static class AreaMicrocosmos
         // es el santuario gigante (sus muebles, montañas de 75 m), con flora y fauna más espaciadas.
         Bounds district = District(rect, anchor, slots, townEra);
         _floorRect = district;
-        int cleared = townEra ? ClearForTown(giant.transform, district) : 0;
-        if (cleared > 0)
-        {
-            floors.Clear(); _blocked.Clear(); Classify(giant, floors, _blocked);
-            Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): {cleared} piezas gigantes del área quitadas de su barrio ({district.size.x:0} × {district.size.z:0} m); el pueblo ocupa el barrio entero.");
-        }
+        if (townEra) Debug.Log($"[Microcosmos] {sceneLabel}: era avanzada ({Eras.Format(year0)}): el pueblo se adapta a su barrio ({district.size.x:0} × {district.size.z:0} m) sin tocar los muebles del piso: los rodea o se sube encima.");
         anchor.y = FloorAt(anchor, floors, 0f);
         var story = new GameObject("Historia").transform; story.SetParent(root.transform, false); story.localPosition = anchor;
 
@@ -178,7 +177,7 @@ public static class AreaMicrocosmos
         if (fit.Length > 0) Debug.Log($"[Microcosmos] {sceneLabel}: la historia {fit}.");
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
-        int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
+        int moved = giant != null ? TouchingUnder(story, giant.transform) : 0;   // (ya no se apartan: se cuentan)
         // La historia de la enfermería (el sandbox de Ambrosio) borra piezas al montarse: sin quitar sus suelos de la lista,
         // el microcosmos del Hospital fallaba (MissingReference en EdgeDist) y se quedaba la escena vieja, sin el hospital.
         floors.RemoveAll(f => f == null);
@@ -225,11 +224,10 @@ public static class AreaMicrocosmos
         // con insectos-humanos, flora, edificaciones y fauna») también en un pueblo: las de FUERA de su barrio (dentro, el pueblo
         // ya quitó los muebles), con flora y fauna del lugar a escala de pueblo y un mirador de la era en las más grandes.
         List<Bounds> tops = giant != null ? FurnitureTops(giant, groundY, Inner(rect, WallInset)) : null;
-        if (tops != null && townMode) tops.RemoveAll(b => InsideXZ(district, b.center, 10f));
-        int outposts = townMode && tops != null ? CivicBuilder.Outposts(cast, tops) : 0;
+        int outposts = townMode && tops != null ? CivicBuilder.Outposts(cast, tops.FindAll(b => !CoveredTop(b)), district) : 0;
         if (outposts > 0)   // sus miradores tapan su meseta: ahí no crece nada (Covered)
             foreach (AreaFunctionSite s in cast.GetComponentsInChildren<AreaFunctionSite>(true))
-                if (s.name.StartsWith(CivicBuilder.OutpostPrefix) && SubtreeBounds(s.transform, out Bounds ob, false)) { ob.Expand(new Vector3(4f, 0f, 4f)); _blocked.Add(ob); }
+                if ((s.name.StartsWith(CivicBuilder.OutpostPrefix) || s.name.Contains("barrio alto")) && SubtreeBounds(s.transform, out Bounds ob, false)) { ob.Expand(new Vector3(4f, 0f, 4f)); _blocked.Add(ob); }
         int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
                              floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
 
@@ -260,6 +258,7 @@ public static class AreaMicrocosmos
         // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
         mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
+        mfl.floorPieces = floorPieces0;
         MicroFloors.Match match = MicroFloors.Of(display);
         if (match != null) { mfl.representative = match.representative; mfl.pendingFloor = match.pending; }
         if (giant != null && FloorForms.ObraLeft(giant.transform).Count > 0) { mfl.finishedForm = false; Debug.LogWarning($"[Microcosmos] {sceneLabel}: quedan piezas de obra en el piso: {string.Join(", ", FloorForms.ObraLeft(giant.transform))}."); }
@@ -292,6 +291,32 @@ public static class AreaMicrocosmos
         // El volumen: el piso y sus muros (los muros no se andan: NavMeshModifier), nada de fuera.
         nav.center = Vector3.up * 15f * K; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f * K, rect.size.z + WallThick * 2f);
         nav.BuildNavMesh();
+        // (2026-11-03) TREPAR: los insectos-humanos suben por las patas y los costados de los muebles del piso (Berón: «pueden trepar
+        // plataformas verticales como las paredes y patas de sillas, mesas, etc.»). Un NavMeshLink del suelo a cada cara de arriba (la IA
+        // lo recorre trepando) y un Climbable en cada mueble alto (el jugador trepa con PlayerClimber).
+        int climbs = 0;
+        if (giant != null && tops != null)
+        {
+            Transform lr = new GameObject("Trepadas").transform; lr.SetParent(root.transform, false);
+            Bounds inside = Inner(rect, 3f);
+            foreach (Bounds top in tops)
+            {
+                Vector3 up = new Vector3(top.center.x, top.max.y, top.min.z + 1.5f), down = new Vector3(top.center.x, groundY, top.min.z - 2f);
+                if (!InsideXZ(inside, down, 0f)) { up.z = top.max.z - 1.5f; down.z = top.max.z + 2f; }
+                if (!InsideXZ(inside, down, 0f)) continue;
+                var g = new GameObject("Trepar"); g.transform.SetParent(lr, false);
+                var link = g.AddComponent<Unity.AI.Navigation.NavMeshLink>();
+                link.startPoint = down; link.endPoint = up; link.width = 2f; link.bidirectional = true; link.costModifier = 4f;
+                climbs++;
+            }
+            foreach (Collider c in giant.GetComponentsInChildren<Collider>())
+            {
+                Bounds b = c.bounds;
+                if (IsFloor(b) || b.size.y < 2f || c.GetComponent<Climbable>() != null) continue;
+                c.gameObject.AddComponent<Climbable>().topY = b.max.y;
+            }
+        }
+        mfl.climbLinks = climbs;
         Debug.Log($"[Microcosmos] {display}: piso ×{AreaScale} con muros (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
     }
 
@@ -423,32 +448,34 @@ public static class AreaMicrocosmos
         return Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z));
     }
 
-    /// <summary>Quita del área gigante todo lo que no es SUELO (losas de menos de 0,6 m de alto a ras de suelo): sus muebles,
-    /// máquinas, columnas y techos. Las plazas reservadas (PlatformSlots en la raíz gigante) se quedan. Devuelve cuántas piezas quitó.</summary>
-    static int ClearForTown(Transform giant, Bounds district)
+    /// <summary>(2026-11-03) LOS MUEBLES DEL PISO, que el pueblo rodea o sube (nunca se quitan): la caja en el mundo de cada pieza del
+    /// piso gigante que no es suelo (losas bajas), del microcosmos al que pertenece <paramref name="anyInMicrocosm"/>. Para los solares
+    /// (CivicBuilder.Lots) y el plano del pueblo (sus calles, ríos y colinas no pasan a través de un mueble).</summary>
+    internal static List<Bounds> FloorFurniture(Transform anyInMicrocosm)
     {
-        var all = new List<Transform>(giant.GetComponentsInChildren<Transform>(true));
-        var keep = new HashSet<Transform> { giant };
-        Bounds near = district; near.Expand(new Vector3(20f, 0f, 20f));
-        foreach (Transform t in all)
+        var l = new List<Bounds>();
+        Transform root = anyInMicrocosm != null ? anyInMicrocosm.root : null;
+        if (root == null) return l;
+        foreach (Transform c in root)
         {
-            Renderer r = t.GetComponent<Renderer>();
-            if (r == null) continue;
-            Bounds b = r.bounds;
-            // Se queda el suelo (losas bajas) y lo que no pisa el barrio (el santuario gigante alrededor del pueblo).
-            bool ground = b.size.y < 0.06f * AreaScale && b.max.y < 0.1f * AreaScale && b.size.x * b.size.z > 0.01f * AreaScale * AreaScale;
-            bool away = b.max.x < near.min.x || b.min.x > near.max.x || b.max.z < near.min.z || b.min.z > near.max.z;
-            if (ground || away) for (Transform p = t; p != null && p != giant.parent; p = p.parent) keep.Add(p);
+            if (!c.name.EndsWith("_gigante")) continue;
+            foreach (Renderer r in c.GetComponentsInChildren<Renderer>())
+            {
+                Bounds b = r.bounds;
+                if (IsFloor(b) || b.size.y < 0.1f) continue;
+                l.Add(b);
+            }
         }
-        int n = 0;
-        for (int i = all.Count - 1; i >= 0; i--)
-        {
-            Transform t = all[i];
-            if (t == null || keep.Contains(t)) continue;
-            Object.DestroyImmediate(t.gameObject); n++;
-        }
-        foreach (Collider c in giant.GetComponentsInChildren<Collider>(true)) if (c != null && c.GetComponent<Renderer>() == null && c.transform != giant) Object.DestroyImmediate(c);   // cajas de mueble sin malla
-        return n;
+        return l;
+    }
+
+    // ¿Algo del piso gigante cubre la cara de arriba <paramref name="top"/> (otra balda encima, la lámpara sobre la mesa)? Entonces no
+    // cabe un edificio encima.
+    static bool CoveredTop(Bounds top)
+    {
+        foreach (Bounds b in _blocked)
+            if (b.min.y > top.max.y + 0.5f && b.min.y < top.max.y + 12f && b.max.x > top.min.x && b.min.x < top.max.x && b.max.z > top.min.z && b.min.z < top.max.z) return true;
+        return false;
     }
 
     /// <summary>EL BARRIO DE LA HISTORIA (×100): un rectángulo del tamaño del piso real × <see cref="Legacy"/> (lo que medía el
@@ -648,6 +675,7 @@ public static class AreaMicrocosmos
     {
         float top = groundY + WallMinHeight;
         if (giant != null) foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y + 10f);
+        { Transform hist = root.Find("Historia"); if (hist != null) foreach (Renderer r in hist.GetComponentsInChildren<Renderer>()) top = Mathf.Max(top, r.bounds.max.y + 10f); }   // (los montes del plano del pueblo)
         float h = Mathf.Min(top - groundY, 400f), t = WallThick, hx = rect.extents.x, hz = rect.extents.z;
         Transform walls = new GameObject("Muros_del_piso").transform; walls.SetParent(root, false);
         walls.localPosition = new Vector3(rect.center.x, groundY, rect.center.z);
@@ -835,7 +863,7 @@ public static class AreaMicrocosmos
         return null;
     }
 
-    static int ClearUnder(Transform story, Transform giant, Bounds foot)
+    static int TouchingUnder(Transform story, Transform giant)
     {
         // Solo se aparta el mueble que CHOCA con una pieza sólida de la historia (no todo lo que cae dentro de la caja que la
         // envuelve): las historias grandes (el bosque y la cueva de Ambrosio) se MEZCLAN con el área, que sigue reconociéndose
@@ -850,16 +878,14 @@ public static class AreaMicrocosmos
         }
         foreach (MobSpawnPoint sp in story.GetComponentsInChildren<MobSpawnPoint>(true)) solids.Add(new Bounds(sp.transform.position, new Vector3(6f, 4f, 6f)));   // se llega a un sitio libre
         if (solids.Count == 0) return 0;
-        var kill = new HashSet<GameObject>();
+        // (2026-11-03) El piso NO se rompe: el mueble que toca la historia se queda (la historia se apoya en él o lo rodea); solo se cuenta.
+        int touching = 0;
         foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
         {
             Bounds b = r.bounds;
             if (IsFloor(b)) continue;
-            bool hit = false;
-            foreach (Bounds s in solids) if (b.max.x >= s.min.x && b.min.x <= s.max.x && b.max.z >= s.min.z && b.min.z <= s.max.z && b.min.y <= s.max.y) { hit = true; break; }
-            if (hit) kill.Add(Piece(r.transform, giant, foot).gameObject);
+            foreach (Bounds s in solids) if (b.max.x >= s.min.x && b.min.x <= s.max.x && b.max.z >= s.min.z && b.min.z <= s.max.z && b.min.y <= s.max.y) { touching++; break; }
         }
-        foreach (GameObject g in kill) if (g != null) Object.DestroyImmediate(g);
         _blocked.Clear();
         foreach (Renderer r in giant.GetComponentsInChildren<Renderer>()) if (!IsFloor(r.bounds)) _blocked.Add(r.bounds);
         // Restos de comida que hayan caído dentro de un mueble: al suelo libre más cercano de su zona.
@@ -869,7 +895,7 @@ public static class AreaMicrocosmos
                 Vector2 r = Random.insideUnitCircle * f.spread * 0.5f;
                 f.transform.position = new Vector3(story.position.x + r.x, f.transform.position.y, story.position.z + r.y);
             }
-        return kill.Count;
+        return touching;
     }
 
     // El MUEBLE entero al que pertenece un cubo (la mesa, no su pata): el hijo del área si es pequeño, o el de su grupo.

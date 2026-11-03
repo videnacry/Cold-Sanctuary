@@ -577,16 +577,8 @@ public static partial class StorySceneBuilder
 
     static int BruceLee(Transform t)
     {
-        // El Dojo terminado: el acabado de la obra se ve y el andamio y el material del día se quitan.
-        Transform giant = t.root.Find("Bruce Lee_gigante");
-        if (giant != null)
-        {
-            foreach (Transform c in giant.GetComponentsInChildren<Transform>(true))
-                if (c != null && c.name == "Acabado") c.gameObject.SetActive(true);
-            foreach (string obra in new[] { "Andamio_obra", "Material_del_dia" })
-                foreach (Transform c in giant.GetComponentsInChildren<Transform>(true))
-                    if (c != null && c.name == obra) Object.DestroyImmediate(c.gameObject);
-        }
+        // El Dojo TERMINADO: AreaMicrocosmos.Build ya montó la forma finalizada del piso (FloorForms.ShowFinished) y no se toca más (el piso
+        // no se rompe: docs/microcosmos-areas.md §Reglas).
 
         Material wood = AreaMicrocosmos.Mat("Hist_Madera", new Color(0.55f, 0.4f, 0.25f)), mat = AreaMicrocosmos.Mat("Hist_Tatami", new Color(0.78f, 0.72f, 0.5f));
         Material water = AreaMicrocosmos.Mat("Hist_Agua", new Color(0.3f, 0.5f, 0.7f)), paper = AreaMicrocosmos.Mat("Hist_Papel", new Color(0.93f, 0.9f, 0.82f));
