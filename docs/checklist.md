@@ -90,6 +90,10 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
 - [ ] Que el **horario semanal** (otro hilo) use `AreaFunctionSite.activity` para mandar a cada uno a sus edificios de ocio, descanso y recuperación.
 - [ ] Palenque sobre el Huerto (24 × 9 m) queda a escala 1:2,5: con su piso propio (más ancho) iría a 1:1.
+- [x] **El piso no se rompe** (2026-11-03, 2.ª vuelta): sin despeje del barrio ni apartar muebles; el pueblo los rodea o sube a sus mesetas (barrio alto) trepando (NavMeshLink + Climbable); `MicroFloor.floorPieces` en `MicroFloors.Validate` y `BruceLeeStoryTest`.
+- [x] **Relieve real low-poly** (`CivicBuilder.Terrain`): montes y colinas con ruido, roca y nieve; lagos; ríos con riberas; acantilados (6 pueblos).
+- [x] **Frutales en las residencias del santuario**: terraza frutal en cada casa de árbol (`ResidentialBuilder`), en la ronda del jardinero; `FruitOrchardTest` (55) lo mira.
+- [ ] **Verificar en vivo la 2.ª vuelta** (lo hace el probador): reconstruir SampleScene y todos los microcosmos; grupos 43, 55, 60, 62, 63, 66; fotos.
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +

@@ -23,13 +23,13 @@ Es como si de pronto el mundo fuera de insectos.
     pueblo, de 3 m) y **espaciada** en el resto del piso (×10: cada 60 m), para no multiplicar por cien el número de plantas.
   - **(2026-11-03) En un pueblo** (era avanzada) el barrio es el piso real **× 60** (`AreaMicrocosmos.TownScale`: el 60 % del
     lado, 1,4–2,8 km) y el pueblo va sobre su plano real a escala 1:1 ([microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)).
-  - En las eras avanzadas solo se quitan los muebles gigantes que pisan el barrio: el pueblo vive en el claro que deja el
-    santuario gigante, con sus montañas-mueble alrededor.
+  - En las eras avanzadas **ya no se quita ningún mueble** (2026-11-03, «el piso no debe romperse»): el pueblo rodea los muebles
+    gigantes o se sube a sus mesetas, trepando (§Reglas, 8 y 9).
   - Las medidas del área gigante que deciden qué es suelo, qué es mueble y qué cara de arriba se puebla escalan con
     `AreaMicrocosmos.K` (= AreaScale / 10); el NavMesh cubre el piso entero (hasta 4,6 km) y 600 m de alto.
   - Lo que no cambia: el tamaño de la flora y de la fauna (relativo a la hormiga) y el de la historia y los pueblos.
 - El área queda **entera** (la cocina se reconoce: barra, fogones, mesas del comedor): la historia se coloca en su plaza (el
-  hueco más libre de su suelo) y solo se aparta el mueble que pisa.
+  hueco más libre de su suelo) y no se aparta ningún mueble (2026-11-03: el piso no se rompe).
 - **Flora a escala:**
   - el musgo y los hongos hacen de hierba y arbustos;
   - las briznas de hierba y los helechos, de árboles.
@@ -57,9 +57,11 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 | 2 | **Se monta ENCIMA de ese piso**: el piso del santuario ×100 es el suelo del microcosmos (`…_gigante`), y la historia y su pueblo van a ras de su suelo. | `AreaMicrocosmos.Build` | `MicroFloors.Validate` (piso gigante presente; la historia a ±2,5 m del suelo) |
 | 3 | **Sobre su FORMA FINALIZADA**: todo piso tiene dos formas (ver [construcciones-elevadas.md](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03)); el microcosmos se monta siempre sobre la finalizada: el «Acabado» encendido y ni andamio, ni material del día, ni conos. | `FloorForms.ShowFinished`, lo PRIMERO de `AreaMicrocosmos.Build` | `MicroFloor.finishedForm`, `FloorForms.ObraLeft`, `MicroFloors.Validate`; `BruceLeeStoryTest` |
 | 4 | **Las estructuras del piso son superficie utilizable**: la cara de arriba de cada mueble gigante (mesas, camas, encimeras, máquinas: mesetas de 75 m) se puebla de flora y fauna; en un pueblo, las de fuera de su barrio también, y en las dos más grandes se levanta un **mirador** de la era (sitio «Mirador», con su monumento, su frutal y bancos para personas e insectos-humanos). | `AreaMicrocosmos.FurnitureTops`, `Nature` (en un pueblo, `TownTopSow`: flora del lugar a escala de pueblo), `CivicBuilder.Outposts` | `MicroFloor.floraOnTops / faunaOnTops / buildingsOnTops`; `MicrocosmosFloorTest` (5) y `MicroFloors.Validate` |
-| 5 | **El pueblo o la ciudad ENTERA de la historia**, sobre su plano real a escala 1:1 en un barrio del piso × 60 (1,4–2,8 km), con sus calles, ríos, lagos, colinas y montes, sus edificios de la historia en su sitio y los del pueblo (plaza, mercado, escuela, estación, comisaría…) | `AreaMicrocosmos.TownScale`, `CivicBuilder.Plans` ([microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)) | `MicroFloors.Validate` (barrio ≥ 40 % del piso y ≥ 12 edificios) |
+| 5 | **El pueblo o la ciudad ENTERA de la historia**, adaptada al piso (regla 8), sobre su plano real a escala 1:1 en un barrio del piso × 60 (1,4–2,8 km), con sus calles, ríos, lagos, colinas y montes, sus edificios de la historia en su sitio y los del pueblo (plaza, mercado, escuela, estación, comisaría…) | `AreaMicrocosmos.TownScale`, `CivicBuilder.Plans` ([microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md)) | `MicroFloors.Validate` (barrio ≥ 40 % del piso y ≥ 12 edificios) |
 | 6 | **Una época y un lugar**: su fecha (`Eras.OfMicrocosmos`), su región (`MicroStyles.RegionOf`) y con ellas el estilo de cada edificio y mueble, su flora y su fauna (`MicroBiome`). | `MicroEra`, `MicroStyles`, `MicroBiome` | reglas 7 y 10 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) |
 | 7 | **Si ningún piso encaja, «pendiente de piso representativo»**: se monta sobre el piso existente que más se le parece y se apunta el piso que faltaría crear (`MicroFloors.Table`); el menú «Pisos que faltan» da la lista. | `MicroFloors`, `MicroFloor.representative / pendingFloor` | `MicroFloors.Validate` (si no lo representa, tiene que decir qué piso falta) |
+| 8 | **El piso NO se rompe** (2026-11-03): ninguna pieza del piso se quita ni se mueve; el pueblo y la historia se ADAPTAN a él: rodean los muebles que apoyan en el suelo o se suben encima (barrio alto en las mesetas). | `AreaMicrocosmos.Build` (sin despeje), `CivicBuilder.Lots` y el plano (esquivan `FloorFurniture`), `CivicBuilder.Outposts` | `MicroFloor.floorPieces` = piezas ahora (`MicroFloors.Validate`); `BruceLeeStoryTest` |
+| 9 | **Los insectos-humanos trepan**: por paredes y patas de mesas, sillas y camas suben a las caras de arriba de los muebles. | un `NavMeshLink` del suelo a cada cara de arriba y `Climbable` en cada mueble alto | `MicroFloor.climbLinks` (si hay edificios encima, &gt; 0) |
 
 ### La tabla de pisos (`MicroFloors.Table`)
 

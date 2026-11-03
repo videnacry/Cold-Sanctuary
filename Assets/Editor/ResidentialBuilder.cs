@@ -27,6 +27,7 @@ public static class ResidentialBuilder
 
     // Dónde va cada casa de árbol (local) y hacia dónde mira su entrada: dos por árbol, a distinta altura y a cada lado.
     static readonly System.Collections.Generic.List<(Vector3 pos, Vector3 door)> _houses = new System.Collections.Generic.List<(Vector3, Vector3)>();
+    static readonly System.Collections.Generic.List<Vector3> _terraces = new System.Collections.Generic.List<Vector3>();
 
     public static Transform Build(Transform parent, Vector3 center)
     {
@@ -56,6 +57,13 @@ public static class ResidentialBuilder
             Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
             _houses.Add((trees[k] + side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 14f), -dir));
         }
+        // (2026-11-03) Las TERRAZAS FRUTALES de cada casa (7 m más allá de su centro, del lado contrario al tronco): las ramas las esquivan.
+        _terraces.Clear();
+        for (int i = 0; i < _houses.Count; i++)
+        {
+            Vector3 trunk = trees[i < 12 ? i / 2 : i - 12], away = _houses[i].pos - trunk; away.y = 0f;
+            _terraces.Add(_houses[i].pos + away.normalized * 7f);
+        }
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
@@ -73,7 +81,7 @@ public static class ResidentialBuilder
         for (int i = 0; i < _houses.Count; i++)
         {
             var (pos, door) = _houses[i];
-            Transform cab = Cabin(root, pos, door, i, $"Casa del árbol {i + 1}");
+            Transform cab = Cabin(root, pos, door, i, $"Casa del árbol {i + 1}", i < 12 && i % 2 == 1 ? -1f : 1f);
             Vector3 trunk = trees[i < 12 ? i / 2 : i - 12] + Vector3.up * (pos.y - 0.35f);
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
@@ -91,13 +99,15 @@ public static class ResidentialBuilder
         if (Mathf.Abs(q.x) < CentralSize * 0.5f + 1f && Mathf.Abs(q.z) < CentralSize * 0.5f + 1f && q.y > DeckY - 1.5f && q.y < DeckY + 4f) return true;   // plataforma central
         foreach (var (pos, _) in _houses)
             if ((h - new Vector2(pos.x, pos.z)).magnitude < 5.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (7 × 6 m y margen)
+        foreach (Vector3 tp in _terraces)
+            if ((h - new Vector2(tp.x, tp.z)).magnitude < 5.2f && q.y > tp.y - 1.5f && q.y < tp.y + 6f) return true;   // terrazas frutales (y la copa del frutal)
         return false;
     }
 
     // Una habitación al ESTILO DE LOS TEMPLOS GRIEGOS (7 × 6 m) pero ABIERTA: solo el suelo y el estilóbato (escalón),
     // sin paredes, columnas ni tejado (se quitaron para ganar visibilidad). Se entra por cualquier lado sin que la vista se
     // tape. Dentro: cama, mesilla con lámpara, armario y estante; el BAÑO en una esquina, tras un biombo (intimidad).
-    static Transform Cabin(Transform root, Vector3 local, Vector3 door, int ownerIdx, string name)
+    static Transform Cabin(Transform root, Vector3 local, Vector3 door, int ownerIdx, string name, float terraceSide = 1f)
     {
         Transform t = new GameObject(name).transform;
         t.SetParent(root, false);
@@ -118,6 +128,14 @@ public static class ResidentialBuilder
         // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima).
         string who = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : $"Habitación libre {ownerIdx + 1}";
         CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(1.75f, 0.27f, -0.9f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
+        // (2026-11-03) SU TERRAZA FRUTAL (Berón: «los frutales en residencias que te pedí era para las residencias del santuario»; docs/
+        // jardines-frutales.md §Residencia): una plataforma de 7 × 6 m pegada a la habitación por el lado contrario al tronco, con un
+        // frutal en maceta en su centro (a ≥ 2 m de la cama, el armario y la alfombra). Es una maceta del jardinero (FruitPlant,
+        // edificio «Residencia»): entra en su ronda.
+        Plank(t, new Vector3(terraceSide * (W * 0.5f + 3.5f), 0f, 0f), new Vector3(7f, 0.3f, D), "Terraza_frutal");
+        FruitCare.Ficha fruit = FruitCare.All[FruitCare.All.Length - 1 - ownerIdx % Mathf.Max(1, FruitCare.All.Length / 2)];   // las de porte pequeño, una distinta en cada casa
+        Transform pot = SampleSceneBuilder.PottedFruit(t, fruit, 900 + ownerIdx, Name, t.position.y + 0.15f);
+        pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 3.5f), 0.15f, 0f));
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.bed = bed;

@@ -228,6 +228,10 @@ public static partial class SampleSceneBuilder
         return (n, rounds);
     }
 
+    /// <summary>(2026-11-03) Una maceta con su frutal fuera de los techos (las terrazas de las casas de árbol de la Residencia,
+    /// ResidentialBuilder): la misma de los techos, con su FruitPlant (y por tanto en la ronda del jardinero).</summary>
+    internal static Transform PottedFruit(Transform parent, FruitCare.Ficha f, int n, string building, float fy) => BuildPotted(parent, f, n, building, fy);
+
     // UNA MACETA con su frutal (variedad enana, a la escala de su ficha) y su estado de cuidado.
     static Transform BuildPotted(Transform group, FruitCare.Ficha f, int n, string bname, float fy, float shrink = 1f)
     {
