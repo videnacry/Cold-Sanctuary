@@ -205,7 +205,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
     /// <summary>Kushal (el jugador de la escena) empieza bajo el agua del tronco sin máscara (en Prueba_Mascaras ya empieza así;
     /// si no, se le pone ahí): nada hacia la estación más cercana (lo que haría quien juega siguiendo el aviso de la pantalla), la
     /// toca, se pone la máscara y desde entonces el aliento no baja.</summary>
-    public static IEnumerator KushalRescue(ArbolCampos t)
+    public static IEnumerator KushalRescue(ArbolCampos t, System.Action<GameObject, string> snap = null)
     {
         PlayerController pc = null;
         foreach (PlayerController p in FindObjectsByType<PlayerController>(FindObjectsSortMode.None)) if (p.CompareTag("Player") && !p.name.Contains("TEST")) { pc = p; break; }
@@ -225,6 +225,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
         }
         yield return null;
         float breath0 = sb.Breath01;
+        snap?.Invoke(k, "bajo_el_agua_sin_mascara");
         MaskStation target = MaskStation.Nearest(sb.HeadPosition, MaskStation.Kind.Station, BreathingMask.RescueRange, true, true);
         float dist0 = target != null ? Vector3.Distance(target.SwimPoint, sb.HeadPosition) : -1f;
         float t0 = Time.time, r0 = Time.realtimeSinceStartup, minB = 1f;
@@ -238,6 +239,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
             minB = Mathf.Min(minB, sb.Breath01);
         }
         float took = Time.time - t0;
+        snap?.Invoke(k, "se_pone_la_mascara");
         TestProbe.Check($"KUSHAL bajo el agua sin máscara ({(startedUnder ? "la escena empieza así" : "puesto a 34 m en el tronco")}) nada a la estación más cercana y se la pone",
             bm.Worn && bm.TakenFrom == target, $"estación a {dist0:0.0} m, puesta en {took:0} s, aliento {breath0:0.00} → mínimo {minB:0.00}");
         // Con la máscara: 20 s más bajo el agua, el aliento no baja.
@@ -245,6 +247,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
         pc.scriptedInput = new Vector3(0f, -0.3f, 0f);
         float minAfter = 1f; bool under = false;
         { float t1 = Time.time, r1 = Time.realtimeSinceStartup; while (Time.time - t1 < 20f && Time.realtimeSinceStartup - r1 < 40f) { yield return null; if (!sb.HeadAboveWater) under = true; if (Time.time - t1 > 2f) minAfter = Mathf.Min(minAfter, sb.Breath01); } }
+        snap?.Invoke(k, "buceando_con_mascara");
         pc.scriptedInput = null;
         TestProbe.Check("con la máscara, Kushal tiene oxígeno ilimitado: 20 s bajo el agua con 4 s de aliento y no baja", bm.Worn && under && minAfter > 0.95f, $"bajo el agua {under}, aliento mínimo {minAfter:0.00}");
         sb.breathHoldSeconds = 50f;
