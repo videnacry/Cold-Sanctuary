@@ -92,7 +92,14 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Descansar | Su casa |
 | Cuidar de la familia | Su casa |
 
-**Etiquetas de actividad** (`LeisureTags.Providers`): las etiquetas de los edificios (trabajo, descanso, recuperación, ocio, con capacidad e interacción) entran por aquí como actividades del catálogo de su escena, sin que el horario dependa del constructor de los pueblos. Mientras no las haya, mandan las plantillas de arriba.
+**Etiquetas de actividad** (`AreaFunctionSite.activity`, `capacity` e `interaction`, que pone el constructor de los pueblos; docs/microcosmos-actividades.md). El horario las lee así:
+
+- **Si la escena tiene edificios etiquetados**, el tiempo libre va **solo a los de ocio, recuperación y descanso**, nunca a los de trabajo. En un pueblo etiquetado, la escuela, el mercado y el huerto son trabajo y salen del catálogo libre.
+- **Los demás edificios de ocio o recuperación** (parque, plaza, museo, sala de baile, baños, mirador, centro de entrenamiento, fuente…) entran como una actividad por plantilla, con su interacción como título y la función de «todos» para el gesto. El hospital no entra.
+- **Las plazas** son la capacidad de la etiqueta; sin etiqueta, los puestos del edificio que sirven para la función.
+- **Sin etiquetas** mandan las plantillas de arriba.
+
+Otros sistemas pueden añadir sitios con `LeisureTags.Providers`.
 
 ### En el juego (`LeisureDirector`)
 

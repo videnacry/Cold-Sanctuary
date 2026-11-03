@@ -230,24 +230,55 @@ public class LeisureDirector : MonoBehaviour
     {
         var sites = new List<AreaFunctionSite>();
         foreach (GameObject root in gr.scene.GetRootGameObjects()) sites.AddRange(root.GetComponentsInChildren<AreaFunctionSite>(true));
+        // ETIQUETAS DE ACTIVIDAD (docs/microcosmos-actividades.md): con los edificios etiquetados, el tiempo libre va a los de ocio,
+        // recuperación y descanso (no a los de trabajo: la escuela, el mercado o el huerto de un pueblo etiquetado son trabajo).
+        bool tagged = sites.Any(s => !string.IsNullOrEmpty(s.activity));
         int k = 0;
+        var covered = new HashSet<string>();
         foreach (var d in MicroActivities)
         {
             var v = new Venue { title = d.building, fn = AreaFunctions.Get(d.fn), home = d.building == "Casa" };
             v.kind = v.fn != null ? v.fn.kind : AreaFunctions.Kind.Rest;
             if (!v.home)
             {
-                foreach (AreaFunctionSite s in sites) if (s.building == d.building && s.Stations.Length > 0) v.sites.Add(s);
+                foreach (AreaFunctionSite s in sites)
+                    if (s.building == d.building && s.Stations.Length > 0 && (!tagged || (s.activity != AreaFunctionSite.Trabajo && !string.IsNullOrEmpty(s.activity)))) v.sites.Add(s);
                 if (v.sites.Count == 0) continue;
-                v.capacity = Mathf.Max(1, v.sites.Sum(s => s.Stations.Count(st => v.fn == null || v.fn.stations.Length == 0 || System.Array.IndexOf(v.fn.stations, st.station) >= 0)));
+                v.capacity = Capacity(v.sites, v.fn);
                 v.title = v.sites.Count == 1 && v.sites[0].title.Length > 0 ? v.sites[0].title : d.building;
+                covered.Add(d.building);
             }
             else if (!gr.bodies.Any(b => b.TryGetComponent(out MicroJornada mj) && mj.home != null)) continue;
             v.index = k++;
             var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, v.home ? 0 : v.capacity, d.pose);
             gr.catalog.Add(act); gr.venues[act] = v;
         }
+        // Los demás edificios etiquetados de ocio o recuperación (parque, plaza, museo, sala de baile, baños, mirador, centro de
+        // entrenamiento, fuente…): una actividad por plantilla, con su interacción, su capacidad y la función de «todos».
+        foreach (var byB in sites.Where(s => (s.activity == AreaFunctionSite.Ocio || s.activity == AreaFunctionSite.Recuperacion) && s.building != "Hospital" && !covered.Contains(s.building) && s.Stations.Length > 0).GroupBy(s => s.building))
+        {
+            AreaFunctionSite first = byB.First();
+            var fs = first.Functions();
+            AreaFunctions.AreaFunction fn = fs.FirstOrDefault(f => f.roles.Length == 0 || System.Array.IndexOf(f.roles, "todos") >= 0) ?? fs.FirstOrDefault();
+            var v = new Venue { title = byB.Count() == 1 && first.title.Length > 0 ? first.title : byB.Key, fn = fn, kind = fn != null ? fn.kind : AreaFunctions.Kind.Rest, index = k++ };
+            v.sites.AddRange(byB);
+            v.capacity = Capacity(v.sites, fn);
+            string what = !string.IsNullOrEmpty(first.interaction) ? first.interaction : AreaFunctionSite.InteractionOf(byB.Key);
+            string title = $"{byB.Key}: {what}";
+            var kind = first.activity == AreaFunctionSite.Recuperacion ? LeisureRoster.Kind.Recuperacion : LeisureRoster.Kind.Ocio;
+            string pose = fn != null && (fn.kind == AreaFunctions.Kind.Practice || fn.kind == AreaFunctions.Kind.Teach) ? "ejercicio" : fn != null && fn.kind == AreaFunctions.Kind.Meditate ? "meditar" : "pie";
+            var act = new LeisureRoster.Activity("tag_" + byB.Key, title, kind, v.title, v.capacity, pose);
+            gr.catalog.Add(act); gr.venues[act] = v;
+        }
         LeisureTags.AddVenues(gr, sites);
+    }
+
+    // Plazas: la capacidad de su etiqueta (si la tiene); si no, sus puestos que sirven para la función.
+    static int Capacity(List<AreaFunctionSite> sites, AreaFunctions.AreaFunction fn)
+    {
+        int tag = sites.Sum(s => Mathf.Max(0, s.capacity));
+        if (tag > 0) return tag;
+        return Mathf.Max(1, sites.Sum(s => s.Stations.Count(st => fn == null || fn.stations.Length == 0 || System.Array.IndexOf(fn.stations, st.station) >= 0)));
     }
 
     // ── Conducir ─────────────────────────────────────────────────────────────────────────────────
