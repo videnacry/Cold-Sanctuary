@@ -160,7 +160,7 @@ public static class AnimalPrefabGenerator
         instance.name = species;
 
         if (instance.GetComponent<Rigidbody>() == null)
-            instance.AddComponent<Rigidbody>();
+            instance.AddComponent<Rigidbody>().freezeRotation = true;   // no se vuelca (CubeGait lo asegura también en escena)
 
         if (instance.GetComponent<BoxCollider>() == null)
             instance.AddComponent<BoxCollider>();

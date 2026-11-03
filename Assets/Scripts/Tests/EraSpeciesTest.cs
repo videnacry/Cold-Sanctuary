@@ -173,7 +173,7 @@ public class EraSpeciesTest : MonoBehaviour, ITestUnit
             tc.SetClock(savedDay, 12f); sc.Evaluate();
             TestProbe.Check("a mediodía la luciérnaga DUERME", female.asleep);
             tc.SetClock(savedDay, 23f); sc.Evaluate();
-            TestProbe.Check("a las 23:00 está despierta", !female.asleep);
+            TestProbe.Check("a las 23:00 está despierta", !female.asleep, $"dormida {female.asleep}, muerta {female.death}, consciente {female.aware}, hora {tc.Hour:0.0}, día {tc.IsDay}");
             tc.SetClock(savedDay, savedHour);
         }
 

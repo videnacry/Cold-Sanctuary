@@ -267,6 +267,7 @@ public class SpellConsole : MonoBehaviour
     {
         ("reemplazar", "reemplazar({destiny:\"Magnate\", quitar:\"\", poner:\"\"})"),   // cambiar una CONVICCIÓN (Convictions)
         ("admin",     "admin({on:true})"),   // lanzador admin: todos los hechizos, sin aprenderlos
+        ("miembro",   "miembro({destiny:\"Kushal\"})"),   // (admin) hace a alguien miembro del santuario: se salta la iniciación
         ("progreso",  "progreso()"),   // checklist de la historia y las misiones (ProgressPanel)
         ("walkTo",    "walkTo({destiny:\"\", maxSpeed:false, distance:1})"),
         ("use",       "use({destiny:\"Nevera\"})"),
@@ -310,6 +311,7 @@ public class SpellConsole : MonoBehaviour
     static readonly Dictionary<string, string> RequiresSkill = new Dictionary<string, string>
     {
         { "yoga", "yoga" }, { "teach", "teach" }, { "analysis", "clinico" }, { "vaccinate", "clinico" },
+        { "miembro", "admin" },   // solo con el lanzador admin (nadie aprende «admin»)
     };
 
     /// <summary>LANZADOR ADMIN (hechizo <c>admin</c>): se conocen TODOS los hechizos del juego, sin aprenderlos.</summary>
@@ -522,6 +524,20 @@ public class SpellConsole : MonoBehaviour
             case "admin":   // LANZADOR ADMIN: todos los hechizos del juego, sin aprenderlos
                 Admin = !args.TryGetValue("on", out string ao) || Clean(ao) != "false";
                 Log(Admin ? "Lanzador admin: conoces todos los hechizos del juego." : "Lanzador normal: solo los hechizos aprendidos.");
+                break;
+            case "miembro": case "member":   // (ADMIN) MIEMBRO DEL SANTUARIO sin la iniciación: para probar la exploración
+                {
+                    if (!Admin) { Log("«miembro» es de administrador: lanza antes admin()."); break; }
+                    string mw = args.TryGetValue("destiny", out string md) ? Clean(md) : "";
+                    GameObject mg = mw.Length == 0 || mw == "Kushal" ? GameObject.FindGameObjectWithTag("Player") : GameObject.Find(mw);
+                    SanctuaryOnboarding ob = mg != null ? mg.GetComponent<SanctuaryOnboarding>() : null;
+                    if (ob == null) { Log(mg == null ? $"¿Dónde está «{mw}»?" : $"«{mg.name}» ya es del santuario."); break; }
+                    foreach (NewcomerInitiator ni in FindObjectsByType<NewcomerInitiator>(FindObjectsSortMode.None)) if (ni.InProgress) ni.ResetState();   // suelta al que lo examinaba o lo llevaba
+                    ob.introMissionsDone = ob.introMissionsRequired; ob.apt = ob.presented = ob.initiated = ob.kitchenTrained = true;
+                    if (mg.TryGetComponent(out PlayerController mpc)) mpc.ReleaseBody();
+                    if (CameraManager.Instance != null) { CameraManager.Instance.ClearRobbery(); CameraManager.Instance.SwitchTo(CameraManager.Instance.preferredMode, forced: true); }
+                    Log($"«{mg.name}» ya es miembro del santuario: sin examen ni iniciación, puede explorar.");
+                }
                 break;
             case "progreso": case "progress":   // CHECKLIST de la historia y las misiones (ProgressPanel): abre o cierra la ventana
                 Log(ProgressPanel.Toggle());

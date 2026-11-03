@@ -66,6 +66,7 @@ public static class MobWorldSceneBuilder
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = MakeMat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>();
+        GalaxyPortal.Dress(portal.transform);   // el portal de vuelta: un agujero negro en una pequeña galaxia
 
         // Misión jugable de la cocina: "Procesar ingredientes" (ChannelMission por presencia). Es
         // self-contained en la escena: MobWorldMission la arranca tras el fundido de entrada y, con

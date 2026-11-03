@@ -94,6 +94,9 @@ public class TeachingSession : MonoBehaviour
             if (!student.TryGetComponent(out Grimoire g)) g = student.gameObject.AddComponent<Grimoire>();
             g.Learn(skillId);   // aprende la secuencia al completarla (ya no es un regalo instantáneo)
         }
+        // Fin de la clase: los dos se levantan (si la última postura era sentada se quedaban así andando, empujando…).
+        if (student != null) DailyPoses.Stand().ApplyFinal(student);
+        if (teacher != null) DailyPoses.Stand().ApplyFinal(teacher);
         if (!_studentIsAI) LessonPrompt.Hide();
         Destroy(this);
     }

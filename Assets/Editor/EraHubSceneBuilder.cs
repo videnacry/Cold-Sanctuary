@@ -18,12 +18,11 @@ public static class EraHubSceneBuilder
     // (escena, nombre del microcosmos en Eras/MicroBiome, historia)
     internal static readonly (string scene, string display, string story)[] All =
     {
-        ("Microcosmos_Scene0_SakshiRio", "Sakshi (el río)", "el origen de Sakshi: el primer viaje de Kushal"),
+        ("Microcosmos_Scene0_SakshiRio", "Sakshi (el río)", "el origen de Sakshi (el microcosmos de la Sala de Yoga)"),
         ("Microcosmos_Scene1_Ambrosio", "Ambrosio (nivel 1)", "Ambrosio: el nivel 1 del microcosmos"),
         ("Microcosmos_Hospital", "Hospital", "Ambrosio, antes del fuego"),
         ("MobWorld_Mesopotamia", "Mesopotamia", "la ciudad-insecto del amanecer de Mesopotamia"),
         ("Microcosmos_Cocina", "Cocina", "la era del fuego: las reencarnaciones"),
-        ("Microcosmos_SalaYoga", "Sala de Yoga", "una tribu (Sala de Yoga)"),
         ("Microcosmos_Textil", "Estudio Textil", "una tribu (Estudio Textil)"),
         ("Microcosmos_Mecanica", "Mecánica", "una tribu (Mecánica)"),
         ("Microcosmos_Huerto", "Huerto", "La Sembradora: los primeros cultivos"),

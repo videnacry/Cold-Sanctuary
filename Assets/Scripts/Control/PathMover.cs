@@ -13,7 +13,7 @@ public class PathMover : MonoBehaviour
     NavMeshPath _path;
     int _corner;
     Vector3 _goal = new Vector3(float.NaN, 0f, 0f);
-    float _repathAt, _cliffLog;
+    float _repathAt, _cliffLog, _cliffSince;
     const float WaterY = -0.25f;
 
     public static PathMover Of(Component c) => c.GetOrAdd<PathMover>();
@@ -52,7 +52,12 @@ public class PathMover : MonoBehaviour
         pos.y = GroundY(pos, transform.position.y);
         // ACANTILADO: si el paso le haría caer más de 1,2 m (borde de una plataforma elevada), no lo da. Las escaleras bajan
         // de peldaño en peldaño; el NavMesh no ve las barandillas invisibles y la ruta a veces pasaba por el borde.
-        if (pos.y < transform.position.y - 1.2f)
+        // ACANTILADO, salvo que el camino completo baje por ahí y lleve un rato parado al borde: sin barandillas, desde un
+        // anillo o una plataforma hija se SALTA al piso de abajo (Berón 2026-10-27: «que sea fácil saltar»), como haría cualquiera.
+        bool jump = _path.status == NavMeshPathStatus.PathComplete && next.y < transform.position.y - 1f && _cliffSince > 0f && Time.time - _cliffSince > 2.5f && transform.position.y - pos.y < 6f;
+        if (pos.y >= transform.position.y - 1.2f || jump) _cliffSince = 0f;
+        else if (_cliffSince <= 0f) _cliffSince = Time.time;
+        if (pos.y < transform.position.y - 1.2f && !jump)
         {
             if (Time.time > _cliffLog) { _cliffLog = Time.time + 10f; Debug.Log($"[Ruta] «{name}» se detiene al borde en ({transform.position.x:0},{transform.position.y:0},{transform.position.z:0}) camino {_path.status} {_path.corners.Length} esquinas, hacia ({target.x:0},{target.z:0})."); }
             return Flat(final - transform.position);

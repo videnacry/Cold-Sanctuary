@@ -177,7 +177,11 @@ public class CameraManager : MonoBehaviour
         returnOnFinish = false
     });
 
-    public void OnExitCubArea() => SwitchTo(preferredMode, forced: true);
+    public void OnExitCubArea() { ClearRobbery(); SwitchTo(preferredMode, forced: true); }
+
+    /// <summary>Suelta un robo «sujeto desde fuera» (zona de cámara, área de crías). Antes nadie ponía _inRobbery a false:
+    /// al salir de la zona (o al teletransportarse a un microcosmos) la «V» quedaba muerta para siempre (Berón 2026-10-27).</summary>
+    public void ClearRobbery() => _inRobbery = false;
 
     // ── Mode switching ───────────────────────────────────────────────────────
 

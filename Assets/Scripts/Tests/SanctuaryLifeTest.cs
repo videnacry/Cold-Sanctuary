@@ -387,7 +387,7 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
-        TestProbe.Check("la sala de yoga tiene la plataforma en el centro y 30 esterillas", FindByPrefix("Esterilla_30") && FindByPrefix("Tarima del maestro"));
+        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && CarpetPad.All.Count(c => c.building == "Sala de Yoga" && c.surface.EndsWith("#anillo")) >= 8 && FindByPrefix("Estatuas_anillo"));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)

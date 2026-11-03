@@ -113,6 +113,7 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Avanza la jornada a la hora <paramref name="h"/>: empieza y termina misiones, mueve a cada uno a su sitio.</summary>
     public void Tick(float h)
     {
+        _hour = h;
         foreach (WorkRoster.Assignment a in today.work)
         {
             float end = a.start + a.mission.hours;
@@ -318,6 +319,8 @@ public class WorkdayDirector : MonoBehaviour
     {
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
+        bool gymTime = !alwaysMove && area == GymArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
+        if (!gymTime) LeaveGym(g);   // deja libre su máquina del gimnasio (si tenía)
         IdleBehavior idle = g.GetComponent<IdleBehavior>();
         Linduarda lin = g.GetComponent<Linduarda>();
         CarnivoreKeeper keeper = g.GetComponent<CarnivoreKeeper>();
@@ -335,8 +338,9 @@ public class WorkdayDirector : MonoBehaviour
             return;
         }
         SetStatus(g, doing);
-        if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) return;   // su conducta propia hace ESTA misión
+        if ((guardDuty && keeper != null) || (lin != null && lin.enabled)) { LeaveGym(g); return; }   // su conducta propia hace ESTA misión
         if (YogaClass(g, missionId)) { if (idle != null) idle.enabled = false; return; }
+        if (gymTime && GymSession(g, doing)) { if (idle != null) idle.enabled = false; return; }
         if (idle != null && idle.enabled) idle.enabled = false;
         Vector3 to = WorkPoint(area, g.name);
         if ((g.transform.position - to).sqrMagnitude > 4f)
@@ -385,6 +389,113 @@ public class WorkdayDirector : MonoBehaviour
         Anima a = g.GetComponent<Anima>();
         if (a != null) DailyPoses.Meditate().ApplyFinal(a);
         g.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 2f);   // ojos cerrados
+    }
+
+    // ── GIMNASIO (docs/gimnasio-maquinas.md, §13) ──────────────────────────────────────────────
+    // El entrenamiento en el gimnasio (14–16 h): 10 min de calentamiento en la zona libre, un CIRCUITO de 10 estaciones de
+    // 9 min (5 abajo y 5 en la entreplanta; la mitad del grupo empieza abajo y la otra arriba, y a los 45 min se cruzan) y
+    // 15 min de estiramientos. La persona i del grupo empieza el día d en la estación (i + d) mod 5 de su piso y usa la
+    // copia (i / 5) mod 3. En la máquina se coloca en su Puesto y alterna las posturas A ↔ B cada ~1,5 s.
+    const string GymArea = "Gimnasio";
+    static readonly GymMachineType[] GymLower = { GymMachineType.Prensa, GymMachineType.PressPecho, GymMachineType.Jalon, GymMachineType.PressHombros, GymMachineType.Remo };
+    static readonly GymMachineType[] GymUpper = { GymMachineType.ExtensionCuadriceps, GymMachineType.BicepsTriceps, GymMachineType.CurlFemoral, GymMachineType.Gemelos, GymMachineType.HipThrust };
+    const float GymRepHalf = 1.5f;      // segundos reales de cada mitad de la repetición (A → B, B → A)
+    const float GymWalkTimeout = 45f;   // si no llega a la máquina en este tiempo, se queda en la zona libre un rato
+
+    class GymUse { public GymStation st; public bool seated, b; public float since, phaseAt; public AsanaPoseSpell spell; }
+    readonly Dictionary<GameObject, GymUse> _gym = new Dictionary<GameObject, GymUse>();
+    readonly Dictionary<GameObject, float> _gymGiveUp = new Dictionary<GameObject, float>();
+    float _hour;
+
+    /// <summary>Puesto de <paramref name="g"/> en el grupo del gimnasio de hoy (−1 si hoy no le toca el gimnasio).</summary>
+    int GymIndex(string who)
+    {
+        int i = 0;
+        foreach (WorkRoster.Worker w in roster.workers)
+        {
+            if (w.clone || !today.training.TryGetValue(w, out string t) || t != GymArea) continue;
+            if (w.name == who) return i;
+            i++;
+        }
+        return -1;
+    }
+
+    /// <summary>La máquina que le toca ahora a la persona <paramref name="i"/> del grupo (null en el calentamiento, los
+    /// estiramientos o si todas las copias están ocupadas).</summary>
+    GymStation GymStationFor(int i, string who)
+    {
+        float min = (_hour - (WorkRoster.StartHour + 6f)) * 60f;
+        if (min < 10f || min >= 100f) return null;
+        int step = Mathf.Clamp(Mathf.FloorToInt((min - 10f) / 9f), 0, 9);
+        bool upper = ((i % 2) + step / 5) % 2 == 1;
+        GymMachineType type = (upper ? GymUpper : GymLower)[(i + today.day + step) % 5];
+        int copy = (i / 5) % 3;
+        for (int k = 0; k < 3; k++)
+        {
+            GymStation s = GymStation.Find(type, (copy + k) % 3);
+            if (s != null && (s.Free || s.Occupant == who)) return s;
+        }
+        return null;
+    }
+
+    /// <summary>Si toca máquina, lleva a <paramref name="g"/> a ella y la usa; true = ya lo maneja. false = a la zona libre
+    /// (calentamiento, estiramientos, sin máquina libre o sin camino): sigue el punto del área de siempre.</summary>
+    bool GymSession(GameObject g, string doing)
+    {
+        Anima a = g.GetComponent<Anima>();
+        ActionQueue q = g.GetComponent<ActionQueue>();
+        if (a == null || a.asleep || (q != null && q.Own.Count > 0)) { LeaveGym(g); return false; }   // comer, el baño y dormir van antes
+        if (_gymGiveUp.TryGetValue(g, out float until) && Time.time < until) { LeaveGym(g); return false; }
+        int i = GymIndex(g.name);
+        GymStation want = i >= 0 ? GymStationFor(i, g.name) : null;
+        if (want == null) { LeaveGym(g); return false; }
+        _gym.TryGetValue(g, out GymUse u);
+        if (u == null || u.st != want)   // cambio de estación: suelta la anterior y reserva la nueva
+        {
+            LeaveGym(g);
+            if (!want.Claim(g.name)) return false;
+            _gym[g] = u = new GymUse { st = want, since = Time.time };
+        }
+        SetStatus(g, $"{doing} · {GymStation.Label(want.type)}");
+        if (!u.seated)
+        {
+            Vector3 to = want.ApproachPoint + Vector3.up;   // el pasillo junto a la máquina (a la altura del pivote, como AreaPoint)
+            Vector3 d = to - g.transform.position;
+            bool sameFloor = Mathf.Abs(d.y) < 1.5f; d.y = 0f;
+            if (!sameFloor || d.sqrMagnitude > 0.8f * 0.8f)
+            {
+                if (Time.time - u.since > GymWalkTimeout) { LeaveGym(g); _gymGiveUp[g] = Time.time + 20f; return false; }
+                PathMover.Of(g.transform).StepToward(to, walkSpeed);
+                return true;
+            }
+            u.seated = true; u.b = false; u.phaseAt = Time.time; u.spell = want.PoseA();
+            Debug.Log($"[Gimnasio] «{g.name}» se pone en {want.name}.");
+        }
+        if (Time.time - u.phaseAt >= GymRepHalf) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
+        float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (GymRepHalf * 0.6f)));
+        GymPlace(g, want.SeatPoint(u.b ? k : 1f - k), want.Facing);   // (solo el hip thrust desplaza la pelvis entre A y B)
+        u.spell.Tick(a);
+        return true;
+    }
+
+    /// <summary>Coloca los PIES (la base del cuerpo de cubos) de <paramref name="g"/> en <paramref name="feet"/>, mirando a <paramref name="facing"/>.</summary>
+    static void GymPlace(GameObject g, Vector3 feet, Quaternion facing)
+    {
+        Transform body = g.transform.Find(CubeHumanoid.BodyName);
+        float off = body != null ? g.transform.position.y - body.position.y : 1f;
+        g.transform.SetPositionAndRotation(new Vector3(feet.x, feet.y + off, feet.z), facing);
+    }
+
+    /// <summary>Se levanta de la máquina (de pie, en el pasillo) y la deja libre.</summary>
+    void LeaveGym(GameObject g)
+    {
+        if (g == null || !_gym.TryGetValue(g, out GymUse u)) return;
+        _gym.Remove(g);
+        GymStation.Release(g.name);
+        if (!u.seated || u.st == null) return;
+        Anima a = g.GetComponent<Anima>();
+        if (a != null) DailyPoses.Stand().ApplyFinal(a);
+        GymPlace(g, u.st.ApproachPoint, g.transform.rotation);
     }
 
     static readonly Dictionary<GameObject, string> _baseLabel = new Dictionary<GameObject, string>();

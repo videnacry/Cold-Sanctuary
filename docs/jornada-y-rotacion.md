@@ -88,7 +88,7 @@ Las marcadas con * son obligatorias cada día.
 
 ## Áreas de entrenamiento
 
-- **Abiertas**: Sala de Yoga y **Gimnasio**: jaulas, bancos, mancuernas, cintas, remo y saco.
+- **Abiertas**: Sala de Yoga y **Gimnasio**: 30 máquinas (10 tipos × 3, docs/gimnasio-maquinas.md), mancuernas, kettlebells, barra de dominadas y sacos.
 - **En obras**:
   - Sala de **Ballet**: 5 días.
   - **Dojo** de artes marciales: 6 días.

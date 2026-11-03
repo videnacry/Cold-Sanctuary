@@ -65,6 +65,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
             }
             yield return null;
         }
+        Debug.Log($"[Experiencia] fin del examen: InProgress={ni.InProgress} Now={ni.Now} tiempo={(limit - Time.time):0} s de margen");
         int steps = seen.Split('|').Length - 1;
         TestProbe.Check("el examen de llegada recorre sus 10 pasos en orden", steps == ArrivalExam.Beats.Length && seen.StartsWith("|expediente|botas|manos|temperatura|tension|auscultacion|hisopo|ecg|vacuna|apto"), seen);
         TestProbe.Check("en cada paso el trabajador tiene su herramienta en la mano", tools == steps, $"{tools}/{steps}");
@@ -78,6 +79,9 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         yield return Until(() => AmbrosioStory.Instance != null, 10f);
         AmbrosioStory st = AmbrosioStory.Instance;
         TestProbe.Check("es el microcosmos de Ambrosio, con su historia", st != null, NewcomerInitiator.FirstMicrocosmos);
+        // LA FLORA NO SE PIERDE del suelo del área gigante (se repetía: Berón 2026-10-28).
+        int flora = FloraOnAreaFloor(out string floraWhy);
+        TestProbe.Check("en el microcosmos crece flora sobre el suelo del área gigante", flora >= 20, floraWhy);
         if (st == null) { Time.timeScale = oldScale; NewcomerInitiator.AllowDuringTests = false; TestProbe.End(); yield break; }
         Vector3 toFam = st.Shanidar.position - _player.transform.position; toFam.y = 0f;
         TestProbe.Check("al aparecer, Ambrosio y su familia están delante", toFam.magnitude < 12f && Vector3.Dot(_player.transform.forward, toFam.normalized) > 0.3f, $"{toFam.magnitude:0.0} m");
@@ -118,7 +122,7 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
         yield return Until(() => st.Now == AmbrosioStory.Beat.Death, AmbrosioStory.PushPhaseSeconds + 30f);
         TestProbe.Check("empujando un minuto más llegan a la entrada de la cueva", st.Now == AmbrosioStory.Beat.Death && Dist(st.Shanidar, st.Cave) < 6f, $"{Dist(st.Shanidar, st.Cave):0.0} m de la cueva");
         yield return Until(() => st.Now == AmbrosioStory.Beat.Sakshi, 40f);   // (la despedida dura ~21 s: Medea, Atlas, Momo, Héspero)
-        TestProbe.Check("Ambrosio se derrumba y muere en la entrada", st.Now == AmbrosioStory.Beat.Sakshi && Vector3.Angle(st.Ambrosio.up, Vector3.up) > 90f);
+        TestProbe.Check("Ambrosio se derrumba y muere en la entrada", st.Now == AmbrosioStory.Beat.Sakshi && Vector3.Angle(st.Ambrosio.up, Vector3.up) > 45f, $"inclinado {Vector3.Angle(st.Ambrosio.up, Vector3.up):0}°");   // cae de lado (90°) y Momo lo alza a medias (60°)
         yield return Until(() => MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld && !MobWorldLoader.Instance.IsBusy, 60f);
         TestProbe.Check("Sakshi se acerca y lo manda de vuelta: vuelve al mesocosmos", MobWorldLoader.HasInstance && !MobWorldLoader.Instance.IsInMobWorld);
         yield return Until(() => ob.apt, 15f);
@@ -145,6 +149,25 @@ public class ExperienciaJugadorTest : MonoBehaviour, ITestUnit
     {
         if (st.PlayerPushing) yield break;
         yield return Press(st, old);
+    }
+
+    /// <summary>Plantas de «Flora_a_escala» sobre el suelo (Mat) del área gigante del microcosmos cargado: dentro de su planta y a
+    /// menos de 2 m de su altura. Si una construcción descarta la flora del suelo (otra vez), esto baja a 0.</summary>
+    public static int FloraOnAreaFloor(out string why)
+    {
+        Transform giant = null, flora = null;
+        foreach (Transform t in Object.FindObjectsByType<Transform>(FindObjectsSortMode.None))
+        {
+            if (giant == null && t.name.EndsWith("_gigante")) giant = t;
+            if (flora == null && t.name == "Flora_a_escala") flora = t;
+        }
+        Transform mat = giant != null ? giant.Find("Mat") : null;
+        if (giant == null || flora == null || mat == null) { why = $"área gigante {(giant != null)}, flora {(flora != null)}, suelo {(mat != null)}"; return 0; }
+        Bounds b = mat.GetComponent<Renderer>().bounds; int n = 0;
+        foreach (Transform p in flora)
+            if (p.position.x > b.min.x && p.position.x < b.max.x && p.position.z > b.min.z && p.position.z < b.max.z && Mathf.Abs(p.position.y - b.max.y) < 2f) n++;
+        why = $"{n} plantas sobre el suelo de «{giant.name}» ({flora.childCount} en total)";
+        return n;
     }
 
     static IEnumerator Until(System.Func<bool> ok, float maxGameSeconds)

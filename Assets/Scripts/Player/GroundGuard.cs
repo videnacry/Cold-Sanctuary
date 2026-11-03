@@ -23,6 +23,7 @@ public class GroundGuard : MonoBehaviour
         if (_cc != null && !_cc.enabled) return;   // trepando / en transición de escena: no tocar
         if (FlyingCarpet.Riding(gameObject)) return;   // volando en alfombra
         if (TryGetComponent(out PlayerController pc) && pc.BodyHeld) return;   // lo sujeta alguien (lo llevan de la mano, sentado en el examen…): lo coloca quien lo sujeta
+        if (GymStation.Seated(gameObject)) return;   // en una máquina del gimnasio (el asiento de la prensa y el banco del curl están altos): lo coloca la jornada
 
         Vector3 p = transform.position;
         // PIES: con CharacterController, su base; sin él (compañeros), la base de su cuerpo de cubos o de su cápsula. Antes

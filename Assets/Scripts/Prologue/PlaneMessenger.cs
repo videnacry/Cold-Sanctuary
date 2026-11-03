@@ -20,6 +20,7 @@ public class PlaneMessenger : MonoBehaviour
     public static void Send(string from, string text, float seconds = 6f)
     {
         Debug.Log($"[Mensaje·{from}] {text}");
+        if (Instance == null) { StorySubtitle.Show(from, text, seconds); return; }   // sin su panel (microcosmos, historias): en subtítulo
         if (Instance != null)
             Instance._active.Add(new Msg { from = from, text = text, until = Time.time + seconds });
     }

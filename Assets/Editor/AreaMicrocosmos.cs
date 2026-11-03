@@ -79,6 +79,7 @@ public static class AreaMicrocosmos
         portal.GetComponent<Collider>().isTrigger = true;
         portal.GetComponent<Renderer>().sharedMaterial = Mat("MobWorldExitPortal", new Color(0.75f, 0.65f, 0.85f));
         portal.AddComponent<WorldExitPortal>().label = "Salir del microcosmos";
+        GalaxyPortal.Dress(portal.transform);   // un agujero negro en una pequeña galaxia (Berón 2026-10-27)
 
         Transform cast = new GameObject("Elenco").transform; cast.SetParent(story, false);
         if (storyOverride != null) dressed = storyOverride(cast);
@@ -89,7 +90,7 @@ public static class AreaMicrocosmos
         // Las historias propias (Patanjali, Planta Atómica, Hospital…) traen su elenco pero ninguna recolectora: sin ellas los
         // mirmidones de ese microcosmos no viven del entorno (semillas; melaza desde el Neolítico, Eras.Dairying). Se añade
         // una cuadrilla pequeña con su guarida, a un lado del claro de la historia (dentro de él: la flora no la tapa).
-        if (cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
+        if ((spec == null || spec.foragers) && cast.GetComponentInChildren<MicroForager>(true) == null) dressed += ForagingBand(cast, new Vector3(0f, 0f, 26f), 6);
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
         int moved = giant != null ? ClearUnder(story, giant.transform, foot) : 0;
@@ -103,7 +104,9 @@ public static class AreaMicrocosmos
         //    el agua: también por el suelo libre del área (entre sus muebles gigantes), menos en el claro de la historia. Cada
         //    planta es un interactuable (Affordance) que algún insecto usa; y su fauna.
         float r0 = giant != null ? Mathf.Max(foot.extents.x, foot.extents.z) * 1.15f + 8f : 52f, r1 = r0 + 110f;
-        float groundY = giant != null ? FloorAt(foot.center, floors, 0f) - 0.02f : 0f;
+        // El SUELO DEL ÁREA es el más bajo bajo su centro (no el más alto: anillos, entreplantas y pisos de arriba también son
+        // «suelos»; con el más alto, la flora del suelo real se descartaba y el microcosmos se quedaba pelado, Berón 2026-10-28).
+        float groundY = giant != null ? FloorLowest(foot.center, floors, 0f) - 0.02f : 0f;
         // El suelo de alrededor, del color de su tierra (arena de Egipto, barro helado de Flandes, mantillo de la taiga…).
         MicroBiome.Biome bio = MicroBiome.For(display);
         Color soil = bio != null ? bio.ground : new Color(0.45f, 0.36f, 0.25f);
@@ -229,6 +232,32 @@ public static class AreaMicrocosmos
     }
 
     /// <summary>Altura del suelo del área en ese punto (la cara de arriba del plano más alto que lo cubre).</summary>
+    // El suelo bajo p cuya cara de arriba queda más cerca de <paramref name="near"/> (no el más alto: hay plantas encima).
+    static float FloorNear(Vector3 p, List<Renderer> floors, float near)
+    {
+        float y = near, best = float.MaxValue;
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && Mathf.Abs(b.max.y - near) < best) { best = Mathf.Abs(b.max.y - near); y = b.max.y; }
+        }
+        return y;
+    }
+
+    // El suelo más BAJO bajo p (el del área; por encima hay anillos y entreplantas).
+    static float FloorLowest(Vector3 p, List<Renderer> floors, float fallback)
+    {
+        float y = float.MaxValue;
+        foreach (Renderer r in floors)
+        {
+            if (r == null) continue;
+            Bounds b = r.bounds;
+            if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z) y = Mathf.Min(y, b.max.y);
+        }
+        return y == float.MaxValue ? fallback : y;
+    }
+
     static float FloorAt(Vector3 p, List<Renderer> floors, float fallback)
     {
         float y = float.MinValue;
@@ -524,7 +553,11 @@ public static class AreaMicrocosmos
                     // Dentro del área: solo sobre su suelo libre (entre muebles), a la altura de ese suelo.
                     if (floors.Count > 0 && EdgeDist(w, floors) < 2f) continue;
                     if (NearBlocked(w, 3f)) continue;
-                    p.y = FloorAt(w, floors, center.y) - center.y;
+                    // En SU planta (la más cercana a la altura del área): antes tomaba el suelo más alto y en el hospital (3 plantas)
+                    // las plantas salían en el piso de arriba o el tejado, fuera del área (Berón 2026-10-27).
+                    float fy = FloorNear(w, floors, center.y);
+                    if (Mathf.Abs(fy - center.y) > 1.5f) continue;
+                    p.y = fy - center.y;
                 }
                 if (biome != null)   // FLORA NATIVA de su era y región (MicroBiome); un 12 % de suelo desnudo para pasar
                 {
