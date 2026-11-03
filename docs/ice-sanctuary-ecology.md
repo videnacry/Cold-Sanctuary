@@ -116,3 +116,10 @@ Con **LOD** (`Lod`, los lejanos piensan más lento) + ánimas **inanimadas barat
 **integrales** (`SharedSoul` para un banco/bosque entero) + **población baja por especie** (2–4), el presupuesto da de
 sobra: el coste alto es solo el **Animal completo** (NavMesh+IA+O(n²)); lo demás es casi gratis. Ver el análisis en
 `docs/checklist.md`. Objetivo: **muchas ánimas** manteniendo pocos "animales completos" simultáneos activos cerca.
+
+## 2026-11-03: los grupos con individuos de verdad
+
+El banco/enjambre (`Swarm`) ya no es un cubo-plataforma con cubos hijos: es un padre vacío con peces plateados antárticos, kril
+antártico, medusas (*Diplulmaris antarctica*, *Desmonema glaciale*) o abejas de las nieves como hijos; un mordisco quita un individuo
+al momento y el grupo se rehace solo (sin ciclo de vida). Viven también bajo cada edificio-árbol y suben por su fondo abierto.
+Auditoría y detalle en [grupos-de-animales.md](grupos-de-animales.md).

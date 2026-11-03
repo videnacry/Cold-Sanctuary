@@ -8,7 +8,7 @@ using UnityEngine;
 /// Ciencias, Producción) migradas al modelo del Árbol de los Campos.
 /// 1. FORMA: hélice (en cada nivel, pisos en dos lados opuestos y ramas en los otros dos, alternando); primer piso a ≥ 50 m y por
 ///    encima del árbol más alto que crece en el santuario; cada área en su piso pegado al tronco.
-/// 2. PUERTAS Y ENTRADAS: cada piso, cada anillo de piso, cada punta y su anillo, el suelo y el techo con su puerta de 3 × 3 m y su
+/// 2. PUERTAS Y ENTRADAS: cada piso, cada anillo de piso, cada punta y su anillo, el suelo y el techo con su puerta de 7 × 7 m y su
 ///    campo magnético; el umbral de cada puerta, libre de muebles; alfombras SOLO en el suelo y en el techo (ninguna en los pisos).
 /// 3. HOLGURA: entre dos árboles (sus losas, ramas, columnas y troncos) hay ≥ 16 m en 3D; el Árbol de los Campos, girando.
 /// 4. NADAR: un personaje entra por el techo (de frente), baja nadando a un piso, va a otro y sale por el suelo.
@@ -67,10 +67,10 @@ public class TreeBuildingsTest : MonoBehaviour, ITestUnit
             {
                 doors++;
                 Transform f = lv.field;
-                bool big = f != null && f.GetComponent<CampoMagnetico>() != null && f.lossyScale.x >= 2.99f && f.lossyScale.y >= 2.99f;
+                bool big = f != null && f.GetComponent<CampoMagnetico>() != null && f.lossyScale.x >= TreeSpec.DoorWidth - 0.01f && Mathf.Abs(f.lossyScale.x - f.lossyScale.y) < 0.05f;   // cuadradas de 7 × 7 m: 8 personas y el submarino de obra (Berón 2026-11-03)
                 if (big) ok++; else if (bad.Length < 200) bad += $"{lv.name}; ";
             }
-            TestProbe.Check($"{b}: cada nivel (suelo, pisos, anillos, puntas y techo) con su puerta de 3 × 3 m y su campo magnético", doors == ok && doors >= floors.Count + tips.Count * 2 + 2, $"{ok}/{doors}; {bad}");
+            TestProbe.Check($"{b}: cada nivel (suelo, pisos, anillos, puntas y techo) con su puerta CUADRADA de 7 × 7 m (8 personas y el submarino de obra) y su campo magnético", doors == ok && doors >= floors.Count + tips.Count * 2 + 2, $"{ok}/{doors}; {bad}");
             int blocked = 0; string blockedWhy = "";
             foreach (TreeLevel lv in floors.Concat(rings.Where(r => !r.via.Any())))
             {

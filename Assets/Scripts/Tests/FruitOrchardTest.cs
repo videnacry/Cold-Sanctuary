@@ -94,9 +94,14 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         // techos planos a un vuelo uno de otro. Con todos los edificios hechos árboles, entrar en uno y salir (nadando a sus
         // puntas) ya son ~1,15 h y saltar de punta a punta cuesta minutos por maceta: 4 árboles y el techo de la Central no caben
         // en 3 rondas de 3 h (≥ 12 h de trabajo). Cada edificio va entero en una ronda (no se parte si cabe en una).
-        int roofs = rounds.SelectMany(r => r.legs).Select(l => l.building).Distinct().Count();
-        var split = rounds.SelectMany(r => r.legs).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
-        TestProbe.Check("con el goteo, la ronda la hace una persona por edificio con frutales (como mucho) y ningún edificio se parte", rounds.Count <= roofs && split.Count == 0,
+        // (2026-11-03) Y LAS TAREAS DEL ÁRBOL (máscaras de oxígeno y fitoplancton): una unidad por edificio-árbol, detrás de sus macetas
+        // (en la misma ronda si cabe; si no, otra ronda del mismo edificio). Como mucho una ronda por edificio con frutales MÁS una por
+        // árbol cuyas tareas no quepan con sus macetas.
+        int roofs = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count();
+        int treeUnits = rounds.SelectMany(r => r.TreeLegs).Count();
+        var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+        TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); con las máscaras y el fitoplancton, como mucho una ronda más por árbol",
+            rounds.Count <= roofs + treeUnits && split.Count == 0 && treeUnits == ArbolCampos.All.Count(a => a != null && FruitGardener.TreeTaskList(a).masks.Count > 0),
             $"{rounds.Count} rondas para {roofs} edificios, total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
             $"{rounds.Count} rondas: " + string.Join(" · ", rounds.Select(r => $"{r.hours:0.0} h")) + $"; total {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s)");
@@ -131,6 +136,36 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         TestProbe.Check("con lo que sobra de las 3 h, poliniza y poda (tareas de la semana)", g.Pollinated + g.Pruned > 0, $"{g.Pollinated} polinizadas, {g.Pruned} podadas");
         Debug.Log($"[Frutales] Medida: «{round.id}» {rp.Count} macetas en {roofsIn} techos: {g.RoundSeconds:0} s de juego = {gameH:0.00} h (estimada {round.hours:0.00} h); total del día {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s).");
         Destroy(body);
+
+        // ── 7. LAS TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03) ──
+        {
+            ArbolCampos tree = ArbolCampos.All.Where(a => a != null && FruitGardener.TreeTaskList(a).masks.Count > 0).OrderBy(a => FruitGardener.TreeTaskList(a).masks.Count).FirstOrDefault();
+            if (tree == null) TestProbe.Check("el jardinero revisa las máscaras de oxígeno y cuida el fitoplancton de un edificio-árbol", false, "sin árboles con máscaras");
+            else
+            {
+                var (masks, beds) = FruitGardener.TreeTaskList(tree);
+                foreach (MaskStation m in MaskStation.Of(tree.building)) m.condition = 0.4f;
+                foreach (Phytoplankton b in beds) b.condition = 0.3f;
+                GameObject gb = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de máscaras (prueba)");
+                if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
+                FruitGardener tg = gb.AddComponent<FruitGardener>();
+                float sc0 = Time.timeScale; Time.timeScale = 4f;
+                tg.AssignTreeTasks(tree);
+                float est = FruitGardener.TreeTaskHours(tree, masks, beds);
+                float capT = Mathf.Min(900f, est * TimeController.timeController.SecondsPerGameDay / 24f / Time.timeScale * 2.5f + 90f), tt0 = Time.realtimeSinceStartup;
+                while (!tg.Finished && Time.realtimeSinceStartup - tt0 < capT) yield return null;
+                Time.timeScale = sc0;
+                float hT = tg.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
+                int okM = MaskStation.Of(tree.building).Count(m => m.condition > 0.99f), allM = MaskStation.Of(tree.building).Count();
+                TestProbe.Check($"el jardinero revisa las máscaras de oxígeno de todas las puertas de {tree.building} (perchero y estación)", tg.Finished && tg.MasksChecked >= Mathf.CeilToInt(masks.Count * 0.9f) && okM >= Mathf.CeilToInt(allM * 0.9f),
+                    tg.Finished ? $"{tg.MasksChecked}/{masks.Count} puertas, {okM}/{allM} puestos al 100 %, {tg.Skipped} saltadas" : $"a los {capT:0} s va por «{tg.Doing}»");
+                TestProbe.Check($"y cuida el fitoplancton del fondo abierto de {tree.building} (en óptimas condiciones)", beds.Count > 0 && tg.PhytoCared == beds.Count && beds.All(b => b.condition > 0.99f), $"{tg.PhytoCared}/{beds.Count} cortinas");
+                TestProbe.Check("las tareas del árbol duran lo estimado al repartir la jornada (≤ 1,5 ×) y sale del agua sin la máscara", tg.Finished && hT <= est * 1.5f + 0.1f && !BreathingMask.Has(gb),
+                    $"medidas {hT:0.00} h de juego (estimadas {est:0.00} h), máscara puesta {BreathingMask.Has(gb)}");
+                Debug.Log($"[Frutales] Medida: tareas del árbol de {tree.building} ({masks.Count} puertas, {beds.Count} cortinas): {hT:0.00} h de juego (estimadas {est:0.00} h).");
+                Destroy(gb);
+            }
+        }
         probe.water = Mathf.Max(probe.water, w0); probe.health = Mathf.Max(probe.health, h0);
         TestProbe.End();
     }

@@ -61,6 +61,10 @@ public static partial class SampleSceneBuilder
             purpose = "Cocina y restaurante (piso del restaurante: cocina abierta y comedor en su anillo): cocinar platillos para el stock y la iniciación de la cocina",
             people = Staff.Concat(new[] { "Magnate" }).ToArray(), groups = new[] { 41 } },   // (el servicio con turistas, 45, necesita la torre: llegan a su pie, suben en alfombra y nadan al anillo; corre en SampleScene)
 
+        new TestSceneSpec { scene = KushalMaskSceneTest.Scene, keep = new[] { TreeSpec.RootName },
+            purpose = "Máscaras de los edificios-árbol: Kushal empieza bajo el agua del tronco del Árbol de los Campos sin máscara, nada a la estación más cercana y se la pone (oxígeno ilimitado)",
+            groups = new[] { 72 }, playerAt = () => TreeSpec.Site + new Vector3(-3f, 33f, 4f) },
+
         // ── DE SANDBOX: suelo + sistemas + el sandbox (ningún área) ──
         new TestSceneSpec { scene = "Prueba_CocinaPrototipos", purpose = "Prototipos de la cocina en el suelo: manchas y limpieza (paso A), paseo guiado y desayuno (paso B), motor de virtualización y descomposición",
             build = new System.Action<Transform>[] { BuildKitchenSandbox, BuildKitchenOnboarding, BuildVirtualizationSandbox, BuildDecompositionSandbox } },
