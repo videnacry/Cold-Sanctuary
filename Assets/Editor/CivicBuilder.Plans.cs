@@ -753,8 +753,8 @@ relleno | 30 | 400 -200",
         ["Le Chambon-sur-Lignon"] = @"
 rio Lignon | 20 | 900 -800, 0 -300, -900 -500
 monte Mont Lizieux | 500 250 | -950 650
-calle Calle mayor | 8 | -500 0, 500 0
-calle Carretera de Le Mazet | 7 | 500 0, 900 -400
+calle Calle mayor | 8 | -500 -80, 500 -80
+calle Carretera de Le Mazet | 7 | 500 -80, 900 -400
 calle Vía del tren del Vivarais | 5 | -800 -230, 800 -180
 Estacion | 300 -210
 Plaza | -260 70
@@ -1191,7 +1191,7 @@ relleno | 40 | 0 120",
                 float run = H / Mathf.Tan(20f * Mathf.Deg2Rad);
                 Transform rp = new GameObject($"Rampa a la planta {i + 1}").transform; rp.SetParent(b, false);
                 float rz = z - run * 0.5f, ry = (i - 0.5f) * H;
-                AreaMicrocosmos.Box(rp, "Rampa", new Vector3(width * 0.5f + 0.9f, ry, rz + d * 0.5f), new Vector3(1.6f, 0.25f, run / Mathf.Cos(20f * Mathf.Deg2Rad)), Quaternion.Euler(-20f, 0f, 0f), ramp, true);
+                AreaMicrocosmos.Box(rp, "Rampa", new Vector3(width * 0.5f + 0.9f, ry, rz), new Vector3(1.6f, 0.25f, run / Mathf.Cos(20f * Mathf.Deg2Rad)), Quaternion.Euler(-20f, 0f, 0f), ramp, true);
                 var rm = rp.gameObject.AddComponent<MicroPiece>(); rm.kind = "rampa"; rm.walkable = true;
             }
             z += d;
