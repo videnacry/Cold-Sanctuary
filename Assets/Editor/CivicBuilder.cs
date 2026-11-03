@@ -75,6 +75,10 @@ internal static partial class CivicBuilder
         }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
+        // (2026-11-03) Los hogares rehacen los muebles a la medida de cada familia y la casa crece (Relayout): si al crecer se acerca a
+        // menos de una calle de otro edificio, se corre a un solar libre (la Higuera de una casa nueva del Huerto quedaba a 0,16 m
+        // del banco de la casa redonda de al lado).
+        moved += Settle(t);
         foreach (AreaFunctionSite s in t.GetComponentsInChildren<AreaFunctionSite>(true)) { s.bodies = ""; Tag(s); }   // las etiquetas, ya con los muebles rehechos a la medida de cada hogar
         if (moved > 0 || fill > 0 || homes > 0 || civic > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {civic} edificios del pueblo, {fill} casas de relleno, {homes} casas nuevas para familias; {Count(t)} edificios en total.");
         MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
