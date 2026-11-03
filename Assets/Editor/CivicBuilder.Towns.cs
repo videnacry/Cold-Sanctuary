@@ -43,6 +43,10 @@ internal static partial class CivicBuilder
     // ciudades (París, Berna, Pasadena, Bagdad) y los pueblos medianos; solo en los pisos enormes (Angostura sobre la Cocina,
     // Prípiat sobre la Central) quedan libres las manzanas más lejanas del claro: las afueras, campo de la era (MicroBiome).
     const int MaxLots = 120;
+    /// <summary>Manzanas (las más lejanas del claro) que el relleno deja libres para las CASAS NUEVAS de las familias (regla 6,
+    /// <see cref="Homes"/>): con los solares de relleno amueblados (2–3 muebles), sin esta reserva no quedaba solar libre y
+    /// hasta 8 vecinos se quedaban sin hogar (PC de Berón, 2026-11-03: París, Menfis, Woolsthorpe, Berkeley, Berna, Pasadena).</summary>
+    const int HomeReserve = 8;
 
     /// <summary>
     /// EL PUEBLO EN EL PISO ENTERO: reparte el piso (fuera del claro de la historia) en una cuadrícula de manzanas separadas por
@@ -96,7 +100,8 @@ internal static partial class CivicBuilder
             sites.Add(Building(t, l.name, l.template, l.title, new Vector3(c.x, 0f, c.y), 0f, l.size, l.style, l.stations));
         }
         int f = 0; _home = null;
-        while (used < cells.Count && used < MaxLots && fill.Length > 0)
+        int fillUpTo = Mathf.Min(MaxLots, Mathf.Max(used, cells.Count - HomeReserve));
+        while (used < fillUpTo && fill.Length > 0)
         {
             Lot l = fill[f % fill.Length];
             Vector2 c = cells[used++];
@@ -112,7 +117,7 @@ internal static partial class CivicBuilder
         }
         int outskirts = cells.Count - used;
         Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia y {f} solares del pueblo en un piso de {r.width:0} × {r.height:0} m (manzanas de {cell:0} m, calles de {MicroBuildRules.Street:0} m)"
-                  + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan de campo." : "."));
+                  + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan libres (casas nuevas de las familias, campo)." : "."));
         return sites;
     }
 
@@ -153,7 +158,7 @@ internal static partial class CivicBuilder
             new Lot("Palestra de Milón", "Dojo", "Palestra de Crotona", 14f, 10f, GreekStone,
                 S("tatami", 0f, 0f, 6f, 5f, "Arena de lucha (skamma)")),
             new Lot("Templo de Hera Lacinia", "Templo", "Templo de Hera Lacinia (cabo Lacinio)", 12f, 10f, GreekStone,
-                S("altar", 0f, 0f, 2f, 1f, "Altar de Hera")),
+                S("altar", 0f, 0f, 2f, 1f, "Altar de Hera"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa de ofrendas"), S("estante", 0f, 0f, 0.8f, 2f, "Exvotos")),
             new Lot("Casa de Milón", "Casa", "Casa de Milón (aquí se reunían)", 12f, 10f, GreekStone,
                 S("cama", -3f, 2f, 1.2f, 2f, "Lecho"), S("fogon", 3f, 2f, 1.6f, 0.8f, "Hogar"), S("mesa", 0f, -2f, 1.6f, 1f, "Mesa")),
             new Lot("Herrería del ágora", "Taller", "Herrería (los martillos de la leyenda)", 10f, 8f, GreekStone,
@@ -161,9 +166,9 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa griega de patio", "Casa", "Casa de Crotona", 10f, 9f, GreekStone),
-            new Lot("Puesto del ágora", "Mercado", "Ágora de Crotona", 10f, 8f, GreekStone, S("puesto", 0f, 0f, 2f, 1f, "Puesto (aceite, higos, miel)")),
-            new Lot("Taller de cerámica", "Alfarería", "Taller de cerámica", 10f, 8f, GreekStone, S("torno_alfarero", 0f, 0f, 1f, 1f, "Torno de alfarero")),
-            new Lot("Huerto de olivos", "Huerto", "Olivar", 12f, 10f, GreekStone, S("bancal", 0f, 0f, 4f, 6f, "Bancal de legumbres")),
+            new Lot("Puesto del ágora", "Mercado", "Ágora de Crotona", 10f, 8f, GreekStone, S("puesto", 0f, 0f, 2f, 1f, "Puesto (aceite, higos, miel)"), S("puesto", 0f, 0f, 2f, 1f, "Puesto de vasijas"), S("estante", 0f, 0f, 0.8f, 2f, "Ánforas de aceite")),
+            new Lot("Taller de cerámica", "Alfarería", "Taller de cerámica", 10f, 8f, GreekStone, S("torno_alfarero", 0f, 0f, 1f, 1f, "Torno de alfarero"), S("horno", 0f, 0f, 1.6f, 1.6f, "Horno de cerámica"), S("estante", 0f, 0f, 0.8f, 2f, "Vasijas secándose")),
+            new Lot("Huerto de olivos", "Huerto", "Olivar", 12f, 10f, GreekStone, S("bancal", 0f, 0f, 4f, 6f, "Bancal de legumbres"), S("pozo", 0f, 0f, 1f, 1f, "Pozo")),
         }, C(0.72f, 0.62f, 0.48f));
         int n = 0;
         n += W(t, "Teano", s[0], "maestro", s[0], s[1], s[3]);
@@ -194,9 +199,9 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa de adobe", "Casa", "Casa de Menfis", 10f, 9f, NileMud),
-            new Lot("Taller de lino", "Taller", "Taller de lino", 10f, 8f, NileMud, S("telar", 0f, 0f, 2f, 1f, "Telar horizontal")),
-            new Lot("Alfarería del barrio", "Alfarería", "Alfarería", 10f, 8f, NileMud, S("torno_alfarero", 0f, 0f, 1f, 1f, "Torno de alfarero")),
-            new Lot("Granero", "Granero", "Granero del templo", 10f, 9f, NileMud, S("granero", 0f, 0f, 2f, 2f, "Silo de grano")),
+            new Lot("Taller de lino", "Taller", "Taller de lino", 10f, 8f, NileMud, S("telar", 0f, 0f, 2f, 1f, "Telar horizontal"), S("telar", 0f, 0f, 2f, 1f, "Telar del aprendiz"), S("lavadero", 0f, 0f, 1.6f, 1f, "Balsa de enriar el lino")),
+            new Lot("Alfarería del barrio", "Alfarería", "Alfarería", 10f, 8f, NileMud, S("torno_alfarero", 0f, 0f, 1f, 1f, "Torno de alfarero"), S("horno", 0f, 0f, 1.6f, 1.6f, "Horno de cerámica"), S("estante", 0f, 0f, 0.8f, 2f, "Jarras de cerveza secándose")),
+            new Lot("Granero", "Granero", "Granero del templo", 10f, 9f, NileMud, S("granero", 0f, 0f, 2f, 2f, "Silo de grano"), S("granero", 0f, 0f, 2f, 2f, "Silo de cebada"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa del escriba del granero")),
         }, C(0.42f, 0.35f, 0.27f));
         int n = 0;
         n += W(t, "Sacerdote de Ptah", s[0], "sabio", s[3], s[0], s[4]);
@@ -230,9 +235,9 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa de patio", "Casa", "Casa de Bagdad", 10f, 10f, AbbasidBrick),
-            new Lot("Taller del zoco", "Taller", "Taller del zoco", 10f, 8f, AbbasidBrick, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del calderero")),
-            new Lot("Mezquita de barrio", "Templo", "Mezquita del barrio", 12f, 10f, AbbasidBrick, S("altar", 0f, 0f, 1.6f, 0.6f, "Mihrab")),
-            new Lot("Huerto de palmeras", "Huerto", "Huerto de palmeras", 12f, 10f, AbbasidBrick, S("bancal", 0f, 0f, 4f, 6f, "Bancal regado por el canal")),
+            new Lot("Taller del zoco", "Taller", "Taller del zoco", 10f, 8f, AbbasidBrick, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del calderero"), S("horno", 0f, 0f, 1.6f, 1.6f, "Fragua"), S("estante", 0f, 0f, 0.8f, 2f, "Calderos y bandejas de cobre")),
+            new Lot("Mezquita de barrio", "Templo", "Mezquita del barrio", 12f, 10f, AbbasidBrick, S("altar", 0f, 0f, 1.6f, 0.6f, "Mihrab"), S("lavadero", 0f, 0f, 1.6f, 1f, "Fuente de las abluciones"), S("estante", 0f, 0f, 0.8f, 2f, "Atril y libros")),
+            new Lot("Huerto de palmeras", "Huerto", "Huerto de palmeras", 12f, 10f, AbbasidBrick, S("bancal", 0f, 0f, 4f, 6f, "Bancal regado por el canal"), S("pozo", 0f, 0f, 1f, 1f, "Noria del canal")),
         }, C(0.72f, 0.62f, 0.45f));
         int n = 0;
         n += W(t, "Traductor de la Casa de la Sabiduría", s[0], "sabio", s[4], s[0], null);
@@ -266,8 +271,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Cabaña de la aldea", "Casa", "Cabaña de Woolsthorpe", 10f, 9f, Thatch),
-            new Lot("Herrería", "Taller", "Herrería de la aldea", 10f, 8f, Thatch, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque y fragua")),
-            new Lot("Huerto de manzanos", "Huerto", "Huerto de la aldea", 12f, 10f, Thatch, S("bancal", 0f, 0f, 4f, 6f, "Bancal de coles")),
+            new Lot("Herrería", "Taller", "Herrería de la aldea", 10f, 8f, Thatch, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque y fragua"), S("horno", 0f, 0f, 1.6f, 1.6f, "Fragua"), S("armario", 0f, 0f, 1f, 0.6f, "Herraduras y clavos")),
+            new Lot("Huerto de manzanos", "Huerto", "Huerto de la aldea", 12f, 10f, Thatch, S("bancal", 0f, 0f, 4f, 6f, "Bancal de coles"), S("pozo", 0f, 0f, 1f, 1f, "Pozo")),
         }, C(0.52f, 0.46f, 0.36f));
         int n = 0;
         n += W(t, "Hannah Ayscough", s[0], "", s[0], null, s[0]);       // la madre de Newton, que llevaba la granja
@@ -292,15 +297,15 @@ internal static partial class CivicBuilder
             new Lot("Casa de los Phipps", "Casa", "Casa de los Phipps (el jardinero)", 12f, 10f, Thatch,
                 S("cama", -2f, 2f, 1.2f, 2f, "Cama de James")),
             new Lot("Iglesia de Santa María", "Templo", "Iglesia de Santa María de Berkeley", 12f, 10f, Limewash,
-                S("altar", 0f, 2f, 2f, 1f, "Altar")),
+                S("altar", 0f, 2f, 2f, 1f, "Altar"), S("banco", 0f, 0f, 2f, 0.6f, "Banco de la nave"), S("banco", 0f, 0f, 2f, 0.6f, "Banco de la nave"), S("estante", 0f, 0f, 0.8f, 2f, "Libros de oración")),
             new Lot("Posada de la calle mayor", "Restaurante", "Posada de Berkeley", 12f, 10f, Limewash,
                 S("fogon", -3f, 2f, 1.6f, 0.8f, "Chimenea con olla"), S("mesa", 2f, -1f, 1.6f, 1.6f, "Mesa con bancos")),
         }, new[]
         {
             new Lot("Cabaña de Berkeley", "Casa", "Cabaña de Berkeley", 10f, 9f, Thatch),
-            new Lot("Quesería", "Cocina", "Quesería", 10f, 8f, Limewash, S("fogon", 0f, 0f, 1.6f, 0.8f, "Caldero de cuajar")),
-            new Lot("Prado de pastos", "Huerto", "Prado", 12f, 10f, Thatch, S("bancal", 0f, 0f, 4f, 6f, "Pasto")),
-            new Lot("Taller del herrador", "Taller", "Herrador", 10f, 8f, Thatch, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque")),
+            new Lot("Quesería", "Cocina", "Quesería", 10f, 8f, Limewash, S("fogon", 0f, 0f, 1.6f, 0.8f, "Caldero de cuajar"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa de prensar el queso"), S("estante", 0f, 0f, 0.8f, 2f, "Quesos curándose")),
+            new Lot("Prado de pastos", "Huerto", "Prado", 12f, 10f, Thatch, S("bancal", 0f, 0f, 4f, 6f, "Pasto"), S("pozo", 0f, 0f, 1f, 1f, "Abrevadero")),
+            new Lot("Taller del herrador", "Taller", "Herrador", 10f, 8f, Thatch, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque"), S("horno", 0f, 0f, 1.6f, 1.6f, "Fragua"), S("armario", 0f, 0f, 1f, 0.6f, "Herraduras y clavos")),
         }, C(0.5f, 0.44f, 0.36f));
         int n = 0;
         n += W(t, "Catherine Jenner", s[0], "", s[4], null, s[0]);
@@ -333,8 +338,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa colonial", "Casa", "Casa de Angostura", 10f, 10f, Colonial),
-            new Lot("Pulpería", "Mercado", "Pulpería", 10f, 8f, Colonial, S("puesto", 0f, 0f, 2f, 1f, "Mostrador de la pulpería")),
-            new Lot("Conuco", "Huerto", "Conuco (yuca y maíz)", 12f, 10f, Colonial, S("bancal", 0f, 0f, 4f, 6f, "Yuca amarga")),
+            new Lot("Pulpería", "Mercado", "Pulpería", 10f, 8f, Colonial, S("puesto", 0f, 0f, 2f, 1f, "Mostrador de la pulpería"), S("barra", 0f, 0f, 2f, 0.8f, "Barra (guarapo y café)"), S("estante", 0f, 0f, 0.8f, 2f, "Sacos, velas y aguardiente")),
+            new Lot("Conuco", "Huerto", "Conuco (yuca y maíz)", 12f, 10f, Colonial, S("bancal", 0f, 0f, 4f, 6f, "Yuca amarga"), S("fogon", 0f, 0f, 1.6f, 0.8f, "Budare del casabe")),
         }, C(0.6f, 0.45f, 0.35f));
         int n = 0;
         n += W(t, "Impresor del Correo del Orinoco", s[1], "mecanico", s[2], null, null);
@@ -363,12 +368,12 @@ internal static partial class CivicBuilder
             new Lot("Prado de la orilla", "Sala de Yoga", "Prado junto al lago (caminar y respirar)", 14f, 10f, Engadine,
                 S("esterilla", -3f, 0f, 1f, 2f, "Banco del prado"), S("esterilla", 3f, 0f, 1f, 2f, "Banco del prado")),
             new Lot("Iglesia de Sils Maria", "Templo", "Iglesia de Sils Maria", 12f, 10f, Engadine,
-                S("altar", 0f, 2f, 2f, 1f, "Altar")),
+                S("altar", 0f, 2f, 2f, 1f, "Altar"), S("banco", 0f, 0f, 2f, 0.6f, "Banco de la nave"), S("banco", 0f, 0f, 2f, 0.6f, "Banco de la nave")),
         }, new[]
         {
             new Lot("Casa engadinesa", "Casa", "Casa de Sils Maria", 10f, 10f, Engadine),
-            new Lot("Establo de montaña", "Granero", "Establo y pajar", 10f, 9f, Engadine, S("granero", 0f, 0f, 2f, 2f, "Heno")),
-            new Lot("Hotel de los veraneantes", "Restaurante", "Hotel de Sils", 12f, 10f, Engadine, S("mesa", 0f, 0f, 1.6f, 1.6f, "Comedor del hotel")),
+            new Lot("Establo de montaña", "Granero", "Establo y pajar", 10f, 9f, Engadine, S("granero", 0f, 0f, 2f, 2f, "Heno"), S("lavadero", 0f, 0f, 1.6f, 1f, "Abrevadero"), S("armario", 0f, 0f, 1f, 0.6f, "Arreos y cencerros")),
+            new Lot("Hotel de los veraneantes", "Restaurante", "Hotel de Sils", 12f, 10f, Engadine, S("mesa", 0f, 0f, 1.6f, 1.6f, "Comedor del hotel"), S("mesa", 0f, 0f, 1.6f, 1.6f, "Mesa de los huéspedes"), S("barra", 0f, 0f, 2f, 0.8f, "Recepción")),
         }, C(0.55f, 0.52f, 0.48f));
         int n = 0;
         n += W(t, "Gian Durisch", s[1], "", s[2], null, s[0]);
@@ -400,8 +405,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Inmueble de París", "Casa", "Inmueble de piedra", 10f, 10f, Haussmann),
-            new Lot("Tienda del barrio", "Mercado", "Tienda", 10f, 8f, Haussmann, S("puesto", 0f, 0f, 2f, 1f, "Mostrador")),
-            new Lot("Taller del barrio", "Taller", "Taller de un artesano", 10f, 8f, Haussmann, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco")),
+            new Lot("Tienda del barrio", "Mercado", "Tienda", 10f, 8f, Haussmann, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 2f, "Estantería de la tienda"), S("armario", 0f, 0f, 1f, 0.6f, "Cajones de la mercería")),
+            new Lot("Taller del barrio", "Taller", "Taller de un artesano", 10f, 8f, Haussmann, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco"), S("torno", 0f, 0f, 1.5f, 0.5f, "Torno de pedal"), S("estante", 0f, 0f, 0.8f, 2f, "Piezas y herramientas")),
         }, C(0.42f, 0.42f, 0.45f));
         int n = 0;
         n += W(t, "Gustave Bémont", s[0], "sabio", s[3], null, s[1]);    // jefe de trabajos de la ESPCI: firmó la nota del radio
@@ -434,8 +439,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa de tablas", "Casa", "Casa de Colorado Springs", 10f, 10f, FrontierWood),
-            new Lot("Almacén de la frontera", "Mercado", "Almacén general", 10f, 8f, FrontierWood, S("puesto", 0f, 0f, 2f, 1f, "Mostrador")),
-            new Lot("Herrería y caballeriza", "Taller", "Herrería", 10f, 8f, FrontierWood, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque")),
+            new Lot("Almacén de la frontera", "Mercado", "Almacén general", 10f, 8f, FrontierWood, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 2f, "Latas, harina y café"), S("armario", 0f, 0f, 1f, 0.6f, "Herramientas de minero")),
+            new Lot("Herrería y caballeriza", "Taller", "Herrería", 10f, 8f, FrontierWood, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque"), S("horno", 0f, 0f, 1.6f, 1.6f, "Fragua"), S("lavadero", 0f, 0f, 1.6f, 1f, "Abrevadero de los caballos")),
         }, C(0.55f, 0.45f, 0.35f));
         int n = 0;
         n += W(t, "Kolman Czito", s[4], "mecanico", s[2], null, null);   // el ayudante de Tesla en Colorado Springs
@@ -467,8 +472,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa de soportales", "Casa", "Casa de Berna", 10f, 10f, Arcades),
-            new Lot("Tienda de soportales", "Mercado", "Tienda de la Kramgasse", 10f, 8f, Arcades, S("puesto", 0f, 0f, 2f, 1f, "Mostrador")),
-            new Lot("Escuela de Berna", "Escuela", "Escuela", 12f, 10f, Arcades, S("pizarra", 0f, 0f, 1.6f, 0.4f, "Pizarra")),
+            new Lot("Tienda de soportales", "Mercado", "Tienda de la Kramgasse", 10f, 8f, Arcades, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 2f, "Estantería de la tienda"), S("armario", 0f, 0f, 1f, 0.6f, "Relojes de pared")),
+            new Lot("Escuela de Berna", "Escuela", "Escuela", 12f, 10f, Arcades, S("pizarra", 0f, 0f, 1.6f, 0.4f, "Pizarra"), S("mesa", 0f, 0f, 1.6f, 1f, "Pupitres"), S("mesa", 0f, 0f, 1.6f, 1f, "Pupitres de los pequeños")),
         }, C(0.55f, 0.52f, 0.46f));
         int n = 0;
         n += W(t, "Michele Besso", s[1], "sabio", s[2], null, null);
@@ -502,8 +507,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Casa de estuco", "Casa", "Casa de Pasadena", 10f, 10f, Stucco),
-            new Lot("Tienda de la avenida", "Mercado", "Tienda", 10f, 8f, Stucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador")),
-            new Lot("Taller mecánico", "Taller", "Taller mecánico", 10f, 8f, Stucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco")),
+            new Lot("Tienda de la avenida", "Mercado", "Tienda", 10f, 8f, Stucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 2f, "Estantería del colmado"), S("armario", 0f, 0f, 1f, 0.6f, "Nevera de refrescos")),
+            new Lot("Taller mecánico", "Taller", "Taller mecánico", 10f, 8f, Stucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco"), S("torno", 0f, 0f, 1.5f, 0.5f, "Torno"), S("estante", 0f, 0f, 0.8f, 2f, "Recambios")),
         }, C(0.32f, 0.32f, 0.33f));
         int n = 0;
         n += W(t, "Lorraine Patterson", s[3], "", s[3], null, null);
@@ -539,8 +544,8 @@ internal static partial class CivicBuilder
         }, new[]
         {
             new Lot("Bloque de viviendas", "Casa", "Bloque de Prípiat (evacuado)", 12f, 10f, Panel),
-            new Lot("Tienda de Prípiat", "Mercado", "Tienda (cerrada)", 10f, 8f, Panel, S("puesto", 0f, 0f, 2f, 1f, "Mostrador vacío")),
-            new Lot("Escuela de Prípiat", "Escuela", "Escuela (vacía)", 12f, 10f, Panel, S("pizarra", 0f, 0f, 1.6f, 0.4f, "Pizarra")),
+            new Lot("Tienda de Prípiat", "Mercado", "Tienda (cerrada)", 10f, 8f, Panel, S("puesto", 0f, 0f, 2f, 1f, "Mostrador vacío"), S("estante", 0f, 0f, 0.8f, 2f, "Estantería vacía"), S("armario", 0f, 0f, 1f, 0.6f, "Cajas sin abrir")),
+            new Lot("Escuela de Prípiat", "Escuela", "Escuela (vacía)", 12f, 10f, Panel, S("pizarra", 0f, 0f, 1.6f, 0.4f, "Pizarra"), S("mesa", 0f, 0f, 1.6f, 1f, "Pupitres (vacíos)"), S("mesa", 0f, 0f, 1.6f, 1f, "Pupitres de los pequeños")),
         }, C(0.4f, 0.4f, 0.4f));
         int n = 0;
         n += W(t, "Bombero de la central", s[1], "", s[3], null, null);
