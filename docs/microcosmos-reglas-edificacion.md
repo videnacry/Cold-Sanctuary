@@ -52,6 +52,13 @@ su rótulo y sus muebles; ni muros, ni puertas, ni techos, ni edificios macizos 
 santuario. Se permiten postes y columnas sueltos (finos: no tapan) y las piezas bajas (bancos, parapetos de menos de
 1,2 m). Los **muros del borde del piso** (`Muros_del_piso`, regla 11 de la plantilla) no son de un edificio y se quedan.
 
+**Excepción: las paredes de cristal** (Berón 2026-11-03: «para salas que deban estar aisladas se pueden utilizar paredes de
+cristal de modo que no bloquean visibilidad, y se debe mantener las reglas de espaciado»; docs/hospital.md §6). Un paño `GlassWall`
+(`Pared_cristal…`, con su dintel) no cuenta como muro (no tapa la vista), pero **sí guarda el paso de la regla 1**: `MicroBuildRules.Pieces`
+lo mide contra los muebles, de dentro y de fuera de su sala (dos paños, entre sí, no). En el santuario hace lo mismo `FurnitureSpacing`.
+Solo para salas que deben aislarse (quirófanos, aislamientos, UCI, salas frías) y en épocas en las que tiene sentido.
+
+
 **Excepción: los muros que la historia necesita** (confirmado por Berón, 2026-11-02: «se pueden quedar los muros que sean
 necesarios para la historia»). Una barrera que ES la historia va bajo un `MicroPiece` con `kind = MicroBuildRules.Historic`
 («historico»): no cuenta como muro ni para el paso. Hoy son dos:

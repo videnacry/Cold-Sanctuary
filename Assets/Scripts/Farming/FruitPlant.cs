@@ -30,6 +30,10 @@ public class FruitPlant : MonoBehaviour
     [Range(0f, 1f)] public float fruitSet = 0.5f;
     public int lastPollinatedDay = -99, lastPrunedDay = -99;
     public int timesPollinated, timesPruned;
+    [Tooltip("BANCAL DE TIERRA (2026-11-03, jardines en la cima de los edificios-árbol): la tierra guarda el agua, el compost y la leguminosa abonan, los insectos útiles frenan la plaga y los polinizadores sostienen el cuajado (GardenBed).")]
+    public GardenBed bed;
+    [Tooltip("En un bancal: su trozo (largo × alto del sustrato × ancho), en lugar de la maceta de su ficha.")]
+    public Vector3 bedSlot;
 
     public static readonly List<FruitPlant> All = new List<FruitPlant>();
     void OnEnable() { All.Add(this); }
@@ -42,13 +46,18 @@ public class FruitPlant : MonoBehaviour
     public bool Thirsty => water < 0.3f;
 
     /// <summary>Medio lado de la maceta (m), en su marco.</summary>
-    public Vector3 PotSize => Ficha != null ? Ficha.maceta : new Vector3(1f, 0.6f, 1f);
+    public Vector3 PotSize => bed != null && bedSlot != Vector3.zero ? bedSlot : Ficha != null ? Ficha.maceta : new Vector3(1f, 0.6f, 1f);
 
     /// <summary>Dónde se pone de pie quien la cuida: junto a la maceta, del lado de <paramref name="from"/>.</summary>
     public Vector3 StandPoint(Vector3 from)
     {
         Vector3 d = from - transform.position; d.y = 0f;
         if (d.sqrMagnitude < 0.01f) d = -transform.forward;
+        if (bed != null)   // en un bancal: al lado largo más cercano (no encima del bancal, por su eje)
+        {
+            Vector3 side = bed.transform.forward * (Vector3.Dot(d, bed.transform.forward) >= 0f ? 1f : -1f);
+            return transform.position + side * (bed.size.y * 0.5f + 0.7f) + Vector3.up;
+        }
         return transform.position + d.normalized * (Mathf.Max(PotSize.x, PotSize.z) * 0.5f + 0.7f) + Vector3.up;
     }
 
@@ -79,11 +88,14 @@ public class FruitPlant : MonoBehaviour
         if (days <= 0f) return;
         FruitCare.Ficha f = Ficha;
         float aw = f != null ? f.aguaDia : 0.35f, an = f != null ? f.abonoDia : 0.1f;
-        water = Mathf.Clamp01(water - aw * days);
+        // En un BANCAL DE TIERRA (GardenBed, 2026-11-03): la tierra guarda el agua, el compost y la leguminosa abonan, los
+        // insectos útiles frenan la plaga y los abejorros y las flores sostienen el cuajado.
+        float bw = bed != null ? bed.waterFactor : 1f, bn = bed != null ? bed.nutrientFactor : 1f, bp = bed != null ? bed.pestFactor : 1f, bs = bed != null ? bed.pollinationFactor : 1f;
+        water = Mathf.Clamp01(water - aw * bw * days);
         if (drip) water = Mathf.MoveTowards(water, DripLevel, (aw + 2f) * days);   // el gotero repone lo que gasta (y algo más)
-        if (FruitCare.Polinizar(kind)) fruitSet = Mathf.Clamp01(fruitSet - 0.08f * days);
-        nutrients = Mathf.Clamp01(nutrients - an * days);
-        pests = Mathf.Clamp01(pests + 0.12f * days);
+        if (FruitCare.Polinizar(kind)) fruitSet = Mathf.Clamp01(fruitSet - 0.08f * bs * days);
+        nutrients = Mathf.Clamp01(nutrients - an * bn * days);
+        pests = Mathf.Clamp01(pests + 0.12f * bp * days);
         bool stressed = water < 0.25f || nutrients < 0.2f || pests > 0.6f;
         float target = stressed ? 0.2f : Mathf.Clamp01(0.55f + 0.45f * Mathf.Min(water, nutrients * 1.5f, 1f - pests));
         health = Mathf.MoveTowards(health, target, (stressed ? 0.35f : 0.25f) * days);
@@ -151,7 +163,7 @@ public class FruitPlant : MonoBehaviour
     void Refresh()
     {
         SetBar(_w, water); SetBar(_n, nutrients); SetBar(_h, health);
-        if (_label != null) _label.text = $"{Name} · agua {water * 100f:0}% · abono {nutrients * 100f:0}% · salud {health * 100f:0}%{(drip ? " · goteo" : "")}{(FruitCare.Polinizar(kind) ? $" · cuajado {fruitSet * 100f:0}%" : "")}{(pests > 0.5f ? " · ¡plaga!" : "")}";
+        if (_label != null) _label.text = $"{Name} · agua {water * 100f:0}% · abono {nutrients * 100f:0}% · salud {health * 100f:0}%{(bed != null ? " · bancal" : drip ? " · goteo" : "")}{(FruitCare.Polinizar(kind) ? $" · cuajado {fruitSet * 100f:0}%" : "")}{(pests > 0.5f ? " · ¡plaga!" : "")}";
     }
 
     /// <summary>Las frutales de un techo (por su torre), en el orden de plantación.</summary>

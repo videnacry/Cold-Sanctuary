@@ -2,7 +2,9 @@
 
 > Berón, 2026-10-23: «la investigación también se debe hacer sobre el hospital para animales… debe tener más maquinaria;
 > 8 trabajadores médicos por hospital: 4 para humanos y 4 para animales». Datos y fuentes: `docs/veterinaria-investigacion.md`.
-> Estado: **construido en la planta 2** (PR #290) salvo la UCI veterinaria, los pediluvios por ala, la cuarentena y
+> Estado (2026-11-03): los 4 quirófanos, la sala fría de pingüinos y un **aislamiento veterinario** (cuarentena de 2 boxes) son **salas
+> de cristal** (docs/hospital.md §6); la **piscina médica de cetáceos** es el pozo del **Leviatán** (docs/submarinos-medicos.md).
+> Antes: **construido en la planta 2** (PR #290) salvo la UCI veterinaria, los pediluvios por ala, la cuarentena y
 > necropsia aparte y la piscina médica de cetáceos (ver `docs/hospital.md` §4). §1 describe lo que había antes.
 
 ## 1. Lo que hay hoy (planta veterinaria, 32 × 20 m = 640 m²)

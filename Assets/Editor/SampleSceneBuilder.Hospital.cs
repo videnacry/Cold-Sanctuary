@@ -116,7 +116,18 @@ public static partial class SampleSceneBuilder
         Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(-9.25f, 0f, -10.6f), 180f);
         an.gameObject.AddComponent<ClinicalStation>();
         Label(an, "Analizador clínico (F)", 1.8f);
-        Station(InfirmaryProps.BloodBankFridge(r, "Banco_de_sangre", new Vector3(-6f, 0f, -10.6f), 180f), HospitalService.BancoDeSangre, "Banco de sangre", 2.2f, false, new Vector3(0f, 0f, -0.9f));
+        // BANCO DE SANGRE (Berón 2026-11-03; docs/hospital.md §Banco de sangre): un tramo corrido (FurnitureLine) con la nevera de
+        // hematíes (2–6 °C), el agitador de plaquetas (20–24 °C), el congelador de plasma (≤ −25 °C), el descongelador, la nevera
+        // veterinaria (perro DEA 1, gato A/B) y el sillón de donante (el banco de sangre andante). BloodBank lleva las existencias.
+        Transform bbl = KitchenProps.Root(r, "Banco_de_sangre_linea", new Vector3(-3.4f, 0f, -10.6f));
+        bbl.gameObject.AddComponent<FurnitureLine>();
+        Transform bbf = Station(InfirmaryProps.BloodBankFridge(bbl, "Banco_de_sangre", new Vector3(-2.6f, 0f, 0f), 180f), HospitalService.BancoDeSangre, "Banco de sangre: cruzar y transfundir (F)", 2.2f, false, new Vector3(0f, 0f, -0.9f));
+        bbf.gameObject.AddComponent<BloodBank>();
+        InfirmaryProps.BloodBankEquipment(bbl, new Vector3(-1.7f, 0f, 0f));
+        Transform donor = InfirmaryProps.DonorChair(bbl, "Sillon_donante", new Vector3(1.9f, 0f, 0f), 180f);
+        donor.gameObject.AddComponent<BloodDonorChair>();
+        Label(donor, "Sillón de donante: dona una unidad (F)", 1.6f);
+        Label(bbl, "Banco de sangre: hematíes 2–6 °C · plaquetas 22 °C en agitación · plasma ≤ −25 °C · perro y gato", 2.6f);
         // Este: espera y farmacia (entrada), imagen (2 rayos X, 2 ecos) y 4 PARITORIOS de 32 m².
         Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(5.6f, 0f, 11.2f));
         for (int i = 0; i < 10; i++)
@@ -155,39 +166,65 @@ public static partial class SampleSceneBuilder
         Transform f1 = Solid(p1, new Vector3(0f, 0.05f, 0f), new Vector3(s1.x, 0.1f, s1.y), new Color(0.84f, 0.92f, 0.9f), "Suelo_hospitalizacion");
         Label(f1, "Bloque quirúrgico, UCI y aislamiento (planta 1)", 2.2f);
         Transform w1 = new GameObject("Planta1_equipamiento").transform; w1.SetParent(p1, false); w1.localPosition = new Vector3(0f, 0.1f, 0f);
-        // 4 QUIRÓFANOS de 6 × 6 m (oeste) con su lavado; esterilización y oxígeno al lado.
+        // PAREDES DE CRISTAL (Berón 2026-11-03; docs/hospital.md §Paredes de cristal): las salas que deben aislarse (quirófanos con
+        // presión positiva, UCI, aislamientos con presión negativa y su esclusa) van en SALAS DE CRISTAL: no tapan la vista y GUARDAN
+        // LOS 2 m (GlassWall: cada paño se mide como un mueble, dentro y fuera). Por eso esta planta se redistribuyó en el piso de
+        // 40 × 40 m del árbol: 4 quirófanos en fila al sur (puerta al pasillo del norte), los lavados y el autoclave en ese pasillo,
+        // la UCI al noreste y los 4 aislamientos al noroeste con su esclusa de cristal.
+        // 4 QUIRÓFANOS en fila, cada uno en su sala de cristal: su conjunto (mesa, lámpara, anestesia e instrumental) + 2 m.
         for (int i = 0; i < 4; i++)
         {
-            Vector3 c = new Vector3(-12.2f + (i % 2) * 6.4f, 0f, -7.6f + (i / 2) * 6.4f);
+            Vector3 rc = new Vector3(-15.3f + i * 8.3f, 0f, -8.8f);   // el centro de la sala
+            Vector3 c = rc + new Vector3(-0.35f, 0f, 0.33f);         // el del conjunto (la mesa), para que su caja quede centrada
             string sfx = i == 0 ? "" : $" {i + 1}";
-            Zone(w1, "Sala_quirofano", c, new Vector2(6f, 6f), zoneQ);
-            Station(InfirmaryProps.OperatingTable(w1, "Quirofano" + sfx, c, 0f), HospitalService.Quirofano, $"Quirófano {i + 1}", 1.6f, true, new Vector3(0.9f, 0f, 0.2f));
-            InfirmaryProps.SurgicalLight(w1, "Lampara_quirurgica" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
-            Station(InfirmaryProps.AnesthesiaMachine(w1, "Anestesia" + sfx, c + new Vector3(0f, 0f, -2.2f), 0f), HospitalService.Anestesia, $"Anestesia {i + 1}", 2f, true, new Vector3(0.9f, 0f, 0f));
-            Label(InfirmaryProps.InstrumentTable(w1, "Instrumental" + sfx, c + new Vector3(2f, 0f, 1.6f), 0f), "Instrumental", 1.3f);
+            Zone(w1, "Sala_quirofano", rc, new Vector2(7.8f, 8f), zoneQ);
+            Transform otT = Station(InfirmaryProps.OperatingTable(w1, "Quirofano" + sfx, c, 0f), HospitalService.Quirofano, $"Quirófano {i + 1}", 1.6f, true, new Vector3(0.9f, 0f, 0.2f));
+            Transform otL = InfirmaryProps.SurgicalLight(w1, "Lampara_quirurgica" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
+            Transform otA = Station(InfirmaryProps.AnesthesiaMachine(w1, "Anestesia" + sfx, c + new Vector3(0f, 0f, -2.2f), 0f), HospitalService.Anestesia, $"Anestesia {i + 1}", 2f, true, new Vector3(0.9f, 0f, 0f));
+            Transform otI = InfirmaryProps.InstrumentTable(w1, "Instrumental" + sfx, c + new Vector3(2f, 0f, 1.6f), 0f);
+            Label(otI, "Instrumental", 1.3f);
+            Transform room = GlassWall.Room(w1, $"Quirofano_{i + 1}", new[] { otT, otL, otA, otI }, 0);
+            if (room != null) Label(room, $"Quirófano {i + 1}: sala de cristal (presión positiva)", 3.1f);
         }
-        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico", new Vector3(-12.2f, 0f, 5.4f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico", 1.9f, false, new Vector3(0f, 0f, -0.9f));
-        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico 2", new Vector3(-5.8f, 0f, 5.4f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico 2", 1.9f, false, new Vector3(0f, 0f, -0.9f));
-        Station(InfirmaryProps.Autoclave(w1, "Autoclave", new Vector3(-14.6f, 0f, 8.6f), 90f), HospitalService.Esterilizacion, "Esterilización (autoclave)", 2f, false, new Vector3(0f, 0f, -1f));
-        Station(InfirmaryProps.OxygenPlant(w1, "Planta_oxigeno", new Vector3(-5.8f, 0f, 8.8f), 180f), HospitalService.Oxigeno, "Planta de oxígeno", 2.6f, false, new Vector3(0f, 0f, -1.1f));
-        // UCI de 6 boxes de 4,3 × 4,3 m (18,6 m² por cama) al sureste, con su control.
+        // El pasillo de los quirófanos (al norte de sus puertas): los lavados entre dos puertas, el autoclave y el oxígeno a los lados.
+        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico", new Vector3(-11.15f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico", 1.9f, false, new Vector3(0f, 0f, -0.9f));
+        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico 2", new Vector3(5.45f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico 2", 1.9f, false, new Vector3(0f, 0f, -0.9f));
+        Station(InfirmaryProps.Autoclave(w1, "Autoclave", new Vector3(-18.3f, 0f, -1.9f), 90f), HospitalService.Esterilizacion, "Esterilización (autoclave)", 2f, false, new Vector3(0f, 0f, -1f));
+        Station(InfirmaryProps.OxygenPlant(w1, "Planta_oxigeno", new Vector3(16.8f, 0f, -1.6f), 180f), HospitalService.Oxigeno, "Planta de oxígeno", 2.6f, false, new Vector3(0f, 0f, -1.1f));
+        // UCI de 6 camas (18,6 m² por cama, 2 m entre ellas) en su sala de cristal al noreste; el control, fuera, viéndolas a través.
+        var icuBeds = new System.Collections.Generic.List<Transform>();
         for (int i = 0; i < 6; i++)
         {
-            Vector3 c = new Vector3(5.6f + (i % 3) * 4.4f, 0f, -8.8f + (i / 3) * 4.8f);   // 2 m libres entre camas (4,8 m de eje: la cama con su gotero mide 2,7)
-            Zone(w1, "Box_UCI", c, new Vector2(4.2f, 4.2f), zoneC);
+            Vector3 c = new Vector3(9.6f + (i % 3) * 3.6f, 0f, 11.55f + (i / 3) * 4.6f);
+            Zone(w1, "Box_UCI", c, new Vector2(3.4f, 4.2f), zoneC);
             Transform icu = InfirmaryProps.HospitalBed(w1, $"UCI {i + 1}", c, 0f, bl[(i + 2) % 4]);
             InfirmaryProps.Ventilator(icu, "Ventilador", new Vector3(-0.85f, 0f, 0.3f), 90f);
             Label(icu, $"UCI {i + 1}", 1.6f);
+            icuBeds.Add(icu);
         }
-        Station(InfirmaryProps.DoctorDesk(w1, "Control_UCI", new Vector3(14f, 0f, -0.4f), 180f), HospitalService.UCI, "Control de la UCI", 1.5f, true);
-        // AISLAMIENTO: 4 habitaciones con esclusa en su ZONA (noreste), a ras de la planta (sin escalón ni escalera: Berón
-        // 2026-10-28), con una sola entrada por la franja de la esclusa.
-        Transform iso = new GameObject("Zona_aislamiento").transform; iso.SetParent(w1, false); iso.localPosition = new Vector3(9.4f, 0f, 6.8f);
-        KitchenProps.C(iso, new Vector3(0f, 0.01f, 0f), new Vector3(12f, 0.02f, 7f), new Color(0.88f, 0.93f, 0.95f), 0f, "Suelo_aislamiento");
-        KitchenProps.C(iso, new Vector3(0f, 0.02f, -2.6f), new Vector3(12f, 0.02f, 1.8f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");   // franja de la esclusa (EPI)
+        Transform icuRoom = GlassWall.Room(w1, "UCI", icuBeds, 2);
+        if (icuRoom != null) Label(icuRoom, "UCI: sala de cristal (el control la ve desde fuera)", 3.1f);
+        Station(InfirmaryProps.DoctorDesk(w1, "Control_UCI", new Vector3(12.9f, 0f, 5.2f), 0f), HospitalService.UCI, "Control de la UCI", 1.5f, true);
+        // AISLAMIENTO: 4 habitaciones de cristal (presión negativa) con su ESCLUSA de cristal delante (la antesala del EPI), a ras de
+        // la planta (sin escalón: Berón 2026-10-28). Cada cama con 2 m hasta su cristal; se entra solo por la esclusa.
+        Transform iso = new GameObject("Zona_aislamiento").transform; iso.SetParent(w1, false); iso.localPosition = Vector3.zero;
+        float isoZ = 16.15f;
         for (int i = 0; i < 4; i++)
-            Station(InfirmaryProps.IsolationRoom(iso, i == 0 ? "Aislamiento" : $"Aislamiento {i + 1}", new Vector3(-4.5f + i * 3f, 0f, 1f), 180f, bl[i % 4]), HospitalService.Aislamiento, $"Aislamiento {i + 1}: presión negativa y esclusa", 2.6f, false, new Vector3(0f, 0f, 2.2f));
-        Label(iso, "Aislamiento (entrada solo por la esclusa)", 2.4f);
+        {
+            Vector3 c = new Vector3(-16.8f + i * 5.25f, 0f, isoZ);
+            Transform bedT = Station(InfirmaryProps.HospitalBed(iso, i == 0 ? "Aislamiento" : $"Aislamiento {i + 1}", c, 0f, bl[i % 4]), HospitalService.Aislamiento, $"Aislamiento {i + 1}: presión negativa (entrar por la esclusa)", 2.6f, false, new Vector3(0.9f, 0f, 0f));
+            GlassWall.Room(iso, $"Aislamiento_{i + 1}", new[] { bedT }, 2);
+        }
+        // La esclusa: un pasillo de cristal de 2,6 m pegado al sur de las cuatro habitaciones (el norte lo cierran ellas), con la
+        // puerta al este; el EPI (bata, guantes, mascarilla FFP2), fuera, junto a la puerta.
+        GlassWall.Box(iso, "Esclusa_aislamiento", new Vector3(-8.95f, 0f, isoZ - 4.86f), new Vector2(20.9f, 2.6f), 0f, 1, 0f, 0);
+        KitchenProps.C(iso, new Vector3(-8.95f, 0.02f, isoZ - 4.86f), new Vector3(20.7f, 0.02f, 2.4f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");
+        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.1f, 0f, isoZ - 4.86f), -90f);
+        KitchenProps.C(epi, new Vector3(0f, 0.9f, 0f), new Vector3(0.9f, 1.8f, 0.45f), KitchenProps.White, 0f, "Armario_EPI");
+        KitchenProps.C(epi, new Vector3(0f, 1.3f, -0.235f), new Vector3(0.7f, 0.3f, 0.02f), new Color(0.95f, 0.82f, 0.3f), 0f, "Rotulo_EPI");
+        KitchenProps.Fit(epi);
+        Label(epi, "EPI: bata, guantes y mascarilla FFP2 antes de la esclusa", 2.1f);
+        Label(iso, "Aislamiento: 4 habitaciones de cristal con presión negativa (entrada solo por la esclusa)", 3.2f);
         // ANILLO ALTO: recuperación postquirúrgica (junto a los quirófanos) y hospitalización general.
         Transform ring1 = RingDeck(w1, "Anillo_camas_planta1", s1);
         RingCarpets(ring1, p1, s1, hospitalName, "Anillo de recuperación y hospitalización");
@@ -217,29 +254,53 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < 4; i++)
             Station(InfirmaryProps.VetTable(v, i == 0 ? "Mesa veterinaria" : $"Mesa veterinaria {i + 1}", new Vector3(-13.4f + i * 3.6f, 0f, 6.6f), 90f), HospitalService.Veterinaria, $"Tratamiento veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
         Label(InfirmaryProps.FloorScale(v, "Bascula", new Vector3(-13.4f, 0f, 9.6f), 0f), "Báscula (dosis por kilo)", 1.5f);
+        // 4 QUIRÓFANOS VETERINARIOS en salas de CRISTAL (Berón 2026-11-03: GlassWall, su conjunto + 2 m), en un bloque de 2 × 2 al
+        // sureste: la fila sur abre al sur, la norte al pasillo del norte.
         for (int i = 0; i < 4; i++)
         {
-            Vector3 c = new Vector3(0.6f + (i % 2) * 6f, 0f, -6.6f + (i / 2) * 5.4f);   // 6 m de eje en X: 2 m entre la anestesia de un quirófano y la lámpara del siguiente
+            Vector3 rc = new Vector3(6.2f + (i % 2) * 7.9f, 0f, -10.05f + (i / 2) * 5.95f);
+            Vector3 c = rc + new Vector3(-0.1f, 0f, 0f);
             string sfx = i == 0 ? "" : $" {i + 1}";
-            Zone(v, "Sala_quirofano_vet", c, new Vector2(5f, 5f), zoneQ);
-            Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
-            InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
-            Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria" + sfx, c + new Vector3(1.6f, 0f, 0f), -90f), HospitalService.Anestesia, $"Anestesia veterinaria {i + 1}", 2f, false, new Vector3(0f, 0f, -0.9f));
+            Zone(v, "Sala_quirofano_vet", rc, new Vector2(7.4f, 5.4f), zoneQ);
+            Transform vt = Station(InfirmaryProps.VetTable(v, "Quirofano veterinario" + sfx, c, 90f), HospitalService.CirugiaVeterinaria, $"Quirófano veterinario {i + 1}", 1.4f, true, new Vector3(0f, 0f, -1.1f));
+            Transform vl = InfirmaryProps.SurgicalLight(v, "Lampara_quirurgica_vet" + sfx, c + new Vector3(-1.4f, 0f, 0f), 90f);
+            Transform va = Station(InfirmaryProps.AnesthesiaMachine(v, "Anestesia veterinaria" + sfx, c + new Vector3(1.6f, 0f, 0f), -90f), HospitalService.Anestesia, $"Anestesia veterinaria {i + 1}", 2f, false, new Vector3(0f, 0f, -0.9f));
+            Transform vr = GlassWall.Room(v, $"Quirofano_vet_{i + 1}", new[] { vt, vl, va }, i < 2 ? 2 : 0);
+            if (vr != null) Label(vr, $"Quirófano veterinario {i + 1}: sala de cristal", 3.1f);
         }
-        // ALA DE DIAGNÓSTICO Y SERVICIO (este): rayos X blindado (4 × 4 m), eco, laboratorio, farmacia, cocina de dietas
-        // (con congelador a −18 °C para el pescado) y la sala fría de los pingüinos (0–10 °C).
-        Zone(v, "Sala_rayos_X_vet", new Vector3(12.6f, 0f, 6.4f), new Vector2(4.4f, 4.4f), zoneW);
-        Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 6.4f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
-        Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(7.6f, 0f, 7f), 0f), HospitalService.Imagen, "Ecógrafo veterinario", 1.6f);
-        Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(13.9f, 0f, 1.4f), -90f), "Laboratorio veterinario", 1.4f);
-        Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(15.4f, 0f, -2.6f), -90f), "Farmacia veterinaria", 2.2f);
-        Transform diet = KitchenProps.Root(v, "Cocina_de_dietas", new Vector3(12.4f, 0f, -6.6f));
+        // SALA FRÍA DE LOS PINGÜINOS (0–10 °C) y AISLAMIENTO VETERINARIO (cuarentena de un animal infeccioso: 2 boxes en batería), las
+        // dos de cristal (el frío y el aire no se escapan; se les ve), al norte de los quirófanos.
+        Zone(v, "Sala_fria_pinguinos", new Vector3(7.1f, 0f, 4.15f), new Vector2(9.6f, 4.4f), new Color(0.8f, 0.9f, 1f));
+        var penguins = new System.Collections.Generic.List<Transform>();
+        for (int i = 0; i < 3; i++, place += 4)
+        {
+            Transform cg = InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(4.9f + i * 2.2f, 0f, 4.15f), 0f);
+            Label(cg, $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
+            penguins.Add(cg);
+        }
+        Transform cold = GlassWall.Room(v, "Sala_fria_pinguinos", penguins, 0);
+        if (cold != null) Label(cold, "Sala fría de los pingüinos (0–10 °C): cristal", 3.1f);
+        var isoV = new System.Collections.Generic.List<Transform>();
+        for (int i = 0; i < 2; i++, place++)
+        {
+            Transform k = InfirmaryProps.Kennel(v, $"Box aislamiento {i + 1}", new Vector3(15.2f + i * 1.45f, 0f, 4.15f), 0f);
+            Label(k, $"Plaza {place}: aislamiento veterinario (cuarentena)", 1.6f);
+            isoV.Add(k);
+        }
+        Transform isoRoom = GlassWall.Room(v, "Aislamiento_veterinario", isoV, 0);
+        if (isoRoom != null) Label(isoRoom, "Aislamiento veterinario: cuarentena de cristal con pediluvio", 3.1f);
+        // ALA DE DIAGNÓSTICO Y SERVICIO (noreste): rayos X blindado (4 × 4 m), eco, laboratorio, farmacia y cocina de dietas (con
+        // congelador a −18 °C para el pescado).
+        Zone(v, "Sala_rayos_X_vet", new Vector3(12.6f, 0f, 10.5f), new Vector2(4.4f, 4.4f), zoneW);
+        Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 9.6f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
+        Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(7f, 0f, 9.6f), 0f), HospitalService.Imagen, "Ecógrafo veterinario", 1.6f);
+        Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(17.6f, 0f, 12f), -90f), "Laboratorio veterinario", 1.4f);
+        Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(18.6f, 0f, 17f), -90f), "Farmacia veterinaria", 2.2f);
+        Transform diet = KitchenProps.Root(v, "Cocina_de_dietas", new Vector3(11f, 0f, 16.8f));
         KitchenProps.C(diet, new Vector3(0f, 0.45f, 0f), new Vector3(2.4f, 0.9f, 0.7f), KitchenProps.Steel, 0f, "Mesa_dietas");
         KitchenProps.C(diet, new Vector3(2.2f, 0.95f, 0f), new Vector3(1f, 1.9f, 0.8f), new Color(0.85f, 0.9f, 0.95f), 0f, "Congelador_pescado");
         KitchenProps.Fit(diet, solid: true);
         Label(diet, "Cocina de dietas (pescado, carne, fruta) y congelador −18 °C", 2.2f);
-        Zone(v, "Sala_fria_pinguinos", new Vector3(8.3f, 0f, 2.4f), new Vector2(6.6f, 4.4f), new Color(0.8f, 0.9f, 1f));
-        for (int i = 0; i < 3; i++, place += 4) Label(InfirmaryProps.Cages(v, $"Jaulas pinguinos {i + 1}", new Vector3(6.2f + i * 2.2f, 0f, 2.4f), 0f), $"Plazas {place}-{place + 3}: sala fría de pingüinos (0–10 °C)", 1.6f);
         // ANILLO DE GRANDES ANIMALES: 6 boxes de osos de 4 × 3 m en batería (puertas de guillotina entre ellos) + jaula de
         // contención, y 2 corrales de foca con piscina de agua salada; pasillo del cuidador de 4 m a cada lado.
         Transform ringV = RingDeck(v, "Anillo_grandes_animales", us);

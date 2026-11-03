@@ -57,9 +57,11 @@ public class HospitalStation : MonoBehaviour, IInteractable
     static bool ForAnimals(HospitalService s) => s == HospitalService.Veterinaria || s == HospitalService.CirugiaVeterinaria;
 
     /// <summary>Atiende al paciente más cercano (animal en veterinaria, persona en el resto). Devuelve a quién.</summary>
-    public Anima Treat(Anima by)
+    public Anima Treat(Anima by) => TreatPatient(Nearest(by), by);
+
+    /// <summary>Atiende a ESTE paciente (el que trae el submarino, el de una prueba) con lo que hace este puesto.</summary>
+    public Anima TreatPatient(Anima patient, Anima by)
     {
-        Anima patient = Nearest(by);
         string what = Science(service);
         if (patient == null) { Debug.Log($"[Hospital] {Label(service)}: no hay ningún paciente aquí. ({what})"); return null; }
         SicknessState ss = patient.GetComponent<SicknessState>();
@@ -72,7 +74,16 @@ public class HospitalStation : MonoBehaviour, IInteractable
             case HospitalService.Consulta: case HospitalService.Veterinaria: patient.stress = Mathf.Max(0f, patient.stress - 0.1f); break;
             case HospitalService.Quirofano: case HospitalService.CirugiaVeterinaria:
                 if (!AnesthetistPresent(patient)) { Debug.Log($"[Hospital] {Label(service)}: no se opera sin alguien en la anestesia (Lista de verificación de cirugía segura de la OMS)."); return null; }
+                // Si sangra (clase III–IV del ATLS), primero sangre cruzada del banco: sin ella no se abre.
+                if (patient.GetComponent<BloodLoss>() is BloodLoss bl && bl.NeedsBlood)
+                {
+                    int u = BloodBank.Instance != null ? BloodBank.Instance.Transfuse(patient, by != null ? by.name : "el quirófano") : 0;
+                    if (u == 0 && bl.NeedsBlood) { Debug.Log($"[Hospital] {Label(service)}: «{patient.name}» ha perdido el {bl.lost * 100f:0} % de su sangre y no hay sangre compatible: no se opera (banco de sangre andante: un donante de su grupo)."); return null; }
+                }
                 Heal(1f); patient.stress = Mathf.Min(1f, patient.stress + 0.1f); break;
+            case HospitalService.BancoDeSangre:   // cruzar y transfundir al paciente de al lado (docs/hospital.md §Banco de sangre)
+                if (BloodBank.Instance != null) BloodBank.Instance.Transfuse(patient, by != null ? by.name : "el banco de sangre");
+                break;
         }
         BodyInjuries inj = patient.GetComponent<BodyInjuries>();
         string dx = $"enfermedad {patient.sickness:0.00}" + (inj != null ? $", {inj.Describe()}" : "");

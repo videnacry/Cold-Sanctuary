@@ -287,6 +287,7 @@ public class WorkdayDirector : MonoBehaviour
     // devolviendo a su sitio.
     static bool OnOwnDuty(GameObject g)
     {
+        if (HospitalSubmarine.Engaged(g)) return true;   // va en el submarino-ambulancia o en el Leviatán (docs/submarinos-medicos.md)
         NewcomerInitiator ni = g.GetComponent<NewcomerInitiator>();
         if (ni != null && ni.Busy) return true;
         if (AreaInitiator.Leading(g)) return true;   // inicia a un recién llegado en su área (yoga, cocina): lo lleva él
