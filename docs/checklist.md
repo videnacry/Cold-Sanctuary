@@ -482,6 +482,17 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ley de la saga: **≥6 personajes vivos por historia, misma alma en cuerpos distintos**. En esta era, Momo/Medea = almas en **ancianas** que mueren cerca de su nacimiento.
 - [ ] Escenarios INTERMEDIOS entre este nivel y el alba de Ambrosio (a definir).
 
+## Horario libre semanal y los seis del mesocosmos (2026-11-03; [`horario-libre.md`](horario-libre.md), [`personajes-mesocosmos.md`](personajes-mesocosmos.md))
+- [x] Reparto semanal de las horas libres (16, 17, 18, 20 y 21 h) con la lógica de la jornada (`LeisureRoster`): catálogo que rota por franja, a quien menos la ha hecho, con plazas.
+- [x] Horario en el juego por escena (`LeisureDirector`): santuario (personal de la jornada) y microcosmos (insectos-humanos con `MicroJornada`); andar al sitio y hacer la actividad; las necesidades van antes.
+- [x] Etiquetas de actividad de los edificios (ocio, recuperación, descanso, capacidad, interacción): el tiempo libre no va a edificios de trabajo.
+- [x] Panel «Horario libre» (botón abajo a la izquierda / consola `horario`).
+- [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada.
+- [x] Prueba `HorarioLibreTest` (grupo 65).
+- [ ] Verificación en vivo del grupo 65, del grupo 50 (línea base 196/1) y de los grupos 28 y 62, más las fotos en `Temp/Horario/` (pendiente: candado de Unity ocupado).
+- [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
+- [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
@@ -557,6 +568,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **03-nov: horario libre semanal y los seis del mesocosmos.** Las horas libres de cada personaje de cada escena se reparten una vez por semana con la lógica de la jornada (el catálogo de ocio y cuidado rota por franja; cada actividad, a quien menos la ha hecho; plazas por sitio): `LeisureRoster`, `LeisureDirector`, `HorarioPanel`, prueba del grupo 65 (docs/horario-libre.md). Elon Musk (mecánica), Goku (artes marciales), Bill Gates (hospital), Warren Buffett (cuentas), MacKenzie Scott (huerto) e Ibrahim Traoré (guardia) se suman al santuario (docs/personajes-mesocosmos.md).
 - **01-sep (PRs #166–#171): cadena trófica del Santuario 1 (HIELO) + sueño día/noche.** (#166) limpieza del bioma:
   fuera la fauna templada (conejo/ciervo/lobo/zorro → reservados a un santuario templado); base viva = marina. (#167/#168)
   **banco como ORGANISMO**: `FishSchool` con crías-hijas que se multiplican con el tamaño; **mordisco-por-colisión**
