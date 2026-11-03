@@ -84,7 +84,7 @@ public class BreathingMask : MonoBehaviour
     /// máscara. true mientras está en ello (quien lo conduce cede el paso este fotograma). Lo llaman PathMover y TreeTrip; si nadie
     /// lo conduce, lo hace su propio Update.</summary>
     public static bool RescueStep(GameObject g, bool fromTrip = false)
-        => g != null && !g.CompareTag("Player") && (fromTrip || !TreeTrip.Busy(g)) && Of(g.transform).Step();
+        => g != null && !g.CompareTag("Player") && g.GetComponent<Animal>() == null && (fromTrip || !TreeTrip.Busy(g)) && Of(g.transform).Step();   // (los animales marinos no llevan máscara)
 
     float _lastStep;
     bool Step()
