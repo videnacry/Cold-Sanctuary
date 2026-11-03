@@ -219,7 +219,7 @@ public static partial class SampleSceneBuilder
         // puerta al este; el EPI (bata, guantes, mascarilla FFP2), fuera, junto a la puerta.
         GlassWall.Box(iso, "Esclusa_aislamiento", new Vector3(-8.8f, 0f, isoZ - 4.91f), new Vector2(21.3f, 2.6f), 0f, 1, 0f, 0);
         KitchenProps.C(iso, new Vector3(-8.8f, 0.02f, isoZ - 4.91f), new Vector3(21.1f, 0.02f, 2.4f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");
-        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.45f, 0f, isoZ - 9.15f), -90f);   // al sur de la puerta de la esclusa: a 2 m de ella y del cristal de la UCI
+        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(3f, 0f, isoZ - 11.15f), -90f);   // al sur de la puerta de la esclusa: a 2 m de ella y de la esquina de cristal de la UCI
         KitchenProps.C(epi, new Vector3(0f, 0.9f, 0f), new Vector3(0.9f, 1.8f, 0.45f), KitchenProps.White, 0f, "Armario_EPI");
         KitchenProps.C(epi, new Vector3(0f, 1.3f, -0.235f), new Vector3(0.7f, 0.3f, 0.02f), new Color(0.95f, 0.82f, 0.3f), 0f, "Rotulo_EPI");
         KitchenProps.Fit(epi);
