@@ -149,6 +149,12 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
         //     alto que un árbol de calle (25 m), nada flotando, nada plantado en una calle ni en un solar — y hay animales.
         if (f.town && flora != null) TownChecks(f, scene, rect, flora, story);
 
+        // (6b) LAS REGLAS DE LOS MICROCOSMOS (2026-11-03, MicroFloors): pertenece a un piso y va montado ENCIMA de él, sobre su forma
+        //      FINALIZADA (nada de obra), las estructuras del piso pobladas, el pueblo entero en una era avanzada y, si el piso no lo
+        //      representa, «pendiente de piso representativo» marcado.
+        var floorRules = MicroFloors.Validate(f.transform, scene, false);
+        TestProbe.Check($"{scene}: reglas de los microcosmos (piso, forma finalizada, estructuras pobladas, pueblo entero, piso pendiente)", floorRules.Count == 0, floorRules.Count == 0 ? $"sobre {f.platform}{(f.representative ? "" : $", pendiente: {f.pendingFloor}")}" : string.Join(" · ", floorRules));
+
         // (7) LAS MISIONES DE COMPASIÓN: desde donde empieza cada refugiado se llega a cada refugio y escondite andando por el NavMesh
         //     y cruzando los pasos que admiten acompañantes (la puerta del gueto no: el pase era solo de Irena).
         if (f.GetComponentInChildren<CompassionMission>(true) != null) CompassionPaths(f, scene);
@@ -178,6 +184,7 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
             bool any = false; Bounds b = default;
             foreach (Renderer r in p.GetComponentsInChildren<Renderer>()) { if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
             if (!any) continue;
+            if (p.name.EndsWith("(sobre mueble)")) continue;   // (2026-11-03) sobre la meseta de un mueble gigante fuera del pueblo: la mira la regla (5)
             plants++;
             if (b.max.y - rect.center.y > 25f) { tall++; if (firstTall.Length == 0) firstTall = $" (p. ej. «{p.name}», {b.max.y - rect.center.y:0} m)"; }
             if (b.min.y - rect.center.y > 1f) { floating++; if (firstFloat.Length == 0) firstFloat = $" (p. ej. «{p.name}» a {b.min.y - rect.center.y:0.0} m del suelo)"; }

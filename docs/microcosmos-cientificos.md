@@ -16,7 +16,7 @@ tenían**.
 | Fecha y lugar | `Era.cs` (`Eras.OfMicrocosmos`) y `StorySceneBuilder.Dates` | Año, lugar, fecha y hora (el sol) de cada uno. |
 | Flora y fauna | `MicroBiome.cs` | Campo: la del lugar y la estación. **Ciudades sin naturaleza salvaje** (París 1898, Berna 1905, Pasadena 1953, Bagdad ~820): solo lo plantado (`Biome.town`) y los animales del pueblo con el cuerpo de su análogo (`Biome.townFauna`, docs/microcosmos-fauna-eras.md), ningún bicho suelto. Toda la flora de pueblo, a escala humana y fuera de calles y solares (reglas de edificación, regla 5). |
 | Su insecto | `InsectCast.cs` | Elegido por etología (tabla abajo). |
-| Entradas | `VirtualizationMachine.StoryScenes` (la máquina del área), `EraHubSceneBuilder.All` (Sala de Eras) | |
+| Entradas | `VirtualizationMachine.StoryScenes` (la máquina del área), `EraHubSceneBuilder.All` (Sala de Eras) | Química, Biología y Central Nuclear tienen su máquina (solo virtualización + sus historias) desde 2026-11-03: antes Curie, Patterson, Jenner y Chernóbil no tenían entrada en el juego. |
 | Prueba | `CivilizedErasTest` (grupo 62) | Carga las 12 escenas: edificios, jornadas, especies y familias. |
 
 ## Los doce
@@ -53,7 +53,7 @@ tenían**.
 | Pasadena | Laboratorio limpio de Caltech, sala del espectrómetro (Argonne), gasolinera «Ethyl», diner, escuela | casas de estuco, tiendas, taller mecánico | Caltech Archives (Patterson 1995); Needleman 2000 |
 | Prípiat | Sótano del bloque 4 (válvulas), parque de bomberos, Hotel Polissia (la comisión), cantina, dosimetría, parque de atracciones | bloques de viviendas evacuados, tienda, escuela | Plokhy 2018; Leatherbarrow 2016; IAEA INSAG-7 |
 
-Todos los edificios usan `CivicBuilder.Building` (abiertos, muebles detallados con el paso de 2 m y, en cada Casa, las
+Los solares de relleno llevan 2–3 muebles de su oficio (puesto + estantería + cajonera, banco + fragua + armario, bancal + pozo…), no uno solo: con uno, el pueblo se veía vacío de lejos (prueba en el PC, 2026-11-03). Todos los edificios usan `CivicBuilder.Building` (abiertos, muebles detallados con el paso de 2 m y, en cada Casa, las
 necesidades básicas: cama, retrete, lavabo, mesa con sillas y cocina).
 
 ## Cosas a decidir / notas

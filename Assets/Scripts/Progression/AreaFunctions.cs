@@ -183,6 +183,39 @@ public static class AreaFunctions
         Roles(Needs(Def("Granero", "gra_moler", "Moler el grano en el molino de mano", 1f, false, Kind.Cook, "granero"), Eras.Capability.Agriculture), "todos");
         Roles(Def("Orfanato", "orf_cuidar", "Cuidar a los niños escondidos", 2f, false, Kind.Care, "cama"), "todos");
         Roles(Def("Trinchera", "tri_refugio", "Descansar en el refugio", 1f, false, Kind.Rest, "cama"), "soldado");
+
+        // ══ LOS EDIFICIOS DEL PUEBLO (2026-11-03, docs/microcosmos-reglas-edificacion.md §8; CivicBuilder.Civic): cada uno con su
+        //    interacción para humanos e insectos-humanos y su categoría de actividad (trabajo, descanso, recuperación u ocio) ══
+        Roles(Def("Comisaría", "pol_atender", "Atender denuncias y avisos en el mostrador", 2f, false, Kind.Serve, "mesa"), "guardia", "todos");
+        Roles(Def("Comisaría", "pol_ronda", "Salir de ronda por las calles", 2f, false, Kind.Guard, "armero", "armario"), "guardia");
+        Roles(Def("Bomberos", "bom_guardia", "Guardia junto a la bomba (listos para salir)", 2f, false, Kind.Guard, "carro"), "bombero", "todos");
+        Roles(Def("Bomberos", "bom_ejercicio", "Ejercicio: tender la manguera y llenar la bomba", 1f, false, Kind.Practice, "carro", "fuente", "pozo"), "bombero");
+        Roles(Def("Museo", "mus_visitar", "Visitar la colección", 1f, false, Kind.Study, "vitrina", "estatua"), "todos");
+        Roles(Def("Museo", "mus_conservar", "Limpiar y catalogar las piezas", 1f, false, Kind.Clean, "vitrina"), "conservador", "sabio");
+        Roles(Def("Guardería", "gua_cuidar", "Cuidar a los pequeños (siesta y comida)", 2f, false, Kind.Care, "cuna"), "cuidador", "todos");
+        Roles(Def("Guardería", "gua_jugar", "Jugar con los niños", 1f, false, Kind.Care, "esterilla", "cuna"), "todos");
+        Roles(Def("Sala de baile", "bai_bailar", "Bailar", 1f, false, Kind.Practice, "pista"), "todos");
+        Roles(Lead(Def("Sala de baile", "bai_ensenar", "Enseñar los pasos del baile", 1f, false, Kind.Teach, "pista")), "maestro");
+        Roles(Def("Estación", "est_viajar", "Esperar y subir al transporte", 0.5f, false, Kind.Rest, "anden"), "todos");
+        Roles(Def("Estación", "est_taquilla", "Vender billetes y despachar la carga", 2f, false, Kind.Trade, "puesto"), "comerciante");
+        Roles(Def("Hotel", "hot_recepcion", "Recibir a los viajeros", 2f, false, Kind.Serve, "barra"), "camarero");
+        Roles(Def("Hotel", "hot_dormir", "Dormir en una habitación", 1f, false, Kind.Rest, "cama"), "todos");
+        Roles(Def("Carpintería", "car_madera", "Serrar, cepillar y ensamblar madera", 2f, false, Kind.Make, "caballete", "banco_taller"), "carpintero", "mecanico");
+        Roles(Def("Obra", "obr_levantar", "Levantar la obra (piedra, ladrillo o bloque)", 2f, false, Kind.Build, "material"), "albanil", "todos");
+        Roles(Def("Obra", "obr_preparar", "Preparar la madera de la obra", 1f, false, Kind.Build, "caballete"), "carpintero", "albanil");
+        Roles(Def("Centro de tecnología", "tec_operar", "Operar los aparatos (centralita, calculadora o instrumentos)", 2f, false, Kind.Operate, "consola"), "tecnico", "sabio");
+        Roles(Def("Cuartel", "mil_guardia", "Guardia en el cuartel", 2f, false, Kind.Guard, "armero"), "soldado", "guardia");
+        Roles(Def("Cuartel", "mil_instruccion", "Instrucción en el patio", 1f, false, Kind.Practice, "tatami"), "soldado");
+        Roles(Def("Baños", "ban_banarse", "Bañarse y nadar (o sudar en el baño de vapor)", 1f, false, Kind.Rest, "piscina", "temazcal"), "todos");
+        Roles(Def("Baños", "ban_vigilar", "Vigilar y limpiar los baños", 1f, false, Kind.Clean, "piscina", "temazcal"), "todos");
+        Roles(Def("Parque", "par_pasear", "Pasear y descansar a la sombra", 1f, false, Kind.Rest, "fuente", "frutal"), "todos");
+        Roles(Def("Parque", "par_cosechar", "Coger fruta de los frutales", 0.5f, false, Kind.Tend, "frutal"), "hortelano", "todos");
+        Roles(Def("Plaza", "pla_reunirse", "Reunirse en la plaza (charlar, coger agua)", 1f, false, Kind.Rest, "fuente"), "todos");
+        Roles(Def("Plaza", "pla_contemplar", "Contemplar el monumento", 0.5f, false, Kind.Meditate, "estatua"), "todos");
+        Roles(Def("Centro de entrenamiento", "ent_entrenar", "Entrenar (lucha, gimnasia o juego de pelota)", 1f, false, Kind.Practice, "tatami", "pista"), "alumno", "todos");
+        Roles(Lead(Def("Centro de entrenamiento", "ent_ensenar", "Dirigir el entrenamiento", 1f, false, Kind.Teach, "tatami", "pista")), "maestro");
+        Roles(Def("Fuente pública", "fue_agua", "Coger agua y lavar", 0.5f, false, Kind.Clean, "fuente", "lavadero"), "todos");
+        Roles(Def("Mirador", "mir_mirar", "Asomarse desde la meseta (el santuario gigante alrededor)", 0.5f, false, Kind.Meditate, "estatua", "frutal"), "todos");
     }
 
     static CulturedMeatLab Lab() => CulturedMeatLab.All.Count > 0 ? CulturedMeatLab.All[0] : null;
@@ -252,6 +285,24 @@ public static class AreaFunctions
         ["Alfarería"] = new[] { "alf_cuencos" },
         ["Granero"] = new[] { "gra_raciones", "gra_moler" },
         ["Orfanato"] = new[] { "orf_cuidar", "coc_fogon", "cas_descansar" },
+        // (2026-11-03) Los edificios del pueblo (CivicBuilder.Civic; su nombre de época y lugar, MicroStyles.CivicName).
+        ["Comisaría"] = new[] { "pol_atender", "pol_ronda" },
+        ["Bomberos"] = new[] { "bom_guardia", "bom_ejercicio" },
+        ["Museo"] = new[] { "mus_visitar", "mus_conservar" },
+        ["Guardería"] = new[] { "gua_cuidar", "gua_jugar", "coc_fogon" },
+        ["Sala de baile"] = new[] { "bai_bailar", "bai_ensenar" },
+        ["Estación"] = new[] { "est_viajar", "est_taquilla" },
+        ["Hotel"] = new[] { "hot_recepcion", "hot_dormir", "res_comer" },
+        ["Carpintería"] = new[] { "car_madera" },
+        ["Obra"] = new[] { "obr_levantar", "obr_preparar" },
+        ["Centro de tecnología"] = new[] { "tec_operar" },
+        ["Cuartel"] = new[] { "mil_guardia", "mil_instruccion" },
+        ["Baños"] = new[] { "ban_banarse", "ban_vigilar" },
+        ["Parque"] = new[] { "par_pasear", "par_cosechar" },
+        ["Plaza"] = new[] { "pla_reunirse", "pla_contemplar" },
+        ["Centro de entrenamiento"] = new[] { "ent_entrenar", "ent_ensenar" },
+        ["Fuente pública"] = new[] { "fue_agua" },
+        ["Mirador"] = new[] { "mir_mirar" },
     };
 
     /// <summary>Las funciones que se pueden hacer en un edificio <paramref name="building"/> en el año <paramref name="year"/>

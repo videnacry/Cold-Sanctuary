@@ -144,6 +144,10 @@ internal static partial class CivicBuilder
             p.gameObject.AddComponent<AreaFunctionStation>().station = key;
             var l = p.gameObject.AddComponent<WorldLabel>(); l.text = label; l.height = 1f;
         }
+        // (2026-11-03) Reglas 9 y 11: un asiento para personas delante de la puerta y su FRUTAL detrás (la higuera de Gilgal).
+        MicroFurniture.Build(b, "banco", new Vector3(0f, 0.08f, -(radius + 2.5f)), 0f, "Banco (para personas)", -9500, null, Region, MicroBody.Human());
+        if (name.StartsWith("Casa")) { Transform fr = FruitTree(b, b.GetSiblingIndex()); fr.localPosition = new Vector3(0f, 0.08f, radius + 2.8f); }
+        site.region = Region; Tag(site, "dormir junto al hogar, moler y guardar el grano");
         Year = y0;
         return site;
     }
@@ -153,7 +157,7 @@ internal static partial class CivicBuilder
     internal static Transform RoundGranary(Transform t, Vector3 pos)
     {
         AreaFunctionSite site = RoundHouse(t, "Granero redondo", pos, 2.2f);
-        site.building = "Granero"; site.title = "Granero redondo (los primeros silos)";
+        site.building = "Granero"; site.title = "Granero redondo (los primeros silos)"; site.activity = ""; site.interaction = ""; Tag(site);
         site.GetComponent<WorldLabel>().text = site.title;
         foreach (AreaFunctionStation s in site.GetComponentsInChildren<AreaFunctionStation>()) s.station = "granero";
         var lair = site.gameObject.AddComponent<MicroLair>(); lair.doorOffset = new Vector3(0f, 0f, -3.4f);   // delante de la puerta
@@ -179,6 +183,7 @@ internal static partial class CivicBuilder
         if (need.x > foot.x + 0.01f || need.y > foot.y + 0.01f) Grow(b, Vector2.Max(foot, need));
         HidingPlace hp = b.GetComponent<HidingPlace>();
         if (hp != null) hp.radius = Mathf.Max(hp.radius, Mathf.Max(need.x, need.y) * 0.5f + 0.5f);
+        site.region = Region; Tag(site);
         return site;
     }
 

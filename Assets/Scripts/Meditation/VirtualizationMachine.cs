@@ -146,6 +146,8 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         // se entra desde la del Gimnasio (la misma torre de Entrenamiento).
         ("Dojo (artes marciales)", "Simulación: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
         ("Gimnasio",     "Simulación del Dojo: Bruce Lee, del Wing Chun al Jeet Kune Do (1957–1971)", "Microcosmos_BruceLee"),
+        // PAKAL DE PALENQUE (docs/microcosmos-maya-pakal.md): pendiente de su piso representativo (un templo de los antepasados); hoy, el Huerto (la milpa).
+        ("Huerto", "Simulación: Pakal de Palenque, el rey que renace como el maíz (683)", "Microcosmos_Pakal"),
         // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
         ("Gimnasio", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
         ("Huerto", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),

@@ -168,6 +168,9 @@ internal static partial class CivicBuilder
                 else if (p.kind == "lavabo") MicroFurniture.Refit(p.transform, "lavabo", Year, region, all);
                 else if (p.kind == "mesa") MicroFurniture.Refit(p.transform, "mesa", Year, region, bodies[0], bodies);
             }
+        // Regla 11: toda residencia, con su frutal (si la casa no lo traía: los aseos del barrio, un porche de la historia).
+        bool hasFruit = false; foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true)) if (p.kind == "frutal") hasFruit = true;
+        if (!hasFruit) { string r0 = Region; Region = region; FruitTree(site.transform, site.name.GetHashCode()); Region = r0; }
         Relayout(site);
 
         foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true))
