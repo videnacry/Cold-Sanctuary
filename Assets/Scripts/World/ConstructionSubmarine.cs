@@ -25,7 +25,7 @@ public class ConstructionSubmarine : MonoBehaviour
     [Tooltip("Velocidad nadando (m/s) y por tierra (m/s).")]
     public float swimSpeed = 4f, driveSpeed = 2.5f;
     [Tooltip("Profundidad (y) a la que cruza el mar bajo el hielo.")]
-    public float seaDepth = -9f;
+    public float seaDepth = -12f;
     public const string Who = "Submarino de obra";
 
     [Tooltip("Dónde aparca en el garaje (lo pone el constructor; si no, donde empieza).")]
@@ -46,6 +46,28 @@ public class ConstructionSubmarine : MonoBehaviour
     readonly List<(System.Func<Vector3> at, bool water, string label)> _route = new List<(System.Func<Vector3>, bool, string)>();
     int _wp; float _wait; bool _loaded; float _legSince;
     Transform _cargo;
+
+    /// <summary>El centro del casco (el pivote va a ras de las orugas).</summary>
+    public Vector3 HullCenter => transform.position + transform.up * Height * 0.5f;
+    /// <summary>Distancia (m) de <paramref name="p"/> a la superficie del casco (un cilindro de proa a popa).</summary>
+    public float HullDistance(Vector3 p)
+    {
+        Vector3 c = HullCenter, f = transform.forward, a = c - f * Length * 0.5f, ab = f * Length;
+        float t = Mathf.Clamp01(Vector3.Dot(p - a, ab) / ab.sqrMagnitude);
+        return Vector3.Distance(p, a + ab * t) - Mathf.Max(Beam, Height) * 0.5f;
+    }
+    /// <summary>El submarino en marcha con el casco a menos de <paramref name="range"/> m de <paramref name="p"/> (null si ninguno).</summary>
+    public static ConstructionSubmarine Nearest(Vector3 p, float range)
+    {
+        ConstructionSubmarine best = null; float bd = range;
+        foreach (ConstructionSubmarine s in All)
+        {
+            if (s == null || (s.Now != State.Driving && s.Now != State.Returning)) continue;
+            float d = s.HullDistance(p);
+            if (d < bd) { bd = d; best = s; }
+        }
+        return best;
+    }
 
     void OnEnable() { if (!All.Contains(this)) All.Add(this); }
     void OnDisable() => All.Remove(this);
@@ -202,7 +224,8 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 face = move.sqrMagnitude > 1e-6f ? move : transform.forward;
         if (!wet) face.y = 0f;
         if (face.sqrMagnitude > 1e-6f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(face.normalized), 1f - Mathf.Exp(-3f * Time.deltaTime));
-        if ((goal - transform.position).magnitude < 0.8f)
+        bool exact = !wet || label.StartsWith("puerta") || label.StartsWith("frente") || label.StartsWith("dentro") || label.StartsWith("sale");   // (en el agua abierta basta pasar cerca: si un grupo está en el punto, lo rodea)
+        if ((goal - transform.position).magnitude < (exact ? 0.8f : 3f))
         {
             if (label.StartsWith("puerta")) doorsUsed.Add(label);
             _wp++; _legSince = Time.time;
@@ -246,7 +269,7 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 lat = d.sqrMagnitude > 1e-4f ? Vector3.ProjectOnPlane(-to, d.normalized) : -to;
         if (lat.sqrMagnitude < 1e-4f) lat = Vector3.Cross(d.normalized, Vector3.up);
         float k = Mathf.Clamp01((6f - gap) / 6f);
-        avoid += lat.normalized * (1.5f * k);
+        avoid += lat.normalized * (1.5f + 2f * k) * k;
         slow = Mathf.Min(slow, Mathf.Lerp(1f, 0.25f, k));
         if (k > 0.3f && Time.time > _avoidLog) { _avoidLog = Time.time + 3f; Avoidances++; Debug.Log($"[Submarino] Esquiva un grupo de animales (holgura {gap:0.0} m)."); }
     }

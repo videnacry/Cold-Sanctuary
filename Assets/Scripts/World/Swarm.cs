@@ -145,6 +145,14 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     /// al tronco de un edificio-árbol por su fondo abierto.</summary>
     protected virtual void Move(float dt)
     {
+        // (2026-11-03) Se apartan del SUBMARINO DE OBRA (como de un barco): si pasa a menos de 6 m de su casco, se alejan de él.
+        ConstructionSubmarine sub = ConstructionSubmarine.Nearest(transform.position, schoolSpread + 6f);
+        if (sub != null)
+        {
+            Vector3 away = transform.position - sub.HullCenter; if (away.sqrMagnitude < 0.01f) away = Vector3.right;
+            transform.position += away.normalized * (kind == SwarmKind.Jellyfish ? 1.2f : fleeSpeed) * dt;
+            return;
+        }
         Transform predator = NearestPredator();
         if (predator != null && kind != SwarmKind.Jellyfish)   // (las medusas no huyen: derivan)
         {

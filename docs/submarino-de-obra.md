@@ -53,12 +53,13 @@ de los árboles a 8 m) y la prueba `SubmarineTest` (grupo 73).
   el submarino aparca allí mirando a la puerta.
 - **Viaje**: cuando una obra (`ConstructionProject`: las salas en obras, p. ej. ballet o dojo en Entrenamiento) no tiene el material
   del día, carga en el garaje la excavadora y los palés, va por tierra a la puerta del garaje, entra al agua del tronco, baja y sale
-  por el fondo al mar, cruza bajo el hielo (a −9 m), sube por el tronco del árbol de la obra, sale por la puerta de ese piso, anda
+  por el fondo al mar, cruza bajo el hielo (a −12 m), sube por el tronco del árbol de la obra, sale por la puerta de ese piso, anda
   hasta 7 m dentro del piso, descarga (`ConstructionProject.DeliverMaterial`: el kit del día sale del almacén de Construcción) y
   vuelve al garaje por el mismo camino.
 - **No choca con los animales**: mira los grupos de peces, kril y medusas y la fauna marina por delante (hasta 15 m); si alguno queda a
   menos de 6 m de su casco, frena (hasta un 25 %) y se aparta de lado y en altura. Apunta la holgura mínima (`MinClearance`) de todo
-  el viaje.
+  el viaje. Y los grupos se apartan de él (como de un barco): si su casco pasa a menos de 6 m, se alejan (las medusas, despacio). En el mar
+  abierto le basta pasar a 3 m de sus puntos de paso (si un grupo está en el punto, lo rodea); cruza bajo el hielo a −12 m.
 
 ## 4. Prueba (grupo 73)
 

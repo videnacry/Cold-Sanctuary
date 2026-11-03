@@ -66,7 +66,8 @@ public class SubmarineTest : MonoBehaviour, ITestUnit
         // Animales en su camino: un banco de peces y un grupo de medusas bajo el árbol de la obra y en su tronco.
         Swarm fish = Swarm.All.FirstOrDefault(s => s != null && s.kind == SwarmKind.Fish);
         Swarm jelly = Swarm.All.FirstOrDefault(s => s != null && s.kind == SwarmKind.Jellyfish);
-        if (fish != null) { fish.transform.position = dest.transform.position + Vector3.up * sub.seaDepth + new Vector3(3f, 0f, 0f); fish.GoTo(fish.transform.position); }
+        Vector3 seaMid = (home != null && home != dest ? Vector3.Lerp(home.transform.position, dest.transform.position, 0.6f) : dest.transform.position + new Vector3(12f, 0f, 0f)) + Vector3.up * sub.seaDepth;
+        if (fish != null) { fish.transform.position = seaMid; fish.GoTo(seaMid); }   // en medio de su camino por el mar
         if (jelly != null) { jelly.transform.position = dest.World(new Vector3(-3f, dl.inside.y * 0.5f, 2f)); jelly.GoTo(jelly.transform.position); }
         int d0 = sub.Deliveries;
         Vector3 start = sub.transform.position;
