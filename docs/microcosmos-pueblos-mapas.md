@@ -79,4 +79,32 @@ Ciencias en el quai Conti), el edificio va al borde del barrio o junto al de la 
 
 ## Recuento
 
-(Se rellena con la verificación en vivo: edificios, piezas de paisaje, objetos y plantas de cada pueblo.)
+Medido en vivo (2026-11-03, `Tools/TmpCheck/Pueblos mapa: recuento`): piso ×100, barrio del pueblo (×60), edificios, residencias con frutal, piezas del plano (paisaje + tramos de calle), plantas, animales, renderers de la escena entera y caras de arriba de muebles pobladas. Escala del plano: 1:1 en Kapilavastu, Berkeley, Chernóbil, Patanjali y Planta Atómica; encogido de 1:1,1 (Berna, Sils) a 1:2,5 (Palenque, sobre el Huerto de 24 × 9 m) en el resto, porque la plaza de la historia no está en el centro del piso o el piso es estrecho.
+
+| Escena | Piso (m) | Barrio (m) | Edificios | Residencias con frutal | Piezas del plano | Plantas | Animales | Renderers | Mesetas pobladas |
+|---|---|---|---|---|---|---|---|---|---|
+| BruceLee | 3600x2600 | 2172x1572 | 91 | 19/19 | 127 | 9445 | 28 | 58541 | 2 (2 miradores) |
+| Pakal | 2400x900 | 1452x552 | 37 | 14/14 | 26 | 4075 | 34 | 34477 | 0 (0 miradores) |
+| Einstein | 3200x2000 | 1932x1212 | 114 | 17/17 | 172 | 8584 | 6 | 55277 | 14 (2 miradores) |
+| Curie | 3200x2000 | 1932x1212 | 124 | 15/15 | 168 | 7178 | 9 | 46393 | 57 (2 miradores) |
+| AlJuarismi | 2600x2000 | 1572x1212 | 112 | 18/18 | 274 | 8032 | 8 | 68971 | 66 (2 miradores) |
+| Newton | 3200x2000 | 1932x1212 | 54 | 14/14 | 84 | 8505 | 33 | 53492 | 14 (2 miradores) |
+| Pitagoras | 3600x2600 | 2172x1572 | 102 | 16/16 | 170 | 7862 | 23 | 71206 | 44 (2 miradores) |
+| Herodoto | 2400x900 | 1452x552 | 98 | 16/16 | 83 | 4746 | 23 | 49761 | 0 (0 miradores) |
+| Jenner | 3200x2000 | 1932x1212 | 78 | 15/15 | 72 | 8743 | 24 | 68486 | 51 (2 miradores) |
+| Bolivar | 4000x3800 | 2412x2292 | 90 | 17/17 | 98 | 8499 | 26 | 75876 | 382 (2 miradores) |
+| Nietzsche | 3600x2600 | 2172x1572 | 53 | 14/14 | 91 | 7851 | 23 | 45057 | 11 (2 miradores) |
+| Tesla | 2600x2000 | 1572x1212 | 99 | 15/15 | 112 | 6843 | 25 | 42877 | 66 (2 miradores) |
+| Patterson | 3200x2000 | 1932x1212 | 111 | 17/17 | 211 | 7602 | 5 | 49508 | 57 (2 miradores) |
+| Chernobil | 4600x3000 | 2772x1812 | 88 | 10/10 | 108 | 8974 | 20 | 54775 | 8 (2 miradores) |
+| Nightingale | 4000x3800 | 2412x2292 | 73 | 17/17 | 84 | 11392 | 21 | 59118 | 62 (2 miradores) |
+| Wright | 2600x2000 | 1572x1212 | 84 | 12/12 | 159 | 7853 | 14 | 52574 | 7 (2 miradores) |
+| Buda | 4000x3800 | 2412x2292 | 68 | 15/15 | 166 | 10956 | 46 | 64941 | 62 (2 miradores) |
+| Eratostenes | 3200x2000 | 1932x1212 | 97 | 11/11 | 146 | 6755 | 40 | 43329 | 14 (2 miradores) |
+| Patanjali | 3600x2600 | 2172x1572 | 52 | 12/12 | 68 | 7761 | 37 | 49600 | 11 (2 miradores) |
+| Tregua1914 | 3600x2600 | 2172x1572 | 25 | 11/11 | 96 | 7541 | 19 | 35687 | 44 (2 miradores) |
+| PlantaAtomica | 3200x2000 | 1932x1212 | 56 | 15/15 | 88 | 10207 | 42 | 62509 | 14 (2 miradores) |
+| IrenaSendler | 4000x3800 | 2412x2292 | 48 | 24/24 | 106 | 11252 | 20 | 51212 | 62 (2 miradores) |
+| LeChambon | 4000x3800 | 2412x2292 | 47 | 28/28 | 50 | 13347 | 31 | 64033 | 382 (2 miradores) |
+
+Por escena: 25–125 edificios, 35 000–76 000 renderers (la mayoría, flora de cubos: 4 000–13 000 plantas). Antes (barrio ×10) el pueblo cabía en 240–460 m (Bruce Lee: 372 × 272 m).
