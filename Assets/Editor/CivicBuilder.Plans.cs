@@ -1216,18 +1216,21 @@ relleno | 40 | 0 120",
         if (tops == null || tops.Count == 0) return 0;
         var sorted = new List<Bounds>(tops);
         sorted.Sort((a, b) => (b.size.x * b.size.z).CompareTo(a.size.x * a.size.z));
+        var used = new List<Transform>();
         MicroStyles.Entry e = MicroStyles.For(Year, Region);
         int n = 0;
         foreach (Bounds top in sorted)
         {
             if (n >= 2) break;
             if (top.size.x < 30f || top.size.z < 30f) continue;
+            bool near = false; foreach (Transform u in used) if (Vector2.Distance(new Vector2(u.position.x, u.position.z), new Vector2(top.center.x, top.center.z)) < 60f) near = true;
+            if (near) continue;   // (dos caras de arriba del mismo mueble: un mirador basta)
             string monument = MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra del mirador";
             AreaFunctionSite site = Building(cast, $"{OutpostPrefix} de la meseta {n + 1}", "Mirador", $"Mirador sobre el mueble gigante ({e.name})", Vector3.zero, 0f, new Vector2(12f, 10f), _planStyle ?? NeedsStyle,
                 S("estatua", 0, 0, 1.4f, 1.4f, monument), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, n).name));
             Vector3 at = cast.InverseTransformPoint(new Vector3(top.center.x, top.max.y, top.center.z));
             site.transform.localPosition = at;
-            n++;
+            n++; used.Add(site.transform);
         }
         if (n > 0) Debug.Log($"[Pueblos] {n} miradores de la era sobre los muebles gigantes del piso (de {tops.Count} caras de arriba fuera del pueblo).");
         return n;

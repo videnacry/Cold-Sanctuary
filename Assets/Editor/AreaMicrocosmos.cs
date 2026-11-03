@@ -1647,7 +1647,8 @@ public static class AreaMicrocosmos
                     p = new Vector3(w.x - center.x, FloorNearOr(w, floors, groundY, groundY) - center.y, w.z - center.z); onStreets++;
                 }
                 else if (sp == "Antlion" && sandPits.Count > 0) p = sandPits[rnd.Next(sandPits.Count)];
-                else if (topPts.Count > 0 && sp != "DungBeetle" && i % 3 == 2) { p = topPts[rnd.Next(topPts.Count)] - center; faunaTop++; }   // uno de cada tres, encima de un mueble
+                else if (topPts.Count > 0 && sp != "DungBeetle" && (i % 3 == 2 || town && i == 0 && faunaTop < 4)) {   // (en un pueblo, el primero de cada especie también, hasta 4: las mesetas fuera del pueblo tienen su fauna)
+                    p = topPts[rnd.Next(topPts.Count)] - center; faunaTop++; }   // uno de cada tres, encima de un mueble
                 else if (sp == "DungBeetle" && dungs.Count > 0) p = dungs[rnd.Next(dungs.Count)] + new Vector3(town ? 0.6f : 5f, 0f, 0f);
                 else if (faunaSlots != null && faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNearOr(w, floors, w.y, groundY) - center.y, w.z - center.z); }
                 else
