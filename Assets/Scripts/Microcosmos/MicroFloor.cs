@@ -25,6 +25,20 @@ public class MicroFloor : MonoBehaviour
     public Vector3 districtCenter;
     public Vector2 districtSize;
 
+    // ── LAS REGLAS DE LOS MICROCOSMOS (2026-11-03, docs/microcosmos-areas.md §Reglas; las comprueba MicroFloors.Validate) ──
+    [Tooltip("El piso del santuario al que pertenece (su área: «MartialArts_Area»…); el microcosmos se monta ENCIMA de ese piso.")]
+    public string platform = "";
+    [Tooltip("¿Se montó sobre la FORMA FINALIZADA del piso (FloorForms: el «Acabado» encendido, sin andamio, material ni conos)?")]
+    public bool finishedForm;
+    [Tooltip("Piezas de obra que se quitaron del piso gigante al montarlo (andamio, material del día, conos, la forma en obra).")]
+    public int obraRemoved;
+    [Tooltip("¿El piso representa la historia (MicroFloors)? Si no, el microcosmos está «pendiente de piso representativo».")]
+    public bool representative = true;
+    [Tooltip("El piso que haría falta crear en el santuario para esta historia (vacío si el piso ya la representa).")]
+    public string pendingFloor = "";
+    [Tooltip("Al construirlo: edificios (miradores de la era) levantados sobre las caras de arriba de los muebles gigantes.")]
+    public int buildingsOnTops;
+
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };
 

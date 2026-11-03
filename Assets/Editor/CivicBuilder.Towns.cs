@@ -34,6 +34,8 @@ internal static partial class CivicBuilder
         public (string key, Vector2 at, Vector2 size, string label)[] stations;
         public Lot(string name, string template, string title, float w, float d, Style st, params (string key, Vector2 at, Vector2 size, string label)[] stations)
         { this.name = name; this.template = template; this.title = title; size = new Vector2(w, d); style = st; this.stations = stations; }
+        /// <summary>(2026-11-03) Un edificio de VARIAS PLANTAS en terraza (CivicBuilder.Storeys): los puestos de cada planta.</summary>
+        public (string key, Vector2 at, Vector2 size, string label)[][] floors;
     }
 
     const float ClearingRadius = 26f;   // el claro de la historia (docs/microcosmos-reglas-edificacion.md, receta 2)
@@ -52,6 +54,7 @@ internal static partial class CivicBuilder
     /// </summary>
     static List<AreaFunctionSite> Town(Transform t, string town, Lot[] named, Lot[] fill, Color street)
     {
+        if (_plan != null) return PlannedTown(t, town, named, fill);
         Rect r = AreaMicrocosmos.FloorRectLocal(t);
         // Tamaño de la manzana: la del edificio más grande + 2 m de paso a cada lado + calle (ver MaxLots).
         float biggest = 14f;
@@ -113,6 +116,33 @@ internal static partial class CivicBuilder
         int outskirts = cells.Count - used;
         Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia y {f} solares del pueblo en un piso de {r.width:0} × {r.height:0} m (manzanas de {cell:0} m, calles de {MicroBuildRules.Street:0} m)"
                   + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan de campo." : "."));
+        return sites;
+    }
+
+    /// <summary>
+    /// EL PUEBLO SOBRE SU PLANO REAL (2026-11-03, CivicBuilder.Plans): los edificios de la historia (<paramref name="named"/>) en su
+    /// sitio del mapa (los «hito» del plano; sin hito, junto al claro), los edificios del pueblo (PlanCivic) y el relleno
+    /// (<paramref name="fill"/>, rotando) a lo largo de sus calles, de frente a ellas. Devuelve los sitios en el orden de siempre (los
+    /// de la historia primero, null si no cupo; luego los del relleno), para que su gente (W, Townsfolk) se reparta igual.
+    /// </summary>
+    static List<AreaFunctionSite> PlannedTown(Transform t, string town, Lot[] named, Lot[] fill)
+    {
+        var lots = new Lots(t);
+        if (named.Length > 0) _planStyle = named[0].style;
+        var sites = new List<AreaFunctionSite>();
+        for (int i = 0; i < named.Length; i++)
+        {
+            Lot l = named[i];
+            AreaFunctionSite s = l.floors != null ? Storeys(t, l.name, l.template, l.title, l.style, l.floors) : Building(t, l.name, l.template, l.title, Vector3.zero, 0f, l.size, l.style, l.stations);
+            Vector2 near = _plan.hitos.TryGetValue(i, out Vector2 h) ? PlanPoint(h) : new Vector2(0f, 40f);
+            if (!PlaceOn(lots, s, near)) { Debug.LogWarning($"[Pueblos] {town}: no cabe «{l.name}»."); Object.DestroyImmediate(s.gameObject); sites.Add(null); continue; }
+            sites.Add(s);
+        }
+        PlanCivic(t, lots, _plan);
+        _home = null;
+        var filled = PlanFill(t, lots, _plan, fill, Mathf.Min(_plan.fill, PlanMaxSites - Count(t)));
+        foreach (AreaFunctionSite s in filled) { if (_home == null && s.building == "Casa") _home = s; sites.Add(s); }
+        Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia en su sitio del plano y {filled.Count} solares del pueblo sobre sus calles.");
         return sites;
     }
 

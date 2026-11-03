@@ -50,15 +50,33 @@ internal static partial class CivicBuilder
         // insecto-humano (en un microcosmos solo hay insectos: InsectOnly). Los hogares ajustan luego cada mueble a su dueño.
         Region = me != null && !string.IsNullOrEmpty(me.region) ? me.region : MicroStyles.RegionOf(display).ToString();
         MicroFurniture.DefaultBody = MicroBody.OfSpecies("Ant", 1.75f);
+        // EL PLANO DEL PUEBLO (2026-11-03, CivicBuilder.Plans): en una era avanzada, su paisaje y sus calles reales primero (los
+        // solares los esquivan); luego los edificios de la historia en su sitio, los del pueblo y las casas a lo largo de las calles.
+        _plan = null; _civicDone = _fillDone = false; _quarterAt = null;
+        _planStyle = FillStyles.TryGetValue(display, out var fs0) ? fs0.st : null;
+        if (MicroBuildRules.IsTownEra(Year))
+        {
+            Rect fl = AreaMicrocosmos.FloorRectLocal(t);
+            _plan = PlanOf(display, fl);
+            if (_plan != null) BuildPlan(t, _plan, fl, _planStyle != null ? Color.Lerp(_planStyle.floor, Color.gray, 0.4f) : C(0.5f, 0.48f, 0.44f));
+        }
         int n = CivilizeEra(t, display);
         if (t.GetComponentInChildren<AreaFunctionSite>(true) == null) return n;   // una historia sin pueblo
         int moved = Settle(t);
         var lots = new Lots(t);
-        // Regla 5: en las eras avanzadas el pueblo sigue por el piso (casas de la era, vacías de gente).
-        int fill = MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs) ? FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10) : 0;
+        int civic = PlanCivic(t, lots, _plan);
+        // Regla 5: en las eras avanzadas el pueblo sigue por el piso (casas de la era, vacías de gente): con plano, a lo largo de sus
+        // calles; sin él, alrededor del claro.
+        int fill = 0;
+        if (MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs))
+        {
+            if (_plan != null && !_fillDone) fill = PlanFill(t, lots, _plan, new[] { new Lot(fs.title, "Casa", fs.title, 12f, 10f, fs.st) }, _plan.fill).Count;
+            else if (_plan == null) fill = FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10);
+        }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
-        if (moved > 0 || fill > 0 || homes > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {fill} casas de relleno, {homes} casas nuevas para familias.");
+        foreach (AreaFunctionSite s in t.GetComponentsInChildren<AreaFunctionSite>(true)) { s.bodies = ""; Tag(s); }   // las etiquetas, ya con los muebles rehechos a la medida de cada hogar
+        if (moved > 0 || fill > 0 || homes > 0 || civic > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {civic} edificios del pueblo, {fill} casas de relleno, {homes} casas nuevas para familias; {Count(t)} edificios en total.");
         MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
         return n;
     }
@@ -75,6 +93,8 @@ internal static partial class CivicBuilder
         ["Irena Sendler"] = (Sandstone, "Casa de vecinos de Varsovia"),
         ["Le Chambon-sur-Lignon"] = (StoneManor, "Casa de piedra del plateau"),
         ["Mesopotamia"] = (MudBrick, "Casa de adobe de Uruk"),
+        ["Tregua 1914"] = (FieldTimber, "Granja de Ploegsteert (evacuada)"),
+        ["Palenque"] = (MayaPlaster, "Casa de Lakamha'"),
     };
 
     /// <summary>Cada EDIFICIO ABIERTO (los de <see cref="Building"/>, con su «Suelo») que choca con otro o con la historia (a menos
@@ -125,6 +145,18 @@ internal static partial class CivicBuilder
             foreach (Transform c in t)
             {
                 if (skip != null && skip.Contains(c)) continue;
+                // (2026-11-03) El PLANO del pueblo (TownPlans): sus calles y su paisaje (río, lago, colinas, campos) se pisan o se
+                // ven, pero no se construye encima: cada tramo, su caja (no la del conjunto, que es el pueblo entero).
+                if (c.name.StartsWith(PlanLandscape) || c.name.EndsWith(PlanStreets))
+                {
+                    foreach (Renderer r in c.GetComponentsInChildren<Renderer>(true))
+                    {
+                        Bounds rb = r.bounds;
+                        Vector3 a = t.InverseTransformPoint(rb.min), z = t.InverseTransformPoint(rb.max);
+                        Mark(Rect.MinMaxRect(Mathf.Min(a.x, z.x), Mathf.Min(a.z, z.z), Mathf.Max(a.x, z.x), Mathf.Max(a.z, z.z)));
+                    }
+                    continue;
+                }
                 bool any = false; Bounds b = default;
                 foreach (Renderer r in c.GetComponentsInChildren<Renderer>(true))
                 {
@@ -134,11 +166,21 @@ internal static partial class CivicBuilder
                 }
                 if (!any) continue;
                 Vector3 mn = t.InverseTransformPoint(b.min), mx = t.InverseTransformPoint(b.max);
-                _taken.Add(Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z)));
+                Mark(Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z)));
             }
         }
 
-        public void Mark(Rect r) => _taken.Add(r);
+        // (2026-11-03) Un índice por celdas de 40 m: con el barrio ×60 hay miles de solares y tramos de calle que mirar.
+        readonly Dictionary<(int, int), List<int>> _grid = new Dictionary<(int, int), List<int>>();
+        const float GridCell = 40f;
+        static int G(float v) => Mathf.FloorToInt(v / GridCell);
+
+        public void Mark(Rect r)
+        {
+            int id = _taken.Count; _taken.Add(r);
+            for (int i = G(r.xMin); i <= G(r.xMax); i++) for (int k = G(r.yMin); k <= G(r.yMax); k++)
+            { if (!_grid.TryGetValue((i, k), out var l)) _grid[(i, k)] = l = new List<int>(); l.Add(id); }
+        }
 
         /// <summary>¿Cabe un solar de <paramref name="size"/> centrado en <paramref name="c"/> (dentro del piso, fuera del claro, a
         /// una calle de todo lo construido)?</summary>
@@ -150,7 +192,8 @@ internal static partial class CivicBuilder
             if (dx * dx + dz * dz < Clearing * Clearing) return false;
             float s = MicroBuildRules.Street;
             Rect g = new Rect(r.x - s, r.y - s, r.width + 2f * s, r.height + 2f * s);
-            foreach (Rect o in _taken) if (g.Overlaps(o)) return false;
+            for (int i = G(g.xMin); i <= G(g.xMax); i++) for (int k = G(g.yMin); k <= G(g.yMax); k++)
+                if (_grid.TryGetValue((i, k), out var l)) foreach (int id in l) if (g.Overlaps(_taken[id])) return false;
             return true;
         }
 
@@ -159,12 +202,25 @@ internal static partial class CivicBuilder
         public Vector3? Take(Vector2 size, Vector2? near = null)
         {
             Vector2 n = near ?? Vector2.zero; Vector2? best = null; float bd = float.MaxValue;
-            for (float x = floor.xMin + size.x * 0.5f; x <= floor.xMax - size.x * 0.5f; x += 2f)
-                for (float z = floor.yMin + size.y * 0.5f; z <= floor.yMax - size.y * 0.5f; z += 2f)
-                {
-                    Vector2 c = new Vector2(x, z); float d = (c - n).sqrMagnitude;
-                    if (d < bd && Free(c, size)) { bd = d; best = c; }
-                }
+            // (2026-11-03) En ANILLOS alrededor de «near» (rejilla de 2 m): con el barrio ×60 (hasta 2,8 km) recorrer el piso entero
+            // eran millones de solares por casa. El primer anillo con sitio da el más cercano (se mira uno más por si la diagonal
+            // del anterior queda más lejos).
+            float x0 = floor.xMin + size.x * 0.5f, x1 = floor.xMax - size.x * 0.5f, z0 = floor.yMin + size.y * 0.5f, z1 = floor.yMax - size.y * 0.5f;
+            if (x0 > x1 || z0 > z1) return null;
+            Vector2 c0 = new Vector2(Mathf.Clamp(n.x, x0, x1), Mathf.Clamp(n.y, z0, z1));
+            int maxR = Mathf.Min(Mathf.CeilToInt(Mathf.Max(floor.width, floor.height) / 2f) + 1, 350), foundAt = -1;   // hasta 700 m de «near»
+            for (int ring = 0; ring <= maxR; ring++)
+            {
+                if (foundAt >= 0 && ring > foundAt + 1) break;
+                for (int i = -ring; i <= ring; i++)
+                    for (int k = -ring; k <= ring; k += (Mathf.Abs(i) == ring || ring == 0) ? 1 : 2 * ring)   // solo el borde del anillo
+                    {
+                        Vector2 c = new Vector2(c0.x + i * 2f, c0.y + k * 2f);
+                        if (c.x < x0 || c.x > x1 || c.y < z0 || c.y > z1) continue;
+                        float d = (c - n).sqrMagnitude;
+                        if (d < bd && Free(c, size)) { bd = d; best = c; if (foundAt < 0) foundAt = ring; }
+                    }
+            }
             if (!best.HasValue) return null;
             Mark(new Rect(best.Value - size * 0.5f, size));
             return new Vector3(best.Value.x, 0f, best.Value.y);
@@ -199,6 +255,7 @@ internal static partial class CivicBuilder
             case "Berna": return EinsteinTown(t);
             case "Pasadena": return PattersonTown(t);
             case "Chernóbil": return ChernobylTown(t);
+            case "Palenque": return PalenqueTown(t);
             default: return 0;
         }
     }
@@ -365,6 +422,7 @@ internal static partial class CivicBuilder
         if (st.columns) for (int k = 0; k < 6; k++) AreaMicrocosmos.Box(b, "Columna", new Vector3(-used.x * 0.5f + 0.4f + k * (used.x - 0.8f) / 5f, st.wallH * 0.5f, -used.y * 0.5f - 0.6f), new Vector3(0.4f, st.wallH, 0.4f), AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), true);
         b.localRotation = Quaternion.Euler(0f, yaw, 0f);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = template; site.title = title; site.region = Region;
+        Tag(site);
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = title; wl.height = 3.2f;
         return site;
     }
@@ -382,12 +440,77 @@ internal static partial class CivicBuilder
             l.Add(p); have.Add(s.key);
         }
         if (template == "Casa" || template == "Orfanato")
+        {
             foreach (string need in new[] { "cama", "mesa", "fogon", "inodoro", "lavabo" })
             {
                 if (have.Contains(need)) continue;
                 l.Add(MicroFurniture.Build(b, need, Vector3.zero, 0f, NeedLabel(need, Year), Year, null, Region));
             }
+            // REGLA 11 (Berón 2026-11-03: «las residencias del microcosmos deben tener plantas frutales»): su FRUTAL, de los que se
+            // cultivaban en su época y lugar (MicroStyles.Fruits: el manzano de Woolsthorpe, el cacao de Palenque, el mango del Terai…).
+            if (!have.Contains("frutal")) l.Add(FruitTree(b, b.name.GetHashCode()));
+        }
+        Adapt(b, l);
         return l;
+    }
+
+    /// <summary>El FRUTAL de una casa (MicroFurniture «frutal»), rotulado con su especie.</summary>
+    internal static Transform FruitTree(Transform b, int seed)
+    {
+        MicroStyles.Fruit fr = MicroFurniture.FruitFor(MicroStyles.For(Year, Region), seed);
+        Transform p = MicroFurniture.Build(b, "frutal", Vector3.zero, 0f, fr.name, Year, null, Region);
+        var wl = p.gameObject.AddComponent<WorldLabel>(); wl.text = fr.name; wl.height = fr.height + 0.6f;
+        return p;
+    }
+
+    /// <summary>
+    /// REGLA 9 (2026-11-03): todo edificio está ADAPTADO A HUMANOS Y A INSECTOS-HUMANOS. Sus muebles se hacen para el cuerpo por
+    /// defecto del microcosmos (MicroFurniture.DefaultBody: un insecto-humano centauro); si entre <paramref name="pieces"/> no hay
+    /// ninguno a la medida de una persona, se le añade un banco para personas (y al revés, uno de abdomen para insectos-humanos).
+    /// </summary>
+    static void Adapt(Transform b, List<Transform> pieces)
+    {
+        bool human = false, insect = false;
+        foreach (Transform p in pieces)
+            foreach (MicroPiece mp in p.GetComponentsInChildren<MicroPiece>(true))
+            {
+                if (!mp.fitted) continue;
+                if (string.IsNullOrEmpty(mp.fitFor)) human = true; else insect = true;
+            }
+        if (!human) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
+        if (!insect) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Asiento de abdomen (para insectos-humanos)", Year, null, Region, MicroBody.OfSpecies("Ant", 1.75f)));
+    }
+
+    /// <summary>
+    /// LAS ETIQUETAS DE ACTIVIDAD de un edificio (regla 8, docs/microcosmos-actividades.md): su categoría (trabajo, descanso,
+    /// recuperación u ocio: <see cref="AreaFunctionSite.ActivityOf"/>), si tiene puestos de trabajo, su capacidad (camas, asientos,
+    /// puestos, sitio en lo que se pisa), la interacción que ofrece y los cuerpos para los que está adaptado. Es lo que el horario
+    /// semanal lee para mandar a cada uno a trabajar, descansar, recuperarse o divertirse.
+    /// </summary>
+    internal static void Tag(AreaFunctionSite site, string interaction = null)
+    {
+        if (site == null) return;
+        if (string.IsNullOrEmpty(site.activity)) site.activity = AreaFunctionSite.ActivityOf(site.building);
+        if (string.IsNullOrEmpty(site.interaction)) site.interaction = interaction ?? AreaFunctionSite.InteractionOf(site.building);
+        if (string.IsNullOrEmpty(site.region)) site.region = Region;
+        int cap = 0; var bodies = new SortedSet<string>();
+        foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
+        {
+            if (mp.transform.parent != null && mp.transform.parent.GetComponentInParent<MicroPiece>(true) != null) { if (mp.kind == "silla" || mp.kind == "banco") cap++; continue; }   // las sillas de una mesa: un comensal cada una
+            if (mp.fitted) bodies.Add(string.IsNullOrEmpty(mp.fitFor) ? "Humano" : mp.fitFor);
+            switch (mp.kind)
+            {
+                case "cama": case "camilla": case "cuna": case "silla": cap += 1; break;
+                case "banco": cap += 2; break;
+                case "tatami": case "esterilla": case "bancal": case "pista": case "piscina": case "anden": cap += mp.walkable ? 4 : 1; break;
+                case "frutal": case "inodoro": case "lavabo": break;
+                default: if (mp.GetComponent<AreaFunctionStation>() != null) cap += 1; break;
+            }
+        }
+        site.capacity = Mathf.Max(1, cap);
+        site.bodies = string.Join(", ", bodies);
+        site.hasWork = false;
+        foreach (var f in site.Functions(Year)) if (f.kind != AreaFunctions.Kind.Rest && f.kind != AreaFunctions.Kind.Dine && !(f.roles.Length == 1 && f.roles[0] == "todos")) { site.hasWork = true; break; }
     }
 
     /// <summary>El nombre de cada mueble de necesidad básica en el ESTILO de su época y lugar (<see cref="Region"/>, MicroStyles) y
@@ -508,9 +631,11 @@ internal static partial class CivicBuilder
         // Un sitio necesita un puesto con funciones: si solo faltaban retrete y lavabo, una cama de descanso.
         bool anyStation = false; foreach (Transform p in pieces) if (p.GetComponent<AreaFunctionStation>() != null) anyStation = true;
         if (!anyStation) { Transform p = MicroFurniture.Build(b, "cama", Vector3.zero, 0f, NeedLabel("cama", Year), Year, null, Region); p.gameObject.AddComponent<AreaFunctionStation>().station = "cama"; pieces.Insert(0, p); }
+        Adapt(b, pieces);
         Vector2 used = Layout(b, pieces, new Vector2(14f, 8f), 0f);
         Floor(b, used, st);
         var site = b.gameObject.AddComponent<AreaFunctionSite>(); site.building = "Casa"; site.title = b.name; site.region = Region;
+        Tag(site);
         var wl = b.gameObject.AddComponent<WorldLabel>(); wl.text = b.name; wl.height = 3f;
         return site;
     }

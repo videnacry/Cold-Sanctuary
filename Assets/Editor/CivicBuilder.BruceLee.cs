@@ -29,6 +29,14 @@ internal static partial class CivicBuilder
         Rect fl = lots.floor;
         // Kowloon al oeste del claro de la historia, Seattle / Oakland / Los Ángeles al este.
         Vector2 hk = new Vector2(Mathf.Lerp(0f, fl.xMin, 0.45f), 0f), us = new Vector2(Mathf.Lerp(0f, fl.xMax, 0.45f), 0f);
+        // (2026-11-03) Con su PLANO (CivicBuilder.Plans): Kowloon alrededor de Nathan Road (oeste) y Seattle alrededor de Broadway (este);
+        // los edificios del pueblo de cada lado, en su región y su estilo.
+        if (_plan != null)
+        {
+            hk = PlanPoint(new Vector2(-300f, 0f)); us = PlanPoint(new Vector2(300f, 0f));
+            _planStyle = TongLau;
+            _quarterAt = q => q.x < 0f ? (MicroStyles.Region.HongKong.ToString(), TongLau) : (MicroStyles.Region.Norteamerica.ToString(), SeattleBrick);
+        }
         var placedHK = new List<Transform>(); var placedUS = new List<Transform>();
 
         // ── KOWLOON, años 50 ── (sus muebles: los de los tong lau de Hong Kong, MicroStyles)
@@ -80,9 +88,9 @@ internal static partial class CivicBuilder
         }
         // El resto del piso: más bloques de tong lau y casas de madera, vacíos de gente (la ciudad sigue).
         Region = MicroStyles.Region.HongKong.ToString();
-        int fill = FillTown(t, lots, hk, TongLau, "Tong lau", 8);
+        int fill = FillTown(t, lots, hk, TongLau, "Tong lau", _plan != null ? 30 : 8);
         Region = MicroStyles.Region.Norteamerica.ToString();
-        fill += FillTown(t, lots, us, Clapboard, "Casa de madera", 6);
+        fill += FillTown(t, lots, us, Clapboard, "Casa de madera", _plan != null ? 25 : 6);
         Region = MicroStyles.Region.HongKong.ToString();   // (las casas nuevas de Homes: la región del trabajo de cada familia)
 
         int n = 0;

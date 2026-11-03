@@ -37,6 +37,9 @@ public static partial class StorySceneBuilder
         ("AtomicPlant_Area", "Berna", "Microcosmos_Einstein", new Color(0.7f, 0.65f, 0.55f), new System.Func<Transform, int>(Einstein)),
         ("Chemistry_Area", "Pasadena", "Microcosmos_Patterson", new Color(0.75f, 0.75f, 0.75f), new System.Func<Transform, int>(Patterson)),
         ("NuclearPower_Area", "Chernóbil", "Microcosmos_Chernobil", new Color(0.5f, 0.55f, 0.5f), new System.Func<Transform, int>(Chernobyl)),
+        // LA HISTORIA MAYA (StorySceneBuilder.Maya.cs, docs/microcosmos-maya-pakal.md): Pakal de Palenque, sobre el Huerto (la milpa) mientras
+        // falta su piso representativo (MicroFloors: «Templo de los antepasados»).
+        ("Garden_Area", "Palenque", "Microcosmos_Pakal", new Color(0.55f, 0.7f, 0.45f), new System.Func<Transform, int>(Pakal)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -61,6 +64,7 @@ public static partial class StorySceneBuilder
         ["Berna"] = ("mayo de 1905", 8.0f),   // camino de la Oficina de Patentes, bajo la Torre del Reloj
         ["Pasadena"] = ("1953", 10.0f),   // la mañana en el laboratorio limpio
         ["Chernóbil"] = ("principios de mayo de 1986", 22.0f),   // de noche, en el sótano del bloque 4
+        ["Palenque"] = ("28 de agosto de 683 (9.12.11.5.18 en la Cuenta Larga)", 7.0f),   // el amanecer del día en que muere Pakal
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era

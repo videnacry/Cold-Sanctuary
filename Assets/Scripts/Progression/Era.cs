@@ -96,6 +96,7 @@ public static class Eras
             case "Berna":                 return (1905, "Berna (Albert Einstein, el año milagroso)");
             case "Pasadena":              return (1953, "Pasadena y Argonne (Clair C. Patterson)");
             case "Chernóbil":             return (1986, "Prípiat y la central de Chernóbil (Alekséi Ananenko y su escuadrón)");
+            case "Palenque":              return (683, "Lakamha' (Palenque), Chiapas: la muerte y el renacer de K'inich Janaab Pakal");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

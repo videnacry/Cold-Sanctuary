@@ -271,6 +271,38 @@ public static class MicroBiome
                 new Bug("DungBeetle", 4, 6, C(0.2f, 0.15f, 0.1f), "Afodio (Aphodius), en el excremento de alce"),
                 new Bug("Antlion", 2, 13, C(0.6f, 0.55f, 0.45f), "Hormiga león (Myrmeleon formicarius), en el arenal soleado") } };
 
+            // ── Palenque (Lakamha'), selva alta perennifolia de Chiapas, finales de agosto (lluvias) ──
+            // Flora: ceiba, ramón, cacao, palma de corozo, helechos, bromelias; la milpa (maíz, frijol, calabaza). Fauna: hormiga
+            // cortadora (Atta cephalotes), abeja sin aguijón de los mayas (Melipona beecheii, la xunáan kab), cigarra gigante (Quesada
+            // gigas), luciérnaga, saltamontes de la milpa y la araña de seda dorada (Trichonephila clavipes). (CONABIO, Reserva de Palenque.)
+            case "Palenque": return new Biome { title = "Palenque, selva alta de Chiapas (agosto, lluvias)", ground = C(0.42f, 0.3f, 0.2f), plants = new[] {
+                new Plant(Kind.Fern, 14, "Helecho arborescente (Cyathea)", 300, C(0.25f, 0.5f, 0.25f), C(0.35f, 0.3f, 0.2f)),
+                new Plant(Kind.Shrub, 10, "Ramón (Brosimum alicastrum)", 1500, C(0.2f, 0.42f, 0.2f), C(0.85f, 0.6f, 0.2f)),
+                new Plant(Kind.Shrub, 6, "Ceiba (Ceiba pentandra)", 2000, C(0.25f, 0.45f, 0.22f), C(0.62f, 0.6f, 0.52f)),
+                new Plant(Kind.Shrub, 8, "Cacao (Theobroma cacao)", 500, C(0.2f, 0.38f, 0.18f), C(0.85f, 0.5f, 0.15f)),
+                new Plant(Kind.Grass, 14, "Maíz de la milpa (Zea mays)", 220, C(0.45f, 0.65f, 0.25f), C(0.95f, 0.8f, 0.3f)),
+                new Plant(Kind.Flower, 7, "Bromelia (Aechmea bracteata)", 80, C(0.3f, 0.5f, 0.25f), C(0.85f, 0.2f, 0.3f)),
+                new Plant(Kind.Fungus, 5, "Hongo de la selva (Marasmius)", 6, C(0.9f, 0.85f, 0.75f), C(0.75f, 0.35f, 0.25f)),
+                new Plant(Kind.Moss, 6, "Musgo de la piedra caliza", 3, C(0.3f, 0.5f, 0.22f), C(0.45f, 0.6f, 0.25f)),
+                new Plant(Kind.Stone, 6, "Caliza", 0, Stone, Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 7, "Cacao del huerto (Theobroma cacao)", 500, C(0.2f, 0.38f, 0.18f), C(0.85f, 0.5f, 0.15f)),
+                new Plant(Kind.Shrub, 5, "Aguacate (Persea americana)", 900, C(0.2f, 0.36f, 0.18f), C(0.2f, 0.35f, 0.15f)),
+                new Plant(Kind.Shrub, 4, "Ceiba de la plaza (Ceiba pentandra)", 2000, C(0.25f, 0.45f, 0.22f), C(0.62f, 0.6f, 0.52f)),
+                new Plant(Kind.Grass, 12, "Maíz del solar (Zea mays)", 200, C(0.45f, 0.65f, 0.25f), C(0.95f, 0.8f, 0.3f)),
+                new Plant(Kind.Flower, 5, "Calabaza (Cucurbita moschata)", 40, C(0.3f, 0.55f, 0.25f), C(0.95f, 0.65f, 0.15f)),
+                new Plant(Kind.Grass, 10, "Césped de grama (Paspalum)", 5, C(0.4f, 0.6f, 0.28f), C(0.5f, 0.6f, 0.3f)) },
+              bugs = new[] {
+                new Bug("Ant", 10, 12, C(0.6f, 0.3f, 0.15f), "Hormiga cortadora de hojas (Atta cephalotes)"),
+                new Bug("SnowBee", 5, 9, C(0.55f, 0.4f, 0.2f), "Abeja sin aguijón de los mayas, xunáan kab (Melipona beecheii)"),
+                new Bug("Cicada", 3, 60, C(0.35f, 0.3f, 0.2f), "Cigarra gigante (Quesada gigas)"),
+                new Bug("Firefly", 4, 12, C(0.3f, 0.22f, 0.15f), "Luciérnaga (Photinus)"),
+                new Bug("Grasshopper", 4, 40, C(0.4f, 0.6f, 0.25f), "Saltamontes de la milpa (Sphenarium)"),
+                new Bug("Spider", 2, 40, C(0.85f, 0.7f, 0.2f), "Araña de seda dorada (Trichonephila clavipes)") },
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.6f, C(0.55f, 0.45f, 0.35f), "Perro del solar (en el microcosmos, una cochinilla)"),
+                new Pet("Ladybug", 3, 0.8f, C(0.2f, 0.25f, 0.3f), "Pavo de monte (en el microcosmos, una mariquita oscura)") } };
+
             // ── Hong Kong, ladera subtropical, mediados de septiembre (Bruce Lee empieza en la escuela de Yip Man) ──
             // Flora y fauna nativas comunes del sur de China y Hong Kong (Hong Kong Herbarium, AFCD; Hong Kong Biodiversity Database).
             case "Bruce Lee": return new Biome { title = "Hong Kong, ladera subtropical (septiembre)", ground = C(0.58f, 0.42f, 0.3f), plants = new[] {
