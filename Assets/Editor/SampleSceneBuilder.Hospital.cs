@@ -195,7 +195,7 @@ public static partial class SampleSceneBuilder
         var icuBeds = new System.Collections.Generic.List<Transform>();
         for (int i = 0; i < 6; i++)
         {
-            Vector3 c = new Vector3(9.6f + (i % 3) * 3.6f, 0f, 11.55f + (i / 3) * 4.6f);
+            Vector3 c = new Vector3(9.2f + (i % 3) * 3.8f, 0f, 11.55f + (i / 3) * 4.7f);   // 3,8 × 4,7 m: las camas con su ventilador guardan 2 m
             Zone(w1, "Box_UCI", c, new Vector2(3.4f, 4.2f), zoneC);
             Transform icu = InfirmaryProps.HospitalBed(w1, $"UCI {i + 1}", c, 0f, bl[(i + 2) % 4]);
             InfirmaryProps.Ventilator(icu, "Ventilador", new Vector3(-0.85f, 0f, 0.3f), 90f);
@@ -219,7 +219,7 @@ public static partial class SampleSceneBuilder
         // puerta al este; el EPI (bata, guantes, mascarilla FFP2), fuera, junto a la puerta.
         GlassWall.Box(iso, "Esclusa_aislamiento", new Vector3(-8.8f, 0f, isoZ - 4.91f), new Vector2(21.3f, 2.6f), 0f, 1, 0f, 0);
         KitchenProps.C(iso, new Vector3(-8.8f, 0.02f, isoZ - 4.91f), new Vector3(21.1f, 0.02f, 2.4f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");
-        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.45f, 0f, isoZ - 4.91f), -90f);
+        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.45f, 0f, isoZ - 9.15f), -90f);   // al sur de la puerta de la esclusa: a 2 m de ella y del cristal de la UCI
         KitchenProps.C(epi, new Vector3(0f, 0.9f, 0f), new Vector3(0.9f, 1.8f, 0.45f), KitchenProps.White, 0f, "Armario_EPI");
         KitchenProps.C(epi, new Vector3(0f, 1.3f, -0.235f), new Vector3(0.7f, 0.3f, 0.02f), new Color(0.95f, 0.82f, 0.3f), 0f, "Rotulo_EPI");
         KitchenProps.Fit(epi);
@@ -292,7 +292,7 @@ public static partial class SampleSceneBuilder
         // ALA DE DIAGNÓSTICO Y SERVICIO (noreste): rayos X blindado (4 × 4 m), eco, laboratorio, farmacia y cocina de dietas (con
         // congelador a −18 °C para el pescado).
         Zone(v, "Sala_rayos_X_vet", new Vector3(12.6f, 0f, 10.5f), new Vector2(4.4f, 4.4f), zoneW);
-        Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 9.6f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
+        Station(InfirmaryProps.XRay(v, "Rayos X veterinario", new Vector3(12.6f, 0f, 9.7f), 0f), HospitalService.Imagen, "Rayos X veterinario (sala blindada)", 2.6f, false, new Vector3(0.9f, 0f, 1f));
         Station(InfirmaryProps.Ultrasound(v, "Ecografo veterinario", new Vector3(7f, 0f, 9.6f), 0f), HospitalService.Imagen, "Ecógrafo veterinario", 1.6f);
         Label(InfirmaryProps.LabBench(v, "Laboratorio veterinario", new Vector3(17.6f, 0f, 12f), -90f), "Laboratorio veterinario", 1.4f);
         Label(InfirmaryProps.MedicineCabinet(v, "Botiquin veterinario", new Vector3(18.6f, 0f, 17f), -90f), "Farmacia veterinaria", 2.2f);
