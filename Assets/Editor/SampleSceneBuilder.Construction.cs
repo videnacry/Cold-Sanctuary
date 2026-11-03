@@ -164,5 +164,24 @@ public static partial class SampleSceneBuilder
         Put("Sadhguru", "YogaRoom_Area", new Vector3(0f, 1.5f, 0f));             // en la plataforma central, rodeado de las 30 esterillas
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
         Put("Andrea", "Kitchen_Area", new Vector3(3f, 1f, 9f));                   // en el comedor: el restaurante es una vía de ingresos
+        // Los seis del mesocosmos (docs/personajes-mesocosmos.md), cada uno en el área de su papel.
+        Put("ElonMusk", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));          // los vehículos y la maquinaria
+        Put("Goku", "Gym_Area", new Vector3(-3f, 1f, 3f));                         // entrena artes marciales (el dojo sigue en obras)
+        Put("BillGates", "Infirmary_Area", new Vector3(3f, 1f, -3f));              // registros y vacunación del hospital
+        Put("WarrenBuffett", "Kitchen_Area", new Vector3(-3f, 1f, 9f));            // las cuentas del restaurante
+        Put("MacKenzieScott", "Garden_Area", new Vector3(2f, 1f, 3f));             // alimentar a los visitantes con lo del huerto
+        Put("IbrahimTraore", "Construction_Area", new Vector3(3f, 1f, 2f));        // coordina la guardia (la torre está junto a las obras)
     }
+
+    /// <summary>LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): id, rótulo, x de salida, ropa y stats
+    /// (fuerza, agilidad, resistencia, masa).</summary>
+    static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] MesoCharacters =
+    {
+        ("ElonMusk", "Elon Musk (mecánica: vehículos eléctricos y cohetes)", 18f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 0.95f, 1.0f, 1.1f),
+        ("Goku", "Goku (entrenador de artes marciales)", 20f, new Color(0.95f, 0.47f, 0.12f), 1.6f, 1.5f, 1.6f, 1.1f),
+        ("BillGates", "Bill Gates (hospital: registros y vacunación)", 22f, new Color(0.22f, 0.32f, 0.55f), 0.95f, 0.95f, 1.0f, 1.0f),
+        ("WarrenBuffett", "Warren Buffett (cuentas del santuario)", 24f, new Color(0.42f, 0.43f, 0.46f), 0.85f, 0.8f, 0.9f, 1.05f),
+        ("MacKenzieScott", "MacKenzie Scott (huerto: alimentar a los visitantes)", 26f, new Color(0.62f, 0.75f, 0.88f), 0.95f, 1.05f, 1.05f, 0.95f),
+        ("IbrahimTraore", "Ibrahim Traoré (guardia: coordina la seguridad)", 28f, new Color(0.33f, 0.36f, 0.24f), 1.25f, 1.2f, 1.3f, 1.05f),
+    };
 }

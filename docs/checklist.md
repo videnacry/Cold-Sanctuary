@@ -70,6 +70,25 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > en la enfermería como paciente de Linduarda; migrar limpieza/recetas de Goluis a `TeachingSession` interactiva; afinar
 > ángulos/IK en Unity; sesiones de yoga futuras (Ashtanga 2–4, Shambhavi, brazos).
 
+## Pueblos desde su mapa, reglas de los microcosmos y Pakal de Palenque (2026-11-03, rama `claude/edif-pueblos`)
+Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcosmos-reglas-edificacion.md`](microcosmos-reglas-edificacion.md) (reglas 8–12),
+[`microcosmos-areas.md`](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03) (reglas de los microcosmos y tabla de pisos),
+[`microcosmos-actividades.md`](microcosmos-actividades.md), [`microcosmos-maya-pakal.md`](microcosmos-maya-pakal.md),
+[`construcciones-elevadas.md`](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03), [`microcosmos-bruce-lee.md`](microcosmos-bruce-lee.md) §6.
+- [x] **Pueblos sobre su plano real** (24 planos: calles, río, lago, colinas, montes, campos, murallas, hitos), barrio ×60 (1,4–2,8 km), ≤ 150 edificios.
+- [x] **Edificios del pueblo** (plaza, mercado, escuela, estación, comisaría, bomberos, museo, guardería, baños, hotel, carpintería, obra, cuartel, centro de tecnología, parque, monumento, pileta, edificios de varias plantas en terraza) con su nombre de época y lugar (`MicroStyles.CivicName`).
+- [x] **Etiquetas de actividad** (trabajo / descanso / recuperación / ocio, capacidad, interacción, cuerpos) en cada `AreaFunctionSite` — gancho para el horario semanal.
+- [x] **Reglas 8–12** en `MicroBuildRules.ValidateSites` (actividad, adaptado a personas e insectos-humanos, estilo del catálogo, frutal en cada residencia, terrazas sin techo).
+- [x] **Reglas de los microcosmos** (`MicroFloors`: piso, montado encima, forma finalizada, estructuras pobladas con miradores, pueblo entero, pendiente de piso representativo) + **9 pisos que faltan** (menú «Pisos que faltan»).
+- [x] **Dos formas de cada piso** (`FloorForms`, `EnsureFloorForms`): 17 pisos (2 en obras, 15 con su forma en obra oculta). Bruce Lee, verificado: antes 3 conos de obra en el Dojo gigante; ahora forma finalizada.
+- [x] **Frutales** de época y lugar en todas las residencias (19 estilos).
+- [x] **Pakal de Palenque** (`Microcosmos_Pakal`, `PakalStoryTest` grupo 66; región `Maya`, estilo `maya_clasico`, bioma, plano de Lakamha').
+- [x] **Verificado en vivo** (2026-11-03): grupos 43 (365/0), 60 (48/0), 62 (373/0), 63 (16/0), 66 (23/0); 0 violaciones de las reglas 1–12 y de las de los microcosmos en los 23 pueblos; fotos en `Temp/Pueblos/`.
+- [x] `Microcosmos_Egina` con su ciudad (`CivicBuilder.EginaTown`; el templo del mito y la stoa, marcados como historia).
+- [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
+- [ ] Que el **horario semanal** (otro hilo) use `AreaFunctionSite.activity` para mandar a cada uno a sus edificios de ocio, descanso y recuperación.
+- [ ] Palenque sobre el Huerto (24 × 9 m) queda a escala 1:2,5: con su piso propio (más ancho) iría a 1:1.
+
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
       clases/config de **hormiga cosechadora, termita cosechadora, escarabajo pelotero, hormiga león,
@@ -484,6 +503,17 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ley de la saga: **≥6 personajes vivos por historia, misma alma en cuerpos distintos**. En esta era, Momo/Medea = almas en **ancianas** que mueren cerca de su nacimiento.
 - [ ] Escenarios INTERMEDIOS entre este nivel y el alba de Ambrosio (a definir).
 
+## Horario libre semanal y los seis del mesocosmos (2026-11-03; [`horario-libre.md`](horario-libre.md), [`personajes-mesocosmos.md`](personajes-mesocosmos.md))
+- [x] Reparto semanal de las horas libres (16, 17, 18, 20 y 21 h) con la lógica de la jornada (`LeisureRoster`): catálogo que rota por franja, a quien menos la ha hecho, con plazas.
+- [x] Horario en el juego por escena (`LeisureDirector`): santuario (personal de la jornada) y microcosmos (insectos-humanos con `MicroJornada`); andar al sitio y hacer la actividad; las necesidades van antes.
+- [x] Etiquetas de actividad de los edificios (ocio, recuperación, descanso, capacidad, interacción): el tiempo libre no va a edificios de trabajo.
+- [x] Panel «Horario libre» (botón abajo a la izquierda / consola `horario`).
+- [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada.
+- [x] Prueba `HorarioLibreTest` (grupo 65).
+- [ ] Verificación en vivo del grupo 65, del grupo 50 (línea base 196/1) y de los grupos 28 y 62, más las fotos en `Temp/Horario/` (pendiente: candado de Unity ocupado).
+- [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
+- [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
@@ -559,6 +589,7 @@ editor-script no sobreviven a Play → el aviso de `PlaneMessenger` del sandbox 
       Pools `Total≈59 Vivencia≈49`.
 
 ## Historial (hecho) — detalle en docs/`DEVLOG.md`/git
+- **03-nov: horario libre semanal y los seis del mesocosmos.** Las horas libres de cada personaje de cada escena se reparten una vez por semana con la lógica de la jornada (el catálogo de ocio y cuidado rota por franja; cada actividad, a quien menos la ha hecho; plazas por sitio): `LeisureRoster`, `LeisureDirector`, `HorarioPanel`, prueba del grupo 65 (docs/horario-libre.md). Elon Musk (mecánica), Goku (artes marciales), Bill Gates (hospital), Warren Buffett (cuentas), MacKenzie Scott (huerto) e Ibrahim Traoré (guardia) se suman al santuario (docs/personajes-mesocosmos.md).
 - **01-sep (PRs #166–#171): cadena trófica del Santuario 1 (HIELO) + sueño día/noche.** (#166) limpieza del bioma:
   fuera la fauna templada (conejo/ciervo/lobo/zorro → reservados a un santuario templado); base viva = marina. (#167/#168)
   **banco como ORGANISMO**: `FishSchool` con crías-hijas que se multiplican con el tamaño; **mordisco-por-colisión**

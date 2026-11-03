@@ -102,7 +102,8 @@ public static class MicroFloors
         foreach (Transform c in root) if (c.name.EndsWith("_gigante")) { giant = c; break; }
         if (giant == null) bad.Add($"no lleva su piso gigante («…_gigante» de {f.platform}): no está montado encima de un piso");
         Transform story = root.Find("Historia");
-        if (story != null && Mathf.Abs(story.localPosition.y - f.center.y) > 2.5f) bad.Add($"la historia no está a ras del piso ({story.localPosition.y - f.center.y:0.0} m)");
+        // Encima: sobre su suelo o sobre una de sus estructuras (una entreplanta, la meseta de un mueble), nunca debajo ni sobre los muros.
+        if (story != null && (story.localPosition.y < f.center.y - 2.5f || story.localPosition.y > f.center.y + Mathf.Max(5f, f.wallHeight))) bad.Add($"la historia no está encima del piso ({story.localPosition.y - f.center.y:0.0} m sobre su suelo)");
         // 3 · Forma finalizada.
         if (!f.finishedForm) bad.Add("no se montó sobre la forma finalizada del piso");
         if (giant != null) { var obra = FloorForms.ObraLeft(giant); if (obra.Count > 0) bad.Add("piezas de obra en el piso: " + string.Join(", ", obra.GetRange(0, Mathf.Min(4, obra.Count)))); }

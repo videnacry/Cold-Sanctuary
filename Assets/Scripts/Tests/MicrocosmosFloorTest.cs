@@ -29,7 +29,7 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
     [Tooltip("Cargar también los microcosmos de Build Settings que no estén cargados.")]
     public bool loadFromBuildSettings = true;
     public int maxScenes = 30;
-    public float loadTimeout = 40f;
+    public float loadTimeout = 120f;   // (2026-11-03) los pueblos ×60 tardan más en cargar (40 s no bastaban: Bagdad, Berkeley, Angostura, Palenque)
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()

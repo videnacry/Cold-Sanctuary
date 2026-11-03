@@ -185,13 +185,16 @@ piso y `MicroBuildRules.Validate` sin violaciones.
 
 ## 6. Sobre el Dojo TERMINADO (2026-11-03)
 
-Berón: «en el microcosmos de Bruce Lee me ha dado la impresión de que se creó sobre el piso en construcción». Era así en parte: el
+Berón: «en el microcosmos de Bruce Lee me ha dado la impresión de que se creó sobre el piso en construcción». **Verificado en vivo**: el microcosmos guardado tenía en su Dojo gigante el «Acabado» encendido pero TRES CONOS de obra
+(40 cm: a ×100, conos naranjas de 40 m; foto `Temp/Pueblos/BruceLee_antes_piso_entero.png`), y el pueblo en un barrio de 372 × 272 m
+en una esquina. Era así en parte: el
 Dojo del santuario sigue en obras (`ConstructionProject`), y el microcosmos clonaba ese piso tal cual —con el andamio, el material
 del día y los **conos** (de 40 cm: a ×100, conos naranjas de 40 m)— y solo DESPUÉS, ya despejado el barrio del pueblo, la historia
 encendía el «Acabado» y quitaba el andamio y el material; los conos se quedaban, y el Dojo terminado (jaula, ring, tatami, sacos)
 aparecía fuera del barrio sin haber pasado por el despeje. Ahora `AreaMicrocosmos.Build` monta SIEMPRE la forma finalizada lo
 primero (`FloorForms.ShowFinished`, ver [construcciones-elevadas.md](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03)):
-Acabado encendido, ni andamio, ni material, ni conos; lo comprueban `BruceLeeStoryTest` (grupo 60) y `MicrocosmosFloorTest` (43).
+Acabado encendido, ni andamio, ni material, ni conos; lo comprueban `BruceLeeStoryTest` (grupo 60) y `MicrocosmosFloorTest` (43). Después (`BruceLee_despues_piso_entero.png`):
+sin conos ni andamio, 5 piezas de obra quitadas al montarlo, y el pueblo en un barrio de 2172 × 1572 m.
 
 Kowloon y Seattle, además, sobre su plano real (Nathan Road, Temple Street, Jordan Road, el puerto Victoria, la Roca del León;
 Broadway, Jefferson Street, University Way, el lago Union, el monte Rainier) con los edificios del pueblo de cada lado en su estilo

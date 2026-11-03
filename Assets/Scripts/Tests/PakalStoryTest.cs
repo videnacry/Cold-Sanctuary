@@ -20,7 +20,7 @@ public class PakalStoryTest : MonoBehaviour, ITestUnit
     public int Group => 66;   // tras las eras civilizadas (62) y el validador (63): carga y descarga una escena
     public bool ParallelSafe => false;
     public const string Scene = "Microcosmos_Pakal";
-    public float loadTimeout = 60f;
+    public float loadTimeout = 180f;   // (2026-11-03) los pueblos ×60 (hasta 150 edificios y 13 000 plantas) tardan más de 60 s en cargar en aditivo
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()

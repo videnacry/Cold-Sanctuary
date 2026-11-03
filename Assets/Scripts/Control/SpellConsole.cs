@@ -577,6 +577,10 @@ public class SpellConsole : MonoBehaviour
                 if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
                 foreach (string jl in WorkdayDirector.Instance.Report()) Log("  " + jl);
                 break;
+            case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/horario-libre.md): abre o cierra el panel y escribe el de hoy
+                Log(HorarioPanel.Toggle());
+                if (LeisureDirector.Instance != null) foreach (LeisureDirector.Group hg in LeisureDirector.Instance.groups) foreach (string hl in LeisureDirector.Instance.Report(hg)) Log("  " + hl);
+                break;
             case "hora": case "hour": if (TimeController.timeController != null && float.TryParse(args.TryGetValue("destiny", out string hv) ? hv : "", System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out float hh)) { TimeController.timeController.SetHour(hh); Log($"Son las {hh:00}:00."); } break;
             case "dia": case "día": case "day":   // dia(N): un día de juego dura N minutos reales (sin N: muestra el calendario)
                 if (TimeController.timeController != null)

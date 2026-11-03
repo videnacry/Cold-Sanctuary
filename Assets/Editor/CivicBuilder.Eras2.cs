@@ -126,6 +126,7 @@ internal static partial class CivicBuilder
         Material floor = AreaMicrocosmos.Mat("Civ_Suelo_barro", C(0.45f, 0.38f, 0.3f));
         // El radio crece lo que pidan el hogar y la estera con 2 m de paso entre ellos y al anillo.
         radius = Mathf.Max(radius, 3.6f);
+        if (name.StartsWith("Casa")) radius = Mathf.Max(radius, 5f);   // (2026-11-03) con el banco para personas dentro del anillo
         AreaMicrocosmos.Box(b, "Suelo", new Vector3(0f, 0.04f, 0f), new Vector3(radius * 2f, 0.08f, radius * 2f), floor, false);
         int segs = 14;
         for (int k = 0; k < segs; k++)
@@ -145,8 +146,8 @@ internal static partial class CivicBuilder
             var l = p.gameObject.AddComponent<WorldLabel>(); l.text = label; l.height = 1f;
         }
         // (2026-11-03) Reglas 9 y 11: un asiento para personas delante de la puerta y su FRUTAL detrás (la higuera de Gilgal).
-        MicroFurniture.Build(b, "banco", new Vector3(0f, 0.08f, -(radius + 2.5f)), 0f, "Banco (para personas)", -9500, null, Region, MicroBody.Human());
-        if (name.StartsWith("Casa")) { Transform fr = FruitTree(b, b.GetSiblingIndex()); fr.localPosition = new Vector3(0f, 0.08f, radius + 2.8f); }
+        MicroFurniture.Build(b, "banco", new Vector3(0f, 0.08f, 3.0f), 0f, "Banco (para personas)", -9500, null, Region, MicroBody.Human());
+        if (name.StartsWith("Casa")) { Transform fr = FruitTree(b, b.GetSiblingIndex()); fr.localPosition = new Vector3(0f, 0.08f, -(radius + 1.5f)); }
         site.region = Region; Tag(site, "dormir junto al hogar, moler y guardar el grano");
         Year = y0;
         return site;

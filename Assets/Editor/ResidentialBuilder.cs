@@ -14,10 +14,12 @@ public static class ResidentialBuilder
     public static readonly string[] Owners =
     {
         "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru", "Andrea",   // solo personajes del juego
+        "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore",   // los seis del mesocosmos
     };
     static readonly string[] Shown =
     {
         "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "el jefe de construcción", "Sadhguru", "Andrea",
+        "Elon Musk", "Goku", "Bill Gates", "Warren Buffett", "MacKenzie Scott", "Ibrahim Traoré",
     };
 
     public const string Name = "Residencia";
@@ -47,6 +49,13 @@ public static class ResidentialBuilder
             _houses.Add((trees[k] + side * HouseOut + Vector3.up * low, -dir));
             _houses.Add((trees[k] - side * HouseOut + Vector3.up * (low + 7f), -dir));
         }
+        // (2026-11-03) UNA TERCERA CASA por árbol, 14 m sobre la de abajo y del mismo lado: los seis del mesocosmos (18 casas).
+        for (int k = 0; k < 6; k++)
+        {
+            float a = (30f + 60f * k) * Mathf.Deg2Rad;
+            Vector3 dir = new Vector3(Mathf.Cos(a), 0f, Mathf.Sin(a)), side = Vector3.Cross(Vector3.up, dir).normalized;
+            _houses.Add((trees[k] + side * HouseOut + Vector3.up * (DeckY - 3f + (k % 3) * 1.5f + 14f), -dir));
+        }
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
@@ -65,7 +74,7 @@ public static class ResidentialBuilder
         {
             var (pos, door) = _houses[i];
             Transform cab = Cabin(root, pos, door, i, $"Casa del árbol {i + 1}");
-            Vector3 trunk = trees[i / 2] + Vector3.up * (pos.y - 0.35f);
+            Vector3 trunk = trees[i < 12 ? i / 2 : i - 12] + Vector3.up * (pos.y - 0.35f);
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }

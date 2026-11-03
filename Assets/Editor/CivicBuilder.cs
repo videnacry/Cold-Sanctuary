@@ -71,10 +71,14 @@ internal static partial class CivicBuilder
         if (MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs))
         {
             if (_plan != null && !_fillDone) fill = PlanFill(t, lots, _plan, new[] { new Lot(fs.title, "Casa", fs.title, 12f, 10f, fs.st) }, _plan.fill).Count;
-            else if (_plan == null) fill = FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10);
+            else if (_plan == null) fill = FillTown(t, lots, Vector2.zero, fs.st, fs.title, lots.floor.width < 250f ? 4 : 10);   // (en un piso de 120 m, como el de Uruk en MobWorld, no caben 10 con sus frutales);
         }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
+        // (2026-11-03) Los hogares rehacen los muebles a la medida de cada familia y la casa crece (Relayout): si al crecer se acerca a
+        // menos de una calle de otro edificio, se corre a un solar libre (la Higuera de una casa nueva del Huerto quedaba a 0,16 m
+        // del banco de la casa redonda de al lado).
+        moved += Settle(t);
         foreach (AreaFunctionSite s in t.GetComponentsInChildren<AreaFunctionSite>(true)) { s.bodies = ""; Tag(s); }   // las etiquetas, ya con los muebles rehechos a la medida de cada hogar
         if (moved > 0 || fill > 0 || homes > 0 || civic > 0) Debug.Log($"[Eras] {display}: {moved} edificios corridos a un solar libre (paso de {MicroBuildRules.Street:0} m entre edificios), {civic} edificios del pueblo, {fill} casas de relleno, {homes} casas nuevas para familias; {Count(t)} edificios en total.");
         MicroBuildRules.Validate(t, $"{display} ({Eras.Format(Year)})");
@@ -95,6 +99,7 @@ internal static partial class CivicBuilder
         ["Mesopotamia"] = (MudBrick, "Casa de adobe de Uruk"),
         ["Tregua 1914"] = (FieldTimber, "Granja de Ploegsteert (evacuada)"),
         ["Palenque"] = (MayaPlaster, "Casa de Lakamha'"),
+        ["Egina"] = (GreekStone, "Casa de Egina"),
     };
 
     /// <summary>Cada EDIFICIO ABIERTO (los de <see cref="Building"/>, con su «Suelo») que choca con otro o con la historia (a menos
@@ -256,6 +261,7 @@ internal static partial class CivicBuilder
             case "Pasadena": return PattersonTown(t);
             case "Chernóbil": return ChernobylTown(t);
             case "Palenque": return PalenqueTown(t);
+            case "Egina": return EginaTown(t);
             default: return 0;
         }
     }
@@ -477,7 +483,14 @@ internal static partial class CivicBuilder
                 if (!mp.fitted) continue;
                 if (string.IsNullOrEmpty(mp.fitFor)) human = true; else insect = true;
             }
-        if (!human) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
+        if (!human)
+        {
+            // Con mesa, uno de sus asientos se hace para una persona (la mesa no crece); sin ella, un banco para personas.
+            Transform table = pieces.Find(p => p.TryGetComponent(out MicroPiece mp) && mp.kind == "mesa");
+            MicroBody.Fit insectBody = MicroFurniture.DefaultBody ?? MicroBody.OfSpecies("Ant", 1.75f);
+            if (table != null && insectBody.Insect) MicroFurniture.Refit(table, "mesa", Year, Region, insectBody, new List<MicroBody.Fit> { insectBody, MicroBody.Human() });
+            else pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
+        }
         if (!insect) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Asiento de abdomen (para insectos-humanos)", Year, null, Region, MicroBody.OfSpecies("Ant", 1.75f)));
     }
 

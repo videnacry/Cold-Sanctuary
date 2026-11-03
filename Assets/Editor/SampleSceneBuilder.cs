@@ -3082,6 +3082,10 @@ public static partial class SampleSceneBuilder
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
         MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
         MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
+        // LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): personas públicas con un papel según su trabajo
+        // conocido, y Goku (ficción) como entrenador de artes marciales. Entran en la jornada (WorkdayDirector.staff) y en el horario libre.
+        foreach (var (id, label, x, clothes, s, ag, en, m) in MesoCharacters)
+            MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
 
         GameObject wolf = LoadAnimalPrefab("Wolf");
         if (wolf != null)
