@@ -59,3 +59,35 @@ internal static partial class CivicBuilder
         return n;
     }
 }
+
+/// <summary>
+/// EGINA (la Grecia heroica del mito de los mirmidones, ~1250 a. C.; docs/microcosmos-myrmidons.md): la ciudad de Éaco sobre su
+/// plano (CivicBuilder.Plans, «Egina»): el puerto y la colina de Kolona (el santuario de Apolo, el asentamiento de la Edad del
+/// Bronce) al oeste, el monte Oros con el santuario de Zeus Helenio al sureste, el palacio de Éaco, el taller del alfarero y los
+/// olivares. (Walter y Felten 1981, Alt-Ägina; Pausanias II.29–30.)
+/// </summary>
+internal static partial class CivicBuilder
+{
+    static int EginaTown(Transform t)
+    {
+        var s = Town(t, "Egina", new[]
+        {
+            new Lot("Palacio de Éaco", "Casa", "Palacio de Éaco (el rey de los mirmidones)", 14f, 10f, GreekStone,
+                S("cama", 0f, 0f, 1.2f, 2f, "Kliné del rey"), S("fogon", 0f, 0f, 1.6f, 0.8f, "Hogar del palacio"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa del consejo")),
+            new Lot("Santuario de Zeus Helenio", "Templo", "Santuario de Zeus Helenio (monte Oros)", 12f, 10f, GreekStone, S("altar", 0f, 0f, 2f, 1f, "Altar de Zeus (la lluvia)")),
+            new Lot("Puerto de Kolona", "Mercado", "Puerto de Kolona", 14f, 10f, GreekStone, S("puesto", 0f, 0f, 2f, 1f, "Barca con ánforas"), S("puesto", 0f, 0f, 2f, 1f, "Pescado y sal")),
+            new Lot("Taller del alfarero", "Alfarería", "Taller del alfarero de Egina", 10f, 8f, GreekStone, S("torno_alfarero", 0f, 0f, 1f, 1f, "Torno de alfarero")),
+        }, new[]
+        {
+            new Lot("Casa de Egina", "Casa", "Casa de Egina", 10f, 9f, GreekStone),
+            new Lot("Olivar", "Huerto", "Olivar de Egina", 12f, 10f, GreekStone, S("bancal", 0f, 0f, 4f, 6f, "Olivos y cebada")),
+            new Lot("Taller de bronce", "Taller", "Taller del broncista", 10f, 8f, GreekStone, S("banco_taller", 0f, 0f, 2f, 0.9f, "Yunque y crisol")),
+        }, C(0.7f, 0.62f, 0.5f));
+        int n = 0;
+        n += W(t, "Alfarero de Egina", s[3], "alfarero", s[0], null, null);
+        n += W(t, "Pescador de Kolona", s[2], "comerciante", s[0], null, null);
+        n += W(t, "Sacerdotisa de Zeus Helenio", s[1], "", s[0], null, null);
+        n += Townsfolk(t, s, 4, "Vecina de Egina", "Vecino de Egina", s[0], s[1]);
+        return n;
+    }
+}

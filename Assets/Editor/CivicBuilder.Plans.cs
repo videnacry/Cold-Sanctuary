@@ -809,6 +809,31 @@ Milicia | 700 -300
 Pileta | 360 220
 Piscina | 200 250
 relleno | 0 | 0 0",
+        // EGINA (la Grecia heroica, ~1250 a. C.): el puerto y la colina de Kolona al oeste (el asentamiento de la Edad del Bronce y el
+        // santuario de Apolo), el monte Oros con el santuario de Zeus Helenio al sureste, los olivares. (Walter y Felten 1981; Pausanias II.29)
+        ["Egina"] = @"
+mar Golfo Sarónico | 500 2400 | -900 0
+colina Kolona | 120 15 | -520 120
+monte Monte Oros | 500 300 | 800 -800
+calle Camino del puerto | 7 | -560 40, 0 60
+calle Camino del Oros | 6 | 0 60, 600 -600
+calle Calle de los alfareros | 5 | -300 -150, -300 300
+calle Calle del palacio | 6 | -100 -200, -100 300
+campo Olivares | 300 200 | 300 250
+campo Campos de cebada | 250 200 | 250 -250
+hito 0 | -110 120
+hito 1 | 560 -540
+hito 2 | -560 0
+hito 3 | -300 80
+Plaza | -60 -90
+Pileta | 40 -110
+Mercado | -200 -60
+Parque | 200 120
+Milicia | -150 220
+Carpinteria | -250 -200
+Obra | 120 -150
+Taller | -350 -100
+relleno | 40 | -100 60",
         // PALENQUE (683): Lakamha', «el lugar de las grandes aguas». El Palacio y el Templo de las Inscripciones sobre la Gran
         // Plaza, el Otolum que corre al norte (con su acueducto bajo el Palacio), el Grupo de las Cruces sobre su colina al este,
         // el Juego de Pelota y el Grupo Norte, el Baño de la Reina, la sierra al sur y la llanura con las milpas al norte.

@@ -15,7 +15,7 @@ public static class MythSceneBuilder
     [MenuItem("Tools/Cold Sanctuary/Build Egina (mirmidones)")]
     public static void BuildAll()
     {
-        MicrocosmTemplate.Build(new MicrocosmSpec(SceneName, "Egina", "final de la primavera, Grecia heroica", 11f, "Construction_Area") { tint = new Color(0.85f, 0.72f, 0.4f), story = Egina }, new Vector3(6000f, 0f, 9500f));
+        MicrocosmTemplate.Build(new MicrocosmSpec(SceneName, "Egina", "final de la primavera, Grecia heroica", 11f, "Construction_Area") { tint = new Color(0.85f, 0.72f, 0.4f), story = t => Egina(t) + CivicBuilder.Civilize(t, "Egina") }, new Vector3(6000f, 0f, 9500f));
         Debug.Log("[Egina] escena de los mirmidones generada.");
     }
 

@@ -99,6 +99,7 @@ internal static partial class CivicBuilder
         ["Mesopotamia"] = (MudBrick, "Casa de adobe de Uruk"),
         ["Tregua 1914"] = (FieldTimber, "Granja de Ploegsteert (evacuada)"),
         ["Palenque"] = (MayaPlaster, "Casa de Lakamha'"),
+        ["Egina"] = (GreekStone, "Casa de Egina"),
     };
 
     /// <summary>Cada EDIFICIO ABIERTO (los de <see cref="Building"/>, con su «Suelo») que choca con otro o con la historia (a menos
@@ -260,6 +261,7 @@ internal static partial class CivicBuilder
             case "Pasadena": return PattersonTown(t);
             case "Chernóbil": return ChernobylTown(t);
             case "Palenque": return PalenqueTown(t);
+            case "Egina": return EginaTown(t);
             default: return 0;
         }
     }
