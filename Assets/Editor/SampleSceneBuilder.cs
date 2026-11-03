@@ -4170,6 +4170,11 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Construction_Area", "Construcción", new Color(0.85f, 0.72f, 0.4f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "CubCare_Area", "Cría", new Color(0.8f, 0.72f, 0.55f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "AtomicPlant_Area", "Planta Atómica", new Color(0.8f, 0.82f, 0.78f), MissionKind.Channel, PhysicsSceneBuilder.SceneName);   // Newton, Curie, Einstein
+        // Química (Curie, Patterson), Biología (Jenner) y Central Nuclear (Chernóbil): sus historias (VirtualizationMachine.StoryScenes)
+        // se entran por la máquina de SU área (docs/microcosmos-cientificos.md).
+        WireMeditationArea(parent, "Chemistry_Area", "Química", new Color(0.78f, 0.85f, 0.9f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "Biology_Area", "Biología", new Color(0.78f, 0.9f, 0.78f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "NuclearPower_Area", "Central Nuclear", new Color(0.75f, 0.78f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");
