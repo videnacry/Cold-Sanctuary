@@ -510,7 +510,8 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Panel «Horario libre» (botón abajo a la izquierda / consola `horario`).
 - [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada.
 - [x] Prueba `HorarioLibreTest` (grupo 65).
-- [ ] Verificación en vivo del grupo 65, del grupo 50 (línea base 196/1) y de los grupos 28 y 62, más las fotos en `Temp/Horario/` (pendiente: candado de Unity ocupado).
+- [x] Retratos de los seis (Temp/Horario/Mesocosmos.png y MesocosmosCaras.png) con la escena reconstruida (Blockout + microcosmos) y guardada.
+- [ ] Verificación en vivo de los grupos 65, 28, 62 y 50 (línea base 196/1) y fotos del panel: la hace el tester único.
 - [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
 - [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
 

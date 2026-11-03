@@ -281,8 +281,8 @@ public static class CubeHair
                 for (int i = 0; i < 9; i++)
                 {
                     float ang = -80f + i * 20f;   // abanico de −80° a +80° (de un lado al otro, por encima)
-                    float len = 0.16f + (i % 2) * 0.05f + (i == 4 ? 0.04f : 0f);
-                    Transform spike = P(h, new Vector3(Mathf.Sin(ang * Mathf.Deg2Rad) * size.x * 0.32f, top + 0.06f + Mathf.Cos(ang * Mathf.Deg2Rad) * len * 0.45f, center.z - size.z * 0.12f - (i % 3) * 0.03f), new Vector3(0.06f, len, 0.06f), c);
+                    float len = 0.3f + (i % 2) * 0.08f + (i == 4 ? 0.06f : 0f);   // (2026-11-03: más largas; a 0,16–0,25 m quedaban como un mechón)
+                    Transform spike = P(h, new Vector3(Mathf.Sin(ang * Mathf.Deg2Rad) * (size.x * 0.5f + len * 0.35f), top + 0.04f + Mathf.Cos(ang * Mathf.Deg2Rad) * len * 0.45f, center.z - size.z * 0.12f - (i % 3) * 0.04f), new Vector3(0.09f, len, 0.09f), c);
                     spike.localRotation = Quaternion.Euler(-18f - (i % 3) * 8f, 0f, -ang * 0.9f);
                 }
                 for (int k = -1; k <= 1; k++)   // mechones de la frente
