@@ -203,6 +203,19 @@ internal static partial class CivicBuilder
     static void Relayout(AreaFunctionSite site)
     {
         Transform b = site.transform, floor = b.Find("Suelo");
+        // (2026-11-03) Un edificio de varias plantas en terraza (CivicBuilder.Storeys): cada planta se recoloca en su terraza, al ancho
+        // del edificio (sus terrazas y su rampa no se mueven).
+        if (b.Find("Planta 1") != null)
+        {
+            float w = floor != null ? floor.localScale.x - 4f : 10f;
+            foreach (Transform g in b)
+            {
+                if (!g.name.StartsWith("Planta ")) continue;
+                var ps = new List<Transform>(); foreach (Transform c in g) if (c.GetComponent<MicroPiece>() != null) ps.Add(c);
+                if (ps.Count > 0) Layout(g, ps, new Vector2(w, 6f), 0f);
+            }
+            return;
+        }
         var pieces = new List<Transform>();
         foreach (Transform c in b) if (c.GetComponent<MicroPiece>() != null) pieces.Add(c);
         if (pieces.Count == 0) return;

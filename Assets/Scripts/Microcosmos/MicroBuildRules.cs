@@ -164,7 +164,7 @@ public static class MicroBuildRules
             foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
             {
                 if (mp == tier || mp.walkable || mp.transform.IsChildOf(tier.transform) || !Box(mp.transform, out Bounds b)) continue;
-                if (b.max.y < tb.max.y - 0.3f && b.max.x > tb.min.x + 0.05f && b.min.x < tb.max.x - 0.05f && b.max.z > tb.min.z + 0.05f && b.min.z < tb.max.z - 0.05f)
+                if (b.min.y < tb.max.y - 1.0f && b.max.x > tb.min.x + 0.05f && b.min.x < tb.max.x - 0.05f && b.max.z > tb.min.z + 0.05f && b.min.z < tb.max.z - 0.05f)
                 { bad.Add($"la planta en terraza de «{site.title}» tapa «{mp.name}»"); break; }
             }
         }

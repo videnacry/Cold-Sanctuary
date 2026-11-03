@@ -1173,7 +1173,7 @@ relleno | 40 | 0 120",
             foreach (Transform pc in pieces) width = Mathf.Max(width, MicroFurniture.LocalBounds(pc).size.x + 2f * MicroBuildRules.Passage);
         }
         var depths = new List<float>(); float total = 0f;
-        foreach (var (g, pieces) in groups) { Vector2 used = Layout(g, pieces, new Vector2(width, 6f), 0f); width = Mathf.Max(width, used.x); depths.Add(used.y); total += used.y; }
+        foreach (var (g, pieces) in groups) { Vector2 used = Layout(g, pieces, new Vector2(width, 6f), 0f); width = Mathf.Max(width, used.x); depths.Add(used.y + 3f); total += used.y + 3f; }   // (+3 m: holgura para cuando los muebles se rehacen a la medida de cada hogar)
         foreach (var (g, pieces) in groups) Layout(g, pieces, new Vector2(width, 6f), 0f);   // todas al mismo ancho
         Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), ramp = AreaMicrocosmos.Mat("Civ_Rampa_" + Hex(st.floor), st.floor);
         float z = -total * 0.5f;
