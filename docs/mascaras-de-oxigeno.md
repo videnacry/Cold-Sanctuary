@@ -64,9 +64,9 @@ camino solo por sus tareas. Los números de cada día salen en el registro: `[Fr
 ## Puertas y ramas para 8 personas (cuadradas)
 
 - Ancho de un personaje: la cápsula del jugador y de los NavMeshAgent tiene **0,35 m de radio → 0,70 m**; entre uno y otro, 0,05 m.
-  **8 × 0,70 + 7 × 0,05 = 5,95 m → puertas de 6 × 6 m** (`TreeSpec.DoorWidth/DoorHeight`, `HelixTower.doorWidth/doorHeight`;
-  antes 3 × 3). Todas: las del tronco, las de las columnas de las puntas y la del techo (su columna pasa a 8,4 × 8,4 m de agua,
-  `TreeSpec.HatchHalf` 4,2).
+  **8 × 0,70 + 7 × 0,05 = 5,95 m**; con el submarino de obra (14 × 5 × 5 m con su carga, 1 m de holgura a cada lado: 7 m), **puertas de 7 × 7 m** (docs/submarino-de-obra.md) (`TreeSpec.DoorWidth/DoorHeight`, `HelixTower.doorWidth/doorHeight`;
+  antes 3 × 3). Todas: las del tronco, las de las columnas de las puntas y la del techo (su columna pasa a 9,2 × 9,2 m de agua,
+  `TreeSpec.HatchHalf` 4,6).
 - **Ramas**: ya eran cuadradas, con un hueco de **10 × 10 m** (Berón 2026-11-01): caben 8 nadadores en fila (5,95 m) con 2 m de
   margen a cada lado y más que la puerta; no se agrandan (agrandarlas mueve las bocas de las caras de 20 m y el alcance de cada
   árbol, que con el simulador de sitios deja las torres a ≥ 16 m unas de otras).

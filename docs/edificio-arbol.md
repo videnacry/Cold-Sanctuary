@@ -318,11 +318,22 @@ se ve nadar a la gente. Fotos con el posprocesado del juego en `Temp/PostMig/`: 
 ## Máscaras, puertas de 8 personas y sin suelo (Berón 2026-11-03)
 
 Detalle en [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md). **Estas medidas mandan sobre las de arriba**:
-- **Puertas cuadradas de 6 × 6 m** (antes 3 × 3): 8 personas a la vez (8 × 0,70 m de cápsula + 7 × 0,05 m = 5,95 m). Todas: tronco,
-  columnas de las puntas y techo (su columna, 8,4 × 8,4 m de agua). Las **ramas** siguen en 10 × 10 m (cuadradas y más anchas que
+- **Puertas cuadradas de 7 × 7 m** (antes 3 × 3): 8 personas a la vez (8 × 0,70 m de cápsula + 7 × 0,05 m = 5,95 m) y el submarino de obra (5 m de ancho y alto + 1 m a cada lado). Todas: tronco,
+  columnas de las puntas y techo (su columna, 9,2 × 9,2 m de agua). Las **ramas** siguen en 10 × 10 m (cuadradas y más anchas que
   las puertas: caben 8 nadadores en fila con margen).
 - **Máscaras**: un perchero fuera de cada puerta y una estación dentro, en el agua, junto a ella (una por nivel). Con la máscara
   puesta el aliento no se gasta; se coge al entrar y se deja al salir; quien acaba en el agua sin máscara nada a la estación más cercana.
 - **Sin suelo**: el agua del tronco baja hasta −1,6 m y el hielo de debajo tiene un hueco (14 × 14 m en el Árbol de los Campos, que
   gira; 19,6 × 19,6 m en las torres): se baja nadando al mar y entran peces, kril y medusas (docs/grupos-de-animales.md). En el hueco
   cuelgan 4 cortinas de fitoplancton que cuida el jardinero del edificio.
+
+## Medidas para el submarino de obra y el submarino hospital (Berón 2026-11-03, tarde) — MANDAN
+
+Detalle y cuentas en [submarino-de-obra.md](submarino-de-obra.md). Vehículo de diseño: **14 × 5 × 5 m** con su carga (excavadora de
+20 t, contenedor de 20 pies o la camilla de un elefante), 1 m de holgura a cada lado (`TreeSpec.VehicleLength/Beam/Height/Clearance`).
+- **Puertas: 7 × 7 m** (`TreeSpec.DoorWidth/DoorHeight`, `HelixTower.doorWidth/doorHeight`), todas cuadradas.
+- **Ramas: 10 × 10 m** (sin cambio: el vehículo gira su codo con 8,5 m). **Tronco: 20 × 20 m** de agua (sin cambio: el submarino
+  pasa junto a un banco de peces). **Columna del techo**: 9,2 × 9,2 m de agua (`TreeSpec.HatchHalf` 4,6).
+- **Entre piso y piso**: 22 m (sin cambio). **Entre piso y anillo**: los anillos de los pisos de un árbol van a **8 m** sobre el piso
+  (`TreeSpec.RingOverFloor`; antes 4), por encima de la puerta del piso.
+- El submarino llega a todos los **pisos** por el tronco; no entra en las columnas de las puntas. Garaje: el piso libre de Producción.

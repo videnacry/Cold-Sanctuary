@@ -26,7 +26,7 @@ public class HelixTower
     public float tubeHalf = 5.3f, tubeWall = 0.3f, mouthX = 4.7f;   // rama: tubo cuadrado (hueco de 10 × 10 m: Berón 2026-11-01, el doble de grueso) y su boca en la cara (dentro de la cara: mouthX + tubeHalf ≤ waterHalf)
     public float chordD = 1.6f;                        // cordones CFST de la celosía de la rama (Ø; chapa 4 % del Ø): con el tubo de 10 m, 1,6 m (antes 1 m)
     public float colHalf = 5.3f, colWall = 0.3f, colMargin = 1f;  // columna de la punta: agua de 10,6 × 10,6 m (recibe el tubo de 10 m), a 1 m del borde del campo
-    public float doorWidth = 6f, doorHeight = 6f, doorX = 5f;     // puertas CUADRADAS de 6 × 6 m (Berón 2026-11-03: que entren 8 personas a la vez; ver TreeSpec.DoorWidth)
+    public float doorWidth = 7f, doorHeight = 7f, doorX = 5f;     // puertas CUADRADAS de 7 × 7 m (Berón 2026-11-03: 8 personas a la vez y el submarino de obra con su carga; ver TreeSpec.DoorWidth)
 
     public float OuterHalf => waterHalf + wall;
     /// <summary>Alto del tronco: el último nivel, su punta, su anillo, la puerta del anillo y la columna (7 m).</summary>
@@ -123,7 +123,7 @@ public static class TreeSpec
     /// <summary>La PUERTA DEL TECHO (Berón 2026-10-31: como la de los anillos, se entra de frente): una columna de agua de 5 × 5 m
     /// que asoma sobre el techo (centro, a ras de la cubierta), con su puerta en la cara +Z (hacia las alfombras).</summary>
     public static Vector3 HatchLocal => new Vector3(0f, RootHeight, -6f);
-    public const float HatchHalf = 4.2f;   // medio lado del agua de la columna del techo (pared de 0,3 m): 8,4 m, para la puerta de 6 m y su estación de máscaras
+    public const float HatchHalf = 4.6f;   // medio lado del agua de la columna del techo (pared de 0,3 m): 9,2 m, para la puerta de 7 m y su estación de máscaras
     /// <summary>SIN SUELO (Berón 2026-11-03): el agua del tronco baja hasta la cara de abajo del hielo (−1,5 m), donde está el hueco al mar.</summary>
     public const float WaterBottomOpen = -1.6f;
     public const int MinRibs = 24;               // 4 esquinas + 5 por cara: uno cada ~3,7 m (lo mínimo; más alto, más: StructuralLimits.Reinforce)
@@ -135,7 +135,17 @@ public static class TreeSpec
     /// <summary>PUERTAS CUADRADAS para 8 personas A LA VEZ (Berón 2026-11-03; antes 3 × 3 m): un personaje mide 0,70 m de ancho (la
     /// cápsula de 0,35 m de radio del jugador y de los NavMeshAgent) y se deja 0,05 m entre uno y otro: 8 × 0,75 = 6,0 m.</summary>
     public const float PersonWidth = 0.70f, PersonGap = 0.05f, PeopleAtOnce = 8f;
-    public const float DoorWidth = 6f, DoorHeight = 6f;
+    /// <summary>EL VEHÍCULO DE DISEÑO (Berón 2026-11-03, docs/submarino-de-obra.md): el submarino de obra con su carga más grande (una
+    /// excavadora de 20 t —CAT 320: 9,5 × 3,0 × 3,0 m de transporte— o un contenedor de 20 pies —6,06 × 2,44 × 2,59 m, hasta 30 t—) y
+    /// el submarino hospital con la camilla de un animal grande (un elefante tumbado, ~7 × 3 × 2 m y 6 t; un oso, 3 × 1,5 m): 14 × 5 × 5 m.</summary>
+    public const float VehicleLength = 14f, VehicleBeam = 5f, VehicleHeight = 5f;
+    /// <summary>Holgura a cada lado entre el vehículo y el marco de una puerta (y entre el vehículo y un grupo de animales en el tronco).</summary>
+    public const float VehicleClearance = 1f;
+    /// <summary>PUERTAS CUADRADAS: lo mayor de 8 personas (6,0 m) y el vehículo con su holgura (5 + 2 × 1 = 7 m) → 7 × 7 m.</summary>
+    public const float DoorWidth = 7f, DoorHeight = 7f;
+    /// <summary>Altura de un ANILLO sobre su piso en un edificio-árbol: por encima de la puerta del piso (7 m), para que el vehículo
+    /// salga de la puerta sin chocar con el balcón del anillo: 8 m (antes 4, la de los anillos de planta).</summary>
+    public const float RingOverFloor = 8f;
     /// <summary>El lado de la puerta del suelo (a = +Z: hacia las alfombras del pie, al NE).</summary>
     public const int GroundSide = 0;
 

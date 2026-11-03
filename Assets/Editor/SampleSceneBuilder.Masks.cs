@@ -119,3 +119,39 @@ public static partial class SampleSceneBuilder
         foreach (Swarm g in groups) { g.wanderRadius = 6f; g.treeVisitChance = 0.5f; }   // viven bajo el árbol: suben al tronco y bajan
     }
 }
+
+public static partial class SampleSceneBuilder
+{
+    /// <summary>EL GARAJE DEL SUBMARINO DE OBRA (Berón 2026-11-03; docs/submarino-de-obra.md): el primer piso libre de la torre de
+    /// Producción (la de Construcción) pasa a ser «Garaje de submarinos», con su plaza pintada y el submarino aparcado mirando a la
+    /// puerta. Si la torre no tiene piso libre, la plaza va en el piso de Construcción.</summary>
+    static void SubmarineGarage(Helix hx)
+    {
+        Transform deck = null;
+        for (int k = 1; k <= hx.Platforms; k++) if (hx.decks[k] != null && hx.decks[k].name.StartsWith("Piso_libre_")) { deck = hx.decks[k]; break; }
+        if (deck != null) deck.name = "Garaje_submarinos";
+        else
+        {
+            for (int k = 1; k <= hx.Platforms && deck == null; k++)
+                if (hx.decks[k] != null && hx.decks[k].GetComponentInChildren<SanctuaryArea>() is SanctuaryArea a && a.name.StartsWith("Construction")) deck = hx.decks[k];
+            if (deck == null) { Debug.LogWarning($"[Submarino] «{hx.building}» no tiene piso libre ni de Construcción para el garaje."); return; }
+        }
+        float half = hx.h.floorSize * 0.5f;
+        Color paint = new Color(0.98f, 0.82f, 0.1f);
+        Transform g = new GameObject("Plaza_submarino").transform; g.SetParent(deck, false); g.localPosition = new Vector3(0f, 0.02f, 2f);
+        float L = TreeSpec.VehicleLength + 2f, B = TreeSpec.VehicleBeam + 2f;
+        foreach (float s in new[] { -1f, 1f })
+        {
+            KitchenProps.C(g, new Vector3(s * B * 0.5f, 0f, 0f), new Vector3(0.25f, 0.02f, L), paint, 0f, "Linea_plaza");
+            KitchenProps.C(g, new Vector3(0f, 0f, s * L * 0.5f), new Vector3(B, 0.02f, 0.25f), paint, 0f, "Linea_plaza");
+        }
+        Label(KitchenProps.C(g, new Vector3(B * 0.5f + 1.5f, 2.5f, 0f), Vector3.one * 0.1f, paint, 0f, "Cartel_garaje"), "Garaje del submarino de obra: maquinaria y material a cualquier piso por la vía marina", 0.6f);
+        GameObject sub = new GameObject("Submarino_obra");
+        sub.transform.SetParent(deck, false);
+        sub.transform.localPosition = new Vector3(0f, 0.05f, 2f);
+        sub.transform.localRotation = Quaternion.Euler(0f, 180f, 0f);   // mirando a la puerta (el lado −Z del piso, contra el tronco)
+        sub.AddComponent<ConstructionSubmarine>();
+        PolarLandscapeBuilder.IgnoreForNav(g.gameObject);
+        Debug.Log($"[Submarino] Garaje en «{deck.name}» de {hx.building} (piso de {2f * half:0} m), con el submarino de obra aparcado.");
+    }
+}

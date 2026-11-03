@@ -198,6 +198,7 @@ public static partial class SampleSceneBuilder
             Transform d = hx.spareFloor != null ? hx.spareFloor(k) : null;
             if (d == null || hx.decks[k] == null) HelixFloor(hx, k, d, new Vector2(h.floorSize, h.floorSize), $"Piso_libre_{k}");
         }
+        if (hx.building == TorreProduccion) SubmarineGarage(hx);   // el garaje del submarino de obra (docs/submarino-de-obra.md)
         // Los ANILLOS de los pisos (RingDeck en U con su balcón contra el tronco) y dónde va cada puerta.
         for (int k = 1; k <= P; k++)
         {
