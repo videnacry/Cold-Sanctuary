@@ -30,7 +30,7 @@ public class HospitalSubmarineTest : MonoBehaviour, ITestUnit
         TestProbe.Check("hay un submarino-ambulancia", sub != null);
         if (sub == null) { TestProbe.End(); yield break; }
         bool fits = sub.FitsDoor(out string why);
-        TestProbe.Check("cabe por las puertas de los edificios-árbol (con 0,2 m a cada lado)", fits, why);
+        TestProbe.Check("cabe por las puertas de los edificios-árbol (con 1 m a cada lado)", fits, why);
         string[] kit = { "Bodega/Trineo_carga", "Bodega/Viga_grua_8t", "Bodega/Camilla", "Bodega/Equipos/Concentrador_O2", "Bodega/Equipos/Bombona_O2", "Bodega/Equipos/Monitor_constantes",
                          "Bodega/Equipos/Desfibrilador", "Bodega/Equipos/Ventilador", "Bodega/Equipos/Nevera_sangre_O_neg", "Bodega/Equipos/Fluidos_y_bombas", "Cabina/Asiento_1", "Cabina/Asiento_2", "Oruga", "Helice", "Rampa_popa" };
         var lack = kit.Where(k => sub.transform.Find(k) == null).ToList();

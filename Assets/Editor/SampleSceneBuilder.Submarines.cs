@@ -3,7 +3,7 @@ using UnityEngine;
 
 /// <summary>
 /// LOS SUBMARINOS DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md):
-/// - el SUBMARINO-AMBULANCIA anfibio (<see cref="HospitalSubmarine"/>): 16 × 5 × 5 m, con orugas para el hielo y hélices para el
+/// - el SUBMARINO-AMBULANCIA anfibio (<see cref="HospitalSubmarine"/>): 14 × 5 × 5 m (el vehículo de diseño de los árboles), con orugas para el hielo y hélices para el
 ///   mar; cabe por las puertas de los edificios-árbol y sube nadando por el tronco a la puerta del piso del hospital. Aparcado
 ///   junto a la puerta del suelo del árbol del hospital (a un lado del paso).
 /// - el LEVIATÁN (<see cref="WhaleHospitalSubmarine"/>): 72 × 18 × 12 m, hospital de animales gigantes con su pozo médico de
@@ -105,7 +105,7 @@ public static partial class SampleSceneBuilder
         for (int i = 0; i < 4; i++) KitchenProps.C(wall, new Vector3(-0.26f, 0.5f + i * 0.2f, 1.4f), new Vector3(0.02f, 0.14f, 0.1f), new Color(0.62f, 0.1f, 0.17f), 0f, "Bolsa_sangre");
         KitchenProps.C(wall, new Vector3(0f, 1.6f, 2.3f), new Vector3(0.3f, 0.5f, 0.9f), new Color(0.85f, 0.92f, 0.98f), 0f, "Fluidos_y_bombas");
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>();
-        wl.text = "Submarino-ambulancia del hospital (anfibio, 16 × 5 × 5 m): bodega para un oso o un elefante, O₂, monitor, desfibrilador, ventilador, sangre O−";
+        wl.text = "Submarino-ambulancia del hospital (anfibio, 14 × 5 × 5 m): bodega para un oso o un elefante, O₂, monitor, desfibrilador, ventilador, sangre O−";
         wl.height = 4.2f;
         Debug.Log($"[Submarino] Ambulancia anfibia aparcada junto a la puerta del suelo de «{ac.building}» en ({park.x:0}, {park.z:0}); {L:0} × {B:0} × {H:0} m, puertas de los árboles {TreeSpec.DoorWidth:0.#} × {TreeSpec.DoorHeight:0.#} m.");
         return t;

@@ -63,7 +63,7 @@ public class Carried : MonoBehaviour
 /// EL SUBMARINO-AMBULANCIA ANFIBIO DEL HOSPITAL (Berón 2026-11-03; docs/submarinos-medicos.md): «crear un submarino para el
 /// hospital de modo que se pueda trasladar personas y animales… equipado para brindar servicios de emergencia a los animales y
 /// personas más grandes terrestres». Va por el hielo con orugas, por el mar sumergido y POR DENTRO DE LOS EDIFICIOS-ÁRBOL: cabe
-/// por sus puertas (16 × 5 × 5 m; las puertas, 6 × 6 m) y sube nadando por el tronco hasta la puerta del piso del hospital.
+/// por sus puertas (el vehículo de diseño, 14 × 5 × 5 m; las puertas, 7 × 7 m) y sube nadando por el tronco hasta la puerta del piso del hospital.
 /// - Bodega de 7,5 × 3,8 × 4 m: cabe un oso polar o un elefante asiático tumbado (hasta ~5 t: grúa de 8 t y trineo de carga),
 ///   camilla de personas, oxígeno (concentrador PSA y 2 bombonas), monitor multiparamétrico, desfibrilador, ventilador, nevera
 ///   de sangre O− (4 unidades, como los helicópteros médicos que llevan sangre: London's Air Ambulance desde 2012) y fluidos.
@@ -76,7 +76,8 @@ public class Carried : MonoBehaviour
 /// </summary>
 public class HospitalSubmarine : MonoBehaviour
 {
-    public const float Length = 16f, Beam = 5f, Height = 5f;
+    /// <summary>El VEHÍCULO DE DISEÑO de los edificios-árbol (docs/submarino-de-obra.md: 14 × 5 × 5 m, 1 m de holgura a cada lado en las puertas de 7 × 7 m).</summary>
+    public const float Length = TreeSpec.VehicleLength, Beam = TreeSpec.VehicleBeam, Height = TreeSpec.VehicleHeight;
     public static readonly Vector3 Bay = new Vector3(3.8f, 4f, 7.5f);   // ancho, alto, largo de la bodega
     public const int BloodCapacity = 4;
     public float driveSpeed = 8f, swimSpeed = 5f, climbSpeed = 3f, turnSpeed = 60f, stretcherSpeed = 1.4f;
@@ -108,7 +109,7 @@ public class HospitalSubmarine : MonoBehaviour
     {
         float w = TreeSpec.DoorWidth, h = TreeSpec.DoorHeight;
         why = $"puerta de {w:0.#} × {h:0.#} m, submarino de {Beam:0.#} × {Height:0.#} m";
-        return w >= Beam + 0.4f && h >= Height + 0.4f;
+        return w >= Beam + 2f * TreeSpec.VehicleClearance && h >= Height + 2f * TreeSpec.VehicleClearance;
     }
 
     void Say(string s) { status = s; log.Add(s); Debug.Log($"[Submarino] {s}"); }
