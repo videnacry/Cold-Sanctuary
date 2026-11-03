@@ -2265,6 +2265,7 @@ public static partial class SampleSceneBuilder
         Object.DestroyImmediate(ground.GetComponent<MeshFilter>());
         ground.transform.localScale = Vector3.one;
         int boxes = PolarLandscapeBuilder.BuildFloes(ground.transform, MakeMaterial("Ice_Floe_MAT", new Color(0.86f, 0.91f, 0.95f)));
+        CutIceUnderAll();   // los troncos de los edificios-árbol no tienen suelo: su hueco en el hielo (los árboles se hicieron antes)
         int links = PolarLandscapeBuilder.BuildSwimLinks(ground.transform);
         Debug.Log($"[Islas] {PolarLandscapeBuilder.CapCount} casquetes ({PolarLandscapeBuilder.Islands.Length} lóbulos, {boxes} placas de hielo) alrededor de la laguna central; {links} enlaces de nado para la IA.");
 

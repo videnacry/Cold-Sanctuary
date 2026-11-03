@@ -51,17 +51,29 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(m, new Vector3(0.05f, -0.12f, 0.03f), new Vector3(0.03f, 0.1f, 0.03f), new Color(0.9f, 0.9f, 0.92f), 0f, "Botella_O2");
     }
 
+    /// <summary>Abre el hueco bajo TODOS los troncos ya hechos, una vez puesta la banquisa (el Blockout construye los árboles antes
+    /// que los casquetes: sin esto el fondo quedaba tapado por el hielo, «choca con Casquete a 0,0 m», 2026-11-03). Repetirlo no
+    /// cambia nada: los trozos ya cortados no pisan el hueco.</summary>
+    static void CutIceUnderAll()
+    {
+        int n = 0;
+        foreach (Helix hx in _helixes) { CutIceUnder(hx); n++; }
+        if (n > 0) Debug.Log($"[Árbol] fondo abierto en el hielo bajo {n} troncos.");
+    }
+
     /// <summary>El HUECO en el hielo bajo el tronco: los bloques de la banquisa que lo pisan se parten en los trozos de alrededor.
     /// Cuadrado y alineado con el mundo: en un árbol que GIRA, de medio lado 0,7 × el agua (siempre dentro del agua del tronco,
     /// gire como gire); en una torre (giro de 0° o 90°), casi toda el agua.</summary>
     static void CutIceUnder(Helix hx)
     {
+        if (hx == null || hx.root == null || hx.ac == null) return;
         GameObject floes = GameObject.Find("Banquisa_Casquetes");
         float half = hx.rotates || Mathf.Abs(Mathf.Repeat(hx.yaw, 90f)) > 0.5f ? hx.h.waterHalf * 0.7f : hx.h.waterHalf - 0.2f;
         Vector3 c = hx.root.position;
         Rect hole = new Rect(c.x - half, c.z - half, 2f * half, 2f * half);
         hx.ac.bottomHole = half;
-        if (floes == null) { Debug.LogWarning($"[Árbol] «{hx.building}»: no hay banquisa (Banquisa_Casquetes) para abrir el fondo."); return; }
+        // Si la banquisa aún no existe (el Blockout hace los árboles antes que los casquetes), el corte se hace luego: CutIceUnderAll.
+        if (floes == null) return;
         int cut = 0;
         var pieces = new List<Transform>();
         foreach (Transform b in floes.transform) pieces.Add(b);
