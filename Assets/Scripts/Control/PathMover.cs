@@ -47,6 +47,8 @@ public class PathMover : MonoBehaviour
         // Otro piso u otro edificio (ya no hay escaleras ni puentes): por la cadena de alfombras voladoras. Así lo hace
         // cualquiera que ande con PathMover (la jornada, Linduarda, la que inicia, los guardias…).
         Vector3 final = target;
+        // Bajo el agua de un edificio-árbol SIN MÁSCARA: primero, a la estación de máscaras más cercana (docs/mascaras-de-oxigeno.md).
+        if (BreathingMask.RescueStep(gameObject)) { Why(1, 0f); return Flat(final - transform.position); }
         if (CarpetPad.Route(gameObject, ref target)) { Why(1, 0f); return Flat(final - transform.position); }   // (y el Árbol de los Campos: por su raíz, nadando)
         if (_path == null) _path = new NavMeshPath();
         // Mientras cruza el agua (fuera del NavMesh) NO recalcula: el camino nuevo saldría de la orilla de atrás y daría la

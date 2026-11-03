@@ -57,3 +57,10 @@ cerca del árbol"; no hablaba de telas. Ahora es una **tejedora orbicular**, com
   que pase a su alcance.
 - Antes acechaba "en el tronco", en un punto que quedaba dentro del tronco. Abejas y arañas aparecían dentro del árbol:
   ahora la araña nace en su tela y las abejas, en su panal.
+
+## El enjambre de pecoreadoras (Berón 2026-11-03)
+
+Cada colmena tiene un **enjambre** (`BeeSwarm`, un `Swarm` de abejas: un padre con ~18 abejas de verdad que aletean) que de día vuela
+de copa en copa entre los árboles a < 80 m de su colmena y de noche vuelve a la piquera. Se ve volar en grupo de un árbol a otro. Las
+abejas de dentro (reina y oficios) siguen siendo individuos: la prueba del ciclo de vida (grupo 58) no cambia. Ver
+[grupos-de-animales.md](grupos-de-animales.md).

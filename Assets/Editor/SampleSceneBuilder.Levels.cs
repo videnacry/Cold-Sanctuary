@@ -89,6 +89,9 @@ public static partial class SampleSceneBuilder
     {
         Color woodDark = new Color(0.48f, 0.4f, 0.33f), wood = new Color(0.62f, 0.52f, 0.42f);
         float inn = width * inside, hx = floor.x * 0.5f - inn, hz = floor.y * 0.5f - inn, ox = hx + width, oz = hz + width;
+        // (Berón 2026-11-03) En un piso de un edificio-árbol el anillo va por ENCIMA de la puerta del piso (7 × 7 m: 8 personas y el
+        // submarino de obra): a 8 m. A 4 m, su balcón contra el tronco tapaba la parte de arriba de la puerta.
+        if (HelixDeckOf(parent, out _, out _, out _)) h = Mathf.Max(h, TreeSpec.RingOverFloor);
         Transform ring = new GameObject(name).transform; ring.SetParent(parent, false); ring.localPosition = Vector3.up * h;
         _ringOpenBack = false;
         // EN UN PISO PEGADO AL TRONCO de un edificio-árbol (docs/edificio-arbol.md §Migración): el anillo va en U, abierto hacia el

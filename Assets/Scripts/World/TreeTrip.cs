@@ -45,7 +45,7 @@ public class TreeTrip : MonoBehaviour
 
     public static void Start(GameObject g, ArbolCampos tree, List<Vector3> path, TreeLevel to, bool wetStart = false)
     {
-        TreeTrip t = g.GetOrAdd<TreeTrip>(); t._wetStart = wetStart;
+        TreeTrip t = g.GetOrAdd<TreeTrip>(); t._wetStart = wetStart; t._maskDone = false; t._maskUntil = 0f;
         t._tree = tree; t._path = path; t._i = 1; t._to = to; t.enabled = true;
         t._ph = PathMover.Of(g.transform).PivotHeight;
         t._swim = SwimBody.Of(g.transform);
@@ -79,6 +79,7 @@ public class TreeTrip : MonoBehaviour
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
         if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
+        if (MaskStep()) { _left = transform.position; return; }
         float budget = (Wet(_i) ? _tree.routeSwimSpeed + (Carried(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)
         {
@@ -106,13 +107,33 @@ public class TreeTrip : MonoBehaviour
             }
             if (Verbose) Debug.Log($"[Árbol] «{name}» tramo {_i}/{_path.Count - 1} hecho a los {Time.time - _t0:0.0} s en {transform.position} ({(Wet(_i) ? "nadando" : "andando")}).");
             _i++;
+            if (_i == 2 && !_maskDone && !_wetStart) break;   // en la puerta: primero, la máscara
         }
         _left = transform.position;
         if (_i >= _path.Count) Finish(true);
     }
 
+    // LA MÁSCARA (docs/mascaras-de-oxigeno.md): al llegar a la puerta (punto 1, fuera) coge una del perchero de la entrada y se la
+    // pone antes de meterse en el agua (o, si el perchero está vacío, de la estación de dentro, junto a la puerta). Si el viaje
+    // empieza ya en el agua y sin máscara, primero nada a la estación más cercana. true mientras está en ello.
+    bool _maskDone; float _maskUntil;
+    bool MaskStep()
+    {
+        if (_maskDone) return false;
+        if (BreathingMask.Has(gameObject)) { if (Time.time < _maskUntil) { _until += Time.deltaTime; return true; } _maskDone = true; return false; }
+        if (_wetStart) { if (BreathingMask.RescueStep(gameObject, true)) { _until += Time.deltaTime; return true; } _maskDone = true; return false; }
+        if (_i < 2) return false;
+        MaskStation r = MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 7f, false, true)
+                        ?? MaskStation.Nearest(_tree.World(_path[Mathf.Min(2, _path.Count - 1)]), MaskStation.Kind.Station, 9f, true, true);
+        if (r != null && BreathingMask.Of(transform).Equip(r)) { _maskUntil = Time.time + BreathingMask.FitSeconds; _until += BreathingMask.FitSeconds; return true; }
+        _maskDone = true; return false;
+    }
+
     void Finish(bool ok)
     {
+        // Sale por una puerta: deja la máscara en el perchero de esa entrada.
+        if (ok && BreathingMask.Has(gameObject) && !WaterZone.Underwater(transform.position + Vector3.up * 0.5f))
+            BreathingMask.Of(transform).Return(MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 9f, false) ?? MaskStation.Nearest(transform.position, null, 9f, false));
         if (_swim != null) _swim.End();
         if (_ccOff && TryGetComponent(out CharacterController cc)) cc.enabled = true;
         if (_held && TryGetComponent(out PlayerController pc)) pc.HoldBody(false);

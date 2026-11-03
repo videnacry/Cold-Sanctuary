@@ -2294,7 +2294,7 @@ public static partial class SampleSceneBuilder
         {
             string n = t.name;
             if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
-                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Perchero_mascaras" || n == "Estacion_mascaras")
                 t.GetOrAdd<NavMeshModifier>().ignoreFromBuild = true;
         }
         NavMeshSurface s = tree.GetOrAdd<NavMeshSurface>();
@@ -2542,35 +2542,21 @@ public static partial class SampleSceneBuilder
         }
     }
 
-    // Bancos/enjambres marinos (Swarm, antes FishSchool): organismos-banco que derivan, huyen y crecen pastando el
-    // fitoplancton (ver BuildPhytoplankton). Los depredadores (oso/foca/pez) los comen por MORDISCO-POR-COLISIÓN
-    // (Swarm.OnTriggerStay). Repartidos cerca de donde viven las familias marinas (Whale 200,-1,15; Seal 180,-1,-20).
+    // Bancos/enjambres marinos (Swarm): GRUPOS de individuos (docs/grupos-de-animales.md, Berón 2026-11-03): un padre vacío que se
+    // mueve como grupo y sus peces, krill o medusas de verdad (SwarmModels) como hijos, que los crea el propio Swarm al empezar.
+    // Antes el padre era un CUBO translúcido escalado 10 × 2 × 10 (se veía como una plataforma). Los depredadores muerden al
+    // padre (Swarm.OnTriggerStay) y desaparece UN individuo; el grupo se rehace con el tiempo (sin ciclo de vida).
     static void BuildSwarms(Transform parent)
     {
         GameObject group = new GameObject("Swarms_AUTO");
         group.transform.SetParent(parent);
-
-        Vector3[] positions =
-        {
-            new Vector3(56f, -2f, 22f),
-            new Vector3(66f, -2f, 30f),
-        };
-
-        Material fishMat = MakeMaterial("Swarm_Fish_MAT", new Color(0.35f, 0.55f, 0.65f, 0.6f));
+        Vector3[] positions = { new Vector3(56f, -2f, 22f), new Vector3(66f, -2f, 30f) };
         for (int i = 0; i < positions.Length; i++)
-        {
-            GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            school.name = $"Swarm_Fish_{i}";
-            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
-            school.transform.SetParent(group.transform);
-            school.transform.position = positions[i];
-            school.transform.localScale = new Vector3(10f, 2f, 10f);
-            school.GetComponent<Renderer>().sharedMaterial = fishMat;
-            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
-            Swarm swarm = school.AddComponent<Swarm>();
-            swarm.kind = SwarmKind.Fish;
-            swarm.unitName = "Fish";
-        }
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Fish_{i}", positions[i], SwarmKind.Fish, SwarmModels.Species.SilverFish, 24f, 40f, 4f);
+        // MEDUSAS de McMurdo (mar de Ross): Diplulmaris antarctica (pequeña, anaranjada) y Desmonema glaciale (la grande).
+        GameObject jelly = new GameObject("Medusas_AUTO"); jelly.transform.SetParent(parent);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Diplulmaris_0", new Vector3(58f, -4f, 14f), SwarmKind.Jellyfish, SwarmModels.Species.Diplulmaris, 10f, 14f, 3.5f);
+        Swarm.Create<Swarm>(jelly.transform, "Medusas_Desmonema_0", new Vector3(70f, -6f, 24f), SwarmKind.Jellyfish, SwarmModels.Species.Desmonema, 4f, 6f, 5f);
     }
 
     // Krill: enjambre de clase Krill (dieta propia). Pasta el FITOPLANCTON para crecer; comido por pez (proximidad) y por
@@ -2579,30 +2565,9 @@ public static partial class SampleSceneBuilder
     {
         GameObject group = new GameObject("Krill_AUTO");
         group.transform.SetParent(parent);
-
-        Vector3[] positions =
-        {
-            new Vector3(62f, -2f, 20f),
-            new Vector3(52f, -2f, 28f),
-        };
-
-        Material krillMat = MakeMaterial("Swarm_Krill_MAT", new Color(0.75f, 0.45f, 0.4f, 0.6f));
+        Vector3[] positions = { new Vector3(62f, -2f, 20f), new Vector3(52f, -2f, 28f) };
         for (int i = 0; i < positions.Length; i++)
-        {
-            GameObject school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            school.name = $"Swarm_Krill_{i}";
-            PolarLandscapeBuilder.IgnoreForNav(school);   // los bancos no son suelo: sin esto había NavMesh «sobre» la laguna
-            school.transform.SetParent(group.transform);
-            school.transform.position = positions[i];
-            school.transform.localScale = new Vector3(8f, 1.5f, 8f);
-            school.GetComponent<Renderer>().sharedMaterial = krillMat;
-            Object.DestroyImmediate(school.GetComponent<Collider>()); // el trigger lo añade Swarm.Start en runtime
-            Swarm swarm = school.AddComponent<Swarm>();
-            swarm.kind = SwarmKind.Krill;
-            swarm.unitName = "Krill";
-            swarm.schoolSpread = 3f;      // banco más compacto que el de peces
-            swarm.perUnitMass = 0.05f;    // cada krill pesa poquísimo
-        }
+            Swarm.Create<Swarm>(group.transform, $"Swarm_Krill_{i}", positions[i], SwarmKind.Krill, SwarmModels.Species.Krill, 40f, 60f, 3f);
     }
 
     // Fitoplancton: el PRODUCTOR base de la cadena marina ("césped del mar", vive de agua+luz, se autoregenera).
@@ -2889,15 +2854,11 @@ public static partial class SampleSceneBuilder
         FoodItem fi = f.AddComponent<FoodItem>(); fi.material = OrganicMaterial.Fish; fi.grams = 150f;
     }
 
-    // Mini-cardumen (pez o krill) para los escenarios por especie: cubo translúcido + Swarm (el trigger lo pone Swarm.Start).
+    // Mini-cardumen (pez o krill) para los escenarios por especie: un grupo con sus individuos (Swarm; el trigger lo pone Swarm.Start).
     static void MiniSwarm(Transform root, string name, SwarmKind kind, Vector3 pos)
     {
-        GameObject s = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        s.name = name; s.transform.SetParent(root); s.transform.position = pos; s.transform.localScale = new Vector3(6f, 1.5f, 6f);
-        Color col = kind == SwarmKind.Krill ? new Color(0.75f, 0.45f, 0.4f, 0.6f) : new Color(0.35f, 0.55f, 0.65f, 0.6f);
-        var r = s.GetComponent<Renderer>(); if (r != null) r.sharedMaterial = MakeMaterial($"{name}_MAT", col);
-        Object.DestroyImmediate(s.GetComponent<Collider>());
-        Swarm sw = s.AddComponent<Swarm>(); sw.kind = kind; sw.unitName = kind == SwarmKind.Krill ? "Krill" : "Fish";
+        bool krill = kind == SwarmKind.Krill;
+        Swarm.Create<Swarm>(root, name, pos, kind, krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 30f : 20f, krill ? 60f : 40f, krill ? 3f : 3.5f);
     }
 
     // ESCENARIOS POR ESPECIE (docs/ice-sanctuary-ecology.md): cada animal en un sandbox AISLADO con su CICLO/INTERACCIÓN

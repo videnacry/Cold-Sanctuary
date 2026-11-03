@@ -287,16 +287,10 @@ public static partial class SampleSceneBuilder
     // Un banco inagotable en el agua (Swarm + BottomlessFood que lo rellena y no lo deja alejarse).
     static void School(Vector3 at, SwarmKind kind, string unit, Color c)
     {
-        var school = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        school.name = $"Banco_inagotable_{unit}";
-        PolarLandscapeBuilder.IgnoreForNav(school);
-        school.transform.position = at;
-        school.transform.localScale = kind == SwarmKind.Fish ? new Vector3(8f, 2f, 8f) : new Vector3(6f, 1.5f, 6f);
-        school.GetComponent<Renderer>().sharedMaterial = MakeMaterial($"CicloVida_{unit}_MAT", c);
-        Object.DestroyImmediate(school.GetComponent<Collider>());
-        Swarm s = school.AddComponent<Swarm>();
-        s.kind = kind; s.unitName = unit; s.count = 60f; s.maxCount = 60f; s.wanderRadius = 5f;
-        if (kind == SwarmKind.Krill) { s.schoolSpread = 3f; s.perUnitMass = 0.05f; }
+        bool krill = kind == SwarmKind.Krill;
+        Swarm s = Swarm.Create<Swarm>(null, $"Banco_inagotable_{unit}", at, kind, krill ? SwarmModels.Species.Krill : SwarmModels.Species.SilverFish, krill ? 60f : 40f, krill ? 60f : 40f, krill ? 3f : 3.5f);
+        s.wanderRadius = 5f;
+        GameObject school = s.gameObject;
         school.AddComponent<BottomlessFood>().leash = 6f;
         WorldLabel wl = school.AddComponent<WorldLabel>(); wl.text = kind == SwarmKind.Fish ? "Banco de peces inagotable" : "Krill inagotable"; wl.height = 3.5f;
     }

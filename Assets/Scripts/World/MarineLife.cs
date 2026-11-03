@@ -187,7 +187,7 @@ public class MarineLife : MonoBehaviour
         Swarm best = null, bestAny = null; float bd = float.MaxValue, bdAny = float.MaxValue;
         foreach (Swarm s in Swarm.All)
         {
-            if (s == null || s.Consumed || IceAbove(s.transform.position)) continue;
+            if (s == null || s.Consumed || (s.kind != SwarmKind.Fish && s.kind != SwarmKind.Krill) || IceAbove(s.transform.position)) continue;
             float d = (s.transform.position - from).sqrMagnitude;
             if (s.kind == SwarmKind.Fish && d < bd) { bd = d; best = s; }
             if (d < bdAny) { bdAny = d; bestAny = s; }
