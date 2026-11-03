@@ -96,7 +96,7 @@ internal static partial class MicroFurniture
             case "armario": Storage(t, e, seed); break;
             case "estante": Shelf(t, seed); break;
             case "pizarra": Blackboard(t); break;
-            case "banco_taller": Workbench(t); break;
+            case "banco_taller": Workbench(t, year); break;
             case "torno": Lathe(t); break;
             case "tunel": WindTunnel(t); break;
             case "muneco": WoodenDummy(t); break;
@@ -1108,15 +1108,26 @@ internal static partial class MicroFurniture
         for (int k = 0; k < 3; k++) C(t, new Vector3(-0.3f + k * 0.25f, 1.15f - k * 0.1f, -0.025f), new Vector3(0.4f - k * 0.1f, 0.015f, 0.005f), Chalk, 0f, "Escrito");
     }
 
-    static void Workbench(Transform t)
+    static void Workbench(Transform t, int year = 1950)
     {
         TableTop(t, new Vector2(2.0f, 0.75f), 0.9f, Wood);
         C(t, new Vector3(0f, 0.2f, 0f), new Vector3(1.9f, 0.04f, 0.6f), WoodDark, 0f, "Balda");
         C(t, new Vector3(-0.8f, 0.98f, -0.3f), new Vector3(0.2f, 0.12f, 0.15f), Iron, 0f, "Tornillo_de_banco");
-        C(t, new Vector3(-0.3f, 0.92f, 0f), new Vector3(0.3f, 0.03f, 0.04f), Iron, 20f, "Llave_inglesa");
+        if (year >= 1840) C(t, new Vector3(-0.3f, 0.92f, 0f), new Vector3(0.3f, 0.03f, 0.04f), Iron, 20f, "Llave_inglesa");   // la llave ajustable, s. XIX
         C(t, new Vector3(0f, 0.92f, 0.1f), new Vector3(0.25f, 0.03f, 0.05f), WoodDark, -10f, "Martillo");
-        C(t, new Vector3(0.5f, 1.0f, 0.1f), new Vector3(0.55f, 0.2f, 0.04f), Iron, 0f, "Llanta_de_bicicleta");
-        C(t, new Vector3(0f, 1.4f, 0.36f), new Vector3(1.8f, 0.8f, 0.03f), WoodDark, 0f, "Panel_de_herramientas");
+        if (year >= 1870) C(t, new Vector3(0.5f, 1.0f, 0.1f), new Vector3(0.55f, 0.2f, 0.04f), Iron, 0f, "Llanta_de_bicicleta");
+        // El panel de la pared, con sus herramientas colgadas (vacío parecía una pantalla, en París 1898): sierra, martillo,
+        // tenazas, escuadra, cinceles y un rollo de cuerda; cada una cuelga de su clavija.
+        C(t, new Vector3(0f, 1.4f, 0.36f), new Vector3(1.8f, 0.8f, 0.03f), Wood, 0f, "Panel_de_herramientas");
+        C(t, new Vector3(-0.6f, 1.45f, 0.33f), new Vector3(0.5f, 0.16f, 0.01f), Iron, 0f, "Sierra_colgada");
+        C(t, new Vector3(-0.6f, 1.45f, 0.335f), new Vector3(0.12f, 0.14f, 0.03f), WoodDark, 0f, "Mango_de_la_sierra");
+        C(t, new Vector3(-0.15f, 1.5f, 0.335f), new Vector3(0.04f, 0.32f, 0.03f), WoodDark, 0f, "Martillo_colgado");
+        C(t, new Vector3(-0.15f, 1.67f, 0.33f), new Vector3(0.14f, 0.05f, 0.04f), Iron, 0f, "Cabeza_del_martillo");
+        C(t, new Vector3(0.15f, 1.45f, 0.335f), new Vector3(0.03f, 0.28f, 0.02f), Iron, 8f, "Tenazas");
+        C(t, new Vector3(0.45f, 1.55f, 0.335f), new Vector3(0.3f, 0.03f, 0.01f), Iron, 0f, "Escuadra");
+        C(t, new Vector3(0.45f, 1.42f, 0.335f), new Vector3(0.03f, 0.26f, 0.01f), Iron, 0f, "Escuadra_brazo");
+        for (int k = 0; k < 3; k++) C(t, new Vector3(0.7f + k * 0.05f, 1.25f, 0.335f), new Vector3(0.02f, 0.18f, 0.02f), k == 0 ? WoodDark : Iron, 0f, "Cincel");
+        C(t, new Vector3(-0.35f, 1.2f, 0.33f), new Vector3(0.18f, 0.18f, 0.05f), Sack, 0f, "Rollo_de_cuerda");
     }
 
     static void Lathe(Transform t)

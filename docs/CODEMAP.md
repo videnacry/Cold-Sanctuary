@@ -2,7 +2,7 @@
 
 > Regenerar con `python3 tools/gen_codemap.py`. Un CI (`.github/workflows/codemap.yml`) lo verifica en cada PR.
 > Es el índice a nivel de CLASE (complementa la tabla de sistemas de `CLAUDE.md` y el índice de `docs/`).
-_Total: 712 tipos._
+_Total: 720 tipos._
 
 
 ## Animals
@@ -84,6 +84,7 @@ _Total: 712 tipos._
 - **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Homes.cs` — REGLA 6 DE EDIFICACIÓN:
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Towns.cs` — LOS PUEBLOS DE LOS CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01:
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.cs` — LOS EDIFICIOS REALES DE CADA ERA en los microcosmos civilizados (docs/microcosmos-civilizaciones.md §8; Berón 2026-11-01:
 - **CompassionSceneBuilder** (class) — `Assets/Editor/CompassionSceneBuilder.cs` — SIMULACIONES DE COMPASIÓN (docs/compassion-simulations.md):
@@ -98,7 +99,7 @@ _Total: 712 tipos._
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
 - **MicrocosmSpec** (class) — `Assets/Editor/MicrocosmTemplate.cs` — LA PLANTILLA DE MICROCOSMOS (Berón 2026-10-27):
-- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.cs` — LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/microcosmos-reglas-edificacion.md, regla 3; Berón 2026-11-01:
+- **MicroFurniture** (class) — `Assets/Editor/MicroFurniture.cs` — LOS MUEBLES DETALLADOS DE LOS MICROCOSMOS (docs/microcosmos-reglas-edificacion.md, reglas 3 y 7; Berón 2026-11-01:
 - **MicroSnapshot** (class) — `Assets/Editor/MicroSnapshot.cs` — FOTOS DE LOS MICROCOSMOS (para revisarlos sin entrar en Play):
 - **MicroWater** (class) — `Assets/Editor/MicroWater.cs` — AGUA ALREDEDOR de los mundos virtuales (microcosmos, mundo mob, virtualizaciones):
 - **MobWorldSceneBuilder** (class) — `Assets/Editor/MobWorldSceneBuilder.cs` — Genera la ESCENA propia del mundo mob (docs mob-world-architecture §13).
@@ -108,6 +109,7 @@ _Total: 712 tipos._
 - **PoseGallery** (class) — `Assets/Editor/PoseGallery.cs` — GALERÍA DE POSTURAS:
 - **ResidentialBuilder** (class) — `Assets/Editor/ResidentialBuilder.cs` — ARBOLEDA RESIDENCIAL (docs/alfombras-plan.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.AtomicPlant.cs` — PLANTA ATÓMICA (docs/atomic-plant.md):
+- **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.CicloHumano.cs` — ESCENAS DE CICLO DE VIDA DE UNA PERSONA (Berón 2026-11-02:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.CicloVida.cs` — ESCENAS DE CICLO DE VIDA (Berón 2026-11-01:
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Construction.cs` — ÁREA DE CONSTRUCCIÓN (docs/construction-simulation.md):
 - **SampleSceneBuilder** (class) — `Assets/Editor/SampleSceneBuilder.Cria.cs` — ÁREA DE CRÍA (docs/cria-simulation.md):
@@ -236,6 +238,8 @@ _Total: 712 tipos._
 - **ChemistryHumors** (class) — `Assets/Scripts/Composition/ChemistryHumors.cs` — PUENTE COMPUESTOS → HUMORES (docs/consciousness-mechanics.md §2.2) — cierra el hueco de la cadena química:
 - **Childhood** (class) — `Assets/Scripts/LifeStage/Childhood.cs`
 - **ChoiceDialog** (class) — `Assets/Scripts/UI/ChoiceDialog.cs` — DIÁLOGO DE OPCIONES (máquina de virtualización, alfombras voladoras…):
+- **CicloHumanoPanel** (class) — `Assets/Scripts/LifeCycle/CicloHumanoPanel.cs` — ESCENAS DE CICLO DE VIDA DE UNA PERSONA (Berón 2026-11-02:
+- **CicloHumanoTest** (class) — `Assets/Scripts/Tests/CicloHumanoTest.cs` — PRUEBA DEL CICLO DE VIDA DE UNA PERSONA (grupo 59; Berón 2026-11-02:
 - **CicloVidaPanel** (class) — `Assets/Scripts/LifeCycle/CicloVidaPanel.cs` — ESCENAS DE CICLO DE VIDA (Berón 2026-11-01:
 - **CicloVidaTest** (class) — `Assets/Scripts/Tests/CicloVidaTest.cs` — PRUEBA DEL CICLO DE VIDA en su isla (grupo 58; Berón 2026-11-01:
 - **CivilizedErasTest** (class) — `Assets/Scripts/Tests/CivilizedErasTest.cs` — TEST DE LOS MICROCOSMOS DE ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8–9).
@@ -390,6 +394,7 @@ _Total: 712 tipos._
 - **HoneydewSpell** (class) — `Assets/Scripts/Transformation/HoneydewSpell.cs` — Hechizo de LA MALEZA DE AMBROSIO — restaura energía al target.
 - **HospitalService** (enum) — `Assets/Scripts/World/HospitalStation.cs` — Servicios de un hospital aislado (docs/hospital.md):
 - **HotCell** (class) — `Assets/Scripts/AtomicPlant/HotCell.cs` — LA CELDA CALIENTE:
+- **Household** (class) — `Assets/Scripts/Body/Household.cs` — UN HOGAR (docs/ciclo-de-vida.md §Humanos; docs/microcosmos-reglas-edificacion.md regla 6; Berón 2026-11-02:
 - **HudGate** (class) — `Assets/Scripts/UI/HudGate.cs` — Decide cuándo se dibujan los HUD OnGUI de los SANDBOX de prueba.
 - **Humor** (enum) — `Assets/Scripts/Mind/Humores.cs` — Compuesto bioquímico de un ser (docs/anima-architecture.md §10.1).
 - **HumorProfile** (class) — `Assets/Scripts/Soul/HumorProfile.cs` — Deriva los HUMORES base (adrenalina/serotonina/cortisol/glucosa/calcio) de la **personalidad** (stats) de un ser (docs/soul-relations-reincarnation §2b).
@@ -465,6 +470,7 @@ _Total: 712 tipos._
 - **MeditationSession** (class) — `Assets/Scripts/Meditation/MeditationSession.cs` — Orchestrates the Microcosmos entry flow shared by BOTH triggers (docs §3):
 - **Medium** (enum) — `Assets/Scripts/Medium.cs` — Medio físico en el que se encuentra una criatura.
 - **MediumZone** (class) — `Assets/Scripts/MediumZone.cs` — Volumen de un medio (normalmente agua).
+- **MicroBody** (class) — `Assets/Scripts/Microcosmos/MicroBody.cs` — EL CUERPO DE QUIEN USA UN MUEBLE (docs/microcosmos-reglas-edificacion.md §Muebles adaptados al cuerpo; Berón 2026-11-02:
 - **MicroBuildRules** (class) — `Assets/Scripts/Microcosmos/MicroBuildRules.cs` — LAS REGLAS DE EDIFICACIÓN DE LOS MICROCOSMOS Y MESOCOSMOS (docs/microcosmos-reglas-edificacion.md; Berón 2026-11-01:
 - **MicroBuildRulesTest** (class) — `Assets/Scripts/Tests/MicroBuildRulesTest.cs` — TEST DEL VALIDADOR DE LAS REGLAS DE EDIFICACIÓN (docs/microcosmos-reglas-edificacion.md, ), sin cargar escenas:
 - **MicrocosmosFloorTest** (class) — `Assets/Scripts/Tests/MicrocosmosFloorTest.cs` — TEST DEL PISO DE LOS MICROCOSMOS (docs/reglas-plataformas.md, regla 11; Berón 2026-10-29):
@@ -481,6 +487,7 @@ _Total: 712 tipos._
 - **MicroPiece** (class) — `Assets/Scripts/Microcosmos/MicroPiece.cs` — UN MUEBLE DE MICROCOSMOS (docs/microcosmos-reglas-edificacion.md):
 - **MicroRoutine** (class) — `Assets/Scripts/Microcosmos/MicroRoutine.cs` — La RUTINA de un mirmidón de las historias (docs/microcosmos-historias.md):
 - **MicroSize** (class) — `Assets/Scripts/Microcosmos/MicroSize.cs` — TAMAÑO EN EL MICROCOSMOS:
+- **MicroStyles** (class) — `Assets/Scripts/Microcosmos/MicroStyles.cs` — EL CATÁLOGO DE ESTILOS DE ÉPOCA Y LUGAR de los muebles de los microcosmos (docs/microcosmos-reglas-edificacion.md §Catálogo; Berón 2026-11-02:
 - **MicroTeacher** (class) — `Assets/Scripts/Microcosmos/MicroTeacher.cs` — LA SEMBRADORA (Ruth renacida, microcosmos del Huerto):
 - **MigrationDiagnostics** (class) — `Assets/Scripts/MigrationDiagnostics.cs` — Diagnóstico de migración (TEMPORAL).
 - **Mind** (class) — `Assets/Scripts/Mind/Mind.cs` — El pilar MENTE de un ánima (docs/anima-architecture.md §3, §6, §10) — MVP.
@@ -535,6 +542,7 @@ _Total: 712 tipos._
 - **PerfProbe** (class) — `Assets/Scripts/UI/PerfProbe.cs` — SONDA DE RENDIMIENTO (consola:
 - **PeriodicTableManager** (class) — `Assets/Scripts/Chemistry/PeriodicTableManager.cs` — Tracks which periodic table elements the player has discovered.
 - **PersonalDosimeter** (class) — `Assets/Scripts/AtomicPlant/PersonalDosimeter.cs` — EL DOSÍMETRO PERSONAL (se recoge en la taquilla de la entrada):
+- **PersonLife** (class) — `Assets/Scripts/Body/PersonLife.cs` — EL CICLO DE VIDA DE UNA PERSONA (docs/ciclo-de-vida.md §Humanos; Berón 2026-11-02:
 - **PhraseCategory** (enum) — `Assets/Scripts/Mind/MindPhrase.cs` — Clasificación de una frase (docs/anima-architecture.md §6/§10).
 - **PhrasePools** (class) — `Assets/Scripts/Mind/PhrasePools.cs` — Pools de contenido de la biblioteca de frases (docs/anima-architecture.md §11).
 - **PhysicsHistoryMission** (class) — `Assets/Scripts/AtomicPlant/PhysicsHistoryMission.cs` — EL MICROCOSMOS DE LA PLANTA ATÓMICA (docs/atomic-plant.md §Microcosmos):
