@@ -15,6 +15,8 @@ public class GlassWall : MonoBehaviour
     public string room;
     public const string Prefix = "Pared_cristal";
     public const float Height = 2.8f, Thick = 0.08f, DoorWidth = 1.8f;
+    /// <summary>Holgura extra de la sala sobre sus 2 m: cubre el perfil de aluminio (sobresale 0,024 m) con margen.</summary>
+    public const float ProfileClear = 0.05f;
     public static readonly Color GlassTint = new Color(0.78f, 0.92f, 1f, 0.22f), Frame = new Color(0.72f, 0.75f, 0.78f);
 
     /// <summary>
@@ -36,7 +38,10 @@ public class GlassWall : MonoBehaviour
             }
         }
         if (!any) return null;
-        Vector2 size = new Vector2(b.size.x + 2f * margin + 2f * Thick, b.size.z + 2f * margin + 2f * Thick);
+        // + ProfileClear: el perfil y el zócalo de aluminio sobresalen 0,024 m del cristal hacia dentro; sin esto el paso
+        // medido (FurnitureSpacing, con el perfil) quedaba en 1,97–1,98 m (2026-11-03).
+        float m = margin + ProfileClear;
+        Vector2 size = new Vector2(b.size.x + 2f * m + 2f * Thick, b.size.z + 2f * m + 2f * Thick);
         if (minSize.HasValue) size = Vector2.Max(size, minSize.Value);
         Vector3 c = new Vector3(b.center.x, 0f, b.center.z);
         float floorY = b.min.y;

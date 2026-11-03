@@ -174,7 +174,7 @@ public static partial class SampleSceneBuilder
         // 4 QUIRÓFANOS en fila, cada uno en su sala de cristal: su conjunto (mesa, lámpara, anestesia e instrumental) + 2 m.
         for (int i = 0; i < 4; i++)
         {
-            Vector3 rc = new Vector3(-15.3f + i * 8.3f, 0f, -8.8f);   // el centro de la sala
+            Vector3 rc = new Vector3(-15.3f + i * 8.4f, 0f, -8.8f);   // el centro de la sala (8,4 m: dos salas vecinas comparten mampara y su instrumental guarda los 2 m a la del vecino)
             Vector3 c = rc + new Vector3(-0.35f, 0f, 0.33f);         // el del conjunto (la mesa), para que su caja quede centrada
             string sfx = i == 0 ? "" : $" {i + 1}";
             Zone(w1, "Sala_quirofano", rc, new Vector2(7.8f, 8f), zoneQ);
@@ -187,8 +187,8 @@ public static partial class SampleSceneBuilder
             if (room != null) Label(room, $"Quirófano {i + 1}: sala de cristal (presión positiva)", 3.1f);
         }
         // El pasillo de los quirófanos (al norte de sus puertas): los lavados entre dos puertas, el autoclave y el oxígeno a los lados.
-        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico", new Vector3(-11.15f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico", 1.9f, false, new Vector3(0f, 0f, -0.9f));
-        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico 2", new Vector3(5.45f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico 2", 1.9f, false, new Vector3(0f, 0f, -0.9f));
+        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico", new Vector3(-11.1f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico", 1.9f, false, new Vector3(0f, 0f, -0.9f));
+        Station(InfirmaryProps.ScrubSink(w1, "Lavado_quirurgico 2", new Vector3(5.7f, 0f, -2.15f), 0f), HospitalService.Esterilizacion, "Lavado quirúrgico 2", 1.9f, false, new Vector3(0f, 0f, -0.9f));
         Station(InfirmaryProps.Autoclave(w1, "Autoclave", new Vector3(-18.3f, 0f, -1.9f), 90f), HospitalService.Esterilizacion, "Esterilización (autoclave)", 2f, false, new Vector3(0f, 0f, -1f));
         Station(InfirmaryProps.OxygenPlant(w1, "Planta_oxigeno", new Vector3(16.8f, 0f, -1.6f), 180f), HospitalService.Oxigeno, "Planta de oxígeno", 2.6f, false, new Vector3(0f, 0f, -1.1f));
         // UCI de 6 camas (18,6 m² por cama, 2 m entre ellas) en su sala de cristal al noreste; el control, fuera, viéndolas a través.
@@ -211,15 +211,15 @@ public static partial class SampleSceneBuilder
         float isoZ = 16.15f;
         for (int i = 0; i < 4; i++)
         {
-            Vector3 c = new Vector3(-16.8f + i * 5.25f, 0f, isoZ);
+            Vector3 c = new Vector3(-16.8f + i * 5.35f, 0f, isoZ);
             Transform bedT = Station(InfirmaryProps.HospitalBed(iso, i == 0 ? "Aislamiento" : $"Aislamiento {i + 1}", c, 0f, bl[i % 4]), HospitalService.Aislamiento, $"Aislamiento {i + 1}: presión negativa (entrar por la esclusa)", 2.6f, false, new Vector3(0.9f, 0f, 0f));
             GlassWall.Room(iso, $"Aislamiento_{i + 1}", new[] { bedT }, 2);
         }
         // La esclusa: un pasillo de cristal de 2,6 m pegado al sur de las cuatro habitaciones (el norte lo cierran ellas), con la
         // puerta al este; el EPI (bata, guantes, mascarilla FFP2), fuera, junto a la puerta.
-        GlassWall.Box(iso, "Esclusa_aislamiento", new Vector3(-8.95f, 0f, isoZ - 4.86f), new Vector2(20.9f, 2.6f), 0f, 1, 0f, 0);
-        KitchenProps.C(iso, new Vector3(-8.95f, 0.02f, isoZ - 4.86f), new Vector3(20.7f, 0.02f, 2.4f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");
-        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.1f, 0f, isoZ - 4.86f), -90f);
+        GlassWall.Box(iso, "Esclusa_aislamiento", new Vector3(-8.8f, 0f, isoZ - 4.91f), new Vector2(21.3f, 2.6f), 0f, 1, 0f, 0);
+        KitchenProps.C(iso, new Vector3(-8.8f, 0.02f, isoZ - 4.91f), new Vector3(21.1f, 0.02f, 2.4f), new Color(0.95f, 0.92f, 0.75f), 0f, "Esclusa_antesala");
+        Transform epi = KitchenProps.Root(iso, "EPI_esclusa", new Vector3(4.45f, 0f, isoZ - 4.91f), -90f);
         KitchenProps.C(epi, new Vector3(0f, 0.9f, 0f), new Vector3(0.9f, 1.8f, 0.45f), KitchenProps.White, 0f, "Armario_EPI");
         KitchenProps.C(epi, new Vector3(0f, 1.3f, -0.235f), new Vector3(0.7f, 0.3f, 0.02f), new Color(0.95f, 0.82f, 0.3f), 0f, "Rotulo_EPI");
         KitchenProps.Fit(epi);
@@ -258,7 +258,7 @@ public static partial class SampleSceneBuilder
         // sureste: la fila sur abre al sur, la norte al pasillo del norte.
         for (int i = 0; i < 4; i++)
         {
-            Vector3 rc = new Vector3(6.2f + (i % 2) * 7.9f, 0f, -10.05f + (i / 2) * 5.95f);
+            Vector3 rc = new Vector3(6.2f + (i % 2) * 8.0f, 0f, -10.1f + (i / 2) * 6.05f);
             Vector3 c = rc + new Vector3(-0.1f, 0f, 0f);
             string sfx = i == 0 ? "" : $" {i + 1}";
             Zone(v, "Sala_quirofano_vet", rc, new Vector2(7.4f, 5.4f), zoneQ);
