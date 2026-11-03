@@ -1629,6 +1629,13 @@ public static class AreaMicrocosmos
         // CALLES (Berón 2026-11-01: «al-Juarismi, Curie, Einstein y Patterson no tienen fauna»).
         if (town && biome != null && biome.townFauna != null)
             foreach (MicroBiome.Pet pt in biome.townFauna) list.Add((pt.species, pt.count, pt.length, pt.tint, pt.name, null, true));
+        // (2026-11-03) Las MESETAS de los muebles gigantes fuera del pueblo también tienen su fauna (reglas de los microcosmos): en un pueblo
+        // sin bichos del lugar (París, Berna, Bagdad, Pasadena: solo los animales de la calle), unos pocos del santuario gigante, allí arriba.
+        if (town && tops != null && tops.Count > 0)
+        {
+            list.Add(("Ladybug", 2, 2.4f, SpeciesColor("Ladybug"), "Mariquita de las mesetas", null, false));
+            list.Add(("Ant", 2, 1.8f, SpeciesColor("Ant"), "Hormiga de las mesetas", null, false));
+        }
         int placed = 0, faunaNext = 0, faunaTop = 0, onStreets = 0;
         foreach (var (sp, n, len, tint, label, dormant, street) in list)
         {
@@ -1647,7 +1654,7 @@ public static class AreaMicrocosmos
                     p = new Vector3(w.x - center.x, FloorNearOr(w, floors, groundY, groundY) - center.y, w.z - center.z); onStreets++;
                 }
                 else if (sp == "Antlion" && sandPits.Count > 0) p = sandPits[rnd.Next(sandPits.Count)];
-                else if (topPts.Count > 0 && sp != "DungBeetle" && (i % 3 == 2 || town && i == 0 && faunaTop < 4)) {   // (en un pueblo, el primero de cada especie también, hasta 4: las mesetas fuera del pueblo tienen su fauna)
+                else if (topPts.Count > 0 && sp != "DungBeetle" && (i % 3 == 2 || town && i == 0 && faunaTop < 4 || label.EndsWith("de las mesetas"))) {   // (en un pueblo, el primero de cada especie también, hasta 4: las mesetas fuera del pueblo tienen su fauna)
                     p = topPts[rnd.Next(topPts.Count)] - center; faunaTop++; }   // uno de cada tres, encima de un mueble
                 else if (sp == "DungBeetle" && dungs.Count > 0) p = dungs[rnd.Next(dungs.Count)] + new Vector3(town ? 0.6f : 5f, 0f, 0f);
                 else if (faunaSlots != null && faunaNext < faunaSlots.Count) { Vector3 w = faunaSlots[faunaNext++]; p = new Vector3(w.x - center.x, FloorNearOr(w, floors, w.y, groundY) - center.y, w.z - center.z); }
