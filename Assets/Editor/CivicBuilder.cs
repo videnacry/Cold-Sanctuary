@@ -477,7 +477,14 @@ internal static partial class CivicBuilder
                 if (!mp.fitted) continue;
                 if (string.IsNullOrEmpty(mp.fitFor)) human = true; else insect = true;
             }
-        if (!human) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
+        if (!human)
+        {
+            // Con mesa, uno de sus asientos se hace para una persona (la mesa no crece); sin ella, un banco para personas.
+            Transform table = pieces.Find(p => p.TryGetComponent(out MicroPiece mp) && mp.kind == "mesa");
+            MicroBody.Fit insectBody = MicroFurniture.DefaultBody ?? MicroBody.OfSpecies("Ant", 1.75f);
+            if (table != null && insectBody.Insect) MicroFurniture.Refit(table, "mesa", Year, Region, insectBody, new List<MicroBody.Fit> { insectBody, MicroBody.Human() });
+            else pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Banco (para personas)", Year, null, Region, MicroBody.Human()));
+        }
         if (!insect) pieces.Add(MicroFurniture.Build(b, "banco", Vector3.zero, 0f, "Asiento de abdomen (para insectos-humanos)", Year, null, Region, MicroBody.OfSpecies("Ant", 1.75f)));
     }
 
