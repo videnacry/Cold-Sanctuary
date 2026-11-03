@@ -194,7 +194,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
             bool water = WaterZone.Underwater(i) && !WaterZone.Underwater(dr) && !WaterZone.Underwater(o);
             if (water) dry++; else if (bad.Length < 240) bad += $"{lv.name}: agua dentro {WaterZone.Underwater(i)}, en la puerta {WaterZone.Underwater(dr)}, fuera {WaterZone.Underwater(o)}; ";
         }
-        TestProbe.Check("cada nivel (suelo, 4 pisos, 4 campos de punta, 4 anillos y el techo) tiene su puerta de 3 × 3 m con el campo magnético, y por ella se pasa", doors == 14 && open == doors, $"{open}/{doors} puertas; {bad}");
+        TestProbe.Check("cada nivel (suelo, 4 pisos, 4 campos de punta, 4 anillos y el techo) tiene su puerta cuadrada de 6 × 6 m con el campo magnético, y por ella se pasa", doors == 14 && open == doors, $"{open}/{doors} puertas; {bad}");
         TestProbe.Check("el agua se queda dentro: el hueco de cada puerta es aire (campana) y fuera no hay agua", dry == doors, $"{dry}/{doors}");
         TreeLevel g0 = t.Ground;
         Vector3 aside = t.World(g0.outside + HelixTower.FromSide(g0.side, Vector3.left) * 4f) + Vector3.up * 1.3f, asideIn = t.World(g0.inside + HelixTower.FromSide(g0.side, Vector3.left) * 4f) + Vector3.up * 1.1f;
@@ -204,7 +204,7 @@ public class TreeOfFieldsTest : MonoBehaviour, ITestUnit
         Transform roofCol = tree.Find("Campana_techo");
         bool roofWater = topL != null && WaterZone.Underwater(t.World(topL.inside) + Vector3.up * 2.5f);
         TestProbe.Check("ENTRADA DEL TECHO: una columna de agua asoma sobre la cubierta con su puerta de frente (como la de los anillos), con agua por encima del dintel",
-            topL != null && roofCol != null && topL.field != null && roofWater && TreeSpec.DoorWidth >= 3f && TreeSpec.DoorHeight >= 3f, $"columna {roofCol != null}, agua sobre la puerta {roofWater}, puertas {TreeSpec.DoorWidth:0.#} × {TreeSpec.DoorHeight:0.#} m");
+            topL != null && roofCol != null && topL.field != null && roofWater && TreeSpec.DoorWidth >= 6f && TreeSpec.DoorHeight == TreeSpec.DoorWidth, $"columna {roofCol != null}, agua sobre la puerta {roofWater}, puertas {TreeSpec.DoorWidth:0.#} × {TreeSpec.DoorHeight:0.#} m");
 
         // ── 4. NADAR ENTRE NIVELES ──
         GameObject body = new GameObject("Nadador_TEST");

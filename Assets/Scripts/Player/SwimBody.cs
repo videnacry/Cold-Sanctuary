@@ -156,7 +156,7 @@ public class SwimBody : MonoBehaviour
         RefreshSurface();
         float floatY = FloatPivotY, y = transform.position.y;
         bool vertical = Mathf.Abs(velocity.y) > 0.25f;
-        if (OutOfBreath && _isPlayer) { velocity.y = Mathf.Max(velocity.y, 1.2f); vertical = true; }   // sin aire: arriba
+        if (OutOfBreath && _isPlayer && !BreathingMask.Has(gameObject)) { velocity.y = Mathf.Max(velocity.y, 1.2f); vertical = true; }   // sin aire: arriba
         if (!vertical) velocity.y = y > floatY - 0.7f ? Mathf.Clamp((floatY - y) * 3f, -1.5f, 1.5f) : buoyantRise;
         else if (velocity.y > 0f) velocity.y = Mathf.Min(velocity.y, Mathf.Max(0f, (floatY - y) * 4f));   // no salta fuera del agua
         if (y > floatY + 0.02f && velocity.y > -0.5f) velocity.y = Mathf.Min(velocity.y, (floatY - y) * 3f);   // cayó al agua: baja a flote
@@ -288,6 +288,8 @@ public class SwimBody : MonoBehaviour
         if (!Active && Breath01 >= 1f) { HeadAboveWater = true; return; }
         Vector3 head = HeadPosition;
         HeadAboveWater = !(WaterZone.SurfaceAt(head, out float s) && head.y < s - 0.02f);
+        // MÁSCARA PUESTA (BreathingMask, edificios-árbol: docs/mascaras-de-oxigeno.md): oxígeno ilimitado, el aliento no se gasta.
+        if (BreathingMask.Has(gameObject)) { Breath01 = Mathf.Min(1f, Breath01 + dt / Mathf.Max(0.1f, breathRefillSeconds)); return; }
         Breath01 = HeadAboveWater ? Mathf.Min(1f, Breath01 + dt / Mathf.Max(0.1f, breathRefillSeconds))
                                   : Mathf.Max(0f, Breath01 - dt / Mathf.Max(1f, HoldSeconds));
     }
