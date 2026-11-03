@@ -109,3 +109,15 @@ Medido en vivo (2026-11-03, `Tools/TmpCheck/Pueblos mapa: recuento`): piso ×100
 | LeChambon | 4000x3800 | 2412x2292 | 47 | 28/28 | 50 | 13347 | 31 | 64033 | 382 (2 miradores) |
 
 Por escena: 25–125 edificios, 35 000–76 000 renderers (la mayoría, flora de cubos: 4 000–13 000 plantas). Antes (barrio ×10) el pueblo cabía en 240–460 m (Bruce Lee: 372 × 272 m).
+
+## El pueblo se adapta al piso y el relieve es real (2026-11-03, segunda vuelta)
+
+- **El piso no se rompe** (reglas 13 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) y 8–9 de
+  [microcosmos-areas.md](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03)): el barrio ×60 ya no despeja los muebles gigantes
+  del área. Las calles, los ríos, los lagos, las colinas y los campos del plano se cortan donde atravesarían un mueble que apoya en el
+  suelo (el registro dice cuántos tramos: «N tramos no se pusieron por no atravesar un mueble del piso»), los solares los rodean, y en
+  las mesetas más grandes del barrio hay un **barrio alto** (casas y un mercado) al que se sube trepando.
+- **Relieve real** (`CivicBuilder.Terrain`): montes y colinas de malla facetada con ruido, roca, canchal y nieve; lagos de orilla
+  irregular; ríos con riberas; acantilados. Línea del plano: `monte Nombre | radio alto | x z | nieve seco`,
+  `acantilado Nombre | alto | x z, x z…`. Alturas reales sobre el pueblo (Corvatsch 1650 m, Pikes Peak 2460 m, Rainier 4390 m, Sila
+  1600 m, Roca del León 495 m, Gurten 340 m…) recortadas a 300 m (los muros del piso llegan a 400 m).

@@ -436,3 +436,23 @@ pone en el lado largo del bancal (`FruitPlant.StandPoint`), no encima.
 
 Cada edificio suma la revisión de sus frutales de la cima (1 min un árbol, 0,75 un arbusto, 0,5 una herbácea) y unos metros por el
 techo. El Árbol de los Campos pasa a tener frutales (los de su cima), además de sus tareas del árbol (máscaras y fitoplancton).
+
+## Frutales en las residencias del santuario (2026-11-03)
+
+Berón: «los frutales en residencias que te pedí era para las residencias del santuario». Cada **casa de árbol** de la Arboleda
+residencial (`ResidentialBuilder`, 18 casas: dos o tres por árbol, con la tercera del horario) lleva una **terraza frutal**:
+
+- una plataforma de **7 × 6 m** pegada a la habitación por el lado **contrario al tronco** (`Terraza_frutal`), a la altura de su suelo;
+- en su centro, **un frutal en maceta** (`SampleSceneBuilder.PottedFruit`, la misma maceta de los techos, con su `FruitPlant`), de las
+  especies de **porte pequeño** (una distinta en cada casa, rotando por `FruitCare.All`);
+- a **≥ 2 m** de la cama, el armario, la mesilla y el área de su alfombra (la maceta queda a 5,5 m del borde de la habitación);
+- las ramas del árbol esquivan la terraza (`ResidentialBuilder.Built`).
+
+Son macetas del **edificio «Residencia»**: `FruitGardener.Rounds` las mete solas en la ronda del jardinero (una unidad más del camino,
+sin punto de cuidados ni goteo: se riegan y abonan a mano en la revisión). `FruitOrchardTest` (grupo 55) comprueba que cada casa tiene
+su frutal y que está a ≥ 2 m de sus muebles; las comprobaciones de los techos (una de cada especie, goteo, punto de cuidados) no se
+aplican a la Residencia.
+
+Los **microcosmos** conservan sus frutales en cada residencia (regla 11 de
+[microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md)): encajan con su historia (el manzano de Woolsthorpe, el cacao de
+Palenque).

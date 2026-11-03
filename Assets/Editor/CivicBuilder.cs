@@ -173,6 +173,15 @@ internal static partial class CivicBuilder
                 Vector3 mn = t.InverseTransformPoint(b.min), mx = t.InverseTransformPoint(b.max);
                 Mark(Rect.MinMaxRect(Mathf.Min(mn.x, mx.x), Mathf.Min(mn.z, mx.z), Mathf.Max(mn.x, mx.x), Mathf.Max(mn.z, mx.z)));
             }
+            // (2026-11-03) LOS MUEBLES DEL PISO (que ya no se quitan: el piso no se rompe): lo que apoya en el suelo (patas, costados,
+            // encimeras, camas) es un solar ocupado; el pueblo lo rodea (o se sube encima: CivicBuilder.Outposts). Lo que queda muy por
+            // encima (el tablero de una mesa) no estorba al suelo de debajo.
+            foreach (Bounds fb in AreaMicrocosmos.FloorFurniture(t))
+            {
+                if (fb.min.y - t.position.y > 5f) continue;
+                Vector3 a = t.InverseTransformPoint(fb.min), z = t.InverseTransformPoint(fb.max);
+                Mark(Rect.MinMaxRect(Mathf.Min(a.x, z.x), Mathf.Min(a.z, z.z), Mathf.Max(a.x, z.x), Mathf.Max(a.z, z.z)));
+            }
         }
 
         // (2026-11-03) Un índice por celdas de 40 m: con el barrio ×60 hay miles de solares y tramos de calle que mirar.

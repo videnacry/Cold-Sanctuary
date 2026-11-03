@@ -38,6 +38,10 @@ public class MicroFloor : MonoBehaviour
     public string pendingFloor = "";
     [Tooltip("Al construirlo: edificios (miradores de la era) levantados sobre las caras de arriba de los muebles gigantes.")]
     public int buildingsOnTops;
+    [Tooltip("(2026-11-03) Piezas del piso gigante (su forma finalizada, dentro de los muros) al montarlo: el piso NO se rompe, así que siguen siendo las mismas.")]
+    public int floorPieces;
+    [Tooltip("Enlaces para TREPAR (NavMeshLink) del suelo a las caras de arriba de los muebles: los insectos-humanos suben por patas y paredes.")]
+    public int climbLinks;
 
     /// <summary>Nombres de los cuatro muros (bajo «Muros_del_piso»).</summary>
     public static readonly string[] WallNames = { "Muro_N", "Muro_S", "Muro_E", "Muro_O" };

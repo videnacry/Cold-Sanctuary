@@ -26,8 +26,8 @@ internal static partial class CivicBuilder
     /// <summary>Tope de edificios de un pueblo (rendimiento): historia + pueblo + relleno.</summary>
     const int PlanMaxSites = 150;
 
-    enum FK { Calle, Rio, Lago, Colina, Monte, Campo, Muralla, Mar }
-    sealed class Feat { public FK k; public string name; public List<Vector2> p = new List<Vector2>(); public float a, b; }
+    enum FK { Calle, Rio, Lago, Colina, Monte, Campo, Muralla, Mar, Acantilado }
+    sealed class Feat { public FK k; public string name; public List<Vector2> p = new List<Vector2>(); public float a, b; public bool snow, dry; }
     sealed class TownPlan
     {
         public string town;
@@ -64,7 +64,8 @@ calle Camino del cabo Lacinio | 6 | 300 -130, 560 -460
 rio Esaro | 25 | -760 380, -200 330, 300 300, 560 280
 mar Mar Jonio | 500 2400 | 820 0
 colina Acrópolis del puerto | 140 25 | 360 120
-monte La Sila | 600 260 | -1250 0
+acantilado Costa del cabo | 18 | 600 -520, 610 -250, 600 -60
+monte La Sila | 600 1600 | -1250 0 | nieve
 hito 0 | 40 60
 hito 1 | -150 -80
 hito 2 | 520 -440
@@ -97,7 +98,7 @@ relleno | 70 | 0 0",
 rio Nilo | 260 | 430 -1000, 400 0, 450 1000
 canal Canal del puerto | 30 | 280 -50, 430 -50
 lago Lago sagrado de Ptah | 45 25 | 90 -140
-colina Meseta de Saqqara | 450 35 | -900 0
+colina Meseta de Saqqara | 450 40 | -900 0 | seco
 campo Campos de la crecida (norte) | 220 300 | 220 520
 campo Campos de la crecida (sur) | 220 300 | 220 -560
 campo Campos de trigo emmer | 260 200 | -480 420
@@ -243,6 +244,7 @@ relleno | 50 | 60 100",
 rio Orinoco | 600 | -1300 560, 1300 560
 colina Piedra del Medio | 25 8 | 100 560
 colina Cerro El Zamuro | 150 40 | 260 -500
+acantilado Barranca del Orinoco | 12 | -650 240, 0 235, 650 240
 calle Paseo Orinoco | 12 | -720 95, 720 95
 calle Calle Venezuela | 8 | -720 -90, 720 -90
 calle Calle Bolívar | 8 | -720 -180, 720 -180
@@ -280,8 +282,8 @@ relleno | 60 | 0 0",
 lago Lago de Sils | 700 330 | -950 520
 lago Lago de Silvaplana | 480 280 | 950 720
 rio Fedacla (arroyo de Fex) | 6 | 120 -900, 60 -100, 0 320
-monte Piz Corvatsch | 600 420 | 760 -850
-monte Piz Lagrev | 520 380 | -950 -560
+monte Piz Corvatsch | 600 1650 | 760 -850 | nieve
+monte Piz Lagrev | 520 1360 | -950 -560 | nieve
 colina Península de Chastè | 120 30 | -420 420
 calle Via da Marias | 7 | -320 0, 320 0
 calle Camino de Maloja | 6 | -320 0, -950 160
@@ -360,7 +362,7 @@ calle Nevada Avenue | 25 | -500 -420, -500 420
 calle Camino de Knob Hill | 10 | 0 0, 0 -220
 calle Vía del Denver & Rio Grande | 6 | -900 -900, -900 900
 rio Monument Creek | 12 | -980 900, -950 0, -1000 -900
-monte Pikes Peak | 700 600 | -1450 -300
+monte Pikes Peak | 700 2460 | -1450 -300 | nieve seco
 hito 0 | 35 45
 hito 1 | -450 -210
 hito 2 | -620 115
@@ -398,7 +400,7 @@ calle Puente de Nydegg | 10 | 700 0, 900 0
 calle Puente de Kirchenfeld | 12 | 150 -70, 150 -520
 calle Puente del Kornhaus | 12 | -50 70, -100 520
 calle Bahnhofplatz y Bubenbergplatz | 20 | -650 10, -720 -150
-colina Gurten | 500 120 | 0 -1150
+colina Gurten | 500 340 | 0 -1150
 colina Rosengarten | 150 25 | 820 320
 hito 0 | 120 18
 hito 1 | -600 80
@@ -441,7 +443,7 @@ calle Wilson Avenue | 15 | -300 -400, -300 1100
 calle Arroyo Parkway | 20 | -650 -400, -650 1100
 calle Allen Avenue | 15 | 650 -400, 650 1100
 rio Arroyo Seco | 30 | -1000 1300, -1050 0, -1100 -900
-monte Montes de San Gabriel | 900 450 | 0 1600
+monte Montes de San Gabriel | 900 1480 | 0 1600 | seco
 hito 0 | 45 45
 hito 1 | -90 60
 hito 2 | 300 860
@@ -516,7 +518,8 @@ calle Camino de la orilla | 10 | -340 -900, -340 900
 calle Camino de Üsküdar | 10 | 0 110, 0 900
 calle Calle de Selimiye | 8 | -340 300, 400 300
 calle Calle de la mezquita | 8 | 250 110, 250 800
-colina Çamlıca | 450 120 | 950 650
+colina Çamlıca | 450 230 | 950 650
+acantilado Ribera del Bósforo | 15 | -440 -600, -445 0, -440 600
 Plaza | 120 250
 Pileta | 60 200
 Parque | 320 450
@@ -677,7 +680,7 @@ calle Trinchera de comunicación alemana | 3 | 250 60, 270 500
 campo Bosque de Ploegsteert | 450 260 | -450 -380
 campo Campo de remolachas | 300 200 | 400 -350
 rio Douve | 10 | -900 420, 0 380, 900 450
-colina Colina de Messines | 500 30 | 300 900
+colina Colina de Messines | 500 60 | 300 900
 relleno | 20 | -250 -450
 calle Camino de Ploegsteert | 6 | -250 -45, -250 -800
 calle Calle de Ploegsteert | 6 | -500 -600, 0 -600",
@@ -752,7 +755,8 @@ relleno | 30 | 400 -200",
         // de Le Mazet y el monte Lizieux. (Carte de l'État-major; Hallie 1979)
         ["Le Chambon-sur-Lignon"] = @"
 rio Lignon | 20 | 900 -800, 0 -300, -900 -500
-monte Mont Lizieux | 500 250 | -950 650
+monte Mont Lizieux | 500 400 | -950 650
+acantilado Gargantas del Lignon | 25 | 700 -660, 300 -440, 0 -360
 calle Calle mayor | 8 | -500 -80, 500 -80
 calle Carretera de Le Mazet | 7 | 500 -80, 900 -400
 calle Vía del tren del Vivarais | 5 | -800 -230, 800 -180
@@ -781,13 +785,13 @@ calle Jordan Road | 20 | -650 -150, -150 -150
 calle Waterloo Road | 20 | -650 200, -150 200
 calle Lee Tat Street | 6 | -380 50, -230 50
 mar Puerto Victoria | 900 260 | -400 -640
-monte Roca del León | 500 300 | -400 980
+monte Roca del León | 500 495 | -400 980
 calle Broadway | 20 | 300 -400, 300 400
 calle Jefferson Street | 15 | 150 -100, 650 -100
 calle University Way | 15 | 520 100, 520 500
 calle Calle 45 Noreste | 15 | 300 300, 700 300
 lago Lago Union | 200 110 | 680 160
-monte Monte Rainier | 450 330 | 900 -980
+monte Monte Rainier | 450 4390 | 900 -980 | nieve
 Policia | -340 -20
 Bomberos | -250 -250
 Estacion | -300 -480
@@ -814,7 +818,7 @@ relleno | 0 | 0 0",
         ["Egina"] = @"
 mar Golfo Sarónico | 500 2400 | -900 0
 colina Kolona | 120 15 | -520 120
-monte Monte Oros | 500 300 | 800 -800
+monte Monte Oros | 500 532 | 800 -800 | seco
 calle Camino del puerto | 7 | -560 40, 0 60
 calle Camino del Oros | 6 | 0 60, 600 -600
 calle Calle de los alfareros | 5 | -300 -150, -300 300
@@ -842,7 +846,8 @@ relleno | 40 | -100 60",
 rio Otolum | 12 | 80 -560, 60 0, 85 300, 45 700
 lago Baño de la Reina | 28 16 | 75 620
 colina Colina del Grupo de las Cruces | 90 22 | 230 -95
-monte Sierra de Don Juan | 750 300 | 0 -1000
+monte Sierra de Don Juan | 750 600 | 0 -1000
+acantilado Escarpe de la sierra | 35 | -420 -380, 0 -400, 420 -370
 campo Milpa del llano | 600 260 | 0 920
 campo Milpa del oeste | 220 220 | -520 520
 calle Gran Plaza | 30 | -150 0, 150 0
@@ -889,16 +894,17 @@ relleno | 40 | 0 120",
                 {
                     case "hito": p.hitos[int.Parse(name, ci)] = V(f[1]); break;
                     case "relleno": p.fill = int.Parse(f[1], ci); p.fillNear = V(f[2]); break;
-                    case "calle": case "rio": case "canal": case "muralla":
+                    case "calle": case "rio": case "canal": case "muralla": case "acantilado":
                     {
-                        var ft = new Feat { k = kind == "calle" ? FK.Calle : kind == "muralla" ? FK.Muralla : FK.Rio, name = name, a = kind == "muralla" ? 1.6f : float.Parse(f[1], ci) };
+                        var ft = new Feat { k = kind == "calle" ? FK.Calle : kind == "muralla" ? FK.Muralla : kind == "acantilado" ? FK.Acantilado : FK.Rio, name = name, a = kind == "muralla" ? 1.6f : float.Parse(f[1], ci) };
                         foreach (string pt in f[2].Split(',')) ft.p.Add(V(pt));
                         p.feats.Add(ft); break;
                     }
                     case "lago": case "colina": case "monte": case "campo": case "mar":
                     {
                         Vector2 ab = V(f[1]);
-                        p.feats.Add(new Feat { k = kind == "lago" ? FK.Lago : kind == "colina" ? FK.Colina : kind == "monte" ? FK.Monte : kind == "campo" ? FK.Campo : FK.Mar, name = name, a = ab.x, b = ab.y, p = { V(f[2]) } });
+                        p.feats.Add(new Feat { k = kind == "lago" ? FK.Lago : kind == "colina" ? FK.Colina : kind == "monte" ? FK.Monte : kind == "campo" ? FK.Campo : FK.Mar, name = name, a = ab.x, b = ab.y, p = { V(f[2]) },
+                            snow = f.Length > 3 && f[3].Contains("nieve"), dry = f.Length > 3 && f[3].Contains("seco") });
                         break;
                     }
                     default:
@@ -933,82 +939,136 @@ relleno | 40 | 0 120",
 
     // ══ 1 · EL PAISAJE Y LAS CALLES ═════════════════════════════════════════════════════════════════════════════════
 
-    /// <summary>Levanta el paisaje y las calles del plano bajo <paramref name="t"/>. Devuelve cuántas piezas puso.</summary>
+    /// <summary>Levanta el paisaje y las calles del plano bajo <paramref name="t"/>, ADAPTADOS AL PISO (2026-11-03: el piso no se rompe):
+    /// ninguna calle, río, lago, colina o campo atraviesa un mueble del piso que apoye en el suelo (se corta a su lado; bajo el tablero
+    /// de una mesa sí se pasa). El relieve, con mallas low-poly realistas (CivicBuilder.Terrain). Devuelve cuántas piezas puso.</summary>
     static int BuildPlan(Transform t, TownPlan p, Rect floor, Color street)
     {
         Transform land = new GameObject(PlanLandscape + p.town).transform; land.SetParent(t, false);
         Transform streets = new GameObject($"Calles de {p.town} {PlanStreets}").transform; streets.SetParent(t, false);
-        Material mStreet = AreaMicrocosmos.Mat("Civ_Calle_" + Hex(street), street), water = AreaMicrocosmos.Mat("Civ_Agua_rio", C(0.32f, 0.5f, 0.62f)),
-            sea = AreaMicrocosmos.Mat("Civ_Agua_mar", C(0.25f, 0.42f, 0.58f)), hill = AreaMicrocosmos.Mat("Civ_Colina", C(0.45f, 0.52f, 0.32f)),
-            rock = AreaMicrocosmos.Mat("Civ_Monte", C(0.5f, 0.48f, 0.44f)), field = AreaMicrocosmos.Mat("Civ_Campo", C(0.62f, 0.6f, 0.34f)),
-            wall = AreaMicrocosmos.Mat("Civ_Cimiento_muralla", C(0.62f, 0.5f, 0.38f));
+        Material mStreet = AreaMicrocosmos.Mat("Civ_Calle_" + Hex(street), street), field = AreaMicrocosmos.Mat("Civ_Campo", C(0.62f, 0.6f, 0.34f)),
+            wall = AreaMicrocosmos.Mat("Civ_Cimiento_muralla", C(0.62f, 0.5f, 0.38f)), sea = TerrainMat("mar", C(0.2f, 0.4f, 0.55f), 0.85f);
         Rect clip = new Rect(floor.xMin + 2f, floor.yMin + 2f, floor.width - 4f, floor.height - 4f);
-        float s = p.scale; int n = 0;
+        // Los muebles del piso que apoyan en el suelo, en los locales de t.
+        var furn = new List<Rect>();
+        foreach (Bounds fb in AreaMicrocosmos.FloorFurniture(t))
+        {
+            if (fb.min.y - t.position.y > 5f) continue;
+            Vector3 a = t.InverseTransformPoint(fb.min), z = t.InverseTransformPoint(fb.max);
+            furn.Add(Rect.MinMaxRect(Mathf.Min(a.x, z.x), Mathf.Min(a.z, z.z), Mathf.Max(a.x, z.x), Mathf.Max(a.z, z.z)));
+        }
+        bool OnFurniture(Vector2 c, float rad)
+        {
+            foreach (Rect r in furn) if (c.x > r.xMin - rad && c.x < r.xMax + rad && c.y > r.yMin - rad && c.y < r.yMax + rad) return true;
+            return false;
+        }
+        float s = p.scale; int n = 0, cut = 0, seed = p.town.GetHashCode() & 0x7fffffff;
         foreach (Feat f in p.feats)
         {
+            seed += 17;
             switch (f.k)
             {
-                case FK.Calle: case FK.Rio: case FK.Muralla:
+                case FK.Calle: case FK.Muralla:
                 {
                     Transform parent = f.k == FK.Calle ? streets : land;
-                    Material m = f.k == FK.Calle ? mStreet : f.k == FK.Rio ? water : wall;
-                    float w = f.k == FK.Muralla ? 1.6f : Mathf.Max(f.k == FK.Calle ? 4f : 6f, f.a * (f.k == FK.Rio ? Mathf.Max(s, 0.5f) : 1f));
-                    float y = f.k == FK.Muralla ? 0.25f : f.k == FK.Rio ? 0.03f : 0.02f, h = f.k == FK.Muralla ? 0.5f : 0.04f;
-                    // Tramos de ≤ 40 m (60 los ríos): su caja ajusta (los solares y la flora esquivan cada tramo, no el conjunto).
-                    float seg = f.k == FK.Rio ? 60f : 40f;
-                    string label = (f.k == FK.Calle ? "Calle " : f.k == FK.Rio ? "Río " : "Cimiento ") + f.name;
+                    Material m = f.k == FK.Calle ? mStreet : wall;
+                    float w = f.k == FK.Muralla ? 1.6f : Mathf.Max(4f, f.a);
+                    float y = f.k == FK.Muralla ? 0.25f : 0.02f, h = f.k == FK.Muralla ? 0.5f : 0.04f;
+                    string label = (f.k == FK.Calle ? "Calle " : "Cimiento ") + f.name;
                     for (int i = 0; i + 1 < f.p.Count; i++)
                     {
                         Vector2 a = f.p[i] * s, b = f.p[i + 1] * s;
                         if (!ClipSegment(ref a, ref b, clip)) continue;
                         float len = (b - a).magnitude; if (len < 0.5f) continue;
-                        int pieces = Mathf.CeilToInt(len / seg);
+                        int pieces = Mathf.CeilToInt(len / 40f);   // tramos de ≤ 40 m (los solares y la flora esquivan cada uno)
                         float yaw = Mathf.Atan2(b.x - a.x, b.y - a.y) * Mathf.Rad2Deg;
                         for (int k = 0; k < pieces; k++)
                         {
                             Vector2 c = Vector2.Lerp(a, b, (k + 0.5f) / pieces);
+                            if (OnFurniture(c, w * 0.5f)) { cut++; continue; }
                             AreaMicrocosmos.Box(parent, label, new Vector3(c.x, y, c.y), new Vector3(w, h, len / pieces + (f.k == FK.Muralla ? 0f : w * 0.3f)), Quaternion.Euler(0f, yaw, 0f), m, f.k == FK.Muralla);
                             n++;
                         }
                     }
-                    if (f.k == FK.Muralla) { var wl = AddLabel(land, f.name, f.p[0] * s, 2f); n++; }
+                    if (f.k == FK.Muralla) { AddLabel(land, f.name, f.p[0] * s, 2f); n++; }
                     break;
                 }
-                case FK.Lago: case FK.Mar: case FK.Campo:
+                case FK.Rio:
                 {
-                    Vector2 c = f.p[0] * s; Vector2 half = f.k == FK.Lago ? new Vector2(f.a, f.b) * Mathf.Max(s, 0.5f) : new Vector2(f.a, f.b) * 0.5f * Mathf.Max(s, 0.5f);
+                    float w = Mathf.Max(6f, f.a * Mathf.Max(s, 0.5f));
+                    for (int i = 0; i + 1 < f.p.Count; i++)
+                    {
+                        Vector2 a = f.p[i] * s, b = f.p[i + 1] * s;
+                        if (!ClipSegment(ref a, ref b, clip)) continue;
+                        float len = (b - a).magnitude; if (len < 0.5f) continue;
+                        int pieces = Mathf.CeilToInt(len / 60f);
+                        for (int k = 0; k < pieces; k++)
+                        {
+                            Vector2 p0 = Vector2.Lerp(a, b, k / (float)pieces), p1 = Vector2.Lerp(a, b, (k + 1) / (float)pieces);
+                            if (OnFurniture((p0 + p1) * 0.5f, w * 0.5f)) { cut++; continue; }
+                            if (RiverReach(land, "Río " + f.name, p0, p1, w, seed + k) != null) n++;
+                        }
+                    }
+                    AddLabel(land, f.name, f.p[Mathf.Min(1, f.p.Count - 1)] * s, 3f);
+                    break;
+                }
+                case FK.Lago:
+                {
+                    Vector2 c = f.p[0] * s, half = new Vector2(f.a, f.b) * Mathf.Max(s, 0.5f);
+                    if (!clip.Contains(c)) break;
+                    half = Vector2.Min(half, new Vector2(Mathf.Min(c.x - clip.xMin, clip.xMax - c.x), Mathf.Min(c.y - clip.yMin, clip.yMax - c.y)) / 1.15f);
+                    if (half.x < 6f || half.y < 6f) break;
+                    if (OnFurniture(c, Mathf.Min(half.x, half.y) * 0.8f)) { cut++; break; }
+                    Lake(land, "Lago " + f.name, c, half.x, half.y, seed);
+                    AddLabel(land, f.name, c, 3f); n++; break;
+                }
+                case FK.Mar: case FK.Campo:
+                {
+                    Vector2 c = f.p[0] * s; Vector2 half = new Vector2(f.a, f.b) * 0.5f * Mathf.Max(s, 0.5f);
                     Rect r = Rect.MinMaxRect(Mathf.Max(c.x - half.x, clip.xMin), Mathf.Max(c.y - half.y, clip.yMin), Mathf.Min(c.x + half.x, clip.xMax), Mathf.Min(c.y + half.y, clip.yMax));
                     if (r.width < 4f || r.height < 4f) break;
-                    if (f.k == FK.Lago && r.width >= half.x * 1.9f && r.height >= half.y * 1.9f)
-                    {   // un lago entero: elipse (cilindro aplastado, sin colisión)
-                        var g = GameObject.CreatePrimitive(PrimitiveType.Cylinder); g.name = "Lago " + f.name; g.transform.SetParent(land, false);
-                        g.transform.localPosition = new Vector3(c.x, 0.03f, c.y); g.transform.localScale = new Vector3(half.x * 2f, 0.02f, half.y * 2f);
-                        Object.DestroyImmediate(g.GetComponent<Collider>()); g.GetComponent<Renderer>().sharedMaterial = water;
-                    }
-                    else AreaMicrocosmos.Box(land, (f.k == FK.Campo ? "Campo " : f.k == FK.Mar ? "Mar " : "Lago ") + f.name, new Vector3(r.center.x, f.k == FK.Campo ? 0.03f : 0.025f, r.center.y), new Vector3(r.width, 0.04f, r.height), f.k == FK.Campo ? field : f.k == FK.Mar ? sea : water, false);
+                    // En trozos de ≤ 80 m, sin los que pisan un mueble: el mar y los campos rodean los muebles.
+                    int nx = Mathf.CeilToInt(r.width / 80f), nz = Mathf.CeilToInt(r.height / 80f);
+                    for (int i = 0; i < nx; i++)
+                        for (int k = 0; k < nz; k++)
+                        {
+                            Rect q = new Rect(r.xMin + i * r.width / nx, r.yMin + k * r.height / nz, r.width / nx, r.height / nz);
+                            if (OnFurniture(q.center, Mathf.Max(q.width, q.height) * 0.5f)) { cut++; continue; }
+                            if (f.k == FK.Mar) AreaMicrocosmos.Box(land, "Mar " + f.name, new Vector3(q.center.x, 0.025f, q.center.y), new Vector3(q.width, 0.04f, q.height), sea, false);
+                            else AreaMicrocosmos.Box(land, "Campo " + f.name, new Vector3(q.center.x, 0.03f, q.center.y), new Vector3(q.width - 1f, 0.04f, q.height - 1f), field, false);
+                            n++;
+                        }
                     AddLabel(land, f.name, r.center, 3f);
-                    n++; break;
+                    break;
                 }
                 case FK.Colina: case FK.Monte:
                 {
-                    // Una COLINA o un MONTE: un elipsoide medio enterrado (su borde, a ras de suelo, con la pendiente que se camina en
-                    // las colinas: h/r ≈ 0,1–0,2 da 15–30°), con su collider de malla (el NavMesh la sube) y su nombre arriba.
+                    // Un MONTE o una COLINA de verdad (CivicBuilder.Peak): malla facetada con ruido, pradera, roca, canchal y nieve.
                     Vector2 c = f.p[0] * s; float r = f.a * Mathf.Max(s, 0.5f), h = f.b * Mathf.Max(s, 0.5f);
                     if (!clip.Contains(c)) break;   // un monte lejano fuera del barrio: no se ve desde el pueblo de este piso
-                    r = Mathf.Min(r, Mathf.Min(Mathf.Min(c.x - clip.xMin, clip.xMax - c.x), Mathf.Min(c.y - clip.yMin, clip.yMax - c.y)));
+                    r = Mathf.Min(r, Mathf.Min(Mathf.Min(c.x - clip.xMin, clip.xMax - c.x), Mathf.Min(c.y - clip.yMin, clip.yMax - c.y)) / 1.15f);
                     if (r < 15f) break;
-                    float bAx = 2.5f * h, aAx = 1.25f * r;   // semiejes del elipsoide (centro a 0,6 b bajo el suelo)
-                    var g = GameObject.CreatePrimitive(PrimitiveType.Sphere); g.name = (f.k == FK.Monte ? "Monte " : "Colina ") + f.name; g.transform.SetParent(land, false);
-                    g.transform.localPosition = new Vector3(c.x, -0.6f * bAx, c.y); g.transform.localScale = new Vector3(aAx * 2f, bAx * 2f, aAx * 2f);
-                    Object.DestroyImmediate(g.GetComponent<Collider>());
-                    var mc = g.AddComponent<MeshCollider>(); mc.sharedMesh = g.GetComponent<MeshFilter>().sharedMesh;
-                    g.GetComponent<Renderer>().sharedMaterial = f.k == FK.Monte ? rock : hill;
+                    if (OnFurniture(c, r * 0.6f)) { cut++; break; }
+                    h = Mathf.Min(h, r * (f.k == FK.Monte ? 0.9f : 0.35f));   // colinas suaves (se suben andando), montes empinados
+                    h = Mathf.Min(h, 300f);   // (los muros del piso llegan a 400 m: los montes reales más altos, recortados)
+                    Peak(land, (f.k == FK.Monte ? "Monte " : "Colina ") + f.name, c, r, h, f.snow ? h * 0.62f : -1f, seed, f.dry);
                     AddLabel(land, f.name, c, h + 4f);
+                    n++; break;
+                }
+                case FK.Acantilado:
+                {
+                    var pts = new List<Vector2>();
+                    foreach (Vector2 q in f.p) { Vector2 w = q * s; if (clip.Contains(w)) pts.Add(w); }
+                    if (pts.Count < 2) break;
+                    bool hit = false; foreach (Vector2 q in pts) if (OnFurniture(q, 4f)) hit = true;
+                    if (hit) { cut++; break; }
+                    Cliff(land, "Acantilado " + f.name, pts, Mathf.Min(f.a, 120f), seed);
+                    AddLabel(land, f.name, pts[0], f.a + 3f);
                     n++; break;
                 }
             }
         }
-        Debug.Log($"[Pueblos] {p.town}: plano a escala {(p.scale >= 0.999f ? "1:1" : $"1:{1f / p.scale:0.0} (encogido para caber en el barrio)")}: {n} piezas de paisaje y calles ({p.feats.Count} elementos del mapa), en un barrio de {floor.width:0} × {floor.height:0} m.");
+        Debug.Log($"[Pueblos] {p.town}: plano a escala {(p.scale >= 0.999f ? "1:1" : $"1:{1f / p.scale:0.0} (encogido para caber en el barrio)")}: {n} piezas de paisaje y calles ({p.feats.Count} elementos del mapa), en un barrio de {floor.width:0} × {floor.height:0} m; {cut} tramos no se pusieron por no atravesar un mueble del piso.");
         return n;
     }
 
@@ -1228,36 +1288,61 @@ relleno | 40 | 0 120",
         return site;
     }
 
-    // ══ LOS MIRADORES SOBRE LOS MUEBLES GIGANTES ════════════════════════════════════════════════════════════════════
+    // ══ EL PUEBLO SOBRE LOS MUEBLES DEL PISO (barrio alto) Y LOS MIRADORES ═════════════════════════════════════════════
 
     /// <summary>
-    /// REGLA DE LOS MICROCOSMOS (2026-11-03): las estructuras del piso (las caras de arriba de sus muebles gigantes, fuera del barrio
-    /// del pueblo) son superficie utilizable. En las dos más grandes se levanta un MIRADOR de la era (sitio «Mirador»: su monumento,
-    /// un frutal del lugar y bancos para humanos e insectos-humanos); la flora y la fauna las pone AreaMicrocosmos.Nature. Devuelve
-    /// cuántos levantó. <paramref name="tops"/>: cajas planas a la altura de cada cara de arriba (en el espacio de la raíz).
+    /// REGLA DE LOS MICROCOSMOS (2026-11-03, Berón: «el piso no debe romperse, las ciudades insecto deben adecuarse al piso … los
+    /// insecto-humanos pueden trepar plataformas verticales como las paredes y patas de sillas, mesas, etc., de modo que no tienen
+    /// problema con subir a mesas, camas, etc., en caso que parte de los pueblos se cree encima de estructuras elevadas»). Las caras
+    /// de arriba de los muebles del piso (mesas, camas, encimeras: mesetas de decenas de metros) son suelo del pueblo:
+    /// - DENTRO del barrio, un BARRIO ALTO: en cada una de las más grandes (hasta 6), una casa de la era (con sus necesidades y su
+    ///   frutal) y, en la mayor, un mercado; se sube trepando (AreaMicrocosmos pone los NavMeshLink de trepar);
+    /// - FUERA del barrio, en las dos más grandes, un MIRADOR de la era (su monumento, un frutal del lugar y bancos).
+    /// <paramref name="tops"/>: cajas planas a la altura de cada cara de arriba (espacio de la raíz), ya sin las que tienen algo encima.
+    /// Devuelve cuántos edificios levantó encima.
     /// </summary>
-    internal static int Outposts(Transform cast, List<Bounds> tops)
+    internal static int Outposts(Transform cast, List<Bounds> tops, Bounds district)
     {
         if (tops == null || tops.Count == 0) return 0;
         var sorted = new List<Bounds>(tops);
         sorted.Sort((a, b) => (b.size.x * b.size.z).CompareTo(a.size.x * a.size.z));
-        var used = new List<Transform>();
         MicroStyles.Entry e = MicroStyles.For(Year, Region);
-        int n = 0;
+        Style st = _planStyle ?? NeedsStyle;
+        var used = new List<Vector3>();
+        int high = 0, look = 0;
+        bool Near(Bounds top) { foreach (Vector3 u in used) if (Vector2.Distance(new Vector2(u.x, u.z), new Vector2(top.center.x, top.center.z)) < 40f) return true; return false; }
+        bool Fits(Bounds top, Transform b)
+        {
+            Transform f = b.Find("Suelo");
+            Vector2 s = f != null ? new Vector2(f.localScale.x, f.localScale.z) : new Vector2(12f, 10f);
+            return top.size.x >= s.x + 2f && top.size.z >= s.y + 2f;
+        }
         foreach (Bounds top in sorted)
         {
-            if (n >= 2) break;
-            if (top.size.x < 30f || top.size.z < 30f) continue;
-            bool near = false; foreach (Transform u in used) if (Vector2.Distance(new Vector2(u.position.x, u.position.z), new Vector2(top.center.x, top.center.z)) < 60f) near = true;
-            if (near) continue;   // (dos caras de arriba del mismo mueble: un mirador basta)
-            string monument = MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra del mirador";
-            AreaFunctionSite site = Building(cast, $"{OutpostPrefix} de la meseta {n + 1}", "Mirador", $"Mirador sobre el mueble gigante ({e.name})", Vector3.zero, 0f, new Vector2(12f, 10f), _planStyle ?? NeedsStyle,
-                S("estatua", 0, 0, 1.4f, 1.4f, monument), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, n).name));
-            Vector3 at = cast.InverseTransformPoint(new Vector3(top.center.x, top.max.y, top.center.z));
-            site.transform.localPosition = at;
-            n++; used.Add(site.transform);
+            bool inside = top.center.x > district.min.x && top.center.x < district.max.x && top.center.z > district.min.z && top.center.z < district.max.z;
+            if (inside ? high >= 6 : look >= 2) continue;
+            if (top.size.x < 16f || top.size.z < 14f || Near(top)) continue;
+            AreaFunctionSite site;
+            if (inside)
+            {
+                string title = high == 0 && MicroStyles.CivicName(MicroStyles.Civic.Mercado, e, Year) != null ? "Mercado del barrio alto" : $"Casa del barrio alto {high + 1}";
+                site = title.StartsWith("Mercado")
+                    ? Building(cast, title, "Mercado", $"{MicroStyles.CivicName(MicroStyles.Civic.Mercado, e, Year)} (sobre el mueble)", Vector3.zero, 0f, new Vector2(14f, 10f), st,
+                               S("puesto", 0, 0, 2f, 1f, "Puesto de fruta"), S("puesto", 0, 0, 2f, 1f, "Puesto de grano"))
+                    : Building(cast, title, "Casa", $"Casa del barrio alto (sobre el mueble)", Vector3.zero, 0f, new Vector2(10f, 8f), st, S("cama", 0, 0, 1f, 2f, NeedLabel("cama", Year)), S("cama", 0, 0, 1f, 2f, NeedLabel("cama", Year)));
+            }
+            else
+            {
+                string monument = MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra del mirador";
+                site = Building(cast, $"{OutpostPrefix} de la meseta {look + 1}", "Mirador", $"Mirador sobre el mueble gigante ({e.name})", Vector3.zero, 0f, new Vector2(12f, 10f), st,
+                    S("estatua", 0, 0, 1.4f, 1.4f, monument), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, look).name));
+            }
+            if (!Fits(top, site.transform)) { Object.DestroyImmediate(site.gameObject); continue; }
+            site.transform.localPosition = cast.InverseTransformPoint(new Vector3(top.center.x, top.max.y, top.center.z));
+            used.Add(top.center);
+            if (inside) high++; else look++;
         }
-        if (n > 0) Debug.Log($"[Pueblos] {n} miradores de la era sobre los muebles gigantes del piso (de {tops.Count} caras de arriba fuera del pueblo).");
-        return n;
+        if (high + look > 0) Debug.Log($"[Pueblos] Sobre los muebles del piso: {high} edificios del barrio alto (dentro del pueblo) y {look} miradores (fuera), de {tops.Count} caras de arriba libres; se sube trepando.");
+        return high + look;
     }
 }

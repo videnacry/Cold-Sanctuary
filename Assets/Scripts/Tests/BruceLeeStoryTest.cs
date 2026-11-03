@@ -221,18 +221,13 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
             // de su plaza, MicroFloor.districtSize) el Dojo gigante se queda en su suelo (sin muebles: ni jaula, ni ring, ni andamio) y
             // la ciudad de la historia (Kowloon y Seattle) lo ocupa entero; fuera del barrio sigue el Dojo gigante. Las medidas del
             // suelo, a la escala del área (0,6 m y 1 m a ×10).
-            string tall = "";
+            // (2026-11-03) EL PISO NO SE ROMPE (Berón: «el dojo se rompía para no interferir con la ciudad … las ciudades insecto deben
+            // adecuarse al piso y no al revés»): el Dojo gigante ENTERO (todas sus piezas, también en el barrio del pueblo), el pueblo lo
+            // rodea o se sube encima (con sus enlaces para trepar).
             MicroFloor mfl = root != null ? root.GetComponent<MicroFloor>() : null;
-            float k = giant != null ? giant.lossyScale.x / 10f : 1f;
-            Bounds dist = mfl != null && mfl.districtSize.x > 1f ? new Bounds(root.TransformPoint(mfl.districtCenter), new Vector3(mfl.districtSize.x, 1e4f, mfl.districtSize.y)) : new Bounds(Vector3.zero, Vector3.one * 1e6f);
-            if (giant != null)
-                foreach (Renderer r in giant.GetComponentsInChildren<Renderer>())
-                {
-                    Bounds rb = r.bounds;
-                    bool inDistrict = rb.max.x > dist.min.x && rb.min.x < dist.max.x && rb.max.z > dist.min.z && rb.min.z < dist.max.z;
-                    if (inDistrict && (rb.size.y >= 0.6f * k || rb.max.y - root.position.y >= 1f * k)) { tall += r.name + "; "; if (tall.Length > 200) break; }
-                }
-            TestProbe.Check("el Dojo gigante sin sus muebles (solo su suelo) en el barrio de la historia: el pueblo lo ocupa", giant != null && tall.Length == 0, tall);
+            int pieces = giant != null ? giant.GetComponentsInChildren<Renderer>(true).Length : 0;
+            TestProbe.Check("el Dojo gigante entero: ni una pieza quitada para el pueblo (el pueblo se adapta al piso)", giant != null && mfl != null && mfl.floorPieces > 0 && pieces == mfl.floorPieces, $"{pieces} piezas ahora, {(mfl != null ? mfl.floorPieces : 0)} al montarlo");
+            TestProbe.Check("los muebles del Dojo se suben trepando (NavMeshLink del suelo a sus caras de arriba)", mfl != null && (mfl.furnitureTops == 0 || mfl.climbLinks > 0), $"{(mfl != null ? mfl.climbLinks : 0)} enlaces para {(mfl != null ? mfl.furnitureTops : 0)} caras de arriba");
             // (2026-11-03) Sobre la FORMA FINALIZADA del Dojo (FloorForms; Berón: «me ha dado la impresión de que se creó sobre el piso en
             // construcción»): su «Acabado» encendido y ni andamio, ni material del día, ni conos en el piso gigante.
             var obra = giant != null ? FloorForms.ObraLeft(giant) : new List<string> { "sin piso gigante" };

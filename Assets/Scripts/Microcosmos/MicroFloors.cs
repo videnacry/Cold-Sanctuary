@@ -107,6 +107,13 @@ public static class MicroFloors
         // 3 · Forma finalizada.
         if (!f.finishedForm) bad.Add("no se montó sobre la forma finalizada del piso");
         if (giant != null) { var obra = FloorForms.ObraLeft(giant); if (obra.Count > 0) bad.Add("piezas de obra en el piso: " + string.Join(", ", obra.GetRange(0, Mathf.Min(4, obra.Count)))); }
+        // 3b · El piso NO se rompe: siguen todas sus piezas (ni se quitan muebles para el pueblo ni para la historia).
+        if (giant != null && f.floorPieces > 0)
+        {
+            int now = giant.GetComponentsInChildren<Renderer>(true).Length;
+            if (now != f.floorPieces) bad.Add($"el piso se rompió: {f.floorPieces} piezas al montarlo y {now} ahora (el pueblo se adapta al piso, no al revés)");
+        }
+        if (f.buildingsOnTops > 0 && f.climbLinks == 0) bad.Add("hay edificios sobre los muebles del piso y ningún enlace para trepar (NavMeshLink)");
         // 4 · Las estructuras del piso, pobladas.
         if (f.furnitureTops > 0 && (f.floraOnTops == 0 || f.faunaOnTops == 0)) bad.Add($"{f.furnitureTops} muebles con cara de arriba y {f.floraOnTops} plantas / {f.faunaOnTops} bichos encima (deben poblarse)");
         // 5 · El pueblo entero.

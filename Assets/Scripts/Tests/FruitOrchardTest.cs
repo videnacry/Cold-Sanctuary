@@ -28,6 +28,8 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         if (tr != null && tr.GetComponentInChildren<FruitOrchardTest>() == null) tr.gameObject.AddComponent<FruitOrchardTest>();
     }
 
+    const string ResidenceBuilding = "Residencia";   // ResidentialBuilder.Name (las terrazas frutales de las casas de árbol)
+
     public IEnumerator Run()
     {
         TestProbe.Begin("Frutales de los techos: una de cada especie, 2 m de paso, sala de cuidados, bienestar y ronda del jardinero");
@@ -44,6 +46,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             // (2026-11-03) Los BANCALES DE TIERRA de la cima de los edificios-árbol tienen su prueba (RoofGardenTest, grupo 80): aquí se
             // miden las macetas. Un edificio con solo bancales (el Árbol de los Campos) no lleva las 19 especies ni punto de cuidados.
             if (kv.Value.All(p => p.bed != null)) continue;
+            if (kv.Key == ResidenceBuilding) continue;   // (2026-11-03) las terrazas de las casas de árbol: su propia comprobación, abajo
             FruitPlant first = kv.Value.First(p => p.bed == null);
             Transform roof = first.transform.parent != null ? first.transform.parent.parent : null;
             var have = new HashSet<GardenCrop.Kind>(kv.Value.Select(p => p.kind));
@@ -64,13 +67,33 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             TestProbe.Check($"techo de {kv.Key}: riego por goteo (cabezal, tubería y un gotero por maceta)", headOk && pipes >= kv.Value.Count && drips == kv.Value.Count, $"cabezal {(headOk ? "sí" : "no")}, {pipes} tramos, {drips}/{kv.Value.Count} goteros");
         }
 
+        // ── 1b. LAS CASAS DE ÁRBOL DE LA RESIDENCIA (2026-11-03, Berón: «los frutales en residencias … para las residencias del santuario»):
+        //     cada habitación con su frutal en su terraza, a ≥ 2 m de sus muebles y su alfombra, y en la ronda del jardinero.
+        var rooms = FindObjectsByType<Bedroom>(FindObjectsSortMode.None).Where(b => b.transform.parent != null && b.transform.parent.name == "ArboledaResidencial").ToList();
+        if (rooms.Count > 0)
+        {
+            var noFruit = rooms.Where(r => r.GetComponentInChildren<FruitPlant>() == null).Select(r => r.name).ToList();
+            TestProbe.Check("cada casa de árbol de la Residencia tiene su frutal en su terraza", noFruit.Count == 0, noFruit.Count == 0 ? $"{rooms.Count} casas" : "sin frutal: " + string.Join(", ", noFruit));
+            float closest = float.MaxValue; string near = "";
+            foreach (Bedroom r in rooms)
+            {
+                FruitPlant fp = r.GetComponentInChildren<FruitPlant>(); if (fp == null) continue;
+                Bounds pb = Box(fp.transform);
+                foreach (Transform c in r.transform)
+                {
+                    if (c == fp.transform || c.name == "Suelo" || c.name == "Estilobato" || c.name == "Terraza_frutal" || c.GetComponentInChildren<Renderer>() == null) continue;
+                    float gp = Gap(pb, Box(c)); if (gp < closest) { closest = gp; near = $"{r.name}: {c.name}"; }
+                }
+            }
+            TestProbe.Check("los frutales de la Residencia, a ≥ 2 m de la cama, el armario y la alfombra", closest >= 1.95f, $"el más cerca a {closest:0.00} m ({near})");
+        }
         // ── 2. SALA DE CUIDADOS ──
         var stations = FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None);
         FruitCareStation mainRoom = stations.FirstOrDefault(s => s.mainRoom);
         string[] needed = { "Banco_trasplante", "Deposito_fertirriego", "Armario_abonos", "Mesa_diagnostico", "Estante_herramientas", "Compostador", "Caja_abejorros", "Pulverizador_mochila", "Carro_cosecha", "Escalera_tijera", "Cabezal_riego" };
         var missing = mainRoom == null ? needed.ToList() : needed.Where(n => mainRoom.transform.Find(n) == null).ToList();
         TestProbe.Check("la sala de cuidados de la experta (Servicios) tiene todo su equipo", mainRoom != null && missing.Count == 0, mainRoom == null ? "no hay sala" : missing.Count == 0 ? $"{needed.Length} equipos en {mainRoom.building}" : "faltan " + string.Join(", ", missing));
-        var noStation = byRoof.Where(kv => kv.Value.Any(p => p.bed == null)).Select(kv => kv.Key).Where(b => !stations.Any(s => s.building == b)).ToList();   // (los bancales llevan su cabezal)
+        var noStation = byRoof.Where(kv => kv.Key != ResidenceBuilding && kv.Value.Any(p => p.bed == null)).Select(kv => kv.Key).Where(b => !stations.Any(s => s.building == b)).ToList();   // (los bancales llevan su cabezal)
         TestProbe.Check("cada techo con frutales tiene su punto de cuidados", noStation.Count == 0, noStation.Count == 0 ? $"{stations.Length} puntos" : "sin punto: " + string.Join(", ", noStation));
 
         // ── 3. ESTADO VISIBLE ──

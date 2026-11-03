@@ -142,9 +142,7 @@ Desde la escala ×100 (2026-11-02, `AreaMicrocosmos.AreaScale`) «el piso entero
 `FloorBounds` / `FloorRectLocal` dan ese barrio, así que los pueblos se levantan igual que antes; alrededor, el resto del piso
 ×100 es el santuario gigante (ver [microcosmos-areas.md §Escala](microcosmos-areas.md#escala)).
 
-Desde las primeras ciudades (`MicroBuildRules.IsTownEra(year)`: año ≥ −3500), el microcosmos **no** es el área del santuario
-con sus muebles gigantes: `AreaMicrocosmos.Build` quita los muebles gigantes (deja el suelo del área y sus plazas
-reservadas) y la historia **recrea el pueblo o la ciudad real** sobre todo el piso (`FloorBounds`). Investiga el lugar real
+Desde las primeras ciudades (`MicroBuildRules.IsTownEra(year)`: año ≥ −3500) la historia **recrea el pueblo o la ciudad real** sobre todo el piso (`FloorBounds`). **(2026-11-03) Sin quitar ningún mueble del área: el pueblo se adapta al piso** (regla 13: los rodea o se sube encima, trepando). Investiga el lugar real
 (planos, fotos, calles, materiales) y cítalo en el doc del microcosmos. Lo **habitan solo insectos-humanos civilizados**;
 **flora y fauna salvajes solo si el lugar y la época las tenían** y salen en la historia (el puerto de Hong Kong con sus
 milanos; un laboratorio de París de 1898 no tiene ninguna). En ese caso, la flora y fauna van fieles a la historia y al lugar
@@ -274,6 +272,39 @@ y el Templo de las Inscripciones de Palenque) pone sus plantas **en terraza**: l
 anterior (MicroPiece «planta», se pisa), con un pretil bajo (0,8 m) al fondo y una **rampa** lateral de 20° (MicroPiece «rampa»).
 Ninguna planta tapa a otra (no hay techos, regla 2) y cada una lleva sus muebles con el paso de 2 m. Violación: «la planta en
 terraza de … tapa …».
+
+### 13. El piso no se rompe: el pueblo se adapta a él (2026-11-03)
+Berón: «en la captura de Bruce me ha dado la impresión de que el dojo se rompía para no interferir con la ciudad, en los requisitos de
+microcosmos debe estar que el piso no debe romperse, las ciudades insecto deben adecuarse al piso y no al revés, los insecto-humanos
+pueden trepar plataformas verticales como las paredes y patas de sillas, mesas, etc., de modo que no tienen problema con subir a mesas,
+camas, etc., en caso que parte de los pueblos se cree encima de estructuras elevadas».
+
+- **Ninguna pieza del piso se quita ni se mueve** para el pueblo ni para la historia: se acabaron el despeje del barrio
+  (`ClearForTown`) y el apartar el mueble que pisa la historia (`ClearUnder`, ahora `TouchingUnder`: solo cuenta). Antes del pueblo
+  solo se monta la forma finalizada del piso (regla de las dos formas) y se recorta lo que cae entero fuera de sus muros.
+- El pueblo **rodea** los muebles que apoyan en el suelo: los solares (`CivicBuilder.Lots`) los marcan ocupados
+  (`AreaMicrocosmos.FloorFurniture`, lo que empieza a menos de 5 m del suelo; bajo el tablero de una mesa sí se construye), y el plano
+  no tiende calles, ríos, lagos, colinas, campos ni acantilados a través de ellos (se corta el tramo).
+- O **se sube encima**: las caras de arriba de los muebles son suelo del pueblo (`CivicBuilder.Outposts`): dentro del barrio, un
+  **barrio alto** (hasta 6 casas o un mercado en las mesetas más grandes que nada tapa); fuera, dos miradores.
+- **Se trepa**: un `NavMeshLink` del suelo a cada cara de arriba (la IA trepa por las patas y los costados) y un `Climbable` en cada
+  mueble alto (el jugador trepa con `PlayerClimber`).
+
+Comprobación: `MicroFloor.floorPieces` (las piezas del piso al montarlo) y `MicroFloors.Validate` («el piso se rompió: N piezas al
+montarlo y M ahora»); si hay edificios sobre los muebles, enlaces para trepar (`MicroFloor.climbLinks`). `BruceLeeStoryTest` (60) mira el
+Dojo entero.
+
+### 14. El relieve, con aspecto real (2026-11-03)
+Berón: «¿un cono gris? ¿es una montaña? entonces debería tener una apariencia realista y lo mismo con lagos, colinas, acantilados».
+`CivicBuilder.Terrain` (low-poly facetado, sin texturas):
+- **montes y colinas** (`Peak`): malla radial con ruido de crestas, pie irregular; pradera, roca en las laderas de más de ~34°, canchal
+  arriba y **nieve** si el lugar la tiene (`| nieve` en el plano: los Alpes de Sils, el Pikes Peak, el Rainier, la Sila); pradera seca
+  en los lugares áridos (`| seco`: Saqqara, Pasadena, Colorado, el Oros). Alturas reales sobre el pueblo, recortadas a 300 m; las colinas,
+  con pendiente que se sube andando (≤ 0,35 de su radio);
+- **lagos** (`Lake`): orilla irregular, agua lisa y brillante, franja de orilla;
+- **ríos** (`RiverReach`): cinta de ancho variable con sus dos riberas, en tramos de ≤ 60 m;
+- **acantilados** (`Cliff`): pared de roca vertical facetada con su cornisa (`acantilado Nombre | alto | x z, …` en el plano: el cabo de
+  Crotona, la barranca del Orinoco en Angostura, la ribera del Bósforo, las gargantas del Lignon, el escarpe de la sierra de Palenque).
 
 ### Solo los muros importantes
 Siguen valiendo las reglas 1–2: paso de 2 m, sin muros ni techos. Lo único alto que se permite es lo que la historia necesita
