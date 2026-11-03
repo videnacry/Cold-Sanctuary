@@ -116,7 +116,18 @@ public static partial class SampleSceneBuilder
         Transform an = InfirmaryProps.BloodAnalyzer(r, "Analizador clinico", new Vector3(-9.25f, 0f, -10.6f), 180f);
         an.gameObject.AddComponent<ClinicalStation>();
         Label(an, "Analizador clínico (F)", 1.8f);
-        Station(InfirmaryProps.BloodBankFridge(r, "Banco_de_sangre", new Vector3(-6f, 0f, -10.6f), 180f), HospitalService.BancoDeSangre, "Banco de sangre", 2.2f, false, new Vector3(0f, 0f, -0.9f));
+        // BANCO DE SANGRE (Berón 2026-11-03; docs/hospital.md §Banco de sangre): un tramo corrido (FurnitureLine) con la nevera de
+        // hematíes (2–6 °C), el agitador de plaquetas (20–24 °C), el congelador de plasma (≤ −25 °C), el descongelador, la nevera
+        // veterinaria (perro DEA 1, gato A/B) y el sillón de donante (el banco de sangre andante). BloodBank lleva las existencias.
+        Transform bbl = KitchenProps.Root(r, "Banco_de_sangre_linea", new Vector3(-3.4f, 0f, -10.6f));
+        bbl.gameObject.AddComponent<FurnitureLine>();
+        Transform bbf = Station(InfirmaryProps.BloodBankFridge(bbl, "Banco_de_sangre", new Vector3(-2.6f, 0f, 0f), 180f), HospitalService.BancoDeSangre, "Banco de sangre: cruzar y transfundir (F)", 2.2f, false, new Vector3(0f, 0f, -0.9f));
+        bbf.gameObject.AddComponent<BloodBank>();
+        InfirmaryProps.BloodBankEquipment(bbl, new Vector3(-1.7f, 0f, 0f));
+        Transform donor = InfirmaryProps.DonorChair(bbl, "Sillon_donante", new Vector3(1.9f, 0f, 0f), 180f);
+        donor.gameObject.AddComponent<BloodDonorChair>();
+        Label(donor, "Sillón de donante: dona una unidad (F)", 1.6f);
+        Label(bbl, "Banco de sangre: hematíes 2–6 °C · plaquetas 22 °C en agitación · plasma ≤ −25 °C · perro y gato", 2.6f);
         // Este: espera y farmacia (entrada), imagen (2 rayos X, 2 ecos) y 4 PARITORIOS de 32 m².
         Transform wait = KitchenProps.Root(r, "Sala_de_espera", new Vector3(5.6f, 0f, 11.2f));
         for (int i = 0; i < 10; i++)

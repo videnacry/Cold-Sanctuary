@@ -89,7 +89,8 @@ public static class AreaFunctions
         Roles(S(Lead(Def(H, "enf_iniciacion", "Iniciación de recién llegados y turistas (análisis, vacuna, primera virtualización)", 1f, true, Kind.Heal, "camilla"))), "medico");
         Roles(S(Def(H, "enf_visita", "Pasar visita y curas en las salas de camas", 2f, true, Kind.Heal, "cama")), "medico", "enfermera");
         S(Also(Def(H, "enf_animales", "Análisis y vacunas de animales", 1f, false, Kind.Heal, "camilla"), "Cría"));
-        Roles(S(Def(H, "enf_inventario", "Limpieza, esterilización e inventario del hospital", 1f, false, Kind.Clean, "armario")), "enfermera");
+        // (2026-11-03) El inventario incluye el BANCO DE SANGRE: retirar lo caducado, reponer el submarino-ambulancia y llamar a un donante O− si falta.
+        Roles(S(Effect(Def(H, "enf_inventario", "Limpieza, esterilización e inventario del hospital", 1f, false, Kind.Clean, "armario"), who => BloodBank.Instance?.DailyRound(who))), "enfermera");
         Roles(S(Def(H, "hos_urgencias", "Guardia de urgencias (triaje y reanimación)", 2f, true, Kind.Heal, "cama")), "medico", "enfermera");
         Roles(S(Lead(Def(H, "hos_quirofano", "Quirófano: cirugía programada (cirujano + anestesista)", 2f, false, Kind.Heal, "mesa_operaciones"))), "medico");
         S(Def(H, "hos_uci", "Cuidados intensivos (UCI)", 2f, false, Kind.Heal, "cama"));
