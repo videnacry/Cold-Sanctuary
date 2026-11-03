@@ -166,7 +166,7 @@ internal static partial class CivicBuilder
                 if (p == null || p.transform.parent != site.transform) continue;   // los muebles de la casa (las sillas de una mesa rehecha ya no están)
                 if (p.kind == "inodoro") MicroFurniture.Refit(p.transform, "inodoro", Year, region, all);
                 else if (p.kind == "lavabo") MicroFurniture.Refit(p.transform, "lavabo", Year, region, all);
-                else if (p.kind == "mesa") MicroFurniture.Refit(p.transform, "mesa", Year, region, bodies[0], bodies);
+                else if (p.kind == "mesa") MicroFurniture.Refit(p.transform, "mesa", Year, region, bodies[0], new List<MicroBody.Fit>(bodies) { MicroBody.Human() });   // (regla 9) y un asiento para una persona
             }
         // Regla 11: toda residencia, con su frutal (si la casa no lo traía: los aseos del barrio, un porche de la historia).
         bool hasFruit = false; foreach (MicroPiece p in site.GetComponentsInChildren<MicroPiece>(true)) if (p.kind == "frutal") hasFruit = true;
@@ -203,6 +203,19 @@ internal static partial class CivicBuilder
     static void Relayout(AreaFunctionSite site)
     {
         Transform b = site.transform, floor = b.Find("Suelo");
+        // (2026-11-03) Un edificio de varias plantas en terraza (CivicBuilder.Storeys): cada planta se recoloca en su terraza, al ancho
+        // del edificio (sus terrazas y su rampa no se mueven).
+        if (b.Find("Planta 1") != null)
+        {
+            float w = floor != null ? floor.localScale.x - 4f : 10f;
+            foreach (Transform g in b)
+            {
+                if (!g.name.StartsWith("Planta ")) continue;
+                var ps = new List<Transform>(); foreach (Transform c in g) if (c.GetComponent<MicroPiece>() != null) ps.Add(c);
+                if (ps.Count > 0) Layout(g, ps, new Vector2(w, 6f), 0f);
+            }
+            return;
+        }
         var pieces = new List<Transform>();
         foreach (Transform c in b) if (c.GetComponent<MicroPiece>() != null) pieces.Add(c);
         if (pieces.Count == 0) return;

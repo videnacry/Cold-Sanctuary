@@ -198,6 +198,7 @@ public static partial class SampleSceneBuilder
             Transform d = hx.spareFloor != null ? hx.spareFloor(k) : null;
             if (d == null || hx.decks[k] == null) HelixFloor(hx, k, d, new Vector2(h.floorSize, h.floorSize), $"Piso_libre_{k}");
         }
+        if (hx.building == TorreProduccion) SubmarineGarage(hx);   // el garaje del submarino de obra (docs/submarino-de-obra.md)
         // Los ANILLOS de los pisos (RingDeck en U con su balcón contra el tronco) y dónde va cada puerta.
         for (int k = 1; k <= P; k++)
         {
@@ -210,7 +211,7 @@ public static partial class SampleSceneBuilder
                 if (HelixDeckOf(t, out _, out _, out Transform own) && own == d) { hx.rings[k] = t; break; }
             }
             hx.doorX[k] = hx.pickDoors ? FreeDoorX(hx, k, d, 0f, null) : h.doorX;
-            if (hx.rings[k] != null) hx.ringDoorX[k] = FreeDoorX(hx, k, hx.rings[k], RingHeight(hx, k), hx.rings[k]);
+            if (hx.rings[k] != null) hx.ringDoorX[k] = FreeDoorX(hx, k, hx.rings[k], RingHeight(hx, k), hx.rings[k], hx.doorX[k]);
         }
 
         // ── HUECOS DE CADA CARA (marco del lado: x a lo largo de la cara, y altura) y bandas de losas (los nervios no las cruzan) ──
@@ -226,6 +227,7 @@ public static partial class SampleSceneBuilder
             if (hx.rings[k] != null) { float ry = Y + RingHeight(hx, k); gaps[side].Add(DoorRect(h, hx.ringDoorX[k], ry)); bands[side].Add(new Vector2(ry - 0.7f, ry + 0.2f)); }
         }
         Trunk(hx, gaps, bands);
+        CutIceUnder(hx);
 
         // ── NIVELES: el suelo, los pisos (y sus anillos), las puntas (y sus anillos) y el techo ──
         ac.levels.Clear();
@@ -271,6 +273,8 @@ public static partial class SampleSceneBuilder
 
         if (!hx.rotates) _roofs.Add((ac.top, new Vector2(TreeSpec.TopWidth, TreeSpec.TopWidth), hx.building));   // sus paneles solares, en el techo (un borde libre)
 
+        foreach (MaskStation ms in tree.GetComponentsInChildren<MaskStation>(true)) ms.building = hx.building;
+        BottomLife(hx, _helixes.IndexOf(hx));   // bajo el tronco abierto: fitoplancton y peces, kril y medusas
         TrunkLook(tree);   // que se lea como agua (cristal casi invisible, agua azul, sin sombra)
 
         // EL TRONCO AGUANTA (StructuralLimits.RootCheck).
@@ -307,7 +311,7 @@ public static partial class SampleSceneBuilder
 
     /// <summary>Dónde va la puerta del piso (o del balcón de su anillo) a lo largo de su cara: donde el umbral (3,4 m de ancho y
     /// 4,4 m hacia dentro del piso) choca con menos muebles y, si empata, lo más cerca del sitio de siempre.</summary>
-    static float FreeDoorX(Helix hx, int k, Transform deck, float yOff, Transform ringOnly)
+    static float FreeDoorX(Helix hx, int k, Transform deck, float yOff, Transform ringOnly, float avoidX = float.NaN)
     {
         HelixTower h = hx.h;
         var (lv, side, _) = TreeSpec.Platform(k);
@@ -337,7 +341,7 @@ public static partial class SampleSceneBuilder
         for (float x = -lim; x <= lim + 0.01f; x += 0.5f)
         {
             Vector3 c = hx.root.TransformPoint(HelixTower.FromSide(side, new Vector3(x, Y + 1.3f, h.OuterHalf + 2.3f)));
-            Vector3 e = hx.root.rotation * HelixTower.SideRot(side) * new Vector3(3.4f, 2.2f, 4.4f);
+            Vector3 e = hx.root.rotation * HelixTower.SideRot(side) * new Vector3(h.doorWidth + 0.4f, 2.2f, 4.4f);
             Bounds zone = new Bounds(c, new Vector3(Mathf.Abs(e.x), Mathf.Abs(e.y), Mathf.Abs(e.z)));
             int hits = 0; foreach (Bounds b in boxes) if (b.Intersects(zone)) hits++;
             // Y lo que tenga caja de colisión aunque no cuelgue del piso (la cocina del restaurante cuelga de Restaurante_AUTO).
@@ -348,7 +352,7 @@ public static partial class SampleSceneBuilder
                 if (n == "Mat" || n.StartsWith("Losa") || n.StartsWith("Viga") || n.StartsWith("Suelo") || n.StartsWith("Wall_") || n == "Mensula" || n.StartsWith("Tornapunta") || col.GetComponentInParent<Anima>() != null) continue;
                 hits++;
             }
-            float score = hits * 100f + Mathf.Abs(x - h.doorX);
+            float score = hits * 100f + Mathf.Abs(x - h.doorX) + (!float.IsNaN(avoidX) && Mathf.Abs(x - avoidX) < h.doorWidth + 0.6f ? 50f : 0f);   // (la puerta del anillo, al lado de la del piso: con puertas de 6 m de alto se juntarían)
             if (score < bestScore) { bestScore = score; best = x; }
         }
         if (bestScore >= 100f) Debug.LogWarning($"[Árbol] «{hx.building}» piso {k}{(ringOnly != null ? " (anillo)" : "")}: ningún umbral del todo libre para su puerta ({Mathf.FloorToInt(bestScore / 100f)} muebles).");
@@ -390,10 +394,17 @@ public static partial class SampleSceneBuilder
         ac.wall = wall.transform;
 
         // AGUA (se ve) y su VOLUMEN nadable (WaterZone: la superficie es lo más alto del volumen).
-        float wy0 = TreeSpec.WaterBottom, wy1 = hx.WaterTop;
+        // SIN SUELO (Berón 2026-11-03: «los edificios-árbol no deben tener suelo, de modo que se puede nadar hacia abajo saliendo al
+        // mar, y pueden entrar animales marinos»): el agua del tronco baja hasta la cara de abajo del hielo y el hielo de debajo
+        // tiene un HUECO (CutIceUnder); el cimiento es un marco alrededor del hueco, no una losa.
+        float wy0 = TreeSpec.WaterBottomOpen, wy1 = hx.WaterTop;
         ac.water = WaterBox(tree, "Agua_raiz", new Vector3(0f, (wy0 + wy1) * 0.5f, 0f), new Vector3(2f * a, wy1 - wy0, 2f * a));
-        KitchenProps.C(tree, Vector3.up * 0.02f, new Vector3(2f * a, 0.04f, 2f * a), new Color(0.3f, 0.42f, 0.48f), 0f, "Fondo_raiz");
-        KitchenProps.C(tree, Vector3.down * 0.4f, new Vector3(2f * o + 3f, 0.8f, 2f * o + 3f), new Color(0.72f, 0.71f, 0.68f), 0f, "Encepado_raiz");   // el cimiento (bajo el hielo)
+        float ef = o + 1.5f, eIn = a - 0.2f;   // el marco del cimiento: de la pared hacia fuera (bajo el hielo), sin tocar el hueco
+        for (int s = 0; s < 4; s++)
+        {
+            Quaternion q = HelixTower.SideRot(s);
+            KitchenProps.C(tree, q * new Vector3(0f, -0.4f, (eIn + ef) * 0.5f), new Vector3(2f * ef, 0.8f, ef - eIn), new Color(0.72f, 0.71f, 0.68f), s * 90f, "Encepado_raiz");
+        }
 
         // EXOESQUELETO: 24 nervios de acero (CFST: 4 esquinas y 5 por cara, uno cada ~3,7 m) y zunchos de canto cada 6 m, una sola
         // malla; no cruzan las puertas, las bocas de las ramas ni las losas de los pisos y de los balcones de sus anillos.
@@ -482,6 +493,7 @@ public static partial class SampleSceneBuilder
         land.position = parent.TransformPoint(landing);
         TreeDoorExit ex = d.gameObject.AddComponent<TreeDoorExit>();
         ex.landing = land; ex.zoneCenter = new Vector3(0f, h * 0.5f, -1.1f); ex.zoneSize = new Vector3(w + 0.8f, h + 2.4f, 3.6f);
+        MaskPoints(d, parent, w, wallThick);   // el perchero de máscaras de fuera y la estación de dentro (docs/mascaras-de-oxigeno.md)
         return field;
     }
 
@@ -690,7 +702,7 @@ public static partial class SampleSceneBuilder
         {
             string n = t.name;
             if (n.StartsWith("Agua") || n == "Campo_magnetico" || n == "Cascada" || n == "Exoesqueleto" || n.StartsWith("Rama_") || n.StartsWith("Campana_rama_")
-                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Pared_raiz" || n == "Campana_techo")
+                || n == "Nervio_rama" || n.StartsWith("Tornapunta") || n == "Tapa_raiz" || n == "Cartel_raiz" || n == "Encepado_raiz" || n == "Fondo_raiz" || n == "Pared_raiz" || n == "Campana_techo" || n == "Perchero_mascaras" || n == "Estacion_mascaras")
                 t.gameObject.GetOrAdd<Unity.AI.Navigation.NavMeshModifier>().ignoreFromBuild = true;
         }
     }

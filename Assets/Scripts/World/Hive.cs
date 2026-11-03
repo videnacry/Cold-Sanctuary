@@ -70,6 +70,10 @@ public class Hive : MonoBehaviour
         honeyStock = Count(Cell.Honey) * 2f;
     }
 
+    /// <summary>Su ENJAMBRE de pecoreadoras (BeeSwarm: de día de árbol en árbol, de noche en la piquera; docs/grupos-de-animales.md).</summary>
+    public BeeSwarm BeeGroup { get; private set; }
+    void Start() { BeeGroup = BeeSwarm.EnsureFor(this); }
+
     void Update()
     {
         MoveAt6();

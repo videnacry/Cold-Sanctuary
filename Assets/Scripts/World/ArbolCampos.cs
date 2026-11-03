@@ -24,6 +24,8 @@ public class ArbolCampos : MonoBehaviour
     public float rootHeight = 92f;
     [Tooltip("Alcance en planta (lo más lejano del eje, m): hasta dónde es «el suelo» del árbol.")]
     public float reach = 56f;
+    [Tooltip("Medio lado del HUECO en el hielo bajo el tronco (sin suelo: se sale nadando al mar; 0 = cerrado).")]
+    public float bottomHole;
     public List<TreeLevel> levels = new List<TreeLevel>();
     public Transform water;          // el agua del tronco (renderer)
     public Transform wall;           // la pared transparente (malla con los huecos de las puertas)

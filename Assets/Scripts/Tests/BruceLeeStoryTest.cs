@@ -21,7 +21,7 @@ public class BruceLeeStoryTest : MonoBehaviour, ITestUnit
     public int Group => 60;   // tras todo lo demás (los microcosmos, 43–44; la vida del santuario, 50–55): carga y descarga una escena
     public bool ParallelSafe => false;
     public const string Scene = "Microcosmos_BruceLee";
-    public float loadTimeout = 60f;
+    public float loadTimeout = 180f;   // (2026-11-03) los pueblos ×60 (hasta 150 edificios y 13 000 plantas) tardan más de 60 s en cargar en aditivo
 
     static readonly string[] Stations = { "Escuela de Yip Man", "Muñeco de madera", "Bahía de Hong Kong", "Jun Fan Gung Fu Institute", "Long Beach 1964", "Reposo de 1970" };
 

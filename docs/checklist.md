@@ -4,6 +4,8 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
+>
 > **ESTADO (2026-08-28) — MUNDO VIVO.** Cerrado el gran arco **emergente + ciclo de vida** (PRs #128–#162, todo
 > documentado): capacidad=hechizo con gate de **doble vía** (anatomía ∨ `Grimoire`), **temperamento histórico**
 > (confianza-por-uso), sentidos/armamento, **navegación por rastros** (`TraceField`/stigmergy), y **ciclo de vida
@@ -67,6 +69,25 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > **salto temporal al dormir** (cuerpo del jugador duerme→amanece, `SleepSpell`+`SetHour`). *Falta:* spawnear al jugador
 > en la enfermería como paciente de Linduarda; migrar limpieza/recetas de Goluis a `TeachingSession` interactiva; afinar
 > ángulos/IK en Unity; sesiones de yoga futuras (Ashtanga 2–4, Shambhavi, brazos).
+
+## Pueblos desde su mapa, reglas de los microcosmos y Pakal de Palenque (2026-11-03, rama `claude/edif-pueblos`)
+Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcosmos-reglas-edificacion.md`](microcosmos-reglas-edificacion.md) (reglas 8–12),
+[`microcosmos-areas.md`](microcosmos-areas.md#reglas-de-los-microcosmos-2026-11-03) (reglas de los microcosmos y tabla de pisos),
+[`microcosmos-actividades.md`](microcosmos-actividades.md), [`microcosmos-maya-pakal.md`](microcosmos-maya-pakal.md),
+[`construcciones-elevadas.md`](construcciones-elevadas.md#las-dos-formas-de-cada-piso-2026-11-03), [`microcosmos-bruce-lee.md`](microcosmos-bruce-lee.md) §6.
+- [x] **Pueblos sobre su plano real** (24 planos: calles, río, lago, colinas, montes, campos, murallas, hitos), barrio ×60 (1,4–2,8 km), ≤ 150 edificios.
+- [x] **Edificios del pueblo** (plaza, mercado, escuela, estación, comisaría, bomberos, museo, guardería, baños, hotel, carpintería, obra, cuartel, centro de tecnología, parque, monumento, pileta, edificios de varias plantas en terraza) con su nombre de época y lugar (`MicroStyles.CivicName`).
+- [x] **Etiquetas de actividad** (trabajo / descanso / recuperación / ocio, capacidad, interacción, cuerpos) en cada `AreaFunctionSite` — gancho para el horario semanal.
+- [x] **Reglas 8–12** en `MicroBuildRules.ValidateSites` (actividad, adaptado a personas e insectos-humanos, estilo del catálogo, frutal en cada residencia, terrazas sin techo).
+- [x] **Reglas de los microcosmos** (`MicroFloors`: piso, montado encima, forma finalizada, estructuras pobladas con miradores, pueblo entero, pendiente de piso representativo) + **9 pisos que faltan** (menú «Pisos que faltan»).
+- [x] **Dos formas de cada piso** (`FloorForms`, `EnsureFloorForms`): 17 pisos (2 en obras, 15 con su forma en obra oculta). Bruce Lee, verificado: antes 3 conos de obra en el Dojo gigante; ahora forma finalizada.
+- [x] **Frutales** de época y lugar en todas las residencias (19 estilos).
+- [x] **Pakal de Palenque** (`Microcosmos_Pakal`, `PakalStoryTest` grupo 66; región `Maya`, estilo `maya_clasico`, bioma, plano de Lakamha').
+- [x] **Verificado en vivo** (2026-11-03): grupos 43 (365/0), 60 (48/0), 62 (373/0), 63 (16/0), 66 (23/0); 0 violaciones de las reglas 1–12 y de las de los microcosmos en los 23 pueblos; fotos en `Temp/Pueblos/`.
+- [x] `Microcosmos_Egina` con su ciudad (`CivicBuilder.EginaTown`; el templo del mito y la stoa, marcados como historia).
+- [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
+- [ ] Que el **horario semanal** (otro hilo) use `AreaFunctionSite.activity` para mandar a cada uno a sus edificios de ocio, descanso y recuperación.
+- [ ] Palenque sobre el Huerto (24 × 9 m) queda a escala 1:2,5: con su piso propio (más ancho) iría a 1:1.
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +

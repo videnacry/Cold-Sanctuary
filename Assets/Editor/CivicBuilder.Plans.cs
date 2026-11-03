@@ -809,6 +809,31 @@ Milicia | 700 -300
 Pileta | 360 220
 Piscina | 200 250
 relleno | 0 | 0 0",
+        // EGINA (la Grecia heroica, ~1250 a. C.): el puerto y la colina de Kolona al oeste (el asentamiento de la Edad del Bronce y el
+        // santuario de Apolo), el monte Oros con el santuario de Zeus Helenio al sureste, los olivares. (Walter y Felten 1981; Pausanias II.29)
+        ["Egina"] = @"
+mar Golfo Sarónico | 500 2400 | -900 0
+colina Kolona | 120 15 | -520 120
+monte Monte Oros | 500 300 | 800 -800
+calle Camino del puerto | 7 | -560 40, 0 60
+calle Camino del Oros | 6 | 0 60, 600 -600
+calle Calle de los alfareros | 5 | -300 -150, -300 300
+calle Calle del palacio | 6 | -100 -200, -100 300
+campo Olivares | 300 200 | 300 250
+campo Campos de cebada | 250 200 | 250 -250
+hito 0 | -110 120
+hito 1 | 560 -540
+hito 2 | -560 0
+hito 3 | -300 80
+Plaza | -60 -90
+Pileta | 40 -110
+Mercado | -200 -60
+Parque | 200 120
+Milicia | -150 220
+Carpinteria | -250 -200
+Obra | 120 -150
+Taller | -350 -100
+relleno | 40 | -100 60",
         // PALENQUE (683): Lakamha', «el lugar de las grandes aguas». El Palacio y el Templo de las Inscripciones sobre la Gran
         // Plaza, el Otolum que corre al norte (con su acueducto bajo el Palacio), el Grupo de las Cruces sobre su colina al este,
         // el Juego de Pelota y el Grupo Norte, el Baño de la Reina, la sierra al sur y la llanura con las milpas al norte.
@@ -1173,7 +1198,7 @@ relleno | 40 | 0 120",
             foreach (Transform pc in pieces) width = Mathf.Max(width, MicroFurniture.LocalBounds(pc).size.x + 2f * MicroBuildRules.Passage);
         }
         var depths = new List<float>(); float total = 0f;
-        foreach (var (g, pieces) in groups) { Vector2 used = Layout(g, pieces, new Vector2(width, 6f), 0f); width = Mathf.Max(width, used.x); depths.Add(used.y); total += used.y; }
+        foreach (var (g, pieces) in groups) { Vector2 used = Layout(g, pieces, new Vector2(width, 6f), 0f); width = Mathf.Max(width, used.x); depths.Add(used.y + 3f); total += used.y + 3f; }   // (+3 m: holgura para cuando los muebles se rehacen a la medida de cada hogar)
         foreach (var (g, pieces) in groups) Layout(g, pieces, new Vector2(width, 6f), 0f);   // todas al mismo ancho
         Material wall = AreaMicrocosmos.Mat("Civ_Muro_" + Hex(st.wall), st.wall), ramp = AreaMicrocosmos.Mat("Civ_Rampa_" + Hex(st.floor), st.floor);
         float z = -total * 0.5f;
@@ -1216,18 +1241,21 @@ relleno | 40 | 0 120",
         if (tops == null || tops.Count == 0) return 0;
         var sorted = new List<Bounds>(tops);
         sorted.Sort((a, b) => (b.size.x * b.size.z).CompareTo(a.size.x * a.size.z));
+        var used = new List<Transform>();
         MicroStyles.Entry e = MicroStyles.For(Year, Region);
         int n = 0;
         foreach (Bounds top in sorted)
         {
             if (n >= 2) break;
             if (top.size.x < 30f || top.size.z < 30f) continue;
+            bool near = false; foreach (Transform u in used) if (Vector2.Distance(new Vector2(u.position.x, u.position.z), new Vector2(top.center.x, top.center.z)) < 60f) near = true;
+            if (near) continue;   // (dos caras de arriba del mismo mueble: un mirador basta)
             string monument = MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra del mirador";
             AreaFunctionSite site = Building(cast, $"{OutpostPrefix} de la meseta {n + 1}", "Mirador", $"Mirador sobre el mueble gigante ({e.name})", Vector3.zero, 0f, new Vector2(12f, 10f), _planStyle ?? NeedsStyle,
                 S("estatua", 0, 0, 1.4f, 1.4f, monument), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, n).name));
             Vector3 at = cast.InverseTransformPoint(new Vector3(top.center.x, top.max.y, top.center.z));
             site.transform.localPosition = at;
-            n++;
+            n++; used.Add(site.transform);
         }
         if (n > 0) Debug.Log($"[Pueblos] {n} miradores de la era sobre los muebles gigantes del piso (de {tops.Count} caras de arriba fuera del pueblo).");
         return n;

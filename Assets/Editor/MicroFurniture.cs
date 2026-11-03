@@ -407,7 +407,7 @@ internal static partial class MicroFurniture
         Transform s = KitchenProps.Root(parent, bench ? "Banco" : "Silla", at, yaw);
         SeatOn(s, e, f, bench);
         var mp = s.gameObject.AddComponent<MicroPiece>();
-        mp.kind = bench ? "banco" : "silla"; mp.need = "sentarse"; mp.style = e.id; mp.fitFor = f.Insect ? $"{f.plan} ({f.species})" : "";
+        mp.kind = bench ? "banco" : "silla"; mp.need = "sentarse"; mp.style = e.id; mp.fitFor = f.Insect ? $"{f.plan} ({f.species})" : ""; mp.fitted = true;
         return s;
     }
 
