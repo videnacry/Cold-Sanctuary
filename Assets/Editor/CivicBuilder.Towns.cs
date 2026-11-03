@@ -43,6 +43,10 @@ internal static partial class CivicBuilder
     // ciudades (París, Berna, Pasadena, Bagdad) y los pueblos medianos; solo en los pisos enormes (Angostura sobre la Cocina,
     // Prípiat sobre la Central) quedan libres las manzanas más lejanas del claro: las afueras, campo de la era (MicroBiome).
     const int MaxLots = 120;
+    /// <summary>Manzanas (las más lejanas del claro) que el relleno deja libres para las CASAS NUEVAS de las familias (regla 6,
+    /// <see cref="Homes"/>): con los solares de relleno amueblados (2–3 muebles), sin esta reserva no quedaba solar libre y
+    /// hasta 8 vecinos se quedaban sin hogar (PC de Berón, 2026-11-03: París, Menfis, Woolsthorpe, Berkeley, Berna, Pasadena).</summary>
+    const int HomeReserve = 8;
 
     /// <summary>
     /// EL PUEBLO EN EL PISO ENTERO: reparte el piso (fuera del claro de la historia) en una cuadrícula de manzanas separadas por
@@ -96,7 +100,8 @@ internal static partial class CivicBuilder
             sites.Add(Building(t, l.name, l.template, l.title, new Vector3(c.x, 0f, c.y), 0f, l.size, l.style, l.stations));
         }
         int f = 0; _home = null;
-        while (used < cells.Count && used < MaxLots && fill.Length > 0)
+        int fillUpTo = Mathf.Min(MaxLots, Mathf.Max(used, cells.Count - HomeReserve));
+        while (used < fillUpTo && fill.Length > 0)
         {
             Lot l = fill[f % fill.Length];
             Vector2 c = cells[used++];
@@ -112,7 +117,7 @@ internal static partial class CivicBuilder
         }
         int outskirts = cells.Count - used;
         Debug.Log($"[Pueblos] {town}: {named.Length} edificios de la historia y {f} solares del pueblo en un piso de {r.width:0} × {r.height:0} m (manzanas de {cell:0} m, calles de {MicroBuildRules.Street:0} m)"
-                  + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan de campo." : "."));
+                  + (outskirts > 0 ? $"; {outskirts} manzanas de las afueras quedan libres (casas nuevas de las familias, campo)." : "."));
         return sites;
     }
 
