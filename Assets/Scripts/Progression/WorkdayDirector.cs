@@ -17,7 +17,8 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
-    public string[] staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea" };
+    public string[] staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea",
+                               "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };   // los seis del mesocosmos (docs/personajes-mesocosmos.md)
     public float walkSpeed = 2.6f;
 
     public readonly WorkRoster roster = new WorkRoster();

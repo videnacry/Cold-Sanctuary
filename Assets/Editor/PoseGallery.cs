@@ -101,9 +101,14 @@ public static class PoseGallery
 
     /// <summary>RETRATOS de las personas del santuario (de frente y de lado, a escala real) en Temp/PoseGallery/Personajes.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
-    public static void Characters()
+    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" }, "Personajes", "Caras");
+
+    /// <summary>RETRATOS de los seis del mesocosmos (docs/personajes-mesocosmos.md) en Temp/PoseGallery/Mesocosmos.png y MesocosmosCaras.png.</summary>
+    [MenuItem("Tools/Cold Sanctuary/Character Gallery (los seis del mesocosmos)")]
+    public static void MesoCharacters() => Portraits(new[] { "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }, "Mesocosmos", "MesocosmosCaras");
+
+    static void Portraits(string[] names, string file, string facesFile)
     {
-        string[] names = { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" };
         string dir = Path.Combine(Application.dataPath, "..", "Temp", "PoseGallery");
         Directory.CreateDirectory(dir);
         Scene scene = EditorSceneManager.NewPreviewScene();
@@ -130,6 +135,8 @@ public static class PoseGallery
                     { "Panterilia", new Vector4(0.7f, 0.95f, 0.9f, 0.79f) }, { "Gohageneis", new Vector4(1.1f, 1.2f, 1.3f, 1.09f) },
                     { "Irosene", new Vector4(1.2f, 1.2f, 1.3f, 1.29f) }, { "Lizmibet", new Vector4(0.95f, 1.05f, 1.2f, 1.05f) },
                     { "JefeConstruccion", new Vector4(1.3f, 0.95f, 1.25f, 1.15f) }, { "Sadhguru", new Vector4(1.0f, 1.2f, 1.4f, 1.0f) }, { "Andrea", new Vector4(1.15f, 1.2f, 1.2f, 1.0f) },
+                    { "ElonMusk", new Vector4(1.05f, 0.95f, 1.0f, 1.1f) }, { "Goku", new Vector4(1.6f, 1.5f, 1.6f, 1.1f) }, { "BillGates", new Vector4(0.95f, 0.95f, 1.0f, 1.0f) },
+                    { "WarrenBuffett", new Vector4(0.85f, 0.8f, 0.9f, 1.05f) }, { "MacKenzieScott", new Vector4(0.95f, 1.05f, 1.05f, 0.95f) }, { "IbrahimTraore", new Vector4(1.25f, 1.2f, 1.3f, 1.05f) },
                 };
                 if (an != null && st.TryGetValue(names[i], out Vector4 sv)) { an.strength = sv.x; an.agility = sv.y; an.endurance = sv.z; an.bodyMass = sv.w; }
                 if (who.TryGetComponent(out BodyShape bsh)) bsh.Apply(true);
@@ -155,10 +162,10 @@ public static class PoseGallery
                 Object.DestroyImmediate(who);
             }
             tex.Apply(); RenderTexture.active = null;
-            File.WriteAllBytes(Path.Combine(dir, "Personajes.png"), tex.EncodeToPNG());
-            faces.Apply(); File.WriteAllBytes(Path.Combine(dir, "Caras.png"), faces.EncodeToPNG()); Object.DestroyImmediate(faces); frt.Release();
+            File.WriteAllBytes(Path.Combine(dir, file + ".png"), tex.EncodeToPNG());
+            faces.Apply(); File.WriteAllBytes(Path.Combine(dir, facesFile + ".png"), faces.EncodeToPNG()); Object.DestroyImmediate(faces); frt.Release();
             Object.DestroyImmediate(tex); rt.Release();
-            Debug.Log($"[Personajes] retratos en Temp/PoseGallery/Personajes.png: {string.Join(", ", names)}");
+            Debug.Log($"[Personajes] retratos en Temp/PoseGallery/{file}.png: {string.Join(", ", names)}");
         }
         finally { EditorSceneManager.ClosePreviewScene(scene); }
     }
