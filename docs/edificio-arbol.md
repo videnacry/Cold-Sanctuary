@@ -314,3 +314,15 @@ se ve nadar a la gente. Fotos con el posprocesado del juego en `Temp/PostMig/`: 
 
 - **v1 (2026-10-29/30)**: raíz redonda de Ø 22 m y 101 m, 8 pisos octogonales de ~51 m inclinados 3° y girados 45° (acordeón),
   6 ramas redondas a 35° con anillos de nidos a ~91 m; `TreeOfFieldsTest` 28/28. Se cambió por la v2 (arriba).
+
+## Máscaras, puertas de 8 personas y sin suelo (Berón 2026-11-03)
+
+Detalle en [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md). **Estas medidas mandan sobre las de arriba**:
+- **Puertas cuadradas de 6 × 6 m** (antes 3 × 3): 8 personas a la vez (8 × 0,70 m de cápsula + 7 × 0,05 m = 5,95 m). Todas: tronco,
+  columnas de las puntas y techo (su columna, 8,4 × 8,4 m de agua). Las **ramas** siguen en 10 × 10 m (cuadradas y más anchas que
+  las puertas: caben 8 nadadores en fila con margen).
+- **Máscaras**: un perchero fuera de cada puerta y una estación dentro, en el agua, junto a ella (una por nivel). Con la máscara
+  puesta el aliento no se gasta; se coge al entrar y se deja al salir; quien acaba en el agua sin máscara nada a la estación más cercana.
+- **Sin suelo**: el agua del tronco baja hasta −1,6 m y el hielo de debajo tiene un hueco (14 × 14 m en el Árbol de los Campos, que
+  gira; 19,6 × 19,6 m en las torres): se baja nadando al mar y entran peces, kril y medusas (docs/grupos-de-animales.md). En el hueco
+  cuelgan 4 cortinas de fitoplancton que cuida el jardinero del edificio.

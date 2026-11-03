@@ -327,3 +327,19 @@ techo, su punto de cuidados con el cabezal y la red de goteo.
     - termina dentro de las 3 h de su misión;
     - con lo que sobra, poliniza o poda alguna;
     - el bienestar medio sube.
+
+## Tareas del árbol: máscaras de oxígeno y fitoplancton (Berón 2026-11-03)
+
+«Se debe crear la tarea de revisar máscaras de oxígeno y la realizaría también la persona que cuida los jardines frutales de los
+edificios… y también ahora debe revisar/cuidar los fitoplancton para que estén en óptimas condiciones.» (docs/mascaras-de-oxigeno.md)
+
+- Cada edificio-árbol añade a las rondas una **unidad de tareas del árbol** (`FruitGardener.Leg.tree`): entrar por el techo con una
+  máscara, bajar nadando de puerta en puerta revisando el perchero y la estación de cada una (**2 min** de juego por puerta), cuidar
+  las 4 cortinas de fitoplancton del fondo abierto (**4 min** cada una) y salir por la puerta del suelo.
+- Se estima con el nado de los viajes (3,9 m/s con la corriente, 1,3 × la recta + 6 m entre puertas) y va **detrás de las macetas
+  de su edificio**: en la misma ronda si cabe en 2,9 h; si no, es **otra ronda del mismo edificio** (otra persona ese día). El Árbol
+  de los Campos, sin frutales, entra en el camino solo por sus tareas. Así la jornada se reparte sola de nuevo: el registro dice
+  cuántas rondas salen (`[Frutales] … tareas de N árboles …`).
+- La prueba (grupo 55) ya no pide «una ronda por edificio»: pide que las **macetas** de cada edificio no se partan, como mucho una
+  ronda más por árbol con tareas, ninguna ronda de más de 3 h y, con un cuerpo de prueba, que las tareas de un árbol dejen todos sus
+  puestos de máscaras y sus cortinas al 100 % en ≤ 1,5 × lo estimado, saliendo sin la máscara.
