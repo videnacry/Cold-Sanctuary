@@ -4,6 +4,8 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
+>
 > **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
 >
 > **ESTADO (2026-08-28) — MUNDO VIVO.** Cerrado el gran arco **emergente + ciclo de vida** (PRs #128–#162, todo
@@ -483,6 +485,17 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] **Subsistema apremios/Guardián/Observación** por rebanadas: Guardián (generalizar `MoodDynamics`) → registro de apremios (hambre/miedo) → aptitud `observacion` → `Observar` pasivo (ojos, `grants`) → adormecer al Guardián (químico). Ver el doc.
 - [ ] Ley de la saga: **≥6 personajes vivos por historia, misma alma en cuerpos distintos**. En esta era, Momo/Medea = almas en **ancianas** que mueren cerca de su nacimiento.
 - [ ] Escenarios INTERMEDIOS entre este nivel y el alba de Ambrosio (a definir).
+
+## Hospital, jardines en la cima y submarinos médicos (2026-11-03; [`hospital.md`](hospital.md) §4–§6, [`submarinos-medicos.md`](submarinos-medicos.md), [`jardines-frutales.md`](jardines-frutales.md) §Jardines en la cima)
+- [x] Jardines frutales en la cima (el techo de alfombras) de cada edificio-árbol: **bancales de tierra** por gremios de pH (cítricos, andino de semisombra, bayas ácidas, mediterráneo, trópico húmedo) con compañeras, flores de néctar, hotel de insectos, abejorros, caja nido, lombrices y goteo; investigación con fuentes y decisión tierra frente a maceta (`GardenBed`, `RoofGardenTest`, grupo 80).
+- [x] La jornada del jardinero: los frutales de la cima entran solos en su ronda y van primero (`TipOrder`).
+- [x] **Submarino-ambulancia anfibio** (14 × 5 × 5 m, el vehículo de diseño de los árboles): por el tronco a por el equipo del hospital, al paciente, a la puerta de urgencias o de veterinaria; bodega para oso o elefante, O₂, monitor, desfibrilador, ventilador, sangre O−, fluidos (`HospitalSubmarine`, grupo 81).
+- [x] Investigación de la atención a ballenas y orcas (varamientos, sedación, campo, rehabilitación) y el **Leviatán**: hospital submarino colosal atracado a ras del hielo, con su pozo médico de suelo elevable; la ambulancia le hace de lanzadera; escenario de una orca herida (`WhaleHospitalSubmarine`, grupo 82).
+- [x] **Banco de sangre**: almacén por temperaturas, ABO/Rh, perros DEA 1 y gatos A/B, caducidad, donación (sillón de donante), transfusión desde el puesto y en el quirófano, ronda diaria dentro del inventario del hospital que repone el submarino (`BloodBank`, `BloodLoss`, grupo 83).
+- [x] **Paredes de cristal** (`GlassWall`): la única pared permitida; guarda los 2 m (`FurnitureSpacing` y `MicroBuildRules`). En el hospital: 4 quirófanos, UCI, 4 aislamientos con esclusa, 4 quirófanos veterinarios, sala fría de pingüinos y aislamiento veterinario (plantas 1 y 2 redistribuidas en el piso de 40 m); revisión de los hospitales de los microcosmos (grupo 84).
+- [ ] Verificación en vivo de los grupos 80–84, de los frutales (55), la jornada (50, línea base 196/1), la vida del santuario (28) y la experiencia del jugador (40), con fotos en `Temp/Hospital/` (ver el informe del hilo).
+- [ ] La ducha de descontaminación de Prípiat (1986) con cristal: es del constructor de los pueblos.
+- [ ] Una alarma que llame sola a la ambulancia cuando alguien cae herido lejos; las ballenas mayores, junto al casco con los pontones.
 
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
