@@ -400,7 +400,7 @@ public class LeisureDirector : MonoBehaviour
         float step = (pos - r.last).magnitude;
         bool riding = FlyingCarpet.Riding(g);
         if (riding) r.flown += step;
-        else if (step > 4f) r.jumps++;
+        else if (step > Mathf.Max(4f, (r.group.micro && g.TryGetComponent(out MicroJornada mjs) ? mjs.speed : walkSpeed) * 3f * Time.deltaTime + 1.5f)) r.jumps++;   // (con el reloj acelerado un paso de un fotograma lento es largo)
         else r.walked += step;
         r.last = pos;
 
@@ -424,7 +424,7 @@ public class LeisureDirector : MonoBehaviour
             {
                 if (r.group.micro)
                 {
-                    if (!MicroMove.Step(g.transform, r.to, microSpeed, 1.6f) && Time.time - r.since > microFallback)
+                    if (!MicroMove.Step(g.transform, r.to, g.TryGetComponent(out MicroJornada mjw) ? mjw.speed : microSpeed, 1.6f) && Time.time - r.since > microFallback)
                     { g.transform.position = r.to; r.fallback = true; r.last = r.to; Debug.LogWarning($"[Horario] «{g.name}» no llega andando en {microFallback:0} s a «{r.venue.title}»: se le pone allí."); }
                     return;
                 }
