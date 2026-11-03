@@ -70,6 +70,11 @@ internal static partial class CivicBuilder
 {
     static int EginaTown(Transform t)
     {
+        // El templo que se levanta (la historia: GreekBuildSite, con su frontón y su tejado en la última etapa) y la stoa del mito son
+        // la HISTORIA: sus tejados se quedan (regla 2, excepción de lo que la historia necesita).
+        foreach (Transform c in t)
+            if (c.GetComponent<GreekBuildSite>() != null || c.name.StartsWith("Stoa"))
+            { var mp = c.GetComponent<MicroPiece>() ?? c.gameObject.AddComponent<MicroPiece>(); mp.kind = MicroBuildRules.Historic; mp.walkable = true; }
         var s = Town(t, "Egina", new[]
         {
             new Lot("Palacio de Éaco", "Casa", "Palacio de Éaco (el rey de los mirmidones)", 14f, 10f, GreekStone,

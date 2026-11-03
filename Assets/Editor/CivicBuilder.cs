@@ -71,7 +71,7 @@ internal static partial class CivicBuilder
         if (MicroBuildRules.IsTownEra(Year) && FillStyles.TryGetValue(display, out var fs))
         {
             if (_plan != null && !_fillDone) fill = PlanFill(t, lots, _plan, new[] { new Lot(fs.title, "Casa", fs.title, 12f, 10f, fs.st) }, _plan.fill).Count;
-            else if (_plan == null) fill = FillTown(t, lots, Vector2.zero, fs.st, fs.title, 10);
+            else if (_plan == null) fill = FillTown(t, lots, Vector2.zero, fs.st, fs.title, lots.floor.width < 250f ? 4 : 10);   // (en un piso de 120 m, como el de Uruk en MobWorld, no caben 10 con sus frutales);
         }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
