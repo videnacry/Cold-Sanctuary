@@ -27,9 +27,9 @@ public class FamososStoryTest : MonoBehaviour, ITestUnit
         ("Microcosmos_Sadhguru", "Sadhguru", 1999, "SurAsia", "YogaRoom_Area", true, new[] { "Mango", "Cocotero", "Banano", "Yaca" }),
         ("Microcosmos_ElonMusk", "Elon Musk", 2008, "Norteamerica", "VehicleWorkshop_Area", false, new[] { "Limonero", "Manzano" }),
         ("Microcosmos_Goku", "Goku", 1930, "China", "MartialArts_Area", true, new[] { "Lichi", "Níspero", "Longán" }),
-        ("Microcosmos_BillGates", "Bill Gates", 1975, "NorteamericaInterior", "VehicleWorkshop_Area", false, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
+        ("Microcosmos_BillGates", "Bill Gates", 1975, "NorteamericaInterior", "Informatics_Area", true, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
         ("Microcosmos_WarrenBuffett", "Warren Buffett", 1983, "NorteamericaInterior", "TextileStudio_Area", false, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
-        ("Microcosmos_MacKenzieScott", "MacKenzie Scott", 2020, "NorteamericaInterior", "Chemistry_Area", false, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
+        ("Microcosmos_MacKenzieScott", "MacKenzie Scott", 2020, "NorteamericaInterior", "Classroom_Area", true, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
         ("Microcosmos_IbrahimTraore", "Ibrahim Traoré", 2024, "Sahel", "Garden_Area", true, new[] { "Mango", "Papayo", "Guayabo", "Karité" }),
     };
 

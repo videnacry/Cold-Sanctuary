@@ -42,4 +42,6 @@ public enum SanctuaryAreaType
     Biology,              // Biología — investigación BSL-2: cultivo abajo, molecular arriba
     NuclearPower,         // Central nuclear — producción: microrreactor de 5 MWe y calefacción de distrito
     LaunchControl,        // Control de misión de la lanzadera de cohetes (docs/lanzadera-de-cohetes.md)
+    Informatics,          // Informática — el clúster de IA local del santuario, su refrigeración líquida y su abastecimiento (docs/piso-informatica.md)
+    Classroom,            // Aula universitaria — aula de clases y sala de estudio para todos a la vez (docs/piso-aula.md)
 }

@@ -137,6 +137,12 @@ public static class AreaFunctions
         S(Def("Biología", "bio_pcr", "Del ADN a la secuencia: extracción, pre-PCR, termociclador y secuenciador", 1f, false, Kind.Study, "mesa_laboratorio"));
         Needs(S(Def("Central Nuclear", "nuc_turno", "Turno de la central: acceso, sala de control, conversión de potencia y calefacción", 1f, false, Kind.Operate, "consola")), Eras.Capability.Nuclear);
         Roles(S(Def(Guard, "gua_carnivoros", "Patrulla y raciones a los carnívoros", 2f, true, Kind.Guard)), "guardia");
+        // (2026-11-04) LOS PISOS NUEVOS (docs/piso-informatica.md, docs/piso-aula.md): el clúster de IA de Informática y el Aula.
+        Roles(S(Effect(Def("Informática", "ifo_sysadmin", "Administrar el clúster de IA: colas, copias, parches y alertas (puesto de monitorización)", 1f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.Sysadmin(who))), "informatico");
+        Roles(S(Effect(Def("Informática", "ifo_refrigeracion", "Mantener la refrigeración líquida: filtros, fugas, bombas e intercambiadores", 1f, false, Kind.Make, "banco_taller"), who => AiCluster.Instance?.CoolingService(who))), "informatico");
+        Roles(S(Effect(Def("Informática", "ifo_energia", "Revisar la acometida, el SAI y las baterías del clúster", 0.5f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.PowerCheck(who))), "informatico");
+        Roles(S(Def("Aula", "aul_clase", "Dar o recibir una clase en el aula (un tema de las áreas del santuario)", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
+        S(Def("Aula", "aul_estudio", "Estudiar en la sala de estudio (biblioteca)", 1f, false, Kind.Study, "mesa"));
 
         // ══ FUNCIONES DEL DÍA (no son del catálogo fijo: las añade AreaWork.Today), con su efecto en el santuario ══
         Get("coc_servicio").effect = who => KitchenLarder.Instance?.ServeService(12, who);

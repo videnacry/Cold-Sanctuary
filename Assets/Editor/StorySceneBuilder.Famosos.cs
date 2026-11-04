@@ -272,7 +272,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ BILL GATES · Albuquerque (Nuevo México), primavera de 1975 · Mecánica ═════════════════════════════════════════════════════
+    // ══ BILL GATES · Albuquerque (Nuevo México), primavera de 1975 · Informática ═════════════════════════════════════════════════════
     //    El BASIC del Altair 8800 funciona en MITS a la primera; Gates y Allen fundan Micro-Soft (4 de abril de 1975).
 
     static int BillGates(Transform t)
@@ -323,7 +323,7 @@ public static partial class StorySceneBuilder
                 Hold("De noche, en el motel: repasa el código a lápiz", motel, 8f, "Bill Gates", "Cada byte cuenta: el Altair tiene muy poca memoria. Hay que decir lo mismo con menos."),
                 Talk("Vuelve con Bill Gates", gates.transform, "Bill Gates", "Un día habrá un ordenador en cada mesa y en cada casa. Hoy es una caja azul con luces."),
             },
-            "Albuquerque (Nuevo México), en la primavera de 1975, sobre el taller de Mecánica del santuario a escala de hormiga (pendiente de su piso: una sala de informática). En MITS, la pequeña empresa que fabrica el Altair 8800, el BASIC de Bill Gates y Paul Allen funciona por primera vez. Ayúdales a cargarlo, a enviarlo y a empezar su empresa. E para hablar, mirar y recoger; para esperar, quédate quieto.",
+            "Albuquerque (Nuevo México), en la primavera de 1975, sobre el piso de Informática del santuario (el clúster de IA) a escala de hormiga. En MITS, la pequeña empresa que fabrica el Altair 8800, el BASIC de Bill Gates y Paul Allen funciona por primera vez. Ayúdales a cargarlo, a enviarlo y a empezar su empresa. E para hablar, mirar y recoger; para esperar, quédate quieto.",
             new[]
             {
                 "Bill Gates (Seattle, 1955) y Paul Allen (Seattle, 1953–2018) se conocieron en el instituto Lakeside, donde aprendieron a programar. En enero de 1975 la revista Popular Electronics sacó en portada el Altair 8800 de MITS, una empresa de Albuquerque: uno de los primeros ordenadores personales, vendido en kit.",
@@ -411,7 +411,7 @@ public static partial class StorySceneBuilder
         return n;
     }
 
-    // ══ MACKENZIE SCOTT · Prairie View A&M University (Texas), 15 de diciembre de 2020 · Química ════════════════════════════════
+    // ══ MACKENZIE SCOTT · Prairie View A&M University (Texas), 15 de diciembre de 2020 · Aula ════════════════════════════════
     //    Su donación sin condiciones de 50 millones de dólares, la mayor de la historia de la universidad. Ella no estuvo en el campus:
     //    su mesa de escritura (donde escribió el ensayo que anunció las donaciones) está en el claro, como un recuerdo.
 
@@ -462,7 +462,7 @@ public static partial class StorySceneBuilder
                 Hold("En la biblioteca: estudia con ellos un rato", library, 8f, "Estudiante de ingeniería", "Ahora solo tengo que preocuparme de aprobar."),
                 Talk("Vuelve con Ruth Simmons", simmons.transform, "Ruth Simmons", "El resto va al fondo de la universidad, para que dure. Esto no es solo dinero: es que alguien de fuera nos haya mirado y haya confiado en nosotros."),
             },
-            "Prairie View A&M University (Texas), el 15 de diciembre de 2020, en plena pandemia, sobre el laboratorio de Química del santuario a escala de hormiga (pendiente de su piso: un aula y biblioteca universitaria). La escritora MacKenzie Scott dona, sin condiciones, la mayor cantidad que esta universidad ha recibido nunca. Mira cómo llega la ayuda a los estudiantes. E para hablar, recorrer y recoger; para escribir y estudiar, quédate quieto.",
+            "Prairie View A&M University (Texas), el 15 de diciembre de 2020, en plena pandemia, sobre el Aula del santuario (clases y sala de estudio) a escala de hormiga. La escritora MacKenzie Scott dona, sin condiciones, la mayor cantidad que esta universidad ha recibido nunca. Mira cómo llega la ayuda a los estudiantes. E para hablar, recorrer y recoger; para escribir y estudiar, quédate quieto.",
             new[]
             {
                 "MacKenzie Scott (San Francisco, 1970) es novelista: estudió en Princeton, donde Toni Morrison fue su profesora, y publicó «The Testing of Luther Albright» (2005) y «Traps» (2013). En 2019 firmó el Giving Pledge, el compromiso de dar la mayor parte de su fortuna.",

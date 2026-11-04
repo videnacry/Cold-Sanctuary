@@ -50,6 +50,7 @@ en el doc de su tema; aquí no se repite.
 | S10 | **Plazas reservadas en cada piso** (`PlatformSlots`) para la flora, la fauna, los personajes y la historia de su microcosmos. Cambiar un piso obliga a revisarlas. | El microcosmos de cada piso necesita sitio garantizado. | `SanctuaryLifeTest` (28: plazas mínimas, ninguna a < 1 m de un mueble); `ExperienciaJugadorTest` (grupo 40) | [reglas-plataformas.md](reglas-plataformas.md) #8 |
 | S11 | **Energía solar, sin gas**: paneles junto a cada edificio y en cada techo; cocinas de inducción. | No llega combustible al santuario; coherencia del mundo. | `SanctuaryLifeTest` (28: «las cocinas son de inducción») | [construcciones-elevadas.md](construcciones-elevadas.md) |
 | S12 | **Una casa del árbol por habitante** (una pareja comparte la suya: J14; cama de 4 plazas desde el 2026-11-04), con su cama, su alfombra-esterilla y su terraza frutal; cada uno duerme en la suya. | Cada personaje tiene su sitio y su vida diaria. | `SanctuaryLifeTest` (28: «Kushal tiene su habitación», cada casa con su alfombra); `FruitOrchardTest` (55) | [alfombras-plan.md](alfombras-plan.md), [jardines-frutales.md](jardines-frutales.md) |
+| S13 | **Capacidad: varias personas a la vez** (Berón 2026-11-04). Cada piso o área tiene máquinas e infraestructura para que varias personas hagan la misma tarea a la vez, como el restaurante o el hospital (≥ 2 puestos por actividad de trabajo). Los centros de **entrenamiento y estudio** son su propia categoría y sirven a **TODOS los miembros a la vez**: el gimnasio (con su piso de cardio), las dos salas de yoga (Hatha y Ashtanga), el ring de almohadas y la sala de estudio (el Aula). **Si un piso no basta, otro piso de esa área** (como el segundo piso de yoga); el número sale de la lista del personal (`WorkdayDirector.Staff`). | Que nadie espere turno para entrenar o estudiar, y que el trabajo se reparta como en el restaurante. | `AreaCapacity` (puestos `AreaSeat`, máquinas `GymStation`, esterillas «Esterilla_N»; registro `[Capacidad]` al construir), `CapacidadPisosTest` (grupo 75); el Aula crece sola (`AulaFloors`). El ring de almohadas: **PENDIENTE DE CONSTRUIR** | Berón 2026-11-04 ([piso-aula.md](piso-aula.md)) |
 
 ## 2. Pisos: sus tres versiones
 
@@ -256,11 +257,13 @@ cambia esta. «Pendiente» = el piso no representa la historia; se monta en él 
 | **Sala de Yoga** (`YogaRoom_Area`: el piso de Hatha; 2026-11-04, dos salas, kund y linga, sin anillo: reconstruir sus microcosmos; su planta de Ashtanga no se copia) | Entrenamiento | Sakshi, el río, y Sala de Yoga (`Microcosmos_Scene0_SakshiRio`) · Patanjali (`Microcosmos_Patanjali`) · Sils Maria, Nietzsche (`Microcosmos_Nietzsche`) · Velliangiri, Sadhguru (`Microcosmos_Sadhguru`) | Sils Maria → Sendero de montaña y biblioteca de filosofía |
 | **Gimnasio** (`Gym_Area`) | Entrenamiento | Tregua 1914 (`Microcosmos_Tregua1914`) · Crotona, Pitágoras (`Microcosmos_Pitagoras`) | Tregua → Campo de deportes de equipo; Crotona → Aula de matemáticas y música |
 | **Dojo** (`MartialArts_Area`, en obras: su «Acabado») | Entrenamiento | Bruce Lee (`Microcosmos_BruceLee`) · Aldea de la montaña, Goku (`Microcosmos_Goku`, homenaje de ficción) | — |
+| **Aula** (`Classroom_Area`, 2026-11-04: clases y sala de estudio para todos; [piso-aula.md](piso-aula.md)) | Entrenamiento | Prairie View, MacKenzie Scott (`Microcosmos_MacKenzieScott`; antes en Química, re-apuntada por la alerta de piso nuevo) | — |
 | **Planta Atómica** (`AtomicPlant_Area`) | Ciencias | Planta Atómica (`Microcosmos_PlantaAtomica`) · Woolsthorpe, Newton (`Microcosmos_Newton`) · Berna, Einstein (`Microcosmos_Einstein`) · Alejandría, Eratóstenes (`Microcosmos_Eratostenes`) | Alejandría → Observatorio y biblioteca |
-| **Química** (`Chemistry_Area`) | Ciencias | París 1898, Curie (`Microcosmos_Curie`) · Pasadena, Patterson (`Microcosmos_Patterson`) · Prairie View, MacKenzie Scott (`Microcosmos_MacKenzieScott`) | Prairie View → Aula y biblioteca universitaria |
+| **Química** (`Chemistry_Area`) | Ciencias | París 1898, Curie (`Microcosmos_Curie`) · Pasadena, Patterson (`Microcosmos_Patterson`) | — |
 | **Biología** (`Biology_Area`) | Ciencias | Berkeley, Jenner (`Microcosmos_Jenner`) | — |
+| **Informática** (`Informatics_Area`, 2026-11-04: el clúster de IA; [piso-informatica.md](piso-informatica.md)) | Ciencias | Albuquerque, Bill Gates (`Microcosmos_BillGates`; antes en Mecánica, re-apuntado por la alerta de piso nuevo) | — |
 | **Construcción** (`Construction_Area`) | Producción | Egina (`Microcosmos_Egina`) · Bagdad, al-Juarismi (`Microcosmos_AlJuarismi`) · Colorado Springs, Tesla (`Microcosmos_Tesla`) | Bagdad → Casa de la Sabiduría; Colorado Springs → Taller de electricidad |
-| **Mecánica** (`VehicleWorkshop_Area`) | Producción | Mecánica (`Microcosmos_Mecanica`) · Dayton, Wright (`Microcosmos_Wright`) · Hawthorne, Elon Musk (`Microcosmos_ElonMusk`) · Albuquerque, Bill Gates (`Microcosmos_BillGates`) | Hawthorne → Fábrica de cohetes y control de misión; Albuquerque → Sala de informática |
+| **Mecánica** (`VehicleWorkshop_Area`) | Producción | Mecánica (`Microcosmos_Mecanica`) · Dayton, Wright (`Microcosmos_Wright`) · Hawthorne, Elon Musk (`Microcosmos_ElonMusk`) | Hawthorne → Fábrica de cohetes y control de misión |
 | **Estudio Textil** (`TextileStudio_Area`) | Producción | Estudio Textil (`Microcosmos_Textil`) · Omaha, Warren Buffett (`Microcosmos_WarrenBuffett`) | Omaha → Mercado y oficina de comercio |
 | **Huerto** (`Garden_Area`, piso 5 del Árbol de los Campos) | Árbol de los Campos | Huerto (`Microcosmos_Huerto`) · Menfis, Heródoto (`Microcosmos_Herodoto`) · Palenque, Pakal (`Microcosmos_Pakal`) · Uagadugú, Ibrahim Traoré (`Microcosmos_IbrahimTraore`) | Menfis → Archivo de historia y geografía; Palenque → Templo de los antepasados |
 | **Central Nuclear** (`NuclearPower_Area`) | aparte | Chernóbil (`Microcosmos_Chernobil`) | — |
@@ -290,8 +293,18 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 **El gancho (2026-11-04):** un gancho de Claude Code (`.claude/hooks/hospital-reminder.sh`, PostToolUse en Edit|Write) avisa al editar un `.cs` de `Assets/`:
 - del **hospital** → revisar los microcosmos que dependen de su piso;
 - de un **piso, área o edificio-árbol** del santuario → revisar que las **jornadas y el reparto de trabajo** (WorkdayDirector, misiones de área, FruitGardener) y el **horario libre** (LeisureRoster) cuadran con los puestos, tiempos de viaje y capacidades nuevos, y los microcosmos de ese piso;
+- de un **constructor de piso** (`SampleSceneBuilder.<Piso>.cs`, al crearlo o editarlo) → mirar los microcosmos «pendiente de piso representativo» y re-apuntar los que encajen (alerta de piso nuevo);
 - de un **microcosmos** → revisar las jornadas de sus insectos-humanos (MicroJornada), el reparto de puestos y el horario libre frente a los edificios de trabajo, ocio y recuperación que cambiaron.
 
+
+**Alerta de piso nuevo (Berón 2026-11-04):** cada vez que se crea un piso, se mira si encaja con algún microcosmos «pendiente de
+piso representativo». Al construir la escena principal, `MicroFloors.AlertFloors` compara cada piso (su nombre y sus palabras de
+`MicroFloors.FloorKeywords`) con el piso que falta de cada pendiente y escribe `[Pisos] ALERTA de piso NUEVO «…»: pendientes que
+encajan: …`. Si el piso los representa, se re-apuntan en `MicroFloors.Table` y en la tabla de arriba. Primer uso (2026-11-04):
+**Bill Gates** (Albuquerque) pasó de Mecánica a **Informática** y **MacKenzie Scott** (Prairie View) de Química al **Aula**. La
+alerta también señala para el Aula a Menfis, Alejandría, Bagdad, Crotona y Sils Maria (esperan una biblioteca o un aula) y para
+Informática a Bagdad (sala de cálculo), y el **control de misión de la lanzadera** a **Hawthorne** (Elon Musk: «fábrica de cohetes y control de misión»): siguen donde están hasta que Berón decida. Se comprueba en `AlertaPisoNuevoTest` (grupo 76).
+Y el gancho avisa al crear o editar un constructor de piso (`SampleSceneBuilder.<Piso>.cs`).
 **Regla W9 (Berón, 2026-11-04):** todo cambio en un piso, área, edificio-árbol o microcosmos obliga a revisar y reajustar las jornadas, el reparto de trabajo y el horario libre de los personajes que lo usan. Se comprueba con el gancho y con las pruebas 50 (jornada), 65 (horario libre) y 62 (eras civilizadas).
 **El registro de dependencias (2026-11-04, `MicroFloorElements`):** al montar un microcosmos se apunta en `MicroFloor.mesoInventory`
 / `mesoSignature` y en `UserSettings/MicroFloorDeps.txt` (fichero local del proyecto Unity) el inventario del piso con el que se montó.
@@ -300,7 +313,7 @@ inventario ya no coincide **avisa** (`[Pisos] REVISAR MICROCOSMOS: …`) con lo 
 reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santuario lleva además su «Forma_microcosmos» oculta
 (`MicroFloorForm`) con la lista de sus elementos (versión meso → versión micro) y sus dependientes.
 
-**El gancho:** hoy cubre el hospital (un gancho de Claude Code al editar sus `.cs`). Pendiente: ampliarlo a los demás constructores de piso de la tabla (el aviso de arriba ya los cubre al reconstruir la escena principal).
+**El gancho:** cubre el hospital, todos los constructores de piso (también los nuevos: alerta de pendientes) y los microcosmos.
 
 ## 12. Recuento y reglas sin comprobación automática
 

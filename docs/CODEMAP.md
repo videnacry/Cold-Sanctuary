@@ -82,6 +82,8 @@ _Total: 720 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
+- **AiCluster** (class) — `Assets/Scripts/World/AiCluster.cs` — el clúster de IA local del piso de Informática: energía, PUE, agua (WUE), calor a la red de distrito, SAI y mantenimiento (docs/piso-informatica.md).
+- **AreaCapacity** / **AreaSeat** — `Assets/Scripts/World/AreaCapacity.cs`, `AreaSeat.cs` — regla de capacidad (manual S13): puestos por actividad; entrenamiento y estudio para todos los miembros.
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Famosos.cs` — LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04): `FamousTown`, `FamousPlans` y un pueblo por figura (Velliangiri, Hawthorne, Aldea de la montaña, Albuquerque, Omaha, Prairie View, Uagadugú).
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):

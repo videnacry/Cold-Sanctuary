@@ -91,9 +91,9 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 | Aldea de la montaña (Goku, homenaje) | Dojo | sí | entrenar sirviendo a la aldea |
 | Uagadugú (Ibrahim Traoré) | Huerto | sí | los productores: labrar y sembrar |
 | Hawthorne (Elon Musk) | Mecánica | **pendiente** | Fábrica de cohetes y control de misión |
-| Albuquerque (Bill Gates) | Mecánica | **pendiente** | Sala de informática (ordenadores y programación) |
+| Albuquerque (Bill Gates) | Informática | sí | el clúster de IA (re-apuntado el 2026-11-04 por la alerta de piso nuevo) |
 | Omaha (Warren Buffett) | Estudio Textil | **pendiente** | Mercado y oficina de comercio (economía) |
-| Prairie View (MacKenzie Scott) | Química | **pendiente** | Aula y biblioteca universitaria |
+| Prairie View (MacKenzie Scott) | Aula | sí | la universidad y su biblioteca (re-apuntada el 2026-11-04) |
 
 ### Los pisos que faltan por crear (`MicroFloors.Pending`)
 
@@ -107,9 +107,9 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
 9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
 10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk).
-11. **Sala de informática (ordenadores y programación)** — Albuquerque (Bill Gates).
+11. ~~Sala de informática~~ — **creado** (piso de Informática, 2026-11-04): Albuquerque (Bill Gates) ya está en él.
 12. **Mercado y oficina de comercio (economía)** — Omaha (Warren Buffett).
-13. **Aula y biblioteca universitaria** — Prairie View (MacKenzie Scott).
+13. ~~Aula y biblioteca universitaria~~ — **creado** (Aula, 2026-11-04): Prairie View (MacKenzie Scott) ya está en él; la alerta señala también a Menfis, Alejandría, Bagdad, Crotona y Sils Maria.
 
 (Una biblioteca común cubriría 2, 4, 5, 13 y en parte 7.) Menú: «Tools/Cold Sanctuary/Pisos que faltan (microcosmos pendientes de
 piso representativo)» los escribe en la consola.
