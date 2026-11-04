@@ -193,7 +193,7 @@ en el doc de su tema; aquí no se repite.
 | A2 | **Las abejas forman enjambres** que de día vuelan de árbol en árbol y de noche vuelven a la colmena. | Se ven mejor volando en grupo. | 71 (visita ≥ 3 árboles) | [grupos-de-animales.md](grupos-de-animales.md) |
 | A3 | **Los grupos marinos entran en los árboles** por el fondo abierto. | El edificio está unido al mar. | 71 | [grupos-de-animales.md](grupos-de-animales.md) |
 | A4 | **Especies reales del lugar** (mar de Ross, McMurdo): pez plateado antártico, kril antártico, *Diplulmaris* y *Desmonema*. | Fidelidad ecológica. | 71 (de su especie y su talla) | [grupos-de-animales.md](grupos-de-animales.md) |
-| A5 | **Las abejas del santuario no deben deslumbrar** (hoy brillan demasiado). **PENDIENTE DE IMPLEMENTAR.** | Ciegan a quien mira. | **solo en docs** | memoria 2026-11-04 |
+| A5 | **Abejas y medusas mates, sin deslumbrar**: sin emisión ni brillo especular (`SwarmModels.Matte`); la abeja de las nieves, de pelusa gris blanquecina. | Brillaban tanto que cegaban a quien miraba (2026-11-04). | **solo en docs** (hecho en código el 2026-11-04, sin prueba propia; se mira en fotos) | [grupos-de-animales.md](grupos-de-animales.md) §2026-11-04 |
 
 ## 9. Personajes, jornada y horario libre
 
@@ -280,11 +280,11 @@ tabla. Lo decide Berón.
 **Total: 110 reglas** (S 12 · F 8 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 7 · W 8 = 109, más la regla de sincronización
 de §11).
 
-**Pendientes de implementar (pedidos del 2026-11-04), 15:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
-M33, M34, A5, J7 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual).
+**Pendientes de implementar (pedidos del 2026-11-04), 14:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
+M33, M34, J7 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual).
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
-áreas), H1 (un solo hospital, mismas plazas), H2 (8 puestos; está en el código pero sin prueba), H6 (anillo de camas por
+áreas), A5 (abejas mates), H1 (un solo hospital, mismas plazas), H2 (8 puestos; está en el código pero sin prueba), H6 (anillo de camas por
 planta), M10 (luz por fecha y lugar), M15 (parte de la fauna salvaje según la época), M22 (tope de 150 edificios), M31 (relieve
 realista), J6 (respeto a las figuras reales) y las de proceso W2, W3, W5, W6, W7 y W8.
 
