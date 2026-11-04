@@ -40,6 +40,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_ElonMusk", "Hawthorne", "Elon Musk y el cuarto Falcon 1 (2008)"),
         ("Microcosmos_Goku", "Aldea de la montaña", "Goku en la aldea de la montaña (homenaje)"),
         ("Microcosmos_BillGates", "Albuquerque", "Bill Gates, Paul Allen y el BASIC del Altair (1975)"),
+        ("Microcosmos_WarrenBuffett", "Omaha", "Warren Buffett y la señora B (1983)"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
         ("Microcosmos_Pitagoras", "Crotona", "Pitágoras y la escuela de Crotona"),

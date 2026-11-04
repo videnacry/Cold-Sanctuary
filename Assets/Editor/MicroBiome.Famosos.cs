@@ -92,6 +92,23 @@ public static partial class MicroBiome
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
                 new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
+            // ── Omaha (1983), finales de agosto: ciudad, sin naturaleza salvaje. Árboles de calle (fresno verde, arce plateado, olmo,
+            //    roble rojo), céspedes y parterres; perros y gatos. Las afueras, pradera de hierba alta (grama, andropogon).
+            //    (City of Omaha, «Street Trees»; Nebraska Game and Parks, tallgrass prairie.)
+            case "Omaha": return new Biome { title = "Omaha (agosto de 1983): ciudad, sin naturaleza salvaje", ground = C(0.45f, 0.4f, 0.3f), plants = new[] {
+                new Plant(Kind.Grass, 14, "Andropogon (Andropogon gerardii), pradera de hierba alta", 150, C(0.45f, 0.55f, 0.3f), C(0.6f, 0.35f, 0.3f)),
+                new Plant(Kind.Flower, 4, "Equinácea (Echinacea purpurea)", 90, C(0.3f, 0.48f, 0.25f), C(0.75f, 0.4f, 0.65f)),
+                new Plant(Kind.Stone, 8, "Bordillo de hormigón", 0, C(0.75f, 0.74f, 0.7f), Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 5, "Fresno verde (Fraxinus pennsylvanica), de calle", 1800, C(0.3f, 0.5f, 0.28f), C(0.5f, 0.42f, 0.32f)),
+                new Plant(Kind.Shrub, 4, "Arce plateado (Acer saccharinum), de calle", 2000, C(0.35f, 0.52f, 0.32f), C(0.75f, 0.78f, 0.75f)),
+                new Plant(Kind.Shrub, 3, "Roble rojo (Quercus rubra), plantado", 2000, C(0.25f, 0.45f, 0.22f), C(0.5f, 0.35f, 0.25f)),
+                new Plant(Kind.Grass, 14, "Césped de la casa, segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Flower, 4, "Petunias del parterre", 30, C(0.3f, 0.48f, 0.25f), C(0.8f, 0.3f, 0.6f)) },
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
+              bugs = new Bug[0] };
             default: return null;
         }
     }

@@ -101,6 +101,7 @@ public static class Eras
             case "Hawthorne":             return (2008, "La fábrica de SpaceX en Hawthorne, California (Elon Musk y el cuarto Falcon 1)");
             case "Aldea de la montaña":   return (1930, "Una aldea de montaña de la China tradicional (homenaje a Goku, ficción)");
             case "Albuquerque":           return (1975, "Albuquerque, Nuevo México (Bill Gates, Paul Allen y el BASIC del Altair)");
+            case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

@@ -15,6 +15,7 @@ internal static partial class CivicBuilder
     static readonly Style MountainTimber = new Style(C(0.72f, 0.66f, 0.56f), C(0.55f, 0.5f, 0.44f), C(0.35f, 0.36f, 0.38f), Roof.Gable, 3.2f);  // aldea de montaña: piedra, pino y teja gris
     static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
     static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
+    static readonly Style OmahaBrick = new Style(C(0.65f, 0.35f, 0.28f), C(0.55f, 0.45f, 0.35f), C(0.35f, 0.33f, 0.32f), Roof.Gable, 3.4f);   // Omaha: ladrillo rojo y tablas, suelo de madera
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -25,6 +26,7 @@ internal static partial class CivicBuilder
             case "Hawthorne": return HawthorneTown(t);
             case "Aldea de la montaña": return MountainVillageTown(t);
             case "Albuquerque": return AlbuquerqueTown(t);
+            case "Omaha": return OmahaTown(t);
             default: return 0;
         }
     }
@@ -166,6 +168,41 @@ Mecanica | 480 -170
 Tecnologia | 150 330
 Estacion | -1100 -250
 relleno | 60 | 500 -600",
+        // OMAHA (1983): la Nebraska Furniture Mart en la calle 72 (al sur de Dodge Street, donde está desde 1970), Dodge Street de este
+        // a oeste, Farnam Street (la casa de Buffett y, más al este, Kiewit Plaza), Memorial Park y el campus de la Universidad de
+        // Nebraska en Omaha; el río Misuri queda a ~10 km al este (fuera). Plano ACORTADO: las distancias al este se han reducido a
+        // un tercio para que quepan la casa y el despacho (OpenStreetMap; Nebraska Furniture Mart; Lowenstein 1995).
+        ["Omaha"] = @"
+calle Calle 72 (72nd Street) | 20 | 0 -1200, 0 1200
+calle Dodge Street | 24 | -1400 800, 1400 800
+calle Farnam Street | 12 | -600 560, 1400 560
+calle Pacific Street | 16 | -1400 -400, 1400 -400
+calle Calle 60 | 12 | 700 -1200, 700 1200
+calle Calle 84 | 14 | -900 -1200, -900 1200
+calle Calle de las casas | 8 | 200 300, 1300 300
+calle Calle de las casas sur | 8 | -800 -800, 600 -800
+colina Loma de Memorial Park | 200 25 | 1000 1000
+campo Prados del oeste | 300 300 | -1200 -900
+hito 0 | 60 80
+hito 1 | 1250 600
+hito 2 | 950 520
+hito 3 | 500 -150
+hito 4 | 180 -120
+hito 5 | -300 250
+Plaza | 450 850
+Mercado | -400 -300
+Parque | 1000 950
+Piscina | -500 -650
+Entrenamiento | -600 600
+Bomberos | 300 650
+Policia | -250 -500
+Estudio | 800 1100
+Guarderia | -700 300
+Museo | 1200 -200
+Mecanica | 250 -450
+Tecnologia | -350 950
+Hotel | -150 850
+relleno | 70 | 300 -600",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -307,6 +344,42 @@ relleno | 60 | 500 -600",
         n += W(t, "Cocinero del diner", s[3], "cocinero", s[3], null, null);
         n += W(t, "Dependienta de la tienda de electrónica", s[5], "comerciante", s[3], null, null);
         n += Townsfolk(t, s, 6, "Vecina de Albuquerque", "Vecino de Albuquerque", s[3], null);
+        return n;
+    }
+
+    // ══ OMAHA (1983): la Nebraska Furniture Mart, el despacho de Berkshire Hathaway (Kiewit Plaza), la casa de Buffett en Farnam
+    //    Street, Gorat's (el asador al que va Buffett), el almacén y taller de tapicería de la tienda y la casa de los Blumkin; casas
+    //    de ladrillo y tablas, tiendas de Dodge Street, talleres e iglesias.
+    static int OmahaTown(Transform t)
+    {
+        var s = Town(t, "Omaha", new[]
+        {
+            new Lot("Nebraska Furniture Mart", "Mercado", "Nebraska Furniture Mart (la tienda de la señora B)", 20f, 14f, OmahaBrick,
+                S("puesto", -6f, 3f, 2.4f, 1.2f, "Rollos de alfombra"), S("puesto", 0f, 3f, 2.4f, 1.2f, "Sofás y sillones"), S("estante", 6f, 3f, 1.2f, 2f, "Neveras y lavadoras"), S("mesa", 0f, -4f, 1.6f, 1f, "Mesa de la señora B")),
+            new Lot("Despacho de Berkshire Hathaway", "Taller de papeles", "Despacho de Berkshire Hathaway (Kiewit Plaza)", 14f, 10f, OmahaBrick,
+                S("mesa", -2f, 2f, 2f, 1f, "Mesa de Buffett (informes anuales)"), S("estante", 3f, 2f, 0.8f, 2f, "Informes de empresas"), S("armario", 0f, -3f, 1.2f, 0.6f, "Archivo")),
+            new Lot("Casa de Buffett en Farnam Street", "Casa", "Casa de Warren Buffett (Farnam Street, desde 1958)", 12f, 10f, OmahaBrick,
+                S("cama", -2f, 2f, 1.6f, 2f, "Cama"), S("estante", 3f, 2f, 0.8f, 1.6f, "Libros y periódicos")),
+            new Lot("Gorat's Steak House", "Restaurante", "Gorat's (el asador de Omaha)", 14f, 10f, OmahaBrick,
+                S("cocina", -3f, 2f, 2f, 0.8f, "Parrilla"), S("mesa", 2f, -1f, 1.6f, 1f, "Mesa con mantel"), S("mesa", -2f, -1f, 1.6f, 1f, "Mesa con mantel")),
+            new Lot("Almacén de la tienda", "Taller", "Almacén y taller de tapicería de la Nebraska Furniture Mart", 16f, 12f, OmahaBrick,
+                S("banco_taller", -3f, 2f, 2.4f, 1f, "Banco del tapicero"), S("estante", 3f, 2f, 1.2f, 2f, "Rollos de tela y de alfombra"), S("armario", 0f, -3f, 1.2f, 0.6f, "Herramientas")),
+            new Lot("Casa de los Blumkin", "Casa", "Casa de Rose Blumkin", 12f, 10f, OmahaBrick,
+                S("cama", -2f, 2f, 1.4f, 2f, "Cama de la señora B")),
+        }, new[]
+        {
+            new Lot("Casa de Omaha", "Casa", "Casa de ladrillo y tablas de Omaha", 10f, 9f, OmahaBrick),
+            new Lot("Tienda de Dodge Street", "Mercado", "Tienda de Dodge Street", 10f, 8f, OmahaBrick, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
+            new Lot("Taller del barrio", "Taller", "Taller del barrio", 12f, 10f, OmahaBrick, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco"), S("armario", 0f, 0f, 1.2f, 0.6f, "Herramientas")),
+            new Lot("Iglesia del barrio", "Templo", "Iglesia del barrio", 12f, 10f, OmahaBrick, S("altar", 0f, 0f, 2f, 1f, "Altar"), S("banco", 0f, 0f, 2f, 0.6f, "Banco")),
+        }, C(0.42f, 0.42f, 0.42f));
+        int n = 0;
+        n += W(t, "Vendedor de alfombras", s[0], "comerciante", s[3], null, null);
+        n += W(t, "Vendedora de muebles", s[0], "comerciante", s[3], null, null);
+        n += W(t, "Secretaria de Berkshire", s[1], "", s[3], null, null);
+        n += W(t, "Camarero de Gorat's", s[3], "cocinero", s[3], null, null);
+        n += W(t, "Tapicero de la tienda", s[4], "", s[3], null, null);
+        n += Townsfolk(t, s, 6, "Vecina de Omaha", "Vecino de Omaha", s[3], null);
         return n;
     }
 }

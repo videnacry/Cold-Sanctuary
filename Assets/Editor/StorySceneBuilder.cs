@@ -45,6 +45,7 @@ public static partial class StorySceneBuilder
         ("VehicleWorkshop_Area", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
         ("MartialArts_Area", "Aldea de la montaña", "Microcosmos_Goku", new Color(0.85f, 0.6f, 0.35f), new System.Func<Transform, int>(Goku)),
         ("VehicleWorkshop_Area", "Albuquerque", "Microcosmos_BillGates", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(BillGates)),
+        ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -74,6 +75,7 @@ public static partial class StorySceneBuilder
         ["Hawthorne"] = ("28 de septiembre de 2008", 16.25f),   // 23:15 UTC: las 16:15 en California, la hora del cuarto lanzamiento
         ["Aldea de la montaña"] = ("un amanecer de primavera (homenaje a Dragon Ball; sin fecha real)", 6.0f),   // ficción: el entrenamiento empieza al amanecer
         ["Albuquerque"] = ("primavera de 1975 (Micro-Soft nace el 4 de abril)", 10.0f),   // la mañana en MITS
+        ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era

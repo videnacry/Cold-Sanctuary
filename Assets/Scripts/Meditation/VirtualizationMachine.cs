@@ -154,6 +154,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Dojo (artes marciales)", "Simulación: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Gimnasio", "Simulación del Dojo: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Mecánica", "Simulación: Bill Gates y Paul Allen en Albuquerque: el BASIC del Altair (1975)", "Microcosmos_BillGates"),
+        ("Estudio Textil", "Simulación: Warren Buffett y la señora B en Omaha: un apretón de manos (1983)", "Microcosmos_WarrenBuffett"),
         // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
         ("Gimnasio", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
         ("Huerto", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),

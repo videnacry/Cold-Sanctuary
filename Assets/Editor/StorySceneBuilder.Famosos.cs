@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -30,6 +30,8 @@ public static partial class StorySceneBuilder
     public static void BuildGoku() => BuildOne("Microcosmos_Goku");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Bill Gates (Albuquerque, 1975)")]
     public static void BuildBillGates() => BuildOne("Microcosmos_BillGates");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Warren Buffett (Omaha, 1983)")]
+    public static void BuildWarrenBuffett() => BuildOne("Microcosmos_WarrenBuffett");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -333,6 +335,75 @@ public static partial class StorySceneBuilder
                 "Freiberger, P. y Swaine, M. (2000). Fire in the Valley: The Making of the Personal Computer, 2.ª ed. McGraw-Hill.",
             },
             "Bill Gates", "Empezamos con una cinta de papel y muchas ganas de aprender. Lo demás vino después.");
+        return n;
+    }
+
+    // ══ WARREN BUFFETT · Omaha (Nebraska), 30 de agosto de 1983 · Estudio Textil ═════════════════════════════════════════════════
+    //    El día de su 53 cumpleaños, Buffett compra la Nebraska Furniture Mart a Rose Blumkin con un contrato de una página, un apretón
+    //    de manos y sin auditoría. (La tienda empezó vendiendo alfombras y telas: de ahí el Estudio Textil.)
+
+    static int WarrenBuffett(Transform t)
+    {
+        Material wood = M("Nogal", 0.45f, 0.32f, 0.22f), rug = M("Alfombra_roja", 0.65f, 0.2f, 0.18f), rug2 = M("Alfombra_azul", 0.25f, 0.35f, 0.6f);
+        Material sofa = M("Tapizado", 0.55f, 0.48f, 0.38f), white = M("Esmalte_blanco", 0.92f, 0.92f, 0.9f), paper = M("Papel", 0.95f, 0.93f, 0.86f);
+
+        // 1 · EL DESPACHO de Berkshire Hathaway (Kiewit Plaza): una mesa y los informes anuales.
+        Transform office = Spot(t, "Despacho de Buffett", new Vector3(-14f, 0f, 10f), "El despacho de Berkshire Hathaway (Kiewit Plaza)", 2.8f);
+        Prop(office, "Mesa del despacho", new Vector3(0f, 0.4f, 0f), new Vector3(2f, 0.8f, 1f), wood);
+        Prop(office, "Pila de informes anuales", new Vector3(0.5f, 0.9f, 0f), new Vector3(0.5f, 0.2f, 0.4f), paper, false);
+
+        // 2 · LA TIENDA: alfombras, muebles y electrodomésticos, y la mesa de la señora B.
+        Transform store = Spot(t, "Nebraska Furniture Mart", new Vector3(4f, 0f, 14f), "Nebraska Furniture Mart (72nd Street)", 3.5f);
+        Transform carpets = Spot(t, "Sección de alfombras", new Vector3(-2f, 0f, 18f), "Alfombras (por donde empezó en 1937)", 2.4f);
+        Prop(carpets, "Rollo de alfombra", new Vector3(-1f, 0.35f, 0f), new Vector3(3f, 0.7f, 0.7f), rug);
+        Prop(carpets, "Rollo de alfombra", new Vector3(1.5f, 0.35f, 1f), new Vector3(3f, 0.7f, 0.7f), rug2);
+        Transform furniture = Spot(t, "Sección de muebles", new Vector3(6f, 0f, 19f), "Muebles", 2.4f);
+        Prop(furniture, "Sofá", new Vector3(0f, 0.4f, 0f), new Vector3(2.2f, 0.8f, 0.9f), sofa);
+        Transform appliances = Spot(t, "Sección de electrodomésticos", new Vector3(12f, 0f, 16f), "Electrodomésticos", 2.4f);
+        Prop(appliances, "Nevera", new Vector3(0f, 0.9f, 0f), new Vector3(0.8f, 1.8f, 0.7f), white);
+        Prop(appliances, "Lavadora", new Vector3(1.2f, 0.45f, 0f), new Vector3(0.7f, 0.9f, 0.7f), white);
+        var sections = new List<Transform> { carpets, furniture, appliances };
+        Transform desk = Spot(t, "Mesa de la señora B", new Vector3(8f, 0f, 8f), "La mesa de Rose Blumkin", 2.4f);
+        Prop(desk, "Mesa", new Vector3(0f, 0.38f, 0f), new Vector3(1.4f, 0.76f, 0.8f), wood);
+        var contract = Items(t, paper, new Vector3(0.3f, 0.02f, 0.4f), ("Contrato de una página", new Vector3(-12f, 0.85f, 10f)));
+
+        // La gente: insectos-humanos. Buffett, una HORMIGA SEGADORA (guarda grano en los años buenos para los malos; paciencia), con
+        // el traje gris de su versión humana; la señora B, una ABEJA OBRERA (trabajó en la tienda hasta pasados los 100 años).
+        GameObject buffett = Modern(t, "Warren Buffett", new Vector3(-11f, 0f, 8f), false, new Color(0.42f, 0.43f, 0.46f), CubeInsect.Hat.None, 1.78f, "Ant");
+        GameObject mrsB = Modern(t, "Rose Blumkin (la señora B)", new Vector3(8f, 0f, 6f), true, new Color(0.3f, 0.3f, 0.35f), CubeInsect.Hat.None, 1.47f, "SnowBee");
+        GameObject louie = Modern(t, "Louie Blumkin", new Vector3(10f, 0f, 11f), false, new Color(0.35f, 0.33f, 0.3f), CubeInsect.Hat.None, 1.75f, "Cricket");
+        GameObject seller = Modern(t, "Vendedora de alfombras (Medea)", new Vector3(-3f, 0f, 15f), true, new Color(0.55f, 0.25f, 0.25f)); Routine(seller, carpets, furniture);
+        GameObject buyer = Modern(t, "Cliente de Omaha (Momo)", new Vector3(2f, 0f, 10f), false, new Color(0.4f, 0.5f, 0.35f)); Routine(buyer, appliances, furniture, carpets);
+        int n = 5;
+
+        Mission(t, "Warren Buffett y la señora B: un apretón de manos (1983)", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("En su despacho, habla con Warren Buffett", buffett.transform, "Warren Buffett", "Hoy cumplo 53 años y quiero hacerme un regalo: comprar la mejor tienda de Omaha. Pero solo si la señora B quiere venderla."),
+                Reach("Ve a la Nebraska Furniture Mart", store, "Cliente de Omaha", "Aquí compra media ciudad. Lo tienen todo, y más barato que nadie."),
+                Talk("Habla con Rose Blumkin, la señora B", mrsB.transform, "Rose Blumkin", "Llegué de Rusia sin saber inglés y sin ir a la escuela. En 1937 abrí esto con 500 dólares en un sótano. Mi regla: vende barato y di la verdad."),
+                Visit("Recorre la tienda: alfombras, muebles y electrodomésticos", sections, "Vendedora de alfombras", "La señora B se sabe el precio de cada alfombra de memoria, y lo que nos costó."),
+                Talk("Habla con Louie, su hijo", louie.transform, "Louie Blumkin", "Mi madre no sabe leer un balance, pero sabe exactamente lo que vale cada cosa. Y nunca miente a un cliente."),
+                Collect("Lleva el contrato de una página a la mesa de la señora B", contract, desk, "Warren Buffett", "No necesito auditores ni abogados. Conozco esta tienda como cliente desde hace años, y me fío de ella."),
+                Hold("En la mesa: el apretón de manos", desk, 8f, "Rose Blumkin", "Trato hecho. Usted me da su palabra y yo le doy la mía. Y yo sigo viniendo a trabajar."),
+                Talk("Vuelve con Warren Buffett", buffett.transform, "Warren Buffett", "Prefiero un trato sencillo con alguien honrado que uno perfecto con alguien de quien no me fío."),
+            },
+            "Omaha (Nebraska, Estados Unidos), el 30 de agosto de 1983, el día en que Warren Buffett cumple 53 años, sobre el Estudio Textil del santuario a escala de hormiga (pendiente de su piso: un mercado y oficina de comercio). Buffett quiere comprar la tienda de muebles de Rose Blumkin, una inmigrante que la levantó de la nada. Acompáñale: la compra se hará con una página y un apretón de manos. E para hablar, recorrer y recoger; para el trato, quédate quieto.",
+            new[]
+            {
+                "Warren Buffett (Omaha, 1930) dirige desde 1965 Berkshire Hathaway, una empresa que compra otras empresas y las deja en manos de quienes las llevan. Vive en Omaha, en la casa de Farnam Street que compró en 1958.",
+                "Rose Blumkin (1893–1998), «la señora B», nació cerca de Minsk, llegó a Estados Unidos en 1917 tras cruzar Siberia, China y Japón, y nunca fue a la escuela. En 1937 abrió la Nebraska Furniture Mart en el sótano de la tienda de su marido, en Omaha, con 500 dólares; su lema era «vende barato y di la verdad».",
+                "El 30 de agosto de 1983, el día de su cumpleaños, Buffett le llevó una propuesta de compra de poco más de una página. La cerraron con un apretón de manos y sin auditoría: no revisó el inventario ni las cuentas. Las cifras varían según la fuente (unos 55 millones de dólares por el 80–90 % de la tienda; la familia se quedó el resto). Buffett lo contó en su carta a los accionistas de 1983.",
+                "La señora B siguió trabajando en la tienda, en un carrito eléctrico, hasta pasados los 100 años. En 2006 Buffett se comprometió a dar casi toda su fortuna a la filantropía, y en 2010 lanzó con Bill y Melinda Gates el Giving Pledge.",
+            },
+            new[]
+            {
+                "Buffett, W. (1984). Carta a los accionistas de Berkshire Hathaway de 1983 (berkshirehathaway.com/letters/1983.html).",
+                "The New York Times (agosto de 1998), obituario de Rose Blumkin («Rose Blumkin, Retail Queen, Dies at 104»).",
+                "Lowenstein, R. (1995). Buffett: The Making of an American Capitalist. Random House.",
+                "Benzinga (2018), «This Day In Market History: Warren Buffett Buys Nebraska Furniture Mart».",
+            },
+            "Warren Buffett", "La confianza no sale en ningún balance, y es lo que más vale.");
         return n;
     }
 }

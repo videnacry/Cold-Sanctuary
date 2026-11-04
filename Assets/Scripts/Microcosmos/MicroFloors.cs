@@ -62,6 +62,7 @@ public static class MicroFloors
         M("Hawthorne", "VehicleWorkshop_Area", "Musk y el Falcon 1: motores y montaje, el taller de Mecánica", "Fábrica de cohetes y control de misión"),
         M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
         M("Albuquerque", "VehicleWorkshop_Area", "Gates y Allen: el Altair y su BASIC (montar y programar), el taller de Mecánica", "Sala de informática (ordenadores y programación)"),
+        M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>
