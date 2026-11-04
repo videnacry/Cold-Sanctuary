@@ -577,6 +577,9 @@ public class SpellConsole : MonoBehaviour
                 if (WorkdayDirector.Instance.today == null && TimeController.timeController != null) WorkdayDirector.Instance.PlanDay(TimeController.timeController.Day);
                 foreach (string jl in WorkdayDirector.Instance.Report()) Log("  " + jl);
                 break;
+            case "rutina": case "routine":   // RUTINA DEL GIMNASIO (docs/gimnasio-maquinas.md §15): el plan y la rutina de hoy de una persona; rutina(Nombre)
+                Log(GymRoutinePanel.Toggle(args.TryGetValue("destiny", out string rw) ? Clean(rw) : null));
+                break;
             case "horario": case "ocio":   // HORARIO LIBRE de la semana (docs/horario-libre.md): abre o cierra el panel y escribe el de hoy
                 Log(HorarioPanel.Toggle());
                 if (LeisureDirector.Instance != null) foreach (LeisureDirector.Group hg in LeisureDirector.Instance.groups) foreach (string hl in LeisureDirector.Instance.Report(hg)) Log("  " + hl);

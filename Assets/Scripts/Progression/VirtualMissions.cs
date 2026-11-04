@@ -75,6 +75,7 @@ public static class VirtualMissions
             case "lab_limpieza": return new[] { "Limpiar las superficies", "Esterilizar el material", "Ordenar el laboratorio" };
             case "con_almacen": return new[] { "Contar el material", "Contar las herramientas", "Apuntar lo que falta" };
             case "gym_mantener": return new[] { "Revisar las máquinas", "Engrasar y ajustar", "Probarlas" };
+            case "gym_planes": return new[] { "Leer el registro de series de cada uno", "Ajustar cargas y repeticiones (progresión doble)", "Escribir la rutina de mañana" };
             case "pla_operar": return new[] { "Coger el dosímetro", "Comprobar la piscina desde el puente", "Arrancar: sacar las barras hasta crítico", "Subir a potencia y vigilar el periodo", "Parar: meter las barras" };
             case "pla_isotopos": return new[] { "Coger el dosímetro", "Mandar el molibdeno al núcleo", "Recuperar la cápsula", "Cargar el generador en la celda caliente", "Pasar por el pórtico de contaminación" };
             case "pla_ronda": return new[] { "Leer la conductividad y cambiar resinas", "Revisar la bomba y el intercambiador", "Revisar la torre de refrigeración", "Medir la tasa de dosis con el Geiger" };
