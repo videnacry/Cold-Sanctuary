@@ -627,11 +627,15 @@ public class WorkdayDirector : MonoBehaviour
         global::YogaClass mine = global::YogaClass.ClassOf(a);
         if (q != null && q.Own.Count > 0 && mine == null) return false;   // comer, el baño y dormir van antes
         if (mine != null) return true;
-        YogaHall h = YogaHall.For(AshtangaSession, YogaHall.Today);
-        if (h == null) return false;
-        global::YogaClass c = global::YogaClass.On(h) ?? global::YogaClass.Begin(a, AshtangaSession, h);
-        if (c == null) return false;
-        return c.teacher == a || c.Join(a);
+        // (regla J16) TODOS A LA VEZ: si la clase de la sala del día está llena, la siguiente sala del estilo (la otra versión, luego
+        // los demás pisos de Ashtanga) abre otra clase con el que llega; así caben todos los miembros (TrainingCentres).
+        foreach (YogaHall h in YogaHall.Ordered(YogaHall.Style.Ashtanga, YogaHall.VersionOn(YogaHall.Today)))
+        {
+            global::YogaClass c = global::YogaClass.On(h);
+            if (c == null) { c = global::YogaClass.Begin(a, AshtangaSession, h); if (c != null && (c.teacher == a || c.Join(a))) return true; continue; }
+            if (c.Join(a)) return true;
+        }
+        return false;
     }
 
     static void LeaveYogaClass(GameObject g)
@@ -748,10 +752,11 @@ public class WorkdayDirector : MonoBehaviour
         int step = Mathf.Clamp(Mathf.FloorToInt((min - 10f) / 9f), 0, 9);
         bool upper = ((i % 2) + step / 5) % 2 == 1;
         GymMachineType type = (upper ? GymUpper : GymLower)[(i + today.day + step) % 5];
-        int copy = (i / 5) % 3;
-        for (int k = 0; k < 3; k++)
+        int copies = Mathf.Max(1, GymStation.CopiesOf(type));   // 3 por piso del gimnasio (regla J16: con más pisos, más copias)
+        int copy = (i / 5) % copies;
+        for (int k = 0; k < copies; k++)
         {
-            GymStation s = GymStation.Find(type, (copy + k) % 3);
+            GymStation s = GymStation.Find(type, (copy + k) % copies);
             if (s != null && (s.Free || s.Occupant == who)) return s;
         }
         return null;

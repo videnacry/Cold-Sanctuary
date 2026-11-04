@@ -102,6 +102,9 @@ public class GymStation : MonoBehaviour
         if (s != null && s.Occupant == who) s.Occupant = null;
     }
 
+    /// <summary>Cuántas copias hay del tipo <paramref name="t"/> (3 por piso del gimnasio; regla J16: más pisos, más copias).</summary>
+    public static int CopiesOf(GymMachineType t) { int n = 0; foreach (GymStation s in _all) if (s != null && s.type == t) n = Mathf.Max(n, s.copy + 1); return n; }
+
     /// <summary>La copia <paramref name="copy"/> del tipo <paramref name="t"/> (null si no existe).</summary>
     public static GymStation Find(GymMachineType t, int copy)
     {

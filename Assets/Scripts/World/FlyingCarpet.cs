@@ -162,22 +162,28 @@ public class FlyingCarpet : MonoBehaviour
         Debug.Log($"[Alfombra] «{who.name}» se sienta en la alfombra y vuela de {pad?.displayName} a {to.displayName}.");
 
         Vector3 from = transform.position, dest = to.FreeSlot(this);
-        float top = Mathf.Max(from.y, dest.y) + cruise;
-        float dist = Vector3.Distance(new Vector3(from.x, 0f, from.z), new Vector3(dest.x, 0f, dest.z));
-        float T = Mathf.Max(3f, (dist + 2f * cruise) / speed), t = 0f;
-        Quaternion face = Quaternion.LookRotation(Flat(dest - from));
-        while (t < T)
+        // (2026-11-04) Los TRAMOS del vuelo: el arco de siempre o, si cruzaría un volumen prohibido (el ring de almohadas), sale por
+        // debajo hasta fuera de él, sube por fuera, cruza por encima y baja (ver Legs). Cada tramo, con su tiempo.
+        foreach (var (l0, l1, arc) in Legs(from, dest, cruise))
         {
-            t += Time.deltaTime;
-            float u = Mathf.Clamp01(t / T);
-            float s = Mathf.SmoothStep(0f, 1f, u);
-            Vector3 p = Vector3.Lerp(from, dest, s);
-            p.y = Mathf.Lerp(from.y, dest.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(from.y, dest.y)) + Mathf.Sin(t * 3f) * 0.05f;   // sube, cruza y baja (con un leve vaivén)
-            transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 2f));
-            if (who == null) { yield return null; continue; }   // (quien iba sentado ya no existe —un cuerpo de prueba destruido en pleno vuelo—: la alfombra termina sola)
-            who.transform.SetPositionAndRotation(p + Vector3.up * (Thickness + 0.05f + rootAbove), transform.rotation);
-            if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
-            yield return null;
+            float top = Mathf.Max(l0.y, l1.y) + (arc ? cruise : 0f);
+            float dist = Vector3.Distance(new Vector3(l0.x, 0f, l0.z), new Vector3(l1.x, 0f, l1.z));
+            float T = arc ? Mathf.Max(3f, (dist + 2f * cruise) / speed) : Mathf.Max(0.6f, Vector3.Distance(l0, l1) / (speed * 0.6f)), t = 0f;
+            Vector3 flat = Flat(dest - from);
+            Quaternion face = flat.sqrMagnitude > 1e-4f ? Quaternion.LookRotation(flat) : transform.rotation;
+            while (t < T)
+            {
+                t += Time.deltaTime;
+                float u = Mathf.Clamp01(t / T);
+                float s = Mathf.SmoothStep(0f, 1f, u);
+                Vector3 p = Vector3.Lerp(l0, l1, s);
+                if (arc) p.y = Mathf.Lerp(l0.y, l1.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(l0.y, l1.y)) + Mathf.Sin(t * 3f) * 0.05f;   // sube, cruza y baja (con un leve vaivén)
+                transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 2f));
+                if (who == null) { yield return null; continue; }   // (quien iba sentado ya no existe —un cuerpo de prueba destruido en pleno vuelo—: la alfombra termina sola)
+                who.transform.SetPositionAndRotation(p + Vector3.up * (Thickness + 0.05f + rootAbove), transform.rotation);
+                if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
+                yield return null;
+            }
         }
         transform.position = dest;
         pad = to;
@@ -205,4 +211,80 @@ public class FlyingCarpet : MonoBehaviour
     }
 
     static Vector3 Flat(Vector3 v) { v.y = 0f; return v.sqrMagnitude > 1e-4f ? v : Vector3.forward; }
+
+    // ── VOLÚMENES PROHIBIDOS (2026-11-04) ──────────────────────────────────────────────────────────────────────────────
+    /// <summary>Quien registra volúmenes que las alfombras no cruzan (el ring de almohadas: estaba encima de la plataforma central y las
+    /// alfombras que salían de ella lo atravesaban). Cada proveedor devuelve sus cajas en el mundo.</summary>
+    public static readonly List<System.Func<IEnumerable<Bounds>>> NoFlyProviders = new List<System.Func<IEnumerable<Bounds>>>();
+    const float NoFlyMargin = 2f;
+
+    static List<Bounds> NoFly()
+    {
+        var l = new List<Bounds>();
+        foreach (var p in NoFlyProviders) { try { foreach (Bounds b in p()) { Bounds e = b; e.Expand(new Vector3(NoFlyMargin * 2f, NoFlyMargin * 2f, NoFlyMargin * 2f)); l.Add(e); } } catch (System.Exception) { } }
+        return l;
+    }
+
+    static bool InFootprint(Bounds b, Vector3 p) => p.x > b.min.x && p.x < b.max.x && p.z > b.min.z && p.z < b.max.z;
+
+    /// <summary>¿El arco de siempre entre <paramref name="a"/> y <paramref name="b"/> pasa por alguna caja?</summary>
+    static bool ArcHits(Vector3 a, Vector3 b, float cruise, List<Bounds> boxes)
+    {
+        float top = Mathf.Max(a.y, b.y) + cruise;
+        for (int i = 1; i < 40; i++)
+        {
+            float u = i / 40f, s = Mathf.SmoothStep(0f, 1f, u);
+            Vector3 p = Vector3.Lerp(a, b, s);
+            p.y = Mathf.Lerp(a.y, b.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(a.y, b.y));
+            foreach (Bounds x in boxes) if (x.Contains(p)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// LOS TRAMOS DEL VUELO: (desde, hasta, ¿en arco?). Sin volúmenes prohibidos en medio, el arco de siempre. Si no:
+    ///  · un extremo DEBAJO de una caja (la plataforma central, bajo el ring) sale en recto, por debajo, hasta fuera de su huella;
+    ///  · un extremo ENCIMA o DENTRO de ella (la pista del propio ring) sube en vertical hasta por encima;
+    ///  · entre esos dos puntos, el arco; si aún cruzara, sube en vertical por fuera, cruza en recto por encima y baja.
+    /// </summary>
+    public static List<(Vector3 a, Vector3 b, bool arc)> Legs(Vector3 from, Vector3 dest, float cruise)
+    {
+        var legs = new List<(Vector3, Vector3, bool)>();
+        List<Bounds> boxes = NoFly();
+        if (boxes.Count == 0 || !ArcHits(from, dest, cruise, boxes)) { legs.Add((from, dest, true)); return legs; }
+        Vector3 Out(Vector3 p, Vector3 toward, List<(Vector3, Vector3, bool)> pre, bool atEnd)
+        {
+            foreach (Bounds b in boxes)
+            {
+                if (!InFootprint(b, p)) continue;
+                Vector3 q;
+                if (p.y < b.min.y)
+                {
+                    // Debajo: en recto hasta el borde de la huella más cercano (hacia el otro extremo si empata), a su misma altura.
+                    float y = Mathf.Min(p.y + 1.5f, b.min.y - 0.5f);
+                    float dxMin = p.x - b.min.x, dxMax = b.max.x - p.x, dzMin = p.z - b.min.z, dzMax = b.max.z - p.z;
+                    float m = Mathf.Min(Mathf.Min(dxMin, dxMax), Mathf.Min(dzMin, dzMax));
+                    q = m == dxMin ? new Vector3(b.min.x - 0.5f, y, p.z) : m == dxMax ? new Vector3(b.max.x + 0.5f, y, p.z)
+                      : m == dzMin ? new Vector3(p.x, y, b.min.z - 0.5f) : new Vector3(p.x, y, b.max.z + 0.5f);
+                }
+                else q = new Vector3(p.x, Mathf.Max(p.y, b.max.y + 0.5f), p.z);   // encima o dentro: en vertical hasta por encima
+                if (atEnd) pre.Add((q, p, false)); else pre.Add((p, q, false));
+                return q;
+            }
+            return p;
+        }
+        var head = new List<(Vector3, Vector3, bool)>(); var tail = new List<(Vector3, Vector3, bool)>();
+        Vector3 a = Out(from, dest, head, false), z = Out(dest, from, tail, true);
+        legs.AddRange(head);
+        if (!ArcHits(a, z, cruise, boxes)) legs.Add((a, z, true));
+        else
+        {
+            float high = Mathf.Max(a.y, z.y);
+            foreach (Bounds b in boxes) high = Mathf.Max(high, b.max.y + 1f);
+            Vector3 a2 = new Vector3(a.x, high, a.z), z2 = new Vector3(z.x, high, z.z);
+            legs.Add((a, a2, false)); legs.Add((a2, z2, false)); legs.Add((z2, z, false));
+        }
+        legs.AddRange(tail);
+        return legs;
+    }
 }

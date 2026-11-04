@@ -112,12 +112,22 @@ El ring tiene su **pista de alfombras**:
    - sin saltos ni teletransportes;
    - al acabar dejan las almohadas.
 
-## Regla J16: todos los miembros a la vez (pendiente fuera del ring)
+## Regla J16: todos los miembros a la vez (hecha: ver [centros-para-todos.md](centros-para-todos.md))
 
 Berón (2026-11-04): los centros de entrenamiento y de ocio dan servicio a todos los miembros del santuario a la vez.
-- **Cumple**: el ring de almohadas (caben 25, son 19).
-- **No cumple todavía** (plazas del catálogo de ocio frente a 17 del personal):
-  - pesas 6, yoga libre 8, huerto 6, lectura 6, crías 4, textil 4, tertulia 8, baile 6, artes marciales 6;
-  - en entrenamiento: el circuito del gimnasio (10 estaciones) y cada sala de yoga (8 esterillas; 32 entre las cuatro).
-- Hacer que cumplan pide agrandar esos pisos (más máquinas y esterillas) o repartirlos entre varias salas.
-- `PillowFightTest` apunta en el registro las actividades que aún no caben, sin fallar.
+- El ring cumple: caben 25 y son 19 residentes.
+- El resto de centros también cumple ya: más pisos donde hacían falta, clases que se reparten por salas y ocio para todos.
+  Detalle en [centros-para-todos.md](centros-para-todos.md).
+- Lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75), que cuenta el ring por su `AreaSeat` «guerra de almohadas».
+- `PillowFightTest` registra además las actividades que van por turnos.
+
+## Las alfombras no atraviesan el ring
+
+El ring está justo encima de la plataforma central, y las alfombras que salían de ella lo cruzaban.
+
+Ahora el ring registra su caja (`PillowRing.Box`: plataforma, cama y cabecero, sin columnas ni alfombras) en
+`FlyingCarpet.NoFlyProviders`, y `FlyingCarpet.Legs` arma el vuelo por tramos:
+- desde debajo del ring: sale en recto, por debajo, hasta fuera de su huella (2 m de margen);
+- desde encima (su propia pista): sube en vertical hasta por encima;
+- entre esos puntos, el arco de siempre;
+- si aún lo cruzara, sube por fuera, cruza en recto por encima y baja.

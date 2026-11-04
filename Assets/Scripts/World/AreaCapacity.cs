@@ -64,16 +64,18 @@ public static class AreaCapacity
             // El YOGA: dos salas (Hatha, el piso de la Sala de Yoga; Ashtanga, su planta propia), cada una para todos.
             if (a.name == "YogaRoom_Area")
             {
-                Transform ash = a.Find("Planta_ashtanga");
+                // (2026-11-04, regla J16) Por el ESTILO de su sala (YogaHall), en TODOS los pisos del estilo: si un piso no llega, el
+                // constructor añade otro (TrainingCentres.FloorsFor; «Planta_hatha_2», «Planta_ashtanga_2»…).
                 int h = 0, s2 = 0;
                 foreach (Transform t in a.GetComponentsInChildren<Transform>(true))
                 {
                     if (!t.name.StartsWith("Esterilla_")) continue;
-                    if (ash != null && t.IsChildOf(ash)) s2++; else h++;
+                    YogaHall hall = t.GetComponentInParent<YogaHall>(true);
+                    if (hall != null && hall.style == YogaHall.Style.Ashtanga) s2++; else h++;
                 }
                 lines.Add(new Line { area = "Yoga Hatha", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = h, need = members });
                 lines.Add(new Line { area = "Yoga Ashtanga", activity = "esterillas", category = AreaSeat.Category.Entrenamiento, have = s2, need = members });
-                hatha = true; ashtanga = ash != null;
+                hatha = true; ashtanga = s2 > 0;
             }
         }
         if (!gym) pending.Add("Gimnasio (no está en la escena)");
@@ -89,6 +91,7 @@ public static class AreaCapacity
     {
         var roots = new List<Transform>();
         foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(a.transform);
+        foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(r.transform);   // el ring de almohadas (arboleda residencial; regla J15)
         int members = Members();
         var lines = Check(roots, members, out var pending);
         var bad = lines.FindAll(l => !l.ok);

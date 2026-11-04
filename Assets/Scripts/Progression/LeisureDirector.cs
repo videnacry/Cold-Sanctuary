@@ -56,6 +56,7 @@ public class LeisureDirector : MonoBehaviour
         public AreaFunctions.Kind kind = AreaFunctions.Kind.Rest;
         public int index;                        // para repartir los sitios de varias actividades en la misma área
         public bool deck;                        // la plataforma central de la arboleda (puntos sobre ella)
+        public readonly List<YogaHall> halls = new List<YogaHall>();   // (regla J16) la sala de yoga en todos los pisos de su estilo
         public int capacity;
     }
 
@@ -178,6 +179,11 @@ public class LeisureDirector : MonoBehaviour
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };
 
+    /// <summary>REGLA J16: actividades de ocio que dan cabida a TODOS los miembros a la vez (su capacidad es la de los miembros). Fuera
+    /// quedan «Jugar con las crías» (pocas personas por camada, para no agobiarlas) y «Manualidades» (una herramienta por persona: los
+    /// telares y la rueca del estudio textil), que van por turnos.</summary>
+    public static readonly HashSet<string> AllMembers = new HashSet<string> { "pesas", "yoga", "ashtanga", "huerto", "lectura", "tertulia", "baile", "artes" };
+
     /// <summary>Prefijo de un sitio que es una SALA de los pisos de yoga («Sala de Yoga · Hatha tradicional»…).</summary>
     public const string YogaVenue = "Sala de Yoga · ";
 
@@ -192,9 +198,16 @@ public class LeisureDirector : MonoBehaviour
                 if (w == "casa") { v = new Venue { title = "su casa del árbol", home = true }; break; }
                 if (w.StartsWith(YogaVenue))
                 {
-                    YogaHall yh = null;
-                    foreach (YogaHall h in YogaHall.All) if (h != null && h.gameObject.scene == gr.scene && YogaVenue + h.Label == w) { yh = h; break; }
-                    if (yh != null) { v = new Venue { title = w, anchor = yh.transform }; break; }
+                    // (regla J16) La sala de ese nombre en TODOS los pisos del estilo: cada plaza, una esterilla de cualquiera de ellas.
+                    // Primero la sala nombrada (en sus pisos) y después la otra versión del estilo: 8 esterillas por sala no llegan.
+                    YogaHall named = null;
+                    foreach (YogaHall h in YogaHall.All) if (h != null && h.gameObject.scene == gr.scene && YogaVenue + h.Label == w && (named == null || h.floorNo < named.floorNo)) named = h;
+                    if (named != null)
+                    {
+                        v = new Venue { title = w, anchor = named.transform };
+                        foreach (YogaHall h in YogaHall.Ordered(named.style, named.version)) if (h.gameObject.scene == gr.scene) v.halls.Add(h);
+                        break;
+                    }
                     continue;
                 }
                 if (w == "Residencia")
@@ -207,8 +220,11 @@ public class LeisureDirector : MonoBehaviour
                 if (a != null) { v = new Venue { title = a.displayName, anchor = a.transform }; break; }
             }
             if (v == null) continue;   // no hay sitio abierto: la actividad no entra esta semana
-            v.capacity = d.cap; v.index = k++;
-            var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, d.cap, d.pose);
+            // REGLA J16: los centros de ocio dan cabida a TODOS los miembros a la vez (los que salen de la lista del personal). Las que no
+            // (crías y textil) son pequeñas por su naturaleza y van por turnos (docs/centros-para-todos.md).
+            int cap = AllMembers.Contains(d.id) ? Mathf.Max(d.cap, AreaCapacity.Members()) : d.cap;
+            v.capacity = cap; v.index = k++;
+            var act = new LeisureRoster.Activity(d.id, d.title, d.kind, v.title, cap, d.pose);
             gr.catalog.Add(act); gr.venues[act] = v;
         }
         LeisureTags.AddVenues(gr);
@@ -468,14 +484,19 @@ public class LeisureDirector : MonoBehaviour
             return OnMesh(res.transform.TransformPoint(new Vector3(-6f + (seat % 3) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -1.6f + (seat / 3) * 1.6f)));
         }
         if (v.anchor == null) return g.transform.position;
-        if (v.deck)   // la plataforma central (18 × 18): a un lado, lejos de las pistas de alfombras del centro y de los bordes norte y sur
-            return OnMesh(v.anchor.TransformPoint(new Vector3(6f - (seat % 2) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -2.4f + (seat / 2) * 1.6f)));
+        if (v.deck)   // la plataforma central (18 × 18): en las dos bandas de los lados (|x| 6 y 7,6 m), lejos de las pistas de alfombras del centro;
+        {             // (regla J16) 4 por fila y 10 filas de 1,6 m: caben 40 (antes, 2 por fila: con todos los miembros se salían del borde)
+            int row = (seat / 4) % 10;
+            float x = (seat % 2 == 0 ? 6f : 7.6f) * (seat % 4 < 2 ? 1f : -1f);
+            return OnMesh(v.anchor.TransformPoint(new Vector3(x, ResidentialBuilder_DeckY + 1.15f, -7.2f + row * 1.6f)));
+        }
         // EL RING DE ALMOHADAS (2026-11-04): cada plaza, una celda del colchón de la cama colosal (PillowRing.Spot).
         if (v.anchor.TryGetComponent(out PillowRing ring)) return ring.Spot(seat) + Vector3.up;
         // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
-        if (v.anchor.TryGetComponent(out YogaHall yh))
+        if (v.halls.Count > 0 || v.anchor.TryGetComponent(out YogaHall _))
         {
-            List<CarpetPad> mats = yh.Mats();
+            List<CarpetPad> mats = new List<CarpetPad>();   // (regla J16: las esterillas de la sala en todos los pisos del estilo)
+            if (v.halls.Count > 0) foreach (YogaHall hh in v.halls) mats.AddRange(hh.Mats()); else mats.AddRange(v.anchor.GetComponent<YogaHall>().Mats());
             if (mats.Count > 0) return OnMesh(mats[seat % mats.Count].transform.position + Vector3.up);
         }
         // Un área: cada actividad en su zona (−5, 0, +5 m) y cada plaza en una rejilla de 1,6 m.

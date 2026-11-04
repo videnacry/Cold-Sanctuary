@@ -22,6 +22,8 @@ public class YogaHall : MonoBehaviour
     public Transform tarima;
     [Tooltip("El kund (agua del tronco, sujeta por el campo magnético): solo en la versión tradicional.")]
     public Transform kund;
+    [Tooltip("Piso del centro de yoga de su estilo (1, 2…): regla J16, los pisos que pidan los miembros.")]
+    public int floorNo = 1;
     [Tooltip("Temperatura de la sala (°C): un valor de diseño (Ashtanga, más cálida).")]
     public float roomTempC = 22f;
 
@@ -55,8 +57,19 @@ public class YogaHall : MonoBehaviour
 
     public static YogaHall Find(Style s, Version v)
     {
-        foreach (YogaHall h in All) if (h != null && h.style == s && h.version == v) return h;
-        return null;
+        YogaHall best = null;   // (regla J16: con varios pisos del estilo, la del primer piso)
+        foreach (YogaHall h in All) if (h != null && h.style == s && h.version == v && (best == null || h.floorNo < best.floorNo)) best = h;
+        return best;
+    }
+
+    /// <summary>(regla J16) Todas las salas de un estilo, en el orden en que se llenan: la versión <paramref name="first"/> antes y, en
+    /// cada versión, del primer piso al último. Cuando una clase se llena, la siguiente empieza en la siguiente sala.</summary>
+    public static List<YogaHall> Ordered(Style s, Version first)
+    {
+        var l = new List<YogaHall>();
+        foreach (YogaHall h in All) if (h != null && h.style == s) l.Add(h);
+        l.Sort((a, b) => a.version != b.version ? (a.version == first ? -1 : 1) : a.floorNo.CompareTo(b.floorNo));
+        return l;
     }
 
     /// <summary>El estilo de una sesión de <see cref="YogaLibrary"/>: la Ashtanga Primaria, en el piso de Ashtanga; el resto (Saludo al
