@@ -456,3 +456,31 @@ aplican a la Residencia.
 Los **microcosmos** conservan sus frutales en cada residencia (regla 11 de
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md)): encajan con su historia (el manzano de Woolsthorpe, el cacao de
 Palenque).
+
+## Rondas que caben en 3 h con las tareas de la semana (2026-11-04)
+
+Lo midió el probador (grupo 55): con las ~200 revisiones de máscaras de los árboles, la jornada del jardinero salía en **36,5 h →
+12 rondas**, tres de ellas de 4,6–5,5 h, y sin tiempo para polinizar ni podar (0 y 0). Tenía dos causas:
+- las tareas de un árbol eran **una sola unidad**, que no se partía;
+- las tareas de la semana solo se hacían con «lo que sobrara».
+
+Cambios en `FruitGardener.Rounds`:
+- **Las tareas de la semana se reservan.** Cada maceta cuenta en su ronda su revisión y, además, la media diaria de lo suyo
+  (`WeeklyHoursPerDay`): 1 min de pincel cada 2 días si se poliniza a mano y 3 min de poda cada `PodaDias`, ×1,5 por el paseo. Así
+  toda ronda deja sitio para polinizar y podar.
+- **Las tareas de un árbol van en tramos** que caben en una ronda con su vuelo. Las puertas van de arriba abajo mientras quepan; en
+  cada tramo se entra por el techo y se sale por el suelo. El fitoplancton va en el último tramo, o en uno suyo si no cabe.
+- **El reparto llena primero.** Cada tramo va a la primera ronda donde cabe (con preferencia por seguir en su mismo edificio). Solo si
+  no cabe en ninguna se abre otra ronda: otro jardinero ese día.
+
+**Ninguna ronda pasa de 2,9 h.** El número de jardineros sale solo del trabajo total. Cuando el hilo de los árboles abarate la
+revisión de máscaras (rotación semanal o mirar el indicador), bajará solo.
+
+La prueba 55 pide ahora:
+- las macetas de un edificio, sin partir;
+- todas las puertas de cada árbol, en algún tramo;
+- rondas bien llenas (no más de total ÷ (0,6 × 2,9 h));
+- ninguna ronda de más de 3 h.
+
+En la prueba del goteo, la planta de control es ahora una **maceta**. En un bancal el abono y la plaga van más despacio (es lo que hace
+el bancal), y por eso la salud no bajaba.

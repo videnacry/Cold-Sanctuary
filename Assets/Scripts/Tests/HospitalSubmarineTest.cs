@@ -63,7 +63,8 @@ public class HospitalSubmarineTest : MonoBehaviour, ITestUnit
         ArbolCampos at = ArbolCampos.At(body.transform.position, out TreeLevel lvAt, out _, false);
         TestProbe.Check("la entrega en el piso de urgencias, en su puesto", sub.delivered && at == ac && lvAt == urg, $"{sub.deliveredTo}; está en {(lvAt != null ? lvAt.name : "?")} ({body.transform.position.y:0.0} m), a los {sub.deliveredAfter:0} s de juego");
         TestProbe.Check("por el camino le pone sangre O− y, en el hospital, el banco de sangre (deja la clase III)", bl.lost < 0.3f && bl.unitsReceived >= 1, $"pérdida {lost0 * 100f:0} % → {bl.lost * 100f:0} % ({bl.unitsReceived} unidades; {sub.transfusedOnBoard} a bordo)");
-        TestProbe.Check("la atienden: estabilizada (menos enfermedad y estrés)", pa.sickness < s0 - 0.1f && pa.stress < 0.6f, $"enfermedad {s0:0.00} → {pa.sickness:0.00}, estrés {pa.stress:0.00}");
+        // (2026-11-04) Se compara con cómo estaba AL SUBIRLA: mientras espera, la hemorragia de clase III la empeora (shock, BloodLoss).
+        TestProbe.Check("la atienden: estabilizada (menos enfermedad que al subirla y menos estrés)", sub.sicknessAfterCare < sub.sicknessAtPickup - 0.1f && pa.stress < 0.6f, $"enfermedad {s0:0.00} al caer, {sub.sicknessAtPickup:0.00} al subirla → {sub.sicknessAfterCare:0.00} atendida (ahora {pa.sickness:0.00}), estrés {pa.stress:0.00}");
         TestProbe.Check("vuelve a aparcar", sub.phase == HospitalSubmarine.Phase.Aparcado && Vector3.Distance(sub.transform.position, sub.parkPos) < 3f, $"{sub.missionSeconds:0} s de juego en total ({(Time.realtimeSinceStartup - t0):0} s reales a ×4)");
         Debug.Log("[Submarino] Registro de la misión (persona): " + string.Join(" | ", sub.log));
         Destroy(body);

@@ -68,7 +68,7 @@ Las marcadas con * son obligatorias cada día.
   - Riego y deshierbe* (2 h)
   - Cosecha (1 h)
   - Alimentar a los visitantes (1 h)
-  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md). Desde el 2026-11-03 también los **bancales de tierra de la cima** de cada edificio-árbol: van primero en la ronda de su edificio (se llega al techo en alfombra)
+  - **Ronda de frutales de los techos*** (`jar_frutales_N`, 3 h cada una; recorre varias torres): con riego por goteo, unas 3 al día para revisar y abonar las ~204 macetas y, con lo que sobra, polinizar y podar (docs/jardines-frutales.md). Desde el 2026-11-03 también los **bancales de tierra de la cima** de cada edificio-árbol: van primero en la ronda de su edificio (se llega al techo en alfombra). Desde el 2026-11-04 cada ronda reserva el tiempo de polinizar y podar, y las tareas de un árbol (máscaras, fitoplancton) van en tramos de ≤ 2,9 h: hay tantos jardineros como pida el trabajo del día (docs/jardines-frutales.md §Rondas que caben en 3 h)
 - **Sala de Yoga**:
   - Clase para turistas* (1 h)
   - Preparar la sala (1 h)
