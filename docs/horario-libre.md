@@ -170,3 +170,5 @@ La jornada sigue intacta: se vuelve a correr el grupo 50.
 **A dónde se anda en el microcosmos** (2026-11-04, ronda 3): entre los puestos de los edificios de la actividad se elige uno con **camino completo** por el NavMesh (con sus trepadas) y se anda a su punto del NavMesh. Si no hay ninguno, se va al final del camino parcial si queda junto al edificio (≤ 15 m). Se da por llegado también cuando el agente está al final de su camino a ≤ 4 m del puesto.
 
 **El panel enseña la escena correcta**: la que fija una prueba (`HorarioPanel.FocusScene`), la que se eligió con «otra escena» o, si no, la escena donde está el jugador.
+
+> **2026-11-04 — Hacer la actividad, comer con su orquesta y uniformes:** en su sitio cada uno HACE su tarea o su actividad (postura, herramienta en la mano, gesto y efecto), come con la orquesta de la comida (bandeja, cubiertos, bocados, beber, devolver) y lleva el uniforme de su tarea; también los insectos-humanos. Ver [actividades-y-uniformes.md](actividades-y-uniformes.md).

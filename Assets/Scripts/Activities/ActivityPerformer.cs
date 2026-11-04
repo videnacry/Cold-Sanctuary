@@ -47,6 +47,8 @@ public class ActivityPerformer : MonoBehaviour
         public Step[] steps;
         /// <summary>true = genérica (por la clase de función, sin pasos propios): la lista de pendientes del doc.</summary>
         public bool generic;
+        /// <summary>Sin registro al empezar y acabar (los gestos cortos de la brigada del restaurante, que cambian a cada plato).</summary>
+        public bool quiet;
         public Performance(string id, string title, params Step[] steps) { this.id = id; this.title = title; this.steps = steps; }
         public override string ToString() => $"{title} ({steps.Length} pasos{(generic ? ", genérica" : "")})";
     }
@@ -105,7 +107,7 @@ public class ActivityPerformer : MonoBehaviour
         performance = p; stepIndex = 0; stepsDone = 0; cycles = 0; effects = 0; startedAt = Time.time;
         _a = GetComponent<Anima>(); _ci = GetComponent<CubeInsect>();
         if (!Active.Contains(this)) Active.Add(this);
-        Debug.Log($"[Actividad] «{name}» empieza a hacer «{p.title}» ({p.steps.Length} pasos{(p.generic ? ", genérica" : "")}).");
+        if (!p.quiet) Debug.Log($"[Actividad] «{name}» empieza a hacer «{p.title}» ({p.steps.Length} pasos{(p.generic ? ", genérica" : "")}).");
         StartStep();
     }
 
@@ -141,7 +143,7 @@ public class ActivityPerformer : MonoBehaviour
     void End(bool quiet = false)
     {
         if (performance == null) return;
-        if (!quiet) Debug.Log($"[Actividad] «{name}» deja «{performance.title}» tras {Time.time - startedAt:0} s ({stepsDone} pasos, {effects} efectos).");
+        if (!quiet && !performance.quiet) Debug.Log($"[Actividad] «{name}» deja «{performance.title}» tras {Time.time - startedAt:0} s ({stepsDone} pasos, {effects} efectos).");
         performance = null;
         Active.Remove(this);
         ActivityKit.ClearProps(gameObject);

@@ -217,6 +217,8 @@ public static class Performances
             S("Leerle en voz baja", M.Read, P.Book, P.None, 7f, F.Paper, 3f, Fine),
             S("Asearla con el cepillo", M.Wipe, P.Brush, P.None, 7f, F.Dust, 1.4f));
         Mi("gym_limpieza", "Limpieza del gimnasio", Wiping("Desinfectar las máquinas"), Mopping());
+        Mi("mec_limpieza", "Limpieza e inventario del taller", Wiping("Desengrasar el banco"), Sweeping(), Noting("Contar las herramientas"));
+        Mi("tex_limpieza", "Limpieza e inventario del estudio textil", Sweeping(), S("Doblar las telas", M.Lift, P.None, P.None, 6f, F.Thread, 2f), Noting("Contar los hilos y las telas"));
         Mi("gym_mantener", "Mantenimiento del gimnasio",
             Checking("Revisar los cables y las poleas", P.Flashlight, F.None, 6f),
             S("Ajustar las máquinas", M.Reach, P.Wrench, P.None, 8f, F.Sparks, 1.5f, Strike, atFace: true),
@@ -374,4 +376,28 @@ public static class Performances
 
     /// <summary>Las misiones con pasos propios (el doc y la prueba).</summary>
     public static IEnumerable<string> OwnMissions => _missions.Keys;
+
+    // ── La brigada del restaurante (RestaurantService): un gesto con su utensilio por papel y paso ──
+    static readonly Dictionary<string, ActivityPerformer.Performance> _service = new Dictionary<string, ActivityPerformer.Performance>();
+    static ActivityPerformer.Performance One(string id, ActivityPerformer.Step s)
+    {
+        if (!_service.TryGetValue(id, out ActivityPerformer.Performance p)) _service[id] = p = new ActivityPerformer.Performance(id, s.label, s) { quiet = true };
+        return p;
+    }
+
+    /// <summary>Lo que hace con las manos un miembro de la brigada del restaurante en el paso <paramref name="step"/> de su papel.</summary>
+    public static ActivityPerformer.Performance ForService(RestaurantService.Role role, int step)
+    {
+        switch (role)
+        {
+            case RestaurantService.Role.Cocinero:
+                return step == 0 ? One("srv_coc_0", S("Sacar el género de la nevera", M.Reach, P.None, P.None, 30f, F.Steam, 2.5f, atFace: true))
+                     : step == 1 ? One("srv_coc_1", S("Cocinar en el equipo del plato", M.Stir, P.Ladle, P.None, 30f, F.Steam, 0.9f, atFace: true))
+                     : One("srv_coc_2", S("Emplatar", M.Reach, P.Spoon, P.None, 30f, F.None));
+            case RestaurantService.Role.Obrador: return One("srv_obr", S("Amasar y elaborar", M.Reach, P.None, P.None, 30f, F.Dust, 1.2f, atFace: true));
+            case RestaurantService.Role.LimpiezaCocina: return One("srv_lim_coc", S("Fregar el puesto", M.Wipe, P.Sponge, P.None, 30f, F.Bubbles, 0.9f, atFace: true));
+            case RestaurantService.Role.LimpiezaSala: return One("srv_lim_sala", S("Limpiar la mesa", M.Wipe, P.Cloth, P.Spray, 30f, F.Bubbles, 1f, atFace: true));
+            default: return One("srv_sala", S("Atender", M.Write, P.Pen, P.Clipboard, 30f, F.None));
+        }
+    }
 }
