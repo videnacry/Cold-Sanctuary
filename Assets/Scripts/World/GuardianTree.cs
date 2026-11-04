@@ -41,6 +41,20 @@ public static class GuardianTree
         return Mathf.Lerp(ColumnBottom, ColumnTop, (y - BaseHeight) / Mathf.Max(1f, height - BaseHeight));
     }
 
+    /// <summary>¿La duela (caja de <paramref name="tw"/> × <paramref name="thick"/> girada <paramref name="yaw"/>° con centro en
+    /// <paramref name="c"/>) pisa alguno de los dos pasillos (|x| &lt; <paramref name="w"/> o |z| &lt; <paramref name="w"/>)?</summary>
+    static bool InCorridor(Vector3 c, float yaw, float tw, float thick, float w)
+    {
+        Quaternion q = Quaternion.Euler(0f, yaw, 0f);
+        float x0 = float.MaxValue, x1 = float.MinValue, z0 = float.MaxValue, z1 = float.MinValue;
+        for (int i = 0; i < 4; i++)
+        {
+            Vector3 p = c + q * new Vector3((i & 1) == 0 ? -tw * 0.5f : tw * 0.5f, 0f, (i & 2) == 0 ? -thick * 0.5f : thick * 0.5f);
+            x0 = Mathf.Min(x0, p.x); x1 = Mathf.Max(x1, p.x); z0 = Mathf.Min(z0, p.z); z1 = Mathf.Max(z1, p.z);
+        }
+        return (x0 < w && x1 > -w) || (z0 < w && z1 > -w);
+    }
+
     public static GameObject Build(Transform parent, string name, Vector3 groundPos, float height, System.Func<Vector3, bool> blocked = null)
     {
         var rnd = new System.Random(4242);
@@ -71,8 +85,10 @@ public static class GuardianTree
                 float a = (s + (Mathf.RoundToInt(y / layer) % 2) * 0.5f) * 360f / staves;
                 float rr = Rr * (s % 2 == 0 ? 1f : 0.9f) - thick * 0.5f;   // acanaladura
                 Vector3 c = Quaternion.Euler(0f, a, 0f) * Vector3.forward * rr;
-                if (y < TunnelHeight && (Mathf.Abs(c.x) < hw + thick * 0.4f || Mathf.Abs(c.z) < hw + thick * 0.4f)) continue;   // los pasillos
                 float tw = 2f * Mathf.PI * Rr / staves * 1.15f;
+                // (2026-11-04) Los PASILLOS: fuera toda duela que pise el pasillo con cualquiera de sus esquinas (antes se miraba su centro, y las
+                // duelas anchas de los lados tapaban el túnel: «Tronco en −6 m», prueba 91).
+                if (y < TunnelHeight + 1f && InCorridor(c, a, tw, thick, hw + 0.3f)) continue;
                 CubeTree.Block(tr, "Tronco", c + Vector3.up * (y + layer * 0.5f), new Vector3(tw, layer * 1.02f, thick), Quaternion.Euler(0f, a, 0f), bark, true);
             }
             float core = Mathf.Max(0f, Rr - thick * 0.9f);
@@ -117,6 +133,7 @@ public static class GuardianTree
         // ── LA COPA: estrecha y cónica en el tercio de arriba (la de la secuoya), ramas cortas que bajan un poco y se levantan en la punta,
         // posaderos con escarcha, y panales en las ramas bajas de la copa ──
         int nests = 0;
+        var lowPerches = new System.Collections.Generic.List<Vector3>();
         float crownBottom = height * 0.62f;
         for (float y = crownBottom; y < height - 2f; y += 4f)
         {
@@ -144,9 +161,11 @@ public static class GuardianTree
                 }
                 GameObject plat = CubeTree.Block(tr, "Rama_Plataforma", p + Vector3.up * 0.1f, new Vector3(1.8f, 0.2f, 1.8f), Quaternion.Euler(0f, yaw, 0f), perch, true);
                 CubeTree.Block(tr, "Escarcha", p + Vector3.up * 0.8f, Vector3.one * R(1f, 1.6f), Quaternion.Euler(R(0f, 30f), R(0f, 90f), 0f), frost, false);
-                if (t < 0.45f && (b % 2 == 0) && nests < 8) { CubeTree.Honeycomb(tr, p + new Vector3(0.5f, -0.05f, 0.2f), nest, (b * 7 + Mathf.RoundToInt(y)) * 13); nests++; }
+                if (t < 0.45f) lowPerches.Add(p);
             }
         }
+        // PANALES (2026-11-04: «0 panales», prueba 91): en las puntas de las ramas bajas de la copa, repartidos (uno de cada dos), hasta 8.
+        for (int i = 0; i < lowPerches.Count && nests < 8; i += 2) { CubeTree.Honeycomb(tr, lowPerches[i] + new Vector3(0.5f, -0.05f, 0.2f), nest, 977 + i * 13); nests++; }
         // Escarcha también en los hombros de la base (donde el ancho se recoge), como la nieve en los contrafuertes.
         for (int k = 0; k < 8; k++)
         {

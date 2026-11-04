@@ -89,6 +89,9 @@ public static partial class SampleSceneBuilder
     static void FurnishMissionControl(Transform f, float S)
     {
         Color desk = new Color(0.32f, 0.34f, 0.38f), screen = new Color(0.12f, 0.35f, 0.45f), chair = new Color(0.18f, 0.18f, 0.2f);
+        // (2026-11-04) Su «Mat» (el suelo del área, del tamaño del piso): con él, el tanque de virtualización del área busca su sitio con 2 m
+        // libres en todo el piso de 32 m; sin él lo buscaba en 10 × 10 m, entre los puestos (prueba 28: 0,00–0,91 m).
+        KitchenProps.C(f, new Vector3(0f, 0.01f, 0f), new Vector3(S - 1f, 0.02f, S - 1f), new Color(0.3f, 0.32f, 0.35f), 0f, "Mat");
         for (int row = 0; row < 3; row++)
             for (int i = 0; i < 4; i++)
             {
