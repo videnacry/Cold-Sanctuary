@@ -5,8 +5,21 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
 > **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 110 reglas,
-> dónde se comprueba cada una, las 14 pendientes de implementar del 2026-11-04 y la tabla piso → microcosmos para revisarlos
+> dónde se comprueba cada una, las pendientes del 2026-11-04 (quedan 5: el resto se hizo en claude/edif-micro3) y la tabla piso → microcosmos para revisarlos
 > cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
+
+## Suelo, flora encima, elementos del piso, alfombras, escala cívica y estatuas (2026-11-04, rama claude/edif-micro3)
+
+Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); manual F2, F3, C7, H8, M9, M13, M30, M32, M33, M34, §11.
+- [x] **Flora encima, nunca debajo** (`MicroGround.Settle`/`ValidateFlora`, regla 7 de `MicroFloors.Validate`); causa de Ambrosio: la flora iba al suelo bajado del área, bajo las losas del hospital.
+- [x] **Capa de tierra de 10 cm** con ruido, cúmulos y piedras, en mosaicos combinados y con collider (`MicroSoilBuilder`, regla 8); la historia y el pueblo encima (`RaiseTown`).
+- [x] **Tercera forma «Forma_microcosmos»** (`FloorForms.MicroName`, `MicroFloorForm`) y **catálogo de elementos** (`MicroFloorElements`) con versión meso y micro; vestida en su sitio (`MicroFloorDress`); cambios de historia (`Overrides`).
+- [x] **Hospital propio y sincronía para todos los pisos**: la forma de microcosmos se hace desde el inventario del meso; `Missing`, firma, registro `UserSettings/MicroFloorDeps.txt`, aviso «REVISAR MICROCOSMOS» y menú «Pisos: microcosmos por revisar».
+- [x] **Alfombras de 7 cm** con núcleo de circuitos y costura de LED (`FlyingCarpet.Thickness`).
+- [x] **Escala cívica por pieza** (no ×2): asientos utilizables (`MicroSeat`, `PublicSeatSpell`), bancos en la plaza, plato y olla por raciones, fuente y estatua monumentales (`MicroCivicScale`, reglas 13–15).
+- [x] **Estatuas de insecto-humano** (`MicroStatue`) en la plaza y colosos en la forma de microcosmos.
+- [ ] **Verificar en vivo** (probador): reconstruir SampleScene y luego, UNO A UNO, Bolívar, Ambrosio, Hospital, Sakshi y Cocina (y el resto cuando se pueda); grupos 64 y 67, y 43, 60, 62, 63, 66 (las reglas nuevas 7–9 y 13–15 harán fallar los microcosmos aún sin reconstruir); fotos con `Tools/TmpCheck/Microcosmos suelo fotos` y `Alfombra canto foto`.
+- [ ] Pendiente: un microcosmos hecho de cero para una historia (M9); el gancho de Claude Code para los demás pisos (el aviso al reconstruir ya los cubre).
 
 > **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
 >

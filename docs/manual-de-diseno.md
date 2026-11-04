@@ -56,8 +56,8 @@ en el doc de su tema; aquí no se repite.
 | # | Regla | Por qué | Se comprueba en | Fuente |
 |---|---|---|---|---|
 | F1 | **Todo piso tiene forma finalizada y forma en construcción** (`FloorForms`): una obra tiene su «Acabado» oculto; un piso terminado tiene su «Forma_en_obra» oculta (andamio, palés, conos, muretes). | El juego enseña obras y reformas; el microcosmos se monta sobre lo terminado. | `SampleSceneBuilder.EnsureFloorForms` (registro `[Pisos] Formas de N pisos`); `MicroFloors.Validate`; `BruceLeeStoryTest` (grupo 60) | [construcciones-elevadas.md](construcciones-elevadas.md) §Las dos formas |
-| F2 | **Tercera versión: el microcosmos.** Todo piso tiene tres versiones: terminada, en construcción y microcosmos. Cada elemento del piso se lista y se construye en versión **meso** (más plana) y versión **micro** (detallada). **PENDIENTE DE IMPLEMENTAR.** | El microcosmos debe ser el mismo piso visto por un insecto, con todo su detalle. | **solo en docs** | memoria 2026-11-04 (Berón) |
-| F3 | **En la versión micro, los muebles son terreno o edificios**: fregadero = lago (o fuente o río si está abierto); cajones y armarios = edificios; caja = cueva o fábrica; zapato = cueva o mercado; fogones = volcanes; bombilla = sol; lámparas = farolas; mesas y sillas = montañas o picos nevados; las alfombras se quitan, se apilan o hacen desniveles. **PENDIENTE DE IMPLEMENTAR.** | Que el mundo gigante se lea como paisaje y no como muebles sueltos. | **solo en docs** | memoria 2026-11-04 |
+| F2 | **Tercera versión: el microcosmos.** Todo piso tiene tres versiones: terminada, en construcción y microcosmos (`FloorForms.MicroName` = «Forma_microcosmos»: en el santuario, oculta, con su inventario `MicroFloorForm`; en el microcosmos, la versión detallada de cada pieza). Cada elemento del piso está en el catálogo `MicroFloorElements` con su versión **meso** (más plana) y su versión **micro** (detallada, `MicroFloorDress`). La versión micro **conserva el sitio de cada pieza** (meso ↔ micro uno a uno; un cambio del piso se rastrea). | El microcosmos debe ser el mismo piso visto por un insecto, con todo su detalle. | `MicroFloors.Validate` regla 9; `MicroSueloTest` (grupo 64), `MicroSueloEscenasTest` (67) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Elementos |
+| F3 | **En la versión micro, los muebles son terreno o edificios** (tabla de `MicroFloorElements.Catalog`): fregadero = lago (cascada y río si el grifo está abierto); cajones y armarios = edificios de la era; caja = cueva (antes de 1750) o fábrica; zapato = cueva (antes de las ciudades) o mercado; fogones = volcanes; bombilla = sol; lámparas = postes de luz con faroles; mesa = montaña; silla = nevado; cama = colinas; bañera = mar; olla = lago de cráter; botella = torre; máquina = fábrica; gotero = antena; carro = estación; perrera = fortaleza; maceta = bosque; espejo = glaciar; libros = estratos; pared = acantilado; columna = aguja de roca; escalera = terrazas; alfombra = desnivel con rampas (o se quita, o se apila en un cúmulo); estatua = coloso de insecto-humano; lo que no tiene fila, peñascos (y se apunta). El estilo de un edificio sigue la era. | Que el mundo gigante se lea como paisaje y no como muebles sueltos. | 64 (el catálogo), 67 (cada pieza con su versión) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Tabla |
 | F4 | **Todos los pisos de un edificio miden lo mismo**: el cuadrado del lado mayor de su área más grande (`SetBack` = 0). Cada área va centrada en su piso, con su lado −Z contra el tronco. | Columnas continuas; ningún piso tapa ni recorta a otro. | `TreeBuildingsTest` (57: áreas en sus pisos) | [alfombras-plan.md](alfombras-plan.md), [edificio-arbol.md](edificio-arbol.md) §Migración |
 | F5 | **Las puertas de los pisos van donde su umbral queda libre de muebles.** | Se entra y se sale sin chocar. | `TreeBuildingsTest` (57: umbrales libres) | [edificio-arbol.md](edificio-arbol.md) |
 | F6 | **Al cambiar un piso**: comprobar los 2 m, la zona de alfombras, las plazas reservadas, los pisos de la torre y **los microcosmos que dependen de él** (§11). | Un cambio en el meso se nota luego en el micro. | `SanctuaryLifeTest` (28) y las pruebas de §11 | [reglas-plataformas.md](reglas-plataformas.md) §Al cambiar una plataforma |
@@ -91,7 +91,7 @@ en el doc de su tema; aquí no se repite.
 | C4 | **El selector del jugador va por áreas** (`CarpetPad.PlayerMenu`): una opción por área, sin «Volar a:», y la alfombra va a la entrada del área. | Menos lista, menos confusión. | **solo en docs** (sin prueba propia) | [alfombras-plan.md](alfombras-plan.md) |
 | C5 | **Todo el que anda usa la red**: `CarpetPad.Route` (y `ArbolCampos.Route` en los árboles) decide andar, volar o nadar; lo usan la jornada, los hechizos y las iniciaciones. | Ningún personaje se queda sin camino. | `JornadaTest` (grupo 50), 57 | [alfombras-plan.md](alfombras-plan.md), [edificio-arbol.md](edificio-arbol.md) |
 | C6 | **La alfombra de cada casa es también su esterilla de yoga.** | Se puede hacer yoga en casa. | 28 (cada casa con su alfombra) | [alfombras-plan.md](alfombras-plan.md) |
-| C7 | **Alfombras más gruesas**: son alfombras tecnológicas con circuitos dentro. **PENDIENTE DE IMPLEMENTAR.** | Que se lea que son máquinas. | **solo en docs** | memoria 2026-11-04 |
+| C7 | **Alfombras más gruesas** (`FlyingCarpet.Thickness` = 7 cm): tejido abajo y arriba, NÚCLEO de circuitos con pistas doradas que asoman por el canto y una COSTURA DE LED alrededor; quien va sentado o se baja, encima de su grosor. | Que se lea que son máquinas. | `MicroSueloTest` (64), `MicroSueloEscenasTest` (67, las del santuario) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Alfombras |
 
 ## 5. Jardines y frutales
 
@@ -117,7 +117,7 @@ en el doc de su tema; aquí no se repite.
 | H5 | **Paredes de cristal solo en salas que deben aislarse** (quirófanos, UCI, aislamientos, sala fría) y solo en épocas en que existían. | Aislar sin tapar la vista. | `GlassWallTest` (84), `MicroBuildRules` | [hospital.md](hospital.md) §6 |
 | H6 | **Un anillo de camas por planta**: cada paciente se recupera en el piso de su servicio. | Ganar suelo sin mezclar servicios. | **solo en docs** | [hospital.md](hospital.md) §2 |
 | H7 | **Submarino-ambulancia** para personas y animales grandes, y el **Leviatán** para ballenas y orcas. | Llegar a todo el santuario y al mar. | `HospitalSubmarineTest` (81), `WhaleHospitalTest` (82) | [submarinos-medicos.md](submarinos-medicos.md) |
-| H8 | **El hospital del microcosmos es una construcción propia** que incluye TODOS los instrumentos, muebles y decoraciones del hospital meso, en su versión micro. **PENDIENTE DE IMPLEMENTAR.** | Hoy el microcosmos es solo la copia gigante del piso. | **solo en docs** | memoria 2026-11-04; ver §11 |
+| H8 | **El hospital del microcosmos es una construcción propia** que incluye TODOS los instrumentos, muebles y decoraciones del hospital meso, en su versión micro: es la «Forma_microcosmos» del piso del hospital, que se hace **desde el inventario del meso** (cada pieza, su versión micro: así no puede quedarse atrás). Igual para todos los pisos. | Hoy el microcosmos era solo la copia gigante del piso. | Aviso al construir (`[Forma microcosmos] … sin su versión de microcosmos`); 64 (la sincronía), 67 (`Missing` = 0 frente al piso del santuario cargado) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Hospital; §11 |
 
 ## 7. Microcosmos
 
@@ -133,7 +133,7 @@ en el doc de su tema; aquí no se repite.
 | M6 | **El piso no se rompe**: ninguna pieza se quita ni se mueve; el pueblo y la historia se adaptan, rodeando los muebles o subiéndose a ellos. | En Bruce Lee el dojo parecía romperse para dejar sitio a la ciudad. | `MicroFloors.Validate` (piezas al montar = piezas ahora), 60 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 13 |
 | M7 | **Todas las estructuras del piso son superficie utilizable**: flora y fauna encima de los muebles gigantes; barrio alto y miradores en sus mesetas. | Aprovechar todo el mundo gigante. | `MicroFloors.Validate`, 43 | [microcosmos-areas.md](microcosmos-areas.md) regla 4 |
 | M8 | **Los insectos-humanos trepan** paredes y patas de muebles (`NavMeshLink` a cada cara de arriba, `Climbable` para el jugador). | Así llegan a lo construido sobre los muebles. | `MicroFloors.Validate` (enlaces para trepar) | [microcosmos-areas.md](microcosmos-areas.md) regla 9 |
-| M9 | **Una historia puede reconstruir su propio microcosmos** a partir de la plantilla del piso. **PENDIENTE DE IMPLEMENTAR.** | Cada historia necesita su versión del lugar. | **solo en docs** | memoria 2026-11-04 |
+| M9 | **Una historia puede reconstruir su propio microcosmos** a partir de la plantilla del piso: quitar, apilar o mover piezas o darles otro elemento (`MicroFloorElements.Overrides`: Angostura apila las alfombras en el cerro, la Tregua quita las alfombras, Sils Maria hace nevado la mesa, Chernóbil hace mar el lavabo). Cuenta como su versión de microcosmos, **no** como romper el piso (la pieza quitada se apaga y sigue contada). Hecho para quitar/apilar/mover/otro elemento; una historia que necesite un microcosmos de cero sigue **PENDIENTE**. | Cada historia necesita su versión del lugar. | `MicroElement.storyOverride` (se ve en 67 y en las fotos) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Cambios de historia |
 | M10 | **La luz sale de la fecha, la hora y el lugar** (`SunFor`: elevación, azimut y color reales). | La plantilla pide fecha y hora para eso. | **solo en docs** (sin prueba propia) | [luz-microcosmos.md](luz-microcosmos.md) |
 
 ### 7.2 Escala
@@ -142,7 +142,7 @@ en el doc de su tema; aquí no se repite.
 |---|---|---|---|---|
 | M11 | **Escala ×100** (`AreaMicrocosmos.AreaScale`): un insecto-humano mide como una persona y una cama de 2 m mide 200 m. El barrio de la historia es el piso ×10; el de un pueblo, ×60, con el plano real a 1:1. | A ×10 la escala era irreal (una hormiga de 18 cm junto a una cama). | `MicroFloors.Validate` (barrio ≥ 40 % del piso) | [microcosmos-areas.md](microcosmos-areas.md) §Escala, [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) |
 | M12 | **La flora del pueblo es de pueblo humano**: a escala real, escasa, fuera de calles y solares, ninguna planta > 25 m ni flotando. | En Bruce Lee las flores gigantes tapaban el pueblo. | `MicrocosmosFloorTest` (43) | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 5 |
-| M13 | **Revisar la escala de estatuas, fuentes, platos y ollas** (quizá ×2 todo): el jugador no puede ser más grande que el comedor. **PENDIENTE DE IMPLEMENTAR.** | Visto en la plaza de Bolívar. | **solo en docs** | memoria 2026-11-04 |
+| M13 | **Escala por pieza, no ×2 global** (`MicroCivicScale`): lo que el cuerpo USA, a la medida del cuerpo (asiento al vientre, mesa a las manos: un ×2 los haría inservibles); lo que ALIMENTA, por raciones (plato ≥ 0,26 m, olla de 2 L por comensal: 8 → 16 L); lo que se MIRA, monumental (estatua ≥ 2,1 × el ciudadano ≈ 3,7 m; fuente ≥ 2,4 × ≈ 4,2 m de lado, con su pretil de asiento). | Visto en la plaza de Bolívar. | `MicroBuildRules.ValidateCivicScale` (reglas 13–15), 64, 67 (y la medida frente al ciudadano) | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Escala |
 
 ### 7.3 Pueblos
 
@@ -169,21 +169,21 @@ en el doc de su tema; aquí no se repite.
 | M27 | **Muebles a la medida de quien los usa** (`MicroBody`: centauro, cúpula, alado, mantis, araña, ciempiés, humano). | Un insecto-humano no cabe en una cama humana. | `ValidateSites` (regla 9), 63 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 7 |
 | M28 | **Adaptado a personas y a insectos-humanos**: cada edificio tiene al menos un mueble para cada uno. | Los dos lo usan. | `ValidateSites` (regla 9), 63 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 9 |
 | M29 | **Estilo de época y lugar desde el catálogo** (`MicroStyles`: año + región → cada mueble); épocas y lugares parecidos reutilizan la entrada y la plantilla la elige sola. | Coherencia histórica sin rehacer cada pueblo. | `ValidateSites` (regla 10), 63 | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 7 y catálogo |
-| M30 | **Sillas y bancos se pueden usar** (sentarse de verdad); platos y ollas a su tamaño. **PENDIENTE DE IMPLEMENTAR** (visto en la plaza de Bolívar). | Los muebles son para usarse. | **solo en docs** | memoria 2026-11-04 |
+| M30 | **Sillas y bancos se pueden usar**: cada asiento lleva su `MicroSeat` (una silla, un sitio; un banco de plaza, tres asientos de abdomen; el pretil de la fuente, ocho) y los ciudadanos se sientan de verdad en su tiempo libre (`PublicSeatSpell`, con `HomeMove.Sit`); la plaza tiene bancos; platos y ollas a su tamaño (M13). | Los muebles son para usarse. | `ValidateCivicScale` regla 13, 64, 67 | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Escala |
 
 ### 7.5 Terreno y vegetación
 
 | # | Regla | Por qué | Se comprueba en | Fuente |
 |---|---|---|---|---|
 | M31 | **Relieve con aspecto real**: montes y colinas facetados con roca, canchal y nieve; lagos de orilla irregular; ríos con riberas; acantilados. Nada de conos grises. | «¿Un cono gris? ¿Es una montaña?» | **solo en docs** (`CivicBuilder.Terrain`; se mira en fotos) | [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) regla 14 |
-| M32 | **La vegetación crece siempre ENCIMA de las superficies, nunca debajo.** **PENDIENTE DE IMPLEMENTAR** como regla general (pasó en Ambrosio y se repite). Hoy solo se comprueba en los pueblos. | Una planta bajo el suelo no se ve y rompe la escena. | Parcial: 43 («ninguna planta flota» en los pueblos), `ExperienciaJugadorTest` (40: la flora sobre el suelo del área gigante) | memoria 2026-11-04 |
-| M33 | **Capa de tierra de ~10 cm** sobre los pisos que usan los microcosmos: irregular, con montículos y piedras. **PENDIENTE DE IMPLEMENTAR.** | Que el suelo parezca tierra y no una losa. | **solo en docs** | memoria 2026-11-04 |
+| M32 | **La vegetación crece siempre ENCIMA de las superficies, nunca debajo**, y nunca dentro de un collider: cada planta (y cada bicho) se apoya en la superficie más alta de encima de su pie (`MicroGround.Settle`: un rayo desde arriba, acotado a 6 m, contra los colliders del microcosmos y las caras de sus suelos); la que queda dentro de un mueble se quita. Causa de Ambrosio: la flora iba al suelo «más cercano» al suelo bajado del área, bajo las losas del hospital. | Una planta bajo el suelo no se ve y rompe la escena. | `MicroFloors.Validate` regla 7 (`MicroGround.ValidateFlora`); 43, 64, 67 | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Flora |
+| M33 | **Capa de tierra de 10 cm** (`MicroGround.SoilThickness`, metros del microcosmos) sobre cada suelo que usa el microcosmos, siguiendo la cara MÁS ALTA (cubre alfombras y losas), con ruido, cúmulos y piedras, su collider, y placas sobre los muebles poblados; lisa bajo la historia y el pueblo, sin tierra sobre su agua. La historia y su pueblo van ENCIMA (se suben a ella). En mosaicos combinados (pocos renderers). | Que el suelo parezca tierra y no una losa, y el pueblo siempre se vea. | `MicroFloors.Validate` regla 8; 67 | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Capa de tierra |
 
 ### 7.6 Estatuas
 
 | # | Regla | Por qué | Se comprueba en | Fuente |
 |---|---|---|---|---|
-| M34 | **Toda estatua humana tiene su versión insecto-humano** en los microcosmos. **PENDIENTE DE IMPLEMENTAR.** | Los habitantes del microcosmos son insectos-humanos. | **solo en docs** | memoria 2026-11-04 |
+| M34 | **Toda estatua humana tiene su versión insecto-humano** en los microcosmos (`MicroStatue`): el cuerpo de un insecto-humano de verdad (su especie por el papel que representa), de pie, de piedra o bronce, en la misma pose y con el mismo nombre; la estatua de la plaza (monumental, M13) y las del piso (Patanjali, Buda, Shiva: colosos en la forma de microcosmos; la humana se apaga, sigue contada). La estela maya y el león chino no son figuras humanas. | Los habitantes del microcosmos son insectos-humanos. | `ValidateCivicScale` regla 15; 64, 67 | [microcosmos-suelo-y-elementos.md](microcosmos-suelo-y-elementos.md) §Estatuas |
 
 ## 8. Animales en grupo
 
@@ -268,18 +268,28 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 3. Pasar `MicrocosmosFloorTest` (43) y, si los hay, la prueba de su historia (`BruceLeeStoryTest` 60, `PakalStoryTest` 66,
    `KitchenOriginStoryTest` 44) y las de los pueblos (`CivilizedErasTest` 62, `MicroBuildRulesTest` 63).
 4. Mirar que las plazas reservadas (S10) siguen cabiendo y que la historia cabe dentro de los muros (M5).
-5. Si el piso tiene versión micro dedicada (el hospital, H8, cuando exista), añadirle lo que cambió en el meso.
-6. Apuntarlo en [checklist.md](checklist.md).
+5. La versión micro de cada piso (también la del hospital, H8) se hace desde el inventario del meso al reconstruir: lo que se
+   añadió al piso aparece solo (con su fila del catálogo o como peñasco, que se apunta en `[Pisos] … sin fila` para darle la suya).
+6. Pasar `MicroSueloEscenasTest` (67): sincronía y firma frente al piso del santuario.
+7. Apuntarlo en [checklist.md](checklist.md).
 
-**El gancho:** hoy cubre el hospital (un gancho de Claude Code al editar sus `.cs`). Pendiente: ampliarlo a los demás constructores de piso de la tabla.
+**El registro de dependencias (2026-11-04, `MicroFloorElements`):** al montar un microcosmos se apunta en `MicroFloor.mesoInventory`
+/ `mesoSignature` y en `UserSettings/MicroFloorDeps.txt` (fichero local del proyecto Unity) el inventario del piso con el que se montó.
+Al reconstruir la escena principal (`EnsureFloorForms`) o con «Tools/Cold Sanctuary/Pisos: microcosmos por revisar», cada piso cuyo
+inventario ya no coincide **avisa** (`[Pisos] REVISAR MICROCOSMOS: …`) con lo que cambió (+pieza / −pieza) y los microcosmos a
+reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santuario lleva además su «Forma_microcosmos» oculta
+(`MicroFloorForm`) con la lista de sus elementos (versión meso → versión micro) y sus dependientes.
+
+**El gancho:** hoy cubre el hospital (un gancho de Claude Code al editar sus `.cs`). Pendiente: ampliarlo a los demás constructores de piso de la tabla (el aviso de arriba ya los cubre al reconstruir la escena principal).
 
 ## 12. Recuento y reglas sin comprobación automática
 
 **Total: 110 reglas** (S 12 · F 8 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 7 · W 8 = 109, más la regla de sincronización
 de §11).
 
-**Pendientes de implementar (pedidos del 2026-11-04), 14:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
-M33, M34, J7 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual).
+**Pendientes de implementar (pedidos del 2026-11-04), 5:** F7, F8, M9 (solo el microcosmos de cero para una historia), J7 y el
+gancho de §11 para los demás pisos. (Hechos el 2026-11-04, a falta de la prueba en vivo del probador: F2, F3, C7, H8, M13, M30, M32,
+M33, M34 y el aviso de microcosmos por revisar de §11.)
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
 áreas), A5 (abejas mates), H1 (un solo hospital, mismas plazas), H2 (8 puestos; está en el código pero sin prueba), H6 (anillo de camas por

@@ -152,8 +152,8 @@ public class MicroSueloTest : MonoBehaviour, ITestUnit
 
 /// <summary>
 /// PRUEBA 67 · EL SUELO Y LOS ELEMENTOS EN LOS MICROCOSMOS CONSTRUIDOS (docs/microcosmos-suelo-y-elementos.md). Carga en aditivo, UNO A
-/// UNO y con espera acotada, los microcosmos de <see cref="scenes"/> (por defecto: Bolívar, el Hospital de Ambrosio, el río de Sakshi
-/// sobre la Sala de Yoga y la Cocina) y en cada uno mira:
+/// UNO y con espera acotada, los microcosmos de <see cref="scenes"/> (por defecto: Bolívar, Ambrosio, el Hospital, el río de Sakshi
+/// sobre la Sala de Yoga y la Cocina; los que no estén en Build Settings fallan y se siguen) y en cada uno mira:
 /// (1) ninguna planta enterrada ni dentro de un collider (MicroGround.ValidateFlora);
 /// (2) la capa de tierra (MicroSoil) con sus mosaicos combinados (pocos renderers) y la historia encima de ella;
 /// (3) la «Forma_microcosmos» con un MicroElement por pieza del inventario con que se montó, y en sincronía con el piso del santuario
@@ -167,7 +167,7 @@ public class MicroSueloEscenasTest : MonoBehaviour, ITestUnit
     public int Group => 67;
     public bool ParallelSafe => false;
     [Tooltip("Las escenas de microcosmos que se cargan (una a una; el PC de 16 GB no aguanta todas a la vez).")]
-    public string[] scenes = { "Microcosmos_Bolivar", "Microcosmos_Hospital", "Microcosmos_Scene0_SakshiRio", "Microcosmos_Cocina" };
+    public string[] scenes = { "Microcosmos_Bolivar", "Microcosmos_Scene1_Ambrosio", "Microcosmos_Hospital", "Microcosmos_Scene0_SakshiRio", "Microcosmos_Cocina" };
     public float loadTimeout = 120f;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
