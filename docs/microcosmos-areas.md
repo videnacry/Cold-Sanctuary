@@ -87,6 +87,13 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 | Sils Maria | Sala de Yoga | **pendiente** | Sendero de montaña y biblioteca de filosofía |
 | Colorado Springs | Construcción | **pendiente** | Taller de electricidad (alta tensión) |
 | Palenque (Pakal) | Huerto | **pendiente** | Templo de los antepasados (memoria, rito y duelo) |
+| Velliangiri (Sadhguru) | Sala de Yoga | sí | meditar en silencio: el Dhyanalinga ([microcosmos-famosos.md](microcosmos-famosos.md)) |
+| Aldea de la montaña (Goku, homenaje) | Dojo | sí | entrenar sirviendo a la aldea |
+| Uagadugú (Ibrahim Traoré) | Huerto | sí | los productores: labrar y sembrar |
+| Hawthorne (Elon Musk) | Mecánica | **pendiente** | Fábrica de cohetes y control de misión |
+| Albuquerque (Bill Gates) | Mecánica | **pendiente** | Sala de informática (ordenadores y programación) |
+| Omaha (Warren Buffett) | Estudio Textil | **pendiente** | Mercado y oficina de comercio (economía) |
+| Prairie View (MacKenzie Scott) | Química | **pendiente** | Aula y biblioteca universitaria |
 
 ### Los pisos que faltan por crear (`MicroFloors.Pending`)
 
@@ -99,8 +106,12 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche).
 8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
 9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
+10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk).
+11. **Sala de informática (ordenadores y programación)** — Albuquerque (Bill Gates).
+12. **Mercado y oficina de comercio (economía)** — Omaha (Warren Buffett).
+13. **Aula y biblioteca universitaria** — Prairie View (MacKenzie Scott).
 
-(Una biblioteca común cubriría 2, 4, 5 y en parte 7.) Menú: «Tools/Cold Sanctuary/Pisos que faltan (microcosmos pendientes de
+(Una biblioteca común cubriría 2, 4, 5, 13 y en parte 7.) Menú: «Tools/Cold Sanctuary/Pisos que faltan (microcosmos pendientes de
 piso representativo)» los escribe en la consola.
 
 ## Historias por área

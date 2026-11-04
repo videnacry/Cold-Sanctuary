@@ -20,6 +20,9 @@ public static partial class MicroStyles
         Prehistoria, Mesopotamia, Egipto, Egeo, Roma, SurAsia, China, HongKong, Japon, Islam, Otomano,
         EuropaMedieval, EuropaNorte, Alpes, EuropaUrbana, FranciaRural, Norteamerica, Hispanoamerica, Sovietico, Frente,
         Maya,   // (2026-11-03) Mesoamérica maya clásica (Palenque)
+        // (2026-11-04) Los famosos (docs/microcosmos-famosos.md): el Sahel (Uagadugú) y el interior de Norteamérica (Albuquerque,
+        // Omaha, Prairie View: frutales de clima continental, no los naranjos de California).
+        Sahel, NorteamericaInterior,
     }
 
     public enum Bed { Estera, LechoJuncos, Reposacabezas, Kline, Lectus, Charpai, Kang, Futon, Minder, Jergon, Dosel, Madera, Hierro, Litera, Hamaca, Moderna, SofaCama }
@@ -124,6 +127,16 @@ public static partial class MicroStyles
         E("maya_clasico", "Maya clásico (Palenque, 250–900)", 250, 900, R(Region.Maya),
           Bed.Estera, Seat.Banco, Table.Baja, Hearth.Topias, Toilet.Pozo, Basin.Cantaro, Storage.Tinaja, Light.Fuego,
           "8A5A3A", "C8B48A", "6E8A7A", "Banca de mampostería enlucida con petate (estera de palma) para dormir y sentarse; el k'oben (fogón de tres piedras) con su comal; ollas y cántaros de barro; tinajas; tea de ocote. Letrinas y baños de vapor en el Palacio de Palenque (Barnhart 2001; Stuart y Stuart 2008)"),
+        // (2026-11-04) LOS FAMOSOS (docs/microcosmos-famosos.md).
+        E("india_moderna", "India moderna (Tamil Nadu, 1900–)", 1900, 2100, R(Region.SurAsia),
+          Bed.Charpai, Seat.Suelo, Table.Baja, Hearth.Gas, Toilet.Turca, Basin.Cantaro, Storage.Estanteria, Light.Bombilla,
+          "7A5A3A", "F2EEE2", "B0714A", "Ashram: esterilla y cojín para sentarse en el suelo, catre de cuerdas (kattil) o colchón fino; cocina de gas con ollas de acero y de barro; letrina a la turca con su jarra; vasija de agua de barro; estante de acero (Isha Yoga Center, Velliangiri)"),
+        E("sahel_moderno", "Sahel (Burkina Faso, 1960–)", 1960, 2100, R(Region.Sahel),
+          Bed.Moderna, Seat.Taburete, Table.Baja, Hearth.Brasero, Toilet.Turca, Basin.Cantaro, Storage.Tinaja, Light.Bombilla,
+          "7A5232", "D9A441", "8C857A", "La cour familiale: cama de hierro con colchón de espuma, taburetes y mesa baja; foyer amélioré (hornillo de barro) y brasero de carbón con su olla de aluminio; letrina a la turca; el canari (tinaja de barro que enfría el agua); estera de paja (Ouagadougou)"),
+        E("norteamerica_interior", "Norteamérica interior (1920–)", 1920, 2100, R(Region.NorteamericaInterior),
+          Bed.Moderna, Seat.Cromado, Table.Formica, Hearth.Gas, Toilet.CisternaBaja, Basin.Pedestal, Storage.Alacena, Light.Bombilla,
+          "8A6A44", "6E9CC0", "C0C4C8", "Cama con colcha, mesa de cocina de fórmica y sillas de cromo, cocina de gas o eléctrica, inodoro de tanque bajo y lavabo de pie (las casas de posguerra de Albuquerque, Omaha y el este de Texas)"),
         E("norteamerica_victoriana", "Norteamérica (1840–1919)", 1840, 1919, R(Region.Norteamerica),
           Bed.Hierro, Seat.Windsor, Table.Redonda, Hearth.Hierro, Toilet.Caseta, Basin.Aguamanil, Storage.Comoda, Light.Quinque,
           "6E4B2E", "D9D2C2", "2F2F33", "Cama de hierro o de latón, sillas de respaldo prensado, cocina de hierro de leña o carbón; la caseta (outhouse) y el lavamanos de jarra y palangana; lámpara de queroseno (casa de los Wright, Dayton)"),
@@ -160,6 +173,8 @@ public static partial class MicroStyles
         [Region.Japon] = new[] { Region.China },
         [Region.China] = new[] { Region.Japon },
         [Region.SurAsia] = new[] { Region.Islam },
+        [Region.NorteamericaInterior] = new[] { Region.Norteamerica },
+        [Region.Sahel] = new[] { Region.Islam },
     };
 
     /// <summary>
@@ -214,6 +229,12 @@ public static partial class MicroStyles
             case "Bruce Lee": return Region.HongKong;   // (Seattle, Oakland y Los Ángeles: CivicBuilder los pone en Norteamérica)
             case "Chernóbil": return Region.Sovietico;
             case "Palenque": return Region.Maya;
+            // Los famosos (docs/microcosmos-famosos.md)
+            case "Velliangiri": return Region.SurAsia;   // 1999: la entrada india_moderna
+            case "Hawthorne": return Region.Norteamerica;
+            case "Aldea de la montaña": return Region.China;
+            case "Albuquerque": case "Omaha": case "Prairie View": return Region.NorteamericaInterior;
+            case "Uagadugú": return Region.Sahel;
             default: return Region.Prehistoria;   // las áreas del santuario: Sakshi, Ambrosio, Cocina, Huerto, Yoga, Textil, Mecánica
         }
     }

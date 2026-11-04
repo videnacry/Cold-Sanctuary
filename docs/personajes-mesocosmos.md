@@ -29,7 +29,7 @@ Se quitaron de:
 - su aspecto en `CubeHair.For` (por el id);
 - sus datos en `SampleSceneBuilder.MesoCharacters` (id, rótulo, ropa y stats).
 
-Crear sus microcosmos es trabajo de otro hilo.
+Sus microcosmos (rama `claude/edif-famosos`): [microcosmos-famosos.md](microcosmos-famosos.md): Sadhguru en Velliangiri (1999), Elon Musk en Hawthorne (2008), Goku en una aldea de montaña (homenaje), Bill Gates en Albuquerque (1975), Warren Buffett en Omaha (1983), MacKenzie Scott en Prairie View (2020) e Ibrahim Traoré en Uagadugú (2024).
 
 **Otras figuras famosas** buscadas en las listas de personal y en los constructores del santuario: ninguna más.
 - Las estatuas de los pisos de yoga (Buda, Ganesha, Adiyogi, Patanjali) son decoración, no personal.

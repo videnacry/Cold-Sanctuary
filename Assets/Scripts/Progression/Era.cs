@@ -97,6 +97,13 @@ public static class Eras
             case "Pasadena":              return (1953, "Pasadena y Argonne (Clair C. Patterson)");
             case "Chernóbil":             return (1986, "Prípiat y la central de Chernóbil (Alekséi Ananenko y su escuadrón)");
             case "Palenque":              return (683, "Lakamha' (Palenque), Chiapas: la muerte y el renacer de K'inich Janaab Pakal");
+            case "Velliangiri":           return (1999, "Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore): Sadhguru y el Dhyanalinga");
+            case "Hawthorne":             return (2008, "La fábrica de SpaceX en Hawthorne, California (Elon Musk y el cuarto Falcon 1)");
+            case "Aldea de la montaña":   return (1930, "Una aldea de montaña de la China tradicional (homenaje a Goku, ficción)");
+            case "Albuquerque":           return (1975, "Albuquerque, Nuevo México (Bill Gates, Paul Allen y el BASIC del Altair)");
+            case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
+            case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
+            case "Uagadugú":              return (2024, "Uagadugú, Burkina Faso (la entrega de tractores a los productores)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

@@ -123,6 +123,12 @@ public static class SolarPosition
             ("Chambon", 45.06f, 4.30f, 288f), ("Sendler", 52.25f, 21.00f, 288f), ("Atómica", 52.81f, -0.63f, 253f),
             ("Bruce Lee", 22.28f, 114.17f, 258f),   // Hong Kong, mediados de septiembre (empieza en la escuela de Yip Man)
             ("Palenque", 17.48f, -92.05f, 240f),   // Palenque, 28 de agosto de 683 (la muerte de Pakal; temporada de lluvias)
+            ("Velliangiri", 10.97f, 76.74f, 175f),   // Isha Yoga Center, 24 de junio de 1999
+            ("Hawthorne", 33.92f, -118.33f, 272f),   // la sede de SpaceX, 28 de septiembre de 2008
+            ("Albuquerque", 35.08f, -106.6f, 95f),   // primavera de 1975 (Micro-Soft, 4 de abril)
+            ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
+            ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
+            ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }

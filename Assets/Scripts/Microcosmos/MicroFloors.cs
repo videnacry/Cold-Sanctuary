@@ -57,6 +57,14 @@ public static class MicroFloors
         M("Pasadena", "Chemistry_Area", "Patterson y la edad de la Tierra: el laboratorio de química"),
         M("Chernóbil", "NuclearPower_Area", "Ananenko y su escuadrón en el bloque 4: la central nuclear"),
         M("Palenque", "Garden_Area", "Pakal, el rey que renace como el maíz (la milpa)", "Templo de los antepasados (memoria, rito y duelo)"),
+        // Los famosos (docs/microcosmos-famosos.md)
+        M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
+        M("Hawthorne", "VehicleWorkshop_Area", "Musk y el Falcon 1: motores y montaje, el taller de Mecánica", "Fábrica de cohetes y control de misión"),
+        M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
+        M("Albuquerque", "VehicleWorkshop_Area", "Gates y Allen: el Altair y su BASIC (montar y programar), el taller de Mecánica", "Sala de informática (ordenadores y programación)"),
+        M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
+        M("Prairie View", "Chemistry_Area", "Scott y Prairie View A&M: aulas de ciencias de una universidad, el laboratorio de Química", "Aula y biblioteca universitaria"),
+        M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>
