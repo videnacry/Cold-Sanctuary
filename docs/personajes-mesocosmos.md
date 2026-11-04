@@ -39,8 +39,9 @@ Sus microcosmos (rama `claude/edif-famosos`): [microcosmos-famosos.md](microcosm
 
 | Papel | Antes | Ahora | Por qué |
 |---|---|---|---|
-| **Maestro de yoga** (Hatha y Ashtanga; medita junto al linga en su tiempo libre) | Sadhguru | **Andrea** (`WorkdayDirector.YogaTeacher`) | Fue el único que hizo yoga de verdad con Leo, que practicaba unas 20 h por semana (`character-andrea.md`). Sale en la tarima de Hatha tradicional; su área es la Sala de Yoga. |
-| Segunda maestra (para dar las dos clases a la vez) | — | **Irosene** (`WorkdayDirector.SecondYogaTeacher`) | Corre, escala y bucea a sus 70 y tantos: el Ashtanga, dinámico, le va. Sigue en el textil. |
+| **Maestra de yoga** (Hatha y Ashtanga; medita junto al linga en su tiempo libre) | Sadhguru → Andrea (unas horas del 2026-11-04) | **Irosene** (`WorkdayDirector.YogaTeacher`) | Ya era la segunda maestra: corre, escala y bucea a sus 70 y tantos, y el Ashtanga, dinámico, le va. Sale en la tarima de Hatha tradicional; su área es la Sala de Yoga. Sigue destacando en el textil. |
+| Segunda maestra (para dar las dos clases a la vez) | Irosene | **Panterilia** (`WorkdayDirector.SecondYogaTeacher`) | La mayor percepción del personal (1,7): ve la postura de cada alumno para corregirla. Es disciplinada (1,5), delgada y ágil, y no lleva otro papel a las 14 h. |
+| **Entrenador del gimnasio** (misión «gym_planes», clase de calentamiento, correcciones y spotter) | — | **Andrea** (`GymProgramming.Trainer`) | Berón (2026-11-04): «el personaje con más fuerza es Andrea» (`Anima.strength` 1,6, el más alto del personal). Con Leo salía a correr y al gimnasio. Las dos clases son a las 14 h, por eso deja el yoga ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15.5). |
 | Mecánica: vehículos y maquinaria | Elon Musk | **Ducristin** | Área: Taller. |
 | Artes marciales (horario libre: «Artes marciales con Gohageneis») | Goku | **Gohageneis** | Ágil y atlético, y ya es de la Guardia. |
 | Hospital: registros y vacunación | Bill Gates | **Maite** | Área: Hospital. |
@@ -54,11 +55,14 @@ Amahuz, Karen, Shalva y Adaguchi siguen de personal general.
 - la de Hatha la guía quien tenga la misión «yog_guia» en la rotación;
 - la de Ashtanga (14 h) la da el primero que llega.
 
-Lo que pasa a Andrea es lo que era fijo de Sadhguru:
+Lo que era fijo de Sadhguru (y luego, unas horas, de Andrea) es ahora de **Irosene**:
 - la salida en la tarima y el área de Yoga;
 - la meditación del tiempo libre;
-- ser el maestro que eligen las pruebas (`YogaClassTest`, `YogaFloorsTest`, con Irosene de segunda maestra);
+- ser la maestra que eligen las pruebas (`YogaClassTest`, `YogaFloorsTest`, con Panterilia de segunda maestra); `YogaClassTest`
+  comprueba además que ninguna de las dos es el entrenador del gimnasio;
 - la escena de prueba `Prueba_Yoga` y la misión virtual de la Sala de Yoga.
+
+Andrea sale en el gimnasio y su área es el Gimnasio (`SanctuaryDirector.HomeArea`, `SampleSceneBuilder.PlaceStaff`).
 
 ## La jornada y el horario libre (regla W9)
 

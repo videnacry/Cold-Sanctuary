@@ -23,10 +23,13 @@ public enum TrainingSplit { CuerpoEntero, TorsoPierna, EmpujeTironPierna, Weider
 public static class GymProgramming
 {
     // ── El papel de entrenador ──────────────────────────────────────────────────────────────────
-    /// <summary>ENTRENADOR DEL GIMNASIO: GOLUIS, «el personaje de la fuerza», corpulento y el más disciplinado del personal
+    /// <summary>ENTRENADOR DEL GIMNASIO: ANDREA (Berón 2026-11-04: «el personaje con más fuerza es Andrea»; antes Goluis). Su fuerza
+    /// es la más alta del personal (Anima.strength 1,6; Goluis 1,5) y entrenaba con Leo (correr, gimnasio, yoga). Deja de ser el
+    /// maestro de yoga (no puede dar la clase de las 14 h y la del gimnasio a la vez): ahora lo es Irosene.
+    /// (Antes: Goluis, «el personaje de la fuerza», corpulento y el más disciplinado del personal
     /// (Archetypes: disciplina 1,3; fuerza 1,5). Gohageneis ya lleva las artes marciales y la Guardia (y es «poco disciplinado»,
-    /// 0,6); Linduarda entrena a diario pero su conducta de médica (recién llegados, hospital) manda sobre la jornada.</summary>
-    public const string Trainer = "Goluis";
+    /// 0,6); Linduarda entrena a diario pero su conducta de médica (recién llegados, hospital) manda sobre la jornada.)</summary>
+    public const string Trainer = "Andrea";
     public const string GymArea = "Gimnasio";
     /// <summary>Misión de la jornada del entrenador: revisar el registro de series y ajustar los planes (1 h, solo él).</summary>
     public const string PlanMissionId = "gym_planes";
@@ -198,12 +201,12 @@ public static class GymProgramming
         { "Player", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.9f, "Kushal, recién llegado: principiante, cuerpo entero 3 d (ACSM: 2–3 d/sem al empezar).", 0, 2, 4) },
         { "Linduarda", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Hipertrofia, 0.8f, "«Deportista, gimnasio a diario»: empuje/tirón/pierna 6 d (cada músculo 2×/sem).", 0, 1, 2, 3, 4, 5) },
         { "Lizmibet", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.45f, "Más de 70 años: fuerza 2 d/sem en máquinas guiadas (OMS y ACSM para mayores).", 1, 4) },
-        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "El personaje de la fuerza y entrenador: torso/pierna 4 d, fuerza (4–6 reps).", 0, 1, 3, 4) },
+        { "Goluis", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.4f, "Corpulento, jefe de cocina: torso/pierna 4 d de fuerza (4–6 reps).", 0, 1, 3, 4) },
         { "Panterilia", P(TrainingSplit.CuerpoEntero, TrainingGoal.Hipertrofia, 0.75f, "Delgada, 42 años: cuerpo entero 3 d para ganar músculo.", 1, 3, 5) },
         { "Gohageneis", P(TrainingSplit.EmpujeTironPierna, TrainingGoal.Fuerza, 1.1f, "Artes marciales y Guardia: fuerza en empuje/tirón/pierna 3 d (el resto, su dojo).", 0, 2, 4) },
         { "Irosene", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.5f, "Más de 70, corre, escala y bucea: resistencia muscular 2 d (15–20 reps).", 2, 5) },
         { "JefeConstruccion", P(TrainingSplit.TorsoPierna, TrainingGoal.Resistencia, 1.15f, "Tote, robusto, jornadas de obra: torso/pierna 4 d de resistencia.", 1, 2, 4, 5) },
-        { "Andrea", P(TrainingSplit.CuerpoEntero, TrainingGoal.Fuerza, 0.9f, "Corre 25 km y hace yoga: fuerza pesada 2 d (mejora la economía de carrera).", 0, 3) },
+        { "Andrea", P(TrainingSplit.TorsoPierna, TrainingGoal.Fuerza, 1.5f, "El de más fuerza y entrenador del gimnasio; corre 25 km: torso/pierna 4 d de fuerza (la fuerza pesada mejora la economía de carrera).", 0, 2, 3, 5) },
         { "Nesvitor", P(TrainingSplit.CuerpoEntero, TrainingGoal.Salud, 0.6f, "El mayor de las cuentas: salud, 2 d en máquinas guiadas.", 0, 3) },
         { "Amahuz", P(TrainingSplit.TorsoPierna, TrainingGoal.Hipertrofia, 0.85f, "Delgado: torso/pierna 4 d para ganar masa.", 0, 1, 3, 4) },
         { "Karen", P(TrainingSplit.CuerpoEntero, TrainingGoal.Resistencia, 0.6f, "Entrena con Amahuz los lunes: cuerpo entero 3 d de resistencia.", 0, 2, 4) },

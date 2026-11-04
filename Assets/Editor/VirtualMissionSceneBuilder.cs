@@ -137,7 +137,7 @@ public static class VirtualMissionSceneBuilder
         {
             case AreaWork.Hospital: return new[] { "Linduarda", "Lizmibet" };
             case "Cocina": return new[] { "Andrea", "Goluis" };
-            case "Sala de Yoga": return new[] { WorkdayDirector.YogaTeacher };   // Andrea (antes Sadhguru, que se fue a su microcosmos)
+            case "Sala de Yoga": return new[] { WorkdayDirector.YogaTeacher };   // Irosene (2026-11-04; antes Andrea y Sadhguru)
             case "Construcción": return new[] { "JefeConstruccion" };
             case "Estudio Textil": return new[] { "Irosene" };
             case "Huerto": return new[] { "Panterilia" };

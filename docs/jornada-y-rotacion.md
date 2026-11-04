@@ -44,7 +44,7 @@ Durante las 8 h los personajes van al área de su misión y se quedan allí. **N
 6. **Obligatorias sin cubrir**: la Magnate se **divide**. Cada clon toma 5 h de huecos, va a esos puestos y **desaparece** al terminar. Si mañana hay más personal, ya no hacen falta clones.
 7. **El resto** pasa a pendientes y es lo primero que se asigna al día siguiente. Siempre se terminan todas las misiones.
 8. **Entrenamiento**: rota entre los entrenamientos abiertos (persona *i*, día *d* → *(i + d) mod n*).
-   Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Goluis,
+   Desde el 2026-11-04, **el gimnasio va por los días del plan de cada uno** (`GymProgramming.ApplyGymDays`; el entrenador, Andrea,
    siempre): quien tiene gimnasio ese día en su plan va; a quien la rotación mandaba un día sin gimnasio en su plan, se le da el
    siguiente entrenamiento abierto ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15).
 9. **Misiones de papel fijo** (`Mission.owner`, 2026-11-04): solo las hace su dueño y se le asignan antes que nada; sin él, ese

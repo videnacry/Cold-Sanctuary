@@ -116,7 +116,7 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
         int per = Mathf.Max(1, Mathf.Min(perClass, people.Count / 2 - 1));
         Anima tH = people.FirstOrDefault(p => p.name == WorkdayDirector.YogaTeacher) ?? people[0];
         people.Remove(tH);
-        Anima tA = people.FirstOrDefault(p => p.name == WorkdayDirector.SecondYogaTeacher) ?? people[0]; people.Remove(tA);   // la segunda maestra (Irosene)
+        Anima tA = people.FirstOrDefault(p => p.name == WorkdayDirector.SecondYogaTeacher) ?? people[0]; people.Remove(tA);   // la segunda maestra (Panterilia; Irosene es la primera desde el 2026-11-04)
         List<Anima> sH = people.Take(per).ToList(), sA = people.Skip(per).Take(per).ToList();
 
         WorkdayDirector wd = WorkdayDirector.Instance;

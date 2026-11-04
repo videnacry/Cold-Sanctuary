@@ -775,12 +775,16 @@ Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (sol
   `[Gimnasio] Amahuz · Torso A · Press de banca plano · serie 2/3 · 9 reps · 42,5 kg · RPE 8` (las de aproximación dicen
   «aproximación»).
 
-### 15.5 El entrenador: Goluis
+### 15.5 El entrenador: Andrea
 
-**Por qué Goluis** (`GymProgramming.Trainer`): es «el personaje de la fuerza», corpulento, y el más disciplinado del personal
-(`Archetypes`: disciplina 1,3 y la fuerza más alta). Gohageneis ya lleva las **artes marciales** del horario libre y la
-**Guardia**, y su disciplina es 0,6. Linduarda va al gimnasio a diario, pero su conducta de médica (recién llegados, hospital)
-manda sobre la jornada. Goluis sigue en la rotación de la mañana como todos.
+**Por qué Andrea** (`GymProgramming.Trainer`). Berón (2026-11-04): «el personaje con más fuerza es Andrea».
+- Su fuerza es la más alta del personal: `Anima.strength` 1,6 (`SampleSceneBuilder.MakeCharacter`). Le sigue Goluis, con 1,5
+  (`Archetypes`). `GymTrainingTest` lo comprueba en escena.
+- Con Leo salía a correr y al gimnasio ([character-andrea.md](character-andrea.md)).
+- Por eso deja de ser maestro de yoga: las dos clases son a las 14 h. El yoga pasa a **Irosene**, con **Panterilia** de segunda
+  maestra ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
+- **Goluis** (el primer entrenador, unas horas del 2026-11-04) mantiene su plan de **fuerza**.
+- Andrea sigue en la rotación de la mañana como todos; sale en el gimnasio y su área es el Gimnasio.
 
 - **Su misión de la jornada**: «Entrenador: revisar el registro de series y ajustar los planes» (`gym_planes`, 1 h, en el
   Gimnasio).
@@ -794,7 +798,7 @@ manda sobre la jornada. Goluis sigue en la rotación de la mañana como todos.
   2. **Rondas**: va a quien está en plena serie y le **corrige** la técnica (`GymProgramming.Cue`: «escápulas atrás y codos a
      unos 45°», «rodillas alineadas con los pies»…). En banca y sentadilla con RPE ≥ 7,5 hace de **spotter** hasta que acaba la
      serie. Como mucho: andar 25 s, corregir 5 s y hacer de spotter 20 s.
-  3. Los días de su propio plan (torso/pierna de fuerza, lun-mar-jue-vie), de 15:00 a 15:55 hace **su rutina**.
+  3. Los días de su propio plan (torso/pierna de fuerza, lun-mié-jue-sáb), de 15:00 a 15:55 hace **su rutina**.
 
 ### 15.6 Los planes asignados
 
@@ -803,12 +807,12 @@ manda sobre la jornada. Goluis sigue en la rotación de la mañana como todos.
 | Kushal (jugador) | Cuerpo entero | lun-mié-vie | Hipertrofia | Principiante: 2–3 d de cuerpo entero (ACSM). |
 | Linduarda | Empuje/tirón/pierna | lun–sáb | Hipertrofia | «Deportista, gimnasio a diario». |
 | Lizmibet | Cuerpo entero (máquinas) | mar-vie | Salud | Más de 70 años: 2 d (OMS, ACSM). |
-| Goluis (entrenador) | Torso/pierna | lun-mar-jue-vie | Fuerza | El personaje de la fuerza. |
+| Goluis | Torso/pierna | lun-mar-jue-vie | Fuerza | Corpulento, jefe de cocina. |
 | Panterilia | Cuerpo entero | mar-jue-sáb | Hipertrofia | Delgada: ganar músculo. |
 | Gohageneis | Empuje/tirón/pierna | lun-mié-vie | Fuerza | Artes marciales y Guardia (el resto, su dojo). |
 | Irosene | Cuerpo entero | mié-sáb | Resistencia | Más de 70; corre, escala y bucea. |
 | Tote (`JefeConstruccion`) | Torso/pierna | mar-mié-vie-sáb | Resistencia | Robusto; jornadas de obra. |
-| Andrea | Cuerpo entero | lun-jue | Fuerza | Corredor de fondo: fuerza pesada 2 d. |
+| Andrea (entrenador) | Torso/pierna | lun-mié-jue-sáb | Fuerza | El de más fuerza; corredor de fondo (la fuerza pesada mejora la economía de carrera). |
 | Nesvitor | Cuerpo entero (máquinas) | lun-jue | Salud | El mayor de las cuentas. |
 | Amahuz | Torso/pierna | lun-mar-jue-vie | Hipertrofia | Delgado: ganar masa. |
 | Karen | Cuerpo entero | lun-mié-vie | Resistencia | Entrena con Amahuz los lunes. |

@@ -48,8 +48,8 @@ public static partial class SampleSceneBuilder
     {
         // ── DE ÁREA: un piso del santuario actual ──
         new TestSceneSpec { scene = "Prueba_Yoga", keep = new[] { "YogaRoom_Area" },
-            purpose = "Pisos de yoga (Hatha y Ashtanga, salas occidental y tradicional con su kund): la clase (Andrea, el maestro, en la tarima y cada practicante en su esterilla), la iniciación de upa-yoga de cuello y el minijuego de upa-yoga por teclas",
-            people = new[] { "Andrea", "Panterilia", "Gohageneis", "Irosene", "Goluis", "Lizmibet", "Magnate" },
+            purpose = "Pisos de yoga (Hatha y Ashtanga, salas occidental y tradicional con su kund): la clase (Irosene, la maestra, en la tarima y cada practicante en su esterilla), la iniciación de upa-yoga de cuello y el minijuego de upa-yoga por teclas",
+            people = new[] { "Irosene", "Panterilia", "Gohageneis", "Andrea", "Goluis", "Lizmibet", "Magnate" },
             groups = new[] { 15, 42, 51, 64 }, build = new System.Action<Transform>[] { BuildUpaYogaSandbox } },
         new TestSceneSpec { scene = "Prueba_YogaSesiones", keep = new[] { "YogaRoom_Area" },
             purpose = "Sesiones de yoga en bucle, una por esterilla (Upa-yoga de cuello, Yoga Namaskar, Saludo al Sol, Ashtanga primaria), para revisar cada postura",

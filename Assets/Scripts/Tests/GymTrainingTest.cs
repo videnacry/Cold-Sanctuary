@@ -65,6 +65,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
             string.Join(", ", plans.Where(p => p.days.Length < 2 || p.days.Length > 6).Select(p => p.who)));
         TestProbe.Check("los días sin gimnasio en su plan, recuperación activa", plans.All(p => Enumerable.Range(0, 7).Where(d => !p.Trains(d)).All(d => GymProgramming.Prescribe(p.who, d).recovery)));
         TestProbe.Check("los humanos-insecto de los microcosmos no tienen plan (en sus eras no hay gimnasio)", GymProgramming.For("Obrera de Hormiga") == null && GymProgramming.For("Myrmidon") == null);
+        TestProbe.Check($"el entrenador ({GymProgramming.Trainer}) parte con las cargas más altas (el de más fuerza) y Goluis sigue con un plan de fuerza", plans.OrderByDescending(p => p.strength).First().who == GymProgramming.Trainer && GymProgramming.For("Goluis").goal == TrainingGoal.Fuerza);
         GymProgramming.DayRoutine r = GymProgramming.Prescribe("Amahuz", 0);
         TestProbe.Check("la rutina empieza calentando y acaba estirando; series × reps, carga, descanso y RPE en cada ejercicio",
             r.items.First().part == "calentamiento" && r.items.Last().part == "vuelta a la calma" && r.Main.All(x => x.sets > 0 && x.reps > 0 && x.restSec > 0f && x.rpe > 0f),
@@ -207,6 +208,11 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         while (Time.realtimeSinceStartup < mEnd && GymUsabilityTest.Arriving()) yield return new WaitForSecondsRealtime(1f);
         WorkdayDirector wd = WorkdayDirector.Instance;
         if (wd != null) wd.ReleaseGym();
+        // «El personaje con más fuerza es Andrea» (Berón 2026-11-04): el entrenador tiene la mayor fuerza del personal en escena.
+        var strong = WorkdayDirector.Staff.Select(n => WorkdayDirector.Body(n)).Where(g => g != null && !g.CompareTag("Player")).Select(g => g.GetComponent<Anima>()).Where(a => a != null).ToList();
+        Anima strongest = strong.OrderByDescending(a => a.strength).FirstOrDefault();
+        TestProbe.Check($"el entrenador ({GymProgramming.Trainer}) es el de más fuerza del personal", strongest != null && strongest.name.StartsWith(GymProgramming.Trainer),
+            string.Join(", ", strong.OrderByDescending(a => a.strength).Take(4).Select(a => $"{a.name} {a.strength:0.00}")));
         var people = new List<GameObject>();
         GameObject trainer = null;
         foreach (string n in WorkdayDirector.Staff)

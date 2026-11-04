@@ -156,9 +156,9 @@ public class SanctuaryDirector : MonoBehaviour
     // el textil, Panterilia lleva la limpieza (y la farmacia, aún sin área: va al huerto), Gohageneis a la mecánica.
     static readonly System.Collections.Generic.Dictionary<string, SanctuaryAreaType> HomeArea = new System.Collections.Generic.Dictionary<string, SanctuaryAreaType>
     {
-        { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
+        { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.YogaRoom },   // (2026-11-04) la maestra de yoga; sigue destacando en el textil
         { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
-        { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Andrea", SanctuaryAreaType.YogaRoom },     // la médica; el maestro de yoga (antes Sadhguru)
+        { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Andrea", SanctuaryAreaType.Gym },     // la médica; el entrenador del gimnasio (2026-11-04: antes maestro de yoga)
         { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
         // (2026-11-04) Los papeles de los famosos que se fueron a sus microcosmos (docs/personajes-mesocosmos.md §Reparto de papeles):
         // la mecánica → Ducristin; registros y vacunación del hospital → Maite; las cuentas, desde el restaurante → Nesvitor; el
