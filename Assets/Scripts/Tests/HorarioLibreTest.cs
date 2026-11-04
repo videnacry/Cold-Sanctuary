@@ -147,6 +147,18 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             var badTraining = wd.roster.trainingAreas.Where(n => areaObjs.Any(x => x.displayName == n && Unfinished(x.transform))).ToList();
             TestProbe.Check("jornada: ningún entrenamiento en un piso en obras", badTraining.Count == 0, badTraining.Count > 0 ? string.Join(", ", badTraining) : string.Join(", ", wd.roster.trainingAreas));
         }
+        // (2026-11-04) LOS MAESTROS DE BAILE (Panterilia y Gohageneis, un día cada uno): guían el baile de las 20 h si están en el horario
+        // (en la Sala de Ballet o, mientras está en obras, en la de reserva), y dan el entrenamiento de la Sala de Ballet si está abierta.
+        string danceLead = Professions.LeadOn("baile", day);
+        var dance = gr.plan.entries.Where(x => x.day == day && x.slot == LeisureRoster.LeadSlot && x.activity.id == "baile").ToList();
+        bool leadFree = gr.plan.people.Any(p => p.name == danceLead) && !gr.plan.entries.Any(x => x.day == day && x.slot == LeisureRoster.LeadSlot && x.activity.together && x.person.name == danceLead);
+        TestProbe.Check($"el baile de las 20 h lo guía su maestro del día ({danceLead})", !leadFree || dance.Any(x => x.lead && x.person.name == danceLead), string.Join(", ", dance.Select(x => x.person.name + (x.lead ? " (guía)" : ""))));
+        if (wd != null && wd.today != null && wd.roster.trainingAreas.Contains("Sala de Ballet"))
+        {
+            string bl = Professions.LeadOn("Sala de Ballet", wd.today.day);
+            WorkRoster.Worker bw = wd.roster.Find(bl);
+            TestProbe.Check($"jornada: {bl} da el entrenamiento de la Sala de Ballet (terminada)", bw != null && wd.today.training.TryGetValue(bw, out string ta) && ta == "Sala de Ballet");
+        }
         foreach (string l in ld.Report(gr)) Log(l);
 
         // Dos franjas de verdad: 16–17 y 17–18 h.

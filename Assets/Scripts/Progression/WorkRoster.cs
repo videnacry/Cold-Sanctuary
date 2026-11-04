@@ -139,6 +139,15 @@ public class WorkRoster
         // ENTRENAMIENTO (2 h): rota también entre los abiertos (persona i, día d → área (i + d) mod n).
         if (trainingAreas.Count > 0)
             for (int i = 0; i < workers.Count; i++) plan.training[workers[i]] = trainingAreas[(i + day) % trainingAreas.Count];
+        // (2026-11-04) LOS MAESTROS de una clase de entrenamiento (el baile: Panterilia y Gohageneis, un día cada uno) dan la suya si su
+        // sala está abierta (terminada); si no, entrenan como los demás.
+        if (useProfessions)
+            foreach (var kv in Professions.ClassLeads)
+            {
+                if (!trainingAreas.Contains(kv.Key)) continue;
+                Worker t = Find(Professions.LeadOn(kv.Key, day));
+                if (t != null && !t.clone) plan.training[t] = kv.Key;
+            }
         return plan;
     }
 

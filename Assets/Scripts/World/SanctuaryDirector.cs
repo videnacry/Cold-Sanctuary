@@ -169,6 +169,7 @@ public class SanctuaryDirector : MonoBehaviour
         { "Josedrilo", SanctuaryAreaType.YogaRoom }, { "Maite", SanctuaryAreaType.Kitchen }, { "Shalva", SanctuaryAreaType.Garden },
         { "Adaguchi", SanctuaryAreaType.Construction }, { "Amykhuz", SanctuaryAreaType.Kitchen }, { "Karen", SanctuaryAreaType.Classroom },
         { "Alicita", SanctuaryAreaType.Construction }, { "Ducristin", SanctuaryAreaType.Classroom }, { "Fausto", SanctuaryAreaType.VehicleWorkshop },
+        { "Julian", SanctuaryAreaType.Construction },   // dirección de proyectos, con Alicita
         { "Nesvitor", SanctuaryAreaType.Garden },   // guardia y agricultor (la guardia patrulla: su área de salida, el huerto)
         // (2026-11-04) Ducristin, gerente de banca y profesor: sale en el Aula (da clase; sus finanzas, en la mesa de cuentas del
         // restaurante); Fausto, mecánico (la mecánica que llevaba Ducristin). Julian, pendiente de foto y de profesión.

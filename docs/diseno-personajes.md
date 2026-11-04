@@ -63,7 +63,7 @@ Retratos: menú **Tools > Cold Sanctuary > Character Gallery (familia y amigos d
 | `Shalva` | `cumbaya.jpg` (derecha, **supuesto**) | **Cultivo y bioconstrucción** (el huerto y las obras) | Pelo corto castaño; jersey grueso de canalé verde oliva; vaqueros azul claro | 1,72 m |
 | `Adaguchi` | `adaguchi.png` | **Submarinismo** (submarino de obra, ambulancia, tareas bajo el agua) y **cocina** | Piel clara morena; pelo corto ondulado castaño oscuro con volumen arriba (`Style.Fade`); un pendiente pequeño; sudadera negra sin mangas con capucha; collar de cuentas oscuras | 1,65 m |
 | `Gallarle` | **pendiente de foto** | Pareja de Ducristin (comparten casa); **sin profesión** hasta que Berón la diga | Aspecto neutro provisional: pelo corto castaño, piel media, camiseta gris azulada, pantalón oscuro (sin rasgos inventados ni `Fem()`) | 1,70 m |
-| `Julian` | **pendiente de foto** | Pareja de Alicita (comparten casa); búlgaro, se conocieron en un máster; **sin profesión** todavía | Aspecto neutro provisional: pelo corto castaño, camiseta azul grisácea, pantalón oscuro (sin rasgos inventados) | 1,75 m |
+| `Julian` | **pendiente de foto** | Pareja de Alicita (comparten casa); búlgaro, se conocieron en un máster; **dirección de proyectos** con Alicita | Aspecto neutro provisional: pelo corto castaño, camiseta azul grisácea, pantalón oscuro (sin rasgos inventados) | 1,75 m |
 | `Fausto` | **pendiente de foto** | Pareja de Irosene (comparten casa); **mecánico** (la mecánica, antes de Ducristin) | Aspecto neutro provisional con ropa de taller gris | 1,72 m |
 
 Piezas nuevas de `CubeHair.Look` (reutilizables):

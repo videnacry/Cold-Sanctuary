@@ -24,6 +24,8 @@ public class LeisureRoster
     public static readonly float[] SlotHours = { 16f, 17f, 18f, 20f, 21f };
     public const float SlotLength = 1f;
     public const float DinnerHour = 19f, BedHour = 22f;
+    /// <summary>La franja de las clases con maestro (el baile): la de las 20 h.</summary>
+    public const int LeadSlot = 3;
 
     /// <summary>Clases de actividad (las etiquetas de los edificios: trabajo, descanso, recuperación u ocio).</summary>
     public enum Kind { Ocio, Cuidado, Descanso, Recuperacion }
@@ -60,6 +62,7 @@ public class LeisureRoster
     {
         public Person person; public Activity activity;
         public int day, slot;   // día absoluto y franja (índice en SlotHours)
+        public bool lead;       // (2026-11-04) la GUÍA: el maestro de la clase (el baile de las 20 h)
         public float Start => SlotHours[slot];
         public override string ToString() => $"día {day} {Start:00}h {person.name} → {activity.title}";
     }
@@ -142,6 +145,18 @@ public class LeisureRoster
             if (a.hosts != null) foreach (string h in a.hosts) { Person p = free.FirstOrDefault(x => x.name == h); if (p != null && left[a] > 0) Take(p); }
             while (left[a] > 0 && free.Count > 0) Take(Choose(a, free));
         }
+        // (2026-11-04) LA CLASE CON MAESTRO: en la franja de las clases (LeadSlot, 20 h) el maestro del día de una actividad con maestro
+        // (el baile: Panterilia o Gohageneis, Professions.ClassLeads) la guía, si está libre; el resto se reparte como siempre.
+        if (slot == LeadSlot)
+            foreach (Activity a in activities)
+            {
+                if (a.together || left[a] <= 0) continue;
+                string who = Professions.LeadOn(a.id, day);
+                Person t = who != null ? free.FirstOrDefault(x => x.name == who) : null;
+                if (t == null) continue;
+                free.Remove(t); left[a]--; t.count[a.id] = t.Count(a.id) + 1; t.last[a.id] = g;
+                plan.entries.Add(new Entry { person = t, activity = a, day = day, slot = slot, lead = true });
+            }
         List<Activity> order = Order(g).Where(a => !a.together).ToList();   // (las de todos a la vez solo van en su franja)
         bool progress = true;
         while (free.Count > 0 && progress)   // vueltas por el catálogo

@@ -149,6 +149,7 @@ public static class AreaFunctions
         Roles(S(Def("Aula", "aul_lenguas", "Lenguas: traducir documentos y dar clase de idiomas", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Cocina", "coc_cuentas", "Las cuentas del santuario: ingresos del restaurante, compras y presupuesto", 0.5f, false, Kind.Trade, "mesa"));
         S(Def("Construcción", "con_proyectos", "Dirigir los proyectos de obra: plan, plazos, material y equipos", 1f, false, Kind.Build));
+        S(Def("Construcción", "con_proyectos2", "Coordinar los proyectos de obra: seguimiento de las obras, equipos y avisos (la otra dirección de proyectos)", 1f, false, Kind.Build));   // (2026-11-04) Alicita y Julian comparten la dirección de proyectos
         // (2026-11-04, más profesiones) La COMUNICACIÓN (Andrea: los avisos y la radio, en el comedor), las LETRAS (Irosene: poesía,
         // narración y lecturas en el Aula) y la CURANDERA (Maite: plantas medicinales en la farmacia del hospital).
         S(Def("Cocina", "coc_avisos", "Comunicación: preparar y dar los avisos del santuario y el programa de radio en el comedor", 0.5f, false, Kind.Trade, "mesa"));

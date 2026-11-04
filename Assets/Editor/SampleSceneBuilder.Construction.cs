@@ -175,7 +175,7 @@ public static partial class SampleSceneBuilder
         Put("Karen", "Classroom_Area", new Vector3(2f, 1f, 2f));                   // asuntos legales y lenguas: su mesa, en el Aula
         Put("Ducristin", "Classroom_Area", new Vector3(-2f, 1f, 2f));              // gerente de banca y profesor: da clase en el Aula (y las finanzas, en el restaurante)
         Put("Fausto", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));            // mecánico (la mecánica, antes de Ducristin)
-        Put("Julian", "Construction_Area", new Vector3(1.5f, 1f, 3.5f));           // con Alicita (pendiente de foto y de profesión)
+        Put("Julian", "Construction_Area", new Vector3(1.5f, 1f, 3.5f));           // dirección de proyectos, con Alicita (pendiente de foto)
         Put("Irosene_Post", "Classroom_Area", new Vector3(0f, 1f, -1f));                // letras: poesía, narración y lecturas en el Aula
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
     }
@@ -195,7 +195,7 @@ public static partial class SampleSceneBuilder
         ("Shalva", "Shalva (cultivo y bioconstrucción)", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
         ("Adaguchi", "Adaguchi (submarinismo y cocina)", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
         ("Gallarle", "Gallarle (pendiente de foto)", 48f, new Color(0.45f, 0.5f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
-        ("Julian", "Julian (pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro)
+        ("Julian", "Julian (dirección de proyectos; pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro)
         ("Fausto", "Fausto (mecánico; pendiente de foto)", 52f, new Color(0.35f, 0.38f, 0.42f), 1.05f, 1.0f, 1.0f, 1.0f), // pareja de Irosene
     };
 

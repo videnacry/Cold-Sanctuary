@@ -75,7 +75,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 |---|---|---|---|
 | **Josedrilo** | Maestro de yoga (`YogaTeacher`), **jefe de obra nueva** y bioconstrucción | Sala de Yoga (guía la clase); Construcción: `obra_` (las obras) y `mat_` (el material) | la tarima de Hatha tradicional |
 | **Tote** (`JefeConstruccion`) | **Jefe de reparaciones** y **guardia** | Construcción: `rep_`; Guardia | Construcción |
-| **Gohageneis** | Guardia y artes marciales | Guardia (y su patrulla, `CarnivoreKeeper`) | — |
+| **Gohageneis** | Guardia, artes marciales y **maestro de baile** | Guardia (y su patrulla, `CarnivoreKeeper`); guía el baile (un día de cada dos) | — |
 | **Nesvitor** | **Guardia** y **agricultor** | Guardia; Huerto | el huerto |
 | **Maite** | **Jefa de cocina** (con Amykhuz) y **curandera** | Cocina; Hospital: `hos_plantas` (misión nueva: remedios de plantas medicinales) y `enf_visita` (curas) | el restaurante |
 | **Amykhuz** | **Jefe de cocina** (con Maite) y química | Cocina; Química | el restaurante |
@@ -87,8 +87,9 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 | **Fausto** | **Mecánico** (la mecánica, antes de Ducristin) | Mecánica | el taller |
 | **Andrea** | **Comunicación**: los avisos del santuario y la radio | Cocina: `coc_avisos` (misión nueva) | el comedor |
 | **Irosene** | **Letras** (poesía y narración) y textil | Aula: `aul_letras` (misión nueva: clase y lecturas); Estudio Textil | el Aula |
-| **Panterilia** | **Segunda maestra de yoga** (`SecondYogaTeacher`: la otra clase cuando hay dos a la vez) | — | — |
-| Gallarle, Julian | Pendientes de foto y de profesión | — | con su pareja |
+| **Panterilia** | **Maestra de baile**, **finanzas** y segunda maestra de yoga (`SecondYogaTeacher`) | Cocina: `coc_cuentas`; guía el baile (un día de cada dos) | el huerto |
+| **Julian** | **Dirección de proyectos**, con Alicita | Construcción: `con_proyectos` y `con_proyectos2` (misión nueva: una para cada uno) | Construcción |
+| Gallarle | Pendiente de foto y de profesión | — | con su pareja |
 
 **Por qué así**:
 - **Ducristin sin banco**: no hay área de banca.
@@ -122,6 +123,22 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
   - La torre del Entrenamiento tiene ahora 10 pisos de entrenamiento más el Aula: 6 niveles.
   - **Simulador de holguras** (`mig/Clear.cs`) vuelto a pasar con 6 niveles: el techo, a ~197 m. Las holguras entre edificios no cambian
     (árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5 m, guardián–Entrenamiento 7,0 m) y el tronco del guardián sube a 202 m.
+
+### Maestros de baile (Panterilia y Gohageneis)
+
+Berón: Panterilia es maestra de baile y de finanzas; Gohageneis, maestro de baile. Funciona como Josedrilo con el yoga.
+- `Professions.ClassLeads` reparte el baile **un día cada uno** (`LeadOn`).
+- **Horario libre**: en la franja de las 20 h (`LeisureRoster.LeadSlot`), el maestro del día guía «Bailar» si está libre.
+  - Se pone delante del grupo; los demás se reparten como siempre.
+  - El sitio es la Sala de Ballet cuando está terminada y, mientras está en obras, la calistenia o el gimnasio.
+- **Jornada**: cuando la Sala de Ballet está terminada y abierta, el maestro del día da su entrenamiento (14–16 h).
+  - Hasta entonces entrena como los demás.
+- **Panterilia sigue de segunda maestra de yoga.** No choca:
+  - el yoga del santuario lo guía Josedrilo;
+  - la clase de Ashtanga la abre el primero que llega;
+  - el baile es a las 20 h y el entrenamiento de ballet, solo los días que le toca.
+- **Julian comparte la dirección de proyectos con Alicita**. Hay dos misiones, `con_proyectos` y la nueva `con_proyectos2`, y cada día
+  cada uno coge la que menos ha hecho.
 
 ### Pisos en obras
 

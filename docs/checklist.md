@@ -604,7 +604,8 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Berón: confirmar que Amykhuz y Karen son pareja; la foto y la profesión de Gallarle.
 - [ ] Tester: reconstruir SampleScene; grupos 50 (jornada con profesiones), 51 y 64 (Josedrilo de maestro), 45 (brigada de cocina), 65 (horario libre, Gallarle), 28, 89 y 92 (casas y ring con 20 residentes).
 - [x] Más datos de Berón (2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Profesiones y parejas, manual J14, J18 y J19): Amahuz → **Amykhuz** (alias para escenas viejas); parejas Amykhuz y Karen (confirmada), Alicita y Julian, Irosene y Fausto; Julian y Fausto nuevos (pendientes de foto; Fausto, mecánico); Josedrilo jefe de obra nueva, Tote jefe de reparaciones y guardia, Nesvitor guardia y agricultor, Ducristin gerente de banca y profesor, Andrea comunicación, Maite jefa de cocina y curandera, Irosene letras en el Aula, Panterilia segunda maestra de yoga; nada de ocio ni entrenamiento en pisos en obras; frutal de la terraza a 5,5 m.
-- [ ] Berón: fotos de Gallarle, Julian y Fausto; profesión de Gallarle y de Julian.
+- [x] Maestros de baile (Panterilia, también finanzas, y Gohageneis) que se turnan por días: guían el baile de las 20 h (en la Sala de Ballet o en la de reserva mientras está en obras) y el entrenamiento de ballet si la sala está terminada; Julian, dirección de proyectos con Alicita (`con_proyectos2`). Prueba en `HorarioLibreTest` (65).
+- [ ] Berón: fotos de Gallarle, Julian y Fausto; profesión de Gallarle.
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 6 niveles: el ballet pide 2 pisos con 21 miembros); grupos 45, 50, 51, 55, 64, 65, 75, 89 y 92.
 
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
