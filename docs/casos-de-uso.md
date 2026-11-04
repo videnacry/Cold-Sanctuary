@@ -145,7 +145,7 @@ IdealStateTest, SensesTest, YogaTest, BodyMetabolismTest, ChecklistAuto, ReachGo
 | CU-MEN-31 | Como jugador quiero ver emociones en las caras de cubos | sin test |
 | CU-MEN-32 | Como jugador quiero que la Magnate calme a los que pelean cerca de ella | sin test |
 | CU-MEN-33 | Como jugador rezagado quiero que la Magnate me enseñe el Saludo al Sol | sin test |
-| CU-MEN-34 | Como jugador quiero encontrar a Lizmibet, Sadhguru, Andrea y el jefe de obra en el santuario | SanctuaryLifeTest «el jefe de construcción, Sadhguru y Andrea están en el santuario» |
+| CU-MEN-34 | Como jugador quiero encontrar a Lizmibet, Andrea y el jefe de obra en el santuario, y ningún famoso (se fueron a sus microcosmos el 2026-11-04) | SanctuaryLifeTest «el jefe de construcción (Tote) y Andrea están en el santuario», «ningún famoso … sigue en el santuario» |
 | CU-MEN-35 | Como personaje quiero un dormitorio propio | SanctuaryLifeTest «hay un dormitorio por persona (12)» |
 | CU-MEN-36 | Como personaje quiero ir al baño | SanctuaryLifeTest «hay inodoros a los que ir al baño» |
 | CU-MEN-37 | Como simulación quiero que los compañeros hablen entre ellos (charlas) | sin test |

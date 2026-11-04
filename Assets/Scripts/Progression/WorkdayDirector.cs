@@ -608,7 +608,7 @@ public class WorkdayDirector : MonoBehaviour
     // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Andrea desde el 2026-11-04; antes Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
     /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre). Desde el 2026-11-04,
-    /// ANDREA, que practica unas 20 h de yoga por semana (docs/character-andrea.md); antes, Sadhguru, que se fue a su microcosmos.
+    /// ANDREA, el único que hacía yoga de verdad con Leo (docs/character-andrea.md); antes, Sadhguru, que se fue a su microcosmos.
     /// La segunda maestra, para dar las dos clases a la vez, es IROSENE (corre, escala y bucea a sus 70 y tantos).</summary>
     public const string YogaTeacher = "Andrea", SecondYogaTeacher = "Irosene";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
