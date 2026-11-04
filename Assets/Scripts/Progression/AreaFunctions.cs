@@ -143,6 +143,12 @@ public static class AreaFunctions
         Roles(S(Effect(Def("Informática", "ifo_energia", "Revisar la acometida, el SAI y las baterías del clúster", 0.5f, false, Kind.Operate, "consola"), who => AiCluster.Instance?.PowerCheck(who))), "informatico");
         Roles(S(Def("Aula", "aul_clase", "Dar o recibir una clase en el aula (un tema de las áreas del santuario)", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Aula", "aul_estudio", "Estudiar en la sala de estudio (biblioteca)", 1f, false, Kind.Study, "mesa"));
+        // (2026-11-04) LAS PROFESIONES NUEVAS (Berón; docs/personajes-mesocosmos.md §Profesiones): asuntos legales y lenguas (Karen, en
+        // una mesa de la sala de estudio del Aula), la contabilidad (Alicita, desde el restaurante) y la dirección de las obras (Alicita).
+        S(Def("Aula", "aul_legal", "Asuntos legales: contratos, permisos, normas y acuerdos del santuario (en una mesa de la sala de estudio)", 1f, false, Kind.Study, "mesa"));
+        Roles(S(Def("Aula", "aul_lenguas", "Lenguas: traducir documentos y dar clase de idiomas", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
+        S(Def("Cocina", "coc_cuentas", "Las cuentas del santuario: ingresos del restaurante, compras y presupuesto", 0.5f, false, Kind.Trade, "mesa"));
+        S(Def("Construcción", "con_proyectos", "Dirigir los proyectos de obra: plan, plazos, material y equipos", 1f, false, Kind.Build));
 
         // ══ FUNCIONES DEL DÍA (no son del catálogo fijo: las añade AreaWork.Today), con su efecto en el santuario ══
         Get("coc_servicio").effect = who => KitchenLarder.Instance?.ServeService(12, who);

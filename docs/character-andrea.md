@@ -34,7 +34,7 @@ Ficha contada por Berón (2026-10-18). Aspecto en [`diseno-personajes.md`](disen
 
 ## En el juego
 
-- El **restaurante** de lujo fue su sueño y los turistas son una vía de ingresos (hasta el 2026-11-04 salía en el comedor).
+- El **restaurante** de lujo fue su sueño y los turistas son una vía de ingresos (hasta el 2026-11-04 salía en el comedor; desde entonces, en el gimnasio).
 - **Entrenador del gimnasio** (`GymProgramming.Trainer`, 2026-11-04). Berón: «el personaje con más fuerza es Andrea».
   - Es el de **más fuerza** del personal (`Anima.strength` 1,6; Goluis, 1,5). Con Leo salía a correr y al gimnasio.
   - Su misión de papel fijo «gym_planes» (revisar el registro de series y ajustar los planes). En el bloque de las 14 h da la
@@ -42,8 +42,8 @@ Ficha contada por Berón (2026-10-18). Aspecto en [`diseno-personajes.md`](disen
     rutina a partir de las 15:00 ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15.5).
   - Sale en el gimnasio y su área es el Gimnasio.
 - Fue **maestro de yoga** unas horas del 2026-11-04, tras irse Sadhguru a su microcosmos, por ser el único que hizo yoga de verdad
-  con Leo. Como las dos clases son a las 14 h, el yoga pasa a **Josedrilo** (Berón: «el profesional del yoga es Josedrilo»; lo aplica la rama de personajes)
-  ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
+  con Leo. Como las dos clases son a las 14 h, el yoga pasó a **Josedrilo** (Berón: «el profesional de yoga es Josedrilo»)
+  ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Profesiones y parejas).
 - Aspecto (`CubeHair.For("Andrea")`): pelo castaño ondulado y rizado, camisa negra de cuello, pantalón de vestir gris marengo, zapatos de piel, cadena plateada con cruz, anillos, pendientes en las dos orejas y pulsera.
 
 ## Pendiente

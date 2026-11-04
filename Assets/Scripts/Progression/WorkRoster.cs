@@ -119,6 +119,7 @@ public class WorkRoster
         var used = workers.ToDictionary(w => w, w => 0f);
         AssignOwned(plan, pools, used);    // las de papel fijo, a su dueño (antes que nada: si no, la rotación le llenaba la jornada)
         AssignGroups(plan, pools, used);   // primero las de grupo: todas a la misma hora, cada una a una persona distinta
+        ProfessionRound(plan, pools, used);   // (2026-11-04) luego, a cada profesional una misión de cada área de su profesión
         RunRounds(plan, pools, workers, used);
 
         // Obligatorias sin cubrir: la Magnate se divide (clones de 5 h) hasta cubrirlas todas.
@@ -157,6 +158,29 @@ public class WorkRoster
             }
     }
 
+    /// <summary>(2026-11-04) Usar las PROFESIONES del personal (<see cref="Professions"/>): cada uno, una misión al día de cada área de su
+    /// profesión antes de las vueltas, y el profesional dirige la misión de grupo de su área si está libre. Sin ellas, rotación pura.</summary>
+    public bool useProfessions = true;
+
+    // LA RONDA DE LAS PROFESIONES: a cada uno (en el orden fijo del personal), una misión de cada área de su profesión: la que menos ha
+    // hecho y que quepa. Lo demás sigue en las vueltas por áreas (todos aprenden todo, regla J2).
+    void ProfessionRound(DayPlan plan, Dictionary<string, List<Mission>> pools, Dictionary<Worker, float> used)
+    {
+        if (!useProfessions) return;
+        foreach (Worker w in workers)
+        {
+            if (w.clone) continue;
+            foreach (string area in Professions.AreasOf(w.name))
+            {
+                if (!pools.TryGetValue(area, out var pool) || pool.Count == 0) continue;
+                Mission pick = Choose(w, IsNewcomer(w, plan.day) ? pool.Where(m => !m.lead).ToList() : pool, used[w]);
+                if (pick == null) continue;
+                pool.Remove(pick);
+                Assign(plan, w, pick, used);
+            }
+        }
+    }
+
     // MISIONES DE GRUPO: se hacen a la vez (p. ej. la clase de yoga necesita mínimo 4: guía en la plataforma, demostrador
     // y dos correctores). Se asignan al principio de la jornada (8:00), cada una a una persona distinta que rota cada día;
     // dentro del grupo, a cada uno el papel que menos ha hecho.
@@ -171,6 +195,9 @@ public class WorkRoster
             var roles = kv.Value;
             if (workers.Count < roles.Count) continue;   // sin gente suficiente: quedan para los clones
             var crew = new List<Worker>();
+            // (2026-11-04) EL PROFESIONAL del área (el maestro de yoga en la clase), si está libre y no es recién llegado, entra y la dirige.
+            Worker pro = useProfessions ? workers.FirstOrDefault(w => !w.clone && used[w] <= 0f && !IsNewcomer(w, plan.day) && Professions.Practises(w.name, roles[0].area)) : null;
+            if (pro != null && roles.Any(m => m.lead)) crew.Add(pro); else pro = null;
             int support = roles.Count(m => !m.lead), newcomers = 0;
             for (int i = 0; crew.Count < roles.Count && i < workers.Count; i++)
             {
@@ -187,7 +214,8 @@ public class WorkRoster
             {
                 bool fresh = IsNewcomer(w, plan.day);
                 Mission best = null;
-                foreach (Mission m in pending) if ((!fresh || !m.lead) && (best == null || w.Count(m.id) < w.Count(best.id))) best = m;
+                if (w == pro) best = pending.FirstOrDefault(m => m.lead);   // el profesional, el papel que dirige
+                if (best == null) foreach (Mission m in pending) if ((!fresh || !m.lead) && (best == null || w.Count(m.id) < w.Count(best.id))) best = m;
                 if (best == null) continue;
                 pending.Remove(best);
                 pools[best.area].Remove(best);

@@ -3106,7 +3106,7 @@ public static partial class SampleSceneBuilder
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
-        // humanas desde el área de Construcción (maquinaria y material). ANDREA es el entrenador del gimnasio (2026-11-04; las clases de yoga pasan a Josedrilo, rama de personajes).
+        // humanas desde el área de Construcción (maquinaria y material). JOSEDRILO da las clases de yoga (el profesional; antes Andrea y Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
         MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);

@@ -199,6 +199,9 @@ public static class CubeHair
         // Adaguchi (confirmado por Berón el 2026-11-04): piel clara morena, pelo corto ondulado
         // castaño oscuro con volumen arriba, un PENDIENTE pequeño; sudadera negra SIN MANGAS con capucha y COLLAR de cuentas oscuras.
         if (n.Contains("adaguchi")) return new Look(Style.Fade, C(0.16f, 0.1f, 0.07f), C(0.88f, 0.7f, 0.58f), C(0.2f, 0.13f, 0.08f)).Face(0.84f, 0.5f).Earring().Wear(C(0.08f, 0.08f, 0.09f), 1.65f).Sleeveless().Hood(C(0.08f, 0.08f, 0.09f)).Beads(C(0.25f, 0.2f, 0.26f)).Pants(C(0.12f, 0.12f, 0.14f)).Shoes(C(0.1f, 0.1f, 0.1f));
+        // Gallarle (2026-11-04, pareja de Ducristin): PENDIENTE DE FOTO. Aspecto neutro provisional, sin rasgos inventados ni género:
+        // pelo corto castaño, piel media, camiseta gris azulada y pantalón oscuro, 1,70 m. Se cambia cuando Berón mande la foto.
+        if (n.Contains("gallarle")) return new Look(Style.Short, C(0.3f, 0.22f, 0.15f), C(0.84f, 0.66f, 0.52f), C(0.25f, 0.18f, 0.12f)).Face(0.8f, 0.45f).Wear(C(0.45f, 0.5f, 0.55f), 1.7f).Pants(C(0.18f, 0.18f, 0.22f)).Shoes(C(0.15f, 0.13f, 0.12f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.

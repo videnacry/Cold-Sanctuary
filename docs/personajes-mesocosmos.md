@@ -35,7 +35,72 @@ Sus microcosmos (rama `claude/edif-famosos`): [microcosmos-famosos.md](microcosm
 - Las estatuas de los pisos de yoga (Buda, Ganesha, Adiyogi, Patanjali) son decoración, no personal.
 - Newton, Curie, Einstein, Bruce Lee y los demás personajes históricos ya viven en sus microcosmos.
 
-## Reparto de papeles (2026-11-04)
+## Profesiones y parejas (Berón, 2026-11-04) — lo que vale ahora
+
+Berón: «Josedrilo y Maite son pareja, ¿Lizmibet y su esposo comparten residencia?; Ducristin tiene de pareja a Gallarle, el
+profesional de yoga es Josedrilo y también es profesional de bioconstrucción; Maite es profesional de cocina, Shalva es profesional de
+cultivo y bioconstrucción, Adaguchi es profesional de submarinismo y cocina, Amahuz es profesional de cocina y química; Karen es
+profesional de asuntos legales y lenguas; Alicita es profesional de contabilidad y project-manager».
+
+**Esto sustituye al reparto de papeles de abajo**, que fue provisional.
+
+### Profesiones (`Professions`)
+
+La profesión da a cada uno su papel sin quitar la rotación (regla J2):
+- cada día, antes de las vueltas por áreas, `WorkRoster` le da **una misión de cada área de su profesión** (la que menos ha hecho);
+- en una misión de grupo que se **dirige** (la clase de yoga), el profesional del área, si está libre, entra en el grupo y la dirige;
+- cada uno **empieza** en el área de su profesión principal (`SanctuaryDirector.HomeArea`, `PlaceStaff`), y su rótulo la dice.
+
+| Persona | Profesión | Áreas en la jornada | Sale en |
+|---|---|---|---|
+| **Josedrilo** | **Maestro de yoga** (`WorkdayDirector.YogaTeacher`: guía la clase de Hatha, medita junto al linga) y bioconstrucción | Sala de Yoga, Construcción | la tarima de Hatha tradicional |
+| Irosene | Segunda maestra de yoga (`SecondYogaTeacher`: la otra clase cuando hay dos a la vez) y su textil | — | Estudio Textil |
+| **Maite** | Cocina | Cocina | el restaurante |
+| **Shalva** | Cultivo y bioconstrucción | Huerto, Construcción | el huerto |
+| **Adaguchi** | Submarinismo (piloto del submarino de obra y de la ambulancia, tareas bajo el agua de los árboles) y cocina | Construcción, Cocina | Construcción |
+| **Amahuz** | Cocina y química | Cocina, Química | el restaurante |
+| **Karen** | Asuntos legales y lenguas | Aula: misiones nuevas `aul_legal` (contratos, permisos, normas y acuerdos, en una mesa de la sala de estudio) y `aul_lenguas` (traducir y dar clase de idiomas) | el Aula |
+| **Alicita** | Contabilidad y dirección de proyectos | Cocina (misión nueva `coc_cuentas`: las cuentas del santuario, que llevaba Nesvitor), Construcción (misión nueva `con_proyectos`: dirigir las obras) | Construcción |
+| Ducristin | Mecánica (vehículos y maquinaria) | Mecánica | el taller |
+| Nesvitor | **Consejero**: personal general, sin área fija (deja las cuentas a Alicita) | — | el comedor |
+| Gallarle | **Pendiente de foto y de profesión**: personal general | — | con Ducristin |
+| Andrea | Deja el yoga; su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento | — | el comedor |
+| Gohageneis | Guardia (patrulla) y artes marciales; ya no tiene a Josedrilo en la guardia | — | — |
+
+- **Karen en el Aula**: aún no hay un área de asuntos legales. El Aula tiene mesas y biblioteca en su sala de estudio para el trabajo
+  de despacho, y pizarra para las clases de lenguas. Y está en la torre del Entrenamiento, que usan todos cada día.
+- **Registros y vacunación del hospital** (eran de Maite): vuelven a las médicas, Lizmibet y Linduarda. Siguen siendo misiones del
+  Hospital en la rotación.
+- **Huerto para los visitantes** (era de Alicita): lo lleva Shalva, profesional de cultivo, con Panterilia.
+
+### Parejas: una casa del árbol por pareja (`ResidentialBuilder.Partners`, `Bedroom.partner`)
+
+| Casa | Viven | Nota |
+|---|---|---|
+| Lizmibet y Tote | Lizmibet y `JefeConstruccion` | antes, cada uno en la suya |
+| Amahuz y Karen | Amahuz y Karen | de su foto: **pendiente de que Berón lo confirme** |
+| Ducristin y Gallarle | Ducristin y Gallarle | Gallarle es nuevo |
+| Josedrilo y Maite | Josedrilo y Maite | antes, cada uno en la suya |
+
+- Hay **16 casas ocupadas de 18**: quedan 2 libres para recién llegados.
+- Duermen allí **20 residentes** (16 dueños y 4 parejas).
+- El ring de almohadas se mide con ellos (⌈√20⌉ = 5: caben 25) y `AreaCapacity` también.
+- Miembros del santuario: 19 con Kushal (`WorkdayDirector.Staff`). Con la regla J16 siguen saliendo 2 pisos de Hatha y 2 de Ashtanga.
+
+### La jornada (regla W9)
+
+- La ronda de las profesiones va antes que las vueltas por áreas. La rotación de siempre (la misión que menos has hecho) reparte el
+  resto, así que todos siguen aprendiendo todo.
+- Hay **4 misiones nuevas** (`aul_legal`, `aul_lenguas`, `coc_cuentas`, `con_proyectos`), 3,5 h al día. Son 19 personas × 5 h: sobra
+  sitio.
+- La brigada del restaurante de `RestaurantServiceTest` lleva a los profesionales de cocina:
+  - Goluis, Maite y Amahuz en la línea;
+  - Gohageneis en el pase;
+  - Adaguchi y Panterilia en el obrador;
+  - Irosene en la limpieza;
+  - Nesvitor en el comedor.
+
+## Reparto de papeles (2026-11-04, provisional: lo sustituyen las profesiones de arriba)
 
 | Papel | Antes | Ahora | Por qué |
 |---|---|---|---|

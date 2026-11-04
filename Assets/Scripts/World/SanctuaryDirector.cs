@@ -158,14 +158,18 @@ public class SanctuaryDirector : MonoBehaviour
     {
         { "Goluis", SanctuaryAreaType.Kitchen }, { "Irosene", SanctuaryAreaType.TextileStudio },
         { "Panterilia", SanctuaryAreaType.Garden },   // Gohageneis es guardia: patrulla, no tiene área fija
-        { "Lizmibet", SanctuaryAreaType.Infirmary }, { "Andrea", SanctuaryAreaType.Gym },     // la médica; ANDREA, el entrenador del gimnasio (2026-11-04; el yoga lo reparte la rama de personajes)
+        { "Lizmibet", SanctuaryAreaType.Infirmary },                                                // la médica (y los registros y la vacunación)
+        { "Andrea", SanctuaryAreaType.Gym },   // (2026-11-04) ANDREA, el entrenador del gimnasio («el personaje con más fuerza es Andrea»): empieza en el gimnasio
         { "JefeConstruccion", SanctuaryAreaType.Construction },                                     // Tofelite («Tote»), el esposo de Lizmibet, dirige las obras
-        // (2026-11-04) Los papeles de los famosos que se fueron a sus microcosmos (docs/personajes-mesocosmos.md §Reparto de papeles):
-        // la mecánica → Ducristin; registros y vacunación del hospital → Maite; las cuentas, desde el restaurante → Nesvitor; el
-        // huerto para los visitantes → Alicita. Josedrilo se une a la Guardia con Gohageneis (patrulla: sin área fija), y Gohageneis
-        // da además las artes marciales. Amahuz, Karen, Shalva y Adaguchi: personal general (empiezan en el área de su nivel).
-        { "Ducristin", SanctuaryAreaType.VehicleWorkshop }, { "Maite", SanctuaryAreaType.Infirmary },
-        { "Nesvitor", SanctuaryAreaType.Kitchen }, { "Alicita", SanctuaryAreaType.Garden },
+        // (2026-11-04) LAS PROFESIONES (Berón; Professions, docs/personajes-mesocosmos.md §Profesiones): cada uno empieza en el área de
+        // su profesión principal. Josedrilo, maestro de yoga (y bioconstrucción); Maite, cocina; Shalva, huerto (y bioconstrucción);
+        // Adaguchi, submarinismo (los submarinos de obra y la ambulancia: Construcción) y cocina; Amahuz, cocina y química; Karen, asuntos
+        // legales y lenguas (su mesa, en el Aula); Alicita, contabilidad y dirección de proyectos (las obras); Ducristin, la mecánica.
+        // Andrea deja el yoga (su papel de entrenador lo pone la rama del entrenamiento); Nesvitor, consejero, sin área fija; Gallarle,
+        // pendiente de foto y de profesión. Gohageneis es guardia (patrulla, sin área fija) y da las artes marciales.
+        { "Josedrilo", SanctuaryAreaType.YogaRoom }, { "Maite", SanctuaryAreaType.Kitchen }, { "Shalva", SanctuaryAreaType.Garden },
+        { "Adaguchi", SanctuaryAreaType.Construction }, { "Amahuz", SanctuaryAreaType.Kitchen }, { "Karen", SanctuaryAreaType.Classroom },
+        { "Alicita", SanctuaryAreaType.Construction }, { "Ducristin", SanctuaryAreaType.VehicleWorkshop },
     };
 
     SanctuaryArea DetermineStartArea(WorldCharacter character)

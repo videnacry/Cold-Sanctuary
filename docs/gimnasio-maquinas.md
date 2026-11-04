@@ -668,7 +668,7 @@ investigar y esto también serviría para el trabajo de entrenador del gym)».
 
 Sustituye al circuito igual para todos de §13: ahora cada persona sigue **su plan**. Código: `GymProgramming` (datos puros:
 planes, rutinas, progresión), `GymTrainingSession` (la sesión en vivo), `GymCoach` (el entrenador) y `WorkdayDirector.GymSession`.
-Reglas J18–J21 del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+Reglas J19–J22 del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
 
 ### 15.1 Investigación: cómo se programa el entrenamiento de fuerza
 
