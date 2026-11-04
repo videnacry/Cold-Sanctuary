@@ -93,7 +93,7 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [x] **El piso no se rompe** (2026-11-03, 2.ª vuelta): sin despeje del barrio ni apartar muebles; el pueblo los rodea o sube a sus mesetas (barrio alto) trepando (NavMeshLink + Climbable); `MicroFloor.floorPieces` en `MicroFloors.Validate` y `BruceLeeStoryTest`.
 - [x] **Relieve real low-poly** (`CivicBuilder.Terrain`): montes y colinas con ruido, roca y nieve; lagos; ríos con riberas; acantilados (6 pueblos).
 - [x] **Frutales en las residencias del santuario**: terraza frutal en cada casa de árbol (`ResidentialBuilder`), en la ronda del jardinero; `FruitOrchardTest` (55) lo mira.
-- [ ] **Verificar en vivo la 2.ª vuelta** (lo hace el probador): reconstruir SampleScene y todos los microcosmos; grupos 43, 55, 60, 62, 63, 66; fotos.
+- [ ] **Verificar en vivo la 2.ª vuelta** (lo hace el probador): reconstruir SampleScene y todos los microcosmos; grupos 43, 55, 60, 62, 63, 66; fotos. Probador (2026-11-04): 829/6; arreglado en código: el banco de la casa redonda del Huerto a 3,5 m (1,93 m del hogar) y `Layout` con la caja girada y 10 cm de holgura; la prueba de la flora ya no cuenta como solar el de un edificio del barrio alto sobre un mueble (3 plantas de Bruce Lee bajo el tablero). Falta repasar 43 y 62.
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
