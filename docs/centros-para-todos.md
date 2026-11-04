@@ -54,7 +54,8 @@ No hay un segundo validador: es `AreaCapacity` con `CapacidadPisosTest` (grupo 7
   - las estaciones del gimnasio;
   - las esterillas por **estilo de su sala** (`YogaHall.style`: los pisos de Ashtanga ya no se buscan por nombre);
   - los `AreaSeat` de la calistenia, el dojo, el ballet y el Aula;
-  - el **ring de almohadas**: `AreaSeat` «guerra de almohadas»; la prueba y `LogScene` lo añaden aunque no sea un área.
+  - el **ring de almohadas** (`PillowRing.All`).
+- El catálogo del horario libre se comprueba con `AreaCapacity.CheckActivities` (lo llama `PillowFightTest`, grupo 89).
 - Falla si un centro de entrenamiento o de estudio no llega a los miembros.
 
 ## Las clases y el ocio

@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// REGLA DE CAPACIDAD (Berón 2026-11-04; docs/manual-de-diseno.md, regla C8). Cada piso o área tiene máquinas e infraestructura
+/// REGLA DE CAPACIDAD (Berón 2026-11-04; docs/manual-de-diseno.md, regla S13 = J16: ES LA MISMA REGLA y este validador es su ÚNICA
+/// fuente; quien compruebe J16 —el horario libre, el ring de almohadas— llama a <see cref="Check"/> o <see cref="CheckActivities"/>). Cada piso o área tiene máquinas e infraestructura
 /// para que VARIAS personas hagan la misma tarea a la vez, como en el restaurante o el hospital. Los centros de ENTRENAMIENTO y
 /// de ESTUDIO son su propia categoría y deben servir a TODOS los miembros del santuario a la vez: el gimnasio, las dos salas de
 /// yoga (Hatha y Ashtanga), el ring de almohadas y la sala de estudio (el Aula).
@@ -24,6 +25,21 @@ public static class AreaCapacity
         return wd != null && wd.staff != null && wd.staff.Length > 0 ? wd.staff.Length : WorkdayDirector.Staff.Length;
     }
 
+
+    /// <summary>Lo que pide la regla para una actividad de esa categoría: trabajo, varias personas; entrenamiento, estudio y ocio,
+    /// todos los miembros.</summary>
+    public static int Need(AreaSeat.Category c, int members) => c == AreaSeat.Category.Trabajo ? MinWorkSeats : members;
+
+    /// <summary>LA MISMA REGLA para listas de actividades sin escena (el catálogo del horario libre, LeisureRoster: título y
+    /// capacidad; <paramref name="unlimited"/> = sin tope). La usan quienes comprueban J16: AreaCapacity es la única fuente
+    /// (manual S13 = J16).</summary>
+    public static List<Line> CheckActivities(IEnumerable<(string title, int capacity, bool unlimited)> activities, int members, AreaSeat.Category category = AreaSeat.Category.Ocio)
+    {
+        var lines = new List<Line>();
+        foreach (var (title, capacity, unlimited) in activities)
+            lines.Add(new Line { area = title, activity = title, category = category, have = unlimited ? int.MaxValue : capacity, need = Need(category, members) });
+        return lines;
+    }
     public struct Line
     {
         public string area, activity; public AreaSeat.Category category; public int have, need;
@@ -51,7 +67,7 @@ public static class AreaCapacity
                 if (s.activity.Contains("almohada")) ring = true;
             }
             foreach (var kv in sum)
-                lines.Add(new Line { area = name, activity = kv.Key, category = kv.Value.c, have = kv.Value.n, need = kv.Value.c == AreaSeat.Category.Trabajo ? MinWorkSeats : members });
+                lines.Add(new Line { area = name, activity = kv.Key, category = kv.Value.c, have = kv.Value.n, need = Need(kv.Value.c, members) });
             // El GIMNASIO: sus máquinas (el piso del gimnasio y el de cardio cuentan juntos: es un mismo centro).
             if (a.name == "Gym_Area")
             {
@@ -78,10 +94,17 @@ public static class AreaCapacity
                 hatha = true; ashtanga = s2 > 0;
             }
         }
+        // El RING DE ALMOHADAS (ocio de todos a la vez; docs/guerra-de-almohadas.md): su capacidad, la de su colchón.
+        foreach (PillowRing r in PillowRing.All)
+        {
+            if (r == null) continue;
+            lines.Add(new Line { area = "Ring de almohadas", activity = PillowRing.ActivityId, category = AreaSeat.Category.Ocio, have = r.Capacity, need = members });
+            ring = true;
+        }
         if (!gym) pending.Add("Gimnasio (no está en la escena)");
         if (!hatha) pending.Add("Sala de Yoga Hatha (no está en la escena)");
         if (!ashtanga) pending.Add("Sala de Yoga Ashtanga (no está en la escena)");
-        if (!ring) pending.Add("Ring de almohadas (PENDIENTE DE CONSTRUIR)");
+        if (!ring) pending.Add("Ring de almohadas (no está en la escena)");
         if (!study) pending.Add("Sala de estudio (no está en la escena)");
         return lines;
     }
@@ -91,7 +114,6 @@ public static class AreaCapacity
     {
         var roots = new List<Transform>();
         foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(a.transform);
-        foreach (PillowRing r in Object.FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None)) roots.Add(r.transform);   // el ring de almohadas (arboleda residencial; regla J15)
         int members = Members();
         var lines = Check(roots, members, out var pending);
         var bad = lines.FindAll(l => !l.ok);

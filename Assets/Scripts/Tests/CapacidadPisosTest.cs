@@ -41,7 +41,6 @@ public class CapacidadPisosTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Regla de capacidad: los pisos del santuario");
         var areas = new List<Transform>();
         foreach (SanctuaryArea a in FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None)) areas.Add(a.transform);
-        foreach (PillowRing r in FindObjectsByType<PillowRing>(FindObjectsInactive.Include, FindObjectsSortMode.None)) areas.Add(r.transform);   // (2026-11-04) el ring de almohadas, en la arboleda: no es un área
         if (areas.Count == 0) { TestProbe.Check("hay áreas en la escena (reconstruye SampleScene)", false); TestProbe.End(); yield break; }
         int members = AreaCapacity.Members();
         var all = AreaCapacity.Check(areas, members, out var pending);

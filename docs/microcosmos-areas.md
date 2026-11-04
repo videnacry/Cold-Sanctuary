@@ -79,18 +79,18 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 | Chernóbil | Central Nuclear | sí | el reactor |
 | Egina | Construcción | sí | los mirmidones levantan su ciudad |
 | Tregua 1914 | Gimnasio | **pendiente** | Campo de deportes de equipo (fútbol) |
-| Alejandría | Planta Atómica | **pendiente** | Observatorio y biblioteca (astronomía y geografía) |
-| Crotona | Gimnasio | **pendiente** | Aula de matemáticas y música (el monocordio) |
-| Menfis | Huerto | **pendiente** | Archivo de historia y geografía (biblioteca) |
-| Bagdad | Construcción | **pendiente** | Casa de la Sabiduría (biblioteca y sala de cálculo) |
+| Alejandría | Aula | sí | la biblioteca de Alejandría (re-apuntado el 2026-11-04 por la alerta de piso nuevo) |
+| Crotona | Aula | sí | la escuela del número y la música (re-apuntado el 2026-11-04) |
+| Menfis | Aula | sí | el archivo y la biblioteca (re-apuntado el 2026-11-04) |
+| Bagdad | Aula | sí | la Casa de la Sabiduría: biblioteca y sala de cálculo (re-apuntado el 2026-11-04) |
 | Angostura | Cocina | **pendiente** | Sala de asambleas (parlamento) |
-| Sils Maria | Sala de Yoga | **pendiente** | Sendero de montaña y biblioteca de filosofía |
+| Sils Maria | Aula | sí | la biblioteca de filosofía (re-apuntado el 2026-11-04) |
 | Colorado Springs | Construcción | **pendiente** | Taller de electricidad (alta tensión) |
 | Palenque (Pakal) | Huerto | **pendiente** | Templo de los antepasados (memoria, rito y duelo) |
 | Velliangiri (Sadhguru) | Sala de Yoga | sí | meditar en silencio: el Dhyanalinga ([microcosmos-famosos.md](microcosmos-famosos.md)) |
 | Aldea de la montaña (Goku, homenaje) | Dojo | sí | entrenar sirviendo a la aldea |
 | Uagadugú (Ibrahim Traoré) | Huerto | sí | los productores: labrar y sembrar |
-| Hawthorne (Elon Musk) | Mecánica | **pendiente** | Fábrica de cohetes y control de misión |
+| Hawthorne (Elon Musk) | Control de misión (lanzadera) | sí | el lanzamiento seguido desde el control (re-apuntado el 2026-11-04) |
 | Albuquerque (Bill Gates) | Informática | sí | el clúster de IA (re-apuntado el 2026-11-04 por la alerta de piso nuevo) |
 | Omaha (Warren Buffett) | Estudio Textil | **pendiente** | Mercado y oficina de comercio (economía) |
 | Prairie View (MacKenzie Scott) | Aula | sí | la universidad y su biblioteca (re-apuntada el 2026-11-04) |
@@ -98,15 +98,15 @@ finalizada, y los microcosmos se crean siempre sobre la forma finalizada».
 ### Los pisos que faltan por crear (`MicroFloors.Pending`)
 
 1. **Campo de deportes de equipo (fútbol)** — Tregua 1914.
-2. **Observatorio y biblioteca** — Alejandría (Eratóstenes).
-3. **Aula de matemáticas y música** — Crotona (Pitágoras).
-4. **Archivo de historia y geografía** — Menfis (Heródoto).
-5. **Casa de la Sabiduría (biblioteca y sala de cálculo)** — Bagdad (al-Juarismi).
+2. **Observatorio y biblioteca** — Alejandría (Eratóstenes). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
+3. **Aula de matemáticas y música** — Crotona (Pitágoras). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
+4. **Archivo de historia y geografía** — Menfis (Heródoto). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
+5. **Casa de la Sabiduría (biblioteca y sala de cálculo)** — Bagdad (al-Juarismi). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 6. **Sala de asambleas (parlamento)** — Angostura (Bolívar).
-7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche).
+7. **Sendero de montaña y biblioteca de filosofía** — Sils Maria (Nietzsche). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 8. **Taller de electricidad (alta tensión)** — Colorado Springs (Tesla).
 9. **Templo de los antepasados (memoria, rito y duelo)** — Palenque (Pakal).
-10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk).
+10. **Fábrica de cohetes y control de misión** — Hawthorne (Elon Musk). — **cubierto** (2026-11-04: re-apuntado a un piso que ya existe).
 11. ~~Sala de informática~~ — **creado** (piso de Informática, 2026-11-04): Albuquerque (Bill Gates) ya está en él.
 12. **Mercado y oficina de comercio (economía)** — Omaha (Warren Buffett).
 13. ~~Aula y biblioteca universitaria~~ — **creado** (Aula, 2026-11-04): Prairie View (MacKenzie Scott) ya está en él; la alerta señala también a Menfis, Alejandría, Bagdad, Crotona y Sils Maria.

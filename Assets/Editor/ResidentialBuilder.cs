@@ -238,7 +238,6 @@ public static class ResidentialBuilder
             }
         PillowRing pr = ring.gameObject.AddComponent<PillowRing>();
         pr.cells = _ringCells; pr.builtFor = _ringFor; pr.mattress = mat; pr.pillows = loose;
-        AreaSeat.Add(ring.gameObject, "guerra de almohadas", AreaSeat.Category.Entrenamiento, _ringCells * _ringCells);   // regla de capacidad (AreaCapacity, S13 / J16): todos a la vez
         // Su PISTA DE ALFOMBRAS (red de edificio de la Residencia: vuela a la plataforma central y al suelo), a 2 m del pie de la cama.
         float zc = -_ringZ * 0.5f + EdgeMargin + ZoneD * 0.5f;
         CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, CarpetPad.Kind.Edificio, Name, 2, $"{Name}#ring", "Ring de almohadas", 2, ZoneW, ZoneD);

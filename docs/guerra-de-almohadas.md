@@ -118,8 +118,8 @@ Berón (2026-11-04): los centros de entrenamiento y de ocio dan servicio a todos
 - El ring cumple: caben 25 y son 19 residentes.
 - El resto de centros también cumple ya: más pisos donde hacían falta, clases que se reparten por salas y ocio para todos.
   Detalle en [centros-para-todos.md](centros-para-todos.md).
-- Lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75), que cuenta el ring por su `AreaSeat` «guerra de almohadas».
-- `PillowFightTest` registra además las actividades que van por turnos.
+- Lo comprueba la regla de capacidad (`AreaCapacity`, grupo 75), que cuenta el ring; `PillowFightTest` llama a `AreaCapacity.CheckActivities` para el ring y el ocio «para todos».
+- Las actividades por turnos se apuntan en el registro.
 
 ## Las alfombras no atraviesan el ring
 
