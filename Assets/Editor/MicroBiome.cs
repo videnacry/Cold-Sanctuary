@@ -12,7 +12,7 @@ using UnityEngine;
 /// nombre real; ver docs/microcosmos-fauna-eras.md.
 /// Escala: 1 cm real de planta ≈ 0,25 m en el microcosmos (la brizna de hierba de 5 cm ≈ 12 m); los bichos, ≈ 0,3 m por mm.
 /// </summary>
-public static class MicroBiome
+public static partial class MicroBiome
 {
     public enum Kind { Grass, Moss, Fungus, Fern, Flower, Shrub, Stone, Sand, Dung, Snow }
 
@@ -60,6 +60,8 @@ public static class MicroBiome
     /// <summary>El bioma del microcosmos llamado <paramref name="display"/> (o null: el genérico).</summary>
     public static Biome For(string display)
     {
+        Biome famous = FamousBiome(display);   // los famosos (MicroBiome.Famosos.cs, docs/microcosmos-famosos.md)
+        if (famous != null) return famous;
         switch (display)
         {
             // ── Kapilavastu / Lumbini (Terai del Nepal), s. V a. C., tras el monzón (oct–nov) ──

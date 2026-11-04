@@ -36,6 +36,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_Tregua1914", "Tregua 1914", "la tregua de Navidad"),
         ("Microcosmos_BruceLee", "Bruce Lee", "Bruce Lee: del Wing Chun al Jeet Kune Do (sé agua)"),
         ("Microcosmos_Pakal", "Palenque", "Pakal de Palenque: el rey que renace como el maíz (683)"),
+        ("Microcosmos_Sadhguru", "Velliangiri", "Sadhguru y el Dhyanalinga (1999)"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
         ("Microcosmos_Pitagoras", "Crotona", "Pitágoras y la escuela de Crotona"),

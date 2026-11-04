@@ -57,6 +57,8 @@ public static class MicroFloors
         M("Pasadena", "Chemistry_Area", "Patterson y la edad de la Tierra: el laboratorio de química"),
         M("Chernóbil", "NuclearPower_Area", "Ananenko y su escuadrón en el bloque 4: la central nuclear"),
         M("Palenque", "Garden_Area", "Pakal, el rey que renace como el maíz (la milpa)", "Templo de los antepasados (memoria, rito y duelo)"),
+        // Los famosos (docs/microcosmos-famosos.md)
+        M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>

@@ -23,7 +23,8 @@ public static partial class MicroStyles
 
     static bool Is(Entry e, params string[] ids) { foreach (string i in ids) if (e.id == i) return true; return false; }
     static bool Europe(Entry e) => Is(e, "europa_medieval", "alpino", "estuardo", "georgiano", "europa_romantica", "belle_epoque", "entreguerras", "francia_rural");
-    static bool Modern(Entry e) => Is(e, "norteamerica_moderna", "sovietico", "occidental_moderna", "hongkong_tonglau");
+    static bool Modern(Entry e) => Is(e, "norteamerica_moderna", "sovietico", "occidental_moderna", "hongkong_tonglau", "norteamerica_interior", "india_moderna", "sahel_moderno");
+    static bool UsaModern(Entry e) => Is(e, "norteamerica_victoriana", "norteamerica_moderna", "norteamerica_interior");
 
     /// <summary>El nombre del edificio <paramref name="c"/> en el estilo <paramref name="e"/> y el año <paramref name="year"/>; null
     /// si en esa época y lugar no existía.</summary>
@@ -36,7 +37,7 @@ public static partial class MicroStyles
                 return Is(e, "egeo") ? "Ágora" : Is(e, "roma") ? "Foro" : Is(e, "egipto") ? "Plaza del templo" : Is(e, "islam_abasi") ? "Maydān (plaza de la mezquita)" :
                        Is(e, "otomano") ? "Meydan (plaza de la fuente)" : Is(e, "hispanoamerica") ? "Plaza Mayor" : Is(e, "maya_clasico") ? "Gran Plaza" :
                        Is(e, "china_tradicional", "hongkong_tonglau") ? "Plaza del templo" : Is(e, "sovietico") ? "Plaza central" : Is(e, "frente_1914") ? null :
-                       Is(e, "norteamerica_victoriana", "norteamerica_moderna") ? "Plaza (town square)" : pre ? "Claro de reunión" : "Plaza mayor";
+                       UsaModern(e) ? "Plaza (town square)" : Is(e, "sahel_moderno") ? "Place (plaza del barrio)" : Is(e, "india_moderna") ? "Plaza del templo del pueblo" : pre ? "Claro de reunión" : "Plaza mayor";
             case Civic.Monumento:
                 return Is(e, "egeo") ? "Estatua votiva (kouros)" : Is(e, "egipto") ? "Coloso del faraón" : Is(e, "roma") ? "Estatua del foro" : Is(e, "islam_abasi", "otomano") ? null :
                        Is(e, "maya_clasico") ? "Estela del gobernante" : Is(e, "mesopotamia") ? "Estela de ofrenda" : Is(e, "sur_asia") ? "Piedra votiva" :
@@ -49,7 +50,7 @@ public static partial class MicroStyles
                 return Is(e, "egeo") ? "Arboleda sagrada (alsos)" : Is(e, "roma") ? "Jardín (hortus)" : Is(e, "egipto") ? "Jardín del templo" : Is(e, "islam_abasi") ? "Bustān (jardín)" :
                        Is(e, "otomano") ? "Bahçe (jardín de té)" : Is(e, "sur_asia") ? "Arboleda (ārāma)" : Is(e, "mesopotamia") ? "Huerto de palmeras" : Is(e, "maya_clasico") ? "Arboleda de cacao y ceibas" :
                        Is(e, "hispanoamerica") ? "Alameda" : Is(e, "china_tradicional", "hongkong_tonglau") ? "Jardín" : Is(e, "sovietico") ? "Parque de la cultura" : Is(e, "frente_1914") ? null :
-                       Is(e, "norteamerica_victoriana", "norteamerica_moderna") ? "Parque" : pre ? null : "Jardín público";
+                       UsaModern(e) ? "Parque" : Is(e, "sahel_moderno") ? "Parque urbano (bosque de la ciudad)" : pre ? null : "Jardín público";
             case Civic.Mercado:
                 return Is(e, "egeo") ? "Mercado del ágora" : Is(e, "islam_abasi", "otomano") ? "Zoco" : Is(e, "maya_clasico") ? "Mercado de la plaza" : Is(e, "frente_1914") || pre ? null : "Mercado";
             case Civic.Taller:
@@ -67,7 +68,7 @@ public static partial class MicroStyles
                 return Is(e, "egeo") ? "Gimnasio (palestra)" : Is(e, "roma") ? "Palestra" : Is(e, "egipto", "mesopotamia") ? "Patio de lucha" : Is(e, "sur_asia") ? "Akhāṛā (patio de lucha)" :
                        Is(e, "islam_abasi") ? "Maydān de furusiyya (caballos y armas)" : Is(e, "otomano") ? "Tekke de luchadores (yağlı güreş)" : Is(e, "maya_clasico") ? "Juego de pelota" :
                        Is(e, "china_tradicional", "hongkong_tonglau") ? "Escuela de artes marciales" : Is(e, "japon_edo_meiji") ? "Dojo" : Is(e, "europa_medieval") ? "Sala de armas" :
-                       Is(e, "estuardo", "georgiano") ? "Sala de esgrima" : Is(e, "sovietico") ? "Club deportivo" : Is(e, "frente_1914") || pre ? null : year >= 1850 ? "Gimnasio (Turnhalle)" : "Sala de armas";
+                       Is(e, "estuardo", "georgiano") ? "Sala de esgrima" : Is(e, "sovietico") ? "Club deportivo" : Is(e, "frente_1914") || pre ? null : Is(e, "india_moderna") ? "Akhāṛā (patio de lucha)" : Is(e, "sahel_moderno", "occidental_moderna", "norteamerica_interior", "norteamerica_moderna") ? "Gimnasio" : year >= 1850 ? "Gimnasio (Turnhalle)" : "Sala de armas";
             case Civic.Baile:
                 return Is(e, "egeo") ? "Orchestra (lugar de la danza)" : Is(e, "egipto") ? "Patio de danzas del templo" : Is(e, "sur_asia") ? "Pabellón de danza" : Is(e, "islam_abasi", "otomano") ? "Salón de música (majlis)" :
                        Is(e, "hispanoamerica") ? "Sala de joropo" : Is(e, "maya_clasico") ? "Plataforma de danza" : Is(e, "hongkong_tonglau", "china_tradicional") ? "Salón de baile" :
@@ -95,14 +96,14 @@ public static partial class MicroStyles
                        year >= 1829 && !Is(e, "frente_1914", "maya_clasico") ? "Comisaría de policía" : null;
             case Civic.Bomberos:
                 return Is(e, "roma") ? "Cuartel de los vigiles (incendios)" : Is(e, "otomano") ? "Tulumbacılar (bomberos de la bomba)" : Is(e, "georgiano") ? "Bomba de incendios de la parroquia" :
-                       Is(e, "alpino") ? "Bomba de incendios del pueblo" : Is(e, "francia_rural") ? "Sapeurs-pompiers" : Is(e, "norteamerica_victoriana", "norteamerica_moderna") ? "Firehouse (parque de bomberos)" :
+                       Is(e, "alpino") ? "Bomba de incendios del pueblo" : Is(e, "francia_rural", "sahel_moderno") ? "Sapeurs-pompiers" : UsaModern(e) ? "Firehouse (parque de bomberos)" :
                        year >= 1800 && !Is(e, "frente_1914", "hispanoamerica", "maya_clasico") ? "Parque de bomberos" : null;
             case Civic.Mecanica:
                 if (year < -3500 || pre || Is(e, "maya_clasico", "frente_1914")) return null;   // sin rueda no hay carretero (los mayas no usaban ruedas de carga)
                 return year >= 1900 ? "Taller mecánico (garaje)" : year >= 1850 ? "Taller mecánico" : "Taller del carretero (ruedas y ejes)";
             case Civic.Milicia:
                 return Is(e, "egeo") ? "Cuartel de los hoplitas" : Is(e, "roma") ? "Castra" : Is(e, "maya_clasico") ? "Casa de los guerreros (bate')" : Is(e, "islam_abasi") ? "Cuartel del jund" :
-                       Is(e, "norteamerica_victoriana", "norteamerica_moderna") ? "Armería de la Guardia Nacional" : Is(e, "frente_1914") ? null : pre || Is(e, "mesopotamia") ? "Casa de los guerreros" : "Cuartel de la milicia";
+                       UsaModern(e) ? "Armería de la Guardia Nacional" : Is(e, "frente_1914") ? null : pre || Is(e, "mesopotamia") ? "Casa de los guerreros" : "Cuartel de la milicia";
             case Civic.Piscina:
                 return Is(e, "egeo") ? "Baños (balaneion)" : Is(e, "roma") ? "Termas" : Is(e, "islam_abasi") ? "Hammam" : Is(e, "otomano") ? "Hamam" : Is(e, "egipto") ? "Lago sagrado del templo" :
                        Is(e, "sur_asia") ? "Estanque de baños (puṣkariṇī)" : Is(e, "maya_clasico") ? "Temazcal (baño de vapor)" : Is(e, "alpino") ? "Baños del lago" :
@@ -119,7 +120,7 @@ public static partial class MicroStyles
             case Civic.Edificio:
                 return Is(e, "hongkong_tonglau") ? "Tong lau (varias plantas)" : Is(e, "belle_epoque", "entreguerras", "europa_romantica") ? "Inmueble de varias plantas" :
                        Is(e, "sovietico") ? "Bloque de viviendas (khrushchyovka)" : Is(e, "roma") ? "Insula" : Is(e, "otomano") ? "Konak de dos plantas" : Is(e, "maya_clasico") ? "Palacio en terrazas" :
-                       Is(e, "islam_abasi") ? "Casa de dos plantas con terraza" : Is(e, "norteamerica_victoriana", "norteamerica_moderna") ? "Edificio de apartamentos" :
+                       Is(e, "islam_abasi") ? "Casa de dos plantas con terraza" : UsaModern(e) ? "Edificio de apartamentos" :
                        Is(e, "alpino", "estuardo", "georgiano") ? "Casa de dos plantas" : null;
         }
         return null;
@@ -157,6 +158,10 @@ public static partial class MicroStyles
             case "frente_1914": return new[] { new Fruit("Manzano de la granja en ruinas (Malus domestica)", 4f, leaf, F(0.75f, 0.15f, 0.12f)) };
             case "hispanoamerica": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Guayabo (Psidium guajava)", 4f, leaf, F(0.85f, 0.85f, 0.4f)), new Fruit("Lechosa (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true) };
             case "maya_clasico": return new[] { new Fruit("Cacao (Theobroma cacao)", 4f, dark, F(0.85f, 0.5f, 0.15f)), new Fruit("Aguacate (Persea americana)", 8f, dark, F(0.2f, 0.35f, 0.15f)), new Fruit("Ramón (Brosimum alicastrum)", 9f, leaf, F(0.85f, 0.6f, 0.2f)), new Fruit("Zapote (Manilkara zapota)", 8f, dark, F(0.55f, 0.4f, 0.25f)), new Fruit("Papaya (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true) };
+            // (2026-11-04) Los famosos (docs/microcosmos-famosos.md).
+            case "india_moderna": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Cocotero (Cocos nucifera)", 12f, F(0.3f, 0.5f, 0.25f), F(0.55f, 0.4f, 0.2f), palm: true), new Fruit("Banano (Musa)", 4f, F(0.3f, 0.55f, 0.25f), F(0.9f, 0.85f, 0.3f), palm: true), new Fruit("Yaca (Artocarpus heterophyllus)", 9f, dark, F(0.6f, 0.65f, 0.25f)) };   // los huertos del pie de Velliangiri
+            case "sahel_moderno": return new[] { new Fruit("Mango (Mangifera indica)", 8f, dark, F(0.95f, 0.65f, 0.15f)), new Fruit("Papayo (Carica papaya)", 4f, F(0.3f, 0.55f, 0.25f), F(0.95f, 0.6f, 0.15f), palm: true), new Fruit("Guayabo (Psidium guajava)", 4f, leaf, F(0.85f, 0.85f, 0.4f)), new Fruit("Karité (Vitellaria paradoxa)", 9f, dark, F(0.5f, 0.55f, 0.3f)) };   // el mango de las cours y el karité de la sabana
+            case "norteamerica_interior": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)), new Fruit("Albaricoquero (Prunus armeniaca)", 4f, leaf, F(0.95f, 0.65f, 0.3f)), new Fruit("Pacano (Carya illinoinensis)", 12f, leaf, F(0.5f, 0.38f, 0.22f)) };   // los albaricoques de Albuquerque, los manzanos de Omaha, los pacanos de Texas
             case "norteamerica_victoriana": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Melocotonero (Prunus persica)", 3.5f, leaf, F(0.95f, 0.6f, 0.4f)) };
             case "norteamerica_moderna": return new[] { new Fruit("Naranjo (Citrus sinensis)", 4f, dark, F(0.95f, 0.55f, 0.1f)), new Fruit("Limonero (Citrus limon)", 3.5f, dark, F(0.95f, 0.9f, 0.25f)), new Fruit("Aguacate (Persea americana)", 7f, dark, F(0.2f, 0.35f, 0.15f)) };   // Pasadena: los naranjos del Valle de San Gabriel
             case "sovietico": return new[] { new Fruit("Manzano (Malus domestica)", 4.5f, leaf, F(0.75f, 0.15f, 0.12f)), new Fruit("Cerezo ácido (Prunus cerasus)", 4f, leaf, F(0.7f, 0.05f, 0.1f)) };   // los frutales de los patios de Prípiat

@@ -271,7 +271,8 @@ internal static partial class CivicBuilder
             case "Chernóbil": return ChernobylTown(t);
             case "Palenque": return PalenqueTown(t);
             case "Egina": return EginaTown(t);
-            default: return 0;
+            default: return FamousTown(t, display);   // los famosos (CivicBuilder.Famosos.cs), o 0
+
         }
     }
 

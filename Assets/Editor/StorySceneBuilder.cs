@@ -40,6 +40,8 @@ public static partial class StorySceneBuilder
         // LA HISTORIA MAYA (StorySceneBuilder.Maya.cs, docs/microcosmos-maya-pakal.md): Pakal de Palenque, sobre el Huerto (la milpa) mientras
         // falta su piso representativo (MicroFloors: «Templo de los antepasados»).
         ("Garden_Area", "Palenque", "Microcosmos_Pakal", new Color(0.55f, 0.7f, 0.45f), new System.Func<Transform, int>(Pakal)),
+        // LOS FAMOSOS (StorySceneBuilder.Famosos.cs, docs/microcosmos-famosos.md): una historia de su vida pública en su pueblo real.
+        ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -65,6 +67,7 @@ public static partial class StorySceneBuilder
         ["Pasadena"] = ("1953", 10.0f),   // la mañana en el laboratorio limpio
         ["Chernóbil"] = ("principios de mayo de 1986", 22.0f),   // de noche, en el sótano del bloque 4
         ["Palenque"] = ("28 de agosto de 683 (9.12.11.5.18 en la Cuenta Larga)", 7.0f),   // el amanecer del día en que muere Pakal
+        ["Velliangiri"] = ("24 de junio de 1999", 6.0f),   // el amanecer del día en que termina la consagración del Dhyanalinga
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era
