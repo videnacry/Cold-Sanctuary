@@ -143,10 +143,12 @@ public static partial class SampleSceneBuilder
         BuildMagnate(root.transform);            // LA MAGNATE: maestra-guardiana (estado infinito; pacifica; enseña yoga al rezagado). docs/anyma-factory-and-control.md
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
+        BuildLaunchSite(root.transform);          // LANZADERA DE COHETES: casquete artificial lejos del santuario y su árbol reforzado, por encima de todo (docs/lanzadera-de-cohetes.md)
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos
         PlaceCarpetAreas();    // alfombras voladoras: un área en cada piso y el piso de alfombras en el techo (ya con los muebles puestos)
+        FinishLaunchSite();    // la corona de lanzamiento sobre el techo de su árbol, y la regla de altura
         SpotAtCarpets("CocinaSpot", "Kitchen_Area");   // la Magnate deja al nuevo donde se llega a la cocina: junto a sus alfombras
         PlaceRooftopSolar();   // paneles en el piso más alto de cada edificio, en un borde libre (antes del bosque: sus ramas los esquivan)
         PlaceRooftopOrchards();   // FRUTALES en maceta en el resto de cada techo, con su punto de cuidados (docs/jardines-frutales.md)
@@ -160,6 +162,7 @@ public static partial class SampleSceneBuilder
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
         FurnitureSpacing.Report();       // muebles sin su pasillo mínimo (máquinas, mesas, camas…): aviso por consola
         EnsureFloorForms();              // cada piso con su forma finalizada y su forma en construcción (FloorForms; los microcosmos, sobre la finalizada)
+        ValidateLaunchHeight("al final del Blockout");   // la regla de la lanzadera, con todo lo elevado ya puesto (si algo creció, sube la plataforma)
         BakeNavMesh();
 
         // Genera también las ESCENAS HERMANAS del MICROCOSMOS (cada una es su propia .unity, no van en el mesocosmos):
@@ -2685,6 +2688,7 @@ public static partial class SampleSceneBuilder
         // (con la holgura de los árboles, 4 m).
         GuardTower.TreeHeight = Mathf.Max(GuardTower.BaseHeight, TallestBuilding());
         GuardTower.Build(root.transform, new Vector3(-20f, 0f, 57f), w => HelixBlockedAt(w, TreeSpec.TreeClearance));   // en su isla, al noroeste del hub
+        root.AddComponent<ElevatedElement>().label = "el árbol de la guardia";   // cuenta para la regla de altura de la lanzadera
         Debug.Log($"[Guardia] El árbol de la guardia mide {GuardTower.TreeHeight:0.0} m (el edificio más alto, con la columna de la puerta de su techo).");
         (string name, Vector3 pos)[] posts =
         {

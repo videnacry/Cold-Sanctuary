@@ -152,6 +152,25 @@ public class ConstructionSubmarine : MonoBehaviour
         return true;
     }
 
+    /// <summary>Lleva la carga a un PISO cualquiera de un edificio-árbol (sin obra: la fábrica de cohetes o el garaje de la lanzadera,
+    /// docs/lanzadera-de-cohetes.md). false si no hay camino o no está aparcado.</summary>
+    public bool SendTo(ArbolCampos to, TreeLevel lb, string title)
+    {
+        if (to == null || lb == null || Now != State.Parked) return false;
+        ArbolCampos from = ArbolCampos.At(transform.position + Vector3.up * 0.5f, out TreeLevel la, out _, false);
+        if (from == null || la == null) { Debug.LogWarning($"[Submarino] no sé en qué piso estoy para ir a «{title}»."); return false; }
+        Target = null; _freeTrip = true;
+        _route.Clear(); doorsUsed.Clear();
+        Vector3 park = ParkPoint(to, lb);
+        AddTrip(from, la, to, lb, () => park);
+        _wp = 0; _legSince = Time.time;
+        Now = State.Loading; _wait = Time.time + 2f;
+        Doing = $"Carga {title} en el garaje";
+        Debug.Log($"[Submarino] Va a llevar {title} a {lb.name} de {to.building}: {_route.Count} tramos.");
+        return true;
+    }
+    bool _freeTrip;
+
     /// <summary>Dónde aparca en un piso: frente a su puerta, metido en el piso (a 9 m del umbral), sobre la losa.</summary>
     static Vector3 ParkPoint(ArbolCampos t, TreeLevel lv)
     {
@@ -188,6 +207,7 @@ public class ConstructionSubmarine : MonoBehaviour
         {
             // Descarga: el material del día a la obra y la maquinaria al piso. Vuelve al garaje.
             if (Target != null) { Target.DeliverMaterial(Who); if (Target.materialOnSite) Deliveries++; }
+            else if (_freeTrip) { Deliveries++; _freeTrip = false; }   // (un viaje a un piso sin obra: la lanzadera de cohetes)
             Debug.Log($"[Submarino] Descarga la excavadora y los palés en «{Target?.title}» (material en obra: {Target?.materialOnSite}); vuelve al garaje.");
             _loaded = false; ShowCargo(false);
             ArbolCampos from = ArbolCampos.At(transform.position + Vector3.up, out TreeLevel la, out _, false);

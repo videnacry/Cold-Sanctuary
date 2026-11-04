@@ -34,6 +34,7 @@ public static partial class SampleSceneBuilder
         public System.Func<int, Transform> spareFloor;            // un piso sin área (la torre tiene menos áreas que pisos)
         public string santuarioLabel;
         public bool finished;
+        public bool launch;                         // la lanzadera de cohetes (no cuenta como «el edificio más alto»: la regla la pone por encima)
         public Transform lastFloor;
         public int Platforms => 4 * h.levels;
         /// <summary>Alto del tronco: sobre el último nivel, su punta, su anillo y la columna (HelixTower.RootHeight).</summary>
@@ -824,7 +825,7 @@ public static partial class SampleSceneBuilder
     static float TallestBuilding()
     {
         float m = 0f;
-        foreach (Helix hx in _helixes) m = Mathf.Max(m, hx.RootHeight + TreeSpec.DoorHeight + 1.6f);
+        foreach (Helix hx in _helixes) if (!hx.launch) m = Mathf.Max(m, hx.RootHeight + TreeSpec.DoorHeight + 1.6f);
         return m;
     }
 }
