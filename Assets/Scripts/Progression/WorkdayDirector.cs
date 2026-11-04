@@ -483,6 +483,7 @@ public class WorkdayDirector : MonoBehaviour
     {
         NewcomerInitiator ini = g.GetComponent<NewcomerInitiator>();
         if (ini != null && ini.InProgress) return;   // está iniciando a un recién llegado: lo lleva ella (si no, la jornada la mandaba en alfombra a otro piso)
+        Dress(g, area, doing, missionId);   // (2026-11-04) el uniforme de su tarea al llegar; su ropa al acabar
         bool gymTime = !alwaysMove && area == GymArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
         if (!gymTime) LeaveGym(g);   // deja libre su máquina del gimnasio (si tenía)
         bool yogaTime = !alwaysMove && area == YogaArea && missionId == null && doing != null && doing.StartsWith("Entrenamiento");
@@ -552,6 +553,46 @@ public class WorkdayDirector : MonoBehaviour
             if (alwaysMove && g.GetComponent<Anima>() == null) g.transform.position = Vector3.MoveTowards(g.transform.position, to, walkSpeed * 3f * Time.deltaTime);
             else PathMover.Of(g.transform).StepToward(to, walkSpeed);
         }
+        else Perform(g, area, doing, missionId);   // (2026-11-04) YA EN SU SITIO: hace la tarea, no se queda de pie
+    }
+
+    // ── HACER LA TAREA (docs/actividades-y-uniformes.md §3; Berón 2026-11-04: «parece que solo van al piso que les toca y no hacen
+    // nada»). En su puesto, cada uno hace la actuación de su misión (Performances: pasos con postura, herramienta en la mano y su
+    // efecto); la cola larga, el bucle genérico de su clase. Mientras la jornada lo tenga aquí se llama cada fotograma: si se va (a
+    // comer, al baño, a otra misión), el que actúa se para solo (ActivityPerformer.KeepAlive).
+    static void Perform(GameObject g, string area, string doing, string missionId)
+    {
+        if (g == null || g.GetComponent<Anima>() == null) return;   // (los clones de la Magnate no tienen esqueleto que mover)
+        ActivityPerformer.Performance p = missionId != null ? Performances.ForMission(missionId)
+            : doing != null && doing.StartsWith("Entrenamiento") ? Performances.ForTraining(area) : null;
+        if (p == null) return;
+        Vector3 face = AreaTransform(area) != null ? AreaTransform(area).position : g.transform.position + g.transform.forward;
+        if (area == AreaWork.Hospital) { HospitalStation post = HospitalStation.PostFor(g.name); if (post != null) face = post.transform.position; }
+        ActivityPerformer ap = ActivityPerformer.Keep(g, p, face);
+        if (ap != null && ap.Doing != null) SetStatus(g, $"{doing} · {ap.Doing}");
+    }
+
+    // ── EL UNIFORME DE LA TAREA (docs/actividades-y-uniformes.md §4): al llegar a su tarea se lo pone; al acabar (libre, la comida, otra
+    // tarea sin uniforme) vuelve a su ropa. Se mira una vez por segundo por persona.
+    readonly Dictionary<GameObject, float> _dressAt = new Dictionary<GameObject, float>();
+    void Dress(GameObject g, string area, string doing, string missionId)
+    {
+        if (g == null || g.GetComponent<Anima>() == null) return;
+        if (_dressAt.TryGetValue(g, out float at) && Time.time < at) return;
+        _dressAt[g] = Time.time + 1f;
+        Uniforms.Kind k = Uniforms.ForWork(missionId, area, doing);
+        if (k == Uniforms.Kind.None) { UniformWearer.Want(g, k); return; }
+        Vector3 pos = g.transform.position;
+        bool there = area == AreaWork.Guard || FruitGardener.IsRound(missionId) || InAreaNamed(area, pos)
+                     || (WorkPoint(area, g.name) - pos).sqrMagnitude < 36f;
+        if (there) UniformWearer.Want(g, k);
+    }
+
+    /// <summary>(Pruebas) Lo mismo que hace la jornada con quien está en su puesto: el uniforme de su tarea y la actuación.</summary>
+    public static void PerformForTest(GameObject g, string area, string doing, string missionId, bool dress = true)
+    {
+        if (dress) UniformWearer.Want(g, Uniforms.ForWork(missionId, area, doing));   // (lo que hace Dress al llegar)
+        Perform(g, area, doing, missionId);
     }
 
     // [Jornada] Las NECESIDADES van antes que el puesto: con «ir al baño», «a comer» o «a la cama» en su carril propio la jornada

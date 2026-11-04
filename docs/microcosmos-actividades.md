@@ -43,3 +43,5 @@ Las funciones nuevas (2026-11-03, `AreaFunctions`): `pol_atender`, `pol_ronda`, 
 `hot_dormir`, `car_madera`, `obr_levantar`, `obr_preparar`, `tec_operar`, `mil_guardia`, `mil_instruccion`, `ban_banarse`,
 `ban_vigilar`, `par_pasear`, `par_cosechar`, `pla_reunirse`, `pla_contemplar`, `ent_entrenar`, `ent_ensenar`, `fue_agua`,
 `mir_mirar`. Papeles nuevos: guardia, bombero, conservador, cuidador, tecnico, carpintero, albanil (y «todos»).
+
+> **2026-11-04 — Hacer la actividad, comer con su orquesta y uniformes:** en su sitio cada uno HACE su tarea o su actividad (postura, herramienta en la mano, gesto y efecto), come con la orquesta de la comida (bandeja, cubiertos, bocados, beber, devolver) y lleva el uniforme de su tarea; también los insectos-humanos. Ver [actividades-y-uniformes.md](actividades-y-uniformes.md).

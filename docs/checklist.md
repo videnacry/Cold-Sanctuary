@@ -20,6 +20,18 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 >   Nietzsche); grupos 64, 51, 42, 57, 28 y el horario libre; fotos de las cuatro salas.
 > - [ ] Ver si la Ashtanga Primaria cabe en el bloque de entrenamiento (si no, una versión corta para la clase).
 
+## Actividades de verdad, la orquesta de la comida y los uniformes (2026-11-04, rama claude/edif-actividades)
+
+Doc: [`actividades-y-uniformes.md`](actividades-y-uniformes.md) (auditoría, pasos, uniformes, pendientes); manual J22–J25. Sin probar en vivo.
+- [x] **Auditoría** de cada misión de la jornada, actividad libre, recuperación y jornada del insecto-humano (doc §1): casi todo «llegaba y se quedaba».
+- [x] **Orquesta de la comida** (`MealRitual`): bandeja → sentarse → cubiertos → bocados (la comida mengua, saciedad y nutrientes por bocado) → beber → recoger → devolver; en el restaurante (`DineSpell`), en casa (`HomeNeedSpell`) y en el comedor de la era (`MicroJornada`, cuchara).
+- [x] **Hacer la actividad** (`ActivityPerformer`, `Performances`): 51 de las 55 misiones del catálogo diario con pasos propios (las 4 de la clase de Hatha ya las hace `YogaClass`), las del día y de prefijo, ballet/calistenia/dojo, el ocio que era solo una postura y la brigada del restaurante con su utensilio; la cola larga (funciones de los microcosmos) con el bucle de su clase.
+- [x] **Uniformes** (`Uniforms`, `UniformWearer`): por tarea al llegar, su ropa al acabar, neopreno al nadar; pelo, cara y piel intactos; delantal de su oficio y era para el insecto-humano.
+- [x] Prueba **`ActividadesTest` (grupo 97)**.
+- [ ] **Probar en vivo** (probador): Play en SampleScene un día de jornada y un microcosmos civilizado ya construido, de uno en uno; grupos 97, 50, 28, 65, 41; fotos del doc §6.
+- [ ] Pasos propios para las funciones de los microcosmos más frecuentes (mercado, alfarería, bomberos, comisaría…): hoy hacen el bucle genérico de su clase.
+- [ ] Turistas del restaurante con la orquesta de la comida; el jugador (lo lleva el hilo de la interacción E); `TreatPatient` desde la actuación del hospital.
+
 ## Suelo, flora encima, elementos del piso, alfombras, escala cívica y estatuas (2026-11-04, rama claude/edif-micro3)
 
 Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); manual F2, F3, C7, H8, M9, M13, M30, M32, M33, M34, §11.

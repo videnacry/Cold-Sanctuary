@@ -855,6 +855,15 @@ public class RestaurantService : MonoBehaviour
     static void Gesture(Actor a)
     {
         CreatureRig rig = a.go.GetComponent<CreatureRig>(); if (rig == null) return;
+        // (2026-11-04) Con su utensilio y su efecto (docs/actividades-y-uniformes.md §3): el cocinero saca el género, remueve con el
+        // cucharón (vapor) y emplata; el obrador amasa (harina); la limpieza friega (espuma). Se para sola al acabar el gesto.
+        ActivityPerformer.Performance p = Performances.ForService(a.role, a.step);
+        if (p != null && a.go.GetComponent<Anima>() != null)
+        {
+            Transform at = a.station != null ? a.station : a.cleaning != null ? a.cleaning : a.puesto;
+            ActivityPerformer.Keep(a.go, p, at != null ? at.position : a.go.transform.position + a.go.transform.forward);
+            return;
+        }
         float t = Time.time * 6f;
         Transform sr = rig.Get(BodyPart.ShoulderRight), fr = rig.Get(BodyPart.ForearmRight), sl = rig.Get(BodyPart.ShoulderLeft);
         if (sr != null) { rig.LockPose(BodyPart.ShoulderRight, 0.2f); sr.localRotation = Quaternion.Euler(-55f + 12f * Mathf.Sin(t), 0f, 12f * Mathf.Cos(t)); }

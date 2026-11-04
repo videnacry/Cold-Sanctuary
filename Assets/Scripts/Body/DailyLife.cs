@@ -66,14 +66,18 @@ public class DineSpell : QueuedSpell
     const float NoProgress = 7f;            // s sin acercarse (sin volar): recalcula; la segunda vez, lo deja
     static readonly Dictionary<Transform, float> _taken = new Dictionary<Transform, float>();   // silla → hasta cuándo (si alguien la deja a medias, caduca)
 
-    int _phase;              // 0 ir a la barra · 1 le sirven · 2 ir a la mesa · 3 comer · 4 levantarse
+    int _phase;              // 0 ir a la barra · 1 le sirven · 2 ir a la mesa · 3 comer · 4 levantarse · 5 devolver la bandeja
     Transform _seat;
+    /// <summary>(2026-11-04) LA ORQUESTA DE LA COMIDA (docs/actividades-y-uniformes.md §2): bandeja, plato a la mesa, cubiertos, bocados con
+    /// el plato que mengua, tragos, recoger y devolver la bandeja en la barra. null antes de que le sirvan.</summary>
+    public MealRitual Meal { get; private set; }
+    public float returnTimeout = 60f;
     float _until;
     string _dish;
     // El tramo en curso: un destino fijo, ya sobre el NavMesh.
     Vector3 _snap; bool _hasGoal; float _legStart, _checkAt, _bestLeft; Vector3 _checkPos; int _restarts;
 
-    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "esperar su plato en la barra", 2 => "buscar mesa", 3 => $"comer {_dish}", _ => "levantarse" };
+    public override string Label => _phase switch { 0 => "pedir en la barra del restaurante", 1 => "esperar su plato en la barra", 2 => "buscar mesa", 3 => $"comer {_dish}", 5 => "devolver la bandeja", _ => "levantarse" };
 
     public override bool Tick(Anima self)
     {
@@ -105,8 +109,9 @@ public class DineSpell : QueuedSpell
                 { Debug.Log($"[Restaurante] «{self.name}» llega a la barra pero ya no queda comida."); return true; }
                 _dish = fc.dishName;
                 Debug.Log($"[Restaurante] «{self.name}» pide en la barra y le sirven {_dish}.");
+                Meal = new MealRitual(_dish); Meal.TakeTray(self.gameObject, true, meal);   // la bandeja con su plato y un vaso
                 _seat = FreeSeat();
-                if (_seat == null) { _phase = 3; _until = Time.time + EatSeconds(); return false; }
+                if (_seat == null) { Meal.SitDown(self.gameObject, null, false); _phase = 3; _until = Time.time + EatSeconds(); return false; }
                 _taken[_seat] = Time.time + 600f;
                 BeginLeg(self, ChairFront(_seat));
                 _phase = 2;
@@ -114,34 +119,52 @@ public class DineSpell : QueuedSpell
             }
             case 2:
             {
+                Meal?.Carry(self.gameObject);
                 int r = Walk(self, seatTimeout, $"una mesa ({_seat?.parent?.name})");
                 if (r == 0) return false;
                 if (r < 0 || _seat == null)   // no llegó a la silla: come de pie donde está (antes se le colocaba en ella desde lejos)
-                { if (_seat != null) _taken.Remove(_seat); _seat = null; _until = Time.time + EatSeconds(); _phase = 3; return false; }
+                { if (_seat != null) _taken.Remove(_seat); _seat = null; Meal?.SitDown(self.gameObject, null, false); _until = Time.time + EatSeconds(); _phase = 3; return false; }
                 Vector3 table = _seat.parent != null ? _seat.parent.position : _seat.position;
                 Vector3 look = table - _seat.position; look.y = 0f;
                 self.transform.position = new Vector3(_seat.position.x, self.transform.position.y, _seat.position.z);   // de delante de la silla a la silla (~0,5 m)
                 if (look.sqrMagnitude > 1e-4f) self.transform.rotation = Quaternion.LookRotation(look);
                 DailyPoses.Sit().ApplyFinal(self);
                 Debug.Log($"[Restaurante] «{self.name}» se sienta a comer en {_seat.parent?.name}.");
+                Meal?.SitDown(self.gameObject, _seat.parent, true);
                 _until = Time.time + EatSeconds();
                 _phase = 3;
                 return false;
             }
             case 3:
             {
-                if (_seat != null) DailyPoses.Sit().ApplyFinal(self);   // sigue sentado (las asanas bloquean los huesos un instante)
-                if (Time.time < _until) return false;
+                // LOS BOCADOS (MealRitual): el brazo al plato y a la boca, el plato que mengua y la saciedad por bocado; cada tres, un trago.
+                if (Meal != null) { if (!Meal.Eat(self.gameObject, _until)) return false; }
+                else { if (_seat != null) DailyPoses.Sit().ApplyFinal(self); if (Time.time < _until) return false; }   // sigue sentado (las asanas bloquean los huesos un instante)
                 BodyMetabolism body = self.GetComponent<BodyMetabolism>();
-                if (body != null) { body.Feed(meal); body.toilet = Mathf.Clamp01(body.toilet + 0.25f); }
+                if (body != null) { if (Meal == null) body.Feed(meal); body.toilet = Mathf.Clamp01(body.toilet + 0.25f); }
                 Debug.Log($"[Cuerpo] «{self.name}» termina de comer {_dish}.");
                 _phase = 4;
                 return false;
             }
-            default:
+            case 4:
                 DailyPoses.Stand().ApplyFinal(self);
                 if (_seat != null) _taken.Remove(_seat);
+                if (Meal == null) return true;
+                // RECOGER Y DEVOLVER: el plato y el vaso a la bandeja, y la bandeja al extremo de la barra.
+                Meal.PickUp(self.gameObject);
+                BeginLeg(self, ReturnPoint(self));
+                _phase = 5;
+                return false;
+            default:
+            {
+                Meal.Carry(self.gameObject);
+                int r = Walk(self, returnTimeout, "la devolución de bandejas", 2.5f);
+                if (r == 0) return false;
+                FoodContainer near = NearestFood(self.transform.position);
+                if (near != null && r > 0) Face(self.transform, near.transform.position);
+                Meal.Return(self.gameObject);   // (si no llegó en su tope, la deja donde está: nunca se queda con ella en la mano)
                 return true;
+            }
         }
     }
 
@@ -154,6 +177,23 @@ public class DineSpell : QueuedSpell
         if (self != null) ReleaseBarSlot(self);
         if (_seat != null) _taken.Remove(_seat);
         _seat = null;
+        Meal?.Abort();
+    }
+
+    // LA DEVOLUCIÓN DE BANDEJAS: el extremo de la barra (el pase), por el lado por donde se llega; sin pedir sitio en la barra. Sin
+    // restaurante, donde está (la deja en la mesa).
+    static Vector3 ReturnPoint(Anima self)
+    {
+        FoodContainer fc = NearestFood(self.transform.position);
+        if (fc == null) foreach (RestaurantKitchen rk in Object.FindObjectsByType<RestaurantKitchen>(FindObjectsSortMode.None))
+            if (rk != null && rk.dishes != null) foreach (RestaurantKitchen.DishStock d in rk.dishes) if (d != null && d.container != null) { fc = d.container; break; }
+        Transform pass = fc != null ? fc.transform.parent : null;
+        if (pass == null || !pass.name.StartsWith("Barra")) return self.transform.position;
+        CarpetPad pad = CarpetPad.For(pass.position + Vector3.up * 0.5f);
+        Vector3 from = pad != null ? pad.transform.position : self.transform.position;
+        float side = Vector3.Dot(from - pass.position, pass.forward) >= 0f ? 1f : -1f;
+        Vector3 p = pass.position + pass.forward * side * 1.0f + pass.right * 2.9f; p.y = pass.position.y;
+        return p;
     }
 
     float EatSeconds() => eatMinutes * (TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f);
