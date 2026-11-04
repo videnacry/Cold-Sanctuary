@@ -34,11 +34,10 @@ Ficha contada por Berón (2026-10-18). Aspecto en [`diseno-personajes.md`](disen
 
 ## En el juego
 
-- El **restaurante** de lujo fue su sueño y los turistas son una vía de ingresos (hasta el 2026-11-04 salía en el comedor).
-- **Maestro de yoga del santuario** desde el 2026-11-04 (`WorkdayDirector.YogaTeacher`), cuando Sadhguru se fue a su microcosmos.
-  Fue el único que hizo yoga de verdad con Leo. Sale en la tarima de la sala de Hatha tradicional, su área es la Sala de Yoga y
-  en su tiempo libre medita junto al linga. Irosene es la segunda maestra, para dar Hatha y Ashtanga a la vez
-  ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
+- El **restaurante** de lujo fue su sueño y los turistas son una vía de ingresos: sale en el comedor.
+- **Ya no es el maestro de yoga** (Berón 2026-11-04: «el profesional de yoga es Josedrilo»). Lo fue unas horas, cuando Sadhguru se fue a
+  su microcosmos. Su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento
+  ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Profesiones y parejas).
 - Aspecto (`CubeHair.For("Andrea")`): pelo castaño ondulado y rizado, camisa negra de cuello, pantalón de vestir gris marengo, zapatos de piel, cadena plateada con cruz, anillos, pendientes en las dos orejas y pulsera.
 
 ## Pendiente

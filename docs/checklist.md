@@ -600,6 +600,9 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 5 niveles) y pasar 75, 89, 65, 50 y las de yoga (`YogaFloorsTest`, `YogaClassTest`); fotos de los pisos de yoga nuevos y de un vuelo de alfombra desde la plataforma central.
 - [x] Pijamadas ([`pijamadas.md`](pijamadas.md), manual J17): una sola cama-litera por casa, de dos pisos de 4, con tobogán para bajar del piso de arriba (8 por casa; la litera triple aparte se quitó por indicación de Berón), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
 - [ ] Tester: con la escena reconstruida, grupo 92 y fotos de una casa con su cama-litera y de una pijamada.
+- [x] Profesiones y parejas (Berón 2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Profesiones y parejas, manual J14 y J18): Josedrilo maestro de yoga (y bioconstrucción), Maite cocina, Shalva cultivo y bioconstrucción, Adaguchi submarinismo y cocina, Amahuz cocina y química, Karen asuntos legales y lenguas (Aula), Alicita contabilidad y proyectos; Nesvitor consejero; Gallarle nuevo (pareja de Ducristin, pendiente de foto y de profesión). Parejas en una casa: Lizmibet y Tote, Amahuz y Karen, Ducristin y Gallarle, Josedrilo y Maite (16 de 18 casas).
+- [ ] Berón: confirmar que Amahuz y Karen son pareja; la foto y la profesión de Gallarle.
+- [ ] Tester: reconstruir SampleScene; grupos 50 (jornada con profesiones), 51 y 64 (Josedrilo de maestro), 45 (brigada de cocina), 65 (horario libre, Gallarle), 28, 89 y 92 (casas y ring con 20 residentes).
 
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
