@@ -51,6 +51,7 @@ public class MaskStation : MonoBehaviour
     {
         if (masks <= 0) return false;
         masks--; Refresh();
+        if (masks == 0) Restock();   // (2026-11-04) el perchero de una entrada muy usada se quedaba vacío a media jornada (piso 5 del Árbol, prueba 70)
         return true;
     }
 
@@ -79,7 +80,21 @@ public class MaskStation : MonoBehaviour
         }
     }
 
-    void Start() { Refresh(); Light(); }
+    void Start() { KeepDry(); Refresh(); Light(); }
+
+    // (2026-11-04) Un PERCHERO no puede quedar dentro del agua (el del piso 5 del Árbol de los Campos salía «mojado», prueba 70): si lo
+    // está, pasa al otro lado de su puerta; y si también ahí, se aparta de la pared hasta salir del agua (con tope).
+    void KeepDry()
+    {
+        if (kind != Kind.Rack) return;
+        bool Wet() => WaterZone.Underwater(SwimPoint + Vector3.up) || WaterZone.Underwater(transform.position + Vector3.up);
+        if (!Wet()) return;
+        Vector3 lp = transform.localPosition, was = lp;
+        transform.localPosition = new Vector3(-lp.x, lp.y, lp.z);
+        for (int i = 0; i < 6 && Wet(); i++) transform.localPosition += new Vector3(0f, 0f, 1f);
+        if (Wet()) transform.localPosition = was;
+        Debug.Log($"[Mascaras] {name} estaba dentro del agua: {(Wet() ? "sigue mojado" : "movido a " + transform.localPosition)}.");
+    }
 
     /// <summary>El puesto más cercano a <paramref name="p"/> (de una clase, o de cualquiera si null), a menos de
     /// <paramref name="max"/> m; <paramref name="underwater"/>: solo los que están dentro del agua (y solo los que no, si false
@@ -97,6 +112,19 @@ public class MaskStation : MonoBehaviour
             if (d < bd) { bd = d; best = m; }
         }
         return best;
+    }
+
+    // EL CARRO DE MÁSCARAS (2026-11-04): un puesto que se queda sin ninguna recibe la mitad de las del puesto más lleno de su edificio
+    // (hasta su capacidad). Así una entrada muy usada no se queda vacía entre los repartos de cada noche.
+    void Restock()
+    {
+        MaskStation rich = null;
+        foreach (MaskStation m in Of(building)) if (m != this && m.masks > 1 && (rich == null || m.masks > rich.masks)) rich = m;
+        if (rich == null) return;
+        int n = Mathf.Min(capacity, rich.masks / 2);
+        rich.masks -= n; masks += n;
+        rich.Refresh(); Refresh();
+        Debug.Log($"[Mascaras] {name} se quedó sin máscaras: el carro trae {n} de {rich.name} ({building}).");
     }
 
     // REPARTO DE CADA NOCHE (2026-11-04): las máscaras van de la entrada por la que se entra a la puerta por la que se sale, así que

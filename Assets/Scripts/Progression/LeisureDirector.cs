@@ -302,6 +302,7 @@ public class LeisureDirector : MonoBehaviour
         public Group group; public LeisureRoster.Entry entry; public Venue venue;
         public Vector3 to; public AreaFunctionStation st;
         public float since, arrivedAt = -1f, performed, blockedFor, walked, flown, poseAt;
+        public float speed = 2.6f, allowed = 60f;   // a qué paso va y cuánto tiempo tiene para llegar andando (microcosmos)
         public Vector3 last; public int jumps; public bool fallback, posed, b, onBed;
         public bool idleWas, linWas, touchedIdle, touchedLin;
         public string blockedBy;
@@ -370,7 +371,22 @@ public class LeisureDirector : MonoBehaviour
     {
         var r = new Run { group = gr, entry = e, venue = gr.venues.TryGetValue(e.activity, out Venue v) ? v : null, since = Time.time, last = g.transform.position };
         if (r.venue != null) r.to = Seat(gr, r, g);
+        TravelPlan(gr, r, g);
         return r;
+    }
+
+    // A QUÉ PASO Y CON CUÁNTO TIEMPO (2026-11-04, HorarioLibreTest en Kapilavastu): en los pueblos ×100 los sitios están a cientos de
+    // metros (el mirador en la meseta de un mueble, la plaza al otro lado del barrio) y a paso de jornada (2,4 m/s) no se llegaba
+    // en los 60 s de MicroJornada: a todos se les ponía allí. Ahora, si está lejos, va a PASO LIGERO (hasta 6 m/s, para llegar en
+    // ~75 s) y el tiempo para llegar crece con la distancia (de 60 a 120 s de juego; la franja dura 150 s).
+    void TravelPlan(Group gr, Run r, GameObject g)
+    {
+        if (!gr.micro) { r.speed = walkSpeed; return; }
+        float baseSpeed = g.TryGetComponent(out MicroJornada mj) ? mj.speed : microSpeed;
+        Vector3 d = r.to - g.transform.position; d.y = 0f;
+        float dist = d.magnitude;
+        r.speed = Mathf.Clamp(dist / 75f, baseSpeed, Mathf.Max(baseSpeed, 6f));
+        r.allowed = Mathf.Clamp(dist / r.speed * 1.4f + 15f, microFallback, 120f);
     }
 
     // Dónde se pone a hacerla: un sitio repartido por plazas (no se amontonan), sobre el NavMesh.
@@ -445,17 +461,21 @@ public class LeisureDirector : MonoBehaviour
 
     void Drive(GameObject g, Run r)
     {
-        // Lo que anduvo (y los saltos: > 4 m en un fotograma sin ir en alfombra).
+        // Lo que anduvo (y los saltos: más de lo que da de sí un paso en ese fotograma, sin ir en alfombra). Solo cuenta lo que pasa
+        // mientras lo lleva el horario: si una necesidad o la historia lo mueve (a su cama, al baño…), eso no es un salto del horario.
         Vector3 pos = g.transform.position;
         float step = (pos - r.last).magnitude;
         bool riding = FlyingCarpet.Riding(g);
-        if (riding) r.flown += step;
-        else if (step > Mathf.Max(4f, (r.group.micro && g.TryGetComponent(out MicroJornada mjs) ? mjs.speed : walkSpeed) * 3f * Time.deltaTime + 1.5f)) r.jumps++;   // (con el reloj acelerado un paso de un fotograma lento es largo)
-        else r.walked += step;
+        string why = r.venue == null ? null : Blocked(g);
+        if (why == null && r.blockedBy == null)
+        {
+            if (riding) r.flown += step;
+            else if (step > Mathf.Max(4f, r.speed * 3f * Time.deltaTime + 1.5f)) r.jumps++;   // (con el reloj acelerado un paso de un fotograma lento es largo)
+            else r.walked += step;
+        }
         r.last = pos;
 
         if (r.venue == null) return;
-        string why = Blocked(g);
         if (why != null)
         {
             if (r.blockedBy == null && r.posed) Unpose(g, r);
@@ -474,8 +494,13 @@ public class LeisureDirector : MonoBehaviour
             {
                 if (r.group.micro)
                 {
-                    if (!MicroMove.Step(g.transform, r.to, g.TryGetComponent(out MicroJornada mjw) ? mjw.speed : microSpeed, 1.6f) && Time.time - r.since > microFallback)
-                    { g.transform.position = r.to; r.fallback = true; r.last = r.to; Debug.LogWarning($"[Horario] «{g.name}» no llega andando en {microFallback:0} s a «{r.venue.title}»: se le pone allí."); }
+                    if (!MicroMove.Step(g.transform, r.to, r.speed, 1.6f) && Time.time - r.since - r.blockedFor > r.allowed)
+                    {
+                        // (con NavMeshAgent hay que llevarlo con Warp: mover el transform lo dejaba volver a su sitio en el fotograma
+                        // siguiente, y contaba decenas de «saltos» de ida y vuelta)
+                        WorkdayDirector.Teleport(g.transform, r.to); r.fallback = true; r.last = g.transform.position;
+                        Debug.LogWarning($"[Horario] «{g.name}» no llega andando en {r.allowed:0} s a «{r.venue.title}»: se le pone allí.");
+                    }
                     return;
                 }
                 Vector3 to = r.to;

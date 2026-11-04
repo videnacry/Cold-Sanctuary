@@ -132,3 +132,7 @@ Eso es el **Leviatán**: el «submarino colosal» de Berón.
 - Una alarma que llame sola a la ambulancia cuando alguien cae herido lejos del hospital (hoy la llama `Dispatch`: la prueba, un hechizo
   o un guion).
 - Las ballenas más grandes, tratadas junto al casco con los pontones: la maniobra está diseñada, pero no construida.
+
+**Ronda 2 del probador (2026-11-04).** La lanzadera del Leviatán llegaba sin equipo: tras la misión del oso, el equipo estaba en el
+piso veterinario y no llegaba a la puerta de urgencias en 120 s. Ahora el submarino va a la **puerta del piso donde está cada uno**
+(urgencias primero) y allí lo espera (`BoardCrew`). El registro dice quién sube y dónde.

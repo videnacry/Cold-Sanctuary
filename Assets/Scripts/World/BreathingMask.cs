@@ -117,7 +117,7 @@ public class BreathingMask : MonoBehaviour
     void Update()
     {
         SwimBody s = Swim;
-        if (Worn && s != null && s.Active) _wetSinceEquip = true;
+        if (Worn && ((s != null && s.Active) || WaterZone.Underwater(transform.position))) _wetSinceEquip = true;
         if (_isPlayer) { PlayerUpdate(s); return; }
         // Sin nadie que lo conduzca (ni la jornada, ni un viaje por el tronco): el rescate lo hace él solo.
         if (!TreeTrip.Busy(gameObject) && !PathMover.DrivenRecently(gameObject, 0.3f) && (_rescuing || Time.time < _fitUntil || Time.time >= _nextCheck)) { _nextCheck = Time.time + 0.25f; Step(); }
@@ -130,10 +130,16 @@ public class BreathingMask : MonoBehaviour
     {
         if (Time.time < _nextScan) return;
         _nextScan = Time.time + 0.2f;
-        bool wet = s != null && s.Active;
+        // (2026-11-04) «En el agua» = nadando O con la cabeza o el cuerpo bajo el agua: Kushal, movido por la prueba, a veces no tenía el
+        // cuerpo de nado activo aunque estuviera dentro del tronco, y como el perchero de fuera está a menos de 5 m de la estación de dentro,
+        // devolvía la máscara al momento de cogerla («aliento mínimo 0,00 con la máscara», prueba 70).
+        Vector3 head = s != null ? s.HeadPosition : transform.position + Vector3.up * 0.7f;
+        bool wet = (s != null && s.Active) || WaterZone.Underwater(head) || WaterZone.Underwater(transform.position);
         if (!Worn)
         {
-            MaskStation near = MaskStation.Nearest(wet ? s.HeadPosition : transform.position, wet ? MaskStation.Kind.Station : MaskStation.Kind.Rack, wet ? 1.8f : 4.5f, wet, true);
+            // (2026-11-04) Solo al ENTRAR en el agua: la del perchero de la puerta por la que entra (a < 6 m) o la de una estación que toca. Antes
+            // la cogía al pasar junto a cualquier perchero y la devolvía al alejarse (Kushal, en la jornada, iba y venía con ella).
+            MaskStation near = !wet ? null : MaskStation.Nearest(head, MaskStation.Kind.Station, 1.8f, true, true) ?? MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 6f, false, true);
             if (near != null) Equip(near);
         }
         else if (!wet && _wetSinceEquip)
