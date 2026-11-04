@@ -462,7 +462,7 @@ public class LeisureDirector : MonoBehaviour
         if (v.home)
         {
             Bedroom room = g.TryGetComponent(out Anima a) ? Bedroom.Of(a) : null;
-            if (room != null && room.bed != null) return OnMesh(room.bed.position + room.bed.right * 1.4f + Vector3.up);
+            if (room != null && room.bed != null) return OnMesh(room.FootSpot + Vector3.up);   // al pie de su cama (la de 4 es ancha: al lado caía encima)
             GameObject res = GameObject.Find("ArboledaResidencial");   // sin dormitorio: a la arboleda
             if (res == null) return g.transform.position;
             return OnMesh(res.transform.TransformPoint(new Vector3(-6f + (seat % 3) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -1.6f + (seat / 3) * 1.6f)));
@@ -602,7 +602,7 @@ public class LeisureDirector : MonoBehaviour
         Bedroom room = Bedroom.Of(a);
         if (room == null || room.bed == null || Vector3.Distance(room.bed.position, g.transform.position) > 3.5f) { DailyPoses.Sit().ApplyFinal(a); return; }
         CharacterController cc = g.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
-        g.transform.position = room.bed.position + Vector3.up * 0.5f;
+        g.transform.position = room.LieSpot(a) + Vector3.up * 0.5f;   // en su plaza de la cama de 4
         g.transform.rotation = room.bed.rotation * Quaternion.Euler(0f, 180f, 0f);
         if (cc != null) cc.enabled = true;
         r.onBed = true; r.last = g.transform.position;

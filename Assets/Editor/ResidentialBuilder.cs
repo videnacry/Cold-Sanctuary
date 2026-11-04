@@ -27,7 +27,14 @@ public static class ResidentialBuilder
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string> { { "Amahuz", "Karen" } };
 
     public const string Name = "Residencia";
-    const float CentralSize = 18f, TreeRing = 21f, HouseOut = 5.2f;
+    // (2026-11-04, Berón: «las camas de las residencias del santuario deben ser capaces de dar espacio a 4 personas») CAMA DE 4: cuatro
+    // plazas de 90 cm (el ancho de una cama individual europea, 90 × 200) una junto a otra → colchón de 3,60 × 2,10 m (como las
+    // «camas familiares» que juntan cuatro individuales; la Alaskan king, la mayor de serie, mide 2,74 × 2,74). Para que quepa con
+    // los 2 m de paso hasta la alfombra-esterilla y el armario, la casa pasa de 7 × 6 a 9 × 7 m y se aleja 1 m más del tronco.
+    public const float BedWidth = 3.6f, BedLength = 2.1f, LaneWidth = 0.9f;
+    public const int BedSleeps = 4;
+    public const float CabinW = 9f, CabinD = 7f;
+    const float CentralSize = 18f, TreeRing = 21f, HouseOut = 1.7f + CabinW * 0.5f;   // (1,7 m del eje del tronco al borde de la casa, como antes)
 
     // Dónde va cada casa de árbol (local) y hacia dónde mira su entrada: dos por árbol, a distinta altura y a cada lado.
     static readonly System.Collections.Generic.List<(Vector3 pos, Vector3 door)> _houses = new System.Collections.Generic.List<(Vector3, Vector3)>();
@@ -66,7 +73,7 @@ public static class ResidentialBuilder
         for (int i = 0; i < _houses.Count; i++)
         {
             Vector3 trunk = trees[i < 12 ? i / 2 : i - 12], away = _houses[i].pos - trunk; away.y = 0f;
-            _terraces.Add(_houses[i].pos + away.normalized * 7f);
+            _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
@@ -102,15 +109,15 @@ public static class ResidentialBuilder
         Vector2 h = new Vector2(q.x, q.z);
         if (Mathf.Abs(q.x) < CentralSize * 0.5f + 1f && Mathf.Abs(q.z) < CentralSize * 0.5f + 1f && q.y > DeckY - 1.5f && q.y < DeckY + 4f) return true;   // plataforma central
         foreach (var (pos, _) in _houses)
-            if ((h - new Vector2(pos.x, pos.z)).magnitude < 5.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (7 × 6 m y margen)
+            if ((h - new Vector2(pos.x, pos.z)).magnitude < 6.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (9 × 7 m: media diagonal 5,7, y margen)
         foreach (Vector3 tp in _terraces)
             if ((h - new Vector2(tp.x, tp.z)).magnitude < 5.2f && q.y > tp.y - 1.5f && q.y < tp.y + 6f) return true;   // terrazas frutales (y la copa del frutal)
         return false;
     }
 
-    // Una habitación al ESTILO DE LOS TEMPLOS GRIEGOS (7 × 6 m) pero ABIERTA: solo el suelo y el estilóbato (escalón),
-    // sin paredes, columnas ni tejado (se quitaron para ganar visibilidad). Se entra por cualquier lado sin que la vista se
-    // tape. Dentro: cama, mesilla con lámpara, armario y estante; el BAÑO en una esquina, tras un biombo (intimidad).
+    // Una habitación al ESTILO DE LOS TEMPLOS GRIEGOS (9 × 7 m desde el 2026-11-04; antes 7 × 6) pero ABIERTA: solo el suelo y el
+    // estilóbato (escalón), sin paredes, columnas ni tejado (se quitaron para ganar visibilidad). Se entra por cualquier lado sin que
+    // la vista se tape. Dentro: la CAMA DE 4, su mesilla y el armario; la alfombra-esterilla, a ≥ 2 m de la cama y del armario.
     static Transform Cabin(Transform root, Vector3 local, Vector3 door, int ownerIdx, string name, float terraceSide = 1f)
     {
         Transform t = new GameObject(name).transform;
@@ -118,22 +125,27 @@ public static class ResidentialBuilder
         t.localPosition = local;
         t.localRotation = Quaternion.LookRotation(-door);   // su -Z mira hacia dentro de la arboleda
         Color marbleDark = new Color(0.82f, 0.8f, 0.76f);
-        float W = 7f, D = 6f;
+        float W = CabinW, D = CabinD;
         Plank(t, Vector3.zero, new Vector3(W, 0.3f, D), "Suelo");
         Solid(t, new Vector3(0f, 0.2f, 0f), new Vector3(W - 0.4f, 0.1f, D - 0.4f), marbleDark, "Estilobato");
         // Cama, mesilla y armario (sin baño: se usan los aseos comunes; sin lámpara ni estante: no hay techo ni paredes).
-        Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-1.8f, 0.25f, 1.2f));
-        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(1.5f, 0.3f, 2.2f), WoodDark, 0f, "Armazon");   // colchón de 2,10 × 1,40 (docs/medidas-muebles.md)
-        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(1.4f, 0.16f, 2.1f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
-        KitchenProps.C(bed, new Vector3(0f, 0.52f, 0.2f), new Vector3(1.44f, 0.06f, 1.3f), Blanket(ownerIdx), 0f, "Manta");
-        KitchenProps.C(bed, new Vector3(0f, 0.55f, 0.85f), new Vector3(0.9f, 0.1f, 0.3f), Color.white, 0f, "Almohada");
-        KitchenProps.C(t, new Vector3(-0.6f, 0.55f, 2.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");
-        KitchenProps.C(t, new Vector3(0.9f, 1.25f, 2.45f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");
-        // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima).
+        // LA CAMA DE 4 (armazón 3,70 × 2,30, de x −4,45 a −0,75 y de z 1,15 a 3,45): cabecero en +z, una almohada y una plaza de 90 cm
+        // por persona (Bedroom.LieSpot), manta de lado a lado.
+        Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-2.6f, 0.25f, 2.3f));
+        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(BedWidth + 0.1f, 0.3f, BedLength + 0.2f), WoodDark, 0f, "Armazon");   // colchón de 3,60 × 2,10 (docs/medidas-muebles.md)
+        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(BedWidth, 0.16f, BedLength), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
+        KitchenProps.C(bed, new Vector3(0f, 0.52f, -0.15f), new Vector3(BedWidth + 0.04f, 0.06f, BedLength * 0.62f), Blanket(ownerIdx), 0f, "Manta");
+        KitchenProps.C(bed, new Vector3(0f, 0.75f, BedLength * 0.5f + 0.06f), new Vector3(BedWidth + 0.1f, 0.9f, 0.1f), WoodDark, 0f, "Cabecero");
+        for (int k = 0; k < BedSleeps; k++)
+            KitchenProps.C(bed, new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0.55f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
+        KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
+        KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
+        // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
+        // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
         string who = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : $"Habitación libre {ownerIdx + 1}";
-        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(1.75f, 0.27f, -0.9f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
+        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(2.65f, 0.27f, -1.65f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
         // (2026-11-03) SU TERRAZA FRUTAL (Berón: «los frutales en residencias que te pedí era para las residencias del santuario»; docs/
-        // jardines-frutales.md §Residencia): una plataforma de 7 × 6 m pegada a la habitación por el lado contrario al tronco, con un
+        // jardines-frutales.md §Residencia): una plataforma de 7 × 7 m (7 × 6 hasta el 2026-11-04) pegada a la habitación por el lado contrario al tronco, con un
         // frutal en maceta en su centro (a ≥ 2 m de la cama, el armario y la alfombra). Es una maceta del jardinero (FruitPlant,
         // edificio «Residencia»): entra en su ronda.
         Plank(t, new Vector3(terraceSide * (W * 0.5f + 3.5f), 0f, 0f), new Vector3(7f, 0.3f, D), "Terraza_frutal");
@@ -145,7 +157,7 @@ public static class ResidentialBuilder
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
-        room.bed = bed;
+        room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
         return t;
     }
