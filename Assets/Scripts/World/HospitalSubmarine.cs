@@ -93,6 +93,8 @@ public class HospitalSubmarine : MonoBehaviour
     public string status = "Aparcado";
     public bool delivered; public string deliveredTo; public float missionSeconds, deliveredAfter;
     public int transfusedOnBoard;
+    /// <summary>Enfermedad del paciente al subirlo (lo que empeoró esperando, con la hemorragia, ya va dentro) y tras atenderlo en su puesto.</summary>
+    public float sicknessAtPickup, sicknessAfterCare;
     public readonly List<string> log = new List<string>();
 
     public static readonly List<HospitalSubmarine> All = new List<HospitalSubmarine>();
@@ -331,6 +333,7 @@ public class HospitalSubmarine : MonoBehaviour
 
         // 3. LA CARGA: por la rampa de popa, en camilla o en el trineo de la grúa, a la bodega.
         phase = Phase.Carga;
+        sicknessAtPickup = p.sickness;
         Carried cp = Carried.Take(p.gameObject, BayT);
         Vector3 ramp = transform.TransformPoint(new Vector3(0f, -Height * 0.5f + 0.3f, -Length * 0.5f - 1.5f));
         float l0 = Time.time;
@@ -371,6 +374,8 @@ public class HospitalSubmarine : MonoBehaviour
         Anima doc = crew.Count > 0 ? crew[0].GetComponent<Anima>() : null;
         if (destSt != null) destSt.TreatPatient(p, doc);
         if (p.GetComponent<BloodLoss>() is BloodLoss bl && bl.lost >= 0.15f && BloodBank.Instance != null) BloodBank.Instance.Transfuse(p, doc != null ? doc.name : "el equipo");
+        sicknessAfterCare = p.sickness;
+        Say($"«{p.name}» atendido: enfermedad {sicknessAtPickup:0.00} al subirlo → {sicknessAfterCare:0.00}");
         foreach (GameObject g in crew) _engaged.Remove(g);
 
         // 6. VUELVE A SU SITIO.

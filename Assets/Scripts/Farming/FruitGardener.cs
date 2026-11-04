@@ -70,6 +70,16 @@ public class FruitGardener : MonoBehaviour
         return fa != fb ? d * 1.3f + 10f : d;   // (medido en Unity 2026-11-01: de punta a punta de Servicios, ~38 s de juego entre andar a la puerta, nadar y salir; antes 2 × la recta + 60 m)
     }
 
+    /// <summary>LAS TAREAS DE LA SEMANA, de media por día (h de juego), que la ronda RESERVA (2026-11-04): polinizar a pincel cada 2
+    /// días las que lo necesitan y podar cada <see cref="FruitCare.PodaDias"/> días. Antes solo se hacían con «lo que sobrara» de las
+    /// 3 h, y con las tareas del árbol no sobraba nada (0 polinizadas, 0 podadas).</summary>
+    public static float WeeklyHoursPerDay(FruitPlant p)
+    {
+        float min = FruitCare.Polinizar(p.kind) ? FruitCare.MinPolinizar / 2f : 0f;
+        int d = FruitCare.PodaDias(p.kind); if (d > 0) min += FruitCare.MinPodar / d;
+        return min * 1.5f / 60f;   // ×1,5: el paso de ir y volver a la planta
+    }
+
     /// <summary>Horas de juego de una revisión en orden de <paramref name="plants"/> (sin vuelo): su ficha + andar.</summary>
     public static float LegHours(List<FruitPlant> plants, bool mainRoom, float walk = 2.6f)
     {
@@ -133,29 +143,51 @@ public class FruitGardener : MonoBehaviour
             if (byRoof.ContainsKey(b))
                 foreach (FruitPlant p in byRoof[b])
                 {
-                    float work = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f, plantH = work + (leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f);
+                    float work = (p.Ficha != null ? p.Ficha.minutos : 2f) / 60f + WeeklyHoursPerDay(p), plantH = work + (leg != null ? Hop(at, p) / 2.6f / SecondsPerGameHour : 0f);
                     if (leg == null || (leg.plants.Count > 0 && leg.hours + plantH > RoundTarget))   // (solo si el edificio no cabe entero en una ronda)
                     { leg = new Leg { building = b, station = StationOf(b), hours = Open(b, pieces++ == 0) }; units.Add(leg); plantH = work; }
                     leg.plants.Add(p); leg.hours += plantH; at = p;
                 }
             if (trees.TryGetValue(b, out ArbolCampos tree))
             {
+                // LAS TAREAS DEL ÁRBOL, EN TRAMOS QUE QUEPAN EN UNA RONDA (2026-11-04: con las ~200 revisiones de máscaras, un árbol solo
+                // pedía 4,6–5,5 h y la ronda pasaba de 3 h). De arriba abajo, tantas puertas como quepan (con su vuelo hasta el techo,
+                // entrar y salir); el fitoplancton del fondo, en el último tramo (o en uno suyo si no cabe).
                 var (masks, beds) = TreeTaskList(tree);
-                units.Add(new Leg { building = b, tree = tree, masks = masks, beds = beds, hours = TreeTaskHours(tree, masks, beds) });
+                var chunk = new List<MaskStation>();
+                float budget = RoundTarget - flightH;
+                foreach (MaskStation m in masks)
+                {
+                    chunk.Add(m);
+                    if (chunk.Count > 1 && TreeTaskHours(tree, chunk, new List<Phytoplankton>()) > budget)
+                    {
+                        chunk.RemoveAt(chunk.Count - 1);
+                        units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, new List<Phytoplankton>()) });
+                        chunk = new List<MaskStation> { m };
+                    }
+                }
+                if (beds.Count > 0 && chunk.Count > 0 && TreeTaskHours(tree, chunk, beds) > budget)
+                {
+                    units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = new List<Phytoplankton>(), hours = TreeTaskHours(tree, chunk, new List<Phytoplankton>()) });
+                    chunk = new List<MaskStation>();
+                }
+                if (chunk.Count > 0 || beds.Count > 0)
+                    units.Add(new Leg { building = b, tree = tree, masks = chunk, beds = beds, hours = TreeTaskHours(tree, chunk, beds) });
             }
         }
-        Round cur = null;
+        // EL REPARTO (2026-11-04): cada tramo cabe ya en una ronda; se llenan las rondas por orden del camino y, si un tramo no cabe en
+        // la ronda en curso, se prueba en las anteriores (con su vuelo) antes de abrir otra: menos jardineros, ninguna ronda > 2,9 h.
         foreach (Leg u in units)
         {
-            // Una unidad de tareas del árbol que no va justo detrás de las macetas de su edificio paga el vuelo hasta su techo.
-            bool afterOwn = cur != null && cur.legs.Count > 0 && cur.legs[cur.legs.Count - 1].building == u.building;
-            float h = u.hours + (u.TreeTasks && !afterOwn ? flightH : 0f);
-            if (cur == null || cur.hours + h > RoundTarget)
+            Round fit = null; float fitH = 0f;
+            foreach (Round r in _rounds)
             {
-                cur = new Round(); _rounds.Add(cur);
-                h = u.hours + (u.TreeTasks ? flightH : 0f);
+                bool afterOwn = r.legs.Count > 0 && r.legs[r.legs.Count - 1].building == u.building;
+                float h = u.hours + (u.TreeTasks && !afterOwn ? flightH : 0f);
+                if (r.hours + h <= RoundTarget) { fit = r; fitH = h; if (afterOwn) break; }
             }
-            cur.legs.Add(u); cur.hours += h;
+            if (fit == null) { fit = new Round(); _rounds.Add(fit); fitH = u.hours + (u.TreeTasks ? flightH : 0f); }
+            fit.legs.Add(u); fit.hours += fitH;
         }
         for (int i = 0; i < _rounds.Count; i++)
         {

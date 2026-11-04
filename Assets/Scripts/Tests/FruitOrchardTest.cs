@@ -102,7 +102,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         TestProbe.Check("cada maceta enseña su agua, abono y salud (barras y etiqueta)", shown == plants.Count, $"{shown}/{plants.Count}");
 
         // ── 4. BIENESTAR ──
-        FruitPlant probe = plants[0];
+        FruitPlant probe = plants.FirstOrDefault(p => p.bed == null) ?? plants[0];   // (una maceta: en un bancal de tierra el abono y la plaga van más despacio, GardenBed)
         float w0 = probe.water, h0 = probe.health;
         probe.water = 0.3f; probe.nutrients = 0.25f; probe.pests = 0.5f; probe.health = 0.5f;
         float n0 = probe.nutrients;
@@ -127,8 +127,9 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         int roofs = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count();
         int treeUnits = rounds.SelectMany(r => r.TreeLegs).Count();
         var split = rounds.SelectMany(r => r.legs).Where(l => l.plants.Count > 0).GroupBy(l => l.building).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
-        TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); con las máscaras y el fitoplancton, como mucho una ronda más por árbol",
-            rounds.Count <= roofs + treeUnits && split.Count == 0 && treeUnits == ArbolCampos.All.Count(a => a != null && FruitGardener.TreeTaskList(a).masks.Count > 0),
+        TestProbe.Check("con el goteo, las macetas de cada edificio las hace una persona (ningún edificio se parte); las máscaras y el fitoplancton de cada árbol, en tramos que caben en una ronda, todos repartidos",
+            rounds.Count <= roofs + treeUnits && split.Count == 0 && ArbolCampos.All.Where(a => a != null).All(a => FruitGardener.TreeTaskList(a).masks.All(m => rounds.SelectMany(r => r.TreeLegs).Any(l => l.masks.Contains(m))))
+            && rounds.Count <= Mathf.CeilToInt(rounds.Sum(r => r.hours) / (FruitGardener.RoundTarget * 0.6f)),   // (2026-11-04: las tareas de un árbol van en tramos que caben en una ronda; todas sus puertas, en alguno; y las rondas, bien llenas)
             $"{rounds.Count} rondas para {roofs} edificios, total {rounds.Sum(r => r.hours):0.0} h de juego{(split.Count > 0 ? "; partidos: " + string.Join(", ", split) : "")}");
         TestProbe.Check($"ninguna ronda pasa de {FruitGardener.MaxRoundHours:0} h (cabe en el bloque de la mañana)", rounds.All(r => r.hours <= FruitGardener.MaxRoundHours + 0.01f),
             $"{rounds.Count} rondas: " + string.Join(" · ", rounds.Select(r => $"{r.hours:0.0} h")) + $"; total {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s)");
