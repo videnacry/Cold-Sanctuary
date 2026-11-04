@@ -126,7 +126,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         Time.timeScale = speed;
         HorarioPanel.Show = true;
         float perHour = tc.SecondsPerGameDay / 24f;
-        float end = Time.realtimeSinceStartup + perHour * 2.3f / speed + 60f;
+        float end = Time.realtimeSinceStartup + Mathf.Max(420f, perHour * 2.3f / speed * 4f);   // (acotado; con la escena cargada los fotogramas son lentos y el reloj avanza menos que el tope)
         bool shot1 = false, labels = false;
         while (tc.Hour < 18.02f && tc.Day == day && Time.realtimeSinceStartup < end)
         {
@@ -135,8 +135,9 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             yield return null;
         }
         if (shots) Capture("panel_santuario_1800");
+        Log($"santuario: el reloj llegó a las {tc.Hour:00.00} h del día {tc.Day} (hasta las 18 h)");
         ld.Tick();   // cierra la franja de las 17 h
-        var recs = LeisureDirector.Records.Skip(rec0).Where(x => !x.micro && x.day == day && x.slot <= 1).ToList();
+        var recs = LeisureDirector.Records.Skip(rec0).Concat(ld.Snapshot()).Where(x => !x.micro && x.day == day && x.slot <= 1).ToList();   // (y las que siguen en marcha si el reloj no llegó)
         Summarize(recs, "santuario", 0.7f);
         TestProbe.Check("santuario: el rótulo dice la actividad («Libre: …»)", labels);
         LeisureDirector.ForceRun = false; ld.ReleaseAll(gr);
@@ -177,15 +178,18 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             LeisureDirector.ForceRun = true;
             Time.timeScale = speed;
             float perHour = tc.SecondsPerGameDay / 24f;
-            float end = Time.realtimeSinceStartup + perHour * 1.2f / speed + 60f;
+            float end = Time.realtimeSinceStartup + Mathf.Max(360f, perHour * 1.2f / speed * 4f);   // (acotado: con el microcosmos cargado —miles de plantas— el reloj avanza más despacio que el tiempo real; 2026-11-04 se cortaba antes de las 16 h)
             bool shot = false;
             while (tc.Hour < 17.02f && tc.Day == day && Time.realtimeSinceStartup < end)
             {
                 if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; Capture("panel_" + sceneName); }
                 yield return null;
             }
+            float reached = tc.Hour; bool started = reached >= 16f || tc.Day > day;
+            Log($"{sceneName}: el reloj llegó a las {reached:00.00} h del día {tc.Day} (hasta las 17 h)");
+            TestProbe.Check($"{sceneName}: el reloj llega a la franja libre de las 16 h", started, $"{reached:00.00} h");
             ld.Tick();
-            var recs = LeisureDirector.Records.Skip(rec0).Where(x => x.micro && x.group == gr.name && x.day == day && x.slot == 0).ToList();
+            var recs = LeisureDirector.Records.Skip(rec0).Concat(ld.Snapshot()).Where(x => x.micro && x.group == gr.name && x.day == day && x.slot == 0).ToList();   // (con las que siguen en marcha)
             Summarize(recs, sceneName, 0.7f);
             LeisureDirector.ForceRun = false; ld.ReleaseAll(gr);
             Time.timeScale = 1f;

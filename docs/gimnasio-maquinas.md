@@ -645,6 +645,15 @@ vez**. En cada piso se alternan tren superior e inferior:
 5. Corregir el comentario de `Training.cs:23` (la entreplanta está a 4 m, no a 3) y el `<summary>` duplicado
    (`:14-17`).
 
+
+## 14. Colgarse siendo alto (2026-11-04)
+
+El cuerpo se ajusta a cada máquina con `GymFit.Fit`. En las posturas colgadas (dominadas, escalera horizontal, anillas…), el cuerpo sube o baja hasta que las manos llegan al agarre.
+
+Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la escalera horizontal a 2,4 m, tenía los pies en el suelo antes de que las manos llegaran a la barra. Se quedaba con las manos a 15 cm del agarre (GymUsabilityTest).
+
+Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
+
 ## Fuentes
 
 - Press de pecho:
