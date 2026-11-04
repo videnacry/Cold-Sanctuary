@@ -14,6 +14,8 @@ using UnityEngine;
 ///   individuales son para los turistas), el jugador lanza cada paso (`step`) → stock +N → tanque → el primer microcosmos de
 ///   la cocina, la era del fuego: las reencarnaciones (<see cref="KitchenMicrocosmos"/>, docs/microcosmos-areas.md).
 /// Todas las esperas tienen tope (docs: no stalls): cada tramo andando, cada paso y la iniciación entera.
+/// (2026-11-04, modelo de Ambrosio) Cada paso que se le pide al jugador sale como MARCADOR «E — paso» en su sitio (la mesa,
+/// el borde del bancal, la esterilla): la E allí lo lanza (<see cref="PlayerTaskRunner.Live"/>; docs/tareas-del-jugador.md).
 /// </summary>
 public class AreaInitiator : MonoBehaviour
 {
@@ -277,8 +279,31 @@ public class AreaInitiator : MonoBehaviour
 
     RestaurantKitchen Kitchen() => _rk != null ? _rk : (_rk = FindAnyObjectByType<RestaurantKitchen>());
 
+    // (2026-11-04, modelo de Ambrosio) EL SITIO DEL ALUMNO: ahí sale el marcador «E — paso» y la E lanza el paso que se le
+    // pide (lo mismo que escribir `step` o el asana; PlayerTaskRunner.Live).
+    Vector3 _studentSpot;
+    bool _keySwapped; KeyCode _oldStepKey;
+    bool StudentIsPlayer => student != null && student.GetComponent<PlayerController>() != null;
+
+    /// <summary>El paso que se le pide ahora, como paso de tarea con E (cada fotograma mientras lo espera).</summary>
+    void OfferE(string action, int idx, int total, System.Func<bool> press, AreaFunctions.Kind? gesture)
+    {
+        if (!StudentIsPlayer) return;
+        PlayerTaskRunner.Live(this, $"Iniciación de {Label}", action, _studentSpot, idx, total, press, gesture);
+    }
+
+    /// <summary>Una frase larga del trabajador, en una acción corta para el rótulo «E — …» (hasta el primer paréntesis, coma o punto).</summary>
+    public static string Short(string say)
+    {
+        if (string.IsNullOrEmpty(say)) return say;
+        int cut = say.Length;
+        foreach (char c in new[] { '(', ',', '.' }) { int i = say.IndexOf(c); if (i > 8 && i < cut) cut = i; }
+        return say.Substring(0, cut).Trim();
+    }
+
     void BeginWork()
     {
+        _studentSpot = Spot(WorkPlace(), false);
         if (kind == Kind.Yoga) BeginLesson(); else if (kind == Kind.Kitchen) BeginCook(); else BeginSoil();
     }
 
@@ -302,7 +327,11 @@ public class AreaInitiator : MonoBehaviour
     {
         Anima st = student.GetComponentInParent<Anima>();
         TeachingSession ts = st != null ? TeachingSession.For(st) : null;
-        if (ts != null && Time.time < _phaseDeadline) return;
+        if (ts != null && Time.time < _phaseDeadline)
+        {
+            if (!ts.StudentDoing && ts.CurrentStep != null) { TeachingSession sess = ts; Anima who = st; OfferE(sess.CurrentStep.asanaName, sess.StepIndex, sess.StepCount, () => sess.CastCurrentStep(who), null); }
+            return;
+        }
         if (ts != null) { Destroy(ts); Debug.Log($"[Iniciación sala de yoga] la clase pasó de su tope: {Who} la da por hecha."); }
         _r.lessonDone = true;
         Say("Muy bien. Ahora, tu primer viaje desde esta sala: al río. Allí hay alguien que te necesita.", 6f);
@@ -325,6 +354,8 @@ public class AreaInitiator : MonoBehaviour
             _cs.kitchen = rk; _cs.playerDriven = student.GetComponent<PlayerController>() != null;
             _cs.externallyDriven = !_cs.playerDriven;   // una IA no avanza sola por tiempo: los pasos los marca la iniciación
         }
+        // La E del jugador ya no avanza la receta en cualquier sitio: la da su marcador, en la mesa (PlayerTaskRunner.Live).
+        if (StudentIsPlayer && !_keySwapped) { _oldStepKey = _cs.stepKey; _cs.stepKey = KeyCode.None; _keySwapped = true; }
         _cs.Assign(_recipe);
         _seenIdx = 0; _promptedIdx = -1; _cookDone = false;
         Now = Phase.Cook;
@@ -355,13 +386,14 @@ public class AreaInitiator : MonoBehaviour
             string qty = step.Trim().ToLowerInvariant().StartsWith("toma ") ? $" — para {_recipe.servings} raciones: {_recipe.Quantities()}" : "";
             if (isPlayer)
             {
-                LessonPrompt.Show($"{Who} (por mayor ×{_recipe.servings}): {step}{qty}", "step", stepTimeout + 2f);
+                LessonPrompt.Show($"{Who} (por mayor ×{_recipe.servings}): {step}{qty} — pulsa E en tu sitio de la mesa", "step", stepTimeout + 2f);
                 KushalVoice.Reply(KushalVoice.Ctx.Instruction);
                 SpellConsole.Propose("step", $"{Who} te pide: {step}", stepTimeout);
             }
             Debug.Log($"[Iniciación cocina] paso {idx + 1}/{_recipe.steps.Length}: «{step}» — {Who} lo hace y se lo pide a «{student.name}».");
         }
         Gesture(_recipe.steps[idx]);
+        { int want = idx; OfferE(Short(_recipe.steps[idx]), idx, _recipe.steps.Length, () => { if (_cs == null || StudentIdx() != want) return false; _cs.AdvanceStep(); return true; }, AreaFunctions.Kind.Cook); }
         if (Time.time < _stepDeadline) return;
         // Venció el tiempo: el trabajador lo hace CON él (no se atasca nunca). Una IA, en cambio, lo hace sola.
         if (isPlayer) { _r.stepsHelped++; _helping = true; Debug.Log($"[Iniciación cocina] «{student.name}» no lanzó «{_recipe.steps[idx]}» a tiempo: {Who} lo hace con él."); }
@@ -379,6 +411,7 @@ public class AreaInitiator : MonoBehaviour
             Grimoire g = student.gameObject.GetOrAdd<Grimoire>();
             g.Learn(_recipe.id);
         }
+        if (_keySwapped && _cs != null) { _cs.stepKey = _oldStepKey; _keySwapped = false; }
         if (_addedStation && _cs != null) Destroy(_cs);
         LessonPrompt.Hide();
         Stand(GetComponent<Anima>());
@@ -487,7 +520,7 @@ public class AreaInitiator : MonoBehaviour
             ArrivalExam.Hold(gameObject, s.tool, BodyPart.HandRight, "Herramienta"); _plotTool = true;
             if (isPlayer)
             {
-                LessonPrompt.Show($"{Who} (huerto, paso {_soilIdx + 1}/{SoilSteps.Length}): {s.say}", "step", stepTimeout + 2f);
+                LessonPrompt.Show($"{Who} (huerto, paso {_soilIdx + 1}/{SoilSteps.Length}): {s.say} — pulsa E en tu sitio del bancal", "step", stepTimeout + 2f);
                 KushalVoice.Reply(KushalVoice.Ctx.Instruction);
                 SpellConsole.Propose("step", $"{Who} te pide: {s.say}", stepTimeout);
             }
@@ -500,6 +533,7 @@ public class AreaInitiator : MonoBehaviour
             if (me != null) (_soilFrameB ? s.b : s.a)().ApplyFinal(me);
             if (_soilCast && st != null) (_soilFrameB ? s.b : s.a)().ApplyFinal(st);
         }
+        if (!_soilCast && st != null) { Anima who = st; OfferE(Short(s.say), _soilIdx, SoilSteps.Length, () => StudentStep(who), null); }
         if (!_soilCast && Time.time >= _soilDeadline)
         {
             // Venció el tiempo: lo hace con él (una IA, en cambio, lo hace sola: cuenta como suyo).
@@ -571,6 +605,7 @@ public class AreaInitiator : MonoBehaviour
         if (why != null && kind == Kind.Garden && student != null) student.gardenTrained = true;
         if (_plotTool) ArrivalExam.Hold(gameObject, null, BodyPart.HandRight, "Herramienta");
         _orch?.Stop();   // suelta al alumno (la orquesta le sujetaba el cuerpo)
+        if (_keySwapped && _cs != null) { _cs.stepKey = _oldStepKey; _keySwapped = false; }
         if (_addedStation && _cs != null) Destroy(_cs);
         if (_ownCook != null) _ownCook.enabled = _ownCookWasOn;
         MagnateWarden.Lock(this, false);

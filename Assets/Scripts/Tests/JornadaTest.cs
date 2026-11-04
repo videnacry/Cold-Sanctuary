@@ -172,7 +172,7 @@ public class JornadaTest : MonoBehaviour, ITestUnit
         var recs = _pw.Records.ToList();
         TestProbe.Check($"{tag}: PlayerWorkday sigue la jornada de Kushal", _pw.Day == day && recs.Count > 0, _pw.Summary());
         string per = string.Join(" · ", recs.Select(r => $"«{r.a.mission.title}» {r.Share:P0}{(r.done ? " ✓" : " ✗")}"));
-        TestProbe.Check($"{tag}: Kushal completa TODAS sus misiones (≥ 50 % del tiempo en su puesto)", recs.Count > 0 && recs.All(r => r.done), per);
+        TestProbe.Check($"{tag}: Kushal completa TODAS sus misiones (todos sus pasos con E, en su puesto)", recs.Count > 0 && recs.All(r => r.done), per);
         TestProbe.Check($"{tag}: come en el restaurante (11–12 h)", _pw.AteToday);
         TestProbe.Check($"{tag}: hace su entrenamiento (14–16 h)", _pw.TrainingDone, $"{_pw.TrainingArea} {_pw.TrainingShare:P0}");
         TestProbe.Check($"{tag}: a las 16:00 su jornada se cierra (libre)", _pw.DayClosed);
