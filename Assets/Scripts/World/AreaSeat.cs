@@ -9,7 +9,7 @@ public class AreaSeat : MonoBehaviour
 {
     /// <summary>Trabajo: basta con que varias personas puedan hacer la tarea a la vez. Entrenamiento y estudio: caben TODOS los
     /// miembros del santuario a la vez.</summary>
-    public enum Category { Trabajo, Entrenamiento, Estudio }
+    public enum Category { Trabajo, Entrenamiento, Estudio, Ocio }
 
     [Tooltip("La actividad del puesto (p. ej. «sysadmin», «refrigeración», «clase», «estudio»).")]
     public string activity = "";

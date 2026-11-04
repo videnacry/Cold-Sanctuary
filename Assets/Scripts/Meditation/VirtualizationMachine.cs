@@ -128,7 +128,8 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         if (areaName == "Construcción") { opts.Add("Simulación: Egina, el reino de los mirmidones (Éaco y Zeus)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Egina")); }
         // FÍSICA (docs/atomic-plant.md): la escalera de la física vive en la planta atómica. «El microcosmos del área» (arriba) es el
         // de Newton, Curie y Einstein; Eratóstenes, el primer tramo, tiene el suyo.
-        if (areaName == "Planta Atómica" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes")) { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
+        if (areaName == "Aula" && Application.CanStreamedLevelBeLoaded("Microcosmos_Eratostenes"))   // (2026-11-04) al Aula (la biblioteca de Alejandría)
+            { opts.Add("Simulación: Eratóstenes mide la Tierra (~240 a. C.)"); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, "Microcosmos_Eratostenes")); }
         // HISTORIAS (docs/microcosmos-historias.md): grandes figuras sobre el área que mejor las cuenta.
         foreach (var (area, label, scene) in StoryScenes)
             if (areaName == area) { string sc = scene; opts.Add(label); acts.Add(() => EnterWithTank(GameObject.FindGameObjectWithTag("Player")?.transform, sc)); }
@@ -150,7 +151,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Huerto", "Simulación: Pakal de Palenque, el rey que renace como el maíz (683)", "Microcosmos_Pakal"),
         // LOS FAMOSOS (docs/microcosmos-famosos.md): una historia de su vida pública, en su pueblo real.
         ("Sala de Yoga", "Simulación: Sadhguru en Velliangiri: el Dhyanalinga (1999)", "Microcosmos_Sadhguru"),
-        ("Mecánica", "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),
+        (LaunchSite.ControlArea, "Simulación: Elon Musk en Hawthorne: el Falcon 1 llega a órbita (2008)", "Microcosmos_ElonMusk"),
         ("Dojo (artes marciales)", "Simulación: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Gimnasio", "Simulación del Dojo: Goku en la aldea de la montaña (homenaje original)", "Microcosmos_Goku"),
         ("Informática", "Simulación: Bill Gates y Paul Allen en Albuquerque: el BASIC del Altair (1975)", "Microcosmos_BillGates"),
@@ -158,13 +159,13 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Aula", "Simulación: MacKenzie Scott y Prairie View A&M: dar sin condiciones (2020)", "Microcosmos_MacKenzieScott"),
         ("Huerto", "Simulación: Uagadugú 2024: tractores para los productores (Ibrahim Traoré)", "Microcosmos_IbrahimTraore"),
         // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
-        ("Gimnasio", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
-        ("Huerto", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),
-        ("Construcción", "Simulación: al-Juarismi en Bagdad: el álgebra y los números indios (~820)", "Microcosmos_AlJuarismi"),
+        ("Aula", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
+        ("Aula", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),
+        ("Aula", "Simulación: al-Juarismi en Bagdad: el álgebra y los números indios (~820)", "Microcosmos_AlJuarismi"),
         ("Planta Atómica", "Simulación: Newton en Woolsthorpe: el año de la peste (1665–1666)", "Microcosmos_Newton"),
         ("Biología", "Simulación: Edward Jenner en Berkeley: la primera vacuna (1796)", "Microcosmos_Jenner"),
         ("Cocina", "Simulación: Bolívar en Angostura: el Congreso y el Orinoco (1819)", "Microcosmos_Bolivar"),
-        ("Sala de Yoga", "Simulación: Nietzsche en Sils Maria: caminar y el eterno retorno (1881)", "Microcosmos_Nietzsche"),
+        ("Aula", "Simulación: Nietzsche en Sils Maria: caminar y el eterno retorno (1881)", "Microcosmos_Nietzsche"),
         ("Química", "Simulación: Marie y Pierre Curie: el polonio y el radio (París, 1898)", "Microcosmos_Curie"),
         ("Construcción", "Simulación: Tesla en Colorado Springs: el rayo artificial (1899)", "Microcosmos_Tesla"),
         ("Planta Atómica", "Simulación: Einstein en Berna: el año milagroso (1905)", "Microcosmos_Einstein"),

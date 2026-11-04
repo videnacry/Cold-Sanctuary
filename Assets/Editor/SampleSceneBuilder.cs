@@ -144,6 +144,9 @@ public static partial class SampleSceneBuilder
         BuildLinduarda(root.transform);          // LINDUARDA (enfermería): guardiana de salud emergente (status→vacuna/analiza al que tenga HealthRecord false, p.ej. Kushal)
         BuildGuardTower(root.transform);          // TORRE DE GUARDIA (tablero de misiones de vigía) + puestos de patrulla
         BuildLaunchSite(root.transform);          // LANZADERA DE COHETES: casquete artificial lejos del santuario y su árbol reforzado, por encima de todo (docs/lanzadera-de-cohetes.md)
+        // (2026-11-04) La máquina de virtualización del control de misión (Musk en Hawthorne, re-apuntado por la alerta de piso nuevo): la
+        // lanzadera se levanta después de BuildMeditationContent, así que su máquina se cablea aquí.
+        WireMeditationArea(root.transform, "Control_de_mision", LaunchSite.ControlArea, new Color(0.45f, 0.55f, 0.7f), MissionKind.Channel, null, virtualOnly: true);
         ResidentialBuilder.Build(root.transform, new Vector3(-60f, 0f, 95f));   // ARBOLEDA RESIDENCIAL: un dormitorio elevado por persona
         BuildGourmetDining(root.transform);      // RESTAURANTE: el comedor gourmet para 30, en la misma plataforma que la cocina abierta
         RelocateTanks();       // los tanques, donde quedan 2 m libres con todos los muebles ya puestos

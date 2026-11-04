@@ -25,7 +25,7 @@ public class FamososStoryTest : MonoBehaviour, ITestUnit
     static readonly (string scene, string hero, int year, string region, string platform, bool rep, string[] fruits)[] Cases =
     {
         ("Microcosmos_Sadhguru", "Sadhguru", 1999, "SurAsia", "YogaRoom_Area", true, new[] { "Mango", "Cocotero", "Banano", "Yaca" }),
-        ("Microcosmos_ElonMusk", "Elon Musk", 2008, "Norteamerica", "VehicleWorkshop_Area", false, new[] { "Limonero", "Manzano" }),
+        ("Microcosmos_ElonMusk", "Elon Musk", 2008, "Norteamerica", "Control_de_mision", true, new[] { "Limonero", "Manzano" }),
         ("Microcosmos_Goku", "Goku", 1930, "China", "MartialArts_Area", true, new[] { "Lichi", "Níspero", "Longán" }),
         ("Microcosmos_BillGates", "Bill Gates", 1975, "NorteamericaInterior", "Informatics_Area", true, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
         ("Microcosmos_WarrenBuffett", "Warren Buffett", 1983, "NorteamericaInterior", "TextileStudio_Area", false, new[] { "Manzano", "Melocotonero", "Albaricoquero", "Pacano" }),
