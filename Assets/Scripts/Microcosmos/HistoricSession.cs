@@ -79,8 +79,9 @@ public class HistoricSession
             case Phase.Fetch:   // el equipo del armario (halteres, mazas, la girya…): ir a por él, como mucho 15 s
                 {
                     AreaFunctionStation eq = cls.Equipment;
-                    if (x.drill.equipment == null || eq == null || Time.time - _walkSince > 15f || MicroMove.Step(g.transform, eq.transform.position, speed, 1.6f))
-                    { if (x.drill.equipment != null && eq != null) Note($"coge {x.drill.equipment}"); phase = Phase.Walk; _walkSince = Time.time; }
+                    bool rack = eq != null && x.drill.equipment != null && HistoricTraining.KeysOf(x.drill).Contains("armero");
+                    if (!rack || Time.time - _walkSince > 15f || MicroMove.Step(g.transform, eq.transform.position, speed, 1.6f))
+                    { if (rack) Note($"coge {x.drill.equipment} del armero"); phase = Phase.Walk; _walkSince = Time.time; }
                     return true;
                 }
             case Phase.Walk:
@@ -96,7 +97,7 @@ public class HistoricSession
                 if (x.Timed) _until = Time.time + TimedSeconds(x);
                 return true;
             case Phase.Wait:
-                if (cls.HasFree) { phase = Phase.Walk; _walkSince = Time.time; return true; }
+                if (cls.HasFreeFor(x.drill)) { phase = Phase.Walk; _walkSince = Time.time; return true; }
                 if (Time.time - _waitSince < MaxWait) return true;
                 if (!x.Timed && !_deferred.Contains(x) && queue.Skip(idx + 1).Any(q => !q.Timed))
                 {
@@ -265,10 +266,14 @@ public class HistoricClass
     public HistoricCoach coach;
     public readonly Dictionary<GameObject, HistoricSession> sessions = new Dictionary<GameObject, HistoricSession>();
     public readonly Dictionary<string, HistoricTraining.Plan> plans = new Dictionary<string, HistoricTraining.Plan>();
-    readonly List<Vector3> _spots = new List<Vector3>(); readonly List<HistoricSession> _occ = new List<HistoricSession>();
+    readonly List<Vector3> _spots = new List<Vector3>(); readonly List<string> _keys = new List<string>(); readonly List<HistoricSession> _occ = new List<HistoricSession>();
     public AreaFunctionStation Equipment { get; private set; }
     public int SpotCount => _spots.Count;
+    public string SpotKey(int i) => i >= 0 && i < _keys.Count ? _keys[i] : null;
 
+    /// <summary>Los SITIOS de entrenar: los puestos de suelo (tatami, foso, pista, campo, sala de esgrima) dan una rejilla de sitios a 2 m
+    /// (la distancia de dos personas, regla del pueblo); cada aparato (halteres, mazas, saco, barra fija, diana…), un sitio delante. Si
+    /// el edificio no tiene puestos, 8 sitios en círculo.</summary>
     public HistoricClass(AreaFunctionSite site, HistoricTraining.Tradition t, int year, string style, int day)
     {
         this.site = site; tradition = t; this.year = year; this.style = style; this.day = day;
@@ -276,29 +281,47 @@ public class HistoricClass
         {
             BoxCollider bc = st.GetComponent<BoxCollider>();
             Vector3 size = bc != null ? Vector3.Scale(bc.size, st.transform.lossyScale) : Vector3.zero;
-            if (Mathf.Abs(size.x) >= 1.5f && Mathf.Abs(size.z) >= 1.5f)
+            bool floor = System.Array.IndexOf(HistoricTraining.FloorKeys, st.station) >= 0 || (Mathf.Abs(size.x) >= 1.5f && Mathf.Abs(size.z) >= 1.5f);
+            if (floor && bc != null)
             {
                 int nx = Mathf.Max(1, Mathf.FloorToInt(Mathf.Abs(size.x) / 2f)), nz = Mathf.Max(1, Mathf.FloorToInt(Mathf.Abs(size.z) / 2f));
                 for (int i = 0; i < nx; i++) for (int j = 0; j < nz; j++)
                 {
                     Vector3 local = bc.center + new Vector3((i + 0.5f) / nx - 0.5f, 0f, (j + 0.5f) / nz - 0.5f).Scale3(bc.size);
-                    Vector3 p = st.transform.TransformPoint(local); p.y = bc.bounds.max.y; _spots.Add(p);
+                    Vector3 p = st.transform.TransformPoint(local); p.y = bc.bounds.max.y; _spots.Add(p); _keys.Add(st.station);
                 }
             }
-            else if (Equipment == null) Equipment = st;
+            else
+            {
+                _spots.Add(MicroJornada.WorkSpotOf(st, site.transform.position)); _keys.Add(st.station);
+                if (st.station == "armero" && Equipment == null) Equipment = st;
+            }
         }
-        if (_spots.Count == 0) for (int i = 0; i < 8; i++) _spots.Add(site.transform.position + Quaternion.Euler(0f, i * 45f, 0f) * Vector3.forward * 3f);
+        if (_spots.Count == 0) for (int i = 0; i < 8; i++) { _spots.Add(site.transform.position + Quaternion.Euler(0f, i * 45f, 0f) * Vector3.forward * 3f); _keys.Add("tatami"); }
         for (int i = 0; i < _spots.Count; i++) _occ.Add(null);
     }
 
     public Vector3 SpotPos(int i) => _spots[Mathf.Clamp(i, 0, _spots.Count - 1)];
-    public bool HasFree => _occ.Any(o => o == null);
     public HistoricSession OccupantOf(int i) => i >= 0 && i < _occ.Count ? _occ[i] : null;
-    /// <summary>Reserva el sitio libre más cercano para <paramref name="s"/> (−1 si no hay).</summary>
+
+    /// <summary>Los sitios que valen para <paramref name="d"/>: los de sus claves (<see cref="HistoricTraining.KeysOf"/>); si el edificio
+    /// no tiene ninguno de esos aparatos, cualquier sitio de suelo; y si tampoco, cualquiera.</summary>
+    List<int> Candidates(HistoricTraining.Drill d)
+    {
+        string[] keys = d != null ? HistoricTraining.KeysOf(d) : HistoricTraining.FloorKeys;
+        var l = Enumerable.Range(0, _spots.Count).Where(i => keys.Contains(_keys[i])).ToList();
+        if (l.Count == 0) l = Enumerable.Range(0, _spots.Count).Where(i => HistoricTraining.FloorKeys.Contains(_keys[i])).ToList();
+        if (l.Count == 0) l = Enumerable.Range(0, _spots.Count).ToList();
+        return l;
+    }
+
+    public bool HasFreeFor(HistoricTraining.Drill d) => Candidates(d).Any(i => _occ[i] == null);
+
+    /// <summary>Reserva para <paramref name="s"/> el sitio libre más cercano de su ejercicio actual (−1 si todos están ocupados).</summary>
     public int Claim(HistoricSession s)
     {
         int best = -1; float bd = float.MaxValue;
-        for (int i = 0; i < _spots.Count; i++)
+        foreach (int i in Candidates(s.Current?.drill))
         {
             if (_occ[i] != null && _occ[i] != s) continue;
             float d = (_spots[i] - s.g.transform.position).sqrMagnitude; if (d < bd) { bd = d; best = i; }
@@ -338,7 +361,7 @@ public class HistoricClass
             HistoricTraining.Tradition t = HistoricTraining.ForSite(j.practice, year);
             if (t == null) return false;
             if (c != null) c.EndAll("otro día");
-            _classes[j.practice] = c = new HistoricClass(j.practice, t, year, MicroStyles.For(year, j.practice.region)?.id, day);
+            _classes[j.practice] = c = new HistoricClass(j.practice, t, year, HistoricTraining.KindOf(j.practice, year), day);
             // EL MAESTRO: quien trabaja en este edificio; si nadie, el primero por nombre de los que practican aquí.
             MicroJornada[] here = Object.FindObjectsByType<MicroJornada>(FindObjectsSortMode.None).Where(x => x != null && x.practice == j.practice && x.follow == null).OrderBy(x => x.name, System.StringComparer.Ordinal).ToArray();
             MicroJornada m = here.FirstOrDefault(x => x.work == j.practice) ?? here.FirstOrDefault();

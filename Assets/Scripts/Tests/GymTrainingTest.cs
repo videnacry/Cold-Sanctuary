@@ -44,7 +44,9 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         Plans();
         TrainerMission();
         Progression();
+        MicroPlans();
         yield return StartCoroutine(Live());
+        yield return StartCoroutine(MicroLive());
         TestProbe.End();
     }
 
@@ -64,7 +66,7 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
             plans.All(p => p.days.Length >= 2 && p.days.Length <= 6 && Enumerable.Range(0, 14).Where(p.Trains).All(d => GymProgramming.Prescribe(p.who, d).Main.Count() >= 4)),
             string.Join(", ", plans.Where(p => p.days.Length < 2 || p.days.Length > 6).Select(p => p.who)));
         TestProbe.Check("los días sin gimnasio en su plan, recuperación activa", plans.All(p => Enumerable.Range(0, 7).Where(d => !p.Trains(d)).All(d => GymProgramming.Prescribe(p.who, d).recovery)));
-        TestProbe.Check("los humanos-insecto de los microcosmos no tienen plan (en sus eras no hay gimnasio)", GymProgramming.For("Obrera de Hormiga") == null && GymProgramming.For("Myrmidon") == null);
+        TestProbe.Check("los humanos-insecto no usan los planes del gimnasio del santuario (tienen los de su época: HistoricTraining)", GymProgramming.For("Obrera de Hormiga") == null && GymProgramming.For("Myrmidon") == null);
         TestProbe.Check($"el entrenador ({GymProgramming.Trainer}) parte con las cargas más altas (el de más fuerza) y Goluis sigue con un plan de fuerza", plans.OrderByDescending(p => p.strength).First().who == GymProgramming.Trainer && GymProgramming.For("Goluis").goal == TrainingGoal.Fuerza);
         GymProgramming.DayRoutine r = GymProgramming.Prescribe("Amahuz", 0);
         TestProbe.Check("la rutina empieza calentando y acaba estirando; series × reps, carga, descanso y RPE en cada ejercicio",
@@ -302,6 +304,129 @@ public class GymTrainingTest : MonoBehaviour, ITestUnit
         Time.timeScale = oldScale;
         if (wd != null) wd.enabled = wdWas;
         GymProgramming.ResetAll();
+    }
+
+    // ── 5. Microcosmos: entrenar como en su época (docs/gimnasio-maquinas.md §16) ─────────────────────
+    /// <summary>Los microcosmos con fecha (Eras.OfMicrocosmos) y las clases estables de los pueblos (MicroStyles.TrainingKind).</summary>
+    static readonly string[] Micros = { "Mesopotamia", "Kapilavastu", "Patanjali", "Egina", "Alejandría", "Escútari", "Dayton", "Tregua 1914", "Bruce Lee",
+        "Irena Sendler", "Le Chambon-sur-Lignon", "Crotona", "Menfis", "Bagdad", "Woolsthorpe", "Berkeley", "Angostura", "Sils Maria", "París 1898",
+        "Colorado Springs", "Berna", "Pasadena", "Chernóbil", "Palenque", "Velliangiri", "Hawthorne", "Aldea de la montaña", "Albuquerque", "Omaha",
+        "Prairie View", "Uagadugú", "Planta Atómica", "Huerto", "Cocina", "Sala de Yoga" };
+    static readonly string[] Kinds = { "juegos_heroicos", "gimnasio_griego", "palestra_romana", "patio_lucha_egipcio", "patio_lucha", "akhara", "furusiyya", "zurkhaneh",
+        "tekke_guresh", "juego_pelota", "wuguan", "dojo", "sala_armas", "sala_esgrima", "prado_juegos", "garrote_coleo", "turnplatz_schwingen", "turnhalle", "hebert",
+        "futbol_tregua", "club_deportivo", "estadio", "gimnasio_moderno" };
+
+    static void MicroPlans()
+    {
+        HistoricTraining.ResetPlans();
+        var noTrad = Kinds.Where(k => HistoricTraining.For(k) == null).ToList();
+        TestProbe.Check($"cada clase de lugar de entrenar de los pueblos tiene su tradición ({Kinds.Length})", noTrad.Count == 0, string.Join(", ", noTrad));
+        int towns = 0; string bad = ""; var seen = new List<string>();
+        foreach (string m in Micros)
+        {
+            HistoricTraining.Tradition t = HistoricTraining.ForMicrocosmos(m, out int year, out string kind);
+            if (kind == null) { if (t != null) bad += $"{m}: tradición sin clase · "; continue; }   // la prehistoria: no hay lugar de entrenar
+            if (t == null) { bad += $"{m} ({kind}, {year}): sin tradición · "; continue; }
+            towns++; seen.Add($"{m}→{t.place}");
+            var sessions = HistoricTraining.Sessions(t, year, kind);
+            if (sessions.Count == 0) { bad += $"{m}: ninguna sesión de ≥ 3 ejercicios de época en {year} · "; continue; }
+            foreach (var s in sessions) foreach (var d in s.drills) if (!d.In(year)) bad += $"{m}: {d.name} no existía en {year} · ";
+            for (int i = 0; i < 3; i++)
+            {
+                HistoricTraining.Plan p = HistoricTraining.PlanFor($"{m} insecto {i}", t, year, kind, i == 0 ? "soldado" : "");
+                if (p.days.Length < 3) bad += $"{p.who}: {p.days.Length} días · ";
+                int d0 = Enumerable.Range(0, 7).First(p.Trains);
+                HistoricTraining.Routine r = HistoricTraining.Prescribe(p, d0);
+                if (r.Main.Count() < 3 || r.Main.Any(x => x.sets < 1 || x.reps < 1 || x.restSec <= 0f)) bad += $"{p.who}: rutina «{r.name}» con {r.Main.Count()} ejercicios · ";
+                if (r.items.First().part != "calentamiento" || r.items.Last().part != "vuelta a la calma") bad += $"{p.who}: sin calentar o sin estirar · ";
+                var before = p.progress.ToDictionary(kv => kv.Key, kv => (kv.Value.load, kv.Value.reps));
+                HistoricTraining.Prescribe(p, d0 + 7);   // una semana después
+                foreach (var kv in p.progress) if (!(kv.Value.load > before[kv.Key].load || kv.Value.reps > before[kv.Key].reps)) bad += $"{p.who}: {kv.Key} no progresa · ";
+            }
+        }
+        Debug.Log("[GymTrainingTest] microcosmos: " + string.Join(", ", seen));
+        TestProbe.Check($"cada pueblo con lugar de entrenar tiene tradición, sesiones de época (≥ 3 ejercicios que existían ese año), planes de 3–4 días y progresión ({towns} pueblos)",
+            bad.Length == 0 && towns >= 20, bad.Length > 300 ? bad.Substring(0, 300) + "…" : bad);
+        TestProbe.Check("Crotona entrena en el gimnasio griego (con el ternero de Milón) y Velliangiri en el akhāṛā con el kalari",
+            HistoricTraining.ForMicrocosmos("Crotona", out int yc, out string kc)?.id == "griego" && HistoricTraining.Sessions(HistoricTraining.For(kc), yc, kc).Any(s => s.drills.Any(d => d.id == "ternero"))
+            && HistoricTraining.ForMicrocosmos("Velliangiri", out int yv, out string kvv)?.id == "akhara" && HistoricTraining.Sessions(HistoricTraining.For(kvv), yv, kvv).Any(s => s.name == "Kalari"));
+        HistoricTraining.ResetPlans();
+    }
+
+    /// <summary>EN VIVO, sin cargar un microcosmos: un edificio de entrenamiento griego de prueba (foso, halteres de un sitio, saco,
+    /// pista y armero) con un maestro y 3 insectos-humanos (cuerpos vacíos); el sitio de los halteres empieza ocupado.</summary>
+    IEnumerator MicroLive()
+    {
+        var root = new GameObject("PruebaPalestra"); root.transform.position = new Vector3(5000f, 0f, 5000f);
+        AreaFunctionSite site = root.AddComponent<AreaFunctionSite>();
+        site.building = "Centro de entrenamiento"; site.training = "gimnasio_griego"; site.region = "Egeo"; site.activity = AreaFunctionSite.Entrenamiento;
+        void St(string key, Vector3 at, Vector3 size)
+        {
+            var go = new GameObject(key); go.transform.SetParent(root.transform, false); go.transform.localPosition = at;
+            BoxCollider bc = go.AddComponent<BoxCollider>(); bc.size = size; bc.center = new Vector3(0f, size.y * 0.5f, 0f);
+            go.AddComponent<AreaFunctionStation>().station = key;
+        }
+        St("foso_lucha", new Vector3(0f, 0f, 0f), new Vector3(4f, 0.05f, 4f));
+        St("halteres", new Vector3(5f, 0f, 0f), new Vector3(1.2f, 0.5f, 0.5f));
+        St("saco", new Vector3(5f, 0f, 3f), new Vector3(1.3f, 1.5f, 0.6f));
+        St("pista_carreras", new Vector3(-5f, 0f, 0f), new Vector3(2.4f, 0.05f, 12f));
+        St("armero", new Vector3(5f, 0f, -3f), new Vector3(1.6f, 1.5f, 0.4f));
+        var cls = new HistoricClass(site, HistoricTraining.For("gimnasio_griego"), -240, "gimnasio_griego", 0);
+        var people = new List<GameObject>();
+        for (int i = 0; i < 4; i++) { var g = new GameObject($"Atleta de prueba {i}"); g.transform.position = root.transform.position + new Vector3(-3f + i * 2f, 0f, -6f); people.Add(g); }
+        float oldScale = Time.timeScale; Time.timeScale = speed;
+        cls.coach = new HistoricCoach(people[0], cls, 8f);
+        var Dr = new System.Func<string, int, HistoricTraining.Prescription>((id, n) => new HistoricTraining.Prescription { drill = HistoricTraining.D(id), sets = 2, reps = n, load = HistoricTraining.D(id).baseLoad, restSec = 90f, rpe = 8f });
+        var sessions = new List<HistoricSession>();
+        foreach (GameObject g in people.Skip(1))
+        {
+            var r = new HistoricTraining.Routine { who = g.name, name = "Palestra de prueba" };
+            r.items.Add(new HistoricTraining.Prescription { drill = HistoricTraining.D("carrera_suave"), minutes = 5f, part = "calentamiento" });
+            r.items.Add(Dr("halteres", 5)); r.items.Add(Dr("lucha_pale", 4)); r.items.Add(Dr("korykos", 6));
+            r.items.Add(new HistoricTraining.Prescription { drill = HistoricTraining.D("estirar"), minutes = 5f, part = "vuelta a la calma" });
+            cls.PlanOf(g.name, "");
+            var s = new HistoricSession(g, cls, r, 60f); cls.sessions[g] = s; sessions.Add(s);
+        }
+        // El sitio de los halteres (uno solo), ocupado al empezar: el primero espera o lo deja para el final; los otros dos, igual.
+        var dummyGo = new GameObject("Ocupante de prueba");
+        var dummy = new HistoricSession(dummyGo, cls, new HistoricTraining.Routine { who = dummyGo.name, name = "—" }, 1f);
+        int hal = Enumerable.Range(0, cls.SpotCount).FirstOrDefault(i => cls.SpotKey(i) == "halteres");
+        cls.Block(hal, dummy); float blockUntil = Time.time + 10f;
+        float waitWas = HistoricSession.MaxWait; HistoricSession.MaxWait = 40f;   // (tres comparten un solo sitio de halteres: que esperen su turno)
+        int doubles = 0; float tEnd = Time.time + 400f, rEnd = Time.realtimeSinceStartup + realLimit;
+        while (Time.time < tEnd && Time.realtimeSinceStartup < rEnd && sessions.Any(s => !s.Done))
+        {
+            if (dummy != null && Time.time >= blockUntil) { cls.Unblock(hal); dummy = null; }
+            cls.coach.Tick(cls.sessions.Values);
+            foreach (HistoricSession s in sessions) s.Tick();
+            var at = sessions.Where(s => s.spot >= 0 && (s.phase == HistoricSession.Phase.Set || s.phase == HistoricSession.Phase.Rest)).Select(s => s.spot).ToList();
+            if (at.Count != at.Distinct().Count()) doubles++;
+            if (dummy != null && sessions.Any(s => s.spot == hal)) doubles++;
+            yield return null;
+        }
+        TestProbe.Check("pueblo: nunca dos en el mismo sitio de entrenar (ni en el ocupado)", doubles == 0, $"{doubles} fotogramas");
+        TestProbe.Check("pueblo: con el sitio de los halteres ocupado, esperan o lo dejan para el final",
+            sessions.Any(s => s.events.Any(e => e.kind == HistoricSession.Kind.Wait || e.kind == HistoricSession.Kind.Defer)));
+        foreach (HistoricSession s in sessions)
+        {
+            var mains = s.queue.Where(x => !x.Timed).ToList(); int ok = 0; string bad = "";
+            foreach (var x in mains)
+            {
+                var evs = s.events.Where(e => e.drill == x.drill.name && (e.kind == HistoricSession.Kind.Set || e.kind == HistoricSession.Kind.Rest)).ToList();
+                var sets = evs.Where(e => e.kind == HistoricSession.Kind.Set).ToList();
+                bool good = sets.Select(e => e.set).SequenceEqual(Enumerable.Range(1, x.sets)) && sets.All(e => e.reps == x.reps)
+                            && evs.Count == 2 * x.sets - 1 && evs.Select((e, i) => (e.kind == HistoricSession.Kind.Set) == (i % 2 == 0)).All(b => b);
+                if (good) ok++; else bad += $"{x.drill.name}: {string.Join(",", sets.Select(e => e.set + "×" + e.reps))} · ";
+            }
+            TestProbe.Check($"pueblo: {s.Who} hace los 3 ejercicios de época con sus series, reps y descanso", ok >= 3, $"{ok}/3 {bad}{(s.Done ? "" : s.Status())}");
+        }
+        HistoricCoach c = cls.coach;
+        TestProbe.Check($"pueblo: el maestro ({cls.tradition.trainer}) da la clase de calentamiento y corrige", c.attended >= 1 && c.classReps >= 2 && c.corrections >= 1,
+            $"{c.attended} alumnos, {c.classReps} repeticiones, {c.corrections} correcciones · {string.Join(" | ", c.notes.Take(4))}");
+        Time.timeScale = oldScale; HistoricSession.MaxWait = waitWas;
+        foreach (GameObject g in people) Object.Destroy(g);
+        Object.Destroy(dummyGo); Object.Destroy(root);
+        HistoricTraining.ResetPlans();
     }
 
 #if UNITY_EDITOR

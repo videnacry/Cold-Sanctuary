@@ -23,7 +23,7 @@ public static class HistoricTraining
 {
     /// <summary>Plantillas del registro donde se entrena con este motor (las del pueblo; docs/microcosmos-actividades.md).</summary>
     public static readonly string[] Buildings = { "Centro de entrenamiento", "Dojo" };
-    public static bool IsTrainingSite(AreaFunctionSite s) => s != null && System.Array.IndexOf(Buildings, s.building) >= 0;
+    public static bool IsTrainingSite(AreaFunctionSite s) => s != null && (s.activity == AreaFunctionSite.Entrenamiento || System.Array.IndexOf(Buildings, s.building) >= 0);
 
     public class Drill
     {
@@ -34,20 +34,20 @@ public static class HistoricTraining
         public float baseLoad, step;       // carga de partida y lo que sube (0 = peso del cuerpo)
         public string unit = "kg";
         public int from = -100000, to = 3000;
-        public string[] styles;            // solo en estos estilos (null = en todos los de su tradición)
+        public string[] styles;            // (sin uso: cada tradición es ya de una clase de época)
         public bool Loaded => baseLoad > 0f;
-        public bool In(int year, string style) => year >= from && year <= to && (styles == null || style == null || styles.Contains(style));
+        public bool In(int year, string kind = null) => year >= from && year <= to;
     }
 
     public class Tradition
     {
         public string id, place, trainer, why;
-        public string[] styles;
+        public string[] styles;                                // las CLASES de los pueblos (AreaFunctionSite.training) que la usan
         public int from, to;
         public string[] warmup, cooldown;                      // ids de ejercicios por tiempo
         public List<(string name, string[] drills)> sessions = new List<(string, string[])>();
         public string[] cues;                                  // lo que corrige el maestro
-        public bool Covers(string style, int year) => year >= from && year <= to && styles.Contains(style);
+        public bool Covers(string kind) => styles.Contains(kind);
     }
 
     static readonly Dictionary<string, Drill> _drills = new Dictionary<string, Drill>();
@@ -58,9 +58,9 @@ public static class HistoricTraining
         => _drills[id] = new Drill { id = id, name = name, equipment = equipment, muscle = muscle, motion = m, baseLoad = load, step = step, from = from, to = to, compound = compound, styles = styles, unit = unit };
     static void T(string id, string name, string equipment, DrillMotion m, float minutes, int from = -100000, int to = 3000, string[] styles = null)
         => _drills[id] = new Drill { id = id, name = name, equipment = equipment, muscle = "general", motion = m, timed = true, minutes = minutes, compound = false, from = from, to = to, styles = styles };
-    static Tradition Add(string id, string place, string trainer, int from, int to, string[] styles, string why, string[] warm, string[] cool, string[] cues, params (string, string[])[] sessions)
+    static Tradition Add(string id, string place, string trainer, string[] styles, string why, string[] warm, string[] cool, string[] cues, params (string, string[])[] sessions)
     {
-        var t = new Tradition { id = id, place = place, trainer = trainer, from = from, to = to, styles = styles, why = why, warmup = warm, cooldown = cool, cues = cues };
+        var t = new Tradition { id = id, place = place, trainer = trainer, styles = styles, why = why, warmup = warm, cooldown = cool, cues = cues };
         t.sessions.AddRange(sessions);
         All.Add(t); return t;
     }
@@ -95,8 +95,8 @@ public static class HistoricTraining
         X("mallakhamb", "Mallakhamb (posturas en el poste)", "poste de madera", "todo el cuerpo", DrillMotion.Sostener, from: 1135);
         X("kushti", "Kushti en el foso de tierra", "foso de tierra", "todo el cuerpo", DrillMotion.Luchar, from: 1500);
         T("meippayattu", "Meippayattu (secuencias del kalari)", null, DrillMotion.Saltar, 5f, 1100, 3000, S("india_moderna"));
-        X("kaal", "Kaal eduppu (patadas del kalari)", null, "piernas y cadera", DrillMotion.Golpear, from: 1100, styles: S("india_moderna"));
-        X("kettukari", "Kettukari (bastón largo del kalari)", "bastón de bambú", "hombros", DrillMotion.Golpear, from: 1100, styles: S("india_moderna"));
+        X("kaal", "Kaal eduppu (patadas del kalari)", null, "piernas y cadera", DrillMotion.Golpear, from: 1100);
+        X("kettukari", "Kettukari (bastón largo del kalari)", "bastón de bambú", "hombros", DrillMotion.Golpear, from: 1100);
         X("lanza_birjas", "Lanza contra el blanco (birjas)", "lanza", "hombros y tronco", DrillMotion.Empujar);
         X("espada_poste", "Espada contra el poste", "espada de práctica", "hombros", DrillMotion.Golpear);
         X("chawgan", "Volteos del mazo de chawgan (polo, a pie)", "mazo de chawgan", "hombros", DrillMotion.Balancear, compound: false);
@@ -115,8 +115,8 @@ public static class HistoricTraining
         T("taolu", "Taolu (formas)", null, DrillMotion.Golpear, 5f);
         X("gun", "Bastón (gun)", "bastón largo", "hombros y tronco", DrillMotion.Golpear);
         X("patadas", "Patadas", null, "piernas y cadera", DrillMotion.Golpear, compound: false);
-        X("muk_yan", "Muk yan jong (muñeco de madera)", "muñeco de madera", "brazos", DrillMotion.Golpear, from: 1850, styles: S("hongkong_tonglau"));
-        X("chi_sao", "Chi sao (manos pegajosas)", null, "brazos", DrillMotion.Luchar, from: 1850, styles: S("hongkong_tonglau"));
+        X("muk_yan", "Muk yan jong (muñeco de madera)", "muñeco de madera", "brazos", DrillMotion.Golpear, from: 1850);
+        X("chi_sao", "Chi sao (manos pegajosas)", null, "brazos", DrillMotion.Luchar, from: 1850);
         X("pesas_bl", "Pesas: curl y press", "barra y mancuernas", "brazos y hombros", DrillMotion.Levantar, 15f, 2.5f, from: 1900);
         X("suburi", "Suburi (cortes con bokken)", "bokken", "hombros y espalda", DrillMotion.Balancear);
         X("shiko", "Shiko (pisotón del sumo)", null, "piernas y cadera", DrillMotion.Saltar);
@@ -132,10 +132,10 @@ public static class HistoricTraining
         X("estocadas", "Estocadas a fondo", "espada o florete", "piernas y hombros", DrillMotion.Empujar);
         X("paradas", "Paradas y respuestas", "espada o florete", "brazos", DrillMotion.Golpear, compound: false);
         T("asalto", "Asalto de esgrima", "espada o florete", DrillMotion.Luchar, 3f);
-        X("lucha_cornish", "Lucha (estilo de Cornualles o Cumberland)", null, "todo el cuerpo", DrillMotion.Luchar, styles: S("estuardo", "georgiano"));
-        X("palo_largo", "Palo largo (quarterstaff)", "palo", "hombros", DrillMotion.Golpear, styles: S("estuardo", "georgiano"));
-        X("lanza_llanera", "Lanza llanera (a pie)", "lanza", "hombros y tronco", DrillMotion.Empujar, styles: S("hispanoamerica"));
-        X("machete", "Esgrima de machete", "machete de práctica", "brazos", DrillMotion.Golpear, styles: S("hispanoamerica"), compound: false);
+        X("lucha_cornish", "Lucha (estilo de Cornualles o Cumberland)", null, "todo el cuerpo", DrillMotion.Luchar);
+        X("palo_largo", "Palo largo (quarterstaff)", "palo", "hombros", DrillMotion.Golpear);
+        X("lanza_llanera", "Lanza llanera (a pie)", "lanza", "hombros y tronco", DrillMotion.Empujar);
+        X("machete", "Esgrima de machete", "machete de práctica", "brazos", DrillMotion.Golpear, compound: false);
         X("reck", "Dominadas en la barra fija (Reck)", "barra fija", "espalda y brazos", DrillMotion.Levantar, from: 1811);
         X("barren", "Fondos en paralelas (Barren)", "paralelas", "pecho y tríceps", DrillMotion.Empujar, from: 1811);
         X("anillas", "Anillas", "anillas", "hombros y brazos", DrillMotion.Sostener, from: 1840, compound: false);
@@ -145,8 +145,8 @@ public static class HistoricTraining
         X("mancuernas", "Mancuernas: alzadas y press", "mancuernas", "hombros y brazos", DrillMotion.Levantar, 3f, 1f, from: 1711);
         T("calistenia", "Ejercicios libres (gimnasia sueca de Ling)", null, DrillMotion.Saltar, 5f, 1813);
         X("balon_medicinal", "Balón medicinal", "balón medicinal", "tronco", DrillMotion.Lanzar, 3f, 1f, from: 1889, compound: false);
-        X("steinstossen", "Steinstossen (lanzar la piedra)", "piedra de 20 kg", "todo el cuerpo", DrillMotion.Lanzar, 20f, 2.5f, from: 1805, styles: S("alpino"));
-        X("schwingen", "Schwingen (lucha suiza en el serrín)", "calzón de lona", "todo el cuerpo", DrillMotion.Luchar, styles: S("alpino"));
+        X("steinstossen", "Steinstossen (lanzar la piedra)", "piedra de 20 kg", "todo el cuerpo", DrillMotion.Lanzar, 20f, 2.5f, from: 1805);
+        X("schwingen", "Schwingen (lucha suiza en el serrín)", "calzón de lona", "todo el cuerpo", DrillMotion.Luchar);
         X("girya", "Girya (pesa rusa): arrancadas y dos tiempos", "girya", "todo el cuerpo", DrillMotion.Balancear, 16f, 8f, from: 1704);
         X("dominadas_gto", "Dominadas (norma GTO)", "barra fija", "espalda y brazos", DrillMotion.Levantar);
         X("flexiones", "Flexiones", null, "pecho y brazos", DrillMotion.Empujar, compound: false);
@@ -157,106 +157,191 @@ public static class HistoricTraining
         X("remo_barra", "Remo con barra", "barra", "espalda", DrillMotion.Levantar, 35f, 2.5f, from: 1920);
         X("maquina", "Máquina de placas", "máquina de placas", "según la máquina", DrillMotion.Empujar, 30f, 2.5f, from: 1970, compound: false);
         X("comba", "Comba", "cuerda de saltar", "piernas", DrillMotion.Saltar, compound: false);
-        X("lutte", "Lutte traditionnelle (lucha)", null, "todo el cuerpo", DrillMotion.Luchar, styles: S("sahel_moderno"));
+        X("lutte", "Lutte traditionnelle (lucha)", null, "todo el cuerpo", DrillMotion.Luchar);
 
-        // ── Lugares de entrenamiento (en orden: el primero que cubre estilo y año) ─────────────
-        Add("griego", "Gimnasio y palestra", "Paidotribes (maestro de la palestra)", -1600, -30, S("egeo"),
-            "Pista, palestra de lucha, halteres, disco y jabalina; en la heroica, los juegos fúnebres de la Ilíada (carrera, lucha, pugilato, peso, jabalina, arco).",
+        // Ejercicios que añaden las clases de los pueblos (claude/edif-pueblos: MicroStyles.TrainingKind).
+        X("salto_longitud", "Salto de longitud", null, "piernas", DrillMotion.Saltar, compound: false);
+        X("mazo_lanzar", "Lanzar el mazo (sledgehammer)", "mazo de herrero", "todo el cuerpo", DrillMotion.Lanzar, 6f, 1f);
+        X("garrote", "Juego de garrote (esgrima de garrote larense)", "garrote", "hombros y piernas", DrillMotion.Golpear);
+        X("coleo_carrera", "Carreras de la manga de coleo (a pie)", null, "piernas", DrillMotion.Correr);
+        T("marcha_hebert", "Marcha y carrera por el parcours", null, DrillMotion.Correr, 5f, 1905);
+        X("cuadrupedia", "Cuadrupedia", null, "todo el cuerpo", DrillMotion.Empujar, from: 1905);
+        X("trepar_hebert", "Trepar y suspenderse", "barra de suspensión", "espalda y brazos", DrillMotion.Levantar, from: 1905);
+        X("saltar_plinto", "Saltar el plinto", "plinto", "piernas", DrillMotion.Saltar, from: 1905);
+        X("levantar_tronco", "Levantar y llevar (un tronco, un compañero)", "tronco", "todo el cuerpo", DrillMotion.Levantar, 15f, 2.5f, from: 1905);
+        X("lanzar_balon", "Lanzar el balón", "balón", "hombros y tronco", DrillMotion.Lanzar, compound: false);
+        X("pases", "Pases con el pie", "balón", "piernas", DrillMotion.Golpear, compound: false);
+        X("regate", "Conducción y regate", "balón", "piernas", DrillMotion.Correr, compound: false);
+        X("tiro_puerta", "Tiros a puerta", "balón", "piernas y cadera", DrillMotion.Golpear, compound: false);
+        X("velocidad_pista", "Series de velocidad en la pista", null, "piernas", DrillMotion.Correr);
+        X("saco_boxeo", "Saco de boxeo", "saco", "hombros y brazos", DrillMotion.Golpear, compound: false);
+
+        // ── Lugares de entrenamiento: uno por CLASE ESTABLE de los pueblos (AreaFunctionSite.training) ─────────────
+        Add("heroicos", "Juegos heroicos (Ilíada XXIII)", "El más anciano de los héroes (dirige los juegos)", S("juegos_heroicos"),
+            "Antes del gimnasio (s. VI a. C.): los juegos fúnebres de Patroclo: carrera, lucha, pugilato, peso, jabalina y arco.",
+            S("carrera_suave"), S("estirar"), S("pies bajo los hombros al agarrar", "brazo largo en el lanzamiento"),
+            ("Juegos", S("carrera_estadio", "lucha_pale", "pugilato", "disco", "jabalina", "arco")));
+        Add("griego", "Gimnasio y palestra", "Paidotribes (maestro de la palestra)", S("gimnasio_griego"),
+            "Xisto, skamma, halteres, kórykos, disco y jabalina; en Crotona, Milón y su ternero.",
             S("carrera_suave"), S("estirar"), S("pies bajo los hombros al agarrar", "balancea los halteres antes de saltar", "brazo largo en el lanzamiento"),
-            ("Pentatlón", S("carrera_estadio", "halteres", "disco", "jabalina", "lucha_pale", "arco")),
+            ("Pentatlón", S("carrera_estadio", "halteres", "disco", "jabalina", "lucha_pale")),
             ("Palestra", S("lucha_pale", "pugilato", "korykos", "ternero", "carrera_estadio")));
-        Add("romano", "Palestra de las termas", "Magister de la palestra", -500, 476, S("roma"),
+        Add("romano", "Palestra de las termas", "Magister de la palestra", S("palestra_romana"),
             "Pesas (halteres), pelota, lucha y el palus de los legionarios; después, el baño.",
             S("carrera_suave"), S("natatio"), S("golpe desde el hombro, no desde el codo", "escudo arriba"),
-            ("Termas", S("halteres", "trigon", "lucha_pale", "carrera_estadio")),
-            ("Instrucción", S("palus", "jabalina", "carrera_estadio", "lucha_pale")));
-        Add("nilo", "Patio de lucha", "Maestro de lucha", -3100, -30, S("egipto"),
-            "Lucha (los 400 pares de Beni Hasan), esgrima de palos (tahtib), carrera y arco: lo que se enseñaba a los soldados.",
+            ("Termas", S("halteres", "trigon", "lucha_pale", "korykos")),
+            ("Instrucción", S("palus", "lucha_pale", "halteres", "trigon")));
+        Add("nilo", "Patio de lucha", "Maestro de lucha", S("patio_lucha_egipcio"),
+            "Lucha (los 400 pares de Beni Hasan), esgrima de palos (tahtib) y sacos de arena: lo que se enseñaba a los soldados.",
             S("carrera_suave"), S("estirar"), S("cadera baja al agarrar", "palo en guardia alta"),
-            ("Lucha y palo", S("lucha_cinturon", "tahtib", "carrera_estadio", "arco")));
-        Add("sumer", "Patio de lucha", "Maestro de lucha", -5000, -500, S("mesopotamia"),
-            "Lucha de cinturón (bronces de Khafajah, ~2600 a. C.), carrera, arco y honda.",
+            ("Lucha y palo", S("lucha_cinturon", "tahtib", "piedra_india", "carrera_estadio")));
+        Add("sumer", "Patio de lucha", "Maestro de lucha", S("patio_lucha"),
+            "Lucha de cinturón (bronces de Khafajah, ~2600 a. C.), piedras de levantar y carrera.",
             S("carrera_suave"), S("estirar"), S("mano firme en el cinturón", "pies separados"),
-            ("Lucha y tiro", S("lucha_cinturon", "carrera_estadio", "arco", "honda")));
-        Add("akhara", "Akhāṛā (patio de lucha)", "Guru (maestro del akhāṛā)", -2600, 2100, S("sur_asia", "india_moderna"),
-            "Lucha en el foso de tierra, dand y baithak, mazas (gada y mudgar), piedras y el poste del mallakhamb; en la antigüedad, lucha y arco (Kapilavastu: la prueba de Siddhartha). En Tamil Nadu, además, el kalari.",
+            ("Lucha y piedras", S("lucha_cinturon", "piedra_india", "carrera_estadio", "honda")));
+        Add("akhara", "Akhāṛā (patio de lucha)", "Guru (maestro del akhāṛā)", S("akhara"),
+            "Lucha en el foso de tierra, dand y baithak, mazas (gada y mudgar), la nal de piedra; en la antigüedad, lucha y maza; en Tamil Nadu, además, el kalari.",
             S("carrera_suave"), S("estirar"), S("espalda larga en el dand", "la maza pasa cerca de la espalda", "talones en el suelo en el baithak"),
-            ("Akhāṛā", S("dand", "baithak", "gada", "mudgar", "kushti", "malla", "piedra_india", "arco")),
-            ("Fuerza y poste", S("mallakhamb", "piedra_india", "gada", "carrera_estadio", "arco")),
+            ("Akhāṛā", S("dand", "baithak", "gada", "mudgar", "kushti", "malla", "piedra_india")),
+            ("Fuerza", S("piedra_india", "gada", "malla", "carrera_estadio", "mudgar")),
             ("Kalari", S("meippayattu", "kaal", "kettukari", "dand")));
-        Add("furusiyya", "Maydān de furusiyya", "Ustādh (maestro de furusiyya)", 600, 1499, S("islam_abasi"),
-            "Arco, lanza, espada, polo (chawgan) y lucha; a pie, sin los caballos.",
+        Add("furusiyya", "Maydān de furusiyya", "Ustādh (maestro de furusiyya)", S("furusiyya"),
+            "Arco, lanza, espada y lucha (los caballos, en la pista del maydān).",
             S("carrera_suave"), S("estirar"), S("tensa con la espalda, no con el brazo", "lanza alineada con el hombro"),
-            ("Armas", S("arco", "lanza_birjas", "espada_poste", "chawgan")),
-            ("Lucha", S("koshti", "carrera_estadio", "arco", "chawgan")));
-        Add("zurkhaneh", "Zurkhaneh (casa de fuerza)", "Morshed (marca el ritmo) y miandar", 1500, 2100, S("persia"),
-            "Para un microcosmos persa futuro: meel, sang, shena, kabbadeh, giros y lucha al ritmo del tambor.",
+            ("Armas", S("arco", "lanza_birjas", "espada_poste", "koshti")),
+            ("Lucha y carrera", S("koshti", "carrera_estadio", "arco", "lanza_birjas")));
+        Add("zurkhaneh", "Zurkhaneh (casa de fuerza)", "Morshed (marca el ritmo) y miandar", S("zurkhaneh"),
+            "Meel, sang, shena, kabbadeh, giros y lucha al ritmo del tambor (safávida en adelante).",
             S("charkh"), S("estirar"), S("al compás del zarb", "meel cerca del cuerpo"),
             ("Varzesh-e pahlavani", S("shena", "meel", "sang", "kabbadeh", "koshti")));
-        Add("otomano", "Tekke de luchadores y okmeydanı", "Üstat (maestro del tekke)", 1500, 1923, S("otomano"),
-            "Lucha con aceite (yağlı güreş), tiro con arco en el okmeydanı y cirit.",
+        Add("otomano", "Tekke de luchadores", "Üstat (maestro del tekke)", S("tekke_guresh"),
+            "Lucha con aceite (yağlı güreş), mazas y tiro con arco.",
             S("pesrev"), S("estirar"), S("mano en el kispet", "arco tensado hasta la oreja"),
-            ("Güreş", S("gures", "carrera_estadio", "cirit")),
-            ("Okçuluk", S("okculuk", "cirit", "gures", "carrera_estadio")));
-        Add("wuguan", "Escuela de artes marciales (wuguan)", "Shifu", -200, 1979, S("china_tradicional", "hongkong_tonglau"),
-            "Postura del jinete, formas, bastón, patadas y candados de piedra; en el Hong Kong de Ip Man, el muñeco de madera y el chi sao.",
+            ("Güreş", S("gures", "meel", "okculuk")),
+            ("Okçuluk", S("okculuk", "gures", "meel", "carrera_estadio")));
+        Add("wuguan", "Escuela de artes marciales (wuguan)", "Shifu", S("wuguan"),
+            "Postura del jinete, formas, saco, candados de piedra y armas; en el Hong Kong de Ip Man, el muñeco de madera y el chi sao.",
             S("mabu"), S("estirar"), S("rodillas hacia fuera en el mabu", "el codo cae hacia dentro", "golpe por la línea central"),
             ("Básicos", S("taolu", "shisuo", "patadas", "gun")),
-            ("Wing Chun", S("muk_yan", "chi_sao", "patadas", "pesas_bl")));
-        Add("dojo", "Dojo", "Sensei", 1603, 1925, S("japon_edo_meiji"),
-            "Para un microcosmos japonés futuro: suburi, kata, shiko, randori y los candados de piedra (hojo undō).",
+            ("Muñeco y saco", S("muk_yan", "chi_sao", "saco_boxeo", "shisuo", "pesas_bl")));
+        Add("dojo", "Dojo", "Sensei", S("dojo"),
+            "Suburi, kata, shiko, makiwara, randori, kyūdō y los candados de piedra (hojo undō).",
             S("carrera_suave"), S("estirar"), S("corta con las caderas", "kiai al final del corte"),
-            ("Keiko", S("suburi", "shiko", "ishi_sashi", "randori")));
-        Add("maya", "Juego de pelota", "Maestro del juego de pelota", 250, 900, S("maya_clasico"),
+            ("Keiko", S("suburi", "shiko", "ishi_sashi", "randori", "arco")));
+        Add("maya", "Juego de pelota", "Maestro del juego de pelota", S("juego_pelota"),
             "Golpes de cadera a la pelota de hule con el yugo, carrera y átlatl.",
             S("carrera_suave"), S("estirar"), S("la cadera, no las manos", "rodilla baja al recibir"),
             ("Pelota", S("pelota_cadera", "carrera_estadio", "atlatl")));
-        Add("medieval", "Sala de armas y liza", "Maestro de armas", 476, 1499, S("europa_medieval"),
-            "Para un microcosmos medieval futuro: el pell, la quintana de la liza, la lucha y el arco largo.",
+        Add("medieval", "Sala de armas", "Maestro de armas", S("sala_armas"),
+            "El poste (pell), la quintana de la liza, la lucha y la piedra.",
             S("carrera_suave"), S("estirar"), S("golpe con el peso del cuerpo", "escudo pegado"),
-            ("Armas", S("pell", "quintana", "ringen", "arco_largo", "piedra_lanzar")));
-        Add("esgrima", "Sala de armas y de esgrima", "Maestro de esgrima", 1500, 1849, S("estuardo", "georgiano", "hispanoamerica", "alpino", "europa_romantica", "norteamerica_victoriana"),
-            "Estocadas, paradas y asaltos; la lucha de Cornualles y el palo largo en Inglaterra; la lanza llanera y el machete en Angostura.",
+            ("Armas", S("pell", "quintana", "ringen", "piedra_lanzar")));
+        Add("esgrima", "Sala de esgrima", "Maestro de esgrima", S("sala_esgrima"),
+            "Estocadas, paradas, asaltos y el poste.",
             S("carrera_suave"), S("estirar"), S("rodilla sobre el pie en el fondo", "la punta en línea", "vuelve a la guardia"),
-            ("Esgrima", S("estocadas", "paradas", "asalto", "lucha_cornish", "lanza_llanera")),
-            ("Campo", S("palo_largo", "machete", "carrera_estadio", "estocadas", "lanza_llanera")));
-        Add("turnen", "Gimnasio (Turnhalle)", "Turnwart (maestro de gimnasia)", 1811, 1959,
-            S("alpino", "europa_romantica", "belle_epoque", "entreguerras", "francia_rural", "norteamerica_victoriana", "hispanoamerica"),
-            "El Turnverein de Jahn (1811) y la gimnasia sueca de Ling: barra fija, paralelas, anillas, potro, cuerda, mazas indias, mancuernas y balón medicinal; en los Alpes, la piedra (Unspunnen) y el schwingen.",
+            ("Esgrima", S("estocadas", "paradas", "asalto", "pell")));
+        Add("prado", "Prado de los juegos (Cotswold Olimpicks, 1612–)", "El que organiza los juegos", S("prado_juegos"),
+            "En el campo inglés: lucha, garrote (quarterstaff y singlestick), carreras, saltos y el mazo.",
+            S("carrera_suave"), S("estirar"), S("agarre corto en el garrote", "cadera abajo en la lucha"),
+            ("Juegos del prado", S("lucha_cornish", "palo_largo", "carrera_estadio", "salto_longitud", "mazo_lanzar")));
+        Add("llanos", "Patio del garrote y manga de coleo", "Maestro de garrote", S("garrote_coleo"),
+            "El juego de garrote, la lanza llanera, el machete y las carreras de la manga.",
+            S("carrera_suave"), S("estirar"), S("garrote corto, pies ligeros", "la lanza sale con la cadera"),
+            ("Garrote", S("garrote", "lanza_llanera", "machete", "coleo_carrera")));
+        Add("turnplatz", "Turnplatz y ruedo de schwingen", "Turnwart (maestro de gimnasia)", S("turnplatz_schwingen"),
+            "Schwingen en el serrín, la piedra de Unspunnen, la barra fija y las paralelas del Turnverein.",
+            S("calistenia"), S("estirar"), S("agarre del calzón, cadera pegada", "cuerpo recto en la barra"),
+            ("Schwingen y piedra", S("schwingen", "steinstossen", "reck", "barren")));
+        Add("turnen", "Gimnasio (Turnhalle)", "Turnwart (maestro de gimnasia)", S("turnhalle"),
+            "El Turnverein de Jahn (1811) y la gimnasia sueca de Ling: barra fija, paralelas, anillas, potro y mazas indias.",
             S("calistenia"), S("estirar"), S("cuerpo recto en la barra", "codos a 90° en las paralelas", "la maza dibuja círculos detrás"),
             ("Aparatos", S("reck", "barren", "potro", "anillas", "cuerda")),
-            ("Pesas ligeras", S("mazas_indias", "mancuernas", "balon_medicinal", "steinstossen", "schwingen", "reck")));
-        Add("sovietico", "Club deportivo", "Trener (entrenador)", 1920, 1991, S("sovietico"),
-            "La girya, la barra fija y las normas del GTO, y el sambo.",
+            ("Mazas", S("mazas_indias", "reck", "barren", "potro")));
+        Add("hebert", "Parcours del método natural (Hébert)", "Moniteur (monitor)", S("hebert"),
+            "El método natural de Georges Hébert: marchar, correr, saltar, trepar, cuadrupedia, levantar y lanzar.",
+            S("marcha_hebert"), S("estirar"), S("aterriza suave, rodillas flexionadas", "espalda recta al levantar"),
+            ("Parcours", S("cuadrupedia", "trepar_hebert", "saltar_plinto", "levantar_tronco", "lanzar_balon")));
+        Add("tregua", "Partido de la tregua", "El capitán", S("futbol_tregua"),
+            "La Navidad de 1914 en la tierra de nadie: un balón (o una lata) y correr.",
+            S("carrera_suave"), S("estirar"), S("pase con el interior del pie", "levanta la cabeza"),
+            ("Partido", S("pases", "regate", "tiro_puerta", "velocidad_pista")));
+        Add("sovietico", "Club deportivo", "Trener (entrenador)", S("club_deportivo"),
+            "La girya, la barra fija y las normas del GTO, el saco y la pista.",
             S("carrera_suave"), S("estirar"), S("la girya sube con la cadera", "barbilla sobre la barra"),
-            ("GTO", S("girya", "dominadas_gto", "flexiones", "sambo")));
-        Add("moderno", "Gimnasio", "Entrenador", 1920, 2100, S("norteamerica_moderna", "norteamerica_interior", "occidental_moderna", "sahel_moderno"),
-            "Barra, banco y, desde 1970, máquinas de placas; en Uagadugú, también la lucha tradicional.",
+            ("GTO", S("girya", "dominadas_gto", "flexiones", "saco_boxeo", "velocidad_pista")));
+        Add("estadio", "Estadio", "Entrenador", S("estadio"),
+            "Fútbol y atletismo; y la lutte traditionnelle.",
+            S("carrera_suave"), S("estirar"), S("pase con el interior del pie", "brazos activos al correr"),
+            ("Campo y pista", S("pases", "regate", "velocidad_pista", "tiro_puerta", "lutte")));
+        Add("moderno", "Gimnasio", "Entrenador", S("gimnasio_moderno"),
+            "Barra y discos, saco, barra fija y balón; desde 1970, máquinas de placas.",
             S("carrera_suave"), S("estirar"), S("escápulas atrás en la banca", "espalda neutra en el peso muerto"),
-            ("Torso", S("banca", "remo_barra", "mancuernas", "maquina", "comba")),
-            ("Pierna", S("sentadilla_barra", "muerto", "maquina", "comba", "lutte")));
+            ("Torso", S("banca", "remo_barra", "dominadas_gto", "saco_boxeo", "maquina")),
+            ("Pierna", S("sentadilla_barra", "muerto", "comba", "maquina", "lanzar_balon")));
     }
 
-    /// <summary>El lugar de entrenamiento del estilo <paramref name="style"/> en <paramref name="year"/> (null = no había).</summary>
-    public static Tradition For(string style, int year)
+    // ── Dónde se hace cada ejercicio: las claves de los puestos de los pueblos (CivicBuilder.TrainingKit) ─────────
+    public static readonly string[] FloorKeys = { "tatami", "pista", "foso_lucha", "pista_carreras", "campo", "pista_esgrima" };
+    /// <summary>Las claves de puesto (<see cref="AreaFunctionStation.station"/>) donde se hace <paramref name="d"/>, en orden de preferencia.</summary>
+    public static string[] KeysOf(Drill d)
     {
-        if (string.IsNullOrEmpty(style)) return null;
-        foreach (Tradition t in All) if (t.Covers(style, year)) return t;
+        switch (d.id)
+        {
+            case "halteres": return S("halteres", "pesas", "piedras");
+            case "piedra_india": case "steinstossen": case "ternero": case "levantar_tronco": return S("piedras", "pesas", "halteres");
+            case "gada": case "mudgar": case "meel": case "kabbadeh": case "mazas_indias": case "shisuo": case "ishi_sashi": case "girya": case "sang": return S("mazas", "piedras", "pesas");
+            case "mancuernas": case "pesas_bl": case "banca": case "sentadilla_barra": case "muerto": case "remo_barra": case "maquina": return S("pesas", "halteres");
+            case "korykos": case "saco_boxeo": return S("saco", "muneco", "makiwara");
+            case "palus": case "pell": case "espada_poste": case "muk_yan": return S("muneco", "makiwara", "saco");
+            case "reck": case "dominadas_gto": case "trepar_hebert": case "cuerda": return S("barra_fija");
+            case "barren": return S("paralelas");
+            case "potro": case "saltar_plinto": return S("potro");
+            case "anillas": return S("anillas");
+            case "arco": case "okculuk": case "arco_largo": return S("diana");
+            case "trigon": case "pelota_cadera": case "pases": case "regate": case "tiro_puerta": case "lanzar_balon": return S("balon", "campo", "pista");
+            case "estocadas": case "paradas": case "asalto": case "garrote": case "machete": case "palo_largo": case "tahtib": case "gun": case "kettukari": case "suburi": case "lanza_birjas": case "lanza_llanera": case "quintana":
+                return S("pista_esgrima", "armero", "tatami", "foso_lucha", "pista", "campo");
+        }
+        switch (d.motion)
+        {
+            case DrillMotion.Luchar: return S("foso_lucha", "tatami");
+            case DrillMotion.Correr: return S("pista_carreras", "campo", "pista");
+            case DrillMotion.Lanzar: return S("campo", "pista_carreras", "pista", "armero");
+            default: return S("tatami", "foso_lucha", "pista", "campo", "pista_carreras");
+        }
+    }
+
+    /// <summary>El lugar de entrenamiento de la CLASE <paramref name="kind"/> (<see cref="AreaFunctionSite.training"/>; null = ninguno).</summary>
+    public static Tradition For(string kind, int year = 0)
+    {
+        if (string.IsNullOrEmpty(kind)) return null;
+        foreach (Tradition t in All) if (t.styles.Contains(kind)) return t;
         return null;
     }
 
-    /// <summary>El de un edificio del pueblo (su región y el año de la escena).</summary>
-    public static Tradition ForSite(AreaFunctionSite site, int year) => site == null ? null : For(MicroStyles.For(year, site.region)?.id, year);
-
-    /// <summary>El de un microcosmos por su nombre (su fecha y su región); null si no tiene fecha o allí no se entrenaba.</summary>
-    public static Tradition ForMicrocosmos(string display, out int year, out string style)
+    /// <summary>La clase de entrenamiento de un edificio: la suya (<see cref="AreaFunctionSite.training"/>) o, si no la tiene, la de su
+    /// estilo de época y lugar (<see cref="MicroStyles.TrainingKind"/>).</summary>
+    public static string KindOf(AreaFunctionSite site, int year)
     {
-        year = 0; style = null;
+        if (site == null) return null;
+        if (!string.IsNullOrEmpty(site.training)) return site.training;
+        MicroStyles.Entry e = MicroStyles.For(year, site.region);
+        return e != null ? MicroStyles.TrainingKind(e, year) : null;
+    }
+
+    /// <summary>El de un edificio del pueblo (su clase y el año de la escena).</summary>
+    public static Tradition ForSite(AreaFunctionSite site, int year) => For(KindOf(site, year), year);
+
+    /// <summary>El de un microcosmos por su nombre (su fecha, su región y la clase de entrenamiento de su estilo); null si no tiene fecha.</summary>
+    public static Tradition ForMicrocosmos(string display, out int year, out string kind)
+    {
+        year = 0; kind = null;
         var when = Eras.OfMicrocosmos(display);
         if (when == null) return null;
         year = when.Value.year;
-        style = MicroStyles.For(year, MicroStyles.RegionOf(display))?.id;
-        return For(style, year);
+        MicroStyles.Entry e = MicroStyles.For(year, MicroStyles.RegionOf(display));
+        kind = e != null ? MicroStyles.TrainingKind(e, year) : null;
+        return For(kind, year);
     }
 
     /// <summary>Las sesiones de la tradición en ese año y estilo (cada una con sus ejercicios de época; las de menos de 3, fuera).</summary>
