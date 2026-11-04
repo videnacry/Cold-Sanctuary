@@ -1,40 +1,53 @@
 using System.Collections.Generic;
 
 /// <summary>
-/// LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04: «el profesional de yoga es Josedrilo y también es profesional de bioconstrucción;
-/// Maite es profesional de cocina, Shalva es profesional de cultivo y bioconstrucción, Adaguchi es profesional de submarinismo y
-/// cocina, Amahuz es profesional de cocina y química; Karen es profesional de asuntos legales y lenguas; Alicita es profesional de
-/// contabilidad y project-manager»; docs/personajes-mesocosmos.md §Profesiones).
+/// LAS PROFESIONES DEL PERSONAL (Berón 2026-11-04; docs/personajes-mesocosmos.md §Profesiones y parejas).
 /// La profesión da a cada uno su papel en la jornada sin quitarle la rotación (regla J2, todos aprenden todo):
-///  · <see cref="WorkRoster"/> le da cada día, ANTES de las vueltas, UNA misión de cada área de su profesión (la que menos ha hecho);
-///  · en una misión de GRUPO que DIRIGE (la clase de yoga), el profesional del área, si está libre, entra en el grupo y la dirige;
+///  · <see cref="WorkRoster"/> le da cada día, ANTES de las vueltas, UNA misión de cada área de su profesión (la que menos ha hecho; si
+///    la profesión nombra misiones —«rep_» las reparaciones, «obra_» la obra nueva—, de esas);
+///  · en una misión de GRUPO de su profesión (la clase de yoga, una obra), el profesional, si está libre, entra en el grupo y, si hay
+///    papel que dirige, lo dirige;
 ///  · su área de salida (<see cref="SanctuaryDirector"/>) y su rótulo.
-/// Las áreas son las de las misiones (<see cref="AreaFunctions"/>): «Sala de Yoga», «Construcción», «Cocina», «Huerto», «Química»,
-/// «Aula», «Mecánica»…
+/// Las áreas son las de las misiones (<see cref="AreaFunctions"/>, <see cref="AreaWork"/>): «Sala de Yoga», «Construcción», «Cocina»,
+/// «Huerto», «Química», «Aula», «Mecánica», «Hospital», «Guardia», «Estudio Textil»…
 /// </summary>
 public static class Professions
 {
     public struct Entry
     {
-        public string who, title; public string[] areas;
+        public string who, title;
+        /// <summary>«Área» o «Área:prefijo1,prefijo2» (solo esas misiones del área).</summary>
+        public string[] areas;
         public Entry(string w, string t, params string[] a) { who = w; title = t; areas = a; }
     }
 
     public static readonly Entry[] All =
     {
-        new Entry("Josedrilo", "maestro de yoga y bioconstrucción", "Sala de Yoga", "Construcción"),
-        new Entry("Maite", "cocina", "Cocina"),
-        new Entry("Shalva", "cultivo y bioconstrucción", "Huerto", "Construcción"),
-        // Submarinismo: los submarinos (el de obra y la ambulancia) y las tareas bajo el agua de los árboles salen de Construcción
-        // (obra y mantenimiento) y del Hospital (la ambulancia); su área de trabajo diaria es Construcción.
+        // Josedrilo: maestro de yoga (YogaTeacher), JEFE DE OBRA NUEVA (las obras: «obra_») y bioconstrucción (el material: «mat_»).
+        new Entry("Josedrilo", "maestro de yoga, jefe de obra nueva y bioconstrucción", "Sala de Yoga", "Construcción:obra_,mat_"),
+        // Tote: JEFE DE REPARACIONES («rep_») y guardia.
+        new Entry("JefeConstruccion", "jefe de reparaciones y guardia", "Construcción:rep_", "Guardia"),
+        // Los guardias: Gohageneis (y las artes marciales), Nesvitor (y agricultor) y Tote.
+        new Entry("Gohageneis", "guardia y artes marciales", "Guardia"),
+        new Entry("Nesvitor", "guardia y agricultor", "Guardia", "Huerto"),
+        // Maite: jefa de cocina con Amykhuz, y CURANDERA (las plantas medicinales y las curas del hospital).
+        new Entry("Maite", "jefa de cocina y curandera", "Cocina", "Hospital:hos_plantas,enf_visita"),
+        new Entry("Amykhuz", "jefe de cocina y química", "Cocina", "Química"),
+        new Entry("Shalva", "cultivo y bioconstrucción", "Huerto", "Construcción:mat_"),
+        // Submarinismo: los submarinos (el de obra y la ambulancia) y las tareas bajo el agua de los árboles salen de Construcción.
         new Entry("Adaguchi", "submarinismo y cocina", "Construcción", "Cocina"),
-        new Entry("Amahuz", "cocina y química", "Cocina", "Química"),
-        // Asuntos legales y lenguas: aún no hay área propia; su mesa está en el Aula (la sala de estudio, con mesas y biblioteca, del
-        // piso del Aula), donde también da clase de lenguas (docs/piso-aula.md).
-        new Entry("Karen", "asuntos legales y lenguas", "Aula"),
-        // Contabilidad (las cuentas del santuario, que llevaba Nesvitor, desde el restaurante) y dirección de proyectos (las obras).
-        new Entry("Alicita", "contabilidad y dirección de proyectos", "Cocina", "Construcción"),
-        new Entry("Ducristin", "mecánica", "Mecánica"),
+        // Asuntos legales y lenguas: aún no hay área propia; su mesa está en la sala de estudio del Aula, donde da clase de lenguas.
+        new Entry("Karen", "asuntos legales y lenguas", "Aula:aul_legal,aul_lenguas"),
+        new Entry("Alicita", "contabilidad y dirección de proyectos", "Cocina:coc_cuentas", "Construcción:con_proyectos"),
+        // Ducristin: GERENTE DE BANCA Y PROFESOR. No hay banco: lleva las finanzas en la mesa de cuentas del restaurante (donde entra el
+        // dinero del santuario) y da clase en el Aula. Su mecánica pasa a Fausto.
+        new Entry("Ducristin", "gerente de banca y profesor", "Cocina:coc_cuentas", "Aula:aul_clase"),
+        new Entry("Fausto", "mecánico", "Mecánica"),
+        // Andrea: COMUNICACIÓN (los avisos del santuario y la radio, en el comedor del restaurante —la torre de Servicios—, donde coinciden
+        // todos a la hora de comer). Su papel de entrenador del gimnasio lo pone la rama del entrenamiento.
+        new Entry("Andrea", "comunicación", "Cocina:coc_avisos"),
+        // Irosene: LETRAS (clases de poesía y narración y lecturas en la sala de estudio del Aula) y su textil.
+        new Entry("Irosene", "letras (poesía y narración) y textil", "Aula:aul_letras", "Estudio Textil"),
     };
 
     static Dictionary<string, Entry> _by;
@@ -43,7 +56,30 @@ public static class Professions
         if (_by == null) { _by = new Dictionary<string, Entry>(); foreach (Entry e in All) _by[e.who] = e; }
         return who != null && _by.TryGetValue(who.Replace("_Post", ""), out Entry x) ? x : (Entry?)null;
     }
-    /// <summary>Las áreas de su profesión (vacío si no tiene).</summary>
-    public static string[] AreasOf(string who) { Entry? e = Of(who); return e.HasValue ? e.Value.areas : new string[0]; }
-    public static bool Practises(string who, string area) => System.Array.IndexOf(AreasOf(who), area) >= 0;
+
+    /// <summary>Las áreas de su profesión (sin los prefijos).</summary>
+    public static string[] AreasOf(string who)
+    {
+        Entry? e = Of(who);
+        if (!e.HasValue) return new string[0];
+        var l = new string[e.Value.areas.Length];
+        for (int i = 0; i < l.Length; i++) { string s = e.Value.areas[i]; int c = s.IndexOf(':'); l[i] = c < 0 ? s : s.Substring(0, c); }
+        return l;
+    }
+
+    /// <summary>¿Es de su profesión el área (y, si se da, la misión <paramref name="missionId"/>)?</summary>
+    public static bool Practises(string who, string area, string missionId = null)
+    {
+        Entry? e = Of(who);
+        if (!e.HasValue) return false;
+        foreach (string s in e.Value.areas)
+        {
+            int c = s.IndexOf(':');
+            string a = c < 0 ? s : s.Substring(0, c);
+            if (a != area) continue;
+            if (c < 0 || missionId == null) return true;
+            foreach (string p in s.Substring(c + 1).Split(',')) if (missionId.StartsWith(p)) return true;
+        }
+        return false;
+    }
 }

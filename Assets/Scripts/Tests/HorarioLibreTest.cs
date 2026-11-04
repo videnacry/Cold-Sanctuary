@@ -8,9 +8,9 @@ using UnityEngine.SceneManagement;
 /// PRUEBA EN VIVO DEL HORARIO LIBRE (docs/horario-libre.md; Berón 2026-11-03). En cuatro partes:
 ///  1. LÓGICA (sin escena): con el catálogo del santuario y 16 personas, una semana entera: todas las franjas llenas, la capacidad
 ///     respetada y cada actividad repartida por igual (Δ ≤ 1); con poca capacidad (40 personas) sigue llena y Δ ≤ 3.
-///  2. LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04: Nesvitor, Amahuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y
+///  2. LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04: Nesvitor, Amykhuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y
 ///     Adaguchi): en la escena con cuerpo de cubos y rótulo, en la jornada (WorkdayDirector.staff, reciben misiones) y con su casa
-///     del árbol (Amahuz y Karen, la misma). Y los FAMOSOS (Sadhguru y los seis del mesocosmos), que se fueron a sus microcosmos,
+///     del árbol (Amykhuz y Karen, la misma). Y los FAMOSOS (Sadhguru y los seis del mesocosmos), que se fueron a sus microcosmos,
 ///     ya no están ni en el santuario ni en la jornada.
 ///  3. EL SANTUARIO EN VIVO: el horario de la semana para todo el personal (cada hora libre llena, capacidad, uniformidad medida) y
 ///     dos franjas de verdad (16–18 h, reloj ×<see cref="speed"/>): cada uno anda a su sitio y hace su actividad.
@@ -25,7 +25,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
     public bool shots = true;
     static readonly string[] MicroScenes = { "Microcosmos_Buda", "Microcosmos_Patanjali", "Microcosmos_Eratostenes", "Microcosmos_BruceLee" };
     /// <summary>La familia y los amigos de Berón (2026-11-04, de sus fotos).</summary>
-    public static readonly string[] Family = { "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle" };
+    public static readonly string[] Family = { "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
     /// <summary>Los famosos que salieron del santuario a sus microcosmos (2026-11-04).</summary>
     public static readonly string[] Famous = { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
 
@@ -93,9 +93,9 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         TestProbe.Check("los de la familia y amigos tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
         TestProbe.Check("los de la familia y amigos llevan su nombre en el rótulo", unlabeled.Length == 0, unlabeled);
         TestProbe.Check("los de la familia y amigos tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
-        GameObject ama = WorkdayDirector.Body("Amahuz"), kar = WorkdayDirector.Body("Karen");
+        GameObject ama = WorkdayDirector.Body("Amykhuz"), kar = WorkdayDirector.Body("Karen");
         Bedroom bA = ama != null && ama.TryGetComponent(out Anima aa) ? Bedroom.Of(aa) : null, bK = kar != null && kar.TryGetComponent(out Anima ak) ? Bedroom.Of(ak) : null;
-        TestProbe.Check("Amahuz y Karen (pareja) comparten casa", bA != null && bA == bK, $"{(bA != null ? bA.name : "—")} · {(bK != null ? bK.name : "—")}");
+        TestProbe.Check("Amykhuz y Karen (pareja) comparten casa", bA != null && bA == bK, $"{(bA != null ? bA.name : "—")} · {(bK != null ? bK.name : "—")}");
         TestProbe.Check("los de la familia y amigos están en la jornada (personal del santuario)", wd != null && Family.All(s => wd.staff.Contains(s)));
         TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en la jornada", wd != null && !Famous.Any(s => wd.staff.Contains(s)), wd != null ? string.Join(", ", Famous.Where(s => wd.staff.Contains(s))) : "sin jornada");
         string still = string.Join(" ", Famous.Where(s => { GameObject g = WorkdayDirector.Body(s); return g != null && g.scene == SceneManager.GetActiveScene(); }));
@@ -136,6 +136,17 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         CheckPlan(gr, "santuario", 15);
         TestProbe.Check("santuario: incluye a la familia y los amigos de Berón, y a ningún famoso", Family.All(s => gr.plan.people.Any(p => p.name == s)) && !Famous.Any(s => gr.plan.people.Any(p => p.name == s)));
         TestProbe.Check("santuario: catálogo de ≥ 6 actividades de ocio y cuidado con sitio", gr.catalog.Count >= 6, string.Join(", ", gr.catalog.Select(a => $"{a.title} → {a.venue}")));
+        // (2026-11-04, Berón vio bailar en el piso de ballet sin terminar) Ningún sitio del ocio ni del entrenamiento es un piso EN OBRAS:
+        // se usa el de reserva (la calistenia o el gimnasio) hasta que se termine.
+        bool Unfinished(Transform t) { ConstructionProject cp = t != null ? t.GetComponentInParent<ConstructionProject>() : null; return cp != null && !cp.Finished; }
+        var inWorks = gr.catalog.Where(a => gr.venues.TryGetValue(a, out var v) && v.anchor != null && Unfinished(v.anchor)).Select(a => $"{a.title} → {a.venue}").ToList();
+        TestProbe.Check("santuario: ninguna actividad libre en un piso en obras (baile en la calistenia o el gimnasio hasta que el ballet se termine)", inWorks.Count == 0, inWorks.Count > 0 ? string.Join(", ", inWorks) : string.Join(", ", gr.catalog.Select(a => a.venue)));
+        if (wd != null)
+        {
+            var areaObjs = FindObjectsByType<SanctuaryArea>(FindObjectsSortMode.None);
+            var badTraining = wd.roster.trainingAreas.Where(n => areaObjs.Any(x => x.displayName == n && Unfinished(x.transform))).ToList();
+            TestProbe.Check("jornada: ningún entrenamiento en un piso en obras", badTraining.Count == 0, badTraining.Count > 0 ? string.Join(", ", badTraining) : string.Join(", ", wd.roster.trainingAreas));
+        }
         foreach (string l in ld.Report(gr)) Log(l);
 
         // Dos franjas de verdad: 16–17 y 17–18 h.

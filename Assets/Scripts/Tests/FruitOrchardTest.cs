@@ -78,11 +78,12 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             foreach (Bedroom r in rooms)
             {
                 FruitPlant fp = r.GetComponentInChildren<FruitPlant>(); if (fp == null) continue;
-                Bounds pb = Box(fp.transform);
+                // (2026-11-04, ronda 6: «Casa del árbol 8», girada, daba 1,34 m con las cajas del mundo) Medido en el MARCO DE LA CASA, con las mallas.
+                Bounds pb = LocalBox(r.transform, fp.transform);
                 foreach (Transform c in r.transform)
                 {
                     if (c == fp.transform || c.name == "Suelo" || c.name == "Estilobato" || c.name == "Terraza_frutal" || c.GetComponentInChildren<Renderer>() == null) continue;
-                    float gp = Gap(pb, Box(c)); if (gp < closest) { closest = gp; near = $"{r.name}: {c.name}"; }
+                    float gp = Gap(pb, LocalBox(r.transform, c)); if (gp < closest) { closest = gp; near = $"{r.name}: {c.name}"; }
                 }
             }
             TestProbe.Check("los frutales de la Residencia, a ≥ 2 m de la cama, el armario y la alfombra", closest >= 1.95f, $"el más cerca a {closest:0.00} m ({near})");
@@ -213,6 +214,23 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
     {
         Bounds b = new Bounds(t.position, Vector3.zero); bool any = false;
         foreach (Renderer r in t.GetComponentsInChildren<Renderer>()) { if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds); }
+        return b;
+    }
+
+    /// <summary>La caja de <paramref name="t"/> en el marco local de <paramref name="frame"/> (con las mallas: sin el engorde de las cajas del mundo en las casas giradas).</summary>
+    static Bounds LocalBox(Transform frame, Transform t)
+    {
+        Bounds b = new Bounds(frame.InverseTransformPoint(t.position), Vector3.zero);
+        foreach (MeshFilter mf in t.GetComponentsInChildren<MeshFilter>())
+        {
+            if (mf.sharedMesh == null) continue;
+            Bounds m = mf.sharedMesh.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 c = m.center + Vector3.Scale(m.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                b.Encapsulate(frame.InverseTransformPoint(mf.transform.TransformPoint(c)));
+            }
+        }
         return b;
     }
 

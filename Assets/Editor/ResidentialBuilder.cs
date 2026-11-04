@@ -16,20 +16,23 @@ public static class ResidentialBuilder
         "Player", "Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet", "Andrea",   // solo personajes del juego
         // (2026-11-04) La familia y los amigos de Berón, en las casas que dejaron Sadhguru y los seis del mesocosmos (se fueron a sus
         // microcosmos). LAS PAREJAS COMPARTEN CASA (Partners; Berón: «Josedrilo y Maite son pareja, ¿Lizmibet y su esposo comparten
-        // residencia?; Ducristin tiene de pareja a Gallarle»): Lizmibet y Tote, Amahuz y Karen, Ducristin y Gallarle, Josedrilo y Maite.
+        // residencia?; Ducristin tiene de pareja a Gallarle»; y luego: Amykhuz y Karen, Alicita y Julian, Irosene y Fausto): Lizmibet y
+        // Tote, Amykhuz y Karen, Ducristin y Gallarle, Josedrilo y Maite, Alicita y Julian, Irosene y Fausto.
         // 16 casas ocupadas de 18: dos libres para recién llegados.
-        "Nesvitor", "Amahuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
+        "Nesvitor", "Amykhuz", "Alicita", "Ducristin", "Josedrilo", "Shalva", "Adaguchi",
     };
     static readonly string[] Shown =
     {
-        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Lizmibet y Tote", "Andrea",
-        "Nesvitor", "Amahuz y Karen", "Alicita", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
+        "Kushal", "la Magnate", "Linduarda", "Goluis", "Panterilia", "Gohageneis", "Irosene y Fausto", "Lizmibet y Tote", "Andrea",
+        "Nesvitor", "Amykhuz y Karen", "Alicita y Julian", "Ducristin y Gallarle", "Josedrilo y Maite", "Shalva", "Adaguchi",
     };
     /// <summary>La pareja con la que comparte casa cada dueño (manual M18, J14), si la tiene.</summary>
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string>
     {
         { "Lizmibet", "JefeConstruccion" },   // Tote, su esposo
-        { "Amahuz", "Karen" },                // (de su foto; pendiente de que Berón lo confirme)
+        { "Amykhuz", "Karen" },                // (confirmado por Berón)
+        { "Alicita", "Julian" },               // búlgaro; se conocieron en un máster
+        { "Irosene", "Fausto" },               // mecánico
         { "Ducristin", "Gallarle" },
         { "Josedrilo", "Maite" },
     };
@@ -224,7 +227,9 @@ public static class ResidentialBuilder
         Transform pot = SampleSceneBuilder.PottedFruit(t, fruit, 900 + ownerIdx, Name, t.position.y + 0.15f);
         // 5 m fuera de la habitación (1,5 m más allá del centro de la terraza): con la copa del frutal, a 2 m de la alfombra-esterilla
         // (en el centro quedaba a 0,83 m; FruitOrchardTest, 2026-11-03).
-        pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 5f), 0.15f, 0f));
+        // (2026-11-04, ronda 6: con la cama-litera más grande, en las casas cuya terraza da al lado de la cama el frutal quedaba justo) A
+        // 5,5 m del centro de la casa, en la mitad de fuera de la terraza: a ≥ 2 m de la cama-litera (en el marco de la casa).
+        pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 5.5f), 0.15f, 0f));
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;

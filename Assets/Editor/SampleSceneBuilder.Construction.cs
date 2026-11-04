@@ -167,14 +167,17 @@ public static partial class SampleSceneBuilder
         // (Professions; docs/personajes-mesocosmos.md §Profesiones). Los que no tienen (Nesvitor, consejero; Gallarle, pendiente), repartidos.
         Put("Josedrilo", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));             // MAESTRO DE YOGA: en la tarima de la sala de Hatha tradicional, junto al linga
         Put("Maite", "Kitchen_Area", new Vector3(0f, 1f, 9f));                     // cocina
-        Put("Amahuz", "Kitchen_Area", new Vector3(-1.5f, 1f, 9f));                 // cocina y química
-        Put("Nesvitor", "Kitchen_Area", new Vector3(-3f, 1f, 9f));                 // consejero, en el comedor
+        Put("Amykhuz", "Kitchen_Area", new Vector3(-1.5f, 1f, 9f));                 // cocina y química
+        Put("Nesvitor", "Garden_Area", new Vector3(-2f, 1f, 3f));                  // guardia y agricultor: en el huerto
         Put("Shalva", "Garden_Area", new Vector3(2f, 1f, 3f));                     // cultivo y bioconstrucción
         Put("Alicita", "Construction_Area", new Vector3(3f, 1f, 2f));              // contabilidad y dirección de proyectos (las obras)
         Put("Adaguchi", "Construction_Area", new Vector3(0f, 1f, 3f));             // submarinismo (los submarinos de obra y la ambulancia) y cocina
         Put("Karen", "Classroom_Area", new Vector3(2f, 1f, 2f));                   // asuntos legales y lenguas: su mesa, en el Aula
-        Put("Ducristin", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));         // la mecánica: vehículos y maquinaria
-        Put("Gallarle", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));         // con su pareja, Ducristin (pendiente de foto y de profesión)
+        Put("Ducristin", "Classroom_Area", new Vector3(-2f, 1f, 2f));              // gerente de banca y profesor: da clase en el Aula (y las finanzas, en el restaurante)
+        Put("Fausto", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));            // mecánico (la mecánica, antes de Ducristin)
+        Put("Julian", "Construction_Area", new Vector3(1.5f, 1f, 3.5f));           // con Alicita (pendiente de foto y de profesión)
+        Put("Irosene_Post", "Classroom_Area", new Vector3(0f, 1f, -1f));                // letras: poesía, narración y lecturas en el Aula
+        Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
     }
 
     /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): id, rótulo,
@@ -182,16 +185,18 @@ public static partial class SampleSceneBuilder
     /// Nesvitor, mayor (lo dice su foto), algo menos ágil. El rótulo lleva su profesión (Professions).</summary>
     public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
     {
-        ("Nesvitor", "Nesvitor · Néstor (consejero)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),
-        ("Amahuz", "Amahuz (cocina y química)", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),
+        ("Nesvitor", "Nesvitor · Néstor (guardia y agricultor)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),
+        ("Amykhuz", "Amykhuz (jefe de cocina y química)", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),
         ("Karen", "Karen (asuntos legales y lenguas)", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),
         ("Alicita", "Alicita · Alicia (contabilidad y dirección de proyectos)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),
-        ("Ducristin", "Ducristin (mecánica: vehículos y maquinaria)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
-        ("Josedrilo", "Josedrilo (maestro de yoga y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
-        ("Maite", "Maite (cocina)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
+        ("Ducristin", "Ducristin (gerente de banca y profesor)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
+        ("Josedrilo", "Josedrilo (maestro de yoga, jefe de obra nueva y bioconstrucción)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Maite", "Maite (jefa de cocina y curandera)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
         ("Shalva", "Shalva (cultivo y bioconstrucción)", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
         ("Adaguchi", "Adaguchi (submarinismo y cocina)", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
         ("Gallarle", "Gallarle (pendiente de foto)", 48f, new Color(0.45f, 0.5f, 0.55f), 1.0f, 1.0f, 1.0f, 1.0f),
+        ("Julian", "Julian (pendiente de foto)", 50f, new Color(0.4f, 0.45f, 0.52f), 1.0f, 1.0f, 1.0f, 1.0f),        // pareja de Alicita (búlgaro)
+        ("Fausto", "Fausto (mecánico; pendiente de foto)", 52f, new Color(0.35f, 0.38f, 0.42f), 1.05f, 1.0f, 1.0f, 1.0f), // pareja de Irosene
     };
 
     /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
