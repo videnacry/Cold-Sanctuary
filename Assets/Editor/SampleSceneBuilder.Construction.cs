@@ -171,7 +171,34 @@ public static partial class SampleSceneBuilder
         Put("WarrenBuffett", "Kitchen_Area", new Vector3(-3f, 1f, 9f));            // las cuentas del restaurante
         Put("MacKenzieScott", "Garden_Area", new Vector3(2f, 1f, 3f));             // alimentar a los visitantes con lo del huerto
         Put("IbrahimTraore", "Construction_Area", new Vector3(3f, 1f, 2f));        // coordina la guardia (la torre está junto a las obras)
+        // La familia y los amigos de Berón (2026-11-04; docs/diseno-personajes.md §Familia y amigos): personal general, sin área
+        // propia; salen repartidos y la jornada los lleva a todas las áreas. La pareja (Amahuz y Karen) sale junta.
+        Put("Nesvitor", "Garden_Area", new Vector3(-2f, 1f, 3f));
+        Put("Amahuz", "TextileStudio_Area", new Vector3(2f, 1f, 2f));
+        Put("Karen", "TextileStudio_Area", new Vector3(3f, 1f, 2f));
+        Put("Alicita", "Kitchen_Area", new Vector3(0f, 1f, 9f));
+        Put("Ducristin", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));
+        Put("Josedrilo", "Gym_Area", new Vector3(3f, 1f, 3f));
+        Put("Maite", "Infirmary_Area", new Vector3(-3f, 1f, -3f));
+        Put("Shalva", "Construction_Area", new Vector3(0f, 1f, 3f));
+        Put("Adaguchi", "CubCare_Area", new Vector3(0f, 1f, 2f));
     }
+
+    /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): id, rótulo,
+    /// x de salida, ropa y stats (fuerza, agilidad, resistencia, masa). Personas reales: stats cercanas a 1, sin suponer edades;
+    /// Nesvitor, mayor (lo dice su foto), algo menos ágil.</summary>
+    public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
+    {
+        ("Nesvitor", "Nesvitor · Néstor", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),
+        ("Amahuz", "Amahuz", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),
+        ("Karen", "Karen", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),
+        ("Alicita", "Alicita · Alicia", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),
+        ("Ducristin", "Ducristin", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
+        ("Josedrilo", "Josedrilo", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Maite", "Maite", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
+        ("Shalva", "Shalva", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
+        ("Adaguchi", "Adaguchi", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
+    };
 
     /// <summary>LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): id, rótulo, x de salida, ropa y stats
     /// (fuerza, agilidad, resistencia, masa).</summary>

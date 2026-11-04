@@ -196,7 +196,7 @@ public static class CubeHair
         // Shalva (cumbaya.jpg, a la DERECHA; supuesto): pelo corto castaño; jersey grueso de CANALÉ verde oliva y vaqueros
         // azul claro.
         if (n.Contains("shalva")) return new Look(Style.Short, C(0.32f, 0.22f, 0.14f), C(0.9f, 0.74f, 0.62f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.3f, 0.33f, 0.15f), 1.72f).Sleeves(C(0.3f, 0.33f, 0.15f)).Pattern(C(0.2f, 0.22f, 0.09f), Weave.Ribs).Pants(C(0.62f, 0.7f, 0.8f)).Shoes(C(0.2f, 0.18f, 0.16f));
-        // Adaguchi (PENDIENTE de que Berón lo confirme: mandó la foto sin nombrarlo): piel clara morena, pelo corto ondulado
+        // Adaguchi (confirmado por Berón el 2026-11-04): piel clara morena, pelo corto ondulado
         // castaño oscuro con volumen arriba, un PENDIENTE pequeño; sudadera negra SIN MANGAS con capucha y COLLAR de cuentas oscuras.
         if (n.Contains("adaguchi")) return new Look(Style.Fade, C(0.16f, 0.1f, 0.07f), C(0.88f, 0.7f, 0.58f), C(0.2f, 0.13f, 0.08f)).Face(0.84f, 0.5f).Earring().Wear(C(0.08f, 0.08f, 0.09f), 1.65f).Sleeveless().Hood(C(0.08f, 0.08f, 0.09f)).Beads(C(0.25f, 0.2f, 0.26f)).Pants(C(0.12f, 0.12f, 0.14f)).Shoes(C(0.1f, 0.1f, 0.1f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre

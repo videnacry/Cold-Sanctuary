@@ -3106,6 +3106,10 @@ public static partial class SampleSceneBuilder
         // conocido, y Goku (ficción) como entrenador de artes marciales. Entran en la jornada (WorkdayDirector.staff) y en el horario libre.
         foreach (var (id, label, x, clothes, s, ag, en, m) in MesoCharacters)
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
+        // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
+        // general en la rotación, sin papel especial. Entran en la jornada, el horario libre y la arboleda residencial.
+        foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)
+            MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
 
         GameObject wolf = LoadAnimalPrefab("Wolf");
         if (wolf != null)
