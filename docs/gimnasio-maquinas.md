@@ -818,7 +818,7 @@ Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (sol
 | Karen | Cuerpo entero | lun-mié-vie | Resistencia | Entrena con Amahuz los lunes. |
 | Alicita | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | Huerto: cargar cajas. |
 | Ducristin | Torso/pierna | lun-mié-jue-sáb | Fuerza | Mecánico: levantar piezas. |
-| Josedrilo | Empuje/tirón/pierna | mar–dom | Hipertrofia | Guardia. |
+| Josedrilo | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | El profesional del yoga: los demás días, el yoga. |
 | Maite | Cuerpo entero | mar-jue-sáb | Resistencia | Mucho de pie (registros y vacunación). |
 | Shalva | Torso/pierna | mar-mié-vie-sáb | Hipertrofia | Personal general. |
 | Adaguchi | Weider | lun–vie | Hipertrofia | Estilo culturista (sudadera sin mangas); cada músculo 1×/sem. |
