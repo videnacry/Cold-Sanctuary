@@ -102,12 +102,12 @@ public static class AreaFunctions
         Roles(S(Def("Huerto", "hue_riego", "Riego y deshierbe de los huertos", 2f, true, Kind.Tend, "bancal")), "hortelano");
         Roles(S(Also(Def("Huerto", "hue_cosecha", "Cosecha para la cocina", 1f, false, Kind.Tend, "bancal"), "Cocina")), "hortelano");
         S(Def("Huerto", "hue_visitantes", "Alimentar a los visitantes del huerto", 1f, false, Kind.Serve, "bancal"));
-        Roles(S(Lead(Group(Def("Sala de Yoga", "yog_guia", "Clase de yoga: guiar desde la plataforma central (objetivo 1)", 1f, true, Kind.Teach, "esterilla"), "clase_yoga"))), "maestro");
-        Roles(S(Lead(Group(Def("Sala de Yoga", "yog_demo", "Clase de yoga: demostrar entre los alumnos (objetivo 2)", 1f, true, Kind.Teach, "esterilla"), "clase_yoga"))), "maestro");
-        Roles(S(Group(Def("Sala de Yoga", "yog_corrige_1", "Clase de yoga: corregir posturas a los alumnos", 1f, true, Kind.Teach, "esterilla"), "clase_yoga")), "maestro");
-        Roles(S(Group(Def("Sala de Yoga", "yog_corrige_2", "Clase de yoga: corregir posturas a los alumnos", 1f, true, Kind.Teach, "esterilla"), "clase_yoga")), "maestro");
+        Roles(S(Lead(Group(Def("Sala de Yoga", "yog_guia", "Clase de Hatha: guiar desde la tarima (objetivo 1)", 1f, true, Kind.Teach, "esterilla"), "clase_yoga"))), "maestro");
+        Roles(S(Lead(Group(Def("Sala de Yoga", "yog_demo", "Clase de Hatha: demostrar entre los alumnos (objetivo 2)", 1f, true, Kind.Teach, "esterilla"), "clase_yoga"))), "maestro");
+        Roles(S(Group(Def("Sala de Yoga", "yog_corrige_1", "Clase de Hatha: corregir posturas a los alumnos", 1f, true, Kind.Teach, "esterilla"), "clase_yoga")), "maestro");
+        Roles(S(Group(Def("Sala de Yoga", "yog_corrige_2", "Clase de Hatha: corregir posturas a los alumnos", 1f, true, Kind.Teach, "esterilla"), "clase_yoga")), "maestro");
         Roles(S(Def("Cocina", "coc_atender", "Atender a los comensales en la barra (servir los pedidos)", 2f, true, Kind.Serve, "barra")), "camarero");
-        S(Def("Sala de Yoga", "yog_sala", "Preparar y limpiar la sala de yoga", 1f, false, Kind.Clean, "esterilla"));
+        S(Def("Sala de Yoga", "yog_sala", "Preparar y limpiar las salas de los pisos de yoga (Hatha y Ashtanga; el kund de las tradicionales)", 1f, false, Kind.Clean, "esterilla"));
         Roles(Needs(S(Def("Mecánica", "mec_vehiculos", "Mantenimiento de vehículos", 2f, false, Kind.Make, "banco_taller")), Eras.Capability.Iron), "mecanico");
         { var f = Roles(Needs(S(Def("Mecánica", "mec_maquinas", "Reparar maquinaria de las áreas", 1f, false, Kind.Make, "banco_taller")), Eras.Capability.Iron), "mecanico"); f.roams = true; }
         Roles(S(Def("Estudio Textil", "tex_tejer", "Tejer y teñir", 2f, false, Kind.Make, "telar")), "tejedor");
@@ -117,7 +117,7 @@ public static class AreaFunctions
         S(Effect(Also(Def("Carne Cultivada", "lab_cosechar", "Cosechar el lote y dar forma a la carne (cocina y comedero)", 1f, true, Kind.Operate, "biorreactor"), "Cocina", "Cría"), who => Lab()?.OrderHarvest(who)));
         S(Def("Carne Cultivada", "lab_limpieza", "Limpieza y esterilización del laboratorio", 1f, false, Kind.Clean, "biorreactor"));
         Roles(S(Def("Cocina", "coc_comedor", "Limpieza del comedor y de los aseos", 1f, true, Kind.Clean, "mesa")), "camarero");
-        S(Def("Sala de Yoga", "yog_aseos", "Limpieza de los aseos de la sala de yoga", 0.5f, false, Kind.Clean));
+        S(Def("Sala de Yoga", "yog_aseos", "Limpieza de los aseos de los pisos de yoga", 0.5f, false, Kind.Clean));
         S(Def("Estudio Textil", "tex_limpieza", "Limpieza e inventario del estudio textil", 0.5f, false, Kind.Clean, "telar"));
         S(Def("Mecánica", "mec_limpieza", "Limpieza e inventario del taller", 0.5f, false, Kind.Clean, "banco_taller"));
         S(Def("Construcción", "con_almacen", "Inventario del almacén de material y herramientas", 0.5f, false, Kind.Build));

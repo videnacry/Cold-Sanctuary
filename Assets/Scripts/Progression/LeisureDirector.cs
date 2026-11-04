@@ -162,7 +162,10 @@ public class LeisureDirector : MonoBehaviour
     public static readonly (string id, string title, LeisureRoster.Kind kind, string[] where, int cap, string pose)[] SanctuaryActivities =
     {
         ("pesas", "Pesas y saco en el gimnasio", LeisureRoster.Kind.Ocio, new[] { "Gimnasio" }, 6, "ejercicio"),
-        ("yoga", "Yoga libre y meditación", LeisureRoster.Kind.Recuperacion, new[] { "Sala de Yoga" }, 8, "meditar"),
+        // LOS PISOS DE YOGA (docs/yoga-pisos.md): «Sala de Yoga · <sala>» es una sala de un piso de yoga (YogaHall); cada plaza, una
+        // de sus esterillas. Hatha y meditación junto al linga (la tradicional) y Ashtanga autoguiado al estilo Mysore (la occidental).
+        ("yoga", "Hatha libre y meditación junto al linga", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Hatha tradicional", "Sala de Yoga" }, 8, "meditar"),
+        ("ashtanga", "Ashtanga autoguiado (estilo Mysore)", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Ashtanga occidental", "Sala de Yoga" }, 8, "ejercicio"),
         ("huerto", "Pasear y cuidar el huerto", LeisureRoster.Kind.Ocio, new[] { "Huerto" }, 6, "pie"),
         ("lectura", "Leer en la plataforma de la arboleda", LeisureRoster.Kind.Ocio, new[] { "Residencia" }, 6, "sentado"),
         ("crias", "Jugar con las crías", LeisureRoster.Kind.Cuidado, new[] { "Cría" }, 4, "pie"),
@@ -173,6 +176,9 @@ public class LeisureDirector : MonoBehaviour
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };
 
+    /// <summary>Prefijo de un sitio que es una SALA de los pisos de yoga («Sala de Yoga · Hatha tradicional»…).</summary>
+    public const string YogaVenue = "Sala de Yoga · ";
+
     void SanctuaryCatalog(Group gr)
     {
         int k = 0;
@@ -182,6 +188,13 @@ public class LeisureDirector : MonoBehaviour
             foreach (string w in d.where)
             {
                 if (w == "casa") { v = new Venue { title = "su casa del árbol", home = true }; break; }
+                if (w.StartsWith(YogaVenue))
+                {
+                    YogaHall yh = null;
+                    foreach (YogaHall h in YogaHall.All) if (h != null && h.gameObject.scene == gr.scene && YogaVenue + h.Label == w) { yh = h; break; }
+                    if (yh != null) { v = new Venue { title = w, anchor = yh.transform }; break; }
+                    continue;
+                }
                 if (w == "Residencia")
                 {
                     GameObject r = GameObject.Find("ArboledaResidencial");
@@ -407,6 +420,12 @@ public class LeisureDirector : MonoBehaviour
         if (v.anchor == null) return g.transform.position;
         if (v.deck)   // la plataforma central (18 × 18): a un lado, lejos de las pistas de alfombras del centro y de los bordes norte y sur
             return OnMesh(v.anchor.TransformPoint(new Vector3(6f - (seat % 2) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -2.4f + (seat / 2) * 1.6f)));
+        // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
+        if (v.anchor.TryGetComponent(out YogaHall yh))
+        {
+            List<CarpetPad> mats = yh.Mats();
+            if (mats.Count > 0) return OnMesh(mats[seat % mats.Count].transform.position + Vector3.up);
+        }
         // Un área: cada actividad en su zona (−5, 0, +5 m) y cada plaza en una rejilla de 1,6 m.
         float zx = ((v.index % 3) - 1) * 5f;
         Vector3 local = new Vector3(zx + ((seat % 3) - 1) * 1.6f, 1f, 1.5f + (seat / 3) * 1.6f - (v.index / 3 % 2) * 4f);

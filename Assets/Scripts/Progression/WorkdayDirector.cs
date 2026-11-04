@@ -597,38 +597,49 @@ public class WorkdayDirector : MonoBehaviour
         Debug.Log($"[Jornada] 11:00 · el servicio deja la comida en la barra: +{added} raciones ({per} de cada uno de {rk.dishes.Length} platillos).");
     }
 
-    // ── SALA DE YOGA ─────────────────────────────────────────────────────────────────────────────
-    // La CLASE (misión de grupo): el guía hace la secuencia en la plataforma central, el demostrador la hace entre los
-    // alumnos y los correctores van de esterilla en esterilla. En su tiempo libre, SADHGURU medita en la plataforma,
-    // inmóvil como una estatua más.
+    // ── PISOS DE YOGA (docs/yoga-pisos.md) ─────────────────────────────────────────────────────
+    // Dos pisos (Hatha y Ashtanga) con dos salas cada uno (occidental y tradicional; YogaHall); la de cada día la da
+    // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
+    // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
+    // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da el primero que
+    // llega. En su tiempo libre, SADHGURU medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
+    /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
+    public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
 
-    /// <summary>Entrenamiento de yoga: a la CLASE de la sala (<see cref="global::YogaClass"/>). Si no hay ninguna, la da el
-    /// primero que llega; los demás van cada uno a su esterilla y repiten los pasos del maestro. false = sin esterilla libre.</summary>
+    /// <summary>Entrenamiento de yoga: a la CLASE DE ASHTANGA de hoy (<see cref="global::YogaClass"/>, en su sala del piso de
+    /// Ashtanga). Si no hay ninguna, la da el primero que llega; los demás van cada uno a su esterilla (en la tradicional, antes
+    /// al kund) y repiten los pasos del maestro. false = sin esterilla libre.</summary>
     static bool YogaTraining(GameObject g)
     {
         Anima a = g.GetComponent<Anima>(); ActionQueue q = g.GetComponent<ActionQueue>();
         if (a == null || a.asleep) return false;
-        global::YogaClass cur = global::YogaClass.Current;
-        if (q != null && q.Own.Count > 0 && (cur == null || !cur.Has(a))) return false;   // comer, el baño y dormir van antes
-        global::YogaClass c = cur ?? global::YogaClass.Begin(a);
+        global::YogaClass mine = global::YogaClass.ClassOf(a);
+        if (q != null && q.Own.Count > 0 && mine == null) return false;   // comer, el baño y dormir van antes
+        if (mine != null) return true;
+        YogaHall h = YogaHall.For(AshtangaSession, YogaHall.Today);
+        if (h == null) return false;
+        global::YogaClass c = global::YogaClass.On(h) ?? global::YogaClass.Begin(a, AshtangaSession, h);
         if (c == null) return false;
         return c.teacher == a || c.Join(a);
     }
 
     static void LeaveYogaClass(GameObject g)
     {
-        global::YogaClass c = global::YogaClass.Current;
-        if (c == null || g == null) return;
+        if (g == null) return;
         Anima a = g.GetComponent<Anima>();
-        if (a != null && c.Has(a)) c.Leave(a);
+        global::YogaClass c = global::YogaClass.ClassOf(a);
+        if (c != null) c.Leave(a);
     }
 
-    static Transform _yogaRoom;
-    static Vector3 YogaPoint(Vector3 local)
+    /// <summary>Un punto de la sala de la clase de Hatha de hoy (local a la sala: su tarima en el origen).</summary>
+    static Vector3 YogaPoint(Vector3 local) => HallPoint(YogaHall.For(HathaSession, YogaHall.Today), local);
+
+    static Vector3 HallPoint(YogaHall h, Vector3 local)
     {
-        if (_yogaRoom == null) { GameObject y = GameObject.Find("YogaRoom_Area"); _yogaRoom = y != null ? y.transform : null; }
-        return _yogaRoom != null ? _yogaRoom.TransformPoint(local) : Vector3.zero;
+        if (h != null) return h.transform.TransformPoint(local);
+        Transform room = global::YogaClass.Room;
+        return room != null ? room.TransformPoint(local) : Vector3.zero;
     }
 
     // La secuencia que la CLASE pone en la cola propia del guía o del demostrador: al acabar esa misión se le QUITA. Antes se
@@ -648,15 +659,15 @@ public class WorkdayDirector : MonoBehaviour
     bool YogaClassRole(GameObject g, string missionId)
     {
         if (missionId == null || !missionId.StartsWith("yog_") || missionId == "yog_sala" || missionId == "yog_aseos") return false;
-        if (missionId == "yog_guia")   // el guía da la CLASE: sube a la tarima y los que entrenan yoga le siguen desde sus esterillas
+        if (missionId == "yog_guia")   // el guía da la CLASE DE HATHA: sube a la tarima de la sala de hoy y los alumnos le siguen desde sus esterillas
         {
             Anima ga = g.GetComponent<Anima>();
-            YogaClass c = ga != null ? YogaClass.Begin(ga) : null;
+            YogaClass c = ga != null ? YogaClass.Begin(ga, HathaSession, YogaHall.For(HathaSession, YogaHall.Today)) : null;
             if (c != null && c.teacher == ga) return true;
         }
         Vector3 to = missionId == "yog_guia" ? YogaPoint(new Vector3(0f, 0.6f, 0f))
                    : missionId == "yog_demo" ? YogaPoint(new Vector3(0f, 0.2f, -3.4f * 0.82f))
-                   : YogaPoint(new Vector3(Mathf.Cos(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 4.4f, 0.2f, Mathf.Sin(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 3.6f));   // los correctores rondan entre los anillos
+                   : YogaPoint(new Vector3(Mathf.Cos(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 4.4f, 0.2f, Mathf.Sin(Time.time * 0.05f + (missionId.EndsWith("2") ? 3f : 0f)) * 3.6f));   // los correctores rondan entre las esterillas
         if ((g.transform.position - to).sqrMagnitude > 1f) { PathMover.Of(g.transform).StepToward(to, walkSpeed); return true; }
         if (missionId == "yog_guia" || missionId == "yog_demo")
         {
@@ -672,7 +683,10 @@ public class WorkdayDirector : MonoBehaviour
     {
         Anima me = g.GetComponent<Anima>(); ActionQueue mq = g.GetComponent<ActionQueue>();
         if (me == null || me.asleep || (mq != null && mq.Own.Count > 0)) return;   // comer, el baño y dormir van antes
-        Vector3 to = YogaPoint(new Vector3(0f, 0.6f, 0f));
+        // En la tarima de la sala de Hatha TRADICIONAL (junto al linga), si no hay clase en ella; si la hay, en la occidental.
+        YogaHall h = YogaHall.Find(YogaHall.Style.Hatha, YogaHall.Version.Tradicional);
+        if (h == null || (YogaClass.On(h) != null && YogaClass.On(h).teacher != me)) h = YogaHall.Find(YogaHall.Style.Hatha, YogaHall.Version.Occidental) ?? h;
+        Vector3 to = HallPoint(h, new Vector3(0f, 0.6f, 0f));
         if ((g.transform.position - to).sqrMagnitude > 1f) { PathMover.Of(g.transform).StepToward(to, walkSpeed); return; }
         Anima a = g.GetComponent<Anima>();
         if (a != null) DailyPoses.Meditate().ApplyFinal(a);

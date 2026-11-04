@@ -175,7 +175,7 @@ se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pis
 - Las **puntas** de las torres (16 × 16 m, al aire) llevan los **frutales en maceta** (una de cada especie, y otra vuelta…, con su
   punto de cuidados y su goteo; la sala de la experta, en la primera punta de Servicios) y, encima, su anillo con nidos. Los
   techos de las torres son los del árbol (22 m: alfombras, puerta de frente y una fila de paneles solares).
-- Un área con **ANILLO** (el comedor del restaurante, las camas del hospital, el anillo de yoga, el de la sala de experimentos)
+- Un área con **ANILLO** (el comedor del restaurante, las camas del hospital, el de la sala de experimentos; el de yoga se quitó el 2026-11-04, [yoga-pisos.md](yoga-pisos.md))
   lo conserva, en **U** (abierto al tronco, sus alas hasta la cara del tronco) con un **BALCÓN** de 3 m contra el tronco: el anillo
   tiene su propia puerta (3 × 3 m) y se llega nadando, como a los anillos de las puntas. Lo que iba en el lado del tronco del
   anillo (algunas camas, la esquina de vinos, los corrales de foca) se corre a los otros tres lados.
@@ -190,7 +190,7 @@ se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pis
 |---|---|---|---|---|---|---|
 | **Árbol de los Campos** | (−50, −84), igual | gira | 2 · 64 m · 92 m | 32 / 16 m (hueco 4) | P1 bosque · P2 bambusal · P5 Huerto · P6 bosque | P3 arrozal · P4 milpa · P7 chacra · P8 rotación |
 | **Servicios** | (5, 94) → **(50, 92)** (lóbulo de la antigua enfermería) | 90° | 3 · 64 m · 103 m | 40 / 16 m (hueco 10) | P1 Restaurante (anillo comedor) · P2 Hospital: urgencias (anillo) · P5 hospitalización (anillo) · P6 veterinario (anillo) · P9 Cría · P10 Carne cultivada | 6 de frutales (sala de la experta en P3) |
-| **Entrenamiento** | (10, 0) → **(−77, 52)** (Norte:Bosque_Comestible) | 0° | 3 · 64 m · 103 m | 36 / 16 m (hueco 10) | P1 Gimnasio · P2 Cardio · P5 Calistenia · P6 Yoga (anillo) · P9 Ballet · P10 Dojo | 6 de frutales |
+| **Entrenamiento** | (10, 0) → **(−77, 52)** (Norte:Bosque_Comestible) | 0° | **4** (2026-11-04) · 64 m · techo **153 m** con los niveles de 22 m | 36 / 16 m (hueco 10) | P1 Gimnasio · P2 Cardio · P5 Calistenia · P6 Yoga: Hatha · **P9 Yoga: Ashtanga** · P10 Ballet · P13 Dojo · P14 libre (sin anillo) | **8** de frutales |
 | **Ciencias** | (92, −108) → (92, −107) | 0° | 4 · 64 m · 114 m | 32 / 16 m (hueco 10) | P1 Planta atómica (TRIGA) · P2 ciclotrón · P5 sala de experimentos (anillo y Foucault) · P6 Química · P9 análisis · P10 Biología · P13 molecular · P14 libre | 8 de frutales |
 | **Producción** | (18, −95) → **(114, 0)** (Este:Paso) | 90° | 2 · **96 m** · 124 m | 26 / 16 m (hueco 4) | P1 Construcción · P2 Mecánica · P5 Textil · P6 libre | 4 de frutales |
 | Central Nuclear | (60, −162), igual | — | no se migra (1 piso a 12 m) | | | |
@@ -207,7 +207,7 @@ se baja nadando); `SanctuaryArea.Contains/InBuilding/Building` entienden los pis
   de los Campos (niveles 3 y 4).
 - Los anillos de los pisos en U pierden su lado del tronco: algunas camas, mesas o boxes se corrieron a los otros lados; la piscina
   del reactor TRIGA ya no baja al suelo: cuelga 4 m bajo su losa (como las tornapuntas), con ~4 m de agua sobre el núcleo.
-- Las esterillas de yoga siguen siendo alfombras dentro de su sala o de su anillo (no llevan a otros pisos).
+- Las esterillas de yoga siguen siendo alfombras dentro de su sala (no llevan a otros pisos). Desde el 2026-11-04 no hay anillo de yoga: el yoga son dos pisos (Hatha P6 y Ashtanga P9) con dos salas cada uno; la torre del Entrenamiento sube a 4 niveles (simulador `mig`: las holguras con Servicios, 16,5 m, y con el Árbol de los Campos, 16,3 m, no cambian; [yoga-pisos.md](yoga-pisos.md)).
 - La salida del agua por las puertas es una «ayuda» (como trepar a un canto): saca de pie al umbral sin animación de trepar.
 - El agua del tronco (20 × 20 × 91 m) es mucha: si Berón lo prefiere, el tronco podría ser hueco entre niveles (no se ha hecho).
 
@@ -262,13 +262,13 @@ las de las tablas de arriba** (que quedan como historia de la v2):
 | Bancal de las puntas del Árbol | 8,6 × 15 m | 7,2 × 15 m (la franja junto a la columna; las mismas filas, algo más cortas) |
 | Quillas de fotobiorreactores | 1,7 m bajo el nivel | 2,4 m (bajo los cordones de 1,6 m); lo más bajo, a 59,6 m (sobre el árbol más alto + 4 m) |
 
-**Alturas**: Árbol de los Campos 64 / 86 m, techo a **109 m** (antes 92) · Servicios y Entrenamiento 64 / 86 / 108, techo **131 m** ·
+**Alturas**: Árbol de los Campos 64 / 86 m, techo a **109 m** (antes 92) · Servicios 64 / 86 / 108, techo **131 m** · Entrenamiento (desde 2026-11-04, con el piso de Ashtanga) 64 / 86 / 108 / 130, techo **153 m** ·
 Ciencias 64 / 86 / 108 / 130, techo **153 m** · Producción 64 / 86, techo **109 m** (ya no sube: ver abajo). El árbol de la guardia
 crece hasta el techo más alto con la columna de su puerta (~158 m).
 
 **Estructura** (`StructuralLimits.Reinforce`: nervios de 4 en 4 desde 24 y, si no basta, zunchos más juntos, hasta quedar bajo el
 80 %; estimado con las fórmulas de `RootCheck`): Árbol 109 m, 28 nervios y zunchos cada 6 m (rama 46 %) · Servicios 131 m, zunchos
-cada 4 m (voladizo de sus pisos de 40 m, 80 %, como antes; rama 79 %) · Entrenamiento 131 m (rama 71 %) · Ciencias 153 m, zunchos
+cada 4 m (voladizo de sus pisos de 40 m, 80 %, como antes; rama 79 %) · Entrenamiento 131 m (rama 71 %; con 4 niveles, 153 m como Ciencias: lo recalcula `Reinforce`, sin medir aún) · Ciencias 153 m, zunchos
 cada 3 m (rama 63 %) · Producción 109 m (rama 37 %). Los tubos de 10 m llevan 4 veces más agua: por eso los cordones de 1,6 m.
 
 **Sitios** (con las piezas más grandes los árboles alcanzan 57–76 m; nueva búsqueda con el simulador, scratchpad/mig, ≥ 16 m en 3D

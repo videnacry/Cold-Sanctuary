@@ -4,9 +4,21 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 110 reglas,
-> dónde se comprueba cada una, las 14 pendientes de implementar del 2026-11-04 y la tabla piso → microcosmos para revisarlos
+> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 114 reglas,
+> dónde se comprueba cada una, las 12 pendientes de implementar del 2026-11-04 y la tabla piso → microcosmos para revisarlos
 > cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
+
+> **HECHO 2026-11-04 (hilo del yoga, rama claude/edif-yoga; sin probar en vivo):** **sin anillo de yoga** y **dos pisos de yoga**
+> en la torre del Entrenamiento (sube a 4 niveles: P6 Hatha = Sala de Yoga, P9 Ashtanga = `Planta_ashtanga`, P14 libre), cada
+> uno con su sala **occidental** (madera, esterillas, accesorios, Buda/Ganesha, sin espejo) y su sala **tradicional** (tierra,
+> algodón, kusha, lámparas de aceite, linga como el Dhyanalinga o Adiyogi y Patanjali, y un **kund** con agua del tronco para
+> sumergirse antes de practicar). Tarima en el centro y 8 esterillas en un solo anillo (líneas de visión medidas,
+> `YogaHall.BlockedSightLines`). La clase guiada es **Hatha** y el entrenamiento de las 14 h **Ashtanga**; la sala del día alterna
+> (tradicional los pares); puede haber una clase por sala a la vez. Ocio: Hatha tradicional y Ashtanga occidental. Investigación
+> con fuentes en [`yoga-pisos.md`](yoga-pisos.md); reglas F7–F12 del manual. Prueba nueva `YogaFloorsTest` (grupo 64).
+> - [ ] **Probar en vivo**: reconstruir la torre del Entrenamiento y los microcosmos de la Sala de Yoga (río de Sakshi, Patanjali,
+>   Nietzsche); grupos 64, 51, 42, 57, 28 y el horario libre; fotos de las cuatro salas.
+> - [ ] Ver si la Ashtanga Primaria cabe en el bloque de entrenamiento (si no, una versión corta para la clase).
 
 > **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
 >

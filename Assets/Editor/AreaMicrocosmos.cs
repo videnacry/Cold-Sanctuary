@@ -64,6 +64,9 @@ public static class AreaMicrocosmos
             // la forma en obra preparada) ANTES de nada más: lo que se agranda, se despeja para el pueblo y se puebla es el piso
             // terminado. (Antes solo lo hacía la historia de Bruce Lee, DESPUÉS de despejar el barrio, y los conos se quedaban.)
             _obraRemoved = FloorForms.ShowFinished(giant.transform);
+            // Sus PLANTAS PROPIAS (otros pisos que cuelgan del área: el de Ashtanga de la Sala de Yoga, las del hospital) no son el
+            // mapa (regla 11): fuera, antes de que se pierda su TreeFloor.
+            foreach (TreeFloor tf in giant.GetComponentsInChildren<TreeFloor>(true)) if (tf != null && tf.gameObject != giant) Object.DestroyImmediate(tf.gameObject);
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);

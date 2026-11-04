@@ -148,8 +148,9 @@ public class AreaInitiator : MonoBehaviour
         if (_ownCook != null) { _ownCookWasOn = _ownCook.enabled; _ownCook.enabled = false; }   // deja su puesto un rato: cocina con el nuevo
         // Si estaban en la clase de yoga en grupo (YogaClass), la dejan: la clase movía y ponía en postura a los mismos cuerpos
         // que la iniciación (el maestro no hacía los pasos del cuello que pedía).
-        YogaClass yc = YogaClass.Current;
-        if (yc != null) { yc.Leave(student != null ? student.GetComponentInParent<Anima>() : null); if (YogaClass.Current != null) YogaClass.Current.Leave(GetComponent<Anima>()); }
+        Anima sa = student != null ? student.GetComponentInParent<Anima>() : null, me = GetComponent<Anima>();
+        YogaClass sc = YogaClass.ClassOf(sa); if (sc != null) sc.Leave(sa);
+        YogaClass mc = YogaClass.ClassOf(me); if (mc != null) mc.Leave(me);
         Now = Phase.Approach; _phaseDeadline = Time.time + Orchestra.StuckSeconds; _approachCap = Time.time + 300f; _apBest = float.MaxValue;
         Debug.Log($"[Iniciación {Label}] {Who} (de turno) lanza «iniciar» sobre «{_r.student}».");
     }

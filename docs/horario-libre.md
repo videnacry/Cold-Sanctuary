@@ -68,7 +68,8 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Actividad | Sitio | Plazas |
 |---|---|---|
 | Pesas y saco (ejercicio: sentadillas) | Gimnasio | 6 |
-| Yoga libre y meditación | Sala de Yoga | 8 |
+| Hatha libre y meditación junto al linga | Sala de Yoga · Hatha tradicional (piso de Hatha; cada plaza, una esterilla; [yoga-pisos.md](yoga-pisos.md)) | 8 |
+| Ashtanga autoguiado (estilo Mysore) | Sala de Yoga · Ashtanga occidental (piso de Ashtanga) | 8 |
 | Pasear y cuidar el huerto | Huerto | 6 |
 | Leer en la plataforma de la arboleda | Arboleda residencial | 6 |
 | Jugar con las crías | Cría | 4 |
