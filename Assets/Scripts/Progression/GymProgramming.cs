@@ -176,7 +176,7 @@ public static class GymProgramming
         public int SessionsDone;
         public bool Trains(int day) => days.Contains(((day % 7) + 7) % 7);
         /// <summary>Frecuencia semanal de cada grupo muscular (veces que se trabaja a la semana).</summary>
-        public int PerMuscleFrequency => split == TrainingSplit.CuerpoEntero ? days.Length : Mathf.Max(1, days.Length / sessions.Count);
+        public int PerMuscleFrequency => Mathf.Max(1, split == TrainingSplit.CuerpoEntero ? days.Length : split == TrainingSplit.TorsoPierna ? days.Length / 2 : split == TrainingSplit.EmpujeTironPierna ? days.Length / 3 : days.Length / 5);
         /// <summary>La rutina del día <paramref name="day"/> (absoluto): rota por las sesiones del reparto, de semana en semana.</summary>
         public DayTemplate SessionOn(int day)
         {
@@ -258,6 +258,7 @@ public static class GymProgramming
     public class Prescription
     {
         public GymMachineType station;
+        public GymMachineType origin;      // la máquina del plan (si estaba ocupada y se cambió por otra, la progresión sigue en esta)
         public int sets, reps, rampSets;   // rampSets: series de aproximación (≈50 % de la carga) antes de las de trabajo
         public float load, restSec, rpe;
         public bool timed; public float minutes;   // calentamiento y vuelta a la calma: por tiempo
@@ -297,7 +298,7 @@ public static class GymProgramming
         foreach (GymMachineType m in t.items)
         {
             Exercise e = Ex(m); Progress pr = Init(p, m); GoalSpec s = Spec(p.goal, e.compound);
-            var x = new Prescription { station = m, sets = pr.sets, reps = pr.reps, load = pr.load, restSec = s.restSec, rpe = s.rpe };
+            var x = new Prescription { station = m, origin = m, sets = pr.sets, reps = pr.reps, load = pr.load, restSec = s.restSec, rpe = s.rpe };
             if (r.deload) { x.sets = Mathf.Max(1, Mathf.CeilToInt(x.sets * 0.5f)); if (x.load > 0f) x.load = Round(x.load * 0.9f); x.rpe -= 2f; }
             if (!ramp && e.compound && x.load > 0f && p.goal != TrainingGoal.Resistencia) { x.rampSets = 1; ramp = true; }
             r.items.Add(x);
