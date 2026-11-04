@@ -777,7 +777,7 @@ public class WorkdayDirector : MonoBehaviour
                 _coach = new GymCoach(g, cp, at != null ? Quaternion.Euler(0f, at.eulerAngles.y, 0f) : Quaternion.identity, classSec, roundsSec, own, (GymEndMin - Mathf.Max(min, GymCoachRoundsEnd)) * ms) { walkSpeed = walkSpeed };
             }
             if (!_coach.Tick(_sessions.Values)) { LeaveGym(g); return false; }
-            SetStatus(g, _coach.Status);
+            SetStatus(g, $"{doing} · {_coach.Status}");   // («Entrenamiento: Gimnasio · Entrenador: …»: JornadaTest no le mira la postura en el gimnasio)
             return true;
         }
         if (!_sessions.TryGetValue(g, out GymTrainingSession s))
