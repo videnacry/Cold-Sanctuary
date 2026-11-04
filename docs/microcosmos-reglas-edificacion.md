@@ -308,6 +308,26 @@ Berón: «¿un cono gris? ¿es una montaña? entonces debería tener una aparien
 - **acantilados** (`Cliff`): pared de roca vertical facetada con su cornisa (`acantilado Nombre | alto | x z, …` en el plano: el cabo de
   Crotona, la barranca del Orinoco en Angostura, la ribera del Bósforo, las gargantas del Lignon, el escarpe de la sierra de Palenque).
 
+### 16. Todo pueblo tiene trabajo, ocio, entrenamiento y recuperación (2026-11-04)
+
+Berón:
+
+> «¿en ninguna época de microcosmos hay gimnasio? … se deben llenar con mapas actuales para cumplir con las estructuras de ocio/entrenamiento/trabajo/recuperación, se usarían mapas actuales solo para buscar posiciones pero se investigaría la época/lugar para recrear edificaciones, muebles y maquinaria nativos»
+
+- **Cuatro categorías.** Todo pueblo de historia tiene al menos un edificio de cada una: **trabajo**, **ocio**, **entrenamiento** y **recuperación** (`AreaFunctionSite.TownCategories`). El descanso ya lo dan las casas. El **entrenamiento** es ahora una categoría propia (`AreaFunctionSite.Entrenamiento`); antes los centros de entrenamiento y los dojos contaban como ocio.
+- **Huecos del plano histórico.** Si el plano histórico no trae alguna categoría, su **posición** se toma de un **mapa de hoy**: el campo de deportes, el parque, el mercado o el hospital del lugar. El edificio que se levanta allí es el **nativo de la época**, investigado (`MicroStyles.CivicName`): sus aparatos y muebles los dan `CivicBuilder.TrainingKit` y `MicroFurniture.Training`. Cada clase de lugar de entrenar está descrita, con sus fuentes, en [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md).
+- **Origen de cada posición en el plano.** Una línea `Tipo | x z | actual: fuente` es de un mapa de hoy. Sin ese tercer campo, la posición es del plano histórico. El edificio lo guarda en `AreaFunctionSite.mapSource` («mapa actual: …»). La lista de cada pueblo, con su fuente, está en [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md).
+- **Red de seguridad.** `CivicBuilder.EnsureCategories` revisa el pueblo al construirlo. Si a pesar del plano sigue faltando una categoría, levanta el edificio nativo junto al centro, lo marca «FALTA posición del mapa actual» y lo registra. El validador lo señala, y la solución es añadir su línea al plano.
+- **Clase estable de entrenamiento.** Cada lugar de entrenar lleva su clase estable en `AreaFunctionSite.training` (`gimnasio_griego`, `akhara`, `furusiyya`, `tekke_guresh`, `wuguan`, `dojo`, `prado_juegos`, `turnplatz_schwingen`, `turnhalle`, `hebert`, `futbol_tregua`, `juego_pelota`…). Es la clase que leen los planes de entrenamiento de los insectos-humanos (ver la sección de los microcosmos en [gimnasio-maquinas.md](gimnasio-maquinas.md)).
+
+**Comprobación:** `MicroFloors.ValidateCategories` hace estas tres comprobaciones, y forma parte de `MicroFloors.Validate` en los pueblos:
+
+- están las cuatro categorías;
+- ninguna posición está marcada «FALTA»;
+- toda posición «mapa actual» dice cuál.
+
+`CivilizedErasTest` (grupo 62) hace la misma comprobación en cada pueblo y lista sus lugares de entrenar.
+
 ### Solo los muros importantes
 Siguen valiendo las reglas 1–2: paso de 2 m, sin muros ni techos. Lo único alto que se permite es lo que la historia necesita
 (`MicroPiece.kind = "historico"`) y lo que el plano real tiene **a ras de suelo**: las murallas del plano son su cimiento (0,5 m:

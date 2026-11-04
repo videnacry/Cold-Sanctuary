@@ -8,6 +8,20 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-04 (entrenamientos reales en el gimnasio, rama claude/edif-entreno; solo código, sin probar en vivo):** cada
+> humano del personal tiene un **plan semanal** (reparto, días, objetivo) y en sus días de gimnasio sigue la rutina del día en
+> orden: calentamiento, series × repeticiones contadas en cada máquina, descanso entre series, cambio de máquina si está ocupada
+> (alternativa, espera acotada o al final) y vuelta a la calma; progresión doble semanal y descarga cada 4.ª semana. **Entrenador:
+> Andrea** (el de más fuerza; el yoga pasa a Josedrilo en la rama de personajes) (misión de papel fijo «gym_planes», clase de calentamiento, correcciones y spotter). Panel: consola `rutina`.
+> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §15; reglas J19–J23 del manual. **Microcosmos (§16)**: los insectos-humanos entrenan como en su época (23 clases de lugar de entrenar de los pueblos, ejercicios con sus años, el maestro del pueblo), con el mismo motor.
+> Prueba nueva `GymTrainingTest` (grupo 87).
+> - [ ] **Probar en vivo** (reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)» y guardarla: la fuerza 1,6 de Andrea y que salga en el gimnasio están en el constructor; luego la escena `Prueba_Yoga`): grupos 87 y 50 (`GymUsabilityTest`), y 28/50
+>   (`SanctuaryLifeTest`, `JornadaTest`: el reparto de las 14 h cambia con los días de cada plan y Andrea tiene la misión de 1 h).
+> - [ ] Fotos: la clase de calentamiento de Andrea en la zona libre (que las filas no caigan dentro de una máquina) y una serie
+>   con su descanso; abrir `rutina(Amahuz)` durante el bloque.
+> - [ ] **Microcosmos**: reconstruir uno a uno (regla W5) Crotona, Velliangiri y Sils Maria y mirar en la práctica de las 14 h la clase del maestro del pueblo y las series en sus aparatos (`[Entreno micro]` en la consola).
+> - [ ] Si Berón quiere: que cada personaje tenga su propio perfil afinado (ahora los objetivos salen de sus fichas).
+
 > **HECHO 2026-11-04 (hilo del yoga, rama claude/edif-yoga; sin probar en vivo):** **sin anillo de yoga** y **dos pisos de yoga**
 > en la torre del Entrenamiento (sube a 4 niveles: P6 Hatha = Sala de Yoga, P9 Ashtanga = `Planta_ashtanga`, P14 libre), cada
 > uno con su sala **occidental** (madera, esterillas, accesorios, Buda/Ganesha, sin espejo) y su sala **tradicional** (tierra,
@@ -149,6 +163,10 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [x] **Relieve real low-poly** (`CivicBuilder.Terrain`): montes y colinas con ruido, roca y nieve; lagos; ríos con riberas; acantilados (6 pueblos).
 - [x] **Frutales en las residencias del santuario**: terraza frutal en cada casa de árbol (`ResidentialBuilder`), en la ronda del jardinero; `FruitOrchardTest` (55) lo mira.
 - [ ] **Verificar en vivo la 2.ª vuelta** (lo hace el probador): reconstruir SampleScene y todos los microcosmos; grupos 43, 55, 60, 62, 63, 66; fotos. Probador (2026-11-04): 829/6; arreglado en código: el banco de la casa redonda del Huerto a 3,5 m (1,93 m del hogar) y `Layout` con la caja girada y 10 cm de holgura; la prueba de la flora ya no cuenta como solar el de un edificio del barrio alto sobre un mueble (3 plantas de Bruce Lee bajo el tablero). Falta repasar 43 y 62.
+- [x] **Entrenamiento de cada época y las cuatro categorías** (2026-11-04, regla 16, manual M35): el entrenamiento es ahora categoría propia y tiene su clase estable (`AreaFunctionSite.training`, `MicroStyles.TrainingKind`), con aparatos nativos (`MicroFurniture.Training`, funciones `ent_*`). Cada hueco del plano histórico se rellena con una posición de un mapa actual, marcada en el plano (`| actual: fuente`): entrenamiento en 10 pueblos, recuperación en 3 y ocio en la Tregua. `MicroFloors.ValidateCategories` lo comprueba y `CivilizedErasTest` (62) también. Docs: [`microcosmos-entrenamiento-eras.md`](microcosmos-entrenamiento-eras.md), regla 16, [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md) §Huecos, [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §Microcosmos y [`microcosmos-actividades.md`](microcosmos-actividades.md).
+- [ ] **Verificar en vivo la regla 16** (lo hace el probador): reconstruir los microcosmos de historias, de compasión, de la Planta Atómica, Egina y los famosos; grupos 62 y 43.
+- [ ] Afinar con OpenStreetMap las posiciones «aproximadas» del mapa actual (Berkeley, Angostura, Tregua, Planta Atómica, Varsovia, Le Chambon, Uagadugú, Dayton) cuando se haga el mapa a mano de cada historia (M9).
+- [ ] El hilo «entreno»: planes de entrenamiento de los insectos-humanos por clase de lugar (`training`), según [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §Microcosmos.
 
 ## Microcosmos — eras/especies + observación (diseño en [`microcosmos-eras-and-observation.md`](microcosmos-eras-and-observation.md))
 - [ ] **Fauna de la era del fuego** (a escala insecto, sabana Pleistoceno): arquetipos de alma +
@@ -612,6 +630,9 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Tester: reconstruir SampleScene (la torre del Entrenamiento sube a 5 niveles) y pasar 75, 89, 65, 50 y las de yoga (`YogaFloorsTest`, `YogaClassTest`); fotos de los pisos de yoga nuevos y de un vuelo de alfombra desde la plataforma central.
 - [x] Pijamadas ([`pijamadas.md`](pijamadas.md), manual J17): una sola cama-litera por casa, de dos pisos de 4, con tobogán para bajar del piso de arriba (8 por casa; la litera triple aparte se quitó por indicación de Berón), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
 - [ ] Tester: con la escena reconstruida, grupo 92 y fotos de una casa con su cama-litera y de una pijamada.
+- [x] Profesiones y parejas (Berón 2026-11-04; [`personajes-mesocosmos.md`](personajes-mesocosmos.md) §Profesiones y parejas, manual J14 y J18): Josedrilo maestro de yoga (y bioconstrucción), Maite cocina, Shalva cultivo y bioconstrucción, Adaguchi submarinismo y cocina, Amahuz cocina y química, Karen asuntos legales y lenguas (Aula), Alicita contabilidad y proyectos; Nesvitor consejero; Gallarle nuevo (pareja de Ducristin, pendiente de foto y de profesión). Parejas en una casa: Lizmibet y Tote, Amahuz y Karen, Ducristin y Gallarle, Josedrilo y Maite (16 de 18 casas).
+- [ ] Berón: confirmar que Amahuz y Karen son pareja; la foto y la profesión de Gallarle.
+- [ ] Tester: reconstruir SampleScene; grupos 50 (jornada con profesiones), 51 y 64 (Josedrilo de maestro), 45 (brigada de cocina), 65 (horario libre, Gallarle), 28, 89 y 92 (casas y ring con 20 residentes).
 
 ## Tareas e iniciaciones del jugador con «E» (2026-11-04; rama `claude/edif-tareasE`; [`tareas-del-jugador.md`](tareas-del-jugador.md), manual J18)
 - [x] Estudiado el modelo de Ambrosio (`AmbrosioStory.Act`: una E que hace lo que toca según el sitio) y generalizado: `PlayerTasks` (catálogo de pasos «acción · puesto · objeto · gesto» y localizador de sitios) y `PlayerTaskRunner` (marcadores «E — acción», aviso en el sitio, pista de ruta, progreso, gesto 2,5 s, objeto en la mano, efecto al cerrar).

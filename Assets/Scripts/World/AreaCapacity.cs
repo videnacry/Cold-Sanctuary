@@ -61,6 +61,9 @@ public static class AreaCapacity
             var sum = new Dictionary<string, (AreaSeat.Category c, int n)>();
             foreach (AreaSeat s in a.GetComponentsInChildren<AreaSeat>(true))
             {
+                // (2026-11-04) Un piso EN OBRAS no da servicio: sus puestos no cuentan hasta que se termine (el ballet, el dojo).
+                ConstructionProject site = s.GetComponentInParent<ConstructionProject>(true);
+                if (site != null && !site.Finished) { string p = $"{name} · {s.activity} (en obras)"; if (!pending.Contains(p)) pending.Add(p); continue; }
                 sum.TryGetValue(s.activity, out var v);
                 sum[s.activity] = (s.category, v.n + s.seats);
                 if (s.category == AreaSeat.Category.Estudio) study = true;

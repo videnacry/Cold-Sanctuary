@@ -75,6 +75,7 @@ internal static partial class CivicBuilder
         }
         int homes = Homes(t, lots, display);   // regla 6: un hogar para cada personaje (las parejas, juntas; CivicBuilder.Homes)
         EnsureNeeds(t, lots, NeedsStyle);
+        if (MicroBuildRules.IsTownEra(Year) && _plan != null) EnsureCategories(t, lots, display);   // regla 16 (2026-11-04): trabajo, ocio, entrenamiento y recuperación
         // (2026-11-03) Los hogares rehacen los muebles a la medida de cada familia y la casa crece (Relayout): si al crecer se acerca a
         // menos de una calle de otro edificio, se corre a un solar libre (la Higuera de una casa nueva del Huerto quedaba a 0,16 m
         // del banco de la casa redonda de al lado).
@@ -516,6 +517,8 @@ internal static partial class CivicBuilder
         if (string.IsNullOrEmpty(site.activity)) site.activity = AreaFunctionSite.ActivityOf(site.building);
         if (string.IsNullOrEmpty(site.interaction)) site.interaction = interaction ?? AreaFunctionSite.InteractionOf(site.building);
         if (string.IsNullOrEmpty(site.region)) site.region = Region;
+        // (2026-11-04) Un lugar de entrenar (el centro de entrenamiento del pueblo, la palestra de Milón, el kwoon de Yip Man): su clase estable de época y lugar.
+        if (site.activity == AreaFunctionSite.Entrenamiento && string.IsNullOrEmpty(site.training)) site.training = MicroStyles.TrainingKind(MicroStyles.For(Year, site.region), Year) ?? "";
         int cap = 0; var bodies = new SortedSet<string>();
         foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
         {

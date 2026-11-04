@@ -148,6 +148,19 @@ public class CivilizedErasTest : MonoBehaviour, ITestUnit
         foreach (GameObject root in s.GetRootGameObjects()) if (root.GetComponentInChildren<AreaFunctionSite>(true) != null) rules.AddRange(MicroBuildRules.Validate(root.transform, sceneName, true, false));
         TestProbe.Check($"{sceneName}: cumple las reglas de edificación", rules.Count == 0, string.Join(" · ", rules.GetRange(0, Mathf.Min(8, rules.Count))));
 
+        // (2026-11-04) REGLA 16: un pueblo de historia tiene trabajo, ocio, entrenamiento y recuperación; lo que el plano histórico no
+        // traía sale de un mapa actual (y lo dice), recreado con lo nativo de la época.
+        foreach (GameObject root in s.GetRootGameObjects())
+            foreach (MicroFloor mf in root.GetComponentsInChildren<MicroFloor>(true))
+            {
+                if (!mf.town) continue;
+                var cat = MicroFloors.ValidateCategories(mf.transform);
+                var kinds = new List<string>();
+                foreach (AreaFunctionSite site in mf.GetComponentsInChildren<AreaFunctionSite>(true)) if (site.activity == AreaFunctionSite.Entrenamiento) kinds.Add($"{site.title} [{site.training}]{(site.mapSource.Length > 0 ? " · " + site.mapSource : "")}");
+                TestProbe.Check($"{sceneName}: el pueblo tiene trabajo, ocio, entrenamiento y recuperación (y cada posición de un mapa actual dice cuál)", cat.Count == 0,
+                    cat.Count > 0 ? string.Join(" · ", cat.GetRange(0, Mathf.Min(6, cat.Count))) : "entrenamiento: " + string.Join("; ", kinds));
+            }
+
         if (loadedHere)
         {
             AsyncOperation un = SceneManager.UnloadSceneAsync(s);

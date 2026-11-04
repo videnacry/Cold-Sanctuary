@@ -81,10 +81,14 @@ public class MicroJornada : MonoBehaviour
         if (hold) return;
         if (_q == null) { _a = GetComponent<Anima>(); _q = GetComponent<ActionQueue>(); }
         if (_a != null && (_a.death || _a.asleep)) return;
-        if (NeedsDriver.Attending(_q)) { _resume = true; return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
+        if (NeedsDriver.Attending(_q)) { _resume = true; HistoricClass.Pause(this); return; }   // el cuerpo atiende una necesidad (en casa): la jornada espera
         if (LeisureDirector.Drives(gameObject)) { _resume = true; return; }   // sus horas libres: lo lleva el HORARIO LIBRE (docs/horario-libre.md)
         if (follow != null) { MicroMove.Step(transform, follow.position - follow.forward * 1.2f, speed * 1.2f, 1.5f); return; }
         string block = BlockAt(Hour);
+        // ENTRENAR COMO EN SU ÉPOCA (2026-11-04, docs/gimnasio-maquinas.md §16): en la práctica, si su sitio es un edificio de entrenamiento
+        // (plantilla «Centro de entrenamiento» o «Dojo»), sigue su rutina de época con series y descanso, o da la clase si es el maestro.
+        if (block == "practica") { if (HistoricClass.Drive(this)) { _resume = true; Say(HistoricClass.StatusOf(this) ?? "Entrenando"); return; } }
+        else HistoricClass.Leave(this);
         if (block != _block || _st == null || _resume) { _resume = false; Choose(block); }
         if (_st == null) return;
         // (2026-11-04) A LA HORA DE COMER, primero al MOSTRADOR por la bandeja y, al acabar, de vuelta a él a devolverla (MealRitual).

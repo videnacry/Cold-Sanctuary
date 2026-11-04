@@ -9,7 +9,9 @@ microcosmos (`AreaFunctionSite`, `Assets/Scripts/Microcosmos/AreaFunctionSite.cs
 
 | Campo | Tipo | Qué es |
 |---|---|---|
-| `activity` | `string` | `AreaFunctionSite.Trabajo` («trabajo»), `Descanso` («descanso»), `Recuperacion` («recuperacion») u `Ocio` («ocio»): para qué va quien lo VISITA |
+| `activity` | `string` | `AreaFunctionSite.Trabajo` («trabajo»), `Descanso` («descanso»), `Recuperacion` («recuperacion»), `Ocio` («ocio») o `Entrenamiento` («entrenamiento», desde el 2026-11-04): para qué va quien lo VISITA |
+| `training` | `string` | (2026-11-04) si es de entrenamiento, su CLASE ESTABLE de época y lugar (`gimnasio_griego`, `akhara`, `furusiyya`, `wuguan`, `turnhalle`…; `MicroStyles.TrainingKind`; ver [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md)) |
+| `mapSource` | `string` | (2026-11-04) de dónde sale su posición: vacío = plano histórico o la historia; «mapa actual: …» = de un mapa de hoy (regla 16) |
 | `hasWork` | `bool` | si además tiene puestos de trabajo (alguna función que no es descansar ni comer ni de «todos») |
 | `capacity` | `int` | cuántas personas lo usan a la vez (camas, asientos de sus mesas, puestos, sitio en lo que se pisa: 4 por tatami, pista, piscina o andén) |
 | `interaction` | `string` | lo que se hace allí, en una frase («bailar y aprender los pasos», «bañarse, nadar o sudar en el baño de vapor»…) |
@@ -23,7 +25,8 @@ microcosmos (`AreaFunctionSite`, `Assets/Scripts/Microcosmos/AreaFunctionSite.cs
 |---|---|
 | **descanso** | Casa, Orfanato, Hotel |
 | **recuperacion** | Hospital, Sala de Yoga, Baños (piscina, hammam, temazcal), Templo |
-| **ocio** | Restaurante, Parque, Plaza (y monumento), Museo, Sala de baile, Mirador, Centro de entrenamiento, Dojo, Fuente pública |
+| **ocio** | Restaurante, Parque, Plaza (y monumento), Museo, Sala de baile, Mirador, Fuente pública |
+| **entrenamiento** (2026-11-04) | Centro de entrenamiento (con su clase de época: gimnasio griego, akhāṛā, maydān de furusiyya, Turnhalle, juego de pelota…), Dojo |
 | **trabajo** | Cocina, Taller, Escuela, Mercado, Laboratorio, Huerto, Granero, Alfarería, Lavandería, Oficina de patentes, Taller de papeles, Trinchera, Comisaría, Bomberos, Guardería, Estación, Carpintería, Obra, Centro de tecnología, Cuartel |
 
 ## Cómo usarlo desde el horario
@@ -45,3 +48,8 @@ Las funciones nuevas (2026-11-03, `AreaFunctions`): `pol_atender`, `pol_ronda`, 
 `mir_mirar`. Papeles nuevos: guardia, bombero, conservador, cuidador, tecnico, carpintero, albanil (y «todos»).
 
 > **2026-11-04 — Hacer la actividad, comer con su orquesta y uniformes:** en su sitio cada uno HACE su tarea o su actividad (postura, herramienta en la mano, gesto y efecto), come con la orquesta de la comida (bandeja, cubiertos, bocados, beber, devolver) y lleva el uniforme de su tarea; también los insectos-humanos. Ver [actividades-y-uniformes.md](actividades-y-uniformes.md).
+## Las cuatro categorías de un pueblo (regla 16, 2026-11-04)
+
+Todo pueblo de historia tiene al menos un edificio de trabajo, uno de ocio, uno de entrenamiento y uno de recuperación (`AreaFunctionSite.TownCategories`; lo comprueba `MicroFloors.ValidateCategories`). Si el plano histórico no trae alguno, su posición sale de un mapa de hoy y se recrea con lo nativo de la época. Ver [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md), regla 16.
+
+**Para el horario libre.** Los sitios de entrenamiento se ofrecen como hasta ahora, del tipo «ocio» del roster (`LeisureDirector`). Los planes de entrenamiento leen `training` y las funciones `ent_*`; ver [gimnasio-maquinas.md](gimnasio-maquinas.md), en «Microcosmos: lugares de entrenar por época».

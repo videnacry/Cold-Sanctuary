@@ -17,7 +17,8 @@ public class WorkdayDirector : MonoBehaviour
     public static WorkdayDirector Instance { get; private set; }
 
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                               "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
+                               "Gallarle", "Julian", "Fausto" };   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
@@ -70,11 +71,16 @@ public class WorkdayDirector : MonoBehaviour
 
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…).</summary>
     static readonly Dictionary<string, GameObject> _bodies = new Dictionary<string, GameObject>();
+    /// <summary>Ids de antes de un cambio de nombre (id nuevo → id viejo), para las escenas sin reconstruir.</summary>
+    public static readonly System.Collections.Generic.Dictionary<string, string> LegacyIds = new System.Collections.Generic.Dictionary<string, string> { { "Amykhuz", "Amahuz" } };
+
     /// <summary>El GameObject de un miembro del personal (en escena algunos se llaman «Goluis_Post»…). Cacheado: buscar por nombre cada frame era lo más caro de la jornada.</summary>
     public static GameObject Body(string n)
     {
         if (_bodies.TryGetValue(n, out GameObject g) && g != null) return g;
         g = GameObject.Find(n) ?? GameObject.Find(n + "_Post");
+        // (2026-11-04) NOMBRES ANTIGUOS: las escenas sin reconstruir guardan el id de antes (Amahuz → Amykhuz).
+        if (g == null && LegacyIds.TryGetValue(n, out string old)) g = GameObject.Find(old) ?? GameObject.Find(old + "_Post");
         _bodies[n] = g;
         return g;
     }
@@ -101,7 +107,12 @@ public class WorkdayDirector : MonoBehaviour
         foreach (GameObject c in _clones.Values) if (c != null) Destroy(c);
         _clones.Clear(); _done.Clear(); _started.Clear();
         _lunched.Clear(); _lunchStocked = false; _heading.Clear();   // [Jornada] la comida de hoy
-        today = roster.Plan(day, AreaWork.Today(day, ConstructionProject.All));
+        ReleaseGym(); _coachDay = int.MinValue;   // las sesiones de gimnasio de ayer
+        List<WorkRoster.Mission> todays = AreaWork.Today(day, ConstructionProject.All);
+        todays.AddRange(GymProgramming.Missions());   // la del entrenador (papel fijo: revisar el registro y ajustar los planes)
+        today = roster.Plan(day, todays);
+        int gymDays = GymProgramming.ApplyGymDays(today, roster.trainingAreas, roster.workers);   // los días de gimnasio de cada plan
+        if (gymDays > 0) Debug.Log($"[Gimnasio] Día {day}: {gymDays} cambios en el entrenamiento de las 14 h por los días de cada plan; al gimnasio: {string.Join(", ", today.training.Where(kv => kv.Value == GymArea).Select(kv => kv.Key.name))}.");
         plannedDay = day;
         foreach (WorkRoster.Worker c in today.clones) _clones[c] = SpawnMagnateBody(c.name);
         Debug.Log($"[Jornada] Día {day}: {today.work.Count} misiones para {roster.workers.Count} personas · orden de áreas: {string.Join(" → ", today.areaOrder)}" +
@@ -649,12 +660,13 @@ public class WorkdayDirector : MonoBehaviour
     // YogaHall.VersionOn (tradicional los pares, occidental los impares). La CLASE DE HATHA (misión de grupo «clase_yoga»): el
     // guía hace la secuencia en la tarima de su sala, el demostrador la hace entre los alumnos y los correctores van de
     // esterilla en esterilla. El ENTRENAMIENTO de las 14 h es la CLASE DE ASHTANGA, en el piso de Ashtanga: la da el primero que
-    // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Andrea desde el 2026-11-04; antes Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
+    // llega. En su tiempo libre, el MAESTRO DE YOGA ('YogaTeacher': Josedrilo, el profesional de yoga; antes Andrea y Sadhguru) medita en la tarima de la sala de Hatha tradicional, junto al linga.
     const string YogaArea = "Sala de Yoga";
-    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre). Desde el 2026-11-04,
-    /// ANDREA, el único que hacía yoga de verdad con Leo (docs/character-andrea.md); antes, Sadhguru, que se fue a su microcosmos.
-    /// La segunda maestra, para dar las dos clases a la vez, es IROSENE (corre, escala y bucea a sus 70 y tantos).</summary>
-    public const string YogaTeacher = "Andrea", SecondYogaTeacher = "Irosene";
+    /// <summary>MAESTRO DE YOGA del santuario (Hatha y Ashtanga; medita junto al linga en su tiempo libre): JOSEDRILO, el profesional de
+    /// yoga (Berón 2026-11-04: «el profesional de yoga es Josedrilo»; Professions). Antes, Andrea (que pasa a entrenador del gimnasio) y
+    /// Sadhguru (que se fue a su microcosmos). La SEGUNDA MAESTRA, para dar las dos clases a la vez, es PANTERILIA (2026-11-04: la de la
+    /// percepción, la que observa; corregir posturas es mirar): Irosene, que lo fue, pasa a las letras en el Aula, como sugirió Berón.</summary>
+    public const string YogaTeacher = "Josedrilo", SecondYogaTeacher = "Panterilia";
     /// <summary>La sesión de cada clase: Hatha (la guiada, misión «yog_guia») y Ashtanga (el entrenamiento de las 14 h).</summary>
     public const string HathaSession = "Saludo al Sol", AshtangaSession = "Ashtanga Primaria";
 
@@ -748,92 +760,91 @@ public class WorkdayDirector : MonoBehaviour
         g.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Asleep, 2f);   // ojos cerrados
     }
 
-    // ── GIMNASIO (docs/gimnasio-maquinas.md, §13) ──────────────────────────────────────────────
-    // El entrenamiento en el gimnasio (14–16 h): 10 min de calentamiento en la zona libre, un CIRCUITO de 10 estaciones de
-    // 9 min (5 abajo y 5 en la entreplanta; la mitad del grupo empieza abajo y la otra arriba, y a los 45 min se cruzan) y
-    // 15 min de estiramientos. La persona i del grupo empieza el día d en la estación (i + d) mod 5 de su piso y usa la
-    // copia (i / 5) mod 3. En la máquina se coloca en su Puesto y alterna las posturas A ↔ B cada ~1,5 s.
-    const string GymArea = "Gimnasio";
-    static readonly GymMachineType[] GymLower = { GymMachineType.Prensa, GymMachineType.PressPecho, GymMachineType.Jalon, GymMachineType.PressHombros, GymMachineType.Remo };
-    static readonly GymMachineType[] GymUpper = { GymMachineType.ExtensionCuadriceps, GymMachineType.BicepsTriceps, GymMachineType.CurlFemoral, GymMachineType.Gemelos, GymMachineType.HipThrust };
-    const float GymRepHalf = 1.5f;      // segundos reales de cada mitad de la repetición (A → B, B → A)
-    const float GymWalkTimeout = 45f;   // si no llega a la máquina en este tiempo, se queda en la zona libre un rato
+    // ── GIMNASIO (docs/gimnasio-maquinas.md, §13 y §15) ────────────────────────────────────────
+    // El entrenamiento en el gimnasio (14–16 h) ya no es un circuito igual para todos: cada uno sigue la RUTINA DE HOY de su plan
+    // (GymProgramming: reparto, series × repeticiones, carga, descanso y RPE) con una GymTrainingSession: calentamiento (la clase
+    // del entrenador o cardio suave), los ejercicios en orden —máquina libre, si no una alternativa, si no espera o lo deja para el
+    // final—, las series con su descanso y la vuelta a la calma. El ENTRENADOR (GymProgramming.Trainer) da la clase de
+    // calentamiento, hace rondas corrigiendo y de spotter (GymCoach) y, los días de su plan, la última hora hace su rutina.
+    const string GymArea = GymProgramming.GymArea;
+    const float GymClassMin = 10f, GymEndMin = 115f, GymCoachRoundsEnd = 60f;   // min de juego desde las 14:00
 
     /// <summary>Una persona en una máquina: la estación, si ya se sentó, la fase (A/B) y su postura. Público para que
     /// <see cref="GymUsabilityTest"/> use EXACTAMENTE el mismo camino que la jornada.</summary>
     public class GymUse { public GymStation st; public bool seated, b; public float since, phaseAt; public AsanaPoseSpell spell; }
-    readonly Dictionary<GameObject, GymUse> _gym = new Dictionary<GameObject, GymUse>();
-    readonly Dictionary<GameObject, float> _gymGiveUp = new Dictionary<GameObject, float>();
+    readonly Dictionary<GameObject, GymTrainingSession> _sessions = new Dictionary<GameObject, GymTrainingSession>();
+    GymCoach _coach; int _coachDay = int.MinValue;
+    /// <summary>Las sesiones de gimnasio de hoy (el panel de la rutina).</summary>
+    public IReadOnlyDictionary<GameObject, GymTrainingSession> GymSessions => _sessions;
+    public GymCoach Coach => _coach;
     /// <summary>¿Está <paramref name="g"/> ahora en una máquina del gimnasio (sentado en su puesto, haciendo la repetición)?</summary>
-    public bool OnGymMachine(GameObject g) => g != null && _gym.TryGetValue(g, out GymUse u) && u.seated;
+    public bool OnGymMachine(GameObject g)
+    {
+        if (g == null) return false;
+        GymTrainingSession s = _sessions.TryGetValue(g, out GymTrainingSession x) ? x : _coach != null && _coach.g == g ? _coach.own : null;
+        return s != null && s.use != null && s.use.seated;
+    }
     /// <summary>Todos se levantan de las máquinas del gimnasio (y las dejan en su sitio): al terminar una prueba de la jornada a
     /// las 16:00 alguien podía quedarse sentado con el agarre desplazado a su medida, y la prueba del gimnasio lo encontraba así.</summary>
-    public void ReleaseGym() { foreach (GameObject g in new List<GameObject>(_gym.Keys)) LeaveGym(g); }
+    public void ReleaseGym()
+    {
+        foreach (GymTrainingSession s in _sessions.Values) s.Stop("se acaba el entrenamiento");
+        _sessions.Clear();
+        if (_coach != null) _coach.Stop("se acaba el entrenamiento");
+        _coach = null;
+    }
     float _hour;
 
-    /// <summary>Puesto de <paramref name="g"/> en el grupo del gimnasio de hoy (−1 si hoy no le toca el gimnasio).</summary>
-    int GymIndex(string who)
+    /// <summary>Punto de la clase de calentamiento del entrenador (la zona libre del gimnasio) y hacia dónde mira.</summary>
+    public static Vector3 GymClassPoint() => WorkPoint(GymArea, "Clase de calentamiento");
+
+    /// <summary>El entrenador de hoy (una vez al día): si el entrenador es del personal y hoy le toca el gimnasio.</summary>
+    void EnsureCoach(float min, float ms)
     {
-        int i = 0;
-        foreach (WorkRoster.Worker w in roster.workers)
-        {
-            if (w.clone || !today.training.TryGetValue(w, out string t) || t != GymArea) continue;
-            if (w.name == who) return i;
-            i++;
-        }
-        return -1;
+        if (_coachDay == today.day) return;
+        WorkRoster.Worker tw = roster.Find(GymProgramming.Trainer);
+        GameObject g = tw != null && today.training.TryGetValue(tw, out string t) && t == GymArea ? Body(GymProgramming.Trainer) : null;
+        if (g == null || g.CompareTag("Player")) return;
+        _coachDay = today.day;
+        GymProgramming.DayRoutine own = GymProgramming.For(g.name, today.day)?.Trains(today.day) == true ? GymProgramming.Prescribe(g.name, today.day) : null;
+        float classSec = Mathf.Max(0f, GymClassMin - min) * ms;
+        float roundsSec = own != null ? Mathf.Max(0f, GymCoachRoundsEnd - Mathf.Max(min, GymClassMin)) * ms : 999999f;
+        Transform at = AreaTransform(GymArea);
+        _coach = new GymCoach(g, GymClassPoint(), at != null ? Quaternion.Euler(0f, at.eulerAngles.y, 0f) : Quaternion.identity, classSec, roundsSec, own, (GymEndMin - Mathf.Max(min, GymCoachRoundsEnd)) * ms) { walkSpeed = walkSpeed };
     }
 
-    /// <summary>La máquina que le toca ahora a la persona <paramref name="i"/> del grupo (null en el calentamiento, los
-    /// estiramientos o si todas las copias están ocupadas).</summary>
-    GymStation GymStationFor(int i, string who)
-    {
-        float min = (_hour - (WorkRoster.StartHour + 6f)) * 60f;
-        if (min < 10f || min >= 100f) return null;
-        int step = Mathf.Clamp(Mathf.FloorToInt((min - 10f) / 9f), 0, 9);
-        bool upper = ((i % 2) + step / 5) % 2 == 1;
-        GymMachineType type = (upper ? GymUpper : GymLower)[(i + today.day + step) % 5];
-        int copies = Mathf.Max(1, GymStation.CopiesOf(type));   // 3 por piso del gimnasio (regla J16: con más pisos, más copias)
-        int copy = (i / 5) % copies;
-        for (int k = 0; k < copies; k++)
-        {
-            GymStation s = GymStation.Find(type, (copy + k) % copies);
-            if (s != null && (s.Free || s.Occupant == who)) return s;
-        }
-        return null;
-    }
-
-    /// <summary>Si toca máquina, lleva a <paramref name="g"/> a ella y la usa; true = ya lo maneja. false = a la zona libre
-    /// (calentamiento, estiramientos, sin máquina libre o sin camino): sigue el punto del área de siempre.</summary>
+    /// <summary>Si toca gimnasio, conduce a <paramref name="g"/> por su rutina de hoy; true = ya lo maneja. false = a la zona
+    /// libre (antes del bloque, ya terminó su rutina o sin plan): sigue el punto del área de siempre.</summary>
     bool GymSession(GameObject g, string doing)
     {
         Anima a = g.GetComponent<Anima>();
         ActionQueue q = g.GetComponent<ActionQueue>();
-        if (a == null || a.asleep || (q != null && q.Own.Count > 0)) { LeaveGym(g); return false; }   // comer, el baño y dormir van antes
-        if (_gymGiveUp.TryGetValue(g, out float until) && Time.time < until) { LeaveGym(g); return false; }
-        int i = GymIndex(g.name);
-        GymStation want = i >= 0 ? GymStationFor(i, g.name) : null;
-        if (want == null) { LeaveGym(g); return false; }
-        _gym.TryGetValue(g, out GymUse u);
-        if (u == null || u.st != want)   // cambio de estación: suelta la anterior y reserva la nueva
+        if (a == null || a.asleep || (q != null && q.Own.Count > 0)) { PauseGym(g); return false; }   // comer, el baño y dormir van antes
+        if (today == null) return false;
+        float min = (_hour - (WorkRoster.StartHour + 6f)) * 60f;
+        float ms = TC != null && TC.TimeSpeedMinuteSecs > 0.01f ? TC.TimeSpeedMinuteSecs : 2.5f;
+        if (min < 0f) return false;
+        if (min >= GymEndMin) { LeaveGym(g); return false; }
+        // EL ENTRENADOR: la clase, las rondas y (si su plan lo pide hoy) su rutina. Se crea con el primero que llega al bloque (si
+        // no, los que van antes que él en la lista del personal empezaban a calentar solos sin ver la clase).
+        EnsureCoach(min, ms);
+        if (g.name == GymProgramming.Trainer)
         {
-            LeaveGym(g);
-            if (!want.Claim(g.name)) return false;
-            _gym[g] = u = new GymUse { st = want, since = Time.time };
+            if (_coach == null || _coachDay != today.day) return false;
+            if (!_coach.Tick(_sessions.Values)) { LeaveGym(g); return false; }
+            SetStatus(g, $"{doing} · {_coach.Status}");   // («Entrenamiento: Gimnasio · Entrenador: …»: JornadaTest no le mira la postura en el gimnasio)
+            return true;
         }
-        SetStatus(g, $"{doing} · {GymStation.Label(want.type)}");
-        if (!u.seated)
+        if (!_sessions.TryGetValue(g, out GymTrainingSession s))
         {
-            if (!GymArrived(g, want))
-            {
-                if (Time.time - u.since > GymWalkTimeout) { LeaveGym(g); _gymGiveUp[g] = Time.time + 20f; return false; }
-                PathMover.Of(g.transform).StepToward(GymApproach(want), walkSpeed);
-                return true;
-            }
-            GymSit(u);
-            Debug.Log($"[Gimnasio] «{g.name}» se pone en {want.name}.");
+            GymProgramming.DayRoutine r = GymProgramming.Prescribe(g.name, today.day);
+            if (r == null) return false;   // sin plan (no es humano del santuario)
+            _sessions[g] = s = new GymTrainingSession(g, r, (GymEndMin - min) * ms) { walkSpeed = walkSpeed };
         }
-        GymRep(g, a, u);
+        if (s.Done) return false;   // ya terminó: a la zona libre
+        GymCoach coach = _coach != null && _coachDay == today.day ? _coach : null;
+        if (!s.Tick(coach)) return false;
+        SetStatus(g, $"{doing} · {s.Status()}");
         return true;
     }
 
@@ -853,10 +864,12 @@ public class WorkdayDirector : MonoBehaviour
 
     /// <summary>Un fotograma de la repetición: alterna A ↔ B al ritmo real del equipo, coloca el cuerpo en el puesto y
     /// aplica la postura. true = en este fotograma cambió de fase.</summary>
-    public static bool GymRep(GameObject g, Anima a, GymUse u)
+    public static bool GymRep(GameObject g, Anima a, GymUse u) => GymRep(g, a, u, GymPoses.RepHalf(u.st.type));   // el ritmo real de cada equipo (cinta 0,35 s, bici 0,4 s, press…)
+
+    /// <summary>Lo mismo con el ritmo <paramref name="half"/> (s por mitad): la rutina lo ajusta para que quepa en el bloque.</summary>
+    public static bool GymRep(GameObject g, Anima a, GymUse u, float half)
     {
         GymStation want = u.st;
-        float half = GymPoses.RepHalf(want.type);   // el ritmo real de cada equipo (cinta 0,35 s, bici 0,4 s, press…)
         bool flip = Time.time - u.phaseAt >= half;
         if (flip) { u.b = !u.b; u.phaseAt = Time.time; u.spell = u.b ? want.PoseB() : want.PoseA(); }
         float k = Mathf.SmoothStep(0f, 1f, Mathf.Clamp01((Time.time - u.phaseAt) / (half * 0.6f)));
@@ -866,6 +879,16 @@ public class WorkdayDirector : MonoBehaviour
         return flip;
     }
 
+    /// <summary>DESCANSO ENTRE SERIES: sigue en la máquina, quieto en la postura A (a su medida).</summary>
+    public static void GymHold(GameObject g, Anima a, GymUse u)
+    {
+        if (u == null || u.st == null) return;
+        if (u.b || u.spell == null) { u.b = false; u.spell = u.st.PoseA(); }
+        GymPlace(g, u.st.SeatPoint(0f), u.st.Facing);
+        if (a != null) u.spell.Tick(a);
+        GymFit.Fit(u.st, g, false);
+    }
+
     /// <summary>Se levanta de la máquina: de pie, en el pasillo (la reserva la suelta <see cref="GymStation.Release"/>).</summary>
     public static void GymStandUp(GameObject g, GymUse u)
     {
@@ -873,7 +896,10 @@ public class WorkdayDirector : MonoBehaviour
         if (g == null || u == null || !u.seated || u.st == null) return;
         Anima a = g.GetComponent<Anima>();
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        GymPlace(g, u.st.ApproachPoint, g.transform.rotation);
+        // (2026-11-04) De pie en el pasillo con el pivote a la altura con la que ANDA (PathMover.OnGround: su suelo y su altura de
+        // pivote). Con la de los pies del cuerpo de cubos, el primer paso lo recolocaba de golpe a otra altura (GymUsabilityTest ronda 6).
+        g.transform.position = PathMover.Of(g.transform).OnGround(u.st.ApproachPoint);
+        PathMover.Of(g.transform).Restart();
     }
 
     /// <summary>Coloca los PIES (la base del cuerpo de cubos) de <paramref name="g"/> en <paramref name="feet"/>, mirando a <paramref name="facing"/>.</summary>
@@ -887,10 +913,17 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Se levanta de la máquina (de pie, en el pasillo) y la deja libre.</summary>
     void LeaveGym(GameObject g)
     {
-        if (g == null || !_gym.TryGetValue(g, out GymUse u)) return;
-        _gym.Remove(g);
-        GymStation.Release(g.name);
-        GymStandUp(g, u);
+        if (g == null) return;
+        if (_sessions.TryGetValue(g, out GymTrainingSession s) && !s.Done) s.Stop("se acaba el entrenamiento");
+        if (_coach != null && _coach.g == g && _coach.phase != GymCoach.Phase.Done) _coach.Stop("se acaba el entrenamiento");
+    }
+
+    /// <summary>Lo deja a medias por una necesidad (comer, el baño, dormir): suelta la máquina; al volver sigue la rutina.</summary>
+    void PauseGym(GameObject g)
+    {
+        if (g == null) return;
+        if (_sessions.TryGetValue(g, out GymTrainingSession s)) s.Pause();
+        if (_coach != null && _coach.g == g && _coach.own != null) _coach.own.Pause();
     }
 
     static readonly Dictionary<GameObject, string> _baseLabel = new Dictionary<GameObject, string>();
@@ -958,6 +991,8 @@ public class WorkdayDirector : MonoBehaviour
         // (PlayerTaskRunner) o la máquina de virtualización; si la ignora, caduca sin efecto (PlayerWorkday).
         if (!a.worker.clone && a.worker.name == "Player") return;
         Apply(a.mission, a.worker.name);
+        if (a.mission.id == GymProgramming.PlanMissionId && today != null)   // el entrenador deja los planes revisados
+            foreach (string l in GymProgramming.Review(a.worker.name, today.day, roster.workers.Where(w => !w.clone).Select(w => w.name))) Debug.Log($"[Entrenador] {a.worker.name} {l}");
     }
 
     /// <summary>Efecto de completar una misión en el mundo: lo trae su función en el REGISTRO (<see cref="AreaFunctions.Run"/>: las obras,

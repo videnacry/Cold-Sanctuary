@@ -19,6 +19,8 @@ public static partial class MicroStyles
     {
         Estudio, Entrenamiento, Baile, Plaza, Estacion, Parque, Museo, Investigacion, Guarderia, Monumento, Policia, Bomberos,
         Mercado, Mecanica, Taller, Milicia, Piscina, Hotel, Carpinteria, Pileta, Obra, Tecnologia, Edificio,
+        /// (2026-11-04) Donde se cura (recuperación): asclepeion, bimaristán, puesto de socorro, hospital…
+        Sanacion,
     }
 
     static bool Is(Entry e, params string[] ids) { foreach (string i in ids) if (e.id == i) return true; return false; }
@@ -49,7 +51,7 @@ public static partial class MicroStyles
             case Civic.Parque:
                 return Is(e, "egeo") ? "Arboleda sagrada (alsos)" : Is(e, "roma") ? "Jardín (hortus)" : Is(e, "egipto") ? "Jardín del templo" : Is(e, "islam_abasi") ? "Bustān (jardín)" :
                        Is(e, "otomano") ? "Bahçe (jardín de té)" : Is(e, "sur_asia") ? "Arboleda (ārāma)" : Is(e, "mesopotamia") ? "Huerto de palmeras" : Is(e, "maya_clasico") ? "Arboleda de cacao y ceibas" :
-                       Is(e, "hispanoamerica") ? "Alameda" : Is(e, "china_tradicional", "hongkong_tonglau") ? "Jardín" : Is(e, "sovietico") ? "Parque de la cultura" : Is(e, "frente_1914") ? null :
+                       Is(e, "hispanoamerica") ? "Alameda" : Is(e, "china_tradicional", "hongkong_tonglau") ? "Jardín" : Is(e, "sovietico") ? "Parque de la cultura" : Is(e, "frente_1914") ? "Tierra de nadie: el encuentro de Navidad" :
                        UsaModern(e) ? "Parque" : Is(e, "sahel_moderno") ? "Parque urbano (bosque de la ciudad)" : pre ? null : "Jardín público";
             case Civic.Mercado:
                 return Is(e, "egeo") ? "Mercado del ágora" : Is(e, "islam_abasi", "otomano") ? "Zoco" : Is(e, "maya_clasico") ? "Mercado de la plaza" : Is(e, "frente_1914") || pre ? null : "Mercado";
@@ -65,10 +67,40 @@ public static partial class MicroStyles
                        Is(e, "maya_clasico") ? "Casa de los escribas (aj tz'ib)" : Is(e, "sur_asia") ? "Escuela del maestro (gurukula)" : Is(e, "china_tradicional") ? "Escuela (sishu)" :
                        Is(e, "frente_1914") ? null : "Escuela";
             case Civic.Entrenamiento:
-                return Is(e, "egeo") ? "Gimnasio (palestra)" : Is(e, "roma") ? "Palestra" : Is(e, "egipto", "mesopotamia") ? "Patio de lucha" : Is(e, "sur_asia") ? "Akhāṛā (patio de lucha)" :
-                       Is(e, "islam_abasi") ? "Maydān de furusiyya (caballos y armas)" : Is(e, "otomano") ? "Tekke de luchadores (yağlı güreş)" : Is(e, "maya_clasico") ? "Juego de pelota" :
-                       Is(e, "china_tradicional", "hongkong_tonglau") ? "Escuela de artes marciales" : Is(e, "japon_edo_meiji") ? "Dojo" : Is(e, "europa_medieval") ? "Sala de armas" :
-                       Is(e, "estuardo", "georgiano") ? "Sala de esgrima" : Is(e, "sovietico") ? "Club deportivo" : Is(e, "frente_1914") || pre ? null : Is(e, "india_moderna") ? "Akhāṛā (patio de lucha)" : Is(e, "sahel_moderno", "occidental_moderna", "norteamerica_interior", "norteamerica_moderna") ? "Gimnasio" : year >= 1850 ? "Gimnasio (Turnhalle)" : "Sala de armas";
+                // (2026-11-04) EL LUGAR DE ENTRENAR DE CADA ÉPOCA Y LUGAR (docs/microcosmos-entrenamiento-eras.md, con fuentes): su clase
+                // estable es TrainingKind (la leen los planes de entrenamiento de los insectos-humanos).
+                switch (TrainingKind(e, year))
+                {
+                    case "juegos_heroicos": return "Dromos de los juegos (carrera, lucha y pugilato)";
+                    case "gimnasio_griego": return "Gimnasio (palestra y xisto)";
+                    case "palestra_romana": return "Palestra de las termas";
+                    case "patio_lucha_egipcio": return "Patio de lucha (como en Beni Hasan)";
+                    case "patio_lucha": return "Patio de lucha (lucha de cinturón)";
+                    case "akhara": return "Akhāṛā (patio de lucha)";
+                    case "furusiyya": return "Maydān de furusiyya (caballos, arco y lucha)";
+                    case "tekke_guresh": return "Tekke de luchadores (yağlı güreş) y campo de tiro";
+                    case "juego_pelota": return "Juego de pelota";
+                    case "wuguan": return "Escuela de artes marciales (wuguan)";
+                    case "dojo": return "Dojo";
+                    case "sala_armas": return "Sala de armas";
+                    case "sala_esgrima": return "Sala de esgrima";
+                    case "prado_juegos": return "Prado de juegos (lucha, garrote y carreras)";
+                    case "garrote_coleo": return "Patio del juego de garrote y manga de coleo";
+                    case "turnplatz_schwingen": return "Turnplatz y ruedo de Schwingen";
+                    case "turnhalle": return Is(e, "norteamerica_victoriana") ? "Gimnasio de la YMCA" : "Gimnasio (sala de gimnasia)";
+                    case "hebert": return "Terreno de deporte (método natural de Hébert)";
+                    case "futbol_tregua": return "Partido de la tregua (fútbol en la tierra de nadie)";
+                    case "club_deportivo": return "Club deportivo (normas GTO)";
+                    case "gimnasio_moderno": return "Gimnasio";
+                    case "estadio": return "Estadio y terreno de deporte";
+                }
+                return null;
+            case Civic.Sanacion:
+                // (2026-11-04) Donde se cura (categoría recuperación): plantilla «Hospital».
+                return Is(e, "egeo") ? "Asclepeion (santuario de curación)" : Is(e, "roma") ? "Valetudinarium" : Is(e, "egipto") ? "Casa de la Vida (médicos del templo)" :
+                       Is(e, "mesopotamia") ? "Casa del asû (el sanador)" : Is(e, "islam_abasi") ? "Bimaristán" : Is(e, "otomano") ? "Darüşşifa" : Is(e, "sur_asia") ? "Casa del vaidya (āyurveda)" :
+                       Is(e, "maya_clasico") ? "Casa del curandero (aj men)" : Is(e, "frente_1914") ? "Puesto de socorro del regimiento" : pre ? null :
+                       Is(e, "china_tradicional") ? "Botica de hierbas" : year >= 1850 ? "Hospital" : Is(e, "hispanoamerica") ? "Hospital de caridad" : "Casa del cirujano-barbero";
             case Civic.Baile:
                 return Is(e, "egeo") ? "Orchestra (lugar de la danza)" : Is(e, "egipto") ? "Patio de danzas del templo" : Is(e, "sur_asia") ? "Pabellón de danza" : Is(e, "islam_abasi", "otomano") ? "Salón de música (majlis)" :
                        Is(e, "hispanoamerica") ? "Sala de joropo" : Is(e, "maya_clasico") ? "Plataforma de danza" : Is(e, "hongkong_tonglau", "china_tradicional") ? "Salón de baile" :
@@ -124,6 +156,42 @@ public static partial class MicroStyles
                        Is(e, "alpino", "estuardo", "georgiano") ? "Casa de dos plantas" : null;
         }
         return null;
+    }
+
+    /// <summary>
+    /// (2026-11-04) LA CLASE ESTABLE DEL LUGAR DE ENTRENAR de la época y el lugar <paramref name="e"/> en <paramref name="year"/>
+    /// (null si no había ninguno: la prehistoria). Es la etiqueta que leen los planes de entrenamiento de los insectos-humanos
+    /// (AreaFunctionSite.training; docs/gimnasio-maquinas.md y docs/microcosmos-entrenamiento-eras.md, con sus fuentes):
+    /// juegos_heroicos, gimnasio_griego, palestra_romana, patio_lucha_egipcio, patio_lucha, akhara, furusiyya, tekke_guresh,
+    /// juego_pelota, wuguan, dojo, sala_armas, sala_esgrima, prado_juegos, garrote_coleo, turnplatz_schwingen, turnhalle, hebert,
+    /// futbol_tregua, club_deportivo, gimnasio_moderno, estadio.
+    /// </summary>
+    public static string TrainingKind(Entry e, int year)
+    {
+        switch (e.id)
+        {
+            case "prehistoria": return null;
+            case "egeo": return year < -700 ? "juegos_heroicos" : "gimnasio_griego";   // los juegos de la Ilíada (XXIII) antes del gimnasio (s. VI a. C.)
+            case "roma": return "palestra_romana";
+            case "egipto": return "patio_lucha_egipcio";
+            case "mesopotamia": return "patio_lucha";
+            case "sur_asia": case "india_moderna": return "akhara";
+            case "islam_abasi": return "furusiyya";   // la zurkhaneh como institución es posterior (safávida); en la Bagdad abasí, la furusiyya y la lucha
+            case "otomano": return "tekke_guresh";
+            case "maya_clasico": return "juego_pelota";
+            case "china_tradicional": case "hongkong_tonglau": return "wuguan";
+            case "japon_edo_meiji": return "dojo";
+            case "europa_medieval": return "sala_armas";
+            case "estuardo": case "georgiano": return "prado_juegos";   // en el campo inglés: la lucha, el garrote y las carreras de los Cotswold Olimpicks (1612–)
+            case "hispanoamerica": return "garrote_coleo";
+            case "alpino": return "turnplatz_schwingen";
+            case "europa_romantica": case "belle_epoque": case "entreguerras": case "norteamerica_victoriana": return "turnhalle";
+            case "francia_rural": return year >= 1910 ? "hebert" : "turnhalle";
+            case "frente_1914": return "futbol_tregua";
+            case "sovietico": return "club_deportivo";
+            case "sahel_moderno": return "estadio";
+            default: return "gimnasio_moderno";
+        }
     }
 
     /// <summary>Un FRUTAL: su nombre (común y científico), su forma y sus colores (hoja, fruto).</summary>

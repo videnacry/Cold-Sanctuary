@@ -39,6 +39,8 @@ internal static partial class MicroFurniture
         "pozo", "telar", "tatami", "esterilla", "bancal",
         // (2026-11-03) los edificios del pueblo y los frutales (MicroFurniture.Civic.cs)
         "frutal", "estatua", "fuente", "vitrina", "piscina", "pista", "consola", "cuna", "armero", "anden", "carro", "caballete", "material", "temazcal",
+        // (2026-11-04) los aparatos de entrenar de cada época (MicroFurniture.Training.cs)
+        "foso_lucha", "pista_carreras", "campo", "pista_esgrima", "halteres", "piedras", "mazas", "pesas", "saco", "makiwara", "barra_fija", "paralelas", "potro", "anillas", "diana", "balon",
     };
 
     /// <summary>El cuerpo para el que se hace un mueble cuando no se dice (lo pone CivicBuilder: en un microcosmos, un

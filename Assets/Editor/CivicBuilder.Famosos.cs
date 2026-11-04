@@ -277,6 +277,7 @@ Bomberos | -650 -450
 Taller | -700 100
 Carpinteria | 650 100
 Obra | -800 650
+Entrenamiento | 300 520 | actual: Stade du 4-Août (Uagadugú); posición aproximada
 relleno | 70 | 0 -650",
     };
 

@@ -85,7 +85,7 @@ public class LeisureDirector : MonoBehaviour
     // ── Participantes ────────────────────────────────────────────────────────────────────────────
 
     static readonly string[] DefaultStaff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                                              "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };
+                                              "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
 
     /// <summary>Vuelve a mirar quién hay en cada escena (cada 2 s, o ya si <paramref name="now"/>) y reparte la semana si cambió
     /// la gente o la semana.</summary>
@@ -286,7 +286,7 @@ public class LeisureDirector : MonoBehaviour
         }
         // Los demás edificios etiquetados de ocio o recuperación (parque, plaza, museo, sala de baile, baños, mirador, centro de
         // entrenamiento, fuente…): una actividad por plantilla, con su interacción, su capacidad y la función de «todos».
-        foreach (var byB in sites.Where(s => (s.activity == AreaFunctionSite.Ocio || s.activity == AreaFunctionSite.Recuperacion) && s.building != "Hospital" && !covered.Contains(s.building) && s.Stations.Length > 0).GroupBy(s => s.building))
+        foreach (var byB in sites.Where(s => (s.activity == AreaFunctionSite.Ocio || s.activity == AreaFunctionSite.Entrenamiento || s.activity == AreaFunctionSite.Recuperacion) && s.building != "Hospital" && !covered.Contains(s.building) && s.Stations.Length > 0).GroupBy(s => s.building))
         {
             AreaFunctionSite first = byB.First();
             var fs = first.Functions();
@@ -377,6 +377,14 @@ public class LeisureDirector : MonoBehaviour
             {
                 if (g == null) continue;
                 LeisureRoster.Entry e = slot >= 0 && inWeek && gr.personOf.TryGetValue(g, out var p) ? gr.plan.At(p, day, slot) : null;
+                // (2026-11-04, ronda 6 del grupo 89: 11/15 llegaban al ring; los de las torres lejanas —Producción, la guardia— no
+                // llegaban en la hora) A una actividad de TODOS A LA VEZ se sale con tiempo: TogetherLead antes de su franja.
+                if (e == null && inWeek && gr.personOf.TryGetValue(g, out var pe))
+                {
+                    int next = NextSlotWithin(h, TogetherLead);
+                    LeisureRoster.Entry early = next >= 0 ? gr.plan.At(pe, day, next) : null;
+                    if (early != null && early.activity.together) e = early;
+                }
                 _runs.TryGetValue(g, out Run run);
                 if (run != null && run.entry != e) { Release(g, run); run = null; }
                 if (e == null) continue;
@@ -384,6 +392,18 @@ public class LeisureDirector : MonoBehaviour
                 Drive(g, run);
             }
         }
+    }
+
+    /// <summary>Lo que se sale antes hacia una actividad de todos a la vez (horas de juego): 20 min, lo que tarda el vuelo más largo
+    /// (de la torre de Producción o de Ciencias a la arboleda y al ring, con sus tres alfombras).</summary>
+    public const float TogetherLead = 0.33f;
+
+    /// <summary>La franja que empieza dentro de las próximas <paramref name="lead"/> horas (−1 si ninguna).</summary>
+    public static int NextSlotWithin(float h, float lead)
+    {
+        for (int i = 0; i < LeisureRoster.SlotHours.Length; i++)
+            if (h < LeisureRoster.SlotHours[i] && LeisureRoster.SlotHours[i] - h <= lead) return i;
+        return -1;
     }
 
     Run Begin(Group gr, GameObject g, LeisureRoster.Entry e)

@@ -21,9 +21,18 @@ public class AreaFunctionSite : MonoBehaviour
     //    con los humanos y humanos-insecto … para poder pertenecer a sus áreas de trabajo, descanso, recuperación u ocio, de modo
     //    que formen parte de sus actividades semanales»). Las pone el constructor (CivicBuilder.Tag) y las LEE el horario semanal:
     //    qué se hace aquí, para cuántos y para qué cuerpos.
-    public const string Trabajo = "trabajo", Descanso = "descanso", Recuperacion = "recuperacion", Ocio = "ocio";
-    public static readonly string[] Activities = { Trabajo, Descanso, Recuperacion, Ocio };
-    [Tooltip("Su categoría de actividad principal (para quien lo visita): trabajo, descanso, recuperacion u ocio.")]
+    // (2026-11-04) Berón: «¿en ninguna época de microcosmos hay gimnasio? … estructuras de ocio/entrenamiento/trabajo/recuperación»:
+    // el ENTRENAMIENTO es su propia categoría (antes los centros de entrenamiento y los dojos contaban como ocio).
+    public const string Trabajo = "trabajo", Descanso = "descanso", Recuperacion = "recuperacion", Ocio = "ocio", Entrenamiento = "entrenamiento";
+    public static readonly string[] Activities = { Trabajo, Descanso, Recuperacion, Ocio, Entrenamiento };
+    /// <summary>(2026-11-04, regla 16 de los microcosmos) Las cuatro categorías que TODO pueblo de historia debe tener (al menos un
+    /// edificio de cada una; MicroFloors.Validate). El descanso lo dan las casas.</summary>
+    public static readonly string[] TownCategories = { Trabajo, Ocio, Entrenamiento, Recuperacion };
+    [Tooltip("(2026-11-04) Si es de entrenamiento: su CLASE ESTABLE de época y lugar (gimnasio_griego, akhara, zurkhaneh, wuguan, dojo, turnhalle, juego_pelota…; MicroStyles.TrainingKind). La leen los planes de entrenamiento de los insectos-humanos (docs/gimnasio-maquinas.md).")]
+    public string training = "";
+    [Tooltip("(2026-11-04) De dónde sale su POSICIÓN: vacío = del plano histórico o de la historia; «mapa actual: …» = de un mapa de hoy (el plano histórico no lo tenía; se recrea con lo nativo de la época); «FALTA …» = puesto sin posición (lo marca el validador).")]
+    public string mapSource = "";
+    [Tooltip("Su categoría de actividad principal (para quien lo visita): trabajo, descanso, recuperacion, ocio o entrenamiento.")]
     public string activity = "";
     [Tooltip("¿Tiene además PUESTOS DE TRABAJO (quien lo atiende trabaja aquí)?")]
     public bool hasWork;
@@ -41,7 +50,8 @@ public class AreaFunctionSite : MonoBehaviour
         {
             case "Casa": case "Orfanato": case "Hotel": return Descanso;
             case "Hospital": case "Sala de Yoga": case "Baños": case "Templo": return Recuperacion;
-            case "Restaurante": case "Parque": case "Plaza": case "Museo": case "Sala de baile": case "Mirador": case "Centro de entrenamiento": case "Dojo": case "Fuente pública": return Ocio;
+            case "Restaurante": case "Parque": case "Plaza": case "Museo": case "Sala de baile": case "Mirador": case "Fuente pública": return Ocio;
+            case "Centro de entrenamiento": case "Dojo": return Entrenamiento;
             default: return Trabajo;
         }
     }

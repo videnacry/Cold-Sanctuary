@@ -191,7 +191,7 @@ public class PathMover : MonoBehaviour
         // subirse a una rama o a un tejado que tenía encima).
         float feet = current - PivotHeight, best = float.NegativeInfinity;
         foreach (RaycastHit h in Physics.RaycastAll(o, Vector3.down, 30f, ~0, QueryTriggerInteraction.Ignore))
-            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f && h.point.y <= feet + 0.8f && h.point.y > best) best = h.point.y;
+            if (!h.transform.IsChildOf(transform) && h.point.y > WaterY - 0.2f && h.point.y <= feet + 0.8f && h.point.y > best && h.collider.GetComponentInParent<GymStation>() == null) best = h.point.y;   // (las máquinas del gimnasio no se pisan: junto al remo, el curl o las dominadas se subía a una pieza y al paso siguiente caía ~1,1 m de golpe; GymUsabilityTest ronda 6)
         if (!float.IsNegativeInfinity(best)) return Mathf.Max(best, WaterY) + PivotHeight;
         return WaterY + PivotHeight * 0.6f;   // en el agua: medio cuerpo sumergido
     }

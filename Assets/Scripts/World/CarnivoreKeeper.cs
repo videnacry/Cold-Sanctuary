@@ -40,6 +40,8 @@ public class CarnivoreKeeper : MonoBehaviour
     {
         // Sus NECESIDADES van antes (baño, comer, dormir): mientras tanto no patrulla. Antes lo llevaba en alfombra al techo
         // estando en la cabina del aseo y, al salir, el aseo lo devolvía de golpe 60 m (JornadaTest 2026-10-29, Gohageneis).
+        // (2026-11-04, ronda 6 del grupo 89: Gohageneis no llegaba al ring) En su TIEMPO LIBRE lo lleva el horario libre: la patrulla espera.
+        if (LeisureDirector.Drives(gameObject)) return;
         if (TryGetComponent(out ActionQueue q) && q.Own.Count > 0 && (q.Own[0] is ToiletSpell || q.Own[0] is DineSpell || q.Own[0] is SleepSpell || q.Own[0] is EatSpell)) return;
         // (2026-11-01) Solo va al comedero si hay raciones: con el comedero vacío iba, volvía a la patrulla y a los 20 s otra vez al
         // comedero, ida y vuelta al pie del tronco de Producción («da vueltas», JornadaTest). Sin raciones, sigue patrullando.
