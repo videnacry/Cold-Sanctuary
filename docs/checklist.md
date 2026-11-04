@@ -8,6 +8,19 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
 > tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-04 (entrenamientos reales en el gimnasio, rama claude/edif-entreno; solo código, sin probar en vivo):** cada
+> humano del personal tiene un **plan semanal** (reparto, días, objetivo) y en sus días de gimnasio sigue la rutina del día en
+> orden: calentamiento, series × repeticiones contadas en cada máquina, descanso entre series, cambio de máquina si está ocupada
+> (alternativa, espera acotada o al final) y vuelta a la calma; progresión doble semanal y descarga cada 4.ª semana. **Entrenador:
+> Goluis** (misión de papel fijo «gym_planes», clase de calentamiento, correcciones y spotter). Panel: consola `rutina`.
+> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §15; reglas J18–J21 del manual.
+> Prueba nueva `GymTrainingTest` (grupo 87).
+> - [ ] **Probar en vivo** (no hace falta reconstruir escenas: es solo código): grupos 87 y 50 (`GymUsabilityTest`), y 28/50
+>   (`SanctuaryLifeTest`, `JornadaTest`: el reparto de las 14 h cambia con los días de cada plan y Goluis tiene la misión de 1 h).
+> - [ ] Fotos: la clase de calentamiento de Goluis en la zona libre (que las filas no caigan dentro de una máquina) y una serie
+>   con su descanso; abrir `rutina(Amahuz)` durante el bloque.
+> - [ ] Si Berón quiere: que cada personaje tenga su propio perfil afinado (ahora los objetivos salen de sus fichas).
+
 > **HECHO 2026-11-04 (hilo del yoga, rama claude/edif-yoga; sin probar en vivo):** **sin anillo de yoga** y **dos pisos de yoga**
 > en la torre del Entrenamiento (sube a 4 niveles: P6 Hatha = Sala de Yoga, P9 Ashtanga = `Planta_ashtanga`, P14 libre), cada
 > uno con su sala **occidental** (madera, esterillas, accesorios, Buda/Ganesha, sin espejo) y su sala **tradicional** (tierra,

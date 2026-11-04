@@ -5,6 +5,9 @@ los personajes las **usen** durante el entrenamiento diario (14:00–16:00).
 
 ## 0. Estado actual (resumen)
 
+> **2026-11-04**: este resumen es el del 2026-10-27. Hoy las máquinas llevan `GymStation` y `GymFit`, y cada humano entrena con
+> su plan (series, repeticiones, descanso, progresión y entrenador): ver [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04).
+
 - **Construcción**: `FurnishGym` (`Assets/Editor/SampleSceneBuilder.Training.cs:18`) coloca 30 máquinas en una
   rejilla de 5 × 3 por piso (paso 2,6 m en X y 3,2 m en Z, `:36-37`). Las primeras 15 (`k < 15`), es decir **los tipos
   0–4** (pecho, hombros, jalón, remo y prensa), van **abajo**. Los **tipos 5–9** (extensión, curl femoral, hip thrust,
@@ -575,6 +578,9 @@ Las 3 máquinas de este tipo pueden alternar el ejercicio: serie de curl (A → 
 
 ## 13. La sesión diaria de entrenamiento en el gimnasio
 
+> **Sustituido el 2026-11-04 por [§15](#15-entrenamientos-reales-planes-series-progresión-y-entrenador-2026-11-04)**: ya no hay
+> un circuito igual para todos; cada persona sigue la rutina de su plan. Se mantiene por la historia y las medidas de tiempo.
+
 **Cuánto dura.** El entrenamiento va de 14:00 a 16:00, 2 h de juego. Un día de juego dura 1 h real, así que 1 min de
 juego son 2,5 s reales y la sesión entera unos **5 min reales**.
 
@@ -654,6 +660,181 @@ Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la esca
 
 Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
 
+## 15. Entrenamientos reales: planes, series, progresión y entrenador (2026-11-04)
+
+Berón: «acabo de ver a Lizmibet usar las máquinas para hacer un ejercicio … hay que actualizar a los demás humanos para que
+realicen entrenamientos reales (series, repeticiones, entiendo que existen rutinas donde se varían músculos por días, se debe
+investigar y esto también serviría para el trabajo de entrenador del gym)».
+
+Sustituye al circuito igual para todos de §13: ahora cada persona sigue **su plan**. Código: `GymProgramming` (datos puros:
+planes, rutinas, progresión), `GymTrainingSession` (la sesión en vivo), `GymCoach` (el entrenador) y `WorkdayDirector.GymSession`.
+Reglas J18–J21 del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 15.1 Investigación: cómo se programa el entrenamiento de fuerza
+
+**Repartos de la semana («splits»).**
+- **Cuerpo entero** (2–3 días): todos los grupos musculares en cada sesión. Es lo que el ACSM recomienda para empezar
+  (2–3 días por semana para principiantes; 3–4 intermedios; 4–5 avanzados).
+- **Torso / pierna** (4 días): dos sesiones de torso y dos de pierna; cada músculo, 2 veces por semana.
+- **Empuje / tirón / pierna** (3 o 6 días): pecho-hombros-tríceps, espalda-bíceps y piernas; con 6 días, cada músculo 2 veces.
+- **Weider o «bro split»** (5 días): un grupo muscular por día; cada músculo, 1 vez por semana.
+- Con el **volumen semanal igualado**, el reparto casi no cambia la fuerza ni la hipertrofia (Ramos-Campo et al. 2024, 14
+  estudios): se puede elegir por preferencia y agenda. Sin igualar el volumen, entrenar cada músculo **≥ 2 veces por semana**
+  dio más hipertrofia que una sola (Schoenfeld, Ogborn y Krieger 2016); con el volumen igualado, la frecuencia apenas importa y
+  **manda el volumen semanal**.
+- **Volumen**: hay relación dosis-respuesta; ≥ 10 series por músculo y semana dan más hipertrofia que < 5 (Schoenfeld, Ogborn y
+  Krieger 2017).
+
+**Series, repeticiones, descanso y esfuerzo por objetivo** (NSCA, *Essentials of Strength Training and Conditioning*; ACSM 2009):
+
+| Objetivo | Series | Repeticiones | Intensidad | Descanso | RPE |
+|---|---|---|---|---|---|
+| Fuerza | 3–5 (multiarticulares) | ≤ 6 | ≥ 80–85 % 1RM | 2–5 min | 8 (quedan 2) |
+| Hipertrofia | 3–6 | 6–12 | 67–85 % | 30–90 s (NSCA); > 60 s, algo mejor (Singer et al. 2024) | 7–9 |
+| Resistencia muscular | 2–3 | 12–20 | ≤ 67 % | ≤ 30–90 s | 6–7 |
+| Salud y mayores | 1–3 | 10–15 | moderada | 1–2 min | 5–7 |
+
+- **RPE por repeticiones en reserva** (Zourdos et al. 2016; Helms et al. 2016): RPE 10 = no queda ninguna; 9 = queda 1; 8 =
+  quedan 2. Sirve para ajustar la carga del día.
+- **Descanso**: largo (2–3 min) en los multiarticulares pesados; con gente entrenada, los descansos largos dan algo más de
+  hipertrofia (Grgic et al. 2017).
+- **Sobrecarga progresiva** (ACSM 2009): subir la carga un 2–10 % cuando se hacen 1–2 repeticiones más de las previstas en dos
+  sesiones seguidas. En la práctica, **progresión doble**: subir repeticiones dentro del rango y, al llegar arriba, subir la carga
+  y volver abajo.
+- **Descargas** (Bell et al. 2023, consenso Delphi de entrenadores): un periodo de menos estrés de entrenamiento para quitar
+  fatiga y llegar mejor a lo siguiente; se programan cada pocas semanas (aquí, 1 de cada 4), bajando sobre todo el **volumen**
+  (series) y algo la carga.
+- **Mayores**: la OMS (2020) pide fortalecer los grandes grupos musculares **≥ 2 días por semana** también a partir de los 65.
+  Máquinas guiadas y RPE moderado.
+- **Calentamiento**: mejoró el rendimiento en el 79 % de los criterios estudiados (Fradkin et al. 2010). 5–10 min de cardio suave,
+  movilidad y **series de aproximación** (≈ 50 % de la carga) antes del primer multiarticular.
+- **Vuelta a la calma**: apenas cambia la recuperación ni las agujetas (Van Hooren y Peake 2018), pero no estorba: 5 min de
+  cardio suave o estiramientos para acabar.
+
+### 15.2 Lo que hace el juego
+
+**Objetivos** (`GymProgramming.Spec`):
+
+| Objetivo | Series (multi / accesorio) | Reps (rango) | Descanso | RPE |
+|---|---|---|---|---|
+| Fuerza | 4 / 3 (los accesorios, como en hipertrofia: 8–12) | 4–6 | 180 s | 8 |
+| Hipertrofia | 3 / 3 | 8–12 | 90 s | 8 |
+| Resistencia | 3 / 2 | 15–20 | 45 s | 7 |
+| Salud | 2 / 2 | 10–15 | 90 s | 6 |
+
+**Rutinas de cada reparto** (`GymProgramming.Templates`; máquinas de §2–§11 y de los pisos de peso libre, cardio y calistenia):
+- Cuerpo entero A: sentadilla en jaula, press de banca, remo sentado, hip thrust y abdominales. B: peso muerto, press de hombros,
+  jalón, curl femoral y gemelos. Con objetivo **salud**, solo máquinas guiadas (A: prensa, press de pecho, remo, curl femoral y
+  abdominales; B: extensión de cuádriceps, press de hombros, jalón, hip thrust y gemelos).
+- Torso A: banca, remo, press de hombros, jalón y bíceps-tríceps. Pierna A: sentadilla, curl femoral, prensa, gemelos y
+  abdominales. Torso B: banca inclinada, remo con mancuerna, dominadas, press de pecho y bíceps-tríceps. Pierna B: peso muerto,
+  Smith, extensión, hip thrust y elevación de piernas.
+- Empuje: banca, press de hombros, banca inclinada y fondos. Tirón: jalón, remo, remo con mancuerna, bíceps-tríceps e
+  hiperextensiones. Pierna: sentadilla, curl femoral, prensa, gemelos y abdominales.
+- Weider: pecho · espalda · hombros y abdomen · pierna · brazos.
+
+Las sesiones de un reparto **rotan** de un día de gimnasio al siguiente (A, B, A… y de semana en semana).
+
+**La rutina de un día** (`GymProgramming.Prescribe`):
+1. 5 min de cardio suave (bici; cinta en resistencia).
+2. Los ejercicios del día con sus series × reps, carga, descanso y RPE. La primera serie del primer multiarticular con carga es
+   de **aproximación**, al 50 %.
+3. 5 min de estiramientos (en la máquina de isquios o, si está ocupada, de pie).
+
+Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (solo pasa si no hay otro entrenamiento abierto):
+**recuperación activa**, 10 min de bici suave y estiramientos.
+
+**Cargas de partida**: la carga base de cada máquina (un adulto medio que ya entrena: banca 40 kg, prensa 90 kg, jalón 40 kg…;
+0 = peso corporal) × el objetivo (fuerza ×1,25, hipertrofia ×1, resistencia ×0,7, salud ×0,6) × la fuerza de cada persona (de
+0,45 a 1,4), redondeada a 1,25 kg.
+
+### 15.3 Progresión y descarga
+
+- **Cada semana** (`AdvanceWeek`, al cambiar de semana: días 7, 14…): +1 repetición (+2 en resistencia) hasta arriba del rango;
+  arriba, **+2,5 kg** tren superior o **+5 kg** inferior (la mitad en salud) y vuelta abajo del rango. Peso corporal: +1 rep
+  (tope 30).
+- Lo que quedó **sin acabar** esa semana (se acabó el bloque, no había máquina) **no sube** (`TrainingPlan.missed`).
+- **Descarga**: la 4.ª semana de cada 4 (semanas 4, 8…): la mitad de series, −10 % de carga y RPE −2. Esa semana no progresa.
+
+### 15.4 La sesión en vivo (14–16 h)
+
+- **Quién va**: quien tiene gimnasio ese día en su plan (y el entrenador, siempre). Si la rotación `(i + d) mod n` le daba
+  gimnasio un día sin gimnasio en su plan, va al siguiente entrenamiento abierto (`GymProgramming.ApplyGymDays`).
+- **Orden** (`GymTrainingSession`): calentamiento (en la clase del entrenador, si la hay) → cada ejercicio → vuelta a la calma.
+- **Máquina**: la copia libre más cercana (la del mismo piso primero).
+- **Si está ocupada**: una alternativa del mismo músculo (banca ↔ press de pecho, sentadilla ↔ Smith ↔ prensa, jalón ↔
+  dominadas, remo ↔ remo con mancuerna…; la carga, en proporción). Si no hay ninguna libre, **espera** hasta 8 s y lo deja para
+  el final; a la segunda, lo salta (y queda sin acabar). Si en 45 s no llega andando, prueba otra copia.
+- **Series**: cada repetición es A → B → A y cuenta al volver a A; en las dos últimas pone cara de esfuerzo.
+- **Descanso**: se queda en la máquina, en la postura A, el descanso real pasado a tiempo de juego (90 s = 1,5 min de juego =
+  3,75 s reales; entre 2 y 10 s).
+- **Ritmo**: el de las repeticiones se ajusta para que la rutina quepa en el bloque (de 0,3 s al ritmo real del equipo por mitad).
+- **Necesidades** (comer, baño, dormir): suelta la máquina y, al volver, repite la serie en curso. A las 15:55 se acaba: lo que
+  falta queda sin acabar.
+- **Registro**: una línea por serie, por ejemplo
+  `[Gimnasio] Amahuz · Torso A · Press de banca plano · serie 2/3 · 9 reps · 42,5 kg · RPE 8` (las de aproximación dicen
+  «aproximación»).
+
+### 15.5 El entrenador: Goluis
+
+**Por qué Goluis** (`GymProgramming.Trainer`): es «el personaje de la fuerza», corpulento, y el más disciplinado del personal
+(`Archetypes`: disciplina 1,3 y la fuerza más alta). Gohageneis ya lleva las **artes marciales** del horario libre y la
+**Guardia**, y su disciplina es 0,6. Linduarda va al gimnasio a diario, pero su conducta de médica (recién llegados, hospital)
+manda sobre la jornada. Goluis sigue en la rotación de la mañana como todos.
+
+- **Su misión de la jornada**: «Entrenador: revisar el registro de series y ajustar los planes» (`gym_planes`, 1 h, en el
+  Gimnasio).
+  - Es una **misión de papel fijo** (`WorkRoster.Mission.owner`): se le asigna a él antes que nada y, si no está, nadie la hace
+    ni queda pendiente.
+  - Al terminarla (`GymProgramming.Review`): escribe el plan de quien no lo tenía, mantiene la carga de lo que quedó sin acabar,
+    avisa de la semana de descarga y deja escrita la rutina de mañana de cada uno.
+- **En el bloque de las 14 h** (`GymCoach`), con los mismos datos de rutina:
+  1. **Clase de calentamiento** (14:00–14:10): en la zona libre, sentadillas con peso corporal y saltos de tijera. Quien llega a
+     calentar se pone en filas de 4 delante de él y repite cada movimiento a su compás.
+  2. **Rondas**: va a quien está en plena serie y le **corrige** la técnica (`GymProgramming.Cue`: «escápulas atrás y codos a
+     unos 45°», «rodillas alineadas con los pies»…). En banca y sentadilla con RPE ≥ 7,5 hace de **spotter** hasta que acaba la
+     serie. Como mucho: andar 25 s, corregir 5 s y hacer de spotter 20 s.
+  3. Los días de su propio plan (torso/pierna de fuerza, lun-mar-jue-vie), de 15:00 a 15:55 hace **su rutina**.
+
+### 15.6 Los planes asignados
+
+| Persona | Reparto | Días | Objetivo | Por qué |
+|---|---|---|---|---|
+| Kushal (jugador) | Cuerpo entero | lun-mié-vie | Hipertrofia | Principiante: 2–3 d de cuerpo entero (ACSM). |
+| Linduarda | Empuje/tirón/pierna | lun–sáb | Hipertrofia | «Deportista, gimnasio a diario». |
+| Lizmibet | Cuerpo entero (máquinas) | mar-vie | Salud | Más de 70 años: 2 d (OMS, ACSM). |
+| Goluis (entrenador) | Torso/pierna | lun-mar-jue-vie | Fuerza | El personaje de la fuerza. |
+| Panterilia | Cuerpo entero | mar-jue-sáb | Hipertrofia | Delgada: ganar músculo. |
+| Gohageneis | Empuje/tirón/pierna | lun-mié-vie | Fuerza | Artes marciales y Guardia (el resto, su dojo). |
+| Irosene | Cuerpo entero | mié-sáb | Resistencia | Más de 70; corre, escala y bucea. |
+| Tote (`JefeConstruccion`) | Torso/pierna | mar-mié-vie-sáb | Resistencia | Robusto; jornadas de obra. |
+| Andrea | Cuerpo entero | lun-jue | Fuerza | Corredor de fondo: fuerza pesada 2 d. |
+| Nesvitor | Cuerpo entero (máquinas) | lun-jue | Salud | El mayor de las cuentas. |
+| Amahuz | Torso/pierna | lun-mar-jue-vie | Hipertrofia | Delgado: ganar masa. |
+| Karen | Cuerpo entero | lun-mié-vie | Resistencia | Entrena con Amahuz los lunes. |
+| Alicita | Empuje/tirón/pierna | mar-jue-sáb | Hipertrofia | Huerto: cargar cajas. |
+| Ducristin | Torso/pierna | lun-mié-jue-sáb | Fuerza | Mecánico: levantar piezas. |
+| Josedrilo | Empuje/tirón/pierna | mar–dom | Hipertrofia | Guardia. |
+| Maite | Cuerpo entero | mar-jue-sáb | Resistencia | Mucho de pie (registros y vacunación). |
+| Shalva | Torso/pierna | mar-mié-vie-sáb | Hipertrofia | Personal general. |
+| Adaguchi | Weider | lun–vie | Hipertrofia | Estilo culturista (sudadera sin mangas); cada músculo 1×/sem. |
+
+Las complexiones salen de [diseno-personajes.md](diseno-personajes.md); no se suponen edades más allá de lo documentado.
+
+**Humanos-insecto**: no tienen plan (`GymProgramming.Eligible`), porque en las eras de sus microcosmos no hay gimnasio. Si algún
+microcosmos llega a tener uno, se les añade un perfil.
+
+### 15.7 Ver la rutina
+
+- **Consola**: `rutina` abre o cierra el panel; `rutina(Amahuz)` lo abre en esa persona; ◀ ▶ cambian de persona
+  (`GymRoutinePanel`). Muestra:
+  - el plan: reparto, días, objetivo, frecuencia por músculo, semana, descarga y quién lo revisó;
+  - la rutina de hoy, con lo que hace ahora (ejercicio, serie i/n, repetición);
+  - las últimas líneas del registro de series;
+  - si es el entrenador, su estado: alumnos de la clase, correcciones y veces de spotter.
+- **Registro**: `[Gimnasio]` (series, cambios de máquina, esperas) y `[Entrenador]` (clase, correcciones, spotter, revisión de
+  planes).
+
 ## Fuentes
 
 - Press de pecho:
@@ -704,6 +885,20 @@ Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de do
   - [Core 3-Tier Dumbbell Rack](https://www.corehandf.com/products/3-tier-dumbbell-rack)
   - [Hammer Strength 3-Tier Rack](https://gymequipment.co.uk/hammer-strength-dumbbell-rack-3-tier)
   - [Gym Gear Classic 3-Tier](https://gymgear.com/products/classic-series-3-tier-dumbbell-rack-without-saddles)
+- Programación del entrenamiento (§15):
+  - [ACSM 2009: Progression models in resistance training for healthy adults (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19204579/)
+  - [Schoenfeld, Ogborn y Krieger 2016: frecuencia e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/27102172/)
+  - [Schoenfeld, Ogborn y Krieger 2017: dosis-respuesta del volumen semanal (core.ac.uk, PDF)](https://core.ac.uk/download/200371264.pdf)
+  - [Ramos-Campo et al. 2024: rutina dividida frente a cuerpo entero (PubMed)](https://pubmed.ncbi.nlm.nih.gov/38595233/)
+  - [Grgic et al. 2017: descansos cortos y largos e hipertrofia (PubMed)](https://pubmed.ncbi.nlm.nih.gov/28641044/)
+  - [Singer et al. 2024: descanso entre series, metaanálisis bayesiano (Frontiers)](https://www.frontiersin.org/articles/10.3389/fspor.2024.1429789/full)
+  - [Zourdos et al. 2016 y Helms et al. 2016: escala RPE por repeticiones en reserva (AUT)](https://openrepository.aut.ac.nz/items/efef3b25-6701-4fb5-bb82-55fcd2a26027/full)
+  - [Bell et al. 2023: descargas, consenso Delphi (Sports Medicine – Open)](https://doi.org/10.1186/s40798-023-00633-0)
+  - [Fradkin, Zazryn y Smoliga 2010: calentamiento y rendimiento (PubMed)](https://pubmed.ncbi.nlm.nih.gov/19996770/)
+  - [Van Hooren y Peake 2018: ¿hace falta la vuelta a la calma? (PMC)](https://pmc.ncbi.nlm.nih.gov/articles/PMC5999142/)
+  - [OMS 2020: directrices de actividad física y comportamiento sedentario](https://www.who.int/publications/i/item/9789240015128)
+  - NSCA, *Essentials of Strength Training and Conditioning* (Haff y Triplett, 4.ª ed., 2016): series, repeticiones y descansos
+    por objetivo (libro, sin enlace).
 - Espacios libres:
   - [Livestrong: Gym Equipment Placement Standards](https://livestrong.com/article/415103-gym-equipment-placement-standards)
   - [Achievable (CSCS): facility layout](https://app.achievable.me/study/cscs/learn/facility-design-layout-and-organization)
