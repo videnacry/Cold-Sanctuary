@@ -174,8 +174,11 @@ public static class MicrocosmosAreaSceneBuilder
 
     internal static void Finish(Scene scene, string path, Scene prev)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         MicroWater.SurroundScene(scene);
+        Debug.Log($"[Tiempo] {scene.name} · agua alrededor: {sw.Elapsed.TotalSeconds:0.0} s"); sw.Restart();
         EditorSceneManager.SaveScene(scene, path);
+        Debug.Log($"[Tiempo] {scene.name} · guardar la escena: {sw.Elapsed.TotalSeconds:0.0} s");
         var scenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
         if (!scenes.Exists(s => s.path == path)) { scenes.Add(new EditorBuildSettingsScene(path, true)); EditorBuildSettings.scenes = scenes.ToArray(); }
         EditorSceneManager.CloseScene(scene, removeScene: true);

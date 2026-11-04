@@ -16,6 +16,8 @@ using El = MicroFloorElements;
 /// </summary>
 internal static class MicroFloorDress
 {
+    /// <summary>(2026-11-04, rendimiento) El TOPE de vértices de la forma de microcosmos de un piso (unos 8 mallas de 60 000).</summary>
+    internal const int DressBudget = 400000;
     // Las submallas (materiales) de la geometría combinada.
     enum M { Roca, Nieve, Agua, Lava, Vidrio, VidrioOscuro, Fachada, Tejado, Metal, Hierba, Arena, Hielo, Luz, Tierra, Toldo, Humo }
     static readonly Color[] Colors =
@@ -89,9 +91,12 @@ internal static class MicroFloorDress
                 g.AddComponent<MeshCollider>().sharedMesh = mesh;
                 g.AddComponent<Unity.AI.Navigation.NavMeshModifier>().ignoreFromBuild = true;
             }
-            v.Clear(); foreach (var s in subs) s.Clear(); chunks++;
+            total += v.Count; v.Clear(); foreach (var s in subs) s.Clear(); chunks++;
         }
         public int Chunks => chunks;
+        int total;
+        /// <summary>Vértices hechos (los guardados y los de la malla en curso).</summary>
+        public int Total => total + v.Count;
     }
 
     static Material[] Mats()
@@ -117,12 +122,14 @@ internal static class MicroFloorDress
         Transform form = new GameObject(FloorForms.MicroName).transform; form.SetParent(root, false);
         Transform recs = new GameObject("Elementos").transform; recs.SetParent(form, false);
         Material[] mats = Mats();
-        var terrain = new Mesher(form, "Terreno_microcosmos", mats, true);     // lo que se pisa (laderas, contrafuertes, rampas)
+        var terrain = new Mesher(form, "Terreno_microcosmos", mats, false);    // laderas, contrafuertes, rampas: (rendimiento, 2026-11-04) decorado, SIN collider
         var deco = new Mesher(form, "Detalle_microcosmos", mats, false);       // lo que se ve (ventanas, nieve, agua, lava, toldos)
         var rnd = new System.Random(display.GetHashCode());
         int mapped = 0, unmapped = 0, suns = 0;
         bool town = MicroBuildRules.IsTownEra(year);
         var stacked = new List<Bounds>();
+        var todo = new List<(El.Element e, Transform t, Bounds b, string path)>();
+        var clock = System.Diagnostics.Stopwatch.StartNew();
         foreach (El.Piece p in inventory)
         {
             El.Element e = p.element ?? El.Other;
@@ -138,12 +145,21 @@ internal static class MicroFloorDress
             if (ov != null && ov.action == El.Action.Quitar) { foreach (Renderer r in p.t.GetComponentsInChildren<Renderer>(true)) r.enabled = false; foreach (Collider c in p.t.GetComponentsInChildren<Collider>(true)) c.enabled = false; continue; }
             if (ov != null && ov.action == El.Action.Mover) { p.t.position += new Vector3(ov.move.x, 0f, ov.move.y) * AreaMicrocosmos.AreaScale; Bounds(p.t, out b); }
             if (ov != null && ov.action == El.Action.Apilar && e.id == "alfombra") { stacked.Add(b); continue; }
-            try { DressOne(e, p.t, b, terrain, deco, rnd, year, town, form, ref suns); }
-            catch (System.Exception ex) { Debug.LogWarning($"[Forma microcosmos] {display}: no se pudo vestir «{p.path}» como {e.id} ({ex.Message})."); }
+            todo.Add((e, p.t, b, p.path));
+        }
+        // (2026-11-04, rendimiento) Se visten de la MÁS GRANDE a la más pequeña hasta un TOPE de vértices (DressBudget): las tazas y los
+        // cubiertos ×100 no necesitan su cráter si el piso ya va lleno; todas quedan apuntadas (MicroElement) igual.
+        todo.Sort((x, y) => (y.b.size.x * y.b.size.z + y.b.size.y).CompareTo(x.b.size.x * x.b.size.z + x.b.size.y));
+        int skipped = 0;
+        foreach (var (e, t, b, path) in todo)
+        {
+            if (terrain.Total + deco.Total > DressBudget) { skipped++; continue; }
+            try { DressOne(e, t, b, terrain, deco, rnd, year, town, form, ref suns); }
+            catch (System.Exception ex) { Debug.LogWarning($"[Forma microcosmos] {display}: no se pudo vestir «{path}» como {e.id} ({ex.Message})."); }
         }
         if (stacked.Count > 0) Mound(stacked, terrain, deco, rnd);
         terrain.Flush(); deco.Flush();
-        Debug.Log($"[Forma microcosmos] {display} ({Eras.Format(year)}): {inventory.Count} piezas del piso reinterpretadas en su versión de microcosmos ({mapped} con fila del catálogo, {unmapped} como peñascos; {terrain.Chunks + deco.Chunks} mallas combinadas, {suns} soles){(stacked.Count > 0 ? $"; {stacked.Count} alfombras apiladas en un cúmulo" : "")}.");
+        Debug.Log($"[Forma microcosmos] {display} ({Eras.Format(year)}): {inventory.Count} piezas del piso reinterpretadas en su versión de microcosmos ({mapped} con fila del catálogo, {unmapped} como peñascos; {terrain.Chunks + deco.Chunks} mallas combinadas, {terrain.Total + deco.Total} vértices, {suns} soles; {skipped} piezas pequeñas sin vestir por el tope de {DressBudget}; {clock.Elapsed.TotalSeconds:0.0} s){(stacked.Count > 0 ? $"; {stacked.Count} alfombras apiladas en un cúmulo" : "")}.");
         return (mapped, unmapped);
     }
 
@@ -513,6 +529,7 @@ internal static class MicroFloorDress
         var p = GameObject.CreatePrimitive(PrimitiveType.Cube); p.name = "Pedestal"; p.transform.SetParent(holder, false);
         p.transform.localPosition = Vector3.up * ped * 0.5f; p.transform.localScale = new Vector3(b.size.x * 0.9f, ped, b.size.z * 0.9f);
         p.GetComponent<Renderer>().sharedMaterial = AreaMicrocosmos.Mat("Coloso_pedestal", new Color(0.62f, 0.6f, 0.56f));
+        Object.DestroyImmediate(p.GetComponent<Collider>());   // decorado (la estatua gigante sigue siendo la del piso, apagada pero con su collider)
         MicroStatue.InsectFigure(holder, Vector3.up * ped, piece.eulerAngles.y, b.size.y - ped, string.IsNullOrEmpty(role) ? "Estatua" : role, new Color(0.78f, 0.74f, 0.66f));
     }
 }
