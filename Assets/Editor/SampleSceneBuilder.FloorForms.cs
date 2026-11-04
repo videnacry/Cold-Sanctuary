@@ -19,6 +19,7 @@ public static partial class SampleSceneBuilder
             total++;
             Transform area = a.transform;
             FloorForms ff = a.GetComponent<FloorForms>() ?? a.gameObject.AddComponent<FloorForms>();
+            MicroForm(area, ff);
             Transform done = area.Find(FloorForms.FinishedName);
             if (done != null)
             {   // En obras: la forma finalizada es su «Acabado»; la de construcción, sus piezas de obra (andamio, material, conos).
@@ -35,6 +36,33 @@ public static partial class SampleSceneBuilder
         }
         Debug.Log($"[Pisos] Formas de {total} pisos: {obras} en obras (su «Acabado» es la forma finalizada) y {made} terminados con su forma en construcción preparada (oculta).");
         return made;
+    }
+
+    /// <summary>
+    /// (2026-11-04) LA TERCERA FORMA, la de MICROCOSMOS (docs/microcosmos-suelo-y-elementos.md): un «Forma_microcosmos» oculto bajo el
+    /// área con su inventario (cada pieza: su versión de mesocosmos y la de microcosmos, MicroFloorElements) y los microcosmos que
+    /// dependen del piso. Si el piso cambió desde que se montó alguno de ellos (el registro de dependencias), AVISA: hay que revisarlo.
+    /// </summary>
+    static void MicroForm(Transform area, FloorForms ff)
+    {
+        Transform old = area.Find(FloorForms.MicroName);
+        if (old != null) Object.DestroyImmediate(old.gameObject);
+        Transform f = new GameObject(FloorForms.MicroName).transform; f.SetParent(area, false);
+        MicroFloorForm form = f.gameObject.AddComponent<MicroFloorForm>();
+        form.Fill(area);
+        f.gameObject.SetActive(false);
+        ff.microcosm = f;
+        if (form.unmapped.Length > 0) Debug.Log($"[Pisos] {area.name}: {form.unmapped.Length} piezas sin fila en el catálogo de elementos (van como peñascos): {string.Join(", ", form.unmapped, 0, Mathf.Min(12, form.unmapped.Length))}{(form.unmapped.Length > 12 ? " …" : "")}.");
+        foreach (string s in MicroFloorElements.Stale(area)) Debug.LogWarning($"[Pisos] REVISAR MICROCOSMOS: {s}.");
+    }
+
+    [UnityEditor.MenuItem("Tools/Cold Sanctuary/Pisos: microcosmos por revisar (el piso cambió)")]
+    static void StaleMicrocosmosMenu()
+    {
+        int n = 0;
+        foreach (SanctuaryArea a in Object.FindObjectsByType<SanctuaryArea>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            foreach (string s in MicroFloorElements.Stale(a.transform)) { Debug.LogWarning($"[Pisos] REVISAR MICROCOSMOS: {s}."); n++; }
+        Debug.Log($"[Pisos] {n} microcosmos por revisar (registro: {MicroFloorElements.DepsPath}).");
     }
 
     [UnityEditor.MenuItem("Tools/Cold Sanctuary/Pisos: preparar sus dos formas (en obra y acabado)")]

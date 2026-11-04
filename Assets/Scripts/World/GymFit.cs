@@ -42,7 +42,7 @@ public static class GymFit
 
     static readonly string[] GripNames = { "Agarre", "Asa", "Asidero", "Barra", "Mango", "Tirador", "Manillar", "Pasamanos", "Anilla", "Peldano",
                                           "Poste_empuje", "Cuerda", "Maneta", "Tubo", "Barandilla" };
-    static readonly string[] Ignored = { "Cable", "Cinta_anilla", "Cadena", "Marca", "Diana", "Tejido", "Dibujo", "Flecos", "Zona", "Borde" };
+    static readonly string[] Ignored = { "Cable", "Cinta_anilla", "Cadena", "Marca", "Diana", "Tejido", "Tejido_inferior", "Nucleo_circuitos", "Circuito", "Costura_LED", "Dibujo", "Flecos", "Zona", "Borde" };
 
     /// <summary>¿La pieza <paramref name="n"/> se agarra en la estación de tipo <paramref name="t"/>?</summary>
     public static bool IsGrip(GymMachineType t, string n)

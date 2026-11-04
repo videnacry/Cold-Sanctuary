@@ -112,6 +112,7 @@ internal static partial class MicroFurniture
                 if (FillCivic(t, key, e, year, seed, ref need, ref walk)) break;
                 TableWithSeats(t, e, f, users, 2); need = "comer"; kind = "mesa"; fitted = true; break;
         }
+        if (key == "silla" || key == "banco") AddSeat(t, key == "banco", f, null);
         if (!t.TryGetComponent(out MicroPiece mp)) mp = t.gameObject.AddComponent<MicroPiece>();
         mp.kind = kind; mp.need = need; mp.walkable = walk; mp.style = e.id; mp.rest = rest;
         mp.fitFor = fitted ? (f.plan == Plan.Humano ? "" : $"{f.plan} ({f.species})") : "";
@@ -180,6 +181,9 @@ internal static partial class MicroFurniture
     }
 
     static float Hands(Fit f) => f.Insect ? Mathf.Clamp(f.hands, 0.75f, 1.1f) : 0.8f;
+
+    /// <summary>Cuántos comen de una cocina (la olla se mide por ellos: MicroCivicScale.PotFor).</summary>
+    internal const int KitchenDiners = 8;
 
     // ══ LA CAMA ═════════════════════════════════════════════════════════════════════════════════════════════════════
     // Para una persona: la del estilo, de 2 × 1 m, de espaldas con su almohada. Para un insecto-humano: la del estilo a su
@@ -408,13 +412,35 @@ internal static partial class MicroFurniture
         SeatOn(s, e, f, bench);
         var mp = s.gameObject.AddComponent<MicroPiece>();
         mp.kind = bench ? "banco" : "silla"; mp.need = "sentarse"; mp.style = e.id; mp.fitFor = f.Insect ? $"{f.plan} ({f.species})" : ""; mp.fitted = true;
+        AddSeat(s, bench, f, parent.Find("Mesa"));
         return s;
+    }
+
+    /// <summary>El ancho de un sitio del banco de un insecto-humano (su asiento de abdomen y el hueco hasta el siguiente).</summary>
+    static float InsectBenchStep(Fit f) => Mathf.Clamp(f.width * 0.75f, 0.3f, 1.2f) + 0.35f;
+
+    /// <summary>(2026-11-04) TODO ASIENTO ES UTILIZABLE (MicroSeat; Berón: «debe ser posible sentarse en las sillas de restaurantes y
+    /// bancos de las plazas»): sus sitios (uno en una silla; tres en un banco) y hacia dónde mira quien se sienta.</summary>
+    static void AddSeat(Transform s, bool bench, Fit f, Transform faceTo)
+    {
+        if (!s.TryGetComponent(out MicroSeat ms)) ms = s.gameObject.AddComponent<MicroSeat>();
+        float step = f.Insect ? InsectBenchStep(f) : 0.47f;
+        ms.points = bench ? new[] { new Vector3(-step, 0f, 0f), Vector3.zero, new Vector3(step, 0f, 0f) } : new[] { Vector3.zero };
+        ms.faceTo = faceTo;
     }
 
     /// <summary>Las piezas del asiento dentro de <paramref name="s"/> (su raíz).</summary>
     static void SeatOn(Transform s, St.Entry e, Fit f, bool bench)
     {
         Color w = e.wood, tx = e.textile;
+        if (f.Insect && bench)
+        {   // (2026-11-04) EL BANCO DE UN INSECTO-HUMANO (el de la plaza): tres asientos de abdomen sobre un larguero común, uno por sitio.
+            float step = InsectBenchStep(f);
+            for (int k = -1; k <= 1; k++) SeatOn(KitchenProps.Root(s, $"Sitio_banco_{k + 2}", new Vector3(k * step, 0f, 0f)), e, f, false);
+            C(s, new Vector3(0f, 0.08f, 0.1f), new Vector3(step * 3f, 0.08f, 0.14f), WoodDark, 0f, "Larguero");
+            C(s, new Vector3(0f, 0.08f, -0.7f), new Vector3(step * 3f, 0.08f, 0.14f), WoodDark, 0f, "Larguero");
+            return;
+        }
         if (f.Insect)
         {
             float y = Mathf.Clamp(f.belly + 0.08f, 0.15f, 0.8f), len = Mathf.Clamp(f.abdomen + 0.1f, 0.4f, 1.6f), wid = Mathf.Clamp(f.width * 0.75f, 0.3f, 1.2f);
@@ -567,8 +593,10 @@ internal static partial class MicroFurniture
             float x = perSide <= 1 ? 0f : -TL * 0.5f + (k + 0.5f) * TL / perSide;
             Seat(t, new Vector3(x, 0f, front ? -(TD * 0.5f + 0.25f) : TD * 0.5f + 0.25f), front ? 0f : 180f, e, bodies[i], false);
             float zp = front ? -TD * 0.25f : TD * 0.25f;
-            KitchenProps.Plate(tb, "Plato", new Vector3(x, h, zp));
-            KitchenProps.Bowl(tb, "Cuenco", new Vector3(x + 0.13f, h, zp));
+            // (2026-11-04) EL PLATO DE UNA COMIDA para quien se sienta ahí (MicroCivicScale.PlateFor: ≥ 0,26 m, a su estatura) y su cuenco.
+            float ps = MicroCivicScale.PlateFor(bodies[i].height) / 0.24f;
+            KitchenProps.Plate(tb, "Plato", new Vector3(x, h, zp)).localScale = new Vector3(ps, 1f, ps);
+            KitchenProps.Bowl(tb, "Cuenco", new Vector3(x + 0.13f * ps, h, zp)).localScale = new Vector3(ps, ps, ps);
             bool chop = e.regions[0] == St.Region.China || e.regions[0] == St.Region.HongKong || e.regions[0] == St.Region.Japon;
             C(tb, new Vector3(x - 0.16f, h + 0.01f, zp), new Vector3(0.01f, 0.01f, 0.2f), chop ? WoodDark : KitchenProps.Steel, 0f, chop ? "Palillos" : "Cuchara");
         }
@@ -949,8 +977,11 @@ internal static partial class MicroFurniture
                 break;
             }
         }
-        KitchenProps.Pan(t, "Sarten", new Vector3(-0.38f, potY, 0.05f), 0f);
-        KitchenProps.Pot(t, "Olla", new Vector3(-0.72f, potY, 0.05f));
+        // (2026-11-04) LA OLLA da de comer a la casa o al comedor (MicroCivicScale.PotFor: 2 L por comensal, 8 comensales ≈ 0,32 m) y la
+        // sartén, a su medida; antes eran las de una cocina de casa del santuario (0,22 m, 5 L).
+        float pot = MicroCivicScale.PotFor(KitchenDiners) / 0.22f;
+        KitchenProps.Pan(t, "Sarten", new Vector3(-0.38f, potY, 0.05f), 0f).localScale = Vector3.one * Mathf.Min(1.3f, pot);
+        KitchenProps.Pot(t, "Olla", new Vector3(-0.78f, potY, 0.05f)).localScale = Vector3.one * pot;
         Utensils(t, top, 0f);
         if (e.from >= 1880 && e.hearth != St.Hearth.Kachelofen)
         {

@@ -507,16 +507,46 @@ public class CarpetPad : MonoBehaviour
 
     static readonly Color[] Colors = { new Color(0.75f, 0.2f, 0.25f), new Color(0.2f, 0.35f, 0.7f), new Color(0.85f, 0.6f, 0.15f), new Color(0.3f, 0.6f, 0.4f), new Color(0.55f, 0.3f, 0.65f), new Color(0.15f, 0.55f, 0.6f) };
 
-    /// <summary>Una alfombra (2 × 3 m: también vale de esterilla de yoga grande) posada en <paramref name="local"/>.</summary>
+    /// <summary>
+    /// Una alfombra (2 × 3 m: también vale de esterilla de yoga grande) posada en <paramref name="local"/>. (2026-11-04) MÁS GRUESA
+    /// (Berón: «todas las alfombras deben ser más gruesas pues son alfombras voladoras hechas con tecnología de modo que dentro tienen
+    /// circuitos»): <see cref="FlyingCarpet.Thickness"/> de canto, con su NÚCLEO de circuitos (la placa oscura con pistas doradas que se
+    /// ven en el canto) entre el tejido de abajo y el de arriba, y una COSTURA DE LED que da la vuelta al canto.
+    /// </summary>
     public static FlyingCarpet BuildCarpet(Transform zone, CarpetPad pad, Vector3 local, int i)
     {
+        float T = FlyingCarpet.Thickness;
         Transform c = new GameObject($"Alfombra_{i + 1}").transform; c.SetParent(zone, false);
         c.localPosition = local;
         BoxCollider bc = c.gameObject.AddComponent<BoxCollider>(); bc.isTrigger = true; bc.center = new Vector3(0f, 0.6f, 0f); bc.size = new Vector3(2.1f, 1.2f, 3.1f);
-        KitchenProps.C(c, new Vector3(0f, 0.008f, 0f), new Vector3(2f, 0.016f, 3f), Colors[i % Colors.Length], 0f, "Tejido");
-        KitchenProps.C(c, new Vector3(0f, 0.01f, 0f), new Vector3(1.5f, 0.016f, 2.4f), new Color(0.95f, 0.85f, 0.45f), 0f, "Dibujo");
-        for (int e = -1; e <= 1; e += 2) KitchenProps.C(c, new Vector3(0f, 0.006f, e * 1.58f), new Vector3(1.9f, 0.012f, 0.16f), Color.white, 0f, "Flecos");
+        Color weave = Colors[i % Colors.Length];
+        KitchenProps.C(c, new Vector3(0f, 0.006f, 0f), new Vector3(2f, 0.012f, 3f), Color.Lerp(weave, Color.black, 0.35f), 0f, "Tejido_inferior");
+        KitchenProps.C(c, new Vector3(0f, T * 0.5f, 0f), new Vector3(1.98f, T - 0.024f, 2.98f), new Color(0.1f, 0.16f, 0.14f), 0f, "Nucleo_circuitos");
+        KitchenProps.C(c, new Vector3(0f, T - 0.008f, 0f), new Vector3(2f, 0.016f, 3f), weave, 0f, "Tejido");
+        KitchenProps.C(c, new Vector3(0f, T - 0.004f, 0f), new Vector3(1.5f, 0.016f, 2.4f), new Color(0.95f, 0.85f, 0.45f), 0f, "Dibujo");
+        for (int e = -1; e <= 1; e += 2) KitchenProps.C(c, new Vector3(0f, T - 0.01f, e * 1.58f), new Vector3(1.9f, 0.012f, 0.16f), Color.white, 0f, "Flecos");
+        // Las PISTAS del circuito, asomando por el canto (doradas) en los cuatro lados, y la COSTURA DE LED a media altura del canto.
+        Color trace = new Color(0.85f, 0.68f, 0.25f), led = new Color(0.3f, 0.95f, 1f);
+        for (int k = 0; k < 7; k++)
+            for (int s = -1; s <= 1; s += 2)
+            {
+                KitchenProps.C(c, new Vector3(s * 1.0f, T * 0.35f, -1.3f + k * 0.43f), new Vector3(0.006f, 0.008f, 0.18f), trace, 0f, "Circuito");
+                if (k < 5) KitchenProps.C(c, new Vector3(-0.8f + k * 0.4f, T * 0.35f, s * 1.5f), new Vector3(0.16f, 0.008f, 0.006f), trace, 0f, "Circuito");
+            }
+        for (int s = -1; s <= 1; s += 2)
+        {
+            Glow(KitchenProps.C(c, new Vector3(s * 1.002f, T * 0.6f, 0f), new Vector3(0.006f, 0.008f, 3f), led, 0f, "Costura_LED"), led);
+            Glow(KitchenProps.C(c, new Vector3(0f, T * 0.6f, s * 1.502f), new Vector3(2f, 0.008f, 0.006f), led, 0f, "Costura_LED"), led);
+        }
         FlyingCarpet fc = c.gameObject.AddComponent<FlyingCarpet>(); fc.pad = pad;
         return fc;
+    }
+
+    // La costura de LED brilla (emisión del material de su color, que solo usan los LED).
+    static void Glow(Transform t, Color c)
+    {
+        Renderer r = t.GetComponent<Renderer>(); if (r == null || r.sharedMaterial == null) return;
+        Material m = r.sharedMaterial;
+        if (m.HasProperty("_EmissionColor")) { m.EnableKeyword("_EMISSION"); m.SetColor("_EmissionColor", c * 2f); }
     }
 }
