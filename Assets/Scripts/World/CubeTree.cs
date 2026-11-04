@@ -59,7 +59,7 @@ public static class CubeTree
             float a = k * 360f / roots + R(-15f, 15f);
             Vector3 d = Quaternion.Euler(0f, a, 0f) * Vector3.forward;
             Block(root.transform, "Raiz", d * 1.6f * girth + Vector3.up * 0.4f * girth, new Vector3(0.7f, 0.8f, 2.2f) * girth,
-                  Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, true);
+                  Quaternion.LookRotation(d) * Quaternion.Euler(18f, 0f, 0f), bark, false);   // (2026-11-04) sin collider: los pingüinos que se acicalan en el borde del hielo quedaban «dentro» de una raíz (jornada 50)
         }
 
         // RAMAS: 3 pisos; cada rama es una cadena de bloques que sube y se abre, con plataforma en la punta.
@@ -137,7 +137,7 @@ public static class CubeTree
     // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
     // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
     static Material _wax, _honey, _cellDark, _capped, _propolis;
-    public static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
+    public static Hive Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
     {
         var rnd = new System.Random(seed);
         Material wax = Mat(ref _wax, new Color(0.93f, 0.8f, 0.42f));
@@ -187,7 +187,7 @@ public static class CubeTree
         Block(root.transform, "Cavidad", new Vector3(0f, floorY, hole * 0.5f + (cd * 0.5f - hole * 0.5f) * 0.5f + 0.02f), new Vector3(cw, wall, cd * 0.5f - hole * 0.5f + 0.04f), Quaternion.identity, barkM, false);    // suelo (delante)
         for (int s = -1; s <= 1; s += 2) Block(root.transform, "Cavidad", new Vector3(s * (hole * 0.5f + (cw * 0.5f - hole * 0.5f) * 0.5f + 0.01f), floorY, 0f), new Vector3(cw * 0.5f - hole * 0.5f, wall, hole), Quaternion.identity, barkM, false);
         Block(root.transform, "Propoleo", new Vector3(0f, floorY - wall * 0.5f - 0.005f, 0f), new Vector3(hole + 0.06f, 0.01f, hole + 0.06f), Quaternion.identity, prop, false);   // borde de propóleo de la piquera
-        root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
+        return root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     // ¿Algún punto de la rama (cadena de segmentos y su plataforma de la punta, con margen) cae en zona bloqueada?
     public static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)

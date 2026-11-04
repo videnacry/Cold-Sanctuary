@@ -199,7 +199,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
                 tg.AssignTreeTasks(tree);
                 float est = FruitGardener.TreeTaskHours(tree, masks, beds);
-                float capT = Mathf.Min(900f, est * TimeController.timeController.SecondsPerGameDay / 24f / Time.timeScale * 2.5f + 90f), tt0 = Time.realtimeSinceStartup;
+                float capT = Mathf.Min(900f, est * TimeController.timeController.SecondsPerGameDay / 24f / Time.timeScale * 5f + 240f), tt0 = Time.realtimeSinceStartup;   // (2026-11-04: con 190 s no acababa: iba por el fitoplancton)
                 while (!tg.Finished && Time.realtimeSinceStartup - tt0 < capT) yield return null;
                 Time.timeScale = sc0;
                 float hT = tg.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);

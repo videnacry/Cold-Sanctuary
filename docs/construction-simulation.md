@@ -59,3 +59,38 @@ y con "detener conflictos"). *Aprendizaje: construir es cuidar; que el muro prot
   (`RepairTicket`/`ServiceHub`/`Toolbox`, `DispatchDemo_AUTO`) compartido con la Mecánica.
 - **Por construir/autorar**: recetas de estructura reales por área (tubería/puerta/ventana), misiones-
   historia del Tallador cableadas, e históricos posteriores (Maestro de catedrales, Brunelleschi).
+
+## 7. Obras que avanzan a la vista (2026-11-04)
+
+Berón: «el progreso de las obras podría ser visual? da la impresión de que mágicamente se termina cuando ha llegado el día».
+Ahora una obra (`World/ConstructionProject.cs`) se va levantando día a día con las piezas de su «Acabado»:
+
+- **Plan de obra.** Al empezar, la obra copia su «Acabado» en una **maqueta** (`Obra_en_progreso`): solo malla y material, **sin
+  colisiones ni conductas**. Cada hijo del acabado es una pieza; si hay pocas para los días de obra, se abren los grupos grandes
+  (la jaula → lona, postes, red). Cada pieza cae en una **etapa** por su nombre (o, si el nombre no lo dice, por su forma: lo
+  plano y ancho es suelo):
+  1. **Cimientos y suelo** (suelo, base, lona, tatami, tarima, parquet…),
+  2. **Estructura** (postes, pilares, vigas, muros, marcos, jaula, ring, red, cuerdas…),
+  3. **Instalaciones** (luces, lámparas, tubos, grifos, duchas, lavabos, altavoces, ventilación…),
+  4. **Muebles y máquinas** (lo demás),
+  5. **Acabados y decoración** (carteles, plantas, macetas, cuadros, espejos, cortinas, estatuas…).
+  Se ordenan por etapa, luego de abajo arriba, y se reparten por igual entre los `daysRequired` días (todos los días tienen
+  alguna si hay al menos tantas piezas como días).
+- **El turno.** Al empezar «Trabajar la obra» (`WorkdayDirector.Begin` → `BeginShift`), mientras dura la misión las piezas de
+  ese día van saliendo una tras otra (crecen desde una lámina y bajan a su sitio), quien trabaja lleva un **martillo** que
+  golpea y se levanta **polvo** donde se construye. Los **palés** del material del día menguan según se gasta (sin material,
+  no se avanza). El **andamio** se va junto a la parte que se construye (sin pisar las alfombras) y el **cartel** dice
+  «EN OBRAS · etapa · %».
+- **El día de obra** cuenta cuando ha trabajado el equipo entero (como antes): las piezas del día quedan puestas y las del día
+  siguiente aún no se ven.
+- **Nada usable antes de terminar.** Lo que se ve es la maqueta; el «Acabado» de verdad (con sus colisiones, puestos y
+  conductas) sigue apagado hasta el último día, y entonces sustituye a la maqueta. Se mantiene la regla de no poner nada en los
+  pisos sin terminar.
+- **Guardar por etapa.** Los días hechos y si hay material en la obra se guardan entre partidas (`PlayerPrefs`, clave
+  `cs_obra_<título>`; nunca mientras corren las pruebas). Al cargar, la obra enseña exactamente las piezas de los días hechos
+  (`Restore`). `ConstructionProject.ClearSaved()` las olvida todas.
+- **Prueba:** `ConstructionProgressTest` (grupo 98) simula 5 días de obra con un equipo de 2 en una obra de prueba: plan por
+  etapas, piezas a media jornada, martillo, material que mengua, cartel, andamio, más piezas cada día y ninguna antes de tiempo,
+  nada usable, el último día = el acabado entero, y cargar en el día 3 = lo mismo que la simulada; y revisa las obras de la escena.
+- **Pendiente:** cuando llegue la capa de interpretación de `claude/edif-actividades`, el martillo sencillo puede pasar a ser
+  una animación del cuerpo.
