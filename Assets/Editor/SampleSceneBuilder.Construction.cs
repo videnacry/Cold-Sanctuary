@@ -161,7 +161,7 @@ public static partial class SampleSceneBuilder
             GameObject g = GameObject.Find(who), a = GameObject.Find(area);
             if (g != null && a != null) g.transform.position = a.transform.TransformPoint(local);
         }
-        Put("Sadhguru", "YogaRoom_Area", new Vector3(0f, 1.5f, 0f));             // en la plataforma central, rodeado de las 30 esterillas
+        Put("Sadhguru", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));             // en la tarima de la sala de Hatha tradicional (junto al linga), rodeado de sus esterillas
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
         Put("Andrea", "Kitchen_Area", new Vector3(3f, 1f, 9f));                   // en el comedor: el restaurante es una vía de ingresos
         // Los seis del mesocosmos (docs/personajes-mesocosmos.md), cada uno en el área de su papel.
