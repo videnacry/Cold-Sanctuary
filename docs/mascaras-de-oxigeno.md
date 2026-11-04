@@ -74,7 +74,6 @@ recta + 6 m) y de vuelta al fondo + 30 s de entrar y salir: del orden de **0,4�
 unidad cabe con las macetas en la ronda de ≤ 2,9 h, la hace el mismo jardinero; si no, es otra ronda del mismo edificio. El Árbol de
 los Campos (sin frutales) entra en el camino solo por sus tareas. El reparto de las rondas lo lleva el hilo del hospital y los jardines;
 los números de cada día salen en el registro: `[Frutales] … tareas de N árboles … → K personas`.
-camino solo por sus tareas. Los números de cada día salen en el registro: `[Frutales] … tareas de N árboles … → K personas`.
 
 ## Puertas y ramas para 8 personas (cuadradas)
 
