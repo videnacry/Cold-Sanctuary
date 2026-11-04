@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -24,6 +24,8 @@ public static partial class StorySceneBuilder
 
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Sadhguru (Velliangiri, 1999)")]
     public static void BuildSadhguru() => BuildOne("Microcosmos_Sadhguru");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Elon Musk (Hawthorne, 2008)")]
+    public static void BuildElonMusk() => BuildOne("Microcosmos_ElonMusk");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -108,6 +110,80 @@ public static partial class StorySceneBuilder
                 "Sadhguru (2016). Inner Engineering: A Yogi's Guide to Joy. Spiegel & Grau (la colina de Chamundi, 1982).",
             },
             "Sadhguru", "Lo que buscas no está en este lugar. Este lugar solo te ayuda a dejar de buscar fuera.");
+        return n;
+    }
+
+    // ══ ELON MUSK · la fábrica de SpaceX en Hawthorne (California), 28 de septiembre de 2008 · Mecánica ═══════════════════════════
+    //    El cuarto lanzamiento del Falcon 1 (desde Omelek, atolón de Kwajalein) se vivió en la fábrica: el equipo de Hawthorne lo
+    //    siguió en las pantallas y Musk les habló al llegar a órbita.
+
+    static int ElonMusk(Transform t)
+    {
+        Material white = M("Fuselaje_blanco", 0.94f, 0.94f, 0.95f), steel = M("Acero", 0.7f, 0.72f, 0.75f), dark = M("Pantalla", 0.08f, 0.1f, 0.14f);
+        Material copper = M("Cobre_tobera", 0.72f, 0.42f, 0.25f), blue = M("Gráfica_azul", 0.25f, 0.55f, 0.85f), epoxy = M("Suelo_epoxi", 0.82f, 0.83f, 0.85f);
+
+        // 1 · LA FÁBRICA: la primera etapa del Falcon 1 tumbada en su cuna (21 m de cohete entero; aquí la etapa) y un Merlin 1C.
+        Transform floor = Spot(t, "Nave de montaje", new Vector3(-8f, 0f, 14f), "La nave de montaje: el Falcon 1 del vuelo 4", 3.5f);
+        Prop(floor, "Suelo de epoxi", new Vector3(0f, 0.02f, 0f), new Vector3(16f, 0.04f, 8f), epoxy, false);
+        Prop(floor, "Primera etapa del Falcon 1 (en su cuna)", new Vector3(0f, 1.2f, 0f), new Vector3(12f, 1.7f, 1.7f), white);
+        for (int k = 0; k < 3; k++) Prop(floor, "Cuna", new Vector3(-5f + k * 5f, 0.35f, 0f), new Vector3(0.6f, 0.7f, 2.2f), steel);
+        Prop(floor, "Tobera del Merlin 1C", new Vector3(6.6f, 1.2f, 0f), new Vector3(1.2f, 1.2f, 1.2f), copper, false);
+
+        // 2 · LA CONSOLA DEL VUELO 3 (2 de agosto de 2008): la gráfica del empuje que quedó tras el apagado.
+        Transform data = Spot(t, "Consola de datos del vuelo 3", new Vector3(12f, 0f, 12f), "Los datos del vuelo 3 (2 de agosto de 2008)", 3f);
+        Prop(data, "Mesa", new Vector3(0f, 0.4f, 0f), new Vector3(2.4f, 0.8f, 1f), steel);
+        Prop(data, "Pantalla", new Vector3(0f, 1.3f, 0.4f), new Vector3(2f, 1f, 0.08f), dark, false);
+        Prop(data, "Curva del empuje residual", new Vector3(0f, 1.3f, 0.35f), new Vector3(1.6f, 0.06f, 0.02f), blue, false);
+
+        // 3 · LAS TRES COSAS QUE MIRAR antes del vuelo 4.
+        var fixes = Items(t, steel, new Vector3(0.7f, 0.9f, 0.7f),
+            ("Motor Merlin 1C (empuje residual tras el apagado)", new Vector3(14f, 0.45f, -2f)),
+            ("Interetapa (la separación)", new Vector3(17f, 0.45f, 3f)),
+            ("Secuencia de vuelo (la espera antes de separar)", new Vector3(11f, 0.45f, 3f)));
+
+        // 4 · EL CONTROL DE MISIÓN: las pantallas con la imagen de Omelek (Kwajalein).
+        Transform control = Spot(t, "Control de misión", new Vector3(-14f, 0f, -4f), "Control de misión: la señal de Omelek", 3.5f);
+        for (int k = 0; k < 3; k++) Prop(control, "Pantalla grande", new Vector3(-3f + k * 3f, 2.2f, 2f), new Vector3(2.6f, 1.6f, 0.1f), dark, false);
+        Prop(control, "Fila de consolas", new Vector3(0f, 0.4f, -1f), new Vector3(8f, 0.8f, 1f), steel);
+
+        // La gente: insectos-humanos. Musk, un SALTAMONTES (el salto es un lanzamiento: guarda energía en las patas y la suelta de
+        // golpe), con la camiseta negra de su versión humana.
+        Color black = new Color(0.08f, 0.08f, 0.09f), polo = new Color(0.2f, 0.25f, 0.35f);
+        GameObject musk = Who(t, "Elon Musk", new Vector3(-4f, 0f, 9f), false, 1.88f, "Grasshopper"); CubeInsect.WearShirt(musk, black);
+        GameObject prop = Who(t, "Ingeniera de propulsión (Medea)", new Vector3(10f, 0f, 9f), true); CubeInsect.WearShirt(prop, polo);
+        GameObject launch = Who(t, "Director de lanzamiento (Héspero)", new Vector3(-12f, 0f, -8f), false); CubeInsect.WearShirt(launch, polo);
+        GameObject tech = Who(t, "Técnico de la nave (Atlas)", new Vector3(-12f, 0f, 12f), false); CubeInsect.WearShirt(tech, new Color(0.3f, 0.32f, 0.36f)); Routine(tech, floor, data);
+        GameObject welder = Who(t, "Soldadora de tanques (Ruth)", new Vector3(-2f, 0f, 18f), true); CubeInsect.WearShirt(welder, new Color(0.45f, 0.4f, 0.32f)); Routine(welder, floor);
+        int n = 5;
+
+        Mission(t, "Elon Musk y el Falcon 1: a la cuarta, órbita (2008)", StoryMission.Marga.Stats, 60f,
+            new[]
+            {
+                Talk("Agosto de 2008: habla con Elon Musk junto al cohete", musk.transform, "Elon Musk", "Tres lanzamientos, tres fallos. Pero tenemos piezas para un cuarto cohete y un equipo que no se ha rendido. Vamos a entender qué pasó y a intentarlo otra vez."),
+                Hold("Mira con el equipo los datos del vuelo 3", data, 10f, "Ingeniera de propulsión", "Al apagarse, el motor nuevo siguió empujando un poco más de lo previsto, y la primera etapa alcanzó a la segunda después de separarse. El fallo no está en una pieza rota: está en el tiempo."),
+                Visit("Revisa las tres cosas: el motor, la interetapa y la secuencia", fixes, "Ingeniera de propulsión", "Basta con esperar más entre el apagado y la separación. Un cambio pequeño en la secuencia."),
+                Talk("Habla con el técnico de la nave", tech.transform, "Técnico", "Siete semanas entre el vuelo 3 y el 4. Hemos dormido poco, pero el cohete ya está en la isla."),
+                Reach("28 de septiembre, 16:15: ve al control de misión", control, "Director de lanzamiento", "Omelek, en el atolón de Kwajalein, en medio del Pacífico. Desde aquí lo vemos todo por las pantallas."),
+                Hold("La cuenta atrás y el ascenso: quédate mirando las pantallas", control, 12f, "Director de lanzamiento", "Despegue… separación de etapas limpia… encendido de la segunda etapa… apagado. ¡Estamos en órbita!"),
+                Talk("Habla con la soldadora de tanques", welder.transform, "Soldadora", "Hay gente llorando por toda la nave. Yo soldé ese tanque."),
+                Talk("Musk habla a todo el equipo", musk.transform, "Elon Musk", "Mucha gente pensaba que no podíamos hacerlo. Lo habéis hecho vosotros, todos. A la cuarta va la vencida."),
+            },
+            "La fábrica de SpaceX en Hawthorne (California), entre agosto y el 28 de septiembre de 2008, sobre el taller de Mecánica del santuario a escala de hormiga (pendiente de su piso: una fábrica de cohetes). Tras tres fallos, la empresa tiene un último Falcon 1. Ayuda al equipo a entender el fallo del vuelo 3 y vive con ellos el cuarto lanzamiento. E para hablar y revisar; para mirar, quédate quieto.",
+            new[]
+            {
+                "Elon Musk (Pretoria, 1971) fundó SpaceX en 2002 para abaratar el acceso al espacio. Su primer cohete, el Falcon 1, era pequeño (unos 21 m) y usaba un motor propio, el Merlin. Se lanzaba desde la isla de Omelek, en el atolón de Kwajalein (Islas Marshall).",
+                "Los tres primeros vuelos fallaron: en 2006 un incendio por una fuga apagó el motor poco después del despegue; en 2007 la segunda etapa se apagó antes de tiempo; y el 2 de agosto de 2008 el empuje residual del motor tras el apagado hizo que la primera etapa chocara con la segunda después de separarse. La solución fue alargar la espera entre el apagado y la separación.",
+                "El 28 de septiembre de 2008 (23:15 UTC; las 16:15 en California), siete semanas después, el cuarto Falcon 1 llegó a órbita con una carga de prueba de 165 kg (RatSat): fue el primer cohete de combustible líquido desarrollado con dinero privado en alcanzar la órbita terrestre. En la sede de Hawthorne, unos 500 empleados lo siguieron por las pantallas; Musk les dio las gracias y dijo que era «uno de los mejores días de mi vida».",
+                "En diciembre de 2008 la NASA contrató a SpaceX para llevar carga a la Estación Espacial. Musk es también una figura pública muy discutida por otros asuntos; esta historia se limita a 2008 y al trabajo de su equipo.",
+            },
+            new[]
+            {
+                "Space.com (29-9-2008), «SpaceX Successfully Launches Falcon 1 Rocket Into Orbit».",
+                "Spaceflight Now, «Falcon 1 flight 4» (spaceflightnow.com/falcon/004).",
+                "Aviation Week (2008), «Falcon 1 Makes Orbit On Fourth Attempt».",
+                "Koenigsmann, H. et al. (2009). «Falcon 1 Launch Vehicle: Demo Flights, Status, Manifest and Upgrade Path». SmallSat Conference (digitalcommons.usu.edu/smallsat/2009).",
+            },
+            "Elon Musk", "Que falle no es lo grave. Lo grave sería dejar de intentarlo.");
         return n;
     }
 }

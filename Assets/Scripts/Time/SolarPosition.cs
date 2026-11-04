@@ -124,6 +124,7 @@ public static class SolarPosition
             ("Bruce Lee", 22.28f, 114.17f, 258f),   // Hong Kong, mediados de septiembre (empieza en la escuela de Yip Man)
             ("Palenque", 17.48f, -92.05f, 240f),   // Palenque, 28 de agosto de 683 (la muerte de Pakal; temporada de lluvias)
             ("Velliangiri", 10.97f, 76.74f, 175f),   // Isha Yoga Center, 24 de junio de 1999
+            ("Hawthorne", 33.92f, -118.33f, 272f),   // la sede de SpaceX, 28 de septiembre de 2008
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }

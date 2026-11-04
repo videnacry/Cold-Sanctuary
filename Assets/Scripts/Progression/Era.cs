@@ -98,6 +98,7 @@ public static class Eras
             case "Chernóbil":             return (1986, "Prípiat y la central de Chernóbil (Alekséi Ananenko y su escuadrón)");
             case "Palenque":              return (683, "Lakamha' (Palenque), Chiapas: la muerte y el renacer de K'inich Janaab Pakal");
             case "Velliangiri":           return (1999, "Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore): Sadhguru y el Dhyanalinga");
+            case "Hawthorne":             return (2008, "La fábrica de SpaceX en Hawthorne, California (Elon Musk y el cuarto Falcon 1)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

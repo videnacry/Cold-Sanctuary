@@ -59,6 +59,7 @@ public static class MicroFloors
         M("Palenque", "Garden_Area", "Pakal, el rey que renace como el maíz (la milpa)", "Templo de los antepasados (memoria, rito y duelo)"),
         // Los famosos (docs/microcosmos-famosos.md)
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
+        M("Hawthorne", "VehicleWorkshop_Area", "Musk y el Falcon 1: motores y montaje, el taller de Mecánica", "Fábrica de cohetes y control de misión"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>

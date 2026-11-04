@@ -37,6 +37,21 @@ public static partial class MicroBiome
               townFauna = new[] {
                 new Pet("Aphid", 2, 2.4f, C(0.92f, 0.9f, 0.85f), "Vaca de la aldea (en el microcosmos, un pulgón)"),
                 new Pet("Woodlouse", 2, 0.7f, C(0.75f, 0.6f, 0.45f), "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)") } };
+            // ── Hawthorne (Los Ángeles), finales de septiembre de 2008: ciudad, sin naturaleza salvaje. Las palmeras de abanico de las
+            //    avenidas, jacarandas y ficus de calle, céspedes y buganvillas (City of Hawthorne; LA County street trees). Perros y gatos.
+            case "Hawthorne": return new Biome { title = "Hawthorne (2008): ciudad, sin naturaleza salvaje", ground = C(0.62f, 0.6f, 0.56f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Grass, 8, "Césped (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Stone, 12, "Bordillo de hormigón", 0, C(0.75f, 0.74f, 0.7f), Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 6, "Palmera de abanico (Washingtonia robusta), plantada", 2000, C(0.35f, 0.5f, 0.28f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Shrub, 3, "Jacaranda (Jacaranda mimosifolia), plantada", 1200, C(0.3f, 0.5f, 0.3f), C(0.6f, 0.45f, 0.85f)),
+                new Plant(Kind.Grass, 14, "Césped de la casa (Cynodon dactylon), segado", 5, C(0.4f, 0.62f, 0.28f), C(0.5f, 0.6f, 0.3f)),
+                new Plant(Kind.Flower, 4, "Buganvilla (Bougainvillea)", 200, C(0.28f, 0.45f, 0.25f), C(0.85f, 0.2f, 0.55f)) },
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
+              bugs = new Bug[0] };
             default: return null;
         }
     }

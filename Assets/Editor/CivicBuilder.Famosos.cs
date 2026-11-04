@@ -11,7 +11,8 @@ using UnityEngine;
 internal static partial class CivicBuilder
 {
     static readonly Style IshaBrick = new Style(C(0.7f, 0.46f, 0.34f), C(0.82f, 0.78f, 0.7f), C(0.6f, 0.35f, 0.25f), Roof.None, 3.4f);     // Isha: ladrillo de barro y suelo de piedra clara
-    static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
+    static readonly Style FactorySteel = new Style(C(0.85f, 0.86f, 0.88f), C(0.82f, 0.83f, 0.85f), C(0.6f, 0.62f, 0.65f), Roof.None, 6f);  // la nave de SpaceX: chapa blanca y suelo de epoxi
+    static readonly Style TamilTile =new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -19,6 +20,7 @@ internal static partial class CivicBuilder
         switch (display)
         {
             case "Velliangiri": return VelliangiriTown(t);
+            case "Hawthorne": return HawthorneTown(t);
             default: return 0;
         }
     }
@@ -58,6 +60,41 @@ Carpinteria | 420 -300
 Obra | -250 220
 Hotel | 300 -150
 relleno | 40 | 600 -250",
+        // HAWTHORNE (2008): la sede de SpaceX en la antigua nave de fuselajes de Northrop (Rocket Road, junto a Crenshaw Boulevard y
+        // la calle 120), el aeropuerto municipal de Hawthorne al oeste de Crenshaw, la autopista 105 al norte, El Segundo Boulevard al
+        // sur y la cuadrícula de casas de estuco. Plano aproximado (OpenStreetMap; City of Hawthorne).
+        ["Hawthorne"] = @"
+calle Crenshaw Boulevard | 30 | -80 -1200, -80 1200
+calle West 120th Street | 20 | -1400 460, 1400 460
+calle Autopista 105 (Glenn Anderson Freeway) | 40 | -1400 920, 1400 920
+calle Rocket Road | 12 | -80 120, 420 120
+calle Jack Northrop Avenue | 14 | -80 -320, 1000 -320
+calle El Segundo Boulevard | 22 | -1400 -1000, 1400 -1000
+calle Prairie Avenue | 20 | -1150 -1200, -1150 1200
+calle Calle de las casas norte | 8 | 300 600, 1300 600
+calle Calle de las casas sur | 8 | 300 -650, 1300 -650
+calle Calle de las casas oeste | 8 | -1100 -650, -300 -650
+campo Pista del aeropuerto municipal | 900 80 | -620 150
+hito 0 | 60 80
+hito 1 | -60 -60
+hito 2 | 180 -40
+hito 3 | 160 180
+hito 4 | 520 600
+Plaza | 640 -360
+Mercado | 380 -460
+Parque | 900 300
+Piscina | 1050 -500
+Entrenamiento | 700 160
+Bomberos | 300 -780
+Policia | -500 -750
+Estudio | -700 -560
+Guarderia | 800 -780
+Museo | -500 400
+Hotel | 300 780
+Mecanica | -300 -300
+Tecnologia | 420 -200
+Estacion | -900 600
+relleno | 60 | 600 -600",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -94,6 +131,38 @@ relleno | 40 | 600 -250",
         n += W(t, "Hortelana del ashram", s[5], "hortelano", s[2], s[1], s[4]);
         n += W(t, "Maestra de la aldea", s[6], "sabio", s[2], null, null);
         n += Townsfolk(t, s, 7, "Vecina de Ikkarai Boluvampatti", "Vecino de Ikkarai Boluvampatti", s[2], s[0]);
+        return n;
+    }
+
+    // ══ HAWTHORNE (2008): la sede de SpaceX (la nave de montaje, el control de misión, el banco del Merlin, la cafetería), un piso de
+    //    ingenieros y la ciudad de casas de estuco con su taller, su tienda y su taquería.
+    static int HawthorneTown(Transform t)
+    {
+        var s = Town(t, "Hawthorne", new[]
+        {
+            new Lot("Nave de montaje de SpaceX", "Taller", "Nave de montaje de SpaceX (Falcon 1)", 20f, 14f, FactorySteel,
+                S("banco_taller", -5f, 3f, 2.4f, 1f, "Etapa del Falcon 1 en su cuna"), S("torno", 0f, 3f, 1.6f, 1f, "Torno de control numérico"), S("banco_taller", 5f, 3f, 2.4f, 1f, "Banco de soldar tanques"), S("armario", 0f, -4f, 1.6f, 0.6f, "Herramientas y llaves dinamométricas")),
+            new Lot("Control de misión", "Centro de tecnología", "Control de misión de Hawthorne", 16f, 12f, FactorySteel,
+                S("consola", -3f, 2f, 2f, 0.8f, "Consola de lanzamiento"), S("consola", 3f, 2f, 2f, 0.8f, "Consola de telemetría"), S("pizarra", 0f, -3f, 2.4f, 0.4f, "Pizarra de la secuencia de vuelo")),
+            new Lot("Banco de pruebas del Merlin", "Taller", "Taller de motores Merlin", 14f, 10f, FactorySteel,
+                S("banco_taller", 0f, 2f, 2.4f, 1f, "Motor Merlin 1C en su soporte"), S("armario", 3f, -3f, 1.2f, 0.6f, "Inyectores y válvulas")),
+            new Lot("Cafetería de la fábrica", "Restaurante", "Cafetería de la fábrica", 14f, 10f, FactorySteel,
+                S("cocina", -3f, 2f, 2f, 0.8f, "Cocina de la cafetería"), S("mesa", 2f, -1f, 2f, 1f, "Mesas largas"), S("barra", 3f, 3f, 2f, 0.8f, "Barra de café")),
+            new Lot("Apartamentos de ingenieros", "Casa", "Apartamento de ingenieros jóvenes", 14f, 10f, Stucco,
+                S("cama", -4f, 2f, 1.2f, 2f, "Cama"), S("cama", 0f, 2f, 1.2f, 2f, "Cama"), S("cama", 4f, 2f, 1.2f, 2f, "Cama")),
+        }, new[]
+        {
+            new Lot("Casa de Hawthorne", "Casa", "Casa de estuco de Hawthorne", 10f, 9f, Stucco),
+            new Lot("Taller de coches", "Taller", "Taller de coches de Crenshaw", 12f, 10f, Stucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
+            new Lot("Tienda de la esquina", "Mercado", "Tienda de la esquina", 10f, 8f, Stucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
+            new Lot("Taquería", "Restaurante", "Taquería de Hawthorne", 10f, 8f, Stucco, S("fogon", 0f, 0f, 1.6f, 0.8f, "Plancha de los tacos"), S("mesa", 0f, 0f, 1.6f, 1f, "Mesa con bancos")),
+        }, C(0.45f, 0.45f, 0.46f));
+        int n = 0;
+        n += W(t, "Ingeniero de aviónica", s[1], "sabio", s[3], null, s[4]);
+        n += W(t, "Técnica de integración", s[0], "", s[3], null, s[4]);
+        n += W(t, "Técnico de motores", s[2], "", s[3], null, s[4]);
+        n += W(t, "Cocinera de la cafetería", s[3], "cocinero", s[3], null, null);
+        n += Townsfolk(t, s, 5, "Vecina de Hawthorne", "Vecino de Hawthorne", s[3], null);
         return n;
     }
 }
