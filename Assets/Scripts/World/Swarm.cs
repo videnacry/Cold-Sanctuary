@@ -80,7 +80,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     protected readonly List<Transform> _children = new List<Transform>();
     readonly List<Vector3> _home = new List<Vector3>();
     readonly List<float> _phase = new List<float>();
-    float _nextReconcile, _nextBite, _nextPredatorScan;
+    float _nextReconcile, _nextBite, _nextPredatorScan, _nextNear;
     Transform _predator;
     Vector3 _lastPos, _vel;
     bool _started;
@@ -134,6 +134,7 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         // Crece: un individuo nuevo cada cierto tiempo (sin ciclo de vida) + lo que PASTA de su alimento (fitoplancton→kril→pez).
         count = Mathf.Min(maxCount, count + growthPerSecond * timeScale * dt + GrazeFood(dt, timeScale));
         if (Time.time >= _nextReconcile) { _nextReconcile = Time.time + 0.5f; ReconcileChildren(); }
+        if (Time.time >= _nextNear && count >= 1f) { _nextNear = Time.time + 0.25f; BiteByProximity(); }
         Move(dt);
         if (dt > 0f)
         {
@@ -300,17 +301,34 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     }
 
     // MORDISCO-POR-COLISIÓN: el depredador choca con el grupo; si tiene hambre y es su dieta, desaparece UN individuo.
-    void OnTriggerStay(Collider other)
+    void OnTriggerStay(Collider other) => TryBite(other.GetComponentInParent<Animal>());
+
+    /// <summary>Un mordisco de <paramref name="a"/> si tiene hambre, come lo de este grupo y no acaba de morder (true si mordió). Lo
+    /// llaman el choque (trigger) y, por si el animal no tiene un collider que lo dispare (la ballena, 2026-11-04: «0 mordiscos»), la
+    /// cercanía: cada 0,25 s, los animales con el centro dentro del grupo.</summary>
+    public bool TryBite(Animal a)
     {
-        if (Time.time < _nextBite || count < 1f) return;
-        Animal a = other.GetComponentInParent<Animal>();
-        if (a == null || a.death || a.Forage == null || a.hungry < 0f) return;
-        if (!Eats(a)) return;
+        if (Time.time < _nextBite || count < 1f) return false;
+        if (a == null || a.death || a.Forage == null || a.hungry < 0f) return false;
+        if (!Eats(a)) return false;
         _nextBite = Time.time + biteCooldown;
         Hurt(1f);
         float nutrition = perUnitMass * Nutrition;
         a.hungry -= nutrition;
         a.GetComponent<Metabolism>()?.AbsorbFood(nutrition, Material);
+        return true;
+    }
+
+    // Mordisco por CERCANÍA: un animal con su centro dentro del grupo (radio del grupo + 1 m) muerde aunque no tenga collider.
+    void BiteByProximity()
+    {
+        float r = schoolSpread + 1f, r2 = r * r;
+        Vector3 c = transform.position;
+        foreach (GameObject go in Animal.wholePopulation)
+        {
+            if (go == null || (go.transform.position - c).sqrMagnitude > r2) continue;
+            if (go.TryGetComponent(out Animal a) && TryBite(a)) return;
+        }
     }
 
     /// <summary>¿Este animal come a los de este grupo? (kril: eatsKrill; pez: eatsFish; medusa: el pingüino —el de Adelia las
