@@ -954,6 +954,9 @@ public class WorkdayDirector : MonoBehaviour
     void Finish(WorkRoster.Assignment a)
     {
         Debug.Log($"[Jornada] {a.worker.name} termina «{a.mission.title}».");
+        // (2026-11-04) LA DE KUSHAL NO LA HACE NADIE POR ÉL: su efecto lo aplica su tarea con E al hacer el último paso
+        // (PlayerTaskRunner) o la máquina de virtualización; si la ignora, caduca sin efecto (PlayerWorkday).
+        if (!a.worker.clone && a.worker.name == "Player") return;
         Apply(a.mission, a.worker.name);
     }
 

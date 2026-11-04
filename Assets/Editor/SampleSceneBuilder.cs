@@ -1326,7 +1326,7 @@ public static partial class SampleSceneBuilder
         drop.AddComponent<HoneydewPickup>().lifetime = 120f;
 
         // ── Kushal (jugador) ─────────────────────────────────────────────────
-        // Hormiga jugadora: FormicAcidSpray (Q) + PullSpell (E→target) + HoneydewSpell (E→honeydew).
+        // Hormiga jugadora: FormicAcidSpray (Q) + PullSpell (F→target) + HoneydewSpell (punto «.»→honeydew; la E es solo interactuar).
         // En el sandbox es una cápsula; el avatar real se conecta desde la escena de Unity.
         Vector3 kushalPos = new Vector3(0f, 0.5f, 2f);
         GameObject kushal = GameObject.CreatePrimitive(PrimitiveType.Capsule);
@@ -1366,7 +1366,7 @@ public static partial class SampleSceneBuilder
 
         var honeydew = kushal.AddComponent<HoneydewSpell>();
         honeydew.range = 3f; honeydew.energyRestore = 40f; honeydew.maxCharges = 5;
-        honeydew.castKey = KeyCode.E;
+        honeydew.castKey = KeyCode.Period;   // (2026-11-04) la E es solo la tecla de interactuar (tareas con E, docs/tareas-del-jugador.md)
 
         // Defensa corporal (ácido fórmico, Q).
         // FormicAcidSpray hereda SpellBase: range = radio del spray, force = estrés por hit.
@@ -3958,12 +3958,12 @@ public static partial class SampleSceneBuilder
 
     static List<BodyPosition> BuildBodyPositionList()
     {
-        // Teclas elegidas para no chocar con WASD/Shift/Space/J-L-I-K/1-0/Tab/Enter/V/Escape/Z-X-C-V-B.
+        // Teclas elegidas para no chocar con WASD/Shift/Space/J-L-I-K/1-0/Tab/Enter/V/Escape/Z-X-C-V-B ni con la E (solo interactuar).
         // Ver docs/ui-holographic-menu.md para la tabla completa y la colision conocida de V.
         (BodyPart part, string description, KeyCode hotkey)[] defs =
         {
             (BodyPart.Elbows,    "Codos",    KeyCode.Q),
-            (BodyPart.Hands,     "Manos",    KeyCode.E),
+            (BodyPart.Hands,     "Manos",    KeyCode.N),   // (2026-11-04) antes E: la E es solo la de interactuar
             (BodyPart.Knees,     "Rodillas", KeyCode.R),
             (BodyPart.Feet,      "Pies",     KeyCode.T),
             (BodyPart.Hips,      "Caderas",  KeyCode.Y),

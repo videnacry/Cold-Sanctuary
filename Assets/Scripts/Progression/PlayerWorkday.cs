@@ -15,10 +15,12 @@ using UnityEngine;
 /// como al resto: si deja su puesto en el turno lo devuelve (WorkdayDirector.HoldPlayer), con un rato para ir andando o en
 /// alfombra a cada puesto nuevo (<see cref="Commute"/>). A las 16:00 es libre: nada lo mueve y la Magnate no lo trae.
 ///
-/// Cuenta lo que HACE (no basta con que pase la hora): cada misión está hecha si estuvo en su puesto al menos la mitad
-/// de su tiempo, o si la practicó en la máquina de virtualización; la comida, si comió en el restaurante; el
-/// entrenamiento, si estuvo en su sala. <see cref="autopilot"/> lo lleva solo a cada puesto (como la jornada a los demás):
-/// lo usa la prueba en vivo (JornadaTest).
+/// Cuenta lo que HACE (no basta con que pase la hora): (2026-11-04, modelo de Ambrosio) cada misión es una TAREA DE PASOS
+/// CON «E» (<see cref="PlayerTaskRunner"/>, <see cref="PlayerTasks"/>): al empezar su hora salen los marcadores y la pista
+/// hacia el primer sitio, y está hecha si hizo todos los pasos (o si la practicó en la máquina de virtualización); si la
+/// ignora, al acabar su hora CADUCA (no hecha, sin efecto: nadie la hace por él). La comida, si comió en el restaurante; el
+/// entrenamiento, si estuvo en su sala. <see cref="autopilot"/> lo lleva solo a cada puesto (como la jornada a los demás) y,
+/// ya en él, pulsa la E de cada paso: lo usa la prueba en vivo (JornadaTest).
 /// </summary>
 public class PlayerWorkday : MonoBehaviour
 {
@@ -41,6 +43,9 @@ public class PlayerWorkday : MonoBehaviour
         public WorkRoster.Assignment a;
         public float present, observed;   // segundos de juego en su puesto / de la misión que vio pasar
         public bool started, closed, done, virtualized;
+        /// <summary>Hizo TODOS los pasos de su tarea con E (PlayerTaskRunner): es lo que la da por hecha.</summary>
+        public bool tasked;
+        public PlayerTaskRunner.Task task;
         public float Share => observed > 0f ? present / observed : 0f;
     }
 
@@ -73,7 +78,12 @@ public class PlayerWorkday : MonoBehaviour
     }
 
     void OnEnable() { Instance = this; }
-    void OnDisable() { if (Instance == this) Instance = null; Hold(false); }
+    void OnDisable()
+    {
+        if (Instance == this) Instance = null;
+        Hold(false);
+        if (PlayerTaskRunner.Instance != null) foreach (Record r in _records) PlayerTaskRunner.Instance.Lapse(r, "se apaga la jornada");
+    }
 
     // ── ¿Ya es del todo del santuario? ─────────────────────────────────────────────────────────────────────────────
 
@@ -107,7 +117,12 @@ public class PlayerWorkday : MonoBehaviour
     public static void Virtualized(WorkRoster.Mission m)
     {
         if (Instance == null || m == null) return;
-        foreach (Record r in Instance._records) if (r.a.mission.id == m.id && !r.closed) { r.virtualized = true; break; }
+        foreach (Record r in Instance._records) if (r.a.mission.id == m.id && !r.closed)
+        {
+            r.virtualized = true;
+            if (PlayerTaskRunner.Instance != null) PlayerTaskRunner.Instance.Lapse(r, "la hizo en la máquina de virtualización");
+            break;
+        }
     }
 
     // ── Cada fotograma ─────────────────────────────────────────────────────────────────────────────────────────────
@@ -190,6 +205,7 @@ public class PlayerWorkday : MonoBehaviour
     void NewDay(WorkdayDirector wd, WorkRoster.Worker me)
     {
         _plan = wd.today;
+        if (PlayerTaskRunner.Instance != null) foreach (Record r in _records) PlayerTaskRunner.Instance.Lapse(r, "día nuevo");
         _records.Clear();
         foreach (WorkRoster.Assignment a in _plan.Of(me)) _records.Add(new Record { a = a });
         AteToday = TrainingDone = _dayClosed = _dineQueued = _lunchSeen = false; _dineTries = 0;
@@ -215,7 +231,11 @@ public class PlayerWorkday : MonoBehaviour
             {
                 r.started = true;
                 Debug.Log($"[Jornada] {a.start:00.0} h · Kushal: empieza «{a.mission.title}» ({a.mission.area}).");
-                LessonPrompt.Show($"Ahora: «{a.mission.title}» en {a.mission.area} (hasta las {end:00}:{(end % 1f) * 60f:00}). Ve a tu puesto: entre torres, en alfombra.", null, 10f);
+                // LA TAREA CON E: marcadores en cada sitio y la pista hacia el primero (si la virtualizó antes, ya está hecha).
+                Record rec = r;
+                if (!r.virtualized) r.task = PlayerTaskRunner.Ensure().Begin(PlayerTasks.For(a.mission), r, t => { rec.tasked = true; Debug.Log($"[Jornada] Kushal hace con E todos los pasos de «{rec.a.mission.title}»."); });
+                int steps = r.task != null ? r.task.Count : 0;
+                LessonPrompt.Show($"Ahora: «{a.mission.title}» en {a.mission.area} (hasta las {end:00}:{(end % 1f) * 60f:00}). Ve a tu puesto (entre torres, en alfombra), sigue los marcadores y pulsa E en cada sitio ({steps} pasos).", null, 10f);
                 KushalVoice.Reply(KushalVoice.Ctx.Mission);
             }
             if (h >= a.start && h < end)
@@ -226,9 +246,10 @@ public class PlayerWorkday : MonoBehaviour
             if (!r.closed && h >= end)
             {
                 r.closed = true;
-                r.done = r.virtualized || (r.observed > 0f && r.Share >= 0.5f);
+                r.done = r.virtualized || r.tasked;   // (2026-11-04) sus pasos con E; estar en el puesto ya no basta
+                if (!r.done && PlayerTaskRunner.Instance != null) PlayerTaskRunner.Instance.Lapse(r, "se acabó su hora");
                 if (r.done) Progress.MarkMission(a.mission.id);
-                Debug.Log($"[Jornada] Kushal {(r.done ? "completa" : "NO completa")} «{a.mission.title}» ({a.mission.area}): en su puesto {r.Share:P0} de {r.observed:0} s{(r.virtualized ? ", virtualizada" : "")}.");
+                Debug.Log($"[Jornada] Kushal {(r.done ? "completa" : "NO completa")} «{a.mission.title}» ({a.mission.area}): pasos con E {(r.task != null ? $"{r.task.index}/{r.task.Count}" : "—")}, en su puesto {r.Share:P0} de {r.observed:0} s{(r.virtualized ? ", virtualizada" : "")}.");
             }
         }
 
@@ -405,11 +426,27 @@ public class PlayerWorkday : MonoBehaviour
         Vector3 target = WorkdayDirector.AreaPoint(area, "Player");
         if (target == Vector3.zero) { Hold(false); return; }
         Vector3 d = target - pos; d.y = 0f;
-        if (AtPost(m, area, pos) && d.magnitude < 4f) { Hold(false); return; }
+        if (AtPost(m, area, pos) && d.magnitude < 4f) { Hold(false); AutoSteps(h); return; }
         Hold(true);
         Vector3 to = target;
         if (CarpetPad.Route(_player, ref to)) return;   // otro piso u otra torre: en alfombra
         PathMover.Of(_player.transform).StepToward(to, walkSpeed);
+    }
+
+    // EL PILOTO, YA EN SU PUESTO, HACE LOS PASOS CON E de la tarea de la misión de ahora (sin ir a cada marcador: el área es
+    // su puesto). Es el jugador simulado de la prueba en vivo, no la IA de los demás.
+    float _nextAutoStep;
+    void AutoSteps(float h)
+    {
+        PlayerTaskRunner run = PlayerTaskRunner.Instance;
+        if (run == null || run.Active == null || run.Active.acting || Time.time < _nextAutoStep) return;
+        foreach (Record r in _records)
+            if (h >= r.a.start && h < r.a.start + r.a.mission.hours && run.Owns(r))
+            {
+                _nextAutoStep = Time.time + 0.5f;
+                Debug.Log($"[Jornada] (piloto) {run.PressAnywhere()}");
+                return;
+            }
     }
 
     // Mientras lo lleva, el cuerpo no obedece al teclado (la cámara sigue libre), como en la orquesta.

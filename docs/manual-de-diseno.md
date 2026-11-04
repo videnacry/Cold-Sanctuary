@@ -226,6 +226,7 @@ en el doc de su tema; aquí no se repite.
 | J23 | **Nadie llega y se queda quieto**: en su puesto, cada misión de la jornada, actividad libre o entrenamiento se HACE (postura, herramienta en la mano, gesto y efecto visible) mientras dura; al irse, la deja y suelta la herramienta. Lo que no tiene pasos propios hace el bucle genérico de su clase y queda listado como pendiente en el doc. | «Solo van al piso que les toca y no hacen nada». | 97 (N misiones a los T s de llegar; se para al irse) | [actividades-y-uniformes.md](actividades-y-uniformes.md) §3 |
 | J24 | **Uniforme por tarea, identidad intacta**: al llegar a su tarea se pone el uniforme de esa tarea y al acabar vuelve a su ropa; el pelo, la cara y la piel no cambian; nadando, neopreno. | Que se vea quién hace qué. | 97 (puesto y quitado; reparto por tarea) | [actividades-y-uniformes.md](actividades-y-uniformes.md) §4 |
 | J25 | **El insecto-humano trabaja con lo de su era**: su actuación, sus herramientas y su delantal son de la época de su microcosmos (sin tabletas antes de 1900, sin jeringa antes de 1850). | Los microcosmos son históricos. | 97 (comida y trabajo del insecto) | [actividades-y-uniformes.md](actividades-y-uniformes.md) §4 |
+| J18 | **Las tareas y las iniciaciones del jugador se hacen con «E» en los sitios marcados** (el modelo de Ambrosio): cada misión de su jornada es una secuencia de pasos con marcador «E — acción» en el mueble de su puesto, aviso en el sitio, pista de ruta, progreso y cierre; la E en el sitio hace el gesto, da el objeto y pasa al siguiente. Cuenta como hecha **solo con todos los pasos** (o virtualizada); si la ignora, **caduca sin efecto**: nadie (ni la jornada ni la IA) la hace por él. Las iniciaciones de cocina, huerto y yoga ofrecen cada paso como «E — paso» en el sitio del alumno. Una misión nueva lleva sus pasos en `PlayerTasks` (si no, salen los genéricos de su clase). **La E es solo la de interactuar**: «Manos» del menú de posturas va en la N y la melaza en el punto (.). | Que el jugador haga su trabajo él mismo, como en Ambrosio (Berón 2026-11-04). | `PlayerTasksTest` (grupo 96: catálogo y marcadores de todas las misiones, 3 misiones, caducar, iniciaciones de huerto y cocina), `JornadaTest` (50) | [tareas-del-jugador.md](tareas-del-jugador.md) |
 
 ## 10. Pruebas y flujo de trabajo
 
@@ -330,7 +331,7 @@ micro3, 2026-11-04; J22–J25, actividades y uniformes, rama claude/edif-activid
 
 **Pendientes de implementar (pedidos del 2026-11-04), 2:** M9 (los mapas a mano de todas las historias menos Angostura, que está hecho) y el gancho de
 §11 para los demás pisos (el aviso «REVISAR MICROCOSMOS» al reconstruir ya los cubre). Hechos en código el 2026-11-04, a falta
-de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); F7–F12 (yoga, grupo 64); J7 (charlas,
+de la prueba en vivo: F2, F3, C7, H8, M13, M30, M32, M33, M34 y el aviso de §11 (micro3); F7–F12 (yoga, grupo 64); J18 (tareas con E, grupo 96); J7 (charlas,
 grupo 88).
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
@@ -350,3 +351,4 @@ realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de 
 [microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
 [grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
 [personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [actividades-y-uniformes.md](actividades-y-uniformes.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
+[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [tareas-del-jugador.md](tareas-del-jugador.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)

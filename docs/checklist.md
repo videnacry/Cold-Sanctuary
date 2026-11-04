@@ -613,6 +613,15 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Pijamadas ([`pijamadas.md`](pijamadas.md), manual J17): una sola cama-litera por casa, de dos pisos de 4, con tobogán para bajar del piso de arriba (8 por casa; la litera triple aparte se quitó por indicación de Berón), pijamada semanal con anfitrión que rota, dormir en su plaza esa noche y volver a casa a la mañana; prueba `SleepoverTest` (grupo 92).
 - [ ] Tester: con la escena reconstruida, grupo 92 y fotos de una casa con su cama-litera y de una pijamada.
 
+## Tareas e iniciaciones del jugador con «E» (2026-11-04; rama `claude/edif-tareasE`; [`tareas-del-jugador.md`](tareas-del-jugador.md), manual J18)
+- [x] Estudiado el modelo de Ambrosio (`AmbrosioStory.Act`: una E que hace lo que toca según el sitio) y generalizado: `PlayerTasks` (catálogo de pasos «acción · puesto · objeto · gesto» y localizador de sitios) y `PlayerTaskRunner` (marcadores «E — acción», aviso en el sitio, pista de ruta, progreso, gesto 2,5 s, objeto en la mano, efecto al cerrar).
+- [x] Las 55 misiones del catálogo de la jornada, las del material, fotobiorreactores y lanzadera con pasos escritos; elaboraciones, obras, reparaciones y frutales por prefijo; el resto, pasos genéricos de su clase.
+- [x] Jornada de Kushal: al empezar la hora de su misión salen los marcadores y la pista; hecha solo con todos los pasos (o virtualizada); si la ignora caduca sin efecto; `WorkdayDirector.Finish` ya no aplica el efecto de sus misiones; el piloto de `JornadaTest` pulsa la E en su puesto.
+- [x] Iniciaciones de cocina, huerto y sala de yoga: cada paso pedido sale como «E — paso» en el sitio del alumno (`PlayerTaskRunner.Live`); `step` y el asana siguen valiendo.
+- [x] Prueba `PlayerTasksTest` (grupo 96).
+- [ ] Tester: con SampleScene reconstruida (solo el santuario), grupos 96, 50, 41, 42 y 43; fotos de un marcador «E — acción» en el telar, en el bancal y en la mesa de emplatado durante la iniciación, y del panel de la tarea con la pista de ruta.
+- [ ] Pendiente: pasos con E en el examen médico de llegada (`NewcomerInitiator`), si Berón lo quiere; efectos propios por paso (regar de verdad, servir un plato); que Kushal dirija la clase de yoga real cuando le toca `yog_guia`. Hecho: «Manos» pasa a la N y la melaza al punto (.); la E es solo la de interactuar (reconstruir SampleScene).
+
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
 - [x] `ConversationDirector` (uno por escena con personas): humanos e insectos-humanos (`PersonLife`), personal de la jornada y `Conversable`; humano↔humano, insecto↔insecto y humano↔insecto en la misma escena; cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar.

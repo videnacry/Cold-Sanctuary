@@ -112,6 +112,15 @@ Las marcadas con * son obligatorias cada día.
 - **Misión nueva**: si la rotación da a alguien una misión que nunca ha hecho, la **Magnate** aparece a su lado y lo inicia. Es la mímica: ella lanza los hechizos y el otro los repite, como en el yoga.
 - **Personajes antiguos**: los que no son recién llegados (Andrea, Goluis…) son miembros desde el principio y entran en la rotación el primer día.
 
+## Las misiones de Kushal se hacen con «E» (2026-11-04)
+
+Berón: «para todas las tareas e iniciaciones vamos a utilizar el modelo de Ambrosio». Cada misión de la jornada de Kushal es
+una **tarea de pasos con E** ([`tareas-del-jugador.md`](tareas-del-jugador.md)): al empezar su hora salen los marcadores
+«E — acción» en los muebles de su puesto y la pista hacia el primero; la E en cada sitio hace el paso. Cuenta como hecha
+**solo con todos los pasos** (o virtualizada); si la ignora, caduca **sin efecto**: la jornada ya no aplica el efecto de las
+misiones de Kushal al acabar la hora. Las iniciaciones de cocina, huerto y sala de yoga piden cada paso igual («E — paso»
+en el sitio del alumno).
+
 ## Máquina de virtualización (y de simulación)
 
 Al usarla se elige:
