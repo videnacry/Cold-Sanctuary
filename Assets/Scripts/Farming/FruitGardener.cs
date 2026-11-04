@@ -70,6 +70,10 @@ public class FruitGardener : MonoBehaviour
         if (a == null || b == null) return 0f;
         float d = Vector3.Distance(a.transform.position, b.transform.position);
         TreeFloor fa = a.GetComponentInParent<TreeFloor>(), fb = b.GetComponentInParent<TreeFloor>();
+        // LAS RESIDENCIAS (2026-11-04: una maceta en la terraza de cada casa del árbol, desde ed774ff): de una casa a otra se va EN
+        // ALFOMBRA (bajar, volar, subir), no andando la recta: un vuelo por casa (la ronda de la Residencia no acababa en su tiempo).
+        Bedroom ra = a.GetComponentInParent<Bedroom>(), rb = b.GetComponentInParent<Bedroom>();
+        if (ra != rb && (ra != null || rb != null)) return d + FlightSeconds * 2.6f;
         return fa != fb ? d * 1.3f + 10f : d;   // (medido en Unity 2026-11-01: de punta a punta de Servicios, ~38 s de juego entre andar a la puerta, nadar y salir; antes 2 × la recta + 60 m)
     }
 

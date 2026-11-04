@@ -7,7 +7,7 @@ using UnityEngine;
 /// encuentra parqueado a ras del suelo y directamente va hacia la ballena herida y la tratarían directamente en dicho submarino
 /// colosal»; docs/submarinos-medicos.md, con la investigación y sus fuentes). Una ballena o una orca no se puede sacar del agua:
 /// fuera de ella su propio peso le aplasta los pulmones y los órganos y se recalienta (Geraci y Lounsbury 2005; NOAA). Por eso
-/// el Leviatán lleva el agua con ella: un POZO MÉDICO inundado de 32 × 10 m con SUELO ELEVABLE (como la piscina médica de suelo
+/// el Leviatán lleva el agua con ella: un POZO MÉDICO inundado de 20 × 8 m con SUELO ELEVABLE (como la piscina médica de suelo
 /// móvil de los acuarios), abierto a popa por una compuerta.
 /// - Atracado en superficie junto a la orilla, «a ras del suelo» (su cubierta al nivel del hielo, con su pasarela).
 /// - LA MISIÓN (<see cref="Dispatch"/>): el submarino-ambulancia trae al equipo veterinario desde el hospital (<see cref="HospitalSubmarine.Ferry"/>),
@@ -21,8 +21,10 @@ using UnityEngine;
 /// </summary>
 public class WhaleHospitalSubmarine : MonoBehaviour
 {
-    public const float Length = 72f, Beam = 18f, Height = 12f;
-    public static readonly Vector2 Well = new Vector2(10f, 32f);   // ancho × largo del pozo médico
+    /// <summary>(2026-11-04) 56 × 16 × 12 m con un pozo de 20 × 8 m: a la medida de su paciente de diseño (una ballena de 16 m; una orca de
+    /// ~7 m, como las del santuario). Con el de 72 m y su pozo de 32 m, la orca se perdía dentro.</summary>
+    public const float Length = 56f, Beam = 16f, Height = 12f;
+    public static readonly Vector2 Well = new Vector2(8f, 20f);   // ancho × largo del pozo médico
     public const float WaterY = -0.25f;
     public float swimSpeed = 4f, turnSpeed = 12f, intakeSpeed = 1f, floorSpeed = 0.6f;
     public float treatGameMinutes = 90f;
@@ -126,6 +128,9 @@ public class WhaleHospitalSubmarine : MonoBehaviour
         while (!Carried.MoveTowards(w.transform, sternMouth, intakeSpeed * 2f) && Time.time - e0 < 90f) yield return null;
         while (!Carried.MoveTowards(w.transform, wellCenter, intakeSpeed) && Time.time - e0 < 180f) yield return null;
         w.transform.rotation = Quaternion.LookRotation(transform.forward);
+        // EL VIENTRE SOBRE LOS COLCHONES (2026-11-04: quedaba a 1,26 m: el pivote de la orca no está en su centro): se la baja hasta que lo
+        // más bajo de su cuerpo quede a 0,15 m del suelo elevable.
+        if (floor != null) { Bounds bb = BodyBounds(w.transform); w.transform.position += Vector3.up * (floor.position.y + 0.15f - bb.min.y); }
         inWell = true;
         if (Gate != null) Gate.localRotation = Quaternion.identity;
         Say($"«{w.name}» en el pozo médico ({Time.time - e0:0} s a {intakeSpeed:0.#} m/s), compuerta cerrada");

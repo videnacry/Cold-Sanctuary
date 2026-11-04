@@ -138,7 +138,8 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
             string.Join("; ", today.Select(m => $"{m.id} {m.hours:0.#} h")));
 
         // ── 6. EL JARDINERO ──
-        FruitGardener.Round round = rounds.OrderByDescending(r => r.Plants.Any(p => FruitCare.Polinizar(p.kind) || FruitCare.PodaDias(p.kind) > 0) ? 1 : 0).ThenByDescending(r => r.legs.Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count()).ThenBy(r => r.hours).First();
+        FruitGardener.Round round = rounds.OrderBy(r => r.Plants.Any(p => p.GetComponentInParent<Bedroom>() != null) ? 1 : 0)   // (2026-11-04) mejor una ronda de techos: la de las casas del árbol va en alfombra casa a casa
+            .ThenByDescending(r => r.Plants.Any(p => FruitCare.Polinizar(p.kind) || FruitCare.PodaDias(p.kind) > 0) ? 1 : 0).ThenByDescending(r => r.legs.Where(l => l.plants.Count > 0).Select(l => l.building).Distinct().Count()).ThenBy(r => r.hours).First();
         var rp = round.Plants.ToList();
         foreach (FruitPlant p in rp) { p.water = 0.3f; p.nutrients = 0.3f; p.pests = 0.4f; p.health = 0.55f; }
         float wellBefore = rp.Average(p => p.Wellbeing);
