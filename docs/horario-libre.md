@@ -163,3 +163,7 @@ Botón «Horario libre» abajo a la izquierda, o en la consola `horario` (tambi�
 La jornada sigue intacta: se vuelve a correr el grupo 50.
 
 **Lejos, en el microcosmos** (2026-11-04): en los pueblos ×100 los sitios quedan a cientos de metros. Si está lejos, el insecto-humano va a **paso ligero** (hasta 6 m/s, para llegar en unos 75 s) y tiene más tiempo para llegar andando (de 60 a 120 s de juego, según la distancia). Si aun así no llega, se le pone allí con `Warp` (NavMeshAgent) y cuenta como `fallback`. Los saltos solo se cuentan mientras lo lleva el horario: lo que lo mueva una necesidad no cuenta.
+
+**A dónde se anda en el microcosmos** (2026-11-04, ronda 3): entre los puestos de los edificios de la actividad se elige uno con **camino completo** por el NavMesh (con sus trepadas) y se anda a su punto del NavMesh. Si no hay ninguno, se va al final del camino parcial si queda junto al edificio (≤ 15 m). Se da por llegado también cuando el agente está al final de su camino a ≤ 4 m del puesto.
+
+**El panel enseña la escena correcta**: la que fija una prueba (`HorarioPanel.FocusScene`), la que se eligió con «otra escena» o, si no, la escena donde está el jugador.
