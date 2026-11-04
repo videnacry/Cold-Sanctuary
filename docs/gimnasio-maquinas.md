@@ -825,8 +825,7 @@ Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (sol
 
 Las complexiones salen de [diseno-personajes.md](diseno-personajes.md); no se suponen edades más allá de lo documentado.
 
-**Humanos-insecto**: no tienen plan (`GymProgramming.Eligible`), porque en las eras de sus microcosmos no hay gimnasio. Si algún
-microcosmos llega a tener uno, se les añade un perfil.
+**Humanos-insecto**: no usan estos planes del santuario (`GymProgramming.Eligible`), sino los de **su época**, en el lugar de entrenar de su pueblo (§16). (El 2026-11-04 se dijo aquí que «en sus eras no hay gimnasio»: era falso; Berón: «desde la antigua Grecia se entrenaba físicamente».)
 
 ### 15.7 Ver la rutina
 
@@ -874,6 +873,112 @@ El hilo «entreno» escribe los planes de entrenamiento de los insectos-humanos 
 - **Aparatos de cada clase.** Los da `CivicBuilder.TrainingKit(clase)`. Por ejemplo, un `gimnasio_griego` tiene xisto, skamma, halteres, kórykos, discos y jabalinas, y una `akhara` tiene foso de tierra, gada y mugdar, y nal. Un plan de entrenamiento puede elegir los ejercicios por la clase y buscar el puesto con `site.StationFor(AreaFunctions.Get("ent_pesos"))`.
 - **En el horario libre.** Los sitios de entrenamiento entran como hasta ahora: una actividad por plantilla, del tipo «ocio» del roster (`LeisureDirector`).
 
+
+## 16. Entrenar como en su época: los planes de los insectos-humanos (2026-11-04)
+
+Berón: «¿en ninguna época de microcosmos hay gimnasio? desde la antigua Grecia se entrenaba físicamente…». Tenía razón. Los pueblos
+tienen ya su lugar de entrenar de época (la sección anterior, de la rama de los pueblos). Aquí van los **planes**, el **catálogo de
+ejercicios de cada época** y la **sesión**, con el mismo motor que el gimnasio del santuario (§15).
+
+- **Código**:
+  - `HistoricTraining`: el catálogo y los planes, datos puros.
+  - `HistoricSession`: la sesión en vivo. `HistoricCoach`: el maestro del pueblo.
+  - `HistoricClass`: la clase del día en un edificio, con sus sitios.
+- **El gancho**: `MicroJornada`, en el bloque de la práctica (14–16 h). Si su sitio de práctica es de entrenamiento
+  (`activity == "entrenamiento"`, o la plantilla «Centro de entrenamiento» o «Dojo»), lo lleva `HistoricClass.Drive`. Si no,
+  sigue como siempre.
+- **La clave**: la **clase estable** del edificio, `AreaFunctionSite.training`. Si viene vacía, se usa
+  `MicroStyles.TrainingKind(estilo, año)`. No hace falta nada más del constructor de los pueblos.
+- **Regla J23** del [manual](manual-de-diseno.md). Prueba: `GymTrainingTest` (grupo 87).
+
+### 16.1 Los lugares de entrenar de la historia y sus ejercicios
+
+Cada clase tiene su tradición (`HistoricTraining.All`), con su maestro y sus sesiones. Cada ejercicio lleva los años en que existe:
+una sesión de ese año solo usa los que ya existían, y se descarta si le quedan menos de 3.
+
+| Clase (`training`) | Lugar · maestro | Ejercicios de época | Microcosmos |
+|---|---|---|---|
+| `juegos_heroicos` | Juegos de la Ilíada XXIII · el héroe más anciano | carrera, lucha, pugilato con correas, peso (disco), jabalina, arco | Egina (−1250) |
+| `gimnasio_griego` | Gimnasio y palestra · paidotribes | carrera de un estadio, **halteres** (desde −708), disco, jabalina, lucha, **kórykos** (desde −500), **el ternero de Milón** (desde −540) | Crotona (−530), Alejandría (−240) |
+| `palestra_romana` | Palestra de las termas · magister | halteres, pelota (trigón, harpastum), lucha, kórykos, **palus** de los legionarios; después, la natatio | (ninguno aún) |
+| `patio_lucha_egipcio` | Patio de lucha · maestro de lucha | lucha (Beni Hasan), **tahtib** (palos, desde −2000), sacos de arena, carrera | Menfis (−450) |
+| `patio_lucha` | Patio de lucha · maestro de lucha | lucha de cinturón, piedras, carrera, honda | Mesopotamia (−3500) |
+| `akhara` | Akhāṛā · guru | lucha (malla-yuddha; kushti desde 1500), **gada**, **mudgar**, la piedra, **dand** y **baithak** (desde 1500), mallakhamb (desde 1135); el **kalari** (desde 1100: meippayattu, patadas, bastón) | Kapilavastu (−530), Patanjali (−150), Velliangiri (1999) |
+| `furusiyya` | Maydān de furusiyya · ustādh | arco, lanza al blanco, espada al poste, lucha (koshti) | Bagdad (820) |
+| `zurkhaneh` | Zurkhaneh · morshed y miandar | **meel**, **sang**, **shena**, **kabbadeh**, giros (charkh), lucha | (ninguno aún) |
+| `tekke_guresh` | Tekke de luchadores · üstat | **yağlı güreş**, mazas, tiro con arco; el peşrev para calentar | Escútari (1854) |
+| `wuguan` | Escuela de artes marciales · shifu | mabu, taolu, **shisuo** (desde 702), patadas, bastón; **muñeco de madera** y chi sao (desde 1850), saco, pesas | Aldea de la montaña (1930), Bruce Lee (1964) |
+| `dojo` | Dojo · sensei | suburi, shiko, **ishi sashi**, randori, kyūdō | (ninguno aún) |
+| `juego_pelota` | Juego de pelota · maestro | golpes de cadera a la pelota de hule, carrera, átlatl | Palenque (683) |
+| `sala_armas` | Sala de armas · maestro de armas | el poste (pell), la quintana, lucha, piedra | (ninguno aún) |
+| `sala_esgrima` | Sala de esgrima · maestro de esgrima | estocadas, paradas, asaltos, poste | (ninguno aún) |
+| `prado_juegos` | Prado de los juegos (Cotswold Olimpicks) · el organizador | lucha, garrote, carreras, salto, el mazo | Woolsthorpe (1666), Berkeley (1796) |
+| `garrote_coleo` | Garrote y manga de coleo · maestro de garrote | juego de garrote, lanza llanera, machete, carreras | Angostura (1819) |
+| `turnplatz_schwingen` | Turnplatz y ruedo de schwingen · Turnwart | **schwingen**, **steinstossen** (piedra de Unspunnen, desde 1805), barra fija, paralelas | Sils Maria (1881) |
+| `turnhalle` | Turnhalle · Turnwart | barra fija, paralelas, potro, anillas, cuerda (desde 1811, Jahn), **mazas indias** (desde 1850); gimnasia sueca de Ling para calentar | Dayton, Colorado Springs, París 1898, Berna, Planta Atómica, Irena Sendler |
+| `hebert` | Parcours del método natural · moniteur | marcha, cuadrupedia, trepar, saltar, levantar y lanzar (desde 1905) | Le Chambon-sur-Lignon (1942) |
+| `futbol_tregua` | Partido de la tregua · el capitán | pases, regate, tiros a puerta, carreras | Tregua 1914 |
+| `club_deportivo` | Club deportivo · trener | **girya**, dominadas del GTO, flexiones, saco, pista | Chernóbil (1986) |
+| `estadio` | Estadio · entrenador | fútbol, atletismo, lutte traditionnelle | Uagadugú (2024) |
+| `gimnasio_moderno` | Gimnasio · entrenador | barra (banca, sentadilla, peso muerto, remo), dominadas, saco, comba; máquinas de placas desde 1970 | Pasadena, Albuquerque, Omaha, Hawthorne, Prairie View |
+
+La prehistoria (Sakshi, Ambrosio, Cocina, Huerto, Yoga…) no tiene lugar de entrenar.
+
+**Dónde se hace cada ejercicio** (`HistoricTraining.KeysOf`): en el aparato del pueblo (`AreaFunctionStation.station`, de
+`CivicBuilder.TrainingKit`).
+- Halteres en `halteres`; piedras y el ternero en `piedras`; mazas, girya y shisuo en `mazas`; barras en `pesas`.
+- Kórykos y saco en `saco`; poste, pell y muñeco en `muneco` o `makiwara`.
+- Barra fija, paralelas, potro y anillas en el suyo. Arcos en `diana`. Pelotas en `balon`, `campo` o `pista`.
+- Armas y esgrima en `pista_esgrima`, `tatami` o `foso_lucha` (cogen el arma del `armero`).
+- Lucha en `foso_lucha` o `tatami`. Carrera en `pista_carreras`, `campo` o `pista`.
+- Si el edificio no tiene ese aparato, cualquier suelo de entrenar.
+
+**Sitios** (`HistoricClass`):
+- Cada suelo (tatami, foso, pista, campo, sala) se parte en sitios a **2 m**, la distancia de dos personas.
+- Cada aparato da un sitio delante.
+- Nunca hay dos personas en el mismo sitio.
+
+### 16.2 Planes y sesión
+
+- **El plan** (`HistoricTraining.PlanFor`):
+  - El objetivo: los soldados, guardias y guerreros entrenan fuerza; el resto, hipertrofia, resistencia o fuerza (fijo por su
+    nombre).
+  - 3 o 4 días por semana. Las sesiones de su tradición rotan de un día al siguiente.
+  - Series, repeticiones, descanso y RPE salen de `GymProgramming.Spec`, como en §15.
+  - La carga de partida es la del aparato de la época: halteres de 2 kg, mazas de 5–8 kg, la girya de 16 kg, el ternero de
+    30 kg…
+- **Progresión** (la del santuario): +1 repetición hasta arriba del rango; arriba, **un paso de carga** (un halter más pesado,
+  la girya siguiente, un ternero más grande, como Milón) y vuelta abajo. Descarga cada 4.ª semana. Lo que queda sin acabar no
+  sube.
+- **La sesión** (`HistoricSession`):
+  1. Calentamiento: la clase del maestro o la carrera suave; en el tekke, el peşrev; en la Turnhalle, la gimnasia de Ling.
+  2. Cada ejercicio: coge el arma del armero si hace falta y va a su sitio. Si está ocupado, espera hasta 8 s y lo deja para el
+     final; a la segunda, lo salta.
+  3. Las series × repeticiones contadas (A → B → A), con el descanso real pasado a tiempo de juego (2–10 s) entre series.
+  4. Vuelta a la calma: estiramientos y masaje con aceite; en Roma, el baño.
+  - Anima el cuerpo de insecto con `CubeInsect.Martial`/`Push` según el movimiento: levantar, empujar, balancear, luchar,
+    correr, lanzar, golpear, sostener o saltar.
+  - Si llega una necesidad (comer, el baño), suelta su sitio y, al volver, repite la serie.
+- **Registro**: `[Entreno micro] Teano · Palestra · Cargar el ternero (como Milón de Crotona) · serie 2/4 · 5 reps · 37,5 kg`.
+
+### 16.3 El maestro del pueblo
+
+- **Quién es** (`HistoricClass.Drive`): quien **trabaja** en ese edificio (su `MicroJornada.work`). Si nadie, el primero por nombre
+  de los que practican allí. Su título es el de la tradición: paidotribes, guru, ustādh, üstat, shifu, sensei, maestro de armas,
+  Turnwart, moniteur, trener…
+- **Qué hace** (`HistoricCoach`):
+  - Los primeros 10 min de juego, la **clase de calentamiento**: los alumnos en filas de 4 delante de él, a 2 m, repiten su
+    movimiento.
+  - Después, **rondas**: va junto a quien está en plena serie y le corrige con las indicaciones de su tradición, por ejemplo
+    «balancea los halteres antes de saltar» o «rodillas hacia fuera en el mabu».
+- **Lo que no hace aún**: su propia rutina. En el santuario, el entrenador sí la hace (§15.5).
+
+### 16.4 Lo que queda para la rama de los pueblos
+
+- El maestro sale de quien tiene ese edificio como trabajo. Conviene que cada pueblo con lugar de entrenar tenga un insecto-humano
+  con `work` = ese edificio y el papel «maestro».
+- Si un pueblo nuevo usa una clase que no está en la tabla, hay que añadirla a `HistoricTraining`. La prueba 87 falla si a una
+  clase le falta su tradición.
 
 ## Fuentes
 
@@ -939,6 +1044,34 @@ El hilo «entreno» escribe los planes de entrenamiento de los insectos-humanos 
   - [OMS 2020: directrices de actividad física y comportamiento sedentario](https://www.who.int/publications/i/item/9789240015128)
   - NSCA, *Essentials of Strength Training and Conditioning* (Haff y Triplett, 4.ª ed., 2016): series, repeticiones y descansos
     por objetivo (libro, sin enlace).
+- Entrenar en la historia (§16):
+  - [Halteres (Wikipedia)](https://en.wikipedia.org/wiki/Halteres_(ancient_Greece)): de piedra o metal, de 2 a 9 kg; Filóstrato
+    (*Gymnasticus* 55) los recomienda para hombros y manos.
+  - [Milón de Crotona (Wikipedia)](https://en.wikipedia.org/wiki/Milo_of_Croton): el ternero que crece cada día, la imagen clásica
+    de la sobrecarga progresiva (leyenda).
+  - [Gimnasio de la antigua Grecia (Wikipedia)](https://en.wikipedia.org/wiki/Gymnasium_(ancient_Greece)) y [Palestra](https://en.wikipedia.org/wiki/Palaestra);
+    [Termas romanas](https://en.wikipedia.org/wiki/Thermae).
+  - [Historia de la lucha (Wikipedia)](https://en.wikipedia.org/wiki/History_of_wrestling): Beni Hasan (unos 400 pares de luchadores,
+    XI–XII dinastías) y los luchadores sumerios.
+  - [Tahtib (Wikipedia)](https://en.wikipedia.org/wiki/Tahtib): la esgrima de palos en tres tumbas de Beni Hasan; con el arco y la
+    lucha, parte de la instrucción de los soldados.
+  - [Pahlevani y rituales del zurkhaneh (Wikipedia)](https://en.wikipedia.org/wiki/Pahlevani_and_zoorkhaneh_rituals): meel, sang,
+    shena y kabbadeh; Patrimonio Inmaterial de la UNESCO (2010).
+  - [Akhara](https://en.wikipedia.org/wiki/Akhara), [Pehlwani](https://en.wikipedia.org/wiki/Pehlwani),
+    [Mallakhamb](https://en.wikipedia.org/wiki/Mallakhamba) y [Kalaripayattu](https://en.wikipedia.org/wiki/Kalaripayattu) (Wikipedia).
+  - [Furusiyya (Wikipedia)](https://en.wikipedia.org/wiki/Furusiyya).
+  - [Okmeydanı (Wikipedia)](https://en.wikipedia.org/wiki/Okmeydan%C4%B1) y [The Archers' Lodge (İstanbul Tarihi)](https://istanbultarihi.ist/505-the-archers-lodge):
+    el tekke de los arqueros; [Yağlı güreş](https://en.wikipedia.org/wiki/Turkish_oil_wrestling).
+  - [Stone locks y armas pesadas en las artes marciales chinas (Chinese Martial Studies)](https://chinesemartialstudies.com/2014/03/10/through-a-lens-darkly-22-heavy-knives-and-stone-locks-strength-training-in-the-traditional-chinese-martial-arts/):
+    los shisuo, parte de los exámenes militares; [Hojo undō (Wikipedia)](https://en.wikipedia.org/wiki/Hojo_und%C5%8D): ishi sashi y chi ishi.
+  - [Juego de pelota mesoamericano (Wikipedia)](https://en.wikipedia.org/wiki/Mesoamerican_ballgame).
+  - [Unspunnenfest (Wikipedia)](https://en.wikipedia.org/wiki/Unspunnenfest) y [Deportes nacionales suizos](https://en.wikipedia.org/wiki/Swiss_national_sports):
+    la piedra (1805) y el schwingen.
+  - [Turnverein](https://en.wikipedia.org/wiki/Turnverein), [Indian club](https://en.wikipedia.org/wiki/Indian_club),
+    [Kettlebell (girya)](https://en.wikipedia.org/wiki/Kettlebell) y [Georges Hébert](https://en.wikipedia.org/wiki/Georges_H%C3%A9bert) (Wikipedia).
+  - Lo que **no** se ha podido confirmar con fuentes y queda como supuesto: el ciclo de cuatro días (tetrada) de Filóstrato, la
+    fecha exacta de las primeras mazas (mudgar) y del dand y el baithak (se pone 1500), y que la lucha de Uruk ya existiera en el
+    −3500 (las primeras imágenes son de hacia el −2900/−2600).
 - Espacios libres:
   - [Livestrong: Gym Equipment Placement Standards](https://livestrong.com/article/415103-gym-equipment-placement-standards)
   - [Achievable (CSCS): facility layout](https://app.achievable.me/study/cscs/learn/facility-design-layout-and-organization)

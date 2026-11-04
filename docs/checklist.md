@@ -13,12 +13,13 @@ Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-plant
 > orden: calentamiento, series × repeticiones contadas en cada máquina, descanso entre series, cambio de máquina si está ocupada
 > (alternativa, espera acotada o al final) y vuelta a la calma; progresión doble semanal y descarga cada 4.ª semana. **Entrenador:
 > Andrea** (el de más fuerza; el yoga pasa a Josedrilo en la rama de personajes) (misión de papel fijo «gym_planes», clase de calentamiento, correcciones y spotter). Panel: consola `rutina`.
-> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §15; reglas J19–J22 del manual.
+> Investigación con fuentes y planes asignados en [`gimnasio-maquinas.md`](gimnasio-maquinas.md) §15; reglas J19–J23 del manual. **Microcosmos (§16)**: los insectos-humanos entrenan como en su época (23 clases de lugar de entrenar de los pueblos, ejercicios con sus años, el maestro del pueblo), con el mismo motor.
 > Prueba nueva `GymTrainingTest` (grupo 87).
 > - [ ] **Probar en vivo** (reconstruir SampleScene con «Build Sample Scene Blockout (solo el santuario, sin microcosmos)» y guardarla: la fuerza 1,6 de Andrea y que salga en el gimnasio están en el constructor; luego la escena `Prueba_Yoga`): grupos 87 y 50 (`GymUsabilityTest`), y 28/50
 >   (`SanctuaryLifeTest`, `JornadaTest`: el reparto de las 14 h cambia con los días de cada plan y Andrea tiene la misión de 1 h).
 > - [ ] Fotos: la clase de calentamiento de Andrea en la zona libre (que las filas no caigan dentro de una máquina) y una serie
 >   con su descanso; abrir `rutina(Amahuz)` durante el bloque.
+> - [ ] **Microcosmos**: reconstruir uno a uno (regla W5) Crotona, Velliangiri y Sils Maria y mirar en la práctica de las 14 h la clase del maestro del pueblo y las series en sus aparatos (`[Entreno micro]` en la consola).
 > - [ ] Si Berón quiere: que cada personaje tenga su propio perfil afinado (ahora los objetivos salen de sus fichas).
 
 > **HECHO 2026-11-04 (hilo del yoga, rama claude/edif-yoga; sin probar en vivo):** **sin anillo de yoga** y **dos pisos de yoga**
