@@ -57,7 +57,7 @@ dentro de un collider. Al construir queda apuntado `MicroFloor.plantsSettled` / 
   barrio alto.
 - **La historia y su pueblo van encima**: la «Historia» sube el grosor de la tierra, y cada edificio o tramo de calle que quedara con
   la base por debajo de la tierra que tiene debajo (sobre una alfombra) se sube a ella (`MicroSoilBuilder.RaiseTown`; nunca se baja).
-- **Renderers**: un mosaico de ≤ 64 × 64 celdas es UNA malla (tierra y piedras en dos submallas) con su MeshCollider. Paso de 2 m o
+- **Renderers y colliders** (rendimiento, 2026-11-04): lo que SE VE (ruido, cúmulos, piedras) va en mosaicos de ≤ 64 × 64 celdas, UNA malla cada uno (tierra y piedras en dos submallas) y SIN collider; paso de 2 m o más en el barrio (≤ ~240 celdas por lado) y 16–40 m en el resto (≤ ~100). El COLLIDER es otra malla, LISA (la mitad del grosor + los cúmulos, sin ruido ni piedras) y más gruesa (≥ 6 m en el barrio): es lo que hornea el NavMesh. Con el ruido y las piedras en el collider, el NavMesh de la Cocina (4 × 4 km) no terminaba (Unity colgado > 40 min). Las plantas se apoyan en la tierra que se ve (`MicroSoilBuilder.Lay` devuelve su altura; `MicroGround.Settle` la usa); el collider va siempre por debajo. Los contrafuertes y laderas de la forma de microcosmos tienen collider pero no entran en el NavMesh (`NavMeshModifier.ignoreFromBuild`).
   más en el barrio (≤ ~240 celdas por lado) y 12–30 m en el resto: unos 30–60 mosaicos por microcosmos.
 
 ## Elementos: las tres formas de cada piso

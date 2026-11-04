@@ -84,7 +84,11 @@ internal static class MicroFloorDress
             var g = new GameObject(mesh.name); g.transform.SetParent(parent, false);
             g.AddComponent<MeshFilter>().sharedMesh = mesh;
             g.AddComponent<MeshRenderer>().sharedMaterials = mats;
-            if (solid) g.AddComponent<MeshCollider>().sharedMesh = mesh;
+            if (solid)
+            {   // (rendimiento) Se pisa y la flora lo respeta, pero el NavMesh no lo hornea: cientos de laderas facetadas multiplicaban sus polígonos.
+                g.AddComponent<MeshCollider>().sharedMesh = mesh;
+                g.AddComponent<Unity.AI.Navigation.NavMeshModifier>().ignoreFromBuild = true;
+            }
             v.Clear(); foreach (var s in subs) s.Clear(); chunks++;
         }
         public int Chunks => chunks;

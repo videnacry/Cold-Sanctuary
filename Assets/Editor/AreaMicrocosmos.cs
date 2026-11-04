@@ -245,15 +245,15 @@ public static class AreaMicrocosmos
         // alfombras y las losas) y una placa sobre cada mueble poblado; lisa donde está la historia y su pueblo, sin tierra sobre su
         // agua. La historia se sube a la tierra (y los edificios o calles que quedaran por debajo, sobre una alfombra): el pueblo
         // siempre se ve encima del suelo.
-        MicroSoil soilLayer = null;
-        if (giant != null)
+        MicroSoil soilLayer = null; System.Func<float, float, float> soilAt = null;
+        if (giant != null && MicroSoilBuilder.Enabled)   // (apagada por defecto: MicroGround.SoilEnabled)
         {
             var flat = new List<Bounds>();
             { Bounds sc = storyCore; sc.Expand(new Vector3(8f, 0f, 8f)); flat.Add(sc); }
             if (_hasCore) { Bounds tc = _townCore; tc.Expand(new Vector3(4f, 0f, 4f)); flat.Add(tc); }
-            foreach (Bounds b in _streets) flat.Add(b);
+            // (las calles quedan dentro del pueblo: no se listan una a una, eran miles de cajas por vértice de tierra)
             List<Bounds> soilTops = tops?.FindAll(b => !TopHasBuilding(b, cast));
-            soilLayer = MicroSoilBuilder.Lay(root.transform, rect, district, floors, groundY, soilTops, flat, StoryWater(story), soil, display.GetHashCode(), sceneLabel);
+            soilLayer = MicroSoilBuilder.Lay(root.transform, rect, district, floors, groundY, soilTops, flat, StoryWater(story), soil, display.GetHashCode(), sceneLabel, out soilAt);
             story.localPosition += Vector3.up * MicroGround.SoilThickness;
             soilLayer.raised = MicroSoilBuilder.RaiseTown(story, floors, groundY);
             Physics.SyncTransforms();
@@ -265,7 +265,7 @@ public static class AreaMicrocosmos
         // en la superficie más alta de encima de su pie (un rayo desde arriba: la tierra, la alfombra, la losa del hospital); la que
         // queda dentro de un collider (una pata, un edificio) se quita.
         var surfaces = MicroSoilBuilder.GroundLayers(floors, groundY); if (tops != null) surfaces.AddRange(tops);
-        var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces);
+        var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces, soilAt);
         Debug.Log($"[Tierra] {sceneLabel}: {settledPl} plantas y bichos apoyados en la superficie de encima, {removedPl} plantas quitadas (dentro de un collider).");
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
