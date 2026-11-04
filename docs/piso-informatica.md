@@ -52,6 +52,7 @@ Odense; la PUE de Google de 2023 (1,10 está confirmada para 2019).
   `ifo_refrigeracion` (filtros, fugas, bombas, intercambiadores: 1 h), `ifo_energia` (acometida, SAI y baterías: 0,5 h). Cada una
   tiene su efecto en el modelo.
 - **Capacidad** (regla S13): 4 puestos de sistemas, 2 de refrigeración y 3 de energía (cuadro y SAI): varias personas a la vez.
+- **Virtualización** (`VirtualMissions`, «Build escenas de virtualización (una por misión)»): cada misión (`ifo_*`, y en el Aula `aul_*`) tiene sus pasos anclados a los bloques del piso real («Bloque_Puesto de monitorización 1», la CDU, las bombas, el SAI…); `VirtualMissionSceneBuilder` copia el área (`Informatics_Area`, `Classroom_Area`).
 
 ## 3. Pruebas
 
