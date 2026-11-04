@@ -241,6 +241,7 @@ public class FruitGardener : MonoBehaviour
         var all = TreeStations(t);
         var masks = new List<MaskStation>();
         for (int i = 0; i < all.Count; i++) if (all[i].Due(day, i)) masks.Add(all[i]);
+        masks.Reverse();   // (de ARRIBA abajo: entra por el techo y baja una sola vez, 2026-11-04)
         var beds = Phytoplankton.All.Where(p => p != null && p.building == t.building).ToList();
         return (masks, beds);
     }
@@ -249,11 +250,13 @@ public class FruitGardener : MonoBehaviour
     /// hoy (≈ 1,3 × la recta + 6 m entre una y otra) y volver al fondo, cuidar las cortinas de fitoplancton y salir por el suelo.</summary>
     public static float TreeTaskHours(ArbolCampos t, List<MaskStation> masks, List<Phytoplankton> beds)
     {
-        Vector3 start = t.Ground != null ? t.World(t.Ground.inside) : t.transform.position;
+        // (2026-11-04) Entra por el TECHO (el panel de máscaras está en su puerta) y BAJA una sola vez por las estaciones de hoy hasta el
+        // fondo: subir desde el suelo y volver contaba la altura del tronco dos veces (1,06 h medidas en el árbol más pequeño, prueba 55).
+        Vector3 start = t.Top != null ? t.World(t.Top.inside) : t.transform.position + Vector3.up * t.rootHeight, bottom = t.Ground != null ? t.World(t.Ground.inside) : t.transform.position;
         float swimM = 0f; Vector3 at = start;
         foreach (MaskStation m in masks) { swimM += Vector3.Distance(at, m.SwimPoint) * 1.3f + 6f; at = m.SwimPoint; }
-        swimM += Vector3.Distance(at, start) * 1.3f;
-        at = start;
+        swimM += Vector3.Distance(at, bottom) * 1.3f;
+        at = bottom;
         foreach (Phytoplankton b in beds) { swimM += Vector3.Distance(at, b.transform.position) + 2f; at = b.transform.position; }
         float min = BoardMinutes + masks.Count * MaskDoorMinutes + beds.Count * Phytoplankton.CareMinutes;
         return min / 60f + (swimM / TaskSwimSpeed + TreeSwimSeconds * 0.5f) / SecondsPerGameHour;
@@ -299,7 +302,7 @@ public class FruitGardener : MonoBehaviour
         Round r = RoundFor(missionId);
         if (r == null || r.legs.Count == 0) return null;
         Leg l = r.legs[0];
-        if (l.TreeTasks && l.tree.Ground != null) return l.tree.World(l.tree.Ground.outside) + Vector3.up;   // (una ronda que empieza por las tareas de un árbol: en su puerta del suelo)
+        if (l.TreeTasks && l.tree.Top != null) return l.tree.World(l.tree.Top.outside) + Vector3.up;   // (una ronda que empieza por las tareas de un árbol: en su techo)
         return l.station != null ? l.station.StandPoint : l.plants.Count > 0 ? l.plants[0].StandPoint(l.plants[0].transform.position + Vector3.forward) : (Vector3?)null;
     }
 
@@ -369,14 +372,14 @@ public class FruitGardener : MonoBehaviour
             {
                 // (2026-11-04) Por la PUERTA DEL SUELO: primero lee el panel de máscaras (la luz y la carga de cada estación), luego
                 // entra a las estaciones de hoy (la rotación y las que están en rojo) y al fitoplancton del fondo, que está ahí mismo.
-                TreeLevel gl = t.Ground;
+                TreeLevel gl = t.Top;   // (2026-11-04: por el TECHO, y baja una sola vez)
                 if (gl == null) { EndLeg(); return; }
-                Doing = $"Va a la puerta del suelo de {leg.building} a revisar las máscaras de oxígeno y el fitoplancton";
+                Doing = $"Va al techo de {leg.building} a revisar las máscaras de oxígeno y el fitoplancton";
                 if (t.InRootWater(transform.position)) { _lastLevel = t.LevelAt(transform.position) ?? gl; StartTreeTasks(t, leg, false); return; }
                 Vector3 to = t.World(gl.outside) + Vector3.up;
                 if (_boardUntil <= 0f)
                 {
-                    if (!Reach(to)) { if (_timedOut) { Debug.LogWarning($"[Frutales] «{name}» no llega a la puerta del suelo de {leg.building}: deja sus máscaras para otro día."); EndLeg(); } return; }
+                    if (!Reach(to)) { if (_timedOut) { Debug.LogWarning($"[Frutales] «{name}» no llega al techo de {leg.building}: deja sus máscaras para otro día."); EndLeg(); } return; }
                     _boardUntil = Time.time + RealSecondsForGameMinutes(BoardMinutes);
                     Debug.Log($"[Frutales] «{name}» lee el panel de máscaras de {leg.building}: hoy revisa {leg.masks.Count} de {TreeStations(t).Count} estaciones (rotación semanal y las que están en rojo).");
                 }
@@ -436,7 +439,7 @@ public class FruitGardener : MonoBehaviour
     void StartTreeTasks(ArbolCampos t, Leg leg, bool fromOutside)
     {
         _task = -1;
-        if (fromOutside && t.Ground != null) { TreeLevel gl = t.Ground; _wps.Clear(); _wps.Add(() => t.World(gl.door) + Vector3.up); _wps.Add(() => t.World(gl.inside) + Vector3.up); }
+        if (fromOutside && t.Top != null) { TreeLevel gl = t.Top; _wps.Clear(); _wps.Add(() => t.World(gl.door) + Vector3.up); _wps.Add(() => t.World(gl.inside) + Vector3.up); }
         Debug.Log($"[Frutales] «{name}» entra en {leg.building} a revisar las máscaras de {leg.masks.Count} puertas y {leg.beds.Count} cortinas de fitoplancton.");
         NextTreeTask(t, leg, keepEntry: fromOutside);
     }
