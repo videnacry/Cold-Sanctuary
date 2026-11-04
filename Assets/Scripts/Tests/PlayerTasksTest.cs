@@ -217,16 +217,18 @@ public class PlayerTasksTest : MonoBehaviour, ITestUnit
         {
             if (ai.WaitingForStudent)
             {
-                yield return null;   // (el marcador en vivo lo pone su Update)
+                yield return null; yield return null;   // (el paso en vivo lo pide el Update de la iniciación y el marcador lo pone el del ejecutor)
                 if (ai == null || !ai.WaitingForStudent) continue;
                 asked++;
                 if (_run.LiveActive && _run.LiveMarker != null) marked++;
                 lastAction = _run.LiveAction;
                 if (_run.LiveActive && !_run.NearLive) { WorkdayDirector.Teleport(_player.transform, PathMover.Of(_player.transform).OnGround(_run.LiveSpot)); yield return null; }
+                int idx = _run.LiveIdx;
                 string r = _run.Press();
                 if (r.StartsWith("haces")) pressed++;
                 else Debug.LogWarning($"[PlayerTasksTest] iniciación de {name}, paso {asked}: {r}");
-                yield return Until(() => ai == null || !ai.WaitingForStudent, 12f);
+                // (en la cocina «esperando al alumno» no se apaga entre pasos: se espera a que pida el siguiente)
+                yield return Until(() => ai == null || !ai.WaitingForStudent || (_run.LiveActive && _run.LiveIdx != idx), 12f);
                 for (int k = 0; k < 3; k++) yield return null;
             }
             yield return null;

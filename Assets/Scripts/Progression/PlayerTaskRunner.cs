@@ -323,6 +323,7 @@ public class PlayerTaskRunner : MonoBehaviour
     public bool LiveActive => LiveNow() != null;
     public Vector3 LiveSpot => LiveNow() != null ? _live.spot : Vector3.zero;
     public string LiveAction => LiveNow()?.action;
+    public int LiveIdx => LiveNow() != null ? _live.idx : -1;
     public GameObject LiveMarker => LiveNow() != null ? _liveMarker : null;
     public bool NearLive => LiveNow() != null && Near(Player(), _live.spot);
 
