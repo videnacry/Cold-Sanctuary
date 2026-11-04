@@ -50,7 +50,8 @@ public class GymCoach
         Note(classSec > 0f ? "abre la clase de calentamiento" : "empieza las rondas por las máquinas");
     }
 
-    public bool ClassRunning => phase == Phase.ToClass || phase == Phase.Class;
+    /// <summary>¿Hay clase ahora? (acotada por su hora de fin: si el entrenador se va a comer, los alumnos no esperan para siempre)</summary>
+    public bool ClassRunning => (phase == Phase.ToClass || phase == Phase.Class) && Time.time < _classUntil;
     public string Status => phase == Phase.ToClass || phase == Phase.Class ? $"Entrenador: clase de calentamiento ({_attendees.Count})"
         : phase == Phase.Rounds ? (_target != null ? $"Entrenador: {(_spotting ? "hace de spotter a" : "corrige a")} {_target.Who}" : "Entrenador: rondas por las máquinas")
         : phase == Phase.Own ? (own != null ? own.Status() : "Su rutina") : "Entrenador";

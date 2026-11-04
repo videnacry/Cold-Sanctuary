@@ -750,6 +750,21 @@ public class WorkdayDirector : MonoBehaviour
     /// <summary>Punto de la clase de calentamiento del entrenador (la zona libre del gimnasio) y hacia dónde mira.</summary>
     public static Vector3 GymClassPoint() => WorkPoint(GymArea, "Clase de calentamiento");
 
+    /// <summary>El entrenador de hoy (una vez al día): si el entrenador es del personal y hoy le toca el gimnasio.</summary>
+    void EnsureCoach(float min, float ms)
+    {
+        if (_coachDay == today.day) return;
+        WorkRoster.Worker tw = roster.Find(GymProgramming.Trainer);
+        GameObject g = tw != null && today.training.TryGetValue(tw, out string t) && t == GymArea ? Body(GymProgramming.Trainer) : null;
+        if (g == null || g.CompareTag("Player")) return;
+        _coachDay = today.day;
+        GymProgramming.DayRoutine own = GymProgramming.For(g.name, today.day)?.Trains(today.day) == true ? GymProgramming.Prescribe(g.name, today.day) : null;
+        float classSec = Mathf.Max(0f, GymClassMin - min) * ms;
+        float roundsSec = own != null ? Mathf.Max(0f, GymCoachRoundsEnd - Mathf.Max(min, GymClassMin)) * ms : 999999f;
+        Transform at = AreaTransform(GymArea);
+        _coach = new GymCoach(g, GymClassPoint(), at != null ? Quaternion.Euler(0f, at.eulerAngles.y, 0f) : Quaternion.identity, classSec, roundsSec, own, (GymEndMin - Mathf.Max(min, GymCoachRoundsEnd)) * ms) { walkSpeed = walkSpeed };
+    }
+
     /// <summary>Si toca gimnasio, conduce a <paramref name="g"/> por su rutina de hoy; true = ya lo maneja. false = a la zona
     /// libre (antes del bloque, ya terminó su rutina o sin plan): sigue el punto del área de siempre.</summary>
     bool GymSession(GameObject g, string doing)
@@ -762,20 +777,12 @@ public class WorkdayDirector : MonoBehaviour
         float ms = TC != null && TC.TimeSpeedMinuteSecs > 0.01f ? TC.TimeSpeedMinuteSecs : 2.5f;
         if (min < 0f) return false;
         if (min >= GymEndMin) { LeaveGym(g); return false; }
-        // EL ENTRENADOR: la clase, las rondas y (si su plan lo pide hoy) su rutina.
+        // EL ENTRENADOR: la clase, las rondas y (si su plan lo pide hoy) su rutina. Se crea con el primero que llega al bloque (si
+        // no, los que van antes que él en la lista del personal empezaban a calentar solos sin ver la clase).
+        EnsureCoach(min, ms);
         if (g.name == GymProgramming.Trainer)
         {
-            if (_coach == null || _coachDay != today.day)
-            {
-                if (_coachDay == today.day) return false;   // ya terminó hoy
-                _coachDay = today.day;
-                GymProgramming.DayRoutine own = GymProgramming.For(g.name, today.day)?.Trains(today.day) == true ? GymProgramming.Prescribe(g.name, today.day) : null;
-                float classSec = Mathf.Max(0f, GymClassMin - min) * ms;
-                float roundsSec = own != null ? Mathf.Max(0f, GymCoachRoundsEnd - Mathf.Max(min, GymClassMin)) * ms : 999999f;
-                Vector3 cp = GymClassPoint();
-                Transform at = AreaTransform(GymArea);
-                _coach = new GymCoach(g, cp, at != null ? Quaternion.Euler(0f, at.eulerAngles.y, 0f) : Quaternion.identity, classSec, roundsSec, own, (GymEndMin - Mathf.Max(min, GymCoachRoundsEnd)) * ms) { walkSpeed = walkSpeed };
-            }
+            if (_coach == null || _coachDay != today.day) return false;
             if (!_coach.Tick(_sessions.Values)) { LeaveGym(g); return false; }
             SetStatus(g, $"{doing} · {_coach.Status}");   // («Entrenamiento: Gimnasio · Entrenador: …»: JornadaTest no le mira la postura en el gimnasio)
             return true;
