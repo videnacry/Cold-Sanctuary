@@ -205,7 +205,11 @@ en el doc de su tema; aquí no se repite.
 | J4 | **Nadie queda encerrado**: quien deja su puesto en la jornada es devuelto por la Magnate; su puesto es el espacio que pide la tarea. | Disciplina sin muros ni guardias que arrastran. | 28 y 50 | [jornada-y-rotacion.md](jornada-y-rotacion.md) |
 | J5 | **Las iniciaciones las da el trabajador de turno que está en el área**; la Magnate solo acompaña. Se hacen «en orquesta»: el trabajador se acerca a ≤ 2 m y cada uno anda solo a su sitio, sin arrastrar ni teletransportar. | Que las enseñe quien conoce el área y que se vean naturales. | `KitchenInitiationTest` (41), `YogaInitiationTest` (42), `GardenInitiationTest` (43) | [reglas-plataformas.md](reglas-plataformas.md) #10, [jornada-y-rotacion.md](jornada-y-rotacion.md) |
 | J6 | **Las figuras reales se tratan con respeto**, por su trabajo público, sin caricatura ni juicio político. | Son personas reales. | **solo en docs** | [personajes-mesocosmos.md](personajes-mesocosmos.md) |
-| J7 | **Humanos e insectos-humanos conversan** con el sistema del anima, con una escena de prueba propia. **PENDIENTE DE IMPLEMENTAR.** | Que la vida social se vea. | **solo en docs** | memoria 2026-11-04 |
+| J7 | **Humanos e insectos-humanos conversan** (humano↔humano, insecto↔insecto, humano↔insecto) cuando comparten escena y están a ≤ 2,6 estaturas; surge por cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar; con su escena de prueba propia (`Prueba_Conversaciones`). Nunca el jugador; quien no deba hablar lleva `Conversable.optOut`. | Que la vida social se vea. | `ConversationTest` (grupo 88) | [conversaciones.md](conversaciones.md), Berón 2026-11-04 |
+| J8 | **Una charla no manda**: no mueve a nadie ni cambia lo que hace (capa encima de jornada, horario libre y necesidades); una necesidad urgente (≥ 0,85), dormir, una iniciación o la historia la cortan; en turno se habla menos. | La jornada y el cuerpo van primero. | 88 (necesidad urgente, nadie salta) | [conversaciones.md](conversaciones.md) §4 |
+| J9 | **Se turnan y se ve**: A, B, A, B; 4–6 frases cortas, una por minuto de juego, en un bocadillo con el tema sobre quien habla. | Que se lea la charla, no solo el registro. | 88 (turnos, bocadillos) | [conversaciones.md](conversaciones.md) §2 |
+| J10 | **Los temas salen del contexto** (trabajo, comida, ocio, familia, linaje de insecto, era y lugar, historia del sitio, necesidades, la mente), con plantillas cortas × datos de los dos; nunca un árbol de diálogo escrito entero. Un microcosmos con historia pone un `ConversationContext`. | Variedad barata y coherente con quien habla. | **solo en docs** (88 registra los temas vistos) | [conversaciones.md](conversaciones.md) §3, [mind-model.md](mind-model.md) §6 |
+| J11 | **Toda charla deja huella** (vínculo, estrés y humores, memoria) y su **coste está acotado**: ≤ 4 a la vez por escena, ≤ 2 nuevas por vuelta, búsqueda cada 2 s, esperas entre charlas, tope de 20 min de juego. | Vida social que importa y no pesa. | 88 (vínculo, emoción, tope) | [conversaciones.md](conversaciones.md) §2 |
 
 ## 10. Pruebas y flujo de trabajo
 
@@ -280,16 +284,17 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 
 ## 12. Recuento y reglas sin comprobación automática
 
-**Total: 110 reglas** (S 12 · F 8 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 7 · W 8 = 109, más la regla de sincronización
+**Total: 114 reglas** (S 12 · F 8 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 11 · W 8 = 113, más la regla de sincronización
 de §11).
 
-**Pendientes de implementar (pedidos del 2026-11-04), 14:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
-M33, M34, J7 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual).
+**Pendientes de implementar (pedidos del 2026-11-04), 13:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
+M33, M34 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual). (J7, las charlas, hecha el
+2026-11-04 en código; falta su verificación en vivo, grupo 88.)
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
 áreas), A5 (abejas mates), H1 (un solo hospital, mismas plazas), H2 (8 puestos; está en el código pero sin prueba), H6 (anillo de camas por
 planta), M10 (luz por fecha y lugar), M15 (parte de la fauna salvaje según la época), M22 (tope de 150 edificios), M31 (relieve
-realista), J6 (respeto a las figuras reales) y las de proceso W2, W3, W5, W6, W7 y W8.
+realista), J6 (respeto a las figuras reales), J10 (temas del contexto) y las de proceso W2, W3, W5, W6, W7 y W8.
 
 ## Docs de cada tema
 
@@ -302,4 +307,4 @@ realista), J6 (respeto a las figuras reales) y las de proceso W2, W3, W5, W6, W7
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
 [grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
-[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
+[personajes-mesocosmos.md](personajes-mesocosmos.md) · [conversaciones.md](conversaciones.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)

@@ -58,6 +58,7 @@ analiza y lo vacuna).
 | `Prueba_Magia` | Reservas, fuego con coste físico, demo de hechizos, walkTo universal | Suelo + sistemas + los tres sandboxes | — | sandbox |
 | `Prueba_Alma` | Mezclas de alma y alma compartida | Suelo + sistemas + los dos sandboxes | — | sandbox |
 | `Prueba_Fauna` | Familias y ciclo de vida, interacciones, escenarios por especie | Suelo + sistemas + la fauna de prueba | — | sandbox |
+| `Prueba_Conversaciones` | Charlas entre personas ([`conversaciones.md`](conversaciones.md)): surgen humano-humano, insecto-insecto y humano-insecto, se turnan, se ven en bocadillos, suben el vínculo y cambian el estrés, una necesidad urgente las corta, tope de charlas a la vez, nadie salta | **Escena propia** (no copia el santuario): una sala con mesa y dos bancos, Elena y Tomás (humanos), Rosa (humana) y Ciro (hormiga), Teodora (mariquita) y Bruno (araña); reloj, director, contexto, nombres, explorador | 88 (charlas) | menú propio «Build Prueba_Conversaciones (charlas entre personas)» (`SampleSceneBuilder.Conversaciones.cs`), no lo regenera «Build Test Scenes» |
 
 ### Retiradas (se borran del disco y de Build Settings al construir)
 
