@@ -545,10 +545,12 @@ internal static partial class CivicBuilder
     /// </summary>
     internal static Vector2 Layout(Transform b, List<Transform> pieces, Vector2 minSize, float zOffset)
     {
-        float P = MicroBuildRules.Passage;
+        // (2026-11-04) Con 10 cm de holgura: las reglas miden la caja del mundo, que en un mueble girado o un edificio girado crece
+        // un poco (en el Huerto quedaban 1,93 m entre un banco y un hogar).
+        float P = MicroBuildRules.Passage + 0.1f;
         var boxes = new List<Bounds>();
         float widest = 0f;
-        foreach (Transform p in pieces) { Bounds lb = MicroFurniture.LocalBounds(p); boxes.Add(lb); widest = Mathf.Max(widest, lb.size.x); }
+        foreach (Transform p in pieces) { Bounds lb = FrameBounds(b, p); boxes.Add(lb); widest = Mathf.Max(widest, lb.size.x); }
         float rowMax = Mathf.Max(minSize.x - 2f * P, widest);
         var rows = new List<List<int>>(); var row = new List<int>(); float x = 0f;
         for (int i = 0; i < pieces.Count; i++)
@@ -580,6 +582,25 @@ internal static partial class CivicBuilder
             z -= depth[k] + P;
         }
         return new Vector2(Mathf.Max(minSize.x, usedW + 2f * P), Mathf.Max(minSize.y, usedD + 2f * P));
+    }
+
+    /// <summary>(2026-11-04) La caja de <paramref name="p"/> en el marco de <paramref name="frame"/> (su padre), relativa a su pivote:
+    /// con su giro (MicroFurniture.LocalBounds la da en el marco del propio mueble, y un hogar girado 90° salía con el ancho y el
+    /// fondo cambiados). Se toman las 8 esquinas de cada caja del mundo: si el edificio está girado, sale algo más grande (seguro).</summary>
+    static Bounds FrameBounds(Transform frame, Transform p)
+    {
+        Bounds b = new Bounds(Vector3.zero, Vector3.zero); bool any = false;
+        foreach (Renderer r in p.GetComponentsInChildren<Renderer>(true))
+        {
+            Bounds rb = r.bounds;
+            for (int k = 0; k < 8; k++)
+            {
+                Vector3 c = new Vector3((k & 1) == 0 ? rb.min.x : rb.max.x, (k & 2) == 0 ? rb.min.y : rb.max.y, (k & 4) == 0 ? rb.min.z : rb.max.z);
+                Vector3 l = frame.InverseTransformPoint(c) - p.localPosition;
+                if (!any) { b = new Bounds(l, Vector3.zero); any = true; } else b.Encapsulate(l);
+            }
+        }
+        return b;
     }
 
     // El SUELO de un edificio abierto (la losa con el material de la era y un borde un poco más oscuro, plano: se pisa).

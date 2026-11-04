@@ -174,7 +174,8 @@ public class MicrocosmosFloorTest : MonoBehaviour, ITestUnit
                     if (r.GetComponentInParent<CubeInsect>(true) != null) continue;
                     if (!any) { b = r.bounds; any = true; } else b.Encapsulate(r.bounds);
                 }
-                if (any) lots.Add(b);
+                // (2026-11-04) Un edificio del barrio alto, sobre la meseta de un mueble gigante: lo de debajo (la planta bajo el tablero) no está en su solar.
+                if (any && b.min.y - rect.center.y <= 2f) lots.Add(b);
             }
             foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
                 for (Transform p = r.transform; p != null && p != story; p = p.parent) if (p.name.StartsWith("Calle")) { streets.Add(r.bounds); break; }
