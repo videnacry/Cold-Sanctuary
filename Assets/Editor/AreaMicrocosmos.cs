@@ -293,7 +293,8 @@ public static class AreaMicrocosmos
         mfl.elementsMapped = elMapped; mfl.elementsUnmapped = elUnmapped;
         if (_inventory != null)
         {   // LAS DEPENDENCIAS (MicroFloorElements.Record): con qué piso del mesocosmos se montó; si el piso cambia, se avisa para revisarlo.
-            mfl.mesoInventory = MicroFloorElements.Keys(_inventory); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
+            // (la firma, la del piso del SANTUARIO tal cual: la copia gigante lleva además las partes que el área no cuelga de sí, Attached)
+            mfl.mesoInventory = MicroFloorElements.Keys(src != null ? MicroFloorElements.Inventory(src.transform) : _inventory); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
             MicroFloorElements.Record(sceneLabel, areaGo, mfl.mesoInventory);
             if (src != null)
             {   // LA SINCRONÍA con el piso del santuario tal como está ahora: nada suyo sin su versión de microcosmos.

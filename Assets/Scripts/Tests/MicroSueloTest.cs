@@ -245,7 +245,7 @@ public class MicroSueloEscenasTest : MonoBehaviour, ITestUnit
         Transform form = root.Find(FloorForms.MicroName);
         int els = form != null ? form.GetComponentsInChildren<MicroElement>(true).Length : 0, want = 0;
         foreach (string k in f.mesoInventory) { int x = k.LastIndexOf('×'); if (x > 0 && int.TryParse(k.Substring(x + 1), out int n)) want += n; }
-        TestProbe.Check($"{scene}: «Forma_microcosmos» con una versión de microcosmos por pieza del piso", form != null && els > 0 && els == want, $"{els} elementos de {want} piezas ({f.elementsMapped} con fila, {f.elementsUnmapped} peñascos); firma {f.mesoSignature}");
+        TestProbe.Check($"{scene}: «Forma_microcosmos» con una versión de microcosmos por pieza del piso", form != null && els > 0 && els >= want, $"{els} elementos para {want} piezas del piso del santuario (la copia gigante puede llevar más: las partes que el área no cuelga de sí) ({f.elementsMapped} con fila, {f.elementsUnmapped} peñascos); firma {f.mesoSignature}");
         GameObject meso = GameObject.Find(f.platform);
         if (meso != null)
         {
