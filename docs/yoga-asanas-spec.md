@@ -1,5 +1,7 @@
 # Ficha de asanas (fuente de verdad anatómica)
 
+> **Dónde se practican (2026-11-04):** en los **pisos de yoga** de la torre del Entrenamiento ([`yoga-pisos.md`](yoga-pisos.md)): la Ashtanga Primaria en el piso de **Ashtanga** y el resto (Saludo al Sol, Yoga Namaskar, upa-yoga) en el de **Hatha**, cada uno con su sala occidental y su sala tradicional (con kund).
+
 Esta ficha describe cada postura con **precisión profesional** (respiración, mirada, apoyos, colocación
 de manos y pies, columna). Es la **referencia** que las posturas en código (`Assets/Scripts/Asana/YogaSpells.cs`
 y `UpaYoga.cs`) aproximan. El rig de cubos (`CubeHumanoid`) coloca los miembros **rotando articulaciones**

@@ -61,8 +61,12 @@ en el doc de su tema; aquí no se repite.
 | F4 | **Todos los pisos de un edificio miden lo mismo**: el cuadrado del lado mayor de su área más grande (`SetBack` = 0). Cada área va centrada en su piso, con su lado −Z contra el tronco. | Columnas continuas; ningún piso tapa ni recorta a otro. | `TreeBuildingsTest` (57: áreas en sus pisos) | [alfombras-plan.md](alfombras-plan.md), [edificio-arbol.md](edificio-arbol.md) §Migración |
 | F5 | **Las puertas de los pisos van donde su umbral queda libre de muebles.** | Se entra y se sale sin chocar. | `TreeBuildingsTest` (57: umbrales libres) | [edificio-arbol.md](edificio-arbol.md) |
 | F6 | **Al cambiar un piso**: comprobar los 2 m, la zona de alfombras, las plazas reservadas, los pisos de la torre y **los microcosmos que dependen de él** (§11). | Un cambio en el meso se nota luego en el micro. | `SanctuaryLifeTest` (28) y las pruebas de §11 | [reglas-plataformas.md](reglas-plataformas.md) §Al cambiar una plataforma |
-| F7 | **Yoga: sin anillo**, porque desde el anillo no se ve al maestro. **PENDIENTE DE IMPLEMENTAR** (hoy `SanctuaryLifeTest` aún pide «las estatuas en su anillo»: hay que cambiar la prueba con el piso). | El alumno debe ver al maestro. | **solo en docs** | memoria 2026-11-04 |
-| F8 | **Pisos de yoga separados**: hatha en uno y ashtanga en otro; investigar lo que pide cada estilo (tierra o esterilla); una versión **occidental** y otra **tradicional**, cada una con sus estatuas o elementos (p. ej. el Dhyanalinga de Isha); quizá un baño en el río antes de practicar. **PENDIENTE DE IMPLEMENTAR.** | Cada estilo tiene su práctica y su ambiente. | **solo en docs** | memoria 2026-11-04 |
+| F7 | **Yoga: sin anillo**, porque desde el anillo no se ve al maestro. | El alumno debe ver al maestro. | `YogaFloorsTest` (grupo 64: sin «Anillo_yoga» ni losas de anillo); `SanctuaryLifeTest` (28) | [yoga-pisos.md](yoga-pisos.md) |
+| F8 | **Pisos de yoga separados**: Hatha en un piso (el de la Sala de Yoga) y Ashtanga en otro (su planta propia), y en cada uno **una sala occidental y una tradicional** (2 pisos × 2 salas, no 4 pisos: Berón pidió «otro piso» y la torre solo sube un nivel). | Cada estilo tiene su práctica y su ambiente; las dos versiones se comparan en el mismo piso. | `YogaFloorsTest` (64: dos pisos, cuatro salas, cada una en el suyo) | [yoga-pisos.md](yoga-pisos.md) §2 |
+| F9 | **El maestro, visible desde cada esterilla**: tarima en el centro de la sala, esterillas en **un solo anillo** a su alrededor (nadie detrás de otro alumno), lo alto (estatuas, estantes, el kund) en las bandas de los extremos, y ≤ 9 m de los ojos del alumno sentado a los del maestro de pie. | Si no se ve al maestro, no se puede seguir la clase. | `YogaHall.BlockedSightLines` (al construir, `[Yoga]`); `YogaFloorsTest` (64) | [yoga-pisos.md](yoga-pisos.md) §4 |
+| F10 | **Sala tradicional**: suelo de tierra, alfombras de algodón, asiento de kusha y algodón (**sin piel animal**), lámparas de aceite y su elemento (linga como el Dhyanalinga en Hatha; Adiyogi y Patanjali en Ashtanga). | La práctica clásica (Bhagavad Gita 6.11, Hatha Yoga Pradipika, Isha, Mysore); el santuario no usa pieles. | `YogaFloorsTest` (64: sus elementos) | [yoga-pisos.md](yoga-pisos.md) §1, §3 |
+| F11 | **Inmersión antes de la práctica tradicional**: un **kund** con agua del tronco del árbol, sujeta por el campo magnético (sin escalones); cada alumno se sumerge antes de ir a su esterilla (como en los Theerthakund de Isha antes del Dhyanalinga). Espera acotada: si no llega, practica sin bañarse. | Prepararse como en la tradición; el agua del árbol, la misma de todo el edificio. | `YogaFloorsTest` (64: se sumergen antes de que empiece la clase) | [yoga-pisos.md](yoga-pisos.md) §1.3, §5 |
+| F12 | **Sala occidental**: suelo de madera, esterillas, accesorios (bloques, cinturones, bolsters, mantas; en Ashtanga, alfombras de Mysore), Buda o Ganesha, y **sin pared de espejo** (distrae de la práctica interior; y no hay muros). | La versión de estudio que conocen los visitantes, sin lo que estorba a la práctica. | `YogaFloorsTest` (64: sus elementos, sin «Espejo») | [yoga-pisos.md](yoga-pisos.md) §1.4 |
 
 ## 3. Edificios-árbol
 
@@ -239,7 +243,7 @@ cambia esta. «Pendiente» = el piso no representa la historia; se monta en él 
 |---|---|---|---|
 | **Hospital**, planta de urgencias (`Infirmary_Area`) | Servicios | Ambrosio, nivel 1 (`Microcosmos_Scene1_Ambrosio`) · Hospital (`Microcosmos_Hospital`) · Escútari, Nightingale (`Microcosmos_Nightingale`) · Kapilavastu, Buda (`Microcosmos_Buda`) · Irena Sendler (`Microcosmos_IrenaSendler`) | — |
 | **Cocina** del restaurante (`Kitchen_Area`) | Servicios | Cocina (`Microcosmos_Cocina`) · Mesopotamia, Uruk (`MobWorld_Mesopotamia`) · Le Chambon-sur-Lignon (`Microcosmos_LeChambon`) · Angostura, Bolívar (`Microcosmos_Bolivar`) | Angostura → Sala de asambleas (parlamento) |
-| **Sala de Yoga** (`YogaRoom_Area`) | Entrenamiento | Sakshi, el río, y Sala de Yoga (`Microcosmos_Scene0_SakshiRio`) · Patanjali (`Microcosmos_Patanjali`) · Sils Maria, Nietzsche (`Microcosmos_Nietzsche`) | Sils Maria → Sendero de montaña y biblioteca de filosofía |
+| **Sala de Yoga** (`YogaRoom_Area`: el piso de Hatha; 2026-11-04, dos salas, kund y linga, sin anillo: reconstruir sus microcosmos; su planta de Ashtanga no se copia) | Entrenamiento | Sakshi, el río, y Sala de Yoga (`Microcosmos_Scene0_SakshiRio`) · Patanjali (`Microcosmos_Patanjali`) · Sils Maria, Nietzsche (`Microcosmos_Nietzsche`) | Sils Maria → Sendero de montaña y biblioteca de filosofía |
 | **Gimnasio** (`Gym_Area`) | Entrenamiento | Tregua 1914 (`Microcosmos_Tregua1914`) · Crotona, Pitágoras (`Microcosmos_Pitagoras`) | Tregua → Campo de deportes de equipo; Crotona → Aula de matemáticas y música |
 | **Dojo** (`MartialArts_Area`, en obras: su «Acabado») | Entrenamiento | Bruce Lee (`Microcosmos_BruceLee`) | — |
 | **Planta Atómica** (`AtomicPlant_Area`) | Ciencias | Planta Atómica (`Microcosmos_PlantaAtomica`) · Woolsthorpe, Newton (`Microcosmos_Newton`) · Berna, Einstein (`Microcosmos_Einstein`) · Alejandría, Eratóstenes (`Microcosmos_Eratostenes`) | Alejandría → Observatorio y biblioteca |
@@ -275,10 +279,10 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 
 ## 12. Recuento y reglas sin comprobación automática
 
-**Total: 110 reglas** (S 12 · F 8 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 7 · W 8 = 109, más la regla de sincronización
+**Total: 114 reglas** (S 12 · F 12 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 7 · W 8 = 113, más la regla de sincronización
 de §11).
 
-**Pendientes de implementar (pedidos del 2026-11-04), 14:** F2, F3, F7, F8, C7, H8, M9, M13, M30, M32 (como regla general),
+**Pendientes de implementar (pedidos del 2026-11-04), 12:** F2, F3, C7, H8, M9, M13, M30, M32 (como regla general),
 M33, M34, J7 y el gancho de §11 (la regla de sincronización en sí ya vale como procedimiento manual).
 
 **Solo en docs (sin validador ni prueba), además de las pendientes:** S8 (medida humana), T12 (anillo en U), C4 (selector por
@@ -292,7 +296,7 @@ realista), J6 (respeto a las figuras reales) y las de proceso W2, W3, W5, W6, W7
 [plano-edificios.md](plano-edificios.md) · [edificio-arbol.md](edificio-arbol.md) · [mascaras-de-oxigeno.md](mascaras-de-oxigeno.md) ·
 [submarino-de-obra.md](submarino-de-obra.md) · [alfombras-plan.md](alfombras-plan.md) (sustituye a
 [transporte-alfombras.md](transporte-alfombras.md), que tenía puentes) · [jardines-frutales.md](jardines-frutales.md) ·
-[hospital.md](hospital.md) · [hospital-plan.md](hospital-plan.md) · [vet-hospital-plan.md](vet-hospital-plan.md) ·
+[yoga-pisos.md](yoga-pisos.md) · [hospital.md](hospital.md) · [hospital-plan.md](hospital-plan.md) · [vet-hospital-plan.md](vet-hospital-plan.md) ·
 [submarinos-medicos.md](submarinos-medicos.md) · [medidas-muebles.md](medidas-muebles.md) · [microcosmos-areas.md](microcosmos-areas.md) ·
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
 [microcosmos-actividades.md](microcosmos-actividades.md) · [luz-microcosmos.md](luz-microcosmos.md) ·

@@ -78,3 +78,12 @@ a las hormigas a un refugio seguro mientras se desinfecta para tratar a un herid
   moverá; cablear los efectos a **`PlayerStats`/humores** reales (hoy medidor interno + logs); el mapeo
   **elemento→compuesto** real (con `Chemistry`); el **QTE de hombros** (3+3); verificar repeticiones con el
   vídeo de Isha; opción de migrar paneles a `FollowingArrays`.
+
+## Dónde se hace (2026-11-04)
+El yoga del santuario ya no tiene **anillo** (Berón: desde él no se veía al maestro). Son **dos pisos** de la torre del
+Entrenamiento —**Hatha** (el de la Sala de Yoga) y **Ashtanga** (su planta propia)— con una sala **occidental** y otra
+**tradicional** cada uno ([`yoga-pisos.md`](yoga-pisos.md)). La **primera clase obligatoria** de upa-yoga de cuello
+(`AreaInitiator`, tras la Magnate) se da en el punto `SalaYoga` del piso de Hatha: el centro del piso, en el paso de 3,4 m
+libre entre las dos salas; el upa-yoga y el Yoga Namaskar son prácticas de Isha, así que sus clases van al piso de **Hatha**
+(`YogaHall.StyleOf`). En la sala tradicional, antes de la clase, los alumnos se sumergen en el **kund** (como en los
+Theerthakund de Isha antes del Dhyanalinga).

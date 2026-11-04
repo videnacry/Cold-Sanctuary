@@ -1,5 +1,7 @@
 # Ashtanga — Serie Primaria (Yoga Chikitsa) = "nivel 1"
 
+> **Dónde se practica (2026-11-04):** en el **piso de Ashtanga** de la torre del Entrenamiento (el entrenamiento de las 14 h), en su sala occidental (madera, esterillas, alfombras de Mysore, Ganesha) o en la tradicional (tierra, alfombras de algodón, kund antes de practicar, Patanjali y Adiyogi): [`yoga-pisos.md`](yoga-pisos.md).
+
 Ashtanga Vinyasa tiene **4 series** (niveles): **Primaria** (Yoga Chikitsa, terapia), **Intermedia** (Nadi Shodhana,
 purificación nerviosa) y **Avanzada A/B** (Sthira Bhaga). Este doc detalla la **Primaria** (nivel 1). Es larga (~75 min),
 **vinyasa** (cada movimiento ligado a una respiración; respiración **Ujjayi**), con **tristana** (respiración + postura +
