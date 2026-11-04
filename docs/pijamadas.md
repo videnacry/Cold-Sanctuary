@@ -72,3 +72,10 @@ almohadas.
    - esa noche duermen en su plaza (≥ 80 %);
    - al despertar, los de arriba bajan por el tobogán y quedan a su pie;
    - a la mañana siguiente vuelven a tener su casa.
+
+## Ronda 6 del probador (2026-11-04)
+
+- «Casa del árbol 18»: la cama-litera «a 1,33 m de la alfombra-esterilla» era un error de medida. La casa está girada 330° y las cajas
+  del mundo engordan. `SleepoverTest` mide ahora en el marco de la casa: con las mallas, y la zona de la alfombra girada como la casa.
+  La distancia de diseño es 2,15 m.
+- La pijamada (21 h) también se sale con `LeisureDirector.TogetherLead` de antelación.

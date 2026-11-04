@@ -52,9 +52,10 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
             if (b.transform.Find("Litera") != null || b.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Cama") != 1) extra++;   // una sola cama por casa
             if (b.spots == null || b.spots.Length < 8 || b.spots[4].position.y - b.spots[0].position.y < 0.9f) tiers++;   // dos pisos, el de arriba ≥ 0,9 m por encima
             foreach (Transform x in b.GetComponentsInChildren<Transform>(true)) if (x.name.StartsWith("Escalera") || x.name.StartsWith("Peldano")) stairs++;
-            Bounds bed = Bounds(b.bed);
+            // (ronda 6: en «Casa del árbol 18», girada 330°, las cajas del mundo engordaban y daban 1,33 m) Medido en el marco de la casa.
+            Bounds bed = LocalBounds(b.transform, b.bed);
             CarpetPad mat = b.GetComponentsInChildren<CarpetPad>().FirstOrDefault(p => p.kind == CarpetPad.Kind.Habitacion);
-            float dMat = mat != null ? DistXZ(bed, new Bounds(mat.transform.position, new Vector3(3f, 1f, 3.6f))) : 99f;
+            float dMat = mat != null ? DistXZ(bed, new Bounds(b.transform.InverseTransformPoint(mat.transform.position), new Vector3(3f, 1f, 3.6f))) : 99f;   // (la zona va girada como la casa)
             if (dMat < 1.95f) { tight++; if (why.Length == 0) why = $"{b.name}: alfombra a {dMat:0.00} m"; }
         }
         TestProbe.Check("una sola cama por casa (la cama-litera; sin litera aparte)", extra == 0, $"{extra} casas con otra");
@@ -64,6 +65,23 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         TestProbe.Check("la cama-litera queda a ≥ 2 m de la alfombra-esterilla", tight == 0, why);
         int noSlide = rooms.Count(b => b.slideTop == null || b.slideBottom == null || b.spots == null || b.spots.Length <= b.sleeps || b.slideTop.position.y - b.slideBottom.position.y < 1.2f || b.slideTop.position.y < b.spots[b.sleeps].position.y);
         TestProbe.Check("cada cama-litera tiene su tobogán: de lo alto del piso de arriba al suelo (para bajar)", noSlide == 0, $"{noSlide} sin tobogán");
+    }
+
+    /// <summary>La caja de <paramref name="root"/> en el marco local de <paramref name="frame"/> (con las mallas, no con las cajas del mundo).</summary>
+    static Bounds LocalBounds(Transform frame, Transform root)
+    {
+        Bounds b = new Bounds(frame.InverseTransformPoint(root.position), Vector3.zero);
+        foreach (MeshFilter mf in root.GetComponentsInChildren<MeshFilter>())
+        {
+            if (mf.sharedMesh == null) continue;
+            Bounds m = mf.sharedMesh.bounds;
+            for (int i = 0; i < 8; i++)
+            {
+                Vector3 c = m.center + Vector3.Scale(m.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                b.Encapsulate(frame.InverseTransformPoint(mf.transform.TransformPoint(c)));
+            }
+        }
+        return b;
     }
 
     static Bounds Bounds(Transform t)
@@ -90,7 +108,7 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         while (day - LeisureRoster.WeekOf(day) * LeisureRoster.DaysPerWeek != Sleepover.Day) day++;
         float start = LeisureRoster.SlotHours[Sleepover.Slot];
         Rest(wd != null ? wd.staff : new string[0]);
-        tc.SetClock(day, start - 0.05f);
+        tc.SetClock(day, start - LeisureDirector.TogetherLead - 0.02f);   // (se sale con tiempo hacia las de todos a la vez)
         if (wd != null) wd.PlanDay(day);
         ld.Scan(true);
         GameObject any = WorkdayDirector.Body("Linduarda") ?? WorkdayDirector.Body("Goluis");

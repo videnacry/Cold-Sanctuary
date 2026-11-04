@@ -377,6 +377,14 @@ public class LeisureDirector : MonoBehaviour
             {
                 if (g == null) continue;
                 LeisureRoster.Entry e = slot >= 0 && inWeek && gr.personOf.TryGetValue(g, out var p) ? gr.plan.At(p, day, slot) : null;
+                // (2026-11-04, ronda 6 del grupo 89: 11/15 llegaban al ring; los de las torres lejanas —Producción, la guardia— no
+                // llegaban en la hora) A una actividad de TODOS A LA VEZ se sale con tiempo: TogetherLead antes de su franja.
+                if (e == null && inWeek && gr.personOf.TryGetValue(g, out var pe))
+                {
+                    int next = NextSlotWithin(h, TogetherLead);
+                    LeisureRoster.Entry early = next >= 0 ? gr.plan.At(pe, day, next) : null;
+                    if (early != null && early.activity.together) e = early;
+                }
                 _runs.TryGetValue(g, out Run run);
                 if (run != null && run.entry != e) { Release(g, run); run = null; }
                 if (e == null) continue;
@@ -384,6 +392,18 @@ public class LeisureDirector : MonoBehaviour
                 Drive(g, run);
             }
         }
+    }
+
+    /// <summary>Lo que se sale antes hacia una actividad de todos a la vez (horas de juego): 20 min, lo que tarda el vuelo más largo
+    /// (de la torre de Producción o de Ciencias a la arboleda y al ring, con sus tres alfombras).</summary>
+    public const float TogetherLead = 0.33f;
+
+    /// <summary>La franja que empieza dentro de las próximas <paramref name="lead"/> horas (−1 si ninguna).</summary>
+    public static int NextSlotWithin(float h, float lead)
+    {
+        for (int i = 0; i < LeisureRoster.SlotHours.Length; i++)
+            if (h < LeisureRoster.SlotHours[i] && LeisureRoster.SlotHours[i] - h <= lead) return i;
+        return -1;
     }
 
     Run Begin(Group gr, GameObject g, LeisureRoster.Entry e)

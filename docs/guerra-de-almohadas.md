@@ -143,3 +143,15 @@ Ahora el ring registra su caja (`PillowRing.Box`: plataforma, cama y cabecero, s
   - `FlyingCarpet.Legs` cubre ese caso: sale en recto por debajo del ring hasta fuera de su huella, luego hace el arco o, si aún lo
     cruzara, sube por fuera y cruza por encima hasta la pista del ring, a la que baja en vertical.
   - `PillowFightTest` muestrea esos mismos tramos.
+
+## Ronda 6 del probador (2026-11-04)
+
+- **11/15 llegaban al ring.** Faltaban Gohageneis, Tote, Ducristin y Shalva.
+  - **Gohageneis**: su patrulla de guardia (`CarnivoreKeeper`) lo seguía moviendo en su tiempo libre. Ahora la patrulla espera mientras
+    lo lleva el horario libre, así que cuenta como uno más.
+  - **Tote, Ducristin y Shalva** venían de las torres lejanas (Producción, Entrenamiento) y no llegaban dentro de la hora. A una
+    actividad de **todos a la vez** se sale con tiempo: `LeisureDirector.TogetherLead`, 20 min de juego antes de su franja. Vale para el
+    ring y la pijamada. Quien está comiendo o con otra necesidad sale cuando acaba.
+- **3/57 vuelos «cruzaban» el ring en el tramo Residencia → Ring de almohadas.** Era el **aterrizaje** en la pista del propio ring: baja
+  en vertical desde encima y atraviesa la caja del ring porque la pista está dentro. La prueba ya no cuenta la columna de la pista
+  (≤ 4,5 m de ella): aterrizar en el ring no es cruzarlo.
