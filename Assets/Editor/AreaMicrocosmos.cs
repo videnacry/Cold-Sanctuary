@@ -31,6 +31,7 @@ public static class AreaMicrocosmos
     /// va el pueblo o la ciudad real a escala 1:1 (su plano: calles, plazas, río, lago, colinas; CivicBuilder.TownPlans).</summary>
     public const float TownScale = 60f;
     static int _obraRemoved;
+    static List<MicroFloorElements.Piece> _inventory;   // el inventario de la copia gigante del piso del último Build (antes de recortarla)
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
     /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
@@ -38,6 +39,7 @@ public static class AreaMicrocosmos
     internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null, MicrocosmSpec spec = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
+        _inventory = null;
         string sceneLabel = spec != null ? spec.scene : root.name;
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
@@ -69,6 +71,9 @@ public static class AreaMicrocosmos
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
             // Los ANILLOS son otras plataformas (el 80 % vuela fuera del piso): no son el mapa.
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t != giant.transform && t.name.StartsWith("Anillo")) Object.DestroyImmediate(t.gameObject);
+            // (2026-11-04) EL INVENTARIO DEL PISO (MicroFloorElements), antes de recortarlo con su borde: cada pieza tendrá su versión de
+            // microcosmos (lo recortado se apunta «fuera») y el microcosmos apunta con qué piso del mesocosmos se montó.
+            _inventory = MicroFloorElements.Inventory(giant.transform);
             giant.transform.SetParent(root.transform, false);
             giant.transform.localPosition = Vector3.zero; giant.transform.localRotation = Quaternion.identity;
             giant.transform.localScale = Vector3.one * AreaScale;
@@ -107,6 +112,10 @@ public static class AreaMicrocosmos
         int year0 = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
         bool townEra = giant != null && storyOverride != null && MicroBuildRules.IsTownEra(year0);
         _floorRoot = root.transform; _floorRect = rect;
+        // (2026-11-04) LA FORMA DE MICROCOSMOS DEL PISO (MicroFloorDress; Berón: «que tal si usamos las sillas y mesas y demás plataformas
+        // para recrear edificios, montañas, mares, acantilados, lagos»): cada pieza, en su sitio, reinterpretada por el catálogo (la mesa,
+        // montaña; la silla, nevado; el lavabo, lago; la cajonera, edificio; las hornillas, volcanes; el foco, el sol…) en la era de la historia.
+        var (elMapped, elUnmapped) = giant != null && _inventory != null ? MicroFloorDress.Dress(root.transform, giant.transform, _inventory, display, year0, display) : (0, 0);
 
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
         Bounds foot = new Bounds(rect.center, new Vector3(rect.size.x, 1f, rect.size.z));
@@ -281,6 +290,18 @@ public static class AreaMicrocosmos
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         mfl.buildingsOnTops = outposts;
         mfl.soil = soilLayer != null; mfl.plantsSettled = settledPl; mfl.plantsRemoved = removedPl;
+        mfl.elementsMapped = elMapped; mfl.elementsUnmapped = elUnmapped;
+        if (_inventory != null)
+        {   // LAS DEPENDENCIAS (MicroFloorElements.Record): con qué piso del mesocosmos se montó; si el piso cambia, se avisa para revisarlo.
+            mfl.mesoInventory = MicroFloorElements.Keys(_inventory); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
+            MicroFloorElements.Record(sceneLabel, areaGo, mfl.mesoInventory);
+            if (src != null)
+            {   // LA SINCRONÍA con el piso del santuario tal como está ahora: nada suyo sin su versión de microcosmos.
+                var miss = MicroFloorElements.Missing(src.transform, root.transform.Find(FloorForms.MicroName));
+                if (miss.Count > 0) Debug.LogWarning($"[Forma microcosmos] {sceneLabel}: {miss.Count} piezas de {areaGo} sin su versión de microcosmos: {string.Join(", ", miss.GetRange(0, Mathf.Min(10, miss.Count)))}.");
+            }
+            _inventory = null;
+        }
         // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
         mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
