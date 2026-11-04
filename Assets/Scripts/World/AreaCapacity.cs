@@ -14,14 +14,14 @@ public static class AreaCapacity
 {
     /// <summary>«Varias personas a la vez»: lo mínimo por actividad de trabajo.</summary>
     public const int MinWorkSeats = 2;
-    /// <summary>Miembros si no hay <see cref="WorkdayDirector"/> en la escena (el personal de 2026-11-04: 18 con el jugador).</summary>
-    public const int DefaultMembers = 18;
+    /// <summary>Miembros sin escena: la lista del personal (<see cref="WorkdayDirector.Staff"/>; 18 con el jugador el 2026-11-04).</summary>
+    public static int DefaultMembers => WorkdayDirector.Staff.Length;
 
     /// <summary>Los miembros del santuario: el personal de la jornada (con el jugador).</summary>
     public static int Members()
     {
         WorkdayDirector wd = Object.FindAnyObjectByType<WorkdayDirector>();
-        return wd != null && wd.staff != null && wd.staff.Length > 0 ? wd.staff.Length : DefaultMembers;
+        return wd != null && wd.staff != null && wd.staff.Length > 0 ? wd.staff.Length : WorkdayDirector.Staff.Length;
     }
 
     public struct Line

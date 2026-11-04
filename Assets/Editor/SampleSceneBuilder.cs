@@ -3468,7 +3468,8 @@ public static partial class SampleSceneBuilder
         //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
         //    Un ÁRBOL: 4 niveles (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a DOS PISOS, docs/yoga-pisos.md), sus 7
         //    pisos en orden y uno libre; 8 puntas con frutales.
-        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, 4);
+        // (2026-11-04) 7 pisos + los del Aula (AulaFloors: los que hagan falta para que quepan todos los miembros; hoy 1): 4 niveles.
+        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, Mathf.CeilToInt((7 + AulaFloors()) / 2f));
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
         Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
         Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ashtanga); Floor(ballet.transform); Floor(dojo.transform);

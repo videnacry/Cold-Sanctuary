@@ -89,7 +89,9 @@ public class InformaticaAulaTest : MonoBehaviour, ITestUnit
             Count(info, "Deposito_reposicion") >= 1 && Count(info, "Bomba") >= 2 && Count(info, "Cuadro_general") >= 1 && Count(info, "Bloque_SAI") == 2 && Count(info, "Bloque_Armario de baterías") == 3);
         TestProbe.Check("extinción por gas inerte", Count(info, "Botella_gas_inerte") >= 4);
         TestProbe.Check("el modelo del clúster (AiCluster) y su pantalla de estado", info.GetComponent<AiCluster>() != null && info.GetComponent<AiCluster>().monitor != null);
-        TestProbe.Check("4 filas de pupitres de 6 y 4 mesas de estudio de 6", Count(aula, "Fila de pupitres") == 4 && Count(aula, "Mesa de estudio") == 4);
+        int members = WorkdayDirector.Staff.Length, groups = Mathf.CeilToInt(members / 6f), floors = Mathf.Max(1, Mathf.CeilToInt(members / 24f));
+        TestProbe.Check($"plazas para los {members} miembros (lista del personal): ≥ {groups} filas de pupitres de 6 y ≥ {groups} mesas de estudio de 6", Count(aula, "Fila de pupitres") >= groups && Count(aula, "Mesa de estudio") >= groups, $"{Count(aula, "Fila de pupitres")} filas, {Count(aula, "Mesa de estudio")} mesas");
+        TestProbe.Check($"{floors} piso(s) de Aula (24 plazas por piso; si no caben, otro piso)", Count(aula, "Planta_aula_") == floors - 1, $"{Count(aula, "Planta_aula_") + 1} pisos");
         TestProbe.Check("la tarima del profesor (pizarra y pantalla) y la biblioteca", Count(aula, "Pizarra") >= 1 && Count(aula, "Estanteria") >= 6);
         TestProbe.End();
     }

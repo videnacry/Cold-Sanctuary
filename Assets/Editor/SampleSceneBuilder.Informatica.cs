@@ -158,17 +158,44 @@ public static partial class SampleSceneBuilder
         return r;
     }
 
-    /// <summary>EL AULA: el siguiente piso de la torre del Entrenamiento (el libre, encima del Dojo). Aula de clases al −X y sala de
-    /// estudio con biblioteca al +X; plazas para 24 en cada una (más que los miembros: caben todos a la vez).</summary>
+    /// <summary>Plazas de cada piso del Aula (4 filas de 6 pupitres y 4 mesas de estudio de 6).</summary>
+    public const int AulaSeatsPerFloor = 24;
+
+    /// <summary>Cuántos pisos de Aula hacen falta para que quepan TODOS los miembros a la vez (la lista del personal,
+    /// <see cref="WorkdayDirector.Staff"/>; Berón 2026-11-04: si un piso no basta, otro piso, como el segundo de yoga).</summary>
+    public static int AulaFloors() => Mathf.Max(1, Mathf.CeilToInt(WorkdayDirector.Staff.Length / (float)AulaSeatsPerFloor));
+
+    /// <summary>EL AULA: el siguiente piso de la torre del Entrenamiento (el libre, encima del Dojo) y, si los miembros no caben en
+    /// uno, los pisos siguientes («Planta_aula_2»…, plantas propias del Aula). En cada piso, aula de clases al −X y sala de estudio
+    /// con biblioteca al +X. Las plazas salen de la lista del personal: en total ≥ miembros en clase y ≥ miembros en estudio.</summary>
     static SanctuaryArea BuildClassroom(Transform areasGroup)
     {
         SanctuaryArea a = BuildAreaBox(areasGroup, ClassroomArea, "Aula", SanctuaryAreaType.Classroom, 1, EntrenamientoCenter, GymSize, new Color(0.85f, 0.8f, 0.65f));
         Vector2 s = TowerFloor(a.transform);
-        Transform g = new GameObject("Planta_aula").transform; g.SetParent(a.transform, false); g.localPosition = Vector3.up * 0.1f;
+        int members = WorkdayDirector.Staff.Length, floors = AulaFloors(), left = members;
+        for (int k = 0; k < floors; k++)
+        {
+            Transform floor = a.transform;
+            if (k > 0) { floor = new GameObject($"Planta_aula_{k + 1}").transform; floor.SetParent(a.transform, false); s = TowerFloor(floor); }
+            int seats = Mathf.Clamp(left, 1, AulaSeatsPerFloor);
+            if (k == floors - 1 && floors == 1) seats = AulaSeatsPerFloor;   // un solo piso: completo (sobra sitio para invitados)
+            FurnishAulaFloor(floor, s, seats, k + 1);
+            left -= seats;
+        }
+        Debug.Log($"[Aula] {members} miembros (lista del personal): {floors} piso(s) de Aula, {AulaSeatsPerFloor} plazas por piso en clase y en estudio.");
+        WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Aula: clases y sala de estudio (caben todos)"; wl.height = 4f;
+        return a;
+    }
+
+    /// <summary>Un piso del Aula con <paramref name="seats"/> plazas en el aula y otras tantas en la sala de estudio (en múltiplos de 6).</summary>
+    static void FurnishAulaFloor(Transform floor, Vector2 s, int seats, int number)
+    {
+        Transform g = new GameObject("Planta_aula").transform; g.SetParent(floor, false); g.localPosition = Vector3.up * 0.1f;
         Solid(g, new Vector3(0f, -0.05f, 0f), new Vector3(s.x - 0.2f, 0.1f, s.y - 0.2f), new Color(0.72f, 0.6f, 0.45f), "Suelo_de_madera");
         float hx = s.x * 0.5f, hz = s.y * 0.5f;
-        // AULA DE CLASES (−X): la tarima del profesor con su mesa, la pizarra y la pantalla del proyector (van juntas) y cuatro
-        // filas de seis pupitres mirando hacia ella, con 2,1 m de paso entre filas.
+        int groups = Mathf.Clamp(Mathf.CeilToInt(seats / 6f), 1, 4);
+        // AULA DE CLASES (−X): la tarima del profesor con su mesa, la pizarra y la pantalla del proyector (van juntas) y las filas de
+        // seis pupitres mirando hacia ella, con 2 m de paso entre filas.
         Transform aula = new GameObject("Aula_de_clases").transform; aula.SetParent(g, false);
         float ax = -hx * 0.47f;   // centro del aula (−8,5 m en un piso de 36 m)
         Transform front = KitchenProps.Root(aula, "Tarima del profesor (mesa, pizarra y pantalla)", new Vector3(ax, 0f, -hz + 2.3f));
@@ -181,15 +208,13 @@ public static partial class SampleSceneBuilder
         AreaSeat.Add(front.gameObject, "dar clase", AreaSeat.Category.Trabajo, 2);   // profesor y ayudante
         WorldLabel fl = front.gameObject.AddComponent<WorldLabel>(); fl.text = "Tarima del profesor"; fl.height = 2.8f;
         float z0 = -hz + 6.2f;   // 2 m libres tras la tarima (sus sillas sobresalen 0,54 m)
-        for (int r = 0; r < 4; r++) DeskRow(aula, $"Fila de pupitres {r + 1} (6 plazas)", new Vector3(ax, 0f, z0 + r * 3.4f), 6, AreaSeat.Category.Estudio, "clase");
-        // SALA DE ESTUDIO Y BIBLIOTECA (+X): cuatro mesas de seis, las estanterías contra la pared (un solo mueble) y dos puestos del
-        // catálogo y de ordenador (con el clúster de IA del santuario).
+        for (int r = 0; r < groups; r++) DeskRow(aula, $"Fila de pupitres {r + 1} (6 plazas)", new Vector3(ax, 0f, z0 + r * 3.4f), 6, AreaSeat.Category.Estudio, "clase");
+        // SALA DE ESTUDIO Y BIBLIOTECA (+X): mesas de seis, las estanterías contra la pared (un solo mueble) y dos puestos del catálogo
+        // y de ordenador (con el clúster de IA del santuario).
         Transform lib = new GameObject("Sala_de_estudio").transform; lib.SetParent(g, false);
         float lx = hx * 0.25f, lx2 = hx * 0.58f;   // 4,5 y 10,5 m
-        StudyTable(lib, "Mesa de estudio 1 (6 plazas)", new Vector3(lx, 0f, -hz + 5f), 3);
-        StudyTable(lib, "Mesa de estudio 2 (6 plazas)", new Vector3(lx2, 0f, -hz + 5f), 3);
-        StudyTable(lib, "Mesa de estudio 3 (6 plazas)", new Vector3(lx, 0f, -hz + 11f), 3);
-        StudyTable(lib, "Mesa de estudio 4 (6 plazas)", new Vector3(lx2, 0f, -hz + 11f), 3);
+        Vector3[] tables = { new Vector3(lx, 0f, -hz + 5f), new Vector3(lx2, 0f, -hz + 5f), new Vector3(lx, 0f, -hz + 11f), new Vector3(lx2, 0f, -hz + 11f) };
+        for (int t = 0; t < groups; t++) StudyTable(lib, $"Mesa de estudio {t + 1} (6 plazas)", tables[t], 3);
         Transform shelves = KitchenProps.Root(lib, "Estanterías de la biblioteca", new Vector3(hx - 2.2f, 0f, -hz + 8.5f));
         Color[] spines = { new Color(0.55f, 0.2f, 0.2f), new Color(0.2f, 0.35f, 0.55f), new Color(0.3f, 0.45f, 0.25f), new Color(0.6f, 0.5f, 0.25f) };
         for (int k = 0; k < 6; k++)
@@ -199,7 +224,7 @@ public static partial class SampleSceneBuilder
             for (int b = 0; b < 4; b++) KitchenProps.C(shelves, new Vector3(-0.2f, 0.35f + b * 0.5f, z), new Vector3(0.06f, 0.3f, 2.1f), spines[(k + b) % 4], 0f, "Lomos_de_libros");
         }
         KitchenProps.Fit(shelves);
-        WorldLabel sl = shelves.gameObject.AddComponent<WorldLabel>(); sl.text = "Biblioteca"; sl.height = 2.8f;
+        WorldLabel sl = shelves.gameObject.AddComponent<WorldLabel>(); sl.text = number > 1 ? $"Biblioteca (piso {number})" : "Biblioteca"; sl.height = 2.8f;
         for (int k = 0; k < 2; k++)
         {
             Transform pc = KitchenProps.Root(lib, $"Puesto del catálogo y de ordenador {k + 1}", new Vector3(k == 0 ? lx : lx2, 0f, -hz + 16.5f));
@@ -208,8 +233,6 @@ public static partial class SampleSceneBuilder
             AreaSeat.Add(pc.gameObject, "catálogo", AreaSeat.Category.Trabajo);
             WorldLabel pl = pc.gameObject.AddComponent<WorldLabel>(); pl.text = pc.name; pl.height = 1.8f;
         }
-        Aseos(a.transform, new Vector3(-hx + 2.1f, 0.1f, hz - 0.9f), 180f, 1);
-        WorldLabel wl = a.gameObject.AddComponent<WorldLabel>(); wl.text = "Aula: clases y sala de estudio (caben todos)"; wl.height = 4f;
-        return a;
+        Aseos(floor, new Vector3(-hx + 2.1f, 0.1f, hz - 0.9f), 180f, 1);
     }
 }

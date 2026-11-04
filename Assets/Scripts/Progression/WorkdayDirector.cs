@@ -16,9 +16,12 @@ public class WorkdayDirector : MonoBehaviour
 {
     public static WorkdayDirector Instance { get; private set; }
 
-    [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
-    public string[] staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
+    public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
                                "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };   // familia y amigos de Berón (docs/diseno-personajes.md)
+    /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
+    /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
+    [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
+    public string[] staff = (string[])Staff.Clone();
     // (2026-11-04, Berón: «los personajes famosos … sácalos del mesocosmos y crea sus microcosmos respectivos») Sadhguru y los seis
     // del mesocosmos (Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott, Ibrahim Traoré) ya no son personal del santuario:
     // viven en sus microcosmos. Sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
