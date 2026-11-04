@@ -230,15 +230,17 @@ public static class MicroFloorElements
     /// </summary>
     public static readonly Override[] Overrides =
     {
-        new Override("Angostura", "alfombra", Action.Apilar, "el cerro del Zamuro sobre el que se asienta la ciudad: las alfombras de la cocina, apiladas"),
         new Override("Sils Maria", "mesa", Action.Como, "Nietzsche camina junto al lago: la mesa, un nevado de la Engadina", "silla"),
         new Override("Tregua 1914", "alfombra", Action.Quitar, "la tierra de nadie: sin alfombras, la llanura embarrada de Flandes"),
         new Override("Chernóbil", "lavabo", Action.Como, "el estanque de refrigeración de la central", "banera"),
     };
 
     /// <summary>Los cambios de la historia <paramref name="display"/> que tocan la pieza de clave <paramref name="key"/>.</summary>
-    public static Override OverrideFor(string display, string key)
+    public static Override OverrideFor(string display, string key, string element = null)
     {
+        // (2026-11-04) Manda el MAPA A MANO de la historia (MicroStoryMaps); la tabla de abajo es la de las historias sin mapa.
+        MicroStoryMaps.Piece mp = MicroStoryMaps.FloorOp(display, key, element);
+        if (mp != null) return new Override(display, mp.match, mp.action, mp.why, mp.element, mp.move);
         foreach (Override o in Overrides) if (o.display == display && (key == o.piece || key.StartsWith(o.piece))) return o;
         return null;
     }

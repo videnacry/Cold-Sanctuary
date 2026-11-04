@@ -21,6 +21,9 @@ public static class MicroGround
     /// <summary>Grosor de la capa de tierra (m del microcosmos: los insectos-humanos miden como una persona, así que son 10 cm de
     /// verdad). Bajo los cúmulos es más gruesa; nunca menos de la mitad.</summary>
     public const float SoilThickness = 0.10f;
+    /// <summary>(2026-11-04) ¿Se pone la CAPA DE TIERRA? APAGADA por defecto (Berón: «el suelo de tierra se puede desactivar si es tan
+    /// pesado»): la Cocina colgaba Unity al hornear el NavMesh. Con false no se construye, no se sube la historia y no se exige (regla 8).</summary>
+    public static bool SoilEnabled = false;
     /// <summary>Nombre del grupo de la capa de tierra bajo la raíz del microcosmos.</summary>
     public const string SoilName = "Suelo_de_tierra";
     /// <summary>Hasta cuántos metros por encima del pie de una planta se busca la superficie que la cubre (una alfombra o una losa
@@ -58,9 +61,10 @@ public static class MicroGround
         Transform hist = root.Find("Historia");
         if (hist != null)
         {
-            foreach (MicroPiece mp in hist.GetComponentsInChildren<MicroPiece>(true)) if (mp.kind == "frutal" || mp.kind == "planta") l.Add(mp.transform);
+            var seen = new HashSet<Transform>();   // (rendimiento: antes List.Contains sobre miles de plantas por cada Affordance)
+            foreach (MicroPiece mp in hist.GetComponentsInChildren<MicroPiece>(true)) if ((mp.kind == "frutal" || mp.kind == "planta") && seen.Add(mp.transform)) l.Add(mp.transform);
             foreach (Affordance a in hist.GetComponentsInChildren<Affordance>(true))
-                if (!l.Contains(a.transform) && IsPlantRoot(a.transform)) l.Add(a.transform);
+                if (!seen.Contains(a.transform) && IsPlantRoot(a.transform) && seen.Add(a.transform)) l.Add(a.transform);
         }
         return l;
     }
@@ -155,12 +159,45 @@ public static class MicroGround
         return bad;
     }
 
+
+    /// <summary>
+    /// (2026-11-04) CAER DESDE EL AIRE (Berón: «un truco que conozco es crear todos los objetos en el aire para que caigan sobre la
+    /// superficie que tenga debajo»): cada pieza de <paramref name="items"/> se suelta desde <paramref name="fromY"/> (bajo la tapa de los
+    /// muros) y queda sobre la superficie MÁS ALTA de debajo de su (x, z) entre los colliders de <paramref name="root"/> (sin plantas,
+    /// bichos ni gente), las caras de <paramref name="surfaces"/> y la tierra que se ve (<paramref name="soilAt"/>). Para lo que se
+    /// coloca a mano (el mapa de cada historia): ahí donde cae es donde el autor lo quiso, también sobre un mueble. Devuelve cuántas.
+    /// </summary>
+    public static int Drop(Transform root, IList<Transform> items, float fromY, IList<Bounds> surfaces = null, System.Func<float, float, float> soilAt = null)
+    {
+        if (root == null || items == null) return 0;
+        Physics.SyncTransforms();
+        int n = 0;
+        foreach (Transform it in items)
+        {
+            if (it == null) continue;
+            Vector3 p = it.position;
+            float top = float.MinValue;
+            foreach (RaycastHit h in Physics.RaycastAll(new Vector3(p.x, fromY, p.z), Vector3.down, fromY - p.y + 50f, ~0, QueryTriggerInteraction.Ignore))
+            {
+                if (h.normal.y < 0.3f || Ignored(h.collider, it) || !h.transform.IsChildOf(root)) continue;
+                if (h.point.y > top) top = h.point.y;
+            }
+            if (surfaces != null) foreach (Bounds b in surfaces) if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && b.max.y < fromY && b.max.y > top) top = b.max.y;
+            float s = soilAt != null ? soilAt(p.x, p.z) : float.NaN;
+            if (!float.IsNaN(s) && s > top) top = s;
+            if (top == float.MinValue) continue;
+            it.position = new Vector3(p.x, top, p.z);
+            n++;
+        }
+        return n;
+    }
+
     /// <summary>
     /// APOYA cada planta (y cada bicho de «Fauna_a_escala») en la superficie más alta de encima de su pie y QUITA las que quedan
     /// dentro de un collider. Lo usa el constructor del microcosmos después de sembrar (también vale en juego). Devuelve
     /// (apoyadas, quitadas).
     /// </summary>
-    public static (int settled, int removed) Settle(Transform root, IList<Bounds> surfaces = null)
+    public static (int settled, int removed) Settle(Transform root, IList<Bounds> surfaces = null, System.Func<float, float, float> soilAt = null)
     {
         int settled = 0, removed = 0;
         if (root == null) return (0, 0);
@@ -173,7 +210,11 @@ public static class MicroGround
         {
             if (pl == null) continue;
             Vector3 b = pl.position;
-            if (TopSurface(root, b, Probe, out float top, out _, pl, surfaces) && Mathf.Abs(top - b.y) > 0.005f)
+            bool found = TopSurface(root, b, Probe, out float top, out _, pl, surfaces);
+            // (2026-11-04) La tierra que SE VE (con su ruido y sus cúmulos): su collider es más liso y va por debajo (MicroSoilBuilder).
+            float s = soilAt != null ? soilAt(b.x, b.z) : float.NaN;
+            if (!float.IsNaN(s) && s >= b.y - 2f && s <= b.y + Probe) { top = found ? Mathf.Max(top, s) : s; found = true; }
+            if (found && Mathf.Abs(top - b.y) > 0.005f)
             {
                 pl.position = new Vector3(b.x, top, b.z);
                 settled++;
@@ -203,6 +244,8 @@ public class MicroSoil : MonoBehaviour
     public float thickness = MicroGround.SoilThickness;
     [Tooltip("Mosaicos de tierra sobre el suelo del piso y placas sobre los muebles (una malla combinada cada uno).")]
     public int tiles, plates;
+    [Tooltip("Colliders LISOS de la tierra (sin ruido ni piedras: los hornea el NavMesh).")]
+    public int colliders;
     [Tooltip("Cúmulos y piedras repartidos.")]
     public int mounds, stones;
     [Tooltip("Edificios y tramos de calle del pueblo levantados para quedar sobre la tierra.")]

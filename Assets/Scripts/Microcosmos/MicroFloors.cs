@@ -206,7 +206,7 @@ public static class MicroFloors
         //     ni dentro de un collider.
         bad.AddRange(MicroGround.ValidateFlora(root, 4));
         // 8 · (2026-11-04) LA CAPA DE TIERRA sobre los suelos del piso (MicroSoil).
-        if (giant != null && root.GetComponentInChildren<MicroSoil>(true) == null) bad.Add("sin capa de tierra (MicroSoil) sobre los suelos del piso");
+        if (MicroGround.SoilEnabled && giant != null && root.GetComponentInChildren<MicroSoil>(true) == null) bad.Add("sin capa de tierra (MicroSoil) sobre los suelos del piso");
         // 9 · (2026-11-04) LA FORMA DE MICROCOSMOS: el piso se monta desde su forma de microcosmos (MicroFloorElements) y apunta el
         //     inventario del piso del mesocosmos con que se montó (para saber qué revisar cuando el piso cambie).
         if (giant != null && root.Find(FloorForms.MicroName) == null) bad.Add($"sin «{FloorForms.MicroName}» (los elementos del piso sin su versión de microcosmos)");

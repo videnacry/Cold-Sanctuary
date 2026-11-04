@@ -245,27 +245,31 @@ public static class AreaMicrocosmos
         // alfombras y las losas) y una placa sobre cada mueble poblado; lisa donde está la historia y su pueblo, sin tierra sobre su
         // agua. La historia se sube a la tierra (y los edificios o calles que quedaran por debajo, sobre una alfombra): el pueblo
         // siempre se ve encima del suelo.
-        MicroSoil soilLayer = null;
-        if (giant != null)
+        MicroSoil soilLayer = null; System.Func<float, float, float> soilAt = null;
+        if (giant != null && MicroSoilBuilder.Enabled)   // (apagada por defecto: MicroGround.SoilEnabled)
         {
             var flat = new List<Bounds>();
             { Bounds sc = storyCore; sc.Expand(new Vector3(8f, 0f, 8f)); flat.Add(sc); }
             if (_hasCore) { Bounds tc = _townCore; tc.Expand(new Vector3(4f, 0f, 4f)); flat.Add(tc); }
-            foreach (Bounds b in _streets) flat.Add(b);
+            // (las calles quedan dentro del pueblo: no se listan una a una, eran miles de cajas por vértice de tierra)
             List<Bounds> soilTops = tops?.FindAll(b => !TopHasBuilding(b, cast));
-            soilLayer = MicroSoilBuilder.Lay(root.transform, rect, district, floors, groundY, soilTops, flat, StoryWater(story), soil, display.GetHashCode(), sceneLabel);
+            soilLayer = MicroSoilBuilder.Lay(root.transform, rect, district, floors, groundY, soilTops, flat, StoryWater(story), soil, display.GetHashCode(), sceneLabel, out soilAt);
             story.localPosition += Vector3.up * MicroGround.SoilThickness;
             soilLayer.raised = MicroSoilBuilder.RaiseTown(story, floors, groundY);
             Physics.SyncTransforms();
         }
         int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
-                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
+                             floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode, display, story.position);
         // (2026-11-04) LA FLORA ENCIMA, NUNCA DEBAJO (MicroGround; Berón: «la vegetación se está creando bajo el suelo … una de las
         // reglas debería ser que la vegetación se cree encima de cada superficie y nunca debajo»): cada planta y cada bicho, apoyados
         // en la superficie más alta de encima de su pie (un rayo desde arriba: la tierra, la alfombra, la losa del hospital); la que
         // queda dentro de un collider (una pata, un edificio) se quita.
         var surfaces = MicroSoilBuilder.GroundLayers(floors, groundY); if (tops != null) surfaces.AddRange(tops);
-        var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces);
+        // (2026-11-04) Lo del MAPA A MANO cae DESDE EL AIRE (bajo la tapa de los muros) sobre la superficie más alta de debajo.
+        int dropped = _handPlaced.Count > 0 ? MicroGround.Drop(root.transform, _handPlaced, groundY + wallH - 3f, surfaces, soilAt) : 0;
+        if (dropped > 0) Debug.Log($"[Mapa] {sceneLabel}: {dropped} plantas y bichos del mapa a mano caídos desde el aire sobre su superficie.");
+        _handPlaced.Clear();
+        var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces, soilAt);
         Debug.Log($"[Tierra] {sceneLabel}: {settledPl} plantas y bichos apoyados en la superficie de encima, {removedPl} plantas quitadas (dentro de un collider).");
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
@@ -1266,9 +1270,15 @@ public static class AreaMicrocosmos
     /// <param name="faunaSlots">Las plazas de fauna del área (ídem): los bichos van primero a ellas y luego a suelo libre.</param>
     static int Nature(Transform root, Bounds rect, Bounds district, float groundY, int seed, Bounds story, List<Renderer> floors, MicroBiome.Biome biome = null,
                       List<Vector3> floraSlots = null, List<Vector3> faunaSlots = null, List<int> floraUnderStory = null, List<Bounds> tops = null,
-                      bool town = false)
+                      bool town = false, string display = null, Vector3 storyOrigin = default)
     {
         var rnd = new System.Random(seed);
+        // (2026-11-04) EL MAPA A MANO de la historia (MicroStoryMaps; regla M9): si está hecho, su flora y su fauna van a su sitio (y caen
+        // desde el aire: MicroGround.Drop); la siembra al azar de abajo es solo el RESPALDO de las historias sin mapa, y se dice.
+        MicroStoryMaps.Map map = display != null ? MicroStoryMaps.For(display) : null;
+        bool hand = map != null && map.status == MicroStoryMaps.Status.Hecho;
+        _handPlaced.Clear();
+        if (display != null) Debug.Log(hand ? $"[Mapa] {display}: mapa a mano ({map.PlantCount} plantas, {map.AnimalCount} bichos, {map.floor.Length} órdenes sobre el piso; {map.place})." : $"[Mapa] {display}: SIN mapa a mano ({(map != null ? "esbozo: " + string.Join("; ", map.todo) : "ni esbozo")}): siembra al azar como respaldo.");
         float biomeWeight = 0f; if (biome != null) foreach (MicroBiome.Plant pl in biome.plants) biomeWeight += pl.weight;
         float R(float a, float b) => a + (float)rnd.NextDouble() * (b - a);
         Vector3 center = new Vector3(rect.center.x, groundY, rect.center.z);
@@ -1456,7 +1466,7 @@ public static class AreaMicrocosmos
         // del área (el más cercano a la altura de la plaza), menos las que tapa la historia (su claro).
         int onSlots = 0;
         var slotPts = new List<Vector3>();
-        if (floraSlots != null)
+        if (floraSlots != null && !hand)
             for (int i = 0; i < floraSlots.Count; i++)
             {
                 Vector3 w = floraSlots[i];
@@ -1475,7 +1485,7 @@ public static class AreaMicrocosmos
         //     (×100) Fina en el BARRIO de la historia; por el resto del piso gigante, cada TownCell × K.
         //     (2026-11-03) Si el pueblo pasa de 500 m de lado (barrio ×60), la rejilla fina se abre en proporción: ~28 000 celdas como mucho.
         float fine = TownCell * Mathf.Max(1f, Mathf.Sqrt(dense.size.x * dense.size.z) / 500f);
-        if (town)
+        if (town && !hand)
             foreach (var (box, step) in Grids(fine))
                 for (float x = box.min.x + step * 0.5f; x <= box.max.x; x += step)
                     for (float z = box.min.z + step * 0.5f; z <= box.max.z; z += step)
@@ -1489,7 +1499,7 @@ public static class AreaMicrocosmos
         //     (×100) La rejilla de 6 m, en el BARRIO de la historia; por el resto del piso gigante (kilómetros), cada 6 m × K: el
         //     santuario gigante también tiene su musgo y sus briznas, sin multiplicar por cien las plantas.
         const float cell = 6f;
-        if (!town)
+        if (!town && !hand)
         foreach (var (box, step) in Grids(cell))
         for (float x = box.min.x + step * 0.5f; x <= box.max.x; x += step)
             for (float z = box.min.z + step * 0.5f; z <= box.max.z; z += step)
@@ -1523,6 +1533,36 @@ public static class AreaMicrocosmos
                     }
             }
         _floraOnTops = onTops;
+        // (2026-11-04) LA FLORA DEL MAPA A MANO: cada planta o rodal en su sitio (metros desde la «Historia»), con la planta de su bioma;
+        // luego cae desde el aire sobre su superficie (MicroGround.Drop, en AreaMicrocosmos.Build).
+        if (hand)
+        {
+            int handFlora = 0, missing = 0;
+            foreach (MicroStoryMaps.Plant hp in map.flora)
+            {
+                MicroBiome.Plant? found = FindPlant(biome, hp.plant);
+                if (found == null) { missing++; Debug.LogWarning($"[Mapa] {display}: la planta «{hp.plant}» no está en su bioma: se salta."); continue; }
+                MicroBiome.Plant pl = found.Value;
+                foreach (Vector2 s in MicroStoryMaps.Spots(hp.at, hp.count, hp.spread))
+                {
+                    Vector3 w = ClampXZ(storyOrigin + new Vector3(s.x, 0f, s.y), inner);
+                    Vector3 p = new Vector3(w.x - center.x, groundY - center.y, w.z - center.z);
+                    int before = flora.childCount;
+                    if (town)
+                    {
+                        float h = Mathf.Max(0.03f, pl.cm / 100f);
+                        TownForm form = FormOf(pl, h);
+                        TownRadii(form, h, out float _, out float spaceR);
+                        AddPt(w, spaceR);
+                        TownPlant(pl, p, h, form, spaceR);
+                    }
+                    else NativePlant(pl, p);
+                    for (int c = before; c < flora.childCount; c++) _handPlaced.Add(flora.GetChild(c));
+                    placed0++; handFlora++;
+                }
+            }
+            Debug.Log($"[Mapa] {display}: {handFlora} plantas del mapa a mano en su sitio{(missing > 0 ? $"; {missing} rodales sin su planta en el bioma" : "")}.");
+        }
         // Una planta DEL LUGAR, a escala de pueblo (sus copas, a escala humana: lo mismo que en las afueras), sobre la cara de arriba
         // de un mueble gigante fuera del pueblo (2026-11-03). Lleva «(sobre mueble)» en el nombre: las pruebas del pueblo no la
         // cuentan como flotante (está apoyada en su meseta).
@@ -1725,32 +1765,35 @@ public static class AreaMicrocosmos
         var fauna = new GameObject("Fauna_a_escala").transform; fauna.SetParent(root, false); fauna.localPosition = center;
         (string sp, int n, float len)[] generic = { ("Antlion", 5, 3f), ("DungBeetle", 5, 5f), ("Termite", 10, 1.6f), ("Mantis", 3, 10f), ("Cricket", 5, 5f), ("Grasshopper", 5, 7f), ("Aphid", 8, 1f), ("Ladybug", 5, 2.4f) };
         // Con bioma, su FAUNA NATIVA (activa en la estación de la historia): cada especie real con el cuerpo de su grupo.
-        var list = new List<(string sp, int n, float len, Color tint, string name, string dormant, bool street)>();
+        var list = new List<(string sp, int n, float len, Color tint, string name, string dormant, bool street, bool handAt, Vector2 at, float spread)>();
         // En el PUEBLO, los bichos del lugar no pasan de la talla de un animal grande del pueblo (2,4 m, un caballo): a escala de
         // hormiga una mantis medía 12 m y paseaba entre las casas de Kowloon como un monstruo, al lado de Bruce Lee (1,7 m).
-        if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, town ? Mathf.Min(bg.Length, 2.4f) : bg.Length, bg.tint, bg.name, bg.dormant, false));
-        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null, false));
+        if (hand) foreach (MicroStoryMaps.Animal ha in map.fauna) list.Add((ha.species, ha.count, town ? Mathf.Min(ha.length, 2.4f) : ha.length, SpeciesColor(ha.species), ha.name, null, false, true, ha.at, ha.spread));   // EL MAPA A MANO
+        else if (biome != null) foreach (MicroBiome.Bug bg in biome.bugs) list.Add((bg.species, bg.count, town ? Mathf.Min(bg.Length, 2.4f) : bg.Length, bg.tint, bg.name, bg.dormant, false, false, default, 0f));
+        else foreach (var (gs, gn, gl) in generic) list.Add((gs, gn, gl, SpeciesColor(gs), gs, null, false, false, default, 0f));
         // LOS ANIMALES DEL PUEBLO (Biome.townFauna: los caballos de los carros, los asnos, los gatos…), a su talla real y por las
         // CALLES (Berón 2026-11-01: «al-Juarismi, Curie, Einstein y Patterson no tienen fauna»).
-        if (town && biome != null && biome.townFauna != null)
-            foreach (MicroBiome.Pet pt in biome.townFauna) list.Add((pt.species, pt.count, pt.length, pt.tint, pt.name, null, true));
+        if (town && !hand && biome != null && biome.townFauna != null)
+            foreach (MicroBiome.Pet pt in biome.townFauna) list.Add((pt.species, pt.count, pt.length, pt.tint, pt.name, null, true, false, default, 0f));
         // (2026-11-03) Las MESETAS de los muebles gigantes fuera del pueblo también tienen su fauna (reglas de los microcosmos): en un pueblo
         // sin bichos del lugar (París, Berna, Bagdad, Pasadena: solo los animales de la calle), unos pocos del santuario gigante, allí arriba.
-        if (town && tops != null && tops.Count > 0)
+        if ((town || hand) && tops != null && tops.Count > 0)
         {
-            list.Add(("Ladybug", 2, 2.4f, SpeciesColor("Ladybug"), "Mariquita de las mesetas", null, false));
-            list.Add(("Ant", 2, 1.8f, SpeciesColor("Ant"), "Hormiga de las mesetas", null, false));
+            list.Add(("Ladybug", 2, 2.4f, SpeciesColor("Ladybug"), "Mariquita de las mesetas", null, false, false, default, 0f));
+            list.Add(("Ant", 2, 1.8f, SpeciesColor("Ant"), "Hormiga de las mesetas", null, false, false, default, 0f));
         }
         int placed = 0, faunaNext = 0, faunaTop = 0, onStreets = 0;
-        foreach (var (sp, n, len, tint, label, dormant, street) in list)
+        foreach (var (sp, n, len, tint, label, dormant, street, handAt, hat, hspread) in list)
         {
             GameObject prefab = AnimalPrefabGenerator.LoadOrCreate(sp);   // lo genera si falta (especies nuevas)
+            List<Vector2> handSpots = handAt ? MicroStoryMaps.Spots(hat, n, hspread) : null;   // (el mapa a mano: cada uno en su sitio)
             for (int i = 0; i < n; i++)
             {
                 // Cada uno nace junto a lo que usa: la hormiga león en la arena fina, el pelotero junto a una boñiga; el resto, en la
                 // siguiente plaza de fauna del piso y, tomadas todas, en suelo libre DENTRO de los muros (nunca fuera: regla 11).
                 Vector3 p;
-                if (street && _streets.Count > 0)
+                if (handAt) { Vector3 w = storyOrigin + new Vector3(handSpots[i].x, 0f, handSpots[i].y); p = new Vector3(w.x - center.x, groundY - center.y, w.z - center.z); }
+                else if (street && _streets.Count > 0)
                 {
                     // Por una calle (a lo largo de un tramo al azar, por su centro: a ≥ 2 m de los solares).
                     Bounds sb = _streets[rnd.Next(_streets.Count)];
@@ -1790,6 +1833,7 @@ public static class AreaMicrocosmos
                 Transform ins = a.transform.Find("Insecto");
                 if (ins != null && ins.lossyScale.z > 1e-6f) holder.localScale = Vector3.one * (len / ins.lossyScale.z);
                 else if (any) { float now = Mathf.Max(bb.size.x, bb.size.z); if (now > 1e-4f) holder.localScale = Vector3.one * (len / now); }
+                if (handAt) _handPlaced.Add(holder);
                 placed++;
             }
         }
@@ -1850,6 +1894,15 @@ public static class AreaMicrocosmos
     }
 
     static int _faunaOnSlots;   // cuántos bichos fueron a las plazas de fauna (el último Nature)
+    // (2026-11-04) Lo que el último Nature puso desde el MAPA A MANO (MicroStoryMaps): cae desde el aire en Build (MicroGround.Drop).
+    static readonly List<Transform> _handPlaced = new List<Transform>();
+    // La planta del bioma cuyo nombre empieza por <paramref name="name"/> (sus plantas y las del pueblo), o null.
+    static MicroBiome.Plant? FindPlant(MicroBiome.Biome b, string name)
+    {
+        if (b == null || string.IsNullOrEmpty(name)) return null;
+        foreach (MicroBiome.Plant[] arr in new[] { b.plants, b.town }) if (arr != null) foreach (MicroBiome.Plant p in arr) if (p.name.StartsWith(name)) return p;
+        return null;
+    }
     static int _floraOnTops, _faunaOnTops;   // plantas y bichos encima de los muebles gigantes (el último Nature)
 
     static bool InsideXZ(Bounds b, Vector3 p, float margin) => p.x > b.min.x - margin && p.x < b.max.x + margin && p.z > b.min.z - margin && p.z < b.max.z + margin;

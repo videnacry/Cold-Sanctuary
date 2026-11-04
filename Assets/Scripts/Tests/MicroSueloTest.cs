@@ -15,7 +15,8 @@ using UnityEngine.SceneManagement;
 /// 5. las ALFOMBRAS: 7 cm de canto con núcleo de circuitos y costura de LED;
 /// 6. la ESCALA cívica: plato de una comida, olla de 2 L por comensal, estatua y fuente monumentales, todo asiento con sitio (MicroSeat),
 ///    el asiento libre más cercano;
-/// 7. las ESTATUAS: una figura humana en una estatua es violación; la de insecto-humano no.
+/// 7. las ESTATUAS: una figura humana en una estatua es violación; la de insecto-humano no;
+/// 8. los MAPAS A MANO (regla M9): Angostura hecho; el mapa manda sobre el piso; toda historia con mapa o esbozo.
 /// </summary>
 public class MicroSueloTest : MonoBehaviour, ITestUnit
 {
@@ -108,6 +109,19 @@ public class MicroSueloTest : MonoBehaviour, ITestUnit
             MicroSeat near2 = MicroSeat.Nearest(chair.position + Vector3.right * 3f, 10f, out int slot2);
             TestProbe.Check("6 · un sitio ocupado no se ofrece", near2 == ms && slot2 == 1, $"sitio {slot2}");
             ms.Leave(slot, gameObject);
+
+            // 8 · Los mapas a mano (regla M9): Angostura hecho y completo; toda historia de la tabla con su mapa o su esbozo.
+            var ang = MicroStoryMaps.For("Angostura");
+            TestProbe.Check("8 · el mapa a mano de Angostura está hecho, con flora, fauna, piso y edificios", ang != null && MicroStoryMaps.Authored("Angostura") && ang.PlantCount >= 100 && ang.AnimalCount >= 10 && ang.floor.Length > 0 && ang.buildings.Length > 0,
+                ang != null ? $"{ang.PlantCount} plantas, {ang.AnimalCount} bichos, {ang.floor.Length} órdenes, {ang.buildings.Length} edificios" : "sin mapa");
+            var op = MicroFloorElements.OverrideFor("Angostura", "hornilla_2", "hornilla");
+            TestProbe.Check("8 · el mapa manda sobre el piso: en Angostura los fogones son tepuyes (mesetas), no volcanes", op != null && op.action == MicroFloorElements.Action.Como && op.element == "mesa", op != null ? op.why : "sin orden");
+            var noMap = new List<string>();
+            foreach (MicroFloors.Match m in MicroFloors.Table) { var mm = MicroStoryMaps.For(m.display); if (mm == null || mm.status == MicroStoryMaps.Status.Esbozo && mm.todo.Length == 0) noMap.Add(m.display); }
+            TestProbe.Check("8 · toda historia tiene su mapa o su esbozo con lo que le falta", noMap.Count == 0, string.Join(", ", noMap));
+            var spots = MicroStoryMaps.Spots(new Vector2(10f, 10f), 12, 20f);
+            bool inCircle = spots.Count == 12; foreach (Vector2 s in spots) if (Vector2.Distance(s, new Vector2(10f, 10f)) > 20.01f) inCircle = false;
+            TestProbe.Check("8 · un rodal reparte sus plantas dentro de su radio", inCircle);
 
             // 7 · Las estatuas: insecto-humano, no humana.
             Transform statue = Piece(site, "Estatua del Libertador", "estatua");
@@ -233,7 +247,7 @@ public class MicroSueloEscenasTest : MonoBehaviour, ITestUnit
         // (2) La tierra.
         MicroSoil soil = root.GetComponentInChildren<MicroSoil>(true);
         int soilRenderers = soil != null ? soil.GetComponentsInChildren<Renderer>(true).Length : 0;
-        TestProbe.Check($"{scene}: capa de tierra de 10 cm con cúmulos y piedras, en mosaicos combinados", soil != null && f.soil && soil.tiles > 0 && soilRenderers <= soil.tiles + soil.plates && soilRenderers < 1500,
+        if (MicroGround.SoilEnabled) TestProbe.Check($"{scene}: capa de tierra de 10 cm con cúmulos y piedras, en mosaicos combinados", soil != null && f.soil && soil.tiles > 0 && soilRenderers <= soil.tiles + soil.plates && soilRenderers < 1500,
             soil != null ? $"{soil.tiles} mosaicos, {soil.plates} placas, {soil.mounds} cúmulos, {soil.stones} piedras, {soilRenderers} renderers; {soil.raised} piezas del pueblo subidas" : "sin MicroSoil");
         Transform story = root.Find("Historia");
         if (story != null && soil != null)
