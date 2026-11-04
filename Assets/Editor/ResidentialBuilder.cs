@@ -269,6 +269,10 @@ public static class ResidentialBuilder
         float headTop = _ringZ * 0.5f - PillowRing.Walkway, bedCz = headTop - _bedZ * 0.5f, matCz = headTop - HeadZone - S * 0.5f;
         Transform mat = Solid(ring, new Vector3(0f, 0.25f, matCz), new Vector3(S, 0.2f, S), mattressC, "Colchon_colosal");   // cara de arriba a +0,35: 0,2 m sobre la plataforma
         Solid(ring, new Vector3(0f, 0.25f, headTop - HeadZone * 0.5f), new Vector3(S, 0.2f, HeadZone), mattressC, "Colchon_cabecero");
+        // (2026-11-04, grupo 89) El colchón es BLANDO: sin collider se anda sobre la plataforma y uno se hunde 0,2 m en él; con collider,
+        // su escalón de 0,2 m frenaba a algunos al entrar. (PillowRing.Spot sigue dando la cara de arriba; CarpetPad.For ve la plataforma.)
+        Object.DestroyImmediate(mat.GetComponent<Collider>());
+        foreach (Transform hm in ring) if (hm.name == "Colchon_cabecero") Object.DestroyImmediate(hm.GetComponent<Collider>());
         for (int k = 1; k < _ringCells; k++)   // el acolchado marca las celdas
         {
             float o = (k - _ringCells * 0.5f) * PillowRing.CellSize;

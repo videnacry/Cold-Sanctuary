@@ -565,6 +565,8 @@ public class LeisureDirector : MonoBehaviour
             SetStatus(g, r, StatusOf(g));
             Vector3 d = r.to - pos; float dy = Mathf.Abs(d.y); d.y = 0f;
             bool there = d.magnitude <= (r.group.micro ? 1.6f : 1.7f) && dy < 2.2f;
+            // EL RING (grupo 89): quien ya pisa el colchón a menos de una celda y media de la suya, ha llegado (se pega almohadazos desde ahí).
+            if (!there && r.venue.anchor != null && r.venue.anchor.TryGetComponent(out PillowRing pring) && pring.OnMattress(pos, 0f) && d.magnitude <= PillowRing.CellSize * 1.5f) there = true;
             if (!there && r.group.micro && d.magnitude <= 4f && g.TryGetComponent(out UnityEngine.AI.NavMeshAgent mag) && mag.enabled && mag.isOnNavMesh && !mag.pathPending && mag.hasPath && mag.remainingDistance <= 0.8f) there = true;   // (el agente ya está al final de su camino, junto al puesto)
             if (!there)
             {
