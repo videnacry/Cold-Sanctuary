@@ -173,7 +173,7 @@ public static class GuardianTree
         }
         // PANALES (2026-11-04: «0 panales», prueba 91): en las puntas de las ramas bajas de la copa, repartidos (uno de cada dos), hasta 8.
         GuardianHives gh = root.AddComponent<GuardianHives>();
-        for (int i = 0; i < lowPerches.Count && nests < 8; i += 2) { Vector3 at = lowPerches[i] + new Vector3(0.5f, -0.05f, 0.2f); CubeTree.Honeycomb(tr, at, nest, 977 + i * 13); gh.spots.Add(at); nests++; }
+        for (int i = 0; i < lowPerches.Count && nests < 8; i += 2) { Vector3 at = lowPerches[i] + new Vector3(0.5f, -0.05f, 0.2f); CubeTree.Honeycomb(tr, at, nest, 977 + i * 13).stays = true; gh.spots.Add(at); nests++; }
         // Escarcha también en los hombros de la base (donde el ancho se recoge), como la nieve en los contrafuertes.
         for (int k = 0; k < 8; k++)
         {
@@ -200,7 +200,7 @@ public class GuardianHives : MonoBehaviour
     {
         if (GetComponentsInChildren<Hive>(true).Length > 0 || spots.Count == 0) return;
         Material nest = CubeTree.Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));
-        for (int i = 0; i < spots.Count; i++) CubeTree.Honeycomb(transform, spots[i], nest, 977 + i * 26);
+        for (int i = 0; i < spots.Count; i++) CubeTree.Honeycomb(transform, spots[i], nest, 977 + i * 26).stays = true;
         Debug.LogWarning($"[Guardia] Faltaban los panales del árbol guardián al empezar: se vuelven a poner {spots.Count} (algo los quita después del Blockout).");
     }
 }

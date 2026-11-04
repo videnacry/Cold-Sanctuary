@@ -96,10 +96,13 @@ public class Hive : MonoBehaviour
     int _movedDay = int.MinValue;
     public int moves { get; private set; }
 
+    /// <summary>No se muda (las colmenas del árbol guardián: son SUYAS; mudándose a las 6:00 se iban todas, prueba 91 «0 panales»).</summary>
+    public bool stays;
+
     void MoveAt6()
     {
         TimeController tc = TimeController.timeController;
-        if (tc == null || ColdSanctuary.TestRunner.Running) return;
+        if (tc == null || ColdSanctuary.TestRunner.Running || stays) return;
         if (_movedDay == int.MinValue) { _movedDay = tc.Hour >= 6f ? tc.Day : tc.Day - 1; return; }   // el día del arranque no cuenta
         if (tc.Day == _movedDay || tc.Hour < 6f) return;
         _movedDay = tc.Day;

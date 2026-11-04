@@ -106,11 +106,36 @@ public class IceInsectLife : MonoBehaviour
     // escala del microcosmos) lo dejaban en ~0. Se mantiene a escala 1.
     // Se mueve en LateUpdate, DESPUÉS de la IA genérica del animal (merodeo de LifeStage/voluntad), que también empujaba
     // su transform y la alejaba del panal: el insecto vuela por su cuenta.
+    // (2026-11-04, prueba 28: «la abeja de las nieves mide 8,10 m (escala (1.41, 1.00, 1.41))») Una abeja no puede crecer ni colgar de un
+    // objeto escalado: si su escala en el mundo se va de su tamaño (1; la reina 1,35), vuelve a él (y se suelta de ese padre); si lleva
+    // algo más grande que ella (comida, una pieza), lo suelta. Lo avisa una vez, con el culpable, para encontrar la causa.
+    float _nextSizeCheck; bool _sizeLogged;
+    void KeepBeeSize()
+    {
+        float want = isQueen ? 1.35f : 1f;
+        Vector3 s = transform.lossyScale;
+        string why = null;
+        if (Mathf.Abs(s.x - want) > 0.15f || Mathf.Abs(s.y - want) > 0.15f || Mathf.Abs(s.z - want) > 0.15f)
+        {
+            why = $"escala {s} (padre «{(transform.parent != null ? transform.parent.name : "ninguno")}»)";
+            if (transform.parent != null && (transform.parent.lossyScale - Vector3.one).sqrMagnitude > 1e-4f) transform.SetParent(null, true);
+            transform.localScale = Vector3.one * want;
+        }
+        foreach (Renderer r in GetComponentsInChildren<Renderer>())
+        {
+            if (r == null || !r.enabled || Mathf.Max(r.bounds.size.x, r.bounds.size.z) < 1.5f) continue;
+            why = (why != null ? why + "; " : "") + $"lleva «{r.name}» de {Mathf.Max(r.bounds.size.x, r.bounds.size.z):0.0} m";
+            if (_self is ICarrier c && c.CarriedFood != null && r.transform.IsChildOf(c.CarriedFood.transform)) c.Drop(transform.position);
+        }
+        if (why != null && !_sizeLogged) { _sizeLogged = true; Debug.LogWarning($"[Abejas] «{name}» no tenía su tamaño: {why}. Vuelve a ~20 cm."); }
+    }
+
     void LateUpdate()
     {
         // (la ARAÑITA recién salida del saco sí es pequeña —~5 % de su madre— y crece con sus mudas: LifeStage)
         if (kind == Kind.Spider && _self != null && _self.lifeStage != LifeStage.adult) { if (transform.localScale.x < 0.05f) transform.localScale = Vector3.one * 0.05f; }
         else if (transform.localScale.x < 0.6f) transform.localScale = Vector3.one;
+        if (kind == Kind.Bee && Time.time >= _nextSizeCheck) { _nextSizeCheck = Time.time + 2f; KeepBeeSize(); }
         if (_self != null && _self.death) { FallDead(); return; }
         // La REINA vive años (2–5 en la abeja melífera [A]); las obreras de invierno, meses (StageProfile «SnowBee»).
         if (isQueen && !_queenLongevity && _self != null && _self.AdultStage != null) { _self.AdultStage.stageDays = 3 * 365; _queenLongevity = true; }
