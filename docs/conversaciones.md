@@ -83,7 +83,7 @@ Con estrés > 0,7 quien abre, la charla es de mal humor (quejas) aunque el tema 
   (`Orchestra.Busy`), la historia lo retiene (`MicroJornada.hold`), sirve en el restaurante o va de viaje en alfombra.
 - En turno de trabajo se habla menos (×0,4) y de su trabajo.
 
-## 5. Reglas (para el manual de diseño)
+## 5. Reglas (en el manual de diseño: J7–J11 de [manual-de-diseno.md](manual-de-diseno.md) §9)
 
 1. **Charlan todas las personas**: humanos e insectos-humanos con `PersonLife` y el personal de la jornada; un personaje de historia
    que no deba hablar lleva `Conversable.optOut`. El jugador no entra.
