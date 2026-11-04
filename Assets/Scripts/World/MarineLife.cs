@@ -87,6 +87,12 @@ public class MarineLife : MonoBehaviour
         if (fw.sqrMagnitude > 1e-4f && Vector3.Angle(transform.up, Vector3.up) > 0.5f)
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(fw.normalized), 3f * Time.deltaTime);
         bool night = TimeController.timeController != null && !TimeController.timeController.IsDay;
+        // (2026-11-04) Se aparta del SUBMARINO DE OBRA (docs/submarino-de-obra.md) si su casco pasa a menos de 6 m: nada hacia el lado contrario.
+        if (!_onIce && transform.position.y < -0.3f)
+        {
+            ConstructionSubmarine sub = ConstructionSubmarine.Nearest(transform.position, 6f + _halfLen);
+            if (sub != null) { Vector3 away = transform.position - sub.HullCenter; if (away.sqrMagnitude < 0.01f) away = Vector3.right; Move(transform.position + away.normalized * 4f, speed * 1.5f, false); return; }
+        }
 
         // ── FOCAS: descanso en el hielo ──
         if (hauls)
@@ -187,7 +193,7 @@ public class MarineLife : MonoBehaviour
         Swarm best = null, bestAny = null; float bd = float.MaxValue, bdAny = float.MaxValue;
         foreach (Swarm s in Swarm.All)
         {
-            if (s == null || s.Consumed || (s.kind != SwarmKind.Fish && s.kind != SwarmKind.Krill) || IceAbove(s.transform.position)) continue;
+            if (s == null || s.Consumed || (s.kind != SwarmKind.Fish && s.kind != SwarmKind.Krill) || IceAbove(s.transform.position) || UnderTree(s.transform.position, 6f)) continue;   // (ni los de debajo de un edificio-árbol: se meten en su tronco)
             float d = (s.transform.position - from).sqrMagnitude;
             if (s.kind == SwarmKind.Fish && d < bd) { bd = d; best = s; }
             if (d < bdAny) { bdAny = d; bestAny = s; }
@@ -195,6 +201,17 @@ public class MarineLife : MonoBehaviour
         return best ?? bestAny;
     }
 
+    /// <summary>¿(x, z) cae bajo el tronco de un edificio-árbol (con <paramref name="margin"/> m de más) y por encima del fondo marino?</summary>
+    public static bool UnderTree(Vector3 p, float margin)
+    {
+        foreach (ArbolCampos t in ArbolCampos.All)
+        {
+            if (t == null) continue;
+            Vector3 l = t.transform.InverseTransformPoint(p);
+            if (Mathf.Max(Mathf.Abs(l.x), Mathf.Abs(l.z)) < t.waterHalf + margin && l.y > -16f) return true;
+        }
+        return false;
+    }
     /// <summary>¿Hay hielo o tierra (no el fondo del mar) bajo (x, z)? Lo primero que hay debajo, a ras del agua o más alto.</summary>
     static bool SolidAt(Vector3 p)
     {
@@ -256,6 +273,9 @@ public class MarineLife : MonoBehaviour
                     dist = Vector3.Distance(new Vector3(to.x, 0f, to.z), new Vector3(np.x, 0f, np.z));   // bajo el hielo cuenta la distancia en planta
                 }
             }
+            // (2026-11-04) Los EDIFICIOS-ÁRBOL tienen el fondo abierto (docs/edificio-arbol.md): ballenas, orcas y focas no se meten por el
+            // hueco a su tronco («cae» en el tronco de Entrenamiento, jornada 50): si el paso entra bajo un tronco, se queda fuera.
+            if (!onIce && UnderTree(np, 2f) && !UnderTree(cur, 2f)) { np.x = cur.x; np.z = cur.z; np.y = Mathf.Min(np.y, cur.y); }
             transform.position = np;
             Vector3 flat = step; flat.y = 0f;
             if (flat.sqrMagnitude > 1e-6f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(flat), 4f * Time.deltaTime);

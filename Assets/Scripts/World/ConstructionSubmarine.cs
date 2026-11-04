@@ -216,7 +216,8 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 avoid = Vector3.zero; float slow = 1f;
         if (wet) Avoid(pos, d, ref avoid, ref slow);
         Vector3 dir = d.magnitude > 1e-3f ? d.normalized : Vector3.zero;
-        Vector3 move = (dir + avoid).normalized * speed * slow * Time.deltaTime;
+        // Hacia el punto, frenando junto a un animal; y de lado para apartarse (aunque esté parado esperando a que se vaya).
+        Vector3 move = (dir * slow + Vector3.ClampMagnitude(avoid, 1f) * 0.6f) * speed * Time.deltaTime;
         if (move.magnitude > d.magnitude && avoid == Vector3.zero) move = d;
         transform.position = pos + move;
         if (wet) SwamMeters += move.magnitude; else DrivenMeters += move.magnitude;
@@ -241,7 +242,7 @@ public class ConstructionSubmarine : MonoBehaviour
     void Avoid(Vector3 pos, Vector3 d, ref Vector3 avoid, ref float slow)
     {
         Vector3 c = pos + Vector3.up * Height * 0.5f;
-        float hullR = Mathf.Max(Beam, Height) * 0.5f, look = Length * 0.5f + 8f;
+        float hullR = Mathf.Max(Beam, Height) * 0.5f, look = Length * 0.5f + 14f;
         foreach (Swarm s in Swarm.All)
         {
             if (s == null || s.kind == SwarmKind.Bee || s.Visible == 0) continue;
@@ -264,13 +265,13 @@ public class ConstructionSubmarine : MonoBehaviour
         Vector3 to = other - c; float dist = to.magnitude;
         if (dist > look + otherR) return;
         float ahead = d.sqrMagnitude > 1e-4f ? Vector3.Dot(to, d.normalized) : 0f;
-        if (ahead < -Length * 0.5f || gap > 6f) return;
+        if (ahead < -Length * 0.5f || gap > 10f) return;
         // Apartarse en perpendicular a la marcha, hacia el lado contrario al animal (y algo en altura).
         Vector3 lat = d.sqrMagnitude > 1e-4f ? Vector3.ProjectOnPlane(-to, d.normalized) : -to;
         if (lat.sqrMagnitude < 1e-4f) lat = Vector3.Cross(d.normalized, Vector3.up);
-        float k = Mathf.Clamp01((6f - gap) / 6f);
+        float k = Mathf.Clamp01((10f - gap) / 8f);   // (2026-11-04: reacciona antes —a 10 m— y para del todo si un animal queda a menos de 2,5 m por delante: −3,2 m de holgura en la prueba 73)
         avoid += lat.normalized * (1.5f + 2f * k) * k;
-        slow = Mathf.Min(slow, Mathf.Lerp(1f, 0.25f, k));
+        slow = Mathf.Min(slow, gap < 2.5f && ahead > 0f ? 0f : Mathf.Lerp(1f, 0.2f, k));
         if (k > 0.3f && Time.time > _avoidLog) { _avoidLog = Time.time + 3f; Avoidances++; Debug.Log($"[Submarino] Esquiva un grupo de animales (holgura {gap:0.0} m)."); }
     }
     float _avoidLog;

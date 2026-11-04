@@ -329,3 +329,10 @@ También pone el `Cuadro_fotobio` con su etiqueta y el componente `FotobioFacade
   - Chisti 2007 (*Biotechnol. Adv.* 25: 294) para ~1,8 kg de CO₂ por kg de biomasa;
   - vidrio de borosilicato 2230 kg/m³;
   - viento de diseño.
+
+## 2026-11-04: más módulos para 17 personas
+
+Con los seis personajes nuevos el santuario tiene **17 personas** (14,3 kg de O₂ al día). Con 8 módulos por columna (499 m²) la fachada
+daba 12,7 kg/día a salud 0,85: no llegaba. Ahora **10 módulos por columna** (`FotobioSpec.ModulesPerColumn`): 480 m² en el tronco + 115 en
+las quillas = **595 m²**, ~17,9 kg/día a salud plena y ~15,2 a 0,85 (~18 personas). El arpa del tronco va de 10 a 56 m (por encima de la
+puerta del suelo, de 7 m). Si la población sigue creciendo, hay que sumar otro vano (el 5 choca con el carril de nado) o más altura.

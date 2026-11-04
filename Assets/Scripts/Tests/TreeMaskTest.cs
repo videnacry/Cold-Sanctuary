@@ -217,12 +217,22 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
         if (bm.Worn) bm.Strip();
         SwimBody sb = SwimBody.Of(k.transform);
         bool startedUnder = t.InRootWater(sb.HeadPosition);
-        if (!startedUnder)
+        // (2026-11-04) Que nada más lo mueva mientras dura la prueba: la jornada de Kushal (piloto automático) lo llevaba a su puesto
+        // (un viaje por el tronco que lo sacaba del agua) y le SUJETABA el cuerpo, así que la entrada de la prueba no hacía nada
+        // («puesto a 34 m … bajo el agua False», prueba 70).
+        var paused = new List<Behaviour>();
+        foreach (PlayerWorkday w in FindObjectsByType<PlayerWorkday>(FindObjectsSortMode.None)) if (w.enabled) { w.enabled = false; paused.Add(w); }
+        if (k.TryGetComponent(out TreeTrip trip) && trip.enabled) trip.enabled = false;
+        for (int i = 0; i < 8 && pc.BodyHeld; i++) pc.HoldBody(false);
+        Vector3 at = t.World(new Vector3(-3f, 34f, 4f));
+        for (int tries = 0; tries < 5 && !t.InRootWater(sb.HeadPosition); tries++)
         {
-            Vector3 at = t.World(new Vector3(-3f, 34f, 4f));
             if (cc != null) cc.enabled = false; k.transform.position = at; if (cc != null) cc.enabled = true; Physics.SyncTransforms();
             pc.SetSwimming(true);
+            yield return null; yield return null;
         }
+        bool placed = t.InRootWater(sb.HeadPosition);
+        if (!placed) TestProbe.Check("Kushal queda bajo el agua del tronco para la prueba", false, $"en {k.transform.position}");
         yield return null;
         float breath0 = sb.Breath01;
         snap?.Invoke(k, "bajo_el_agua_sin_mascara");
@@ -257,6 +267,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
             if (cc != null) cc.enabled = false; k.transform.SetPositionAndRotation(back, backR); if (cc != null) cc.enabled = true; Physics.SyncTransforms();
             pc.SetSwimming(false);
         }
+        foreach (Behaviour b in paused) if (b != null) b.enabled = true;
     }
 
 #if UNITY_EDITOR

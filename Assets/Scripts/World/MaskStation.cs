@@ -15,7 +15,17 @@ public class MaskStation : MonoBehaviour
     [SerializeField] int masks = 8;
     /// <summary>Estado de las máscaras del puesto (1 = revisadas hoy). Baja <see cref="DecayPerDay"/> al día.</summary>
     [Range(0f, 1f)] public float condition = 1f;
-    public const float DecayPerDay = 0.25f;
+    /// (2026-11-04) Baja un 10 % al día: con la revisión por ROTACIÓN (cada puerta una vez por semana, ver FruitGardener) llega a la
+    /// semana con un 30–40 %. Por debajo de <see cref="FlagBelow"/> su luz se pone roja y el panel del árbol la marca: se revisa ese día.
+    public const float DecayPerDay = 0.1f;
+    public const float FlagBelow = 0.3f;
+    /// <summary>Días de la rotación: cada día se revisa a mano 1/7 de las puertas de cada árbol.</summary>
+    public const int RotationDays = 7;
+    /// <summary>¿Hay que revisarlo a mano el día <paramref name="day"/>? Le toca por la rotación (su número entre las estaciones del
+    /// árbol) o su luz está en rojo.</summary>
+    public bool Due(int day, int index) => condition < FlagBelow || ((index % RotationDays) + RotationDays) % RotationDays == ((day % RotationDays) + RotationDays) % RotationDays;
+    /// <summary>La LUZ del puesto (el indicador que lee el panel): verde ≥ 50 %, ámbar, roja bajo <see cref="FlagBelow"/>.</summary>
+    public Color Indicator => condition >= 0.5f ? new Color(0.4f, 1f, 0.6f) : condition >= FlagBelow ? new Color(1f, 0.75f, 0.2f) : new Color(1f, 0.25f, 0.2f);
     /// <summary>Minutos de juego en revisar el puesto (las juntas y el visor, la válvula y la carga de cada botella).</summary>
     public const float CheckMinutes = 1f;
     /// <summary>Donde se pone quien la coge (dentro del agua, delante del panel; o fuera, delante del perchero).</summary>
@@ -34,7 +44,7 @@ public class MaskStation : MonoBehaviour
     {
         int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
         if (_lastDay < 0) _lastDay = day;
-        if (day != _lastDay) { condition = Mathf.Max(0f, condition - DecayPerDay * (day - _lastDay)); _lastDay = day; }
+        if (day != _lastDay) { condition = Mathf.Max(0f, condition - DecayPerDay * (day - _lastDay)); _lastDay = day; Light(); Rebalance(building, day); }
     }
 
     public bool TryTake()
@@ -53,7 +63,7 @@ public class MaskStation : MonoBehaviour
         float before = condition;
         condition = 1f;
         if (masks < capacity) masks = capacity;
-        Refresh();
+        Refresh(); Light();
         Debug.Log($"[Mascaras] «{who}» revisa {name}: estado {before * 100f:0}% → 100%, {masks} máscaras.");
     }
 
@@ -69,7 +79,7 @@ public class MaskStation : MonoBehaviour
         }
     }
 
-    void Start() { Refresh(); }
+    void Start() { Refresh(); Light(); }
 
     /// <summary>El puesto más cercano a <paramref name="p"/> (de una clase, o de cualquiera si null), a menos de
     /// <paramref name="max"/> m; <paramref name="underwater"/>: solo los que están dentro del agua (y solo los que no, si false
@@ -87,6 +97,32 @@ public class MaskStation : MonoBehaviour
             if (d < bd) { bd = d; best = m; }
         }
         return best;
+    }
+
+    // REPARTO DE CADA NOCHE (2026-11-04): las máscaras van de la entrada por la que se entra a la puerta por la que se sale, así que
+    // unos percheros se vacían y otros se llenan (el del piso 5 del Árbol de los Campos quedaba vacío en la prueba 70). Al cambiar el
+    // día, en cada edificio, los puestos con más de su capacidad pasan las que les sobran a los que tienen menos (el carro de máscaras).
+    static readonly Dictionary<string, int> _rebalancedDay = new Dictionary<string, int>();
+    static void Rebalance(string building, int day)
+    {
+        if (building == null || (_rebalancedDay.TryGetValue(building, out int d) && d == day)) return;
+        _rebalancedDay[building] = day;
+        var list = new List<MaskStation>(); foreach (MaskStation m in Of(building)) list.Add(m);
+        int moved = 0;
+        foreach (MaskStation poor in list)
+            foreach (MaskStation rich in list)
+            {
+                if (poor.masks >= poor.capacity) break;
+                while (rich != poor && rich.masks > rich.capacity && poor.masks < poor.capacity) { rich.masks--; poor.masks++; moved++; }
+            }
+        if (moved > 0) { foreach (MaskStation m in list) m.Refresh(); Debug.Log($"[Mascaras] Reparto de la noche en {building}: {moved} máscaras de los percheros llenos a los vacíos."); }
+    }
+
+    // La luz de la estación (verde, ámbar o roja según su estado): el indicador que lee el panel del árbol.
+    void Light()
+    {
+        Transform l = transform.Find("Luz_estacion");
+        if (l != null && l.TryGetComponent(out Renderer r)) r.sharedMaterial = KitchenProps.Mat(Indicator);
     }
 
     public static IEnumerable<MaskStation> Of(string building)

@@ -165,17 +165,24 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         Debug.Log($"[Frutales] Medida: «{round.id}» {rp.Count} macetas en {roofsIn} techos: {g.RoundSeconds:0} s de juego = {gameH:0.00} h (estimada {round.hours:0.00} h); total del día {rounds.Sum(r => r.hours):0.0} h → {rounds.Count} persona(s).");
         Destroy(body);
 
-        // ── 7. LAS TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03) ──
+        // ── 7. LAS TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03; 2026-11-04: revisión BARATA por rotación
+        //    semanal y por el panel de luces, docs/mascaras-de-oxigeno.md §El jardinero) ──
         {
-            ArbolCampos tree = ArbolCampos.All.Where(a => a != null && FruitGardener.TreeTaskList(a).masks.Count > 0).OrderBy(a => FruitGardener.TreeTaskList(a).masks.Count).FirstOrDefault();
+            ArbolCampos tree = ArbolCampos.All.Where(a => a != null && FruitGardener.TreeStations(a).Count > 0).OrderBy(a => FruitGardener.TreeStations(a).Count).FirstOrDefault();
             if (tree == null) TestProbe.Check("el jardinero revisa las máscaras de oxígeno y cuida el fitoplancton de un edificio-árbol", false, "sin árboles con máscaras");
             else
             {
+                var all = FruitGardener.TreeStations(tree);
+                foreach (MaskStation m in MaskStation.Of(tree.building)) m.condition = 0.6f;   // ámbar: no se revisan si no les toca
+                // Dos que NO tocan hoy, en rojo: el panel las marca y se revisan también.
+                int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
+                var notDue = Enumerable.Range(0, all.Count).Where(i => !all[i].Due(day, i)).Take(2).Select(i => all[i]).ToList();
+                foreach (MaskStation m in notDue) m.condition = 0.2f;
                 var (masks, beds) = FruitGardener.TreeTaskList(tree);
-                foreach (MaskStation m in MaskStation.Of(tree.building)) m.condition = 0.4f;
+                var rot = masks.Where(m => !notDue.Contains(m)).ToList();
                 foreach (Phytoplankton b in beds) b.condition = 0.3f;
                 GameObject gb = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de máscaras (prueba)");
-                if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
+                if (tree.Ground != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Ground.outside) + Vector3.up);
                 FruitGardener tg = gb.AddComponent<FruitGardener>();
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
                 tg.AssignTreeTasks(tree);
@@ -184,13 +191,16 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 while (!tg.Finished && Time.realtimeSinceStartup - tt0 < capT) yield return null;
                 Time.timeScale = sc0;
                 float hT = tg.RoundSeconds / (TimeController.timeController.SecondsPerGameDay / 24f);
-                int okM = MaskStation.Of(tree.building).Count(m => m.condition > 0.99f), allM = MaskStation.Of(tree.building).Count();
-                TestProbe.Check($"el jardinero revisa las máscaras de oxígeno de todas las puertas de {tree.building} (perchero y estación)", tg.Finished && tg.MasksChecked >= Mathf.CeilToInt(masks.Count * 0.9f) && okM >= Mathf.CeilToInt(allM * 0.9f),
-                    tg.Finished ? $"{tg.MasksChecked}/{masks.Count} puertas, {okM}/{allM} puestos al 100 %, {tg.Skipped} saltadas" : $"a los {capT:0} s va por «{tg.Doing}»");
+                int rotOk = rot.Count(m => m.condition > 0.99f), redOk = notDue.Count(m => m.condition > 0.99f);
+                int untouched = all.Count(m => !masks.Contains(m) && m.condition < 0.99f), others = all.Count(m => !masks.Contains(m));
+                TestProbe.Check($"el jardinero lee el panel de máscaras de {tree.building} y revisa hoy solo 1/7 de las puertas (la rotación) y las que están en rojo",
+                    tg.Finished && masks.Count <= Mathf.CeilToInt(all.Count / 7f) + notDue.Count && rotOk == rot.Count && redOk == notDue.Count && untouched == others,
+                    tg.Finished ? $"{tg.MasksChecked} revisadas de {all.Count} estaciones: {rotOk}/{rot.Count} de la rotación, {redOk}/{notDue.Count} en rojo; {untouched}/{others} sin tocar; {tg.Skipped} saltadas" : $"a los {capT:0} s va por «{tg.Doing}»");
                 TestProbe.Check($"y cuida el fitoplancton del fondo abierto de {tree.building} (en óptimas condiciones)", beds.Count > 0 && tg.PhytoCared == beds.Count && beds.All(b => b.condition > 0.99f), $"{tg.PhytoCared}/{beds.Count} cortinas");
-                TestProbe.Check("las tareas del árbol duran lo estimado al repartir la jornada (≤ 1,5 ×) y sale del agua sin la máscara", tg.Finished && hT <= est * 1.5f + 0.1f && !BreathingMask.Has(gb),
+                TestProbe.Check("las tareas del árbol son cortas (≤ 1 h de juego), duran lo estimado al repartir la jornada (≤ 1,5 ×) y sale del agua sin la máscara",
+                    tg.Finished && est <= 1f && hT <= est * 1.5f + 0.1f && !BreathingMask.Has(gb),
                     $"medidas {hT:0.00} h de juego (estimadas {est:0.00} h), máscara puesta {BreathingMask.Has(gb)}");
-                Debug.Log($"[Frutales] Medida: tareas del árbol de {tree.building} ({masks.Count} puertas, {beds.Count} cortinas): {hT:0.00} h de juego (estimadas {est:0.00} h).");
+                Debug.Log($"[Frutales] Medida: tareas del árbol de {tree.building} ({masks.Count} de {all.Count} estaciones, {beds.Count} cortinas): {hT:0.00} h de juego (estimadas {est:0.00} h).");
                 Destroy(gb);
             }
         }

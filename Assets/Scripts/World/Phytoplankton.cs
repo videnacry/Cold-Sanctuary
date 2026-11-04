@@ -30,7 +30,7 @@ public class Phytoplankton : MonoBehaviour, ITarget, IEdible
     [Range(0f, 1f)] public float condition = 1f;
     public const float DecayPerDay = 0.3f;
     /// <summary>Minutos de juego en cuidar una cortina: limpiar el biofilm, medir y abonar (nitrato, fosfato, hierro).</summary>
-    public const float CareMinutes = 4f;
+    public const float CareMinutes = 2f;
     int _lastDay = -1;
     /// <summary>Cuidados del jardinero: el cultivo vuelve a estar en óptimas condiciones.</summary>
     public void Care(string who)

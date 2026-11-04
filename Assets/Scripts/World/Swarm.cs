@@ -71,6 +71,8 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     [Min(0.05f)] public float biteCooldown = 0.5f;
 
     public static int Bites { get; private set; }
+    /// <summary>Anima a todos los individuos aunque estén lejos de la cámara (pruebas, fotos).</summary>
+    public static bool AnimateAll;
 
     protected Vector3 _origin;
     protected Vector3 _target;
@@ -78,7 +80,8 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     protected readonly List<Transform> _children = new List<Transform>();
     readonly List<Vector3> _home = new List<Vector3>();
     readonly List<float> _phase = new List<float>();
-    float _nextReconcile, _nextBite;
+    float _nextReconcile, _nextBite, _nextPredatorScan;
+    Transform _predator;
     Vector3 _lastPos, _vel;
     bool _started;
     /// <summary>Velocidad (m/s) suavizada del grupo.</summary>
@@ -150,10 +153,11 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
         if (sub != null)
         {
             Vector3 away = transform.position - sub.HullCenter; if (away.sqrMagnitude < 0.01f) away = Vector3.right;
-            transform.position += away.normalized * (kind == SwarmKind.Jellyfish ? 1.2f : fleeSpeed) * dt;
+            transform.position += away.normalized * (kind == SwarmKind.Jellyfish ? 2.5f : fleeSpeed) * dt;
             return;
         }
-        Transform predator = NearestPredator();
+        if (Time.time >= _nextPredatorScan) { _nextPredatorScan = Time.time + 0.25f; _predator = NearestPredator(); }   // (cada 0,25 s: buscarlo en cada fotograma, en cada grupo, pesaba)
+        Transform predator = _predator;
         if (predator != null && kind != SwarmKind.Jellyfish)   // (las medusas no huyen: derivan)
         {
             Vector3 away = transform.position - predator.position; away.y = 0f;
@@ -189,6 +193,9 @@ public class Swarm : MonoBehaviour, ITarget, IEdible
     void AnimateIndividuals()
     {
         float t = Time.time;
+        // (2026-11-04) Lejos de la cámara (> 150 m) no se anima a cada individuo: son muchos y no se ven (la escena va más ligera).
+        Camera cam = Camera.main;
+        if (!AnimateAll && cam != null && (cam.transform.position - transform.position).sqrMagnitude > 150f * 150f) return;
         float sc = SwarmModels.DisplayScale(species);
         for (int i = 0; i < _children.Count; i++)
         {

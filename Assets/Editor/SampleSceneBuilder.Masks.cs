@@ -19,6 +19,17 @@ public static partial class SampleSceneBuilder
     {
         Vector3 ax = d.InverseTransformPoint(axisFrom.position);
         float sgn = ax.x >= 0f ? 1f : -1f;   // hacia el centro de la cara: lejos de las esquinas
+        // (2026-11-04) Y FUERA DEL AGUA: en el piso 5 del Árbol de los Campos (el Huerto), el perchero caía dentro del agua del tanque
+        // de virtualización del piso («perchero mojado», prueba 70). Si su lado está mojado y el otro no, va al otro.
+        Physics.SyncTransforms();
+        bool Wet(float s)
+        {
+            foreach (float z in new[] { wallThick + 0.35f, wallThick + 1.25f })
+                foreach (Collider c in Physics.OverlapSphere(d.TransformPoint(new Vector3(s * (w * 0.5f + 0.9f), 1f, z)), 0.4f, ~0, QueryTriggerInteraction.Collide))
+                    if (c.GetComponent<WaterZone>() != null) return true;
+            return false;
+        }
+        if (Wet(sgn) && !Wet(-sgn)) sgn = -sgn;
         // ── PERCHERO (fuera) ──
         Transform rack = new GameObject("Perchero_mascaras").transform; rack.SetParent(d, false);
         rack.localPosition = new Vector3(sgn * (w * 0.5f + 0.9f), 0f, wallThick + 0.35f);
