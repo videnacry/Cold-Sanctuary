@@ -67,3 +67,13 @@ Ningún grupo es una plataforma; los peces, el kril, las medusas y las abejas so
 moverse el banco van con él todos sus peces; un depredador que come peces choca con el banco y cada mordisco quita UN pez; el banco
 se rehace solo; hay grupos de las dos medusas y laten; un grupo marino sube al tronco del Árbol de los Campos por su fondo abierto;
 y el enjambre de una colmena visita de día al menos 3 árboles distintos.
+
+## 2026-11-04: sin deslumbrar (Berón: «las abejas y las medusas brillan tanto que deslumbran»)
+
+No era emisión: los individuos usaban `KitchenProps.Mat`, que para un color con alfa < 0,99 hace CRISTAL (transparente, liso 0,92), y
+la abeja era casi blanca. Docenas de brillos especulares superpuestos se leían como luces. Ahora `SwarmModels.Matte`: lisura 0,15
+(opacos) / 0,2 (translúcidos: alas, umbrela, brazos, tentáculos, kril), sin reflejos especulares ni del entorno, sin emisión y con la
+luminancia como mucho en 0,55. La abeja de las nieves es de **pelusa gris blanquecina** mate con bandas oscuras y alas grises; las
+abejas de la colmena (prefab) usan esos colores (`CubeCreature`) y, aunque su prefab sea el de antes, se pasan a mate al empezar
+(`SwarmModels.Dim` en `IceInsectLife`). Las medusas siguen translúcidas pero mates; ninguna brilla (los escifozoos antárticos no se
+conocen por su bioluminiscencia).
