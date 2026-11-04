@@ -568,7 +568,7 @@ public class RestaurantService : MonoBehaviour
 
     // ── Turistas ────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    static readonly string[] TouristBodies = { "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru", "Goluis", "Andrea" };
+    static readonly string[] TouristBodies = { "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Nesvitor", "Goluis", "Andrea" };   // (2026-11-04: Nesvitor en vez de Sadhguru, que se fue a su microcosmos)
 
     /// <summary>Llega un turista al pie de la torre del restaurante (una copia de cuerpo, como en la virtualización).</summary>
     public Diner SpawnTourist()

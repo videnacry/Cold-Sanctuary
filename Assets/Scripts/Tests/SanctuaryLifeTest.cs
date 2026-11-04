@@ -213,7 +213,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         float dayMin = TimeController.timeController.RealMinutesPerDay;
         TestProbe.Check("un día de juego dura lo configurado en el reloj (1 h por defecto)", clock != null && Mathf.Abs(dayMin - clock.realMinutesPerDay) < 0.5f, $"{dayMin:0.#} min");
         TestProbe.Check("hay área de Construcción con maquinaria y material", FindByPrefix("Construction_Area") && FindByPrefix("Miniexcavadora") && FindByPrefix("Hormigonera"));
-        TestProbe.Check("el jefe de construcción, Sadhguru y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Sadhguru") && FindByPrefix("Andrea"));
+        TestProbe.Check("el jefe de construcción (Tote) y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Andrea"));
+        // (2026-11-04) Los famosos se fueron a sus microcosmos: ninguno sigue en el santuario.
+        string famous = string.Join(" ", new[] { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }.Where(n => WorkdayDirector.Body(n) != null && WorkdayDirector.Body(n).scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()));
+        TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en el santuario", famous.Length == 0, famous);
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
         TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
 

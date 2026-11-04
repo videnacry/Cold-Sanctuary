@@ -101,11 +101,7 @@ public static class PoseGallery
 
     /// <summary>RETRATOS de las personas del santuario (de frente y de lado, a escala real) en Temp/PoseGallery/Personajes.png.</summary>
     [MenuItem("Tools/Cold Sanctuary/Character Gallery (PNG de las personas)")]
-    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Sadhguru", "Andrea" }, "Personajes", "Caras");
-
-    /// <summary>RETRATOS de los seis del mesocosmos (docs/personajes-mesocosmos.md) en Temp/PoseGallery/Mesocosmos.png y MesocosmosCaras.png.</summary>
-    [MenuItem("Tools/Cold Sanctuary/Character Gallery (los seis del mesocosmos)")]
-    public static void MesoCharacters() => Portraits(new[] { "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }, "Mesocosmos", "MesocosmosCaras");
+    public static void Characters() => Portraits(new[] { "Player", "Magnate", "Linduarda", "Lizmibet", "JefeConstruccion", "Goluis", "Panterilia", "Gohageneis", "Irosene", "Andrea" }, "Personajes", "Caras");
 
     /// <summary>RETRATOS de la familia y los amigos de Berón (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
     /// en Temp/PoseGallery/Familia.png y FamiliaCaras.png.</summary>

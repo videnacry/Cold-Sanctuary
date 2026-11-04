@@ -154,7 +154,7 @@ public static partial class SampleSceneBuilder
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
-        PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
+        PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
@@ -2210,7 +2210,7 @@ public static partial class SampleSceneBuilder
                 va.fieldOfView = 200f; va.range = 30f;   // ojos humanos: ~200° de campo, ~120° binocular al frente
                 string nm = a.name;
                 va.ApplyProfile(nm.StartsWith("Gohageneis") ? VisualAttention.Profile.Vigilante : nm.StartsWith("Irosene") || nm.StartsWith("Goluis") ? VisualAttention.Profile.Esteta
-                    : nm.StartsWith("Sadhguru") || nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
+                    : nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
             }
             if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
@@ -3096,18 +3096,16 @@ public static partial class SampleSceneBuilder
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
-        // humanas desde el área de Construcción (maquinaria y material). SADHGURU da las clases en el centro de yoga.
+        // humanas desde el área de Construcción (maquinaria y material). ANDREA da las clases de yoga (antes Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
         MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
-        MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
-        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
-        // LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): personas públicas con un papel según su trabajo
-        // conocido, y Goku (ficción) como entrenador de artes marciales. Entran en la jornada (WorkdayDirector.staff) y en el horario libre.
-        foreach (var (id, label, x, clothes, s, ag, en, m) in MesoCharacters)
-            MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y maestro de yoga)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
+        // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
+        // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
+        // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
         // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
-        // general en la rotación, sin papel especial. Entran en la jornada, el horario libre y la arboleda residencial.
+        // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
         foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
 
