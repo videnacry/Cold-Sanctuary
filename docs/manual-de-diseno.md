@@ -224,7 +224,7 @@ en el doc de su tema; aquí no se repite.
 
 **La regla (Berón 2026-11-04):** cuando un piso del santuario (por ejemplo el hospital) cambia su forma, sus instrumentos, sus
 muebles o sus decoraciones, **hay que revisar todos los microcosmos que dependen de ese piso**. Un recordatorio automático
-(gancho) debe avisarlo. **El gancho está PENDIENTE DE IMPLEMENTAR**; mientras tanto, la regla F6 y esta sección son el recordatorio.
+(gancho) lo avisa: desde el 2026-11-04 hay un gancho de Claude Code (PostToolUse en Edit|Write, `.claude/hooks/hospital-reminder.sh` en la carpeta de trabajo de Berón) que, al editar un `.cs` del hospital bajo `Assets/`, recuerda revisar los microcosmos de su fila.
 
 **Por qué:** cada microcosmos es la copia ×100 de su piso (M2). Un piso que cambia y un microcosmos que no se reconstruye dejan
 un mundo que ya no corresponde, y la versión micro dedicada del hospital (H8) tiene que llevar los mismos instrumentos y
@@ -271,9 +271,7 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 5. Si el piso tiene versión micro dedicada (el hospital, H8, cuando exista), añadirle lo que cambió en el meso.
 6. Apuntarlo en [checklist.md](checklist.md).
 
-**El gancho que falta (propuesta):** al cambiar un constructor de piso de los de arriba, avisar con la lista de microcosmos de
-su fila. Puede ser un gancho de Claude Code (al editar esos archivos) o un paso del CI que compare los archivos cambiados con esta
-tabla. Lo decide Berón.
+**El gancho:** hoy cubre el hospital (un gancho de Claude Code al editar sus `.cs`). Pendiente: ampliarlo a los demás constructores de piso de la tabla.
 
 ## 12. Recuento y reglas sin comprobación automática
 
