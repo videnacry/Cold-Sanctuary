@@ -7,10 +7,10 @@ using UnityEngine;
 /// docs/pijamadas.md).
 ///  · Una vez por SEMANA (el viernes, en la franja libre de las 21 h) hay pijamada en la casa de UN anfitrión. El anfitrión ROTA cada
 ///    semana por las casas del árbol (<see cref="LeisureRoster.HostIndex"/>): una casa distinta cada semana, en su orden.
-///  · Van el anfitrión (y su pareja, que vive allí) y los que quepan en la casa (<see cref="Bedroom.Capacity"/>: la cama de 4 y la
-///    litera de 3), elegidos por el horario libre como cualquier actividad: los que menos pijamadas llevan.
+///  · Van el anfitrión (y su pareja, que vive allí) y los que quepan en la casa (<see cref="Bedroom.Capacity"/>: la cama-litera, de 4
+///    con su piso de arriba: 8 plazas), elegidos por el horario libre como cualquier actividad: los que menos pijamadas llevan.
 ///  · Esa NOCHE duermen allí: <see cref="Bedroom.Of"/> devuelve la casa del anfitrión y cada invitado tiene su plaza (las de la cama
-///    que no usan los que viven allí y las de la litera). A la mañana siguiente (desde las <see cref="WakeHour"/>) cada uno vuelve a
+///    de abajo que no usan los que viven allí y después las de arriba). A la mañana siguiente (desde las <see cref="WakeHour"/>) cada uno vuelve a
 ///    su casa: la pijamada se olvida sola.
 /// </summary>
 public static class Sleepover
@@ -60,7 +60,7 @@ public static class Sleepover
     }
 
     /// <summary>Apunta a <paramref name="a"/> a la pijamada de la noche <paramref name="night"/> en <paramref name="room"/>: le da la
-    /// primera plaza libre (las de la cama que no usan los que viven allí, y luego las de la litera). Los que viven allí duermen en la
+    /// primera plaza libre (las de abajo que no usan los que viven allí, y luego las de arriba). Los que viven allí duermen en la
     /// suya. false = no queda plaza.</summary>
     public static bool Join(Anima a, Bedroom room, int night)
     {

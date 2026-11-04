@@ -26,12 +26,12 @@ public class Bedroom : MonoBehaviour
     void OnEnable() => All.Add(this);
     void OnDisable() => All.Remove(this);
 
-    [Tooltip("(2026-11-04, pijamadas) Las PLAZAS para dormir de la casa: primero las de la cama (una por plaza, a lo ancho) y después las de la litera. Cada una, un punto 0,5 m por debajo de la cara de arriba de su colchón y girado como su cama.")]
+    [Tooltip("(2026-11-04, pijamadas) Las PLAZAS para dormir de la casa: las del piso de abajo de la cama-litera (una por plaza, a lo ancho) y después las del de arriba. Cada una, un punto 0,5 m por debajo de la cara de arriba de su colchón y girado como su cama.")]
     public Transform[] spots;
-    [Tooltip("Dónde se juntan los de una pijamada antes de dormir (puntos de la casa, en el pasillo entre la cama y la litera).")]
+    [Tooltip("Dónde se juntan los de una pijamada antes de dormir (puntos de la casa, delante de la cama).")]
     public Transform[] gather;
 
-    /// <summary>Cuántos duermen en la casa (la cama y la litera).</summary>
+    /// <summary>Cuántos duermen en la casa (los dos pisos de la cama-litera: 8).</summary>
     public int Capacity => spots != null && spots.Length > 0 ? spots.Length : sleeps;
 
     /// <summary>El dormitorio de <paramref name="a"/>: el de la pijamada de esta noche si está invitado (<see cref="Sleepover"/>); si

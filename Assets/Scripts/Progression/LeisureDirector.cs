@@ -492,7 +492,7 @@ public class LeisureDirector : MonoBehaviour
         }
         // EL RING DE ALMOHADAS (2026-11-04): cada plaza, una celda del colchón de la cama colosal (PillowRing.Spot).
         if (v.anchor.TryGetComponent(out PillowRing ring)) return ring.Spot(seat) + Vector3.up;
-        // LA PIJAMADA (2026-11-04): en la casa del anfitrión, cada plaza un punto del pasillo entre la cama y la litera.
+        // LA PIJAMADA (2026-11-04): en la casa del anfitrión, cada plaza un punto delante de la cama-litera.
         if (!v.home && v.anchor.TryGetComponent(out Bedroom hostRoom)) return hostRoom.GatherSpot(seat) + Vector3.up;
         // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
         if (v.halls.Count > 0 || v.anchor.TryGetComponent(out YogaHall _))
@@ -593,7 +593,7 @@ public class LeisureDirector : MonoBehaviour
         // LA GUERRA DE ALMOHADAS (docs/guerra-de-almohadas.md): coge una almohada y da almohadazos a los de al lado, sin salir de su celda.
         if (r.entry.activity.pose == "almohadas") { if (a != null) PillowFight.Tick(g, a, r.venue.anchor != null ? r.venue.anchor.GetComponent<PillowRing>() : null); r.posed = true; return; }
         // LA PIJAMADA (docs/pijamadas.md): al llegar a la casa del anfitrión se apunta a dormir allí esta noche (Sleepover: su plaza en la
-        // cama o la litera); luego, sentado charlando con los demás.
+        // cama-litera, abajo o arriba); luego, sentado charlando con los demás.
         if (r.entry.activity.pose == Sleepover.ActivityId && a != null && !r.posed && r.venue.anchor != null && r.venue.anchor.TryGetComponent(out Bedroom host)) Sleepover.Join(a, host, r.entry.day);
         Vector3 c = r.st != null ? r.st.transform.position : r.venue.anchor != null ? r.venue.anchor.position : r.to;
         Vector3 look = c - g.transform.position; look.y = 0f;

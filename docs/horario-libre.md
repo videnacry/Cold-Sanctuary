@@ -78,8 +78,8 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Bailar | Sala de Ballet → Calistenia → Gimnasio | 6 |
 | Artes marciales con Gohageneis (antes con Goku, que se fue a su microcosmos el 2026-11-04) | Dojo → Gimnasio | 6 |
 | **Guerra de almohadas** (2026-11-04): TODOS A LA VEZ, solo el sábado a las 20 h (`together`); la añade el ring como etiqueta de actividad ([guerra-de-almohadas.md](guerra-de-almohadas.md)) | Ring de almohadas (cama colosal sobre la plataforma central) | las del ring (hoy 25) |
-| **Pijamada** (2026-11-04): el viernes a las 21 h, con el anfitrión de la semana (rota) y los que menos llevan; esa noche duermen allí ([pijamadas.md](pijamadas.md)) | La casa del árbol del anfitrión (cama de 4 y litera de 3) | 7 (por turnos) |
-| Descansar en casa (tumbado en su plaza de la cama de 4) | Su casa del árbol | sin límite |
+| **Pijamada** (2026-11-04): el viernes a las 21 h, con el anfitrión de la semana (rota) y los que menos llevan; esa noche duermen allí ([pijamadas.md](pijamadas.md)) | La casa del árbol del anfitrión (la cama-litera de 8) | 8 (por turnos) |
+| Descansar en casa (tumbado en su plaza, abajo, de la cama-litera) | Su casa del árbol | sin límite |
 
 **Microcosmos** (`MicroActivities`). La plantilla de edificio y la función del registro que se hace allí. Las plazas son los puestos de esos edificios. Solo entran las plantillas que hay en la escena.
 

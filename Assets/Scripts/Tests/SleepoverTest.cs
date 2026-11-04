@@ -5,12 +5,12 @@ using UnityEngine;
 
 /// <summary>
 /// PRUEBA DE LAS PIJAMADAS (grupo 92; docs/pijamadas.md; Berón 2026-11-04). En SampleScene:
-///  1. LAS CASAS: cada casa del árbol duerme a 7 (cama de 4 y litera de 3); la litera no tiene escalera (se trepa por su poste) y
-///     queda a ≥ 2 m de la cama y de la alfombra-esterilla.
+///  1. LAS CASAS: cada casa del árbol duerme a 8 (una sola cama-litera de dos pisos de 4); sin escalera (se trepa por su poste) y
+///     a ≥ 2 m de la alfombra-esterilla.
 ///  2. EL HORARIO: la pijamada del viernes a las 21 h va con su anfitrión (y su pareja) y no pasa de las plazas de la casa; el
 ///     anfitrión cambia de una semana a la siguiente.
 ///  3. EN VIVO: en esa franja los invitados van a la casa del anfitrión (andando y en alfombra, sin saltos), se apuntan a dormir allí,
-///     y esa noche se acuestan en su plaza (cama o litera); a la mañana siguiente cada uno vuelve a tener su casa.
+///     y esa noche se acuestan en su plaza (abajo o arriba); a la mañana siguiente cada uno vuelve a tener su casa.
 /// Todas las esperas, acotadas.
 /// </summary>
 public class SleepoverTest : MonoBehaviour, ITestUnit
@@ -31,7 +31,7 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
 
     public IEnumerator Run()
     {
-        TestProbe.Begin("Pijamadas: camas de 4 y literas en las casas del árbol, anfitrión que rota y dormir en su casa");
+        TestProbe.Begin("Pijamadas: la cama-litera de 8 en las casas del árbol, anfitrión que rota y dormir en su casa");
         Houses();
         yield return Live();
         TestProbe.End();
@@ -42,24 +42,25 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
     {
         var rooms = Bedroom.All.Where(b => b != null && b.transform.parent != null && b.transform.parent.name == "ArboledaResidencial").ToList();
         TestProbe.Check("hay casas del árbol", rooms.Count > 0, $"{rooms.Count}");
-        var small = rooms.Where(b => b.Capacity < 7).Select(b => $"{b.name} {b.Capacity}").ToList();
-        TestProbe.Check("cada casa duerme a 7 (cama de 4 y litera de 3)", small.Count == 0, string.Join(", ", small));
-        int noClimb = 0, stairs = 0, tight = 0; string why = "";
+        var small = rooms.Where(b => b.Capacity < 8).Select(b => $"{b.name} {b.Capacity}").ToList();
+        TestProbe.Check("cada casa duerme a 8 (una cama-litera de dos pisos de 4)", small.Count == 0, string.Join(", ", small));
+        int noClimb = 0, stairs = 0, tight = 0, extra = 0, tiers = 0; string why = "";
         foreach (Bedroom b in rooms)
         {
-            Transform bunk = b.transform.Find("Litera");
-            if (bunk == null) { noClimb++; continue; }
-            if (bunk.GetComponentInChildren<Climbable>() == null) noClimb++;
+            if (b.bed == null || b.bed.GetComponentInChildren<Climbable>() == null) noClimb++;
+            if (b.transform.Find("Litera") != null || b.GetComponentsInChildren<Transform>(true).Count(x => x.name == "Cama") != 1) extra++;   // una sola cama por casa
+            if (b.spots == null || b.spots.Length < 8 || b.spots[4].position.y - b.spots[0].position.y < 0.9f) tiers++;   // dos pisos, el de arriba ≥ 0,9 m por encima
             foreach (Transform x in b.GetComponentsInChildren<Transform>(true)) if (x.name.StartsWith("Escalera") || x.name.StartsWith("Peldano")) stairs++;
-            Bounds bb = Bounds(bunk), bed = Bounds(b.bed);
-            float dBed = DistXZ(bb, bed);
+            Bounds bed = Bounds(b.bed);
             CarpetPad mat = b.GetComponentsInChildren<CarpetPad>().FirstOrDefault(p => p.kind == CarpetPad.Kind.Habitacion);
-            float dMat = mat != null ? DistXZ(bb, new Bounds(mat.transform.position, new Vector3(3f, 1f, 3.6f))) : 99f;
-            if (dBed < 1.95f || dMat < 1.95f) { tight++; if (why.Length == 0) why = $"{b.name}: cama {dBed:0.00} m, alfombra {dMat:0.00} m"; }
+            float dMat = mat != null ? DistXZ(bed, new Bounds(mat.transform.position, new Vector3(3f, 1f, 3.6f))) : 99f;
+            if (dMat < 1.95f) { tight++; if (why.Length == 0) why = $"{b.name}: alfombra a {dMat:0.00} m"; }
         }
-        TestProbe.Check("cada litera se sube trepando por su poste (Climbable)", noClimb == 0, $"{noClimb} sin poste");
+        TestProbe.Check("una sola cama por casa (la cama-litera; sin litera aparte)", extra == 0, $"{extra} casas con otra");
+        TestProbe.Check("la cama-litera tiene dos pisos de 4 plazas", tiers == 0, $"{tiers} sin el piso de arriba");
+        TestProbe.Check("al piso de arriba se sube trepando por su poste (Climbable)", noClimb == 0, $"{noClimb} sin poste");
         TestProbe.Check("sin escaleras en las casas", stairs == 0, $"{stairs}");
-        TestProbe.Check("la litera queda a ≥ 2 m de la cama y de la alfombra-esterilla", tight == 0, why);
+        TestProbe.Check("la cama-litera queda a ≥ 2 m de la alfombra-esterilla", tight == 0, why);
     }
 
     static Bounds Bounds(Transform t)
@@ -97,7 +98,7 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         Bedroom host = gr.venues.TryGetValue(act, out var hv) && hv.anchor != null ? hv.anchor.GetComponent<Bedroom>() : null;
         var inSlot = gr.plan.entries.Where(e => e.day == day && e.slot == Sleepover.Slot && e.activity == act).ToList();
         TestProbe.Check("van el anfitrión y su pareja", act.hosts.All(h => inSlot.Any(e => e.person.name == h)), $"{string.Join(", ", act.hosts)} · van {string.Join(", ", inSlot.Select(e => e.person.name))}");
-        TestProbe.Check("no pasa de las plazas de la casa (7)", host != null && inSlot.Count <= host.Capacity && inSlot.Count > act.hosts.Length, $"{inSlot.Count} de {(host != null ? host.Capacity : 0)}");
+        TestProbe.Check("no pasa de las plazas de la casa (8)", host != null && inSlot.Count <= host.Capacity && inSlot.Count > act.hosts.Length, $"{inSlot.Count} de {(host != null ? host.Capacity : 0)}");
         // El anfitrión rota: el de la semana siguiente es otro.
         var people = new HashSet<string>(gr.bodies.Where(b => b != null).Select(b => b.name.Replace("_Post", "")));
         List<Bedroom> hosts = Sleepover.Hosts(gr.scene, people);
@@ -126,6 +127,10 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         TestProbe.Check("los invitados se apuntan a dormir en la casa del anfitrión", guests.Count > 0 && joined >= 0.8f * guests.Count, $"{joined}/{guests.Count}");
         var spotIdx = guests.Select(n => { Anima a = Body(n); return a != null ? host.SpotIndex(a) : -1; }).Where(i => i >= 0).ToList();
         TestProbe.Check("cada invitado tiene su plaza (ninguna repetida, ni la de los que viven allí)", spotIdx.Distinct().Count() == spotIdx.Count && !spotIdx.Contains((host.sleeps - 1) / 2), string.Join(", ", spotIdx));
+        int own = (host.sleeps - 1) / 2;   // la plaza del dueño (abajo); la de su pareja, la de al lado
+        var freeLower = Enumerable.Range(0, host.sleeps).Where(i => i != own && (string.IsNullOrEmpty(host.partner) || i != own + 1)).ToList();
+        bool lowerFirst = !spotIdx.Any(i => i >= host.sleeps) || freeLower.All(spotIdx.Contains);
+        TestProbe.Check("los invitados llenan primero el piso de abajo y luego el de arriba", lowerFirst, string.Join(", ", spotIdx));
         LeisureDirector.ForceRun = false; ld.ReleaseAll(gr);
 
         // ESA NOCHE: con sueño, cada uno a su plaza en la casa del anfitrión (acotado).
@@ -139,9 +144,9 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
             if (inBed >= names.Count) break;
             yield return new WaitForSecondsRealtime(1f);
         }
-        TestProbe.Check("esa noche duermen en su plaza de la casa del anfitrión (cama o litera; ≥ 80 %)", inBed >= 0.8f * names.Count, $"{inBed}/{names.Count}");
+        TestProbe.Check("esa noche duermen en su plaza de la casa del anfitrión (abajo o arriba; ≥ 80 %)", inBed >= 0.8f * names.Count, $"{inBed}/{names.Count}");
         int bunk = guests.Count(n => { Anima a = Body(n); return a != null && host.SpotIndex(a) >= host.sleeps; });
-        Log($"anfitrión {host.owner} ({host.name}): {names.Count} en la pijamada, {bunk} en la litera, {inBed} dormidos en su plaza");
+        Log($"anfitrión {host.owner} ({host.name}): {names.Count} en la pijamada, {bunk} arriba, {inBed} dormidos en su plaza");
 
         // A LA MAÑANA SIGUIENTE: cada uno vuelve a tener su casa.
         tc.SetClock(day + 1, Sleepover.WakeHour + 1f);

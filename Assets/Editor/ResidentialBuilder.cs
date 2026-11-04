@@ -32,7 +32,10 @@ public static class ResidentialBuilder
     // «camas familiares» que juntan cuatro individuales; la Alaskan king, la mayor de serie, mide 2,74 × 2,74). Para que quepa con
     // los 2 m de paso hasta la alfombra-esterilla y el armario, la casa pasa de 7 × 6 a 9 × 7 m y se aleja 1 m más del tronco.
     public const float BedWidth = 3.6f, BedLength = 2.1f, LaneWidth = 0.9f;
-    public const int BedSleeps = 4;
+    public const int BedSleeps = 4;   // plazas por piso de la cama-litera (dos pisos: 8 por casa)
+    /// <summary>Cara de arriba del colchón del piso de arriba de la cama-litera, sobre la raíz de la cama (la del de abajo, a 0,5 m):
+    /// 1,1 m entre colchones (unos 0,8 m libres para sentarse abajo).</summary>
+    public const float BedUpperTop = 1.6f;
     public const float CabinW = 9f, CabinD = 7f;
     const float CentralSize = 18f, TreeRing = 21f, HouseOut = 1.7f + CabinW * 0.5f;   // (1,7 m del eje del tronco al borde de la casa, como antes)
 
@@ -132,58 +135,55 @@ public static class ResidentialBuilder
         Plank(t, Vector3.zero, new Vector3(W, 0.3f, D), "Suelo");
         Solid(t, new Vector3(0f, 0.2f, 0f), new Vector3(W - 0.4f, 0.1f, D - 0.4f), marbleDark, "Estilobato");
         // Cama, mesilla y armario (sin baño: se usan los aseos comunes; sin lámpara ni estante: no hay techo ni paredes).
-        // LA CAMA DE 4 (armazón 3,70 × 2,30, de x −4,45 a −0,75 y de z 1,15 a 3,45): cabecero en +z, una almohada y una plaza de 90 cm
-        // por persona (Bedroom.LieSpot), manta de lado a lado.
+        // LA CAMA-LITERA DE 8 (Berón 2026-11-04: «las camas de las residencias … para 4 personas»; y luego «la cama de 4 se convierte en
+        // litera, de modo que se mantiene solo una cama por residencia»; docs/pijamadas.md). UNA sola pieza por casa, de dos pisos, cada
+        // uno un colchón de 4 plazas de 3,60 × 2,10 (armazón 3,70 × 2,30, de x −4,45 a −0,75 y de z 1,15 a 3,45): cabecero alto en +z,
+        // una almohada y una plaza de 90 cm por persona en cada piso (Bedroom.LieSpot). Los que viven allí duermen abajo. SIN ESCALERA
+        // (regla de plataformas 3): al piso de arriba se sube TREPANDO por el poste del pie (Climbable, como a los árboles); barandilla
+        // por los lados abiertos de arriba.
         Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-2.6f, 0.25f, 2.3f));
+        float upperTop = BedUpperTop;   // cara de arriba del colchón de arriba (sobre la raíz de la cama; el de abajo, a 0,5)
         KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(BedWidth + 0.1f, 0.3f, BedLength + 0.2f), WoodDark, 0f, "Armazon");   // colchón de 3,60 × 2,10 (docs/medidas-muebles.md)
         KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(BedWidth, 0.16f, BedLength), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
         KitchenProps.C(bed, new Vector3(0f, 0.52f, -0.15f), new Vector3(BedWidth + 0.04f, 0.06f, BedLength * 0.62f), Blanket(ownerIdx), 0f, "Manta");
-        KitchenProps.C(bed, new Vector3(0f, 0.75f, BedLength * 0.5f + 0.06f), new Vector3(BedWidth + 0.1f, 0.9f, 0.1f), WoodDark, 0f, "Cabecero");
+        KitchenProps.C(bed, new Vector3(0f, upperTop - 0.22f, 0f), new Vector3(BedWidth + 0.1f, 0.12f, BedLength + 0.2f), WoodDark, 0f, "Armazon_arriba");
+        KitchenProps.C(bed, new Vector3(0f, upperTop - 0.08f, 0f), new Vector3(BedWidth, 0.16f, BedLength), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon_arriba");
+        KitchenProps.C(bed, new Vector3(0f, upperTop + 0.02f, -0.15f), new Vector3(BedWidth + 0.04f, 0.06f, BedLength * 0.62f), Blanket(ownerIdx + 1), 0f, "Manta_arriba");
+        KitchenProps.C(bed, new Vector3(0f, (upperTop + 0.5f) * 0.5f, BedLength * 0.5f + 0.06f), new Vector3(BedWidth + 0.1f, upperTop + 0.5f, 0.1f), WoodDark, 0f, "Cabecero");
         for (int k = 0; k < BedSleeps; k++)
-            KitchenProps.C(bed, new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0.55f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
-        KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
-        KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
-        // (2026-11-04, Berón: «las camas son grandes para permitir que los residentes puedan hacer pijamadas, se podría incluso crear
-        // literas para incrementar el número de personas que pueden participar en la pijamada»; docs/pijamadas.md) LITERA TRIPLE delante
-        // de la cama: 3 colchones de 0,90 × 2,00 m (como los de la cama) a 0,6 · 1,5 · 2,4 m, en x −3,05…−2,15 y z −3,2…−1,2: a 2,35 m
-        // de la cama y a 3,3 m de la alfombra-esterilla. SIN ESCALERA (regla de plataformas 3): a los de arriba se sube TREPANDO por su
-        // poste (Climbable, como a los árboles), y a dormir se tumba en su plaza como en la cama. Barandillas en los dos de arriba.
-        Transform bunk = KitchenProps.Root(t, "Litera", new Vector3(-2.6f, 0.25f, -2.2f));
-        float[] tierTop = { 0.4f, 1.3f, 2.2f };   // cara de arriba de cada colchón (sobre la raíz de la litera)
+        {
+            float x = (k - (BedSleeps - 1) * 0.5f) * LaneWidth;
+            KitchenProps.C(bed, new Vector3(x, 0.55f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
+            KitchenProps.C(bed, new Vector3(x, upperTop + 0.05f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
+        }
         for (int sx = -1; sx <= 1; sx += 2)
             for (int sz = -1; sz <= 1; sz += 2)
             {
-                Transform post = KitchenProps.C(bunk, new Vector3(sx * 0.48f, 1.3f, sz * 1.03f), new Vector3(0.08f, 2.6f, 0.08f), WoodDark, 0f, "Poste");
-                if (sx < 0 && sz < 0)   // el poste para trepar (por el lado del pasillo)
+                Transform post = KitchenProps.C(bed, new Vector3(sx * (BedWidth * 0.5f + 0.05f), (upperTop + 0.5f) * 0.5f, sz * (BedLength * 0.5f + 0.1f)), new Vector3(0.1f, upperTop + 0.5f, 0.1f), WoodDark, 0f, "Poste");
+                if (sx > 0 && sz < 0)   // el poste para trepar: el del pie, del lado del pasillo
                 {
                     if (post.GetComponent<Collider>() == null) post.gameObject.AddComponent<BoxCollider>();
-                    Climbable cl = post.gameObject.AddComponent<Climbable>(); cl.topY = bunk.position.y + tierTop[tierTop.Length - 1];
+                    Climbable cl = post.gameObject.AddComponent<Climbable>(); cl.topY = bed.position.y + upperTop;
                 }
             }
-        for (int k = 0; k < tierTop.Length; k++)
-        {
-            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] - 0.15f, 0f), new Vector3(1.0f, 0.06f, 2.1f), WoodDark, 0f, "Somier_litera");
-            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] - 0.06f, 0f), new Vector3(0.9f, 0.12f, 2.0f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon_litera");
-            KitchenProps.C(bunk, new Vector3(0f, tierTop[k] + 0.04f, 0.75f), new Vector3(0.6f, 0.08f, 0.3f), Color.white, 0f, "Almohada");
-            if (k > 0) KitchenProps.C(bunk, new Vector3(0.48f, tierTop[k] + 0.2f, 0f), new Vector3(0.04f, 0.04f, 1.9f), WoodDark, 0f, "Barandilla");
-        }
-        // LAS PLAZAS PARA DORMIR (Bedroom.spots): las 4 de la cama y las 3 de la litera; cada una 0,5 m por debajo de la cara de arriba
-        // de su colchón (como la raíz de la cama: SleepSpell tumba a cada uno 0,5 m más arriba) y girada como su cama.
+        KitchenProps.C(bed, new Vector3(-(BedWidth * 0.5f + 0.05f), upperTop + 0.25f, 0f), new Vector3(0.05f, 0.05f, BedLength), WoodDark, 0f, "Barandilla");   // lados abiertos de arriba
+        KitchenProps.C(bed, new Vector3(-0.45f, upperTop + 0.25f, -(BedLength * 0.5f + 0.1f)), new Vector3(BedWidth - 0.9f, 0.05f, 0.05f), WoodDark, 0f, "Barandilla");   // al pie, sin tapar el poste
+        KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
+        KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
+        // LAS PLAZAS PARA DORMIR (Bedroom.spots): las 4 de abajo y las 4 de arriba; cada una 0,5 m por debajo de la cara de arriba de su
+        // colchón (como la raíz de la cama: SleepSpell tumba a cada uno 0,5 m más arriba) y girada como la cama.
         var spots = new System.Collections.Generic.List<Transform>();
-        for (int k = 0; k < BedSleeps; k++)
-        {
-            Transform sp = new GameObject($"Plaza_{k + 1}").transform; sp.SetParent(bed, false);
-            sp.localPosition = new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0f, 0f); spots.Add(sp);
-        }
-        for (int k = 0; k < tierTop.Length; k++)
-        {
-            Transform sp = new GameObject($"Plaza_litera_{k + 1}").transform; sp.SetParent(bunk, false);
-            sp.localPosition = new Vector3(0f, tierTop[k] - 0.5f, 0f); spots.Add(sp);
-        }
-        // Dónde se juntan los de una pijamada: el pasillo entre la cama (z ≥ 1,15) y la litera (z ≤ −1,2), y junto a la alfombra.
+        for (int tier = 0; tier < 2; tier++)
+            for (int k = 0; k < BedSleeps; k++)
+            {
+                Transform sp = new GameObject(tier == 0 ? $"Plaza_{k + 1}" : $"Plaza_arriba_{k + 1}").transform; sp.SetParent(bed, false);
+                sp.localPosition = new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, tier == 0 ? 0f : upperTop - 0.5f, 0f); spots.Add(sp);
+            }
+        // Dónde se juntan los de una pijamada: delante de la cama, en el sitio que dejó la litera aparte (x −4,5…−0,85, z −3,5…0,9),
+        // a ≥ 2 m de la alfombra-esterilla (x ≥ 1,15).
         var gather = new System.Collections.Generic.List<Transform>();
-        Vector3[] gp = { new Vector3(-4.0f, 0.25f, 0.35f), new Vector3(-3.0f, 0.25f, 0.35f), new Vector3(-2.0f, 0.25f, 0.35f), new Vector3(-1.0f, 0.25f, 0.35f),
-                         new Vector3(-1.5f, 0.25f, -0.55f), new Vector3(-0.6f, 0.25f, -0.55f), new Vector3(0.3f, 0.25f, -0.55f) };
+        Vector3[] gp = { new Vector3(-4.0f, 0.25f, 0.4f), new Vector3(-3.0f, 0.25f, 0.4f), new Vector3(-2.0f, 0.25f, 0.4f), new Vector3(-1.0f, 0.25f, 0.4f),
+                         new Vector3(-4.0f, 0.25f, -1.2f), new Vector3(-3.0f, 0.25f, -1.2f), new Vector3(-2.0f, 0.25f, -1.2f), new Vector3(-1.0f, 0.25f, -1.2f) };
         for (int k = 0; k < gp.Length; k++) { Transform gt = new GameObject($"Pijamada_{k + 1}").transform; gt.SetParent(t, false); gt.localPosition = gp[k]; gather.Add(gt); }
         // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
         // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
@@ -203,7 +203,7 @@ public static class ResidentialBuilder
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
         room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
-        room.spots = spots.ToArray(); room.gather = gather.ToArray();   // pijamadas: 4 en la cama y 3 en la litera (2026-11-04)
+        room.spots = spots.ToArray(); room.gather = gather.ToArray();   // pijamadas: 4 abajo y 4 arriba en la cama-litera (2026-11-04)
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
         return t;
     }
