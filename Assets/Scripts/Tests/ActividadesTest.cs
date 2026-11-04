@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 96; docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que
+/// PRUEBA DE LAS ACTIVIDADES DE VERDAD (grupo 97; docs/actividades-y-uniformes.md; Berón 2026-11-04: «parece que solo van al piso que
 /// les toca y no hacen nada … sería posible que los humanos se coloquen uniformes»). En cualquier escena con personal:
 ///  1. LA COMIDA (humano): bandeja → sentarse → cubiertos → bocados (el brazo sube y baja, la comida del plato MENGUA, el hambre baja) →
 ///     beber → recoger → devolver; todos los pasos en orden y la vajilla fuera de las manos al final.
@@ -20,7 +20,7 @@ using UnityEngine;
 /// </summary>
 public class ActividadesTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 96;
+    public int Group => 97;
     public bool ParallelSafe => false;
     [Tooltip("Misiones que se prueban (las primeras del catálogo diario, obligatorias primero).")]
     public int sampleMissions = 10;

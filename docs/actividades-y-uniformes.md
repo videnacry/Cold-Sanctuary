@@ -7,7 +7,7 @@ tareas que vayan a realizar de la jornada?, estos arreglos … también aplican 
 orquestas/animaciones para completar sus tareas/jornada/ocio/recuperación».
 
 Rama `claude/edif-actividades`. Código en `Assets/Scripts/Activities/` (`ActivityKit`, `ActivityPerformer`, `Performances`,
-`MealRitual`, `Uniforms`, `UniformWearer`, `UniformDirector`) y `CubeInsect.Uniform.cs`. Prueba: `ActividadesTest` (grupo 96).
+`MealRitual`, `Uniforms`, `UniformWearer`, `UniformDirector`) y `CubeInsect.Uniform.cs`. Prueba: `ActividadesTest` (grupo 97).
 Solo código: **sin probar en vivo** (lo prueba el probador único).
 
 ## 1. Auditoría (estado el 2026-11-04, antes del cambio)
@@ -163,16 +163,16 @@ la historia), `UniformDirector` llama a `MealRitual.Sweep` y la vajilla desapare
 
 | # | Regla | Se comprueba en |
 |---|---|---|
-| J18 | **Comer es una orquesta**: bandeja → sentarse → cubiertos → bocados (la comida mengua, la saciedad va por bocado) → beber → recoger → devolver la bandeja; igual en el restaurante, en casa y en el comedor de la era (insectos-humanos con cuchara). | `ActividadesTest` (96) |
-| J19 | **Nadie llega y se queda quieto**: en su puesto, cada misión, actividad libre o entrenamiento se HACE (postura, herramienta en la mano, gesto y efecto visible); lo que no tiene pasos propios hace el bucle de su clase y se lista como pendiente. | 96 (N misiones a los T s de llegar) |
-| J20 | **Uniforme por tarea, identidad intacta**: al llegar a la tarea se pone su uniforme y al acabar vuelve a su ropa; nunca cambian el pelo, la cara ni la piel; nadando, neopreno. | 96 |
-| J21 | **El insecto-humano trabaja con lo de su era**: herramientas y delantal de la época del microcosmos (sin tabletas antes de 1900). | 96 (comida y trabajo del insecto) |
+| J22 | **Comer es una orquesta**: bandeja → sentarse → cubiertos → bocados (la comida mengua, la saciedad va por bocado) → beber → recoger → devolver la bandeja; igual en el restaurante, en casa y en el comedor de la era (insectos-humanos con cuchara). | `ActividadesTest` (96) |
+| J23 | **Nadie llega y se queda quieto**: en su puesto, cada misión, actividad libre o entrenamiento se HACE (postura, herramienta en la mano, gesto y efecto visible); lo que no tiene pasos propios hace el bucle de su clase y se lista como pendiente. | 97 (N misiones a los T s de llegar) |
+| J24 | **Uniforme por tarea, identidad intacta**: al llegar a la tarea se pone su uniforme y al acabar vuelve a su ropa; nunca cambian el pelo, la cara ni la piel; nadando, neopreno. | 97 |
+| J25 | **El insecto-humano trabaja con lo de su era**: herramientas y delantal de la época del microcosmos (sin tabletas antes de 1900). | 97 (comida y trabajo del insecto) |
 
 ## 6. Para probar en vivo
 
 1. Sin reconstruir nada para la comida, las actuaciones y los uniformes del santuario: es todo en tiempo de juego. Basta Play en
    SampleScene (jornada de un día) y un microcosmos civilizado ya construido (p. ej. la Cocina o el Hospital), de uno en uno.
-2. Grupo **96** (`ActividadesTest`); y por regresión **50** (`JornadaTest`: la comida tarda un poco más por la vuelta a la barra), **28**,
+2. Grupo **97** (`ActividadesTest`); y por regresión **50** (`JornadaTest`: la comida tarda un poco más por la vuelta a la barra), **28**,
    **65** (horario libre), **41** (iniciación en la cocina: la brigada ahora usa la actuación), y el pase de los microcosmos (60, 62, 66).
 3. Fotos: (a) el comedor a las 11:20 — bandejas, platos en la mesa, cubiertos en la mano, un plato a medias; (b) la barra a las 11:50 con
    bandejas devueltas; (c) la cocina con chaquetillas y gorros; (d) el quirófano (pijama verde) y una sala de camas (bata y fonendo);
