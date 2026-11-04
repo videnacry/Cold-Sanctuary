@@ -176,9 +176,15 @@ public class HomeNeedSpell : QueuedSpell
     /// <summary>Quien se quedó sin comida en casa lo vuelve a intentar pasado un rato (no en bucle).</summary>
     public static readonly Dictionary<Anima, float> RetryEat = new Dictionary<Anima, float>();
 
-    int _phase;          // 0 ir · 1 usarlo · 2 levantarse
+    int _phase;          // 0 ir · 1 usarlo · 2 levantarse (comer: llevar el plato al fregadero)
     float _since, _until, _sleepStart;
     Transform _spot;
+    // (2026-11-04) COMER CON SU ORQUESTA (MealRitual, docs/actividades-y-uniformes.md §2): coge el plato de la despensa, se sienta, come a
+    // bocados con los cubiertos y bebe, y al acabar lleva el plato al fregadero (el lavabo de casa).
+    MealRitual _meal; bool _fetched; float _fetchSince = -1f;
+    const float ClearTimeout = 20f;
+    /// <summary>La comida en curso (null si no es comer o aún no cogió el plato): pruebas.</summary>
+    public MealRitual Meal => _meal;
 
     public override string Label => need switch
     {
@@ -208,6 +214,21 @@ public class HomeNeedSpell : QueuedSpell
                     { Debug.Log($"[Hogar] «{self.name}» tiene hambre y la despensa está vacía."); RetryEat[self] = Time.time + 20f; return true; }
                     _since = Time.time;
                 }
+                if (need == Need.Comer && !_fetched && home.pantry != null)   // PRIMERO, EL PLATO: de la despensa
+                {
+                    if (_fetchSince < 0f) _fetchSince = Time.time;
+                    Vector3 pto = UsePoint(home.pantry.transform, t.position, h);
+                    bool atPantry = MicroMove.Step(t, pto, 1.4f * h / 1.75f, 0.45f * h);
+                    if (!atPantry && Time.time - _fetchSince > WalkTimeout) { HomeMove.Place(t, pto); HomeMove.Release(t); atPantry = true; Fallbacks++; }
+                    if (!atPantry) return false;
+                    HomeMove.Face(t, home.pantry.transform.position);
+                    if (!home.pantry.Take()) { RetryEat[self] = Time.time + 20f; Debug.Log($"[Hogar] «{self.name}»: no quedaba nada en la despensa."); return true; }
+                    _fetched = true; _since = Time.time;
+                    _meal = new MealRitual(home.pantry.dishName);
+                    _meal.TakeTray(self.gameObject, false, 0.75f);
+                    return false;
+                }
+                _meal?.Carry(self.gameObject);
                 Vector3 to = UsePoint(_spot, t.position, h);
                 bool there = MicroMove.Step(t, to, 1.4f * h / 1.75f, 0.45f * h);
                 if (!there && Time.time - _since > WalkTimeout)
@@ -232,15 +253,32 @@ public class HomeNeedSpell : QueuedSpell
                 }
                 else
                 {
-                    if (need == Need.Comer) HomeMove.KeepSitting(self);
-                    if (Time.time < _until) return false;
+                    if (_meal != null) { if (!_meal.Eat(self.gameObject, _until)) return false; }   // los bocados, el plato que mengua, los tragos
+                    else
+                    {
+                        if (need == Need.Comer) HomeMove.KeepSitting(self);
+                        if (Time.time < _until) return false;
+                    }
                     Finish(self, body);
                 }
                 HomeMove.StandUp(self, UsePoint(_spot, t.position, h));
                 _phase = 2;
+                if (_meal == null) return true;
+                _meal.PickUp(self.gameObject);   // el plato vacío y el vaso, al fregadero
+                _since = Time.time;
+                return false;
+            }
+            default:
+            {
+                if (_meal == null) return true;
+                Transform sink = home.washbasin != null ? home.washbasin : home.pantry != null ? home.pantry.transform : null;
+                bool there = sink == null || MicroMove.Step(t, UsePoint(sink, t.position, h), 1.4f * h / 1.75f, 0.45f * h);
+                _meal.Carry(self.gameObject);
+                if (!there && Time.time - _since < ClearTimeout) return false;
+                if (sink != null) HomeMove.Face(t, sink.position);
+                _meal.Return(self.gameObject);
                 return true;
             }
-            default: return true;
         }
     }
 
@@ -251,6 +289,7 @@ public class HomeNeedSpell : QueuedSpell
         {
             case Need.Comer:
                 HomeMove.Sit(self, _spot, home.table);
+                _meal?.SitDown(self.gameObject, home.table, self.GetComponent<CreatureRig>() != null);
                 _until = Time.time + eatMinutes * MinuteSecs;
                 Debug.Log($"[Hogar] «{self.name}» se sienta a comer en casa.");
                 break;
@@ -279,7 +318,13 @@ public class HomeNeedSpell : QueuedSpell
         switch (need)
         {
             case Need.Comer:
-                if (home.pantry != null && home.pantry.Take())
+                if (_meal != null)   // ya cogió su ración y se la ha comido a bocados (MealRitual: la saciedad va por bocado)
+                {
+                    if (body != null) body.toilet = Mathf.Clamp01(body.toilet + 0.25f);
+                    PersonLife.Report(self.gameObject, "comer");
+                    Debug.Log($"[Hogar] «{self.name}» come en casa ({_meal.dish}): {_meal.bitesTaken} bocados.");
+                }
+                else if (home.pantry != null && home.pantry.Take())
                 {
                     if (body != null) { body.Feed(0.75f); body.toilet = Mathf.Clamp01(body.toilet + 0.25f); }
                     PersonLife.Report(self.gameObject, "comer");

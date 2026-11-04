@@ -87,22 +87,26 @@ public class MicroJornada : MonoBehaviour
         string block = BlockAt(Hour);
         if (block != _block || _st == null || _resume) { _resume = false; Choose(block); }
         if (_st == null) return;
-        Vector3 to = WorkSpotOf(_st, transform.position);
+        // (2026-11-04) A LA HORA DE COMER, primero al MOSTRADOR por la bandeja y, al acabar, de vuelta a él a devolverla (MealRitual).
+        AreaFunctionStation target = _block == "comida" && _counter != null && (_mealStage == 1 || _mealStage == 4) ? _counter : _st;
+        Vector3 to = WorkSpotOf(target, transform.position);
         bool there = MicroMove.Step(transform, to, speed, 1.6f);
         if (!there && Time.time - _since > 60f)   // sin quedarse dando vueltas para siempre (y avisa: es un fallo de la planta)
         {
             transform.position = to; there = true; Fallbacks++;
-            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en 60 s a «{_st.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
+            if (Fallbacks <= 20) Debug.LogWarning($"[Jornada micro] «{name}» no llega andando en 60 s a «{target.name}» de {(_site != null ? _site.title : "?")}: se le pone allí.");
         }
-        if (!there) { Say(_block == "casa" ? "A casa" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
+        if (!there) { _meal?.Carry(gameObject); Say(_block == "casa" ? "A casa" : _block == "comida" && _mealStage == 4 ? "Devuelve la bandeja" : "Va a " + (_site != null ? _site.title : "su puesto")); return; }
         if (_arrivedAt < 0f) _arrivedAt = Time.time;
-        if (_block == "comida") Lunch();
-        Vector3 look = _st.transform.position - transform.position; look.y = 0f;
-        if (look.sqrMagnitude > 0.01f) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
+        Vector3 look = target.transform.position - transform.position; look.y = 0f;
+        if (look.sqrMagnitude > 0.01f && _mealStage != 3) transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
+        if (_block == "comida") { Lunch(); return; }
         if (_fn != null)
         {
-            CubeInsect ci = GetComponent<CubeInsect>();
-            if (ci != null) AreaFunctionStation.Gesture(ci, _fn.kind);
+            // (2026-11-04) HACERLO DE VERDAD (docs/actividades-y-uniformes.md §3): la actuación de su función —herramienta de su era en la
+            // mano, el gesto y su efecto— y, en el trabajo, el delantal de su oficio (antes solo un gesto de brazos sin nada en las manos).
+            ActivityPerformer.Keep(gameObject, Performances.ForMission(_fn.id), _st.transform.position);
+            if (_block == "trabajo") UniformWearer.Want(gameObject, Uniforms.ForFunction(_fn));
             Say(AreaFunctions.Verb(_fn.kind));
         }
     }
@@ -119,22 +123,69 @@ public class MicroJornada : MonoBehaviour
         if (_st == null) { AreaFunctionStation[] all = _site.Stations; if (all.Length > 0) _st = all[_salt % all.Length]; }
         if (_st != null) { if (_st.occupant == null) _st.occupant = this; if (_fn != null) _st.uses++; }
         Doing = _fn != null ? $"{AreaFunctions.Verb(_fn.kind)}: {_fn.title}" : "";
+        // Fuera del trabajo, con su ropa; la comida a medias (si la historia o una necesidad lo sacó), recogida.
+        if (block != "trabajo") UniformWearer.Want(gameObject, Uniforms.Kind.None);
+        _meal?.Abort(); _meal = null; _counter = null; _mealStage = 0;
+        if (block == "comida" && _site != null)
+        {
+            foreach (AreaFunctionStation s in _site.Stations)
+                if (s != null && s != _st && System.Array.IndexOf(CounterKeys, s.station) >= 0) { _counter = s; break; }
+            _mealStage = Day == _ateDay ? 5 : _counter != null ? 1 : 2;
+        }
     }
 
-    // LA COMIDA DEL MEDIODÍA en el comedor de la era (una vez al día, tras ~20 min de juego sentado a su puesto): el mismo
-    // efecto que comer en casa (HomeNeedSpell) o en el restaurante del santuario (DineSpell).
+    // ── LA COMIDA DEL MEDIODÍA en el comedor de la era, CON SU ORQUESTA (MealRitual; docs/actividades-y-uniformes.md §2) ──
+    // 1 al mostrador por la bandeja · 2 a su mesa (sin mostrador, le sirven en ella) · 3 comer a bocados (~20 min de juego) ·
+    // 4 devolver la bandeja al mostrador · 5 ya comió. El mismo efecto que comer en casa (HomeNeedSpell) o en el restaurante (DineSpell),
+    // pero repartido por bocados.
+    static readonly string[] CounterKeys = { "barra", "mostrador", "granero", "fogon", "puesto" };
+    AreaFunctionStation _counter;
+    int _mealStage; float _mealUntil;
+    MealRitual _meal;
+    /// <summary>La comida de hoy (pruebas): null si aún no recogió su bandeja.</summary>
+    public MealRitual Meal => _meal;
+    /// <summary>En qué paso de la comida va (0 nada · 1 al mostrador · 2 a la mesa · 3 comiendo · 4 a devolver · 5 comió).</summary>
+    public int MealStage => _mealStage;
+    static int Day => TimeController.timeController != null ? TimeController.timeController.Day : 0;
+
     void Lunch()
     {
         if (_body == null) _body = GetComponent<BodyMetabolism>();
-        if (_body == null) return;
-        int day = TimeController.timeController != null ? TimeController.timeController.Day : 0;
         float minute = TimeController.timeController != null ? TimeController.timeController.TimeSpeedMinuteSecs : 1f;
-        if (day == _ateDay || Time.time - _arrivedAt < 20f * minute) return;
-        _ateDay = day;
-        _body.Feed(0.75f); _body.toilet = Mathf.Clamp01(_body.toilet + 0.25f);
-        PersonLife.Report(gameObject, "comer");
-        Debug.Log($"[Jornada micro] «{name}» come en {(_site != null ? _site.title : "el comedor")}.");
+        switch (_mealStage)
+        {
+            case 1:   // en el mostrador: la bandeja
+                _meal = new MealRitual(EraDish(Eras.Now)); _meal.TakeTray(gameObject, true, 0.75f);
+                _mealStage = 2; _since = Time.time;
+                Say("Recoge su bandeja");
+                return;
+            case 2:   // en su mesa: el plato a la mesa y los cubiertos
+                if (_meal == null) { _meal = new MealRitual(EraDish(Eras.Now)); _meal.TakeTray(gameObject, false, 0.75f); }   // (sin mostrador: le sirven en la mesa)
+                _meal.SitDown(gameObject, _st.transform, ActivityKit.IsHuman(gameObject));
+                _mealUntil = Time.time + 20f * minute; _mealStage = 3;
+                return;
+            case 3:
+                Say("Comiendo");
+                if (!_meal.Eat(gameObject, _mealUntil)) return;
+                _ateDay = Day;
+                if (_body != null) _body.toilet = Mathf.Clamp01(_body.toilet + 0.25f);
+                PersonLife.Report(gameObject, "comer");
+                Debug.Log($"[Jornada micro] «{name}» come en {(_site != null ? _site.title : "el comedor")} ({_meal.dish}, {_meal.bitesTaken} bocados).");
+                _meal.PickUp(gameObject); _since = Time.time;
+                if (_counter != null) { _mealStage = 4; return; }
+                _meal.Return(gameObject); _mealStage = 5;   // sin mostrador: la deja recogida en la mesa
+                return;
+            case 4:   // en el mostrador: la devuelve
+                _meal.Return(gameObject); _mealStage = 5;
+                return;
+            default:
+                Say("Sobremesa");
+                return;
+        }
     }
+
+    /// <summary>La comida de cada época (para el plato y sus nutrientes).</summary>
+    public static string EraDish(int year) => year < -3000 ? "gachas de cebada" : year < 500 ? "pan, aceitunas y queso" : year < 1800 ? "potaje de legumbres" : year < 1950 ? "estofado con pan" : "arroz con verduras";
 
     void Say(string what) { if (_label != null) _label.text = $"{_name} · {what}"; }
 

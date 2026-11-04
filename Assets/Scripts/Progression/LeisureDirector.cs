@@ -600,9 +600,18 @@ public class LeisureDirector : MonoBehaviour
         string pose = r.entry.activity.pose;
         if (pose == "baile") g.transform.Rotate(0f, 120f * Time.deltaTime, 0f);
         else if (look.sqrMagnitude > 0.04f && !r.onBed) g.transform.rotation = Quaternion.Slerp(g.transform.rotation, Quaternion.LookRotation(look), Time.deltaTime * 4f);
+        // (2026-11-04) HACERLA DE VERDAD (docs/actividades-y-uniformes.md §3): leer con su libro, bordar, charlar con su taza, regar,
+        // jugar con las crías…; el insecto-humano, la actuación de su actividad o el bucle de la clase del edificio (con lo que tenga en
+        // las manos y su efecto). Las que tienen su propio sistema (yoga, baile, pesas, almohadas, pijamada, descansar) siguen igual.
+        ActivityPerformer.Performance perf = Performances.ForLeisure(r.entry.activity.id);
         CubeInsect ci = g.GetComponent<CubeInsect>();
-        if (ci != null) { AreaFunctionStation.Gesture(ci, r.venue.kind == AreaFunctions.Kind.Rest && pose == "pie" ? AreaFunctions.Kind.Care : r.venue.kind); return; }
+        if (ci != null)
+        {
+            ActivityPerformer.Keep(g, perf ?? Performances.ForKind(r.venue.kind == AreaFunctions.Kind.Rest && pose == "pie" ? AreaFunctions.Kind.Care : r.venue.kind), c);
+            r.posed = true; return;
+        }
         if (a == null) return;
+        if (perf != null && !r.onBed) { ActivityPerformer.Keep(g, perf, c); r.posed = true; return; }
         if (!r.posed)
         {
             r.posed = true; r.poseAt = Time.time;
