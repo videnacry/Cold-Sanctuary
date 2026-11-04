@@ -508,7 +508,12 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
-        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && (GameObject.Find("Anillo_yoga")?.GetComponentsInChildren<CarpetPad>().Count(c => c.building.StartsWith("Entrenamiento") && c.surface.Contains("#anillo")) ?? 0) >= 8 && FindByPrefix("Estatuas_anillo"));
+        // LOS PISOS DE YOGA (Berón 2026-11-04): sin anillo; cuatro salas (Hatha y Ashtanga, occidental y tradicional), cada una con
+        // su tarima en el centro y sus alfombras-esterilla alrededor (lo demás lo mira YogaFloorsTest, grupo 64).
+        var yogaHalls = YogaHall.All.Where(h => h != null).ToList();
+        TestProbe.Check("los pisos de yoga: sin anillo, cuatro salas (Hatha y Ashtanga × occidental y tradicional) con su tarima en el centro y sus alfombras-esterilla",
+            GameObject.Find("Anillo_yoga") == null && yogaHalls.Count == 4 && yogaHalls.All(h => h.tarima != null && h.Mats().Count >= 6 && h.Mats().All(m => m.building.StartsWith("Entrenamiento"))),
+            string.Join(" · ", yogaHalls.Select(h => $"{h.Label}: {h.Mats().Count} esterillas")));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)

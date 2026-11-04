@@ -110,7 +110,7 @@ Va por orden de importancia.
 6. **Comedor del restaurante** (`SampleSceneBuilder.Restaurant.cs:61`): cambiar el bloque macizo de la caída del mantel
    (de 0,45 a 0,75 m) por un faldón de 0,62 a 0,765 m. Bajar el tablero a 0,75 m. Hay que verificar en juego la
    orientación de las sillas (`:73`): el +z del asiento apunta hacia fuera de la mesa.
-7. **Esterillas de yoga** (`SampleSceneBuilder.cs:3739`): de 1,80 a **2,00 × 0,66 m**. Hay que comprobar que los anillos
+7. **Esterillas de yoga** (hoy alfombras-esterilla de 3 × 3,6 m en `SampleSceneBuilder.Yoga.cs`; el anillo de yoga se quitó el 2026-11-04): de 1,80 a **2,00 × 0,66 m**. Hay que comprobar que los anillos
    de 3,4 y 5,4 m siguen sin solaparse; la esterilla mide 0,2 m más.
 8. **Escaleras** (`SampleSceneBuilder.Levels.cs:15`): bajar `StairAngle` de 38° a ~33°, para dejar huella de 0,26–0,27
    y contrahuella de ~0,175. La escalera se alarga de 5,1 a 6,2 m en planta, así que antes hay que revisar dónde cabe en
