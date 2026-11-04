@@ -38,6 +38,8 @@ Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); man
 > **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
 >
 > **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
+> **HECHO 2026-11-04 (rama claude/edif-cohetes):** **lanzadera de cohetes** en un casquete artificial a ≥ 300 m del santuario, con un árbol-edificio reforzado (pisos «Fábrica de cohetes», «Control de misión» y garaje), la corona de lanzamiento con deflector, trinchera de llamas, diluvio, cubeta y escudo, y la **regla de altura** (plataforma ≥ máx(lo más alto, aves) + 30 m; se valida y sube sola). [`lanzadera-de-cohetes.md`](lanzadera-de-cohetes.md), prueba 90. *Falta:* verificación en vivo, el aviso y el lanzamiento en la jornada.
+>
 >
 > **ESTADO (2026-08-28) — MUNDO VIVO.** Cerrado el gran arco **emergente + ciclo de vida** (PRs #128–#162, todo
 > documentado): capacidad=hechizo con gate de **doble vía** (anatomía ∨ `Grimoire`), **temperamento histórico**
@@ -120,7 +122,7 @@ Docs: [`microcosmos-pueblos-mapas.md`](microcosmos-pueblos-mapas.md), [`microcos
 - [ ] **Famosos: verificar en vivo** (lo hace el probador): reconstruir de una en una las 7 escenas (menú «Build Microcosmos de famosos/…») y la Sala de Eras; grupo 69; fotos. Repasar los [verificar] del doc (direcciones de MITS y del motel, cifras de la compra de la Nebraska Furniture Mart, día exacto del Dhyanalinga).
 - [x] **Pisos nuevos (2026-11-04, rama `claude/edif-pisos`)**: **Informática** ([`piso-informatica.md`](piso-informatica.md): clúster de IA local, refrigeración líquida en circuito cerrado, calor a la red de distrito, SAI; `AiCluster`; misiones `ifo_*`) en el piso libre de Ciencias, y el **Aula** ([`piso-aula.md`](piso-aula.md): clases y sala de estudio, plazas para todos los miembros, pisos según la lista del personal; misiones `aul_*`) en el piso libre del Entrenamiento. **Regla de capacidad** (manual S13, `AreaCapacity`, grupo 75) y **alerta de piso nuevo** (manual §11, `MicroFloors.AlertFloors`, grupo 76; gancho ampliado): Gates → Informática y Scott → Aula. Pruebas 74, 75 y 76.
 - [ ] **Pisos nuevos: verificar en vivo** (probador): reconstruir SampleScene (Blockout solo santuario) y después Gates y Scott; grupos 74, 75, 76, 61 (registro con las 5 misiones nuevas), 28, 69; fotos. Ver los `[Capacidad]` que fallen (gimnasio y yoga frente a 18 miembros: si no caben, otro piso, regla S13) y construir el **ring de almohadas**.
-- [ ] Decidir si Menfis, Alejandría, Bagdad, Crotona y Sils Maria pasan al Aula (biblioteca) y Bagdad a Informática (la alerta de piso nuevo los señala).
+- [ ] Decidir si Menfis, Alejandría, Bagdad, Crotona y Sils Maria pasan al Aula (biblioteca), Bagdad a Informática y Hawthorne (Musk) al control de misión de la lanzadera (la alerta de piso nuevo los señala).
 - [x] **Verificado en vivo** (2026-11-03): grupos 43 (365/0), 60 (48/0), 62 (373/0), 63 (16/0), 66 (23/0); 0 violaciones de las reglas 1–12 y de las de los microcosmos en los 23 pueblos; fotos en `Temp/Pueblos/`.
 - [x] `Microcosmos_Egina` con su ciudad (`CivicBuilder.EginaTown`; el templo del mito y la stoa, marcados como historia).
 - [ ] Crear en el santuario los **pisos representativos pendientes** (biblioteca/observatorio, campo de deportes, aula de música, sala de asambleas, taller de electricidad, sendero de montaña, templo de los antepasados).
@@ -581,6 +583,15 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Microcosmos propios de Sadhguru y los seis (otro hilo).
 - [ ] Vivencias (frases de conversación, `PhrasePools`) de la familia y los amigos: hacen falta datos de Berón sobre cada uno.
 - [ ] Más casas del árbol (una 4.ª por árbol, con árboles más altos) para los recién llegados.
+
+## Camas de 4 y guerra de almohadas (2026-11-04; rama `claude/edif-personajes`; [`guerra-de-almohadas.md`](guerra-de-almohadas.md))
+- [x] Camas de 4 plazas (colchón de 3,60 × 2,10) en las 18 casas del árbol; casa de 9 × 7 m con los 2 m de paso; cada uno duerme en su plaza (la pareja, en plazas distintas).
+- [x] Ring de almohadas sobre la plataforma central: cama colosal de n × n celdas de 2,5 m (n = ⌈√residentes⌉: hoy 5 × 5, caben 25 para 19), borde blando, almohadones, 50 almohadas sueltas, pista de alfombras propia.
+- [x] Regla y validador (`PillowRing.Validate`, manual J15): falla si no caben los residentes o el personal; al reconstruir crece.
+- [x] Actividad de todos a la vez en el horario libre (sábado 20 h; `LeisureRoster.Activity.together`, etiqueta del ring) con `PillowFight` (coger almohada, almohadazo, risa, vínculo, acotado).
+- [x] Prueba `PillowFightTest` (grupo 89).
+- [ ] Tester: reconstruir SampleScene (solo el santuario) y guardarla; grupos 89, 65, 28 y 55 (frutales de las terrazas); fotos del ring y de una casa.
+- [ ] Regla J16 (todos los miembros a la vez) en el resto de centros: gimnasio, salas de yoga y catálogo de ocio.
 
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.

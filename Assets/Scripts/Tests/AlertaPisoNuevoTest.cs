@@ -39,6 +39,8 @@ public class AlertaPisoNuevoTest : MonoBehaviour, ITestUnit
         TestProbe.Check("Informática encuentra a Bagdad (sala de cálculo)", Has(info, "Bagdad"), Names(info));
         var rockets = MicroFloors.PendingFor("Rocket_Area", "Fábrica de cohetes", new[] { "cohetes" });
         TestProbe.Check("una fábrica de cohetes encontraría a Hawthorne (Musk)", Has(rockets, "Hawthorne"), Names(rockets));
+        var launch = MicroFloors.PendingFor("Control_de_mision", "Control de misión");
+        TestProbe.Check("el control de misión de la lanzadera (piso nuevo de 2026-11-04) encuentra a Hawthorne (Musk)", Has(launch, "Hawthorne"), Names(launch));
         var none = MicroFloors.PendingFor("Calisthenics_Area", "Calistenia");
         TestProbe.Check("un piso sin relación (Calistenia) no encuentra a nadie", none.Count == 0, Names(none));
         TestProbe.End();

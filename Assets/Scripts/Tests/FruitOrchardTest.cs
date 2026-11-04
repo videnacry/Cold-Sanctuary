@@ -169,7 +169,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         // ── 7. LAS TAREAS DEL ÁRBOL: máscaras de oxígeno y fitoplancton (Berón 2026-11-03; 2026-11-04: revisión BARATA por rotación
         //    semanal y por el panel de luces, docs/mascaras-de-oxigeno.md §El jardinero) ──
         {
-            ArbolCampos tree = ArbolCampos.All.Where(a => a != null && FruitGardener.TreeStations(a).Count > 0).OrderBy(a => FruitGardener.TreeStations(a).Count).FirstOrDefault();
+            ArbolCampos tree = ArbolCampos.All.Where(a => a != null && a.building != LaunchHeightRule.Building && FruitGardener.TreeStations(a).Count > 0).OrderBy(a => FruitGardener.TreeStations(a).Count).FirstOrDefault();
             if (tree == null) TestProbe.Check("el jardinero revisa las máscaras de oxígeno y cuida el fitoplancton de un edificio-árbol", false, "sin árboles con máscaras");
             else
             {

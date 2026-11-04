@@ -177,7 +177,7 @@ public class SleepSpell : QueuedSpell
                 CharacterController cc = self.GetComponent<CharacterController>(); if (cc != null) cc.enabled = false;
                 // Sobre el colchón (su cara de arriba está a +0,50 de la raíz de la cama) y con la cabeza en la almohada: la
                 // pose Lie pone la cabeza hacia −z del cuerpo y la almohada está en +z de la cama, así que se gira 180°.
-                self.transform.position = room.bed.position + Vector3.up * 0.5f;
+                self.transform.position = room.LieSpot(self) + Vector3.up * 0.5f;   // en SU plaza de la cama (de 4 desde el 2026-11-04)
                 self.transform.rotation = room.bed.rotation * Quaternion.Euler(0f, 180f, 0f);
                 if (cc != null) cc.enabled = true;
                 DailyPoses.Lie().ApplyFinal(self);

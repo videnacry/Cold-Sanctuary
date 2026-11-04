@@ -27,7 +27,14 @@ public static class ResidentialBuilder
     static readonly System.Collections.Generic.Dictionary<string, string> Partners = new System.Collections.Generic.Dictionary<string, string> { { "Amahuz", "Karen" } };
 
     public const string Name = "Residencia";
-    const float CentralSize = 18f, TreeRing = 21f, HouseOut = 5.2f;
+    // (2026-11-04, Berón: «las camas de las residencias del santuario deben ser capaces de dar espacio a 4 personas») CAMA DE 4: cuatro
+    // plazas de 90 cm (el ancho de una cama individual europea, 90 × 200) una junto a otra → colchón de 3,60 × 2,10 m (como las
+    // «camas familiares» que juntan cuatro individuales; la Alaskan king, la mayor de serie, mide 2,74 × 2,74). Para que quepa con
+    // los 2 m de paso hasta la alfombra-esterilla y el armario, la casa pasa de 7 × 6 a 9 × 7 m y se aleja 1 m más del tronco.
+    public const float BedWidth = 3.6f, BedLength = 2.1f, LaneWidth = 0.9f;
+    public const int BedSleeps = 4;
+    public const float CabinW = 9f, CabinD = 7f;
+    const float CentralSize = 18f, TreeRing = 21f, HouseOut = 1.7f + CabinW * 0.5f;   // (1,7 m del eje del tronco al borde de la casa, como antes)
 
     // Dónde va cada casa de árbol (local) y hacia dónde mira su entrada: dos por árbol, a distinta altura y a cada lado.
     static readonly System.Collections.Generic.List<(Vector3 pos, Vector3 door)> _houses = new System.Collections.Generic.List<(Vector3, Vector3)>();
@@ -66,8 +73,9 @@ public static class ResidentialBuilder
         for (int i = 0; i < _houses.Count; i++)
         {
             Vector3 trunk = trees[i < 12 ? i / 2 : i - 12], away = _houses[i].pos - trunk; away.y = 0f;
-            _terraces.Add(_houses[i].pos + away.normalized * 7f);
+            _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
+        RingSize(Owners.Length + Partners.Count);   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, 26f, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
@@ -90,6 +98,7 @@ public static class ResidentialBuilder
             Beam(root, pos + Vector3.up * -0.35f, trunk);   // viga al tronco que la sostiene
             Beam(root, pos + Vector3.up * -0.35f + Vector3.Cross(Vector3.up, door).normalized * 2.5f, trunk + Vector3.down * 2.5f);   // y su tornapuntas
         }
+        BuildPillowRing(root);   // (2026-11-04) el ring de almohadas sobre la plataforma central (docs/guerra-de-almohadas.md)
         SoftGround.Plant(root, center + Vector3.down * 0.1f, new Vector2(64f, 64f), 77);   // colchón de musgo bajo toda la arboleda
         WorldLabel wl = root.gameObject.AddComponent<WorldLabel>(); wl.text = "Arboleda residencial (casas de árbol)"; wl.height = DeckY + 5f;
         return root;
@@ -101,16 +110,17 @@ public static class ResidentialBuilder
     {
         Vector2 h = new Vector2(q.x, q.z);
         if (Mathf.Abs(q.x) < CentralSize * 0.5f + 1f && Mathf.Abs(q.z) < CentralSize * 0.5f + 1f && q.y > DeckY - 1.5f && q.y < DeckY + 4f) return true;   // plataforma central
+        if (Mathf.Abs(q.x) < _ringX * 0.5f + 1f && Mathf.Abs(q.z) < _ringZ * 0.5f + 1f && q.y > RingY - 1.5f && q.y < RingY + 4f) return true;   // el ring de almohadas
         foreach (var (pos, _) in _houses)
-            if ((h - new Vector2(pos.x, pos.z)).magnitude < 5.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (7 × 6 m y margen)
+            if ((h - new Vector2(pos.x, pos.z)).magnitude < 6.2f && q.y > pos.y - 1.5f && q.y < pos.y + 4f) return true;   // casas (9 × 7 m: media diagonal 5,7, y margen)
         foreach (Vector3 tp in _terraces)
             if ((h - new Vector2(tp.x, tp.z)).magnitude < 5.2f && q.y > tp.y - 1.5f && q.y < tp.y + 6f) return true;   // terrazas frutales (y la copa del frutal)
         return false;
     }
 
-    // Una habitación al ESTILO DE LOS TEMPLOS GRIEGOS (7 × 6 m) pero ABIERTA: solo el suelo y el estilóbato (escalón),
-    // sin paredes, columnas ni tejado (se quitaron para ganar visibilidad). Se entra por cualquier lado sin que la vista se
-    // tape. Dentro: cama, mesilla con lámpara, armario y estante; el BAÑO en una esquina, tras un biombo (intimidad).
+    // Una habitación al ESTILO DE LOS TEMPLOS GRIEGOS (9 × 7 m desde el 2026-11-04; antes 7 × 6) pero ABIERTA: solo el suelo y el
+    // estilóbato (escalón), sin paredes, columnas ni tejado (se quitaron para ganar visibilidad). Se entra por cualquier lado sin que
+    // la vista se tape. Dentro: la CAMA DE 4, su mesilla y el armario; la alfombra-esterilla, a ≥ 2 m de la cama y del armario.
     static Transform Cabin(Transform root, Vector3 local, Vector3 door, int ownerIdx, string name, float terraceSide = 1f)
     {
         Transform t = new GameObject(name).transform;
@@ -118,22 +128,27 @@ public static class ResidentialBuilder
         t.localPosition = local;
         t.localRotation = Quaternion.LookRotation(-door);   // su -Z mira hacia dentro de la arboleda
         Color marbleDark = new Color(0.82f, 0.8f, 0.76f);
-        float W = 7f, D = 6f;
+        float W = CabinW, D = CabinD;
         Plank(t, Vector3.zero, new Vector3(W, 0.3f, D), "Suelo");
         Solid(t, new Vector3(0f, 0.2f, 0f), new Vector3(W - 0.4f, 0.1f, D - 0.4f), marbleDark, "Estilobato");
         // Cama, mesilla y armario (sin baño: se usan los aseos comunes; sin lámpara ni estante: no hay techo ni paredes).
-        Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-1.8f, 0.25f, 1.2f));
-        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(1.5f, 0.3f, 2.2f), WoodDark, 0f, "Armazon");   // colchón de 2,10 × 1,40 (docs/medidas-muebles.md)
-        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(1.4f, 0.16f, 2.1f), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
-        KitchenProps.C(bed, new Vector3(0f, 0.52f, 0.2f), new Vector3(1.44f, 0.06f, 1.3f), Blanket(ownerIdx), 0f, "Manta");
-        KitchenProps.C(bed, new Vector3(0f, 0.55f, 0.85f), new Vector3(0.9f, 0.1f, 0.3f), Color.white, 0f, "Almohada");
-        KitchenProps.C(t, new Vector3(-0.6f, 0.55f, 2.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");
-        KitchenProps.C(t, new Vector3(0.9f, 1.25f, 2.45f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");
-        // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima).
+        // LA CAMA DE 4 (armazón 3,70 × 2,30, de x −4,45 a −0,75 y de z 1,15 a 3,45): cabecero en +z, una almohada y una plaza de 90 cm
+        // por persona (Bedroom.LieSpot), manta de lado a lado.
+        Transform bed = KitchenProps.Root(t, "Cama", new Vector3(-2.6f, 0.25f, 2.3f));
+        KitchenProps.C(bed, new Vector3(0f, 0.2f, 0f), new Vector3(BedWidth + 0.1f, 0.3f, BedLength + 0.2f), WoodDark, 0f, "Armazon");   // colchón de 3,60 × 2,10 (docs/medidas-muebles.md)
+        KitchenProps.C(bed, new Vector3(0f, 0.42f, 0f), new Vector3(BedWidth, 0.16f, BedLength), new Color(0.95f, 0.95f, 0.93f), 0f, "Colchon");
+        KitchenProps.C(bed, new Vector3(0f, 0.52f, -0.15f), new Vector3(BedWidth + 0.04f, 0.06f, BedLength * 0.62f), Blanket(ownerIdx), 0f, "Manta");
+        KitchenProps.C(bed, new Vector3(0f, 0.75f, BedLength * 0.5f + 0.06f), new Vector3(BedWidth + 0.1f, 0.9f, 0.1f), WoodDark, 0f, "Cabecero");
+        for (int k = 0; k < BedSleeps; k++)
+            KitchenProps.C(bed, new Vector3((k - (BedSleeps - 1) * 0.5f) * LaneWidth, 0.55f, BedLength * 0.5f - 0.3f), new Vector3(0.7f, 0.1f, 0.35f), Color.white, 0f, "Almohada");
+        KitchenProps.C(t, new Vector3(-0.4f, 0.55f, 3.2f), new Vector3(0.45f, 0.55f, 0.4f), Wood, 0f, "Mesilla");   // pegada a la cama (van juntas)
+        KitchenProps.C(t, new Vector3(2.6f, 1.25f, 3.2f), new Vector3(1.4f, 1.9f, 0.55f), Wood, 0f, "Armario");     // a 2,1 m de la mesilla
+        // SU ALFOMBRA, que es también su ESTERILLA DE YOGA: lleva a la plataforma central (y se hace yoga encima). Zona de 3 × 3,6 m
+        // de x 1,15 a 4,15 y de z −3,45 a 0,15: a 2,15 m de la cama y a 2,8 m del armario.
         string who = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : $"Habitación libre {ownerIdx + 1}";
-        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(1.75f, 0.27f, -0.9f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
+        CarpetPad.BuildZone(t, t.TransformPoint(new Vector3(2.65f, 0.27f, -1.65f)), t.rotation, CarpetPad.Kind.Habitacion, Name, 2, $"{Name}#hab{ownerIdx}", who, 1, 3f, 3.6f);
         // (2026-11-03) SU TERRAZA FRUTAL (Berón: «los frutales en residencias que te pedí era para las residencias del santuario»; docs/
-        // jardines-frutales.md §Residencia): una plataforma de 7 × 6 m pegada a la habitación por el lado contrario al tronco, con un
+        // jardines-frutales.md §Residencia): una plataforma de 7 × 7 m (7 × 6 hasta el 2026-11-04) pegada a la habitación por el lado contrario al tronco, con un
         // frutal en maceta en su centro (a ≥ 2 m de la cama, el armario y la alfombra). Es una maceta del jardinero (FruitPlant,
         // edificio «Residencia»): entra en su ronda.
         Plank(t, new Vector3(terraceSide * (W * 0.5f + 3.5f), 0f, 0f), new Vector3(7f, 0.3f, D), "Terraza_frutal");
@@ -145,8 +160,96 @@ public static class ResidentialBuilder
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
-        room.bed = bed;
+        room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
         WorldLabel wl = t.gameObject.AddComponent<WorldLabel>(); wl.text = ownerIdx < Shown.Length ? $"Habitación de {Shown[ownerIdx]}" : "Habitación libre (para recién llegados)"; wl.height = 2.5f;
+        return t;
+    }
+
+    // ── EL RING DE ALMOHADAS (2026-11-04; docs/guerra-de-almohadas.md) ──────────────────────────────────────────────────────
+    // Berón: «se deben crear guerras de almohadas en un ring que se debe crear en la residencia, el ring debe ser creado con la regla
+    // para que tenga las dimensiones necesarias para que se enfrenten todos los residentes del santuario y debe estar lleno de
+    // almohadas y la base es una cama colosal». Una plataforma 8 m por encima de la central (sobre sus propias columnas), con la
+    // CAMA COLOSAL: colchón de n × n celdas de 2,5 m (PillowRing: n = ⌈√residentes⌉), borde blando de 0,6 m con una entrada de 3 m
+    // al pie, cabecero con almohadones gigantes y dos almohadas sueltas por luchador. 2 m de paso alrededor y hasta su pista de
+    // alfombras (red «Residencia» de edificio: vuela a la plataforma central y al suelo).
+
+    /// <summary>Altura del ring: 8 m sobre la plataforma central (queda dentro del anillo de casas: ver <see cref="RingSize"/>).</summary>
+    public const float RingY = DeckY + 8f;
+    const float HeadZone = 1.6f, ZoneW = 7.6f, ZoneD = 4.4f, EdgeMargin = 0.8f, FootGap = 3f;
+    static int _ringCells = 1, _ringFor;
+    static float _ringX, _ringZ, _bedX, _bedZ;
+
+    /// <summary>Las medidas del ring para <paramref name="fighters"/> residentes (la regla: PillowRing.CellsFor). Avisa si ya no cabe
+    /// dentro del anillo de casas (su borde interior está a 17,5 m del centro): entonces hay que subirlo o llevarlo a otro sitio.</summary>
+    static void RingSize(int fighters)
+    {
+        _ringFor = fighters; _ringCells = PillowRing.CellsFor(fighters);
+        float S = _ringCells * PillowRing.CellSize;
+        _bedX = S + 2f * PillowRing.Bumper; _bedZ = S + PillowRing.Bumper + HeadZone;
+        _ringX = Mathf.Max(_bedX, ZoneW) + 2f * PillowRing.Walkway;
+        _ringZ = PillowRing.Walkway + _bedZ + PillowRing.Walkway + ZoneD + EdgeMargin;
+        float corner = new Vector2(_ringX * 0.5f, _ringZ * 0.5f).magnitude, inner = TreeRing - CabinD * 0.5f - 1f;
+        if (corner > inner) Debug.LogError($"[Residencia] el ring de almohadas para {fighters} residentes ({_ringX:0.0} × {_ringZ:0.0} m) ya no cabe dentro del anillo de casas (esquina a {corner:0.0} m, máximo {inner:0.0}).");
+        else Debug.Log($"[Residencia] ring de almohadas para {fighters} residentes: colchón de {_ringCells} × {_ringCells} celdas ({S:0.0} m de lado, caben {_ringCells * _ringCells}), plataforma de {_ringX:0.0} × {_ringZ:0.0} m a {RingY:0} m.");
+    }
+
+    static void BuildPillowRing(Transform root)
+    {
+        Transform ring = new GameObject("RingAlmohadas").transform;
+        ring.SetParent(root, false);
+        ring.localPosition = new Vector3(0f, RingY, 0f);
+        float S = _ringCells * PillowRing.CellSize, B = PillowRing.Bumper;
+        Color mattressC = new Color(0.97f, 0.95f, 0.91f), soft = new Color(0.93f, 0.76f, 0.83f), quilt = new Color(0.88f, 0.84f, 0.8f);
+        Plank(ring, Vector3.zero, new Vector3(_ringX, 0.3f, _ringZ), "Plataforma_ring");   // cara de arriba a +0,15
+        for (int i = 0; i < 4; i++)
+            Solid(ring, new Vector3((i % 2 == 0 ? -1f : 1f) * (_ringX * 0.5f - 0.4f), -RingY * 0.5f, (i < 2 ? -1f : 1f) * (_ringZ * 0.5f - 0.4f)), new Vector3(0.6f, RingY, 0.6f), Wood, "Columna_ring");
+        // La CAMA COLOSAL: el cabecero en +z, el pie hacia la pista de alfombras (−z).
+        float headTop = _ringZ * 0.5f - PillowRing.Walkway, bedCz = headTop - _bedZ * 0.5f, matCz = headTop - HeadZone - S * 0.5f;
+        Transform mat = Solid(ring, new Vector3(0f, 0.25f, matCz), new Vector3(S, 0.2f, S), mattressC, "Colchon_colosal");   // cara de arriba a +0,35: 0,2 m sobre la plataforma
+        Solid(ring, new Vector3(0f, 0.25f, headTop - HeadZone * 0.5f), new Vector3(S, 0.2f, HeadZone), mattressC, "Colchon_cabecero");
+        for (int k = 1; k < _ringCells; k++)   // el acolchado marca las celdas
+        {
+            float o = (k - _ringCells * 0.5f) * PillowRing.CellSize;
+            Deco(ring, new Vector3(o, 0.353f, matCz), new Vector3(0.05f, 0.006f, S), quilt, "Acolchado");
+            Deco(ring, new Vector3(0f, 0.353f, matCz + o), new Vector3(S, 0.006f, 0.05f), quilt, "Acolchado");
+        }
+        // Borde blando: a los lados entero; al pie, con la ENTRADA de 3 m en el centro (sin escalones: el colchón sube 0,2 m). Es blando:
+        // sin collider, se pasa por encima (quien va a una celda del lado no tiene que rodear hasta la entrada).
+        for (int s = -1; s <= 1; s += 2)
+            Deco(ring, new Vector3(s * (S * 0.5f + B * 0.5f), 0.375f, bedCz), new Vector3(B, 0.45f, _bedZ), soft, "Borde_blando");
+        float footLen = (_bedX - FootGap) * 0.5f, footZ = matCz - S * 0.5f - B * 0.5f;
+        for (int s = -1; s <= 1; s += 2)
+            Deco(ring, new Vector3(s * (FootGap * 0.5f + footLen * 0.5f), 0.375f, footZ), new Vector3(footLen, 0.45f, B), soft, "Borde_blando_pie");
+        Solid(ring, new Vector3(0f, 1.0f, headTop - 0.2f), new Vector3(_bedX, 1.7f, 0.4f), WoodDark, "Cabecero_colosal");
+        for (int k = 0; k < _ringCells; k++)   // almohadones gigantes contra el cabecero
+            Deco(ring, new Vector3((k - (_ringCells - 1) * 0.5f) * PillowRing.CellSize, 0.62f, headTop - 0.4f - (HeadZone - 0.5f) * 0.5f), new Vector3(PillowRing.CellSize * 0.85f, 0.55f, HeadZone - 0.5f), Color.white, "Almohadon_gigante");
+        // LLENO DE ALMOHADAS: dos sueltas por celda (sin collider: se cogen, no se tropieza con ellas).
+        Transform loose = new GameObject("Almohadas").transform; loose.SetParent(ring, false);
+        Color[] pastel = { new Color(0.98f, 0.86f, 0.9f), new Color(0.86f, 0.92f, 0.99f), new Color(0.99f, 0.95f, 0.8f), new Color(0.88f, 0.97f, 0.88f), new Color(0.93f, 0.88f, 0.99f) };
+        var rnd = new System.Random(4242);
+        int cells = _ringCells * _ringCells;
+        for (int c = 0; c < cells; c++)
+            for (int p = 0; p < PillowRing.PillowsPerFighter; p++)
+            {
+                float cx = (c % _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize, cz = (c / _ringCells - (_ringCells - 1) * 0.5f) * PillowRing.CellSize;
+                Vector3 at = new Vector3(cx + (p == 0 ? -0.65f : 0.65f), 0.43f, matCz + cz + (p == 0 ? 0.55f : -0.55f));
+                Transform pil = Deco(loose, at, new Vector3(0.6f, 0.15f, 0.4f), pastel[(c + p) % pastel.Length], $"Almohada_{c * PillowRing.PillowsPerFighter + p + 1}");
+                pil.localRotation = Quaternion.Euler(0f, (float)rnd.NextDouble() * 360f, 0f);
+            }
+        PillowRing pr = ring.gameObject.AddComponent<PillowRing>();
+        pr.cells = _ringCells; pr.builtFor = _ringFor; pr.mattress = mat; pr.pillows = loose;
+        // Su PISTA DE ALFOMBRAS (red de edificio de la Residencia: vuela a la plataforma central y al suelo), a 2 m del pie de la cama.
+        float zc = -_ringZ * 0.5f + EdgeMargin + ZoneD * 0.5f;
+        CarpetPad.BuildZone(ring, ring.TransformPoint(new Vector3(0f, 0.15f, zc)), ring.rotation, CarpetPad.Kind.Edificio, Name, 2, $"{Name}#ring", "Ring de almohadas", 2, ZoneW, ZoneD);
+        WorldLabel wl = ring.gameObject.AddComponent<WorldLabel>();
+        wl.text = $"Ring de almohadas (cama colosal): {_ringCells} × {_ringCells} celdas, caben {cells}"; wl.height = 3f;
+    }
+
+    // Una pieza sin collider (decoración y almohadas sueltas).
+    static Transform Deco(Transform parent, Vector3 local, Vector3 size, Color c, string name)
+    {
+        Transform t = Solid(parent, local, size, c, name);
+        Object.DestroyImmediate(t.GetComponent<Collider>());
         return t;
     }
 

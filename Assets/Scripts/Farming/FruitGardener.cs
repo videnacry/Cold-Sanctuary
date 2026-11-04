@@ -115,7 +115,7 @@ public class FruitGardener : MonoBehaviour
         // jardinero de ese edificio (si no cabe en su ronda, otro jardinero del mismo edificio); el Árbol de los Campos, sin
         // frutales, entra en el camino solo por sus tareas.
         var trees = new Dictionary<string, ArbolCampos>();
-        foreach (ArbolCampos t in ArbolCampos.All) if (t != null && !trees.ContainsKey(t.building) && TreeStations(t).Count > 0) trees[t.building] = t;
+        foreach (ArbolCampos t in ArbolCampos.All) if (t != null && t.building != LaunchHeightRule.Building && !trees.ContainsKey(t.building) && TreeStations(t).Count > 0) trees[t.building] = t;   // (la lanzadera, lejos: sus máscaras las revisa su equipo de seguridad)
         var buildings = byRoof.Keys.Union(trees.Keys).ToList();
         if (buildings.Count == 0) return _rounds;
         var stations = Object.FindObjectsByType<FruitCareStation>(FindObjectsSortMode.None);
