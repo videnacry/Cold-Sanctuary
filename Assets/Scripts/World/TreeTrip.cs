@@ -51,7 +51,7 @@ public class TreeTrip : MonoBehaviour
         t._swim = SwimBody.Of(g.transform);
         float len = 0f; for (int i = 1; i < path.Count; i++) len += Vector3.Distance(path[i - 1], path[i]);
         t._t0 = Time.time; t._left = g.transform.position; t._recheck = Time.time + 1f;
-        t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 3f + 40f;   // (2026-11-04: +20 s de margen: con 4 a la vez por una rama, uno se daba por atascado, prueba 53)
+        t._until = Time.time + len / Mathf.Max(0.5f, tree.routeSwimSpeed) * 4f + 60f;   // (2026-11-04: más margen —4× el nado + 60 s—: con 4 a la vez por una rama, uno se daba por atascado, prueba 53; el aviso dice dónde)
         // El jugador: se le sujeta el cuerpo (su control no lo mueve a la vez) y, como a todos, se le lleva sin chocar con los
         // cantos de las puertas: el CharacterController se apaga durante el viaje (GroundGuard tampoco lo toca).
         if (g.TryGetComponent(out PlayerController pc) && !t._held) { pc.HoldBody(true); t._held = true; }
@@ -78,7 +78,7 @@ public class TreeTrip : MonoBehaviour
         // cocina hacia el árbol, 130 m, a 1,67 m por fotograma, en el servicio del restaurante).
         if ((transform.position - _left).sqrMagnitude > 16f)
         { Debug.Log($"[Árbol] «{name}» ya no está donde lo dejó el viaje ({Vector3.Distance(transform.position, _left):0.0} m): deja el viaje a {_to?.name}."); Finish(false); return; }
-        if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1})."); Finish(false); return; }
+        if (Time.time > _until) { Stuck++; Debug.LogWarning($"[Árbol] «{name}» no llegó a {_to.name} a tiempo: se queda donde está (tramo {_i}/{_path.Count - 1}, en {transform.position}, hacia {_tree.World(_path[Mathf.Min(_i, _path.Count - 1)])}, {Time.time - _t0:0} s; máscara {BreathingMask.Has(gameObject)}, rescate {BreathingMask.IsRescuing(gameObject)})."); Finish(false); return; }
         if (MaskStep()) { _left = transform.position; return; }
         float budget = (Wet(_i) ? _tree.routeSwimSpeed + (Carried(_i) ? _tree.routeCurrent : 0f) : 1.8f) * Time.deltaTime;
         for (int guard = 0; guard < 4 && _i < _path.Count && budget > 1e-4f; guard++)

@@ -111,6 +111,7 @@ pantalla), se pone la máscara y pasa 20 s bajo el agua con 4 s de aliento sin g
   (la del perchero de esa puerta, a < 6 m, o tocando una estación); antes la cogía al pasar junto a cualquier perchero y la devolvía al
   alejarse (en la jornada, Kushal iba y venía con ella). «En el agua» cuenta también la cabeza o el cuerpo sumergidos, aunque el cuerpo
   de nado no esté activo (con la máscara puesta el aliento no baja).
+- **Ronda 3**: el jugador solo coge la máscara del perchero en el segundo y medio en que se mete en el agua; ya dentro, de una estación (buceando hacia la estación la cogía del perchero de fuera, a través de la pared). Que el aliento baje mientras va a por ella es lo esperado: la máscara es para quien la lleva puesta. `ArbolCampos.Route` apunta `[Ruta-árbol]` cuando el jugador entra en un tronco o vuela a otro árbol, y por qué.
 - **Percheros**: si uno queda dentro del agua al empezar, pasa al otro lado de su puerta (o se aparta de la pared); si se queda sin
   máscaras, el carro le trae la mitad de las del puesto más lleno del edificio (además del reparto de cada noche).
 - **Jardinero**: entra por el **techo** (panel en su puerta) y baja una sola vez por las estaciones de hoy hasta el fondo: ~0,7–0,85 h

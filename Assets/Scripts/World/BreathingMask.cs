@@ -125,7 +125,7 @@ public class BreathingMask : MonoBehaviour
 
     // EL JUGADOR: coge la máscara al pasar junto a un perchero de la entrada (o al tocar una estación dentro del agua) y la deja en el
     // perchero de la puerta por la que sale (tras haber nadado con ella).
-    float _nextScan;
+    float _nextScan, _enteredAt = -99f; bool _wasWet;
     void PlayerUpdate(SwimBody s)
     {
         if (Time.time < _nextScan) return;
@@ -135,11 +135,14 @@ public class BreathingMask : MonoBehaviour
         // devolvía la máscara al momento de cogerla («aliento mínimo 0,00 con la máscara», prueba 70).
         Vector3 head = s != null ? s.HeadPosition : transform.position + Vector3.up * 0.7f;
         bool wet = (s != null && s.Active) || WaterZone.Underwater(head) || WaterZone.Underwater(transform.position);
+        if (wet && !_wasWet) _enteredAt = Time.time;   // acaba de meterse en el agua
+        _wasWet = wet;
         if (!Worn)
         {
             // (2026-11-04) Solo al ENTRAR en el agua: la del perchero de la puerta por la que entra (a < 6 m) o la de una estación que toca. Antes
             // la cogía al pasar junto a cualquier perchero y la devolvía al alejarse (Kushal, en la jornada, iba y venía con ella).
-            MaskStation near = !wet ? null : MaskStation.Nearest(head, MaskStation.Kind.Station, 1.8f, true, true) ?? MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 6f, false, true);
+            MaskStation near = !wet ? null : MaskStation.Nearest(head, MaskStation.Kind.Station, 1.8f, true, true)
+                ?? (Time.time - _enteredAt < 1.5f ? MaskStation.Nearest(transform.position, MaskStation.Kind.Rack, 6f, false, true) : null);   // (el perchero, solo al ENTRAR: ya dentro, la estación —2026-11-04: buceando hacia la estación cogía la del perchero de fuera a través de la pared, prueba 70)
             if (near != null) Equip(near);
         }
         else if (!wet && _wetSinceEquip)
