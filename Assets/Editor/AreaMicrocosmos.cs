@@ -41,6 +41,9 @@ public static class AreaMicrocosmos
         var root = new GameObject($"Microcosmos_{display}");
         _inventory = null;
         string sceneLabel = spec != null ? spec.scene : root.name;
+        // (2026-11-04) TIEMPOS por fase: «[Tiempo] escena · fase: N s» (el probador ve dónde se va el tiempo de cada construcción).
+        var sw = System.Diagnostics.Stopwatch.StartNew(); var swAll = System.Diagnostics.Stopwatch.StartNew();
+        void Phase(string n) { Debug.Log($"[Tiempo] {sceneLabel} · {n}: {sw.Elapsed.TotalSeconds:0.0} s (total {swAll.Elapsed.TotalSeconds:0} s)"); sw.Restart(); }
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
         if (era.HasValue) { MicroEra me = root.AddComponent<MicroEra>(); me.year = era.Value.year; me.place = era.Value.place; me.region = MicroStyles.RegionOf(display).ToString(); }
@@ -107,6 +110,7 @@ public static class AreaMicrocosmos
         // insecto deben adecuarse al piso y no al revés»): desde aquí ninguna pieza del piso (su forma finalizada, dentro de sus muros)
         // se quita ni se mueve. Se cuentan, y MicroFloors.Validate comprueba que siguen todas.
         int floorPieces0 = giant != null ? giant.GetComponentsInChildren<Renderer>(true).Length : 0;
+        Phase("piso gigante e inventario");
 
         // 1b) ERA AVANZADA (regla 5 de docs/microcosmos-reglas-edificacion.md, MicroBuildRules.IsTownEra): el pueblo o la ciudad
         //     real de la historia ocupa TODO SU BARRIO (×100, 2026-11-02: el barrio es el piso × Legacy alrededor de la plaza de la
@@ -119,6 +123,7 @@ public static class AreaMicrocosmos
         // para recrear edificios, montañas, mares, acantilados, lagos»): cada pieza, en su sitio, reinterpretada por el catálogo (la mesa,
         // montaña; la silla, nevado; el lavabo, lago; la cajonera, edificio; las hornillas, volcanes; el foco, el sol…) en la era de la historia.
         var (elMapped, elUnmapped) = giant != null && _inventory != null ? MicroFloorDress.Dress(root.transform, giant.transform, _inventory, display, year0, display) : (0, 0);
+        Phase("forma de microcosmos (vestir el piso)");
 
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
         Bounds foot = new Bounds(rect.center, new Vector3(rect.size.x, 1f, rect.size.z));
@@ -186,6 +191,7 @@ public static class AreaMicrocosmos
         // 2b) La historia, DENTRO DEL PISO (regla 11): sus estructuras (cueva, río, sendero, guarida…) no pueden quedar fuera de
         //     los muros. Si se sale por un lado, se corre entera hacia dentro; si es más grande que el piso, pieza a pieza.
         string fit = FitStory(story, cast, Inner(rect, WallInset));
+        Phase("historia (y su pueblo)");
         if (fit.Length > 0) Debug.Log($"[Microcosmos] {sceneLabel}: la historia {fit}.");
 
         // 3) Solo se aparta el mueble que pisa la historia (una mesa, una silla), no el área.
@@ -258,8 +264,10 @@ public static class AreaMicrocosmos
             soilLayer.raised = MicroSoilBuilder.RaiseTown(story, floors, groundY);
             Physics.SyncTransforms();
         }
+        Phase("pueblo en huellas, mesetas, miradores y tierra");
         int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
                              floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode, display, story.position);
+        Phase("naturaleza (flora y fauna)");
         // (2026-11-04) LA FLORA ENCIMA, NUNCA DEBAJO (MicroGround; Berón: «la vegetación se está creando bajo el suelo … una de las
         // reglas debería ser que la vegetación se cree encima de cada superficie y nunca debajo»): cada planta y cada bicho, apoyados
         // en la superficie más alta de encima de su pie (un rayo desde arriba: la tierra, la alfombra, la losa del hospital); la que
@@ -270,6 +278,7 @@ public static class AreaMicrocosmos
         if (dropped > 0) Debug.Log($"[Mapa] {sceneLabel}: {dropped} plantas y bichos del mapa a mano caídos desde el aire sobre su superficie.");
         _handPlaced.Clear();
         var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces, soilAt);
+        Phase("asentar y caer desde el aire (Settle, Drop)");
         Debug.Log($"[Tierra] {sceneLabel}: {settledPl} plantas y bichos apoyados en la superficie de encima, {removedPl} plantas quitadas (dentro de un collider).");
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
@@ -301,11 +310,13 @@ public static class AreaMicrocosmos
         if (_inventory != null)
         {   // LAS DEPENDENCIAS (MicroFloorElements.Record): con qué piso del mesocosmos se montó; si el piso cambia, se avisa para revisarlo.
             // (la firma, la del piso del SANTUARIO tal cual: la copia gigante lleva además las partes que el área no cuelga de sí, Attached)
-            mfl.mesoInventory = MicroFloorElements.Keys(src != null ? MicroFloorElements.Inventory(src.transform) : _inventory); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
+            var mesoInv = src != null ? MicroFloorElements.Inventory(src.transform) : _inventory;   // (una sola vez)
+            mfl.mesoInventory = MicroFloorElements.Keys(mesoInv); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
             MicroFloorElements.Record(sceneLabel, areaGo, mfl.mesoInventory);
             if (src != null)
             {   // LA SINCRONÍA con el piso del santuario tal como está ahora: nada suyo sin su versión de microcosmos.
-                var miss = MicroFloorElements.Missing(src.transform, root.transform.Find(FloorForms.MicroName));
+                var have = new HashSet<string>(); foreach (var p in _inventory) have.Add(p.key);   // (cada pieza de la copia gigante tiene su MicroElement)
+                var miss = new List<string>(); foreach (var p in mesoInv) if (!have.Contains(p.key) && !miss.Contains(p.key)) miss.Add(p.key);
                 if (miss.Count > 0) Debug.LogWarning($"[Forma microcosmos] {sceneLabel}: {miss.Count} piezas de {areaGo} sin su versión de microcosmos: {string.Join(", ", miss.GetRange(0, Mathf.Min(10, miss.Count)))}.");
             }
             _inventory = null;
@@ -324,6 +335,7 @@ public static class AreaMicrocosmos
         // EL BLOQUEO DE HUMANOS (InsectOnly, docs/microcosmos-civilizaciones.md §3): ninguna escena de microcosmos se guarda con un
         // cuerpo humano (un personaje de historia vestido de humano se convierte en su insecto).
         InsectOnly.EnforceRoot(root.transform);
+        Phase("censo, dependencias y bloqueo de humanos");
 
         root.transform.position = o;
 
@@ -346,6 +358,7 @@ public static class AreaMicrocosmos
         // El volumen: el piso y sus muros (los muros no se andan: NavMeshModifier), nada de fuera.
         nav.center = Vector3.up * 15f * K; nav.size = new Vector3(rect.size.x + WallThick * 2f, 60f * K, rect.size.z + WallThick * 2f);
         nav.BuildNavMesh();
+        Phase("NavMesh");
         // (2026-11-03) TREPAR: los insectos-humanos suben por las patas y los costados de los muebles del piso (Berón: «pueden trepar
         // plataformas verticales como las paredes y patas de sillas, mesas, etc.»). Un NavMeshLink del suelo a cada cara de arriba (la IA
         // lo recorre trepando) y un Climbable en cada mueble alto (el jugador trepa con PlayerClimber).
@@ -372,6 +385,7 @@ public static class AreaMicrocosmos
             }
         }
         mfl.climbLinks = climbs;
+        Phase("enlaces para trepar");
         Debug.Log($"[Microcosmos] {display}: piso ×{AreaScale} con muros (se apartan {moved} muebles bajo la historia, hueco libre {free:0} m entre {_blocked.Count} muebles), {dressed} mirmidones e insectos de la historia y {animals} animales a escala de hormiga.");
     }
 

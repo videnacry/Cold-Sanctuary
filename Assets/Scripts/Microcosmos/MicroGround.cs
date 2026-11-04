@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -160,6 +161,84 @@ public static class MicroGround
     }
 
 
+    // ── EN LOTE (2026-11-04, rendimiento): un RaycastCommand y un OverlapSphereCommand por pieza, todos a la vez (antes, un
+    //    Physics.RaycastAll y un OverlapSphere por planta: 10–20 mil consultas una a una), y lo que no cuenta, en caché por collider. ──
+    const int MaxHits = 16;
+
+    // Lo que no cuenta (las plantas, los bichos, la gente, la tapa), sin mirar quién pregunta: en caché por collider.
+    static bool IgnoredCached(Collider c, Dictionary<Collider, bool> cache)
+    {
+        if (c == null) return true;
+        if (!cache.TryGetValue(c, out bool v)) cache[c] = v = Ignored(c);
+        return v;
+    }
+
+    /// <summary>Un rayo hacia abajo por pieza (desde <paramref name="from"/>(i), <paramref name="length"/>(i) m) en lote; por pieza, el
+    /// punto más alto que <paramref name="accept"/> admite (float.MinValue si ninguno). Si un rayo llena sus <see cref="MaxHits"/>
+    /// impactos, esa pieza se mira aparte con RaycastAll (no se pierde la cara de arriba).</summary>
+    static float[] BatchTops(Transform root, IList<Transform> items, System.Func<int, Vector3> from, System.Func<int, float> length, System.Func<int, Collider, bool> accept)
+    {
+        int n = items.Count; var tops = new float[n];
+        for (int i = 0; i < n; i++) tops[i] = float.MinValue;
+        if (n == 0) return tops;
+        var cmds = new NativeArray<RaycastCommand>(n, Allocator.TempJob);
+        var hits = new NativeArray<RaycastHit>(n * MaxHits, Allocator.TempJob);
+        try
+        {
+            var qp = new QueryParameters(~0, false, QueryTriggerInteraction.Ignore, false);
+            for (int i = 0; i < n; i++) cmds[i] = new RaycastCommand(items[i] != null ? from(i) : Vector3.zero, Vector3.down, qp, items[i] != null ? length(i) : 0f);
+            RaycastCommand.ScheduleBatch(cmds, hits, 32, MaxHits).Complete();
+            for (int i = 0; i < n; i++)
+            {
+                if (items[i] == null) continue;
+                int count = 0;
+                for (int k = 0; k < MaxHits; k++)
+                {
+                    RaycastHit h = hits[i * MaxHits + k];
+                    Collider c = h.collider;
+                    if (c == null) break;
+                    count++;
+                    if (h.normal.y < 0.3f || !h.transform.IsChildOf(root) || !accept(i, c)) continue;
+                    if (h.point.y > tops[i]) tops[i] = h.point.y;
+                }
+                if (count < MaxHits) continue;
+                tops[i] = float.MinValue;   // lleno: se mira aparte
+                foreach (RaycastHit h in Physics.RaycastAll(from(i), Vector3.down, length(i), ~0, QueryTriggerInteraction.Ignore))
+                    if (h.normal.y >= 0.3f && h.transform.IsChildOf(root) && accept(i, h.collider) && h.point.y > tops[i]) tops[i] = h.point.y;
+            }
+        }
+        finally { cmds.Dispose(); hits.Dispose(); }
+        return tops;
+    }
+
+    // ¿Cuál pieza queda DENTRO de un collider (una esfera de 0,12 m a 0,25 m sobre su pie), en lote?
+    static bool[] BatchInside(Transform root, IList<Transform> items, Dictionary<Collider, bool> cache)
+    {
+        int n = items.Count; var inside = new bool[n];
+        if (n == 0) return inside;
+        var cmds = new NativeArray<OverlapSphereCommand>(n, Allocator.TempJob);
+        var hits = new NativeArray<ColliderHit>(n * MaxHits, Allocator.TempJob);
+        try
+        {
+            var qp = new QueryParameters(~0, false, QueryTriggerInteraction.Ignore, false);
+            for (int i = 0; i < n; i++) cmds[i] = new OverlapSphereCommand(items[i] != null ? items[i].position + Vector3.up * 0.25f : Vector3.down * 1e6f, items[i] != null ? 0.12f : 0.001f, qp);
+            OverlapSphereCommand.ScheduleBatch(cmds, hits, 32, MaxHits).Complete();
+            for (int i = 0; i < n; i++)
+            {
+                if (items[i] == null) continue;
+                for (int k = 0; k < MaxHits; k++)
+                {
+                    Collider c = hits[i * MaxHits + k].collider;
+                    if (c == null) break;
+                    if (IgnoredCached(c, cache) || c.transform.IsChildOf(items[i]) || !c.transform.IsChildOf(root) || IsSoil(c)) continue;
+                    inside[i] = true; break;
+                }
+            }
+        }
+        finally { cmds.Dispose(); hits.Dispose(); }
+        return inside;
+    }
+
     /// <summary>
     /// (2026-11-04) CAER DESDE EL AIRE (Berón: «un truco que conozco es crear todos los objetos en el aire para que caigan sobre la
     /// superficie que tenga debajo»): cada pieza de <paramref name="items"/> se suelta desde <paramref name="fromY"/> (bajo la tapa de los
@@ -171,17 +250,15 @@ public static class MicroGround
     {
         if (root == null || items == null) return 0;
         Physics.SyncTransforms();
+        var cache = new Dictionary<Collider, bool>();
+        var list = new List<Transform>(items);
+        float[] tops = BatchTops(root, list, i => new Vector3(list[i].position.x, fromY, list[i].position.z), i => fromY - list[i].position.y + 50f,
+                                 (i, c) => !IgnoredCached(c, cache) && !c.transform.IsChildOf(list[i]));
         int n = 0;
-        foreach (Transform it in items)
+        for (int i = 0; i < list.Count; i++)
         {
-            if (it == null) continue;
-            Vector3 p = it.position;
-            float top = float.MinValue;
-            foreach (RaycastHit h in Physics.RaycastAll(new Vector3(p.x, fromY, p.z), Vector3.down, fromY - p.y + 50f, ~0, QueryTriggerInteraction.Ignore))
-            {
-                if (h.normal.y < 0.3f || Ignored(h.collider, it) || !h.transform.IsChildOf(root)) continue;
-                if (h.point.y > top) top = h.point.y;
-            }
+            Transform it = list[i]; if (it == null) continue;
+            Vector3 p = it.position; float top = tops[i];
             if (surfaces != null) foreach (Bounds b in surfaces) if (p.x >= b.min.x && p.x <= b.max.x && p.z >= b.min.z && p.z <= b.max.z && b.max.y < fromY && b.max.y > top) top = b.max.y;
             float s = soilAt != null ? soilAt(p.x, p.z) : float.NaN;
             if (!float.IsNaN(s) && s > top) top = s;
@@ -195,7 +272,7 @@ public static class MicroGround
     /// <summary>
     /// APOYA cada planta (y cada bicho de «Fauna_a_escala») en la superficie más alta de encima de su pie y QUITA las que quedan
     /// dentro de un collider. Lo usa el constructor del microcosmos después de sembrar (también vale en juego). Devuelve
-    /// (apoyadas, quitadas).
+    /// (apoyadas, quitadas). Las consultas van en lote (<see cref="BatchTops"/>, <see cref="BatchInside"/>).
     /// </summary>
     public static (int settled, int removed) Settle(Transform root, IList<Bounds> surfaces = null, System.Func<float, float, float> soilAt = null)
     {
@@ -205,28 +282,31 @@ public static class MicroGround
         var plants = Plants(root);
         Transform fauna = root.Find("Fauna_a_escala");
         if (fauna != null) foreach (Transform c in fauna) plants.Add(c);
-        var dead = new List<Transform>();
-        foreach (Transform pl in plants)
+        var cache = new Dictionary<Collider, bool>();
+        var bases = new Vector3[plants.Count];
+        for (int i = 0; i < plants.Count; i++) bases[i] = plants[i] != null ? plants[i].position : Vector3.zero;
+        // Como TopSurface: solo lo que TAPA el pie (la tierra, una capa apoyada a su altura o por debajo), no una balda por encima.
+        float[] tops = BatchTops(root, plants, i => bases[i] + Vector3.up * Probe, i => Probe + 2f,
+                                 (i, c) => !IgnoredCached(c, cache) && !c.transform.IsChildOf(plants[i]) && (IsSoil(c) || c.bounds.min.y <= bases[i].y + 0.5f));
+        for (int i = 0; i < plants.Count; i++)
         {
-            if (pl == null) continue;
-            Vector3 b = pl.position;
-            bool found = TopSurface(root, b, Probe, out float top, out _, pl, surfaces);
+            Transform pl = plants[i]; if (pl == null) continue;
+            Vector3 b = bases[i]; float top = tops[i]; bool found = top > float.MinValue;
+            if (surfaces != null)
+                foreach (Bounds sb in surfaces)
+                    if (b.x >= sb.min.x && b.x <= sb.max.x && b.z >= sb.min.z && b.z <= sb.max.z && sb.max.y <= b.y + Probe && sb.max.y >= b.y - 2f && sb.min.y <= b.y + 0.5f && sb.max.y > top) { top = sb.max.y; found = true; }
             // (2026-11-04) La tierra que SE VE (con su ruido y sus cúmulos): su collider es más liso y va por debajo (MicroSoilBuilder).
             float s = soilAt != null ? soilAt(b.x, b.z) : float.NaN;
             if (!float.IsNaN(s) && s >= b.y - 2f && s <= b.y + Probe) { top = found ? Mathf.Max(top, s) : s; found = true; }
-            if (found && Mathf.Abs(top - b.y) > 0.005f)
-            {
-                pl.position = new Vector3(b.x, top, b.z);
-                settled++;
-            }
+            if (found && Mathf.Abs(top - b.y) > 0.005f) { pl.position = new Vector3(b.x, top, b.z); settled++; }
         }
         Physics.SyncTransforms();
-        foreach (Transform pl in plants)
-            if (pl != null && (pl.parent == null || pl.parent.name != "Fauna_a_escala") && Inside(root, pl) != null) dead.Add(pl);
-        foreach (Transform d in dead)
+        var flora = new List<Transform>(); foreach (Transform pl in plants) if (pl != null && (pl.parent == null || pl.parent.name != "Fauna_a_escala")) flora.Add(pl);
+        bool[] inside = BatchInside(root, flora, cache);
+        for (int i = 0; i < flora.Count; i++)
         {
-            if (d == null) continue;
-            if (Application.isPlaying) Object.Destroy(d.gameObject); else Object.DestroyImmediate(d.gameObject);
+            if (!inside[i] || flora[i] == null) continue;
+            if (Application.isPlaying) Object.Destroy(flora[i].gameObject); else Object.DestroyImmediate(flora[i].gameObject);
             removed++;
         }
         return (settled, removed);

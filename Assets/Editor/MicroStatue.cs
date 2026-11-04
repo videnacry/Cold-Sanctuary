@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -43,14 +44,34 @@ internal static class MicroStatue
         foreach (Animator an in g.GetComponentsInChildren<Animator>(true)) Object.DestroyImmediate(an);
         Material m = AreaMicrocosmos.Mat("Estatua_" + ColorUtility.ToHtmlStringRGB(stone), stone);
         Material dark = AreaMicrocosmos.Mat("Estatua_sombra_" + ColorUtility.ToHtmlStringRGB(stone), Color.Lerp(stone, Color.black, 0.18f));
+        // (2026-11-04, rendimiento) TODA la figura en UNA malla (piedra y sombra en dos submallas): antes eran decenas de renderers por
+        // estatua (y cientos en un coloso).
+        var parts = new[] { new List<CombineInstance>(), new List<CombineInstance>() };
+        Matrix4x4 w2l = g.transform.worldToLocalMatrix;
         int k = 0;
-        foreach (Renderer r in g.GetComponentsInChildren<Renderer>(true))
+        foreach (MeshFilter mf in g.GetComponentsInChildren<MeshFilter>(true))
         {
-            var mats = r.sharedMaterials;
-            for (int i = 0; i < mats.Length; i++) mats[i] = (k++ % 5 == 0) ? dark : m;   // un poco de sombra tallada
-            r.sharedMaterials = mats;
-            r.enabled = true;
+            if (mf.sharedMesh == null || mf.gameObject == g || mf.GetComponent<Renderer>() == null) continue;
+            for (int s = 0; s < mf.sharedMesh.subMeshCount; s++)
+                parts[(k++ % 5 == 0) ? 1 : 0].Add(new CombineInstance { mesh = mf.sharedMesh, subMeshIndex = s, transform = w2l * mf.transform.localToWorldMatrix });
         }
+        if (k == 0) return;
+        var subs = new List<CombineInstance>(); var subMats = new List<Material>();
+        for (int i = 0; i < 2; i++)
+        {
+            if (parts[i].Count == 0) continue;
+            var sm = new Mesh { indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+            sm.CombineMeshes(parts[i].ToArray(), true, true);
+            subs.Add(new CombineInstance { mesh = sm, transform = Matrix4x4.identity }); subMats.Add(i == 0 ? m : dark);
+        }
+        var mesh = new Mesh { name = "Estatua_insecto_humano", indexFormat = UnityEngine.Rendering.IndexFormat.UInt32 };
+        mesh.CombineMeshes(subs.ToArray(), false, false);
+        mesh.RecalculateBounds();
+        for (int i = g.transform.childCount - 1; i >= 0; i--) Object.DestroyImmediate(g.transform.GetChild(i).gameObject);
+        if (!g.TryGetComponent(out MeshFilter own)) own = g.AddComponent<MeshFilter>();
+        own.sharedMesh = mesh;
+        if (!g.TryGetComponent(out MeshRenderer mr)) mr = g.AddComponent<MeshRenderer>();
+        mr.sharedMaterials = subMats.ToArray();
     }
 
     // Si no se puede vestir el insecto (sin ficha de especie): un insecto-humano de bloques (abdomen detrás, torso erguido, antenas).
