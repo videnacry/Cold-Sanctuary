@@ -186,7 +186,8 @@ public static partial class SampleSceneBuilder
         KitchenProps.C(eq, new Vector3(3.5f, 1.5f, 1.2f), new Vector3(0.1f, 3f, 0.1f), KitchenProps.Steel, 0f, "Jeringa_pertiga");
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(t, new Vector3(s * (B * 0.5f - 2f), H * 0.5f + 0.8f, hz - 9f), new Vector3(2.5f, 1.6f, 8f), SubOrange, 0f, "Ponton_eslinga");
         // PASARELA al hielo, por el costado de la orilla.
-        Transform gw = new GameObject("Pasarela").transform; gw.SetParent(t, false); gw.localPosition = new Vector3(shoreSide * (B * 0.5f), H * 0.5f, hz - 26f);
+        Transform gw = new GameObject("Pasarela_Leviatan").transform;   // (no «Pasarela» a secas: SanctuaryLifeTest la tomaría por un puente entre plataformas)
+        gw.SetParent(t, false); gw.localPosition = new Vector3(shoreSide * (B * 0.5f), H * 0.5f, hz - 26f);
         float reach = 7f;
         KitchenProps.C(gw, new Vector3(shoreSide * reach * 0.5f, 0.05f, 0f), new Vector3(reach, 0.1f, 2f), KitchenProps.Steel, 0f, "Tablero");
         Transform end = new GameObject("Fin").transform; end.SetParent(gw, false); end.localPosition = new Vector3(shoreSide * (reach + 0.5f), 0f, 0f);

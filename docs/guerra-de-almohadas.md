@@ -131,3 +131,15 @@ Ahora el ring registra su caja (`PillowRing.Box`: plataforma, cama y cabecero, s
 - desde encima (su propia pista): sube en vertical hasta por encima;
 - entre esos puntos, el arco de siempre;
 - si aún lo cruzara, sube por fuera, cruza en recto por encima y baja.
+
+## Ronda 5 del probador (2026-11-04)
+
+- **8 de 10 llegaban al ring y como mucho 8 a la vez sobre el colchón** (faltaban Adaguchi y Panterilia). Tres cambios:
+  - las celdas se llenan **desde el fondo** (el cabecero) hacia la entrada del pie, así los primeros no tapan el paso a los de detrás;
+  - el colchón es **blando**: sin collider, se anda sobre la plataforma y uno se hunde 0,2 m en él, porque el escalón de 0,2 m frenaba
+    a algunos al entrar;
+  - quien ya pisa el colchón a menos de celda y media de la suya cuenta como llegado y pelea desde ahí.
+- **3 de 57 vuelos cruzaban el ring** (Plataforma central → Ring de almohadas): esa pasada era anterior a `e4f3221`.
+  - `FlyingCarpet.Legs` cubre ese caso: sale en recto por debajo del ring hasta fuera de su huella, luego hace el arco o, si aún lo
+    cruzara, sube por fuera y cruza por encima hasta la pista del ring, a la que baja en vertical.
+  - `PillowFightTest` muestrea esos mismos tramos.

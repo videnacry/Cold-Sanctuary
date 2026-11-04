@@ -151,19 +151,50 @@ public class HospitalSubmarine : MonoBehaviour
         return false;
     }
 
+    /// <summary>EL EQUIPO, POR SU PAPEL Y NO POR SU NOMBRE (2026-11-04: con el reparto nuevo de papeles, docs/personajes-mesocosmos.md,
+    /// Andrea pasó a maestro de yoga y la lanzadera salía vacía). Por orden:
+    /// 1. quien tiene HOY una misión del hospital con papel médico o de enfermería (para un animal, primero las veterinarias:
+    ///    hos_veterinaria, enf_animales);
+    /// 2. quien está ahora en el hospital (<see cref="WorkdayDirector.InArea"/>);
+    /// 3. el personal sanitario fijo (Linduarda, la doctora de la iniciación; quien lleve una conducta del hospital);
+    /// 4. si aún falta, el personal más cercano al hospital (un traslado urgente no sale sin nadie).
+    /// Siempre los que estén libres (no en otro vehículo, no dando de comer a un ingresado) y, en cada grupo, los más cercanos.</summary>
     List<GameObject> PickCrew(bool animal)
     {
         var l = new List<GameObject>();
-        var pool = new List<GameObject>();
-        if (WorkdayDirector.Instance != null) pool.AddRange(WorkdayDirector.Instance.InArea(AreaWork.Hospital));
-        foreach (string n in new[] { "Lizmibet", "Linduarda" }) { GameObject g = GameObject.Find(n); if (g != null && !pool.Contains(g)) pool.Add(g); }
-        foreach (GameObject g in pool)
+        Vector3 hosp = FindFloor(HospitalService.Urgencias, out ArbolCampos hac, out TreeLevel hl, out _) ? hac.World(hl.outside) : transform.position;
+        bool Free(GameObject g) => g != null && !g.CompareTag("Player") && g.GetComponent<Anima>() != null && !Engaged(g) && !(g.GetComponent<VetCare>() is VetCare vc && vc.Busy) && !l.Contains(g);
+        void Take(IEnumerable<GameObject> tier)
         {
-            if (g == null || g.CompareTag("Player") || g.GetComponent<Anima>() == null || Engaged(g)) continue;
-            if (g.GetComponent<VetCare>() is VetCare vc && vc.Busy) continue;
-            l.Add(g);
-            if (l.Count == 2) break;
+            var t = new List<GameObject>();
+            foreach (GameObject g in tier) if (Free(g) && !t.Contains(g)) t.Add(g);
+            t.Sort((a, b) => Vector3.Distance(a.transform.position, hosp).CompareTo(Vector3.Distance(b.transform.position, hosp)));
+            foreach (GameObject g in t) { if (l.Count >= 2) return; l.Add(g); }
         }
+        WorkdayDirector wd = WorkdayDirector.Instance;
+        if (wd != null && wd.today != null)
+        {
+            var vets = new List<GameObject>(); var med = new List<GameObject>();
+            foreach (WorkRoster.Assignment a in wd.today.work)
+            {
+                if (a?.mission == null || a.worker == null || a.mission.area != AreaWork.Hospital) continue;
+                GameObject g = WorkdayDirector.Body(a.worker.name);
+                AreaFunctions.AreaFunction fn = AreaFunctions.Get(a.mission.id);
+                bool vet = a.mission.id == "hos_veterinaria" || a.mission.id == "enf_animales";
+                bool medical = vet || (fn != null && System.Array.Exists(fn.roles, r => r == "medico" || r == "enfermera")) || a.mission.id.StartsWith("hos_");
+                if (vet) vets.Add(g); else if (medical) med.Add(g);
+            }
+            if (animal) { Take(vets); Take(med); } else { Take(med); Take(vets); }
+        }
+        if (wd != null) Take(wd.InArea(AreaWork.Hospital));
+        var fixedStaff = new List<GameObject>();
+        foreach (Linduarda lin in FindObjectsByType<Linduarda>(FindObjectsSortMode.None)) fixedStaff.Add(lin.gameObject);
+        foreach (VetCare vc in FindObjectsByType<VetCare>(FindObjectsSortMode.None)) fixedStaff.Add(vc.gameObject);
+        Take(fixedStaff);
+        var anyone = new List<GameObject>();
+        foreach (string n in WorkdayDirector.Staff) { GameObject g = WorkdayDirector.Body(n); if (g != null) anyone.Add(g); }
+        Take(anyone);
+        if (l.Count > 0) Debug.Log($"[Submarino] equipo elegido por su papel: {string.Join(", ", l.ConvertAll(g => g.name))}");
         return l;
     }
 

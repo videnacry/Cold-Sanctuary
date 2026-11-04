@@ -253,8 +253,13 @@ public class YogaClass : MonoBehaviour
         if (Now == Phase.Gathering)
         {
             bool all = _ps.Count > 0 && onMats == _ps.Count;
-            if (TeacherOnTarima && (all || (onMats > 0 && Time.time > GatherEnd))) { Now = Phase.Teaching; TeachingSince = Time.time; Next(); }
-            else if (Time.time - _since > (GatherEnd - _since) * 2f) End();   // nadie llega: no se queda esperando para siempre
+            // (2026-11-04, grupo 64: Panterilia aún iba al kund cuando la clase tradicional empezó por tiempo —GatherEnd se fija al unirse
+            // y no contaba lo que tarda en llegar al agua—) Mientras alguien de la tradicional siga camino del kund o dentro, y dentro de su
+            // propio plazo (bathDeadline, acotado: al pasarlo va sin bañarse), la clase espera.
+            bool bathPending = false;
+            foreach (Practitioner p in _ps) if (p.immerse && !p.bathed && !p.onMat) { bathPending = true; break; }
+            if (TeacherOnTarima && (all || (onMats > 0 && Time.time > GatherEnd && !bathPending))) { Now = Phase.Teaching; TeachingSince = Time.time; Next(); }
+            else if (!bathPending && Time.time - _since > (GatherEnd - _since) * 2f) End();   // nadie llega: no se queda esperando para siempre
             return;
         }
 

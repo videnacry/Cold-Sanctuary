@@ -159,6 +159,7 @@ public class EatSpell : QueuedSpell
 public class SleepSpell : QueuedSpell
 {
     bool _started;
+    Bedroom _room; int _spot = -1;   // dónde se acostó (para bajar por el tobogán si durmió arriba)
     public override string Label => "dormir";
 
     [Tooltip("Hora a la que se despierta tras el salto temporal (amanecer).")]
@@ -178,6 +179,7 @@ public class SleepSpell : QueuedSpell
                 // Sobre el colchón (su cara de arriba está a +0,50 de la raíz de la cama) y con la cabeza en la almohada: la
                 // pose Lie pone la cabeza hacia −z del cuerpo y la almohada está en +z de la cama, así que se gira 180°.
                 self.transform.position = room.LieSpot(self) + Vector3.up * 0.5f;   // en SU plaza de la cama (de 4 desde el 2026-11-04)
+                _room = room; _spot = room.SpotIndex(self);
                 self.transform.rotation = room.LieRotation(self) * Quaternion.Euler(0f, 180f, 0f);
                 if (cc != null) cc.enabled = true;
                 DailyPoses.Lie().ApplyFinal(self);
@@ -202,6 +204,9 @@ public class SleepSpell : QueuedSpell
             DailyPoses.Stand().ApplyFinal(self);
             self.GetComponentInChildren<CubeFace>()?.Show(CubeFace.Expression.Neutral, 0.1f);
             Debug.Log($"[Cuerpo] «{self.name}» se despierta{(self.aware ? " (amenaza)" : " descansado")}.");
+            // (2026-11-04, Berón: «las literas tienen resbaladera») Si durmió en el piso de ARRIBA de la cama-litera, baja por el TOBOGÁN.
+            if (_room != null && _room.Upper(_spot) && _room.slideTop != null && _room.slideBottom != null && self.TryGetComponent(out ActionQueue sq))
+                sq.EnqueueOwn(new SlideSpell { room = _room });
             return true;
         }
         return false;
