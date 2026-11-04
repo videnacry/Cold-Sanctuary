@@ -11,7 +11,7 @@ public static class CubeTree
 {
     static Material _bark, _branch, _leaf, _platform, _nest;
 
-    static Material Mat(ref Material cache, Color c)
+    public static Material Mat(ref Material cache, Color c)
     {
         if (cache != null) return cache;
         Shader sh = Shader.Find("Universal Render Pipeline/Lit");
@@ -137,7 +137,7 @@ public static class CubeTree
     // en filas alternas desplazadas medio hueco), unas OPERCULADAS (tapadas de cera clara, con miel) y otras abiertas
     // (oscuras, con cría o néctar). Arriba, la cera que las pega a la rama; abajo, la piquera por donde entran.
     static Material _wax, _honey, _cellDark, _capped, _propolis;
-    static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
+    public static void Honeycomb(Transform parent, Vector3 localTop, Material nestMat, int seed)
     {
         var rnd = new System.Random(seed);
         Material wax = Mat(ref _wax, new Color(0.93f, 0.8f, 0.42f));
@@ -190,7 +190,7 @@ public static class CubeTree
         root.AddComponent<Hive>();   // la colmena: estados de las celdillas (cría, néctar, miel, polen) que trabajan las abejas
     }
     // ¿Algún punto de la rama (cadena de segmentos y su plataforma de la punta, con margen) cae en zona bloqueada?
-    static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)
+    public static bool BranchHits(Transform root, Vector3 p, float yaw, float pitch, float segLen, int segs, System.Func<Vector3, bool> blocked)
     {
         for (int s = 0; s < segs; s++)
         {
@@ -201,7 +201,7 @@ public static class CubeTree
         return blocked(root.TransformPoint(p + Vector3.up * 0.8f)) || blocked(root.TransformPoint(p + Vector3.up * 1.6f));   // posadero y escarcha
     }
 
-    static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
+    public static GameObject Block(Transform parent, string name, Vector3 localPos, Vector3 size, Quaternion rot, Material m, bool solid)
     {
         GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
         g.name = name;
