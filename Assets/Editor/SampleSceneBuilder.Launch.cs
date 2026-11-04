@@ -80,7 +80,7 @@ public static partial class SampleSceneBuilder
         }
         KitchenProps.C(f, new Vector3(5f, 1.2f, 6f), new Vector3(1.2f, 2.4f, 1.2f), new Color(0.9f, 0.9f, 0.92f), 0f, "Carga_util_cofia");
         for (int s = -1; s <= 1; s += 2) KitchenProps.C(f, new Vector3(s * (S * 0.5f - 1.5f), 4f, 4f), new Vector3(0.4f, 8f, 0.4f), steel, 0f, "Columna_grua");
-        KitchenProps.C(f, new Vector3(0f, 8f, 4f), new Vector3(S - 3f, 0.5f, 0.6f), yel, 0f, "Puente_grua");
+        KitchenProps.C(f, new Vector3(0f, 8f, 4f), new Vector3(S - 3f, 0.5f, 0.6f), yel, 0f, "Grua_puente");   // (no «Puente_…»: SanctuaryLifeTest busca puentes entre plataformas por ese prefijo)
         Label(KitchenProps.C(f, new Vector3(0f, 9f, 4f), Vector3.one * 0.1f, yel, 0f, "Cartel_fabrica"), $"{LaunchSite.FactoryFloor}: etapas, carga útil e integración (ver el microcosmos de Musk)", 1f);
         SubmarineBay(f, null, new Vector3(0f, 0.02f, -6f));
     }
