@@ -84,6 +84,7 @@ en el doc de su tema; aquí no se repite.
 | T10 | **Solo gira el Árbol de los Campos** (una vuelta cada 6 h de juego, contra el sol); las torres no giran. | Los campos reparten sol y lluvia; un hospital o una cocina no pueden girar. | 53 (giro y NavMesh) | [edificio-arbol.md](edificio-arbol.md) §Giro, §Migración |
 | T11 | **Viajes sin teletransportes**: se anda, se vuela o se nada; si alguien se atasca, se queda donde está y avisa. | Que todo movimiento sea visible y creíble. | 53 (viajes a nado sin saltos ni atascos) | [edificio-arbol.md](edificio-arbol.md) §Moverse |
 | T12 | **Un área con anillo lo conserva en U**, abierto al tronco, con su balcón y su puerta; se llega nadando. | Mantener las camas y el comedor de los anillos con el nuevo modelo. | **solo en docs** (lo hace `TowerFloor`; sin prueba propia) | [edificio-arbol.md](edificio-arbol.md) §Migración |
+| T13 | **Regla de altura de la lanzadera de cohetes**: plataforma ≥ máx(lo más alto del santuario —techos de los edificios-árbol con la columna de su puerta y todo `ElevatedElement`—, techo de vuelo de las aves —mín. 152 m—) + 30 m; y a ≥ 300 m de todo edificio e isla. Se valida al construirla y al final del Blockout (si no cumple, error y la corona **sube**); en juego, al aparecer un elemento elevado. Lo nuevo y alto lleva `ElevatedElement`. | Que una explosión o el chorro no afecten a las aves ni a los pisos más altos, aunque los árboles crezcan. | `LaunchSiteTest` (grupo 90) | [lanzadera-de-cohetes.md](lanzadera-de-cohetes.md) |
 
 ## 4. Alfombras voladoras
 

@@ -41,4 +41,5 @@ public enum SanctuaryAreaType
     Chemistry,            // Química — investigación: síntesis abajo, análisis arriba (docs/laboratorios-investigacion.md)
     Biology,              // Biología — investigación BSL-2: cultivo abajo, molecular arriba
     NuclearPower,         // Central nuclear — producción: microrreactor de 5 MWe y calefacción de distrito
+    LaunchControl,        // Control de misión de la lanzadera de cohetes (docs/lanzadera-de-cohetes.md)
 }
