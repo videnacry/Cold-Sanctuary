@@ -49,7 +49,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
                 bool rOk = rack != null && !WaterZone.Underwater(rack.SwimPoint + Vector3.up) && rack.Masks > 0;
                 bool sOk = st != null && st.Underwater && st.Masks > 0;
                 if (rOk) withRack++; if (sOk) withStation++;
-                if ((!rOk || !sOk) && miss.Length < 260) miss += $"{tr.building}/{d.name}: perchero {(rack == null ? "no" : rOk ? "sí" : "mojado o vacío")}, estación {(st == null ? "no" : sOk ? "sí" : "fuera del agua o vacía")}; ";
+                if ((!rOk || !sOk) && miss.Length < 260) miss += $"{tr.building}/{d.name}: perchero {(rack == null ? "no" : rOk ? "sí" : $"{(WaterZone.Underwater(rack.SwimPoint + Vector3.up) ? "MOJADO (en " + WaterZone.At(rack.SwimPoint + Vector3.up)?.name + ")" : "seco")}, {rack.Masks} máscaras")}, estación {(st == null ? "no" : sOk ? "sí" : "fuera del agua o vacía")}; ";
             }
         TestProbe.Check("cada puerta de cada edificio-árbol tiene su perchero de máscaras fuera (en seco, con máscaras)", doors > 0 && withRack == doors, $"{withRack}/{doors} puertas en {ArbolCampos.All.Count} árboles; {miss}");
         TestProbe.Check("y su estación de máscaras dentro, en el agua junto a la puerta (una en cada nivel)", doors > 0 && withStation == doors, $"{withStation}/{doors}");
@@ -150,14 +150,16 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
             MaskStation rack = t.GetComponentsInChildren<MaskStation>().Where(m => m.kind == MaskStation.Kind.Rack).OrderBy(m => Vector3.Distance(m.SwimPoint, t.World(g0.outside))).FirstOrDefault();
             void Put(Vector3 at, Vector3 face) { scc.enabled = false; sw.transform.SetPositionAndRotation(at, Quaternion.LookRotation(face)); scc.enabled = true; Physics.SyncTransforms(); }
             Vector3 inward = -t.transform.TransformDirection(TreeSpec.Dir(g0.doorAngle));
+            // Pasa junto al perchero sin entrar: NO la coge (2026-11-04: solo al meterse en el agua, sin rodeos).
             Put(rack != null ? rack.SwimPoint + Vector3.up * 1f : t.World(g0.outside) + Vector3.up, inward);
             yield return Wait(0.6f);
-            bool took = bm.Worn;
-            TestProbe.Check("el jugador, junto al perchero de la entrada, coge la máscara y se la pone", took, rack != null ? $"perchero {rack.name}" : "sin perchero");
+            bool dryTook = bm.Worn;
             // Entra: andando hacia la puerta desde fuera.
             Put(t.World(g0.outside) + Vector3.up * 1.0f, inward);
             spc.scriptedInput = new Vector3(0f, 0f, 1f);
-            { float t0 = Time.time, r0 = Time.realtimeSinceStartup; while (!spc.IsSwimming && Time.time - t0 < 6f && Time.realtimeSinceStartup - r0 < 20f) yield return null; }
+            { float t0 = Time.time, r0 = Time.realtimeSinceStartup; while ((!spc.IsSwimming || !bm.Worn) && Time.time - t0 < 6f && Time.realtimeSinceStartup - r0 < 20f) yield return null; }
+            TestProbe.Check("el jugador coge la máscara del perchero de la entrada AL METERSE en el agua (no al pasar junto a él)", !dryTook && bm.Worn && bm.TakenFrom != null && bm.TakenFrom.kind == MaskStation.Kind.Rack,
+                $"al pasar en seco {dryTook}; nadando {spc.IsSwimming}, de {bm.TakenFrom?.name ?? "ninguno"}");
             // Bucea 12 s (aliento de 4 s).
             SwimBody psb = SwimBody.Of(sw.transform); psb.breathHoldSeconds = 4f;
             Put(t.World(new Vector3(0f, 12f, 0f)), inward);
@@ -244,6 +246,7 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
             Vector3 d = target.SwimPoint - sb.HeadPosition;
             Vector3 flat = new Vector3(d.x, 0f, d.z);
             if (flat.sqrMagnitude > 0.04f) k.transform.rotation = Quaternion.LookRotation(flat.normalized);
+            if (!pc.IsSwimming && t.InRootWater(k.transform.position)) pc.SetSwimming(true);   // (dentro del tronco, nadando: lo movía la prueba)
             pc.scriptedInput = new Vector3(0f, Mathf.Clamp(d.y * 0.8f, -1f, 1f), flat.magnitude > 0.6f ? Mathf.Clamp01(flat.magnitude / 2f) : 0f);
             yield return null;
             minB = Mathf.Min(minB, sb.Breath01);
@@ -251,12 +254,12 @@ public class TreeMaskTest : MonoBehaviour, ITestUnit
         float took = Time.time - t0;
         snap?.Invoke(k, "se_pone_la_mascara");
         TestProbe.Check($"KUSHAL bajo el agua sin máscara ({(startedUnder ? "la escena empieza así" : "puesto a 34 m en el tronco")}) nada a la estación más cercana y se la pone",
-            bm.Worn && bm.TakenFrom == target, $"estación a {dist0:0.0} m, puesta en {took:0} s, aliento {breath0:0.00} → mínimo {minB:0.00}");
+            bm.Worn && bm.TakenFrom != null && bm.TakenFrom.kind == MaskStation.Kind.Station, $"estación a {dist0:0.0} m, puesta en {took:0} s, aliento {breath0:0.00} → mínimo {minB:0.00}");
         // Con la máscara: 20 s más bajo el agua, el aliento no baja.
         sb.breathHoldSeconds = 4f;
         pc.scriptedInput = new Vector3(0f, -0.3f, 0f);
         float minAfter = 1f; bool under = false;
-        { float t1 = Time.time, r1 = Time.realtimeSinceStartup; while (Time.time - t1 < 20f && Time.realtimeSinceStartup - r1 < 40f) { yield return null; if (!sb.HeadAboveWater) under = true; if (Time.time - t1 > 2f) minAfter = Mathf.Min(minAfter, sb.Breath01); } }
+        { float t1 = Time.time, r1 = Time.realtimeSinceStartup; while (Time.time - t1 < 20f && Time.realtimeSinceStartup - r1 < 40f) { if (!pc.IsSwimming && t.InRootWater(k.transform.position)) pc.SetSwimming(true); yield return null; if (WaterZone.Underwater(sb.HeadPosition)) under = true; if (Time.time - t1 > 2f) minAfter = Mathf.Min(minAfter, sb.Breath01); if (!bm.Worn) break; } }
         snap?.Invoke(k, "buceando_con_mascara");
         pc.scriptedInput = null;
         TestProbe.Check("con la máscara, Kushal tiene oxígeno ilimitado: 20 s bajo el agua con 4 s de aliento y no baja", bm.Worn && under && minAfter > 0.95f, $"bajo el agua {under}, aliento mínimo {minAfter:0.00}");
