@@ -135,7 +135,9 @@ public static class ResidentialBuilder
         Plank(t, new Vector3(terraceSide * (W * 0.5f + 3.5f), 0f, 0f), new Vector3(7f, 0.3f, D), "Terraza_frutal");
         FruitCare.Ficha fruit = FruitCare.All[FruitCare.All.Length - 1 - ownerIdx % Mathf.Max(1, FruitCare.All.Length / 2)];   // las de porte pequeño, una distinta en cada casa
         Transform pot = SampleSceneBuilder.PottedFruit(t, fruit, 900 + ownerIdx, Name, t.position.y + 0.15f);
-        pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 3.5f), 0.15f, 0f));
+        // 5 m fuera de la habitación (1,5 m más allá del centro de la terraza): con la copa del frutal, a 2 m de la alfombra-esterilla
+        // (en el centro quedaba a 0,83 m; FruitOrchardTest, 2026-11-03).
+        pot.position = t.TransformPoint(new Vector3(terraceSide * (W * 0.5f + 5f), 0.15f, 0f));
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.bed = bed;
