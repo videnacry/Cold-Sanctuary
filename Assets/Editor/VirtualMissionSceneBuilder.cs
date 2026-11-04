@@ -124,6 +124,8 @@ public static class VirtualMissionSceneBuilder
             case "Química": return "Chemistry_Area";
             case "Biología": return "Biology_Area";
             case "Central Nuclear": return "NuclearPower_Area";
+            case "Informática": return SampleSceneBuilder.InformaticsArea;   // (2026-11-04) los pisos nuevos
+            case "Aula": return SampleSceneBuilder.ClassroomArea;
             default: return null;
         }
     }

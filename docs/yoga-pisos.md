@@ -171,3 +171,13 @@ prueba lo pide a 0.
 - La clase de Ashtanga Primaria es larga: en el bloque de entrenamiento puede no acabar (al cambiar de bloque, el maestro la deja).
 - El microcosmos de la Sala de Yoga (el río de Sakshi) es solo el piso de Hatha: su planta de Ashtanga ya no se copia
   (`AreaMicrocosmos` quita las plantas propias del área; vale también para el hospital).
+
+## Ronda 5 del probador (2026-11-04)
+
+- **Salas**: con la regla J16 hay 2 pisos de Hatha y 2 de Ashtanga, así que 8 salas. `YogaFloorsTest` (64) y `SanctuaryLifeTest`
+  (28) ya no piden 4: piden 2 × (pisos de Hatha + pisos de Ashtanga), con los pisos de `TrainingCentres.FloorsFor`.
+- **Panterilia no se sumergía antes de la clase tradicional** (la clase empezó a los 188 s y ella aún no había salido del kund).
+  - Era el **plazo**, no el camino: la clase empieza por tiempo al pasar `GatherEnd`, que se fija al unirse cada uno y no cuenta lo
+    que tarda en llegar al agua.
+  - Ahora, mientras alguien de la tradicional siga camino del kund o dentro, y dentro de su propio plazo (`bathDeadline`, acotado: al
+    pasarlo va sin bañarse), la clase espera.

@@ -30,6 +30,11 @@ public class Bedroom : MonoBehaviour
     public Transform[] spots;
     [Tooltip("Dónde se juntan los de una pijamada antes de dormir (puntos de la casa, delante de la cama).")]
     public Transform[] gather;
+    [Tooltip("(2026-11-04, «las literas tienen resbaladera») Lo alto y el pie del TOBOGÁN de la cama-litera: por él se baja del piso de arriba (se sube trepando por el poste).")]
+    public Transform slideTop, slideBottom;
+
+    /// <summary>¿Es <paramref name="spot"/> una plaza del piso de arriba de la cama-litera?</summary>
+    public bool Upper(int spot) => spot >= sleeps && spots != null && spot < spots.Length;
 
     /// <summary>Cuántos duermen en la casa (los dos pisos de la cama-litera: 8).</summary>
     public int Capacity => spots != null && spots.Length > 0 ? spots.Length : sleeps;

@@ -6,11 +6,12 @@ using UnityEngine;
 /// <summary>
 /// PRUEBA DE LAS PIJAMADAS (grupo 92; docs/pijamadas.md; Berón 2026-11-04). En SampleScene:
 ///  1. LAS CASAS: cada casa del árbol duerme a 8 (una sola cama-litera de dos pisos de 4); sin escalera (se trepa por su poste) y
-///     a ≥ 2 m de la alfombra-esterilla.
+///     a ≥ 2 m de la alfombra-esterilla; tiene su tobogán para bajar del piso de arriba.
 ///  2. EL HORARIO: la pijamada del viernes a las 21 h va con su anfitrión (y su pareja) y no pasa de las plazas de la casa; el
 ///     anfitrión cambia de una semana a la siguiente.
 ///  3. EN VIVO: en esa franja los invitados van a la casa del anfitrión (andando y en alfombra, sin saltos), se apuntan a dormir allí,
-///     y esa noche se acuestan en su plaza (abajo o arriba); a la mañana siguiente cada uno vuelve a tener su casa.
+///     y esa noche se acuestan en su plaza (abajo o arriba); al despertar, los de arriba bajan por el tobogán; a la mañana siguiente
+///     cada uno vuelve a tener su casa.
 /// Todas las esperas, acotadas.
 /// </summary>
 public class SleepoverTest : MonoBehaviour, ITestUnit
@@ -61,6 +62,8 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         TestProbe.Check("al piso de arriba se sube trepando por su poste (Climbable)", noClimb == 0, $"{noClimb} sin poste");
         TestProbe.Check("sin escaleras en las casas", stairs == 0, $"{stairs}");
         TestProbe.Check("la cama-litera queda a ≥ 2 m de la alfombra-esterilla", tight == 0, why);
+        int noSlide = rooms.Count(b => b.slideTop == null || b.slideBottom == null || b.spots == null || b.spots.Length <= b.sleeps || b.slideTop.position.y - b.slideBottom.position.y < 1.2f || b.slideTop.position.y < b.spots[b.sleeps].position.y);
+        TestProbe.Check("cada cama-litera tiene su tobogán: de lo alto del piso de arriba al suelo (para bajar)", noSlide == 0, $"{noSlide} sin tobogán");
     }
 
     static Bounds Bounds(Transform t)
@@ -147,6 +150,20 @@ public class SleepoverTest : MonoBehaviour, ITestUnit
         TestProbe.Check("esa noche duermen en su plaza de la casa del anfitrión (abajo o arriba; ≥ 80 %)", inBed >= 0.8f * names.Count, $"{inBed}/{names.Count}");
         int bunk = guests.Count(n => { Anima a = Body(n); return a != null && host.SpotIndex(a) >= host.sleeps; });
         Log($"anfitrión {host.owner} ({host.name}): {names.Count} en la pijamada, {bunk} arriba, {inBed} dormidos en su plaza");
+
+        // AL DESPERTAR: los de arriba bajan por el TOBOGÁN (Berón: «las literas tienen resbaladera»), y quedan de pie a su pie (acotado).
+        var upper = guests.Where(n => { Anima a = Body(n); return a != null && a.asleep && host.Upper(host.SpotIndex(a)); }).ToList();
+        SlideSpell.Slides = 0;
+        foreach (string n in names) { Anima a = Body(n); if (a != null) a.sleepiness = 0.05f; }
+        float slideEnd = Time.realtimeSinceStartup + 60f;
+        int down = 0;
+        while (Time.realtimeSinceStartup < slideEnd)
+        {
+            down = upper.Count(n => { Anima a = Body(n); return a != null && !a.asleep && host.slideBottom != null && (a.transform.position - host.slideBottom.position).magnitude < 1.2f; });
+            if (down >= upper.Count && SlideSpell.Slides >= upper.Count) break;
+            yield return new WaitForSecondsRealtime(0.5f);
+        }
+        TestProbe.Check("los que durmieron arriba bajan por el tobogán y quedan a su pie", upper.Count == 0 || (SlideSpell.Slides >= upper.Count && down >= upper.Count), $"{SlideSpell.Slides} bajadas, {down}/{upper.Count} al pie del tobogán");
 
         // A LA MAÑANA SIGUIENTE: cada uno vuelve a tener su casa.
         tc.SetClock(day + 1, Sleepover.WakeHour + 1f);

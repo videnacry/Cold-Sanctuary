@@ -44,7 +44,7 @@ public class WhaleHospitalSubmarine : MonoBehaviour
 
     Transform WellFloor => transform.Find("Pozo/Suelo_elevable");
     Transform Gate => transform.Find("Compuerta_popa");
-    public Transform Gangway => transform.Find("Pasarela/Fin");
+    public Transform Gangway => transform.Find("Pasarela_Leviatan/Fin");
     Transform[] Seats() { var l = new List<Transform>(); for (int i = 1; i <= 4; i++) { Transform s = transform.Find($"Puente/Asiento_{i}"); if (s != null) l.Add(s); } return l.ToArray(); }
     float SurfacedY => berthPos.y;
     float DepthY => WaterY - 1.6f - Height * 0.5f;   // el lomo bajo las placas de hielo (1,5 m)

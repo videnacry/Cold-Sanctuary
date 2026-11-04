@@ -27,6 +27,10 @@ pijamada (`Bedroom.gather`, 8 puntos en dos filas). Los 2 m de paso se mantienen
 
 **Sin escalera** (reglas de plataformas, regla 3):
 - Al piso de arriba se sube **trepando por el poste del pie** (`Climbable`, como a los árboles).
+- Se **baja por el tobogán** (Berón: «las literas tienen resbaladera»). Sale del pie de la cama por el lado −x (x −4,3…−3,7) y baja
+  en recta 2,6 m hasta el suelo, con ~32° de pendiente, bordes y una pista de frenado de 0,6 m. Es parte de la cama y no lleva collider:
+  no estorba al paso, y queda a ~5 m de la alfombra-esterilla. Al despertar, quien durmió arriba se sienta en lo alto y se desliza
+  hasta el pie en 1,6 s (`SlideSpell`, `Bedroom.slideTop`/`slideBottom`); allí se pone de pie.
 - A dormir, cada uno se tumba en su plaza: `SleepSpell` lo pone sobre su colchón.
 - No hay peldaños ni piezas «Escalera».
 
@@ -49,6 +53,7 @@ pijamada (`Bedroom.gather`, 8 puntos en dos filas). Los 2 m de paso se mantienen
   - al llegar se apunta a dormir allí (`Sleepover.Join`). A cada invitado le toca la primera plaza libre: las de abajo que no usan
     los que viven allí y luego las de arriba.
 - **Esa noche**: `Bedroom.Of` devuelve la casa del anfitrión. Cuando tienen sueño, van a su plaza (`NeedsDriver`) y duermen allí.
+- **Al despertar**, los que durmieron arriba bajan por el tobogán.
 - **A la mañana siguiente**, desde las 8:00 (`Sleepover.WakeHour`), la pijamada se olvida sola y cada uno vuelve a su casa.
 
 La pijamada es una actividad **por turnos** (regla J16): caben 8 por casa, no todos los miembros. Para todos a la vez está el ring de
@@ -56,7 +61,7 @@ almohadas.
 
 ## Prueba: `SleepoverTest` (grupo 92, SampleScene)
 
-1. Cada casa duerme a 8 en una sola cama-litera de dos pisos de 4 (sin litera aparte). Se sube al piso de arriba por su poste, no hay escaleras, y queda a ≥ 2 m de la alfombra.
+1. Cada casa duerme a 8 en una sola cama-litera de dos pisos de 4 (sin litera aparte). Se sube al piso de arriba por su poste y se baja por su tobogán; no hay escaleras, y queda a ≥ 2 m de la alfombra.
 2. El horario:
    - la pijamada está en el catálogo, con el anfitrión y su pareja;
    - no pasa de 8;
@@ -65,4 +70,5 @@ almohadas.
    - van a la casa del anfitrión (≥ 80 %), andando y en alfombra, sin saltos;
    - cada invitado se apunta y tiene su plaza: primero las libres de abajo, luego las de arriba;
    - esa noche duermen en su plaza (≥ 80 %);
+   - al despertar, los de arriba bajan por el tobogán y quedan a su pie;
    - a la mañana siguiente vuelven a tener su casa.

@@ -129,8 +129,8 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
                     minVisible = Mathf.Min(minVisible, target.Visible);
                 }
                 pred.transform.position = back;
-                int bites = Swarm.Bites - bites0, after = target.Visible;
-                TestProbe.Check($"un depredador ({pred.SpeciesName}) choca con el banco: cada mordisco quita UN pez, al momento", bites >= 1 && before - after == bites && Mathf.Abs(cnt0 - target.count - bites) < 0.01f,
+                int after = target.Visible, bites = Mathf.RoundToInt(cnt0 - target.count);   // (los de ESTE banco: Swarm.Bites cuenta los de todos)
+                TestProbe.Check($"un depredador ({pred.SpeciesName}) choca con el banco: cada mordisco quita UN pez, al momento", bites >= 1 && before - after == bites && Mathf.Abs(cnt0 - target.count - bites) < 0.01f && Swarm.Bites - bites0 >= bites,
                     $"{bites} mordiscos: {before} → {after} peces (cuenta {cnt0:0.0} → {target.count:0.0})");
                 // ── 4. SE REHACE ──
                 target.count = Mathf.Min(target.count, 6f); target.ReconcileChildren();

@@ -74,7 +74,9 @@ public class PillowRing : MonoBehaviour
     public Vector3 Spot(int seat)
     {
         int n = Mathf.Max(1, cells), i = ((seat % (n * n)) + n * n) % (n * n);
-        float x = (i % n - (n - 1) * 0.5f) * CellSize, z = (i / n - (n - 1) * 0.5f) * CellSize;
+        // (2026-11-04, grupo 89: 8/10 llegaban) Se llena DESDE EL FONDO (el cabecero, +z) hacia la entrada del pie: los primeros en llegar
+        // no se quedan en la primera fila tapando el paso a los de detrás.
+        float x = (i % n - (n - 1) * 0.5f) * CellSize, z = ((n - 1) * 0.5f - i / n) * CellSize;
         if (mattress == null) return transform.TransformPoint(new Vector3(x, 0f, z));
         return mattress.parent.TransformPoint(mattress.localPosition + new Vector3(x, mattress.localScale.y * 0.5f, z));   // (el colchón cuelga del ring, sin girar)
     }

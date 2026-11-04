@@ -82,7 +82,9 @@ public class YogaFloorsTest : MonoBehaviour, ITestUnit
                 int blocked = h.BlockedSightLines(out string why);
                 TestProbe.Check($"sala {tag}: todas las esterillas ven al maestro (nada en medio, ≤ {YogaHall.MaxSight:0} m)", blocked == 0, why);
             }
-        TestProbe.Check("exactamente cuatro salas de yoga", halls.Count == 4, string.Join(", ", halls.Select(h => h.Label)));
+        // (regla J16) Tantas salas como pisos pide el número de miembros: dos por piso (occidental y tradicional) de cada estilo.
+        int mem = AreaCapacity.Members(), expectHalls = 2 * (TrainingCentres.FloorsFor("Yoga Hatha", mem) + TrainingCentres.FloorsFor("Yoga Ashtanga", mem));
+        TestProbe.Check($"{expectHalls} salas de yoga (2 por piso; los pisos de cada estilo, ⌈{mem} miembros / 16 esterillas⌉ por la regla J16)", halls.Count == expectHalls, string.Join(", ", halls.Select(h => $"{h.Label} (piso {h.floorNo})")));
         if (room != null)
         {
             var bad = FurnitureSpacing.Violations(room);
