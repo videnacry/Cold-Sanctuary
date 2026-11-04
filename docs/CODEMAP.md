@@ -727,7 +727,9 @@ _Total: 720 tipos._
 - **WorldCharacter** (class) — `Assets/Scripts/World/WorldCharacter.cs` — Attach to any entity that participates in the sanctuary's world simulation:
 - **WorldExitPortal** (class) — `Assets/Scripts/MobWorld/WorldExitPortal.cs` — PORTAL DE SALIDA de un mundo interior — EL ÚNICO, REUTILIZABLE (no crees otro:
 - **WorldLabel** (class) — `Assets/Scripts/UI/WorldLabel.cs` — Etiqueta de nombre para un objeto NO-anima (mueble/ingrediente/utensilio/estación).
-- **YogaClass** (class) — `Assets/Scripts/World/YogaClass.cs` — CLASE DE YOGA EN GRUPO en la Sala de Yoga (torre del Entrenamiento; Berón 2026-10-29).
+- **YogaClass** (class) — `Assets/Scripts/World/YogaClass.cs` — CLASE DE YOGA EN GRUPO en una sala de los pisos de yoga (una por sala; inmersión en el kund en la tradicional).
+- **YogaFloorsTest** (class) — `Assets/Scripts/Tests/YogaFloorsTest.cs` — LOS PISOS DE YOGA (grupo 64): sin anillo, cuatro salas, líneas de visión, una clase por piso, el kund.
+- **YogaHall** (class) — `Assets/Scripts/World/YogaHall.cs` — UNA SALA de los pisos de yoga (Hatha/Ashtanga × occidental/tradicional): tarima, esterillas, kund, líneas de visión.
 - **YogaClassTest** (class) — `Assets/Scripts/Tests/YogaClassTest.cs` — CLASE DE YOGA EN VIVO (Berón 2026-10-29):
 - **YogaInitiationTest** (class) — `Assets/Scripts/Tests/YogaInitiationTest.cs` — TEST DE LA INICIACIÓN DE LA SALA DE YOGA COMO ORQUESTA (Berón 2026-10-29):
 - **YogaNamaskar** (class) — `Assets/Scripts/Asana/YogaNamaskar.cs` — YOGA NAMASKAR (lo que la Magnate enseña DESPUÉS del upa-yoga de cuello y ANTES del Saludo al Sol).

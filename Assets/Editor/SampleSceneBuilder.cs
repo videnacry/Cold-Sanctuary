@@ -154,7 +154,7 @@ public static partial class SampleSceneBuilder
         BuildIceFlora(root.transform);           // FLORA de hielo: árbol carnívoro (señuelo+sopor) + abejas de las nieves — docs/ice-sanctuary-ecology.md
         new GameObject("Jornada_AUTO").AddComponent<WorkdayDirector>().transform.SetParent(root.transform);   // jornada de 8 h y rotación diaria (docs/jornada-y-rotacion.md)
         { GameObject inf = GameObject.Find("Infirmary_Area"); if (inf != null) inf.AddComponent<InfirmaryGate>(); }   // la iniciación es bloqueante: la Magnate guarda la salida
-        PlaceStaff();       // cada personaje nuevo en su área (Sadhguru en la tarima de yoga, el jefe de obra en Construcción…)
+        PlaceStaff();       // cada personaje nuevo en su área (Andrea en la tarima de yoga, el jefe de obra en Construcción…)
         DressHumanoids();   // Kushal, la Magnate, compañeros y seres de prueba → cuerpo de cubos articulado (sin .fbx)
         BuildPolarIce(root.transform);   // banquisa: casquetes de hielo con canales y puentes + sotobosque polar
         PlaceGroundCarpetAreas();        // al pie de cada edificio, en el hielo (ya hecho), sus alfombras para subir
@@ -2210,7 +2210,7 @@ public static partial class SampleSceneBuilder
                 va.fieldOfView = 200f; va.range = 30f;   // ojos humanos: ~200° de campo, ~120° binocular al frente
                 string nm = a.name;
                 va.ApplyProfile(nm.StartsWith("Gohageneis") ? VisualAttention.Profile.Vigilante : nm.StartsWith("Irosene") || nm.StartsWith("Goluis") ? VisualAttention.Profile.Esteta
-                    : nm.StartsWith("Sadhguru") || nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
+                    : nm.StartsWith("Magnate") ? VisualAttention.Profile.Contemplativo : nm.StartsWith("Lizmibet") || nm.StartsWith("Andrea") ? VisualAttention.Profile.Afectivo : VisualAttention.Profile.Equilibrado);
             }
             if (a.GetComponent<Magnate>() != null && a.GetComponent<MageCells>() == null) a.gameObject.AddComponent<MageCells>().fraction = 1f;
             n++;
@@ -3096,15 +3096,17 @@ public static partial class SampleSceneBuilder
         liz.AddComponent<WorldCharacter>().characterName = "Lizmibet";
 
         // Su ESPOSO, JEFE DE CONSTRUCCIÓN (docs/construction-simulation.md): repara y levanta las estructuras de las áreas
-        // humanas desde el área de Construcción (maquinaria y material). SADHGURU da las clases en el centro de yoga.
+        // humanas desde el área de Construcción (maquinaria y material). ANDREA da las clases de yoga (antes Sadhguru).
         // ANDREA es uno de los DUEÑOS del santuario (los turistas son una de sus vías de ingresos).
         MakeCharacter(root.transform, "JefeConstruccion", "Tote · Tofelite (jefe de construcción)",   // Tofelite, esposo de Lizmibet; lo suelen llamar Tote. El id sigue siendo JefeConstruccion (escenas y pruebas)
              new Vector3(12f, 1f, 8f), new Color(0.78f, 0.8f, 0.82f), 1.3f, 0.95f, 1.25f, 1.15f);
-        MakeCharacter(root.transform, "Sadhguru", "Sadhguru (maestro de yoga)", new Vector3(14f, 1f, 8f), new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f);
-        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
-        // LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): personas públicas con un papel según su trabajo
-        // conocido, y Goku (ficción) como entrenador de artes marciales. Entran en la jornada (WorkdayDirector.staff) y en el horario libre.
-        foreach (var (id, label, x, clothes, s, ag, en, m) in MesoCharacters)
+        MakeCharacter(root.transform, "Andrea", "Andrea (dueño del santuario y maestro de yoga)", new Vector3(16f, 1f, 8f), new Color(0.08f, 0.08f, 0.09f), 1.15f, 1.2f, 1.2f, 1.0f);
+        // (2026-11-04) SADHGURU y LOS SEIS DEL MESOCOSMOS ya no se construyen aquí: Berón los sacó a sus microcosmos («los personajes
+        // famosos … sácalos del mesocosmos y crea sus microcosmos respectivos»). Sus datos siguen en MesoCharacters y su aspecto en
+        // CubeHair.For; sus papeles los llevan otros (docs/personajes-mesocosmos.md §Reparto de papeles).
+        // LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): personal
+        // de la rotación; cinco llevan además un papel de los famosos que se fueron. Entran en la jornada, el horario libre y la arboleda.
+        foreach (var (id, label, x, clothes, s, ag, en, m) in FamilyCharacters)
             MakeCharacter(root.transform, id, label, new Vector3(x, 1f, 8f), clothes, s, ag, en, m);
 
         GameObject wolf = LoadAnimalPrefab("Wolf");
@@ -3462,12 +3464,14 @@ public static partial class SampleSceneBuilder
         Floor(kitchen.transform);
         Floor(hospital.transform); Floor(Child(hospital.transform, "Planta_hospitalizacion")); Floor(Child(hospital.transform, "Planta_veterinaria"));   // las amuebla BuildHospital
         Floor(cria.transform); Floor(meat.transform);
-        //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga · Ballet · Dojo. Lo pesado y
-        //    ruidoso (las máquinas) abajo; lo silencioso (yoga, con su anillo de estatuas, y las salas en obras) arriba.
-        //    Un ÁRBOL: 3 niveles, sus 6 pisos en orden y 6 puntas con frutales; la sala de yoga, con su anillo en U y su puerta.
-        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, 3);
+        //  · ENTRENAMIENTO: Gimnasio · Cardio y zona libre · Calistenia, parkour y crossfit · Yoga (Hatha) · Yoga (Ashtanga) · Ballet
+        //    · Dojo. Lo pesado y ruidoso (las máquinas) abajo; lo silencioso (los dos pisos de yoga y las salas en obras) arriba.
+        //    Un ÁRBOL: 4 niveles (Berón 2026-11-04: se quitó el anillo de yoga y el yoga pasó a DOS PISOS, docs/yoga-pisos.md), sus 7
+        //    pisos en orden y uno libre; 8 puntas con frutales.
+        BeginTreeTower(areasGroup.transform, TorreEntrenamiento, EntrenamientoCenter, GymSize, EntrenamientoYaw, 4);
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
-        Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ballet.transform); Floor(dojo.transform);
+        Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
+        Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ashtanga); Floor(ballet.transform); Floor(dojo.transform);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
@@ -3475,7 +3479,7 @@ public static partial class SampleSceneBuilder
         Floor(works.transform); Floor(mech.transform); Floor(textile.transform);
         // Los EDIFICIOS que juntan varias áreas llevan el nombre de su torre (el de su planta baja diría solo una).
         BuildingNames[kitchen.transform] = TorreServicios; BuildingNames[gym.transform] = TorreEntrenamiento; BuildingNames[works.transform] = TorreProduccion;
-        FurnishYoga(yoga.transform, size[yoga.transform]);
+        FurnishYoga(yoga.transform, ashtanga, size[yoga.transform]);   // los dos pisos de yoga: Hatha y Ashtanga, cada uno con su sala occidental y su sala tradicional
         FurnishTextile(textile.transform, size[textile.transform]);   // el estudio textil de Irosene: telares, rueca, lanas, tintes, corte y costura
         FurnishConstruction(works.transform, size[works.transform]);   // maquinaria, material, herramientas y taller de obra
         FurnishGym(gym.transform, size[gym.transform]);                  // máquinas de placas y peso libre
@@ -3488,7 +3492,7 @@ public static partial class SampleSceneBuilder
         PrepareSite(dojo.transform, size[dojo.transform], "Dojo (MMA, kickboxing y karate)", 6, 3, FinishedDojo);
         // ASEOS en cada área humana (el restaurante y la enfermería los ponen al amueblarse).
         Vector2 s2 = size[yoga.transform];
-        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // sala de yoga: contra el borde +Z, esquina −X (en el lateral pisaba una esterilla; las estatuas ya van en el anillo)
+        Aseos(yoga.transform, new Vector3(-s2.x * 0.5f + 3.1f, 0.1f, s2.y * 0.5f - 0.8f), 180f);   // piso de Hatha: contra el borde +Z, esquina −X (en la sala occidental; los del piso de Ashtanga los pone FurnishYoga)
         s2 = size[mech.transform]; Aseos(mech.transform, new Vector3(-s2.x * 0.5f + 0.2f + 1.9f, 0.1f, s2.y * 0.5f - 0.9f), 180f, 1);
         s2 = size[textile.transform]; Aseos(textile.transform, new Vector3(3.5f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // textil (al fondo, junto a los ovillos)
         s2 = criaLayout; Aseos(meat.transform, new Vector3(s2.x * 0.5f - 0.2f - 1.9f, 0.1f, -s2.y * 0.5f + 0.9f), 0f, 1);   // laboratorio
@@ -3738,55 +3742,6 @@ public static partial class SampleSceneBuilder
         g.transform.localPosition = local; g.transform.localScale = size;
         g.GetComponent<Renderer>().sharedMaterial = KitchenProps.Mat(c);
         return g.transform;
-    }
-
-    // SALA DE YOGA para 30: esterillas en 6×5 con su espacio, tarima del maestro delante, cojines y campana.
-    static void FurnishYoga(Transform area, Vector2 size)
-    {
-        // SALA CÉNTRICA (Berón 2026-10-27): la PLATAFORMA del maestro en el centro y, alrededor, ALFOMBRAS VOLADORAS que son
-        // también las ESTERILLAS (2 × 3 m: ofrecen volar o las prácticas de yoga que sabe quien la pisa). Ocupan más que las
-        // esterillas viejas: seis caben en la sala y el resto va en un ANILLO (plataforma hija a 4 m, como el de los
-        // hospitales), con las cuatro estatuas en sus puntos cardinales. Al anillo se sube en alfombra (es otro «piso»).
-        Transform r = new GameObject("Esterillas").transform; r.SetParent(area, false); r.localPosition = new Vector3(0f, 0.1f, 0f);
-        // Las esterillas son alfombras de la red de su EDIFICIO (la torre del Entrenamiento) y de su piso (docs/plano-edificios.md).
-        string yoga = BuildingOf(area, "Sala de Yoga"); int fi = FloorIndex(area);
-        // En un edificio-árbol no hay alfombras entre pisos (se nada): las esterillas son solo esterillas (cada grupo, su propia red de
-        // una sola superficie: no vuelan ni al techo ni de la sala al anillo).
-        bool treeFloor = HelixDeckOf(area, out _, out _, out _);
-        string yogaRoom = treeFloor ? $"{yoga} (esterillas de la sala)" : yoga, yogaRing = treeFloor ? $"{yoga} (esterillas del anillo)" : yoga;
-        string floorSurf = $"{yoga}#{fi}", ringSurf = fi == 1 ? $"{yoga}#anillo" : $"{yoga}#anillo{fi}", floorLabel = FloorName(area, fi, yoga);
-        int k = 0;
-        // En la sala, SEIS (3 × 3,6 m cada una), alineadas con las paredes y a 2 m entre sí, de la tarima y del tanque de
-        // virtualización (la esquina +X+Z): dos por cada lado largo y una delante y otra detrás de la tarima. (Antes eran ocho
-        // giradas hacia el centro: se tocaban entre ellas y la de la esquina pisaba el tanque.)
-        float sx = Mathf.Min(5.8f, size.x * 0.5f - 3.0f), fz = Mathf.Min(5.3f, size.y * 0.5f - 2.2f);
-        foreach (Vector3 p in new[] { new Vector3(-sx, 0f, -4.8f), new Vector3(-sx, 0f, 0.2f), new Vector3(sx, 0f, -4.8f), new Vector3(sx, 0f, 0.2f),
-                                      new Vector3(0f, 0f, fz), new Vector3(0f, 0f, -fz) })
-        {
-            Quaternion face = Quaternion.LookRotation(Mathf.Abs(p.x) > 0.1f ? new Vector3(-p.x, 0f, 0f) : new Vector3(0f, 0f, -p.z));   // de cara a la plataforma
-            CarpetPad.BuildZone(r, r.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yogaRoom, fi, floorSurf, floorLabel, 1, 3f, 3.6f).name = $"Esterilla_{++k}";
-        }
-        // EL ANILLO: 8 m de ancho, 20 % sobre la sala; alfombras cada ~5 m por su línea central (menos en esquinas y puntos cardinales).
-        const float W = 8f;
-        Transform ring = RingDeck(area, "Anillo_yoga", size, MezzanineHeight, W, 0.2f);
-        float len = RingLength(size, W), cx = size.x * 0.5f - W * 0.2f + W * 0.5f, cz = size.y * 0.5f - W * 0.2f + W * 0.5f;
-        for (float s = 2.5f; s < len; s += 5f)
-        {
-            var (p, yaw, corner) = RingPoint(size, s, W, 0.2f, 3.5f);
-            if (corner) continue;
-            if (Mathf.Abs(p.x) < 3f || Mathf.Abs(p.z) < 3f) continue;   // el punto cardinal: ahí va su estatua
-            Quaternion face = Quaternion.LookRotation(new Vector3(-p.x, 0f, -p.z));
-            CarpetPad.BuildZone(ring, ring.TransformPoint(p + Vector3.up * 0.01f), area.rotation * face, CarpetPad.Kind.Edificio, yogaRing, fi, ringSurf, "Sala de Yoga · anillo", 1, 3f, 3.6f).name = $"Esterilla_{++k}";
-        }
-        Transform statues = new GameObject("Estatuas_anillo").transform; statues.SetParent(ring, false);
-        YogaStatues.BuildCardinal(statues, cx + 1.5f, cz + 1.5f);   // Patanjali, Buda, Aum y Shiva, cada uno en un punto cardinal del anillo
-        if (_ringOpenBack)   // anillo en U (edificio-árbol): la estatua del lado del tronco (Aum), al balcón, lejos del tronco y de su puerta
-            foreach (Transform st in statues)
-                if (st.localPosition.z < -1f) { st.localPosition = new Vector3(cx - 2f, 0f, _ringBackZ + 1.5f); Vector3 dd = -st.localPosition; dd.y = 0f; st.localRotation = Quaternion.LookRotation(dd); }
-        Debug.Log($"[Yoga] {k} alfombras-esterilla (6 en la sala y {k - 6} en el anillo) y las estatuas en los cuatro puntos cardinales.");
-        KitchenProps.C(r, new Vector3(0f, 0.2f, 0f), new Vector3(2.6f, 0.4f, 2.6f), new Color(0.6f, 0.5f, 0.42f), 0f, "Tarima del maestro").gameObject.AddComponent<BoxCollider>();   // se sube a ella (sin collider el maestro quedaba dentro)
-        KitchenProps.C(r, new Vector3(0f, 0.41f, 0f), new Vector3(0.8f, 0.02f, 2f), new Color(0.95f, 0.88f, 0.6f), 0f, "Esterilla del maestro");
-        KitchenProps.C(r, new Vector3(1f, 0.5f, 0.9f), new Vector3(0.25f, 0.2f, 0.25f), new Color(0.85f, 0.7f, 0.35f), 0f, "Cuenco tibetano");
     }
 
     // Contorno, no muro: 2,4 m tapaban la vista del área desde fuera (se dibuja el espacio sin ocultarlo).

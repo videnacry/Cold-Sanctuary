@@ -161,27 +161,50 @@ public static partial class SampleSceneBuilder
             GameObject g = GameObject.Find(who), a = GameObject.Find(area);
             if (g != null && a != null) g.transform.position = a.transform.TransformPoint(local);
         }
-        Put("Sadhguru", "YogaRoom_Area", new Vector3(0f, 1.5f, 0f));             // en la plataforma central, rodeado de las 30 esterillas
+        Put("Andrea", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));               // MAESTRO DE YOGA (antes Sadhguru): en la tarima de la sala de Hatha tradicional, junto al linga
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
-        Put("Andrea", "Kitchen_Area", new Vector3(3f, 1f, 9f));                   // en el comedor: el restaurante es una vía de ingresos
-        // Los seis del mesocosmos (docs/personajes-mesocosmos.md), cada uno en el área de su papel.
-        Put("ElonMusk", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));          // los vehículos y la maquinaria
-        Put("Goku", "Gym_Area", new Vector3(-3f, 1f, 3f));                         // entrena artes marciales (el dojo sigue en obras)
-        Put("BillGates", "Infirmary_Area", new Vector3(3f, 1f, -3f));              // registros y vacunación del hospital
-        Put("WarrenBuffett", "Kitchen_Area", new Vector3(-3f, 1f, 9f));            // las cuentas del restaurante
-        Put("MacKenzieScott", "Garden_Area", new Vector3(2f, 1f, 3f));             // alimentar a los visitantes con lo del huerto
-        Put("IbrahimTraore", "Construction_Area", new Vector3(3f, 1f, 2f));        // coordina la guardia (la torre está junto a las obras)
+        // La familia y los amigos de Berón (2026-11-04; docs/diseno-personajes.md §Familia y amigos). Los que heredan un papel de los
+        // famosos que se fueron a sus microcosmos salen en su área (docs/personajes-mesocosmos.md §Reparto de papeles); los demás,
+        // repartidos (la jornada los lleva a todas las áreas). La pareja (Amahuz y Karen) sale junta.
+        Put("Nesvitor", "Kitchen_Area", new Vector3(-3f, 1f, 9f));                 // las cuentas del santuario, desde el restaurante
+        Put("Ducristin", "VehicleWorkshop_Area", new Vector3(2f, 1f, 2f));         // la mecánica: vehículos y maquinaria
+        Put("Maite", "Infirmary_Area", new Vector3(3f, 1f, -3f));                  // registros y vacunación del hospital
+        Put("Alicita", "Garden_Area", new Vector3(2f, 1f, 3f));                    // el huerto: alimentar a los visitantes
+        Put("Josedrilo", "Construction_Area", new Vector3(3f, 1f, 2f));            // la guardia, con Gohageneis (la torre está junto a las obras)
+        Put("Amahuz", "TextileStudio_Area", new Vector3(2f, 1f, 2f));
+        Put("Karen", "TextileStudio_Area", new Vector3(3f, 1f, 2f));
+        Put("Shalva", "Gym_Area", new Vector3(-3f, 1f, 3f));
+        Put("Adaguchi", "CubCare_Area", new Vector3(0f, 1f, 2f));
     }
 
-    /// <summary>LOS SEIS DEL MESOCOSMOS (Berón 2026-11-03; docs/personajes-mesocosmos.md): id, rótulo, x de salida, ropa y stats
-    /// (fuerza, agilidad, resistencia, masa).</summary>
-    static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] MesoCharacters =
+    /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): id, rótulo,
+    /// x de salida, ropa y stats (fuerza, agilidad, resistencia, masa). Personas reales: stats cercanas a 1, sin suponer edades;
+    /// Nesvitor, mayor (lo dice su foto), algo menos ágil. El rótulo lleva el papel heredado de los famosos, si lo tiene.</summary>
+    public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] FamilyCharacters =
     {
-        ("ElonMusk", "Elon Musk (mecánica: vehículos eléctricos y cohetes)", 18f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 0.95f, 1.0f, 1.1f),
-        ("Goku", "Goku (entrenador de artes marciales)", 20f, new Color(0.95f, 0.47f, 0.12f), 1.6f, 1.5f, 1.6f, 1.1f),
-        ("BillGates", "Bill Gates (hospital: registros y vacunación)", 22f, new Color(0.22f, 0.32f, 0.55f), 0.95f, 0.95f, 1.0f, 1.0f),
-        ("WarrenBuffett", "Warren Buffett (cuentas del santuario)", 24f, new Color(0.42f, 0.43f, 0.46f), 0.85f, 0.8f, 0.9f, 1.05f),
-        ("MacKenzieScott", "MacKenzie Scott (huerto: alimentar a los visitantes)", 26f, new Color(0.62f, 0.75f, 0.88f), 0.95f, 1.05f, 1.05f, 0.95f),
-        ("IbrahimTraore", "Ibrahim Traoré (guardia: coordina la seguridad)", 28f, new Color(0.33f, 0.36f, 0.24f), 1.25f, 1.2f, 1.3f, 1.05f),
+        ("Nesvitor", "Nesvitor · Néstor (cuentas del santuario)", 30f, new Color(0.1f, 0.1f, 0.11f), 0.95f, 0.9f, 1.05f, 1.0f),
+        ("Amahuz", "Amahuz", 32f, new Color(0.1f, 0.12f, 0.22f), 1.0f, 1.05f, 1.0f, 0.9f),
+        ("Karen", "Karen", 34f, new Color(0.97f, 0.96f, 0.95f), 0.9f, 1.05f, 1.0f, 0.95f),
+        ("Alicita", "Alicita · Alicia (huerto: alimentar a los visitantes)", 36f, new Color(0.12f, 0.13f, 0.15f), 0.9f, 1.0f, 1.05f, 0.95f),
+        ("Ducristin", "Ducristin (mecánica: vehículos y maquinaria)", 38f, new Color(0.6f, 0.78f, 0.95f), 1.0f, 1.0f, 1.0f, 1.05f),
+        ("Josedrilo", "Josedrilo (guardia)", 40f, new Color(0.1f, 0.09f, 0.09f), 1.05f, 1.0f, 1.0f, 1.0f),
+        ("Maite", "Maite (hospital: registros y vacunación)", 42f, new Color(0.36f, 0.33f, 0.24f), 0.9f, 1.05f, 1.0f, 0.95f),
+        ("Shalva", "Shalva", 44f, new Color(0.3f, 0.33f, 0.15f), 1.05f, 1.0f, 1.05f, 1.0f),
+        ("Adaguchi", "Adaguchi", 46f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 1.0f, 1.0f, 1.05f),
+    };
+
+    /// <summary>LOS FAMOSOS QUE SE FUERON A SUS MICROCOSMOS (Berón 2026-11-04: «los personajes famosos, elon musk, sadhguru, y demás
+    /// sácalos del mesocosmos y crea sus microcosmos respectivos»). YA NO SE CONSTRUYEN EN EL SANTUARIO: quedan aquí sus datos (id,
+    /// rótulo, ropa y stats: fuerza, agilidad, resistencia, masa) para sus microcosmos; su aspecto sigue en CubeHair.For (por el id).
+    /// Sus papeles en el santuario los llevan otros: docs/personajes-mesocosmos.md §Reparto de papeles.</summary>
+    public static readonly (string id, string label, float x, Color clothes, float s, float ag, float en, float m)[] MesoCharacters =
+    {
+        ("Sadhguru", "Sadhguru (maestro de yoga)", 14f, new Color(0.5f, 0.72f, 0.62f), 1.0f, 1.2f, 1.4f, 1.0f),
+        ("ElonMusk", "Elon Musk (vehículos eléctricos y cohetes)", 18f, new Color(0.08f, 0.08f, 0.09f), 1.05f, 0.95f, 1.0f, 1.1f),
+        ("Goku", "Goku (artes marciales)", 20f, new Color(0.95f, 0.47f, 0.12f), 1.6f, 1.5f, 1.6f, 1.1f),
+        ("BillGates", "Bill Gates (software y salud pública)", 22f, new Color(0.22f, 0.32f, 0.55f), 0.95f, 0.95f, 1.0f, 1.0f),
+        ("WarrenBuffett", "Warren Buffett (inversor)", 24f, new Color(0.42f, 0.43f, 0.46f), 0.85f, 0.8f, 0.9f, 1.05f),
+        ("MacKenzieScott", "MacKenzie Scott (novelista y filántropa)", 26f, new Color(0.62f, 0.75f, 0.88f), 0.95f, 1.05f, 1.05f, 0.95f),
+        ("IbrahimTraore", "Ibrahim Traoré (capitán)", 28f, new Color(0.33f, 0.36f, 0.24f), 1.25f, 1.2f, 1.3f, 1.05f),
     };
 }

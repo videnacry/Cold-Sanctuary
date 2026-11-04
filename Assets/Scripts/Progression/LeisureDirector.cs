@@ -83,7 +83,8 @@ public class LeisureDirector : MonoBehaviour
 
     // ── Participantes ────────────────────────────────────────────────────────────────────────────
 
-    static readonly string[] DefaultStaff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea" };
+    static readonly string[] DefaultStaff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
+                                              "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };
 
     /// <summary>Vuelve a mirar quién hay en cada escena (cada 2 s, o ya si <paramref name="now"/>) y reparte la semana si cambió
     /// la gente o la semana.</summary>
@@ -162,16 +163,23 @@ public class LeisureDirector : MonoBehaviour
     public static readonly (string id, string title, LeisureRoster.Kind kind, string[] where, int cap, string pose)[] SanctuaryActivities =
     {
         ("pesas", "Pesas y saco en el gimnasio", LeisureRoster.Kind.Ocio, new[] { "Gimnasio" }, 6, "ejercicio"),
-        ("yoga", "Yoga libre y meditación", LeisureRoster.Kind.Recuperacion, new[] { "Sala de Yoga" }, 8, "meditar"),
+        // LOS PISOS DE YOGA (docs/yoga-pisos.md): «Sala de Yoga · <sala>» es una sala de un piso de yoga (YogaHall); cada plaza, una
+        // de sus esterillas. Hatha y meditación junto al linga (la tradicional) y Ashtanga autoguiado al estilo Mysore (la occidental).
+        ("yoga", "Hatha libre y meditación junto al linga", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Hatha tradicional", "Sala de Yoga" }, 8, "meditar"),
+        ("ashtanga", "Ashtanga autoguiado (estilo Mysore)", LeisureRoster.Kind.Recuperacion, new[] { YogaVenue + "Ashtanga occidental", "Sala de Yoga" }, 8, "ejercicio"),
         ("huerto", "Pasear y cuidar el huerto", LeisureRoster.Kind.Ocio, new[] { "Huerto" }, 6, "pie"),
         ("lectura", "Leer en la plataforma de la arboleda", LeisureRoster.Kind.Ocio, new[] { "Residencia" }, 6, "sentado"),
         ("crias", "Jugar con las crías", LeisureRoster.Kind.Cuidado, new[] { "Cría" }, 4, "pie"),
         ("textil", "Manualidades en el estudio textil", LeisureRoster.Kind.Ocio, new[] { "Estudio Textil" }, 4, "sentado"),
         ("tertulia", "Tertulia en el restaurante", LeisureRoster.Kind.Ocio, new[] { "Cocina" }, 8, "sentado"),
         ("baile", "Bailar", LeisureRoster.Kind.Ocio, new[] { "Sala de Ballet", "Calistenia", "Gimnasio" }, 6, "baile"),
-        ("artes", "Artes marciales con Goku", LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
+        ("artes", "Artes marciales con Gohageneis",   // (2026-11-04: antes con Goku, que se fue a su microcosmos)
+          LeisureRoster.Kind.Ocio, new[] { "Dojo (artes marciales)", "Gimnasio" }, 6, "ejercicio"),
         ("descanso", "Descansar en casa", LeisureRoster.Kind.Descanso, new[] { "casa" }, 0, "tumbado"),
     };
+
+    /// <summary>Prefijo de un sitio que es una SALA de los pisos de yoga («Sala de Yoga · Hatha tradicional»…).</summary>
+    public const string YogaVenue = "Sala de Yoga · ";
 
     void SanctuaryCatalog(Group gr)
     {
@@ -182,6 +190,13 @@ public class LeisureDirector : MonoBehaviour
             foreach (string w in d.where)
             {
                 if (w == "casa") { v = new Venue { title = "su casa del árbol", home = true }; break; }
+                if (w.StartsWith(YogaVenue))
+                {
+                    YogaHall yh = null;
+                    foreach (YogaHall h in YogaHall.All) if (h != null && h.gameObject.scene == gr.scene && YogaVenue + h.Label == w) { yh = h; break; }
+                    if (yh != null) { v = new Venue { title = w, anchor = yh.transform }; break; }
+                    continue;
+                }
                 if (w == "Residencia")
                 {
                     GameObject r = GameObject.Find("ArboledaResidencial");
@@ -289,6 +304,7 @@ public class LeisureDirector : MonoBehaviour
         public Group group; public LeisureRoster.Entry entry; public Venue venue;
         public Vector3 to; public AreaFunctionStation st;
         public float since, arrivedAt = -1f, performed, blockedFor, walked, flown, poseAt;
+        public bool reachable;   // (microcosmos) su punto tiene camino andando por el NavMesh
         public float speed = 2.6f, allowed = 60f;   // a qué paso va y cuánto tiempo tiene para llegar andando (microcosmos)
         public Vector3 last; public int jumps; public bool fallback, posed, b, onBed;
         public bool idleWas, linWas, touchedIdle, touchedLin;
@@ -370,10 +386,57 @@ public class LeisureDirector : MonoBehaviour
     {
         if (!gr.micro) { r.speed = walkSpeed; return; }
         float baseSpeed = g.TryGetComponent(out MicroJornada mj) ? mj.speed : microSpeed;
+        Reachable(r, g, mj);
         Vector3 d = r.to - g.transform.position; d.y = 0f;
         float dist = d.magnitude;
         r.speed = Mathf.Clamp(dist / 75f, baseSpeed, Mathf.Max(baseSpeed, 6f));
         r.allowed = Mathf.Clamp(dist / r.speed * 1.4f + 15f, microFallback, 120f);
+    }
+
+    // UN SITIO AL QUE SE PUEDA LLEGAR ANDANDO (2026-11-04, ronda 3 en Kapilavastu: 0/5 llegaban andando; el agente se quedaba en el
+    // final de un camino PARCIAL —el puesto está pegado a su mueble o en la meseta de un mueble gigante— y a los 60–120 s se le ponía
+    // allí). Se busca, entre los puestos de los edificios de la actividad, uno con camino COMPLETO por el NavMesh (con sus trepadas) y
+    // se va a su punto del NavMesh; si no hay ninguno, al final del camino parcial si queda junto al edificio (≤ 15 m).
+    void Reachable(Run r, GameObject g, MicroJornada mj)
+    {
+        UnityEngine.AI.NavMeshAgent ag = g.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (ag == null || !ag.enabled || !ag.isOnNavMesh || r.venue == null) return;
+        var cands = new List<(AreaFunctionStation st, Vector3 p)>();
+        if (r.st != null) cands.Add((r.st, r.to));
+        var sites = r.venue.home ? (mj != null && mj.home != null ? new List<AreaFunctionSite> { mj.home } : new List<AreaFunctionSite>()) : r.venue.sites;
+        foreach (AreaFunctionSite s in sites)
+            foreach (AreaFunctionStation st in s.Stations)
+            {
+                if (cands.Count >= 14) break;
+                if (st == r.st || (st.occupant != null && st.occupant != (Object)g)) continue;
+                if (r.venue.fn != null && r.venue.fn.stations.Length > 0 && System.Array.IndexOf(r.venue.fn.stations, st.station) < 0) continue;
+                cands.Add((st, MicroJornada.WorkSpotOf(st, g.transform.position)));
+            }
+        var path = new UnityEngine.AI.NavMeshPath();
+        Vector3? partialEnd = null; AreaFunctionStation partialSt = null;
+        foreach (var (st, p) in cands)
+        {
+            if (!UnityEngine.AI.NavMesh.SamplePosition(p, out UnityEngine.AI.NavMeshHit hit, 4f, ag.areaMask)) continue;
+            if (!ag.CalculatePath(hit.position, path)) continue;
+            if (path.status == UnityEngine.AI.NavMeshPathStatus.PathComplete) { Take(r, g, st, hit.position); r.reachable = true; return; }
+            if (partialEnd == null && path.status == UnityEngine.AI.NavMeshPathStatus.PathPartial && path.corners.Length > 0)
+            {
+                Vector3 end = path.corners[path.corners.Length - 1];
+                Vector3 site = st != null ? st.transform.position : p; Vector3 dd = end - site; dd.y = 0f;
+                if (dd.magnitude <= 15f) { partialEnd = end; partialSt = st; }
+            }
+        }
+        if (partialEnd.HasValue) { Take(r, g, partialSt, partialEnd.Value); r.reachable = true; }
+    }
+
+    static void Take(Run r, GameObject g, AreaFunctionStation st, Vector3 p)
+    {
+        if (st != null && st != r.st)
+        {
+            if (r.st != null && r.st.occupant == (Object)g) r.st.occupant = null;
+            r.st = st; if (st.occupant == null) st.occupant = g;
+        }
+        r.to = p;
     }
 
     // Dónde se pone a hacerla: un sitio repartido por plazas (no se amontonan), sobre el NavMesh.
@@ -407,6 +470,12 @@ public class LeisureDirector : MonoBehaviour
         if (v.anchor == null) return g.transform.position;
         if (v.deck)   // la plataforma central (18 × 18): a un lado, lejos de las pistas de alfombras del centro y de los bordes norte y sur
             return OnMesh(v.anchor.TransformPoint(new Vector3(6f - (seat % 2) * 1.6f, ResidentialBuilder_DeckY + 1.15f, -2.4f + (seat / 2) * 1.6f)));
+        // Una SALA de los pisos de yoga: cada plaza, una de sus esterillas (de cara a la tarima).
+        if (v.anchor.TryGetComponent(out YogaHall yh))
+        {
+            List<CarpetPad> mats = yh.Mats();
+            if (mats.Count > 0) return OnMesh(mats[seat % mats.Count].transform.position + Vector3.up);
+        }
         // Un área: cada actividad en su zona (−5, 0, +5 m) y cada plaza en una rejilla de 1,6 m.
         float zx = ((v.index % 3) - 1) * 5f;
         Vector3 local = new Vector3(zx + ((seat % 3) - 1) * 1.6f, 1f, 1.5f + (seat / 3) * 1.6f - (v.index / 3 % 2) * 4f);
@@ -471,6 +540,7 @@ public class LeisureDirector : MonoBehaviour
             SetStatus(g, r, StatusOf(g));
             Vector3 d = r.to - pos; float dy = Mathf.Abs(d.y); d.y = 0f;
             bool there = d.magnitude <= (r.group.micro ? 1.6f : 1.7f) && dy < 2.2f;
+            if (!there && r.group.micro && d.magnitude <= 4f && g.TryGetComponent(out UnityEngine.AI.NavMeshAgent mag) && mag.enabled && mag.isOnNavMesh && !mag.pathPending && mag.hasPath && mag.remainingDistance <= 0.8f) there = true;   // (el agente ya está al final de su camino, junto al puesto)
             if (!there)
             {
                 if (r.group.micro)

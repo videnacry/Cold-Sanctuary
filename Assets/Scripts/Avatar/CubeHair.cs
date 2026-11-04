@@ -7,8 +7,10 @@ using UnityEngine;
 /// </summary>
 public static class CubeHair
 {
-    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy, Medium, Bob, Turban, Spiky }
-    public enum Beard { None, Full, Goatee, Stubble, Long }
+    public enum Style { Short, Long, Bun, Ponytail, Curly, Shaved, ChefHat, Fade, LongWavy, Medium, Bob, Turban, Spiky, SweptBack, Quiff, TiedBack }
+    public enum Beard { None, Full, Goatee, Stubble, Long, Moustache, ThinMoustache }
+    /// <summary>Dibujo de la tela de la camisa o el jersey: cuadros, rayas finas o canalé (punto grueso).</summary>
+    public enum Weave { None, Checks, Stripes, Ribs }
 
     public struct Look
     {
@@ -37,8 +39,26 @@ public static class CubeHair
         public bool rings;                                   // anillos en los dedos
         public Color stole; public bool hasStole;            // chal/estola cruzada sobre el hombro
         public Color necklace; public bool hasNecklace, necklaceCross;   // collar (cadena con cruz o guirnalda/mala)
+        // (2026-11-04: la familia y los amigos de Berón, de sus fotos; docs/diseno-personajes.md §Familia y amigos)
+        public Color beardTint; public bool hasBeardTint;    // bigote de otro color que el pelo (canas)
+        public Color shadesFrame, shadesLens; public bool hasShades, aviator;   // gafas de sol: envolventes o de aviador
+        public Color watch, watchFace; public bool hasWatch;  // reloj de pulsera (muñeca izquierda)
+        public Color band;                                   // color de la muñequera (sin él, negra)
+        public Color clipA, clipB; public bool hasClip;      // pinza de flor en el pelo
+        public bool bothEars, hoops;                         // pendientes en las dos orejas; de aro
+        public Color bag; public bool hasBag;                // bolso cruzado
+        public Color belt; public bool hasBelt;              // cinturón
+        public Color skirt, skirtPrint; public bool hasSkirt;   // falda con estampado de flores
+        public bool ruffles;                                 // volantes en el pecho
+        public Color inner, tee; public bool jacket, jacketClosed, hasTee;   // chaqueta con cremallera sobre camisa (y camiseta)
+        public Color hoodColor; public bool hood;            // capucha caída a la espalda
+        public Color pattern; public Weave weave;            // cuadros, rayas o canalé de la camisa o el jersey
+        public bool rolledSleeves, collar, openCollar;       // mangas remangadas; cuello de camisa (abierto)
+        public Color hangingGlasses; public bool hasHangingGlasses;   // gafas colgadas de la camisa
+        public bool beads;                                   // collar de cuentas de un solo color
         public Look(Style s, Color h, Color sk, Color e, bool b = false)
         {
+            this = default;
             style = s; hair = h; skin = sk; eyes = e; beard = b; height = 0f; clothes = default; hasClothes = false;
             pants = sleeves = shoes = glasses = cap = capLogo = default; hasPants = hasSleeves = shorts = hasShoes = hasGlasses = hasCap = false;
             beardStyle = b ? Beard.Full : Beard.None; tattoos = earring = false;
@@ -71,6 +91,26 @@ public static class CubeHair
         public Look Vest(Color shirt) { upperSleeves = shirt; hasUpperSleeves = true; return this; }   // clothes = chaleco; shirt = camiseta
         public Look Corset(Color c) { waist = c; hasWaist = true; return this; }
         public Look Boots(Color c) { boots = c; hasBoots = true; return this; }
+        public Look Moustache(Color tint, bool thin = false) { beard = true; beardStyle = thin ? Beard.ThinMoustache : Beard.Moustache; beardTint = tint; hasBeardTint = true; return this; }
+        public Look Shades(Color frame, Color lens, bool aviatorShape = false) { shadesFrame = frame; shadesLens = lens; hasShades = true; aviator = aviatorShape; return this; }
+        public Look Watch(Color strap, Color face) { watch = strap; watchFace = face; hasWatch = true; return this; }
+        public Look Band(Color c) { wristband = true; band = c; return this; }
+        public Look HairClip(Color a, Color b) { clipA = a; clipB = b; hasClip = true; return this; }
+        public Look Earrings(bool hoop = false) { earring = true; bothEars = true; hoops = hoop; return this; }
+        public Look Bag(Color c) { bag = c; hasBag = true; return this; }
+        public Look Belt(Color c) { belt = c; hasBelt = true; return this; }
+        /// <summary>Falda por encima de la rodilla: cadera del color de la falda, piernas al aire, flores de <paramref name="print"/>.</summary>
+        public Look Skirt(Color c, Color print) { skirt = c; skirtPrint = print; hasSkirt = true; pants = c; hasPants = true; shorts = true; return this; }
+        public Look Ruffles() { ruffles = true; return this; }
+        /// <summary>Chaqueta con cremallera (el color de <see cref="Wear"/>: llamar después) sobre una camisa <paramref name="shirt"/>.
+        /// Abierta, la camisa se ve por delante; cerrada, solo en el cuello. <paramref name="undershirt"/>: la camiseta que asoma.</summary>
+        public Look Jacket(Color shirt, Color? undershirt = null, bool closed = false) { jacket = true; inner = shirt; jacketClosed = closed; sleeves = clothes; hasSleeves = true; if (undershirt.HasValue) { tee = undershirt.Value; hasTee = true; } return this; }
+        public Look Hood(Color c) { hood = true; hoodColor = c; return this; }
+        public Look Pattern(Color line, Weave kind) { pattern = line; weave = kind; return this; }
+        public Look RolledSleeves() { rolledSleeves = true; return this; }
+        public Look Collar(bool open = false) { collar = true; openCollar = open; return this; }
+        public Look HangingGlasses(Color c) { hangingGlasses = c; hasHangingGlasses = true; return this; }
+        public Look Beads(Color c) { necklace = c; hasNecklace = true; necklaceCross = false; beads = true; return this; }
         public Look Extras(bool upperTat = false, bool band = false, bool walletChain = false, bool backRifle = false) { upperTattoo = upperTat; wristband = band; chain = walletChain; rifle = backRifle; return this; }
     }
 
@@ -98,9 +138,11 @@ public static class CubeHair
         // Lizmibet: 70+ años, ecuatoriana, médica, gran amiga de Irosene. (de su foto) pelo corto rizado y voluminoso castaño
         // cobrizo, gafas finas plateadas, piel clara, vestido blanco campesino de manga larga hasta los tobillos, sandalias blancas.
         if (n.Contains("lizmibet")) return new Look(Style.Curly, C(0.6f, 0.32f, 0.2f), C(0.93f, 0.77f, 0.67f), C(0.3f, 0.2f, 0.12f)).Fem().Face(0.84f, 0.3f).Lips(C(0.78f, 0.5f, 0.52f)).Glasses(C(0.72f, 0.72f, 0.75f)).Wear(C(0.97f, 0.97f, 0.95f), 1.55f).Pants(C(0.97f, 0.97f, 0.95f)).Sleeves(C(0.97f, 0.97f, 0.95f)).Shoes(C(0.95f, 0.95f, 0.95f));
-        // Su esposo, JEFE DE CONSTRUCCIÓN. (de su foto) pelo corto oscuro entrecano peinado hacia atrás, gafas de sol oscuras,
-        // piel morena clara, polo gris claro, bermudas verde salvia con cinturón, chanclas negras, reloj.
-        if (n.Contains("jefeconstruccion") || n.Contains("jefe_construccion")) return new Look(Style.Short, C(0.2f, 0.19f, 0.19f), C(0.8f, 0.6f, 0.47f), C(0.2f, 0.14f, 0.1f)).Face(0.88f, 0.4f).Glasses(C(0.08f, 0.08f, 0.1f)).Wear(C(0.78f, 0.8f, 0.82f), 1.68f).Pants(C(0.5f, 0.58f, 0.54f), true).Shoes(C(0.08f, 0.08f, 0.09f)).Extras(band: true);
+        // Su esposo, Tofelite «TOTE», JEFE DE CONSTRUCCIÓN. (de su foto, tote.jpg, 2026-11-04; antes, de la foto con Lizmibet: polo
+        // gris y bermudas) piel morena, pelo corto oscuro, GAFAS DE SOL ENVOLVENTES oscuras, camisa rosa pálido de RAYAS FINAS con
+        // las mangas REMANGADAS y el cuello ABIERTO, pantalón gris de vestir con CINTURÓN oscuro, zapatos marrones de cordones y
+        // RELOJ DORADO en la muñeca izquierda. Robusto (sus stats).
+        if (n.Contains("jefeconstruccion") || n.Contains("jefe_construccion")) return new Look(Style.Short, C(0.12f, 0.1f, 0.1f), C(0.78f, 0.58f, 0.45f), C(0.2f, 0.14f, 0.1f)).Face(0.88f, 0.4f).Shades(C(0.1f, 0.1f, 0.11f), C(0.16f, 0.12f, 0.12f)).Wear(C(0.93f, 0.82f, 0.86f), 1.68f).Pattern(C(0.78f, 0.52f, 0.62f), Weave.Stripes).RolledSleeves().Collar(true).Pants(C(0.56f, 0.55f, 0.53f)).Belt(C(0.16f, 0.13f, 0.18f)).Shoes(C(0.4f, 0.28f, 0.18f)).Watch(C(0.85f, 0.72f, 0.38f), C(0.95f, 0.9f, 0.75f));
         // Sadhguru: da las clases en el centro de yoga. (de su foto) turbante crema con franja granate, barba larga blanca
         // y bigote poblado, piel morena, camiseta sin mangas verde agua, dhoti blanco y chal blanco con ribete turquesa,
         // guirnalda de flores al cuello, descalzo.
@@ -128,6 +170,35 @@ public static class CubeHair
         // Ibrahim Traoré (capitán, presidente de transición de Burkina Faso; coordina la Guardia): piel oscura, pelo negro muy corto
         // y barba corta, boina roja, uniforme de campaña verde oliva y botas.
         if (n.Contains("ibrahimtraore") || n.Contains("ibrahim traoré") || n.Contains("ibrahim traore")) return new Look(Style.Shaved, C(0.05f, 0.04f, 0.04f), C(0.36f, 0.24f, 0.17f), C(0.12f, 0.08f, 0.06f)).Face(0.86f, 0.55f).Stubble().Beret(C(0.72f, 0.1f, 0.12f)).Wear(C(0.33f, 0.36f, 0.24f), 1.8f).Sleeves(C(0.33f, 0.36f, 0.24f)).Pants(C(0.3f, 0.33f, 0.22f)).Boots(C(0.12f, 0.1f, 0.08f));
+        // FAMILIA Y AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos). Personas reales:
+        // solo rasgos visibles (pelo, piel, ropa, complementos), con respeto y sin caricatura. Estaturas estimadas.
+        // Nesvitor (Néstor): piel curtida morena, pelo canoso y negro peinado hacia atrás, BIGOTE espeso canoso; forro polar negro
+        // con cremallera ABIERTO sobre camisa blanca de CUADROS finos azules y camiseta amarilla; las gafas colgadas de la camisa.
+        if (n.Contains("nesvitor")) return new Look(Style.SweptBack, C(0.3f, 0.29f, 0.28f), C(0.7f, 0.5f, 0.38f), C(0.2f, 0.14f, 0.1f)).Face(0.84f, 0.5f).Moustache(C(0.6f, 0.58f, 0.56f)).Wear(C(0.1f, 0.1f, 0.11f), 1.68f).Jacket(C(0.95f, 0.95f, 0.97f), C(0.98f, 0.84f, 0.2f)).Pattern(C(0.55f, 0.66f, 0.88f), Weave.Checks).HangingGlasses(C(0.72f, 0.66f, 0.5f)).Pants(C(0.22f, 0.22f, 0.25f)).Shoes(C(0.12f, 0.1f, 0.09f));
+        // Amahuz (pareja de Karen): delgado, piel clara morena, pelo castaño oscuro, BIGOTE fino; polo azul marino de manga corta
+        // (cuello cerrado), pantalón oscuro y BOLSO negro cruzado.
+        if (n.Contains("amahuz")) return new Look(Style.Short, C(0.2f, 0.13f, 0.09f), C(0.86f, 0.68f, 0.55f), C(0.22f, 0.15f, 0.1f)).Face(0.78f, 0.45f).Moustache(C(0.24f, 0.17f, 0.12f), true).Wear(C(0.1f, 0.12f, 0.22f), 1.76f).Collar().Pants(C(0.08f, 0.08f, 0.1f)).Bag(C(0.06f, 0.06f, 0.07f)).Shoes(C(0.07f, 0.07f, 0.08f));
+        // Karen (pareja de Amahuz): piel morena cálida, melena larga castaña oscura con una PINZA DE FLOR rosa y amarilla,
+        // pendientes pequeños; blusa blanca sin mangas con VOLANTES, FALDA berenjena con flores rosas y lilas, RELOJ negro.
+        if (n.Contains("karen")) return new Look(Style.Long, C(0.22f, 0.14f, 0.09f), C(0.74f, 0.53f, 0.4f), C(0.2f, 0.13f, 0.08f)).Fem().Face(0.78f, 0.55f).Lips(C(0.72f, 0.42f, 0.42f)).HairClip(C(0.95f, 0.55f, 0.72f), C(0.98f, 0.85f, 0.3f)).Earrings().Wear(C(0.97f, 0.96f, 0.95f), 1.58f).Sleeveless().Ruffles().Skirt(C(0.24f, 0.12f, 0.18f), C(0.88f, 0.58f, 0.82f)).Watch(C(0.08f, 0.08f, 0.09f), C(0.2f, 0.2f, 0.22f)).Shoes(C(0.16f, 0.1f, 0.1f));
+        // Alicita (Alicia): piel clara morena, melena larga lisa negra, ARETES de aro pequeños; chaqueta negra con cremallera
+        // (cerrada) y el cuello verde fosforito de la camiseta asomando. Sonriente.
+        if (n.Contains("alicita")) return new Look(Style.Long, C(0.06f, 0.05f, 0.06f), C(0.88f, 0.7f, 0.58f), C(0.18f, 0.12f, 0.08f)).Fem().Face(0.8f, 0.55f).Lips(C(0.75f, 0.45f, 0.45f)).Earrings(true).Wear(C(0.12f, 0.13f, 0.15f), 1.58f).Jacket(C(0.62f, 0.95f, 0.15f), null, true).Pants(C(0.12f, 0.12f, 0.15f)).Shoes(C(0.1f, 0.1f, 0.11f));
+        // Ducristin («semigod»): piel morena, pelo corto castaño oscuro LEVANTADO por delante (tupé), GAFAS DE AVIADOR de cristal
+        // degradado; camisa azul clara de CUADROS con cuello abierto y MUÑEQUERA roja.
+        if (n.Contains("ducristin")) return new Look(Style.Quiff, C(0.2f, 0.13f, 0.09f), C(0.78f, 0.58f, 0.45f), C(0.2f, 0.13f, 0.08f)).Face(0.86f, 0.5f).Shades(C(0.75f, 0.75f, 0.78f), C(0.36f, 0.22f, 0.26f), true).Wear(C(0.6f, 0.78f, 0.95f), 1.7f).Sleeves(C(0.6f, 0.78f, 0.95f)).Pattern(C(0.42f, 0.6f, 0.88f), Weave.Checks).Collar(true).Band(C(0.85f, 0.15f, 0.2f)).Pants(C(0.25f, 0.27f, 0.32f)).Shoes(C(0.15f, 0.12f, 0.1f));
+        // Josedrilo (cumbaya.jpg, a la IZQUIERDA; supuesto): melena larga castaña oscura RECOGIDA atrás; chaqueta de cuero negra
+        // y pantalón granate.
+        if (n.Contains("josedrilo")) return new Look(Style.TiedBack, C(0.22f, 0.15f, 0.1f), C(0.88f, 0.72f, 0.6f), C(0.22f, 0.15f, 0.1f)).Face(0.8f, 0.45f).Wear(C(0.1f, 0.09f, 0.09f), 1.75f).Jacket(C(0.2f, 0.2f, 0.22f)).Pants(C(0.45f, 0.2f, 0.2f)).Shoes(C(0.1f, 0.08f, 0.07f));
+        // Maite (cumbaya.jpg, en el CENTRO; supuesto): melena larga ondulada castaña, piel clara; parka con CAPUCHA verde oliva
+        // parduzco sobre una camiseta gris.
+        if (n.Contains("maite")) return new Look(Style.LongWavy, C(0.4f, 0.26f, 0.16f), C(0.95f, 0.8f, 0.7f), C(0.25f, 0.17f, 0.1f)).Fem().Face(0.76f, 0.55f).Lips(C(0.78f, 0.5f, 0.5f)).Wear(C(0.36f, 0.33f, 0.24f), 1.65f).Jacket(C(0.5f, 0.5f, 0.52f)).Hood(C(0.36f, 0.33f, 0.24f)).Pants(C(0.15f, 0.15f, 0.18f)).Shoes(C(0.2f, 0.15f, 0.12f));
+        // Shalva (cumbaya.jpg, a la DERECHA; supuesto): pelo corto castaño; jersey grueso de CANALÉ verde oliva y vaqueros
+        // azul claro.
+        if (n.Contains("shalva")) return new Look(Style.Short, C(0.32f, 0.22f, 0.14f), C(0.9f, 0.74f, 0.62f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.3f, 0.33f, 0.15f), 1.72f).Sleeves(C(0.3f, 0.33f, 0.15f)).Pattern(C(0.2f, 0.22f, 0.09f), Weave.Ribs).Pants(C(0.62f, 0.7f, 0.8f)).Shoes(C(0.2f, 0.18f, 0.16f));
+        // Adaguchi (confirmado por Berón el 2026-11-04): piel clara morena, pelo corto ondulado
+        // castaño oscuro con volumen arriba, un PENDIENTE pequeño; sudadera negra SIN MANGAS con capucha y COLLAR de cuentas oscuras.
+        if (n.Contains("adaguchi")) return new Look(Style.Fade, C(0.16f, 0.1f, 0.07f), C(0.88f, 0.7f, 0.58f), C(0.2f, 0.13f, 0.08f)).Face(0.84f, 0.5f).Earring().Wear(C(0.08f, 0.08f, 0.09f), 1.65f).Sleeveless().Hood(C(0.08f, 0.08f, 0.09f)).Beads(C(0.25f, 0.2f, 0.26f)).Pants(C(0.12f, 0.12f, 0.14f)).Shoes(C(0.1f, 0.1f, 0.1f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
@@ -184,7 +255,7 @@ public static class CubeHair
                 P(h, new Vector3(0f, top + 0.025f, center.z - 0.005f), new Vector3(w, 0.05f, d), c);
                 P(h, new Vector3(0f, center.y + size.y * 0.15f, back - 0.012f), new Vector3(w, size.y * 0.75f, 0.03f), c);
                 for (int s = -1; s <= 1; s += 2) P(h, new Vector3(s * (size.x * 0.5f + 0.012f), center.y + size.y * 0.25f, center.z - size.z * 0.15f), new Vector3(0.03f, size.y * 0.5f, size.z * 0.6f), c);
-                if (look.style == Style.Ponytail || look.style == Style.Bun)   // RECOGIDO: peinado hacia atrás, la frente despejada (sin flequillo)
+                if (look.style == Style.Ponytail || look.style == Style.Bun || look.style == Style.SweptBack || look.style == Style.Quiff || look.style == Style.TiedBack)   // RECOGIDO o PEINADO HACIA ATRÁS: la frente despejada (sin flequillo)
                     P(h, new Vector3(0f, top - 0.004f, center.z + size.z * 0.5f - 0.03f), new Vector3(w * 0.88f, 0.022f, 0.05f), c);
                 else if (look.style != Style.Bob)
                     P(h, new Vector3(0f, top - 0.02f, center.z + size.z * 0.5f - 0.005f), new Vector3(w * 0.85f, 0.05f, 0.025f), c);
@@ -225,6 +296,27 @@ public static class CubeHair
                 }
                 else if (look.style == Style.Bun)
                     P(h, new Vector3(0f, top - 0.01f, back - 0.05f), new Vector3(0.12f, 0.1f, 0.1f), c);
+                else if (look.style == Style.SweptBack)
+                {
+                    // PEINADO HACIA ATRÁS: una capa algo abultada sobre la coronilla que baja hacia la nuca, y las sienes pegadas.
+                    P(h, new Vector3(0f, top + 0.045f, center.z - 0.02f), new Vector3(w * 0.9f, 0.03f, d * 0.92f), c);
+                    Transform swept = P(h, new Vector3(0f, top + 0.02f, back + 0.01f), new Vector3(w * 0.92f, 0.04f, 0.08f), c);
+                    swept.localRotation = Quaternion.Euler(-30f, 0f, 0f);
+                }
+                else if (look.style == Style.Quiff)
+                {
+                    // TUPÉ: el pelo de delante levantado hacia arriba y atrás, más alto en la frente que en la coronilla.
+                    Transform q = P(h, new Vector3(0f, top + 0.06f, center.z + size.z * 0.3f), new Vector3(w * 0.82f, 0.08f, 0.12f), c);
+                    q.localRotation = Quaternion.Euler(-28f, 0f, 0f);
+                    P(h, new Vector3(0f, top + 0.04f, center.z - size.z * 0.05f), new Vector3(w * 0.85f, 0.04f, d * 0.6f), c);
+                }
+                else if (look.style == Style.TiedBack)
+                {
+                    // MELENA RECOGIDA ATRÁS: cola baja en la nuca, por debajo de los hombros; la goma, más oscura.
+                    P(h, new Vector3(0f, center.y - size.y * 0.05f, back - 0.03f), new Vector3(0.06f, 0.05f, 0.05f), c * 0.75f + new Color(0, 0, 0, 1));
+                    Transform tail = P(h, new Vector3(0f, center.y - size.y * 0.55f, back - 0.045f), new Vector3(0.07f, size.y * 0.95f, 0.045f), c);
+                    tail.localRotation = Quaternion.Euler(-6f, 0f, 0f);
+                }
                 else if (look.style == Style.Ponytail)
                 {
                     // COLETA ALTA: el moño de la goma en la coronilla, atrás, y la cola cayendo por la nuca.
@@ -324,6 +416,18 @@ public static class CubeHair
         }
         else if (look.beardStyle == Beard.Goatee)   // PERILLA: solo en la barbilla
             P(h, new Vector3(0f, center.y - size.y * 0.44f, front + 0.005f), new Vector3(size.x * 0.32f, size.y * 0.16f, 0.03f), c);
+        else if (look.beardStyle == Beard.Moustache || look.beardStyle == Beard.ThinMoustache)
+        {
+            // BIGOTE entre la nariz y la boca: espeso (con las puntas caídas a los lados de la boca) o fino (una sombra).
+            Color mc = look.hasBeardTint ? look.beardTint : c;
+            bool thick = look.beardStyle == Beard.Moustache;
+            float mw = size.x * (thick ? 0.48f : 0.34f);
+            if (!thick) mc = Color.Lerp(look.skin, mc, 0.55f);
+            P(h, new Vector3(0f, center.y - size.y * 0.195f, front + (thick ? 0.014f : 0.004f)), new Vector3(mw, thick ? 0.035f : 0.012f, thick ? 0.03f : 0.006f), mc);
+            if (thick)
+                for (int s = -1; s <= 1; s += 2)
+                    P(h, new Vector3(s * mw * 0.47f, center.y - size.y * 0.255f, front + 0.012f), new Vector3(0.024f, 0.04f, 0.024f), mc);
+        }
 
         if (look.hasGlasses)   // GAFAS redondas (en cubos: dos aros cuadrados con su puente y patillas)
         {
@@ -363,8 +467,55 @@ public static class CubeHair
             P(h, new Vector3(size.x * 0.22f, top + 0.03f, front + 0.008f), new Vector3(0.035f, 0.04f, 0.006f), new Color(0.85f, 0.72f, 0.3f));   // insignia
         }
 
-        if (look.earring)   // PENDIENTE
-            P(h, new Vector3(-(size.x * 0.5f + 0.012f), center.y - size.y * 0.05f, center.z), new Vector3(0.018f, 0.018f, 0.018f), new Color(0.85f, 0.85f, 0.88f));
+        if (look.hasShades)   // GAFAS DE SOL: cristales rellenos (envolventes: una banda que rodea las sienes; de aviador: gota con montura fina)
+        {
+            float ey = center.y + size.y * 0.12f, ex = size.x * 0.24f, r = Mathf.Min(size.x, size.y) * 0.16f, z = front + 0.02f;
+            if (look.aviator)
+            {
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    P(h, new Vector3(s * ex, ey - r * 0.15f, z), new Vector3(r * 2.3f, r * 1.8f, 0.01f), look.shadesLens);
+                    P(h, new Vector3(s * (ex - r * 0.15f), ey - r * 1.15f, z), new Vector3(r * 1.7f, r * 0.5f, 0.01f), Color.Lerp(look.shadesLens, Color.white, 0.12f));   // degradado: más claro abajo
+                    P(h, new Vector3(s * ex, ey + r * 0.8f, z + 0.004f), new Vector3(r * 2.4f, 0.01f, 0.01f), look.shadesFrame);
+                    P(h, new Vector3(s * (size.x * 0.5f + 0.005f), ey + r * 0.6f, center.z + size.z * 0.15f), new Vector3(0.006f, 0.008f, size.z * 0.7f), look.shadesFrame);
+                }
+                P(h, new Vector3(0f, ey + r * 0.8f, z + 0.004f), new Vector3(ex * 2f - r * 2.2f, 0.008f, 0.008f), look.shadesFrame);   // doble puente
+                P(h, new Vector3(0f, ey + r * 0.35f, z + 0.004f), new Vector3(ex * 2f - r * 2.2f, 0.006f, 0.006f), look.shadesFrame);
+            }
+            else
+            {
+                P(h, new Vector3(0f, ey, z), new Vector3(size.x * 0.92f, r * 1.7f, 0.014f), look.shadesLens);
+                P(h, new Vector3(0f, ey + r * 0.9f, z + 0.002f), new Vector3(size.x * 0.94f, 0.014f, 0.016f), look.shadesFrame);
+                for (int s = -1; s <= 1; s += 2)
+                {
+                    P(h, new Vector3(s * (size.x * 0.5f + 0.006f), ey, front - 0.02f), new Vector3(0.012f, r * 1.4f, 0.07f), look.shadesLens);   // envuelve la sien
+                    P(h, new Vector3(s * (size.x * 0.5f + 0.006f), ey + r * 0.5f, center.z + size.z * 0.1f), new Vector3(0.008f, 0.012f, size.z * 0.6f), look.shadesFrame);
+                }
+            }
+        }
+
+        if (look.hasClip)   // PINZA DE FLOR sobre la oreja izquierda: cinco pétalos alrededor de un botón
+        {
+            Vector3 fc = new Vector3(size.x * 0.5f + 0.035f, top - 0.06f, center.z + size.z * 0.05f);
+            for (int i = 0; i < 5; i++)
+            {
+                float a = i / 5f * Mathf.PI * 2f;
+                P(h, fc + new Vector3(0f, Mathf.Cos(a) * 0.022f, Mathf.Sin(a) * 0.022f), new Vector3(0.012f, 0.022f, 0.022f), i % 2 == 0 ? look.clipA : Color.Lerp(look.clipA, Color.white, 0.3f));
+            }
+            P(h, fc + new Vector3(0.004f, 0f, 0f), new Vector3(0.014f, 0.016f, 0.016f), look.clipB);
+        }
+
+        if (look.earring)   // PENDIENTE (uno, o en las dos orejas; pequeño o de aro)
+            for (int s = -1; s <= (look.bothEars ? 1 : -1); s += 2)
+            {
+                float ex = s * (size.x * 0.5f + 0.012f), ey = center.y - size.y * 0.05f;
+                Color metal = new Color(0.85f, 0.85f, 0.88f);
+                if (!look.hoops) { P(h, new Vector3(ex, ey, center.z), new Vector3(0.018f, 0.018f, 0.018f), metal); continue; }
+                P(h, new Vector3(ex, ey - 0.012f, center.z - 0.016f), new Vector3(0.008f, 0.03f, 0.008f), metal);   // aro: cuatro lados
+                P(h, new Vector3(ex, ey - 0.012f, center.z + 0.016f), new Vector3(0.008f, 0.03f, 0.008f), metal);
+                P(h, new Vector3(ex, ey - 0.03f, center.z), new Vector3(0.008f, 0.008f, 0.04f), metal);
+                P(h, new Vector3(ex, ey + 0.004f, center.z), new Vector3(0.008f, 0.008f, 0.02f), metal);
+            }
     }
 
 

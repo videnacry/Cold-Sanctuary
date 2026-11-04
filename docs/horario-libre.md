@@ -68,14 +68,15 @@ También se mide el Δ por persona: la diferencia entre su actividad más hecha 
 | Actividad | Sitio | Plazas |
 |---|---|---|
 | Pesas y saco (ejercicio: sentadillas) | Gimnasio | 6 |
-| Yoga libre y meditación | Sala de Yoga | 8 |
+| Hatha libre y meditación junto al linga | Sala de Yoga · Hatha tradicional (piso de Hatha; cada plaza, una esterilla; [yoga-pisos.md](yoga-pisos.md)) | 8 |
+| Ashtanga autoguiado (estilo Mysore) | Sala de Yoga · Ashtanga occidental (piso de Ashtanga) | 8 |
 | Pasear y cuidar el huerto | Huerto | 6 |
 | Leer en la plataforma de la arboleda | Arboleda residencial | 6 |
 | Jugar con las crías | Cría | 4 |
 | Manualidades | Estudio Textil | 4 |
 | Tertulia | Restaurante («Cocina») | 8 |
 | Bailar | Sala de Ballet → Calistenia → Gimnasio | 6 |
-| Artes marciales con Goku | Dojo → Gimnasio | 6 |
+| Artes marciales con Gohageneis (antes con Goku, que se fue a su microcosmos el 2026-11-04) | Dojo → Gimnasio | 6 |
 | Descansar en casa (tumbado en su cama) | Su casa del árbol | sin límite |
 
 **Microcosmos** (`MicroActivities`). La plantilla de edificio y la función del registro que se hace allí. Las plazas son los puestos de esos edificios. Solo entran las plantillas que hay en la escena.
@@ -163,3 +164,7 @@ Botón «Horario libre» abajo a la izquierda, o en la consola `horario` (tambi�
 La jornada sigue intacta: se vuelve a correr el grupo 50.
 
 **Lejos, en el microcosmos** (2026-11-04): en los pueblos ×100 los sitios quedan a cientos de metros. Si está lejos, el insecto-humano va a **paso ligero** (hasta 6 m/s, para llegar en unos 75 s) y tiene más tiempo para llegar andando (de 60 a 120 s de juego, según la distancia). Si aun así no llega, se le pone allí con `Warp` (NavMeshAgent) y cuenta como `fallback`. Los saltos solo se cuentan mientras lo lleva el horario: lo que lo mueva una necesidad no cuenta.
+
+**A dónde se anda en el microcosmos** (2026-11-04, ronda 3): entre los puestos de los edificios de la actividad se elige uno con **camino completo** por el NavMesh (con sus trepadas) y se anda a su punto del NavMesh. Si no hay ninguno, se va al final del camino parcial si queda junto al edificio (≤ 15 m). Se da por llegado también cuando el agente está al final de su camino a ≤ 4 m del puesto.
+
+**El panel enseña la escena correcta**: la que fija una prueba (`HorarioPanel.FocusScene`), la que se eligió con «otra escena» o, si no, la escena donde está el jugador.

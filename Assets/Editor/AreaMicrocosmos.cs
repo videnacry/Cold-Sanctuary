@@ -31,6 +31,7 @@ public static class AreaMicrocosmos
     /// va el pueblo o la ciudad real a escala 1:1 (su plano: calles, plazas, río, lago, colinas; CivicBuilder.TownPlans).</summary>
     public const float TownScale = 60f;
     static int _obraRemoved;
+    static List<MicroFloorElements.Piece> _inventory;   // el inventario de la copia gigante del piso del último Build (antes de recortarla)
     const float StoryScale = 2.25f, AntHeight = 1.8f;
 
     /// <param name="storyOverride">Otra historia en vez de la del área (p. ej. las simulaciones de compasión): construye en
@@ -38,6 +39,7 @@ public static class AreaMicrocosmos
     internal static void Build(string areaGo, string display, SampleSceneBuilder.MissionKind kind, Color tint, Vector3 o, System.Func<Transform, int> storyOverride = null, MicrocosmSpec spec = null)
     {
         var root = new GameObject($"Microcosmos_{display}");
+        _inventory = null;
         string sceneLabel = spec != null ? spec.scene : root.name;
         // Su FECHA (Eras): las conductas consultan Eras.Allows (sin ordeño de pulgones antes del Neolítico, etc.).
         var era = Eras.OfMicrocosmos(display);
@@ -64,11 +66,17 @@ public static class AreaMicrocosmos
             // la forma en obra preparada) ANTES de nada más: lo que se agranda, se despeja para el pueblo y se puebla es el piso
             // terminado. (Antes solo lo hacía la historia de Bruce Lee, DESPUÉS de despejar el barrio, y los conos se quedaban.)
             _obraRemoved = FloorForms.ShowFinished(giant.transform);
+            // Sus PLANTAS PROPIAS (otros pisos que cuelgan del área: el de Ashtanga de la Sala de Yoga, las del hospital) no son el
+            // mapa (regla 11): fuera, antes de que se pierda su TreeFloor.
+            foreach (TreeFloor tf in giant.GetComponentsInChildren<TreeFloor>(true)) if (tf != null && tf.gameObject != giant) Object.DestroyImmediate(tf.gameObject);
             foreach (MonoBehaviour mb in giant.GetComponentsInChildren<MonoBehaviour>(true)) Object.DestroyImmediate(mb);
             foreach (string n in new[] { "Estructura_Elevada" }) { Transform t = giant.transform.Find(n); if (t != null) Object.DestroyImmediate(t.gameObject); }
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t.name.EndsWith("_VirtualizationMachine")) Object.DestroyImmediate(t.gameObject);
             // Los ANILLOS son otras plataformas (el 80 % vuela fuera del piso): no son el mapa.
             foreach (Transform t in giant.GetComponentsInChildren<Transform>(true)) if (t != null && t != giant.transform && t.name.StartsWith("Anillo")) Object.DestroyImmediate(t.gameObject);
+            // (2026-11-04) EL INVENTARIO DEL PISO (MicroFloorElements), antes de recortarlo con su borde: cada pieza tendrá su versión de
+            // microcosmos (lo recortado se apunta «fuera») y el microcosmos apunta con qué piso del mesocosmos se montó.
+            _inventory = MicroFloorElements.Inventory(giant.transform);
             giant.transform.SetParent(root.transform, false);
             giant.transform.localPosition = Vector3.zero; giant.transform.localRotation = Quaternion.identity;
             giant.transform.localScale = Vector3.one * AreaScale;
@@ -107,6 +115,10 @@ public static class AreaMicrocosmos
         int year0 = spec != null ? spec.year : (era.HasValue ? era.Value.year : Eras.Present);
         bool townEra = giant != null && storyOverride != null && MicroBuildRules.IsTownEra(year0);
         _floorRoot = root.transform; _floorRect = rect;
+        // (2026-11-04) LA FORMA DE MICROCOSMOS DEL PISO (MicroFloorDress; Berón: «que tal si usamos las sillas y mesas y demás plataformas
+        // para recrear edificios, montañas, mares, acantilados, lagos»): cada pieza, en su sitio, reinterpretada por el catálogo (la mesa,
+        // montaña; la silla, nevado; el lavabo, lago; la cajonera, edificio; las hornillas, volcanes; el foco, el sol…) en la era de la historia.
+        var (elMapped, elUnmapped) = giant != null && _inventory != null ? MicroFloorDress.Dress(root.transform, giant.transform, _inventory, display, year0, display) : (0, 0);
 
         // 2) Dónde va la HISTORIA: el hueco más libre del SUELO del área (entre mesas, junto a la barra…), no su centro.
         Bounds foot = new Bounds(rect.center, new Vector3(rect.size.x, 1f, rect.size.z));
@@ -228,8 +240,33 @@ public static class AreaMicrocosmos
         if (outposts > 0)   // sus miradores tapan su meseta: ahí no crece nada (Covered)
             foreach (AreaFunctionSite s in cast.GetComponentsInChildren<AreaFunctionSite>(true))
                 if ((s.name.StartsWith(CivicBuilder.OutpostPrefix) || s.name.Contains("barrio alto")) && SubtreeBounds(s.transform, out Bounds ob, false)) { ob.Expand(new Vector3(4f, 0f, 4f)); _blocked.Add(ob); }
+        // (2026-11-04) LA CAPA DE TIERRA (MicroGround, MicroSoilBuilder; Berón: «una capa de superficie … un suelo de tierra, el cual
+        // tiene sus irregularidades, cúmulos y piedras»): 10 cm sobre la cara de arriba MÁS ALTA de cada suelo del piso (cubre las
+        // alfombras y las losas) y una placa sobre cada mueble poblado; lisa donde está la historia y su pueblo, sin tierra sobre su
+        // agua. La historia se sube a la tierra (y los edificios o calles que quedaran por debajo, sobre una alfombra): el pueblo
+        // siempre se ve encima del suelo.
+        MicroSoil soilLayer = null;
+        if (giant != null)
+        {
+            var flat = new List<Bounds>();
+            { Bounds sc = storyCore; sc.Expand(new Vector3(8f, 0f, 8f)); flat.Add(sc); }
+            if (_hasCore) { Bounds tc = _townCore; tc.Expand(new Vector3(4f, 0f, 4f)); flat.Add(tc); }
+            foreach (Bounds b in _streets) flat.Add(b);
+            List<Bounds> soilTops = tops?.FindAll(b => !TopHasBuilding(b, cast));
+            soilLayer = MicroSoilBuilder.Lay(root.transform, rect, district, floors, groundY, soilTops, flat, StoryWater(story), soil, display.GetHashCode(), sceneLabel);
+            story.localPosition += Vector3.up * MicroGround.SoilThickness;
+            soilLayer.raised = MicroSoilBuilder.RaiseTown(story, floors, groundY);
+            Physics.SyncTransforms();
+        }
         int animals = Nature(root.transform, rect, district, groundY, display.GetHashCode(), storyCore, floors, bio,
                              floraAt, faunaAt, giantSlots != null ? giantSlots.floraUnderStory : null, tops, townMode);
+        // (2026-11-04) LA FLORA ENCIMA, NUNCA DEBAJO (MicroGround; Berón: «la vegetación se está creando bajo el suelo … una de las
+        // reglas debería ser que la vegetación se cree encima de cada superficie y nunca debajo»): cada planta y cada bicho, apoyados
+        // en la superficie más alta de encima de su pie (un rayo desde arriba: la tierra, la alfombra, la losa del hospital); la que
+        // queda dentro de un collider (una pata, un edificio) se quita.
+        var surfaces = MicroSoilBuilder.GroundLayers(floors, groundY); if (tops != null) surfaces.AddRange(tops);
+        var (settledPl, removedPl) = MicroGround.Settle(root.transform, surfaces);
+        Debug.Log($"[Tierra] {sceneLabel}: {settledPl} plantas y bichos apoyados en la superficie de encima, {removedPl} plantas quitadas (dentro de un collider).");
 
         // Los PERSONAJES que andan por el área (las recolectoras de la tribu, MicroForager) empiezan en sus plazas de personaje,
         // alrededor de la historia; los de papel fijo (la líder, Nasatya, la Sembradora…) siguen junto a su estructura.
@@ -255,6 +292,20 @@ public static class AreaMicrocosmos
         mfl.districtCenter = new Vector3(district.center.x, groundY, district.center.z); mfl.districtSize = new Vector2(district.size.x, district.size.z);
         mfl.furnitureTops = tops != null ? tops.Count : 0; mfl.floraOnTops = _floraOnTops; mfl.faunaOnTops = _faunaOnTops; mfl.town = townMode;
         mfl.buildingsOnTops = outposts;
+        mfl.soil = soilLayer != null; mfl.plantsSettled = settledPl; mfl.plantsRemoved = removedPl;
+        mfl.elementsMapped = elMapped; mfl.elementsUnmapped = elUnmapped;
+        if (_inventory != null)
+        {   // LAS DEPENDENCIAS (MicroFloorElements.Record): con qué piso del mesocosmos se montó; si el piso cambia, se avisa para revisarlo.
+            // (la firma, la del piso del SANTUARIO tal cual: la copia gigante lleva además las partes que el área no cuelga de sí, Attached)
+            mfl.mesoInventory = MicroFloorElements.Keys(src != null ? MicroFloorElements.Inventory(src.transform) : _inventory); mfl.mesoSignature = MicroFloorElements.Signature(mfl.mesoInventory);
+            MicroFloorElements.Record(sceneLabel, areaGo, mfl.mesoInventory);
+            if (src != null)
+            {   // LA SINCRONÍA con el piso del santuario tal como está ahora: nada suyo sin su versión de microcosmos.
+                var miss = MicroFloorElements.Missing(src.transform, root.transform.Find(FloorForms.MicroName));
+                if (miss.Count > 0) Debug.LogWarning($"[Forma microcosmos] {sceneLabel}: {miss.Count} piezas de {areaGo} sin su versión de microcosmos: {string.Join(", ", miss.GetRange(0, Mathf.Min(10, miss.Count)))}.");
+            }
+            _inventory = null;
+        }
         // EL PISO AL QUE PERTENECE (reglas de los microcosmos, docs/microcosmos-areas.md §Reglas): montado ENCIMA de ese piso del
         // santuario, en su forma finalizada; y si el piso no representa la historia, «pendiente de piso representativo».
         mfl.platform = areaGo; mfl.finishedForm = giant != null; mfl.obraRemoved = _obraRemoved;
@@ -394,6 +445,34 @@ public static class AreaMicrocosmos
             }
         }
         return n;
+    }
+
+    /// <summary>(2026-11-04) El AGUA de la historia (ríos, lagos, el mar del plano, el agua pintada de una orilla): sobre ella no va
+    /// la capa de tierra. Las piezas planas cuyo nombre o material dice agua.</summary>
+    static List<Bounds> StoryWater(Transform story)
+    {
+        var l = new List<Bounds>();
+        foreach (Renderer r in story.GetComponentsInChildren<Renderer>(true))
+        {
+            Bounds b = r.bounds;
+            if (b.size.y > 3f || b.size.x * b.size.z < 4f) continue;
+            string n = r.name.ToLowerInvariant();
+            bool water = n.Contains("agua") || n.Contains("lago") || n.Contains("río") || n.Contains("rio_") || n.Contains("water") || n.Contains("mar_");
+            if (!water) foreach (Material m in r.sharedMaterials) if (m != null && (m.name.StartsWith("Relieve_agua") || m.name.StartsWith("Relieve_mar") || m.name.Contains("Agua"))) { water = true; break; }
+            if (water) l.Add(b);
+        }
+        return l;
+    }
+
+    /// <summary>¿Hay un edificio (un mirador del barrio alto) sobre la cara de arriba <paramref name="top"/>? Ahí no va la placa de tierra.</summary>
+    static bool TopHasBuilding(Bounds top, Transform cast)
+    {
+        foreach (AreaFunctionSite s in cast.GetComponentsInChildren<AreaFunctionSite>(true))
+        {
+            Vector3 p = s.transform.position;
+            if (p.x > top.min.x && p.x < top.max.x && p.z > top.min.z && p.z < top.max.z && Mathf.Abs(p.y - top.max.y) < 3f) return true;
+        }
+        return false;
     }
 
     // Las huellas del pueblo y, de ellas, las calles (el último TownFootprints): la flora del pueblo crece junto a ellas, sin pisarlas,

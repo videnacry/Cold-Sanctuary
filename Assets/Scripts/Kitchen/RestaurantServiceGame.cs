@@ -177,7 +177,7 @@ public class RestaurantServiceGame : MonoBehaviour
     {
         if (copies)
         {
-            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Sadhguru" };   // el camarero (WaiterSource) no se sienta a comer
+            string[] who = { "Goluis", "Panterilia", "Irosene", "Lizmibet", "JefeConstruccion", "Nesvitor" };   // (Nesvitor en vez de Sadhguru, 2026-11-04) el camarero (WaiterSource) no se sienta a comer
             GameObject c = WorkdayDirector.SpawnBodyCopy(who[n % who.Length], $"Turista_{n}");
             c.transform.SetParent(transform, true);
             return c.transform;

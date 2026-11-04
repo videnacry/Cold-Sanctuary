@@ -82,10 +82,10 @@ Eso es el **Leviatán**: el «submarino colosal» de Berón.
 
 ## 3. El Leviatán: hospital submarino de animales gigantes
 
-- **Casco**: 72 × 18 × 12 m. Atracado **a ras del suelo**: en superficie, con la cubierta a la altura del hielo y una **pasarela** a
+- **Casco**: 56 × 16 × 12 m. Atracado **a ras del suelo**: en superficie, con la cubierta a la altura del hielo y una **pasarela** a
   la orilla. El atraque lo busca el constructor (`FindBerth`): mar abierto bajo todo el casco y 3 m alrededor, la orilla a 7 m de un
   costado, a ≥ 45 m de los troncos de los árboles y lo más cerca posible de la laguna de las orcas.
-- **El pozo médico**: **32 × 10 m** a popa, inundado y abierto al mar por una **compuerta de popa** abatible. Tiene un **suelo
+- **El pozo médico**: **20 × 8 m** a popa, inundado y abierto al mar por una **compuerta de popa** abatible. Tiene un **suelo
   elevable** con colchones de espuma y guías, una **pasarela** con barandilla alrededor, un **pórtico grúa**, **rociadores** (piel
   mojada y fresca) y **ventanales de cristal** desde los pasillos de los cascos.
   - Cabe una orca (≤ 9,8 m), una beluga o una ballena gris o jorobada joven (≤ 16 m).
@@ -136,3 +136,11 @@ Eso es el **Leviatán**: el «submarino colosal» de Berón.
 **Ronda 2 del probador (2026-11-04).** La lanzadera del Leviatán llegaba sin equipo: tras la misión del oso, el equipo estaba en el
 piso veterinario y no llegaba a la puerta de urgencias en 120 s. Ahora el submarino va a la **puerta del piso donde está cada uno**
 (urgencias primero) y allí lo espera (`BoardCrew`). El registro dice quién sube y dónde.
+
+**Ronda 3 del probador (2026-11-04).**
+- **El Leviatán, a la medida de su paciente**: 56 × 16 × 12 m con un pozo de **20 × 8 m**, que cabe una ballena de 16 m con 2 m en cada
+  punta. Con 72 m y un pozo de 32 m, la orca del santuario (~7 m) se perdía dentro.
+- **El vientre, sobre los colchones**: al entrar en el pozo, la orca se baja hasta que lo más bajo de su cuerpo queda a 0,15 m del suelo
+  elevable. Antes quedaba a 1,26 m, porque su pivote no está en su centro.
+- **La bodega de la ambulancia, a la vista**: estaba dentro del casco bajo (a −1,85 m) y el paciente no se veía por el ventanal. Ahora
+  está por encima, a −0,4 m.

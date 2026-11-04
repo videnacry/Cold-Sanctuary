@@ -44,9 +44,10 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
     public IEnumerator Run()
     {
         TestProbe.Begin("Clase de yoga: maestro en la tarima, cada practicante en su esterilla, repiten los pasos");
-        if (YogaClass.Room == null || YogaClass.Tarima == null)
-        { TestProbe.Check("hay Sala de Yoga con la tarima del maestro", false); TestProbe.End(); yield break; }
-        List<CarpetPad> mats = YogaClass.Mats();
+        YogaHall hall = YogaHall.Find(YogaHall.Style.Hatha, YogaHall.Version.Occidental);   // (la sala sin kund: la inmersión la mira YogaFloorsTest)
+        if (YogaClass.Room == null || hall == null || hall.tarima == null)
+        { TestProbe.Check("hay Sala de Yoga (piso de Hatha, sala occidental) con la tarima del maestro", false); TestProbe.End(); yield break; }
+        List<CarpetPad> mats = hall.Mats();
         TestProbe.Check($"la sala tiene esterillas para {practitioners} practicantes", mats.Count >= practitioners, $"{mats.Count} esterillas");
 
         float mEnd = Time.realtimeSinceStartup + 120f;   // que el personal ya sea del santuario (al hacerse miembro lo colocan de golpe en su área)
@@ -54,7 +55,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             yield return new WaitForSecondsRealtime(1f);
         yield return new WaitForSecondsRealtime(1f);
         WorkdayDirector wd = WorkdayDirector.Instance;
-        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Sadhguru", "Andrea" };
+        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };
         var people = new List<Anima>();
         foreach (string n in names)
         {
@@ -67,19 +68,19 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check($"hay maestro y {practitioners} practicantes en el personal", people.Count >= practitioners + 1, string.Join(", ", people.Select(p => p.name)));
         if (people.Count < 2) { TestProbe.End(); yield break; }
-        // El maestro: Sadhguru si está (el yogui del santuario); si no, el primero.
-        Anima teacher = people.FirstOrDefault(p => p.name == "Sadhguru") ?? people[0];
+        // El maestro: el de yoga del santuario (WorkdayDirector.YogaTeacher, Andrea) si está; si no, el primero.
+        Anima teacher = people.FirstOrDefault(p => p.name == WorkdayDirector.YogaTeacher) ?? people[0];
         List<Anima> studs = people.Where(p => p != teacher).Take(practitioners).ToList();
 
         WorkdayDirector.LogTeleports = true;
         bool wdWas = wd != null && wd.enabled; if (wd != null) wd.enabled = false;
         float oldScale = Time.timeScale; Time.timeScale = speed;
-        if (YogaClass.Current != null) YogaClass.Current.End();
+        YogaClass.EndAll();
         yield return null;
         var all = new List<Anima> { teacher }; all.AddRange(studs);
         var who = all.ToDictionary(a => a, Hold);
 
-        YogaClass c = YogaClass.Begin(teacher, "Saludo al Sol");
+        YogaClass c = YogaClass.Begin(teacher, "Saludo al Sol", hall);
         TestProbe.Check("empieza la clase con el maestro", c != null && c.teacher == teacher, teacher.name);
         if (c == null) { Finish(who, oldScale, wd, wdWas); TestProbe.End(); yield break; }
         int joined = studs.Count(s => c.Join(s));
@@ -121,7 +122,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
                 bool all2 = c.Practitioners.Any(p => p.onMat) && c.Practitioners.Where(p => p.onMat).All(p => YogaClass.Matches(p.a, step, tolerance) && MatchesTeacher(p.a, teacher, step, tolerance));
                 if (all2) { stepCopied = Time.time - stepAt <= copyLimit + step.duration * step.reachFraction; if (stepCopied) { copied++; worstCopy = Mathf.Max(worstCopy, Time.time - stepAt); } }
             }
-            if (!YogaClass.OnTarima(teacher.gameObject)) offTarima++;
+            if (!c.IsOnTarima(teacher.gameObject)) offTarima++;
             foreach (YogaClass.Practitioner p in c.Practitioners)
             {
                 Vector3 d = p.mat.transform.position - p.a.transform.position; d.y = 0f;
@@ -218,7 +219,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
 
     static void Finish(Dictionary<Anima, Who> who, float scale, WorkdayDirector wd, bool wdWas)
     {
-        if (YogaClass.Current != null) YogaClass.Current.End();
+        YogaClass.EndAll();
         foreach (Who w in who.Values)
         {
             if (w.a == null) continue;

@@ -213,7 +213,10 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
         float dayMin = TimeController.timeController.RealMinutesPerDay;
         TestProbe.Check("un día de juego dura lo configurado en el reloj (1 h por defecto)", clock != null && Mathf.Abs(dayMin - clock.realMinutesPerDay) < 0.5f, $"{dayMin:0.#} min");
         TestProbe.Check("hay área de Construcción con maquinaria y material", FindByPrefix("Construction_Area") && FindByPrefix("Miniexcavadora") && FindByPrefix("Hormigonera"));
-        TestProbe.Check("el jefe de construcción, Sadhguru y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Sadhguru") && FindByPrefix("Andrea"));
+        TestProbe.Check("el jefe de construcción (Tote) y Andrea están en el santuario", FindByPrefix("JefeConstruccion") && FindByPrefix("Andrea"));
+        // (2026-11-04) Los famosos se fueron a sus microcosmos: ninguno sigue en el santuario.
+        string famous = string.Join(" ", new[] { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" }.Where(n => WorkdayDirector.Body(n) != null && WorkdayDirector.Body(n).scene == UnityEngine.SceneManagement.SceneManager.GetActiveScene()));
+        TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en el santuario", famous.Length == 0, famous);
         CarnivoreKeeper keeper = FindAnyObjectByType<CarnivoreKeeper>();
         TestProbe.Check("un guardia patrulla y alimenta a los carnívoros", keeper != null, keeper != null ? keeper.name : "ninguno");
 
@@ -508,7 +511,12 @@ public class SanctuaryLifeTest : MonoBehaviour, ITestUnit
             if (Gastronomy.Menu.All(d => eqs.Contains("Equipo_" + d.equipment))) fullSt++;
         }
         TestProbe.Check("la cocina ocupa la planta: ocho puestos completos (todo el equipo de la carta) en anillo, cámaras y obradores dobles", fullSt == 8 && FindByPrefix("Camara_de_refrigeracion") && FindByPrefix("Panaderia_2") && FindByPrefix("Queseria_2"), $"{fullSt} puestos completos");
-        TestProbe.Check("la sala de yoga tiene la plataforma en el centro, alfombras-esterilla en la sala y en su anillo, y las estatuas en él", FindByPrefix("Tarima del maestro") && (GameObject.Find("Anillo_yoga")?.GetComponentsInChildren<CarpetPad>().Count(c => c.building.StartsWith("Entrenamiento") && c.surface.Contains("#anillo")) ?? 0) >= 8 && FindByPrefix("Estatuas_anillo"));
+        // LOS PISOS DE YOGA (Berón 2026-11-04): sin anillo; cuatro salas (Hatha y Ashtanga, occidental y tradicional), cada una con
+        // su tarima en el centro y sus alfombras-esterilla alrededor (lo demás lo mira YogaFloorsTest, grupo 64).
+        var yogaHalls = YogaHall.All.Where(h => h != null).ToList();
+        TestProbe.Check("los pisos de yoga: sin anillo, cuatro salas (Hatha y Ashtanga × occidental y tradicional) con su tarima en el centro y sus alfombras-esterilla",
+            GameObject.Find("Anillo_yoga") == null && yogaHalls.Count == 4 && yogaHalls.All(h => h.tarima != null && h.Mats().Count >= 6 && h.Mats().All(m => m.building.StartsWith("Entrenamiento"))),
+            string.Join(" · ", yogaHalls.Select(h => $"{h.Label}: {h.Mats().Count} esterillas")));
         // PROGRESO (hechizo «progreso»): abre el checklist de historias y misiones, y lo vuelve a cerrar.
         SpellConsole scp = FindAnyObjectByType<SpellConsole>();
         if (scp != null)

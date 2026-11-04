@@ -4,10 +4,37 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
-> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 110 reglas,
-> dónde se comprueba cada una, las 14 pendientes de implementar del 2026-11-04 y la tabla piso → microcosmos para revisarlos
-> cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
+> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 119 reglas,
+> dónde se comprueba cada una, las 2 que quedan pendientes del 2026-11-04 (M9 y el gancho de §11 para los demás pisos) y la
+> tabla piso → microcosmos para revisarlos cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
 
+> **HECHO 2026-11-04 (hilo del yoga, rama claude/edif-yoga; sin probar en vivo):** **sin anillo de yoga** y **dos pisos de yoga**
+> en la torre del Entrenamiento (sube a 4 niveles: P6 Hatha = Sala de Yoga, P9 Ashtanga = `Planta_ashtanga`, P14 libre), cada
+> uno con su sala **occidental** (madera, esterillas, accesorios, Buda/Ganesha, sin espejo) y su sala **tradicional** (tierra,
+> algodón, kusha, lámparas de aceite, linga como el Dhyanalinga o Adiyogi y Patanjali, y un **kund** con agua del tronco para
+> sumergirse antes de practicar). Tarima en el centro y 8 esterillas en un solo anillo (líneas de visión medidas,
+> `YogaHall.BlockedSightLines`). La clase guiada es **Hatha** y el entrenamiento de las 14 h **Ashtanga**; la sala del día alterna
+> (tradicional los pares); puede haber una clase por sala a la vez. Ocio: Hatha tradicional y Ashtanga occidental. Investigación
+> con fuentes en [`yoga-pisos.md`](yoga-pisos.md); reglas F7–F12 del manual. Prueba nueva `YogaFloorsTest` (grupo 64).
+> - [ ] **Probar en vivo**: reconstruir la torre del Entrenamiento y los microcosmos de la Sala de Yoga (río de Sakshi, Patanjali,
+>   Nietzsche); grupos 64, 51, 42, 57, 28 y el horario libre; fotos de las cuatro salas.
+> - [ ] Ver si la Ashtanga Primaria cabe en el bloque de entrenamiento (si no, una versión corta para la clase).
+
+## Suelo, flora encima, elementos del piso, alfombras, escala cívica y estatuas (2026-11-04, rama claude/edif-micro3)
+
+Doc: [`microcosmos-suelo-y-elementos.md`](microcosmos-suelo-y-elementos.md); manual F2, F3, C7, H8, M9, M13, M30, M32, M33, M34, §11.
+- [x] **Flora encima, nunca debajo** (`MicroGround.Settle`/`ValidateFlora`, regla 7 de `MicroFloors.Validate`); causa de Ambrosio: la flora iba al suelo bajado del área, bajo las losas del hospital.
+- [x] **Capa de tierra de 10 cm** con ruido, cúmulos y piedras, en mosaicos combinados y con collider (`MicroSoilBuilder`, regla 8); la historia y el pueblo encima (`RaiseTown`).
+- [x] **Tercera forma «Forma_microcosmos»** (`FloorForms.MicroName`, `MicroFloorForm`) y **catálogo de elementos** (`MicroFloorElements`) con versión meso y micro; vestida en su sitio (`MicroFloorDress`); cambios de historia (`Overrides`).
+- [x] **Hospital propio y sincronía para todos los pisos**: la forma de microcosmos se hace desde el inventario del meso; `Missing`, firma, registro `UserSettings/MicroFloorDeps.txt`, aviso «REVISAR MICROCOSMOS» y menú «Pisos: microcosmos por revisar».
+- [x] **Alfombras de 7 cm** con núcleo de circuitos y costura de LED (`FlyingCarpet.Thickness`).
+- [x] **Escala cívica por pieza** (no ×2): asientos utilizables (`MicroSeat`, `PublicSeatSpell`), bancos en la plaza, plato y olla por raciones, fuente y estatua monumentales (`MicroCivicScale`, reglas 13–15).
+- [x] **Estatuas de insecto-humano** (`MicroStatue`) en la plaza y colosos en la forma de microcosmos.
+- [ ] **Verificar en vivo** (probador): reconstruir SampleScene y luego, UNO A UNO, Bolívar, Ambrosio, Hospital, Sakshi y Cocina (y el resto cuando se pueda); grupos 68 y 67, y 43, 60, 62, 63, 66 (las reglas nuevas 7–9 y 13–15 harán fallar los microcosmos aún sin reconstruir); fotos con `Tools/TmpCheck/Microcosmos suelo fotos` y `Alfombra canto foto`.
+- [ ] Pendiente: un microcosmos hecho de cero para una historia (M9); el gancho de Claude Code para los demás pisos (el aviso al reconstruir ya los cubre).
+
+> **HECHO 2026-11-04 (hilo de personajes, rama claude/edif-personajes):** la **familia y los amigos de Berón** (Nesvitor, Amahuz y Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva, Adaguchi) en el santuario con su aspecto de sus fotos, Tote mejorado, y los **famosos** (Sadhguru y los seis del mesocosmos) **fuera, a sus microcosmos**, con sus papeles repartidos (yoga → Andrea). *Falta:* la verificación en vivo del tester y que Berón confirme los nombres de `cumbaya.jpg`. Ver la sección «Familia y amigos de Berón» abajo.>
+>
 > **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
 >
 > **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).
@@ -531,12 +558,37 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Horario en el juego por escena (`LeisureDirector`): santuario (personal de la jornada) y microcosmos (insectos-humanos con `MicroJornada`); andar al sitio y hacer la actividad; las necesidades van antes.
 - [x] Etiquetas de actividad de los edificios (ocio, recuperación, descanso, capacidad, interacción): el tiempo libre no va a edificios de trabajo.
 - [x] Panel «Horario libre» (botón abajo a la izquierda / consola `horario`).
-- [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada.
+- [x] Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré: papel, aspecto de cubos, casa del árbol (3.ª casa por árbol) y jornada (2026-11-04: ya no están; ver abajo).
 - [x] Prueba `HorarioLibreTest` (grupo 65).
 - [x] Retratos de los seis (Temp/Horario/Mesocosmos.png y MesocosmosCaras.png) con la escena reconstruida (Blockout + microcosmos) y guardada.
-- [ ] Verificación en vivo de los grupos 65, 28, 62 y 50 (línea base 196/1) y fotos del panel: la hace el tester único. 1.ª pasada (2026-11-04): 65 = 30/1 (Kapilavastu sin franjas: el reloj no llegaba a las 16 h con la escena cargada; corregido con tope de tiempo mayor y las franjas en marcha) y 50 = 148/2 (Elon Musk no llegaba a la escalera horizontal; corregido: dobla las rodillas). 2.ª (lote F): 43 = 6/4 (inicia el huerto Warren Buffett desde la ronda de frutales del techo de Servicios; corregido: inicia quien está en el área). Ronda 2: 43 y la escalera OK; 65 = 34/2 (en Kapilavastu se les ponía en su sitio a los 60 s y el transform peleaba con el NavMeshAgent; corregido: paso ligero según la distancia, tiempo según la distancia y Warp). Repetir 65.
+- [ ] Verificación en vivo de los grupos 65, 28, 62 y 50 (línea base 196/1) y fotos del panel: la hace el tester único. 1.ª pasada (2026-11-04): 65 = 30/1 (Kapilavastu sin franjas: el reloj no llegaba a las 16 h con la escena cargada; corregido con tope de tiempo mayor y las franjas en marcha) y 50 = 148/2 (Elon Musk no llegaba a la escalera horizontal; corregido: dobla las rodillas). 2.ª (lote F): 43 = 6/4 (inicia el huerto Warren Buffett desde la ronda de frutales del techo de Servicios; corregido: inicia quien está en el área). Ronda 2: 43 y la escalera OK; 65 = 34/2 (en Kapilavastu se les ponía en su sitio a los 60 s y el transform peleaba con el NavMeshAgent; corregido: paso ligero según la distancia, tiempo según la distancia y Warp). Ronda 3: 65 = 35/1 (0/5 llegan andando: el agente se quedaba al final de un camino parcial; corregido: puesto con camino completo) y fotos con la escena equivocada (corregido: cámara propia y panel de la escena de la prueba). Repetir 65.
 - [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
 - [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
+- [x] ~~Los seis en el santuario~~ → **2026-11-04: salen a sus microcosmos** (ver la sección siguiente).
+
+## Familia y amigos de Berón; los famosos, a sus microcosmos (2026-11-04; rama `claude/edif-personajes`; [`diseno-personajes.md`](diseno-personajes.md) §Familia y amigos, [`personajes-mesocosmos.md`](personajes-mesocosmos.md))
+- [x] Aspecto de cubos de Nesvitor, Amahuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y Adaguchi, de sus fotos; Tote mejorado según `tote.jpg`. Piezas nuevas en `CubeHair`/`CubeHumanoid` (peinados, bigote, gafas de sol, chaqueta, cuadros/rayas/canalé, falda, reloj, bolso…).
+- [x] En la escena (`FamilyCharacters`), `PlaceStaff`, `WorkdayDirector.staff`, `HomeArea`, horario libre y galería («Character Gallery (familia y amigos de Berón)»).
+- [x] Casas del árbol: las 18 para el personal que queda y los nueve; Amahuz y Karen comparten casa (`Bedroom.partner`). No queda casa libre.
+- [x] Sadhguru, Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré fuera del santuario (escena, jornada, casas, horario libre, galería, turistas, pruebas). Su aspecto y sus datos (`MesoCharacters`) se quedan para sus microcosmos.
+- [x] Papeles: yoga → Andrea (y Irosene, segunda maestra); mecánica → Ducristin; registros y vacunación → Maite; cuentas → Nesvitor; huerto → Alicita; guardia → Josedrilo con Gohageneis; artes marciales → Gohageneis.
+- [x] Pruebas: `HorarioLibreTest` (65) comprueba a los nueve, la casa compartida y que no quede ningún famoso; `SanctuaryLifeTest` (28), `YogaClassTest`, `YogaFloorsTest` y `RestaurantServiceTest` actualizadas.
+- [ ] Tester: reconstruir SampleScene (Blockout, solo el santuario) y guardarla; grupos 28, 50, 65, el de yoga y el del restaurante; retratos de la galería de la familia.
+- [ ] Berón: confirmar el reparto de nombres de `cumbaya.jpg` (supuesto de izquierda a derecha: Josedrilo, Maite, Shalva) y los papeles heredados.
+- [ ] Microcosmos propios de Sadhguru y los seis (otro hilo).
+- [ ] Vivencias (frases de conversación, `PhrasePools`) de la familia y los amigos: hacen falta datos de Berón sobre cada uno.
+- [ ] Más casas del árbol (una 4.ª por árbol, con árboles más altos) para los recién llegados.
+
+## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
+- [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
+- [x] `ConversationDirector` (uno por escena con personas): humanos e insectos-humanos (`PersonLife`), personal de la jornada y `Conversable`; humano↔humano, insecto↔insecto y humano↔insecto en la misma escena; cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar.
+- [x] Turnos A/B de 4–6 frases, bocadillo con el tema sobre quien habla; vínculo, estrés, humores, cara y memoria.
+- [x] Temas del contexto (`ConversationTopics`): trabajo, comida, ocio, familia, linaje de insecto, era/lugar (`MicroEra`/`ConversationContext`), historia del sitio, hambre, cansancio, la mente.
+- [x] Prioridades: no mueve a nadie; una necesidad urgente, dormir, una iniciación o la historia la cortan; menos en turno. Tope de 4 a la vez, búsqueda cada 2 s.
+- [x] Escena `Prueba_Conversaciones` (mesa, dos bancos, seis personas) y prueba `ConversationTest` (grupo 88).
+- [ ] Verificación en vivo del grupo 88 y fotos de los bocadillos: la hace el tester único.
+- [ ] Ver charlas en SampleScene y en Kapilavastu (comida, franjas libres) y que el registro no se llena.
+- [ ] `ConversationContext` con su historia en los microcosmos de historia.
 
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**

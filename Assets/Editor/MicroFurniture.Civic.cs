@@ -65,42 +65,63 @@ internal static partial class MicroFurniture
         }
     }
 
+    // (2026-11-04) LA ESTATUA MONUMENTAL DE INSECTO-HUMANO (MicroStatue; Berón: «la estatua tenía forma humana … el jugador era mucho
+    // más grande que la estatua»): pedestal de 1,3 m y figura de insecto-humano (el papel de la estatua: su nombre) para un total de
+    // MicroCivicScale.StatueTotal (≈ 3,7 m: más del doble del ciudadano). La estela maya y el león chino no son figuras humanas: siguen.
     static void Statue(Transform t, St.Entry e)
     {
-        Color stone = e.id == "maya_clasico" ? H("C8C0A8") : e.id == "egipto" ? H("C9A86A") : e.id == "sovietico" ? H("5A5E60") : H("BDB6A8");
-        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(1.4f, 1f, 1.4f), Stone, 0f, "Peana");
+        Color stone = e.id == "maya_clasico" ? H("C8C0A8") : e.id == "egipto" ? H("C9A86A") : e.id == "sovietico" ? H("5A5E60") : e.from >= 1800 && e.id != "sovietico" ? H("6E6248") : H("BDB6A8");
+        float total = MicroCivicScale.StatueTotal(), pedestal = 1.3f;
+        C(t, new Vector3(0f, 0.15f, 0f), new Vector3(2.2f, 0.3f, 2.2f), Stone, 0f, "Grada");
+        C(t, new Vector3(0f, 0.3f + (pedestal - 0.3f) * 0.5f, 0f), new Vector3(1.6f, pedestal - 0.3f, 1.6f), Stone, 0f, "Peana");
+        C(t, new Vector3(0f, pedestal - 0.05f, 0f), new Vector3(1.75f, 0.1f, 1.75f), Color.Lerp(Stone, Color.white, 0.2f), 0f, "Cornisa");
+        C(t, new Vector3(0f, pedestal * 0.55f, -0.81f), new Vector3(0.9f, 0.3f, 0.02f), Brass, 0f, "Placa");
         if (e.id == "maya_clasico" || e.id == "mesopotamia")
         {   // la ESTELA: losa tallada con su glifo (Palenque prefería los tableros, pero las estelas son el monumento maya)
-            C(t, new Vector3(0f, 2.4f, 0f), new Vector3(1f, 2.8f, 0.35f), stone, 0f, "Estela");
-            C(t, new Vector3(0f, 2.6f, -0.19f), new Vector3(0.7f, 1.6f, 0.04f), Color.Lerp(stone, Color.black, 0.25f), 0f, "Relieve");
-            for (int k = 0; k < 4; k++) C(t, new Vector3(-0.25f + (k % 2) * 0.5f, 3.55f - (k / 2) * 0.3f, -0.2f), new Vector3(0.18f, 0.18f, 0.03f), Color.Lerp(stone, Color.black, 0.35f), 0f, "Glifo");
+            float sh = total - pedestal;
+            C(t, new Vector3(0f, pedestal + sh * 0.5f, 0f), new Vector3(1.2f, sh, 0.4f), stone, 0f, "Estela");
+            C(t, new Vector3(0f, pedestal + sh * 0.55f, -0.21f), new Vector3(0.85f, sh * 0.6f, 0.04f), Color.Lerp(stone, Color.black, 0.25f), 0f, "Relieve");
+            for (int k = 0; k < 4; k++) C(t, new Vector3(-0.25f + (k % 2) * 0.5f, pedestal + sh * 0.85f - (k / 2) * 0.3f, -0.22f), new Vector3(0.18f, 0.18f, 0.03f), Color.Lerp(stone, Color.black, 0.35f), 0f, "Glifo");
             return;
         }
         if (e.id == "china_tradicional" || e.id == "hongkong_tonglau")
         {   // león guardián (shishi): cuerpo sentado, cabeza grande, la bola bajo la pata
-            C(t, new Vector3(0f, 1.5f, 0.1f), new Vector3(0.7f, 1f, 0.9f), stone, 0f, "Cuerpo");
-            C(t, new Vector3(0f, 2.2f, -0.2f), new Vector3(0.75f, 0.65f, 0.6f), stone, 0f, "Cabeza");
-            C(t, new Vector3(0.25f, 1.15f, -0.45f), Vector3.one * 0.3f, stone, 0f, "Bola");
+            C(t, new Vector3(0f, pedestal + 0.6f, 0.1f), new Vector3(0.9f, 1.2f, 1.1f), stone, 0f, "Cuerpo");
+            C(t, new Vector3(0f, pedestal + 1.45f, -0.25f), new Vector3(0.95f, 0.8f, 0.75f), stone, 0f, "Cabeza");
+            C(t, new Vector3(0.3f, pedestal + 0.2f, -0.55f), Vector3.one * 0.38f, stone, 0f, "Bola");
             return;
         }
-        C(t, new Vector3(0f, 1.85f, 0f), new Vector3(0.6f, 1.4f, 0.4f), stone, 0f, "Figura");
-        C(t, new Vector3(0f, 2.75f, 0f), new Vector3(0.36f, 0.4f, 0.36f), stone, 0f, "Cabeza");
-        C(t, new Vector3(-0.42f, 2.1f, 0f), new Vector3(0.18f, 0.9f, 0.2f), stone, new Vector3(0f, 0f, -12f), "Brazo");
-        C(t, new Vector3(0.42f, 2.3f, -0.1f), new Vector3(0.18f, 0.9f, 0.2f), stone, new Vector3(-40f, 0f, 10f), "Brazo");
+        // La figura: un INSECTO-HUMANO de piedra o bronce, de pie, con el nombre de quien representa.
+        MicroStatue.InsectFigure(t, new Vector3(0f, pedestal, 0f), 180f, total - pedestal, t.name, stone);
     }
 
+    // (2026-11-04) LA FUENTE DE LA PLAZA a la medida del ciudadano (MicroCivicScale.FountainSide ≈ 4,2 m de lado): su pretil a la
+    // altura de un asiento (0,45 m), y es un asiento (MicroSeat, ocho sitios); la columna con su caño, más alta que quien bebe.
     static void Fountain(Transform t, St.Entry e)
     {
         Color stone = e.id == "otomano" || e.id == "islam_abasi" ? H("D9D0BC") : Stone;
+        float side = MicroCivicScale.FountainSide(), half = side * 0.5f, rim = MicroCivicScale.RimSeat, w = 0.4f;
         for (int s = -1; s <= 1; s += 2)
         {
-            C(t, new Vector3(0f, 0.3f, s * 1.1f), new Vector3(2.4f, 0.6f, 0.2f), stone, 0f, "Pretil");
-            C(t, new Vector3(s * 1.1f, 0.3f, 0f), new Vector3(0.2f, 0.6f, 2.4f), stone, 0f, "Pretil");
+            C(t, new Vector3(0f, rim * 0.5f, s * (half - w * 0.5f)), new Vector3(side, rim, w), stone, 0f, "Pretil");
+            C(t, new Vector3(s * (half - w * 0.5f), rim * 0.5f, 0f), new Vector3(w, rim, side - 2f * w), stone, 0f, "Pretil");
         }
-        C(t, new Vector3(0f, 0.45f, 0f), new Vector3(2f, 0.04f, 2f), Water, 0f, "Agua");
-        C(t, new Vector3(0f, 0.9f, 0f), new Vector3(0.35f, 1.8f, 0.35f), stone, 0f, "Columna");
-        C(t, new Vector3(0f, 1.6f, -0.3f), new Vector3(0.1f, 0.1f, 0.35f), Brass, 0f, "Caño");
-        C(t, new Vector3(0f, 1.1f, -0.45f), new Vector3(0.06f, 0.9f, 0.06f), Water, 0f, "Chorro");
+        C(t, new Vector3(0f, rim - 0.08f, 0f), new Vector3(side - 2f * w, 0.04f, side - 2f * w), Water, 0f, "Agua");
+        C(t, new Vector3(0f, 0.5f, 0f), new Vector3(1.1f, 1f, 1.1f), stone, 45f, "Taza_baja");
+        C(t, new Vector3(0f, 1.6f, 0f), new Vector3(0.4f, 2.2f, 0.4f), stone, 0f, "Columna");
+        C(t, new Vector3(0f, 2.75f, 0f), new Vector3(1.3f, 0.18f, 1.3f), stone, 45f, "Taza_alta");
+        C(t, new Vector3(0f, 2.87f, 0f), new Vector3(1.1f, 0.04f, 1.1f), Water, 45f, "Agua_alta");
+        for (int k = 0; k < 4; k++)
+        {
+            Quaternion q = Quaternion.Euler(0f, k * 90f, 0f);
+            C(t, q * new Vector3(0f, 2.4f, 0.55f) , new Vector3(0.1f, 0.1f, 0.35f), Brass, k * 90f, "Caño");
+            C(t, q * new Vector3(0f, 1.45f, 0.75f), new Vector3(0.06f, 1.9f, 0.06f), Water, k * 90f, "Chorro");
+        }
+        // Se sientan en el pretil (ocho sitios, mirando hacia fuera, a la plaza).
+        var seat = t.gameObject.AddComponent<MicroSeat>();
+        var pts = new System.Collections.Generic.List<Vector3>();
+        for (int k = 0; k < 4; k++) for (int j = -1; j <= 1; j += 2) pts.Add(Quaternion.Euler(0f, k * 90f, 0f) * new Vector3(j * half * 0.5f, 0f, half + 0.35f));
+        seat.points = pts.ToArray();
     }
 
     static void Showcase(Transform t, St.Entry e, int seed)

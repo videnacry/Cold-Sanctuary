@@ -8,8 +8,10 @@ using UnityEngine.SceneManagement;
 /// PRUEBA EN VIVO DEL HORARIO LIBRE (docs/horario-libre.md; Berón 2026-11-03). En cuatro partes:
 ///  1. LÓGICA (sin escena): con el catálogo del santuario y 16 personas, una semana entera: todas las franjas llenas, la capacidad
 ///     respetada y cada actividad repartida por igual (Δ ≤ 1); con poca capacidad (40 personas) sigue llena y Δ ≤ 3.
-///  2. LOS SEIS DEL MESOCOSMOS (Elon Musk, Goku, Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré): en la escena con
-///     cuerpo de cubos, rótulo con su papel, en la jornada (WorkdayDirector.staff, reciben misiones) y con su casa del árbol.
+///  2. LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04: Nesvitor, Amahuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y
+///     Adaguchi): en la escena con cuerpo de cubos y rótulo, en la jornada (WorkdayDirector.staff, reciben misiones) y con su casa
+///     del árbol (Amahuz y Karen, la misma). Y los FAMOSOS (Sadhguru y los seis del mesocosmos), que se fueron a sus microcosmos,
+///     ya no están ni en el santuario ni en la jornada.
 ///  3. EL SANTUARIO EN VIVO: el horario de la semana para todo el personal (cada hora libre llena, capacidad, uniformidad medida) y
 ///     dos franjas de verdad (16–18 h, reloj ×<see cref="speed"/>): cada uno anda a su sitio y hace su actividad.
 ///  4. UN MICROCOSMOS (cargado en aditivo): lo mismo con sus insectos-humanos y sus edificios.
@@ -22,7 +24,10 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
     public float speed = 6f;
     public bool shots = true;
     static readonly string[] MicroScenes = { "Microcosmos_Buda", "Microcosmos_Patanjali", "Microcosmos_Eratostenes", "Microcosmos_BruceLee" };
-    public static readonly string[] Six = { "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
+    /// <summary>La familia y los amigos de Berón (2026-11-04, de sus fotos).</summary>
+    public static readonly string[] Family = { "Nesvitor", "Amahuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi" };
+    /// <summary>Los famosos que salieron del santuario a sus microcosmos (2026-11-04).</summary>
+    public static readonly string[] Famous = { "Sadhguru", "ElonMusk", "Goku", "BillGates", "WarrenBuffett", "MacKenzieScott", "IbrahimTraore" };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void Register()
@@ -38,12 +43,12 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         TestProbe.Begin("Horario libre: la semana de ocio y cuidado, repartida por igual, andando a cada sitio (santuario y microcosmos)");
         Logic();
         float oldScale = Time.timeScale;
-        try { Six_(); } catch (System.Exception ex) { TestProbe.Check("los seis del mesocosmos", false, ex.Message); }
+        try { Family_(); } catch (System.Exception ex) { TestProbe.Check("la familia y los amigos de Berón", false, ex.Message); }
         yield return Sanctuary();
         yield return Micro();
         LeisureDirector.ForceRun = false;
         if (LeisureDirector.Instance != null) LeisureDirector.Instance.ReleaseAll();
-        HorarioPanel.Show = false;
+        HorarioPanel.Show = false; HorarioPanel.FocusScene = "";
         Time.timeScale = oldScale;
         TestProbe.End();
     }
@@ -70,33 +75,39 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         Log($"lógica: 16 personas Δ={s0}/{s1}; 40 personas Δ={st}");
     }
 
-    // ── 2. Los seis ──────────────────────────────────────────────────────────────────────────────
-    void Six_()
+    // ── 2. La familia y los amigos de Berón; los famosos, fuera ─────────────────────────────────────
+    void Family_()
     {
         WorkdayDirector wd = WorkdayDirector.Instance != null ? WorkdayDirector.Instance : FindAnyObjectByType<WorkdayDirector>();
         string missing = "", bodyless = "", unlabeled = "", homeless = "";
-        foreach (string id in Six)
+        foreach (string id in Family)
         {
             GameObject g = WorkdayDirector.Body(id);
             if (g == null) { missing += id + " "; continue; }
             if (g.transform.Find(CubeHumanoid.BodyName) == null) bodyless += id + " ";
             WorldLabel wl = g.GetComponent<WorldLabel>();
-            if (wl == null || !wl.text.Contains("(")) unlabeled += id + " ";
+            if (wl == null || !wl.text.StartsWith(id)) unlabeled += id + " ";
             if (!g.TryGetComponent(out Anima a) || Bedroom.Of(a) == null) homeless += id + " ";
         }
-        TestProbe.Check("los seis del mesocosmos están en el santuario", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", Six));
-        TestProbe.Check("los seis tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
-        TestProbe.Check("los seis llevan su papel en el rótulo", unlabeled.Length == 0, unlabeled);
-        TestProbe.Check("los seis tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
-        TestProbe.Check("los seis están en la jornada (personal del santuario)", wd != null && Six.All(s => wd.staff.Contains(s)));
+        TestProbe.Check("la familia y los amigos de Berón están en el santuario", missing.Length == 0, missing.Length > 0 ? "faltan: " + missing : string.Join(", ", Family));
+        TestProbe.Check("los nueve tienen cuerpo de cubos", bodyless.Length == 0, bodyless);
+        TestProbe.Check("los nueve llevan su nombre en el rótulo", unlabeled.Length == 0, unlabeled);
+        TestProbe.Check("los nueve tienen su casa del árbol (dormitorio)", homeless.Length == 0, homeless);
+        GameObject ama = WorkdayDirector.Body("Amahuz"), kar = WorkdayDirector.Body("Karen");
+        Bedroom bA = ama != null && ama.TryGetComponent(out Anima aa) ? Bedroom.Of(aa) : null, bK = kar != null && kar.TryGetComponent(out Anima ak) ? Bedroom.Of(ak) : null;
+        TestProbe.Check("Amahuz y Karen (pareja) comparten casa", bA != null && bA == bK, $"{(bA != null ? bA.name : "—")} · {(bK != null ? bK.name : "—")}");
+        TestProbe.Check("los nueve están en la jornada (personal del santuario)", wd != null && Family.All(s => wd.staff.Contains(s)));
+        TestProbe.Check("ningún famoso (Sadhguru ni los seis del mesocosmos) sigue en la jornada", wd != null && !Famous.Any(s => wd.staff.Contains(s)), wd != null ? string.Join(", ", Famous.Where(s => wd.staff.Contains(s))) : "sin jornada");
+        string still = string.Join(" ", Famous.Where(s => { GameObject g = WorkdayDirector.Body(s); return g != null && g.scene == SceneManager.GetActiveScene(); }));
+        TestProbe.Check("ningún famoso sigue en el santuario (se fueron a sus microcosmos)", still.Length == 0, still);
         if (wd != null)
         {
             TimeController tc = TimeController.timeController;
             WorkRoster.DayPlan p = wd.today ?? wd.PlanDay(tc.Day);
-            var got = Six.Where(s => wd.roster.Find(s) != null && p.work.Any(a => a.worker.name == s)).ToList();
-            TestProbe.Check("los seis reciben misiones en el reparto de la jornada", got.Count == Six.Length, string.Join(" · ", Six.Select(s => $"{s}: {string.Join(", ", p.work.Where(a => a.worker.name == s).Select(a => a.mission.title))}")));
+            var got = Family.Where(s => wd.roster.Find(s) != null && p.work.Any(a => a.worker.name == s)).ToList();
+            TestProbe.Check("los nueve reciben misiones en el reparto de la jornada", got.Count == Family.Length, string.Join(" · ", Family.Select(s => $"{s}: {string.Join(", ", p.work.Where(a => a.worker.name == s).Select(a => a.mission.title))}")));
         }
-        if (shots) foreach (string id in Six) { GameObject g = WorkdayDirector.Body(id); if (g != null) Portrait(g.transform, id); }
+        if (shots) foreach (string id in Family) { GameObject g = WorkdayDirector.Body(id); if (g != null) Portrait(g.transform, id); }
     }
 
     // ── 3. El santuario en vivo ──────────────────────────────────────────────────────────────────
@@ -105,6 +116,13 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         LeisureDirector ld = LeisureDirector.Instance;
         TimeController tc = TimeController.timeController;
         if (!TestProbe.Check("hay director del horario libre", ld != null)) yield break;
+        // Sale del microcosmos si una prueba anterior lo dejó dentro (Ambrosio): el santuario, a la vista (y su cámara, allí).
+        if (MobWorldLoader.HasInstance && MobWorldLoader.Instance.IsInMobWorld)
+        {
+            MobWorldLoader.Instance.ExitMobWorld();
+            float until = Time.realtimeSinceStartup + 30f;
+            while ((MobWorldLoader.Instance.IsInMobWorld || MobWorldLoader.Instance.IsBusy) && Time.realtimeSinceStartup < until) yield return null;
+        }
         WorkdayDirector wd = WorkdayDirector.Instance;
         // La tarde empieza descansada (como la jornada, grupo 50): sin hambre, sueño ni baño que se adelanten a todo.
         Rest(wd != null ? wd.staff : new string[0]);
@@ -116,7 +134,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         LeisureDirector.Group gr = any != null ? ld.GroupOf(any) : ld.groups.FirstOrDefault(g => !g.micro);
         if (!TestProbe.Check("el santuario tiene su horario libre de la semana", gr != null && gr.plan != null)) yield break;
         CheckPlan(gr, "santuario", 15);
-        TestProbe.Check("santuario: incluye a los seis del mesocosmos", Six.All(s => gr.plan.people.Any(p => p.name == s)));
+        TestProbe.Check("santuario: incluye a la familia y los amigos de Berón, y a ningún famoso", Family.All(s => gr.plan.people.Any(p => p.name == s)) && !Famous.Any(s => gr.plan.people.Any(p => p.name == s)));
         TestProbe.Check("santuario: catálogo de ≥ 6 actividades de ocio y cuidado con sitio", gr.catalog.Count >= 6, string.Join(", ", gr.catalog.Select(a => $"{a.title} → {a.venue}")));
         foreach (string l in ld.Report(gr)) Log(l);
 
@@ -131,10 +149,10 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
         while (tc.Hour < 18.02f && tc.Day == day && Time.realtimeSinceStartup < end)
         {
             if (!labels && tc.Hour > 16.5f) labels = gr.bodies.Any(b => b != null && b.TryGetComponent(out WorldLabel wl) && wl.text.Contains("Libre:"));
-            if (shots && !shot1 && tc.Hour > 16.75f) { shot1 = true; Capture("panel_santuario_1645"); }
+            if (shots && !shot1 && tc.Hour > 16.75f) { shot1 = true; HorarioPanel.FocusScene = gr.name; StartCoroutine(Shoot(ld, gr, "panel_santuario_1645")); }
             yield return null;
         }
-        if (shots) Capture("panel_santuario_1800");
+        if (shots) { HorarioPanel.FocusScene = gr.name; yield return Shoot(ld, gr, "panel_santuario_1800"); }
         Log($"santuario: el reloj llegó a las {tc.Hour:00.00} h del día {tc.Day} (hasta las 18 h)");
         ld.Tick();   // cierra la franja de las 17 h
         var recs = LeisureDirector.Records.Skip(rec0).Concat(ld.Snapshot()).Where(x => !x.micro && x.day == day && x.slot <= 1).ToList();   // (y las que siguen en marcha si el reloj no llegó)
@@ -182,7 +200,7 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
             bool shot = false;
             while (tc.Hour < 17.02f && tc.Day == day && Time.realtimeSinceStartup < end)
             {
-                if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; Capture("panel_" + sceneName); }
+                if (shots && !shot && tc.Hour > 16.7f) { shot = true; HorarioPanel.Show = true; HorarioPanel.FocusScene = gr.name; StartCoroutine(Shoot(ld, gr, "panel_" + sceneName)); }
                 yield return null;
             }
             float reached = tc.Hour; bool started = reached >= 16f || tc.Day > day;
@@ -252,6 +270,28 @@ public class HorarioLibreTest : MonoBehaviour, ITestUnit
 
     // ── Fotos ────────────────────────────────────────────────────────────────────────────────────
     const string Dir = "Temp/Horario";
+
+    // UNA CAPTURA DE LA ESCENA DEL GRUPO con el panel encima (2026-11-04: la del santuario salía con el microcosmos de Ambrosio de fondo
+    // —la cámara seguía allí— y la de Kapilavastu con el horario del santuario). Una cámara propia, por encima de la principal, mira a
+    // alguien del grupo (mejor uno que ya hace su actividad); el panel enseña ese grupo (HorarioPanel.FocusScene).
+    IEnumerator Shoot(LeisureDirector ld, LeisureDirector.Group gr, string tag)
+    {
+        GameObject who = null;
+        foreach (var kv in ld.Runs) if (kv.Key != null && kv.Value.group == gr && kv.Value.Arrived) { who = kv.Key; break; }
+        if (who == null) who = gr.bodies.FirstOrDefault(b => b != null);
+        if (who == null) { Capture(tag); yield break; }
+        var go = new GameObject("FotoHorarioPanel_TEMP");
+        Camera cam = go.AddComponent<Camera>();
+        cam.depth = 100f; cam.fieldOfView = 50f; cam.nearClipPlane = 0.1f;
+        Transform t = who.transform;
+        Vector3 at = t.position + Vector3.up * 0.8f;
+        cam.transform.position = at - t.forward * 7f + t.right * 3f + Vector3.up * 3.5f;
+        cam.transform.LookAt(at);
+        yield return null;
+        Capture(tag);
+        yield return null; yield return null;
+        Destroy(go);
+    }
 
     static void Capture(string tag)
     {

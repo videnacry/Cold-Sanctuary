@@ -94,7 +94,11 @@ public static class MicroFloors
     /// 3. sobre su FORMA FINALIZADA: nada de obra (andamio, material, conos) y el «Acabado» encendido;
     /// 4. las ESTRUCTURAS del piso (caras de arriba de los muebles) son superficie poblada: flora y fauna encima;
     /// 5. en una era avanzada, el PUEBLO ENTERO: el barrio del pueblo (×60) y al menos 12 edificios;
-    /// 6. si su piso no lo representa, está MARCADO «pendiente de piso representativo» (con el piso que falta).
+    /// 6. si su piso no lo representa, está MARCADO «pendiente de piso representativo» (con el piso que falta);
+    /// 7. (2026-11-04) la FLORA ENCIMA de cada superficie, nunca debajo ni dentro de un collider (<see cref="MicroGround.ValidateFlora"/>);
+    /// 8. la CAPA DE TIERRA (<see cref="MicroSoil"/>) sobre los suelos del piso;
+    /// 9. montado desde la FORMA DE MICROCOSMOS del piso («Forma_microcosmos», <see cref="MicroFloorElements"/>), con el inventario del
+    ///    piso del mesocosmos apuntado (<see cref="MicroFloor.mesoSignature"/>).
     /// </summary>
     public static List<string> Validate(Transform root, string label = null, bool log = true)
     {
@@ -134,6 +138,15 @@ public static class MicroFloors
         }
         // 6 · Pendiente de piso representativo, marcado.
         if (!f.representative && string.IsNullOrEmpty(f.pendingFloor)) bad.Add("su piso no lo representa y no dice qué piso falta (pendiente de piso representativo)");
+        // 7 · (2026-11-04) LA FLORA ENCIMA, NUNCA DEBAJO (MicroGround): ninguna planta con el pie bajo la superficie sobre la que está
+        //     ni dentro de un collider.
+        bad.AddRange(MicroGround.ValidateFlora(root, 4));
+        // 8 · (2026-11-04) LA CAPA DE TIERRA sobre los suelos del piso (MicroSoil).
+        if (giant != null && root.GetComponentInChildren<MicroSoil>(true) == null) bad.Add("sin capa de tierra (MicroSoil) sobre los suelos del piso");
+        // 9 · (2026-11-04) LA FORMA DE MICROCOSMOS: el piso se monta desde su forma de microcosmos (MicroFloorElements) y apunta el
+        //     inventario del piso del mesocosmos con que se montó (para saber qué revisar cuando el piso cambie).
+        if (giant != null && root.Find(FloorForms.MicroName) == null) bad.Add($"sin «{FloorForms.MicroName}» (los elementos del piso sin su versión de microcosmos)");
+        if (giant != null && string.IsNullOrEmpty(f.mesoSignature)) bad.Add("no apunta el inventario del piso del mesocosmos con que se montó (mesoSignature)");
         if (log)
         {
             string pend = f.representative ? "" : $"; PENDIENTE de piso representativo: «{f.pendingFloor}» (hoy sobre {f.platform})";

@@ -149,7 +149,7 @@ internal static partial class CivicBuilder
         MicroFurniture.Build(b, "banco", new Vector3(0f, 0.08f, radius >= 5f ? 3.5f : 3.0f), 0f, "Banco (para personas)", -9500, null, Region, MicroBody.Human());
         // (2026-11-04) Regla 9: y uno de abdomen para insectos-humanos, al otro lado del hogar (el granero no tenía ninguno a su medida).
         MicroFurniture.Build(b, "banco", new Vector3(0f, 0.08f, -3.5f), 0f, "Asiento de abdomen (para insectos-humanos)", -9500, null, Region, MicroBody.OfSpecies("Ant", 1.75f));
-        if (name.StartsWith("Casa")) { Transform fr = FruitTree(b, b.GetSiblingIndex()); fr.localPosition = new Vector3(0f, 0.08f, -(radius + 1.5f)); }
+        if (name.StartsWith("Casa")) { Transform fr = FruitTree(b, b.GetSiblingIndex()); fr.localPosition = new Vector3(0f, 0.08f, -(radius + 3.5f)); }   // (2026-11-04) a 3,5 m del anillo: a 1,5 quedaba a 1,14 m del asiento de abdomen
         site.region = Region; Tag(site, "dormir junto al hogar, moler y guardar el grano");
         Year = y0;
         return site;

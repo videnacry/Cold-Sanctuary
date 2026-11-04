@@ -18,6 +18,9 @@ public class FlyingCarpet : MonoBehaviour
 
     public CarpetPad pad;
     public float speed = 18f, cruise = 26f;
+    /// <summary>(2026-11-04) El GROSOR de la alfombra (su canto con el núcleo de circuitos y la costura de LED, CarpetPad.BuildCarpet):
+    /// quien va sentado o se baja, encima de él.</summary>
+    public const float Thickness = 0.07f;
     public bool Flying { get; private set; }
     float _ignoreUntil;
 
@@ -124,7 +127,7 @@ public class FlyingCarpet : MonoBehaviour
     {
         Anima a = who.GetComponent<Anima>(); if (a == null || session == null) return;
         if (!who.TryGetComponent(out ActionQueue q)) q = who.AddComponent<ActionQueue>();
-        WorkdayDirector.Teleport(who.transform, transform.position + Vector3.up * 0.05f);
+        WorkdayDirector.Teleport(who.transform, transform.position + Vector3.up * (Thickness + 0.02f));
         who.transform.rotation = transform.rotation;
         foreach (QueuedSpell s in session.Build()) q.EnqueuePlayer(s);
         Debug.Log($"[Alfombra] «{who.name}» hace «{session.name}» en la alfombra-esterilla.");
@@ -172,7 +175,7 @@ public class FlyingCarpet : MonoBehaviour
             p.y = Mathf.Lerp(from.y, dest.y, s) + Mathf.Sin(u * Mathf.PI) * (top - Mathf.Max(from.y, dest.y)) + Mathf.Sin(t * 3f) * 0.05f;   // sube, cruza y baja (con un leve vaivén)
             transform.SetPositionAndRotation(p, Quaternion.Slerp(transform.rotation, face, Time.deltaTime * 2f));
             if (who == null) { yield return null; continue; }   // (quien iba sentado ya no existe —un cuerpo de prueba destruido en pleno vuelo—: la alfombra termina sola)
-            who.transform.SetPositionAndRotation(p + Vector3.up * (0.12f + rootAbove), transform.rotation);
+            who.transform.SetPositionAndRotation(p + Vector3.up * (Thickness + 0.05f + rootAbove), transform.rotation);
             if (a != null) DailyPoses.Sit().ApplyFinal(a);   // sentado, tranquilo, esperando desembarcar
             yield return null;
         }
@@ -189,7 +192,7 @@ public class FlyingCarpet : MonoBehaviour
         }
         // DESEMBARCAR: se levanta al lado de la alfombra.
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        who.transform.position = dest + Vector3.up * (0.05f + rootAbove);   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
+        who.transform.position = dest + Vector3.up * (Thickness + 0.02f + rootAbove);   // de pie ENCIMA de la alfombra (antes se bajaba 1,6 m a un lado y en una casa del árbol caía al vacío)
         if (cc != null) cc.enabled = ccWas;
         if (agent != null) { agent.enabled = agentWas; if (agent.enabled && agent.isOnNavMesh) agent.Warp(who.transform.position); }
         if (pc != null) pc.HoldBody(false);

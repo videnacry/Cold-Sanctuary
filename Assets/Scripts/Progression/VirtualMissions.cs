@@ -60,7 +60,7 @@ public static class VirtualMissions
             case "hue_riego": return new[] { "Abrir el riego", "Regar las filas", "Quitar las malas hierbas" };
             case "hue_cosecha": return new[] { "Cosechar lo maduro", "Llenar las cestas", "Llevarlas a la cocina" };
             case "hue_visitantes": return new[] { "Ver qué animal tiene hambre", "Darle de comer", "Proteger el cultivo" };
-            case "yog_guia": return new[] { "Subir a la plataforma central", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };
+            case "yog_guia": return new[] { "Subir a la tarima de la sala", "Guiar el saludo al sol", "Guiar las posturas", "Cerrar con la meditación" };
             case "yog_demo": return new[] { "Colocarse entre los alumnos", "Demostrar cada postura", "Sostenerla mientras la copian" };
             case "yog_corrige_1": case "yog_corrige_2": return new[] { "Observar a los alumnos", "Corregir la postura de uno", "Corregir la de otro", "Corregir la del último" };
             case "yog_sala": return new[] { "Colocar las esterillas", "Limpiar el suelo", "Ventilar la sala" };

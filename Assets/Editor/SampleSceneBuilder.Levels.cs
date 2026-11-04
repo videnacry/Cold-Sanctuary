@@ -154,7 +154,7 @@ public static partial class SampleSceneBuilder
     /// <summary>ÁREA DE ALFOMBRAS DEL ANILLO (Berón 2026-10-28: sin escaleras, a los anillos se sube en alfombra): en el centro del
     /// lado +Z de su línea central, atravesada (7,6 m a lo ancho del anillo), de la red del EDIFICIO: sus alfombras llevan a los
     /// pisos del edificio y las de cada piso, a este anillo. Superficie «edificio#anillo» (en el piso N &gt; 1, «edificio#anilloN»),
-    /// como las esterillas del anillo de yoga. Quien amuebla el anillo deja libre ese hueco (|x| &lt; 4,6 m en el lado +Z).</summary>
+    /// (como lo eran las esterillas del anillo de yoga, que se quitó el 2026-11-04). Quien amuebla el anillo deja libre ese hueco (|x| &lt; 4,6 m en el lado +Z).</summary>
     static CarpetPad RingCarpets(Transform ring, Transform floor, Vector2 floorSize, string building, string label, float width = 10f, float inside = 0.2f)
     {
         if (HelixDeckOf(floor, out _, out _, out _)) return null;   // en un edificio-árbol se llega al anillo nadando, por su puerta del tronco
