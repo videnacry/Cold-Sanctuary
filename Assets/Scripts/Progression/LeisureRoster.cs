@@ -37,6 +37,9 @@ public class LeisureRoster
         // (2026-11-04) TODOS A LA VEZ: una franja fija a la semana (día 0–6 de la semana y franja) para todo el que quepa (la guerra de
         // almohadas en el ring de la arboleda). Fuera de esa franja no entra en el reparto.
         public bool together; public int togetherDay = -1, togetherSlot = -1;
+        // (2026-11-04, pijamadas) Los ANFITRIONES de esta semana (los que viven en la casa): van primero; el resto de plazas, a los que
+        // menos veces la han hecho. El anfitrión rota cada semana (HostIndex).
+        public string[] hosts;
         public Activity(string id, string title, Kind kind, string venue, int capacity, string pose = "pie")
         { this.id = id; this.title = title; this.kind = kind; this.venue = venue; this.capacity = capacity; this.pose = pose; }
         public bool Unlimited => capacity <= 0;
@@ -81,6 +84,9 @@ public class LeisureRoster
     public Person Find(string name) => people.FirstOrDefault(p => p.name == name);
 
     public static int WeekOf(int day) => day >= 0 ? day / DaysPerWeek : (day - DaysPerWeek + 1) / DaysPerWeek;
+    /// <summary>(2026-11-04, pijamadas) El anfitrión de la semana <paramref name="week"/> entre <paramref name="hosts"/> casas: rota una
+    /// casa por semana, en su orden (la semana 0, la primera; la 1, la segunda…).</summary>
+    public static int HostIndex(int week, int hosts) => hosts <= 0 ? 0 : ((week % hosts) + hosts) % hosts;
     public static int GlobalSlot(int day, int slot) => day * SlotHours.Length + slot;
 
     /// <summary>La franja libre que empieza a la hora <paramref name="h"/> (−1 si es jornada, cena o sueño).</summary>
@@ -125,19 +131,16 @@ public class LeisureRoster
         int g = GlobalSlot(day, slot);
         var free = new List<Person>(people);
         var left = activities.ToDictionary(a => a, a => a.Unlimited ? int.MaxValue : a.capacity);
-        // TODOS A LA VEZ (2026-11-04): en su franja de la semana, la actividad de grupo se lleva a todos los que quepan (en el orden fijo
-        // del personal); los que no quepan siguen con el reparto normal.
+        // TODOS A LA VEZ (2026-11-04): en su franja de la semana, la actividad de grupo se lleva a los que quepan: primero sus anfitriones
+        // (la pijamada) y después, uno a uno, los que menos veces la han hecho (como el reparto normal). Los que no quepan siguen con el
+        // reparto normal. (Con plazas para todos —el ring— van todos.)
         int dow = day - plan.firstDay;
         foreach (Activity a in activities)
         {
             if (!a.together || a.togetherDay != dow || a.togetherSlot != slot) continue;
-            foreach (Person p in new List<Person>(free))
-            {
-                if (left[a] <= 0) break;
-                free.Remove(p); left[a]--;
-                p.count[a.id] = p.Count(a.id) + 1; p.last[a.id] = g;
-                plan.entries.Add(new Entry { person = p, activity = a, day = day, slot = slot });
-            }
+            void Take(Person p) { free.Remove(p); left[a]--; p.count[a.id] = p.Count(a.id) + 1; p.last[a.id] = g; plan.entries.Add(new Entry { person = p, activity = a, day = day, slot = slot }); }
+            if (a.hosts != null) foreach (string h in a.hosts) { Person p = free.FirstOrDefault(x => x.name == h); if (p != null && left[a] > 0) Take(p); }
+            while (left[a] > 0 && free.Count > 0) Take(Choose(a, free));
         }
         List<Activity> order = Order(g).Where(a => !a.together).ToList();   // (las de todos a la vez solo van en su franja)
         bool progress = true;

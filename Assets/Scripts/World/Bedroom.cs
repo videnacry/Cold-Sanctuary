@@ -26,8 +26,26 @@ public class Bedroom : MonoBehaviour
     void OnEnable() => All.Add(this);
     void OnDisable() => All.Remove(this);
 
-    /// <summary>El dormitorio de <paramref name="a"/> (por su nombre, como dueño o como pareja), o null si no tiene.</summary>
+    [Tooltip("(2026-11-04, pijamadas) Las PLAZAS para dormir de la casa: primero las de la cama (una por plaza, a lo ancho) y después las de la litera. Cada una, un punto 0,5 m por debajo de la cara de arriba de su colchón y girado como su cama.")]
+    public Transform[] spots;
+    [Tooltip("Dónde se juntan los de una pijamada antes de dormir (puntos de la casa, en el pasillo entre la cama y la litera).")]
+    public Transform[] gather;
+
+    /// <summary>Cuántos duermen en la casa (la cama y la litera).</summary>
+    public int Capacity => spots != null && spots.Length > 0 ? spots.Length : sleeps;
+
+    /// <summary>El dormitorio de <paramref name="a"/>: el de la pijamada de esta noche si está invitado (<see cref="Sleepover"/>); si
+    /// no, el suyo (por su nombre, como dueño o como pareja), o null si no tiene.</summary>
     public static Bedroom Of(Anima a)
+    {
+        if (a == null) return null;
+        Bedroom guest = Sleepover.RoomOf(a);
+        if (guest != null) return guest;
+        return Own(a);
+    }
+
+    /// <summary>Su propio dormitorio (sin contar pijamadas).</summary>
+    public static Bedroom Own(Anima a)
     {
         if (a == null) return null;
         string n = a.name.ToLowerInvariant();
@@ -35,6 +53,14 @@ public class Bedroom : MonoBehaviour
         foreach (Bedroom b in All)
             if (b != null && (Is(b.owner) || Is(b.partner))) return b;
         return null;
+    }
+
+    /// <summary>¿Vive aquí (dueño o pareja)?</summary>
+    public bool Lives(Anima a)
+    {
+        if (a == null) return false;
+        string n = a.name.ToLowerInvariant();
+        return (!string.IsNullOrEmpty(owner) && n.Contains(owner.ToLowerInvariant())) || (!string.IsNullOrEmpty(partner) && n.Contains(partner.ToLowerInvariant()));
     }
 
     /// <summary>La plaza de <paramref name="a"/> en la cama: el dueño en la del medio y su pareja a su lado (en una cama de 1, la
@@ -46,13 +72,31 @@ public class Bedroom : MonoBehaviour
         return Mathf.Clamp((sleeps - 1) / 2 + (isPartner ? 1 : 0), 0, sleeps - 1);
     }
 
-    /// <summary>Dónde se tumba <paramref name="a"/>: la raíz de la cama desplazada a su plaza (el colchón queda 0,5 m más arriba).</summary>
+    /// <summary>La plaza de <paramref name="a"/> esta noche: la de la pijamada si es invitado; si no, la suya de la cama.</summary>
+    public int SpotIndex(Anima a) => Sleepover.SpotIn(a, this, out int i) ? i : LaneOf(a);
+
+    /// <summary>La plaza (su punto) de <paramref name="a"/>: a donde anda para acostarse.</summary>
+    public Transform SpotOf(Anima a)
+    {
+        int i = SpotIndex(a);
+        return spots != null && i >= 0 && i < spots.Length && spots[i] != null ? spots[i] : bed;
+    }
+
+    /// <summary>Dónde se tumba <paramref name="a"/>: su plaza (la cara de arriba de su colchón queda 0,5 m más arriba).</summary>
     public Vector3 LieSpot(Anima a)
     {
+        if (spots != null && spots.Length > 0) { Transform s = SpotOf(a); if (s != null) return s.position; }
         if (bed == null) return transform.position;
         float off = (LaneOf(a) - (sleeps - 1) * 0.5f) * laneWidth;
         return bed.position + bed.right * off;
     }
+
+    /// <summary>Cómo queda girado al tumbarse en su plaza (como su cama).</summary>
+    public Quaternion LieRotation(Anima a) { Transform s = SpotOf(a); return s != null ? s.rotation : bed != null ? bed.rotation : transform.rotation; }
+
+    /// <summary>El punto <paramref name="i"/> donde se juntan los de una pijamada (de pie o sentados, en el pasillo).</summary>
+    public Vector3 GatherSpot(int i) => gather != null && gather.Length > 0 && gather[((i % gather.Length) + gather.Length) % gather.Length] != null
+        ? gather[((i % gather.Length) + gather.Length) % gather.Length].position : FootSpot;
 
     /// <summary>Al pie de la cama, de pie (para esperar junto a ella sin pisar el colchón).</summary>
     public Vector3 FootSpot => bed != null ? bed.position - bed.forward * (bedLength * 0.5f + 0.7f) : transform.position;
