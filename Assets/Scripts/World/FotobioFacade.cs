@@ -58,7 +58,10 @@ public static class FotobioSpec
     public const int BaysPerFace = 6;
     public const float ModuleW = 3f, ModuleH = 4f, ManifoldH = 0.3f;
     public static float ModulePitch => ModuleH + 2f * ManifoldH;   // 4,6 m
-    public const int ModulesPerColumn = 8;
+    /// (2026-11-04) 10 módulos por columna (antes 8): con los 6 personajes nuevos el santuario es de 17 personas y con 8 módulos el O₂ a
+    /// salud 0,85 cubría 15 (12,7 kg/día para 14,3); con 10, 595 m² y ~15,2 kg/día a salud 0,85 (~18 personas). El arpa baja a 10 m (sobre
+    /// la puerta del suelo, de 7 m).
+    public const int ModulesPerColumn = 10;
     /// <summary>Lo más alto del arpa del tronco: 4 m por debajo de las tornapuntas de los pisos (60 m).</summary>
     public const float TrunkTop = 56f;
     public static float TrunkBottom => TrunkTop - ModulesPerColumn * ModulePitch;   // 19,2 m

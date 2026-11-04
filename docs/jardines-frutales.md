@@ -456,3 +456,8 @@ aplican a la Residencia.
 Los **microcosmos** conservan sus frutales en cada residencia (regla 11 de
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md)): encajan con su historia (el manzano de Woolsthorpe, el cacao de
 Palenque).
+
+**2026-11-04: tareas del árbol baratas.** Revisar a nado todas las puertas cada día salía a ~200 revisiones (36,5 h de rondas). Ahora el
+jardinero lee el panel de máscaras en la puerta del suelo y revisa a mano solo 1/7 de las estaciones (rotación semanal) y las que su luz
+marca en rojo; las cortinas de fitoplancton, 2 min cada una junto a la puerta del suelo. ~0,4–0,7 h por árbol. Detalle en
+[mascaras-de-oxigeno.md](mascaras-de-oxigeno.md) §El jardinero.

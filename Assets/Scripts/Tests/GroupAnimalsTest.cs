@@ -55,6 +55,7 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
     public IEnumerator Run()
     {
         TestProbe.Begin("Grupos de animales: peces, kril, medusas y abejas como un padre con sus individuos");
+        Swarm.AnimateAll = true;   // (lejos de la cámara no se animan: aquí se miden todos)
         yield return Wait(1f);   // (los grupos crean sus individuos en su Start)
         Swarm.All.RemoveAll(s => s == null);
         var fish = Swarm.All.Where(s => s.kind == SwarmKind.Fish).ToList();
@@ -84,7 +85,10 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
         {
             Vector3 p0 = f0.transform.position;
             var kids = f0.transform.Cast<Transform>().ToList();
-            var w0 = kids.Select(c => c.position).ToList();
+            // (2026-11-04) En el marco del banco: al moverse el banco también GIRA hacia donde va, y un pez a 4 m del centro se desplaza
+            // en el mundo metros de más (6/40 «con él» midiendo en el mundo). Lo que cuenta: sigue siendo hijo del banco, en su sitio del
+            // grupo (su vaivén es de ±0,3 m) y cerca del centro.
+            var w0 = kids.Select(c => c.localPosition).ToList();
             float oldSpeed = f0.driftSpeed; f0.driftSpeed = 3f;
             Vector3 goal = p0 + new Vector3(6f, 0f, 3f);
             f0.GoTo(goal);
@@ -94,8 +98,8 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
             for (int i = 0; i < kids.Count; i++)
             {
                 if (kids[i] == null) continue;
-                Vector3 m = kids[i].position - w0[i];
-                if (Vector3.Distance(m, moved) < 1.6f && Vector3.Distance(kids[i].position, f0.transform.position) < f0.schoolSpread * 2f) with++;
+                Vector3 m = kids[i].localPosition - w0[i];
+                if (kids[i].parent == f0.transform && m.magnitude < 1.2f && Vector3.Distance(kids[i].position, f0.transform.position) < f0.schoolSpread * 2f) with++;
             }
             int alive = kids.Count(c => c != null);
             f0.driftSpeed = oldSpeed;
@@ -197,6 +201,7 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
                 }
             }
         }
+        Swarm.AnimateAll = false;
         TestProbe.End();
     }
 

@@ -34,7 +34,7 @@ se gasta), `TreeTrip` (la coge y la deja), `PathMover.StepToward` (rescate) y la
 - **Rescate** (`BreathingMask.RescueStep`): un personaje con la cabeza bajo el agua de un árbol, sin máscara y con una estación a
   < 45 m, nada a la más cercana con máscaras y se la pone; mientras, quien lo conduce (la jornada, un viaje) le cede el paso. Si no
   hay ninguna a mano (el mar abierto), sube a respirar como siempre.
-- **Estado de los puestos**: cada uno tiene su `condition` (juntas, visor, válvula y carga de las botellas) que baja un 25 % al día;
+- **Estado de los puestos**: cada uno tiene su `condition` (juntas, visor, válvula y carga de las botellas) que baja un 10 % al día (antes 25 %; ver §El jardinero);
   lo repone el jardinero (abajo).
 
 ## Fitoplancton del fondo abierto
@@ -46,19 +46,34 @@ transparente. Son de su edificio (`building`): su estado baja un 30 % al día y,
 grupos de los tres bajo cada árbol y suben por el hueco (docs/grupos-de-animales.md). (No va en el agua del tronco: se pondría
 verde y taparía a los nadadores; ver docs/fotobiorreactores.md.)
 
-## El jardinero: revisar las máscaras y cuidar el fitoplancton
+## El jardinero: revisar las máscaras y cuidar el fitoplancton (revisión BARATA, 2026-11-04)
 
 `FruitGardener` (docs/jardines-frutales.md §Tareas del árbol). Cada edificio-árbol tiene una **unidad de tareas del árbol** que va
-en la ronda de su jardinero, detrás de sus macetas:
-1. Va al techo, coge una máscara del perchero y entra.
-2. Baja nadando de puerta en puerta por el camino de los viajes (tronco, ramas y columnas) y en cada una revisa la estación de dentro
-   y el perchero de fuera (**2 min** de juego por puerta; repone las que falten).
-3. Baja al fondo abierto y cuida cada cortina de fitoplancton (**4 min**: limpiar las láminas, medir y abonar).
+en la ronda de su jardinero, detrás de sus macetas.
+
+**Por qué cambió (prueba 55, 2026-11-04):** con la primera versión el jardinero nadaba cada día a TODAS las puertas (≈ 200 revisiones
+en 5 árboles): 36,5 h de rondas para 12 personas y ni un minuto para polinizar o podar. Ahora la revisión es barata, con dos cosas a
+la vez:
+- **Rotación semanal**: cada día se revisa a mano 1/7 de las estaciones de cada árbol (la estación nº *i*, de abajo arriba, el día en
+  que *i* mod 7 = día mod 7; `MaskStation.Due`). Cada puerta, una vez por semana.
+- **Por el indicador**: cada estación tiene una luz (verde ≥ 50 %, ámbar, **roja < 30 %**, `MaskStation.Indicator`) que llega al **panel
+  de máscaras** de la puerta del suelo. El jardinero lee el panel (**3 min**) y revisa también las que estén en rojo, toque o no.
+- Para que una semana baste, el estado de un puesto baja ahora un **10 %** al día (antes 25 %): llega a su revisión con 30–40 %.
+- Las máscaras que se acumulan en unas entradas y faltan en otras se reparten **cada noche** en cada edificio (el carro de máscaras:
+  los puestos con más de su capacidad pasan las que sobran a los que tienen menos).
+
+Lo que hace cada día:
+1. Va a la **puerta del suelo** de su árbol y lee el panel de máscaras (3 min).
+2. Coge una máscara del perchero y entra; sube nadando a las estaciones de hoy (las ~3 de la rotación y las rojas), por el camino de
+   los viajes, y en cada una revisa la estación y el perchero de su puerta (**2 min**; repone las que falten).
+3. Vuelve al fondo y cuida cada cortina de fitoplancton (**2 min**: limpiar las láminas, medir y abonar; están junto a la puerta del suelo).
 4. Sale por la puerta del suelo y deja la máscara.
 
-Estimación (`FruitGardener.TreeTaskHours`): revisiones + nado a 3,9 m/s (con la corriente) de puerta en puerta (1,3 × la recta + 6 m)
-+ 30 s de entrar y salir. **Reparto**: si la unidad cabe con las macetas en la ronda de ≤ 2,9 h, la hace el mismo jardinero; si no,
-es otra ronda del mismo edificio (otra persona ese día, con su vuelo al techo). El Árbol de los Campos (sin frutales) entra en el
+Estimación (`FruitGardener.TreeTaskHours`): panel + revisiones + nado a 3,9 m/s (con la corriente) de estación en estación (1,3 × la
+recta + 6 m) y de vuelta al fondo + 30 s de entrar y salir: del orden de **0,4–0,7 h por árbol** (antes 2–3 h). **Reparto**: si la
+unidad cabe con las macetas en la ronda de ≤ 2,9 h, la hace el mismo jardinero; si no, es otra ronda del mismo edificio. El Árbol de
+los Campos (sin frutales) entra en el camino solo por sus tareas. El reparto de las rondas lo lleva el hilo del hospital y los jardines;
+los números de cada día salen en el registro: `[Frutales] … tareas de N árboles … → K personas`.
 camino solo por sus tareas. Los números de cada día salen en el registro: `[Frutales] … tareas de N árboles … → K personas`.
 
 ## Puertas y ramas para 8 personas (cuadradas)

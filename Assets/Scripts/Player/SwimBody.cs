@@ -355,7 +355,9 @@ public class SwimBody : MonoBehaviour
             Quaternion c = Quaternion.Slerp(_cur[p], t, k);
             _cur[p] = c;
             j.transform.localRotation = j.RestRotation * Quaternion.Slerp(Quaternion.identity, c, _w);
-            if (_rig != null) _rig.LockPose(p, 0.25f);   // el andar, la emoción y la mirada ceden estos huesos
+            // el andar, la emoción y la mirada ceden estos huesos (2026-11-04: hasta el fotograma siguiente aunque sea lento —a ×3 o con la
+            // escena cargada un fotograma pasa de 0,25 s de juego y el bloqueo caducaba entre fotograma y fotograma: «huesos del nado 28/44», prueba 54)
+            if (_rig != null) _rig.LockPose(p, Mathf.Max(0.25f, 3f * dt));
         }
         _applied = true;
     }

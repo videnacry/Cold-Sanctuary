@@ -55,6 +55,14 @@ public class TreeDoorExit : MonoBehaviour
         if (fw.sqrMagnitude > 0.01f) pc.transform.rotation = Quaternion.LookRotation(fw.normalized);
         if (cc != null && was) cc.enabled = true;
         pc.SetSwimming(false);
+        // Sale por una puerta con la máscara puesta: la deja en el perchero de ESA puerta (2026-11-04: antes se miraba cada 0,2 s si
+        // había un perchero a 5 m, y quien seguía andando hacia fuera ya estaba más lejos: «máscara True», prueba 70).
+        if (BreathingMask.Has(pc.gameObject))
+        {
+            MaskStation rack = null;
+            foreach (MaskStation m in GetComponentsInChildren<MaskStation>()) if (m.kind == MaskStation.Kind.Rack) { rack = m; break; }
+            BreathingMask.Of(pc.transform).Return(rack);
+        }
         Physics.SyncTransforms();
         Exits++;
         Debug.Log($"[Árbol] «{pc.name}» sale del agua por {name} (de pie en {landing.name}).");
