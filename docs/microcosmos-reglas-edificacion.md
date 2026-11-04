@@ -1,5 +1,7 @@
 # Reglas de edificación de los microcosmos y mesocosmos (2026-11-01)
 
+> Todas las reglas de Berón, resumidas y con su comprobación: [manual-de-diseno.md](manual-de-diseno.md).
+
 Berón: «en el microcosmos de Bruce Lee la cocina y los muebles parecían cubos». Desde ahora todo edificio de un microcosmos o
 mesocosmos (los de `CivicBuilder`, los pueblos nuevos de las figuras históricas y las historias que traen sus propias
 estructuras) cumple estas **siete reglas** (la sexta, el hogar de cada personaje, y la séptima, muebles a la medida de quien los usa y en el estilo de su época y lugar, desde 2026-11-02). El código que las aplica y las comprueba:
