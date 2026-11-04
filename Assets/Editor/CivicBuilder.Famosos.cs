@@ -14,6 +14,7 @@ internal static partial class CivicBuilder
     static readonly Style FactorySteel = new Style(C(0.85f, 0.86f, 0.88f), C(0.82f, 0.83f, 0.85f), C(0.6f, 0.62f, 0.65f), Roof.None, 6f);  // la nave de SpaceX: chapa blanca y suelo de epoxi
     static readonly Style MountainTimber = new Style(C(0.72f, 0.66f, 0.56f), C(0.55f, 0.5f, 0.44f), C(0.35f, 0.36f, 0.38f), Roof.Gable, 3.2f);  // aldea de montaña: piedra, pino y teja gris
     static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
+    static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -23,6 +24,7 @@ internal static partial class CivicBuilder
             case "Velliangiri": return VelliangiriTown(t);
             case "Hawthorne": return HawthorneTown(t);
             case "Aldea de la montaña": return MountainVillageTown(t);
+            case "Albuquerque": return AlbuquerqueTown(t);
             default: return 0;
         }
     }
@@ -130,6 +132,40 @@ Hotel | -400 -80
 Carpinteria | -350 300
 Obra | 430 220
 relleno | 30 | 0 60",
+        // ALBUQUERQUE (1975): el noreste de la ciudad, junto a la Central Avenue (la Ruta 66): MITS en un pequeño centro comercial,
+        // San Mateo y Carlisle Boulevard de norte a sur, Lomas al norte, la sierra de Sandía al este y el valle del Río Grande al
+        // oeste. Plano aproximado: la dirección exacta de MITS y del motel no está verificada (OpenStreetMap; Allen 2011).
+        ["Albuquerque"] = @"
+calle Central Avenue (Ruta 66) | 24 | -1400 -220, 1400 -220
+calle Lomas Boulevard | 18 | -1400 330, 1400 330
+calle San Mateo Boulevard | 20 | 320 -1200, 320 1200
+calle Carlisle Boulevard | 16 | -520 -1200, -520 1200
+calle Calle de las casas norte | 8 | -500 650, 1200 650
+calle Calle de las casas sur | 8 | -500 -650, 1200 -650
+calle Calle del centro comercial | 10 | -80 -220, -80 120
+monte Sierra de Sandía | 800 1600 | 1800 600 | seco
+rio Río Grande | 70 | -1550 -1300, -1480 0, -1560 1300
+campo Huertos del valle (chile y albaricoques) | 220 300 | -1250 -500
+hito 0 | 0 80
+hito 1 | 120 120
+hito 2 | 220 -260
+hito 3 | -150 -260
+hito 4 | 420 520
+hito 5 | -260 80
+Plaza | 650 -380
+Mercado | 820 -260
+Parque | -350 560
+Piscina | 900 450
+Entrenamiento | -700 -420
+Bomberos | 600 140
+Policia | -300 -480
+Estudio | 750 -800
+Guarderia | -700 750
+Museo | -900 -100
+Mecanica | 480 -170
+Tecnologia | 150 330
+Estacion | -1100 -250
+relleno | 60 | 500 -600",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -235,6 +271,42 @@ relleno | 30 | 0 60",
         n += W(t, "Hortelano del arrozal", s[5], "hortelano", s[3], s[0], null);
         n += W(t, "Carpintera de la aldea", s[6], "", s[3], s[0], null);
         n += Townsfolk(t, s, 7, "Vecina de la aldea", "Vecino de la aldea", s[3], s[0]);
+        return n;
+    }
+
+    // ══ ALBUQUERQUE (1975): MITS (el Altair 8800), la primera oficina de Micro-Soft, el motel, la cafetería de la Ruta 66, el piso de
+    //    Gates y Allen y la tienda de electrónica; casas de estuco color adobe, talleres de la Ruta 66 y huertos del valle.
+    static int AlbuquerqueTown(Transform t)
+    {
+        var s = Town(t, "Albuquerque", new[]
+        {
+            new Lot("MITS", "Taller", "MITS (Micro Instrumentation and Telemetry Systems): el Altair 8800", 16f, 12f, PuebloStucco,
+                S("banco_taller", -4f, 2f, 2.4f, 1f, "Mesa de montaje del Altair 8800"), S("consola", 2f, 2f, 1.6f, 0.8f, "Altair 8800 con su teletipo"), S("estante", 5f, -3f, 0.8f, 2f, "Kits del Altair en sus cajas")),
+            new Lot("Oficina de Micro-Soft", "Centro de tecnología", "La primera oficina de Micro-Soft", 14f, 10f, PuebloStucco,
+                S("consola", -3f, 2f, 1.6f, 0.8f, "Terminal"), S("mesa", 2f, 2f, 2f, 1f, "Mesa con listados de código"), S("estante", 4f, -3f, 0.8f, 1.6f, "Cintas perforadas y manuales")),
+            new Lot("Motel", "Hotel", "Motel de la Ruta 66", 14f, 10f, PuebloStucco,
+                S("cama", -3f, 2f, 1.4f, 2f, "Cama del motel"), S("cama", 2f, 2f, 1.4f, 2f, "Cama del motel"), S("mesa", 4f, -3f, 1.2f, 0.7f, "Mesita de escribir")),
+            new Lot("Cafetería de la Ruta 66", "Restaurante", "Cafetería de la Ruta 66 (un diner)", 14f, 10f, PuebloStucco,
+                S("cocina", -3f, 2f, 2f, 0.8f, "Plancha del diner"), S("barra", 2f, 2f, 2.4f, 0.8f, "Barra con taburetes"), S("mesa", 0f, -3f, 1.6f, 1f, "Mesa de reservado")),
+            new Lot("Piso de Gates y Allen", "Casa", "Piso de Bill Gates y Paul Allen", 12f, 10f, PuebloStucco,
+                S("cama", -2f, 2f, 1.2f, 2f, "Cama de Bill"), S("cama", 2f, 2f, 1.2f, 2f, "Cama de Paul")),
+            new Lot("Tienda de electrónica", "Mercado", "Tienda de electrónica (componentes y kits)", 12f, 10f, PuebloStucco,
+                S("puesto", 0f, 2f, 2f, 1f, "Mostrador de componentes"), S("estante", -3f, -3f, 0.8f, 1.6f, "Cajones de resistencias y chips")),
+        }, new[]
+        {
+            new Lot("Casa de Albuquerque", "Casa", "Casa de estuco de Albuquerque", 10f, 9f, PuebloStucco),
+            new Lot("Taller de la Ruta 66", "Taller", "Taller mecánico de la Ruta 66", 12f, 10f, PuebloStucco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco del mecánico"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
+            new Lot("Tienda del barrio", "Mercado", "Tienda del barrio", 10f, 8f, PuebloStucco, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
+            new Lot("Huerto del valle", "Huerto", "Huerto de chile y albaricoques", 12f, 10f, PuebloStucco, S("bancal", 0f, 0f, 4f, 6f, "Matas de chile"), S("pozo", 0f, 0f, 1f, 1f, "Acequia")),
+        }, C(0.5f, 0.48f, 0.46f));
+        int n = 0;
+        n += W(t, "Técnico de MITS", s[0], "", s[3], null, null);
+        n += W(t, "Montadora de kits de MITS", s[0], "", s[3], null, null);
+        n += W(t, "Programador de Micro-Soft", s[1], "sabio", s[3], null, s[4]);
+        n += W(t, "Recepcionista del motel", s[2], "", s[3], null, null);
+        n += W(t, "Cocinero del diner", s[3], "cocinero", s[3], null, null);
+        n += W(t, "Dependienta de la tienda de electrónica", s[5], "comerciante", s[3], null, null);
+        n += Townsfolk(t, s, 6, "Vecina de Albuquerque", "Vecino de Albuquerque", s[3], null);
         return n;
     }
 }

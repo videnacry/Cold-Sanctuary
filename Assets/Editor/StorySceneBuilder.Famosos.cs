@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -28,6 +28,8 @@ public static partial class StorySceneBuilder
     public static void BuildElonMusk() => BuildOne("Microcosmos_ElonMusk");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Goku (aldea de la montaña, homenaje)")]
     public static void BuildGoku() => BuildOne("Microcosmos_Goku");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Bill Gates (Albuquerque, 1975)")]
+    public static void BuildBillGates() => BuildOne("Microcosmos_BillGates");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -261,6 +263,76 @@ public static partial class StorySceneBuilder
                 "UNESCO, «Ancient Building Complex in the Wudang Mountains» (whc.unesco.org/en/list/705).",
             },
             "Maestra", "Mañana el aljibe volverá a estar vacío. Y tú volverás a llenarlo.");
+        return n;
+    }
+
+    // ══ BILL GATES · Albuquerque (Nuevo México), primavera de 1975 · Mecánica ═════════════════════════════════════════════════════
+    //    El BASIC del Altair 8800 funciona en MITS a la primera; Gates y Allen fundan Micro-Soft (4 de abril de 1975).
+
+    static int BillGates(Transform t)
+    {
+        Material blue = M("Panel_azul_Altair", 0.2f, 0.32f, 0.55f), grey = M("Gris_metal", 0.62f, 0.63f, 0.65f), led = M("Led_rojo", 0.95f, 0.15f, 0.1f);
+        Material paper = M("Cinta_de_papel", 0.95f, 0.9f, 0.7f), wood = M("Formica_madera", 0.6f, 0.45f, 0.3f), cream = M("Teletipo_crema", 0.86f, 0.82f, 0.7f);
+
+        // 1 · EL ALTAIR 8800 con su teletipo y su lector de cinta perforada (MITS, en un pequeño centro comercial).
+        Transform altair = Spot(t, "Altair 8800", new Vector3(0f, 0f, 14f), "El Altair 8800: el BASIC carga desde una cinta de papel", 3f);
+        Prop(altair, "Mesa de trabajo", new Vector3(0f, 0.4f, 0f), new Vector3(3.2f, 0.8f, 1.2f), wood);
+        Prop(altair, "Altair 8800", new Vector3(0f, 1f, 0f), new Vector3(1.2f, 0.4f, 0.9f), blue);
+        for (int k = 0; k < 8; k++) Prop(altair, "Luz del panel", new Vector3(-0.5f + k * 0.14f, 1.1f, -0.46f), new Vector3(0.05f, 0.05f, 0.02f), led, false);
+        var parts = new List<Transform>();
+        Transform tty = Spot(t, "Teletipo", new Vector3(-6f, 0f, 14f), "Teletipo (escribe y lee)", 2.4f);
+        Prop(tty, "Teletipo Modelo 33", new Vector3(0f, 0.55f, 0f), new Vector3(1f, 1.1f, 0.8f), cream); parts.Add(tty);
+        Transform reader = Spot(t, "Lector de cinta perforada", new Vector3(6f, 0f, 14f), "Lector de cinta perforada", 2.4f);
+        Prop(reader, "Lector", new Vector3(0f, 0.5f, 0f), new Vector3(0.6f, 1f, 0.5f), grey); parts.Add(reader);
+        parts.Add(altair);
+
+        // 2 · LAS COPIAS DEL BASIC para enviar a los aficionados, y la mesa de envíos de MITS.
+        var tapes = Items(t, paper, new Vector3(0.35f, 0.35f, 0.12f), ("Rollo de cinta del BASIC", new Vector3(12f, 0.2f, 4f)), ("Rollo de cinta del BASIC", new Vector3(14f, 0.2f, 6f)), ("Rollo de cinta del BASIC", new Vector3(16f, 0.2f, 4f)));
+        Transform ship = Spot(t, "Mesa de envíos de MITS", new Vector3(-14f, 0f, 4f), "Envíos: kits del Altair y cintas del BASIC", 2.4f);
+        Prop(ship, "Mesa de envíos", new Vector3(0f, 0.45f, 0f), new Vector3(2.4f, 0.9f, 1f), wood);
+
+        // 3 · EL MOTEL: la mesa donde se escribe código a mano, de noche.
+        Transform motel = Spot(t, "Mesa del motel", new Vector3(-15f, 0f, -6f), "La habitación del motel: código a lápiz", 2.4f);
+        Prop(motel, "Mesa pequeña", new Vector3(0f, 0.38f, 0f), new Vector3(1.2f, 0.76f, 0.7f), wood);
+        Prop(motel, "Listado de código", new Vector3(0f, 0.78f, 0f), new Vector3(0.6f, 0.02f, 0.4f), paper, false);
+
+        // La gente: insectos-humanos. Gates, una HORMIGA (la colonia resuelve problemas repartiéndolos en pasos sencillos: los
+        // algoritmos de colonia de hormigas, Dorigo 1992), con el jersey azul de su versión humana.
+        Color sweater = new Color(0.22f, 0.32f, 0.55f), brown = new Color(0.45f, 0.35f, 0.25f);
+        GameObject gates = Who(t, "Bill Gates", new Vector3(3f, 0f, 8f), false, 1.77f, "Ant"); CubeInsect.WearShirt(gates, sweater);
+        GameObject allen = Who(t, "Paul Allen", new Vector3(-3f, 0f, 10f), false, 1.85f, "Spider"); CubeInsect.WearShirt(allen, brown);
+        GameObject roberts = Who(t, "Ed Roberts (MITS)", new Vector3(8f, 0f, 10f), false, 1.9f, "DungBeetle"); CubeInsect.Wear1940s(roberts, new Color(0.35f, 0.38f, 0.42f), CubeInsect.Hat.None);
+        GameObject clerk = Who(t, "Empleada de envíos de MITS (Ruth)", new Vector3(-12f, 0f, 2f), true); CubeInsect.WearShirt(clerk, new Color(0.7f, 0.5f, 0.35f)); Routine(clerk, ship, altair);
+        int n = 4;
+
+        Mission(t, "Bill Gates y Paul Allen: el BASIC del Altair (1975)", StoryMission.Marga.Stats, 60f,
+            new[]
+            {
+                Talk("En MITS, habla con Paul Allen", allen.transform, "Paul Allen", "Volé hasta aquí con el BASIC en una cinta de papel. En el avión me di cuenta de que no habíamos escrito el programita que lee la cinta… y lo escribí a mano antes de aterrizar."),
+                Visit("Mira las tres piezas: el teletipo, el lector de cinta y el Altair", parts, "Ed Roberts", "El Altair no tiene pantalla ni teclado: solo luces e interruptores. Con el teletipo y la cinta, se le puede hablar."),
+                Hold("Quédate mirando mientras la cinta carga", altair, 10f, "Paul Allen", "El teletipo escribe «MEMORY SIZE?». ¡Funciona! Nunca lo habíamos probado en un Altair de verdad: solo en un simulador que escribí en Harvard."),
+                Talk("Habla con Ed Roberts", roberts.transform, "Ed Roberts", "Lo vendemos con el Altair. Si los aficionados pueden programar en BASIC, cualquiera podrá usar un ordenador."),
+                Talk("Habla con Bill Gates", gates.transform, "Bill Gates", "Paul se queda en MITS y yo vengo cuando puedo. Montamos una empresa para hacer programas para estos micro-ordenadores: Micro-Soft."),
+                Collect("Lleva las tres cintas del BASIC a la mesa de envíos", tapes, ship, "Empleada de envíos", "Cada kit sale con su cinta. Los clubes de aficionados se las pasan unos a otros."),
+                Hold("De noche, en el motel: repasa el código a lápiz", motel, 8f, "Bill Gates", "Cada byte cuenta: el Altair tiene muy poca memoria. Hay que decir lo mismo con menos."),
+                Talk("Vuelve con Bill Gates", gates.transform, "Bill Gates", "Un día habrá un ordenador en cada mesa y en cada casa. Hoy es una caja azul con luces."),
+            },
+            "Albuquerque (Nuevo México), en la primavera de 1975, sobre el taller de Mecánica del santuario a escala de hormiga (pendiente de su piso: una sala de informática). En MITS, la pequeña empresa que fabrica el Altair 8800, el BASIC de Bill Gates y Paul Allen funciona por primera vez. Ayúdales a cargarlo, a enviarlo y a empezar su empresa. E para hablar, mirar y recoger; para esperar, quédate quieto.",
+            new[]
+            {
+                "Bill Gates (Seattle, 1955) y Paul Allen (Seattle, 1953–2018) se conocieron en el instituto Lakeside, donde aprendieron a programar. En enero de 1975 la revista Popular Electronics sacó en portada el Altair 8800 de MITS, una empresa de Albuquerque: uno de los primeros ordenadores personales, vendido en kit.",
+                "Gates y Allen escribieron un intérprete de BASIC para el Altair en unas ocho semanas, en Harvard, sin tener ninguno: Allen programó un simulador del procesador Intel 8080 en un ordenador grande de la universidad (y Monte Davidoff escribió las rutinas de cálculo con decimales). Allen voló a Albuquerque con el programa en una cinta perforada; según su relato, escribió el cargador de la cinta en el avión. En MITS funcionó a la primera.",
+                "Allen entró en MITS como director de software el 1 de marzo de 1975 y la sociedad Micro-Soft se fundó en Albuquerque el 4 de abril de 1975 (el nombre fue idea de Allen). El 22 de julio firmaron la licencia del BASIC con MITS. Microsoft se quedó en Albuquerque hasta 1979, cuando se mudó a Bellevue (Washington).",
+                "Las fechas exactas de la demostración (entre febrero y marzo) y algunos detalles cambian según quién lo cuente. Años después, Gates y su entonces esposa crearon una fundación que financia, entre otras cosas, vacunas para los países más pobres.",
+            },
+            new[]
+            {
+                "Allen, P. (2011). Idea Man: A Memoir by the Cofounder of Microsoft. Portfolio.",
+                "Microsoft, «History of Microsoft: 1975» (learn.microsoft.com/en-us/shows/history/history-of-microsoft-1975).",
+                "Computer History Museum, «Altair BASIC Interpreter Source Tape» (computerhistory.org/revolution/artifact/312/1142).",
+                "Freiberger, P. y Swaine, M. (2000). Fire in the Valley: The Making of the Personal Computer, 2.ª ed. McGraw-Hill.",
+            },
+            "Bill Gates", "Empezamos con una cinta de papel y muchas ganas de aprender. Lo demás vino después.");
         return n;
     }
 }

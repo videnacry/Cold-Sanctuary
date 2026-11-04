@@ -75,6 +75,23 @@ public static partial class MicroBiome
               townFauna = new[] {
                 new Pet("Ladybug", 3, 0.5f, C(0.75f, 0.45f, 0.2f), "Gallina de la aldea (en el microcosmos, una mariquita parda)"),
                 new Pet("Woodlouse", 2, 0.7f, C(0.7f, 0.55f, 0.35f), "Perro de la aldea (en el microcosmos, una cochinilla hormiguera)") } };
+            // ── Albuquerque (1975), primavera: ciudad, sin naturaleza salvaje. Olmos siberianos y álamos de calle (Populus
+            //    deltoides wislizenii, el cottonwood del Río Grande), enebros, chamisa y céspedes; perros y gatos. En las afueras, la
+            //    estepa del alto desierto (grama azul, chamisa, cholla). (City of Albuquerque, «Street Tree Guide»; Dick-Peddie 1993.)
+            case "Albuquerque": return new Biome { title = "Albuquerque (1975): ciudad, sin naturaleza salvaje", ground = C(0.72f, 0.62f, 0.5f), plants = new[] {
+                new Plant(Kind.Grass, 12, "Grama azul (Bouteloua gracilis)", 25, C(0.5f, 0.6f, 0.4f), C(0.55f, 0.45f, 0.35f)),
+                new Plant(Kind.Shrub, 8, "Chamisa (Ericameria nauseosa)", 120, C(0.5f, 0.58f, 0.45f), C(0.9f, 0.8f, 0.2f)),
+                new Plant(Kind.Shrub, 4, "Cholla (Cylindropuntia imbricata)", 150, C(0.4f, 0.52f, 0.35f), C(0.7f, 0.2f, 0.5f)),
+                new Plant(Kind.Stone, 10, "Grava del alto desierto", 0, C(0.7f, 0.6f, 0.5f), Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 5, "Álamo del Río Grande (Populus deltoides wislizenii), plantado", 1800, C(0.35f, 0.55f, 0.3f), C(0.6f, 0.55f, 0.45f)),
+                new Plant(Kind.Shrub, 4, "Olmo siberiano (Ulmus pumila), de calle", 1500, C(0.3f, 0.5f, 0.28f), C(0.5f, 0.42f, 0.32f)),
+                new Plant(Kind.Shrub, 3, "Enebro del jardín (Juniperus scopulorum)", 400, C(0.25f, 0.4f, 0.32f), C(0.4f, 0.45f, 0.6f)),
+                new Plant(Kind.Grass, 10, "Césped de la casa, segado", 5, C(0.42f, 0.6f, 0.3f), C(0.5f, 0.58f, 0.3f)) },
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
+                new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
+              bugs = new Bug[0] };
             default: return null;
         }
     }
