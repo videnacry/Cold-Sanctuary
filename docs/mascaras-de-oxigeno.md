@@ -57,14 +57,14 @@ la vez:
 - **Rotación semanal**: cada día se revisa a mano 1/7 de las estaciones de cada árbol (la estación nº *i*, de abajo arriba, el día en
   que *i* mod 7 = día mod 7; `MaskStation.Due`). Cada puerta, una vez por semana.
 - **Por el indicador**: cada estación tiene una luz (verde ≥ 50 %, ámbar, **roja < 30 %**, `MaskStation.Indicator`) que llega al **panel
-  de máscaras** de la puerta del suelo. El jardinero lee el panel (**3 min**) y revisa también las que estén en rojo, toque o no.
+  de máscaras** de la puerta del techo. El jardinero lee el panel (**3 min**) y revisa también las que estén en rojo, toque o no.
 - Para que una semana baste, el estado de un puesto baja ahora un **10 %** al día (antes 25 %): llega a su revisión con 30–40 %.
 - Las máscaras que se acumulan en unas entradas y faltan en otras se reparten **cada noche** en cada edificio (el carro de máscaras:
   los puestos con más de su capacidad pasan las que sobran a los que tienen menos).
 
 Lo que hace cada día:
-1. Va a la **puerta del suelo** de su árbol y lee el panel de máscaras (3 min).
-2. Coge una máscara del perchero y entra; sube nadando a las estaciones de hoy (las ~3 de la rotación y las rojas), por el camino de
+1. Va al **techo** de su árbol (en alfombra) y lee el panel de máscaras de su puerta (3 min).
+2. Coge una máscara del perchero y entra; BAJA nadando (una sola vez, de arriba abajo) por las estaciones de hoy (las ~3 de la rotación y las rojas), por el camino de
    los viajes, y en cada una revisa la estación y el perchero de su puerta (**2 min**; repone las que falten).
 3. Vuelve al fondo y cuida cada cortina de fitoplancton (**2 min**: limpiar las láminas, medir y abonar; están junto a la puerta del suelo).
 4. Sale por la puerta del suelo y deja la máscara.
@@ -103,3 +103,15 @@ los números de cada día salen en el registro: `[Frutales] … tareas de N árb
 `Prueba_Mascaras` (Assets/Scenes/Pruebas; se regenera con el blockout): solo el Árbol de los Campos, con **Kushal empezando bajo el
 agua del tronco, a 33 m, sin máscara**. Grupo 72: nada a la estación más cercana (como haría quien juega siguiendo el aviso de
 pantalla), se pone la máscara y pasa 20 s bajo el agua con 4 s de aliento sin gastarlo.
+
+## 2026-11-04 (ronda 2 del probador)
+
+- **Coger y dejar, sin coste de viaje**: en un viaje por el tronco la máscara se coge al pasar por la puerta, ya entrando, **sin pararse**
+  (antes, 1,2 s por viaje) y se deja en el perchero de la puerta de salida, sin rodeos. El jugador solo la coge **al meterse en el agua**
+  (la del perchero de esa puerta, a < 6 m, o tocando una estación); antes la cogía al pasar junto a cualquier perchero y la devolvía al
+  alejarse (en la jornada, Kushal iba y venía con ella). «En el agua» cuenta también la cabeza o el cuerpo sumergidos, aunque el cuerpo
+  de nado no esté activo (con la máscara puesta el aliento no baja).
+- **Percheros**: si uno queda dentro del agua al empezar, pasa al otro lado de su puerta (o se aparta de la pared); si se queda sin
+  máscaras, el carro le trae la mitad de las del puesto más lleno del edificio (además del reparto de cada noche).
+- **Jardinero**: entra por el **techo** (panel en su puerta) y baja una sola vez por las estaciones de hoy hasta el fondo: ~0,7–0,85 h
+  por árbol (subir desde el suelo y volver contaba la altura del tronco dos veces: 1,06 h en el árbol más pequeño).

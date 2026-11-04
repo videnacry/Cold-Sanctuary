@@ -182,7 +182,7 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
                 var rot = masks.Where(m => !notDue.Contains(m)).ToList();
                 foreach (Phytoplankton b in beds) b.condition = 0.3f;
                 GameObject gb = WorkdayDirector.SpawnBodyCopy("Irosene", "Jardinera de máscaras (prueba)");
-                if (tree.Ground != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Ground.outside) + Vector3.up);
+                if (tree.Top != null) WorkdayDirector.Teleport(gb.transform, tree.World(tree.Top.outside) + Vector3.up);
                 FruitGardener tg = gb.AddComponent<FruitGardener>();
                 float sc0 = Time.timeScale; Time.timeScale = 4f;
                 tg.AssignTreeTasks(tree);

@@ -89,10 +89,10 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
             // en el mundo metros de más (6/40 «con él» midiendo en el mundo). Lo que cuenta: sigue siendo hijo del banco, en su sitio del
             // grupo (su vaivén es de ±0,3 m) y cerca del centro.
             var w0 = kids.Select(c => c.localPosition).ToList();
-            float oldSpeed = f0.driftSpeed; f0.driftSpeed = 3f;
+            float oldSpeed = f0.driftSpeed, oldNight = f0.nightDriftFactor; f0.driftSpeed = 3f; f0.nightDriftFactor = 1f;   // (de noche derivan a 0,3: el banco se movía 2,8 m)
             Vector3 goal = p0 + new Vector3(6f, 0f, 3f);
             f0.GoTo(goal);
-            yield return Wait(4f);
+            yield return Wait(5f);
             Vector3 moved = f0.transform.position - p0;
             int with = 0;
             for (int i = 0; i < kids.Count; i++)
@@ -102,7 +102,7 @@ public class GroupAnimalsTest : MonoBehaviour, ITestUnit
                 if (kids[i].parent == f0.transform && m.magnitude < 1.2f && Vector3.Distance(kids[i].position, f0.transform.position) < f0.schoolSpread * 2f) with++;
             }
             int alive = kids.Count(c => c != null);
-            f0.driftSpeed = oldSpeed;
+            f0.driftSpeed = oldSpeed; f0.nightDriftFactor = oldNight;
             TestProbe.Check("al moverse el banco, todos sus peces van con él (el grupo es un solo cuerpo)", moved.magnitude > 3f && with == alive, $"el banco se movió {moved.magnitude:0.0} m; {with}/{alive} peces con él");
         }
 
