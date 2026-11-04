@@ -319,8 +319,8 @@ reconstruir. Vale para TODOS los pisos, no solo el hospital. Cada piso del santu
 ## 12. Recuento y reglas sin comprobación automática
 
 
-**Total: 119 reglas** (S 12 · F 12 · T 12 · C 7 · G 8 · H 8 · M 34 · A 5 · J 11 · W 9 = 118 —W9, la de revisar jornadas y horario al
-cambiar un piso, va en §11—, más la regla de sincronización de §11). (Recontado por el probador al integrar yoga, charlas y
+**Total: 126 reglas** (S 13 · F 12 · T 13 · C 7 · G 8 · H 8 · M 34 · A 5 · J 16 · W 9 = 125 —W9, la de revisar jornadas y horario al
+cambiar un piso, va en §11—, más la regla de sincronización de §11). (Recontado por el probador al integrar yoga, charlas, micro3, personajes, cohetes y pisos;
 micro3, 2026-11-04.)
 
 **Pendientes de implementar (pedidos del 2026-11-04), 2:** M9 (los mapas a mano de todas las historias menos Angostura, que está hecho) y el gancho de
