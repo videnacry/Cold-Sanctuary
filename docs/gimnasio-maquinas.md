@@ -660,6 +660,7 @@ Quien mide más de lo que la barra permite, como Elon Musk (1,88 m) bajo la esca
 
 Ahora baja hasta el agarre y **dobla las rodillas** (`GymFit.TuckLegs`, IK de dos huesos): los pies suben lo que falta y van algo hacia atrás. Hasta 0,4 m de diferencia; con más, el cuerpo se queda sobre el suelo como antes.
 
+### 14.1 Ronda 6 de GymUsabilityTest (2026-11-04)- **Saltos de ~1,1 m andando entre máquinas** (Goluis hacia el remo, Lizmibet hacia el curl, Adaguchi hacia las dominadas). `PathMover` pegaba los pies a lo más alto que hubiera a un escalón (≤ 0,8 m). Junto a esas máquinas, eso era una pieza de la máquina vecina, y al paso siguiente caía de golpe. Ahora las piezas de una `GymStation` no cuentan como suelo para andar. Al levantarse, el pivote se pone con `PathMover.OnGround`, a la misma altura con la que anda.- **Banca plana**: la espinilla izquierda de Adaguchi entraba 2 cm en el «Banco» en A y en B. Los muslos se abren 26° en vez de 20°.
 ## 15. Entrenamientos reales: planes, series, progresión y entrenador (2026-11-04)
 
 Berón: «acabo de ver a Lizmibet usar las máquinas para hacer un ejercicio … hay que actualizar a los demás humanos para que

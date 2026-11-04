@@ -850,7 +850,10 @@ public class WorkdayDirector : MonoBehaviour
         if (g == null || u == null || !u.seated || u.st == null) return;
         Anima a = g.GetComponent<Anima>();
         if (a != null) DailyPoses.Stand().ApplyFinal(a);
-        GymPlace(g, u.st.ApproachPoint, g.transform.rotation);
+        // (2026-11-04) De pie en el pasillo con el pivote a la altura con la que ANDA (PathMover.OnGround: su suelo y su altura de
+        // pivote). Con la de los pies del cuerpo de cubos, el primer paso lo recolocaba de golpe a otra altura (GymUsabilityTest ronda 6).
+        g.transform.position = PathMover.Of(g.transform).OnGround(u.st.ApproachPoint);
+        PathMover.Of(g.transform).Restart();
     }
 
     /// <summary>Coloca los PIES (la base del cuerpo de cubos) de <paramref name="g"/> en <paramref name="feet"/>, mirando a <paramref name="facing"/>.</summary>

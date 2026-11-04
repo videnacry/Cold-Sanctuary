@@ -302,7 +302,7 @@ public static class GymPoses
             case GymMachineType.PressBancaPlano:   // tumbado boca arriba, cabeza hacia +Z
                 Add(BodyPart.Hips, -90); Add(BodyPart.Chest, -5);
                 if (b) Arms(-88, 10, -5); else Arms(-10, 55, -100);
-                Legs(15, 20, 75); break;
+                Legs(15, 26, 75); break;   // (2026-11-04) muslos 26° abiertos, no 20°: con 20° la espinilla izquierda de Adaguchi (1,65 m) entraba 2 cm en el «Banco» en A y en B (GymUsabilityTest, ronda 6)
             case GymMachineType.PressBancaInclinado:   // respaldo a 30° de la horizontal
                 Add(BodyPart.Hips, -60); Add(BodyPart.Neck, 10);
                 if (b) Arms(-120, 10, -5); else Arms(-20, 55, -110);
