@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett", "Microcosmos_MacKenzieScott",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -32,6 +32,8 @@ public static partial class StorySceneBuilder
     public static void BuildBillGates() => BuildOne("Microcosmos_BillGates");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Warren Buffett (Omaha, 1983)")]
     public static void BuildWarrenBuffett() => BuildOne("Microcosmos_WarrenBuffett");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/MacKenzie Scott (Prairie View, 2020)")]
+    public static void BuildMacKenzieScott() => BuildOne("Microcosmos_MacKenzieScott");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -404,6 +406,76 @@ public static partial class StorySceneBuilder
                 "Benzinga (2018), «This Day In Market History: Warren Buffett Buys Nebraska Furniture Mart».",
             },
             "Warren Buffett", "La confianza no sale en ningún balance, y es lo que más vale.");
+        return n;
+    }
+
+    // ══ MACKENZIE SCOTT · Prairie View A&M University (Texas), 15 de diciembre de 2020 · Química ════════════════════════════════
+    //    Su donación sin condiciones de 50 millones de dólares, la mayor de la historia de la universidad. Ella no estuvo en el campus:
+    //    su mesa de escritura (donde escribió el ensayo que anunció las donaciones) está en el claro, como un recuerdo.
+
+    static int MacKenzieScott(Transform t)
+    {
+        Material wood = M("Madera_clara", 0.7f, 0.58f, 0.42f), paper = M("Papel", 0.95f, 0.93f, 0.86f), maroon = M("Granate_PVAMU", 0.45f, 0.12f, 0.2f);
+        Material gold = M("Oro_PVAMU", 0.85f, 0.7f, 0.3f), screen = M("Pantalla", 0.12f, 0.14f, 0.18f), books = M("Lomos_de_libros", 0.4f, 0.3f, 0.45f);
+
+        // 1 · LA MESA DE ESCRITURA (Seattle): el portátil con el ensayo «384 maneras de ayudar».
+        Transform writing = Spot(t, "Mesa de escritura de Scott", new Vector3(-15f, 0f, 10f), "La mesa donde escribe MacKenzie Scott (Seattle)", 2.6f);
+        Prop(writing, "Mesa", new Vector3(0f, 0.38f, 0f), new Vector3(1.6f, 0.76f, 0.8f), wood);
+        Prop(writing, "Portátil (el ensayo)", new Vector3(0f, 0.82f, 0f), new Vector3(0.5f, 0.05f, 0.35f), screen, false);
+
+        // 2 · LA PRESIDENCIA de la universidad y la oficina de ayudas.
+        Transform president = Spot(t, "Despacho de la presidenta", new Vector3(2f, 0f, 16f), "Despacho de la presidenta de Prairie View A&M", 2.8f);
+        Prop(president, "Mesa de la presidenta", new Vector3(0f, 0.4f, 0f), new Vector3(2f, 0.8f, 1f), wood);
+        Prop(president, "Bandera granate y oro", new Vector3(1.4f, 1.2f, 0.6f), new Vector3(0.6f, 0.9f, 0.04f), maroon, false);
+        Transform aid = Spot(t, "Oficina de ayudas a estudiantes", new Vector3(14f, 0f, 6f), "Oficina de ayudas: las deudas que impedían graduarse", 2.8f);
+        Prop(aid, "Mostrador", new Vector3(0f, 0.5f, 0f), new Vector3(2.4f, 1f, 0.8f), wood);
+        var letters = Items(t, paper, new Vector3(0.3f, 0.02f, 0.22f), ("Carta de ayuda de emergencia", new Vector3(4f, 0.85f, 16f)), ("Carta de ayuda de emergencia", new Vector3(4.5f, 0.85f, 15.6f)), ("Carta de ayuda de emergencia", new Vector3(3.5f, 0.85f, 15.6f)));
+
+        // 3 · LA BIBLIOTECA.
+        Transform library = Spot(t, "Biblioteca", new Vector3(-12f, 0f, -6f), "La biblioteca John B. Coleman", 3f);
+        for (int k = 0; k < 3; k++) Prop(library, "Estantería", new Vector3(-3f + k * 3f, 1f, 2f), new Vector3(2f, 2f, 0.5f), books);
+        Prop(library, "Mesa de estudio", new Vector3(0f, 0.38f, -1f), new Vector3(3f, 0.76f, 1f), wood);
+        Prop(library, "Banderín de la graduación", new Vector3(0f, 1.6f, 2.3f), new Vector3(1.2f, 0.5f, 0.04f), gold, false);
+
+        // La gente: insectos-humanos. Scott, una ABEJA (da sin pedir nada a cambio: poliniza las flores que visita y sigue su vuelo),
+        // con la blusa azul claro de su versión humana; Ruth Simmons, la presidenta, y los estudiantes.
+        Color blouse = new Color(0.62f, 0.75f, 0.88f), suit = new Color(0.3f, 0.25f, 0.35f);
+        GameObject scott = Modern(t, "MacKenzie Scott", new Vector3(-13f, 0f, 7f), true, blouse, CubeInsect.Hat.None, 1.7f, "SnowBee");
+        GameObject simmons = Modern(t, "Ruth Simmons", new Vector3(5f, 0f, 13f), true, suit, CubeInsect.Hat.None, 1.68f, "Firefly");
+        var students = new List<Transform>();
+        foreach (var (name, pos, female) in new[] { ("Estudiante de ingeniería (Sakshi)", new Vector3(10f, 0f, -4f), true), ("Estudiante de enfermería (Medea)", new Vector3(16f, 0f, -2f), true), ("Estudiante de agronomía (Momo)", new Vector3(13f, 0f, -9f), false) })
+        { GameObject s = Modern(t, name, pos, female, new Color(0.45f, 0.12f, 0.2f)); Routine(s, library, aid); students.Add(s.transform); }
+        GameObject clerk = Modern(t, "Encargado de la oficina de ayudas (Héspero)", new Vector3(14f, 0f, 3f), false, new Color(0.35f, 0.38f, 0.42f));
+        int n = 6;
+
+        Mission(t, "MacKenzie Scott y Prairie View: dar sin condiciones (2020)", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("En su mesa de escritura, habla con MacKenzie Scott", scott.transform, "MacKenzie Scott", "Este año la pandemia ha hecho más pobres a los que ya lo tenían difícil. Con un pequeño equipo hemos buscado a quienes ya hacen el trabajo, para darles el dinero sin pedirles nada a cambio. Ellos saben mejor que yo en qué usarlo."),
+                Hold("Quédate mientras escribe el ensayo que lo anuncia", writing, 8f, "MacKenzie Scott", "No quiero que esto trate de mí. Voy a escribir sobre ellos: 384 organizaciones, y por qué las elegimos."),
+                Reach("15 de diciembre: ve al despacho de la presidenta de Prairie View A&M", president, "Encargado de la oficina de ayudas", "La presidenta acaba de colgar el teléfono. No dice nada: solo sonríe."),
+                Talk("Habla con Ruth Simmons, la presidenta", simmons.transform, "Ruth Simmons", "Cincuenta millones de dólares, sin condiciones: la mayor donación en los casi 145 años de esta universidad. Y lo primero que haremos es ayudar a los que están a punto de terminar."),
+                Visit("Habla con tres estudiantes que no podían pagar su último curso", students, "Estudiante de enfermería", "Me faltaba un semestre y debía la matrícula. Pensaba dejarlo y ponerme a trabajar."),
+                Collect("Lleva las tres cartas de ayuda a la oficina de ayudas", letters, aid, "Encargado de la oficina de ayudas", "Diez millones para ayudas de emergencia a los de tercero y cuarto. Estas tres deudas quedan pagadas."),
+                Hold("En la biblioteca: estudia con ellos un rato", library, 8f, "Estudiante de ingeniería", "Ahora solo tengo que preocuparme de aprobar."),
+                Talk("Vuelve con Ruth Simmons", simmons.transform, "Ruth Simmons", "El resto va al fondo de la universidad, para que dure. Esto no es solo dinero: es que alguien de fuera nos haya mirado y haya confiado en nosotros."),
+            },
+            "Prairie View A&M University (Texas), el 15 de diciembre de 2020, en plena pandemia, sobre el laboratorio de Química del santuario a escala de hormiga (pendiente de su piso: un aula y biblioteca universitaria). La escritora MacKenzie Scott dona, sin condiciones, la mayor cantidad que esta universidad ha recibido nunca. Mira cómo llega la ayuda a los estudiantes. E para hablar, recorrer y recoger; para escribir y estudiar, quédate quieto.",
+            new[]
+            {
+                "MacKenzie Scott (San Francisco, 1970) es novelista: estudió en Princeton, donde Toni Morrison fue su profesora, y publicó «The Testing of Luther Albright» (2005) y «Traps» (2013). En 2019 firmó el Giving Pledge, el compromiso de dar la mayor parte de su fortuna.",
+                "En 2020 dio de forma muy distinta a la habitual: sin convocatorias ni informes, con un equipo de asesores que buscó organizaciones que ya hacían el trabajo, y donaciones sin condiciones (cada organización decide cómo usarlas). Lo anunció en dos ensayos: el 28 de julio («116 Organizations Driving Change», unos 1700 millones de dólares) y el 15 de diciembre («384 Ways to Help», unos 4200 millones para 384 organizaciones: bancos de alimentos, ayudas de emergencia, universidades históricamente negras, como Prairie View).",
+                "Prairie View A&M, fundada en 1876, es la segunda universidad pública más antigua de Texas y una universidad históricamente negra (HBCU). Sus 50 millones fueron la mayor donación de su historia y aumentaron su fondo en torno a un 40 %. Su presidenta, Ruth Simmons, destinó 10 millones a ayudas de emergencia para estudiantes de tercero y cuarto con deudas de matrícula, y la mayor parte del resto al fondo.",
+                "Scott no estuvo en el campus: en este microcosmos su mesa de escritura está en el claro como recuerdo de dónde salió la ayuda.",
+            },
+            new[]
+            {
+                "Scott, M. (15-12-2020). «384 Ways to Help». Medium (mackenzie-scott.medium.com).",
+                "Prairie View A&M University (15-12-2020), «Donor announces landmark $50 million gift to Prairie View A&M University» (pvamu.edu).",
+                "The Texas Tribune (15-12-2020), «Prairie View A&M receives $50 million donation from MacKenzie Scott».",
+                "The Chronicle of Philanthropy (2020), «Gifts From MacKenzie Scott Put Overlooked Colleges and Universities in the Spotlight».",
+            },
+            "Estudiante de ingeniería", "Me gradúo en mayo. Y algún día ayudaré yo a otro.");
         return n;
     }
 }

@@ -102,6 +102,7 @@ public static class Eras
             case "Aldea de la montaña":   return (1930, "Una aldea de montaña de la China tradicional (homenaje a Goku, ficción)");
             case "Albuquerque":           return (1975, "Albuquerque, Nuevo México (Bill Gates, Paul Allen y el BASIC del Altair)");
             case "Omaha":                 return (1983, "Omaha, Nebraska (Warren Buffett compra la Nebraska Furniture Mart a Rose Blumkin)");
+            case "Prairie View":          return (2020, "Prairie View A&M University, Texas (la donación de MacKenzie Scott)");
             case "Planta Atómica":        return (1905, "Woolsthorpe, París y Berna (Newton, Curie, Einstein)");
             default: return null;
         }

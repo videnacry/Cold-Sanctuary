@@ -109,6 +109,23 @@ public static partial class MicroBiome
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro de la casa (en el microcosmos, una cochinilla hormiguera)"),
                 new Pet("Woodlouse", 2, 0.5f, C(0.85f, 0.83f, 0.78f), "Gato de la casa (en el microcosmos, una cochinilla hormiguera)") },
               bugs = new Bug[0] };
+            // ── Prairie View (condado de Waller, Texas), mediados de diciembre: la sabana de robles del este de Texas (post oak
+            //    savanna) y los pinares de pino taeda; invierno suave, pocos bichos. En el campus, encinas de Virginia, árboles de
+            //    Júpiter (crape myrtle) y céspedes; perros. (Texas Parks and Wildlife, «Post Oak Savannah».)
+            case "Prairie View": return new Biome { title = "Prairie View, sabana de robles del este de Texas (diciembre de 2020)", ground = C(0.5f, 0.4f, 0.3f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Roble post (Quercus stellata)", 1500, C(0.35f, 0.42f, 0.25f), C(0.5f, 0.4f, 0.3f)),
+                new Plant(Kind.Shrub, 5, "Pino taeda (Pinus taeda)", 2200, C(0.22f, 0.38f, 0.25f), C(0.45f, 0.35f, 0.25f)),
+                new Plant(Kind.Shrub, 4, "Yaupon (Ilex vomitoria)", 300, C(0.25f, 0.4f, 0.22f), C(0.8f, 0.15f, 0.12f)),
+                new Plant(Kind.Grass, 14, "Pasto del condado (Paspalum notatum)", 30, C(0.55f, 0.55f, 0.35f), C(0.6f, 0.55f, 0.4f)) },
+              town = new[] {
+                new Plant(Kind.Shrub, 5, "Encina de Virginia (Quercus virginiana), plantada en el campus", 1500, C(0.22f, 0.4f, 0.22f), C(0.45f, 0.38f, 0.3f)),
+                new Plant(Kind.Shrub, 4, "Árbol de Júpiter (Lagerstroemia indica), plantado", 400, C(0.35f, 0.4f, 0.3f), C(0.85f, 0.4f, 0.6f)),
+                new Plant(Kind.Grass, 14, "Césped del campus, segado", 5, C(0.45f, 0.58f, 0.3f), C(0.5f, 0.55f, 0.3f)) },
+              bugs = new[] {
+                new Bug("Ant", 4, 4, C(0.6f, 0.25f, 0.12f), "Hormiga roja de fuego (Solenopsis invicta)"),
+                new Bug("Spider", 2, 10, C(0.4f, 0.32f, 0.25f), "Araña lobo (Hogna)") },
+              townFauna = new[] {
+                new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro del pueblo (en el microcosmos, una cochinilla hormiguera)") } };
             default: return null;
         }
     }

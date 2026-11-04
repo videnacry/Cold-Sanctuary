@@ -16,6 +16,7 @@ internal static partial class CivicBuilder
     static readonly Style TamilTile = new Style(C(0.92f, 0.88f, 0.78f), C(0.6f, 0.45f, 0.32f), C(0.7f, 0.32f, 0.22f), Roof.Gable, 3.2f);  // aldea tamil: encalado y teja de Mangalore
     static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
     static readonly Style OmahaBrick = new Style(C(0.65f, 0.35f, 0.28f), C(0.55f, 0.45f, 0.35f), C(0.35f, 0.33f, 0.32f), Roof.Gable, 3.4f);   // Omaha: ladrillo rojo y tablas, suelo de madera
+    static readonly Style CampusBrick = new Style(C(0.72f, 0.5f, 0.38f), C(0.75f, 0.72f, 0.66f), C(0.45f, 0.12f, 0.2f), Roof.Flat, 3.6f);   // Prairie View: ladrillo del campus, granate y oro
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -27,6 +28,7 @@ internal static partial class CivicBuilder
             case "Aldea de la montaña": return MountainVillageTown(t);
             case "Albuquerque": return AlbuquerqueTown(t);
             case "Omaha": return OmahaTown(t);
+            case "Prairie View": return PrairieViewTown(t);
             default: return 0;
         }
     }
@@ -203,6 +205,40 @@ Mecanica | 250 -450
 Tecnologia | -350 950
 Hotel | -150 850
 relleno | 70 | 300 -600",
+        // PRAIRIE VIEW (2020): el campus de Prairie View A&M en el condado de Waller (Texas), sobre la antigua finca de Alta Vista: la
+        // avenida de la universidad, la administración, la biblioteca John B. Coleman, las aulas de ciencias, las residencias y la
+        // granja experimental; la autopista 290 al sur y el pueblo de Prairie View; pinares y robledales al norte. Plano aproximado
+        // (OpenStreetMap; PVAMU, «Campus Map»).
+        ["Prairie View"] = @"
+calle University Drive | 14 | -1200 0, 1200 0
+calle Avenida del campus | 10 | 0 -400, 0 600
+calle Calle de las residencias | 8 | -500 300, 500 300
+calle Autopista 290 | 30 | -1400 -950, 1400 -800
+calle FM 1098 | 12 | 900 -950, 900 900
+calle Calle del pueblo | 8 | 300 -600, 1200 -600
+campo Granja experimental | 300 220 | -800 450
+campo Pastos del condado de Waller | 400 300 | 1000 700
+colina Loma de los pinos | 260 20 | -400 900
+hito 0 | 60 120
+hito 1 | -140 140
+hito 2 | 160 220
+hito 3 | -160 -120
+hito 4 | 120 380
+hito 5 | 180 -140
+hito 6 | -700 420
+Plaza | 0 -200
+Mercado | 600 -500
+Parque | -300 -350
+Piscina | 350 150
+Entrenamiento | -450 120
+Bomberos | 700 -700
+Policia | 450 -250
+Guarderia | 500 -700
+Museo | -250 450
+Investigacion | 300 420
+Tecnologia | -350 300
+Hotel | 800 -400
+relleno | 50 | 700 -600",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -380,6 +416,44 @@ relleno | 70 | 300 -600",
         n += W(t, "Camarero de Gorat's", s[3], "cocinero", s[3], null, null);
         n += W(t, "Tapicero de la tienda", s[4], "", s[3], null, null);
         n += Townsfolk(t, s, 6, "Vecina de Omaha", "Vecino de Omaha", s[3], null);
+        return n;
+    }
+
+    // ══ PRAIRIE VIEW (2020): el campus de Prairie View A&M (la presidencia, la biblioteca, las aulas de ciencias, el comedor, una
+    //    residencia, la oficina de ayudas y la granja experimental) y el pueblo (casas, iglesia, tienda, taller).
+    static int PrairieViewTown(Transform t)
+    {
+        var s = Town(t, "Prairie View", new[]
+        {
+            new Lot("Edificio de administración", "Taller de papeles", "Presidencia de Prairie View A&M", 14f, 10f, CampusBrick,
+                S("mesa", -2f, 2f, 2f, 1f, "Mesa de la presidenta"), S("estante", 3f, 2f, 0.8f, 2f, "Historia de la universidad (desde 1876)"), S("mesa", 0f, -3f, 2.4f, 1f, "Mesa de reuniones")),
+            new Lot("Biblioteca John B. Coleman", "Escuela", "Biblioteca John B. Coleman", 18f, 12f, CampusBrick,
+                S("estante", -5f, 3f, 2f, 0.6f, "Estanterías"), S("estante", 0f, 3f, 2f, 0.6f, "Estanterías"), S("mesa", -2f, -2f, 2.4f, 1f, "Mesa de estudio"), S("mesa", 3f, -2f, 2.4f, 1f, "Mesa de estudio")),
+            new Lot("Aulas de ciencias", "Laboratorio", "Aulas y laboratorios de ciencias e ingeniería", 16f, 12f, CampusBrick,
+                S("mesa_laboratorio", -3f, 2f, 2.4f, 1f, "Mesa de laboratorio"), S("mesa_laboratorio", 3f, 2f, 2.4f, 1f, "Mesa de laboratorio"), S("pizarra", 0f, -4f, 2.4f, 0.4f, "Pizarra")),
+            new Lot("Comedor del campus", "Restaurante", "Comedor del campus", 16f, 12f, CampusBrick,
+                S("cocina", -4f, 3f, 2.4f, 0.8f, "Cocina del comedor"), S("mesa", 0f, -1f, 2.4f, 1f, "Mesas largas"), S("barra", 4f, 3f, 2.4f, 0.8f, "Barra de servir")),
+            new Lot("Residencia de estudiantes", "Casa", "Residencia de estudiantes", 16f, 12f, CampusBrick,
+                S("cama", -5f, 3f, 1f, 2f, "Cama"), S("cama", -2f, 3f, 1f, 2f, "Cama"), S("cama", 1f, 3f, 1f, 2f, "Cama"), S("cama", 4f, 3f, 1f, 2f, "Cama")),
+            new Lot("Oficina de ayudas a estudiantes", "Taller de papeles", "Oficina de ayudas a estudiantes", 12f, 10f, CampusBrick,
+                S("mesa", 0f, 2f, 2.4f, 1f, "Mostrador de atención"), S("armario", 3f, -3f, 1.2f, 0.6f, "Expedientes")),
+            new Lot("Granja experimental", "Huerto", "Granja experimental de la universidad", 16f, 12f, CampusBrick,
+                S("bancal", -3f, 0f, 4f, 6f, "Bancal de ensayo"), S("pozo", 4f, 2f, 1.2f, 1.2f, "Riego")),
+        }, new[]
+        {
+            new Lot("Casa de Prairie View", "Casa", "Casa de madera de Prairie View", 10f, 9f, OmahaBrick),
+            new Lot("Iglesia de Prairie View", "Templo", "Iglesia del pueblo", 12f, 10f, OmahaBrick, S("altar", 0f, 0f, 2f, 1f, "Púlpito"), S("banco", 0f, 0f, 2f, 0.6f, "Banco")),
+            new Lot("Tienda del pueblo", "Mercado", "Tienda del pueblo", 10f, 8f, OmahaBrick, S("puesto", 0f, 0f, 2f, 1f, "Mostrador"), S("estante", 0f, 0f, 0.8f, 1.6f, "Estantes")),
+            new Lot("Taller de Prairie View", "Taller", "Taller mecánico del pueblo", 12f, 10f, OmahaBrick, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco"), S("armario", 0f, 0f, 1.2f, 0.6f, "Recambios")),
+        }, C(0.46f, 0.45f, 0.44f));
+        int n = 0;
+        n += W(t, "Bibliotecaria de la Coleman", s[1], "sabio", s[3], null, null);
+        n += W(t, "Profesora de química", s[2], "sabio", s[3], null, null);
+        n += W(t, "Estudiante de cuarto", s[2], "alumno", s[3], s[1], s[4]);
+        n += W(t, "Estudiante de tercero", s[1], "alumno", s[3], s[1], s[4]);
+        n += W(t, "Cocinero del comedor", s[3], "cocinero", s[3], null, null);
+        n += W(t, "Técnica de la granja experimental", s[6], "hortelano", s[3], null, null);
+        n += Townsfolk(t, s, 7, "Vecina de Prairie View", "Vecino de Prairie View", s[3], null);
         return n;
     }
 }
