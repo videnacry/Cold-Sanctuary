@@ -35,6 +35,7 @@ Ficha contada por Berón (2026-10-18). Aspecto en [`diseno-personajes.md`](disen
 ## En el juego
 
 - El **restaurante** de lujo fue su sueño y los turistas son una vía de ingresos: sale en el comedor.
+- **Profesional de comunicación** (Berón 2026-11-04): los avisos del santuario y la radio en el comedor (misión `coc_avisos`).
 - **Ya no es el maestro de yoga** (Berón 2026-11-04: «el profesional de yoga es Josedrilo»). Lo fue unas horas, cuando Sadhguru se fue a
   su microcosmos. Su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento
   ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Profesiones y parejas).

@@ -27,7 +27,7 @@ Distribución de la casa (x de −4,5 a 4,5; z de −3,5 a 3,5; cabecero en +z),
 
 Dormir:
 - `Bedroom.sleeps` (4) y `laneWidth` (0,9 m) dan una plaza a cada uno.
-- `Bedroom.LieSpot`: el dueño en una plaza del medio y su pareja en la de al lado (Amahuz y Karen).
+- `Bedroom.LieSpot`: el dueño en una plaza del medio y su pareja en la de al lado (Amykhuz y Karen).
 - `SleepSpell` y «Descansar en casa» tumban a cada uno en su plaza.
 - El sitio de la casa en el horario libre es el pie de la cama (`Bedroom.FootSpot`).
 

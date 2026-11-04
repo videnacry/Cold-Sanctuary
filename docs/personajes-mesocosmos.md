@@ -37,64 +37,109 @@ Sus microcosmos (rama `claude/edif-famosos`): [microcosmos-famosos.md](microcosm
 
 ## Profesiones y parejas (Berón, 2026-11-04) — lo que vale ahora
 
-Berón: «Josedrilo y Maite son pareja, ¿Lizmibet y su esposo comparten residencia?; Ducristin tiene de pareja a Gallarle, el
-profesional de yoga es Josedrilo y también es profesional de bioconstrucción; Maite es profesional de cocina, Shalva es profesional de
-cultivo y bioconstrucción, Adaguchi es profesional de submarinismo y cocina, Amahuz es profesional de cocina y química; Karen es
-profesional de asuntos legales y lenguas; Alicita es profesional de contabilidad y project-manager».
+Lo que dijo Berón, en dos tandas:
+- «Josedrilo y Maite son pareja, ¿Lizmibet y su esposo comparten residencia?; Ducristin tiene de pareja a Gallarle, el profesional de
+  yoga es Josedrilo y también es profesional de bioconstrucción; Maite es profesional de cocina, Shalva es profesional de cultivo y
+  bioconstrucción, Adaguchi es profesional de submarinismo y cocina, Amahuz es profesional de cocina y química; Karen es profesional de
+  asuntos legales y lenguas; Alicita es profesional de contabilidad y project-manager».
+- Después:
+  - **Amahuz se llama Amykhuz**, y él y Karen son pareja (confirmado);
+  - **Alicita y Julian** son pareja (Julian es búlgaro; se conocieron en un máster);
+  - **Irosene y Fausto** son pareja (Fausto es mecánico);
+  - Josedrilo es además **jefe de obra nueva**;
+  - Tote es **jefe de reparaciones** y **guardia**;
+  - Nesvitor es **guardia** y **agricultor**;
+  - Ducristin es **gerente de banca** y **profesor**;
+  - Andrea es profesional de **comunicación**;
+  - Maite es **jefa de cocina** con Amykhuz y **curandera**;
+  - Irosene es profesional de **letras** (profesora de poesía y narración);
+  - los guardias son Gohageneis, Nesvitor y Tote.
 
 **Esto sustituye al reparto de papeles de abajo**, que fue provisional.
+
+**Cambio de nombre**: `Amahuz` → **`Amykhuz`** en todo: id, rótulo, personal, casas, pruebas y docs.
+- Las escenas sin reconstruir guardan el GameObject «Amahuz».
+- `WorkdayDirector.LegacyIds` y `CubeHair.For` aceptan el nombre viejo, y al reconstruir sale el nuevo.
+- La foto sigue siendo `amahuz_karen.jpg`.
 
 ### Profesiones (`Professions`)
 
 La profesión da a cada uno su papel sin quitar la rotación (regla J2):
-- cada día, antes de las vueltas por áreas, `WorkRoster` le da **una misión de cada área de su profesión** (la que menos ha hecho);
-- en una misión de grupo que se **dirige** (la clase de yoga), el profesional del área, si está libre, entra en el grupo y la dirige;
-- cada uno **empieza** en el área de su profesión principal (`SanctuaryDirector.HomeArea`, `PlaceStaff`), y su rótulo la dice.
+- Cada día, antes de las vueltas por áreas, `WorkRoster` le da **una misión de cada área de su profesión**: la que menos ha hecho, y si
+  la profesión nombra misiones con un prefijo (`rep_` las reparaciones, `obra_` la obra nueva…), una de esas.
+- En una misión de **grupo** de su profesión (la clase de yoga, una obra), el profesional entra si está libre y **dirige** el papel que
+  se dirige.
+- Cada uno **empieza** en el área de su profesión principal (`SanctuaryDirector.HomeArea`, `PlaceStaff`), y su rótulo la dice.
 
-| Persona | Profesión | Áreas en la jornada | Sale en |
+| Persona | Profesión | Misiones de su profesión | Sale en |
 |---|---|---|---|
-| **Josedrilo** | **Maestro de yoga** (`WorkdayDirector.YogaTeacher`: guía la clase de Hatha, medita junto al linga) y bioconstrucción | Sala de Yoga, Construcción | la tarima de Hatha tradicional |
-| Irosene | Segunda maestra de yoga (`SecondYogaTeacher`: la otra clase cuando hay dos a la vez) y su textil | — | Estudio Textil |
-| **Maite** | Cocina | Cocina | el restaurante |
-| **Shalva** | Cultivo y bioconstrucción | Huerto, Construcción | el huerto |
-| **Adaguchi** | Submarinismo (piloto del submarino de obra y de la ambulancia, tareas bajo el agua de los árboles) y cocina | Construcción, Cocina | Construcción |
-| **Amahuz** | Cocina y química | Cocina, Química | el restaurante |
-| **Karen** | Asuntos legales y lenguas | Aula: misiones nuevas `aul_legal` (contratos, permisos, normas y acuerdos, en una mesa de la sala de estudio) y `aul_lenguas` (traducir y dar clase de idiomas) | el Aula |
-| **Alicita** | Contabilidad y dirección de proyectos | Cocina (misión nueva `coc_cuentas`: las cuentas del santuario, que llevaba Nesvitor), Construcción (misión nueva `con_proyectos`: dirigir las obras) | Construcción |
-| Ducristin | Mecánica (vehículos y maquinaria) | Mecánica | el taller |
-| Nesvitor | **Consejero**: personal general, sin área fija (deja las cuentas a Alicita) | — | el comedor |
-| Gallarle | **Pendiente de foto y de profesión**: personal general | — | con Ducristin |
-| Andrea | Deja el yoga; su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento | — | el comedor |
-| Gohageneis | Guardia (patrulla) y artes marciales; ya no tiene a Josedrilo en la guardia | — | — |
+| **Josedrilo** | Maestro de yoga (`YogaTeacher`), **jefe de obra nueva** y bioconstrucción | Sala de Yoga (guía la clase); Construcción: `obra_` (las obras) y `mat_` (el material) | la tarima de Hatha tradicional |
+| **Tote** (`JefeConstruccion`) | **Jefe de reparaciones** y **guardia** | Construcción: `rep_`; Guardia | Construcción |
+| **Gohageneis** | Guardia y artes marciales | Guardia (y su patrulla, `CarnivoreKeeper`) | — |
+| **Nesvitor** | **Guardia** y **agricultor** | Guardia; Huerto | el huerto |
+| **Maite** | **Jefa de cocina** (con Amykhuz) y **curandera** | Cocina; Hospital: `hos_plantas` (misión nueva: remedios de plantas medicinales) y `enf_visita` (curas) | el restaurante |
+| **Amykhuz** | **Jefe de cocina** (con Maite) y química | Cocina; Química | el restaurante |
+| Shalva | Cultivo y bioconstrucción | Huerto; Construcción: `mat_` | el huerto |
+| Adaguchi | Submarinismo (submarino de obra, ambulancia, tareas bajo el agua) y cocina | Construcción; Cocina | Construcción |
+| Karen | Asuntos legales y lenguas | Aula: `aul_legal`, `aul_lenguas` | el Aula |
+| Alicita | Contabilidad y dirección de proyectos | Cocina: `coc_cuentas`; Construcción: `con_proyectos` | Construcción |
+| **Ducristin** | **Gerente de banca y profesor** | Cocina: `coc_cuentas` (las finanzas); Aula: `aul_clase` | el Aula |
+| **Fausto** | **Mecánico** (la mecánica, antes de Ducristin) | Mecánica | el taller |
+| **Andrea** | **Comunicación**: los avisos del santuario y la radio | Cocina: `coc_avisos` (misión nueva) | el comedor |
+| **Irosene** | **Letras** (poesía y narración) y textil | Aula: `aul_letras` (misión nueva: clase y lecturas); Estudio Textil | el Aula |
+| **Panterilia** | **Segunda maestra de yoga** (`SecondYogaTeacher`: la otra clase cuando hay dos a la vez) | — | — |
+| Gallarle, Julian | Pendientes de foto y de profesión | — | con su pareja |
 
-- **Karen en el Aula**: aún no hay un área de asuntos legales. El Aula tiene mesas y biblioteca en su sala de estudio para el trabajo
-  de despacho, y pizarra para las clases de lenguas. Y está en la torre del Entrenamiento, que usan todos cada día.
-- **Registros y vacunación del hospital** (eran de Maite): vuelven a las médicas, Lizmibet y Linduarda. Siguen siendo misiones del
-  Hospital en la rotación.
-- **Huerto para los visitantes** (era de Alicita): lo lleva Shalva, profesional de cultivo, con Panterilia.
+**Por qué así**:
+- **Ducristin sin banco**: no hay área de banca.
+  - Las finanzas van en la mesa de cuentas del restaurante (Servicios), por donde entra el dinero del santuario, la misma que lleva
+    Alicita.
+  - Su faceta de profesor va en el Aula, con las clases.
+- **Andrea en comunicación**: el comedor del restaurante (Servicios) es donde coinciden todos a la hora de comer, así que ahí se dan los
+  avisos y se hace la radio. Su papel de **entrenador del gimnasio** lo pone la rama del entrenamiento: aquí no se toca.
+- **Irosene al Aula**, como sugirió Berón: da clase de poesía y narración y lee en la sala de estudio. Deja de ser la segunda maestra de
+  yoga.
+- **Panterilia segunda maestra**: es «la de la percepción», la que observa, y corregir posturas es mirar.
+- **Karen en el Aula**: no hay área de asuntos legales. La sala de estudio tiene mesas y biblioteca para el despacho, y la pizarra
+  sirve para las lenguas.
+- **Los registros y la vacunación** del hospital los llevan las médicas (Lizmibet y Linduarda). Maite, como curandera, hace las plantas
+  medicinales y las curas.
 
 ### Parejas: una casa del árbol por pareja (`ResidentialBuilder.Partners`, `Bedroom.partner`)
 
-| Casa | Viven | Nota |
-|---|---|---|
-| Lizmibet y Tote | Lizmibet y `JefeConstruccion` | antes, cada uno en la suya |
-| Amahuz y Karen | Amahuz y Karen | de su foto: **pendiente de que Berón lo confirme** |
-| Ducristin y Gallarle | Ducristin y Gallarle | Gallarle es nuevo |
-| Josedrilo y Maite | Josedrilo y Maite | antes, cada uno en la suya |
+| Casa | Viven |
+|---|---|
+| Lizmibet y Tote | Lizmibet, `JefeConstruccion` |
+| Amykhuz y Karen | (confirmado) |
+| Ducristin y Gallarle | Gallarle, pendiente de foto |
+| Josedrilo y Maite | |
+| Alicita y Julian | Julian, búlgaro, pendiente de foto |
+| Irosene y Fausto | Fausto, mecánico, pendiente de foto |
 
-- Hay **16 casas ocupadas de 18**: quedan 2 libres para recién llegados.
-- Duermen allí **20 residentes** (16 dueños y 4 parejas).
-- El ring de almohadas se mide con ellos (⌈√20⌉ = 5: caben 25) y `AreaCapacity` también.
-- Miembros del santuario: 19 con Kushal (`WorkdayDirector.Staff`). Con la regla J16 siguen saliendo 2 pisos de Hatha y 2 de Ashtanga.
+- Hay **16 casas ocupadas de 18**: quedan 2 libres.
+- Duermen allí **22 residentes**: 16 dueños y 6 parejas. El ring de almohadas sigue en 5 × 5, caben 25.
+- **Miembros**: 21 con Kushal. Con la regla J16, el **ballet pasa a 2 pisos** (20 plazas por piso). El yoga sigue en 2 + 2 pisos.
+  - La torre del Entrenamiento tiene ahora 10 pisos de entrenamiento más el Aula: 6 niveles.
+  - **Simulador de holguras** (`mig/Clear.cs`) vuelto a pasar con 6 niveles: el techo, a ~197 m. Las holguras entre edificios no cambian
+    (árbol–Entrenamiento 16,3 m, Servicios–Entrenamiento 16,5 m, guardián–Entrenamiento 7,0 m) y el tronco del guardián sube a 202 m.
+
+### Pisos en obras
+
+Berón vio bailar en el piso de ballet sin terminar.
+- El ocio y el entrenamiento **no van a un piso en obras**: `LeisureDirector.OpenArea` y `WorkdayDirector.OpenTraining` ya lo
+  filtraban por su `ConstructionProject`. Hasta que el ballet se termine, el baile va a la calistenia o al gimnasio.
+- `HorarioLibreTest` (65) ahora lo **comprueba**:
+  - ninguna actividad libre ni ningún entrenamiento tiene su sitio en un piso en obras;
+  - `AreaCapacity` no cuenta los puestos de un piso en obras, que quedan como pendientes.
 
 ### La jornada (regla W9)
 
-- La ronda de las profesiones va antes que las vueltas por áreas. La rotación de siempre (la misión que menos has hecho) reparte el
-  resto, así que todos siguen aprendiendo todo.
-- Hay **4 misiones nuevas** (`aul_legal`, `aul_lenguas`, `coc_cuentas`, `con_proyectos`), 3,5 h al día. Son 19 personas × 5 h: sobra
-  sitio.
-- La brigada del restaurante de `RestaurantServiceTest` lleva a los profesionales de cocina:
-  - Goluis, Maite y Amahuz en la línea;
+- Ronda de profesiones antes de las vueltas. Las misiones de grupo de su profesión las dirige el profesional; las obras las dirige
+  Josedrilo.
+- Hay 7 misiones nuevas de profesión: `aul_legal`, `aul_lenguas`, `aul_letras`, `coc_cuentas`, `coc_avisos`, `con_proyectos` y
+  `hos_plantas`. Son unas 6 h al día frente a 21 × 5 h: sobra sitio.
+- La brigada de `RestaurantServiceTest`:
+  - Goluis, Maite y Amykhuz (los jefes de cocina) en la línea;
   - Gohageneis en el pase;
   - Adaguchi y Panterilia en el obrador;
   - Irosene en la limpieza;
@@ -113,7 +158,7 @@ La profesión da a cada uno su papel sin quitar la rotación (regla J2):
 | Huerto: alimentar a los visitantes | MacKenzie Scott | **Alicita** | Área: Huerto (con Panterilia). |
 | Guardia | Ibrahim Traoré (coordinaba) | **Josedrilo**, con Gohageneis | Patrulla: como Gohageneis, sin área fija. |
 
-Amahuz, Karen, Shalva y Adaguchi siguen de personal general.
+Amykhuz, Karen, Shalva y Adaguchi siguen de personal general.
 
 **Las clases de yoga** funcionan igual que antes:
 - la de Hatha la guía quien tenga la misión «yog_guia» en la rotación;
@@ -129,12 +174,12 @@ Lo que pasa a Andrea es lo que era fijo de Sadhguru:
 
 - **Personal del santuario** (`WorkdayDirector.staff`, 18 con el jugador):
   - Kushal, Linduarda, Lizmibet, Goluis, Panterilia, Gohageneis, Irosene, Tote (`JefeConstruccion`) y Andrea;
-  - los nueve de las fotos de Berón: Nesvitor, Amahuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y Adaguchi.
+  - los nueve de las fotos de Berón: Nesvitor, Amykhuz, Karen, Alicita, Ducristin, Josedrilo, Maite, Shalva y Adaguchi.
 - Antes eran 16 sin el jugador; ahora, 17. La rotación reparte las misiones de todas las áreas entre todos: cada misión le toca a
   cada uno algo menos a menudo.
 - **Horario libre**: el catálogo tiene 54 plazas a la vez, más «Descansar en casa» sin límite. Con 17 personas sobra sitio. Solo
   cambió el maestro de artes marciales (de Goku a Gohageneis).
-- **Casas del árbol**: las 18 están ocupadas (10 del personal que queda y 8 de la familia y los amigos de Berón; Amahuz y Karen
+- **Casas del árbol**: las 18 están ocupadas (10 del personal que queda y 8 de la familia y los amigos de Berón; Amykhuz y Karen
   comparten una). Ya no queda casa libre para recién llegados: si llega alguien, hay que añadir casas.
 
 ## Historia: los seis del mesocosmos (2026-11-03, ya no están)

@@ -105,6 +105,11 @@ su `mood`. Líneas de ejemplo:
 
 ## Lugar en el santuario y arco
 
+**2026-11-04 (Berón):** Irosene es **profesional de letras**: profesora de **poesía y narración**. Tiene su puesto en la sala de estudio
+del **Aula** (clases y lecturas, misión `aul_letras`) y sigue con su **textil**. Su pareja es **Fausto**, mecánico, y comparten casa del
+árbol. Deja de ser la segunda maestra de yoga, que pasa a ser Panterilia
+([personajes-mesocosmos.md](personajes-mesocosmos.md) §Profesiones y parejas).
+
 - **Ubicación actual:** nivel **submarino** (Tier 4). **Visita a Panterilia** (Cleaning, Tier 1) y
   tuvo **grandes momentos en el huerto/jardinería** (Garden, Tier 2) hasta tener que subir de nivel.
 - **Progresión mágica excepcional:** por quedarse tanto en Nivel 1 (llegaron muy mal físicamente),
