@@ -85,7 +85,7 @@ public class LeisureDirector : MonoBehaviour
     // ── Participantes ────────────────────────────────────────────────────────────────────────────
 
     static readonly string[] DefaultStaff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
-                                              "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
+                                              "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
 
     /// <summary>Vuelve a mirar quién hay en cada escena (cada 2 s, o ya si <paramref name="now"/>) y reparte la semana si cambió
     /// la gente o la semana.</summary>
@@ -521,6 +521,8 @@ public class LeisureDirector : MonoBehaviour
             if (v.halls.Count > 0) foreach (YogaHall hh in v.halls) mats.AddRange(hh.Mats()); else mats.AddRange(v.anchor.GetComponent<YogaHall>().Mats());
             if (mats.Count > 0) return OnMesh(mats[seat % mats.Count].transform.position + Vector3.up);
         }
+        // (2026-11-04) EL MAESTRO de la clase (el baile: Panterilia o Gohageneis) se pone DELANTE de su grupo, a 1,5 m de la primera fila.
+        if (r.entry != null && r.entry.lead) return OnMesh(v.anchor.TransformPoint(new Vector3(((v.index % 3) - 1) * 5f, 1f, 0f - (v.index / 3 % 2) * 4f)));
         // Un área: cada actividad en su zona (−5, 0, +5 m) y cada plaza en una rejilla de 1,6 m.
         float zx = ((v.index % 3) - 1) * 5f;
         Vector3 local = new Vector3(zx + ((seat % 3) - 1) * 1.6f, 1f, 1.5f + (seat / 3) * 1.6f - (v.index / 3 % 2) * 4f);

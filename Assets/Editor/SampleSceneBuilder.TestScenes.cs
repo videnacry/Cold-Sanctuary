@@ -41,7 +41,7 @@ public static partial class SampleSceneBuilder
     }
 
     // Personal del santuario (WorkdayDirector.staff sin el jugador): la clase de yoga y el servicio del restaurante lo toman de aquí.
-    static readonly string[] Staff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
+    static readonly string[] Staff = { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
     static readonly string[] YogaSessions = { "Upa-yoga de cuello", "Yoga Namaskar", "Saludo al Sol", "Ashtanga Primaria" };
 
     static readonly TestSceneSpec[] TestScenes =

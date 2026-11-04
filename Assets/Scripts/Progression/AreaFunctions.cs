@@ -149,11 +149,17 @@ public static class AreaFunctions
         Roles(S(Def("Aula", "aul_lenguas", "Lenguas: traducir documentos y dar clase de idiomas", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         S(Def("Cocina", "coc_cuentas", "Las cuentas del santuario: ingresos del restaurante, compras y presupuesto", 0.5f, false, Kind.Trade, "mesa"));
         S(Def("Construcción", "con_proyectos", "Dirigir los proyectos de obra: plan, plazos, material y equipos", 1f, false, Kind.Build));
+        S(Def("Construcción", "con_proyectos2", "Coordinar los proyectos de obra: seguimiento de las obras, equipos y avisos (la otra dirección de proyectos)", 1f, false, Kind.Build));   // (2026-11-04) Alicita y Julian comparten la dirección de proyectos
         // (2026-11-04, más profesiones) La COMUNICACIÓN (Andrea: los avisos y la radio, en el comedor), las LETRAS (Irosene: poesía,
         // narración y lecturas en el Aula) y la CURANDERA (Maite: plantas medicinales en la farmacia del hospital).
         S(Def("Cocina", "coc_avisos", "Comunicación: preparar y dar los avisos del santuario y el programa de radio en el comedor", 0.5f, false, Kind.Trade, "mesa"));
         Roles(S(Def("Aula", "aul_letras", "Letras: clase de poesía y narración, y lecturas en la sala de estudio", 1f, false, Kind.Teach, "pizarra")), "maestro", "alumno");
         Roles(S(Def("Hospital", "hos_plantas", "Curandera: remedios de plantas medicinales (infusiones, cataplasmas y ungüentos) para los pacientes", 1f, false, Kind.Heal, "armario")), "enfermera");
+        // (2026-11-04, los seis nuevos) PEDIATRÍA (Ivelyna), la FLOTA DE ALFOMBRAS y el transporte aéreo (Luciana, en la Mecánica) y el
+        // CONTROL DE MISIÓN de la lanzadera (Luciana; el área «Control de misión», LaunchSite.ControlArea).
+        Roles(S(Def("Hospital", "hos_pediatria", "Pediatría: consulta, vacunas y control del crecimiento de los niños", 1f, false, Kind.Heal, "camilla")), "medico");
+        S(Def("Mecánica", "mec_alfombras", "Flota de alfombras voladoras: revisar circuitos, LED y tejido y repartirlas por las pistas (transporte aéreo)", 1f, false, Kind.Make, "banco_taller"));
+        S(Def("Control de misión", "lan_control", "Control de misión: seguimiento de la lanzadera, del tiempo y de los vuelos", 1f, false, Kind.Operate, "consola"));
 
         // ══ FUNCIONES DEL DÍA (no son del catálogo fijo: las añade AreaWork.Today), con su efecto en el santuario ══
         Get("coc_servicio").effect = who => KitchenLarder.Instance?.ServeService(12, who);

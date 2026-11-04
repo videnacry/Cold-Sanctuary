@@ -206,6 +206,11 @@ public static class CubeHair
         // provisional como el de Gallarle (sin rasgos inventados ni género); Fausto con ropa de taller.
         if (n.Contains("julian")) return new Look(Style.Short, C(0.28f, 0.2f, 0.14f), C(0.9f, 0.76f, 0.66f), C(0.3f, 0.24f, 0.18f)).Face(0.8f, 0.45f).Wear(C(0.4f, 0.45f, 0.52f), 1.75f).Pants(C(0.2f, 0.2f, 0.24f)).Shoes(C(0.15f, 0.13f, 0.12f));
         if (n.Contains("fausto")) return new Look(Style.Short, C(0.25f, 0.2f, 0.16f), C(0.82f, 0.64f, 0.5f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.35f, 0.38f, 0.42f), 1.72f).Sleeves(C(0.35f, 0.38f, 0.42f)).Pants(C(0.3f, 0.32f, 0.36f)).Shoes(C(0.12f, 0.1f, 0.09f));
+        // LOS SEIS NUEVOS (Berón 2026-11-04): David y Adonis (informática), Julito y Ale (biotecnología), Ivelyna (pediatra) y Luciana
+        // (piloto). PENDIENTES DE FOTO: aspecto neutro provisional, como Gallarle, sin rasgos inventados. El rasgo femenino (Fem) solo
+        // donde el nombre lo sugiere (Ivelyna, Luciana), PENDIENTE DE CONFIRMAR con Berón; Ale (Alejandro o Alejandra), sin él. Por nombre
+        // EXACTO (David, Ale… son nombres que pueden salir en los microcosmos).
+        if (n == "david" || n == "adonis" || n == "julito" || n == "ale" || n == "ivelyna" || n == "luciana") return Placeholder(n);
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.
@@ -230,6 +235,17 @@ public static class CubeHair
     }
 
     static Color Pick(string n, params Color[] c) => c[Mathf.Abs(n.GetHashCode() / 3) % c.Length];
+
+    // Aspecto provisional de los pendientes de foto: pelo corto o media melena castaña, piel media, ropa lisa de un color por persona.
+    static int Sum(string n) { int h = 0; foreach (char ch in n) h += ch; return h; }
+    static Look Placeholder(string n)
+    {
+        Color[] wear = { C(0.4f, 0.45f, 0.52f), C(0.45f, 0.4f, 0.35f), C(0.35f, 0.45f, 0.4f), C(0.5f, 0.45f, 0.55f), C(0.55f, 0.5f, 0.42f), C(0.38f, 0.42f, 0.5f) };
+        bool fem = n == "ivelyna" || n == "luciana";   // (por el nombre; pendiente de confirmar)
+        Look l = new Look(fem ? Style.Medium : Style.Short, C(0.28f, 0.2f, 0.14f), C(0.86f, 0.7f, 0.58f), C(0.25f, 0.18f, 0.12f)).Face(fem ? 0.76f : 0.82f, 0.45f)
+            .Wear(wear[Sum(n) % wear.Length], fem ? 1.63f : 1.74f).Pants(C(0.2f, 0.2f, 0.24f)).Shoes(C(0.15f, 0.13f, 0.12f));
+        return fem ? l.Fem() : l;
+    }
 
     /// <summary>Pone el pelo sobre la articulación de la cabeza (su cubo: <paramref name="size"/> centrado en <paramref name="center"/>).</summary>
     public static void Build(Transform head, Vector3 center, Vector3 size, Look look)

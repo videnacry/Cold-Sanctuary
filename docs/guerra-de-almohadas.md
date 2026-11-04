@@ -27,7 +27,7 @@ Distribución de la casa (x de −4,5 a 4,5; z de −3,5 a 3,5; cabecero en +z),
 
 Dormir:
 - `Bedroom.sleeps` (4) y `laneWidth` (0,9 m) dan una plaza a cada uno.
-- `Bedroom.LieSpot`: el dueño en una plaza del medio y su pareja en la de al lado (Amahuz y Karen).
+- `Bedroom.LieSpot`: el dueño en una plaza del medio y su pareja en la de al lado (Amykhuz y Karen).
 - `SleepSpell` y «Descansar en casa» tumban a cada uno en su plaza.
 - El sitio de la casa en el horario libre es el pie de la cama (`Bedroom.FootSpot`).
 
@@ -155,3 +155,12 @@ Ahora el ring registra su caja (`PillowRing.Box`: plataforma, cama y cabecero, s
 - **3/57 vuelos «cruzaban» el ring en el tramo Residencia → Ring de almohadas.** Era el **aterrizaje** en la pista del propio ring: baja
   en vertical desde encima y atraviesa la caja del ring porque la pista está dentro. La prueba ya no cuenta la columna de la pista
   (≤ 4,5 m de ella): aterrizar en el ring no es cruzarlo.
+
+## Con 28 residentes (2026-11-04)
+
+- Seis personas más y una cuarta casa por árbol: hay **28 residentes**, así que el colchón pasa a **6 × 6** celdas (15 m de lado,
+  caben 36).
+- Para que el ring siga dentro del anillo de casas (esquina a ≤ 16,5 m del centro), la franja del cabecero baja de 1,6 a 1,2 m y el
+  margen del borde de 0,8 a 0,3 m.
+  - La plataforma queda en 20,2 × 25,5 m, con la esquina a 16,3 m.
+  - Con más de 36 residentes ya no cabe: `RingSize` avisa.

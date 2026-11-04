@@ -55,7 +55,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
             yield return new WaitForSecondsRealtime(1f);
         yield return new WaitForSecondsRealtime(1f);
         WorkdayDirector wd = WorkdayDirector.Instance;
-        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto" };
+        string[] names = wd != null ? wd.staff : new[] { "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea", "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi", "Gallarle", "Julian", "Fausto", "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };
         var people = new List<Anima>();
         foreach (string n in names)
         {

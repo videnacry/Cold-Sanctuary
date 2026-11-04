@@ -18,7 +18,8 @@ public class WorkdayDirector : MonoBehaviour
 
     public static readonly string[] Staff = { "Player", "Linduarda", "Lizmibet", "Goluis", "Panterilia", "Gohageneis", "Irosene", "JefeConstruccion", "Andrea",
                                "Nesvitor", "Amykhuz", "Karen", "Alicita", "Ducristin", "Josedrilo", "Maite", "Shalva", "Adaguchi",   // familia y amigos de Berón (docs/diseno-personajes.md)
-                               "Gallarle", "Julian", "Fausto" };   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
+                               "Gallarle", "Julian", "Fausto",   // (2026-11-04) parejas: de Ducristin (Gallarle), de Alicita (Julian) y de Irosene (Fausto); pendientes de foto
+                               "David", "Adonis", "Julito", "Ale", "Ivelyna", "Luciana" };   // (2026-11-04) seis nuevos: informática, biotecnología, pediatría y piloto; pendientes de foto
     /// <summary>(2026-11-04) La lista del personal, también sin escena: la usan la regla de capacidad (AreaCapacity) y el
     /// constructor del Aula (cuántas plazas y cuántos pisos).</summary>
     [Tooltip("Personal del santuario en su orden FIJO (el de la rotación). El jugador entra cuando ya es miembro.")]
