@@ -61,10 +61,10 @@ public static class SwarmModels
                 Part(g.transform, "Tentaculos", Get("des_tent", () => JellyTentacles(0.42f, 3.2f, 24)), new Color(0.85f, 0.6f, 0.5f, 0.4f));
                 break;
             default:
-                Part(g.transform, "Cuerpo", Get("abeja_cuerpo", BeeBody), new Color(0.82f, 0.88f, 0.95f));
-                Part(g.transform, "Bandas", Get("abeja_bandas", BeeBands), new Color(0.12f, 0.12f, 0.16f));
-                Transform wl = Part(g.transform, "Ala_izq", Get("abeja_ala", BeeWing), new Color(0.9f, 0.95f, 1f, 0.45f));
-                Transform wr = Part(g.transform, "Ala_der", Get("abeja_ala", BeeWing), new Color(0.9f, 0.95f, 1f, 0.45f));
+                Part(g.transform, "Cuerpo", Get("abeja_cuerpo", BeeBody), new Color(0.6f, 0.6f, 0.57f));
+                Part(g.transform, "Bandas", Get("abeja_bandas", BeeBands), new Color(0.1f, 0.09f, 0.08f));
+                Transform wl = Part(g.transform, "Ala_izq", Get("abeja_ala", BeeWing), new Color(0.62f, 0.66f, 0.7f, 0.3f));
+                Transform wr = Part(g.transform, "Ala_der", Get("abeja_ala", BeeWing), new Color(0.62f, 0.66f, 0.7f, 0.3f));
                 wl.localPosition = new Vector3(-0.015f, 0.035f, 0.01f); wr.localPosition = new Vector3(0.015f, 0.035f, 0.01f);
                 wr.localScale = new Vector3(-1f, 1f, 1f);
                 break;
@@ -79,10 +79,47 @@ public static class SwarmModels
         p.transform.SetParent(parent, false);
         p.AddComponent<MeshFilter>().sharedMesh = m;
         MeshRenderer r = p.AddComponent<MeshRenderer>();
-        r.sharedMaterial = KitchenProps.Mat(c);
+        r.sharedMaterial = Matte(c);   // (2026-11-04: mate, sin brillo ni emisión: las abejas deslumbraban como luces)
         r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;   // pequeños y muchos: sin sombra
         r.receiveShadows = false;
         return p.transform;
+    }
+
+    // ── MATERIAL MATE (Berón 2026-11-04: «las abejas brillan tanto que deslumbran») ──
+    static readonly Dictionary<Color, Material> _matte = new Dictionary<Color, Material>();
+    /// <summary>Lo más claro que puede ser un individuo (luminancia): con el sol del hielo y el posprocesado, un cuerpo casi blanco y
+    /// liso se ve como una luz.</summary>
+    public const float MaxLuminance = 0.55f;
+
+    /// <summary>Un material MATE para <paramref name="c"/>: sin emisión, casi sin brillo especular (también los translúcidos: alas,
+    /// medusas, kril) y, si es muy claro, oscurecido hasta <see cref="MaxLuminance"/>.</summary>
+    public static Material Matte(Color c)
+    {
+        if (_matte.TryGetValue(c, out Material m) && m != null) return m;
+        Color t = c;
+        float lum = 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b;
+        if (lum > MaxLuminance) { float k = MaxLuminance / lum; t = new Color(c.r * k, c.g * k, c.b * k, c.a); }
+        m = new Material(KitchenProps.Mat(t)) { name = "Grupo_mate_" + ColorUtility.ToHtmlStringRGBA(t) };
+        if (m.HasProperty("_Smoothness")) m.SetFloat("_Smoothness", t.a < 0.99f ? 0.2f : 0.15f);   // (translúcidos sin cristal: alas, umbrela, tentáculos, kril)
+        if (m.HasProperty("_SpecularHighlights")) m.SetFloat("_SpecularHighlights", 0f);
+        m.EnableKeyword("_SPECULARHIGHLIGHTS_OFF");
+        if (m.HasProperty("_EnvironmentReflections")) m.SetFloat("_EnvironmentReflections", 0f);
+        m.EnableKeyword("_ENVIRONMENTREFLECTIONS_OFF");
+        m.DisableKeyword("_EMISSION");
+        if (m.HasProperty("_EmissionColor")) m.SetColor("_EmissionColor", Color.black);
+        return _matte[c] = m;
+    }
+
+    /// <summary>Pasa a MATE todos los renderers de un cuerpo (las abejas de la colmena: sus prefabs eran casi blancos y lisos).</summary>
+    public static void Dim(GameObject who)
+    {
+        foreach (Renderer r in who.GetComponentsInChildren<Renderer>(true))
+        {
+            if (r is ParticleSystemRenderer || r is LineRenderer || r.sharedMaterial == null) continue;
+            if (r.GetComponent<TMPro.TMP_Text>() != null) continue;
+            Color c = r.sharedMaterial.HasProperty("_BaseColor") ? r.sharedMaterial.GetColor("_BaseColor") : r.sharedMaterial.color;
+            r.sharedMaterial = Matte(c);
+        }
     }
 
     static Mesh Get(string key, System.Func<B> build)

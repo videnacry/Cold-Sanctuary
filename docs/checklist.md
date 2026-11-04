@@ -4,6 +4,10 @@ Tablero para retomar. Última sesión: 2026-08-28. Marca lo que completes.
 Contexto de fondo: [`AUDIT-2026-07-09.md`](AUDIT-2026-07-09.md), [`gaps-vs-planteamiento.md`](gaps-vs-planteamiento.md),
 [`world-topology-and-planes.md`](world-topology-and-planes.md) (visión del mundo grande / los 3 planos).
 
+> **MANUAL DE DISEÑO (2026-11-04):** todas las reglas de Berón están en [`manual-de-diseno.md`](manual-de-diseno.md): 110 reglas,
+> dónde se comprueba cada una, las 14 pendientes de implementar del 2026-11-04 y la tabla piso → microcosmos para revisarlos
+> cuando cambia un piso. Al recibir una regla nueva, añadirla allí.
+
 > **HECHO 2026-11-03 (hilo del hospital, rama claude/edif-hospital):** **jardines frutales en la cima** de cada edificio-árbol en **bancales de tierra** por gremios (compañeras, flores, insectos útiles, abejorros, lombrices; tierra frente a maceta, con fuentes), **submarino-ambulancia anfibio** que entra por el tronco a por el equipo y lleva personas y grandes animales a urgencias o veterinaria, el **Leviatán** (hospital submarino de ballenas y orcas con pozo médico de suelo elevable), **banco de sangre** y **paredes de cristal** (la única pared permitida, con sus 2 m) en las salas aisladas del hospital. Pruebas 80–84; [`submarinos-medicos.md`](submarinos-medicos.md), [`hospital.md`](hospital.md) §4–§6.
 >
 > **HECHO 2026-11-03 (hilo de los árboles, rama claude/edif-arboles):** **máscaras de oxígeno** en los edificios-árbol (perchero en cada puerta, estación dentro, oxígeno ilimitado, rescate; [`mascaras-de-oxigeno.md`](mascaras-de-oxigeno.md)), **puertas cuadradas de 7 × 7 m** (8 personas y el submarino), **fondo abierto** al mar con cortinas de fitoplancton, **tareas del jardinero** (máscaras y fitoplancton; rondas repartidas de nuevo), **grupos de animales** con individuos de verdad (peces plateados, kril, medusas de McMurdo y enjambres de abejas de árbol en árbol; [`grupos-de-animales.md`](grupos-de-animales.md)) y el **submarino de obra** anfibio con su garaje ([`submarino-de-obra.md`](submarino-de-obra.md)). Pruebas 70–73 y la escena `Prueba_Mascaras`. *Falta:* lo que diga el informe del hilo (verificación en vivo).

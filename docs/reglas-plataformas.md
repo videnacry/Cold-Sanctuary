@@ -1,5 +1,7 @@
 # Reglas de las plataformas (pisos, anillos y microcosmos)
 
+> Todas las reglas de Berón, resumidas y con su comprobación: [manual-de-diseno.md](manual-de-diseno.md).
+
 Reglas que debe cumplir **cada piso** del santuario (Berón, 2026-10-22 … 2026-10-29). Cada una tiene, o tendrá, su prueba:
 si un cambio rompe una regla, la prueba debe fallar antes de que se note jugando.
 

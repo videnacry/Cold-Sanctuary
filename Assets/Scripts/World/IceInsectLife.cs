@@ -64,6 +64,7 @@ public class IceInsectLife : MonoBehaviour
     void Start()
     {
         _self = GetComponent<Animal>();
+        if (kind == Kind.Bee) SwarmModels.Dim(gameObject);   // (Berón 2026-11-04: deslumbraban como luces) mate y sin brillo, aunque su prefab sea el de antes, casi blanco
         UnityEngine.AI.NavMeshAgent nav = GetComponent<UnityEngine.AI.NavMeshAgent>();
         if (nav != null) nav.enabled = false;   // vuela / trepa: no anda por el NavMesh
         if (TryGetComponent(out Rigidbody rb)) { rb.isKinematic = true; rb.useGravity = false; }   // vuela: la gravedad no la arrastra
