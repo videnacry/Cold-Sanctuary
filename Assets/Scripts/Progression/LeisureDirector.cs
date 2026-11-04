@@ -286,7 +286,7 @@ public class LeisureDirector : MonoBehaviour
         }
         // Los demás edificios etiquetados de ocio o recuperación (parque, plaza, museo, sala de baile, baños, mirador, centro de
         // entrenamiento, fuente…): una actividad por plantilla, con su interacción, su capacidad y la función de «todos».
-        foreach (var byB in sites.Where(s => (s.activity == AreaFunctionSite.Ocio || s.activity == AreaFunctionSite.Recuperacion) && s.building != "Hospital" && !covered.Contains(s.building) && s.Stations.Length > 0).GroupBy(s => s.building))
+        foreach (var byB in sites.Where(s => (s.activity == AreaFunctionSite.Ocio || s.activity == AreaFunctionSite.Entrenamiento || s.activity == AreaFunctionSite.Recuperacion) && s.building != "Hospital" && !covered.Contains(s.building) && s.Stations.Length > 0).GroupBy(s => s.building))
         {
             AreaFunctionSite first = byB.First();
             var fs = first.Functions();

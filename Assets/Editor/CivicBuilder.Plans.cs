@@ -33,7 +33,7 @@ internal static partial class CivicBuilder
         public string town;
         public readonly List<Feat> feats = new List<Feat>();
         public readonly Dictionary<int, Vector2> hitos = new Dictionary<int, Vector2>();
-        public readonly List<(MicroStyles.Civic c, Vector2 at)> civic = new List<(MicroStyles.Civic, Vector2)>();
+        public readonly List<(MicroStyles.Civic c, Vector2 at, string src)> civic = new List<(MicroStyles.Civic, Vector2, string)>();   // src: "" = plano histórico; «mapa actual: …» (regla 16)
         public int fill = 60; public Vector2 fillNear;
         public float scale = 1f;
     }
@@ -48,6 +48,9 @@ internal static partial class CivicBuilder
     //   lago Nombre | rx rz | x z             colina / monte Nombre | radio alto | x z    campo / mar Nombre | ancho fondo | x z
     //   hito i | x z  (el edificio i de la historia)     Tipo | x z  (un edificio del pueblo: MicroStyles.Civic)
     //   relleno | n | x z  (n casas y talleres a lo largo de las calles, empezando cerca de x z)
+    //   (2026-11-04, regla 16) Tipo | x z | actual: fuente   — una posición sacada de un MAPA DE HOY (el plano histórico no traía
+    //   ese lugar de entrenamiento, ocio, recuperación o trabajo); el edificio es el NATIVO de la época (MicroStyles.CivicName). Sin
+    //   ese tercer campo, la posición es del plano histórico (fuentes en docs/microcosmos-pueblos-mapas.md).
     static readonly Dictionary<string, string> PlanText = new Dictionary<string, string>
     {
         // CROTONA (~530 a. C.): retícula de plateiai E-O junto al mar Jonio (este), el río Esaro al norte, la acrópolis sobre el
@@ -203,6 +206,7 @@ Obra | 650 110
 Guarderia | 700 260
 Mecanica | 750 -260
 Investigacion | -160 -120
+Entrenamiento | 560 -120 | actual: campo de juego de Colsterworth, entre Skillington Road y Woolsthorpe Road (mapa de senderos de la parroquia de Colsterworth)
 relleno | 30 | 700 0",
         // BERKELEY (1796): la calle mayor, Canonbury y Salter Street; la iglesia de Santa María con The Chantry junto al
         // cementerio; el castillo al sureste; el Little Avon y el estuario del Severn al oeste. (Jenner Museum; VCH Glos. vol. 5)
@@ -236,6 +240,7 @@ Obra | 300 380
 Guarderia | -120 250
 Mecanica | 270 200
 Investigacion | -130 50
+Entrenamiento | -40 -260 | actual: campo de deportes de Hamfields (Hamfields Lane, Berkeley); posición aproximada
 relleno | 50 | 60 100",
         // ANGOSTURA (1819): la cuadrícula colonial en la orilla sur del Orinoco (aquí, su estrechura), la Plaza Mayor con la
         // catedral y la Casa del Congreso, el Paseo junto al río, la Piedra del Medio y el cerro El Zamuro con su fortín.
@@ -275,6 +280,7 @@ Guarderia | -120 -230
 Taller | -260 20
 Mecanica | 380 0
 Estudio | 150 -60
+Entrenamiento | -380 -250 | actual: Estadio Polideportivo Heres (Ciudad Bolívar); posición aproximada
 relleno | 60 | 0 0",
         // SILS MARIA (1881): el pueblo entre el lago de Sils (oeste) y el de Silvaplana (noreste), a la boca del valle de Fex
         // (sur); la península de Chastè; el piz Corvatsch y el piz Lagrev. (Siegfriedkarte 1:50 000, hoja 518, 1878)
@@ -304,6 +310,7 @@ Piscina | -460 250
 Policia | -150 -65
 Carpinteria | 200 -100
 Taller | -200 -150
+Entrenamiento | -20 -170 | actual: campo de deportes Muot Marias, en el centro de Sils Maria
 relleno | 30 | 0 0",
         // PARÍS (1898): el Barrio Latino. La rue Lhomond (la ESPCI y su cobertizo), rue Mouffetard, rue d'Ulm, la Montagne
         // Sainte-Geneviève con el Panteón, el boulevard Saint-Michel, Port-Royal, el Jardín del Luxemburgo, el Jardin des Plantes,
@@ -566,6 +573,7 @@ Entrenamiento | 650 150
 Museo | 750 250
 Milicia | 500 -300
 Pileta | -50 125
+Sanacion | 300 -350 | actual: Miami Valley Hospital (fundado en 1890), al sur del centro de Dayton; posición aproximada
 relleno | 60 | 0 0",
         // KAPILAVASTU (s. V a. C.): Tilaurakot, ciudad amurallada de ~500 × 450 m con puertas a los puntos cardinales (las del este
         // y el oeste, excavadas), calles en cuadrícula, estanques revestidos de ladrillo; el río Banganga al oeste y los arrozales.
@@ -681,6 +689,9 @@ campo Bosque de Ploegsteert | 450 260 | -450 -380
 campo Campo de remolachas | 300 200 | 400 -350
 rio Douve | 10 | -900 420, 0 380, 900 450
 colina Colina de Messines | 500 60 | 300 900
+Entrenamiento | 150 10 | actual: el campo de Saint-Yvon (Ploegsteert) con el monumento al partido de fútbol de la tregua (UEFA, 2014)
+Parque | -150 10 | actual: la cruz de la tregua de los Khaki Chums (1999) en Saint-Yvon (Ploegsteert)
+Sanacion | -300 -300 | actual: cementerio Lancashire Cottage (CWGC), al sur del bosque de Ploegsteert, donde estaban los puestos de la línea; posición aproximada
 relleno | 20 | -250 -450
 calle Camino de Ploegsteert | 6 | -250 -45, -250 -800
 calle Calle de Ploegsteert | 6 | -500 -600, 0 -600",
@@ -704,6 +715,8 @@ Bomberos | 260 -120
 Tecnologia | 380 -60
 Investigacion | 120 -260
 Parque | -300 200
+Entrenamiento | -40 -220 | actual: Gymnase Lavoisier (10 rue Pierre Nicole, París 5.º), junto a la rue Lhomond
+Sanacion | 250 160 | actual: Inselspital (Berna), al oeste del casco viejo; posición aproximada
 relleno | 40 | 0 0",
         // URUK (~3500 a. C.): el recinto del Eanna, la terraza de Anu con el Templo Blanco al oeste (13 m), los canales que cruzan
         // la ciudad y el viejo curso del Éufrates; campos y palmerales fuera. (Nissen 1988; Crüsemann et al. 2019, Uruk)
@@ -750,6 +763,7 @@ Piscina | -380 -560
 Hotel | 300 -500
 Tecnologia | 550 300
 Guarderia | -300 -420
+Entrenamiento | 100 480 | actual: estadio del Polonia (ul. Konwiktorska, Varsovia; desde 1928); posición aproximada
 relleno | 30 | 400 -200",
         // LE CHAMBON-SUR-LIGNON (1942): el pueblo del plateau, el río Lignon, la estación del tren del Vivarais (1902), la carretera
         // de Le Mazet y el monte Lizieux. (Carte de l'État-major; Hallie 1979)
@@ -772,6 +786,7 @@ Taller | -420 -60
 Mecanica | -460 160
 Guarderia | 220 360
 Obra | -220 360
+Entrenamiento | -150 120 | actual: estadio de la route du Stade (complejo de los Bretchs, Le Chambon-sur-Lignon); posición aproximada
 relleno | 25 | 300 120",
         // BRUCE LEE (1957–1971): dos barrios. KOWLOON (Yau Ma Tei y Mong Kok, años 50) al oeste: Nathan Road, Temple Street,
         // Shanghai Street, Jordan Road y Waterloo Road, el puerto Victoria al sur y la Roca del León al norte (Hong Kong Map, 1957,
@@ -837,6 +852,7 @@ Milicia | -150 220
 Carpinteria | -250 -200
 Obra | 120 -150
 Taller | -350 -100
+Entrenamiento | -450 -250 | actual: estadio municipal de Egina, al sur del puerto junto al mar (calle Gymnastirio)
 relleno | 40 | -100 60",
         // PALENQUE (683): Lakamha', «el lugar de las grandes aguas». El Palacio y el Templo de las Inscripciones sobre la Gran
         // Plaza, el Otolum que corre al norte (con su acueducto bajo el Palacio), el Grupo de las Cruces sobre su colina al este,
@@ -908,7 +924,7 @@ relleno | 40 | 0 120",
                         break;
                     }
                     default:
-                        if (System.Enum.TryParse(kind, out MicroStyles.Civic c)) p.civic.Add((c, V(f[1])));
+                        if (System.Enum.TryParse(kind, out MicroStyles.Civic c)) p.civic.Add((c, V(f[1]), f.Length > 2 && f[2].StartsWith("actual") ? MicroFloors.CurrentMap + " " + f[2].Substring(f[2].IndexOf(':') + 1).Trim() : ""));
                         else Debug.LogWarning($"[Pueblos] {display}: línea del plano sin entender: «{line}»");
                         break;
                 }
@@ -1108,7 +1124,7 @@ relleno | 40 | 0 120",
         MicroStyles.Entry e = MicroStyles.For(Year, Region);
         Style st = _planStyle ?? NeedsStyle;
         int n = 0, skipped = 0; var none = new List<string>();
-        foreach (var (c, at) in p.civic)
+        foreach (var (c, at, src) in p.civic)
         {
             if (Count(t) >= PlanMaxSites) break;
             string region0 = Region; Style st0 = st;
@@ -1121,9 +1137,46 @@ relleno | 40 | 0 120",
             bool ok = PlaceOn(lots, site, PlanPoint(at));
             Region = region0; st = st0; e = MicroStyles.For(Year, Region);
             if (!ok) { Object.DestroyImmediate(site.gameObject); skipped++; continue; }
+            site.mapSource = src;
             n++;
         }
         Debug.Log($"[Pueblos] {p.town}: {n} edificios del pueblo en su sitio del plano ({e.id}, {Eras.Format(Year)}){(skipped > 0 ? $"; {skipped} sin solar" : "")}{(none.Count > 0 ? $"; no existían entonces: {string.Join(", ", none)}" : "")}.");
+        return n;
+    }
+
+    /// <summary>
+    /// REGLA 16 (2026-11-04): un pueblo de historia tiene al menos un edificio de TRABAJO, OCIO, ENTRENAMIENTO y RECUPERACIÓN. Los
+    /// huecos del plano histórico se llenan EN EL PLANO con posiciones de un mapa de hoy («Tipo | x z | actual: fuente»). Si aun así
+    /// falta una categoría (un plano sin su línea), se levanta el edificio nativo de la época junto al centro y queda marcado
+    /// «FALTA posición del mapa actual» (MicroFloors.ValidateCategories lo señala: hay que añadir su línea al plano). Devuelve cuántos puso.
+    /// </summary>
+    static int EnsureCategories(Transform t, Lots lots, string display)
+    {
+        var have = new HashSet<string>();
+        foreach (AreaFunctionSite s in t.GetComponentsInChildren<AreaFunctionSite>(true)) if (!string.IsNullOrEmpty(s.activity)) have.Add(s.activity);
+        MicroStyles.Entry e = MicroStyles.For(Year, Region);
+        Style st = _planStyle ?? NeedsStyle;
+        int n = 0;
+        foreach (string cat in AreaFunctionSite.TownCategories)
+        {
+            if (have.Contains(cat)) continue;
+            MicroStyles.Civic[] options = cat == AreaFunctionSite.Entrenamiento ? new[] { MicroStyles.Civic.Entrenamiento } :
+                cat == AreaFunctionSite.Recuperacion ? new[] { MicroStyles.Civic.Piscina, MicroStyles.Civic.Sanacion } :
+                cat == AreaFunctionSite.Ocio ? new[] { MicroStyles.Civic.Plaza, MicroStyles.Civic.Parque, MicroStyles.Civic.Baile } : new[] { MicroStyles.Civic.Mercado, MicroStyles.Civic.Taller };
+            AreaFunctionSite site = null;
+            foreach (MicroStyles.Civic c in options)
+            {
+                string title = MicroStyles.CivicName(c, e, Year);
+                if (title == null) continue;
+                site = Civic(t, c, title, st, e);
+                if (site != null) break;
+            }
+            if (site == null) { Debug.LogWarning($"[Pueblos] {display}: sin edificio de {cat} en {e.id} ({Eras.Format(Year)}): no hay ninguno de la época."); continue; }
+            if (!PlaceOn(lots, site, Vector2.zero)) { Object.DestroyImmediate(site.gameObject); Debug.LogWarning($"[Pueblos] {display}: sin solar para el edificio de {cat}."); continue; }
+            site.mapSource = MicroFloors.MissingMap + " posición del mapa actual (añadir su línea al plano)";
+            Debug.LogWarning($"[Pueblos] {display}: faltaba {cat}; «{site.title}» va junto al centro SIN posición del mapa actual (regla 16: añade «{site.name} | x z | actual: fuente» al plano).");
+            n++;
+        }
         return n;
     }
 
@@ -1137,12 +1190,24 @@ relleno | 40 | 0 120",
         switch (c)
         {
             case MicroStyles.Civic.Estudio: return Building(t, title, "Escuela", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("pizarra", 0, 0, 1.6f, 0.4f, "Pizarra"), S("mesa", 0, 0, 2f, 1f, "Pupitres"), S("estante", 0, 0, 0.8f, 2f, maya ? "Códices de papel amate" : "Libros"));
-            case MicroStyles.Civic.Entrenamiento: return Building(t, title, "Centro de entrenamiento", title, Vector3.zero, 0f, new Vector2(16f, 12f), st, maya ? S("pista", 0, 0, 6f, 6f, "Cancha del juego de pelota") : S("tatami", 0, 0, 6f, 5f, "Suelo de entrenar"), S("armario", 0, 0, 1.2f, 0.6f, maya ? "Protectores de cadera (yugos)" : "Equipo"));
+            case MicroStyles.Civic.Entrenamiento:
+            {
+                // (2026-11-04) EL LUGAR DE ENTRENAR DE SU ÉPOCA Y LUGAR, con sus aparatos nativos (TrainingKit; docs/microcosmos-entrenamiento-eras.md).
+                string kind = MicroStyles.TrainingKind(e, Year);
+                if (kind == null) return null;
+                AreaFunctionSite site = Building(t, title, "Centro de entrenamiento", title, Vector3.zero, 0f, kind == "futbol_tregua" || kind == "estadio" ? new Vector2(16f, 18f) : new Vector2(16f, 14f), st, TrainingKit(kind));
+                site.training = kind; Tag(site);
+                return site;
+            }
+            case MicroStyles.Civic.Sanacion:
+                return Building(t, title, "Hospital", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("camilla", 0, 0, 1f, 2f, e.id == "frente_1914" ? "Camilla del puesto de socorro" : "Camilla de curas"),
+                    S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("armario", 0, 0, 1.2f, 0.6f, e.id == "frente_1914" ? "Vendas, yodo y morfina" : Year >= 1850 ? "Botiquín" : "Remedios y hierbas"), S("lavabo", 0, 0, 1f, 1f, NeedLabel("lavabo", Year)));
             case MicroStyles.Civic.Baile: return Building(t, title, "Sala de baile", title, Vector3.zero, 0f, new Vector2(14f, 12f), st, S("pista", 0, 0, 6f, 6f, "Pista de baile"), S("mesa", 0, 0, 1.6f, 1f, "Mesa de los músicos"));
             case MicroStyles.Civic.Plaza: return Building(t, title, "Plaza", title, Vector3.zero, 0f, new Vector2(24f, 20f), st, S("fuente", 0, 0, 4.4f, 4.4f, MicroStyles.CivicName(MicroStyles.Civic.Pileta, e, Year) ?? "Fuente"), S("estatua", 0, 0, 2.2f, 2.2f, MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"));
             case MicroStyles.Civic.Monumento: return Building(t, title, "Plaza", title, Vector3.zero, 0f, new Vector2(10f, 10f), st, S("estatua", 0, 0, 2.2f, 2.2f, title), S("fuente", 0, 0, 4.4f, 4.4f, "Pila"), S("banco", 0, 0, 4f, 1.6f, "Banco"), S("banco", 0, 0, 4f, 1.6f, "Banco"));
             case MicroStyles.Civic.Pileta: return Building(t, title, "Fuente pública", title, Vector3.zero, 0f, new Vector2(10f, 8f), st, S("fuente", 0, 0, 4.4f, 4.4f, title), S("lavadero", 0, 0, 1.6f, 1f, "Lavadero"));
-            case MicroStyles.Civic.Parque: return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(22f, 18f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 1).name), S("fuente", 0, 0, 4.4f, 4.4f, "Fuente"), S("banco", 0, 0, 4f, 1.6f, "Banco del parque"), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 2).name));
+            case MicroStyles.Civic.Parque: if (e.id == "frente_1914") return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(16f, 12f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("mesa", 0, 0, 1.6f, 1f, "Intercambio de regalos (tabaco, salchichas, botones)"), S("banco", 0, 0, 4f, 1.6f, "Sacos terreros para sentarse"));   // la Navidad de 1914 (Parque: pasear, coger fruta)
+                return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(22f, 18f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 1).name), S("fuente", 0, 0, 4.4f, 4.4f, "Fuente"), S("banco", 0, 0, 4f, 1.6f, "Banco del parque"), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 2).name));
             case MicroStyles.Civic.Estacion: return Building(t, title, "Estación", title, Vector3.zero, 0f, new Vector2(16f, 10f), st, S("anden", 0, 0, 8f, 3f, "Andén"), S("puesto", 0, 0, 2f, 1f, "Taquilla"));
             case MicroStyles.Civic.Museo: return Building(t, title, "Museo", title, Vector3.zero, 0f, new Vector2(16f, 10f), st, S("vitrina", 0, 0, 1.6f, 0.6f, "Vitrina"), S("vitrina", 0, 0, 1.6f, 0.6f, "Vitrina"), S("estatua", 0, 0, 1.4f, 1.4f, "Pieza mayor de la colección"));
             case MicroStyles.Civic.Investigacion: return Building(t, title, "Laboratorio", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("mesa_laboratorio", 0, 0, 2.4f, 1f, maya ? "Mesa de las cuentas del calendario" : "Mesa de experimentos"), S("estante", 0, 0, 0.8f, 2f, "Registros"), S("consola", 0, 0, 1.6f, 0.7f, "Instrumentos"));
@@ -1161,6 +1226,38 @@ relleno | 40 | 0 120",
             case MicroStyles.Civic.Edificio: return Storeys(t, title, "Casa", title, st, new[] { new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)) }, new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("mesa", 0, 0, 1.6f, 1f, NeedLabel("mesa", Year)) }, new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)) } });
         }
         return null;
+    }
+
+    /// <summary>
+    /// (2026-11-04) LOS APARATOS NATIVOS de cada clase de lugar de entrenar (MicroStyles.TrainingKind; MicroFurniture.Training;
+    /// fuentes en docs/microcosmos-entrenamiento-eras.md). Cada uno es un puesto de las funciones «ent_*» del registro.
+    /// </summary>
+    static (string key, Vector2 at, Vector2 size, string label)[] TrainingKit(string kind)
+    {
+        switch (kind)
+        {
+            case "juegos_heroicos": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Dromos (la carrera)"), S("foso_lucha", 0, 0, 5f, 5f, "Lugar de la lucha y del pugilato"), S("armero", 0, 0, 1.6f, 0.4f, "Discos de piedra y jabalinas") };
+            case "gimnasio_griego": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Xisto (pista cubierta)"), S("foso_lucha", 0, 0, 5f, 5f, "Skamma (foso de arena)"), S("halteres", 0, 0, 1.2f, 0.5f, "Halteres de piedra y plomo"), S("saco", 0, 0, 1.3f, 0.6f, "Kórykos (saco colgado)"), S("armero", 0, 0, 1.6f, 0.4f, "Discos y jabalinas") };
+            case "palestra_romana": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Palestra (arena de lucha)"), S("halteres", 0, 0, 1.2f, 0.5f, "Halteres"), S("saco", 0, 0, 1.3f, 0.6f, "Kórykos"), S("balon", 0, 0, 0.8f, 0.8f, "Pelotas (pila, follis, harpastum)") };
+            case "patio_lucha_egipcio": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Patio de lucha"), S("armero", 0, 0, 1.6f, 0.4f, "Bastones de la lucha con palo"), S("piedras", 0, 0, 1.6f, 0.6f, "Sacos de arena de levantar") };
+            case "patio_lucha": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Lucha de cinturón"), S("piedras", 0, 0, 1.6f, 0.6f, "Piedras de levantar") };
+            case "akhara": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Akhāṛā (tierra con aceite y cúrcuma)"), S("mazas", 0, 0, 1.4f, 0.5f, "Gada y mugdar"), S("piedras", 0, 0, 1.6f, 0.6f, "Nal (anilla de piedra)") };
+            case "furusiyya": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Pista del maydān (caballos)"), S("diana", 0, 0, 1f, 0.4f, "Qabaq (blanco del arco)"), S("armero", 0, 0, 1.6f, 0.4f, "Lanzas y sables"), S("foso_lucha", 0, 0, 5f, 5f, "Lucha (koshti)") };
+            case "tekke_guresh": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Er meydanı (lucha con aceite)"), S("mazas", 0, 0, 1.4f, 0.5f, "Mazas de los luchadores"), S("diana", 0, 0, 1f, 0.4f, "Blanco del campo de tiro") };
+            case "juego_pelota": return new[] { S("pista", 0, 0, 6f, 6f, "Cancha del juego de pelota"), S("armario", 0, 0, 1.2f, 0.6f, "Protectores de cadera (yugos)"), S("balon", 0, 0, 0.8f, 0.8f, "Pelota de hule") };
+            case "wuguan": return new[] { S("tatami", 0, 0, 6f, 5f, "Patio de entrenar"), S("muneco", 0, 0, 1f, 0.8f, "Muñeco de madera (mu ren zhuang)"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de arena (sha bao)"), S("piedras", 0, 0, 1.6f, 0.6f, "Candados de piedra (shi suo)"), S("armero", 0, 0, 1.6f, 0.4f, "Armas del kung fu") };
+            case "dojo": return new[] { S("tatami", 0, 0, 6f, 5f, "Tatami"), S("makiwara", 0, 0, 0.6f, 0.6f, "Makiwara"), S("armero", 0, 0, 1.6f, 0.4f, "Bokken y shinai"), S("diana", 0, 0, 1f, 0.4f, "Mato (blanco de kyūdō)") };
+            case "sala_armas": case "sala_esgrima": return new[] { S("pista_esgrima", 0, 0, 2f, 10f, "Sala (suelo de esgrima)"), S("armero", 0, 0, 1.6f, 0.4f, kind == "sala_armas" ? "Espadas y rodelas" : "Floretes y espadas"), S("muneco", 0, 0, 1f, 0.8f, "Poste de armas") };
+            case "prado_juegos": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Ruedo de lucha"), S("armero", 0, 0, 1.6f, 0.4f, "Garrotes (quarterstaff y singlestick)"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista de carreras del prado"), S("balon", 0, 0, 0.8f, 0.8f, "Balón de camp-ball") };
+            case "garrote_coleo": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Manga de coleo"), S("armero", 0, 0, 1.6f, 0.4f, "Garrotes del juego de garrote") };
+            case "turnplatz_schwingen": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Ruedo de serrín del Schwingen"), S("piedras", 0, 0, 1.6f, 0.6f, "Piedra de Unspunnen"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija del Turnverein"), S("paralelas", 0, 0, 1.2f, 2.8f, "Paralelas") };
+            case "turnhalle": return new[] { S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("paralelas", 0, 0, 1.2f, 2.8f, "Paralelas"), S("potro", 0, 0, 0.9f, 2.3f, "Potro"), S("anillas", 0, 0, 2.1f, 0.4f, "Anillas"), S("mazas", 0, 0, 1.4f, 0.5f, "Mazas indias") };
+            case "hebert": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Parcours (método natural)"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra de suspensión"), S("potro", 0, 0, 0.9f, 2.3f, "Plinto de saltos"), S("balon", 0, 0, 0.8f, 0.8f, "Balón") };
+            case "futbol_tregua": return new[] { S("campo", 0, 0, 7f, 11f, "Campo en la tierra de nadie"), S("balon", 0, 0, 0.8f, 0.8f, "Balón de cuero (o una lata de carne)") };
+            case "club_deportivo": return new[] { S("pesas", 0, 0, 2f, 1.2f, "Barra y discos"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de boxeo") };
+            case "estadio": return new[] { S("campo", 0, 0, 7f, 11f, "Terreno de fútbol"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista de atletismo"), S("balon", 0, 0, 0.8f, 0.8f, "Balones") };
+            default: return new[] { S("pesas", 0, 0, 2f, 1.2f, "Barra y discos"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de boxeo"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("balon", 0, 0, 0.8f, 0.8f, "Balón y canasta") };
+        }
     }
 
     // Lleva el edificio (en el origen) al solar libre más cercano a «near», de frente a la calle si la hay. false si no hay sitio.

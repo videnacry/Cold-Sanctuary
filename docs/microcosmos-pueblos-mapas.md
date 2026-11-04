@@ -121,3 +121,43 @@ Por escena: 25–125 edificios, 35 000–76 000 renderers (la mayoría, flora de
   irregular; ríos con riberas; acantilados. Línea del plano: `monte Nombre | radio alto | x z | nieve seco`,
   `acantilado Nombre | alto | x z, x z…`. Alturas reales sobre el pueblo (Corvatsch 1650 m, Pikes Peak 2460 m, Rainier 4390 m, Sila
   1600 m, Roca del León 495 m, Gurten 340 m…) recortadas a 300 m (los muros del piso llegan a 400 m).
+
+## Huecos del plano histórico, rellenados con posiciones de un mapa actual (2026-11-04, regla 16)
+
+Regla 16 de [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md): todo pueblo tiene trabajo, ocio, entrenamiento y recuperación.
+
+**Cómo se lee cada posición del plano:**
+
+- Una línea `Tipo | x z` sin más es una posición del **plano histórico** (las fuentes de arriba).
+- `Tipo | x z | actual: fuente` es una posición sacada de un **mapa de hoy**.
+
+El edificio que se levanta en cualquiera de las dos es siempre el **nativo de la época**. El lugar de entrenamiento de cada época, con sus fuentes, está en [microcosmos-entrenamiento-eras.md](microcosmos-entrenamiento-eras.md).
+
+**Pueblos que ya cubrían las cuatro categorías.** Todos los demás tenían en su plano o en su historia un lugar de cada categoría:
+
+- Crotona tenía la palestra de Milón y su gimnasio.
+- Menfis, Bagdad, Kapilavastu, Alejandría, Patanjali, Mesopotamia, París 1898, Colorado Springs, Berna, Pasadena, Chernóbil, Escútari y Dayton ya tenían una línea `Entrenamiento`. Ahora levantan el lugar de su época: patio de lucha, furusiyya, akhāṛā, gimnasio, Turnhalle, YMCA, club GTO o tekke.
+- Palenque y la aldea de la montaña tenían su lugar de entrenar en la historia.
+- Bruce Lee tiene el kwoon de Yip Man.
+- Velliangiri, Hawthorne, Albuquerque, Omaha y Prairie View ya tenían una línea `Entrenamiento`.
+
+**Pueblos con huecos.** Esta es la tabla de los que no:
+
+| Pueblo (año) | Categoría que faltaba | Qué se levanta (nativo) | Posición del mapa actual (fuente) |
+|---|---|---|---|
+| Woolsthorpe (1666) | entrenamiento | Prado de juegos (lucha, garrote y carreras) | El campo de juego de Colsterworth, entre Skillington Road y Woolsthorpe Road ([mapa de senderos de la parroquia](https://colsterworth.parish.lincolnshire.gov.uk/downloads/file/1269/nature-trail-locations-map-v6)) |
+| Berkeley (1796) | entrenamiento | Prado de juegos | El campo de deportes de Hamfields (Hamfields Lane). Posición aproximada. |
+| Angostura (1819) | entrenamiento | Patio del juego de garrote y manga de coleo | Estadio Polideportivo Heres (Ciudad Bolívar). Posición aproximada. |
+| Sils Maria (1881) | entrenamiento | Turnplatz y ruedo de Schwingen | El campo de deportes Muot Marias, en el centro de Sils ([graubuenden.ch](https://www.graubuenden.ch/en/attractions/muot-marias-sports-field)) |
+| Tregua 1914 | entrenamiento | Partido de la tregua (fútbol en la tierra de nadie) | El campo de Saint-Yvon (Ploegsteert), con el monumento de la UEFA al partido (2014) ([pierreswesternfront.nl](https://www.pierreswesternfront.nl/ypres-salient-traces-of-bairnsfather-the-christmas-truce-st-yvon-ploegsteert)) |
+| Tregua 1914 | ocio | Tierra de nadie: el encuentro de Navidad (regalos, sacos para sentarse) | La cruz de la tregua de los Khaki Chums (1999) en Saint-Yvon |
+| Tregua 1914 | recuperación | Puesto de socorro del regimiento | El cementerio Lancashire Cottage (CWGC), al sur del bosque de Ploegsteert. Posición aproximada. |
+| Planta Atómica (1905) | entrenamiento | Gimnasio (sala de gimnasia) | Gymnase Lavoisier (10 rue Pierre Nicole, París 5.º), junto a la rue Lhomond ([paris.fr](https://www.paris.fr/lieux/gymnase-lavoisier-3190)) |
+| Planta Atómica (1905) | recuperación | Hospital | Inselspital (Berna), al oeste del casco viejo. Posición aproximada. |
+| Irena Sendler (1942) | entrenamiento | Gimnasio (sala de gimnasia). Bajo la ocupación, el deporte polaco estaba prohibido y se entrenaba a escondidas. | Estadio del Polonia (ul. Konwiktorska, desde 1928). Posición aproximada. |
+| Le Chambon-sur-Lignon (1942) | entrenamiento | Terreno de deporte (método natural de Hébert) | El estadio de la route du Stade (complejo de los Bretchs). Posición aproximada. |
+| Egina (−1250) | entrenamiento | Dromos de los juegos (carrera, lucha y pugilato) | El estadio municipal de Egina, al sur del puerto junto al mar (calle Gymnastirio) |
+| Uagadugú (2024) | entrenamiento | Estadio y terreno de deporte | Stade du 4-Août. Posición aproximada. |
+| Dayton (1903) | recuperación | Hospital | Miami Valley Hospital (fundado en 1890), al sur del centro. Posición aproximada. |
+
+**Qué significa «posición aproximada».** Que el sitio existe hoy, pero su punto en el plano (que ya es esquemático) está estimado y no medido. Hay que afinarlo con OpenStreetMap cuando se haga el mapa a mano de esa historia (manual M9).

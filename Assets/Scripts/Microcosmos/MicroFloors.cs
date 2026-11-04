@@ -199,6 +199,7 @@ public static class MicroFloors
             float want = 0.4f * Mathf.Min(f.size.x, f.size.y);
             if (Mathf.Min(f.districtSize.x, f.districtSize.y) < want) bad.Add($"el pueblo ocupa un barrio de {f.districtSize.x:0} × {f.districtSize.y:0} m (< 40 % del piso de {f.size.x:0} m): no es el pueblo entero");
             if (sites < 12) bad.Add($"el pueblo tiene {sites} edificios (< 12): reconstruye la ciudad entera de la historia");
+            bad.AddRange(ValidateCategories(root));   // regla 16 (2026-11-04)
         }
         // 6 · Pendiente de piso representativo, marcado.
         if (!f.representative && string.IsNullOrEmpty(f.pendingFloor)) bad.Add("su piso no lo representa y no dice qué piso falta (pendiente de piso representativo)");
@@ -219,4 +220,31 @@ public static class MicroFloors
         }
         return bad;
     }
+    /// <summary>Prefijo de <see cref="AreaFunctionSite.mapSource"/> para una posición tomada de un mapa de hoy.</summary>
+    public const string CurrentMap = "mapa actual:";
+    /// <summary>Prefijo de <see cref="AreaFunctionSite.mapSource"/> para un edificio que el constructor tuvo que poner sin posición del mapa.</summary>
+    public const string MissingMap = "FALTA";
+
+    /// <summary>
+    /// REGLA 16 (2026-11-04; Berón: «se deben llenar con mapas actuales para cumplir con las estructuras de ocio/entrenamiento/trabajo/
+    /// recuperación, se usarían mapas actuales solo para buscar posiciones pero se investigaría la época/lugar para recrear
+    /// edificaciones, muebles y maquinaria nativos»): un pueblo de historia tiene al menos un edificio de cada categoría
+    /// (<see cref="AreaFunctionSite.TownCategories"/>: trabajo, ocio, entrenamiento y recuperación), y cada posición sacada de un mapa
+    /// de hoy lo dice con su fuente («mapa actual: …»); ninguno sin posición («FALTA …»). Devuelve las violaciones.
+    /// </summary>
+    public static List<string> ValidateCategories(Transform root)
+    {
+        var bad = new List<string>();
+        var have = new HashSet<string>();
+        foreach (AreaFunctionSite s in root.GetComponentsInChildren<AreaFunctionSite>(true))
+        {
+            if (!string.IsNullOrEmpty(s.activity)) have.Add(s.activity);
+            if (s.mapSource.StartsWith(MissingMap)) bad.Add($"«{s.title}» sin posición del mapa ({s.mapSource})");
+            else if (s.mapSource.StartsWith(CurrentMap) && s.mapSource.Length < CurrentMap.Length + 8) bad.Add($"«{s.title}» sale de un mapa actual sin decir cuál");
+            if (s.activity == AreaFunctionSite.Entrenamiento && string.IsNullOrEmpty(s.training)) bad.Add($"«{s.title}» de entrenamiento sin su clase (training)");
+        }
+        foreach (string c in AreaFunctionSite.TownCategories) if (!have.Contains(c)) bad.Add($"el pueblo no tiene ningún edificio de {c} (regla 16: si el plano histórico no lo trae, su posición sale de un mapa actual)");
+        return bad;
+    }
+
 }
