@@ -1137,12 +1137,24 @@ relleno | 40 | 0 120",
         switch (c)
         {
             case MicroStyles.Civic.Estudio: return Building(t, title, "Escuela", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("pizarra", 0, 0, 1.6f, 0.4f, "Pizarra"), S("mesa", 0, 0, 2f, 1f, "Pupitres"), S("estante", 0, 0, 0.8f, 2f, maya ? "Códices de papel amate" : "Libros"));
-            case MicroStyles.Civic.Entrenamiento: return Building(t, title, "Centro de entrenamiento", title, Vector3.zero, 0f, new Vector2(16f, 12f), st, maya ? S("pista", 0, 0, 6f, 6f, "Cancha del juego de pelota") : S("tatami", 0, 0, 6f, 5f, "Suelo de entrenar"), S("armario", 0, 0, 1.2f, 0.6f, maya ? "Protectores de cadera (yugos)" : "Equipo"));
+            case MicroStyles.Civic.Entrenamiento:
+            {
+                // (2026-11-04) EL LUGAR DE ENTRENAR DE SU ÉPOCA Y LUGAR, con sus aparatos nativos (TrainingKit; docs/microcosmos-entrenamiento-eras.md).
+                string kind = MicroStyles.TrainingKind(e, Year);
+                if (kind == null) return null;
+                AreaFunctionSite site = Building(t, title, "Centro de entrenamiento", title, Vector3.zero, 0f, kind == "futbol_tregua" || kind == "estadio" ? new Vector2(16f, 18f) : new Vector2(16f, 14f), st, TrainingKit(kind));
+                site.training = kind; Tag(site);
+                return site;
+            }
+            case MicroStyles.Civic.Sanacion:
+                return Building(t, title, "Hospital", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("camilla", 0, 0, 1f, 2f, e.id == "frente_1914" ? "Camilla del puesto de socorro" : "Camilla de curas"),
+                    S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("armario", 0, 0, 1.2f, 0.6f, e.id == "frente_1914" ? "Vendas, yodo y morfina" : Year >= 1850 ? "Botiquín" : "Remedios y hierbas"), S("lavabo", 0, 0, 1f, 1f, NeedLabel("lavabo", Year)));
             case MicroStyles.Civic.Baile: return Building(t, title, "Sala de baile", title, Vector3.zero, 0f, new Vector2(14f, 12f), st, S("pista", 0, 0, 6f, 6f, "Pista de baile"), S("mesa", 0, 0, 1.6f, 1f, "Mesa de los músicos"));
             case MicroStyles.Civic.Plaza: return Building(t, title, "Plaza", title, Vector3.zero, 0f, new Vector2(24f, 20f), st, S("fuente", 0, 0, 4.4f, 4.4f, MicroStyles.CivicName(MicroStyles.Civic.Pileta, e, Year) ?? "Fuente"), S("estatua", 0, 0, 2.2f, 2.2f, MicroStyles.CivicName(MicroStyles.Civic.Monumento, e, Year) ?? "Piedra de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"), S("banco", 0, 0, 4f, 1.6f, "Banco de la plaza"));
             case MicroStyles.Civic.Monumento: return Building(t, title, "Plaza", title, Vector3.zero, 0f, new Vector2(10f, 10f), st, S("estatua", 0, 0, 2.2f, 2.2f, title), S("fuente", 0, 0, 4.4f, 4.4f, "Pila"), S("banco", 0, 0, 4f, 1.6f, "Banco"), S("banco", 0, 0, 4f, 1.6f, "Banco"));
             case MicroStyles.Civic.Pileta: return Building(t, title, "Fuente pública", title, Vector3.zero, 0f, new Vector2(10f, 8f), st, S("fuente", 0, 0, 4.4f, 4.4f, title), S("lavadero", 0, 0, 1.6f, 1f, "Lavadero"));
-            case MicroStyles.Civic.Parque: return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(22f, 18f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 1).name), S("fuente", 0, 0, 4.4f, 4.4f, "Fuente"), S("banco", 0, 0, 4f, 1.6f, "Banco del parque"), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 2).name));
+            case MicroStyles.Civic.Parque: if (e.id == "frente_1914") return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(16f, 12f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("mesa", 0, 0, 1.6f, 1f, "Intercambio de regalos (tabaco, salchichas, botones)"), S("banco", 0, 0, 4f, 1.6f, "Sacos terreros para sentarse"));   // la Navidad de 1914 (Parque: pasear, coger fruta)
+                return Building(t, title, "Parque", title, Vector3.zero, 0f, new Vector2(22f, 18f), st, S("frutal", 0, 0, 1.6f, 1.6f, fruit), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 1).name), S("fuente", 0, 0, 4.4f, 4.4f, "Fuente"), S("banco", 0, 0, 4f, 1.6f, "Banco del parque"), S("frutal", 0, 0, 1.6f, 1.6f, MicroFurniture.FruitFor(e, title.GetHashCode() + 2).name));
             case MicroStyles.Civic.Estacion: return Building(t, title, "Estación", title, Vector3.zero, 0f, new Vector2(16f, 10f), st, S("anden", 0, 0, 8f, 3f, "Andén"), S("puesto", 0, 0, 2f, 1f, "Taquilla"));
             case MicroStyles.Civic.Museo: return Building(t, title, "Museo", title, Vector3.zero, 0f, new Vector2(16f, 10f), st, S("vitrina", 0, 0, 1.6f, 0.6f, "Vitrina"), S("vitrina", 0, 0, 1.6f, 0.6f, "Vitrina"), S("estatua", 0, 0, 1.4f, 1.4f, "Pieza mayor de la colección"));
             case MicroStyles.Civic.Investigacion: return Building(t, title, "Laboratorio", title, Vector3.zero, 0f, new Vector2(14f, 10f), st, S("mesa_laboratorio", 0, 0, 2.4f, 1f, maya ? "Mesa de las cuentas del calendario" : "Mesa de experimentos"), S("estante", 0, 0, 0.8f, 2f, "Registros"), S("consola", 0, 0, 1.6f, 0.7f, "Instrumentos"));
@@ -1161,6 +1173,38 @@ relleno | 40 | 0 120",
             case MicroStyles.Civic.Edificio: return Storeys(t, title, "Casa", title, st, new[] { new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)) }, new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("mesa", 0, 0, 1.6f, 1f, NeedLabel("mesa", Year)) }, new[] { S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)), S("cama", 0, 0, 1.2f, 2f, NeedLabel("cama", Year)) } });
         }
         return null;
+    }
+
+    /// <summary>
+    /// (2026-11-04) LOS APARATOS NATIVOS de cada clase de lugar de entrenar (MicroStyles.TrainingKind; MicroFurniture.Training;
+    /// fuentes en docs/microcosmos-entrenamiento-eras.md). Cada uno es un puesto de las funciones «ent_*» del registro.
+    /// </summary>
+    static (string key, Vector2 at, Vector2 size, string label)[] TrainingKit(string kind)
+    {
+        switch (kind)
+        {
+            case "juegos_heroicos": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Dromos (la carrera)"), S("foso_lucha", 0, 0, 5f, 5f, "Lugar de la lucha y del pugilato"), S("armero", 0, 0, 1.6f, 0.4f, "Discos de piedra y jabalinas") };
+            case "gimnasio_griego": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Xisto (pista cubierta)"), S("foso_lucha", 0, 0, 5f, 5f, "Skamma (foso de arena)"), S("halteres", 0, 0, 1.2f, 0.5f, "Halteres de piedra y plomo"), S("saco", 0, 0, 1.3f, 0.6f, "Kórykos (saco colgado)"), S("armero", 0, 0, 1.6f, 0.4f, "Discos y jabalinas") };
+            case "palestra_romana": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Palestra (arena de lucha)"), S("halteres", 0, 0, 1.2f, 0.5f, "Halteres"), S("saco", 0, 0, 1.3f, 0.6f, "Kórykos"), S("balon", 0, 0, 0.8f, 0.8f, "Pelotas (pila, follis, harpastum)") };
+            case "patio_lucha_egipcio": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Patio de lucha"), S("armero", 0, 0, 1.6f, 0.4f, "Bastones de la lucha con palo"), S("piedras", 0, 0, 1.6f, 0.6f, "Sacos de arena de levantar") };
+            case "patio_lucha": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Lucha de cinturón"), S("piedras", 0, 0, 1.6f, 0.6f, "Piedras de levantar") };
+            case "akhara": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Akhāṛā (tierra con aceite y cúrcuma)"), S("mazas", 0, 0, 1.4f, 0.5f, "Gada y mugdar"), S("piedras", 0, 0, 1.6f, 0.6f, "Nal (anilla de piedra)") };
+            case "furusiyya": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Pista del maydān (caballos)"), S("diana", 0, 0, 1f, 0.4f, "Qabaq (blanco del arco)"), S("armero", 0, 0, 1.6f, 0.4f, "Lanzas y sables"), S("foso_lucha", 0, 0, 5f, 5f, "Lucha (koshti)") };
+            case "tekke_guresh": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Er meydanı (lucha con aceite)"), S("mazas", 0, 0, 1.4f, 0.5f, "Mazas de los luchadores"), S("diana", 0, 0, 1f, 0.4f, "Blanco del campo de tiro") };
+            case "juego_pelota": return new[] { S("pista", 0, 0, 6f, 6f, "Cancha del juego de pelota"), S("armario", 0, 0, 1.2f, 0.6f, "Protectores de cadera (yugos)"), S("balon", 0, 0, 0.8f, 0.8f, "Pelota de hule") };
+            case "wuguan": return new[] { S("tatami", 0, 0, 6f, 5f, "Patio de entrenar"), S("muneco", 0, 0, 1f, 0.8f, "Muñeco de madera (mu ren zhuang)"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de arena (sha bao)"), S("piedras", 0, 0, 1.6f, 0.6f, "Candados de piedra (shi suo)"), S("armero", 0, 0, 1.6f, 0.4f, "Armas del kung fu") };
+            case "dojo": return new[] { S("tatami", 0, 0, 6f, 5f, "Tatami"), S("makiwara", 0, 0, 0.6f, 0.6f, "Makiwara"), S("armero", 0, 0, 1.6f, 0.4f, "Bokken y shinai"), S("diana", 0, 0, 1f, 0.4f, "Mato (blanco de kyūdō)") };
+            case "sala_armas": case "sala_esgrima": return new[] { S("pista_esgrima", 0, 0, 2f, 10f, "Sala (suelo de esgrima)"), S("armero", 0, 0, 1.6f, 0.4f, kind == "sala_armas" ? "Espadas y rodelas" : "Floretes y espadas"), S("muneco", 0, 0, 1f, 0.8f, "Poste de armas") };
+            case "prado_juegos": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Ruedo de lucha"), S("armero", 0, 0, 1.6f, 0.4f, "Garrotes (quarterstaff y singlestick)"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista de carreras del prado"), S("balon", 0, 0, 0.8f, 0.8f, "Balón de camp-ball") };
+            case "garrote_coleo": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Manga de coleo"), S("armero", 0, 0, 1.6f, 0.4f, "Garrotes del juego de garrote") };
+            case "turnplatz_schwingen": return new[] { S("foso_lucha", 0, 0, 5f, 5f, "Ruedo de serrín del Schwingen"), S("piedras", 0, 0, 1.6f, 0.6f, "Piedra de Unspunnen"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija del Turnverein"), S("paralelas", 0, 0, 1.2f, 2.8f, "Paralelas") };
+            case "turnhalle": return new[] { S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("paralelas", 0, 0, 1.2f, 2.8f, "Paralelas"), S("potro", 0, 0, 0.9f, 2.3f, "Potro"), S("anillas", 0, 0, 2.1f, 0.4f, "Anillas"), S("mazas", 0, 0, 1.4f, 0.5f, "Mazas indias") };
+            case "hebert": return new[] { S("pista_carreras", 0, 0, 2.4f, 12f, "Parcours (método natural)"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra de suspensión"), S("potro", 0, 0, 0.9f, 2.3f, "Plinto de saltos"), S("balon", 0, 0, 0.8f, 0.8f, "Balón") };
+            case "futbol_tregua": return new[] { S("campo", 0, 0, 7f, 11f, "Campo en la tierra de nadie"), S("balon", 0, 0, 0.8f, 0.8f, "Balón de cuero (o una lata de carne)") };
+            case "club_deportivo": return new[] { S("pesas", 0, 0, 2f, 1.2f, "Barra y discos"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de boxeo") };
+            case "estadio": return new[] { S("campo", 0, 0, 7f, 11f, "Terreno de fútbol"), S("pista_carreras", 0, 0, 2.4f, 12f, "Pista de atletismo"), S("balon", 0, 0, 0.8f, 0.8f, "Balones") };
+            default: return new[] { S("pesas", 0, 0, 2f, 1.2f, "Barra y discos"), S("saco", 0, 0, 1.3f, 0.6f, "Saco de boxeo"), S("barra_fija", 0, 0, 2.3f, 1.6f, "Barra fija"), S("balon", 0, 0, 0.8f, 0.8f, "Balón y canasta") };
+        }
     }
 
     // Lleva el edificio (en el origen) al solar libre más cercano a «near», de frente a la calle si la hay. false si no hay sitio.

@@ -148,7 +148,7 @@ public static class MicroBuildRules
         var ids = new HashSet<string>(); foreach (MicroStyles.Entry e in MicroStyles.All) ids.Add(e.id);
         foreach (AreaFunctionSite site in scope.GetComponentsInChildren<AreaFunctionSite>(true))
         {
-            if (System.Array.IndexOf(AreaFunctionSite.Activities, site.activity) < 0) bad.Add($"«{site.title}» sin etiqueta de actividad (trabajo, descanso, recuperacion u ocio)");
+            if (System.Array.IndexOf(AreaFunctionSite.Activities, site.activity) < 0) bad.Add($"«{site.title}» sin etiqueta de actividad (trabajo, descanso, recuperacion, ocio o entrenamiento)");
             if (string.IsNullOrEmpty(site.interaction) || site.capacity <= 0) bad.Add($"«{site.title}» sin su interacción o su capacidad");
             bool human = false, insect = false, fruit = false;
             foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))

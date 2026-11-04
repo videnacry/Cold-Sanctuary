@@ -219,8 +219,19 @@ public static class AreaFunctions
         Roles(Def("Parque", "par_cosechar", "Coger fruta de los frutales", 0.5f, false, Kind.Tend, "frutal"), "hortelano", "todos");
         Roles(Def("Plaza", "pla_reunirse", "Reunirse en la plaza (charlar, coger agua)", 1f, false, Kind.Rest, "fuente"), "todos");
         Roles(Def("Plaza", "pla_contemplar", "Contemplar el monumento", 0.5f, false, Kind.Meditate, "estatua"), "todos");
-        Roles(Def("Centro de entrenamiento", "ent_entrenar", "Entrenar (lucha, gimnasia o juego de pelota)", 1f, false, Kind.Practice, "tatami", "pista"), "alumno", "todos");
-        Roles(Lead(Def("Centro de entrenamiento", "ent_ensenar", "Dirigir el entrenamiento", 1f, false, Kind.Teach, "tatami", "pista")), "maestro");
+        Roles(Def("Centro de entrenamiento", "ent_entrenar", "Entrenar (lucha, gimnasia o juego de pelota)", 1f, false, Kind.Practice, "tatami", "pista", "foso_lucha", "pista_carreras", "campo"), "alumno", "todos");
+        Roles(Lead(Def("Centro de entrenamiento", "ent_ensenar", "Dirigir el entrenamiento", 1f, false, Kind.Teach, "tatami", "pista", "foso_lucha", "pista_carreras", "campo")), "maestro");
+        // (2026-11-04) LOS APARATOS DE ENTRENAR DE CADA ÉPOCA (docs/microcosmos-entrenamiento-eras.md; MicroFurniture.Training): cada
+        // función, con los puestos que la sirven. Los planes de entrenamiento de los insectos-humanos (docs/gimnasio-maquinas.md) las
+        // eligen por la clase del sitio (AreaFunctionSite.training).
+        Roles(Def("Centro de entrenamiento", "ent_lucha", "Luchar en el foso (pale, kushti, güreş, Schwingen…)", 1f, false, Kind.Practice, "foso_lucha", "tatami"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_correr", "Correr en la pista (dromos, xisto, parcours)", 1f, false, Kind.Practice, "pista_carreras", "campo"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_pesos", "Levantar pesos (halteres, piedras, mazas, pesas)", 1f, false, Kind.Practice, "halteres", "piedras", "mazas", "pesas"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_golpear", "Golpear el saco, el poste o el muñeco", 1f, false, Kind.Practice, "saco", "makiwara", "muneco"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_aparatos", "Gimnasia en los aparatos (barra, paralelas, potro, anillas)", 1f, false, Kind.Practice, "barra_fija", "paralelas", "potro", "anillas"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_armas", "Esgrima y armas (palo, garrote, espada, lanza)", 1f, false, Kind.Practice, "pista_esgrima", "armero"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_tiro", "Tiro con arco al blanco", 1f, false, Kind.Practice, "diana"), "alumno", "todos");
+        Roles(Def("Centro de entrenamiento", "ent_pelota", "Jugar a la pelota (pelota maya, camp-ball, fútbol)", 1f, false, Kind.Practice, "balon", "campo", "pista"), "alumno", "todos");
         Roles(Def("Fuente pública", "fue_agua", "Coger agua y lavar", 0.5f, false, Kind.Clean, "fuente", "lavadero"), "todos");
         Roles(Def("Mirador", "mir_mirar", "Asomarse desde la meseta (el santuario gigante alrededor)", 0.5f, false, Kind.Meditate, "estatua", "frutal"), "todos");
     }
@@ -307,7 +318,7 @@ public static class AreaFunctions
         ["Baños"] = new[] { "ban_banarse", "ban_vigilar" },
         ["Parque"] = new[] { "par_pasear", "par_cosechar" },
         ["Plaza"] = new[] { "pla_reunirse", "pla_contemplar" },
-        ["Centro de entrenamiento"] = new[] { "ent_entrenar", "ent_ensenar" },
+        ["Centro de entrenamiento"] = new[] { "ent_entrenar", "ent_ensenar", "ent_lucha", "ent_correr", "ent_pesos", "ent_golpear", "ent_aparatos", "ent_armas", "ent_tiro", "ent_pelota" },
         ["Fuente pública"] = new[] { "fue_agua" },
         ["Mirador"] = new[] { "mir_mirar" },
     };

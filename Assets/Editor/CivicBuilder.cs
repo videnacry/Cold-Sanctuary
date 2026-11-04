@@ -516,6 +516,8 @@ internal static partial class CivicBuilder
         if (string.IsNullOrEmpty(site.activity)) site.activity = AreaFunctionSite.ActivityOf(site.building);
         if (string.IsNullOrEmpty(site.interaction)) site.interaction = interaction ?? AreaFunctionSite.InteractionOf(site.building);
         if (string.IsNullOrEmpty(site.region)) site.region = Region;
+        // (2026-11-04) Un lugar de entrenar (el centro de entrenamiento del pueblo, la palestra de Milón, el kwoon de Yip Man): su clase estable de época y lugar.
+        if (site.activity == AreaFunctionSite.Entrenamiento && string.IsNullOrEmpty(site.training)) site.training = MicroStyles.TrainingKind(MicroStyles.For(Year, site.region), Year) ?? "";
         int cap = 0; var bodies = new SortedSet<string>();
         foreach (MicroPiece mp in site.GetComponentsInChildren<MicroPiece>(true))
         {
