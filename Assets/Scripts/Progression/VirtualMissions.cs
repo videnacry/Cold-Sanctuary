@@ -93,6 +93,12 @@ public static class VirtualMissions
             case "mat_bahareque": return new[] { "Cavar el barro", "Mezclarlo con paja", "Amasarlo" };
             case "mat_micelio": return new[] { "Preparar la paja y la cañamiza", "Llenar los moldes", "Sembrar el micelio" };
             case "mat_cuerda": return new[] { "Separar la fibra de cáñamo", "Hilarla", "Trenzar la cuerda" };
+            // (2026-11-04) Informática (el clúster de IA) y el Aula.
+            case "ifo_sysadmin": return new[] { "Revisar las alertas en el puesto de monitorización", "Vaciar las colas y repartir los trabajos", "Comprobar las copias en el almacenamiento", "Aplicar los parches y reiniciar en orden" };
+            case "ifo_refrigeracion": return new[] { "Cambiar los filtros de la CDU", "Buscar fugas en los colectores", "Probar la bomba de reserva", "Desincrustar el intercambiador" };
+            case "ifo_energia": return new[] { "Leer el analizador de la acometida", "Probar el SAI", "Revisar las baterías" };
+            case "aul_clase": return new[] { "Preparar la pizarra y la pantalla", "Dar la clase desde la tarima", "Resolver dudas en las filas" };
+            case "aul_estudio": return new[] { "Buscar el libro en la biblioteca", "Consultarlo en el catálogo", "Estudiar en la mesa" };
             default: return new[] { "Preparar", "Hacer la tarea", "Recoger" };
         }
     }
@@ -124,6 +130,12 @@ public static class VirtualMissions
             case "bio_pcr": return new[] { "Bloque_Mesa de extracción de ADN 1", "Bloque_Estación pre-PCR 1", "Bloque_Termocicladores 1", "Bloque_Secuenciadores (MiSeq y MinION)" };
             case "nuc_turno": return new[] { "Bloque_Puesto de acceso", "Bloque_Sala de control", "Bloque_Conversión de potencia", "Bloque_Intercambiador de la calefacción de distrito" };
             case "pla_ciclotron": return new[] { "Taquilla_dosimetros", "Consola_ciclotron", "Consola_ciclotron", "Celda_sintesis_FDG" };
+            // (2026-11-04) Informática y el Aula: los bloques y muebles de sus pisos (SampleSceneBuilder.Informatica.cs).
+            case "ifo_sysadmin": return new[] { "Bloque_Puesto de monitorización 1", "Bloque_Puesto de monitorización 2", "Bloque_Racks de almacenamiento (NVMe y copias)", "Bloque_Fila de racks de GPU A (4 racks + CDU)" };
+            case "ifo_refrigeracion": return new[] { "Bloque_Banco de mantenimiento de la refrigeración 1", "Bloque_Fila de racks de GPU B (4 racks + CDU)", "Bloque_Bombas del circuito (2 + 1 de reserva)", "Bloque_Intercambiador: calor a la red de distrito" };
+            case "ifo_energia": return new[] { "Bloque_Cuadro de la acometida (central nuclear y paneles)", "Bloque_SAI 1", "Bloque_Armario de baterías de litio 1" };
+            case "aul_clase": return new[] { "Tarima del profesor (mesa, pizarra y pantalla)", "Tarima del profesor (mesa, pizarra y pantalla)", "Fila de pupitres 1 (6 plazas)" };
+            case "aul_estudio": return new[] { "Estanterías de la biblioteca", "Puesto del catálogo y de ordenador 1", "Mesa de estudio 1 (6 plazas)" };
             default: return null;
         }
     }
@@ -144,6 +156,8 @@ public static class VirtualMissions
             case "Química": return new Color(0.78f, 0.85f, 0.9f);
             case "Biología": return new Color(0.78f, 0.9f, 0.78f);
             case "Central Nuclear": return new Color(0.75f, 0.78f, 0.8f);
+            case "Informática": return new Color(0.55f, 0.65f, 0.8f);   // (2026-11-04) los pisos nuevos (docs/piso-informatica.md, docs/piso-aula.md)
+            case "Aula": return new Color(0.85f, 0.8f, 0.65f);
             default: return new Color(0.6f, 0.65f, 0.7f);
         }
     }
