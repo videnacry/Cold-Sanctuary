@@ -47,6 +47,7 @@ public static partial class StorySceneBuilder
         ("VehicleWorkshop_Area", "Albuquerque", "Microcosmos_BillGates", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(BillGates)),
         ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
         ("Chemistry_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
+        ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
     };
 
     // La PLANTILLA (MicrocosmTemplate): la fecha y la hora de cada historia.
@@ -78,6 +79,7 @@ public static partial class StorySceneBuilder
         ["Albuquerque"] = ("primavera de 1975 (Micro-Soft nace el 4 de abril)", 10.0f),   // la mañana en MITS
         ["Omaha"] = ("30 de agosto de 1983 (el 53 cumpleaños de Buffett)", 10.0f),   // la mañana en la tienda (hora representativa)
         ["Prairie View"] = ("15 de diciembre de 2020", 10.0f),   // la mañana del anuncio
+        ["Uagadugú"] = ("6 de mayo de 2024", 9.0f),   // la mañana de la entrega (hora representativa)
     };
 
     // Las historias son de ERAS CIVILIZADAS (docs/microcosmos-civilizaciones.md §8): tras la historia, los EDIFICIOS REALES de su era

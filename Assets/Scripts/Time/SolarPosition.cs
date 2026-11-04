@@ -128,6 +128,7 @@ public static class SolarPosition
             ("Albuquerque", 35.08f, -106.6f, 95f),   // primavera de 1975 (Micro-Soft, 4 de abril)
             ("Omaha", 41.25f, -96.03f, 242f),   // 30 de agosto de 1983
             ("Prairie View", 30.09f, -95.99f, 350f),   // 15 de diciembre de 2020
+            ("Uagadugú", 12.37f, -1.52f, 127f),   // 6 de mayo de 2024
         };
         foreach (var e in table)
             if (display.IndexOf(e.key, System.StringComparison.OrdinalIgnoreCase) >= 0) { lat = e.la; lon = e.lo; doy = e.d; return true; }

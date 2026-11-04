@@ -156,6 +156,7 @@ public class VirtualizationMachine : MonoBehaviour, IInteractable
         ("Mecánica", "Simulación: Bill Gates y Paul Allen en Albuquerque: el BASIC del Altair (1975)", "Microcosmos_BillGates"),
         ("Estudio Textil", "Simulación: Warren Buffett y la señora B en Omaha: un apretón de manos (1983)", "Microcosmos_WarrenBuffett"),
         ("Química", "Simulación: MacKenzie Scott y Prairie View A&M: dar sin condiciones (2020)", "Microcosmos_MacKenzieScott"),
+        ("Huerto", "Simulación: Uagadugú 2024: tractores para los productores (Ibrahim Traoré)", "Microcosmos_IbrahimTraore"),
         // Científicos e históricos (docs/microcosmos-cientificos.md): el pueblo donde ocurrió, sobre el área que mejor lo cuenta.
         ("Gimnasio", "Simulación: Pitágoras en Crotona: el número, la música y Milón (~530 a. C.)", "Microcosmos_Pitagoras"),
         ("Huerto", "Simulación: Heródoto en Egipto: «el don del río» (~450 a. C.)", "Microcosmos_Herodoto"),

@@ -126,6 +126,31 @@ public static partial class MicroBiome
                 new Bug("Spider", 2, 10, C(0.4f, 0.32f, 0.25f), "Araña lobo (Hogna)") },
               townFauna = new[] {
                 new Pet("Woodlouse", 3, 0.7f, C(0.8f, 0.72f, 0.6f), "Perro del pueblo (en el microcosmos, una cochinilla hormiguera)") } };
+            // ── Uagadugú, principios de mayo: sabana sudanesa al final de la estación seca, muy calurosa. Néré, karité, baobab y
+            //    acacias en la periferia, hierba seca; termiteros de Macrotermes, hormigas, saltamontes y escarabajos peloteros. En la
+            //    ciudad, nim y caobas de calle, mangos de los patios y eucaliptos; cabras, gallinas y asnos de carga. (FAO; Arbonnier
+            //    2004, Trees, Shrubs and Lianas of West African Dry Zones.)
+            case "Uagadugú": return new Biome { title = "Uagadugú, sabana sudanesa (mayo de 2024, final de la estación seca)", ground = C(0.68f, 0.42f, 0.26f), plants = new[] {
+                new Plant(Kind.Shrub, 6, "Néré (Parkia biglobosa)", 1500, C(0.3f, 0.45f, 0.25f), C(0.85f, 0.25f, 0.15f)),
+                new Plant(Kind.Shrub, 5, "Karité (Vitellaria paradoxa)", 1200, C(0.28f, 0.42f, 0.24f), C(0.5f, 0.55f, 0.3f)),
+                new Plant(Kind.Shrub, 2, "Baobab (Adansonia digitata)", 2000, C(0.4f, 0.48f, 0.3f), C(0.6f, 0.55f, 0.45f)),
+                new Plant(Kind.Shrub, 5, "Acacia (Vachellia seyal)", 600, C(0.4f, 0.5f, 0.3f), C(0.9f, 0.8f, 0.3f)),
+                new Plant(Kind.Grass, 14, "Hierba seca de la sabana (Andropogon gayanus)", 150, C(0.75f, 0.65f, 0.4f), C(0.7f, 0.55f, 0.35f)),
+                new Plant(Kind.Stone, 8, "Coraza de laterita", 0, C(0.6f, 0.35f, 0.22f), Stone) },
+              town = new[] {
+                new Plant(Kind.Shrub, 6, "Nim (Azadirachta indica), árbol de sombra de la calle", 1200, C(0.25f, 0.45f, 0.22f), C(0.85f, 0.85f, 0.6f)),
+                new Plant(Kind.Shrub, 4, "Caoba de Senegal (Khaya senegalensis), de avenida", 1800, C(0.22f, 0.4f, 0.22f), C(0.45f, 0.3f, 0.2f)),
+                new Plant(Kind.Shrub, 3, "Eucalipto (Eucalyptus camaldulensis), plantado", 2000, C(0.4f, 0.5f, 0.4f), C(0.6f, 0.55f, 0.5f)),
+                new Plant(Kind.Grass, 6, "Hierba del patio", 15, C(0.6f, 0.6f, 0.35f), C(0.6f, 0.55f, 0.35f)) },
+              bugs = new[] {
+                new Bug("Termite", 8, 10, C(0.9f, 0.85f, 0.72f), "Termita de los termiteros (Macrotermes subhyalinus)"),
+                new Bug("Ant", 6, 8, C(0.3f, 0.2f, 0.15f), "Hormiga de la sabana (Pachycondyla)"),
+                new Bug("Grasshopper", 4, 40, C(0.6f, 0.55f, 0.35f), "Saltamontes de la sabana (Kraussaria angulifera)"),
+                new Bug("DungBeetle", 3, 25, C(0.2f, 0.18f, 0.16f), "Escarabajo pelotero") },
+              townFauna = new[] {
+                new Pet("Aphid", 3, 1.2f, C(0.85f, 0.8f, 0.7f), "Cabra del patio (en el microcosmos, un pulgón)"),
+                new Pet("Ladybug", 3, 0.5f, C(0.75f, 0.45f, 0.2f), "Gallina del patio (en el microcosmos, una mariquita parda)"),
+                new Pet("Aphid", 2, 1.6f, C(0.55f, 0.5f, 0.45f), "Asno de carga (en el microcosmos, un pulgón de carga)") } };
             default: return null;
         }
     }

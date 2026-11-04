@@ -64,6 +64,7 @@ public static class MicroFloors
         M("Albuquerque", "VehicleWorkshop_Area", "Gates y Allen: el Altair y su BASIC (montar y programar), el taller de Mecánica", "Sala de informática (ordenadores y programación)"),
         M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
         M("Prairie View", "Chemistry_Area", "Scott y Prairie View A&M: aulas de ciencias de una universidad, el laboratorio de Química", "Aula y biblioteca universitaria"),
+        M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
     };
 
     /// <summary>La fila del microcosmos <paramref name="display"/> (o null).</summary>

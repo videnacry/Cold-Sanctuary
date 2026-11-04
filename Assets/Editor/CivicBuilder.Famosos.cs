@@ -17,6 +17,7 @@ internal static partial class CivicBuilder
     static readonly Style PuebloStucco = new Style(C(0.82f, 0.68f, 0.52f), C(0.62f, 0.55f, 0.48f), C(0.55f, 0.4f, 0.3f), Roof.Flat, 3.2f);   // Albuquerque: estuco color adobe (Pueblo Revival), tejado plano
     static readonly Style OmahaBrick = new Style(C(0.65f, 0.35f, 0.28f), C(0.55f, 0.45f, 0.35f), C(0.35f, 0.33f, 0.32f), Roof.Gable, 3.4f);   // Omaha: ladrillo rojo y tablas, suelo de madera
     static readonly Style CampusBrick = new Style(C(0.72f, 0.5f, 0.38f), C(0.75f, 0.72f, 0.66f), C(0.45f, 0.12f, 0.2f), Roof.Flat, 3.6f);   // Prairie View: ladrillo del campus, granate y oro
+    static readonly Style SahelBanco = new Style(C(0.72f, 0.5f, 0.34f), C(0.62f, 0.45f, 0.32f), C(0.6f, 0.62f, 0.62f), Roof.Flat, 3f);       // Uagadugú: banco (adobe) enlucido y chapa, patio de tierra
 
     /// <summary>El pueblo de cada famoso (0 si <paramref name="display"/> no es uno de ellos).</summary>
     static int FamousTown(Transform t, string display)
@@ -29,6 +30,7 @@ internal static partial class CivicBuilder
             case "Albuquerque": return AlbuquerqueTown(t);
             case "Omaha": return OmahaTown(t);
             case "Prairie View": return PrairieViewTown(t);
+            case "Uagadugú": return OuagadougouTown(t);
             default: return 0;
         }
     }
@@ -239,6 +241,43 @@ Investigacion | 300 420
 Tecnologia | -350 300
 Hotel | 800 -400
 relleno | 50 | 700 -600",
+        // UAGADUGÚ (2024): el centro (el gran mercado Rood Woko, la plaza de la Nación, la estación del ferrocarril de 1954), la avenida
+        // Kwame Nkrumah, y al norte los embalses (barrages n.º 1, 2 y 3 de Tanghin) con sus huertos y el parque urbano Bangr-Weoogo.
+        // Plano ACORTADO al norte (los barrages están a ~2 km del centro) y aproximado (OpenStreetMap; Ville de Ouagadougou).
+        ["Uagadugú"] = @"
+lago Barrage n.º 2 de Tanghin | 260 90 | -300 950
+lago Barrage n.º 3 de Tanghin | 200 80 | 250 1050
+campo Huertos del barrage | 500 120 | -50 780
+campo Parque urbano Bangr-Weoogo | 380 260 | 750 850
+campo Campos de la periferia | 400 300 | -1100 -900
+calle Avenida Kwame Nkrumah | 24 | -900 -700, 800 500
+calle Bulevar de Tanghin | 16 | 0 0, 0 700
+calle Avenida de la Nación | 18 | -1300 -100, 1300 -100
+calle Calle del mercado | 10 | -500 -400, 300 -400
+calle Calle de los patios norte | 8 | -900 300, 900 300
+calle Calle de los patios sur | 8 | -900 -800, 900 -800
+calle Vía del ferrocarril | 8 | -1400 -560, 1400 -500
+hito 0 | 80 100
+hito 1 | -120 640
+hito 2 | -250 -330
+hito 3 | 240 200
+hito 4 | 140 -260
+hito 5 | -200 250
+hito 6 | 350 -150
+Plaza | -60 -160
+Mercado | -500 -250
+Parque | 700 700
+Estacion | -200 -560
+Estudio | 450 350
+Guarderia | -450 380
+Museo | 600 -300
+Piscina | 750 -150
+Hotel | 300 -380
+Bomberos | -650 -450
+Taller | -700 100
+Carpinteria | 650 100
+Obra | -800 650
+relleno | 70 | 0 -650",
     };
 
     // ══ VELLIANGIRI (1999): el Isha Yoga Center (el Dhyanalinga bajo su cúpula, la sala de práctica, el comedor, las cabañas de los
@@ -454,6 +493,46 @@ relleno | 50 | 700 -600",
         n += W(t, "Cocinero del comedor", s[3], "cocinero", s[3], null, null);
         n += W(t, "Técnica de la granja experimental", s[6], "hortelano", s[3], null, null);
         n += Townsfolk(t, s, 7, "Vecina de Prairie View", "Vecino de Prairie View", s[3], null);
+        return n;
+    }
+
+    // ══ UAGADUGÚ (2024): la explanada de la entrega (el parque de maquinaria), los huertos del barrage, el mercado Rood Woko, un
+    //    centro de formación agrícola, un maquis, la cour familiale de la horticultora y el molino de cereales; patios familiares,
+    //    talleres de soldadura, mercados y huertos de barrio. Nada militar.
+    static int OuagadougouTown(Transform t)
+    {
+        var s = Town(t, "Uagadugú", new[]
+        {
+            new Lot("Parque de maquinaria agrícola", "Taller", "Explanada de la entrega: tractores, motocultores y motobombas", 20f, 14f, SahelBanco,
+                S("banco_taller", -5f, 3f, 2.4f, 1.2f, "Tractor"), S("banco_taller", 0f, 3f, 2.4f, 1.2f, "Motocultor"), S("armario", 5f, 3f, 1.6f, 0.8f, "Motobombas y repuestos"), S("mesa", 0f, -4f, 2f, 1f, "Mesa de la brigada de mecanización")),
+            new Lot("Huertos del barrage", "Huerto", "Huertos del barrage de Tanghin (tomate, cebolla, col)", 16f, 12f, SahelBanco,
+                S("bancal", -4f, 0f, 4f, 6f, "Bancal de tomates"), S("bancal", 2f, 0f, 4f, 6f, "Bancal de cebollas"), S("pozo", 6f, 3f, 1.2f, 1.2f, "Pozo y regaderas")),
+            new Lot("Mercado Rood Woko", "Mercado", "Gran mercado Rood Woko", 18f, 12f, SahelBanco,
+                S("puesto", -5f, 2f, 2f, 1f, "Puesto de tomates y cebollas"), S("puesto", 0f, 2f, 2f, 1f, "Puesto de mijo, maíz y sorgo"), S("puesto", 5f, 2f, 2f, 1f, "Puesto de telas (Faso Dan Fani)")),
+            new Lot("Centro de formación agrícola", "Escuela", "Centro de formación agrícola", 14f, 10f, SahelBanco,
+                S("pizarra", 0f, 3.5f, 2.4f, 0.4f, "Pizarra: cómo cavar el zaï"), S("mesa", 0f, 0f, 2.4f, 1f, "Mesa con semillas de muestra"), S("estante", -5f, -3f, 0.8f, 1.6f, "Fichas de cultivos")),
+            new Lot("Maquis del barrio", "Restaurante", "Maquis del barrio (tô y salsa de gombo)", 14f, 10f, SahelBanco,
+                S("fogon", -3f, 2f, 1.6f, 0.8f, "Olla de tô y salsa de gombo"), S("mesa", 2f, -1f, 2f, 1f, "Mesa con bancos"), S("barra", 3f, 3f, 2f, 0.8f, "Barra de zumo de bissap")),
+            new Lot("Cour familiale de la horticultora", "Casa", "Cour familiale de la horticultora", 14f, 12f, SahelBanco,
+                S("cama", -4f, 2f, 1.2f, 2f, "Cama"), S("cama", 0f, 2f, 1.2f, 2f, "Cama"), S("cama", 4f, 2f, 1.2f, 2f, "Cama de los niños")),
+            new Lot("Molino de cereales", "Granero", "Molino de cereales del barrio", 12f, 10f, SahelBanco,
+                S("granero", 0f, 2f, 2f, 2f, "Molino de mijo y maíz"), S("estante", 3f, -3f, 0.8f, 1.6f, "Sacos de harina")),
+        }, new[]
+        {
+            new Lot("Cour familiale de Uagadugú", "Casa", "Cour familiale (patio de varias casas)", 12f, 10f, SahelBanco),
+            new Lot("Taller de soldadura", "Taller", "Taller de soldadura (carros y aperos)", 12f, 10f, SahelBanco, S("banco_taller", 0f, 0f, 2f, 0.9f, "Banco de soldar"), S("armario", 0f, 0f, 1.2f, 0.6f, "Hierros y herramientas")),
+            new Lot("Mercado de barrio", "Mercado", "Mercado de barrio", 10f, 8f, SahelBanco, S("puesto", 0f, 0f, 2f, 1f, "Puesto de verduras"), S("puesto", 0f, 0f, 2f, 1f, "Puesto de cereales")),
+            new Lot("Huerto de barrio", "Huerto", "Huerto de barrio", 12f, 10f, SahelBanco, S("bancal", 0f, 0f, 4f, 6f, "Bancal"), S("pozo", 0f, 0f, 1f, 1f, "Pozo")),
+        }, C(0.6f, 0.4f, 0.28f));
+        int n = 0;
+        n += W(t, "Mecánica de la brigada", s[0], "", s[4], null, null);
+        n += W(t, "Horticultor del barrage", s[1], "hortelano", s[4], null, null);
+        n += W(t, "Vendedora del mercado", s[2], "comerciante", s[4], null, null);
+        n += W(t, "Formador agrícola", s[3], "sabio", s[4], null, null);
+        n += W(t, "Cocinera del maquis", s[4], "cocinero", s[4], null, null);
+        n += W(t, "Molinero del barrio", s[6], "", s[4], null, null);
+        n += C2(t, "Hortelana de Tanghin", "Tejedor de Tanghin", s[5], s[4], s[1]);
+        n += Townsfolk(t, s, 7, "Vecina de Uagadugú", "Vecino de Uagadugú", s[4], null);
         return n;
     }
 }

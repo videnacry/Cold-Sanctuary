@@ -14,7 +14,7 @@ public static partial class StorySceneBuilder
 {
     internal static readonly string[] FamousScenes =
     {
-        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett", "Microcosmos_MacKenzieScott",
+        "Microcosmos_Sadhguru", "Microcosmos_ElonMusk", "Microcosmos_Goku", "Microcosmos_BillGates", "Microcosmos_WarrenBuffett", "Microcosmos_MacKenzieScott", "Microcosmos_IbrahimTraore",
     };
 
     /// <summary>Genera SOLO los microcosmos de los famosos, uno tras otro (con la escena principal abierta). Con poca memoria, mejor
@@ -34,6 +34,8 @@ public static partial class StorySceneBuilder
     public static void BuildWarrenBuffett() => BuildOne("Microcosmos_WarrenBuffett");
     [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/MacKenzie Scott (Prairie View, 2020)")]
     public static void BuildMacKenzieScott() => BuildOne("Microcosmos_MacKenzieScott");
+    [MenuItem("Tools/Cold Sanctuary/Build Microcosmos de famosos/Ibrahim Traoré (Uagadugú, 2024)")]
+    public static void BuildIbrahimTraore() => BuildOne("Microcosmos_IbrahimTraore");
 
     // ══ SADHGURU · Isha Yoga Center, al pie de los montes Velliangiri (Coimbatore), 24 de junio de 1999 · Sala de Yoga ══════════════
 
@@ -476,6 +478,78 @@ public static partial class StorySceneBuilder
                 "The Chronicle of Philanthropy (2020), «Gifts From MacKenzie Scott Put Overlooked Colleges and Universities in the Spotlight».",
             },
             "Estudiante de ingeniería", "Me gradúo en mayo. Y algún día ayudaré yo a otro.");
+        return n;
+    }
+
+    // ══ IBRAHIM TRAORÉ · Uagadugú (Burkina Faso), 6 de mayo de 2024 · Huerto ══════════════════════════════════════════════════════
+    //    Un acto CIVIL y agrícola, contado con neutralidad: la entrega de tractores, motocultores y motobombas para labrar gratis los
+    //    campos de los productores antes de las lluvias (la Ofensiva agropastoral 2023–2025). La historia es de los campesinos; nada
+    //    militar ni político se muestra ni se celebra.
+
+    static int IbrahimTraore(Transform t)
+    {
+        Material red = M("Tractor_rojo", 0.75f, 0.18f, 0.12f), blue = M("Motocultor_azul", 0.2f, 0.35f, 0.65f), grey = M("Motobomba_gris", 0.5f, 0.52f, 0.55f);
+        Material soil = M("Tierra_laterita", 0.62f, 0.38f, 0.22f), water = M("Agua_del_barrage", 0.35f, 0.5f, 0.55f), sack = M("Saco_de_semilla", 0.85f, 0.78f, 0.6f), green = M("Hoja_de_huerto", 0.3f, 0.55f, 0.25f);
+
+        // 1 · LOS HUERTOS DEL BARRAGE (Tanghin): bancales regados a mano junto al embalse.
+        Transform gardens = Spot(t, "Huertos del barrage", new Vector3(-15f, 0f, 12f), "Los huertos junto al barrage de Tanghin", 2.8f);
+        Prop(gardens, "Agua del barrage", new Vector3(-3f, 0.02f, 0f), new Vector3(3f, 0.04f, 14f), water, false);
+        for (int k = 0; k < 3; k++) Prop(gardens, "Bancal de tomates y cebollas", new Vector3(1.5f, 0.12f, -4f + k * 4f), new Vector3(2.4f, 0.24f, 2.4f), green);
+
+        // 2 · LA EXPLANADA DE LA ENTREGA: un tractor, un motocultor y una motobomba (de los 400 tractores y demás equipos).
+        Transform ground = Spot(t, "Explanada de la entrega", new Vector3(4f, 0f, 15f), "La entrega del equipo agrícola (6 de mayo de 2024)", 3f);
+        Transform tractor = Spot(t, "Tractor", new Vector3(0f, 0f, 18f), "Tractor (labra la tierra antes de las lluvias)", 3f);
+        Prop(tractor, "Tractor", new Vector3(0f, 1f, 0f), new Vector3(2f, 2f, 3.5f), red);
+        Transform tiller = Spot(t, "Motocultor", new Vector3(6f, 0f, 19f), "Motocultor (para las parcelas pequeñas)", 2.4f);
+        Prop(tiller, "Motocultor", new Vector3(0f, 0.5f, 0f), new Vector3(0.9f, 1f, 2f), blue);
+        Transform pump = Spot(t, "Motobomba", new Vector3(11f, 0f, 17f), "Motobomba (riego de los huertos)", 2.4f);
+        Prop(pump, "Motobomba", new Vector3(0f, 0.35f, 0f), new Vector3(0.8f, 0.7f, 0.6f), grey);
+        var machines = new List<Transform> { tractor, tiller, pump };
+
+        // 3 · EL CAMPO: semillas para la siembra y el surco que se labra; los hoyos del zaï.
+        Transform field = Spot(t, "Campo por labrar", new Vector3(14f, 0f, 2f), "El campo: labrar y sembrar antes de las lluvias", 2.4f);
+        Prop(field, "Tierra de laterita", new Vector3(0f, 0.02f, 0f), new Vector3(8f, 0.04f, 6f), soil, false);
+        for (int k = 0; k < 4; k++) Prop(field, "Hoyo de zaï (con estiércol)", new Vector3(-3f + k * 2f, 0.03f, -2f), new Vector3(0.5f, 0.05f, 0.5f), M("Hoyo_zai", 0.35f, 0.25f, 0.15f), false);
+        var seeds = Items(t, sack, new Vector3(0.6f, 0.5f, 0.5f), ("Saco de semilla de maíz", new Vector3(-6f, 0.25f, -8f)), ("Saco de semilla de sorgo", new Vector3(-3f, 0.25f, -9f)), ("Saco de semilla de niébé (caupí)", new Vector3(0f, 0.25f, -8f)));
+
+        // La gente: insectos-humanos. Traoré, una TERMITA (las Macrotermes de la sabana cultivan su propio hongo: la colonia que se
+        // alimenta a sí misma), con el verde oliva de su versión humana (sin armas: es un acto civil).
+        Color olive = new Color(0.33f, 0.36f, 0.24f), wax = new Color(0.85f, 0.45f, 0.15f), indigo = new Color(0.2f, 0.25f, 0.5f);
+        GameObject traore = Modern(t, "Ibrahim Traoré", new Vector3(2f, 0f, 11f), false, olive, CubeInsect.Hat.None, 1.8f, "Termite");
+        GameObject minister = Modern(t, "Ismaël Sombié (ministro de Agricultura)", new Vector3(7f, 0f, 11f), false, olive, CubeInsect.Hat.None, 1.75f, "Cricket");
+        GameObject grower = Who(t, "Horticultora del barrage (Ruth)", new Vector3(-12f, 0f, 9f), true); CubeInsect.WearShirt(grower, wax); Routine(grower, gardens);
+        GameObject driver = Who(t, "Tractorista de la brigada (Atlas)", new Vector3(12f, 0f, 6f), false); CubeInsect.WearShirt(driver, indigo); Routine(driver, tractor, field);
+        GameObject agro = Who(t, "Agrónoma de extensión (Sakshi)", new Vector3(16f, 0f, -2f), true); CubeInsect.WearShirt(agro, new Color(0.3f, 0.5f, 0.35f));
+        int n = 5;
+
+        Mission(t, "Uagadugú, 2024: tractores para los productores", StoryMission.Marga.Bonds, 60f,
+            new[]
+            {
+                Talk("En los huertos del barrage, habla con la horticultora", grower.transform, "Horticultora", "Riego con la regadera y cavo con la daba, como mi madre. Las lluvias llegan en unas semanas: quien no tenga la tierra lista, siembra tarde."),
+                Reach("6 de mayo: ve a la explanada de la entrega", ground, "Horticultora", "Dicen que han traído tractores para labrar los campos de la gente. Vamos a verlo."),
+                Talk("Habla con Ibrahim Traoré", traore.transform, "Ibrahim Traoré", "Estas máquinas las ha comprado el Estado para los productores. Que la tierra que trabajamos nos dé de comer a todos."),
+                Visit("Mira el equipo: el tractor, el motocultor y la motobomba", machines, "Tractorista de la brigada", "El tractor para los campos grandes, el motocultor para las parcelas pequeñas y la motobomba para regar los huertos en la estación seca."),
+                Talk("Habla con el ministro de Agricultura", minister.transform, "Ismaël Sombié", "En cada comuna habrá una brigada de mecanización. El labrado será gratuito para los productores, antes de las lluvias."),
+                Collect("Lleva las semillas de maíz, sorgo y niébé al campo", seeds, field, "Agrónoma de extensión", "Maíz, sorgo y niébé: lo que se come aquí. El niébé, además, devuelve nitrógeno a la tierra."),
+                Hold("Labra un surco con el tractorista", field, 8f, "Tractorista de la brigada", "Lo que con la daba es una semana, con el tractor es una mañana."),
+                Talk("Habla con la agrónoma", agro.transform, "Agrónoma de extensión", "Con tractor o sin él, la tierra hay que cuidarla. Mira estos hoyos: es el zaï, una técnica de aquí. Se cava, se echa estiércol y guarda el agua de la lluvia junto a la semilla."),
+            },
+            "Uagadugú (Burkina Faso), el 6 de mayo de 2024, al final de la estación seca, sobre el Huerto del santuario a escala de hormiga. El gobierno entrega tractores, motocultores y motobombas para labrar gratis los campos de los productores antes de las lluvias. Acompaña a una horticultora del barrage a ver las máquinas, a sembrar y a aprender el zaï. E para hablar, mirar y recoger; para labrar, quédate quieto.",
+            new[]
+            {
+                "Burkina Faso es un país del Sahel donde la mayoría de la gente vive del campo: maíz, sorgo, mijo, niébé y, en los huertos que rodean los embalses (barrages) de Uagadugú, tomates, cebollas y verduras. Las lluvias se concentran entre junio y septiembre, y las sequías son frecuentes.",
+                "El capitán Ibrahim Traoré preside la transición de Burkina Faso desde finales de septiembre de 2022, cuando llegó al poder por un golpe militar; su gobierno despierta opiniones muy distintas dentro y fuera del país. Este microcosmos no trata de política ni de asuntos militares: cuenta un acto civil y agrícola.",
+                "Su gobierno lanzó la «Ofensiva agropastoral y haliéutica 2023–2025», con el objetivo de que el país produzca su propia comida. El 6 de mayo de 2024, en Uagadugú, Traoré entregó al ministro de Agricultura, Ismaël Sombié, equipos agrícolas comprados por el Estado: 400 tractores, además de motocultores, motobombas, semillas y abonos (las cifras de estos últimos varían según la fuente). Desde el 30 de mayo, brigadas de mecanización empezaron a labrar gratis los campos de los productores. No hemos encontrado una evaluación independiente de sus resultados.",
+                "El zaï es una técnica tradicional del norte de Burkina Faso: hoyos con estiércol que recogen el agua de la lluvia junto a la semilla. El campesino Yacouba Sawadogo la mejoró y la enseñó durante décadas para recuperar tierras degradadas (Premio Right Livelihood 2018).",
+            },
+            new[]
+            {
+                "Sidwaya (31-5-2024), «Burkina Faso : Déploiement des tracteurs pour l'offensive agropastorale et halieutique 2023-2025» (sidwaya.info).",
+                "Sidwaya (12-6-2024), «Editorial : De la houe au tracteur» (sidwaya.info).",
+                "Right Livelihood Foundation, «Yacouba Sawadogo» (rightlivelihood.org).",
+                "FAO, «Burkina Faso: country profile» (fao.org/countryprofiles).",
+            },
+            "Horticultora", "Este año sembraré a tiempo. Y seguiré cavando mi zaï, que la tierra se cuida con las manos.");
         return n;
     }
 }

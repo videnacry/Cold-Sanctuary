@@ -42,6 +42,7 @@ public static class EraHubSceneBuilder
         ("Microcosmos_BillGates", "Albuquerque", "Bill Gates, Paul Allen y el BASIC del Altair (1975)"),
         ("Microcosmos_WarrenBuffett", "Omaha", "Warren Buffett y la señora B (1983)"),
         ("Microcosmos_MacKenzieScott", "Prairie View", "MacKenzie Scott y Prairie View A&M (2020)"),
+        ("Microcosmos_IbrahimTraore", "Uagadugú", "Uagadugú 2024: tractores para los productores"),
         ("Microcosmos_IrenaSendler", "Irena Sendler", "Irena Sendler y los niños del gueto"),
         ("Microcosmos_LeChambon", "Le Chambon-sur-Lignon", "el pueblo que escondió a miles"),
         ("Microcosmos_Pitagoras", "Crotona", "Pitágoras y la escuela de Crotona"),
