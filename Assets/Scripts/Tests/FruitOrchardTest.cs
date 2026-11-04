@@ -117,7 +117,17 @@ public class FruitOrchardTest : MonoBehaviour, ITestUnit
         // ── 5. RONDAS ──
         var rounds = FruitGardener.Rounds();
         var inRounds = rounds.SelectMany(r => r.Plants).ToList();
-        TestProbe.Check("cada maceta está en una sola ronda", inRounds.Count == plants.Count && inRounds.Distinct().Count() == plants.Count, $"{inRounds.Count} en rondas de {plants.Count}");
+        var gardenerPots = plants.Where(p => !p.HomeTended).ToList(); int homePots = plants.Count - gardenerPots.Count;   // (2026-11-04) las de las casas del árbol las cuida su residente
+        TestProbe.Check("cada maceta del jardinero está en una sola ronda (las de las casas del árbol, en ninguna: las cuida su residente)", inRounds.Count == gardenerPots.Count && inRounds.Distinct().Count() == gardenerPots.Count && !inRounds.Any(p => p.HomeTended), $"{inRounds.Count} en rondas de {gardenerPots.Count}; {homePots} de casa");
+        FruitPlant home = plants.FirstOrDefault(p => p.HomeTended);
+        if (home != null)
+        {
+            var hs = (home.water, home.nutrients, home.pests, home.health, home.lastCareDay);
+            home.lastCareDay = -99; home.nutrients = 0.3f; home.pests = 0.5f;
+            bool did = home.HomeCare(true);
+            TestProbe.Check("la maceta de una casa del árbol la revisa su residente (no el jardinero)", did && home.pests < 0.2f && home.nutrients > 0.5f, $"«{home.lastCaredBy}» cuida el {home.Name}");
+            (home.water, home.nutrients, home.pests, home.health) = (hs.water, hs.nutrients, hs.pests, hs.health);
+        }
         // UNA PERSONA POR EDIFICIO CON FRUTALES, como mucho (2026-11-01): antes «unas 3 personas al día», con los frutales en
         // techos planos a un vuelo uno de otro. Con todos los edificios hechos árboles, entrar en uno y salir (nadando a sus
         // puntas) ya son ~1,15 h y saltar de punta a punta cuesta minutos por maceta: 4 árboles y el techo de la Central no caben

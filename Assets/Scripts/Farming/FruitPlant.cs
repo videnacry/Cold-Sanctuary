@@ -76,10 +76,31 @@ public class FruitPlant : MonoBehaviour
         Refresh();
     }
 
+    /// <summary>LA MACETA DE CASA (2026-11-04): la de la terraza de una casa del árbol (dentro de un <see cref="Bedroom"/>) la cuida SU
+    /// RESIDENTE, no el jardinero. Con 16–18 casas, cada una a un vuelo en alfombra, la ronda del jardinero pasaba de 36,5 a 52 h (19
+    /// personas) por 18 macetas; el residente, que duerme allí, la revisa al levantarse (1 min, como en cualquier casa con plantas).</summary>
+    public bool HomeTended { get { if (!_homeKnown) { _home = GetComponentInParent<Bedroom>(); _homeKnown = true; } return _home != null; } }
+    Bedroom _home; bool _homeKnown;
+    public const float HomeCareHour = 7.5f;
+
     void Update()
     {
         Tick(Time.deltaTime / SecondsPerDay);
+        // El residente revisa su maceta una vez al día, al levantarse: el agua, el abono y la plaga; y, si le toca, la poliniza y la poda.
+        HomeCare(false);
         if (Time.time >= _nextUi) { _nextUi = Time.time + 1f; Refresh(); }
+    }
+
+    /// <summary>El residente revisa su maceta (si es de casa y hoy aún no, desde las 7:30; con <paramref name="now"/>, ya). true si lo hizo.</summary>
+    public bool HomeCare(bool now)
+    {
+        if (!HomeTended || lastCareDay == Today) return false;
+        if (!now && (TimeController.timeController == null || TimeController.timeController.Hour < HomeCareHour)) return false;
+        string who = !string.IsNullOrEmpty(_home.owner) ? _home.owner : "su residente";
+        Care(who);
+        if (NeedsPollination(Today)) Pollinate(who);
+        if (NeedsPruning(Today)) Prune(who);
+        return true;
     }
 
     /// <summary>Avanza <paramref name="days"/> días de juego: gasta agua y abono, sube la plaga y la salud sigue al estado.</summary>

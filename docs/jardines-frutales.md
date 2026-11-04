@@ -507,3 +507,14 @@ Residencia no acababa en su tiempo. La prueba 55 elige para su jardinero una ron
   La prueba 55 ya no las cuenta como un techo que no debe partirse.
 - La maceta de control de la prueba del goteo es una **con goteo, de un techo**: las de las casas del árbol no llevan goteo, y el
   mortiño elegido se quedaba sin agua.
+
+**Ronda 6 (2026-11-04): las macetas de casa, para su residente.** Con las casas del árbol (16 casas y literas, 18 macetas) y el
+personal nuevo, la jornada del jardinero subía a **52 h y 19 rondas**: cada maceta de casa es un vuelo en alfombra (~45 s reales), más
+que su revisión. **Decisión: la maceta de la terraza de cada casa la cuida su residente** (`FruitPlant.HomeTended` y `HomeCare`). Al
+levantarse (desde las 7:30), una vez al día, la revisa y, si le toca, la poliniza y la poda.
+- **Por qué**: duerme allí, no tiene que volar, le cuesta un minuto y es lo que se hace con una planta de casa. El jardinero (la
+  experta, Irosene) sigue con lo que pide oficio: los techos, las puntas, los bancales y las tareas del árbol.
+- Las rondas del jardinero ya **no incluyen** esas macetas, y la prueba 55 comprueba que las cuida su residente.
+- Además, **la ronda tiene tope**: a las 3,2 h se da por terminada, salvo en mitad de unas tareas del árbol, y lo que falte se queda
+  para el día siguiente. Las tareas de la semana tampoco pasan de su tiempo reservado (+5 min): una maceta que no se alcanzaba dejaba
+  al jardinero de prueba polinizando y podando sin acabar.
