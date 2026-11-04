@@ -119,6 +119,7 @@ public class ConstructionSubmarine : MonoBehaviour
     {
         if (Now == State.Parked || Now == State.Loading || Now == State.Unloading)
         {
+            if (Now == State.Parked && _pendingTo != null) { var (pt, pl, pn) = (_pendingTo, _pendingLevel, _pendingTitle); _pendingTo = null; SendTo(pt, pl, pn); return; }
             if (Now == State.Parked && Time.time > _nextLook) { _nextLook = Time.time + 2f; ConstructionProject p = NextJob(); if (p != null) Send(p); }
             if ((Now == State.Loading || Now == State.Unloading) && Time.time >= _wait) Advance();
             return;
@@ -156,7 +157,9 @@ public class ConstructionSubmarine : MonoBehaviour
     /// docs/lanzadera-de-cohetes.md). false si no hay camino o no está aparcado.</summary>
     public bool SendTo(ArbolCampos to, TreeLevel lb, string title)
     {
-        if (to == null || lb == null || Now != State.Parked) return false;
+        if (to == null || lb == null) return false;
+        // (2026-11-04) Si está de viaje (llevando material a una obra), el encargo queda en COLA y sale al aparcar (prueba 90: «en 0 s»).
+        if (Now != State.Parked) { _pendingTo = to; _pendingLevel = lb; _pendingTitle = title; Debug.Log($"[Submarino] Encargo en cola: {title} a {lb.name} de {to.building} (está {Doing})."); return true; }
         ArbolCampos from = ArbolCampos.At(transform.position + Vector3.up * 0.5f, out TreeLevel la, out _, false);
         if (from == null || la == null) { Debug.LogWarning($"[Submarino] no sé en qué piso estoy para ir a «{title}»."); return false; }
         Target = null; _freeTrip = true;
@@ -170,6 +173,7 @@ public class ConstructionSubmarine : MonoBehaviour
         return true;
     }
     bool _freeTrip;
+    ArbolCampos _pendingTo; TreeLevel _pendingLevel; string _pendingTitle;
 
     /// <summary>Dónde aparca en un piso: frente a su puerta, metido en el piso (a 9 m del umbral), sobre la losa.</summary>
     static Vector3 ParkPoint(ArbolCampos t, TreeLevel lv)

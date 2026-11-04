@@ -64,3 +64,10 @@ Código: `Assets/Scripts/World/GuardianTree.cs` (el árbol), `GuardTower.cs` (la
 Alto ≥ máx(132,6 m, edificio más alto); base ≥ 18 m a ras de suelo con contrafuertes; los dos pasadizos libres de 7 × 7 m y el NavMesh de
 boca a boca por dentro; corteza de hielo, ≥ 4 panales y ≥ 10 posaderos, sin cazar; plataforma en anillo, tablero y alfombras; y la regla de
 la lanzadera.
+
+## Rondas 5–6 del probador (2026-11-04)
+- **La base a la altura de los pasadizos** ya no son duelas giradas (sus esquinas pisaban los túneles, se quitaban y la base quedaba de
+  13,4 m): cada cuarto entre los dos túneles se llena con una rejilla de bloques de 1,5 m alineados con ellos hasta el borde del círculo
+  (con acanaladuras en el borde). Por encima, las duelas de siempre.
+- **Panales**: el constructor pone 8 (lo dice su registro), pero en el juego no estaban. `GuardianHives` guarda sus sitios y, si al empezar
+  faltan, los vuelve a poner y lo avisa (`[Guardia] Faltaban los panales…`): queda por encontrar qué los quita.

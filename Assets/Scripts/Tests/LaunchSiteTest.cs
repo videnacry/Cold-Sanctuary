@@ -94,7 +94,10 @@ public class LaunchSiteTest : MonoBehaviour, ITestUnit
         if (sub == null || garage == null) TestProbe.Check("el submarino de obra llega por la vía marina al garaje de la lanzadera", false, $"submarino {sub != null}, garaje {garage != null}");
         else
         {
-            int d0 = sub.Deliveries; float old = Time.timeScale; Time.timeScale = 4f;
+            float old = Time.timeScale; Time.timeScale = 4f;
+            // (2026-11-04) Si está llevando material a una obra, se espera a que aparque (prueba 90: «en 0 s»).
+            { float tw = Time.time, rw = Time.realtimeSinceStartup; while (sub.Now != ConstructionSubmarine.State.Parked && Time.time - tw < 900f && Time.realtimeSinceStartup - rw < 300f) yield return null; }
+            int d0 = sub.Deliveries;
             bool sent = sub.SendTo(lt, garage, "etapas y carga útil");
             float t0 = Time.time, rr = Time.realtimeSinceStartup;
             while (sent && sub.Deliveries == d0 && Time.time - t0 < 900f && Time.realtimeSinceStartup - rr < 300f) yield return null;

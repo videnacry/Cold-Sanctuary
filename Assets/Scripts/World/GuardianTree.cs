@@ -80,29 +80,36 @@ public static class GuardianTree
         for (float y = 0f; y < BaseHeight; y += layer)
         {
             float W = WidthAt(y + layer * 0.5f, height), Rr = W * 0.5f, thick = Mathf.Min(3.2f, Rr * 0.45f);
+            if (y < TunnelHeight + 1f)
+            {
+                // (2026-11-04) A LA ALTURA DE LOS PASADIZOS: cada cuarto de la base, entre los dos túneles, se llena con una rejilla de
+                // bloques de 1,5 m hasta el borde (el círculo de la base), alineados con los túneles. Con duelas giradas, sus esquinas pisaban
+                // el pasillo y se quitaban todas: la base salía de 13,4 m (prueba 91).
+                const float cell = 1.5f;
+                for (float x = hw; x < Rr; x += cell)
+                    for (float z = hw; z < Rr; z += cell)
+                    {
+                        float x1 = Mathf.Min(x + cell, Rr), z1 = Mathf.Min(z + cell, Rr);
+                        if (x * x + z * z > Rr * Rr) continue;                       // del todo fuera del círculo
+                        float cx = (x + x1) * 0.5f, cz = (z + z1) * 0.5f;
+                        if (cx * cx + cz * cz > (Rr + 0.4f) * (Rr + 0.4f)) continue;
+                        bool flute = ((Mathf.RoundToInt(Mathf.Atan2(cz, cx) * Mathf.Rad2Deg / 11.25f)) % 2 == 1) && cx * cx + cz * cz > (Rr - cell) * (Rr - cell);   // acanaladura
+                        for (int qx = -1; qx <= 1; qx += 2)
+                            for (int qz = -1; qz <= 1; qz += 2)
+                                CubeTree.Block(tr, "Tronco", new Vector3(qx * cx, y + layer * 0.5f, qz * cz), new Vector3((x1 - x) * (flute ? 0.8f : 1.02f), layer * 1.02f, (z1 - z) * (flute ? 0.8f : 1.02f)), Quaternion.identity, bark, true);
+                    }
+                continue;
+            }
             for (int s = 0; s < staves; s++)
             {
                 float a = (s + (Mathf.RoundToInt(y / layer) % 2) * 0.5f) * 360f / staves;
                 float rr = Rr * (s % 2 == 0 ? 1f : 0.9f) - thick * 0.5f;   // acanaladura
                 Vector3 c = Quaternion.Euler(0f, a, 0f) * Vector3.forward * rr;
                 float tw = 2f * Mathf.PI * Rr / staves * 1.15f;
-                // (2026-11-04) Los PASILLOS: fuera toda duela que pise el pasillo con cualquiera de sus esquinas (antes se miraba su centro, y las
-                // duelas anchas de los lados tapaban el túnel: «Tronco en −6 m», prueba 91).
-                if (y < TunnelHeight + 1f && InCorridor(c, a, tw, thick, hw + 0.3f)) continue;
                 CubeTree.Block(tr, "Tronco", c + Vector3.up * (y + layer * 0.5f), new Vector3(tw, layer * 1.02f, thick), Quaternion.Euler(0f, a, 0f), bark, true);
             }
             float core = Mathf.Max(0f, Rr - thick * 0.9f);
-            if (core < 0.5f) continue;
-            if (y >= TunnelHeight) CubeTree.Block(tr, "Tronco", Vector3.up * (y + layer * 0.5f), new Vector3(core * 1.42f, layer * 1.02f, core * 1.42f), Quaternion.Euler(0f, 22.5f, 0f), bark, true);
-            else
-                for (int qx = -1; qx <= 1; qx += 2)
-                    for (int qz = -1; qz <= 1; qz += 2)
-                    {
-                        float a0 = hw, a1 = core * 0.75f;
-                        if (a1 <= a0 + 0.3f) continue;
-                        float m = (a0 + a1) * 0.5f, sz = a1 - a0;
-                        CubeTree.Block(tr, "Tronco", new Vector3(qx * m, y + layer * 0.5f, qz * m), new Vector3(sz, layer * 1.02f, sz), Quaternion.identity, bark, true);
-                    }
+            if (core >= 0.5f) CubeTree.Block(tr, "Tronco", Vector3.up * (y + layer * 0.5f), new Vector3(core * 1.42f, layer * 1.02f, core * 1.42f), Quaternion.Euler(0f, 22.5f, 0f), bark, true);   // (el techo de los pasadizos, el primero)
         }
         // ── CONTRAFUERTES (raíces tabulares): 12 aletas que bajan al hielo, entre las bocas de los túneles ──
         float R0 = BaseDiameter * 0.5f;
@@ -165,7 +172,8 @@ public static class GuardianTree
             }
         }
         // PANALES (2026-11-04: «0 panales», prueba 91): en las puntas de las ramas bajas de la copa, repartidos (uno de cada dos), hasta 8.
-        for (int i = 0; i < lowPerches.Count && nests < 8; i += 2) { CubeTree.Honeycomb(tr, lowPerches[i] + new Vector3(0.5f, -0.05f, 0.2f), nest, 977 + i * 13); nests++; }
+        GuardianHives gh = root.AddComponent<GuardianHives>();
+        for (int i = 0; i < lowPerches.Count && nests < 8; i += 2) { Vector3 at = lowPerches[i] + new Vector3(0.5f, -0.05f, 0.2f); CubeTree.Honeycomb(tr, at, nest, 977 + i * 13); gh.spots.Add(at); nests++; }
         // Escarcha también en los hombros de la base (donde el ancho se recoge), como la nieve en los contrafuertes.
         for (int k = 0; k < 8; k++)
         {
@@ -178,5 +186,21 @@ public static class GuardianTree
         Debug.Log($"[Guardia] Árbol guardián (injerto): base de {BaseDiameter:0.0} m (el castaño de los cien caballos, {RecordGirth:0.0} m de perímetro), fuste y copa de secuoya hasta {height:0} m " +
                   $"(récord histórico {RecordHeight:0.0} m; vivo, Hyperion, {LivingRecordHeight:0.00} m), dos pasadizos de {TunnelWidth:0} × {TunnelHeight:0} m y {nests} panales.");
         return root;
+    }
+}
+
+/// <summary>Los PANALES del árbol guardián (sitios locales). Al empezar el juego, si no están (prueba 91, 2026-11-04: «0 colmenas en 0
+/// nidos» aunque el constructor puso 8: algo los quita entre el Blockout y el juego, aún sin encontrar), los vuelve a poner y lo avisa.</summary>
+public class GuardianHives : MonoBehaviour
+{
+    public System.Collections.Generic.List<Vector3> spots = new System.Collections.Generic.List<Vector3>();
+    static Material _nest;
+
+    void Awake()
+    {
+        if (GetComponentsInChildren<Hive>(true).Length > 0 || spots.Count == 0) return;
+        Material nest = CubeTree.Mat(ref _nest, new Color(0.90f, 0.78f, 0.35f));
+        for (int i = 0; i < spots.Count; i++) CubeTree.Honeycomb(transform, spots[i], nest, 977 + i * 26);
+        Debug.LogWarning($"[Guardia] Faltaban los panales del árbol guardián al empezar: se vuelven a poner {spots.Count} (algo los quita después del Blockout).");
     }
 }
