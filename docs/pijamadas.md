@@ -45,7 +45,7 @@ La litera está delante de la cama (casa de 9 × 7 m), en x −3,05…−2,15 y 
 La pijamada es una actividad **por turnos** (regla J16): caben 7 por casa, no todos los miembros. Para todos a la vez está el ring de
 almohadas.
 
-## Prueba: `SleepoverTest` (grupo 91, SampleScene)
+## Prueba: `SleepoverTest` (grupo 92, SampleScene)
 
 1. Cada casa duerme a 7. La litera se sube por su poste, no hay escaleras, y queda a ≥ 2 m de la cama y de la alfombra.
 2. El horario:

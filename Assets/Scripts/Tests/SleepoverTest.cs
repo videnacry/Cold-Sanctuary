@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// PRUEBA DE LAS PIJAMADAS (grupo 91; docs/pijamadas.md; Berón 2026-11-04). En SampleScene:
+/// PRUEBA DE LAS PIJAMADAS (grupo 92; docs/pijamadas.md; Berón 2026-11-04). En SampleScene:
 ///  1. LAS CASAS: cada casa del árbol duerme a 7 (cama de 4 y litera de 3); la litera no tiene escalera (se trepa por su poste) y
 ///     queda a ≥ 2 m de la cama y de la alfombra-esterilla.
 ///  2. EL HORARIO: la pijamada del viernes a las 21 h va con su anfitrión (y su pareja) y no pasa de las plazas de la casa; el
@@ -15,7 +15,7 @@ using UnityEngine;
 /// </summary>
 public class SleepoverTest : MonoBehaviour, ITestUnit
 {
-    public int Group => 91;
+    public int Group => 92;
     public bool ParallelSafe => false;
     public float speed = 6f;
 
