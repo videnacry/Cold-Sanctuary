@@ -107,7 +107,17 @@ public class AreaInitiator : MonoBehaviour
     {
         string area = AreaOf(k);
         if (WorkdayDirector.Instance != null)
-            foreach (GameObject g in WorkdayDirector.Instance.InArea(area)) if (Usable(g)) return g;
+        {
+            // (2026-11-04, GardenInitiationTest) Primero quien está DE VERDAD en el área; luego quien no anda por los techos con la
+            // ronda de frutales (una misión del Huerto, pero lejos: Warren Buffett, en el techo de Servicios a 235 m, no llegaba al
+            // recién llegado y la iniciación acababa en teletransporte de emergencia); y si no hay otro, cualquiera de turno.
+            var on = new List<GameObject>();
+            foreach (GameObject g in WorkdayDirector.Instance.InArea(area)) if (Usable(g)) on.Add(g);
+            bool Round(GameObject g) => g.TryGetComponent(out FruitGardener fg) && fg.enabled;
+            GameObject pick = on.Find(g => !Round(g) && WorkdayDirector.InWorkspace(null, area, g.transform.position))
+                           ?? on.Find(g => !Round(g)) ?? (on.Count > 0 ? on[0] : null);
+            if (pick != null) return pick;
+        }
         if (k == Kind.Kitchen)
         {
             KitchenBoss kb = FindAnyObjectByType<KitchenBoss>();

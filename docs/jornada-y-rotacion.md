@@ -132,3 +132,5 @@ La misión de la **Enfermería** es **iniciar a un turista**: recibirlo, anális
 ## Horario libre (2026-11-03)
 
 Las horas libres (16–19 y 20–22 h) tienen ahora un **horario semanal** de ocio y cuidado con la misma lógica de rotación: docs/horario-libre.md (incluye un resumen de cómo reparte la jornada).
+
+**Quién inicia en un área** (`AreaInitiator.PickWorker`, 2026-11-04): de los que tienen ahora misión en el área, primero quien está físicamente en ella; luego quien no está en la ronda de frutales de los techos (esa misión es del Huerto, pero se hace lejos); y si no hay otro, cualquiera de turno. Antes podía tocarle a quien estaba en el techo de Servicios, a 235 m, que no llegaba (GardenInitiationTest).
