@@ -24,6 +24,8 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         "tex_limpieza", "mec_limpieza", "con_almacen", "cri_tomas", "cri_recintos", "cri_vinculo", "gym_limpieza", "gym_mantener",
         "pla_operar", "pla_isotopos", "pla_ronda", "pla_ciclotron", "fis_experimentos", "qui_sintesis", "qui_residuos",
         "bio_cultivo", "bio_pcr", "nuc_turno", "gua_carnivoros",
+        // (2026-11-04) los pisos nuevos: Informática (el clúster de IA) y el Aula (docs/piso-informatica.md, docs/piso-aula.md)
+        "ifo_sysadmin", "ifo_refrigeracion", "ifo_energia", "aul_clase", "aul_estudio",
     };
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -40,8 +42,8 @@ public class AreaFunctionRegistryTest : MonoBehaviour, ITestUnit
         string order = "";
         for (int i = 0; i < Mathf.Max(c.Length, Ids.Length); i++)
             if (i >= c.Length || i >= Ids.Length || c[i].id != Ids[i]) { order = $"posición {i + 1}: «{(i < c.Length ? c[i].id : "—")}» en vez de «{(i < Ids.Length ? Ids[i] : "—")}»"; break; }
-        TestProbe.Check("mismas 50 misiones y en el mismo orden", order.Length == 0 && c.Length == Ids.Length, order.Length > 0 ? order : $"{c.Length}");
-        TestProbe.Near("mismas horas en total (60 h)", c.Sum(m => m.hours), 60f, 0.01f);
+        TestProbe.Check("mismas 55 misiones (50 de antes + 5 de Informática y el Aula) y en el mismo orden", order.Length == 0 && c.Length == Ids.Length, order.Length > 0 ? order : $"{c.Length}");
+        TestProbe.Near("mismas horas en total (64,5 h: 60 de antes + 4,5 de los pisos nuevos)", c.Sum(m => m.hours), 64.5f, 0.01f);
         TestProbe.Check("mismas obligatorias (18)", c.Count(m => m.mandatory) == 18, $"{c.Count(m => m.mandatory)}");
         TestProbe.Check("dirigen: iniciación, quirófano, guiar y demostrar la clase", c.Where(m => m.lead).Select(m => m.id).OrderBy(x => x).SequenceEqual(new[] { "enf_iniciacion", "hos_quirofano", "yog_demo", "yog_guia" }));
         TestProbe.Check("la clase de yoga es un grupo de 4", c.Count(m => m.group == "clase_yoga") == 4);

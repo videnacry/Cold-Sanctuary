@@ -3472,6 +3472,8 @@ public static partial class SampleSceneBuilder
         Transform cardio = new GameObject("Cardio y zona libre").transform; cardio.SetParent(areasGroup.transform, false);   // un piso del gimnasio (no un área aparte)
         Transform ashtanga = Child(yoga.transform, "Planta_ashtanga");   // el piso de Ashtanga: planta propia de la Sala de Yoga (sus misiones y su jornada son las del área)
         Floor(gym.transform); Floor(cardio); Floor(calis.transform); Floor(yoga.transform); Floor(ashtanga); Floor(ballet.transform); Floor(dojo.transform);
+        // (2026-11-04) EL AULA (docs/piso-aula.md): el piso libre del Entrenamiento, encima del Dojo: aula de clases y sala de estudio para todos.
+        SanctuaryArea aula = BuildClassroom(areasGroup.transform); areas.Add(aula);
         //  · PRODUCCIÓN (más baja, junto al Árbol de los Campos): Construcción · Mecánica · Estudio Textil. La maquinaria
         //    pesada, abajo.
         //    Un ÁRBOL: 2 niveles desde 96 m (por encima de Servicios y Ciencias); sus 3 pisos en orden y uno libre; 4 puntas con frutales.
@@ -3514,6 +3516,8 @@ public static partial class SampleSceneBuilder
         BuildPhysicsHall(plant.transform);
         SanctuaryArea chem = BuildChemistry(areasGroup.transform); areas.Add(chem);
         SanctuaryArea bio = BuildBiology(areasGroup.transform); areas.Add(bio);
+        // (2026-11-04) INFORMÁTICA (docs/piso-informatica.md): el piso libre de Ciencias, encima de Biología: el clúster de IA local.
+        SanctuaryArea info = BuildInformatics(areasGroup.transform); areas.Add(info);
         // CENTRAL NUCLEAR de producción, APARTE: un reactor de producción necesita su propio sitio de exclusión (el límite
         // pintado alrededor) y no comparte columnas con nadie.
         SanctuaryArea nuc = BuildNuclearPlant(areasGroup.transform); areas.Add(nuc);
@@ -3543,6 +3547,10 @@ public static partial class SampleSceneBuilder
         // para buscar un borde libre. Y un campo en el hub.
         for (int r = 0; r < 3; r++) SolarArray.Build(areasGroup.transform, $"CampoSolar_{r + 1}", new Vector3(26f, 0f, -26f - r * 4f), 0f, 8);
 
+        // (2026-11-04) ALERTA DE PISO NUEVO (manual §11): cada piso, contra los microcosmos «pendiente de piso representativo».
+        MicroFloors.AlertFloors(areas.ConvertAll(x => (x.name, x.displayName)));
+        // (2026-11-04) REGLA DE CAPACIDAD (manual C8): puestos por actividad; entrenamiento y estudio, para todos los miembros.
+        AreaCapacity.LogScene();
         return areas.ToArray();
     }
 
@@ -4116,6 +4124,9 @@ public static partial class SampleSceneBuilder
         WireMeditationArea(parent, "Chemistry_Area", "Química", new Color(0.78f, 0.85f, 0.9f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "Biology_Area", "Biología", new Color(0.78f, 0.9f, 0.78f), MissionKind.Channel, null, virtualOnly: true);
         WireMeditationArea(parent, "NuclearPower_Area", "Central Nuclear", new Color(0.75f, 0.78f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
+        // (2026-11-04) Los pisos nuevos: Informática (Bill Gates en Albuquerque) y el Aula (MacKenzie Scott en Prairie View).
+        WireMeditationArea(parent, "Informatics_Area", "Informática", new Color(0.55f, 0.65f, 0.8f), MissionKind.Channel, null, virtualOnly: true);
+        WireMeditationArea(parent, "Classroom_Area", "Aula", new Color(0.85f, 0.8f, 0.65f), MissionKind.Channel, null, virtualOnly: true);
 
         // Segunda vía de entrada: el hechizo de loto (arranca bloqueado; se activa al aprenderlo).
         GameObject player = GameObject.Find("Player");

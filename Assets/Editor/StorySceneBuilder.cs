@@ -44,9 +44,9 @@ public static partial class StorySceneBuilder
         ("YogaRoom_Area", "Velliangiri", "Microcosmos_Sadhguru", new Color(0.8f, 0.7f, 0.55f), new System.Func<Transform, int>(Sadhguru)),
         ("VehicleWorkshop_Area", "Hawthorne", "Microcosmos_ElonMusk", new Color(0.7f, 0.72f, 0.78f), new System.Func<Transform, int>(ElonMusk)),
         ("MartialArts_Area", "Aldea de la montaña", "Microcosmos_Goku", new Color(0.85f, 0.6f, 0.35f), new System.Func<Transform, int>(Goku)),
-        ("VehicleWorkshop_Area", "Albuquerque", "Microcosmos_BillGates", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(BillGates)),
+        ("Informatics_Area", "Albuquerque", "Microcosmos_BillGates", new Color(0.55f, 0.62f, 0.75f), new System.Func<Transform, int>(BillGates)),
         ("TextileStudio_Area", "Omaha", "Microcosmos_WarrenBuffett", new Color(0.7f, 0.6f, 0.5f), new System.Func<Transform, int>(WarrenBuffett)),
-        ("Chemistry_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
+        ("Classroom_Area", "Prairie View", "Microcosmos_MacKenzieScott", new Color(0.62f, 0.72f, 0.85f), new System.Func<Transform, int>(MacKenzieScott)),
         ("Garden_Area", "Uagadugú", "Microcosmos_IbrahimTraore", new Color(0.8f, 0.55f, 0.35f), new System.Func<Transform, int>(IbrahimTraore)),
     };
 

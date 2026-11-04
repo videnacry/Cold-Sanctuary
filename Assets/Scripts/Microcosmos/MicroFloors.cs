@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using UnityEngine;
 
 /// <summary>
@@ -61,9 +63,10 @@ public static class MicroFloors
         M("Velliangiri", "YogaRoom_Area", "Sadhguru y el Dhyanalinga: meditar en silencio, la Sala de Yoga"),
         M("Hawthorne", "VehicleWorkshop_Area", "Musk y el Falcon 1: motores y montaje, el taller de Mecánica", "Fábrica de cohetes y control de misión"),
         M("Aldea de la montaña", "MartialArts_Area", "Goku (homenaje, ficción): entrenar en la aldea de la montaña, el Dojo"),
-        M("Albuquerque", "VehicleWorkshop_Area", "Gates y Allen: el Altair y su BASIC (montar y programar), el taller de Mecánica", "Sala de informática (ordenadores y programación)"),
+        // (2026-11-04) Re-apuntados por la ALERTA DE PISO NUEVO (AlertFloors): Gates a Informática y Scott al Aula (docs/piso-informatica.md, docs/piso-aula.md).
+        M("Albuquerque", "Informatics_Area", "Gates y Allen: el Altair y su BASIC; el piso de Informática (ordenadores y programación)"),
         M("Omaha", "TextileStudio_Area", "Buffett y la señora B: la tienda que empezó vendiendo alfombras y telas, el Estudio Textil", "Mercado y oficina de comercio (economía)"),
-        M("Prairie View", "Chemistry_Area", "Scott y Prairie View A&M: aulas de ciencias de una universidad, el laboratorio de Química", "Aula y biblioteca universitaria"),
+        M("Prairie View", "Classroom_Area", "Scott y Prairie View A&M: la universidad, su biblioteca y sus estudiantes; el Aula"),
         M("Uagadugú", "Garden_Area", "los productores y sus huertos: labrar y sembrar antes de las lluvias, el Huerto"),
     };
 
@@ -72,6 +75,66 @@ public static class MicroFloors
     {
         foreach (Match m in Table) if (m.display == display) return m;
         return null;
+    }
+
+    // ══ ALERTA DE PISO NUEVO (Berón 2026-11-04; manual §11, regla «alerta de piso nuevo») ═════════════════════════════════════════
+    // Cada vez que se crea un piso, se mira si encaja con algún microcosmos «pendiente de piso representativo»: así no se queda
+    // ninguno montado en un piso que no lo representa cuando ya existe el suyo.
+
+    /// <summary>Palabras que describen cada piso del santuario (además de su nombre), para buscar sus pendientes.</summary>
+    public static readonly Dictionary<string, string[]> FloorKeywords = new Dictionary<string, string[]>
+    {
+        ["Informatics_Area"] = new[] { "informática", "ordenador", "programación", "computación", "servidor", "cálculo" },
+        ["Classroom_Area"] = new[] { "aula", "biblioteca", "universidad", "universitaria", "estudio", "clase", "archivo" },
+    };
+
+    /// <summary>Minúsculas y sin tildes (para comparar «Informática» con «informatica»).</summary>
+    public static string Norm(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        var sb = new StringBuilder();
+        foreach (char c in s.ToLowerInvariant().Normalize(NormalizationForm.FormD))
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
+        return sb.ToString();
+    }
+
+    static readonly HashSet<string> Stop = new HashSet<string> { "planta", "sala", "piso", "area", "del", "los", "las" };
+
+    /// <summary>Los microcosmos PENDIENTES (no representados) cuyo piso que falta encaja con un piso de nombre
+    /// <paramref name="display"/> y palabras <paramref name="keywords"/> (las de <see cref="FloorKeywords"/> si es null).</summary>
+    public static List<Match> PendingFor(string platform, string display, IEnumerable<string> keywords = null)
+    {
+        var words = new List<string>();
+        if (keywords == null && platform != null && FloorKeywords.TryGetValue(platform, out string[] kw)) keywords = kw;
+        if (keywords != null) foreach (string k in keywords) { string n = Norm(k); if (n.Length >= 4) words.Add(n); }
+        foreach (string w in Norm(display).Split(' ', '(', ')', ',', '·')) if (w.Length >= 5 && !Stop.Contains(w)) words.Add(w);
+        var hits = new List<Match>();
+        foreach (Match m in Table)
+        {
+            if (m.representative || m.platform == platform) continue;
+            string p = Norm(m.pending);
+            foreach (string w in words) if (p.Contains(w)) { hits.Add(m); break; }
+        }
+        return hits;
+    }
+
+    /// <summary>LA ALERTA: para cada piso (<paramref name="floors"/>: GameObject del área y su nombre), dice en la consola si es un
+    /// piso NUEVO (ningún microcosmos lo usa) y qué microcosmos pendientes encajan con él. Devuelve cuántos encajes encontró.</summary>
+    public static int AlertFloors(IEnumerable<(string platform, string display)> floors)
+    {
+        int n = 0;
+        foreach (var (platform, display) in floors)
+        {
+            bool used = false;
+            foreach (Match m in Table) if (m.platform == platform) { used = true; break; }
+            var hits = PendingFor(platform, display);
+            n += hits.Count;
+            if (hits.Count == 0 && used) continue;
+            string list = hits.Count == 0 ? "ninguno encaja" : string.Join(" · ", hits.ConvertAll(h => $"{h.display} (hoy sobre {h.platform}; falta «{h.pending}»)"));
+            Debug.LogWarning($"[Pisos] ALERTA de piso {(used ? "" : "NUEVO ")}«{display}» ({platform}): pendientes de piso representativo que encajan: {list}." +
+                             (hits.Count > 0 ? " Re-apúntalos en MicroFloors.Table si este piso los representa (manual §11)." : ""));
+        }
+        return n;
     }
 
     /// <summary>LOS PISOS QUE FALTAN POR CREAR en el santuario: cada uno con los microcosmos que lo esperan.</summary>
