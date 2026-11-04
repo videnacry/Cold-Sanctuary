@@ -82,6 +82,7 @@ _Total: 720 tipos._
 - **AnimalModelImporter** (class) — `Assets/Editor/AnimalModelImporter.cs` — Auto-configures FBX import settings for animal models dropped into Assets/Animals/*/Models/.
 - **AnimalPrefabGenerator** (class) — `Assets/Editor/AnimalPrefabGenerator.cs` — Genera un GameObject/prefab por especie a partir del FBX ya importado en Assets/Animals/[Especie]/Models/ y del script de comportamiento existente (WolfBehavior, FoxBehavior, etc).
 - **AreaMicrocosmos** (class) — `Assets/Editor/AreaMicrocosmos.cs` — EL MICROCOSMOS DE CADA ÁREA (docs/microcosmos-areas.md):
+- **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Famosos.cs` — LOS PUEBLOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04): `FamousTown`, `FamousPlans` y un pueblo por figura (Velliangiri, Hawthorne, Aldea de la montaña, Albuquerque, Omaha, Prairie View, Uagadugú).
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.BruceLee.cs` — EL PUEBLO DE BRUCE LEE (docs/microcosmos-bruce-lee.md §5, docs/microcosmos-reglas-edificacion.md):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Eras2.cs` — LAS ERAS QUE FALTABAN (docs/microcosmos-civilizaciones.md §8–9):
 - **CivicBuilder** (class) — `Assets/Editor/CivicBuilder.Homes.cs` — REGLA 6 DE EDIFICACIÓN:
@@ -95,6 +96,7 @@ _Total: 720 tipos._
 - **HeadlessVerify** (class) — `Assets/Editor/HeadlessVerify.cs` — Verificación por LÍNEA DE COMANDOS:
 - **InicioSceneBuilder** (class) — `Assets/Editor/InicioSceneBuilder.cs` — ESCENA INICIO (Berón 2026-10-30:
 - **InsectGallerySceneBuilder** (class) — `Assets/Editor/InsectGallerySceneBuilder.cs` — GALERÍA DE INSECTOS-HUMANOS (Berón, 2026-10-23/24:
+- **MicroBiome** (class) — `Assets/Editor/MicroBiome.Famosos.cs` — flora y fauna de los pueblos de los famosos (`FamousBiome`, docs/microcosmos-famosos.md).
 - **MicroBiome** (class) — `Assets/Editor/MicroBiome.cs` — FLORA Y FAUNA NATIVAS de cada microcosmos (Berón, 2026-10-23:
 - **MicrocosmosAreaSceneBuilder** (class) — `Assets/Editor/MicrocosmosAreaSceneBuilder.cs` — ESCENAS DE MICROCOSMOS POR ÁREA (Sala de Yoga, Huerto, Enfermería, Veterinaria, Textil, Mecánica).
 - **MicrocosmosSceneBuilder** (class) — `Assets/Editor/MicrocosmosSceneBuilder.cs` — Genera la ESCENA propia del MICROCOSMOS **Scene1 (Ambrosio / el alba)** — el nivel introductorio de la cueva y el pulgón (docs/microcosmos-level1.md, microcosmos-insects.md §13).
@@ -134,6 +136,7 @@ _Total: 720 tipos._
 - **ScaleAudit** (class) — `Assets/Editor/ScaleAudit.cs` — AUDITORÍA DE ESCALA (menú):
 - **SceneDiagnostics** (class) — `Assets/Editor/SceneDiagnostics.cs` — Utilidades rápidas de medición para diagnosticar problemas de escala en la escena.
 - **ScriptProfiler** (class) — `Assets/Editor/ScriptProfiler.cs` — PERFIL DE SCRIPTS (menú Tools/Cold Sanctuary/Perfil de scripts, en Play):
+- **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Famosos.cs` — MICROCOSMOS DE LOS FAMOSOS (docs/microcosmos-famosos.md; Berón 2026-11-04): Sadhguru, Elon Musk, Goku (homenaje), Bill Gates, Warren Buffett, MacKenzie Scott e Ibrahim Traoré; menú por escena.
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.Scientists.cs` — MICROCOSMOS DE CIENTÍFICOS E HISTÓRICOS (docs/microcosmos-cientificos.md; Berón 2026-11-01).
 - **StorySceneBuilder** (class) — `Assets/Editor/StorySceneBuilder.cs` — MICROCOSMOS DE HISTORIAS (docs/microcosmos-historias.md):
 - **VirtualMissionSceneBuilder** (class) — `Assets/Editor/VirtualMissionSceneBuilder.cs` — ESCENAS DE VIRTUALIZACIÓN, UNA POR MISIÓN (VirtualMissions).

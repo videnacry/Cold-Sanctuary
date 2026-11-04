@@ -204,7 +204,7 @@ en el doc de su tema; aquí no se repite.
 | J3 | **Horario libre semanal** con la misma lógica de reparto: ocio y cuidado en las horas libres, solo en edificios de ocio, recuperación o descanso. | Que el tiempo libre también se reparta por igual. | `HorarioLibreTest` (grupo 65) | [horario-libre.md](horario-libre.md) |
 | J4 | **Nadie queda encerrado**: quien deja su puesto en la jornada es devuelto por la Magnate; su puesto es el espacio que pide la tarea. | Disciplina sin muros ni guardias que arrastran. | 28 y 50 | [jornada-y-rotacion.md](jornada-y-rotacion.md) |
 | J5 | **Las iniciaciones las da el trabajador de turno que está en el área**; la Magnate solo acompaña. Se hacen «en orquesta»: el trabajador se acerca a ≤ 2 m y cada uno anda solo a su sitio, sin arrastrar ni teletransportar. | Que las enseñe quien conoce el área y que se vean naturales. | `KitchenInitiationTest` (41), `YogaInitiationTest` (42), `GardenInitiationTest` (43) | [reglas-plataformas.md](reglas-plataformas.md) #10, [jornada-y-rotacion.md](jornada-y-rotacion.md) |
-| J6 | **Las figuras reales se tratan con respeto**, por su trabajo público, sin caricatura ni juicio político. | Son personas reales. | **solo en docs** | [personajes-mesocosmos.md](personajes-mesocosmos.md) |
+| J6 | **Las figuras reales se tratan con respeto**, por su trabajo público, sin caricatura ni juicio político. Los famosos viven en su **microcosmos de historia** (no en el personal del santuario): una escena de su vida pública, documentada e inspiradora, con lo discutido nombrado en una línea y sin juicio; un líder político, solo en un acto civil y sin nada militar; un personaje de ficción, en un **homenaje original** que no copia escenas, diálogos, lugares ni técnicas de la obra (2026-11-04). | Son personas reales; la ficción tiene autor. | `FamososStoryTest` (grupo 69: la ficha de Goku dice «homenaje»; Uagadugú sin edificios militares); el resto, **solo en docs** | [personajes-mesocosmos.md](personajes-mesocosmos.md), [microcosmos-famosos.md](microcosmos-famosos.md) |
 | J7 | **Humanos e insectos-humanos conversan** con el sistema del anima, con una escena de prueba propia. **PENDIENTE DE IMPLEMENTAR.** | Que la vida social se vea. | **solo en docs** | memoria 2026-11-04 |
 
 ## 10. Pruebas y flujo de trabajo
@@ -239,16 +239,16 @@ cambia esta. «Pendiente» = el piso no representa la historia; se monta en él 
 |---|---|---|---|
 | **Hospital**, planta de urgencias (`Infirmary_Area`) | Servicios | Ambrosio, nivel 1 (`Microcosmos_Scene1_Ambrosio`) · Hospital (`Microcosmos_Hospital`) · Escútari, Nightingale (`Microcosmos_Nightingale`) · Kapilavastu, Buda (`Microcosmos_Buda`) · Irena Sendler (`Microcosmos_IrenaSendler`) | — |
 | **Cocina** del restaurante (`Kitchen_Area`) | Servicios | Cocina (`Microcosmos_Cocina`) · Mesopotamia, Uruk (`MobWorld_Mesopotamia`) · Le Chambon-sur-Lignon (`Microcosmos_LeChambon`) · Angostura, Bolívar (`Microcosmos_Bolivar`) | Angostura → Sala de asambleas (parlamento) |
-| **Sala de Yoga** (`YogaRoom_Area`) | Entrenamiento | Sakshi, el río, y Sala de Yoga (`Microcosmos_Scene0_SakshiRio`) · Patanjali (`Microcosmos_Patanjali`) · Sils Maria, Nietzsche (`Microcosmos_Nietzsche`) | Sils Maria → Sendero de montaña y biblioteca de filosofía |
+| **Sala de Yoga** (`YogaRoom_Area`) | Entrenamiento | Sakshi, el río, y Sala de Yoga (`Microcosmos_Scene0_SakshiRio`) · Patanjali (`Microcosmos_Patanjali`) · Sils Maria, Nietzsche (`Microcosmos_Nietzsche`) · Velliangiri, Sadhguru (`Microcosmos_Sadhguru`) | Sils Maria → Sendero de montaña y biblioteca de filosofía |
 | **Gimnasio** (`Gym_Area`) | Entrenamiento | Tregua 1914 (`Microcosmos_Tregua1914`) · Crotona, Pitágoras (`Microcosmos_Pitagoras`) | Tregua → Campo de deportes de equipo; Crotona → Aula de matemáticas y música |
-| **Dojo** (`MartialArts_Area`, en obras: su «Acabado») | Entrenamiento | Bruce Lee (`Microcosmos_BruceLee`) | — |
+| **Dojo** (`MartialArts_Area`, en obras: su «Acabado») | Entrenamiento | Bruce Lee (`Microcosmos_BruceLee`) · Aldea de la montaña, Goku (`Microcosmos_Goku`, homenaje de ficción) | — |
 | **Planta Atómica** (`AtomicPlant_Area`) | Ciencias | Planta Atómica (`Microcosmos_PlantaAtomica`) · Woolsthorpe, Newton (`Microcosmos_Newton`) · Berna, Einstein (`Microcosmos_Einstein`) · Alejandría, Eratóstenes (`Microcosmos_Eratostenes`) | Alejandría → Observatorio y biblioteca |
-| **Química** (`Chemistry_Area`) | Ciencias | París 1898, Curie (`Microcosmos_Curie`) · Pasadena, Patterson (`Microcosmos_Patterson`) | — |
+| **Química** (`Chemistry_Area`) | Ciencias | París 1898, Curie (`Microcosmos_Curie`) · Pasadena, Patterson (`Microcosmos_Patterson`) · Prairie View, MacKenzie Scott (`Microcosmos_MacKenzieScott`) | Prairie View → Aula y biblioteca universitaria |
 | **Biología** (`Biology_Area`) | Ciencias | Berkeley, Jenner (`Microcosmos_Jenner`) | — |
 | **Construcción** (`Construction_Area`) | Producción | Egina (`Microcosmos_Egina`) · Bagdad, al-Juarismi (`Microcosmos_AlJuarismi`) · Colorado Springs, Tesla (`Microcosmos_Tesla`) | Bagdad → Casa de la Sabiduría; Colorado Springs → Taller de electricidad |
-| **Mecánica** (`VehicleWorkshop_Area`) | Producción | Mecánica (`Microcosmos_Mecanica`) · Dayton, Wright (`Microcosmos_Wright`) | — |
-| **Estudio Textil** (`TextileStudio_Area`) | Producción | Estudio Textil (`Microcosmos_Textil`) | — |
-| **Huerto** (`Garden_Area`, piso 5 del Árbol de los Campos) | Árbol de los Campos | Huerto (`Microcosmos_Huerto`) · Menfis, Heródoto (`Microcosmos_Herodoto`) · Palenque, Pakal (`Microcosmos_Pakal`) | Menfis → Archivo de historia y geografía; Palenque → Templo de los antepasados |
+| **Mecánica** (`VehicleWorkshop_Area`) | Producción | Mecánica (`Microcosmos_Mecanica`) · Dayton, Wright (`Microcosmos_Wright`) · Hawthorne, Elon Musk (`Microcosmos_ElonMusk`) · Albuquerque, Bill Gates (`Microcosmos_BillGates`) | Hawthorne → Fábrica de cohetes y control de misión; Albuquerque → Sala de informática |
+| **Estudio Textil** (`TextileStudio_Area`) | Producción | Estudio Textil (`Microcosmos_Textil`) · Omaha, Warren Buffett (`Microcosmos_WarrenBuffett`) | Omaha → Mercado y oficina de comercio |
+| **Huerto** (`Garden_Area`, piso 5 del Árbol de los Campos) | Árbol de los Campos | Huerto (`Microcosmos_Huerto`) · Menfis, Heródoto (`Microcosmos_Herodoto`) · Palenque, Pakal (`Microcosmos_Pakal`) · Uagadugú, Ibrahim Traoré (`Microcosmos_IbrahimTraore`) | Menfis → Archivo de historia y geografía; Palenque → Templo de los antepasados |
 | **Central Nuclear** (`NuclearPower_Area`) | aparte | Chernóbil (`Microcosmos_Chernobil`) | — |
 
 Hoy **no tienen microcosmos** (cambiarlos no obliga a revisar ninguno): las otras plantas del hospital (hospitalización y
@@ -265,7 +265,7 @@ el Dojo…), tocan **todos** los pisos los cambios en `SampleSceneBuilder.Towers
 
 1. Buscar el piso en la tabla de arriba (o en `MicroFloors.Table` por su `platform`).
 2. Reconstruir cada microcosmos que depende de él, **de uno en uno** (W5).
-3. Pasar `MicrocosmosFloorTest` (43) y, si los hay, la prueba de su historia (`BruceLeeStoryTest` 60, `PakalStoryTest` 66,
+3. Pasar `MicrocosmosFloorTest` (43) y, si los hay, la prueba de su historia (`BruceLeeStoryTest` 60, `PakalStoryTest` 66, `FamososStoryTest` 69,
    `KitchenOriginStoryTest` 44) y las de los pueblos (`CivilizedErasTest` 62, `MicroBuildRulesTest` 63).
 4. Mirar que las plazas reservadas (S10) siguen cabiendo y que la historia cabe dentro de los muros (M5).
 5. Si el piso tiene versión micro dedicada (el hospital, H8, cuando exista), añadirle lo que cambió en el meso.
@@ -295,6 +295,6 @@ realista), J6 (respeto a las figuras reales) y las de proceso W2, W3, W5, W6, W7
 [hospital.md](hospital.md) · [hospital-plan.md](hospital-plan.md) · [vet-hospital-plan.md](vet-hospital-plan.md) ·
 [submarinos-medicos.md](submarinos-medicos.md) · [medidas-muebles.md](medidas-muebles.md) · [microcosmos-areas.md](microcosmos-areas.md) ·
 [microcosmos-reglas-edificacion.md](microcosmos-reglas-edificacion.md) · [microcosmos-pueblos-mapas.md](microcosmos-pueblos-mapas.md) ·
-[microcosmos-actividades.md](microcosmos-actividades.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
+[microcosmos-actividades.md](microcosmos-actividades.md) · [microcosmos-famosos.md](microcosmos-famosos.md) · [luz-microcosmos.md](luz-microcosmos.md) ·
 [grupos-de-animales.md](grupos-de-animales.md) · [jornada-y-rotacion.md](jornada-y-rotacion.md) · [horario-libre.md](horario-libre.md) ·
 [personajes-mesocosmos.md](personajes-mesocosmos.md) · [conventions.md](conventions.md) · [checklist.md](checklist.md)
