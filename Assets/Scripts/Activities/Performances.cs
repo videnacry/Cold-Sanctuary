@@ -46,7 +46,7 @@ public static class Performances
         /// <summary>Revisar algo (un monitor, una máquina, una planta): inclinarse y señalar.</summary>
         public static readonly ActivityKit.Arms Inspect = new ActivityKit.Arms(2.2f, J(B.Back, 10, 20), J(B.Neck, 15, 25), J(B.ShoulderRight, -80, -70, 0, -15), J(B.ForearmRight, -10, -10), J(B.ShoulderLeft, -10, -10));
         /// <summary>Llevar una caja o una bandeja a la altura del pecho.</summary>
-        public static readonly ActivityKit.Arms Carry = new ActivityKit.Arms(2.0f, J(B.ShoulderLeft, -25, -28), J(B.ShoulderRight, -25, -28), J(B.ForearmLeft, -80, -77), J(B.ForearmRight, -80, -77));
+        public static readonly ActivityKit.Arms Carry = new ActivityKit.Arms(2.0f, J(B.ShoulderLeft, -25, -32), J(B.ShoulderRight, -25, -32), J(B.ForearmLeft, -80, -72), J(B.ForearmRight, -80, -72));
         /// <summary>Explicar en la pizarra: el brazo derecho alto, señalando.</summary>
         public static readonly ActivityKit.Arms Teach = new ActivityKit.Arms(1.8f, J(B.ShoulderRight, -120, -100, 0, -25), J(B.ForearmRight, -15, -30), J(B.ShoulderLeft, -20, -20), J(B.ForearmLeft, -60, -60));
         /// <summary>Atender a un paciente en la cama: inclinado sobre él, las dos manos.</summary>

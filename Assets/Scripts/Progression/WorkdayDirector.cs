@@ -589,9 +589,9 @@ public class WorkdayDirector : MonoBehaviour
     }
 
     /// <summary>(Pruebas) Lo mismo que hace la jornada con quien está en su puesto: el uniforme de su tarea y la actuación.</summary>
-    public void PerformForTest(GameObject g, string area, string doing, string missionId, bool dress = true)
+    public static void PerformForTest(GameObject g, string area, string doing, string missionId, bool dress = true)
     {
-        if (dress) { _dressAt.Remove(g); Dress(g, area, doing, missionId); }
+        if (dress) UniformWearer.Want(g, Uniforms.ForWork(missionId, area, doing));   // (lo que hace Dress al llegar)
         Perform(g, area, doing, missionId);
     }
 
