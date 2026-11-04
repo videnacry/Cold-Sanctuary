@@ -532,6 +532,17 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [ ] Ballet, Dojo y Calistenia entran solos en el catálogo al terminarse sus obras (hoy el baile y las artes marciales van al Gimnasio).
 - [ ] Horario libre de Kushal como sugerencia (hoy el jugador es libre y no entra en el reparto).
 
+## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
+- [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.
+- [x] `ConversationDirector` (uno por escena con personas): humanos e insectos-humanos (`PersonLife`), personal de la jornada y `Conversable`; humano↔humano, insecto↔insecto y humano↔insecto en la misma escena; cercanía, vínculo, actividad compartida (puesto, comida, franja libre) y ganas de hablar.
+- [x] Turnos A/B de 4–6 frases, bocadillo con el tema sobre quien habla; vínculo, estrés, humores, cara y memoria.
+- [x] Temas del contexto (`ConversationTopics`): trabajo, comida, ocio, familia, linaje de insecto, era/lugar (`MicroEra`/`ConversationContext`), historia del sitio, hambre, cansancio, la mente.
+- [x] Prioridades: no mueve a nadie; una necesidad urgente, dormir, una iniciación o la historia la cortan; menos en turno. Tope de 4 a la vez, búsqueda cada 2 s.
+- [x] Escena `Prueba_Conversaciones` (mesa, dos bancos, seis personas) y prueba `ConversationTest` (grupo 88).
+- [ ] Verificación en vivo del grupo 88 y fotos de los bocadillos: la hace el tester único.
+- [ ] Ver charlas en SampleScene y en Kapilavastu (comida, franjas libres) y que el registro no se llena.
+- [ ] `ConversationContext` con su historia en los microcosmos de historia.
+
 ## Siguiente (código)
 - [ ] **Alma compartida (resto)**: `HelpRequest` ya hace "ir juntos" (MVP); falta **compartir pensamientos**
       (misma frase → instancia de mente/madre compartida) y que el sí/no lea bond/humores/inclinaciones.
