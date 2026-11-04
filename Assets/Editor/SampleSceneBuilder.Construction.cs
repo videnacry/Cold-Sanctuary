@@ -184,6 +184,7 @@ public static partial class SampleSceneBuilder
         Put("Ivelyna", "Infirmary_Area", new Vector3(-3f, 1f, -3f));               // pediatra, en el hospital
         Put("Luciana", "VehicleWorkshop_Area", new Vector3(-2f, 1f, 2f));          // piloto: la flota de alfombras (y el control de misión)
         Put("Gallarle", "Classroom_Area", new Vector3(-3f, 1f, -1f));              // con su pareja, Ducristin (pendiente de foto y de profesión)
+        Put("Neo", "Classroom_Area", new Vector3(-4f, 1f, -2f));                   // su hijo (niño): va con su madre (PersonLife), sin jornada
     }
 
     /// <summary>LA FAMILIA Y LOS AMIGOS DE BERÓN (2026-11-04, de sus fotos; docs/diseno-personajes.md §Familia y amigos): id, rótulo,

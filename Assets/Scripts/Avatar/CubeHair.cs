@@ -208,9 +208,12 @@ public static class CubeHair
         if (n.Contains("fausto")) return new Look(Style.Short, C(0.25f, 0.2f, 0.16f), C(0.82f, 0.64f, 0.5f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.35f, 0.38f, 0.42f), 1.72f).Sleeves(C(0.35f, 0.38f, 0.42f)).Pants(C(0.3f, 0.32f, 0.36f)).Shoes(C(0.12f, 0.1f, 0.09f));
         // LOS SEIS NUEVOS (Berón 2026-11-04): David y Adonis (informática), Julito y Ale (biotecnología), Ivelyna (pediatra) y Luciana
         // (piloto). PENDIENTES DE FOTO: aspecto neutro provisional, como Gallarle, sin rasgos inventados. El rasgo femenino (Fem) solo
-        // donde el nombre lo sugiere (Ivelyna, Luciana), PENDIENTE DE CONFIRMAR con Berón; Ale (Alejandro o Alejandra), sin él. Por nombre
+        // donde el nombre lo sugiere (Ivelyna, Luciana), PENDIENTE DE CONFIRMAR con Berón; Ale es HOMBRE (confirmado por Berón), sin él. Por nombre
         // EXACTO (David, Ale… son nombres que pueden salir en los microcosmos).
         if (n == "david" || n == "adonis" || n == "julito" || n == "ale" || n == "ivelyna" || n == "luciana") return Placeholder(n);
+        // NEO (2026-11-04), niño, hijo de Ducristin y Gallarle: PENDIENTE DE FOTO. Aspecto neutro de niño (~1,2 m; su cuerpo crece
+        // con PersonLife/BodyAging), sin Fem; por nombre EXACTO.
+        if (n == "neo") return new Look(Style.Short, C(0.28f, 0.2f, 0.14f), C(0.86f, 0.7f, 0.58f), C(0.25f, 0.18f, 0.12f)).Face(0.84f, 0.45f).Wear(C(0.3f, 0.55f, 0.75f), 1.2f).Pants(C(0.2f, 0.22f, 0.3f)).Shoes(C(0.2f, 0.15f, 0.12f));
         // BRUCE LEE (docs/microcosmos-bruce-lee.md): figura histórica del microcosmos del Dojo. Sin parecido de cine: un hombre
         // delgado y atlético de ~1,72 m, pelo negro corto, ropa sencilla de entrenamiento negra (chaqueta de cuello chino, pantalón
         // y zapatillas de tela). La complexión delgada y fibrosa sale de sus stats (BodyShape), que pone su builder.

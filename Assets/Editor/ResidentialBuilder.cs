@@ -39,6 +39,11 @@ public static class ResidentialBuilder
         { "Ducristin", "Gallarle" },
         { "Josedrilo", "Maite" },
     };
+    /// <summary>Los hijos que viven en casa de cada dueño (2026-11-04: Neo, hijo de Ducristin y Gallarle).</summary>
+    static readonly System.Collections.Generic.Dictionary<string, string[]> Kids = new System.Collections.Generic.Dictionary<string, string[]>
+    {
+        { "Ducristin", new[] { "Neo" } },
+    };
 
     /// <summary>Altura de los árboles de la arboleda (2026-11-04: 38 m, antes 26, para sostener la cuarta casa, a 30–33 m).</summary>
     public const float TreeHeight = 38f;
@@ -106,7 +111,7 @@ public static class ResidentialBuilder
             Vector3 trunk = trees[TreeOf(i)], away = _houses[i].pos - trunk; away.y = 0f;
             _terraces.Add(_houses[i].pos + away.normalized * (CabinW * 0.5f + 3.5f));   // (el centro de la terraza de 7 m, pegada a la casa)
         }
-        RingSize(Owners.Length + Partners.Count);   // (antes que los árboles: sus ramas esquivan el ring)
+        RingSize(Owners.Length + Partners.Count + System.Linq.Enumerable.Sum(Kids.Values, k => k.Length));   // (con los hijos)   // (antes que los árboles: sus ramas esquivan el ring)
         for (int k = 0; k < 6; k++)
             CubeTree.Build(root, $"ArbolResidencial_{k + 1}", center + trees[k], 7100 + k * 13, TreeHeight, carnivorous: false, blocked: p => Built(root.InverseTransformPoint(p)));
 
@@ -250,6 +255,7 @@ public static class ResidentialBuilder
         Bedroom room = t.gameObject.AddComponent<Bedroom>();
         room.owner = ownerIdx < Owners.Length ? Owners[ownerIdx] : null;   // las demás: para quien llegue al santuario
         room.partner = room.owner != null && Partners.TryGetValue(room.owner, out string mate) ? mate : null;
+        room.kids = room.owner != null && Kids.TryGetValue(room.owner, out string[] kids) ? kids : null;
         room.bed = bed; room.sleeps = BedSleeps; room.laneWidth = LaneWidth; room.bedLength = BedLength;   // cama de 4 (2026-11-04)
         room.spots = spots.ToArray(); room.gather = gather.ToArray();   // pijamadas: 4 abajo y 4 arriba en la cama-litera (2026-11-04)
         room.slideTop = slideTop; room.slideBottom = slideBottom;   // el tobogán para bajar del piso de arriba

@@ -14,6 +14,8 @@ public class Bedroom : MonoBehaviour
     public string owner;
     [Tooltip("Su pareja, si comparten casa. Vacío si vive solo.")]
     public string partner;
+    [Tooltip("Sus hijos, que viven en la casa (2026-11-04: Neo, de Ducristin y Gallarle).")]
+    public string[] kids;
     public Transform bed;
     [Tooltip("Plazas de la cama, una junto a otra a lo ancho (eje X de la cama).")]
     [Min(1)] public int sleeps = 1;
@@ -56,7 +58,7 @@ public class Bedroom : MonoBehaviour
         string n = a.name.ToLowerInvariant();
         bool Is(string who) => !string.IsNullOrEmpty(who) && n.Contains(who.ToLowerInvariant());
         foreach (Bedroom b in All)
-            if (b != null && (Is(b.owner) || Is(b.partner))) return b;
+            if (b != null && (Is(b.owner) || Is(b.partner) || (b.kids != null && System.Array.Exists(b.kids, Is)))) return b;
         return null;
     }
 
@@ -65,7 +67,8 @@ public class Bedroom : MonoBehaviour
     {
         if (a == null) return false;
         string n = a.name.ToLowerInvariant();
-        return (!string.IsNullOrEmpty(owner) && n.Contains(owner.ToLowerInvariant())) || (!string.IsNullOrEmpty(partner) && n.Contains(partner.ToLowerInvariant()));
+        return (!string.IsNullOrEmpty(owner) && n.Contains(owner.ToLowerInvariant())) || (!string.IsNullOrEmpty(partner) && n.Contains(partner.ToLowerInvariant()))
+            || (kids != null && System.Array.Exists(kids, k => !string.IsNullOrEmpty(k) && n == k.ToLowerInvariant()));
     }
 
     /// <summary>La plaza de <paramref name="a"/> en la cama: el dueño en la del medio y su pareja a su lado (en una cama de 1, la
@@ -74,6 +77,7 @@ public class Bedroom : MonoBehaviour
     {
         if (sleeps <= 1) return 0;
         bool isPartner = a != null && !string.IsNullOrEmpty(partner) && a.name.ToLowerInvariant().Contains(partner.ToLowerInvariant());
+        if (a != null && kids != null && System.Array.Exists(kids, k => !string.IsNullOrEmpty(k) && a.name.ToLowerInvariant() == k.ToLowerInvariant())) return 0;   // los hijos, a un lado
         return Mathf.Clamp((sleeps - 1) / 2 + (isPartner ? 1 : 0), 0, sleeps - 1);
     }
 
