@@ -50,7 +50,7 @@ public static class CubeCreature
         if (s.Contains("meerkat")) return new Spec { length = 0.3f, height = 0.15f, width = 0.1f, head = new Vector3(0.07f, 0.07f, 0.08f), snout = 0.04f, ear = new Vector2(0.02f, 0.02f), tail = 0.22f, tailThick = 0.03f, fur = C(0.86f, 0.78f, 0.64f), belly = C(0.93f, 0.88f, 0.78f) };
         // INSECTOS DE HIELO MODIFICADOS (santuario 1): a su tamaño real agrandado — abeja de las nieves ~20 cm, araña ~30 cm.
         if (s.Contains("snowspider")) return new Spec { plan = Plan.Insect, length = 0.3f, height = 0.12f, width = 0.12f, head = new Vector3(0.07f, 0.06f, 0.06f), fur = C(0.86f, 0.9f, 0.96f), belly = C(0.78f, 0.84f, 0.92f), accent = C(0.35f, 0.42f, 0.55f) };
-        if (s.Contains("snowbee")) return new Spec { plan = Plan.Insect, length = 0.2f, height = 0.09f, width = 0.09f, head = new Vector3(0.06f, 0.055f, 0.05f), fur = C(0.98f, 0.95f, 0.75f), belly = C(0.96f, 0.96f, 0.92f), accent = C(0.55f, 0.62f, 0.75f), wings = true };
+        if (s.Contains("snowbee")) return new Spec { plan = Plan.Insect, length = 0.2f, height = 0.09f, width = 0.09f, head = new Vector3(0.06f, 0.055f, 0.05f), fur = C(0.62f, 0.62f, 0.6f), belly = C(0.55f, 0.55f, 0.53f), accent = C(0.12f, 0.12f, 0.13f), wings = true };   // (2026-11-04, Berón: casi blancas y lisas, deslumbraban como luces: pelusa gris blanquecina mate, bandas oscuras)
         if (s.Contains("bee")) return new Spec { plan = Plan.Insect, length = 0.5f, height = 0.22f, width = 0.22f, head = new Vector3(0.15f, 0.14f, 0.13f), fur = C(0.98f, 0.92f, 0.6f), belly = C(0.95f, 0.95f, 0.9f), accent = C(0.3f, 0.28f, 0.3f), wings = true };
         if (PlanForInsect(s)) return new Spec { plan = Plan.Insect, length = 0.5f, height = 0.2f, width = 0.2f, head = new Vector3(0.14f, 0.12f, 0.12f), fur = InsectColor(s), belly = InsectColor(s) * 0.85f + new Color(0, 0, 0, 1), accent = C(0.2f, 0.2f, 0.22f), wings = s.Contains("ladybug") || s.Contains("beetle") };
         return new Spec();
@@ -310,7 +310,7 @@ public static class CubeCreature
             if (sp.wings)
             {
                 CubeJoint w = J(thorax.transform, s < 0 ? BodyPart.ScapulaLeft : BodyPart.ScapulaRight, new Vector3(W * 0.3f * s, H * 0.32f, 0f),
-                                new Vector3(L * 0.35f, 0.006f, L * 0.18f), new Vector3(L * 0.17f * s, 0f, -L * 0.05f), C(0.92f, 0.96f, 0.99f), rig);
+                                new Vector3(L * 0.35f, 0.006f, L * 0.18f), new Vector3(L * 0.17f * s, 0f, -L * 0.05f), C(0.6f, 0.64f, 0.68f), rig);   // (alas grises: blancas y opacas brillaban como una lámpara)
                 w.transform.localRotation = Quaternion.Euler(0f, 25f * s, 10f * s);
             }
         }
