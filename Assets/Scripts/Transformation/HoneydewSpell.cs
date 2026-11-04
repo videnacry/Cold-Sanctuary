@@ -36,7 +36,7 @@ public class HoneydewSpell : SpellBase
     [Min(1)] public int maxCharges = 10;
 
     [Tooltip("Tecla para lanzar la maleza sobre el target seleccionado.")]
-    public KeyCode castKey = KeyCode.E;
+    public KeyCode castKey = KeyCode.Period;   // (2026-11-04) la E es solo la tecla de interactuar
 
     // ── Ciclo de vida ────────────────────────────────────────────────────────
 

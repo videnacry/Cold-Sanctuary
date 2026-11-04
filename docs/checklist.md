@@ -608,7 +608,7 @@ Decisión del usuario (2026-09-11): **diseñar a fondo primero** (hecho) → **e
 - [x] Iniciaciones de cocina, huerto y sala de yoga: cada paso pedido sale como «E — paso» en el sitio del alumno (`PlayerTaskRunner.Live`); `step` y el asana siguen valiendo.
 - [x] Prueba `PlayerTasksTest` (grupo 96).
 - [ ] Tester: con SampleScene reconstruida (solo el santuario), grupos 96, 50, 41, 42 y 43; fotos de un marcador «E — acción» en el telar, en el bancal y en la mesa de emplatado durante la iniciación, y del panel de la tarea con la pista de ruta.
-- [ ] Pendiente: pasos con E en el examen médico de llegada (`NewcomerInitiator`), si Berón lo quiere; efectos propios por paso (regar de verdad, servir un plato); que Kushal dirija la clase de yoga real cuando le toca `yog_guia`; mover la tecla «Manos» del menú de posturas y la melaza del santuario fuera de la E.
+- [ ] Pendiente: pasos con E en el examen médico de llegada (`NewcomerInitiator`), si Berón lo quiere; efectos propios por paso (regar de verdad, servir un plato); que Kushal dirija la clase de yoga real cuando le toca `yog_guia`. Hecho: «Manos» pasa a la N y la melaza al punto (.); la E es solo la de interactuar (reconstruir SampleScene).
 
 ## Charlas entre personas (2026-11-04; [`conversaciones.md`](conversaciones.md))
 - [x] Resumen del sistema que había (`CommunicationSpell`, `Mind`, `SocialField`, vínculos): nadie llevaba el hechizo, solo Mentes, no se veía, sin contexto.

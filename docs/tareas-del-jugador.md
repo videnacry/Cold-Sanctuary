@@ -89,8 +89,14 @@ Iniciaciones: **cocina, huerto y sala de yoga**.
   `yog_corrige_*`) se hace con E pero no mueve la clase real (`YogaClass`) cuando el que la da es Kushal.
 - Efectos propios por paso (regar el bancal de verdad, servir un plato concreto): hoy el paso da el objeto y el gesto, y el
   efecto en el santuario llega al cerrar la misión.
-- La E también es la tecla de «Manos» del menú de posturas y del hechizo de la melaza en la escena del santuario
-  (`SampleSceneBuilder`): con una tarea a la vista, la E del sitio va a la tarea; conviene mover esas dos a otra tecla.
+
+## La E es solo la de interactuar
+
+Desde el 2026-11-04 la E no hace nada más en el santuario: la parte del cuerpo «Manos» del menú de posturas pasa a la
+**N** (su botón y su holograma muestran «[N]») y el hechizo de la melaza de Kushal (`HoneydewSpell.castKey`) al **punto (.)**.
+Las teclas libres se buscaron entre todas las `KeyCode` del código (letras libres: solo N; además «,», «.» y F2–F9). Los
+microcosmos de historia (Ambrosio, la cocina del fuego, el río, `StoryMission`) ya usaban la E solo para interactuar. Las
+escenas guardan la tecla: hay que reconstruir SampleScene para que cambie.
 
 ## Prueba
 
