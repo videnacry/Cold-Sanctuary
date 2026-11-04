@@ -516,6 +516,7 @@ public static partial class StorySceneBuilder
         // alimenta a sí misma), con el verde oliva de su versión humana (sin armas: es un acto civil).
         Color olive = new Color(0.33f, 0.36f, 0.24f), wax = new Color(0.85f, 0.45f, 0.15f), indigo = new Color(0.2f, 0.25f, 0.5f);
         GameObject traore = Modern(t, "Ibrahim Traoré", new Vector3(2f, 0f, 11f), false, olive, CubeInsect.Hat.None, 1.8f, "Termite");
+        { CubeHair.Look look = CubeHair.For("Ibrahim Traoré"); look.beret = false; CubeInsect.Humanize(traore, look); }   // su cara y su pelo, sin la boina militar: es un acto civil
         GameObject minister = Modern(t, "Ismaël Sombié (ministro de Agricultura)", new Vector3(7f, 0f, 11f), false, olive, CubeInsect.Hat.None, 1.75f, "Cricket");
         GameObject grower = Who(t, "Horticultora del barrage (Ruth)", new Vector3(-12f, 0f, 9f), true); CubeInsect.WearShirt(grower, wax); Routine(grower, gardens);
         GameObject driver = Who(t, "Tractorista de la brigada (Atlas)", new Vector3(12f, 0f, 6f), false); CubeInsect.WearShirt(driver, indigo); Routine(driver, tractor, field);
