@@ -161,8 +161,7 @@ public static partial class SampleSceneBuilder
             GameObject g = GameObject.Find(who), a = GameObject.Find(area);
             if (g != null && a != null) g.transform.position = a.transform.TransformPoint(local);
         }
-        Put("Irosene", "YogaRoom_Area", new Vector3(9f, 1.5f, 0f));              // MAESTRA DE YOGA (2026-11-04; antes Andrea y Sadhguru): en la tarima de la sala de Hatha tradicional, junto al linga
-        Put("Andrea", "Gym_Area", new Vector3(3f, 1f, 3f));                      // ENTRENADOR DEL GIMNASIO (2026-11-04: «el personaje con más fuerza es Andrea»)
+        Put("Andrea", "Gym_Area", new Vector3(3f, 1f, 3f));                      // ENTRENADOR DEL GIMNASIO (2026-11-04: «el personaje con más fuerza es Andrea»). Quién sale en la tarima de yoga lo pone la rama de personajes (Josedrilo)
         Put("JefeConstruccion", "Construction_Area", new Vector3(-1.5f, 1f, -0.3f)); // junto al banco de trabajo y la pizarra de avisos
         // La familia y los amigos de Berón (2026-11-04; docs/diseno-personajes.md §Familia y amigos). Los que heredan un papel de los
         // famosos que se fueron a sus microcosmos salen en su área (docs/personajes-mesocosmos.md §Reparto de papeles); los demás,

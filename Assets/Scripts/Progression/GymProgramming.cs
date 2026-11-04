@@ -25,7 +25,7 @@ public static class GymProgramming
     // ── El papel de entrenador ──────────────────────────────────────────────────────────────────
     /// <summary>ENTRENADOR DEL GIMNASIO: ANDREA (Berón 2026-11-04: «el personaje con más fuerza es Andrea»; antes Goluis). Su fuerza
     /// es la más alta del personal (Anima.strength 1,6; Goluis 1,5) y entrenaba con Leo (correr, gimnasio, yoga). Deja de ser el
-    /// maestro de yoga (no puede dar la clase de las 14 h y la del gimnasio a la vez): ahora lo es Irosene.
+    /// maestro de yoga (no puede dar la clase de las 14 h y la del gimnasio a la vez): el yoga pasa a Josedrilo, que reparte la rama de personajes.
     /// (Antes: Goluis, «el personaje de la fuerza», corpulento y el más disciplinado del personal
     /// (Archetypes: disciplina 1,3; fuerza 1,5). Gohageneis ya lleva las artes marciales y la Guardia (y es «poco disciplinado»,
     /// 0,6); Linduarda entrena a diario pero su conducta de médica (recién llegados, hospital) manda sobre la jornada.)</summary>

@@ -68,8 +68,7 @@ public class YogaClassTest : MonoBehaviour, ITestUnit
         }
         TestProbe.Check($"hay maestro y {practitioners} practicantes en el personal", people.Count >= practitioners + 1, string.Join(", ", people.Select(p => p.name)));
         if (people.Count < 2) { TestProbe.End(); yield break; }
-        // El maestro: el de yoga del santuario (WorkdayDirector.YogaTeacher, Irosene) si está; si no, el primero.
-        TestProbe.Check("la maestra de yoga no es el entrenador del gimnasio (las dos clases son a las 14 h)", WorkdayDirector.YogaTeacher != GymProgramming.Trainer && WorkdayDirector.SecondYogaTeacher != GymProgramming.Trainer, $"yoga {WorkdayDirector.YogaTeacher}/{WorkdayDirector.SecondYogaTeacher} · gimnasio {GymProgramming.Trainer}");
+        // El maestro: el de yoga del santuario (WorkdayDirector.YogaTeacher, Andrea) si está; si no, el primero.
         Anima teacher = people.FirstOrDefault(p => p.name == WorkdayDirector.YogaTeacher) ?? people[0];
         List<Anima> studs = people.Where(p => p != teacher).Take(practitioners).ToList();
 

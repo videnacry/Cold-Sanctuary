@@ -42,7 +42,7 @@ Ficha contada por Berón (2026-10-18). Aspecto en [`diseno-personajes.md`](disen
     rutina a partir de las 15:00 ([gimnasio-maquinas.md](gimnasio-maquinas.md) §15.5).
   - Sale en el gimnasio y su área es el Gimnasio.
 - Fue **maestro de yoga** unas horas del 2026-11-04, tras irse Sadhguru a su microcosmos, por ser el único que hizo yoga de verdad
-  con Leo. Como las dos clases son a las 14 h, el yoga pasó a **Irosene**, con Panterilia de segunda maestra
+  con Leo. Como las dos clases son a las 14 h, el yoga pasa a **Josedrilo** (Berón: «el profesional del yoga es Josedrilo»; lo aplica la rama de personajes)
   ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
 - Aspecto (`CubeHair.For("Andrea")`): pelo castaño ondulado y rizado, camisa negra de cuello, pantalón de vestir gris marengo, zapatos de piel, cadena plateada con cruz, anillos, pendientes en las dos orejas y pulsera.
 

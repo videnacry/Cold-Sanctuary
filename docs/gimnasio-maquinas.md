@@ -781,8 +781,8 @@ Si la rotación manda a alguien al gimnasio un día sin gimnasio en su plan (sol
 - Su fuerza es la más alta del personal: `Anima.strength` 1,6 (`SampleSceneBuilder.MakeCharacter`). Le sigue Goluis, con 1,5
   (`Archetypes`). `GymTrainingTest` lo comprueba en escena.
 - Con Leo salía a correr y al gimnasio ([character-andrea.md](character-andrea.md)).
-- Por eso deja de ser maestro de yoga: las dos clases son a las 14 h. El yoga pasa a **Irosene**, con **Panterilia** de segunda
-  maestra ([personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
+- Por eso deja de ser maestro de yoga: las dos clases son a las 14 h. El yoga pasa a **Josedrilo** (Berón; lo aplica la rama de personajes, con `WorkdayDirector.YogaTeacher` y las pruebas de yoga;
+  ver [personajes-mesocosmos.md](personajes-mesocosmos.md) §Reparto de papeles).
 - **Goluis** (el primer entrenador, unas horas del 2026-11-04) mantiene su plan de **fuerza**.
 - Andrea sigue en la rotación de la mañana como todos; sale en el gimnasio y su área es el Gimnasio.
 
